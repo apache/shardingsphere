@@ -45,6 +45,12 @@ public final class DistinctSelectItem implements SelectItem {
     @Setter
     private int index = -1;
     
+    public DistinctSelectItem(final String innerExpression, final Optional<String> alias) {
+    
+    }
+    
+    
+    
     @Override
     public String getExpression() {
         return Strings.isNullOrEmpty(distinctColumn) ? DefaultKeyword.DISTINCT.name() : SQLUtil.getExactlyValue(DefaultKeyword.DISTINCT + " " + distinctColumn);
