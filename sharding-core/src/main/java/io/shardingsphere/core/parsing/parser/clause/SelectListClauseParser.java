@@ -82,6 +82,7 @@ public abstract class SelectListClauseParser implements SQLClauseParser {
             result = parseRowNumberSelectItem(selectStatement);
         } else if (isDistinctSelectItem()) {
             result = parseDistinctSelectItem();
+            parseRestSelectItem(selectStatement);
         } else if (isStarSelectItem()) {
             selectStatement.setContainStar(true);
             result = parseStarSelectItem();
