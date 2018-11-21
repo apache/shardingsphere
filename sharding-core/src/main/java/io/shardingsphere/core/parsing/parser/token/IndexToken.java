@@ -28,7 +28,6 @@ import lombok.ToString;
  * @author caohao
  */
 @ToString
-
 public final class IndexToken extends SQLToken {
     
     @Getter
