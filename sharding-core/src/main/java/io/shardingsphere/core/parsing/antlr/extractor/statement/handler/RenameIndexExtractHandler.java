@@ -17,19 +17,17 @@
 
 package io.shardingsphere.core.parsing.antlr.extractor.statement.handler;
 
-import java.util.Collection;
-import java.util.Collections;
-import java.util.LinkedList;
-
-import org.antlr.v4.runtime.ParserRuleContext;
-import org.antlr.v4.runtime.tree.ParseTree;
-
 import com.google.common.base.Optional;
-
 import io.shardingsphere.core.parsing.antlr.extractor.statement.handler.result.IndexExtractResult;
 import io.shardingsphere.core.parsing.antlr.extractor.statement.util.ASTUtils;
 import io.shardingsphere.core.parsing.parser.token.IndexToken;
 import io.shardingsphere.core.util.SQLUtil;
+import org.antlr.v4.runtime.ParserRuleContext;
+import org.antlr.v4.runtime.tree.ParseTree;
+
+import java.util.Collection;
+import java.util.Collections;
+import java.util.LinkedList;
 
 /**
  * Rename index extract handler.
@@ -37,7 +35,7 @@ import io.shardingsphere.core.util.SQLUtil;
  * @author duhongjun
  */
 public final class RenameIndexExtractHandler implements ASTExtractHandler<Collection<IndexExtractResult>> {
-
+    
     @Override
     public Collection<IndexExtractResult> extract(final ParserRuleContext ancestorNode) {
         Optional<ParserRuleContext> renameIndexNode = ASTUtils.findFirstChildNode(ancestorNode, RuleName.RENAME_INDEX);
@@ -57,7 +55,7 @@ public final class RenameIndexExtractHandler implements ASTExtractHandler<Collec
         result.add(getIndexToken((ParserRuleContext) oldIndexNode));
         return result;
     }
-
+    
     private IndexExtractResult getIndexToken(final ParserRuleContext indexNode) {
         String name = SQLUtil.getNameWithoutSchema(indexNode.getText());
         return new IndexExtractResult(name, new IndexToken(indexNode.getStop().getStartIndex(), name, null));

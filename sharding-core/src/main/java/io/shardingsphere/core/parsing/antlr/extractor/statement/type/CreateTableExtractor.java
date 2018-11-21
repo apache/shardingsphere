@@ -46,12 +46,12 @@ public final class CreateTableExtractor extends DDLStatementExtractor {
     }
     
     @Override
-    protected SQLStatement createStatement(final ShardingTableMetaData shardingTableMetaData) {
+    protected SQLStatement createStatement() {
         return new CreateTableStatement();
     }
     
     @Override
-    protected void postExtract(final SQLStatement statement) {
+    protected void postExtract(final SQLStatement statement, final ShardingTableMetaData shardingTableMetaData) {
         CreateTableStatement createStatement = (CreateTableStatement) statement;
         Collection<ColumnMetaData> newColumnMetaDataList = new LinkedList<>();
         int position = 0;

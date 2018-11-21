@@ -17,10 +17,10 @@
 
 package io.shardingsphere.core.parsing.antlr.extractor.statement.handler.result;
 
+import lombok.Getter;
+
 import java.util.LinkedHashMap;
 import java.util.Map;
-
-import lombok.Getter;
 
 /**
  * Extract select expr result.
@@ -28,7 +28,7 @@ import lombok.Getter;
  * @author duhongjun
  */
 @Getter
-public class SelectExprExtractResult implements ExtractResult {
-
+public final class SelectExprExtractResult implements ExtractResult {
+    
     private final Map<String, String> selectExprs = new LinkedHashMap<>();
 }

@@ -15,32 +15,28 @@
  * </p>
  */
 
-package io.shardingsphere.core.parsing.antlr.extractor.statement.handler.fillor;
+package io.shardingsphere.core.parsing.antlr.extractor.statement.handler.filler;
 
-import io.shardingsphere.core.parsing.antlr.extractor.statement.handler.result.DropPrimaryKeyExtractResult;
+import io.shardingsphere.core.metadata.table.ShardingTableMetaData;
+import io.shardingsphere.core.parsing.antlr.extractor.statement.handler.result.DropColumnExtractResult;
 import io.shardingsphere.core.parsing.antlr.sql.ddl.AlterTableStatement;
 import io.shardingsphere.core.parsing.parser.sql.SQLStatement;
 
 /**
- * Drop primary key handler result filler.
+ * Drop column handler result filler.
  *
  * @author duhongjun
  */
-public class DropPrimaryKeyHandlerResultFiller extends AbstractHandlerResultFiller {
-
-    public DropPrimaryKeyHandlerResultFiller() {
-        super(DropPrimaryKeyExtractResult.class);
+public final class DropColumnHandlerResultFiller extends AbstractHandlerResultFiller {
+    
+    public DropColumnHandlerResultFiller() {
+        super(DropColumnExtractResult.class);
     }
-
-    /**
-     * Fill result to SQLStatement.
-     *
-     * @param extractResult extract result from AST
-     * @param statement SQL statement
-     */
+    
     @Override
-    protected void fillSQLStatement(final Object extractResult, final SQLStatement statement) {
+    protected void fillSQLStatement(final Object extractResult, final SQLStatement statement, final ShardingTableMetaData shardingTableMetaData) {
+        DropColumnExtractResult actualResult = (DropColumnExtractResult) extractResult;
         AlterTableStatement alterStatement = (AlterTableStatement) statement;
-        alterStatement.setDropPrimaryKey(((DropPrimaryKeyExtractResult) extractResult).isDropPrimaryKey());
+        alterStatement.getDropColumns().addAll(actualResult.getDropColumnNames());
     }
 }

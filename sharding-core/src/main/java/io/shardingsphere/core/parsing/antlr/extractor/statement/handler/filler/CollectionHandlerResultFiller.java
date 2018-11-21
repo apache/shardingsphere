@@ -15,40 +15,33 @@
  * </p>
  */
 
-package io.shardingsphere.core.parsing.antlr.extractor.statement.handler.fillor;
+package io.shardingsphere.core.parsing.antlr.extractor.statement.handler.filler;
 
-import java.util.Collection;
-
-import io.shardingsphere.core.parsing.antlr.extractor.registry.HandlerResultFillerRegistry;
+import io.shardingsphere.core.metadata.table.ShardingTableMetaData;
 import io.shardingsphere.core.parsing.antlr.extractor.statement.handler.result.ExtractResult;
 import io.shardingsphere.core.parsing.parser.sql.SQLStatement;
+
+import java.util.Collection;
 
 /**
  * Collection handler result filler.
  *
  * @author duhongjun
  */
-public class CollectionHandlerResultFiller extends AbstractHandlerResultFiller {
-
+public final class CollectionHandlerResultFiller extends AbstractHandlerResultFiller {
+    
     public CollectionHandlerResultFiller() {
         super(Collection.class);
     }
-
-    /**
-     * Fill result to SQLStatement.
-     *
-     * @param extractResult extract result from AST
-     * @param statement SQL statement
-     */
+    
     @SuppressWarnings("unchecked")
     @Override
-    protected void fillSQLStatement(final Object extractResult, final SQLStatement statement) {
-        @SuppressWarnings("rawtypes")
+    protected void fillSQLStatement(final Object extractResult, final SQLStatement statement, final ShardingTableMetaData shardingTableMetaData) {
         Collection<? extends ExtractResult> collection = (Collection) extractResult;
         for (ExtractResult each : collection) {
-            HandlerResultFiller fillor = HandlerResultFillerRegistry.getFillor(each);
-            if (null != fillor) {
-                fillor.fill(each, statement);
+            HandlerResultFiller filler = HandlerResultFillerRegistry.getFiller(each);
+            if (null != filler) {
+                filler.fill(each, statement, shardingTableMetaData);
             }
         }
     }

@@ -15,26 +15,24 @@
  * </p>
  */
 
-package io.shardingsphere.core.parsing.antlr.sql.ddl.mysql;
+package io.shardingsphere.core.parsing.antlr.extractor.statement.handler.filler;
 
-import io.shardingsphere.core.parsing.antlr.sql.ddl.AlterTableStatement;
-import io.shardingsphere.core.parsing.antlr.sql.ddl.ColumnPosition;
-import lombok.Getter;
-import lombok.Setter;
-import lombok.ToString;
-
-import java.util.LinkedList;
-import java.util.List;
+import io.shardingsphere.core.metadata.table.ShardingTableMetaData;
+import io.shardingsphere.core.parsing.parser.sql.SQLStatement;
 
 /**
- * MySQL alter table statement.
+ * Handler result filler.
  * 
  * @author duhongjun
  */
-@Getter
-@Setter
-@ToString(callSuper = true)
-public final class MySQLAlterTableStatement extends AlterTableStatement {
+public interface HandlerResultFiller {
     
-    private final List<ColumnPosition> positionChangedColumns = new LinkedList<>();
+    /**
+     * Fill result to SQLStatement.
+     *
+     * @param extractResult extract result from AST
+     * @param statement SQL statement
+     * @param shardingTableMetaData sharding table meta data
+     */
+    void fill(Object extractResult, SQLStatement statement, ShardingTableMetaData shardingTableMetaData);
 }

@@ -19,7 +19,6 @@ package io.shardingsphere.core.parsing.antlr.sql.ddl;
 
 import lombok.Getter;
 import lombok.Setter;
-import lombok.ToString;
 
 /**
  * Column definition.
@@ -28,7 +27,6 @@ import lombok.ToString;
  */
 @Getter
 @Setter
-@ToString
 public final class ColumnDefinition {
     
     private String name;

@@ -15,10 +15,10 @@
  * </p>
  */
 
-package io.shardingsphere.core.parsing.antlr.extractor.statement.handler.fillor;
+package io.shardingsphere.core.parsing.antlr.extractor.statement.handler.filler;
 
 import com.google.common.base.Optional;
-
+import io.shardingsphere.core.metadata.table.ShardingTableMetaData;
 import io.shardingsphere.core.parsing.antlr.extractor.statement.handler.result.PrimaryKeyExtractResult;
 import io.shardingsphere.core.parsing.antlr.sql.ddl.AlterTableStatement;
 import io.shardingsphere.core.parsing.antlr.sql.ddl.ColumnDefinition;
@@ -30,41 +30,34 @@ import io.shardingsphere.core.parsing.parser.sql.ddl.create.table.CreateTableSta
  *
  * @author duhongjun
  */
-public class PrimaryKeyHandlerResultFiller extends AbstractHandlerResultFiller {
-
+public final class PrimaryKeyHandlerResultFiller extends AbstractHandlerResultFiller {
+    
     public PrimaryKeyHandlerResultFiller() {
         super(PrimaryKeyExtractResult.class);
     }
-
-    /**
-     * Fill result to SQLStatement.
-     *
-     * @param extractResult extract result from AST
-     * @param statement SQL statement
-     */
+    
     @Override
-    protected void fillSQLStatement(final Object extractResult, final SQLStatement statement) {
+    protected void fillSQLStatement(final Object extractResult, final SQLStatement statement, final ShardingTableMetaData shardingTableMetaData) {
         if (statement instanceof AlterTableStatement) {
-            fillAlter((PrimaryKeyExtractResult) extractResult, (AlterTableStatement) statement);
+            fillAlter((PrimaryKeyExtractResult) extractResult, (AlterTableStatement) statement, shardingTableMetaData);
         } else if (statement instanceof CreateTableStatement) {
             fillCreate((PrimaryKeyExtractResult) extractResult, (CreateTableStatement) statement);
         }
     }
-
-    private void fillAlter(final PrimaryKeyExtractResult result, final AlterTableStatement statement) {
-        for (String each : result.getPrimaryKeyColumnNames()) {
-            Optional<ColumnDefinition> updateColumn = statement.getColumnDefinitionByName(each);
+    
+    private void fillAlter(final PrimaryKeyExtractResult primaryKeyExtractResult, final AlterTableStatement statement, final ShardingTableMetaData shardingTableMetaData) {
+        for (String each : primaryKeyExtractResult.getPrimaryKeyColumnNames()) {
+            Optional<ColumnDefinition> updateColumn = statement.findColumnDefinition(each, shardingTableMetaData);
             if (updateColumn.isPresent()) {
                 updateColumn.get().setPrimaryKey(true);
                 statement.getUpdateColumns().put(each, updateColumn.get());
             }
         }
     }
-
-    private void fillCreate(final PrimaryKeyExtractResult result, final CreateTableStatement statement) {
-        for (String each : result.getPrimaryKeyColumnNames()) {
+    
+    private void fillCreate(final PrimaryKeyExtractResult primaryKeyExtractResult, final CreateTableStatement statement) {
+        for (String each : primaryKeyExtractResult.getPrimaryKeyColumnNames()) {
             statement.getPrimaryKeyColumns().add(each);
         }
     }
-
 }
