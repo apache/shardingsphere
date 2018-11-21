@@ -22,12 +22,12 @@ import io.shardingsphere.core.parsing.antlr.extractor.SQLStatementType;
 import io.shardingsphere.core.parsing.antlr.extractor.registry.SQLStatementExtractorRegistry;
 import io.shardingsphere.core.parsing.antlr.extractor.statement.type.CreateTableExtractor;
 import io.shardingsphere.core.parsing.antlr.extractor.statement.type.IndexWithTableStatementExtractor;
-import io.shardingsphere.core.parsing.antlr.extractor.statement.type.SingleTableExtractor;
 import io.shardingsphere.core.parsing.antlr.extractor.statement.type.TCLStatementExtractor;
 import io.shardingsphere.core.parsing.antlr.extractor.statement.type.dialect.oracle.OracleAlterIndexExtractor;
 import io.shardingsphere.core.parsing.antlr.extractor.statement.type.dialect.oracle.OracleAlterTableExtractor;
 import io.shardingsphere.core.parsing.antlr.extractor.statement.type.dialect.oracle.OracleDropIndexExtractor;
 import io.shardingsphere.core.parsing.antlr.extractor.statement.type.dialect.oracle.OracleDropTableExtractor;
+import io.shardingsphere.core.parsing.antlr.extractor.statement.type.dialect.oracle.OracleTruncateTableExtractor;
 
 import java.util.HashMap;
 import java.util.Map;
@@ -51,7 +51,7 @@ public final class OracleStatementExtractorRegistry implements SQLStatementExtra
         EXTRACTORS.put(SQLStatementType.CREATE_TABLE, new CreateTableExtractor());
         EXTRACTORS.put(SQLStatementType.ALTER_TABLE, new OracleAlterTableExtractor());
         EXTRACTORS.put(SQLStatementType.DROP_TABLE, new OracleDropTableExtractor());
-        EXTRACTORS.put(SQLStatementType.TRUNCATE_TABLE, new SingleTableExtractor());
+        EXTRACTORS.put(SQLStatementType.TRUNCATE_TABLE, new OracleTruncateTableExtractor());
         EXTRACTORS.put(SQLStatementType.CREATE_INDEX, new IndexWithTableStatementExtractor());
         EXTRACTORS.put(SQLStatementType.ALTER_INDEX, new OracleAlterIndexExtractor());
         EXTRACTORS.put(SQLStatementType.DROP_INDEX, new OracleDropIndexExtractor());

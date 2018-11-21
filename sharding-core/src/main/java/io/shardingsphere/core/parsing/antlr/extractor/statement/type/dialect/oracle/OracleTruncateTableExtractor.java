@@ -15,18 +15,19 @@
  * </p>
  */
 
-package io.shardingsphere.core.parsing.antlr.extractor.statement.type;
+package io.shardingsphere.core.parsing.antlr.extractor.statement.type.dialect.oracle;
 
-import io.shardingsphere.core.parsing.antlr.extractor.statement.handler.TableNamesExtractHandler;
+import io.shardingsphere.core.parsing.antlr.extractor.statement.handler.TableNameExtractHandler;
+import io.shardingsphere.core.parsing.antlr.extractor.statement.type.TruncateTableExtractor;
 
 /**
- * Truncate table extractor.
+ * Truncate table extractor for Oracle.
  * 
  * @author duhongjun
  */
-public final class TruncateTablesExtractor extends DDLStatementExtractor {
+public final class OracleTruncateTableExtractor extends TruncateTableExtractor {
     
-    public TruncateTablesExtractor() {
-        addExtractHandler(new TableNamesExtractHandler());
+    public OracleTruncateTableExtractor() {
+        addExtractHandler(new TableNameExtractHandler());
     }
 }
