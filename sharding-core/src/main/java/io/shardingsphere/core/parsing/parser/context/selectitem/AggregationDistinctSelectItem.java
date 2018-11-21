@@ -36,8 +36,8 @@ public final class AggregationDistinctSelectItem extends DistinctSelectItem {
     
     private final AggregationType type;
     
-    public AggregationDistinctSelectItem(final AggregationType type, final String distinctColumn, final Optional<String> alias) {
-        super(distinctColumn, alias);
+    public AggregationDistinctSelectItem(final AggregationType type, final String columnName, final Optional<String> alias) {
+        super(columnName, alias);
         this.type = type;
         // TODO :panjuan gets correct parsing result and supports this syntax
         throw new SQLParsingUnsupportedException(type.toString() + "(DISTINCT)");
