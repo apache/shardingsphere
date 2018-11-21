@@ -17,7 +17,6 @@
 
 package io.shardingsphere.core.parsing.antlr.extractor.statement.type;
 
-import io.shardingsphere.core.metadata.table.ShardingTableMetaData;
 import io.shardingsphere.core.parsing.parser.sql.SQLStatement;
 import io.shardingsphere.core.parsing.parser.sql.tcl.TCLStatement;
 
@@ -29,7 +28,7 @@ import io.shardingsphere.core.parsing.parser.sql.tcl.TCLStatement;
 public final class TCLStatementExtractor extends AbstractSQLStatementExtractor {
     
     @Override
-    protected SQLStatement createStatement(final ShardingTableMetaData shardingTableMetaData) {
+    protected SQLStatement createStatement() {
         return new TCLStatement();
     }
 }

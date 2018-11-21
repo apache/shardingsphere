@@ -17,10 +17,10 @@
 
 package io.shardingsphere.core.parsing.antlr.extractor.statement.handler.result;
 
+import lombok.Getter;
+
 import java.util.LinkedHashSet;
 import java.util.Set;
-
-import lombok.Getter;
 
 /**
  * Add primary key result.
@@ -29,6 +29,6 @@ import lombok.Getter;
  */
 @Getter
 public final class PrimaryKeyExtractResult implements ExtractResult {
-
+    
     private final Set<String> primaryKeyColumnNames = new LinkedHashSet<>();
 }

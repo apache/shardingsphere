@@ -17,39 +17,33 @@
 
 package io.shardingsphere.core.parsing.antlr.extractor.statement.handler;
 
-import java.util.Collection;
-import java.util.Collections;
-import java.util.LinkedList;
-
-import org.antlr.v4.runtime.ParserRuleContext;
-import org.antlr.v4.runtime.tree.TerminalNode;
-
 import com.google.common.base.Optional;
-
 import io.shardingsphere.core.constant.OrderDirection;
 import io.shardingsphere.core.parsing.antlr.extractor.statement.handler.result.OrderByExtractResult;
 import io.shardingsphere.core.parsing.antlr.extractor.statement.util.ASTUtils;
 import io.shardingsphere.core.parsing.parser.token.OrderByToken;
+import lombok.RequiredArgsConstructor;
+import org.antlr.v4.runtime.ParserRuleContext;
+import org.antlr.v4.runtime.tree.TerminalNode;
+
+import java.util.Collection;
+import java.util.Collections;
+import java.util.LinkedList;
 
 /**
  * Order by extract handler.
  *
  * @author duhongjun
  */
+@RequiredArgsConstructor
 public class OrderByExtractHandler implements ASTExtractHandler<Collection<OrderByExtractResult>> {
-
-    protected RuleName ruleName;
-
+    
+    private final RuleName ruleName;
+    
     public OrderByExtractHandler() {
         ruleName = RuleName.ORDERBYCLAUSE;
     }
-
-    /**
-     * Extract AST.
-     *
-     * @param ancestorNode ancestor node of AST
-     * @return extract result
-     */
+    
     @Override
     public Collection<OrderByExtractResult> extract(final ParserRuleContext ancestorNode) {
         Optional<ParserRuleContext> orderByParentNode = ASTUtils.findFirstChildNode(ancestorNode, ruleName);
@@ -74,7 +68,6 @@ public class OrderByExtractHandler implements ASTExtractHandler<Collection<Order
                 ownerName = name.substring(0, pos - 1);
                 name = name.substring(pos + 1);
             }
-
             if (1 < count) {
                 TerminalNode direction = (TerminalNode) each.getChild(1);
                 if (direction.getSymbol().getStopIndex() - direction.getSymbol().getStartIndex() == 3) {
@@ -83,7 +76,6 @@ public class OrderByExtractHandler implements ASTExtractHandler<Collection<Order
                     orderDirection = OrderDirection.ASC;
                 }
             }
-
             result.add(new OrderByExtractResult(Optional.of(ownerName), Optional.of(name), orderDirection, null, new OrderByToken(orderByParentNode.get().getStop().getStopIndex())));
         }
         return result;

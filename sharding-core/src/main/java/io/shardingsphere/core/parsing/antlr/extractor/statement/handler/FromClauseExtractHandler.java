@@ -17,33 +17,25 @@
 
 package io.shardingsphere.core.parsing.antlr.extractor.statement.handler;
 
-import java.util.Collection;
-import java.util.Collections;
-import java.util.LinkedList;
-
-import org.antlr.v4.runtime.ParserRuleContext;
-
 import com.google.common.base.Optional;
-
 import io.shardingsphere.core.parsing.antlr.extractor.statement.handler.result.TableExtractResult;
 import io.shardingsphere.core.parsing.antlr.extractor.statement.handler.result.TableJoinExtractResult;
 import io.shardingsphere.core.parsing.antlr.extractor.statement.util.ASTUtils;
+import org.antlr.v4.runtime.ParserRuleContext;
+
+import java.util.Collection;
+import java.util.Collections;
+import java.util.LinkedList;
 
 /**
  * Extract table result.
  *
  * @author duhongjun
  */
-public class FromClauseExtractHandler implements ASTExtractHandler<Collection<TableExtractResult>> {
-
+public final class FromClauseExtractHandler implements ASTExtractHandler<Collection<TableExtractResult>> {
+    
     private final TableNameExtractHandler tableNameExtractHandler = new TableNameExtractHandler();
-
-    /**
-     * Extract AST.
-     *
-     * @param ancestorNode ancestor node of AST
-     * @return extract result
-     */
+    
     @Override
     public Collection<TableExtractResult> extract(final ParserRuleContext ancestorNode) {
         Optional<ParserRuleContext> fromNode = ASTUtils.findFirstChildNode(ancestorNode, RuleName.FROM_CLAUSE);

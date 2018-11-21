@@ -17,16 +17,14 @@
 
 package io.shardingsphere.core.parsing.antlr.extractor.statement.handler;
 
+import com.google.common.base.Optional;
+import io.shardingsphere.core.parsing.antlr.extractor.statement.handler.result.TableExtractResult;
+import io.shardingsphere.core.parsing.antlr.extractor.statement.util.ASTUtils;
+import org.antlr.v4.runtime.ParserRuleContext;
+
 import java.util.Collection;
 import java.util.Collections;
 import java.util.LinkedList;
-
-import org.antlr.v4.runtime.ParserRuleContext;
-
-import com.google.common.base.Optional;
-
-import io.shardingsphere.core.parsing.antlr.extractor.statement.handler.result.TableExtractResult;
-import io.shardingsphere.core.parsing.antlr.extractor.statement.util.ASTUtils;
 
 /**
  * Multiple table names extract handler.
@@ -34,9 +32,9 @@ import io.shardingsphere.core.parsing.antlr.extractor.statement.util.ASTUtils;
  * @author duhongjun
  */
 public final class TableNamesExtractHandler implements ASTExtractHandler<Collection<TableExtractResult>> {
-
+    
     private final TableNameExtractHandler tableNameExtractHandler = new TableNameExtractHandler();
-
+    
     @Override
     public Collection<TableExtractResult> extract(final ParserRuleContext ancestorNode) {
         Collection<ParserRuleContext> tableNameNodes = ASTUtils.getAllDescendantNodes(ancestorNode, RuleName.TABLE_NAME);

@@ -25,7 +25,6 @@ import lombok.AccessLevel;
 import lombok.Getter;
 import lombok.RequiredArgsConstructor;
 import lombok.Setter;
-import lombok.ToString;
 
 import java.util.Collections;
 import java.util.LinkedList;
@@ -39,7 +38,6 @@ import java.util.List;
 @RequiredArgsConstructor
 @Getter
 @Setter
-@ToString
 public abstract class AbstractSQLStatement implements SQLStatement {
     
     private final SQLType type;

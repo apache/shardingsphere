@@ -22,8 +22,9 @@ package io.shardingsphere.core.parsing.antlr.extractor.statement.handler;
  * 
  * @author duhongjun
  */
-public class GroupByExtractHandler extends OrderByExtractHandler {
+public final class GroupByExtractHandler extends OrderByExtractHandler {
+    
     public GroupByExtractHandler() {
-        ruleName = RuleName.GROUPBYCLAUSE;
+        super(RuleName.GROUPBYCLAUSE);
     }
 }

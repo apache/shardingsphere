@@ -29,28 +29,28 @@ import lombok.Setter;
 @Getter
 @Setter
 public final class ColumnDefinitionExtractResult implements ExtractResult {
+    
     private String name;
-
+    
     private String type;
-
+    
     private Integer length;
-
+    
     private boolean primaryKey;
-
+    
     private ColumnPosition position;
-
+    
     private String oldName;
-
+    
     private boolean isAdd;
-
-    public ColumnDefinitionExtractResult(final String name, final String type, final Integer length,
-            final boolean primaryKey) {
+    
+    public ColumnDefinitionExtractResult(final String name, final String type, final Integer length, final boolean primaryKey) {
         this.name = name;
         this.type = type;
         this.length = length;
         this.primaryKey = primaryKey;
     }
-
+    
     public ColumnDefinitionExtractResult(final String name, final String oldName) {
         this.name = name;
         this.oldName = oldName;

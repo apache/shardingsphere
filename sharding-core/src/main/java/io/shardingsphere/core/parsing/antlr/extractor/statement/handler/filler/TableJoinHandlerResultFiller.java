@@ -15,8 +15,9 @@
  * </p>
  */
 
-package io.shardingsphere.core.parsing.antlr.extractor.statement.handler.fillor;
+package io.shardingsphere.core.parsing.antlr.extractor.statement.handler.filler;
 
+import io.shardingsphere.core.metadata.table.ShardingTableMetaData;
 import io.shardingsphere.core.parsing.antlr.extractor.statement.handler.result.TableJoinExtractResult;
 import io.shardingsphere.core.parsing.parser.sql.SQLStatement;
 
@@ -25,20 +26,15 @@ import io.shardingsphere.core.parsing.parser.sql.SQLStatement;
  * 
  * @author duhongjun
  */
-public class TableJoinHandlerResultFiller extends TableHandlerResultFiller {
+public final class TableJoinHandlerResultFiller extends TableHandlerResultFiller {
+    
     public TableJoinHandlerResultFiller() {
         super(TableJoinExtractResult.class);
     }
-
-    /**
-     * Fill result to SQLStatement.
-     *
-     * @param extractResult extract result from AST
-     * @param statement SQL statement
-     */
+    
     @Override
-    protected void fillSQLStatement(final Object extractResult, final SQLStatement statement) {
+    protected void fillSQLStatement(final Object extractResult, final SQLStatement statement, final ShardingTableMetaData shardingTableMetaData) {
         TableJoinExtractResult tableResult = (TableJoinExtractResult) extractResult;
-        super.fillSQLStatement(tableResult, statement);
+        super.fillSQLStatement(tableResult, statement, shardingTableMetaData);
     }
 }

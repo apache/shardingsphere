@@ -17,34 +17,31 @@
 
 package io.shardingsphere.core.parsing.antlr.extractor.statement.type;
 
+import com.google.common.base.Optional;
+import io.shardingsphere.core.metadata.table.ShardingTableMetaData;
+import io.shardingsphere.core.parsing.antlr.extractor.SQLStatementExtractor;
+import io.shardingsphere.core.parsing.antlr.extractor.statement.handler.ASTExtractHandler;
+import io.shardingsphere.core.parsing.antlr.extractor.statement.handler.filler.HandlerResultFiller;
+import io.shardingsphere.core.parsing.antlr.extractor.statement.handler.filler.HandlerResultFillerRegistry;
+import io.shardingsphere.core.parsing.parser.sql.SQLStatement;
+import org.antlr.v4.runtime.ParserRuleContext;
+
 import java.util.Collection;
 import java.util.LinkedList;
 import java.util.List;
-
-import org.antlr.v4.runtime.ParserRuleContext;
-
-import com.google.common.base.Optional;
-
-import io.shardingsphere.core.metadata.table.ShardingTableMetaData;
-import io.shardingsphere.core.parsing.antlr.extractor.SQLStatementExtractor;
-import io.shardingsphere.core.parsing.antlr.extractor.registry.HandlerResultFillerRegistry;
-import io.shardingsphere.core.parsing.antlr.extractor.statement.handler.ASTExtractHandler;
-import io.shardingsphere.core.parsing.antlr.extractor.statement.handler.fillor.HandlerResultFiller;
-import io.shardingsphere.core.parsing.parser.sql.SQLStatement;
 
 /**
  * Abstract SQL statement extractor.
  *
  * @author duhongjun
  */
-@SuppressWarnings("rawtypes")
 public abstract class AbstractSQLStatementExtractor implements SQLStatementExtractor {
-
+    
     private final Collection<ASTExtractHandler<?>> extractHandlers = new LinkedList<>();
-
+    
     @Override
     public final SQLStatement extract(final ParserRuleContext rootNode, final ShardingTableMetaData shardingTableMetaData) {
-        SQLStatement result = createStatement(shardingTableMetaData);
+        SQLStatement result = createStatement();
         List<Object> extractResults = new LinkedList<>();
         for (ASTExtractHandler each : extractHandlers) {
             Object extractResult = each.extract(rootNode);
@@ -59,20 +56,20 @@ public abstract class AbstractSQLStatementExtractor implements SQLStatementExtra
             }
         }
         for (Object each : extractResults) {
-            HandlerResultFiller fillor = HandlerResultFillerRegistry.getFillor(each);
-            if (null != fillor) {
-                fillor.fill(each, result);
+            HandlerResultFiller filler = HandlerResultFillerRegistry.getFiller(each);
+            if (null != filler) {
+                filler.fill(each, result, shardingTableMetaData);
             }
         }
-        postExtract(result);
+        postExtract(result, shardingTableMetaData);
         return result;
     }
-
-    protected abstract SQLStatement createStatement(ShardingTableMetaData shardingTableMetaData);
-
-    protected void postExtract(final SQLStatement statement) {
+    
+    protected abstract SQLStatement createStatement();
+    
+    protected void postExtract(final SQLStatement statement, final ShardingTableMetaData shardingTableMetaData) {
     }
-
+    
     protected final void addExtractHandler(final ASTExtractHandler handler) {
         extractHandlers.add(handler);
     }

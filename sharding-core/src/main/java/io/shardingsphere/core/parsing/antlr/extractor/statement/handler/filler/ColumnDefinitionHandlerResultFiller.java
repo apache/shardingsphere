@@ -15,14 +15,13 @@
  * </p>
  */
 
-package io.shardingsphere.core.parsing.antlr.extractor.statement.handler.fillor;
+package io.shardingsphere.core.parsing.antlr.extractor.statement.handler.filler;
 
 import com.google.common.base.Optional;
-
+import io.shardingsphere.core.metadata.table.ShardingTableMetaData;
 import io.shardingsphere.core.parsing.antlr.extractor.statement.handler.result.ColumnDefinitionExtractResult;
 import io.shardingsphere.core.parsing.antlr.sql.ddl.AlterTableStatement;
 import io.shardingsphere.core.parsing.antlr.sql.ddl.ColumnDefinition;
-import io.shardingsphere.core.parsing.antlr.sql.ddl.mysql.MySQLAlterTableStatement;
 import io.shardingsphere.core.parsing.parser.sql.SQLStatement;
 import io.shardingsphere.core.parsing.parser.sql.ddl.create.table.CreateTableStatement;
 import io.shardingsphere.core.util.SQLUtil;
@@ -32,33 +31,26 @@ import io.shardingsphere.core.util.SQLUtil;
  *
  * @author duhongjun
  */
-public class ColumnDefinitionHandlerResultFiller extends AbstractHandlerResultFiller {
-
+public final class ColumnDefinitionHandlerResultFiller extends AbstractHandlerResultFiller {
+    
     public ColumnDefinitionHandlerResultFiller() {
         super(ColumnDefinitionExtractResult.class);
     }
-
-    /**
-     * Fill result to SQLStatement.
-     *
-     * @param extractResult extract result from AST
-     * @param statement SQL statement
-     */
+    
     @Override
-    protected void fillSQLStatement(final Object extractResult, final SQLStatement statement) {
+    protected void fillSQLStatement(final Object extractResult, final SQLStatement statement, final ShardingTableMetaData shardingTableMetaData) {
         ColumnDefinitionExtractResult columnExtractResult = (ColumnDefinitionExtractResult) extractResult;
         if (statement instanceof AlterTableStatement) {
-            fillAlter(columnExtractResult, (AlterTableStatement) statement);
+            fillAlter(columnExtractResult, (AlterTableStatement) statement, shardingTableMetaData);
         } else if (statement instanceof CreateTableStatement) {
             fillCreate(columnExtractResult, (CreateTableStatement) statement);
         }
     }
-
-    private void fillAlter(final ColumnDefinitionExtractResult columnExtractResult,
-                           final AlterTableStatement alterTableStatement) {
+    
+    private void fillAlter(final ColumnDefinitionExtractResult columnExtractResult, final AlterTableStatement alterTableStatement, final ShardingTableMetaData shardingTableMetaData) {
         String oldName = columnExtractResult.getOldName();
         if (null != oldName) {
-            Optional<ColumnDefinition> oldDefinition = alterTableStatement.getColumnDefinitionByName(oldName);
+            Optional<ColumnDefinition> oldDefinition = alterTableStatement.findColumnDefinition(oldName, shardingTableMetaData);
             if (!oldDefinition.isPresent()) {
                 return;
             }
@@ -72,18 +64,16 @@ public class ColumnDefinitionHandlerResultFiller extends AbstractHandlerResultFi
             ColumnDefinition columnDefinition = new ColumnDefinition(columnExtractResult.getName(), columnExtractResult.getType(), columnExtractResult.getLength(), columnExtractResult.isPrimaryKey());
             if (!columnExtractResult.isAdd()) {
                 alterTableStatement.getUpdateColumns().put(columnExtractResult.getName(), columnDefinition);
-            } else if (!alterTableStatement.findColumnDefinition(columnExtractResult.getName()).isPresent()) {
+            } else if (!alterTableStatement.findColumnDefinitionFromMetaData(columnExtractResult.getName(), shardingTableMetaData).isPresent()) {
                 alterTableStatement.getAddColumns().add(columnDefinition);
             }
         }
         if (null != columnExtractResult.getPosition()) {
-            MySQLAlterTableStatement mysqlAlterTable = (MySQLAlterTableStatement) alterTableStatement;
-            mysqlAlterTable.getPositionChangedColumns().add(columnExtractResult.getPosition());
+            alterTableStatement.getPositionChangedColumns().add(columnExtractResult.getPosition());
         }
     }
-
-    private void fillCreate(final ColumnDefinitionExtractResult columnDefinition,
-                            final CreateTableStatement createTableStatement) {
+    
+    private void fillCreate(final ColumnDefinitionExtractResult columnDefinition, final CreateTableStatement createTableStatement) {
         createTableStatement.getColumnNames().add(SQLUtil.getExactlyValue(columnDefinition.getName()));
         createTableStatement.getColumnTypes().add(columnDefinition.getType());
         if (columnDefinition.isPrimaryKey()) {

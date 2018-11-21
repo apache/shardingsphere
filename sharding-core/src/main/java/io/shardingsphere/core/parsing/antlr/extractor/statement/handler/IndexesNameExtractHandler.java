@@ -17,16 +17,15 @@
 
 package io.shardingsphere.core.parsing.antlr.extractor.statement.handler;
 
-import java.util.Collection;
-import java.util.Collections;
-import java.util.LinkedList;
-
-import org.antlr.v4.runtime.ParserRuleContext;
-
 import io.shardingsphere.core.parsing.antlr.extractor.statement.handler.result.IndexExtractResult;
 import io.shardingsphere.core.parsing.antlr.extractor.statement.util.ASTUtils;
 import io.shardingsphere.core.parsing.parser.token.IndexToken;
 import io.shardingsphere.core.util.SQLUtil;
+import org.antlr.v4.runtime.ParserRuleContext;
+
+import java.util.Collection;
+import java.util.Collections;
+import java.util.LinkedList;
 
 /**
  * Multiple index names extract handler.
@@ -34,11 +33,10 @@ import io.shardingsphere.core.util.SQLUtil;
  * @author duhongjun
  */
 public final class IndexesNameExtractHandler implements ASTExtractHandler<Collection<IndexExtractResult>> {
-
+    
     @Override
     public Collection<IndexExtractResult> extract(final ParserRuleContext ancestorNode) {
-        Collection<ParserRuleContext> indexNameNodes = ASTUtils.getAllDescendantNodes(ancestorNode,
-                RuleName.INDEX_NAME);
+        Collection<ParserRuleContext> indexNameNodes = ASTUtils.getAllDescendantNodes(ancestorNode, RuleName.INDEX_NAME);
         if (indexNameNodes.isEmpty()) {
             return Collections.emptyList();
         }
