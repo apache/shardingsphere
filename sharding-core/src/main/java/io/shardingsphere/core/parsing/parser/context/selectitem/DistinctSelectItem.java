@@ -40,13 +40,9 @@ import java.util.List;
 @ToString
 public final class DistinctSelectItem implements SelectItem {
     
-    private final AggregationType type;
-    
-    private final String innerExpression;
+    private final String distinctColumn;
     
     private final Optional<String> alias;
-    
-    private final List<DistinctSelectItem> derivedAggregationSelectItems = new ArrayList<>(2);
     
     @Setter
     private int index = -1;
