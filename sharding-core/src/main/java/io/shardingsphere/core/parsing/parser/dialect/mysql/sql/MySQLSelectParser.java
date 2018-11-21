@@ -45,7 +45,6 @@ public final class MySQLSelectParser extends AbstractSelectParser {
     
     @Override
     protected void parseInternal(final SelectStatement selectStatement) {
-//         parseDistinct();
         parseSelectOption();
         parseSelectList(selectStatement, getItems());
         parseFrom(selectStatement);
