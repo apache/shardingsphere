@@ -26,6 +26,7 @@ import io.shardingsphere.core.parsing.lexer.token.Symbol;
 import io.shardingsphere.core.parsing.parser.clause.expression.AliasExpressionParser;
 import io.shardingsphere.core.parsing.parser.context.selectitem.AggregationSelectItem;
 import io.shardingsphere.core.parsing.parser.context.selectitem.CommonSelectItem;
+import io.shardingsphere.core.parsing.parser.context.selectitem.DistinctSelectItem;
 import io.shardingsphere.core.parsing.parser.context.selectitem.SelectItem;
 import io.shardingsphere.core.parsing.parser.context.selectitem.StarSelectItem;
 import io.shardingsphere.core.parsing.parser.dialect.ExpressionParserFactory;
@@ -77,7 +78,7 @@ public abstract class SelectListClauseParser implements SQLClauseParser {
         if (isRowNumberSelectItem()) {
             result = parseRowNumberSelectItem(selectStatement);
         } else if (isDistinctSelectItem()) {
-            result = ;
+            result = parseDistinctSelectItem();
         } else if (isStarSelectItem()) {
             selectStatement.setContainStar(true);
             result = parseStarSelectItem();
@@ -100,14 +101,13 @@ public abstract class SelectListClauseParser implements SQLClauseParser {
         return lexerEngine.equalAny(DefaultKeyword.DISTINCT);
     }
     
-    private boolean isAggregationDistinctSelectItem() {
-        return lexerEngine.equalAny(DefaultKeyword.DISTINCT) && lexerEngine.equalAny(DefaultKeyword.MAX, DefaultKeyword.MIN, DefaultKeyword.SUM, DefaultKeyword.AVG, DefaultKeyword.COUNT);
+    private SelectItem parseDistinctSelectItem() {
+        lexerEngine.nextToken();
+        return new DistinctSelectItem("", aliasExpressionParser.parseSelectItemAlias());
     }
     
-    private SelectItem parseDistinctSelectItem(final SelectStatement selectStatement) {
-        AggregationType aggregationType = AggregationType.valueOf(lexerEngine.getCurrentToken().getLiterals().toUpperCase());
-        lexerEngine.nextToken();
-        return new AggregationSelectItem(aggregationType, lexerEngine.skipParentheses(selectStatement), aliasExpressionParser.parseSelectItemAlias());
+    private boolean isAggregationDistinctSelectItem() {
+        return lexerEngine.equalAny(DefaultKeyword.DISTINCT) && lexerEngine.equalAny(DefaultKeyword.MAX, DefaultKeyword.MIN, DefaultKeyword.SUM, DefaultKeyword.AVG, DefaultKeyword.COUNT);
     }
     
     private boolean isStarSelectItem() {
