@@ -22,9 +22,9 @@ import lombok.Getter;
 import lombok.RequiredArgsConstructor;
 
 /**
- * Index placeholder for rewrite.
+ * Aggregation distinct placeholder for rewrite.
  *
- * @author zhangliang
+ * @author panjuan
  */
 @RequiredArgsConstructor
 @Getter
