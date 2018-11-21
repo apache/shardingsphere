@@ -17,7 +17,6 @@
 
 package io.shardingsphere.core.parsing.parser.token;
 
-import io.shardingsphere.core.util.SQLUtil;
 import lombok.Getter;
 import lombok.Setter;
 import lombok.ToString;
@@ -34,29 +33,11 @@ public final class AggregationDistinctToken extends SQLToken {
     private final String originalLiterals;
     
     @Setter
-    private String tableName;
+    private String columnName;
     
     public AggregationDistinctToken(final int beginPosition, final String originalLiterals, final String tableName) {
         super(beginPosition);
         this.originalLiterals = originalLiterals;
         this.tableName = tableName;
-    }
-    
-    /**
-     * Get index name.
-     * 
-     * @return index name
-     */
-    public String getIndexName() {
-        return SQLUtil.getExactlyValue(originalLiterals);
-    }
-    
-    /**
-     * Get table name.
-     *
-     * @return table name
-     */
-    public String getTableName() {
-        return SQLUtil.getExactlyValue(tableName);
     }
 }
