@@ -76,8 +76,9 @@ public abstract class SelectListClauseParser implements SQLClauseParser {
         SelectItem result;
         if (isRowNumberSelectItem()) {
             result = parseRowNumberSelectItem(selectStatement);
-        } else if
-        else if (isStarSelectItem()) {
+        } else if (isDistinctSelectItem()) {
+        
+        } else if (isStarSelectItem()) {
             selectStatement.setContainStar(true);
             result = parseStarSelectItem();
         } else if (isAggregationSelectItem()) {
@@ -100,11 +101,17 @@ public abstract class SelectListClauseParser implements SQLClauseParser {
     }
     
     private boolean isDistinctSelectItem() {
-        return lexerEngine.equalAny(DefaultKeyword.DISTINCT) && !lexerEngine.equalAny(DefaultKeyword.MAX, DefaultKeyword.MIN, DefaultKeyword.SUM, DefaultKeyword.AVG, DefaultKeyword.COUNT);
+        return lexerEngine.equalAny(DefaultKeyword.DISTINCT);
     }
     
     private boolean isAggregationDistinctSelectItem() {
         return lexerEngine.equalAny(DefaultKeyword.DISTINCT) && lexerEngine.equalAny(DefaultKeyword.MAX, DefaultKeyword.MIN, DefaultKeyword.SUM, DefaultKeyword.AVG, DefaultKeyword.COUNT);
+    }
+    
+    private SelectItem parseDistinctSelectItem(final SelectStatement selectStatement) {
+        AggregationType aggregationType = AggregationType.valueOf(lexerEngine.getCurrentToken().getLiterals().toUpperCase());
+        lexerEngine.nextToken();
+        return new AggregationSelectItem(aggregationType, lexerEngine.skipParentheses(selectStatement), aliasExpressionParser.parseSelectItemAlias());
     }
     
     private SelectItem parseStarSelectItem() {
