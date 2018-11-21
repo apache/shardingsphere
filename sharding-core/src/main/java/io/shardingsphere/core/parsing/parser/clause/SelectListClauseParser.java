@@ -106,10 +106,6 @@ public abstract class SelectListClauseParser implements SQLClauseParser {
         return new DistinctSelectItem("", aliasExpressionParser.parseSelectItemAlias());
     }
     
-    private boolean isAggregationDistinctSelectItem() {
-        return lexerEngine.equalAny(DefaultKeyword.DISTINCT) && lexerEngine.equalAny(DefaultKeyword.MAX, DefaultKeyword.MIN, DefaultKeyword.SUM, DefaultKeyword.AVG, DefaultKeyword.COUNT);
-    }
-    
     private boolean isStarSelectItem() {
         return Symbol.STAR.getLiterals().equals(SQLUtil.getExactlyValue(lexerEngine.getCurrentToken().getLiterals()));
     }
@@ -160,6 +156,10 @@ public abstract class SelectListClauseParser implements SQLClauseParser {
         AggregationType aggregationType = AggregationType.valueOf(lexerEngine.getCurrentToken().getLiterals().toUpperCase());
         lexerEngine.nextToken();
         return new AggregationSelectItem(aggregationType, lexerEngine.skipParentheses(selectStatement), aliasExpressionParser.parseSelectItemAlias());
+    }
+    
+    private boolean isAggregationDistinctSelectItem() {
+        return lexerEngine.equalAny(DefaultKeyword.DISTINCT) && lexerEngine.equalAny(DefaultKeyword.MAX, DefaultKeyword.MIN, DefaultKeyword.SUM, DefaultKeyword.AVG, DefaultKeyword.COUNT);
     }
     
     private String parseRestSelectItem(final SelectStatement selectStatement) {
