@@ -39,7 +39,7 @@ public final class AggregationDistinctSelectItem extends DistinctSelectItem {
     public AggregationDistinctSelectItem(final AggregationType type, final String distinctColumn, final Optional<String> alias) {
         super(distinctColumn, alias);
         this.type = type;
-        //TODO :panjuan gets correct parsing result and supports this syntax
+        // TODO :panjuan gets correct parsing result and supports this syntax
         throw new SQLParsingUnsupportedException(type.toString() + "(DISTINCT)");
     }
 }
