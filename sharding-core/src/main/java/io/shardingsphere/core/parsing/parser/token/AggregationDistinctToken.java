@@ -18,7 +18,6 @@
 package io.shardingsphere.core.parsing.parser.token;
 
 import lombok.Getter;
-import lombok.Setter;
 import lombok.ToString;
 
 /**
@@ -26,13 +25,12 @@ import lombok.ToString;
  *
  * @author panjuan
  */
+@Getter
 @ToString
 public final class AggregationDistinctToken extends SQLToken {
     
-    @Getter
     private final String originalLiterals;
     
-    @Setter
     private String columnName;
     
     public AggregationDistinctToken(final int beginPosition, final String originalLiterals, final String columnName) {
