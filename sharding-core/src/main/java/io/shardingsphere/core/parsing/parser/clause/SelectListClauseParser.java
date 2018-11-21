@@ -44,6 +44,7 @@ import java.util.regex.Pattern;
  * Select list clause parser.
  *
  * @author zhangliang
+ * @author panjuan
  */
 @Getter
 public abstract class SelectListClauseParser implements SQLClauseParser {
