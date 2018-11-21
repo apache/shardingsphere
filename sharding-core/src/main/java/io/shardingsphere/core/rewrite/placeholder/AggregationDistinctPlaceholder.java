@@ -17,6 +17,7 @@
 
 package io.shardingsphere.core.rewrite.placeholder;
 
+import io.shardingsphere.core.parsing.lexer.token.DefaultKeyword;
 import lombok.Getter;
 import lombok.RequiredArgsConstructor;
 
@@ -32,5 +33,9 @@ public final class AggregationDistinctPlaceholder implements ShardingPlaceholder
     private final String columnName;
     
     private final String logicTableName;
-
+    
+    @Override
+    public String toString() {
+        return DefaultKeyword.DISTINCT + " " + columnName;
+    }
 }
