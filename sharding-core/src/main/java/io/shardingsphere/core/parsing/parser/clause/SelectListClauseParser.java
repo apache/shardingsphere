@@ -77,7 +77,7 @@ public abstract class SelectListClauseParser implements SQLClauseParser {
         if (isRowNumberSelectItem()) {
             result = parseRowNumberSelectItem(selectStatement);
         } else if (isDistinctSelectItem()) {
-        
+            result = ;
         } else if (isStarSelectItem()) {
             selectStatement.setContainStar(true);
             result = parseStarSelectItem();
@@ -96,10 +96,6 @@ public abstract class SelectListClauseParser implements SQLClauseParser {
     
     protected abstract SelectItem parseRowNumberSelectItem(SelectStatement selectStatement);
     
-    private boolean isStarSelectItem() {
-        return Symbol.STAR.getLiterals().equals(SQLUtil.getExactlyValue(lexerEngine.getCurrentToken().getLiterals()));
-    }
-    
     private boolean isDistinctSelectItem() {
         return lexerEngine.equalAny(DefaultKeyword.DISTINCT);
     }
@@ -112,6 +108,10 @@ public abstract class SelectListClauseParser implements SQLClauseParser {
         AggregationType aggregationType = AggregationType.valueOf(lexerEngine.getCurrentToken().getLiterals().toUpperCase());
         lexerEngine.nextToken();
         return new AggregationSelectItem(aggregationType, lexerEngine.skipParentheses(selectStatement), aliasExpressionParser.parseSelectItemAlias());
+    }
+    
+    private boolean isStarSelectItem() {
+        return Symbol.STAR.getLiterals().equals(SQLUtil.getExactlyValue(lexerEngine.getCurrentToken().getLiterals()));
     }
     
     private SelectItem parseStarSelectItem() {
