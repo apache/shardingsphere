@@ -27,12 +27,13 @@ import lombok.RequiredArgsConstructor;
 import lombok.Setter;
 import lombok.ToString;
 
+import java.util.regex.Pattern;
+
 /**
  * Distinct select item.
  *
  * @author panjuan
  */
-@RequiredArgsConstructor
 @Getter
 @EqualsAndHashCode
 @ToString
@@ -44,12 +45,6 @@ public final class DistinctSelectItem implements SelectItem {
     
     @Setter
     private int index = -1;
-    
-    public DistinctSelectItem(final String innerExpression, final Optional<String> alias) {
-    
-    }
-    
-    
     
     @Override
     public String getExpression() {
