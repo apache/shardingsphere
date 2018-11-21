@@ -56,7 +56,7 @@ public class BackendTransactionManager {
         }
         if (TransactionOperationType.BEGIN == operationType && ConnectionStatus.TRANSACTION != connection.getStatus()) {
             connection.setStatus(ConnectionStatus.TRANSACTION);
-            connection.getCachedConnections().clear();
+            connection.releaseConnections();
         }
         if (TransactionType.LOCAL == transactionType) {
             doLocalTransaction(operationType);

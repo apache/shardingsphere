@@ -185,9 +185,7 @@ public final class BackendConnection implements AutoCloseable {
         exceptions.addAll(closeStatements());
         exceptions.addAll(closeResultSets());
         if (ConnectionStatus.TERMINATED == status) {
-            exceptions.addAll(closeConnections());
-            cachedConnections.clear();
-            methodInvocations.clear();
+            exceptions.addAll(releaseConnections());
         }
         throwSQLExceptionIfNecessary(exceptions);
     }
@@ -218,7 +216,7 @@ public final class BackendConnection implements AutoCloseable {
         return result;
     }
     
-    private Collection<SQLException> closeConnections() {
+    Collection<SQLException> releaseConnections() {
         Collection<SQLException> result = new LinkedList<>();
         for (Connection each : cachedConnections.values()) {
             try {
@@ -227,6 +225,8 @@ public final class BackendConnection implements AutoCloseable {
                 result.add(ex);
             }
         }
+        cachedConnections.clear();
+        methodInvocations.clear();
         return result;
     }
     
