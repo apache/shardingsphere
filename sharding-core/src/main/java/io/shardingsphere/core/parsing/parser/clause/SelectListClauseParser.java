@@ -164,11 +164,17 @@ public abstract class SelectListClauseParser implements SQLClauseParser {
     private SelectItem parseAggregationSelectItem(final SelectStatement selectStatement) {
         AggregationType aggregationType = AggregationType.valueOf(lexerEngine.getCurrentToken().getLiterals().toUpperCase());
         int beinPosition = lexerEngine.getCurrentToken().getEndPosition();
+        return getAggregationSelectItem(selectStatement, aggregationType);
+    }
+    
+    private SelectItem getAggregationSelectItem(final SelectStatement selectStatement, final AggregationType aggregationType) {
+        
         lexerEngine.nextToken();
         String innerExpression = lexerEngine.skipParentheses(selectStatement);
         if (isAggregationDistinctSelectItem(innerExpression)) {
             AggregationDistinctSelectItem result = new AggregationDistinctSelectItem(aggregationType, innerExpression, aliasExpressionParser.parseSelectItemAlias());
             selectStatement.getSQLTokens().add(new AggregationDistinctToken(beinPosition, SQLUtil.getExactlyValue(aggregationType.name() + innerExpression), result.getColumnName()));
+            return result;
         }
         return new AggregationSelectItem(aggregationType, innerExpression, aliasExpressionParser.parseSelectItemAlias());
     }
