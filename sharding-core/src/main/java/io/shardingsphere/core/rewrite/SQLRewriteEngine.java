@@ -28,6 +28,7 @@ import io.shardingsphere.core.parsing.parser.context.limit.Limit;
 import io.shardingsphere.core.parsing.parser.sql.SQLStatement;
 import io.shardingsphere.core.parsing.parser.sql.dml.insert.InsertStatement;
 import io.shardingsphere.core.parsing.parser.sql.dql.select.SelectStatement;
+import io.shardingsphere.core.parsing.parser.token.AggregationDistinctToken;
 import io.shardingsphere.core.parsing.parser.token.IndexToken;
 import io.shardingsphere.core.parsing.parser.token.InsertColumnToken;
 import io.shardingsphere.core.parsing.parser.token.InsertValuesToken;
@@ -135,6 +136,8 @@ public final class SQLRewriteEngine {
                 appendOrderByToken(result, count);
             } else if (each instanceof InsertColumnToken) {
                 appendSymbolToken(result, (InsertColumnToken) each, count);
+            } else if (each instanceof AggregationDistinctToken) {
+    
             } else if (each instanceof RemoveToken) {
                 appendRest(result, count, ((RemoveToken) each).getEndPosition());
             }
