@@ -17,10 +17,10 @@
 
 package io.shardingsphere.core.parsing.parser.context.selectitem;
 
+import com.google.common.base.Optional;
 import io.shardingsphere.core.constant.AggregationType;
 import lombok.EqualsAndHashCode;
 import lombok.Getter;
-import lombok.RequiredArgsConstructor;
 import lombok.ToString;
 
 /**
@@ -34,4 +34,9 @@ import lombok.ToString;
 public final class AggregationDistinctSelectItem extends DistinctSelectItem {
     
     private final AggregationType type;
+    
+    public AggregationDistinctSelectItem(final AggregationType type, final String distinctColumn, final Optional<String> alias) {
+        super(distinctColumn, alias);
+        this.type = type;
+    }
 }
