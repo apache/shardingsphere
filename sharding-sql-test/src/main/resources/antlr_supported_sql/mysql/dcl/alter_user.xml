@@ -3,7 +3,7 @@
     <sql-case id="alter_user" value="ALTER USER user1" />
     <sql-case id="alter_users" value="ALTER USER user1, user2" />
     <sql-case id="alter_user_if_exists" value="ALTER USER IF EXISTS user1" />
-    <sql-case id="alter_localhost_user" value="ALTER USER 'user1'@'localhost'" />
+    <sql-case id="alter_local_user" value="ALTER USER 'user1'@'localhost'" />
     <sql-case id="alter_user_with_password" value="ALTER USER user1 IDENTIFIED BY 'password'" />
     <sql-case id="alter_user_with_resource_option" value="ALTER USER user1 MAX_QUERIES_PER_HOUR 1" />
     <sql-case id="alter_user_with_resource_options" value="ALTER USER user1 MAX_QUERIES_PER_HOUR 1 MAX_UPDATES_PER_HOUR 1" />
