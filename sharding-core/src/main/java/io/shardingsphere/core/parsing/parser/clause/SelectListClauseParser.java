@@ -158,9 +158,11 @@ public abstract class SelectListClauseParser implements SQLClauseParser {
         AggregationType aggregationType = AggregationType.valueOf(lexerEngine.getCurrentToken().getLiterals().toUpperCase());
         lexerEngine.nextToken();
         String innerExpression = lexerEngine.skipParentheses(selectStatement);
-        return isAggregationDistinctSelectItem(innerExpression) ? new AggregationDistinctSelectItem(aggregationType, innerExpression, aliasExpressionParser.parseSelectItemAlias()) : new AggregationSelectItem(aggregationType, innerExpression, aliasExpressionParser.parseSelectItemAlias());
+        return isAggregationDistinctSelectItem(innerExpression) ? new AggregationDistinctSelectItem(aggregationType, innerExpression, aliasExpressionParser.parseSelectItemAlias())
+                : new AggregationSelectItem(aggregationType, innerExpression, aliasExpressionParser.parseSelectItemAlias());
     }
     
+    // TODO :panjuan does not use pattern to check
     private boolean isAggregationDistinctSelectItem(final String innerExpression) {
         String pattern = "(\\s*DISTINCT\\s+.*)";
         return Pattern.matches(pattern, innerExpression.toUpperCase());
