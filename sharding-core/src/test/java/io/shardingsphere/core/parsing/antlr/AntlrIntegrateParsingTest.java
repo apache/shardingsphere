@@ -101,7 +101,7 @@ public final class AntlrIntegrateParsingTest extends AbstractBaseIntegrateSQLPar
         ParserResult parserResult = null;
         try {
             parserResult = parserResultSetLoader.getParserResult(sqlCaseId);
-        } catch (Exception e) {
+        } catch (Exception ignored) {
         }
         if (null != parserResult) {
             String sql = sqlCasesLoader.getSupportedSQL(sqlCaseId, sqlCaseType, parserResult.getParameters());
