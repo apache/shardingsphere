@@ -233,14 +233,14 @@ exprsWithParen
     ;
 
 expr
-    : expr OR expr
-    | expr OR_ expr
-    | expr XOR expr
-    | expr AND expr
+    : expr AND expr
     | expr AND_ expr
+    | expr XOR expr
     | LP_ expr RP_
     | NOT expr
     | NOT_ expr
+    | expr OR expr
+    | expr OR_ expr
     | booleanPrimary
     | exprRecursive
     ;
