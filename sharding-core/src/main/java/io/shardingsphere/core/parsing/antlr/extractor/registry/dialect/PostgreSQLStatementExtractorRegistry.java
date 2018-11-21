@@ -21,15 +21,16 @@ import io.shardingsphere.core.parsing.antlr.extractor.SQLStatementExtractor;
 import io.shardingsphere.core.parsing.antlr.extractor.SQLStatementType;
 import io.shardingsphere.core.parsing.antlr.extractor.registry.SQLStatementExtractorRegistry;
 import io.shardingsphere.core.parsing.antlr.extractor.statement.type.CreateTableExtractor;
+import io.shardingsphere.core.parsing.antlr.extractor.statement.type.DropTableExtractor;
 import io.shardingsphere.core.parsing.antlr.extractor.statement.type.IndexWithTableStatementExtractor;
-import io.shardingsphere.core.parsing.antlr.extractor.statement.type.OnlyMultiTableExtractor;
 import io.shardingsphere.core.parsing.antlr.extractor.statement.type.TCLStatementExtractor;
+import io.shardingsphere.core.parsing.antlr.extractor.statement.type.TruncateTablesExtractor;
 import io.shardingsphere.core.parsing.antlr.extractor.statement.type.dialect.postgresql.PostgreSQLAlterIndexExtractor;
 import io.shardingsphere.core.parsing.antlr.extractor.statement.type.dialect.postgresql.PostgreSQLAlterTableExtractor;
+import io.shardingsphere.core.parsing.antlr.extractor.statement.type.dialect.postgresql.PostgreSQLDropIndexExtractor;
 
 import java.util.HashMap;
 import java.util.Map;
-import io.shardingsphere.core.parsing.antlr.extractor.statement.type.dialect.postgresql.PostgreSQLDropIndexExtractor;
 
 /**
  * SQL statement extractor registry for PostgreSQL.
@@ -49,8 +50,8 @@ public final class PostgreSQLStatementExtractorRegistry implements SQLStatementE
     private static void registerDDL() {
         EXTRACTORS.put(SQLStatementType.CREATE_TABLE, new CreateTableExtractor());
         EXTRACTORS.put(SQLStatementType.ALTER_TABLE, new PostgreSQLAlterTableExtractor());
-        EXTRACTORS.put(SQLStatementType.DROP_TABLE, new OnlyMultiTableExtractor());
-        EXTRACTORS.put(SQLStatementType.TRUNCATE_TABLE, new OnlyMultiTableExtractor());
+        EXTRACTORS.put(SQLStatementType.DROP_TABLE, new DropTableExtractor());
+        EXTRACTORS.put(SQLStatementType.TRUNCATE_TABLE, new TruncateTablesExtractor());
         EXTRACTORS.put(SQLStatementType.CREATE_INDEX, new IndexWithTableStatementExtractor());
         EXTRACTORS.put(SQLStatementType.ALTER_INDEX, new PostgreSQLAlterIndexExtractor());
         EXTRACTORS.put(SQLStatementType.DROP_INDEX, new PostgreSQLDropIndexExtractor());

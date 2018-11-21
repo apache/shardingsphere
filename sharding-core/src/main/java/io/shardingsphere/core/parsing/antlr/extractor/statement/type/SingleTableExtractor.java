@@ -17,16 +17,16 @@
 
 package io.shardingsphere.core.parsing.antlr.extractor.statement.type;
 
-import io.shardingsphere.core.parsing.antlr.extractor.statement.handler.TableNamesExtractHandler;
+import io.shardingsphere.core.parsing.antlr.extractor.statement.handler.TableNameExtractHandler;
 
 /**
- * Multiple table statement extractor.
+ * Single table statement extractor.
  * 
  * @author duhongjun
  */
-public final class OnlyMultiTableExtractor extends DDLStatementExtractor {
+public final class SingleTableExtractor extends DDLStatementExtractor {
     
-    public OnlyMultiTableExtractor() {
-        addExtractHandler(new TableNamesExtractHandler());
+    public SingleTableExtractor() {
+        addExtractHandler(new TableNameExtractHandler());
     }
 }
