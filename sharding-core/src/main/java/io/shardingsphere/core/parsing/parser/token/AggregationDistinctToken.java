@@ -35,9 +35,9 @@ public final class AggregationDistinctToken extends SQLToken {
     @Setter
     private String columnName;
     
-    public AggregationDistinctToken(final int beginPosition, final String originalLiterals, final String tableName) {
+    public AggregationDistinctToken(final int beginPosition, final String originalLiterals, final String columnName) {
         super(beginPosition);
         this.originalLiterals = originalLiterals;
-        this.tableName = tableName;
+        this.columnName = columnName;
     }
 }
