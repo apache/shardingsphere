@@ -17,6 +17,8 @@
 
 package io.shardingsphere.core.parsing.antlr.extractor.statement.handler.result;
 
+import com.google.common.base.Optional;
+
 import lombok.Getter;
 import lombok.RequiredArgsConstructor;
 
@@ -29,7 +31,7 @@ import lombok.RequiredArgsConstructor;
 @Getter
 public class ColumnExtractResult implements ExtractResult{
     
-    private final String owner;
+    private final Optional<String> owner;
     
     private final String name;
 }
