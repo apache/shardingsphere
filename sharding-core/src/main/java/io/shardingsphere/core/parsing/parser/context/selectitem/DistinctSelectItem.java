@@ -18,16 +18,14 @@
 package io.shardingsphere.core.parsing.parser.context.selectitem;
 
 import com.google.common.base.Optional;
-import io.shardingsphere.core.constant.AggregationType;
+import com.google.common.base.Strings;
+import io.shardingsphere.core.parsing.lexer.token.DefaultKeyword;
 import io.shardingsphere.core.util.SQLUtil;
 import lombok.EqualsAndHashCode;
 import lombok.Getter;
 import lombok.RequiredArgsConstructor;
 import lombok.Setter;
 import lombok.ToString;
-
-import java.util.ArrayList;
-import java.util.List;
 
 /**
  * Distinct select item.
@@ -49,7 +47,7 @@ public final class DistinctSelectItem implements SelectItem {
     
     @Override
     public String getExpression() {
-        return SQLUtil.getExactlyValue(type.name() + innerExpression);
+        return Strings.isNullOrEmpty(distinctColumn) ? DefaultKeyword.DISTINCT.name() : SQLUtil.getExactlyValue(DefaultKeyword.DISTINCT + " " + distinctColumn);
     }
     
     /**
