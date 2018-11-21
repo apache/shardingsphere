@@ -163,20 +163,19 @@ public abstract class SelectListClauseParser implements SQLClauseParser {
     
     private SelectItem parseAggregationSelectItem(final SelectStatement selectStatement) {
         AggregationType aggregationType = AggregationType.valueOf(lexerEngine.getCurrentToken().getLiterals().toUpperCase());
-        int beinPosition = lexerEngine.getCurrentToken().getEndPosition();
-        return getAggregationSelectItem(selectStatement, aggregationType);
-    }
-    
-    private SelectItem getAggregationSelectItem(final SelectStatement selectStatement, final AggregationType aggregationType) {
-        
+        int beginPosition = lexerEngine.getCurrentToken().getEndPosition();
         lexerEngine.nextToken();
         String innerExpression = lexerEngine.skipParentheses(selectStatement);
         if (isAggregationDistinctSelectItem(innerExpression)) {
-            AggregationDistinctSelectItem result = new AggregationDistinctSelectItem(aggregationType, innerExpression, aliasExpressionParser.parseSelectItemAlias());
-            selectStatement.getSQLTokens().add(new AggregationDistinctToken(beinPosition, SQLUtil.getExactlyValue(aggregationType.name() + innerExpression), result.getColumnName()));
-            return result;
+            return getAggregationDistinctSelectItem(selectStatement, aggregationType, beginPosition, innerExpression);
         }
         return new AggregationSelectItem(aggregationType, innerExpression, aliasExpressionParser.parseSelectItemAlias());
+    }
+    
+    private SelectItem getAggregationDistinctSelectItem(final SelectStatement selectStatement, final AggregationType aggregationType, final int beginPosition, final String innerExpression) {
+        AggregationDistinctSelectItem result = new AggregationDistinctSelectItem(aggregationType, innerExpression, aliasExpressionParser.parseSelectItemAlias());
+        selectStatement.getSQLTokens().add(new AggregationDistinctToken(beginPosition, SQLUtil.getExactlyValue(aggregationType.name() + innerExpression), result.getColumnName()));
+        return result;
     }
     
     // TODO :panjuan does not use pattern to check
