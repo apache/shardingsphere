@@ -14,6 +14,7 @@
 
 #### Core
 
+1. [ISSUE #1348](https://github.com/sharding-sphere/sharding-sphere/issues/1348) 使用`PreparedStatement`执行多库SELECT LIMIT语句时异常
 1. [ISSUE #1422](https://github.com/sharding-sphere/sharding-sphere/issues/1422) 同时使用`defaultDataSourceName`和`defaultDatabaseStrategy`时异常
 
 #### Sharding-Proxy
