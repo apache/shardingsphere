@@ -24,6 +24,7 @@ import io.shardingsphere.core.parsing.lexer.token.DefaultKeyword;
 import io.shardingsphere.core.parsing.lexer.token.Keyword;
 import io.shardingsphere.core.parsing.lexer.token.Symbol;
 import io.shardingsphere.core.parsing.parser.clause.expression.AliasExpressionParser;
+import io.shardingsphere.core.parsing.parser.context.selectitem.AggregationDistinctSelectItem;
 import io.shardingsphere.core.parsing.parser.context.selectitem.AggregationSelectItem;
 import io.shardingsphere.core.parsing.parser.context.selectitem.CommonSelectItem;
 import io.shardingsphere.core.parsing.parser.context.selectitem.DistinctSelectItem;
@@ -37,6 +38,7 @@ import io.shardingsphere.core.util.SQLUtil;
 import lombok.Getter;
 
 import java.util.List;
+import java.util.regex.Pattern;
 
 /**
  * Select list clause parser.
@@ -156,11 +158,12 @@ public abstract class SelectListClauseParser implements SQLClauseParser {
         AggregationType aggregationType = AggregationType.valueOf(lexerEngine.getCurrentToken().getLiterals().toUpperCase());
         lexerEngine.nextToken();
         String innerExpression = lexerEngine.skipParentheses(selectStatement);
-        return new AggregationSelectItem(aggregationType, innerExpression, aliasExpressionParser.parseSelectItemAlias());
+        return isAggregationDistinctSelectItem(innerExpression) ? new AggregationDistinctSelectItem(aggregationType, innerExpression, aliasExpressionParser.parseSelectItemAlias()) : new AggregationSelectItem(aggregationType, innerExpression, aliasExpressionParser.parseSelectItemAlias());
     }
     
-    private boolean isAggregationDistinctSelectItem() {
-        return lexerEngine.equalAny(DefaultKeyword.DISTINCT) && lexerEngine.equalAny(DefaultKeyword.MAX, DefaultKeyword.MIN, DefaultKeyword.SUM, DefaultKeyword.AVG, DefaultKeyword.COUNT);
+    private boolean isAggregationDistinctSelectItem(final String innerExpression) {
+        String pattern = "(\\s*DISTINCT\\s+.*)";
+        return Pattern.matches(pattern, innerExpression.toUpperCase());
     }
     
     private String parseRestSelectItem(final SelectStatement selectStatement) {
