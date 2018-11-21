@@ -97,7 +97,9 @@ public enum RuleName {
     
     ORDERBYCLAUSE("OrderByClause"),
     
-    ORDERBYITEM("OrderByItem");
+    ORDERBYITEM("OrderByItem"),
+    
+    WHERECLAUSE("WhereClause");
     
     private final String name;
     
