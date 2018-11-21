@@ -15,17 +15,22 @@
  * </p>
  */
 
-package io.shardingsphere.core.parsing.antlr;
+package io.shardingsphere.core.parsing.antlr.extractor.statement.handler.result;
 
-import io.shardingsphere.core.parsing.antlr.ddl.IntegrateDDLParsingCompatTest;
-import org.junit.runner.RunWith;
-import org.junit.runners.Suite;
-import org.junit.runners.Suite.SuiteClasses;
+import io.shardingsphere.core.parsing.parser.context.condition.OrCondition;
+import lombok.Getter;
+import lombok.RequiredArgsConstructor;
 
-@RunWith(Suite.class)
-@SuiteClasses({
-        AntlrIntegrateParsingTest.class,
-        IntegrateDDLParsingCompatTest.class
-})
-public final class AllAntlrParsingTests {
+/**
+ * Condition extract result.
+ * 
+ * @author duhongjun
+ */
+@RequiredArgsConstructor
+@Getter
+public final class ConditionExtractResult  implements ExtractResult {
+    
+    private final OrCondition orCondition;
+    
 }
+
