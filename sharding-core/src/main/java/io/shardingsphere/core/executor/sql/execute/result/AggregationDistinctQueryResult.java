@@ -45,13 +45,7 @@ public final class AggregationDistinctQueryResult extends DistinctQueryResult {
     
     @SneakyThrows
     public AggregationDistinctQueryResult(final Collection<QueryResult> queryResults) {
-        this.columnLabelAndIndexMap = getColumnLabelAndIndexMap(queryResults.iterator().next());
-        resultData = getResultData(queryResults);
-    }
-    
-    private AggregationDistinctQueryResult(final Multimap<String, Integer> columnLabelAndIndexMap, final Iterator<List<Object>> resultData) {
-        this.columnLabelAndIndexMap = columnLabelAndIndexMap;
-        this.resultData = resultData;
+        super(queryResults);
     }
     
     @SneakyThrows
