@@ -49,13 +49,13 @@ public final class DistinctQueryResult implements QueryResult {
     private Map<Integer, Set<Object>> getColumnIndexAndDistinctValues(final Collection<QueryResult> queryResults) {
         Map<Integer, Set<Object>> result = createIntegerSetMap(queryResults);
         for (QueryResult each : queryResults) {
-            fillInColumnIndexAndDistinctValuesMap(result, each);
+            fillInColumnIndexAndDistinctValues(result, each);
         }
         return result;
     }1
     
     @SneakyThrows
-    private void fillInColumnIndexAndDistinctValuesMap(final Map<Integer, Set<Object>> columnIndexAndDistinctValues, final QueryResult queryResult) {
+    private void fillInColumnIndexAndDistinctValues(final Map<Integer, Set<Object>> columnIndexAndDistinctValues, final QueryResult queryResult) {
         while (queryResult.next()) {
             for (int i = 1; i <= columnIndexAndDistinctValues.size(); i++) {
                 columnIndexAndDistinctValues.get(i).add(queryResult.getValue(i, Object.class));
