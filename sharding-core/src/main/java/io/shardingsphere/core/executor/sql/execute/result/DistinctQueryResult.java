@@ -54,10 +54,10 @@ public final class DistinctQueryResult implements QueryResult {
         return result;
     }
     
-    private void fillInColumnIndexAndDistinctValuesMap(final Map<Integer, Set<Object>> columnIndexAndDistinctValues, final QueryResult each) throws SQLException {
-        while (each.next()) {
+    private void fillInColumnIndexAndDistinctValuesMap(final Map<Integer, Set<Object>> columnIndexAndDistinctValues, final QueryResult queryResult) throws SQLException {
+        while (queryResult.next()) {
             for (int i = 1; i <= columnIndexAndDistinctValues.size(); i++) {
-                columnIndexAndDistinctValues.get(i).add(each.getValue(i, Object.class));
+                columnIndexAndDistinctValues.get(i).add(queryResult.getValue(i, Object.class));
             }
         }
     }
