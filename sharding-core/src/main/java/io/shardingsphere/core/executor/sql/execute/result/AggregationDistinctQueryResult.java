@@ -22,7 +22,7 @@ import com.google.common.collect.Iterators;
 import com.google.common.collect.Lists;
 import com.google.common.collect.Multimap;
 import io.shardingsphere.core.merger.QueryResult;
-import io.shardingsphere.core.parsing.parser.context.selectitem.DistinctSelectItem;
+import io.shardingsphere.core.parsing.parser.context.selectitem.AggregationDistinctSelectItem;
 import io.shardingsphere.core.parsing.parser.sql.dql.select.SelectStatement;
 import lombok.SneakyThrows;
 
@@ -33,6 +33,7 @@ import java.util.Calendar;
 import java.util.Collection;
 import java.util.Iterator;
 import java.util.LinkedHashSet;
+import java.util.LinkedList;
 import java.util.List;
 import java.util.Map.Entry;
 import java.util.Set;
@@ -57,7 +58,9 @@ public final class AggregationDistinctQueryResult extends DistinctQueryResult {
     }
     
     private int getAggregationDistinctColumnIndex(final SelectStatement selectStatement) {
-        if (selectStatement.getAggregationDistinctSelectItems().isEmpty()) {
+        List<Integer> result = new LinkedList<>();
+        List<AggregationDistinctSelectItem> distinctSelectItems = selectStatement.getAggregationDistinctSelectItems();
+        if (.isEmpty()) {
             return -1;
         }
         return selectStatement.getDistinctSelectItems().iterator().next().
