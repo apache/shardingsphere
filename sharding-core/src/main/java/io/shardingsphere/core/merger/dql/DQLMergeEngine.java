@@ -47,15 +47,15 @@ import java.util.TreeMap;
  */
 public final class DQLMergeEngine implements MergeEngine {
     
-    private final List<QueryResult> queryResults;
-    
     private final SelectStatement selectStatement;
+    
+    private final List<QueryResult> queryResults;
     
     private final Map<String, Integer> columnLabelIndexMap;
     
     public DQLMergeEngine(final List<QueryResult> queryResults, final SelectStatement selectStatement) throws SQLException {
-        this.queryResults = getQueryResults(queryResults);
         this.selectStatement = selectStatement;
+        this.queryResults = getQueryResults(queryResults);
         columnLabelIndexMap = getColumnLabelIndexMap(queryResults.get(0));
     }
     
