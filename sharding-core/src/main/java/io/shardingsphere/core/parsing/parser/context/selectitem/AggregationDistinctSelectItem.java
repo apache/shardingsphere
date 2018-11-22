@@ -22,6 +22,7 @@ import io.shardingsphere.core.constant.AggregationType;
 import io.shardingsphere.core.parsing.parser.exception.SQLParsingUnsupportedException;
 import lombok.EqualsAndHashCode;
 import lombok.Getter;
+import lombok.Setter;
 import lombok.ToString;
 
 /**
@@ -35,6 +36,9 @@ import lombok.ToString;
 public final class AggregationDistinctSelectItem extends DistinctSelectItem {
     
     private final AggregationType type;
+    
+    @Setter
+    private int index;
     
     public AggregationDistinctSelectItem(final AggregationType type, final String columnName, final Optional<String> alias) {
         super(columnName, alias);
