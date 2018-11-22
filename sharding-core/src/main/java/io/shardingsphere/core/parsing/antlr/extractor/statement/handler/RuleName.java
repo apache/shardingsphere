@@ -77,6 +77,10 @@ public enum RuleName {
     
     ALTER_TABLE_ADD_CONSTRAINT("AlterTableAddConstraint"),
     
+    SELECTCLAUSE("SelectClause"),
+    
+    SELECTEXPR("SelectExpr"),
+    
     TABLE_CONSTRAINT("TableConstraint"),
     
     TABLE_REFERENCE("TableReference"),
