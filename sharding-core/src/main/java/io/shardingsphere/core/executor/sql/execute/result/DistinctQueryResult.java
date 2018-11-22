@@ -52,15 +52,15 @@ public class DistinctQueryResult implements QueryResult {
     
     private List<Object> currentRow;
     
+    protected DistinctQueryResult(final Multimap<String, Integer> columnLabelAndIndexMap, final Iterator<List<Object>> resultData) {
+        this.columnLabelAndIndexMap = columnLabelAndIndexMap;
+        this.resultData = resultData;
+    }
+    
     @SneakyThrows
     public DistinctQueryResult(final Collection<QueryResult> queryResults) {
         this.columnLabelAndIndexMap = getColumnLabelAndIndexMap(queryResults.iterator().next());
         resultData = getResultData(queryResults);
-    }
-    
-    protected DistinctQueryResult(final Multimap<String, Integer> columnLabelAndIndexMap, final Iterator<List<Object>> resultData) {
-        this.columnLabelAndIndexMap = columnLabelAndIndexMap;
-        this.resultData = resultData;
     }
     
     @SneakyThrows
