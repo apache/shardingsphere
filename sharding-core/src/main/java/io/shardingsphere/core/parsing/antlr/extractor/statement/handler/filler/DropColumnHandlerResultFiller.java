@@ -36,6 +36,10 @@ public final class DropColumnHandlerResultFiller extends AbstractHandlerResultFi
     
     @Override
     protected void fillSQLStatement(final Object extractResult, final SQLStatement statement, final ShardingRule shardingRule, final ShardingTableMetaData shardingTableMetaData) {
-         
+        DropColumnExtractResult dropColumnResult = (DropColumnExtractResult)extractResult;
+        AlterTableStatement alterStatement = (AlterTableStatement) statement;
+        for(String each : dropColumnResult.getDropColumnNames()) {
+            alterStatement.getDropColumns().add(each);
+        }
     }
 }
