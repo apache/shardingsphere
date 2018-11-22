@@ -38,11 +38,11 @@ public final class DistinctQueryResult implements QueryResult {
 
     private final Collection<QueryResult> queryResults;
 
-    private final Map<Integer, Set<Object>> columnIndexAndDistinctValusesMap;
+    private final Map<Integer, Set<Object>> columnIndexAndDistinctValuesMap;
 
     public DistinctQueryResult(final Collection<QueryResult> queryResults) {
         this.queryResults = queryResults;
-        columnIndexAndDistinctValusesMap = getColumnIndexAndDistinctValuesMap(queryResults);
+        columnIndexAndDistinctValuesMap = getColumnIndexAndDistinctValuesMap(queryResults);
     }
     
     @SneakyThrows
