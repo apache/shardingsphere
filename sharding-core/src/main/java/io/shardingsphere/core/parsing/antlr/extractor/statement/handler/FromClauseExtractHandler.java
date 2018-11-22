@@ -18,6 +18,8 @@
 package io.shardingsphere.core.parsing.antlr.extractor.statement.handler;
 
 import com.google.common.base.Optional;
+
+import io.shardingsphere.core.parsing.antlr.extractor.statement.handler.result.ConditionExtractResult;
 import io.shardingsphere.core.parsing.antlr.extractor.statement.handler.result.TableExtractResult;
 import io.shardingsphere.core.parsing.antlr.extractor.statement.handler.result.TableJoinExtractResult;
 import io.shardingsphere.core.parsing.antlr.extractor.statement.util.ASTUtils;
@@ -35,6 +37,7 @@ import java.util.LinkedList;
 public final class FromClauseExtractHandler implements ASTExtractHandler<Collection<TableExtractResult>> {
     
     private final TableNameExtractHandler tableNameExtractHandler = new TableNameExtractHandler();
+    private final ConditionExtractHandler conditionExtractHandler = new ConditionExtractHandler();
     
     @Override
     public Collection<TableExtractResult> extract(final ParserRuleContext ancestorNode) {
@@ -72,7 +75,10 @@ public final class FromClauseExtractHandler implements ASTExtractHandler<Collect
                 Optional<ParserRuleContext> exprNode = ASTUtils.findFirstChildNode(joinTableNode.get(), RuleName.EXPR);
                 if (exprNode.isPresent()) {
                     TableJoinExtractResult tableJoinResult = new TableJoinExtractResult(extractResult.get());
-                    //TODO extract condition
+                    Optional<ConditionExtractResult> conditionResult = conditionExtractHandler.extract(exprNode.get());
+                    if(conditionResult.isPresent()) {
+                        tableJoinResult.getJoinConditions().getAndConditions().addAll(conditionResult.get().getOrCondition().getAndConditions());
+                    }
                     result.add(tableJoinResult);
                     continue;
                 }
