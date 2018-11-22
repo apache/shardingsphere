@@ -48,9 +48,10 @@ public final class DistinctQueryResult implements QueryResult {
     private final Iterator<List<Object>> resultData;
     
     private List<Object> currentRow;
-
+    
+    @SneakyThrows
     public DistinctQueryResult(final Collection<QueryResult> queryResults) {
-        this.columnLabelAndIndexMap = queryResults;
+        this.columnLabelAndIndexMap = getColumnLabelAndIndexMap(queryResults.iterator().next());
         columnIndexAndDistinctValues = getColumnIndexAndDistinctValues(queryResults);
     }
     
