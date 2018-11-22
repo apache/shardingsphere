@@ -56,7 +56,7 @@ public final class AggregationDistinctQueryResult extends DistinctQueryResult {
     public AggregationDistinctQueryResult(final Collection<QueryResult> queryResults, final SelectStatement selectStatement) {
         super(queryResults);
         initAggregationDistinctColumnIndexes(selectStatement);
-        
+        initDerivedItemIndexes(selectStatement);
     }
     
     private void initAggregationDistinctColumnIndexes(final SelectStatement selectStatement) {
