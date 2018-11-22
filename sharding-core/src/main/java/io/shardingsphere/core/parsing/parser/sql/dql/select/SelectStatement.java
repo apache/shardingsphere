@@ -209,6 +209,13 @@ public final class SelectStatement extends DQLStatement {
         }
     }
     
+    private void setIndexForAggregationDistinctItem(final Map<String, Integer> columnLabelIndexMap) {
+        for (AggregationDistinctSelectItem each : getAggregationDistinctSelectItems()) {
+            Preconditions.checkState(columnLabelIndexMap.containsKey(each.getColumnLabel()), String.format("Can't find index: %s, please add alias for aggregate selections", each));
+            each.setIndex(columnLabelIndexMap.get(each.getColumnLabel()));
+        }
+    }
+    
     private void setIndexForOrderItem(final Map<String, Integer> columnLabelIndexMap, final List<OrderItem> orderItems) {
         for (OrderItem each : orderItems) {
             if (-1 != each.getIndex()) {
