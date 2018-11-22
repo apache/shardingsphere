@@ -52,7 +52,7 @@ public final class DistinctQueryResult implements QueryResult {
     @SneakyThrows
     public DistinctQueryResult(final Collection<QueryResult> queryResults) {
         this.columnLabelAndIndexMap = getColumnLabelAndIndexMap(queryResults.iterator().next());
-        columnIndexAndDistinctValues = getColumnIndexAndDistinctValues(queryResults);
+        resultData = getResultData(queryResults);
     }
     
     private Multimap<String, Integer> getColumnLabelAndIndexMap(final QueryResult queryResult) throws SQLException {
