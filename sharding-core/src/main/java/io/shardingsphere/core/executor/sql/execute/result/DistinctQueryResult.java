@@ -52,7 +52,7 @@ public final class DistinctQueryResult implements QueryResult {
             fillInColumnIndexAndDistinctValues(result, each);
         }
         return result;
-    }1
+    }
     
     @SneakyThrows
     private void fillInColumnIndexAndDistinctValues(final Map<Integer, Set<Object>> columnIndexAndDistinctValues, final QueryResult queryResult) {
