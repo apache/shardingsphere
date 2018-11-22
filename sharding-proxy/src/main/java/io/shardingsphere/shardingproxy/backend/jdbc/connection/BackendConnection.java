@@ -189,7 +189,7 @@ public final class BackendConnection implements AutoCloseable {
         exceptions.addAll(closeStatements());
         exceptions.addAll(closeResultSets());
         if (ConnectionStatus.TERMINATED == status || forceClose) {
-            exceptions.addAll(releaseConnections());
+            exceptions.addAll(releaseConnections(forceClose));
         }
         throwSQLExceptionIfNecessary(exceptions);
     }
@@ -220,11 +220,13 @@ public final class BackendConnection implements AutoCloseable {
         return result;
     }
     
-    Collection<SQLException> releaseConnections() {
+    Collection<SQLException> releaseConnections(final boolean forceRollback) {
         Collection<SQLException> result = new LinkedList<>();
         for (Connection each : cachedConnections.values()) {
             try {
-                each.rollback();
+                if (forceRollback) {
+                    each.rollback();
+                }
                 each.close();
             } catch (SQLException ex) {
                 result.add(ex);
