@@ -17,28 +17,32 @@
 
 package io.shardingsphere.core.parsing.antlr.extractor.statement.handler;
 
+import java.util.Collection;
+import java.util.Collections;
+import java.util.LinkedList;
+
+import org.antlr.v4.runtime.ParserRuleContext;
+import org.antlr.v4.runtime.tree.TerminalNode;
+
 import com.google.common.base.Optional;
+
 import io.shardingsphere.core.constant.OrderDirection;
 import io.shardingsphere.core.parsing.antlr.extractor.statement.handler.result.OrderByExtractResult;
 import io.shardingsphere.core.parsing.antlr.extractor.statement.util.ASTUtils;
 import io.shardingsphere.core.parsing.parser.token.OrderByToken;
-import lombok.RequiredArgsConstructor;
-import org.antlr.v4.runtime.ParserRuleContext;
-import org.antlr.v4.runtime.tree.TerminalNode;
-
-import java.util.Collection;
-import java.util.Collections;
-import java.util.LinkedList;
+import lombok.Getter;
+import lombok.Setter;
 
 /**
  * Order by extract handler.
  *
  * @author duhongjun
  */
-@RequiredArgsConstructor
+@Setter
+@Getter
 public class OrderByExtractHandler implements ASTExtractHandler<Collection<OrderByExtractResult>> {
     
-    private final RuleName ruleName;
+    private RuleName ruleName;
     
     public OrderByExtractHandler() {
         ruleName = RuleName.ORDERBYCLAUSE;
