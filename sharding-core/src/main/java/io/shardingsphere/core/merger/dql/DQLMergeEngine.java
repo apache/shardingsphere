@@ -17,6 +17,8 @@
 
 package io.shardingsphere.core.merger.dql;
 
+import com.google.common.base.Function;
+import com.google.common.collect.Lists;
 import io.shardingsphere.core.constant.DatabaseType;
 import io.shardingsphere.core.executor.sql.execute.result.DistinctQueryResult;
 import io.shardingsphere.core.merger.MergeEngine;
@@ -30,12 +32,10 @@ import io.shardingsphere.core.merger.dql.pagination.LimitDecoratorMergedResult;
 import io.shardingsphere.core.merger.dql.pagination.RowNumberDecoratorMergedResult;
 import io.shardingsphere.core.merger.dql.pagination.TopAndRowNumberDecoratorMergedResult;
 import io.shardingsphere.core.parsing.parser.context.limit.Limit;
-import io.shardingsphere.core.parsing.parser.context.selectitem.DistinctSelectItem;
 import io.shardingsphere.core.parsing.parser.sql.dql.select.SelectStatement;
 import io.shardingsphere.core.util.SQLUtil;
 
 import java.sql.SQLException;
-import java.util.Collections;
 import java.util.List;
 import java.util.Map;
 import java.util.TreeMap;
@@ -71,7 +71,12 @@ public final class DQLMergeEngine implements MergeEngine {
     }
     
     private List<QueryResult> getQueryResults(final DistinctQueryResult distinctQueryResult) {
-    
+        return Lists.transform(distinctQueryResult.divide(), new Function<DistinctQueryResult, QueryResult>() {
+            @Override
+            public QueryResult apply(final DistinctQueryResult input) {
+                return input;
+            }
+        });
     }
     
     private Map<String, Integer> getColumnLabelIndexMap(final QueryResult queryResult) throws SQLException {
