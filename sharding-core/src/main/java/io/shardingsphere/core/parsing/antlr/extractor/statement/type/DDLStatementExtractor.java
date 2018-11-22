@@ -17,7 +17,6 @@
 
 package io.shardingsphere.core.parsing.antlr.extractor.statement.type;
 
-import io.shardingsphere.core.metadata.table.ShardingTableMetaData;
 import io.shardingsphere.core.parsing.parser.sql.SQLStatement;
 import io.shardingsphere.core.parsing.parser.sql.ddl.DDLStatement;
 
@@ -27,14 +26,9 @@ import io.shardingsphere.core.parsing.parser.sql.ddl.DDLStatement;
  * @author duhongjun
  */
 public class DDLStatementExtractor extends AbstractSQLStatementExtractor {
-
-    /**
-     * Create DDL Statement.
-     * @param shardingTableMetaData sharding table meta data
-     * @return SQL statement
-     */
+    
     @Override
-    protected SQLStatement createStatement(final ShardingTableMetaData shardingTableMetaData) {
+    protected SQLStatement createStatement() {
         return new DDLStatement();
     }
 }

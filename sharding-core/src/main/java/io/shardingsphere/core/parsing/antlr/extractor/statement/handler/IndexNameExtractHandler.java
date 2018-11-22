@@ -21,8 +21,7 @@ import org.antlr.v4.runtime.ParserRuleContext;
 
 import com.google.common.base.Optional;
 
-import io.shardingsphere.core.parsing.antlr.extractor.statement.handler.result.ExtractResult;
-import io.shardingsphere.core.parsing.antlr.extractor.statement.handler.result.SQLTokenExtractResult;
+import io.shardingsphere.core.parsing.antlr.extractor.statement.handler.result.IndexExtractResult;
 import io.shardingsphere.core.parsing.antlr.extractor.statement.util.ASTUtils;
 import io.shardingsphere.core.parsing.parser.token.IndexToken;
 import io.shardingsphere.core.util.SQLUtil;
@@ -32,16 +31,15 @@ import io.shardingsphere.core.util.SQLUtil;
  * 
  * @author duhongjun
  */
-public final class IndexNameExtractHandler implements ASTExtractHandler {
+public final class IndexNameExtractHandler implements ASTExtractHandler<Optional<IndexExtractResult>> {
     
     @Override
-    public Optional<ExtractResult> extract(final ParserRuleContext ancestorNode) {
+    public Optional<IndexExtractResult> extract(final ParserRuleContext ancestorNode) {
         Optional<ParserRuleContext> indexNameNode = ASTUtils.findFirstChildNode(ancestorNode, RuleName.INDEX_NAME);
         if (!indexNameNode.isPresent()) {
             return Optional.absent();
         }
-        SQLTokenExtractResult result = new SQLTokenExtractResult();
-        result.getSqlTokens().add(new IndexToken(indexNameNode.get().getStop().getStartIndex(), SQLUtil.getNameWithoutSchema(indexNameNode.get().getText()), null));
-        return Optional.<ExtractResult>of(result);
+        String name = SQLUtil.getNameWithoutSchema(indexNameNode.get().getText());
+        return Optional.of(new IndexExtractResult(name, new IndexToken(indexNameNode.get().getStop().getStartIndex(), name, null)));
     }
 }

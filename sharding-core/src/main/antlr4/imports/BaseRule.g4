@@ -4,7 +4,7 @@ import DataType, Keyword, Symbol;
 
 ID: 
     (BQ_?[a-zA-Z_$][a-zA-Z0-9_$]* BQ_? DOT)? (BQ_?[a-zA-Z_$][a-zA-Z0-9_$]* BQ_?)
-    | [a-zA-Z_$0-9]+ DOT ASTERISK
+    | [a-zA-Z_$0-9]+ DOT_ASTERISK
     ;
     
 schemaName
@@ -233,14 +233,14 @@ exprsWithParen
     ;
 
 expr
-    : expr OR expr
-    | expr OR_ expr
-    | expr XOR expr
-    | expr AND expr
+    : expr AND expr
     | expr AND_ expr
+    | expr XOR expr
     | LP_ expr RP_
     | NOT expr
     | NOT_ expr
+    | expr OR expr
+    | expr OR_ expr
     | booleanPrimary
     | exprRecursive
     ;
@@ -348,9 +348,9 @@ collateClause
     ;
     
 orderByClause
-    : ORDER BY groupByItem (COMMA groupByItem)*
+    : ORDER BY orderByItem (COMMA orderByItem)*
     ;
     
-groupByItem
+orderByItem
     : (columnName | NUMBER |expr) (ASC|DESC)?
     ;

@@ -22,7 +22,6 @@ import org.antlr.v4.runtime.ParserRuleContext;
 import com.google.common.base.Optional;
 
 import io.shardingsphere.core.parsing.antlr.extractor.statement.handler.result.DropPrimaryKeyExtractResult;
-import io.shardingsphere.core.parsing.antlr.extractor.statement.handler.result.ExtractResult;
 import io.shardingsphere.core.parsing.antlr.extractor.statement.util.ASTUtils;
 
 /**
@@ -30,14 +29,14 @@ import io.shardingsphere.core.parsing.antlr.extractor.statement.util.ASTUtils;
  *
  * @author duhongjun
  */
-public final class DropPrimaryKeyExtractHandler implements ASTExtractHandler {
+public final class DropPrimaryKeyExtractHandler implements ASTExtractHandler<Optional<DropPrimaryKeyExtractResult>> {
     
     @Override
-    public Optional<ExtractResult> extract(final ParserRuleContext ancestorNode) {
+    public Optional<DropPrimaryKeyExtractResult> extract(final ParserRuleContext ancestorNode) {
         Optional<ParserRuleContext> dropPrimaryKeyNode = ASTUtils.findFirstChildNode(ancestorNode, RuleName.DROP_PRIMARY_KEY);
         if (!dropPrimaryKeyNode.isPresent()) {
             return Optional.absent();
         }
-        return Optional.<ExtractResult>of(new DropPrimaryKeyExtractResult(true));
+        return Optional.of(new DropPrimaryKeyExtractResult(true));
     }
 }

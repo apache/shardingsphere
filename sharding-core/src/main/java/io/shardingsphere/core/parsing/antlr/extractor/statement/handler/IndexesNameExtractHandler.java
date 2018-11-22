@@ -17,35 +17,34 @@
 
 package io.shardingsphere.core.parsing.antlr.extractor.statement.handler;
 
-import java.util.Collection;
-
-import org.antlr.v4.runtime.ParserRuleContext;
-
-import com.google.common.base.Optional;
-
-import io.shardingsphere.core.parsing.antlr.extractor.statement.handler.result.ExtractResult;
-import io.shardingsphere.core.parsing.antlr.extractor.statement.handler.result.SQLTokenExtractResult;
+import io.shardingsphere.core.parsing.antlr.extractor.statement.handler.result.IndexExtractResult;
 import io.shardingsphere.core.parsing.antlr.extractor.statement.util.ASTUtils;
 import io.shardingsphere.core.parsing.parser.token.IndexToken;
 import io.shardingsphere.core.util.SQLUtil;
+import org.antlr.v4.runtime.ParserRuleContext;
+
+import java.util.Collection;
+import java.util.Collections;
+import java.util.LinkedList;
 
 /**
  * Multiple index names extract handler.
  *
  * @author duhongjun
  */
-public final class IndexesNameExtractHandler implements ASTExtractHandler {
+public final class IndexesNameExtractHandler implements ASTExtractHandler<Collection<IndexExtractResult>> {
     
     @Override
-    public Optional<ExtractResult> extract(final ParserRuleContext ancestorNode) {
+    public Collection<IndexExtractResult> extract(final ParserRuleContext ancestorNode) {
         Collection<ParserRuleContext> indexNameNodes = ASTUtils.getAllDescendantNodes(ancestorNode, RuleName.INDEX_NAME);
         if (indexNameNodes.isEmpty()) {
-            return Optional.absent();
+            return Collections.emptyList();
         }
-        SQLTokenExtractResult result = new SQLTokenExtractResult();
+        Collection<IndexExtractResult> result = new LinkedList<>();
         for (ParserRuleContext each : indexNameNodes) {
-            result.getSqlTokens().add(new IndexToken(each.getStop().getStartIndex(), SQLUtil.getNameWithoutSchema(each.getText()), null));
+            String name = SQLUtil.getNameWithoutSchema(each.getText());
+            result.add(new IndexExtractResult(name, new IndexToken(each.getStop().getStartIndex(), name, null)));
         }
-        return Optional.<ExtractResult>of(result);
+        return result;
     }
 }

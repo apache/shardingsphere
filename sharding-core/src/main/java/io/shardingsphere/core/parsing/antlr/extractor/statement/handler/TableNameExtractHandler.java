@@ -17,39 +17,47 @@
 
 package io.shardingsphere.core.parsing.antlr.extractor.statement.handler;
 
-import org.antlr.v4.runtime.ParserRuleContext;
-
 import com.google.common.base.Optional;
-
-import io.shardingsphere.core.parsing.antlr.extractor.statement.handler.result.ExtractResult;
-import io.shardingsphere.core.parsing.antlr.extractor.statement.handler.result.SQLTokenExtractResult;
+import io.shardingsphere.core.parsing.antlr.extractor.statement.handler.result.TableExtractResult;
 import io.shardingsphere.core.parsing.antlr.extractor.statement.util.ASTUtils;
 import io.shardingsphere.core.parsing.lexer.token.Symbol;
 import io.shardingsphere.core.parsing.parser.token.TableToken;
+import io.shardingsphere.core.util.SQLUtil;
+import org.antlr.v4.runtime.ParserRuleContext;
 
 /**
  * Single table name extract handler.
  *
  * @author duhongjun
  */
-public class TableNameExtractHandler implements ASTExtractHandler {
+public final class TableNameExtractHandler implements ASTExtractHandler<Optional<TableExtractResult>> {
     
-    /**
-     * Extract AST.
-     *
-     * @param ancestorNode ancestor node of AST
-     * @return Extract Result
-     */
     @Override
-    public Optional<ExtractResult> extract(final ParserRuleContext ancestorNode) {
+    public Optional<TableExtractResult> extract(final ParserRuleContext ancestorNode) {
         Optional<ParserRuleContext> tableNameNode = ASTUtils.findFirstChildNode(ancestorNode, RuleName.TABLE_NAME);
         if (!tableNameNode.isPresent()) {
             return Optional.absent();
         }
-        SQLTokenExtractResult result = new SQLTokenExtractResult();
         String tableText = tableNameNode.get().getText();
         int dotPosition = tableText.contains(Symbol.DOT.getLiterals()) ? tableText.lastIndexOf(Symbol.DOT.getLiterals()) : 0;
-        result.getSqlTokens().add(new TableToken(tableNameNode.get().getStart().getStartIndex(), dotPosition, tableText));
-        return Optional.<ExtractResult>of(result);
+        String tableName = tableText;
+        Optional<String> schemaName;
+        if (0 < dotPosition) {
+            tableName = tableText.substring(dotPosition + 1);
+            String schemaText = tableText.substring(0, dotPosition);
+            dotPosition = schemaText.contains(Symbol.DOT.getLiterals()) ? schemaText.lastIndexOf(Symbol.DOT.getLiterals()) : 0;
+            schemaName = Optional.of(tableText.substring(dotPosition + 1));
+        } else {
+            schemaName = Optional.absent();
+        }
+        Optional<ParserRuleContext> aliasNode = ASTUtils.findFirstChildNode(tableNameNode.get(), RuleName.ALIAS);
+        Optional<String> alias;
+        if (aliasNode.isPresent()) {
+            alias = Optional.of(aliasNode.get().getText());
+        } else {
+            alias = Optional.absent();
+        }
+        TableToken tableToken = new TableToken(tableNameNode.get().getStart().getStartIndex(), dotPosition, tableName);
+        return Optional.of(new TableExtractResult(SQLUtil.getExactlyValue(tableName), alias, schemaName, tableToken));
     }
 }

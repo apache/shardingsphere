@@ -17,4 +17,6 @@
     <orchestraion:sharding-data-source id="tableRuleWithAttributesDataSourceOrchestration" data-source-ref="tableRuleWithAttributesDataSource" registry-center-ref="regCenter" />
     <orchestraion:sharding-data-source id="bindingTableRuleDatasourceOrchestration" data-source-ref="bindingTableRuleDatasource" registry-center-ref="regCenter" />
     <orchestraion:sharding-data-source id="multiBindingTableRulesDatasourceOrchestration" data-source-ref="multiBindingTableRulesDatasource" registry-center-ref="regCenter" />
+    <orchestraion:sharding-data-source id="broadcastTableRuleDatasourceOrchestration" data-source-ref="broadcastTableRuleDatasource" registry-center-ref="regCenter" />
+    <orchestraion:sharding-data-source id="multiBroadcastTableRulesDatasourceOrchestration" data-source-ref="multiBroadcastTableRulesDatasource" registry-center-ref="regCenter" />
 </beans>

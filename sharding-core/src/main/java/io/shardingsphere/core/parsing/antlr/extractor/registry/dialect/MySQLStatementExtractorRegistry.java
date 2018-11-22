@@ -20,12 +20,13 @@ package io.shardingsphere.core.parsing.antlr.extractor.registry.dialect;
 import io.shardingsphere.core.parsing.antlr.extractor.SQLStatementExtractor;
 import io.shardingsphere.core.parsing.antlr.extractor.SQLStatementType;
 import io.shardingsphere.core.parsing.antlr.extractor.registry.SQLStatementExtractorRegistry;
+import io.shardingsphere.core.parsing.antlr.extractor.statement.type.CreateIndexExtractor;
 import io.shardingsphere.core.parsing.antlr.extractor.statement.type.CreateTableExtractor;
-import io.shardingsphere.core.parsing.antlr.extractor.statement.type.IndexWithTableStatementExtractor;
-import io.shardingsphere.core.parsing.antlr.extractor.statement.type.OnlyMultiTableExtractor;
-import io.shardingsphere.core.parsing.antlr.extractor.statement.type.OnlySingleTableExtractor;
+import io.shardingsphere.core.parsing.antlr.extractor.statement.type.DropIndexExtractor;
 import io.shardingsphere.core.parsing.antlr.extractor.statement.type.TCLStatementExtractor;
 import io.shardingsphere.core.parsing.antlr.extractor.statement.type.dialect.mysql.MySQLAlterTableExtractor;
+import io.shardingsphere.core.parsing.antlr.extractor.statement.type.dialect.mysql.MySQLDropTableExtractor;
+import io.shardingsphere.core.parsing.antlr.extractor.statement.type.dialect.mysql.MySQLTruncateTableExtractor;
 
 import java.util.HashMap;
 import java.util.Map;
@@ -49,10 +50,10 @@ public final class MySQLStatementExtractorRegistry implements SQLStatementExtrac
     private static void registerDDL() {
         EXTRACTORS.put(SQLStatementType.CREATE_TABLE, new CreateTableExtractor());
         EXTRACTORS.put(SQLStatementType.ALTER_TABLE, new MySQLAlterTableExtractor());
-        EXTRACTORS.put(SQLStatementType.DROP_TABLE, new OnlyMultiTableExtractor());
-        EXTRACTORS.put(SQLStatementType.TRUNCATE_TABLE, new OnlySingleTableExtractor());
-        EXTRACTORS.put(SQLStatementType.CREATE_INDEX, new IndexWithTableStatementExtractor());
-        EXTRACTORS.put(SQLStatementType.DROP_INDEX, new IndexWithTableStatementExtractor());
+        EXTRACTORS.put(SQLStatementType.DROP_TABLE, new MySQLDropTableExtractor());
+        EXTRACTORS.put(SQLStatementType.TRUNCATE_TABLE, new MySQLTruncateTableExtractor());
+        EXTRACTORS.put(SQLStatementType.CREATE_INDEX, new CreateIndexExtractor());
+        EXTRACTORS.put(SQLStatementType.DROP_INDEX, new DropIndexExtractor());
     }
     
     private static void registerTCL() {
