@@ -18,12 +18,10 @@
 package io.shardingsphere.core.parsing.antlr.extractor.statement.handler.result;
 
 import com.google.common.base.Optional;
+
 import io.shardingsphere.core.parsing.parser.context.condition.OrCondition;
 import io.shardingsphere.core.parsing.parser.token.TableToken;
 import lombok.Getter;
-
-import java.util.LinkedList;
-import java.util.List;
 
 /**
  * Table join extract result.
@@ -33,7 +31,7 @@ import java.util.List;
 @Getter
 public final class TableJoinExtractResult extends TableExtractResult {
     
-    private final List<OrCondition> joinConditions = new LinkedList<>();
+    private final OrCondition joinConditions = new OrCondition();
     
     public TableJoinExtractResult(final String name, final Optional<String> alias, final Optional<String> schemaName, final TableToken token) {
         super(name, alias, schemaName, token);
