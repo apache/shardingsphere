@@ -17,21 +17,13 @@
 
 package io.shardingsphere.core.executor.sql.execute.result;
 
-import com.google.common.collect.HashMultimap;
-import com.google.common.collect.Multimap;
 import io.shardingsphere.core.merger.QueryResult;
-import lombok.RequiredArgsConstructor;
 
 import java.io.InputStream;
-import java.sql.ResultSet;
-import java.sql.ResultSetMetaData;
 import java.sql.SQLException;
-import java.util.ArrayList;
 import java.util.Calendar;
 import java.util.Collection;
-import java.util.Iterator;
-import java.util.LinkedList;
-import java.util.List;
+import java.util.Map;
 import java.util.Map.Entry;
 
 /**
@@ -40,13 +32,15 @@ import java.util.Map.Entry;
  * @author panjuan
  */
 public final class DistinctQueryResult implements QueryResult {
-    
+
     private final Collection<QueryResult> queryResults;
-    
+
+    private final Map<Integer, Collection<Object>> columnIndexAndDistinctValusesMap;
+
     public DistinctQueryResult(final Collection<QueryResult> queryResults) {
-    
+        queryResults
     }
-    
+
     @Override
     public boolean next() {
         if (resultData.hasNext()) {
@@ -56,47 +50,47 @@ public final class DistinctQueryResult implements QueryResult {
         currentRow = null;
         return false;
     }
-    
+
     @Override
     public Object getValue(final int columnIndex, final Class<?> type) {
         return currentRow.get(columnIndex - 1);
     }
-    
+
     @Override
     public Object getValue(final String columnLabel, final Class<?> type) {
         return currentRow.get(getIndexByColumnLabel(columnLabel));
     }
-    
+
     @Override
     public Object getCalendarValue(final int columnIndex, final Class<?> type, final Calendar calendar) {
         return currentRow.get(columnIndex - 1);
     }
-    
+
     @Override
     public Object getCalendarValue(final String columnLabel, final Class<?> type, final Calendar calendar) {
         return currentRow.get(getIndexByColumnLabel(columnLabel));
     }
-    
+
     @Override
     public InputStream getInputStream(final int columnIndex, final String type) {
         return (InputStream) currentRow.get(columnIndex - 1);
     }
-    
+
     @Override
     public InputStream getInputStream(final String columnLabel, final String type) {
         return (InputStream) currentRow.get(getIndexByColumnLabel(columnLabel));
     }
-    
+
     @Override
     public boolean wasNull() {
         return null == currentRow;
     }
-    
+
     @Override
     public int getColumnCount() {
         return columnLabelAndIndexMap.size();
     }
-    
+
     @Override
     public String getColumnLabel(final int columnIndex) throws SQLException {
         for (Entry<String, Integer> entry : columnLabelAndIndexMap.entries()) {
