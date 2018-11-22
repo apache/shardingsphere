@@ -41,13 +41,7 @@ import java.util.Set;
  *
  * @author panjuan
  */
-public final class AggregationDistinctQueryResult implements QueryResult {
-    
-    private final Multimap<String, Integer> columnLabelAndIndexMap;
-    
-    private final Iterator<List<Object>> resultData;
-    
-    private List<Object> currentRow;
+public final class AggregationDistinctQueryResult extends DistinctQueryResult {
     
     @SneakyThrows
     public AggregationDistinctQueryResult(final Collection<QueryResult> queryResults) {
