@@ -43,6 +43,7 @@ public final class DistinctQueryResult implements QueryResult {
 
     public DistinctQueryResult(final Collection<QueryResult> queryResults) {
         this.queryResults = queryResults;
+        columnIndexAndDistinctValusesMap = getColumnIndexAndDistinctValusesMap(queryResults);
     }
     
     @SneakyThrows
