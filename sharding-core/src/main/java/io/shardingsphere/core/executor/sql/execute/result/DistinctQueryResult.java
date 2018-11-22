@@ -17,11 +17,13 @@
 
 package io.shardingsphere.core.executor.sql.execute.result;
 
+import com.google.common.collect.HashMultimap;
 import com.google.common.collect.Multimap;
 import io.shardingsphere.core.merger.QueryResult;
 import lombok.SneakyThrows;
 
 import java.io.InputStream;
+import java.sql.ResultSetMetaData;
 import java.sql.SQLException;
 import java.util.ArrayList;
 import java.util.Calendar;
@@ -54,7 +56,13 @@ public final class DistinctQueryResult implements QueryResult {
         columnIndexAndDistinctValues = getColumnIndexAndDistinctValues(queryResults);
     }
     
-    
+    private Multimap<String, Integer> getMetaData(final QueryResult queryResult) throws SQLException {
+        Multimap<String, Integer> result = HashMultimap.create();
+        for (int columnIndex = 1; columnIndex <= resultSetMetaData.getColumnCount(); columnIndex++) {
+            result.put(resultSetMetaData.getColumnLabel(columnIndex), columnIndex);
+        }
+        return result;
+    }
     
     private Iterator<List<Object>> getResultData(final Collection<QueryResult> queryResults) throws SQLException {
         Set<List<Object>> result = new LinkedHashSet<>();
