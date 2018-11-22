@@ -17,7 +17,6 @@
 
 package io.shardingsphere.core.merger.dql;
 
-import com.sun.scenario.effect.impl.prism.PrImage;
 import io.shardingsphere.core.constant.DatabaseType;
 import io.shardingsphere.core.executor.sql.execute.result.DistinctQueryResult;
 import io.shardingsphere.core.merger.MergeEngine;
@@ -55,16 +54,19 @@ public final class DQLMergeEngine implements MergeEngine {
     private final Map<String, Integer> columnLabelIndexMap;
     
     public DQLMergeEngine(final List<QueryResult> queryResults, final SelectStatement selectStatement) throws SQLException {
-//        this.queryResults = selectStatement.getDistinctSelectItems().isEmpty() ? queryResults : Collections.singletonList(new DistinctQueryResult(queryResults));
-        this.queryResults = Collections.singletonList((QueryResult) new DistinctQueryResult(queryResults));
+        this.queryResults = getQueryResults(queryResults);
         this.selectStatement = selectStatement;
         columnLabelIndexMap = getColumnLabelIndexMap(queryResults.get(0));
     }
     
     private List<QueryResult> getQueryResults(final List<QueryResult> queryResults) {
-        if (!selectStatement.getAggregationDistinctSelectItems().isEmpty()) {
-            return
+//        if (!selectStatement.getAggregationDistinctSelectItems().isEmpty()) {
+//            return Collections.singletonList((QueryResult) new )
+//        }
+        if (!selectStatement.getDistinctSelectItems().isEmpty()) {
+            return Collections.singletonList((QueryResult) new DistinctQueryResult(queryResults));
         }
+        return queryResults;
     }
     
     private Map<String, Integer> getColumnLabelIndexMap(final QueryResult queryResult) throws SQLException {
