@@ -34,43 +34,11 @@ import java.util.List;
 import java.util.Map.Entry;
 
 /**
- * Query result for memory loading.
+ * Distinct query result.
  *
- * @author zhangliang
  * @author panjuan
  */
 public final class DistinctQueryResult implements QueryResult {
-    
-    private final Multimap<String, Integer> columnLabelAndIndexMap;
-    
-    private final Iterator<List<Object>> resultData;
-    
-    private List<Object> currentRow;
-    
-    public DistinctQueryResult(final ResultSet resultSet) throws SQLException {
-        columnLabelAndIndexMap = getMetaData(resultSet.getMetaData());
-        resultData = getResultData(resultSet);
-    }
-    
-    private Multimap<String, Integer> getMetaData(final ResultSetMetaData resultSetMetaData) throws SQLException {
-        Multimap<String, Integer> result = HashMultimap.create();
-        for (int columnIndex = 1; columnIndex <= resultSetMetaData.getColumnCount(); columnIndex++) {
-            result.put(resultSetMetaData.getColumnLabel(columnIndex), columnIndex);
-        }
-        return result;
-    }
-    
-    private Iterator<List<Object>> getResultData(final ResultSet resultSet) throws SQLException {
-        Collection<List<Object>> result = new LinkedList<>();
-        while (resultSet.next()) {
-            List<Object> row = new ArrayList<>(columnLabelAndIndexMap.size());
-            for (int columnIndex = 1; columnIndex <= resultSet.getMetaData().getColumnCount(); columnIndex++) {
-                row.add(resultSet.getObject(columnIndex));
-            }
-            result.add(row);
-        }
-        return result.iterator();
-    }
     
     @Override
     public boolean next() {
@@ -130,9 +98,5 @@ public final class DistinctQueryResult implements QueryResult {
             }
         }
         throw new SQLException("Column index out of range", "9999");
-    }
-    
-    private Integer getIndexByColumnLabel(final String columnLabel) {
-        return new ArrayList<>(columnLabelAndIndexMap.get(columnLabel)).get(0) - 1;
     }
 }
