@@ -45,28 +45,28 @@ import java.util.Set;
  */
 public final class AggregationDistinctQueryResult extends DistinctQueryResult {
     
-    private final List<Integer> aggregationDistinctColumnIndexes;
+    private final List<Integer> aggregationDistinctColumnIndexes = new LinkedList<>();
     
-    private final List<Integer> derivedCountIndexes;
+    private final List<Integer> derivedCountIndexes = new LinkedList<>();
     
-    private final List<Integer> derivedSumIndexes;
+    private final List<Integer> derivedSumIndexes = new LinkedList<>();
     
     @SneakyThrows
     public AggregationDistinctQueryResult(final Collection<QueryResult> queryResults, final SelectStatement selectStatement) {
         super(queryResults);
-        aggregationDistinctColumnIndexes = getAggregationDistinctColumnIndexes(selectStatement);
+        initAggregationDistinctColumnIndexes(selectStatement);
         
     }
     
-    private List<Integer> getAggregationDistinctColumnIndexes(final SelectStatement selectStatement) {
-        List<Integer> result = new LinkedList<>();
+    private void initAggregationDistinctColumnIndexes(final SelectStatement selectStatement) {
         for (AggregationDistinctSelectItem each :selectStatement.getAggregationDistinctSelectItems()) {
-            result.add(each.getIndex());
+            aggregationDistinctColumnIndexes.add(each.getIndex());
         }
-        return result;
     }
     
-    private List<Integer> getDerivedCountIndexes
+    private List<Integer> getDerivedCountIndexes(final SelectStatement selectStatement) {
+    
+    }
     
     
     
