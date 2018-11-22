@@ -41,6 +41,7 @@ import java.util.TreeMap;
  * DQL result set merge engine.
  *
  * @author zhangliang
+ * @author panjuan
  */
 public final class DQLMergeEngine implements MergeEngine {
     
