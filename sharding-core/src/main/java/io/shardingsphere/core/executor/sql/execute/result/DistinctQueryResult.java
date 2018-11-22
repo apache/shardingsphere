@@ -17,11 +17,11 @@
 
 package io.shardingsphere.core.executor.sql.execute.result;
 
+import com.google.common.collect.Multimap;
 import io.shardingsphere.core.merger.QueryResult;
 import lombok.SneakyThrows;
 
 import java.io.InputStream;
-import java.sql.ResultSet;
 import java.sql.SQLException;
 import java.util.ArrayList;
 import java.util.Calendar;
@@ -29,7 +29,6 @@ import java.util.Collection;
 import java.util.Iterator;
 import java.util.LinkedHashMap;
 import java.util.LinkedHashSet;
-import java.util.LinkedList;
 import java.util.List;
 import java.util.Map;
 import java.util.Map.Entry;
@@ -44,6 +43,8 @@ public final class DistinctQueryResult implements QueryResult {
 
     private final Collection<QueryResult> queryResults;
     
+    private final Multimap<String, Integer> columnLabelAndIndexMap;
+    
     private final Iterator<List<Object>> resultData;
     
     private List<Object> currentRow;
@@ -52,6 +53,8 @@ public final class DistinctQueryResult implements QueryResult {
         this.queryResults = queryResults;
         columnIndexAndDistinctValues = getColumnIndexAndDistinctValues(queryResults);
     }
+    
+    
     
     private Iterator<List<Object>> getResultData(final Collection<QueryResult> queryResults) throws SQLException {
         Set<List<Object>> result = new LinkedHashSet<>();
