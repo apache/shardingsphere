@@ -42,8 +42,6 @@ import java.util.Set;
  * @author panjuan
  */
 public final class DistinctQueryResult implements QueryResult {
-
-    private final Collection<QueryResult> queryResults;
     
     private final Multimap<String, Integer> columnLabelAndIndexMap;
     
@@ -52,7 +50,7 @@ public final class DistinctQueryResult implements QueryResult {
     private List<Object> currentRow;
 
     public DistinctQueryResult(final Collection<QueryResult> queryResults) {
-        this.queryResults = queryResults;
+        this.columnLabelAndIndexMap = queryResults;
         columnIndexAndDistinctValues = getColumnIndexAndDistinctValues(queryResults);
     }
     
