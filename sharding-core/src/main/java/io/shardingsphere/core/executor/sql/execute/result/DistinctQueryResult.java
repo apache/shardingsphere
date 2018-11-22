@@ -18,13 +18,16 @@
 package io.shardingsphere.core.executor.sql.execute.result;
 
 import io.shardingsphere.core.merger.QueryResult;
+import lombok.SneakyThrows;
 
 import java.io.InputStream;
 import java.sql.SQLException;
 import java.util.Calendar;
 import java.util.Collection;
+import java.util.HashMap;
 import java.util.Map;
 import java.util.Map.Entry;
+import java.util.Set;
 
 /**
  * Distinct query result.
@@ -35,10 +38,17 @@ public final class DistinctQueryResult implements QueryResult {
 
     private final Collection<QueryResult> queryResults;
 
-    private final Map<Integer, Collection<Object>> columnIndexAndDistinctValusesMap;
+    private final Map<Integer, Set<Object>> columnIndexAndDistinctValusesMap;
 
     public DistinctQueryResult(final Collection<QueryResult> queryResults) {
-        queryResults
+        this.queryResults = queryResults;
+        
+    }
+    
+    @SneakyThrows
+    private Map<Integer, Collection<Object>> getColumnIndexAndDistinctValusesMap(final Collection<QueryResult> queryResults) {
+        Map<Integer, Collection<Object>> result = new HashMap<>(queryResults.iterator().next().getColumnCount());
+        
     }
 
     @Override
