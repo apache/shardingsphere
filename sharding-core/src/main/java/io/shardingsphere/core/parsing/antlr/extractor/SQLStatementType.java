@@ -51,7 +51,9 @@ public enum SQLStatementType {
     
     BEGIN_WORK("BeginWork"),
     
-    SET_VARIABLE("SetVariable");
+    SET_VARIABLE("SetVariable"),
+    
+    SELECT("Select");
     
     private final String name;
     
