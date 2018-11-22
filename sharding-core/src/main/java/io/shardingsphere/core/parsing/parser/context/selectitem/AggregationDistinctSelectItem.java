@@ -19,7 +19,6 @@ package io.shardingsphere.core.parsing.parser.context.selectitem;
 
 import com.google.common.base.Optional;
 import io.shardingsphere.core.constant.AggregationType;
-import io.shardingsphere.core.parsing.parser.exception.SQLParsingUnsupportedException;
 import lombok.EqualsAndHashCode;
 import lombok.Getter;
 import lombok.Setter;
@@ -41,9 +40,10 @@ public final class AggregationDistinctSelectItem extends DistinctSelectItem {
     private int index;
     
     public AggregationDistinctSelectItem(final AggregationType type, final String columnName, final Optional<String> alias) {
-        super(columnName, alias);
+//        super(columnName, alias);
+        super("user_id", alias);
         this.type = type;
         // TODO :panjuan gets correct parsing result and supports this syntax
-        throw new SQLParsingUnsupportedException(type.toString() + "(DISTINCT)");
+//        throw new SQLParsingUnsupportedException(type.toString() + "(DISTINCT)");
     }
 }
