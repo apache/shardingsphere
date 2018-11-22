@@ -47,9 +47,17 @@ public final class DistinctQueryResult implements QueryResult {
     
     @SneakyThrows
     private Map<Integer, Set<Object>> getColumnIndexAndDistinctValues(final Collection<QueryResult> queryResults) {
-        Map<Integer, Set<Object>> result = createIntegerSetMap(queryResults);
+        Map<Integer, Set<Object>> result = createColumnIndexAndDistinctValues(queryResults);
         for (QueryResult each : queryResults) {
             fillInColumnIndexAndDistinctValues(result, each);
+        }
+        return result;
+    }
+    
+    private Map<Integer, Set<Object>> createColumnIndexAndDistinctValues(final Collection<QueryResult> queryResults) throws SQLException {
+        Map<Integer, Set<Object>> result = new LinkedHashMap<>(queryResults.iterator().next().getColumnCount());
+        for (int i = 1; i <= queryResults.iterator().next().getColumnCount(); i++) {
+            result.put(i, new LinkedHashSet<>());
         }
         return result;
     }
@@ -61,14 +69,6 @@ public final class DistinctQueryResult implements QueryResult {
                 columnIndexAndDistinctValues.get(i).add(queryResult.getValue(i, Object.class));
             }
         }
-    }
-    
-    private Map<Integer, Set<Object>> createIntegerSetMap(final Collection<QueryResult> queryResults) throws SQLException {
-        Map<Integer, Set<Object>> result = new LinkedHashMap<>(queryResults.iterator().next().getColumnCount());
-        for (int i = 1; i <= queryResults.iterator().next().getColumnCount(); i++) {
-            result.put(i, new LinkedHashSet<>());
-        }
-        return result;
     }
     
     @Override
