@@ -180,11 +180,15 @@ public final class BackendConnection implements AutoCloseable {
     
     @Override
     public void close() throws SQLException {
+        close(false);
+    }
+    
+    public void close(final boolean forceClose) throws SQLException {
         Collection<SQLException> exceptions = new LinkedList<>();
         MasterVisitedManager.clear();
         exceptions.addAll(closeStatements());
         exceptions.addAll(closeResultSets());
-        if (ConnectionStatus.TERMINATED == status) {
+        if (ConnectionStatus.TERMINATED == status || forceClose) {
             exceptions.addAll(releaseConnections());
         }
         throwSQLExceptionIfNecessary(exceptions);
