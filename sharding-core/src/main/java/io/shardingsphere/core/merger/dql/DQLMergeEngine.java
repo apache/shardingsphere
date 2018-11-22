@@ -30,6 +30,7 @@ import io.shardingsphere.core.merger.dql.pagination.LimitDecoratorMergedResult;
 import io.shardingsphere.core.merger.dql.pagination.RowNumberDecoratorMergedResult;
 import io.shardingsphere.core.merger.dql.pagination.TopAndRowNumberDecoratorMergedResult;
 import io.shardingsphere.core.parsing.parser.context.limit.Limit;
+import io.shardingsphere.core.parsing.parser.context.selectitem.DistinctSelectItem;
 import io.shardingsphere.core.parsing.parser.sql.dql.select.SelectStatement;
 import io.shardingsphere.core.util.SQLUtil;
 
@@ -64,9 +65,13 @@ public final class DQLMergeEngine implements MergeEngine {
 //            return Collections.singletonList((QueryResult) new )
 //        }
         if (!selectStatement.getDistinctSelectItems().isEmpty()) {
-            return Collections.singletonList((QueryResult) new DistinctQueryResult(queryResults));
+            return getQueryResults(new DistinctQueryResult(queryResults));
         }
         return queryResults;
+    }
+    
+    private List<QueryResult> getQueryResults(final DistinctQueryResult distinctQueryResult) {
+    
     }
     
     private Map<String, Integer> getColumnLabelIndexMap(final QueryResult queryResult) throws SQLException {
