@@ -110,7 +110,11 @@ public final class SelectStatement extends DQLStatement {
         return result;
     }
     
-    
+    /**
+     * Get aggregation distinct select items.
+     *
+     * @return aggregation distinct select items
+     */
     public List<AggregationDistinctSelectItem> getAggregationDistinctSelectItems() {
         List<AggregationDistinctSelectItem> result = new LinkedList<>();
         for (SelectItem each : items) {
