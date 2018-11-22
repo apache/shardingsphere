@@ -52,6 +52,14 @@ public final class AggregationDistinctQueryResult extends DistinctQueryResult {
     
     private final List<Integer> derivedSumIndexes = new LinkedList<>();
     
+    private AggregationDistinctQueryResult(final Multimap<String, Integer> columnLabelAndIndexMap, final Iterator<List<Object>> resultData,
+                                           final List<Integer> aggregationDistinctColumnIndexes, final List<Integer> derivedCountIndexes, final List<Integer> derivedSumIndexes) {
+        super(columnLabelAndIndexMap, resultData);
+        this.aggregationDistinctColumnIndexes.addAll(aggregationDistinctColumnIndexes);
+        this.derivedCountIndexes.addAll(derivedCountIndexes);
+        this.derivedSumIndexes.addAll(derivedSumIndexes);
+    }
+    
     @SneakyThrows
     public AggregationDistinctQueryResult(final Collection<QueryResult> queryResults, final SelectStatement selectStatement) {
         super(queryResults);
@@ -73,14 +81,6 @@ public final class AggregationDistinctQueryResult extends DistinctQueryResult {
                 derivedSumIndexes.add(derivedAggregationSelectItems.get(1).getIndex());
             }
         }
-    }
-    
-    private AggregationDistinctQueryResult(final Multimap<String, Integer> columnLabelAndIndexMap, final Iterator<List<Object>> resultData,
-                                           final List<Integer> aggregationDistinctColumnIndexes, final List<Integer> derivedCountIndexes, final List<Integer> derivedSumIndexes) {
-        super(columnLabelAndIndexMap, resultData);
-        this.aggregationDistinctColumnIndexes.addAll(aggregationDistinctColumnIndexes);
-        this.derivedCountIndexes.addAll(derivedCountIndexes);
-        this.derivedSumIndexes.addAll(derivedSumIndexes);
     }
     
     /**
