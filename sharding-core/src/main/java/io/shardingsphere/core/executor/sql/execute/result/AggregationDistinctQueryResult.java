@@ -64,7 +64,7 @@ public final class AggregationDistinctQueryResult extends DistinctQueryResult {
         }
     }
     
-    private List<Integer> getDerivedCountIndexes(final SelectStatement selectStatement) {
+    private void initDerivedCountIndexes(final SelectStatement selectStatement) {
     
     }
     
