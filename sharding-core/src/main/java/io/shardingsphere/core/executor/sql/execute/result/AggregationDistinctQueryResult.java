@@ -47,9 +47,9 @@ public final class AggregationDistinctQueryResult extends DistinctQueryResult {
     
     private final List<Integer> aggregationDistinctColumnIndexes;
     
-    private final int derivedCountIndex;
+    private final List<Integer> derivedCountIndex;
     
-    private final int derivedSumIndex;
+    private final List<Integer> derivedSumIndex;
     
     @SneakyThrows
     public AggregationDistinctQueryResult(final Collection<QueryResult> queryResults, final SelectStatement selectStatement) {
@@ -65,6 +65,8 @@ public final class AggregationDistinctQueryResult extends DistinctQueryResult {
         }
         return result;
     }
+    
+    
     
     private AggregationDistinctQueryResult(final Multimap<String, Integer> columnLabelAndIndexMap, final Iterator<List<Object>> resultData, final List<Integer> aggregationDistinctColumnIndexes) {
         super(columnLabelAndIndexMap, resultData);
