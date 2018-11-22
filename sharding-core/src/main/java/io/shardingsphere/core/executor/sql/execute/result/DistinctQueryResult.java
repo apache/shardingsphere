@@ -17,7 +17,6 @@
 
 package io.shardingsphere.core.executor.sql.execute.result;
 
-import com.google.common.collect.SetMultimap;
 import io.shardingsphere.core.merger.QueryResult;
 import lombok.SneakyThrows;
 import java.io.InputStream;
@@ -43,11 +42,11 @@ public final class DistinctQueryResult implements QueryResult {
 
     public DistinctQueryResult(final Collection<QueryResult> queryResults) {
         this.queryResults = queryResults;
-        columnIndexAndDistinctValusesMap = getColumnIndexAndDistinctValusesMap(queryResults);
+        columnIndexAndDistinctValusesMap = getColumnIndexAndDistinctValuesMap(queryResults);
     }
     
     @SneakyThrows
-    private Map<Integer, Set<Object>> getColumnIndexAndDistinctValusesMap(final Collection<QueryResult> queryResults) {
+    private Map<Integer, Set<Object>> getColumnIndexAndDistinctValuesMap(final Collection<QueryResult> queryResults) {
         Map<Integer, Set<Object>> result = createIntegerSetMap(queryResults);
         for (QueryResult each : queryResults) {
             while (each.next()) {
