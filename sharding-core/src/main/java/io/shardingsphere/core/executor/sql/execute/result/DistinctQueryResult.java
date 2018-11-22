@@ -55,7 +55,8 @@ public final class DistinctQueryResult implements QueryResult {
         resultData = getResultData(queryResults);
     }
     
-    private Multimap<String, Integer> getColumnLabelAndIndexMap(final QueryResult queryResult) throws SQLException {
+    @SneakyThrows
+    private Multimap<String, Integer> getColumnLabelAndIndexMap(final QueryResult queryResult) {
         Multimap<String, Integer> result = HashMultimap.create();
         for (int columnIndex = 1; columnIndex <= queryResult.getColumnCount(); columnIndex++) {
             result.put(queryResult.getColumnLabel(columnIndex), columnIndex);
@@ -63,7 +64,8 @@ public final class DistinctQueryResult implements QueryResult {
         return result;
     }
     
-    private Iterator<List<Object>> getResultData(final Collection<QueryResult> queryResults) throws SQLException {
+    @SneakyThrows
+    private Iterator<List<Object>> getResultData(final Collection<QueryResult> queryResults) {
         Set<List<Object>> result = new LinkedHashSet<>();
         for (QueryResult each : queryResults) {
             while (each.next()) {
