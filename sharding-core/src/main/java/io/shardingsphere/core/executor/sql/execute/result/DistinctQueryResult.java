@@ -17,14 +17,15 @@
 
 package io.shardingsphere.core.executor.sql.execute.result;
 
+import com.google.common.collect.SetMultimap;
 import io.shardingsphere.core.merger.QueryResult;
 import lombok.SneakyThrows;
-
 import java.io.InputStream;
 import java.sql.SQLException;
 import java.util.Calendar;
 import java.util.Collection;
-import java.util.HashMap;
+import java.util.LinkedHashMap;
+import java.util.LinkedHashSet;
 import java.util.Map;
 import java.util.Map.Entry;
 import java.util.Set;
@@ -42,15 +43,30 @@ public final class DistinctQueryResult implements QueryResult {
 
     public DistinctQueryResult(final Collection<QueryResult> queryResults) {
         this.queryResults = queryResults;
-        
+        columnIndexAndDistinctValusesMap = getColumnIndexAndDistinctValusesMap(queryResults);
     }
     
     @SneakyThrows
-    private Map<Integer, Collection<Object>> getColumnIndexAndDistinctValusesMap(final Collection<QueryResult> queryResults) {
-        Map<Integer, Collection<Object>> result = new HashMap<>(queryResults.iterator().next().getColumnCount());
-        
+    private Map<Integer, Set<Object>> getColumnIndexAndDistinctValusesMap(final Collection<QueryResult> queryResults) {
+        Map<Integer, Set<Object>> result = createIntegerSetMap(queryResults);
+        for (QueryResult each : queryResults) {
+            while (each.next()) {
+                for (int i = 1; i <= result.size(); i++) {
+                    result.get(i).add(each.getValue(i, Object.class));
+                }
+            }
+        }
+        return result;
     }
-
+    
+    private Map<Integer, Set<Object>> createIntegerSetMap(final Collection<QueryResult> queryResults) throws SQLException {
+        Map<Integer, Set<Object>> result = new LinkedHashMap<>(queryResults.iterator().next().getColumnCount());
+        for (int i = 1; i <= queryResults.iterator().next().getColumnCount(); i++) {
+            result.put(i, new LinkedHashSet<>());
+        }
+        return result;
+    }
+    
     @Override
     public boolean next() {
         if (resultData.hasNext()) {
