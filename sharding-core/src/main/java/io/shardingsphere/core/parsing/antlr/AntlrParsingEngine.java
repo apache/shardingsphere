@@ -43,8 +43,8 @@ public final class AntlrParsingEngine {
      *
      * @param dbType database type
      * @param sql SQL
-     * @param shardingRule sharding rule
-     * @param shardingTableMetaData sharding table meta data
+     * @param shardingRule databases and tables sharding rule
+     * @param shardingTableMetaData sharding metadata
      * @return SQL statement
      */
     public static SQLStatement parse(final DatabaseType dbType, final String sql, final ShardingRule shardingRule, final ShardingTableMetaData shardingTableMetaData) {
@@ -57,6 +57,6 @@ public final class AntlrParsingEngine {
         if (null == extractor) {
             throw new SQLParsingUnsupportedException(String.format("Unsupported SQL statement of `%s`", parserRuleContext.getClass().getSimpleName()));
         }
-        return extractor.extract(parserRuleContext, shardingTableMetaData);
+        return extractor.extract(parserRuleContext, shardingRule, shardingTableMetaData);
     }
 }

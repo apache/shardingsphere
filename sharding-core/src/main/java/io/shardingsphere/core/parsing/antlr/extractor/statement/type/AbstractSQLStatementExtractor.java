@@ -24,6 +24,8 @@ import io.shardingsphere.core.parsing.antlr.extractor.statement.handler.ASTExtra
 import io.shardingsphere.core.parsing.antlr.extractor.statement.handler.filler.HandlerResultFiller;
 import io.shardingsphere.core.parsing.antlr.extractor.statement.handler.filler.HandlerResultFillerRegistry;
 import io.shardingsphere.core.parsing.parser.sql.SQLStatement;
+import io.shardingsphere.core.rule.ShardingRule;
+
 import org.antlr.v4.runtime.ParserRuleContext;
 
 import java.util.Collection;
@@ -40,7 +42,7 @@ public abstract class AbstractSQLStatementExtractor implements SQLStatementExtra
     private final Collection<ASTExtractHandler<?>> extractHandlers = new LinkedList<>();
     
     @Override
-    public final SQLStatement extract(final ParserRuleContext rootNode, final ShardingTableMetaData shardingTableMetaData) {
+    public final SQLStatement extract(final ParserRuleContext rootNode, final ShardingRule shardingRule, final ShardingTableMetaData shardingTableMetaData) {
         SQLStatement result = createStatement();
         List<Object> extractResults = new LinkedList<>();
         for (ASTExtractHandler each : extractHandlers) {
