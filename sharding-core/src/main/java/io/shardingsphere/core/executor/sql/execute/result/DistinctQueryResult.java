@@ -70,13 +70,13 @@ public final class DistinctQueryResult implements QueryResult {
         return resultData.iterator();
     }
     
-    private void fill(final Set<List<Object>> result, final QueryResult each) throws SQLException {
-        while (each.next()) {
-            List<Object> row = new ArrayList<>(each.getColumnCount());
-            for (int columnIndex = 1; columnIndex <= each.getColumnCount(); columnIndex++) {
-                row.add(each.getValue(columnIndex, Object.class));
+    private void fill(final Set<List<Object>> resultData, final QueryResult queryResult) throws SQLException {
+        while (queryResult.next()) {
+            List<Object> row = new ArrayList<>(queryResult.getColumnCount());
+            for (int columnIndex = 1; columnIndex <= queryResult.getColumnCount(); columnIndex++) {
+                row.add(queryResult.getValue(columnIndex, Object.class));
             }
-            result.add(row);
+            resultData.add(row);
         }
     }
     
