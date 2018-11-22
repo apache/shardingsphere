@@ -75,8 +75,6 @@ public final class AggregationDistinctQueryResult extends DistinctQueryResult {
         }
     }
     
-    
-    
     private AggregationDistinctQueryResult(final Multimap<String, Integer> columnLabelAndIndexMap, final Iterator<List<Object>> resultData,
                                            final List<Integer> aggregationDistinctColumnIndexes, final List<Integer> derivedCountIndexes, final List<Integer> derivedSumIndexes) {
         super(columnLabelAndIndexMap, resultData);
