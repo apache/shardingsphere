@@ -23,16 +23,13 @@ import io.shardingsphere.core.merger.QueryResult;
 import lombok.SneakyThrows;
 
 import java.io.InputStream;
-import java.sql.ResultSetMetaData;
 import java.sql.SQLException;
 import java.util.ArrayList;
 import java.util.Calendar;
 import java.util.Collection;
 import java.util.Iterator;
-import java.util.LinkedHashMap;
 import java.util.LinkedHashSet;
 import java.util.List;
-import java.util.Map;
 import java.util.Map.Entry;
 import java.util.Set;
 
@@ -66,14 +63,14 @@ public final class DistinctQueryResult implements QueryResult {
     
     @SneakyThrows
     private Iterator<List<Object>> getResultData(final Collection<QueryResult> queryResults) {
-        Set<List<Object>> result = new LinkedHashSet<>();
+        Set<List<Object>> resultData = new LinkedHashSet<>();
         for (QueryResult each : queryResults) {
-            fillInResultData(result, each);
+            fill(resultData, each);
         }
-        return result.iterator();
+        return resultData.iterator();
     }
     
-    private void fillInResultData(final Set<List<Object>> result, final QueryResult each) throws SQLException {
+    private void fill(final Set<List<Object>> result, final QueryResult each) throws SQLException {
         while (each.next()) {
             List<Object> row = new ArrayList<>(each.getColumnCount());
             for (int columnIndex = 1; columnIndex <= each.getColumnCount(); columnIndex++) {
