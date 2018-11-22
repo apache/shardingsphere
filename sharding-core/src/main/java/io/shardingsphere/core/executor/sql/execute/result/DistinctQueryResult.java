@@ -20,6 +20,7 @@ package io.shardingsphere.core.executor.sql.execute.result;
 import com.google.common.collect.HashMultimap;
 import com.google.common.collect.Multimap;
 import io.shardingsphere.core.merger.QueryResult;
+import lombok.RequiredArgsConstructor;
 
 import java.io.InputStream;
 import java.sql.ResultSet;
@@ -38,7 +39,10 @@ import java.util.Map.Entry;
  *
  * @author panjuan
  */
+@RequiredArgsConstructor
 public final class DistinctQueryResult implements QueryResult {
+    
+    private final Collection<QueryResult> queryResults;
     
     @Override
     public boolean next() {
