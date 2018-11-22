@@ -15,17 +15,19 @@
  * </p>
  */
 
-package io.shardingsphere.core.parsing.antlr;
+package io.shardingsphere.core.parsing.antlr.extractor.statement.type.dialect.mysql;
 
-import io.shardingsphere.core.parsing.antlr.ddl.IntegrateDDLParsingCompatTest;
-import org.junit.runner.RunWith;
-import org.junit.runners.Suite;
-import org.junit.runners.Suite.SuiteClasses;
+import io.shardingsphere.core.parsing.antlr.extractor.statement.handler.TableNameExtractHandler;
+import io.shardingsphere.core.parsing.antlr.extractor.statement.type.TruncateTableExtractor;
 
-@RunWith(Suite.class)
-@SuiteClasses({
-        AntlrIntegrateParsingTest.class,
-        IntegrateDDLParsingCompatTest.class
-})
-public final class AllAntlrParsingTests {
+/**
+ * Truncate table extractor for MySQL.
+ * 
+ * @author duhongjun
+ */
+public final class MySQLTruncateTableExtractor extends TruncateTableExtractor {
+    
+    public MySQLTruncateTableExtractor() {
+        addExtractHandler(new TableNameExtractHandler());
+    }
 }

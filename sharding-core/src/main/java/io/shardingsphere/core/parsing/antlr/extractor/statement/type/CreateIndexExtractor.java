@@ -15,17 +15,20 @@
  * </p>
  */
 
-package io.shardingsphere.core.parsing.antlr;
+package io.shardingsphere.core.parsing.antlr.extractor.statement.type;
 
-import io.shardingsphere.core.parsing.antlr.ddl.IntegrateDDLParsingCompatTest;
-import org.junit.runner.RunWith;
-import org.junit.runners.Suite;
-import org.junit.runners.Suite.SuiteClasses;
+import io.shardingsphere.core.parsing.antlr.extractor.statement.handler.IndexNameExtractHandler;
+import io.shardingsphere.core.parsing.antlr.extractor.statement.handler.TableNameExtractHandler;
 
-@RunWith(Suite.class)
-@SuiteClasses({
-        AntlrIntegrateParsingTest.class,
-        IntegrateDDLParsingCompatTest.class
-})
-public final class AllAntlrParsingTests {
+/**
+ * Create index extractor.
+ * 
+ * @author duhongjun
+ */
+public final class CreateIndexExtractor extends DDLStatementExtractor {
+    
+    public CreateIndexExtractor() {
+        addExtractHandler(new TableNameExtractHandler());
+        addExtractHandler(new IndexNameExtractHandler());
+    }
 }

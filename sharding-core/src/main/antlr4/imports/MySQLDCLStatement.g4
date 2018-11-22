@@ -61,8 +61,8 @@ objectType
 
 privLevel
     : ASTERISK
-    | ASTERISK DOT ASTERISK
-    | schemaName DOT ASTERISK
+    | ASTERISK DOT_ASTERISK
+    | schemaName DOT_ASTERISK
     | schemaName DOT tableName
     | tableName
     | schemaName DOT routineName
@@ -127,7 +127,7 @@ revokeRole
 
 createUser
     : CREATE USER (IF NOT EXISTS)?
-    user authOptions?
+    userAuthOptions
     DEFAULT ROLE roles
     (REQUIRE (NONE | tlsOption (COMMA AND? tlsOption)*))?
     (WITH resourceOption (COMMA resourceOption)*)?
@@ -142,8 +142,12 @@ authOption
     | DISCARD OLD PASSWORD
     ;
 
-authOptions
-    : authOption (COMMA authOption)*
+userAuthOption
+    : user authOption?
+    ;
+
+userAuthOptions
+    : userAuthOption (COMMA userAuthOption)*
     ;
 
 authPlugin
@@ -174,7 +178,7 @@ lockOption
 
 alterUser
     : ALTER USER (IF EXISTS)?
-    user authOptions
+    userAuthOptions
     (REQUIRE (NONE | tlsOption (COMMA AND? tlsOption)*))?
     (WITH resourceOption (COMMA resourceOption)*)?
     (passwordOption | lockOption)*

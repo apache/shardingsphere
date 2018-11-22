@@ -15,17 +15,19 @@
  * </p>
  */
 
-package io.shardingsphere.core.parsing.antlr;
+package io.shardingsphere.core.parsing.antlr.extractor.statement.type.dialect.postgresql;
 
-import io.shardingsphere.core.parsing.antlr.ddl.IntegrateDDLParsingCompatTest;
-import org.junit.runner.RunWith;
-import org.junit.runners.Suite;
-import org.junit.runners.Suite.SuiteClasses;
+import io.shardingsphere.core.parsing.antlr.extractor.statement.handler.TableNamesExtractHandler;
+import io.shardingsphere.core.parsing.antlr.extractor.statement.type.TruncateTableExtractor;
 
-@RunWith(Suite.class)
-@SuiteClasses({
-        AntlrIntegrateParsingTest.class,
-        IntegrateDDLParsingCompatTest.class
-})
-public final class AllAntlrParsingTests {
+/**
+ * Truncate table extractor for PostgreSQL.
+ * 
+ * @author duhongjun
+ */
+public final class PostgreSQLTruncateTableExtractor extends TruncateTableExtractor {
+    
+    public PostgreSQLTruncateTableExtractor() {
+        addExtractHandler(new TableNamesExtractHandler());
+    }
 }

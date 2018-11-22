@@ -15,20 +15,19 @@
  * </p>
  */
 
-package io.shardingsphere.core.parsing.antlr.extractor.statement.type;
+package io.shardingsphere.core.parsing.antlr.extractor.statement.type.dialect.postgresql;
 
-import io.shardingsphere.core.parsing.antlr.extractor.statement.handler.IndexNameExtractHandler;
-import io.shardingsphere.core.parsing.antlr.extractor.statement.handler.TableNameExtractHandler;
+import io.shardingsphere.core.parsing.antlr.extractor.statement.handler.TableNamesExtractHandler;
+import io.shardingsphere.core.parsing.antlr.extractor.statement.type.DropTableExtractor;
 
 /**
- * Statement with table and index extractor.
+ * Drop table extractor for PostgreSQL.
  * 
  * @author duhongjun
  */
-public final class IndexWithTableStatementExtractor extends DDLStatementExtractor {
+public final class PostgreSQLDropTableExtractor extends DropTableExtractor {
     
-    public IndexWithTableStatementExtractor() {
-        addExtractHandler(new TableNameExtractHandler());
-        addExtractHandler(new IndexNameExtractHandler());
+    public PostgreSQLDropTableExtractor() {
+        addExtractHandler(new TableNamesExtractHandler());
     }
 }

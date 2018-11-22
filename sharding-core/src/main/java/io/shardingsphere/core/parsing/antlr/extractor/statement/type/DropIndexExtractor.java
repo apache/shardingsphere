@@ -17,16 +17,18 @@
 
 package io.shardingsphere.core.parsing.antlr.extractor.statement.type;
 
+import io.shardingsphere.core.parsing.antlr.extractor.statement.handler.IndexNameExtractHandler;
 import io.shardingsphere.core.parsing.antlr.extractor.statement.handler.TableNameExtractHandler;
 
 /**
- * Statement with single table extractor.
+ * Drop index extractor.
  * 
  * @author duhongjun
  */
-public final class OnlySingleTableExtractor extends DDLStatementExtractor {
+public final class DropIndexExtractor extends DDLStatementExtractor {
     
-    public OnlySingleTableExtractor() {
+    public DropIndexExtractor() {
         addExtractHandler(new TableNameExtractHandler());
+        addExtractHandler(new IndexNameExtractHandler());
     }
 }
