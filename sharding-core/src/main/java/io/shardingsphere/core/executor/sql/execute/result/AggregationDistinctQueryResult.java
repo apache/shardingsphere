@@ -23,6 +23,7 @@ import com.google.common.collect.Lists;
 import com.google.common.collect.Multimap;
 import io.shardingsphere.core.merger.QueryResult;
 import io.shardingsphere.core.parsing.parser.context.selectitem.AggregationDistinctSelectItem;
+import io.shardingsphere.core.parsing.parser.context.selectitem.AggregationSelectItem;
 import io.shardingsphere.core.parsing.parser.sql.dql.select.SelectStatement;
 import lombok.SneakyThrows;
 
@@ -64,8 +65,14 @@ public final class AggregationDistinctQueryResult extends DistinctQueryResult {
         }
     }
     
-    private void initDerivedCountIndexes(final SelectStatement selectStatement) {
-    
+    private void initDerivedItemIndexes(final SelectStatement selectStatement) {
+        for (AggregationSelectItem each : selectStatement.getAggregationSelectItems()) {
+            List<AggregationSelectItem> derivedAggregationSelectItems = each.getDerivedAggregationSelectItems();
+            if (!derivedAggregationSelectItems.isEmpty()) {
+                derivedCountIndexes.add(derivedAggregationSelectItems.get(0).getIndex());
+                derivedSumIndexes.add(derivedAggregationSelectItems.get(1).getIndex());
+            }
+        }
     }
     
     
