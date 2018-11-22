@@ -58,8 +58,8 @@ public final class DistinctQueryResult implements QueryResult {
     
     private Multimap<String, Integer> getColumnLabelAndIndexMap(final QueryResult queryResult) throws SQLException {
         Multimap<String, Integer> result = HashMultimap.create();
-        for (int columnIndex = 1; columnIndex <= resultSetMetaData.getColumnCount(); columnIndex++) {
-            result.put(resultSetMetaData.getColumnLabel(columnIndex), columnIndex);
+        for (int columnIndex = 1; columnIndex <= queryResult.getColumnCount(); columnIndex++) {
+            result.put(queryResult.getColumnLabel(columnIndex), columnIndex);
         }
         return result;
     }
