@@ -72,16 +72,20 @@ public final class DQLMergeEngine implements MergeEngine {
     
     private MergedResult build() throws SQLException {
         if (!selectStatement.getGroupByItems().isEmpty() || !selectStatement.getAggregationSelectItems().isEmpty()) {
-            if (selectStatement.isSameGroupByAndOrderByItems()) {
-                return new GroupByStreamMergedResult(columnLabelIndexMap, queryResults, selectStatement);
-            } else {
-                return new GroupByMemoryMergedResult(columnLabelIndexMap, queryResults, selectStatement);
-            }
+            return getGroupByMergedResult();
         }
         if (!selectStatement.getOrderByItems().isEmpty()) {
             return new OrderByStreamMergedResult(queryResults, selectStatement.getOrderByItems());
         }
         return new IteratorStreamMergedResult(queryResults);
+    }
+    
+    private MergedResult getGroupByMergedResult() throws SQLException {
+        if (selectStatement.isSameGroupByAndOrderByItems()) {
+            return new GroupByStreamMergedResult(columnLabelIndexMap, queryResults, selectStatement);
+        } else {
+            return new GroupByMemoryMergedResult(columnLabelIndexMap, queryResults, selectStatement);
+        }
     }
     
     private MergedResult decorate(final MergedResult mergedResult) throws SQLException {
