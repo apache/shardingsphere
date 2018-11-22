@@ -23,6 +23,8 @@ import com.google.common.collect.Iterators;
 import com.google.common.collect.Lists;
 import com.google.common.collect.Multimap;
 import io.shardingsphere.core.merger.QueryResult;
+import lombok.AccessLevel;
+import lombok.Getter;
 import lombok.SneakyThrows;
 
 import java.io.InputStream;
@@ -41,6 +43,7 @@ import java.util.Set;
  *
  * @author panjuan
  */
+@Getter(AccessLevel.PROTECTED)
 public final class DistinctQueryResult implements QueryResult {
     
     private final Multimap<String, Integer> columnLabelAndIndexMap;
