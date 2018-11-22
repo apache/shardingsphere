@@ -14,7 +14,6 @@
         <dependency>
             <groupId>io.shardingsphere</groupId>
             <artifactId>sharding-transaction-spring</artifactId>
-            <version>${project.parent.version}</version>
         </dependency>
         <dependency>
             <groupId>org.springframework</groupId>

@@ -22,9 +22,10 @@
         <project.build.locale>zh_CN</project.build.locale>
         
         <sharding-sphere.version>3.0.1-SNAPSHOT</sharding-sphere.version>
-        
-        <spring-framework.version>4.3.6.RELEASE</spring-framework.version>
-        <spring-boot.version>1.5.0.RELEASE</spring-boot.version>
+    
+        <aspectjweaver.version>1.8.9</aspectjweaver.version>
+        <spring-framework.version>4.3.20.RELEASE</spring-framework.version>
+        <spring-boot.version>1.5.17.RELEASE</spring-boot.version>
         <commons-dbcp.version>1.4</commons-dbcp.version>
         <mysql-connector-java.version>5.1.42</mysql-connector-java.version>
         <postgresql.version>9.1-901-1.jdbc4</postgresql.version>
@@ -88,6 +89,16 @@
             </dependency>
             <dependency>
                 <groupId>io.shardingsphere</groupId>
+                <artifactId>sharding-transaction-xa</artifactId>
+                <version>${project.parent.version}</version>
+            </dependency>
+            <dependency>
+                <groupId>io.shardingsphere</groupId>
+                <artifactId>sharding-transaction-spring</artifactId>
+                <version>${project.parent.version}</version>
+            </dependency>
+            <dependency>
+                <groupId>io.shardingsphere</groupId>
                 <artifactId>sharding-orchestration-reg-zookeeper-curator</artifactId>
                 <version>${sharding-sphere.version}</version>
             </dependency>
@@ -96,7 +107,12 @@
                 <artifactId>sharding-orchestration-reg-etcd</artifactId>
                 <version>${sharding-sphere.version}</version>
             </dependency>
-
+    
+            <dependency>
+                <groupId>org.aspectj</groupId>
+                <artifactId>aspectjweaver</artifactId>
+                <version>${aspectjweaver.version}</version>
+            </dependency>
             <dependency>
                 <groupId>org.springframework</groupId>
                 <artifactId>spring-jdbc</artifactId>
@@ -135,6 +151,11 @@
             <dependency>
                 <groupId>org.springframework.boot</groupId>
                 <artifactId>spring-boot-starter-data-jpa</artifactId>
+                <version>${spring-boot.version}</version>
+            </dependency>
+            <dependency>
+                <groupId>org.springframework.boot</groupId>
+                <artifactId>spring-boot-starter-aop</artifactId>
                 <version>${spring-boot.version}</version>
             </dependency>
             <dependency>
