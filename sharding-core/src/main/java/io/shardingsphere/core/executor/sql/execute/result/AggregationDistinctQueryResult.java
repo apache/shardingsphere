@@ -37,7 +37,7 @@ import java.util.Map.Entry;
 import java.util.Set;
 
 /**
- * Distinct query result.
+ * Aggregation distinct query result.
  *
  * @author panjuan
  */
