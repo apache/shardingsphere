@@ -18,6 +18,7 @@
 package io.shardingsphere.core.merger.dql;
 
 import io.shardingsphere.core.constant.DatabaseType;
+import io.shardingsphere.core.executor.sql.execute.result.DistinctQueryResult;
 import io.shardingsphere.core.merger.MergeEngine;
 import io.shardingsphere.core.merger.MergedResult;
 import io.shardingsphere.core.merger.QueryResult;
@@ -33,6 +34,9 @@ import io.shardingsphere.core.parsing.parser.sql.dql.select.SelectStatement;
 import io.shardingsphere.core.util.SQLUtil;
 
 import java.sql.SQLException;
+import java.util.Collection;
+import java.util.Collections;
+import java.util.LinkedList;
 import java.util.List;
 import java.util.Map;
 import java.util.TreeMap;
@@ -52,7 +56,7 @@ public final class DQLMergeEngine implements MergeEngine {
     private final Map<String, Integer> columnLabelIndexMap;
     
     public DQLMergeEngine(final List<QueryResult> queryResults, final SelectStatement selectStatement) throws SQLException {
-        this.queryResults = queryResults;
+        this.queryResults = selectStatement.getDistinctSelectItems().isEmpty() ? queryResults : Collections.singletonList(new DistinctQueryResult(queryResults));
         this.selectStatement = selectStatement;
         columnLabelIndexMap = getColumnLabelIndexMap(queryResults.get(0));
     }
