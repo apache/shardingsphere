@@ -77,9 +77,12 @@ public final class AggregationDistinctQueryResult extends DistinctQueryResult {
     
     
     
-    private AggregationDistinctQueryResult(final Multimap<String, Integer> columnLabelAndIndexMap, final Iterator<List<Object>> resultData, final List<Integer> aggregationDistinctColumnIndexes) {
+    private AggregationDistinctQueryResult(final Multimap<String, Integer> columnLabelAndIndexMap, final Iterator<List<Object>> resultData,
+                                           final List<Integer> aggregationDistinctColumnIndexes, final List<Integer> derivedCountIndexe, final List<Integer> derivedSumIndexes) {
         super(columnLabelAndIndexMap, resultData);
-        this.aggregationDistinctColumnIndexes = aggregationDistinctColumnIndexes;
+        this.aggregationDistinctColumnIndexes.addAll(aggregationDistinctColumnIndexes);
+        this.derivedCountIndexes.addAll(derivedCountIndexe);
+        this.derivedSumIndexes.addAll(derivedSumIndexes);
     }
     
     /**
