@@ -21,6 +21,7 @@ import com.google.common.base.Optional;
 import com.google.common.base.Preconditions;
 import io.shardingsphere.core.parsing.parser.context.OrderItem;
 import io.shardingsphere.core.parsing.parser.context.limit.Limit;
+import io.shardingsphere.core.parsing.parser.context.selectitem.AggregationDistinctSelectItem;
 import io.shardingsphere.core.parsing.parser.context.selectitem.AggregationSelectItem;
 import io.shardingsphere.core.parsing.parser.context.selectitem.SelectItem;
 import io.shardingsphere.core.parsing.parser.context.selectitem.StarSelectItem;
@@ -104,6 +105,18 @@ public final class SelectStatement extends DQLStatement {
                 AggregationSelectItem aggregationSelectItem = (AggregationSelectItem) each;
                 result.add(aggregationSelectItem);
                 result.addAll(aggregationSelectItem.getDerivedAggregationSelectItems());
+            }
+        }
+        return result;
+    }
+    
+    
+    public List<AggregationDistinctSelectItem> getAggregationDistinctSelectItems() {
+        List<AggregationDistinctSelectItem> result = new LinkedList<>();
+        for (SelectItem each : items) {
+            if (each instanceof AggregationDistinctSelectItem) {
+                AggregationDistinctSelectItem distinctSelectItem = (AggregationDistinctSelectItem) each;
+                result.add(distinctSelectItem);
             }
         }
         return result;
