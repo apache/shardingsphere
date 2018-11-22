@@ -47,9 +47,9 @@ public final class AggregationDistinctQueryResult extends DistinctQueryResult {
     
     private final List<Integer> aggregationDistinctColumnIndexes;
     
-    private final List<Integer> derivedCountIndex;
+    private final List<Integer> derivedCountIndexes;
     
-    private final List<Integer> derivedSumIndex;
+    private final List<Integer> derivedSumIndexes;
     
     @SneakyThrows
     public AggregationDistinctQueryResult(final Collection<QueryResult> queryResults, final SelectStatement selectStatement) {
@@ -65,6 +65,8 @@ public final class AggregationDistinctQueryResult extends DistinctQueryResult {
         }
         return result;
     }
+    
+    private List<Integer> getDerivedCountIndexes
     
     
     
