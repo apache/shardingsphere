@@ -48,32 +48,8 @@ public final class AggregationDistinctQueryResult extends DistinctQueryResult {
         super(queryResults);
     }
     
-    @SneakyThrows
-    private Multimap<String, Integer> getColumnLabelAndIndexMap(final QueryResult queryResult) {
-        Multimap<String, Integer> result = HashMultimap.create();
-        for (int columnIndex = 1; columnIndex <= queryResult.getColumnCount(); columnIndex++) {
-            result.put(queryResult.getColumnLabel(columnIndex), columnIndex);
-        }
-        return result;
-    }
-    
-    @SneakyThrows
-    private Iterator<List<Object>> getResultData(final Collection<QueryResult> queryResults) {
-        Set<List<Object>> resultData = new LinkedHashSet<>();
-        for (QueryResult each : queryResults) {
-            fill(resultData, each);
-        }
-        return resultData.iterator();
-    }
-    
-    private void fill(final Set<List<Object>> resultData, final QueryResult queryResult) throws SQLException {
-        while (queryResult.next()) {
-            List<Object> row = new ArrayList<>(queryResult.getColumnCount());
-            for (int columnIndex = 1; columnIndex <= queryResult.getColumnCount(); columnIndex++) {
-                row.add(queryResult.getValue(columnIndex, Object.class));
-            }
-            resultData.add(row);
-        }
+    private AggregationDistinctQueryResult(final Multimap<String, Integer> columnLabelAndIndexMap, final Iterator<List<Object>> resultData) {
+        super(columnLabelAndIndexMap, resultData);
     }
     
     /**
