@@ -183,6 +183,12 @@ public final class BackendConnection implements AutoCloseable {
         close(false);
     }
     
+    /**
+     * Close cached connection.
+     *
+     * @param forceClose force close flag
+     * @throws SQLException SQL exception
+     */
     public void close(final boolean forceClose) throws SQLException {
         Collection<SQLException> exceptions = new LinkedList<>();
         MasterVisitedManager.clear();
