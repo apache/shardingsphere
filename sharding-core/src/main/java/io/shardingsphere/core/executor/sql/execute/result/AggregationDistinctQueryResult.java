@@ -78,10 +78,10 @@ public final class AggregationDistinctQueryResult extends DistinctQueryResult {
     
     
     private AggregationDistinctQueryResult(final Multimap<String, Integer> columnLabelAndIndexMap, final Iterator<List<Object>> resultData,
-                                           final List<Integer> aggregationDistinctColumnIndexes, final List<Integer> derivedCountIndexe, final List<Integer> derivedSumIndexes) {
+                                           final List<Integer> aggregationDistinctColumnIndexes, final List<Integer> derivedCountIndexes, final List<Integer> derivedSumIndexes) {
         super(columnLabelAndIndexMap, resultData);
         this.aggregationDistinctColumnIndexes.addAll(aggregationDistinctColumnIndexes);
-        this.derivedCountIndexes.addAll(derivedCountIndexe);
+        this.derivedCountIndexes.addAll(derivedCountIndexes);
         this.derivedSumIndexes.addAll(derivedSumIndexes);
     }
     
@@ -98,7 +98,7 @@ public final class AggregationDistinctQueryResult extends DistinctQueryResult {
             public DistinctQueryResult apply(final List<Object> row) {
                 Set<List<Object>> resultData = new LinkedHashSet<>();
                 resultData.add(row);
-                return new AggregationDistinctQueryResult(getColumnLabelAndIndexMap(), resultData.iterator());
+                return new AggregationDistinctQueryResult(getColumnLabelAndIndexMap(), resultData.iterator(), aggregationDistinctColumnIndexes, derivedCountIndexes, derivedSumIndexes);
             }
         }));
     }
