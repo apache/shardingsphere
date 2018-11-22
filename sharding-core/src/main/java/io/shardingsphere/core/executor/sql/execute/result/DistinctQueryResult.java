@@ -17,7 +17,9 @@
 
 package io.shardingsphere.core.executor.sql.execute.result;
 
+import com.google.common.base.Function;
 import com.google.common.collect.HashMultimap;
+import com.google.common.collect.Iterators;
 import com.google.common.collect.Multimap;
 import io.shardingsphere.core.merger.QueryResult;
 import lombok.SneakyThrows;
@@ -29,6 +31,7 @@ import java.util.Calendar;
 import java.util.Collection;
 import java.util.Iterator;
 import java.util.LinkedHashSet;
+import java.util.LinkedList;
 import java.util.List;
 import java.util.Map.Entry;
 import java.util.Set;
@@ -50,6 +53,11 @@ public final class DistinctQueryResult implements QueryResult {
     public DistinctQueryResult(final Collection<QueryResult> queryResults) {
         this.columnLabelAndIndexMap = getColumnLabelAndIndexMap(queryResults.iterator().next());
         resultData = getResultData(queryResults);
+    }
+    
+    private DistinctQueryResult(final Multimap<String, Integer> columnLabelAndIndexMap, final Iterator<List<Object>> resultData) {
+        this.columnLabelAndIndexMap = columnLabelAndIndexMap;
+        this.resultData = resultData;
     }
     
     @SneakyThrows
@@ -78,6 +86,17 @@ public final class DistinctQueryResult implements QueryResult {
             }
             resultData.add(row);
         }
+    }
+    
+    public List<QueryResult> divide() {
+        List<QueryResult> result = new LinkedList<>();
+        Iterators.transform(resultData, new Function<List<Object>, DistinctQueryResult>() {
+            
+            @Override
+            public DistinctQueryResult apply(final List<Object> row) {
+            
+            }
+        })
     }
     
     @Override
