@@ -99,7 +99,19 @@ public enum RuleName {
     
     ORDERBYITEM("OrderByItem"),
     
-    WHERECLAUSE("WhereClause");
+    WHERECLAUSE("WhereClause"),
+    
+    COMPARSIONOPERATOR("ComparsionOperator"),
+    
+    PREDICATE("Predicate"),
+    
+    QUESTION("Question"),
+    
+    NUMBER("Number"),
+    
+    STRING("String"),
+    
+    SIMPLEEXPR("SimpleExpr");
     
     private final String name;
     
