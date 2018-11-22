@@ -44,7 +44,7 @@ import java.util.Set;
  */
 public final class AggregationDistinctQueryResult extends DistinctQueryResult {
     
-    private final int distinctColumnIndex;
+    private final List<Integer> distinctColumnIndexes;
     
     private final int derivedCountIndex;
     
