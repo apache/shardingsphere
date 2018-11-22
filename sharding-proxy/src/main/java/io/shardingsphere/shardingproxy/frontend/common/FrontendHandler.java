@@ -25,6 +25,7 @@ import io.shardingsphere.shardingproxy.frontend.common.executor.ChannelThreadExe
 import io.shardingsphere.shardingproxy.runtime.GlobalRegistry;
 import lombok.Getter;
 import lombok.Setter;
+import lombok.SneakyThrows;
 
 /**
  * Frontend handler.
@@ -65,8 +66,10 @@ public abstract class FrontendHandler extends ChannelInboundHandlerAdapter {
     protected abstract void executeCommand(ChannelHandlerContext context, ByteBuf message);
     
     @Override
+    @SneakyThrows
     public final void channelInactive(final ChannelHandlerContext context) {
         context.fireChannelInactive();
+        backendConnection.close();
         backendConnection.cancel();
         ChannelThreadExecutorGroup.getInstance().unregister(context.channel().id());
     }

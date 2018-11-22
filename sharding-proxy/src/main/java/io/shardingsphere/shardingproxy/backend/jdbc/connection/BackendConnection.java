@@ -220,6 +220,7 @@ public final class BackendConnection implements AutoCloseable {
         Collection<SQLException> result = new LinkedList<>();
         for (Connection each : cachedConnections.values()) {
             try {
+                each.rollback();
                 each.close();
             } catch (SQLException ex) {
                 result.add(ex);
