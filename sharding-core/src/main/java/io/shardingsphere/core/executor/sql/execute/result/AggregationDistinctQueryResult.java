@@ -43,6 +43,8 @@ import java.util.Set;
  */
 public final class AggregationDistinctQueryResult extends DistinctQueryResult {
     
+    private final int distinctColumnIndex;
+    
     @SneakyThrows
     public AggregationDistinctQueryResult(final Collection<QueryResult> queryResults) {
         super(queryResults);
