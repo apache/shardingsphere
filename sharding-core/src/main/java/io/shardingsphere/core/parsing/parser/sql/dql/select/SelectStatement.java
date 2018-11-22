@@ -47,6 +47,7 @@ import java.util.Set;
  * Select statement.
  *
  * @author zhangliang
+ * @author panjuan
  */
 @Getter
 @Setter
