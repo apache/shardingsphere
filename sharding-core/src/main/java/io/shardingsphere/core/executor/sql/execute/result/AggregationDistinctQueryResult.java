@@ -57,14 +57,15 @@ public final class AggregationDistinctQueryResult extends DistinctQueryResult {
      *
      * @return multiple child distinct query results
      */
-    public List<AggregationDistinctQueryResult> divide() {
-        return Lists.newArrayList(Iterators.transform(resultData, new Function<List<Object>, AggregationDistinctQueryResult>() {
+    @Override
+    public List<DistinctQueryResult> divide() {
+        return Lists.newArrayList(Iterators.transform(getResultData(), new Function<List<Object>, DistinctQueryResult>() {
     
             @Override
-            public AggregationDistinctQueryResult apply(final List<Object> row) {
+            public DistinctQueryResult apply(final List<Object> row) {
                 Set<List<Object>> resultData = new LinkedHashSet<>();
                 resultData.add(row);
-                return new AggregationDistinctQueryResult(columnLabelAndIndexMap, resultData.iterator());
+                return new AggregationDistinctQueryResult(getColumnLabelAndIndexMap(), resultData.iterator());
             }
         }));
     }
