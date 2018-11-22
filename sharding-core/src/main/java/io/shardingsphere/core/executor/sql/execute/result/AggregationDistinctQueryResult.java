@@ -45,7 +45,7 @@ import java.util.Set;
  */
 public final class AggregationDistinctQueryResult extends DistinctQueryResult {
     
-    private final List<Integer> distinctColumnIndexes;
+    private final List<Integer> aggregationDistinctColumnIndexes;
     
     private final int derivedCountIndex;
     
@@ -54,10 +54,11 @@ public final class AggregationDistinctQueryResult extends DistinctQueryResult {
     @SneakyThrows
     public AggregationDistinctQueryResult(final Collection<QueryResult> queryResults, final SelectStatement selectStatement) {
         super(queryResults);
+        aggregationDistinctColumnIndexes = getAggregationDistinctColumnIndexes(selectStatement);
         
     }
     
-    private List<Integer> getAggregationDistinctColumnIndex(final SelectStatement selectStatement) {
+    private List<Integer> getAggregationDistinctColumnIndexes(final SelectStatement selectStatement) {
         List<Integer> result = new LinkedList<>();
         for (AggregationDistinctSelectItem each :selectStatement.getAggregationDistinctSelectItems()) {
             result.add(each.getIndex());
@@ -65,8 +66,9 @@ public final class AggregationDistinctQueryResult extends DistinctQueryResult {
         return result;
     }
     
-    private AggregationDistinctQueryResult(final Multimap<String, Integer> columnLabelAndIndexMap, final Iterator<List<Object>> resultData) {
+    private AggregationDistinctQueryResult(final Multimap<String, Integer> columnLabelAndIndexMap, final Iterator<List<Object>> resultData, final List<Integer> aggregationDistinctColumnIndexes) {
         super(columnLabelAndIndexMap, resultData);
+        this.aggregationDistinctColumnIndexes = aggregationDistinctColumnIndexes;
     }
     
     /**
