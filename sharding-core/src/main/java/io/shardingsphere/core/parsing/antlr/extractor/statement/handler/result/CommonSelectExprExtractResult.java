@@ -17,11 +17,21 @@
 
 package io.shardingsphere.core.parsing.antlr.extractor.statement.handler.result;
 
+import com.google.common.base.Optional;
+
+import lombok.Getter;
+import lombok.RequiredArgsConstructor;
+
 /**
- * Extract select expr result.
- *
+ * Common select expr extract result.
+ * 
  * @author duhongjun
  */
-public abstract class SelectExprExtractResult implements ExtractResult {
+@RequiredArgsConstructor
+@Getter
+public final class CommonSelectExprExtractResult extends SelectExprExtractResult {
+
+    private final String expression;
     
+    private final Optional<String> alias;
 }
