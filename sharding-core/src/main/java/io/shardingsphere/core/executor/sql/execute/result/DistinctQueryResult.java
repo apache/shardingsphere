@@ -68,40 +68,18 @@ public final class DistinctQueryResult implements QueryResult {
     private Iterator<List<Object>> getResultData(final Collection<QueryResult> queryResults) {
         Set<List<Object>> result = new LinkedHashSet<>();
         for (QueryResult each : queryResults) {
-            while (each.next()) {
-                List<Object> row = new ArrayList<>(each.getColumnCount());
-                for (int columnIndex = 1; columnIndex <= each.getColumnCount(); columnIndex++) {
-                    row.add(each.getValue(columnIndex, Object.class));
-                }
-                result.add(row);
-            }
+            fillInResultData(result, each);
         }
         return result.iterator();
     }
     
-    @SneakyThrows
-    private Map<Integer, Set<Object>> getColumnIndexAndDistinctValues(final Collection<QueryResult> queryResults) {
-        Map<Integer, Set<Object>> result = createColumnIndexAndDistinctValues(queryResults);
-        for (QueryResult each : queryResults) {
-            fillInColumnIndexAndDistinctValues(result, each);
-        }
-        return result;
-    }
-    
-    private Map<Integer, Set<Object>> createColumnIndexAndDistinctValues(final Collection<QueryResult> queryResults) throws SQLException {
-        Map<Integer, Set<Object>> result = new LinkedHashMap<>(queryResults.iterator().next().getColumnCount());
-        for (int i = 1; i <= queryResults.iterator().next().getColumnCount(); i++) {
-            result.put(i, new LinkedHashSet<>());
-        }
-        return result;
-    }
-    
-    @SneakyThrows
-    private void fillInColumnIndexAndDistinctValues(final Map<Integer, Set<Object>> columnIndexAndDistinctValues, final QueryResult queryResult) {
-        while (queryResult.next()) {
-            for (int i = 1; i <= columnIndexAndDistinctValues.size(); i++) {
-                columnIndexAndDistinctValues.get(i).add(queryResult.getValue(i, Object.class));
+    private void fillInResultData(final Set<List<Object>> result, final QueryResult each) throws SQLException {
+        while (each.next()) {
+            List<Object> row = new ArrayList<>(each.getColumnCount());
+            for (int columnIndex = 1; columnIndex <= each.getColumnCount(); columnIndex++) {
+                row.add(each.getValue(columnIndex, Object.class));
             }
+            result.add(row);
         }
     }
     
