@@ -57,13 +57,12 @@ public final class AggregationDistinctQueryResult extends DistinctQueryResult {
         
     }
     
-    private int getAggregationDistinctColumnIndex(final SelectStatement selectStatement) {
+    private List<Integer> getAggregationDistinctColumnIndex(final SelectStatement selectStatement) {
         List<Integer> result = new LinkedList<>();
-        List<AggregationDistinctSelectItem> distinctSelectItems = selectStatement.getAggregationDistinctSelectItems();
-        if (.isEmpty()) {
-            return -1;
+        for (AggregationDistinctSelectItem each :selectStatement.getAggregationDistinctSelectItems()) {
+            result.add(each.getIndex());
         }
-        return selectStatement.getDistinctSelectItems().iterator().next().
+        return result;
     }
     
     private AggregationDistinctQueryResult(final Multimap<String, Integer> columnLabelAndIndexMap, final Iterator<List<Object>> resultData) {
