@@ -252,12 +252,12 @@ exprRecursive
 booleanPrimary
     : booleanPrimary IS NOT? (TRUE | FALSE | UNKNOWN |NULL)
     | booleanPrimary SAFE_EQ predicate
-    | booleanPrimary comparisonOperator predicate
-    | booleanPrimary comparisonOperator (ALL | ANY) subquery
+    | booleanPrimary comparsionOperator predicate
+    | booleanPrimary comparsionOperator (ALL | ANY) subquery
     | predicate
     ;
 
-comparisonOperator
+comparsionOperator
     : EQ_
     | GTE
     | GT
@@ -269,7 +269,7 @@ comparisonOperator
 
 predicate
     : bitExpr NOT? IN subquery
-    | bitExpr NOT? IN LP_ simpleExpr ( COMMA  simpleExpr)* RP_
+    | bitExpr NOT? IN LP_ simpleExpr (COMMA simpleExpr)* RP_
     | bitExpr NOT? BETWEEN simpleExpr AND predicate
     | bitExpr SOUNDS LIKE simpleExpr
     | bitExpr NOT? LIKE simpleExpr (ESCAPE simpleExpr)*
@@ -297,7 +297,7 @@ bitExpr
 simpleExpr
     : functionCall
     | liter
-    | ID
+    | columnName
     | simpleExpr collateClause
     //| param_marker
     //| variable
@@ -308,7 +308,7 @@ simpleExpr
     | NOT_ simpleExpr
     | BINARY simpleExpr
     | LP_ expr RP_
-    | ROW LP_ simpleExpr( COMMA  simpleExpr)* RP_
+    | ROW LP_ simpleExpr( COMMA simpleExpr)* RP_
     | subquery
     | EXISTS subquery
     // | (identifier expr)
@@ -327,18 +327,31 @@ privateExprOfDb
     ;
     
 liter
-    : QUESTION
-    | NUMBER
+    : question
+    | number
     | TRUE
     | FALSE
     | NULL
     | LBE_ ID STRING RBE_
     | HEX_DIGIT
-    | ID? STRING  collateClause?
+    | string
+    | ID STRING  collateClause?
     | (DATE | TIME |TIMESTAMP) STRING
     | ID? BIT_NUM collateClause?
     ;
     
+question
+    : QUESTION
+    ;
+        
+number
+   : NUMBER
+   ;
+   
+string
+    : STRING
+    ;
+        
 subquery
     : matchNone
     ;
