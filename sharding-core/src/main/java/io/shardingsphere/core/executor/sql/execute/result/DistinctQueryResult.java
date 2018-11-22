@@ -19,12 +19,15 @@ package io.shardingsphere.core.executor.sql.execute.result;
 
 import io.shardingsphere.core.merger.QueryResult;
 import lombok.SneakyThrows;
+
 import java.io.InputStream;
 import java.sql.SQLException;
 import java.util.Calendar;
 import java.util.Collection;
+import java.util.Iterator;
 import java.util.LinkedHashMap;
 import java.util.LinkedHashSet;
+import java.util.List;
 import java.util.Map;
 import java.util.Map.Entry;
 import java.util.Set;
@@ -37,6 +40,10 @@ import java.util.Set;
 public final class DistinctQueryResult implements QueryResult {
 
     private final Collection<QueryResult> queryResults;
+    
+    private final Iterator<List<Object>> resultData;
+    
+    private List<Object> currentRow;
 
     private final Map<Integer, Set<Object>> columnIndexAndDistinctValues;
 
