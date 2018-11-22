@@ -48,21 +48,21 @@ public final class DistinctQueryResult implements QueryResult {
     
     private List<Object> currentRow;
 
-    private final Map<Integer, Set<Object>> columnIndexAndDistinctValues;
-
     public DistinctQueryResult(final Collection<QueryResult> queryResults) {
         this.queryResults = queryResults;
         columnIndexAndDistinctValues = getColumnIndexAndDistinctValues(queryResults);
     }
     
-    private Iterator<List<Object>> getResultData(final ResultSet resultSet) throws SQLException {
-        Collection<List<Object>> result = new LinkedList<>();
-        while (resultSet.next()) {
-            List<Object> row = new ArrayList<>(columnLabelAndIndexMap.size());
-            for (int columnIndex = 1; columnIndex <= resultSet.getMetaData().getColumnCount(); columnIndex++) {
-                row.add(resultSet.getObject(columnIndex));
+    private Iterator<List<Object>> getResultData(final Collection<QueryResult> queryResults) throws SQLException {
+        Set<List<Object>> result = new LinkedHashSet<>();
+        for (QueryResult each : queryResults) {
+            while (each.next()) {
+                List<Object> row = new ArrayList<>(each.getColumnCount());
+                for (int columnIndex = 1; columnIndex <= each.getColumnCount(); columnIndex++) {
+                    row.add(each.getValue(columnIndex, Object.class));
+                }
+                result.add(row);
             }
-            result.add(row);
         }
         return result.iterator();
     }
