@@ -21,6 +21,7 @@ import io.shardingsphere.core.metadata.table.ShardingTableMetaData;
 import io.shardingsphere.core.parsing.antlr.extractor.statement.handler.result.DropPrimaryKeyExtractResult;
 import io.shardingsphere.core.parsing.antlr.sql.ddl.AlterTableStatement;
 import io.shardingsphere.core.parsing.parser.sql.SQLStatement;
+import io.shardingsphere.core.rule.ShardingRule;
 
 /**
  * Drop primary key handler result filler.
@@ -34,7 +35,7 @@ public final class DropPrimaryKeyHandlerResultFiller extends AbstractHandlerResu
     }
     
     @Override
-    protected void fillSQLStatement(final Object extractResult, final SQLStatement statement, final ShardingTableMetaData shardingTableMetaData) {
+    protected void fillSQLStatement(final Object extractResult, final SQLStatement statement, final ShardingRule shardingRule, final ShardingTableMetaData shardingTableMetaData) {
         AlterTableStatement alterStatement = (AlterTableStatement) statement;
         alterStatement.setDropPrimaryKey(((DropPrimaryKeyExtractResult) extractResult).isDropPrimaryKey());
     }

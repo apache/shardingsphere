@@ -20,6 +20,7 @@ package io.shardingsphere.core.parsing.antlr.extractor.statement.handler.filler;
 import io.shardingsphere.core.metadata.table.ShardingTableMetaData;
 import io.shardingsphere.core.parsing.antlr.extractor.statement.handler.result.TableJoinExtractResult;
 import io.shardingsphere.core.parsing.parser.sql.SQLStatement;
+import io.shardingsphere.core.rule.ShardingRule;
 
 /**
  * Join table extract result filler.
@@ -33,8 +34,8 @@ public final class TableJoinHandlerResultFiller extends TableHandlerResultFiller
     }
     
     @Override
-    protected void fillSQLStatement(final Object extractResult, final SQLStatement statement, final ShardingTableMetaData shardingTableMetaData) {
+    protected void fillSQLStatement(final Object extractResult, final SQLStatement statement, ShardingRule shardingRule, final ShardingTableMetaData shardingTableMetaData) {
         TableJoinExtractResult tableResult = (TableJoinExtractResult) extractResult;
-        super.fillSQLStatement(tableResult, statement, shardingTableMetaData);
+        super.fillSQLStatement(tableResult, statement, shardingRule, shardingTableMetaData);
     }
 }

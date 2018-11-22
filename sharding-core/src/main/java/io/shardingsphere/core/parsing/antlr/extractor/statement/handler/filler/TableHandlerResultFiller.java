@@ -22,6 +22,7 @@ import io.shardingsphere.core.parsing.antlr.extractor.statement.handler.result.E
 import io.shardingsphere.core.parsing.antlr.extractor.statement.handler.result.TableExtractResult;
 import io.shardingsphere.core.parsing.parser.context.table.Table;
 import io.shardingsphere.core.parsing.parser.sql.SQLStatement;
+import io.shardingsphere.core.rule.ShardingRule;
 
 /**
  * Table handler result filler.
@@ -39,7 +40,7 @@ public class TableHandlerResultFiller extends AbstractHandlerResultFiller {
     }
     
     @Override
-    protected void fillSQLStatement(final Object extractResult, final SQLStatement statement, final ShardingTableMetaData shardingTableMetaData) {
+    protected void fillSQLStatement(final Object extractResult, final SQLStatement statement, final ShardingRule shardingRule, final ShardingTableMetaData shardingTableMetaData) {
         TableExtractResult tableResult = (TableExtractResult) extractResult;
         statement.getTables().add(new Table(tableResult.getName(), tableResult.getAlias()));
         statement.getSQLTokens().add(tableResult.getToken());

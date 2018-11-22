@@ -24,6 +24,7 @@ import io.shardingsphere.core.parsing.antlr.sql.ddl.AlterTableStatement;
 import io.shardingsphere.core.parsing.antlr.sql.ddl.ColumnDefinition;
 import io.shardingsphere.core.parsing.parser.sql.SQLStatement;
 import io.shardingsphere.core.parsing.parser.sql.ddl.create.table.CreateTableStatement;
+import io.shardingsphere.core.rule.ShardingRule;
 
 /**
  * Primary keyHandler result filler.
@@ -37,7 +38,7 @@ public final class PrimaryKeyHandlerResultFiller extends AbstractHandlerResultFi
     }
     
     @Override
-    protected void fillSQLStatement(final Object extractResult, final SQLStatement statement, final ShardingTableMetaData shardingTableMetaData) {
+    protected void fillSQLStatement(final Object extractResult, final SQLStatement statement, final ShardingRule shardingRule, final ShardingTableMetaData shardingTableMetaData) {
         if (statement instanceof AlterTableStatement) {
             fillAlter((PrimaryKeyExtractResult) extractResult, (AlterTableStatement) statement, shardingTableMetaData);
         } else if (statement instanceof CreateTableStatement) {

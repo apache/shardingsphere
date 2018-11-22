@@ -60,7 +60,7 @@ public abstract class AbstractSQLStatementExtractor implements SQLStatementExtra
         for (Object each : extractResults) {
             HandlerResultFiller filler = HandlerResultFillerRegistry.getFiller(each);
             if (null != filler) {
-                filler.fill(each, result, shardingTableMetaData);
+                filler.fill(each, result, shardingRule, shardingTableMetaData);
             }
         }
         postExtract(result, shardingTableMetaData);
