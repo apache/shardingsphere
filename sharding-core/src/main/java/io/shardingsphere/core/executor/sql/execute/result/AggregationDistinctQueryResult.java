@@ -18,12 +18,11 @@
 package io.shardingsphere.core.executor.sql.execute.result;
 
 import com.google.common.base.Function;
-import com.google.common.collect.HashMultimap;
 import com.google.common.collect.Iterators;
 import com.google.common.collect.Lists;
 import com.google.common.collect.Multimap;
-import com.sun.org.apache.bcel.internal.generic.Select;
 import io.shardingsphere.core.merger.QueryResult;
+import io.shardingsphere.core.parsing.parser.context.selectitem.DistinctSelectItem;
 import io.shardingsphere.core.parsing.parser.sql.dql.select.SelectStatement;
 import lombok.SneakyThrows;
 
@@ -54,6 +53,14 @@ public final class AggregationDistinctQueryResult extends DistinctQueryResult {
     @SneakyThrows
     public AggregationDistinctQueryResult(final Collection<QueryResult> queryResults, final SelectStatement selectStatement) {
         super(queryResults);
+        
+    }
+    
+    private int getAggregationDistinctColumnIndex(final SelectStatement selectStatement) {
+        if (selectStatement.getAggregationDistinctSelectItems().isEmpty()) {
+            return -1;
+        }
+        return selectStatement.getDistinctSelectItems().iterator().next().
     }
     
     private AggregationDistinctQueryResult(final Multimap<String, Integer> columnLabelAndIndexMap, final Iterator<List<Object>> resultData) {
