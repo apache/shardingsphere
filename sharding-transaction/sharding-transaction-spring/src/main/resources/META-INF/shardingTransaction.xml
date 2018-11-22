@@ -7,6 +7,6 @@
                         http://www.springframework.org/schema/aop
                         http://www.springframework.org/schema/aop/spring-aop.xsd
                         ">
-    <aop:aspectj-autoproxy />
+    <aop:aspectj-autoproxy proxy-target-class="true"/>
     <bean id="shardingTransactionAspect" class="io.shardingsphere.transaction.aspect.ShardingTransactionalAspect"/>
 </beans>

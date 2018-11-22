@@ -80,18 +80,6 @@ public class SpringBootConfiguration implements EnvironmentAware {
                         dataSourceMap, masterSlaveProperties.getMasterSlaveRuleConfiguration(), configMapProperties.getConfigMap(), propMapProperties.getProps());
     }
     
-    /**
-     * Get transactionManager bean.
-     *
-     * @param dataSource data source bean
-     * @return PlatformTransactionManager bean
-     */
-    @Bean
-    @ConditionalOnMissingBean(PlatformTransactionManager.class)
-    public PlatformTransactionManager transactionManager(final DataSource dataSource) {
-        return new DataSourceTransactionManager(dataSource);
-    }
-    
     @Override
     public final void setEnvironment(final Environment environment) {
         setDataSourceMap(environment);

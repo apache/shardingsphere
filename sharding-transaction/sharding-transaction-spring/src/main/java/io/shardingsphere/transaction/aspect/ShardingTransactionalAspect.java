@@ -20,21 +20,25 @@ package io.shardingsphere.transaction.aspect;
 import io.shardingsphere.core.exception.ShardingException;
 import io.shardingsphere.core.transaction.TransactionTypeHolder;
 import io.shardingsphere.transaction.annotation.ShardingTransactional;
+import io.shardingsphere.transaction.handler.JpaTransactionManagerHandler;
+import io.shardingsphere.transaction.handler.TransactionManagerHandler;
+
 import org.aspectj.lang.JoinPoint;
+import org.aspectj.lang.annotation.After;
 import org.aspectj.lang.annotation.Aspect;
 import org.aspectj.lang.annotation.Before;
 import org.aspectj.lang.annotation.Pointcut;
 import org.aspectj.lang.reflect.MethodSignature;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.core.Ordered;
 import org.springframework.core.annotation.Order;
 import org.springframework.stereotype.Component;
+import org.springframework.transaction.PlatformTransactionManager;
 
 import java.lang.reflect.Method;
-import java.sql.Connection;
-import java.sql.SQLException;
-import java.sql.Statement;
 
-import javax.sql.DataSource;
+import lombok.Getter;
+import lombok.RequiredArgsConstructor;
 
 /**
  * Sharding transaction aspect.
@@ -43,22 +47,23 @@ import javax.sql.DataSource;
  */
 @Aspect
 @Component
-@Order(2147483646)
+@Order(Ordered.LOWEST_PRECEDENCE - 1)
 public final class ShardingTransactionalAspect {
     
-    private static final String SET_TRANSACTION_TYPE_SQL = "SET TRANSACTION_TYPE=%s";
+    private PlatformTransactionManager transactionManager;
     
-    private DataSource dataSource;
+    private TransactionManagerHandler transactionManagerHandler;
     
     /**
-     * Inject dataSource of Sharding-Proxy.
-     * This dataSource required when Switch transaction type for Sharding-Proxy.
+     * Inject spring transactionManager.
+     * This transactionManager required when Switch transaction type for Sharding-Proxy.
      *
-     * @param dataSources Sharding-Proxy datasource.
+     * @param transactionManager spring transactionManager
      */
-    @Autowired(required = false)
-    public void setDataSource(final DataSource[] dataSources) {
-        this.dataSource = dataSources[0];
+    @Autowired
+    public void setTransactionManager(final PlatformTransactionManager transactionManager) {
+        this.transactionManager = transactionManager;
+        setTransactionManagerHandler();
     }
     
     /**
@@ -78,19 +83,39 @@ public final class ShardingTransactionalAspect {
                 TransactionTypeHolder.set(shardingTransactional.type());
                 break;
             case PROXY:
-                if (null == dataSource) {
-                    throw new ShardingException(String.format("No DataSource be injected while executing transactional method %s.%s. Please make sure there are a data source bean in Spring",
-                        joinPoint.getTarget().getClass().getName(), joinPoint.getSignature().getName()));
-                }
-                try (Connection connection = dataSource.getConnection();
-                    Statement statement = connection.createStatement()) {
-                    statement.execute(String.format(SET_TRANSACTION_TYPE_SQL, shardingTransactional.type().name()));
-                } catch (SQLException e) {
-                    throw new ShardingException("Switch transaction type for sharding-proxy failed: ", e);
-                }
+                transactionManagerHandler.switchTransactionType(shardingTransactional.type());
                 break;
             default:
             
+        }
+    }
+    
+    @After(value = "shardingTransactionalPointCut()")
+    public void cleanTransactionTypeAfterTransaction(final JoinPoint joinPoint) {
+        ShardingTransactional shardingTransactional = getAnnotation(joinPoint);
+        
+        switch (shardingTransactional.environment()) {
+            case JDBC:
+                TransactionTypeHolder.clear();
+                break;
+            case PROXY:
+                transactionManagerHandler.unbindResource();
+                break;
+            default:
+            
+        }
+    }
+    
+    private void setTransactionManagerHandler() {
+        switch (TransactionManagerType.getTransactionManagerTypeByClassName(transactionManager.getClass().getName())) {
+            case DATASOURCE:
+                break;
+            case JPA:
+                transactionManagerHandler = new JpaTransactionManagerHandler(transactionManager);
+                break;
+            case UNSUPPORTED:
+            default:
+                throw new ShardingException(String.format("Switching transaction Type is unsupported for transaction manager %s", transactionManager.getClass().getName()));
         }
     }
     
@@ -104,4 +129,34 @@ public final class ShardingTransactionalAspect {
         return result;
     }
     
+    @RequiredArgsConstructor
+    private enum TransactionManagerType {
+        
+        /**
+         * Spring DataSourceTransactionManager.
+         */
+        DATASOURCE("org.springframework.jdbc.datasource.DataSourceTransactionManager"),
+    
+        /**
+         * Spring JpaTransactionManager.
+         */
+        JPA("org.springframework.orm.jpa.JpaTransactionManager"),
+    
+        /**
+         * Other spring PlatformTransactionManager.
+         */
+        UNSUPPORTED("");
+        
+        @Getter
+        private final String className;
+        
+        private static TransactionManagerType getTransactionManagerTypeByClassName(final String className) {
+            for (TransactionManagerType each : TransactionManagerType.values()) {
+                if (each.getClassName().equals(className)) {
+                    return each;
+                }
+            }
+            return UNSUPPORTED;
+        }
+    }
 }
