@@ -88,6 +88,11 @@ public final class DistinctQueryResult implements QueryResult {
         }
     }
     
+    /**
+     * Divide one distinct query result to multiple child ones.
+     *
+     * @return multiple child distinct query results
+     */
     public List<DistinctQueryResult> divide() {
         return Lists.newArrayList(Iterators.transform(resultData, new Function<List<Object>, DistinctQueryResult>() {
     
