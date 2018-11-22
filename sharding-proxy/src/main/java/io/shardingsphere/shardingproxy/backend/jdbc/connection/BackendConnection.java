@@ -17,7 +17,7 @@
 
 package io.shardingsphere.shardingproxy.backend.jdbc.connection;
 
-import com.google.common.collect.HashMultimap;
+import com.google.common.collect.LinkedHashMultimap;
 import com.google.common.collect.Multimap;
 import io.shardingsphere.core.constant.ConnectionMode;
 import io.shardingsphere.core.constant.transaction.TransactionType;
@@ -49,7 +49,7 @@ public final class BackendConnection implements AutoCloseable {
     
     private LogicSchema logicSchema;
     
-    private final Multimap<String, Connection> cachedConnections = HashMultimap.create();
+    private final Multimap<String, Connection> cachedConnections = LinkedHashMultimap.create();
     
     private final Collection<Statement> cachedStatements = new CopyOnWriteArrayList<>();
     
