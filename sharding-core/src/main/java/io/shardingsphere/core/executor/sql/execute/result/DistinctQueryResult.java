@@ -139,4 +139,8 @@ public final class DistinctQueryResult implements QueryResult {
         }
         throw new SQLException("Column index out of range", "9999");
     }
+    
+    private Integer getIndexByColumnLabel(final String columnLabel) {
+        return new ArrayList<>(columnLabelAndIndexMap.get(columnLabel)).get(0) - 1;
+    }
 }
