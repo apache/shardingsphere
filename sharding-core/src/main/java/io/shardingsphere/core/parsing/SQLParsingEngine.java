@@ -29,6 +29,7 @@ import io.shardingsphere.core.parsing.parser.sql.SQLParser;
 import io.shardingsphere.core.parsing.parser.sql.SQLParserFactory;
 import io.shardingsphere.core.parsing.parser.sql.SQLStatement;
 import io.shardingsphere.core.parsing.parser.sql.ddl.DDLStatement;
+import io.shardingsphere.core.parsing.parser.sql.dql.DQLStatement;
 import io.shardingsphere.core.parsing.parser.sql.tcl.TCLStatement;
 import io.shardingsphere.core.rule.ShardingRule;
 import lombok.RequiredArgsConstructor;
@@ -75,7 +76,11 @@ public final class SQLParsingEngine {
         } else if (TCLStatement.isTCL(firstToken.getType())) {
             result = AntlrParsingEngine.parse(dbType, sql, shardingRule, shardingTableMetaData);
         } else {
-            result = sqlParser.parse();
+            if(DQLStatement.isDQL(firstToken.getType()) && DatabaseType.MySQL == dbType) {
+                result = AntlrParsingEngine.parse(dbType, sql, shardingRule, shardingTableMetaData);
+            }else {
+                result = sqlParser.parse();
+            }
         }
         if (useCache) {
             ParsingResultCache.getInstance().put(sql, result);
