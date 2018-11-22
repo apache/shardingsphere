@@ -39,10 +39,13 @@ import java.util.Map.Entry;
  *
  * @author panjuan
  */
-@RequiredArgsConstructor
 public final class DistinctQueryResult implements QueryResult {
     
     private final Collection<QueryResult> queryResults;
+    
+    public DistinctQueryResult(final Collection<QueryResult> queryResults) {
+    
+    }
     
     @Override
     public boolean next() {
