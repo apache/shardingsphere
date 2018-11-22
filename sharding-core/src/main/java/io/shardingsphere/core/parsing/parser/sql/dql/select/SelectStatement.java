@@ -194,6 +194,7 @@ public final class SelectStatement extends DQLStatement {
      */
     public void setIndexForItems(final Map<String, Integer> columnLabelIndexMap) {
         setIndexForAggregationItem(columnLabelIndexMap);
+        setIndexForAggregationDistinctItem(columnLabelIndexMap);
         setIndexForOrderItem(columnLabelIndexMap, orderByItems);
         setIndexForOrderItem(columnLabelIndexMap, groupByItems);
     }
