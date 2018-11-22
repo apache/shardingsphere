@@ -22,7 +22,9 @@ import com.google.common.collect.HashMultimap;
 import com.google.common.collect.Iterators;
 import com.google.common.collect.Lists;
 import com.google.common.collect.Multimap;
+import com.sun.org.apache.bcel.internal.generic.Select;
 import io.shardingsphere.core.merger.QueryResult;
+import io.shardingsphere.core.parsing.parser.sql.dql.select.SelectStatement;
 import lombok.SneakyThrows;
 
 import java.io.InputStream;
@@ -45,8 +47,12 @@ public final class AggregationDistinctQueryResult extends DistinctQueryResult {
     
     private final int distinctColumnIndex;
     
+    private final int derivedCountIndex;
+    
+    private final int derivedSumIndex;
+    
     @SneakyThrows
-    public AggregationDistinctQueryResult(final Collection<QueryResult> queryResults) {
+    public AggregationDistinctQueryResult(final Collection<QueryResult> queryResults, final SelectStatement selectStatement) {
         super(queryResults);
     }
     
