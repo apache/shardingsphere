@@ -100,7 +100,9 @@ public final class AggregationDistinctQueryResult extends DistinctQueryResult {
         return getCurrentRow().get(columnIndex - 1);
     }
     
-    
+    private Object getValue(final String columnLabel) {
+        return getValue(getIndexByColumnLabel(columnLabel));
+    }
     
     @Override
     public Object getValue(final int columnIndex, final Class<?> type) {
