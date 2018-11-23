@@ -48,12 +48,12 @@ public final class AggregationDistinctQueryResult extends DistinctQueryResult {
     
     private final Map<Integer, Integer> derivedCountIndexAndDistinctIndexes = new LinkedHashMap<>();
     
-    private final Map<Integer, Integer> distinctIndexAndDerivedSumIndexes = new LinkedHashMap<>();
+    private final Map<Integer, Integer> derivedSumIndexAndDistinctIndexes = new LinkedHashMap<>();
     
-    private AggregationDistinctQueryResult(final Multimap<String, Integer> columnLabelAndIndexMap, final Iterator<List<Object>> resultData, final Map<Integer, Integer> derivedCountIndexAndDistinctIndexes, final Map<Integer, Integer> distinctIndexAndDerivedSumIndexes) {
+    private AggregationDistinctQueryResult(final Multimap<String, Integer> columnLabelAndIndexMap, final Iterator<List<Object>> resultData, final Map<Integer, Integer> derivedCountIndexAndDistinctIndexes, final Map<Integer, Integer> derivedSumIndexAndDistinctIndexes) {
         super(columnLabelAndIndexMap, resultData);
         this.derivedCountIndexAndDistinctIndexes.putAll(derivedCountIndexAndDistinctIndexes);
-        this.distinctIndexAndDerivedSumIndexes.putAll(distinctIndexAndDerivedSumIndexes);
+        this.derivedSumIndexAndDistinctIndexes.putAll(derivedSumIndexAndDistinctIndexes);
     }
     
     @SneakyThrows
@@ -67,7 +67,7 @@ public final class AggregationDistinctQueryResult extends DistinctQueryResult {
             List<AggregationSelectItem> derivedAggregationSelectItems = each.getDerivedAggregationSelectItems();
             if (!derivedAggregationSelectItems.isEmpty()) {
                 derivedCountIndexAndDistinctIndexes.put(each.getIndex(), derivedAggregationSelectItems.get(0).getIndex());
-                distinctIndexAndDerivedSumIndexes.put(each.getIndex(),derivedAggregationSelectItems.get(1).getIndex());
+                derivedSumIndexAndDistinctIndexes.put(each.getIndex(),derivedAggregationSelectItems.get(1).getIndex());
             }
         }
     }
@@ -85,7 +85,7 @@ public final class AggregationDistinctQueryResult extends DistinctQueryResult {
             public DistinctQueryResult apply(final List<Object> row) {
                 Set<List<Object>> resultData = new LinkedHashSet<>();
                 resultData.add(row);
-                return new AggregationDistinctQueryResult(getColumnLabelAndIndexMap(), resultData.iterator(), derivedCountIndexAndDistinctIndexes, distinctIndexAndDerivedSumIndexes);
+                return new AggregationDistinctQueryResult(getColumnLabelAndIndexMap(), resultData.iterator(), derivedCountIndexAndDistinctIndexes, derivedSumIndexAndDistinctIndexes);
             }
         }));
     }
@@ -94,7 +94,7 @@ public final class AggregationDistinctQueryResult extends DistinctQueryResult {
         if (derivedCountIndexAndDistinctIndexes.values().contains(columnIndex)) {
             return 1;
         }
-        if (distinctIndexAndDerivedSumIndexes.values().contains(columnIndex)) {
+        if (derivedSumIndexAndDistinctIndexes.values().contains(columnIndex)) {
             return getCurrentRow().get()
         }
         
