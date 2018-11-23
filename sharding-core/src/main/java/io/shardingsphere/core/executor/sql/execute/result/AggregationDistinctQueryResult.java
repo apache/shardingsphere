@@ -108,6 +108,18 @@ public final class AggregationDistinctQueryResult extends DistinctQueryResult {
         }));
     }
     
+    private Object getValue(final int columnIndex) {
+        if (derivedCountIndexes.contains(columnIndex)) {
+            return 1;
+        }
+        if (derivedSumIndexes.contains(columnIndex)) {
+            return getCurrentRow().get()
+        }
+        
+        
+        
+    }
+    
     @Override
     public Object getValue(final int columnIndex, final Class<?> type) {
         return currentRow.get(columnIndex - 1);
