@@ -20,6 +20,7 @@ package io.shardingsphere.core.merger.dql;
 import com.google.common.base.Function;
 import com.google.common.collect.Lists;
 import io.shardingsphere.core.constant.DatabaseType;
+import io.shardingsphere.core.executor.sql.execute.result.AggregationDistinctQueryResult;
 import io.shardingsphere.core.executor.sql.execute.result.DistinctQueryResult;
 import io.shardingsphere.core.merger.MergeEngine;
 import io.shardingsphere.core.merger.MergedResult;
@@ -36,6 +37,7 @@ import io.shardingsphere.core.parsing.parser.sql.dql.select.SelectStatement;
 import io.shardingsphere.core.util.SQLUtil;
 
 import java.sql.SQLException;
+import java.util.Collections;
 import java.util.List;
 import java.util.Map;
 import java.util.TreeMap;
@@ -61,9 +63,9 @@ public final class DQLMergeEngine implements MergeEngine {
     }
     
     private List<QueryResult> getQueryResults(final List<QueryResult> queryResults) {
-//        if (!selectStatement.getAggregationDistinctSelectItems().isEmpty()) {
-//            return Collections.singletonList((QueryResult) new )
-//        }
+        if (!selectStatement.getAggregationDistinctSelectItems().isEmpty()) {
+            return Collections.singletonList((QueryResult) new AggregationDistinctQueryResult(queryResults, selectStatement));
+        }
         if (!selectStatement.getDistinctSelectItems().isEmpty()) {
             return getQueryResults(new DistinctQueryResult(queryResults));
         }
