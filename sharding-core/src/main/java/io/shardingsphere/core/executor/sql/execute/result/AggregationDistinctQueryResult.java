@@ -86,6 +86,14 @@ public final class AggregationDistinctQueryResult extends DistinctQueryResult {
             List<AggregationSelectItem> derivedAggregationSelectItems = each.getDerivedAggregationSelectItems();
             if (!derivedAggregationSelectItems.isEmpty()) {
                 derivedCountIndexes.add(derivedAggregationSelectItems.get(0).getIndex());
+            }
+        }
+    }
+    
+    private void getDerivedSumIndexes(final SelectStatement selectStatement) {
+        for (AggregationSelectItem each : selectStatement.getAggregationSelectItems()) {
+            List<AggregationSelectItem> derivedAggregationSelectItems = each.getDerivedAggregationSelectItems();
+            if (!derivedAggregationSelectItems.isEmpty()) {
                 derivedSumIndexes.add(derivedAggregationSelectItems.get(1).getIndex());
             }
         }
