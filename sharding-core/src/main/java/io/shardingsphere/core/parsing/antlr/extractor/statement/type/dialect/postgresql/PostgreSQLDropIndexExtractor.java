@@ -17,7 +17,7 @@
 
 package io.shardingsphere.core.parsing.antlr.extractor.statement.type.dialect.postgresql;
 
-import io.shardingsphere.core.parsing.antlr.extractor.statement.handler.IndexesNameExtractor;
+import io.shardingsphere.core.parsing.antlr.extractor.statement.clause.IndexesNameExtractor;
 import io.shardingsphere.core.parsing.antlr.extractor.statement.type.DDLStatementExtractor;
 
 /**

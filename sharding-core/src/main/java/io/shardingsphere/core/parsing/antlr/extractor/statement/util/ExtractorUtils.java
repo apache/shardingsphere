@@ -18,7 +18,7 @@
 package io.shardingsphere.core.parsing.antlr.extractor.statement.util;
 
 import com.google.common.base.Optional;
-import io.shardingsphere.core.parsing.antlr.extractor.statement.handler.RuleName;
+import io.shardingsphere.core.parsing.antlr.extractor.statement.clause.RuleName;
 import io.shardingsphere.core.parsing.antlr.sql.ddl.ColumnPosition;
 import lombok.AccessLevel;
 import lombok.NoArgsConstructor;

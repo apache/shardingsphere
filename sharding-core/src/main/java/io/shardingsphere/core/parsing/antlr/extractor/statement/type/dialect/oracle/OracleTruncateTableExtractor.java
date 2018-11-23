@@ -17,7 +17,7 @@
 
 package io.shardingsphere.core.parsing.antlr.extractor.statement.type.dialect.oracle;
 
-import io.shardingsphere.core.parsing.antlr.extractor.statement.handler.TableNameExtractor;
+import io.shardingsphere.core.parsing.antlr.extractor.statement.clause.TableNameExtractor;
 import io.shardingsphere.core.parsing.antlr.extractor.statement.type.TruncateTableExtractor;
 
 /**

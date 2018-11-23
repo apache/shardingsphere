@@ -20,9 +20,9 @@ package io.shardingsphere.core.parsing.antlr.extractor.statement.type;
 import com.google.common.base.Optional;
 import io.shardingsphere.core.metadata.table.ShardingTableMetaData;
 import io.shardingsphere.core.parsing.antlr.extractor.SQLStatementExtractor;
-import io.shardingsphere.core.parsing.antlr.extractor.statement.handler.SQLClauseExtractor;
-import io.shardingsphere.core.parsing.antlr.extractor.statement.handler.filler.HandlerResultFiller;
-import io.shardingsphere.core.parsing.antlr.extractor.statement.handler.filler.HandlerResultFillerRegistry;
+import io.shardingsphere.core.parsing.antlr.extractor.statement.clause.SQLClauseExtractor;
+import io.shardingsphere.core.parsing.antlr.extractor.statement.clause.filler.HandlerResultFiller;
+import io.shardingsphere.core.parsing.antlr.extractor.statement.clause.filler.HandlerResultFillerRegistry;
 import io.shardingsphere.core.parsing.parser.sql.SQLStatement;
 import org.antlr.v4.runtime.ParserRuleContext;
 

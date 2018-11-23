@@ -20,10 +20,10 @@ package io.shardingsphere.core.parsing.antlr.extractor.statement.type;
 import io.shardingsphere.core.metadata.table.ColumnMetaData;
 import io.shardingsphere.core.metadata.table.ShardingTableMetaData;
 import io.shardingsphere.core.metadata.table.TableMetaData;
-import io.shardingsphere.core.parsing.antlr.extractor.statement.handler.ColumnDefinitionExtractor;
-import io.shardingsphere.core.parsing.antlr.extractor.statement.handler.CreatePrimaryKeyExtractor;
-import io.shardingsphere.core.parsing.antlr.extractor.statement.handler.IndexesNameExtractor;
-import io.shardingsphere.core.parsing.antlr.extractor.statement.handler.TableNamesExtractor;
+import io.shardingsphere.core.parsing.antlr.extractor.statement.clause.ColumnDefinitionExtractor;
+import io.shardingsphere.core.parsing.antlr.extractor.statement.clause.CreatePrimaryKeyExtractor;
+import io.shardingsphere.core.parsing.antlr.extractor.statement.clause.IndexesNameExtractor;
+import io.shardingsphere.core.parsing.antlr.extractor.statement.clause.TableNamesExtractor;
 import io.shardingsphere.core.parsing.parser.sql.SQLStatement;
 import io.shardingsphere.core.parsing.parser.sql.ddl.create.table.CreateTableStatement;
 

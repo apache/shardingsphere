@@ -18,15 +18,15 @@
 package io.shardingsphere.core.parsing.antlr.extractor.statement.type.dialect.mysql;
 
 import io.shardingsphere.core.metadata.table.ColumnMetaData;
-import io.shardingsphere.core.parsing.antlr.extractor.statement.handler.AddPrimaryKeyExtractor;
-import io.shardingsphere.core.parsing.antlr.extractor.statement.handler.DropPrimaryKeyExtractor;
-import io.shardingsphere.core.parsing.antlr.extractor.statement.handler.RenameIndexExtractor;
-import io.shardingsphere.core.parsing.antlr.extractor.statement.handler.RuleName;
-import io.shardingsphere.core.parsing.antlr.extractor.statement.handler.dialect.mysql.MySQLAddColumnExtractHandler;
-import io.shardingsphere.core.parsing.antlr.extractor.statement.handler.dialect.mysql.MySQLAddIndexExtractHandler;
-import io.shardingsphere.core.parsing.antlr.extractor.statement.handler.dialect.mysql.MySQLChangeColumnExtractHandler;
-import io.shardingsphere.core.parsing.antlr.extractor.statement.handler.dialect.mysql.MySQLDropIndexExtractHandler;
-import io.shardingsphere.core.parsing.antlr.extractor.statement.handler.dialect.mysql.MySQLModifyColumnExtractHandler;
+import io.shardingsphere.core.parsing.antlr.extractor.statement.clause.AddPrimaryKeyExtractor;
+import io.shardingsphere.core.parsing.antlr.extractor.statement.clause.DropPrimaryKeyExtractor;
+import io.shardingsphere.core.parsing.antlr.extractor.statement.clause.RenameIndexExtractor;
+import io.shardingsphere.core.parsing.antlr.extractor.statement.clause.RuleName;
+import io.shardingsphere.core.parsing.antlr.extractor.statement.clause.dialect.mysql.MySQLAddColumnExtractHandler;
+import io.shardingsphere.core.parsing.antlr.extractor.statement.clause.dialect.mysql.MySQLAddIndexExtractHandler;
+import io.shardingsphere.core.parsing.antlr.extractor.statement.clause.dialect.mysql.MySQLChangeColumnExtractHandler;
+import io.shardingsphere.core.parsing.antlr.extractor.statement.clause.dialect.mysql.MySQLDropIndexExtractHandler;
+import io.shardingsphere.core.parsing.antlr.extractor.statement.clause.dialect.mysql.MySQLModifyColumnExtractHandler;
 import io.shardingsphere.core.parsing.antlr.extractor.statement.type.AlterTableExtractor;
 import io.shardingsphere.core.parsing.antlr.sql.ddl.AlterTableStatement;
 import io.shardingsphere.core.parsing.antlr.sql.ddl.ColumnPosition;

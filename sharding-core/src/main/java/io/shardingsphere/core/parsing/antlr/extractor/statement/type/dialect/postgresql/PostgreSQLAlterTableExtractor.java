@@ -17,11 +17,11 @@
 
 package io.shardingsphere.core.parsing.antlr.extractor.statement.type.dialect.postgresql;
 
-import io.shardingsphere.core.parsing.antlr.extractor.statement.handler.AddColumnExtractor;
-import io.shardingsphere.core.parsing.antlr.extractor.statement.handler.AddPrimaryKeyExtractor;
-import io.shardingsphere.core.parsing.antlr.extractor.statement.handler.ModifyColumnExtractor;
-import io.shardingsphere.core.parsing.antlr.extractor.statement.handler.RenameColumnExtractor;
-import io.shardingsphere.core.parsing.antlr.extractor.statement.handler.RuleName;
+import io.shardingsphere.core.parsing.antlr.extractor.statement.clause.AddColumnExtractor;
+import io.shardingsphere.core.parsing.antlr.extractor.statement.clause.AddPrimaryKeyExtractor;
+import io.shardingsphere.core.parsing.antlr.extractor.statement.clause.ModifyColumnExtractor;
+import io.shardingsphere.core.parsing.antlr.extractor.statement.clause.RenameColumnExtractor;
+import io.shardingsphere.core.parsing.antlr.extractor.statement.clause.RuleName;
 import io.shardingsphere.core.parsing.antlr.extractor.statement.type.AlterTableExtractor;
 
 /**

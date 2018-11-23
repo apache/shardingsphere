@@ -17,11 +17,11 @@
 
 package io.shardingsphere.core.parsing.antlr.extractor.statement.type.dialect.sqlserver;
 
-import io.shardingsphere.core.parsing.antlr.extractor.statement.handler.AddColumnExtractor;
-import io.shardingsphere.core.parsing.antlr.extractor.statement.handler.ModifyColumnExtractor;
-import io.shardingsphere.core.parsing.antlr.extractor.statement.handler.dialect.sqlserver.SQLServerAddIndexExtractHandler;
-import io.shardingsphere.core.parsing.antlr.extractor.statement.handler.dialect.sqlserver.SQLServerAddPrimaryKeyExtractHandler;
-import io.shardingsphere.core.parsing.antlr.extractor.statement.handler.dialect.sqlserver.SQLServerDropIndexExtractHandler;
+import io.shardingsphere.core.parsing.antlr.extractor.statement.clause.AddColumnExtractor;
+import io.shardingsphere.core.parsing.antlr.extractor.statement.clause.ModifyColumnExtractor;
+import io.shardingsphere.core.parsing.antlr.extractor.statement.clause.dialect.sqlserver.SQLServerAddIndexExtractHandler;
+import io.shardingsphere.core.parsing.antlr.extractor.statement.clause.dialect.sqlserver.SQLServerAddPrimaryKeyExtractHandler;
+import io.shardingsphere.core.parsing.antlr.extractor.statement.clause.dialect.sqlserver.SQLServerDropIndexExtractHandler;
 import io.shardingsphere.core.parsing.antlr.extractor.statement.type.AlterTableExtractor;
 
 /**

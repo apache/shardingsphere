@@ -17,7 +17,7 @@
 
 package io.shardingsphere.core.parsing.antlr.extractor.statement.type.dialect.sqlserver;
 
-import io.shardingsphere.core.parsing.antlr.extractor.statement.handler.TableNamesExtractor;
+import io.shardingsphere.core.parsing.antlr.extractor.statement.clause.TableNamesExtractor;
 import io.shardingsphere.core.parsing.antlr.extractor.statement.type.DropTableExtractor;
 
 /**

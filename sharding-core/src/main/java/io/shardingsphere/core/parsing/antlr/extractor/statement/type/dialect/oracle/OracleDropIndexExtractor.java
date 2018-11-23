@@ -17,7 +17,7 @@
 
 package io.shardingsphere.core.parsing.antlr.extractor.statement.type.dialect.oracle;
 
-import io.shardingsphere.core.parsing.antlr.extractor.statement.handler.IndexNameExtractor;
+import io.shardingsphere.core.parsing.antlr.extractor.statement.clause.IndexNameExtractor;
 import io.shardingsphere.core.parsing.antlr.extractor.statement.type.DDLStatementExtractor;
 
 /**
