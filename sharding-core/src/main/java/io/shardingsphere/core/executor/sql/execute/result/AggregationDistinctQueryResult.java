@@ -71,8 +71,6 @@ public final class AggregationDistinctQueryResult extends DistinctQueryResult {
     @SneakyThrows
     public AggregationDistinctQueryResult(final Collection<QueryResult> queryResults, final SelectStatement selectStatement) {
         super(queryResults);
-        initAggregationDistinctColumnIndexes(selectStatement);
-        initDerivedItemIndexes(selectStatement);
     }
     
     private List<Integer> getAggregationDistinctColumnIndexes(final SelectStatement selectStatement) {
@@ -83,7 +81,7 @@ public final class AggregationDistinctQueryResult extends DistinctQueryResult {
         return result;
     }
     
-    private void initDerivedItemIndexes(final SelectStatement selectStatement) {
+    private void getDerivedCountIndexes(final SelectStatement selectStatement) {
         for (AggregationSelectItem each : selectStatement.getAggregationSelectItems()) {
             List<AggregationSelectItem> derivedAggregationSelectItems = each.getDerivedAggregationSelectItems();
             if (!derivedAggregationSelectItems.isEmpty()) {
