@@ -64,14 +64,8 @@ public final class AggregationDistinctQueryResult extends DistinctQueryResult {
     @SneakyThrows
     public AggregationDistinctQueryResult(final Collection<QueryResult> queryResults, final SelectStatement selectStatement) {
         super(queryResults);
-    }
-    
-    private Map<Integer, AggregationType> aggregationDistinctColumnIndexAndTypes(final SelectStatement selectStatement) {
-        Map<Integer, AggregationType> result = new LinkedHashMap<>();
-        for (AggregationDistinctSelectItem each : selectStatement.getAggregationDistinctSelectItems()) {
-            result.put(each.getIndex(), each.getType());
-        }
-        return result;
+        derivedCountIndexes.addAll(getDerivedCountIndexes(selectStatement));
+        derivedSumIndexes.addAll(getDerivedSumIndexes(selectStatement));
     }
     
     private List<Integer> getDerivedCountIndexes(final SelectStatement selectStatement) {
