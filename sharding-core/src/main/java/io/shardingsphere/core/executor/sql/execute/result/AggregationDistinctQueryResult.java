@@ -66,6 +66,7 @@ public final class AggregationDistinctQueryResult extends DistinctQueryResult {
         List<Integer> aggregationDistinctColumnIndexes = getAggregationDistinctColumnIndexes(selectStatement);
         List<Integer> derivedCountIndexes = getDerivedCountIndexes(selectStatement);
         List<Integer> derivedSumIndexes = getDerivedSumIndexes(selectStatement);
+        
     }
     
     @SneakyThrows
@@ -103,12 +104,14 @@ public final class AggregationDistinctQueryResult extends DistinctQueryResult {
         return result;
     }
     
-    @Override
-    protected void fill(final Set<List<Object>> resultData, final QueryResult queryResult) throws SQLException {
-        while (queryResult.next()) {
-            List<Object> row = new ArrayList<>(queryResult.getColumnCount());
-            for (int columnIndex = 1; columnIndex <= queryResult.getColumnCount(); columnIndex++) {
-                row.add(queryResult.getValue(columnIndex, Object.class));
+    protected void fill(final List<Integer> aggregationDistinctColumnIndexes, final List<Integer> derivedCountIndexes, final List<Integer> derivedSumIndexes) {
+        
+        while (getResultData().hasNext()) {
+            List<Object> row = getResultData().next();
+            for (int columnIndex = 1; columnIndex <= row.size(); columnIndex++) {
+                List<Object> result = new LinkedList<>();
+                if
+                result.add();
             }
             resultData.add(row);
         }
