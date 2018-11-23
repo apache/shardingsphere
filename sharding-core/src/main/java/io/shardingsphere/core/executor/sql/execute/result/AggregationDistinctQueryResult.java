@@ -65,8 +65,8 @@ public final class AggregationDistinctQueryResult extends DistinctQueryResult {
     @SneakyThrows
     public AggregationDistinctQueryResult(final Collection<QueryResult> queryResults, final SelectStatement selectStatement) {
         super(queryResults);
-        derivedCountIndexes.addAll(getDerivedCountIndexes(selectStatement));
-        derivedSumIndexes.addAll(getDerivedSumIndexes(selectStatement));
+        distinctIndexAndDerivedCountIndexes.putAll(getDerivedCountIndexes(selectStatement));
+        distinctIndexAndDerivedSumIndexes.putAll(getDerivedSumIndexes(selectStatement));
     }
     
     private Map<Integer, Integer> getDerivedCountIndexes(final SelectStatement selectStatement) {
