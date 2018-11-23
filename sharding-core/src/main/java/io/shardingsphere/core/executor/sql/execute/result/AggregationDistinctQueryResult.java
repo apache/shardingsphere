@@ -146,7 +146,7 @@ public final class AggregationDistinctQueryResult extends DistinctQueryResult {
 
     @Override
     public String getColumnLabel(final int columnIndex) throws SQLException {
-        for (Entry<String, Integer> entry : columnLabelAndIndexMap.entries()) {
+        for (Entry<String, Integer> entry : getColumnLabelAndIndexMap().entries()) {
             if (columnIndex == entry.getValue()) {
                 return entry.getKey();
             }
@@ -155,6 +155,6 @@ public final class AggregationDistinctQueryResult extends DistinctQueryResult {
     }
     
     private Integer getIndexByColumnLabel(final String columnLabel) {
-        return new ArrayList<>(columnLabelAndIndexMap.get(columnLabel)).get(0) - 1;
+        return new ArrayList<>(getColumnLabelAndIndexMap().get(columnLabel)).get(0) - 1;
     }
 }
