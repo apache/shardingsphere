@@ -18,6 +18,7 @@
 package io.shardingsphere.core.executor.sql.execute.result;
 
 import com.google.common.base.Function;
+import com.google.common.base.Predicate;
 import com.google.common.collect.Iterators;
 import com.google.common.collect.Lists;
 import com.google.common.collect.Multimap;
@@ -70,11 +71,17 @@ public final class AggregationDistinctQueryResult extends DistinctQueryResult {
     }
     
     private Map<Integer, Integer> getDerivedCountIndexes(final SelectStatement selectStatement) {
-        List<Integer> result = new LinkedList<>();
-        for (AggregationSelectItem each : selectStatement.getAggregationSelectItems()) {
-            List<AggregationSelectItem> derivedAggregationSelectItems = each.getDerivedAggregationSelectItems();
+        Map<Integer, Integer> result = new HashMap<>();
+        for (final AggregationDistinctSelectItem each : selectStatement.getAggregationDistinctSelectItems()) {
+            List<AggregationSelectItem> derivedAggregationSelectItems = Iterators.find(selectStatement.getAggregationSelectItems().iterator(), new Predicate<AggregationSelectItem>() {
+                
+                @Override
+                public boolean apply(final AggregationSelectItem input) {
+                    return each.getIndex() == input.getIndex();
+                }
+            }).getDerivedAggregationSelectItems();
             if (!derivedAggregationSelectItems.isEmpty()) {
-                result.add(derivedAggregationSelectItems.get(0).getIndex());
+                result.put(, derivedAggregationSelectItems.get(0).getIndex());
             }
         }
         return result;
