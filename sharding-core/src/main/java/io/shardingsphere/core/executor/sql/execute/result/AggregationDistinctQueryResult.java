@@ -25,6 +25,7 @@ import io.shardingsphere.core.merger.QueryResult;
 import io.shardingsphere.core.parsing.parser.context.selectitem.AggregationDistinctSelectItem;
 import io.shardingsphere.core.parsing.parser.context.selectitem.AggregationSelectItem;
 import io.shardingsphere.core.parsing.parser.sql.dql.select.SelectStatement;
+import lombok.Getter;
 import lombok.SneakyThrows;
 
 import java.io.InputStream;
@@ -46,6 +47,9 @@ import java.util.Set;
  */
 public final class AggregationDistinctQueryResult extends DistinctQueryResult {
     
+    @Getter
+    private final Iterator<List<Object>> resultData;
+    
     private final List<Integer> aggregationDistinctColumnIndexes = new LinkedList<>();
     
     private final List<Integer> derivedCountIndexes = new LinkedList<>();
@@ -55,9 +59,13 @@ public final class AggregationDistinctQueryResult extends DistinctQueryResult {
     private AggregationDistinctQueryResult(final Multimap<String, Integer> columnLabelAndIndexMap, final Iterator<List<Object>> resultData,
                                            final List<Integer> aggregationDistinctColumnIndexes, final List<Integer> derivedCountIndexes, final List<Integer> derivedSumIndexes) {
         super(columnLabelAndIndexMap, resultData);
-        this.aggregationDistinctColumnIndexes.addAll(aggregationDistinctColumnIndexes);
-        this.derivedCountIndexes.addAll(derivedCountIndexes);
-        this.derivedSumIndexes.addAll(derivedSumIndexes);
+        
+    }
+    
+    private Iterator<List<Object>> getResultData(final SelectStatement selectStatement) {
+        List<Integer> aggregationDistinctColumnIndexes = getAggregationDistinctColumnIndexes(selectStatement);
+        List<Integer> derivedCountIndexes = new LinkedList<>();
+        List<Integer> derivedSumIndexes = new LinkedList<>();
     }
     
     @SneakyThrows
@@ -67,10 +75,12 @@ public final class AggregationDistinctQueryResult extends DistinctQueryResult {
         initDerivedItemIndexes(selectStatement);
     }
     
-    private void initAggregationDistinctColumnIndexes(final SelectStatement selectStatement) {
+    private List<Integer> getAggregationDistinctColumnIndexes(final SelectStatement selectStatement) {
+        List<Integer> result = new LinkedList<>();
         for (AggregationDistinctSelectItem each :selectStatement.getAggregationDistinctSelectItems()) {
-            aggregationDistinctColumnIndexes.add(each.getIndex());
+            result.add(each.getIndex());
         }
+        return result;
     }
     
     private void initDerivedItemIndexes(final SelectStatement selectStatement) {
@@ -80,6 +90,17 @@ public final class AggregationDistinctQueryResult extends DistinctQueryResult {
                 derivedCountIndexes.add(derivedAggregationSelectItems.get(0).getIndex());
                 derivedSumIndexes.add(derivedAggregationSelectItems.get(1).getIndex());
             }
+        }
+    }
+    
+    @Override
+    protected void fill(final Set<List<Object>> resultData, final QueryResult queryResult) throws SQLException {
+        while (queryResult.next()) {
+            List<Object> row = new ArrayList<>(queryResult.getColumnCount());
+            for (int columnIndex = 1; columnIndex <= queryResult.getColumnCount(); columnIndex++) {
+                row.add(queryResult.getValue(columnIndex, Object.class));
+            }
+            resultData.add(row);
         }
     }
     
