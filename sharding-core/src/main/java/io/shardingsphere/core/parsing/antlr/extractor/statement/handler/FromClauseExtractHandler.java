@@ -55,6 +55,7 @@ public final class FromClauseExtractHandler implements ASTExtractHandler<Optiona
         TableAndConditionExtractResult result = new TableAndConditionExtractResult();
         conditionExtractHandler = new ConditionExtractHandler(result.getTableAliases());
         Collection<ParserRuleContext> questionNodes = ASTUtils.getAllDescendantNodes(ancestorNode, RuleName.QUESTION);
+        result.setParamenterCount(questionNodes.size());
         Map<ParserRuleContext, Integer> questionNodeIndexMap = new HashMap<>();
         int index = 0;
         for(ParserRuleContext each : questionNodes) {
@@ -106,7 +107,6 @@ public final class FromClauseExtractHandler implements ASTExtractHandler<Optiona
             alias = extractResult.getAlias().get();
         }
         tableAndConditionExtractResult.getTableAliases().put(alias, extractResult.getName());
-        tableAndConditionExtractResult.getTableExtractResults().add(extractResult);
     }
     
     private Optional<OrCondition> buildCondition(final ParserRuleContext node, Map<ParserRuleContext, Integer> questionNodeIndexMap, Map<String,String> tableAliases) {

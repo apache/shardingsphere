@@ -17,13 +17,12 @@
 
 package io.shardingsphere.core.parsing.antlr.extractor.statement.handler.result;
 
-import java.util.Collection;
 import java.util.HashMap;
-import java.util.LinkedList;
 import java.util.Map;
 
 import io.shardingsphere.core.parsing.parser.context.condition.OrCondition;
 import lombok.Getter;
+import lombok.Setter;
 
 /**
  * Table and condition extract result.
@@ -33,10 +32,11 @@ import lombok.Getter;
 @Getter
 public final class TableAndConditionExtractResult implements ExtractResult {
     
-    private final Collection<TableExtractResult> tableExtractResults = new LinkedList<>();
-    
     private final Map<String, String> tableAliases = new HashMap<>();
     
     private final OrCondition conditions = new OrCondition();
+    
+    @Setter
+    private Integer paramenterCount;
     
 }

@@ -19,7 +19,6 @@ package io.shardingsphere.core.parsing.antlr.extractor.statement.handler.filler;
 
 import io.shardingsphere.core.metadata.table.ShardingTableMetaData;
 import io.shardingsphere.core.parsing.antlr.extractor.statement.handler.result.TableAndConditionExtractResult;
-import io.shardingsphere.core.parsing.antlr.extractor.statement.handler.result.TableExtractResult;
 import io.shardingsphere.core.parsing.parser.context.condition.OrCondition;
 import io.shardingsphere.core.parsing.parser.sql.SQLStatement;
 import io.shardingsphere.core.rule.ShardingRule;
@@ -38,13 +37,11 @@ public class TableAndConditionHandlerResultFiller extends AbstractHandlerResultF
     @Override
     protected void fillSQLStatement(Object extractResult, SQLStatement statement, ShardingRule shardingRule, ShardingTableMetaData shardingTableMetaData) {
         TableAndConditionExtractResult tableAndConditionResult = (TableAndConditionExtractResult)extractResult;
-        for(TableExtractResult each : tableAndConditionResult.getTableExtractResults()) {
-            HandlerResultFiller filler = HandlerResultFillerRegistry.getFiller(each);
-            if(null != filler) {
-                filler.fill(each, statement, shardingRule, shardingTableMetaData);
-            }
-        }
         OrCondition orCondition = tableAndConditionResult.getConditions().optimize();
         statement.getConditions().getOrCondition().getAndConditions().addAll(orCondition.getAndConditions());
+        int count = 0;
+        while(count < tableAndConditionResult.getParamenterCount()) {
+            statement.increaseParametersIndex();
+        }
     }
 }
