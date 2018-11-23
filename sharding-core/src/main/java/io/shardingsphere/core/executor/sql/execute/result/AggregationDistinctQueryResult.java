@@ -63,30 +63,17 @@ public final class AggregationDistinctQueryResult extends DistinctQueryResult {
     @SneakyThrows
     public AggregationDistinctQueryResult(final Collection<QueryResult> queryResults, final SelectStatement selectStatement) {
         super(queryResults);
-        distinctIndexAndDerivedCountIndexes.putAll(getDerivedCountIndexes(selectStatement));
-        distinctIndexAndDerivedSumIndexes.putAll(getDerivedSumIndexes(selectStatement));
     }
     
     private void init(final SelectStatement selectStatement) {
-        Map<Integer, Integer> result = new HashMap<>();
         for (AggregationSelectItem each : selectStatement.getAggregationSelectItems()) {
             List<AggregationSelectItem> derivedAggregationSelectItems = each.getDerivedAggregationSelectItems();
             if (!derivedAggregationSelectItems.isEmpty()) {
-                result.put(each.getIndex(), derivedAggregationSelectItems.get(0).getIndex());
-            }
-        }
-        return result;
-    }
+                distinctIndexAndDerivedCountIndexes.put(each.getIndex(), derivedAggregationSelectItems.get(0).getIndex());
+                distinctIndexAndDerivedSumIndexes.add(derivedAggregationSelectItems.get(1).getIndex());
     
-    private Map<Integer, Integer> getDerivedSumIndexes(final SelectStatement selectStatement) {
-        List<Integer> result = new LinkedList<>();
-        for (AggregationSelectItem each : selectStatement.getAggregationSelectItems()) {
-            List<AggregationSelectItem> derivedAggregationSelectItems = each.getDerivedAggregationSelectItems();
-            if (!derivedAggregationSelectItems.isEmpty()) {
-                result.add(derivedAggregationSelectItems.get(1).getIndex());
             }
         }
-        return result;
     }
     
     /**
