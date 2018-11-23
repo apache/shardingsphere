@@ -111,32 +111,32 @@ public final class AggregationDistinctQueryResult extends DistinctQueryResult {
 
     @Override
     public Object getValue(final String columnLabel, final Class<?> type) {
-        return currentRow.get(getIndexByColumnLabel(columnLabel));
+        return getValue(columnLabel);
     }
 
     @Override
     public Object getCalendarValue(final int columnIndex, final Class<?> type, final Calendar calendar) {
-        return currentRow.get(columnIndex - 1);
+        return getValue(columnIndex);
     }
 
     @Override
     public Object getCalendarValue(final String columnLabel, final Class<?> type, final Calendar calendar) {
-        return currentRow.get(getIndexByColumnLabel(columnLabel));
+        return getValue(columnLabel);
     }
 
     @Override
     public InputStream getInputStream(final int columnIndex, final String type) {
-        return (InputStream) currentRow.get(columnIndex - 1);
+        return (InputStream) getValue(columnIndex);
     }
 
     @Override
     public InputStream getInputStream(final String columnLabel, final String type) {
-        return (InputStream) currentRow.get(getIndexByColumnLabel(columnLabel));
+        return (InputStream) getValue(columnLabel);
     }
 
     @Override
     public boolean wasNull() {
-        return null == currentRow;
+        return null == getCurrentRow();
     }
 
     @Override
