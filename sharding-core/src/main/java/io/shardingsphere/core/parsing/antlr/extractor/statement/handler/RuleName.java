@@ -115,7 +115,11 @@ public enum RuleName {
     
     STRING("String"),
     
-    SIMPLEEXPR("SimpleExpr");
+    SIMPLEEXPR("SimpleExpr"),
+    
+    LIMITCLAUSE("LimitClause"),
+    
+    RANGECLAUSE("RangeClause");
     
     private final String name;
     
