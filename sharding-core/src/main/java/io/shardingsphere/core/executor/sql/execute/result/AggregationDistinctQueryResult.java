@@ -30,6 +30,7 @@ import lombok.Getter;
 import lombok.SneakyThrows;
 
 import java.io.InputStream;
+import java.math.BigDecimal;
 import java.sql.SQLException;
 import java.util.ArrayList;
 import java.util.Calendar;
@@ -50,11 +51,6 @@ import java.util.Set;
  */
 public final class AggregationDistinctQueryResult extends DistinctQueryResult {
     
-    @Getter
-    private final Map<Integer, Object> aggregationDistinctColumnIndexAndValues;
-    
-    private final List<Integer> aggregationDistinctColumnIndexes = new LinkedList<>();
-    
     private final List<Integer> derivedCountIndexes = new LinkedList<>();
     
     private final List<Integer> derivedSumIndexes = new LinkedList<>();
@@ -62,13 +58,6 @@ public final class AggregationDistinctQueryResult extends DistinctQueryResult {
     private AggregationDistinctQueryResult(final Multimap<String, Integer> columnLabelAndIndexMap, final Iterator<List<Object>> resultData,
                                            final List<Integer> aggregationDistinctColumnIndexes, final List<Integer> derivedCountIndexes, final List<Integer> derivedSumIndexes) {
         super(columnLabelAndIndexMap, resultData);
-        
-    }
-    
-    private Iterator<List<Object>> getResultData(final SelectStatement selectStatement) {
-        Map<Integer, AggregationType> aggregationDistinctColumnIndexAndTypes = aggregationDistinctColumnIndexAndTypes(selectStatement);
-        List<Integer> derivedCountIndexes = getDerivedCountIndexes(selectStatement);
-        List<Integer> derivedSumIndexes = getDerivedSumIndexes(selectStatement);
         
     }
     
@@ -107,11 +96,16 @@ public final class AggregationDistinctQueryResult extends DistinctQueryResult {
         return result;
     }
     
-    protected void fill(final Map<Integer, AggregationType> aggregationDistinctColumnIndexes) {
+    protected void fill(final Map<Integer, AggregationType> aggregationDistinctColumnIndexAndTypes) {
         List<List<Object>> resultData = Lists.newArrayList(getResultData());
-        for (Entry<Integer, AggregationType> entry : aggregationDistinctColumnIndexes
-             ) {
-            
+        Map<Integer, Object> result = new LinkedHashMap<>();
+        for (Entry<Integer, AggregationType> entry : aggregationDistinctColumnIndexAndTypes.entrySet()) {
+            BigDecimal value = new BigDecimal("0");
+            for (List<Object> each : resultData) {
+                if (entry.getValue().equals(AggregationType.COUNT)) {
+                    value.add()
+                }
+            }
         }
         while (getResultData().hasNext()) {
             List<Object> row = getResultData().next();
