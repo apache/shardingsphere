@@ -17,34 +17,32 @@
 
 package io.shardingsphere.core.parsing.antlr.extractor.statement.handler;
 
-import org.antlr.v4.runtime.ParserRuleContext;
-import org.antlr.v4.runtime.tree.ParseTree;
-
 import com.google.common.base.Optional;
-
 import io.shardingsphere.core.parsing.antlr.extractor.statement.handler.result.ConditionExtractResult;
 import io.shardingsphere.core.parsing.antlr.extractor.statement.util.ASTUtils;
 import io.shardingsphere.core.parsing.antlr.extractor.statement.util.OperatorUtils;
 import io.shardingsphere.core.parsing.parser.context.condition.AndCondition;
 import io.shardingsphere.core.parsing.parser.context.condition.OrCondition;
+import org.antlr.v4.runtime.ParserRuleContext;
+import org.antlr.v4.runtime.tree.ParseTree;
 
 /**
- * Condition extract handler.
+ * Condition clause extractor.
  * 
  * @author duhongjun
  */
-public final class ConditionExtractHandler implements ASTExtractHandler<Optional<ConditionExtractResult>> {
+public final class ConditionExtractor implements SQLClauseExtractor<Optional<ConditionExtractResult>> {
     
     @Override
-    public Optional<ConditionExtractResult> extract(ParserRuleContext ancestorNode) {
+    public Optional<ConditionExtractResult> extract(final ParserRuleContext ancestorNode) {
         Optional<ParserRuleContext> whereNode = ASTUtils.findFirstChildNode(ancestorNode, RuleName.WHERECLAUSE);
-        if(!whereNode.isPresent()) {
+        if (!whereNode.isPresent()) {
             return Optional.absent();
         }
         return Optional.of(new ConditionExtractResult(extractCondition(whereNode.get()).get()));
     }
     
-    private Optional<OrCondition> extractCondition(ParseTree tree) {
+    private Optional<OrCondition> extractCondition(final ParseTree tree) {
         int index = -1;
         for (int i = 0; i < tree.getChildCount(); i++) {
             if (OperatorUtils.isRationalOperator(tree.getChild(i).getText())) {
@@ -93,7 +91,7 @@ public final class ConditionExtractHandler implements ASTExtractHandler<Optional
                 if (OperatorUtils.parenMatch(tree.getChild(index + 2).getText(), tree.getChild(index).getText())) {
                     throw new RuntimeException("missing right paren");
                 }
-                if (index >= 0 && "ExprContext".equals(tree.getChild(index + 1).getClass().getSimpleName())) {
+                if ("ExprContext".equals(tree.getChild(index + 1).getClass().getSimpleName())) {
                     return extractCondition(tree.getChild(index + 1));
                 }
             } else {

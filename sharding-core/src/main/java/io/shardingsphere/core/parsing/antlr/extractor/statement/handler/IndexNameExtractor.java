@@ -17,21 +17,19 @@
 
 package io.shardingsphere.core.parsing.antlr.extractor.statement.handler;
 
-import org.antlr.v4.runtime.ParserRuleContext;
-
 import com.google.common.base.Optional;
-
 import io.shardingsphere.core.parsing.antlr.extractor.statement.handler.result.IndexExtractResult;
 import io.shardingsphere.core.parsing.antlr.extractor.statement.util.ASTUtils;
 import io.shardingsphere.core.parsing.parser.token.IndexToken;
 import io.shardingsphere.core.util.SQLUtil;
+import org.antlr.v4.runtime.ParserRuleContext;
 
 /**
- * Index name extract handler.
+ * Index name clause extractor.
  * 
  * @author duhongjun
  */
-public final class IndexNameExtractHandler implements ASTExtractHandler<Optional<IndexExtractResult>> {
+public final class IndexNameExtractor implements SQLClauseExtractor<Optional<IndexExtractResult>> {
     
     @Override
     public Optional<IndexExtractResult> extract(final ParserRuleContext ancestorNode) {

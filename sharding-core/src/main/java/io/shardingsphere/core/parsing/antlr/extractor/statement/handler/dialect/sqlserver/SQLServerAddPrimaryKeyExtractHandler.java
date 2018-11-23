@@ -17,24 +17,22 @@
 
 package io.shardingsphere.core.parsing.antlr.extractor.statement.handler.dialect.sqlserver;
 
-import java.util.Collection;
-
+import com.google.common.base.Optional;
+import io.shardingsphere.core.parsing.antlr.extractor.statement.handler.RuleName;
+import io.shardingsphere.core.parsing.antlr.extractor.statement.handler.SQLClauseExtractor;
+import io.shardingsphere.core.parsing.antlr.extractor.statement.handler.result.PrimaryKeyExtractResult;
+import io.shardingsphere.core.parsing.antlr.extractor.statement.util.ASTUtils;
 import org.antlr.v4.runtime.ParserRuleContext;
 import org.antlr.v4.runtime.tree.ParseTree;
 
-import com.google.common.base.Optional;
-
-import io.shardingsphere.core.parsing.antlr.extractor.statement.handler.ASTExtractHandler;
-import io.shardingsphere.core.parsing.antlr.extractor.statement.handler.RuleName;
-import io.shardingsphere.core.parsing.antlr.extractor.statement.handler.result.PrimaryKeyExtractResult;
-import io.shardingsphere.core.parsing.antlr.extractor.statement.util.ASTUtils;
+import java.util.Collection;
 
 /**
  * Primary key extract handler for SQLServer.
  *
  * @author duhongjun
  */
-public final class SQLServerAddPrimaryKeyExtractHandler implements ASTExtractHandler<Optional<PrimaryKeyExtractResult>> {
+public final class SQLServerAddPrimaryKeyExtractHandler implements SQLClauseExtractor<Optional<PrimaryKeyExtractResult>> {
     
     @Override
     public Optional<PrimaryKeyExtractResult> extract(final ParserRuleContext ancestorNode) {

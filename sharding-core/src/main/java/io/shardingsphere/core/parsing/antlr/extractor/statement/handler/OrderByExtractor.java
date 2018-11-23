@@ -31,16 +31,16 @@ import java.util.Collections;
 import java.util.LinkedList;
 
 /**
- * Order by extract handler.
+ * Order by clause extractor.
  *
  * @author duhongjun
  */
 @RequiredArgsConstructor
-public class OrderByExtractHandler implements ASTExtractHandler<Collection<OrderByExtractResult>> {
+public class OrderByExtractor implements SQLClauseExtractor<Collection<OrderByExtractResult>> {
     
     private final RuleName ruleName;
     
-    public OrderByExtractHandler() {
+    public OrderByExtractor() {
         ruleName = RuleName.ORDERBYCLAUSE;
     }
     

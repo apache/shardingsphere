@@ -20,9 +20,9 @@ package io.shardingsphere.core.parsing.antlr.extractor.statement.type;
 import io.shardingsphere.core.metadata.table.ColumnMetaData;
 import io.shardingsphere.core.metadata.table.ShardingTableMetaData;
 import io.shardingsphere.core.metadata.table.TableMetaData;
-import io.shardingsphere.core.parsing.antlr.extractor.statement.handler.DropColumnExtractHandler;
-import io.shardingsphere.core.parsing.antlr.extractor.statement.handler.RenameTableExtractHandler;
-import io.shardingsphere.core.parsing.antlr.extractor.statement.handler.TableNamesExtractHandler;
+import io.shardingsphere.core.parsing.antlr.extractor.statement.handler.DropColumnExtractor;
+import io.shardingsphere.core.parsing.antlr.extractor.statement.handler.RenameTableExtractor;
+import io.shardingsphere.core.parsing.antlr.extractor.statement.handler.TableNamesExtractor;
 import io.shardingsphere.core.parsing.antlr.sql.ddl.AlterTableStatement;
 import io.shardingsphere.core.parsing.antlr.sql.ddl.ColumnDefinition;
 import io.shardingsphere.core.parsing.parser.sql.SQLStatement;
@@ -39,9 +39,9 @@ import java.util.List;
 public abstract class AlterTableExtractor extends DDLStatementExtractor {
     
     protected AlterTableExtractor() {
-        addExtractHandler(new TableNamesExtractHandler());
-        addExtractHandler(new RenameTableExtractHandler());
-        addExtractHandler(new DropColumnExtractHandler());
+        addExtractHandler(new TableNamesExtractor());
+        addExtractHandler(new RenameTableExtractor());
+        addExtractHandler(new DropColumnExtractor());
     }
     
     @Override

@@ -17,8 +17,8 @@
 
 package io.shardingsphere.core.parsing.antlr.extractor.statement.type.dialect.sqlserver;
 
-import io.shardingsphere.core.parsing.antlr.extractor.statement.handler.AddColumnExtractHandler;
-import io.shardingsphere.core.parsing.antlr.extractor.statement.handler.ModifyColumnExtractHandler;
+import io.shardingsphere.core.parsing.antlr.extractor.statement.handler.AddColumnExtractor;
+import io.shardingsphere.core.parsing.antlr.extractor.statement.handler.ModifyColumnExtractor;
 import io.shardingsphere.core.parsing.antlr.extractor.statement.handler.dialect.sqlserver.SQLServerAddIndexExtractHandler;
 import io.shardingsphere.core.parsing.antlr.extractor.statement.handler.dialect.sqlserver.SQLServerAddPrimaryKeyExtractHandler;
 import io.shardingsphere.core.parsing.antlr.extractor.statement.handler.dialect.sqlserver.SQLServerDropIndexExtractHandler;
@@ -32,8 +32,8 @@ import io.shardingsphere.core.parsing.antlr.extractor.statement.type.AlterTableE
 public final class SQLServerAlterTableExtractor extends AlterTableExtractor {
     
     public SQLServerAlterTableExtractor() {
-        addExtractHandler(new AddColumnExtractHandler());
-        addExtractHandler(new ModifyColumnExtractHandler()); 
+        addExtractHandler(new AddColumnExtractor());
+        addExtractHandler(new ModifyColumnExtractor()); 
         addExtractHandler(new SQLServerAddIndexExtractHandler()); 
         addExtractHandler(new SQLServerDropIndexExtractHandler());
         addExtractHandler(new SQLServerAddPrimaryKeyExtractHandler());

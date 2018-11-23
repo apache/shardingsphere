@@ -28,31 +28,28 @@ import java.util.Collections;
 import java.util.LinkedList;
 
 /**
- * Modify column extract handler.
+ * Column definition clause extractor.
  *
  * @author duhongjun
  */
-public class ModifyColumnExtractHandler implements ASTExtractHandler<Collection<ColumnDefinitionExtractResult>> {
+public final class ColumnDefinitionExtractor implements SQLClauseExtractor<Collection<ColumnDefinitionExtractResult>> {
     
     private final ColumnDefinitionPhraseExtractor columnDefinitionPhraseExtractor = new ColumnDefinitionPhraseExtractor();
     
     @Override
     public Collection<ColumnDefinitionExtractResult> extract(final ParserRuleContext ancestorNode) {
-        Collection<ParserRuleContext> modifyColumnNodes = ASTUtils.getAllDescendantNodes(ancestorNode, RuleName.MODIFY_COLUMN);
-        if (modifyColumnNodes.isEmpty()) {
+        Collection<ParserRuleContext> columnDefinitionNodes = ASTUtils.getAllDescendantNodes(ancestorNode, RuleName.COLUMN_DEFINITION);
+        if (columnDefinitionNodes.isEmpty()) {
             return Collections.emptyList();
         }
         Collection<ColumnDefinitionExtractResult> result = new LinkedList<>();
-        for (ParserRuleContext each : modifyColumnNodes) {
+        for (ParserRuleContext each : columnDefinitionNodes) {
             Optional<ColumnDefinitionExtractResult> columnDefinition = columnDefinitionPhraseExtractor.extract(each);
             if (columnDefinition.isPresent()) {
-                postExtractColumnDefinition(each, columnDefinition.get());
+                columnDefinition.get().setAdd(true);
                 result.add(columnDefinition.get());
             }
         }
         return result;
-    }
-    
-    protected void postExtractColumnDefinition(final ParserRuleContext ancestorNode, final ColumnDefinitionExtractResult columnDefinition) {
     }
 }

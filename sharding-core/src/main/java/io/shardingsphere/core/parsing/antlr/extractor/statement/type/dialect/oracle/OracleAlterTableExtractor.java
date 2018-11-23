@@ -17,9 +17,9 @@
 
 package io.shardingsphere.core.parsing.antlr.extractor.statement.type.dialect.oracle;
 
-import io.shardingsphere.core.parsing.antlr.extractor.statement.handler.AddColumnExtractHandler;
-import io.shardingsphere.core.parsing.antlr.extractor.statement.handler.AddPrimaryKeyExtractHandler;
-import io.shardingsphere.core.parsing.antlr.extractor.statement.handler.RenameColumnExtractHandler;
+import io.shardingsphere.core.parsing.antlr.extractor.statement.handler.AddColumnExtractor;
+import io.shardingsphere.core.parsing.antlr.extractor.statement.handler.AddPrimaryKeyExtractor;
+import io.shardingsphere.core.parsing.antlr.extractor.statement.handler.RenameColumnExtractor;
 import io.shardingsphere.core.parsing.antlr.extractor.statement.handler.RuleName;
 import io.shardingsphere.core.parsing.antlr.extractor.statement.handler.dialect.oracle.OracleDropPrimaryKeyExtractHandler;
 import io.shardingsphere.core.parsing.antlr.extractor.statement.handler.dialect.oracle.OracleModifyColumnExtractHandler;
@@ -33,10 +33,10 @@ import io.shardingsphere.core.parsing.antlr.extractor.statement.type.AlterTableE
 public final class OracleAlterTableExtractor extends AlterTableExtractor {
     
     public OracleAlterTableExtractor() {
-        addExtractHandler(new AddColumnExtractHandler());
+        addExtractHandler(new AddColumnExtractor());
         addExtractHandler(new OracleModifyColumnExtractHandler());
-        addExtractHandler(new RenameColumnExtractHandler());
-        addExtractHandler(new AddPrimaryKeyExtractHandler(RuleName.ADD_CONSTRAINT_CLAUSE));
+        addExtractHandler(new RenameColumnExtractor());
+        addExtractHandler(new AddPrimaryKeyExtractor(RuleName.ADD_CONSTRAINT_CLAUSE));
         addExtractHandler(new OracleDropPrimaryKeyExtractHandler());
     }
 }

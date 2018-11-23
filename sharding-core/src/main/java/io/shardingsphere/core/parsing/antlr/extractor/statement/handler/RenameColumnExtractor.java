@@ -17,20 +17,18 @@
 
 package io.shardingsphere.core.parsing.antlr.extractor.statement.handler;
 
-import org.antlr.v4.runtime.ParserRuleContext;
-
 import com.google.common.base.Optional;
-
 import io.shardingsphere.core.parsing.antlr.extractor.statement.handler.result.ExtractResult;
 import io.shardingsphere.core.parsing.antlr.extractor.statement.util.ASTUtils;
 import io.shardingsphere.core.parsing.parser.exception.SQLParsingUnsupportedException;
+import org.antlr.v4.runtime.ParserRuleContext;
 
 /**
- * Rename column extract handler.
+ * Rename column clause extractor.
  * 
  * @author duhongjun
  */
-public final class RenameColumnExtractHandler implements ASTExtractHandler<Optional<ExtractResult>> {
+public final class RenameColumnExtractor implements SQLClauseExtractor<Optional<ExtractResult>> {
     
     @Override
     public Optional<ExtractResult> extract(final ParserRuleContext ancestorNode) {

@@ -17,47 +17,34 @@
 
 package io.shardingsphere.core.parsing.antlr.extractor.statement.handler;
 
-import com.google.common.base.Optional;
 import io.shardingsphere.core.parsing.antlr.extractor.statement.handler.result.IndexExtractResult;
 import io.shardingsphere.core.parsing.antlr.extractor.statement.util.ASTUtils;
 import io.shardingsphere.core.parsing.parser.token.IndexToken;
 import io.shardingsphere.core.util.SQLUtil;
 import org.antlr.v4.runtime.ParserRuleContext;
-import org.antlr.v4.runtime.tree.ParseTree;
 
 import java.util.Collection;
 import java.util.Collections;
 import java.util.LinkedList;
 
 /**
- * Rename index extract handler.
+ * Multiple index names clause extractor.
  *
  * @author duhongjun
  */
-public final class RenameIndexExtractHandler implements ASTExtractHandler<Collection<IndexExtractResult>> {
+public final class IndexesNameExtractor implements SQLClauseExtractor<Collection<IndexExtractResult>> {
     
     @Override
     public Collection<IndexExtractResult> extract(final ParserRuleContext ancestorNode) {
-        Optional<ParserRuleContext> renameIndexNode = ASTUtils.findFirstChildNode(ancestorNode, RuleName.RENAME_INDEX);
-        if (!renameIndexNode.isPresent() || 4 > renameIndexNode.get().getChildCount()) {
-            return Collections.emptyList();
-        }
-        ParseTree oldIndexNode = renameIndexNode.get().getChild(2);
-        if (!(oldIndexNode instanceof ParserRuleContext)) {
-            return Collections.emptyList();
-        }
-        ParseTree newIndexNode = renameIndexNode.get().getChild(4);
-        if (!(newIndexNode instanceof ParserRuleContext)) {
+        Collection<ParserRuleContext> indexNameNodes = ASTUtils.getAllDescendantNodes(ancestorNode, RuleName.INDEX_NAME);
+        if (indexNameNodes.isEmpty()) {
             return Collections.emptyList();
         }
         Collection<IndexExtractResult> result = new LinkedList<>();
-        result.add(getIndexToken((ParserRuleContext) newIndexNode));
-        result.add(getIndexToken((ParserRuleContext) oldIndexNode));
+        for (ParserRuleContext each : indexNameNodes) {
+            String name = SQLUtil.getNameWithoutSchema(each.getText());
+            result.add(new IndexExtractResult(name, new IndexToken(each.getStop().getStartIndex(), name, null)));
+        }
         return result;
-    }
-    
-    private IndexExtractResult getIndexToken(final ParserRuleContext indexNode) {
-        String name = SQLUtil.getNameWithoutSchema(indexNode.getText());
-        return new IndexExtractResult(name, new IndexToken(indexNode.getStop().getStartIndex(), name, null));
     }
 }

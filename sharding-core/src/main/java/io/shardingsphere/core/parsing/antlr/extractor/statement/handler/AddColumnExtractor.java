@@ -22,34 +22,45 @@ import io.shardingsphere.core.parsing.antlr.extractor.statement.handler.result.C
 import io.shardingsphere.core.parsing.antlr.extractor.statement.phrase.ColumnDefinitionPhraseExtractor;
 import io.shardingsphere.core.parsing.antlr.extractor.statement.util.ASTUtils;
 import org.antlr.v4.runtime.ParserRuleContext;
+import org.antlr.v4.runtime.tree.ParseTree;
 
 import java.util.Collection;
 import java.util.Collections;
 import java.util.LinkedList;
 
 /**
- * Column definition extract handler.
+ * Add column clause extractor.
  *
  * @author duhongjun
  */
-public final class ColumnDefinitionExtractHandler implements ASTExtractHandler<Collection<ColumnDefinitionExtractResult>> {
+public class AddColumnExtractor implements SQLClauseExtractor<Collection<ColumnDefinitionExtractResult>> {
     
     private final ColumnDefinitionPhraseExtractor columnDefinitionPhraseExtractor = new ColumnDefinitionPhraseExtractor();
     
     @Override
     public Collection<ColumnDefinitionExtractResult> extract(final ParserRuleContext ancestorNode) {
-        Collection<ParserRuleContext> columnDefinitionNodes = ASTUtils.getAllDescendantNodes(ancestorNode, RuleName.COLUMN_DEFINITION);
-        if (columnDefinitionNodes.isEmpty()) {
+        Collection<ParserRuleContext> addColumnNodes = ASTUtils.getAllDescendantNodes(ancestorNode, RuleName.ADD_COLUMN);
+        if (addColumnNodes.isEmpty()) {
             return Collections.emptyList();
         }
         Collection<ColumnDefinitionExtractResult> result = new LinkedList<>();
-        for (ParserRuleContext each : columnDefinitionNodes) {
+        for (ParserRuleContext each : addColumnNodes) {
+            extractAddColumn(each, result);
+        }
+        return result;
+    }
+    
+    private void extractAddColumn(final ParserRuleContext addColumnNode, final Collection<ColumnDefinitionExtractResult> result) {
+        for (ParserRuleContext each : ASTUtils.getAllDescendantNodes(addColumnNode, RuleName.COLUMN_DEFINITION)) {
             Optional<ColumnDefinitionExtractResult> columnDefinition = columnDefinitionPhraseExtractor.extract(each);
             if (columnDefinition.isPresent()) {
                 columnDefinition.get().setAdd(true);
+                postExtractColumnDefinition(addColumnNode, columnDefinition.get());
                 result.add(columnDefinition.get());
             }
         }
-        return result;
+    }
+    
+    protected void postExtractColumnDefinition(final ParseTree ancestorNode, final ColumnDefinitionExtractResult columnDefinition) {
     }
 }

@@ -17,7 +17,7 @@
 
 package io.shardingsphere.core.parsing.antlr.extractor.statement.type.dialect.postgresql;
 
-import io.shardingsphere.core.parsing.antlr.extractor.statement.handler.TableNamesExtractHandler;
+import io.shardingsphere.core.parsing.antlr.extractor.statement.handler.TableNamesExtractor;
 import io.shardingsphere.core.parsing.antlr.extractor.statement.type.TruncateTableExtractor;
 
 /**
@@ -28,6 +28,6 @@ import io.shardingsphere.core.parsing.antlr.extractor.statement.type.TruncateTab
 public final class PostgreSQLTruncateTableExtractor extends TruncateTableExtractor {
     
     public PostgreSQLTruncateTableExtractor() {
-        addExtractHandler(new TableNamesExtractHandler());
+        addExtractHandler(new TableNamesExtractor());
     }
 }

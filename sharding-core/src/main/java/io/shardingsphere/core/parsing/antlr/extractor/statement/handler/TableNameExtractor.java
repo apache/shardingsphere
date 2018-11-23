@@ -26,11 +26,11 @@ import io.shardingsphere.core.util.SQLUtil;
 import org.antlr.v4.runtime.ParserRuleContext;
 
 /**
- * Single table name extract handler.
+ * Single table name clause extractor.
  *
  * @author duhongjun
  */
-public final class TableNameExtractHandler implements ASTExtractHandler<Optional<TableExtractResult>> {
+public final class TableNameExtractor implements SQLClauseExtractor<Optional<TableExtractResult>> {
     
     @Override
     public Optional<TableExtractResult> extract(final ParserRuleContext ancestorNode) {

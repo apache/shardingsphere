@@ -17,19 +17,17 @@
 
 package io.shardingsphere.core.parsing.antlr.extractor.statement.handler;
 
-import org.antlr.v4.runtime.ParserRuleContext;
-
 import com.google.common.base.Optional;
-
 import io.shardingsphere.core.parsing.antlr.extractor.statement.handler.result.DropPrimaryKeyExtractResult;
 import io.shardingsphere.core.parsing.antlr.extractor.statement.util.ASTUtils;
+import org.antlr.v4.runtime.ParserRuleContext;
 
 /**
- * Drop primary key extract handler.
+ * Drop primary key clause extractor.
  *
  * @author duhongjun
  */
-public final class DropPrimaryKeyExtractHandler implements ASTExtractHandler<Optional<DropPrimaryKeyExtractResult>> {
+public final class DropPrimaryKeyExtractor implements SQLClauseExtractor<Optional<DropPrimaryKeyExtractResult>> {
     
     @Override
     public Optional<DropPrimaryKeyExtractResult> extract(final ParserRuleContext ancestorNode) {

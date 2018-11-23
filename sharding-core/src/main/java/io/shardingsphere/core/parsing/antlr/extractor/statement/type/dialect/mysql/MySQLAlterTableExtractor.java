@@ -18,9 +18,9 @@
 package io.shardingsphere.core.parsing.antlr.extractor.statement.type.dialect.mysql;
 
 import io.shardingsphere.core.metadata.table.ColumnMetaData;
-import io.shardingsphere.core.parsing.antlr.extractor.statement.handler.AddPrimaryKeyExtractHandler;
-import io.shardingsphere.core.parsing.antlr.extractor.statement.handler.DropPrimaryKeyExtractHandler;
-import io.shardingsphere.core.parsing.antlr.extractor.statement.handler.RenameIndexExtractHandler;
+import io.shardingsphere.core.parsing.antlr.extractor.statement.handler.AddPrimaryKeyExtractor;
+import io.shardingsphere.core.parsing.antlr.extractor.statement.handler.DropPrimaryKeyExtractor;
+import io.shardingsphere.core.parsing.antlr.extractor.statement.handler.RenameIndexExtractor;
 import io.shardingsphere.core.parsing.antlr.extractor.statement.handler.RuleName;
 import io.shardingsphere.core.parsing.antlr.extractor.statement.handler.dialect.mysql.MySQLAddColumnExtractHandler;
 import io.shardingsphere.core.parsing.antlr.extractor.statement.handler.dialect.mysql.MySQLAddIndexExtractHandler;
@@ -46,9 +46,9 @@ public final class MySQLAlterTableExtractor extends AlterTableExtractor {
         addExtractHandler(new MySQLAddColumnExtractHandler());
         addExtractHandler(new MySQLAddIndexExtractHandler());
         addExtractHandler(new MySQLDropIndexExtractHandler());
-        addExtractHandler(new RenameIndexExtractHandler());
-        addExtractHandler(new AddPrimaryKeyExtractHandler(RuleName.ADD_CONSTRAINT));
-        addExtractHandler(new DropPrimaryKeyExtractHandler());
+        addExtractHandler(new RenameIndexExtractor());
+        addExtractHandler(new AddPrimaryKeyExtractor(RuleName.ADD_CONSTRAINT));
+        addExtractHandler(new DropPrimaryKeyExtractor());
         addExtractHandler(new MySQLChangeColumnExtractHandler());
         addExtractHandler(new MySQLModifyColumnExtractHandler());
     }

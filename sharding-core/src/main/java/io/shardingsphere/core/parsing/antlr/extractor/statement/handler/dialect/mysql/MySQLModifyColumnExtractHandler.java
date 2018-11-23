@@ -17,25 +17,23 @@
 
 package io.shardingsphere.core.parsing.antlr.extractor.statement.handler.dialect.mysql;
 
-import org.antlr.v4.runtime.ParserRuleContext;
-
 import com.google.common.base.Optional;
-
-import io.shardingsphere.core.parsing.antlr.extractor.statement.handler.ModifyColumnExtractHandler;
+import io.shardingsphere.core.parsing.antlr.extractor.statement.handler.ModifyColumnExtractor;
 import io.shardingsphere.core.parsing.antlr.extractor.statement.handler.result.ColumnDefinitionExtractResult;
 import io.shardingsphere.core.parsing.antlr.extractor.statement.util.ExtractorUtils;
 import io.shardingsphere.core.parsing.antlr.sql.ddl.ColumnPosition;
+import org.antlr.v4.runtime.ParserRuleContext;
 
 /**
  * Modify column extract handler for MySQL.
  * 
  * @author duhongjun
  */
-public final class MySQLModifyColumnExtractHandler extends ModifyColumnExtractHandler {
+public final class MySQLModifyColumnExtractHandler extends ModifyColumnExtractor {
     
     @Override
     protected void postExtractColumnDefinition(final ParserRuleContext ancestorNode, final ColumnDefinitionExtractResult columnDefinition) {
-        Optional<ColumnPosition> columnPosition = ExtractorUtils.extractFirstOrAfterColumn((ParserRuleContext) ancestorNode, columnDefinition.getName());
+        Optional<ColumnPosition> columnPosition = ExtractorUtils.extractFirstOrAfterColumn(ancestorNode, columnDefinition.getName());
         if (columnPosition.isPresent()) {
             columnDefinition.setPosition(columnPosition.get());
         }

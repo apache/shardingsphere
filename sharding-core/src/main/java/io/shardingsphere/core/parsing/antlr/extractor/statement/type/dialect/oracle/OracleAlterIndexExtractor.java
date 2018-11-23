@@ -17,7 +17,7 @@
 
 package io.shardingsphere.core.parsing.antlr.extractor.statement.type.dialect.oracle;
 
-import io.shardingsphere.core.parsing.antlr.extractor.statement.handler.IndexesNameExtractHandler;
+import io.shardingsphere.core.parsing.antlr.extractor.statement.handler.IndexesNameExtractor;
 import io.shardingsphere.core.parsing.antlr.extractor.statement.type.DDLStatementExtractor;
 
 /**
@@ -28,6 +28,6 @@ import io.shardingsphere.core.parsing.antlr.extractor.statement.type.DDLStatemen
 public final class OracleAlterIndexExtractor extends DDLStatementExtractor {
     
     public OracleAlterIndexExtractor() {
-        addExtractHandler(new IndexesNameExtractHandler());
+        addExtractHandler(new IndexesNameExtractor());
     }
 }

@@ -17,25 +17,24 @@
 
 package io.shardingsphere.core.parsing.antlr.extractor.statement.handler.dialect.mysql;
 
-import java.util.Collection;
-import java.util.Collections;
-
-import org.antlr.v4.runtime.ParserRuleContext;
-
-import io.shardingsphere.core.parsing.antlr.extractor.statement.handler.ASTExtractHandler;
-import io.shardingsphere.core.parsing.antlr.extractor.statement.handler.IndexesNameExtractHandler;
+import io.shardingsphere.core.parsing.antlr.extractor.statement.handler.IndexesNameExtractor;
 import io.shardingsphere.core.parsing.antlr.extractor.statement.handler.RuleName;
+import io.shardingsphere.core.parsing.antlr.extractor.statement.handler.SQLClauseExtractor;
 import io.shardingsphere.core.parsing.antlr.extractor.statement.handler.result.IndexExtractResult;
 import io.shardingsphere.core.parsing.antlr.extractor.statement.util.ASTUtils;
+import org.antlr.v4.runtime.ParserRuleContext;
+
+import java.util.Collection;
+import java.util.Collections;
 
 /**
  * Add index extract handler for MySQL.
  *
  * @author duhongjun
  */
-public final class MySQLAddIndexExtractHandler implements ASTExtractHandler<Collection<IndexExtractResult>> {
+public final class MySQLAddIndexExtractHandler implements SQLClauseExtractor<Collection<IndexExtractResult>> {
     
-    private final IndexesNameExtractHandler indexNamesExtractHandler = new IndexesNameExtractHandler();
+    private final IndexesNameExtractor indexNamesExtractHandler = new IndexesNameExtractor();
     
     @Override
     public Collection<IndexExtractResult> extract(final ParserRuleContext ancestorNode) {

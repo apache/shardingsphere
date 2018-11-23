@@ -18,9 +18,9 @@
 package io.shardingsphere.core.parsing.antlr.extractor.statement.handler.dialect.mysql;
 
 import com.google.common.base.Optional;
-import io.shardingsphere.core.parsing.antlr.extractor.statement.handler.ASTExtractHandler;
-import io.shardingsphere.core.parsing.antlr.extractor.statement.handler.IndexNameExtractHandler;
+import io.shardingsphere.core.parsing.antlr.extractor.statement.handler.IndexNameExtractor;
 import io.shardingsphere.core.parsing.antlr.extractor.statement.handler.RuleName;
+import io.shardingsphere.core.parsing.antlr.extractor.statement.handler.SQLClauseExtractor;
 import io.shardingsphere.core.parsing.antlr.extractor.statement.handler.result.IndexExtractResult;
 import io.shardingsphere.core.parsing.antlr.extractor.statement.util.ASTUtils;
 import org.antlr.v4.runtime.ParserRuleContext;
@@ -35,9 +35,9 @@ import java.util.LinkedList;
  *
  * @author duhongjun
  */
-public final class MySQLDropIndexExtractHandler implements ASTExtractHandler<Collection<IndexExtractResult>> {
+public final class MySQLDropIndexExtractHandler implements SQLClauseExtractor<Collection<IndexExtractResult>> {
     
-    private final IndexNameExtractHandler indexNameExtractHandler = new IndexNameExtractHandler();
+    private final IndexNameExtractor indexNameExtractHandler = new IndexNameExtractor();
     
     @Override
     public Collection<IndexExtractResult> extract(final ParserRuleContext ancestorNode) {

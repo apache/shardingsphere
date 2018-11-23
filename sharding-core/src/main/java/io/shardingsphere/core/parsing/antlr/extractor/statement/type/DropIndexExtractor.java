@@ -17,8 +17,8 @@
 
 package io.shardingsphere.core.parsing.antlr.extractor.statement.type;
 
-import io.shardingsphere.core.parsing.antlr.extractor.statement.handler.IndexNameExtractHandler;
-import io.shardingsphere.core.parsing.antlr.extractor.statement.handler.TableNameExtractHandler;
+import io.shardingsphere.core.parsing.antlr.extractor.statement.handler.IndexNameExtractor;
+import io.shardingsphere.core.parsing.antlr.extractor.statement.handler.TableNameExtractor;
 
 /**
  * Drop index extractor.
@@ -28,7 +28,7 @@ import io.shardingsphere.core.parsing.antlr.extractor.statement.handler.TableNam
 public final class DropIndexExtractor extends DDLStatementExtractor {
     
     public DropIndexExtractor() {
-        addExtractHandler(new TableNameExtractHandler());
-        addExtractHandler(new IndexNameExtractHandler());
+        addExtractHandler(new TableNameExtractor());
+        addExtractHandler(new IndexNameExtractor());
     }
 }

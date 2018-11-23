@@ -20,7 +20,7 @@ package io.shardingsphere.core.parsing.antlr.extractor.statement.type;
 import com.google.common.base.Optional;
 import io.shardingsphere.core.metadata.table.ShardingTableMetaData;
 import io.shardingsphere.core.parsing.antlr.extractor.SQLStatementExtractor;
-import io.shardingsphere.core.parsing.antlr.extractor.statement.handler.ASTExtractHandler;
+import io.shardingsphere.core.parsing.antlr.extractor.statement.handler.SQLClauseExtractor;
 import io.shardingsphere.core.parsing.antlr.extractor.statement.handler.filler.HandlerResultFiller;
 import io.shardingsphere.core.parsing.antlr.extractor.statement.handler.filler.HandlerResultFillerRegistry;
 import io.shardingsphere.core.parsing.parser.sql.SQLStatement;
@@ -37,13 +37,13 @@ import java.util.List;
  */
 public abstract class AbstractSQLStatementExtractor implements SQLStatementExtractor {
     
-    private final Collection<ASTExtractHandler<?>> extractHandlers = new LinkedList<>();
+    private final Collection<SQLClauseExtractor<?>> extractHandlers = new LinkedList<>();
     
     @Override
     public final SQLStatement extract(final ParserRuleContext rootNode, final ShardingTableMetaData shardingTableMetaData) {
         SQLStatement result = createStatement();
         List<Object> extractResults = new LinkedList<>();
-        for (ASTExtractHandler each : extractHandlers) {
+        for (SQLClauseExtractor each : extractHandlers) {
             Object extractResult = each.extract(rootNode);
             if (extractResult instanceof Optional) {
                 if (((Optional) extractResult).isPresent()) {
@@ -70,7 +70,7 @@ public abstract class AbstractSQLStatementExtractor implements SQLStatementExtra
     protected void postExtract(final SQLStatement statement, final ShardingTableMetaData shardingTableMetaData) {
     }
     
-    protected final void addExtractHandler(final ASTExtractHandler handler) {
+    protected final void addExtractHandler(final SQLClauseExtractor handler) {
         extractHandlers.add(handler);
     }
 }

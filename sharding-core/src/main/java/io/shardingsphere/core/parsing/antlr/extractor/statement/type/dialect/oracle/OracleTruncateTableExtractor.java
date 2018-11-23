@@ -17,7 +17,7 @@
 
 package io.shardingsphere.core.parsing.antlr.extractor.statement.type.dialect.oracle;
 
-import io.shardingsphere.core.parsing.antlr.extractor.statement.handler.TableNameExtractHandler;
+import io.shardingsphere.core.parsing.antlr.extractor.statement.handler.TableNameExtractor;
 import io.shardingsphere.core.parsing.antlr.extractor.statement.type.TruncateTableExtractor;
 
 /**
@@ -28,6 +28,6 @@ import io.shardingsphere.core.parsing.antlr.extractor.statement.type.TruncateTab
 public final class OracleTruncateTableExtractor extends TruncateTableExtractor {
     
     public OracleTruncateTableExtractor() {
-        addExtractHandler(new TableNameExtractHandler());
+        addExtractHandler(new TableNameExtractor());
     }
 }

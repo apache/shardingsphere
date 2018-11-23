@@ -20,17 +20,17 @@ package io.shardingsphere.core.parsing.antlr.extractor.statement.handler;
 import org.antlr.v4.runtime.ParserRuleContext;
 
 /**
- * AST extract handler.
+ * SQL clause extractor.
  * 
  * @author duhongjun
  */
-public interface ASTExtractHandler<T> {
+public interface SQLClauseExtractor<T> {
     
     /**
-     * Extract AST.
+     * Extract SQL clause from SQL AST.
      *  
      * @param ancestorNode ancestor node of AST
-     * @return extract result
+     * @return SQL clause
      */
     T extract(ParserRuleContext ancestorNode);
 }

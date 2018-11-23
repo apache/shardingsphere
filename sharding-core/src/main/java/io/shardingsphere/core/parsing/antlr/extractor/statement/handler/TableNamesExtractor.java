@@ -17,10 +17,9 @@
 
 package io.shardingsphere.core.parsing.antlr.extractor.statement.handler;
 
-import io.shardingsphere.core.parsing.antlr.extractor.statement.handler.result.IndexExtractResult;
+import com.google.common.base.Optional;
+import io.shardingsphere.core.parsing.antlr.extractor.statement.handler.result.TableExtractResult;
 import io.shardingsphere.core.parsing.antlr.extractor.statement.util.ASTUtils;
-import io.shardingsphere.core.parsing.parser.token.IndexToken;
-import io.shardingsphere.core.util.SQLUtil;
 import org.antlr.v4.runtime.ParserRuleContext;
 
 import java.util.Collection;
@@ -28,22 +27,26 @@ import java.util.Collections;
 import java.util.LinkedList;
 
 /**
- * Multiple index names extract handler.
+ * Multiple table names clause extractor.
  *
  * @author duhongjun
  */
-public final class IndexesNameExtractHandler implements ASTExtractHandler<Collection<IndexExtractResult>> {
+public final class TableNamesExtractor implements SQLClauseExtractor<Collection<TableExtractResult>> {
+    
+    private final TableNameExtractor tableNameExtractHandler = new TableNameExtractor();
     
     @Override
-    public Collection<IndexExtractResult> extract(final ParserRuleContext ancestorNode) {
-        Collection<ParserRuleContext> indexNameNodes = ASTUtils.getAllDescendantNodes(ancestorNode, RuleName.INDEX_NAME);
-        if (indexNameNodes.isEmpty()) {
+    public Collection<TableExtractResult> extract(final ParserRuleContext ancestorNode) {
+        Collection<ParserRuleContext> tableNameNodes = ASTUtils.getAllDescendantNodes(ancestorNode, RuleName.TABLE_NAME);
+        if (tableNameNodes.isEmpty()) {
             return Collections.emptyList();
         }
-        Collection<IndexExtractResult> result = new LinkedList<>();
-        for (ParserRuleContext each : indexNameNodes) {
-            String name = SQLUtil.getNameWithoutSchema(each.getText());
-            result.add(new IndexExtractResult(name, new IndexToken(each.getStop().getStartIndex(), name, null)));
+        Collection<TableExtractResult> result = new LinkedList<>();
+        for (ParserRuleContext each : tableNameNodes) {
+            Optional<TableExtractResult> tableExtractResult = tableNameExtractHandler.extract(each);
+            if (tableExtractResult.isPresent()) {
+                result.add(tableExtractResult.get());
+            }
         }
         return result;
     }

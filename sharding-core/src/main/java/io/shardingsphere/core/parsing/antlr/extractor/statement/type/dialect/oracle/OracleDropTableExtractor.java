@@ -17,7 +17,7 @@
 
 package io.shardingsphere.core.parsing.antlr.extractor.statement.type.dialect.oracle;
 
-import io.shardingsphere.core.parsing.antlr.extractor.statement.handler.TableNameExtractHandler;
+import io.shardingsphere.core.parsing.antlr.extractor.statement.handler.TableNameExtractor;
 import io.shardingsphere.core.parsing.antlr.extractor.statement.type.DropTableExtractor;
 
 /**
@@ -28,6 +28,6 @@ import io.shardingsphere.core.parsing.antlr.extractor.statement.type.DropTableEx
 public final class OracleDropTableExtractor extends DropTableExtractor {
     
     public OracleDropTableExtractor() {
-        addExtractHandler(new TableNameExtractHandler());
+        addExtractHandler(new TableNameExtractor());
     }
 }

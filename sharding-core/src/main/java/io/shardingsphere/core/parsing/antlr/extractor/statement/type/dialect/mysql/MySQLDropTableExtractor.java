@@ -17,7 +17,7 @@
 
 package io.shardingsphere.core.parsing.antlr.extractor.statement.type.dialect.mysql;
 
-import io.shardingsphere.core.parsing.antlr.extractor.statement.handler.TableNamesExtractHandler;
+import io.shardingsphere.core.parsing.antlr.extractor.statement.handler.TableNamesExtractor;
 import io.shardingsphere.core.parsing.antlr.extractor.statement.type.DropTableExtractor;
 
 /**
@@ -28,6 +28,6 @@ import io.shardingsphere.core.parsing.antlr.extractor.statement.type.DropTableEx
 public final class MySQLDropTableExtractor extends DropTableExtractor {
     
     public MySQLDropTableExtractor() {
-        addExtractHandler(new TableNamesExtractHandler());
+        addExtractHandler(new TableNamesExtractor());
     }
 }

@@ -17,24 +17,22 @@
 
 package io.shardingsphere.core.parsing.antlr.extractor.statement.handler.dialect.sqlserver;
 
-import org.antlr.v4.runtime.ParserRuleContext;
-
 import com.google.common.base.Optional;
-
-import io.shardingsphere.core.parsing.antlr.extractor.statement.handler.ASTExtractHandler;
-import io.shardingsphere.core.parsing.antlr.extractor.statement.handler.IndexNameExtractHandler;
+import io.shardingsphere.core.parsing.antlr.extractor.statement.handler.IndexNameExtractor;
 import io.shardingsphere.core.parsing.antlr.extractor.statement.handler.RuleName;
+import io.shardingsphere.core.parsing.antlr.extractor.statement.handler.SQLClauseExtractor;
 import io.shardingsphere.core.parsing.antlr.extractor.statement.handler.result.IndexExtractResult;
 import io.shardingsphere.core.parsing.antlr.extractor.statement.util.ASTUtils;
+import org.antlr.v4.runtime.ParserRuleContext;
 
 /**
  * Drop index extract handler for SQLServer.
  * 
  * @author duhongjun
  */
-public final class SQLServerDropIndexExtractHandler implements ASTExtractHandler<Optional<IndexExtractResult>> {
+public final class SQLServerDropIndexExtractHandler implements SQLClauseExtractor<Optional<IndexExtractResult>> {
     
-    private final IndexNameExtractHandler indexNameExtractHandler = new IndexNameExtractHandler();
+    private final IndexNameExtractor indexNameExtractHandler = new IndexNameExtractor();
     
     @Override
     public Optional<IndexExtractResult> extract(final ParserRuleContext ancestorNode) {

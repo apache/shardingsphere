@@ -17,21 +17,19 @@
 
 package io.shardingsphere.core.parsing.antlr.extractor.statement.handler.dialect.oracle;
 
-import org.antlr.v4.runtime.ParserRuleContext;
-
 import com.google.common.base.Optional;
-
-import io.shardingsphere.core.parsing.antlr.extractor.statement.handler.ASTExtractHandler;
 import io.shardingsphere.core.parsing.antlr.extractor.statement.handler.RuleName;
+import io.shardingsphere.core.parsing.antlr.extractor.statement.handler.SQLClauseExtractor;
 import io.shardingsphere.core.parsing.antlr.extractor.statement.handler.result.DropPrimaryKeyExtractResult;
 import io.shardingsphere.core.parsing.antlr.extractor.statement.util.ASTUtils;
+import org.antlr.v4.runtime.ParserRuleContext;
 
 /**
  * Drop primary key extract handler for Oracle.
  *
  * @author duhongjun
  */
-public final class OracleDropPrimaryKeyExtractHandler implements ASTExtractHandler<Optional<DropPrimaryKeyExtractResult>> {
+public final class OracleDropPrimaryKeyExtractHandler implements SQLClauseExtractor<Optional<DropPrimaryKeyExtractResult>> {
     
     @Override
     public Optional<DropPrimaryKeyExtractResult> extract(final ParserRuleContext ancestorNode) {

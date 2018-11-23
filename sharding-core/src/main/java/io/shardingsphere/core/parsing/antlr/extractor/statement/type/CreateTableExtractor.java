@@ -20,10 +20,10 @@ package io.shardingsphere.core.parsing.antlr.extractor.statement.type;
 import io.shardingsphere.core.metadata.table.ColumnMetaData;
 import io.shardingsphere.core.metadata.table.ShardingTableMetaData;
 import io.shardingsphere.core.metadata.table.TableMetaData;
-import io.shardingsphere.core.parsing.antlr.extractor.statement.handler.ColumnDefinitionExtractHandler;
-import io.shardingsphere.core.parsing.antlr.extractor.statement.handler.CreatePrimaryKeyExtractHandler;
-import io.shardingsphere.core.parsing.antlr.extractor.statement.handler.IndexesNameExtractHandler;
-import io.shardingsphere.core.parsing.antlr.extractor.statement.handler.TableNamesExtractHandler;
+import io.shardingsphere.core.parsing.antlr.extractor.statement.handler.ColumnDefinitionExtractor;
+import io.shardingsphere.core.parsing.antlr.extractor.statement.handler.CreatePrimaryKeyExtractor;
+import io.shardingsphere.core.parsing.antlr.extractor.statement.handler.IndexesNameExtractor;
+import io.shardingsphere.core.parsing.antlr.extractor.statement.handler.TableNamesExtractor;
 import io.shardingsphere.core.parsing.parser.sql.SQLStatement;
 import io.shardingsphere.core.parsing.parser.sql.ddl.create.table.CreateTableStatement;
 
@@ -39,10 +39,10 @@ import java.util.List;
 public final class CreateTableExtractor extends DDLStatementExtractor {
     
     public CreateTableExtractor() {
-        addExtractHandler(new TableNamesExtractHandler());
-        addExtractHandler(new ColumnDefinitionExtractHandler());
-        addExtractHandler(new IndexesNameExtractHandler());
-        addExtractHandler(new CreatePrimaryKeyExtractHandler());
+        addExtractHandler(new TableNamesExtractor());
+        addExtractHandler(new ColumnDefinitionExtractor());
+        addExtractHandler(new IndexesNameExtractor());
+        addExtractHandler(new CreatePrimaryKeyExtractor());
     }
     
     @Override

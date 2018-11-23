@@ -17,22 +17,20 @@
 
 package io.shardingsphere.core.parsing.antlr.extractor.statement.handler.dialect.mysql;
 
-import org.antlr.v4.runtime.ParserRuleContext;
-import org.antlr.v4.runtime.tree.ParseTree;
-
 import com.google.common.base.Optional;
-
-import io.shardingsphere.core.parsing.antlr.extractor.statement.handler.AddColumnExtractHandler;
+import io.shardingsphere.core.parsing.antlr.extractor.statement.handler.AddColumnExtractor;
 import io.shardingsphere.core.parsing.antlr.extractor.statement.handler.result.ColumnDefinitionExtractResult;
 import io.shardingsphere.core.parsing.antlr.extractor.statement.util.ExtractorUtils;
 import io.shardingsphere.core.parsing.antlr.sql.ddl.ColumnPosition;
+import org.antlr.v4.runtime.ParserRuleContext;
+import org.antlr.v4.runtime.tree.ParseTree;
 
 /**
  * Add column extract handler for MySQL.
  * 
  * @author duhongjun
  */
-public final class MySQLAddColumnExtractHandler extends AddColumnExtractHandler {
+public final class MySQLAddColumnExtractHandler extends AddColumnExtractor {
     
     @Override
     protected void postExtractColumnDefinition(final ParseTree ancestorNode, final ColumnDefinitionExtractResult columnDefinition) {

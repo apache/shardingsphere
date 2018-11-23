@@ -17,23 +17,21 @@
 
 package io.shardingsphere.core.parsing.antlr.extractor.statement.handler;
 
-import java.util.Collection;
-
-import org.antlr.v4.runtime.ParserRuleContext;
-import org.antlr.v4.runtime.tree.ParseTree;
-
 import com.google.common.base.Optional;
-
 import io.shardingsphere.core.parsing.antlr.extractor.statement.handler.result.DropColumnExtractResult;
 import io.shardingsphere.core.parsing.antlr.extractor.statement.util.ASTUtils;
 import io.shardingsphere.core.util.SQLUtil;
+import org.antlr.v4.runtime.ParserRuleContext;
+import org.antlr.v4.runtime.tree.ParseTree;
+
+import java.util.Collection;
 
 /**
- * Drop column extract handler.
+ * Drop column clause extractor.
  *
  * @author duhongjun
  */
-public final class DropColumnExtractHandler implements ASTExtractHandler<Optional<DropColumnExtractResult>> {
+public final class DropColumnExtractor implements SQLClauseExtractor<Optional<DropColumnExtractResult>> {
     
     @Override
     public Optional<DropColumnExtractResult> extract(final ParserRuleContext ancestorNode) {

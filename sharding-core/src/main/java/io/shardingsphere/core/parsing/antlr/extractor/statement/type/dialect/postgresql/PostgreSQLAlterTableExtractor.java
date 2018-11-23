@@ -17,10 +17,10 @@
 
 package io.shardingsphere.core.parsing.antlr.extractor.statement.type.dialect.postgresql;
 
-import io.shardingsphere.core.parsing.antlr.extractor.statement.handler.AddColumnExtractHandler;
-import io.shardingsphere.core.parsing.antlr.extractor.statement.handler.AddPrimaryKeyExtractHandler;
-import io.shardingsphere.core.parsing.antlr.extractor.statement.handler.ModifyColumnExtractHandler;
-import io.shardingsphere.core.parsing.antlr.extractor.statement.handler.RenameColumnExtractHandler;
+import io.shardingsphere.core.parsing.antlr.extractor.statement.handler.AddColumnExtractor;
+import io.shardingsphere.core.parsing.antlr.extractor.statement.handler.AddPrimaryKeyExtractor;
+import io.shardingsphere.core.parsing.antlr.extractor.statement.handler.ModifyColumnExtractor;
+import io.shardingsphere.core.parsing.antlr.extractor.statement.handler.RenameColumnExtractor;
 import io.shardingsphere.core.parsing.antlr.extractor.statement.handler.RuleName;
 import io.shardingsphere.core.parsing.antlr.extractor.statement.type.AlterTableExtractor;
 
@@ -32,9 +32,9 @@ import io.shardingsphere.core.parsing.antlr.extractor.statement.type.AlterTableE
 public final class PostgreSQLAlterTableExtractor extends AlterTableExtractor {
     
     public PostgreSQLAlterTableExtractor() {
-        addExtractHandler(new AddColumnExtractHandler());
-        addExtractHandler(new AddPrimaryKeyExtractHandler(RuleName.ALTER_TABLE_ADD_CONSTRAINT));
-        addExtractHandler(new ModifyColumnExtractHandler());
-        addExtractHandler(new RenameColumnExtractHandler());
+        addExtractHandler(new AddColumnExtractor());
+        addExtractHandler(new AddPrimaryKeyExtractor(RuleName.ALTER_TABLE_ADD_CONSTRAINT));
+        addExtractHandler(new ModifyColumnExtractor());
+        addExtractHandler(new RenameColumnExtractor());
     }
 }

@@ -17,7 +17,7 @@
 
 package io.shardingsphere.core.parsing.antlr.extractor.statement.type.dialect.sqlserver;
 
-import io.shardingsphere.core.parsing.antlr.extractor.statement.handler.TableNameExtractHandler;
+import io.shardingsphere.core.parsing.antlr.extractor.statement.handler.TableNameExtractor;
 import io.shardingsphere.core.parsing.antlr.extractor.statement.type.TruncateTableExtractor;
 
 /**
@@ -28,6 +28,6 @@ import io.shardingsphere.core.parsing.antlr.extractor.statement.type.TruncateTab
 public final class SQLServerTruncateTableExtractor extends TruncateTableExtractor {
     
     public SQLServerTruncateTableExtractor() {
-        addExtractHandler(new TableNameExtractHandler());
+        addExtractHandler(new TableNameExtractor());
     }
 }

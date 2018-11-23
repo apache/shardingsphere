@@ -17,7 +17,7 @@
 
 package io.shardingsphere.core.parsing.antlr.extractor.statement.type.dialect.oracle;
 
-import io.shardingsphere.core.parsing.antlr.extractor.statement.handler.IndexNameExtractHandler;
+import io.shardingsphere.core.parsing.antlr.extractor.statement.handler.IndexNameExtractor;
 import io.shardingsphere.core.parsing.antlr.extractor.statement.type.DDLStatementExtractor;
 
 /**
@@ -28,6 +28,6 @@ import io.shardingsphere.core.parsing.antlr.extractor.statement.type.DDLStatemen
 public final class OracleDropIndexExtractor extends DDLStatementExtractor {
     
     public OracleDropIndexExtractor() {
-        addExtractHandler(new IndexNameExtractHandler());
+        addExtractHandler(new IndexNameExtractor());
     }
 }

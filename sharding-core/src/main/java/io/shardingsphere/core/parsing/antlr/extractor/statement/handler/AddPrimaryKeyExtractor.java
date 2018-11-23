@@ -17,34 +17,36 @@
 
 package io.shardingsphere.core.parsing.antlr.extractor.statement.handler;
 
-import java.util.Collection;
-
-import org.antlr.v4.runtime.ParserRuleContext;
-
 import com.google.common.base.Optional;
-
 import io.shardingsphere.core.parsing.antlr.extractor.statement.handler.result.PrimaryKeyExtractResult;
 import io.shardingsphere.core.parsing.antlr.extractor.statement.util.ASTUtils;
+import lombok.RequiredArgsConstructor;
+import org.antlr.v4.runtime.ParserRuleContext;
+
+import java.util.Collection;
 
 /**
- * Create table primary key extract handler.
+ * Add primary key clause extractor.
  *
  * @author duhongjun
  */
-public final class CreatePrimaryKeyExtractHandler implements ASTExtractHandler<Optional<PrimaryKeyExtractResult>> {
+@RequiredArgsConstructor
+public final class AddPrimaryKeyExtractor implements SQLClauseExtractor<Optional<PrimaryKeyExtractResult>> {
+    
+    private final RuleName ruleName;
     
     @Override
     public Optional<PrimaryKeyExtractResult> extract(final ParserRuleContext ancestorNode) {
-        Optional<ParserRuleContext> primaryKeyNode = ASTUtils.findFirstChildNode(ancestorNode, RuleName.PRIMARY_KEY);
+        Optional<ParserRuleContext> modifyColumnNode = ASTUtils.findFirstChildNode(ancestorNode, ruleName);
+        if (!modifyColumnNode.isPresent()) {
+            return Optional.absent();
+        }
+        Optional<ParserRuleContext> primaryKeyNode = ASTUtils.findFirstChildNode(modifyColumnNode.get(), RuleName.PRIMARY_KEY);
         if (!primaryKeyNode.isPresent()) {
             return Optional.absent();
         }
-        Optional<ParserRuleContext> columnListNode = ASTUtils.findFirstChildNode(primaryKeyNode.get().getParent().getParent(), RuleName.COLUMN_LIST);
-        if (!columnListNode.isPresent()) {
-            return Optional.absent();
-        }
-        Collection<ParserRuleContext> columnNameNodes = ASTUtils.getAllDescendantNodes(columnListNode.get(), RuleName.COLUMN_NAME);
-        if (columnNameNodes.isEmpty()) {
+        Collection<ParserRuleContext> columnNameNodes = ASTUtils.getAllDescendantNodes(modifyColumnNode.get(), RuleName.COLUMN_NAME);
+        if (null == columnNameNodes) {
             return Optional.absent();
         }
         PrimaryKeyExtractResult result = new PrimaryKeyExtractResult();

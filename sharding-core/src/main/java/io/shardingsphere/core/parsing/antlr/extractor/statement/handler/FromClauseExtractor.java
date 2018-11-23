@@ -28,13 +28,13 @@ import java.util.Collections;
 import java.util.LinkedList;
 
 /**
- * Extract table result.
+ * From clause extractor.
  *
  * @author duhongjun
  */
-public final class FromClauseExtractHandler implements ASTExtractHandler<Collection<TableExtractResult>> {
+public final class FromClauseExtractor implements SQLClauseExtractor<Collection<TableExtractResult>> {
     
-    private final TableNameExtractHandler tableNameExtractHandler = new TableNameExtractHandler();
+    private final TableNameExtractor tableNameExtractHandler = new TableNameExtractor();
     
     @Override
     public Collection<TableExtractResult> extract(final ParserRuleContext ancestorNode) {
@@ -49,12 +49,8 @@ public final class FromClauseExtractHandler implements ASTExtractHandler<Collect
         Collection<TableExtractResult> result = new LinkedList<>();
         for (ParserRuleContext each : tableReferenceNodes) {
             Optional<ParserRuleContext> joinTableNode = ASTUtils.findFirstChildNode(each, RuleName.JOIN_TABLE);
-            Optional<ParserRuleContext> tableFactorNode = null;
-            if (joinTableNode.isPresent()) {
-                tableFactorNode = ASTUtils.findFirstChildNode(joinTableNode.get(), RuleName.TABLE_FACTOR);
-            } else {
-                tableFactorNode = ASTUtils.findFirstChildNode(each, RuleName.TABLE_FACTOR);
-            }
+            Optional<ParserRuleContext> tableFactorNode = joinTableNode.isPresent()
+                    ? ASTUtils.findFirstChildNode(joinTableNode.get(), RuleName.TABLE_FACTOR) : ASTUtils.findFirstChildNode(each, RuleName.TABLE_FACTOR);
             //TODO subquery
             if (!tableFactorNode.isPresent()) {
                 continue;
