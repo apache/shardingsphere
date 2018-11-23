@@ -52,14 +52,14 @@ import java.util.Set;
  */
 public final class AggregationDistinctQueryResult extends DistinctQueryResult {
     
-    private final Map<Integer, Integer> distinctColumnIndexAndDerivedCountIndex = new HashMap<>();
+    private final Map<Integer, Integer> distinctIndexAndDerivedCountIndexes = new HashMap<>();
     
-    private final Map<Integer, Integer> distinctColumnIndexAndDerivedSumIndexes = new HashMap<>();
+    private final Map<Integer, Integer> distinctIndexAndDerivedSumIndexes = new HashMap<>();
     
-    private AggregationDistinctQueryResult(final Multimap<String, Integer> columnLabelAndIndexMap, final Iterator<List<Object>> resultData, final Map<Integer, Integer> derivedCountIndexes, final Map<Integer, Integer> derivedSumIndexes) {
+    private AggregationDistinctQueryResult(final Multimap<String, Integer> columnLabelAndIndexMap, final Iterator<List<Object>> resultData, final Map<Integer, Integer> distinctIndexAndDerivedCountIndexes, final Map<Integer, Integer> distinctIndexAndDerivedSumIndexes) {
         super(columnLabelAndIndexMap, resultData);
-        this.derivedCountIndexes.addAll(derivedCountIndexes);
-        this.derivedSumIndexes.addAll(derivedSumIndexes);
+        this.distinctIndexAndDerivedCountIndexes.putAll(distinctIndexAndDerivedCountIndexes);
+        this.distinctIndexAndDerivedSumIndexes.putAll(distinctIndexAndDerivedSumIndexes);
     }
     
     @SneakyThrows
