@@ -21,6 +21,7 @@ import com.google.common.base.Function;
 import com.google.common.collect.Iterators;
 import com.google.common.collect.Lists;
 import com.google.common.collect.Multimap;
+import io.shardingsphere.core.constant.AggregationType;
 import io.shardingsphere.core.merger.QueryResult;
 import io.shardingsphere.core.parsing.parser.context.selectitem.AggregationDistinctSelectItem;
 import io.shardingsphere.core.parsing.parser.context.selectitem.AggregationSelectItem;
@@ -34,9 +35,11 @@ import java.util.ArrayList;
 import java.util.Calendar;
 import java.util.Collection;
 import java.util.Iterator;
+import java.util.LinkedHashMap;
 import java.util.LinkedHashSet;
 import java.util.LinkedList;
 import java.util.List;
+import java.util.Map;
 import java.util.Map.Entry;
 import java.util.Set;
 
@@ -63,7 +66,7 @@ public final class AggregationDistinctQueryResult extends DistinctQueryResult {
     }
     
     private Iterator<List<Object>> getResultData(final SelectStatement selectStatement) {
-        List<Integer> aggregationDistinctColumnIndexes = getAggregationDistinctColumnIndexes(selectStatement);
+        Map<Integer, AggregationType> aggregationDistinctColumnIndexes = getAggregationDistinctColumnIndexes(selectStatement);
         List<Integer> derivedCountIndexes = getDerivedCountIndexes(selectStatement);
         List<Integer> derivedSumIndexes = getDerivedSumIndexes(selectStatement);
         
@@ -74,10 +77,10 @@ public final class AggregationDistinctQueryResult extends DistinctQueryResult {
         super(queryResults);
     }
     
-    private List<Integer> getAggregationDistinctColumnIndexes(final SelectStatement selectStatement) {
-        List<Integer> result = new LinkedList<>();
-        for (AggregationDistinctSelectItem each :selectStatement.getAggregationDistinctSelectItems()) {
-            result.add(each.getIndex());
+    private Map<Integer, AggregationType> getAggregationDistinctColumnIndexes(final SelectStatement selectStatement) {
+        Map<Integer, AggregationType> result = new LinkedHashMap<>();
+        for (AggregationDistinctSelectItem each : selectStatement.getAggregationDistinctSelectItems()) {
+            result.put(each.getIndex(), each.getType());
         }
         return result;
     }
