@@ -83,9 +83,9 @@ public final class AggregationDistinctQueryResult extends DistinctQueryResult {
         return Lists.newArrayList(Iterators.transform(getResultData(), new Function<List<Object>, DistinctQueryResult>() {
     
             @Override
-            public DistinctQueryResult apply(final List<Object> row) {
+            public DistinctQueryResult apply(final List<Object> input) {
                 Set<List<Object>> resultData = new LinkedHashSet<>();
-                resultData.add(row);
+                resultData.add(input);
                 return new AggregationDistinctQueryResult(getColumnLabelAndIndexMap(), resultData.iterator(), derivedCountIndexAndDistinctIndexes, derivedSumIndexAndDistinctIndexes);
             }
         }));
