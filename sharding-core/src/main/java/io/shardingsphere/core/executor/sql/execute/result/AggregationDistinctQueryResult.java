@@ -52,17 +52,20 @@ import java.util.Set;
  */
 public final class AggregationDistinctQueryResult extends DistinctQueryResult {
     
-    private final Map<Integer, Integer> distinctIndexAndDerivedCountIndexes;
+    private final Map<Integer, Integer> distinctIndexAndDerivedCountIndexes = new LinkedHashMap<>();
     
-    private final Map<Integer, Integer> distinctIndexAndDerivedSumIndexes;
+    private final Map<Integer, Integer> distinctIndexAndDerivedSumIndexes = new LinkedHashMap<>();
     
     private AggregationDistinctQueryResult(final Multimap<String, Integer> columnLabelAndIndexMap, final Iterator<List<Object>> resultData, final Map<Integer, Integer> distinctIndexAndDerivedCountIndexes, final Map<Integer, Integer> distinctIndexAndDerivedSumIndexes) {
         super(columnLabelAndIndexMap, resultData);
+        this.distinctIndexAndDerivedCountIndexes = distinctIndexAndDerivedCountIndexes;
+        this.distinctIndexAndDerivedSumIndexes = distinctIndexAndDerivedSumIndexes;
     }
     
     @SneakyThrows
     public AggregationDistinctQueryResult(final Collection<QueryResult> queryResults, final SelectStatement selectStatement) {
         super(queryResults);
+        init(selectStatement);
     }
     
     private void init(final SelectStatement selectStatement) {
@@ -70,7 +73,7 @@ public final class AggregationDistinctQueryResult extends DistinctQueryResult {
             List<AggregationSelectItem> derivedAggregationSelectItems = each.getDerivedAggregationSelectItems();
             if (!derivedAggregationSelectItems.isEmpty()) {
                 distinctIndexAndDerivedCountIndexes.put(each.getIndex(), derivedAggregationSelectItems.get(0).getIndex());
-                distinctIndexAndDerivedSumIndexes.add(derivedAggregationSelectItems.get(1).getIndex());
+                distinctIndexAndDerivedSumIndexes.put(each.getIndex(),derivedAggregationSelectItems.get(1).getIndex());
     
             }
         }
