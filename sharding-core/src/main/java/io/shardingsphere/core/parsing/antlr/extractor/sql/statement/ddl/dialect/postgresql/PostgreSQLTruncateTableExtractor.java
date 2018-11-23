@@ -15,12 +15,19 @@
  * </p>
  */
 
-package io.shardingsphere.core.parsing.antlr.extractor.sql.segment;
+package io.shardingsphere.core.parsing.antlr.extractor.sql.statement.ddl.dialect.postgresql;
+
+import io.shardingsphere.core.parsing.antlr.extractor.sql.segment.common.TableNamesExtractor;
+import io.shardingsphere.core.parsing.antlr.extractor.sql.statement.ddl.TruncateTableExtractor;
 
 /**
- * SQL segment extractor.
+ * Truncate table extractor for PostgreSQL.
  * 
  * @author duhongjun
  */
-public interface SQLSegmentExtractor {
+public final class PostgreSQLTruncateTableExtractor extends TruncateTableExtractor {
+    
+    public PostgreSQLTruncateTableExtractor() {
+        addExtractor(new TableNamesExtractor());
+    }
 }

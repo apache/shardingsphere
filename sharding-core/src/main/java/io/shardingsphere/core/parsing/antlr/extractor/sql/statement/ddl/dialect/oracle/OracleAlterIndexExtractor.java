@@ -15,12 +15,19 @@
  * </p>
  */
 
-package io.shardingsphere.core.parsing.antlr.extractor.sql.segment;
+package io.shardingsphere.core.parsing.antlr.extractor.sql.statement.ddl.dialect.oracle;
+
+import io.shardingsphere.core.parsing.antlr.extractor.sql.segment.common.IndexesNameExtractor;
+import io.shardingsphere.core.parsing.antlr.extractor.sql.statement.ddl.DDLStatementExtractor;
 
 /**
- * SQL segment extractor.
+ * Oracle alter index statement extractor.
  * 
  * @author duhongjun
  */
-public interface SQLSegmentExtractor {
+public final class OracleAlterIndexExtractor extends DDLStatementExtractor {
+    
+    public OracleAlterIndexExtractor() {
+        addExtractor(new IndexesNameExtractor());
+    }
 }

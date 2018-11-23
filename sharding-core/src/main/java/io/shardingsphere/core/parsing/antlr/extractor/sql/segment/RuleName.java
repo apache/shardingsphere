@@ -81,8 +81,6 @@ public enum RuleName {
     
     TABLE_REFERENCE("TableReference"),
     
-    FROM_CLAUSE("FromClause"),
-    
     TABLE_FACTOR("TableFactor"),
     
     JOIN_TABLE("JoinTable"),
@@ -93,13 +91,15 @@ public enum RuleName {
     
     EXPR("Expr"),
     
-    GROUPBYCLAUSE("GroupByClause"),
+    FROM_CLAUSE("FromClause"),
     
-    ORDERBYCLAUSE("OrderByClause"),
+    WHERE_CLAUSE("WhereClause"),
     
-    ORDERBYITEM("OrderByItem"),
+    GROUP_BY_CLAUSE("GroupByClause"),
     
-    WHERECLAUSE("WhereClause");
+    ORDER_BY_CLAUSE("OrderByClause"),
+    
+    ORDER_BY_ITEM("OrderByItem");
     
     private final String name;
     

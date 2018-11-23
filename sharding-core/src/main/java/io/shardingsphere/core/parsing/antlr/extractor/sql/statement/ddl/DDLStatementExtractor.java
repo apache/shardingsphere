@@ -15,12 +15,21 @@
  * </p>
  */
 
-package io.shardingsphere.core.parsing.antlr.extractor.sql.segment;
+package io.shardingsphere.core.parsing.antlr.extractor.sql.statement.ddl;
+
+import io.shardingsphere.core.parsing.antlr.extractor.sql.statement.AbstractSQLStatementExtractor;
+import io.shardingsphere.core.parsing.parser.sql.SQLStatement;
+import io.shardingsphere.core.parsing.parser.sql.ddl.DDLStatement;
 
 /**
- * SQL segment extractor.
+ * DDL statement extractor.
  * 
  * @author duhongjun
  */
-public interface SQLSegmentExtractor {
+public class DDLStatementExtractor extends AbstractSQLStatementExtractor {
+    
+    @Override
+    protected SQLStatement createStatement() {
+        return new DDLStatement();
+    }
 }

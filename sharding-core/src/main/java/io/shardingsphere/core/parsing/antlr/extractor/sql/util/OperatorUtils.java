@@ -86,6 +86,6 @@ public class OperatorUtils {
      * @return match return true
      */
     public static boolean parenMatch(final String startParen, final String endParen) {
-        return PARENTHESES.containsKey(startParen) && PARENTHESES.get(startParen).equals(endParen);
+        return isStartParen(startParen) && PARENTHESES.get(startParen).equals(endParen);
     }
 }

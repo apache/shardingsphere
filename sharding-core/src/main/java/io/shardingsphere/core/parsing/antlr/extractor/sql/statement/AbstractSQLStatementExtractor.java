@@ -20,6 +20,8 @@ package io.shardingsphere.core.parsing.antlr.extractor.sql.statement;
 import com.google.common.base.Optional;
 import io.shardingsphere.core.metadata.table.ShardingTableMetaData;
 import io.shardingsphere.core.parsing.antlr.extractor.SQLStatementExtractor;
+import io.shardingsphere.core.parsing.antlr.extractor.sql.segment.CollectionSQLSegmentExtractor;
+import io.shardingsphere.core.parsing.antlr.extractor.sql.segment.OptionalSQLSegmentExtractor;
 import io.shardingsphere.core.parsing.antlr.extractor.sql.segment.SQLSegmentExtractor;
 import io.shardingsphere.core.parsing.antlr.extractor.sql.segment.filler.HandlerResultFiller;
 import io.shardingsphere.core.parsing.antlr.extractor.sql.segment.filler.HandlerResultFillerRegistry;
@@ -37,20 +39,22 @@ import java.util.List;
  */
 public abstract class AbstractSQLStatementExtractor implements SQLStatementExtractor {
     
-    private final Collection<SQLSegmentExtractor<?>> extractors = new LinkedList<>();
+    private final Collection<SQLSegmentExtractor> extractors = new LinkedList<>();
     
     @Override
     public final SQLStatement extract(final ParserRuleContext rootNode, final ShardingTableMetaData shardingTableMetaData) {
         SQLStatement result = createStatement();
         List<Object> extractResults = new LinkedList<>();
         for (SQLSegmentExtractor each : extractors) {
-            Object extractResult = each.extract(rootNode);
-            if (extractResult instanceof Optional) {
-                if (((Optional) extractResult).isPresent()) {
+            if (each instanceof OptionalSQLSegmentExtractor) {
+                Optional<?> extractResult = ((OptionalSQLSegmentExtractor) each).extract(rootNode);
+                if (extractResult.isPresent()) {
                     extractResults.add(((Optional) extractResult).get());
                 }
-            } else if (extractResult instanceof Collection) {
-                if (!((Collection) extractResult).isEmpty()) {
+            }
+            if (each instanceof CollectionSQLSegmentExtractor) {
+                Collection<?> extractResult = ((CollectionSQLSegmentExtractor) each).extract(rootNode);
+                if (!extractResult.isEmpty()) {
                     extractResults.add(extractResult);
                 }
             }

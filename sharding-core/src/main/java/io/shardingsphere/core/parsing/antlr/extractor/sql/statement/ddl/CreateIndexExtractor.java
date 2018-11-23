@@ -15,12 +15,20 @@
  * </p>
  */
 
-package io.shardingsphere.core.parsing.antlr.extractor.sql.segment;
+package io.shardingsphere.core.parsing.antlr.extractor.sql.statement.ddl;
+
+import io.shardingsphere.core.parsing.antlr.extractor.sql.segment.common.IndexNameExtractor;
+import io.shardingsphere.core.parsing.antlr.extractor.sql.segment.common.TableNameExtractor;
 
 /**
- * SQL segment extractor.
+ * Create index extractor.
  * 
  * @author duhongjun
  */
-public interface SQLSegmentExtractor {
+public final class CreateIndexExtractor extends DDLStatementExtractor {
+    
+    public CreateIndexExtractor() {
+        addExtractor(new TableNameExtractor());
+        addExtractor(new IndexNameExtractor());
+    }
 }

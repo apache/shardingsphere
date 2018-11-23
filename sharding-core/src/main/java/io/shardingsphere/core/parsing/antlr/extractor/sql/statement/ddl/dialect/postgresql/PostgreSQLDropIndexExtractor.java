@@ -15,12 +15,19 @@
  * </p>
  */
 
-package io.shardingsphere.core.parsing.antlr.extractor.sql.segment;
+package io.shardingsphere.core.parsing.antlr.extractor.sql.statement.ddl.dialect.postgresql;
+
+import io.shardingsphere.core.parsing.antlr.extractor.sql.segment.common.IndexesNameExtractor;
+import io.shardingsphere.core.parsing.antlr.extractor.sql.statement.ddl.DDLStatementExtractor;
 
 /**
- * SQL segment extractor.
+ * Postgre drop index statement extractor.
  * 
  * @author duhongjun
  */
-public interface SQLSegmentExtractor {
+public final class PostgreSQLDropIndexExtractor extends DDLStatementExtractor {
+    
+    public PostgreSQLDropIndexExtractor() {
+        addExtractor(new IndexesNameExtractor());
+    }
 }

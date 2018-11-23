@@ -15,12 +15,19 @@
  * </p>
  */
 
-package io.shardingsphere.core.parsing.antlr.extractor.sql.segment;
+package io.shardingsphere.core.parsing.antlr.extractor.sql.statement.ddl.dialect.postgresql;
+
+import io.shardingsphere.core.parsing.antlr.extractor.sql.segment.common.TableNamesExtractor;
+import io.shardingsphere.core.parsing.antlr.extractor.sql.statement.ddl.DropTableExtractor;
 
 /**
- * SQL segment extractor.
+ * Drop table extractor for PostgreSQL.
  * 
  * @author duhongjun
  */
-public interface SQLSegmentExtractor {
+public final class PostgreSQLDropTableExtractor extends DropTableExtractor {
+    
+    public PostgreSQLDropTableExtractor() {
+        addExtractor(new TableNamesExtractor());
+    }
 }

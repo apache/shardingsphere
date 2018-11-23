@@ -15,12 +15,19 @@
  * </p>
  */
 
-package io.shardingsphere.core.parsing.antlr.extractor.sql.segment;
+package io.shardingsphere.core.parsing.antlr.extractor.sql.statement.ddl.dialect.mysql;
+
+import io.shardingsphere.core.parsing.antlr.extractor.sql.segment.common.TableNameExtractor;
+import io.shardingsphere.core.parsing.antlr.extractor.sql.statement.ddl.TruncateTableExtractor;
 
 /**
- * SQL segment extractor.
+ * Truncate table extractor for MySQL.
  * 
  * @author duhongjun
  */
-public interface SQLSegmentExtractor {
+public final class MySQLTruncateTableExtractor extends TruncateTableExtractor {
+    
+    public MySQLTruncateTableExtractor() {
+        addExtractor(new TableNameExtractor());
+    }
 }

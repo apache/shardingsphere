@@ -15,12 +15,18 @@
  * </p>
  */
 
-package io.shardingsphere.core.parsing.antlr.extractor.sql.segment;
+package io.shardingsphere.core.parsing.antlr.extractor.sql.segment.common;
+
+import io.shardingsphere.core.parsing.antlr.extractor.sql.segment.RuleName;
 
 /**
- * SQL segment extractor.
+ * Group by clause extractor.
  * 
  * @author duhongjun
  */
-public interface SQLSegmentExtractor {
+public final class GroupByClauseExtractor extends OrderByClauseExtractor {
+    
+    public GroupByClauseExtractor() {
+        super(RuleName.GROUP_BY_CLAUSE);
+    }
 }
