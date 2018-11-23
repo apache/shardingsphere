@@ -90,31 +90,6 @@ public final class AggregationDistinctQueryResult extends DistinctQueryResult {
         return result;
     }
     
-    protected void fill(final Map<Integer, AggregationType> aggregationDistinctColumnIndexAndTypes) {
-        List<List<Object>> resultData = Lists.newArrayList(getResultData());
-        Map<Integer, Object> result = new LinkedHashMap<>();
-        for (Entry<Integer, AggregationType> entry : aggregationDistinctColumnIndexAndTypes.entrySet()) {
-            BigDecimal value = new BigDecimal("0");
-            for (List<Object> each : resultData) {
-                if (entry.getValue().equals(AggregationType.COUNT)) {
-                    value.add()
-                }
-            }
-        }
-        while (getResultData().hasNext()) {
-            List<Object> row = getResultData().next();
-            
-            for (int columnIndex = 1; columnIndex <= row.size(); columnIndex++) {
-                List<Object> result = new LinkedList<>();
-                if (aggregationDistinctColumnIndexes.keySet().contains(columnIndex)) {
-                
-                }
-                result.add();
-            }
-            resultData.add(row);
-        }
-    }
-    
     /**
      * Divide one distinct query result to multiple child ones.
      *
