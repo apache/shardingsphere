@@ -61,8 +61,7 @@ public final class CommandExecutor implements Runnable {
         rootInvokeHook.start();
         int connectionSize = 0;
         try (MySQLPacketPayload payload = new MySQLPacketPayload(message);
-             BackendConnection backendConnection = new BackendConnection()) {
-            frontendHandler.setBackendConnection(backendConnection);
+             BackendConnection backendConnection = frontendHandler.getBackendConnection()) {
             CommandPacket commandPacket = getCommandPacket(payload, backendConnection, frontendHandler);
             Optional<CommandResponsePackets> responsePackets = commandPacket.execute();
             if (!responsePackets.isPresent()) {
