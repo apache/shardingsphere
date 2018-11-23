@@ -35,6 +35,7 @@ import java.sql.SQLException;
 import java.util.ArrayList;
 import java.util.Calendar;
 import java.util.Collection;
+import java.util.HashMap;
 import java.util.Iterator;
 import java.util.LinkedHashMap;
 import java.util.LinkedHashSet;
@@ -51,11 +52,11 @@ import java.util.Set;
  */
 public final class AggregationDistinctQueryResult extends DistinctQueryResult {
     
-    private final List<Integer> derivedCountIndexes = new LinkedList<>();
+    private final Map<Integer, Integer> distinctColumnIndexAndDerivedCountIndex = new HashMap<>();
     
-    private final List<Integer> derivedSumIndexes = new LinkedList<>();
+    private final Map<Integer, Integer> distinctColumnIndexAndDerivedSumIndexes = new HashMap<>();
     
-    private AggregationDistinctQueryResult(final Multimap<String, Integer> columnLabelAndIndexMap, final Iterator<List<Object>> resultData, final List<Integer> derivedCountIndexes, final List<Integer> derivedSumIndexes) {
+    private AggregationDistinctQueryResult(final Multimap<String, Integer> columnLabelAndIndexMap, final Iterator<List<Object>> resultData, final Map<Integer, Integer> derivedCountIndexes, final Map<Integer, Integer> derivedSumIndexes) {
         super(columnLabelAndIndexMap, resultData);
         this.derivedCountIndexes.addAll(derivedCountIndexes);
         this.derivedSumIndexes.addAll(derivedSumIndexes);
@@ -68,7 +69,7 @@ public final class AggregationDistinctQueryResult extends DistinctQueryResult {
         derivedSumIndexes.addAll(getDerivedSumIndexes(selectStatement));
     }
     
-    private List<Integer> getDerivedCountIndexes(final SelectStatement selectStatement) {
+    private Map<Integer, Integer> getDerivedCountIndexes(final SelectStatement selectStatement) {
         List<Integer> result = new LinkedList<>();
         for (AggregationSelectItem each : selectStatement.getAggregationSelectItems()) {
             List<AggregationSelectItem> derivedAggregationSelectItems = each.getDerivedAggregationSelectItems();
@@ -79,7 +80,7 @@ public final class AggregationDistinctQueryResult extends DistinctQueryResult {
         return result;
     }
     
-    private List<Integer> getDerivedSumIndexes(final SelectStatement selectStatement) {
+    private Map<Integer, Integer> getDerivedSumIndexes(final SelectStatement selectStatement) {
         List<Integer> result = new LinkedList<>();
         for (AggregationSelectItem each : selectStatement.getAggregationSelectItems()) {
             List<AggregationSelectItem> derivedAggregationSelectItems = each.getDerivedAggregationSelectItems();
