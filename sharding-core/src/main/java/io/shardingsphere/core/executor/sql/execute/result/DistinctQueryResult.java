@@ -81,7 +81,7 @@ public class DistinctQueryResult implements QueryResult {
         return resultData.iterator();
     }
     
-    protected void fill(final Set<List<Object>> resultData, final QueryResult queryResult) throws SQLException {
+    private void fill(final Set<List<Object>> resultData, final QueryResult queryResult) throws SQLException {
         while (queryResult.next()) {
             List<Object> row = new ArrayList<>(queryResult.getColumnCount());
             for (int columnIndex = 1; columnIndex <= queryResult.getColumnCount(); columnIndex++) {
