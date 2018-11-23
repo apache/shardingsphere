@@ -58,11 +58,11 @@ public final class DQLMergeEngine implements MergeEngine {
     
     public DQLMergeEngine(final List<QueryResult> queryResults, final SelectStatement selectStatement) throws SQLException {
         this.selectStatement = selectStatement;
-        this.queryResults = getQueryResults(queryResults);
+        this.queryResults = getRevisedQueryResults(queryResults);
         columnLabelIndexMap = getColumnLabelIndexMap(queryResults.get(0));
     }
     
-    private List<QueryResult> getQueryResults(final List<QueryResult> queryResults) {
+    private List<QueryResult> getRevisedQueryResults(final List<QueryResult> queryResults) {
         if (!selectStatement.getAggregationDistinctSelectItems().isEmpty()) {
             return Collections.singletonList((QueryResult) new AggregationDistinctQueryResult(queryResults, selectStatement));
         }
