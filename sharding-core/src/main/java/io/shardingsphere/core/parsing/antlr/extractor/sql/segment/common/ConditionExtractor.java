@@ -18,11 +18,13 @@
 package io.shardingsphere.core.parsing.antlr.extractor.sql.segment.common;
 
 import com.google.common.base.Optional;
+import com.google.common.base.Preconditions;
+import io.shardingsphere.core.parsing.antlr.extractor.sql.segment.LogicalOperator;
 import io.shardingsphere.core.parsing.antlr.extractor.sql.segment.OptionalSQLSegmentExtractor;
+import io.shardingsphere.core.parsing.antlr.extractor.sql.segment.Paren;
 import io.shardingsphere.core.parsing.antlr.extractor.sql.segment.RuleName;
 import io.shardingsphere.core.parsing.antlr.extractor.sql.segment.result.ConditionExtractResult;
 import io.shardingsphere.core.parsing.antlr.extractor.sql.util.ASTUtils;
-import io.shardingsphere.core.parsing.antlr.extractor.sql.util.OperatorUtils;
 import io.shardingsphere.core.parsing.parser.context.condition.AndCondition;
 import io.shardingsphere.core.parsing.parser.context.condition.OrCondition;
 import org.antlr.v4.runtime.ParserRuleContext;
@@ -47,7 +49,7 @@ public final class ConditionExtractor implements OptionalSQLSegmentExtractor<Con
     private Optional<OrCondition> extractCondition(final ParseTree tree) {
         int index = -1;
         for (int i = 0; i < tree.getChildCount(); i++) {
-            if (OperatorUtils.isRationalOperator(tree.getChild(i).getText())) {
+            if (LogicalOperator.isLogicalOperator(tree.getChild(i).getText())) {
                 index = i;
                 break;
             }
@@ -57,10 +59,10 @@ public final class ConditionExtractor implements OptionalSQLSegmentExtractor<Con
             Optional<OrCondition> leftOrCondition = extractCondition(tree.getChild(index - 1));
             Optional<OrCondition> rightOrCondition = extractCondition(tree.getChild(index + 1));
             if (!leftOrCondition.get().getAndConditions().isEmpty() && !rightOrCondition.get().getAndConditions().isEmpty()) {
-                if (OperatorUtils.isOr(tree.getChild(index).getText())) {
+                if (LogicalOperator.isOrOperator(tree.getChild(index).getText())) {
                     result.getAndConditions().addAll(leftOrCondition.get().getAndConditions());
                     result.getAndConditions().addAll(rightOrCondition.get().getAndConditions());
-                } else if (OperatorUtils.isAnd(tree.getChild(index).getText())) {
+                } else if (LogicalOperator.isAndOperator(tree.getChild(index).getText())) {
                     for (AndCondition each : leftOrCondition.get().getAndConditions()) {
                         for (AndCondition eachRightOr : rightOrCondition.get().getAndConditions()) {
                             AndCondition tempList = new AndCondition();
@@ -81,19 +83,15 @@ public final class ConditionExtractor implements OptionalSQLSegmentExtractor<Con
         } else {
             index = -1;
             for (int i = 0; i < tree.getChildCount(); i++) {
-                if (OperatorUtils.isStartParen(tree.getChild(i).getText())) {
+                if (Paren.isLeftParen(tree.getChild(i).getText())) {
                     index = i;
                     break;
                 }
             }
-            if (0 <= index) {
-                if (tree.getChildCount() != index + 3) {
-                    throw new RuntimeException("invalid expression");
-                }
-                if (OperatorUtils.parenMatch(tree.getChild(index + 2).getText(), tree.getChild(index).getText())) {
-                    throw new RuntimeException("missing right paren");
-                }
-                if ("ExprContext".equals(tree.getChild(index + 1).getClass().getSimpleName())) {
+            if (index >= 0) {
+                Preconditions.checkState(tree.getChildCount() == index + 3, "Invalid expression.");
+                Preconditions.checkState(Paren.match(tree.getChild(index + 2).getText(), tree.getChild(index).getText()), "Missing right paren.");
+                if (RuleName.EXPR.getName().equals(tree.getChild(index + 1).getClass().getSimpleName())) {
                     return extractCondition(tree.getChild(index + 1));
                 }
             } else {
