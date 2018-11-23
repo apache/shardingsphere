@@ -109,16 +109,6 @@ public final class AggregationDistinctQueryResult extends DistinctQueryResult {
     }
     
     @Override
-    public boolean next() {
-        if (resultData.hasNext()) {
-            currentRow = resultData.next();
-            return true;
-        }
-        currentRow = null;
-        return false;
-    }
-
-    @Override
     public Object getValue(final int columnIndex, final Class<?> type) {
         return currentRow.get(columnIndex - 1);
     }
