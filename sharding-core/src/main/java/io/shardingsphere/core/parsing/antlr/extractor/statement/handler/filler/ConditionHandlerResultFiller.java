@@ -40,10 +40,6 @@ public class ConditionHandlerResultFiller extends AbstractHandlerResultFiller {
     protected void fillSQLStatement(final Object extractResult, final SQLStatement statement, final ShardingRule shardingRule, final ShardingTableMetaData shardingTableMetaData) {
         ConditionExtractResult conditionResult = (ConditionExtractResult) extractResult;
         OrCondition orCondition = conditionResult.getOrCondition().optimize();
-        for(AndCondition each : orCondition.getAndConditions()) {
-            for(Condition condition : each.getConditions()) {
-                statement.getConditions().add(condition, shardingRule);
-            }
-        }
+        statement.getConditions().getOrCondition().getAndConditions().addAll(orCondition.getAndConditions());
     }
 }

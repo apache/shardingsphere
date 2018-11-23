@@ -17,17 +17,21 @@
 
 package io.shardingsphere.core.parsing.antlr.extractor.statement.handler.filler;
 
-import io.shardingsphere.core.parsing.antlr.extractor.statement.handler.result.ColumnDefinitionExtractResult;
-import io.shardingsphere.core.parsing.antlr.extractor.statement.handler.result.DropColumnExtractResult;
-import io.shardingsphere.core.parsing.antlr.extractor.statement.handler.result.DropPrimaryKeyExtractResult;
-import io.shardingsphere.core.parsing.antlr.extractor.statement.handler.result.IndexExtractResult;
-import io.shardingsphere.core.parsing.antlr.extractor.statement.handler.result.PrimaryKeyExtractResult;
-import io.shardingsphere.core.parsing.antlr.extractor.statement.handler.result.TableExtractResult;
-import io.shardingsphere.core.parsing.antlr.extractor.statement.handler.result.TableJoinExtractResult;
-
 import java.util.Collection;
 import java.util.HashMap;
 import java.util.Map;
+
+import io.shardingsphere.core.parsing.antlr.extractor.statement.handler.result.ColumnDefinitionExtractResult;
+import io.shardingsphere.core.parsing.antlr.extractor.statement.handler.result.DropColumnExtractResult;
+import io.shardingsphere.core.parsing.antlr.extractor.statement.handler.result.DropPrimaryKeyExtractResult;
+import io.shardingsphere.core.parsing.antlr.extractor.statement.handler.result.GroupByExtractResult;
+import io.shardingsphere.core.parsing.antlr.extractor.statement.handler.result.IndexExtractResult;
+import io.shardingsphere.core.parsing.antlr.extractor.statement.handler.result.LimitExtractResult;
+import io.shardingsphere.core.parsing.antlr.extractor.statement.handler.result.OrderByExtractResult;
+import io.shardingsphere.core.parsing.antlr.extractor.statement.handler.result.PrimaryKeyExtractResult;
+import io.shardingsphere.core.parsing.antlr.extractor.statement.handler.result.TableAndConditionExtractResult;
+import io.shardingsphere.core.parsing.antlr.extractor.statement.handler.result.TableExtractResult;
+import io.shardingsphere.core.parsing.antlr.extractor.statement.handler.result.TableJoinExtractResult;
 
 /**
  * Handler result filler registry.
@@ -46,6 +50,10 @@ public final class HandlerResultFillerRegistry {
         registry(ColumnDefinitionExtractResult.class, new ColumnDefinitionHandlerResultFiller());
         registry(TableJoinExtractResult.class, new TableJoinHandlerResultFiller());
         registry(IndexExtractResult.class, new IndexHandlerResultFiller());
+        registry(LimitExtractResult.class, new LimitHandlerResultFiller());
+        registry(TableAndConditionExtractResult.class, new TableAndConditionHandlerResultFiller());
+        registry(GroupByExtractResult.class, new GroupByHandlerResultFiller());
+        registry(OrderByExtractResult.class, new OrderByHandlerResultFiller());
         registry(Collection.class, new CollectionHandlerResultFiller());
     }
     

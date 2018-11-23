@@ -19,6 +19,7 @@ package io.shardingsphere.core.parsing.antlr.extractor.statement.handler;
 
 import java.util.Collection;
 import java.util.HashMap;
+import java.util.Iterator;
 import java.util.LinkedList;
 import java.util.List;
 import java.util.Map;
@@ -43,32 +44,26 @@ import io.shardingsphere.core.parsing.parser.expression.SQLNumberExpression;
 import io.shardingsphere.core.parsing.parser.expression.SQLPlaceholderExpression;
 import io.shardingsphere.core.parsing.parser.expression.SQLTextExpression;
 import io.shardingsphere.core.util.NumberUtil;
+import lombok.RequiredArgsConstructor;
 
 /**
  * Condition extract handler.
  * 
  * @author duhongjun
  */
+@RequiredArgsConstructor
 public final class ConditionExtractHandler implements ASTExtractHandler<Optional<ConditionExtractResult>> {
+    
+    private final Map<String,String> tableAlias;
     
     private final ColumnExtractHandler columnHandler = new ColumnExtractHandler();
     
     @Override
     public Optional<ConditionExtractResult> extract(final ParserRuleContext ancestorNode) {
-        Optional<ParserRuleContext> whereNode = ASTUtils.findFirstChildNode(ancestorNode, RuleName.WHERECLAUSE);
-        Collection<ParserRuleContext> questionNodes = ASTUtils.getAllDescendantNodes(ancestorNode, RuleName.QUESTION);
-        Map<ParserRuleContext, Integer> questionNodeIndexMap = new HashMap<>();
-        int index = 0;
-        for(ParserRuleContext each : questionNodes) {
-            questionNodeIndexMap.put(each, index++);
-        }
-        if(!whereNode.isPresent()) {
-            return Optional.absent();
-        }
-        return Optional.of(new ConditionExtractResult(extractCondition(questionNodeIndexMap, (ParserRuleContext)whereNode.get().getChild(1)).get()));
+        throw new RuntimeException();
     }
     
-    private Optional<OrCondition> extractCondition(final Map<ParserRuleContext, Integer> questionNodeIndexMap, final ParserRuleContext exprNode) {
+    public Optional<OrCondition> extractCondition(final Map<ParserRuleContext, Integer> questionNodeIndexMap, final ParserRuleContext exprNode) {
         int index = -1;
         for (int i = 0; i < exprNode.getChildCount(); i++) {
             if (OperatorUtils.isRationalOperator(exprNode.getChild(i).getText())) {
@@ -160,7 +155,7 @@ public final class ConditionExtractHandler implements ASTExtractHandler<Optional
         if(3 != comparisionNode.get().getParent().getChildCount()) {
             return Optional.absent();
         }
-        if(!Symbol.EQ.name().equalsIgnoreCase(comparisionNode.get().getText())) {
+        if(!Symbol.EQ.getLiterals().equalsIgnoreCase(comparisionNode.get().getText())) {
             return Optional.absent();
         }
         Optional<ParserRuleContext> leftNode = ASTUtils.findFirstChildNode((ParserRuleContext)comparisionNode.get().parent.getChild(0), RuleName.COLUMN_NAME);
@@ -173,11 +168,10 @@ public final class ConditionExtractHandler implements ASTExtractHandler<Optional
         }
         ParserRuleContext valueNode = null;
         if(leftNode.isPresent()) {
-            valueNode = (ParserRuleContext)exprNode.getChild(2);
+            valueNode = (ParserRuleContext)comparisionNode.get().parent.getChild(2);
         }else if(rightNode.isPresent()) {
-            valueNode = (ParserRuleContext)exprNode.getChild(0);
+            valueNode = (ParserRuleContext)comparisionNode.get().parent.getChild(0);
         }
-        
         Optional<Column> column = buildColumn(exprNode);
         if(!column.isPresent()) {
             return Optional.absent();
@@ -265,11 +259,25 @@ public final class ConditionExtractHandler implements ASTExtractHandler<Optional
     }
     
     private Optional<Column> buildColumn(final ParserRuleContext parentNode) {
+        if(tableAlias.isEmpty()) {
+            return Optional.absent();
+        }
         Optional<ParserRuleContext> column = ASTUtils.findFirstChildNode(parentNode, RuleName.COLUMN_NAME);
-        if(column.isPresent()) {
+        if(!column.isPresent()) {
             return Optional.absent();
         }
         Optional<ColumnExtractResult> columnExtractResult = columnHandler.extract(column.get());
-        return Optional.of(new Column(columnExtractResult.get().getName(), columnExtractResult.get().getOwner().get()));
+        if(!columnExtractResult.isPresent()) {
+            return Optional.absent();
+        }
+        String ownerName = columnExtractResult.get().getOwner().isPresent() ? columnExtractResult.get().getOwner().get() : "";
+        if(columnExtractResult.get().getOwner().isPresent()) {
+            ownerName = tableAlias.get(ownerName);
+        }
+        if(null == ownerName || "".equals(ownerName)) {
+            Iterator<String> iterator = tableAlias.values().iterator();
+            ownerName = iterator.next();
+        }
+        return Optional.of(new Column(columnExtractResult.get().getName(), ownerName));
     }     
 }
