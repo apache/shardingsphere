@@ -21,25 +21,19 @@ import com.google.common.base.Function;
 import com.google.common.collect.Iterators;
 import com.google.common.collect.Lists;
 import com.google.common.collect.Multimap;
-import io.shardingsphere.core.constant.AggregationType;
 import io.shardingsphere.core.merger.QueryResult;
-import io.shardingsphere.core.parsing.parser.context.selectitem.AggregationDistinctSelectItem;
 import io.shardingsphere.core.parsing.parser.context.selectitem.AggregationSelectItem;
 import io.shardingsphere.core.parsing.parser.sql.dql.select.SelectStatement;
-import lombok.Getter;
 import lombok.SneakyThrows;
 
 import java.io.InputStream;
-import java.math.BigDecimal;
 import java.sql.SQLException;
 import java.util.ArrayList;
 import java.util.Calendar;
 import java.util.Collection;
-import java.util.HashMap;
 import java.util.Iterator;
 import java.util.LinkedHashMap;
 import java.util.LinkedHashSet;
-import java.util.LinkedList;
 import java.util.List;
 import java.util.Map;
 import java.util.Map.Entry;
@@ -52,13 +46,13 @@ import java.util.Set;
  */
 public final class AggregationDistinctQueryResult extends DistinctQueryResult {
     
-    private final Map<Integer, Integer> distinctIndexAndDerivedCountIndexes = new LinkedHashMap<>();
+    private final Map<Integer, Integer> derivedCountIndexAndDistinctIndexes = new LinkedHashMap<>();
     
     private final Map<Integer, Integer> distinctIndexAndDerivedSumIndexes = new LinkedHashMap<>();
     
-    private AggregationDistinctQueryResult(final Multimap<String, Integer> columnLabelAndIndexMap, final Iterator<List<Object>> resultData, final Map<Integer, Integer> distinctIndexAndDerivedCountIndexes, final Map<Integer, Integer> distinctIndexAndDerivedSumIndexes) {
+    private AggregationDistinctQueryResult(final Multimap<String, Integer> columnLabelAndIndexMap, final Iterator<List<Object>> resultData, final Map<Integer, Integer> derivedCountIndexAndDistinctIndexes, final Map<Integer, Integer> distinctIndexAndDerivedSumIndexes) {
         super(columnLabelAndIndexMap, resultData);
-        this.distinctIndexAndDerivedCountIndexes.putAll(distinctIndexAndDerivedCountIndexes);
+        this.derivedCountIndexAndDistinctIndexes.putAll(derivedCountIndexAndDistinctIndexes);
         this.distinctIndexAndDerivedSumIndexes.putAll(distinctIndexAndDerivedSumIndexes);
     }
     
@@ -72,7 +66,7 @@ public final class AggregationDistinctQueryResult extends DistinctQueryResult {
         for (AggregationSelectItem each : selectStatement.getAggregationSelectItems()) {
             List<AggregationSelectItem> derivedAggregationSelectItems = each.getDerivedAggregationSelectItems();
             if (!derivedAggregationSelectItems.isEmpty()) {
-                distinctIndexAndDerivedCountIndexes.put(each.getIndex(), derivedAggregationSelectItems.get(0).getIndex());
+                derivedCountIndexAndDistinctIndexes.put(each.getIndex(), derivedAggregationSelectItems.get(0).getIndex());
                 distinctIndexAndDerivedSumIndexes.put(each.getIndex(),derivedAggregationSelectItems.get(1).getIndex());
             }
         }
@@ -91,16 +85,16 @@ public final class AggregationDistinctQueryResult extends DistinctQueryResult {
             public DistinctQueryResult apply(final List<Object> row) {
                 Set<List<Object>> resultData = new LinkedHashSet<>();
                 resultData.add(row);
-                return new AggregationDistinctQueryResult(getColumnLabelAndIndexMap(), resultData.iterator(), distinctIndexAndDerivedCountIndexes, distinctIndexAndDerivedSumIndexes);
+                return new AggregationDistinctQueryResult(getColumnLabelAndIndexMap(), resultData.iterator(), derivedCountIndexAndDistinctIndexes, distinctIndexAndDerivedSumIndexes);
             }
         }));
     }
     
     private Object getValue(final int columnIndex) {
-        if (derivedCountIndexes.contains(columnIndex)) {
+        if (derivedCountIndexAndDistinctIndexes.values().contains(columnIndex)) {
             return 1;
         }
-        if (derivedSumIndexes.contains(columnIndex)) {
+        if (distinctIndexAndDerivedSumIndexes.values().contains(columnIndex)) {
             return getCurrentRow().get()
         }
         
