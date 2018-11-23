@@ -51,7 +51,7 @@ import java.util.Set;
 public final class AggregationDistinctQueryResult extends DistinctQueryResult {
     
     @Getter
-    private final Iterator<List<Object>> resultData;
+    private final Map<Integer, Object> aggregationDistinctColumnIndexAndValues;
     
     private final List<Integer> aggregationDistinctColumnIndexes = new LinkedList<>();
     
@@ -66,7 +66,7 @@ public final class AggregationDistinctQueryResult extends DistinctQueryResult {
     }
     
     private Iterator<List<Object>> getResultData(final SelectStatement selectStatement) {
-        Map<Integer, AggregationType> aggregationDistinctColumnIndexes = getAggregationDistinctColumnIndexes(selectStatement);
+        Map<Integer, AggregationType> aggregationDistinctColumnIndexAndTypes = aggregationDistinctColumnIndexAndTypes(selectStatement);
         List<Integer> derivedCountIndexes = getDerivedCountIndexes(selectStatement);
         List<Integer> derivedSumIndexes = getDerivedSumIndexes(selectStatement);
         
@@ -77,7 +77,7 @@ public final class AggregationDistinctQueryResult extends DistinctQueryResult {
         super(queryResults);
     }
     
-    private Map<Integer, AggregationType> getAggregationDistinctColumnIndexes(final SelectStatement selectStatement) {
+    private Map<Integer, AggregationType> aggregationDistinctColumnIndexAndTypes(final SelectStatement selectStatement) {
         Map<Integer, AggregationType> result = new LinkedHashMap<>();
         for (AggregationDistinctSelectItem each : selectStatement.getAggregationDistinctSelectItems()) {
             result.put(each.getIndex(), each.getType());
@@ -107,13 +107,20 @@ public final class AggregationDistinctQueryResult extends DistinctQueryResult {
         return result;
     }
     
-    protected void fill(final List<Integer> aggregationDistinctColumnIndexes, final List<Integer> derivedCountIndexes, final List<Integer> derivedSumIndexes) {
-        
+    protected void fill(final Map<Integer, AggregationType> aggregationDistinctColumnIndexes) {
+        List<List<Object>> resultData = Lists.newArrayList(getResultData());
+        for (Entry<Integer, AggregationType> entry : aggregationDistinctColumnIndexes
+             ) {
+            
+        }
         while (getResultData().hasNext()) {
             List<Object> row = getResultData().next();
+            
             for (int columnIndex = 1; columnIndex <= row.size(); columnIndex++) {
                 List<Object> result = new LinkedList<>();
-                if
+                if (aggregationDistinctColumnIndexes.keySet().contains(columnIndex)) {
+                
+                }
                 result.add();
             }
             resultData.add(row);
