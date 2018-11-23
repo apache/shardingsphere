@@ -18,7 +18,6 @@
 package io.shardingsphere.core.executor.sql.execute.result;
 
 import com.google.common.base.Function;
-import com.google.common.base.Predicate;
 import com.google.common.collect.Iterators;
 import com.google.common.collect.Lists;
 import com.google.common.collect.Multimap;
@@ -53,14 +52,12 @@ import java.util.Set;
  */
 public final class AggregationDistinctQueryResult extends DistinctQueryResult {
     
-    private final Map<Integer, Integer> distinctIndexAndDerivedCountIndexes = new HashMap<>();
+    private final Map<Integer, Integer> distinctIndexAndDerivedCountIndexes;
     
-    private final Map<Integer, Integer> distinctIndexAndDerivedSumIndexes = new HashMap<>();
+    private final Map<Integer, Integer> distinctIndexAndDerivedSumIndexes;
     
     private AggregationDistinctQueryResult(final Multimap<String, Integer> columnLabelAndIndexMap, final Iterator<List<Object>> resultData, final Map<Integer, Integer> distinctIndexAndDerivedCountIndexes, final Map<Integer, Integer> distinctIndexAndDerivedSumIndexes) {
         super(columnLabelAndIndexMap, resultData);
-        this.distinctIndexAndDerivedCountIndexes.putAll(distinctIndexAndDerivedCountIndexes);
-        this.distinctIndexAndDerivedSumIndexes.putAll(distinctIndexAndDerivedSumIndexes);
     }
     
     @SneakyThrows
@@ -70,18 +67,12 @@ public final class AggregationDistinctQueryResult extends DistinctQueryResult {
         distinctIndexAndDerivedSumIndexes.putAll(getDerivedSumIndexes(selectStatement));
     }
     
-    private Map<Integer, Integer> getDerivedCountIndexes(final SelectStatement selectStatement) {
+    private void init(final SelectStatement selectStatement) {
         Map<Integer, Integer> result = new HashMap<>();
-        for (final AggregationDistinctSelectItem each : selectStatement.getAggregationDistinctSelectItems()) {
-            List<AggregationSelectItem> derivedAggregationSelectItems = Iterators.find(selectStatement.getAggregationSelectItems().iterator(), new Predicate<AggregationSelectItem>() {
-                
-                @Override
-                public boolean apply(final AggregationSelectItem input) {
-                    return each.getIndex() == input.getIndex();
-                }
-            }).getDerivedAggregationSelectItems();
+        for (AggregationSelectItem each : selectStatement.getAggregationSelectItems()) {
+            List<AggregationSelectItem> derivedAggregationSelectItems = each.getDerivedAggregationSelectItems();
             if (!derivedAggregationSelectItems.isEmpty()) {
-                result.put(, derivedAggregationSelectItems.get(0).getIndex());
+                result.put(each.getIndex(), derivedAggregationSelectItems.get(0).getIndex());
             }
         }
         return result;
