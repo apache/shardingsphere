@@ -103,7 +103,7 @@ public final class AggregationDistinctQueryResult extends DistinctQueryResult {
             public DistinctQueryResult apply(final List<Object> row) {
                 Set<List<Object>> resultData = new LinkedHashSet<>();
                 resultData.add(row);
-                return new AggregationDistinctQueryResult(getColumnLabelAndIndexMap(), resultData.iterator(), aggregationDistinctColumnIndexes, derivedCountIndexes, derivedSumIndexes);
+                return new AggregationDistinctQueryResult(getColumnLabelAndIndexMap(), resultData.iterator(), derivedCountIndexes, derivedSumIndexes);
             }
         }));
     }
