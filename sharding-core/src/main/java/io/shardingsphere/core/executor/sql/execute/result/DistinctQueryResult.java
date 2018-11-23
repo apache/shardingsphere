@@ -44,7 +44,7 @@ import java.util.Set;
  * @author panjuan
  */
 @Getter(AccessLevel.PROTECTED)
-public class DistinctQueryResult implements QueryResult {
+public final class DistinctQueryResult implements QueryResult {
     
     private final Multimap<String, Integer> columnLabelAndIndexMap;
     
@@ -52,7 +52,7 @@ public class DistinctQueryResult implements QueryResult {
     
     private List<Object> currentRow;
     
-    protected DistinctQueryResult(final Multimap<String, Integer> columnLabelAndIndexMap, final Iterator<List<Object>> resultData) {
+    private DistinctQueryResult(final Multimap<String, Integer> columnLabelAndIndexMap, final Iterator<List<Object>> resultData) {
         this.columnLabelAndIndexMap = columnLabelAndIndexMap;
         this.resultData = resultData;
     }
