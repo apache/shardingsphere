@@ -24,6 +24,8 @@ chapter = true
 * 京东大数据与智能供应链
 * [每日优鲜便利购](https://www.imrfresh.com/)
 * [大易有塑](https://www.dayi35.com/)
+* [大搜车](https://www.souche.com/zh/)
+* [蜂网](https://www.newbeescm.com/)
 
 ## 互联网金融
 
