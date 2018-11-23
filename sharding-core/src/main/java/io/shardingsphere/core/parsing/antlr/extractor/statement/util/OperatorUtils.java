@@ -63,7 +63,7 @@ public class OperatorUtils {
         if (DefaultKeyword.OR.name().equalsIgnoreCase(text)) {
             return true;
         }
-        if (Symbol.DOUBLE_BAR.name().equalsIgnoreCase(text)) {
+        if (Symbol.DOUBLE_BAR.getLiterals().equalsIgnoreCase(text)) {
             return true;
         }
         return false;
@@ -79,7 +79,7 @@ public class OperatorUtils {
         if (DefaultKeyword.AND.name().equalsIgnoreCase(text)) {
             return true;
         }
-        if (Symbol.DOUBLE_AMP.name().equalsIgnoreCase(text)) {
+        if (Symbol.DOUBLE_AMP.getLiterals().equalsIgnoreCase(text)) {
             return true;
         }
         return false;

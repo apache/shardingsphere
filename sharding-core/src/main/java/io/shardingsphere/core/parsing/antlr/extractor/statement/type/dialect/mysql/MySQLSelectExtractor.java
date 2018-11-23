@@ -20,6 +20,7 @@ package io.shardingsphere.core.parsing.antlr.extractor.statement.type.dialect.my
 import io.shardingsphere.core.parsing.antlr.extractor.statement.handler.ConditionExtractHandler;
 import io.shardingsphere.core.parsing.antlr.extractor.statement.handler.FromClauseExtractHandler;
 import io.shardingsphere.core.parsing.antlr.extractor.statement.handler.GroupByExtractHandler;
+import io.shardingsphere.core.parsing.antlr.extractor.statement.handler.LimitClauseExtractHandler;
 import io.shardingsphere.core.parsing.antlr.extractor.statement.handler.OrderByExtractHandler;
 import io.shardingsphere.core.parsing.antlr.extractor.statement.handler.SelectExprExtractHandler;
 import io.shardingsphere.core.parsing.antlr.extractor.statement.handler.TableNameExtractHandler;
@@ -38,14 +39,13 @@ public class MySQLSelectExtractor extends AbstractSQLStatementExtractor {
         addExtractHandler(new TableNameExtractHandler());
         addExtractHandler(new SelectExprExtractHandler());
         addExtractHandler(new FromClauseExtractHandler());
-        addExtractHandler(new ConditionExtractHandler());
         addExtractHandler(new GroupByExtractHandler());
         addExtractHandler(new OrderByExtractHandler());
+        addExtractHandler(new LimitClauseExtractHandler());
     }
     
     @Override
     protected SQLStatement createStatement() {
         return new SelectStatement();
     }
-
 }

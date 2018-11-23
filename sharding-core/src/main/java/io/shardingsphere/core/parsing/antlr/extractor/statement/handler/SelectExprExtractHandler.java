@@ -50,8 +50,7 @@ public class SelectExprExtractHandler implements ASTExtractHandler<Collection<Se
         }
         Collection<SelectExprExtractResult> result = new LinkedList<>();
         for(ParserRuleContext each : selectExprNodes) {
-            ParserRuleContext firstChild = (ParserRuleContext)each.getChild(0);
-            String firstChildText = firstChild.getText();
+            String firstChildText = each.getChild(0).getText();
             if(firstChildText.endsWith(Symbol.STAR.getLiterals())) {
                 int pos = firstChildText.indexOf(Symbol.DOT.getLiterals());
                 String owner ="";
@@ -60,6 +59,7 @@ public class SelectExprExtractHandler implements ASTExtractHandler<Collection<Se
                 }
                 result.add(new StarSelectExprExtractResult(Optional.of(owner)));
             }else {
+                ParserRuleContext firstChild = (ParserRuleContext)each.getChild(0);
                 //TODO best choice using index
                 StringBuilder builder = new StringBuilder();
                 for(int i = 0; i < firstChild.getChildCount(); i++) {
