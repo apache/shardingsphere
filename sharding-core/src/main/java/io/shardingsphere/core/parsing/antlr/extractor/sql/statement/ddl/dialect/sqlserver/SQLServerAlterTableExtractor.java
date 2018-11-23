@@ -32,10 +32,10 @@ import io.shardingsphere.core.parsing.antlr.extractor.sql.statement.ddl.AlterTab
 public final class SQLServerAlterTableExtractor extends AlterTableExtractor {
     
     public SQLServerAlterTableExtractor() {
-        addExtractor(new AddColumnExtractor());
-        addExtractor(new ModifyColumnExtractor()); 
-        addExtractor(new SQLServerAddIndexExtractor()); 
-        addExtractor(new SQLServerDropIndexExtractor());
-        addExtractor(new SQLServerAddPrimaryKeyExtractor());
+        addSQLSegmentExtractor(new AddColumnExtractor());
+        addSQLSegmentExtractor(new ModifyColumnExtractor()); 
+        addSQLSegmentExtractor(new SQLServerAddIndexExtractor()); 
+        addSQLSegmentExtractor(new SQLServerDropIndexExtractor());
+        addSQLSegmentExtractor(new SQLServerAddPrimaryKeyExtractor());
     }
 }

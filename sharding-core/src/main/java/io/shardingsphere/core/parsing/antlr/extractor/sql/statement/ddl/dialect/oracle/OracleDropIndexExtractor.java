@@ -28,6 +28,6 @@ import io.shardingsphere.core.parsing.antlr.extractor.sql.statement.ddl.DDLState
 public final class OracleDropIndexExtractor extends DDLStatementExtractor {
     
     public OracleDropIndexExtractor() {
-        addExtractor(new IndexNameExtractor());
+        addSQLSegmentExtractor(new IndexNameExtractor());
     }
 }

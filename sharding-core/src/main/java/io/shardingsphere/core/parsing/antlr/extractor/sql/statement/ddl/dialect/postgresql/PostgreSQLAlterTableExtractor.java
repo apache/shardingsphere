@@ -32,9 +32,9 @@ import io.shardingsphere.core.parsing.antlr.extractor.sql.statement.ddl.AlterTab
 public final class PostgreSQLAlterTableExtractor extends AlterTableExtractor {
     
     public PostgreSQLAlterTableExtractor() {
-        addExtractor(new AddColumnExtractor());
-        addExtractor(new AddPrimaryKeyExtractor(RuleName.ALTER_TABLE_ADD_CONSTRAINT));
-        addExtractor(new ModifyColumnExtractor());
-        addExtractor(new RenameColumnExtractor());
+        addSQLSegmentExtractor(new AddColumnExtractor());
+        addSQLSegmentExtractor(new AddPrimaryKeyExtractor(RuleName.ALTER_TABLE_ADD_CONSTRAINT));
+        addSQLSegmentExtractor(new ModifyColumnExtractor());
+        addSQLSegmentExtractor(new RenameColumnExtractor());
     }
 }

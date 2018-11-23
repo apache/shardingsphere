@@ -28,6 +28,6 @@ import io.shardingsphere.core.parsing.antlr.extractor.sql.statement.ddl.DDLState
 public final class PostgreSQLAlterIndexExtractor extends DDLStatementExtractor {
     
     public PostgreSQLAlterIndexExtractor() {
-        addExtractor(new IndexesNameExtractor());
+        addSQLSegmentExtractor(new IndexesNameExtractor());
     }
 }

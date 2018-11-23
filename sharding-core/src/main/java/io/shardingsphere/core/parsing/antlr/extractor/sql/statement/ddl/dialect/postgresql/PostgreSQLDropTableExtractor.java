@@ -28,6 +28,6 @@ import io.shardingsphere.core.parsing.antlr.extractor.sql.statement.ddl.DropTabl
 public final class PostgreSQLDropTableExtractor extends DropTableExtractor {
     
     public PostgreSQLDropTableExtractor() {
-        addExtractor(new TableNamesExtractor());
+        addSQLSegmentExtractor(new TableNamesExtractor());
     }
 }

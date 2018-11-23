@@ -39,13 +39,13 @@ import java.util.List;
  */
 public abstract class AbstractSQLStatementExtractor implements SQLStatementExtractor {
     
-    private final Collection<SQLSegmentExtractor> extractors = new LinkedList<>();
+    private final Collection<SQLSegmentExtractor> sqlSegmentExtractors = new LinkedList<>();
     
     @Override
     public final SQLStatement extract(final ParserRuleContext rootNode, final ShardingTableMetaData shardingTableMetaData) {
         SQLStatement result = createStatement();
         List<Object> extractResults = new LinkedList<>();
-        for (SQLSegmentExtractor each : extractors) {
+        for (SQLSegmentExtractor each : sqlSegmentExtractors) {
             if (each instanceof OptionalSQLSegmentExtractor) {
                 Optional<?> extractResult = ((OptionalSQLSegmentExtractor) each).extract(rootNode);
                 if (extractResult.isPresent()) {
@@ -69,12 +69,12 @@ public abstract class AbstractSQLStatementExtractor implements SQLStatementExtra
         return result;
     }
     
+    protected final void addSQLSegmentExtractor(final SQLSegmentExtractor extractor) {
+        sqlSegmentExtractors.add(extractor);
+    }
+    
     protected abstract SQLStatement createStatement();
     
     protected void postExtract(final SQLStatement statement, final ShardingTableMetaData shardingTableMetaData) {
-    }
-    
-    protected final void addExtractor(final SQLSegmentExtractor extractor) {
-        extractors.add(extractor);
     }
 }

@@ -28,7 +28,7 @@ import io.shardingsphere.core.parsing.antlr.extractor.sql.segment.common.TableNa
 public final class AlterIndexExtractor extends DDLStatementExtractor {
     
     public AlterIndexExtractor() {
-        addExtractor(new TableNameExtractor());
-        addExtractor(new IndexNameExtractor());
+        addSQLSegmentExtractor(new TableNameExtractor());
+        addSQLSegmentExtractor(new IndexNameExtractor());
     }
 }

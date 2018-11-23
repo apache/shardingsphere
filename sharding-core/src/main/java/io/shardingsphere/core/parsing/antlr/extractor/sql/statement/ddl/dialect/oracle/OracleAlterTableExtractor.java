@@ -33,10 +33,10 @@ import io.shardingsphere.core.parsing.antlr.extractor.sql.statement.ddl.AlterTab
 public final class OracleAlterTableExtractor extends AlterTableExtractor {
     
     public OracleAlterTableExtractor() {
-        addExtractor(new AddColumnExtractor());
-        addExtractor(new OracleModifyColumnExtractor());
-        addExtractor(new RenameColumnExtractor());
-        addExtractor(new AddPrimaryKeyExtractor(RuleName.ADD_CONSTRAINT_CLAUSE));
-        addExtractor(new OracleDropPrimaryKeyExtractor());
+        addSQLSegmentExtractor(new AddColumnExtractor());
+        addSQLSegmentExtractor(new OracleModifyColumnExtractor());
+        addSQLSegmentExtractor(new RenameColumnExtractor());
+        addSQLSegmentExtractor(new AddPrimaryKeyExtractor(RuleName.ADD_CONSTRAINT_CLAUSE));
+        addSQLSegmentExtractor(new OracleDropPrimaryKeyExtractor());
     }
 }

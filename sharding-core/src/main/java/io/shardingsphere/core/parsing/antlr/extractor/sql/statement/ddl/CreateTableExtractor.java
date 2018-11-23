@@ -39,10 +39,10 @@ import java.util.List;
 public final class CreateTableExtractor extends DDLStatementExtractor {
     
     public CreateTableExtractor() {
-        addExtractor(new TableNamesExtractor());
-        addExtractor(new ColumnDefinitionExtractor());
-        addExtractor(new IndexesNameExtractor());
-        addExtractor(new CreatePrimaryKeyExtractor());
+        addSQLSegmentExtractor(new TableNamesExtractor());
+        addSQLSegmentExtractor(new ColumnDefinitionExtractor());
+        addSQLSegmentExtractor(new IndexesNameExtractor());
+        addSQLSegmentExtractor(new CreatePrimaryKeyExtractor());
     }
     
     @Override

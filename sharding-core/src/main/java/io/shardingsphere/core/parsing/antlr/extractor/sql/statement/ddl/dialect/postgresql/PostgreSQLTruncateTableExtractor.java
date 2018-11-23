@@ -28,6 +28,6 @@ import io.shardingsphere.core.parsing.antlr.extractor.sql.statement.ddl.Truncate
 public final class PostgreSQLTruncateTableExtractor extends TruncateTableExtractor {
     
     public PostgreSQLTruncateTableExtractor() {
-        addExtractor(new TableNamesExtractor());
+        addSQLSegmentExtractor(new TableNamesExtractor());
     }
 }

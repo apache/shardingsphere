@@ -28,6 +28,6 @@ import io.shardingsphere.core.parsing.antlr.extractor.sql.statement.ddl.DropTabl
 public final class MySQLDropTableExtractor extends DropTableExtractor {
     
     public MySQLDropTableExtractor() {
-        addExtractor(new TableNamesExtractor());
+        addSQLSegmentExtractor(new TableNamesExtractor());
     }
 }
