@@ -141,7 +141,7 @@ public final class AggregationDistinctQueryResult extends DistinctQueryResult {
 
     @Override
     public int getColumnCount() {
-        return columnLabelAndIndexMap.size();
+        return getColumnLabelAndIndexMap().size();
     }
 
     @Override
