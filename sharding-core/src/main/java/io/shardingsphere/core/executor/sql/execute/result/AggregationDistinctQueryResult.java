@@ -55,10 +55,10 @@ public final class AggregationDistinctQueryResult extends DistinctQueryResult {
     
     private final List<Integer> derivedSumIndexes = new LinkedList<>();
     
-    private AggregationDistinctQueryResult(final Multimap<String, Integer> columnLabelAndIndexMap, final Iterator<List<Object>> resultData,
-                                           final List<Integer> aggregationDistinctColumnIndexes, final List<Integer> derivedCountIndexes, final List<Integer> derivedSumIndexes) {
+    private AggregationDistinctQueryResult(final Multimap<String, Integer> columnLabelAndIndexMap, final Iterator<List<Object>> resultData, final List<Integer> derivedCountIndexes, final List<Integer> derivedSumIndexes) {
         super(columnLabelAndIndexMap, resultData);
-        
+        this.derivedCountIndexes.addAll(derivedCountIndexes);
+        this.derivedSumIndexes.addAll(derivedSumIndexes);
     }
     
     @SneakyThrows
