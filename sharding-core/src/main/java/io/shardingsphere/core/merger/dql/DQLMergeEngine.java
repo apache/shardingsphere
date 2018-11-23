@@ -57,21 +57,21 @@ public final class DQLMergeEngine implements MergeEngine {
     
     public DQLMergeEngine(final List<QueryResult> queryResults, final SelectStatement selectStatement) throws SQLException {
         this.selectStatement = selectStatement;
-        this.queryResults = getRevisedQueryResults(queryResults);
+        this.queryResults = getRealQueryResults(queryResults);
         columnLabelIndexMap = getColumnLabelIndexMap(queryResults.get(0));
     }
     
-    private List<QueryResult> getRevisedQueryResults(final List<QueryResult> queryResults) {
+    private List<QueryResult> getRealQueryResults(final List<QueryResult> queryResults) {
         if (!selectStatement.getAggregationDistinctSelectItems().isEmpty()) {
-            return getQueryResults(new AggregationDistinctQueryResult(queryResults, selectStatement));
+            return getDividedQueryResults(new AggregationDistinctQueryResult(queryResults, selectStatement));
         }
         if (!selectStatement.getDistinctSelectItems().isEmpty()) {
-            return getQueryResults(new DistinctQueryResult(queryResults));
+            return getDividedQueryResults(new DistinctQueryResult(queryResults));
         }
         return queryResults;
     }
     
-    private List<QueryResult> getQueryResults(final DistinctQueryResult distinctQueryResult) {
+    private List<QueryResult> getDividedQueryResults(final DistinctQueryResult distinctQueryResult) {
         return Lists.transform(distinctQueryResult.divide(), new Function<DistinctQueryResult, QueryResult>() {
             @Override
             public QueryResult apply(final DistinctQueryResult input) {
