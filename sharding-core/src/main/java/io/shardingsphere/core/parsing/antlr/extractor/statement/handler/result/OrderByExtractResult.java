@@ -18,27 +18,27 @@
 package io.shardingsphere.core.parsing.antlr.extractor.statement.handler.result;
 
 import com.google.common.base.Optional;
+
 import io.shardingsphere.core.constant.OrderDirection;
 import io.shardingsphere.core.parsing.parser.token.OrderByToken;
 import lombok.Getter;
-import lombok.RequiredArgsConstructor;
 
 /**
  * Order by extract result.
  * 
  * @author duhongjun
  */
-@RequiredArgsConstructor
 @Getter
-public final class OrderByExtractResult implements ExtractResult {
-    
-    private final Optional<String> owner;
-    
-    private final Optional<String> name;
+public final class OrderByExtractResult extends GroupByExtractResult {
     
     private final OrderDirection orderDirection;
     
     private final OrderDirection nullOrderDirection;
     
-    private final OrderByToken orderByToken;
+    
+    public OrderByExtractResult(Optional<String> owner, Optional<String> name, int index, OrderDirection orderDirection, OrderDirection nullOrderDirection, OrderByToken orderByToken) {
+        super(owner, name, index, orderByToken);
+        this.orderDirection = orderDirection;
+        this.nullOrderDirection = nullOrderDirection;
+    }
 }

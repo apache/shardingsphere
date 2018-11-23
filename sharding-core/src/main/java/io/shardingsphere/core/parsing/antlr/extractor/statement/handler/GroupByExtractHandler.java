@@ -17,6 +17,12 @@
 
 package io.shardingsphere.core.parsing.antlr.extractor.statement.handler;
 
+import com.google.common.base.Optional;
+
+import io.shardingsphere.core.constant.OrderDirection;
+import io.shardingsphere.core.parsing.antlr.extractor.statement.handler.result.GroupByExtractResult;
+import io.shardingsphere.core.parsing.parser.token.OrderByToken;
+
 /**
  * Group by extract handler.
  * 
@@ -26,5 +32,9 @@ public final class GroupByExtractHandler extends OrderByExtractHandler {
     
     public GroupByExtractHandler() {
         setRuleName(RuleName.GROUPBYCLAUSE);
+    }
+    
+    protected GroupByExtractResult buildExtractResult(String ownerName, String name, int index, OrderDirection orderDirection, int orderTokenBeginPosition) {
+        return new GroupByExtractResult(Optional.of(ownerName), Optional.of(name), index, new OrderByToken(orderTokenBeginPosition));
     }
 }

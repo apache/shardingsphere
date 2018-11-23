@@ -27,9 +27,11 @@ import org.antlr.v4.runtime.tree.TerminalNode;
 import com.google.common.base.Optional;
 
 import io.shardingsphere.core.constant.OrderDirection;
+import io.shardingsphere.core.parsing.antlr.extractor.statement.handler.result.GroupByExtractResult;
 import io.shardingsphere.core.parsing.antlr.extractor.statement.handler.result.OrderByExtractResult;
 import io.shardingsphere.core.parsing.antlr.extractor.statement.util.ASTUtils;
 import io.shardingsphere.core.parsing.parser.token.OrderByToken;
+import io.shardingsphere.core.util.NumberUtil;
 import lombok.Getter;
 import lombok.Setter;
 
@@ -64,11 +66,16 @@ public class OrderByExtractHandler implements ASTExtractHandler<Collection<Order
             if (count == 0) {
                 continue;
             }
+            Optional<ParserRuleContext> numberNode = ASTUtils.findFirstChildNode(each, RuleName.NUMBER);
+            int index = -1;
+            if(numberNode.isPresent()) {
+                index = NumberUtil.getExactlyNumber(numberNode.get().getText(), 10).intValue();
+            }
             String name = each.getChild(0).getText();
             String ownerName = "";
             int pos = name.lastIndexOf(".");
             OrderDirection orderDirection = null;
-            if (0 >= pos) {
+            if (0 < pos) {
                 ownerName = name.substring(0, pos - 1);
                 name = name.substring(pos + 1);
             }
@@ -80,8 +87,12 @@ public class OrderByExtractHandler implements ASTExtractHandler<Collection<Order
                     orderDirection = OrderDirection.ASC;
                 }
             }
-            result.add(new OrderByExtractResult(Optional.of(ownerName), Optional.of(name), orderDirection, null, new OrderByToken(orderByParentNode.get().getStop().getStopIndex())));
+            result.add((OrderByExtractResult)buildExtractResult(ownerName, name, index, orderDirection, each.getStart().getStartIndex()));
         }
         return result;
+    }
+    
+    protected GroupByExtractResult buildExtractResult(String ownerName, String name, int index, OrderDirection orderDirection, int orderTokenBeginPosition) {
+        return new OrderByExtractResult(Optional.of(ownerName), Optional.of(name), index, orderDirection, OrderDirection.ASC, new OrderByToken(orderTokenBeginPosition));
     }
 }
