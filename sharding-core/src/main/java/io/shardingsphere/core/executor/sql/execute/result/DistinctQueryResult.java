@@ -117,47 +117,47 @@ public class DistinctQueryResult implements QueryResult {
         currentRow = null;
         return false;
     }
-
+    
     @Override
     public Object getValue(final int columnIndex, final Class<?> type) {
         return currentRow.get(columnIndex - 1);
     }
-
+    
     @Override
     public Object getValue(final String columnLabel, final Class<?> type) {
         return currentRow.get(getIndexByColumnLabel(columnLabel));
     }
-
+    
     @Override
     public Object getCalendarValue(final int columnIndex, final Class<?> type, final Calendar calendar) {
         return currentRow.get(columnIndex - 1);
     }
-
+    
     @Override
     public Object getCalendarValue(final String columnLabel, final Class<?> type, final Calendar calendar) {
         return currentRow.get(getIndexByColumnLabel(columnLabel));
     }
-
+    
     @Override
     public InputStream getInputStream(final int columnIndex, final String type) {
         return (InputStream) currentRow.get(columnIndex - 1);
     }
-
+    
     @Override
     public InputStream getInputStream(final String columnLabel, final String type) {
         return (InputStream) currentRow.get(getIndexByColumnLabel(columnLabel));
     }
-
+    
     @Override
     public boolean wasNull() {
         return null == currentRow;
     }
-
+    
     @Override
     public int getColumnCount() {
         return columnLabelAndIndexMap.size();
     }
-
+    
     @Override
     public String getColumnLabel(final int columnIndex) throws SQLException {
         for (Entry<String, Integer> entry : columnLabelAndIndexMap.entries()) {
