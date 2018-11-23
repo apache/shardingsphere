@@ -108,42 +108,42 @@ public final class AggregationDistinctQueryResult extends DistinctQueryResult {
     public Object getValue(final int columnIndex, final Class<?> type) {
         return getValue(columnIndex);
     }
-
+    
     @Override
     public Object getValue(final String columnLabel, final Class<?> type) {
         return getValue(columnLabel);
     }
-
+    
     @Override
     public Object getCalendarValue(final int columnIndex, final Class<?> type, final Calendar calendar) {
         return getValue(columnIndex);
     }
-
+    
     @Override
     public Object getCalendarValue(final String columnLabel, final Class<?> type, final Calendar calendar) {
         return getValue(columnLabel);
     }
-
+    
     @Override
     public InputStream getInputStream(final int columnIndex, final String type) {
         return (InputStream) getValue(columnIndex);
     }
-
+    
     @Override
     public InputStream getInputStream(final String columnLabel, final String type) {
         return (InputStream) getValue(columnLabel);
     }
-
+    
     @Override
     public boolean wasNull() {
         return null == getCurrentRow();
     }
-
+    
     @Override
     public int getColumnCount() {
         return getColumnLabelAndIndexMap().size();
     }
-
+    
     @Override
     public String getColumnLabel(final int columnIndex) throws SQLException {
         for (Entry<String, Integer> entry : getColumnLabelAndIndexMap().entries()) {
