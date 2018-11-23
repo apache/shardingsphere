@@ -58,8 +58,8 @@ public final class AggregationDistinctQueryResult extends DistinctQueryResult {
     
     private AggregationDistinctQueryResult(final Multimap<String, Integer> columnLabelAndIndexMap, final Iterator<List<Object>> resultData, final Map<Integer, Integer> distinctIndexAndDerivedCountIndexes, final Map<Integer, Integer> distinctIndexAndDerivedSumIndexes) {
         super(columnLabelAndIndexMap, resultData);
-        this.distinctIndexAndDerivedCountIndexes = distinctIndexAndDerivedCountIndexes;
-        this.distinctIndexAndDerivedSumIndexes = distinctIndexAndDerivedSumIndexes;
+        this.distinctIndexAndDerivedCountIndexes.putAll(distinctIndexAndDerivedCountIndexes);
+        this.distinctIndexAndDerivedSumIndexes.putAll(distinctIndexAndDerivedSumIndexes);
     }
     
     @SneakyThrows
@@ -74,7 +74,6 @@ public final class AggregationDistinctQueryResult extends DistinctQueryResult {
             if (!derivedAggregationSelectItems.isEmpty()) {
                 distinctIndexAndDerivedCountIndexes.put(each.getIndex(), derivedAggregationSelectItems.get(0).getIndex());
                 distinctIndexAndDerivedSumIndexes.put(each.getIndex(),derivedAggregationSelectItems.get(1).getIndex());
-    
             }
         }
     }
