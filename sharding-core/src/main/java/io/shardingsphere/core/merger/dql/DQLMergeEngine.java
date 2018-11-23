@@ -37,7 +37,6 @@ import io.shardingsphere.core.parsing.parser.sql.dql.select.SelectStatement;
 import io.shardingsphere.core.util.SQLUtil;
 
 import java.sql.SQLException;
-import java.util.Collections;
 import java.util.List;
 import java.util.Map;
 import java.util.TreeMap;
@@ -64,7 +63,7 @@ public final class DQLMergeEngine implements MergeEngine {
     
     private List<QueryResult> getRevisedQueryResults(final List<QueryResult> queryResults) {
         if (!selectStatement.getAggregationDistinctSelectItems().isEmpty()) {
-            return Collections.singletonList((QueryResult) new AggregationDistinctQueryResult(queryResults, selectStatement));
+            return getQueryResults(new AggregationDistinctQueryResult(queryResults, selectStatement));
         }
         if (!selectStatement.getDistinctSelectItems().isEmpty()) {
             return getQueryResults(new DistinctQueryResult(queryResults));
