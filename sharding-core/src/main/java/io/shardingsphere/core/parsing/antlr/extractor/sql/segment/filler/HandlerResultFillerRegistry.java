@@ -17,17 +17,21 @@
 
 package io.shardingsphere.core.parsing.antlr.extractor.sql.segment.filler;
 
-import io.shardingsphere.core.parsing.antlr.extractor.sql.segment.result.ColumnDefinitionExtractResult;
-import io.shardingsphere.core.parsing.antlr.extractor.sql.segment.result.DropColumnExtractResult;
-import io.shardingsphere.core.parsing.antlr.extractor.sql.segment.result.DropPrimaryKeyExtractResult;
-import io.shardingsphere.core.parsing.antlr.extractor.sql.segment.result.IndexExtractResult;
-import io.shardingsphere.core.parsing.antlr.extractor.sql.segment.result.PrimaryKeyExtractResult;
-import io.shardingsphere.core.parsing.antlr.extractor.sql.segment.result.TableExtractResult;
-import io.shardingsphere.core.parsing.antlr.extractor.sql.segment.result.TableJoinExtractResult;
-
 import java.util.Collection;
 import java.util.HashMap;
 import java.util.Map;
+
+import io.shardingsphere.core.parsing.antlr.extractor.sql.segment.result.ColumnDefinitionExtractResult;
+import io.shardingsphere.core.parsing.antlr.extractor.sql.segment.result.DropColumnExtractResult;
+import io.shardingsphere.core.parsing.antlr.extractor.sql.segment.result.DropPrimaryKeyExtractResult;
+import io.shardingsphere.core.parsing.antlr.extractor.sql.segment.result.GroupByExtractResult;
+import io.shardingsphere.core.parsing.antlr.extractor.sql.segment.result.IndexExtractResult;
+import io.shardingsphere.core.parsing.antlr.extractor.sql.segment.result.LimitExtractResult;
+import io.shardingsphere.core.parsing.antlr.extractor.sql.segment.result.OrderByExtractResult;
+import io.shardingsphere.core.parsing.antlr.extractor.sql.segment.result.PrimaryKeyExtractResult;
+import io.shardingsphere.core.parsing.antlr.extractor.sql.segment.result.TableAndConditionExtractResult;
+import io.shardingsphere.core.parsing.antlr.extractor.sql.segment.result.TableExtractResult;
+import io.shardingsphere.core.parsing.antlr.extractor.sql.segment.result.TableJoinExtractResult;
 
 /**
  * Handler result filler registry.
@@ -46,6 +50,10 @@ public final class HandlerResultFillerRegistry {
         registry(ColumnDefinitionExtractResult.class, new ColumnDefinitionHandlerResultFiller());
         registry(TableJoinExtractResult.class, new TableJoinHandlerResultFiller());
         registry(IndexExtractResult.class, new IndexHandlerResultFiller());
+        registry(LimitExtractResult.class, new LimitHandlerResultFiller());
+        registry(TableAndConditionExtractResult.class, new TableAndConditionHandlerResultFiller());
+        registry(GroupByExtractResult.class, new GroupByHandlerResultFiller());
+        registry(OrderByExtractResult.class, new OrderByHandlerResultFiller());
         registry(Collection.class, new CollectionHandlerResultFiller());
     }
     

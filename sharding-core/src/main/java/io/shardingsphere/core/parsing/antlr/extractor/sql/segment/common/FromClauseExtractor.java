@@ -17,38 +17,58 @@
 
 package io.shardingsphere.core.parsing.antlr.extractor.sql.segment.common;
 
+import java.util.Collection;
+import java.util.HashMap;
+import java.util.Map;
+
+import org.antlr.v4.runtime.ParserRuleContext;
+
 import com.google.common.base.Optional;
-import io.shardingsphere.core.parsing.antlr.extractor.sql.segment.CollectionSQLSegmentExtractor;
+
+import io.shardingsphere.core.parsing.antlr.extractor.sql.segment.OptionalSQLSegmentExtractor;
 import io.shardingsphere.core.parsing.antlr.extractor.sql.segment.RuleName;
+import io.shardingsphere.core.parsing.antlr.extractor.sql.segment.result.TableAndConditionExtractResult;
 import io.shardingsphere.core.parsing.antlr.extractor.sql.segment.result.TableExtractResult;
 import io.shardingsphere.core.parsing.antlr.extractor.sql.segment.result.TableJoinExtractResult;
 import io.shardingsphere.core.parsing.antlr.extractor.sql.util.ASTUtils;
-import org.antlr.v4.runtime.ParserRuleContext;
-
-import java.util.Collection;
-import java.util.Collections;
-import java.util.LinkedList;
+import io.shardingsphere.core.parsing.parser.context.condition.OrCondition;
 
 /**
  * From clause extractor.
  *
  * @author duhongjun
  */
-public final class FromClauseExtractor implements CollectionSQLSegmentExtractor<TableExtractResult> {
+public final class FromClauseExtractor implements OptionalSQLSegmentExtractor<TableAndConditionExtractResult> {
     
     private final TableNameExtractor tableNameExtractHandler = new TableNameExtractor();
     
+    private ConditionExtractor conditionExtractor;
+    
     @Override
-    public Collection<TableExtractResult> extract(final ParserRuleContext ancestorNode) {
+    public Optional<TableAndConditionExtractResult> extract(final ParserRuleContext ancestorNode) {
         Optional<ParserRuleContext> fromNode = ASTUtils.findFirstChildNode(ancestorNode, RuleName.FROM_CLAUSE);
         if (!fromNode.isPresent()) {
-            return Collections.emptyList();
+            return Optional.absent();
         }
         Collection<ParserRuleContext> tableReferenceNodes = ASTUtils.getAllDescendantNodes(fromNode.get(), RuleName.TABLE_REFERENCE);
         if (tableReferenceNodes.isEmpty()) {
-            return Collections.emptyList();
+            return Optional.absent();
         }
-        Collection<TableExtractResult> result = new LinkedList<>();
+        TableAndConditionExtractResult result = new TableAndConditionExtractResult();
+        conditionExtractor = new ConditionExtractor(result.getTableAliases());
+        Collection<ParserRuleContext> questionNodes = ASTUtils.getAllDescendantNodes(ancestorNode, RuleName.QUESTION);
+        result.setParamenterCount(questionNodes.size());
+        Map<ParserRuleContext, Integer> questionNodeIndexMap = new HashMap<>();
+        int index = 0;
+        for(ParserRuleContext each : questionNodes) {
+            questionNodeIndexMap.put(each, index++);
+        }
+        extractAndFillTableResult(result, tableReferenceNodes, questionNodeIndexMap);
+        extractAndFillWhere(result, questionNodeIndexMap, ancestorNode);
+        return Optional.of(result);
+    }
+    
+    private void extractAndFillTableResult(final TableAndConditionExtractResult tableAndConditionExtractResult, final Collection<ParserRuleContext> tableReferenceNodes, Map<ParserRuleContext, Integer> questionNodeIndexMap) {
         for (ParserRuleContext each : tableReferenceNodes) {
             Optional<ParserRuleContext> joinTableNode = ASTUtils.findFirstChildNode(each, RuleName.JOIN_TABLE);
             Optional<ParserRuleContext> tableFactorNode = joinTableNode.isPresent()
@@ -62,21 +82,47 @@ public final class FromClauseExtractor implements CollectionSQLSegmentExtractor<
                 continue;
             }
             if (!joinTableNode.isPresent()) {
-                result.add(extractResult.get());
+                fillTableResult(tableAndConditionExtractResult, extractResult.get());
                 continue;
             }
             Optional<ParserRuleContext> joinConditionNode = ASTUtils.findFirstChildNode(joinTableNode.get(), RuleName.JOIN_CONDITION);
             if (joinConditionNode.isPresent()) {
-                Optional<ParserRuleContext> exprNode = ASTUtils.findFirstChildNode(joinTableNode.get(), RuleName.EXPR);
-                if (exprNode.isPresent()) {
+                Optional<OrCondition> conditionResult = buildCondition(joinConditionNode.get(), questionNodeIndexMap, tableAndConditionExtractResult.getTableAliases());
+                if(conditionResult.isPresent()) {
                     TableJoinExtractResult tableJoinResult = new TableJoinExtractResult(extractResult.get());
-                    //TODO extract condition
-                    result.add(tableJoinResult);
+                    tableJoinResult.getJoinConditions().getAndConditions().addAll(conditionResult.get().getAndConditions());
+                    fillTableResult(tableAndConditionExtractResult, tableJoinResult);
                     continue;
                 }
             }
-            result.add(extractResult.get());
+            fillTableResult(tableAndConditionExtractResult, extractResult.get());
         }
-        return result;
+    }
+    
+    private void fillTableResult(final TableAndConditionExtractResult tableAndConditionExtractResult, final TableExtractResult extractResult) {
+        String alias = extractResult.getName();
+        if(extractResult.getAlias().isPresent()) {
+            alias = extractResult.getAlias().get();
+        }
+        tableAndConditionExtractResult.getTableAliases().put(alias, extractResult.getName());
+    }
+    
+    private Optional<OrCondition> buildCondition(final ParserRuleContext node, Map<ParserRuleContext, Integer> questionNodeIndexMap, Map<String,String> tableAliases) {
+        Optional<ParserRuleContext> exprNode = ASTUtils.findFirstChildNode(node, RuleName.EXPR);
+        if (exprNode.isPresent()) {
+            return conditionExtractor.extractCondition(questionNodeIndexMap, exprNode.get());
+        }
+        return Optional.absent();
+    }
+    
+    private void extractAndFillWhere(final TableAndConditionExtractResult tableAndConditionExtractResult, Map<ParserRuleContext, Integer> questionNodeIndexMap, final ParserRuleContext ancestorNode) {
+        Optional<ParserRuleContext> whereNode = ASTUtils.findFirstChildNode(ancestorNode, RuleName.WHERE_CLAUSE);
+        if(!whereNode.isPresent()) {
+            return;
+        }
+        Optional<OrCondition> conditions = buildCondition((ParserRuleContext)whereNode.get().getChild(1), questionNodeIndexMap, tableAndConditionExtractResult.getTableAliases());
+        if(conditions.isPresent()) {
+            tableAndConditionExtractResult.getConditions().getAndConditions().addAll(conditions.get().getAndConditions());
+        }
     }
 }
