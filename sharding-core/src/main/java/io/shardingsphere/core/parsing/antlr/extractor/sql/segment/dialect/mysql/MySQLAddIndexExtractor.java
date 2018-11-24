@@ -19,7 +19,7 @@ package io.shardingsphere.core.parsing.antlr.extractor.sql.segment.dialect.mysql
 
 import io.shardingsphere.core.parsing.antlr.extractor.sql.segment.CollectionSQLSegmentExtractor;
 import io.shardingsphere.core.parsing.antlr.extractor.sql.segment.RuleName;
-import io.shardingsphere.core.parsing.antlr.extractor.sql.segment.common.IndexesNameExtractor;
+import io.shardingsphere.core.parsing.antlr.extractor.sql.segment.common.IndexNamesExtractor;
 import io.shardingsphere.core.parsing.antlr.extractor.sql.segment.result.IndexExtractResult;
 import io.shardingsphere.core.parsing.antlr.extractor.sql.util.ASTUtils;
 import org.antlr.v4.runtime.ParserRuleContext;
@@ -34,7 +34,7 @@ import java.util.Collections;
  */
 public final class MySQLAddIndexExtractor implements CollectionSQLSegmentExtractor<IndexExtractResult> {
     
-    private final IndexesNameExtractor indexesNameExtractor = new IndexesNameExtractor();
+    private final IndexNamesExtractor indexesNameExtractor = new IndexNamesExtractor();
     
     @Override
     public Collection<IndexExtractResult> extract(final ParserRuleContext ancestorNode) {

@@ -19,8 +19,8 @@ package io.shardingsphere.core.parsing.antlr.extractor.sql.segment.result;
 
 import lombok.Getter;
 
+import java.util.Collection;
 import java.util.LinkedHashSet;
-import java.util.Set;
 
 /**
  * Drop column result.
@@ -30,5 +30,5 @@ import java.util.Set;
 @Getter
 public final class DropColumnExtractResult implements ExtractResult {
     
-    private final Set<String> dropColumnNames = new LinkedHashSet<>();
+    private final Collection<String> dropColumnNames = new LinkedHashSet<>();
 }

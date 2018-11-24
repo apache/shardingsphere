@@ -17,35 +17,33 @@
 
 package io.shardingsphere.core.parsing.antlr.extractor.sql.segment.common;
 
+import com.google.common.base.Optional;
 import io.shardingsphere.core.parsing.antlr.extractor.sql.segment.CollectionSQLSegmentExtractor;
 import io.shardingsphere.core.parsing.antlr.extractor.sql.segment.RuleName;
 import io.shardingsphere.core.parsing.antlr.extractor.sql.segment.result.IndexExtractResult;
 import io.shardingsphere.core.parsing.antlr.extractor.sql.util.ASTUtils;
-import io.shardingsphere.core.parsing.parser.token.IndexToken;
-import io.shardingsphere.core.util.SQLUtil;
 import org.antlr.v4.runtime.ParserRuleContext;
 
 import java.util.Collection;
-import java.util.Collections;
 import java.util.LinkedList;
 
 /**
- * Indexes name extractor.
+ * Index names extractor.
  *
  * @author duhongjun
  */
-public final class IndexesNameExtractor implements CollectionSQLSegmentExtractor<IndexExtractResult> {
+public final class IndexNamesExtractor implements CollectionSQLSegmentExtractor<IndexExtractResult> {
+    
+    private final IndexNameExtractor indexNameExtractor = new IndexNameExtractor();
     
     @Override
     public Collection<IndexExtractResult> extract(final ParserRuleContext ancestorNode) {
-        Collection<ParserRuleContext> indexNameNodes = ASTUtils.getAllDescendantNodes(ancestorNode, RuleName.INDEX_NAME);
-        if (indexNameNodes.isEmpty()) {
-            return Collections.emptyList();
-        }
         Collection<IndexExtractResult> result = new LinkedList<>();
-        for (ParserRuleContext each : indexNameNodes) {
-            String name = SQLUtil.getNameWithoutSchema(each.getText());
-            result.add(new IndexExtractResult(name, new IndexToken(each.getStop().getStartIndex(), name, null)));
+        for (ParserRuleContext each : ASTUtils.getAllDescendantNodes(ancestorNode, RuleName.INDEX_NAME)) {
+            Optional<IndexExtractResult> indexExtractResult = indexNameExtractor.extract(each);
+            if (indexExtractResult.isPresent()) {
+                result.add(indexExtractResult.get());
+            }
         }
         return result;
     }

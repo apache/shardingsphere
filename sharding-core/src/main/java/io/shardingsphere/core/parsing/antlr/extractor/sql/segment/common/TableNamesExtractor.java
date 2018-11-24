@@ -25,7 +25,6 @@ import io.shardingsphere.core.parsing.antlr.extractor.sql.util.ASTUtils;
 import org.antlr.v4.runtime.ParserRuleContext;
 
 import java.util.Collection;
-import java.util.Collections;
 import java.util.LinkedList;
 
 /**
@@ -39,12 +38,8 @@ public final class TableNamesExtractor implements CollectionSQLSegmentExtractor<
     
     @Override
     public Collection<TableExtractResult> extract(final ParserRuleContext ancestorNode) {
-        Collection<ParserRuleContext> tableNameNodes = ASTUtils.getAllDescendantNodes(ancestorNode, RuleName.TABLE_NAME);
-        if (tableNameNodes.isEmpty()) {
-            return Collections.emptyList();
-        }
         Collection<TableExtractResult> result = new LinkedList<>();
-        for (ParserRuleContext each : tableNameNodes) {
+        for (ParserRuleContext each : ASTUtils.getAllDescendantNodes(ancestorNode, RuleName.TABLE_NAME)) {
             Optional<TableExtractResult> tableExtractResult = tableNameExtractor.extract(each);
             if (tableExtractResult.isPresent()) {
                 result.add(tableExtractResult.get());
