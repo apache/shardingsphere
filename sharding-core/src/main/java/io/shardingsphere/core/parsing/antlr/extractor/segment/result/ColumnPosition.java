@@ -15,35 +15,30 @@
  * </p>
  */
 
-package io.shardingsphere.core.parsing.antlr.sql.ddl;
+package io.shardingsphere.core.parsing.antlr.extractor.segment.result;
 
-import io.shardingsphere.core.parsing.antlr.extractor.segment.result.ColumnPosition;
 import lombok.Getter;
 import lombok.Setter;
 
 /**
- * Column definition.
+ * Record alter table column position.
  * 
  * @author duhongjun
  */
 @Getter
 @Setter
-public final class ColumnDefinition {
+public final class ColumnPosition implements ExtractResult, Comparable<ColumnPosition> {
     
-    private String name;
+    private int startIndex;
     
-    private String type;
+    private String firstColumn;
     
-    private Integer length;
+    private String columnName;
     
-    private boolean primaryKey;
+    private String afterColumn;
     
-    private ColumnPosition position;
-    
-    public ColumnDefinition(final String name, final String type, final Integer length, final boolean primaryKey) {
-        this.name = name;
-        this.type = type;
-        this.length = length;
-        this.primaryKey = primaryKey;
+    @Override
+    public int compareTo(final ColumnPosition o) {
+        return null == o ? -1 : startIndex - o.startIndex;
     }
 }

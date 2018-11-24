@@ -15,35 +15,22 @@
  * </p>
  */
 
-package io.shardingsphere.core.parsing.antlr.sql.ddl;
+package io.shardingsphere.core.parsing.antlr.extractor.segment.result;
 
-import io.shardingsphere.core.parsing.antlr.extractor.segment.result.ColumnPosition;
+import io.shardingsphere.core.parsing.parser.token.IndexToken;
 import lombok.Getter;
-import lombok.Setter;
+import lombok.RequiredArgsConstructor;
 
 /**
- * Column definition.
+ * Index extract result.
  * 
  * @author duhongjun
  */
+@RequiredArgsConstructor
 @Getter
-@Setter
-public final class ColumnDefinition {
+public final class IndexExtractResult implements ExtractResult {
     
-    private String name;
+    private final String name;
     
-    private String type;
-    
-    private Integer length;
-    
-    private boolean primaryKey;
-    
-    private ColumnPosition position;
-    
-    public ColumnDefinition(final String name, final String type, final Integer length, final boolean primaryKey) {
-        this.name = name;
-        this.type = type;
-        this.length = length;
-        this.primaryKey = primaryKey;
-    }
+    private final IndexToken token;
 }

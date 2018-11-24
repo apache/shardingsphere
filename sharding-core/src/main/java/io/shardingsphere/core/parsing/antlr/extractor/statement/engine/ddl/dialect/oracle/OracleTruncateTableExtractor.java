@@ -15,35 +15,19 @@
  * </p>
  */
 
-package io.shardingsphere.core.parsing.antlr.sql.ddl;
+package io.shardingsphere.core.parsing.antlr.extractor.statement.engine.ddl.dialect.oracle;
 
-import io.shardingsphere.core.parsing.antlr.extractor.segment.result.ColumnPosition;
-import lombok.Getter;
-import lombok.Setter;
+import io.shardingsphere.core.parsing.antlr.extractor.segment.engine.TableNameExtractor;
+import io.shardingsphere.core.parsing.antlr.extractor.statement.engine.ddl.TruncateTableExtractor;
 
 /**
- * Column definition.
+ * Truncate table extractor for Oracle.
  * 
  * @author duhongjun
  */
-@Getter
-@Setter
-public final class ColumnDefinition {
+public final class OracleTruncateTableExtractor extends TruncateTableExtractor {
     
-    private String name;
-    
-    private String type;
-    
-    private Integer length;
-    
-    private boolean primaryKey;
-    
-    private ColumnPosition position;
-    
-    public ColumnDefinition(final String name, final String type, final Integer length, final boolean primaryKey) {
-        this.name = name;
-        this.type = type;
-        this.length = length;
-        this.primaryKey = primaryKey;
+    public OracleTruncateTableExtractor() {
+        addSQLSegmentExtractor(new TableNameExtractor());
     }
 }

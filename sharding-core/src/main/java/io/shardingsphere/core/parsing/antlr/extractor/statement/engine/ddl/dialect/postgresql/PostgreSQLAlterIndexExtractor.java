@@ -15,35 +15,19 @@
  * </p>
  */
 
-package io.shardingsphere.core.parsing.antlr.sql.ddl;
+package io.shardingsphere.core.parsing.antlr.extractor.statement.engine.ddl.dialect.postgresql;
 
-import io.shardingsphere.core.parsing.antlr.extractor.segment.result.ColumnPosition;
-import lombok.Getter;
-import lombok.Setter;
+import io.shardingsphere.core.parsing.antlr.extractor.segment.engine.IndexNamesExtractor;
+import io.shardingsphere.core.parsing.antlr.extractor.statement.engine.ddl.DDLStatementExtractor;
 
 /**
- * Column definition.
+ * Postgre alter index statement extractor.
  * 
  * @author duhongjun
  */
-@Getter
-@Setter
-public final class ColumnDefinition {
+public final class PostgreSQLAlterIndexExtractor extends DDLStatementExtractor {
     
-    private String name;
-    
-    private String type;
-    
-    private Integer length;
-    
-    private boolean primaryKey;
-    
-    private ColumnPosition position;
-    
-    public ColumnDefinition(final String name, final String type, final Integer length, final boolean primaryKey) {
-        this.name = name;
-        this.type = type;
-        this.length = length;
-        this.primaryKey = primaryKey;
+    public PostgreSQLAlterIndexExtractor() {
+        addSQLSegmentExtractor(new IndexNamesExtractor());
     }
 }

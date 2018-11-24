@@ -15,35 +15,18 @@
  * </p>
  */
 
-package io.shardingsphere.core.parsing.antlr.sql.ddl;
+package io.shardingsphere.core.parsing.antlr.extractor.segment.engine;
 
-import io.shardingsphere.core.parsing.antlr.extractor.segment.result.ColumnPosition;
-import lombok.Getter;
-import lombok.Setter;
+import io.shardingsphere.core.parsing.antlr.extractor.segment.constant.RuleName;
 
 /**
- * Column definition.
+ * Group by clause extractor.
  * 
  * @author duhongjun
  */
-@Getter
-@Setter
-public final class ColumnDefinition {
+public final class GroupByClauseExtractor extends OrderByClauseExtractor {
     
-    private String name;
-    
-    private String type;
-    
-    private Integer length;
-    
-    private boolean primaryKey;
-    
-    private ColumnPosition position;
-    
-    public ColumnDefinition(final String name, final String type, final Integer length, final boolean primaryKey) {
-        this.name = name;
-        this.type = type;
-        this.length = length;
-        this.primaryKey = primaryKey;
+    public GroupByClauseExtractor() {
+        super(RuleName.GROUP_BY_CLAUSE);
     }
 }
