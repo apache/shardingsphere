@@ -46,7 +46,6 @@ public final class HandlerResultFillerRegistry {
         registry(ColumnDefinitionSegment.class, new ColumnDefinitionHandlerResultFiller());
         registry(TableJoinSegment.class, new TableJoinHandlerResultFiller());
         registry(IndexSegment.class, new IndexHandlerResultFiller());
-        registry(Collection.class, new CollectionHandlerResultFiller());
     }
     
     /**

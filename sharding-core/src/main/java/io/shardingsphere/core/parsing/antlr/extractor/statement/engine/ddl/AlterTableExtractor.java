@@ -50,8 +50,8 @@ public abstract class AlterTableExtractor extends DDLStatementExtractor {
     }
     
     @Override
-    protected final void postExtract(final SQLStatement statement, final ShardingTableMetaData shardingTableMetaData) {
-        AlterTableStatement alterTableStatement = (AlterTableStatement) statement;
+    protected final void postExtract(final SQLStatement sqlStatement, final ShardingTableMetaData shardingTableMetaData) {
+        AlterTableStatement alterTableStatement = (AlterTableStatement) sqlStatement;
         TableMetaData oldTableMetaData = shardingTableMetaData.get(alterTableStatement.getTables().getSingleTableName());
         if (null == oldTableMetaData) {
             return;
