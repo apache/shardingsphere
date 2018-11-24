@@ -15,26 +15,26 @@
  * </p>
  */
 
-package io.shardingsphere.core.parsing.antlr.extractor.segment.filler;
+package io.shardingsphere.core.parsing.antlr.filler;
 
 import io.shardingsphere.core.metadata.table.ShardingTableMetaData;
-import io.shardingsphere.core.parsing.antlr.sql.segment.TableJoinSegment;
+import io.shardingsphere.core.parsing.antlr.sql.segment.SQLSegment;
 import io.shardingsphere.core.parsing.parser.sql.SQLStatement;
 
 /**
- * Join table extract result filler.
+ * SQL segment filler.
  * 
  * @author duhongjun
+ * @author zhangliang
  */
-public final class TableJoinHandlerResultFiller extends TableHandlerResultFiller {
+public interface SQLSegmentFiller {
     
-    public TableJoinHandlerResultFiller() {
-        super(TableJoinSegment.class);
-    }
-    
-    @Override
-    protected void fillSQLStatement(final Object extractResult, final SQLStatement statement, final ShardingTableMetaData shardingTableMetaData) {
-        TableJoinSegment tableResult = (TableJoinSegment) extractResult;
-        super.fillSQLStatement(tableResult, statement, shardingTableMetaData);
-    }
+    /**
+     * Fill SQL segment result to SQL statement.
+     *
+     * @param sqlSegment SQL segment
+     * @param sqlStatement SQL statement
+     * @param shardingTableMetaData sharding table meta data
+     */
+    void fill(SQLSegment sqlSegment, SQLStatement sqlStatement, ShardingTableMetaData shardingTableMetaData);
 }

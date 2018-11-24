@@ -33,7 +33,7 @@ import java.util.HashMap;
 import java.util.Map;
 
 /**
- * SQL statement extractor registry for PostgreSQL.
+ * SQL statement extractor register for PostgreSQL.
  * 
  * @author duhongjun
  * @author zhangliang

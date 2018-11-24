@@ -56,9 +56,9 @@ public final class ShardingTransactionHandlerRegistry {
     }
     
     /**
-     * Get instance of sharding transaction handler registry.
+     * Get instance of sharding transaction handler register.
      *
-     * @return sharding transaction handler registry
+     * @return sharding transaction handler register
      */
     public static ShardingTransactionHandlerRegistry getInstance() {
         return INSTANCE;

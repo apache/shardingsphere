@@ -33,7 +33,7 @@ import java.util.HashMap;
 import java.util.Map;
 
 /**
- * SQL statement extractor registry for Oracle.
+ * SQL statement extractor register for Oracle.
  * 
  * @author duhongjun
  * @author zhangliang

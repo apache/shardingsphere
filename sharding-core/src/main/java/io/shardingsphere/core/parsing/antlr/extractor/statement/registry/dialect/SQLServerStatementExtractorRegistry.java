@@ -33,7 +33,7 @@ import java.util.HashMap;
 import java.util.Map;
 
 /**
- * SQL statement extractor registry for SQLServer.
+ * SQL statement extractor register for SQLServer.
  * 
  * @author duhongjun
  * @author zhangliang

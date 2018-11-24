@@ -25,7 +25,7 @@ import lombok.NoArgsConstructor;
 import java.util.concurrent.TimeUnit;
 
 /**
- * Future registry.
+ * Future register.
  *
  * @author wangkai
  * @author zhangliang
@@ -39,9 +39,9 @@ public final class FutureRegistry {
     private final Cache<Integer, SynchronizedFuture> resultCache = CacheBuilder.newBuilder().expireAfterWrite(60, TimeUnit.SECONDS).build();
     
     /**
-     * Get instance of future registry.
+     * Get instance of future register.
      *
-     * @return instance of future registry
+     * @return instance of future register
      */
     public static FutureRegistry getInstance() {
         return INSTANCE;

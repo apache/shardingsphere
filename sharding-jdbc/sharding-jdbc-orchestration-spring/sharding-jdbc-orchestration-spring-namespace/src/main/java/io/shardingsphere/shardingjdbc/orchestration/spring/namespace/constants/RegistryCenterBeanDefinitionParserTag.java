@@ -28,7 +28,7 @@ import lombok.NoArgsConstructor;
 @NoArgsConstructor(access = AccessLevel.PRIVATE)
 public final class RegistryCenterBeanDefinitionParserTag {
     
-    public static final String ROOT_TAG = "registry-center";
+    public static final String ROOT_TAG = "register-center";
     
     public static final String SERVER_LISTS_TAG = "server-lists";
     

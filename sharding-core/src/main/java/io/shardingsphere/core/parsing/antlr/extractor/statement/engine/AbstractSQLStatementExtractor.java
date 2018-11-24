@@ -22,9 +22,9 @@ import io.shardingsphere.core.metadata.table.ShardingTableMetaData;
 import io.shardingsphere.core.parsing.antlr.extractor.segment.CollectionSQLSegmentExtractor;
 import io.shardingsphere.core.parsing.antlr.extractor.segment.OptionalSQLSegmentExtractor;
 import io.shardingsphere.core.parsing.antlr.extractor.segment.SQLSegmentExtractor;
-import io.shardingsphere.core.parsing.antlr.extractor.segment.filler.HandlerResultFiller;
-import io.shardingsphere.core.parsing.antlr.extractor.segment.filler.HandlerResultFillerRegistry;
 import io.shardingsphere.core.parsing.antlr.extractor.statement.SQLStatementExtractor;
+import io.shardingsphere.core.parsing.antlr.filler.SQLSegmentFiller;
+import io.shardingsphere.core.parsing.antlr.filler.SQLSegmentFillerRegistry;
 import io.shardingsphere.core.parsing.antlr.sql.segment.SQLSegment;
 import io.shardingsphere.core.parsing.parser.sql.SQLStatement;
 import org.antlr.v4.runtime.ParserRuleContext;
@@ -58,9 +58,9 @@ public abstract class AbstractSQLStatementExtractor implements SQLStatementExtra
             }
         }
         for (SQLSegment each : sqlSegments) {
-            HandlerResultFiller filler = HandlerResultFillerRegistry.getFiller(each);
-            if (null != filler) {
-                filler.fill(each, result, shardingTableMetaData);
+            Optional<SQLSegmentFiller> filler = SQLSegmentFillerRegistry.findFiller(each);
+            if (filler.isPresent()) {
+                filler.get().fill(each, result, shardingTableMetaData);
             }
         }
         postExtract(result, shardingTableMetaData);

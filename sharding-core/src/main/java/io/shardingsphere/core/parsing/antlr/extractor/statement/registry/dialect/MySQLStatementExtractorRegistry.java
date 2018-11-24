@@ -32,7 +32,7 @@ import java.util.HashMap;
 import java.util.Map;
 
 /**
- * SQL statement extractor registry for MySQL.
+ * SQL statement extractor register for MySQL.
  * 
  * @author duhongjun
  * @author zhangliang

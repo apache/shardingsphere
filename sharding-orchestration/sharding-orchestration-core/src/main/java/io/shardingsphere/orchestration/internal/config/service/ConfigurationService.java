@@ -64,7 +64,7 @@ public final class ConfigurationService {
      * @param authentication authentication
      * @param configMap config map
      * @param props sharding properties
-     * @param isOverwrite is overwrite registry center's configuration
+     * @param isOverwrite is overwrite register center's configuration
      */
     public void persistConfiguration(final String shardingSchemaName, final Map<String, DataSourceConfiguration> dataSourceConfigurations, final RuleConfiguration ruleConfig,
                                      final Authentication authentication, final Map<String, Object> configMap, final Properties props, final boolean isOverwrite) {

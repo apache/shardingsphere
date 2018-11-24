@@ -33,10 +33,10 @@ import java.util.ServiceLoader;
 public final class RegistryCenterLoader {
     
     /**
-     * Load registry center from SPI.
+     * Load register center from SPI.
      * 
-     * @param regCenterConfig registry center configuration
-     * @return registry center
+     * @param regCenterConfig register center configuration
+     * @return register center
      */
     public static RegistryCenter load(final RegistryCenterConfiguration regCenterConfig) {
         Preconditions.checkNotNull(regCenterConfig, "Registry center configuration cannot be null.");

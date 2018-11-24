@@ -25,7 +25,7 @@ import java.util.concurrent.ConcurrentMap;
 import java.util.concurrent.atomic.AtomicInteger;
 
 /**
- * Binary prepared statement registry.
+ * Binary prepared statement register.
  *
  * @author zhangliang
  * @author zhangyonglun
@@ -42,9 +42,9 @@ public final class BinaryStatementRegistry {
     private final AtomicInteger sequence = new AtomicInteger();
     
     /**
-     * Get prepared statement registry instance.
+     * Get prepared statement register instance.
      * 
-     * @return prepared statement registry instance
+     * @return prepared statement register instance
      */
     public static BinaryStatementRegistry getInstance() {
         return INSTANCE;
