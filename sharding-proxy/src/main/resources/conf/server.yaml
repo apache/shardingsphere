@@ -7,7 +7,7 @@
 #orchestration:
 #  name: orchestration_ds
 #  overwrite: true
-#  register:
+#  registry:
 #    serverLists: localhost:2181
 #    namespace: orchestration
 #

@@ -24,7 +24,7 @@ import lombok.AccessLevel;
 import lombok.NoArgsConstructor;
 
 /**
- * Channel register.
+ * Channel registry.
  *
  * @author wangkai
  * @author zhangliang
@@ -38,9 +38,9 @@ public final class ChannelRegistry {
     private final Cache<String, Integer> connectionIds = CacheBuilder.newBuilder().build();
     
     /**
-     * Get instance of channel register.
+     * Get instance of channel registry.
      *
-     * @return instance of channel register
+     * @return instance of channel registry
      */
     public static ChannelRegistry getInstance() {
         return INSTANCE;

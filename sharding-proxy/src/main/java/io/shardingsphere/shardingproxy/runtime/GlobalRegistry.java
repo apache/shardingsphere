@@ -47,7 +47,7 @@ import java.util.Properties;
 import java.util.concurrent.ConcurrentHashMap;
 
 /**
- * Global register.
+ * Global registry.
  *
  * @author chenqingyang
  * @author panjuan
@@ -104,7 +104,7 @@ public final class GlobalRegistry {
      * @param authentication authentication
      * @param configMap config map
      * @param props properties
-     * @param isUsingRegistry is using register or not
+     * @param isUsingRegistry is using registry or not
      */
     public void init(final Map<String, Map<String, DataSourceParameter>> schemaDataSources, final Map<String, RuleConfiguration> schemaRules, 
                      final Authentication authentication, final Map<String, Object> configMap, final Properties props, final boolean isUsingRegistry) {

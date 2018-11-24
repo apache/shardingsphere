@@ -33,10 +33,10 @@ import java.util.ServiceLoader;
 public final class RegistryCenterLoader {
     
     /**
-     * Load register center from SPI.
+     * Load registry center from SPI.
      * 
-     * @param regCenterConfig register center configuration
-     * @return register center
+     * @param regCenterConfig registry center configuration
+     * @return registry center
      */
     public static RegistryCenter load(final RegistryCenterConfiguration regCenterConfig) {
         Preconditions.checkNotNull(regCenterConfig, "Registry center configuration cannot be null.");
@@ -46,9 +46,9 @@ public final class RegistryCenterLoader {
             result = each;
             count++;
         }
-        Preconditions.checkNotNull(result, "Cannot load implementation class for `RegistryCenter`");
+        Preconditions.checkNotNull(result, "Cannot load implementation class for registry center");
         if (1 != count) {
-            log.warn("Find more than one RegistryCenter implementation class, use `{}` now", result.getClass().getName());
+            log.warn("Find more than one registry center implementation class, use `{}` now", result.getClass().getName());
         }
         result.init(regCenterConfig);
         return result;

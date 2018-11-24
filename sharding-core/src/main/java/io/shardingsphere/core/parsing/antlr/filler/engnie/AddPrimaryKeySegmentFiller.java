@@ -19,7 +19,7 @@ package io.shardingsphere.core.parsing.antlr.filler.engnie;
 
 import com.google.common.base.Optional;
 import io.shardingsphere.core.metadata.table.ShardingTableMetaData;
-import io.shardingsphere.core.parsing.antlr.filler.AbstractSQLSegmentFiller;
+import io.shardingsphere.core.parsing.antlr.filler.SQLSegmentFiller;
 import io.shardingsphere.core.parsing.antlr.sql.segment.AddPrimaryKeySegment;
 import io.shardingsphere.core.parsing.antlr.sql.segment.SQLSegment;
 import io.shardingsphere.core.parsing.antlr.sql.statement.ddl.AlterTableStatement;
@@ -28,18 +28,14 @@ import io.shardingsphere.core.parsing.parser.sql.SQLStatement;
 import io.shardingsphere.core.parsing.parser.sql.ddl.create.table.CreateTableStatement;
 
 /**
- * Primary keyHandler result filler.
+ * Add primary keyHandler result filler.
  *
  * @author duhongjun
  */
-public final class PrimaryKeySegmentFiller extends AbstractSQLSegmentFiller {
-    
-    public PrimaryKeySegmentFiller() {
-        super(AddPrimaryKeySegment.class);
-    }
+public final class AddPrimaryKeySegmentFiller implements SQLSegmentFiller {
     
     @Override
-    protected void doFill(final SQLSegment sqlSegment, final SQLStatement sqlStatement, final ShardingTableMetaData shardingTableMetaData) {
+    public void fill(final SQLSegment sqlSegment, final SQLStatement sqlStatement, final ShardingTableMetaData shardingTableMetaData) {
         if (sqlStatement instanceof AlterTableStatement) {
             fillAlter((AddPrimaryKeySegment) sqlSegment, (AlterTableStatement) sqlStatement, shardingTableMetaData);
         } else if (sqlStatement instanceof CreateTableStatement) {

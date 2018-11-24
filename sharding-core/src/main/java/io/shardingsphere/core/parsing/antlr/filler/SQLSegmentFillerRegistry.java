@@ -18,11 +18,11 @@
 package io.shardingsphere.core.parsing.antlr.filler;
 
 import com.google.common.base.Optional;
+import io.shardingsphere.core.parsing.antlr.filler.engnie.AddPrimaryKeySegmentFiller;
 import io.shardingsphere.core.parsing.antlr.filler.engnie.ColumnDefinitionSegmentFiller;
 import io.shardingsphere.core.parsing.antlr.filler.engnie.DropColumnSegmentFiller;
 import io.shardingsphere.core.parsing.antlr.filler.engnie.DropPrimaryKeySegmentFiller;
 import io.shardingsphere.core.parsing.antlr.filler.engnie.IndexSegmentFiller;
-import io.shardingsphere.core.parsing.antlr.filler.engnie.PrimaryKeySegmentFiller;
 import io.shardingsphere.core.parsing.antlr.filler.engnie.TableJoinSegmentFiller;
 import io.shardingsphere.core.parsing.antlr.filler.engnie.TableSegmentFiller;
 import io.shardingsphere.core.parsing.antlr.sql.segment.AddPrimaryKeySegment;
@@ -38,7 +38,7 @@ import java.util.HashMap;
 import java.util.Map;
 
 /**
- * SQL Segment filler register.
+ * SQL Segment filler registry.
  *
  * @author duhongjun
  */
@@ -48,7 +48,7 @@ public final class SQLSegmentFillerRegistry {
     
     static {
         FILLERS.put(DropColumnSegment.class, new DropColumnSegmentFiller());
-        FILLERS.put(AddPrimaryKeySegment.class, new PrimaryKeySegmentFiller());
+        FILLERS.put(AddPrimaryKeySegment.class, new AddPrimaryKeySegmentFiller());
         FILLERS.put(DropPrimaryKeySegment.class, new DropPrimaryKeySegmentFiller());
         FILLERS.put(TableSegment.class, new TableSegmentFiller());
         FILLERS.put(ColumnDefinitionSegment.class, new ColumnDefinitionSegmentFiller());

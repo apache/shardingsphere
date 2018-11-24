@@ -19,7 +19,6 @@ package io.shardingsphere.core.parsing.antlr.filler.engnie;
 
 import io.shardingsphere.core.metadata.table.ShardingTableMetaData;
 import io.shardingsphere.core.parsing.antlr.sql.segment.SQLSegment;
-import io.shardingsphere.core.parsing.antlr.sql.segment.TableJoinSegment;
 import io.shardingsphere.core.parsing.parser.sql.SQLStatement;
 
 /**
@@ -29,13 +28,8 @@ import io.shardingsphere.core.parsing.parser.sql.SQLStatement;
  */
 public final class TableJoinSegmentFiller extends TableSegmentFiller {
     
-    public TableJoinSegmentFiller() {
-        super(TableJoinSegment.class);
-    }
-    
     @Override
-    protected void doFill(final SQLSegment sqlSegment, final SQLStatement sqlStatement, final ShardingTableMetaData shardingTableMetaData) {
-        TableJoinSegment tableJoinSegment = (TableJoinSegment) sqlSegment;
-        super.doFill(tableJoinSegment, sqlStatement, shardingTableMetaData);
+    public void fill(final SQLSegment sqlSegment, final SQLStatement sqlStatement, final ShardingTableMetaData shardingTableMetaData) {
+        super.fill(sqlSegment, sqlStatement, shardingTableMetaData);
     }
 }
