@@ -23,14 +23,14 @@ import java.util.Map;
 import io.shardingsphere.core.parsing.antlr.extractor.SQLStatementExtractor;
 import io.shardingsphere.core.parsing.antlr.extractor.SQLStatementType;
 import io.shardingsphere.core.parsing.antlr.extractor.registry.SQLStatementExtractorRegistry;
-import io.shardingsphere.core.parsing.antlr.extractor.statement.type.CreateIndexExtractor;
-import io.shardingsphere.core.parsing.antlr.extractor.statement.type.CreateTableExtractor;
-import io.shardingsphere.core.parsing.antlr.extractor.statement.type.DropIndexExtractor;
-import io.shardingsphere.core.parsing.antlr.extractor.statement.type.TCLStatementExtractor;
-import io.shardingsphere.core.parsing.antlr.extractor.statement.type.dialect.mysql.MySQLAlterTableExtractor;
-import io.shardingsphere.core.parsing.antlr.extractor.statement.type.dialect.mysql.MySQLDropTableExtractor;
-import io.shardingsphere.core.parsing.antlr.extractor.statement.type.dialect.mysql.MySQLSelectExtractor;
-import io.shardingsphere.core.parsing.antlr.extractor.statement.type.dialect.mysql.MySQLTruncateTableExtractor;
+import io.shardingsphere.core.parsing.antlr.extractor.sql.statement.ddl.CreateIndexExtractor;
+import io.shardingsphere.core.parsing.antlr.extractor.sql.statement.ddl.CreateTableExtractor;
+import io.shardingsphere.core.parsing.antlr.extractor.sql.statement.ddl.DropIndexExtractor;
+import io.shardingsphere.core.parsing.antlr.extractor.sql.statement.ddl.dialect.mysql.MySQLAlterTableExtractor;
+import io.shardingsphere.core.parsing.antlr.extractor.sql.statement.ddl.dialect.mysql.MySQLDropTableExtractor;
+import io.shardingsphere.core.parsing.antlr.extractor.sql.statement.ddl.dialect.mysql.MySQLTruncateTableExtractor;
+import io.shardingsphere.core.parsing.antlr.extractor.sql.statement.dql.MySQLSelectExtractor;
+import io.shardingsphere.core.parsing.antlr.extractor.sql.statement.tcl.TCLStatementExtractor;
 
 /**
  * SQL statement extractor registry for MySQL.

@@ -135,9 +135,8 @@ public final class GlobalRegistry {
      *
      * @return transaction type
      */
-    // TODO just config proxy.transaction.enable here, in future(3.1.0)
     public TransactionType getTransactionType() {
-        return shardingProperties.<Boolean>getValue(ShardingPropertiesConstant.PROXY_TRANSACTION_ENABLED) ? TransactionType.XA : TransactionType.LOCAL;
+        return TransactionType.valueOf((String) shardingProperties.getValue(ShardingPropertiesConstant.PROXY_TRANSACTION_TYPE));
     }
     
     /**
