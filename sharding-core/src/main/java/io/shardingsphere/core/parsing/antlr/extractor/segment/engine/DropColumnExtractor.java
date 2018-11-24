@@ -33,7 +33,7 @@ import java.util.Collection;
  *
  * @author duhongjun
  */
-public final class DropColumnExtractor implements OptionalSQLSegmentExtractor<DropColumnSegment> {
+public final class DropColumnExtractor implements OptionalSQLSegmentExtractor {
     
     @Override
     public Optional<DropColumnSegment> extract(final ParserRuleContext ancestorNode) {

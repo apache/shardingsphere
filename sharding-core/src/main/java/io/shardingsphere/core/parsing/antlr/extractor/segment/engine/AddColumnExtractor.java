@@ -34,7 +34,7 @@ import java.util.LinkedList;
  *
  * @author duhongjun
  */
-public class AddColumnExtractor implements CollectionSQLSegmentExtractor<ColumnDefinitionSegment> {
+public class AddColumnExtractor implements CollectionSQLSegmentExtractor {
     
     private final ColumnDefinitionPhraseExtractor columnDefinitionPhraseExtractor = new ColumnDefinitionPhraseExtractor();
     

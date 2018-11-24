@@ -34,7 +34,7 @@ import java.util.LinkedList;
  *
  * @author duhongjun
  */
-public final class OracleModifyColumnExtractor implements CollectionSQLSegmentExtractor<ColumnDefinitionSegment> {
+public final class OracleModifyColumnExtractor implements CollectionSQLSegmentExtractor {
     
     private final ColumnDefinitionPhraseExtractor columnDefinitionPhraseExtractor = new ColumnDefinitionPhraseExtractor();
     

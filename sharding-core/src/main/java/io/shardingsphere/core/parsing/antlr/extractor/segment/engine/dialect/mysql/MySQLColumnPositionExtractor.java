@@ -31,7 +31,7 @@ import org.antlr.v4.runtime.ParserRuleContext;
  * @author duhongjun
  */
 @RequiredArgsConstructor
-public final class MySQLColumnPositionExtractor implements OptionalSQLSegmentExtractor<ColumnPositionSegment> {
+public final class MySQLColumnPositionExtractor implements OptionalSQLSegmentExtractor {
     
     private final String columnName;
     

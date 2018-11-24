@@ -34,7 +34,7 @@ import java.util.LinkedList;
  *
  * @author duhongjun
  */
-public final class FromClauseExtractor implements CollectionSQLSegmentExtractor<TableSegment> {
+public final class FromClauseExtractor implements CollectionSQLSegmentExtractor {
     
     private final TableNameExtractor tableNameExtractor = new TableNameExtractor();
     

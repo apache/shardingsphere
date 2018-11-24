@@ -32,7 +32,7 @@ import java.util.Collections;
  *
  * @author duhongjun
  */
-public final class MySQLAddIndexExtractor implements CollectionSQLSegmentExtractor<IndexSegment> {
+public final class MySQLAddIndexExtractor implements CollectionSQLSegmentExtractor {
     
     private final IndexNamesExtractor indexesNameExtractor = new IndexNamesExtractor();
     

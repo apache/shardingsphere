@@ -29,7 +29,7 @@ import org.antlr.v4.runtime.ParserRuleContext;
  *
  * @author duhongjun
  */
-public final class DropPrimaryKeyExtractor implements OptionalSQLSegmentExtractor<DropPrimaryKeySegment> {
+public final class DropPrimaryKeyExtractor implements OptionalSQLSegmentExtractor {
     
     @Override
     public Optional<DropPrimaryKeySegment> extract(final ParserRuleContext ancestorNode) {

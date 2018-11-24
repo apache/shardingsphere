@@ -33,7 +33,7 @@ import java.util.Collection;
  * @author duhongjun
  */
 @RequiredArgsConstructor
-public final class AddPrimaryKeyExtractor implements OptionalSQLSegmentExtractor<AddPrimaryKeySegment> {
+public final class AddPrimaryKeyExtractor implements OptionalSQLSegmentExtractor {
     
     private final RuleName ruleName;
     

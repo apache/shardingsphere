@@ -31,7 +31,7 @@ import java.util.Collection;
  *
  * @author duhongjun
  */
-public final class CreatePrimaryKeyExtractor implements OptionalSQLSegmentExtractor<AddPrimaryKeySegment> {
+public final class CreatePrimaryKeyExtractor implements OptionalSQLSegmentExtractor {
     
     @Override
     public Optional<AddPrimaryKeySegment> extract(final ParserRuleContext ancestorNode) {

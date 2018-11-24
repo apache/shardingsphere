@@ -30,7 +30,7 @@ import org.antlr.v4.runtime.ParserRuleContext;
  * 
  * @author duhongjun
  */
-public final class RenameColumnExtractor implements OptionalSQLSegmentExtractor<SQLSegment> {
+public final class RenameColumnExtractor implements OptionalSQLSegmentExtractor {
     
     @Override
     public Optional<SQLSegment> extract(final ParserRuleContext ancestorNode) {

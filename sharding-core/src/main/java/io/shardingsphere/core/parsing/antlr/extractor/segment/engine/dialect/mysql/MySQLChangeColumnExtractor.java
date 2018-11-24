@@ -31,7 +31,7 @@ import org.antlr.v4.runtime.ParserRuleContext;
  * 
  * @author duhongjun
  */
-public final class MySQLChangeColumnExtractor implements OptionalSQLSegmentExtractor<ColumnDefinitionSegment> {
+public final class MySQLChangeColumnExtractor implements OptionalSQLSegmentExtractor {
     
     private final ColumnDefinitionPhraseExtractor columnDefinitionPhraseExtractor = new ColumnDefinitionPhraseExtractor();
     

@@ -32,7 +32,7 @@ import java.util.Collection;
  *
  * @author duhongjun
  */
-public final class SQLServerAddPrimaryKeyExtractor implements OptionalSQLSegmentExtractor<AddPrimaryKeySegment> {
+public final class SQLServerAddPrimaryKeyExtractor implements OptionalSQLSegmentExtractor {
     
     @Override
     public Optional<AddPrimaryKeySegment> extract(final ParserRuleContext ancestorNode) {

@@ -25,10 +25,8 @@ import org.antlr.v4.runtime.ParserRuleContext;
  * Optional SQL segment extractor.
  * 
  * @author zhangliang
- * 
- * @param <T> Type of SQL segment
  */
-public interface OptionalSQLSegmentExtractor<T extends SQLSegment> extends SQLSegmentExtractor {
+public interface OptionalSQLSegmentExtractor extends SQLSegmentExtractor {
     
     /**
      * Extract SQL segment from SQL AST.
@@ -36,5 +34,5 @@ public interface OptionalSQLSegmentExtractor<T extends SQLSegment> extends SQLSe
      * @param ancestorNode ancestor node of AST
      * @return SQL segment
      */
-    Optional<T> extract(ParserRuleContext ancestorNode);
+    Optional<? extends SQLSegment> extract(ParserRuleContext ancestorNode);
 }

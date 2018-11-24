@@ -26,16 +26,14 @@ import java.util.Collection;
  * Collection SQL segment extractor.
  * 
  * @author zhangliang
- * 
- * @param <T> Type of SQL segment 
  */
-public interface CollectionSQLSegmentExtractor<T extends SQLSegment> extends SQLSegmentExtractor {
+public interface CollectionSQLSegmentExtractor extends SQLSegmentExtractor {
     
     /**
-     * Extract SQL segment from SQL AST.
+     * Extract SQL segments from SQL AST.
      *  
      * @param ancestorNode ancestor node of AST
-     * @return SQL segment
+     * @return SQL segments
      */
-    Collection<T> extract(ParserRuleContext ancestorNode);
+    Collection<? extends SQLSegment> extract(ParserRuleContext ancestorNode);
 }

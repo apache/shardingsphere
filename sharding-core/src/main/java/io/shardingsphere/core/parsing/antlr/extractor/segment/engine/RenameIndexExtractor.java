@@ -36,7 +36,7 @@ import java.util.LinkedList;
  *
  * @author duhongjun
  */
-public final class RenameIndexExtractor implements CollectionSQLSegmentExtractor<IndexSegment> {
+public final class RenameIndexExtractor implements CollectionSQLSegmentExtractor {
     
     @Override
     public Collection<IndexSegment> extract(final ParserRuleContext ancestorNode) {

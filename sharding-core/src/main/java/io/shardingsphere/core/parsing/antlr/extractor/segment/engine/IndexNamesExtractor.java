@@ -32,7 +32,7 @@ import java.util.LinkedList;
  *
  * @author duhongjun
  */
-public final class IndexNamesExtractor implements CollectionSQLSegmentExtractor<IndexSegment> {
+public final class IndexNamesExtractor implements CollectionSQLSegmentExtractor {
     
     private final IndexNameExtractor indexNameExtractor = new IndexNameExtractor();
     

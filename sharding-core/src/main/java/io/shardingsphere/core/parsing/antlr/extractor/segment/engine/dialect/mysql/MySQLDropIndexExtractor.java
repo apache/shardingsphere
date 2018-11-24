@@ -35,7 +35,7 @@ import java.util.LinkedList;
  *
  * @author duhongjun
  */
-public final class MySQLDropIndexExtractor implements CollectionSQLSegmentExtractor<IndexSegment> {
+public final class MySQLDropIndexExtractor implements CollectionSQLSegmentExtractor {
     
     private final IndexNameExtractor indexNameExtractor = new IndexNameExtractor();
     

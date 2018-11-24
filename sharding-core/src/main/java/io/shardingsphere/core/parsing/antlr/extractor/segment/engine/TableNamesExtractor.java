@@ -32,7 +32,7 @@ import java.util.LinkedList;
  *
  * @author duhongjun
  */
-public final class TableNamesExtractor implements CollectionSQLSegmentExtractor<TableSegment> {
+public final class TableNamesExtractor implements CollectionSQLSegmentExtractor {
     
     private final TableNameExtractor tableNameExtractor = new TableNameExtractor();
     

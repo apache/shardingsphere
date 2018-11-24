@@ -38,7 +38,7 @@ import java.util.LinkedList;
  * @author duhongjun
  */
 @RequiredArgsConstructor
-public class OrderByClauseExtractor implements CollectionSQLSegmentExtractor<OrderBySegment> {
+public class OrderByClauseExtractor implements CollectionSQLSegmentExtractor {
     
     private final RuleName ruleName;
     

@@ -33,7 +33,7 @@ import java.util.LinkedList;
  *
  * @author duhongjun
  */
-public class ModifyColumnExtractor implements CollectionSQLSegmentExtractor<ColumnDefinitionSegment> {
+public class ModifyColumnExtractor implements CollectionSQLSegmentExtractor {
     
     private final ColumnDefinitionPhraseExtractor columnDefinitionPhraseExtractor = new ColumnDefinitionPhraseExtractor();
     

@@ -35,7 +35,7 @@ import java.util.List;
  *
  * @author duhongjun
  */
-public final class TableNameExtractor implements OptionalSQLSegmentExtractor<TableSegment> {
+public final class TableNameExtractor implements OptionalSQLSegmentExtractor {
     
     @Override
     public Optional<TableSegment> extract(final ParserRuleContext ancestorNode) {

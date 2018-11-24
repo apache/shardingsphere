@@ -30,7 +30,7 @@ import org.antlr.v4.runtime.ParserRuleContext;
  * 
  * @author duhongjun
  */
-public final class SQLServerAddIndexExtractor implements OptionalSQLSegmentExtractor<IndexSegment> {
+public final class SQLServerAddIndexExtractor implements OptionalSQLSegmentExtractor {
     
     private final IndexNameExtractor indexNameExtractor = new IndexNameExtractor();
     

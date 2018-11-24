@@ -31,7 +31,7 @@ import org.antlr.v4.runtime.ParserRuleContext;
  * 
  * @author duhongjun
  */
-public final class IndexNameExtractor implements OptionalSQLSegmentExtractor<IndexSegment> {
+public final class IndexNameExtractor implements OptionalSQLSegmentExtractor {
     
     @Override
     public Optional<IndexSegment> extract(final ParserRuleContext ancestorNode) {

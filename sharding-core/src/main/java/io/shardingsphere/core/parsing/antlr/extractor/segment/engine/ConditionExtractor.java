@@ -35,7 +35,7 @@ import org.antlr.v4.runtime.tree.ParseTree;
  * 
  * @author duhongjun
  */
-public final class ConditionExtractor implements OptionalSQLSegmentExtractor<PredicateSegment> {
+public final class ConditionExtractor implements OptionalSQLSegmentExtractor {
     
     @Override
     public Optional<PredicateSegment> extract(final ParserRuleContext ancestorNode) {
