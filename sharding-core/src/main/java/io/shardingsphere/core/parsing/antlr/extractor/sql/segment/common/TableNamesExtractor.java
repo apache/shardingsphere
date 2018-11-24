@@ -35,7 +35,7 @@ import java.util.LinkedList;
  */
 public final class TableNamesExtractor implements CollectionSQLSegmentExtractor<TableExtractResult> {
     
-    private final TableNameExtractor tableNameExtractHandler = new TableNameExtractor();
+    private final TableNameExtractor tableNameExtractor = new TableNameExtractor();
     
     @Override
     public Collection<TableExtractResult> extract(final ParserRuleContext ancestorNode) {
@@ -45,7 +45,7 @@ public final class TableNamesExtractor implements CollectionSQLSegmentExtractor<
         }
         Collection<TableExtractResult> result = new LinkedList<>();
         for (ParserRuleContext each : tableNameNodes) {
-            Optional<TableExtractResult> tableExtractResult = tableNameExtractHandler.extract(each);
+            Optional<TableExtractResult> tableExtractResult = tableNameExtractor.extract(each);
             if (tableExtractResult.isPresent()) {
                 result.add(tableExtractResult.get());
             }

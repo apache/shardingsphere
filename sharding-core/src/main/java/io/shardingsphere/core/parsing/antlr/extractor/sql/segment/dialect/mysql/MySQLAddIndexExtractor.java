@@ -34,7 +34,7 @@ import java.util.Collections;
  */
 public final class MySQLAddIndexExtractor implements CollectionSQLSegmentExtractor<IndexExtractResult> {
     
-    private final IndexesNameExtractor indexNamesExtractHandler = new IndexesNameExtractor();
+    private final IndexesNameExtractor indexesNameExtractor = new IndexesNameExtractor();
     
     @Override
     public Collection<IndexExtractResult> extract(final ParserRuleContext ancestorNode) {
@@ -43,6 +43,6 @@ public final class MySQLAddIndexExtractor implements CollectionSQLSegmentExtract
             return Collections.emptyList();
         }
        
-        return indexNamesExtractHandler.extract(ancestorNode);
+        return indexesNameExtractor.extract(ancestorNode);
     }
 }

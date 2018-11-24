@@ -37,7 +37,7 @@ import java.util.LinkedList;
  */
 public final class MySQLDropIndexExtractor implements CollectionSQLSegmentExtractor<IndexExtractResult> {
     
-    private final IndexNameExtractor indexNameExtractHandler = new IndexNameExtractor();
+    private final IndexNameExtractor indexNameExtractor = new IndexNameExtractor();
     
     @Override
     public Collection<IndexExtractResult> extract(final ParserRuleContext ancestorNode) {
@@ -55,7 +55,7 @@ public final class MySQLDropIndexExtractor implements CollectionSQLSegmentExtrac
             if (!(lastChild instanceof ParserRuleContext)) {
                 continue;
             }
-            Optional<IndexExtractResult> extractResult = indexNameExtractHandler.extract((ParserRuleContext) lastChild);
+            Optional<IndexExtractResult> extractResult = indexNameExtractor.extract((ParserRuleContext) lastChild);
             if (extractResult.isPresent()) {
                 result.add(extractResult.get());
             }

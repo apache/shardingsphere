@@ -32,7 +32,7 @@ import org.antlr.v4.runtime.ParserRuleContext;
  */
 public final class SQLServerDropIndexExtractor implements OptionalSQLSegmentExtractor<IndexExtractResult> {
     
-    private final IndexNameExtractor indexNameExtractHandler = new IndexNameExtractor();
+    private final IndexNameExtractor indexNameExtractor = new IndexNameExtractor();
     
     @Override
     public Optional<IndexExtractResult> extract(final ParserRuleContext ancestorNode) {
@@ -44,6 +44,6 @@ public final class SQLServerDropIndexExtractor implements OptionalSQLSegmentExtr
         if (!indexNameNode.isPresent()) {
             return Optional.absent();
         }
-        return indexNameExtractHandler.extract(indexNameNode.get());
+        return indexNameExtractor.extract(indexNameNode.get());
     }
 }
