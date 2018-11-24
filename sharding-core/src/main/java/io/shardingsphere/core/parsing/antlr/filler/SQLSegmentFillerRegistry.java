@@ -57,7 +57,7 @@ public final class SQLSegmentFillerRegistry {
     }
     
     /**
-     * Get SQL segment filler.
+     * Find SQL segment filler.
      *
      * @param sqlSegment sql segment
      * @return instance of SQL segment filler

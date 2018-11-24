@@ -40,6 +40,6 @@ public final class IndexNameExtractor implements OptionalSQLSegmentExtractor {
             return Optional.absent();
         }
         String indexName = SQLUtil.getNameWithoutSchema(indexNameNode.get().getText());
-        return Optional.of(new IndexSegment(indexName, new IndexToken(indexNameNode.get().getStop().getStartIndex(), indexName, null)));
+        return Optional.of(new IndexSegment(indexName, new IndexToken(indexNameNode.get().getStop().getStartIndex(), indexName)));
     }
 }
