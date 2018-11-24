@@ -18,7 +18,7 @@
 package io.shardingsphere.core.parsing.antlr.extractor.segment.filler;
 
 import io.shardingsphere.core.metadata.table.ShardingTableMetaData;
-import io.shardingsphere.core.parsing.antlr.extractor.segment.result.IndexExtractResult;
+import io.shardingsphere.core.parsing.antlr.sql.segment.IndexSegment;
 import io.shardingsphere.core.parsing.parser.sql.SQLStatement;
 import io.shardingsphere.core.parsing.parser.token.IndexToken;
 
@@ -30,17 +30,17 @@ import io.shardingsphere.core.parsing.parser.token.IndexToken;
 public final class IndexHandlerResultFiller extends AbstractHandlerResultFiller {
     
     public IndexHandlerResultFiller() {
-        super(IndexExtractResult.class);
+        super(IndexSegment.class);
     }
     
     @Override
     protected void fillSQLStatement(final Object extractResult, final SQLStatement statement, final ShardingTableMetaData shardingTableMetaData) {
-        IndexToken indexToken = ((IndexExtractResult) extractResult).getToken();
+        IndexToken indexToken = ((IndexSegment) extractResult).getToken();
         if (!statement.getTables().isEmpty() && null == indexToken.getTableName()) {
             indexToken.setTableName(statement.getTables().getSingleTableName());
         } else {
             indexToken.setTableName("");
         }
-        statement.getSQLTokens().add(((IndexExtractResult) extractResult).getToken());
+        statement.getSQLTokens().add(((IndexSegment) extractResult).getToken());
     }
 }

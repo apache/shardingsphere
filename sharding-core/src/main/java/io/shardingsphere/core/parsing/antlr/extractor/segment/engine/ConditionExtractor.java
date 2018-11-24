@@ -23,8 +23,8 @@ import io.shardingsphere.core.parsing.antlr.extractor.segment.OptionalSQLSegment
 import io.shardingsphere.core.parsing.antlr.extractor.segment.constant.LogicalOperator;
 import io.shardingsphere.core.parsing.antlr.extractor.segment.constant.Paren;
 import io.shardingsphere.core.parsing.antlr.extractor.segment.constant.RuleName;
-import io.shardingsphere.core.parsing.antlr.extractor.segment.result.ConditionExtractResult;
 import io.shardingsphere.core.parsing.antlr.extractor.util.ASTUtils;
+import io.shardingsphere.core.parsing.antlr.sql.segment.PredicateSegment;
 import io.shardingsphere.core.parsing.parser.context.condition.AndCondition;
 import io.shardingsphere.core.parsing.parser.context.condition.OrCondition;
 import org.antlr.v4.runtime.ParserRuleContext;
@@ -35,15 +35,15 @@ import org.antlr.v4.runtime.tree.ParseTree;
  * 
  * @author duhongjun
  */
-public final class ConditionExtractor implements OptionalSQLSegmentExtractor<ConditionExtractResult> {
+public final class ConditionExtractor implements OptionalSQLSegmentExtractor<PredicateSegment> {
     
     @Override
-    public Optional<ConditionExtractResult> extract(final ParserRuleContext ancestorNode) {
+    public Optional<PredicateSegment> extract(final ParserRuleContext ancestorNode) {
         Optional<ParserRuleContext> whereNode = ASTUtils.findFirstChildNode(ancestorNode, RuleName.WHERE_CLAUSE);
         if (!whereNode.isPresent()) {
             return Optional.absent();
         }
-        return Optional.of(new ConditionExtractResult(extractCondition(whereNode.get()).get()));
+        return Optional.of(new PredicateSegment(extractCondition(whereNode.get()).get()));
     }
     
     private Optional<OrCondition> extractCondition(final ParseTree tree) {

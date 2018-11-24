@@ -21,8 +21,8 @@ import com.google.common.base.Optional;
 import io.shardingsphere.core.parsing.antlr.extractor.segment.CollectionSQLSegmentExtractor;
 import io.shardingsphere.core.parsing.antlr.extractor.segment.constant.RuleName;
 import io.shardingsphere.core.parsing.antlr.extractor.segment.engine.ColumnDefinitionPhraseExtractor;
-import io.shardingsphere.core.parsing.antlr.extractor.segment.result.ColumnDefinitionExtractResult;
 import io.shardingsphere.core.parsing.antlr.extractor.util.ASTUtils;
+import io.shardingsphere.core.parsing.antlr.sql.segment.ColumnDefinitionSegment;
 import org.antlr.v4.runtime.ParserRuleContext;
 
 import java.util.Collection;
@@ -34,21 +34,21 @@ import java.util.LinkedList;
  *
  * @author duhongjun
  */
-public final class OracleModifyColumnExtractor implements CollectionSQLSegmentExtractor<ColumnDefinitionExtractResult> {
+public final class OracleModifyColumnExtractor implements CollectionSQLSegmentExtractor<ColumnDefinitionSegment> {
     
     private final ColumnDefinitionPhraseExtractor columnDefinitionPhraseExtractor = new ColumnDefinitionPhraseExtractor();
     
     @Override
-    public Collection<ColumnDefinitionExtractResult> extract(final ParserRuleContext ancestorNode) {
+    public Collection<ColumnDefinitionSegment> extract(final ParserRuleContext ancestorNode) {
         Collection<ParserRuleContext> modifyColumnNodes = ASTUtils.getAllDescendantNodes(ancestorNode, RuleName.MODIFY_COLUMN);
         if (modifyColumnNodes.isEmpty()) {
             return Collections.emptyList();
         }
-        Collection<ColumnDefinitionExtractResult> result = new LinkedList<>();
+        Collection<ColumnDefinitionSegment> result = new LinkedList<>();
         for (ParserRuleContext modifyColumnNode : modifyColumnNodes) {
             for (ParserRuleContext each : ASTUtils.getAllDescendantNodes(modifyColumnNode, RuleName.MODIFY_COL_PROPERTIES)) {
                 // it`s not column definition, but can call this method
-                Optional<ColumnDefinitionExtractResult> columnDefinition = columnDefinitionPhraseExtractor.extract(each);
+                Optional<ColumnDefinitionSegment> columnDefinition = columnDefinitionPhraseExtractor.extract(each);
                 if (columnDefinition.isPresent()) {
                     result.add(columnDefinition.get());
                 }

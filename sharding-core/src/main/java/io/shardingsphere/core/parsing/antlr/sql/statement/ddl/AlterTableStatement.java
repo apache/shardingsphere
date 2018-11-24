@@ -15,13 +15,13 @@
  * </p>
  */
 
-package io.shardingsphere.core.parsing.antlr.sql.ddl;
+package io.shardingsphere.core.parsing.antlr.sql.statement.ddl;
 
 import com.google.common.base.Optional;
 import io.shardingsphere.core.metadata.table.ColumnMetaData;
 import io.shardingsphere.core.metadata.table.ShardingTableMetaData;
 import io.shardingsphere.core.metadata.table.TableMetaData;
-import io.shardingsphere.core.parsing.antlr.extractor.segment.result.ColumnPosition;
+import io.shardingsphere.core.parsing.antlr.sql.segment.ColumnPositionSegment;
 import io.shardingsphere.core.parsing.parser.sql.ddl.DDLStatement;
 import lombok.Getter;
 import lombok.Setter;
@@ -46,7 +46,7 @@ public final class AlterTableStatement extends DDLStatement {
     
     private final Map<String, ColumnDefinition> updateColumns = new LinkedHashMap<>();
     
-    private final List<ColumnPosition> positionChangedColumns = new LinkedList<>();
+    private final List<ColumnPositionSegment> positionChangedColumns = new LinkedList<>();
     
     private boolean dropPrimaryKey;
     

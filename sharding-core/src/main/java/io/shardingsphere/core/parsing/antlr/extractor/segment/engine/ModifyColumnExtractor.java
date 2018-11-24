@@ -20,8 +20,8 @@ package io.shardingsphere.core.parsing.antlr.extractor.segment.engine;
 import com.google.common.base.Optional;
 import io.shardingsphere.core.parsing.antlr.extractor.segment.CollectionSQLSegmentExtractor;
 import io.shardingsphere.core.parsing.antlr.extractor.segment.constant.RuleName;
-import io.shardingsphere.core.parsing.antlr.extractor.segment.result.ColumnDefinitionExtractResult;
 import io.shardingsphere.core.parsing.antlr.extractor.util.ASTUtils;
+import io.shardingsphere.core.parsing.antlr.sql.segment.ColumnDefinitionSegment;
 import org.antlr.v4.runtime.ParserRuleContext;
 
 import java.util.Collection;
@@ -33,19 +33,19 @@ import java.util.LinkedList;
  *
  * @author duhongjun
  */
-public class ModifyColumnExtractor implements CollectionSQLSegmentExtractor<ColumnDefinitionExtractResult> {
+public class ModifyColumnExtractor implements CollectionSQLSegmentExtractor<ColumnDefinitionSegment> {
     
     private final ColumnDefinitionPhraseExtractor columnDefinitionPhraseExtractor = new ColumnDefinitionPhraseExtractor();
     
     @Override
-    public Collection<ColumnDefinitionExtractResult> extract(final ParserRuleContext ancestorNode) {
+    public Collection<ColumnDefinitionSegment> extract(final ParserRuleContext ancestorNode) {
         Collection<ParserRuleContext> modifyColumnNodes = ASTUtils.getAllDescendantNodes(ancestorNode, RuleName.MODIFY_COLUMN);
         if (modifyColumnNodes.isEmpty()) {
             return Collections.emptyList();
         }
-        Collection<ColumnDefinitionExtractResult> result = new LinkedList<>();
+        Collection<ColumnDefinitionSegment> result = new LinkedList<>();
         for (ParserRuleContext each : modifyColumnNodes) {
-            Optional<ColumnDefinitionExtractResult> columnDefinition = columnDefinitionPhraseExtractor.extract(each);
+            Optional<ColumnDefinitionSegment> columnDefinition = columnDefinitionPhraseExtractor.extract(each);
             if (columnDefinition.isPresent()) {
                 postExtractColumnDefinition(each, columnDefinition.get());
                 result.add(columnDefinition.get());
@@ -54,6 +54,6 @@ public class ModifyColumnExtractor implements CollectionSQLSegmentExtractor<Colu
         return result;
     }
     
-    protected void postExtractColumnDefinition(final ParserRuleContext ancestorNode, final ColumnDefinitionExtractResult columnDefinition) {
+    protected void postExtractColumnDefinition(final ParserRuleContext ancestorNode, final ColumnDefinitionSegment columnDefinition) {
     }
 }

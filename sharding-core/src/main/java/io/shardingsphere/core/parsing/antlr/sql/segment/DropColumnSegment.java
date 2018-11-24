@@ -15,20 +15,20 @@
  * </p>
  */
 
-package io.shardingsphere.core.parsing.antlr.extractor.segment.result;
+package io.shardingsphere.core.parsing.antlr.sql.segment;
 
 import lombok.Getter;
 
-import java.util.LinkedHashMap;
-import java.util.Map;
+import java.util.Collection;
+import java.util.LinkedHashSet;
 
 /**
- * Extract select expression result.
+ * Drop column segment.
  *
  * @author duhongjun
  */
 @Getter
-public final class SelectExpressionExtractResult implements ExtractResult {
+public final class DropColumnSegment implements SQLSegment {
     
-    private final Map<String, String> selectExpressions = new LinkedHashMap<>();
+    private final Collection<String> dropColumnNames = new LinkedHashSet<>();
 }

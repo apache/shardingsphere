@@ -15,19 +15,12 @@
  * </p>
  */
 
-package io.shardingsphere.core.parsing.antlr.extractor.segment.result;
-
-import lombok.Getter;
-import lombok.RequiredArgsConstructor;
+package io.shardingsphere.core.parsing.antlr.sql.segment;
 
 /**
- * Drop primary key extract result.
+ *  SQL segment.
  * 
- * @author duhongjun
+ * @author zhangliang
  */
-@RequiredArgsConstructor
-@Getter
-public final class DropPrimaryKeyExtractResult implements ExtractResult {
-    
-    private final boolean dropPrimaryKey;
+public interface SQLSegment {
 }

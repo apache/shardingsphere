@@ -20,8 +20,8 @@ package io.shardingsphere.core.parsing.antlr.extractor.segment.engine.dialect.my
 import com.google.common.base.Optional;
 import io.shardingsphere.core.parsing.antlr.extractor.segment.OptionalSQLSegmentExtractor;
 import io.shardingsphere.core.parsing.antlr.extractor.segment.constant.RuleName;
-import io.shardingsphere.core.parsing.antlr.extractor.segment.result.ColumnPosition;
 import io.shardingsphere.core.parsing.antlr.extractor.util.ASTUtils;
+import io.shardingsphere.core.parsing.antlr.sql.segment.ColumnPositionSegment;
 import lombok.RequiredArgsConstructor;
 import org.antlr.v4.runtime.ParserRuleContext;
 
@@ -31,18 +31,18 @@ import org.antlr.v4.runtime.ParserRuleContext;
  * @author duhongjun
  */
 @RequiredArgsConstructor
-public final class MySQLColumnPositionExtractor implements OptionalSQLSegmentExtractor<ColumnPosition> {
+public final class MySQLColumnPositionExtractor implements OptionalSQLSegmentExtractor<ColumnPositionSegment> {
     
     private final String columnName;
     
     @Override
-    public Optional<ColumnPosition> extract(final ParserRuleContext ancestorNode) {
+    public Optional<ColumnPositionSegment> extract(final ParserRuleContext ancestorNode) {
         Optional<ParserRuleContext> firstOrAfterColumnNode = ASTUtils.findFirstChildNode(ancestorNode, RuleName.FIRST_OR_AFTER_COLUMN);
         if (!firstOrAfterColumnNode.isPresent()) {
             return Optional.absent();
         }
         Optional<ParserRuleContext> columnNameNode = ASTUtils.findFirstChildNode(firstOrAfterColumnNode.get(), RuleName.COLUMN_NAME);
-        ColumnPosition result = new ColumnPosition();
+        ColumnPositionSegment result = new ColumnPositionSegment();
         result.setStartIndex(firstOrAfterColumnNode.get().getStart().getStartIndex());
         if (columnNameNode.isPresent()) {
             result.setColumnName(columnName);

@@ -18,8 +18,8 @@
 package io.shardingsphere.core.parsing.antlr.extractor.segment.filler;
 
 import io.shardingsphere.core.metadata.table.ShardingTableMetaData;
-import io.shardingsphere.core.parsing.antlr.extractor.segment.result.ExtractResult;
-import io.shardingsphere.core.parsing.antlr.extractor.segment.result.TableExtractResult;
+import io.shardingsphere.core.parsing.antlr.sql.segment.SQLSegment;
+import io.shardingsphere.core.parsing.antlr.sql.segment.TableSegment;
 import io.shardingsphere.core.parsing.parser.context.table.Table;
 import io.shardingsphere.core.parsing.parser.sql.SQLStatement;
 
@@ -30,17 +30,17 @@ import io.shardingsphere.core.parsing.parser.sql.SQLStatement;
  */
 public class TableHandlerResultFiller extends AbstractHandlerResultFiller {
     
-    public TableHandlerResultFiller(final Class<? extends ExtractResult> extractResultClass) {
-        super(TableExtractResult.class);
+    public TableHandlerResultFiller(final Class<? extends SQLSegment> extractResultClass) {
+        super(TableSegment.class);
     }
     
     public TableHandlerResultFiller() {
-        super(TableExtractResult.class);
+        super(TableSegment.class);
     }
     
     @Override
     protected void fillSQLStatement(final Object extractResult, final SQLStatement statement, final ShardingTableMetaData shardingTableMetaData) {
-        TableExtractResult tableResult = (TableExtractResult) extractResult;
+        TableSegment tableResult = (TableSegment) extractResult;
         statement.getTables().add(new Table(tableResult.getName(), tableResult.getAlias()));
         statement.getSQLTokens().add(tableResult.getToken());
     }

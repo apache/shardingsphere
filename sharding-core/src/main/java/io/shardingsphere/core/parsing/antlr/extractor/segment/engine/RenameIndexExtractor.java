@@ -20,8 +20,8 @@ package io.shardingsphere.core.parsing.antlr.extractor.segment.engine;
 import com.google.common.base.Optional;
 import io.shardingsphere.core.parsing.antlr.extractor.segment.CollectionSQLSegmentExtractor;
 import io.shardingsphere.core.parsing.antlr.extractor.segment.constant.RuleName;
-import io.shardingsphere.core.parsing.antlr.extractor.segment.result.IndexExtractResult;
 import io.shardingsphere.core.parsing.antlr.extractor.util.ASTUtils;
+import io.shardingsphere.core.parsing.antlr.sql.segment.IndexSegment;
 import io.shardingsphere.core.parsing.parser.token.IndexToken;
 import io.shardingsphere.core.util.SQLUtil;
 import org.antlr.v4.runtime.ParserRuleContext;
@@ -36,10 +36,10 @@ import java.util.LinkedList;
  *
  * @author duhongjun
  */
-public final class RenameIndexExtractor implements CollectionSQLSegmentExtractor<IndexExtractResult> {
+public final class RenameIndexExtractor implements CollectionSQLSegmentExtractor<IndexSegment> {
     
     @Override
-    public Collection<IndexExtractResult> extract(final ParserRuleContext ancestorNode) {
+    public Collection<IndexSegment> extract(final ParserRuleContext ancestorNode) {
         Optional<ParserRuleContext> renameIndexNode = ASTUtils.findFirstChildNode(ancestorNode, RuleName.RENAME_INDEX);
         if (!renameIndexNode.isPresent() || 4 > renameIndexNode.get().getChildCount()) {
             return Collections.emptyList();
@@ -52,14 +52,14 @@ public final class RenameIndexExtractor implements CollectionSQLSegmentExtractor
         if (!(newIndexNode instanceof ParserRuleContext)) {
             return Collections.emptyList();
         }
-        Collection<IndexExtractResult> result = new LinkedList<>();
+        Collection<IndexSegment> result = new LinkedList<>();
         result.add(getIndexToken((ParserRuleContext) newIndexNode));
         result.add(getIndexToken((ParserRuleContext) oldIndexNode));
         return result;
     }
     
-    private IndexExtractResult getIndexToken(final ParserRuleContext indexNode) {
+    private IndexSegment getIndexToken(final ParserRuleContext indexNode) {
         String name = SQLUtil.getNameWithoutSchema(indexNode.getText());
-        return new IndexExtractResult(name, new IndexToken(indexNode.getStop().getStartIndex(), name, null));
+        return new IndexSegment(name, new IndexToken(indexNode.getStop().getStartIndex(), name, null));
     }
 }

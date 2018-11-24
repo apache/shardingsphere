@@ -21,8 +21,8 @@ import com.google.common.base.Optional;
 import io.shardingsphere.core.constant.OrderDirection;
 import io.shardingsphere.core.parsing.antlr.extractor.segment.CollectionSQLSegmentExtractor;
 import io.shardingsphere.core.parsing.antlr.extractor.segment.constant.RuleName;
-import io.shardingsphere.core.parsing.antlr.extractor.segment.result.OrderByExtractResult;
 import io.shardingsphere.core.parsing.antlr.extractor.util.ASTUtils;
+import io.shardingsphere.core.parsing.antlr.sql.segment.OrderBySegment;
 import io.shardingsphere.core.parsing.parser.token.OrderByToken;
 import lombok.RequiredArgsConstructor;
 import org.antlr.v4.runtime.ParserRuleContext;
@@ -38,7 +38,7 @@ import java.util.LinkedList;
  * @author duhongjun
  */
 @RequiredArgsConstructor
-public class OrderByClauseExtractor implements CollectionSQLSegmentExtractor<OrderByExtractResult> {
+public class OrderByClauseExtractor implements CollectionSQLSegmentExtractor<OrderBySegment> {
     
     private final RuleName ruleName;
     
@@ -47,7 +47,7 @@ public class OrderByClauseExtractor implements CollectionSQLSegmentExtractor<Ord
     }
     
     @Override
-    public Collection<OrderByExtractResult> extract(final ParserRuleContext ancestorNode) {
+    public Collection<OrderBySegment> extract(final ParserRuleContext ancestorNode) {
         Optional<ParserRuleContext> orderByParentNode = ASTUtils.findFirstChildNode(ancestorNode, ruleName);
         if (!orderByParentNode.isPresent()) {
             return Collections.emptyList();
@@ -56,7 +56,7 @@ public class OrderByClauseExtractor implements CollectionSQLSegmentExtractor<Ord
         if (orderByNodes.isEmpty()) {
             return Collections.emptyList();
         }
-        Collection<OrderByExtractResult> result = new LinkedList<>();
+        Collection<OrderBySegment> result = new LinkedList<>();
         for (ParserRuleContext each : orderByNodes) {
             int count = each.getChildCount();
             if (count == 0) {
@@ -78,7 +78,7 @@ public class OrderByClauseExtractor implements CollectionSQLSegmentExtractor<Ord
                     orderDirection = OrderDirection.ASC;
                 }
             }
-            result.add(new OrderByExtractResult(Optional.of(ownerName), Optional.of(name), orderDirection, null, new OrderByToken(orderByParentNode.get().getStop().getStopIndex())));
+            result.add(new OrderBySegment(Optional.of(ownerName), Optional.of(name), orderDirection, null, new OrderByToken(orderByParentNode.get().getStop().getStopIndex())));
         }
         return result;
     }

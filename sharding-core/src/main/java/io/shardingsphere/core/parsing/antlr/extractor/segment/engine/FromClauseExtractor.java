@@ -20,9 +20,9 @@ package io.shardingsphere.core.parsing.antlr.extractor.segment.engine;
 import com.google.common.base.Optional;
 import io.shardingsphere.core.parsing.antlr.extractor.segment.CollectionSQLSegmentExtractor;
 import io.shardingsphere.core.parsing.antlr.extractor.segment.constant.RuleName;
-import io.shardingsphere.core.parsing.antlr.extractor.segment.result.TableExtractResult;
-import io.shardingsphere.core.parsing.antlr.extractor.segment.result.TableJoinExtractResult;
 import io.shardingsphere.core.parsing.antlr.extractor.util.ASTUtils;
+import io.shardingsphere.core.parsing.antlr.sql.segment.TableJoinSegment;
+import io.shardingsphere.core.parsing.antlr.sql.segment.TableSegment;
 import org.antlr.v4.runtime.ParserRuleContext;
 
 import java.util.Collection;
@@ -34,12 +34,12 @@ import java.util.LinkedList;
  *
  * @author duhongjun
  */
-public final class FromClauseExtractor implements CollectionSQLSegmentExtractor<TableExtractResult> {
+public final class FromClauseExtractor implements CollectionSQLSegmentExtractor<TableSegment> {
     
     private final TableNameExtractor tableNameExtractor = new TableNameExtractor();
     
     @Override
-    public Collection<TableExtractResult> extract(final ParserRuleContext ancestorNode) {
+    public Collection<TableSegment> extract(final ParserRuleContext ancestorNode) {
         Optional<ParserRuleContext> fromNode = ASTUtils.findFirstChildNode(ancestorNode, RuleName.FROM_CLAUSE);
         if (!fromNode.isPresent()) {
             return Collections.emptyList();
@@ -48,7 +48,7 @@ public final class FromClauseExtractor implements CollectionSQLSegmentExtractor<
         if (tableReferenceNodes.isEmpty()) {
             return Collections.emptyList();
         }
-        Collection<TableExtractResult> result = new LinkedList<>();
+        Collection<TableSegment> result = new LinkedList<>();
         for (ParserRuleContext each : tableReferenceNodes) {
             Optional<ParserRuleContext> joinTableNode = ASTUtils.findFirstChildNode(each, RuleName.JOIN_TABLE);
             Optional<ParserRuleContext> tableFactorNode = joinTableNode.isPresent()
@@ -57,7 +57,7 @@ public final class FromClauseExtractor implements CollectionSQLSegmentExtractor<
             if (!tableFactorNode.isPresent()) {
                 continue;
             }
-            Optional<TableExtractResult> extractResult = tableNameExtractor.extract(tableFactorNode.get());
+            Optional<TableSegment> extractResult = tableNameExtractor.extract(tableFactorNode.get());
             if (!extractResult.isPresent()) {
                 continue;
             }
@@ -69,7 +69,7 @@ public final class FromClauseExtractor implements CollectionSQLSegmentExtractor<
             if (joinConditionNode.isPresent()) {
                 Optional<ParserRuleContext> exprNode = ASTUtils.findFirstChildNode(joinTableNode.get(), RuleName.EXPR);
                 if (exprNode.isPresent()) {
-                    TableJoinExtractResult tableJoinResult = new TableJoinExtractResult(extractResult.get());
+                    TableJoinSegment tableJoinResult = new TableJoinSegment(extractResult.get());
                     //TODO extract condition
                     result.add(tableJoinResult);
                     continue;

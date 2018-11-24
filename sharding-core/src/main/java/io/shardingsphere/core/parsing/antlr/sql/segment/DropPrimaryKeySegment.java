@@ -15,20 +15,19 @@
  * </p>
  */
 
-package io.shardingsphere.core.parsing.antlr.extractor.segment.result;
+package io.shardingsphere.core.parsing.antlr.sql.segment;
 
 import lombok.Getter;
-
-import java.util.Collection;
-import java.util.LinkedHashSet;
+import lombok.RequiredArgsConstructor;
 
 /**
- * Drop column result.
- *
+ * Drop primary key segment.
+ * 
  * @author duhongjun
  */
+@RequiredArgsConstructor
 @Getter
-public final class DropColumnExtractResult implements ExtractResult {
+public final class DropPrimaryKeySegment implements SQLSegment {
     
-    private final Collection<String> dropColumnNames = new LinkedHashSet<>();
+    private final boolean dropPrimaryKey;
 }

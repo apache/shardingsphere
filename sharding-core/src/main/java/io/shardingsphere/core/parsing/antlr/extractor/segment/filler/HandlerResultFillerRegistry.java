@@ -17,13 +17,13 @@
 
 package io.shardingsphere.core.parsing.antlr.extractor.segment.filler;
 
-import io.shardingsphere.core.parsing.antlr.extractor.segment.result.ColumnDefinitionExtractResult;
-import io.shardingsphere.core.parsing.antlr.extractor.segment.result.DropColumnExtractResult;
-import io.shardingsphere.core.parsing.antlr.extractor.segment.result.DropPrimaryKeyExtractResult;
-import io.shardingsphere.core.parsing.antlr.extractor.segment.result.IndexExtractResult;
-import io.shardingsphere.core.parsing.antlr.extractor.segment.result.PrimaryKeyExtractResult;
-import io.shardingsphere.core.parsing.antlr.extractor.segment.result.TableExtractResult;
-import io.shardingsphere.core.parsing.antlr.extractor.segment.result.TableJoinExtractResult;
+import io.shardingsphere.core.parsing.antlr.sql.segment.AddPrimaryKeySegment;
+import io.shardingsphere.core.parsing.antlr.sql.segment.ColumnDefinitionSegment;
+import io.shardingsphere.core.parsing.antlr.sql.segment.DropColumnSegment;
+import io.shardingsphere.core.parsing.antlr.sql.segment.DropPrimaryKeySegment;
+import io.shardingsphere.core.parsing.antlr.sql.segment.IndexSegment;
+import io.shardingsphere.core.parsing.antlr.sql.segment.TableJoinSegment;
+import io.shardingsphere.core.parsing.antlr.sql.segment.TableSegment;
 
 import java.util.Collection;
 import java.util.HashMap;
@@ -39,13 +39,13 @@ public final class HandlerResultFillerRegistry {
     private static final Map<Class<?>, HandlerResultFiller> FILLERS = new HashMap<>();
     
     static {
-        registry(DropColumnExtractResult.class, new DropColumnHandlerResultFiller());
-        registry(PrimaryKeyExtractResult.class, new PrimaryKeyHandlerResultFiller());
-        registry(DropPrimaryKeyExtractResult.class, new DropPrimaryKeyHandlerResultFiller());
-        registry(TableExtractResult.class, new TableHandlerResultFiller());
-        registry(ColumnDefinitionExtractResult.class, new ColumnDefinitionHandlerResultFiller());
-        registry(TableJoinExtractResult.class, new TableJoinHandlerResultFiller());
-        registry(IndexExtractResult.class, new IndexHandlerResultFiller());
+        registry(DropColumnSegment.class, new DropColumnHandlerResultFiller());
+        registry(AddPrimaryKeySegment.class, new PrimaryKeyHandlerResultFiller());
+        registry(DropPrimaryKeySegment.class, new DropPrimaryKeyHandlerResultFiller());
+        registry(TableSegment.class, new TableHandlerResultFiller());
+        registry(ColumnDefinitionSegment.class, new ColumnDefinitionHandlerResultFiller());
+        registry(TableJoinSegment.class, new TableJoinHandlerResultFiller());
+        registry(IndexSegment.class, new IndexHandlerResultFiller());
         registry(Collection.class, new CollectionHandlerResultFiller());
     }
     

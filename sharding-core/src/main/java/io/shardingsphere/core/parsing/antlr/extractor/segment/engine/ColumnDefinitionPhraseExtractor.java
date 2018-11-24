@@ -20,8 +20,8 @@ package io.shardingsphere.core.parsing.antlr.extractor.segment.engine;
 import com.google.common.base.Optional;
 import io.shardingsphere.core.parsing.antlr.extractor.segment.OptionalSQLSegmentExtractor;
 import io.shardingsphere.core.parsing.antlr.extractor.segment.constant.RuleName;
-import io.shardingsphere.core.parsing.antlr.extractor.segment.result.ColumnDefinitionExtractResult;
 import io.shardingsphere.core.parsing.antlr.extractor.util.ASTUtils;
+import io.shardingsphere.core.parsing.antlr.sql.segment.ColumnDefinitionSegment;
 import org.antlr.v4.runtime.ParserRuleContext;
 
 /**
@@ -30,10 +30,10 @@ import org.antlr.v4.runtime.ParserRuleContext;
  * @author duhongjun
  * @author zhangliang
  */
-public final class ColumnDefinitionPhraseExtractor implements OptionalSQLSegmentExtractor<ColumnDefinitionExtractResult> {
+public final class ColumnDefinitionPhraseExtractor implements OptionalSQLSegmentExtractor<ColumnDefinitionSegment> {
     
     @Override
-    public Optional<ColumnDefinitionExtractResult> extract(final ParserRuleContext columnDefinitionNode) {
+    public Optional<ColumnDefinitionSegment> extract(final ParserRuleContext columnDefinitionNode) {
         Optional<ParserRuleContext> columnNameNode = ASTUtils.findFirstChildNode(columnDefinitionNode, RuleName.COLUMN_NAME);
         if (!columnNameNode.isPresent()) {
             return Optional.absent();
@@ -42,7 +42,7 @@ public final class ColumnDefinitionPhraseExtractor implements OptionalSQLSegment
         Optional<String> dataTypeText = dataTypeNode.isPresent() ? Optional.of(dataTypeNode.get().getChild(0).getText()) : Optional.<String>absent();
         Optional<Integer> dataTypeLength = dataTypeNode.isPresent() ? getDataTypeLength(dataTypeNode.get()) : Optional.<Integer>absent();
         boolean isPrimaryKey = ASTUtils.findFirstChildNode(columnDefinitionNode, RuleName.PRIMARY_KEY).isPresent();
-        return Optional.of(new ColumnDefinitionExtractResult(columnNameNode.get().getText(), dataTypeText.orNull(), dataTypeLength.orNull(), isPrimaryKey));
+        return Optional.of(new ColumnDefinitionSegment(columnNameNode.get().getText(), dataTypeText.orNull(), dataTypeLength.orNull(), isPrimaryKey));
     }
     
     private Optional<Integer> getDataTypeLength(final ParserRuleContext dataTypeContext) {

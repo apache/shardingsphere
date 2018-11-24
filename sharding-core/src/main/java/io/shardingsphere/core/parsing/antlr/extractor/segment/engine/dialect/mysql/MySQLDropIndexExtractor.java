@@ -21,8 +21,8 @@ import com.google.common.base.Optional;
 import io.shardingsphere.core.parsing.antlr.extractor.segment.CollectionSQLSegmentExtractor;
 import io.shardingsphere.core.parsing.antlr.extractor.segment.constant.RuleName;
 import io.shardingsphere.core.parsing.antlr.extractor.segment.engine.IndexNameExtractor;
-import io.shardingsphere.core.parsing.antlr.extractor.segment.result.IndexExtractResult;
 import io.shardingsphere.core.parsing.antlr.extractor.util.ASTUtils;
+import io.shardingsphere.core.parsing.antlr.sql.segment.IndexSegment;
 import org.antlr.v4.runtime.ParserRuleContext;
 import org.antlr.v4.runtime.tree.ParseTree;
 
@@ -35,17 +35,17 @@ import java.util.LinkedList;
  *
  * @author duhongjun
  */
-public final class MySQLDropIndexExtractor implements CollectionSQLSegmentExtractor<IndexExtractResult> {
+public final class MySQLDropIndexExtractor implements CollectionSQLSegmentExtractor<IndexSegment> {
     
     private final IndexNameExtractor indexNameExtractor = new IndexNameExtractor();
     
     @Override
-    public Collection<IndexExtractResult> extract(final ParserRuleContext ancestorNode) {
+    public Collection<IndexSegment> extract(final ParserRuleContext ancestorNode) {
         Collection<ParserRuleContext> dropIndexNodes = ASTUtils.getAllDescendantNodes(ancestorNode, RuleName.DROP_INDEX_REF);
         if (dropIndexNodes.isEmpty()) {
             return Collections.emptyList();
         }
-        Collection<IndexExtractResult> result = new LinkedList<>();
+        Collection<IndexSegment> result = new LinkedList<>();
         for (ParserRuleContext each : dropIndexNodes) {
             int childCnt = each.getChildCount();
             if (0 == childCnt) {
@@ -55,7 +55,7 @@ public final class MySQLDropIndexExtractor implements CollectionSQLSegmentExtrac
             if (!(lastChild instanceof ParserRuleContext)) {
                 continue;
             }
-            Optional<IndexExtractResult> extractResult = indexNameExtractor.extract((ParserRuleContext) lastChild);
+            Optional<IndexSegment> extractResult = indexNameExtractor.extract((ParserRuleContext) lastChild);
             if (extractResult.isPresent()) {
                 result.add(extractResult.get());
             }

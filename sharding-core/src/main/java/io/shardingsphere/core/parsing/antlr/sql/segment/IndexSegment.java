@@ -15,20 +15,22 @@
  * </p>
  */
 
-package io.shardingsphere.core.parsing.antlr.extractor.segment.result;
+package io.shardingsphere.core.parsing.antlr.sql.segment;
 
+import io.shardingsphere.core.parsing.parser.token.IndexToken;
 import lombok.Getter;
-
-import java.util.LinkedHashSet;
-import java.util.Set;
+import lombok.RequiredArgsConstructor;
 
 /**
- * Add primary key result.
- *
+ * Index segment.
+ * 
  * @author duhongjun
  */
+@RequiredArgsConstructor
 @Getter
-public final class PrimaryKeyExtractResult implements ExtractResult {
+public final class IndexSegment implements SQLSegment {
     
-    private final Set<String> primaryKeyColumnNames = new LinkedHashSet<>();
+    private final String name;
+    
+    private final IndexToken token;
 }

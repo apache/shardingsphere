@@ -20,8 +20,8 @@ package io.shardingsphere.core.parsing.antlr.extractor.segment.engine.dialect.sq
 import com.google.common.base.Optional;
 import io.shardingsphere.core.parsing.antlr.extractor.segment.OptionalSQLSegmentExtractor;
 import io.shardingsphere.core.parsing.antlr.extractor.segment.constant.RuleName;
-import io.shardingsphere.core.parsing.antlr.extractor.segment.result.PrimaryKeyExtractResult;
 import io.shardingsphere.core.parsing.antlr.extractor.util.ASTUtils;
+import io.shardingsphere.core.parsing.antlr.sql.segment.AddPrimaryKeySegment;
 import org.antlr.v4.runtime.ParserRuleContext;
 import org.antlr.v4.runtime.tree.ParseTree;
 
@@ -32,10 +32,10 @@ import java.util.Collection;
  *
  * @author duhongjun
  */
-public final class SQLServerAddPrimaryKeyExtractor implements OptionalSQLSegmentExtractor<PrimaryKeyExtractResult> {
+public final class SQLServerAddPrimaryKeyExtractor implements OptionalSQLSegmentExtractor<AddPrimaryKeySegment> {
     
     @Override
-    public Optional<PrimaryKeyExtractResult> extract(final ParserRuleContext ancestorNode) {
+    public Optional<AddPrimaryKeySegment> extract(final ParserRuleContext ancestorNode) {
         Optional<ParserRuleContext> addColumnNode = ASTUtils.findFirstChildNode(ancestorNode, RuleName.ADD_COLUMN);
         if (!addColumnNode.isPresent()) {
             return Optional.absent();
@@ -52,7 +52,7 @@ public final class SQLServerAddPrimaryKeyExtractor implements OptionalSQLSegment
         if (columnNameNodes.isEmpty()) {
             return Optional.absent();
         }
-        PrimaryKeyExtractResult result = new PrimaryKeyExtractResult();
+        AddPrimaryKeySegment result = new AddPrimaryKeySegment();
         for (ParseTree each : columnNameNodes) {
             result.getPrimaryKeyColumnNames().add(each.getText());
         }

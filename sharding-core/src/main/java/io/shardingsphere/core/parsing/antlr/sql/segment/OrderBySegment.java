@@ -15,47 +15,30 @@
  * </p>
  */
 
-package io.shardingsphere.core.parsing.antlr.extractor.segment.result;
+package io.shardingsphere.core.parsing.antlr.sql.segment;
 
 import com.google.common.base.Optional;
-import io.shardingsphere.core.parsing.parser.token.TableToken;
+import io.shardingsphere.core.constant.OrderDirection;
+import io.shardingsphere.core.parsing.parser.token.OrderByToken;
 import lombok.Getter;
 import lombok.RequiredArgsConstructor;
-import lombok.Setter;
 
 /**
- * Table extract result.
+ * Order by segment.
  * 
  * @author duhongjun
  */
 @RequiredArgsConstructor
 @Getter
-@Setter
-public class TableExtractResult implements ExtractResult {
+public final class OrderBySegment implements SQLSegment {
     
-    private final String name;
+    private final Optional<String> owner;
     
-    private final TableToken token;
+    private final Optional<String> name;
     
-    private String schemaName;
+    private final OrderDirection orderDirection;
     
-    private String alias;
+    private final OrderDirection nullOrderDirection;
     
-    /**
-     * Get schema name.
-     *
-     * @return schema name
-     */
-    public Optional<String> getSchemaName() {
-        return Optional.fromNullable(schemaName);
-    }
-    
-    /**
-     * Get table alias.
-     * 
-     * @return table alias
-     */
-    public Optional<String> getAlias() {
-        return Optional.fromNullable(alias);
-    }
+    private final OrderByToken orderByToken;
 }

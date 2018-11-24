@@ -21,9 +21,9 @@ import com.google.common.base.Optional;
 import io.shardingsphere.core.parsing.antlr.extractor.segment.OptionalSQLSegmentExtractor;
 import io.shardingsphere.core.parsing.antlr.extractor.segment.constant.RuleName;
 import io.shardingsphere.core.parsing.antlr.extractor.segment.engine.ColumnDefinitionPhraseExtractor;
-import io.shardingsphere.core.parsing.antlr.extractor.segment.result.ColumnDefinitionExtractResult;
-import io.shardingsphere.core.parsing.antlr.extractor.segment.result.ColumnPosition;
 import io.shardingsphere.core.parsing.antlr.extractor.util.ASTUtils;
+import io.shardingsphere.core.parsing.antlr.sql.segment.ColumnDefinitionSegment;
+import io.shardingsphere.core.parsing.antlr.sql.segment.ColumnPositionSegment;
 import org.antlr.v4.runtime.ParserRuleContext;
 
 /**
@@ -31,12 +31,12 @@ import org.antlr.v4.runtime.ParserRuleContext;
  * 
  * @author duhongjun
  */
-public final class MySQLChangeColumnExtractor implements OptionalSQLSegmentExtractor<ColumnDefinitionExtractResult> {
+public final class MySQLChangeColumnExtractor implements OptionalSQLSegmentExtractor<ColumnDefinitionSegment> {
     
     private final ColumnDefinitionPhraseExtractor columnDefinitionPhraseExtractor = new ColumnDefinitionPhraseExtractor();
     
     @Override
-    public Optional<ColumnDefinitionExtractResult> extract(final ParserRuleContext ancestorNode) {
+    public Optional<ColumnDefinitionSegment> extract(final ParserRuleContext ancestorNode) {
         Optional<ParserRuleContext> changeColumnNode = ASTUtils.findFirstChildNode(ancestorNode, RuleName.CHANGE_COLUMN);
         if (!changeColumnNode.isPresent()) {
             return Optional.absent();
@@ -49,10 +49,10 @@ public final class MySQLChangeColumnExtractor implements OptionalSQLSegmentExtra
         if (!columnDefinitionNode.isPresent()) {
             return Optional.absent();
         }
-        Optional<ColumnDefinitionExtractResult> result = columnDefinitionPhraseExtractor.extract(columnDefinitionNode.get());
+        Optional<ColumnDefinitionSegment> result = columnDefinitionPhraseExtractor.extract(columnDefinitionNode.get());
         if (result.isPresent()) {
             result.get().setOldName(oldColumnNode.get().getText());
-            Optional<ColumnPosition> columnPosition = new MySQLColumnPositionExtractor(result.get().getName()).extract(changeColumnNode.get());
+            Optional<ColumnPositionSegment> columnPosition = new MySQLColumnPositionExtractor(result.get().getName()).extract(changeColumnNode.get());
             if (columnPosition.isPresent()) {
                 result.get().setPosition(columnPosition.get());
             }

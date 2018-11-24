@@ -15,7 +15,7 @@
  * </p>
  */
 
-package io.shardingsphere.core.parsing.antlr.extractor.segment.result;
+package io.shardingsphere.core.parsing.antlr.sql.segment;
 
 import io.shardingsphere.core.parsing.parser.context.condition.OrCondition;
 import io.shardingsphere.core.parsing.parser.token.TableToken;
@@ -25,22 +25,22 @@ import java.util.LinkedList;
 import java.util.List;
 
 /**
- * Table join extract result.
+ * Table join segment.
  *
  * @author duhongjun
  */
 @Getter
-public final class TableJoinExtractResult extends TableExtractResult {
+public final class TableJoinSegment extends TableSegment {
     
     private final List<OrCondition> joinConditions = new LinkedList<>();
     
-    public TableJoinExtractResult(final String name, final String alias, final String schemaName, final TableToken token) {
+    public TableJoinSegment(final String name, final String alias, final String schemaName, final TableToken token) {
         super(name, token);
         setAlias(alias);
         setSchemaName(schemaName);
     }
     
-    public TableJoinExtractResult(final TableExtractResult parent) {
+    public TableJoinSegment(final TableSegment parent) {
         super(parent.getName(), parent.getToken());
         setAlias(parent.getAlias().orNull());
         setSchemaName(parent.getSchemaName().orNull());

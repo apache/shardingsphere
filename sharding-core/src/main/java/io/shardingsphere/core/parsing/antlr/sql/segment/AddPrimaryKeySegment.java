@@ -15,35 +15,20 @@
  * </p>
  */
 
-package io.shardingsphere.core.parsing.antlr.sql.ddl;
+package io.shardingsphere.core.parsing.antlr.sql.segment;
 
-import io.shardingsphere.core.parsing.antlr.extractor.segment.result.ColumnPosition;
 import lombok.Getter;
-import lombok.Setter;
+
+import java.util.LinkedHashSet;
+import java.util.Set;
 
 /**
- * Column definition.
- * 
+ * Add primary key segment.
+ *
  * @author duhongjun
  */
 @Getter
-@Setter
-public final class ColumnDefinition {
+public final class AddPrimaryKeySegment implements SQLSegment {
     
-    private String name;
-    
-    private String type;
-    
-    private Integer length;
-    
-    private boolean primaryKey;
-    
-    private ColumnPosition position;
-    
-    public ColumnDefinition(final String name, final String type, final Integer length, final boolean primaryKey) {
-        this.name = name;
-        this.type = type;
-        this.length = length;
-        this.primaryKey = primaryKey;
-    }
+    private final Set<String> primaryKeyColumnNames = new LinkedHashSet<>();
 }

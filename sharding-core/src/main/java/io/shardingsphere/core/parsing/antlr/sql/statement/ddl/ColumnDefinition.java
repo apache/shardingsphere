@@ -15,19 +15,20 @@
  * </p>
  */
 
-package io.shardingsphere.core.parsing.antlr.extractor.segment.result;
+package io.shardingsphere.core.parsing.antlr.sql.statement.ddl;
 
+import io.shardingsphere.core.parsing.antlr.sql.segment.ColumnPositionSegment;
 import lombok.Getter;
 import lombok.Setter;
 
 /**
- * Add column result.
- *
+ * Column definition.
+ * 
  * @author duhongjun
  */
 @Getter
 @Setter
-public final class ColumnDefinitionExtractResult implements ExtractResult {
+public final class ColumnDefinition {
     
     private String name;
     
@@ -37,21 +38,12 @@ public final class ColumnDefinitionExtractResult implements ExtractResult {
     
     private boolean primaryKey;
     
-    private ColumnPosition position;
+    private ColumnPositionSegment position;
     
-    private String oldName;
-    
-    private boolean isAdd;
-    
-    public ColumnDefinitionExtractResult(final String name, final String type, final Integer length, final boolean primaryKey) {
+    public ColumnDefinition(final String name, final String type, final Integer length, final boolean primaryKey) {
         this.name = name;
         this.type = type;
         this.length = length;
         this.primaryKey = primaryKey;
-    }
-    
-    public ColumnDefinitionExtractResult(final String name, final String oldName) {
-        this.name = name;
-        this.oldName = oldName;
     }
 }

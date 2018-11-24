@@ -20,8 +20,8 @@ package io.shardingsphere.core.parsing.antlr.extractor.segment.engine;
 import com.google.common.base.Optional;
 import io.shardingsphere.core.parsing.antlr.extractor.segment.OptionalSQLSegmentExtractor;
 import io.shardingsphere.core.parsing.antlr.extractor.segment.constant.RuleName;
-import io.shardingsphere.core.parsing.antlr.extractor.segment.result.ExtractResult;
 import io.shardingsphere.core.parsing.antlr.extractor.util.ASTUtils;
+import io.shardingsphere.core.parsing.antlr.sql.segment.SQLSegment;
 import io.shardingsphere.core.parsing.parser.exception.SQLParsingUnsupportedException;
 import org.antlr.v4.runtime.ParserRuleContext;
 
@@ -30,10 +30,10 @@ import org.antlr.v4.runtime.ParserRuleContext;
  *
  * @author duhongjun
  */
-public final class RenameTableExtractor implements OptionalSQLSegmentExtractor<ExtractResult> {
+public final class RenameTableExtractor implements OptionalSQLSegmentExtractor<SQLSegment> {
     
     @Override
-    public Optional<ExtractResult> extract(final ParserRuleContext ancestorNode) {
+    public Optional<SQLSegment> extract(final ParserRuleContext ancestorNode) {
         Optional<ParserRuleContext> renameTableNode = ASTUtils.findFirstChildNode(ancestorNode, RuleName.RENAME_TABLE);
         if (!renameTableNode.isPresent() || 0 == renameTableNode.get().getChildCount()) {
             return Optional.absent();

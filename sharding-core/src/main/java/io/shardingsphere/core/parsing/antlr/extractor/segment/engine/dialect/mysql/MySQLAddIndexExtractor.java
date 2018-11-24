@@ -20,8 +20,8 @@ package io.shardingsphere.core.parsing.antlr.extractor.segment.engine.dialect.my
 import io.shardingsphere.core.parsing.antlr.extractor.segment.CollectionSQLSegmentExtractor;
 import io.shardingsphere.core.parsing.antlr.extractor.segment.constant.RuleName;
 import io.shardingsphere.core.parsing.antlr.extractor.segment.engine.IndexNamesExtractor;
-import io.shardingsphere.core.parsing.antlr.extractor.segment.result.IndexExtractResult;
 import io.shardingsphere.core.parsing.antlr.extractor.util.ASTUtils;
+import io.shardingsphere.core.parsing.antlr.sql.segment.IndexSegment;
 import org.antlr.v4.runtime.ParserRuleContext;
 
 import java.util.Collection;
@@ -32,12 +32,12 @@ import java.util.Collections;
  *
  * @author duhongjun
  */
-public final class MySQLAddIndexExtractor implements CollectionSQLSegmentExtractor<IndexExtractResult> {
+public final class MySQLAddIndexExtractor implements CollectionSQLSegmentExtractor<IndexSegment> {
     
     private final IndexNamesExtractor indexesNameExtractor = new IndexNamesExtractor();
     
     @Override
-    public Collection<IndexExtractResult> extract(final ParserRuleContext ancestorNode) {
+    public Collection<IndexSegment> extract(final ParserRuleContext ancestorNode) {
         Collection<ParserRuleContext> addIndexNodes = ASTUtils.getAllDescendantNodes(ancestorNode, RuleName.ADD_INDEX);
         if (addIndexNodes.isEmpty()) {
             return Collections.emptyList();

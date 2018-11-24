@@ -15,30 +15,22 @@
  * </p>
  */
 
-package io.shardingsphere.core.parsing.antlr.extractor.segment.result;
+package io.shardingsphere.core.parsing.antlr.sql.segment;
 
+import io.shardingsphere.core.parsing.parser.context.condition.OrCondition;
 import lombok.Getter;
-import lombok.Setter;
+import lombok.RequiredArgsConstructor;
 
 /**
- * Record alter table column position.
+ * predicate segment.
  * 
  * @author duhongjun
  */
+@RequiredArgsConstructor
 @Getter
-@Setter
-public final class ColumnPosition implements ExtractResult, Comparable<ColumnPosition> {
+public final class PredicateSegment implements SQLSegment {
     
-    private int startIndex;
+    private final OrCondition orCondition;
     
-    private String firstColumn;
-    
-    private String columnName;
-    
-    private String afterColumn;
-    
-    @Override
-    public int compareTo(final ColumnPosition o) {
-        return null == o ? -1 : startIndex - o.startIndex;
-    }
 }
+

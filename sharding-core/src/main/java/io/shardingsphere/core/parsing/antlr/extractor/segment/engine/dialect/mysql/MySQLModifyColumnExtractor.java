@@ -19,8 +19,8 @@ package io.shardingsphere.core.parsing.antlr.extractor.segment.engine.dialect.my
 
 import com.google.common.base.Optional;
 import io.shardingsphere.core.parsing.antlr.extractor.segment.engine.ModifyColumnExtractor;
-import io.shardingsphere.core.parsing.antlr.extractor.segment.result.ColumnDefinitionExtractResult;
-import io.shardingsphere.core.parsing.antlr.extractor.segment.result.ColumnPosition;
+import io.shardingsphere.core.parsing.antlr.sql.segment.ColumnDefinitionSegment;
+import io.shardingsphere.core.parsing.antlr.sql.segment.ColumnPositionSegment;
 import org.antlr.v4.runtime.ParserRuleContext;
 
 /**
@@ -31,8 +31,8 @@ import org.antlr.v4.runtime.ParserRuleContext;
 public final class MySQLModifyColumnExtractor extends ModifyColumnExtractor {
     
     @Override
-    protected void postExtractColumnDefinition(final ParserRuleContext ancestorNode, final ColumnDefinitionExtractResult columnDefinition) {
-        Optional<ColumnPosition> columnPosition = new MySQLColumnPositionExtractor(columnDefinition.getName()).extract(ancestorNode);
+    protected void postExtractColumnDefinition(final ParserRuleContext ancestorNode, final ColumnDefinitionSegment columnDefinition) {
+        Optional<ColumnPositionSegment> columnPosition = new MySQLColumnPositionExtractor(columnDefinition.getName()).extract(ancestorNode);
         if (columnPosition.isPresent()) {
             columnDefinition.setPosition(columnPosition.get());
         }

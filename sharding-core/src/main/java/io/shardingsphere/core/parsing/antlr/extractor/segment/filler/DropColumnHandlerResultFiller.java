@@ -18,8 +18,8 @@
 package io.shardingsphere.core.parsing.antlr.extractor.segment.filler;
 
 import io.shardingsphere.core.metadata.table.ShardingTableMetaData;
-import io.shardingsphere.core.parsing.antlr.extractor.segment.result.DropColumnExtractResult;
-import io.shardingsphere.core.parsing.antlr.sql.ddl.AlterTableStatement;
+import io.shardingsphere.core.parsing.antlr.sql.segment.DropColumnSegment;
+import io.shardingsphere.core.parsing.antlr.sql.statement.ddl.AlterTableStatement;
 import io.shardingsphere.core.parsing.parser.sql.SQLStatement;
 
 /**
@@ -30,12 +30,12 @@ import io.shardingsphere.core.parsing.parser.sql.SQLStatement;
 public final class DropColumnHandlerResultFiller extends AbstractHandlerResultFiller {
     
     public DropColumnHandlerResultFiller() {
-        super(DropColumnExtractResult.class);
+        super(DropColumnSegment.class);
     }
     
     @Override
     protected void fillSQLStatement(final Object extractResult, final SQLStatement statement, final ShardingTableMetaData shardingTableMetaData) {
-        DropColumnExtractResult actualResult = (DropColumnExtractResult) extractResult;
+        DropColumnSegment actualResult = (DropColumnSegment) extractResult;
         AlterTableStatement alterStatement = (AlterTableStatement) statement;
         alterStatement.getDropColumns().addAll(actualResult.getDropColumnNames());
     }

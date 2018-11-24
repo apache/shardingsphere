@@ -19,9 +19,9 @@ package io.shardingsphere.core.parsing.antlr.extractor.segment.filler;
 
 import com.google.common.base.Optional;
 import io.shardingsphere.core.metadata.table.ShardingTableMetaData;
-import io.shardingsphere.core.parsing.antlr.extractor.segment.result.ColumnDefinitionExtractResult;
-import io.shardingsphere.core.parsing.antlr.sql.ddl.AlterTableStatement;
-import io.shardingsphere.core.parsing.antlr.sql.ddl.ColumnDefinition;
+import io.shardingsphere.core.parsing.antlr.sql.segment.ColumnDefinitionSegment;
+import io.shardingsphere.core.parsing.antlr.sql.statement.ddl.AlterTableStatement;
+import io.shardingsphere.core.parsing.antlr.sql.statement.ddl.ColumnDefinition;
 import io.shardingsphere.core.parsing.parser.sql.SQLStatement;
 import io.shardingsphere.core.parsing.parser.sql.ddl.create.table.CreateTableStatement;
 import io.shardingsphere.core.util.SQLUtil;
@@ -34,12 +34,12 @@ import io.shardingsphere.core.util.SQLUtil;
 public final class ColumnDefinitionHandlerResultFiller extends AbstractHandlerResultFiller {
     
     public ColumnDefinitionHandlerResultFiller() {
-        super(ColumnDefinitionExtractResult.class);
+        super(ColumnDefinitionSegment.class);
     }
     
     @Override
     protected void fillSQLStatement(final Object extractResult, final SQLStatement statement, final ShardingTableMetaData shardingTableMetaData) {
-        ColumnDefinitionExtractResult columnExtractResult = (ColumnDefinitionExtractResult) extractResult;
+        ColumnDefinitionSegment columnExtractResult = (ColumnDefinitionSegment) extractResult;
         if (statement instanceof AlterTableStatement) {
             fillAlter(columnExtractResult, (AlterTableStatement) statement, shardingTableMetaData);
         } else if (statement instanceof CreateTableStatement) {
@@ -47,7 +47,7 @@ public final class ColumnDefinitionHandlerResultFiller extends AbstractHandlerRe
         }
     }
     
-    private void fillAlter(final ColumnDefinitionExtractResult columnExtractResult, final AlterTableStatement alterTableStatement, final ShardingTableMetaData shardingTableMetaData) {
+    private void fillAlter(final ColumnDefinitionSegment columnExtractResult, final AlterTableStatement alterTableStatement, final ShardingTableMetaData shardingTableMetaData) {
         String oldName = columnExtractResult.getOldName();
         if (null != oldName) {
             Optional<ColumnDefinition> oldDefinition = alterTableStatement.findColumnDefinition(oldName, shardingTableMetaData);
@@ -73,7 +73,7 @@ public final class ColumnDefinitionHandlerResultFiller extends AbstractHandlerRe
         }
     }
     
-    private void fillCreate(final ColumnDefinitionExtractResult columnDefinition, final CreateTableStatement createTableStatement) {
+    private void fillCreate(final ColumnDefinitionSegment columnDefinition, final CreateTableStatement createTableStatement) {
         createTableStatement.getColumnNames().add(SQLUtil.getExactlyValue(columnDefinition.getName()));
         createTableStatement.getColumnTypes().add(columnDefinition.getType());
         if (columnDefinition.isPrimaryKey()) {

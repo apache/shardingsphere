@@ -18,8 +18,8 @@
 package io.shardingsphere.core.parsing.antlr.extractor.segment.filler;
 
 import io.shardingsphere.core.metadata.table.ShardingTableMetaData;
-import io.shardingsphere.core.parsing.antlr.extractor.segment.result.DropPrimaryKeyExtractResult;
-import io.shardingsphere.core.parsing.antlr.sql.ddl.AlterTableStatement;
+import io.shardingsphere.core.parsing.antlr.sql.segment.DropPrimaryKeySegment;
+import io.shardingsphere.core.parsing.antlr.sql.statement.ddl.AlterTableStatement;
 import io.shardingsphere.core.parsing.parser.sql.SQLStatement;
 
 /**
@@ -30,12 +30,12 @@ import io.shardingsphere.core.parsing.parser.sql.SQLStatement;
 public final class DropPrimaryKeyHandlerResultFiller extends AbstractHandlerResultFiller {
     
     public DropPrimaryKeyHandlerResultFiller() {
-        super(DropPrimaryKeyExtractResult.class);
+        super(DropPrimaryKeySegment.class);
     }
     
     @Override
     protected void fillSQLStatement(final Object extractResult, final SQLStatement statement, final ShardingTableMetaData shardingTableMetaData) {
         AlterTableStatement alterStatement = (AlterTableStatement) statement;
-        alterStatement.setDropPrimaryKey(((DropPrimaryKeyExtractResult) extractResult).isDropPrimaryKey());
+        alterStatement.setDropPrimaryKey(((DropPrimaryKeySegment) extractResult).isDropPrimaryKey());
     }
 }

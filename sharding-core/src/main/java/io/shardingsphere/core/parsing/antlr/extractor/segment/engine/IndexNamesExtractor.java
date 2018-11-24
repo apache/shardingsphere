@@ -20,8 +20,8 @@ package io.shardingsphere.core.parsing.antlr.extractor.segment.engine;
 import com.google.common.base.Optional;
 import io.shardingsphere.core.parsing.antlr.extractor.segment.CollectionSQLSegmentExtractor;
 import io.shardingsphere.core.parsing.antlr.extractor.segment.constant.RuleName;
-import io.shardingsphere.core.parsing.antlr.extractor.segment.result.IndexExtractResult;
 import io.shardingsphere.core.parsing.antlr.extractor.util.ASTUtils;
+import io.shardingsphere.core.parsing.antlr.sql.segment.IndexSegment;
 import org.antlr.v4.runtime.ParserRuleContext;
 
 import java.util.Collection;
@@ -32,15 +32,15 @@ import java.util.LinkedList;
  *
  * @author duhongjun
  */
-public final class IndexNamesExtractor implements CollectionSQLSegmentExtractor<IndexExtractResult> {
+public final class IndexNamesExtractor implements CollectionSQLSegmentExtractor<IndexSegment> {
     
     private final IndexNameExtractor indexNameExtractor = new IndexNameExtractor();
     
     @Override
-    public Collection<IndexExtractResult> extract(final ParserRuleContext ancestorNode) {
-        Collection<IndexExtractResult> result = new LinkedList<>();
+    public Collection<IndexSegment> extract(final ParserRuleContext ancestorNode) {
+        Collection<IndexSegment> result = new LinkedList<>();
         for (ParserRuleContext each : ASTUtils.getAllDescendantNodes(ancestorNode, RuleName.INDEX_NAME)) {
-            Optional<IndexExtractResult> indexExtractResult = indexNameExtractor.extract(each);
+            Optional<IndexSegment> indexExtractResult = indexNameExtractor.extract(each);
             if (indexExtractResult.isPresent()) {
                 result.add(indexExtractResult.get());
             }

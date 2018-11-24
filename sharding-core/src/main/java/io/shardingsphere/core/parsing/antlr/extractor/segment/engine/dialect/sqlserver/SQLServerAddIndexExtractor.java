@@ -21,8 +21,8 @@ import com.google.common.base.Optional;
 import io.shardingsphere.core.parsing.antlr.extractor.segment.OptionalSQLSegmentExtractor;
 import io.shardingsphere.core.parsing.antlr.extractor.segment.constant.RuleName;
 import io.shardingsphere.core.parsing.antlr.extractor.segment.engine.IndexNameExtractor;
-import io.shardingsphere.core.parsing.antlr.extractor.segment.result.IndexExtractResult;
 import io.shardingsphere.core.parsing.antlr.extractor.util.ASTUtils;
+import io.shardingsphere.core.parsing.antlr.sql.segment.IndexSegment;
 import org.antlr.v4.runtime.ParserRuleContext;
 
 /**
@@ -30,12 +30,12 @@ import org.antlr.v4.runtime.ParserRuleContext;
  * 
  * @author duhongjun
  */
-public final class SQLServerAddIndexExtractor implements OptionalSQLSegmentExtractor<IndexExtractResult> {
+public final class SQLServerAddIndexExtractor implements OptionalSQLSegmentExtractor<IndexSegment> {
     
     private final IndexNameExtractor indexNameExtractor = new IndexNameExtractor();
     
     @Override
-    public Optional<IndexExtractResult> extract(final ParserRuleContext ancestorNode) {
+    public Optional<IndexSegment> extract(final ParserRuleContext ancestorNode) {
         Optional<ParserRuleContext> indexDefOptionNode = ASTUtils.findFirstChildNode(ancestorNode, RuleName.ADD_COLUMN);
         if (!indexDefOptionNode.isPresent()) {
             return Optional.absent();

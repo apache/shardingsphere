@@ -27,9 +27,9 @@ import io.shardingsphere.core.parsing.antlr.extractor.segment.engine.dialect.mys
 import io.shardingsphere.core.parsing.antlr.extractor.segment.engine.dialect.mysql.MySQLChangeColumnExtractor;
 import io.shardingsphere.core.parsing.antlr.extractor.segment.engine.dialect.mysql.MySQLDropIndexExtractor;
 import io.shardingsphere.core.parsing.antlr.extractor.segment.engine.dialect.mysql.MySQLModifyColumnExtractor;
-import io.shardingsphere.core.parsing.antlr.extractor.segment.result.ColumnPosition;
 import io.shardingsphere.core.parsing.antlr.extractor.statement.engine.ddl.AlterTableExtractor;
-import io.shardingsphere.core.parsing.antlr.sql.ddl.AlterTableStatement;
+import io.shardingsphere.core.parsing.antlr.sql.segment.ColumnPositionSegment;
+import io.shardingsphere.core.parsing.antlr.sql.statement.ddl.AlterTableStatement;
 
 import java.util.Collections;
 import java.util.Iterator;
@@ -61,7 +61,7 @@ public final class MySQLAlterTableExtractor extends AlterTableExtractor {
         if (alterTableStatement.getPositionChangedColumns().size() > 1) {
             Collections.sort(alterTableStatement.getPositionChangedColumns());
         }
-        for (ColumnPosition each : alterTableStatement.getPositionChangedColumns()) {
+        for (ColumnPositionSegment each : alterTableStatement.getPositionChangedColumns()) {
             if (null != each.getFirstColumn()) {
                 adjustFirst(newColumnMetaData, each.getFirstColumn());
             } else {
@@ -86,7 +86,7 @@ public final class MySQLAlterTableExtractor extends AlterTableExtractor {
         }
     }
     
-    private void adjustAfter(final List<ColumnMetaData> newColumnMetaData, final ColumnPosition columnPosition) {
+    private void adjustAfter(final List<ColumnMetaData> newColumnMetaData, final ColumnPositionSegment columnPosition) {
         int afterIndex = -1;
         int adjustColumnIndex = -1;
         for (int i = 0; i < newColumnMetaData.size(); i++) {

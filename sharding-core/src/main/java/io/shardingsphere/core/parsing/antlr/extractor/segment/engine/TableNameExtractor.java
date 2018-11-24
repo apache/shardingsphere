@@ -21,8 +21,8 @@ import com.google.common.base.Optional;
 import com.google.common.base.Splitter;
 import io.shardingsphere.core.parsing.antlr.extractor.segment.OptionalSQLSegmentExtractor;
 import io.shardingsphere.core.parsing.antlr.extractor.segment.constant.RuleName;
-import io.shardingsphere.core.parsing.antlr.extractor.segment.result.TableExtractResult;
 import io.shardingsphere.core.parsing.antlr.extractor.util.ASTUtils;
+import io.shardingsphere.core.parsing.antlr.sql.segment.TableSegment;
 import io.shardingsphere.core.parsing.lexer.token.Symbol;
 import io.shardingsphere.core.parsing.parser.token.TableToken;
 import io.shardingsphere.core.util.SQLUtil;
@@ -35,10 +35,10 @@ import java.util.List;
  *
  * @author duhongjun
  */
-public final class TableNameExtractor implements OptionalSQLSegmentExtractor<TableExtractResult> {
+public final class TableNameExtractor implements OptionalSQLSegmentExtractor<TableSegment> {
     
     @Override
-    public Optional<TableExtractResult> extract(final ParserRuleContext ancestorNode) {
+    public Optional<TableSegment> extract(final ParserRuleContext ancestorNode) {
         Optional<ParserRuleContext> tableNameNode = ASTUtils.findFirstChildNode(ancestorNode, RuleName.TABLE_NAME);
         if (!tableNameNode.isPresent()) {
             return Optional.absent();
@@ -58,7 +58,7 @@ public final class TableNameExtractor implements OptionalSQLSegmentExtractor<Tab
             skippedSchemaNameLength = 0;
         }
         TableToken tableToken = new TableToken(tableNameNode.get().getStart().getStartIndex(), skippedSchemaNameLength, tableName);
-        TableExtractResult result = new TableExtractResult(SQLUtil.getExactlyValue(tableName), tableToken);
+        TableSegment result = new TableSegment(SQLUtil.getExactlyValue(tableName), tableToken);
         result.setSchemaName(schemaName.orNull());
         Optional<ParserRuleContext> aliasNode = ASTUtils.findFirstChildNode(tableNameNode.get(), RuleName.ALIAS);
         if (aliasNode.isPresent()) {

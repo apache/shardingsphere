@@ -18,7 +18,7 @@
 package io.shardingsphere.core.parsing.antlr.extractor.segment.filler;
 
 import io.shardingsphere.core.metadata.table.ShardingTableMetaData;
-import io.shardingsphere.core.parsing.antlr.extractor.segment.result.ExtractResult;
+import io.shardingsphere.core.parsing.antlr.sql.segment.SQLSegment;
 import io.shardingsphere.core.parsing.parser.sql.SQLStatement;
 
 import java.util.Collection;
@@ -37,8 +37,8 @@ public final class CollectionHandlerResultFiller extends AbstractHandlerResultFi
     @SuppressWarnings("unchecked")
     @Override
     protected void fillSQLStatement(final Object extractResult, final SQLStatement statement, final ShardingTableMetaData shardingTableMetaData) {
-        Collection<? extends ExtractResult> collection = (Collection) extractResult;
-        for (ExtractResult each : collection) {
+        Collection<? extends SQLSegment> collection = (Collection) extractResult;
+        for (SQLSegment each : collection) {
             HandlerResultFiller filler = HandlerResultFillerRegistry.getFiller(each);
             if (null != filler) {
                 filler.fill(each, statement, shardingTableMetaData);

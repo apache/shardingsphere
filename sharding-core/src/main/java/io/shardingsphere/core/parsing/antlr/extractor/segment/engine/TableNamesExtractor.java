@@ -20,8 +20,8 @@ package io.shardingsphere.core.parsing.antlr.extractor.segment.engine;
 import com.google.common.base.Optional;
 import io.shardingsphere.core.parsing.antlr.extractor.segment.CollectionSQLSegmentExtractor;
 import io.shardingsphere.core.parsing.antlr.extractor.segment.constant.RuleName;
-import io.shardingsphere.core.parsing.antlr.extractor.segment.result.TableExtractResult;
 import io.shardingsphere.core.parsing.antlr.extractor.util.ASTUtils;
+import io.shardingsphere.core.parsing.antlr.sql.segment.TableSegment;
 import org.antlr.v4.runtime.ParserRuleContext;
 
 import java.util.Collection;
@@ -32,15 +32,15 @@ import java.util.LinkedList;
  *
  * @author duhongjun
  */
-public final class TableNamesExtractor implements CollectionSQLSegmentExtractor<TableExtractResult> {
+public final class TableNamesExtractor implements CollectionSQLSegmentExtractor<TableSegment> {
     
     private final TableNameExtractor tableNameExtractor = new TableNameExtractor();
     
     @Override
-    public Collection<TableExtractResult> extract(final ParserRuleContext ancestorNode) {
-        Collection<TableExtractResult> result = new LinkedList<>();
+    public Collection<TableSegment> extract(final ParserRuleContext ancestorNode) {
+        Collection<TableSegment> result = new LinkedList<>();
         for (ParserRuleContext each : ASTUtils.getAllDescendantNodes(ancestorNode, RuleName.TABLE_NAME)) {
-            Optional<TableExtractResult> tableExtractResult = tableNameExtractor.extract(each);
+            Optional<TableSegment> tableExtractResult = tableNameExtractor.extract(each);
             if (tableExtractResult.isPresent()) {
                 result.add(tableExtractResult.get());
             }

@@ -20,8 +20,8 @@ package io.shardingsphere.core.parsing.antlr.extractor.segment.engine;
 import com.google.common.base.Optional;
 import io.shardingsphere.core.parsing.antlr.extractor.segment.CollectionSQLSegmentExtractor;
 import io.shardingsphere.core.parsing.antlr.extractor.segment.constant.RuleName;
-import io.shardingsphere.core.parsing.antlr.extractor.segment.result.ColumnDefinitionExtractResult;
 import io.shardingsphere.core.parsing.antlr.extractor.util.ASTUtils;
+import io.shardingsphere.core.parsing.antlr.sql.segment.ColumnDefinitionSegment;
 import org.antlr.v4.runtime.ParserRuleContext;
 import org.antlr.v4.runtime.tree.ParseTree;
 
@@ -34,26 +34,26 @@ import java.util.LinkedList;
  *
  * @author duhongjun
  */
-public class AddColumnExtractor implements CollectionSQLSegmentExtractor<ColumnDefinitionExtractResult> {
+public class AddColumnExtractor implements CollectionSQLSegmentExtractor<ColumnDefinitionSegment> {
     
     private final ColumnDefinitionPhraseExtractor columnDefinitionPhraseExtractor = new ColumnDefinitionPhraseExtractor();
     
     @Override
-    public Collection<ColumnDefinitionExtractResult> extract(final ParserRuleContext ancestorNode) {
+    public Collection<ColumnDefinitionSegment> extract(final ParserRuleContext ancestorNode) {
         Collection<ParserRuleContext> addColumnNodes = ASTUtils.getAllDescendantNodes(ancestorNode, RuleName.ADD_COLUMN);
         if (addColumnNodes.isEmpty()) {
             return Collections.emptyList();
         }
-        Collection<ColumnDefinitionExtractResult> result = new LinkedList<>();
+        Collection<ColumnDefinitionSegment> result = new LinkedList<>();
         for (ParserRuleContext each : addColumnNodes) {
             extractAddColumn(each, result);
         }
         return result;
     }
     
-    private void extractAddColumn(final ParserRuleContext addColumnNode, final Collection<ColumnDefinitionExtractResult> result) {
+    private void extractAddColumn(final ParserRuleContext addColumnNode, final Collection<ColumnDefinitionSegment> result) {
         for (ParserRuleContext each : ASTUtils.getAllDescendantNodes(addColumnNode, RuleName.COLUMN_DEFINITION)) {
-            Optional<ColumnDefinitionExtractResult> columnDefinition = columnDefinitionPhraseExtractor.extract(each);
+            Optional<ColumnDefinitionSegment> columnDefinition = columnDefinitionPhraseExtractor.extract(each);
             if (columnDefinition.isPresent()) {
                 columnDefinition.get().setAdd(true);
                 postExtractColumnDefinition(addColumnNode, columnDefinition.get());
@@ -62,6 +62,6 @@ public class AddColumnExtractor implements CollectionSQLSegmentExtractor<ColumnD
         }
     }
     
-    protected void postExtractColumnDefinition(final ParseTree ancestorNode, final ColumnDefinitionExtractResult columnDefinition) {
+    protected void postExtractColumnDefinition(final ParseTree ancestorNode, final ColumnDefinitionSegment columnDefinition) {
     }
 }

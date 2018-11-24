@@ -15,22 +15,20 @@
  * </p>
  */
 
-package io.shardingsphere.core.parsing.antlr.extractor.segment.result;
+package io.shardingsphere.core.parsing.antlr.sql.segment;
 
-import io.shardingsphere.core.parsing.parser.token.IndexToken;
 import lombok.Getter;
-import lombok.RequiredArgsConstructor;
+
+import java.util.LinkedHashMap;
+import java.util.Map;
 
 /**
- * Index extract result.
- * 
+ * Select expression segment.
+ *
  * @author duhongjun
  */
-@RequiredArgsConstructor
 @Getter
-public final class IndexExtractResult implements ExtractResult {
+public final class SelectExpressionSegment implements SQLSegment {
     
-    private final String name;
-    
-    private final IndexToken token;
+    private final Map<String, String> selectExpressions = new LinkedHashMap<>();
 }
