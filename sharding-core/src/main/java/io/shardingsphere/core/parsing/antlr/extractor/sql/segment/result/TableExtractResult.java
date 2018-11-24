@@ -21,6 +21,7 @@ import com.google.common.base.Optional;
 import io.shardingsphere.core.parsing.parser.token.TableToken;
 import lombok.Getter;
 import lombok.RequiredArgsConstructor;
+import lombok.Setter;
 
 /**
  * Table extract result.
@@ -29,13 +30,32 @@ import lombok.RequiredArgsConstructor;
  */
 @RequiredArgsConstructor
 @Getter
+@Setter
 public class TableExtractResult implements ExtractResult {
     
     private final String name;
     
-    private final Optional<String> alias;
-    
-    private final Optional<String> schemaName;
-    
     private final TableToken token;
+    
+    private String schemaName;
+    
+    private String alias;
+    
+    /**
+     * Get schema name.
+     *
+     * @return schema name
+     */
+    public Optional<String> getSchemaName() {
+        return Optional.fromNullable(schemaName);
+    }
+    
+    /**
+     * Get table alias.
+     * 
+     * @return table alias
+     */
+    public Optional<String> getAlias() {
+        return Optional.fromNullable(alias);
+    }
 }

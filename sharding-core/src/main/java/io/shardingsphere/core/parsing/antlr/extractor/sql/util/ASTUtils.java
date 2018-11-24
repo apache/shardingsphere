@@ -25,9 +25,7 @@ import org.antlr.v4.runtime.ParserRuleContext;
 import org.antlr.v4.runtime.tree.ParseTree;
 
 import java.util.Collection;
-import java.util.Collections;
 import java.util.LinkedList;
-import java.util.List;
 
 /**
  * AST utility.
@@ -45,20 +43,16 @@ public final class ASTUtils {
      * @return matched node
      */
     public static Optional<ParserRuleContext> findFirstChildNode(final ParserRuleContext node, final RuleName ruleName) {
-        if (null == node) {
-            return Optional.absent();
-        }
         if (isMatchedNode(node, ruleName)) {
             return Optional.of(node);
         }
         for (int i = 0; i < node.getChildCount(); i++) {
             ParseTree child = node.getChild(i);
-            if (!(child instanceof ParserRuleContext)) {
-                continue;
-            }
-            Optional<ParserRuleContext> result = findFirstChildNode((ParserRuleContext) child, ruleName);
-            if (result.isPresent()) {
-                return result;
+            if (child instanceof ParserRuleContext) {
+                Optional<ParserRuleContext> result = findFirstChildNode((ParserRuleContext) child, ruleName);
+                if (result.isPresent()) {
+                    return result;
+                }
             }
         }
         return Optional.absent();
@@ -72,10 +66,7 @@ public final class ASTUtils {
      * @return all descendant nodes
      */
     public static Collection<ParserRuleContext> getAllDescendantNodes(final ParserRuleContext node, final RuleName ruleName) {
-        if (null == node) {
-            return Collections.emptyList();
-        }
-        List<ParserRuleContext> result = new LinkedList<>();
+        Collection<ParserRuleContext> result = new LinkedList<>();
         if (isMatchedNode(node, ruleName)) {
             result.add(node);
         }
@@ -89,8 +80,8 @@ public final class ASTUtils {
         return ruleName.getName().equals(node.getClass().getSimpleName());
     }
     
-    private static List<ParserRuleContext> getChildrenNodes(final ParserRuleContext node) {
-        List<ParserRuleContext> result = new LinkedList<>();
+    private static Collection<ParserRuleContext> getChildrenNodes(final ParserRuleContext node) {
+        Collection<ParserRuleContext> result = new LinkedList<>();
         for (int i = 0; i < node.getChildCount(); i++) {
             ParseTree child = node.getChild(i);
             if (child instanceof ParserRuleContext) {

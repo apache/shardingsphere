@@ -17,7 +17,6 @@
 
 package io.shardingsphere.core.parsing.antlr.extractor.sql.segment.result;
 
-import com.google.common.base.Optional;
 import io.shardingsphere.core.parsing.parser.context.condition.OrCondition;
 import io.shardingsphere.core.parsing.parser.token.TableToken;
 import lombok.Getter;
@@ -35,11 +34,15 @@ public final class TableJoinExtractResult extends TableExtractResult {
     
     private final List<OrCondition> joinConditions = new LinkedList<>();
     
-    public TableJoinExtractResult(final String name, final Optional<String> alias, final Optional<String> schemaName, final TableToken token) {
-        super(name, alias, schemaName, token);
+    public TableJoinExtractResult(final String name, final String alias, final String schemaName, final TableToken token) {
+        super(name, token);
+        setAlias(alias);
+        setSchemaName(schemaName);
     }
     
     public TableJoinExtractResult(final TableExtractResult parent) {
-        super(parent.getName(), parent.getAlias(), parent.getSchemaName(), parent.getToken());
+        super(parent.getName(), parent.getToken());
+        setAlias(parent.getAlias().orNull());
+        setSchemaName(parent.getSchemaName().orNull());
     }
 }
