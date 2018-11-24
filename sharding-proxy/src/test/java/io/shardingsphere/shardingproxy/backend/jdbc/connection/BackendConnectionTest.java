@@ -53,7 +53,7 @@ import static org.mockito.Mockito.verify;
 import static org.mockito.Mockito.when;
 
 @RunWith(MockitoJUnitRunner.class)
-public class BackendConnectionTest {
+public final class BackendConnectionTest {
     
     @Mock
     private LogicSchema logicSchema;
@@ -64,7 +64,6 @@ public class BackendConnectionTest {
     private BackendConnection backendConnection = new BackendConnection(TransactionType.LOCAL);
     
     @Before
-    @SuppressWarnings("unchecked")
     @SneakyThrows
     public void setup() {
         when(logicSchema.getBackendDataSource()).thenReturn(backendDataSource);
