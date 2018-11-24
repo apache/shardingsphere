@@ -194,7 +194,7 @@ public final class BackendConnection implements AutoCloseable {
         MasterVisitedManager.clear();
         exceptions.addAll(closeStatements());
         exceptions.addAll(closeResultSets());
-        if (ConnectionStatus.TERMINATED == status || forceClose) {
+        if (ConnectionStatus.TRANSACTION != status || forceClose) {
             exceptions.addAll(releaseConnections(forceClose));
         }
         throwSQLExceptionIfNecessary(exceptions);
