@@ -17,7 +17,6 @@
 
 package io.shardingsphere.core.parsing.antlr.extractor.sql.segment.result;
 
-import io.shardingsphere.core.parsing.antlr.sql.ddl.ColumnPosition;
 import lombok.Getter;
 import lombok.Setter;
 

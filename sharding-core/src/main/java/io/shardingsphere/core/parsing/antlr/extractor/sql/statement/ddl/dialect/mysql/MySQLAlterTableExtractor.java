@@ -27,9 +27,9 @@ import io.shardingsphere.core.parsing.antlr.extractor.sql.segment.dialect.mysql.
 import io.shardingsphere.core.parsing.antlr.extractor.sql.segment.dialect.mysql.MySQLChangeColumnExtractor;
 import io.shardingsphere.core.parsing.antlr.extractor.sql.segment.dialect.mysql.MySQLDropIndexExtractor;
 import io.shardingsphere.core.parsing.antlr.extractor.sql.segment.dialect.mysql.MySQLModifyColumnExtractor;
+import io.shardingsphere.core.parsing.antlr.extractor.sql.segment.result.ColumnPosition;
 import io.shardingsphere.core.parsing.antlr.extractor.sql.statement.ddl.AlterTableExtractor;
 import io.shardingsphere.core.parsing.antlr.sql.ddl.AlterTableStatement;
-import io.shardingsphere.core.parsing.antlr.sql.ddl.ColumnPosition;
 
 import java.util.Collections;
 import java.util.Iterator;

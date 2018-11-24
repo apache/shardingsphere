@@ -20,7 +20,7 @@ package io.shardingsphere.core.parsing.antlr.extractor.sql.segment.dialect.mysql
 import com.google.common.base.Optional;
 import io.shardingsphere.core.parsing.antlr.extractor.sql.segment.common.AddColumnExtractor;
 import io.shardingsphere.core.parsing.antlr.extractor.sql.segment.result.ColumnDefinitionExtractResult;
-import io.shardingsphere.core.parsing.antlr.sql.ddl.ColumnPosition;
+import io.shardingsphere.core.parsing.antlr.extractor.sql.segment.result.ColumnPosition;
 import org.antlr.v4.runtime.ParserRuleContext;
 import org.antlr.v4.runtime.tree.ParseTree;
 

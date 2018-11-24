@@ -17,6 +17,7 @@
 
 package io.shardingsphere.core.parsing.antlr.extractor.sql.segment;
 
+import io.shardingsphere.core.parsing.antlr.extractor.sql.segment.result.ExtractResult;
 import org.antlr.v4.runtime.ParserRuleContext;
 
 import java.util.Collection;
@@ -25,8 +26,10 @@ import java.util.Collection;
  * Collection SQL segment extractor.
  * 
  * @author zhangliang
+ * 
+ * @param <T> Type of SQL segment 
  */
-public interface CollectionSQLSegmentExtractor<T> extends SQLSegmentExtractor {
+public interface CollectionSQLSegmentExtractor<T extends ExtractResult> extends SQLSegmentExtractor {
     
     /**
      * Extract SQL segment from SQL AST.

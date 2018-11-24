@@ -18,14 +18,17 @@
 package io.shardingsphere.core.parsing.antlr.extractor.sql.segment;
 
 import com.google.common.base.Optional;
+import io.shardingsphere.core.parsing.antlr.extractor.sql.segment.result.ExtractResult;
 import org.antlr.v4.runtime.ParserRuleContext;
 
 /**
  * Optional SQL segment extractor.
  * 
  * @author zhangliang
+ * 
+ * @param <T> Type of SQL segment
  */
-public interface OptionalSQLSegmentExtractor<T> extends SQLSegmentExtractor {
+public interface OptionalSQLSegmentExtractor<T extends ExtractResult> extends SQLSegmentExtractor {
     
     /**
      * Extract SQL segment from SQL AST.

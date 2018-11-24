@@ -15,7 +15,7 @@
  * </p>
  */
 
-package io.shardingsphere.core.parsing.antlr.sql.ddl;
+package io.shardingsphere.core.parsing.antlr.extractor.sql.segment.result;
 
 import lombok.Getter;
 import lombok.Setter;
@@ -27,7 +27,7 @@ import lombok.Setter;
  */
 @Getter
 @Setter
-public final class ColumnPosition implements Comparable<ColumnPosition> {
+public final class ColumnPosition implements ExtractResult, Comparable<ColumnPosition> {
     
     private int startIndex;
     
