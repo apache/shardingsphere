@@ -36,5 +36,6 @@ public class TableSegmentFiller implements SQLSegmentFiller {
     public void fill(final SQLSegment sqlSegment, final SQLStatement sqlStatement, final ShardingRule shardingRule, final ShardingTableMetaData shardingTableMetaData) {
         TableSegment tableSegment = (TableSegment) sqlSegment;
         sqlStatement.getTables().add(new Table(tableSegment.getName(), tableSegment.getAlias()));
+        sqlStatement.getSQLTokens().add(tableSegment.getToken());
     }
 }

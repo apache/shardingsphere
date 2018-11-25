@@ -40,6 +40,7 @@ public class TableAndConditionSegmentFiller implements SQLSegmentFiller {
         int count = 0;
         while (count < tableAndConditionSegment.getParamenterCount()) {
             sqlStatement.increaseParametersIndex();
+            count++;
         }
     }
 }
