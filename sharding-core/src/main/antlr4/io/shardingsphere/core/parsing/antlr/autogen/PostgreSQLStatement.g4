@@ -33,4 +33,5 @@ execute
     | renameRole
     | alterRoleSetConfig
     | alterRoleResetConfig
+    | dropRole
     ;
