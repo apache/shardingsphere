@@ -25,7 +25,7 @@ import io.shardingsphere.core.parsing.parser.sql.SQLStatement;
 import io.shardingsphere.core.parsing.parser.token.IndexToken;
 
 /**
- * Index handler result filler.
+ * Index segment filler.
  *
  * @author duhongjun
  */

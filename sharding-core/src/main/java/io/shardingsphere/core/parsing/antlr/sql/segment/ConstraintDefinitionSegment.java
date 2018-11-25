@@ -19,16 +19,16 @@ package io.shardingsphere.core.parsing.antlr.sql.segment;
 
 import lombok.Getter;
 
+import java.util.Collection;
 import java.util.LinkedHashSet;
-import java.util.Set;
 
 /**
- * Add primary key segment.
+ * Constraint definition segment.
  *
  * @author duhongjun
  */
 @Getter
-public final class AddPrimaryKeySegment implements SQLSegment {
+public final class ConstraintDefinitionSegment implements SQLSegment {
     
-    private final Set<String> primaryKeyColumnNames = new LinkedHashSet<>();
+    private final Collection<String> primaryKeyColumnNames = new LinkedHashSet<>();
 }

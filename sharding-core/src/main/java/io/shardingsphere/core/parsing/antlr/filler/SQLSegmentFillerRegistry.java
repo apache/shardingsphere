@@ -18,15 +18,15 @@
 package io.shardingsphere.core.parsing.antlr.filler;
 
 import com.google.common.base.Optional;
-import io.shardingsphere.core.parsing.antlr.filler.engnie.AddPrimaryKeySegmentFiller;
 import io.shardingsphere.core.parsing.antlr.filler.engnie.ColumnDefinitionSegmentFiller;
+import io.shardingsphere.core.parsing.antlr.filler.engnie.ConstraintDefinitionSegmentFiller;
 import io.shardingsphere.core.parsing.antlr.filler.engnie.DropColumnSegmentFiller;
 import io.shardingsphere.core.parsing.antlr.filler.engnie.DropPrimaryKeySegmentFiller;
 import io.shardingsphere.core.parsing.antlr.filler.engnie.IndexSegmentFiller;
 import io.shardingsphere.core.parsing.antlr.filler.engnie.TableJoinSegmentFiller;
 import io.shardingsphere.core.parsing.antlr.filler.engnie.TableSegmentFiller;
-import io.shardingsphere.core.parsing.antlr.sql.segment.AddPrimaryKeySegment;
 import io.shardingsphere.core.parsing.antlr.sql.segment.ColumnDefinitionSegment;
+import io.shardingsphere.core.parsing.antlr.sql.segment.ConstraintDefinitionSegment;
 import io.shardingsphere.core.parsing.antlr.sql.segment.DropColumnSegment;
 import io.shardingsphere.core.parsing.antlr.sql.segment.DropPrimaryKeySegment;
 import io.shardingsphere.core.parsing.antlr.sql.segment.IndexSegment;
@@ -48,7 +48,7 @@ public final class SQLSegmentFillerRegistry {
     
     static {
         FILLERS.put(DropColumnSegment.class, new DropColumnSegmentFiller());
-        FILLERS.put(AddPrimaryKeySegment.class, new AddPrimaryKeySegmentFiller());
+        FILLERS.put(ConstraintDefinitionSegment.class, new ConstraintDefinitionSegmentFiller());
         FILLERS.put(DropPrimaryKeySegment.class, new DropPrimaryKeySegmentFiller());
         FILLERS.put(TableSegment.class, new TableSegmentFiller());
         FILLERS.put(ColumnDefinitionSegment.class, new ColumnDefinitionSegmentFiller());

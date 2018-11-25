@@ -21,7 +21,7 @@ import com.google.common.base.Optional;
 import io.shardingsphere.core.parsing.antlr.extractor.segment.OptionalSQLSegmentExtractor;
 import io.shardingsphere.core.parsing.antlr.extractor.segment.constant.RuleName;
 import io.shardingsphere.core.parsing.antlr.extractor.util.ASTUtils;
-import io.shardingsphere.core.parsing.antlr.sql.segment.AddPrimaryKeySegment;
+import io.shardingsphere.core.parsing.antlr.sql.segment.ConstraintDefinitionSegment;
 import lombok.RequiredArgsConstructor;
 import org.antlr.v4.runtime.ParserRuleContext;
 
@@ -38,7 +38,7 @@ public final class AddPrimaryKeyExtractor implements OptionalSQLSegmentExtractor
     private final RuleName ruleName;
     
     @Override
-    public Optional<AddPrimaryKeySegment> extract(final ParserRuleContext ancestorNode) {
+    public Optional<ConstraintDefinitionSegment> extract(final ParserRuleContext ancestorNode) {
         Optional<ParserRuleContext> modifyColumnNode = ASTUtils.findFirstChildNode(ancestorNode, ruleName);
         if (!modifyColumnNode.isPresent()) {
             return Optional.absent();
@@ -51,7 +51,7 @@ public final class AddPrimaryKeyExtractor implements OptionalSQLSegmentExtractor
         if (null == columnNameNodes) {
             return Optional.absent();
         }
-        AddPrimaryKeySegment result = new AddPrimaryKeySegment();
+        ConstraintDefinitionSegment result = new ConstraintDefinitionSegment();
         for (ParserRuleContext each : columnNameNodes) {
             result.getPrimaryKeyColumnNames().add(each.getText());
         }
