@@ -32,7 +32,7 @@ import io.shardingsphere.core.parsing.lexer.token.Symbol;
  * 
  * @author duhongjun
  */
-public final class ColumnExtractHandler implements OptionalSQLSegmentExtractor {
+public final class ColumnSegmentExtractor implements OptionalSQLSegmentExtractor {
     
     @Override
     public Optional<ColumnSegment> extract(final ParserRuleContext ancestorNode) {
@@ -46,9 +46,7 @@ public final class ColumnExtractHandler implements OptionalSQLSegmentExtractor {
         Optional<String> ownerName;
         if (0 < dotPosition) {
             columnName = columnText.substring(dotPosition + 1);
-            String ownerText = columnText.substring(0, dotPosition);
-            dotPosition = ownerText.contains(Symbol.DOT.getLiterals()) ? ownerText.lastIndexOf(Symbol.DOT.getLiterals()) : 0;
-            ownerName = Optional.of(columnText.substring(dotPosition + 1));
+            ownerName = Optional.of(columnText.substring(0, dotPosition));
         } else {
             ownerName = Optional.absent();
         }

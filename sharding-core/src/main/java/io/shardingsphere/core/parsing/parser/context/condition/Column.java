@@ -18,8 +18,10 @@
 package io.shardingsphere.core.parsing.parser.context.condition;
 
 import com.google.common.base.Objects;
+
 import lombok.Getter;
 import lombok.RequiredArgsConstructor;
+import lombok.Setter;
 import lombok.ToString;
 
 /**
@@ -35,7 +37,13 @@ public final class Column {
     
     private final String name;
     
-    private final String tableName;
+    @Setter
+    private String tableName;
+    
+    public Column(final String name, final String tableName) {
+        this.name = name;
+        this.tableName = tableName;
+    }
     
     @Override
     public boolean equals(final Object obj) {

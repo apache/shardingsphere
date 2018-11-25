@@ -17,10 +17,17 @@
 
 package io.shardingsphere.core.parsing.antlr.filler.engnie;
 
+import java.util.Collection;
+import java.util.HashMap;
+import java.util.Iterator;
+import java.util.Map;
+
 import io.shardingsphere.core.metadata.table.ShardingTableMetaData;
 import io.shardingsphere.core.parsing.antlr.filler.SQLSegmentFiller;
 import io.shardingsphere.core.parsing.antlr.sql.segment.SQLSegment;
 import io.shardingsphere.core.parsing.antlr.sql.segment.TableAndConditionSegment;
+import io.shardingsphere.core.parsing.parser.context.condition.AndCondition;
+import io.shardingsphere.core.parsing.parser.context.condition.Condition;
 import io.shardingsphere.core.parsing.parser.context.condition.OrCondition;
 import io.shardingsphere.core.parsing.parser.sql.SQLStatement;
 import io.shardingsphere.core.rule.ShardingRule;
@@ -33,14 +40,67 @@ import io.shardingsphere.core.rule.ShardingRule;
 public class TableAndConditionSegmentFiller implements SQLSegmentFiller {
     
     @Override
-    public void fill(final SQLSegment sqlSegment, final SQLStatement sqlStatement, final ShardingRule shardingRule, final ShardingTableMetaData shardingTableMetaData) {
+    public void fill(final SQLSegment sqlSegment, final SQLStatement sqlStatement, final ShardingRule shardingRule,
+            final ShardingTableMetaData shardingTableMetaData) {
         TableAndConditionSegment tableAndConditionSegment = (TableAndConditionSegment) sqlSegment;
         OrCondition orCondition = tableAndConditionSegment.getConditions().optimize();
+        Map<String, String> columnNameToTable = new HashMap<String, String>();
+        Map<String, Integer> columnNameCount = new HashMap<String, Integer>();
+        fillColumnTableMap(sqlStatement, shardingTableMetaData, columnNameToTable, columnNameCount);
+        filterShardingCondition(orCondition, shardingRule, columnNameToTable, columnNameCount);
         sqlStatement.getConditions().getOrCondition().getAndConditions().addAll(orCondition.getAndConditions());
         int count = 0;
         while (count < tableAndConditionSegment.getParamenterCount()) {
             sqlStatement.increaseParametersIndex();
             count++;
+        }
+    }
+    
+    private void fillColumnTableMap(final SQLStatement sqlStatement, final ShardingTableMetaData shardingTableMetaData,
+            final Map<String, String> columnNameToTable, final Map<String, Integer> columnNameCount) {
+        for (String each : sqlStatement.getTables().getTableNames()) {
+            Collection<String> tableColumns = shardingTableMetaData.getAllColumnNames(each);
+            for (String columnName : tableColumns) {
+                columnNameToTable.put(columnName, each);
+                Integer count = columnNameCount.get(columnName);
+                if (null == count) {
+                    count = 1;
+                } else {
+                    count++;
+                }
+                columnNameCount.put(columnName, count);
+            }
+        }
+    }
+    
+    private void filterShardingCondition(final OrCondition orCondition, final ShardingRule shardingRule, final Map<String, String> columnNameToTable, final Map<String, Integer> columnNameCount) {
+        Iterator<AndCondition> andConditionIterator = orCondition.getAndConditions().iterator();
+        while(andConditionIterator.hasNext()) {
+            AndCondition andCondition = andConditionIterator.next();
+            Iterator<Condition> conditionIterator = andCondition.getConditions().iterator();
+            while(conditionIterator.hasNext()) {
+                Condition condition = conditionIterator.next();
+                if(null == condition.getColumn()) {
+                    conditionIterator.remove();
+                    continue;
+                }
+                if(null == condition.getColumn().getTableName()) {
+                    String tableName = columnNameToTable.get(condition.getColumn().getName());
+                    Integer count = columnNameCount.get(condition.getColumn().getName());
+                    if(null != tableName && count.intValue() == 1) {
+                        condition.getColumn().setTableName(tableName);
+                    }else {
+                        conditionIterator.remove();
+                        continue;
+                    }
+                }
+                if(!shardingRule.isShardingColumn(condition.getColumn())) {
+                    conditionIterator.remove();
+                }
+            }
+            if(andCondition.getConditions().isEmpty()) {
+                andConditionIterator.remove();
+            }
         }
     }
 }

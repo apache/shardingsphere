@@ -40,7 +40,7 @@ public final class FromClauseExtractor implements OptionalSQLSegmentExtractor {
     
     private final TableNameExtractor tableNameExtractor = new TableNameExtractor();
     
-    private ConditionExtractor conditionExtractor;
+    private PredicateSegmentExtractor conditionExtractor;
     
     @Override
     public Optional<TableAndConditionSegment> extract(final ParserRuleContext ancestorNode) {
@@ -53,7 +53,7 @@ public final class FromClauseExtractor implements OptionalSQLSegmentExtractor {
             return Optional.absent();
         }
         TableAndConditionSegment result = new TableAndConditionSegment();
-        conditionExtractor = new ConditionExtractor(result.getTableAliases());
+        conditionExtractor = new PredicateSegmentExtractor(result.getTableAliases());
         Collection<ParserRuleContext> questionNodes = ASTUtils.getAllDescendantNodes(ancestorNode, RuleName.QUESTION);
         result.setParamenterCount(questionNodes.size());
         Map<ParserRuleContext, Integer> questionNodeIndexMap = new HashMap<>();
@@ -69,32 +69,29 @@ public final class FromClauseExtractor implements OptionalSQLSegmentExtractor {
     private void extractAndFillTableResult(final TableAndConditionSegment tableAndConditionSegment, final Collection<ParserRuleContext> tableReferenceNodes,
                                            final Map<ParserRuleContext, Integer> questionNodeIndexMap) {
         for (ParserRuleContext each : tableReferenceNodes) {
-            Optional<ParserRuleContext> joinTableNode = ASTUtils.findFirstChildNode(each, RuleName.JOIN_TABLE);
-            Optional<ParserRuleContext> tableFactorNode = joinTableNode.isPresent()
-                    ? ASTUtils.findFirstChildNode(joinTableNode.get(), RuleName.TABLE_FACTOR) : ASTUtils.findFirstChildNode(each, RuleName.TABLE_FACTOR);
-            //TODO subquery
-            if (!tableFactorNode.isPresent()) {
-                continue;
-            }
-            Optional<TableSegment> extractResult = tableNameExtractor.extract(tableFactorNode.get());
-            if (!extractResult.isPresent()) {
-                continue;
-            }
-            if (!joinTableNode.isPresent()) {
-                fillTableResult(tableAndConditionSegment, extractResult.get());
-                continue;
-            }
-            Optional<ParserRuleContext> joinConditionNode = ASTUtils.findFirstChildNode(joinTableNode.get(), RuleName.JOIN_CONDITION);
-            if (joinConditionNode.isPresent()) {
-                Optional<OrCondition> conditionResult = buildCondition(joinConditionNode.get(), questionNodeIndexMap, tableAndConditionSegment.getTableAliases());
-                if (conditionResult.isPresent()) {
-                    TableJoinSegment tableJoinResult = new TableJoinSegment(extractResult.get());
-                    tableJoinResult.getJoinConditions().getAndConditions().addAll(conditionResult.get().getAndConditions());
-                    fillTableResult(tableAndConditionSegment, tableJoinResult);
-                    continue;
+            for(int i = 0; i < each.getChildCount(); i++) {
+                ParserRuleContext tableFactorNode = null;
+                boolean joinNode = false;
+                if(RuleName.JOIN_TABLE.getName().endsWith(each.getClass().getSimpleName())) {
+                    tableFactorNode = ASTUtils.findFirstChildNode((ParserRuleContext)each.getChild(i), RuleName.TABLE_FACTOR).get();
+                    joinNode = true;
+                }else {
+                    tableFactorNode = (ParserRuleContext)each.getChild(i);
+                }
+                //TODO subquery
+                Optional<TableSegment> tableSegment = tableNameExtractor.extract(tableFactorNode);
+                if (joinNode) {
+                    Optional<ParserRuleContext> joinConditionNode = ASTUtils.findFirstChildNode((ParserRuleContext)each.getChild(i), RuleName.JOIN_CONDITION);
+                    if (joinConditionNode.isPresent()) {
+                        Optional<OrCondition> conditionResult = buildCondition(joinConditionNode.get(),questionNodeIndexMap, tableAndConditionSegment.getTableAliases());
+                        TableJoinSegment tableJoinResult = new TableJoinSegment(tableSegment.get());
+                        tableJoinResult.getJoinConditions().getAndConditions().addAll(conditionResult.get().getAndConditions());
+                        fillTableResult(tableAndConditionSegment, tableJoinResult);
+                    }
+                }else {
+                    fillTableResult(tableAndConditionSegment, tableSegment.get());
                 }
             }
-            fillTableResult(tableAndConditionSegment, extractResult.get());
         }
     }
     

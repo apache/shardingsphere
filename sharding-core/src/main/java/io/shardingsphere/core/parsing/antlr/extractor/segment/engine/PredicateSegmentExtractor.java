@@ -18,7 +18,6 @@
 package io.shardingsphere.core.parsing.antlr.extractor.segment.engine;
 
 import java.util.Collection;
-import java.util.Iterator;
 import java.util.LinkedList;
 import java.util.List;
 import java.util.Map;
@@ -32,7 +31,7 @@ import io.shardingsphere.core.parsing.antlr.extractor.segment.OptionalSQLSegment
 import io.shardingsphere.core.parsing.antlr.extractor.segment.constant.LogicalOperator;
 import io.shardingsphere.core.parsing.antlr.extractor.segment.constant.Paren;
 import io.shardingsphere.core.parsing.antlr.extractor.segment.constant.RuleName;
-import io.shardingsphere.core.parsing.antlr.extractor.statement.engine.ColumnExtractHandler;
+import io.shardingsphere.core.parsing.antlr.extractor.statement.engine.ColumnSegmentExtractor;
 import io.shardingsphere.core.parsing.antlr.extractor.util.ASTUtils;
 import io.shardingsphere.core.parsing.antlr.sql.segment.ColumnSegment;
 import io.shardingsphere.core.parsing.antlr.sql.segment.PredicateSegment;
@@ -51,16 +50,16 @@ import io.shardingsphere.core.util.NumberUtil;
 import lombok.RequiredArgsConstructor;
 
 /**
- * Condition clause extractor.
+ * Predicate segment extractor.
  *
  * @author duhongjun
  */
 @RequiredArgsConstructor
-public final class ConditionExtractor implements OptionalSQLSegmentExtractor {
+public final class PredicateSegmentExtractor implements OptionalSQLSegmentExtractor {
     
     private final Map<String, String> tableAlias;
     
-    private final ColumnExtractHandler columnHandler = new ColumnExtractHandler();
+    private final ColumnSegmentExtractor columnHandler = new ColumnSegmentExtractor();
     
     @Override
     public Optional<PredicateSegment> extract(final ParserRuleContext ancestorNode) {
@@ -279,10 +278,6 @@ public final class ConditionExtractor implements OptionalSQLSegmentExtractor {
         String ownerName = columnExtractResult.get().getOwner().isPresent() ? columnExtractResult.get().getOwner().get() : "";
         if (columnExtractResult.get().getOwner().isPresent()) {
             ownerName = tableAlias.get(ownerName);
-        }
-        if (null == ownerName || "".equals(ownerName)) {
-            Iterator<String> iterator = tableAlias.values().iterator();
-            ownerName = iterator.next();
         }
         return Optional.of(new Column(columnExtractResult.get().getName(), ownerName));
     }
