@@ -53,7 +53,7 @@ import static org.mockito.Mockito.verify;
 import static org.mockito.Mockito.when;
 
 @RunWith(MockitoJUnitRunner.class)
-public class BackendConnectionTest {
+public final class BackendConnectionTest {
     
     @Mock
     private LogicSchema logicSchema;
@@ -64,7 +64,6 @@ public class BackendConnectionTest {
     private BackendConnection backendConnection = new BackendConnection(TransactionType.LOCAL);
     
     @Before
-    @SuppressWarnings("unchecked")
     @SneakyThrows
     public void setup() {
         when(logicSchema.getBackendDataSource()).thenReturn(backendDataSource);
@@ -151,20 +150,36 @@ public class BackendConnectionTest {
     }
     
     @Test
-    public void assertAutoCloseConnection() throws SQLException {
+    public void assertAutoCloseConnectionWithoutTransaction() throws SQLException {
         BackendConnection actual;
         try (BackendConnection backendConnection = new BackendConnection(TransactionType.LOCAL)) {
             backendConnection.setLogicSchema(logicSchema);
-            backendConnection.setTransactionType(TransactionType.XA);
             MockConnectionUtil.setCachedConnections(backendConnection, "ds1", 10);
             when(backendDataSource.getConnections((ConnectionMode) any(), anyString(), eq(2))).thenReturn(MockConnectionUtil.mockNewConnections(2));
             backendConnection.getConnections(ConnectionMode.MEMORY_STRICTLY, "ds1", 12);
-            backendConnection.setStatus(ConnectionStatus.TERMINATED);
             mockResultSetAndStatement(backendConnection);
             actual = backendConnection;
         }
         assertThat(actual.getConnectionSize(), is(0));
         assertTrue(actual.getCachedConnections().isEmpty());
+        assertTrue(actual.getCachedResultSets().isEmpty());
+        assertTrue(actual.getCachedStatements().isEmpty());
+    }
+    
+    @Test
+    public void assertAutoCloseConnectionWithTransaction() throws SQLException {
+        BackendConnection actual;
+        try (BackendConnection backendConnection = new BackendConnection(TransactionType.LOCAL)) {
+            backendConnection.setLogicSchema(logicSchema);
+            MockConnectionUtil.setCachedConnections(backendConnection, "ds1", 10);
+            when(backendDataSource.getConnections((ConnectionMode) any(), anyString(), eq(2))).thenReturn(MockConnectionUtil.mockNewConnections(2));
+            backendConnection.getConnections(ConnectionMode.MEMORY_STRICTLY, "ds1", 12);
+            backendConnection.setStatus(ConnectionStatus.TRANSACTION);
+            mockResultSetAndStatement(backendConnection);
+            actual = backendConnection;
+        }
+        assertThat(actual.getConnectionSize(), is(12));
+        assertThat(actual.getCachedConnections().get("ds1").size(), is(12));
         assertTrue(actual.getCachedResultSets().isEmpty());
         assertTrue(actual.getCachedStatements().isEmpty());
     }

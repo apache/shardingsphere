@@ -17,13 +17,13 @@
 
 package io.shardingsphere.core.parsing.antlr.extractor.sql.statement.dql;
 
-import io.shardingsphere.core.parsing.antlr.extractor.sql.segment.common.FromClauseExtractor;
-import io.shardingsphere.core.parsing.antlr.extractor.sql.segment.common.GroupByClauseExtractor;
-import io.shardingsphere.core.parsing.antlr.extractor.sql.segment.common.LimitClauseExtractor;
-import io.shardingsphere.core.parsing.antlr.extractor.sql.segment.common.OrderByClauseExtractor;
-import io.shardingsphere.core.parsing.antlr.extractor.sql.segment.common.SelectExpressionExtractor;
-import io.shardingsphere.core.parsing.antlr.extractor.sql.segment.common.TableNameExtractor;
-import io.shardingsphere.core.parsing.antlr.extractor.sql.statement.AbstractSQLStatementExtractor;
+import io.shardingsphere.core.parsing.antlr.extractor.segment.engine.FromClauseExtractor;
+import io.shardingsphere.core.parsing.antlr.extractor.segment.engine.GroupByClauseExtractor;
+import io.shardingsphere.core.parsing.antlr.extractor.segment.engine.OrderByClauseExtractor;
+import io.shardingsphere.core.parsing.antlr.extractor.segment.engine.TableNameExtractor;
+import io.shardingsphere.core.parsing.antlr.extractor.statement.engine.AbstractSQLStatementExtractor;
+import io.shardingsphere.core.parsing.antlr.extractor.statement.engine.LimitClauseExtractor;
+import io.shardingsphere.core.parsing.antlr.extractor.statement.engine.SelectExpressionExtractor;
 import io.shardingsphere.core.parsing.parser.sql.SQLStatement;
 import io.shardingsphere.core.parsing.parser.sql.dql.select.SelectStatement;
 
