@@ -19,8 +19,8 @@ package io.shardingsphere.core.parsing.antlr.extractor.statement.engine.ddl.dial
 
 import io.shardingsphere.core.metadata.table.ColumnMetaData;
 import io.shardingsphere.core.parsing.antlr.extractor.segment.constant.RuleName;
-import io.shardingsphere.core.parsing.antlr.extractor.segment.engine.AddPrimaryKeyExtractor;
 import io.shardingsphere.core.parsing.antlr.extractor.segment.engine.DropPrimaryKeyExtractor;
+import io.shardingsphere.core.parsing.antlr.extractor.segment.engine.PrimaryKeyForAlterTableExtractor;
 import io.shardingsphere.core.parsing.antlr.extractor.segment.engine.RenameIndexExtractor;
 import io.shardingsphere.core.parsing.antlr.extractor.segment.engine.dialect.mysql.MySQLAddColumnExtractor;
 import io.shardingsphere.core.parsing.antlr.extractor.segment.engine.dialect.mysql.MySQLAddIndexExtractor;
@@ -47,7 +47,7 @@ public final class MySQLAlterTableExtractor extends AlterTableExtractor {
         addSQLSegmentExtractor(new MySQLAddIndexExtractor());
         addSQLSegmentExtractor(new MySQLDropIndexExtractor());
         addSQLSegmentExtractor(new RenameIndexExtractor());
-        addSQLSegmentExtractor(new AddPrimaryKeyExtractor(RuleName.ADD_CONSTRAINT));
+        addSQLSegmentExtractor(new PrimaryKeyForAlterTableExtractor(RuleName.ADD_CONSTRAINT));
         addSQLSegmentExtractor(new DropPrimaryKeyExtractor());
         addSQLSegmentExtractor(new MySQLChangeColumnExtractor());
         addSQLSegmentExtractor(new MySQLModifyColumnExtractor());
