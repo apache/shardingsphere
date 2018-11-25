@@ -96,13 +96,13 @@ revoke
     privType columnList? (COMMA privType columnList?)*
     privOnClause
     FROM roleSpecifications
-    (CASCADE | RESTRICT)
+    (CASCADE | RESTRICT)?
     ;
 
 revokeRole
     : REVOKE (ADMIN OPTION FOR)?
     roleNames FROM roleNames
-    (CASCADE | RESTRICT)
+    (CASCADE | RESTRICT)?
     ;
 
 createUser
