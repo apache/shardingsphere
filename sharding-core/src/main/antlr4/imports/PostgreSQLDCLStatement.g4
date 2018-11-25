@@ -37,8 +37,8 @@ privOnClause
         | FOREIGN DATA WRAPPER fdwNames
         | FOREIGN SERVER serverNames
         | (FUNCTION | PROCEDURE | ROUTINE) routineName (LP_ (argMode? argName? dataType (COMMA argMode? argName? dataType)*)? RP_)?
-          (COMMA (FUNCTION | PROCEDURE | ROUTINE) routineName (LP_ (argMode? argName? dataType (COMMA argMode? argName? dataType)*)? RP_)?)*
-        | ALL (FUNCTION | PROCEDURE | ROUTINE) IN SCHEMA schemaNames
+          (COMMA routineName (LP_ (argMode? argName? dataType (COMMA argMode? argName? dataType)*)? RP_)?)*
+        | ALL (FUNCTIONS | PROCEDURES | ROUTINES) IN SCHEMA schemaNames
         | LANGUAGE langNames
         | LARGE OBJECT loids
         | SCHEMA schemaNames
