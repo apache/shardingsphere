@@ -35,11 +35,11 @@ import io.shardingsphere.core.parsing.lexer.token.Symbol;
 
 /**
  * Select expression extractor.
- * 
+ *
  * @author duhongjun
  */
 public class SelectExpressionExtractor implements CollectionSQLSegmentExtractor {
-
+    
     @Override
     public Collection<SelectExpressionSegment> extract(ParserRuleContext ancestorNode) {
         Optional<ParserRuleContext> selectClaseNode = ASTUtils.findFirstChildNode(ancestorNode, RuleName.SELECT_CLAUSE);
@@ -51,24 +51,24 @@ public class SelectExpressionExtractor implements CollectionSQLSegmentExtractor 
             return Collections.emptyList();
         }
         Collection<SelectExpressionSegment> result = new LinkedList<>();
-        for(ParserRuleContext each : selectExprNodes) {
+        for (ParserRuleContext each : selectExprNodes) {
             String firstChildText = each.getChild(0).getText();
-            if(firstChildText.endsWith(Symbol.STAR.getLiterals())) {
+            if (firstChildText.endsWith(Symbol.STAR.getLiterals())) {
                 int pos = firstChildText.indexOf(Symbol.DOT.getLiterals());
-                String owner ="";
-                if(0 < pos) {
+                String owner = "";
+                if (0 < pos) {
                     owner = firstChildText.substring(0, pos - 1);
                 }
                 result.add(new StarSelectExpressionSegment(Optional.of(owner)));
-            }else {
-                ParserRuleContext firstChild = (ParserRuleContext)each.getChild(0);
+            } else {
+                ParserRuleContext firstChild = (ParserRuleContext) each.getChild(0);
                 //TODO best choice using index
                 StringBuilder builder = new StringBuilder();
-                for(int i = 0; i < firstChild.getChildCount(); i++) {
-                    builder.append(firstChild.getChild(i).getText()+" ");
+                for (int i = 0; i < firstChild.getChildCount(); i++) {
+                    builder.append(firstChild.getChild(i).getText() + " ");
                 }
                 String alias = "";
-                if(3 == each.getChildCount()) {
+                if (3 == each.getChildCount()) {
                     alias = each.getChild(2).getText();
                 }
                 result.add(new CommonSelectExpressionSegment(builder.toString(), Optional.of(alias)));
@@ -76,5 +76,5 @@ public class SelectExpressionExtractor implements CollectionSQLSegmentExtractor 
         }
         return Collections.emptyList();
     }
-
+    
 }

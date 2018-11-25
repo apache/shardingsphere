@@ -32,10 +32,10 @@ import io.shardingsphere.core.parsing.lexer.token.Symbol;
  * 
  * @author duhongjun
  */
-public class ColumnExtractHandler implements OptionalSQLSegmentExtractor {
+public final class ColumnExtractHandler implements OptionalSQLSegmentExtractor {
     
     @Override
-    public Optional<ColumnSegment> extract(ParserRuleContext ancestorNode) {
+    public Optional<ColumnSegment> extract(final ParserRuleContext ancestorNode) {
         Optional<ParserRuleContext> columnNode = ASTUtils.findFirstChildNode(ancestorNode, RuleName.COLUMN_NAME);
         if (!columnNode.isPresent()) {
             return Optional.absent();

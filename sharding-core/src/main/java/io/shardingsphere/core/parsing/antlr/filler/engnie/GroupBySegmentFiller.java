@@ -31,7 +31,7 @@ import io.shardingsphere.core.rule.ShardingRule;
 
 /**
  * Group by segment filler.
- * 
+ *
  * @author duhongjun
  */
 public class GroupBySegmentFiller implements SQLSegmentFiller {
@@ -40,12 +40,12 @@ public class GroupBySegmentFiller implements SQLSegmentFiller {
     public void fill(final SQLSegment sqlSegment, final SQLStatement sqlStatement, final ShardingRule shardingRule, final ShardingTableMetaData shardingTableMetaData) {
         GroupBySegment groupBySegment = (GroupBySegment) sqlSegment;
         SelectStatement selectStatement = (SelectStatement) sqlStatement;
-        if(-1 < groupBySegment.getIndex()) {
-            selectStatement.getOrderByItems().add(new OrderItem(groupBySegment.getIndex(), OrderDirection.ASC, OrderDirection.ASC)); 
-        }else if(groupBySegment.getName().isPresent()) {
+        if (-1 < groupBySegment.getIndex()) {
+            selectStatement.getOrderByItems().add(new OrderItem(groupBySegment.getIndex(), OrderDirection.ASC, OrderDirection.ASC));
+        } else if (groupBySegment.getName().isPresent()) {
             String owner = groupBySegment.getOwner().isPresent() ? groupBySegment.getOwner().get() : "";
             String name = groupBySegment.getName().isPresent() ? groupBySegment.getName().get() : "";
-            selectStatement.getOrderByItems().add(new OrderItem(owner, name, OrderDirection.ASC, OrderDirection.ASC, Optional.<String>absent())); 
+            selectStatement.getOrderByItems().add(new OrderItem(owner, name, OrderDirection.ASC, OrderDirection.ASC, Optional.<String>absent()));
         }
     }
 }

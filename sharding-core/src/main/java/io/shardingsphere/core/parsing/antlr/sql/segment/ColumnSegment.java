@@ -24,12 +24,12 @@ import lombok.RequiredArgsConstructor;
 
 /**
  * Column segment.
- * 
+ *
  * @author duhongjun
  */
 @RequiredArgsConstructor
 @Getter
-public class ColumnSegment implements SQLSegment{
+public class ColumnSegment implements SQLSegment {
     
     private final Optional<String> owner;
     

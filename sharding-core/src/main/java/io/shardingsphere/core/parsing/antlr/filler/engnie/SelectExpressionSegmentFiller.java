@@ -31,7 +31,7 @@ import io.shardingsphere.core.rule.ShardingRule;
 
 /**
  * Select expression handler result filler.
- * 
+ *
  * @author duhongjun
  */
 public class SelectExpressionSegmentFiller implements SQLSegmentFiller {
@@ -39,11 +39,11 @@ public class SelectExpressionSegmentFiller implements SQLSegmentFiller {
     @Override
     public void fill(final SQLSegment sqlSegment, final SQLStatement sqlStatement, final ShardingRule shardingRule, final ShardingTableMetaData shardingTableMetaData) {
         SelectExpressionSegment selectExpressionSegment = (SelectExpressionSegment) sqlSegment;
-        SelectStatement selectStatement = (SelectStatement)sqlStatement;
-        if(selectExpressionSegment instanceof StarSelectExpressionSegment) {
-            selectStatement.getItems().add(new StarSelectItem(((StarSelectExpressionSegment)selectExpressionSegment).getOwner()));
-        }else if(selectExpressionSegment instanceof CommonSelectExpressionSegment) {
-            CommonSelectExpressionSegment commonResult = (CommonSelectExpressionSegment)sqlSegment;
+        SelectStatement selectStatement = (SelectStatement) sqlStatement;
+        if (selectExpressionSegment instanceof StarSelectExpressionSegment) {
+            selectStatement.getItems().add(new StarSelectItem(((StarSelectExpressionSegment) selectExpressionSegment).getOwner()));
+        } else if (selectExpressionSegment instanceof CommonSelectExpressionSegment) {
+            CommonSelectExpressionSegment commonResult = (CommonSelectExpressionSegment) sqlSegment;
             selectStatement.getItems().add(new CommonSelectItem(commonResult.getExpression(), commonResult.getAlias()));
         }
     }

@@ -38,13 +38,13 @@ import io.shardingsphere.core.util.NumberUtil;
 
 /**
  * Limit clause extractor.
- * 
+ *
  * @author duhongjun
  */
 public class LimitClauseExtractor implements CollectionSQLSegmentExtractor {
     
     @Override
-    public Collection<LimitSegment> extract(ParserRuleContext ancestorNode) {
+    public Collection<LimitSegment> extract(final ParserRuleContext ancestorNode) {
         Optional<ParserRuleContext> limitNode = ASTUtils.findFirstChildNode(ancestorNode, RuleName.LIMIT_CLAUSE);
         if (!limitNode.isPresent()) {
             return Collections.emptyList();
@@ -57,23 +57,23 @@ public class LimitClauseExtractor implements CollectionSQLSegmentExtractor {
         Collection<ParserRuleContext> questionNodes = ASTUtils.getAllDescendantNodes(ancestorNode, RuleName.QUESTION);
         Map<ParserRuleContext, Integer> questionNodeIndexMap = new HashMap<>();
         int index = 0;
-        for(ParserRuleContext each : questionNodes) {
+        for (ParserRuleContext each : questionNodes) {
             questionNodeIndexMap.put(each, index++);
         }
         addLimitExtractResult(result, questionNodeIndexMap, rangeNode.get().getChild(0));
-        if(rangeNode.get().getChildCount() >= 3) {
+        if (rangeNode.get().getChildCount() >= 3) {
             addLimitExtractResult(result, questionNodeIndexMap, rangeNode.get().getChild(2));
         }
         return Collections.emptyList();
     }
     
-    public void addLimitExtractResult(Collection<LimitSegment> limitResult, Map<ParserRuleContext, Integer> questionNodeIndexMap, ParseTree node) {
-        if(node.getText().equals(Symbol.QUESTION.getLiterals())) {
-            if(questionNodeIndexMap.containsKey(node)) {
-                limitResult.add(new LimitSegment(DatabaseType.MySQL, -1 , questionNodeIndexMap.get(node)));
+    private void addLimitExtractResult(final Collection<LimitSegment> limitResult, final Map<ParserRuleContext, Integer> questionNodeIndexMap, final ParseTree node) {
+        if (node.getText().equals(Symbol.QUESTION.getLiterals())) {
+            if (questionNodeIndexMap.containsKey(node)) {
+                limitResult.add(new LimitSegment(DatabaseType.MySQL, -1, questionNodeIndexMap.get(node)));
             }
-        }else {
-            limitResult.add(new LimitSegment(DatabaseType.MySQL, NumberUtil.getExactlyNumber(node.getText(), 10).intValue() , -1));
+        } else {
+            limitResult.add(new LimitSegment(DatabaseType.MySQL, NumberUtil.getExactlyNumber(node.getText(), 10).intValue(), -1));
         }
     }
 }

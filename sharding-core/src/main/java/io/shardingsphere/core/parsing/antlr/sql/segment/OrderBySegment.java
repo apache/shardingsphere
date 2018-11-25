@@ -35,8 +35,8 @@ public final class OrderBySegment extends GroupBySegment {
     
     private final OrderDirection nullOrderDirection;
     
-    
-    public OrderBySegment(Optional<String> owner, Optional<String> name, int index, OrderDirection orderDirection, OrderDirection nullOrderDirection, OrderByToken orderByToken) {
+    public OrderBySegment(final Optional<String> owner, final Optional<String> name, final int index, final OrderDirection orderDirection,
+                          final OrderDirection nullOrderDirection, final OrderByToken orderByToken) {
         super(owner, name, index, orderByToken);
         this.orderDirection = orderDirection;
         this.nullOrderDirection = nullOrderDirection;

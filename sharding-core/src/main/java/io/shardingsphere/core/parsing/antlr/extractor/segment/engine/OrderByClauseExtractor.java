@@ -68,7 +68,7 @@ public class OrderByClauseExtractor implements CollectionSQLSegmentExtractor {
             }
             Optional<ParserRuleContext> numberNode = ASTUtils.findFirstChildNode(each, RuleName.NUMBER);
             int index = -1;
-            if(numberNode.isPresent()) {
+            if (numberNode.isPresent()) {
                 index = NumberUtil.getExactlyNumber(numberNode.get().getText(), 10).intValue();
             }
             String name = each.getChild(0).getText();
@@ -87,12 +87,12 @@ public class OrderByClauseExtractor implements CollectionSQLSegmentExtractor {
                     orderDirection = OrderDirection.ASC;
                 }
             }
-            result.add((OrderBySegment)buildSegment(ownerName, name, index, orderDirection, each.getStart().getStartIndex()));
+            result.add((OrderBySegment) buildSegment(ownerName, name, index, orderDirection, each.getStart().getStartIndex()));
         }
         return result;
     }
     
-    protected GroupBySegment buildSegment(String ownerName, String name, int index, OrderDirection orderDirection, int orderTokenBeginPosition) {
+    protected GroupBySegment buildSegment(final String ownerName, final String name, final int index, final OrderDirection orderDirection, final int orderTokenBeginPosition) {
         return new OrderBySegment(Optional.of(ownerName), Optional.of(name), index, orderDirection, OrderDirection.ASC, new OrderByToken(orderTokenBeginPosition));
     }
 }

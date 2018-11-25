@@ -30,7 +30,7 @@ import io.shardingsphere.core.rule.ShardingRule;
 
 /**
  * Order by segment filler.
- * 
+ *
  * @author duhongjun
  */
 public class OrderBySegmentFiller implements SQLSegmentFiller {
@@ -39,12 +39,12 @@ public class OrderBySegmentFiller implements SQLSegmentFiller {
     public void fill(final SQLSegment sqlSegment, final SQLStatement sqlStatement, final ShardingRule shardingRule, final ShardingTableMetaData shardingTableMetaData) {
         OrderBySegment orderBySegment = (OrderBySegment) sqlSegment;
         SelectStatement selectStatement = (SelectStatement) sqlStatement;
-        if(-1 < orderBySegment.getIndex()) {
-            selectStatement.getOrderByItems().add(new OrderItem(orderBySegment.getIndex(), orderBySegment.getOrderDirection(), orderBySegment.getNullOrderDirection())); 
-        }else if(orderBySegment.getName().isPresent()) {
+        if (-1 < orderBySegment.getIndex()) {
+            selectStatement.getOrderByItems().add(new OrderItem(orderBySegment.getIndex(), orderBySegment.getOrderDirection(), orderBySegment.getNullOrderDirection()));
+        } else if (orderBySegment.getName().isPresent()) {
             String owner = orderBySegment.getOwner().isPresent() ? orderBySegment.getOwner().get() : "";
             String name = orderBySegment.getName().isPresent() ? orderBySegment.getName().get() : "";
-            selectStatement.getOrderByItems().add(new OrderItem(owner, name, orderBySegment.getOrderDirection(), orderBySegment.getNullOrderDirection(), Optional.<String>absent())); 
+            selectStatement.getOrderByItems().add(new OrderItem(owner, name, orderBySegment.getOrderDirection(), orderBySegment.getNullOrderDirection(), Optional.<String>absent()));
         }
     }
 }

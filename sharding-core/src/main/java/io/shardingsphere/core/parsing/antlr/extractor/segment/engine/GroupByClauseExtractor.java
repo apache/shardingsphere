@@ -26,7 +26,7 @@ import io.shardingsphere.core.parsing.parser.token.OrderByToken;
 
 /**
  * Group by clause extractor.
- * 
+ *
  * @author duhongjun
  */
 public final class GroupByClauseExtractor extends OrderByClauseExtractor {
@@ -35,7 +35,7 @@ public final class GroupByClauseExtractor extends OrderByClauseExtractor {
         super(RuleName.GROUP_BY_CLAUSE);
     }
     
-    protected GroupBySegment buildSegment(String ownerName, String name, int index, OrderDirection orderDirection, int orderTokenBeginPosition) {
+    protected GroupBySegment buildSegment(final String ownerName, final String name, final int index, final OrderDirection orderDirection, final int orderTokenBeginPosition) {
         return new GroupBySegment(Optional.of(ownerName), Optional.of(name), index, new OrderByToken(orderTokenBeginPosition));
     }
 }

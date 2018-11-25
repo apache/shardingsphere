@@ -31,7 +31,7 @@ import io.shardingsphere.core.rule.ShardingRule;
 
 /**
  * Limit segment filler.
- * 
+ *
  * @author duhongjun
  */
 public class LimitSegmentFiller implements SQLSegmentFiller {
@@ -40,13 +40,13 @@ public class LimitSegmentFiller implements SQLSegmentFiller {
     public void fill(final SQLSegment sqlSegment, final SQLStatement sqlStatement, final ShardingRule shardingRule, final ShardingTableMetaData shardingTableMetaData) {
         @SuppressWarnings("unchecked")
         List<LimitSegment> limitSegment = (List<LimitSegment>) sqlSegment;
-        if(limitSegment.isEmpty()) {
+        if (limitSegment.isEmpty()) {
             return;
         }
-        SelectStatement selectStatement = (SelectStatement)sqlStatement;
+        SelectStatement selectStatement = (SelectStatement) sqlStatement;
         Limit limit = new Limit(limitSegment.get(0).getDatabaseType());
         limit.setOffset(new LimitValue(limitSegment.get(0).getValue(), limitSegment.get(0).getIndex(), false));
-        if(1 < limitSegment.size()) {
+        if (1 < limitSegment.size()) {
             limit.setRowCount(new LimitValue(limitSegment.get(0).getValue(), limitSegment.get(0).getIndex(), false));
         }
         selectStatement.setLimit(limit);

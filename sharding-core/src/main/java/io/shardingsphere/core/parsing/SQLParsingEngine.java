@@ -76,9 +76,9 @@ public final class SQLParsingEngine {
         } else if (TCLStatement.isTCL(firstToken.getType())) {
             result = AntlrParsingEngine.parse(dbType, sql, shardingRule, shardingTableMetaData);
         } else {
-            if(DQLStatement.isDQL(firstToken.getType()) && DatabaseType.MySQL == dbType) {
+            if (DQLStatement.isDQL(firstToken.getType()) && DatabaseType.MySQL == dbType) {
                 result = AntlrParsingEngine.parse(dbType, sql, shardingRule, shardingTableMetaData);
-            }else {
+            } else {
                 result = sqlParser.parse();
             }
         }

@@ -27,18 +27,18 @@ import io.shardingsphere.core.rule.ShardingRule;
 
 /**
  * Table and condition segment filler.
- * 
+ *
  * @author duhongjun
  */
 public class TableAndConditionSegmentFiller implements SQLSegmentFiller {
     
     @Override
     public void fill(final SQLSegment sqlSegment, final SQLStatement sqlStatement, final ShardingRule shardingRule, final ShardingTableMetaData shardingTableMetaData) {
-        TableAndConditionSegment tableAndConditionSegment = (TableAndConditionSegment)sqlSegment;
+        TableAndConditionSegment tableAndConditionSegment = (TableAndConditionSegment) sqlSegment;
         OrCondition orCondition = tableAndConditionSegment.getConditions().optimize();
         sqlStatement.getConditions().getOrCondition().getAndConditions().addAll(orCondition.getAndConditions());
         int count = 0;
-        while(count < tableAndConditionSegment.getParamenterCount()) {
+        while (count < tableAndConditionSegment.getParamenterCount()) {
             sqlStatement.increaseParametersIndex();
         }
     }
