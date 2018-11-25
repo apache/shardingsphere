@@ -148,15 +148,19 @@ renameUser
     ;
 
 alterUserSetConfig
-    : alterRoleConfigOp SET STRING ((TO | EQ) (STRING | ID | NUMBER | DEFAULT) | FROM CURRENT)
+    : alterUserConfigOp SET configName ((TO | EQ_) (STRING | ID | NUMBER | DEFAULT) | FROM CURRENT)
     ;
 
-alterRoleConfigOp
+configName
+    : ID
+    ;
+
+alterUserConfigOp
     : ALTER USER (roleSpecification | ALL) (IN DATABASE databaseName)?
     ;
 
 alterUserResetConfig
-    : alterRoleConfigOp RESET (STRING | ALL)
+    : alterUserConfigOp RESET (configName | ALL)
     ;
 
 dropUser
@@ -176,11 +180,15 @@ renameRole
     ;
 
 alterRoleSetConfig
-    : alterRoleConfigOp SET STRING ((TO | EQ) (STRING | ID | NUMBER | DEFAULT) | FROM CURRENT)
+    : alterRoleConfigOp SET configName ((TO | EQ_) (STRING | ID | NUMBER | DEFAULT) | FROM CURRENT)
+    ;
+
+alterRoleConfigOp
+    : ALTER ROLE (roleSpecification | ALL) (IN DATABASE databaseName)?
     ;
 
 alterRoleResetConfig
-    : alterRoleConfigOp RESET (STRING | ALL)
+    : alterRoleConfigOp RESET (configName | ALL)
     ;
 
 dropRole
