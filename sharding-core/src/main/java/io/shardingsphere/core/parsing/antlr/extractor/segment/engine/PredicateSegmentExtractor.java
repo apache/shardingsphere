@@ -254,6 +254,7 @@ public final class PredicateSegmentExtractor implements OptionalSQLSegmentExtrac
             Optional<SQLExpression> expression = buildExperssion(questionNodeIndexMap, each);
             if (!expression.isPresent()) {
                 sqlExpressions.clear();
+                break;
             }
             sqlExpressions.add(expression.get());
         }

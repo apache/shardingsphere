@@ -64,7 +64,7 @@ public class LimitClauseExtractor implements CollectionSQLSegmentExtractor {
         if (rangeNode.get().getChildCount() >= 3) {
             addLimitExtractResult(result, questionNodeIndexMap, rangeNode.get().getChild(2));
         }
-        return Collections.emptyList();
+        return result;
     }
     
     private void addLimitExtractResult(final Collection<LimitSegment> limitResult, final Map<ParserRuleContext, Integer> questionNodeIndexMap, final ParseTree node) {

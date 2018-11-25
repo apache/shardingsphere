@@ -28,6 +28,7 @@ import io.shardingsphere.core.parsing.antlr.filler.engnie.DropColumnSegmentFille
 import io.shardingsphere.core.parsing.antlr.filler.engnie.DropPrimaryKeySegmentFiller;
 import io.shardingsphere.core.parsing.antlr.filler.engnie.GroupBySegmentFiller;
 import io.shardingsphere.core.parsing.antlr.filler.engnie.IndexSegmentFiller;
+import io.shardingsphere.core.parsing.antlr.filler.engnie.LimitSegmentFiller;
 import io.shardingsphere.core.parsing.antlr.filler.engnie.OrderBySegmentFiller;
 import io.shardingsphere.core.parsing.antlr.filler.engnie.PredicateSegmentFiller;
 import io.shardingsphere.core.parsing.antlr.filler.engnie.TableAndConditionSegmentFiller;
@@ -39,6 +40,7 @@ import io.shardingsphere.core.parsing.antlr.sql.segment.DropColumnSegment;
 import io.shardingsphere.core.parsing.antlr.sql.segment.DropPrimaryKeySegment;
 import io.shardingsphere.core.parsing.antlr.sql.segment.GroupBySegment;
 import io.shardingsphere.core.parsing.antlr.sql.segment.IndexSegment;
+import io.shardingsphere.core.parsing.antlr.sql.segment.LimitSegment;
 import io.shardingsphere.core.parsing.antlr.sql.segment.OrderBySegment;
 import io.shardingsphere.core.parsing.antlr.sql.segment.PredicateSegment;
 import io.shardingsphere.core.parsing.antlr.sql.segment.SQLSegment;
@@ -67,6 +69,7 @@ public final class SQLSegmentFillerRegistry {
         FILLERS.put(GroupBySegment.class, new GroupBySegmentFiller());
         FILLERS.put(PredicateSegment.class, new PredicateSegmentFiller());
         FILLERS.put(TableAndConditionSegment.class, new TableAndConditionSegmentFiller());
+        FILLERS.put(LimitSegment.class, new LimitSegmentFiller());
     }
     
     /**

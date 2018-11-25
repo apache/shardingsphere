@@ -17,8 +17,6 @@
 
 package io.shardingsphere.core.parsing.antlr.filler.engnie;
 
-import java.util.List;
-
 import io.shardingsphere.core.metadata.table.ShardingTableMetaData;
 import io.shardingsphere.core.parsing.antlr.filler.SQLSegmentFiller;
 import io.shardingsphere.core.parsing.antlr.sql.segment.LimitSegment;
@@ -38,17 +36,15 @@ public class LimitSegmentFiller implements SQLSegmentFiller {
     
     @Override
     public void fill(final SQLSegment sqlSegment, final SQLStatement sqlStatement, final ShardingRule shardingRule, final ShardingTableMetaData shardingTableMetaData) {
-        @SuppressWarnings("unchecked")
-        List<LimitSegment> limitSegment = (List<LimitSegment>) sqlSegment;
-        if (limitSegment.isEmpty()) {
-            return;
-        }
+        LimitSegment limitSegment = (LimitSegment) sqlSegment;
         SelectStatement selectStatement = (SelectStatement) sqlStatement;
-        Limit limit = new Limit(limitSegment.get(0).getDatabaseType());
-        limit.setOffset(new LimitValue(limitSegment.get(0).getValue(), limitSegment.get(0).getIndex(), false));
-        if (1 < limitSegment.size()) {
-            limit.setRowCount(new LimitValue(limitSegment.get(0).getValue(), limitSegment.get(0).getIndex(), false));
+        Limit limit = selectStatement.getLimit();
+        if(null == limit) {
+            limit = new Limit(limitSegment.getDatabaseType());
+            selectStatement.setLimit(limit);
+            limit.setOffset(new LimitValue(limitSegment.getValue(), limitSegment.getIndex(), false));
+        }else {
+            limit.setRowCount(new LimitValue(limitSegment.getValue(), limitSegment.getIndex(), false));
         }
-        selectStatement.setLimit(limit);
     }
 }

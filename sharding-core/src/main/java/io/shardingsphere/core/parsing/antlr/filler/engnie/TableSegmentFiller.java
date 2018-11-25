@@ -23,6 +23,7 @@ import io.shardingsphere.core.parsing.antlr.sql.segment.SQLSegment;
 import io.shardingsphere.core.parsing.antlr.sql.segment.TableSegment;
 import io.shardingsphere.core.parsing.parser.context.table.Table;
 import io.shardingsphere.core.parsing.parser.sql.SQLStatement;
+import io.shardingsphere.core.parsing.parser.sql.dql.select.SelectStatement;
 import io.shardingsphere.core.rule.ShardingRule;
 
 /**
@@ -36,8 +37,14 @@ public class TableSegmentFiller implements SQLSegmentFiller {
     public void fill(final SQLSegment sqlSegment, final SQLStatement sqlStatement, final ShardingRule shardingRule, final ShardingTableMetaData shardingTableMetaData) {
         TableSegment tableSegment = (TableSegment) sqlSegment;
         String tableName = tableSegment.getName();
-        if (shardingRule.tryFindTableRuleByLogicTable(tableName).isPresent()|| shardingRule.isBroadcastTable(tableName) || shardingRule.findBindingTableRule(tableName).isPresent()
+        boolean needAdd = false;
+        if(!(sqlStatement instanceof SelectStatement)) {
+            needAdd = true;
+        }else if (shardingRule.tryFindTableRuleByLogicTable(tableName).isPresent()|| shardingRule.isBroadcastTable(tableName) || shardingRule.findBindingTableRule(tableName).isPresent()
                 || shardingRule.getShardingDataSourceNames().getDataSourceNames().contains(shardingRule.getShardingDataSourceNames().getDefaultDataSourceName())) {
+            needAdd = true;
+        }
+        if(needAdd) {
             sqlStatement.getTables().add(new Table(tableSegment.getName(), tableSegment.getAlias()));
             sqlStatement.getSQLTokens().add(tableSegment.getToken());
         }

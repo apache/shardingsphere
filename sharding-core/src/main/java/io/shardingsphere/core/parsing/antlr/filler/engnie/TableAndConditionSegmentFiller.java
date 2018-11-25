@@ -58,6 +58,9 @@ public class TableAndConditionSegmentFiller implements SQLSegmentFiller {
     
     private void fillColumnTableMap(final SQLStatement sqlStatement, final ShardingTableMetaData shardingTableMetaData,
             final Map<String, String> columnNameToTable, final Map<String, Integer> columnNameCount) {
+        if(null == shardingTableMetaData) {
+            return;
+        }
         for (String each : sqlStatement.getTables().getTableNames()) {
             Collection<String> tableColumns = shardingTableMetaData.getAllColumnNames(each);
             for (String columnName : tableColumns) {
