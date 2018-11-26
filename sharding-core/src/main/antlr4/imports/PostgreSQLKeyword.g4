@@ -482,12 +482,20 @@ SERVER
     : S E R V E R
     ;
 
+SERVER_VERSION
+    : S E R V E R UL_ V E R S I O N
+    ;
+
 SESSION
     : S E S S I O N
     ;
 
 SESSION_USER
     : S E S S I O N UL_ U S E R
+    ;
+
+SHOW
+    : S H O W
     ;
 
 SIMPLE

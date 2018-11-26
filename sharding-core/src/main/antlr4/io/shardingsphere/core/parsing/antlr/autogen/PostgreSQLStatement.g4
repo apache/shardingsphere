@@ -2,7 +2,7 @@ grammar PostgreSQLStatement;
 
 import PostgreSQLKeyword, Keyword, PostgreSQLBase, PostgreSQLCreateIndex, PostgreSQLAlterIndex
        , PostgreSQLDropIndex, PostgreSQLCreateTable, PostgreSQLAlterTable, PostgreSQLDropTable, PostgreSQLTruncateTable
-       , PostgreSQLTCLStatement, PostgreSQLDCLStatement
+       , PostgreSQLTCLStatement, PostgreSQLDCLStatement, PostgreSQLDALStatement
        ;
 
 execute
@@ -34,4 +34,5 @@ execute
     | alterRoleSetConfig
     | alterRoleResetConfig
     | dropRole
+    | show
     ;

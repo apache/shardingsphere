@@ -21,11 +21,7 @@ import io.shardingsphere.core.parsing.antlr.extractor.statement.SQLStatementExtr
 import io.shardingsphere.core.parsing.antlr.extractor.statement.SQLStatementType;
 import io.shardingsphere.core.parsing.antlr.extractor.statement.engine.ddl.CreateIndexExtractor;
 import io.shardingsphere.core.parsing.antlr.extractor.statement.engine.ddl.CreateTableExtractor;
-import io.shardingsphere.core.parsing.antlr.extractor.statement.engine.ddl.dialect.postgresql.PostgreSQLAlterIndexExtractor;
-import io.shardingsphere.core.parsing.antlr.extractor.statement.engine.ddl.dialect.postgresql.PostgreSQLAlterTableExtractor;
-import io.shardingsphere.core.parsing.antlr.extractor.statement.engine.ddl.dialect.postgresql.PostgreSQLDropIndexExtractor;
-import io.shardingsphere.core.parsing.antlr.extractor.statement.engine.ddl.dialect.postgresql.PostgreSQLDropTableExtractor;
-import io.shardingsphere.core.parsing.antlr.extractor.statement.engine.ddl.dialect.postgresql.PostgreSQLTruncateTableExtractor;
+import io.shardingsphere.core.parsing.antlr.extractor.statement.engine.ddl.dialect.postgresql.*;
 import io.shardingsphere.core.parsing.antlr.extractor.statement.engine.tcl.TCLStatementExtractor;
 import io.shardingsphere.core.parsing.antlr.extractor.statement.registry.SQLStatementExtractorRegistry;
 
@@ -45,6 +41,7 @@ public final class PostgreSQLStatementExtractorRegistry implements SQLStatementE
     static {
         registerDDL();
         registerTCL();
+        registerDAL();
     }
     
     private static void registerDDL() {
@@ -65,6 +62,10 @@ public final class PostgreSQLStatementExtractorRegistry implements SQLStatementE
         EXTRACTORS.put(SQLStatementType.BEGIN_WORK, new TCLStatementExtractor());
     }
     
+    private static void registerDAL() {
+        EXTRACTORS.put(SQLStatementType.SHOW, new PostgreSQLShowExtractor());
+    }
+
     @Override
     public SQLStatementExtractor getSQLStatementExtractor(final SQLStatementType type) {
         return EXTRACTORS.get(type);
