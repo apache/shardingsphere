@@ -127,7 +127,7 @@ public final class PredicateSegmentExtractor implements OptionalSQLSegmentExtrac
         if (0 <= index) {
             Preconditions.checkState(exprNode.getChildCount() == index + 3, "Invalid expression.");
             Preconditions.checkState(Paren.match(exprNode.getChild(index).getText(), exprNode.getChild(index + 2).getText()), "Missing right paren.");
-            if (index >= 0 && "ExprContext".equals(exprNode.getChild(index + 1).getClass().getSimpleName())) {
+            if (index >= 0 && RuleName.EXPR.name().equals(exprNode.getChild(index + 1).getClass().getSimpleName())) {
                 return extractCondition(questionNodeIndexMap, (ParserRuleContext) exprNode.getChild(index + 1));
             }
             return Optional.absent();
