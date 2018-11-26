@@ -32,18 +32,15 @@ import lombok.ToString;
 @Getter
 @EqualsAndHashCode
 @ToString
-public final class AggregationDistinctSelectItem extends DistinctSelectItem {
+public final class AggregationDistinctSelectItem extends AggregationSelectItem {
     
-    private final AggregationType type;
+    private final String distinctColumnName;
     
     @Setter
     private int index;
     
-    public AggregationDistinctSelectItem(final AggregationType type, final String columnName, final Optional<String> alias) {
-//        super(columnName, alias);
-        super("user_id", alias);
-        this.type = type;
-        // TODO :panjuan gets correct parsing result and supports this syntax
-//        throw new SQLParsingUnsupportedException(type.toString() + "(DISTINCT)");
+    public AggregationDistinctSelectItem(final AggregationType type, final String innerExpression, final Optional<String> alias, final String distinctColumnName) {
+        super(type, innerExpression, alias);
+        this.distinctColumnName = distinctColumnName;
     }
 }
