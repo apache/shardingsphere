@@ -129,7 +129,7 @@ public final class AggregationDistinctQueryResult extends DistinctQueryResult {
     }
     
     private Object getValue(final String columnLabel) {
-        return getValue(getColumnIndex(columnLabel));
+        return getValue(getColumnIndex(columnLabel) - 1);
     }
     
     @Override
@@ -189,6 +189,6 @@ public final class AggregationDistinctQueryResult extends DistinctQueryResult {
     
     @Override
     protected Integer getColumnIndex(final String columnLabel) {
-        return aggregationColumnLabelAndIndexes.containsKey(columnLabel) ? new ArrayList<>(aggregationColumnLabelAndIndexes.get(columnLabel)).get(0) - 1 : super.getColumnIndex(columnLabel);
+        return aggregationColumnLabelAndIndexes.containsKey(columnLabel) ? new ArrayList<>(aggregationColumnLabelAndIndexes.get(columnLabel)).get(0) : super.getColumnIndex(columnLabel);
     }
 }
