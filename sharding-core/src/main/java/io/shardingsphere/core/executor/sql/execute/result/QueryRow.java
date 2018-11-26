@@ -17,10 +17,17 @@
 
 package io.shardingsphere.core.executor.sql.execute.result;
 
+import lombok.RequiredArgsConstructor;
+
+import java.util.List;
+
 /**
  * Query row.
  *
  * @author panjuan
  */
+@RequiredArgsConstructor
 public final class QueryRow {
+    
+    private final List<Object> rowData;
 }
