@@ -169,11 +169,13 @@ public final class AggregationDistinctQueryResult extends DistinctQueryResult {
     
     @Override
     public String getColumnLabel(final int columnIndex) throws SQLException {
+        for (Entry<String, Integer> entry : aggregationExpressionAndColumnIndexes.entries()) {
+            if (columnIndex == entry.getValue()) {
+                return entry.getKey();
+            }
+        }
         for (Entry<String, Integer> entry : getColumnLabelAndIndexMap().entries()) {
             if (columnIndex == entry.getValue()) {
-                if (distinctColumnNameAndAggregationExpressions.containsKey(entry.getKey())) {
-                    return distinctColumnNameAndAggregationExpressions.get(entry.getKey());
-                }
                 return entry.getKey();
             }
         }
