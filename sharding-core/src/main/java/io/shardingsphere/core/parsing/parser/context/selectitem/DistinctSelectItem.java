@@ -35,7 +35,7 @@ import lombok.ToString;
 @EqualsAndHashCode
 @ToString
 @RequiredArgsConstructor
-public class DistinctSelectItem implements SelectItem {
+public final class DistinctSelectItem implements SelectItem {
     
     private final String columnName;
     
