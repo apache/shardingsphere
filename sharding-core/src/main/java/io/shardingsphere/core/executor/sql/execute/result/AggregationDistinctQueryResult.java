@@ -92,7 +92,7 @@ public final class AggregationDistinctQueryResult extends DistinctQueryResult {
     private void initAggregationColumnLabelAndIndexes(final AggregationSelectItem selectItem) {
         if (selectItem instanceof AggregationDistinctSelectItem) {
             AggregationDistinctSelectItem distinctSelectItem = (AggregationDistinctSelectItem) selectItem;
-            aggregationColumnLabelAndIndexes.put(distinctSelectItem.getColumnLabel(), getIndexByColumnLabel(distinctSelectItem.getColumnLabel()));
+            aggregationColumnLabelAndIndexes.put(distinctSelectItem.getColumnLabel(), new ArrayList<>(getColumnLabelAndIndexMap().get(distinctSelectItem.getDistinctColumnName())).get(0));
         }
     }
     
