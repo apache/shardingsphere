@@ -67,7 +67,7 @@ public class SelectExpressionExtractor implements CollectionSQLSegmentExtractor 
                     String name = functionCall.get().getChild(0).getText();
                     //TODO best choice using index
                     StringBuilder builder = new StringBuilder();
-                    for(int i = 2; i < functionCall.get().getChildCount() - 1;i++) {
+                    for (int i = 2; i < functionCall.get().getChildCount() - 1; i++) {
                         builder.append(functionCall.get().getChild(i).getText());
                     }
                     Optional<ParserRuleContext> aliasNode = ASTUtils.findFirstChildNode(each, RuleName.ALIAS);
@@ -78,7 +78,7 @@ public class SelectExpressionExtractor implements CollectionSQLSegmentExtractor 
                         alias = Optional.absent();
                     }
                     result.add(new FunctionSelectExpressionSegment(name, builder.toString(), alias));
-                }else {
+                } else {
                     ParserRuleContext firstChild = (ParserRuleContext) each.getChild(0);
                     //TODO best choice using index
                     StringBuilder builder = new StringBuilder();

@@ -51,13 +51,13 @@ public class SelectExpressionSegmentFiller implements SQLSegmentFiller {
         } else if (selectExpressionSegment instanceof FunctionSelectExpressionSegment) {
             FunctionSelectExpressionSegment functionSegment = (FunctionSelectExpressionSegment) sqlSegment;
             AggregationType aggregationType = null;
-            for(AggregationType each : AggregationType.values()) {
-                if(each.name().equalsIgnoreCase(functionSegment.getName())) {
+            for (AggregationType each : AggregationType.values()) {
+                if (each.name().equalsIgnoreCase(functionSegment.getName())) {
                     aggregationType = each;
                     break;
                 }
             }
-            if(null != aggregationType) {
+            if (null != aggregationType) {
                 selectStatement.getItems().add(new AggregationSelectItem(aggregationType, functionSegment.getInnerExpression(), functionSegment.getAlias()));
             }
         }
