@@ -17,6 +17,7 @@
 
 package io.shardingsphere.core.executor.sql.execute.result;
 
+import lombok.Getter;
 import lombok.RequiredArgsConstructor;
 
 import java.util.List;
@@ -26,10 +27,15 @@ import java.util.List;
  *
  * @author panjuan
  */
+@Getter
 @RequiredArgsConstructor
 public final class QueryRow {
     
     private final List<Object> rowData;
     
-    private final String distinctColumnName;
+    private final int distinctColumnIndex;
+    
+    public boolean isEqual(final QueryRow queryRow) {
+    
+    }
 }
