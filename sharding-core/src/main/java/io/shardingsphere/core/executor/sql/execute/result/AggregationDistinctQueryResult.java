@@ -47,17 +47,17 @@ import java.util.Set;
  */
 public final class AggregationDistinctQueryResult extends DistinctQueryResult {
     
-    private final Map<String, String> aggregationExpressionAndDistinctColumnNames = new LinkedHashMap<>();
+    private final Map<String, String> distinctColumnNameAndAggregationExpressions = new LinkedHashMap<>();
     
     private final Map<Integer, Integer> derivedCountIndexAndDistinctIndexes = new LinkedHashMap<>();
     
     private final Map<Integer, Integer> derivedSumIndexAndDistinctIndexes = new LinkedHashMap<>();
     
     private AggregationDistinctQueryResult(final Multimap<String, Integer> columnLabelAndIndexMap, final Iterator<List<Object>> resultData,
-                                           final Map<String, String> aggregationExpressionAndDistinctColumnNames, final Map<Integer, Integer> derivedCountIndexAndDistinctIndexes,
-                                           final Map<Integer, Integer> derivedSumIndexAndDistinctIndexes) {
+                                           final Map<String, String> distinctColumnNameAndAggregationExpressions,
+                                           final Map<Integer, Integer> derivedCountIndexAndDistinctIndexes, final Map<Integer, Integer> derivedSumIndexAndDistinctIndexes) {
         super(columnLabelAndIndexMap, resultData);
-        this.aggregationExpressionAndDistinctColumnNames.putAll(aggregationExpressionAndDistinctColumnNames);
+        this.distinctColumnNameAndAggregationExpressions.putAll(distinctColumnNameAndAggregationExpressions);
         this.derivedCountIndexAndDistinctIndexes.putAll(derivedCountIndexAndDistinctIndexes);
         this.derivedSumIndexAndDistinctIndexes.putAll(derivedSumIndexAndDistinctIndexes);
     }
@@ -70,7 +70,7 @@ public final class AggregationDistinctQueryResult extends DistinctQueryResult {
     
     private void init(final SelectStatement selectStatement) {
         for (AggregationSelectItem each : selectStatement.getAggregationSelectItems()) {
-            initAggregationExpressionAndDistinctColumnNames(each);
+            initDistinctColumnNameAndAggregationExpressions(each);
             initDerivedIndexAndDistinctIndexes(each);
         }
     }
@@ -83,10 +83,10 @@ public final class AggregationDistinctQueryResult extends DistinctQueryResult {
         }
     }
     
-    private void initAggregationExpressionAndDistinctColumnNames(final AggregationSelectItem selectItem) {
+    private void initDistinctColumnNameAndAggregationExpressions(final AggregationSelectItem selectItem) {
         if (selectItem instanceof AggregationDistinctSelectItem) {
             AggregationDistinctSelectItem distinctSelectItem = (AggregationDistinctSelectItem) selectItem;
-            aggregationExpressionAndDistinctColumnNames.put(distinctSelectItem.getInnerExpression(), distinctSelectItem.getDistinctColumnName());
+            distinctColumnNameAndAggregationExpressions.put(distinctSelectItem.getDistinctColumnName(), distinctSelectItem.getInnerExpression());
         }
     }
     
@@ -104,7 +104,7 @@ public final class AggregationDistinctQueryResult extends DistinctQueryResult {
                 Set<List<Object>> resultData = new LinkedHashSet<>();
                 resultData.add(input);
                 return new AggregationDistinctQueryResult(getColumnLabelAndIndexMap(),
-                        resultData.iterator(), aggregationExpressionAndDistinctColumnNames, derivedCountIndexAndDistinctIndexes, derivedSumIndexAndDistinctIndexes);
+                        resultData.iterator(), distinctColumnNameAndAggregationExpressions, derivedCountIndexAndDistinctIndexes, derivedSumIndexAndDistinctIndexes);
             }
         }));
     }
