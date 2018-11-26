@@ -65,10 +65,11 @@ public final class PredicateSegmentExtractor implements OptionalSQLSegmentExtrac
         throw new RuntimeException();
     }
     
-    /** Extract SQL segment from SQL AST.
+    /**
+     * Extract SQL segment from SQL AST.
      *
      * @param questionNodeIndexMap question node map
-     * @param exprNode expression node of AST
+     * @param exprNode             expression node of AST
      * @return or condition
      */
     public Optional<OrCondition> extractCondition(final Map<ParserRuleContext, Integer> questionNodeIndexMap, final ParserRuleContext exprNode) {
@@ -248,8 +249,8 @@ public final class PredicateSegmentExtractor implements OptionalSQLSegmentExtrac
             return Optional.absent();
         }
         List<SQLExpression> sqlExpressions = new LinkedList<>();
-        for(int i = 3; i < predicateNode.getChildCount(); i++) {
-            if(RuleName.SIMPLE_EXPR.getName().equals(predicateNode.getChild(i).getClass().getSimpleName())) {
+        for (int i = 3; i < predicateNode.getChildCount(); i++) {
+            if (RuleName.SIMPLE_EXPR.getName().equals(predicateNode.getChild(i).getClass().getSimpleName())) {
                 Optional<SQLExpression> expression = buildExperssion(questionNodeIndexMap, (ParserRuleContext) predicateNode.getChild(i));
                 if (!expression.isPresent()) {
                     sqlExpressions.clear();

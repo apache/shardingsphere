@@ -71,11 +71,7 @@ public enum RuleName {
     
     ADD_CONSTRAINT("AddConstraint"),
     
-    ADD_CONSTRAINT_CLAUSE("AddConstraintClause"), 
-    
     DROP_CONSTRAINT_CLAUSE("DropConstraintClause"),
-    
-    ALTER_TABLE_ADD_CONSTRAINT("AlterTableAddConstraint"),
     
     SELECT_CLAUSE("SelectClause"),
     

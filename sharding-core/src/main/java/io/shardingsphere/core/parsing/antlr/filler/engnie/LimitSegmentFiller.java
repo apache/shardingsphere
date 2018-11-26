@@ -39,11 +39,11 @@ public class LimitSegmentFiller implements SQLSegmentFiller {
         LimitSegment limitSegment = (LimitSegment) sqlSegment;
         SelectStatement selectStatement = (SelectStatement) sqlStatement;
         Limit limit = selectStatement.getLimit();
-        if(null == limit) {
+        if (null == limit) {
             limit = new Limit(limitSegment.getDatabaseType());
             selectStatement.setLimit(limit);
             limit.setOffset(new LimitValue(limitSegment.getValue(), limitSegment.getIndex(), false));
-        }else {
+        } else {
             limit.setRowCount(new LimitValue(limitSegment.getValue(), limitSegment.getIndex(), false));
         }
     }

@@ -41,7 +41,7 @@ import io.shardingsphere.core.parsing.lexer.token.Symbol;
 public class SelectExpressionExtractor implements CollectionSQLSegmentExtractor {
     
     @Override
-    public Collection<SelectExpressionSegment> extract(ParserRuleContext ancestorNode) {
+    public Collection<SelectExpressionSegment> extract(final ParserRuleContext ancestorNode) {
         Optional<ParserRuleContext> selectClaseNode = ASTUtils.findFirstChildNode(ancestorNode, RuleName.SELECT_CLAUSE);
         if (!selectClaseNode.isPresent()) {
             return Collections.emptyList();

@@ -85,7 +85,7 @@ public final class ShardingTableMetaData {
      */
     public Collection<String> getAllColumnNames(final String tableName) {
         TableMetaData tableMeta = tableMetaDataMap.get(tableName);
-        if(null == tableMeta) {
+        if (null == tableMeta) {
             return Collections.emptyList();
         }
         return tableMeta.getAllColumnNames();
