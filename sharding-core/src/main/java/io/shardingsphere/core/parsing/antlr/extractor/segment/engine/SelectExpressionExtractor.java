@@ -29,6 +29,7 @@ import io.shardingsphere.core.parsing.antlr.extractor.segment.CollectionSQLSegme
 import io.shardingsphere.core.parsing.antlr.extractor.segment.constant.RuleName;
 import io.shardingsphere.core.parsing.antlr.extractor.util.ASTUtils;
 import io.shardingsphere.core.parsing.antlr.sql.segment.CommonSelectExpressionSegment;
+import io.shardingsphere.core.parsing.antlr.sql.segment.FunctionSelectExpressionSegment;
 import io.shardingsphere.core.parsing.antlr.sql.segment.SelectExpressionSegment;
 import io.shardingsphere.core.parsing.antlr.sql.segment.StarSelectExpressionSegment;
 import io.shardingsphere.core.parsing.lexer.token.Symbol;
@@ -61,20 +62,40 @@ public class SelectExpressionExtractor implements CollectionSQLSegmentExtractor 
                 }
                 result.add(new StarSelectExpressionSegment(Optional.of(owner)));
             } else {
-                ParserRuleContext firstChild = (ParserRuleContext) each.getChild(0);
-                //TODO best choice using index
-                StringBuilder builder = new StringBuilder();
-                for (int i = 0; i < firstChild.getChildCount(); i++) {
-                    builder.append(firstChild.getChild(i).getText() + " ");
+                Optional<ParserRuleContext> functionCall = ASTUtils.findFirstChildNode(each, RuleName.FUNCTION_CALL);
+                if (functionCall.isPresent()) {
+                    String name = functionCall.get().getChild(0).getText();
+                    //TODO best choice using index
+                    StringBuilder builder = new StringBuilder();
+                    for(int i = 2; i < functionCall.get().getChildCount() - 1;i++) {
+                        builder.append(functionCall.get().getChild(i).getText());
+                    }
+                    Optional<ParserRuleContext> aliasNode = ASTUtils.findFirstChildNode(each, RuleName.ALIAS);
+                    Optional<String> alias = null;
+                    if (aliasNode.isPresent()) {
+                        alias = Optional.of(aliasNode.get().getText());
+                    } else {
+                        alias = Optional.absent();
+                    }
+                    result.add(new FunctionSelectExpressionSegment(name, builder.toString(), alias));
+                }else {
+                    ParserRuleContext firstChild = (ParserRuleContext) each.getChild(0);
+                    //TODO best choice using index
+                    StringBuilder builder = new StringBuilder();
+                    for (int i = 0; i < firstChild.getChildCount(); i++) {
+                        builder.append(firstChild.getChild(i).getText() + " ");
+                    }
+                    Optional<String> alias = null;
+                    if (3 == each.getChildCount()) {
+                        alias = Optional.of(each.getChild(2).getText());
+                    } else {
+                        alias = Optional.absent();
+                    }
+                    result.add(new CommonSelectExpressionSegment(builder.toString(), alias));
                 }
-                String alias = "";
-                if (3 == each.getChildCount()) {
-                    alias = each.getChild(2).getText();
-                }
-                result.add(new CommonSelectExpressionSegment(builder.toString(), Optional.of(alias)));
             }
         }
-        return Collections.emptyList();
+        return result;
     }
     
 }

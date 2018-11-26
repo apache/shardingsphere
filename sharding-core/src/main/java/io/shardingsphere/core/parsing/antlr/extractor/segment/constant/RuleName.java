@@ -77,6 +77,8 @@ public enum RuleName {
     
     SELECT_EXPR("SelectExpr"),
     
+    FUNCTION_CALL("FunctionCall"),
+    
     TABLE_CONSTRAINT("TableConstraint"),
     
     TABLE_REFERENCE("TableReference"),
