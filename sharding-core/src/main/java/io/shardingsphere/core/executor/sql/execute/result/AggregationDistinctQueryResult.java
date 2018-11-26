@@ -74,7 +74,7 @@ public final class AggregationDistinctQueryResult extends DistinctQueryResult {
     
     private void init(final SelectStatement selectStatement) {
         for (AggregationSelectItem each : selectStatement.getAggregationSelectItems()) {
-            initDistinctColumnNameAndAggregationExpressions(each);
+            initAggregationExpressionAndColumnIndexes(each);
             initDerivedIndexAndDistinctIndexes(each);
         }
     }
@@ -87,10 +87,10 @@ public final class AggregationDistinctQueryResult extends DistinctQueryResult {
         }
     }
     
-    private void initDistinctColumnNameAndAggregationExpressions(final AggregationSelectItem selectItem) {
+    private void initAggregationExpressionAndColumnIndexes(final AggregationSelectItem selectItem) {
         if (selectItem instanceof AggregationDistinctSelectItem) {
             AggregationDistinctSelectItem distinctSelectItem = (AggregationDistinctSelectItem) selectItem;
-            distinctColumnNameAndAggregationExpressions.put(distinctSelectItem.getDistinctColumnName(), distinctSelectItem.getInnerExpression());
+            aggregationExpressionAndColumnIndexes.put(distinctSelectItem.getInnerExpression(), distinctSelectItem.getIndex());
         }
     }
     
@@ -108,7 +108,7 @@ public final class AggregationDistinctQueryResult extends DistinctQueryResult {
                 Set<List<Object>> resultData = new LinkedHashSet<>();
                 resultData.add(input);
                 return new AggregationDistinctQueryResult(getColumnLabelAndIndexMap(),
-                        resultData.iterator(), distinctColumnNameAndAggregationExpressions, derivedCountIndexAndDistinctIndexes, derivedSumIndexAndDistinctIndexes);
+                        resultData.iterator(), aggregationExpressionAndColumnIndexes, derivedCountIndexAndDistinctIndexes, derivedSumIndexAndDistinctIndexes);
             }
         }));
     }
