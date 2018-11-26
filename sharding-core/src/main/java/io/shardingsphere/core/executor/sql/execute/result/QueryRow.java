@@ -46,6 +46,6 @@ public final class QueryRow {
      * @return column value
      */
     public Object getColumnValue(final int columnIndex) {
-        return rowData.get(columnIndex);
+        return rowData.get(columnIndex - 1);
     }
 }
