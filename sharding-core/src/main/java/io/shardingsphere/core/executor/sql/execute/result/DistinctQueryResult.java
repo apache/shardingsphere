@@ -125,7 +125,7 @@ public class DistinctQueryResult implements QueryResult {
     
     @Override
     public Object getValue(final String columnLabel, final Class<?> type) {
-        return currentRow.get(getColumnIndex(columnLabel));
+        return currentRow.get(getColumnIndex(columnLabel) - 1);
     }
     
     @Override
@@ -135,7 +135,7 @@ public class DistinctQueryResult implements QueryResult {
     
     @Override
     public Object getCalendarValue(final String columnLabel, final Class<?> type, final Calendar calendar) {
-        return currentRow.get(getColumnIndex(columnLabel));
+        return currentRow.get(getColumnIndex(columnLabel) - 1);
     }
     
     @Override
@@ -145,7 +145,7 @@ public class DistinctQueryResult implements QueryResult {
     
     @Override
     public InputStream getInputStream(final String columnLabel, final String type) {
-        return (InputStream) currentRow.get(getColumnIndex(columnLabel));
+        return (InputStream) currentRow.get(getColumnIndex(columnLabel) - 1);
     }
     
     @Override
@@ -169,6 +169,6 @@ public class DistinctQueryResult implements QueryResult {
     }
     
     protected Integer getColumnIndex(final String columnLabel) {
-        return new ArrayList<>(columnLabelAndIndexMap.get(columnLabel)).get(0) - 1;
+        return new ArrayList<>(columnLabelAndIndexMap.get(columnLabel)).get(0);
     }
 }
