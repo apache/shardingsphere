@@ -25,7 +25,7 @@ import java.util.Map;
 import io.shardingsphere.core.metadata.table.ShardingTableMetaData;
 import io.shardingsphere.core.parsing.antlr.filler.SQLSegmentFiller;
 import io.shardingsphere.core.parsing.antlr.sql.segment.SQLSegment;
-import io.shardingsphere.core.parsing.antlr.sql.segment.TableAndConditionSegment;
+import io.shardingsphere.core.parsing.antlr.sql.segment.FromWhereSegment;
 import io.shardingsphere.core.parsing.parser.context.condition.AndCondition;
 import io.shardingsphere.core.parsing.parser.context.condition.Condition;
 import io.shardingsphere.core.parsing.parser.context.condition.OrCondition;
@@ -33,24 +33,24 @@ import io.shardingsphere.core.parsing.parser.sql.SQLStatement;
 import io.shardingsphere.core.rule.ShardingRule;
 
 /**
- * Table and condition segment filler.
+ * From where segment filler.
  *
  * @author duhongjun
  */
-public class TableAndConditionSegmentFiller implements SQLSegmentFiller {
+public class FromWhereSegmentFiller implements SQLSegmentFiller {
     
     @Override
     public void fill(final SQLSegment sqlSegment, final SQLStatement sqlStatement, final ShardingRule shardingRule,
                      final ShardingTableMetaData shardingTableMetaData) {
-        TableAndConditionSegment tableAndConditionSegment = (TableAndConditionSegment) sqlSegment;
-        OrCondition orCondition = tableAndConditionSegment.getConditions().optimize();
+        FromWhereSegment fromWhereSegment = (FromWhereSegment) sqlSegment;
+        OrCondition orCondition = fromWhereSegment.getConditions().optimize();
         Map<String, String> columnNameToTable = new HashMap<String, String>();
         Map<String, Integer> columnNameCount = new HashMap<String, Integer>();
         fillColumnTableMap(sqlStatement, shardingTableMetaData, columnNameToTable, columnNameCount);
         filterShardingCondition(sqlStatement, orCondition, shardingRule, columnNameToTable, columnNameCount);
         sqlStatement.getConditions().getOrCondition().getAndConditions().addAll(orCondition.getAndConditions());
         int count = 0;
-        while (count < tableAndConditionSegment.getParamenterCount()) {
+        while (count < fromWhereSegment.getParamenterCount()) {
             sqlStatement.increaseParametersIndex();
             count++;
         }
@@ -76,7 +76,8 @@ public class TableAndConditionSegmentFiller implements SQLSegmentFiller {
         }
     }
     
-    private void filterShardingCondition(final SQLStatement sqlStatement, final OrCondition orCondition, final ShardingRule shardingRule, final Map<String, String> columnNameToTable, final Map<String, Integer> columnNameCount) {
+    private void filterShardingCondition(final SQLStatement sqlStatement, final OrCondition orCondition, final ShardingRule shardingRule,
+                                         final Map<String, String> columnNameToTable, final Map<String, Integer> columnNameCount) {
         Iterator<AndCondition> andConditionIterator = orCondition.getAndConditions().iterator();
         while (andConditionIterator.hasNext()) {
             AndCondition andCondition = andConditionIterator.next();
@@ -93,9 +94,9 @@ public class TableAndConditionSegmentFiller implements SQLSegmentFiller {
                     if (null != tableName && count.intValue() == 1) {
                         condition.getColumn().setTableName(tableName);
                     } else {
-                        if(sqlStatement.getTables().isSingleTable()) {
+                        if (sqlStatement.getTables().isSingleTable()) {
                             condition.getColumn().setTableName(sqlStatement.getTables().getSingleTableName());
-                        }else {
+                        } else {
                             conditionIterator.remove();
                         }
                         continue;

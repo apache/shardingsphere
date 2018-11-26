@@ -25,12 +25,12 @@ import lombok.Getter;
 import lombok.Setter;
 
 /**
- * Table and condition segment.
+ * From where segment.
  * 
  * @author duhongjun
  */
 @Getter
-public final class TableAndConditionSegment implements SQLSegment {
+public final class FromWhereSegment implements SQLSegment {
     
     private final Map<String, String> tableAliases = new HashMap<>();
     

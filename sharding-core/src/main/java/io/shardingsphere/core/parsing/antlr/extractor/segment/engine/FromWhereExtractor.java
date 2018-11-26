@@ -21,7 +21,7 @@ import com.google.common.base.Optional;
 import io.shardingsphere.core.parsing.antlr.extractor.segment.OptionalSQLSegmentExtractor;
 import io.shardingsphere.core.parsing.antlr.extractor.segment.constant.RuleName;
 import io.shardingsphere.core.parsing.antlr.extractor.util.ASTUtils;
-import io.shardingsphere.core.parsing.antlr.sql.segment.TableAndConditionSegment;
+import io.shardingsphere.core.parsing.antlr.sql.segment.FromWhereSegment;
 import io.shardingsphere.core.parsing.antlr.sql.segment.TableJoinSegment;
 import io.shardingsphere.core.parsing.antlr.sql.segment.TableSegment;
 import io.shardingsphere.core.parsing.parser.context.condition.OrCondition;
@@ -36,14 +36,14 @@ import java.util.Map;
  *
  * @author duhongjun
  */
-public final class FromClauseExtractor implements OptionalSQLSegmentExtractor {
+public final class FromWhereExtractor implements OptionalSQLSegmentExtractor {
     
     private final TableNameExtractor tableNameExtractor = new TableNameExtractor();
     
     private PredicateSegmentExtractor conditionExtractor;
     
     @Override
-    public Optional<TableAndConditionSegment> extract(final ParserRuleContext ancestorNode) {
+    public Optional<FromWhereSegment> extract(final ParserRuleContext ancestorNode) {
         Optional<ParserRuleContext> fromNode = ASTUtils.findFirstChildNode(ancestorNode, RuleName.FROM_CLAUSE);
         if (!fromNode.isPresent()) {
             return Optional.absent();
@@ -52,7 +52,7 @@ public final class FromClauseExtractor implements OptionalSQLSegmentExtractor {
         if (tableReferenceNodes.isEmpty()) {
             return Optional.absent();
         }
-        TableAndConditionSegment result = new TableAndConditionSegment();
+        FromWhereSegment result = new FromWhereSegment();
         conditionExtractor = new PredicateSegmentExtractor(result.getTableAliases());
         Collection<ParserRuleContext> questionNodes = ASTUtils.getAllDescendantNodes(ancestorNode, RuleName.QUESTION);
         result.setParamenterCount(questionNodes.size());
@@ -66,7 +66,7 @@ public final class FromClauseExtractor implements OptionalSQLSegmentExtractor {
         return Optional.of(result);
     }
     
-    private void extractAndFillTableResult(final TableAndConditionSegment tableAndConditionSegment, final Collection<ParserRuleContext> tableReferenceNodes,
+    private void extractAndFillTableResult(final FromWhereSegment tableAndConditionSegment, final Collection<ParserRuleContext> tableReferenceNodes,
                                            final Map<ParserRuleContext, Integer> questionNodeIndexMap) {
         for (ParserRuleContext each : tableReferenceNodes) {
             for (int i = 0; i < each.getChildCount(); i++) {
@@ -95,7 +95,7 @@ public final class FromClauseExtractor implements OptionalSQLSegmentExtractor {
         }
     }
     
-    private void fillTableResult(final TableAndConditionSegment tableAndConditionSegment, final TableSegment tableSegment) {
+    private void fillTableResult(final FromWhereSegment tableAndConditionSegment, final TableSegment tableSegment) {
         String alias = tableSegment.getName();
         if (tableSegment.getAlias().isPresent()) {
             alias = tableSegment.getAlias().get();
@@ -111,7 +111,7 @@ public final class FromClauseExtractor implements OptionalSQLSegmentExtractor {
         return Optional.absent();
     }
     
-    private void extractAndFillWhere(final TableAndConditionSegment tableAndConditionSegment, final Map<ParserRuleContext, Integer> questionNodeIndexMap, final ParserRuleContext ancestorNode) {
+    private void extractAndFillWhere(final FromWhereSegment tableAndConditionSegment, final Map<ParserRuleContext, Integer> questionNodeIndexMap, final ParserRuleContext ancestorNode) {
         Optional<ParserRuleContext> whereNode = ASTUtils.findFirstChildNode(ancestorNode, RuleName.WHERE_CLAUSE);
         if (!whereNode.isPresent()) {
             return;

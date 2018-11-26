@@ -30,7 +30,7 @@ import io.shardingsphere.core.parsing.antlr.filler.engnie.IndexSegmentFiller;
 import io.shardingsphere.core.parsing.antlr.filler.engnie.LimitSegmentFiller;
 import io.shardingsphere.core.parsing.antlr.filler.engnie.OrderBySegmentFiller;
 import io.shardingsphere.core.parsing.antlr.filler.engnie.PredicateSegmentFiller;
-import io.shardingsphere.core.parsing.antlr.filler.engnie.TableAndConditionSegmentFiller;
+import io.shardingsphere.core.parsing.antlr.filler.engnie.FromWhereSegmentFiller;
 import io.shardingsphere.core.parsing.antlr.filler.engnie.TableJoinSegmentFiller;
 import io.shardingsphere.core.parsing.antlr.filler.engnie.TableSegmentFiller;
 import io.shardingsphere.core.parsing.antlr.sql.segment.ColumnDefinitionSegment;
@@ -43,7 +43,7 @@ import io.shardingsphere.core.parsing.antlr.sql.segment.LimitSegment;
 import io.shardingsphere.core.parsing.antlr.sql.segment.OrderBySegment;
 import io.shardingsphere.core.parsing.antlr.sql.segment.PredicateSegment;
 import io.shardingsphere.core.parsing.antlr.sql.segment.SQLSegment;
-import io.shardingsphere.core.parsing.antlr.sql.segment.TableAndConditionSegment;
+import io.shardingsphere.core.parsing.antlr.sql.segment.FromWhereSegment;
 import io.shardingsphere.core.parsing.antlr.sql.segment.TableJoinSegment;
 import io.shardingsphere.core.parsing.antlr.sql.segment.TableSegment;
 
@@ -67,7 +67,7 @@ public final class SQLSegmentFillerRegistry {
         FILLERS.put(OrderBySegment.class, new OrderBySegmentFiller());
         FILLERS.put(GroupBySegment.class, new GroupBySegmentFiller());
         FILLERS.put(PredicateSegment.class, new PredicateSegmentFiller());
-        FILLERS.put(TableAndConditionSegment.class, new TableAndConditionSegmentFiller());
+        FILLERS.put(FromWhereSegment.class, new FromWhereSegmentFiller());
         FILLERS.put(LimitSegment.class, new LimitSegmentFiller());
     }
     

@@ -17,7 +17,7 @@
 
 package io.shardingsphere.core.parsing.antlr.extractor.sql.statement.dql;
 
-import io.shardingsphere.core.parsing.antlr.extractor.segment.engine.FromClauseExtractor;
+import io.shardingsphere.core.parsing.antlr.extractor.segment.engine.FromWhereExtractor;
 import io.shardingsphere.core.parsing.antlr.extractor.segment.engine.GroupByClauseExtractor;
 import io.shardingsphere.core.parsing.antlr.extractor.segment.engine.OrderByClauseExtractor;
 import io.shardingsphere.core.parsing.antlr.extractor.segment.engine.TableNamesExtractor;
@@ -37,7 +37,7 @@ public class MySQLSelectExtractor extends AbstractSQLStatementExtractor {
     public MySQLSelectExtractor() {
         addSQLSegmentExtractor(new TableNamesExtractor());
         addSQLSegmentExtractor(new SelectExpressionExtractor());
-        addSQLSegmentExtractor(new FromClauseExtractor());
+        addSQLSegmentExtractor(new FromWhereExtractor());
         addSQLSegmentExtractor(new GroupByClauseExtractor());
         addSQLSegmentExtractor(new OrderByClauseExtractor());
         addSQLSegmentExtractor(new LimitClauseExtractor());
