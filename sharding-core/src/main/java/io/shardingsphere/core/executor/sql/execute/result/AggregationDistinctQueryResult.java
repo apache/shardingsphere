@@ -92,7 +92,7 @@ public final class AggregationDistinctQueryResult extends DistinctQueryResult {
     private void initAggregationColumnLabelAndIndexes(final AggregationSelectItem selectItem) {
         if (selectItem instanceof AggregationDistinctSelectItem) {
             AggregationDistinctSelectItem distinctSelectItem = (AggregationDistinctSelectItem) selectItem;
-            aggregationColumnLabelAndIndexes.put(distinctSelectItem.getColumnLabel(), new ArrayList<>(getColumnLabelAndIndexMap().get(distinctSelectItem.getDistinctColumnName())).get(0));
+            aggregationColumnLabelAndIndexes.put(distinctSelectItem.getColumnLabel(), super.getCol);
         }
     }
     
@@ -187,6 +187,7 @@ public final class AggregationDistinctQueryResult extends DistinctQueryResult {
         throw new SQLException("Column index out of range", "9999");
     }
     
+    @Override
     private Integer getColumnIndex(final String columnLabel) {
         return new ArrayList<>(aggregationColumnLabelAndIndexes.containsKey(columnLabel) ? aggregationColumnLabelAndIndexes.get(columnLabel)
                 : getColumnLabelAndIndexMap().get(columnLabel)).get(0) - 1;
