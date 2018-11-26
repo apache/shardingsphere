@@ -139,99 +139,99 @@ dataTypeLength
 primaryKey
     : PRIMARY? KEY
     ;
-
+    
 matchNone
     : 'Default does not match anything'
     ;
-
+    
 ids
     : ID (COMMA  ID)*
     ;
-
+    
 idList
     : LP_ ids RP_
     ;
-
+    
 rangeClause
     : NUMBER (COMMA  NUMBER)* | NUMBER OFFSET NUMBER
     ;
-
+    
 schemaNames
     : schemaName (COMMA schemaName)*
     ;
-
+    
 databaseNames
     : databaseName (COMMA databaseName)*
     ;
-
+    
 domainNames
     : domainName (COMMA domainName)*
     ;
-
+    
 tableNamesWithParen
     : LP_ tableNames RP_
     ;
-
+    
 tableNames
     : tableName (COMMA tableName)*
     ;
-
+    
 columnNamesWithParen
     : LP_ columnNames RP_
     ;
-
+    
 columnNames
     : columnName (COMMA columnName)*
     ;
-
+    
 columnList
     : LP_ columnNames RP_
     ;
-
+    
 sequenceNames
     : sequenceName (COMMA sequenceName)*
     ;
-
+    
 tablespaceNames
     : tablespaceName (COMMA tablespaceName)*
     ;
-
+    
 indexNames
     : indexName (COMMA indexName)*
     ;
-
+    
 typeNames
     : typeName (COMMA typeName)*
     ;
-
+    
 rowNames
     : rowName (COMMA rowName)*
     ;
-
+    
 roleNames
     : roleName (COMMA roleName)*
     ;
-
+    
 userNames
     : userName (COMMA userName)*
     ;
-
+    
 serverNames
     : serverName (COMMA serverName)*
     ;
-
+    
 bitExprs:
     bitExpr (COMMA bitExpr)*
     ;
-
+    
 exprs
     : expr (COMMA expr)*
     ;
-
+    
 exprsWithParen
     : LP_ exprs RP_
     ;
-
+    
 expr
     : expr AND expr
     | expr AND_ expr
@@ -244,11 +244,11 @@ expr
     | booleanPrimary
     | exprRecursive
     ;
-
+    
 exprRecursive
     : matchNone
     ;
-
+    
 booleanPrimary
     : booleanPrimary IS NOT? (TRUE | FALSE | UNKNOWN |NULL)
     | booleanPrimary SAFE_EQ predicate
@@ -256,7 +256,7 @@ booleanPrimary
     | booleanPrimary comparsionOperator (ALL | ANY) subquery
     | predicate
     ;
-
+    
 comparsionOperator
     : EQ_
     | GTE
@@ -266,7 +266,7 @@ comparsionOperator
     | NEQ_
     | NEQ
     ;
-
+    
 predicate
     : bitExpr NOT? IN subquery
     | bitExpr NOT? IN LP_ simpleExpr (COMMA simpleExpr)* RP_
@@ -276,7 +276,7 @@ predicate
     | bitExpr NOT? REGEXP simpleExpr
     | bitExpr
     ;
-
+    
 bitExpr
     : bitExpr BIT_INCLUSIVE_OR bitExpr
     | bitExpr BIT_AND bitExpr
@@ -293,7 +293,7 @@ bitExpr
     //| bitExpr '-' interval_expr
     | simpleExpr
     ;
-
+    
 simpleExpr
     : functionCall
     | liter
@@ -343,7 +343,7 @@ liter
 question
     : QUESTION
     ;
-        
+    
 number
    : NUMBER
    ;
@@ -351,7 +351,7 @@ number
 string
     : STRING
     ;
-        
+    
 subquery
     : matchNone
     ;
