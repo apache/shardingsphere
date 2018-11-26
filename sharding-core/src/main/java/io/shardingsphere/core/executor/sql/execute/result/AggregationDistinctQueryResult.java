@@ -22,6 +22,7 @@ import com.google.common.collect.Iterators;
 import com.google.common.collect.Lists;
 import com.google.common.collect.Multimap;
 import io.shardingsphere.core.merger.QueryResult;
+import io.shardingsphere.core.parsing.parser.context.selectitem.AggregationDistinctSelectItem;
 import io.shardingsphere.core.parsing.parser.context.selectitem.AggregationSelectItem;
 import io.shardingsphere.core.parsing.parser.sql.dql.select.SelectStatement;
 import lombok.SneakyThrows;
@@ -46,6 +47,8 @@ import java.util.Set;
  */
 public final class AggregationDistinctQueryResult extends DistinctQueryResult {
     
+    private final Map<String, String> distinctColumnNameAndAggregationExpressions = new LinkedHashMap<>();
+    
     private final Map<Integer, Integer> derivedCountIndexAndDistinctIndexes = new LinkedHashMap<>();
     
     private final Map<Integer, Integer> derivedSumIndexAndDistinctIndexes = new LinkedHashMap<>();
@@ -65,6 +68,10 @@ public final class AggregationDistinctQueryResult extends DistinctQueryResult {
     
     private void init(final SelectStatement selectStatement) {
         for (AggregationSelectItem each : selectStatement.getAggregationSelectItems()) {
+            if (each instanceof AggregationDistinctSelectItem) {
+                AggregationDistinctSelectItem distinctSelectItem = (AggregationDistinctSelectItem) each;
+                distinctColumnNameAndAggregationExpressions.put(distinctSelectItem.getDistinctColumnName(), distinctSelectItem.getInnerExpression());
+            }
             List<AggregationSelectItem> derivedAggregationSelectItems = each.getDerivedAggregationSelectItems();
             if (!derivedAggregationSelectItems.isEmpty()) {
                 derivedCountIndexAndDistinctIndexes.put(derivedAggregationSelectItems.get(0).getIndex(), each.getIndex());
