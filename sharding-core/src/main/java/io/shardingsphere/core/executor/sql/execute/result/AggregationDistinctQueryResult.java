@@ -117,7 +117,7 @@ public final class AggregationDistinctQueryResult extends DistinctQueryResult {
     
     private Object getValue(final int columnIndex) {
         if (distinctIndexAndAggregationTypes.keySet().contains(columnIndex)) {
-            return AggregationType.COUNT.equals(distinctIndexAndAggregationTypes.get(columnIndex)) ? 1 : getCurrentRow().get(columnIndex - 1);
+            return AggregationType.COUNT == distinctIndexAndAggregationTypes.get(columnIndex) ? 1 : getCurrentRow().get(columnIndex - 1);
         }
         if (derivedCountIndexAndDistinctIndexes.keySet().contains(columnIndex)) {
             return 1;
