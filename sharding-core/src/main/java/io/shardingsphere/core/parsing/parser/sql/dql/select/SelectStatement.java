@@ -109,6 +109,7 @@ public final class SelectStatement extends DQLStatement {
                 result.addAll(aggregationSelectItem.getDerivedAggregationSelectItems());
             }
         }
+        result.addAll(getAggregationDistinctSelectItems());
         return result;
     }
     
