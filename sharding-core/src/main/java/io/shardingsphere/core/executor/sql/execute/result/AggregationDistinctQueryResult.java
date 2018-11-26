@@ -73,11 +73,11 @@ public final class AggregationDistinctQueryResult extends DistinctQueryResult {
         }
     }
     
-    private void initDerivedIndexAndDistinctIndexes(final AggregationSelectItem each) {
-        List<AggregationSelectItem> derivedAggregationSelectItems = each.getDerivedAggregationSelectItems();
+    private void initDerivedIndexAndDistinctIndexes(final AggregationSelectItem selectItem) {
+        List<AggregationSelectItem> derivedAggregationSelectItems = selectItem.getDerivedAggregationSelectItems();
         if (!derivedAggregationSelectItems.isEmpty()) {
-            derivedCountIndexAndDistinctIndexes.put(derivedAggregationSelectItems.get(0).getIndex(), each.getIndex());
-            derivedSumIndexAndDistinctIndexes.put(derivedAggregationSelectItems.get(1).getIndex(), each.getIndex());
+            derivedCountIndexAndDistinctIndexes.put(derivedAggregationSelectItems.get(0).getIndex(), selectItem.getIndex());
+            derivedSumIndexAndDistinctIndexes.put(derivedAggregationSelectItems.get(1).getIndex(), selectItem.getIndex());
         }
     }
     
