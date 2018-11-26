@@ -38,4 +38,8 @@ public final class QueryRow {
     public boolean isEqual(final QueryRow queryRow) {
     
     }
+    
+    public Object getColumnValue(final int columnIndex) {
+        return rowData.get(columnIndex);
+    }
 }
