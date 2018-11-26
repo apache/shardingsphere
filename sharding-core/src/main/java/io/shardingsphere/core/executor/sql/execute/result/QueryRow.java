@@ -30,4 +30,6 @@ import java.util.List;
 public final class QueryRow {
     
     private final List<Object> rowData;
+    
+    private final String distinctColumnName;
 }
