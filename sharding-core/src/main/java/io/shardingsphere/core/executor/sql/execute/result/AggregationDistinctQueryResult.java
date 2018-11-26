@@ -189,7 +189,6 @@ public final class AggregationDistinctQueryResult extends DistinctQueryResult {
     
     @Override
     protected Integer getColumnIndex(final String columnLabel) {
-        return new ArrayList<>(aggregationColumnLabelAndIndexes.containsKey(columnLabel) ? aggregationColumnLabelAndIndexes.get(columnLabel)
-                : getColumnLabelAndIndexMap().get(columnLabel)).get(0) - 1;
+        return aggregationColumnLabelAndIndexes.containsKey(columnLabel) ? new ArrayList<>(aggregationColumnLabelAndIndexes.get(columnLabel)).get(0) - 1 : super.getColumnIndex(columnLabel);
     }
 }
