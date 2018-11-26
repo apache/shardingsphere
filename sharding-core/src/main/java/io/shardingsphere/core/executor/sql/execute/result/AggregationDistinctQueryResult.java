@@ -22,6 +22,7 @@ import com.google.common.collect.HashMultimap;
 import com.google.common.collect.Iterators;
 import com.google.common.collect.Lists;
 import com.google.common.collect.Multimap;
+import io.shardingsphere.core.constant.AggregationType;
 import io.shardingsphere.core.merger.QueryResult;
 import io.shardingsphere.core.parsing.parser.context.selectitem.AggregationDistinctSelectItem;
 import io.shardingsphere.core.parsing.parser.context.selectitem.AggregationSelectItem;
@@ -50,6 +51,8 @@ public final class AggregationDistinctQueryResult extends DistinctQueryResult {
     
     private final Multimap<String, Integer> aggregationExpressionAndColumnIndexes = HashMultimap.create();
     
+    private final Map<Integer, AggregationType> distinctIndexAndAggregationTypes = new LinkedHashMap<>();
+    
     private final Map<Integer, Integer> derivedCountIndexAndDistinctIndexes = new LinkedHashMap<>();
     
     private final Map<Integer, Integer> derivedSumIndexAndDistinctIndexes = new LinkedHashMap<>();
@@ -73,6 +76,7 @@ public final class AggregationDistinctQueryResult extends DistinctQueryResult {
         for (AggregationSelectItem each : selectStatement.getAggregationSelectItems()) {
             initAggregationExpressionAndColumnIndexes(each);
             initDerivedIndexAndDistinctIndexes(each);
+            distinctIndexAndAggregationTypes.put(each.getIndex(), each.getType());
         }
     }
     
