@@ -18,11 +18,9 @@
 package io.shardingsphere.core.executor.sql.execute.result;
 
 import com.google.common.base.Function;
-import com.google.common.base.Predicate;
 import com.google.common.collect.HashMultimap;
 import com.google.common.collect.Iterators;
 import com.google.common.collect.Lists;
-import com.google.common.collect.Maps;
 import com.google.common.collect.Multimap;
 import io.shardingsphere.core.merger.QueryResult;
 import io.shardingsphere.core.parsing.parser.context.selectitem.AggregationDistinctSelectItem;
@@ -35,7 +33,6 @@ import java.sql.SQLException;
 import java.util.ArrayList;
 import java.util.Calendar;
 import java.util.Collection;
-import java.util.HashMap;
 import java.util.Iterator;
 import java.util.LinkedHashMap;
 import java.util.LinkedHashSet;
@@ -183,16 +180,6 @@ public final class AggregationDistinctQueryResult extends DistinctQueryResult {
     }
     
     private Integer getIndexByColumnLabel(final String columnLabel) {
-        String result = columnLabel;
-        Map<String, String> filtered = new HashMap<>();
-        if (distinctColumnNameAndAggregationExpressions.containsValue(columnLabel)) {
-            filtered.putAll(Maps.filterValues(distinctColumnNameAndAggregationExpressions, new Predicate<String>() {
-                @Override
-                public boolean apply(final String input) {
-                    return columnLabel.equals(input);
-                }
-            }));
-        }
-        return filtered.isEmpty() ? new ArrayList<>(getColumnLabelAndIndexMap().get(columnLabel)).get(0) - 1 : ;
+        return aggregationExpressionAndColumnIndexes.containsKey(columnLabel) ? new ArrayList<>(aggregationExpressionAndColumnIndexes.get(columnLabel)).get(0) - 1 : new ArrayList<>(getColumnLabelAndIndexMap().get(columnLabel)).get(0) - 1 ;
     }
 }
