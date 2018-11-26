@@ -77,7 +77,7 @@ public final class AggregationDistinctQueryResult extends DistinctQueryResult {
         for (AggregationSelectItem each : selectStatement.getAggregationSelectItems()) {
             initAggregationExpressionAndColumnIndexes(each);
             initDerivedIndexAndDistinctIndexes(each);
-            distinctIndexAndAggregationTypes.put(each.getIndex(), each.getType());
+            distinctIndexAndAggregationTypes.put(getIndexByColumnLabel(each.getColumnLabel()), each.getType());
         }
     }
     
