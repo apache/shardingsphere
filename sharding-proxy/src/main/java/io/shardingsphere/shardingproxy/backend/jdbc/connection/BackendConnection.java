@@ -101,6 +101,17 @@ public final class BackendConnection implements AutoCloseable {
         if (ConnectionStatus.INIT == status || ConnectionStatus.TERMINATED == status) {
             status = ConnectionStatus.RUNNING;
         }
+        if (ConnectionStatus.TRANSACTION == status) {
+            return getConnectionsWithTransaction(connectionMode, dataSourceName, connectionSize);
+        } else {
+            return getConnectionsWithoutTransaction(connectionMode, dataSourceName, connectionSize);
+        }
+    }
+    
+    private List<Connection> getConnectionsWithTransaction(final ConnectionMode connectionMode, final String dataSourceName, final int connectionSize) throws SQLException {
+        if (ConnectionStatus.INIT == status || ConnectionStatus.TERMINATED == status) {
+            status = ConnectionStatus.RUNNING;
+        }
         Collection<Connection> connections;
         synchronized (cachedConnections) {
             connections = cachedConnections.get(dataSourceName);
@@ -122,6 +133,12 @@ public final class BackendConnection implements AutoCloseable {
                 cachedConnections.putAll(dataSourceName, result);
             }
         }
+        return result;
+    }
+    
+    private List<Connection> getConnectionsWithoutTransaction(final ConnectionMode connectionMode, final String dataSourceName, final int connectionSize) throws SQLException {
+        List<Connection> result = logicSchema.getBackendDataSource().getConnections(connectionMode, dataSourceName, connectionSize);
+        cachedConnections.putAll(dataSourceName, result);
         return result;
     }
     
@@ -190,14 +207,16 @@ public final class BackendConnection implements AutoCloseable {
      * @throws SQLException SQL exception
      */
     public void close(final boolean forceClose) throws SQLException {
-        Collection<SQLException> exceptions = new LinkedList<>();
-        MasterVisitedManager.clear();
-        exceptions.addAll(closeStatements());
-        exceptions.addAll(closeResultSets());
-        if (ConnectionStatus.TRANSACTION != status || forceClose) {
-            exceptions.addAll(releaseConnections(forceClose));
+        synchronized (cachedConnections) {
+            Collection<SQLException> exceptions = new LinkedList<>();
+            MasterVisitedManager.clear();
+            exceptions.addAll(closeStatements());
+            exceptions.addAll(closeResultSets());
+            if (ConnectionStatus.TRANSACTION != status || forceClose) {
+                exceptions.addAll(releaseConnections(forceClose));
+            }
+            throwSQLExceptionIfNecessary(exceptions);
         }
-        throwSQLExceptionIfNecessary(exceptions);
     }
     
     private Collection<SQLException> closeResultSets() {
