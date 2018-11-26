@@ -37,13 +37,13 @@ import lombok.ToString;
 @RequiredArgsConstructor
 public final class DistinctSelectItem implements SelectItem {
     
-    private final String columnName;
+    private final String distinctColumnName;
     
     private final Optional<String> alias;
 
     @Override
     public String getExpression() {
-        return Strings.isNullOrEmpty(columnName) ? DefaultKeyword.DISTINCT.name() : SQLUtil.getExactlyValue(DefaultKeyword.DISTINCT + " " + columnName);
+        return Strings.isNullOrEmpty(distinctColumnName) ? DefaultKeyword.DISTINCT.name() : SQLUtil.getExactlyValue(DefaultKeyword.DISTINCT + " " + distinctColumnName);
     }
     
     /**
