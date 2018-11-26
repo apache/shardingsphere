@@ -49,7 +49,7 @@ import java.util.Set;
  */
 public final class AggregationDistinctQueryResult extends DistinctQueryResult {
     
-    private final Multimap<String, Integer> aggregationExpressionAndColumnIndexes = HashMultimap.create();
+    private final Multimap<String, Integer> aggregationColumnLableAndIndexes = HashMultimap.create();
     
     private final Map<Integer, AggregationType> distinctIndexAndAggregationTypes = new LinkedHashMap<>();
     
@@ -58,10 +58,10 @@ public final class AggregationDistinctQueryResult extends DistinctQueryResult {
     private final Map<Integer, Integer> derivedSumIndexAndDistinctIndexes = new LinkedHashMap<>();
     
     private AggregationDistinctQueryResult(final Multimap<String, Integer> columnLabelAndIndexMap, final Iterator<List<Object>> resultData,
-                                           final Multimap<String, Integer> aggregationExpressionAndColumnIndexes, final Map<Integer, AggregationType> distinctIndexAndAggregationTypes,
+                                           final Multimap<String, Integer> aggregationColumnLableAndIndexes, final Map<Integer, AggregationType> distinctIndexAndAggregationTypes,
                                            final Map<Integer, Integer> derivedCountIndexAndDistinctIndexes, final Map<Integer, Integer> derivedSumIndexAndDistinctIndexes) {
         super(columnLabelAndIndexMap, resultData);
-        this.aggregationExpressionAndColumnIndexes.putAll(aggregationExpressionAndColumnIndexes);
+        this.aggregationColumnLableAndIndexes.putAll(aggregationColumnLableAndIndexes);
         this.distinctIndexAndAggregationTypes.putAll(distinctIndexAndAggregationTypes);
         this.derivedCountIndexAndDistinctIndexes.putAll(derivedCountIndexAndDistinctIndexes);
         this.derivedSumIndexAndDistinctIndexes.putAll(derivedSumIndexAndDistinctIndexes);
@@ -92,7 +92,7 @@ public final class AggregationDistinctQueryResult extends DistinctQueryResult {
     private void initAggregationExpressionAndColumnIndexes(final AggregationSelectItem selectItem) {
         if (selectItem instanceof AggregationDistinctSelectItem) {
             AggregationDistinctSelectItem distinctSelectItem = (AggregationDistinctSelectItem) selectItem;
-            aggregationExpressionAndColumnIndexes.put(distinctSelectItem.getColumnLabel(), distinctSelectItem.getIndex());
+            aggregationColumnLableAndIndexes.put(distinctSelectItem.getColumnLabel(), distinctSelectItem.getIndex());
         }
     }
     
@@ -110,7 +110,7 @@ public final class AggregationDistinctQueryResult extends DistinctQueryResult {
                 Set<List<Object>> resultData = new LinkedHashSet<>();
                 resultData.add(input);
                 return new AggregationDistinctQueryResult(getColumnLabelAndIndexMap(),
-                        resultData.iterator(), aggregationExpressionAndColumnIndexes, distinctIndexAndAggregationTypes, derivedCountIndexAndDistinctIndexes, derivedSumIndexAndDistinctIndexes);
+                        resultData.iterator(), aggregationColumnLableAndIndexes, distinctIndexAndAggregationTypes, derivedCountIndexAndDistinctIndexes, derivedSumIndexAndDistinctIndexes);
             }
         }));
     }
@@ -174,7 +174,7 @@ public final class AggregationDistinctQueryResult extends DistinctQueryResult {
     
     @Override
     public String getColumnLabel(final int columnIndex) throws SQLException {
-        for (Entry<String, Integer> entry : aggregationExpressionAndColumnIndexes.entries()) {
+        for (Entry<String, Integer> entry : aggregationColumnLableAndIndexes.entries()) {
             if (columnIndex == entry.getValue()) {
                 return entry.getKey();
             }
@@ -188,7 +188,7 @@ public final class AggregationDistinctQueryResult extends DistinctQueryResult {
     }
     
     private Integer getIndexByColumnLabel(final String columnLabel) {
-        return new ArrayList<>(aggregationExpressionAndColumnIndexes.containsKey(columnLabel) ? aggregationExpressionAndColumnIndexes.get(columnLabel)
+        return new ArrayList<>(aggregationColumnLableAndIndexes.containsKey(columnLabel) ? aggregationColumnLableAndIndexes.get(columnLabel)
                 : getColumnLabelAndIndexMap().get(columnLabel)).get(0) - 1;
     }
 }
