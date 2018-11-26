@@ -177,24 +177,6 @@ public final class BackendConnection implements AutoCloseable {
         cachedResultSets.add(resultSet);
     }
     
-    /**
-     * Cancel statement.
-     */
-    public void cancel() {
-        Collection<SQLException> exceptions = new LinkedList<>();
-        for (Statement each : cachedStatements) {
-            try {
-                each.cancel();
-            } catch (final SQLException ex) {
-                exceptions.add(ex);
-            }
-        }
-        if (!exceptions.isEmpty()) {
-            log.warn("Failed to cancel statement due to {}", exceptions);
-        }
-        cachedStatements.clear();
-    }
-    
     @Override
     public void close() throws SQLException {
         close(false);

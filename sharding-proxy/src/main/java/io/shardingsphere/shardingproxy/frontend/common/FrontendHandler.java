@@ -70,7 +70,6 @@ public abstract class FrontendHandler extends ChannelInboundHandlerAdapter {
     public final void channelInactive(final ChannelHandlerContext context) {
         context.fireChannelInactive();
         backendConnection.close(true);
-        backendConnection.cancel();
         ChannelThreadExecutorGroup.getInstance().unregister(context.channel().id());
     }
 }
