@@ -17,7 +17,6 @@
 
 package io.shardingsphere.core.parsing.antlr.extractor.segment.engine;
 
-import java.util.Collection;
 import java.util.LinkedList;
 import java.util.List;
 import java.util.Map;
@@ -248,15 +247,16 @@ public final class PredicateSegmentExtractor implements OptionalSQLSegmentExtrac
         if (!column.isPresent()) {
             return Optional.absent();
         }
-        Collection<ParserRuleContext> expressionNodes = ASTUtils.getAllDescendantNodes((ParserRuleContext) predicateNode.getChild(0), RuleName.SIMPLE_EXPR);
         List<SQLExpression> sqlExpressions = new LinkedList<>();
-        for (ParserRuleContext each : expressionNodes) {
-            Optional<SQLExpression> expression = buildExperssion(questionNodeIndexMap, each);
-            if (!expression.isPresent()) {
-                sqlExpressions.clear();
-                break;
+        for(int i = 3; i < predicateNode.getChildCount(); i++) {
+            if(RuleName.SIMPLE_EXPR.getName().equals(predicateNode.getChild(i).getClass().getSimpleName())) {
+                Optional<SQLExpression> expression = buildExperssion(questionNodeIndexMap, (ParserRuleContext) predicateNode.getChild(i));
+                if (!expression.isPresent()) {
+                    sqlExpressions.clear();
+                    break;
+                }
+                sqlExpressions.add(expression.get());
             }
-            sqlExpressions.add(expression.get());
         }
         if (!sqlExpressions.isEmpty()) {
             return Optional.of(new Condition(column.get(), sqlExpressions));

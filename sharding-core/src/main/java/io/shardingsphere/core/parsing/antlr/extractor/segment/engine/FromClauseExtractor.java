@@ -69,26 +69,26 @@ public final class FromClauseExtractor implements OptionalSQLSegmentExtractor {
     private void extractAndFillTableResult(final TableAndConditionSegment tableAndConditionSegment, final Collection<ParserRuleContext> tableReferenceNodes,
                                            final Map<ParserRuleContext, Integer> questionNodeIndexMap) {
         for (ParserRuleContext each : tableReferenceNodes) {
-            for(int i = 0; i < each.getChildCount(); i++) {
+            for (int i = 0; i < each.getChildCount(); i++) {
                 ParserRuleContext tableFactorNode = null;
                 boolean joinNode = false;
-                if(RuleName.JOIN_TABLE.getName().endsWith(each.getClass().getSimpleName())) {
-                    tableFactorNode = ASTUtils.findFirstChildNode((ParserRuleContext)each.getChild(i), RuleName.TABLE_FACTOR).get();
+                if (RuleName.JOIN_TABLE.getName().endsWith(each.getClass().getSimpleName())) {
+                    tableFactorNode = ASTUtils.findFirstChildNode((ParserRuleContext) each.getChild(i), RuleName.TABLE_FACTOR).get();
                     joinNode = true;
-                }else {
-                    tableFactorNode = (ParserRuleContext)each.getChild(i);
+                } else {
+                    tableFactorNode = (ParserRuleContext) each.getChild(i);
                 }
                 //TODO subquery
                 Optional<TableSegment> tableSegment = tableNameExtractor.extract(tableFactorNode);
                 if (joinNode) {
-                    Optional<ParserRuleContext> joinConditionNode = ASTUtils.findFirstChildNode((ParserRuleContext)each.getChild(i), RuleName.JOIN_CONDITION);
+                    Optional<ParserRuleContext> joinConditionNode = ASTUtils.findFirstChildNode((ParserRuleContext) each.getChild(i), RuleName.JOIN_CONDITION);
                     if (joinConditionNode.isPresent()) {
-                        Optional<OrCondition> conditionResult = buildCondition(joinConditionNode.get(),questionNodeIndexMap, tableAndConditionSegment.getTableAliases());
+                        Optional<OrCondition> conditionResult = buildCondition(joinConditionNode.get(), questionNodeIndexMap, tableAndConditionSegment.getTableAliases());
                         TableJoinSegment tableJoinResult = new TableJoinSegment(tableSegment.get());
                         tableJoinResult.getJoinConditions().getAndConditions().addAll(conditionResult.get().getAndConditions());
                         fillTableResult(tableAndConditionSegment, tableJoinResult);
                     }
-                }else {
+                } else {
                     fillTableResult(tableAndConditionSegment, tableSegment.get());
                 }
             }

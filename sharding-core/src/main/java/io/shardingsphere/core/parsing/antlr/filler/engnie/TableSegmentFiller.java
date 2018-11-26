@@ -38,13 +38,13 @@ public class TableSegmentFiller implements SQLSegmentFiller {
         TableSegment tableSegment = (TableSegment) sqlSegment;
         String tableName = tableSegment.getName();
         boolean needAdd = false;
-        if(!(sqlStatement instanceof SelectStatement)) {
+        if (!(sqlStatement instanceof SelectStatement)) {
             needAdd = true;
-        }else if (shardingRule.tryFindTableRuleByLogicTable(tableName).isPresent()|| shardingRule.isBroadcastTable(tableName) || shardingRule.findBindingTableRule(tableName).isPresent()
+        } else if (shardingRule.tryFindTableRuleByLogicTable(tableName).isPresent() || shardingRule.isBroadcastTable(tableName) || shardingRule.findBindingTableRule(tableName).isPresent()
                 || shardingRule.getShardingDataSourceNames().getDataSourceNames().contains(shardingRule.getShardingDataSourceNames().getDefaultDataSourceName())) {
             needAdd = true;
         }
-        if(needAdd) {
+        if (needAdd) {
             sqlStatement.getTables().add(new Table(tableSegment.getName(), tableSegment.getAlias()));
             sqlStatement.getSQLTokens().add(tableSegment.getToken());
         }
