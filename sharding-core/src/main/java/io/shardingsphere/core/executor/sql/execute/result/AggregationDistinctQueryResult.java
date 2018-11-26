@@ -18,8 +18,11 @@
 package io.shardingsphere.core.executor.sql.execute.result;
 
 import com.google.common.base.Function;
+import com.google.common.base.Predicate;
+import com.google.common.collect.HashMultimap;
 import com.google.common.collect.Iterators;
 import com.google.common.collect.Lists;
+import com.google.common.collect.Maps;
 import com.google.common.collect.Multimap;
 import io.shardingsphere.core.merger.QueryResult;
 import io.shardingsphere.core.parsing.parser.context.selectitem.AggregationDistinctSelectItem;
@@ -32,6 +35,7 @@ import java.sql.SQLException;
 import java.util.ArrayList;
 import java.util.Calendar;
 import java.util.Collection;
+import java.util.HashMap;
 import java.util.Iterator;
 import java.util.LinkedHashMap;
 import java.util.LinkedHashSet;
@@ -47,17 +51,17 @@ import java.util.Set;
  */
 public final class AggregationDistinctQueryResult extends DistinctQueryResult {
     
-    private final Map<String, String> distinctColumnNameAndAggregationExpressions = new LinkedHashMap<>();
+    private final Multimap<String, Integer> aggregationExpressionAndColumnIndexes = HashMultimap.create();
     
     private final Map<Integer, Integer> derivedCountIndexAndDistinctIndexes = new LinkedHashMap<>();
     
     private final Map<Integer, Integer> derivedSumIndexAndDistinctIndexes = new LinkedHashMap<>();
     
     private AggregationDistinctQueryResult(final Multimap<String, Integer> columnLabelAndIndexMap, final Iterator<List<Object>> resultData,
-                                           final Map<String, String> distinctColumnNameAndAggregationExpressions,
+                                           final Multimap<String, Integer> aggregationExpressionAndColumnIndexes,
                                            final Map<Integer, Integer> derivedCountIndexAndDistinctIndexes, final Map<Integer, Integer> derivedSumIndexAndDistinctIndexes) {
         super(columnLabelAndIndexMap, resultData);
-        this.distinctColumnNameAndAggregationExpressions.putAll(distinctColumnNameAndAggregationExpressions);
+        this.aggregationExpressionAndColumnIndexes.putAll(aggregationExpressionAndColumnIndexes);
         this.derivedCountIndexAndDistinctIndexes.putAll(derivedCountIndexAndDistinctIndexes);
         this.derivedSumIndexAndDistinctIndexes.putAll(derivedSumIndexAndDistinctIndexes);
     }
@@ -167,6 +171,9 @@ public final class AggregationDistinctQueryResult extends DistinctQueryResult {
     public String getColumnLabel(final int columnIndex) throws SQLException {
         for (Entry<String, Integer> entry : getColumnLabelAndIndexMap().entries()) {
             if (columnIndex == entry.getValue()) {
+                if (distinctColumnNameAndAggregationExpressions.containsKey(entry.getKey())) {
+                    return distinctColumnNameAndAggregationExpressions.get(entry.getKey());
+                }
                 return entry.getKey();
             }
         }
@@ -174,6 +181,16 @@ public final class AggregationDistinctQueryResult extends DistinctQueryResult {
     }
     
     private Integer getIndexByColumnLabel(final String columnLabel) {
-        return new ArrayList<>(getColumnLabelAndIndexMap().get(columnLabel)).get(0) - 1;
+        String result = columnLabel;
+        Map<String, String> filtered = new HashMap<>();
+        if (distinctColumnNameAndAggregationExpressions.containsValue(columnLabel)) {
+            filtered.putAll(Maps.filterValues(distinctColumnNameAndAggregationExpressions, new Predicate<String>() {
+                @Override
+                public boolean apply(final String input) {
+                    return columnLabel.equals(input);
+                }
+            }));
+        }
+        return filtered.isEmpty() ? new ArrayList<>(getColumnLabelAndIndexMap().get(columnLabel)).get(0) - 1 : ;
     }
 }
