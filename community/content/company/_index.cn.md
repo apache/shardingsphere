@@ -14,6 +14,7 @@ chapter = true
 ## 电子商务
 
 * [当当](http://www.dangdang.com/)
+* [转转](http://www.zhuanzhuan.com/)
 * [搜好货](http://www.912688.com/)
 * [唯品会](http://www.vip.com/)
 * [TCL](http://www.tcl.com/)
@@ -24,6 +25,7 @@ chapter = true
 * 京东大数据与智能供应链
 * [每日优鲜便利购](https://www.imrfresh.com/)
 * [大易有塑](https://www.dayi35.com/)
+* [瓜子二手车](https://www.guazi.com/)
 * [大搜车](https://www.souche.com/zh/)
 * [蜂网](https://www.newbeescm.com/)
 
@@ -54,12 +56,10 @@ chapter = true
 ## O2O
 
 * [东方车联](http://www.dongfang789.com/)
-* [转转](http://www.zhuanzhuan.com/)
 * [PP停车](https://660pp.com)
 * [中策车空间](http://www.zcckj.com/)
 * [首汽约车](http://www.01zhuanche.com/)
 * [滴滴小桔车服](https://www.didiglobal.com/)
-* [瓜子二手车](https://www.guazi.com/)
 
 ## 社交平台
 
@@ -94,6 +94,7 @@ chapter = true
 * [高阳捷迅](http://www.19pay.com.cn/)
 * [超级蓝领网络科技服务有限公司](http://www.chaojilanling.cn/)
 * [北京云庐科技有限公司](http://www.cloudansys.com/)
+* [海典软件](http://www.hydee.cn)
 
 ## 政府
 

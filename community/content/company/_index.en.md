@@ -14,6 +14,7 @@ The list here will be shown in the registered order.
 ## E-commerce
 
 * [Dangdang](http://www.dangdang.com/)
+* [Zhuanzhuan](http://www.zhuanzhuan.com/)
 * [912688](http://www.912688.com/)
 * [vipshop](http://www.vip.com/)
 * [TCL](http://www.tcl.com/)
@@ -24,6 +25,7 @@ The list here will be shown in the registered order.
 * JD’s Big Data and Intelligent Supply Chain Department
 * [Imrfresh](https://www.imrfresh.com/)
 * [Dayi35](https://www.dayi35.com/)
+* [GuaZi](https://www.guazi.com/)
 * [souche](https://www.souche.com/zh/)
 * [newbeescm](https://www.newbeescm.com/)
 
@@ -54,12 +56,10 @@ The list here will be shown in the registered order.
 ## O2O
 
 * [Dongfang789](http://www.dongfang789.com/)
-* [Zhuanzhuan](http://www.zhuanzhuan.com/)
 * [ChinaRoad](https://660pp.com)
 * [Zhong Ce Auto Space](http://www.zcckj.com/)
 * [Shouqi](http://www.01zhuanche.com/)
 * [DiDi global](https://www.didiglobal.com/)
-* [GuaZi](https://www.guazi.com/)
 
 ## SNS
 
@@ -94,6 +94,7 @@ The list here will be shown in the registered order.
 * [19pay](http://www.19pay.com.cn/)
 * [Chaojilanling](http://www.chaojilanling.cn/)
 * [Cloudansys](http://www.cloudansys.com/)
+* [HYDEE](http://www.hydee.cn)
 
 ## Government
 
