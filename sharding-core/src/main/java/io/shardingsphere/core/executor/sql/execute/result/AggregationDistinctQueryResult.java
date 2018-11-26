@@ -77,9 +77,9 @@ public final class AggregationDistinctQueryResult extends DistinctQueryResult {
         }
     }
     
-    private void initDistinctColumnNameAndAggregationExpressions(final AggregationSelectItem each) {
-        if (each instanceof AggregationDistinctSelectItem) {
-            AggregationDistinctSelectItem distinctSelectItem = (AggregationDistinctSelectItem) each;
+    private void initDistinctColumnNameAndAggregationExpressions(final AggregationSelectItem selectItem) {
+        if (selectItem instanceof AggregationDistinctSelectItem) {
+            AggregationDistinctSelectItem distinctSelectItem = (AggregationDistinctSelectItem) selectItem;
             distinctColumnNameAndAggregationExpressions.put(distinctSelectItem.getDistinctColumnName(), distinctSelectItem.getInnerExpression());
         }
     }
