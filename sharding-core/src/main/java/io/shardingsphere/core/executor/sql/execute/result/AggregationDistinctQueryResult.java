@@ -47,17 +47,17 @@ import java.util.Set;
  */
 public final class AggregationDistinctQueryResult extends DistinctQueryResult {
     
-    private final Map<String, String> distinctColumnNameAndAggregationExpressions = new LinkedHashMap<>();
+    private final Map<String, String> aggregationExpressionAndDistinctColumnNames = new LinkedHashMap<>();
     
     private final Map<Integer, Integer> derivedCountIndexAndDistinctIndexes = new LinkedHashMap<>();
     
     private final Map<Integer, Integer> derivedSumIndexAndDistinctIndexes = new LinkedHashMap<>();
     
     private AggregationDistinctQueryResult(final Multimap<String, Integer> columnLabelAndIndexMap, final Iterator<List<Object>> resultData,
-                                           final Map<String, String> distinctColumnNameAndAggregationExpressions, final Map<Integer, Integer> derivedCountIndexAndDistinctIndexes,
+                                           final Map<String, String> aggregationExpressionAndDistinctColumnNames, final Map<Integer, Integer> derivedCountIndexAndDistinctIndexes,
                                            final Map<Integer, Integer> derivedSumIndexAndDistinctIndexes) {
         super(columnLabelAndIndexMap, resultData);
-        this.distinctColumnNameAndAggregationExpressions.putAll(distinctColumnNameAndAggregationExpressions);
+        this.aggregationExpressionAndDistinctColumnNames.putAll(aggregationExpressionAndDistinctColumnNames);
         this.derivedCountIndexAndDistinctIndexes.putAll(derivedCountIndexAndDistinctIndexes);
         this.derivedSumIndexAndDistinctIndexes.putAll(derivedSumIndexAndDistinctIndexes);
     }
@@ -86,7 +86,7 @@ public final class AggregationDistinctQueryResult extends DistinctQueryResult {
     private void initDistinctColumnNameAndAggregationExpressions(final AggregationSelectItem selectItem) {
         if (selectItem instanceof AggregationDistinctSelectItem) {
             AggregationDistinctSelectItem distinctSelectItem = (AggregationDistinctSelectItem) selectItem;
-            distinctColumnNameAndAggregationExpressions.put(distinctSelectItem.getDistinctColumnName(), distinctSelectItem.getInnerExpression());
+            aggregationExpressionAndDistinctColumnNames.put(distinctSelectItem.getDistinctColumnName(), distinctSelectItem.getInnerExpression());
         }
     }
     
@@ -104,7 +104,7 @@ public final class AggregationDistinctQueryResult extends DistinctQueryResult {
                 Set<List<Object>> resultData = new LinkedHashSet<>();
                 resultData.add(input);
                 return new AggregationDistinctQueryResult(getColumnLabelAndIndexMap(),
-                        resultData.iterator(), distinctColumnNameAndAggregationExpressions, derivedCountIndexAndDistinctIndexes, derivedSumIndexAndDistinctIndexes);
+                        resultData.iterator(), aggregationExpressionAndDistinctColumnNames, derivedCountIndexAndDistinctIndexes, derivedSumIndexAndDistinctIndexes);
             }
         }));
     }
