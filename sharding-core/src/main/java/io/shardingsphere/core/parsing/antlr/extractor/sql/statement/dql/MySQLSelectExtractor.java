@@ -19,11 +19,11 @@ package io.shardingsphere.core.parsing.antlr.extractor.sql.statement.dql;
 
 import io.shardingsphere.core.parsing.antlr.extractor.segment.engine.FromWhereExtractor;
 import io.shardingsphere.core.parsing.antlr.extractor.segment.engine.GroupByClauseExtractor;
+import io.shardingsphere.core.parsing.antlr.extractor.segment.engine.LimitClauseExtractor;
 import io.shardingsphere.core.parsing.antlr.extractor.segment.engine.OrderByClauseExtractor;
+import io.shardingsphere.core.parsing.antlr.extractor.segment.engine.SelectExpressionExtractor;
 import io.shardingsphere.core.parsing.antlr.extractor.segment.engine.TableNamesExtractor;
 import io.shardingsphere.core.parsing.antlr.extractor.statement.engine.AbstractSQLStatementExtractor;
-import io.shardingsphere.core.parsing.antlr.extractor.statement.engine.LimitClauseExtractor;
-import io.shardingsphere.core.parsing.antlr.extractor.statement.engine.SelectExpressionExtractor;
 import io.shardingsphere.core.parsing.parser.sql.SQLStatement;
 import io.shardingsphere.core.parsing.parser.sql.dql.select.SelectStatement;
 

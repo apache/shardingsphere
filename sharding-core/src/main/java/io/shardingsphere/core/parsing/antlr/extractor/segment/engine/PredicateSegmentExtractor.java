@@ -30,7 +30,6 @@ import io.shardingsphere.core.parsing.antlr.extractor.segment.OptionalSQLSegment
 import io.shardingsphere.core.parsing.antlr.extractor.segment.constant.LogicalOperator;
 import io.shardingsphere.core.parsing.antlr.extractor.segment.constant.Paren;
 import io.shardingsphere.core.parsing.antlr.extractor.segment.constant.RuleName;
-import io.shardingsphere.core.parsing.antlr.extractor.statement.engine.ColumnSegmentExtractor;
 import io.shardingsphere.core.parsing.antlr.extractor.util.ASTUtils;
 import io.shardingsphere.core.parsing.antlr.sql.segment.ColumnSegment;
 import io.shardingsphere.core.parsing.antlr.sql.segment.PredicateSegment;
