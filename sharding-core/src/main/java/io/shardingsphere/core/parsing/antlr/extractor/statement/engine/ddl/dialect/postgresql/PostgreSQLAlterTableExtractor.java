@@ -19,8 +19,8 @@ package io.shardingsphere.core.parsing.antlr.extractor.statement.engine.ddl.dial
 
 import io.shardingsphere.core.parsing.antlr.extractor.segment.constant.RuleName;
 import io.shardingsphere.core.parsing.antlr.extractor.segment.engine.AddColumnExtractor;
-import io.shardingsphere.core.parsing.antlr.extractor.segment.engine.AddPrimaryKeyExtractor;
 import io.shardingsphere.core.parsing.antlr.extractor.segment.engine.ModifyColumnExtractor;
+import io.shardingsphere.core.parsing.antlr.extractor.segment.engine.PrimaryKeyForAlterTableExtractor;
 import io.shardingsphere.core.parsing.antlr.extractor.segment.engine.RenameColumnExtractor;
 import io.shardingsphere.core.parsing.antlr.extractor.statement.engine.ddl.AlterTableExtractor;
 
@@ -33,7 +33,7 @@ public final class PostgreSQLAlterTableExtractor extends AlterTableExtractor {
     
     public PostgreSQLAlterTableExtractor() {
         addSQLSegmentExtractor(new AddColumnExtractor());
-        addSQLSegmentExtractor(new AddPrimaryKeyExtractor(RuleName.ALTER_TABLE_ADD_CONSTRAINT));
+        addSQLSegmentExtractor(new PrimaryKeyForAlterTableExtractor(RuleName.ALTER_TABLE_ADD_CONSTRAINT));
         addSQLSegmentExtractor(new ModifyColumnExtractor());
         addSQLSegmentExtractor(new RenameColumnExtractor());
     }

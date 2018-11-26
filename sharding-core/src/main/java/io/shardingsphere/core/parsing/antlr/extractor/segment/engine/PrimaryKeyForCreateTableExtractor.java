@@ -21,20 +21,20 @@ import com.google.common.base.Optional;
 import io.shardingsphere.core.parsing.antlr.extractor.segment.OptionalSQLSegmentExtractor;
 import io.shardingsphere.core.parsing.antlr.extractor.segment.constant.RuleName;
 import io.shardingsphere.core.parsing.antlr.extractor.util.ASTUtils;
-import io.shardingsphere.core.parsing.antlr.sql.segment.AddPrimaryKeySegment;
+import io.shardingsphere.core.parsing.antlr.sql.segment.ConstraintDefinitionSegment;
 import org.antlr.v4.runtime.ParserRuleContext;
 
 import java.util.Collection;
 
 /**
- * Create table primary key clause extractor.
+ * Primary key for create table extractor.
  *
  * @author duhongjun
  */
-public final class CreatePrimaryKeyExtractor implements OptionalSQLSegmentExtractor {
+public final class PrimaryKeyForCreateTableExtractor implements OptionalSQLSegmentExtractor {
     
     @Override
-    public Optional<AddPrimaryKeySegment> extract(final ParserRuleContext ancestorNode) {
+    public Optional<ConstraintDefinitionSegment> extract(final ParserRuleContext ancestorNode) {
         Optional<ParserRuleContext> primaryKeyNode = ASTUtils.findFirstChildNode(ancestorNode, RuleName.PRIMARY_KEY);
         if (!primaryKeyNode.isPresent()) {
             return Optional.absent();
@@ -47,7 +47,7 @@ public final class CreatePrimaryKeyExtractor implements OptionalSQLSegmentExtrac
         if (columnNameNodes.isEmpty()) {
             return Optional.absent();
         }
-        AddPrimaryKeySegment result = new AddPrimaryKeySegment();
+        ConstraintDefinitionSegment result = new ConstraintDefinitionSegment();
         for (ParserRuleContext each : columnNameNodes) {
             result.getPrimaryKeyColumnNames().add(each.getText());
         }
