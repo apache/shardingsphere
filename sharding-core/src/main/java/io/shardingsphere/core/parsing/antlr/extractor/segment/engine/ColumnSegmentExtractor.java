@@ -15,7 +15,7 @@
  * </p>
  */
 
-package io.shardingsphere.core.parsing.antlr.extractor.statement.engine;
+package io.shardingsphere.core.parsing.antlr.extractor.segment.engine;
 
 import org.antlr.v4.runtime.ParserRuleContext;
 
