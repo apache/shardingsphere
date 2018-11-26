@@ -180,6 +180,7 @@ public final class AggregationDistinctQueryResult extends DistinctQueryResult {
     }
     
     private Integer getIndexByColumnLabel(final String columnLabel) {
-        return aggregationExpressionAndColumnIndexes.containsKey(columnLabel) ? new ArrayList<>(aggregationExpressionAndColumnIndexes.get(columnLabel)).get(0) - 1 : new ArrayList<>(getColumnLabelAndIndexMap().get(columnLabel)).get(0) - 1 ;
+        return new ArrayList<>(aggregationExpressionAndColumnIndexes.containsKey(columnLabel) ? aggregationExpressionAndColumnIndexes.get(columnLabel)
+                : getColumnLabelAndIndexMap().get(columnLabel)).get(0) - 1;
     }
 }
