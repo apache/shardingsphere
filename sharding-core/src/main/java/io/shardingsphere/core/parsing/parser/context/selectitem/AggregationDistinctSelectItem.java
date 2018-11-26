@@ -30,7 +30,7 @@ import lombok.ToString;
  * @author panjuan
  */
 @Getter
-@EqualsAndHashCode
+@EqualsAndHashCode(callSuper = true)
 @ToString
 public final class AggregationDistinctSelectItem extends AggregationSelectItem {
     
