@@ -24,6 +24,8 @@ The list here will be shown in the registered order.
 * JD’s Big Data and Intelligent Supply Chain Department
 * [Imrfresh](https://www.imrfresh.com/)
 * [Dayi35](https://www.dayi35.com/)
+* [souche](https://www.souche.com/zh/)
+* [newbeescm](https://www.newbeescm.com/)
 
 ## FinTech
 
