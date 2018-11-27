@@ -19,6 +19,7 @@ package io.shardingsphere.core.parsing.antlr.extractor.statement.registry.dialec
 
 import io.shardingsphere.core.parsing.antlr.extractor.statement.SQLStatementExtractor;
 import io.shardingsphere.core.parsing.antlr.extractor.statement.SQLStatementType;
+import io.shardingsphere.core.parsing.antlr.extractor.statement.engine.dal.dialect.postgresql.PostgreSQLShowExtractor;
 import io.shardingsphere.core.parsing.antlr.extractor.statement.engine.ddl.CreateIndexExtractor;
 import io.shardingsphere.core.parsing.antlr.extractor.statement.engine.ddl.CreateTableExtractor;
 import io.shardingsphere.core.parsing.antlr.extractor.statement.engine.ddl.dialect.postgresql.*;
