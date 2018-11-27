@@ -243,17 +243,4 @@ public final class BackendConnectionTest {
         backendConnection.setLogicSchema(mock(LogicSchema.class));
         assertSame(logicSchema, backendConnection.getLogicSchema());
     }
-    
-    @Test
-    public void assertCancelStatement() throws SQLException {
-        mockStatementCancel(backendConnection);
-        backendConnection.cancel();
-        assertTrue(backendConnection.getCachedStatements().isEmpty());
-    }
-    
-    private void mockStatementCancel(final BackendConnection backendConnection) throws SQLException {
-        Statement statement = mock(Statement.class);
-        doThrow(SQLException.class).when(statement).cancel();
-        backendConnection.add(statement);
-    }
 }

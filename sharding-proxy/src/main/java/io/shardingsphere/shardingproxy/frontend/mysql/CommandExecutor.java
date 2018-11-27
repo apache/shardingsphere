@@ -98,9 +98,9 @@ public final class CommandExecutor implements Runnable {
         currentSequenceId = headPacketsCount;
         while (queryCommandPacket.next()) {
             while (!context.channel().isWritable() && context.channel().isActive()) {
-                synchronized (io.shardingsphere.shardingproxy.frontend.mysql.CommandExecutor.this) {
+                synchronized (frontendHandler) {
                     try {
-                        io.shardingsphere.shardingproxy.frontend.mysql.CommandExecutor.this.wait();
+                        frontendHandler.wait();
                     } catch (final InterruptedException ignored) {
                     }
                 }
