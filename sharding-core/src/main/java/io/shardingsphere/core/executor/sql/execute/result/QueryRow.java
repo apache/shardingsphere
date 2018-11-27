@@ -17,8 +17,11 @@
 
 package io.shardingsphere.core.executor.sql.execute.result;
 
+import com.google.common.base.Function;
+import com.google.common.collect.Lists;
 import lombok.Getter;
 import lombok.RequiredArgsConstructor;
+
 import java.util.LinkedList;
 import java.util.List;
 
@@ -41,10 +44,15 @@ public final class QueryRow {
     }
     
     private boolean isEqual(final QueryRow queryRow) {
-        if (-1 == distinctColumnIndex) {
+        if (distinctColumnIndexes.isEmpty()) {
             return rowData.equals(queryRow.getRowData());
         }
-        return rowData.get(distinctColumnIndex).equals(queryRow.getDistinctColumnIndex());
+        for (int i = 0; i < distinctColumnIndexes.size(); i++) {
+            if (!rowData.get(i).equals(queryRow.getRowData().get(i))) {
+                return false;
+            }
+        }
+        return true;
     }
     
     /**
@@ -70,9 +78,15 @@ public final class QueryRow {
     
     @Override
     public int hashCode() {
-        if (-1 == distinctColumnIndex) {
+        if (distinctColumnIndexes.isEmpty()) {
             return rowData.hashCode();
         }
-        return rowData.get(distinctColumnIndex).hashCode();
+        return Lists.transform(distinctColumnIndexes, new Function<Integer, Object>() {
+    
+            @Override
+            public Object apply(final Integer input) {
+                return rowData.get(input);
+            }
+        }).hashCode();
     }
 }
