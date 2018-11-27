@@ -128,7 +128,7 @@ public final class AggregationDistinctQueryResult extends DistinctQueryResult {
     }
     
     private Object getValue(final String columnLabel) {
-        return getValue(getColumnIndex(columnLabel) - 1);
+        return getValue(getColumnIndex(columnLabel));
     }
     
     @Override
