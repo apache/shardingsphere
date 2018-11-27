@@ -110,15 +110,15 @@ public final class AggregationDistinctQueryResult extends DistinctQueryResult {
     
     private Object getValue(final int columnIndex) {
         if (distinctIndexAndAggregationTypes.keySet().contains(columnIndex)) {
-            return AggregationType.COUNT == distinctIndexAndAggregationTypes.get(columnIndex) ? 1 : getCurrentRow().get(columnIndex - 1);
+            return AggregationType.COUNT == distinctIndexAndAggregationTypes.get(columnIndex) ? 1 : super.getValue(columnIndex, Object.class);
         }
         if (derivedCountIndexAndDistinctIndexes.keySet().contains(columnIndex)) {
             return 1;
         }
         if (derivedSumIndexAndDistinctIndexes.keySet().contains(columnIndex)) {
-            return getCurrentRow().get(derivedSumIndexAndDistinctIndexes.get(columnIndex) - 1);
+            return super.getValue(derivedSumIndexAndDistinctIndexes.get(columnIndex), Object.class);
         }
-        return getCurrentRow().get(columnIndex - 1);
+        return super.getValue(columnIndex, Object.class);
     }
     
     private Object getValue(final String columnLabel) {
