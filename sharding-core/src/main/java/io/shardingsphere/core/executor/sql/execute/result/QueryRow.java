@@ -66,4 +66,12 @@ public final class QueryRow {
         }
         return isEqual((QueryRow) obj);
     }
+    
+    @Override
+    public int hashCode() {
+        if (-1 == distinctColumnIndex) {
+            return rowData.hashCode();
+        }
+        return rowData.get(distinctColumnIndex).hashCode();
+    }
 }
