@@ -47,6 +47,13 @@ public final class QueryRow {
         if (distinctColumnIndexes.isEmpty()) {
             return rowData.equals(queryRow.getRowData());
         }
+        if (!distinctColumnIndexes.equals(queryRow.getDistinctColumnIndexes())) {
+            return false;
+        }
+        return isEqualByPart(queryRow);
+    }
+    
+    private boolean isEqualByPart(final QueryRow queryRow) {
         for (int i = 0; i < distinctColumnIndexes.size(); i++) {
             if (!rowData.get(i).equals(queryRow.getRowData().get(i))) {
                 return false;
