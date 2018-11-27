@@ -15,7 +15,7 @@
  * </p>
  */
 
-package io.shardingsphere.core.executor.sql.execute.result.row;
+package io.shardingsphere.core.executor.sql.execute.row;
 
 import com.google.common.base.Function;
 import com.google.common.collect.Lists;
