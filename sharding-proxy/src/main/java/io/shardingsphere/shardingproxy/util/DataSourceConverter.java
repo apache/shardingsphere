@@ -32,7 +32,7 @@ import java.util.Map;
  * @author panjuan
  */
 @NoArgsConstructor(access = AccessLevel.PRIVATE)
-public class DataSourceConverter {
+public final class DataSourceConverter {
     
     /**
      * Get data source map.

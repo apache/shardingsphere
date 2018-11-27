@@ -15,26 +15,13 @@
  * </p>
  */
 
-package io.shardingsphere.shardingproxy;
+package io.shardingsphere.shardingproxy.util;
 
-import io.shardingsphere.shardingproxy.config.AllConfigTests;
-import io.shardingsphere.shardingproxy.frontend.AllFrontendTests;
-import io.shardingsphere.shardingproxy.listener.AllListenerTests;
-import io.shardingsphere.shardingproxy.runtime.AllRuntimeTests;
-import io.shardingsphere.shardingproxy.transport.AllTransportTests;
-import io.shardingsphere.shardingproxy.util.AllUtilTests;
 import org.junit.runner.RunWith;
 import org.junit.runners.Suite;
 import org.junit.runners.Suite.SuiteClasses;
 
 @RunWith(Suite.class)
-@SuiteClasses({
-        AllRuntimeTests.class, 
-        AllListenerTests.class, 
-        AllConfigTests.class, 
-        AllTransportTests.class, 
-        AllFrontendTests.class, 
-        AllUtilTests.class
-})
-public final class AllTests {
+@SuiteClasses(DataSourceConverterTest.class)
+public final class AllUtilTests {
 }
