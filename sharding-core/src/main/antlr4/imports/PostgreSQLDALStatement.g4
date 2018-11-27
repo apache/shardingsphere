@@ -8,5 +8,5 @@ show
     
 showParam
     : ALL
-    | SERVER_VERSION
+    | ID
     ;
