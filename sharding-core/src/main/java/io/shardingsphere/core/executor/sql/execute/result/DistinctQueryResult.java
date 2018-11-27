@@ -64,6 +64,12 @@ public class DistinctQueryResult implements QueryResult {
     }
     
     @SneakyThrows
+    public DistinctQueryResult(final Collection<QueryResult> queryResults) {
+        this.columnLabelAndIndexMap = getColumnLabelAndIndexMap(queryResults.iterator().next());
+        resultData = getResultData(queryResults, -1);
+    }
+    
+    @SneakyThrows
     private Multimap<String, Integer> getColumnLabelAndIndexMap(final QueryResult queryResult) {
         Multimap<String, Integer> result = HashMultimap.create();
         for (int columnIndex = 1; columnIndex <= queryResult.getColumnCount(); columnIndex++) {
