@@ -2,6 +2,7 @@
     <metadata>
         <column name="item_id" />
     </metadata>
+    <row values="100001" />
     <row values="100002" />
     <row values="100101" />
     <row values="100102" />
