@@ -80,7 +80,7 @@ public final class QueryRow {
     
             @Override
             public Object apply(final Integer input) {
-                return rowData.get(input);
+                return rowData.get(input - 1);
             }
         }).hashCode();
     }
