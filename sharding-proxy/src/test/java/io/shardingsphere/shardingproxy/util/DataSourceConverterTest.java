@@ -25,20 +25,28 @@ import java.util.HashMap;
 import java.util.Map;
 
 import static org.hamcrest.CoreMatchers.is;
+import static org.junit.Assert.assertNotNull;
 import static org.junit.Assert.assertThat;
-import static org.junit.Assert.assertTrue;
+import static org.mockito.Mockito.mock;
+import static org.mockito.Mockito.when;
 
 public final class DataSourceConverterTest {
     
     @Test
     public void assertGetDataSourceParameterMap() {
         Map<String, DataSourceConfiguration> dataSourceConfigurationMap = new HashMap<>(2, 1);
-        dataSourceConfigurationMap.put("ds_0", new DataSourceConfiguration());
-        dataSourceConfigurationMap.put("ds_1", new DataSourceConfiguration());
+        DataSourceConfiguration dataSourceConfiguration0 = mock(DataSourceConfiguration.class);
+        DataSourceParameter dataSourceParameter0 = new DataSourceParameter();
+        when(dataSourceConfiguration0.createDataSourceParameter()).thenReturn(dataSourceParameter0);
+        dataSourceConfigurationMap.put("ds_0", dataSourceConfiguration0);
+        DataSourceConfiguration dataSourceConfiguration1 = mock(DataSourceConfiguration.class);
+        DataSourceParameter dataSourceParameter1 = new DataSourceParameter();
+        when(dataSourceConfiguration1.createDataSourceParameter()).thenReturn(dataSourceParameter1);
+        dataSourceConfigurationMap.put("ds_1", dataSourceConfiguration1);
         Map<String, DataSourceParameter> actual = DataSourceConverter.getDataSourceParameterMap(dataSourceConfigurationMap);
         assertThat(actual.size(), is(2));
-        assertTrue(actual.containsKey("ds_0"));
-        assertTrue(actual.containsKey("ds_1"));
+        assertThat(actual.get("ds_0"), is(dataSourceParameter0));
+        assertThat(actual.get("ds_1"), is(dataSourceParameter1));
     }
     
     @Test
@@ -48,7 +56,7 @@ public final class DataSourceConverterTest {
         dataSourceParameterMap.put("ds_1", new DataSourceParameter());
         Map<String, DataSourceConfiguration> actual = DataSourceConverter.getDataSourceConfigurationMap(dataSourceParameterMap);
         assertThat(actual.size(), is(2));
-        assertTrue(actual.containsKey("ds_0"));
-        assertTrue(actual.containsKey("ds_1"));
+        assertNotNull(actual.get("ds_0"));
+        assertNotNull(actual.get("ds_1"));
     }
 }
