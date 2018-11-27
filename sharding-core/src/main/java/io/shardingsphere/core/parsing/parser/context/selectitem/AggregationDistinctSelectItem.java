@@ -41,7 +41,6 @@ public final class AggregationDistinctSelectItem extends AggregationSelectItem {
     
     public AggregationDistinctSelectItem(final AggregationType type, final String innerExpression, final Optional<String> alias, final String distinctColumnName) {
         super(type, innerExpression, alias);
-//        this.distinctColumnName = distinctColumnName;
-        this.distinctColumnName = "user_id";
+        this.distinctColumnName = distinctColumnName;
     }
 }
