@@ -35,8 +35,17 @@ public final class QueryRow {
     
     private final int distinctColumnIndex;
     
-    public boolean isEqual(final QueryRow queryRow) {
-    
+    /**
+     * Two query rows are equal or not.
+     *
+     * @param queryRow
+     * @return
+     */
+    public boolean isSame(final QueryRow queryRow) {
+        if (-1 == distinctColumnIndex) {
+            return rowData.equals(queryRow.getRowData());
+        }
+        return rowData.get(distinctColumnIndex).equals(queryRow.getDistinctColumnIndex());
     }
     
     /**
