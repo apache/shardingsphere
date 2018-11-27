@@ -18,7 +18,6 @@
 package io.shardingsphere.core.executor.sql.execute.result;
 
 import com.google.common.base.Function;
-import com.google.common.base.Strings;
 import com.google.common.collect.HashMultimap;
 import com.google.common.collect.Iterators;
 import com.google.common.collect.Lists;
@@ -84,17 +83,11 @@ public class DistinctQueryResult implements QueryResult {
     
     private void fill(final Set<QueryRow> resultData, final QueryResult queryResult, final int distinctColumnIndex) throws SQLException {
         while (queryResult.next()) {
-            QueryRow row = new ArrayList<>(queryResult.getColumnCount());
+            List<Object> rowData = new ArrayList<>(queryResult.getColumnCount());
             for (int columnIndex = 1; columnIndex <= queryResult.getColumnCount(); columnIndex++) {
-                
-                if (Strings.isNullOrEmpty(distinctColumnIndex)) {
-                    row.add(queryResult.getValue(columnIndex, Object.class));
-                } else {
-                
-                }
-                
+                rowData.add(queryResult.getValue(columnIndex, Object.class));
             }
-            resultData.add(row);
+            resultData.add(new QueryRow(rowData, distinctColumnIndex));
         }
     }
     
