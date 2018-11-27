@@ -99,7 +99,9 @@ public enum RuleName {
     
     ORDER_BY_CLAUSE("OrderByClause"),
     
-    ORDER_BY_ITEM("OrderByItem");
+    ORDER_BY_ITEM("OrderByItem"),
+
+    SHOW_PARAM("ShowParam");
     
     private final String name;
     
