@@ -59,9 +59,9 @@ public class DistinctQueryResult implements QueryResult {
     }
     
     @SneakyThrows
-    public DistinctQueryResult(final Collection<QueryResult> queryResults, final String distinctColumnName) {
+    public DistinctQueryResult(final Collection<QueryResult> queryResults, final int distinctColumnIndex) {
         this.columnLabelAndIndexMap = getColumnLabelAndIndexMap(queryResults.iterator().next());
-        resultData = getResultData(queryResults, distinctColumnName);
+        resultData = getResultData(queryResults, distinctColumnIndex);
     }
     
     @SneakyThrows
@@ -74,19 +74,19 @@ public class DistinctQueryResult implements QueryResult {
     }
     
     @SneakyThrows
-    private Iterator<QueryRow> getResultData(final Collection<QueryResult> queryResults, final String distinctColumnName) {
+    private Iterator<QueryRow> getResultData(final Collection<QueryResult> queryResults, final int distinctColumnIndex) {
         Set<QueryRow> resultData = new LinkedHashSet<>();
         for (QueryResult each : queryResults) {
-            fill(resultData, each, distinctColumnName);
+            fill(resultData, each, distinctColumnIndex);
         }
         return resultData.iterator();
     }
     
-    private void fill(final Set<QueryRow> resultData, final QueryResult queryResult, final String distinctColumnName) throws SQLException {
+    private void fill(final Set<QueryRow> resultData, final QueryResult queryResult, final int distinctColumnIndex) throws SQLException {
         while (queryResult.next()) {
-            List<Object> row = new ArrayList<>(queryResult.getColumnCount());
+            QueryRow row = new ArrayList<>(queryResult.getColumnCount());
             for (int columnIndex = 1; columnIndex <= queryResult.getColumnCount(); columnIndex++) {
-                if (Strings.isNullOrEmpty(distinctColumnName)) {
+                if (Strings.isNullOrEmpty(distinctColumnIndex)) {
                     row.add(queryResult.getValue(columnIndex, Object.class));
                 } else {
                 
