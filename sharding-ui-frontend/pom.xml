@@ -12,7 +12,7 @@
     <name>${project.artifactId}</name>
 
     <properties>
-        <node.version>v8.9.4</node.version>
+        <node.version>v6.10.0</node.version>
     </properties>
 
     <build>
