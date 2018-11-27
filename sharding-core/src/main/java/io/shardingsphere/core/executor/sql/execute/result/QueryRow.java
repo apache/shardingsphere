@@ -20,6 +20,8 @@ package io.shardingsphere.core.executor.sql.execute.result;
 import lombok.Getter;
 import lombok.RequiredArgsConstructor;
 
+import java.util.Collection;
+import java.util.LinkedList;
 import java.util.List;
 
 /**
@@ -28,12 +30,11 @@ import java.util.List;
  * @author panjuan
  */
 @Getter
-@RequiredArgsConstructor
 public final class QueryRow {
     
     private final List<Object> rowData;
     
-    private final int distinctColumnIndex;
+    private final Collection<Integer> distinctColumnIndexes = new LinkedList<>();
     
     public QueryRow(final List<Object> rowData) {
         this(rowData, -1);
