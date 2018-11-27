@@ -18,42 +18,32 @@
 package io.shardingsphere.core.parsing.parser.context.selectitem;
 
 import com.google.common.base.Optional;
-import io.shardingsphere.core.constant.AggregationType;
+import com.google.common.base.Strings;
+import io.shardingsphere.core.parsing.lexer.token.DefaultKeyword;
 import io.shardingsphere.core.util.SQLUtil;
 import lombok.EqualsAndHashCode;
 import lombok.Getter;
 import lombok.RequiredArgsConstructor;
-import lombok.Setter;
 import lombok.ToString;
 
-import java.util.ArrayList;
-import java.util.List;
-
 /**
- * Aggregation select item.
+ * Distinct select item.
  *
- * @author zhangliang
+ * @author panjuan
  */
-@RequiredArgsConstructor
 @Getter
 @EqualsAndHashCode
 @ToString
-public class AggregationSelectItem implements SelectItem {
+@RequiredArgsConstructor
+public final class DistinctSelectItem implements SelectItem {
     
-    private final AggregationType type;
-    
-    private final String innerExpression;
+    private final String distinctColumnName;
     
     private final Optional<String> alias;
-    
-    private final List<AggregationSelectItem> derivedAggregationSelectItems = new ArrayList<>(2);
-    
-    @Setter
-    private int index = -1;
-    
+
     @Override
     public String getExpression() {
-        return SQLUtil.getExactlyValue(type.name() + innerExpression);
+        return Strings.isNullOrEmpty(distinctColumnName) ? DefaultKeyword.DISTINCT.name() : SQLUtil.getExactlyValue(DefaultKeyword.DISTINCT + " " + distinctColumnName);
     }
     
     /**

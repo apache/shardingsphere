@@ -19,49 +19,28 @@ package io.shardingsphere.core.parsing.parser.context.selectitem;
 
 import com.google.common.base.Optional;
 import io.shardingsphere.core.constant.AggregationType;
-import io.shardingsphere.core.util.SQLUtil;
 import lombok.EqualsAndHashCode;
 import lombok.Getter;
-import lombok.RequiredArgsConstructor;
 import lombok.Setter;
 import lombok.ToString;
 
-import java.util.ArrayList;
-import java.util.List;
-
 /**
- * Aggregation select item.
+ * Aggregation distinct select item.
  *
- * @author zhangliang
+ * @author panjuan
  */
-@RequiredArgsConstructor
 @Getter
-@EqualsAndHashCode
+@EqualsAndHashCode(callSuper = true)
 @ToString
-public class AggregationSelectItem implements SelectItem {
+public final class AggregationDistinctSelectItem extends AggregationSelectItem {
     
-    private final AggregationType type;
-    
-    private final String innerExpression;
-    
-    private final Optional<String> alias;
-    
-    private final List<AggregationSelectItem> derivedAggregationSelectItems = new ArrayList<>(2);
+    private final String distinctColumnName;
     
     @Setter
-    private int index = -1;
+    private int index;
     
-    @Override
-    public String getExpression() {
-        return SQLUtil.getExactlyValue(type.name() + innerExpression);
-    }
-    
-    /**
-     * Get column label.
-     *
-     * @return column label
-     */
-    public String getColumnLabel() {
-        return alias.isPresent() ? alias.get() : getExpression();
+    public AggregationDistinctSelectItem(final AggregationType type, final String innerExpression, final Optional<String> alias, final String distinctColumnName) {
+        super(type, innerExpression, alias);
+        this.distinctColumnName = distinctColumnName;
     }
 }

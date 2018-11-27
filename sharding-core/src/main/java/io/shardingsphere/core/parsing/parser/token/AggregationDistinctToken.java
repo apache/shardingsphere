@@ -15,25 +15,27 @@
  * </p>
  */
 
-package io.shardingsphere.core.parsing.parser.dialect.sqlserver.clause;
+package io.shardingsphere.core.parsing.parser.token;
 
-import io.shardingsphere.core.parsing.lexer.LexerEngine;
-import io.shardingsphere.core.parsing.lexer.token.Keyword;
-import io.shardingsphere.core.parsing.parser.clause.DistinctClauseParser;
+import lombok.Getter;
+import lombok.ToString;
 
 /**
- * Distinct clause parser for SQLServer.
+ * Aggregation distinct token.
  *
- * @author zhangliang
+ * @author panjuan
  */
-public final class SQLServerDistinctClauseParser extends DistinctClauseParser {
+@Getter
+@ToString
+public final class AggregationDistinctToken extends SQLToken {
     
-    public SQLServerDistinctClauseParser(final LexerEngine lexerEngine) {
-        super(lexerEngine);
-    }
+    private final String originalLiterals;
     
-    @Override
-    protected Keyword[] getSynonymousKeywordsForDistinct() {
-        return new Keyword[0];
+    private String columnName;
+    
+    public AggregationDistinctToken(final int beginPosition, final String originalLiterals, final String columnName) {
+        super(beginPosition);
+        this.originalLiterals = originalLiterals;
+        this.columnName = columnName;
     }
 }
