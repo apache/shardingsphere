@@ -19,6 +19,7 @@ package io.shardingsphere.core.executor.sql.execute.result;
 
 import com.google.common.collect.HashMultimap;
 import com.google.common.collect.Multimap;
+import io.shardingsphere.core.executor.sql.execute.result.row.QueryRow;
 import io.shardingsphere.core.merger.QueryResult;
 
 import java.io.InputStream;
