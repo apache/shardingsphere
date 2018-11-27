@@ -9,6 +9,7 @@ chapter = true
 [![GitHub stars](https://img.shields.io/github/stars/sharding-sphere/sharding-sphere.svg?style=social&label=Star)](https://github.com/sharding-sphere/sharding-sphere/stargazers)&nbsp;
 [![GitHub forks](https://img.shields.io/github/forks/sharding-sphere/sharding-sphere.svg?style=social&label=Fork)](https://github.com/sharding-sphere/sharding-sphere/fork)&nbsp;
 [![GitHub watchers](https://img.shields.io/github/watchers/sharding-sphere/sharding-sphere.svg?style=social&label=Watch)](https://github.com/sharding-sphere/sharding-sphere/watchers)
+[![Stargazers over time](https://starcharts.herokuapp.com/sharding-sphere/sharding-sphere.svg)](https://starcharts.herokuapp.com/sharding-sphere/sharding-sphere)
 
 Sharding-Sphere是一套开源的分布式数据库中间件解决方案组成的生态圈，它由Sharding-JDBC、Sharding-Proxy和Sharding-Sidecar（计划中）这3款相互独立的产品组成。他们均提供标准化的数据分片、分布式事务和数据库治理功能，可适用于如Java同构、异构语言、容器、云原生等各种多样化的应用场景。
 
