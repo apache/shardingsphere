@@ -20,9 +20,9 @@ package io.shardingsphere.core.parsing.integrate.asserts.table;
 import com.google.common.base.Joiner;
 import io.shardingsphere.core.metadata.table.ColumnMetaData;
 import io.shardingsphere.core.metadata.table.TableMetaData;
-import io.shardingsphere.core.parsing.antlr.sql.ddl.AlterTableStatement;
-import io.shardingsphere.core.parsing.antlr.sql.ddl.ColumnDefinition;
-import io.shardingsphere.core.parsing.antlr.sql.ddl.ColumnPosition;
+import io.shardingsphere.core.parsing.antlr.sql.segment.ColumnPositionSegment;
+import io.shardingsphere.core.parsing.antlr.sql.statement.ddl.AlterTableStatement;
+import io.shardingsphere.core.parsing.antlr.sql.statement.ddl.ColumnDefinition;
 import io.shardingsphere.core.parsing.integrate.asserts.SQLStatementAssertMessage;
 import io.shardingsphere.core.parsing.integrate.jaxb.meta.ExpectedTableMetaData;
 import io.shardingsphere.core.parsing.integrate.jaxb.table.ExpectedAlterTable;
@@ -93,19 +93,19 @@ public final class AlterTableAssert {
         assertColumnDefinition(actual.getValue(), expected);
     }
     
-    private void assertColumnPositions(final List<ColumnPosition> actual, final List<ExpectedColumnPosition> expected) {
+    private void assertColumnPositions(final List<ColumnPositionSegment> actual, final List<ExpectedColumnPosition> expected) {
         if (null == expected) {
             return;
         }
         assertThat(assertMessage.getFullAssertMessage("Alter column position size error: "), actual.size(), is(expected.size()));
         int count = 0;
-        for (ColumnPosition each : actual) {
+        for (ColumnPositionSegment each : actual) {
             assertColumnPosition(each, expected.get(count));
             count++;
         }
     }
     
-    private void assertColumnPosition(final ColumnPosition actual, final ExpectedColumnPosition expected) {
+    private void assertColumnPosition(final ColumnPositionSegment actual, final ExpectedColumnPosition expected) {
         assertThat(assertMessage.getFullAssertMessage("Alter column position name assertion error: "), actual.getColumnName(), is(expected.getColumnName()));
         assertThat(assertMessage.getFullAssertMessage("Alter column [" + actual.getColumnName() + "]position startIndex assertion error: "), actual.getStartIndex(), is(expected.getStartIndex()));
         assertThat(assertMessage.getFullAssertMessage("Alter column [" + actual.getColumnName() + "]position firstColumn assertion error: "), actual.getFirstColumn(), is(expected.getFirstColumn()));

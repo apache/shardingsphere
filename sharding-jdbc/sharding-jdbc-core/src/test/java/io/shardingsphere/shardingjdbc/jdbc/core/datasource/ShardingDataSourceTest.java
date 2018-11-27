@@ -25,9 +25,9 @@ import io.shardingsphere.api.config.TableRuleConfiguration;
 import io.shardingsphere.core.constant.DatabaseType;
 import io.shardingsphere.core.constant.transaction.TransactionType;
 import io.shardingsphere.core.rule.ShardingRule;
+import io.shardingsphere.core.transaction.TransactionTypeHolder;
 import io.shardingsphere.shardingjdbc.api.MasterSlaveDataSourceFactory;
 import io.shardingsphere.shardingjdbc.jdbc.core.connection.ShardingConnection;
-import io.shardingsphere.core.transaction.TransactionTypeHolder;
 import org.junit.After;
 import org.junit.Test;
 import org.mockito.ArgumentMatchers;
@@ -56,7 +56,7 @@ import static org.mockito.Mockito.when;
 public final class ShardingDataSourceTest {
     
     @After
-    public void teardown() {
+    public void tearDown() {
         TransactionTypeHolder.set(TransactionType.LOCAL);
     }
     

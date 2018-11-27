@@ -22,8 +22,10 @@ import io.netty.channel.ChannelHandlerContext;
 import io.netty.channel.ChannelInboundHandlerAdapter;
 import io.shardingsphere.shardingproxy.backend.jdbc.connection.BackendConnection;
 import io.shardingsphere.shardingproxy.frontend.common.executor.ChannelThreadExecutorGroup;
+import io.shardingsphere.shardingproxy.runtime.GlobalRegistry;
 import lombok.Getter;
 import lombok.Setter;
+import lombok.SneakyThrows;
 
 /**
  * Frontend handler.
@@ -34,8 +36,8 @@ public abstract class FrontendHandler extends ChannelInboundHandlerAdapter {
     
     private volatile boolean authorized;
     
-    @Setter
-    private volatile BackendConnection backendConnection;
+    @Getter
+    private volatile BackendConnection backendConnection = new BackendConnection(GlobalRegistry.getInstance().getTransactionType());
 
     @Getter
     @Setter
@@ -64,12 +66,10 @@ public abstract class FrontendHandler extends ChannelInboundHandlerAdapter {
     protected abstract void executeCommand(ChannelHandlerContext context, ByteBuf message);
     
     @Override
+    @SneakyThrows
     public final void channelInactive(final ChannelHandlerContext context) {
         context.fireChannelInactive();
-        // TODO :yonglun investigate why null here 
-        if (null != backendConnection) {
-            backendConnection.cancel();
-        }
+        backendConnection.close(true);
         ChannelThreadExecutorGroup.getInstance().unregister(context.channel().id());
     }
 }

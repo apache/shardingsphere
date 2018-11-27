@@ -87,7 +87,7 @@ public final class DataSourceService {
      */
     public ShardingRuleConfiguration getAvailableShardingRuleConfiguration(final String shardingSchemaName) {
         ShardingRuleConfiguration result = configService.loadShardingRuleConfiguration(shardingSchemaName);
-        Preconditions.checkState(null != result && !result.getTableRuleConfigs().isEmpty(), "Missing the sharding rule configuration on register center");
+        Preconditions.checkState(null != result && !result.getTableRuleConfigs().isEmpty(), "Missing the sharding rule configuration on registry center");
         Collection<String> disabledDataSourceNames = getDisabledSlaveDataSourceNames().get(shardingSchemaName);
         if (null == disabledDataSourceNames) {
             return result;

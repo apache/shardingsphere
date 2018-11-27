@@ -19,6 +19,7 @@ ASTERISK: '*' ;
 SLASH: '/' ;
 BACKSLASH: '\\' ;
 DOT: '.';
+DOT_ASTERISK: '.*';
 
 SAFE_EQ: '<=>';
 EQ: '==';

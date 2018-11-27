@@ -33,6 +33,7 @@ import io.shardingsphere.shardingproxy.transport.mysql.packet.handshake.Connecti
 import io.shardingsphere.shardingproxy.transport.mysql.packet.handshake.HandshakePacket;
 import lombok.SneakyThrows;
 import org.junit.Before;
+import org.junit.BeforeClass;
 import org.junit.Test;
 import org.junit.runner.RunWith;
 import org.mockito.Mock;
@@ -56,6 +57,14 @@ public final class MySQLFrontendHandlerTest {
     
     @Mock
     private ChannelHandlerContext context;
+    
+    @BeforeClass
+    @SneakyThrows
+    public static void beforeClass() {
+        Field field = GlobalRegistry.getInstance().getClass().getDeclaredField("shardingProperties");
+        field.setAccessible(true);
+        field.set(GlobalRegistry.getInstance(), new ShardingProperties(new Properties()));
+    }
     
     @Before
     @SneakyThrows

@@ -17,12 +17,15 @@
 
 package io.shardingsphere.core.parsing.antlr;
 
-import io.shardingsphere.core.parsing.antlr.ddl.IntegrateDDLParsingTest;
+import io.shardingsphere.core.parsing.antlr.ddl.IntegrateDDLParsingCompatTest;
 import org.junit.runner.RunWith;
 import org.junit.runners.Suite;
 import org.junit.runners.Suite.SuiteClasses;
 
 @RunWith(Suite.class)
-@SuiteClasses(IntegrateDDLParsingTest.class)
+@SuiteClasses({
+        AntlrIntegrateParsingTest.class,
+        IntegrateDDLParsingCompatTest.class
+})
 public final class AllAntlrParsingTests {
 }
