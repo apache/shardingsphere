@@ -69,7 +69,13 @@ public final class AggregationDistinctQueryResult extends DistinctQueryResult {
     
     @SneakyThrows
     public AggregationDistinctQueryResult(final Collection<QueryResult> queryResults, final SelectStatement selectStatement) {
-        super(queryResults, selectStatement.getAggregationDistinctSelectItems().get(0).getDistinctColumnName());
+        super(queryResults, Lists.transform(selectStatement.getAggregationDistinctSelectItems(), new Function<AggregationDistinctSelectItem, String>() {
+    
+            @Override
+            public String apply(final AggregationDistinctSelectItem input) {
+                return input.getDistinctColumnName();
+            }
+        }));
         init(selectStatement);
     }
     
