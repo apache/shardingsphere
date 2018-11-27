@@ -83,10 +83,6 @@ public abstract class AbstractSelectParser implements SQLParser {
     
     protected abstract void parseInternal(SelectStatement selectStatement);
     
-    protected final void parseDistinct() {
-        selectClauseParserFacade.getDistinctClauseParser().parse();
-    }
-    
     protected final void parseSelectList(final SelectStatement selectStatement, final List<SelectItem> items) {
         selectClauseParserFacade.getSelectListClauseParser().parse(selectStatement, items);
     }
