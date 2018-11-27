@@ -82,9 +82,6 @@ public final class AggregationDistinctQueryResult extends DistinctQueryResult {
         }
     }
     
-    private void initAggregationColumnLabelAndIndexes(final AggregationDistinctSelectItem selectItem) {
-    }
-    
     private void initDerivedIndexAndDistinctIndexes(final AggregationDistinctSelectItem selectItem) {
         List<AggregationSelectItem> derivedAggregationSelectItems = selectItem.getDerivedAggregationSelectItems();
         if (!derivedAggregationSelectItems.isEmpty()) {
