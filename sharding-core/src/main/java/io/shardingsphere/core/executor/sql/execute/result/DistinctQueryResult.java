@@ -18,6 +18,7 @@
 package io.shardingsphere.core.executor.sql.execute.result;
 
 import com.google.common.base.Function;
+import com.google.common.collect.Collections2;
 import com.google.common.collect.HashMultimap;
 import com.google.common.collect.Iterators;
 import com.google.common.collect.Lists;
@@ -32,6 +33,7 @@ import java.sql.SQLException;
 import java.util.ArrayList;
 import java.util.Calendar;
 import java.util.Collection;
+import java.util.Collections;
 import java.util.Iterator;
 import java.util.LinkedHashSet;
 import java.util.List;
@@ -58,9 +60,9 @@ public class DistinctQueryResult implements QueryResult {
     }
     
     @SneakyThrows
-    public DistinctQueryResult(final Collection<QueryResult> queryResults, final String distinctColumnLabel) {
+    public DistinctQueryResult(final Collection<QueryResult> queryResults, final Collection<String> distinctColumnLabels) {
         this.columnLabelAndIndexMap = getColumnLabelAndIndexMap(queryResults.iterator().next());
-        resultData = getResultData(queryResults, getColumnIndex(distinctColumnLabel));
+        resultData = getResultData(queryResults, distinctColumnLabels);
     }
     
     @SneakyThrows
@@ -79,10 +81,17 @@ public class DistinctQueryResult implements QueryResult {
     }
     
     @SneakyThrows
-    private Iterator<QueryRow> getResultData(final Collection<QueryResult> queryResults, final int distinctColumnIndex) {
+    private Iterator<QueryRow> getResultData(final Collection<QueryResult> queryResults, final Collection<String> distinctColumnLabels) {
         Set<QueryRow> resultData = new LinkedHashSet<>();
+        Collection<Integer> distinctColumnIndexes = Collections2.transform(distinctColumnLabels, new Function<String, Integer>() {
+    
+            @Override
+            public Integer apply(final String input) {
+                return getColumnIndex(input);
+            }
+        });
         for (QueryResult each : queryResults) {
-            fill(resultData, each, distinctColumnIndex);
+            fill(resultData, each, distinctColumnIndexes);
         }
         return resultData.iterator();
     }
