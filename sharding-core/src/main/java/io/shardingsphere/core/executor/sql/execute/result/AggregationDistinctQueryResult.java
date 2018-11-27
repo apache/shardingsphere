@@ -51,18 +51,18 @@ public final class AggregationDistinctQueryResult extends DistinctQueryResult {
     
     private final Multimap<String, Integer> aggregationColumnLabelAndIndexes = HashMultimap.create();
     
-    private final Map<Integer, AggregationType> distinctIndexAndAggregationTypes = new LinkedHashMap<>();
+    private final Map<Integer, AggregationType> distinctAggregationIndexAndTypes = new LinkedHashMap<>();
     
     private final Map<Integer, Integer> derivedCountIndexAndDistinctIndexes = new LinkedHashMap<>();
     
     private final Map<Integer, Integer> derivedSumIndexAndDistinctIndexes = new LinkedHashMap<>();
     
     private AggregationDistinctQueryResult(final Multimap<String, Integer> columnLabelAndIndexMap, final Iterator<QueryRow> resultData,
-                                           final Multimap<String, Integer> aggregationColumnLabelAndIndexes, final Map<Integer, AggregationType> distinctIndexAndAggregationTypes,
+                                           final Multimap<String, Integer> aggregationColumnLabelAndIndexes, final Map<Integer, AggregationType> distinctAggregationIndexAndTypes,
                                            final Map<Integer, Integer> derivedCountIndexAndDistinctIndexes, final Map<Integer, Integer> derivedSumIndexAndDistinctIndexes) {
         super(columnLabelAndIndexMap, resultData);
         this.aggregationColumnLabelAndIndexes.putAll(aggregationColumnLabelAndIndexes);
-        this.distinctIndexAndAggregationTypes.putAll(distinctIndexAndAggregationTypes);
+        this.distinctAggregationIndexAndTypes.putAll(distinctAggregationIndexAndTypes);
         this.derivedCountIndexAndDistinctIndexes.putAll(derivedCountIndexAndDistinctIndexes);
         this.derivedSumIndexAndDistinctIndexes.putAll(derivedSumIndexAndDistinctIndexes);
     }
@@ -77,7 +77,7 @@ public final class AggregationDistinctQueryResult extends DistinctQueryResult {
         for (AggregationDistinctSelectItem each : selectStatement.getAggregationDistinctSelectItems()) {
             aggregationColumnLabelAndIndexes.put(each.getColumnLabel(), super.getColumnIndex(each.getDistinctColumnName()));
             initDerivedIndexAndDistinctIndexes(each);
-            distinctIndexAndAggregationTypes.put(getColumnIndex(each.getColumnLabel()), each.getType());
+            distinctAggregationIndexAndTypes.put(getColumnIndex(each.getColumnLabel()), each.getType());
         }
     }
     
@@ -103,14 +103,14 @@ public final class AggregationDistinctQueryResult extends DistinctQueryResult {
                 Set<QueryRow> resultData = new LinkedHashSet<>();
                 resultData.add(input);
                 return new AggregationDistinctQueryResult(getColumnLabelAndIndexMap(),
-                        resultData.iterator(), aggregationColumnLabelAndIndexes, distinctIndexAndAggregationTypes, derivedCountIndexAndDistinctIndexes, derivedSumIndexAndDistinctIndexes);
+                        resultData.iterator(), aggregationColumnLabelAndIndexes, distinctAggregationIndexAndTypes, derivedCountIndexAndDistinctIndexes, derivedSumIndexAndDistinctIndexes);
             }
         }));
     }
     
     private Object getValue(final int columnIndex) {
-        if (distinctIndexAndAggregationTypes.keySet().contains(columnIndex)) {
-            return AggregationType.COUNT == distinctIndexAndAggregationTypes.get(columnIndex) ? 1 : super.getValue(columnIndex, Object.class);
+        if (distinctAggregationIndexAndTypes.keySet().contains(columnIndex)) {
+            return AggregationType.COUNT == distinctAggregationIndexAndTypes.get(columnIndex) ? 1 : super.getValue(columnIndex, Object.class);
         }
         if (derivedCountIndexAndDistinctIndexes.keySet().contains(columnIndex)) {
             return 1;
