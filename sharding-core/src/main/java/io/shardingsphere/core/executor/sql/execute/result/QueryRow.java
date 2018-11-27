@@ -43,6 +43,21 @@ public final class QueryRow {
         this.distinctColumnIndexes.addAll(distinctColumnIndexes);
     }
     
+    /**
+     * Get column value.
+     *
+     * @param columnIndex column index
+     * @return column value
+     */
+    public Object getColumnValue(final int columnIndex) {
+        return rowData.get(columnIndex - 1);
+    }
+    
+    @Override
+    public boolean equals(final Object obj) {
+        return this == obj || null != obj && getClass() == obj.getClass() && isEqual((QueryRow) obj);
+    }
+    
     private boolean isEqual(final QueryRow queryRow) {
         if (distinctColumnIndexes.isEmpty()) {
             return rowData.equals(queryRow.getRowData());
@@ -57,21 +72,6 @@ public final class QueryRow {
             }
         }
         return true;
-    }
-    
-    /**
-     * Get column value.
-     *
-     * @param columnIndex column index
-     * @return column value
-     */
-    public Object getColumnValue(final int columnIndex) {
-        return rowData.get(columnIndex - 1);
-    }
-    
-    @Override
-    public boolean equals(final Object obj) {
-        return this == obj || null != obj && getClass() == obj.getClass() && isEqual((QueryRow) obj);
     }
     
     @Override
