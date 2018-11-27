@@ -112,7 +112,9 @@ public abstract class SelectListClauseParser implements SQLClauseParser {
     
     private SelectItem parseDistinctSelectItem() {
         lexerEngine.nextToken();
-        return new DistinctSelectItem("", aliasExpressionParser.parseSelectItemAlias());
+        String distinctColumnName = lexerEngine.getCurrentToken().getLiterals();
+        lexerEngine.nextToken();
+        return new DistinctSelectItem(distinctColumnName, aliasExpressionParser.parseSelectItemAlias());
     }
     
     private boolean isStarSelectItem() {
