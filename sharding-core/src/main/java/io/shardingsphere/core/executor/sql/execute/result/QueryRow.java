@@ -35,6 +35,10 @@ public final class QueryRow {
     
     private final int distinctColumnIndex;
     
+    public QueryRow(final List<Object> rowData) {
+        this(rowData, -1);
+    }
+    
     /**
      * Two query rows are equal or not.
      *
