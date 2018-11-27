@@ -84,32 +84,32 @@ public final class MemoryQueryResult implements QueryResult {
     
     @Override
     public Object getValue(final int columnIndex, final Class<?> type) {
-        return currentRow.get(columnIndex - 1);
+        return currentRow.getColumnValue(columnIndex);
     }
     
     @Override
     public Object getValue(final String columnLabel, final Class<?> type) {
-        return currentRow.get(getIndexByColumnLabel(columnLabel));
+        return currentRow.getColumnValue(getIndexByColumnLabel(columnLabel));
     }
     
     @Override
     public Object getCalendarValue(final int columnIndex, final Class<?> type, final Calendar calendar) {
-        return currentRow.get(columnIndex - 1);
+        return currentRow.getColumnValue(columnIndex);
     }
     
     @Override
     public Object getCalendarValue(final String columnLabel, final Class<?> type, final Calendar calendar) {
-        return currentRow.get(getIndexByColumnLabel(columnLabel));
+        return currentRow.getColumnValue(getIndexByColumnLabel(columnLabel));
     }
     
     @Override
     public InputStream getInputStream(final int columnIndex, final String type) {
-        return (InputStream) currentRow.get(columnIndex - 1);
+        return (InputStream) currentRow.getColumnValue(columnIndex);
     }
     
     @Override
     public InputStream getInputStream(final String columnLabel, final String type) {
-        return (InputStream) currentRow.get(getIndexByColumnLabel(columnLabel));
+        return (InputStream) currentRow.getColumnValue(getIndexByColumnLabel(columnLabel));
     }
     
     @Override
