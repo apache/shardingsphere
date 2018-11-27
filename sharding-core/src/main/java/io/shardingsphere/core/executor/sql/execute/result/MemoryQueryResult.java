@@ -43,9 +43,9 @@ public final class MemoryQueryResult implements QueryResult {
     
     private final Multimap<String, Integer> columnLabelAndIndexMap;
     
-    private final Iterator<List<Object>> resultData;
+    private final Iterator<QueryRow> resultData;
     
-    private List<Object> currentRow;
+    private QueryRow currentRow;
     
     public MemoryQueryResult(final ResultSet resultSet) throws SQLException {
         columnLabelAndIndexMap = getMetaData(resultSet.getMetaData());
@@ -60,14 +60,14 @@ public final class MemoryQueryResult implements QueryResult {
         return result;
     }
     
-    private Iterator<List<Object>> getResultData(final ResultSet resultSet) throws SQLException {
-        Collection<List<Object>> result = new LinkedList<>();
+    private Iterator<QueryRow> getResultData(final ResultSet resultSet) throws SQLException {
+        Collection<QueryRow> result = new LinkedList<>();
         while (resultSet.next()) {
-            List<Object> row = new ArrayList<>(columnLabelAndIndexMap.size());
+            List<Object> rowData = new ArrayList<>(columnLabelAndIndexMap.size());
             for (int columnIndex = 1; columnIndex <= resultSet.getMetaData().getColumnCount(); columnIndex++) {
-                row.add(resultSet.getObject(columnIndex));
+                rowData.add(resultSet.getObject(columnIndex));
             }
-            result.add(row);
+            result.add(new QueryRow(rowData));
         }
         return result.iterator();
     }
