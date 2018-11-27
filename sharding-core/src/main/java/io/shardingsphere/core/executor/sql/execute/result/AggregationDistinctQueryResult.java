@@ -188,6 +188,10 @@ public final class AggregationDistinctQueryResult extends DistinctQueryResult {
     
     @Override
     protected Integer getColumnIndex(final String columnLabel) {
-        return distinctAggregationColumnLabelAndIndexes.containsKey(columnLabel) ? new ArrayList<>(distinctAggregationColumnLabelAndIndexes.get(columnLabel)).get(0) : super.getColumnIndex(columnLabel);
+        return isContainColumnLabel(columnLabel) ? new ArrayList<>(distinctAggregationColumnLabelAndIndexes.get(columnLabel)).get(0) : super.getColumnIndex(columnLabel);
+    }
+    
+    private boolean isContainColumnLabel(final String columnLabel) {
+        return null != distinctAggregationColumnLabelAndIndexes && distinctAggregationColumnLabelAndIndexes.containsKey(columnLabel);
     }
 }
