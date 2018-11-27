@@ -38,10 +38,10 @@ public final class QueryRow {
     /**
      * Two query rows are equal or not.
      *
-     * @param queryRow
-     * @return
+     * @param queryRow query row
+     * @return is equal or not
      */
-    public boolean isSame(final QueryRow queryRow) {
+    public boolean isEqual(final QueryRow queryRow) {
         if (-1 == distinctColumnIndex) {
             return rowData.equals(queryRow.getRowData());
         }
