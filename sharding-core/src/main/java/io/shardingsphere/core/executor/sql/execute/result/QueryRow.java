@@ -78,10 +78,7 @@ public final class QueryRow {
     
     @Override
     public int hashCode() {
-        if (distinctColumnIndexes.isEmpty()) {
-            return rowData.hashCode();
-        }
-        return Lists.transform(distinctColumnIndexes, new Function<Integer, Object>() {
+        return distinctColumnIndexes.isEmpty() ? rowData.hashCode() : Lists.transform(distinctColumnIndexes, new Function<Integer, Object>() {
     
             @Override
             public Object apply(final Integer input) {
