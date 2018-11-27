@@ -86,6 +86,7 @@ public class DistinctQueryResult implements QueryResult {
         while (queryResult.next()) {
             QueryRow row = new ArrayList<>(queryResult.getColumnCount());
             for (int columnIndex = 1; columnIndex <= queryResult.getColumnCount(); columnIndex++) {
+                
                 if (Strings.isNullOrEmpty(distinctColumnIndex)) {
                     row.add(queryResult.getValue(columnIndex, Object.class));
                 } else {
