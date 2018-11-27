@@ -18,7 +18,6 @@
 package io.shardingsphere.core.executor.sql.execute.result;
 
 import com.google.common.base.Function;
-import com.google.common.collect.Collections2;
 import com.google.common.collect.HashMultimap;
 import com.google.common.collect.Iterators;
 import com.google.common.collect.Lists;
@@ -68,7 +67,7 @@ public class DistinctQueryResult implements QueryResult {
     @SneakyThrows
     public DistinctQueryResult(final Collection<QueryResult> queryResults) {
         this.columnLabelAndIndexMap = getColumnLabelAndIndexMap(queryResults.iterator().next());
-        resultData = getResultData(queryResults, -1);
+        resultData = getResultData(queryResults, Collections.<String>emptyList());
     }
     
     @SneakyThrows
