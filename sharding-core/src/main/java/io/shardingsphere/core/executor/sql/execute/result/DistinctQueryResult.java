@@ -53,7 +53,7 @@ public class DistinctQueryResult implements QueryResult {
     
     private QueryRow currentRow;
     
-    protected DistinctQueryResult(final Multimap<String, Integer> columnLabelAndIndexMap, final Iterator<List<Object>> resultData) {
+    protected DistinctQueryResult(final Multimap<String, Integer> columnLabelAndIndexMap, final Iterator<QueryRow> resultData) {
         this.columnLabelAndIndexMap = columnLabelAndIndexMap;
         this.resultData = resultData;
     }
@@ -74,15 +74,15 @@ public class DistinctQueryResult implements QueryResult {
     }
     
     @SneakyThrows
-    private Iterator<List<Object>> getResultData(final Collection<QueryResult> queryResults, final String distinctColumnName) {
-        Set<List<Object>> resultData = new LinkedHashSet<>();
+    private Iterator<QueryRow> getResultData(final Collection<QueryResult> queryResults, final String distinctColumnName) {
+        Set<QueryRow> resultData = new LinkedHashSet<>();
         for (QueryResult each : queryResults) {
             fill(resultData, each, distinctColumnName);
         }
         return resultData.iterator();
     }
     
-    private void fill(final Set<List<Object>> resultData, final QueryResult queryResult, final String distinctColumnName) throws SQLException {
+    private void fill(final Set<QueryRow> resultData, final QueryResult queryResult, final String distinctColumnName) throws SQLException {
         while (queryResult.next()) {
             List<Object> row = new ArrayList<>(queryResult.getColumnCount());
             for (int columnIndex = 1; columnIndex <= queryResult.getColumnCount(); columnIndex++) {
