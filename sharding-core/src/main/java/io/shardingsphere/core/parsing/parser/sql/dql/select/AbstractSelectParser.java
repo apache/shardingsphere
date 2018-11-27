@@ -210,10 +210,7 @@ public abstract class AbstractSelectParser implements SQLParser {
     
     private boolean containsItemInSelectItems(final SelectStatement selectStatement, final OrderItem orderItem) {
         for (SelectItem each : selectStatement.getItems()) {
-            if (containsItemInDistinctItems(orderItem, each)) {
-                return true;
-            }
-            if (isSameAlias(each, orderItem) || isSameQualifiedName(each, orderItem)) {
+            if (containsItemInDistinctItems(orderItem, each) || isSameAlias(each, orderItem) || isSameQualifiedName(each, orderItem)) {
                 return true;
             }
         }
