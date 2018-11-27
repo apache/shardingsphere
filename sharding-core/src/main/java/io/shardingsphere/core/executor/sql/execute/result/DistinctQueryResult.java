@@ -18,6 +18,7 @@
 package io.shardingsphere.core.executor.sql.execute.result;
 
 import com.google.common.base.Function;
+import com.google.common.base.Strings;
 import com.google.common.collect.HashMultimap;
 import com.google.common.collect.Iterators;
 import com.google.common.collect.Lists;
@@ -48,9 +49,9 @@ public class DistinctQueryResult implements QueryResult {
     
     private final Multimap<String, Integer> columnLabelAndIndexMap;
     
-    private final Iterator<List<Object>> resultData;
+    private final Iterator<QueryRow> resultData;
     
-    private List<Object> currentRow;
+    private QueryRow currentRow;
     
     protected DistinctQueryResult(final Multimap<String, Integer> columnLabelAndIndexMap, final Iterator<List<Object>> resultData) {
         this.columnLabelAndIndexMap = columnLabelAndIndexMap;
@@ -58,9 +59,9 @@ public class DistinctQueryResult implements QueryResult {
     }
     
     @SneakyThrows
-    public DistinctQueryResult(final Collection<QueryResult> queryResults) {
+    public DistinctQueryResult(final Collection<QueryResult> queryResults, final String distinctColumnName) {
         this.columnLabelAndIndexMap = getColumnLabelAndIndexMap(queryResults.iterator().next());
-        resultData = getResultData(queryResults);
+        resultData = getResultData(queryResults, distinctColumnName);
     }
     
     @SneakyThrows
@@ -73,19 +74,24 @@ public class DistinctQueryResult implements QueryResult {
     }
     
     @SneakyThrows
-    private Iterator<List<Object>> getResultData(final Collection<QueryResult> queryResults) {
+    private Iterator<List<Object>> getResultData(final Collection<QueryResult> queryResults, final String distinctColumnName) {
         Set<List<Object>> resultData = new LinkedHashSet<>();
         for (QueryResult each : queryResults) {
-            fill(resultData, each);
+            fill(resultData, each, distinctColumnName);
         }
         return resultData.iterator();
     }
     
-    private void fill(final Set<List<Object>> resultData, final QueryResult queryResult) throws SQLException {
+    private void fill(final Set<List<Object>> resultData, final QueryResult queryResult, final String distinctColumnName) throws SQLException {
         while (queryResult.next()) {
             List<Object> row = new ArrayList<>(queryResult.getColumnCount());
             for (int columnIndex = 1; columnIndex <= queryResult.getColumnCount(); columnIndex++) {
-                row.add(queryResult.getValue(columnIndex, Object.class));
+                if (Strings.isNullOrEmpty(distinctColumnName)) {
+                    row.add(queryResult.getValue(columnIndex, Object.class));
+                } else {
+                
+                }
+                
             }
             resultData.add(row);
         }
