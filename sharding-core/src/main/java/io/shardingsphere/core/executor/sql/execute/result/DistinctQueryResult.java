@@ -60,7 +60,7 @@ public class DistinctQueryResult implements QueryResult {
     }
     
     @SneakyThrows
-    public DistinctQueryResult(final Collection<QueryResult> queryResults, final Collection<String> distinctColumnLabels) {
+    public DistinctQueryResult(final Collection<QueryResult> queryResults, final List<String> distinctColumnLabels) {
         this.columnLabelAndIndexMap = getColumnLabelAndIndexMap(queryResults.iterator().next());
         resultData = getResultData(queryResults, distinctColumnLabels);
     }
@@ -81,9 +81,9 @@ public class DistinctQueryResult implements QueryResult {
     }
     
     @SneakyThrows
-    private Iterator<QueryRow> getResultData(final Collection<QueryResult> queryResults, final Collection<String> distinctColumnLabels) {
+    private Iterator<QueryRow> getResultData(final Collection<QueryResult> queryResults, final List<String> distinctColumnLabels) {
         Set<QueryRow> resultData = new LinkedHashSet<>();
-        Collection<Integer> distinctColumnIndexes = Collections2.transform(distinctColumnLabels, new Function<String, Integer>() {
+        List<Integer> distinctColumnIndexes = Lists.transform(distinctColumnLabels, new Function<String, Integer>() {
     
             @Override
             public Integer apply(final String input) {
@@ -96,7 +96,7 @@ public class DistinctQueryResult implements QueryResult {
         return resultData.iterator();
     }
     
-    private void fill(final Set<QueryRow> resultData, final QueryResult queryResult, final Collection<Integer> distinctColumnIndexes) throws SQLException {
+    private void fill(final Set<QueryRow> resultData, final QueryResult queryResult, final List<Integer> distinctColumnIndexes) throws SQLException {
         while (queryResult.next()) {
             List<Object> rowData = new ArrayList<>(queryResult.getColumnCount());
             for (int columnIndex = 1; columnIndex <= queryResult.getColumnCount(); columnIndex++) {
