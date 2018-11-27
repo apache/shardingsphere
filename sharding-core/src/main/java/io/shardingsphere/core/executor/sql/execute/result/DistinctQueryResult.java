@@ -103,11 +103,11 @@ public class DistinctQueryResult implements QueryResult {
      * @return multiple child distinct query results
      */
     public List<DistinctQueryResult> divide() {
-        return Lists.newArrayList(Iterators.transform(resultData, new Function<List<Object>, DistinctQueryResult>() {
+        return Lists.newArrayList(Iterators.transform(resultData, new Function<QueryRow, DistinctQueryResult>() {
     
             @Override
-            public DistinctQueryResult apply(final List<Object> row) {
-                Set<List<Object>> resultData = new LinkedHashSet<>();
+            public DistinctQueryResult apply(final QueryRow row) {
+                Set<QueryRow> resultData = new LinkedHashSet<>();
                 resultData.add(row);
                 return new DistinctQueryResult(columnLabelAndIndexMap, resultData.iterator());
             }
@@ -126,7 +126,7 @@ public class DistinctQueryResult implements QueryResult {
     
     @Override
     public Object getValue(final int columnIndex, final Class<?> type) {
-        return currentRow.get(columnIndex - 1);
+        return currentRow.getColumnValue(columnIndex);
     }
     
     @Override
