@@ -89,7 +89,7 @@ public final class MemoryQueryResult implements QueryResult {
     
     @Override
     public Object getValue(final String columnLabel, final Class<?> type) {
-        return currentRow.getColumnValue(getIndexByColumnLabel(columnLabel));
+        return currentRow.getColumnValue(getColumnIndex(columnLabel));
     }
     
     @Override
@@ -99,7 +99,7 @@ public final class MemoryQueryResult implements QueryResult {
     
     @Override
     public Object getCalendarValue(final String columnLabel, final Class<?> type, final Calendar calendar) {
-        return currentRow.getColumnValue(getIndexByColumnLabel(columnLabel));
+        return currentRow.getColumnValue(getColumnIndex(columnLabel));
     }
     
     @Override
@@ -109,7 +109,7 @@ public final class MemoryQueryResult implements QueryResult {
     
     @Override
     public InputStream getInputStream(final String columnLabel, final String type) {
-        return (InputStream) currentRow.getColumnValue(getIndexByColumnLabel(columnLabel));
+        return (InputStream) currentRow.getColumnValue(getColumnIndex(columnLabel));
     }
     
     @Override
@@ -132,7 +132,7 @@ public final class MemoryQueryResult implements QueryResult {
         throw new SQLException("Column index out of range", "9999");
     }
     
-    private Integer getIndexByColumnLabel(final String columnLabel) {
+    private Integer getColumnIndex(final String columnLabel) {
         return new ArrayList<>(columnLabelAndIndexMap.get(columnLabel)).get(0) - 1;
     }
 }
