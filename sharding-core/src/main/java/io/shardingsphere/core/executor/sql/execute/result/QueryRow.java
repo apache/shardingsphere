@@ -71,13 +71,7 @@ public final class QueryRow {
     
     @Override
     public boolean equals(final Object obj) {
-        if (this == obj) {
-            return true;
-        }
-        if (null == obj || getClass() != obj.getClass()) {
-            return false;
-        }
-        return isEqual((QueryRow) obj);
+        return this == obj || null != obj && getClass() == obj.getClass() && isEqual((QueryRow) obj);
     }
     
     @Override
