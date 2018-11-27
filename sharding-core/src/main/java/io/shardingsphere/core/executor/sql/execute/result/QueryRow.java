@@ -61,4 +61,15 @@ public final class QueryRow {
     public Object getColumnValue(final int columnIndex) {
         return rowData.get(columnIndex - 1);
     }
+    
+    @Override
+    public boolean equals(final Object obj) {
+        if (this == obj) {
+            return true;
+        }
+        if (null == obj || getClass() != obj.getClass()) {
+            return false;
+        }
+        return isEqual((QueryRow) obj);
+    }
 }
