@@ -96,13 +96,13 @@ public class DistinctQueryResult implements QueryResult {
         return resultData.iterator();
     }
     
-    private void fill(final Set<QueryRow> resultData, final QueryResult queryResult, final int distinctColumnIndex) throws SQLException {
+    private void fill(final Set<QueryRow> resultData, final QueryResult queryResult, final Collection<Integer> distinctColumnIndexes) throws SQLException {
         while (queryResult.next()) {
             List<Object> rowData = new ArrayList<>(queryResult.getColumnCount());
             for (int columnIndex = 1; columnIndex <= queryResult.getColumnCount(); columnIndex++) {
                 rowData.add(queryResult.getValue(columnIndex, Object.class));
             }
-            resultData.add(new QueryRow(rowData, distinctColumnIndex));
+            resultData.add(new QueryRow(rowData, distinctColumnIndexes));
         }
     }
     
