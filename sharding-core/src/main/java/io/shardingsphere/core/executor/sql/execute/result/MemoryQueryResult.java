@@ -134,6 +134,6 @@ public final class MemoryQueryResult implements QueryResult {
     }
     
     private Integer getColumnIndex(final String columnLabel) {
-        return new ArrayList<>(columnLabelAndIndexMap.get(columnLabel)).get(0) - 1;
+        return new ArrayList<>(columnLabelAndIndexMap.get(columnLabel)).get(0);
     }
 }
