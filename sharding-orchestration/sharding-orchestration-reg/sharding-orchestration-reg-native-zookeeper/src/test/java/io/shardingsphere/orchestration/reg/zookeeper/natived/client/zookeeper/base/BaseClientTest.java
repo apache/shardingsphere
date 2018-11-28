@@ -109,12 +109,22 @@ public abstract class BaseClientTest extends BaseTest {
         assertNull(getZooKeeper(client).exists(PathUtil.getRealPath(TestSupport.ROOT, keyC), false));
         assertNotNull(getZooKeeper(client).exists(PathUtil.getRealPath(TestSupport.ROOT, "a"), false));
         client.deleteCurrentBranch(keyB);
-        assertNull(getZooKeeper(client).exists(PathUtil.checkPath(TestSupport.ROOT), false));
+        checkChangeKey(client, keyB);
         client.createAllNeedPath(keyB, valueB, CreateMode.PERSISTENT);
         assertNotNull(getZooKeeper(client).exists(PathUtil.getRealPath(TestSupport.ROOT, keyB), false));
         assertThat(client.getDataString(keyB), is(valueB));
         client.deleteCurrentBranch(keyB);
-        assertNull(getZooKeeper(client).exists(PathUtil.checkPath(TestSupport.ROOT), false));
+        checkChangeKey(client, PathUtil.checkPath(TestSupport.ROOT));
+    }
+
+    protected void checkChangeKey(final IZookeeperClient client, final String key) throws KeeperException, InterruptedException {
+        if (getZooKeeper(client).exists(PathUtil.getRealPath(TestSupport.ROOT, key), false) != null) {
+            List<String> children = client.getChildren(TestSupport.ROOT);
+            // LeaderElection.executeContention delete CHANGING_KEY when action done
+            if (children != null && !children.isEmpty()) {
+                assertThat(children, hasItems(ZookeeperConstants.CHANGING_KEY));
+            }
+        }
     }
     
     protected final void isExisted(final IZookeeperClient client) throws KeeperException, InterruptedException {
