@@ -161,6 +161,7 @@ public final class BackendConnectionTest {
             backendConnection.setLogicSchema(logicSchema);
             when(backendDataSource.getConnections((ConnectionMode) any(), anyString(), eq(12))).thenReturn(MockConnectionUtil.mockNewConnections(12));
             backendConnection.getConnections(ConnectionMode.MEMORY_STRICTLY, "ds1", 12);
+            assertThat(backendConnection.getStatus(), is(ConnectionStatus.RUNNING));
             mockResultSetAndStatement(backendConnection);
             actual = backendConnection;
         }
@@ -168,6 +169,7 @@ public final class BackendConnectionTest {
         assertTrue(actual.getCachedConnections().isEmpty());
         assertTrue(actual.getCachedResultSets().isEmpty());
         assertTrue(actual.getCachedStatements().isEmpty());
+        assertThat(actual.getStatus(), is(ConnectionStatus.RELEASE));
     }
     
     @Test
