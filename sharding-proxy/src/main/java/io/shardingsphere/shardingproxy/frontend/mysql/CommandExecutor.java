@@ -67,7 +67,7 @@ public final class CommandExecutor implements Runnable {
             if (ConnectionStatus.TRANSACTION != backendConnection.getStatus() && ConnectionStatus.INIT != backendConnection.getStatus()
                 && ConnectionStatus.TERMINATED != backendConnection.getStatus()) {
                 while (true) {
-                    if (backendConnection.setStatus(ConnectionStatus.RELEASE, ConnectionStatus.RUNNING)) {
+                    if (backendConnection.compareAndSetStatus(ConnectionStatus.RELEASE, ConnectionStatus.RUNNING)) {
                         break;
                     }
                 }

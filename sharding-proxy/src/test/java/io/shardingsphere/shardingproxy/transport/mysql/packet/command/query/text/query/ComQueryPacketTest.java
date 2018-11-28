@@ -153,7 +153,7 @@ public final class ComQueryPacketTest {
     
     @Test
     public void assertExecuteTCLWithLocalTransaction() {
-        backendConnection.setStatus(ConnectionStatus.TRANSACTION);
+        backendConnection.getAndSetStatus(ConnectionStatus.TRANSACTION);
         when(payload.readStringEOF()).thenReturn("COMMIT");
         ComQueryPacket packet = new ComQueryPacket(1, 1000, payload, backendConnection, frontendHandler);
         Optional<CommandResponsePackets> actual = packet.execute();
@@ -164,7 +164,7 @@ public final class ComQueryPacketTest {
     @Test
     public void assertExecuteTCLWithXATransaction() {
         backendConnection.setTransactionType(TransactionType.XA);
-        backendConnection.setStatus(ConnectionStatus.TRANSACTION);
+        backendConnection.getAndSetStatus(ConnectionStatus.TRANSACTION);
         when(payload.readStringEOF()).thenReturn("ROLLBACK");
         ComQueryPacket packet = new ComQueryPacket(1, 1000, payload, backendConnection, frontendHandler);
         Optional<CommandResponsePackets> actual = packet.execute();
@@ -176,7 +176,7 @@ public final class ComQueryPacketTest {
     @Test
     public void assertExecuteRollbackWithXATransaction() {
         backendConnection.setTransactionType(TransactionType.XA);
-        backendConnection.setStatus(ConnectionStatus.TRANSACTION);
+        backendConnection.getAndSetStatus(ConnectionStatus.TRANSACTION);
         when(payload.readStringEOF()).thenReturn("COMMIT");
         ComQueryPacket packet = new ComQueryPacket(1, 1000, payload, backendConnection, frontendHandler);
         Optional<CommandResponsePackets> actual = packet.execute();

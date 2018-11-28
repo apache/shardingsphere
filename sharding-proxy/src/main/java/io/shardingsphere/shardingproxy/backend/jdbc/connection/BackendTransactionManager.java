@@ -55,7 +55,7 @@ public class BackendTransactionManager {
             Preconditions.checkNotNull(shardingTransactionHandler, String.format("Cannot find transaction manager of [%s]", transactionType));
         }
         if (TransactionOperationType.BEGIN == operationType && ConnectionStatus.TRANSACTION != connection.getStatus()) {
-            connection.setStatus(ConnectionStatus.TRANSACTION);
+            connection.getAndSetStatus(ConnectionStatus.TRANSACTION);
             connection.releaseConnections(false);
         }
         if (TransactionType.LOCAL == transactionType) {
@@ -63,7 +63,7 @@ public class BackendTransactionManager {
         } else if (TransactionType.XA == transactionType) {
             shardingTransactionHandler.doInTransaction(new XATransactionEvent(operationType));
             if (TransactionOperationType.BEGIN != operationType) {
-                connection.setStatus(ConnectionStatus.TERMINATED);
+                connection.getAndSetStatus(ConnectionStatus.TERMINATED);
             }
         }
     }
@@ -91,7 +91,7 @@ public class BackendTransactionManager {
         if (ConnectionStatus.TRANSACTION == connection.getStatus()) {
             Collection<SQLException> exceptions = new LinkedList<>();
             exceptions.addAll(commitConnections());
-            connection.setStatus(ConnectionStatus.TERMINATED);
+            connection.getAndSetStatus(ConnectionStatus.TERMINATED);
             throwSQLExceptionIfNecessary(exceptions);
         }
     }
@@ -100,7 +100,7 @@ public class BackendTransactionManager {
         if (ConnectionStatus.TRANSACTION == connection.getStatus()) {
             Collection<SQLException> exceptions = new LinkedList<>();
             exceptions.addAll(rollbackConnections());
-            connection.setStatus(ConnectionStatus.TERMINATED);
+            connection.getAndSetStatus(ConnectionStatus.TERMINATED);
             throwSQLExceptionIfNecessary(exceptions);
         }
     }

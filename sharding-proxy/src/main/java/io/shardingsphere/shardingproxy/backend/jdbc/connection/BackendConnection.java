@@ -77,7 +77,7 @@ public final class BackendConnection implements AutoCloseable {
      * @param update new update status
      * @return boolean set succeed or failed
      */
-    public boolean setStatus(final ConnectionStatus expect, final ConnectionStatus update) {
+    public boolean compareAndSetStatus(final ConnectionStatus expect, final ConnectionStatus update) {
         return status.compareAndSet(expect, update);
     }
     
@@ -86,7 +86,7 @@ public final class BackendConnection implements AutoCloseable {
      *
      * @param update new update status
      */
-    public void setStatus(final ConnectionStatus update) {
+    public void getAndSetStatus(final ConnectionStatus update) {
         status.getAndSet(update);
     }
     
@@ -231,9 +231,7 @@ public final class BackendConnection implements AutoCloseable {
         if (ConnectionStatus.TRANSACTION != status.get() && ConnectionStatus.INIT != status.get()
             && ConnectionStatus.TERMINATED != status.get()) {
             status.compareAndSet(ConnectionStatus.RUNNING, ConnectionStatus.RELEASE);
-//            log.debug("++++release, channel:{}, status:{}", context.channel().id().asShortText(), status.get());
         }
-        
         throwSQLExceptionIfNecessary(exceptions);
     }
     
