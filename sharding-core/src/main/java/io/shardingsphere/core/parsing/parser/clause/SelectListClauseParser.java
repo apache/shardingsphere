@@ -38,7 +38,9 @@ import io.shardingsphere.core.rule.ShardingRule;
 import io.shardingsphere.core.util.SQLUtil;
 import lombok.Getter;
 
+import java.util.Collection;
 import java.util.Collections;
+import java.util.LinkedList;
 import java.util.List;
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
@@ -72,36 +74,41 @@ public abstract class SelectListClauseParser implements SQLClauseParser {
      */
     public void parse(final SelectStatement selectStatement, final List<SelectItem> items) {
         do {
-            selectStatement.getItems().add(parseSelectItem(selectStatement));
+            selectStatement.getItems().addAll(parseSelectItems(selectStatement));
         } while (lexerEngine.skipIfEqual(Symbol.COMMA));
         selectStatement.setSelectListLastPosition(lexerEngine.getCurrentToken().getEndPosition() - lexerEngine.getCurrentToken().getLiterals().length());
         items.addAll(selectStatement.getItems());
     }
     
-    private SelectItem parseSelectItem(final SelectStatement selectStatement) {
+    private Collection<SelectItem> parseSelectItems(final SelectStatement selectStatement) {
         lexerEngine.skipIfEqual(getSkippedKeywordsBeforeSelectItem());
-        SelectItem result = getSelectItem(selectStatement);
-        if (!selectStatement.getDistinctSelectItems().isEmpty()) {
-            selectStatement.getDistinctSelectItems().get(0).getDistinctColumnNames().add(result.getExpression());
+        Collection<SelectItem> result = getSelectItems(selectStatement);
+        for (SelectItem each : result) {
+            if (!selectStatement.getDistinctSelectItems().isEmpty()) {
+                selectStatement.getDistinctSelectItems().get(0).getDistinctColumnNames().add(each.getExpression());
+            }
         }
         return result;
     }
     
-    private SelectItem getSelectItem(final SelectStatement selectStatement) {
-        final SelectItem result;
+    private Collection<SelectItem> getSelectItems(final SelectStatement selectStatement) {
+        final Collection<SelectItem> result = new LinkedList<>();
         if (isRowNumberSelectItem()) {
-            result = parseRowNumberSelectItem(selectStatement);
+            result.add(parseRowNumberSelectItem(selectStatement));
         } else if (isDistinctSelectItem()) {
-            result = parseDistinctSelectItem(selectStatement);
+            result.add(parseDistinctSelectItem(selectStatement));
+            if (isStarSelectItem()) {
+                result.add(parseStarSelectItem());
+            }
             parseRestSelectItem(selectStatement);
         } else if (isStarSelectItem()) {
             selectStatement.setContainStar(true);
-            result = parseStarSelectItem();
+            result.add(parseStarSelectItem());
         } else if (isAggregationSelectItem()) {
-            result = parseAggregationSelectItem(selectStatement);
+            result.add(parseAggregationSelectItem(selectStatement));
             parseRestSelectItem(selectStatement);
         } else {
-            result = parseCommonOrStarSelectItem(selectStatement);
+            result.add(parseCommonOrStarSelectItem(selectStatement));
         }
         return result;
     }
@@ -119,6 +126,9 @@ public abstract class SelectListClauseParser implements SQLClauseParser {
     private SelectItem parseDistinctSelectItem(final SelectStatement selectStatement) {
         lexerEngine.nextToken();
         String distinctColumnName = lexerEngine.getCurrentToken().getLiterals();
+        if (Symbol.STAR == lexerEngine.getCurrentToken().getType()) {
+            return new DistinctSelectItem(Collections.<String>emptyList(), aliasExpressionParser.parseSelectItemAlias());
+        }
         lexerEngine.nextToken();
         distinctColumnName = SQLUtil.getExactlyValue(distinctColumnName + parseRestSelectItem(selectStatement));
         return new DistinctSelectItem(Collections.singletonList(distinctColumnName), aliasExpressionParser.parseSelectItemAlias());
