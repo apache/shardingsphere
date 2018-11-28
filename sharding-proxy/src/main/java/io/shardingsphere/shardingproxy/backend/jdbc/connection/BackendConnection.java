@@ -109,9 +109,6 @@ public final class BackendConnection implements AutoCloseable {
     }
     
     private List<Connection> getConnectionsWithTransaction(final ConnectionMode connectionMode, final String dataSourceName, final int connectionSize) throws SQLException {
-        if (ConnectionStatus.INIT == status || ConnectionStatus.TERMINATED == status) {
-            status = ConnectionStatus.RUNNING;
-        }
         Collection<Connection> connections;
         synchronized (cachedConnections) {
             connections = cachedConnections.get(dataSourceName);
