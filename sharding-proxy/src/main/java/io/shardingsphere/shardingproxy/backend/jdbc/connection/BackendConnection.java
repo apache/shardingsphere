@@ -66,6 +66,8 @@ public final class BackendConnection implements AutoCloseable {
     @Setter
     private ChannelHandlerContext context;
     
+    private final Object lock = new Object();
+    
     public BackendConnection(final TransactionType transactionType) {
         this.transactionType = transactionType;
     }
@@ -228,9 +230,10 @@ public final class BackendConnection implements AutoCloseable {
         if (ConnectionStatus.TRANSACTION != status.get() || forceClose) {
             exceptions.addAll(releaseConnections(forceClose));
         }
-        if (ConnectionStatus.TRANSACTION != status.get() && ConnectionStatus.INIT != status.get()
-            && ConnectionStatus.TERMINATED != status.get()) {
-            status.compareAndSet(ConnectionStatus.RUNNING, ConnectionStatus.RELEASE);
+        if (status.compareAndSet(ConnectionStatus.RUNNING, ConnectionStatus.RELEASE)) {
+            synchronized (lock) {
+                lock.notifyAll();
+            }
         }
         throwSQLExceptionIfNecessary(exceptions);
     }
