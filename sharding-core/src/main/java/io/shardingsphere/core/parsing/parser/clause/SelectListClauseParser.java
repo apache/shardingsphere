@@ -83,11 +83,7 @@ public abstract class SelectListClauseParser implements SQLClauseParser {
     private Collection<SelectItem> parseSelectItems(final SelectStatement selectStatement) {
         lexerEngine.skipIfEqual(getSkippedKeywordsBeforeSelectItem());
         Collection<SelectItem> result = getSelectItems(selectStatement);
-        for (SelectItem each : result) {
-            if (!selectStatement.getDistinctSelectItems().isEmpty()) {
-                selectStatement.getDistinctSelectItems().get(0).getDistinctColumnNames().add(each.getExpression());
-            }
-        }
+        reviseDistinctSelectItems(selectStatement, result);
         return result;
     }
     
@@ -97,9 +93,7 @@ public abstract class SelectListClauseParser implements SQLClauseParser {
             result.add(parseRowNumberSelectItem(selectStatement));
         } else if (isDistinctSelectItem()) {
             result.add(parseDistinctSelectItem(selectStatement));
-            if (isStarSelectItem()) {
-                result.add(parseStarSelectItem());
-            }
+            addStarSelectItem(result);
             parseRestSelectItem(selectStatement);
         } else if (isStarSelectItem()) {
             selectStatement.setContainStar(true);
@@ -111,6 +105,20 @@ public abstract class SelectListClauseParser implements SQLClauseParser {
             result.add(parseCommonOrStarSelectItem(selectStatement));
         }
         return result;
+    }
+    
+    private void addStarSelectItem(final Collection<SelectItem> result) {
+        if (isStarSelectItem()) {
+            result.add(parseStarSelectItem());
+        }
+    }
+    
+    private void reviseDistinctSelectItems(final SelectStatement selectStatement, final Collection<SelectItem> selectItems) {
+        for (SelectItem each : selectItems) {
+            if (!(selectStatement.getDistinctSelectItems().isEmpty() || each instanceof StarSelectItem)) {
+                selectStatement.getDistinctSelectItems().get(0).getDistinctColumnNames().add(each.getExpression());
+            }
+        }
     }
     
     protected abstract Keyword[] getSkippedKeywordsBeforeSelectItem();
