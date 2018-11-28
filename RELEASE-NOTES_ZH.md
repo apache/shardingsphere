@@ -9,6 +9,7 @@
 #### Core
 
 1. [ISSUE #1412](https://github.com/sharding-sphere/sharding-sphere/issues/1412) 支持广播表
+1. [ISSUE #1486](https://github.com/sharding-sphere/sharding-sphere/issues/1486) 支持`DISTINCT`语法
 
 ### 缺陷修正
 

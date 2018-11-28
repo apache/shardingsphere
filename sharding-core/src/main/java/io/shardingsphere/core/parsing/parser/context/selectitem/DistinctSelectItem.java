@@ -17,14 +17,17 @@
 
 package io.shardingsphere.core.parsing.parser.context.selectitem;
 
+import com.google.common.base.Joiner;
 import com.google.common.base.Optional;
-import com.google.common.base.Strings;
 import io.shardingsphere.core.parsing.lexer.token.DefaultKeyword;
 import io.shardingsphere.core.util.SQLUtil;
 import lombok.EqualsAndHashCode;
 import lombok.Getter;
-import lombok.RequiredArgsConstructor;
 import lombok.ToString;
+
+import java.util.Collection;
+import java.util.HashSet;
+import java.util.Set;
 
 /**
  * Distinct select item.
@@ -34,16 +37,21 @@ import lombok.ToString;
 @Getter
 @EqualsAndHashCode
 @ToString
-@RequiredArgsConstructor
 public final class DistinctSelectItem implements SelectItem {
     
-    private final String distinctColumnName;
+    private final Set<String> distinctColumnNames = new HashSet<>();
     
     private final Optional<String> alias;
+    
+    public DistinctSelectItem(final Collection<String> distinctColumnNames, final Optional<String> alias) {
+        this.distinctColumnNames.addAll(distinctColumnNames);
+        this.alias = alias;
+    }
 
     @Override
     public String getExpression() {
-        return Strings.isNullOrEmpty(distinctColumnName) ? DefaultKeyword.DISTINCT.name() : SQLUtil.getExactlyValue(DefaultKeyword.DISTINCT + " " + distinctColumnName);
+        
+        return distinctColumnNames.isEmpty() ? DefaultKeyword.DISTINCT.name() : SQLUtil.getExactlyValue(DefaultKeyword.DISTINCT + " " + Joiner.on(", ").join(distinctColumnNames));
     }
     
     /**

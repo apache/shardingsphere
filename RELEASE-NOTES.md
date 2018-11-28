@@ -9,6 +9,7 @@
 #### Core
 
 1. [ISSUE #1412](https://github.com/sharding-sphere/sharding-sphere/issues/1412) Support broadcast table
+1. [ISSUE #1486](https://github.com/sharding-sphere/sharding-sphere/issues/1486) Support `DISTINCT` syntax
 
 ### Bug Fixes
 

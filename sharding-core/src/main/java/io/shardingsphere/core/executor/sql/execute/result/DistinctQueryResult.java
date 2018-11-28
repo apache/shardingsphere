@@ -33,7 +33,6 @@ import java.sql.SQLException;
 import java.util.ArrayList;
 import java.util.Calendar;
 import java.util.Collection;
-import java.util.Collections;
 import java.util.Iterator;
 import java.util.LinkedHashSet;
 import java.util.List;
@@ -63,12 +62,6 @@ public class DistinctQueryResult implements QueryResult {
     public DistinctQueryResult(final Collection<QueryResult> queryResults, final List<String> distinctColumnLabels) {
         this.columnLabelAndIndexMap = getColumnLabelAndIndexMap(queryResults.iterator().next());
         resultData = getResultData(queryResults, distinctColumnLabels);
-    }
-    
-    @SneakyThrows
-    public DistinctQueryResult(final Collection<QueryResult> queryResults) {
-        this.columnLabelAndIndexMap = getColumnLabelAndIndexMap(queryResults.iterator().next());
-        resultData = getResultData(queryResults, Collections.<String>emptyList());
     }
     
     @SneakyThrows
