@@ -15,7 +15,7 @@
  * </p>
  */
 
-package io.shardingsphere.orchestration.internal.yaml;
+package io.shardingsphere.orchestration.yaml;
 
 import org.yaml.snakeyaml.introspector.Property;
 import org.yaml.snakeyaml.nodes.CollectionNode;

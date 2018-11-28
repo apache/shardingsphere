@@ -15,16 +15,13 @@
  * </p>
  */
 
-package io.shardingsphere.orchestration.internal.yaml;
+package io.shardingsphere.shardingproxy.util;
 
 import org.junit.runner.RunWith;
 import org.junit.runners.Suite;
 import org.junit.runners.Suite.SuiteClasses;
 
 @RunWith(Suite.class)
-@SuiteClasses({
-        YamlOrchestrationConfigurationTest.class, 
-        DefaultRepresenterTest.class
-})
-public final class AllYamlTests {
+@SuiteClasses(DataSourceConverterTest.class)
+public final class AllUtilTests {
 }

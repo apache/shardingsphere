@@ -15,16 +15,21 @@
  * </p>
  */
 
-package io.shardingsphere.orchestration.internal.state.listener;
+package io.shardingsphere.orchestration.yaml.fixture;
 
-import org.junit.runner.RunWith;
-import org.junit.runners.Suite;
-import org.junit.runners.Suite.SuiteClasses;
+import lombok.Getter;
+import lombok.Setter;
 
-@RunWith(Suite.class)
-@SuiteClasses({
-        DataSourceStateOrchestrationListenerTest.class,
-        InstanceStateOrchestrationListenerTest.class
-})
-public final class AllListenerTests {
+import java.util.Collection;
+import java.util.Map;
+
+@Getter
+@Setter
+public final class DefaultRepresenterFixture {
+    
+    private String value;
+    
+    private Collection<String> collection;
+    
+    private Map<String, String> map;
 }

@@ -42,16 +42,16 @@ import static org.mockito.Mockito.when;
 public final class DataSourceServiceTest {
     
     private static final String DATA_SOURCE_YAML =
-            "ds_0: !!io.shardingsphere.core.config.DataSourceConfiguration\n"
+            "ds_0: !!io.shardingsphere.orchestration.yaml.YamlDataSourceConfiguration\n"
                     + "  dataSourceClassName: org.apache.commons.dbcp2.BasicDataSource\n" + "  properties:\n"
                     + "    driverClassName: com.mysql.jdbc.Driver\n" + "    url: jdbc:mysql://localhost:3306/ds_0\n" + "    username: root\n" + "    password: root\n"
-                    + "ds_1: !!io.shardingsphere.core.config.DataSourceConfiguration\n"
+                    + "ds_1: !!io.shardingsphere.orchestration.yaml.YamlDataSourceConfiguration\n"
                     + "  dataSourceClassName: org.apache.commons.dbcp2.BasicDataSource\n" + "  properties:\n"
                     + "    driverClassName: com.mysql.jdbc.Driver\n" + "    url: jdbc:mysql://localhost:3306/ds_1\n" + "    username: root\n" + "    password: root\n"
-                    + "ds_0_slave: !!io.shardingsphere.core.config.DataSourceConfiguration\n"
+                    + "ds_0_slave: !!io.shardingsphere.orchestration.yaml.YamlDataSourceConfiguration\n"
                     + "  dataSourceClassName: org.apache.commons.dbcp2.BasicDataSource\n" + "  properties:\n"
                     + "    driverClassName: com.mysql.jdbc.Driver\n" + "    url: jdbc:mysql://localhost:3306/ds_0_slave\n" + "    username: root\n" + "    password: root\n"
-                    + "ds_1_slave: !!io.shardingsphere.core.config.DataSourceConfiguration\n"
+                    + "ds_1_slave: !!io.shardingsphere.orchestration.yaml.YamlDataSourceConfiguration\n"
                     + "  dataSourceClassName: org.apache.commons.dbcp2.BasicDataSource\n" + "  properties:\n"
                     + "    driverClassName: com.mysql.jdbc.Driver\n" + "    url: jdbc:mysql://localhost:3306/ds_1_slave\n" + "    username: root\n" + "    password: root\n";
     

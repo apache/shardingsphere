@@ -17,75 +17,34 @@
 
 package io.shardingsphere.orchestration.internal.listener;
 
-import io.shardingsphere.orchestration.internal.config.listener.AuthenticationOrchestrationListener;
-import io.shardingsphere.orchestration.internal.config.listener.ConfigMapOrchestrationListener;
-import io.shardingsphere.orchestration.internal.config.listener.RuleOrchestrationListener;
-import io.shardingsphere.orchestration.internal.config.listener.DataSourceOrchestrationListener;
-import io.shardingsphere.orchestration.internal.config.listener.PropertiesOrchestrationListener;
-import io.shardingsphere.orchestration.internal.state.listener.DataSourceStateOrchestrationListener;
-import io.shardingsphere.orchestration.internal.state.listener.InstanceStateOrchestrationListener;
+import io.shardingsphere.orchestration.internal.config.listener.ConfigurationOrchestrationListenerManager;
+import io.shardingsphere.orchestration.internal.state.listener.StateOrchestrationListenerManager;
 import io.shardingsphere.orchestration.reg.api.RegistryCenter;
 
 import java.util.Collection;
-import java.util.LinkedList;
 
 /**
- * Registry center's listener manager.
+ * Orchestration listener manager.
  *
  * @author caohao
  * @author panjuan
  */
 public final class OrchestrationListenerManager {
     
-    private final Collection<RuleOrchestrationListener> ruleListenerManagers = new LinkedList<>();
+    private final ConfigurationOrchestrationListenerManager configOrchestrationListenerManager;
     
-    private final Collection<DataSourceOrchestrationListener> dataSourceListenerManagers = new LinkedList<>();
-    
-    private final PropertiesOrchestrationListener propertiesListenerManager;
-    
-    private final AuthenticationOrchestrationListener authenticationListenerManager;
-    
-    private final ConfigMapOrchestrationListener configMapListenerManager;
-    
-    private final InstanceStateOrchestrationListener instanceStateListenerManager;
-    
-    private final DataSourceStateOrchestrationListener dataSourceStateListenerManager;
+    private final StateOrchestrationListenerManager stateOrchestrationListenerManager;
     
     public OrchestrationListenerManager(final String name, final RegistryCenter regCenter, final Collection<String> shardingSchemaNames) {
-        for (String each : shardingSchemaNames) {
-            dataSourceListenerManagers.add(new DataSourceOrchestrationListener(name, regCenter, each));
-            ruleListenerManagers.add(new RuleOrchestrationListener(name, regCenter, each));
-        }
-        propertiesListenerManager = new PropertiesOrchestrationListener(name, regCenter);
-        authenticationListenerManager = new AuthenticationOrchestrationListener(name, regCenter);
-        instanceStateListenerManager = new InstanceStateOrchestrationListener(name, regCenter);
-        configMapListenerManager = new ConfigMapOrchestrationListener(name, regCenter);
-        dataSourceStateListenerManager = new DataSourceStateOrchestrationListener(name, regCenter);
+        configOrchestrationListenerManager = new ConfigurationOrchestrationListenerManager(name, regCenter, shardingSchemaNames);
+        stateOrchestrationListenerManager = new StateOrchestrationListenerManager(name, regCenter);
     }
     
     /**
-     * Initialize listeners.
-     *
+     * Initialize all orchestration listeners.
      */
     public void initListeners() {
-        initRuleListenerManagers();
-        initDataSourceListenerManagers();
-        propertiesListenerManager.watch();
-        authenticationListenerManager.watch();
-        instanceStateListenerManager.watch();
-        dataSourceStateListenerManager.watch();
-        configMapListenerManager.watch();
-    }
-    
-    private void initDataSourceListenerManagers() {
-        for (DataSourceOrchestrationListener each : dataSourceListenerManagers) {
-            each.watch();
-        }
-    }
-    
-    private void initRuleListenerManagers() {
-        for (RuleOrchestrationListener each : ruleListenerManagers) {
-            each.watch();
-        }
+        configOrchestrationListenerManager.initListeners();
+        stateOrchestrationListenerManager.initListeners();
     }
 }

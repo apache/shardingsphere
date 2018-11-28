@@ -15,16 +15,13 @@
  * </p>
  */
 
-package io.shardingsphere.shardingjdbc.orchestration.spring.boot.orchestration;
+package io.shardingsphere.orchestration.internal.listener;
 
-import io.shardingsphere.orchestration.yaml.YamlOrchestrationConfiguration;
-import org.springframework.boot.context.properties.ConfigurationProperties;
+import org.junit.runner.RunWith;
+import org.junit.runners.Suite;
+import org.junit.runners.Suite.SuiteClasses;
 
-/**
- * Orchestration configuration properties.
- *
- * @author caohao
- */
-@ConfigurationProperties(prefix = "sharding.jdbc.config.orchestration")
-public class SpringBootOrchestrationConfigurationProperties extends YamlOrchestrationConfiguration {
+@RunWith(Suite.class)
+@SuiteClasses(OrchestrationListenerManagerTest.class)
+public final class AllListenerTests {
 }
