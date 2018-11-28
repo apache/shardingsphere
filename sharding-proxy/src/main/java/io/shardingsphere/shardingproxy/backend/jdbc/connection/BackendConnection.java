@@ -24,7 +24,6 @@ import io.shardingsphere.core.constant.transaction.TransactionType;
 import io.shardingsphere.core.routing.router.masterslave.MasterVisitedManager;
 import io.shardingsphere.shardingproxy.runtime.schema.LogicSchema;
 import lombok.Getter;
-import lombok.Setter;
 import lombok.extern.slf4j.Slf4j;
 
 import java.sql.Connection;
@@ -36,6 +35,7 @@ import java.util.Collection;
 import java.util.LinkedList;
 import java.util.List;
 import java.util.concurrent.CopyOnWriteArrayList;
+import java.util.concurrent.atomic.AtomicReference;
 
 /**
  * Backend connection.
@@ -57,8 +57,7 @@ public final class BackendConnection implements AutoCloseable {
     
     private final Collection<MethodInvocation> methodInvocations = new ArrayList<>();
     
-    @Setter
-    private ConnectionStatus status = ConnectionStatus.INIT;
+    private volatile AtomicReference<ConnectionStatus> status = new AtomicReference<>(ConnectionStatus.INIT);
     
     private TransactionType transactionType;
     
@@ -67,12 +66,40 @@ public final class BackendConnection implements AutoCloseable {
     }
     
     /**
+     * Change connection status using compare and set.
+     *
+     * @param expect expect status
+     * @param update new update status
+     */
+    public void setStatus(final ConnectionStatus expect, final ConnectionStatus update) {
+        status.compareAndSet(expect, update);
+    }
+    
+    /**
+     * Change connection status using get and set.
+     *
+     * @param update new update status
+     */
+    public void setStatus(final ConnectionStatus update) {
+        status.getAndSet(update);
+    }
+    
+    /**
+     * Get current connection status.
+     *
+     * @return connection status
+     */
+    public ConnectionStatus getStatus() {
+        return status.get();
+    }
+    
+    /**
      * Change transaction type of current channel.
      *
      * @param transactionType transaction type
      */
     public void setTransactionType(final TransactionType transactionType) {
-        if (ConnectionStatus.TRANSACTION != status) {
+        if (ConnectionStatus.TRANSACTION != status.get()) {
             this.transactionType = transactionType;
         }
     }
@@ -83,7 +110,7 @@ public final class BackendConnection implements AutoCloseable {
      * @param logicSchema logic schema
      */
     public void setLogicSchema(final LogicSchema logicSchema) {
-        if (ConnectionStatus.TRANSACTION != status) {
+        if (ConnectionStatus.TRANSACTION != status.get()) {
             this.logicSchema = logicSchema;
         }
     }
@@ -98,10 +125,10 @@ public final class BackendConnection implements AutoCloseable {
      * @throws SQLException SQL exception
      */
     public List<Connection> getConnections(final ConnectionMode connectionMode, final String dataSourceName, final int connectionSize) throws SQLException {
-        if (ConnectionStatus.INIT == status || ConnectionStatus.TERMINATED == status) {
-            status = ConnectionStatus.RUNNING;
+        if (ConnectionStatus.INIT == status.get() || ConnectionStatus.TERMINATED == status.get()) {
+            status.getAndSet(ConnectionStatus.RUNNING);
         }
-        if (ConnectionStatus.TRANSACTION == status) {
+        if (ConnectionStatus.TRANSACTION == status.get()) {
             return getConnectionsWithTransaction(connectionMode, dataSourceName, connectionSize);
         } else {
             return getConnectionsWithoutTransaction(connectionMode, dataSourceName, connectionSize);
@@ -187,17 +214,18 @@ public final class BackendConnection implements AutoCloseable {
      * @param forceClose force close flag
      * @throws SQLException SQL exception
      */
-    public void close(final boolean forceClose) throws SQLException {
-        synchronized (cachedConnections) {
-            Collection<SQLException> exceptions = new LinkedList<>();
-            MasterVisitedManager.clear();
-            exceptions.addAll(closeStatements());
-            exceptions.addAll(closeResultSets());
-            if (ConnectionStatus.TRANSACTION != status || forceClose) {
-                exceptions.addAll(releaseConnections(forceClose));
-            }
-            throwSQLExceptionIfNecessary(exceptions);
+    public synchronized void close(final boolean forceClose) throws SQLException {
+        if (ConnectionStatus.TRANSACTION != status.get()) {
+            status.compareAndSet(ConnectionStatus.RUNNING, ConnectionStatus.RELEASE);
         }
+        Collection<SQLException> exceptions = new LinkedList<>();
+        MasterVisitedManager.clear();
+        exceptions.addAll(closeStatements());
+        exceptions.addAll(closeResultSets());
+        if (ConnectionStatus.TRANSACTION != status.get() || forceClose) {
+            exceptions.addAll(releaseConnections(forceClose));
+        }
+        throwSQLExceptionIfNecessary(exceptions);
     }
     
     private Collection<SQLException> closeResultSets() {
@@ -230,7 +258,7 @@ public final class BackendConnection implements AutoCloseable {
         Collection<SQLException> result = new LinkedList<>();
         for (Connection each : cachedConnections.values()) {
             try {
-                if (forceRollback && ConnectionStatus.TRANSACTION == status) {
+                if (forceRollback && ConnectionStatus.TRANSACTION == status.get()) {
                     each.rollback();
                 }
                 each.close();
