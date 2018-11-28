@@ -21,6 +21,7 @@ import com.google.common.base.Optional;
 import io.netty.buffer.ByteBuf;
 import io.netty.channel.ChannelHandlerContext;
 import io.shardingsphere.shardingproxy.backend.jdbc.connection.BackendConnection;
+import io.shardingsphere.shardingproxy.backend.jdbc.connection.ConnectionStatus;
 import io.shardingsphere.shardingproxy.frontend.common.FrontendHandler;
 import io.shardingsphere.shardingproxy.runtime.ChannelRegistry;
 import io.shardingsphere.shardingproxy.transport.common.packet.DatabasePacket;
@@ -36,6 +37,7 @@ import io.shardingsphere.shardingproxy.transport.mysql.packet.generic.OKPacket;
 import io.shardingsphere.spi.root.RootInvokeHook;
 import io.shardingsphere.spi.root.SPIRootInvokeHook;
 import lombok.RequiredArgsConstructor;
+
 import java.sql.SQLException;
 
 /**
@@ -62,6 +64,7 @@ public final class CommandExecutor implements Runnable {
         int connectionSize = 0;
         try (MySQLPacketPayload payload = new MySQLPacketPayload(message);
              BackendConnection backendConnection = frontendHandler.getBackendConnection()) {
+            waitUntilConnectionReleasedIfNecessary(backendConnection);
             CommandPacket commandPacket = getCommandPacket(payload, backendConnection, frontendHandler);
             Optional<CommandResponsePackets> responsePackets = commandPacket.execute();
             if (!responsePackets.isPresent()) {
@@ -82,6 +85,17 @@ public final class CommandExecutor implements Runnable {
             context.writeAndFlush(new ErrPacket(1, ServerErrorCode.ER_STD_UNKNOWN_EXCEPTION, ex.getMessage()));
         } finally {
             rootInvokeHook.finish(connectionSize);
+        }
+    }
+    
+    private void waitUntilConnectionReleasedIfNecessary(final BackendConnection backendConnection) throws InterruptedException {
+        if (ConnectionStatus.TRANSACTION != backendConnection.getStatus() && ConnectionStatus.INIT != backendConnection.getStatus()
+            && ConnectionStatus.TERMINATED != backendConnection.getStatus()) {
+            while (!backendConnection.compareAndSetStatus(ConnectionStatus.RELEASE, ConnectionStatus.RUNNING)) {
+                synchronized (backendConnection.getLock()) {
+                    backendConnection.getLock().wait(1000);
+                }
+            }
         }
     }
     

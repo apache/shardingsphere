@@ -45,6 +45,7 @@ public abstract class FrontendHandler extends ChannelInboundHandlerAdapter {
 
     @Override
     public final void channelActive(final ChannelHandlerContext context) {
+        backendConnection.setContext(context);
         ChannelThreadExecutorGroup.getInstance().register(context.channel().id());
         handshake(context);
     }

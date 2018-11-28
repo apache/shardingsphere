@@ -17,12 +17,22 @@
 
 package io.shardingsphere.shardingproxy.backend.jdbc.connection;
 
+import io.shardingsphere.core.constant.transaction.TransactionOperationType;
+
+import java.sql.SQLException;
+
 /**
- * Connection status.
+ * Transaction manager interface for proxy.
  *
  * @author zhaojun
  */
-public enum ConnectionStatus {
+public interface TransactionManager {
     
-    INIT, RUNNING, RELEASE, TRANSACTION, TERMINATED
+    /**
+     * Handle proxy transaction.
+     *
+     * @param operationType transaction operation type
+     * @throws SQLException SQL Exception
+     */
+    void doInTransaction(TransactionOperationType operationType) throws SQLException;
 }
