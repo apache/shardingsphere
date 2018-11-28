@@ -93,7 +93,7 @@ public final class CommandExecutor implements Runnable {
             && ConnectionStatus.TERMINATED != backendConnection.getStatus()) {
             while (!backendConnection.compareAndSetStatus(ConnectionStatus.RELEASE, ConnectionStatus.RUNNING)) {
                 synchronized (backendConnection.getLock()) {
-                    backendConnection.getLock().wait();
+                    backendConnection.getLock().wait(1000);
                 }
             }
         }
