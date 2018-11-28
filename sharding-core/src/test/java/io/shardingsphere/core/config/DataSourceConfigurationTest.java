@@ -55,8 +55,7 @@ public final class DataSourceConfigurationTest {
         properties.put("jdbcUrl", "jdbc:h2:mem:test;DB_CLOSE_DELAY=-1;DATABASE_TO_UPPER=false;MODE=MySQL");
         properties.put("username", "root");
         properties.put("password", "root");
-        DataSourceConfiguration dataSourceConfig = new DataSourceConfiguration();
-        dataSourceConfig.setDataSourceClassName(DataSourceParameter.DATA_SOURCE_POOL_CLASS_NAME);
+        DataSourceConfiguration dataSourceConfig = new DataSourceConfiguration(DataSourceParameter.DATA_SOURCE_POOL_CLASS_NAME);
         dataSourceConfig.getProperties().putAll(properties);
         HikariDataSource actual = (HikariDataSource) dataSourceConfig.createDataSource();
         assertThat(actual.getDriverClassName(), is("org.h2.Driver"));

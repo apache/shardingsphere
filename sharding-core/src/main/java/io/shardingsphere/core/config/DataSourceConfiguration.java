@@ -24,7 +24,7 @@ import com.google.common.collect.Sets;
 import io.shardingsphere.core.exception.ShardingConfigurationException;
 import io.shardingsphere.core.rule.DataSourceParameter;
 import lombok.Getter;
-import lombok.Setter;
+import lombok.RequiredArgsConstructor;
 
 import javax.sql.DataSource;
 import java.lang.reflect.Field;
@@ -41,8 +41,8 @@ import java.util.Map.Entry;
  * @author zhangliang
  * @author panjuan
  */
+@RequiredArgsConstructor
 @Getter
-@Setter
 public final class DataSourceConfiguration {
     
     private static final String GETTER_PREFIX = "get";
@@ -58,9 +58,9 @@ public final class DataSourceConfiguration {
         SKIPPED_PROPERTY_NAMES = Sets.newHashSet("loginTimeout");
     }
     
-    private String dataSourceClassName;
+    private final String dataSourceClassName;
     
-    private Map<String, Object> properties = new LinkedHashMap<>();
+    private final Map<String, Object> properties = new LinkedHashMap<>();
     
     /**
      * Get data source configuration.
@@ -80,8 +80,7 @@ public final class DataSourceConfiguration {
         } catch (final ReflectiveOperationException ex) {
             throw new ShardingConfigurationException(ex);
         }
-        DataSourceConfiguration result = new DataSourceConfiguration();
-        result.setDataSourceClassName(dataSource.getClass().getName());
+        DataSourceConfiguration result = new DataSourceConfiguration(dataSource.getClass().getName());
         result.getProperties().putAll(properties);
         return result;
     }
@@ -93,8 +92,7 @@ public final class DataSourceConfiguration {
      * @return data source configuration
      */
     public static DataSourceConfiguration getDataSourceConfiguration(final DataSourceParameter dataSourceParameter) {
-        DataSourceConfiguration result = new DataSourceConfiguration();
-        result.setDataSourceClassName(DataSourceParameter.DATA_SOURCE_POOL_CLASS_NAME);
+        DataSourceConfiguration result = new DataSourceConfiguration(DataSourceParameter.DATA_SOURCE_POOL_CLASS_NAME);
         for (Field each : dataSourceParameter.getClass().getDeclaredFields()) {
             try {
                 each.setAccessible(true);

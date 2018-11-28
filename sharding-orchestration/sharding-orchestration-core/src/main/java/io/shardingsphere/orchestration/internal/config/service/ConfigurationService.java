@@ -17,8 +17,10 @@
 
 package io.shardingsphere.orchestration.internal.config.service;
 
+import com.google.common.base.Function;
 import com.google.common.base.Preconditions;
 import com.google.common.base.Strings;
+import com.google.common.collect.Maps;
 import io.shardingsphere.api.config.MasterSlaveRuleConfiguration;
 import io.shardingsphere.api.config.RuleConfiguration;
 import io.shardingsphere.api.config.ShardingRuleConfiguration;
@@ -27,8 +29,9 @@ import io.shardingsphere.core.rule.Authentication;
 import io.shardingsphere.core.yaml.masterslave.YamlMasterSlaveRuleConfiguration;
 import io.shardingsphere.core.yaml.sharding.YamlShardingRuleConfiguration;
 import io.shardingsphere.orchestration.internal.config.node.ConfigurationNode;
-import io.shardingsphere.orchestration.internal.yaml.DefaultRepresenter;
 import io.shardingsphere.orchestration.reg.api.RegistryCenter;
+import io.shardingsphere.orchestration.yaml.DefaultRepresenter;
+import io.shardingsphere.orchestration.yaml.YamlDataSourceConfiguration;
 import org.yaml.snakeyaml.Yaml;
 
 import java.util.Collection;
@@ -78,7 +81,17 @@ public final class ConfigurationService {
     private void persistDataSourceConfiguration(final String shardingSchemaName, final Map<String, DataSourceConfiguration> dataSourceConfigs, final boolean isOverwrite) {
         if (isOverwrite || !hasDataSourceConfiguration(shardingSchemaName)) {
             Preconditions.checkState(null != dataSourceConfigs && !dataSourceConfigs.isEmpty(), "No available data source in `%s` for orchestration.", shardingSchemaName);
-            regCenter.persist(configNode.getDataSourcePath(shardingSchemaName), new Yaml(new DefaultRepresenter()).dumpAsMap(dataSourceConfigs));
+            regCenter.persist(configNode.getDataSourcePath(shardingSchemaName), new Yaml(new DefaultRepresenter()).dumpAsMap(
+                    Maps.transformValues(dataSourceConfigs, new Function<DataSourceConfiguration, YamlDataSourceConfiguration>() {
+                        
+                        @Override
+                        public YamlDataSourceConfiguration apply(final DataSourceConfiguration input) {
+                            YamlDataSourceConfiguration result = new YamlDataSourceConfiguration();
+                            result.setDataSourceClassName(input.getDataSourceClassName());
+                            result.setProperties(input.getProperties());
+                            return result;
+                        }
+                    })));
         }
     }
     
@@ -150,9 +163,17 @@ public final class ConfigurationService {
      */
     @SuppressWarnings("unchecked")
     public Map<String, DataSourceConfiguration> loadDataSourceConfigurations(final String shardingSchemaName) {
-        Map<String, DataSourceConfiguration> result = (Map) new Yaml().load(regCenter.getDirectly(configNode.getDataSourcePath(shardingSchemaName)));
+        Map<String, YamlDataSourceConfiguration> result = (Map) new Yaml().load(regCenter.getDirectly(configNode.getDataSourcePath(shardingSchemaName)));
         Preconditions.checkState(null != result && !result.isEmpty(), "No available data sources to load in `%s` for orchestration.", shardingSchemaName);
-        return result;
+        return Maps.transformValues(result, new Function<YamlDataSourceConfiguration, DataSourceConfiguration>() {
+            
+            @Override
+            public DataSourceConfiguration apply(final YamlDataSourceConfiguration input) {
+                DataSourceConfiguration result = new DataSourceConfiguration(input.getDataSourceClassName());
+                result.getProperties().putAll(input.getProperties());
+                return result;
+            }
+        });
     }
     
     /**
