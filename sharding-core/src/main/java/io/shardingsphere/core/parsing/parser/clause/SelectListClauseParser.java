@@ -38,6 +38,7 @@ import io.shardingsphere.core.rule.ShardingRule;
 import io.shardingsphere.core.util.SQLUtil;
 import lombok.Getter;
 
+import java.util.Collections;
 import java.util.List;
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
@@ -98,6 +99,9 @@ public abstract class SelectListClauseParser implements SQLClauseParser {
         } else {
             result = parseCommonOrStarSelectItem(selectStatement);
         }
+        if (!selectStatement.getDistinctSelectItems().isEmpty()) {
+            selectStatement.getDistinctSelectItems().get(0).getDistinctColumnNames().add(result.getExpression());
+        }
         return result;
     }
     
@@ -116,7 +120,7 @@ public abstract class SelectListClauseParser implements SQLClauseParser {
         String distinctColumnName = lexerEngine.getCurrentToken().getLiterals();
         lexerEngine.nextToken();
         distinctColumnName = SQLUtil.getExactlyValue(distinctColumnName + parseRestSelectItem(selectStatement));
-        return new DistinctSelectItem(distinctColumnName, aliasExpressionParser.parseSelectItemAlias());
+        return new DistinctSelectItem(Collections.singletonList(distinctColumnName), aliasExpressionParser.parseSelectItemAlias());
     }
     
     private boolean isStarSelectItem() {
