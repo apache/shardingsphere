@@ -39,6 +39,7 @@ import io.shardingsphere.core.util.SQLUtil;
 import lombok.Getter;
 
 import java.util.List;
+import java.util.regex.Matcher;
 import java.util.regex.Pattern;
 
 /**
@@ -86,7 +87,7 @@ public abstract class SelectListClauseParser implements SQLClauseParser {
         if (isRowNumberSelectItem()) {
             result = parseRowNumberSelectItem(selectStatement);
         } else if (isDistinctSelectItem()) {
-            result = parseDistinctSelectItem();
+            result = parseDistinctSelectItem(selectStatement);
             parseRestSelectItem(selectStatement);
         } else if (isStarSelectItem()) {
             selectStatement.setContainStar(true);
@@ -110,10 +111,11 @@ public abstract class SelectListClauseParser implements SQLClauseParser {
         return lexerEngine.equalAny(DefaultKeyword.DISTINCT);
     }
     
-    private SelectItem parseDistinctSelectItem() {
+    private SelectItem parseDistinctSelectItem(final SelectStatement selectStatement) {
         lexerEngine.nextToken();
         String distinctColumnName = lexerEngine.getCurrentToken().getLiterals();
         lexerEngine.nextToken();
+        distinctColumnName = SQLUtil.getExactlyValue(distinctColumnName + parseRestSelectItem(selectStatement));
         return new DistinctSelectItem(distinctColumnName, aliasExpressionParser.parseSelectItemAlias());
     }
     
@@ -173,7 +175,7 @@ public abstract class SelectListClauseParser implements SQLClauseParser {
     }
     
     private SelectItem getAggregationDistinctSelectItem(final SelectStatement selectStatement, final AggregationType aggregationType, final int beginPosition, final String innerExpression) {
-        AggregationDistinctSelectItem result = new AggregationDistinctSelectItem(aggregationType, innerExpression, aliasExpressionParser.parseSelectItemAlias(), getDistinctColumnName());
+        AggregationDistinctSelectItem result = new AggregationDistinctSelectItem(aggregationType, innerExpression, aliasExpressionParser.parseSelectItemAlias(), getDistinctColumnName(innerExpression));
         selectStatement.getSQLTokens().add(new AggregationDistinctToken(beginPosition, SQLUtil.getExactlyValue(aggregationType.name() + innerExpression), result.getDistinctColumnName()));
         return result;
     }
@@ -185,8 +187,14 @@ public abstract class SelectListClauseParser implements SQLClauseParser {
     }
     
     // TODO :panjuan parse distinct column name
-    private String getDistinctColumnName() {
-        return "";
+    private String getDistinctColumnName(final String innerExpression) {
+        Pattern pattern = Pattern.compile("\\(\\s*DISTINCT\\s+(\\S+)\\s*\\)", Pattern.CASE_INSENSITIVE);
+        Matcher matcher = pattern.matcher(innerExpression);
+        String result = "";
+        if (matcher.find()) {
+            result = matcher.group(1);
+        }
+        return result;
     }
     
     private String parseRestSelectItem(final SelectStatement selectStatement) {
