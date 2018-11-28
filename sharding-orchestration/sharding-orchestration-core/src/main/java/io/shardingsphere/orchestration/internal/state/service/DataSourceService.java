@@ -69,11 +69,10 @@ public final class DataSourceService {
      */
     public Map<String, DataSourceConfiguration> getAvailableDataSourceConfigurations(final String shardingSchemaName) {
         Map<String, DataSourceConfiguration> result = configService.loadDataSourceConfigurations(shardingSchemaName);
-        Collection<String> disabledDataSourceNames = getDisabledSlaveDataSourceNames().get(shardingSchemaName);
-        if (null == disabledDataSourceNames) {
+        if (!getDisabledSlaveDataSourceNames().containsKey(shardingSchemaName)) {
             return result;
         }
-        for (String each : disabledDataSourceNames) {
+        for (String each : getDisabledSlaveDataSourceNames().get(shardingSchemaName)) {
             result.remove(each);
         }
         return result;
@@ -87,12 +86,11 @@ public final class DataSourceService {
      */
     public ShardingRuleConfiguration getAvailableShardingRuleConfiguration(final String shardingSchemaName) {
         ShardingRuleConfiguration result = configService.loadShardingRuleConfiguration(shardingSchemaName);
-        Preconditions.checkState(null != result && !result.getTableRuleConfigs().isEmpty(), "Missing the sharding rule configuration on registry center");
-        Collection<String> disabledDataSourceNames = getDisabledSlaveDataSourceNames().get(shardingSchemaName);
-        if (null == disabledDataSourceNames) {
+        Preconditions.checkState(null != result && !result.getTableRuleConfigs().isEmpty(), "Missing the sharding rule configuration on registry center.");
+        if (!getDisabledSlaveDataSourceNames().containsKey(shardingSchemaName)) {
             return result;
         }
-        for (String each : disabledDataSourceNames) {
+        for (String each : getDisabledSlaveDataSourceNames().get(shardingSchemaName)) {
             for (MasterSlaveRuleConfiguration masterSlaveRuleConfig : result.getMasterSlaveRuleConfigs()) {
                 masterSlaveRuleConfig.getSlaveDataSourceNames().remove(each);
             }
@@ -109,12 +107,25 @@ public final class DataSourceService {
     public MasterSlaveRuleConfiguration getAvailableMasterSlaveRuleConfiguration(final String shardingSchemaName) {
         MasterSlaveRuleConfiguration result = configService.loadMasterSlaveRuleConfiguration(shardingSchemaName);
         Preconditions.checkState(null != result && !Strings.isNullOrEmpty(result.getMasterDataSourceName()), "No available master slave rule configuration to load.");
-        Collection<String> disabledDataSourceNames = getDisabledSlaveDataSourceNames().get(shardingSchemaName);
-        if (null == disabledDataSourceNames) {
+        if (!getDisabledSlaveDataSourceNames().containsKey(shardingSchemaName)) {
             return result;
         }
-        for (String each : disabledDataSourceNames) {
+        for (String each : getDisabledSlaveDataSourceNames().get(shardingSchemaName)) {
             result.getSlaveDataSourceNames().remove(each);
+        }
+        return result;
+    }
+    
+    /**
+     * Get disabled slave data source names.
+     *
+     * @return disabled slave data source names
+     */
+    public Map<String, Collection<String>> getDisabledSlaveDataSourceNames() {
+        Map<String, Collection<String>> result = getDisabledDataSourceNames();
+        Map<String, Collection<String>> slaveDataSourceNamesMap = configService.getAllSlaveDataSourceNames();
+        for (String each : result.keySet()) {
+            result.get(each).containsAll(slaveDataSourceNamesMap.get(each));
         }
         return result;
     }
@@ -141,20 +152,6 @@ public final class DataSourceService {
                 result.put(schemaName, new LinkedList<String>());
             }
             result.get(schemaName).add(dataSourceName);
-        }
-        return result;
-    }
-    
-    /**
-     * Get disabled slave data source names.
-     *
-     * @return disabled slave data source names
-     */
-    public Map<String, Collection<String>> getDisabledSlaveDataSourceNames() {
-        Map<String, Collection<String>> result = getDisabledDataSourceNames();
-        Map<String, Collection<String>> slaveDataSourceNamesMap = configService.getAllSlaveDataSourceNames();
-        for (String each : result.keySet()) {
-            result.get(each).containsAll(slaveDataSourceNamesMap.get(each));
         }
         return result;
     }

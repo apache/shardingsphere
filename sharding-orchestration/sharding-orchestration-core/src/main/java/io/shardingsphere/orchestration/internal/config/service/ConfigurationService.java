@@ -59,26 +59,26 @@ public final class ConfigurationService {
      * Persist rule configuration.
      *
      * @param shardingSchemaName sharding schema name
-     * @param dataSourceConfigurations data source configuration map
+     * @param dataSourceConfigs data source configuration map
      * @param ruleConfig rule configuration
      * @param authentication authentication
      * @param configMap config map
      * @param props sharding properties
      * @param isOverwrite is overwrite registry center's configuration
      */
-    public void persistConfiguration(final String shardingSchemaName, final Map<String, DataSourceConfiguration> dataSourceConfigurations, final RuleConfiguration ruleConfig,
+    public void persistConfiguration(final String shardingSchemaName, final Map<String, DataSourceConfiguration> dataSourceConfigs, final RuleConfiguration ruleConfig,
                                      final Authentication authentication, final Map<String, Object> configMap, final Properties props, final boolean isOverwrite) {
-        persistDataSourceConfiguration(shardingSchemaName, dataSourceConfigurations, isOverwrite);
+        persistDataSourceConfiguration(shardingSchemaName, dataSourceConfigs, isOverwrite);
         persistRuleConfiguration(shardingSchemaName, ruleConfig, isOverwrite);
         persistAuthentication(authentication, isOverwrite);
         persistConfigMap(configMap, isOverwrite);
         persistProperties(props, isOverwrite);
     }
     
-    private void persistDataSourceConfiguration(final String shardingSchemaName, final Map<String, DataSourceConfiguration> dataSourceConfigurations, final boolean isOverwrite) {
+    private void persistDataSourceConfiguration(final String shardingSchemaName, final Map<String, DataSourceConfiguration> dataSourceConfigs, final boolean isOverwrite) {
         if (isOverwrite || !hasDataSourceConfiguration(shardingSchemaName)) {
-            Preconditions.checkState(null != dataSourceConfigurations && !dataSourceConfigurations.isEmpty(), "No available data source in `%s` for orchestration.", shardingSchemaName);
-            regCenter.persist(configNode.getDataSourcePath(shardingSchemaName), new Yaml(new DefaultRepresenter()).dumpAsMap(dataSourceConfigurations));
+            Preconditions.checkState(null != dataSourceConfigs && !dataSourceConfigs.isEmpty(), "No available data source in `%s` for orchestration.", shardingSchemaName);
+            regCenter.persist(configNode.getDataSourcePath(shardingSchemaName), new Yaml(new DefaultRepresenter()).dumpAsMap(dataSourceConfigs));
         }
     }
     
@@ -234,11 +234,7 @@ public final class ConfigurationService {
     public Map<String, Collection<String>> getAllSlaveDataSourceNames() {
         Map<String, Collection<String>> result = new LinkedHashMap<>();
         for (String each : getAllShardingSchemaNames()) {
-            if (isShardingRule(each)) {
-                result.put(each, getSlaveDataSourceNamesFromShardingRule(each));
-            } else {
-                result.put(each, getSlaveDataSourceNamesFromMasterSlaveRule(each));
-            }
+            result.put(each, isShardingRule(each) ? getSlaveDataSourceNamesFromShardingRule(each) : getSlaveDataSourceNamesFromMasterSlaveRule(each));
         }
         return result;
     }

@@ -19,6 +19,7 @@ package io.shardingsphere.core.config;
 
 import com.google.common.base.CaseFormat;
 import com.google.common.base.Joiner;
+import com.google.common.base.Optional;
 import com.google.common.collect.Sets;
 import io.shardingsphere.core.exception.ShardingConfigurationException;
 import io.shardingsphere.core.rule.DataSourceParameter;
@@ -44,6 +45,10 @@ import java.util.Map.Entry;
 @Setter
 public final class DataSourceConfiguration {
     
+    private static final String GETTER_PREFIX = "get";
+    
+    private static final String SETTER_PREFIX = "set";
+    
     private static final Collection<Class<?>> GENERAL_CLASS_TYPE;
     
     private static final Collection<String> SKIPPED_PROPERTY_NAMES;
@@ -55,7 +60,7 @@ public final class DataSourceConfiguration {
     
     private String dataSourceClassName;
     
-    private Map<String, Object> properties;
+    private Map<String, Object> properties = new LinkedHashMap<>();
     
     /**
      * Get data source configuration.
@@ -67,7 +72,7 @@ public final class DataSourceConfiguration {
         Map<String, Object> properties = new LinkedHashMap<>();
         try {
             for (Method each : findAllGetterMethods(dataSource)) {
-                String propertyName = CaseFormat.UPPER_CAMEL.to(CaseFormat.LOWER_CAMEL, each.getName().substring(3));
+                String propertyName = CaseFormat.UPPER_CAMEL.to(CaseFormat.LOWER_CAMEL, each.getName().substring(GETTER_PREFIX.length()));
                 if (GENERAL_CLASS_TYPE.contains(each.getReturnType()) && !SKIPPED_PROPERTY_NAMES.contains(propertyName)) {
                     properties.put(propertyName, each.invoke(dataSource));
                 }
@@ -77,7 +82,7 @@ public final class DataSourceConfiguration {
         }
         DataSourceConfiguration result = new DataSourceConfiguration();
         result.setDataSourceClassName(dataSource.getClass().getName());
-        result.setProperties(properties);
+        result.getProperties().putAll(properties);
         return result;
     }
     
@@ -89,8 +94,7 @@ public final class DataSourceConfiguration {
      */
     public static DataSourceConfiguration getDataSourceConfiguration(final DataSourceParameter dataSourceParameter) {
         DataSourceConfiguration result = new DataSourceConfiguration();
-        result.setDataSourceClassName("com.zaxxer.hikari.HikariDataSource");
-        result.setProperties(new LinkedHashMap<String, Object>());
+        result.setDataSourceClassName(DataSourceParameter.DATA_SOURCE_POOL_CLASS_NAME);
         for (Field each : dataSourceParameter.getClass().getDeclaredFields()) {
             try {
                 each.setAccessible(true);
@@ -104,7 +108,7 @@ public final class DataSourceConfiguration {
     private static Collection<Method> findAllGetterMethods(final DataSource dataSource) {
         Collection<Method> result = new HashSet<>();
         for (Method each : dataSource.getClass().getMethods()) {
-            if (each.getName().startsWith("get") && 0 == each.getParameterTypes().length) {
+            if (each.getName().startsWith(GETTER_PREFIX) && 0 == each.getParameterTypes().length) {
                 result.add(each);
             }
         }
@@ -112,7 +116,7 @@ public final class DataSourceConfiguration {
     }
     
     /**
-     * create data source.
+     * Create data source.
      * 
      * @return data source
      */
@@ -124,9 +128,9 @@ public final class DataSourceConfiguration {
                 if (SKIPPED_PROPERTY_NAMES.contains(entry.getKey())) {
                     continue;
                 }
-                Method setterMethod = findSetterMethodByName(methods, entry.getKey());
-                if (null != setterMethod) {
-                    setterMethod.invoke(result, entry.getValue());
+                Optional<Method> setterMethod = findSetterMethod(methods, entry.getKey());
+                if (setterMethod.isPresent()) {
+                    setterMethod.get().invoke(result, entry.getValue());
                 }
             }
             return result;
@@ -135,14 +139,14 @@ public final class DataSourceConfiguration {
         }
     }
     
-    private Method findSetterMethodByName(final Method[] methods, final String property) {
-        String setterMethodName = Joiner.on("").join("set", CaseFormat.LOWER_CAMEL.to(CaseFormat.UPPER_CAMEL, property));
+    private Optional<Method> findSetterMethod(final Method[] methods, final String property) {
+        String setterMethodName = Joiner.on("").join(SETTER_PREFIX, CaseFormat.LOWER_CAMEL.to(CaseFormat.UPPER_CAMEL, property));
         for (Method each : methods) {
             if (each.getName().equals(setterMethodName) && 1 == each.getParameterTypes().length) {
-                return each;
+                return Optional.of(each);
             }
         }
-        return null;
+        return Optional.absent();
     }
     
     /**
@@ -155,7 +159,7 @@ public final class DataSourceConfiguration {
         for (Field each : result.getClass().getDeclaredFields()) {
             try {
                 each.setAccessible(true);
-                if (null != properties.get(each.getName())) {
+                if (properties.containsKey(each.getName())) {
                     each.set(result, properties.get(each.getName()));
                 }
             } catch (final ReflectiveOperationException ignored) {
