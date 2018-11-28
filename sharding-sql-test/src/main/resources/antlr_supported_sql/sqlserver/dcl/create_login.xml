@@ -1,0 +1,9 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<sql-cases db-types="SQLServer" namespace="sqlserver.dcl.createLogin">
+    <sql-case id="create_login_with_password" value="CREATE LOGIN login1 WITH PASSWORD = 'password'" />
+    <!--<sql-case id="create_login_with_windows" value="CREATE LOGIN [domain\login1] FROM WINDOWS" />-->
+    <sql-case id="create_login_with_certificate" value="CREATE LOGIN login1 FROM CERTIFICATE certificate" />
+    <sql-case id="create_login_with_asym_key" value="CREATE LOGIN login1 FROM ASYMMETRIC KEY asym_key" />
+    <sql-case id="create_login_with_password_option" value="CREATE LOGIN login1 WITH PASSWORD = 'password' MUST_CHANGE, CHECK_EXPIRATION = ON" />
+    <sql-case id="create_login_with_default_database" value="CREATE LOGIN login1 WITH PASSWORD = 'password' DEFAULT_DATABASE = database" />
+</sql-cases>
