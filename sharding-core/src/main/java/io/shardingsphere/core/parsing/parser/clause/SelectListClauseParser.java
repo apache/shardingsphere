@@ -80,7 +80,11 @@ public abstract class SelectListClauseParser implements SQLClauseParser {
     
     private SelectItem parseSelectItem(final SelectStatement selectStatement) {
         lexerEngine.skipIfEqual(getSkippedKeywordsBeforeSelectItem());
-        return getSelectItem(selectStatement);
+        SelectItem result = getSelectItem(selectStatement);
+        if (!selectStatement.getDistinctSelectItems().isEmpty()) {
+            selectStatement.getDistinctSelectItems().get(0).getDistinctColumnNames().add(result.getExpression());
+        }
+        return result;
     }
     
     private SelectItem getSelectItem(final SelectStatement selectStatement) {
@@ -98,9 +102,6 @@ public abstract class SelectListClauseParser implements SQLClauseParser {
             parseRestSelectItem(selectStatement);
         } else {
             result = parseCommonOrStarSelectItem(selectStatement);
-        }
-        if (!selectStatement.getDistinctSelectItems().isEmpty()) {
-            selectStatement.getDistinctSelectItems().get(0).getDistinctColumnNames().add(result.getExpression());
         }
         return result;
     }
