@@ -34,16 +34,11 @@ import java.sql.SQLException;
  * @author zhaojun
  */
 @RequiredArgsConstructor
-public class BackendTransactionManager {
+public final class BackendTransactionManager implements TransactionManager {
     
     private final BackendConnection connection;
     
-    /**
-     * Handle proxy transaction.
-     *
-     * @param operationType transaction operation type
-     * @throws SQLException SQL Exception
-     */
+    @Override
     public void doInTransaction(final TransactionOperationType operationType) throws SQLException {
         TransactionType transactionType = connection.getTransactionType();
         ShardingTransactionHandler<ShardingTransactionEvent> shardingTransactionHandler = ShardingTransactionHandlerRegistry.getInstance().getHandler(transactionType);

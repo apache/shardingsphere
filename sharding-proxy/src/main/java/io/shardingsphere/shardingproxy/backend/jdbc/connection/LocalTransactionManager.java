@@ -32,10 +32,11 @@ import java.util.LinkedList;
  * @author zhaojun
  */
 @RequiredArgsConstructor
-public class LocalTransactionManager {
+public final class LocalTransactionManager implements TransactionManager {
     
     private final BackendConnection connection;
     
+    @Override
     public void doInTransaction(final TransactionOperationType operationType) throws SQLException {
         switch (operationType) {
             case BEGIN:
