@@ -37,6 +37,7 @@ import io.shardingsphere.core.parsing.parser.sql.dql.select.SelectStatement;
 import io.shardingsphere.core.util.SQLUtil;
 
 import java.sql.SQLException;
+import java.util.ArrayList;
 import java.util.List;
 import java.util.Map;
 import java.util.TreeMap;
@@ -66,7 +67,7 @@ public final class DQLMergeEngine implements MergeEngine {
             return getDividedQueryResults(new AggregationDistinctQueryResult(queryResults, selectStatement));
         }
         if (!selectStatement.getDistinctSelectItems().isEmpty()) {
-            return getDividedQueryResults(new DistinctQueryResult(queryResults));
+            return getDividedQueryResults(new DistinctQueryResult(queryResults, new ArrayList<>(selectStatement.getDistinctSelectItems().get(0).getDistinctColumnNames())));
         }
         return queryResults;
     }
