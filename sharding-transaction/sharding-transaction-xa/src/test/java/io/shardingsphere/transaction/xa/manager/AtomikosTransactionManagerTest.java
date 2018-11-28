@@ -68,7 +68,7 @@ public final class AtomikosTransactionManagerTest {
     }
     
     @After
-    public void teardown() {
+    public void tearDown() {
         ReflectiveUtil.setProperty(atomikosTransactionManager, "underlyingTransactionManager", underlyingTransactionManager);
         atomikosTransactionManager.destroy();
     }

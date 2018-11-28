@@ -55,7 +55,6 @@ public final class OrchestrationFacade implements AutoCloseable {
     
     private final DataSourceService dataSourceService;
     
-    @Getter
     private final OrchestrationListenerManager listenerManager;
     
     public OrchestrationFacade(final OrchestrationConfiguration orchestrationConfig, final Collection<String> shardingSchemaNames) {

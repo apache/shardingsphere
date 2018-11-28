@@ -24,23 +24,29 @@ import io.shardingsphere.core.parsing.lexer.token.DefaultKeyword;
 import io.shardingsphere.core.parsing.lexer.token.Keyword;
 import io.shardingsphere.core.parsing.lexer.token.Symbol;
 import io.shardingsphere.core.parsing.parser.clause.expression.AliasExpressionParser;
+import io.shardingsphere.core.parsing.parser.context.selectitem.AggregationDistinctSelectItem;
 import io.shardingsphere.core.parsing.parser.context.selectitem.AggregationSelectItem;
 import io.shardingsphere.core.parsing.parser.context.selectitem.CommonSelectItem;
+import io.shardingsphere.core.parsing.parser.context.selectitem.DistinctSelectItem;
 import io.shardingsphere.core.parsing.parser.context.selectitem.SelectItem;
 import io.shardingsphere.core.parsing.parser.context.selectitem.StarSelectItem;
 import io.shardingsphere.core.parsing.parser.dialect.ExpressionParserFactory;
 import io.shardingsphere.core.parsing.parser.sql.dql.select.SelectStatement;
+import io.shardingsphere.core.parsing.parser.token.AggregationDistinctToken;
 import io.shardingsphere.core.parsing.parser.token.TableToken;
 import io.shardingsphere.core.rule.ShardingRule;
 import io.shardingsphere.core.util.SQLUtil;
 import lombok.Getter;
 
 import java.util.List;
+import java.util.regex.Matcher;
+import java.util.regex.Pattern;
 
 /**
  * Select list clause parser.
  *
  * @author zhangliang
+ * @author panjuan
  */
 @Getter
 public abstract class SelectListClauseParser implements SQLClauseParser {
@@ -73,9 +79,16 @@ public abstract class SelectListClauseParser implements SQLClauseParser {
     
     private SelectItem parseSelectItem(final SelectStatement selectStatement) {
         lexerEngine.skipIfEqual(getSkippedKeywordsBeforeSelectItem());
-        SelectItem result;
+        return getSelectItem(selectStatement);
+    }
+    
+    private SelectItem getSelectItem(final SelectStatement selectStatement) {
+        final SelectItem result;
         if (isRowNumberSelectItem()) {
             result = parseRowNumberSelectItem(selectStatement);
+        } else if (isDistinctSelectItem()) {
+            result = parseDistinctSelectItem(selectStatement);
+            parseRestSelectItem(selectStatement);
         } else if (isStarSelectItem()) {
             selectStatement.setContainStar(true);
             result = parseStarSelectItem();
@@ -93,6 +106,18 @@ public abstract class SelectListClauseParser implements SQLClauseParser {
     protected abstract boolean isRowNumberSelectItem();
     
     protected abstract SelectItem parseRowNumberSelectItem(SelectStatement selectStatement);
+    
+    private boolean isDistinctSelectItem() {
+        return lexerEngine.equalAny(DefaultKeyword.DISTINCT);
+    }
+    
+    private SelectItem parseDistinctSelectItem(final SelectStatement selectStatement) {
+        lexerEngine.nextToken();
+        String distinctColumnName = lexerEngine.getCurrentToken().getLiterals();
+        lexerEngine.nextToken();
+        distinctColumnName = SQLUtil.getExactlyValue(distinctColumnName + parseRestSelectItem(selectStatement));
+        return new DistinctSelectItem(distinctColumnName, aliasExpressionParser.parseSelectItemAlias());
+    }
     
     private boolean isStarSelectItem() {
         return Symbol.STAR.getLiterals().equals(SQLUtil.getExactlyValue(lexerEngine.getCurrentToken().getLiterals()));
@@ -142,8 +167,34 @@ public abstract class SelectListClauseParser implements SQLClauseParser {
     
     private SelectItem parseAggregationSelectItem(final SelectStatement selectStatement) {
         AggregationType aggregationType = AggregationType.valueOf(lexerEngine.getCurrentToken().getLiterals().toUpperCase());
+        int beginPosition = lexerEngine.getCurrentToken().getEndPosition() - lexerEngine.getCurrentToken().getLiterals().length();
         lexerEngine.nextToken();
-        return new AggregationSelectItem(aggregationType, lexerEngine.skipParentheses(selectStatement), aliasExpressionParser.parseSelectItemAlias());
+        String innerExpression = lexerEngine.skipParentheses(selectStatement);
+        return isAggregationDistinctSelectItem(innerExpression) ? getAggregationDistinctSelectItem(selectStatement, aggregationType, beginPosition, innerExpression)
+                : new AggregationSelectItem(aggregationType, innerExpression, aliasExpressionParser.parseSelectItemAlias());
+    }
+    
+    private SelectItem getAggregationDistinctSelectItem(final SelectStatement selectStatement, final AggregationType aggregationType, final int beginPosition, final String innerExpression) {
+        AggregationDistinctSelectItem result = new AggregationDistinctSelectItem(aggregationType, innerExpression, aliasExpressionParser.parseSelectItemAlias(), getDistinctColumnName(innerExpression));
+        selectStatement.getSQLTokens().add(new AggregationDistinctToken(beginPosition, SQLUtil.getExactlyValue(aggregationType.name() + innerExpression), result.getDistinctColumnName()));
+        return result;
+    }
+    
+    // TODO :panjuan does not use pattern to check
+    private boolean isAggregationDistinctSelectItem(final String innerExpression) {
+        String pattern = "\\(\\s*DISTINCT\\s+.*\\)";
+        return Pattern.matches(pattern, innerExpression.toUpperCase());
+    }
+    
+    // TODO :panjuan parse distinct column name
+    private String getDistinctColumnName(final String innerExpression) {
+        Pattern pattern = Pattern.compile("\\(\\s*DISTINCT\\s+(\\S+)\\s*\\)", Pattern.CASE_INSENSITIVE);
+        Matcher matcher = pattern.matcher(innerExpression);
+        String result = "";
+        if (matcher.find()) {
+            result = matcher.group(1);
+        }
+        return result;
     }
     
     private String parseRestSelectItem(final SelectStatement selectStatement) {

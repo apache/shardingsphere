@@ -29,6 +29,7 @@ import io.shardingsphere.core.parsing.parser.clause.facade.AbstractSelectClauseP
 import io.shardingsphere.core.parsing.parser.constant.DerivedColumn;
 import io.shardingsphere.core.parsing.parser.context.OrderItem;
 import io.shardingsphere.core.parsing.parser.context.selectitem.AggregationSelectItem;
+import io.shardingsphere.core.parsing.parser.context.selectitem.DistinctSelectItem;
 import io.shardingsphere.core.parsing.parser.context.selectitem.SelectItem;
 import io.shardingsphere.core.parsing.parser.context.selectitem.StarSelectItem;
 import io.shardingsphere.core.parsing.parser.context.table.Table;
@@ -82,10 +83,6 @@ public abstract class AbstractSelectParser implements SQLParser {
     }
     
     protected abstract void parseInternal(SelectStatement selectStatement);
-    
-    protected final void parseDistinct() {
-        selectClauseParserFacade.getDistinctClauseParser().parse();
-    }
     
     protected final void parseSelectList(final SelectStatement selectStatement, final List<SelectItem> items) {
         selectClauseParserFacade.getSelectListClauseParser().parse(selectStatement, items);
@@ -213,11 +210,19 @@ public abstract class AbstractSelectParser implements SQLParser {
     
     private boolean containsItemInSelectItems(final SelectStatement selectStatement, final OrderItem orderItem) {
         for (SelectItem each : selectStatement.getItems()) {
-            if (isSameAlias(each, orderItem) || isSameQualifiedName(each, orderItem)) {
+            if (containsItemInDistinctItems(orderItem, each) || isSameAlias(each, orderItem) || isSameQualifiedName(each, orderItem)) {
                 return true;
             }
         }
         return false;
+    }
+    
+    private boolean containsItemInDistinctItems(final OrderItem orderItem, final SelectItem selectItem) {
+        if (!(selectItem instanceof DistinctSelectItem)) {
+            return false;
+        }
+        DistinctSelectItem distinctSelectItem = (DistinctSelectItem) selectItem;
+        return orderItem.getColumnLabel().equals(distinctSelectItem.getDistinctColumnName()) || orderItem.getColumnLabel().equals(distinctSelectItem.getColumnLabel());
     }
     
     private boolean isSameAlias(final SelectItem selectItem, final OrderItem orderItem) {

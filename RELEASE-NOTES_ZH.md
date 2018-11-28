@@ -14,12 +14,14 @@
 
 #### Core
 
+1. [ISSUE #1348](https://github.com/sharding-sphere/sharding-sphere/issues/1348) 使用`PreparedStatement`执行多库SELECT LIMIT语句时异常
 1. [ISSUE #1422](https://github.com/sharding-sphere/sharding-sphere/issues/1422) 同时使用`defaultDataSourceName`和`defaultDatabaseStrategy`时异常
 
 #### Sharding-Proxy
 
 1. [ISSUE #1403](https://github.com/sharding-sphere/sharding-sphere/issues/1403) 读写分离模式时，使用`PreparedStatement`异常
 1. [ISSUE #1414](https://github.com/sharding-sphere/sharding-sphere/issues/1414) 多逻辑数据源配置时，`SHOW CREATE TABLE tb_name`语句执行异常
+1. [ISSUE #1475](https://github.com/sharding-sphere/sharding-sphere/issues/1475) `SHOW [FUll] TABLES FROM db_name LIKE 'tb_name'`语句不能返回逻辑表的信息
 
 ## 3.0.0
 

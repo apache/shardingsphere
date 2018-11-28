@@ -24,6 +24,7 @@ import io.shardingsphere.core.parsing.antlr.AntlrParsingEngine;
 import io.shardingsphere.core.parsing.cache.ParsingResultCache;
 import io.shardingsphere.core.parsing.lexer.LexerEngine;
 import io.shardingsphere.core.parsing.lexer.LexerEngineFactory;
+import io.shardingsphere.core.parsing.lexer.dialect.postgresql.PostgreSQLKeyword;
 import io.shardingsphere.core.parsing.lexer.token.Token;
 import io.shardingsphere.core.parsing.parser.sql.SQLParser;
 import io.shardingsphere.core.parsing.parser.sql.SQLParserFactory;
@@ -64,6 +65,12 @@ public final class SQLParsingEngine {
         lexerEngine.nextToken();
         Token firstToken = lexerEngine.getCurrentToken();
         SQLStatement result;
+
+        if (PostgreSQLKeyword.SHOW == lexerEngine.getCurrentToken().getType()) {
+            result = AntlrParsingEngine.parse(dbType, sql, shardingRule, shardingTableMetaData);
+            return result;
+        }
+
         SQLParser sqlParser = SQLParserFactory.newInstance(dbType, lexerEngine.getCurrentToken().getType(), shardingRule, lexerEngine, shardingTableMetaData);
         Token currentToken = lexerEngine.getCurrentToken();
         if (firstToken != currentToken) {

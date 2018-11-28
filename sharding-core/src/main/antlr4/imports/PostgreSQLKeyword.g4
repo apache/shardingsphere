@@ -490,6 +490,10 @@ SESSION_USER
     : S E S S I O N UL_ U S E R
     ;
 
+SHOW
+    : S H O W
+    ;
+
 SIMPLE
     : S I M P L E
     ;

@@ -18,7 +18,7 @@
 package io.shardingsphere.orchestration.internal.listener;
 
 /**
- * Registry center's listener manager.
+ * Orchestration listener.
  *
  * @author caohao
  * @author panjuan
