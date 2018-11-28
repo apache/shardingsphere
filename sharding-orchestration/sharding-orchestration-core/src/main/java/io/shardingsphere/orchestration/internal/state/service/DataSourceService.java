@@ -22,8 +22,8 @@ import com.google.common.base.Strings;
 import io.shardingsphere.api.config.MasterSlaveRuleConfiguration;
 import io.shardingsphere.api.config.ShardingRuleConfiguration;
 import io.shardingsphere.core.config.DataSourceConfiguration;
-import io.shardingsphere.core.constant.ShardingConstant;
 import io.shardingsphere.orchestration.internal.config.service.ConfigurationService;
+import io.shardingsphere.orchestration.internal.state.node.OrchestrationSchema;
 import io.shardingsphere.orchestration.internal.state.node.StateNode;
 import io.shardingsphere.orchestration.internal.state.node.StateNodeStatus;
 import io.shardingsphere.orchestration.reg.api.RegistryCenter;
@@ -58,7 +58,7 @@ public final class DataSourceService {
      * Persist master-salve data sources node.
      */
     public void persistDataSourcesNode() {
-        regCenter.persist(stateNode.getDataSourcesNodeFullPath(), "");
+        regCenter.persist(stateNode.getDataSourcesNodeFullRootPath(), "");
     }
     
     /**
@@ -132,26 +132,15 @@ public final class DataSourceService {
     
     private Map<String, Collection<String>> getDisabledDataSourceNames() {
         Map<String, Collection<String>> result = new LinkedHashMap<>();
-        String dataSourcesNodePath = stateNode.getDataSourcesNodeFullPath();
-        Collection<String> schemaDataSources = regCenter.getChildrenKeys(dataSourcesNodePath);
-        for (String each : schemaDataSources) {
-            if (!StateNodeStatus.DISABLED.toString().equalsIgnoreCase(regCenter.get(dataSourcesNodePath + "/" + each))) {
+        for (String each : regCenter.getChildrenKeys(stateNode.getDataSourcesNodeFullRootPath())) {
+            if (!StateNodeStatus.DISABLED.toString().equalsIgnoreCase(regCenter.get(stateNode.getDataSourcesNodeFullPath(each)))) {
                 continue;
             }
-            String schemaName;
-            String dataSourceName;
-            if (each.contains(".")) {
-                int position = each.indexOf(".");
-                schemaName = each.substring(0, position);
-                dataSourceName = each.substring(position + 1);
-            } else {
-                schemaName = ShardingConstant.LOGIC_SCHEMA_NAME;
-                dataSourceName = each;
+            OrchestrationSchema orchestrationSchema = new OrchestrationSchema(each);
+            if (!result.containsKey(orchestrationSchema.getSchemaName())) {
+                result.put(orchestrationSchema.getSchemaName(), new LinkedList<String>());
             }
-            if (!result.containsKey(schemaName)) {
-                result.put(schemaName, new LinkedList<String>());
-            }
-            result.get(schemaName).add(dataSourceName);
+            result.get(orchestrationSchema.getSchemaName()).add(orchestrationSchema.getDataSourceName());
         }
         return result;
     }

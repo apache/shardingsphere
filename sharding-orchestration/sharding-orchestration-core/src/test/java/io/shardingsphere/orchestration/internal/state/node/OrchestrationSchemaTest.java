@@ -17,27 +17,25 @@
 
 package io.shardingsphere.orchestration.internal.state.node;
 
+import io.shardingsphere.core.constant.ShardingConstant;
 import org.junit.Test;
 
 import static org.hamcrest.CoreMatchers.is;
 import static org.junit.Assert.assertThat;
 
-public final class StateNodeTest {
-    
-    private StateNode stateNode = new StateNode("test");
+public final class OrchestrationSchemaTest {
     
     @Test
-    public void assertGetInstancesNodeFullPath() {
-        assertThat(stateNode.getInstancesNodeFullPath("testId"), is("/test/state/instances/testId"));
+    public void assertNewOrchestrationSchemaWithDataSourceNameOnly() {
+        OrchestrationSchema actual = new OrchestrationSchema("test_ds");
+        assertThat(actual.getSchemaName(), is(ShardingConstant.LOGIC_SCHEMA_NAME));
+        assertThat(actual.getDataSourceName(), is("test_ds"));
     }
     
     @Test
-    public void assertGetDataSourcesNodeFullRootPath() {
-        assertThat(stateNode.getDataSourcesNodeFullRootPath(), is("/test/state/datasources"));
-    }
-    
-    @Test
-    public void assertGetDataSourcesNodeFullPath() {
-        assertThat(stateNode.getDataSourcesNodeFullPath("sharding_db"), is("/test/state/datasources/sharding_db"));
+    public void assertNewOrchestrationSchemaWithSchemaNameAndDataSourceName() {
+        OrchestrationSchema actual = new OrchestrationSchema("test_schema.test_ds");
+        assertThat(actual.getSchemaName(), is("test_schema"));
+        assertThat(actual.getDataSourceName(), is("test_ds"));
     }
 }

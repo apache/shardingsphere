@@ -47,11 +47,21 @@ public final class StateNode {
     }
     
     /**
+     * Get data source node full root path.
+     *
+     * @return data source node full root path
+     */
+    public String getDataSourcesNodeFullRootPath() {
+        return Joiner.on("/").join("", name, ROOT, DATA_SOURCES_NODE_PATH);
+    }
+    
+    /**
      * Get data source node full path.
      *
+     * @param schemaDataSourceName schema name and data source name
      * @return data source node full path
      */
-    public String getDataSourcesNodeFullPath() {
-        return Joiner.on("/").join("", name, ROOT, DATA_SOURCES_NODE_PATH);
+    public String getDataSourcesNodeFullPath(final String schemaDataSourceName) {
+        return Joiner.on("/").join("", name, ROOT, DATA_SOURCES_NODE_PATH, schemaDataSourceName);
     }
 }
