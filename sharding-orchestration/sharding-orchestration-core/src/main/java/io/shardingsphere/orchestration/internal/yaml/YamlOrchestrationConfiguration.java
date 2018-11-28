@@ -45,7 +45,7 @@ public class YamlOrchestrationConfiguration {
      * @return orchestration configuration from yaml
      */
     public OrchestrationConfiguration getOrchestrationConfiguration() {
-        Preconditions.checkNotNull(registry, "Registry center must be required!");
+        Preconditions.checkNotNull(registry, "Registry center must be required.");
         return new OrchestrationConfiguration(name, registry, overwrite);
     }
 }

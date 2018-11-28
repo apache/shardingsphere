@@ -15,16 +15,13 @@
  * </p>
  */
 
-package io.shardingsphere.orchestration.internal.state.listener;
+package io.shardingsphere.orchestration.internal.listener;
 
 import org.junit.runner.RunWith;
 import org.junit.runners.Suite;
 import org.junit.runners.Suite.SuiteClasses;
 
 @RunWith(Suite.class)
-@SuiteClasses({
-        DataSourceStateOrchestrationListenerTest.class,
-        InstanceStateOrchestrationListenerTest.class
-})
+@SuiteClasses(OrchestrationListenerManagerTest.class)
 public final class AllListenerTests {
 }

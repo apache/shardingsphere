@@ -17,7 +17,12 @@
 
 package io.shardingsphere.orchestration.internal.config;
 
-import io.shardingsphere.orchestration.internal.config.listener.AllListenerTests;
+import io.shardingsphere.orchestration.internal.config.listener.AuthenticationOrchestrationListenerTest;
+import io.shardingsphere.orchestration.internal.config.listener.ConfigMapOrchestrationListenerTest;
+import io.shardingsphere.orchestration.internal.config.listener.ConfigurationOrchestrationListenerManagerTest;
+import io.shardingsphere.orchestration.internal.config.listener.DataSourceOrchestrationListenerTest;
+import io.shardingsphere.orchestration.internal.config.listener.PropertiesOrchestrationListenerTest;
+import io.shardingsphere.orchestration.internal.config.listener.RuleOrchestrationListenerTest;
 import io.shardingsphere.orchestration.internal.config.node.ConfigurationNodeTest;
 import io.shardingsphere.orchestration.internal.config.service.ConfigurationServiceTest;
 import org.junit.runner.RunWith;
@@ -26,9 +31,14 @@ import org.junit.runners.Suite.SuiteClasses;
 
 @RunWith(Suite.class)
 @SuiteClasses({
-        ConfigurationNodeTest.class,
+        ConfigurationNodeTest.class, 
         ConfigurationServiceTest.class,
-        AllListenerTests.class
+        ConfigurationOrchestrationListenerManagerTest.class,
+        RuleOrchestrationListenerTest.class, 
+        DataSourceOrchestrationListenerTest.class, 
+        PropertiesOrchestrationListenerTest.class,
+        AuthenticationOrchestrationListenerTest.class,
+        ConfigMapOrchestrationListenerTest.class
 })
 public final class AllConfigTests {
 }

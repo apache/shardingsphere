@@ -29,9 +29,9 @@ import io.shardingsphere.core.config.DataSourceConfiguration;
 import io.shardingsphere.core.constant.properties.ShardingPropertiesConstant;
 import io.shardingsphere.core.rule.Authentication;
 import io.shardingsphere.orchestration.config.OrchestrationConfiguration;
-import io.shardingsphere.orchestration.internal.config.listener.DataSourceOrchestrationListener;
-import io.shardingsphere.orchestration.internal.config.listener.RuleOrchestrationListener;
+import io.shardingsphere.orchestration.internal.config.listener.ConfigurationOrchestrationListenerManager;
 import io.shardingsphere.orchestration.internal.listener.OrchestrationListenerManager;
+import io.shardingsphere.orchestration.internal.state.listener.StateOrchestrationListenerManager;
 import io.shardingsphere.orchestration.reg.api.RegistryCenter;
 import io.shardingsphere.orchestration.reg.api.RegistryCenterConfiguration;
 import io.shardingsphere.orchestration.reg.listener.EventListener;
@@ -84,33 +84,11 @@ public final class OrchestrationFacadeTest {
         Field file = orchestrationFacade.getClass().getDeclaredField("listenerManager");
         file.setAccessible(true);
         OrchestrationListenerManager listenerManager = (OrchestrationListenerManager) file.get(orchestrationFacade);
-        setRegistry(listenerManager.getClass().getDeclaredField("propertiesListenerManager"), listenerManager);
-        setRegistry(listenerManager.getClass().getDeclaredField("authenticationListenerManager"), listenerManager);
-        setRegistry(listenerManager.getClass().getDeclaredField("configMapListenerManager"), listenerManager);
-        setRegistry(listenerManager.getClass().getDeclaredField("instanceStateListenerManager"), listenerManager);
-        setRegistry(listenerManager.getClass().getDeclaredField("dataSourceStateListenerManager"), listenerManager);
-        setRegistryForDataSourceListenerManagers(listenerManager);
-        setRegistryForRuleListenerManagers(listenerManager);
-    }
-    
-    @SuppressWarnings("unchecked")
-    private void setRegistryForDataSourceListenerManagers(final OrchestrationListenerManager listenerManager) throws ReflectiveOperationException {
-        Field childField = listenerManager.getClass().getDeclaredField("dataSourceListenerManagers");
-        childField.setAccessible(true);
-        Collection<DataSourceOrchestrationListener> dataSourceListenerManagers = (Collection<DataSourceOrchestrationListener>) childField.get(listenerManager);
-        for (DataSourceOrchestrationListener each : dataSourceListenerManagers) {
-            setRegistry(each);
-        }
-    }
-    
-    @SuppressWarnings("unchecked")
-    private void setRegistryForRuleListenerManagers(final OrchestrationListenerManager listenerManager) throws ReflectiveOperationException {
-        Field childField = listenerManager.getClass().getDeclaredField("ruleListenerManagers");
-        childField.setAccessible(true);
-        Collection<RuleOrchestrationListener> ruleListenerManagers = (Collection<RuleOrchestrationListener>) childField.get(listenerManager);
-        for (RuleOrchestrationListener each : ruleListenerManagers) {
-            setRegistry(each);
-        }
+        ConfigurationOrchestrationListenerManager configOrchestrationListenerManager
+                = new ConfigurationOrchestrationListenerManager("test", regCenter, Arrays.asList("sharding_db", "masterslave_db"));
+        StateOrchestrationListenerManager stateOrchestrationListenerManager = new StateOrchestrationListenerManager("test", regCenter);
+        setField(listenerManager, "configOrchestrationListenerManager", configOrchestrationListenerManager);
+        setField(listenerManager, "stateOrchestrationListenerManager", stateOrchestrationListenerManager);
     }
     
     private void setRegistry(final Field field, final Object target) throws ReflectiveOperationException {
@@ -122,6 +100,12 @@ public final class OrchestrationFacadeTest {
         Field field = target.getClass().getDeclaredField("regCenter");
         field.setAccessible(true);
         field.set(target, regCenter);
+    }
+    
+    private void setField(final Object target, final String fieldName, final Object fieldValue) throws ReflectiveOperationException {
+        Field field = target.getClass().getDeclaredField(fieldName);
+        field.setAccessible(true);
+        field.set(target, fieldValue);
     }
     
     @Test
