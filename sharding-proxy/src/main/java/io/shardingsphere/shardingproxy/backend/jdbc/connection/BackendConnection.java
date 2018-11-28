@@ -168,11 +168,9 @@ public final class BackendConnection implements AutoCloseable {
         return result;
     }
     
-    private List<Connection> getConnectionsWithoutTransaction(final ConnectionMode connectionMode, final String dataSourceName, final int connectionSize) throws SQLException {
+    private synchronized List<Connection> getConnectionsWithoutTransaction(final ConnectionMode connectionMode, final String dataSourceName, final int connectionSize) throws SQLException {
         List<Connection> result = logicSchema.getBackendDataSource().getConnections(connectionMode, dataSourceName, connectionSize);
-        synchronized (cachedConnections) {
-            cachedConnections.putAll(dataSourceName, result);
-        }
+        cachedConnections.putAll(dataSourceName, result);
         return result;
     }
     
@@ -222,7 +220,7 @@ public final class BackendConnection implements AutoCloseable {
      * @param forceClose force close flag
      * @throws SQLException SQL exception
      */
-    public void close(final boolean forceClose) throws SQLException {
+    public synchronized void close(final boolean forceClose) throws SQLException {
         Collection<SQLException> exceptions = new LinkedList<>();
         MasterVisitedManager.clear();
         exceptions.addAll(closeStatements());
