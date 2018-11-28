@@ -19,11 +19,13 @@ package io.shardingsphere.shardingproxy.backend.jdbc.connection;
 
 import com.google.common.collect.LinkedHashMultimap;
 import com.google.common.collect.Multimap;
+import io.netty.channel.ChannelHandlerContext;
 import io.shardingsphere.core.constant.ConnectionMode;
 import io.shardingsphere.core.constant.transaction.TransactionType;
 import io.shardingsphere.core.routing.router.masterslave.MasterVisitedManager;
 import io.shardingsphere.shardingproxy.runtime.schema.LogicSchema;
 import lombok.Getter;
+import lombok.Setter;
 import lombok.extern.slf4j.Slf4j;
 
 import java.sql.Connection;
@@ -61,6 +63,9 @@ public final class BackendConnection implements AutoCloseable {
     
     private TransactionType transactionType;
     
+    @Setter
+    private ChannelHandlerContext context;
+    
     public BackendConnection(final TransactionType transactionType) {
         this.transactionType = transactionType;
     }
@@ -70,9 +75,10 @@ public final class BackendConnection implements AutoCloseable {
      *
      * @param expect expect status
      * @param update new update status
+     * @return boolean set succeed or failed
      */
-    public void setStatus(final ConnectionStatus expect, final ConnectionStatus update) {
-        status.compareAndSet(expect, update);
+    public boolean setStatus(final ConnectionStatus expect, final ConnectionStatus update) {
+        return status.compareAndSet(expect, update);
     }
     
     /**
@@ -225,7 +231,9 @@ public final class BackendConnection implements AutoCloseable {
         if (ConnectionStatus.TRANSACTION != status.get() && ConnectionStatus.INIT != status.get()
             && ConnectionStatus.TERMINATED != status.get()) {
             status.compareAndSet(ConnectionStatus.RUNNING, ConnectionStatus.RELEASE);
+//            log.debug("++++release, channel:{}, status:{}", context.channel().id().asShortText(), status.get());
         }
+        
         throwSQLExceptionIfNecessary(exceptions);
     }
     
