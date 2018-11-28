@@ -41,18 +41,18 @@ import lombok.RequiredArgsConstructor;
  */
 @RequiredArgsConstructor
 public final class SQLParsingEngine {
-    
+
     private final DatabaseType dbType;
-    
+
     private final String sql;
-    
+
     private final ShardingRule shardingRule;
-    
+
     private final ShardingTableMetaData shardingTableMetaData;
-    
+
     /**
      * Parse SQL.
-     * 
+     *
      * @param useCache use cache or not
      * @return parsed SQL statement
      */
@@ -66,7 +66,8 @@ public final class SQLParsingEngine {
         Token firstToken = lexerEngine.getCurrentToken();
         SQLStatement result;
 
-        if (PostgreSQLKeyword.SHOW == lexerEngine.getCurrentToken().getType()) {
+        if (PostgreSQLKeyword.SHOW == lexerEngine.getCurrentToken().getType() ||
+                PostgreSQLKeyword.SET == lexerEngine.getCurrentToken().getType()) {
             result = AntlrParsingEngine.parse(dbType, sql, shardingRule, shardingTableMetaData);
             return result;
         }
@@ -89,7 +90,7 @@ public final class SQLParsingEngine {
         }
         return result;
     }
-    
+
     private Optional<SQLStatement> getSQLStatementFromCache(final boolean useCache) {
         return useCache ? Optional.fromNullable(ParsingResultCache.getInstance().getSQLStatement(sql)) : Optional.<SQLStatement>absent();
     }
