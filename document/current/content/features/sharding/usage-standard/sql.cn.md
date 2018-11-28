@@ -12,7 +12,7 @@ weight = 1
 
 ## 支持项
 
-全面支持DQL、DML和DDL。支持分页、排序、分组、聚合、关联查询（不支持跨库关联）。以下用最为复杂的DQL举例：
+全面支持DQL、DML和DDL。支持分页、DISTINCT、排序、分组、聚合、关联查询（不支持跨库关联）。以下用最为复杂的DQL举例：
 
 - SELECT主语句
 
@@ -42,7 +42,7 @@ table_reference ([INNER] | {LEFT|RIGHT} [OUTER]) JOIN table_factor [JOIN ON cond
 
 ## 不支持项
 
-不支持冗余括号、CASE WHEN、DISTINCT、HAVING、UNION (ALL)，有限支持子查询。
+不支持冗余括号、CASE WHEN、HAVING、UNION (ALL)，有限支持子查询。
 
 除了分页子查询的支持之外(详情请参考[分页](/cn/features/sharding/usage-standard/pagination))，也支持同等模式的子查询。无论嵌套多少层，Sharding-Sphere都可以解析至第一个包含数据表的子查询，一旦在下层嵌套中再次找到包含数据表的子查询将直接抛出解析异常。
 
@@ -87,16 +87,32 @@ SELECT COUNT(*) FROM (SELECT * FROM t_order o WHERE o.id IN (SELECT id FROM t_or
 | CREATE INDEX idx_name ON tbl_name                                                           |                            |
 | DROP INDEX idx_name ON tbl_name                                                             |                            |
 | DROP INDEX idx_name                                                                         |  TableRule中配置logic-index |
+| SELECT DISTINCT * FROM tbl_name WHERE col1 = ?                                              |                            |
+| SELECT DISTINCT col1 FROM tbl_name                                                          |                            |
+| SELECT DISTINCT col1, col2, col3 FROM tbl_name                                              |                            |
+| SELECT COUNT(DISTINCT col1) FROM tbl_name                                                   |                            |
+| SELECT SUM(DISTINCT col1) FROM tbl_name                                                     |                            |
+| SELECT DISTINCT col1 FROM tbl_name ORDER BY col1                                            |                            |
+| SELECT DISTINCT col1 FROM tbl_name ORDER BY col2                                            |                            |
+| SELECT COUNT(DISTINCT col1) FROM tbl_name GROUP BY col1                                     |                            |
+| SELECT COUNT(DISTINCT col1), col1 FROM tbl_name GROUP BY col1                               |                            |
+| SELECT DISTINCT col1 + col2 FROM tbl_name                                                   |                            |
 
 ### 不支持的SQL
 
-| SQL                                                                                         | 不支持原因        |
-| ------------------------------------------------------------------------------------------- |----------------- |
-| INSERT INTO tbl_name (col1, col2, ...) SELECT col1, col2, ... FROM tbl_name WHERE col3 = ?  | INSERT .. SELECT |
-| INSERT INTO tbl_name SET col1 = ?                                                           | INSERT .. SET    |
-| SELECT DISTINCT * FROM tbl_name WHERE column1 = ?                                           | DISTINCT         |
-| SELECT COUNT(col1) as count_alias FROM tbl_name GROUP BY col1 HAVING count_alias > ?        | HAVING           |
-| SELECT * FROM tbl_name1 UNION SELECT * FROM tbl_name2                                       | UNION            |
-| SELECT * FROM tbl_name1 UNION ALL SELECT * FROM tbl_name2                                   | UNION ALL        |
-| SELECT * FROM tbl_name1 WHERE (val1=?) AND (val1=?)                                         | 冗余括号          |
-| SELECT * FROM ds.tbl_name1                                                                  | 包含schema        |
+| SQL                                                                                         | 不支持原因                        |  
+| ------------------------------------------------------------------------------------------- |--------------------------------- |                    
+| INSERT INTO tbl_name (col1, col2, ...) SELECT col1, col2, ... FROM tbl_name WHERE col3 = ?  | INSERT .. SEL                    |
+| INSERT INTO tbl_name SET col1 = ?                                                           | INSERT .. SET                    |
+| SELECT COUNT(col1) as count_alias FROM tbl_name GROUP BY col1 HAVING count_alias > ?        | HAVING                           |
+| SELECT * FROM tbl_name1 UNION SELECT * FROM tbl_name2                                       | UNION                            |
+| SELECT * FROM tbl_name1 UNION ALL SELECT * FROM tbl_name2                                   | UNION ALL                        |
+| SELECT * FROM tbl_name1 WHERE (val1=?) AND (val1=?)                                         | 冗余括号                          |
+| SELECT * FROM ds.tbl_name1                                                                  | 包含schema                        | 
+| SELECT DISTINCT(col1) FROM tbl_name                                                         | DISTINCT()                       |
+| SELECT DISTINCT(col1 + col2) FROM tbl_name                                                  | DISTINCT()                       |
+| SELECT COUNT(DISTINCT col1 + col2) FROM tbl_name                                            | PLUS FUNCTION                    |
+| SELECT AVG(DISTINCT col1) FROM tbl_name                                                     | AVG(DISTINCT)                    |
+| SELECT COUNT(DISTINCT col1), SUM(DISTINCT col1) FROM tbl_name                               | 同时使用2种DISTINCT的聚合函数       |
+| SELECT SUM(DISTINCT col1), SUM(col1) FROM tbl_name                                          | 同时使用普通聚合函数和DISTINCT聚合函数|
+| SELECT col1, COUNT(DISTINCT col1) FROM tbl_name GROUP BY col1                               | COUNT(DISTINCT)和普通查询项的顺序问题|
