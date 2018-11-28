@@ -35,4 +35,5 @@ execute
     | alterRoleResetConfig
     | dropRole
     | show
+    | setParam
     ;
