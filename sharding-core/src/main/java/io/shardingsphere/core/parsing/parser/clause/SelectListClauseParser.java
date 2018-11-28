@@ -86,7 +86,7 @@ public abstract class SelectListClauseParser implements SQLClauseParser {
         if (isRowNumberSelectItem()) {
             result = parseRowNumberSelectItem(selectStatement);
         } else if (isDistinctSelectItem()) {
-            result = parseDistinctSelectItem();
+            result = parseDistinctSelectItem(selectStatement);
             parseRestSelectItem(selectStatement);
         } else if (isStarSelectItem()) {
             selectStatement.setContainStar(true);
@@ -110,10 +110,11 @@ public abstract class SelectListClauseParser implements SQLClauseParser {
         return lexerEngine.equalAny(DefaultKeyword.DISTINCT);
     }
     
-    private SelectItem parseDistinctSelectItem() {
+    private SelectItem parseDistinctSelectItem(final SelectStatement selectStatement) {
         lexerEngine.nextToken();
         String distinctColumnName = lexerEngine.getCurrentToken().getLiterals();
         lexerEngine.nextToken();
+        distinctColumnName = SQLUtil.getExactlyValue(distinctColumnName + parseRestSelectItem(selectStatement));
         return new DistinctSelectItem(distinctColumnName, aliasExpressionParser.parseSelectItemAlias());
     }
     
