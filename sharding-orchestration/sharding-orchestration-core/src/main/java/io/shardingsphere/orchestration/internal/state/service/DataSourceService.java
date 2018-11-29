@@ -121,15 +121,15 @@ public final class DataSourceService {
      * @return disabled slave data source names
      */
     public Map<String, Collection<String>> getDisabledSlaveDataSourceNames() {
-        Map<String, Collection<String>> result = getDisabledDataSourceNames().getSchemaGroup();
+        Map<String, Collection<String>> result = getDisableOrchestrationSchemaGroup().getSchemaGroup();
         Map<String, Collection<String>> slaveDataSourceNamesMap = configService.getAllSlaveDataSourceNames();
         for (String each : result.keySet()) {
-            result.get(each).containsAll(slaveDataSourceNamesMap.get(each));
+            result.get(each).retainAll(slaveDataSourceNamesMap.get(each));
         }
         return result;
     }
     
-    private OrchestrationSchemaGroup getDisabledDataSourceNames() {
+    private OrchestrationSchemaGroup getDisableOrchestrationSchemaGroup() {
         OrchestrationSchemaGroup result = new OrchestrationSchemaGroup();
         for (String each : regCenter.getChildrenKeys(stateNode.getDataSourcesNodeFullRootPath())) {
             if (StateNodeStatus.DISABLED.toString().equalsIgnoreCase(regCenter.get(stateNode.getDataSourcesNodeFullPath(each)))) {

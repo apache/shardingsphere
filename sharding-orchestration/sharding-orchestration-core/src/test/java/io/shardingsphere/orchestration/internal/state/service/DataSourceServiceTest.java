@@ -17,7 +17,6 @@
 
 package io.shardingsphere.orchestration.internal.state.service;
 
-import io.shardingsphere.api.config.MasterSlaveRuleConfiguration;
 import io.shardingsphere.api.config.ShardingRuleConfiguration;
 import io.shardingsphere.core.config.DataSourceConfiguration;
 import io.shardingsphere.orchestration.reg.api.RegistryCenter;
@@ -28,6 +27,7 @@ import org.mockito.Mock;
 import org.mockito.junit.MockitoJUnitRunner;
 
 import java.util.Arrays;
+import java.util.Collection;
 import java.util.Collections;
 import java.util.Map;
 
@@ -126,15 +126,15 @@ public final class DataSourceServiceTest {
         when(regCenter.getDirectly("/test/config/schema/masterslave_db/rule")).thenReturn(MASTER_SLAVE_RULE_YAML);
         when(regCenter.getChildrenKeys("/test/state/datasources")).thenReturn(Collections.singletonList("masterslave_db.ds_0_slave"));
         when(regCenter.get("/test/state/datasources/masterslave_db.ds_0_slave")).thenReturn("disabled");
-        MasterSlaveRuleConfiguration actual = dataSourceService.getAvailableMasterSlaveRuleConfiguration("masterslave_db");
-        assertFalse(actual.getSlaveDataSourceNames().contains("ds_0_slave"));
+        Map<String, Collection<String>> actual = dataSourceService.getDisabledSlaveDataSourceNames();
+        assertTrue(actual.get("masterslave_db").contains("ds_0_slave"));
     }
     
     @Test
     public void assertGetDisabledSlaveDataSourceNamesWithoutDisabledDataSources() {
         when(regCenter.getChildrenKeys("/test/config/schema")).thenReturn(Collections.singletonList("masterslave_db"));
         when(regCenter.getDirectly("/test/config/schema/masterslave_db/rule")).thenReturn(MASTER_SLAVE_RULE_YAML);
-        MasterSlaveRuleConfiguration actual = dataSourceService.getAvailableMasterSlaveRuleConfiguration("masterslave_db");
-        assertTrue(actual.getSlaveDataSourceNames().contains("ds_0_slave"));
+        Map<String, Collection<String>> actual = dataSourceService.getDisabledSlaveDataSourceNames();
+        assertFalse(actual.containsKey("masterslave_db"));
     }
 }
