@@ -53,9 +53,9 @@ public final class DataSourceService {
     }
     
     /**
-     * Persist master-salve data sources node.
+     * Initialize data sources node.
      */
-    public void persistDataSourcesNode() {
+    public void initDataSourcesNode() {
         regCenter.persist(stateNode.getDataSourcesNodeFullRootPath(), "");
     }
     
@@ -67,7 +67,7 @@ public final class DataSourceService {
      */
     public Map<String, DataSourceConfiguration> getAvailableDataSourceConfigurations(final String shardingSchemaName) {
         Map<String, DataSourceConfiguration> result = configService.loadDataSourceConfigurations(shardingSchemaName);
-        for (String each : getDisabledOrchestrationShardingSchemaGroup().getDataSourceNames(shardingSchemaName)) {
+        for (String each : getDisabledSlaveSchemaGroup().getDataSourceNames(shardingSchemaName)) {
             result.remove(each);
         }
         return result;
@@ -82,7 +82,7 @@ public final class DataSourceService {
     public ShardingRuleConfiguration getAvailableShardingRuleConfiguration(final String shardingSchemaName) {
         ShardingRuleConfiguration result = configService.loadShardingRuleConfiguration(shardingSchemaName);
         Preconditions.checkState(null != result && !result.getTableRuleConfigs().isEmpty(), "Missing the sharding rule configuration on registry center.");
-        for (String each : getDisabledOrchestrationShardingSchemaGroup().getDataSourceNames(shardingSchemaName)) {
+        for (String each : getDisabledSlaveSchemaGroup().getDataSourceNames(shardingSchemaName)) {
             for (MasterSlaveRuleConfiguration masterSlaveRuleConfig : result.getMasterSlaveRuleConfigs()) {
                 masterSlaveRuleConfig.getSlaveDataSourceNames().remove(each);
             }
@@ -99,7 +99,7 @@ public final class DataSourceService {
     public MasterSlaveRuleConfiguration getAvailableMasterSlaveRuleConfiguration(final String shardingSchemaName) {
         MasterSlaveRuleConfiguration result = configService.loadMasterSlaveRuleConfiguration(shardingSchemaName);
         Preconditions.checkState(null != result && !Strings.isNullOrEmpty(result.getMasterDataSourceName()), "No available master slave rule configuration to load.");
-        for (String each : getDisabledOrchestrationShardingSchemaGroup().getDataSourceNames(shardingSchemaName)) {
+        for (String each : getDisabledSlaveSchemaGroup().getDataSourceNames(shardingSchemaName)) {
             result.getSlaveDataSourceNames().remove(each);
         }
         return result;
@@ -110,7 +110,7 @@ public final class DataSourceService {
      *
      * @return disabled slave orchestration sharding schema group
      */
-    public OrchestrationShardingSchemaGroup getDisabledOrchestrationShardingSchemaGroup() {
+    public OrchestrationShardingSchemaGroup getDisabledSlaveSchemaGroup() {
         OrchestrationShardingSchemaGroup result = new OrchestrationShardingSchemaGroup();
         OrchestrationShardingSchemaGroup slaveGroup = configService.getAllSlaveDataSourceNames();
         for (String each : regCenter.getChildrenKeys(stateNode.getDataSourcesNodeFullRootPath())) {

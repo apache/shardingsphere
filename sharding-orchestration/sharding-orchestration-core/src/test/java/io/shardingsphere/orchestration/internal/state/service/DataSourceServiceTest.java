@@ -73,8 +73,8 @@ public final class DataSourceServiceTest {
     }
     
     @Test
-    public void assertPersistDataSourcesNode() {
-        dataSourceService.persistDataSourcesNode();
+    public void assertInitDataSourcesNode() {
+        dataSourceService.initDataSourcesNode();
         verify(regCenter).persist("/test/state/datasources", "");
     }
     
@@ -125,13 +125,13 @@ public final class DataSourceServiceTest {
         when(regCenter.getDirectly("/test/config/schema/masterslave_db/rule")).thenReturn(MASTER_SLAVE_RULE_YAML);
         when(regCenter.getChildrenKeys("/test/state/datasources")).thenReturn(Collections.singletonList("masterslave_db.ds_0_slave"));
         when(regCenter.get("/test/state/datasources/masterslave_db.ds_0_slave")).thenReturn("disabled");
-        assertTrue(dataSourceService.getDisabledOrchestrationShardingSchemaGroup().getDataSourceNames("masterslave_db").contains("ds_0_slave"));
+        assertTrue(dataSourceService.getDisabledSlaveSchemaGroup().getDataSourceNames("masterslave_db").contains("ds_0_slave"));
     }
     
     @Test
     public void assertGetDisabledOrchestrationShardingSchemaGroupWithoutDisabledDataSources() {
         when(regCenter.getChildrenKeys("/test/config/schema")).thenReturn(Collections.singletonList("masterslave_db"));
         when(regCenter.getDirectly("/test/config/schema/masterslave_db/rule")).thenReturn(MASTER_SLAVE_RULE_YAML);
-        assertTrue(dataSourceService.getDisabledOrchestrationShardingSchemaGroup().getDataSourceNames("masterslave_db").isEmpty());
+        assertTrue(dataSourceService.getDisabledSlaveSchemaGroup().getDataSourceNames("masterslave_db").isEmpty());
     }
 }
