@@ -102,7 +102,7 @@ dropUser
     ;
 
 createLogin
-    : CREATE LOGIN (windowsPrincipal | ID) (WITH  loginOptionList  | FROM  sources)
+    : CREATE LOGIN (windowsPrincipal | ID) (WITH  loginOptionList | FROM  sources)
     ;
 
 loginOptionList
@@ -141,10 +141,10 @@ createRole
     : CREATE ROLE roleName (AUTHORIZATION ID)
     ;    
 
- alterRole
-     : ALTER ROLE roleName ((ADD | DROP) MEMBER ID |  WITH NAME EQ_ ID  )
-     ;
+alterRole
+    : ALTER ROLE roleName ((ADD | DROP) MEMBER ID | WITH NAME EQ_ ID)
+    ;
 
-  dropRole
-      : DROP ROLE roleName
-      ;
+dropRole
+    : DROP ROLE roleName
+    ;
