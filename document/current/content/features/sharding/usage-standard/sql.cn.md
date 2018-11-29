@@ -28,7 +28,7 @@ SELECT select_expr [, select_expr ...] FROM table_reference [, table_reference .
 
 ```sql
 * | 
-COLUMN_NAME [AS] [alias] | 
+[DISTINCT] COLUMN_NAME [AS] [alias] | 
 (MAX | MIN | SUM | AVG)(COLUMN_NAME | alias) [AS] [alias] | 
 COUNT(* | COLUMN_NAME | alias) [AS] [alias]
 ```
@@ -88,15 +88,7 @@ SELECT COUNT(*) FROM (SELECT * FROM t_order o WHERE o.id IN (SELECT id FROM t_or
 | DROP INDEX idx_name ON tbl_name                                                             |                            |
 | DROP INDEX idx_name                                                                         |  TableRule中配置logic-index |
 | SELECT DISTINCT * FROM tbl_name WHERE col1 = ?                                              |                            |
-| SELECT DISTINCT col1 FROM tbl_name                                                          |                            |
-| SELECT DISTINCT col1, col2, col3 FROM tbl_name                                              |                            |
 | SELECT COUNT(DISTINCT col1) FROM tbl_name                                                   |                            |
-| SELECT SUM(DISTINCT col1) FROM tbl_name                                                     |                            |
-| SELECT DISTINCT col1 FROM tbl_name ORDER BY col1                                            |                            |
-| SELECT DISTINCT col1 FROM tbl_name ORDER BY col2                                            |                            |
-| SELECT COUNT(DISTINCT col1) FROM tbl_name GROUP BY col1                                     |                            |
-| SELECT COUNT(DISTINCT col1), col1 FROM tbl_name GROUP BY col1                               |                            |
-| SELECT DISTINCT col1 + col2 FROM tbl_name                                                   |                            |
 
 ### 不支持的SQL
 
@@ -109,6 +101,29 @@ SELECT COUNT(*) FROM (SELECT * FROM t_order o WHERE o.id IN (SELECT id FROM t_or
 | SELECT * FROM tbl_name1 UNION ALL SELECT * FROM tbl_name2                                   | UNION ALL                        |
 | SELECT * FROM tbl_name1 WHERE (val1=?) AND (val1=?)                                         | 冗余括号                          |
 | SELECT * FROM ds.tbl_name1                                                                  | 包含schema                        | 
+| SELECT SUM(DISTINCT col1), SUM(col1) FROM tbl_name                                          | 详见`DISTINCT`支持情况详细说明      |
+
+## `DISTINCT`支持情况详细说明
+
+### 支持的SQL
+
+| SQL                                                                                         | Required condition                  |
+| ------------------------------------------------------------------------------------------- | ----------------------------------- |
+| SELECT DISTINCT * FROM tbl_name WHERE col1 = ?                                              |                                     |
+| SELECT DISTINCT col1 FROM tbl_name                                                          |                                     |
+| SELECT DISTINCT col1, col2, col3 FROM tbl_name                                              |                                     |
+| SELECT COUNT(DISTINCT col1) FROM tbl_name                                                   |                                     |
+| SELECT SUM(DISTINCT col1) FROM tbl_name                                                     |                                     |
+| SELECT DISTINCT col1 FROM tbl_name ORDER BY col1                                            |                                     |
+| SELECT DISTINCT col1 FROM tbl_name ORDER BY col2                                            |                                     |
+| SELECT COUNT(DISTINCT col1) FROM tbl_name GROUP BY col1                                     |                                     |
+| SELECT COUNT(DISTINCT col1), col1 FROM tbl_name GROUP BY col1                               |                                     |
+| SELECT DISTINCT col1 + col2 FROM tbl_name                                                   |                                     |
+
+### 不支持的SQL
+
+| SQL                                                                                         | 不支持原因                         |
+| ------------------------------------------------------------------------------------------- |--------------------------------- |
 | SELECT DISTINCT(col1) FROM tbl_name                                                         | DISTINCT()                       |
 | SELECT DISTINCT(col1 + col2) FROM tbl_name                                                  | DISTINCT()                       |
 | SELECT COUNT(DISTINCT col1 + col2) FROM tbl_name                                            | PLUS FUNCTION                    |

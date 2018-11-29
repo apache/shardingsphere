@@ -26,7 +26,7 @@ SELECT select_expr [, select_expr ...] FROM table_reference [, table_reference .
 
 ```sql
 * | 
-COLUMN_NAME [AS] [alias] | 
+[DISTINCT] COLUMN_NAME [AS] [alias] | 
 (MAX | MIN | SUM | AVG)(COLUMN_NAME | alias) [AS] [alias] | 
 COUNT(* | COLUMN_NAME | alias) [AS] [alias]
 ```
@@ -86,6 +86,29 @@ Can not support SQL which include schema. Because of Sharding-Sphere is manage m
 | DROP INDEX idx_name ON tbl_name                                                             |                                     |
 | DROP INDEX idx_name                                                                         |  Configure logic-index in TableRule |
 | SELECT DISTINCT * FROM tbl_name WHERE col1 = ?                                              |                                     |
+| SELECT COUNT(DISTINCT col1) FROM tbl_name                                                   |                                     |
+
+### Unsupported SQL
+
+| SQL                                                                                         | Unsupported reason                                      |
+| ------------------------------------------------------------------------------------------- |-------------------------------------------------------- |
+| INSERT INTO tbl_name (col1, col2, ...) SELECT col1, col2, ... FROM tbl_name WHERE col3 = ?  | INSERT .. SELECT                                        |
+| INSERT INTO tbl_name SET col1 = ?                                                           | INSERT .. SET                                           |
+| SELECT COUNT(col1) as count_alias FROM tbl_name GROUP BY col1 HAVING count_alias > ?        | HAVING                                                  |
+| SELECT * FROM tbl_name1 UNION SELECT * FROM tbl_name2                                       | UNION                                                   |
+| SELECT * FROM tbl_name1 UNION ALL SELECT * FROM tbl_name2                                   | UNION ALL                                               |
+| SELECT * FROM tbl_name1 WHERE (val1=?) AND (val1=?)                                         | brackets redundancy                                     |
+| SELECT * FROM ds.tbl_name1                                                                  | include schema                                          |
+| SELECT SUM(DISTINCT col1), SUM(col1) FROM tbl_name                                          | Please refer to the detail of supporting `DISTINCT`     |
+
+
+## More detail of supporting `DISTINCT` syntax
+
+### Supported SQL
+
+| SQL                                                                                         | Required condition                  |
+| ------------------------------------------------------------------------------------------- | ----------------------------------- |
+| SELECT DISTINCT * FROM tbl_name WHERE col1 = ?                                              |                                     |
 | SELECT DISTINCT col1 FROM tbl_name                                                          |                                     |
 | SELECT DISTINCT col1, col2, col3 FROM tbl_name                                              |                                     |
 | SELECT COUNT(DISTINCT col1) FROM tbl_name                                                   |                                     |
@@ -100,13 +123,6 @@ Can not support SQL which include schema. Because of Sharding-Sphere is manage m
 
 | SQL                                                                                         | Unsupported reason                                      |
 | ------------------------------------------------------------------------------------------- |-------------------------------------------------------- |
-| INSERT INTO tbl_name (col1, col2, ...) SELECT col1, col2, ... FROM tbl_name WHERE col3 = ?  | INSERT .. SELECT                                        |
-| INSERT INTO tbl_name SET col1 = ?                                                           | INSERT .. SET                                           |
-| SELECT COUNT(col1) as count_alias FROM tbl_name GROUP BY col1 HAVING count_alias > ?        | HAVING                                                  |
-| SELECT * FROM tbl_name1 UNION SELECT * FROM tbl_name2                                       | UNION                                                   |
-| SELECT * FROM tbl_name1 UNION ALL SELECT * FROM tbl_name2                                   | UNION ALL                                               |
-| SELECT * FROM tbl_name1 WHERE (val1=?) AND (val1=?)                                         | brackets redundancy                                     |
-| SELECT * FROM ds.tbl_name1                                                                  | include schema                                          |
 | SELECT DISTINCT(col1) FROM tbl_name                                                         | DISTINCT()                                              |
 | SELECT DISTINCT(col1 + col2) FROM tbl_name                                                  | DISTINCT()                                              |
 | SELECT COUNT(DISTINCT col1 + col2) FROM tbl_name                                            | PLUS FUNCTION                                           |
