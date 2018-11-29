@@ -15,26 +15,27 @@
  * </p>
  */
 
-package io.shardingsphere.core.parsing.parser.dialect.oracle.clause;
+package io.shardingsphere.core.rewrite.placeholder;
 
-import io.shardingsphere.core.parsing.lexer.LexerEngine;
 import io.shardingsphere.core.parsing.lexer.token.DefaultKeyword;
-import io.shardingsphere.core.parsing.lexer.token.Keyword;
-import io.shardingsphere.core.parsing.parser.clause.DistinctClauseParser;
+import lombok.Getter;
+import lombok.RequiredArgsConstructor;
 
 /**
- * Distinct clause parser for Oracle.
+ * Aggregation distinct placeholder for rewrite.
  *
- * @author zhangliang
+ * @author panjuan
  */
-public final class OracleDistinctClauseParser extends DistinctClauseParser {
+@RequiredArgsConstructor
+@Getter
+public final class AggregationDistinctPlaceholder implements ShardingPlaceholder {
     
-    public OracleDistinctClauseParser(final LexerEngine lexerEngine) {
-        super(lexerEngine);
-    }
+    private final String columnName;
+    
+    private final String logicTableName;
     
     @Override
-    protected Keyword[] getSynonymousKeywordsForDistinct() {
-        return new Keyword[] {DefaultKeyword.UNIQUE};
+    public String toString() {
+        return DefaultKeyword.DISTINCT + " " + columnName;
     }
 }

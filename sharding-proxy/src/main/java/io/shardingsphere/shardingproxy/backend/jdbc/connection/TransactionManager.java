@@ -15,16 +15,24 @@
  * </p>
  */
 
-package io.shardingsphere.orchestration.internal.state.listener;
+package io.shardingsphere.shardingproxy.backend.jdbc.connection;
 
-import org.junit.runner.RunWith;
-import org.junit.runners.Suite;
-import org.junit.runners.Suite.SuiteClasses;
+import io.shardingsphere.core.constant.transaction.TransactionOperationType;
 
-@RunWith(Suite.class)
-@SuiteClasses({
-        DataSourceStateOrchestrationListenerTest.class,
-        InstanceStateOrchestrationListenerTest.class
-})
-public final class AllListenerTests {
+import java.sql.SQLException;
+
+/**
+ * Transaction manager interface for proxy.
+ *
+ * @author zhaojun
+ */
+public interface TransactionManager {
+    
+    /**
+     * Handle proxy transaction.
+     *
+     * @param operationType transaction operation type
+     * @throws SQLException SQL Exception
+     */
+    void doInTransaction(TransactionOperationType operationType) throws SQLException;
 }

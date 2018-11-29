@@ -46,9 +46,9 @@ public final class RegistryCenterLoader {
             result = each;
             count++;
         }
-        Preconditions.checkNotNull(result, "Cannot load implementation class for registry center");
+        Preconditions.checkNotNull(result, "Cannot load implementation class for registry center.");
         if (1 != count) {
-            log.warn("Find more than one registry center implementation class, use `{}` now", result.getClass().getName());
+            log.warn("Find more than one registry center implementation class, use `{}` now.", result.getClass().getName());
         }
         result.init(regCenterConfig);
         return result;

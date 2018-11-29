@@ -118,6 +118,8 @@ public enum RuleName {
     LIMIT_CLAUSE("LimitClause"),
     
     RANGE_CLAUSE("RangeClause");
+
+    SHOW_PARAM("ShowParam");
     
     private final String name;
     

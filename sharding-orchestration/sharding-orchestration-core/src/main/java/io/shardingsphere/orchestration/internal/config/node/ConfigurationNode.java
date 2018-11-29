@@ -21,7 +21,7 @@ import com.google.common.base.Joiner;
 import lombok.RequiredArgsConstructor;
 
 /**
- * Data configuration node.
+ * Configuration node.
  *
  * @author caohao
  * @author panjuan

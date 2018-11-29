@@ -15,19 +15,23 @@
  * </p>
  */
 
-package io.shardingsphere.orchestration.internal.config.listener;
+package io.shardingsphere.orchestration.yaml;
 
-import org.junit.runner.RunWith;
-import org.junit.runners.Suite;
-import org.junit.runners.Suite.SuiteClasses;
+import lombok.Getter;
+import lombok.Setter;
 
-@RunWith(Suite.class)
-@SuiteClasses({
-        AuthenticationOrchestrationListenerTest.class,
-        ConfigMapOrchestrationListenerTest.class,
-        DataSourceOrchestrationListenerTest.class,
-        PropertiesOrchestrationListenerTest.class,
-        RuleOrchestrationListenerTest.class
-})
-public final class AllListenerTests {
+import java.util.Map;
+
+/**
+ * Data source configuration for yaml.
+ *
+ * @author zhangliang
+ */
+@Getter
+@Setter
+public final class YamlDataSourceConfiguration {
+    
+    private String dataSourceClassName;
+    
+    private Map<String, Object> properties;
 }

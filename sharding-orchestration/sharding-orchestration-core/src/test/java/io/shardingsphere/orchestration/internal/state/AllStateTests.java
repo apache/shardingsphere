@@ -17,8 +17,12 @@
 
 package io.shardingsphere.orchestration.internal.state;
 
-import io.shardingsphere.orchestration.internal.state.listener.AllListenerTests;
+import io.shardingsphere.orchestration.internal.state.listener.DataSourceStateOrchestrationListenerTest;
+import io.shardingsphere.orchestration.internal.state.listener.InstanceStateOrchestrationListenerTest;
+import io.shardingsphere.orchestration.internal.state.listener.StateOrchestrationListenerManagerTest;
 import io.shardingsphere.orchestration.internal.state.node.StateNodeTest;
+import io.shardingsphere.orchestration.internal.state.schema.OrchestrationSchemaGroupTest;
+import io.shardingsphere.orchestration.internal.state.schema.OrchestrationSchemaTest;
 import io.shardingsphere.orchestration.internal.state.service.DataSourceServiceTest;
 import io.shardingsphere.orchestration.internal.state.service.InstanceStateServiceTest;
 import org.junit.runner.RunWith;
@@ -27,10 +31,14 @@ import org.junit.runners.Suite.SuiteClasses;
 
 @RunWith(Suite.class)
 @SuiteClasses({
-        StateNodeTest.class,
-        InstanceStateServiceTest.class,
-        DataSourceServiceTest.class,
-        AllListenerTests.class
+        StateNodeTest.class, 
+        OrchestrationSchemaTest.class, 
+        OrchestrationSchemaGroupTest.class, 
+        InstanceStateServiceTest.class, 
+        DataSourceServiceTest.class, 
+        StateOrchestrationListenerManagerTest.class, 
+        DataSourceStateOrchestrationListenerTest.class, 
+        InstanceStateOrchestrationListenerTest.class
 })
 public final class AllStateTests {
 }

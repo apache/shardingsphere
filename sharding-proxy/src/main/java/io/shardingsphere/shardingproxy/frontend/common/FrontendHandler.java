@@ -45,6 +45,7 @@ public abstract class FrontendHandler extends ChannelInboundHandlerAdapter {
 
     @Override
     public final void channelActive(final ChannelHandlerContext context) {
+        backendConnection.setContext(context);
         ChannelThreadExecutorGroup.getInstance().register(context.channel().id());
         handshake(context);
     }
@@ -70,7 +71,6 @@ public abstract class FrontendHandler extends ChannelInboundHandlerAdapter {
     public final void channelInactive(final ChannelHandlerContext context) {
         context.fireChannelInactive();
         backendConnection.close(true);
-        backendConnection.cancel();
         ChannelThreadExecutorGroup.getInstance().unregister(context.channel().id());
     }
 }

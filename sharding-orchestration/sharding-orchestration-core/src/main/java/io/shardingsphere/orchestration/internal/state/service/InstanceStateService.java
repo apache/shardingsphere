@@ -17,8 +17,8 @@
 
 package io.shardingsphere.orchestration.internal.state.service;
 
-import io.shardingsphere.orchestration.internal.state.node.StateNode;
 import io.shardingsphere.orchestration.internal.state.instance.OrchestrationInstance;
+import io.shardingsphere.orchestration.internal.state.node.StateNode;
 import io.shardingsphere.orchestration.reg.api.RegistryCenter;
 
 /**
@@ -33,15 +33,16 @@ public final class InstanceStateService {
     
     private final RegistryCenter regCenter;
     
-    private final OrchestrationInstance instance = OrchestrationInstance.getInstance();
+    private final OrchestrationInstance instance;
     
     public InstanceStateService(final String name, final RegistryCenter regCenter) {
         stateNode = new StateNode(name);
         this.regCenter = regCenter;
+        instance = OrchestrationInstance.getInstance();
     }
     
     /**
-     * Persist proxy instance online.
+     * Persist instance online.
      */
     public void persistInstanceOnline() {
         regCenter.persistEphemeral(stateNode.getInstancesNodeFullPath(instance.getInstanceId()), "");

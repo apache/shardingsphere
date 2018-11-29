@@ -21,6 +21,7 @@ import com.google.common.base.Optional;
 import io.netty.buffer.ByteBuf;
 import io.netty.channel.ChannelHandlerContext;
 import io.shardingsphere.shardingproxy.backend.jdbc.connection.BackendConnection;
+import io.shardingsphere.shardingproxy.backend.jdbc.connection.ConnectionStatus;
 import io.shardingsphere.shardingproxy.frontend.common.FrontendHandler;
 import io.shardingsphere.shardingproxy.runtime.ChannelRegistry;
 import io.shardingsphere.shardingproxy.transport.common.packet.DatabasePacket;
@@ -36,6 +37,7 @@ import io.shardingsphere.shardingproxy.transport.mysql.packet.generic.OKPacket;
 import io.shardingsphere.spi.root.RootInvokeHook;
 import io.shardingsphere.spi.root.SPIRootInvokeHook;
 import lombok.RequiredArgsConstructor;
+
 import java.sql.SQLException;
 
 /**
@@ -62,6 +64,7 @@ public final class CommandExecutor implements Runnable {
         int connectionSize = 0;
         try (MySQLPacketPayload payload = new MySQLPacketPayload(message);
              BackendConnection backendConnection = frontendHandler.getBackendConnection()) {
+            waitUntilConnectionReleasedIfNecessary(backendConnection);
             CommandPacket commandPacket = getCommandPacket(payload, backendConnection, frontendHandler);
             Optional<CommandResponsePackets> responsePackets = commandPacket.execute();
             if (!responsePackets.isPresent()) {
@@ -85,6 +88,17 @@ public final class CommandExecutor implements Runnable {
         }
     }
     
+    private void waitUntilConnectionReleasedIfNecessary(final BackendConnection backendConnection) throws InterruptedException {
+        if (ConnectionStatus.TRANSACTION != backendConnection.getStatus() && ConnectionStatus.INIT != backendConnection.getStatus()
+            && ConnectionStatus.TERMINATED != backendConnection.getStatus()) {
+            while (!backendConnection.compareAndSetStatus(ConnectionStatus.RELEASE, ConnectionStatus.RUNNING)) {
+                synchronized (backendConnection.getLock()) {
+                    backendConnection.getLock().wait(1000);
+                }
+            }
+        }
+    }
+    
     private CommandPacket getCommandPacket(final MySQLPacketPayload payload, final BackendConnection backendConnection, final FrontendHandler frontendHandler) throws SQLException {
         int sequenceId = payload.readInt1();
         int connectionId = ChannelRegistry.getInstance().getConnectionId(context.channel().id().asShortText());
@@ -98,9 +112,9 @@ public final class CommandExecutor implements Runnable {
         currentSequenceId = headPacketsCount;
         while (queryCommandPacket.next()) {
             while (!context.channel().isWritable() && context.channel().isActive()) {
-                synchronized (io.shardingsphere.shardingproxy.frontend.mysql.CommandExecutor.this) {
+                synchronized (frontendHandler) {
                     try {
-                        io.shardingsphere.shardingproxy.frontend.mysql.CommandExecutor.this.wait();
+                        frontendHandler.wait();
                     } catch (final InterruptedException ignored) {
                     }
                 }

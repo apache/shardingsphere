@@ -15,33 +15,27 @@
  * </p>
  */
 
-package io.shardingsphere.orchestration.internal.yaml.fixture;
+package io.shardingsphere.core.parsing.parser.token;
 
 import lombok.Getter;
-import lombok.Setter;
+import lombok.ToString;
 
-import java.util.Arrays;
-import java.util.Collection;
-
+/**
+ * Aggregation distinct token.
+ *
+ * @author panjuan
+ */
 @Getter
-@Setter
-public final class SimpleTypeRepresenterFixture {
+@ToString
+public final class AggregationDistinctToken extends SQLToken {
     
-    private boolean booleanValue;
+    private final String originalLiterals;
     
-    private Boolean booleanObjectValue = Boolean.TRUE;
+    private String columnName;
     
-    private int intValue;
-    
-    private Integer integerObjectValue = 10;
-    
-    private long longValue;
-    
-    private Long longObjectValue = 10L;
-    
-    private String string = "value";
-    
-    private Collection<String> collection = Arrays.asList("value1", "value2");
-    
-    private String skippedProperty = "skipped";
+    public AggregationDistinctToken(final int beginPosition, final String originalLiterals, final String columnName) {
+        super(beginPosition);
+        this.originalLiterals = originalLiterals;
+        this.columnName = columnName;
+    }
 }

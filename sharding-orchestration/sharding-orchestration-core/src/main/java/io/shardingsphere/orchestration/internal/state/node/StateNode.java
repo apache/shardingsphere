@@ -17,34 +17,24 @@
 
 package io.shardingsphere.orchestration.internal.state.node;
 
+import com.google.common.base.Joiner;
+import lombok.RequiredArgsConstructor;
+
 /**
  * State node.
  *
  * @author caohao
  */
-public class StateNode {
+@RequiredArgsConstructor
+public final class StateNode {
     
     private static final String ROOT = "state";
     
-    private static final String INSTANCES_NODE_PATH = ROOT + "/instances";
+    private static final String INSTANCES_NODE_PATH = "instances";
     
-    private static final String DATA_SOURCES_NODE_PATH = ROOT + "/datasources";
+    private static final String DATA_SOURCES_NODE_PATH = "datasources";
     
     private final String name;
-    
-    public StateNode(final String name) {
-        this.name = name;
-    }
-    
-    /**
-     * Get data source node full path.
-     *
-     * @return data source node full path
-     */
-    public String getDataSourcesNodeFullPath() {
-        return String.format("/%s/%s", name, DATA_SOURCES_NODE_PATH);
-    }
-    
     
     /**
      * Get instance node full path.
@@ -53,6 +43,25 @@ public class StateNode {
      * @return instance node full path
      */
     public String getInstancesNodeFullPath(final String instanceId) {
-        return String.format("/%s/%s/%s", name, INSTANCES_NODE_PATH, instanceId);
+        return Joiner.on("/").join("", name, ROOT, INSTANCES_NODE_PATH, instanceId);
+    }
+    
+    /**
+     * Get data source node full root path.
+     *
+     * @return data source node full root path
+     */
+    public String getDataSourcesNodeFullRootPath() {
+        return Joiner.on("/").join("", name, ROOT, DATA_SOURCES_NODE_PATH);
+    }
+    
+    /**
+     * Get data source node full path.
+     *
+     * @param schemaDataSourceName schema name and data source name
+     * @return data source node full path
+     */
+    public String getDataSourcesNodeFullPath(final String schemaDataSourceName) {
+        return Joiner.on("/").join("", name, ROOT, DATA_SOURCES_NODE_PATH, schemaDataSourceName);
     }
 }

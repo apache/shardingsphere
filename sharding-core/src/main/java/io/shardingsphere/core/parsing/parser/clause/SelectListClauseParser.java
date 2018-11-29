@@ -24,23 +24,32 @@ import io.shardingsphere.core.parsing.lexer.token.DefaultKeyword;
 import io.shardingsphere.core.parsing.lexer.token.Keyword;
 import io.shardingsphere.core.parsing.lexer.token.Symbol;
 import io.shardingsphere.core.parsing.parser.clause.expression.AliasExpressionParser;
+import io.shardingsphere.core.parsing.parser.context.selectitem.AggregationDistinctSelectItem;
 import io.shardingsphere.core.parsing.parser.context.selectitem.AggregationSelectItem;
 import io.shardingsphere.core.parsing.parser.context.selectitem.CommonSelectItem;
+import io.shardingsphere.core.parsing.parser.context.selectitem.DistinctSelectItem;
 import io.shardingsphere.core.parsing.parser.context.selectitem.SelectItem;
 import io.shardingsphere.core.parsing.parser.context.selectitem.StarSelectItem;
 import io.shardingsphere.core.parsing.parser.dialect.ExpressionParserFactory;
 import io.shardingsphere.core.parsing.parser.sql.dql.select.SelectStatement;
+import io.shardingsphere.core.parsing.parser.token.AggregationDistinctToken;
 import io.shardingsphere.core.parsing.parser.token.TableToken;
 import io.shardingsphere.core.rule.ShardingRule;
 import io.shardingsphere.core.util.SQLUtil;
 import lombok.Getter;
 
+import java.util.Collection;
+import java.util.Collections;
+import java.util.LinkedList;
 import java.util.List;
+import java.util.regex.Matcher;
+import java.util.regex.Pattern;
 
 /**
  * Select list clause parser.
  *
  * @author zhangliang
+ * @author panjuan
  */
 @Getter
 public abstract class SelectListClauseParser implements SQLClauseParser {
@@ -65,27 +74,51 @@ public abstract class SelectListClauseParser implements SQLClauseParser {
      */
     public void parse(final SelectStatement selectStatement, final List<SelectItem> items) {
         do {
-            selectStatement.getItems().add(parseSelectItem(selectStatement));
+            selectStatement.getItems().addAll(parseSelectItems(selectStatement));
         } while (lexerEngine.skipIfEqual(Symbol.COMMA));
         selectStatement.setSelectListLastPosition(lexerEngine.getCurrentToken().getEndPosition() - lexerEngine.getCurrentToken().getLiterals().length());
         items.addAll(selectStatement.getItems());
     }
     
-    private SelectItem parseSelectItem(final SelectStatement selectStatement) {
+    private Collection<SelectItem> parseSelectItems(final SelectStatement selectStatement) {
         lexerEngine.skipIfEqual(getSkippedKeywordsBeforeSelectItem());
-        SelectItem result;
+        Collection<SelectItem> result = getSelectItems(selectStatement);
+        reviseDistinctSelectItems(selectStatement, result);
+        return result;
+    }
+    
+    private Collection<SelectItem> getSelectItems(final SelectStatement selectStatement) {
+        final Collection<SelectItem> result = new LinkedList<>();
         if (isRowNumberSelectItem()) {
-            result = parseRowNumberSelectItem(selectStatement);
+            result.add(parseRowNumberSelectItem(selectStatement));
+        } else if (isDistinctSelectItem()) {
+            result.add(parseDistinctSelectItem(selectStatement));
+            addStarSelectItem(result);
+            parseRestSelectItem(selectStatement);
         } else if (isStarSelectItem()) {
             selectStatement.setContainStar(true);
-            result = parseStarSelectItem();
+            result.add(parseStarSelectItem());
         } else if (isAggregationSelectItem()) {
-            result = parseAggregationSelectItem(selectStatement);
+            result.add(parseAggregationSelectItem(selectStatement));
             parseRestSelectItem(selectStatement);
         } else {
-            result = parseCommonOrStarSelectItem(selectStatement);
+            result.add(parseCommonOrStarSelectItem(selectStatement));
         }
         return result;
+    }
+    
+    private void addStarSelectItem(final Collection<SelectItem> result) {
+        if (isStarSelectItem()) {
+            result.add(parseStarSelectItem());
+        }
+    }
+    
+    private void reviseDistinctSelectItems(final SelectStatement selectStatement, final Collection<SelectItem> selectItems) {
+        for (SelectItem each : selectItems) {
+            if (!(selectStatement.getDistinctSelectItems().isEmpty() || each instanceof StarSelectItem)) {
+                selectStatement.getDistinctSelectItems().get(0).getDistinctColumnNames().add(each.getExpression());
+            }
+        }
     }
     
     protected abstract Keyword[] getSkippedKeywordsBeforeSelectItem();
@@ -93,6 +126,21 @@ public abstract class SelectListClauseParser implements SQLClauseParser {
     protected abstract boolean isRowNumberSelectItem();
     
     protected abstract SelectItem parseRowNumberSelectItem(SelectStatement selectStatement);
+    
+    private boolean isDistinctSelectItem() {
+        return lexerEngine.equalAny(DefaultKeyword.DISTINCT);
+    }
+    
+    private SelectItem parseDistinctSelectItem(final SelectStatement selectStatement) {
+        lexerEngine.nextToken();
+        String distinctColumnName = lexerEngine.getCurrentToken().getLiterals();
+        if (Symbol.STAR == lexerEngine.getCurrentToken().getType()) {
+            return new DistinctSelectItem(Collections.<String>emptyList(), aliasExpressionParser.parseSelectItemAlias());
+        }
+        lexerEngine.nextToken();
+        distinctColumnName = SQLUtil.getExactlyValue(distinctColumnName + parseRestSelectItem(selectStatement));
+        return new DistinctSelectItem(Collections.singletonList(distinctColumnName), aliasExpressionParser.parseSelectItemAlias());
+    }
     
     private boolean isStarSelectItem() {
         return Symbol.STAR.getLiterals().equals(SQLUtil.getExactlyValue(lexerEngine.getCurrentToken().getLiterals()));
@@ -142,8 +190,34 @@ public abstract class SelectListClauseParser implements SQLClauseParser {
     
     private SelectItem parseAggregationSelectItem(final SelectStatement selectStatement) {
         AggregationType aggregationType = AggregationType.valueOf(lexerEngine.getCurrentToken().getLiterals().toUpperCase());
+        int beginPosition = lexerEngine.getCurrentToken().getEndPosition() - lexerEngine.getCurrentToken().getLiterals().length();
         lexerEngine.nextToken();
-        return new AggregationSelectItem(aggregationType, lexerEngine.skipParentheses(selectStatement), aliasExpressionParser.parseSelectItemAlias());
+        String innerExpression = lexerEngine.skipParentheses(selectStatement);
+        return isAggregationDistinctSelectItem(innerExpression) ? getAggregationDistinctSelectItem(selectStatement, aggregationType, beginPosition, innerExpression)
+                : new AggregationSelectItem(aggregationType, innerExpression, aliasExpressionParser.parseSelectItemAlias());
+    }
+    
+    private SelectItem getAggregationDistinctSelectItem(final SelectStatement selectStatement, final AggregationType aggregationType, final int beginPosition, final String innerExpression) {
+        AggregationDistinctSelectItem result = new AggregationDistinctSelectItem(aggregationType, innerExpression, aliasExpressionParser.parseSelectItemAlias(), getDistinctColumnName(innerExpression));
+        selectStatement.getSQLTokens().add(new AggregationDistinctToken(beginPosition, SQLUtil.getExactlyValue(aggregationType.name() + innerExpression), result.getDistinctColumnName()));
+        return result;
+    }
+    
+    // TODO :panjuan does not use pattern to check
+    private boolean isAggregationDistinctSelectItem(final String innerExpression) {
+        String pattern = "\\(\\s*DISTINCT\\s+.*\\)";
+        return Pattern.matches(pattern, innerExpression.toUpperCase());
+    }
+    
+    // TODO :panjuan parse distinct column name
+    private String getDistinctColumnName(final String innerExpression) {
+        Pattern pattern = Pattern.compile("\\(\\s*DISTINCT\\s+(\\S+)\\s*\\)", Pattern.CASE_INSENSITIVE);
+        Matcher matcher = pattern.matcher(innerExpression);
+        String result = "";
+        if (matcher.find()) {
+            result = matcher.group(1);
+        }
+        return result;
     }
     
     private String parseRestSelectItem(final SelectStatement selectStatement) {

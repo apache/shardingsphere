@@ -15,7 +15,7 @@
  * </p>
  */
 
-package io.shardingsphere.orchestration.internal.yaml;
+package io.shardingsphere.orchestration.yaml;
 
 import com.google.common.base.Preconditions;
 import io.shardingsphere.orchestration.config.OrchestrationConfiguration;
@@ -45,7 +45,7 @@ public class YamlOrchestrationConfiguration {
      * @return orchestration configuration from yaml
      */
     public OrchestrationConfiguration getOrchestrationConfiguration() {
-        Preconditions.checkNotNull(registry, "Registry center must be required!");
+        Preconditions.checkNotNull(registry, "Registry center must be required.");
         return new OrchestrationConfiguration(name, registry, overwrite);
     }
 }

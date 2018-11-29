@@ -27,12 +27,17 @@ public final class StateNodeTest {
     private StateNode stateNode = new StateNode("test");
     
     @Test
-    public void assertGetDataSourcesNodeFullPath() {
-        assertThat(stateNode.getDataSourcesNodeFullPath(), is("/test/state/datasources"));
+    public void assertGetInstancesNodeFullPath() {
+        assertThat(stateNode.getInstancesNodeFullPath("testId"), is("/test/state/instances/testId"));
     }
     
     @Test
-    public void assertGetInstancesNodeFullPath() {
-        assertThat(stateNode.getInstancesNodeFullPath("testId"), is("/test/state/instances/testId"));
+    public void assertGetDataSourcesNodeFullRootPath() {
+        assertThat(stateNode.getDataSourcesNodeFullRootPath(), is("/test/state/datasources"));
+    }
+    
+    @Test
+    public void assertGetDataSourcesNodeFullPath() {
+        assertThat(stateNode.getDataSourcesNodeFullPath("sharding_db"), is("/test/state/datasources/sharding_db"));
     }
 }

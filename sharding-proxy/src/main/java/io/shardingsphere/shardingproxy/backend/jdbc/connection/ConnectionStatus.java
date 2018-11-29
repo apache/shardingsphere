@@ -24,5 +24,5 @@ package io.shardingsphere.shardingproxy.backend.jdbc.connection;
  */
 public enum ConnectionStatus {
     
-    INIT, RUNNING, TRANSACTION, TERMINATED
+    INIT, RUNNING, RELEASE, TRANSACTION, TERMINATED
 }

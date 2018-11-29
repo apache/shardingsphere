@@ -33,6 +33,7 @@ import io.shardingsphere.core.parsing.antlr.filler.engnie.LimitSegmentFiller;
 import io.shardingsphere.core.parsing.antlr.filler.engnie.OrderBySegmentFiller;
 import io.shardingsphere.core.parsing.antlr.filler.engnie.PredicateSegmentFiller;
 import io.shardingsphere.core.parsing.antlr.filler.engnie.SelectExpressionSegmentFiller;
+import io.shardingsphere.core.parsing.antlr.filler.engnie.ShowParamSegmentFiller;
 import io.shardingsphere.core.parsing.antlr.filler.engnie.TableJoinSegmentFiller;
 import io.shardingsphere.core.parsing.antlr.filler.engnie.TableSegmentFiller;
 import io.shardingsphere.core.parsing.antlr.sql.segment.ColumnDefinitionSegment;
@@ -48,6 +49,7 @@ import io.shardingsphere.core.parsing.antlr.sql.segment.LimitSegment;
 import io.shardingsphere.core.parsing.antlr.sql.segment.OrderBySegment;
 import io.shardingsphere.core.parsing.antlr.sql.segment.PredicateSegment;
 import io.shardingsphere.core.parsing.antlr.sql.segment.SQLSegment;
+import io.shardingsphere.core.parsing.antlr.sql.segment.ShowParamSegment;
 import io.shardingsphere.core.parsing.antlr.sql.segment.StarSelectExpressionSegment;
 import io.shardingsphere.core.parsing.antlr.sql.segment.TableJoinSegment;
 import io.shardingsphere.core.parsing.antlr.sql.segment.TableSegment;
@@ -77,6 +79,7 @@ public final class SQLSegmentFillerRegistry {
         FILLERS.put(StarSelectExpressionSegment.class, new SelectExpressionSegmentFiller());
         FILLERS.put(CommonSelectExpressionSegment.class, new SelectExpressionSegmentFiller());
         FILLERS.put(FunctionSelectExpressionSegment.class, new SelectExpressionSegmentFiller());
+        FILLERS.put(ShowParamSegment.class, new ShowParamSegmentFiller());
     }
     
     /**
