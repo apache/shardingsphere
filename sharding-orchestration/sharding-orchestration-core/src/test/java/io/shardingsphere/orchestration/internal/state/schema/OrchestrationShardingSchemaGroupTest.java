@@ -32,9 +32,9 @@ public final class OrchestrationShardingSchemaGroupTest {
         OrchestrationShardingSchemaGroup actual = new OrchestrationShardingSchemaGroup();
         actual.add(new OrchestrationShardingSchema("test_0.ds_0"));
         actual.add(new OrchestrationShardingSchema("test_0.ds_1"));
-        assertThat(actual.getSchemaGroup().get("test_0").size(), is(2));
-        assertTrue(actual.getSchemaGroup().get("test_0").contains("ds_0"));
-        assertTrue(actual.getSchemaGroup().get("test_0").contains("ds_1"));
+        assertThat(actual.getDataSourceNames("test_0").size(), is(2));
+        assertTrue(actual.getDataSourceNames("test_0").contains("ds_0"));
+        assertTrue(actual.getDataSourceNames("test_0").contains("ds_1"));
     }
     
     @Test
@@ -42,18 +42,18 @@ public final class OrchestrationShardingSchemaGroupTest {
         OrchestrationShardingSchemaGroup actual = new OrchestrationShardingSchemaGroup();
         actual.add(new OrchestrationShardingSchema("test_0.ds_0"));
         actual.add(new OrchestrationShardingSchema("test_1.ds_1"));
-        assertThat(actual.getSchemaGroup().get("test_0").size(), is(1));
-        assertTrue(actual.getSchemaGroup().get("test_0").contains("ds_0"));
-        assertThat(actual.getSchemaGroup().get("test_1").size(), is(1));
-        assertTrue(actual.getSchemaGroup().get("test_1").contains("ds_1"));
+        assertThat(actual.getDataSourceNames("test_0").size(), is(1));
+        assertTrue(actual.getDataSourceNames("test_0").contains("ds_0"));
+        assertThat(actual.getDataSourceNames("test_1").size(), is(1));
+        assertTrue(actual.getDataSourceNames("test_1").contains("ds_1"));
     }
     
     @Test
     public void assertPut() {
         OrchestrationShardingSchemaGroup actual = new OrchestrationShardingSchemaGroup();
         actual.put("test", Arrays.asList("ds_0", "ds_1"));
-        assertThat(actual.getSchemaGroup().get("test").size(), is(2));
-        assertTrue(actual.getSchemaGroup().get("test").contains("ds_0"));
-        assertTrue(actual.getSchemaGroup().get("test").contains("ds_1"));
+        assertThat(actual.getDataSourceNames("test").size(), is(2));
+        assertTrue(actual.getDataSourceNames("test").contains("ds_0"));
+        assertTrue(actual.getDataSourceNames("test").contains("ds_1"));
     }
 }

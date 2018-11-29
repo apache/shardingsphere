@@ -61,6 +61,6 @@ public final class OrchestrationMasterSlaveRule extends MasterSlaveRule {
     @Subscribe
     public void renew(final DisabledStateEventBusEvent disabledStateEventBusEvent) {
         disabledDataSourceNames.clear();
-        disabledDataSourceNames.addAll(disabledStateEventBusEvent.getDisabledSchemaDataSourceMap().get(ShardingConstant.LOGIC_SCHEMA_NAME));
+        disabledDataSourceNames.addAll(disabledStateEventBusEvent.getDisabledGroup().getDataSourceNames(ShardingConstant.LOGIC_SCHEMA_NAME));
     }
 }

@@ -389,8 +389,11 @@ public final class ConfigurationServiceTest {
         when(regCenter.getDirectly("/test/config/schema/masterslave_db/rule")).thenReturn(MASTER_SLAVE_RULE_YAML);
         ConfigurationService configurationService = new ConfigurationService("test", regCenter);
         OrchestrationShardingSchemaGroup actual = configurationService.getAllSlaveDataSourceNames();
-        assertThat(actual.getSchemaGroup().size(), is(2));
-        assertTrue(actual.getSchemaGroup().containsValue(Arrays.asList("slave_ds_0", "slave_ds_1")));
-        assertTrue(actual.getSchemaGroup().containsValue(Arrays.asList("db0_slave", "db1_slave")));
+        assertThat(actual.getDataSourceNames("sharding_ms_db").size(), is(2));
+        assertThat(actual.getDataSourceNames("sharding_ms_db"), hasItems("db0_slave"));
+        assertThat(actual.getDataSourceNames("sharding_ms_db"), hasItems("db1_slave"));
+        assertThat(actual.getDataSourceNames("masterslave_db").size(), is(2));
+        assertThat(actual.getDataSourceNames("masterslave_db"), hasItems("slave_ds_0"));
+        assertThat(actual.getDataSourceNames("masterslave_db"), hasItems("slave_ds_1"));
     }
 }

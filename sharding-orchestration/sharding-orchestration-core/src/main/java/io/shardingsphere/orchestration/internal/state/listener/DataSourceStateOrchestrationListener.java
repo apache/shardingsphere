@@ -53,7 +53,7 @@ public final class DataSourceStateOrchestrationListener implements Orchestration
             @Override
             public void onChange(final DataChangedEvent event) {
                 if (DataChangedEvent.Type.UPDATED == event.getEventType() || DataChangedEvent.Type.DELETED == event.getEventType()) {
-                    ShardingEventBusInstance.getInstance().post(new DisabledStateEventBusEvent(dataSourceService.getDisabledSlaveDataSourceNames()));
+                    ShardingEventBusInstance.getInstance().post(new DisabledStateEventBusEvent(dataSourceService.getDisabledOrchestrationShardingSchemaGroup()));
                 }
             }
         });

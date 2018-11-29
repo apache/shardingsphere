@@ -17,9 +17,8 @@
 
 package io.shardingsphere.orchestration.internal.state.schema;
 
-import lombok.Getter;
-
 import java.util.Collection;
+import java.util.Collections;
 import java.util.HashMap;
 import java.util.LinkedList;
 import java.util.Map;
@@ -29,7 +28,6 @@ import java.util.Map;
  *
  * @author zhangliang
  */
-@Getter
 public final class OrchestrationShardingSchemaGroup {
     
     private final Map<String, Collection<String>> schemaGroup = new HashMap<>();
@@ -50,10 +48,20 @@ public final class OrchestrationShardingSchemaGroup {
     /**
      * Put orchestration sharding schema.
      * 
-     * @param schemaName schema name
+     * @param shardingSchemaName sharding schema name
      * @param dataSourceNames data source names
      */
-    public void put(final String schemaName, final Collection<String> dataSourceNames) {
-        schemaGroup.put(schemaName, dataSourceNames);
+    public void put(final String shardingSchemaName, final Collection<String> dataSourceNames) {
+        schemaGroup.put(shardingSchemaName, dataSourceNames);
+    }
+    
+    /**
+     * Get data source names.
+     * 
+     * @param shardingSchemaName sharding schema name
+     * @return data source names
+     */
+    public Collection<String> getDataSourceNames(final String shardingSchemaName) {
+        return schemaGroup.containsKey(shardingSchemaName) ? schemaGroup.get(shardingSchemaName) : Collections.<String>emptyList();
     }
 }
