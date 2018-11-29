@@ -17,9 +17,9 @@
 
 package io.shardingsphere.core.parsing.antlr.sql.segment;
 
-import com.google.common.base.Optional;
+import java.util.Collection;
+import java.util.LinkedList;
 
-import io.shardingsphere.core.parsing.parser.token.OrderByToken;
 import lombok.Getter;
 import lombok.RequiredArgsConstructor;
 import lombok.Setter;
@@ -34,12 +34,8 @@ import lombok.Setter;
 @Setter
 public class GroupBySegment implements SQLSegment {
 
-    private final Optional<String> owner;
+    private final int groupByLastPosition;
     
-    private final Optional<String> name;
-    
-    private final int index;
-    
-    private final OrderByToken orderByToken;
+    private final Collection<OrderBySegment> groupByItems = new LinkedList<>();
     
 }

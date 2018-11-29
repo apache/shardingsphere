@@ -40,4 +40,11 @@ public class ColumnSegment implements SQLSegment {
     private String tableName;
     
     private final int startPosition;
+    
+    public ColumnSegment(final Optional<String> owner, final String name, final String tableName, final int startPosition) {
+        this.owner = owner;
+        this.name = name;
+        this.tableName = tableName;
+        this.startPosition = startPosition;
+    }
 }

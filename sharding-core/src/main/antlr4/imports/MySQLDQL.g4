@@ -92,10 +92,10 @@ indexHintList
     ;
     
 indexHint
-    : USE (INDEX|KEY) (FOR (JOIN|ORDER BY|GROUP BY))* idList
-    | IGNORE (INDEX|KEY) (FOR (JOIN|ORDER BY|GROUP BY))* idList
+    : (USE | IGNORE | FORCE) (INDEX|KEY) (FOR (JOIN|ORDER BY|GROUP BY))* idList
     ;
 
 selectExpr
-    : (columnName | ASTERISK | expr) AS? alias?
+    : (columnName | expr) AS? alias?
+    | columnName DOT ASTERISK
     ;

@@ -17,11 +17,16 @@
 
 package io.shardingsphere.core.parsing.antlr.extractor.segment.engine;
 
+import org.antlr.v4.runtime.ParserRuleContext;
+
 import com.google.common.base.Optional;
 
 import io.shardingsphere.core.constant.OrderDirection;
+import io.shardingsphere.core.parsing.antlr.extractor.segment.OptionalSQLSegmentExtractor;
 import io.shardingsphere.core.parsing.antlr.extractor.segment.constant.RuleName;
+import io.shardingsphere.core.parsing.antlr.extractor.util.ASTUtils;
 import io.shardingsphere.core.parsing.antlr.sql.segment.GroupBySegment;
+import io.shardingsphere.core.parsing.antlr.sql.segment.OrderBySegment;
 import io.shardingsphere.core.parsing.parser.token.OrderByToken;
 
 /**
@@ -29,13 +34,21 @@ import io.shardingsphere.core.parsing.parser.token.OrderByToken;
  *
  * @author duhongjun
  */
-public final class GroupByClauseExtractor extends OrderByClauseExtractor {
+public final class GroupByClauseExtractor implements OptionalSQLSegmentExtractor {
     
-    public GroupByClauseExtractor() {
-        super(RuleName.GROUP_BY_CLAUSE);
+    @Override
+    public Optional<GroupBySegment> extract(ParserRuleContext ancestorNode) {
+        Optional<ParserRuleContext> orderByParentNode = ASTUtils.findFirstChildNode(ancestorNode, RuleName.ORDER_BY_CLAUSE);
+        if (!orderByParentNode.isPresent()) {
+            return Optional.absent();
+        }
+        GroupBySegment result = new GroupBySegment(orderByParentNode.get().getStop().getStopIndex() + 2);
+        result.getGroupByItems().addAll(new OrderByClauseExtractor().extractOrderBy(orderByParentNode.get()));
+        return Optional.of(result);
     }
     
-    protected GroupBySegment buildSegment(final String ownerName, final String name, final int index, final OrderDirection orderDirection, final int orderTokenBeginPosition) {
-        return new GroupBySegment(Optional.of(ownerName), Optional.of(name), index, new OrderByToken(orderTokenBeginPosition));
+    protected OrderBySegment buildSegment(final String ownerName, final String name, final int index, final OrderDirection orderDirection, final int orderTokenBeginPosition, final int columnBeginPosition) {
+        return new OrderBySegment(Optional.of(ownerName), Optional.of(name), columnBeginPosition, index, new OrderByToken(orderTokenBeginPosition));
     }
+
 }

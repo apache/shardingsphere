@@ -77,6 +77,8 @@ public enum RuleName {
     
     SELECT_EXPR("SelectExpr"),
     
+    SELECT_EXPRS("SelectExprs"),
+    
     FUNCTION_CALL("FunctionCall"),
     
     TABLE_CONSTRAINT("TableConstraint"),
@@ -117,7 +119,7 @@ public enum RuleName {
     
     LIMIT_CLAUSE("LimitClause"),
     
-    RANGE_CLAUSE("RangeClause");
+    RANGE_CLAUSE("RangeClause"),
 
     SHOW_PARAM("ShowParam");
     

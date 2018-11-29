@@ -28,6 +28,7 @@ import io.shardingsphere.core.parsing.antlr.extractor.segment.constant.RuleName;
 import io.shardingsphere.core.parsing.antlr.extractor.util.ASTUtils;
 import io.shardingsphere.core.parsing.antlr.sql.segment.ColumnSegment;
 import io.shardingsphere.core.parsing.lexer.token.Symbol;
+import io.shardingsphere.core.util.SQLUtil;
 import lombok.RequiredArgsConstructor;
 
 /**
@@ -53,12 +54,12 @@ public final class ColumnSegmentExtractor implements OptionalSQLSegmentExtractor
         String tableName = null;
         if (0 < dotPosition) {
             columnName = columnText.substring(dotPosition + 1);
-            ownerName = Optional.of(columnText.substring(0, dotPosition));
+            ownerName = Optional.of(SQLUtil.getExactlyValue(columnText.substring(0, dotPosition)));
             tableName = tableAlias.get(ownerName.get());
         } else {
             ownerName = Optional.absent();
         }
-        
+        columnName = SQLUtil.getExactlyValue(columnName);
         return Optional.of(new ColumnSegment(ownerName, columnName, tableName, columnNode.get().getStart().getStartIndex()));
     }
 }

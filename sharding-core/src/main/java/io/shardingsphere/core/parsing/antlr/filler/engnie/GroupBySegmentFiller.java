@@ -23,10 +23,12 @@ import io.shardingsphere.core.constant.OrderDirection;
 import io.shardingsphere.core.metadata.table.ShardingTableMetaData;
 import io.shardingsphere.core.parsing.antlr.filler.SQLSegmentFiller;
 import io.shardingsphere.core.parsing.antlr.sql.segment.GroupBySegment;
+import io.shardingsphere.core.parsing.antlr.sql.segment.OrderBySegment;
 import io.shardingsphere.core.parsing.antlr.sql.segment.SQLSegment;
 import io.shardingsphere.core.parsing.parser.context.OrderItem;
 import io.shardingsphere.core.parsing.parser.sql.SQLStatement;
 import io.shardingsphere.core.parsing.parser.sql.dql.select.SelectStatement;
+import io.shardingsphere.core.parsing.parser.token.TableToken;
 import io.shardingsphere.core.rule.ShardingRule;
 
 /**
@@ -40,12 +42,18 @@ public class GroupBySegmentFiller implements SQLSegmentFiller {
     public void fill(final SQLSegment sqlSegment, final SQLStatement sqlStatement, final ShardingRule shardingRule, final ShardingTableMetaData shardingTableMetaData) {
         GroupBySegment groupBySegment = (GroupBySegment) sqlSegment;
         SelectStatement selectStatement = (SelectStatement) sqlStatement;
-        if (-1 < groupBySegment.getIndex()) {
-            selectStatement.getOrderByItems().add(new OrderItem(groupBySegment.getIndex(), OrderDirection.ASC, OrderDirection.ASC));
-        } else if (groupBySegment.getName().isPresent()) {
-            String owner = groupBySegment.getOwner().isPresent() ? groupBySegment.getOwner().get() : "";
-            String name = groupBySegment.getName().isPresent() ? groupBySegment.getName().get() : "";
-            selectStatement.getOrderByItems().add(new OrderItem(owner, name, OrderDirection.ASC, OrderDirection.ASC, Optional.<String>absent()));
+        selectStatement.setGroupByLastPosition(groupBySegment.getGroupByLastPosition());
+        for(OrderBySegment each : groupBySegment.getGroupByItems()) {
+            if (-1 < each.getIndex()) {
+                selectStatement.getOrderByItems().add(new OrderItem(each.getIndex(), OrderDirection.ASC, OrderDirection.ASC));
+            } else if (each.getName().isPresent()) {
+                String owner = each.getOwner().isPresent() ? each.getOwner().get() : "";
+                String name = each.getName().isPresent() ? each.getName().get() : "";
+                if (sqlStatement.getTables().getTableNames().contains(owner)) {
+                    sqlStatement.addSQLToken(new TableToken(each.getStartPosition(), 0, owner));
+                }
+                selectStatement.getOrderByItems().add(new OrderItem(owner, name, OrderDirection.ASC, OrderDirection.ASC, Optional.<String>absent()));
+            }
         }
     }
 }

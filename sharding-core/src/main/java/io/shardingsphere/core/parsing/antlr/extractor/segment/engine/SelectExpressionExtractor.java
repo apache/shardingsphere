@@ -19,18 +19,23 @@ package io.shardingsphere.core.parsing.antlr.extractor.segment.engine;
 
 import java.util.Collection;
 import java.util.Collections;
+import java.util.HashMap;
 import java.util.LinkedList;
 
 import org.antlr.v4.runtime.ParserRuleContext;
+import org.antlr.v4.runtime.tree.ParseTree;
+import org.antlr.v4.runtime.tree.TerminalNodeImpl;
 
 import com.google.common.base.Optional;
 
 import io.shardingsphere.core.parsing.antlr.extractor.segment.CollectionSQLSegmentExtractor;
 import io.shardingsphere.core.parsing.antlr.extractor.segment.constant.RuleName;
 import io.shardingsphere.core.parsing.antlr.extractor.util.ASTUtils;
+import io.shardingsphere.core.parsing.antlr.sql.segment.ColumnSegment;
 import io.shardingsphere.core.parsing.antlr.sql.segment.CommonSelectExpressionSegment;
 import io.shardingsphere.core.parsing.antlr.sql.segment.FunctionSelectExpressionSegment;
 import io.shardingsphere.core.parsing.antlr.sql.segment.SelectExpressionSegment;
+import io.shardingsphere.core.parsing.antlr.sql.segment.SelectPropertyExpressionSegment;
 import io.shardingsphere.core.parsing.antlr.sql.segment.StarSelectExpressionSegment;
 import io.shardingsphere.core.parsing.lexer.token.Symbol;
 
@@ -47,13 +52,17 @@ public class SelectExpressionExtractor implements CollectionSQLSegmentExtractor 
         if (!selectClaseNode.isPresent()) {
             return Collections.emptyList();
         }
-        Collection<ParserRuleContext> selectExprNodes = ASTUtils.getAllDescendantNodes(selectClaseNode.get(), RuleName.SELECT_EXPR);
-        if (selectExprNodes.isEmpty()) {
+        Optional<ParserRuleContext> selectExprsNode = ASTUtils.findFirstChildNode(selectClaseNode.get(), RuleName.SELECT_EXPRS);
+        if (!selectExprsNode.isPresent()) {
             return Collections.emptyList();
         }
         Collection<SelectExpressionSegment> result = new LinkedList<>();
-        for (ParserRuleContext each : selectExprNodes) {
-            String firstChildText = each.getChild(0).getText();
+        for (int i = 0; i < selectExprsNode.get().getChildCount(); i++) {
+            ParseTree childNode = selectExprsNode.get().getChild(0);
+            if(childNode instanceof TerminalNodeImpl) {
+                continue;
+            }
+            String firstChildText = childNode.getText();
             if (firstChildText.endsWith(Symbol.STAR.getLiterals())) {
                 int pos = firstChildText.indexOf(Symbol.DOT.getLiterals());
                 String owner = "";
@@ -62,40 +71,45 @@ public class SelectExpressionExtractor implements CollectionSQLSegmentExtractor 
                 }
                 result.add(new StarSelectExpressionSegment(Optional.of(owner)));
             } else {
-                Optional<ParserRuleContext> functionCall = ASTUtils.findFirstChildNode(each, RuleName.FUNCTION_CALL);
-                if (functionCall.isPresent()) {
-                    String name = functionCall.get().getChild(0).getText();
-                    //TODO best choice using index
-                    StringBuilder builder = new StringBuilder();
-                    for (int i = 2; i < functionCall.get().getChildCount() - 1; i++) {
-                        builder.append(functionCall.get().getChild(i).getText());
-                    }
-                    Optional<ParserRuleContext> aliasNode = ASTUtils.findFirstChildNode(each, RuleName.ALIAS);
-                    Optional<String> alias = null;
-                    if (aliasNode.isPresent()) {
-                        alias = Optional.of(aliasNode.get().getText());
-                    } else {
-                        alias = Optional.absent();
-                    }
-                    result.add(new FunctionSelectExpressionSegment(name, builder.toString(), alias));
+                Optional<ParserRuleContext> aliasNode = ASTUtils.findFirstChildNode((ParserRuleContext)childNode, RuleName.ALIAS);
+                Optional<String> alias = null;
+                if (aliasNode.isPresent()) {
+                    alias = Optional.of(aliasNode.get().getText());
                 } else {
-                    ParserRuleContext firstChild = (ParserRuleContext) each.getChild(0);
-                    //TODO best choice using index
-                    StringBuilder builder = new StringBuilder();
-                    for (int i = 0; i < firstChild.getChildCount(); i++) {
-                        builder.append(firstChild.getChild(i).getText() + " ");
-                    }
-                    Optional<String> alias = null;
-                    if (3 == each.getChildCount()) {
-                        alias = Optional.of(each.getChild(2).getText());
+                    alias = Optional.absent();
+                }
+                
+                Optional<ColumnSegment> columnSegment = new ColumnSegmentExtractor(new HashMap<String,String>()).extract((ParserRuleContext)childNode);
+                if(columnSegment.isPresent()) {
+                    result.add(new SelectPropertyExpressionSegment(columnSegment.get().getOwner().get(), columnSegment.get().getName(), columnSegment.get().getStartPosition()));
+                }else {
+                    Optional<ParserRuleContext> functionCall = ASTUtils.findFirstChildNode((ParserRuleContext)childNode, RuleName.FUNCTION_CALL);
+                    if (functionCall.isPresent()) {
+                        String name = functionCall.get().getChild(0).getText();
+                        //TODO best choice using index
+                        StringBuilder builder = new StringBuilder();
+                        for (int j = 1; i < functionCall.get().getChildCount(); j++) {
+                            builder.append(functionCall.get().getChild(j).getText());
+                        }
+                        result.add(new FunctionSelectExpressionSegment(name, getParseTreeText(childNode.getChild(0)), alias));
                     } else {
-                        alias = Optional.absent();
+                        result.add(new CommonSelectExpressionSegment(getParseTreeText(childNode.getChild(0)), alias));
                     }
-                    result.add(new CommonSelectExpressionSegment(builder.toString(), alias));
                 }
             }
         }
         return result;
     }
     
+    private String getParseTreeText(ParseTree node) {
+        if(node.getChildCount() < 2) {
+           return node.getText();
+        }
+      //TODO best choice using index
+        StringBuilder builder = new StringBuilder();
+        for (int i = 0; i < node.getChildCount(); i++) {
+            builder.append(node.getChild(i).getText());
+        }
+        return builder.toString();
+    }
 }

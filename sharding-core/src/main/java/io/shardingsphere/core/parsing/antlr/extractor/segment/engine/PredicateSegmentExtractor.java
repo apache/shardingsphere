@@ -38,7 +38,7 @@ import io.shardingsphere.core.parsing.antlr.sql.segment.ConditionSegment;
 import io.shardingsphere.core.parsing.antlr.sql.segment.OrConditionSegment;
 import io.shardingsphere.core.parsing.antlr.sql.segment.PredicateSegment;
 import io.shardingsphere.core.parsing.antlr.sql.segment.SQLBetweenExpressionSegment;
-import io.shardingsphere.core.parsing.antlr.sql.segment.SQLEqExpressionSegment;
+import io.shardingsphere.core.parsing.antlr.sql.segment.SQLEqualsExpressionSegment;
 import io.shardingsphere.core.parsing.antlr.sql.segment.SQLInExpressionSegment;
 import io.shardingsphere.core.parsing.lexer.token.DefaultKeyword;
 import io.shardingsphere.core.parsing.lexer.token.Symbol;
@@ -180,7 +180,7 @@ public final class PredicateSegmentExtractor implements OptionalSQLSegmentExtrac
         if (!sqlExpression.isPresent()) {
             return Optional.absent();
         }
-        return Optional.of(new ConditionSegment(column.get(), ShardingOperator.EQUAL, new SQLEqExpressionSegment(sqlExpression.get())));
+        return Optional.of(new ConditionSegment(column.get(), ShardingOperator.EQUAL, new SQLEqualsExpressionSegment(sqlExpression.get())));
     }
     
     private Optional<SQLExpression> buildExperssion(final Map<ParserRuleContext, Integer> questionNodeIndexMap, final ParserRuleContext valueNode) {

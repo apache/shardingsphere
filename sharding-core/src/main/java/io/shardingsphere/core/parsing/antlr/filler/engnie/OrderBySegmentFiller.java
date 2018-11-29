@@ -26,6 +26,7 @@ import io.shardingsphere.core.parsing.antlr.sql.segment.SQLSegment;
 import io.shardingsphere.core.parsing.parser.context.OrderItem;
 import io.shardingsphere.core.parsing.parser.sql.SQLStatement;
 import io.shardingsphere.core.parsing.parser.sql.dql.select.SelectStatement;
+import io.shardingsphere.core.parsing.parser.token.TableToken;
 import io.shardingsphere.core.rule.ShardingRule;
 
 /**
@@ -44,6 +45,9 @@ public class OrderBySegmentFiller implements SQLSegmentFiller {
         } else if (orderBySegment.getName().isPresent()) {
             String owner = orderBySegment.getOwner().isPresent() ? orderBySegment.getOwner().get() : "";
             String name = orderBySegment.getName().isPresent() ? orderBySegment.getName().get() : "";
+            if (sqlStatement.getTables().getTableNames().contains(owner)) {
+                sqlStatement.addSQLToken(new TableToken(orderBySegment.getStartPosition(), 0, owner));
+            }
             selectStatement.getOrderByItems().add(new OrderItem(owner, name, orderBySegment.getOrderDirection(), orderBySegment.getNullOrderDirection(), Optional.<String>absent()));
         }
     }
