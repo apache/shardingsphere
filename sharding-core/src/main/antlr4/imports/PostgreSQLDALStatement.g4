@@ -30,3 +30,7 @@ timeZoneType
     | LOCAL
     | DEFAULT
     ;
+
+resetParam
+    : RESET (ALL | ID)
+    ;

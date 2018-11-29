@@ -36,4 +36,5 @@ execute
     | dropRole
     | show
     | setParam
+    | resetParam
     ;
