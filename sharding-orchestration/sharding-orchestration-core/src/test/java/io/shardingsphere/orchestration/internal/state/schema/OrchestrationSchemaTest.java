@@ -15,7 +15,7 @@
  * </p>
  */
 
-package io.shardingsphere.orchestration.internal.state.node;
+package io.shardingsphere.orchestration.internal.state.schema;
 
 import io.shardingsphere.core.constant.ShardingConstant;
 import org.junit.Test;

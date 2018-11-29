@@ -15,7 +15,7 @@
  * </p>
  */
 
-package io.shardingsphere.orchestration.internal.state.node;
+package io.shardingsphere.orchestration.internal.state.schema;
 
 import com.google.common.base.Splitter;
 import io.shardingsphere.core.constant.ShardingConstant;

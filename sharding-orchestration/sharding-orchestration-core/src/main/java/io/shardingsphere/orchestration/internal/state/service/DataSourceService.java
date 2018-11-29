@@ -23,14 +23,13 @@ import io.shardingsphere.api.config.MasterSlaveRuleConfiguration;
 import io.shardingsphere.api.config.ShardingRuleConfiguration;
 import io.shardingsphere.core.config.DataSourceConfiguration;
 import io.shardingsphere.orchestration.internal.config.service.ConfigurationService;
-import io.shardingsphere.orchestration.internal.state.node.OrchestrationSchema;
 import io.shardingsphere.orchestration.internal.state.node.StateNode;
 import io.shardingsphere.orchestration.internal.state.node.StateNodeStatus;
+import io.shardingsphere.orchestration.internal.state.schema.OrchestrationSchema;
+import io.shardingsphere.orchestration.internal.state.schema.OrchestrationSchemaGroup;
 import io.shardingsphere.orchestration.reg.api.RegistryCenter;
 
 import java.util.Collection;
-import java.util.LinkedHashMap;
-import java.util.LinkedList;
 import java.util.Map;
 
 /**
@@ -122,7 +121,7 @@ public final class DataSourceService {
      * @return disabled slave data source names
      */
     public Map<String, Collection<String>> getDisabledSlaveDataSourceNames() {
-        Map<String, Collection<String>> result = getDisabledDataSourceNames();
+        Map<String, Collection<String>> result = getDisabledDataSourceNames().getSchemaGroup();
         Map<String, Collection<String>> slaveDataSourceNamesMap = configService.getAllSlaveDataSourceNames();
         for (String each : result.keySet()) {
             result.get(each).containsAll(slaveDataSourceNamesMap.get(each));
@@ -130,17 +129,12 @@ public final class DataSourceService {
         return result;
     }
     
-    private Map<String, Collection<String>> getDisabledDataSourceNames() {
-        Map<String, Collection<String>> result = new LinkedHashMap<>();
+    private OrchestrationSchemaGroup getDisabledDataSourceNames() {
+        OrchestrationSchemaGroup result = new OrchestrationSchemaGroup();
         for (String each : regCenter.getChildrenKeys(stateNode.getDataSourcesNodeFullRootPath())) {
-            if (!StateNodeStatus.DISABLED.toString().equalsIgnoreCase(regCenter.get(stateNode.getDataSourcesNodeFullPath(each)))) {
-                continue;
+            if (StateNodeStatus.DISABLED.toString().equalsIgnoreCase(regCenter.get(stateNode.getDataSourcesNodeFullPath(each)))) {
+                result.add(new OrchestrationSchema(each));
             }
-            OrchestrationSchema orchestrationSchema = new OrchestrationSchema(each);
-            if (!result.containsKey(orchestrationSchema.getSchemaName())) {
-                result.put(orchestrationSchema.getSchemaName(), new LinkedList<String>());
-            }
-            result.get(orchestrationSchema.getSchemaName()).add(orchestrationSchema.getDataSourceName());
         }
         return result;
     }
