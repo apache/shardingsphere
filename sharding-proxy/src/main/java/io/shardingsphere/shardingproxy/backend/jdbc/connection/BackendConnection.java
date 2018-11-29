@@ -22,6 +22,7 @@ import com.google.common.collect.Multimap;
 import io.netty.channel.ChannelHandlerContext;
 import io.shardingsphere.core.constant.ConnectionMode;
 import io.shardingsphere.core.constant.transaction.TransactionType;
+import io.shardingsphere.core.exception.ShardingException;
 import io.shardingsphere.core.routing.router.masterslave.MasterVisitedManager;
 import io.shardingsphere.shardingproxy.runtime.schema.LogicSchema;
 import lombok.Getter;
@@ -80,9 +81,10 @@ public final class BackendConnection implements AutoCloseable {
      * @param transactionType transaction type
      */
     public void setTransactionType(final TransactionType transactionType) {
-        if (canDoSwitch()) {
-            this.transactionType = transactionType;
+        if (isSwitchFailed()) {
+            throw new ShardingException("Failed to set transaction type, exceed maximum retry count!");
         }
+        this.transactionType = transactionType;
     }
     
     /**
@@ -91,13 +93,14 @@ public final class BackendConnection implements AutoCloseable {
      * @param logicSchema logic schema
      */
     public void setLogicSchema(final LogicSchema logicSchema) {
-        if (canDoSwitch()) {
-            this.logicSchema = logicSchema;
+        if (isSwitchFailed()) {
+            throw new ShardingException("Failed to set logic schema, exceed maximum retry count!");
         }
+        this.logicSchema = logicSchema;
     }
     
     @SneakyThrows
-    private boolean canDoSwitch() {
+    private boolean isSwitchFailed() {
         int retryCount = 0;
         while (stateHandler.isInTransaction() && retryCount < MAXIMUM_RETRY_COUNT) {
             resourceSynchronizer.doAwait();
@@ -105,10 +108,10 @@ public final class BackendConnection implements AutoCloseable {
             log.warn("Current transaction have not terminated, retry count:[{}]", retryCount);
         }
         if (retryCount >= MAXIMUM_RETRY_COUNT) {
-            log.warn("Set transaction type failed, exceed maximum retry count:[{}]", MAXIMUM_RETRY_COUNT);
-            return false;
+            log.error("Cannot do switch, exceed maximum retry count:[{}]", MAXIMUM_RETRY_COUNT);
+            return true;
         }
-        return true;
+        return false;
     }
     
     /**
@@ -121,7 +124,7 @@ public final class BackendConnection implements AutoCloseable {
      * @throws SQLException SQL exception
      */
     public List<Connection> getConnections(final ConnectionMode connectionMode, final String dataSourceName, final int connectionSize) throws SQLException {
-        stateHandler.changeRunningStatusIfNecessary();
+        stateHandler.setRunningStatusIfNecessary();
         if (stateHandler.isInTransaction()) {
             return getConnectionsWithTransaction(connectionMode, dataSourceName, connectionSize);
         } else {

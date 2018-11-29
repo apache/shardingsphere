@@ -22,17 +22,25 @@ package io.shardingsphere.shardingproxy.backend.jdbc.connection;
  *
  * @author zhaojun
  */
-public class ResourceSynchronizer {
+class ResourceSynchronizer {
     
     private final Object lock = new Object();
     
-    public void doAwait() throws InterruptedException {
+    /**
+     * Do await.
+     *
+     * @throws InterruptedException interrupted exception
+     */
+    void doAwait() throws InterruptedException {
         synchronized (lock) {
-            lock.wait(1000);
+            lock.wait(100);
         }
     }
     
-    public void doNotify() {
+    /**
+     * Do notify.
+     */
+    void doNotify() {
         synchronized (lock) {
             lock.notifyAll();
         }

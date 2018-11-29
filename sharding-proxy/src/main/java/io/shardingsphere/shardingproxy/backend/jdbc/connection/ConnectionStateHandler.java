@@ -34,17 +34,6 @@ public class ConnectionStateHandler {
     private final ResourceSynchronizer resourceSynchronizer;
     
     /**
-     * Change connection status using compare and set.
-     *
-     * @param expect expect status
-     * @param update new update status
-     * @return boolean set succeed or failed
-     */
-    public boolean compareAndSetStatus(final ConnectionStatus expect, final ConnectionStatus update) {
-        return status.compareAndSet(expect, update);
-    }
-    
-    /**
      * Change connection status using get and set.
      *
      * @param update new update status
@@ -68,7 +57,7 @@ public class ConnectionStateHandler {
     /**
      * Change connection status to running if necessary.
      */
-    public void changeRunningStatusIfNecessary() {
+    void setRunningStatusIfNecessary() {
         if (ConnectionStatus.INIT == status.get() || ConnectionStatus.TERMINATED == status.get()) {
             status.getAndSet(ConnectionStatus.RUNNING);
         }
@@ -79,14 +68,14 @@ public class ConnectionStateHandler {
      *
      * @return true or false
      */
-    public boolean isInTransaction() {
+    boolean isInTransaction() {
         return ConnectionStatus.TRANSACTION == status.get();
     }
     
     /**
      * Notify connection to finish wait if necessary.
      */
-    public void doNotifyIfNecessary() {
+    void doNotifyIfNecessary() {
         if (status.compareAndSet(ConnectionStatus.RUNNING, ConnectionStatus.RELEASE)) {
             resourceSynchronizer.doNotify();
         }
@@ -103,5 +92,9 @@ public class ConnectionStateHandler {
                 resourceSynchronizer.doAwait();
             }
         }
+    }
+    
+    private boolean compareAndSetStatus(final ConnectionStatus expect, final ConnectionStatus update) {
+        return status.compareAndSet(expect, update);
     }
 }

@@ -20,6 +20,7 @@ package io.shardingsphere.shardingproxy.backend.jdbc.connection;
 import io.shardingsphere.core.constant.ConnectionMode;
 import io.shardingsphere.core.constant.transaction.TransactionOperationType;
 import io.shardingsphere.core.constant.transaction.TransactionType;
+import io.shardingsphere.core.exception.ShardingException;
 import io.shardingsphere.shardingproxy.backend.jdbc.datasource.JDBCBackendDataSource;
 import io.shardingsphere.shardingproxy.runtime.schema.LogicSchema;
 import lombok.SneakyThrows;
@@ -40,7 +41,6 @@ import java.util.List;
 
 import static org.hamcrest.CoreMatchers.instanceOf;
 import static org.hamcrest.CoreMatchers.is;
-import static org.junit.Assert.assertSame;
 import static org.junit.Assert.assertThat;
 import static org.junit.Assert.assertTrue;
 import static org.mockito.ArgumentMatchers.any;
@@ -230,19 +230,17 @@ public final class BackendConnectionTest {
         }
     }
     
-    @Test
+    @Test(expected = ShardingException.class)
     public void assertFailedSwitchTransactionTypeWhileBegin() throws SQLException {
         BackendTransactionManager transactionManager = new BackendTransactionManager(backendConnection);
         transactionManager.doInTransaction(TransactionOperationType.BEGIN);
         backendConnection.setTransactionType(TransactionType.XA);
-        assertSame(TransactionType.LOCAL, backendConnection.getTransactionType());
     }
     
-    @Test
+    @Test(expected = ShardingException.class)
     public void assertFailedSwitchLogicSchemaWhileBegin() throws SQLException {
         BackendTransactionManager transactionManager = new BackendTransactionManager(backendConnection);
         transactionManager.doInTransaction(TransactionOperationType.BEGIN);
         backendConnection.setLogicSchema(mock(LogicSchema.class));
-        assertSame(logicSchema, backendConnection.getLogicSchema());
     }
 }
