@@ -21,13 +21,13 @@ import lombok.Getter;
 import lombok.RequiredArgsConstructor;
 
 /**
- * Circuit event bus event.
+ * Circuit state event.
  *
  * @author panjuan
  */
 @RequiredArgsConstructor
 @Getter
-public final class CircuitStateEventBusEvent {
+public final class CircuitStateEvent {
     
     private final boolean isCircuitBreak;
 }

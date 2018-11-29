@@ -22,13 +22,13 @@ import lombok.Getter;
 import lombok.RequiredArgsConstructor;
 
 /**
- * Disabled event bus event.
+ * Disabled state event.
  *
  * @author panjuan
  */
 @RequiredArgsConstructor
 @Getter
-public final class DisabledStateEventBusEvent {
+public final class DisabledStateEvent {
     
     private final OrchestrationShardingSchemaGroup disabledGroup;
 }
