@@ -124,7 +124,6 @@ Can not support SQL which include schema. Because of Sharding-Sphere is manage m
 | SQL                                                                                         | Unsupported reason                                      |
 | ------------------------------------------------------------------------------------------- |-------------------------------------------------------- |
 | SELECT DISTINCT(col1) FROM tbl_name                                                         | DISTINCT()                                              |
-| SELECT DISTINCT(col1 + col2) FROM tbl_name                                                  | DISTINCT() + PLUS FUNCTION                              |
 | SELECT COUNT(DISTINCT col1 + col2) FROM tbl_name                                            | PLUS FUNCTION + DISTINCT                                |
 | SELECT AVG(DISTINCT col1) FROM tbl_name                                                     | AVG(DISTINCT)                                           |
 | SELECT COUNT(DISTINCT col1), SUM(DISTINCT col1) FROM tbl_name                               | use two of the aggregation functions of DISTINCT        |

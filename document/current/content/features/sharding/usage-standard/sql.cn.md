@@ -12,7 +12,7 @@ weight = 1
 
 ## 支持项
 
-全面支持DQL、DML和DDL。支持分页、DISTINCT、排序、分组、聚合、关联查询（不支持跨库关联）。以下用最为复杂的DQL举例：
+全面支持DQL、DML和DDL。支持分页、去重、排序、分组、聚合、关联查询（不支持跨库关联）。以下用最为复杂的DQL举例：
 
 - SELECT主语句
 
@@ -125,7 +125,6 @@ SELECT COUNT(*) FROM (SELECT * FROM t_order o WHERE o.id IN (SELECT id FROM t_or
 | SQL                                                                                         | 不支持原因                         |
 | ------------------------------------------------------------------------------------------- |--------------------------------- |
 | SELECT DISTINCT(col1) FROM tbl_name                                                         | DISTINCT()                       |
-| SELECT DISTINCT(col1 + col2) FROM tbl_name                                                  | DISTINCT() + PLUS FUNCTION       |
 | SELECT COUNT(DISTINCT col1 + col2) FROM tbl_name                                            | PLUS FUNCTION + DISTINCT         |
 | SELECT AVG(DISTINCT col1) FROM tbl_name                                                     | AVG(DISTINCT)                    |
 | SELECT COUNT(DISTINCT col1), SUM(DISTINCT col1) FROM tbl_name                               | 同时使用2种DISTINCT的聚合函数       |
