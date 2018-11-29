@@ -31,7 +31,7 @@ public class ConnectionStateHandler {
     
     private volatile AtomicReference<ConnectionStatus> status = new AtomicReference<>(ConnectionStatus.INIT);
     
-    private final Object lock;
+    private final ResourceSynchronizer resourceSynchronizer;
     
     /**
      * Change connection status using compare and set.
@@ -52,9 +52,7 @@ public class ConnectionStateHandler {
     public void getAndSetStatus(final ConnectionStatus update) {
         status.getAndSet(update);
         if (ConnectionStatus.TERMINATED == status.get()) {
-            synchronized (lock) {
-                lock.notifyAll();
-            }
+            resourceSynchronizer.doNotify();
         }
     }
     
@@ -90,9 +88,7 @@ public class ConnectionStateHandler {
      */
     public void doNotifyIfNecessary() {
         if (status.compareAndSet(ConnectionStatus.RUNNING, ConnectionStatus.RELEASE)) {
-            synchronized (lock) {
-                lock.notifyAll();
-            }
+            resourceSynchronizer.doNotify();
         }
     }
     
@@ -104,9 +100,7 @@ public class ConnectionStateHandler {
     public void waitUntilConnectionReleasedIfNecessary() throws InterruptedException {
         if (ConnectionStatus.TRANSACTION != status.get() && ConnectionStatus.INIT != status.get() && ConnectionStatus.TERMINATED != status.get()) {
             while (!compareAndSetStatus(ConnectionStatus.RELEASE, ConnectionStatus.RUNNING)) {
-                synchronized (lock) {
-                    lock.wait(1000);
-                }
+                resourceSynchronizer.doAwait();
             }
         }
     }

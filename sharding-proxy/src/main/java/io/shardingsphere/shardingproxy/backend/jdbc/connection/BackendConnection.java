@@ -61,9 +61,9 @@ public final class BackendConnection implements AutoCloseable {
     
     private final Collection<MethodInvocation> methodInvocations = new ArrayList<>();
     
-    private final Object lock = new Object();
+    private final ResourceSynchronizer resourceSynchronizer = new ResourceSynchronizer();
     
-    private final ConnectionStateHandler stateHandler = new ConnectionStateHandler(lock);
+    private final ConnectionStateHandler stateHandler = new ConnectionStateHandler(resourceSynchronizer);
     
     private TransactionType transactionType;
     
@@ -100,9 +100,7 @@ public final class BackendConnection implements AutoCloseable {
     private boolean canDoSwitch() {
         int retryCount = 0;
         while (stateHandler.isInTransaction() && retryCount < MAXIMUM_RETRY_COUNT) {
-            synchronized (lock) {
-                lock.wait(1000);
-            }
+            resourceSynchronizer.doAwait();
             ++retryCount;
             log.warn("Current transaction have not terminated, retry count:[{}]", retryCount);
         }
