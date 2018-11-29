@@ -35,15 +35,25 @@ public final class OrchestrationShardingSchemaGroup {
     private final Map<String, Collection<String>> schemaGroup = new HashMap<>();
     
     /**
-     * Add orchestration schema.
+     * Add orchestration sharding schema.
      * 
-     * @param orchestrationSchema orchestration schema
+     * @param orchestrationShardingSchema orchestration sharding schema
      */
-    public void add(final OrchestrationShardingSchema orchestrationSchema) {
-        String schemaName = orchestrationSchema.getSchemaName();
+    public void add(final OrchestrationShardingSchema orchestrationShardingSchema) {
+        String schemaName = orchestrationShardingSchema.getSchemaName();
         if (!schemaGroup.containsKey(schemaName)) {
             schemaGroup.put(schemaName, new LinkedList<String>());
         }
-        schemaGroup.get(schemaName).add(orchestrationSchema.getDataSourceName());
+        schemaGroup.get(schemaName).add(orchestrationShardingSchema.getDataSourceName());
+    }
+    
+    /**
+     * Put orchestration sharding schema.
+     * 
+     * @param schemaName schema name
+     * @param dataSourceNames data source names
+     */
+    public void put(final String schemaName, final Collection<String> dataSourceNames) {
+        schemaGroup.put(schemaName, dataSourceNames);
     }
 }

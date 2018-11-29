@@ -19,6 +19,8 @@ package io.shardingsphere.orchestration.internal.state.schema;
 
 import org.junit.Test;
 
+import java.util.Arrays;
+
 import static org.hamcrest.CoreMatchers.is;
 import static org.junit.Assert.assertThat;
 import static org.junit.Assert.assertTrue;
@@ -44,5 +46,14 @@ public final class OrchestrationShardingSchemaGroupTest {
         assertTrue(actual.getSchemaGroup().get("test_0").contains("ds_0"));
         assertThat(actual.getSchemaGroup().get("test_1").size(), is(1));
         assertTrue(actual.getSchemaGroup().get("test_1").contains("ds_1"));
+    }
+    
+    @Test
+    public void assertPut() {
+        OrchestrationShardingSchemaGroup actual = new OrchestrationShardingSchemaGroup();
+        actual.put("test", Arrays.asList("ds_0", "ds_1"));
+        assertThat(actual.getSchemaGroup().get("test").size(), is(2));
+        assertTrue(actual.getSchemaGroup().get("test").contains("ds_0"));
+        assertTrue(actual.getSchemaGroup().get("test").contains("ds_1"));
     }
 }

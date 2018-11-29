@@ -121,21 +121,17 @@ public final class DataSourceService {
      * @return disabled slave data source names
      */
     public Map<String, Collection<String>> getDisabledSlaveDataSourceNames() {
-        Map<String, Collection<String>> result = getDisableOrchestrationSchemaGroup().getSchemaGroup();
-        Map<String, Collection<String>> slaveDataSourceNamesMap = configService.getAllSlaveDataSourceNames();
-        for (String each : result.keySet()) {
-            result.get(each).retainAll(slaveDataSourceNamesMap.get(each));
-        }
-        return result;
-    }
-    
-    private OrchestrationShardingSchemaGroup getDisableOrchestrationSchemaGroup() {
+        OrchestrationShardingSchemaGroup slaveGroup = configService.getAllSlaveDataSourceNames();
         OrchestrationShardingSchemaGroup result = new OrchestrationShardingSchemaGroup();
         for (String each : regCenter.getChildrenKeys(stateNode.getDataSourcesNodeFullRootPath())) {
             if (StateNodeStatus.DISABLED.toString().equalsIgnoreCase(regCenter.get(stateNode.getDataSourcesNodeFullPath(each)))) {
-                result.add(new OrchestrationShardingSchema(each));
+                OrchestrationShardingSchema orchestrationShardingSchema = new OrchestrationShardingSchema(each);
+                String schemaName = orchestrationShardingSchema.getSchemaName();
+                if (slaveGroup.getSchemaGroup().containsKey(schemaName) && slaveGroup.getSchemaGroup().get(schemaName).contains(orchestrationShardingSchema.getDataSourceName())) {
+                    result.add(orchestrationShardingSchema);
+                }
             }
         }
-        return result;
+        return result.getSchemaGroup();
     }
 }

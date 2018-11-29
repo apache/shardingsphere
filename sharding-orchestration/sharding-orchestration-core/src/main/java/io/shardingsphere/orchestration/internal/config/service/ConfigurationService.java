@@ -29,6 +29,7 @@ import io.shardingsphere.core.rule.Authentication;
 import io.shardingsphere.core.yaml.masterslave.YamlMasterSlaveRuleConfiguration;
 import io.shardingsphere.core.yaml.sharding.YamlShardingRuleConfiguration;
 import io.shardingsphere.orchestration.internal.config.node.ConfigurationNode;
+import io.shardingsphere.orchestration.internal.state.schema.OrchestrationShardingSchemaGroup;
 import io.shardingsphere.orchestration.reg.api.RegistryCenter;
 import io.shardingsphere.orchestration.yaml.DefaultRepresenter;
 import io.shardingsphere.orchestration.yaml.YamlDataSourceConfiguration;
@@ -252,8 +253,8 @@ public final class ConfigurationService {
      *
      * @return slave data source names
      */
-    public Map<String, Collection<String>> getAllSlaveDataSourceNames() {
-        Map<String, Collection<String>> result = new LinkedHashMap<>();
+    public OrchestrationShardingSchemaGroup getAllSlaveDataSourceNames() {
+        OrchestrationShardingSchemaGroup result = new OrchestrationShardingSchemaGroup();
         for (String each : getAllShardingSchemaNames()) {
             result.put(each, isShardingRule(each) ? getSlaveDataSourceNamesFromShardingRule(each) : getSlaveDataSourceNamesFromMasterSlaveRule(each));
         }
