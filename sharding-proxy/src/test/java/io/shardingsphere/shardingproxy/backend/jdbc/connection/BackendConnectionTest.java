@@ -72,44 +72,44 @@ public final class BackendConnectionTest {
     
     @Test
     public void assertGetConnectionCacheIsEmpty() throws SQLException {
-        backendConnection.getAndSetStatus(ConnectionStatus.TRANSACTION);
+        backendConnection.getStateHandler().getAndSetStatus(ConnectionStatus.TRANSACTION);
         when(backendDataSource.getConnections((ConnectionMode) any(), anyString(), eq(2))).thenReturn(MockConnectionUtil.mockNewConnections(2));
         List<Connection> actualConnections = backendConnection.getConnections(ConnectionMode.MEMORY_STRICTLY, "ds1", 2);
         assertThat(actualConnections.size(), is(2));
         assertThat(backendConnection.getConnectionSize(), is(2));
-        assertThat(backendConnection.getStatus(), is(ConnectionStatus.TRANSACTION));
+        assertThat(backendConnection.getStateHandler().getStatus(), is(ConnectionStatus.TRANSACTION));
     }
     
     @Test
     public void assertGetConnectionSizeLessThanCache() throws SQLException {
-        backendConnection.getAndSetStatus(ConnectionStatus.TRANSACTION);
+        backendConnection.getStateHandler().getAndSetStatus(ConnectionStatus.TRANSACTION);
         MockConnectionUtil.setCachedConnections(backendConnection, "ds1", 10);
         List<Connection> actualConnections = backendConnection.getConnections(ConnectionMode.MEMORY_STRICTLY, "ds1", 2);
         assertThat(actualConnections.size(), is(2));
         assertThat(backendConnection.getConnectionSize(), is(10));
-        assertThat(backendConnection.getStatus(), is(ConnectionStatus.TRANSACTION));
+        assertThat(backendConnection.getStateHandler().getStatus(), is(ConnectionStatus.TRANSACTION));
     }
     
     @Test
     public void assertGetConnectionSizeGreaterThanCache() throws SQLException {
-        backendConnection.getAndSetStatus(ConnectionStatus.TRANSACTION);
+        backendConnection.getStateHandler().getAndSetStatus(ConnectionStatus.TRANSACTION);
         MockConnectionUtil.setCachedConnections(backendConnection, "ds1", 10);
         when(backendDataSource.getConnections((ConnectionMode) any(), anyString(), eq(2))).thenReturn(MockConnectionUtil.mockNewConnections(2));
         List<Connection> actualConnections = backendConnection.getConnections(ConnectionMode.MEMORY_STRICTLY, "ds1", 12);
         assertThat(actualConnections.size(), is(12));
         assertThat(backendConnection.getConnectionSize(), is(12));
-        assertThat(backendConnection.getStatus(), is(ConnectionStatus.TRANSACTION));
+        assertThat(backendConnection.getStateHandler().getStatus(), is(ConnectionStatus.TRANSACTION));
     }
     
     @Test
     public void assertGetConnectionWithMethodInvocation() throws SQLException {
-        backendConnection.getAndSetStatus(ConnectionStatus.TRANSACTION);
+        backendConnection.getStateHandler().getAndSetStatus(ConnectionStatus.TRANSACTION);
         when(backendDataSource.getConnections((ConnectionMode) any(), anyString(), eq(2))).thenReturn(MockConnectionUtil.mockNewConnections(2));
         setMethodInvocation();
         List<Connection> actualConnections = backendConnection.getConnections(ConnectionMode.MEMORY_STRICTLY, "ds1", 2);
         verify(backendConnection.getMethodInvocations().iterator().next(), times(2)).invoke(any());
         assertThat(actualConnections.size(), is(2));
-        assertThat(backendConnection.getStatus(), is(ConnectionStatus.TRANSACTION));
+        assertThat(backendConnection.getStateHandler().getStatus(), is(ConnectionStatus.TRANSACTION));
     }
     
     @SneakyThrows
@@ -147,11 +147,11 @@ public final class BackendConnectionTest {
     
     @SneakyThrows
     private void assertOneThreadResult() {
-        backendConnection.getAndSetStatus(ConnectionStatus.TRANSACTION);
+        backendConnection.getStateHandler().getAndSetStatus(ConnectionStatus.TRANSACTION);
         List<Connection> actualConnections = backendConnection.getConnections(ConnectionMode.MEMORY_STRICTLY, "ds1", 12);
         assertThat(actualConnections.size(), is(12));
         assertThat(backendConnection.getConnectionSize(), is(12));
-        assertThat(backendConnection.getStatus(), is(ConnectionStatus.TRANSACTION));
+        assertThat(backendConnection.getStateHandler().getStatus(), is(ConnectionStatus.TRANSACTION));
     }
     
     @Test
@@ -161,7 +161,7 @@ public final class BackendConnectionTest {
             backendConnection.setLogicSchema(logicSchema);
             when(backendDataSource.getConnections((ConnectionMode) any(), anyString(), eq(12))).thenReturn(MockConnectionUtil.mockNewConnections(12));
             backendConnection.getConnections(ConnectionMode.MEMORY_STRICTLY, "ds1", 12);
-            assertThat(backendConnection.getStatus(), is(ConnectionStatus.RUNNING));
+            assertThat(backendConnection.getStateHandler().getStatus(), is(ConnectionStatus.RUNNING));
             mockResultSetAndStatement(backendConnection);
             actual = backendConnection;
         }
@@ -169,7 +169,7 @@ public final class BackendConnectionTest {
         assertTrue(actual.getCachedConnections().isEmpty());
         assertTrue(actual.getCachedResultSets().isEmpty());
         assertTrue(actual.getCachedStatements().isEmpty());
-        assertThat(actual.getStatus(), is(ConnectionStatus.RELEASE));
+        assertThat(actual.getStateHandler().getStatus(), is(ConnectionStatus.RELEASE));
     }
     
     @Test
@@ -179,7 +179,7 @@ public final class BackendConnectionTest {
             backendConnection.setLogicSchema(logicSchema);
             MockConnectionUtil.setCachedConnections(backendConnection, "ds1", 10);
             when(backendDataSource.getConnections((ConnectionMode) any(), anyString(), eq(2))).thenReturn(MockConnectionUtil.mockNewConnections(2));
-            backendConnection.getAndSetStatus(ConnectionStatus.TRANSACTION);
+            backendConnection.getStateHandler().getAndSetStatus(ConnectionStatus.TRANSACTION);
             backendConnection.getConnections(ConnectionMode.MEMORY_STRICTLY, "ds1", 12);
             mockResultSetAndStatement(backendConnection);
             actual = backendConnection;
@@ -196,11 +196,11 @@ public final class BackendConnectionTest {
         try (BackendConnection backendConnection = new BackendConnection(TransactionType.LOCAL)) {
             backendConnection.setLogicSchema(logicSchema);
             backendConnection.setTransactionType(TransactionType.XA);
-            backendConnection.getAndSetStatus(ConnectionStatus.TRANSACTION);
+            backendConnection.getStateHandler().getAndSetStatus(ConnectionStatus.TRANSACTION);
             MockConnectionUtil.setCachedConnections(backendConnection, "ds1", 10);
             when(backendDataSource.getConnections((ConnectionMode) any(), anyString(), eq(2))).thenReturn(MockConnectionUtil.mockNewConnections(2));
             backendConnection.getConnections(ConnectionMode.MEMORY_STRICTLY, "ds1", 12);
-            backendConnection.getAndSetStatus(ConnectionStatus.TERMINATED);
+            backendConnection.getStateHandler().getAndSetStatus(ConnectionStatus.TERMINATED);
             mockResultSetAndStatement(backendConnection);
             mockResultSetAndStatementException(backendConnection);
             actual = backendConnection;

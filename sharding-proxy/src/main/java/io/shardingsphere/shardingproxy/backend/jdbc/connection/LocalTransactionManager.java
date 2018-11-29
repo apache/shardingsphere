@@ -57,19 +57,19 @@ public final class LocalTransactionManager implements TransactionManager {
     }
     
     private void commit() throws SQLException {
-        if (ConnectionStatus.TRANSACTION == connection.getStatus()) {
+        if (connection.getStateHandler().isInTransaction()) {
             Collection<SQLException> exceptions = new LinkedList<>();
             exceptions.addAll(commitConnections());
-            connection.getAndSetStatus(ConnectionStatus.TERMINATED);
+            connection.getStateHandler().getAndSetStatus(ConnectionStatus.TERMINATED);
             throwSQLExceptionIfNecessary(exceptions);
         }
     }
     
     private void rollback() throws SQLException {
-        if (ConnectionStatus.TRANSACTION == connection.getStatus()) {
+        if (connection.getStateHandler().isInTransaction()) {
             Collection<SQLException> exceptions = new LinkedList<>();
             exceptions.addAll(rollbackConnections());
-            connection.getAndSetStatus(ConnectionStatus.TERMINATED);
+            connection.getStateHandler().getAndSetStatus(ConnectionStatus.TERMINATED);
             throwSQLExceptionIfNecessary(exceptions);
         }
     }

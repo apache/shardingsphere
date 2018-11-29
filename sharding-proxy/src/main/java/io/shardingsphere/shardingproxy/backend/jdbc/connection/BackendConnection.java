@@ -38,7 +38,6 @@ import java.util.Collection;
 import java.util.LinkedList;
 import java.util.List;
 import java.util.concurrent.CopyOnWriteArrayList;
-import java.util.concurrent.atomic.AtomicReference;
 
 /**
  * Backend connection.
@@ -62,7 +61,7 @@ public final class BackendConnection implements AutoCloseable {
     
     private final Collection<MethodInvocation> methodInvocations = new ArrayList<>();
     
-    private volatile AtomicReference<ConnectionStatus> status = new AtomicReference<>(ConnectionStatus.INIT);
+    private final ConnectionStateHandler stateHandler = new ConnectionStateHandler();
     
     private TransactionType transactionType;
     
@@ -76,35 +75,6 @@ public final class BackendConnection implements AutoCloseable {
     }
     
     /**
-     * Change connection status using compare and set.
-     *
-     * @param expect expect status
-     * @param update new update status
-     * @return boolean set succeed or failed
-     */
-    public boolean compareAndSetStatus(final ConnectionStatus expect, final ConnectionStatus update) {
-        return status.compareAndSet(expect, update);
-    }
-    
-    /**
-     * Change connection status using get and set.
-     *
-     * @param update new update status
-     */
-    public void getAndSetStatus(final ConnectionStatus update) {
-        status.getAndSet(update);
-    }
-    
-    /**
-     * Get current connection status.
-     *
-     * @return connection status
-     */
-    public ConnectionStatus getStatus() {
-        return status.get();
-    }
-    
-    /**
      * Change transaction type of current channel.
      *
      * @param transactionType transaction type
@@ -112,14 +82,14 @@ public final class BackendConnection implements AutoCloseable {
     @SneakyThrows
     public void setTransactionType(final TransactionType transactionType) {
         int retryCount = 0;
-        while (ConnectionStatus.TRANSACTION == status.get() && retryCount <= MAXIMUM_RETRY_COUNT) {
+        while (stateHandler.isInTransaction() && retryCount < MAXIMUM_RETRY_COUNT) {
             synchronized (lock) {
                 lock.wait(1000);
             }
             ++retryCount;
-            log.warn("Current transaction have not terminated, set transaction type will execute later. retry count:[{}]", retryCount);
+            log.warn("Current transaction have not terminated, set transaction type will execute later, retry count:[{}]", retryCount);
         }
-        if (retryCount > MAXIMUM_RETRY_COUNT) {
+        if (retryCount >= MAXIMUM_RETRY_COUNT) {
             log.warn("Set transaction type failed, exceed maximum retry count:[{}]", MAXIMUM_RETRY_COUNT);
             return;
         }
@@ -132,7 +102,7 @@ public final class BackendConnection implements AutoCloseable {
      * @param logicSchema logic schema
      */
     public void setLogicSchema(final LogicSchema logicSchema) {
-        if (ConnectionStatus.TRANSACTION != status.get()) {
+        if (!stateHandler.isInTransaction()) {
             this.logicSchema = logicSchema;
         }
     }
@@ -147,10 +117,8 @@ public final class BackendConnection implements AutoCloseable {
      * @throws SQLException SQL exception
      */
     public List<Connection> getConnections(final ConnectionMode connectionMode, final String dataSourceName, final int connectionSize) throws SQLException {
-        if (ConnectionStatus.INIT == status.get() || ConnectionStatus.TERMINATED == status.get()) {
-            status.getAndSet(ConnectionStatus.RUNNING);
-        }
-        if (ConnectionStatus.TRANSACTION == status.get()) {
+        stateHandler.changeRunningStatusIfNecessary();
+        if (stateHandler.isInTransaction()) {
             return getConnectionsWithTransaction(connectionMode, dataSourceName, connectionSize);
         } else {
             return getConnectionsWithoutTransaction(connectionMode, dataSourceName, connectionSize);
@@ -239,14 +207,10 @@ public final class BackendConnection implements AutoCloseable {
         MasterVisitedManager.clear();
         exceptions.addAll(closeStatements());
         exceptions.addAll(closeResultSets());
-        if (ConnectionStatus.TRANSACTION != status.get() || forceClose) {
+        if (!stateHandler.isInTransaction() || forceClose) {
             exceptions.addAll(releaseConnections(forceClose));
         }
-        if (status.compareAndSet(ConnectionStatus.RUNNING, ConnectionStatus.RELEASE)) {
-            synchronized (lock) {
-                lock.notifyAll();
-            }
-        }
+        stateHandler.doNotifyIfNecessary();
         throwSQLExceptionIfNecessary(exceptions);
     }
     
@@ -280,7 +244,7 @@ public final class BackendConnection implements AutoCloseable {
         Collection<SQLException> result = new LinkedList<>();
         for (Connection each : cachedConnections.values()) {
             try {
-                if (forceRollback && ConnectionStatus.TRANSACTION == status.get()) {
+                if (forceRollback && stateHandler.isInTransaction()) {
                     each.rollback();
                 }
                 each.close();
