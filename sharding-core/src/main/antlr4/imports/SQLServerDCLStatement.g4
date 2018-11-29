@@ -146,5 +146,5 @@ alterRole
     ;
 
 dropRole
-    : DROP ROLE roleName
+    : DROP ROLE (IF EXISTS)? roleName
     ;
