@@ -106,7 +106,7 @@ createLogin
     ;
 
 loginOptionList
-    : PASSWORD EQ_ STRING HASHED? MUST_CHANGE? (COMMA optionsList)*
+    : PASSWORD EQ_ (STRING | ID HASHED) MUST_CHANGE? (COMMA optionsList)*
     ;
 
 sources
@@ -118,7 +118,7 @@ alterLogin
     ;
 
 loginOption
-    :  PASSWORD EQ_ STRING HASHED? (OLD_PASSWORD EQ_ STRING | passwordOption (passwordOption )?)?
+    :  PASSWORD EQ_ (STRING | ID HASHED) (OLD_PASSWORD EQ_ STRING | passwordOption (passwordOption )?)?
     | DEFAULT_DATABASE EQ_ databaseName
     | optionsList
     | NO CREDENTIAL
