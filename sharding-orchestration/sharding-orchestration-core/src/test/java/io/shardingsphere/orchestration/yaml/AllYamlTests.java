@@ -23,8 +23,9 @@ import org.junit.runners.Suite.SuiteClasses;
 
 @RunWith(Suite.class)
 @SuiteClasses({
-        YamlOrchestrationConfigurationTest.class, 
-        DefaultRepresenterTest.class
+        DefaultYamlRepresenterTest.class, 
+        YamlOrchestrationConfigurationTest.class,
+        YamlDataSourceConfigurationTest.class
 })
 public final class AllYamlTests {
 }
