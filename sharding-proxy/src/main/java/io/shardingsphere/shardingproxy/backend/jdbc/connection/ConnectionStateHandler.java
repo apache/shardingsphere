@@ -17,6 +17,8 @@
 
 package io.shardingsphere.shardingproxy.backend.jdbc.connection;
 
+import lombok.RequiredArgsConstructor;
+
 import java.util.concurrent.atomic.AtomicReference;
 
 /**
@@ -24,11 +26,12 @@ import java.util.concurrent.atomic.AtomicReference;
  *
  * @author zhaojun
  */
+@RequiredArgsConstructor
 public class ConnectionStateHandler {
     
     private volatile AtomicReference<ConnectionStatus> status = new AtomicReference<>(ConnectionStatus.INIT);
     
-    private final Object lock = new Object();
+    private final Object lock;
     
     /**
      * Change connection status using compare and set.
@@ -48,6 +51,11 @@ public class ConnectionStateHandler {
      */
     public void getAndSetStatus(final ConnectionStatus update) {
         status.getAndSet(update);
+        if (ConnectionStatus.TERMINATED == status.get()) {
+            synchronized (lock) {
+                lock.notifyAll();
+            }
+        }
     }
     
     /**

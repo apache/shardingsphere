@@ -61,14 +61,14 @@ public final class BackendConnection implements AutoCloseable {
     
     private final Collection<MethodInvocation> methodInvocations = new ArrayList<>();
     
-    private final ConnectionStateHandler stateHandler = new ConnectionStateHandler();
+    private final Object lock = new Object();
+    
+    private final ConnectionStateHandler stateHandler = new ConnectionStateHandler(lock);
     
     private TransactionType transactionType;
     
     @Setter
     private ChannelHandlerContext context;
-    
-    private final Object lock = new Object();
     
     public BackendConnection(final TransactionType transactionType) {
         this.transactionType = transactionType;
@@ -79,21 +79,10 @@ public final class BackendConnection implements AutoCloseable {
      *
      * @param transactionType transaction type
      */
-    @SneakyThrows
     public void setTransactionType(final TransactionType transactionType) {
-        int retryCount = 0;
-        while (stateHandler.isInTransaction() && retryCount < MAXIMUM_RETRY_COUNT) {
-            synchronized (lock) {
-                lock.wait(1000);
-            }
-            ++retryCount;
-            log.warn("Current transaction have not terminated, set transaction type will execute later, retry count:[{}]", retryCount);
+        if (canDoSwitch()) {
+            this.transactionType = transactionType;
         }
-        if (retryCount >= MAXIMUM_RETRY_COUNT) {
-            log.warn("Set transaction type failed, exceed maximum retry count:[{}]", MAXIMUM_RETRY_COUNT);
-            return;
-        }
-        this.transactionType = transactionType;
     }
     
     /**
@@ -102,9 +91,26 @@ public final class BackendConnection implements AutoCloseable {
      * @param logicSchema logic schema
      */
     public void setLogicSchema(final LogicSchema logicSchema) {
-        if (!stateHandler.isInTransaction()) {
+        if (canDoSwitch()) {
             this.logicSchema = logicSchema;
         }
+    }
+    
+    @SneakyThrows
+    private boolean canDoSwitch() {
+        int retryCount = 0;
+        while (stateHandler.isInTransaction() && retryCount < MAXIMUM_RETRY_COUNT) {
+            synchronized (lock) {
+                lock.wait(1000);
+            }
+            ++retryCount;
+            log.warn("Current transaction have not terminated, retry count:[{}]", retryCount);
+        }
+        if (retryCount >= MAXIMUM_RETRY_COUNT) {
+            log.warn("Set transaction type failed, exceed maximum retry count:[{}]", MAXIMUM_RETRY_COUNT);
+            return false;
+        }
+        return true;
     }
     
     /**
