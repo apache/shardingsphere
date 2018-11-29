@@ -94,7 +94,7 @@ optionsList
     ;
 
 alterUser
-    : ALTER USER userName optionsLists
+    : ALTER USER userName WITH optionsLists
     ;
 
 dropUser
