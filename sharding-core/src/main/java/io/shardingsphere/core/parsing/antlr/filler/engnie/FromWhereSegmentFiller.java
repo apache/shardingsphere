@@ -19,14 +19,23 @@ package io.shardingsphere.core.parsing.antlr.filler.engnie;
 
 import java.util.Collection;
 import java.util.HashMap;
-import java.util.Iterator;
+import java.util.LinkedList;
+import java.util.List;
 import java.util.Map;
 
+import io.shardingsphere.core.constant.ShardingOperator;
 import io.shardingsphere.core.metadata.table.ShardingTableMetaData;
 import io.shardingsphere.core.parsing.antlr.filler.SQLSegmentFiller;
-import io.shardingsphere.core.parsing.antlr.sql.segment.SQLSegment;
+import io.shardingsphere.core.parsing.antlr.sql.segment.AndConditionSegment;
+import io.shardingsphere.core.parsing.antlr.sql.segment.ConditionSegment;
 import io.shardingsphere.core.parsing.antlr.sql.segment.FromWhereSegment;
+import io.shardingsphere.core.parsing.antlr.sql.segment.OrConditionSegment;
+import io.shardingsphere.core.parsing.antlr.sql.segment.SQLBetweenExpressionSegment;
+import io.shardingsphere.core.parsing.antlr.sql.segment.SQLEqExpressionSegment;
+import io.shardingsphere.core.parsing.antlr.sql.segment.SQLInExpressionSegment;
+import io.shardingsphere.core.parsing.antlr.sql.segment.SQLSegment;
 import io.shardingsphere.core.parsing.parser.context.condition.AndCondition;
+import io.shardingsphere.core.parsing.parser.context.condition.Column;
 import io.shardingsphere.core.parsing.parser.context.condition.Condition;
 import io.shardingsphere.core.parsing.parser.context.condition.OrCondition;
 import io.shardingsphere.core.parsing.parser.sql.SQLStatement;
@@ -43,12 +52,13 @@ public class FromWhereSegmentFiller implements SQLSegmentFiller {
     public void fill(final SQLSegment sqlSegment, final SQLStatement sqlStatement, final ShardingRule shardingRule,
                      final ShardingTableMetaData shardingTableMetaData) {
         FromWhereSegment fromWhereSegment = (FromWhereSegment) sqlSegment;
-        OrCondition orCondition = fromWhereSegment.getConditions().optimize();
-        Map<String, String> columnNameToTable = new HashMap<String, String>();
-        Map<String, Integer> columnNameCount = new HashMap<String, Integer>();
-        fillColumnTableMap(sqlStatement, shardingTableMetaData, columnNameToTable, columnNameCount);
-        filterShardingCondition(sqlStatement, orCondition, shardingRule, columnNameToTable, columnNameCount);
-        sqlStatement.getConditions().getOrCondition().getAndConditions().addAll(orCondition.getAndConditions());
+        if(!fromWhereSegment.getConditions().getAndConditions().isEmpty()) {
+            Map<String, String> columnNameToTable = new HashMap<String, String>();
+            Map<String, Integer> columnNameCount = new HashMap<String, Integer>();
+            fillColumnTableMap(sqlStatement, shardingTableMetaData, columnNameToTable, columnNameCount);
+            OrCondition orCondition = filterShardingCondition(sqlStatement, fromWhereSegment.getConditions(), shardingRule, columnNameToTable, columnNameCount);
+            sqlStatement.getConditions().getOrCondition().getAndConditions().addAll(orCondition.getAndConditions());
+        }
         int count = 0;
         while (count < fromWhereSegment.getParamenterCount()) {
             sqlStatement.increaseParametersIndex();
@@ -76,39 +86,49 @@ public class FromWhereSegmentFiller implements SQLSegmentFiller {
         }
     }
     
-    private void filterShardingCondition(final SQLStatement sqlStatement, final OrCondition orCondition, final ShardingRule shardingRule,
+    private OrCondition filterShardingCondition(final SQLStatement sqlStatement, final OrConditionSegment orCondition, final ShardingRule shardingRule,
                                          final Map<String, String> columnNameToTable, final Map<String, Integer> columnNameCount) {
-        Iterator<AndCondition> andConditionIterator = orCondition.getAndConditions().iterator();
-        while (andConditionIterator.hasNext()) {
-            AndCondition andCondition = andConditionIterator.next();
-            Iterator<Condition> conditionIterator = andCondition.getConditions().iterator();
-            while (conditionIterator.hasNext()) {
-                Condition condition = conditionIterator.next();
+        OrCondition result = new OrCondition();
+        for(AndConditionSegment each : orCondition.getAndConditions()) {
+            List<ConditionSegment> shardingCondition = new LinkedList<>();
+            for (ConditionSegment condition : each.getConditions()) {
                 if (null == condition.getColumn()) {
-                    conditionIterator.remove();
                     continue;
                 }
                 if ("".equals(condition.getColumn().getTableName())) {
-                    String tableName = columnNameToTable.get(condition.getColumn().getName());
-                    Integer count = columnNameCount.get(condition.getColumn().getName());
-                    if (null != tableName && count.intValue() == 1) {
-                        condition.getColumn().setTableName(tableName);
-                    } else {
-                        if (sqlStatement.getTables().isSingleTable()) {
-                            condition.getColumn().setTableName(sqlStatement.getTables().getSingleTableName());
-                        } else {
-                            conditionIterator.remove();
+                    if (sqlStatement.getTables().isSingleTable()) {
+                        condition.getColumn().setTableName(sqlStatement.getTables().getSingleTableName());
+                    }else {
+                        String tableName = columnNameToTable.get(condition.getColumn().getName());
+                        Integer count = columnNameCount.get(condition.getColumn().getName());
+                        if (null != tableName && count.intValue() == 1) {
+                            condition.getColumn().setTableName(tableName);
                         }
-                        continue;
                     }
                 }
-                if (!shardingRule.isShardingColumn(condition.getColumn())) {
-                    conditionIterator.remove();
+                
+                if (shardingRule.isShardingColumn(new Column(condition.getColumn().getName(), condition.getColumn().getTableName()))) {
+                    shardingCondition.add(condition);
                 }
             }
-            if (andCondition.getConditions().isEmpty()) {
-                andConditionIterator.remove();
+            if(!shardingCondition.isEmpty()) {
+                AndCondition andConditionResult = new AndCondition();
+                result.getAndConditions().add(andConditionResult);
+                for(ConditionSegment eachCondition : shardingCondition) {
+                    Column column = new Column(eachCondition.getColumn().getName(), eachCondition.getColumn().getTableName());
+                    if(ShardingOperator.EQUAL == eachCondition.getOperator()) {
+                        SQLEqExpressionSegment expression = (SQLEqExpressionSegment) eachCondition.getExpression();
+                        andConditionResult.getConditions().add(new Condition(column, expression.getExpression()));
+                    }else if(ShardingOperator.IN == eachCondition.getOperator()) {
+                        SQLInExpressionSegment expression = (SQLInExpressionSegment) eachCondition.getExpression();
+                        andConditionResult.getConditions().add(new Condition(column, expression.getSqlExpressions()));
+                    }else if(ShardingOperator.BETWEEN == eachCondition.getOperator()) {
+                        SQLBetweenExpressionSegment expression = (SQLBetweenExpressionSegment) eachCondition.getExpression();
+                        andConditionResult.getConditions().add(new Condition(column, expression.getBeginExpress(), expression.getEndExpress()));
+                    }
+                }
             }
         }
+        return result;
     }
 }

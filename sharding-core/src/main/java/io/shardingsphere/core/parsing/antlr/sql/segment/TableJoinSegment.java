@@ -17,7 +17,6 @@
 
 package io.shardingsphere.core.parsing.antlr.sql.segment;
 
-import io.shardingsphere.core.parsing.parser.context.condition.OrCondition;
 import io.shardingsphere.core.parsing.parser.token.TableToken;
 import lombok.Getter;
 
@@ -29,7 +28,7 @@ import lombok.Getter;
 @Getter
 public final class TableJoinSegment extends TableSegment {
     
-    private final OrCondition joinConditions = new OrCondition();
+    private final OrConditionSegment joinConditions = new OrConditionSegment();
     
     public TableJoinSegment(final String name, final String alias, final String schemaName, final TableToken token) {
         super(name, token);

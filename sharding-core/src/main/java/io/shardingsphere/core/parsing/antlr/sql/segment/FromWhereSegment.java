@@ -20,7 +20,6 @@ package io.shardingsphere.core.parsing.antlr.sql.segment;
 import java.util.HashMap;
 import java.util.Map;
 
-import io.shardingsphere.core.parsing.parser.context.condition.OrCondition;
 import lombok.Getter;
 import lombok.Setter;
 
@@ -34,9 +33,8 @@ public final class FromWhereSegment implements SQLSegment {
     
     private final Map<String, String> tableAliases = new HashMap<>();
     
-    private final OrCondition conditions = new OrCondition();
+    private final OrConditionSegment conditions = new OrConditionSegment();
     
     @Setter
     private Integer paramenterCount;
-    
 }

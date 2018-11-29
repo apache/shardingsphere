@@ -53,7 +53,7 @@ public enum SQLStatementType {
     
     SET_VARIABLE("SetVariable"),
     
-    SELECT("Select");
+    SELECT("Select"),
 
     SHOW("Show");
     

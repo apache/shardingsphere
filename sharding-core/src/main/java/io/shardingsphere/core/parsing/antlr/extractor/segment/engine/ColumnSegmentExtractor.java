@@ -17,6 +17,8 @@
 
 package io.shardingsphere.core.parsing.antlr.extractor.segment.engine;
 
+import java.util.Map;
+
 import org.antlr.v4.runtime.ParserRuleContext;
 
 import com.google.common.base.Optional;
@@ -26,13 +28,17 @@ import io.shardingsphere.core.parsing.antlr.extractor.segment.constant.RuleName;
 import io.shardingsphere.core.parsing.antlr.extractor.util.ASTUtils;
 import io.shardingsphere.core.parsing.antlr.sql.segment.ColumnSegment;
 import io.shardingsphere.core.parsing.lexer.token.Symbol;
+import lombok.RequiredArgsConstructor;
 
 /**
  * Column extract handler.
  * 
  * @author duhongjun
  */
+@RequiredArgsConstructor
 public final class ColumnSegmentExtractor implements OptionalSQLSegmentExtractor {
+    
+    private final Map<String, String> tableAlias;
     
     @Override
     public Optional<ColumnSegment> extract(final ParserRuleContext ancestorNode) {
@@ -44,12 +50,15 @@ public final class ColumnSegmentExtractor implements OptionalSQLSegmentExtractor
         int dotPosition = columnText.contains(Symbol.DOT.getLiterals()) ? columnText.lastIndexOf(Symbol.DOT.getLiterals()) : 0;
         String columnName = columnText;
         Optional<String> ownerName;
+        String tableName = null;
         if (0 < dotPosition) {
             columnName = columnText.substring(dotPosition + 1);
             ownerName = Optional.of(columnText.substring(0, dotPosition));
+            tableName = tableAlias.get(ownerName.get());
         } else {
             ownerName = Optional.absent();
         }
-        return Optional.of(new ColumnSegment(ownerName, columnName));
+        
+        return Optional.of(new ColumnSegment(ownerName, columnName, tableName, columnNode.get().getStart().getStartIndex()));
     }
 }

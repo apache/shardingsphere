@@ -21,7 +21,6 @@ import com.google.common.base.Objects;
 
 import lombok.Getter;
 import lombok.RequiredArgsConstructor;
-import lombok.Setter;
 import lombok.ToString;
 
 /**
@@ -37,7 +36,6 @@ public final class Column {
     
     private final String name;
     
-    @Setter
     private String tableName;
     
     public Column(final String name, final String tableName) {

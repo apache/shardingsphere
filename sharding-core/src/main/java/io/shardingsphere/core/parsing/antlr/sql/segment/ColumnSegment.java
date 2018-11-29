@@ -21,6 +21,7 @@ import com.google.common.base.Optional;
 
 import lombok.Getter;
 import lombok.RequiredArgsConstructor;
+import lombok.Setter;
 
 /**
  * Column segment.
@@ -34,4 +35,9 @@ public class ColumnSegment implements SQLSegment {
     private final Optional<String> owner;
     
     private final String name;
+    
+    @Setter
+    private String tableName;
+    
+    private final int startPosition;
 }
