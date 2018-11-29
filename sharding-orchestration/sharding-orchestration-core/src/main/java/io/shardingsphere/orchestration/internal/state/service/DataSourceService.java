@@ -25,8 +25,8 @@ import io.shardingsphere.core.config.DataSourceConfiguration;
 import io.shardingsphere.orchestration.internal.config.service.ConfigurationService;
 import io.shardingsphere.orchestration.internal.state.node.StateNode;
 import io.shardingsphere.orchestration.internal.state.node.StateNodeStatus;
-import io.shardingsphere.orchestration.internal.state.schema.OrchestrationSchema;
-import io.shardingsphere.orchestration.internal.state.schema.OrchestrationSchemaGroup;
+import io.shardingsphere.orchestration.internal.state.schema.OrchestrationShardingSchema;
+import io.shardingsphere.orchestration.internal.state.schema.OrchestrationShardingSchemaGroup;
 import io.shardingsphere.orchestration.reg.api.RegistryCenter;
 
 import java.util.Collection;
@@ -129,11 +129,11 @@ public final class DataSourceService {
         return result;
     }
     
-    private OrchestrationSchemaGroup getDisableOrchestrationSchemaGroup() {
-        OrchestrationSchemaGroup result = new OrchestrationSchemaGroup();
+    private OrchestrationShardingSchemaGroup getDisableOrchestrationSchemaGroup() {
+        OrchestrationShardingSchemaGroup result = new OrchestrationShardingSchemaGroup();
         for (String each : regCenter.getChildrenKeys(stateNode.getDataSourcesNodeFullRootPath())) {
             if (StateNodeStatus.DISABLED.toString().equalsIgnoreCase(regCenter.get(stateNode.getDataSourcesNodeFullPath(each)))) {
-                result.add(new OrchestrationSchema(each));
+                result.add(new OrchestrationShardingSchema(each));
             }
         }
         return result;

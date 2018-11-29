@@ -23,13 +23,13 @@ import static org.hamcrest.CoreMatchers.is;
 import static org.junit.Assert.assertThat;
 import static org.junit.Assert.assertTrue;
 
-public final class OrchestrationSchemaGroupTest {
+public final class OrchestrationShardingSchemaGroupTest {
     
     @Test
     public void assertAddWithExistedSchemaName() {
-        OrchestrationSchemaGroup actual = new OrchestrationSchemaGroup();
-        actual.add(new OrchestrationSchema("test_0.ds_0"));
-        actual.add(new OrchestrationSchema("test_0.ds_1"));
+        OrchestrationShardingSchemaGroup actual = new OrchestrationShardingSchemaGroup();
+        actual.add(new OrchestrationShardingSchema("test_0.ds_0"));
+        actual.add(new OrchestrationShardingSchema("test_0.ds_1"));
         assertThat(actual.getSchemaGroup().get("test_0").size(), is(2));
         assertTrue(actual.getSchemaGroup().get("test_0").contains("ds_0"));
         assertTrue(actual.getSchemaGroup().get("test_0").contains("ds_1"));
@@ -37,9 +37,9 @@ public final class OrchestrationSchemaGroupTest {
     
     @Test
     public void assertAddWithoutExistedSchemaName() {
-        OrchestrationSchemaGroup actual = new OrchestrationSchemaGroup();
-        actual.add(new OrchestrationSchema("test_0.ds_0"));
-        actual.add(new OrchestrationSchema("test_1.ds_1"));
+        OrchestrationShardingSchemaGroup actual = new OrchestrationShardingSchemaGroup();
+        actual.add(new OrchestrationShardingSchema("test_0.ds_0"));
+        actual.add(new OrchestrationShardingSchema("test_1.ds_1"));
         assertThat(actual.getSchemaGroup().get("test_0").size(), is(1));
         assertTrue(actual.getSchemaGroup().get("test_0").contains("ds_0"));
         assertThat(actual.getSchemaGroup().get("test_1").size(), is(1));

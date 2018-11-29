@@ -23,18 +23,18 @@ import org.junit.Test;
 import static org.hamcrest.CoreMatchers.is;
 import static org.junit.Assert.assertThat;
 
-public final class OrchestrationSchemaTest {
+public final class OrchestrationShardingSchemaTest {
     
     @Test
     public void assertNewOrchestrationSchemaWithDataSourceNameOnly() {
-        OrchestrationSchema actual = new OrchestrationSchema("test_ds");
+        OrchestrationShardingSchema actual = new OrchestrationShardingSchema("test_ds");
         assertThat(actual.getSchemaName(), is(ShardingConstant.LOGIC_SCHEMA_NAME));
         assertThat(actual.getDataSourceName(), is("test_ds"));
     }
     
     @Test
     public void assertNewOrchestrationSchemaWithSchemaNameAndDataSourceName() {
-        OrchestrationSchema actual = new OrchestrationSchema("test_schema.test_ds");
+        OrchestrationShardingSchema actual = new OrchestrationShardingSchema("test_schema.test_ds");
         assertThat(actual.getSchemaName(), is("test_schema"));
         assertThat(actual.getDataSourceName(), is("test_ds"));
     }

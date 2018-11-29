@@ -25,12 +25,12 @@ import java.util.LinkedList;
 import java.util.Map;
 
 /**
- * Orchestration schema group.
+ * Orchestration sharding schema group.
  *
  * @author zhangliang
  */
 @Getter
-public final class OrchestrationSchemaGroup {
+public final class OrchestrationShardingSchemaGroup {
     
     private final Map<String, Collection<String>> schemaGroup = new HashMap<>();
     
@@ -39,7 +39,7 @@ public final class OrchestrationSchemaGroup {
      * 
      * @param orchestrationSchema orchestration schema
      */
-    public void add(final OrchestrationSchema orchestrationSchema) {
+    public void add(final OrchestrationShardingSchema orchestrationSchema) {
         String schemaName = orchestrationSchema.getSchemaName();
         if (!schemaGroup.containsKey(schemaName)) {
             schemaGroup.put(schemaName, new LinkedList<String>());

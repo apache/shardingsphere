@@ -24,18 +24,18 @@ import lombok.Getter;
 import java.util.List;
 
 /**
- * Orchestration schema.
+ * Orchestration sharding schema.
  *
  * @author zhangliang
  */
 @Getter
-public final class OrchestrationSchema {
+public final class OrchestrationShardingSchema {
     
     private final String schemaName;
     
     private final String dataSourceName;
     
-    public OrchestrationSchema(final String value) {
+    public OrchestrationShardingSchema(final String value) {
         if (value.contains(".")) {
             List<String> values = Splitter.on(".").splitToList(value);
             schemaName = values.get(0);
