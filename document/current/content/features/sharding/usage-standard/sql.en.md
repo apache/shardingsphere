@@ -10,7 +10,7 @@ This section lists the supported SQL syntax and the unsupported SQL syntax for u
 
 ## Supported SQL
 
-Fully support DQL, DML and DDL. Support pagination, ORDER BY, GROUP BY, aggregation and JOIN(cannot support cross database). Example for DQL: 
+Fully support DQL, DML and DDL. Support pagination, DISTINCT, ORDER BY, GROUP BY, aggregation and JOIN(cannot support cross database). Example for DQL: 
 
 - Main SELECT
 
@@ -26,7 +26,7 @@ SELECT select_expr [, select_expr ...] FROM table_reference [, table_reference .
 
 ```sql
 * | 
-COLUMN_NAME [AS] [alias] | 
+[DISTINCT] COLUMN_NAME [AS] [alias] | 
 (MAX | MIN | SUM | AVG)(COLUMN_NAME | alias) [AS] [alias] | 
 COUNT(* | COLUMN_NAME | alias) [AS] [alias]
 ```
@@ -40,7 +40,7 @@ table_reference ([INNER] | {LEFT|RIGHT} [OUTER]) JOIN table_factor [JOIN ON cond
 
 ## Unsupported SQL
 
-Cannot support brackets redundancy, CASE WHEN、DISTINCT、HAVING、UNION (ALL), can support subquery limited.
+Cannot support brackets redundancy, CASE WHEN, HAVING, UNION (ALL), can support subquery limited.
 
 Sharding-Sphere supports subquery similar with paging subquery ([Pagination]((/features/sharding/usage-standard/pagination)). No matter how many layers in a subquery, Sharding-Sphere can always find the first subquery that contains the table data, once the sub-subquery containing table data is found in the lower nest, Sharding-Sphere will throw an exception.
 
@@ -85,16 +85,47 @@ Can not support SQL which include schema. Because of Sharding-Sphere is manage m
 | CREATE INDEX idx_name ON tbl_name                                                           |                                     |
 | DROP INDEX idx_name ON tbl_name                                                             |                                     |
 | DROP INDEX idx_name                                                                         |  Configure logic-index in TableRule |
+| SELECT DISTINCT * FROM tbl_name WHERE col1 = ?                                              |                                     |
+| SELECT COUNT(DISTINCT col1) FROM tbl_name                                                   |                                     |
 
 ### Unsupported SQL
 
-| SQL                                                                                         | Unsupported reason  |
-| ------------------------------------------------------------------------------------------- |-------------------- |
-| INSERT INTO tbl_name (col1, col2, ...) SELECT col1, col2, ... FROM tbl_name WHERE col3 = ?  | INSERT .. SELECT    |
-| INSERT INTO tbl_name SET col1 = ?                                                           | INSERT .. SET       |
-| SELECT DISTINCT * FROM tbl_name WHERE column1 = ?                                           | DISTINCT            |
-| SELECT COUNT(col1) as count_alias FROM tbl_name GROUP BY col1 HAVING count_alias > ?        | HAVING              |
-| SELECT * FROM tbl_name1 UNION SELECT * FROM tbl_name2                                       | UNION               |
-| SELECT * FROM tbl_name1 UNION ALL SELECT * FROM tbl_name2                                   | UNION ALL           |
-| SELECT * FROM tbl_name1 WHERE (val1=?) AND (val1=?)                                         | brackets redundancy |
-| SELECT * FROM ds.tbl_name1                                                                  | inculde schema      |
+| SQL                                                                                         | Unsupported reason                                      |
+| ------------------------------------------------------------------------------------------- |-------------------------------------------------------- |
+| INSERT INTO tbl_name (col1, col2, ...) SELECT col1, col2, ... FROM tbl_name WHERE col3 = ?  | INSERT .. SELECT                                        |
+| INSERT INTO tbl_name SET col1 = ?                                                           | INSERT .. SET                                           |
+| SELECT COUNT(col1) as count_alias FROM tbl_name GROUP BY col1 HAVING count_alias > ?        | HAVING                                                  |
+| SELECT * FROM tbl_name1 UNION SELECT * FROM tbl_name2                                       | UNION                                                   |
+| SELECT * FROM tbl_name1 UNION ALL SELECT * FROM tbl_name2                                   | UNION ALL                                               |
+| SELECT * FROM tbl_name1 WHERE (val1=?) AND (val1=?)                                         | brackets redundancy                                     |
+| SELECT * FROM ds.tbl_name1                                                                  | include schema                                          |
+| SELECT SUM(DISTINCT col1), SUM(col1) FROM tbl_name                                          | Please refer to the detail of supporting `DISTINCT`     |
+
+
+## More detail of supporting `DISTINCT` syntax
+
+### Supported SQL
+
+| SQL                                                                                         | Required condition                  |
+| ------------------------------------------------------------------------------------------- | ----------------------------------- |
+| SELECT DISTINCT * FROM tbl_name WHERE col1 = ?                                              |                                     |
+| SELECT DISTINCT col1 FROM tbl_name                                                          |                                     |
+| SELECT DISTINCT col1, col2, col3 FROM tbl_name                                              |                                     |
+| SELECT COUNT(DISTINCT col1) FROM tbl_name                                                   |                                     |
+| SELECT SUM(DISTINCT col1) FROM tbl_name                                                     |                                     |
+| SELECT DISTINCT col1 FROM tbl_name ORDER BY col1                                            |                                     |
+| SELECT DISTINCT col1 FROM tbl_name ORDER BY col2                                            |                                     |
+| SELECT COUNT(DISTINCT col1) FROM tbl_name GROUP BY col1                                     |                                     |
+| SELECT COUNT(DISTINCT col1), col1 FROM tbl_name GROUP BY col1                               |                                     |
+| SELECT DISTINCT col1 + col2 FROM tbl_name                                                   |                                     |
+
+### Unsupported SQL
+
+| SQL                                                                                         | Unsupported reason                                      |
+| ------------------------------------------------------------------------------------------- |-------------------------------------------------------- |
+| SELECT DISTINCT(col1) FROM tbl_name                                                         | DISTINCT()                                              |
+| SELECT COUNT(DISTINCT col1 + col2) FROM tbl_name                                            | PLUS FUNCTION + DISTINCT                                |
+| SELECT AVG(DISTINCT col1) FROM tbl_name                                                     | AVG(DISTINCT)                                           |
+| SELECT COUNT(DISTINCT col1), SUM(DISTINCT col1) FROM tbl_name                               | use two of the aggregation functions of DISTINCT        |
+| SELECT SUM(DISTINCT col1), SUM(col1) FROM tbl_name                                          | use regular and DISTINCT aggregation functions together |
+| SELECT col1, COUNT(DISTINCT col1) FROM tbl_name GROUP BY col1                               | the order of COUNT(DISTINCT) and regular select item    |
