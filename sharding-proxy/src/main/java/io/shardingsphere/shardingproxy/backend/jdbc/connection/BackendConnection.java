@@ -26,6 +26,7 @@ import io.shardingsphere.core.routing.router.masterslave.MasterVisitedManager;
 import io.shardingsphere.shardingproxy.runtime.schema.LogicSchema;
 import lombok.Getter;
 import lombok.Setter;
+import lombok.SneakyThrows;
 import lombok.extern.slf4j.Slf4j;
 
 import java.sql.Connection;
@@ -48,6 +49,8 @@ import java.util.concurrent.atomic.AtomicReference;
 @Slf4j
 @Getter
 public final class BackendConnection implements AutoCloseable {
+    
+    private static final int MAXIMUM_RETRY_COUNT = 5;
     
     private LogicSchema logicSchema;
     
@@ -106,10 +109,21 @@ public final class BackendConnection implements AutoCloseable {
      *
      * @param transactionType transaction type
      */
+    @SneakyThrows
     public void setTransactionType(final TransactionType transactionType) {
-        if (ConnectionStatus.TRANSACTION != status.get()) {
-            this.transactionType = transactionType;
+        int retryCount = 0;
+        while (ConnectionStatus.TRANSACTION == status.get() && retryCount <= MAXIMUM_RETRY_COUNT) {
+            synchronized (lock) {
+                lock.wait(1000);
+            }
+            ++retryCount;
+            log.warn("Current transaction have not terminated, set transaction type will execute later. retry count:[{}]", retryCount);
         }
+        if (retryCount > MAXIMUM_RETRY_COUNT) {
+            log.warn("Set transaction type failed, exceed maximum retry count:[{}]", MAXIMUM_RETRY_COUNT);
+            return;
+        }
+        this.transactionType = transactionType;
     }
     
     /**
