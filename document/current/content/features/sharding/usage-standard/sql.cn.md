@@ -125,8 +125,8 @@ SELECT COUNT(*) FROM (SELECT * FROM t_order o WHERE o.id IN (SELECT id FROM t_or
 | SQL                                                                                         | 不支持原因                         |
 | ------------------------------------------------------------------------------------------- |--------------------------------- |
 | SELECT DISTINCT(col1) FROM tbl_name                                                         | DISTINCT()                       |
-| SELECT DISTINCT(col1 + col2) FROM tbl_name                                                  | DISTINCT()                       |
-| SELECT COUNT(DISTINCT col1 + col2) FROM tbl_name                                            | PLUS FUNCTION                    |
+| SELECT DISTINCT(col1 + col2) FROM tbl_name                                                  | DISTINCT() + PLUS FUNCTION       |
+| SELECT COUNT(DISTINCT col1 + col2) FROM tbl_name                                            | PLUS FUNCTION + DISTINCT         |
 | SELECT AVG(DISTINCT col1) FROM tbl_name                                                     | AVG(DISTINCT)                    |
 | SELECT COUNT(DISTINCT col1), SUM(DISTINCT col1) FROM tbl_name                               | 同时使用2种DISTINCT的聚合函数       |
 | SELECT SUM(DISTINCT col1), SUM(col1) FROM tbl_name                                          | 同时使用普通聚合函数和DISTINCT聚合函数|
