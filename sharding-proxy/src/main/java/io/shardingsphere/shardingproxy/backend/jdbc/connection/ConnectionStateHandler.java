@@ -20,7 +20,7 @@ package io.shardingsphere.shardingproxy.backend.jdbc.connection;
 import java.util.concurrent.atomic.AtomicReference;
 
 /**
- * Connection state handler
+ * Connection state handler.
  *
  * @author zhaojun
  */
@@ -59,17 +59,27 @@ public class ConnectionStateHandler {
         return status.get();
     }
     
+    /**
+     * Change connection status to running if necessary.
+     */
     public void changeRunningStatusIfNecessary() {
         if (ConnectionStatus.INIT == status.get() || ConnectionStatus.TERMINATED == status.get()) {
             status.getAndSet(ConnectionStatus.RUNNING);
         }
     }
     
+    /**
+     * Judge whether connection is in transaction or not.
+     *
+     * @return true or false
+     */
     public boolean isInTransaction() {
         return ConnectionStatus.TRANSACTION == status.get();
     }
     
-    
+    /**
+     * Notify connection to finish wait if necessary.
+     */
     public void doNotifyIfNecessary() {
         if (status.compareAndSet(ConnectionStatus.RUNNING, ConnectionStatus.RELEASE)) {
             synchronized (lock) {
@@ -78,6 +88,11 @@ public class ConnectionStateHandler {
         }
     }
     
+    /**
+     * Wait until connection is released if necessary.
+     *
+     * @throws InterruptedException interrupted exception
+     */
     public void waitUntilConnectionReleasedIfNecessary() throws InterruptedException {
         if (ConnectionStatus.TRANSACTION != status.get() && ConnectionStatus.INIT != status.get() && ConnectionStatus.TERMINATED != status.get()) {
             while (!compareAndSetStatus(ConnectionStatus.RELEASE, ConnectionStatus.RUNNING)) {
