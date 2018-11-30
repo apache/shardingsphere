@@ -15,21 +15,16 @@
  * </p>
  */
 
-package io.shardingsphere.orchestration.yaml.fixture;
+package io.shardingsphere.shardingjdbc.orchestration.spring.boot.orchestration;
 
-import lombok.Getter;
-import lombok.Setter;
+import io.shardingsphere.orchestration.yaml.YamlOrchestrationConfiguration;
+import org.springframework.boot.context.properties.ConfigurationProperties;
 
-import java.util.Collection;
-import java.util.Map;
-
-@Getter
-@Setter
-public final class DefaultRepresenterFixture {
-    
-    private String value;
-    
-    private Collection<String> collection;
-    
-    private Map<String, String> map;
+/**
+ * Orchestration configuration properties.
+ *
+ * @author caohao
+ */
+@ConfigurationProperties(prefix = "sharding.jdbc.config.orchestration")
+public class SpringBootOrchestrationConfigurationProperties extends YamlOrchestrationConfiguration {
 }

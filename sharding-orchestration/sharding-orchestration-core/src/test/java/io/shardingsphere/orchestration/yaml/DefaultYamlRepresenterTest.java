@@ -17,7 +17,7 @@
 
 package io.shardingsphere.orchestration.yaml;
 
-import io.shardingsphere.orchestration.yaml.fixture.DefaultRepresenterFixture;
+import io.shardingsphere.orchestration.yaml.fixture.DefaultYamlRepresenterFixture;
 import org.junit.Test;
 import org.yaml.snakeyaml.Yaml;
 
@@ -30,33 +30,33 @@ import static org.hamcrest.CoreMatchers.containsString;
 import static org.hamcrest.CoreMatchers.is;
 import static org.junit.Assert.assertThat;
 
-public final class DefaultRepresenterTest {
+public final class DefaultYamlRepresenterTest {
     
     @Test
     public void assertToYamlWithNull() {
-        DefaultRepresenterFixture actual = new DefaultRepresenterFixture();
-        assertThat(new Yaml(new DefaultRepresenter()).dumpAsMap(actual), is("{}\n"));
+        DefaultYamlRepresenterFixture actual = new DefaultYamlRepresenterFixture();
+        assertThat(new Yaml(new DefaultYamlRepresenter()).dumpAsMap(actual), is("{}\n"));
     }
     
     @Test
     public void assertToYamlWithEmpty() {
-        DefaultRepresenterFixture actual = new DefaultRepresenterFixture();
+        DefaultYamlRepresenterFixture actual = new DefaultYamlRepresenterFixture();
         actual.setValue("");
         actual.setCollection(Collections.<String>emptyList());
         actual.setMap(Collections.<String, String>emptyMap());
-        assertThat(new Yaml(new DefaultRepresenter()).dumpAsMap(actual), is("value: ''\n"));
+        assertThat(new Yaml(new DefaultYamlRepresenter()).dumpAsMap(actual), is("value: ''\n"));
     }
     
     @Test
     public void assertToYamlWithValue() {
-        DefaultRepresenterFixture actual = new DefaultRepresenterFixture();
+        DefaultYamlRepresenterFixture actual = new DefaultYamlRepresenterFixture();
         actual.setValue("value");
         actual.setCollection(Arrays.asList("value1", "value2"));
         Map<String, String> map = new LinkedHashMap<>(2, 1);
         map.put("key1", "value1");
         map.put("key2", "value2");
         actual.setMap(map);
-        String expected = new Yaml(new DefaultRepresenter()).dumpAsMap(actual);
+        String expected = new Yaml(new DefaultYamlRepresenter()).dumpAsMap(actual);
         assertThat(expected, containsString("collection:\n- value1\n- value2\n"));
         assertThat(expected, containsString("map:\n  key1: value1\n  key2: value2\n"));
         assertThat(expected, containsString("value: value\n"));

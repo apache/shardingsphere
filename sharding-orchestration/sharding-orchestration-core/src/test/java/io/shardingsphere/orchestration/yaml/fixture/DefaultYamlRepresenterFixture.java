@@ -15,17 +15,21 @@
  * </p>
  */
 
-package io.shardingsphere.orchestration.yaml;
+package io.shardingsphere.orchestration.yaml.fixture;
 
-import org.junit.runner.RunWith;
-import org.junit.runners.Suite;
-import org.junit.runners.Suite.SuiteClasses;
+import lombok.Getter;
+import lombok.Setter;
 
-@RunWith(Suite.class)
-@SuiteClasses({
-        DefaultYamlRepresenterTest.class, 
-        YamlOrchestrationConfigurationTest.class,
-        YamlDataSourceConfigurationTest.class
-})
-public final class AllYamlTests {
+import java.util.Collection;
+import java.util.Map;
+
+@Getter
+@Setter
+public final class DefaultYamlRepresenterFixture {
+    
+    private String value;
+    
+    private Collection<String> collection;
+    
+    private Map<String, String> map;
 }

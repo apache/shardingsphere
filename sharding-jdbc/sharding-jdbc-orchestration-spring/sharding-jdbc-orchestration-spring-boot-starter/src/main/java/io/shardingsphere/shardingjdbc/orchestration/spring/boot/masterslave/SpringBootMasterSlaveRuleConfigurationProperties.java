@@ -15,19 +15,16 @@
  * </p>
  */
 
-package io.shardingsphere.orchestration.internal.state.event;
+package io.shardingsphere.shardingjdbc.orchestration.spring.boot.masterslave;
 
-import lombok.Getter;
-import lombok.RequiredArgsConstructor;
+import io.shardingsphere.core.yaml.masterslave.YamlMasterSlaveRuleConfiguration;
+import org.springframework.boot.context.properties.ConfigurationProperties;
 
 /**
- * Circuit event bus event.
+ * Master-slave rule configuration properties.
  *
- * @author panjuan
+ * @author caohao
  */
-@RequiredArgsConstructor
-@Getter
-public final class CircuitStateEventBusEvent {
-    
-    private final boolean isCircuitBreak;
+@ConfigurationProperties(prefix = "sharding.jdbc.config.masterslave")
+public class SpringBootMasterSlaveRuleConfigurationProperties extends YamlMasterSlaveRuleConfiguration {
 }

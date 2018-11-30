@@ -36,12 +36,7 @@ public final class Column {
     
     private final String name;
     
-    private String tableName;
-    
-    public Column(final String name, final String tableName) {
-        this.name = name;
-        this.tableName = tableName;
-    }
+    private final String tableName;
     
     @Override
     public boolean equals(final Object obj) {

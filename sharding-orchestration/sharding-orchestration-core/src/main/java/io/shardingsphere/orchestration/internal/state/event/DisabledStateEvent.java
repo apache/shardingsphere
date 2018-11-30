@@ -15,17 +15,20 @@
  * </p>
  */
 
-package io.shardingsphere.orchestration.yaml;
+package io.shardingsphere.orchestration.internal.state.event;
 
-import org.junit.runner.RunWith;
-import org.junit.runners.Suite;
-import org.junit.runners.Suite.SuiteClasses;
+import io.shardingsphere.orchestration.internal.state.schema.OrchestrationShardingSchemaGroup;
+import lombok.Getter;
+import lombok.RequiredArgsConstructor;
 
-@RunWith(Suite.class)
-@SuiteClasses({
-        DefaultYamlRepresenterTest.class, 
-        YamlOrchestrationConfigurationTest.class,
-        YamlDataSourceConfigurationTest.class
-})
-public final class AllYamlTests {
+/**
+ * Disabled state event.
+ *
+ * @author panjuan
+ */
+@RequiredArgsConstructor
+@Getter
+public final class DisabledStateEvent {
+    
+    private final OrchestrationShardingSchemaGroup disabledGroup;
 }

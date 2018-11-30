@@ -15,33 +15,19 @@
  * </p>
  */
 
-package io.shardingsphere.orchestration.yaml.fixture;
+package io.shardingsphere.orchestration.internal.state.event;
 
 import lombok.Getter;
-import lombok.Setter;
+import lombok.RequiredArgsConstructor;
 
-import java.util.Arrays;
-import java.util.Collection;
-
+/**
+ * Circuit state event.
+ *
+ * @author panjuan
+ */
+@RequiredArgsConstructor
 @Getter
-@Setter
-public final class SimpleTypeRepresenterFixture {
+public final class CircuitStateEvent {
     
-    private boolean booleanValue;
-    
-    private Boolean booleanObjectValue = Boolean.TRUE;
-    
-    private int intValue;
-    
-    private Integer integerObjectValue = 10;
-    
-    private long longValue;
-    
-    private Long longObjectValue = 10L;
-    
-    private String string = "value";
-    
-    private Collection<String> collection = Arrays.asList("value1", "value2");
-    
-    private String skippedProperty = "skipped";
+    private final boolean isCircuitBreak;
 }

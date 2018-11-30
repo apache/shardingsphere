@@ -19,8 +19,9 @@ package io.shardingsphere.orchestration.internal.rule;
 
 import io.shardingsphere.api.algorithm.masterslave.RandomMasterSlaveLoadBalanceAlgorithm;
 import io.shardingsphere.api.config.MasterSlaveRuleConfiguration;
-import io.shardingsphere.core.constant.ShardingConstant;
-import io.shardingsphere.orchestration.internal.state.event.DisabledStateEventBusEvent;
+import io.shardingsphere.orchestration.internal.state.event.DisabledStateEvent;
+import io.shardingsphere.orchestration.internal.state.schema.OrchestrationShardingSchema;
+import io.shardingsphere.orchestration.internal.state.schema.OrchestrationShardingSchemaGroup;
 import org.junit.Before;
 import org.junit.Test;
 
@@ -58,12 +59,13 @@ public final class OrchestrationMasterSlaveRuleTest {
     @Test
     public void assertRenew() {
         Collection<String> expected = Collections.singletonList("slave_db_1");
-        orchestrationMasterSlaveRule.renew(getDisabledStateEventBusEvent());
+        orchestrationMasterSlaveRule.renew(getDisabledStateEvent());
         assertThat(orchestrationMasterSlaveRule.getSlaveDataSourceNames(), is(expected));
     }
     
-    private DisabledStateEventBusEvent getDisabledStateEventBusEvent() {
-        Collection<String> slaveNames = Collections.singletonList("slave_db_0");
-        return new DisabledStateEventBusEvent(Collections.singletonMap(ShardingConstant.LOGIC_SCHEMA_NAME, slaveNames));
+    private DisabledStateEvent getDisabledStateEvent() {
+        OrchestrationShardingSchemaGroup orchestrationShardingSchemaGroup = new OrchestrationShardingSchemaGroup();
+        orchestrationShardingSchemaGroup.add(new OrchestrationShardingSchema("slave_db_0"));
+        return new DisabledStateEvent(orchestrationShardingSchemaGroup);
     }
 }

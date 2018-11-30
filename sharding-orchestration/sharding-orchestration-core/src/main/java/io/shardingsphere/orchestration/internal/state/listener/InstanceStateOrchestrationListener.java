@@ -18,11 +18,11 @@
 package io.shardingsphere.orchestration.internal.state.listener;
 
 import io.shardingsphere.core.event.ShardingEventBusInstance;
-import io.shardingsphere.orchestration.internal.state.event.CircuitStateEventBusEvent;
 import io.shardingsphere.orchestration.internal.listener.OrchestrationListener;
+import io.shardingsphere.orchestration.internal.state.event.CircuitStateEvent;
+import io.shardingsphere.orchestration.internal.state.instance.OrchestrationInstance;
 import io.shardingsphere.orchestration.internal.state.node.StateNode;
 import io.shardingsphere.orchestration.internal.state.node.StateNodeStatus;
-import io.shardingsphere.orchestration.internal.state.instance.OrchestrationInstance;
 import io.shardingsphere.orchestration.reg.api.RegistryCenter;
 import io.shardingsphere.orchestration.reg.listener.DataChangedEvent;
 import io.shardingsphere.orchestration.reg.listener.EventListener;
@@ -52,9 +52,9 @@ public final class InstanceStateOrchestrationListener implements OrchestrationLi
             public void onChange(final DataChangedEvent event) {
                 if (DataChangedEvent.Type.UPDATED == event.getEventType()) {
                     if (StateNodeStatus.DISABLED.toString().equalsIgnoreCase(regCenter.get(event.getKey()))) {
-                        ShardingEventBusInstance.getInstance().post(new CircuitStateEventBusEvent(true));
+                        ShardingEventBusInstance.getInstance().post(new CircuitStateEvent(true));
                     } else {
-                        ShardingEventBusInstance.getInstance().post(new CircuitStateEventBusEvent(false));
+                        ShardingEventBusInstance.getInstance().post(new CircuitStateEvent(false));
                     }
                 }
             }

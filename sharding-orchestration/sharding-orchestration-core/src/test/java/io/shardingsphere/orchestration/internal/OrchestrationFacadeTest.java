@@ -90,7 +90,7 @@ public final class OrchestrationFacadeTest {
         verify(configService).persistConfiguration(
                 "sharding_db", dataSourceConfigurationMap, ruleConfigurationMap.get("sharding_db"), authentication, Collections.<String, Object>emptyMap(), props, true);
         verify(instanceStateService).persistInstanceOnline();
-        verify(dataSourceService).persistDataSourcesNode();
+        verify(dataSourceService).initDataSourcesNode();
         verify(listenerManager).initListeners();
     }
     
@@ -98,7 +98,7 @@ public final class OrchestrationFacadeTest {
     public void assertInitWithoutParameters() {
         orchestrationFacade.init();
         verify(instanceStateService).persistInstanceOnline();
-        verify(dataSourceService).persistDataSourcesNode();
+        verify(dataSourceService).initDataSourcesNode();
         verify(listenerManager).initListeners();
     }
     

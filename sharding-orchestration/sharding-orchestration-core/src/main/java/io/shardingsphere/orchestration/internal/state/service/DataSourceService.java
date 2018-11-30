@@ -25,11 +25,10 @@ import io.shardingsphere.core.config.DataSourceConfiguration;
 import io.shardingsphere.orchestration.internal.config.service.ConfigurationService;
 import io.shardingsphere.orchestration.internal.state.node.StateNode;
 import io.shardingsphere.orchestration.internal.state.node.StateNodeStatus;
-import io.shardingsphere.orchestration.internal.state.schema.OrchestrationSchema;
-import io.shardingsphere.orchestration.internal.state.schema.OrchestrationSchemaGroup;
+import io.shardingsphere.orchestration.internal.state.schema.OrchestrationShardingSchema;
+import io.shardingsphere.orchestration.internal.state.schema.OrchestrationShardingSchemaGroup;
 import io.shardingsphere.orchestration.reg.api.RegistryCenter;
 
-import java.util.Collection;
 import java.util.Map;
 
 /**
@@ -54,9 +53,9 @@ public final class DataSourceService {
     }
     
     /**
-     * Persist master-salve data sources node.
+     * Initialize data sources node.
      */
-    public void persistDataSourcesNode() {
+    public void initDataSourcesNode() {
         regCenter.persist(stateNode.getDataSourcesNodeFullRootPath(), "");
     }
     
@@ -68,10 +67,7 @@ public final class DataSourceService {
      */
     public Map<String, DataSourceConfiguration> getAvailableDataSourceConfigurations(final String shardingSchemaName) {
         Map<String, DataSourceConfiguration> result = configService.loadDataSourceConfigurations(shardingSchemaName);
-        if (!getDisabledSlaveDataSourceNames().containsKey(shardingSchemaName)) {
-            return result;
-        }
-        for (String each : getDisabledSlaveDataSourceNames().get(shardingSchemaName)) {
+        for (String each : getDisabledSlaveSchemaGroup().getDataSourceNames(shardingSchemaName)) {
             result.remove(each);
         }
         return result;
@@ -86,10 +82,7 @@ public final class DataSourceService {
     public ShardingRuleConfiguration getAvailableShardingRuleConfiguration(final String shardingSchemaName) {
         ShardingRuleConfiguration result = configService.loadShardingRuleConfiguration(shardingSchemaName);
         Preconditions.checkState(null != result && !result.getTableRuleConfigs().isEmpty(), "Missing the sharding rule configuration on registry center.");
-        if (!getDisabledSlaveDataSourceNames().containsKey(shardingSchemaName)) {
-            return result;
-        }
-        for (String each : getDisabledSlaveDataSourceNames().get(shardingSchemaName)) {
+        for (String each : getDisabledSlaveSchemaGroup().getDataSourceNames(shardingSchemaName)) {
             for (MasterSlaveRuleConfiguration masterSlaveRuleConfig : result.getMasterSlaveRuleConfigs()) {
                 masterSlaveRuleConfig.getSlaveDataSourceNames().remove(each);
             }
@@ -106,34 +99,26 @@ public final class DataSourceService {
     public MasterSlaveRuleConfiguration getAvailableMasterSlaveRuleConfiguration(final String shardingSchemaName) {
         MasterSlaveRuleConfiguration result = configService.loadMasterSlaveRuleConfiguration(shardingSchemaName);
         Preconditions.checkState(null != result && !Strings.isNullOrEmpty(result.getMasterDataSourceName()), "No available master slave rule configuration to load.");
-        if (!getDisabledSlaveDataSourceNames().containsKey(shardingSchemaName)) {
-            return result;
-        }
-        for (String each : getDisabledSlaveDataSourceNames().get(shardingSchemaName)) {
+        for (String each : getDisabledSlaveSchemaGroup().getDataSourceNames(shardingSchemaName)) {
             result.getSlaveDataSourceNames().remove(each);
         }
         return result;
     }
     
     /**
-     * Get disabled slave data source names.
+     * Get disabled slave orchestration sharding schema group.
      *
-     * @return disabled slave data source names
+     * @return disabled slave orchestration sharding schema group
      */
-    public Map<String, Collection<String>> getDisabledSlaveDataSourceNames() {
-        Map<String, Collection<String>> result = getDisableOrchestrationSchemaGroup().getSchemaGroup();
-        Map<String, Collection<String>> slaveDataSourceNamesMap = configService.getAllSlaveDataSourceNames();
-        for (String each : result.keySet()) {
-            result.get(each).retainAll(slaveDataSourceNamesMap.get(each));
-        }
-        return result;
-    }
-    
-    private OrchestrationSchemaGroup getDisableOrchestrationSchemaGroup() {
-        OrchestrationSchemaGroup result = new OrchestrationSchemaGroup();
+    public OrchestrationShardingSchemaGroup getDisabledSlaveSchemaGroup() {
+        OrchestrationShardingSchemaGroup result = new OrchestrationShardingSchemaGroup();
+        OrchestrationShardingSchemaGroup slaveGroup = configService.getAllSlaveDataSourceNames();
         for (String each : regCenter.getChildrenKeys(stateNode.getDataSourcesNodeFullRootPath())) {
             if (StateNodeStatus.DISABLED.toString().equalsIgnoreCase(regCenter.get(stateNode.getDataSourcesNodeFullPath(each)))) {
-                result.add(new OrchestrationSchema(each));
+                OrchestrationShardingSchema orchestrationShardingSchema = new OrchestrationShardingSchema(each);
+                if (slaveGroup.getDataSourceNames(orchestrationShardingSchema.getSchemaName()).contains(orchestrationShardingSchema.getDataSourceName())) {
+                    result.add(orchestrationShardingSchema);
+                }
             }
         }
         return result;

@@ -31,7 +31,7 @@ import io.shardingsphere.core.rule.Authentication;
 import io.shardingsphere.core.rule.DataSourceParameter;
 import io.shardingsphere.orchestration.internal.config.event.AuthenticationChangedEvent;
 import io.shardingsphere.orchestration.internal.config.event.PropertiesChangedEvent;
-import io.shardingsphere.orchestration.internal.state.event.CircuitStateEventBusEvent;
+import io.shardingsphere.orchestration.internal.state.event.CircuitStateEvent;
 import io.shardingsphere.shardingproxy.runtime.schema.LogicSchema;
 import io.shardingsphere.shardingproxy.runtime.schema.MasterSlaveSchema;
 import io.shardingsphere.shardingproxy.runtime.schema.ShardingSchema;
@@ -171,11 +171,11 @@ public final class GlobalRegistry {
     /**
      * Renew properties.
      *
-     * @param propertiesEvent properties event
+     * @param propertiesChangedEvent properties changed event
      */
     @Subscribe
-    public void renew(final PropertiesChangedEvent propertiesEvent) {
-        shardingProperties = new ShardingProperties(propertiesEvent.getProps());
+    public void renew(final PropertiesChangedEvent propertiesChangedEvent) {
+        shardingProperties = new ShardingProperties(propertiesChangedEvent.getProps());
     }
     
     /**
@@ -189,12 +189,12 @@ public final class GlobalRegistry {
     }
     
     /**
-     * Renew circuit breaker dataSource names.
+     * Renew circuit breaker data source names.
      *
-     * @param circuitStateEventBusEvent jdbc circuit event bus event
+     * @param circuitStateEvent circuit state event
      */
     @Subscribe
-    public void renewCircuitBreakerDataSourceNames(final CircuitStateEventBusEvent circuitStateEventBusEvent) {
-        isCircuitBreak = circuitStateEventBusEvent.isCircuitBreak();
+    public void renewCircuitBreakerDataSourceNames(final CircuitStateEvent circuitStateEvent) {
+        isCircuitBreak = circuitStateEvent.isCircuitBreak();
     }
 }

@@ -27,7 +27,6 @@ import org.mockito.Mock;
 import org.mockito.junit.MockitoJUnitRunner;
 
 import java.util.Arrays;
-import java.util.Collection;
 import java.util.Collections;
 import java.util.Map;
 
@@ -74,8 +73,8 @@ public final class DataSourceServiceTest {
     }
     
     @Test
-    public void assertPersistDataSourcesNode() {
-        dataSourceService.persistDataSourcesNode();
+    public void assertInitDataSourcesNode() {
+        dataSourceService.initDataSourcesNode();
         verify(regCenter).persist("/test/state/datasources", "");
     }
     
@@ -121,20 +120,18 @@ public final class DataSourceServiceTest {
     }
     
     @Test
-    public void assertGetDisabledSlaveDataSourceNamesWithDisabledDataSources() {
+    public void assertGetDisabledOrchestrationShardingSchemaGroupWithDisabledDataSources() {
         when(regCenter.getChildrenKeys("/test/config/schema")).thenReturn(Collections.singletonList("masterslave_db"));
         when(regCenter.getDirectly("/test/config/schema/masterslave_db/rule")).thenReturn(MASTER_SLAVE_RULE_YAML);
         when(regCenter.getChildrenKeys("/test/state/datasources")).thenReturn(Collections.singletonList("masterslave_db.ds_0_slave"));
         when(regCenter.get("/test/state/datasources/masterslave_db.ds_0_slave")).thenReturn("disabled");
-        Map<String, Collection<String>> actual = dataSourceService.getDisabledSlaveDataSourceNames();
-        assertTrue(actual.get("masterslave_db").contains("ds_0_slave"));
+        assertTrue(dataSourceService.getDisabledSlaveSchemaGroup().getDataSourceNames("masterslave_db").contains("ds_0_slave"));
     }
     
     @Test
-    public void assertGetDisabledSlaveDataSourceNamesWithoutDisabledDataSources() {
+    public void assertGetDisabledOrchestrationShardingSchemaGroupWithoutDisabledDataSources() {
         when(regCenter.getChildrenKeys("/test/config/schema")).thenReturn(Collections.singletonList("masterslave_db"));
         when(regCenter.getDirectly("/test/config/schema/masterslave_db/rule")).thenReturn(MASTER_SLAVE_RULE_YAML);
-        Map<String, Collection<String>> actual = dataSourceService.getDisabledSlaveDataSourceNames();
-        assertFalse(actual.containsKey("masterslave_db"));
+        assertTrue(dataSourceService.getDisabledSlaveSchemaGroup().getDataSourceNames("masterslave_db").isEmpty());
     }
 }

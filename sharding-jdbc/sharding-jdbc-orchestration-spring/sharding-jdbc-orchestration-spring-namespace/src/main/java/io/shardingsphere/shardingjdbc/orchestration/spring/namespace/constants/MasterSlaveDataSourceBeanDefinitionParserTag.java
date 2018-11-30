@@ -15,22 +15,19 @@
  * </p>
  */
 
-package io.shardingsphere.orchestration.internal.state.event;
+package io.shardingsphere.shardingjdbc.orchestration.spring.namespace.constants;
 
-import lombok.Getter;
-import lombok.RequiredArgsConstructor;
-
-import java.util.Collection;
-import java.util.Map;
+import lombok.AccessLevel;
+import lombok.NoArgsConstructor;
 
 /**
- * Disabled event bus event.
- *
+ * Master slave data source parser tag constants.
+ * 
  * @author panjuan
  */
-@RequiredArgsConstructor
-@Getter
-public final class DisabledStateEventBusEvent {
+@NoArgsConstructor(access = AccessLevel.PRIVATE)
+public final class MasterSlaveDataSourceBeanDefinitionParserTag {
     
-    private final Map<String, Collection<String>> disabledSchemaDataSourceMap;
+    public static final String ROOT_TAG = "master-slave-data-source";
 }
+
