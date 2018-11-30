@@ -25,7 +25,7 @@ import static org.hamcrest.CoreMatchers.is;
 import static org.junit.Assert.assertThat;
 
 public final class ColumnTypeTest {
-    
+
     @Test
     public void assertValueOfJDBC() {
         assertThat(ColumnType.valueOfJDBCType(Types.BIT), is(ColumnType.MYSQL_TYPE_BIT));
@@ -44,23 +44,23 @@ public final class ColumnTypeTest {
         assertThat(ColumnType.valueOfJDBCType(Types.DATE), is(ColumnType.MYSQL_TYPE_DATE));
         assertThat(ColumnType.valueOfJDBCType(Types.TIME), is(ColumnType.MYSQL_TYPE_TIME));
         assertThat(ColumnType.valueOfJDBCType(Types.TIMESTAMP), is(ColumnType.MYSQL_TYPE_TIMESTAMP));
-        assertThat(ColumnType.valueOfJDBCType(Types.BINARY), is(ColumnType.MYSQL_TYPE_BLOB));
+        assertThat(ColumnType.valueOfJDBCType(Types.BINARY), is(ColumnType.MYSQL_TYPE_STRING));
         assertThat(ColumnType.valueOfJDBCType(Types.VARBINARY), is(ColumnType.MYSQL_TYPE_MEDIUM_BLOB));
         assertThat(ColumnType.valueOfJDBCType(Types.LONGVARBINARY), is(ColumnType.MYSQL_TYPE_LONG_BLOB));
         assertThat(ColumnType.valueOfJDBCType(Types.NULL), is(ColumnType.MYSQL_TYPE_NULL));
         assertThat(ColumnType.valueOfJDBCType(Types.BLOB), is(ColumnType.MYSQL_TYPE_BLOB));
     }
-    
+
     @Test(expected = IllegalArgumentException.class)
     public void assertValueOfJDBCIllegalArgument() {
         ColumnType.valueOfJDBCType(9999);
     }
-    
+
     @Test
     public void assertValueOf() {
         assertThat(ColumnType.valueOf(ColumnType.MYSQL_TYPE_DECIMAL.getValue()), is(ColumnType.MYSQL_TYPE_DECIMAL));
     }
-    
+
     @Test(expected = IllegalArgumentException.class)
     public void assertValueOfWithIllegalArgument() {
         ColumnType.valueOf(-1);
