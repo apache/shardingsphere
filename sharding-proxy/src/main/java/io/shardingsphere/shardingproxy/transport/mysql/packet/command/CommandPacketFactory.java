@@ -64,7 +64,7 @@ public final class CommandPacketFactory {
             case COM_INIT_DB:
                 return new ComInitDbPacket(sequenceId, payload, frontendHandler);
             case COM_FIELD_LIST:
-                return new ComFieldListPacket(sequenceId, connectionId, backendConnection.getCurrentSchema(), payload, backendConnection);
+                return new ComFieldListPacket(sequenceId, connectionId, payload, backendConnection);
             case COM_QUERY:
                 return new ComQueryPacket(sequenceId, connectionId, payload, backendConnection, frontendHandler);
             case COM_STMT_PREPARE:

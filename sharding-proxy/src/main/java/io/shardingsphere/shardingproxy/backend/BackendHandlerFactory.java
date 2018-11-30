@@ -68,11 +68,10 @@ public final class BackendHandlerFactory {
      * @param sql SQL to be executed
      * @param backendConnection backend connection
      * @param databaseType database type
-     * @param schema schema
      * @return instance of text protocol backend handler
      */
     public static BackendHandler newTextProtocolInstance(
-            final int connectionId, final int sequenceId, final String sql, final BackendConnection backendConnection, final DatabaseType databaseType, final String schema) {
+            final int connectionId, final int sequenceId, final String sql, final BackendConnection backendConnection, final DatabaseType databaseType) {
         LogicSchema logicSchema = backendConnection.getLogicSchema();
         return GLOBAL_REGISTRY.getShardingProperties().<Boolean>getValue(ShardingPropertiesConstant.PROXY_BACKEND_USE_NIO)
                 ? new NettyBackendHandler(logicSchema, connectionId, sequenceId, sql, databaseType)
@@ -124,8 +123,7 @@ public final class BackendHandlerFactory {
             return new SchemaUnicastBackendHandler(connectionId, sequenceId, sql, backendConnection, DatabaseType.MySQL);
         }
         
-        String schema = getSchema(sqlStatement).isPresent() ? getSchema(sqlStatement).get() : backendConnection.getCurrentSchema();
-        return newTextProtocolInstance(connectionId, sequenceId, sql, backendConnection, DatabaseType.MySQL, schema);
+        return newTextProtocolInstance(connectionId, sequenceId, sql, backendConnection, DatabaseType.MySQL);
     }
     
     private static Optional<String> getSchema(final SQLStatement sqlStatement) {
