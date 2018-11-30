@@ -86,7 +86,7 @@ public final class BackendConnection implements AutoCloseable {
      */
     public void setTransactionType(final TransactionType transactionType) {
         if (isSwitchFailed()) {
-            throw new ShardingException("Failed to set transaction type, exceed maximum retry count!");
+            throw new ShardingException("Failed to switch transaction type, please terminate current transaction.");
         }
         this.transactionType = transactionType;
     }
@@ -98,7 +98,7 @@ public final class BackendConnection implements AutoCloseable {
      */
     public void setCurrentSchema(final String currentSchema) {
         if (isSwitchFailed()) {
-            throw new ShardingException("Failed to set logic schema, exceed maximum retry count!");
+            throw new ShardingException("Failed to switch schema, please terminate current transaction.");
         }
         this.currentSchema = currentSchema;
         this.logicSchema = GlobalRegistry.getInstance().getLogicSchema(currentSchema);
@@ -110,10 +110,10 @@ public final class BackendConnection implements AutoCloseable {
         while (stateHandler.isInTransaction() && retryCount < MAXIMUM_RETRY_COUNT) {
             resourceSynchronizer.doAwait();
             ++retryCount;
-            log.warn("Current transaction have not terminated, retry count:[{}]", retryCount);
+            log.warn("Current transaction have not terminated, retry count:[{}].", retryCount);
         }
         if (retryCount >= MAXIMUM_RETRY_COUNT) {
-            log.error("Cannot do switch, exceed maximum retry count:[{}]", MAXIMUM_RETRY_COUNT);
+            log.error("Cannot do switch, exceed maximum retry count:[{}].", MAXIMUM_RETRY_COUNT);
             return true;
         }
         return false;
