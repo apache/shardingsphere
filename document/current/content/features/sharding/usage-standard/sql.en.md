@@ -117,7 +117,6 @@ Can not support SQL which include schema. Because of Sharding-Sphere is manage m
 | SELECT DISTINCT col1 FROM tbl_name ORDER BY col2                                            |                                     |
 | SELECT COUNT(DISTINCT col1) FROM tbl_name GROUP BY col1                                     |                                     |
 | SELECT COUNT(DISTINCT col1), col1 FROM tbl_name GROUP BY col1                               |                                     |
-| SELECT DISTINCT col1 + col2 FROM tbl_name                                                   |                                     |
 
 ### Unsupported SQL
 
