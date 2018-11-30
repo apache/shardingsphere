@@ -67,7 +67,15 @@ public final class BackendConnectionTest {
     @SneakyThrows
     public void setup() {
         when(logicSchema.getBackendDataSource()).thenReturn(backendDataSource);
-        backendConnection.setLogicSchema(logicSchema);
+        setLogicSchema(backendConnection);
+        
+    }
+    
+    @SneakyThrows
+    private void setLogicSchema(final BackendConnection backendConnection) {
+        Field field = backendConnection.getClass().getDeclaredField("logicSchema");
+        field.setAccessible(true);
+        field.set(backendConnection, logicSchema);
     }
     
     @Test
@@ -158,7 +166,7 @@ public final class BackendConnectionTest {
     public void assertAutoCloseConnectionWithoutTransaction() throws SQLException {
         BackendConnection actual;
         try (BackendConnection backendConnection = new BackendConnection(TransactionType.LOCAL)) {
-            backendConnection.setLogicSchema(logicSchema);
+            setLogicSchema(backendConnection);
             when(backendDataSource.getConnections((ConnectionMode) any(), anyString(), eq(12))).thenReturn(MockConnectionUtil.mockNewConnections(12));
             backendConnection.getConnections(ConnectionMode.MEMORY_STRICTLY, "ds1", 12);
             assertThat(backendConnection.getStateHandler().getStatus(), is(ConnectionStatus.RUNNING));
@@ -176,7 +184,7 @@ public final class BackendConnectionTest {
     public void assertAutoCloseConnectionWithTransaction() throws SQLException {
         BackendConnection actual;
         try (BackendConnection backendConnection = new BackendConnection(TransactionType.LOCAL)) {
-            backendConnection.setLogicSchema(logicSchema);
+            setLogicSchema(backendConnection);
             MockConnectionUtil.setCachedConnections(backendConnection, "ds1", 10);
             when(backendDataSource.getConnections((ConnectionMode) any(), anyString(), eq(2))).thenReturn(MockConnectionUtil.mockNewConnections(2));
             backendConnection.getStateHandler().getAndSetStatus(ConnectionStatus.TRANSACTION);
@@ -194,7 +202,7 @@ public final class BackendConnectionTest {
     public void assertAutoCloseConnectionWithException() {
         BackendConnection actual = null;
         try (BackendConnection backendConnection = new BackendConnection(TransactionType.LOCAL)) {
-            backendConnection.setLogicSchema(logicSchema);
+            setLogicSchema(backendConnection);
             backendConnection.setTransactionType(TransactionType.XA);
             backendConnection.getStateHandler().getAndSetStatus(ConnectionStatus.TRANSACTION);
             MockConnectionUtil.setCachedConnections(backendConnection, "ds1", 10);
@@ -241,6 +249,6 @@ public final class BackendConnectionTest {
     public void assertFailedSwitchLogicSchemaWhileBegin() throws SQLException {
         BackendTransactionManager transactionManager = new BackendTransactionManager(backendConnection);
         transactionManager.doInTransaction(TransactionOperationType.BEGIN);
-        backendConnection.setLogicSchema(mock(LogicSchema.class));
+        backendConnection.setCurrentSchema("newSchema");
     }
 }

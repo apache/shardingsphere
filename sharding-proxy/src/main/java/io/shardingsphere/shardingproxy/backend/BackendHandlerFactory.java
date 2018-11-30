@@ -73,8 +73,7 @@ public final class BackendHandlerFactory {
      */
     public static BackendHandler newTextProtocolInstance(
             final int connectionId, final int sequenceId, final String sql, final BackendConnection backendConnection, final DatabaseType databaseType, final String schema) {
-        LogicSchema logicSchema = GLOBAL_REGISTRY.getLogicSchema(schema);
-        backendConnection.setLogicSchema(logicSchema);
+        LogicSchema logicSchema = backendConnection.getLogicSchema();
         return GLOBAL_REGISTRY.getShardingProperties().<Boolean>getValue(ShardingPropertiesConstant.PROXY_BACKEND_USE_NIO)
                 ? new NettyBackendHandler(logicSchema, connectionId, sequenceId, sql, databaseType)
                 : new JDBCBackendHandler(logicSchema, sql, new JDBCExecuteEngine(backendConnection, new StatementExecutorWrapper(logicSchema)));
@@ -94,8 +93,7 @@ public final class BackendHandlerFactory {
      */
     public static BackendHandler newBinaryProtocolInstance(final int connectionId, final int sequenceId, final String sql, final List<Object> parameters,
                                                            final BackendConnection backendConnection, final DatabaseType databaseType, final String schema) {
-        LogicSchema logicSchema = GLOBAL_REGISTRY.getLogicSchema(schema);
-        backendConnection.setLogicSchema(logicSchema);
+        LogicSchema logicSchema = backendConnection.getLogicSchema();
         return GLOBAL_REGISTRY.getShardingProperties().<Boolean>getValue(ShardingPropertiesConstant.PROXY_BACKEND_USE_NIO)
                 ? new NettyBackendHandler(logicSchema, connectionId, sequenceId, sql, databaseType)
                 : new JDBCBackendHandler(logicSchema, sql, new JDBCExecuteEngine(backendConnection, new PreparedStatementExecutorWrapper(logicSchema, parameters)));
@@ -127,7 +125,7 @@ public final class BackendHandlerFactory {
             return new SchemaUnicastBackendHandler(connectionId, sequenceId, sql, backendConnection, DatabaseType.MySQL);
         }
         
-        String schema = getSchema(sqlStatement).isPresent() ? getSchema(sqlStatement).get() : frontendHandler.getCurrentSchema();
+        String schema = getSchema(sqlStatement).isPresent() ? getSchema(sqlStatement).get() : backendConnection.getCurrentSchema();
         return newTextProtocolInstance(connectionId, sequenceId, sql, backendConnection, DatabaseType.MySQL, schema);
     }
     

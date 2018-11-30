@@ -84,7 +84,7 @@ public final class ComQueryPacketTest {
     @Before
     public void setUp() {
         setShardingSchemas();
-        setFrontendHandlerSchema();
+        backendConnection.setCurrentSchema(ShardingConstant.LOGIC_SCHEMA_NAME);
     }
     
     @After
@@ -102,9 +102,9 @@ public final class ComQueryPacketTest {
         field.set(GlobalRegistry.getInstance(), shardingSchemas);
     }
     
-    private void setFrontendHandlerSchema() {
-        when(frontendHandler.getCurrentSchema()).thenReturn(ShardingConstant.LOGIC_SCHEMA_NAME);
-    }
+//    private void setFrontendHandlerSchema() {
+//        when(frontendHandler.getCurrentSchema()).thenReturn(ShardingConstant.LOGIC_SCHEMA_NAME);
+//    }
     
     @SneakyThrows
     private static void setGlobalRegistry() {

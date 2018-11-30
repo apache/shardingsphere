@@ -17,6 +17,7 @@
 
 package io.shardingsphere.shardingproxy.backend.jdbc.connection;
 
+import com.google.common.base.Preconditions;
 import com.google.common.collect.LinkedHashMultimap;
 import com.google.common.collect.Multimap;
 import io.netty.channel.ChannelHandlerContext;
@@ -24,6 +25,7 @@ import io.shardingsphere.core.constant.ConnectionMode;
 import io.shardingsphere.core.constant.transaction.TransactionType;
 import io.shardingsphere.core.exception.ShardingException;
 import io.shardingsphere.core.routing.router.masterslave.MasterVisitedManager;
+import io.shardingsphere.shardingproxy.runtime.GlobalRegistry;
 import io.shardingsphere.shardingproxy.runtime.schema.LogicSchema;
 import lombok.Getter;
 import lombok.Setter;
@@ -51,6 +53,8 @@ import java.util.concurrent.CopyOnWriteArrayList;
 public final class BackendConnection implements AutoCloseable {
     
     private static final int MAXIMUM_RETRY_COUNT = 5;
+    
+    private volatile String currentSchema;
     
     private LogicSchema logicSchema;
     
@@ -90,13 +94,14 @@ public final class BackendConnection implements AutoCloseable {
     /**
      * Change logic schema of current channel.
      *
-     * @param logicSchema logic schema
+     * @param currentSchema current schema
      */
-    public void setLogicSchema(final LogicSchema logicSchema) {
+    public void setCurrentSchema(final String currentSchema) {
         if (isSwitchFailed()) {
             throw new ShardingException("Failed to set logic schema, exceed maximum retry count!");
         }
-        this.logicSchema = logicSchema;
+        this.currentSchema = currentSchema;
+        this.logicSchema = GlobalRegistry.getInstance().getLogicSchema(currentSchema);
     }
     
     @SneakyThrows
@@ -158,12 +163,14 @@ public final class BackendConnection implements AutoCloseable {
     }
     
     private synchronized List<Connection> getConnectionsWithoutTransaction(final ConnectionMode connectionMode, final String dataSourceName, final int connectionSize) throws SQLException {
+        Preconditions.checkNotNull(logicSchema, "current logic schema is null");
         List<Connection> result = logicSchema.getBackendDataSource().getConnections(connectionMode, dataSourceName, connectionSize);
         cachedConnections.putAll(dataSourceName, result);
         return result;
     }
     
     private List<Connection> createNewConnections(final ConnectionMode connectionMode, final String dataSourceName, final int connectionSize) throws SQLException {
+        Preconditions.checkNotNull(logicSchema, "current logic schema is null");
         List<Connection> result = logicSchema.getBackendDataSource().getConnections(connectionMode, dataSourceName, connectionSize);
         for (Connection each : result) {
             replayMethodsInvocation(each);
