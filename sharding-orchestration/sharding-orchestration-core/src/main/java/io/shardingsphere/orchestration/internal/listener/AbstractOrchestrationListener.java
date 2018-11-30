@@ -17,16 +17,26 @@
 
 package io.shardingsphere.orchestration.internal.listener;
 
+import io.shardingsphere.orchestration.reg.api.RegistryCenter;
+import io.shardingsphere.orchestration.reg.listener.EventListener;
+import lombok.RequiredArgsConstructor;
+
 /**
- * Orchestration listener.
+ * Abstract orchestration listener.
  *
- * @author caohao
- * @author panjuan
+ * @author zhangliang
  */
-public interface OrchestrationListener {
+@RequiredArgsConstructor
+public abstract class AbstractOrchestrationListener implements OrchestrationListener {
     
-    /**
-     * Start to watch.
-     */
-    void watch();
+    private final RegistryCenter regCenter;
+    
+    private final String watchKey;
+    
+    @Override
+    public final void watch() {
+        regCenter.watch(watchKey, getEventListener());
+    }
+    
+    protected abstract EventListener getEventListener();
 }

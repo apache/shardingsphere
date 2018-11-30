@@ -18,36 +18,31 @@
 package io.shardingsphere.orchestration.internal.config.listener;
 
 import io.shardingsphere.core.event.ShardingEventBusInstance;
+import io.shardingsphere.orchestration.internal.config.event.PropertiesChangedEvent;
 import io.shardingsphere.orchestration.internal.config.node.ConfigurationNode;
 import io.shardingsphere.orchestration.internal.config.service.ConfigurationService;
-import io.shardingsphere.orchestration.internal.config.event.PropertiesChangedEvent;
-import io.shardingsphere.orchestration.internal.listener.OrchestrationListener;
+import io.shardingsphere.orchestration.internal.listener.AbstractOrchestrationListener;
 import io.shardingsphere.orchestration.reg.api.RegistryCenter;
 import io.shardingsphere.orchestration.reg.listener.DataChangedEvent;
 import io.shardingsphere.orchestration.reg.listener.EventListener;
 
 /**
- * Properties listener manager.
+ * Properties orchestration listener.
  *
  * @author panjuan
  */
-public final class PropertiesOrchestrationListener implements OrchestrationListener {
-    
-    private final ConfigurationNode configNode;
-    
-    private final RegistryCenter regCenter;
+public final class PropertiesOrchestrationListener extends AbstractOrchestrationListener {
     
     private final ConfigurationService configService;
     
     public PropertiesOrchestrationListener(final String name, final RegistryCenter regCenter) {
-        configNode = new ConfigurationNode(name);
-        this.regCenter = regCenter;
+        super(regCenter, new ConfigurationNode(name).getPropsPath());
         configService = new ConfigurationService(name, regCenter);
     }
     
     @Override
-    public void watch() {
-        regCenter.watch(configNode.getPropsPath(), new EventListener() {
+    protected EventListener getEventListener() {
+        return new EventListener() {
             
             @Override
             public void onChange(final DataChangedEvent event) {
@@ -55,6 +50,6 @@ public final class PropertiesOrchestrationListener implements OrchestrationListe
                     ShardingEventBusInstance.getInstance().post(new PropertiesChangedEvent(configService.loadProperties()));
                 }
             }
-        });
+        };
     }
 }

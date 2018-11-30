@@ -18,39 +18,34 @@
 package io.shardingsphere.orchestration.internal.config.listener;
 
 import io.shardingsphere.core.event.ShardingEventBusInstance;
-import io.shardingsphere.orchestration.internal.config.node.ConfigurationNode;
 import io.shardingsphere.orchestration.internal.config.event.DataSourceChangedEvent;
-import io.shardingsphere.orchestration.internal.listener.OrchestrationListener;
+import io.shardingsphere.orchestration.internal.config.node.ConfigurationNode;
+import io.shardingsphere.orchestration.internal.listener.AbstractOrchestrationListener;
 import io.shardingsphere.orchestration.internal.state.service.DataSourceService;
 import io.shardingsphere.orchestration.reg.api.RegistryCenter;
 import io.shardingsphere.orchestration.reg.listener.DataChangedEvent;
 import io.shardingsphere.orchestration.reg.listener.EventListener;
 
 /**
- * Data source listener manager.
+ * Data source orchestration listener.
  *
  * @author panjuan
  */
-public final class DataSourceOrchestrationListener implements OrchestrationListener {
-    
-    private final ConfigurationNode configNode;
-    
-    private final RegistryCenter regCenter;
+public final class DataSourceOrchestrationListener extends AbstractOrchestrationListener {
     
     private final String shardingSchemaName;
     
     private final DataSourceService dataSourceService;
     
     public DataSourceOrchestrationListener(final String name, final RegistryCenter regCenter, final String shardingSchemaName) {
-        configNode = new ConfigurationNode(name);
-        this.regCenter = regCenter;
+        super(regCenter, new ConfigurationNode(name).getDataSourcePath(shardingSchemaName));
         this.shardingSchemaName = shardingSchemaName;
         dataSourceService = new DataSourceService(name, regCenter);
     }
     
     @Override
-    public void watch() {
-        regCenter.watch(configNode.getDataSourcePath(shardingSchemaName), new EventListener() {
+    protected EventListener getEventListener() {
+        return new EventListener() {
             
             @Override
             public void onChange(final DataChangedEvent event) {
@@ -58,6 +53,6 @@ public final class DataSourceOrchestrationListener implements OrchestrationListe
                     ShardingEventBusInstance.getInstance().post(new DataSourceChangedEvent(shardingSchemaName, dataSourceService.getAvailableDataSourceConfigurations(shardingSchemaName)));
                 }
             }
-        });
+        };
     }
 }

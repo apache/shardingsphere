@@ -18,36 +18,31 @@
 package io.shardingsphere.orchestration.internal.config.listener;
 
 import io.shardingsphere.core.event.ShardingEventBusInstance;
+import io.shardingsphere.orchestration.internal.config.event.AuthenticationChangedEvent;
 import io.shardingsphere.orchestration.internal.config.node.ConfigurationNode;
 import io.shardingsphere.orchestration.internal.config.service.ConfigurationService;
-import io.shardingsphere.orchestration.internal.config.event.AuthenticationChangedEvent;
-import io.shardingsphere.orchestration.internal.listener.OrchestrationListener;
+import io.shardingsphere.orchestration.internal.listener.AbstractOrchestrationListener;
 import io.shardingsphere.orchestration.reg.api.RegistryCenter;
 import io.shardingsphere.orchestration.reg.listener.DataChangedEvent;
 import io.shardingsphere.orchestration.reg.listener.EventListener;
 
 /**
- * Authentication listener manager.
+ * Authentication orchestration listener.
  *
  * @author panjuan
  */
-public final class AuthenticationOrchestrationListener implements OrchestrationListener {
-    
-    private final ConfigurationNode configNode;
-    
-    private final RegistryCenter regCenter;
+public final class AuthenticationOrchestrationListener extends AbstractOrchestrationListener {
     
     private final ConfigurationService configService;
     
     public AuthenticationOrchestrationListener(final String name, final RegistryCenter regCenter) {
-        configNode = new ConfigurationNode(name);
-        this.regCenter = regCenter;
+        super(regCenter, new ConfigurationNode(name).getAuthenticationPath());
         configService = new ConfigurationService(name, regCenter);
     }
     
     @Override
-    public void watch() {
-        regCenter.watch(configNode.getAuthenticationPath(), new EventListener() {
+    protected EventListener getEventListener() {
+        return new EventListener() {
             
             @Override
             public void onChange(final DataChangedEvent event) {
@@ -55,6 +50,6 @@ public final class AuthenticationOrchestrationListener implements OrchestrationL
                     ShardingEventBusInstance.getInstance().post(new AuthenticationChangedEvent(configService.loadAuthentication()));
                 }
             }
-        });
+        };
     }
 }

@@ -18,27 +18,23 @@
 package io.shardingsphere.orchestration.internal.config.listener;
 
 import io.shardingsphere.core.event.ShardingEventBusInstance;
-import io.shardingsphere.orchestration.internal.config.node.ConfigurationNode;
-import io.shardingsphere.orchestration.internal.config.service.ConfigurationService;
 import io.shardingsphere.orchestration.internal.config.event.MasterSlaveRuleChangedEvent;
 import io.shardingsphere.orchestration.internal.config.event.ShardingRuleChangedEvent;
-import io.shardingsphere.orchestration.internal.listener.OrchestrationListener;
+import io.shardingsphere.orchestration.internal.config.node.ConfigurationNode;
+import io.shardingsphere.orchestration.internal.config.service.ConfigurationService;
+import io.shardingsphere.orchestration.internal.listener.AbstractOrchestrationListener;
 import io.shardingsphere.orchestration.internal.state.service.DataSourceService;
 import io.shardingsphere.orchestration.reg.api.RegistryCenter;
 import io.shardingsphere.orchestration.reg.listener.DataChangedEvent;
 import io.shardingsphere.orchestration.reg.listener.EventListener;
 
 /**
- * Rule listener manager.
+ * Rule orchestration listener.
  *
  * @author caohao
  * @author panjuan
  */
-public final class RuleOrchestrationListener implements OrchestrationListener {
-    
-    private final ConfigurationNode configNode;
-    
-    private final RegistryCenter regCenter;
+public final class RuleOrchestrationListener extends AbstractOrchestrationListener {
     
     private final String shardingSchemaName;
     
@@ -47,16 +43,15 @@ public final class RuleOrchestrationListener implements OrchestrationListener {
     private final DataSourceService dataSourceService;
     
     public RuleOrchestrationListener(final String name, final RegistryCenter regCenter, final String shardingSchemaName) {
-        configNode = new ConfigurationNode(name);
-        this.regCenter = regCenter;
+        super(regCenter, new ConfigurationNode(name).getRulePath(shardingSchemaName));
         this.shardingSchemaName = shardingSchemaName;
         configService = new ConfigurationService(name, regCenter);
         dataSourceService = new DataSourceService(name, regCenter);
     }
     
     @Override
-    public void watch() {
-        regCenter.watch(configNode.getRulePath(shardingSchemaName), new EventListener() {
+    protected EventListener getEventListener() {
+        return new EventListener() {
             
             @Override
             public void onChange(final DataChangedEvent event) {
@@ -64,14 +59,14 @@ public final class RuleOrchestrationListener implements OrchestrationListener {
                     ShardingEventBusInstance.getInstance().post(configService.isShardingRule(shardingSchemaName) ? getShardingConfigurationChangedEvent() : getMasterSlaveConfigurationChangedEvent());
                 }
             }
-            
+    
             private MasterSlaveRuleChangedEvent getMasterSlaveConfigurationChangedEvent() {
                 return new MasterSlaveRuleChangedEvent(shardingSchemaName, dataSourceService.getAvailableMasterSlaveRuleConfiguration(shardingSchemaName));
             }
-            
+    
             private ShardingRuleChangedEvent getShardingConfigurationChangedEvent() {
                 return new ShardingRuleChangedEvent(shardingSchemaName, dataSourceService.getAvailableShardingRuleConfiguration(shardingSchemaName));
             }
-        });
+        };
     }
 }

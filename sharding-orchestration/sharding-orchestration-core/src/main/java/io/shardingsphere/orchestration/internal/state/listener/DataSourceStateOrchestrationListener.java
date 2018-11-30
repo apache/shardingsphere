@@ -18,7 +18,7 @@
 package io.shardingsphere.orchestration.internal.state.listener;
 
 import io.shardingsphere.core.event.ShardingEventBusInstance;
-import io.shardingsphere.orchestration.internal.listener.OrchestrationListener;
+import io.shardingsphere.orchestration.internal.listener.AbstractOrchestrationListener;
 import io.shardingsphere.orchestration.internal.state.event.DisabledStateEvent;
 import io.shardingsphere.orchestration.internal.state.node.StateNode;
 import io.shardingsphere.orchestration.internal.state.service.DataSourceService;
@@ -27,28 +27,23 @@ import io.shardingsphere.orchestration.reg.listener.DataChangedEvent;
 import io.shardingsphere.orchestration.reg.listener.EventListener;
 
 /**
- * Data source listener manager.
+ * Data source state orchestration listener.
  *
  * @author caohao
  * @author panjuan
  */
-public final class DataSourceStateOrchestrationListener implements OrchestrationListener {
-    
-    private final StateNode stateNode;
-    
-    private final RegistryCenter regCenter;
+public final class DataSourceStateOrchestrationListener extends AbstractOrchestrationListener {
     
     private final DataSourceService dataSourceService;
     
     public DataSourceStateOrchestrationListener(final String name, final RegistryCenter regCenter) {
-        stateNode = new StateNode(name);
-        this.regCenter = regCenter;
+        super(regCenter, new StateNode(name).getDataSourcesNodeFullRootPath());
         dataSourceService = new DataSourceService(name, regCenter);
     }
     
     @Override
-    public void watch() {
-        regCenter.watch(stateNode.getDataSourcesNodeFullRootPath(), new EventListener() {
+    protected EventListener getEventListener() {
+        return new EventListener() {
             
             @Override
             public void onChange(final DataChangedEvent event) {
@@ -56,6 +51,6 @@ public final class DataSourceStateOrchestrationListener implements Orchestration
                     ShardingEventBusInstance.getInstance().post(new DisabledStateEvent(dataSourceService.getDisabledSlaveSchemaGroup()));
                 }
             }
-        });
+        };
     }
 }

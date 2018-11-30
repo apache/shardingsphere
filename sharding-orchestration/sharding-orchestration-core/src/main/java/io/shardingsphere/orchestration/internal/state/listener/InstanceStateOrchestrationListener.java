@@ -18,7 +18,7 @@
 package io.shardingsphere.orchestration.internal.state.listener;
 
 import io.shardingsphere.core.event.ShardingEventBusInstance;
-import io.shardingsphere.orchestration.internal.listener.OrchestrationListener;
+import io.shardingsphere.orchestration.internal.listener.AbstractOrchestrationListener;
 import io.shardingsphere.orchestration.internal.state.event.CircuitStateEvent;
 import io.shardingsphere.orchestration.internal.state.instance.OrchestrationInstance;
 import io.shardingsphere.orchestration.internal.state.node.StateNode;
@@ -28,26 +28,24 @@ import io.shardingsphere.orchestration.reg.listener.DataChangedEvent;
 import io.shardingsphere.orchestration.reg.listener.EventListener;
 
 /**
- * Instance listener manager.
+ * Instance State orchestration listener.
  *
  * @author caohao
  * @author panjuan
  */
-public final class InstanceStateOrchestrationListener implements OrchestrationListener {
-    
-    private final StateNode stateNode;
+public final class InstanceStateOrchestrationListener extends AbstractOrchestrationListener {
     
     private final RegistryCenter regCenter;
     
     public InstanceStateOrchestrationListener(final String name, final RegistryCenter regCenter) {
-        stateNode = new StateNode(name);
+        super(regCenter, new StateNode(name).getInstancesNodeFullPath(OrchestrationInstance.getInstance().getInstanceId()));
         this.regCenter = regCenter;
     }
     
     @Override
-    public void watch() {
-        regCenter.watch(stateNode.getInstancesNodeFullPath(OrchestrationInstance.getInstance().getInstanceId()), new EventListener() {
-            
+    protected EventListener getEventListener() {
+        return new EventListener() {
+    
             @Override
             public void onChange(final DataChangedEvent event) {
                 if (DataChangedEvent.Type.UPDATED == event.getEventType()) {
@@ -58,6 +56,6 @@ public final class InstanceStateOrchestrationListener implements OrchestrationLi
                     }
                 }
             }
-        });
+        };
     }
 }
