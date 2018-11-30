@@ -85,8 +85,8 @@ Can not support SQL which include schema. Because of Sharding-Sphere is manage m
 | CREATE INDEX idx_name ON tbl_name                                                           |                                     |
 | DROP INDEX idx_name ON tbl_name                                                             |                                     |
 | DROP INDEX idx_name                                                                         |  Configure logic-index in TableRule |
-| SELECT DISTINCT * FROM tbl_name WHERE col1 = ?                                              |                                     |
-| SELECT COUNT(DISTINCT col1) FROM tbl_name                                                   |                                     |
+| SELECT DISTINCT * FROM tbl_name WHERE col1 = ?                                              |  Will support at 3.1.0, not released yet |
+| SELECT COUNT(DISTINCT col1) FROM tbl_name                                                   |  Will support at 3.1.0, not released yet |
 
 ### Unsupported SQL
 
@@ -102,7 +102,7 @@ Can not support SQL which include schema. Because of Sharding-Sphere is manage m
 | SELECT SUM(DISTINCT col1), SUM(col1) FROM tbl_name                                          | Please refer to the detail of supporting `DISTINCT`     |
 
 
-## More detail of supporting `DISTINCT` syntax
+## More detail of supporting `DISTINCT` syntax (Will support at 3.1.0, not released yet)
 
 ### Supported SQL
 

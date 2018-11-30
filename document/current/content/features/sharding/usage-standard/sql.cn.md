@@ -87,8 +87,8 @@ SELECT COUNT(*) FROM (SELECT * FROM t_order o WHERE o.id IN (SELECT id FROM t_or
 | CREATE INDEX idx_name ON tbl_name                                                           |                            |
 | DROP INDEX idx_name ON tbl_name                                                             |                            |
 | DROP INDEX idx_name                                                                         |  TableRule中配置logic-index |
-| SELECT DISTINCT * FROM tbl_name WHERE col1 = ?                                              |                            |
-| SELECT COUNT(DISTINCT col1) FROM tbl_name                                                   |                            |
+| SELECT DISTINCT * FROM tbl_name WHERE col1 = ?                                              |在3.1.0支持，目前还未发布正式版本|
+| SELECT COUNT(DISTINCT col1) FROM tbl_name                                                   |在3.1.0支持，目前还未发布正式版本|
 
 ### 不支持的SQL
 
@@ -103,7 +103,7 @@ SELECT COUNT(*) FROM (SELECT * FROM t_order o WHERE o.id IN (SELECT id FROM t_or
 | SELECT * FROM ds.tbl_name1                                                                  | 包含schema                        | 
 | SELECT SUM(DISTINCT col1), SUM(col1) FROM tbl_name                                          | 详见`DISTINCT`支持情况详细说明      |
 
-## `DISTINCT`支持情况详细说明
+## `DISTINCT`支持情况详细说明（在3.1.0支持，目前还未发布正式版本）
 
 ### 支持的SQL
 
