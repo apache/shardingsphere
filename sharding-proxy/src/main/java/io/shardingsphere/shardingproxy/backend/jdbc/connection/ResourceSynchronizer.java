@@ -17,6 +17,11 @@
 
 package io.shardingsphere.shardingproxy.backend.jdbc.connection;
 
+import java.util.concurrent.TimeUnit;
+import java.util.concurrent.locks.Condition;
+import java.util.concurrent.locks.Lock;
+import java.util.concurrent.locks.ReentrantLock;
+
 /**
  * Resource synchronizer.
  *
@@ -24,7 +29,9 @@ package io.shardingsphere.shardingproxy.backend.jdbc.connection;
  */
 class ResourceSynchronizer {
     
-    private final Object lock = new Object();
+    private final Lock lock = new ReentrantLock();
+    
+    private final Condition condition = lock.newCondition();
     
     /**
      * Do await.
@@ -32,8 +39,11 @@ class ResourceSynchronizer {
      * @throws InterruptedException interrupted exception
      */
     void doAwait() throws InterruptedException {
-        synchronized (lock) {
-            lock.wait(100);
+        lock.lock();
+        try {
+            condition.await(200, TimeUnit.MILLISECONDS);
+        } finally {
+            lock.unlock();
         }
     }
     
@@ -41,8 +51,11 @@ class ResourceSynchronizer {
      * Do notify.
      */
     void doNotify() {
-        synchronized (lock) {
-            lock.notifyAll();
+        lock.lock();
+        try {
+            condition.signalAll();
+        } finally {
+            lock.unlock();
         }
     }
 }
