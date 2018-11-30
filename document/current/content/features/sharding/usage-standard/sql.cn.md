@@ -118,7 +118,6 @@ SELECT COUNT(*) FROM (SELECT * FROM t_order o WHERE o.id IN (SELECT id FROM t_or
 | SELECT DISTINCT col1 FROM tbl_name ORDER BY col2                                            |                                     |
 | SELECT COUNT(DISTINCT col1) FROM tbl_name GROUP BY col1                                     |                                     |
 | SELECT COUNT(DISTINCT col1), col1 FROM tbl_name GROUP BY col1                               |                                     |
-| SELECT DISTINCT col1 + col2 FROM tbl_name                                                   |                                     |
 
 ### 不支持的SQL
 
