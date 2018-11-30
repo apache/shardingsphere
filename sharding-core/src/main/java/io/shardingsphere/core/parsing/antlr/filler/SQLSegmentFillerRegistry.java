@@ -31,26 +31,25 @@ import io.shardingsphere.core.parsing.antlr.filler.engnie.GroupBySegmentFiller;
 import io.shardingsphere.core.parsing.antlr.filler.engnie.IndexSegmentFiller;
 import io.shardingsphere.core.parsing.antlr.filler.engnie.LimitSegmentFiller;
 import io.shardingsphere.core.parsing.antlr.filler.engnie.OrderBySegmentFiller;
-import io.shardingsphere.core.parsing.antlr.filler.engnie.PredicateSegmentFiller;
 import io.shardingsphere.core.parsing.antlr.filler.engnie.SelectExpressionSegmentFiller;
 import io.shardingsphere.core.parsing.antlr.filler.engnie.ShowParamSegmentFiller;
 import io.shardingsphere.core.parsing.antlr.filler.engnie.TableJoinSegmentFiller;
 import io.shardingsphere.core.parsing.antlr.filler.engnie.TableSegmentFiller;
 import io.shardingsphere.core.parsing.antlr.sql.segment.ColumnDefinitionSegment;
-import io.shardingsphere.core.parsing.antlr.sql.segment.CommonSelectExpressionSegment;
+import io.shardingsphere.core.parsing.antlr.sql.segment.CommonExpressionSegment;
 import io.shardingsphere.core.parsing.antlr.sql.segment.ConstraintDefinitionSegment;
 import io.shardingsphere.core.parsing.antlr.sql.segment.DropColumnSegment;
 import io.shardingsphere.core.parsing.antlr.sql.segment.DropPrimaryKeySegment;
 import io.shardingsphere.core.parsing.antlr.sql.segment.FromWhereSegment;
-import io.shardingsphere.core.parsing.antlr.sql.segment.FunctionSelectExpressionSegment;
+import io.shardingsphere.core.parsing.antlr.sql.segment.FunctionExpressionSegment;
 import io.shardingsphere.core.parsing.antlr.sql.segment.GroupBySegment;
 import io.shardingsphere.core.parsing.antlr.sql.segment.IndexSegment;
 import io.shardingsphere.core.parsing.antlr.sql.segment.LimitSegment;
 import io.shardingsphere.core.parsing.antlr.sql.segment.OrderBySegment;
-import io.shardingsphere.core.parsing.antlr.sql.segment.PredicateSegment;
+import io.shardingsphere.core.parsing.antlr.sql.segment.PropertyExpressionSegment;
 import io.shardingsphere.core.parsing.antlr.sql.segment.SQLSegment;
 import io.shardingsphere.core.parsing.antlr.sql.segment.ShowParamSegment;
-import io.shardingsphere.core.parsing.antlr.sql.segment.StarSelectExpressionSegment;
+import io.shardingsphere.core.parsing.antlr.sql.segment.StarExpressionSegment;
 import io.shardingsphere.core.parsing.antlr.sql.segment.TableJoinSegment;
 import io.shardingsphere.core.parsing.antlr.sql.segment.TableSegment;
 
@@ -73,12 +72,12 @@ public final class SQLSegmentFillerRegistry {
         FILLERS.put(TableJoinSegment.class, new TableJoinSegmentFiller());
         FILLERS.put(OrderBySegment.class, new OrderBySegmentFiller());
         FILLERS.put(GroupBySegment.class, new GroupBySegmentFiller());
-        FILLERS.put(PredicateSegment.class, new PredicateSegmentFiller());
         FILLERS.put(FromWhereSegment.class, new FromWhereSegmentFiller());
         FILLERS.put(LimitSegment.class, new LimitSegmentFiller());
-        FILLERS.put(StarSelectExpressionSegment.class, new SelectExpressionSegmentFiller());
-        FILLERS.put(CommonSelectExpressionSegment.class, new SelectExpressionSegmentFiller());
-        FILLERS.put(FunctionSelectExpressionSegment.class, new SelectExpressionSegmentFiller());
+        FILLERS.put(StarExpressionSegment.class, new SelectExpressionSegmentFiller());
+        FILLERS.put(CommonExpressionSegment.class, new SelectExpressionSegmentFiller());
+        FILLERS.put(FunctionExpressionSegment.class, new SelectExpressionSegmentFiller());
+        FILLERS.put(PropertyExpressionSegment.class, new SelectExpressionSegmentFiller());
         FILLERS.put(ShowParamSegment.class, new ShowParamSegmentFiller());
     }
     

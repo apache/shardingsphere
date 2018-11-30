@@ -5,7 +5,7 @@ import lombok.RequiredArgsConstructor;
 
 @RequiredArgsConstructor
 @Getter
-public class SelectPropertyExpressionSegment extends SelectExpressionSegment {
+public class PropertyExpressionSegment extends SelectExpressionSegment {
     
     private final String owner;
     

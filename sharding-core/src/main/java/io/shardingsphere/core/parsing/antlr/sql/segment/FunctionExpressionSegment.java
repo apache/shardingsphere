@@ -23,15 +23,17 @@ import lombok.Getter;
 import lombok.RequiredArgsConstructor;
 
 /**
- * Common select expression extract result.
+ * Function expression segment.
  * 
  * @author duhongjun
  */
 @RequiredArgsConstructor
 @Getter
-public final class CommonSelectExpressionSegment extends SelectExpressionSegment {
-
-    private final String expression;
+public class FunctionExpressionSegment extends SelectExpressionSegment {
+    
+    private final String name;
+    
+    private final String innerExpression;
     
     private final Optional<String> alias;
 }

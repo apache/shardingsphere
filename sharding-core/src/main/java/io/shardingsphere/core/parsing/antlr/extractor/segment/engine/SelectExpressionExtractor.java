@@ -32,11 +32,11 @@ import io.shardingsphere.core.parsing.antlr.extractor.segment.CollectionSQLSegme
 import io.shardingsphere.core.parsing.antlr.extractor.segment.constant.RuleName;
 import io.shardingsphere.core.parsing.antlr.extractor.util.ASTUtils;
 import io.shardingsphere.core.parsing.antlr.sql.segment.ColumnSegment;
-import io.shardingsphere.core.parsing.antlr.sql.segment.CommonSelectExpressionSegment;
-import io.shardingsphere.core.parsing.antlr.sql.segment.FunctionSelectExpressionSegment;
+import io.shardingsphere.core.parsing.antlr.sql.segment.CommonExpressionSegment;
+import io.shardingsphere.core.parsing.antlr.sql.segment.FunctionExpressionSegment;
 import io.shardingsphere.core.parsing.antlr.sql.segment.SelectExpressionSegment;
-import io.shardingsphere.core.parsing.antlr.sql.segment.SelectPropertyExpressionSegment;
-import io.shardingsphere.core.parsing.antlr.sql.segment.StarSelectExpressionSegment;
+import io.shardingsphere.core.parsing.antlr.sql.segment.PropertyExpressionSegment;
+import io.shardingsphere.core.parsing.antlr.sql.segment.StarExpressionSegment;
 import io.shardingsphere.core.parsing.lexer.token.Symbol;
 
 /**
@@ -67,9 +67,9 @@ public class SelectExpressionExtractor implements CollectionSQLSegmentExtractor 
                 int pos = firstChildText.indexOf(Symbol.DOT.getLiterals());
                 String owner = "";
                 if (0 < pos) {
-                    owner = firstChildText.substring(0, pos - 1);
+                    owner = firstChildText.substring(0, pos);
                 }
-                result.add(new StarSelectExpressionSegment(Optional.of(owner)));
+                result.add(new StarExpressionSegment(Optional.of(owner)));
             } else {
                 Optional<ParserRuleContext> aliasNode = ASTUtils.findFirstChildNode((ParserRuleContext)childNode, RuleName.ALIAS);
                 Optional<String> alias = null;
@@ -81,7 +81,7 @@ public class SelectExpressionExtractor implements CollectionSQLSegmentExtractor 
                 
                 Optional<ColumnSegment> columnSegment = new ColumnSegmentExtractor(new HashMap<String,String>()).extract((ParserRuleContext)childNode);
                 if(columnSegment.isPresent()) {
-                    result.add(new SelectPropertyExpressionSegment(columnSegment.get().getOwner().get(), columnSegment.get().getName(), columnSegment.get().getStartPosition()));
+                    result.add(new PropertyExpressionSegment(columnSegment.get().getOwner().get(), columnSegment.get().getName(), columnSegment.get().getStartPosition()));
                 }else {
                     Optional<ParserRuleContext> functionCall = ASTUtils.findFirstChildNode((ParserRuleContext)childNode, RuleName.FUNCTION_CALL);
                     if (functionCall.isPresent()) {
@@ -91,9 +91,9 @@ public class SelectExpressionExtractor implements CollectionSQLSegmentExtractor 
                         for (int j = 1; i < functionCall.get().getChildCount(); j++) {
                             builder.append(functionCall.get().getChild(j).getText());
                         }
-                        result.add(new FunctionSelectExpressionSegment(name, getParseTreeText(childNode.getChild(0)), alias));
+                        result.add(new FunctionExpressionSegment(name, getParseTreeText(childNode.getChild(0)), alias));
                     } else {
-                        result.add(new CommonSelectExpressionSegment(getParseTreeText(childNode.getChild(0)), alias));
+                        result.add(new CommonExpressionSegment(getParseTreeText(childNode.getChild(0)), alias));
                     }
                 }
             }

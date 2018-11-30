@@ -73,15 +73,13 @@ public class OrderByClauseExtractor implements CollectionSQLSegmentExtractor {
             int pos = name.lastIndexOf(".");
             OrderDirection orderDirection = null;
             if (0 < pos) {
-                ownerName = name.substring(0, pos - 1);
+                ownerName = name.substring(0, pos);
                 name = name.substring(pos + 1);
             }
+            orderDirection = OrderDirection.ASC;
             if (1 < count) {
-                TerminalNode direction = (TerminalNode) each.getChild(1);
-                if (direction.getSymbol().getStopIndex() - direction.getSymbol().getStartIndex() == 3) {
+                if (OrderDirection.DESC.name().equalsIgnoreCase(each.getChild(count - 1).getText())) {
                     orderDirection = OrderDirection.DESC;
-                } else {
-                    orderDirection = OrderDirection.ASC;
                 }
             }
             result.add(buildSegment(ownerName, name, index, orderDirection, each.getStart().getStartIndex(), orderByParentNode.getStart().getStartIndex()));

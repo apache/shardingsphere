@@ -26,6 +26,7 @@ import io.shardingsphere.core.constant.AggregationType;
 import io.shardingsphere.core.metadata.table.ShardingTableMetaData;
 import io.shardingsphere.core.parsing.antlr.extractor.segment.engine.FromWhereExtractor;
 import io.shardingsphere.core.parsing.antlr.extractor.segment.engine.GroupByClauseExtractor;
+import io.shardingsphere.core.parsing.antlr.extractor.segment.engine.IndexNamesExtractor;
 import io.shardingsphere.core.parsing.antlr.extractor.segment.engine.LimitClauseExtractor;
 import io.shardingsphere.core.parsing.antlr.extractor.segment.engine.OrderByClauseExtractor;
 import io.shardingsphere.core.parsing.antlr.extractor.segment.engine.SelectExpressionExtractor;
@@ -51,6 +52,7 @@ public class MySQLSelectExtractor extends AbstractSQLStatementExtractor {
     
     public MySQLSelectExtractor() {
         addSQLSegmentExtractor(new TableNamesExtractor());
+        addSQLSegmentExtractor(new IndexNamesExtractor());
         addSQLSegmentExtractor(new SelectExpressionExtractor());
         addSQLSegmentExtractor(new FromWhereExtractor());
         addSQLSegmentExtractor(new GroupByClauseExtractor());

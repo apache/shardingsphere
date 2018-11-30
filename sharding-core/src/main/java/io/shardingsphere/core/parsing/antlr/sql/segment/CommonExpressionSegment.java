@@ -23,13 +23,15 @@ import lombok.Getter;
 import lombok.RequiredArgsConstructor;
 
 /**
- * Star select expression extract result.
+ * Common select expression extract result.
  * 
  * @author duhongjun
  */
 @RequiredArgsConstructor
 @Getter
-public final class StarSelectExpressionSegment extends SelectExpressionSegment {
+public final class CommonExpressionSegment extends SelectExpressionSegment {
 
-    private final Optional<String> owner;
+    private final String expression;
+    
+    private final Optional<String> alias;
 }

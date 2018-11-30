@@ -20,11 +20,11 @@ package io.shardingsphere.core.parsing.antlr.filler.engnie;
 import io.shardingsphere.core.constant.AggregationType;
 import io.shardingsphere.core.metadata.table.ShardingTableMetaData;
 import io.shardingsphere.core.parsing.antlr.filler.SQLSegmentFiller;
-import io.shardingsphere.core.parsing.antlr.sql.segment.CommonSelectExpressionSegment;
-import io.shardingsphere.core.parsing.antlr.sql.segment.FunctionSelectExpressionSegment;
+import io.shardingsphere.core.parsing.antlr.sql.segment.CommonExpressionSegment;
+import io.shardingsphere.core.parsing.antlr.sql.segment.FunctionExpressionSegment;
 import io.shardingsphere.core.parsing.antlr.sql.segment.SQLSegment;
 import io.shardingsphere.core.parsing.antlr.sql.segment.SelectExpressionSegment;
-import io.shardingsphere.core.parsing.antlr.sql.segment.StarSelectExpressionSegment;
+import io.shardingsphere.core.parsing.antlr.sql.segment.StarExpressionSegment;
 import io.shardingsphere.core.parsing.parser.context.selectitem.AggregationSelectItem;
 import io.shardingsphere.core.parsing.parser.context.selectitem.CommonSelectItem;
 import io.shardingsphere.core.parsing.parser.context.selectitem.StarSelectItem;
@@ -43,13 +43,13 @@ public class SelectExpressionSegmentFiller implements SQLSegmentFiller {
     public void fill(final SQLSegment sqlSegment, final SQLStatement sqlStatement, final ShardingRule shardingRule, final ShardingTableMetaData shardingTableMetaData) {
         SelectExpressionSegment selectExpressionSegment = (SelectExpressionSegment) sqlSegment;
         SelectStatement selectStatement = (SelectStatement) sqlStatement;
-        if (selectExpressionSegment instanceof StarSelectExpressionSegment) {
-            selectStatement.getItems().add(new StarSelectItem(((StarSelectExpressionSegment) selectExpressionSegment).getOwner()));
-        } else if (selectExpressionSegment instanceof CommonSelectExpressionSegment) {
-            CommonSelectExpressionSegment commonSegment = (CommonSelectExpressionSegment) sqlSegment;
+        if (selectExpressionSegment instanceof StarExpressionSegment) {
+            selectStatement.getItems().add(new StarSelectItem(((StarExpressionSegment) selectExpressionSegment).getOwner()));
+        } else if (selectExpressionSegment instanceof CommonExpressionSegment) {
+            CommonExpressionSegment commonSegment = (CommonExpressionSegment) sqlSegment;
             selectStatement.getItems().add(new CommonSelectItem(commonSegment.getExpression(), commonSegment.getAlias()));
-        } else if (selectExpressionSegment instanceof FunctionSelectExpressionSegment) {
-            FunctionSelectExpressionSegment functionSegment = (FunctionSelectExpressionSegment) sqlSegment;
+        } else if (selectExpressionSegment instanceof FunctionExpressionSegment) {
+            FunctionExpressionSegment functionSegment = (FunctionExpressionSegment) sqlSegment;
             AggregationType aggregationType = null;
             for (AggregationType each : AggregationType.values()) {
                 if (each.name().equalsIgnoreCase(functionSegment.getName())) {
