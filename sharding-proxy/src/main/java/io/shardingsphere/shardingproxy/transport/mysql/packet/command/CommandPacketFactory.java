@@ -70,7 +70,7 @@ public final class CommandPacketFactory {
             case COM_STMT_PREPARE:
                 return new ComStmtPreparePacket(sequenceId, backendConnection, payload);
             case COM_STMT_EXECUTE:
-                return new ComStmtExecutePacket(sequenceId, connectionId, backendConnection.getCurrentSchema(), payload, backendConnection);
+                return new ComStmtExecutePacket(sequenceId, connectionId, payload, backendConnection);
             case COM_STMT_CLOSE:
                 return new ComStmtClosePacket(sequenceId, payload);
             case COM_PING:

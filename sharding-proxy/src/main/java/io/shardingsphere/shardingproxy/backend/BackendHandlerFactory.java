@@ -88,11 +88,10 @@ public final class BackendHandlerFactory {
      * @param parameters SQL parameters
      * @param backendConnection backend connection
      * @param databaseType database type
-     * @param schema schema
      * @return instance of text protocol backend handler
      */
     public static BackendHandler newBinaryProtocolInstance(final int connectionId, final int sequenceId, final String sql, final List<Object> parameters,
-                                                           final BackendConnection backendConnection, final DatabaseType databaseType, final String schema) {
+                                                           final BackendConnection backendConnection, final DatabaseType databaseType) {
         LogicSchema logicSchema = backendConnection.getLogicSchema();
         return GLOBAL_REGISTRY.getShardingProperties().<Boolean>getValue(ShardingPropertiesConstant.PROXY_BACKEND_USE_NIO)
                 ? new NettyBackendHandler(logicSchema, connectionId, sequenceId, sql, databaseType)
