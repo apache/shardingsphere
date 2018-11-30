@@ -39,6 +39,7 @@ import java.sql.SQLException;
  *
  * @author zhangliang
  * @author wangkai
+ * @author zhaojun
  */
 @NoArgsConstructor(access = AccessLevel.PRIVATE)
 public final class CommandPacketFactory {
