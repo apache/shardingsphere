@@ -22,7 +22,7 @@ import com.google.common.base.Strings;
 import io.shardingsphere.core.constant.ShardingConstant;
 import io.shardingsphere.core.exception.ShardingException;
 import io.shardingsphere.core.rule.ShardingRule;
-import io.shardingsphere.orchestration.internal.ShardingOrchestrationFacade;
+import io.shardingsphere.orchestration.internal.registry.ShardingOrchestrationFacade;
 import io.shardingsphere.shardingjdbc.jdbc.core.datasource.MasterSlaveDataSource;
 import io.shardingsphere.shardingjdbc.jdbc.core.datasource.ShardingDataSource;
 import io.shardingsphere.shardingjdbc.orchestration.internal.datasource.OrchestrationMasterSlaveDataSource;

@@ -23,7 +23,7 @@ import io.shardingsphere.core.constant.properties.ShardingPropertiesConstant;
 import io.shardingsphere.core.rule.Authentication;
 import io.shardingsphere.core.rule.DataSourceParameter;
 import io.shardingsphere.opentracing.ShardingTracer;
-import io.shardingsphere.orchestration.internal.ShardingOrchestrationFacade;
+import io.shardingsphere.orchestration.internal.registry.ShardingOrchestrationFacade;
 import io.shardingsphere.shardingproxy.config.ShardingConfiguration;
 import io.shardingsphere.shardingproxy.config.ShardingConfigurationLoader;
 import io.shardingsphere.shardingproxy.config.yaml.YamlProxyRuleConfiguration;

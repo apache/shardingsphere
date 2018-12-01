@@ -22,7 +22,7 @@ import io.shardingsphere.api.config.MasterSlaveRuleConfiguration;
 import io.shardingsphere.core.constant.ShardingConstant;
 import io.shardingsphere.core.rule.MasterSlaveRule;
 import io.shardingsphere.orchestration.internal.eventbus.ShardingOrchestrationEventBus;
-import io.shardingsphere.orchestration.internal.state.event.DisabledStateChangedEvent;
+import io.shardingsphere.orchestration.internal.registry.state.event.DisabledStateChangedEvent;
 
 import java.util.Collection;
 import java.util.LinkedList;

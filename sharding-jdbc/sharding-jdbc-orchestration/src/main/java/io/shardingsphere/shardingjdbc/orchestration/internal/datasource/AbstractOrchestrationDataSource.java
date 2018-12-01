@@ -19,9 +19,9 @@ package io.shardingsphere.shardingjdbc.orchestration.internal.datasource;
 
 import com.google.common.eventbus.Subscribe;
 import io.shardingsphere.core.constant.ShardingConstant;
-import io.shardingsphere.orchestration.internal.ShardingOrchestrationFacade;
 import io.shardingsphere.orchestration.internal.eventbus.ShardingOrchestrationEventBus;
-import io.shardingsphere.orchestration.internal.state.event.CircuitStateChangedEvent;
+import io.shardingsphere.orchestration.internal.registry.ShardingOrchestrationFacade;
+import io.shardingsphere.orchestration.internal.registry.state.event.CircuitStateChangedEvent;
 import io.shardingsphere.shardingjdbc.jdbc.adapter.AbstractDataSourceAdapter;
 import io.shardingsphere.shardingjdbc.orchestration.internal.util.DataSourceConverter;
 import lombok.AccessLevel;
