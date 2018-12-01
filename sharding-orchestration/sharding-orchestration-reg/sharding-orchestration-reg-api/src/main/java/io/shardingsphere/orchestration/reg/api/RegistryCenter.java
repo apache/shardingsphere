@@ -99,7 +99,7 @@ public interface RegistryCenter extends AutoCloseable {
      * Watch key or path of the registry.
      *
      * @param key key of data
-     * @param eventListener change listener
+     * @param eventListener event listener
      */
     void watch(String key, EventListener eventListener);
 }
