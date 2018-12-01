@@ -20,7 +20,6 @@ package io.shardingsphere.shardingproxy.backend.jdbc.connection;
 import com.google.common.base.Preconditions;
 import com.google.common.collect.LinkedHashMultimap;
 import com.google.common.collect.Multimap;
-import io.netty.channel.Channel;
 import io.shardingsphere.core.constant.ConnectionMode;
 import io.shardingsphere.core.constant.transaction.TransactionType;
 import io.shardingsphere.core.exception.ShardingException;
@@ -61,7 +60,7 @@ public final class BackendConnection implements AutoCloseable {
     private TransactionType transactionType;
     
     @Setter
-    private Channel frontendChannel;
+    private int connectionId;
     
     private final Multimap<String, Connection> cachedConnections = LinkedHashMultimap.create();
     

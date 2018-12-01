@@ -37,8 +37,6 @@ import java.util.List;
 @RequiredArgsConstructor
 public final class SchemaBroadcastBackendHandler implements BackendHandler {
     
-    private final int connectionId;
-    
     private final int sequenceId;
     
     private final String sql;
@@ -50,9 +48,9 @@ public final class SchemaBroadcastBackendHandler implements BackendHandler {
     @Override
     public CommandResponsePackets execute() {
         List<DatabasePacket> packets = new LinkedList<>();
-        for (String schema : GlobalRegistry.getInstance().getSchemaNames()) {
-            backendConnection.setCurrentSchema(schema);
-            BackendHandler backendHandler = BackendHandlerFactory.newTextProtocolInstance(connectionId, sequenceId, sql, backendConnection, databaseType);
+        for (String each : GlobalRegistry.getInstance().getSchemaNames()) {
+            backendConnection.setCurrentSchema(each);
+            BackendHandler backendHandler = BackendHandlerFactory.newTextProtocolInstance(sequenceId, sql, backendConnection, databaseType);
             CommandResponsePackets commandResponsePackets = backendHandler.execute();
             packets.addAll(commandResponsePackets.getPackets());
         }

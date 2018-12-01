@@ -32,8 +32,8 @@ public final class SchemaUnicastBackendHandler implements BackendHandler {
     
     private final BackendHandler backendHandler;
     
-    public SchemaUnicastBackendHandler(final int connectionId, final int sequenceId, final String sql, final BackendConnection backendConnection, final DatabaseType databaseType) {
-        backendHandler = BackendHandlerFactory.newTextProtocolInstance(connectionId, sequenceId, sql, backendConnection, databaseType);
+    public SchemaUnicastBackendHandler(final int sequenceId, final String sql, final BackendConnection backendConnection, final DatabaseType databaseType) {
+        backendHandler = BackendHandlerFactory.newTextProtocolInstance(sequenceId, sql, backendConnection, databaseType);
     }
     
     @Override
