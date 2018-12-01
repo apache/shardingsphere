@@ -35,7 +35,8 @@ partitionClause
     ;
     
 selectExprs
-    : asterisk (COMMA selectExpr)*
+    : selectExpr (COMMA selectExpr)*
+    | asterisk (COMMA selectExpr)*
     | (selectExpr COMMA)+ asterisk (COMMA selectExpr)*
     ; 
     

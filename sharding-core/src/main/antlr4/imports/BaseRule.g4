@@ -4,7 +4,6 @@ import DataType, Keyword, Symbol;
 
 ID: 
     (BQ_?[a-zA-Z_$][a-zA-Z0-9_$]* BQ_? DOT)? (BQ_?[a-zA-Z_$][a-zA-Z0-9_$]* BQ_?)
-    | [a-zA-Z_$0-9]+ DOT_ASTERISK
     ;
     
 schemaName

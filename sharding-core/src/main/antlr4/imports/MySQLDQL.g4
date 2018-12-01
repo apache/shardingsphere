@@ -97,5 +97,5 @@ indexHint
 
 selectExpr
     : (columnName | expr) AS? alias?
-    | columnName DOT ASTERISK
+    | columnName DOT_ASTERISK
     ;
