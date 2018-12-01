@@ -33,12 +33,12 @@ public final class DataChangedEvent {
     
     private final String value;
     
-    private final Type type;
+    private final ChangedType changedType;
     
     /**
-     * Data changed event type.
+     * Data changed type.
      */
-    public enum Type {
+    public enum ChangedType {
         
         UPDATED, DELETED, IGNORED
     }

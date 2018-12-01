@@ -18,6 +18,7 @@
 package io.shardingsphere.orchestration.internal.config.listener;
 
 import io.shardingsphere.orchestration.reg.api.RegistryCenter;
+import io.shardingsphere.orchestration.reg.listener.DataChangedEvent.ChangedType;
 import io.shardingsphere.orchestration.reg.listener.DataChangedEventListener;
 import org.junit.Before;
 import org.junit.Test;
@@ -44,7 +45,7 @@ public final class ConfigMapChangedListenerTest {
     
     @Test
     public void assertWatch() {
-        configMapChangedListener.watch();
+        configMapChangedListener.watch(ChangedType.UPDATED);
         verify(regCenter).watch(eq("/test/config/configmap"), any(DataChangedEventListener.class));
     }
 }

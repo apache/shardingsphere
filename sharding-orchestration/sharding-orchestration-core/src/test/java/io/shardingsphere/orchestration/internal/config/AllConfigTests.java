@@ -19,7 +19,7 @@ package io.shardingsphere.orchestration.internal.config;
 
 import io.shardingsphere.orchestration.internal.config.listener.AuthenticationChangedListenerTest;
 import io.shardingsphere.orchestration.internal.config.listener.ConfigMapChangedListenerTest;
-import io.shardingsphere.orchestration.internal.config.listener.ConfigurationOrchestrationListenerManagerTest;
+import io.shardingsphere.orchestration.internal.config.listener.ConfigurationChangedListenerManagerTest;
 import io.shardingsphere.orchestration.internal.config.listener.DataSourceChangedListenerTest;
 import io.shardingsphere.orchestration.internal.config.listener.PropertiesChangedListenerTest;
 import io.shardingsphere.orchestration.internal.config.listener.RuleChangedListenerTest;
@@ -33,7 +33,7 @@ import org.junit.runners.Suite.SuiteClasses;
 @SuiteClasses({
         ConfigurationNodeTest.class, 
         ConfigurationServiceTest.class,
-        ConfigurationOrchestrationListenerManagerTest.class,
+        ConfigurationChangedListenerManagerTest.class,
         RuleChangedListenerTest.class, 
         DataSourceChangedListenerTest.class, 
         PropertiesChangedListenerTest.class,

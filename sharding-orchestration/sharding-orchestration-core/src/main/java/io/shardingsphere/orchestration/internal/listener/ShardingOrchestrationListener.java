@@ -17,6 +17,8 @@
 
 package io.shardingsphere.orchestration.internal.listener;
 
+import io.shardingsphere.orchestration.reg.listener.DataChangedEvent.ChangedType;
+
 /**
  * Sharding orchestration listener.
  *
@@ -27,6 +29,8 @@ public interface ShardingOrchestrationListener {
     
     /**
      * Start to watch.
+     * 
+     * @param watchedChangedTypes watched data change types
      */
-    void watch();
+    void watch(ChangedType... watchedChangedTypes);
 }

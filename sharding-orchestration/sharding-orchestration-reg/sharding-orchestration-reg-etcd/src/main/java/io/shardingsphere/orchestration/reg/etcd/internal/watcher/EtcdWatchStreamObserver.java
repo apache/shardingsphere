@@ -22,7 +22,7 @@ import etcdserverpb.Rpc.WatchResponse;
 import io.grpc.stub.StreamObserver;
 import io.shardingsphere.orchestration.reg.exception.RegistryCenterException;
 import io.shardingsphere.orchestration.reg.listener.DataChangedEvent;
-import io.shardingsphere.orchestration.reg.listener.DataChangedEvent.Type;
+import io.shardingsphere.orchestration.reg.listener.DataChangedEvent.ChangedType;
 import io.shardingsphere.orchestration.reg.listener.DataChangedEventListener;
 import lombok.RequiredArgsConstructor;
 import mvccpb.Kv.Event;
@@ -43,21 +43,21 @@ public final class EtcdWatchStreamObserver implements StreamObserver<WatchRespon
             return;
         }
         for (Event event : response.getEventsList()) {
-            Type eventType = getEventType(event);
-            if (Type.IGNORED != eventType) {
-                dataChangedEventListener.onChange(new DataChangedEvent(event.getKv().getKey().toStringUtf8(), event.getKv().getValue().toStringUtf8(), eventType));
+            ChangedType changedType = getChangedType(event);
+            if (ChangedType.IGNORED != changedType) {
+                dataChangedEventListener.onChange(new DataChangedEvent(event.getKv().getKey().toStringUtf8(), event.getKv().getValue().toStringUtf8(), changedType));
             }
         }
     }
     
-    private Type getEventType(final Event event) {
+    private ChangedType getChangedType(final Event event) {
         switch (event.getType()) {
             case PUT:
-                return DataChangedEvent.Type.UPDATED;
+                return DataChangedEvent.ChangedType.UPDATED;
             case DELETE:
-                return DataChangedEvent.Type.DELETED;
+                return DataChangedEvent.ChangedType.DELETED;
             default:
-                return DataChangedEvent.Type.IGNORED;
+                return DataChangedEvent.ChangedType.IGNORED;
         }
     }
     

@@ -17,7 +17,6 @@
 
 package io.shardingsphere.orchestration.internal.state.listener;
 
-import com.google.common.base.Optional;
 import io.shardingsphere.orchestration.internal.listener.PostShardingOrchestrationEventListener;
 import io.shardingsphere.orchestration.internal.listener.ShardingOrchestrationEvent;
 import io.shardingsphere.orchestration.internal.state.event.DisabledStateChangedEvent;
@@ -42,7 +41,7 @@ public final class DataSourceStateChangedListener extends PostShardingOrchestrat
     }
     
     @Override
-    protected Optional<ShardingOrchestrationEvent> createOrchestrationEvent(final DataChangedEvent event) {
-        return Optional.<ShardingOrchestrationEvent>of(new DisabledStateChangedEvent(dataSourceService.getDisabledSlaveSchemaGroup()));
+    protected ShardingOrchestrationEvent createOrchestrationEvent(final DataChangedEvent event) {
+        return new DisabledStateChangedEvent(dataSourceService.getDisabledSlaveSchemaGroup());
     }
 }

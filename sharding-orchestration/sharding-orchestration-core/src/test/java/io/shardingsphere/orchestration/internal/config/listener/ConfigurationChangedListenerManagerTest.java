@@ -18,6 +18,7 @@
 package io.shardingsphere.orchestration.internal.config.listener;
 
 import io.shardingsphere.orchestration.reg.api.RegistryCenter;
+import io.shardingsphere.orchestration.reg.listener.DataChangedEvent.ChangedType;
 import org.junit.Test;
 import org.junit.runner.RunWith;
 import org.mockito.Mock;
@@ -29,7 +30,7 @@ import java.util.Arrays;
 import static org.mockito.Mockito.verify;
 
 @RunWith(MockitoJUnitRunner.class)
-public final class ConfigurationOrchestrationListenerManagerTest {
+public final class ConfigurationChangedListenerManagerTest {
     
     @Mock
     private RegistryCenter regCenter;
@@ -64,13 +65,13 @@ public final class ConfigurationOrchestrationListenerManagerTest {
         setField(actual, "authenticationChangedListener", authenticationChangedListener);
         setField(actual, "configMapChangedListener", configMapChangedListener);
         actual.initListeners();
-        verify(ruleChangedListener0).watch();
-        verify(ruleChangedListener1).watch();
-        verify(dataSourceChangedListener0).watch();
-        verify(dataSourceChangedListener1).watch();
-        verify(propertiesChangedListener).watch();
-        verify(authenticationChangedListener).watch();
-        verify(configMapChangedListener).watch();
+        verify(ruleChangedListener0).watch(ChangedType.UPDATED);
+        verify(ruleChangedListener1).watch(ChangedType.UPDATED);
+        verify(dataSourceChangedListener0).watch(ChangedType.UPDATED);
+        verify(dataSourceChangedListener1).watch(ChangedType.UPDATED);
+        verify(propertiesChangedListener).watch(ChangedType.UPDATED);
+        verify(authenticationChangedListener).watch(ChangedType.UPDATED);
+        verify(configMapChangedListener).watch(ChangedType.UPDATED);
     }
     
     private void setField(final Object target, final String fieldName, final Object fieldValue) throws ReflectiveOperationException {

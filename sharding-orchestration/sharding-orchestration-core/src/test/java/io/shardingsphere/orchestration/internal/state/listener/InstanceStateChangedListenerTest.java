@@ -18,6 +18,7 @@
 package io.shardingsphere.orchestration.internal.state.listener;
 
 import io.shardingsphere.orchestration.reg.api.RegistryCenter;
+import io.shardingsphere.orchestration.reg.listener.DataChangedEvent.ChangedType;
 import io.shardingsphere.orchestration.reg.listener.DataChangedEventListener;
 import org.junit.Before;
 import org.junit.Test;
@@ -44,7 +45,7 @@ public final class InstanceStateChangedListenerTest {
     
     @Test
     public void assertWatch() {
-        instanceStateChangedListener.watch();
+        instanceStateChangedListener.watch(ChangedType.UPDATED);
         verify(regCenter).watch(anyString(), any(DataChangedEventListener.class));
     
     }

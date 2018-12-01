@@ -19,7 +19,7 @@ package io.shardingsphere.orchestration.internal.state;
 
 import io.shardingsphere.orchestration.internal.state.listener.DataSourceStateChangedListenerTest;
 import io.shardingsphere.orchestration.internal.state.listener.InstanceStateChangedListenerTest;
-import io.shardingsphere.orchestration.internal.state.listener.StateOrchestrationListenerManagerTest;
+import io.shardingsphere.orchestration.internal.state.listener.StateChangedListenerManagerTest;
 import io.shardingsphere.orchestration.internal.state.node.StateNodeTest;
 import io.shardingsphere.orchestration.internal.state.schema.OrchestrationShardingSchemaGroupTest;
 import io.shardingsphere.orchestration.internal.state.schema.OrchestrationShardingSchemaTest;
@@ -36,7 +36,7 @@ import org.junit.runners.Suite.SuiteClasses;
         OrchestrationShardingSchemaGroupTest.class, 
         InstanceStateServiceTest.class, 
         DataSourceServiceTest.class, 
-        StateOrchestrationListenerManagerTest.class, 
+        StateChangedListenerManagerTest.class, 
         DataSourceStateChangedListenerTest.class, 
         InstanceStateChangedListenerTest.class
 })

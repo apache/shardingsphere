@@ -17,13 +17,16 @@
 
 package io.shardingsphere.orchestration.internal.listener;
 
-import com.google.common.base.Optional;
 import com.google.common.eventbus.EventBus;
 import io.shardingsphere.orchestration.internal.eventbus.ShardingOrchestrationEventBus;
 import io.shardingsphere.orchestration.reg.api.RegistryCenter;
 import io.shardingsphere.orchestration.reg.listener.DataChangedEvent;
+import io.shardingsphere.orchestration.reg.listener.DataChangedEvent.ChangedType;
 import io.shardingsphere.orchestration.reg.listener.DataChangedEventListener;
 import lombok.RequiredArgsConstructor;
+
+import java.util.Arrays;
+import java.util.Collection;
 
 /**
  * Post sharding orchestration event listener.
@@ -40,18 +43,22 @@ public abstract class PostShardingOrchestrationEventListener implements Sharding
     private final String watchKey;
     
     @Override
-    public final void watch() {
+    public final void watch(final ChangedType... watchedChangedTypes) {
+        final Collection<ChangedType> watchedChangedTypeList = Arrays.asList(watchedChangedTypes);
         regCenter.watch(watchKey, new DataChangedEventListener() {
             
             @Override
             public void onChange(final DataChangedEvent dataChangedEvent) {
-                Optional<ShardingOrchestrationEvent> newEvent = createOrchestrationEvent(dataChangedEvent);
-                if (newEvent.isPresent()) {
-                    eventBus.post(newEvent);
+                if (watchedChangedTypeList.contains(dataChangedEvent.getChangedType())) {
+                    ShardingOrchestrationEvent orchestrationEvent = createOrchestrationEvent(dataChangedEvent);
+                    // TODO to be removed when using event for config map
+                    if (null != orchestrationEvent) {
+                        eventBus.post(orchestrationEvent);
+                    }
                 }
             }
         });
     }
     
-    protected abstract Optional<ShardingOrchestrationEvent> createOrchestrationEvent(DataChangedEvent event);
+    protected abstract ShardingOrchestrationEvent createOrchestrationEvent(DataChangedEvent event);
 }

@@ -18,6 +18,7 @@
 package io.shardingsphere.orchestration.internal.state.listener;
 
 import io.shardingsphere.orchestration.reg.api.RegistryCenter;
+import io.shardingsphere.orchestration.reg.listener.DataChangedEvent.ChangedType;
 import org.junit.Test;
 import org.junit.runner.RunWith;
 import org.mockito.Mock;
@@ -28,7 +29,7 @@ import java.lang.reflect.Field;
 import static org.mockito.Mockito.verify;
 
 @RunWith(MockitoJUnitRunner.class)
-public final class StateOrchestrationListenerManagerTest {
+public final class StateChangedListenerManagerTest {
     
     @Mock
     private RegistryCenter regCenter;
@@ -45,8 +46,8 @@ public final class StateOrchestrationListenerManagerTest {
         setField(actual, "instanceStateChangedListener", instanceStateChangedListener);
         setField(actual, "dataSourceStateChangedListener", dataSourceStateChangedListener);
         actual.initListeners();
-        verify(instanceStateChangedListener).watch();
-        verify(dataSourceStateChangedListener).watch();
+        verify(instanceStateChangedListener).watch(ChangedType.UPDATED);
+        verify(dataSourceStateChangedListener).watch(ChangedType.UPDATED, ChangedType.DELETED);
     }
     
     private void setField(final Object target, final String fieldName, final Object fieldValue) throws ReflectiveOperationException {

@@ -18,6 +18,7 @@
 package io.shardingsphere.orchestration.internal.config.listener;
 
 import io.shardingsphere.orchestration.reg.api.RegistryCenter;
+import io.shardingsphere.orchestration.reg.listener.DataChangedEvent.ChangedType;
 
 import java.util.Collection;
 import java.util.LinkedList;
@@ -54,13 +55,13 @@ public final class ConfigurationChangedListenerManager {
      */
     public void initListeners() {
         for (RuleChangedListener each : ruleChangedListeners) {
-            each.watch();
+            each.watch(ChangedType.UPDATED);
         }
         for (DataSourceChangedListener each : dataSourceChangedListeners) {
-            each.watch();
+            each.watch(ChangedType.UPDATED);
         }
-        propertiesChangedListener.watch();
-        authenticationChangedListener.watch();
-        configMapChangedListener.watch();
+        propertiesChangedListener.watch(ChangedType.UPDATED);
+        authenticationChangedListener.watch(ChangedType.UPDATED);
+        configMapChangedListener.watch(ChangedType.UPDATED);
     }
 }

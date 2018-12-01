@@ -17,7 +17,6 @@
 
 package io.shardingsphere.orchestration.internal.config.listener;
 
-import com.google.common.base.Optional;
 import io.shardingsphere.orchestration.internal.config.event.DataSourceChangedEvent;
 import io.shardingsphere.orchestration.internal.config.node.ConfigurationNode;
 import io.shardingsphere.orchestration.internal.listener.PostShardingOrchestrationEventListener;
@@ -25,7 +24,6 @@ import io.shardingsphere.orchestration.internal.listener.ShardingOrchestrationEv
 import io.shardingsphere.orchestration.internal.state.service.DataSourceService;
 import io.shardingsphere.orchestration.reg.api.RegistryCenter;
 import io.shardingsphere.orchestration.reg.listener.DataChangedEvent;
-import io.shardingsphere.orchestration.reg.listener.DataChangedEvent.Type;
 
 /**
  * Data source changed listener.
@@ -45,9 +43,7 @@ public final class DataSourceChangedListener extends PostShardingOrchestrationEv
     }
     
     @Override
-    protected Optional<ShardingOrchestrationEvent> createOrchestrationEvent(final DataChangedEvent event) {
-        return Type.UPDATED == event.getType()
-                ? Optional.<ShardingOrchestrationEvent>of(new DataSourceChangedEvent(shardingSchemaName, dataSourceService.getAvailableDataSourceConfigurations(shardingSchemaName)))
-                : Optional.<ShardingOrchestrationEvent>absent();
+    protected ShardingOrchestrationEvent createOrchestrationEvent(final DataChangedEvent event) {
+        return new DataSourceChangedEvent(shardingSchemaName, dataSourceService.getAvailableDataSourceConfigurations(shardingSchemaName));
     }
 }

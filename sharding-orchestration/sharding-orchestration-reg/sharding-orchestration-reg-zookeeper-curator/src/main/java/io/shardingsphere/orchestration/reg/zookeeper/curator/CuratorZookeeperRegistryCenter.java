@@ -22,7 +22,7 @@ import com.google.common.base.Strings;
 import io.shardingsphere.orchestration.reg.api.RegistryCenter;
 import io.shardingsphere.orchestration.reg.api.RegistryCenterConfiguration;
 import io.shardingsphere.orchestration.reg.listener.DataChangedEvent;
-import io.shardingsphere.orchestration.reg.listener.DataChangedEvent.Type;
+import io.shardingsphere.orchestration.reg.listener.DataChangedEvent.ChangedType;
 import io.shardingsphere.orchestration.reg.listener.DataChangedEventListener;
 import org.apache.curator.framework.CuratorFramework;
 import org.apache.curator.framework.CuratorFrameworkFactory;
@@ -226,22 +226,22 @@ public final class CuratorZookeeperRegistryCenter implements RegistryCenter {
                 if (null == data || null == data.getPath()) {
                     return;
                 }
-                Type eventType = getEventType(event);
-                if (Type.IGNORED != eventType) {
-                    dataChangedEventListener.onChange(new DataChangedEvent(data.getPath(), null == data.getData() ? null : new String(data.getData(), "UTF-8"), eventType));
+                ChangedType changedType = getChangedType(event);
+                if (ChangedType.IGNORED != changedType) {
+                    dataChangedEventListener.onChange(new DataChangedEvent(data.getPath(), null == data.getData() ? null : new String(data.getData(), "UTF-8"), changedType));
                 }
             }
         });
     }
     
-    private Type getEventType(final TreeCacheEvent event) {
+    private ChangedType getChangedType(final TreeCacheEvent event) {
         switch (event.getType()) {
             case NODE_UPDATED:
-                return DataChangedEvent.Type.UPDATED;
+                return DataChangedEvent.ChangedType.UPDATED;
             case NODE_REMOVED:
-                return DataChangedEvent.Type.DELETED;
+                return DataChangedEvent.ChangedType.DELETED;
             default:
-                return DataChangedEvent.Type.IGNORED;
+                return DataChangedEvent.ChangedType.IGNORED;
         }
     }
     

@@ -17,7 +17,6 @@
 
 package io.shardingsphere.orchestration.internal.config.listener;
 
-import com.google.common.base.Optional;
 import io.shardingsphere.orchestration.internal.config.event.AuthenticationChangedEvent;
 import io.shardingsphere.orchestration.internal.config.node.ConfigurationNode;
 import io.shardingsphere.orchestration.internal.config.service.ConfigurationService;
@@ -25,7 +24,6 @@ import io.shardingsphere.orchestration.internal.listener.PostShardingOrchestrati
 import io.shardingsphere.orchestration.internal.listener.ShardingOrchestrationEvent;
 import io.shardingsphere.orchestration.reg.api.RegistryCenter;
 import io.shardingsphere.orchestration.reg.listener.DataChangedEvent;
-import io.shardingsphere.orchestration.reg.listener.DataChangedEvent.Type;
 
 /**
  * Authentication changed listener.
@@ -42,8 +40,7 @@ public final class AuthenticationChangedListener extends PostShardingOrchestrati
     }
     
     @Override
-    protected Optional<ShardingOrchestrationEvent> createOrchestrationEvent(final DataChangedEvent event) {
-        return Type.UPDATED == event.getType()
-                ? Optional.<ShardingOrchestrationEvent>of(new AuthenticationChangedEvent(configService.loadAuthentication())) : Optional.<ShardingOrchestrationEvent>absent();
+    protected ShardingOrchestrationEvent createOrchestrationEvent(final DataChangedEvent event) {
+        return new AuthenticationChangedEvent(configService.loadAuthentication());
     }
 }

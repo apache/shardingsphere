@@ -18,6 +18,7 @@
 package io.shardingsphere.orchestration.internal.state.listener;
 
 import io.shardingsphere.orchestration.reg.api.RegistryCenter;
+import io.shardingsphere.orchestration.reg.listener.DataChangedEvent.ChangedType;
 
 /**
  * State changed listener manager.
@@ -39,7 +40,7 @@ public final class StateChangedListenerManager {
      * Initialize all state changed listeners.
      */
     public void initListeners() {
-        instanceStateChangedListener.watch();
-        dataSourceStateChangedListener.watch();
+        instanceStateChangedListener.watch(ChangedType.UPDATED);
+        dataSourceStateChangedListener.watch(ChangedType.UPDATED, ChangedType.DELETED);
     }
 }
