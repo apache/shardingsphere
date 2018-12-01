@@ -23,6 +23,7 @@ import io.shardingsphere.core.parsing.antlr.filler.SQLSegmentFiller;
 import io.shardingsphere.core.parsing.antlr.sql.segment.CommonExpressionSegment;
 import io.shardingsphere.core.parsing.antlr.sql.segment.FunctionExpressionSegment;
 import io.shardingsphere.core.parsing.antlr.sql.segment.SQLSegment;
+import io.shardingsphere.core.parsing.antlr.sql.segment.SelectClauseSegment;
 import io.shardingsphere.core.parsing.antlr.sql.segment.SelectExpressionSegment;
 import io.shardingsphere.core.parsing.antlr.sql.segment.StarExpressionSegment;
 import io.shardingsphere.core.parsing.parser.context.selectitem.AggregationSelectItem;
@@ -33,32 +34,35 @@ import io.shardingsphere.core.parsing.parser.sql.dql.select.SelectStatement;
 import io.shardingsphere.core.rule.ShardingRule;
 
 /**
- * Select expression segment filler.
+ * Select clause filler.
  *
  * @author duhongjun
  */
-public class SelectExpressionSegmentFiller implements SQLSegmentFiller {
+public class SelectClauseFiller implements SQLSegmentFiller {
     
     @Override
     public void fill(final SQLSegment sqlSegment, final SQLStatement sqlStatement, final ShardingRule shardingRule, final ShardingTableMetaData shardingTableMetaData) {
-        SelectExpressionSegment selectExpressionSegment = (SelectExpressionSegment) sqlSegment;
+        SelectClauseSegment selectClauseSegment = (SelectClauseSegment) sqlSegment;
         SelectStatement selectStatement = (SelectStatement) sqlStatement;
-        if (selectExpressionSegment instanceof StarExpressionSegment) {
-            selectStatement.getItems().add(new StarSelectItem(((StarExpressionSegment) selectExpressionSegment).getOwner()));
-        } else if (selectExpressionSegment instanceof CommonExpressionSegment) {
-            CommonExpressionSegment commonSegment = (CommonExpressionSegment) sqlSegment;
-            selectStatement.getItems().add(new CommonSelectItem(commonSegment.getExpression(), commonSegment.getAlias()));
-        } else if (selectExpressionSegment instanceof FunctionExpressionSegment) {
-            FunctionExpressionSegment functionSegment = (FunctionExpressionSegment) sqlSegment;
-            AggregationType aggregationType = null;
-            for (AggregationType each : AggregationType.values()) {
-                if (each.name().equalsIgnoreCase(functionSegment.getName())) {
-                    aggregationType = each;
-                    break;
+        selectStatement.setSelectListLastPosition(selectClauseSegment.getSelectListLastPosition());
+        for(SelectExpressionSegment each : selectClauseSegment.getExpressions()) {
+            if (each instanceof StarExpressionSegment) {
+                selectStatement.getItems().add(new StarSelectItem(((StarExpressionSegment) each).getOwner()));
+            } else if (each instanceof CommonExpressionSegment) {
+                CommonExpressionSegment commonSegment = (CommonExpressionSegment) each;
+                selectStatement.getItems().add(new CommonSelectItem(commonSegment.getExpression(), commonSegment.getAlias()));
+            } else if (each instanceof FunctionExpressionSegment) {
+                FunctionExpressionSegment functionSegment = (FunctionExpressionSegment) each;
+                AggregationType aggregationType = null;
+                for (AggregationType eachType : AggregationType.values()) {
+                    if (eachType.name().equalsIgnoreCase(functionSegment.getName())) {
+                        aggregationType = eachType;
+                        break;
+                    }
                 }
-            }
-            if (null != aggregationType) {
-                selectStatement.getItems().add(new AggregationSelectItem(aggregationType, functionSegment.getInnerExpression(), functionSegment.getAlias()));
+                if (null != aggregationType) {
+                    selectStatement.getItems().add(new AggregationSelectItem(aggregationType, functionSegment.getInnerExpression(), functionSegment.getAlias()));
+                }
             }
         }
     }
