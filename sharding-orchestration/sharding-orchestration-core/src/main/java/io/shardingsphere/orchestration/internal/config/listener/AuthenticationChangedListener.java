@@ -21,20 +21,18 @@ import com.google.common.base.Optional;
 import io.shardingsphere.orchestration.internal.config.event.AuthenticationChangedEvent;
 import io.shardingsphere.orchestration.internal.config.node.ConfigurationNode;
 import io.shardingsphere.orchestration.internal.config.service.ConfigurationService;
-import io.shardingsphere.orchestration.internal.listener.AbstractShardingOrchestrationListener;
 import io.shardingsphere.orchestration.internal.listener.PostShardingOrchestrationEventListener;
 import io.shardingsphere.orchestration.internal.listener.ShardingOrchestrationEvent;
 import io.shardingsphere.orchestration.reg.api.RegistryCenter;
 import io.shardingsphere.orchestration.reg.listener.DataChangedEvent;
 import io.shardingsphere.orchestration.reg.listener.DataChangedEvent.Type;
-import io.shardingsphere.orchestration.reg.listener.DataChangedEventListener;
 
 /**
  * Authentication changed listener.
  *
  * @author panjuan
  */
-public final class AuthenticationChangedListener extends AbstractShardingOrchestrationListener {
+public final class AuthenticationChangedListener extends PostShardingOrchestrationEventListener {
     
     private final ConfigurationService configService;
     
@@ -44,14 +42,8 @@ public final class AuthenticationChangedListener extends AbstractShardingOrchest
     }
     
     @Override
-    protected DataChangedEventListener getDataChangedEventListener() {
-        return new PostShardingOrchestrationEventListener() {
-            
-            @Override
-            protected Optional<ShardingOrchestrationEvent> createOrchestrationEvent(final DataChangedEvent event) {
-                return Type.UPDATED == event.getType()
-                        ? Optional.<ShardingOrchestrationEvent>of(new AuthenticationChangedEvent(configService.loadAuthentication())) : Optional.<ShardingOrchestrationEvent>absent();
-            }
-        };
+    protected Optional<ShardingOrchestrationEvent> createOrchestrationEvent(final DataChangedEvent event) {
+        return Type.UPDATED == event.getType()
+                ? Optional.<ShardingOrchestrationEvent>of(new AuthenticationChangedEvent(configService.loadAuthentication())) : Optional.<ShardingOrchestrationEvent>absent();
     }
 }

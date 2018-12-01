@@ -25,9 +25,9 @@ package io.shardingsphere.orchestration.reg.listener;
 public interface DataChangedEventListener {
     
     /**
-     * Fire when event changed.
+     * Fire when data changed.
      * 
-     * @param event data changed event
+     * @param dataChangedEvent data changed event
      */
-    void onChange(DataChangedEvent event);
+    void onChange(DataChangedEvent dataChangedEvent);
 }
