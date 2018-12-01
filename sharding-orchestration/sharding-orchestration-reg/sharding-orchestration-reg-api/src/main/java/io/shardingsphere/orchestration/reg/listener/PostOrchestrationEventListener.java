@@ -17,39 +17,25 @@
 
 package io.shardingsphere.orchestration.reg.listener;
 
+import com.google.common.base.Optional;
 import io.shardingsphere.core.event.ShardingEventBusInstance;
-import io.shardingsphere.orchestration.reg.listener.DataChangedEvent.Type;
 import lombok.RequiredArgsConstructor;
 
 /**
- * Abstract event listener.
+ * Post orchestration event listener.
  *
  * @author zhangliang
  */
 @RequiredArgsConstructor
-public abstract class AbstractEventListener implements EventListener {
-    
-    private final boolean isFireOnUpdate;
-    
-    private final boolean isFireOnDelete;
+public abstract class PostOrchestrationEventListener implements EventListener {
     
     @Override
     public final void onChange(final DataChangedEvent event) {
-        if (isFireWhenUpdate(event.getEventType()) || isFireWhenDelete(event.getEventType())) {
-            Object newEvent = createEvent(event);
-            if (null != newEvent) {
-                ShardingEventBusInstance.getInstance().post(newEvent);
-            }
+        Optional<Object> newEvent = createEvent(event);
+        if (newEvent.isPresent()) {
+            ShardingEventBusInstance.getInstance().post(newEvent);
         }
     }
     
-    private boolean isFireWhenUpdate(final Type type) {
-        return isFireOnUpdate && Type.UPDATED == type;
-    }
-    
-    private boolean isFireWhenDelete(final Type type) {
-        return isFireOnDelete && Type.DELETED == type;
-    }
-    
-    protected abstract Object createEvent(DataChangedEvent event);
+    protected abstract Optional<Object> createEvent(DataChangedEvent event);
 }

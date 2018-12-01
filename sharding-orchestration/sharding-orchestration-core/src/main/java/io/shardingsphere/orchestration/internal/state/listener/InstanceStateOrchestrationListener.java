@@ -17,15 +17,17 @@
 
 package io.shardingsphere.orchestration.internal.state.listener;
 
+import com.google.common.base.Optional;
 import io.shardingsphere.orchestration.internal.listener.AbstractOrchestrationListener;
 import io.shardingsphere.orchestration.internal.state.event.CircuitStateEvent;
 import io.shardingsphere.orchestration.internal.state.instance.OrchestrationInstance;
 import io.shardingsphere.orchestration.internal.state.node.StateNode;
 import io.shardingsphere.orchestration.internal.state.node.StateNodeStatus;
 import io.shardingsphere.orchestration.reg.api.RegistryCenter;
-import io.shardingsphere.orchestration.reg.listener.AbstractEventListener;
 import io.shardingsphere.orchestration.reg.listener.DataChangedEvent;
+import io.shardingsphere.orchestration.reg.listener.DataChangedEvent.Type;
 import io.shardingsphere.orchestration.reg.listener.EventListener;
+import io.shardingsphere.orchestration.reg.listener.PostOrchestrationEventListener;
 
 /**
  * Instance State orchestration listener.
@@ -44,11 +46,12 @@ public final class InstanceStateOrchestrationListener extends AbstractOrchestrat
     
     @Override
     protected EventListener getEventListener() {
-        return new AbstractEventListener(true, false) {
+        return new PostOrchestrationEventListener() {
             
             @Override
-            protected Object createEvent(final DataChangedEvent event) {
-                return new CircuitStateEvent(StateNodeStatus.DISABLED.toString().equalsIgnoreCase(regCenter.get(event.getKey())));
+            protected Optional<Object> createEvent(final DataChangedEvent event) {
+                return Type.UPDATED == event.getEventType()
+                        ? Optional.<Object>of(new CircuitStateEvent(StateNodeStatus.DISABLED.toString().equalsIgnoreCase(regCenter.get(event.getKey())))) : Optional.absent();
             }
         };
     }

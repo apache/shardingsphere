@@ -22,6 +22,7 @@ import etcdserverpb.Rpc.WatchResponse;
 import io.grpc.stub.StreamObserver;
 import io.shardingsphere.orchestration.reg.exception.RegistryCenterException;
 import io.shardingsphere.orchestration.reg.listener.DataChangedEvent;
+import io.shardingsphere.orchestration.reg.listener.DataChangedEvent.Type;
 import io.shardingsphere.orchestration.reg.listener.EventListener;
 import lombok.RequiredArgsConstructor;
 import mvccpb.Kv.Event;
@@ -42,11 +43,14 @@ public final class EtcdWatchStreamObserver implements StreamObserver<WatchRespon
             return;
         }
         for (Event event : response.getEventsList()) {
-            eventListener.onChange(new DataChangedEvent(getEventType(event), event.getKv().getKey().toStringUtf8(), event.getKv().getValue().toStringUtf8()));
+            Type eventType = getEventType(event);
+            if (Type.IGNORED != eventType) {
+                eventListener.onChange(new DataChangedEvent(eventType, event.getKv().getKey().toStringUtf8(), event.getKv().getValue().toStringUtf8()));
+            }
         }
     }
     
-    private DataChangedEvent.Type getEventType(final Event event) {
+    private Type getEventType(final Event event) {
         switch (event.getType()) {
             case PUT:
                 return DataChangedEvent.Type.UPDATED;

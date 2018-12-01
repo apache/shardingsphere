@@ -17,14 +17,16 @@
 
 package io.shardingsphere.orchestration.internal.config.listener;
 
+import com.google.common.base.Optional;
 import io.shardingsphere.orchestration.internal.config.event.DataSourceChangedEvent;
 import io.shardingsphere.orchestration.internal.config.node.ConfigurationNode;
 import io.shardingsphere.orchestration.internal.listener.AbstractOrchestrationListener;
 import io.shardingsphere.orchestration.internal.state.service.DataSourceService;
 import io.shardingsphere.orchestration.reg.api.RegistryCenter;
-import io.shardingsphere.orchestration.reg.listener.AbstractEventListener;
 import io.shardingsphere.orchestration.reg.listener.DataChangedEvent;
+import io.shardingsphere.orchestration.reg.listener.DataChangedEvent.Type;
 import io.shardingsphere.orchestration.reg.listener.EventListener;
+import io.shardingsphere.orchestration.reg.listener.PostOrchestrationEventListener;
 
 /**
  * Data source orchestration listener.
@@ -45,11 +47,12 @@ public final class DataSourceOrchestrationListener extends AbstractOrchestration
     
     @Override
     protected EventListener getEventListener() {
-        return new AbstractEventListener(true, false) {
+        return new PostOrchestrationEventListener() {
             
             @Override
-            protected Object createEvent(final DataChangedEvent event) {
-                return new DataSourceChangedEvent(shardingSchemaName, dataSourceService.getAvailableDataSourceConfigurations(shardingSchemaName));
+            protected Optional<Object> createEvent(final DataChangedEvent event) {
+                return Type.UPDATED == event.getEventType()
+                        ? Optional.<Object>of(new DataSourceChangedEvent(shardingSchemaName, dataSourceService.getAvailableDataSourceConfigurations(shardingSchemaName))) : Optional.absent();
             }
         };
     }

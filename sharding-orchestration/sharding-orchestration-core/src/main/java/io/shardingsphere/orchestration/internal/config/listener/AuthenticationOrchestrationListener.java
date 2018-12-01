@@ -17,14 +17,16 @@
 
 package io.shardingsphere.orchestration.internal.config.listener;
 
+import com.google.common.base.Optional;
 import io.shardingsphere.orchestration.internal.config.event.AuthenticationChangedEvent;
 import io.shardingsphere.orchestration.internal.config.node.ConfigurationNode;
 import io.shardingsphere.orchestration.internal.config.service.ConfigurationService;
 import io.shardingsphere.orchestration.internal.listener.AbstractOrchestrationListener;
 import io.shardingsphere.orchestration.reg.api.RegistryCenter;
-import io.shardingsphere.orchestration.reg.listener.AbstractEventListener;
 import io.shardingsphere.orchestration.reg.listener.DataChangedEvent;
+import io.shardingsphere.orchestration.reg.listener.DataChangedEvent.Type;
 import io.shardingsphere.orchestration.reg.listener.EventListener;
+import io.shardingsphere.orchestration.reg.listener.PostOrchestrationEventListener;
 
 /**
  * Authentication orchestration listener.
@@ -42,11 +44,11 @@ public final class AuthenticationOrchestrationListener extends AbstractOrchestra
     
     @Override
     protected EventListener getEventListener() {
-        return new AbstractEventListener(true, false) {
+        return new PostOrchestrationEventListener() {
             
             @Override
-            protected Object createEvent(final DataChangedEvent event) {
-                return new AuthenticationChangedEvent(configService.loadAuthentication());
+            protected Optional<Object> createEvent(final DataChangedEvent event) {
+                return Type.UPDATED == event.getEventType() ? Optional.<Object>of(new AuthenticationChangedEvent(configService.loadAuthentication())) : Optional.absent();
             }
         };
     }
