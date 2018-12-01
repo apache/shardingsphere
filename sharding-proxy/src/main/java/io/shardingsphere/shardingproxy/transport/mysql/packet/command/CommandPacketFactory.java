@@ -39,6 +39,7 @@ import java.sql.SQLException;
  *
  * @author zhangliang
  * @author wangkai
+ * @author zhaojun
  */
 @NoArgsConstructor(access = AccessLevel.PRIVATE)
 public final class CommandPacketFactory {
@@ -64,13 +65,13 @@ public final class CommandPacketFactory {
             case COM_INIT_DB:
                 return new ComInitDbPacket(sequenceId, payload, frontendHandler);
             case COM_FIELD_LIST:
-                return new ComFieldListPacket(sequenceId, connectionId, frontendHandler.getCurrentSchema(), payload, backendConnection);
+                return new ComFieldListPacket(sequenceId, connectionId, payload, backendConnection);
             case COM_QUERY:
                 return new ComQueryPacket(sequenceId, connectionId, payload, backendConnection, frontendHandler);
             case COM_STMT_PREPARE:
-                return new ComStmtPreparePacket(sequenceId, frontendHandler.getCurrentSchema(), payload);
+                return new ComStmtPreparePacket(sequenceId, backendConnection, payload);
             case COM_STMT_EXECUTE:
-                return new ComStmtExecutePacket(sequenceId, connectionId, frontendHandler.getCurrentSchema(), payload, backendConnection);
+                return new ComStmtExecutePacket(sequenceId, connectionId, payload, backendConnection);
             case COM_STMT_CLOSE:
                 return new ComStmtClosePacket(sequenceId, payload);
             case COM_PING:

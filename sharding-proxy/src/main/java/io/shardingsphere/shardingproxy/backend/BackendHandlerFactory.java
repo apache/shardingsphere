@@ -17,23 +17,15 @@
 
 package io.shardingsphere.shardingproxy.backend;
 
-import com.google.common.base.Optional;
 import io.shardingsphere.core.constant.DatabaseType;
 import io.shardingsphere.core.constant.SQLType;
 import io.shardingsphere.core.constant.properties.ShardingPropertiesConstant;
 import io.shardingsphere.core.parsing.SQLJudgeEngine;
 import io.shardingsphere.core.parsing.parser.dialect.mysql.statement.SetStatement;
-import io.shardingsphere.core.parsing.parser.dialect.mysql.statement.ShowColumnsStatement;
-import io.shardingsphere.core.parsing.parser.dialect.mysql.statement.ShowCreateTableStatement;
 import io.shardingsphere.core.parsing.parser.dialect.mysql.statement.ShowDatabasesStatement;
-import io.shardingsphere.core.parsing.parser.dialect.mysql.statement.ShowIndexStatement;
 import io.shardingsphere.core.parsing.parser.dialect.mysql.statement.ShowOtherStatement;
-import io.shardingsphere.core.parsing.parser.dialect.mysql.statement.ShowTableStatusStatement;
-import io.shardingsphere.core.parsing.parser.dialect.mysql.statement.ShowTablesStatement;
 import io.shardingsphere.core.parsing.parser.dialect.mysql.statement.UseStatement;
 import io.shardingsphere.core.parsing.parser.sql.SQLStatement;
-import io.shardingsphere.core.parsing.parser.token.SQLToken;
-import io.shardingsphere.core.parsing.parser.token.SchemaToken;
 import io.shardingsphere.shardingproxy.backend.jdbc.JDBCBackendHandler;
 import io.shardingsphere.shardingproxy.backend.jdbc.connection.BackendConnection;
 import io.shardingsphere.shardingproxy.backend.jdbc.execute.JDBCExecuteEngine;
@@ -46,7 +38,6 @@ import io.shardingsphere.shardingproxy.runtime.schema.LogicSchema;
 import lombok.AccessLevel;
 import lombok.NoArgsConstructor;
 
-import java.util.LinkedList;
 import java.util.List;
 
 /**
@@ -54,6 +45,7 @@ import java.util.List;
  *
  * @author zhangliang
  * @author panjuan
+ * @author zhaojun
  */
 @NoArgsConstructor(access = AccessLevel.PRIVATE)
 public final class BackendHandlerFactory {
@@ -68,13 +60,11 @@ public final class BackendHandlerFactory {
      * @param sql SQL to be executed
      * @param backendConnection backend connection
      * @param databaseType database type
-     * @param schema schema
      * @return instance of text protocol backend handler
      */
     public static BackendHandler newTextProtocolInstance(
-            final int connectionId, final int sequenceId, final String sql, final BackendConnection backendConnection, final DatabaseType databaseType, final String schema) {
-        LogicSchema logicSchema = GLOBAL_REGISTRY.getLogicSchema(schema);
-        backendConnection.setLogicSchema(logicSchema);
+            final int connectionId, final int sequenceId, final String sql, final BackendConnection backendConnection, final DatabaseType databaseType) {
+        LogicSchema logicSchema = backendConnection.getLogicSchema();
         return GLOBAL_REGISTRY.getShardingProperties().<Boolean>getValue(ShardingPropertiesConstant.PROXY_BACKEND_USE_NIO)
                 ? new NettyBackendHandler(logicSchema, connectionId, sequenceId, sql, databaseType)
                 : new JDBCBackendHandler(logicSchema, sql, new JDBCExecuteEngine(backendConnection, new StatementExecutorWrapper(logicSchema)));
@@ -89,13 +79,11 @@ public final class BackendHandlerFactory {
      * @param parameters SQL parameters
      * @param backendConnection backend connection
      * @param databaseType database type
-     * @param schema schema
      * @return instance of text protocol backend handler
      */
     public static BackendHandler newBinaryProtocolInstance(final int connectionId, final int sequenceId, final String sql, final List<Object> parameters,
-                                                           final BackendConnection backendConnection, final DatabaseType databaseType, final String schema) {
-        LogicSchema logicSchema = GLOBAL_REGISTRY.getLogicSchema(schema);
-        backendConnection.setLogicSchema(logicSchema);
+                                                           final BackendConnection backendConnection, final DatabaseType databaseType) {
+        LogicSchema logicSchema = backendConnection.getLogicSchema();
         return GLOBAL_REGISTRY.getShardingProperties().<Boolean>getValue(ShardingPropertiesConstant.PROXY_BACKEND_USE_NIO)
                 ? new NettyBackendHandler(logicSchema, connectionId, sequenceId, sql, databaseType)
                 : new JDBCBackendHandler(logicSchema, sql, new JDBCExecuteEngine(backendConnection, new PreparedStatementExecutorWrapper(logicSchema, parameters)));
@@ -127,18 +115,6 @@ public final class BackendHandlerFactory {
             return new SchemaUnicastBackendHandler(connectionId, sequenceId, sql, backendConnection, DatabaseType.MySQL);
         }
         
-        String schema = getSchema(sqlStatement).isPresent() ? getSchema(sqlStatement).get() : frontendHandler.getCurrentSchema();
-        return newTextProtocolInstance(connectionId, sequenceId, sql, backendConnection, DatabaseType.MySQL, schema);
-    }
-    
-    private static Optional<String> getSchema(final SQLStatement sqlStatement) {
-        List<SQLToken> sqlTokens = sqlStatement.getSQLTokens();
-        if (!sqlTokens.isEmpty()
-                && (sqlStatement instanceof ShowTablesStatement || sqlStatement instanceof ShowColumnsStatement
-                || sqlStatement instanceof ShowIndexStatement || sqlStatement instanceof ShowTableStatusStatement
-                || sqlStatement instanceof ShowCreateTableStatement)) {
-            return Optional.of(((SchemaToken) new LinkedList<>(sqlTokens).getLast()).getSchemaName());
-        }
-        return Optional.absent();
+        return newTextProtocolInstance(connectionId, sequenceId, sql, backendConnection, DatabaseType.MySQL);
     }
 }

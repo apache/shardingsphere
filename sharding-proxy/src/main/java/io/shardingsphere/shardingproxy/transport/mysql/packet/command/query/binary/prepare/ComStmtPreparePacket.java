@@ -25,7 +25,7 @@ import io.shardingsphere.core.parsing.parser.sql.SQLStatement;
 import io.shardingsphere.core.parsing.parser.sql.dml.insert.InsertStatement;
 import io.shardingsphere.core.parsing.parser.sql.dql.select.SelectStatement;
 import io.shardingsphere.core.rule.ShardingRule;
-import io.shardingsphere.shardingproxy.runtime.GlobalRegistry;
+import io.shardingsphere.shardingproxy.backend.jdbc.connection.BackendConnection;
 import io.shardingsphere.shardingproxy.runtime.schema.LogicSchema;
 import io.shardingsphere.shardingproxy.runtime.schema.ShardingSchema;
 import io.shardingsphere.shardingproxy.transport.mysql.constant.ColumnType;
@@ -59,11 +59,11 @@ public final class ComStmtPreparePacket implements CommandPacket {
     
     private final SQLParsingEngine sqlParsingEngine;
     
-    public ComStmtPreparePacket(final int sequenceId, final String currentSchema, final MySQLPacketPayload payload) {
+    public ComStmtPreparePacket(final int sequenceId, final BackendConnection backendConnection, final MySQLPacketPayload payload) {
         this.sequenceId = sequenceId;
-        this.currentSchema = currentSchema;
         sql = payload.readStringEOF();
-        LogicSchema logicSchema = GlobalRegistry.getInstance().getLogicSchema(currentSchema);
+        currentSchema = backendConnection.getCurrentSchema();
+        LogicSchema logicSchema = backendConnection.getLogicSchema();
         sqlParsingEngine = new SQLParsingEngine(DatabaseType.MySQL, sql, getShardingRule(logicSchema), logicSchema.getMetaData().getTable());
     }
     

@@ -45,8 +45,8 @@ public final class BackendTransactionManager implements TransactionManager {
         if (null != transactionType && transactionType != TransactionType.LOCAL) {
             Preconditions.checkNotNull(shardingTransactionHandler, String.format("Cannot find transaction manager of [%s]", transactionType));
         }
-        if (TransactionOperationType.BEGIN == operationType && ConnectionStatus.TRANSACTION != connection.getStatus()) {
-            connection.getAndSetStatus(ConnectionStatus.TRANSACTION);
+        if (TransactionOperationType.BEGIN == operationType && !connection.getStateHandler().isInTransaction()) {
+            connection.getStateHandler().getAndSetStatus(ConnectionStatus.TRANSACTION);
             connection.releaseConnections(false);
         }
         if (TransactionType.LOCAL == transactionType) {
@@ -54,7 +54,7 @@ public final class BackendTransactionManager implements TransactionManager {
         } else if (TransactionType.XA == transactionType) {
             shardingTransactionHandler.doInTransaction(new XATransactionEvent(operationType));
             if (TransactionOperationType.BEGIN != operationType) {
-                connection.getAndSetStatus(ConnectionStatus.TERMINATED);
+                connection.getStateHandler().getAndSetStatus(ConnectionStatus.TERMINATED);
             }
         }
     }

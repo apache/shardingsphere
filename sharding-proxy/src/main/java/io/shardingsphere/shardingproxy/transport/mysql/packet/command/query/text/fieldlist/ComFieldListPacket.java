@@ -58,12 +58,12 @@ public final class ComFieldListPacket implements CommandPacket {
     
     private final BackendHandler backendHandler;
     
-    public ComFieldListPacket(final int sequenceId, final int connectionId, final String currentSchema, final MySQLPacketPayload payload, final BackendConnection backendConnection) {
+    public ComFieldListPacket(final int sequenceId, final int connectionId, final MySQLPacketPayload payload, final BackendConnection backendConnection) {
         this.sequenceId = sequenceId;
-        this.currentSchema = currentSchema;
+        this.currentSchema = backendConnection.getCurrentSchema();
         table = payload.readStringNul();
         fieldWildcard = payload.readStringEOF();
-        backendHandler = BackendHandlerFactory.newTextProtocolInstance(connectionId, sequenceId, String.format(SQL, table, currentSchema), backendConnection, DatabaseType.MySQL, currentSchema);
+        backendHandler = BackendHandlerFactory.newTextProtocolInstance(connectionId, sequenceId, String.format(SQL, table, currentSchema), backendConnection, DatabaseType.MySQL);
     }
     
     @Override

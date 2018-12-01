@@ -66,7 +66,7 @@ public final class MySQLFrontendHandler extends FrontendHandler {
                     context.writeAndFlush(new ErrPacket(response41.getSequenceId() + 1, ServerErrorCode.ER_BAD_DB_ERROR, response41.getDatabase()));
                     return;
                 }
-                setCurrentSchema(response41.getDatabase());
+                getBackendConnection().setCurrentSchema(response41.getDatabase());
                 context.writeAndFlush(new OKPacket(response41.getSequenceId() + 1));
             } else {
                 // TODO localhost should replace to real ip address
