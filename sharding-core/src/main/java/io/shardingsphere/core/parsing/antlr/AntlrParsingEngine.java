@@ -17,6 +17,9 @@
 
 package io.shardingsphere.core.parsing.antlr;
 
+import org.antlr.v4.runtime.ParserRuleContext;
+import org.antlr.v4.runtime.tree.ErrorNodeImpl;
+
 import io.shardingsphere.core.constant.DatabaseType;
 import io.shardingsphere.core.metadata.table.ShardingTableMetaData;
 import io.shardingsphere.core.parsing.antlr.ast.SQLASTParserFactory;
@@ -28,7 +31,6 @@ import io.shardingsphere.core.parsing.parser.sql.SQLStatement;
 import io.shardingsphere.core.rule.ShardingRule;
 import lombok.AccessLevel;
 import lombok.NoArgsConstructor;
-import org.antlr.v4.runtime.ParserRuleContext;
 
 /**
  * Parsing engine for Antlr.
@@ -50,6 +52,9 @@ public final class AntlrParsingEngine {
     public static SQLStatement parse(final DatabaseType dbType, final String sql, final ShardingRule shardingRule, final ShardingTableMetaData shardingTableMetaData) {
         ParserRuleContext rootContext = SQLASTParserFactory.newInstance(dbType, sql).execute();
         if (null == rootContext) {
+            throw new SQLParsingUnsupportedException(String.format("Unsupported SQL of `%s`", sql));
+        }
+        if (rootContext.getChild(0) instanceof ErrorNodeImpl) {
             throw new SQLParsingUnsupportedException(String.format("Unsupported SQL of `%s`", sql));
         }
         ParserRuleContext parserRuleContext = (ParserRuleContext) rootContext.getChild(0);
