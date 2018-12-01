@@ -26,11 +26,11 @@ import io.shardingsphere.api.config.ShardingRuleConfiguration;
 import io.shardingsphere.core.constant.properties.ShardingProperties;
 import io.shardingsphere.core.constant.properties.ShardingPropertiesConstant;
 import io.shardingsphere.core.constant.transaction.TransactionType;
-import io.shardingsphere.core.event.ShardingEventBusInstance;
 import io.shardingsphere.core.rule.Authentication;
 import io.shardingsphere.core.rule.DataSourceParameter;
 import io.shardingsphere.orchestration.internal.config.event.AuthenticationChangedEvent;
 import io.shardingsphere.orchestration.internal.config.event.PropertiesChangedEvent;
+import io.shardingsphere.orchestration.internal.listener.ShardingOrchestrationEventBusInstance;
 import io.shardingsphere.orchestration.internal.state.event.CircuitStateEvent;
 import io.shardingsphere.shardingproxy.runtime.schema.LogicSchema;
 import io.shardingsphere.shardingproxy.runtime.schema.MasterSlaveSchema;
@@ -79,7 +79,7 @@ public final class GlobalRegistry {
      * Register listener.
      */
     public void register() {
-        ShardingEventBusInstance.getInstance().register(this);
+        ShardingOrchestrationEventBusInstance.getInstance().register(this);
     }
     
     /**

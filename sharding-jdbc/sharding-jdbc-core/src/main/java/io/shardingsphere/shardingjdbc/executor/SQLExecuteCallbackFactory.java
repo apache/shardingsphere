@@ -18,7 +18,6 @@
 package io.shardingsphere.shardingjdbc.executor;
 
 import io.shardingsphere.core.constant.DatabaseType;
-import io.shardingsphere.core.constant.SQLType;
 import io.shardingsphere.core.executor.StatementExecuteUnit;
 import io.shardingsphere.core.executor.sql.execute.SQLExecuteCallback;
 
@@ -26,22 +25,22 @@ import java.sql.PreparedStatement;
 import java.sql.SQLException;
 
 /**
- * Sql Execute callback factory.
+ * SQL execute callback factory.
  *
  * @author yangyi
  */
 public final class SQLExecuteCallbackFactory {
     
     /**
-     * Get update SQLExecuteCallBack for PreparedStatementExecutor.
+     * Get update callback.
      *
-     * @param databaseType      types of database
-     * @param sqlType           types of sql
+     * @param databaseType database type
      * @param isExceptionThrown is exception thrown
-     * @return update SQLExecuteCallBack
+     * @return update callback
      */
-    public static SQLExecuteCallback<Integer> getPreparedUpdateSQLExecuteCallback(final DatabaseType databaseType, final SQLType sqlType, final boolean isExceptionThrown) {
-        return new SQLExecuteCallback<Integer>(databaseType, sqlType, isExceptionThrown) {
+    public static SQLExecuteCallback<Integer> getPreparedUpdateSQLExecuteCallback(final DatabaseType databaseType, final boolean isExceptionThrown) {
+        return new SQLExecuteCallback<Integer>(databaseType, isExceptionThrown) {
+            
             @Override
             protected Integer executeSQL(final StatementExecuteUnit statementExecuteUnit) throws SQLException {
                 return ((PreparedStatement) statementExecuteUnit.getStatement()).executeUpdate();
@@ -50,15 +49,14 @@ public final class SQLExecuteCallbackFactory {
     }
     
     /**
-     * Get single SQLExecuteCallBack for PreparedStatementExecutor.
+     * Get execute callback.
      *
-     * @param databaseType      types of database
-     * @param sqlType           types of sql
+     * @param databaseType database type
      * @param isExceptionThrown is exception thrown
-     * @return single SQLExecuteCallBack
+     * @return execute callback
      */
-    public static SQLExecuteCallback<Boolean> getPreparedSQLExecuteCallback(final DatabaseType databaseType, final SQLType sqlType, final boolean isExceptionThrown) {
-        return new SQLExecuteCallback<Boolean>(databaseType, sqlType, isExceptionThrown) {
+    public static SQLExecuteCallback<Boolean> getPreparedSQLExecuteCallback(final DatabaseType databaseType, final boolean isExceptionThrown) {
+        return new SQLExecuteCallback<Boolean>(databaseType, isExceptionThrown) {
             
             @Override
             protected Boolean executeSQL(final StatementExecuteUnit statementExecuteUnit) throws SQLException {

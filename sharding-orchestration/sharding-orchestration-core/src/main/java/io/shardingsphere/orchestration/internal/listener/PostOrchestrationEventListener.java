@@ -15,10 +15,11 @@
  * </p>
  */
 
-package io.shardingsphere.orchestration.reg.listener;
+package io.shardingsphere.orchestration.internal.listener;
 
 import com.google.common.base.Optional;
-import io.shardingsphere.core.event.ShardingEventBusInstance;
+import io.shardingsphere.orchestration.reg.listener.DataChangedEvent;
+import io.shardingsphere.orchestration.reg.listener.EventListener;
 import lombok.RequiredArgsConstructor;
 
 /**
@@ -33,7 +34,7 @@ public abstract class PostOrchestrationEventListener implements EventListener {
     public final void onChange(final DataChangedEvent event) {
         Optional<Object> newEvent = createEvent(event);
         if (newEvent.isPresent()) {
-            ShardingEventBusInstance.getInstance().post(newEvent);
+            ShardingOrchestrationEventBusInstance.getInstance().post(newEvent);
         }
     }
     

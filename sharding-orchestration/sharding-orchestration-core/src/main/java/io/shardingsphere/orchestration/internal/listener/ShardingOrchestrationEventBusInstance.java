@@ -15,24 +15,28 @@
  * </p>
  */
 
-package io.shardingsphere.core.event.transaction.base;
+package io.shardingsphere.orchestration.internal.listener;
 
-import io.shardingsphere.core.event.ShardingEvent;
-import io.shardingsphere.core.routing.RouteUnit;
-import lombok.Getter;
-import lombok.RequiredArgsConstructor;
+import com.google.common.eventbus.EventBus;
+import lombok.AccessLevel;
+import lombok.NoArgsConstructor;
 
 /**
- * Saga SQL execution.
- *
- * @author yangyi
+ * Sharding orchestration event bus for singleton instance.
+ * 
+ * @author zhangliang
  */
-@Getter
-@RequiredArgsConstructor
-public final class SagaSQLExecutionEvent extends ShardingEvent {
+@NoArgsConstructor(access = AccessLevel.PRIVATE)
+public final class ShardingOrchestrationEventBusInstance {
     
-    private final RouteUnit routeUnit;
+    private static final EventBus INSTANCE = new EventBus();
     
-    private final String transactionId;
-    
+    /**
+     * Get instance of sharding orchestration event bus.
+     * 
+     * @return instance of sharding orchestration event bus
+     */
+    public static EventBus getInstance() {
+        return INSTANCE;
+    }
 }

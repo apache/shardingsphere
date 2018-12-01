@@ -23,12 +23,12 @@ import io.shardingsphere.orchestration.internal.config.event.ShardingRuleChanged
 import io.shardingsphere.orchestration.internal.config.node.ConfigurationNode;
 import io.shardingsphere.orchestration.internal.config.service.ConfigurationService;
 import io.shardingsphere.orchestration.internal.listener.AbstractOrchestrationListener;
+import io.shardingsphere.orchestration.internal.listener.PostOrchestrationEventListener;
 import io.shardingsphere.orchestration.internal.state.service.DataSourceService;
 import io.shardingsphere.orchestration.reg.api.RegistryCenter;
 import io.shardingsphere.orchestration.reg.listener.DataChangedEvent;
 import io.shardingsphere.orchestration.reg.listener.DataChangedEvent.Type;
 import io.shardingsphere.orchestration.reg.listener.EventListener;
-import io.shardingsphere.orchestration.reg.listener.PostOrchestrationEventListener;
 
 /**
  * Rule orchestration listener.
