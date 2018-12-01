@@ -85,9 +85,11 @@ public final class FromWhereExtractor implements OptionalSQLSegmentExtractor {
                 if (joinNode) {
                     Optional<ParserRuleContext> joinConditionNode = ASTUtils.findFirstChildNode((ParserRuleContext) each.getChild(i), RuleName.JOIN_CONDITION);
                     if (joinConditionNode.isPresent()) {
-                        Optional<OrConditionSegment> conditionResult = buildCondition(joinConditionNode.get(), questionNodeIndexMap, fromWhereSegment.getTableAliases());
                         TableJoinSegment tableJoinResult = new TableJoinSegment(tableSegment.get());
-                        tableJoinResult.getJoinConditions().getAndConditions().addAll(conditionResult.get().getAndConditions());
+                        Optional<OrConditionSegment> conditionResult = buildCondition(joinConditionNode.get(), questionNodeIndexMap, fromWhereSegment.getTableAliases());
+                        if(conditionResult.isPresent()) {
+                            tableJoinResult.getJoinConditions().getAndConditions().addAll(conditionResult.get().getAndConditions());
+                        }
                         fillTableResult(fromWhereSegment, tableJoinResult);
                     }
                 } else {

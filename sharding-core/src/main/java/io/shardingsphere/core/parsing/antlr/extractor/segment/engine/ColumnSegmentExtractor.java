@@ -51,7 +51,7 @@ public final class ColumnSegmentExtractor implements OptionalSQLSegmentExtractor
         int dotPosition = columnText.contains(Symbol.DOT.getLiterals()) ? columnText.lastIndexOf(Symbol.DOT.getLiterals()) : 0;
         String columnName = columnText;
         Optional<String> ownerName;
-        String tableName = null;
+        String tableName = "";
         if (0 < dotPosition) {
             columnName = columnText.substring(dotPosition + 1);
             ownerName = Optional.of(SQLUtil.getExactlyValue(columnText.substring(0, dotPosition)));

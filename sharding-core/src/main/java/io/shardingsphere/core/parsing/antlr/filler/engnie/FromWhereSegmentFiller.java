@@ -53,7 +53,7 @@ public class FromWhereSegmentFiller implements SQLSegmentFiller {
     public void fill(final SQLSegment sqlSegment, final SQLStatement sqlStatement, final ShardingRule shardingRule,
                      final ShardingTableMetaData shardingTableMetaData) {
         FromWhereSegment fromWhereSegment = (FromWhereSegment) sqlSegment;
-        if(!fromWhereSegment.getConditions().getAndConditions().isEmpty()) {
+        if (!fromWhereSegment.getConditions().getAndConditions().isEmpty()) {
             Map<String, String> columnNameToTable = new HashMap<String, String>();
             Map<String, Integer> columnNameCount = new HashMap<String, Integer>();
             fillColumnTableMap(sqlStatement, shardingTableMetaData, columnNameToTable, columnNameCount);
@@ -88,9 +88,10 @@ public class FromWhereSegmentFiller implements SQLSegmentFiller {
     }
     
     private OrCondition filterShardingCondition(final SQLStatement sqlStatement, final OrConditionSegment orCondition, final ShardingRule shardingRule,
-                                         final Map<String, String> columnNameToTable, final Map<String, Integer> columnNameCount) {
+                                                final Map<String, String> columnNameToTable, final Map<String, Integer> columnNameCount) {
         OrCondition result = new OrCondition();
-        for(AndConditionSegment each : orCondition.getAndConditions()) {
+        boolean needSharding = false;
+        for (AndConditionSegment each : orCondition.getAndConditions()) {
             List<ConditionSegment> shardingCondition = new LinkedList<>();
             for (ConditionSegment condition : each.getConditions()) {
                 if (null == condition.getColumn()) {
@@ -99,7 +100,7 @@ public class FromWhereSegmentFiller implements SQLSegmentFiller {
                 if ("".equals(condition.getColumn().getTableName())) {
                     if (sqlStatement.getTables().isSingleTable()) {
                         condition.getColumn().setTableName(sqlStatement.getTables().getSingleTableName());
-                    }else {
+                    } else {
                         String tableName = columnNameToTable.get(condition.getColumn().getName());
                         Integer count = columnNameCount.get(condition.getColumn().getName());
                         if (null != tableName && count.intValue() == 1) {
@@ -107,32 +108,37 @@ public class FromWhereSegmentFiller implements SQLSegmentFiller {
                         }
                     }
                 }
-                
                 if (shardingRule.isShardingColumn(new Column(condition.getColumn().getName(), condition.getColumn().getTableName()))) {
                     shardingCondition.add(condition);
+                    needSharding = true;
                 }
             }
-            fillResult(result, sqlStatement, shardingCondition); 
+            if(needSharding) {
+                fillResult(result, sqlStatement, shardingCondition);
+            }else {
+                result.getAndConditions().clear();
+                break;
+            }
         }
         return result;
     }
     
     private void fillResult(OrCondition result, final SQLStatement sqlStatement, List<ConditionSegment> shardingCondition) {
-        if(!shardingCondition.isEmpty()) {
+        if (!shardingCondition.isEmpty()) {
             AndCondition andConditionResult = new AndCondition();
             result.getAndConditions().add(andConditionResult);
-            for(ConditionSegment eachCondition : shardingCondition) {
+            for (ConditionSegment eachCondition : shardingCondition) {
                 Column column = new Column(eachCondition.getColumn().getName(), eachCondition.getColumn().getTableName());
                 if (eachCondition.getColumn().getOwner().isPresent() && sqlStatement.getTables().getTableNames().contains(eachCondition.getColumn().getOwner().get())) {
                     sqlStatement.addSQLToken(new TableToken(eachCondition.getColumn().getStartPosition(), 0, eachCondition.getColumn().getOwner().get()));
                 }
-                if(ShardingOperator.EQUAL == eachCondition.getOperator()) {
+                if (ShardingOperator.EQUAL == eachCondition.getOperator()) {
                     SQLEqualsExpressionSegment expression = (SQLEqualsExpressionSegment) eachCondition.getExpression();
                     andConditionResult.getConditions().add(new Condition(column, expression.getExpression()));
-                }else if(ShardingOperator.IN == eachCondition.getOperator()) {
+                } else if (ShardingOperator.IN == eachCondition.getOperator()) {
                     SQLInExpressionSegment expression = (SQLInExpressionSegment) eachCondition.getExpression();
                     andConditionResult.getConditions().add(new Condition(column, expression.getSqlExpressions()));
-                }else if(ShardingOperator.BETWEEN == eachCondition.getOperator()) {
+                } else if (ShardingOperator.BETWEEN == eachCondition.getOperator()) {
                     SQLBetweenExpressionSegment expression = (SQLBetweenExpressionSegment) eachCondition.getExpression();
                     andConditionResult.getConditions().add(new Condition(column, expression.getBeginExpress(), expression.getEndExpress()));
                 }

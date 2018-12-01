@@ -89,29 +89,30 @@ public final class PredicateSegmentExtractor implements OptionalSQLSegmentExtrac
     }
     
     private Optional<OrConditionSegment> mergeCondition(final Optional<OrConditionSegment> leftOrCondition, final Optional<OrConditionSegment> rightOrCondition, final String operator) {
-        if (!leftOrCondition.get().getAndConditions().isEmpty() && !rightOrCondition.get().getAndConditions().isEmpty()) {
-            if (LogicalOperator.isOrOperator(operator)) {
-                leftOrCondition.get().getAndConditions().addAll(rightOrCondition.get().getAndConditions());
-                return leftOrCondition;
-            }
-            if (LogicalOperator.isAndOperator(operator)) {
-                OrConditionSegment result = new OrConditionSegment();
-                for (AndConditionSegment each : leftOrCondition.get().getAndConditions()) {
-                    for (AndConditionSegment eachRightOr : rightOrCondition.get().getAndConditions()) {
-                        AndConditionSegment tempList = new AndConditionSegment();
-                        tempList.getConditions().addAll(each.getConditions());
-                        tempList.getConditions().addAll(eachRightOr.getConditions());
-                        result.getAndConditions().add(tempList);
-                    }
-                }
-                return Optional.of(result);
-            }
+        if (!leftOrCondition.isPresent() && !rightOrCondition.isPresent()) {
+            return Optional.absent();
         }
-        if (!leftOrCondition.get().getAndConditions().isEmpty()) {
+        if (leftOrCondition.isPresent() && !rightOrCondition.isPresent()) {
             return leftOrCondition;
         }
-        if (!rightOrCondition.get().getAndConditions().isEmpty()) {
+        if (rightOrCondition.isPresent() && !leftOrCondition.isPresent()) {
             return rightOrCondition;
+        }
+        if (LogicalOperator.isOrOperator(operator)) {
+            leftOrCondition.get().getAndConditions().addAll(rightOrCondition.get().getAndConditions());
+            return leftOrCondition;
+        }
+        if (LogicalOperator.isAndOperator(operator)) {
+            OrConditionSegment result = new OrConditionSegment();
+            for (AndConditionSegment each : leftOrCondition.get().getAndConditions()) {
+                for (AndConditionSegment eachRightOr : rightOrCondition.get().getAndConditions()) {
+                    AndConditionSegment tempList = new AndConditionSegment();
+                    tempList.getConditions().addAll(each.getConditions());
+                    tempList.getConditions().addAll(eachRightOr.getConditions());
+                    result.getAndConditions().add(tempList);
+                }
+            }
+            return Optional.of(result);
         }
         return Optional.of(new OrConditionSegment());
     }
@@ -127,16 +128,19 @@ public final class PredicateSegmentExtractor implements OptionalSQLSegmentExtrac
         if (0 <= index) {
             Preconditions.checkState(exprNode.getChildCount() == index + 3, "Invalid expression.");
             Preconditions.checkState(Paren.match(exprNode.getChild(index).getText(), exprNode.getChild(index + 2).getText()), "Missing right paren.");
-            if (index >= 0 && RuleName.EXPR.name().equals(exprNode.getChild(index + 1).getClass().getSimpleName())) {
+            if (index >= 0 && RuleName.EXPR.getName().equals(exprNode.getChild(index + 1).getClass().getSimpleName())) {
                 return extractCondition(questionNodeIndexMap, (ParserRuleContext) exprNode.getChild(index + 1));
             }
             return Optional.absent();
         }
-        OrConditionSegment result = new OrConditionSegment();
-        AndConditionSegment newAndCondition = new AndConditionSegment();
-        newAndCondition.getConditions().add(buildCondition(questionNodeIndexMap, exprNode).get());
-        result.getAndConditions().add(newAndCondition);
-        return Optional.of(result);
+        Optional<ConditionSegment> condition = buildCondition(questionNodeIndexMap, exprNode);
+        if(condition.isPresent()) {
+            OrConditionSegment result = new OrConditionSegment();
+            AndConditionSegment newAndCondition = new AndConditionSegment();
+            newAndCondition.getConditions().add(condition.get());
+            result.getAndConditions().add(newAndCondition);
+        }
+        return Optional.absent();
     }
     
     private Optional<ConditionSegment> buildCondition(final Map<ParserRuleContext, Integer> questionNodeIndexMap, final ParserRuleContext exprNode) {
