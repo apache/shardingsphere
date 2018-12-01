@@ -15,19 +15,19 @@
  * </p>
  */
 
-package io.shardingsphere.orchestration.internal.listener;
+package io.shardingsphere.orchestration.internal.eventbus;
 
 import com.google.common.eventbus.EventBus;
 import lombok.AccessLevel;
 import lombok.NoArgsConstructor;
 
 /**
- * Sharding orchestration event bus for singleton instance.
+ * Sharding orchestration event bus.
  * 
  * @author zhangliang
  */
 @NoArgsConstructor(access = AccessLevel.PRIVATE)
-public final class ShardingOrchestrationEventBusInstance {
+public final class ShardingOrchestrationEventBus {
     
     private static final EventBus INSTANCE = new EventBus();
     

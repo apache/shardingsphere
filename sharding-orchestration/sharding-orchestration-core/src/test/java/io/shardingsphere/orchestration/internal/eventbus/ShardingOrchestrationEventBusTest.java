@@ -15,13 +15,17 @@
  * </p>
  */
 
-package io.shardingsphere.orchestration.internal.listener;
+package io.shardingsphere.orchestration.internal.eventbus;
 
-import org.junit.runner.RunWith;
-import org.junit.runners.Suite;
-import org.junit.runners.Suite.SuiteClasses;
+import org.junit.Test;
 
-@RunWith(Suite.class)
-@SuiteClasses(OrchestrationListenerManagerTest.class)
-public final class AllListenerTests {
+import static org.hamcrest.CoreMatchers.is;
+import static org.junit.Assert.assertThat;
+
+public final class ShardingOrchestrationEventBusTest {
+    
+    @Test
+    public void assertGetInstance() {
+        assertThat(ShardingOrchestrationEventBus.getInstance(), is(ShardingOrchestrationEventBus.getInstance()));
+    }
 }

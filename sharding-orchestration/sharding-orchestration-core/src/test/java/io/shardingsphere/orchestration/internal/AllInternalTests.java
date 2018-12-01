@@ -18,6 +18,7 @@
 package io.shardingsphere.orchestration.internal;
 
 import io.shardingsphere.orchestration.internal.config.AllConfigTests;
+import io.shardingsphere.orchestration.internal.eventbus.AllEventBusTests;
 import io.shardingsphere.orchestration.internal.listener.AllListenerTests;
 import io.shardingsphere.orchestration.internal.rule.AllRuleTests;
 import io.shardingsphere.orchestration.internal.state.AllStateTests;
@@ -28,9 +29,10 @@ import org.junit.runners.Suite.SuiteClasses;
 @RunWith(Suite.class)
 @SuiteClasses({
         AllRuleTests.class, 
-        AllConfigTests.class,
-        AllStateTests.class,
-        AllListenerTests.class
+        AllConfigTests.class, 
+        AllStateTests.class, 
+        AllListenerTests.class, 
+        AllEventBusTests.class
 })
 public final class AllInternalTests {
 }

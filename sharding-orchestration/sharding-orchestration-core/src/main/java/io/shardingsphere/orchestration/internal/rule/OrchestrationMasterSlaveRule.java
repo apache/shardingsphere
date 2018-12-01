@@ -21,7 +21,7 @@ import com.google.common.eventbus.Subscribe;
 import io.shardingsphere.api.config.MasterSlaveRuleConfiguration;
 import io.shardingsphere.core.constant.ShardingConstant;
 import io.shardingsphere.core.rule.MasterSlaveRule;
-import io.shardingsphere.orchestration.internal.listener.ShardingOrchestrationEventBusInstance;
+import io.shardingsphere.orchestration.internal.eventbus.ShardingOrchestrationEventBus;
 import io.shardingsphere.orchestration.internal.state.event.DisabledStateEvent;
 
 import java.util.Collection;
@@ -38,7 +38,7 @@ public final class OrchestrationMasterSlaveRule extends MasterSlaveRule {
     
     public OrchestrationMasterSlaveRule(final MasterSlaveRuleConfiguration config) {
         super(config);
-        ShardingOrchestrationEventBusInstance.getInstance().register(this);
+        ShardingOrchestrationEventBus.getInstance().register(this);
     }
     
     /**
