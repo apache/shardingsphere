@@ -17,8 +17,8 @@
 
 package io.shardingsphere.orchestration.internal.listener;
 
-import io.shardingsphere.orchestration.internal.config.listener.ConfigurationOrchestrationListenerManager;
-import io.shardingsphere.orchestration.internal.state.listener.StateOrchestrationListenerManager;
+import io.shardingsphere.orchestration.internal.config.listener.ConfigurationChangedListenerManager;
+import io.shardingsphere.orchestration.internal.state.listener.StateChangedListenerManager;
 import io.shardingsphere.orchestration.reg.api.RegistryCenter;
 
 import java.util.Collection;
@@ -31,20 +31,20 @@ import java.util.Collection;
  */
 public final class ShardingOrchestrationListenerManager {
     
-    private final ConfigurationOrchestrationListenerManager configOrchestrationListenerManager;
+    private final ConfigurationChangedListenerManager configurationChangedListenerManager;
     
-    private final StateOrchestrationListenerManager stateOrchestrationListenerManager;
+    private final StateChangedListenerManager stateChangedListenerManager;
     
     public ShardingOrchestrationListenerManager(final String name, final RegistryCenter regCenter, final Collection<String> shardingSchemaNames) {
-        configOrchestrationListenerManager = new ConfigurationOrchestrationListenerManager(name, regCenter, shardingSchemaNames);
-        stateOrchestrationListenerManager = new StateOrchestrationListenerManager(name, regCenter);
+        configurationChangedListenerManager = new ConfigurationChangedListenerManager(name, regCenter, shardingSchemaNames);
+        stateChangedListenerManager = new StateChangedListenerManager(name, regCenter);
     }
     
     /**
      * Initialize all orchestration listeners.
      */
     public void initListeners() {
-        configOrchestrationListenerManager.initListeners();
-        stateOrchestrationListenerManager.initListeners();
+        configurationChangedListenerManager.initListeners();
+        stateChangedListenerManager.initListeners();
     }
 }

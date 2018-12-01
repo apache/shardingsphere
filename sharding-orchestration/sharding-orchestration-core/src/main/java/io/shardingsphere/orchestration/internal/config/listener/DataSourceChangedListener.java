@@ -18,29 +18,32 @@
 package io.shardingsphere.orchestration.internal.config.listener;
 
 import com.google.common.base.Optional;
-import io.shardingsphere.orchestration.internal.config.event.AuthenticationChangedEvent;
+import io.shardingsphere.orchestration.internal.config.event.DataSourceChangedEvent;
 import io.shardingsphere.orchestration.internal.config.node.ConfigurationNode;
-import io.shardingsphere.orchestration.internal.config.service.ConfigurationService;
 import io.shardingsphere.orchestration.internal.listener.AbstractShardingOrchestrationListener;
 import io.shardingsphere.orchestration.internal.listener.PostShardingOrchestrationEventListener;
 import io.shardingsphere.orchestration.internal.listener.ShardingOrchestrationEvent;
+import io.shardingsphere.orchestration.internal.state.service.DataSourceService;
 import io.shardingsphere.orchestration.reg.api.RegistryCenter;
 import io.shardingsphere.orchestration.reg.listener.DataChangedEvent;
 import io.shardingsphere.orchestration.reg.listener.DataChangedEvent.Type;
 import io.shardingsphere.orchestration.reg.listener.DataChangedEventListener;
 
 /**
- * Authentication orchestration listener.
+ * Data source changed listener.
  *
  * @author panjuan
  */
-public final class AuthenticationOrchestrationListener extends AbstractShardingOrchestrationListener {
+public final class DataSourceChangedListener extends AbstractShardingOrchestrationListener {
     
-    private final ConfigurationService configService;
+    private final String shardingSchemaName;
     
-    public AuthenticationOrchestrationListener(final String name, final RegistryCenter regCenter) {
-        super(regCenter, new ConfigurationNode(name).getAuthenticationPath());
-        configService = new ConfigurationService(name, regCenter);
+    private final DataSourceService dataSourceService;
+    
+    public DataSourceChangedListener(final String name, final RegistryCenter regCenter, final String shardingSchemaName) {
+        super(regCenter, new ConfigurationNode(name).getDataSourcePath(shardingSchemaName));
+        this.shardingSchemaName = shardingSchemaName;
+        dataSourceService = new DataSourceService(name, regCenter);
     }
     
     @Override
@@ -50,7 +53,8 @@ public final class AuthenticationOrchestrationListener extends AbstractShardingO
             @Override
             protected Optional<ShardingOrchestrationEvent> createOrchestrationEvent(final DataChangedEvent event) {
                 return Type.UPDATED == event.getType()
-                        ? Optional.<ShardingOrchestrationEvent>of(new AuthenticationChangedEvent(configService.loadAuthentication())) : Optional.<ShardingOrchestrationEvent>absent();
+                        ? Optional.<ShardingOrchestrationEvent>of(new DataSourceChangedEvent(shardingSchemaName, dataSourceService.getAvailableDataSourceConfigurations(shardingSchemaName)))
+                        : Optional.<ShardingOrchestrationEvent>absent();
             }
         };
     }

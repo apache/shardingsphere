@@ -30,21 +30,21 @@ import static org.mockito.ArgumentMatchers.eq;
 import static org.mockito.Mockito.verify;
 
 @RunWith(MockitoJUnitRunner.class)
-public final class ConfigMapOrchestrationListenerTest {
+public final class ConfigMapChangedListenerTest {
     
-    private ConfigMapOrchestrationListener configMapOrchestrationListener;
+    private ConfigMapChangedListener configMapChangedListener;
     
     @Mock
     private RegistryCenter regCenter;
     
     @Before
     public void setUp() {
-        configMapOrchestrationListener = new ConfigMapOrchestrationListener("test", regCenter);
+        configMapChangedListener = new ConfigMapChangedListener("test", regCenter);
     }
     
     @Test
     public void assertWatch() {
-        configMapOrchestrationListener.watch();
+        configMapChangedListener.watch();
         verify(regCenter).watch(eq("/test/config/configmap"), any(DataChangedEventListener.class));
     }
 }

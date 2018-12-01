@@ -20,26 +20,26 @@ package io.shardingsphere.orchestration.internal.state.listener;
 import io.shardingsphere.orchestration.reg.api.RegistryCenter;
 
 /**
- * State orchestration listener manager.
+ * State changed listener manager.
  *
  * @author zhangliang
  */
-public final class StateOrchestrationListenerManager {
+public final class StateChangedListenerManager {
     
-    private final InstanceStateOrchestrationListener instanceStateListenerManager;
+    private final InstanceStateChangedListener instanceStateChangedListener;
     
-    private final DataSourceStateOrchestrationListener dataSourceStateListenerManager;
+    private final DataSourceStateChangedListener dataSourceStateChangedListener;
     
-    public StateOrchestrationListenerManager(final String name, final RegistryCenter regCenter) {
-        instanceStateListenerManager = new InstanceStateOrchestrationListener(name, regCenter);
-        dataSourceStateListenerManager = new DataSourceStateOrchestrationListener(name, regCenter);
+    public StateChangedListenerManager(final String name, final RegistryCenter regCenter) {
+        instanceStateChangedListener = new InstanceStateChangedListener(name, regCenter);
+        dataSourceStateChangedListener = new DataSourceStateChangedListener(name, regCenter);
     }
     
     /**
-     * Initialize all state orchestration listeners.
+     * Initialize all state changed listeners.
      */
     public void initListeners() {
-        instanceStateListenerManager.watch();
-        dataSourceStateListenerManager.watch();
+        instanceStateChangedListener.watch();
+        dataSourceStateChangedListener.watch();
     }
 }

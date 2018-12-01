@@ -32,12 +32,12 @@ import io.shardingsphere.orchestration.reg.listener.DataChangedEvent.Type;
 import io.shardingsphere.orchestration.reg.listener.DataChangedEventListener;
 
 /**
- * Rule orchestration listener.
+ * Rule changed listener.
  *
  * @author caohao
  * @author panjuan
  */
-public final class RuleOrchestrationListener extends AbstractShardingOrchestrationListener {
+public final class RuleChangedListener extends AbstractShardingOrchestrationListener {
     
     private final String shardingSchemaName;
     
@@ -45,7 +45,7 @@ public final class RuleOrchestrationListener extends AbstractShardingOrchestrati
     
     private final DataSourceService dataSourceService;
     
-    public RuleOrchestrationListener(final String name, final RegistryCenter regCenter, final String shardingSchemaName) {
+    public RuleChangedListener(final String name, final RegistryCenter regCenter, final String shardingSchemaName) {
         super(regCenter, new ConfigurationNode(name).getRulePath(shardingSchemaName));
         this.shardingSchemaName = shardingSchemaName;
         configService = new ConfigurationService(name, regCenter);

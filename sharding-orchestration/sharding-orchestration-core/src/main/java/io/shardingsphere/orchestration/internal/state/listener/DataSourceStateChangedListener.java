@@ -15,34 +15,31 @@
  * </p>
  */
 
-package io.shardingsphere.orchestration.internal.config.listener;
+package io.shardingsphere.orchestration.internal.state.listener;
 
 import com.google.common.base.Optional;
-import io.shardingsphere.orchestration.internal.config.event.DataSourceChangedEvent;
-import io.shardingsphere.orchestration.internal.config.node.ConfigurationNode;
 import io.shardingsphere.orchestration.internal.listener.AbstractShardingOrchestrationListener;
 import io.shardingsphere.orchestration.internal.listener.PostShardingOrchestrationEventListener;
 import io.shardingsphere.orchestration.internal.listener.ShardingOrchestrationEvent;
+import io.shardingsphere.orchestration.internal.state.event.DisabledStateChangedEvent;
+import io.shardingsphere.orchestration.internal.state.node.StateNode;
 import io.shardingsphere.orchestration.internal.state.service.DataSourceService;
 import io.shardingsphere.orchestration.reg.api.RegistryCenter;
 import io.shardingsphere.orchestration.reg.listener.DataChangedEvent;
-import io.shardingsphere.orchestration.reg.listener.DataChangedEvent.Type;
 import io.shardingsphere.orchestration.reg.listener.DataChangedEventListener;
 
 /**
- * Data source orchestration listener.
+ * Data source state changed listener.
  *
+ * @author caohao
  * @author panjuan
  */
-public final class DataSourceOrchestrationListener extends AbstractShardingOrchestrationListener {
-    
-    private final String shardingSchemaName;
+public final class DataSourceStateChangedListener extends AbstractShardingOrchestrationListener {
     
     private final DataSourceService dataSourceService;
     
-    public DataSourceOrchestrationListener(final String name, final RegistryCenter regCenter, final String shardingSchemaName) {
-        super(regCenter, new ConfigurationNode(name).getDataSourcePath(shardingSchemaName));
-        this.shardingSchemaName = shardingSchemaName;
+    public DataSourceStateChangedListener(final String name, final RegistryCenter regCenter) {
+        super(regCenter, new StateNode(name).getDataSourcesNodeFullRootPath());
         dataSourceService = new DataSourceService(name, regCenter);
     }
     
@@ -51,10 +48,8 @@ public final class DataSourceOrchestrationListener extends AbstractShardingOrche
         return new PostShardingOrchestrationEventListener() {
             
             @Override
-            protected Optional<ShardingOrchestrationEvent> createOrchestrationEvent(final DataChangedEvent event) {
-                return Type.UPDATED == event.getType()
-                        ? Optional.<ShardingOrchestrationEvent>of(new DataSourceChangedEvent(shardingSchemaName, dataSourceService.getAvailableDataSourceConfigurations(shardingSchemaName)))
-                        : Optional.<ShardingOrchestrationEvent>absent();
+            protected Optional<ShardingOrchestrationEvent> createOrchestrationEvent(final DataChangedEvent dataChangedEvent) {
+                return Optional.<ShardingOrchestrationEvent>of(new DisabledStateChangedEvent(dataSourceService.getDisabledSlaveSchemaGroup()));
             }
         };
     }

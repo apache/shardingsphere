@@ -30,16 +30,16 @@ import io.shardingsphere.orchestration.reg.listener.DataChangedEvent.Type;
 import io.shardingsphere.orchestration.reg.listener.DataChangedEventListener;
 
 /**
- * Config map orchestration listener.
+ * Config map changed listener.
  *
  * @author caohao
  * @author panjuan
  */
-public final class ConfigMapOrchestrationListener extends AbstractShardingOrchestrationListener {
+public final class ConfigMapChangedListener extends AbstractShardingOrchestrationListener {
     
     private final ConfigurationService configService;
     
-    public ConfigMapOrchestrationListener(final String name, final RegistryCenter regCenter) {
+    public ConfigMapChangedListener(final String name, final RegistryCenter regCenter) {
         super(regCenter, new ConfigurationNode(name).getConfigMapPath());
         configService = new ConfigurationService(name, regCenter);
     }

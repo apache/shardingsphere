@@ -15,32 +15,32 @@
  * </p>
  */
 
-package io.shardingsphere.orchestration.internal.state.listener;
+package io.shardingsphere.orchestration.internal.config.listener;
 
 import com.google.common.base.Optional;
+import io.shardingsphere.orchestration.internal.config.event.AuthenticationChangedEvent;
+import io.shardingsphere.orchestration.internal.config.node.ConfigurationNode;
+import io.shardingsphere.orchestration.internal.config.service.ConfigurationService;
 import io.shardingsphere.orchestration.internal.listener.AbstractShardingOrchestrationListener;
 import io.shardingsphere.orchestration.internal.listener.PostShardingOrchestrationEventListener;
 import io.shardingsphere.orchestration.internal.listener.ShardingOrchestrationEvent;
-import io.shardingsphere.orchestration.internal.state.event.DisabledStateChangedEvent;
-import io.shardingsphere.orchestration.internal.state.node.StateNode;
-import io.shardingsphere.orchestration.internal.state.service.DataSourceService;
 import io.shardingsphere.orchestration.reg.api.RegistryCenter;
 import io.shardingsphere.orchestration.reg.listener.DataChangedEvent;
+import io.shardingsphere.orchestration.reg.listener.DataChangedEvent.Type;
 import io.shardingsphere.orchestration.reg.listener.DataChangedEventListener;
 
 /**
- * Data source state orchestration listener.
+ * Authentication changed listener.
  *
- * @author caohao
  * @author panjuan
  */
-public final class DataSourceStateOrchestrationListener extends AbstractShardingOrchestrationListener {
+public final class AuthenticationChangedListener extends AbstractShardingOrchestrationListener {
     
-    private final DataSourceService dataSourceService;
+    private final ConfigurationService configService;
     
-    public DataSourceStateOrchestrationListener(final String name, final RegistryCenter regCenter) {
-        super(regCenter, new StateNode(name).getDataSourcesNodeFullRootPath());
-        dataSourceService = new DataSourceService(name, regCenter);
+    public AuthenticationChangedListener(final String name, final RegistryCenter regCenter) {
+        super(regCenter, new ConfigurationNode(name).getAuthenticationPath());
+        configService = new ConfigurationService(name, regCenter);
     }
     
     @Override
@@ -48,8 +48,9 @@ public final class DataSourceStateOrchestrationListener extends AbstractSharding
         return new PostShardingOrchestrationEventListener() {
             
             @Override
-            protected Optional<ShardingOrchestrationEvent> createOrchestrationEvent(final DataChangedEvent dataChangedEvent) {
-                return Optional.<ShardingOrchestrationEvent>of(new DisabledStateChangedEvent(dataSourceService.getDisabledSlaveSchemaGroup()));
+            protected Optional<ShardingOrchestrationEvent> createOrchestrationEvent(final DataChangedEvent event) {
+                return Type.UPDATED == event.getType()
+                        ? Optional.<ShardingOrchestrationEvent>of(new AuthenticationChangedEvent(configService.loadAuthentication())) : Optional.<ShardingOrchestrationEvent>absent();
             }
         };
     }

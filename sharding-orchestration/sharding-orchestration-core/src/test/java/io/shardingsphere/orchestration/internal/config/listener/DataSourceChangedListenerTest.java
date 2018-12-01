@@ -30,21 +30,21 @@ import static org.mockito.ArgumentMatchers.eq;
 import static org.mockito.Mockito.verify;
 
 @RunWith(MockitoJUnitRunner.class)
-public final class PropertiesOrchestrationListenerTest {
+public final class DataSourceChangedListenerTest {
     
-    private PropertiesOrchestrationListener propertiesOrchestrationListener;
+    private DataSourceChangedListener dataSourceChangedListener;
     
     @Mock
     private RegistryCenter regCenter;
     
     @Before
     public void setUp() {
-        propertiesOrchestrationListener = new PropertiesOrchestrationListener("test", regCenter);
+        dataSourceChangedListener = new DataSourceChangedListener("test", regCenter, "sharding_db");
     }
     
     @Test
     public void assertWatch() {
-        propertiesOrchestrationListener.watch();
-        verify(regCenter).watch(eq("/test/config/props"), any(DataChangedEventListener.class));
+        dataSourceChangedListener.watch();
+        verify(regCenter).watch(eq("/test/config/schema/sharding_db/datasource"), any(DataChangedEventListener.class));
     }
 }

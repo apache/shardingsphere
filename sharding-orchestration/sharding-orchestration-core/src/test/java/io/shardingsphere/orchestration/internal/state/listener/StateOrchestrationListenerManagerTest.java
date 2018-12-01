@@ -34,23 +34,23 @@ public final class StateOrchestrationListenerManagerTest {
     private RegistryCenter regCenter;
     
     @Mock
-    private InstanceStateOrchestrationListener instanceStateListenerManager;
+    private InstanceStateChangedListener instanceStateChangedListener;
     
     @Mock
-    private DataSourceStateOrchestrationListener dataSourceStateListenerManager;
+    private DataSourceStateChangedListener dataSourceStateChangedListener;
     
     @Test
     public void assertInitListeners() throws ReflectiveOperationException {
-        StateOrchestrationListenerManager actual = new StateOrchestrationListenerManager("test", regCenter);
-        setField(actual, "instanceStateListenerManager", instanceStateListenerManager);
-        setField(actual, "dataSourceStateListenerManager", dataSourceStateListenerManager);
+        StateChangedListenerManager actual = new StateChangedListenerManager("test", regCenter);
+        setField(actual, "instanceStateChangedListener", instanceStateChangedListener);
+        setField(actual, "dataSourceStateChangedListener", dataSourceStateChangedListener);
         actual.initListeners();
-        verify(instanceStateListenerManager).watch();
-        verify(dataSourceStateListenerManager).watch();
+        verify(instanceStateChangedListener).watch();
+        verify(dataSourceStateChangedListener).watch();
     }
     
     private void setField(final Object target, final String fieldName, final Object fieldValue) throws ReflectiveOperationException {
-        Field field = StateOrchestrationListenerManager.class.getDeclaredField(fieldName);
+        Field field = StateChangedListenerManager.class.getDeclaredField(fieldName);
         field.setAccessible(true);
         field.set(target, fieldValue);
     }

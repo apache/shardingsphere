@@ -35,46 +35,46 @@ public final class ConfigurationOrchestrationListenerManagerTest {
     private RegistryCenter regCenter;
     
     @Mock
-    private RuleOrchestrationListener ruleOrchestrationListener0;
+    private RuleChangedListener ruleChangedListener0;
     
     @Mock
-    private RuleOrchestrationListener ruleOrchestrationListener1;
+    private RuleChangedListener ruleChangedListener1;
     
     @Mock
-    private DataSourceOrchestrationListener dataSourceOrchestrationListener0;
+    private DataSourceChangedListener dataSourceChangedListener0;
     
     @Mock
-    private DataSourceOrchestrationListener dataSourceOrchestrationListener1;
+    private DataSourceChangedListener dataSourceChangedListener1;
     
     @Mock
-    private PropertiesOrchestrationListener propertiesListenerManager;
+    private PropertiesChangedListener propertiesChangedListener;
     
     @Mock
-    private AuthenticationOrchestrationListener authenticationListenerManager;
+    private AuthenticationChangedListener authenticationChangedListener;
     
     @Mock
-    private ConfigMapOrchestrationListener configMapListenerManager;
+    private ConfigMapChangedListener configMapChangedListener;
     
     @Test
     public void assertInitListeners() throws ReflectiveOperationException {
-        ConfigurationOrchestrationListenerManager actual = new ConfigurationOrchestrationListenerManager("test", regCenter, Arrays.asList("sharding_db", "masterslave_db"));
-        setField(actual, "ruleListenerManagers", Arrays.asList(ruleOrchestrationListener0, ruleOrchestrationListener1));
-        setField(actual, "dataSourceListenerManagers", Arrays.asList(dataSourceOrchestrationListener0, dataSourceOrchestrationListener1));
-        setField(actual, "propertiesListenerManager", propertiesListenerManager);
-        setField(actual, "authenticationListenerManager", authenticationListenerManager);
-        setField(actual, "configMapListenerManager", configMapListenerManager);
+        ConfigurationChangedListenerManager actual = new ConfigurationChangedListenerManager("test", regCenter, Arrays.asList("sharding_db", "masterslave_db"));
+        setField(actual, "ruleChangedListeners", Arrays.asList(ruleChangedListener0, ruleChangedListener1));
+        setField(actual, "dataSourceChangedListeners", Arrays.asList(dataSourceChangedListener0, dataSourceChangedListener1));
+        setField(actual, "propertiesChangedListener", propertiesChangedListener);
+        setField(actual, "authenticationChangedListener", authenticationChangedListener);
+        setField(actual, "configMapChangedListener", configMapChangedListener);
         actual.initListeners();
-        verify(ruleOrchestrationListener0).watch();
-        verify(ruleOrchestrationListener1).watch();
-        verify(dataSourceOrchestrationListener0).watch();
-        verify(dataSourceOrchestrationListener1).watch();
-        verify(propertiesListenerManager).watch();
-        verify(authenticationListenerManager).watch();
-        verify(configMapListenerManager).watch();
+        verify(ruleChangedListener0).watch();
+        verify(ruleChangedListener1).watch();
+        verify(dataSourceChangedListener0).watch();
+        verify(dataSourceChangedListener1).watch();
+        verify(propertiesChangedListener).watch();
+        verify(authenticationChangedListener).watch();
+        verify(configMapChangedListener).watch();
     }
     
     private void setField(final Object target, final String fieldName, final Object fieldValue) throws ReflectiveOperationException {
-        Field field = ConfigurationOrchestrationListenerManager.class.getDeclaredField(fieldName);
+        Field field = ConfigurationChangedListenerManager.class.getDeclaredField(fieldName);
         field.setAccessible(true);
         field.set(target, fieldValue);
     }

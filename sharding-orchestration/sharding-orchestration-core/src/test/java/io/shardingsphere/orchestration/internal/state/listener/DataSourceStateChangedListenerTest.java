@@ -26,26 +26,25 @@ import org.mockito.Mock;
 import org.mockito.junit.MockitoJUnitRunner;
 
 import static org.mockito.ArgumentMatchers.any;
-import static org.mockito.ArgumentMatchers.anyString;
+import static org.mockito.ArgumentMatchers.eq;
 import static org.mockito.Mockito.verify;
 
 @RunWith(MockitoJUnitRunner.class)
-public final class InstanceStateOrchestrationListenerTest {
+public final class DataSourceStateChangedListenerTest {
     
-    private InstanceStateOrchestrationListener instanceStateOrchestrationListener;
+    private DataSourceStateChangedListener dataSourceStateChangedListener;
     
     @Mock
     private RegistryCenter regCenter;
     
     @Before
     public void setUp() {
-        instanceStateOrchestrationListener = new InstanceStateOrchestrationListener("test", regCenter);
+        dataSourceStateChangedListener = new DataSourceStateChangedListener("test", regCenter);
     }
     
     @Test
     public void assertWatch() {
-        instanceStateOrchestrationListener.watch();
-        verify(regCenter).watch(anyString(), any(DataChangedEventListener.class));
-    
+        dataSourceStateChangedListener.watch();
+        verify(regCenter).watch(eq("/test/state/datasources"), any(DataChangedEventListener.class));
     }
 }

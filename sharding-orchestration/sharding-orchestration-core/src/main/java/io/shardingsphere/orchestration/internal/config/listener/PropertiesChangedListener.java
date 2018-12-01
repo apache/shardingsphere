@@ -15,34 +15,32 @@
  * </p>
  */
 
-package io.shardingsphere.orchestration.internal.state.listener;
+package io.shardingsphere.orchestration.internal.config.listener;
 
 import com.google.common.base.Optional;
+import io.shardingsphere.orchestration.internal.config.event.PropertiesChangedEvent;
+import io.shardingsphere.orchestration.internal.config.node.ConfigurationNode;
+import io.shardingsphere.orchestration.internal.config.service.ConfigurationService;
 import io.shardingsphere.orchestration.internal.listener.AbstractShardingOrchestrationListener;
 import io.shardingsphere.orchestration.internal.listener.PostShardingOrchestrationEventListener;
 import io.shardingsphere.orchestration.internal.listener.ShardingOrchestrationEvent;
-import io.shardingsphere.orchestration.internal.state.event.CircuitStateChangedEvent;
-import io.shardingsphere.orchestration.internal.state.instance.OrchestrationInstance;
-import io.shardingsphere.orchestration.internal.state.node.StateNode;
-import io.shardingsphere.orchestration.internal.state.node.StateNodeStatus;
 import io.shardingsphere.orchestration.reg.api.RegistryCenter;
 import io.shardingsphere.orchestration.reg.listener.DataChangedEvent;
 import io.shardingsphere.orchestration.reg.listener.DataChangedEvent.Type;
 import io.shardingsphere.orchestration.reg.listener.DataChangedEventListener;
 
 /**
- * Instance State orchestration listener.
+ * Properties changed listener.
  *
- * @author caohao
  * @author panjuan
  */
-public final class InstanceStateOrchestrationListener extends AbstractShardingOrchestrationListener {
+public final class PropertiesChangedListener extends AbstractShardingOrchestrationListener {
     
-    private final RegistryCenter regCenter;
+    private final ConfigurationService configService;
     
-    public InstanceStateOrchestrationListener(final String name, final RegistryCenter regCenter) {
-        super(regCenter, new StateNode(name).getInstancesNodeFullPath(OrchestrationInstance.getInstance().getInstanceId()));
-        this.regCenter = regCenter;
+    public PropertiesChangedListener(final String name, final RegistryCenter regCenter) {
+        super(regCenter, new ConfigurationNode(name).getPropsPath());
+        configService = new ConfigurationService(name, regCenter);
     }
     
     @Override
@@ -52,8 +50,7 @@ public final class InstanceStateOrchestrationListener extends AbstractShardingOr
             @Override
             protected Optional<ShardingOrchestrationEvent> createOrchestrationEvent(final DataChangedEvent event) {
                 return Type.UPDATED == event.getType()
-                        ? Optional.<ShardingOrchestrationEvent>of(new CircuitStateChangedEvent(StateNodeStatus.DISABLED.toString().equalsIgnoreCase(regCenter.get(event.getKey()))))
-                        : Optional.<ShardingOrchestrationEvent>absent();
+                        ? Optional.<ShardingOrchestrationEvent>of(new PropertiesChangedEvent(configService.loadProperties())) : Optional.<ShardingOrchestrationEvent>absent();
             }
         };
     }
