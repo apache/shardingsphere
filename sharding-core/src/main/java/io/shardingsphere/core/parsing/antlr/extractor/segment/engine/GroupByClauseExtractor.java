@@ -38,7 +38,7 @@ public final class GroupByClauseExtractor implements OptionalSQLSegmentExtractor
     
     @Override
     public Optional<GroupBySegment> extract(ParserRuleContext ancestorNode) {
-        Optional<ParserRuleContext> orderByParentNode = ASTUtils.findFirstChildNode(ancestorNode, RuleName.ORDER_BY_CLAUSE);
+        Optional<ParserRuleContext> orderByParentNode = ASTUtils.findFirstChildNode(ancestorNode, RuleName.GROUP_BY_CLAUSE);
         if (!orderByParentNode.isPresent()) {
             return Optional.absent();
         }
@@ -47,8 +47,9 @@ public final class GroupByClauseExtractor implements OptionalSQLSegmentExtractor
         return Optional.of(result);
     }
     
-    protected OrderBySegment buildSegment(final String ownerName, final String name, final int index, final OrderDirection orderDirection, final int orderTokenBeginPosition, final int columnBeginPosition) {
+    protected OrderBySegment buildSegment(final String ownerName, final String name, final int index, final OrderDirection orderDirection,
+                                          final int orderTokenBeginPosition, final int columnBeginPosition) {
         return new OrderBySegment(Optional.of(ownerName), Optional.of(name), columnBeginPosition, index, new OrderByToken(orderTokenBeginPosition));
     }
-
+    
 }

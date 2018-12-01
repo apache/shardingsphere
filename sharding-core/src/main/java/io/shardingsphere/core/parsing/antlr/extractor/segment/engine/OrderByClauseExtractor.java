@@ -22,7 +22,6 @@ import java.util.Collections;
 import java.util.LinkedList;
 
 import org.antlr.v4.runtime.ParserRuleContext;
-import org.antlr.v4.runtime.tree.TerminalNode;
 
 import com.google.common.base.Optional;
 
@@ -68,13 +67,16 @@ public class OrderByClauseExtractor implements CollectionSQLSegmentExtractor {
             if (numberNode.isPresent()) {
                 index = NumberUtil.getExactlyNumber(numberNode.get().getText(), 10).intValue();
             }
-            String name = each.getChild(0).getText();
-            String ownerName = "";
-            int pos = name.lastIndexOf(".");
+            String columnText = each.getChild(0).getText();
+            int pos = columnText.lastIndexOf(".");
             OrderDirection orderDirection = null;
+            Optional<String> owner = Optional.absent();
+            Optional<String> name = Optional.absent();
             if (0 < pos) {
-                ownerName = name.substring(0, pos);
-                name = name.substring(pos + 1);
+                owner = Optional.of(columnText.substring(0, pos));
+                name = Optional.of(columnText.substring(pos + 1));
+            }else {
+                name = Optional.of(columnText);
             }
             orderDirection = OrderDirection.ASC;
             if (1 < count) {
@@ -82,12 +84,13 @@ public class OrderByClauseExtractor implements CollectionSQLSegmentExtractor {
                     orderDirection = OrderDirection.DESC;
                 }
             }
-            result.add(buildSegment(ownerName, name, index, orderDirection, each.getStart().getStartIndex(), orderByParentNode.getStart().getStartIndex()));
+            result.add(buildSegment(owner, name, index, orderDirection, each.getStart().getStartIndex(), orderByParentNode.getStart().getStartIndex()));
         }
         return result;
     }
     
-    protected OrderBySegment buildSegment(final String ownerName, final String name, final int index, final OrderDirection orderDirection, final int orderTokenBeginPosition, final int columnBeginPosition) {
-        return new OrderBySegment(Optional.of(ownerName), Optional.of(name), columnBeginPosition, index, new OrderByToken(orderTokenBeginPosition));
+    protected OrderBySegment buildSegment(final Optional<String> ownerName, final Optional<String> name, final int index, 
+            final OrderDirection orderDirection, final int orderTokenBeginPosition, final int columnBeginPosition) {
+        return new OrderBySegment(ownerName, name, index, columnBeginPosition, new OrderByToken(orderTokenBeginPosition),  orderDirection, OrderDirection.ASC); 
     }
 }

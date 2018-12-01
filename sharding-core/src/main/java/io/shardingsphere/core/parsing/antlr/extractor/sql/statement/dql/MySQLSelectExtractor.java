@@ -29,7 +29,7 @@ import io.shardingsphere.core.parsing.antlr.extractor.segment.engine.GroupByClau
 import io.shardingsphere.core.parsing.antlr.extractor.segment.engine.IndexNamesExtractor;
 import io.shardingsphere.core.parsing.antlr.extractor.segment.engine.LimitClauseExtractor;
 import io.shardingsphere.core.parsing.antlr.extractor.segment.engine.OrderByClauseExtractor;
-import io.shardingsphere.core.parsing.antlr.extractor.segment.engine.SelectExpressionExtractor;
+import io.shardingsphere.core.parsing.antlr.extractor.segment.engine.SelectClauseExtractor;
 import io.shardingsphere.core.parsing.antlr.extractor.segment.engine.TableNamesExtractor;
 import io.shardingsphere.core.parsing.antlr.extractor.statement.engine.AbstractSQLStatementExtractor;
 import io.shardingsphere.core.parsing.parser.constant.DerivedColumn;
@@ -53,7 +53,7 @@ public class MySQLSelectExtractor extends AbstractSQLStatementExtractor {
     public MySQLSelectExtractor() {
         addSQLSegmentExtractor(new TableNamesExtractor());
         addSQLSegmentExtractor(new IndexNamesExtractor());
-        addSQLSegmentExtractor(new SelectExpressionExtractor());
+        addSQLSegmentExtractor(new SelectClauseExtractor());
         addSQLSegmentExtractor(new FromWhereExtractor());
         addSQLSegmentExtractor(new GroupByClauseExtractor());
         addSQLSegmentExtractor(new OrderByClauseExtractor());
@@ -72,8 +72,12 @@ public class MySQLSelectExtractor extends AbstractSQLStatementExtractor {
     private void appendDerivedColumns(final SelectStatement selectStatement, final ShardingTableMetaData shardingTableMetaData) {
         ItemsToken itemsToken = new ItemsToken(selectStatement.getSelectListLastPosition());
         appendAvgDerivedColumns(itemsToken, selectStatement);
-        appendDerivedOrderColumns(itemsToken, selectStatement.getOrderByItems(), selectStatement, shardingTableMetaData);
-        appendDerivedGroupColumns(itemsToken, selectStatement.getGroupByItems(), selectStatement, shardingTableMetaData);
+        if(!selectStatement.getOrderByItems().isEmpty()) {
+            appendDerivedOrderColumns(itemsToken, selectStatement.getOrderByItems(), selectStatement, shardingTableMetaData);
+        }
+        if(!selectStatement.getGroupByItems().isEmpty()) {
+            appendDerivedGroupColumns(itemsToken, selectStatement.getGroupByItems(), selectStatement, shardingTableMetaData);
+        }
         if (!itemsToken.getItems().isEmpty()) {
             selectStatement.addSQLToken(itemsToken);
         }
