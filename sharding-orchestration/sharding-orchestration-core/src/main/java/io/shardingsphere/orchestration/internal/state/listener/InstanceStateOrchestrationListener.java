@@ -27,7 +27,7 @@ import io.shardingsphere.orchestration.internal.state.node.StateNodeStatus;
 import io.shardingsphere.orchestration.reg.api.RegistryCenter;
 import io.shardingsphere.orchestration.reg.listener.DataChangedEvent;
 import io.shardingsphere.orchestration.reg.listener.DataChangedEvent.Type;
-import io.shardingsphere.orchestration.reg.listener.EventListener;
+import io.shardingsphere.orchestration.reg.listener.DataChangedEventListener;
 
 /**
  * Instance State orchestration listener.
@@ -45,12 +45,12 @@ public final class InstanceStateOrchestrationListener extends AbstractOrchestrat
     }
     
     @Override
-    protected EventListener getEventListener() {
+    protected DataChangedEventListener getDataChangedEventListener() {
         return new PostOrchestrationEventListener() {
             
             @Override
             protected Optional<Object> createEvent(final DataChangedEvent event) {
-                return Type.UPDATED == event.getEventType()
+                return Type.UPDATED == event.getType()
                         ? Optional.<Object>of(new CircuitStateEvent(StateNodeStatus.DISABLED.toString().equalsIgnoreCase(regCenter.get(event.getKey())))) : Optional.absent();
             }
         };

@@ -18,11 +18,11 @@
 package io.shardingsphere.orchestration.reg.listener;
 
 /**
- * Coordinator registry event change listener.
+ * Listener for data changed event.
  *
  * @author junxiong
  */
-public interface EventListener {
+public interface DataChangedEventListener {
     
     /**
      * Fire when event changed.

@@ -25,7 +25,7 @@ import io.shardingsphere.orchestration.internal.state.node.StateNode;
 import io.shardingsphere.orchestration.internal.state.service.DataSourceService;
 import io.shardingsphere.orchestration.reg.api.RegistryCenter;
 import io.shardingsphere.orchestration.reg.listener.DataChangedEvent;
-import io.shardingsphere.orchestration.reg.listener.EventListener;
+import io.shardingsphere.orchestration.reg.listener.DataChangedEventListener;
 
 /**
  * Data source state orchestration listener.
@@ -43,7 +43,7 @@ public final class DataSourceStateOrchestrationListener extends AbstractOrchestr
     }
     
     @Override
-    protected EventListener getEventListener() {
+    protected DataChangedEventListener getDataChangedEventListener() {
         return new PostOrchestrationEventListener() {
             
             @Override

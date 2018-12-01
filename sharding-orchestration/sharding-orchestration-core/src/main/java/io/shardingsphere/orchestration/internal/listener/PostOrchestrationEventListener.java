@@ -19,7 +19,7 @@ package io.shardingsphere.orchestration.internal.listener;
 
 import com.google.common.base.Optional;
 import io.shardingsphere.orchestration.reg.listener.DataChangedEvent;
-import io.shardingsphere.orchestration.reg.listener.EventListener;
+import io.shardingsphere.orchestration.reg.listener.DataChangedEventListener;
 import lombok.RequiredArgsConstructor;
 
 /**
@@ -28,7 +28,7 @@ import lombok.RequiredArgsConstructor;
  * @author zhangliang
  */
 @RequiredArgsConstructor
-public abstract class PostOrchestrationEventListener implements EventListener {
+public abstract class PostOrchestrationEventListener implements DataChangedEventListener {
     
     @Override
     public final void onChange(final DataChangedEvent event) {

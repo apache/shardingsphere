@@ -18,7 +18,7 @@
 package io.shardingsphere.orchestration.internal.listener;
 
 import io.shardingsphere.orchestration.reg.api.RegistryCenter;
-import io.shardingsphere.orchestration.reg.listener.EventListener;
+import io.shardingsphere.orchestration.reg.listener.DataChangedEventListener;
 import lombok.RequiredArgsConstructor;
 
 /**
@@ -35,8 +35,8 @@ public abstract class AbstractOrchestrationListener implements OrchestrationList
     
     @Override
     public final void watch() {
-        regCenter.watch(watchKey, getEventListener());
+        regCenter.watch(watchKey, getDataChangedEventListener());
     }
     
-    protected abstract EventListener getEventListener();
+    protected abstract DataChangedEventListener getDataChangedEventListener();
 }

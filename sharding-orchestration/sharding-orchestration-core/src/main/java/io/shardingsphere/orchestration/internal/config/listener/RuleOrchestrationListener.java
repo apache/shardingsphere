@@ -28,7 +28,7 @@ import io.shardingsphere.orchestration.internal.state.service.DataSourceService;
 import io.shardingsphere.orchestration.reg.api.RegistryCenter;
 import io.shardingsphere.orchestration.reg.listener.DataChangedEvent;
 import io.shardingsphere.orchestration.reg.listener.DataChangedEvent.Type;
-import io.shardingsphere.orchestration.reg.listener.EventListener;
+import io.shardingsphere.orchestration.reg.listener.DataChangedEventListener;
 
 /**
  * Rule orchestration listener.
@@ -52,12 +52,12 @@ public final class RuleOrchestrationListener extends AbstractOrchestrationListen
     }
     
     @Override
-    protected EventListener getEventListener() {
+    protected DataChangedEventListener getDataChangedEventListener() {
         return new PostOrchestrationEventListener() {
             
             @Override
             protected Optional<Object> createEvent(final DataChangedEvent event) {
-                return Type.UPDATED == event.getEventType() ? Optional.of(configService.isShardingRule(shardingSchemaName) ? getShardingConfigurationChangedEvent()
+                return Type.UPDATED == event.getType() ? Optional.of(configService.isShardingRule(shardingSchemaName) ? getShardingConfigurationChangedEvent()
                         : getMasterSlaveConfigurationChangedEvent()) : Optional.absent();
             }
             

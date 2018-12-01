@@ -18,7 +18,7 @@
 package io.shardingsphere.orchestration.internal.config.listener;
 
 import io.shardingsphere.orchestration.reg.api.RegistryCenter;
-import io.shardingsphere.orchestration.reg.listener.EventListener;
+import io.shardingsphere.orchestration.reg.listener.DataChangedEventListener;
 import org.junit.Before;
 import org.junit.Test;
 import org.junit.runner.RunWith;
@@ -45,6 +45,6 @@ public final class PropertiesOrchestrationListenerTest {
     @Test
     public void assertWatch() {
         propertiesOrchestrationListener.watch();
-        verify(regCenter).watch(eq("/test/config/props"), any(EventListener.class));
+        verify(regCenter).watch(eq("/test/config/props"), any(DataChangedEventListener.class));
     }
 }

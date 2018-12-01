@@ -23,7 +23,7 @@ import io.shardingsphere.orchestration.reg.api.RegistryCenter;
 import io.shardingsphere.orchestration.reg.api.RegistryCenterConfiguration;
 import io.shardingsphere.orchestration.reg.listener.DataChangedEvent;
 import io.shardingsphere.orchestration.reg.listener.DataChangedEvent.Type;
-import io.shardingsphere.orchestration.reg.listener.EventListener;
+import io.shardingsphere.orchestration.reg.listener.DataChangedEventListener;
 import org.apache.curator.framework.CuratorFramework;
 import org.apache.curator.framework.CuratorFrameworkFactory;
 import org.apache.curator.framework.api.ACLProvider;
@@ -212,7 +212,7 @@ public final class CuratorZookeeperRegistryCenter implements RegistryCenter {
     }
     
     @Override
-    public void watch(final String key, final EventListener eventListener) {
+    public void watch(final String key, final DataChangedEventListener dataChangedEventListener) {
         final String path = key + "/";
         if (!caches.containsKey(path)) {
             addCacheData(key);
@@ -228,7 +228,7 @@ public final class CuratorZookeeperRegistryCenter implements RegistryCenter {
                 }
                 Type eventType = getEventType(event);
                 if (Type.IGNORED != eventType) {
-                    eventListener.onChange(new DataChangedEvent(eventType, data.getPath(), null == data.getData() ? null : new String(data.getData(), "UTF-8")));
+                    dataChangedEventListener.onChange(new DataChangedEvent(data.getPath(), null == data.getData() ? null : new String(data.getData(), "UTF-8"), eventType));
                 }
             }
         });
