@@ -18,8 +18,8 @@
 package io.shardingsphere.orchestration;
 
 import io.shardingsphere.orchestration.internal.AllInternalTests;
-import io.shardingsphere.orchestration.internal.OrchestrationFacadeTest;
 import io.shardingsphere.orchestration.internal.RegistryCenterLoaderTest;
+import io.shardingsphere.orchestration.internal.ShardingOrchestrationFacadeTest;
 import io.shardingsphere.orchestration.yaml.AllYamlTests;
 import org.junit.runner.RunWith;
 import org.junit.runners.Suite;
@@ -27,9 +27,9 @@ import org.junit.runners.Suite.SuiteClasses;
 
 @RunWith(Suite.class)
 @SuiteClasses({
-        AllYamlTests.class, 
         RegistryCenterLoaderTest.class, 
-        OrchestrationFacadeTest.class, 
+        ShardingOrchestrationFacadeTest.class, 
+        AllYamlTests.class, 
         AllInternalTests.class
 })
 public final class AllTests {

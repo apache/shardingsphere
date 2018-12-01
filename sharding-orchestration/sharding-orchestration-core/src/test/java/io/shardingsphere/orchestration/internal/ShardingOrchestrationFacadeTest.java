@@ -44,9 +44,9 @@ import static org.mockito.Mockito.mock;
 import static org.mockito.Mockito.verify;
 
 @RunWith(MockitoJUnitRunner.class)
-public final class OrchestrationFacadeTest {
+public final class ShardingOrchestrationFacadeTest {
     
-    private OrchestrationFacade orchestrationFacade;
+    private ShardingOrchestrationFacade shardingOrchestrationFacade;
     
     @Mock
     private RegistryCenter regCenter;
@@ -65,12 +65,12 @@ public final class OrchestrationFacadeTest {
     
     @Before
     public void setUp() throws ReflectiveOperationException {
-        orchestrationFacade = new OrchestrationFacade(new OrchestrationConfiguration("test", new RegistryCenterConfiguration(), true), Arrays.asList("sharding_db", "masterslave_db"));
-        setField(orchestrationFacade, "regCenter", regCenter);
-        setField(orchestrationFacade, "configService", configService);
-        setField(orchestrationFacade, "instanceStateService", instanceStateService);
-        setField(orchestrationFacade, "dataSourceService", dataSourceService);
-        setField(orchestrationFacade, "listenerManager", listenerManager);
+        shardingOrchestrationFacade = new ShardingOrchestrationFacade(new OrchestrationConfiguration("test", new RegistryCenterConfiguration(), true), Arrays.asList("sharding_db", "masterslave_db"));
+        setField(shardingOrchestrationFacade, "regCenter", regCenter);
+        setField(shardingOrchestrationFacade, "configService", configService);
+        setField(shardingOrchestrationFacade, "instanceStateService", instanceStateService);
+        setField(shardingOrchestrationFacade, "dataSourceService", dataSourceService);
+        setField(shardingOrchestrationFacade, "listenerManager", listenerManager);
     }
     
     private void setField(final Object target, final String fieldName, final Object fieldValue) throws ReflectiveOperationException {
@@ -85,7 +85,7 @@ public final class OrchestrationFacadeTest {
         Map<String, RuleConfiguration> ruleConfigurationMap = Collections.singletonMap("sharding_db", mock(RuleConfiguration.class));
         Authentication authentication = new Authentication();
         Properties props = new Properties();
-        orchestrationFacade.init(
+        shardingOrchestrationFacade.init(
                 Collections.singletonMap("sharding_db", dataSourceConfigurationMap), ruleConfigurationMap, authentication, Collections.<String, Object>emptyMap(), props);
         verify(configService).persistConfiguration(
                 "sharding_db", dataSourceConfigurationMap, ruleConfigurationMap.get("sharding_db"), authentication, Collections.<String, Object>emptyMap(), props, true);
@@ -96,7 +96,7 @@ public final class OrchestrationFacadeTest {
     
     @Test
     public void assertInitWithoutParameters() {
-        orchestrationFacade.init();
+        shardingOrchestrationFacade.init();
         verify(instanceStateService).persistInstanceOnline();
         verify(dataSourceService).initDataSourcesNode();
         verify(listenerManager).initListeners();
@@ -104,14 +104,14 @@ public final class OrchestrationFacadeTest {
     
     @Test
     public void assertCloseSuccess() throws Exception {
-        orchestrationFacade.close();
+        shardingOrchestrationFacade.close();
         verify(regCenter).close();
     }
     
     @Test
     public void assertCloseFailure() throws Exception {
         doThrow(new RuntimeException()).when(regCenter).close();
-        orchestrationFacade.close();
+        shardingOrchestrationFacade.close();
         verify(regCenter).close();
     }
 }

@@ -35,14 +35,14 @@ import java.util.Map.Entry;
 import java.util.Properties;
 
 /**
- * Orchestration service facade.
+ * Sharding orchestration facade.
  *
  * @author zhangliang
  * @author caohao
  * @author panjuan
  */
 @Slf4j
-public final class OrchestrationFacade implements AutoCloseable {
+public final class ShardingOrchestrationFacade implements AutoCloseable {
     
     private final RegistryCenter regCenter;
     
@@ -57,7 +57,7 @@ public final class OrchestrationFacade implements AutoCloseable {
     
     private final ShardingOrchestrationListenerManager listenerManager;
     
-    public OrchestrationFacade(final OrchestrationConfiguration orchestrationConfig, final Collection<String> shardingSchemaNames) {
+    public ShardingOrchestrationFacade(final OrchestrationConfiguration orchestrationConfig, final Collection<String> shardingSchemaNames) {
         regCenter = RegistryCenterLoader.load(orchestrationConfig.getRegCenterConfig());
         isOverwrite = orchestrationConfig.isOverwrite();
         configService = new ConfigurationService(orchestrationConfig.getName(), regCenter);

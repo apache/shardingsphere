@@ -31,7 +31,7 @@ import java.util.Collections;
 import static org.mockito.Mockito.verify;
 
 @RunWith(MockitoJUnitRunner.class)
-public final class OrchestrationListenerManagerTest {
+public final class ShardingOrchestrationListenerManagerTest {
     
     @Mock
     private RegistryCenter regCenter;

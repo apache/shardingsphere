@@ -22,6 +22,6 @@ import org.junit.runners.Suite;
 import org.junit.runners.Suite.SuiteClasses;
 
 @RunWith(Suite.class)
-@SuiteClasses(OrchestrationListenerManagerTest.class)
+@SuiteClasses(ShardingOrchestrationListenerManagerTest.class)
 public final class AllListenerTests {
 }
