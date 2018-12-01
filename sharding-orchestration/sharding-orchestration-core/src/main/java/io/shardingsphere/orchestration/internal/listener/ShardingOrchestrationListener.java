@@ -18,12 +18,12 @@
 package io.shardingsphere.orchestration.internal.listener;
 
 /**
- * Orchestration listener.
+ * Sharding orchestration listener.
  *
  * @author caohao
  * @author panjuan
  */
-public interface OrchestrationListener {
+public interface ShardingOrchestrationListener {
     
     /**
      * Start to watch.

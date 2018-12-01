@@ -15,20 +15,12 @@
  * </p>
  */
 
-package io.shardingsphere.orchestration.internal.state.event;
-
-import io.shardingsphere.orchestration.internal.state.schema.OrchestrationShardingSchemaGroup;
-import lombok.Getter;
-import lombok.RequiredArgsConstructor;
+package io.shardingsphere.orchestration.internal.listener;
 
 /**
- * Disabled state event.
+ * Sharding orchestration event.
  *
- * @author panjuan
+ * @author zhangliang
  */
-@RequiredArgsConstructor
-@Getter
-public final class DisabledStateEvent {
-    
-    private final OrchestrationShardingSchemaGroup disabledGroup;
+public interface ShardingOrchestrationEvent {
 }

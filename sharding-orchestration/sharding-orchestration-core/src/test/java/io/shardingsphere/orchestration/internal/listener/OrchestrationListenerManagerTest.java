@@ -44,7 +44,7 @@ public final class OrchestrationListenerManagerTest {
     
     @Test
     public void assertInitListeners() throws ReflectiveOperationException {
-        OrchestrationListenerManager actual = new OrchestrationListenerManager("test", regCenter, Collections.<String>emptyList());
+        ShardingOrchestrationListenerManager actual = new ShardingOrchestrationListenerManager("test", regCenter, Collections.<String>emptyList());
         setField(actual, "configOrchestrationListenerManager", configOrchestrationListenerManager);
         setField(actual, "stateOrchestrationListenerManager", stateOrchestrationListenerManager);
         actual.initListeners();
@@ -53,7 +53,7 @@ public final class OrchestrationListenerManagerTest {
     }
     
     private void setField(final Object target, final String fieldName, final Object fieldValue) throws ReflectiveOperationException {
-        Field field = OrchestrationListenerManager.class.getDeclaredField(fieldName);
+        Field field = ShardingOrchestrationListenerManager.class.getDeclaredField(fieldName);
         field.setAccessible(true);
         field.set(target, fieldValue);
     }

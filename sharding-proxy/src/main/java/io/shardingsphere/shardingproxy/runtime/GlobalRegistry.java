@@ -31,7 +31,7 @@ import io.shardingsphere.core.rule.DataSourceParameter;
 import io.shardingsphere.orchestration.internal.config.event.AuthenticationChangedEvent;
 import io.shardingsphere.orchestration.internal.config.event.PropertiesChangedEvent;
 import io.shardingsphere.orchestration.internal.eventbus.ShardingOrchestrationEventBus;
-import io.shardingsphere.orchestration.internal.state.event.CircuitStateEvent;
+import io.shardingsphere.orchestration.internal.state.event.CircuitStateChangedEvent;
 import io.shardingsphere.shardingproxy.runtime.schema.LogicSchema;
 import io.shardingsphere.shardingproxy.runtime.schema.MasterSlaveSchema;
 import io.shardingsphere.shardingproxy.runtime.schema.ShardingSchema;
@@ -191,10 +191,10 @@ public final class GlobalRegistry {
     /**
      * Renew circuit breaker data source names.
      *
-     * @param circuitStateEvent circuit state event
+     * @param circuitStateChangedEvent circuit state changed event
      */
     @Subscribe
-    public void renewCircuitBreakerDataSourceNames(final CircuitStateEvent circuitStateEvent) {
-        isCircuitBreak = circuitStateEvent.isCircuitBreak();
+    public void renewCircuitBreakerDataSourceNames(final CircuitStateChangedEvent circuitStateChangedEvent) {
+        isCircuitBreak = circuitStateChangedEvent.isCircuitBreak();
     }
 }

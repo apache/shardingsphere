@@ -24,18 +24,18 @@ import io.shardingsphere.orchestration.reg.api.RegistryCenter;
 import java.util.Collection;
 
 /**
- * Orchestration listener manager.
+ * Sharding orchestration listener manager.
  *
  * @author caohao
  * @author panjuan
  */
-public final class OrchestrationListenerManager {
+public final class ShardingOrchestrationListenerManager {
     
     private final ConfigurationOrchestrationListenerManager configOrchestrationListenerManager;
     
     private final StateOrchestrationListenerManager stateOrchestrationListenerManager;
     
-    public OrchestrationListenerManager(final String name, final RegistryCenter regCenter, final Collection<String> shardingSchemaNames) {
+    public ShardingOrchestrationListenerManager(final String name, final RegistryCenter regCenter, final Collection<String> shardingSchemaNames) {
         configOrchestrationListenerManager = new ConfigurationOrchestrationListenerManager(name, regCenter, shardingSchemaNames);
         stateOrchestrationListenerManager = new StateOrchestrationListenerManager(name, regCenter);
     }

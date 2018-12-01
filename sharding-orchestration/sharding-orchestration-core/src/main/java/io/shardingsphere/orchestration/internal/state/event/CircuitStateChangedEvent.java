@@ -17,6 +17,7 @@
 
 package io.shardingsphere.orchestration.internal.state.event;
 
+import io.shardingsphere.orchestration.internal.listener.ShardingOrchestrationEvent;
 import lombok.Getter;
 import lombok.RequiredArgsConstructor;
 
@@ -27,7 +28,7 @@ import lombok.RequiredArgsConstructor;
  */
 @RequiredArgsConstructor
 @Getter
-public final class CircuitStateEvent {
+public final class CircuitStateChangedEvent implements ShardingOrchestrationEvent {
     
     private final boolean isCircuitBreak;
 }

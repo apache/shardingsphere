@@ -21,7 +21,7 @@ import com.google.common.eventbus.Subscribe;
 import io.shardingsphere.core.constant.ShardingConstant;
 import io.shardingsphere.orchestration.internal.OrchestrationFacade;
 import io.shardingsphere.orchestration.internal.eventbus.ShardingOrchestrationEventBus;
-import io.shardingsphere.orchestration.internal.state.event.CircuitStateEvent;
+import io.shardingsphere.orchestration.internal.state.event.CircuitStateChangedEvent;
 import io.shardingsphere.shardingjdbc.jdbc.adapter.AbstractDataSourceAdapter;
 import io.shardingsphere.shardingjdbc.orchestration.internal.util.DataSourceConverter;
 import lombok.AccessLevel;
@@ -59,10 +59,10 @@ public abstract class AbstractOrchestrationDataSource extends AbstractDataSource
      /**
      * Renew circuit breaker data source names.
      *
-     * @param circuitStateEvent jdbc circuit event
+     * @param circuitStateChangedEvent circuit state changed event
      */
     @Subscribe
-    public void renew(final CircuitStateEvent circuitStateEvent) {
-        isCircuitBreak = circuitStateEvent.isCircuitBreak();
+    public void renew(final CircuitStateChangedEvent circuitStateChangedEvent) {
+        isCircuitBreak = circuitStateChangedEvent.isCircuitBreak();
     }
 }

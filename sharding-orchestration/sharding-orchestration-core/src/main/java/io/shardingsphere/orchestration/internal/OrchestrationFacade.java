@@ -22,7 +22,7 @@ import io.shardingsphere.core.config.DataSourceConfiguration;
 import io.shardingsphere.core.rule.Authentication;
 import io.shardingsphere.orchestration.config.OrchestrationConfiguration;
 import io.shardingsphere.orchestration.internal.config.service.ConfigurationService;
-import io.shardingsphere.orchestration.internal.listener.OrchestrationListenerManager;
+import io.shardingsphere.orchestration.internal.listener.ShardingOrchestrationListenerManager;
 import io.shardingsphere.orchestration.internal.state.service.DataSourceService;
 import io.shardingsphere.orchestration.internal.state.service.InstanceStateService;
 import io.shardingsphere.orchestration.reg.api.RegistryCenter;
@@ -55,7 +55,7 @@ public final class OrchestrationFacade implements AutoCloseable {
     
     private final DataSourceService dataSourceService;
     
-    private final OrchestrationListenerManager listenerManager;
+    private final ShardingOrchestrationListenerManager listenerManager;
     
     public OrchestrationFacade(final OrchestrationConfiguration orchestrationConfig, final Collection<String> shardingSchemaNames) {
         regCenter = RegistryCenterLoader.load(orchestrationConfig.getRegCenterConfig());
@@ -63,8 +63,8 @@ public final class OrchestrationFacade implements AutoCloseable {
         configService = new ConfigurationService(orchestrationConfig.getName(), regCenter);
         instanceStateService = new InstanceStateService(orchestrationConfig.getName(), regCenter);
         dataSourceService = new DataSourceService(orchestrationConfig.getName(), regCenter);
-        listenerManager = shardingSchemaNames.isEmpty() ? new OrchestrationListenerManager(orchestrationConfig.getName(), regCenter, configService.getAllShardingSchemaNames())
-                : new OrchestrationListenerManager(orchestrationConfig.getName(), regCenter, shardingSchemaNames);
+        listenerManager = shardingSchemaNames.isEmpty() ? new ShardingOrchestrationListenerManager(orchestrationConfig.getName(), regCenter, configService.getAllShardingSchemaNames())
+                : new ShardingOrchestrationListenerManager(orchestrationConfig.getName(), regCenter, shardingSchemaNames);
     }
     
     /**

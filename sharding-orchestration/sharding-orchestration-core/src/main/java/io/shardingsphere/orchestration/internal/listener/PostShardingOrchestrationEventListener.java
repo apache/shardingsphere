@@ -15,31 +15,30 @@
  * </p>
  */
 
-package io.shardingsphere.orchestration.internal.eventbus;
+package io.shardingsphere.orchestration.internal.listener;
 
 import com.google.common.base.Optional;
 import com.google.common.eventbus.EventBus;
+import io.shardingsphere.orchestration.internal.eventbus.ShardingOrchestrationEventBus;
 import io.shardingsphere.orchestration.reg.listener.DataChangedEvent;
 import io.shardingsphere.orchestration.reg.listener.DataChangedEventListener;
-import lombok.RequiredArgsConstructor;
 
 /**
- * Post orchestration event listener.
+ * Post sharding orchestration event listener.
  *
  * @author zhangliang
  */
-@RequiredArgsConstructor
-public abstract class PostOrchestrationEventListener implements DataChangedEventListener {
+public abstract class PostShardingOrchestrationEventListener implements DataChangedEventListener {
     
     private final EventBus eventBus = ShardingOrchestrationEventBus.getInstance();
     
     @Override
-    public final void onChange(final DataChangedEvent event) {
-        Optional<Object> newEvent = createEvent(event);
+    public final void onChange(final DataChangedEvent dataChangedEvent) {
+        Optional<ShardingOrchestrationEvent> newEvent = createOrchestrationEvent(dataChangedEvent);
         if (newEvent.isPresent()) {
             eventBus.post(newEvent);
         }
     }
     
-    protected abstract Optional<Object> createEvent(DataChangedEvent event);
+    protected abstract Optional<ShardingOrchestrationEvent> createOrchestrationEvent(DataChangedEvent event);
 }

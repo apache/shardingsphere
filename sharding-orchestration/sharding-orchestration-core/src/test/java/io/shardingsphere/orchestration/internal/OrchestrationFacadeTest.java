@@ -22,7 +22,7 @@ import io.shardingsphere.core.config.DataSourceConfiguration;
 import io.shardingsphere.core.rule.Authentication;
 import io.shardingsphere.orchestration.config.OrchestrationConfiguration;
 import io.shardingsphere.orchestration.internal.config.service.ConfigurationService;
-import io.shardingsphere.orchestration.internal.listener.OrchestrationListenerManager;
+import io.shardingsphere.orchestration.internal.listener.ShardingOrchestrationListenerManager;
 import io.shardingsphere.orchestration.internal.state.service.DataSourceService;
 import io.shardingsphere.orchestration.internal.state.service.InstanceStateService;
 import io.shardingsphere.orchestration.reg.api.RegistryCenter;
@@ -61,7 +61,7 @@ public final class OrchestrationFacadeTest {
     private DataSourceService dataSourceService;
     
     @Mock
-    private OrchestrationListenerManager listenerManager;
+    private ShardingOrchestrationListenerManager listenerManager;
     
     @Before
     public void setUp() throws ReflectiveOperationException {

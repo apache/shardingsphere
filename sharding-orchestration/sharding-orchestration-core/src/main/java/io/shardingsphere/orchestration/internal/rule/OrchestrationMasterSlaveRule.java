@@ -22,7 +22,7 @@ import io.shardingsphere.api.config.MasterSlaveRuleConfiguration;
 import io.shardingsphere.core.constant.ShardingConstant;
 import io.shardingsphere.core.rule.MasterSlaveRule;
 import io.shardingsphere.orchestration.internal.eventbus.ShardingOrchestrationEventBus;
-import io.shardingsphere.orchestration.internal.state.event.DisabledStateEvent;
+import io.shardingsphere.orchestration.internal.state.event.DisabledStateChangedEvent;
 
 import java.util.Collection;
 import java.util.LinkedList;
@@ -58,11 +58,11 @@ public final class OrchestrationMasterSlaveRule extends MasterSlaveRule {
     /**
      * Renew disable data source names.
      *
-     * @param disabledStateEvent disabled state event
+     * @param disabledStateChangedEvent disabled state changed event
      */
     @Subscribe
-    public void renew(final DisabledStateEvent disabledStateEvent) {
+    public void renew(final DisabledStateChangedEvent disabledStateChangedEvent) {
         disabledDataSourceNames.clear();
-        disabledDataSourceNames.addAll(disabledStateEvent.getDisabledGroup().getDataSourceNames(ShardingConstant.LOGIC_SCHEMA_NAME));
+        disabledDataSourceNames.addAll(disabledStateChangedEvent.getDisabledGroup().getDataSourceNames(ShardingConstant.LOGIC_SCHEMA_NAME));
     }
 }

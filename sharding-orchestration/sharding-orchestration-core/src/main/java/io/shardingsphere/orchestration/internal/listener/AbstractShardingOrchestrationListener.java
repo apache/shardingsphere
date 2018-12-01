@@ -15,22 +15,28 @@
  * </p>
  */
 
-package io.shardingsphere.orchestration.internal.config.event;
+package io.shardingsphere.orchestration.internal.listener;
 
-import io.shardingsphere.orchestration.internal.listener.ShardingOrchestrationEvent;
-import lombok.Getter;
+import io.shardingsphere.orchestration.reg.api.RegistryCenter;
+import io.shardingsphere.orchestration.reg.listener.DataChangedEventListener;
 import lombok.RequiredArgsConstructor;
 
-import java.util.Properties;
-
 /**
- * Properties changed event.
+ * Abstract sharding orchestration listener.
  *
- * @author panjuan
+ * @author zhangliang
  */
 @RequiredArgsConstructor
-@Getter
-public final class PropertiesChangedEvent implements ShardingOrchestrationEvent {
+public abstract class AbstractShardingOrchestrationListener implements ShardingOrchestrationListener {
     
-    private final Properties props;
+    private final RegistryCenter regCenter;
+    
+    private final String watchKey;
+    
+    @Override
+    public final void watch() {
+        regCenter.watch(watchKey, getDataChangedEventListener());
+    }
+    
+    protected abstract DataChangedEventListener getDataChangedEventListener();
 }

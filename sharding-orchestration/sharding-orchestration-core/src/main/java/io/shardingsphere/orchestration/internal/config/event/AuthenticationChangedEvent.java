@@ -18,6 +18,7 @@
 package io.shardingsphere.orchestration.internal.config.event;
 
 import io.shardingsphere.core.rule.Authentication;
+import io.shardingsphere.orchestration.internal.listener.ShardingOrchestrationEvent;
 import lombok.Getter;
 import lombok.RequiredArgsConstructor;
 
@@ -28,7 +29,7 @@ import lombok.RequiredArgsConstructor;
  */
 @RequiredArgsConstructor
 @Getter
-public final class AuthenticationChangedEvent {
+public final class AuthenticationChangedEvent implements ShardingOrchestrationEvent {
     
     private final Authentication authentication;
 }

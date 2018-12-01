@@ -18,9 +18,10 @@
 package io.shardingsphere.orchestration.internal.state.listener;
 
 import com.google.common.base.Optional;
-import io.shardingsphere.orchestration.internal.eventbus.PostOrchestrationEventListener;
-import io.shardingsphere.orchestration.internal.listener.AbstractOrchestrationListener;
-import io.shardingsphere.orchestration.internal.state.event.DisabledStateEvent;
+import io.shardingsphere.orchestration.internal.listener.AbstractShardingOrchestrationListener;
+import io.shardingsphere.orchestration.internal.listener.PostShardingOrchestrationEventListener;
+import io.shardingsphere.orchestration.internal.listener.ShardingOrchestrationEvent;
+import io.shardingsphere.orchestration.internal.state.event.DisabledStateChangedEvent;
 import io.shardingsphere.orchestration.internal.state.node.StateNode;
 import io.shardingsphere.orchestration.internal.state.service.DataSourceService;
 import io.shardingsphere.orchestration.reg.api.RegistryCenter;
@@ -33,7 +34,7 @@ import io.shardingsphere.orchestration.reg.listener.DataChangedEventListener;
  * @author caohao
  * @author panjuan
  */
-public final class DataSourceStateOrchestrationListener extends AbstractOrchestrationListener {
+public final class DataSourceStateOrchestrationListener extends AbstractShardingOrchestrationListener {
     
     private final DataSourceService dataSourceService;
     
@@ -44,11 +45,11 @@ public final class DataSourceStateOrchestrationListener extends AbstractOrchestr
     
     @Override
     protected DataChangedEventListener getDataChangedEventListener() {
-        return new PostOrchestrationEventListener() {
+        return new PostShardingOrchestrationEventListener() {
             
             @Override
-            protected Optional<Object> createEvent(final DataChangedEvent dataChangedEvent) {
-                return Optional.<Object>of(new DisabledStateEvent(dataSourceService.getDisabledSlaveSchemaGroup()));
+            protected Optional<ShardingOrchestrationEvent> createOrchestrationEvent(final DataChangedEvent dataChangedEvent) {
+                return Optional.<ShardingOrchestrationEvent>of(new DisabledStateChangedEvent(dataSourceService.getDisabledSlaveSchemaGroup()));
             }
         };
     }

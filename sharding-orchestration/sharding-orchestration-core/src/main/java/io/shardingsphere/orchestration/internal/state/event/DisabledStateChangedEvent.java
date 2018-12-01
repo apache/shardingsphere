@@ -15,28 +15,21 @@
  * </p>
  */
 
-package io.shardingsphere.orchestration.internal.listener;
+package io.shardingsphere.orchestration.internal.state.event;
 
-import io.shardingsphere.orchestration.reg.api.RegistryCenter;
-import io.shardingsphere.orchestration.reg.listener.DataChangedEventListener;
+import io.shardingsphere.orchestration.internal.listener.ShardingOrchestrationEvent;
+import io.shardingsphere.orchestration.internal.state.schema.OrchestrationShardingSchemaGroup;
+import lombok.Getter;
 import lombok.RequiredArgsConstructor;
 
 /**
- * Abstract orchestration listener.
+ * Disabled state event.
  *
- * @author zhangliang
+ * @author panjuan
  */
 @RequiredArgsConstructor
-public abstract class AbstractOrchestrationListener implements OrchestrationListener {
+@Getter
+public final class DisabledStateChangedEvent implements ShardingOrchestrationEvent {
     
-    private final RegistryCenter regCenter;
-    
-    private final String watchKey;
-    
-    @Override
-    public final void watch() {
-        regCenter.watch(watchKey, getDataChangedEventListener());
-    }
-    
-    protected abstract DataChangedEventListener getDataChangedEventListener();
+    private final OrchestrationShardingSchemaGroup disabledGroup;
 }

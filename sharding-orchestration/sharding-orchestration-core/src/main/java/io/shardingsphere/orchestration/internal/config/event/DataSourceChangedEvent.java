@@ -18,6 +18,7 @@
 package io.shardingsphere.orchestration.internal.config.event;
 
 import io.shardingsphere.core.config.DataSourceConfiguration;
+import io.shardingsphere.orchestration.internal.listener.ShardingOrchestrationEvent;
 import lombok.Getter;
 import lombok.RequiredArgsConstructor;
 
@@ -30,7 +31,7 @@ import java.util.Map;
  */
 @RequiredArgsConstructor
 @Getter
-public final class DataSourceChangedEvent {
+public final class DataSourceChangedEvent implements ShardingOrchestrationEvent {
     
     private final String schemaName;
     

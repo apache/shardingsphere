@@ -18,9 +18,10 @@
 package io.shardingsphere.orchestration.internal.state.listener;
 
 import com.google.common.base.Optional;
-import io.shardingsphere.orchestration.internal.eventbus.PostOrchestrationEventListener;
-import io.shardingsphere.orchestration.internal.listener.AbstractOrchestrationListener;
-import io.shardingsphere.orchestration.internal.state.event.CircuitStateEvent;
+import io.shardingsphere.orchestration.internal.listener.AbstractShardingOrchestrationListener;
+import io.shardingsphere.orchestration.internal.listener.PostShardingOrchestrationEventListener;
+import io.shardingsphere.orchestration.internal.listener.ShardingOrchestrationEvent;
+import io.shardingsphere.orchestration.internal.state.event.CircuitStateChangedEvent;
 import io.shardingsphere.orchestration.internal.state.instance.OrchestrationInstance;
 import io.shardingsphere.orchestration.internal.state.node.StateNode;
 import io.shardingsphere.orchestration.internal.state.node.StateNodeStatus;
@@ -35,7 +36,7 @@ import io.shardingsphere.orchestration.reg.listener.DataChangedEventListener;
  * @author caohao
  * @author panjuan
  */
-public final class InstanceStateOrchestrationListener extends AbstractOrchestrationListener {
+public final class InstanceStateOrchestrationListener extends AbstractShardingOrchestrationListener {
     
     private final RegistryCenter regCenter;
     
@@ -46,12 +47,13 @@ public final class InstanceStateOrchestrationListener extends AbstractOrchestrat
     
     @Override
     protected DataChangedEventListener getDataChangedEventListener() {
-        return new PostOrchestrationEventListener() {
+        return new PostShardingOrchestrationEventListener() {
             
             @Override
-            protected Optional<Object> createEvent(final DataChangedEvent event) {
+            protected Optional<ShardingOrchestrationEvent> createOrchestrationEvent(final DataChangedEvent event) {
                 return Type.UPDATED == event.getType()
-                        ? Optional.<Object>of(new CircuitStateEvent(StateNodeStatus.DISABLED.toString().equalsIgnoreCase(regCenter.get(event.getKey())))) : Optional.absent();
+                        ? Optional.<ShardingOrchestrationEvent>of(new CircuitStateChangedEvent(StateNodeStatus.DISABLED.toString().equalsIgnoreCase(regCenter.get(event.getKey()))))
+                        : Optional.<ShardingOrchestrationEvent>absent();
             }
         };
     }
