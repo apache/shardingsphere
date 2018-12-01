@@ -53,7 +53,7 @@ public final class ComStmtPreparePacket implements CommandPacket {
     @Getter
     private final int sequenceId;
     
-    private final String currentSchema;
+    private final String schemaName;
     
     private final String sql;
     
@@ -62,7 +62,7 @@ public final class ComStmtPreparePacket implements CommandPacket {
     public ComStmtPreparePacket(final int sequenceId, final BackendConnection backendConnection, final MySQLPacketPayload payload) {
         this.sequenceId = sequenceId;
         sql = payload.readStringEOF();
-        currentSchema = backendConnection.getCurrentSchema();
+        schemaName = backendConnection.getSchemaName();
         LogicSchema logicSchema = backendConnection.getLogicSchema();
         sqlParsingEngine = new SQLParsingEngine(DatabaseType.MySQL, sql, getShardingRule(logicSchema), logicSchema.getMetaData().getTable());
     }
@@ -86,7 +86,7 @@ public final class ComStmtPreparePacket implements CommandPacket {
                 new ComStmtPrepareOKPacket(++currentSequenceId, PREPARED_STATEMENT_REGISTRY.register(sql, parametersIndex), getNumColumns(sqlStatement), parametersIndex, 0));
         for (int i = 0; i < parametersIndex; i++) {
             // TODO add column name
-            result.getPackets().add(new ColumnDefinition41Packet(++currentSequenceId, currentSchema,
+            result.getPackets().add(new ColumnDefinition41Packet(++currentSequenceId, schemaName,
                     sqlStatement.getTables().isSingleTable() ? sqlStatement.getTables().getSingleTableName() : "", "", "", "", 100, ColumnType.MYSQL_TYPE_VARCHAR, 0));
         }
         if (parametersIndex > 0) {

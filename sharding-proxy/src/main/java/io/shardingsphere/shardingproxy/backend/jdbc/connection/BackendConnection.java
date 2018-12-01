@@ -54,9 +54,14 @@ public final class BackendConnection implements AutoCloseable {
     
     private static final int MAXIMUM_RETRY_COUNT = 5;
     
-    private volatile String currentSchema;
+    private volatile String schemaName;
     
     private LogicSchema logicSchema;
+    
+    private TransactionType transactionType;
+    
+    @Setter
+    private ChannelHandlerContext context;
     
     private final Multimap<String, Connection> cachedConnections = LinkedHashMultimap.create();
     
@@ -69,11 +74,6 @@ public final class BackendConnection implements AutoCloseable {
     private final ResourceSynchronizer resourceSynchronizer = new ResourceSynchronizer();
     
     private final ConnectionStateHandler stateHandler = new ConnectionStateHandler(resourceSynchronizer);
-    
-    private TransactionType transactionType;
-    
-    @Setter
-    private ChannelHandlerContext context;
     
     public BackendConnection(final TransactionType transactionType) {
         this.transactionType = transactionType;
@@ -94,14 +94,14 @@ public final class BackendConnection implements AutoCloseable {
     /**
      * Change logic schema of current channel.
      *
-     * @param currentSchema current schema
+     * @param schemaName current schema
      */
-    public void setCurrentSchema(final String currentSchema) {
+    public void setCurrentSchema(final String schemaName) {
         if (isSwitchFailed()) {
             throw new ShardingException("Failed to switch schema, please terminate current transaction.");
         }
-        this.currentSchema = currentSchema;
-        this.logicSchema = GlobalRegistry.getInstance().getLogicSchema(currentSchema);
+        this.schemaName = schemaName;
+        this.logicSchema = GlobalRegistry.getInstance().getLogicSchema(schemaName);
     }
     
     @SneakyThrows
