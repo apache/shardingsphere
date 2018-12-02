@@ -100,6 +100,9 @@ public final class SQLParserFactory {
         }
         lexerEngine.nextToken();
         TokenType secondaryTokenType = lexerEngine.getCurrentToken().getType();
+        if (DALStatement.isDAL(tokenType, secondaryTokenType)) {
+            new AntlrParsingEngine(dbType, sql, shardingRule, shardingTableMetaData);
+        }
         if (DDLStatement.isDDL(tokenType, secondaryTokenType)) {
             return new AntlrParsingEngine(dbType, sql, shardingRule, shardingTableMetaData);
         }
