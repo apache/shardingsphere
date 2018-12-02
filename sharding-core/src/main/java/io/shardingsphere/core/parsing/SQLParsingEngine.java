@@ -67,7 +67,7 @@ public final class SQLParsingEngine {
         SQLStatement result;
 
         if (PostgreSQLKeyword.SHOW == lexerEngine.getCurrentToken().getType()) {
-            result = AntlrParsingEngine.parse(dbType, sql, shardingRule, shardingTableMetaData);
+            result = new AntlrParsingEngine(dbType, sql, shardingRule, shardingTableMetaData).parse();
             return result;
         }
 
@@ -75,12 +75,12 @@ public final class SQLParsingEngine {
         Token currentToken = lexerEngine.getCurrentToken();
         if (firstToken != currentToken) {
             if (DDLStatement.isDDL(firstToken.getType(), currentToken.getType())) {
-                result = AntlrParsingEngine.parse(dbType, sql, shardingRule, shardingTableMetaData);
+                result = new AntlrParsingEngine(dbType, sql, shardingRule, shardingTableMetaData).parse();
             } else {
                 result = sqlParser.parse();
             }
         } else if (TCLStatement.isTCL(firstToken.getType())) {
-            result = AntlrParsingEngine.parse(dbType, sql, shardingRule, shardingTableMetaData);
+            result = new AntlrParsingEngine(dbType, sql, shardingRule, shardingTableMetaData).parse();
         } else {
             result = sqlParser.parse();
         }
