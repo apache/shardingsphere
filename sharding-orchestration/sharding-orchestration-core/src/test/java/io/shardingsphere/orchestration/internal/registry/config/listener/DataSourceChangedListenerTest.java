@@ -18,8 +18,8 @@
 package io.shardingsphere.orchestration.internal.registry.config.listener;
 
 import io.shardingsphere.core.config.DataSourceConfiguration;
+import io.shardingsphere.orchestration.FieldUtil;
 import io.shardingsphere.orchestration.internal.registry.config.event.DataSourceChangedEvent;
-import io.shardingsphere.orchestration.internal.registry.fixture.FieldUtil;
 import io.shardingsphere.orchestration.internal.registry.state.service.DataSourceService;
 import io.shardingsphere.orchestration.reg.api.RegistryCenter;
 import io.shardingsphere.orchestration.reg.listener.DataChangedEvent;

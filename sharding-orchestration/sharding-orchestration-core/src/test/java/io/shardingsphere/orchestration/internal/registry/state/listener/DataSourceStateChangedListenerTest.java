@@ -17,7 +17,7 @@
 
 package io.shardingsphere.orchestration.internal.registry.state.listener;
 
-import io.shardingsphere.orchestration.internal.registry.fixture.FieldUtil;
+import io.shardingsphere.orchestration.FieldUtil;
 import io.shardingsphere.orchestration.internal.registry.state.schema.OrchestrationShardingSchemaGroup;
 import io.shardingsphere.orchestration.internal.registry.state.service.DataSourceService;
 import io.shardingsphere.orchestration.reg.api.RegistryCenter;

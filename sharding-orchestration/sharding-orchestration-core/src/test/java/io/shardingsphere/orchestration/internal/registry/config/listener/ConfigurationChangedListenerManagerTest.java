@@ -17,7 +17,7 @@
 
 package io.shardingsphere.orchestration.internal.registry.config.listener;
 
-import io.shardingsphere.orchestration.internal.registry.fixture.FieldUtil;
+import io.shardingsphere.orchestration.FieldUtil;
 import io.shardingsphere.orchestration.reg.api.RegistryCenter;
 import io.shardingsphere.orchestration.reg.listener.DataChangedEvent.ChangedType;
 import org.junit.Test;

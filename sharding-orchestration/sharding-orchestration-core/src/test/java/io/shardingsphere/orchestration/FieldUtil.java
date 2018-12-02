@@ -15,7 +15,7 @@
  * </p>
  */
 
-package io.shardingsphere.orchestration.internal.registry.fixture;
+package io.shardingsphere.orchestration;
 
 import lombok.RequiredArgsConstructor;
 import lombok.SneakyThrows;
