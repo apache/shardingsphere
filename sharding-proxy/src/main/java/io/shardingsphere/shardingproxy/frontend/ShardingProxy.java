@@ -39,6 +39,11 @@ import lombok.AccessLevel;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
 
+import java.util.concurrent.ExecutorService;
+import java.util.concurrent.LinkedBlockingQueue;
+import java.util.concurrent.ThreadPoolExecutor;
+import java.util.concurrent.TimeUnit;
+
 /**
  * Sharding-Proxy.
  *
@@ -61,7 +66,7 @@ public final class ShardingProxy {
     private EventLoopGroup workerGroup;
     
     @Getter
-    private EventLoopGroup userGroup;
+    private ExecutorService commandExecutorService;
     
     /**
      * Get instance of proxy context.
@@ -82,6 +87,7 @@ public final class ShardingProxy {
         try {
             ServerBootstrap bootstrap = new ServerBootstrap();
             bossGroup = createEventLoopGroup();
+            commandExecutorService = createCommandExecutorService();
             if (bossGroup instanceof EpollEventLoopGroup) {
                 groupsEpoll(bootstrap);
             } else {
@@ -93,7 +99,7 @@ public final class ShardingProxy {
             }
             future.channel().closeFuture().sync();
         } finally {
-            userGroup.shutdownGracefully();
+            commandExecutorService.shutdown();
             workerGroup.shutdownGracefully();
             bossGroup.shutdownGracefully();
             backendExecutorContext.getExecuteEngine().close();
@@ -101,6 +107,11 @@ public final class ShardingProxy {
                 BackendNettyClientManager.getInstance().stop();
             }
         }
+    }
+    
+    private ExecutorService createCommandExecutorService() {
+        int nThreads = GLOBAL_REGISTRY.getShardingProperties().<Integer>getValue(ShardingPropertiesConstant.ACCEPTOR_SIZE);
+        return new ThreadPoolExecutor(nThreads, nThreads, 0, TimeUnit.MILLISECONDS, new LinkedBlockingQueue(16));
     }
     
     private EventLoopGroup createEventLoopGroup() {
@@ -113,7 +124,6 @@ public final class ShardingProxy {
     
     private void groupsEpoll(final ServerBootstrap bootstrap) {
         workerGroup = new EpollEventLoopGroup();
-        userGroup = new EpollEventLoopGroup(GLOBAL_REGISTRY.getShardingProperties().<Integer>getValue(ShardingPropertiesConstant.ACCEPTOR_SIZE));
         bootstrap.group(bossGroup, workerGroup)
                 .channel(EpollServerSocketChannel.class)
                 .option(EpollChannelOption.SO_BACKLOG, 128)
@@ -126,7 +136,6 @@ public final class ShardingProxy {
     
     private void groupsNio(final ServerBootstrap bootstrap) {
         workerGroup = new NioEventLoopGroup();
-        userGroup = new NioEventLoopGroup(GLOBAL_REGISTRY.getShardingProperties().<Integer>getValue(ShardingPropertiesConstant.ACCEPTOR_SIZE));
         bootstrap.group(bossGroup, workerGroup)
                 .channel(NioServerSocketChannel.class)
                 .option(ChannelOption.SO_BACKLOG, 128)

@@ -20,7 +20,6 @@ package io.shardingsphere.shardingproxy.frontend.mysql;
 import com.google.common.base.Strings;
 import io.netty.buffer.ByteBuf;
 import io.netty.channel.ChannelHandlerContext;
-import io.shardingsphere.shardingproxy.frontend.ShardingProxy;
 import io.shardingsphere.shardingproxy.frontend.common.FrontendHandler;
 import io.shardingsphere.shardingproxy.frontend.common.executor.ExecutorGroup;
 import io.shardingsphere.shardingproxy.runtime.ChannelRegistry;
@@ -76,7 +75,7 @@ public final class MySQLFrontendHandler extends FrontendHandler {
     
     @Override
     protected void executeCommand(final ChannelHandlerContext context, final ByteBuf message) {
-        new ExecutorGroup(ShardingProxy.getInstance().getUserGroup(), context.channel().id()).getExecutorService().execute(new CommandExecutor(context, message, this));
+        new ExecutorGroup(context.channel().id()).getExecutorService().execute(new CommandExecutor(context, message, this));
     }
     
     @Override

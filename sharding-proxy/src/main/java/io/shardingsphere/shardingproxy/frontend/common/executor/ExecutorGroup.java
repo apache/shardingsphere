@@ -18,8 +18,8 @@
 package io.shardingsphere.shardingproxy.frontend.common.executor;
 
 import io.netty.channel.ChannelId;
-import io.netty.channel.EventLoopGroup;
 import io.shardingsphere.core.constant.transaction.TransactionType;
+import io.shardingsphere.shardingproxy.frontend.ShardingProxy;
 import io.shardingsphere.shardingproxy.runtime.GlobalRegistry;
 import lombok.RequiredArgsConstructor;
 
@@ -35,8 +35,6 @@ public final class ExecutorGroup {
     
     private static final GlobalRegistry GLOBAL_REGISTRY = GlobalRegistry.getInstance();
     
-    private final EventLoopGroup eventLoopGroup;
-    
     private final ChannelId channelId;
     
     /**
@@ -45,6 +43,6 @@ public final class ExecutorGroup {
      * @return executor service
      */
     public ExecutorService getExecutorService() {
-        return TransactionType.XA == GLOBAL_REGISTRY.getTransactionType() ? ChannelThreadExecutorGroup.getInstance().get(channelId) : eventLoopGroup;
+        return TransactionType.XA == GLOBAL_REGISTRY.getTransactionType() ? ChannelThreadExecutorGroup.getInstance().get(channelId) : ShardingProxy.getInstance().getCommandExecutorService();
     }
 }
