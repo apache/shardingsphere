@@ -17,18 +17,19 @@
 
 package io.shardingsphere.orchestration.internal.registry.state.listener;
 
+import io.shardingsphere.orchestration.internal.registry.state.node.StateNodeStatus;
 import io.shardingsphere.orchestration.reg.api.RegistryCenter;
+import io.shardingsphere.orchestration.reg.listener.DataChangedEvent;
 import io.shardingsphere.orchestration.reg.listener.DataChangedEvent.ChangedType;
-import io.shardingsphere.orchestration.reg.listener.DataChangedEventListener;
 import org.junit.Before;
 import org.junit.Test;
 import org.junit.runner.RunWith;
 import org.mockito.Mock;
 import org.mockito.junit.MockitoJUnitRunner;
 
-import static org.mockito.ArgumentMatchers.any;
-import static org.mockito.ArgumentMatchers.anyString;
-import static org.mockito.Mockito.verify;
+import static org.junit.Assert.assertFalse;
+import static org.junit.Assert.assertTrue;
+import static org.mockito.Mockito.when;
 
 @RunWith(MockitoJUnitRunner.class)
 public final class InstanceStateChangedListenerTest {
@@ -44,9 +45,16 @@ public final class InstanceStateChangedListenerTest {
     }
     
     @Test
-    public void assertWatch() {
-        instanceStateChangedListener.watch(ChangedType.UPDATED);
-        verify(regCenter).watch(anyString(), any(DataChangedEventListener.class));
+    public void assertCreateOrchestrationEventWhenEnabled() {
+        DataChangedEvent dataChangedEvent = new DataChangedEvent("test/test_ds", "", ChangedType.UPDATED);
+        when(regCenter.get("test/test_ds")).thenReturn("");
+        assertFalse(instanceStateChangedListener.createOrchestrationEvent(dataChangedEvent).isCircuitBreak());
+    }
     
+    @Test
+    public void assertCreateOrchestrationEventWhenDisabled() {
+        DataChangedEvent dataChangedEvent = new DataChangedEvent("test/test_ds", StateNodeStatus.DISABLED.name(), ChangedType.UPDATED);
+        when(regCenter.get("test/test_ds")).thenReturn(StateNodeStatus.DISABLED.name());
+        assertTrue(instanceStateChangedListener.createOrchestrationEvent(dataChangedEvent).isCircuitBreak());
     }
 }

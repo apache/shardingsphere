@@ -21,7 +21,6 @@ import io.shardingsphere.orchestration.internal.registry.config.event.ConfigMapC
 import io.shardingsphere.orchestration.internal.registry.config.node.ConfigurationNode;
 import io.shardingsphere.orchestration.internal.registry.config.service.ConfigurationService;
 import io.shardingsphere.orchestration.internal.registry.listener.PostShardingOrchestrationEventListener;
-import io.shardingsphere.orchestration.internal.registry.listener.ShardingOrchestrationEvent;
 import io.shardingsphere.orchestration.reg.api.RegistryCenter;
 import io.shardingsphere.orchestration.reg.listener.DataChangedEvent;
 
@@ -41,7 +40,7 @@ public final class ConfigMapChangedListener extends PostShardingOrchestrationEve
     }
     
     @Override
-    protected ShardingOrchestrationEvent createOrchestrationEvent(final DataChangedEvent event) {
+    protected ConfigMapChangedEvent createOrchestrationEvent(final DataChangedEvent event) {
         return new ConfigMapChangedEvent(configService.loadConfigMap());
     }
 }

@@ -38,14 +38,14 @@ public final class PostShardingOrchestrationEventListenerTest {
     
     @Test
     public void assertWatch() {
-        PostShardingOrchestrationEventListener postShardingOrchestrationEventListener = new PostShardingOrchestrationEventListener(regCenter, "test_node") {
-    
+        PostShardingOrchestrationEventListener postShardingOrchestrationEventListener = new PostShardingOrchestrationEventListener(regCenter, "test") {
+            
             @Override
             protected ShardingOrchestrationEvent createOrchestrationEvent(final DataChangedEvent event) {
                 return mock(ShardingOrchestrationEvent.class);
             }
         };
         postShardingOrchestrationEventListener.watch();
-        verify(regCenter).watch(eq("test_node"), ArgumentMatchers.<DataChangedEventListener>any());
+        verify(regCenter).watch(eq("test"), ArgumentMatchers.<DataChangedEventListener>any());
     }
 }
