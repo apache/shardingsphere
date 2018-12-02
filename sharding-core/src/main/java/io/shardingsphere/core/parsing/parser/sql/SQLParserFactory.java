@@ -19,8 +19,10 @@ package io.shardingsphere.core.parsing.parser.sql;
 
 import io.shardingsphere.core.constant.DatabaseType;
 import io.shardingsphere.core.metadata.table.ShardingTableMetaData;
+import io.shardingsphere.core.parsing.antlr.AntlrParsingEngine;
 import io.shardingsphere.core.parsing.lexer.LexerEngine;
 import io.shardingsphere.core.parsing.lexer.dialect.mysql.MySQLKeyword;
+import io.shardingsphere.core.parsing.lexer.dialect.postgresql.PostgreSQLKeyword;
 import io.shardingsphere.core.parsing.lexer.token.DefaultKeyword;
 import io.shardingsphere.core.parsing.lexer.token.Keyword;
 import io.shardingsphere.core.parsing.lexer.token.TokenType;
@@ -69,14 +71,18 @@ public final class SQLParserFactory {
      * Create SQL parser.
      *
      * @param dbType database type
-     * @param tokenType token type
      * @param shardingRule databases and tables sharding rule
      * @param lexerEngine lexical analysis engine
      * @param shardingTableMetaData sharding metadata
+     * @param sql sql to parse
      * @return SQL parser
      */
     public static SQLParser newInstance(
-            final DatabaseType dbType, final TokenType tokenType, final ShardingRule shardingRule, final LexerEngine lexerEngine, final ShardingTableMetaData shardingTableMetaData) {
+            final DatabaseType dbType, final ShardingRule shardingRule, final LexerEngine lexerEngine, final ShardingTableMetaData shardingTableMetaData, final String sql) {
+        
+        lexerEngine.nextToken();
+        TokenType tokenType = lexerEngine.getCurrentToken().getType();
+        
         if (DQLStatement.isDQL(tokenType)) {
             return getDQLParser(dbType, shardingRule, lexerEngine, shardingTableMetaData);
         }
@@ -84,15 +90,18 @@ public final class SQLParserFactory {
             return getDMLParser(dbType, tokenType, shardingRule, lexerEngine, shardingTableMetaData);
         }
         if (TCLStatement.isTCL(tokenType)) {
-            return getTCLParser(dbType, shardingRule, lexerEngine);
+            return new AntlrParsingEngine(dbType, sql, shardingRule, shardingTableMetaData);
         }
         if (DALStatement.isDAL(tokenType)) {
+            if (PostgreSQLKeyword.SHOW == tokenType) {
+                new AntlrParsingEngine(dbType, sql, shardingRule, shardingTableMetaData);
+            }
             return getDALParser(dbType, (Keyword) tokenType, shardingRule, lexerEngine);
         }
         lexerEngine.nextToken();
         TokenType secondaryTokenType = lexerEngine.getCurrentToken().getType();
         if (DDLStatement.isDDL(tokenType, secondaryTokenType)) {
-            return getDDLParser(dbType, tokenType, shardingRule, lexerEngine);
+            return new AntlrParsingEngine(dbType, sql, shardingRule, shardingTableMetaData);
         }
         if (DCLStatement.isDCL(tokenType, secondaryTokenType)) {
             return getDCLParser(dbType, tokenType, shardingRule, lexerEngine);
@@ -116,45 +125,6 @@ public final class SQLParserFactory {
             default:
                 throw new SQLParsingUnsupportedException(tokenType);
         }
-    }
-    
-    private static SQLParser getDDLParser(final DatabaseType dbType, final TokenType tokenType, final ShardingRule shardingRule, final LexerEngine lexerEngine) {
-        lexerEngine.skipUntil(DefaultKeyword.INDEX, DefaultKeyword.TABLE);
-        if (lexerEngine.isEnd()) {
-            throw new SQLParsingUnsupportedException(tokenType);
-        }
-        return DefaultKeyword.TABLE == lexerEngine.getCurrentToken().getType() ? getTableDDLParser(dbType, tokenType, shardingRule, lexerEngine)
-                : getIndexDDLParser(dbType, tokenType, shardingRule, lexerEngine);
-    }
-    
-    private static SQLParser getTableDDLParser(final DatabaseType dbType, final TokenType tokenType, final ShardingRule shardingRule, final LexerEngine lexerEngine) {
-        switch ((DefaultKeyword) tokenType) {
-            case CREATE:
-                return CreateTableParserFactory.newInstance(dbType, shardingRule, lexerEngine);
-            case ALTER:
-                return AlterTableParserFactory.newInstance(dbType, shardingRule, lexerEngine);
-            case DROP:
-                return DropTableParserFactory.newInstance(dbType, shardingRule, lexerEngine);
-            case TRUNCATE:
-                return TruncateTableParserFactory.newInstance(dbType, shardingRule, lexerEngine);
-            default:
-                throw new SQLParsingUnsupportedException(tokenType);
-        }
-    }
-    
-    private static SQLParser getIndexDDLParser(final DatabaseType dbType, final TokenType tokenType, final ShardingRule shardingRule, final LexerEngine lexerEngine) {
-        switch ((DefaultKeyword) tokenType) {
-            case CREATE:
-                return CreateIndexParserFactory.newInstance(dbType, shardingRule, lexerEngine);
-            case DROP:
-                return DropIndexParserFactory.newInstance(dbType, shardingRule, lexerEngine);
-            default:
-                throw new SQLParsingUnsupportedException(tokenType);
-        }
-    }
-    
-    private static SQLParser getTCLParser(final DatabaseType dbType, final ShardingRule shardingRule, final LexerEngine lexerEngine) {
-        return TCLParserFactory.newInstance(dbType, shardingRule, lexerEngine);
     }
     
     private static SQLParser getDALParser(final DatabaseType dbType, final Keyword tokenType, final ShardingRule shardingRule, final LexerEngine lexerEngine) {
