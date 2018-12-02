@@ -33,7 +33,7 @@ import java.util.Map;
 @Getter
 public final class DataSourceChangedEvent implements ShardingOrchestrationEvent {
     
-    private final String schemaName;
+    private final String shardingSchemaName;
     
     private final Map<String, DataSourceConfiguration> dataSourceConfigurations;
 }
