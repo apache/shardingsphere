@@ -3,12 +3,7 @@ grammar PostgreSQLDALStatement;
 import PostgreSQLKeyword, Keyword, BaseRule, DataType, Symbol;
 
 show
-    : SHOW showParam
-    ;
-    
-showParam
-    : ALL
-    | ID
+    : SHOW (ALL | ID)
     ;
 
 setParam
@@ -16,8 +11,7 @@ setParam
     ;
 
 scope
-    : SESSION
-    | LOCAL
+    : SESSION | LOCAL
     ;
 
 setClause
