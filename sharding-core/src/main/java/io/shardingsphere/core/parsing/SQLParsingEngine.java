@@ -66,8 +66,7 @@ public final class SQLParsingEngine {
         Token firstToken = lexerEngine.getCurrentToken();
         SQLStatement result;
 
-        if (PostgreSQLKeyword.SHOW == lexerEngine.getCurrentToken().getType()
-                || PostgreSQLKeyword.SET == lexerEngine.getCurrentToken().getType()
+        if (PostgreSQLKeyword.SHOW == lexerEngine.getCurrentToken().getType() || PostgreSQLKeyword.SET == lexerEngine.getCurrentToken().getType()
                 || PostgreSQLKeyword.RESET == lexerEngine.getCurrentToken().getType()) {
             result = AntlrParsingEngine.parse(dbType, sql, shardingRule, shardingTableMetaData);
             return result;
