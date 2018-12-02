@@ -53,11 +53,11 @@ public final class RuleChangedListener extends PostShardingOrchestrationEventLis
         return configService.isShardingRule(shardingSchemaName) ? getShardingConfigurationChangedEvent() : getMasterSlaveConfigurationChangedEvent();
     }
     
-    private MasterSlaveRuleChangedEvent getMasterSlaveConfigurationChangedEvent() {
-        return new MasterSlaveRuleChangedEvent(shardingSchemaName, dataSourceService.getAvailableMasterSlaveRuleConfiguration(shardingSchemaName));
-    }
-    
     private ShardingRuleChangedEvent getShardingConfigurationChangedEvent() {
         return new ShardingRuleChangedEvent(shardingSchemaName, dataSourceService.getAvailableShardingRuleConfiguration(shardingSchemaName));
+    }
+    
+    private MasterSlaveRuleChangedEvent getMasterSlaveConfigurationChangedEvent() {
+        return new MasterSlaveRuleChangedEvent(shardingSchemaName, dataSourceService.getAvailableMasterSlaveRuleConfiguration(shardingSchemaName));
     }
 }

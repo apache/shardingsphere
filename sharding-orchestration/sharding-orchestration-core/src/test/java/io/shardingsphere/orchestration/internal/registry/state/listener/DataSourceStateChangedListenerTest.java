@@ -17,18 +17,21 @@
 
 package io.shardingsphere.orchestration.internal.registry.state.listener;
 
+import io.shardingsphere.orchestration.internal.registry.fixture.FieldUtil;
+import io.shardingsphere.orchestration.internal.registry.state.schema.OrchestrationShardingSchemaGroup;
+import io.shardingsphere.orchestration.internal.registry.state.service.DataSourceService;
 import io.shardingsphere.orchestration.reg.api.RegistryCenter;
-import io.shardingsphere.orchestration.reg.listener.DataChangedEvent.ChangedType;
-import io.shardingsphere.orchestration.reg.listener.DataChangedEventListener;
+import io.shardingsphere.orchestration.reg.listener.DataChangedEvent;
 import org.junit.Before;
 import org.junit.Test;
 import org.junit.runner.RunWith;
 import org.mockito.Mock;
 import org.mockito.junit.MockitoJUnitRunner;
 
-import static org.mockito.ArgumentMatchers.any;
-import static org.mockito.ArgumentMatchers.eq;
-import static org.mockito.Mockito.verify;
+import static org.hamcrest.CoreMatchers.is;
+import static org.junit.Assert.assertThat;
+import static org.mockito.Mockito.mock;
+import static org.mockito.Mockito.when;
 
 @RunWith(MockitoJUnitRunner.class)
 public final class DataSourceStateChangedListenerTest {
@@ -38,14 +41,19 @@ public final class DataSourceStateChangedListenerTest {
     @Mock
     private RegistryCenter regCenter;
     
+    @Mock
+    private DataSourceService dataSourceService;
+    
     @Before
     public void setUp() {
         dataSourceStateChangedListener = new DataSourceStateChangedListener("test", regCenter);
+        FieldUtil.setField(dataSourceStateChangedListener, "dataSourceService", dataSourceService);
     }
     
     @Test
-    public void assertWatch() {
-        dataSourceStateChangedListener.watch(ChangedType.UPDATED, ChangedType.DELETED);
-        verify(regCenter).watch(eq("/test/state/datasources"), any(DataChangedEventListener.class));
+    public void assertCreateOrchestrationEvent() {
+        OrchestrationShardingSchemaGroup expected = mock(OrchestrationShardingSchemaGroup.class);
+        when(dataSourceService.getDisabledSlaveSchemaGroup()).thenReturn(expected);
+        assertThat(dataSourceStateChangedListener.createOrchestrationEvent(mock(DataChangedEvent.class)).getDisabledGroup(), is(expected));
     }
 }

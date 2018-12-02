@@ -300,7 +300,7 @@ public final class ConfigurationServiceTest {
     }
     
     @Test
-    public void assertLoadDataSources() {
+    public void assertLoadDataSourceConfigurations() {
         when(regCenter.getDirectly("/test/config/schema/sharding_db/datasource")).thenReturn(DATA_SOURCE_YAML);
         ConfigurationService configurationService = new ConfigurationService("test", regCenter);
         Map<String, DataSourceConfiguration> actual = configurationService.loadDataSourceConfigurations("sharding_db");

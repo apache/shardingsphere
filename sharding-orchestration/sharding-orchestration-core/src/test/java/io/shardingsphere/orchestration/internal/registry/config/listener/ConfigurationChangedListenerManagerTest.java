@@ -17,6 +17,7 @@
 
 package io.shardingsphere.orchestration.internal.registry.config.listener;
 
+import io.shardingsphere.orchestration.internal.registry.fixture.FieldUtil;
 import io.shardingsphere.orchestration.reg.api.RegistryCenter;
 import io.shardingsphere.orchestration.reg.listener.DataChangedEvent.ChangedType;
 import org.junit.Test;
@@ -24,7 +25,6 @@ import org.junit.runner.RunWith;
 import org.mockito.Mock;
 import org.mockito.junit.MockitoJUnitRunner;
 
-import java.lang.reflect.Field;
 import java.util.Arrays;
 
 import static org.mockito.Mockito.verify;
@@ -57,13 +57,13 @@ public final class ConfigurationChangedListenerManagerTest {
     private ConfigMapChangedListener configMapChangedListener;
     
     @Test
-    public void assertInitListeners() throws ReflectiveOperationException {
+    public void assertInitListeners() {
         ConfigurationChangedListenerManager actual = new ConfigurationChangedListenerManager("test", regCenter, Arrays.asList("sharding_db", "masterslave_db"));
-        setField(actual, "ruleChangedListeners", Arrays.asList(ruleChangedListener0, ruleChangedListener1));
-        setField(actual, "dataSourceChangedListeners", Arrays.asList(dataSourceChangedListener0, dataSourceChangedListener1));
-        setField(actual, "propertiesChangedListener", propertiesChangedListener);
-        setField(actual, "authenticationChangedListener", authenticationChangedListener);
-        setField(actual, "configMapChangedListener", configMapChangedListener);
+        FieldUtil.setField(actual, "ruleChangedListeners", Arrays.asList(ruleChangedListener0, ruleChangedListener1));
+        FieldUtil.setField(actual, "dataSourceChangedListeners", Arrays.asList(dataSourceChangedListener0, dataSourceChangedListener1));
+        FieldUtil.setField(actual, "propertiesChangedListener", propertiesChangedListener);
+        FieldUtil.setField(actual, "authenticationChangedListener", authenticationChangedListener);
+        FieldUtil.setField(actual, "configMapChangedListener", configMapChangedListener);
         actual.initListeners();
         verify(ruleChangedListener0).watch(ChangedType.UPDATED);
         verify(ruleChangedListener1).watch(ChangedType.UPDATED);
@@ -72,11 +72,5 @@ public final class ConfigurationChangedListenerManagerTest {
         verify(propertiesChangedListener).watch(ChangedType.UPDATED);
         verify(authenticationChangedListener).watch(ChangedType.UPDATED);
         verify(configMapChangedListener).watch(ChangedType.UPDATED);
-    }
-    
-    private void setField(final Object target, final String fieldName, final Object fieldValue) throws ReflectiveOperationException {
-        Field field = ConfigurationChangedListenerManager.class.getDeclaredField(fieldName);
-        field.setAccessible(true);
-        field.set(target, fieldValue);
     }
 }

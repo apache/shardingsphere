@@ -30,6 +30,7 @@ import io.shardingsphere.core.rule.Authentication;
 import io.shardingsphere.core.rule.DataSourceParameter;
 import io.shardingsphere.orchestration.internal.eventbus.ShardingOrchestrationEventBus;
 import io.shardingsphere.orchestration.internal.registry.config.event.AuthenticationChangedEvent;
+import io.shardingsphere.orchestration.internal.registry.config.event.ConfigMapChangedEvent;
 import io.shardingsphere.orchestration.internal.registry.config.event.PropertiesChangedEvent;
 import io.shardingsphere.orchestration.internal.registry.state.event.CircuitStateChangedEvent;
 import io.shardingsphere.shardingproxy.runtime.schema.LogicSchema;
@@ -181,11 +182,22 @@ public final class GlobalRegistry {
     /**
      * Renew authentication.
      *
-     * @param authenticationEvent authentication event
+     * @param authenticationChangedEvent authentication changed event
      */
     @Subscribe
-    public void renew(final AuthenticationChangedEvent authenticationEvent) {
-        authentication = authenticationEvent.getAuthentication();
+    public void renew(final AuthenticationChangedEvent authenticationChangedEvent) {
+        authentication = authenticationChangedEvent.getAuthentication();
+    }
+    
+    /**
+     * Renew config map.
+     *
+     * @param configMapChangedEvent config map changed event
+     */
+    @Subscribe
+    public void renew(final ConfigMapChangedEvent configMapChangedEvent) {
+        ConfigMapContext.getInstance().getConfigMap().clear();
+        ConfigMapContext.getInstance().getConfigMap().putAll(configMapChangedEvent.getConfigMap());
     }
     
     /**

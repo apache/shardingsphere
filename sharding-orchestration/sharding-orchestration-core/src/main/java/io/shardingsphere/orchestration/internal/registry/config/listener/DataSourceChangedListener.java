@@ -20,7 +20,6 @@ package io.shardingsphere.orchestration.internal.registry.config.listener;
 import io.shardingsphere.orchestration.internal.registry.config.event.DataSourceChangedEvent;
 import io.shardingsphere.orchestration.internal.registry.config.node.ConfigurationNode;
 import io.shardingsphere.orchestration.internal.registry.listener.PostShardingOrchestrationEventListener;
-import io.shardingsphere.orchestration.internal.registry.listener.ShardingOrchestrationEvent;
 import io.shardingsphere.orchestration.internal.registry.state.service.DataSourceService;
 import io.shardingsphere.orchestration.reg.api.RegistryCenter;
 import io.shardingsphere.orchestration.reg.listener.DataChangedEvent;
@@ -43,7 +42,7 @@ public final class DataSourceChangedListener extends PostShardingOrchestrationEv
     }
     
     @Override
-    protected ShardingOrchestrationEvent createOrchestrationEvent(final DataChangedEvent event) {
+    protected DataSourceChangedEvent createOrchestrationEvent(final DataChangedEvent event) {
         return new DataSourceChangedEvent(shardingSchemaName, dataSourceService.getAvailableDataSourceConfigurations(shardingSchemaName));
     }
 }

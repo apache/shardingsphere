@@ -17,18 +17,26 @@
 
 package io.shardingsphere.orchestration.internal.registry.config.listener;
 
+import io.shardingsphere.api.config.MasterSlaveRuleConfiguration;
+import io.shardingsphere.api.config.ShardingRuleConfiguration;
+import io.shardingsphere.orchestration.internal.registry.config.event.MasterSlaveRuleChangedEvent;
+import io.shardingsphere.orchestration.internal.registry.config.event.ShardingRuleChangedEvent;
+import io.shardingsphere.orchestration.internal.registry.config.service.ConfigurationService;
+import io.shardingsphere.orchestration.internal.registry.fixture.FieldUtil;
+import io.shardingsphere.orchestration.internal.registry.state.service.DataSourceService;
 import io.shardingsphere.orchestration.reg.api.RegistryCenter;
-import io.shardingsphere.orchestration.reg.listener.DataChangedEvent.ChangedType;
-import io.shardingsphere.orchestration.reg.listener.DataChangedEventListener;
+import io.shardingsphere.orchestration.reg.listener.DataChangedEvent;
+import lombok.SneakyThrows;
 import org.junit.Before;
 import org.junit.Test;
 import org.junit.runner.RunWith;
 import org.mockito.Mock;
 import org.mockito.junit.MockitoJUnitRunner;
 
-import static org.mockito.ArgumentMatchers.any;
-import static org.mockito.ArgumentMatchers.eq;
-import static org.mockito.Mockito.verify;
+import static org.hamcrest.CoreMatchers.is;
+import static org.junit.Assert.assertThat;
+import static org.mockito.Mockito.mock;
+import static org.mockito.Mockito.when;
 
 @RunWith(MockitoJUnitRunner.class)
 public final class RuleChangedListenerTest {
@@ -38,14 +46,36 @@ public final class RuleChangedListenerTest {
     @Mock
     private RegistryCenter regCenter;
     
+    @Mock
+    private ConfigurationService configService;
+    
+    @Mock
+    private DataSourceService dataSourceService;
+    
     @Before
+    @SneakyThrows
     public void setUp() {
         ruleChangedListener = new RuleChangedListener("test", regCenter, "sharding_db");
+        FieldUtil.setField(ruleChangedListener, "configService", configService);
+        FieldUtil.setField(ruleChangedListener, "dataSourceService", dataSourceService);
     }
     
     @Test
-    public void assertWatch() {
-        ruleChangedListener.watch(ChangedType.UPDATED);
-        verify(regCenter).watch(eq("/test/config/schema/sharding_db/rule"), any(DataChangedEventListener.class));
+    public void assertCreateOrchestrationEventForSharding() {
+        when(configService.isShardingRule("sharding_db")).thenReturn(true);
+        ShardingRuleConfiguration expected = mock(ShardingRuleConfiguration.class);
+        when(dataSourceService.getAvailableShardingRuleConfiguration("sharding_db")).thenReturn(expected);
+        ShardingRuleChangedEvent actual = (ShardingRuleChangedEvent) ruleChangedListener.createOrchestrationEvent(mock(DataChangedEvent.class));
+        assertThat(actual.getShardingSchemaName(), is("sharding_db"));
+        assertThat(actual.getShardingRuleConfiguration(), is(expected));
+    }
+    
+    @Test
+    public void assertCreateOrchestrationEventForMasterSlave() {
+        MasterSlaveRuleConfiguration expected = mock(MasterSlaveRuleConfiguration.class);
+        when(dataSourceService.getAvailableMasterSlaveRuleConfiguration("sharding_db")).thenReturn(expected);
+        MasterSlaveRuleChangedEvent actual = (MasterSlaveRuleChangedEvent) ruleChangedListener.createOrchestrationEvent(mock(DataChangedEvent.class));
+        assertThat(actual.getShardingSchemaName(), is("sharding_db"));
+        assertThat(actual.getMasterSlaveRuleConfiguration(), is(expected));
     }
 }

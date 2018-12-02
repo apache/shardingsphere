@@ -74,7 +74,7 @@ public abstract class LogicSchema {
      */
     @Subscribe
     public final void renew(final DataSourceChangedEvent dataSourceEvent) {
-        if (!name.equals(dataSourceEvent.getSchemaName())) {
+        if (!name.equals(dataSourceEvent.getShardingSchemaName())) {
             return;
         }
         backendDataSource.close();

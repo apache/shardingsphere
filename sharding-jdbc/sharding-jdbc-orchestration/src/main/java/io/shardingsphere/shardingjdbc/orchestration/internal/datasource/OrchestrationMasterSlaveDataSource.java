@@ -28,6 +28,7 @@ import io.shardingsphere.core.constant.ShardingConstant;
 import io.shardingsphere.core.rule.MasterSlaveRule;
 import io.shardingsphere.orchestration.config.OrchestrationConfiguration;
 import io.shardingsphere.orchestration.internal.registry.ShardingOrchestrationFacade;
+import io.shardingsphere.orchestration.internal.registry.config.event.ConfigMapChangedEvent;
 import io.shardingsphere.orchestration.internal.registry.config.event.DataSourceChangedEvent;
 import io.shardingsphere.orchestration.internal.registry.config.event.MasterSlaveRuleChangedEvent;
 import io.shardingsphere.orchestration.internal.registry.config.event.PropertiesChangedEvent;
@@ -96,13 +97,13 @@ public class OrchestrationMasterSlaveDataSource extends AbstractOrchestrationDat
     /**
      * Renew master-slave rule.
      *
-     * @param masterSlaveEvent master-slave configuration changed event
+     * @param masterSlaveRuleChangedEvent master-slave configuration changed event
      * @throws SQLException SQL exception
      */
     @Subscribe
-    public final void renew(final MasterSlaveRuleChangedEvent masterSlaveEvent) throws SQLException {
+    public final void renew(final MasterSlaveRuleChangedEvent masterSlaveRuleChangedEvent) throws SQLException {
         dataSource = new MasterSlaveDataSource(dataSource.getDataSourceMap(),
-                masterSlaveEvent.getMasterSlaveRuleConfig(), ConfigMapContext.getInstance().getConfigMap(), dataSource.getShardingProperties().getProps());
+                masterSlaveRuleChangedEvent.getMasterSlaveRuleConfiguration(), ConfigMapContext.getInstance().getConfigMap(), dataSource.getShardingProperties().getProps());
     }
     
     /**
@@ -123,7 +124,6 @@ public class OrchestrationMasterSlaveDataSource extends AbstractOrchestrationDat
             }
         }
         result.putAll(DataSourceConverter.getDataSourceMap(newDataSourceConfigurations));
-        
         dataSource.close();
         dataSource = new MasterSlaveDataSource(DataSourceConverter.getDataSourceMap(dataSourceChangedEvent.getDataSourceConfigurations()),
                 dataSource.getMasterSlaveRule(), ConfigMapContext.getInstance().getConfigMap(), dataSource.getShardingProperties().getProps());
@@ -132,11 +132,22 @@ public class OrchestrationMasterSlaveDataSource extends AbstractOrchestrationDat
     /**
      * Renew properties.
      *
-     * @param propertiesEvent properties event
+     * @param propertiesChangedEvent properties changed event
      */
     @SneakyThrows
     @Subscribe
-    public final void renew(final PropertiesChangedEvent propertiesEvent) {
-        dataSource = new MasterSlaveDataSource(dataSource.getDataSourceMap(), dataSource.getMasterSlaveRule(), ConfigMapContext.getInstance().getConfigMap(), propertiesEvent.getProps());
+    public final void renew(final PropertiesChangedEvent propertiesChangedEvent) {
+        dataSource = new MasterSlaveDataSource(dataSource.getDataSourceMap(), dataSource.getMasterSlaveRule(), ConfigMapContext.getInstance().getConfigMap(), propertiesChangedEvent.getProps());
+    }
+    
+    /**
+     * Renew config map.
+     *
+     * @param configMapChangedEvent config map changed event
+     */
+    @Subscribe
+    public final void renew(final ConfigMapChangedEvent configMapChangedEvent) {
+        ConfigMapContext.getInstance().getConfigMap().clear();
+        ConfigMapContext.getInstance().getConfigMap().putAll(configMapChangedEvent.getConfigMap());
     }
 }
