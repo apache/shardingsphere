@@ -35,7 +35,7 @@ import io.shardingsphere.core.rule.ShardingRule;
  * @author duhongjun
  */
 public class OrderBySegmentFiller implements SQLSegmentFiller {
-    
+
     @Override
     public void fill(final SQLSegment sqlSegment, final SQLStatement sqlStatement, final ShardingRule shardingRule, final ShardingTableMetaData shardingTableMetaData) {
         OrderBySegment orderBySegment = (OrderBySegment) sqlSegment;
@@ -43,12 +43,16 @@ public class OrderBySegmentFiller implements SQLSegmentFiller {
         if (-1 < orderBySegment.getIndex()) {
             selectStatement.getOrderByItems().add(new OrderItem(orderBySegment.getIndex(), orderBySegment.getOrderDirection(), orderBySegment.getNullOrderDirection()));
         } else if (orderBySegment.getName().isPresent()) {
-            String owner = orderBySegment.getOwner().isPresent() ? orderBySegment.getOwner().get() : "";
-            String name = orderBySegment.getName().isPresent() ? orderBySegment.getName().get() : "";
-            if (sqlStatement.getTables().getTableNames().contains(owner)) {
-                sqlStatement.addSQLToken(new TableToken(orderBySegment.getStartPosition(), 0, owner));
+            String name = orderBySegment.getName().get();
+            if (orderBySegment.getOwner().isPresent()) {
+                String owner = orderBySegment.getOwner().get();
+                if (sqlStatement.getTables().getTableNames().contains(owner)) {
+                    sqlStatement.addSQLToken(new TableToken(orderBySegment.getStartPosition(), 0, owner));
+                }
+                selectStatement.getOrderByItems().add(new OrderItem(owner, name, orderBySegment.getOrderDirection(), orderBySegment.getNullOrderDirection(), selectStatement.getAlias(owner+"."+name)));
+            }else {
+                selectStatement.getOrderByItems().add(new OrderItem(name, orderBySegment.getOrderDirection(), orderBySegment.getNullOrderDirection(), selectStatement.getAlias(name)));
             }
-            selectStatement.getOrderByItems().add(new OrderItem(owner, name, orderBySegment.getOrderDirection(), orderBySegment.getNullOrderDirection(), Optional.<String>absent()));
         }
     }
 }

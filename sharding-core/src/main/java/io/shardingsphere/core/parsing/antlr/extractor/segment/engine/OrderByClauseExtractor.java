@@ -62,23 +62,23 @@ public class OrderByClauseExtractor implements CollectionSQLSegmentExtractor {
             if (count == 0) {
                 continue;
             }
-            Optional<ParserRuleContext> numberNode = ASTUtils.findFirstChildNode(each, RuleName.NUMBER);
-            int index = -1;
-            if (numberNode.isPresent()) {
-                index = NumberUtil.getExactlyNumber(numberNode.get().getText(), 10).intValue();
-            }
-            String columnText = each.getChild(0).getText();
-            int pos = columnText.lastIndexOf(".");
-            OrderDirection orderDirection = null;
             Optional<String> owner = Optional.absent();
             Optional<String> name = Optional.absent();
-            if (0 < pos) {
-                owner = Optional.of(columnText.substring(0, pos));
-                name = Optional.of(columnText.substring(pos + 1));
+            int index = -1;
+            Optional<ParserRuleContext> numberNode = ASTUtils.findFirstChildNode(each, RuleName.NUMBER);
+            if (numberNode.isPresent()) {
+                index = NumberUtil.getExactlyNumber(numberNode.get().getText(), 10).intValue();
             }else {
-                name = Optional.of(columnText);
+                String columnText = each.getChild(0).getText();
+                int pos = columnText.lastIndexOf(".");
+                if (0 < pos) {
+                    owner = Optional.of(columnText.substring(0, pos));
+                    name = Optional.of(columnText.substring(pos + 1));
+                }else {
+                    name = Optional.of(columnText);
+                }
             }
-            orderDirection = OrderDirection.ASC;
+            OrderDirection orderDirection = OrderDirection.ASC;
             if (1 < count) {
                 if (OrderDirection.DESC.name().equalsIgnoreCase(each.getChild(count - 1).getText())) {
                     orderDirection = OrderDirection.DESC;

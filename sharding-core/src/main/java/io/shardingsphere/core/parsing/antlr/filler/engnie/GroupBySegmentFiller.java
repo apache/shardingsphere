@@ -47,12 +47,16 @@ public class GroupBySegmentFiller implements SQLSegmentFiller {
             if (-1 < each.getIndex()) {
                 selectStatement.getGroupByItems().add(new OrderItem(each.getIndex(), OrderDirection.ASC, OrderDirection.ASC));
             } else if (each.getName().isPresent()) {
-                String owner = each.getOwner().isPresent() ? each.getOwner().get() : "";
-                String name = each.getName().isPresent() ? each.getName().get() : "";
-                if (each.getOwner().isPresent() && sqlStatement.getTables().getTableNames().contains(owner)) {
-                    sqlStatement.addSQLToken(new TableToken(each.getStartPosition(), 0, owner));
+                String name = each.getName().get();
+                if (each.getOwner().isPresent()) {
+                    String owner = each.getOwner().get();
+                    if (sqlStatement.getTables().getTableNames().contains(owner)) {
+                        sqlStatement.addSQLToken(new TableToken(each.getStartPosition(), 0, owner));
+                    }
+                    selectStatement.getGroupByItems().add(new OrderItem(owner, name, OrderDirection.ASC, OrderDirection.ASC, selectStatement.getAlias(owner+"."+name)));
+                }else {
+                    selectStatement.getGroupByItems().add(new OrderItem(name, OrderDirection.ASC, OrderDirection.ASC, selectStatement.getAlias(name)));
                 }
-                selectStatement.getGroupByItems().add(new OrderItem(owner, name, OrderDirection.ASC, OrderDirection.ASC, Optional.<String>absent()));
             }
         }
     }

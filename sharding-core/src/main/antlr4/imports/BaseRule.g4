@@ -364,5 +364,5 @@ orderByClause
     ;
     
 orderByItem
-    : (columnName | NUMBER |expr) (ASC|DESC)?
+    : (columnName | number |expr) (ASC|DESC)?
     ;

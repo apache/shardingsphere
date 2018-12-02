@@ -114,7 +114,7 @@ public final class PredicateSegmentExtractor implements OptionalSQLSegmentExtrac
             }
             return Optional.of(result);
         }
-        return Optional.of(new OrConditionSegment());
+        return Optional.absent();
     }
     
     private Optional<OrConditionSegment> extractConditionForParen(final Map<ParserRuleContext, Integer> questionNodeIndexMap, final ParserRuleContext exprNode) {
@@ -139,6 +139,7 @@ public final class PredicateSegmentExtractor implements OptionalSQLSegmentExtrac
             AndConditionSegment newAndCondition = new AndConditionSegment();
             newAndCondition.getConditions().add(condition.get());
             result.getAndConditions().add(newAndCondition);
+            return Optional.of(result);
         }
         return Optional.absent();
     }

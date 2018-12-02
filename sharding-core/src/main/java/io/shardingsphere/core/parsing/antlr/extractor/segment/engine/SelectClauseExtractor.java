@@ -55,7 +55,7 @@ public class SelectClauseExtractor implements OptionalSQLSegmentExtractor {
         }
         SelectClauseSegment result = new SelectClauseSegment(selectExprsNode.get().getStop().getStopIndex() + 2);
         for (int i = 0; i < selectExprsNode.get().getChildCount(); i++) {
-            ParseTree childNode = selectExprsNode.get().getChild(0);
+            ParseTree childNode = selectExprsNode.get().getChild(i);
             if (childNode instanceof TerminalNodeImpl) {
                 continue;
             }
@@ -80,10 +80,10 @@ public class SelectClauseExtractor implements OptionalSQLSegmentExtractor {
                     String name = functionCall.get().getChild(0).getText();
                     //TODO best choice using index
                     StringBuilder builder = new StringBuilder();
-                    for (int j = 1; i < functionCall.get().getChildCount(); j++) {
+                    for (int j = 1; j < functionCall.get().getChildCount(); j++) {
                         builder.append(functionCall.get().getChild(j).getText());
                     }
-                    result.getExpressions().add(new FunctionExpressionSegment(name, getParseTreeText(childNode.getChild(0)), alias));
+                    result.getExpressions().add(new FunctionExpressionSegment(name, builder.toString(), alias));
                 } else {
                     if(RuleName.COLUMN_NAME.getName().equals(childNode.getClass().getSimpleName())) {
                         Optional<ColumnSegment> columnSegment = new ColumnSegmentExtractor(new HashMap<String, String>()).extract((ParserRuleContext) childNode);
@@ -101,7 +101,6 @@ public class SelectClauseExtractor implements OptionalSQLSegmentExtractor {
         if (node.getChildCount() < 2) {
             return node.getText();
         }
-        //TODO best choice using index
         StringBuilder builder = new StringBuilder();
         for (int i = 0; i < node.getChildCount(); i++) {
             builder.append(node.getChild(i).getText());

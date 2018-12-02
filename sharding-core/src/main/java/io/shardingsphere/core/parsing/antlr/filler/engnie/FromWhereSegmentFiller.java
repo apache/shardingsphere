@@ -90,9 +90,9 @@ public class FromWhereSegmentFiller implements SQLSegmentFiller {
     private OrCondition filterShardingCondition(final SQLStatement sqlStatement, final OrConditionSegment orCondition, final ShardingRule shardingRule,
                                                 final Map<String, String> columnNameToTable, final Map<String, Integer> columnNameCount) {
         OrCondition result = new OrCondition();
-        boolean needSharding = false;
         for (AndConditionSegment each : orCondition.getAndConditions()) {
             List<ConditionSegment> shardingCondition = new LinkedList<>();
+            boolean needSharding = true;
             for (ConditionSegment condition : each.getConditions()) {
                 if (null == condition.getColumn()) {
                     continue;
@@ -110,7 +110,8 @@ public class FromWhereSegmentFiller implements SQLSegmentFiller {
                 }
                 if (shardingRule.isShardingColumn(new Column(condition.getColumn().getName(), condition.getColumn().getTableName()))) {
                     shardingCondition.add(condition);
-                    needSharding = true;
+                }else {
+                    needSharding = false;
                 }
             }
             if(needSharding) {

@@ -47,6 +47,9 @@ public class SelectClauseFiller implements SQLSegmentFiller {
         selectStatement.setSelectListLastPosition(selectClauseSegment.getSelectListLastPosition());
         for(SelectExpressionSegment each : selectClauseSegment.getExpressions()) {
             if (each instanceof StarExpressionSegment) {
+                if(!selectStatement.isContainStar()) {
+                    selectStatement.setContainStar(true);
+                }
                 selectStatement.getItems().add(new StarSelectItem(((StarExpressionSegment) each).getOwner()));
             } else if (each instanceof CommonExpressionSegment) {
                 CommonExpressionSegment commonSegment = (CommonExpressionSegment) each;
