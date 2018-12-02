@@ -89,9 +89,6 @@ public final class SQLParserFactory {
         if (DMLStatement.isDML(tokenType)) {
             return getDMLParser(dbType, tokenType, shardingRule, lexerEngine, shardingTableMetaData);
         }
-        if (TCLStatement.isTCL(tokenType)) {
-            return new AntlrParsingEngine(dbType, sql, shardingRule, shardingTableMetaData);
-        }
         if (DALStatement.isDAL(tokenType)) {
             if (PostgreSQLKeyword.SHOW == tokenType) {
                 new AntlrParsingEngine(dbType, sql, shardingRule, shardingTableMetaData);
@@ -102,6 +99,9 @@ public final class SQLParserFactory {
         TokenType secondaryTokenType = lexerEngine.getCurrentToken().getType();
         if (DALStatement.isDAL(tokenType, secondaryTokenType)) {
             new AntlrParsingEngine(dbType, sql, shardingRule, shardingTableMetaData);
+        }
+        if (TCLStatement.isTCL(tokenType)) {
+            return new AntlrParsingEngine(dbType, sql, shardingRule, shardingTableMetaData);
         }
         if (DDLStatement.isDDL(tokenType, secondaryTokenType)) {
             return new AntlrParsingEngine(dbType, sql, shardingRule, shardingTableMetaData);
