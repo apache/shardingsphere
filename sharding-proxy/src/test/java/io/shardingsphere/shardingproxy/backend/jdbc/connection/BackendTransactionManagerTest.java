@@ -48,7 +48,7 @@ public class BackendTransactionManagerTest {
     public void assertLocalTransactionCommit() throws SQLException {
         MockConnectionUtil.setCachedConnections(backendConnection, "ds1", 2);
         backendTransactionManager.doInTransaction(TransactionOperationType.BEGIN);
-        assertThat(backendConnection.getStatus(), is(ConnectionStatus.TRANSACTION));
+        assertThat(backendConnection.getStateHandler().getStatus(), is(ConnectionStatus.TRANSACTION));
         assertThat(backendConnection.getMethodInvocations().size(), is(1));
         assertThat(backendConnection.getMethodInvocations().iterator().next().getArguments(), is(new Object[]{false}));
         assertTrue(backendConnection.getCachedConnections().isEmpty());
@@ -57,7 +57,7 @@ public class BackendTransactionManagerTest {
         Iterator<Connection> iterator = backendConnection.getCachedConnections().values().iterator();
         verify(iterator.next()).commit();
         verify(iterator.next()).commit();
-        assertThat(backendConnection.getStatus(), is(ConnectionStatus.TERMINATED));
+        assertThat(backendConnection.getStateHandler().getStatus(), is(ConnectionStatus.TERMINATED));
     }
     
     @Test
@@ -70,7 +70,7 @@ public class BackendTransactionManagerTest {
         } catch (SQLException ex) {
             assertThat(ex.getNextException().getNextException(), instanceOf(SQLException.class));
         }
-        assertThat(backendConnection.getStatus(), is(ConnectionStatus.TERMINATED));
+        assertThat(backendConnection.getStateHandler().getStatus(), is(ConnectionStatus.TERMINATED));
     }
     
     @Test
@@ -81,7 +81,7 @@ public class BackendTransactionManagerTest {
         Iterator<Connection> iterator = backendConnection.getCachedConnections().values().iterator();
         verify(iterator.next()).rollback();
         verify(iterator.next()).rollback();
-        assertThat(backendConnection.getStatus(), is(ConnectionStatus.TERMINATED));
+        assertThat(backendConnection.getStateHandler().getStatus(), is(ConnectionStatus.TERMINATED));
     }
     
     @Test
@@ -94,7 +94,7 @@ public class BackendTransactionManagerTest {
         } catch (SQLException ex) {
             assertThat(ex.getNextException().getNextException(), instanceOf(SQLException.class));
         }
-        assertThat(backendConnection.getStatus(), is(ConnectionStatus.TERMINATED));
+        assertThat(backendConnection.getStateHandler().getStatus(), is(ConnectionStatus.TERMINATED));
     }
     
     @Test
@@ -102,9 +102,9 @@ public class BackendTransactionManagerTest {
         backendConnection.setTransactionType(TransactionType.XA);
         backendTransactionManager.doInTransaction(TransactionOperationType.BEGIN);
         assertTrue(backendConnection.getMethodInvocations().isEmpty());
-        assertThat(backendConnection.getStatus(), is(ConnectionStatus.TRANSACTION));
+        assertThat(backendConnection.getStateHandler().getStatus(), is(ConnectionStatus.TRANSACTION));
         backendTransactionManager.doInTransaction(TransactionOperationType.COMMIT);
-        assertThat(backendConnection.getStatus(), is(ConnectionStatus.TERMINATED));
+        assertThat(backendConnection.getStateHandler().getStatus(), is(ConnectionStatus.TERMINATED));
         backendTransactionManager.doInTransaction(TransactionOperationType.BEGIN);
     }
     
@@ -113,8 +113,8 @@ public class BackendTransactionManagerTest {
         backendConnection.setTransactionType(TransactionType.XA);
         backendTransactionManager.doInTransaction(TransactionOperationType.BEGIN);
         assertTrue(backendConnection.getMethodInvocations().isEmpty());
-        assertThat(backendConnection.getStatus(), is(ConnectionStatus.TRANSACTION));
+        assertThat(backendConnection.getStateHandler().getStatus(), is(ConnectionStatus.TRANSACTION));
         backendTransactionManager.doInTransaction(TransactionOperationType.ROLLBACK);
-        assertThat(backendConnection.getStatus(), is(ConnectionStatus.TERMINATED));
+        assertThat(backendConnection.getStateHandler().getStatus(), is(ConnectionStatus.TERMINATED));
     }
 }

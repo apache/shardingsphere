@@ -112,7 +112,7 @@ public final class JDBCBackendHandler extends AbstractBackendHandler {
     
     private boolean isUnsupportedXA(final SQLType sqlType) {
         BackendConnection connection = executeEngine.getBackendConnection();
-        return TransactionType.XA == connection.getTransactionType() && SQLType.DDL == sqlType && ConnectionStatus.TRANSACTION == connection.getStatus();
+        return TransactionType.XA == connection.getTransactionType() && SQLType.DDL == sqlType && ConnectionStatus.TRANSACTION == connection.getStateHandler().getStatus();
     }
     
     private CommandResponsePackets merge(final SQLStatement sqlStatement) throws SQLException {

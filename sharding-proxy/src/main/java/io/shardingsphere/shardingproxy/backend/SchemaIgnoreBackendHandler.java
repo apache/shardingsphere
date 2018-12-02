@@ -95,7 +95,7 @@ public final class SchemaIgnoreBackendHandler implements BackendHandler {
         if (!GLOBAL_REGISTRY.schemaExists(schema)) {
             return new CommandResponsePackets(new ErrPacket(1, ServerErrorCode.ER_BAD_DB_ERROR, schema));
         }
-        frontendHandler.setCurrentSchema(schema);
+        frontendHandler.getBackendConnection().setCurrentSchema(schema);
         return new CommandResponsePackets(new OKPacket(1));
     }
     

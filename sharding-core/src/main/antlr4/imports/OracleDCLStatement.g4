@@ -90,7 +90,7 @@ revokeRolesFromPrograms
 
 createUser
     : CREATE USER userName IDENTIFIED 
-    (BY STRING | (EXTERNALLY | GLOBALLY) ( AS STRING)?)
+    (BY ID | (EXTERNALLY | GLOBALLY) ( AS STRING)?)
     ( 
         DEFAULT TABLESPACE ID
         | TEMPORARY TABLESPACE ID
@@ -112,7 +112,7 @@ alterUser
     ( 
         userName
         ( 
-            IDENTIFIED (BY STRING (REPLACE STRING)? | (EXTERNALLY | GLOBALLY) ( AS STRING)?)
+            IDENTIFIED (BY ID (REPLACE STRING)? | (EXTERNALLY | GLOBALLY) ( AS STRING)?)
             | DEFAULT TABLESPACE ID
             | TEMPORARY TABLESPACE ID
             | QUOTA (sizeClause | UNLIMITED) ON ID
@@ -153,14 +153,14 @@ createRole
     : CREATE ROLE roleName
     ( 
         NOT IDENTIFIED
-        | IDENTIFIED (BY STRING| USING schemaName? ID| EXTERNALLY | GLOBALLY)
+        | IDENTIFIED (BY ID | USING schemaName? ID | EXTERNALLY | GLOBALLY)
     )? 
     (CONTAINER EQ_ (CURRENT | ALL))? 
     ;
 
 alterRole
     : ALTER ROLE roleName
-    (NOT IDENTIFIED | IDENTIFIED (BY STRING | USING schemaName? ID | EXTERNALLY | GLOBALLY))
+    (NOT IDENTIFIED | IDENTIFIED (BY ID | USING schemaName? ID | EXTERNALLY | GLOBALLY))
     (CONTAINER EQ_ (CURRENT | ALL))? 
     ;
 

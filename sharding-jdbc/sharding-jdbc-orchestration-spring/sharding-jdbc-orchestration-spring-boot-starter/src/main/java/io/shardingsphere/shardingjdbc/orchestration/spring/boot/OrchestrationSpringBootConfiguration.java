@@ -22,7 +22,7 @@ import com.google.common.base.Strings;
 import io.shardingsphere.core.constant.ShardingConstant;
 import io.shardingsphere.core.exception.ShardingException;
 import io.shardingsphere.core.rule.ShardingRule;
-import io.shardingsphere.orchestration.internal.OrchestrationFacade;
+import io.shardingsphere.orchestration.internal.registry.ShardingOrchestrationFacade;
 import io.shardingsphere.shardingjdbc.jdbc.core.datasource.MasterSlaveDataSource;
 import io.shardingsphere.shardingjdbc.jdbc.core.datasource.ShardingDataSource;
 import io.shardingsphere.shardingjdbc.orchestration.internal.datasource.OrchestrationMasterSlaveDataSource;
@@ -108,9 +108,9 @@ public class OrchestrationSpringBootConfiguration implements EnvironmentAware {
     }
     
     private boolean isShardingRuleByRegistry() {
-        try (OrchestrationFacade orchestrationFacade = new OrchestrationFacade(
+        try (ShardingOrchestrationFacade shardingOrchestrationFacade = new ShardingOrchestrationFacade(
                 orchestrationProperties.getOrchestrationConfiguration(), Collections.singletonList(ShardingConstant.LOGIC_SCHEMA_NAME))) {
-            return orchestrationFacade.getConfigService().isShardingRule(ShardingConstant.LOGIC_SCHEMA_NAME);
+            return shardingOrchestrationFacade.getConfigService().isShardingRule(ShardingConstant.LOGIC_SCHEMA_NAME);
         }
     }
     

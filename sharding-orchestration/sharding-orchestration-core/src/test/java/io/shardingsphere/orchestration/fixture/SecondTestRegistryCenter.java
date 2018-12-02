@@ -19,7 +19,7 @@ package io.shardingsphere.orchestration.fixture;
 
 import io.shardingsphere.orchestration.reg.api.RegistryCenter;
 import io.shardingsphere.orchestration.reg.api.RegistryCenterConfiguration;
-import io.shardingsphere.orchestration.reg.listener.EventListener;
+import io.shardingsphere.orchestration.reg.listener.DataChangedEventListener;
 
 import java.util.Collections;
 import java.util.List;
@@ -63,7 +63,7 @@ public final class SecondTestRegistryCenter implements RegistryCenter {
     }
     
     @Override
-    public void watch(final String key, final EventListener eventListener) {
+    public void watch(final String key, final DataChangedEventListener dataChangedEventListener) {
     }
     
     @Override

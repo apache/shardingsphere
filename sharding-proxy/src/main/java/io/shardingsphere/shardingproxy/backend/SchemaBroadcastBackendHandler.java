@@ -51,7 +51,8 @@ public final class SchemaBroadcastBackendHandler implements BackendHandler {
     public CommandResponsePackets execute() {
         List<DatabasePacket> packets = new LinkedList<>();
         for (String schema : GlobalRegistry.getInstance().getSchemaNames()) {
-            BackendHandler backendHandler = BackendHandlerFactory.newTextProtocolInstance(connectionId, sequenceId, sql, backendConnection, databaseType, schema);
+            backendConnection.setCurrentSchema(schema);
+            BackendHandler backendHandler = BackendHandlerFactory.newTextProtocolInstance(connectionId, sequenceId, sql, backendConnection, databaseType);
             CommandResponsePackets commandResponsePackets = backendHandler.execute();
             packets.addAll(commandResponsePackets.getPackets());
         }

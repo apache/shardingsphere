@@ -17,15 +17,19 @@
 
 package io.shardingsphere.shardingproxy.backend.jdbc.connection;
 
+import com.google.common.base.Preconditions;
 import com.google.common.collect.LinkedHashMultimap;
 import com.google.common.collect.Multimap;
 import io.netty.channel.ChannelHandlerContext;
 import io.shardingsphere.core.constant.ConnectionMode;
 import io.shardingsphere.core.constant.transaction.TransactionType;
+import io.shardingsphere.core.exception.ShardingException;
 import io.shardingsphere.core.routing.router.masterslave.MasterVisitedManager;
+import io.shardingsphere.shardingproxy.runtime.GlobalRegistry;
 import io.shardingsphere.shardingproxy.runtime.schema.LogicSchema;
 import lombok.Getter;
 import lombok.Setter;
+import lombok.SneakyThrows;
 import lombok.extern.slf4j.Slf4j;
 
 import java.sql.Connection;
@@ -37,7 +41,6 @@ import java.util.Collection;
 import java.util.LinkedList;
 import java.util.List;
 import java.util.concurrent.CopyOnWriteArrayList;
-import java.util.concurrent.atomic.AtomicReference;
 
 /**
  * Backend connection.
@@ -49,6 +52,10 @@ import java.util.concurrent.atomic.AtomicReference;
 @Getter
 public final class BackendConnection implements AutoCloseable {
     
+    private static final int MAXIMUM_RETRY_COUNT = 5;
+    
+    private volatile String currentSchema;
+    
     private LogicSchema logicSchema;
     
     private final Multimap<String, Connection> cachedConnections = LinkedHashMultimap.create();
@@ -59,46 +66,17 @@ public final class BackendConnection implements AutoCloseable {
     
     private final Collection<MethodInvocation> methodInvocations = new ArrayList<>();
     
-    private volatile AtomicReference<ConnectionStatus> status = new AtomicReference<>(ConnectionStatus.INIT);
+    private final ResourceSynchronizer resourceSynchronizer = new ResourceSynchronizer();
+    
+    private final ConnectionStateHandler stateHandler = new ConnectionStateHandler(resourceSynchronizer);
     
     private TransactionType transactionType;
     
     @Setter
     private ChannelHandlerContext context;
     
-    private final Object lock = new Object();
-    
     public BackendConnection(final TransactionType transactionType) {
         this.transactionType = transactionType;
-    }
-    
-    /**
-     * Change connection status using compare and set.
-     *
-     * @param expect expect status
-     * @param update new update status
-     * @return boolean set succeed or failed
-     */
-    public boolean compareAndSetStatus(final ConnectionStatus expect, final ConnectionStatus update) {
-        return status.compareAndSet(expect, update);
-    }
-    
-    /**
-     * Change connection status using get and set.
-     *
-     * @param update new update status
-     */
-    public void getAndSetStatus(final ConnectionStatus update) {
-        status.getAndSet(update);
-    }
-    
-    /**
-     * Get current connection status.
-     *
-     * @return connection status
-     */
-    public ConnectionStatus getStatus() {
-        return status.get();
     }
     
     /**
@@ -107,20 +85,38 @@ public final class BackendConnection implements AutoCloseable {
      * @param transactionType transaction type
      */
     public void setTransactionType(final TransactionType transactionType) {
-        if (ConnectionStatus.TRANSACTION != status.get()) {
-            this.transactionType = transactionType;
+        if (isSwitchFailed()) {
+            throw new ShardingException("Failed to switch transaction type, please terminate current transaction.");
         }
+        this.transactionType = transactionType;
     }
     
     /**
      * Change logic schema of current channel.
      *
-     * @param logicSchema logic schema
+     * @param currentSchema current schema
      */
-    public void setLogicSchema(final LogicSchema logicSchema) {
-        if (ConnectionStatus.TRANSACTION != status.get()) {
-            this.logicSchema = logicSchema;
+    public void setCurrentSchema(final String currentSchema) {
+        if (isSwitchFailed()) {
+            throw new ShardingException("Failed to switch schema, please terminate current transaction.");
         }
+        this.currentSchema = currentSchema;
+        this.logicSchema = GlobalRegistry.getInstance().getLogicSchema(currentSchema);
+    }
+    
+    @SneakyThrows
+    private boolean isSwitchFailed() {
+        int retryCount = 0;
+        while (stateHandler.isInTransaction() && retryCount < MAXIMUM_RETRY_COUNT) {
+            resourceSynchronizer.doAwait();
+            ++retryCount;
+            log.warn("Current transaction have not terminated, retry count:[{}].", retryCount);
+        }
+        if (retryCount >= MAXIMUM_RETRY_COUNT) {
+            log.error("Cannot do switch, exceed maximum retry count:[{}].", MAXIMUM_RETRY_COUNT);
+            return true;
+        }
+        return false;
     }
     
     /**
@@ -133,10 +129,8 @@ public final class BackendConnection implements AutoCloseable {
      * @throws SQLException SQL exception
      */
     public List<Connection> getConnections(final ConnectionMode connectionMode, final String dataSourceName, final int connectionSize) throws SQLException {
-        if (ConnectionStatus.INIT == status.get() || ConnectionStatus.TERMINATED == status.get()) {
-            status.getAndSet(ConnectionStatus.RUNNING);
-        }
-        if (ConnectionStatus.TRANSACTION == status.get()) {
+        stateHandler.setRunningStatusIfNecessary();
+        if (stateHandler.isInTransaction()) {
             return getConnectionsWithTransaction(connectionMode, dataSourceName, connectionSize);
         } else {
             return getConnectionsWithoutTransaction(connectionMode, dataSourceName, connectionSize);
@@ -169,12 +163,14 @@ public final class BackendConnection implements AutoCloseable {
     }
     
     private synchronized List<Connection> getConnectionsWithoutTransaction(final ConnectionMode connectionMode, final String dataSourceName, final int connectionSize) throws SQLException {
+        Preconditions.checkNotNull(logicSchema, "current logic schema is null");
         List<Connection> result = logicSchema.getBackendDataSource().getConnections(connectionMode, dataSourceName, connectionSize);
         cachedConnections.putAll(dataSourceName, result);
         return result;
     }
     
     private List<Connection> createNewConnections(final ConnectionMode connectionMode, final String dataSourceName, final int connectionSize) throws SQLException {
+        Preconditions.checkNotNull(logicSchema, "current logic schema is null");
         List<Connection> result = logicSchema.getBackendDataSource().getConnections(connectionMode, dataSourceName, connectionSize);
         for (Connection each : result) {
             replayMethodsInvocation(each);
@@ -225,14 +221,10 @@ public final class BackendConnection implements AutoCloseable {
         MasterVisitedManager.clear();
         exceptions.addAll(closeStatements());
         exceptions.addAll(closeResultSets());
-        if (ConnectionStatus.TRANSACTION != status.get() || forceClose) {
+        if (!stateHandler.isInTransaction() || forceClose) {
             exceptions.addAll(releaseConnections(forceClose));
         }
-        if (status.compareAndSet(ConnectionStatus.RUNNING, ConnectionStatus.RELEASE)) {
-            synchronized (lock) {
-                lock.notifyAll();
-            }
-        }
+        stateHandler.doNotifyIfNecessary();
         throwSQLExceptionIfNecessary(exceptions);
     }
     
@@ -266,7 +258,7 @@ public final class BackendConnection implements AutoCloseable {
         Collection<SQLException> result = new LinkedList<>();
         for (Connection each : cachedConnections.values()) {
             try {
-                if (forceRollback && ConnectionStatus.TRANSACTION == status.get()) {
+                if (forceRollback && stateHandler.isInTransaction()) {
                     each.rollback();
                 }
                 each.close();

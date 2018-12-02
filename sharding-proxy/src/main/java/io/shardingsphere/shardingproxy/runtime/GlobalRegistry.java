@@ -26,12 +26,12 @@ import io.shardingsphere.api.config.ShardingRuleConfiguration;
 import io.shardingsphere.core.constant.properties.ShardingProperties;
 import io.shardingsphere.core.constant.properties.ShardingPropertiesConstant;
 import io.shardingsphere.core.constant.transaction.TransactionType;
-import io.shardingsphere.core.event.ShardingEventBusInstance;
 import io.shardingsphere.core.rule.Authentication;
 import io.shardingsphere.core.rule.DataSourceParameter;
-import io.shardingsphere.orchestration.internal.config.event.AuthenticationChangedEvent;
-import io.shardingsphere.orchestration.internal.config.event.PropertiesChangedEvent;
-import io.shardingsphere.orchestration.internal.state.event.CircuitStateEvent;
+import io.shardingsphere.orchestration.internal.eventbus.ShardingOrchestrationEventBus;
+import io.shardingsphere.orchestration.internal.registry.config.event.AuthenticationChangedEvent;
+import io.shardingsphere.orchestration.internal.registry.config.event.PropertiesChangedEvent;
+import io.shardingsphere.orchestration.internal.registry.state.event.CircuitStateChangedEvent;
 import io.shardingsphere.shardingproxy.runtime.schema.LogicSchema;
 import io.shardingsphere.shardingproxy.runtime.schema.MasterSlaveSchema;
 import io.shardingsphere.shardingproxy.runtime.schema.ShardingSchema;
@@ -79,7 +79,7 @@ public final class GlobalRegistry {
      * Register listener.
      */
     public void register() {
-        ShardingEventBusInstance.getInstance().register(this);
+        ShardingOrchestrationEventBus.getInstance().register(this);
     }
     
     /**
@@ -119,12 +119,12 @@ public final class GlobalRegistry {
     private void initSchema(final Map<String, Map<String, DataSourceParameter>> schemaDataSources, final Map<String, RuleConfiguration> schemaRules, final boolean isUsingRegistry) {
         for (Entry<String, RuleConfiguration> entry : schemaRules.entrySet()) {
             String schemaName = entry.getKey();
-            logicSchemas.put(schemaName, getLogicSchema(schemaName, schemaDataSources, entry.getValue(), isUsingRegistry));
+            logicSchemas.put(schemaName, createLogicSchema(schemaName, schemaDataSources, entry.getValue(), isUsingRegistry));
         }
     }
     
-    private LogicSchema getLogicSchema(final String schemaName, 
-                                       final Map<String, Map<String, DataSourceParameter>> schemaDataSources, final RuleConfiguration ruleConfiguration, final boolean isUsingRegistry) {
+    private LogicSchema createLogicSchema(final String schemaName,
+                                          final Map<String, Map<String, DataSourceParameter>> schemaDataSources, final RuleConfiguration ruleConfiguration, final boolean isUsingRegistry) {
         return ruleConfiguration instanceof ShardingRuleConfiguration
                 ? new ShardingSchema(schemaName, schemaDataSources.get(schemaName), (ShardingRuleConfiguration) ruleConfiguration, isUsingRegistry)
                 : new MasterSlaveSchema(schemaName, schemaDataSources.get(schemaName), (MasterSlaveRuleConfiguration) ruleConfiguration, isUsingRegistry);
@@ -191,10 +191,10 @@ public final class GlobalRegistry {
     /**
      * Renew circuit breaker data source names.
      *
-     * @param circuitStateEvent circuit state event
+     * @param circuitStateChangedEvent circuit state changed event
      */
     @Subscribe
-    public void renewCircuitBreakerDataSourceNames(final CircuitStateEvent circuitStateEvent) {
-        isCircuitBreak = circuitStateEvent.isCircuitBreak();
+    public void renewCircuitBreakerDataSourceNames(final CircuitStateChangedEvent circuitStateChangedEvent) {
+        isCircuitBreak = circuitStateChangedEvent.isCircuitBreak();
     }
 }

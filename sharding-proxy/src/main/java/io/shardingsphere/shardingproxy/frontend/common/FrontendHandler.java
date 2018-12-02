@@ -24,7 +24,6 @@ import io.shardingsphere.shardingproxy.backend.jdbc.connection.BackendConnection
 import io.shardingsphere.shardingproxy.frontend.common.executor.ChannelThreadExecutorGroup;
 import io.shardingsphere.shardingproxy.runtime.GlobalRegistry;
 import lombok.Getter;
-import lombok.Setter;
 import lombok.SneakyThrows;
 
 /**
@@ -38,10 +37,6 @@ public abstract class FrontendHandler extends ChannelInboundHandlerAdapter {
     
     @Getter
     private volatile BackendConnection backendConnection = new BackendConnection(GlobalRegistry.getInstance().getTransactionType());
-
-    @Getter
-    @Setter
-    private volatile String currentSchema;
 
     @Override
     public final void channelActive(final ChannelHandlerContext context) {

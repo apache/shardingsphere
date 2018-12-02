@@ -62,7 +62,7 @@ public final class ComInitDbPacket implements CommandPacket {
     public Optional<CommandResponsePackets> execute() {
         log.debug("Schema name received for Sharding-Proxy: {}", schema);
         if (GlobalRegistry.getInstance().schemaExists(schema)) {
-            frontendHandler.setCurrentSchema(schema);
+            frontendHandler.getBackendConnection().setCurrentSchema(schema);
             return Optional.of(new CommandResponsePackets(new OKPacket(getSequenceId() + 1)));
         }
         return Optional.of(new CommandResponsePackets(new ErrPacket(getSequenceId() + 1, ServerErrorCode.ER_BAD_DB_ERROR, schema)));
