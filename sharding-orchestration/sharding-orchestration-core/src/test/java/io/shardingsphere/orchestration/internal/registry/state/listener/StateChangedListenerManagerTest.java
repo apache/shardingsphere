@@ -17,9 +17,9 @@
 
 package io.shardingsphere.orchestration.internal.registry.state.listener;
 
-import io.shardingsphere.orchestration.FieldUtil;
 import io.shardingsphere.orchestration.reg.api.RegistryCenter;
 import io.shardingsphere.orchestration.reg.listener.DataChangedEvent.ChangedType;
+import io.shardingsphere.orchestration.util.FieldUtil;
 import org.junit.Test;
 import org.junit.runner.RunWith;
 import org.mockito.Mock;

@@ -20,7 +20,6 @@ package io.shardingsphere.orchestration.internal.registry.state.schema;
 import com.google.common.base.Splitter;
 import io.shardingsphere.core.constant.ShardingConstant;
 import lombok.Getter;
-import lombok.RequiredArgsConstructor;
 
 import java.util.List;
 
@@ -29,7 +28,6 @@ import java.util.List;
  *
  * @author zhangliang
  */
-@RequiredArgsConstructor
 @Getter
 public final class OrchestrationShardingSchema {
     

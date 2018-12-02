@@ -20,7 +20,6 @@ package io.shardingsphere.orchestration.internal.registry;
 import io.shardingsphere.api.config.RuleConfiguration;
 import io.shardingsphere.core.config.DataSourceConfiguration;
 import io.shardingsphere.core.rule.Authentication;
-import io.shardingsphere.orchestration.FieldUtil;
 import io.shardingsphere.orchestration.config.OrchestrationConfiguration;
 import io.shardingsphere.orchestration.internal.registry.config.service.ConfigurationService;
 import io.shardingsphere.orchestration.internal.registry.listener.ShardingOrchestrationListenerManager;
@@ -28,6 +27,7 @@ import io.shardingsphere.orchestration.internal.registry.state.service.DataSourc
 import io.shardingsphere.orchestration.internal.registry.state.service.InstanceStateService;
 import io.shardingsphere.orchestration.reg.api.RegistryCenter;
 import io.shardingsphere.orchestration.reg.api.RegistryCenterConfiguration;
+import io.shardingsphere.orchestration.util.FieldUtil;
 import org.junit.Before;
 import org.junit.Test;
 import org.junit.runner.RunWith;

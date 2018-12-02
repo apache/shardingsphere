@@ -17,10 +17,10 @@
 
 package io.shardingsphere.orchestration.internal.registry.listener;
 
-import io.shardingsphere.orchestration.FieldUtil;
 import io.shardingsphere.orchestration.internal.registry.config.listener.ConfigurationChangedListenerManager;
 import io.shardingsphere.orchestration.internal.registry.state.listener.StateChangedListenerManager;
 import io.shardingsphere.orchestration.reg.api.RegistryCenter;
+import io.shardingsphere.orchestration.util.FieldUtil;
 import org.junit.Test;
 import org.junit.runner.RunWith;
 import org.mockito.Mock;

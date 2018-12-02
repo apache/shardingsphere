@@ -18,10 +18,10 @@
 package io.shardingsphere.orchestration.internal.registry.config.listener;
 
 import io.shardingsphere.core.rule.Authentication;
-import io.shardingsphere.orchestration.FieldUtil;
 import io.shardingsphere.orchestration.internal.registry.config.service.ConfigurationService;
 import io.shardingsphere.orchestration.reg.api.RegistryCenter;
 import io.shardingsphere.orchestration.reg.listener.DataChangedEvent;
+import io.shardingsphere.orchestration.util.FieldUtil;
 import org.junit.Before;
 import org.junit.Test;
 import org.junit.runner.RunWith;
