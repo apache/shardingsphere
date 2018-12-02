@@ -61,7 +61,7 @@ public final class OrchestrationMasterSlaveRule extends MasterSlaveRule {
      * @param disabledStateChangedEvent disabled state changed event
      */
     @Subscribe
-    public void renew(final DisabledStateChangedEvent disabledStateChangedEvent) {
+    public synchronized void renew(final DisabledStateChangedEvent disabledStateChangedEvent) {
         disabledDataSourceNames.clear();
         disabledDataSourceNames.addAll(disabledStateChangedEvent.getDisabledGroup().getDataSourceNames(ShardingConstant.LOGIC_SCHEMA_NAME));
     }

@@ -62,7 +62,7 @@ public abstract class AbstractOrchestrationDataSource extends AbstractDataSource
      * @param circuitStateChangedEvent circuit state changed event
      */
     @Subscribe
-    public void renew(final CircuitStateChangedEvent circuitStateChangedEvent) {
+    public final synchronized void renew(final CircuitStateChangedEvent circuitStateChangedEvent) {
         isCircuitBreak = circuitStateChangedEvent.isCircuitBreak();
     }
 }

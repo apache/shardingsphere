@@ -175,7 +175,7 @@ public final class GlobalRegistry {
      * @param propertiesChangedEvent properties changed event
      */
     @Subscribe
-    public void renew(final PropertiesChangedEvent propertiesChangedEvent) {
+    public synchronized void renew(final PropertiesChangedEvent propertiesChangedEvent) {
         shardingProperties = new ShardingProperties(propertiesChangedEvent.getProps());
     }
     
@@ -185,7 +185,7 @@ public final class GlobalRegistry {
      * @param authenticationChangedEvent authentication changed event
      */
     @Subscribe
-    public void renew(final AuthenticationChangedEvent authenticationChangedEvent) {
+    public synchronized void renew(final AuthenticationChangedEvent authenticationChangedEvent) {
         authentication = authenticationChangedEvent.getAuthentication();
     }
     
@@ -195,18 +195,18 @@ public final class GlobalRegistry {
      * @param configMapChangedEvent config map changed event
      */
     @Subscribe
-    public void renew(final ConfigMapChangedEvent configMapChangedEvent) {
+    public synchronized void renew(final ConfigMapChangedEvent configMapChangedEvent) {
         ConfigMapContext.getInstance().getConfigMap().clear();
         ConfigMapContext.getInstance().getConfigMap().putAll(configMapChangedEvent.getConfigMap());
     }
     
     /**
-     * Renew circuit breaker data source names.
+     * Renew circuit breaker state.
      *
      * @param circuitStateChangedEvent circuit state changed event
      */
     @Subscribe
-    public void renewCircuitBreakerDataSourceNames(final CircuitStateChangedEvent circuitStateChangedEvent) {
+    public synchronized void renew(final CircuitStateChangedEvent circuitStateChangedEvent) {
         isCircuitBreak = circuitStateChangedEvent.isCircuitBreak();
     }
 }

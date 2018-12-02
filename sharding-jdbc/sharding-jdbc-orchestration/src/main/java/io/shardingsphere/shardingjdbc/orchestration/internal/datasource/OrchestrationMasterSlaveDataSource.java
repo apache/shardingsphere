@@ -101,7 +101,7 @@ public class OrchestrationMasterSlaveDataSource extends AbstractOrchestrationDat
      * @throws SQLException SQL exception
      */
     @Subscribe
-    public final void renew(final MasterSlaveRuleChangedEvent masterSlaveRuleChangedEvent) throws SQLException {
+    public final synchronized void renew(final MasterSlaveRuleChangedEvent masterSlaveRuleChangedEvent) throws SQLException {
         dataSource = new MasterSlaveDataSource(dataSource.getDataSourceMap(),
                 masterSlaveRuleChangedEvent.getMasterSlaveRuleConfiguration(), ConfigMapContext.getInstance().getConfigMap(), dataSource.getShardingProperties().getProps());
     }
@@ -113,7 +113,7 @@ public class OrchestrationMasterSlaveDataSource extends AbstractOrchestrationDat
      */
     @Subscribe
     @SneakyThrows
-    public final void renew(final DataSourceChangedEvent dataSourceChangedEvent) {
+    public final synchronized void renew(final DataSourceChangedEvent dataSourceChangedEvent) {
         Map<String, DataSourceConfiguration> originalDataSourceConfigurations = DataSourceConverter.getDataSourceConfigurationMap(dataSource.getDataSourceMap());
         Map<String, DataSourceConfiguration> newDataSourceConfigurations = dataSourceChangedEvent.getDataSourceConfigurations();
         Map<String, DataSource> result = new LinkedHashMap<>();
@@ -136,7 +136,7 @@ public class OrchestrationMasterSlaveDataSource extends AbstractOrchestrationDat
      */
     @SneakyThrows
     @Subscribe
-    public final void renew(final PropertiesChangedEvent propertiesChangedEvent) {
+    public final synchronized void renew(final PropertiesChangedEvent propertiesChangedEvent) {
         dataSource = new MasterSlaveDataSource(dataSource.getDataSourceMap(), dataSource.getMasterSlaveRule(), ConfigMapContext.getInstance().getConfigMap(), propertiesChangedEvent.getProps());
     }
     
@@ -146,7 +146,7 @@ public class OrchestrationMasterSlaveDataSource extends AbstractOrchestrationDat
      * @param configMapChangedEvent config map changed event
      */
     @Subscribe
-    public final void renew(final ConfigMapChangedEvent configMapChangedEvent) {
+    public final synchronized void renew(final ConfigMapChangedEvent configMapChangedEvent) {
         ConfigMapContext.getInstance().getConfigMap().clear();
         ConfigMapContext.getInstance().getConfigMap().putAll(configMapChangedEvent.getConfigMap());
     }

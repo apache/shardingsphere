@@ -70,16 +70,16 @@ public abstract class LogicSchema {
     /**
      * Renew data source configuration.
      *
-     * @param dataSourceEvent data source event.
+     * @param dataSourceChangedEvent data source changed event.
      */
     @Subscribe
-    public final void renew(final DataSourceChangedEvent dataSourceEvent) {
-        if (!name.equals(dataSourceEvent.getShardingSchemaName())) {
+    public final synchronized void renew(final DataSourceChangedEvent dataSourceChangedEvent) {
+        if (!name.equals(dataSourceChangedEvent.getShardingSchemaName())) {
             return;
         }
         backendDataSource.close();
         dataSources.clear();
-        dataSources.putAll(DataSourceConverter.getDataSourceParameterMap(dataSourceEvent.getDataSourceConfigurations()));
+        dataSources.putAll(DataSourceConverter.getDataSourceParameterMap(dataSourceChangedEvent.getDataSourceConfigurations()));
         backendDataSource = new JDBCBackendDataSource(dataSources);
     }
 }

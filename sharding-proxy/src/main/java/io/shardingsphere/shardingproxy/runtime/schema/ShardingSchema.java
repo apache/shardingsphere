@@ -74,14 +74,14 @@ public final class ShardingSchema extends LogicSchema {
     /**
      * Renew sharding rule.
      *
-     * @param shardingEvent sharding event.
+     * @param shardingRuleChangedEvent sharding rule changed event.
      */
     @Subscribe
-    public void renew(final ShardingRuleChangedEvent shardingEvent) {
-        if (!getName().equals(shardingEvent.getShardingSchemaName())) {
+    public synchronized void renew(final ShardingRuleChangedEvent shardingRuleChangedEvent) {
+        if (!getName().equals(shardingRuleChangedEvent.getShardingSchemaName())) {
             return;
         }
-        shardingRule = new OrchestrationShardingRule(shardingEvent.getShardingRuleConfiguration(), getDataSources().keySet());
+        shardingRule = new OrchestrationShardingRule(shardingRuleChangedEvent.getShardingRuleConfiguration(), getDataSources().keySet());
     }
     
     /**
@@ -90,7 +90,7 @@ public final class ShardingSchema extends LogicSchema {
      * @param disabledStateChangedEvent disabled state changed event
      */
     @Subscribe
-    public void renew(final DisabledStateChangedEvent disabledStateChangedEvent) {
+    public synchronized void renew(final DisabledStateChangedEvent disabledStateChangedEvent) {
         Collection<String> disabledDataSourceNames = disabledStateChangedEvent.getDisabledGroup().getDataSourceNames(getName());
         for (MasterSlaveRule each : shardingRule.getMasterSlaveRules()) {
             OrchestrationShardingSchemaGroup orchestrationShardingSchemaGroup = new OrchestrationShardingSchemaGroup();
