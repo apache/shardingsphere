@@ -22,7 +22,6 @@ import io.shardingsphere.api.config.ShardingRuleConfiguration;
 import io.shardingsphere.orchestration.internal.registry.config.event.MasterSlaveRuleChangedEvent;
 import io.shardingsphere.orchestration.internal.registry.config.event.ShardingRuleChangedEvent;
 import io.shardingsphere.orchestration.internal.registry.config.service.ConfigurationService;
-import io.shardingsphere.orchestration.internal.registry.state.service.DataSourceService;
 import io.shardingsphere.orchestration.reg.api.RegistryCenter;
 import io.shardingsphere.orchestration.reg.listener.DataChangedEvent;
 import io.shardingsphere.orchestration.util.FieldUtil;
@@ -49,33 +48,29 @@ public final class RuleChangedListenerTest {
     @Mock
     private ConfigurationService configService;
     
-    @Mock
-    private DataSourceService dataSourceService;
-    
     @Before
     @SneakyThrows
     public void setUp() {
-        ruleChangedListener = new RuleChangedListener("test", regCenter, "sharding_db");
+        ruleChangedListener = new RuleChangedListener("test", regCenter, "sharding_schema");
         FieldUtil.setField(ruleChangedListener, "configService", configService);
-        FieldUtil.setField(ruleChangedListener, "dataSourceService", dataSourceService);
     }
     
     @Test
     public void assertCreateShardingOrchestrationEventForSharding() {
-        when(configService.isShardingRule("sharding_db")).thenReturn(true);
+        when(configService.isShardingRule("sharding_schema")).thenReturn(true);
         ShardingRuleConfiguration expected = mock(ShardingRuleConfiguration.class);
-        when(dataSourceService.getAvailableShardingRuleConfiguration("sharding_db")).thenReturn(expected);
+        when(configService.loadShardingRuleConfiguration("sharding_schema")).thenReturn(expected);
         ShardingRuleChangedEvent actual = (ShardingRuleChangedEvent) ruleChangedListener.createShardingOrchestrationEvent(mock(DataChangedEvent.class));
-        assertThat(actual.getShardingSchemaName(), is("sharding_db"));
+        assertThat(actual.getShardingSchemaName(), is("sharding_schema"));
         assertThat(actual.getShardingRuleConfiguration(), is(expected));
     }
     
     @Test
     public void assertCreateShardingOrchestrationEventForMasterSlave() {
         MasterSlaveRuleConfiguration expected = mock(MasterSlaveRuleConfiguration.class);
-        when(dataSourceService.getAvailableMasterSlaveRuleConfiguration("sharding_db")).thenReturn(expected);
+        when(configService.loadMasterSlaveRuleConfiguration("sharding_schema")).thenReturn(expected);
         MasterSlaveRuleChangedEvent actual = (MasterSlaveRuleChangedEvent) ruleChangedListener.createShardingOrchestrationEvent(mock(DataChangedEvent.class));
-        assertThat(actual.getShardingSchemaName(), is("sharding_db"));
+        assertThat(actual.getShardingSchemaName(), is("sharding_schema"));
         assertThat(actual.getMasterSlaveRuleConfiguration(), is(expected));
     }
 }

@@ -22,9 +22,9 @@ import io.shardingsphere.api.config.MasterSlaveRuleConfiguration;
 import io.shardingsphere.core.constant.properties.ShardingProperties;
 import io.shardingsphere.core.constant.transaction.TransactionType;
 import io.shardingsphere.core.rule.MasterSlaveRule;
+import io.shardingsphere.core.transaction.TransactionTypeHolder;
 import io.shardingsphere.shardingjdbc.jdbc.adapter.AbstractDataSourceAdapter;
 import io.shardingsphere.shardingjdbc.jdbc.core.connection.MasterSlaveConnection;
-import io.shardingsphere.core.transaction.TransactionTypeHolder;
 import lombok.Getter;
 import lombok.extern.slf4j.Slf4j;
 
@@ -58,8 +58,7 @@ public class MasterSlaveDataSource extends AbstractDataSourceAdapter {
         shardingProperties = new ShardingProperties(null == props ? new Properties() : props);
     }
     
-    public MasterSlaveDataSource(final Map<String, DataSource> dataSourceMap, final MasterSlaveRule masterSlaveRule,
-                                 final Map<String, Object> configMap, final Properties props) throws SQLException {
+    public MasterSlaveDataSource(final Map<String, DataSource> dataSourceMap, final MasterSlaveRule masterSlaveRule, final Map<String, Object> configMap, final Properties props) throws SQLException {
         super(dataSourceMap);
         if (!configMap.isEmpty()) {
             ConfigMapContext.getInstance().getConfigMap().putAll(configMap);
