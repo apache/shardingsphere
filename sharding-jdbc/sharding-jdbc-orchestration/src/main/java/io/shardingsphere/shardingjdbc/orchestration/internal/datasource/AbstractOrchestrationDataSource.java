@@ -57,7 +57,7 @@ public abstract class AbstractOrchestrationDataSource extends AbstractDataSource
     
     /**
      /**
-     * Renew circuit breaker data source names.
+     * Renew circuit breaker state.
      *
      * @param circuitStateChangedEvent circuit state changed event
      */
