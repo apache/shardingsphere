@@ -123,4 +123,16 @@ public final class DataSourceService {
         }
         return result;
     }
+    
+    /**
+     * Get disabled slave sharding schema.
+     * @param dataSourceNodeFullPath data source node full path
+     * @return optional of OrchestrationShardingSchema
+     */
+    public OrchestrationShardingSchema getDisabledSlaveShardingSchema(final String dataSourceNodeFullPath) {
+        String schemaDataSource = dataSourceNodeFullPath.replace(stateNode.getDataSourcesNodeFullRootPath() + '/', "");
+        OrchestrationShardingSchema result = new OrchestrationShardingSchema(schemaDataSource);
+        OrchestrationShardingSchemaGroup slaveGroup = configService.getAllSlaveDataSourceNames();
+        return slaveGroup.getDataSourceNames(result.getSchemaName()).contains(result.getDataSourceName()) ? result : new OrchestrationShardingSchema(result.getSchemaName(), "");
+    }
 }
