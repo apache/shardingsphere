@@ -40,7 +40,7 @@ public final class DataSourceStateChangedListener extends PostShardingOrchestrat
     }
     
     @Override
-    protected DisabledStateChangedEvent createOrchestrationEvent(final DataChangedEvent event) {
+    protected DisabledStateChangedEvent createShardingOrchestrationEvent(final DataChangedEvent event) {
         return new DisabledStateChangedEvent(dataSourceService.getDisabledSlaveSchemaGroup());
     }
 }

@@ -39,7 +39,7 @@ public final class AuthenticationChangedListener extends PostShardingOrchestrati
     }
     
     @Override
-    protected AuthenticationChangedEvent createOrchestrationEvent(final DataChangedEvent event) {
+    protected AuthenticationChangedEvent createShardingOrchestrationEvent(final DataChangedEvent event) {
         return new AuthenticationChangedEvent(configService.loadAuthentication());
     }
 }

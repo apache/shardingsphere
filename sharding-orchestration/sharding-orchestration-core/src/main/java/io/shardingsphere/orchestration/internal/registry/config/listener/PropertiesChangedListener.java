@@ -39,7 +39,7 @@ public final class PropertiesChangedListener extends PostShardingOrchestrationEv
     }
     
     @Override
-    protected PropertiesChangedEvent createOrchestrationEvent(final DataChangedEvent event) {
+    protected PropertiesChangedEvent createShardingOrchestrationEvent(final DataChangedEvent event) {
         return new PropertiesChangedEvent(configService.loadProperties());
     }
 }

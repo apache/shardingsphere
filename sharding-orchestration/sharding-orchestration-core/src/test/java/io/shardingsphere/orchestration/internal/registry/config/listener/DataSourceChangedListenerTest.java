@@ -57,11 +57,11 @@ public final class DataSourceChangedListenerTest {
     }
     
     @Test
-    public void assertCreateOrchestrationEvent() {
+    public void assertCreateShardingOrchestrationEvent() {
         Map<String, DataSourceConfiguration> expected = new HashMap<>(1, 1);
         expected.put("sharding_db", mock(DataSourceConfiguration.class));
         when(dataSourceService.getAvailableDataSourceConfigurations("sharding_db")).thenReturn(expected);
-        DataSourceChangedEvent actual = dataSourceChangedListener.createOrchestrationEvent(mock(DataChangedEvent.class));
+        DataSourceChangedEvent actual = dataSourceChangedListener.createShardingOrchestrationEvent(mock(DataChangedEvent.class));
         assertThat(actual.getShardingSchemaName(), is("sharding_db"));
         assertThat(actual.getDataSourceConfigurations(), is(expected));
     }

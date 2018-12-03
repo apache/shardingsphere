@@ -51,9 +51,9 @@ public final class DataSourceStateChangedListenerTest {
     }
     
     @Test
-    public void assertCreateOrchestrationEvent() {
+    public void assertCreateShardingOrchestrationEvent() {
         OrchestrationShardingSchemaGroup expected = mock(OrchestrationShardingSchemaGroup.class);
         when(dataSourceService.getDisabledSlaveSchemaGroup()).thenReturn(expected);
-        assertThat(dataSourceStateChangedListener.createOrchestrationEvent(mock(DataChangedEvent.class)).getDisabledGroup(), is(expected));
+        assertThat(dataSourceStateChangedListener.createShardingOrchestrationEvent(mock(DataChangedEvent.class)).getDisabledGroup(), is(expected));
     }
 }

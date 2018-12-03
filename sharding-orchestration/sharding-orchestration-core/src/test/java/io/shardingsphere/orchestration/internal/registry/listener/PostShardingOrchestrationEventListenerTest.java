@@ -41,7 +41,7 @@ public final class PostShardingOrchestrationEventListenerTest {
         PostShardingOrchestrationEventListener postShardingOrchestrationEventListener = new PostShardingOrchestrationEventListener(regCenter, "test") {
             
             @Override
-            protected ShardingOrchestrationEvent createOrchestrationEvent(final DataChangedEvent event) {
+            protected ShardingOrchestrationEvent createShardingOrchestrationEvent(final DataChangedEvent event) {
                 return mock(ShardingOrchestrationEvent.class);
             }
         };

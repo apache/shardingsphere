@@ -49,7 +49,7 @@ public final class RuleChangedListener extends PostShardingOrchestrationEventLis
     }
     
     @Override
-    protected ShardingOrchestrationEvent createOrchestrationEvent(final DataChangedEvent event) {
+    protected ShardingOrchestrationEvent createShardingOrchestrationEvent(final DataChangedEvent event) {
         return configService.isShardingRule(shardingSchemaName) ? getShardingConfigurationChangedEvent() : getMasterSlaveConfigurationChangedEvent();
     }
     

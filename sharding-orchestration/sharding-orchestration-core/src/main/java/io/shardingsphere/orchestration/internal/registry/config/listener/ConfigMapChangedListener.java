@@ -40,7 +40,7 @@ public final class ConfigMapChangedListener extends PostShardingOrchestrationEve
     }
     
     @Override
-    protected ConfigMapChangedEvent createOrchestrationEvent(final DataChangedEvent event) {
+    protected ConfigMapChangedEvent createShardingOrchestrationEvent(final DataChangedEvent event) {
         return new ConfigMapChangedEvent(configService.loadConfigMap());
     }
 }

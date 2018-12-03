@@ -42,7 +42,7 @@ public final class DataSourceChangedListener extends PostShardingOrchestrationEv
     }
     
     @Override
-    protected DataSourceChangedEvent createOrchestrationEvent(final DataChangedEvent event) {
+    protected DataSourceChangedEvent createShardingOrchestrationEvent(final DataChangedEvent event) {
         return new DataSourceChangedEvent(shardingSchemaName, dataSourceService.getAvailableDataSourceConfigurations(shardingSchemaName));
     }
 }

@@ -55,10 +55,10 @@ public final class PropertiesChangedListenerTest {
     }
     
     @Test
-    public void assertCreateOrchestrationEvent() {
+    public void assertCreateShardingOrchestrationEvent() {
         Properties expected = new Properties();
         expected.setProperty(ShardingPropertiesConstant.SQL_SHOW.getKey(), Boolean.TRUE.toString());
         when(configService.loadProperties()).thenReturn(expected);
-        assertThat(propertiesChangedListener.createOrchestrationEvent(mock(DataChangedEvent.class)).getProps(), is(expected));
+        assertThat(propertiesChangedListener.createShardingOrchestrationEvent(mock(DataChangedEvent.class)).getProps(), is(expected));
     }
 }

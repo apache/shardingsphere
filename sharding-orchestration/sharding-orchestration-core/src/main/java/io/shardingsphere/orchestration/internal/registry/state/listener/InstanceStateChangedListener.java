@@ -41,7 +41,7 @@ public final class InstanceStateChangedListener extends PostShardingOrchestratio
     }
     
     @Override
-    protected CircuitStateChangedEvent createOrchestrationEvent(final DataChangedEvent event) {
+    protected CircuitStateChangedEvent createShardingOrchestrationEvent(final DataChangedEvent event) {
         return new CircuitStateChangedEvent(StateNodeStatus.DISABLED.toString().equalsIgnoreCase(regCenter.get(event.getKey())));
     }
 }

@@ -51,9 +51,9 @@ public final class AuthenticationChangedListenerTest {
     }
     
     @Test
-    public void assertCreateOrchestrationEvent() {
+    public void assertCreateShardingOrchestrationEvent() {
         Authentication expected = new Authentication();
         when(configService.loadAuthentication()).thenReturn(expected);
-        assertThat(authenticationChangedListener.createOrchestrationEvent(mock(DataChangedEvent.class)).getAuthentication(), is(expected));
+        assertThat(authenticationChangedListener.createShardingOrchestrationEvent(mock(DataChangedEvent.class)).getAuthentication(), is(expected));
     }
 }

@@ -55,10 +55,10 @@ public final class ConfigMapChangedListenerTest {
     }
     
     @Test
-    public void assertCreateOrchestrationEvent() {
+    public void assertCreateShardingOrchestrationEvent() {
         Map<String, Object> expected = new HashMap<>(1, 1);
         expected.put("key_0", "value_0");
         when(configService.loadConfigMap()).thenReturn(expected);
-        assertThat(configMapChangedListener.createOrchestrationEvent(mock(DataChangedEvent.class)).getConfigMap(), is(expected));
+        assertThat(configMapChangedListener.createShardingOrchestrationEvent(mock(DataChangedEvent.class)).getConfigMap(), is(expected));
     }
 }

@@ -45,16 +45,16 @@ public final class InstanceStateChangedListenerTest {
     }
     
     @Test
-    public void assertCreateOrchestrationEventWhenEnabled() {
+    public void assertCreateShardingOrchestrationEventWhenEnabled() {
         DataChangedEvent dataChangedEvent = new DataChangedEvent("test/test_ds", "", ChangedType.UPDATED);
         when(regCenter.get("test/test_ds")).thenReturn("");
-        assertFalse(instanceStateChangedListener.createOrchestrationEvent(dataChangedEvent).isCircuitBreak());
+        assertFalse(instanceStateChangedListener.createShardingOrchestrationEvent(dataChangedEvent).isCircuitBreak());
     }
     
     @Test
-    public void assertCreateOrchestrationEventWhenDisabled() {
+    public void assertCreateShardingOrchestrationEventWhenDisabled() {
         DataChangedEvent dataChangedEvent = new DataChangedEvent("test/test_ds", StateNodeStatus.DISABLED.name(), ChangedType.UPDATED);
         when(regCenter.get("test/test_ds")).thenReturn(StateNodeStatus.DISABLED.name());
-        assertTrue(instanceStateChangedListener.createOrchestrationEvent(dataChangedEvent).isCircuitBreak());
+        assertTrue(instanceStateChangedListener.createShardingOrchestrationEvent(dataChangedEvent).isCircuitBreak());
     }
 }

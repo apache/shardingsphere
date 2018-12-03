@@ -50,11 +50,11 @@ public abstract class PostShardingOrchestrationEventListener implements Sharding
             @Override
             public void onChange(final DataChangedEvent dataChangedEvent) {
                 if (watchedChangedTypeList.contains(dataChangedEvent.getChangedType())) {
-                    eventBus.post(createOrchestrationEvent(dataChangedEvent));
+                    eventBus.post(createShardingOrchestrationEvent(dataChangedEvent));
                 }
             }
         });
     }
     
-    protected abstract ShardingOrchestrationEvent createOrchestrationEvent(DataChangedEvent event);
+    protected abstract ShardingOrchestrationEvent createShardingOrchestrationEvent(DataChangedEvent event);
 }
