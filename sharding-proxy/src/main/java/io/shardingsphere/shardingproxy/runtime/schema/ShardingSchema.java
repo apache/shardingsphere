@@ -57,15 +57,15 @@ public final class ShardingSchema extends LogicSchema {
     
     public ShardingSchema(final String name, final Map<String, DataSourceParameter> dataSources, final ShardingRuleConfiguration shardingRuleConfig, final boolean isUsingRegistry) {
         super(name, dataSources);
-        shardingRule = getShardingRule(shardingRuleConfig, dataSources.keySet(), isUsingRegistry);
-        metaData = getShardingMetaData();
+        shardingRule = createShardingRule(shardingRuleConfig, dataSources.keySet(), isUsingRegistry);
+        metaData = createShardingMetaData();
     }
     
-    private ShardingRule getShardingRule(final ShardingRuleConfiguration shardingRule, final Collection<String> dataSourceNames, final boolean isUsingRegistry) {
-        return isUsingRegistry ? new OrchestrationShardingRule(shardingRule, dataSourceNames) : new ShardingRule(shardingRule, dataSourceNames);
+    private ShardingRule createShardingRule(final ShardingRuleConfiguration shardingRuleConfig, final Collection<String> dataSourceNames, final boolean isUsingRegistry) {
+        return isUsingRegistry ? new OrchestrationShardingRule(shardingRuleConfig, dataSourceNames) : new ShardingRule(shardingRuleConfig, dataSourceNames);
     }
     
-    private ShardingMetaData getShardingMetaData() {
+    private ShardingMetaData createShardingMetaData() {
         return new ShardingMetaData(getDataSourceURLs(getDataSources()), shardingRule, DatabaseType.MySQL, 
                 BackendExecutorContext.getInstance().getExecuteEngine(), new ProxyTableMetaDataConnectionManager(getBackendDataSource()), 
                 GlobalRegistry.getInstance().getShardingProperties().<Integer>getValue(ShardingPropertiesConstant.MAX_CONNECTIONS_SIZE_PER_QUERY));
@@ -78,10 +78,9 @@ public final class ShardingSchema extends LogicSchema {
      */
     @Subscribe
     public synchronized void renew(final ShardingRuleChangedEvent shardingRuleChangedEvent) {
-        if (!getName().equals(shardingRuleChangedEvent.getShardingSchemaName())) {
-            return;
+        if (getName().equals(shardingRuleChangedEvent.getShardingSchemaName())) {
+            shardingRule = new OrchestrationShardingRule(shardingRuleChangedEvent.getShardingRuleConfiguration(), getDataSources().keySet());
         }
-        shardingRule = new OrchestrationShardingRule(shardingRuleChangedEvent.getShardingRuleConfiguration(), getDataSources().keySet());
     }
     
     /**
