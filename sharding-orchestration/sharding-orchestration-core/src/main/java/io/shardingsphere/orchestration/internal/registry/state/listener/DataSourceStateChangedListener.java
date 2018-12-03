@@ -17,10 +17,10 @@
 
 package io.shardingsphere.orchestration.internal.registry.state.listener;
 
-import com.google.common.base.Strings;
 import io.shardingsphere.orchestration.internal.registry.listener.PostShardingOrchestrationEventListener;
 import io.shardingsphere.orchestration.internal.registry.state.event.DisabledStateChangedEvent;
 import io.shardingsphere.orchestration.internal.registry.state.node.StateNode;
+import io.shardingsphere.orchestration.internal.registry.state.node.StateNodeStatus;
 import io.shardingsphere.orchestration.internal.registry.state.schema.OrchestrationShardingSchema;
 import io.shardingsphere.orchestration.internal.registry.state.service.DataSourceService;
 import io.shardingsphere.orchestration.reg.api.RegistryCenter;
@@ -48,7 +48,7 @@ public final class DataSourceStateChangedListener extends PostShardingOrchestrat
     }
     
     private DisabledStateChangedEvent getDisabledStateChangedEvent(final DataChangedEvent event, final OrchestrationShardingSchema shardingSchema) {
-        return !Strings.isNullOrEmpty(event.getValue()) && ChangedType.UPDATED == event.getChangedType()
+        return StateNodeStatus.DISABLED.toString().equalsIgnoreCase(event.getValue()) && ChangedType.UPDATED == event.getChangedType()
                 ? new DisabledStateChangedEvent(shardingSchema, true) : new DisabledStateChangedEvent(shardingSchema, false);
     }
 }
