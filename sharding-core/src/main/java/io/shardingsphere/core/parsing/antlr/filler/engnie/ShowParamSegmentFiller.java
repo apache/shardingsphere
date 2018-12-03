@@ -31,7 +31,7 @@ import io.shardingsphere.core.parsing.parser.sql.SQLStatement;
  */
 public class ShowParamSegmentFiller implements SQLSegmentFiller {
     @Override
-    public void fill(SQLSegment sqlSegment, SQLStatement sqlStatement, ShardingTableMetaData shardingTableMetaData) {
+    public void fill(final SQLSegment sqlSegment, final SQLStatement sqlStatement, final ShardingTableMetaData shardingTableMetaData) {
         ShowParamSegment segment = (ShowParamSegment) sqlSegment;
         ShowStatement statement = (ShowStatement) sqlStatement;
         statement.setName(segment.getName());
