@@ -75,7 +75,13 @@ public final class OrchestrationMasterSlaveRule extends MasterSlaveRule {
         }
     }
     
-    private void updateDisabledDataSourceNames(final String dataSourceName, final boolean isDisabled) {
+    /**
+     * Update disabled data source names.
+     * 
+     * @param dataSourceName data source name
+     * @param isDisabled is disabled
+     */
+    public void updateDisabledDataSourceNames(final String dataSourceName, final boolean isDisabled) {
         if (isDisabled) {
             disabledDataSourceNames.add(dataSourceName);
         } else {
