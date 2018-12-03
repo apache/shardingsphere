@@ -23,9 +23,12 @@ import io.shardingsphere.core.constant.ShardingConstant;
 import io.shardingsphere.core.rule.MasterSlaveRule;
 import io.shardingsphere.orchestration.internal.eventbus.ShardingOrchestrationEventBus;
 import io.shardingsphere.orchestration.internal.registry.state.event.DisabledStateChangedEvent;
+import io.shardingsphere.orchestration.internal.registry.state.schema.OrchestrationShardingSchema;
 
 import java.util.Collection;
+import java.util.LinkedHashSet;
 import java.util.LinkedList;
+import java.util.Set;
 
 /**
  * Orchestration master slave rule.
@@ -34,7 +37,7 @@ import java.util.LinkedList;
  */
 public final class OrchestrationMasterSlaveRule extends MasterSlaveRule {
     
-    private final Collection<String> disabledDataSourceNames = new LinkedList<>();
+    private final Set<String> disabledDataSourceNames = new LinkedHashSet<>();
     
     public OrchestrationMasterSlaveRule(final MasterSlaveRuleConfiguration config) {
         super(config);
@@ -62,7 +65,17 @@ public final class OrchestrationMasterSlaveRule extends MasterSlaveRule {
      */
     @Subscribe
     public synchronized void renew(final DisabledStateChangedEvent disabledStateChangedEvent) {
-        disabledDataSourceNames.clear();
-        disabledDataSourceNames.addAll(disabledStateChangedEvent.getDisabledGroup().getDataSourceNames(ShardingConstant.LOGIC_SCHEMA_NAME));
+        OrchestrationShardingSchema shardingSchema = disabledStateChangedEvent.getShardingSchema();
+        if (ShardingConstant.LOGIC_SCHEMA_NAME.equals(shardingSchema.getSchemaName())) {
+            reviseDisabledDataSourceNames(disabledStateChangedEvent.isDisabled(), shardingSchema.getDataSourceName());
+        }
+    }
+    
+    private void reviseDisabledDataSourceNames(final boolean isDisabled, final String dataSourceName) {
+        if (isDisabled) {
+            disabledDataSourceNames.add(dataSourceName);
+        } else {
+            disabledDataSourceNames.remove(dataSourceName);
+        }
     }
 }
