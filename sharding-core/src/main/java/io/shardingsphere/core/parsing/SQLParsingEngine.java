@@ -20,17 +20,11 @@ package io.shardingsphere.core.parsing;
 import com.google.common.base.Optional;
 import io.shardingsphere.core.constant.DatabaseType;
 import io.shardingsphere.core.metadata.table.ShardingTableMetaData;
-import io.shardingsphere.core.parsing.antlr.AntlrParsingEngine;
 import io.shardingsphere.core.parsing.cache.ParsingResultCache;
 import io.shardingsphere.core.parsing.lexer.LexerEngine;
 import io.shardingsphere.core.parsing.lexer.LexerEngineFactory;
-import io.shardingsphere.core.parsing.lexer.dialect.postgresql.PostgreSQLKeyword;
-import io.shardingsphere.core.parsing.lexer.token.Token;
-import io.shardingsphere.core.parsing.parser.sql.SQLParser;
 import io.shardingsphere.core.parsing.parser.sql.SQLParserFactory;
 import io.shardingsphere.core.parsing.parser.sql.SQLStatement;
-import io.shardingsphere.core.parsing.parser.sql.ddl.DDLStatement;
-import io.shardingsphere.core.parsing.parser.sql.tcl.TCLStatement;
 import io.shardingsphere.core.rule.ShardingRule;
 import lombok.RequiredArgsConstructor;
 

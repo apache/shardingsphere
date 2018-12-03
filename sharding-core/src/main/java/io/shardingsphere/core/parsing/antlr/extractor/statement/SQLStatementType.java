@@ -53,7 +53,7 @@ public enum SQLStatementType {
     
     SET_VARIABLE("SetVariable"),
 
-    SET_PARAM("SetParam"), // PostgreSQL SET statement
+    SET_PARAM("SetParam"),
 
     RESET_PARAM("ResetParam"),
 
