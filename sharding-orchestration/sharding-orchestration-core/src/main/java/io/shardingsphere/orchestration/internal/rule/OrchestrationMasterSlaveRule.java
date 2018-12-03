@@ -67,11 +67,11 @@ public final class OrchestrationMasterSlaveRule extends MasterSlaveRule {
     public synchronized void renew(final DisabledStateChangedEvent disabledStateChangedEvent) {
         OrchestrationShardingSchema shardingSchema = disabledStateChangedEvent.getShardingSchema();
         if (ShardingConstant.LOGIC_SCHEMA_NAME.equals(shardingSchema.getSchemaName())) {
-            reviseDisabledDataSourceNames(disabledStateChangedEvent.isDisabled(), shardingSchema.getDataSourceName());
+            updateDisabledDataSourceNames(shardingSchema.getDataSourceName(), disabledStateChangedEvent.isDisabled());
         }
     }
     
-    private void reviseDisabledDataSourceNames(final boolean isDisabled, final String dataSourceName) {
+    private void updateDisabledDataSourceNames(final String dataSourceName, final boolean isDisabled) {
         if (isDisabled) {
             disabledDataSourceNames.add(dataSourceName);
         } else {

@@ -92,13 +92,12 @@ public final class ShardingSchema extends LogicSchema {
     @Subscribe
     public synchronized void renew(final DisabledStateChangedEvent disabledStateChangedEvent) {
         OrchestrationShardingSchema shardingSchema = disabledStateChangedEvent.getShardingSchema();
-        if (!getName().equals(shardingSchema.getSchemaName())) {
-            return;
+        if (getName().equals(shardingSchema.getSchemaName())) {
+            renewOrchestrationMasterSlaveRules(shardingSchema.getDataSourceName(), disabledStateChangedEvent.isDisabled());
         }
-        renewOrchestrationMasterSlaveRules(disabledStateChangedEvent.isDisabled(), shardingSchema.getDataSourceName());
     }
     
-    private void renewOrchestrationMasterSlaveRules(final boolean isDisabled, final String dataSourceName) {
+    private void renewOrchestrationMasterSlaveRules(final String dataSourceName, final boolean isDisabled) {
         for (MasterSlaveRule each : shardingRule.getMasterSlaveRules()) {
             ((OrchestrationMasterSlaveRule) each).renew(new DisabledStateChangedEvent(new OrchestrationShardingSchema(ShardingConstant.LOGIC_SCHEMA_NAME, dataSourceName), isDisabled));
         }

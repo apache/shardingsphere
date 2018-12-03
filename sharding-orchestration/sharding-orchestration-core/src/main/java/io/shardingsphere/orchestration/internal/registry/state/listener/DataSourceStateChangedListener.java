@@ -21,7 +21,6 @@ import io.shardingsphere.orchestration.internal.registry.listener.PostShardingOr
 import io.shardingsphere.orchestration.internal.registry.state.event.DisabledStateChangedEvent;
 import io.shardingsphere.orchestration.internal.registry.state.node.StateNode;
 import io.shardingsphere.orchestration.internal.registry.state.node.StateNodeStatus;
-import io.shardingsphere.orchestration.internal.registry.state.schema.OrchestrationShardingSchema;
 import io.shardingsphere.orchestration.internal.registry.state.service.DataSourceService;
 import io.shardingsphere.orchestration.reg.api.RegistryCenter;
 import io.shardingsphere.orchestration.reg.listener.DataChangedEvent;
@@ -44,11 +43,11 @@ public final class DataSourceStateChangedListener extends PostShardingOrchestrat
     
     @Override
     protected DisabledStateChangedEvent createShardingOrchestrationEvent(final DataChangedEvent event) {
-        return getDisabledStateChangedEvent(event, dataSourceService.getDisabledSlaveShardingSchema(event.getKey()));
+        // TODO consider about instead of dataSourceService.getDisabledSlaveShardingSchema(event.getKey()) from event.getKey()
+        return new DisabledStateChangedEvent(dataSourceService.getDisabledSlaveShardingSchema(event.getKey()), isDataSourceDisabled(event));
     }
     
-    private DisabledStateChangedEvent getDisabledStateChangedEvent(final DataChangedEvent event, final OrchestrationShardingSchema shardingSchema) {
-        return StateNodeStatus.DISABLED.toString().equalsIgnoreCase(event.getValue()) && ChangedType.UPDATED == event.getChangedType()
-                ? new DisabledStateChangedEvent(shardingSchema, true) : new DisabledStateChangedEvent(shardingSchema, false);
+    private boolean isDataSourceDisabled(final DataChangedEvent event) {
+        return StateNodeStatus.DISABLED.toString().equalsIgnoreCase(event.getValue()) && ChangedType.UPDATED == event.getChangedType();
     }
 }
