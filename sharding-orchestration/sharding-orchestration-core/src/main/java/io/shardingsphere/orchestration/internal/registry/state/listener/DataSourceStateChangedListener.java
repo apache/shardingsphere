@@ -48,9 +48,7 @@ public final class DataSourceStateChangedListener extends PostShardingOrchestrat
     }
     
     private DisabledStateChangedEvent getDisabledStateChangedEvent(final DataChangedEvent event, final OrchestrationShardingSchema shardingSchema) {
-        if (!Strings.isNullOrEmpty(event.getValue()) && ChangedType.UPDATED == event.getChangedType()) {
-            return new DisabledStateChangedEvent(shardingSchema, true);
-        }
-        return new DisabledStateChangedEvent(shardingSchema, false);
+        return !Strings.isNullOrEmpty(event.getValue()) && ChangedType.UPDATED == event.getChangedType()
+                ? new DisabledStateChangedEvent(shardingSchema, true) : new DisabledStateChangedEvent(shardingSchema, false);
     }
 }
