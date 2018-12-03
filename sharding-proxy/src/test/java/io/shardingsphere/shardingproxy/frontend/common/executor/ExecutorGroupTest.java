@@ -18,10 +18,10 @@
 package io.shardingsphere.shardingproxy.frontend.common.executor;
 
 import io.netty.channel.ChannelId;
-import io.netty.channel.EventLoopGroup;
 import io.shardingsphere.core.constant.properties.ShardingProperties;
 import io.shardingsphere.core.constant.properties.ShardingPropertiesConstant;
 import io.shardingsphere.core.constant.transaction.TransactionType;
+import io.shardingsphere.shardingproxy.frontend.ShardingProxy;
 import io.shardingsphere.shardingproxy.runtime.GlobalRegistry;
 import org.hamcrest.CoreMatchers;
 import org.hamcrest.Matchers;
@@ -48,20 +48,28 @@ public final class ExecutorGroupTest {
     @Test
     public void assertGetExecutorServiceWithLocal() throws ReflectiveOperationException {
         setTransactionType(TransactionType.LOCAL);
-        EventLoopGroup eventLoopGroup = mock(EventLoopGroup.class);
+        ExecutorService commandExecutorService = mock(ExecutorService.class);
+        setShardingProxyCommandExecutorService(commandExecutorService);
         ChannelId channelId = mock(ChannelId.class);
-        assertThat(new ExecutorGroup(eventLoopGroup, channelId).getExecutorService(), CoreMatchers.<ExecutorService>is(eventLoopGroup));
+        assertThat(new ExecutorGroup(channelId).getExecutorService(), CoreMatchers.is(commandExecutorService));
     }
     
     @Test
     public void assertGetExecutorServiceWithXA() throws ReflectiveOperationException {
         setTransactionType(TransactionType.XA);
-        EventLoopGroup eventLoopGroup = mock(EventLoopGroup.class);
+        ExecutorService commandExecutorService = mock(ExecutorService.class);
+        setShardingProxyCommandExecutorService(commandExecutorService);
         ChannelId channelId = mock(ChannelId.class);
         ChannelThreadExecutorGroup.getInstance().register(channelId);
-        assertThat(new ExecutorGroup(eventLoopGroup, channelId).getExecutorService(), Matchers.<ExecutorService>not(eventLoopGroup));
-        assertNotNull(new ExecutorGroup(eventLoopGroup, channelId).getExecutorService());
+        assertThat(new ExecutorGroup(channelId).getExecutorService(), Matchers.not(commandExecutorService));
+        assertNotNull(new ExecutorGroup(channelId).getExecutorService());
         ChannelThreadExecutorGroup.getInstance().unregister(channelId);
+    }
+    
+    private void setShardingProxyCommandExecutorService(final ExecutorService commandExecutorService) throws ReflectiveOperationException {
+        Field field = ShardingProxy.getInstance().getClass().getDeclaredField("commandExecutorService");
+        field.setAccessible(true);
+        field.set(ShardingProxy.getInstance(), commandExecutorService);
     }
     
     private void setTransactionType(final TransactionType transactionType) throws ReflectiveOperationException {
