@@ -109,8 +109,8 @@ public final class AntlrIntegrateParsingTest extends AbstractBaseIntegrateSQLPar
             if (DatabaseType.H2 == databaseType) {
                 execDatabaseType = DatabaseType.MySQL;
             }
-            new SQLStatementAssert(AntlrParsingEngine.parse(
-                    execDatabaseType, sql, getShardingRule(), getShardingTableMetaData()), sqlCaseId, sqlCaseType, sqlCasesLoader, parserResultSetLoader).assertSQLStatement();
+            new SQLStatementAssert(new AntlrParsingEngine(
+                    execDatabaseType, sql, getShardingRule(), getShardingTableMetaData()).parse(), sqlCaseId, sqlCaseType, sqlCasesLoader, parserResultSetLoader).assertSQLStatement();
         }
     }
     

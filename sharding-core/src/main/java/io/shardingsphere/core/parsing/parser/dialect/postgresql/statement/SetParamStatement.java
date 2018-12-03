@@ -15,20 +15,14 @@
  * </p>
  */
 
-package io.shardingsphere.core.parsing.antlr.sql.segment;
+package io.shardingsphere.core.parsing.parser.dialect.postgresql.statement;
 
-import lombok.Getter;
-import lombok.RequiredArgsConstructor;
-import lombok.Setter;
+import io.shardingsphere.core.parsing.parser.sql.dal.DALStatement;
 
 /**
- * Show param segment.
+ * Set param statement.
  *
  * @author loxp
  */
-@RequiredArgsConstructor
-@Getter
-@Setter
-public class ShowParamSegment implements SQLSegment {
-    private final String name;
+public class SetParamStatement extends DALStatement {
 }

@@ -17,24 +17,21 @@
 
 package io.shardingsphere.core.parsing.antlr.extractor.statement.engine.dal.dialect.postgresql;
 
-import io.shardingsphere.core.parsing.antlr.extractor.segment.engine.dialect.postgresql.ShowParamExtractor;
 import io.shardingsphere.core.parsing.antlr.extractor.statement.engine.dal.DALStatementExtractor;
-import io.shardingsphere.core.parsing.parser.dialect.postgresql.statement.ShowStatement;
+import io.shardingsphere.core.parsing.parser.dialect.postgresql.statement.SetParamStatement;
 import io.shardingsphere.core.parsing.parser.sql.SQLStatement;
+import lombok.NoArgsConstructor;
 
 /**
- * PostgreSQL show statement extractor.
+ * PostgreSQL set param statement extractor.
  *
  * @author loxp
  */
-public final class PostgreSQLShowExtractor extends DALStatementExtractor {
-    
-    public PostgreSQLShowExtractor() {
-        addSQLSegmentExtractor(new ShowParamExtractor());
-    }
+@NoArgsConstructor
+public class PostgreSQLSetParamExtractor extends DALStatementExtractor {
 
     @Override
     protected SQLStatement createStatement() {
-        return new ShowStatement();
+        return new SetParamStatement();
     }
 }
