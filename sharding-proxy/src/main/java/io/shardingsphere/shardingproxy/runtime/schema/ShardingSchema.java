@@ -28,7 +28,7 @@ import io.shardingsphere.core.rule.MasterSlaveRule;
 import io.shardingsphere.core.rule.ShardingRule;
 import io.shardingsphere.orchestration.internal.registry.config.event.ShardingRuleChangedEvent;
 import io.shardingsphere.orchestration.internal.registry.state.event.DisabledStateChangedEvent;
-import io.shardingsphere.orchestration.internal.registry.state.schema.OrchestrationShardingSchemaGroup;
+import io.shardingsphere.orchestration.internal.registry.state.schema.OrchestrationShardingSchema;
 import io.shardingsphere.orchestration.internal.rule.OrchestrationMasterSlaveRule;
 import io.shardingsphere.orchestration.internal.rule.OrchestrationShardingRule;
 import io.shardingsphere.shardingproxy.backend.BackendExecutorContext;
@@ -91,11 +91,16 @@ public final class ShardingSchema extends LogicSchema {
      */
     @Subscribe
     public synchronized void renew(final DisabledStateChangedEvent disabledStateChangedEvent) {
-        Collection<String> disabledDataSourceNames = disabledStateChangedEvent.getDisabledGroup().getDataSourceNames(getName());
+        OrchestrationShardingSchema shardingSchema = disabledStateChangedEvent.getShardingSchema();
+        if (!getName().equals(shardingSchema.getSchemaName())) {
+            return;
+        }
+        renewOrchestrationMasterSlaveRules(disabledStateChangedEvent.isDisabled(), shardingSchema.getDataSourceName());
+    }
+    
+    private void renewOrchestrationMasterSlaveRules(final boolean isDisabled, final String dataSourceName) {
         for (MasterSlaveRule each : shardingRule.getMasterSlaveRules()) {
-            OrchestrationShardingSchemaGroup orchestrationShardingSchemaGroup = new OrchestrationShardingSchemaGroup();
-            orchestrationShardingSchemaGroup.put(ShardingConstant.LOGIC_SCHEMA_NAME, disabledDataSourceNames);
-            ((OrchestrationMasterSlaveRule) each).renew(new DisabledStateChangedEvent(orchestrationShardingSchemaGroup));
+            ((OrchestrationMasterSlaveRule) each).renew(new DisabledStateChangedEvent(new OrchestrationShardingSchema(ShardingConstant.LOGIC_SCHEMA_NAME, dataSourceName), isDisabled));
         }
     }
 }

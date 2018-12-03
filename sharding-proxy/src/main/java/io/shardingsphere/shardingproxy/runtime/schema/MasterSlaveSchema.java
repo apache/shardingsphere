@@ -29,7 +29,7 @@ import io.shardingsphere.core.rule.MasterSlaveRule;
 import io.shardingsphere.core.rule.ShardingRule;
 import io.shardingsphere.orchestration.internal.registry.config.event.MasterSlaveRuleChangedEvent;
 import io.shardingsphere.orchestration.internal.registry.state.event.DisabledStateChangedEvent;
-import io.shardingsphere.orchestration.internal.registry.state.schema.OrchestrationShardingSchemaGroup;
+import io.shardingsphere.orchestration.internal.registry.state.schema.OrchestrationShardingSchema;
 import io.shardingsphere.orchestration.internal.rule.OrchestrationMasterSlaveRule;
 import io.shardingsphere.shardingproxy.backend.BackendExecutorContext;
 import io.shardingsphere.shardingproxy.runtime.GlobalRegistry;
@@ -86,8 +86,11 @@ public final class MasterSlaveSchema extends LogicSchema {
      */
     @Subscribe
     public synchronized void renew(final DisabledStateChangedEvent disabledStateChangedEvent) {
-        OrchestrationShardingSchemaGroup orchestrationShardingSchemaGroup = new OrchestrationShardingSchemaGroup();
-        orchestrationShardingSchemaGroup.put(ShardingConstant.LOGIC_SCHEMA_NAME, disabledStateChangedEvent.getDisabledGroup().getDataSourceNames(getName()));
-        ((OrchestrationMasterSlaveRule) masterSlaveRule).renew(new DisabledStateChangedEvent(orchestrationShardingSchemaGroup));
+        OrchestrationShardingSchema shardingSchema = disabledStateChangedEvent.getShardingSchema();
+        if (!getName().equals(shardingSchema.getSchemaName())) {
+            return;
+        }
+        ((OrchestrationMasterSlaveRule) masterSlaveRule).renew(
+                new DisabledStateChangedEvent(new OrchestrationShardingSchema(ShardingConstant.LOGIC_SCHEMA_NAME, shardingSchema.getDataSourceName()), disabledStateChangedEvent.isDisabled()));
     }
 }
