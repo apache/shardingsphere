@@ -320,13 +320,16 @@ simpleExpr
     | EXISTS subquery
     // | (identifier expr)
     //| match_expr
-    //| case_expr
+    | caseExpress
     // | interval_expr
     |privateExprOfDb
     ;
     
 functionCall
     : ID LP_ bitExprs? RP_
+    ;
+    
+caseExpress:
     ;
     
 privateExprOfDb

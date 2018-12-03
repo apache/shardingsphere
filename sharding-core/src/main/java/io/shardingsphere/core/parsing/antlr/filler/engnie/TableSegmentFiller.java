@@ -37,7 +37,6 @@ public class TableSegmentFiller implements SQLSegmentFiller {
     @Override
     public void fill(final SQLSegment sqlSegment, final SQLStatement sqlStatement, final ShardingRule shardingRule, final ShardingTableMetaData shardingTableMetaData) {
         TableSegment tableSegment = (TableSegment) sqlSegment;
-        SelectStatement selectStatement = (SelectStatement) sqlStatement;
         String tableName = tableSegment.getName();
         boolean needAdd = false;
         if (!(sqlStatement instanceof SelectStatement)) {
@@ -50,8 +49,8 @@ public class TableSegmentFiller implements SQLSegmentFiller {
             sqlStatement.getTables().add(new Table(tableSegment.getName(), tableSegment.getAlias()));
             sqlStatement.getSQLTokens().add(tableSegment.getToken());
             if (tableSegment.getAlias().isPresent()) {
-                if (selectStatement.getTables().getTableNames().contains(tableSegment.getAlias().get())) {
-                    selectStatement.addSQLToken(new TableToken(tableSegment.getAliasStartPosition(), 0, tableSegment.getAlias().get()));
+                if (sqlStatement.getTables().getTableNames().contains(tableSegment.getAlias().get())) {
+                    sqlStatement.addSQLToken(new TableToken(tableSegment.getAliasStartPosition(), 0, tableSegment.getAlias().get()));
                 }
             }
         }

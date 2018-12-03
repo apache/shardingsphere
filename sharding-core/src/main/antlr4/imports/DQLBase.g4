@@ -51,3 +51,7 @@ selectExpr
 tableReferences
     : 
     ;
+    
+functionCall
+    : (ID | DATE) LP_ bitExprs? RP_
+    ;

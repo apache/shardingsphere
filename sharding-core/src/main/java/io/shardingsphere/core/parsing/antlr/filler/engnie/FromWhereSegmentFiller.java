@@ -135,7 +135,7 @@ public class FromWhereSegmentFiller implements SQLSegmentFiller {
         return result;
     }
     
-    private void fillResult(OrCondition result, final SQLStatement sqlStatement, List<ConditionSegment> shardingCondition) {
+    private void fillResult(final OrCondition result, final SQLStatement sqlStatement, final List<ConditionSegment> shardingCondition) {
         if (!shardingCondition.isEmpty()) {
             AndCondition andConditionResult = new AndCondition();
             result.getAndConditions().add(andConditionResult);
