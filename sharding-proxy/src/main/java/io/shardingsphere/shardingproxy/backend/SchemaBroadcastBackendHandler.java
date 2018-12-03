@@ -33,9 +33,10 @@ import java.util.List;
  * Backend handler for schema broadcast.
  *
  * @author chenqingyang
+ * @author zhaojun
  */
 @RequiredArgsConstructor
-public final class SchemaBroadcastBackendHandler implements BackendHandler {
+public final class SchemaBroadcastBackendHandler extends AbstractBackendHandler {
     
     private final int sequenceId;
     
@@ -46,7 +47,7 @@ public final class SchemaBroadcastBackendHandler implements BackendHandler {
     private final DatabaseType databaseType;
     
     @Override
-    public CommandResponsePackets execute() {
+    protected CommandResponsePackets execute0() {
         List<DatabasePacket> packets = new LinkedList<>();
         for (String each : GlobalRegistry.getInstance().getSchemaNames()) {
             backendConnection.setCurrentSchema(each);
@@ -55,16 +56,6 @@ public final class SchemaBroadcastBackendHandler implements BackendHandler {
             packets.addAll(commandResponsePackets.getPackets());
         }
         return merge(packets);
-    }
-    
-    @Override
-    public boolean next() {
-        return false;
-    }
-    
-    @Override
-    public ResultPacket getResultValue() {
-        return null;
     }
     
     private CommandResponsePackets merge(final Collection<DatabasePacket> packets) {

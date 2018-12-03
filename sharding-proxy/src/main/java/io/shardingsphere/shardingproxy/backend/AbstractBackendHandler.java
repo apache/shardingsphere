@@ -76,7 +76,7 @@ public abstract class AbstractBackendHandler implements BackendHandler {
      * @return false
      */
     @Override
-    public boolean next() {
+    public boolean next() throws SQLException {
         return false;
     }
     
@@ -86,7 +86,7 @@ public abstract class AbstractBackendHandler implements BackendHandler {
      * @return result packet
      */
     @Override
-    public ResultPacket getResultValue() {
+    public ResultPacket getResultValue() throws SQLException {
         return null;
     }
 }
