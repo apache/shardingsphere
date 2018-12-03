@@ -27,6 +27,7 @@ import io.shardingsphere.core.constant.ShardingOperator;
 import io.shardingsphere.core.metadata.table.ShardingTableMetaData;
 import io.shardingsphere.core.parsing.antlr.filler.SQLSegmentFiller;
 import io.shardingsphere.core.parsing.antlr.sql.segment.AndConditionSegment;
+import io.shardingsphere.core.parsing.antlr.sql.segment.ColumnSegment;
 import io.shardingsphere.core.parsing.antlr.sql.segment.ConditionSegment;
 import io.shardingsphere.core.parsing.antlr.sql.segment.FromWhereSegment;
 import io.shardingsphere.core.parsing.antlr.sql.segment.OrConditionSegment;
@@ -92,9 +93,20 @@ public class FromWhereSegmentFiller implements SQLSegmentFiller {
         OrCondition result = new OrCondition();
         for (AndConditionSegment each : orCondition.getAndConditions()) {
             List<ConditionSegment> shardingCondition = new LinkedList<>();
-            boolean needSharding = true;
+            boolean needSharding = false;
             for (ConditionSegment condition : each.getConditions()) {
                 if (null == condition.getColumn()) {
+                    continue;
+                }
+                if (condition.getColumn().getOwner().isPresent() && sqlStatement.getTables().getTableNames().contains(condition.getColumn().getOwner().get())) {
+                    sqlStatement.addSQLToken(new TableToken(condition.getColumn().getStartPosition(), 0, condition.getColumn().getOwner().get()));
+                }
+                if (condition.getExpression() instanceof ColumnSegment) {
+                    ColumnSegment rightColumn = (ColumnSegment) condition.getExpression();
+                    if (rightColumn.getOwner().isPresent() && sqlStatement.getTables().getTableNames().contains(rightColumn.getOwner().get())) {
+                        sqlStatement.addSQLToken(new TableToken(rightColumn.getStartPosition(), 0, rightColumn.getOwner().get()));
+                    }
+                    needSharding = true;
                     continue;
                 }
                 if ("".equals(condition.getColumn().getTableName())) {
@@ -110,13 +122,12 @@ public class FromWhereSegmentFiller implements SQLSegmentFiller {
                 }
                 if (shardingRule.isShardingColumn(new Column(condition.getColumn().getName(), condition.getColumn().getTableName()))) {
                     shardingCondition.add(condition);
-                }else {
-                    needSharding = false;
+                    needSharding = true;
                 }
             }
-            if(needSharding) {
+            if (needSharding) {
                 fillResult(result, sqlStatement, shardingCondition);
-            }else {
+            } else {
                 result.getAndConditions().clear();
                 break;
             }
@@ -130,9 +141,6 @@ public class FromWhereSegmentFiller implements SQLSegmentFiller {
             result.getAndConditions().add(andConditionResult);
             for (ConditionSegment eachCondition : shardingCondition) {
                 Column column = new Column(eachCondition.getColumn().getName(), eachCondition.getColumn().getTableName());
-                if (eachCondition.getColumn().getOwner().isPresent() && sqlStatement.getTables().getTableNames().contains(eachCondition.getColumn().getOwner().get())) {
-                    sqlStatement.addSQLToken(new TableToken(eachCondition.getColumn().getStartPosition(), 0, eachCondition.getColumn().getOwner().get()));
-                }
                 if (ShardingOperator.EQUAL == eachCondition.getOperator()) {
                     SQLEqualsExpressionSegment expression = (SQLEqualsExpressionSegment) eachCondition.getExpression();
                     andConditionResult.getConditions().add(new Condition(column, expression.getExpression()));

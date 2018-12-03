@@ -18,21 +18,19 @@
 package io.shardingsphere.core.parsing.antlr.extractor.segment.engine;
 
 import java.util.Collection;
-import java.util.Collections;
 import java.util.HashMap;
-import java.util.LinkedList;
 import java.util.Map;
 
 import org.antlr.v4.runtime.ParserRuleContext;
-import org.antlr.v4.runtime.tree.ParseTree;
 
 import com.google.common.base.Optional;
 
 import io.shardingsphere.core.constant.DatabaseType;
-import io.shardingsphere.core.parsing.antlr.extractor.segment.CollectionSQLSegmentExtractor;
+import io.shardingsphere.core.parsing.antlr.extractor.segment.OptionalSQLSegmentExtractor;
 import io.shardingsphere.core.parsing.antlr.extractor.segment.constant.RuleName;
 import io.shardingsphere.core.parsing.antlr.extractor.util.ASTUtils;
 import io.shardingsphere.core.parsing.antlr.sql.segment.LimitSegment;
+import io.shardingsphere.core.parsing.antlr.sql.segment.LimitValueSegment;
 import io.shardingsphere.core.parsing.lexer.token.Symbol;
 import io.shardingsphere.core.util.NumberUtil;
 
@@ -41,39 +39,42 @@ import io.shardingsphere.core.util.NumberUtil;
  *
  * @author duhongjun
  */
-public class LimitClauseExtractor implements CollectionSQLSegmentExtractor {
+public class LimitClauseExtractor implements OptionalSQLSegmentExtractor {
     
     @Override
-    public Collection<LimitSegment> extract(final ParserRuleContext ancestorNode) {
+    public Optional<LimitSegment> extract(final ParserRuleContext ancestorNode) {
         Optional<ParserRuleContext> limitNode = ASTUtils.findFirstChildNode(ancestorNode, RuleName.LIMIT_CLAUSE);
         if (!limitNode.isPresent()) {
-            return Collections.emptyList();
+            return Optional.absent();
         }
         Optional<ParserRuleContext> rangeNode = ASTUtils.findFirstChildNode(limitNode.get(), RuleName.RANGE_CLAUSE);
         if (!rangeNode.isPresent()) {
-            return Collections.emptyList();
+            return Optional.absent();
         }
-        Collection<LimitSegment> result = new LinkedList<>();
         Collection<ParserRuleContext> questionNodes = ASTUtils.getAllDescendantNodes(ancestorNode, RuleName.QUESTION);
         Map<ParserRuleContext, Integer> questionNodeIndexMap = new HashMap<>();
         int index = 0;
         for (ParserRuleContext each : questionNodes) {
             questionNodeIndexMap.put(each, index++);
         }
-        addLimitExtractResult(result, questionNodeIndexMap, rangeNode.get().getChild(0));
+        LimitValueSegment firstLimitValue = addLimitExtractResult(questionNodeIndexMap, (ParserRuleContext) rangeNode.get().getChild(0));
+        LimitValueSegment secondLimitValue = null;
         if (rangeNode.get().getChildCount() >= 3) {
-            addLimitExtractResult(result, questionNodeIndexMap, rangeNode.get().getChild(2));
+            secondLimitValue = addLimitExtractResult(questionNodeIndexMap, (ParserRuleContext) rangeNode.get().getChild(2));
+            return Optional.of(new LimitSegment(DatabaseType.MySQL, Optional.of(firstLimitValue), Optional.of(secondLimitValue)));
+        } else {
+            return Optional.of(new LimitSegment(DatabaseType.MySQL, Optional.of(firstLimitValue)));
         }
-        return result;
     }
     
-    private void addLimitExtractResult(final Collection<LimitSegment> limitResult, final Map<ParserRuleContext, Integer> questionNodeIndexMap, final ParseTree node) {
+    private LimitValueSegment addLimitExtractResult(final Map<ParserRuleContext, Integer> questionNodeIndexMap, final ParserRuleContext node) {
         if (node.getText().equals(Symbol.QUESTION.getLiterals())) {
-            if (questionNodeIndexMap.containsKey(node)) {
-                limitResult.add(new LimitSegment(DatabaseType.MySQL, -1, questionNodeIndexMap.get(node)));
+            if (questionNodeIndexMap.containsKey(node.getChild(0))) {
+                return new LimitValueSegment(-1, questionNodeIndexMap.get(node.getChild(0)), ((ParserRuleContext) node.getChild(0)).getStart().getStartIndex());
             }
         } else {
-            limitResult.add(new LimitSegment(DatabaseType.MySQL, NumberUtil.getExactlyNumber(node.getText(), 10).intValue(), -1));
+            return new LimitValueSegment(NumberUtil.getExactlyNumber(node.getText(), 10).intValue(), -1, node.getStart().getStartIndex());
         }
+        return null;
     }
 }

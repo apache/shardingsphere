@@ -41,6 +41,8 @@ public class TableSegment implements SQLSegment {
     
     private String alias;
     
+    private int aliasStartPosition = -1;
+    
     /**
      * Get schema name.
      *

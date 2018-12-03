@@ -62,6 +62,6 @@ public final class AntlrParsingEngine {
         if (null == extractor) {
             throw new SQLParsingUnsupportedException(String.format("Unsupported SQL statement of `%s`", parserRuleContext.getClass().getSimpleName()));
         }
-        return extractor.extract(parserRuleContext, shardingRule, shardingTableMetaData);
+        return extractor.extract(sql, parserRuleContext, shardingRule, shardingTableMetaData);
     }
 }

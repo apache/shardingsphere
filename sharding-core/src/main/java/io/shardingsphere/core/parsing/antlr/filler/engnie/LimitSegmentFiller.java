@@ -25,6 +25,8 @@ import io.shardingsphere.core.parsing.parser.context.limit.Limit;
 import io.shardingsphere.core.parsing.parser.context.limit.LimitValue;
 import io.shardingsphere.core.parsing.parser.sql.SQLStatement;
 import io.shardingsphere.core.parsing.parser.sql.dql.select.SelectStatement;
+import io.shardingsphere.core.parsing.parser.token.OffsetToken;
+import io.shardingsphere.core.parsing.parser.token.RowCountToken;
 import io.shardingsphere.core.rule.ShardingRule;
 
 /**
@@ -38,13 +40,17 @@ public class LimitSegmentFiller implements SQLSegmentFiller {
     public void fill(final SQLSegment sqlSegment, final SQLStatement sqlStatement, final ShardingRule shardingRule, final ShardingTableMetaData shardingTableMetaData) {
         LimitSegment limitSegment = (LimitSegment) sqlSegment;
         SelectStatement selectStatement = (SelectStatement) sqlStatement;
-        Limit limit = selectStatement.getLimit();
-        if (null == limit) {
-            limit = new Limit(limitSegment.getDatabaseType());
-            selectStatement.setLimit(limit);
-            limit.setOffset(new LimitValue(limitSegment.getValue(), limitSegment.getIndex(), false));
-        } else {
-            limit.setRowCount(new LimitValue(limitSegment.getValue(), limitSegment.getIndex(), false));
+        Limit limit = new Limit(limitSegment.getDatabaseType());
+        selectStatement.setLimit(limit);
+        if (limitSegment.getOffset().isPresent()) {
+            limit.setOffset(new LimitValue(limitSegment.getOffset().get().getValue(), limitSegment.getOffset().get().getIndex(), false));
+            if (-1 == limitSegment.getOffset().get().getIndex()) {
+                selectStatement.getSQLTokens().add(new OffsetToken(limitSegment.getOffset().get().getBeginPosition(), limitSegment.getOffset().get().getValue()));
+            }
+        }
+        limit.setRowCount(new LimitValue(limitSegment.getRowCount().get().getValue(), limitSegment.getRowCount().get().getIndex(), false));
+        if (-1 == limitSegment.getRowCount().get().getIndex()) {
+            selectStatement.getSQLTokens().add(new RowCountToken(limitSegment.getRowCount().get().getBeginPosition(), limitSegment.getRowCount().get().getValue()));
         }
     }
 }

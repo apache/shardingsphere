@@ -152,8 +152,12 @@ idList
     ;
     
 rangeClause
-    : NUMBER (COMMA  NUMBER)* | NUMBER OFFSET NUMBER
+    : rangeItem (COMMA  rangeItem)* | rangeItem OFFSET rangeItem
     ;
+    
+rangeItem
+    : number | question
+    ;    
     
 schemaNames
     : schemaName (COMMA schemaName)*
@@ -197,6 +201,10 @@ tablespaceNames
     
 indexNames
     : indexName (COMMA indexName)*
+    ;
+    
+indexList
+    : LP_ indexNames RP_
     ;
     
 typeNames

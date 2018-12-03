@@ -42,10 +42,11 @@ import io.shardingsphere.core.parsing.parser.context.table.Table;
 import io.shardingsphere.core.parsing.parser.sql.SQLStatement;
 import io.shardingsphere.core.parsing.parser.sql.dql.select.SelectStatement;
 import io.shardingsphere.core.parsing.parser.token.ItemsToken;
+import io.shardingsphere.core.parsing.parser.token.OrderByToken;
 
 /**
  * MySQL select extractor.
- * 
+ *
  * @author duhongjun
  */
 public class MySQLSelectExtractor extends AbstractSQLStatementExtractor {
@@ -61,21 +62,28 @@ public class MySQLSelectExtractor extends AbstractSQLStatementExtractor {
     }
     
     @Override
+    protected SQLStatement createStatement(final String sql) {
+        SelectStatement result = new SelectStatement();
+        result.setSql(sql);
+        return result;
+    }
+    
     protected SQLStatement createStatement() {
-        return new SelectStatement();
+        return null;
     }
     
     protected void postExtract(final SQLStatement sqlStatement, final ShardingTableMetaData shardingTableMetaData) {
-        appendDerivedColumns((SelectStatement)sqlStatement, shardingTableMetaData);
+        appendDerivedColumns((SelectStatement) sqlStatement, shardingTableMetaData);
+        appendDerivedOrderBy((SelectStatement) sqlStatement);
     }
     
     private void appendDerivedColumns(final SelectStatement selectStatement, final ShardingTableMetaData shardingTableMetaData) {
         ItemsToken itemsToken = new ItemsToken(selectStatement.getSelectListLastPosition());
         appendAvgDerivedColumns(itemsToken, selectStatement);
-        if(!selectStatement.getOrderByItems().isEmpty()) {
+        if (!selectStatement.getOrderByItems().isEmpty()) {
             appendDerivedOrderColumns(itemsToken, selectStatement.getOrderByItems(), selectStatement, shardingTableMetaData);
         }
-        if(!selectStatement.getGroupByItems().isEmpty()) {
+        if (!selectStatement.getGroupByItems().isEmpty()) {
             appendDerivedGroupColumns(itemsToken, selectStatement.getGroupByItems(), selectStatement, shardingTableMetaData);
         }
         if (!itemsToken.getItems().isEmpty()) {
@@ -130,7 +138,7 @@ public class MySQLSelectExtractor extends AbstractSQLStatementExtractor {
     }
     
     private boolean containsItemInStarSelectItems(final SelectStatement selectStatement, final OrderItem orderItem, final ShardingTableMetaData shardingTableMetaData) {
-        return selectStatement.hasUnqualifiedStarSelectItem() 
+        return selectStatement.hasUnqualifiedStarSelectItem()
                 || containsItemWithOwnerInStarSelectItems(selectStatement, orderItem) || containsItemWithoutOwnerInStarSelectItems(selectStatement, orderItem, shardingTableMetaData);
     }
     
@@ -179,5 +187,12 @@ public class MySQLSelectExtractor extends AbstractSQLStatementExtractor {
     
     private boolean isSameQualifiedName(final SelectItem selectItem, final OrderItem orderItem) {
         return !selectItem.getAlias().isPresent() && orderItem.getQualifiedName().isPresent() && selectItem.getExpression().equalsIgnoreCase(orderItem.getQualifiedName().get());
+    }
+    
+    private void appendDerivedOrderBy(final SelectStatement selectStatement) {
+        if (!selectStatement.getGroupByItems().isEmpty() && selectStatement.getOrderByItems().isEmpty()) {
+            selectStatement.getOrderByItems().addAll(selectStatement.getGroupByItems());
+            selectStatement.addSQLToken(new OrderByToken(selectStatement.getGroupByLastPosition()));
+        }
     }
 }

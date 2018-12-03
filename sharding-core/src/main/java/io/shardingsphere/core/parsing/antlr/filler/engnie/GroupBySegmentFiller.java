@@ -17,18 +17,13 @@
 
 package io.shardingsphere.core.parsing.antlr.filler.engnie;
 
-import com.google.common.base.Optional;
-
-import io.shardingsphere.core.constant.OrderDirection;
 import io.shardingsphere.core.metadata.table.ShardingTableMetaData;
 import io.shardingsphere.core.parsing.antlr.filler.SQLSegmentFiller;
 import io.shardingsphere.core.parsing.antlr.sql.segment.GroupBySegment;
-import io.shardingsphere.core.parsing.antlr.sql.segment.OrderBySegment;
+import io.shardingsphere.core.parsing.antlr.sql.segment.OrderByItemSegment;
 import io.shardingsphere.core.parsing.antlr.sql.segment.SQLSegment;
-import io.shardingsphere.core.parsing.parser.context.OrderItem;
 import io.shardingsphere.core.parsing.parser.sql.SQLStatement;
 import io.shardingsphere.core.parsing.parser.sql.dql.select.SelectStatement;
-import io.shardingsphere.core.parsing.parser.token.TableToken;
 import io.shardingsphere.core.rule.ShardingRule;
 
 /**
@@ -43,21 +38,9 @@ public class GroupBySegmentFiller implements SQLSegmentFiller {
         GroupBySegment groupBySegment = (GroupBySegment) sqlSegment;
         SelectStatement selectStatement = (SelectStatement) sqlStatement;
         selectStatement.setGroupByLastPosition(groupBySegment.getGroupByLastPosition());
-        for(OrderBySegment each : groupBySegment.getGroupByItems()) {
-            if (-1 < each.getIndex()) {
-                selectStatement.getGroupByItems().add(new OrderItem(each.getIndex(), OrderDirection.ASC, OrderDirection.ASC));
-            } else if (each.getName().isPresent()) {
-                String name = each.getName().get();
-                if (each.getOwner().isPresent()) {
-                    String owner = each.getOwner().get();
-                    if (sqlStatement.getTables().getTableNames().contains(owner)) {
-                        sqlStatement.addSQLToken(new TableToken(each.getStartPosition(), 0, owner));
-                    }
-                    selectStatement.getGroupByItems().add(new OrderItem(owner, name, OrderDirection.ASC, OrderDirection.ASC, selectStatement.getAlias(owner+"."+name)));
-                }else {
-                    selectStatement.getGroupByItems().add(new OrderItem(name, OrderDirection.ASC, OrderDirection.ASC, selectStatement.getAlias(name)));
-                }
-            }
+        OrderBySegmentFiller orderFiller = new OrderBySegmentFiller();
+        for (OrderByItemSegment each : groupBySegment.getGroupByItems()) {
+            selectStatement.getGroupByItems().add(orderFiller.buildOrderItemAndFillToken(selectStatement, each));
         }
     }
 }

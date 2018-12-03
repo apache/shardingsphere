@@ -33,7 +33,9 @@ public class FunctionExpressionSegment extends SelectExpressionSegment {
     
     private final String name;
     
-    private final String innerExpression;
-    
     private final Optional<String> alias;
+    
+    private final int innerExpressionStartIndex;
+    
+    private final int innerExpressionEndIndex; 
 }

@@ -14,4 +14,8 @@ public class PropertyExpressionSegment extends SelectExpressionSegment {
     private final String name;
     
     private final int startPosition;
+    
+    private final int endPosition;
+    
+    private final Optional<String> alias;
 }

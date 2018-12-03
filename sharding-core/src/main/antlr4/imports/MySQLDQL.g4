@@ -92,7 +92,7 @@ indexHintList
     ;
     
 indexHint
-    : (USE | IGNORE | FORCE) (INDEX|KEY) (FOR (JOIN|ORDER BY|GROUP BY))* idList
+    : (USE | IGNORE | FORCE) (INDEX|KEY) (FOR (JOIN|ORDER BY|GROUP BY))* indexList
     ;
 
 selectExpr

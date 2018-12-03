@@ -66,12 +66,12 @@ public final class SQLSegmentFillerRegistry {
         FILLERS.put(TableSegment.class, new TableSegmentFiller());
         FILLERS.put(ColumnDefinitionSegment.class, new ColumnDefinitionSegmentFiller());
         FILLERS.put(IndexSegment.class, new IndexSegmentFiller());
-        FILLERS.put(TableJoinSegment.class, new TableJoinSegmentFiller());
-        FILLERS.put(OrderBySegment.class, new OrderBySegmentFiller());
-        FILLERS.put(GroupBySegment.class, new GroupBySegmentFiller());
-        FILLERS.put(FromWhereSegment.class, new FromWhereSegmentFiller());
-        FILLERS.put(LimitSegment.class, new LimitSegmentFiller());
         FILLERS.put(SelectClauseSegment.class, new SelectClauseFiller());
+        FILLERS.put(FromWhereSegment.class, new FromWhereSegmentFiller());
+        FILLERS.put(TableJoinSegment.class, new TableJoinSegmentFiller());
+        FILLERS.put(GroupBySegment.class, new GroupBySegmentFiller());
+        FILLERS.put(OrderBySegment.class, new OrderBySegmentFiller());
+        FILLERS.put(LimitSegment.class, new LimitSegmentFiller());
         FILLERS.put(ShowParamSegment.class, new ShowParamSegmentFiller());
     }
     

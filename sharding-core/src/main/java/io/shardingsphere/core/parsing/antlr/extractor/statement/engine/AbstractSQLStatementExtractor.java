@@ -45,8 +45,8 @@ public abstract class AbstractSQLStatementExtractor implements SQLStatementExtra
     private final Collection<SQLSegmentExtractor> sqlSegmentExtractors = new LinkedList<>();
     
     @Override
-    public final SQLStatement extract(final ParserRuleContext rootNode, final ShardingRule shardingRule, final ShardingTableMetaData shardingTableMetaData) {
-        SQLStatement result = createStatement();
+    public final SQLStatement extract(final String sql, final ParserRuleContext rootNode, final ShardingRule shardingRule, final ShardingTableMetaData shardingTableMetaData) {
+        SQLStatement result = createStatement(sql);
         List<SQLSegment> sqlSegments = new LinkedList<>();
         for (SQLSegmentExtractor each : sqlSegmentExtractors) {
             if (each instanceof OptionalSQLSegmentExtractor) {
@@ -71,6 +71,10 @@ public abstract class AbstractSQLStatementExtractor implements SQLStatementExtra
     
     protected final void addSQLSegmentExtractor(final SQLSegmentExtractor sqlSegmentExtractor) {
         sqlSegmentExtractors.add(sqlSegmentExtractor);
+    }
+    
+    protected SQLStatement createStatement(final String sql) {
+        return createStatement();
     }
     
     protected abstract SQLStatement createStatement();

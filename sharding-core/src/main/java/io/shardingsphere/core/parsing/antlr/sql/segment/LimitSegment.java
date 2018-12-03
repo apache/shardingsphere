@@ -17,22 +17,33 @@
 
 package io.shardingsphere.core.parsing.antlr.sql.segment;
 
+import com.google.common.base.Optional;
 import io.shardingsphere.core.constant.DatabaseType;
 import lombok.Getter;
-import lombok.RequiredArgsConstructor;
 
 /**
  * Limit segment.
  * 
  * @author duhongjun
  */
-@RequiredArgsConstructor
 @Getter
 public final class LimitSegment implements SQLSegment {
     
     private final DatabaseType databaseType;
-
-    private final int value;
-
-    private final int index;
+    
+    private final Optional<LimitValueSegment> offset;
+    
+    private final Optional<LimitValueSegment> rowCount;
+    
+    public LimitSegment(final DatabaseType databaseType, final Optional<LimitValueSegment> offset, final Optional<LimitValueSegment> rowCount) {
+        this.databaseType = databaseType;
+        this.offset = offset;
+        this.rowCount = rowCount;
+    }
+    
+    public LimitSegment(final DatabaseType databaseType, final Optional<LimitValueSegment> rowCount) {
+        this.databaseType = databaseType;
+        this.offset = Optional.absent();
+        this.rowCount = rowCount;
+    }
 }

@@ -17,34 +17,21 @@
 
 package io.shardingsphere.core.parsing.antlr.sql.segment;
 
-import com.google.common.base.Optional;
-
 import lombok.Getter;
 import lombok.RequiredArgsConstructor;
-import lombok.Setter;
 
 /**
- * Column segment.
- *
+ * Limit value segment.
+ * 
  * @author duhongjun
  */
 @RequiredArgsConstructor
 @Getter
-public class ColumnSegment implements SQLExpressionSegment {
+public class LimitValueSegment implements SQLSegment {
     
-    private final Optional<String> owner;
+    private final int value;
+
+    private final int index;
     
-    private final String name;
-    
-    @Setter
-    private String tableName;
-    
-    private final int startPosition;
-    
-    public ColumnSegment(final Optional<String> owner, final String name, final String tableName, final int startPosition) {
-        this.owner = owner;
-        this.name = name;
-        this.tableName = tableName;
-        this.startPosition = startPosition;
-    }
+    private final int beginPosition;
 }

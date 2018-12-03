@@ -33,10 +33,11 @@ public interface SQLStatementExtractor {
     /** 
      * Extract SQL statement from SQL AST.
      * 
+     * @param sql SQL text
      * @param rootNode root node of AST
      * @param shardingRule  databases and tables sharding rule
      * @param shardingTableMetaData sharding table meta data
      * @return SQL statement
      */
-    SQLStatement extract(ParserRuleContext rootNode, ShardingRule shardingRule, ShardingTableMetaData shardingTableMetaData);
+    SQLStatement extract(String sql, ParserRuleContext rootNode, ShardingRule shardingRule, ShardingTableMetaData shardingTableMetaData);
 }

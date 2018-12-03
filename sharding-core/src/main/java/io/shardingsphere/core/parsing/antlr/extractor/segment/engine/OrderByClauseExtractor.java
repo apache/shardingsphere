@@ -26,9 +26,10 @@ import org.antlr.v4.runtime.ParserRuleContext;
 import com.google.common.base.Optional;
 
 import io.shardingsphere.core.constant.OrderDirection;
-import io.shardingsphere.core.parsing.antlr.extractor.segment.CollectionSQLSegmentExtractor;
+import io.shardingsphere.core.parsing.antlr.extractor.segment.OptionalSQLSegmentExtractor;
 import io.shardingsphere.core.parsing.antlr.extractor.segment.constant.RuleName;
 import io.shardingsphere.core.parsing.antlr.extractor.util.ASTUtils;
+import io.shardingsphere.core.parsing.antlr.sql.segment.OrderByItemSegment;
 import io.shardingsphere.core.parsing.antlr.sql.segment.OrderBySegment;
 import io.shardingsphere.core.parsing.parser.token.OrderByToken;
 import io.shardingsphere.core.util.NumberUtil;
@@ -40,57 +41,50 @@ import lombok.RequiredArgsConstructor;
  * @author duhongjun
  */
 @RequiredArgsConstructor
-public class OrderByClauseExtractor implements CollectionSQLSegmentExtractor {
+public class OrderByClauseExtractor implements OptionalSQLSegmentExtractor {
     
     @Override
-    public Collection<OrderBySegment> extract(final ParserRuleContext ancestorNode) {
+    public Optional<OrderBySegment> extract(final ParserRuleContext ancestorNode) {
         Optional<ParserRuleContext> orderByParentNode = ASTUtils.findFirstChildNode(ancestorNode, RuleName.ORDER_BY_CLAUSE);
         if (!orderByParentNode.isPresent()) {
-            return Collections.emptyList();
+            return Optional.absent();
         }
-        return extractOrderBy(orderByParentNode.get());
+        OrderBySegment result = new OrderBySegment();
+        result.getOrderByItems().addAll(extractOrderBy(orderByParentNode.get()));
+        return Optional.of(result);
     }
     
-    public Collection<OrderBySegment> extractOrderBy(ParserRuleContext orderByParentNode) {
+    protected Collection<OrderByItemSegment> extractOrderBy(ParserRuleContext orderByParentNode) {
         Collection<ParserRuleContext> orderByNodes = ASTUtils.getAllDescendantNodes(orderByParentNode, RuleName.ORDER_BY_ITEM);
         if (orderByNodes.isEmpty()) {
             return Collections.emptyList();
         }
-        Collection<OrderBySegment> result = new LinkedList<>();
+        Collection<OrderByItemSegment> result = new LinkedList<>();
         for (ParserRuleContext each : orderByNodes) {
             int count = each.getChildCount();
             if (count == 0) {
                 continue;
             }
-            Optional<String> owner = Optional.absent();
-            Optional<String> name = Optional.absent();
             int index = -1;
             Optional<ParserRuleContext> numberNode = ASTUtils.findFirstChildNode(each, RuleName.NUMBER);
             if (numberNode.isPresent()) {
                 index = NumberUtil.getExactlyNumber(numberNode.get().getText(), 10).intValue();
-            }else {
-                String columnText = each.getChild(0).getText();
-                int pos = columnText.lastIndexOf(".");
-                if (0 < pos) {
-                    owner = Optional.of(columnText.substring(0, pos));
-                    name = Optional.of(columnText.substring(pos + 1));
-                }else {
-                    name = Optional.of(columnText);
-                }
             }
+            boolean isIdentifier = RuleName.COLUMN_NAME.getName().equalsIgnoreCase(each.getChild(0).getClass().getSimpleName());
             OrderDirection orderDirection = OrderDirection.ASC;
             if (1 < count) {
                 if (OrderDirection.DESC.name().equalsIgnoreCase(each.getChild(count - 1).getText())) {
                     orderDirection = OrderDirection.DESC;
                 }
             }
-            result.add(buildSegment(owner, name, index, orderDirection, each.getStart().getStartIndex(), orderByParentNode.getStart().getStartIndex()));
+            ParserRuleContext firstChild = (ParserRuleContext) each.getChild(0);
+            result.add(buildSegment(index, orderDirection, firstChild.getStart().getStartIndex(), firstChild.getStop().getStopIndex(), isIdentifier, orderByParentNode.getStart().getStartIndex()));
         }
         return result;
     }
     
-    protected OrderBySegment buildSegment(final Optional<String> ownerName, final Optional<String> name, final int index, 
-            final OrderDirection orderDirection, final int orderTokenBeginPosition, final int columnBeginPosition) {
-        return new OrderBySegment(ownerName, name, index, columnBeginPosition, new OrderByToken(orderTokenBeginPosition),  orderDirection, OrderDirection.ASC); 
+    protected OrderByItemSegment buildSegment(final int index, final OrderDirection orderDirection, final int expressionStartPosition,
+                                              final int expressionEndPosition, final boolean isIdentifier, final int orderyItemStartPosition) {
+        return new OrderByItemSegment(index, expressionStartPosition, expressionEndPosition, isIdentifier, new OrderByToken(orderyItemStartPosition), orderDirection, OrderDirection.ASC);
     }
 }

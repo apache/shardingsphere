@@ -17,10 +17,9 @@
 
 package io.shardingsphere.core.parsing.antlr.filler.engnie;
 
-import com.google.common.base.Optional;
-
 import io.shardingsphere.core.metadata.table.ShardingTableMetaData;
 import io.shardingsphere.core.parsing.antlr.filler.SQLSegmentFiller;
+import io.shardingsphere.core.parsing.antlr.sql.segment.OrderByItemSegment;
 import io.shardingsphere.core.parsing.antlr.sql.segment.OrderBySegment;
 import io.shardingsphere.core.parsing.antlr.sql.segment.SQLSegment;
 import io.shardingsphere.core.parsing.parser.context.OrderItem;
@@ -28,6 +27,7 @@ import io.shardingsphere.core.parsing.parser.sql.SQLStatement;
 import io.shardingsphere.core.parsing.parser.sql.dql.select.SelectStatement;
 import io.shardingsphere.core.parsing.parser.token.TableToken;
 import io.shardingsphere.core.rule.ShardingRule;
+import io.shardingsphere.core.util.SQLUtil;
 
 /**
  * Order by segment filler.
@@ -35,24 +35,35 @@ import io.shardingsphere.core.rule.ShardingRule;
  * @author duhongjun
  */
 public class OrderBySegmentFiller implements SQLSegmentFiller {
-
+    
     @Override
     public void fill(final SQLSegment sqlSegment, final SQLStatement sqlStatement, final ShardingRule shardingRule, final ShardingTableMetaData shardingTableMetaData) {
         OrderBySegment orderBySegment = (OrderBySegment) sqlSegment;
         SelectStatement selectStatement = (SelectStatement) sqlStatement;
-        if (-1 < orderBySegment.getIndex()) {
-            selectStatement.getOrderByItems().add(new OrderItem(orderBySegment.getIndex(), orderBySegment.getOrderDirection(), orderBySegment.getNullOrderDirection()));
-        } else if (orderBySegment.getName().isPresent()) {
-            String name = orderBySegment.getName().get();
-            if (orderBySegment.getOwner().isPresent()) {
-                String owner = orderBySegment.getOwner().get();
-                if (sqlStatement.getTables().getTableNames().contains(owner)) {
-                    sqlStatement.addSQLToken(new TableToken(orderBySegment.getStartPosition(), 0, owner));
-                }
-                selectStatement.getOrderByItems().add(new OrderItem(owner, name, orderBySegment.getOrderDirection(), orderBySegment.getNullOrderDirection(), selectStatement.getAlias(owner+"."+name)));
-            }else {
-                selectStatement.getOrderByItems().add(new OrderItem(name, orderBySegment.getOrderDirection(), orderBySegment.getNullOrderDirection(), selectStatement.getAlias(name)));
-            }
+        for (OrderByItemSegment each : orderBySegment.getOrderByItems()) {
+            selectStatement.getOrderByItems().add(buildOrderItemAndFillToken(selectStatement, each));
         }
+    }
+    
+    public OrderItem buildOrderItemAndFillToken(SelectStatement selectStatement, OrderByItemSegment each) {
+        if (-1 < each.getIndex()) {
+            return new OrderItem(each.getIndex(), each.getOrderDirection(), each.getNullOrderDirection());
+        }
+        String expression = selectStatement.getSql().substring(each.getExpressionStartPosition(), each.getExpressionEndPosition() + 1);
+        if (!each.isIdentifier()) {
+            return new OrderItem(expression, each.getOrderDirection(), each.getNullOrderDirection(), selectStatement.getAlias(expression));
+        }
+        expression = SQLUtil.getExactlyValue(expression);
+        int dotPosition = expression.indexOf(".");
+        String name = expression;
+        if (0 < dotPosition) {
+            name = expression.substring(dotPosition + 1);
+            String owner = expression.substring(0, dotPosition);
+            if (selectStatement.getTables().getTableNames().contains(owner)) {
+                selectStatement.addSQLToken(new TableToken(each.getExpressionStartPosition(), 0, owner));
+            }
+            return new OrderItem(owner, name, each.getOrderDirection(), each.getNullOrderDirection(), selectStatement.getAlias(owner + "." + name));
+        }
+        return new OrderItem(name, each.getOrderDirection(), each.getNullOrderDirection(), selectStatement.getAlias(name));
     }
 }

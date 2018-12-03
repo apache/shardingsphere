@@ -17,46 +17,21 @@
 
 package io.shardingsphere.core.parsing.antlr.sql.segment;
 
-import com.google.common.base.Optional;
+import java.util.Collection;
+import java.util.LinkedList;
 
-import io.shardingsphere.core.constant.OrderDirection;
-import io.shardingsphere.core.parsing.parser.token.OrderByToken;
 import lombok.Getter;
+import lombok.RequiredArgsConstructor;
 
 /**
  * Order by segment.
  * 
  * @author duhongjun
  */
+@RequiredArgsConstructor
 @Getter
-public final class OrderBySegment implements SQLSegment {
+public class OrderBySegment implements SQLSegment {
     
-    private final Optional<String> owner;
+    private final Collection<OrderByItemSegment> orderByItems = new LinkedList<>();
     
-    private final Optional<String> name;
-    
-    private final int index;
-    
-    private final int startPosition;
-    
-    private final OrderByToken orderByToken;
-    
-    private final OrderDirection orderDirection;
-    
-    private final OrderDirection nullOrderDirection;
-    
-    public OrderBySegment(final Optional<String> owner, final Optional<String> name, final int index, final int startPosition, final OrderByToken orderByToken, final OrderDirection orderDirection,
-                          final OrderDirection nullOrderDirection) {
-        this.owner = owner;
-        this.name = name;
-        this.index = index;
-        this.startPosition = startPosition;
-        this.orderByToken = orderByToken;
-        this.orderDirection = orderDirection;
-        this.nullOrderDirection = nullOrderDirection;
-    }
-    
-    public OrderBySegment(final Optional<String> owner, final Optional<String> name, final int index, final int startPosition, final OrderByToken orderByToken) {
-        this(owner, name, index, startPosition, orderByToken, OrderDirection.ASC, OrderDirection.ASC);
-    }
 }

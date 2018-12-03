@@ -17,20 +17,17 @@
 
 package io.shardingsphere.core.parsing.antlr.filler.engnie;
 
+import com.google.common.base.Optional;
 import io.shardingsphere.core.constant.AggregationType;
 import io.shardingsphere.core.metadata.table.ShardingTableMetaData;
 import io.shardingsphere.core.parsing.antlr.filler.SQLSegmentFiller;
-import io.shardingsphere.core.parsing.antlr.sql.segment.CommonExpressionSegment;
-import io.shardingsphere.core.parsing.antlr.sql.segment.FunctionExpressionSegment;
-import io.shardingsphere.core.parsing.antlr.sql.segment.SQLSegment;
-import io.shardingsphere.core.parsing.antlr.sql.segment.SelectClauseSegment;
-import io.shardingsphere.core.parsing.antlr.sql.segment.SelectExpressionSegment;
-import io.shardingsphere.core.parsing.antlr.sql.segment.StarExpressionSegment;
+import io.shardingsphere.core.parsing.antlr.sql.segment.*;
 import io.shardingsphere.core.parsing.parser.context.selectitem.AggregationSelectItem;
 import io.shardingsphere.core.parsing.parser.context.selectitem.CommonSelectItem;
 import io.shardingsphere.core.parsing.parser.context.selectitem.StarSelectItem;
 import io.shardingsphere.core.parsing.parser.sql.SQLStatement;
 import io.shardingsphere.core.parsing.parser.sql.dql.select.SelectStatement;
+import io.shardingsphere.core.parsing.parser.token.TableToken;
 import io.shardingsphere.core.rule.ShardingRule;
 
 /**
@@ -45,16 +42,34 @@ public class SelectClauseFiller implements SQLSegmentFiller {
         SelectClauseSegment selectClauseSegment = (SelectClauseSegment) sqlSegment;
         SelectStatement selectStatement = (SelectStatement) sqlStatement;
         selectStatement.setSelectListLastPosition(selectClauseSegment.getSelectListLastPosition());
-        for(SelectExpressionSegment each : selectClauseSegment.getExpressions()) {
+        for (SelectExpressionSegment each : selectClauseSegment.getExpressions()) {
             if (each instanceof StarExpressionSegment) {
-                if(!selectStatement.isContainStar()) {
+                if (!selectStatement.isContainStar()) {
                     selectStatement.setContainStar(true);
                 }
-                selectStatement.getItems().add(new StarSelectItem(((StarExpressionSegment) each).getOwner()));
-            } else if (each instanceof CommonExpressionSegment) {
+                StarExpressionSegment starSegment = (StarExpressionSegment) each;
+                selectStatement.getItems().add(new StarSelectItem(starSegment.getOwner()));
+                Optional<String> owner = starSegment.getOwner();
+                if (owner.isPresent() && selectStatement.getTables().getTableNames().contains(owner.get())) {
+                    selectStatement.addSQLToken(new TableToken(starSegment.getStartPosition(), 0, owner.get()));
+                }
+                continue;
+            }
+            if (each instanceof PropertyExpressionSegment) {
+                PropertyExpressionSegment propertySegment = (PropertyExpressionSegment) each;
+                Optional<String> owner = propertySegment.getOwner();
+                if (owner.isPresent() && selectStatement.getTables().getTableNames().contains(owner.get())) {
+                    selectStatement.addSQLToken(new TableToken(propertySegment.getStartPosition(), 0, owner.get()));
+                }
+                selectStatement.getItems().add(new CommonSelectItem(selectStatement.getSql().substring(propertySegment.getStartPosition(), propertySegment.getEndPosition() + 1), propertySegment.getAlias()));
+                continue;
+            }
+            if (each instanceof CommonExpressionSegment) {
                 CommonExpressionSegment commonSegment = (CommonExpressionSegment) each;
                 selectStatement.getItems().add(new CommonSelectItem(commonSegment.getExpression(), commonSegment.getAlias()));
-            } else if (each instanceof FunctionExpressionSegment) {
+                continue;
+            }
+            if (each instanceof FunctionExpressionSegment) {
                 FunctionExpressionSegment functionSegment = (FunctionExpressionSegment) each;
                 AggregationType aggregationType = null;
                 for (AggregationType eachType : AggregationType.values()) {
@@ -63,8 +78,11 @@ public class SelectClauseFiller implements SQLSegmentFiller {
                         break;
                     }
                 }
+                String innerExpression = selectStatement.getSql().substring(functionSegment.getInnerExpressionStartIndex(), functionSegment.getInnerExpressionEndIndex() + 1);
                 if (null != aggregationType) {
-                    selectStatement.getItems().add(new AggregationSelectItem(aggregationType, functionSegment.getInnerExpression(), functionSegment.getAlias()));
+                    selectStatement.getItems().add(new AggregationSelectItem(aggregationType, innerExpression, functionSegment.getAlias()));
+                } else {
+                    selectStatement.getItems().add(new CommonSelectItem(functionSegment.getName() + innerExpression, functionSegment.getAlias()));
                 }
             }
         }

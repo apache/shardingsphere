@@ -24,6 +24,7 @@ import io.shardingsphere.core.parsing.antlr.sql.segment.TableSegment;
 import io.shardingsphere.core.parsing.parser.context.table.Table;
 import io.shardingsphere.core.parsing.parser.sql.SQLStatement;
 import io.shardingsphere.core.parsing.parser.sql.dql.select.SelectStatement;
+import io.shardingsphere.core.parsing.parser.token.TableToken;
 import io.shardingsphere.core.rule.ShardingRule;
 
 /**
@@ -36,6 +37,7 @@ public class TableSegmentFiller implements SQLSegmentFiller {
     @Override
     public void fill(final SQLSegment sqlSegment, final SQLStatement sqlStatement, final ShardingRule shardingRule, final ShardingTableMetaData shardingTableMetaData) {
         TableSegment tableSegment = (TableSegment) sqlSegment;
+        SelectStatement selectStatement = (SelectStatement) sqlStatement;
         String tableName = tableSegment.getName();
         boolean needAdd = false;
         if (!(sqlStatement instanceof SelectStatement)) {
@@ -47,6 +49,11 @@ public class TableSegmentFiller implements SQLSegmentFiller {
         if (needAdd) {
             sqlStatement.getTables().add(new Table(tableSegment.getName(), tableSegment.getAlias()));
             sqlStatement.getSQLTokens().add(tableSegment.getToken());
+            if (tableSegment.getAlias().isPresent()) {
+                if (selectStatement.getTables().getTableNames().contains(tableSegment.getAlias().get())) {
+                    selectStatement.addSQLToken(new TableToken(tableSegment.getAliasStartPosition(), 0, tableSegment.getAlias().get()));
+                }
+            }
         }
     }
 }

@@ -36,6 +36,6 @@ public class GroupBySegment implements SQLSegment {
 
     private final int groupByLastPosition;
     
-    private final Collection<OrderBySegment> groupByItems = new LinkedList<>();
+    private final Collection<OrderByItemSegment> groupByItems = new LinkedList<>();
     
 }

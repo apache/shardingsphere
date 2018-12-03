@@ -17,17 +17,12 @@
 
 package io.shardingsphere.core.parsing.antlr.extractor.segment.engine;
 
-import org.antlr.v4.runtime.ParserRuleContext;
-
 import com.google.common.base.Optional;
-
-import io.shardingsphere.core.constant.OrderDirection;
 import io.shardingsphere.core.parsing.antlr.extractor.segment.OptionalSQLSegmentExtractor;
 import io.shardingsphere.core.parsing.antlr.extractor.segment.constant.RuleName;
 import io.shardingsphere.core.parsing.antlr.extractor.util.ASTUtils;
 import io.shardingsphere.core.parsing.antlr.sql.segment.GroupBySegment;
-import io.shardingsphere.core.parsing.antlr.sql.segment.OrderBySegment;
-import io.shardingsphere.core.parsing.parser.token.OrderByToken;
+import org.antlr.v4.runtime.ParserRuleContext;
 
 /**
  * Group by clause extractor.
@@ -42,14 +37,8 @@ public final class GroupByClauseExtractor implements OptionalSQLSegmentExtractor
         if (!orderByParentNode.isPresent()) {
             return Optional.absent();
         }
-        GroupBySegment result = new GroupBySegment(orderByParentNode.get().getStop().getStopIndex() + 2);
+        GroupBySegment result = new GroupBySegment(orderByParentNode.get().getStop().getStopIndex() + 1);
         result.getGroupByItems().addAll(new OrderByClauseExtractor().extractOrderBy(orderByParentNode.get()));
         return Optional.of(result);
     }
-    
-    protected OrderBySegment buildSegment(final String ownerName, final String name, final int index, final OrderDirection orderDirection,
-                                          final int orderTokenBeginPosition, final int columnBeginPosition) {
-        return new OrderBySegment(Optional.of(ownerName), Optional.of(name), columnBeginPosition, index, new OrderByToken(orderTokenBeginPosition));
-    }
-    
 }

@@ -6,7 +6,7 @@ import lombok.RequiredArgsConstructor;
 
 @RequiredArgsConstructor
 @Getter
-public class SQLBetweenExpressionSegment extends SQLExpressionSegment {
+public class SQLBetweenExpressionSegment implements SQLExpressionSegment {
     
     private final SQLExpression beginExpress;
     

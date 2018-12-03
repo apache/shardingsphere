@@ -30,6 +30,8 @@ import lombok.RequiredArgsConstructor;
 @RequiredArgsConstructor
 @Getter
 public final class StarExpressionSegment extends SelectExpressionSegment {
-
+    
+    private final int startPosition;
+    
     private final Optional<String> owner;
 }

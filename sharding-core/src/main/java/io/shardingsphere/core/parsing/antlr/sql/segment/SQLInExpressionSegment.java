@@ -9,7 +9,7 @@ import lombok.RequiredArgsConstructor;
 
 @RequiredArgsConstructor
 @Getter
-public final class SQLInExpressionSegment extends SQLExpressionSegment {
+public final class SQLInExpressionSegment implements SQLExpressionSegment {
     
     private final List<SQLExpression> sqlExpressions = new LinkedList<>();
 }
