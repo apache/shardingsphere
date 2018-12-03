@@ -93,7 +93,7 @@ public final class BackendConnection implements AutoCloseable {
     /**
      * Change logic schema of current channel.
      *
-     * @param schemaName current schema
+     * @param schemaName schema name
      */
     public void setCurrentSchema(final String schemaName) {
         if (isSwitchFailed()) {
@@ -124,7 +124,7 @@ public final class BackendConnection implements AutoCloseable {
      * @param connectionMode connection mode
      * @param dataSourceName data source name
      * @param connectionSize size of connections to be get
-     * @return connection
+     * @return connections
      * @throws SQLException SQL exception
      */
     public List<Connection> getConnections(final ConnectionMode connectionMode, final String dataSourceName, final int connectionSize) throws SQLException {

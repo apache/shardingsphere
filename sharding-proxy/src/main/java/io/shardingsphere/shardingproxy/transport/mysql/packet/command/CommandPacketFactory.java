@@ -18,7 +18,6 @@
 package io.shardingsphere.shardingproxy.transport.mysql.packet.command;
 
 import io.shardingsphere.shardingproxy.backend.jdbc.connection.BackendConnection;
-import io.shardingsphere.shardingproxy.frontend.common.FrontendHandler;
 import io.shardingsphere.shardingproxy.transport.mysql.packet.MySQLPacketPayload;
 import io.shardingsphere.shardingproxy.transport.mysql.packet.command.admin.UnsupportedCommandPacket;
 import io.shardingsphere.shardingproxy.transport.mysql.packet.command.admin.initdb.ComInitDbPacket;
@@ -50,23 +49,21 @@ public final class CommandPacketFactory {
      * @param sequenceId        sequence id
      * @param payload           MySQL packet payload
      * @param backendConnection backend connection
-     * @param frontendHandler   frontend handler
      * @return command packet
      * @throws SQLException SQL exception
      */
-    public static CommandPacket newInstance(final int sequenceId, final MySQLPacketPayload payload,
-                                            final BackendConnection backendConnection, final FrontendHandler frontendHandler) throws SQLException {
+    public static CommandPacket newInstance(final int sequenceId, final MySQLPacketPayload payload, final BackendConnection backendConnection) throws SQLException {
         int commandPacketTypeValue = payload.readInt1();
         CommandPacketType type = CommandPacketType.valueOf(commandPacketTypeValue);
         switch (type) {
             case COM_QUIT:
                 return new ComQuitPacket(sequenceId);
             case COM_INIT_DB:
-                return new ComInitDbPacket(sequenceId, payload, frontendHandler);
+                return new ComInitDbPacket(sequenceId, payload, backendConnection);
             case COM_FIELD_LIST:
                 return new ComFieldListPacket(sequenceId, payload, backendConnection);
             case COM_QUERY:
-                return new ComQueryPacket(sequenceId, payload, backendConnection, frontendHandler);
+                return new ComQueryPacket(sequenceId, payload, backendConnection);
             case COM_STMT_PREPARE:
                 return new ComStmtPreparePacket(sequenceId, backendConnection, payload);
             case COM_STMT_EXECUTE:

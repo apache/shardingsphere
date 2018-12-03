@@ -32,7 +32,6 @@ import io.shardingsphere.shardingproxy.backend.jdbc.execute.JDBCExecuteEngine;
 import io.shardingsphere.shardingproxy.backend.jdbc.wrapper.PreparedStatementExecutorWrapper;
 import io.shardingsphere.shardingproxy.backend.jdbc.wrapper.StatementExecutorWrapper;
 import io.shardingsphere.shardingproxy.backend.netty.NettyBackendHandler;
-import io.shardingsphere.shardingproxy.frontend.common.FrontendHandler;
 import io.shardingsphere.shardingproxy.runtime.GlobalRegistry;
 import io.shardingsphere.shardingproxy.runtime.schema.LogicSchema;
 import lombok.AccessLevel;
@@ -53,23 +52,21 @@ public final class BackendHandlerFactory {
     private static final GlobalRegistry GLOBAL_REGISTRY = GlobalRegistry.getInstance();
     
     /**
-     * Create new com query backend handler instance by SQl judge.
+     * Create new com query backend handler instance by SQL judge.
      *
      * @param sequenceId sequence ID of SQL packet
      * @param sql SQL to be executed
      * @param backendConnection backend connection
      * @param databaseType database type
-     * @param frontendHandler frontend handler
      * @return instance of backend handler
      */
-    public static BackendHandler createBackendHandler(final int sequenceId, final String sql, final BackendConnection backendConnection,
-                                                      final DatabaseType databaseType, final FrontendHandler frontendHandler) {
+    public static BackendHandler createBackendHandler(final int sequenceId, final String sql, final BackendConnection backendConnection, final DatabaseType databaseType) {
         SQLStatement sqlStatement = new SQLJudgeEngine(sql).judge();
         if (SQLType.DCL == sqlStatement.getType() || sqlStatement instanceof SetStatement) {
             return new SchemaBroadcastBackendHandler(sequenceId, sql, backendConnection, databaseType);
         }
         if (sqlStatement instanceof UseStatement || sqlStatement instanceof ShowDatabasesStatement) {
-            return new SchemaIgnoreBackendHandler(sqlStatement, frontendHandler);
+            return new SchemaIgnoreBackendHandler(sqlStatement, backendConnection);
         }
         if (sqlStatement instanceof ShowOtherStatement) {
             return new SchemaUnicastBackendHandler(sequenceId, sql, backendConnection, DatabaseType.MySQL);

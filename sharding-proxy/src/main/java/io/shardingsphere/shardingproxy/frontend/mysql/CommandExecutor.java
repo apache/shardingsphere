@@ -89,7 +89,7 @@ public final class CommandExecutor implements Runnable {
     
     private CommandPacket getCommandPacket(final MySQLPacketPayload payload, final BackendConnection backendConnection, final FrontendHandler frontendHandler) throws SQLException {
         int sequenceId = payload.readInt1();
-        return CommandPacketFactory.newInstance(sequenceId, payload, backendConnection, frontendHandler);
+        return CommandPacketFactory.newInstance(sequenceId, payload, backendConnection);
     }
     
     private void writeMoreResults(final QueryCommandPacket queryCommandPacket, final int headPacketsCount) throws SQLException {
