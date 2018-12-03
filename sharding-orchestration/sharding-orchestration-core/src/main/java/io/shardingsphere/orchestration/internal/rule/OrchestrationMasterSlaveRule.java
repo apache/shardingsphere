@@ -17,6 +17,7 @@
 
 package io.shardingsphere.orchestration.internal.rule;
 
+import com.google.common.eventbus.EventBus;
 import com.google.common.eventbus.Subscribe;
 import io.shardingsphere.api.config.MasterSlaveRuleConfiguration;
 import io.shardingsphere.core.constant.ShardingConstant;
@@ -28,7 +29,6 @@ import io.shardingsphere.orchestration.internal.registry.state.schema.Orchestrat
 import java.util.Collection;
 import java.util.LinkedHashSet;
 import java.util.LinkedList;
-import java.util.Set;
 
 /**
  * Orchestration master slave rule.
@@ -37,11 +37,13 @@ import java.util.Set;
  */
 public final class OrchestrationMasterSlaveRule extends MasterSlaveRule {
     
-    private final Set<String> disabledDataSourceNames = new LinkedHashSet<>();
+    private final EventBus eventBus = ShardingOrchestrationEventBus.getInstance();
+    
+    private final Collection<String> disabledDataSourceNames = new LinkedHashSet<>();
     
     public OrchestrationMasterSlaveRule(final MasterSlaveRuleConfiguration config) {
         super(config);
-        ShardingOrchestrationEventBus.getInstance().register(this);
+        eventBus.register(this);
     }
     
     /**

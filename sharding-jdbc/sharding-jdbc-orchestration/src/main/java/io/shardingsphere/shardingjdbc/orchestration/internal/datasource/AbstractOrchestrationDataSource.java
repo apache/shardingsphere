@@ -17,6 +17,7 @@
 
 package io.shardingsphere.shardingjdbc.orchestration.internal.datasource;
 
+import com.google.common.eventbus.EventBus;
 import com.google.common.eventbus.Subscribe;
 import io.shardingsphere.core.constant.ShardingConstant;
 import io.shardingsphere.orchestration.internal.eventbus.ShardingOrchestrationEventBus;
@@ -39,6 +40,8 @@ import java.util.Map;
 @Getter(AccessLevel.PROTECTED)
 public abstract class AbstractOrchestrationDataSource extends AbstractDataSourceAdapter {
     
+    private final EventBus eventBus = ShardingOrchestrationEventBus.getInstance();
+    
     private final ShardingOrchestrationFacade shardingOrchestrationFacade;
     
     private boolean isCircuitBreak;
@@ -46,13 +49,13 @@ public abstract class AbstractOrchestrationDataSource extends AbstractDataSource
     public AbstractOrchestrationDataSource(final ShardingOrchestrationFacade shardingOrchestrationFacade, final Map<String, DataSource> dataSourceMap) throws SQLException {
         super(dataSourceMap);
         this.shardingOrchestrationFacade = shardingOrchestrationFacade;
-        ShardingOrchestrationEventBus.getInstance().register(this);
+        eventBus.register(this);
     }
     
     public AbstractOrchestrationDataSource(final ShardingOrchestrationFacade shardingOrchestrationFacade) throws SQLException {
         super(DataSourceConverter.getDataSourceMap(shardingOrchestrationFacade.getConfigService().loadDataSourceConfigurations(ShardingConstant.LOGIC_SCHEMA_NAME)));
         this.shardingOrchestrationFacade = shardingOrchestrationFacade;
-        ShardingOrchestrationEventBus.getInstance().register(this);
+        eventBus.register(this);
     }
     
     /**
