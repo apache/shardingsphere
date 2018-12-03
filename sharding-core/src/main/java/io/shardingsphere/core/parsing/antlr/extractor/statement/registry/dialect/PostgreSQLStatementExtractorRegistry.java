@@ -24,7 +24,11 @@ import io.shardingsphere.core.parsing.antlr.extractor.statement.engine.dal.diale
 import io.shardingsphere.core.parsing.antlr.extractor.statement.engine.dal.dialect.postgresql.PostgreSQLShowExtractor;
 import io.shardingsphere.core.parsing.antlr.extractor.statement.engine.ddl.CreateIndexExtractor;
 import io.shardingsphere.core.parsing.antlr.extractor.statement.engine.ddl.CreateTableExtractor;
-import io.shardingsphere.core.parsing.antlr.extractor.statement.engine.ddl.dialect.postgresql.*;
+import io.shardingsphere.core.parsing.antlr.extractor.statement.engine.ddl.dialect.postgresql.PostgreSQLAlterIndexExtractor;
+import io.shardingsphere.core.parsing.antlr.extractor.statement.engine.ddl.dialect.postgresql.PostgreSQLAlterTableExtractor;
+import io.shardingsphere.core.parsing.antlr.extractor.statement.engine.ddl.dialect.postgresql.PostgreSQLDropIndexExtractor;
+import io.shardingsphere.core.parsing.antlr.extractor.statement.engine.ddl.dialect.postgresql.PostgreSQLDropTableExtractor;
+import io.shardingsphere.core.parsing.antlr.extractor.statement.engine.ddl.dialect.postgresql.PostgreSQLTruncateTableExtractor;
 import io.shardingsphere.core.parsing.antlr.extractor.statement.engine.tcl.TCLStatementExtractor;
 import io.shardingsphere.core.parsing.antlr.extractor.statement.registry.SQLStatementExtractorRegistry;
 
