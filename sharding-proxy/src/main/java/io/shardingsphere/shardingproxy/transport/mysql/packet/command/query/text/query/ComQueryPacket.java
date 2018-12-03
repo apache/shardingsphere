@@ -25,7 +25,6 @@ import io.shardingsphere.shardingproxy.backend.BackendHandlerFactory;
 import io.shardingsphere.shardingproxy.backend.ResultPacket;
 import io.shardingsphere.shardingproxy.backend.jdbc.connection.BackendConnection;
 import io.shardingsphere.shardingproxy.backend.jdbc.connection.BackendTransactionManager;
-import io.shardingsphere.shardingproxy.frontend.common.FrontendHandler;
 import io.shardingsphere.shardingproxy.runtime.GlobalRegistry;
 import io.shardingsphere.shardingproxy.transport.common.packet.DatabasePacket;
 import io.shardingsphere.shardingproxy.transport.mysql.constant.ServerErrorCode;
@@ -62,10 +61,10 @@ public final class ComQueryPacket implements QueryCommandPacket {
     
     private final BackendTransactionManager backendTransactionManager;
     
-    public ComQueryPacket(final int sequenceId, final int connectionId, final MySQLPacketPayload payload, final BackendConnection backendConnection, final FrontendHandler frontendHandler) {
+    public ComQueryPacket(final int sequenceId, final MySQLPacketPayload payload, final BackendConnection backendConnection) {
         this.sequenceId = sequenceId;
         sql = payload.readStringEOF();
-        backendHandler = BackendHandlerFactory.createBackendHandler(connectionId, sequenceId, sql, backendConnection, DatabaseType.MySQL, frontendHandler);
+        backendHandler = BackendHandlerFactory.createBackendHandler(sequenceId, sql, backendConnection, DatabaseType.MySQL);
         backendTransactionManager = new BackendTransactionManager(backendConnection);
     }
     

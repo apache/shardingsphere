@@ -23,7 +23,7 @@ import io.shardingsphere.core.parsing.parser.dialect.mysql.statement.ShowDatabas
 import io.shardingsphere.core.parsing.parser.dialect.mysql.statement.UseStatement;
 import io.shardingsphere.core.parsing.parser.sql.SQLStatement;
 import io.shardingsphere.core.util.SQLUtil;
-import io.shardingsphere.shardingproxy.frontend.common.FrontendHandler;
+import io.shardingsphere.shardingproxy.backend.jdbc.connection.BackendConnection;
 import io.shardingsphere.shardingproxy.runtime.GlobalRegistry;
 import io.shardingsphere.shardingproxy.transport.mysql.constant.ColumnType;
 import io.shardingsphere.shardingproxy.transport.mysql.constant.ServerErrorCode;
@@ -54,7 +54,7 @@ public final class SchemaIgnoreBackendHandler implements BackendHandler {
     
     private final SQLStatement sqlStatement;
     
-    private final FrontendHandler frontendHandler;
+    private final BackendConnection backendConnection;
     
     private MergedResult mergedResult;
     
@@ -67,7 +67,7 @@ public final class SchemaIgnoreBackendHandler implements BackendHandler {
     @Override
     public CommandResponsePackets execute() {
         if (sqlStatement instanceof UseStatement) {
-            return handleUseStatement((UseStatement) sqlStatement, frontendHandler);
+            return handleUseStatement((UseStatement) sqlStatement);
         }
         
         if (sqlStatement instanceof ShowDatabasesStatement) {
@@ -90,12 +90,12 @@ public final class SchemaIgnoreBackendHandler implements BackendHandler {
         return new ResultPacket(++currentSequenceId, data, columnCount, columnTypes);
     }
     
-    private CommandResponsePackets handleUseStatement(final UseStatement useStatement, final FrontendHandler frontendHandler) {
+    private CommandResponsePackets handleUseStatement(final UseStatement useStatement) {
         String schema = SQLUtil.getExactlyValue(useStatement.getSchema());
         if (!GLOBAL_REGISTRY.schemaExists(schema)) {
             return new CommandResponsePackets(new ErrPacket(1, ServerErrorCode.ER_BAD_DB_ERROR, schema));
         }
-        frontendHandler.getBackendConnection().setCurrentSchema(schema);
+        backendConnection.setCurrentSchema(schema);
         return new CommandResponsePackets(new OKPacket(1));
     }
     

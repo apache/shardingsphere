@@ -22,7 +22,6 @@ import io.netty.buffer.ByteBuf;
 import io.netty.channel.ChannelHandlerContext;
 import io.shardingsphere.shardingproxy.backend.jdbc.connection.BackendConnection;
 import io.shardingsphere.shardingproxy.frontend.common.FrontendHandler;
-import io.shardingsphere.shardingproxy.runtime.ChannelRegistry;
 import io.shardingsphere.shardingproxy.transport.common.packet.DatabasePacket;
 import io.shardingsphere.shardingproxy.transport.mysql.constant.ServerErrorCode;
 import io.shardingsphere.shardingproxy.transport.mysql.packet.MySQLPacketPayload;
@@ -90,8 +89,7 @@ public final class CommandExecutor implements Runnable {
     
     private CommandPacket getCommandPacket(final MySQLPacketPayload payload, final BackendConnection backendConnection, final FrontendHandler frontendHandler) throws SQLException {
         int sequenceId = payload.readInt1();
-        int connectionId = ChannelRegistry.getInstance().getConnectionId(context.channel().id().asShortText());
-        return CommandPacketFactory.newInstance(sequenceId, connectionId, payload, backendConnection, frontendHandler);
+        return CommandPacketFactory.newInstance(sequenceId, payload, backendConnection);
     }
     
     private void writeMoreResults(final QueryCommandPacket queryCommandPacket, final int headPacketsCount) throws SQLException {

@@ -20,7 +20,6 @@ package io.shardingsphere.shardingproxy.backend.jdbc.connection;
 import com.google.common.base.Preconditions;
 import com.google.common.collect.LinkedHashMultimap;
 import com.google.common.collect.Multimap;
-import io.netty.channel.ChannelHandlerContext;
 import io.shardingsphere.core.constant.ConnectionMode;
 import io.shardingsphere.core.constant.transaction.TransactionType;
 import io.shardingsphere.core.exception.ShardingException;
@@ -54,9 +53,14 @@ public final class BackendConnection implements AutoCloseable {
     
     private static final int MAXIMUM_RETRY_COUNT = 5;
     
-    private volatile String currentSchema;
+    private volatile String schemaName;
     
     private LogicSchema logicSchema;
+    
+    private TransactionType transactionType;
+    
+    @Setter
+    private int connectionId;
     
     private final Multimap<String, Connection> cachedConnections = LinkedHashMultimap.create();
     
@@ -69,11 +73,6 @@ public final class BackendConnection implements AutoCloseable {
     private final ResourceSynchronizer resourceSynchronizer = new ResourceSynchronizer();
     
     private final ConnectionStateHandler stateHandler = new ConnectionStateHandler(resourceSynchronizer);
-    
-    private TransactionType transactionType;
-    
-    @Setter
-    private ChannelHandlerContext context;
     
     public BackendConnection(final TransactionType transactionType) {
         this.transactionType = transactionType;
@@ -94,14 +93,14 @@ public final class BackendConnection implements AutoCloseable {
     /**
      * Change logic schema of current channel.
      *
-     * @param currentSchema current schema
+     * @param schemaName schema name
      */
-    public void setCurrentSchema(final String currentSchema) {
+    public void setCurrentSchema(final String schemaName) {
         if (isSwitchFailed()) {
             throw new ShardingException("Failed to switch schema, please terminate current transaction.");
         }
-        this.currentSchema = currentSchema;
-        this.logicSchema = GlobalRegistry.getInstance().getLogicSchema(currentSchema);
+        this.schemaName = schemaName;
+        this.logicSchema = GlobalRegistry.getInstance().getLogicSchema(schemaName);
     }
     
     @SneakyThrows
@@ -125,7 +124,7 @@ public final class BackendConnection implements AutoCloseable {
      * @param connectionMode connection mode
      * @param dataSourceName data source name
      * @param connectionSize size of connections to be get
-     * @return connection
+     * @return connections
      * @throws SQLException SQL exception
      */
     public List<Connection> getConnections(final ConnectionMode connectionMode, final String dataSourceName, final int connectionSize) throws SQLException {
