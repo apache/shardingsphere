@@ -49,14 +49,12 @@ public final class OrchestrationMasterSlaveRule extends MasterSlaveRule {
     /**
      * Get slave data source names.
      *
-     * @return available slave data source name
+     * @return available slave data source names
      */
     @Override
     public Collection<String> getSlaveDataSourceNames() {
         Collection<String> result = new LinkedList<>(super.getSlaveDataSourceNames());
-        for (String each : disabledDataSourceNames) {
-            result.remove(each);
-        }
+        result.removeAll(disabledDataSourceNames);
         return result;
     }
     
@@ -68,6 +66,7 @@ public final class OrchestrationMasterSlaveRule extends MasterSlaveRule {
     @Subscribe
     public synchronized void renew(final DisabledStateChangedEvent disabledStateChangedEvent) {
         OrchestrationShardingSchema shardingSchema = disabledStateChangedEvent.getShardingSchema();
+        // TODO need to confirm, why use ShardingConstant.LOGIC_SCHEMA_NAME here
         if (ShardingConstant.LOGIC_SCHEMA_NAME.equals(shardingSchema.getSchemaName())) {
             updateDisabledDataSourceNames(shardingSchema.getDataSourceName(), disabledStateChangedEvent.isDisabled());
         }
