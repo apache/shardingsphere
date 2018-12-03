@@ -3,7 +3,7 @@ grammar DMLBase;
 import Keyword, MySQLBase, DQLBase, BaseRule, DataType, Symbol;
 
 execute
-    : select | insert | update | delete
+    : insert | update | delete
     ;
 
 fromClause 
@@ -19,13 +19,9 @@ havingClause
     ;
 
 orderByClause
-    : ORDER BY groupByItem (COMMA groupByItem)*
+    : ORDER BY orderByItem (COMMA orderByItem)*
     ;
-
-groupByItem:
-    (columnName | NUMBER |expr) (ASC|DESC)?
-    ;
-
+    
 limitClause
     : LIMIT rangeClause
     ;

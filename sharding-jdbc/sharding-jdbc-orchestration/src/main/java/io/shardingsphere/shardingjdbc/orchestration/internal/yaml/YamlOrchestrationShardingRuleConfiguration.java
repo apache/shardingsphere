@@ -18,7 +18,7 @@
 package io.shardingsphere.shardingjdbc.orchestration.internal.yaml;
 
 import io.shardingsphere.core.yaml.sharding.YamlShardingConfiguration;
-import io.shardingsphere.orchestration.internal.yaml.YamlOrchestrationConfiguration;
+import io.shardingsphere.orchestration.yaml.YamlOrchestrationConfiguration;
 import lombok.Getter;
 import lombok.Setter;
 

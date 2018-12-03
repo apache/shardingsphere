@@ -19,6 +19,8 @@ package io.shardingsphere.shardingproxy.transport.mysql.packet.command.admin.ini
 
 import com.google.common.base.Optional;
 import io.shardingsphere.core.constant.ShardingConstant;
+import io.shardingsphere.core.constant.transaction.TransactionType;
+import io.shardingsphere.shardingproxy.backend.jdbc.connection.BackendConnection;
 import io.shardingsphere.shardingproxy.frontend.common.FrontendHandler;
 import io.shardingsphere.shardingproxy.runtime.GlobalRegistry;
 import io.shardingsphere.shardingproxy.runtime.schema.LogicSchema;
@@ -62,6 +64,7 @@ public final class ComInitDbPacketTest {
         Field field = GlobalRegistry.class.getDeclaredField("logicSchemas");
         field.setAccessible(true);
         field.set(GlobalRegistry.getInstance(), logicSchemas);
+        when(frontendHandler.getBackendConnection()).thenReturn(new BackendConnection(TransactionType.LOCAL));
     }
     
     @Test

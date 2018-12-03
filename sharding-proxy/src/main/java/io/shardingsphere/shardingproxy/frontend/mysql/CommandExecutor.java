@@ -36,12 +36,14 @@ import io.shardingsphere.shardingproxy.transport.mysql.packet.generic.OKPacket;
 import io.shardingsphere.spi.root.RootInvokeHook;
 import io.shardingsphere.spi.root.SPIRootInvokeHook;
 import lombok.RequiredArgsConstructor;
+
 import java.sql.SQLException;
 
 /**
  * Command executor.
  *
  * @author zhangyonglun
+ * @author zhaojun
  */
 @RequiredArgsConstructor
 public final class CommandExecutor implements Runnable {
@@ -61,8 +63,8 @@ public final class CommandExecutor implements Runnable {
         rootInvokeHook.start();
         int connectionSize = 0;
         try (MySQLPacketPayload payload = new MySQLPacketPayload(message);
-             BackendConnection backendConnection = new BackendConnection()) {
-            frontendHandler.setBackendConnection(backendConnection);
+             BackendConnection backendConnection = frontendHandler.getBackendConnection()) {
+            backendConnection.getStateHandler().waitUntilConnectionReleasedIfNecessary();
             CommandPacket commandPacket = getCommandPacket(payload, backendConnection, frontendHandler);
             Optional<CommandResponsePackets> responsePackets = commandPacket.execute();
             if (!responsePackets.isPresent()) {
@@ -99,9 +101,9 @@ public final class CommandExecutor implements Runnable {
         currentSequenceId = headPacketsCount;
         while (queryCommandPacket.next()) {
             while (!context.channel().isWritable() && context.channel().isActive()) {
-                synchronized (io.shardingsphere.shardingproxy.frontend.mysql.CommandExecutor.this) {
+                synchronized (frontendHandler) {
                     try {
-                        io.shardingsphere.shardingproxy.frontend.mysql.CommandExecutor.this.wait();
+                        frontendHandler.wait();
                     } catch (final InterruptedException ignored) {
                     }
                 }

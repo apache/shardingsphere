@@ -20,6 +20,7 @@ package io.shardingsphere.shardingproxy.transport.mysql.packet.command;
 import io.shardingsphere.core.constant.ShardingConstant;
 import io.shardingsphere.core.constant.properties.ShardingProperties;
 import io.shardingsphere.core.constant.properties.ShardingPropertiesConstant;
+import io.shardingsphere.core.constant.transaction.TransactionType;
 import io.shardingsphere.core.metadata.ShardingMetaData;
 import io.shardingsphere.shardingproxy.backend.jdbc.connection.BackendConnection;
 import io.shardingsphere.shardingproxy.frontend.common.FrontendHandler;
@@ -61,8 +62,7 @@ public final class CommandPacketFactoryTest {
     @Mock
     private MySQLPacketPayload payload;
     
-    @Mock
-    private BackendConnection backendConnection;
+    private BackendConnection backendConnection = new BackendConnection(TransactionType.LOCAL);
     
     @Mock
     private FrontendHandler frontendHandler;
@@ -70,7 +70,7 @@ public final class CommandPacketFactoryTest {
     @Before
     public void setUp() throws ReflectiveOperationException {
         setShardingSchemas();
-        setFrontendHandlerSchema();
+        backendConnection.setCurrentSchema(ShardingConstant.LOGIC_SCHEMA_NAME);
         setMaxConnectionsSizePerQuery();
     }
     
@@ -84,10 +84,6 @@ public final class CommandPacketFactoryTest {
         Field field = GlobalRegistry.class.getDeclaredField("logicSchemas");
         field.setAccessible(true);
         field.set(GlobalRegistry.getInstance(), shardingSchemas);
-    }
-    
-    private void setFrontendHandlerSchema() {
-        when(frontendHandler.getCurrentSchema()).thenReturn(ShardingConstant.LOGIC_SCHEMA_NAME);
     }
     
     private void setMaxConnectionsSizePerQuery() throws ReflectiveOperationException {
@@ -125,7 +121,6 @@ public final class CommandPacketFactoryTest {
     
     @Test
     public void assertNewInstanceWithComStmtPreparePacket() throws SQLException {
-        when(frontendHandler.getCurrentSchema()).thenReturn(ShardingConstant.LOGIC_SCHEMA_NAME);
         when(payload.readInt1()).thenReturn(CommandPacketType.COM_STMT_PREPARE.getValue());
         assertThat(CommandPacketFactory.newInstance(1, 1000, payload, backendConnection, frontendHandler), instanceOf(ComStmtPreparePacket.class));
     }

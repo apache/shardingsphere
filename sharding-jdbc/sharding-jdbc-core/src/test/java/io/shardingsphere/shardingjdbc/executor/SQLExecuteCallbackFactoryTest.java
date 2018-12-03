@@ -84,17 +84,12 @@ public class SQLExecuteCallbackFactoryTest {
         when(statement.getConnection()).thenReturn(connection);
         when(connection.getMetaData()).thenReturn(metaData);
         when(metaData.getURL()).thenReturn("jdbc:mysql://localhost:3306/test");
-    }
-    
-    @After
-    public void tearDown() {
-        TransactionTypeHolder.set(ORIGIN_TRANSACTION_TYPE);
+        unit = new StatementExecuteUnit(new RouteUnit("ds", new SQLUnit("SELECT now()", Collections.<List<Object>>emptyList())), preparedStatement, ConnectionMode.CONNECTION_STRICTLY);
     }
     
     @Test
     public void assertGetPreparedUpdateSQLExecuteCallback() throws SQLException {
-        unit = new StatementExecuteUnit(new RouteUnit("ds", new SQLUnit("SELECT now()", Collections.<List<Object>>emptyList())), preparedStatement, ConnectionMode.CONNECTION_STRICTLY);
-        SQLExecuteCallback sqlExecuteCallback = SQLExecuteCallbackFactory.getPreparedUpdateSQLExecuteCallback(DatabaseType.MySQL, SQLType.DML, true);
+        SQLExecuteCallback sqlExecuteCallback = SQLExecuteCallbackFactory.getPreparedUpdateSQLExecuteCallback(DatabaseType.MySQL, true);
         sqlExecuteCallback.execute(unit, true, null);
         verify(preparedStatement).executeUpdate();
         TransactionTypeHolder.set(TransactionType.BASE);
@@ -108,8 +103,7 @@ public class SQLExecuteCallbackFactoryTest {
     
     @Test
     public void assertGetPreparedSQLExecuteCallback() throws SQLException {
-        unit = new StatementExecuteUnit(new RouteUnit("ds", new SQLUnit("SELECT now()", Collections.<List<Object>>emptyList())), preparedStatement, ConnectionMode.CONNECTION_STRICTLY);
-        SQLExecuteCallback sqlExecuteCallback = SQLExecuteCallbackFactory.getPreparedSQLExecuteCallback(DatabaseType.MySQL, SQLType.DML, true);
+        SQLExecuteCallback sqlExecuteCallback = SQLExecuteCallbackFactory.getPreparedSQLExecuteCallback(DatabaseType.MySQL, true);
         sqlExecuteCallback.execute(unit, true, null);
         verify(preparedStatement).execute();
         TransactionTypeHolder.set(TransactionType.BASE);

@@ -17,11 +17,12 @@
 
 package io.shardingsphere.core.executor.threadlocal;
 
-import io.shardingsphere.core.executor.fixture.ExecutorTestUtil;
 import io.shardingsphere.core.executor.sql.execute.threadlocal.ExecutorExceptionHandler;
+import lombok.SneakyThrows;
 import org.junit.After;
 import org.junit.Test;
 
+import java.lang.reflect.Field;
 import java.sql.SQLException;
 
 import static org.junit.Assert.assertFalse;
@@ -30,8 +31,11 @@ import static org.junit.Assert.assertTrue;
 public class ExecutorExceptionHandlerTest {
     
     @After
+    @SneakyThrows
     public void tearDown() {
-        ExecutorTestUtil.clear();
+        Field field = ExecutorExceptionHandler.class.getDeclaredField("IS_EXCEPTION_THROWN");
+        field.setAccessible(true);
+        ((ThreadLocal) field.get(ExecutorExceptionHandler.class)).remove();
     }
     
     @Test(expected = SQLException.class)

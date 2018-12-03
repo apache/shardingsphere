@@ -22,7 +22,7 @@ import io.shardingsphere.core.constant.SagaRecoveryPolicy;
 import io.shardingsphere.core.rule.DataSourceParameter;
 import io.shardingsphere.core.yaml.masterslave.YamlMasterSlaveRuleConfiguration;
 import io.shardingsphere.core.yaml.sharding.YamlShardingRuleConfiguration;
-import io.shardingsphere.orchestration.internal.yaml.YamlOrchestrationConfiguration;
+import io.shardingsphere.orchestration.yaml.YamlOrchestrationConfiguration;
 import io.shardingsphere.shardingproxy.config.yaml.YamlProxyRuleConfiguration;
 import org.junit.Test;
 

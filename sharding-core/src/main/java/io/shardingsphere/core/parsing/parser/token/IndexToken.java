@@ -27,19 +27,22 @@ import lombok.ToString;
  *
  * @author caohao
  */
+@Getter
+@Setter
 @ToString
-
 public final class IndexToken extends SQLToken {
     
-    @Getter
     private final String originalLiterals;
     
-    @Setter
     private String tableName;
     
-    public IndexToken(final int beginPosition, final String originalLiterals, final String tableName) {
+    public IndexToken(final int beginPosition, final String originalLiterals) {
         super(beginPosition);
         this.originalLiterals = originalLiterals;
+    }
+    
+    public IndexToken(final int beginPosition, final String originalLiterals, final String tableName) {
+        this(beginPosition, originalLiterals);
         this.tableName = tableName;
     }
     

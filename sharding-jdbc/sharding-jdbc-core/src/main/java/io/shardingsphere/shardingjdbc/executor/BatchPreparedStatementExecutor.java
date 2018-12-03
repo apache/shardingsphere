@@ -109,7 +109,6 @@ public final class BatchPreparedStatementExecutor extends AbstractStatementExecu
      * @param routeResult route result
      */
     public void addBatchForRouteUnits(final SQLRouteResult routeResult) {
-        setSqlType(routeResult.getSqlStatement().getType());
         handleOldRouteUnits(createBatchRouteUnits(routeResult.getRouteUnits()));
         handleNewRouteUnits(createBatchRouteUnits(routeResult.getRouteUnits()));
         batchCount++;

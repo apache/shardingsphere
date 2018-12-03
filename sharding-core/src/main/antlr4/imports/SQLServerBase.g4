@@ -4,7 +4,7 @@ import SQLServerKeyword, Keyword, Symbol, BaseRule, DataType;
 
 ID
     : (LBT_? DQ_? [a-zA-Z_$#][a-zA-Z0-9_$#]* DQ_? RBT_? DOT)* DOT* (LBT_? DQ_? [a-zA-Z_$#][a-zA-Z0-9_$#]* DQ_? RBT_?)
-    | [a-zA-Z0-9_$]+ DOT ASTERISK
+    | [a-zA-Z0-9_$]+ DOT_ASTERISK
     ;
 
 dataType

@@ -28,6 +28,7 @@ import io.shardingsphere.core.parsing.parser.context.limit.Limit;
 import io.shardingsphere.core.parsing.parser.sql.SQLStatement;
 import io.shardingsphere.core.parsing.parser.sql.dml.insert.InsertStatement;
 import io.shardingsphere.core.parsing.parser.sql.dql.select.SelectStatement;
+import io.shardingsphere.core.parsing.parser.token.AggregationDistinctToken;
 import io.shardingsphere.core.parsing.parser.token.IndexToken;
 import io.shardingsphere.core.parsing.parser.token.InsertColumnToken;
 import io.shardingsphere.core.parsing.parser.token.InsertValuesToken;
@@ -39,6 +40,7 @@ import io.shardingsphere.core.parsing.parser.token.RowCountToken;
 import io.shardingsphere.core.parsing.parser.token.SQLToken;
 import io.shardingsphere.core.parsing.parser.token.SchemaToken;
 import io.shardingsphere.core.parsing.parser.token.TableToken;
+import io.shardingsphere.core.rewrite.placeholder.AggregationDistinctPlaceholder;
 import io.shardingsphere.core.rewrite.placeholder.IndexPlaceholder;
 import io.shardingsphere.core.rewrite.placeholder.InsertValuesPlaceholder;
 import io.shardingsphere.core.rewrite.placeholder.SchemaPlaceholder;
@@ -135,6 +137,8 @@ public final class SQLRewriteEngine {
                 appendOrderByToken(result, count);
             } else if (each instanceof InsertColumnToken) {
                 appendSymbolToken(result, (InsertColumnToken) each, count);
+            } else if (each instanceof AggregationDistinctToken) {
+                appendDistinctPlaceholder(result, (AggregationDistinctToken) each, count);
             } else if (each instanceof RemoveToken) {
                 appendRest(result, count, ((RemoveToken) each).getEndPosition());
             }
@@ -226,6 +230,12 @@ public final class SQLRewriteEngine {
     private void appendSymbolToken(final SQLBuilder sqlBuilder, final InsertColumnToken insertColumnToken, final int count) {
         sqlBuilder.appendLiterals(insertColumnToken.getColumnName());
         appendRest(sqlBuilder, count, insertColumnToken.getBeginPosition());
+    }
+    
+    private void appendDistinctPlaceholder(final SQLBuilder sqlBuilder, final AggregationDistinctToken distinctToken, final int count) {
+        sqlBuilder.appendPlaceholder(new AggregationDistinctPlaceholder(distinctToken.getColumnName().toLowerCase(), ""));
+        int beginPosition = distinctToken.getBeginPosition() + distinctToken.getOriginalLiterals().length();
+        appendRest(sqlBuilder, count, beginPosition);
     }
     
     private void appendRest(final SQLBuilder sqlBuilder, final int count, final int beginPosition) {

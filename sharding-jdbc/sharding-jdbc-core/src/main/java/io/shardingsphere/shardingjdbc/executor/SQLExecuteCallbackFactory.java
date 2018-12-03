@@ -22,32 +22,32 @@ import io.shardingsphere.core.constant.SQLType;
 import io.shardingsphere.core.constant.transaction.TransactionType;
 import io.shardingsphere.core.executor.StatementExecuteUnit;
 import io.shardingsphere.core.executor.sql.execute.SQLExecuteCallback;
-import io.shardingsphere.shardingjdbc.transaction.TransactionTypeHolder;
+import io.shardingsphere.core.transaction.TransactionTypeHolder;
 import io.shardingsphere.transaction.executor.SagaSQLExecuteCallback;
 
 import java.sql.PreparedStatement;
 import java.sql.SQLException;
 
 /**
- * Sql Execute callback factory.
+ * SQL execute callback factory.
  *
  * @author yangyi
  */
 final class SQLExecuteCallbackFactory {
     
     /**
-     * Get update SQLExecuteCallBack for PreparedStatementExecutor.
+     * Get update callback.
      *
-     * @param databaseType      types of database
-     * @param sqlType           types of sql
+     * @param databaseType database type
      * @param isExceptionThrown is exception thrown
-     * @return update SQLExecuteCallBack
+     * @return update callback
      */
-    static SQLExecuteCallback<Integer> getPreparedUpdateSQLExecuteCallback(final DatabaseType databaseType, final SQLType sqlType, final boolean isExceptionThrown) {
+    public static SQLExecuteCallback<Integer> getPreparedUpdateSQLExecuteCallback(final DatabaseType databaseType, final boolean isExceptionThrown) {
         if (isSagaTransaction(sqlType)) {
             return getSagaUpdateSQLExecuteCallback(databaseType, sqlType, isExceptionThrown);
         }
-        return new SQLExecuteCallback<Integer>(databaseType, sqlType, isExceptionThrown) {
+        return new SQLExecuteCallback<Integer>(databaseType, isExceptionThrown) {
+            
             @Override
             protected Integer executeSQL(final StatementExecuteUnit statementExecuteUnit) throws SQLException {
                 return ((PreparedStatement) statementExecuteUnit.getStatement()).executeUpdate();
@@ -56,18 +56,17 @@ final class SQLExecuteCallbackFactory {
     }
     
     /**
-     * Get single SQLExecuteCallBack for PreparedStatementExecutor.
+     * Get execute callback.
      *
-     * @param databaseType      types of database
-     * @param sqlType           types of sql
+     * @param databaseType database type
      * @param isExceptionThrown is exception thrown
-     * @return single SQLExecuteCallBack
+     * @return execute callback
      */
-    static SQLExecuteCallback<Boolean> getPreparedSQLExecuteCallback(final DatabaseType databaseType, final SQLType sqlType, final boolean isExceptionThrown) {
+    public static SQLExecuteCallback<Boolean> getPreparedSQLExecuteCallback(final DatabaseType databaseType, final boolean isExceptionThrown) {
         if (isSagaTransaction(sqlType)) {
             return getSagaSQLExecuteCallback(databaseType, sqlType, isExceptionThrown);
         }
-        return new SQLExecuteCallback<Boolean>(databaseType, sqlType, isExceptionThrown) {
+        return new SQLExecuteCallback<Boolean>(databaseType, isExceptionThrown) {
             
             @Override
             protected Boolean executeSQL(final StatementExecuteUnit statementExecuteUnit) throws SQLException {

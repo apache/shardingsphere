@@ -22,9 +22,6 @@ import org.junit.runners.Suite;
 import org.junit.runners.Suite.SuiteClasses;
 
 @RunWith(Suite.class)
-@SuiteClasses({
-        EventBusInstanceTest.class,
-        DataSourceUtilTest.class
-    })
+@SuiteClasses(DataSourceUtilTest.class)
 public final class AllUtilTests {
 }

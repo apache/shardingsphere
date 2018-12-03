@@ -19,9 +19,9 @@ package io.shardingsphere.shardingjdbc.orchestration.internal.datasource;
 
 import com.google.common.eventbus.Subscribe;
 import io.shardingsphere.core.constant.ShardingConstant;
-import io.shardingsphere.core.event.ShardingEventBusInstance;
-import io.shardingsphere.orchestration.internal.OrchestrationFacade;
-import io.shardingsphere.orchestration.internal.state.event.CircuitStateEventBusEvent;
+import io.shardingsphere.orchestration.internal.eventbus.ShardingOrchestrationEventBus;
+import io.shardingsphere.orchestration.internal.registry.ShardingOrchestrationFacade;
+import io.shardingsphere.orchestration.internal.registry.state.event.CircuitStateChangedEvent;
 import io.shardingsphere.shardingjdbc.jdbc.adapter.AbstractDataSourceAdapter;
 import io.shardingsphere.shardingjdbc.orchestration.internal.util.DataSourceConverter;
 import lombok.AccessLevel;
@@ -39,30 +39,30 @@ import java.util.Map;
 @Getter(AccessLevel.PROTECTED)
 public abstract class AbstractOrchestrationDataSource extends AbstractDataSourceAdapter {
     
-    private final OrchestrationFacade orchestrationFacade;
+    private final ShardingOrchestrationFacade shardingOrchestrationFacade;
     
     private boolean isCircuitBreak;
     
-    public AbstractOrchestrationDataSource(final OrchestrationFacade orchestrationFacade, final Map<String, DataSource> dataSourceMap) throws SQLException {
+    public AbstractOrchestrationDataSource(final ShardingOrchestrationFacade shardingOrchestrationFacade, final Map<String, DataSource> dataSourceMap) throws SQLException {
         super(dataSourceMap);
-        this.orchestrationFacade = orchestrationFacade;
-        ShardingEventBusInstance.getInstance().register(this);
+        this.shardingOrchestrationFacade = shardingOrchestrationFacade;
+        ShardingOrchestrationEventBus.getInstance().register(this);
     }
     
-    public AbstractOrchestrationDataSource(final OrchestrationFacade orchestrationFacade) throws SQLException {
-        super(DataSourceConverter.getDataSourceMap(orchestrationFacade.getConfigService().loadDataSourceConfigurations(ShardingConstant.LOGIC_SCHEMA_NAME)));
-        this.orchestrationFacade = orchestrationFacade;
-        ShardingEventBusInstance.getInstance().register(this);
+    public AbstractOrchestrationDataSource(final ShardingOrchestrationFacade shardingOrchestrationFacade) throws SQLException {
+        super(DataSourceConverter.getDataSourceMap(shardingOrchestrationFacade.getConfigService().loadDataSourceConfigurations(ShardingConstant.LOGIC_SCHEMA_NAME)));
+        this.shardingOrchestrationFacade = shardingOrchestrationFacade;
+        ShardingOrchestrationEventBus.getInstance().register(this);
     }
     
     /**
      /**
-     * Renew circuit breaker dataSource names.
+     * Renew circuit breaker data source names.
      *
-     * @param circuitStateEventBusEvent jdbc circuit event bus event
+     * @param circuitStateChangedEvent circuit state changed event
      */
     @Subscribe
-    public void renew(final CircuitStateEventBusEvent circuitStateEventBusEvent) {
-        isCircuitBreak = circuitStateEventBusEvent.isCircuitBreak();
+    public final synchronized void renew(final CircuitStateChangedEvent circuitStateChangedEvent) {
+        isCircuitBreak = circuitStateChangedEvent.isCircuitBreak();
     }
 }

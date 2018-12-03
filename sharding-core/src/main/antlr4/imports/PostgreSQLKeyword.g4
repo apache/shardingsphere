@@ -178,6 +178,10 @@ FORCE
     : F O R C E
     ;
 
+FUNCTIONS
+    : F U N C T I O N S
+    ;
+
 FULL
     : F U L L
     ;
@@ -390,6 +394,10 @@ PROCEDURE
     : P R O C E D U R E
     ;
 
+PROCEDURES
+    : P R O C E D U R E S
+    ;
+
 PUBLIC
     : P U B L I C
     ;
@@ -434,6 +442,10 @@ ROUTINE
     : R O U T I N E
     ;
 
+ROUTINES
+    : R O U T I N E S
+    ;
+
 ROWS
     : R O W S
     ;
@@ -476,6 +488,10 @@ SESSION
 
 SESSION_USER
     : S E S S I O N UL_ U S E R
+    ;
+
+SHOW
+    : S H O W
     ;
 
 SIMPLE
