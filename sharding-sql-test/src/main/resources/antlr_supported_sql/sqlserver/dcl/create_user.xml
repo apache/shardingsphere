@@ -4,7 +4,6 @@
     <sql-case id="create_user_with_login" value="CREATE USER user1 FROM LOGIN login1" />
     <sql-case id="create_user_with_schema" value="CREATE USER user1 WITH DEFAULT_SCHEMA = schema" />
     <sql-case id="create_user_with_password" value="CREATE USER user1 WITH PASSWORD = 'password'" />
-    <sql-case id="create_login_with_hashed_password" value="CREATE USER user1 WITH PASSWORD = 0x01000CF35567C60BFB41EBDE4CF700A985A13D773D6B45B90900 HASHED" />
     <sql-case id="create_user_with_no_login" value="CREATE USER user1 WITHOUT LOGIN" />
     <!--<sql-case id="create_login_with_windows" value="CREATE LOGIN [domain\login1]" />-->
     <sql-case id="create_user_with_certificate" value="CREATE USER user1 FROM CERTIFICATE certificate" />

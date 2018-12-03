@@ -1,7 +1,6 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <sql-cases db-types="SQLServer" namespace="sqlserver.dcl.alterUser">
     <sql-case id="alter_user_set_password" value="ALTER USER user1 WITH PASSWORD = 'password'" />
-    <sql-case id="alter_user_set_hashed_password" value="ALTER USER user1 WITH PASSWORD = 0x01000CF35567C60BFB41EBDE4CF700A985A13D773D6B45B90900 HASHED" />
     <sql-case id="alter_user_set_login" value="ALTER USER user1 WITH LOGIN = login1" />
     <sql-case id="alter_user_set_default_schema" value="ALTER USER user1 WITH DEFAULT_SCHEMA = schema" />
     <sql-case id="alter_user_rename" value="ALTER USER user1_bak WITH NAME = user1" />

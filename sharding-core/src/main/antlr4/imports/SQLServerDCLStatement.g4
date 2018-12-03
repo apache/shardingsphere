@@ -67,7 +67,7 @@ createUserBody1
 
 createUserBody2
     : windowsPrincipal (WITH optionsLists)?
-    | userName WITH PASSWORD EQ_ (STRING | ID HASHED) (COMMA optionsList)*
+    | userName WITH PASSWORD EQ_ STRING (COMMA optionsList)*
     | ID FROM EXTERNAL PROVIDER
     ;
     
