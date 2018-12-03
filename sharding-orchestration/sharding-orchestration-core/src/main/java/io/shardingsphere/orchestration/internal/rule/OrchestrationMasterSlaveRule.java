@@ -53,6 +53,9 @@ public final class OrchestrationMasterSlaveRule extends MasterSlaveRule {
      */
     @Override
     public Collection<String> getSlaveDataSourceNames() {
+        if (disabledDataSourceNames.isEmpty()) {
+            return super.getSlaveDataSourceNames();
+        }
         Collection<String> result = new LinkedList<>(super.getSlaveDataSourceNames());
         result.removeAll(disabledDataSourceNames);
         return result;
