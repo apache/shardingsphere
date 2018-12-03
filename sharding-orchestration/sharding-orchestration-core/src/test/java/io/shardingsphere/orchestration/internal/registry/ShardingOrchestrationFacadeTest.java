@@ -27,13 +27,13 @@ import io.shardingsphere.orchestration.internal.registry.state.service.DataSourc
 import io.shardingsphere.orchestration.internal.registry.state.service.InstanceStateService;
 import io.shardingsphere.orchestration.reg.api.RegistryCenter;
 import io.shardingsphere.orchestration.reg.api.RegistryCenterConfiguration;
+import io.shardingsphere.orchestration.util.FieldUtil;
 import org.junit.Before;
 import org.junit.Test;
 import org.junit.runner.RunWith;
 import org.mockito.Mock;
 import org.mockito.junit.MockitoJUnitRunner;
 
-import java.lang.reflect.Field;
 import java.util.Arrays;
 import java.util.Collections;
 import java.util.Map;
@@ -64,19 +64,13 @@ public final class ShardingOrchestrationFacadeTest {
     private ShardingOrchestrationListenerManager listenerManager;
     
     @Before
-    public void setUp() throws ReflectiveOperationException {
+    public void setUp() {
         shardingOrchestrationFacade = new ShardingOrchestrationFacade(new OrchestrationConfiguration("test", new RegistryCenterConfiguration(), true), Arrays.asList("sharding_db", "masterslave_db"));
-        setField(shardingOrchestrationFacade, "regCenter", regCenter);
-        setField(shardingOrchestrationFacade, "configService", configService);
-        setField(shardingOrchestrationFacade, "instanceStateService", instanceStateService);
-        setField(shardingOrchestrationFacade, "dataSourceService", dataSourceService);
-        setField(shardingOrchestrationFacade, "listenerManager", listenerManager);
-    }
-    
-    private void setField(final Object target, final String fieldName, final Object fieldValue) throws ReflectiveOperationException {
-        Field field = target.getClass().getDeclaredField(fieldName);
-        field.setAccessible(true);
-        field.set(target, fieldValue);
+        FieldUtil.setField(shardingOrchestrationFacade, "regCenter", regCenter);
+        FieldUtil.setField(shardingOrchestrationFacade, "configService", configService);
+        FieldUtil.setField(shardingOrchestrationFacade, "instanceStateService", instanceStateService);
+        FieldUtil.setField(shardingOrchestrationFacade, "dataSourceService", dataSourceService);
+        FieldUtil.setField(shardingOrchestrationFacade, "listenerManager", listenerManager);
     }
     
     @Test

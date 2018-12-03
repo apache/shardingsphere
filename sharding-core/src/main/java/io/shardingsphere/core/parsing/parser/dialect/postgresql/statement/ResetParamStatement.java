@@ -15,24 +15,14 @@
  * </p>
  */
 
-package io.shardingsphere.orchestration.internal.registry.config.event;
+package io.shardingsphere.core.parsing.parser.dialect.postgresql.statement;
 
-import io.shardingsphere.api.config.MasterSlaveRuleConfiguration;
-import io.shardingsphere.orchestration.internal.registry.listener.ShardingOrchestrationEvent;
-import lombok.Getter;
-import lombok.RequiredArgsConstructor;
+import io.shardingsphere.core.parsing.parser.sql.dal.DALStatement;
 
 /**
- * Master slave rule changed event.
+ * Reset param statement.
  *
- * @author zhangliang
- * @author panjuan
+ * @author loxp
  */
-@RequiredArgsConstructor
-@Getter
-public final class MasterSlaveRuleChangedEvent implements ShardingOrchestrationEvent {
-    
-    private final String shardingSchemaName;
-    
-    private final MasterSlaveRuleConfiguration masterSlaveRuleConfiguration;
+public class ResetParamStatement extends DALStatement {
 }

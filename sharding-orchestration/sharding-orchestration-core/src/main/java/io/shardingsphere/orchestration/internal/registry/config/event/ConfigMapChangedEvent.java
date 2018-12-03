@@ -17,22 +17,20 @@
 
 package io.shardingsphere.orchestration.internal.registry.config.event;
 
-import io.shardingsphere.api.config.MasterSlaveRuleConfiguration;
 import io.shardingsphere.orchestration.internal.registry.listener.ShardingOrchestrationEvent;
 import lombok.Getter;
 import lombok.RequiredArgsConstructor;
 
+import java.util.Map;
+
 /**
- * Master slave rule changed event.
+ * Config map changed event.
  *
  * @author zhangliang
- * @author panjuan
  */
 @RequiredArgsConstructor
 @Getter
-public final class MasterSlaveRuleChangedEvent implements ShardingOrchestrationEvent {
+public final class ConfigMapChangedEvent implements ShardingOrchestrationEvent {
     
-    private final String shardingSchemaName;
-    
-    private final MasterSlaveRuleConfiguration masterSlaveRuleConfiguration;
+    private final Map<String, Object> configMap;
 }

@@ -17,7 +17,7 @@
 
 package io.shardingsphere.orchestration.internal.registry;
 
-import io.shardingsphere.orchestration.fixture.SecondTestRegistryCenter;
+import io.shardingsphere.orchestration.internal.registry.fixture.SecondTestRegistryCenter;
 import io.shardingsphere.orchestration.reg.api.RegistryCenter;
 import io.shardingsphere.orchestration.reg.api.RegistryCenterConfiguration;
 import org.hamcrest.CoreMatchers;

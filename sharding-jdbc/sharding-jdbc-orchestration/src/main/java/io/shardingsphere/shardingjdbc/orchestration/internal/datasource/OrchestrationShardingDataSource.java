@@ -26,6 +26,7 @@ import io.shardingsphere.core.constant.ShardingConstant;
 import io.shardingsphere.core.rule.ShardingRule;
 import io.shardingsphere.orchestration.config.OrchestrationConfiguration;
 import io.shardingsphere.orchestration.internal.registry.ShardingOrchestrationFacade;
+import io.shardingsphere.orchestration.internal.registry.config.event.ConfigMapChangedEvent;
 import io.shardingsphere.orchestration.internal.registry.config.event.DataSourceChangedEvent;
 import io.shardingsphere.orchestration.internal.registry.config.event.PropertiesChangedEvent;
 import io.shardingsphere.orchestration.internal.registry.config.event.ShardingRuleChangedEvent;
@@ -90,37 +91,48 @@ public class OrchestrationShardingDataSource extends AbstractOrchestrationDataSo
     /**
      * Renew sharding rule.
      *
-     * @param shardingEvent sharding event
+     * @param shardingRuleChangedEvent sharding rule changed event
      */
     @Subscribe
     @SneakyThrows
-    public final void renew(final ShardingRuleChangedEvent shardingEvent) {
-        dataSource = new ShardingDataSource(dataSource.getDataSourceMap(), new ShardingRule(shardingEvent.getShardingRuleConfiguration(),
+    public final synchronized void renew(final ShardingRuleChangedEvent shardingRuleChangedEvent) {
+        dataSource = new ShardingDataSource(dataSource.getDataSourceMap(), new ShardingRule(shardingRuleChangedEvent.getShardingRuleConfiguration(),
                 dataSource.getDataSourceMap().keySet()), ConfigMapContext.getInstance().getConfigMap(), dataSource.getShardingContext().getShardingProperties().getProps());
     }
     
     /**
      * Renew sharding data source.
      *
-     * @param dataSourceEvent data source event
+     * @param dataSourceChangedEvent data source changed event
      */
     @Subscribe
     @SneakyThrows
-    public final void renew(final DataSourceChangedEvent dataSourceEvent) {
+    public final synchronized void renew(final DataSourceChangedEvent dataSourceChangedEvent) {
         dataSource.close();
-        dataSource = new ShardingDataSource(DataSourceConverter.getDataSourceMap(dataSourceEvent.getDataSourceConfigurations()), dataSource.getShardingContext().getShardingRule(),
+        dataSource = new ShardingDataSource(DataSourceConverter.getDataSourceMap(dataSourceChangedEvent.getDataSourceConfigurations()), dataSource.getShardingContext().getShardingRule(),
                 ConfigMapContext.getInstance().getConfigMap(), dataSource.getShardingContext().getShardingProperties().getProps());
     }
     
     /**
      * Renew properties.
      *
-     * @param propertiesEvent properties event
+     * @param propertiesChangedEvent properties changed event
      */
     @SneakyThrows
     @Subscribe
-    public void renew(final PropertiesChangedEvent propertiesEvent) {
+    public final synchronized void renew(final PropertiesChangedEvent propertiesChangedEvent) {
         dataSource = new ShardingDataSource(dataSource.getDataSourceMap(),
-                dataSource.getShardingContext().getShardingRule(), ConfigMapContext.getInstance().getConfigMap(), propertiesEvent.getProps());
+                dataSource.getShardingContext().getShardingRule(), ConfigMapContext.getInstance().getConfigMap(), propertiesChangedEvent.getProps());
+    }
+    
+    /**
+     * Renew config map.
+     *
+     * @param configMapChangedEvent config map changed event
+     */
+    @Subscribe
+    public final synchronized void renew(final ConfigMapChangedEvent configMapChangedEvent) {
+        ConfigMapContext.getInstance().getConfigMap().clear();
+        ConfigMapContext.getInstance().getConfigMap().putAll(configMapChangedEvent.getConfigMap());
     }
 }

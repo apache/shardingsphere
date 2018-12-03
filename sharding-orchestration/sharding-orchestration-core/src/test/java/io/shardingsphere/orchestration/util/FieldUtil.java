@@ -15,24 +15,32 @@
  * </p>
  */
 
-package io.shardingsphere.orchestration.internal.registry.config.event;
+package io.shardingsphere.orchestration.util;
 
-import io.shardingsphere.api.config.MasterSlaveRuleConfiguration;
-import io.shardingsphere.orchestration.internal.registry.listener.ShardingOrchestrationEvent;
-import lombok.Getter;
 import lombok.RequiredArgsConstructor;
+import lombok.SneakyThrows;
+
+import java.lang.reflect.Field;
 
 /**
- * Master slave rule changed event.
+ * Field Utility.
  *
  * @author zhangliang
- * @author panjuan
  */
 @RequiredArgsConstructor
-@Getter
-public final class MasterSlaveRuleChangedEvent implements ShardingOrchestrationEvent {
+public final class FieldUtil {
     
-    private final String shardingSchemaName;
-    
-    private final MasterSlaveRuleConfiguration masterSlaveRuleConfiguration;
+    /**
+     * Set field.
+     * 
+     * @param target target to be settled
+     * @param fieldName field name to be settled
+     * @param fieldValue field value to be settled
+     */
+    @SneakyThrows
+    public static void setField(final Object target, final String fieldName, final Object fieldValue) {
+        Field field = target.getClass().getDeclaredField(fieldName);
+        field.setAccessible(true);
+        field.set(target, fieldValue);
+    }
 }

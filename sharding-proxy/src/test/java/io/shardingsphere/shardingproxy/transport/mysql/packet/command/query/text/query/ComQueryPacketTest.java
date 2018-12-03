@@ -26,7 +26,6 @@ import io.shardingsphere.shardingproxy.backend.BackendHandler;
 import io.shardingsphere.shardingproxy.backend.ResultPacket;
 import io.shardingsphere.shardingproxy.backend.jdbc.connection.BackendConnection;
 import io.shardingsphere.shardingproxy.backend.jdbc.connection.ConnectionStatus;
-import io.shardingsphere.shardingproxy.frontend.common.FrontendHandler;
 import io.shardingsphere.shardingproxy.runtime.GlobalRegistry;
 import io.shardingsphere.shardingproxy.runtime.schema.ShardingSchema;
 import io.shardingsphere.shardingproxy.transport.common.packet.DatabasePacket;
@@ -71,9 +70,6 @@ public final class ComQueryPacketTest {
     private MySQLPacketPayload payload;
     
     private BackendConnection backendConnection = new BackendConnection(TransactionType.LOCAL);
-    
-    @Mock
-    private FrontendHandler frontendHandler;
     
     @BeforeClass
     public static void init() {
@@ -132,7 +128,7 @@ public final class ComQueryPacketTest {
         when(backendHandler.execute()).thenReturn(new CommandResponsePackets(expectedFieldCountPacket));
         when(backendHandler.next()).thenReturn(true, false);
         when(backendHandler.getResultValue()).thenReturn(new ResultPacket(2, Collections.<Object>singletonList(99999L), 1, Collections.singletonList(ColumnType.MYSQL_TYPE_LONG)));
-        ComQueryPacket packet = new ComQueryPacket(1, 1000, payload, backendConnection, frontendHandler);
+        ComQueryPacket packet = new ComQueryPacket(1, payload, backendConnection);
         setBackendHandler(packet, backendHandler);
         Optional<CommandResponsePackets> actual = packet.execute();
         assertTrue(actual.isPresent());
@@ -154,7 +150,7 @@ public final class ComQueryPacketTest {
     @Test
     public void assertExecuteTCLWithLocalTransaction() {
         when(payload.readStringEOF()).thenReturn("COMMIT");
-        ComQueryPacket packet = new ComQueryPacket(1, 1000, payload, backendConnection, frontendHandler);
+        ComQueryPacket packet = new ComQueryPacket(1, payload, backendConnection);
         backendConnection.getStateHandler().getAndSetStatus(ConnectionStatus.TRANSACTION);
         Optional<CommandResponsePackets> actual = packet.execute();
         assertTrue(actual.isPresent());
@@ -165,7 +161,7 @@ public final class ComQueryPacketTest {
     public void assertExecuteTCLWithXATransaction() {
         backendConnection.setTransactionType(TransactionType.XA);
         when(payload.readStringEOF()).thenReturn("ROLLBACK");
-        ComQueryPacket packet = new ComQueryPacket(1, 1000, payload, backendConnection, frontendHandler);
+        ComQueryPacket packet = new ComQueryPacket(1, payload, backendConnection);
         backendConnection.getStateHandler().getAndSetStatus(ConnectionStatus.TRANSACTION);
         Optional<CommandResponsePackets> actual = packet.execute();
         assertTrue(actual.isPresent());
@@ -177,7 +173,7 @@ public final class ComQueryPacketTest {
     public void assertExecuteRollbackWithXATransaction() {
         backendConnection.setTransactionType(TransactionType.XA);
         when(payload.readStringEOF()).thenReturn("COMMIT");
-        ComQueryPacket packet = new ComQueryPacket(1, 1000, payload, backendConnection, frontendHandler);
+        ComQueryPacket packet = new ComQueryPacket(1, payload, backendConnection);
         backendConnection.getStateHandler().getAndSetStatus(ConnectionStatus.TRANSACTION);
         Optional<CommandResponsePackets> actual = packet.execute();
         assertTrue(actual.isPresent());

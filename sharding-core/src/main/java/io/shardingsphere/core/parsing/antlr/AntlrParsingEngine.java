@@ -17,9 +17,6 @@
 
 package io.shardingsphere.core.parsing.antlr;
 
-import org.antlr.v4.runtime.ParserRuleContext;
-import org.antlr.v4.runtime.tree.ErrorNodeImpl;
-
 import io.shardingsphere.core.constant.DatabaseType;
 import io.shardingsphere.core.metadata.table.ShardingTableMetaData;
 import io.shardingsphere.core.parsing.antlr.ast.SQLASTParserFactory;
@@ -27,34 +24,32 @@ import io.shardingsphere.core.parsing.antlr.extractor.statement.SQLStatementExtr
 import io.shardingsphere.core.parsing.antlr.extractor.statement.SQLStatementExtractorFactory;
 import io.shardingsphere.core.parsing.antlr.extractor.statement.SQLStatementType;
 import io.shardingsphere.core.parsing.parser.exception.SQLParsingUnsupportedException;
+import io.shardingsphere.core.parsing.parser.sql.SQLParser;
 import io.shardingsphere.core.parsing.parser.sql.SQLStatement;
 import io.shardingsphere.core.rule.ShardingRule;
-import lombok.AccessLevel;
-import lombok.NoArgsConstructor;
+import lombok.AllArgsConstructor;
+import org.antlr.v4.runtime.ParserRuleContext;
 
 /**
  * Parsing engine for Antlr.
  *
  * @author duhongjun
  */
-@NoArgsConstructor(access = AccessLevel.PRIVATE)
-public final class AntlrParsingEngine {
+@AllArgsConstructor
+public final class AntlrParsingEngine implements SQLParser {
     
-    /**
-     * Parse SQL.
-     *
-     * @param dbType database type
-     * @param sql SQL
-     * @param shardingRule databases and tables sharding rule
-     * @param shardingTableMetaData sharding metadata
-     * @return SQL statement
-     */
-    public static SQLStatement parse(final DatabaseType dbType, final String sql, final ShardingRule shardingRule, final ShardingTableMetaData shardingTableMetaData) {
+    private DatabaseType dbType;
+    
+    private String sql;
+    
+    private ShardingRule shardingRule;
+    
+    private ShardingTableMetaData shardingTableMetaData;
+    
+    @Override
+    public SQLStatement parse() {
         ParserRuleContext rootContext = SQLASTParserFactory.newInstance(dbType, sql).execute();
         if (null == rootContext) {
-            throw new SQLParsingUnsupportedException(String.format("Unsupported SQL of `%s`", sql));
-        }
-        if (rootContext.getChild(0) instanceof ErrorNodeImpl) {
             throw new SQLParsingUnsupportedException(String.format("Unsupported SQL of `%s`", sql));
         }
         ParserRuleContext parserRuleContext = (ParserRuleContext) rootContext.getChild(0);
@@ -62,6 +57,6 @@ public final class AntlrParsingEngine {
         if (null == extractor) {
             throw new SQLParsingUnsupportedException(String.format("Unsupported SQL statement of `%s`", parserRuleContext.getClass().getSimpleName()));
         }
-        return extractor.extract(sql, parserRuleContext, shardingRule, shardingTableMetaData);
+        return extractor.extract(parserRuleContext, shardingTableMetaData);
     }
 }

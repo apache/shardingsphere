@@ -17,9 +17,15 @@
 
 package io.shardingsphere.orchestration.internal.registry.state.service;
 
+import com.google.common.collect.Lists;
+import io.shardingsphere.api.config.MasterSlaveRuleConfiguration;
 import io.shardingsphere.api.config.ShardingRuleConfiguration;
+import io.shardingsphere.api.config.TableRuleConfiguration;
 import io.shardingsphere.core.config.DataSourceConfiguration;
+import io.shardingsphere.orchestration.internal.registry.config.service.ConfigurationService;
+import io.shardingsphere.orchestration.internal.registry.state.schema.OrchestrationShardingSchemaGroup;
 import io.shardingsphere.orchestration.reg.api.RegistryCenter;
+import io.shardingsphere.orchestration.util.FieldUtil;
 import org.junit.Before;
 import org.junit.Test;
 import org.junit.runner.RunWith;
@@ -28,48 +34,32 @@ import org.mockito.junit.MockitoJUnitRunner;
 
 import java.util.Arrays;
 import java.util.Collections;
+import java.util.LinkedHashMap;
 import java.util.Map;
 
+import static org.hamcrest.CoreMatchers.hasItems;
 import static org.hamcrest.CoreMatchers.is;
-import static org.junit.Assert.assertFalse;
 import static org.junit.Assert.assertThat;
 import static org.junit.Assert.assertTrue;
+import static org.mockito.Mockito.mock;
 import static org.mockito.Mockito.verify;
 import static org.mockito.Mockito.when;
 
 @RunWith(MockitoJUnitRunner.class)
 public final class DataSourceServiceTest {
     
-    private static final String DATA_SOURCE_YAML =
-            "ds_0: !!io.shardingsphere.orchestration.yaml.YamlDataSourceConfiguration\n"
-                    + "  dataSourceClassName: org.apache.commons.dbcp2.BasicDataSource\n" + "  properties:\n"
-                    + "    driverClassName: com.mysql.jdbc.Driver\n" + "    url: jdbc:mysql://localhost:3306/ds_0\n" + "    username: root\n" + "    password: root\n"
-                    + "ds_1: !!io.shardingsphere.orchestration.yaml.YamlDataSourceConfiguration\n"
-                    + "  dataSourceClassName: org.apache.commons.dbcp2.BasicDataSource\n" + "  properties:\n"
-                    + "    driverClassName: com.mysql.jdbc.Driver\n" + "    url: jdbc:mysql://localhost:3306/ds_1\n" + "    username: root\n" + "    password: root\n"
-                    + "ds_0_slave: !!io.shardingsphere.orchestration.yaml.YamlDataSourceConfiguration\n"
-                    + "  dataSourceClassName: org.apache.commons.dbcp2.BasicDataSource\n" + "  properties:\n"
-                    + "    driverClassName: com.mysql.jdbc.Driver\n" + "    url: jdbc:mysql://localhost:3306/ds_0_slave\n" + "    username: root\n" + "    password: root\n"
-                    + "ds_1_slave: !!io.shardingsphere.orchestration.yaml.YamlDataSourceConfiguration\n"
-                    + "  dataSourceClassName: org.apache.commons.dbcp2.BasicDataSource\n" + "  properties:\n"
-                    + "    driverClassName: com.mysql.jdbc.Driver\n" + "    url: jdbc:mysql://localhost:3306/ds_1_slave\n" + "    username: root\n" + "    password: root\n";
-    
-    private static final String SHARDING_MASTER_SLAVE_RULE_YAML = "tables:\n" + "  t_order: \n" + "    actualDataNodes: ds_ms_${0..1}.t_order_${0..1}\n" + "    databaseStrategy: \n"
-            + "      inline:\n" + "        shardingColumn: user_id\n" + "        algorithmExpression: ds_ms_${user_id % 2}\n" + "    tableStrategy: \n" + "      inline:\n"
-            + "        shardingColumn: order_id\n" + "        algorithmExpression: t_order_${order_id % 2}\n" + "    keyGeneratorColumnName: order_id\n"
-            + "masterSlaveRules:\n" + "  ds_ms_0:\n" + "    masterDataSourceName: ds_0\n" + "    slaveDataSourceNames:\n"
-            + "      - ds_0_slave\n" + "  ds_ms_1:\n" + "    masterDataSourceName: ds_1\n" + "    slaveDataSourceNames:\n" + "      - ds_1_slave";
-    
-    private static final String MASTER_SLAVE_RULE_YAML = "masterDataSourceName: ds_0\n" + "name: ds_ms\n" + "slaveDataSourceNames:\n" + "- ds_0_slave\n";
-    
     @Mock
     private RegistryCenter regCenter;
+    
+    @Mock
+    private ConfigurationService configService;
     
     private DataSourceService dataSourceService;
     
     @Before
     public void setUp() {
         dataSourceService = new DataSourceService("test", regCenter);
+        FieldUtil.setField(dataSourceService, "configService", configService);
     }
     
     @Test
@@ -79,59 +69,55 @@ public final class DataSourceServiceTest {
     }
     
     @Test
-    public void assertGetAvailableDataSourceConfigurationsWithDisabledDataSources() {
-        when(regCenter.getChildrenKeys("/test/config/schema")).thenReturn(Arrays.asList("sharding_db", "logic_db"));
-        when(regCenter.getDirectly("/test/config/schema/sharding_db/rule")).thenReturn(SHARDING_MASTER_SLAVE_RULE_YAML);
-        when(regCenter.getDirectly("/test/config/schema/sharding_db/datasource")).thenReturn(DATA_SOURCE_YAML);
-        when(regCenter.getDirectly("/test/config/schema/logic_db/rule")).thenReturn(SHARDING_MASTER_SLAVE_RULE_YAML);
-        when(regCenter.getChildrenKeys("/test/state/datasources")).thenReturn(Arrays.asList("sharding_db.ds_0_slave", "ds_1_slave", "sharding_db.ds_0"));
-        when(regCenter.get("/test/state/datasources/sharding_db.ds_0_slave")).thenReturn("disabled");
-        when(regCenter.get("/test/state/datasources/ds_1_slave")).thenReturn("disabled");
-        Map<String, DataSourceConfiguration> availableDataSourceConfigs = dataSourceService.getAvailableDataSourceConfigurations("sharding_db");
-        assertThat(availableDataSourceConfigs.size(), is(3));
+    public void assertGetAvailableDataSourceConfigurations() {
+        Map<String, DataSourceConfiguration> dataSourceConfigurations = new LinkedHashMap<>(2, 1);
+        DataSourceConfiguration masterDataSourceConfiguration = mock(DataSourceConfiguration.class);
+        dataSourceConfigurations.put("master_ds", masterDataSourceConfiguration);
+        DataSourceConfiguration slaveDataSourceConfiguration0 = mock(DataSourceConfiguration.class);
+        dataSourceConfigurations.put("slave_ds_0", slaveDataSourceConfiguration0);
+        DataSourceConfiguration slaveDataSourceConfiguration1 = mock(DataSourceConfiguration.class);
+        dataSourceConfigurations.put("slave_ds_1", slaveDataSourceConfiguration1);
+        when(configService.loadDataSourceConfigurations("sharding_schema")).thenReturn(dataSourceConfigurations);
+        mockDisabledSlaveSchemaGroup();
+        Map<String, DataSourceConfiguration> actual = dataSourceService.getAvailableDataSourceConfigurations("sharding_schema");
+        assertThat(actual.size(), is(2));
+        assertThat(actual.get("master_ds"), is(masterDataSourceConfiguration));
+        assertThat(actual.get("slave_ds_1"), is(slaveDataSourceConfiguration1));
     }
     
     @Test
-    public void assertGetAvailableDataSourceConfigurationsWithoutDisabledDataSources() {
-        when(regCenter.getChildrenKeys("/test/config/schema")).thenReturn(Collections.singletonList("sharding_db"));
-        when(regCenter.getDirectly("/test/config/schema/sharding_db/rule")).thenReturn(SHARDING_MASTER_SLAVE_RULE_YAML);
-        when(regCenter.getDirectly("/test/config/schema/sharding_db/datasource")).thenReturn(DATA_SOURCE_YAML);
-        when(regCenter.getChildrenKeys("/test/state/datasources")).thenReturn(Collections.<String>emptyList());
-        Map<String, DataSourceConfiguration> availableDataSourceConfigs = dataSourceService.getAvailableDataSourceConfigurations("sharding_db");
-        assertThat(availableDataSourceConfigs.size(), is(4));
+    public void assertGetAvailableShardingRuleConfiguration() {
+        ShardingRuleConfiguration shardingRuleConfiguration = new ShardingRuleConfiguration();
+        shardingRuleConfiguration.getTableRuleConfigs().add(mock(TableRuleConfiguration.class));
+        shardingRuleConfiguration.getMasterSlaveRuleConfigs().add(new MasterSlaveRuleConfiguration("ms_ds", "master_ds", Lists.newArrayList("slave_ds_0", "slave_ds_1"), null));
+        when(configService.loadShardingRuleConfiguration("sharding_schema")).thenReturn(shardingRuleConfiguration);
+        mockDisabledSlaveSchemaGroup();
+        ShardingRuleConfiguration actual = dataSourceService.getAvailableShardingRuleConfiguration("sharding_schema");
+        assertThat(actual.getMasterSlaveRuleConfigs().iterator().next().getSlaveDataSourceNames().size(), is(1));
+        assertThat(actual.getMasterSlaveRuleConfigs().iterator().next().getSlaveDataSourceNames(), hasItems("slave_ds_1"));
     }
     
     @Test
-    public void assertGetAvailableShardingRuleConfigurationWithDisabledDataSources() {
-        when(regCenter.getChildrenKeys("/test/config/schema")).thenReturn(Collections.singletonList("sharding_db"));
-        when(regCenter.getDirectly("/test/config/schema/sharding_db/rule")).thenReturn(SHARDING_MASTER_SLAVE_RULE_YAML);
-        when(regCenter.getChildrenKeys("/test/state/datasources")).thenReturn(Collections.singletonList("sharding_db.ds_0_slave"));
-        when(regCenter.get("/test/state/datasources/sharding_db.ds_0_slave")).thenReturn("disabled");
-        ShardingRuleConfiguration actual = dataSourceService.getAvailableShardingRuleConfiguration("sharding_db");
-        assertFalse(actual.getMasterSlaveRuleConfigs().iterator().next().getSlaveDataSourceNames().contains("ds_0_slave"));
+    public void assertGetAvailableMasterSlaveRuleConfiguration() {
+        MasterSlaveRuleConfiguration masterSlaveRuleConfiguration = new MasterSlaveRuleConfiguration("ms_ds", "master_ds", Lists.newArrayList("slave_ds_0", "slave_ds_1"), null);
+        when(configService.loadMasterSlaveRuleConfiguration("sharding_schema")).thenReturn(masterSlaveRuleConfiguration);
+        mockDisabledSlaveSchemaGroup();
+        MasterSlaveRuleConfiguration actual = dataSourceService.getAvailableMasterSlaveRuleConfiguration("sharding_schema");
+        assertThat(actual.getSlaveDataSourceNames().size(), is(1));
+        assertThat(actual.getSlaveDataSourceNames(), hasItems("slave_ds_1"));
     }
     
     @Test
-    public void assertGetAvailableShardingRuleConfigurationWithoutDisabledDataSources() {
-        when(regCenter.getChildrenKeys("/test/config/schema")).thenReturn(Collections.singletonList("sharding_db"));
-        when(regCenter.getDirectly("/test/config/schema/sharding_db/rule")).thenReturn(SHARDING_MASTER_SLAVE_RULE_YAML);
-        ShardingRuleConfiguration actual = dataSourceService.getAvailableShardingRuleConfiguration("sharding_db");
-        assertTrue(actual.getMasterSlaveRuleConfigs().iterator().next().getSlaveDataSourceNames().contains("ds_0_slave"));
+    public void assertGetDisabledSlaveSchemaGroup() {
+        mockDisabledSlaveSchemaGroup();
+        assertTrue(dataSourceService.getDisabledSlaveSchemaGroup().getDataSourceNames("sharding_schema").contains("slave_ds_0"));
     }
     
-    @Test
-    public void assertGetDisabledOrchestrationShardingSchemaGroupWithDisabledDataSources() {
-        when(regCenter.getChildrenKeys("/test/config/schema")).thenReturn(Collections.singletonList("masterslave_db"));
-        when(regCenter.getDirectly("/test/config/schema/masterslave_db/rule")).thenReturn(MASTER_SLAVE_RULE_YAML);
-        when(regCenter.getChildrenKeys("/test/state/datasources")).thenReturn(Collections.singletonList("masterslave_db.ds_0_slave"));
-        when(regCenter.get("/test/state/datasources/masterslave_db.ds_0_slave")).thenReturn("disabled");
-        assertTrue(dataSourceService.getDisabledSlaveSchemaGroup().getDataSourceNames("masterslave_db").contains("ds_0_slave"));
-    }
-    
-    @Test
-    public void assertGetDisabledOrchestrationShardingSchemaGroupWithoutDisabledDataSources() {
-        when(regCenter.getChildrenKeys("/test/config/schema")).thenReturn(Collections.singletonList("masterslave_db"));
-        when(regCenter.getDirectly("/test/config/schema/masterslave_db/rule")).thenReturn(MASTER_SLAVE_RULE_YAML);
-        assertTrue(dataSourceService.getDisabledSlaveSchemaGroup().getDataSourceNames("masterslave_db").isEmpty());
+    private void mockDisabledSlaveSchemaGroup() {
+        OrchestrationShardingSchemaGroup slaveGroup = mock(OrchestrationShardingSchemaGroup.class);
+        when(slaveGroup.getDataSourceNames("sharding_schema")).thenReturn(Arrays.asList("slave_ds_0", "slave_ds_1"));
+        when(configService.getAllSlaveDataSourceNames()).thenReturn(slaveGroup);
+        when(regCenter.getChildrenKeys("/test/state/datasources")).thenReturn(Collections.singletonList("sharding_schema.slave_ds_0"));
+        when(regCenter.get("/test/state/datasources/sharding_schema.slave_ds_0")).thenReturn("disabled");
     }
 }

@@ -20,12 +20,12 @@ package io.shardingsphere.orchestration.internal.registry.listener;
 import io.shardingsphere.orchestration.internal.registry.config.listener.ConfigurationChangedListenerManager;
 import io.shardingsphere.orchestration.internal.registry.state.listener.StateChangedListenerManager;
 import io.shardingsphere.orchestration.reg.api.RegistryCenter;
+import io.shardingsphere.orchestration.util.FieldUtil;
 import org.junit.Test;
 import org.junit.runner.RunWith;
 import org.mockito.Mock;
 import org.mockito.junit.MockitoJUnitRunner;
 
-import java.lang.reflect.Field;
 import java.util.Collections;
 
 import static org.mockito.Mockito.verify;
@@ -43,18 +43,12 @@ public final class ShardingOrchestrationListenerManagerTest {
     private StateChangedListenerManager stateChangedListenerManager;
     
     @Test
-    public void assertInitListeners() throws ReflectiveOperationException {
+    public void assertInitListeners() {
         ShardingOrchestrationListenerManager actual = new ShardingOrchestrationListenerManager("test", regCenter, Collections.<String>emptyList());
-        setField(actual, "configurationChangedListenerManager", configurationChangedListenerManager);
-        setField(actual, "stateChangedListenerManager", stateChangedListenerManager);
+        FieldUtil.setField(actual, "configurationChangedListenerManager", configurationChangedListenerManager);
+        FieldUtil.setField(actual, "stateChangedListenerManager", stateChangedListenerManager);
         actual.initListeners();
         verify(configurationChangedListenerManager).initListeners();
         verify(stateChangedListenerManager).initListeners();
-    }
-    
-    private void setField(final Object target, final String fieldName, final Object fieldValue) throws ReflectiveOperationException {
-        Field field = ShardingOrchestrationListenerManager.class.getDeclaredField(fieldName);
-        field.setAccessible(true);
-        field.set(target, fieldValue);
     }
 }

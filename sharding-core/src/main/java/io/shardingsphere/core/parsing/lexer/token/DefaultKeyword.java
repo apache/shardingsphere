@@ -156,7 +156,8 @@ public enum DefaultKeyword implements Keyword {
     COMMIT,
     ROLLBACK,
     SAVEPOINT,
-    BEGIN, 
+    BEGIN,
+    TRANSACTION,
     
     /*
     Other Command

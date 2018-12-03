@@ -23,11 +23,11 @@ import com.google.common.eventbus.Subscribe;
 import io.shardingsphere.api.ConfigMapContext;
 import io.shardingsphere.api.config.MasterSlaveRuleConfiguration;
 import io.shardingsphere.api.config.RuleConfiguration;
-import io.shardingsphere.core.config.DataSourceConfiguration;
 import io.shardingsphere.core.constant.ShardingConstant;
 import io.shardingsphere.core.rule.MasterSlaveRule;
 import io.shardingsphere.orchestration.config.OrchestrationConfiguration;
 import io.shardingsphere.orchestration.internal.registry.ShardingOrchestrationFacade;
+import io.shardingsphere.orchestration.internal.registry.config.event.ConfigMapChangedEvent;
 import io.shardingsphere.orchestration.internal.registry.config.event.DataSourceChangedEvent;
 import io.shardingsphere.orchestration.internal.registry.config.event.MasterSlaveRuleChangedEvent;
 import io.shardingsphere.orchestration.internal.registry.config.event.PropertiesChangedEvent;
@@ -38,12 +38,10 @@ import io.shardingsphere.shardingjdbc.orchestration.internal.circuit.datasource.
 import io.shardingsphere.shardingjdbc.orchestration.internal.util.DataSourceConverter;
 import lombok.SneakyThrows;
 
-import javax.sql.DataSource;
 import java.sql.Connection;
 import java.sql.SQLException;
 import java.util.Collections;
 import java.util.HashMap;
-import java.util.LinkedHashMap;
 import java.util.Map;
 
 /**
@@ -96,13 +94,13 @@ public class OrchestrationMasterSlaveDataSource extends AbstractOrchestrationDat
     /**
      * Renew master-slave rule.
      *
-     * @param masterSlaveEvent master-slave configuration changed event
+     * @param masterSlaveRuleChangedEvent master-slave configuration changed event
      * @throws SQLException SQL exception
      */
     @Subscribe
-    public final void renew(final MasterSlaveRuleChangedEvent masterSlaveEvent) throws SQLException {
+    public final synchronized void renew(final MasterSlaveRuleChangedEvent masterSlaveRuleChangedEvent) throws SQLException {
         dataSource = new MasterSlaveDataSource(dataSource.getDataSourceMap(),
-                masterSlaveEvent.getMasterSlaveRuleConfig(), ConfigMapContext.getInstance().getConfigMap(), dataSource.getShardingProperties().getProps());
+                masterSlaveRuleChangedEvent.getMasterSlaveRuleConfiguration(), ConfigMapContext.getInstance().getConfigMap(), dataSource.getShardingProperties().getProps());
     }
     
     /**
@@ -112,18 +110,7 @@ public class OrchestrationMasterSlaveDataSource extends AbstractOrchestrationDat
      */
     @Subscribe
     @SneakyThrows
-    public final void renew(final DataSourceChangedEvent dataSourceChangedEvent) {
-        Map<String, DataSourceConfiguration> originalDataSourceConfigurations = DataSourceConverter.getDataSourceConfigurationMap(dataSource.getDataSourceMap());
-        Map<String, DataSourceConfiguration> newDataSourceConfigurations = dataSourceChangedEvent.getDataSourceConfigurations();
-        Map<String, DataSource> result = new LinkedHashMap<>();
-        for (String each : originalDataSourceConfigurations.keySet()) {
-            if (originalDataSourceConfigurations.get(each).equals(newDataSourceConfigurations.get(each))) {
-                result.put(each, dataSource.getDataSourceMap().get(each));
-                newDataSourceConfigurations.remove(each);
-            }
-        }
-        result.putAll(DataSourceConverter.getDataSourceMap(newDataSourceConfigurations));
-        
+    public final synchronized void renew(final DataSourceChangedEvent dataSourceChangedEvent) {
         dataSource.close();
         dataSource = new MasterSlaveDataSource(DataSourceConverter.getDataSourceMap(dataSourceChangedEvent.getDataSourceConfigurations()),
                 dataSource.getMasterSlaveRule(), ConfigMapContext.getInstance().getConfigMap(), dataSource.getShardingProperties().getProps());
@@ -132,11 +119,22 @@ public class OrchestrationMasterSlaveDataSource extends AbstractOrchestrationDat
     /**
      * Renew properties.
      *
-     * @param propertiesEvent properties event
+     * @param propertiesChangedEvent properties changed event
      */
     @SneakyThrows
     @Subscribe
-    public final void renew(final PropertiesChangedEvent propertiesEvent) {
-        dataSource = new MasterSlaveDataSource(dataSource.getDataSourceMap(), dataSource.getMasterSlaveRule(), ConfigMapContext.getInstance().getConfigMap(), propertiesEvent.getProps());
+    public final synchronized void renew(final PropertiesChangedEvent propertiesChangedEvent) {
+        dataSource = new MasterSlaveDataSource(dataSource.getDataSourceMap(), dataSource.getMasterSlaveRule(), ConfigMapContext.getInstance().getConfigMap(), propertiesChangedEvent.getProps());
+    }
+    
+    /**
+     * Renew config map.
+     *
+     * @param configMapChangedEvent config map changed event
+     */
+    @Subscribe
+    public final synchronized void renew(final ConfigMapChangedEvent configMapChangedEvent) {
+        ConfigMapContext.getInstance().getConfigMap().clear();
+        ConfigMapContext.getInstance().getConfigMap().putAll(configMapChangedEvent.getConfigMap());
     }
 }

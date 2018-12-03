@@ -24,6 +24,7 @@ import org.yaml.snakeyaml.Yaml;
 
 import static org.hamcrest.CoreMatchers.is;
 import static org.junit.Assert.assertThat;
+import static org.junit.Assert.assertTrue;
 
 public final class YamlOrchestrationConfigurationTest {
     
@@ -31,8 +32,10 @@ public final class YamlOrchestrationConfigurationTest {
     public void assertLoadFromYamlWithMinConfiguration() {
         RegistryCenterConfiguration expectedRegistryCenterConfig = new RegistryCenterConfiguration();
         expectedRegistryCenterConfig.setServerLists("localhost:3181");
-        OrchestrationConfiguration expected = new OrchestrationConfiguration("min_config", expectedRegistryCenterConfig, false);
         YamlOrchestrationConfiguration actual = loadYamlOrchestrationConfiguration("/yaml/orchestration-configuration.min.yaml");
+        assertThat(actual.getName(), is("min_config"));
+        assertThat(actual.getRegistry().getServerLists(), is("localhost:3181"));
+        OrchestrationConfiguration expected = new OrchestrationConfiguration("min_config", expectedRegistryCenterConfig, false);
         assertOrchestrationConfiguration(actual.getOrchestrationConfiguration(), expected);
     }
     
@@ -46,8 +49,17 @@ public final class YamlOrchestrationConfigurationTest {
         expectedRegistryCenterConfig.setMaxRetries(1);
         expectedRegistryCenterConfig.setRetryIntervalMilliseconds(1000);
         expectedRegistryCenterConfig.setTimeToLiveSeconds(10);
-        OrchestrationConfiguration expected = new OrchestrationConfiguration("max_config", expectedRegistryCenterConfig, true);
         YamlOrchestrationConfiguration actual = loadYamlOrchestrationConfiguration("/yaml/orchestration-configuration.max.yaml");
+        assertThat(actual.getName(), is("max_config"));
+        assertTrue(actual.isOverwrite());
+        assertThat(actual.getRegistry().getServerLists(), is("localhost:3181"));
+        assertThat(actual.getRegistry().getNamespace(), is("orchestration-yaml-test"));
+        assertThat(actual.getRegistry().getDigest(), is("user:password"));
+        assertThat(actual.getRegistry().getOperationTimeoutMilliseconds(), is(1000));
+        assertThat(actual.getRegistry().getMaxRetries(), is(1));
+        assertThat(actual.getRegistry().getRetryIntervalMilliseconds(), is(1000));
+        assertThat(actual.getRegistry().getTimeToLiveSeconds(), is(10));
+        OrchestrationConfiguration expected = new OrchestrationConfiguration("max_config", expectedRegistryCenterConfig, true);
         assertOrchestrationConfiguration(actual.getOrchestrationConfiguration(), expected);
     }
     

@@ -18,7 +18,6 @@
 package io.shardingsphere.orchestration.internal.registry.state.listener;
 
 import io.shardingsphere.orchestration.internal.registry.listener.PostShardingOrchestrationEventListener;
-import io.shardingsphere.orchestration.internal.registry.listener.ShardingOrchestrationEvent;
 import io.shardingsphere.orchestration.internal.registry.state.event.CircuitStateChangedEvent;
 import io.shardingsphere.orchestration.internal.registry.state.instance.OrchestrationInstance;
 import io.shardingsphere.orchestration.internal.registry.state.node.StateNode;
@@ -42,7 +41,7 @@ public final class InstanceStateChangedListener extends PostShardingOrchestratio
     }
     
     @Override
-    protected ShardingOrchestrationEvent createOrchestrationEvent(final DataChangedEvent event) {
+    protected CircuitStateChangedEvent createShardingOrchestrationEvent(final DataChangedEvent event) {
         return new CircuitStateChangedEvent(StateNodeStatus.DISABLED.toString().equalsIgnoreCase(regCenter.get(event.getKey())));
     }
 }

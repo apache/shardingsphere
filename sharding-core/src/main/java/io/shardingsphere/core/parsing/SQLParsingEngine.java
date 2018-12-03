@@ -30,7 +30,6 @@ import io.shardingsphere.core.parsing.parser.sql.SQLParser;
 import io.shardingsphere.core.parsing.parser.sql.SQLParserFactory;
 import io.shardingsphere.core.parsing.parser.sql.SQLStatement;
 import io.shardingsphere.core.parsing.parser.sql.ddl.DDLStatement;
-import io.shardingsphere.core.parsing.parser.sql.dql.DQLStatement;
 import io.shardingsphere.core.parsing.parser.sql.tcl.TCLStatement;
 import io.shardingsphere.core.rule.ShardingRule;
 import lombok.RequiredArgsConstructor;
@@ -63,32 +62,7 @@ public final class SQLParsingEngine {
             return cachedSQLStatement.get();
         }
         LexerEngine lexerEngine = LexerEngineFactory.newInstance(dbType, sql);
-        lexerEngine.nextToken();
-        Token firstToken = lexerEngine.getCurrentToken();
-        SQLStatement result;
-
-        if (PostgreSQLKeyword.SHOW == lexerEngine.getCurrentToken().getType()) {
-            result = AntlrParsingEngine.parse(dbType, sql, shardingRule, shardingTableMetaData);
-            return result;
-        }
-
-        SQLParser sqlParser = SQLParserFactory.newInstance(dbType, lexerEngine.getCurrentToken().getType(), shardingRule, lexerEngine, shardingTableMetaData);
-        Token currentToken = lexerEngine.getCurrentToken();
-        if (firstToken != currentToken) {
-            if (DDLStatement.isDDL(firstToken.getType(), currentToken.getType())) {
-                result = AntlrParsingEngine.parse(dbType, sql, shardingRule, shardingTableMetaData);
-            } else {
-                result = sqlParser.parse();
-            }
-        } else if (TCLStatement.isTCL(firstToken.getType())) {
-            result = AntlrParsingEngine.parse(dbType, sql, shardingRule, shardingTableMetaData);
-        } else {
-            if (DQLStatement.isDQL(firstToken.getType()) && DatabaseType.MySQL == dbType) {
-                result = AntlrParsingEngine.parse(dbType, sql, shardingRule, shardingTableMetaData);
-            } else {
-                result = sqlParser.parse();
-            }
-        }
+        SQLStatement result = SQLParserFactory.newInstance(dbType, shardingRule, lexerEngine, shardingTableMetaData, sql).parse();
         if (useCache) {
             ParsingResultCache.getInstance().put(sql, result);
         }

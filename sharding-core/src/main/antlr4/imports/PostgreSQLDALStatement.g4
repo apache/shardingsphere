@@ -3,10 +3,26 @@ grammar PostgreSQLDALStatement;
 import PostgreSQLKeyword, Keyword, BaseRule, DataType, Symbol;
 
 show
-    : SHOW showParam
+    : SHOW (ALL | ID)
+    ;
+
+setParam
+    : SET scope? setClause
+    ;
+
+scope
+    : SESSION | LOCAL
     ;
     
-showParam
-    : ALL
-    | ID
+setClause
+    : TIME ZONE timeZoneType
+    | ID (TO | EQ_) (STRING | DEFAULT)
+    ;
+
+timeZoneType
+    : NUMBER | LOCAL | DEFAULT
+    ;
+
+resetParam
+    : RESET (ALL | ID)
     ;

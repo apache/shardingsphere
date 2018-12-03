@@ -54,6 +54,7 @@ public final class MySQLFrontendHandler extends FrontendHandler {
     protected void handshake(final ChannelHandlerContext context) {
         int connectionId = ConnectionIdGenerator.getInstance().nextId();
         ChannelRegistry.getInstance().putConnectionId(context.channel().id().asShortText(), connectionId);
+        getBackendConnection().setConnectionId(connectionId);
         context.writeAndFlush(new HandshakePacket(connectionId, authenticationHandler.getAuthPluginData()));
     }
     

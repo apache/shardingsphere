@@ -19,12 +19,11 @@ package io.shardingsphere.orchestration.internal.registry.state.listener;
 
 import io.shardingsphere.orchestration.reg.api.RegistryCenter;
 import io.shardingsphere.orchestration.reg.listener.DataChangedEvent.ChangedType;
+import io.shardingsphere.orchestration.util.FieldUtil;
 import org.junit.Test;
 import org.junit.runner.RunWith;
 import org.mockito.Mock;
 import org.mockito.junit.MockitoJUnitRunner;
-
-import java.lang.reflect.Field;
 
 import static org.mockito.Mockito.verify;
 
@@ -41,18 +40,12 @@ public final class StateChangedListenerManagerTest {
     private DataSourceStateChangedListener dataSourceStateChangedListener;
     
     @Test
-    public void assertInitListeners() throws ReflectiveOperationException {
+    public void assertInitListeners() {
         StateChangedListenerManager actual = new StateChangedListenerManager("test", regCenter);
-        setField(actual, "instanceStateChangedListener", instanceStateChangedListener);
-        setField(actual, "dataSourceStateChangedListener", dataSourceStateChangedListener);
+        FieldUtil.setField(actual, "instanceStateChangedListener", instanceStateChangedListener);
+        FieldUtil.setField(actual, "dataSourceStateChangedListener", dataSourceStateChangedListener);
         actual.initListeners();
         verify(instanceStateChangedListener).watch(ChangedType.UPDATED);
         verify(dataSourceStateChangedListener).watch(ChangedType.UPDATED, ChangedType.DELETED);
-    }
-    
-    private void setField(final Object target, final String fieldName, final Object fieldValue) throws ReflectiveOperationException {
-        Field field = StateChangedListenerManager.class.getDeclaredField(fieldName);
-        field.setAccessible(true);
-        field.set(target, fieldValue);
     }
 }
