@@ -378,6 +378,7 @@
         </order-by-columns>
     </parser-result>
     
+    <!--  
     <parser-result sql-case-id="select_alias_as_keyword" parameters="1">
         <tables>
             <table name="t_order_item" alias="length" />
@@ -393,6 +394,7 @@
             </and-condition>
         </or-condition>
     </parser-result>
+    -->
     
     <parser-result sql-case-id="select_with_force_index_join" parameters="1000">
         <tables>
