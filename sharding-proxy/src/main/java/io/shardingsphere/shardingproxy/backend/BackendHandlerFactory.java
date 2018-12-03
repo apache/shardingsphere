@@ -53,7 +53,7 @@ public final class BackendHandlerFactory {
     private static final GlobalRegistry GLOBAL_REGISTRY = GlobalRegistry.getInstance();
     
     /**
-     * Create new instance by sql judge.
+     * Create new com query backend handler instance by SQl judge.
      *
      * @param sequenceId sequence ID of SQL packet
      * @param sql SQL to be executed
@@ -62,20 +62,18 @@ public final class BackendHandlerFactory {
      * @param frontendHandler frontend handler
      * @return instance of backend handler
      */
-    public static BackendHandler createBackendHandler(final int sequenceId, final String sql, final BackendConnection backendConnection, final DatabaseType databaseType, final FrontendHandler frontendHandler) {
+    public static BackendHandler createBackendHandler(final int sequenceId, final String sql, final BackendConnection backendConnection,
+                                                      final DatabaseType databaseType, final FrontendHandler frontendHandler) {
         SQLStatement sqlStatement = new SQLJudgeEngine(sql).judge();
         if (SQLType.DCL == sqlStatement.getType() || sqlStatement instanceof SetStatement) {
             return new SchemaBroadcastBackendHandler(sequenceId, sql, backendConnection, databaseType);
         }
-        
         if (sqlStatement instanceof UseStatement || sqlStatement instanceof ShowDatabasesStatement) {
             return new SchemaIgnoreBackendHandler(sqlStatement, frontendHandler);
         }
-        
         if (sqlStatement instanceof ShowOtherStatement) {
             return new SchemaUnicastBackendHandler(sequenceId, sql, backendConnection, DatabaseType.MySQL);
         }
-        
         return newTextProtocolInstance(sequenceId, sql, backendConnection, DatabaseType.MySQL);
     }
     
