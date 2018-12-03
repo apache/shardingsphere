@@ -20,9 +20,7 @@ setClause
     ;
 
 timeZoneType
-    : NUMBER
-    | LOCAL
-    | DEFAULT
+    : NUMBER | LOCAL | DEFAULT
     ;
 
 resetParam
