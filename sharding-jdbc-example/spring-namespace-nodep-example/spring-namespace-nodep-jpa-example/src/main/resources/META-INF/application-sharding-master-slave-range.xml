@@ -13,6 +13,7 @@
                         http://www.springframework.org/schema/tx/spring-tx.xsd
                         http://shardingsphere.io/schema/shardingsphere/sharding 
                         http://shardingsphere.io/schema/shardingsphere/sharding/sharding.xsd">
+    <import resource="classpath:META-INF/shardingTransaction.xml"/>
     <context:annotation-config />
     <context:component-scan base-package="io.shardingsphere.example.repository.jpa"/>
 
