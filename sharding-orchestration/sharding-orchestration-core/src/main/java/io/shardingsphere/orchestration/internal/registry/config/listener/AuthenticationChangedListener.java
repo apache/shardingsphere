@@ -19,10 +19,10 @@ package io.shardingsphere.orchestration.internal.registry.config.listener;
 
 import io.shardingsphere.orchestration.internal.registry.config.event.AuthenticationChangedEvent;
 import io.shardingsphere.orchestration.internal.registry.config.node.ConfigurationNode;
-import io.shardingsphere.orchestration.internal.registry.config.service.ConfigurationService;
 import io.shardingsphere.orchestration.internal.registry.listener.PostShardingOrchestrationEventListener;
 import io.shardingsphere.orchestration.reg.api.RegistryCenter;
 import io.shardingsphere.orchestration.reg.listener.DataChangedEvent;
+import io.shardingsphere.orchestration.yaml.ConfigurationYamlConverter;
 
 /**
  * Authentication changed listener.
@@ -31,15 +31,12 @@ import io.shardingsphere.orchestration.reg.listener.DataChangedEvent;
  */
 public final class AuthenticationChangedListener extends PostShardingOrchestrationEventListener {
     
-    private final ConfigurationService configService;
-    
     public AuthenticationChangedListener(final String name, final RegistryCenter regCenter) {
         super(regCenter, new ConfigurationNode(name).getAuthenticationPath());
-        configService = new ConfigurationService(name, regCenter);
     }
     
     @Override
     protected AuthenticationChangedEvent createShardingOrchestrationEvent(final DataChangedEvent event) {
-        return new AuthenticationChangedEvent(configService.loadAuthentication());
+        return new AuthenticationChangedEvent(ConfigurationYamlConverter.loadAuthentication(event.getValue()));
     }
 }
