@@ -17,14 +17,7 @@
 
 package io.shardingsphere.core.parsing.antlr.extractor.segment.engine;
 
-import java.util.Collection;
-import java.util.HashMap;
-import java.util.Map;
-
-import org.antlr.v4.runtime.ParserRuleContext;
-
 import com.google.common.base.Optional;
-
 import io.shardingsphere.core.parsing.antlr.extractor.segment.OptionalSQLSegmentExtractor;
 import io.shardingsphere.core.parsing.antlr.extractor.segment.constant.RuleName;
 import io.shardingsphere.core.parsing.antlr.extractor.util.ASTUtils;
@@ -32,6 +25,11 @@ import io.shardingsphere.core.parsing.antlr.sql.segment.FromWhereSegment;
 import io.shardingsphere.core.parsing.antlr.sql.segment.condition.OrConditionSegment;
 import io.shardingsphere.core.parsing.antlr.sql.segment.table.TableJoinSegment;
 import io.shardingsphere.core.parsing.antlr.sql.segment.table.TableSegment;
+import org.antlr.v4.runtime.ParserRuleContext;
+
+import java.util.Collection;
+import java.util.HashMap;
+import java.util.Map;
 
 /**
  * From clause extractor.
@@ -57,7 +55,7 @@ public final class FromWhereExtractor implements OptionalSQLSegmentExtractor {
         FromWhereSegment result = new FromWhereSegment();
         predicateSegmentExtractor = new PredicateExtractor(result.getTableAliases());
         Collection<ParserRuleContext> questionNodes = ASTUtils.getAllDescendantNodes(ancestorNode, RuleName.QUESTION);
-        result.setParamenterCount(questionNodes.size());
+        result.setParameterCount(questionNodes.size());
         Map<ParserRuleContext, Integer> questionNodeIndexMap = new HashMap<>();
         int index = 0;
         for (ParserRuleContext each : questionNodes) {
@@ -72,7 +70,7 @@ public final class FromWhereExtractor implements OptionalSQLSegmentExtractor {
                                             final Map<ParserRuleContext, Integer> questionNodeIndexMap) {
         for (ParserRuleContext each : tableReferenceNodes) {
             for (int i = 0; i < each.getChildCount(); i++) {
-                ParserRuleContext tableFactorNode = null;
+                ParserRuleContext tableFactorNode;
                 boolean joinNode = false;
                 if (RuleName.JOIN_TABLE.getName().endsWith(each.getChild(i).getClass().getSimpleName())) {
                     tableFactorNode = ASTUtils.findFirstChildNode((ParserRuleContext) each.getChild(i), RuleName.TABLE_FACTOR).get();
