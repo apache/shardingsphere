@@ -19,10 +19,10 @@ package io.shardingsphere.orchestration.internal.registry.config.listener;
 
 import io.shardingsphere.orchestration.internal.registry.config.event.ConfigMapChangedEvent;
 import io.shardingsphere.orchestration.internal.registry.config.node.ConfigurationNode;
-import io.shardingsphere.orchestration.internal.registry.config.service.ConfigurationService;
 import io.shardingsphere.orchestration.internal.registry.listener.PostShardingOrchestrationEventListener;
 import io.shardingsphere.orchestration.reg.api.RegistryCenter;
 import io.shardingsphere.orchestration.reg.listener.DataChangedEvent;
+import io.shardingsphere.orchestration.yaml.ConfigurationYamlConverter;
 
 /**
  * Config map changed listener.
@@ -32,15 +32,12 @@ import io.shardingsphere.orchestration.reg.listener.DataChangedEvent;
  */
 public final class ConfigMapChangedListener extends PostShardingOrchestrationEventListener {
     
-    private final ConfigurationService configService;
-    
     public ConfigMapChangedListener(final String name, final RegistryCenter regCenter) {
         super(regCenter, new ConfigurationNode(name).getConfigMapPath());
-        configService = new ConfigurationService(name, regCenter);
     }
     
     @Override
     protected ConfigMapChangedEvent createShardingOrchestrationEvent(final DataChangedEvent event) {
-        return new ConfigMapChangedEvent(configService.loadConfigMap());
+        return new ConfigMapChangedEvent(ConfigurationYamlConverter.loadConfigMap(event.getValue()));
     }
 }
