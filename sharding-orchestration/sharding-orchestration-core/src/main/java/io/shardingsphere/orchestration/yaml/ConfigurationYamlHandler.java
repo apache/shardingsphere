@@ -136,4 +136,55 @@ public class ConfigurationYamlHandler {
     public static String dumpProperties(final Properties props) {
         return new Yaml(new DefaultYamlRepresenter()).dumpAsMap(props);
     }
+    
+    /**
+     * Dump authentication.
+     *
+     * @param authentication authentication
+     * @return data
+     */
+    public static String dumpAuthentication(final Authentication authentication) {
+       return new Yaml(new DefaultYamlRepresenter()).dumpAsMap(authentication);
+    }
+    
+    /**
+     * Dump master-slave rule configuration.
+     *
+     * @param masterSlaveRuleConfig master-slave rule configuration
+     * @return data
+     */
+    public static String dumpMasterSlaveRuleConfiguration(final MasterSlaveRuleConfiguration masterSlaveRuleConfig) {
+        return new Yaml(new DefaultYamlRepresenter()).dumpAsMap(new YamlMasterSlaveRuleConfiguration(masterSlaveRuleConfig));
+    }
+    
+    /**
+     * Dump sharding rule configuration.
+     *
+     * @param shardingRuleConfig sharding rule configuration
+     * @return data
+     */
+    public static String dumpShardingRuleConfiguration(final ShardingRuleConfiguration shardingRuleConfig) {
+        return new Yaml(new DefaultYamlRepresenter()).dumpAsMap(new YamlShardingRuleConfiguration(shardingRuleConfig));
+    }
+    
+    /**
+     * Dump data sources.
+     *
+     * @param dataSourceConfigs data sources map
+     * @return data
+     */
+    @SuppressWarnings("unchecked")
+    public static String dumpDataSourceConfigurations(final Map<String, DataSourceConfiguration> dataSourceConfigs) {
+        return new Yaml(new DefaultYamlRepresenter()).dumpAsMap(
+                Maps.transformValues(dataSourceConfigs, new Function<DataSourceConfiguration, YamlDataSourceConfiguration>() {
+            
+                    @Override
+                    public YamlDataSourceConfiguration apply(final DataSourceConfiguration input) {
+                        YamlDataSourceConfiguration result = new YamlDataSourceConfiguration();
+                        result.setDataSourceClassName(input.getDataSourceClassName());
+                        result.setProperties(input.getProperties());
+                        return result;
+                    }
+                }));
+    }
 }
