@@ -29,7 +29,6 @@ import io.shardingsphere.core.rule.Authentication;
 import io.shardingsphere.core.yaml.masterslave.YamlMasterSlaveRuleConfiguration;
 import io.shardingsphere.core.yaml.sharding.YamlShardingRuleConfiguration;
 import io.shardingsphere.orchestration.internal.registry.config.node.ConfigurationNode;
-import io.shardingsphere.orchestration.internal.registry.state.schema.OrchestrationShardingSchemaGroup;
 import io.shardingsphere.orchestration.reg.api.RegistryCenter;
 import io.shardingsphere.orchestration.yaml.ConfigurationYamlLoader;
 import io.shardingsphere.orchestration.yaml.DefaultYamlRepresenter;
@@ -37,7 +36,6 @@ import io.shardingsphere.orchestration.yaml.YamlDataSourceConfiguration;
 import org.yaml.snakeyaml.Yaml;
 
 import java.util.Collection;
-import java.util.LinkedList;
 import java.util.Map;
 import java.util.Properties;
 
@@ -231,30 +229,5 @@ public final class ConfigurationService {
      */
     public Collection<String> getAllShardingSchemaNames() {
         return regCenter.getChildrenKeys(configNode.getSchemaPath());
-    }
-    
-    /**
-     * Get all slave data source names.
-     *
-     * @return slave data source names
-     */
-    public OrchestrationShardingSchemaGroup getAllSlaveDataSourceNames() {
-        OrchestrationShardingSchemaGroup result = new OrchestrationShardingSchemaGroup();
-        for (String each : getAllShardingSchemaNames()) {
-            result.put(each, isShardingRule(each) ? getSlaveDataSourceNamesFromShardingRule(each) : getSlaveDataSourceNamesFromMasterSlaveRule(each));
-        }
-        return result;
-    }
-    
-    private Collection<String> getSlaveDataSourceNamesFromShardingRule(final String schemaName) {
-        Collection<String> result = new LinkedList<>();
-        for (MasterSlaveRuleConfiguration each : loadShardingRuleConfiguration(schemaName).getMasterSlaveRuleConfigs()) {
-            result.addAll(each.getSlaveDataSourceNames());
-        }
-        return result;
-    }
-    
-    private Collection<String> getSlaveDataSourceNamesFromMasterSlaveRule(final String schemaName) {
-        return loadMasterSlaveRuleConfiguration(schemaName).getSlaveDataSourceNames();
     }
 }
