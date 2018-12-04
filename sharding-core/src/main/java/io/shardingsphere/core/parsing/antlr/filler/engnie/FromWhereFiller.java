@@ -44,7 +44,7 @@ import io.shardingsphere.core.parsing.parser.token.TableToken;
 import io.shardingsphere.core.rule.ShardingRule;
 
 /**
- * From where segment filler.
+ * From where filler.
  *
  * @author duhongjun
  */

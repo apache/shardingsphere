@@ -23,7 +23,7 @@ import io.shardingsphere.core.parsing.parser.token.OrderByToken;
 import lombok.Getter;
 
 /**
- * Order by segment.
+ * Order by item segment.
  * 
  * @author duhongjun
  */

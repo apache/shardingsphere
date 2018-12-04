@@ -30,7 +30,7 @@ import io.shardingsphere.core.rule.ShardingRule;
 import io.shardingsphere.core.util.SQLUtil;
 
 /**
- * Column definition segment filler.
+ * Column definition filler.
  *
  * @author duhongjun
  */

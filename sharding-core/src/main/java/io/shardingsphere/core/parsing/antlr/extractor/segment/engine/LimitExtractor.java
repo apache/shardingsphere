@@ -35,7 +35,7 @@ import io.shardingsphere.core.parsing.lexer.token.Symbol;
 import io.shardingsphere.core.util.NumberUtil;
 
 /**
- * Limit clause extractor.
+ * Limit extractor.
  *
  * @author duhongjun
  */

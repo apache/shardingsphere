@@ -20,7 +20,7 @@ package io.shardingsphere.core.parsing.antlr.sql.segment.expr;
 import io.shardingsphere.core.parsing.antlr.sql.segment.SQLSegment;
 
 /**
- * Select expression segment.
+ * Expression segment.
  *
  * @author duhongjun
  */

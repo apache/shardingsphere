@@ -27,7 +27,7 @@ import io.shardingsphere.core.parsing.parser.sql.dql.select.SelectStatement;
 import io.shardingsphere.core.rule.ShardingRule;
 
 /**
- * Group by segment filler.
+ * Group by filler.
  *
  * @author duhongjun
  */

@@ -29,7 +29,7 @@ import io.shardingsphere.core.parsing.parser.sql.ddl.create.table.CreateTableSta
 import io.shardingsphere.core.rule.ShardingRule;
 
 /**
- * Constraint definition segment filler.
+ * Constraint definition filler.
  *
  * @author duhongjun
  */

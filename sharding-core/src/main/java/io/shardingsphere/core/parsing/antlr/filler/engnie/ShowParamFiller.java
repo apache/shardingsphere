@@ -26,7 +26,7 @@ import io.shardingsphere.core.parsing.parser.sql.SQLStatement;
 import io.shardingsphere.core.rule.ShardingRule;
 
 /**
- * Show param segment filler.
+ * Show param filler.
  *
  * @author loxp
  */

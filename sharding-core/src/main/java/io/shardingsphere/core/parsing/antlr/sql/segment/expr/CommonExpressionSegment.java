@@ -23,7 +23,7 @@ import lombok.Getter;
 import lombok.RequiredArgsConstructor;
 
 /**
- * Common select expression extract result.
+ * Common expression segment.
  * 
  * @author duhongjun
  */

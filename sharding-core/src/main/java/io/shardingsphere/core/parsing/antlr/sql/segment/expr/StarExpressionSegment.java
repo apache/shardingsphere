@@ -23,7 +23,7 @@ import lombok.Getter;
 import lombok.RequiredArgsConstructor;
 
 /**
- * Star select expression extract result.
+ * Star expression segment.
  * 
  * @author duhongjun
  */

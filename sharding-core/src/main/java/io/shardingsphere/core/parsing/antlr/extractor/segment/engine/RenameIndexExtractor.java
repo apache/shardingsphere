@@ -32,7 +32,7 @@ import java.util.Collections;
 import java.util.LinkedList;
 
 /**
- * Rename index clause extractor.
+ * Rename index extractor.
  *
  * @author duhongjun
  */

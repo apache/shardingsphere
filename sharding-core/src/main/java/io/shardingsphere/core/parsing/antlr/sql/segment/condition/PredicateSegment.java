@@ -23,7 +23,7 @@ import lombok.Getter;
 import lombok.RequiredArgsConstructor;
 
 /**
- * predicate segment.
+ * Predicate segment.
  * 
  * @author duhongjun
  */

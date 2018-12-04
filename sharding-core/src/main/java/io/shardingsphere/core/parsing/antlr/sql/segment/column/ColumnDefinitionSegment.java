@@ -22,7 +22,7 @@ import lombok.Getter;
 import lombok.Setter;
 
 /**
- * Add column segment.
+ * Column definition segment.
  *
  * @author duhongjun
  */

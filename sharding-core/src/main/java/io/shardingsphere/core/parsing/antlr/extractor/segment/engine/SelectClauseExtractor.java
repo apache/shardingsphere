@@ -38,7 +38,7 @@ import io.shardingsphere.core.parsing.lexer.token.Symbol;
 import io.shardingsphere.core.util.SQLUtil;
 
 /**
- * Select expression extractor.
+ * Select clause extractor.
  *
  * @author duhongjun
  */
@@ -85,7 +85,8 @@ public class SelectClauseExtractor implements OptionalSQLSegmentExtractor {
                     if (RuleName.COLUMN_NAME.getName().equals(childNode.getClass().getSimpleName())) {
                         ParserRuleContext columnNode = (ParserRuleContext) childNode;
                         Optional<ColumnSegment> columnSegment = new ColumnSegmentExtractor(new HashMap<String, String>()).extract(columnNode);
-                        PropertyExpressionSegment propertySegment = new PropertyExpressionSegment(columnSegment.get().getOwner(), columnSegment.get().getName(), columnNode.getStart().getStartIndex(), columnNode.getStop().getStopIndex(), alias);
+                        PropertyExpressionSegment propertySegment = new PropertyExpressionSegment(columnSegment.get().getOwner(), columnSegment.get().getName(),
+                                columnNode.getStart().getStartIndex(), columnNode.getStop().getStopIndex(), alias);
                         result.getExpressions().add(propertySegment);
                     } else {
                         result.getExpressions().add(new CommonExpressionSegment(getParseTreeText(childNode.getChild(0)), alias));
@@ -96,7 +97,7 @@ public class SelectClauseExtractor implements OptionalSQLSegmentExtractor {
         return Optional.of(result);
     }
     
-    private String getParseTreeText(ParseTree node) {
+    private String getParseTreeText(final ParseTree node) {
         if (node.getChildCount() < 2) {
             return node.getText();
         }

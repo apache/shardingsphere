@@ -26,7 +26,7 @@ import lombok.RequiredArgsConstructor;
 import lombok.Setter;
 
 /**
- * Group by extract result.
+ * Group by segment.
  * 
  * @author duhongjun
  */

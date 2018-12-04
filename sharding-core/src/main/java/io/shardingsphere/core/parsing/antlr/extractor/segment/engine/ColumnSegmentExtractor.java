@@ -32,7 +32,7 @@ import io.shardingsphere.core.util.SQLUtil;
 import lombok.RequiredArgsConstructor;
 
 /**
- * Column extract handler.
+ * Column extract extractor.
  * 
  * @author duhongjun
  */

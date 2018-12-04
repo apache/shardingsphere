@@ -26,7 +26,7 @@ import io.shardingsphere.core.parsing.parser.sql.SQLStatement;
 import io.shardingsphere.core.rule.ShardingRule;
 
 /**
- * Drop primary key segment filler.
+ * Drop primary key filler.
  *
  * @author duhongjun
  */

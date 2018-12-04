@@ -30,7 +30,7 @@ import io.shardingsphere.core.parsing.parser.token.RowCountToken;
 import io.shardingsphere.core.rule.ShardingRule;
 
 /**
- * Limit segment filler.
+ * Limit filler.
  *
  * @author duhongjun
  */

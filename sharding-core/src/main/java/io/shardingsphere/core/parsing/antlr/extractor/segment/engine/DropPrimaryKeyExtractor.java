@@ -26,7 +26,7 @@ import io.shardingsphere.core.parsing.antlr.sql.segment.constraint.DropPrimaryKe
 import org.antlr.v4.runtime.ParserRuleContext;
 
 /**
- * Drop primary key clause extractor.
+ * Drop primary key extractor.
  *
  * @author duhongjun
  */

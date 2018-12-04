@@ -26,7 +26,7 @@ import io.shardingsphere.core.parsing.parser.sql.SQLStatement;
 import io.shardingsphere.core.rule.ShardingRule;
 
 /**
- * Drop column segment filler.
+ * Drop column filler.
  *
  * @author duhongjun
  */

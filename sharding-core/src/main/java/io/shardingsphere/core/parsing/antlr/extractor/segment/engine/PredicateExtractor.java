@@ -50,7 +50,7 @@ import io.shardingsphere.core.util.NumberUtil;
 import lombok.RequiredArgsConstructor;
 
 /**
- * Predicate segment extractor.
+ * Predicate extractor.
  *
  * @author duhongjun
  */

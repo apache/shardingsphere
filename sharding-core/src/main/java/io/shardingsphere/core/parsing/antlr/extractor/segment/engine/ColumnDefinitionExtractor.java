@@ -26,7 +26,7 @@ import io.shardingsphere.core.parsing.antlr.sql.segment.column.ColumnDefinitionS
 import org.antlr.v4.runtime.ParserRuleContext;
 
 /**
- * Column definition clause extractor.
+ * Column definition extractor.
  * 
  * @author duhongjun
  * @author zhangliang

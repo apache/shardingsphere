@@ -26,7 +26,7 @@ import io.shardingsphere.core.parsing.parser.token.IndexToken;
 import io.shardingsphere.core.rule.ShardingRule;
 
 /**
- * Index segment filler.
+ * Index filler.
  *
  * @author duhongjun
  */

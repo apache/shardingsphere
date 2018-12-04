@@ -30,7 +30,7 @@ import java.util.Collections;
 import java.util.LinkedList;
 
 /**
- * Modify column clause extractor.
+ * Modify column extractor.
  *
  * @author duhongjun
  */

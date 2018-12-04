@@ -29,7 +29,7 @@ import org.antlr.v4.runtime.tree.ParseTree;
 import java.util.Collection;
 
 /**
- * Drop column clause extractor.
+ * Drop column extractor.
  *
  * @author duhongjun
  */

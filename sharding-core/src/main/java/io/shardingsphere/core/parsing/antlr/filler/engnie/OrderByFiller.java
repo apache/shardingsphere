@@ -30,7 +30,7 @@ import io.shardingsphere.core.rule.ShardingRule;
 import io.shardingsphere.core.util.SQLUtil;
 
 /**
- * Order by segment filler.
+ * Order by filler.
  *
  * @author duhongjun
  */
@@ -45,7 +45,7 @@ public class OrderByFiller implements SQLSegmentFiller {
         }
     }
     
-    public OrderItem buildOrderItemAndFillToken(SelectStatement selectStatement, OrderByItemSegment each) {
+    protected OrderItem buildOrderItemAndFillToken(final SelectStatement selectStatement, final OrderByItemSegment each) {
         if (-1 < each.getIndex()) {
             return new OrderItem(each.getIndex(), each.getOrderDirection(), each.getNullOrderDirection());
         }

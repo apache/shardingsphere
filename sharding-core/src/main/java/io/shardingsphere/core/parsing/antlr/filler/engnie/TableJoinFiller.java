@@ -23,7 +23,7 @@ import io.shardingsphere.core.parsing.parser.sql.SQLStatement;
 import io.shardingsphere.core.rule.ShardingRule;
 
 /**
- * Join table segment filler.
+ * Join table filler.
  * 
  * @author duhongjun
  */

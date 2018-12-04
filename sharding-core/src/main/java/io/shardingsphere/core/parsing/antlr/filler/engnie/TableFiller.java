@@ -28,7 +28,7 @@ import io.shardingsphere.core.parsing.parser.token.TableToken;
 import io.shardingsphere.core.rule.ShardingRule;
 
 /**
- * Table segment filler.
+ * Table filler.
  *
  * @author duhongjun
  */

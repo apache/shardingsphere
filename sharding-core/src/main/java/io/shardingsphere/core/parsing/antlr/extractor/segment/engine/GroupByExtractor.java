@@ -26,14 +26,14 @@ import io.shardingsphere.core.parsing.antlr.sql.segment.order.GroupBySegment;
 import org.antlr.v4.runtime.ParserRuleContext;
 
 /**
- * Group by clause extractor.
+ * Group by extractor.
  *
  * @author duhongjun
  */
 public final class GroupByExtractor implements OptionalSQLSegmentExtractor {
     
     @Override
-    public Optional<GroupBySegment> extract(ParserRuleContext ancestorNode) {
+    public Optional<GroupBySegment> extract(final ParserRuleContext ancestorNode) {
         Optional<ParserRuleContext> orderByParentNode = ASTUtils.findFirstChildNode(ancestorNode, RuleName.GROUP_BY_CLAUSE);
         if (!orderByParentNode.isPresent()) {
             return Optional.absent();

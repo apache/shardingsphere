@@ -36,7 +36,7 @@ import io.shardingsphere.core.util.NumberUtil;
 import lombok.RequiredArgsConstructor;
 
 /**
- * Order by clause extractor.
+ * Order by extractor.
  *
  * @author duhongjun
  */
@@ -54,7 +54,7 @@ public class OrderByExtractor implements OptionalSQLSegmentExtractor {
         return Optional.of(result);
     }
     
-    protected Collection<OrderByItemSegment> extractOrderBy(ParserRuleContext orderByParentNode) {
+    protected Collection<OrderByItemSegment> extractOrderBy(final ParserRuleContext orderByParentNode) {
         Collection<ParserRuleContext> orderByNodes = ASTUtils.getAllDescendantNodes(orderByParentNode, RuleName.ORDER_BY_ITEM);
         if (orderByNodes.isEmpty()) {
             return Collections.emptyList();
