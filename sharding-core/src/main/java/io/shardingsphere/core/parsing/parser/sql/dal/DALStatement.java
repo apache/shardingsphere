@@ -28,6 +28,7 @@ import lombok.ToString;
 
 import java.util.Arrays;
 import java.util.Collection;
+import java.util.Collections;
 
 /**
  * DAL statement.
@@ -40,7 +41,7 @@ public class DALStatement extends AbstractSQLStatement {
     private static final Collection<Keyword> SINGLE_TOKEN_STATEMENT_PREFIX = Arrays.<Keyword>asList(DefaultKeyword.USE, DefaultKeyword.DESC, MySQLKeyword.DESCRIBE, MySQLKeyword.SHOW, 
             PostgreSQLKeyword.SHOW, PostgreSQLKeyword.RESET);
 
-    private static final Collection<Keyword> DUAL_TOKEN_PRIMARY_STATEMENT_PREFIX = Arrays.<Keyword>asList(DefaultKeyword.SET);
+    private static final Collection<Keyword> DUAL_TOKEN_PRIMARY_STATEMENT_PREFIX = Collections.<Keyword>singletonList(DefaultKeyword.SET);
 
     private static final Collection<Keyword> DUAL_TOKEN_NOT_SECONDARY_STATEMENT_PREFIX = Arrays.<Keyword>asList(DefaultKeyword.ROLE, DefaultKeyword.TRANSACTION, PostgreSQLKeyword.CONSTRAINTS);
     

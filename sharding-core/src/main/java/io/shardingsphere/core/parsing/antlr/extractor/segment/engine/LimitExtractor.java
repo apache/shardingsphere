@@ -17,14 +17,7 @@
 
 package io.shardingsphere.core.parsing.antlr.extractor.segment.engine;
 
-import java.util.Collection;
-import java.util.HashMap;
-import java.util.Map;
-
-import org.antlr.v4.runtime.ParserRuleContext;
-
 import com.google.common.base.Optional;
-
 import io.shardingsphere.core.constant.DatabaseType;
 import io.shardingsphere.core.parsing.antlr.extractor.segment.OptionalSQLSegmentExtractor;
 import io.shardingsphere.core.parsing.antlr.extractor.segment.constant.RuleName;
@@ -33,6 +26,11 @@ import io.shardingsphere.core.parsing.antlr.sql.segment.LimitSegment;
 import io.shardingsphere.core.parsing.antlr.sql.segment.LimitValueSegment;
 import io.shardingsphere.core.parsing.lexer.token.Symbol;
 import io.shardingsphere.core.util.NumberUtil;
+import org.antlr.v4.runtime.ParserRuleContext;
+
+import java.util.Collection;
+import java.util.HashMap;
+import java.util.Map;
 
 /**
  * Limit extractor.
@@ -58,7 +56,7 @@ public class LimitExtractor implements OptionalSQLSegmentExtractor {
             questionNodeIndexMap.put(each, index++);
         }
         LimitValueSegment firstLimitValue = addLimitExtractResult(questionNodeIndexMap, (ParserRuleContext) rangeNode.get().getChild(0));
-        LimitValueSegment secondLimitValue = null;
+        LimitValueSegment secondLimitValue;
         if (rangeNode.get().getChildCount() >= 3) {
             secondLimitValue = addLimitExtractResult(questionNodeIndexMap, (ParserRuleContext) rangeNode.get().getChild(2));
             return Optional.of(new LimitSegment(DatabaseType.MySQL, Optional.of(firstLimitValue), Optional.of(secondLimitValue)));

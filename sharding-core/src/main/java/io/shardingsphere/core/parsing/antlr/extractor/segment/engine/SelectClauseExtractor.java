@@ -47,26 +47,26 @@ public class SelectClauseExtractor implements OptionalSQLSegmentExtractor {
     
     @Override
     public Optional<SelectClauseSegment> extract(final ParserRuleContext ancestorNode) {
-        Optional<ParserRuleContext> selectClaseNode = ASTUtils.findFirstChildNode(ancestorNode, RuleName.SELECT_CLAUSE);
-        if (!selectClaseNode.isPresent()) {
+        Optional<ParserRuleContext> selectClauseNode = ASTUtils.findFirstChildNode(ancestorNode, RuleName.SELECT_CLAUSE);
+        if (!selectClauseNode.isPresent()) {
             return Optional.absent();
         }
-        Optional<ParserRuleContext> selectExprsNode = ASTUtils.findFirstChildNode(selectClaseNode.get(), RuleName.SELECT_EXPRS);
-        if (!selectExprsNode.isPresent()) {
+        Optional<ParserRuleContext> selectExpressionNode = ASTUtils.findFirstChildNode(selectClauseNode.get(), RuleName.SELECT_EXPRS);
+        if (!selectExpressionNode.isPresent()) {
             return Optional.absent();
         }
-        SelectClauseSegment result = new SelectClauseSegment(selectExprsNode.get().getStop().getStopIndex() + 2);
-        for (int i = 0; i < selectExprsNode.get().getChildCount(); i++) {
-            ParseTree childNode = selectExprsNode.get().getChild(i);
+        SelectClauseSegment result = new SelectClauseSegment(selectExpressionNode.get().getStop().getStopIndex() + 2);
+        for (int i = 0; i < selectExpressionNode.get().getChildCount(); i++) {
+            ParseTree childNode = selectExpressionNode.get().getChild(i);
             if (childNode instanceof TerminalNodeImpl) {
                 continue;
             }
             String firstChildText = childNode.getText();
             if (firstChildText.endsWith(Symbol.STAR.getLiterals())) {
-                int pos = firstChildText.indexOf(Symbol.DOT.getLiterals());
-                Optional<String> owner = Optional.<String>absent();
-                if (0 < pos) {
-                    owner = Optional.of(SQLUtil.getExactlyValue(firstChildText.substring(0, pos)));
+                int position = firstChildText.indexOf(Symbol.DOT.getLiterals());
+                Optional<String> owner = Optional.absent();
+                if (0 < position) {
+                    owner = Optional.of(SQLUtil.getExactlyValue(firstChildText.substring(0, position)));
                 }
                 result.getExpressions().add(new StarExpressionSegment(((ParserRuleContext) childNode).getStart().getStartIndex(), owner));
             } else {

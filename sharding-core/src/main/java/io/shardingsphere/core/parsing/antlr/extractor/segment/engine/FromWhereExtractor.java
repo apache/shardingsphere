@@ -59,7 +59,7 @@ public final class FromWhereExtractor implements OptionalSQLSegmentExtractor {
         FromWhereSegment result = new FromWhereSegment();
         predicateSegmentExtractor = new PredicateExtractor(result.getTableAliases());
         Collection<ParserRuleContext> questionNodes = ASTUtils.getAllDescendantNodes(ancestorNode, RuleName.QUESTION);
-        result.setParamenterCount(questionNodes.size());
+        result.setParameterCount(questionNodes.size());
         Map<ParserRuleContext, Integer> questionNodeIndexMap = new HashMap<>();
         int index = 0;
         for (ParserRuleContext each : questionNodes) {
@@ -78,14 +78,14 @@ public final class FromWhereExtractor implements OptionalSQLSegmentExtractor {
                     continue;
                 }
                 ParserRuleContext childNode = (ParserRuleContext) each.getChild(i);
-                if (RuleName.TABLE_REFERENCES.getName().endsWith(childNode.getClass().getSimpleName())) {
+                if (RuleName.TABLE_REFERENCES.getName().equals(childNode.getClass().getSimpleName())) {
                     final Collection<ParserRuleContext> subTableReferenceNodes = ASTUtils.getAllDescendantNodes(childNode, RuleName.TABLE_REFERENCE);
                     if(!subTableReferenceNodes.isEmpty()) {
                         extractAndFillTableSegment(fromWhereSegment, subTableReferenceNodes, questionNodeIndexMap);
                     }
                     continue;
                 }
-                if (RuleName.TABLE_FACTOR.getName().endsWith(childNode.getClass().getSimpleName())) {
+                if (RuleName.TABLE_FACTOR.getName().equals(childNode.getClass().getSimpleName())) {
                     if(fillSubquery(fromWhereSegment, childNode)) {
                         continue;
                     }

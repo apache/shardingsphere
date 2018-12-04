@@ -15,13 +15,7 @@
  * </p>
  */
 
-package io.shardingsphere.core.parsing.antlr.filler.engnie;
-
-import java.util.Collection;
-import java.util.HashMap;
-import java.util.LinkedList;
-import java.util.List;
-import java.util.Map;
+package io.shardingsphere.core.parsing.antlr.filler.engine;
 
 import io.shardingsphere.core.constant.ShardingOperator;
 import io.shardingsphere.core.metadata.table.ShardingTableMetaData;
@@ -43,6 +37,12 @@ import io.shardingsphere.core.parsing.parser.sql.SQLStatement;
 import io.shardingsphere.core.parsing.parser.token.TableToken;
 import io.shardingsphere.core.rule.ShardingRule;
 
+import java.util.Collection;
+import java.util.HashMap;
+import java.util.LinkedList;
+import java.util.List;
+import java.util.Map;
+
 /**
  * From where filler.
  *
@@ -55,14 +55,14 @@ public class FromWhereFiller implements SQLSegmentFiller {
                      final ShardingTableMetaData shardingTableMetaData) {
         FromWhereSegment fromWhereSegment = (FromWhereSegment) sqlSegment;
         if (!fromWhereSegment.getConditions().getAndConditions().isEmpty()) {
-            Map<String, String> columnNameToTable = new HashMap<String, String>();
-            Map<String, Integer> columnNameCount = new HashMap<String, Integer>();
+            Map<String, String> columnNameToTable = new HashMap<>();
+            Map<String, Integer> columnNameCount = new HashMap<>();
             fillColumnTableMap(sqlStatement, shardingTableMetaData, columnNameToTable, columnNameCount);
             OrCondition orCondition = filterShardingCondition(sqlStatement, fromWhereSegment.getConditions(), shardingRule, columnNameToTable, columnNameCount);
             sqlStatement.getConditions().getOrCondition().getAndConditions().addAll(orCondition.getAndConditions());
         }
         int count = 0;
-        while (count < fromWhereSegment.getParamenterCount()) {
+        while (count < fromWhereSegment.getParameterCount()) {
             sqlStatement.increaseParametersIndex();
             count++;
         }
@@ -115,7 +115,7 @@ public class FromWhereFiller implements SQLSegmentFiller {
                     } else {
                         String tableName = columnNameToTable.get(condition.getColumn().getName());
                         Integer count = columnNameCount.get(condition.getColumn().getName());
-                        if (null != tableName && count.intValue() == 1) {
+                        if (null != tableName && 1 == count) {
                             condition.getColumn().setTableName(tableName);
                         }
                     }

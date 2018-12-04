@@ -32,6 +32,8 @@ import io.shardingsphere.orchestration.internal.registry.config.event.DataSource
 import io.shardingsphere.orchestration.internal.registry.config.event.MasterSlaveRuleChangedEvent;
 import io.shardingsphere.orchestration.internal.registry.config.event.PropertiesChangedEvent;
 import io.shardingsphere.orchestration.internal.registry.config.service.ConfigurationService;
+import io.shardingsphere.orchestration.internal.registry.state.event.DisabledStateChangedEvent;
+import io.shardingsphere.orchestration.internal.registry.state.schema.OrchestrationShardingSchema;
 import io.shardingsphere.orchestration.internal.rule.OrchestrationMasterSlaveRule;
 import io.shardingsphere.shardingjdbc.jdbc.core.datasource.MasterSlaveDataSource;
 import io.shardingsphere.shardingjdbc.orchestration.internal.circuit.datasource.CircuitBreakerDataSource;
@@ -136,5 +138,18 @@ public class OrchestrationMasterSlaveDataSource extends AbstractOrchestrationDat
     public final synchronized void renew(final ConfigMapChangedEvent configMapChangedEvent) {
         ConfigMapContext.getInstance().getConfigMap().clear();
         ConfigMapContext.getInstance().getConfigMap().putAll(configMapChangedEvent.getConfigMap());
+    }
+    
+    /**
+     * Renew disabled data source names.
+     *
+     * @param disabledStateChangedEvent disabled state changed event
+     */
+    @Subscribe
+    public synchronized void renew(final DisabledStateChangedEvent disabledStateChangedEvent) {
+        OrchestrationShardingSchema shardingSchema = disabledStateChangedEvent.getShardingSchema();
+        if (ShardingConstant.LOGIC_SCHEMA_NAME.equals(shardingSchema.getSchemaName())) {
+            ((OrchestrationMasterSlaveRule) dataSource.getMasterSlaveRule()).updateDisabledDataSourceNames(shardingSchema.getDataSourceName(), disabledStateChangedEvent.isDisabled());
+        }
     }
 }

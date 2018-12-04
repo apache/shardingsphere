@@ -47,6 +47,7 @@ import org.antlr.v4.runtime.TokenStream;
 import org.junit.Test;
 import org.junit.runner.RunWith;
 import org.junit.runners.Parameterized;
+import org.junit.runners.Parameterized.Parameters;
 
 import java.lang.reflect.Constructor;
 import java.lang.reflect.Method;
@@ -68,7 +69,7 @@ public final class AntlrIntegrateParsingTest extends AbstractBaseIntegrateSQLPar
     
     private final SQLCaseType sqlCaseType;
     
-    @Parameterized.Parameters(name = "{0} ({2}) -> {1}")
+    @Parameters(name = "{0} ({2}) -> {1}")
     public static Collection<Object[]> getTestParameters() {
         return sqlCasesLoader.getSupportedSQLTestParameters(Arrays.<Enum>asList(DatabaseType.values()), DatabaseType.class);
     }
@@ -116,6 +117,7 @@ public final class AntlrIntegrateParsingTest extends AbstractBaseIntegrateSQLPar
     
     /**
      * Execute.
+     * 
      * @param lexerClass lexer class
      * @param parserClass parser class
      * @param charStream char stream

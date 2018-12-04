@@ -42,5 +42,5 @@ public final class FromWhereSegment implements SQLSegment {
     private final Collection<SubquerySegment> subquerys = new LinkedList<>();
     
     @Setter
-    private Integer paramenterCount;
+    private Integer parameterCount;
 }

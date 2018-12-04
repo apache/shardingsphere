@@ -17,6 +17,7 @@
 
 package io.shardingsphere.core.parsing.antlr.extractor.statement;
 
+import io.shardingsphere.core.parsing.parser.exception.SQLParsingUnsupportedException;
 import lombok.RequiredArgsConstructor;
 
 /**
@@ -75,6 +76,6 @@ public enum SQLStatementType {
                 return each;
             }
         }
-        throw new UnsupportedOperationException(String.format("Unsupported SQL statement of `%s`", name));
+        throw new SQLParsingUnsupportedException(String.format("Unsupported SQL statement of `%s`", name));
     }
 }

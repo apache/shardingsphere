@@ -259,12 +259,12 @@ exprRecursive
 booleanPrimary
     : booleanPrimary IS NOT? (TRUE | FALSE | UNKNOWN |NULL)
     | booleanPrimary SAFE_EQ predicate
-    | booleanPrimary comparsionOperator predicate
-    | booleanPrimary comparsionOperator (ALL | ANY) subquery
+    | booleanPrimary comparisonOperator predicate
+    | booleanPrimary comparisonOperator (ALL | ANY) subquery
     | predicate
     ;
     
-comparsionOperator
+comparisonOperator
     : EQ_
     | GTE
     | GT
