@@ -15,7 +15,7 @@
  * </p>
  */
 
-package io.shardingsphere.core.parsing.antlr.extractor.sql.statement.dql;
+package io.shardingsphere.core.parsing.antlr.extractor.statement.engine.dql.dialect.mysql;
 
 import com.google.common.base.Optional;
 import com.google.common.base.Preconditions;
@@ -44,11 +44,11 @@ import io.shardingsphere.core.parsing.parser.token.OrderByToken;
 import java.util.List;
 
 /**
- * MySQL select extractor.
+ * Select extractor for MySQL.
  *
  * @author duhongjun
  */
-public class MySQLSelectExtractor extends AbstractSQLStatementExtractor {
+public final class MySQLSelectExtractor extends AbstractSQLStatementExtractor {
     
     public MySQLSelectExtractor() {
         addSQLSegmentExtractor(new TableNamesExtractor());
@@ -65,10 +65,6 @@ public class MySQLSelectExtractor extends AbstractSQLStatementExtractor {
         SelectStatement result = new SelectStatement();
         result.setSql(sql);
         return result;
-    }
-    
-    protected SQLStatement createStatement() {
-        return null;
     }
     
     protected void postExtract(final SQLStatement sqlStatement, final ShardingTableMetaData shardingTableMetaData) {
