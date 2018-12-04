@@ -79,10 +79,10 @@ renameColumn
     ;
 
 constraintClauses
-    : addConstraintClause | modifyConstraintClause | renameConstraintClause | dropConstraintClause+
+    : addConstraint | modifyConstraintClause | renameConstraintClause | dropConstraintClause+
     ;
 
-addConstraintClause
+addConstraint
     : ADD (outOfLineConstraint+ | outOfLineRefConstraint)
     ;
 

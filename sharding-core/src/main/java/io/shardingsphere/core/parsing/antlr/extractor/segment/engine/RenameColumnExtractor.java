@@ -26,7 +26,7 @@ import io.shardingsphere.core.parsing.parser.exception.SQLParsingUnsupportedExce
 import org.antlr.v4.runtime.ParserRuleContext;
 
 /**
- * Rename column clause extractor.
+ * Rename column extractor.
  * 
  * @author duhongjun
  */

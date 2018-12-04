@@ -20,10 +20,11 @@ package io.shardingsphere.core.parsing.antlr.extractor.segment.engine.dialect.my
 import com.google.common.base.Optional;
 import io.shardingsphere.core.parsing.antlr.extractor.segment.OptionalSQLSegmentExtractor;
 import io.shardingsphere.core.parsing.antlr.extractor.segment.constant.RuleName;
-import io.shardingsphere.core.parsing.antlr.extractor.segment.engine.ColumnDefinitionPhraseExtractor;
+import io.shardingsphere.core.parsing.antlr.extractor.segment.engine.ColumnDefinitionExtractor;
 import io.shardingsphere.core.parsing.antlr.extractor.util.ASTUtils;
-import io.shardingsphere.core.parsing.antlr.sql.segment.ColumnDefinitionSegment;
-import io.shardingsphere.core.parsing.antlr.sql.segment.ColumnPositionSegment;
+import io.shardingsphere.core.parsing.antlr.sql.segment.column.ColumnDefinitionSegment;
+import io.shardingsphere.core.parsing.antlr.sql.segment.column.ColumnPositionSegment;
+
 import org.antlr.v4.runtime.ParserRuleContext;
 
 /**
@@ -33,7 +34,7 @@ import org.antlr.v4.runtime.ParserRuleContext;
  */
 public final class MySQLChangeColumnExtractor implements OptionalSQLSegmentExtractor {
     
-    private final ColumnDefinitionPhraseExtractor columnDefinitionPhraseExtractor = new ColumnDefinitionPhraseExtractor();
+    private final ColumnDefinitionExtractor columnDefinitionPhraseExtractor = new ColumnDefinitionExtractor();
     
     @Override
     public Optional<ColumnDefinitionSegment> extract(final ParserRuleContext ancestorNode) {

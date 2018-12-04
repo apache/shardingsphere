@@ -1,6 +1,6 @@
 grammar MySQLDQL;
 
-import MySQLKeyword, Keyword, Symbol, DataType, BaseRule, DQLBase;
+import DQLBase, MySQLKeyword, Keyword, Symbol, DataType, BaseRule;
 
 select 
     : withClause | unionSelect
@@ -92,10 +92,10 @@ indexHintList
     ;
     
 indexHint
-    : USE (INDEX|KEY) (FOR (JOIN|ORDER BY|GROUP BY))* idList
-    | IGNORE (INDEX|KEY) (FOR (JOIN|ORDER BY|GROUP BY))* idList
+    : (USE | IGNORE | FORCE) (INDEX|KEY) (FOR (JOIN|ORDER BY|GROUP BY))* indexList
     ;
 
 selectExpr
-    : (columnName | ASTERISK | expr) AS? alias?
+    : (columnName | expr) AS? alias?
+    | columnName DOT_ASTERISK
     ;

@@ -4,7 +4,6 @@ import DataType, Keyword, Symbol;
 
 ID: 
     (BQ_?[a-zA-Z_$][a-zA-Z0-9_$]* BQ_? DOT)? (BQ_?[a-zA-Z_$][a-zA-Z0-9_$]* BQ_?)
-    | [a-zA-Z_$0-9]+ DOT_ASTERISK
     ;
     
 schemaName
@@ -139,99 +138,107 @@ dataTypeLength
 primaryKey
     : PRIMARY? KEY
     ;
-
+    
 matchNone
     : 'Default does not match anything'
     ;
-
+    
 ids
     : ID (COMMA  ID)*
     ;
-
+    
 idList
     : LP_ ids RP_
     ;
-
+    
 rangeClause
-    : NUMBER (COMMA  NUMBER)* | NUMBER OFFSET NUMBER
+    : rangeItem (COMMA  rangeItem)* | rangeItem OFFSET rangeItem
     ;
-
+    
+rangeItem
+    : number | question
+    ;    
+    
 schemaNames
     : schemaName (COMMA schemaName)*
     ;
-
+    
 databaseNames
     : databaseName (COMMA databaseName)*
     ;
-
+    
 domainNames
     : domainName (COMMA domainName)*
     ;
-
+    
 tableNamesWithParen
     : LP_ tableNames RP_
     ;
-
+    
 tableNames
     : tableName (COMMA tableName)*
     ;
-
+    
 columnNamesWithParen
     : LP_ columnNames RP_
     ;
-
+    
 columnNames
     : columnName (COMMA columnName)*
     ;
-
+    
 columnList
     : LP_ columnNames RP_
     ;
-
+    
 sequenceNames
     : sequenceName (COMMA sequenceName)*
     ;
-
+    
 tablespaceNames
     : tablespaceName (COMMA tablespaceName)*
     ;
-
+    
 indexNames
     : indexName (COMMA indexName)*
     ;
-
+    
+indexList
+    : LP_ indexNames RP_
+    ;
+    
 typeNames
     : typeName (COMMA typeName)*
     ;
-
+    
 rowNames
     : rowName (COMMA rowName)*
     ;
-
+    
 roleNames
     : roleName (COMMA roleName)*
     ;
-
+    
 userNames
     : userName (COMMA userName)*
     ;
-
+    
 serverNames
     : serverName (COMMA serverName)*
     ;
-
+    
 bitExprs:
     bitExpr (COMMA bitExpr)*
     ;
-
+    
 exprs
     : expr (COMMA expr)*
     ;
-
+    
 exprsWithParen
     : LP_ exprs RP_
     ;
-
+    
 expr
     : expr AND expr
     | expr AND_ expr
@@ -244,20 +251,20 @@ expr
     | booleanPrimary
     | exprRecursive
     ;
-
+    
 exprRecursive
     : matchNone
     ;
-
+    
 booleanPrimary
     : booleanPrimary IS NOT? (TRUE | FALSE | UNKNOWN |NULL)
     | booleanPrimary SAFE_EQ predicate
-    | booleanPrimary comparisonOperator predicate
-    | booleanPrimary comparisonOperator (ALL | ANY) subquery
+    | booleanPrimary comparsionOperator predicate
+    | booleanPrimary comparsionOperator (ALL | ANY) subquery
     | predicate
     ;
-
-comparisonOperator
+    
+comparsionOperator
     : EQ_
     | GTE
     | GT
@@ -266,17 +273,17 @@ comparisonOperator
     | NEQ_
     | NEQ
     ;
-
+    
 predicate
     : bitExpr NOT? IN subquery
-    | bitExpr NOT? IN LP_ simpleExpr ( COMMA  simpleExpr)* RP_
+    | bitExpr NOT? IN LP_ simpleExpr (COMMA simpleExpr)* RP_
     | bitExpr NOT? BETWEEN simpleExpr AND predicate
     | bitExpr SOUNDS LIKE simpleExpr
     | bitExpr NOT? LIKE simpleExpr (ESCAPE simpleExpr)*
     | bitExpr NOT? REGEXP simpleExpr
     | bitExpr
     ;
-
+    
 bitExpr
     : bitExpr BIT_INCLUSIVE_OR bitExpr
     | bitExpr BIT_AND bitExpr
@@ -293,11 +300,11 @@ bitExpr
     //| bitExpr '-' interval_expr
     | simpleExpr
     ;
-
+    
 simpleExpr
     : functionCall
     | liter
-    | ID
+    | columnName
     | simpleExpr collateClause
     //| param_marker
     //| variable
@@ -308,12 +315,12 @@ simpleExpr
     | NOT_ simpleExpr
     | BINARY simpleExpr
     | LP_ expr RP_
-    | ROW LP_ simpleExpr( COMMA  simpleExpr)* RP_
+    | ROW LP_ simpleExpr( COMMA simpleExpr)* RP_
     | subquery
     | EXISTS subquery
     // | (identifier expr)
     //| match_expr
-    //| case_expr
+    | caseExpress
     // | interval_expr
     |privateExprOfDb
     ;
@@ -322,21 +329,37 @@ functionCall
     : ID LP_ bitExprs? RP_
     ;
     
+caseExpress:
+    ;
+    
 privateExprOfDb
     : matchNone
     ;
     
 liter
-    : QUESTION
-    | NUMBER
+    : question
+    | number
     | TRUE
     | FALSE
     | NULL
     | LBE_ ID STRING RBE_
     | HEX_DIGIT
-    | ID? STRING  collateClause?
+    | string
+    | ID STRING  collateClause?
     | (DATE | TIME |TIMESTAMP) STRING
     | ID? BIT_NUM collateClause?
+    ;
+    
+question
+    : QUESTION
+    ;
+    
+number
+   : NUMBER
+   ;
+   
+string
+    : STRING
     ;
     
 subquery
@@ -352,5 +375,5 @@ orderByClause
     ;
     
 orderByItem
-    : (columnName | NUMBER |expr) (ASC|DESC)?
+    : (columnName | number |expr) (ASC|DESC)?
     ;

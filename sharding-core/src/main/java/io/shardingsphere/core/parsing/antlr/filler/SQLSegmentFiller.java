@@ -20,6 +20,7 @@ package io.shardingsphere.core.parsing.antlr.filler;
 import io.shardingsphere.core.metadata.table.ShardingTableMetaData;
 import io.shardingsphere.core.parsing.antlr.sql.segment.SQLSegment;
 import io.shardingsphere.core.parsing.parser.sql.SQLStatement;
+import io.shardingsphere.core.rule.ShardingRule;
 
 /**
  * SQL segment filler.
@@ -34,7 +35,8 @@ public interface SQLSegmentFiller {
      *
      * @param sqlSegment SQL segment
      * @param sqlStatement SQL statement
+     * @param shardingRule  databases and tables sharding rule
      * @param shardingTableMetaData sharding table meta data
      */
-    void fill(SQLSegment sqlSegment, SQLStatement sqlStatement, ShardingTableMetaData shardingTableMetaData);
+    void fill(SQLSegment sqlSegment, SQLStatement sqlStatement, ShardingRule shardingRule, ShardingTableMetaData shardingTableMetaData);
 }

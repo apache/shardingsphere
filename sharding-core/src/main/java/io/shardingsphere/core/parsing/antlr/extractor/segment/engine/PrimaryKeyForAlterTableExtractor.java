@@ -21,8 +21,8 @@ import com.google.common.base.Optional;
 import io.shardingsphere.core.parsing.antlr.extractor.segment.OptionalSQLSegmentExtractor;
 import io.shardingsphere.core.parsing.antlr.extractor.segment.constant.RuleName;
 import io.shardingsphere.core.parsing.antlr.extractor.util.ASTUtils;
-import io.shardingsphere.core.parsing.antlr.sql.segment.ConstraintDefinitionSegment;
-import lombok.RequiredArgsConstructor;
+import io.shardingsphere.core.parsing.antlr.sql.segment.constraint.ConstraintDefinitionSegment;
+
 import org.antlr.v4.runtime.ParserRuleContext;
 
 import java.util.Collection;
@@ -32,14 +32,11 @@ import java.util.Collection;
  *
  * @author duhongjun
  */
-@RequiredArgsConstructor
 public final class PrimaryKeyForAlterTableExtractor implements OptionalSQLSegmentExtractor {
-    
-    private final RuleName ruleName;
     
     @Override
     public Optional<ConstraintDefinitionSegment> extract(final ParserRuleContext ancestorNode) {
-        Optional<ParserRuleContext> modifyColumnNode = ASTUtils.findFirstChildNode(ancestorNode, ruleName);
+        Optional<ParserRuleContext> modifyColumnNode = ASTUtils.findFirstChildNode(ancestorNode, RuleName.ADD_CONSTRAINT);
         if (!modifyColumnNode.isPresent()) {
             return Optional.absent();
         }

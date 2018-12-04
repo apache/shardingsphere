@@ -52,6 +52,8 @@ public enum SQLStatementType {
     BEGIN_WORK("BeginWork"),
     
     SET_VARIABLE("SetVariable"),
+    
+    SELECT("Select"),
 
     SET_PARAM("SetParam"),
 

@@ -23,7 +23,7 @@ alterTableAction
     : addColumn
     | dropColumn
     | modifyColumn
-    | alterTableAddConstraint
+    | addConstraint
     | ALTER CONSTRAINT constraintName constraintOptionalParam
     | VALIDATE CONSTRAINT constraintName
     | DROP CONSTRAINT (IF EXISTS)? constraintName (RESTRICT | CASCADE)?
@@ -95,7 +95,7 @@ attributeOption
     : ID EQ_ simpleExpr
     ;
 
-alterTableAddConstraint       
+addConstraint       
     : ADD (tableConstraint (NOT VALID)? | tableConstraintUsingIndex)
     ;
 

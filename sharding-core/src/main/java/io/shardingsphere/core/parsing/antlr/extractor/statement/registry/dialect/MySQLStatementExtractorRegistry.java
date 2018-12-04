@@ -17,6 +17,10 @@
 
 package io.shardingsphere.core.parsing.antlr.extractor.statement.registry.dialect;
 
+import java.util.HashMap;
+import java.util.Map;
+
+import io.shardingsphere.core.parsing.antlr.extractor.sql.statement.dql.MySQLSelectExtractor;
 import io.shardingsphere.core.parsing.antlr.extractor.statement.SQLStatementExtractor;
 import io.shardingsphere.core.parsing.antlr.extractor.statement.SQLStatementType;
 import io.shardingsphere.core.parsing.antlr.extractor.statement.engine.ddl.CreateIndexExtractor;
@@ -27,9 +31,6 @@ import io.shardingsphere.core.parsing.antlr.extractor.statement.engine.ddl.diale
 import io.shardingsphere.core.parsing.antlr.extractor.statement.engine.ddl.dialect.mysql.MySQLTruncateTableExtractor;
 import io.shardingsphere.core.parsing.antlr.extractor.statement.engine.tcl.TCLStatementExtractor;
 import io.shardingsphere.core.parsing.antlr.extractor.statement.registry.SQLStatementExtractorRegistry;
-
-import java.util.HashMap;
-import java.util.Map;
 
 /**
  * SQL statement extractor registry for MySQL.
@@ -45,6 +46,7 @@ public final class MySQLStatementExtractorRegistry implements SQLStatementExtrac
         registerDDL();
         registerTCL();
         registerDAL();
+        registerDQL();
     }
     
     private static void registerDDL() {
@@ -66,6 +68,10 @@ public final class MySQLStatementExtractorRegistry implements SQLStatementExtrac
     
     private static void registerDAL() {
         EXTRACTORS.put(SQLStatementType.SET_VARIABLE, new TCLStatementExtractor());
+    }
+    
+    private static void registerDQL() {
+        EXTRACTORS.put(SQLStatementType.SELECT, new MySQLSelectExtractor());
     }
     
     @Override
