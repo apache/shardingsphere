@@ -83,6 +83,8 @@ public enum RuleName {
     
     TABLE_CONSTRAINT("TableConstraint"),
     
+    TABLE_REFERENCES("TableReference"),
+    
     TABLE_REFERENCE("TableReference"),
     
     TABLE_FACTOR("TableFactor"),
@@ -120,7 +122,9 @@ public enum RuleName {
     LIMIT_CLAUSE("LimitClause"),
     
     RANGE_CLAUSE("RangeClause"),
-
+    
+    SUBQUERY("Subquery"),
+    
     SHOW_PARAM("ShowParam");
     
     private final String name;
