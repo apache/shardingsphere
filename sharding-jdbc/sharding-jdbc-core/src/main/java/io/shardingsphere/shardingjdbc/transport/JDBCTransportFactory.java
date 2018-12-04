@@ -38,7 +38,7 @@ public final class JDBCTransportFactory implements ShardingTransportFactory {
     
     @Override
     public void cacheTransport(final SagaTransactionEvent event) {
-        transports.set(new JDBCSqlTransport((AbstractConnectionAdapter) event.getConnection()));
+        transports.set(new JDBCSQLTransport((AbstractConnectionAdapter) event.getConnection()));
     }
     
     @Override

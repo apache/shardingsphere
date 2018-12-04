@@ -26,9 +26,8 @@ import io.shardingsphere.core.executor.StatementExecuteUnit;
 import io.shardingsphere.core.executor.sql.execute.SQLExecuteCallback;
 import io.shardingsphere.core.routing.RouteUnit;
 import io.shardingsphere.core.routing.SQLUnit;
+import io.shardingsphere.core.transaction.TransactionTypeHolder;
 import io.shardingsphere.shardingjdbc.jdbc.core.datasource.FixedBaseShardingTransactionHandler;
-import io.shardingsphere.shardingjdbc.transaction.TransactionTypeHolder;
-import io.shardingsphere.spi.transaction.ShardingTransactionHandler;
 import io.shardingsphere.spi.transaction.ShardingTransactionHandlerRegistry;
 import io.shardingsphere.transaction.executor.SagaSQLExecuteCallback;
 import org.junit.After;
@@ -81,15 +80,19 @@ public class SQLExecuteCallbackFactoryTest {
     @Before
     public void setUp() throws SQLException {
         when(preparedStatement.getConnection()).thenReturn(connection);
-        when(statement.getConnection()).thenReturn(connection);
         when(connection.getMetaData()).thenReturn(metaData);
         when(metaData.getURL()).thenReturn("jdbc:mysql://localhost:3306/test");
         unit = new StatementExecuteUnit(new RouteUnit("ds", new SQLUnit("SELECT now()", Collections.<List<Object>>emptyList())), preparedStatement, ConnectionMode.CONNECTION_STRICTLY);
     }
     
+    @After
+    public void tearDown() {
+        TransactionTypeHolder.set(ORIGIN_TRANSACTION_TYPE);
+    }
+    
     @Test
     public void assertGetPreparedUpdateSQLExecuteCallback() throws SQLException {
-        SQLExecuteCallback sqlExecuteCallback = SQLExecuteCallbackFactory.getPreparedUpdateSQLExecuteCallback(DatabaseType.MySQL, true);
+        SQLExecuteCallback sqlExecuteCallback = SQLExecuteCallbackFactory.getPreparedUpdateSQLExecuteCallback(DatabaseType.MySQL, SQLType.DML, true);
         sqlExecuteCallback.execute(unit, true, null);
         verify(preparedStatement).executeUpdate();
         TransactionTypeHolder.set(TransactionType.BASE);
@@ -103,7 +106,7 @@ public class SQLExecuteCallbackFactoryTest {
     
     @Test
     public void assertGetPreparedSQLExecuteCallback() throws SQLException {
-        SQLExecuteCallback sqlExecuteCallback = SQLExecuteCallbackFactory.getPreparedSQLExecuteCallback(DatabaseType.MySQL, true);
+        SQLExecuteCallback sqlExecuteCallback = SQLExecuteCallbackFactory.getPreparedSQLExecuteCallback(DatabaseType.MySQL, SQLType.DML, true);
         sqlExecuteCallback.execute(unit, true, null);
         verify(preparedStatement).execute();
         TransactionTypeHolder.set(TransactionType.BASE);
@@ -117,7 +120,6 @@ public class SQLExecuteCallbackFactoryTest {
     
     @Test
     public void assertGetBatchPreparedSQLExecuteCallback() throws SQLException {
-        unit = new StatementExecuteUnit(new RouteUnit("ds", new SQLUnit("SELECT now()", Collections.<List<Object>>emptyList())), preparedStatement, ConnectionMode.CONNECTION_STRICTLY);
         SQLExecuteCallback sqlExecuteCallback = SQLExecuteCallbackFactory.getBatchPreparedSQLExecuteCallback(DatabaseType.MySQL, SQLType.DML, true);
         sqlExecuteCallback.execute(unit, true, null);
         verify(preparedStatement).executeBatch();
@@ -132,7 +134,6 @@ public class SQLExecuteCallbackFactoryTest {
     
     @Test
     public void assertGetSQLExecuteCallbackWithUpdater() throws SQLException {
-        unit = new StatementExecuteUnit(new RouteUnit("ds", new SQLUnit("SELECT now()", Collections.<List<Object>>emptyList())), statement, ConnectionMode.CONNECTION_STRICTLY);
         SQLExecuteCallback sqlExecuteCallback = SQLExecuteCallbackFactory.getSQLExecuteCallback(DatabaseType.MySQL, SQLType.DML, true, updater);
         sqlExecuteCallback.execute(unit, true, null);
         verify(updater).executeUpdate(unit.getStatement(), unit.getRouteUnit().getSqlUnit().getSql());
@@ -147,7 +148,6 @@ public class SQLExecuteCallbackFactoryTest {
     
     @Test
     public void assertGetSQLExecuteCallbackWithExecutor() throws SQLException {
-        unit = new StatementExecuteUnit(new RouteUnit("ds", new SQLUnit("SELECT now()", Collections.<List<Object>>emptyList())), statement, ConnectionMode.CONNECTION_STRICTLY);
         SQLExecuteCallback sqlExecuteCallback = SQLExecuteCallbackFactory.getSQLExecuteCallback(DatabaseType.MySQL, SQLType.DML, true, executor);
         sqlExecuteCallback.execute(unit, true, null);
         verify(executor).execute(unit.getStatement(), unit.getRouteUnit().getSqlUnit().getSql());
