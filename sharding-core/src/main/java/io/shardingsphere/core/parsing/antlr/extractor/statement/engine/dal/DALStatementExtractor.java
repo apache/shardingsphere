@@ -29,7 +29,7 @@ import io.shardingsphere.core.parsing.parser.sql.dal.DALStatement;
 public abstract class DALStatementExtractor extends AbstractSQLStatementExtractor {
     
     @Override
-    protected SQLStatement createStatement() {
+    protected SQLStatement createSQLStatement(final String sql) {
         return new DALStatement();
     }
 }

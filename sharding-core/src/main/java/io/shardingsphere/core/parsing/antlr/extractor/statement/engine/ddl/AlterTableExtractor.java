@@ -45,7 +45,7 @@ public abstract class AlterTableExtractor extends DDLStatementExtractor {
     }
     
     @Override
-    protected final SQLStatement createStatement() {
+    protected final SQLStatement createSQLStatement(final String sql) {
         return new AlterTableStatement();
     }
     

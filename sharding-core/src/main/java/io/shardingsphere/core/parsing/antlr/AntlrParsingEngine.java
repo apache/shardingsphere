@@ -50,14 +50,22 @@ public final class AntlrParsingEngine implements SQLParser {
     
     @Override
     public SQLStatement parse() {
-        ParseTree root = SQLASTParserFactory.newInstance(databaseType, sql).execute().getChild(0);
-        if (root instanceof ErrorNode) {
+        return extractSQLStatement(parseAST());
+    }
+    
+    private ParseTree parseAST() {
+        ParseTree result = SQLASTParserFactory.newInstance(databaseType, sql).execute().getChild(0);
+        if (result instanceof ErrorNode) {
             throw new SQLParsingUnsupportedException(String.format("Unsupported SQL of `%s`", sql));
         }
-        SQLStatementExtractor extractor = SQLStatementExtractorFactory.getInstance(databaseType, SQLStatementType.nameOf(root.getClass().getSimpleName()));
+        return result;
+    }
+    
+    private SQLStatement extractSQLStatement(final ParseTree rootNode) {
+        SQLStatementExtractor extractor = SQLStatementExtractorFactory.getInstance(databaseType, SQLStatementType.nameOf(rootNode.getClass().getSimpleName()));
         if (null == extractor) {
-            throw new SQLParsingUnsupportedException(String.format("Unsupported SQL statement of `%s`", root.getClass().getSimpleName()));
+            throw new SQLParsingUnsupportedException(String.format("Unsupported SQL statement of `%s`", rootNode.getClass().getSimpleName()));
         }
-        return extractor.extract(sql, (ParserRuleContext) root, shardingRule, shardingTableMetaData);
+        return extractor.extract(sql, (ParserRuleContext) rootNode, shardingRule, shardingTableMetaData);
     }
 }

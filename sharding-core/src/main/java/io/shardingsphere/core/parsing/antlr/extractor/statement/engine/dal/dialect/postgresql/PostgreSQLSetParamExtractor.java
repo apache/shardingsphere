@@ -31,7 +31,7 @@ import lombok.NoArgsConstructor;
 public class PostgreSQLSetParamExtractor extends DALStatementExtractor {
     
     @Override
-    protected SQLStatement createStatement() {
+    protected SQLStatement createSQLStatement(final String sql) {
         return new SetParamStatement();
     }
 }

@@ -46,7 +46,7 @@ public final class CreateTableExtractor extends DDLStatementExtractor {
     }
     
     @Override
-    protected SQLStatement createStatement() {
+    protected SQLStatement createSQLStatement(final String sql) {
         return new CreateTableStatement();
     }
     
