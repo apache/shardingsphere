@@ -41,7 +41,7 @@ import java.util.Properties;
  * @author panjuan
  */
 @NoArgsConstructor(access = AccessLevel.PRIVATE)
-public class ConfigurationYamlLoader {
+public class ConfigurationYamlHandler {
     
     /**
      * Load config map.
@@ -115,5 +115,25 @@ public class ConfigurationYamlLoader {
                 return result;
             }
         });
+    }
+    
+    /**
+     * Dump config map.
+     *
+     * @param configMap config map
+     * @return data
+     */
+    public static String dumpConfigMap(final Map<String, Object> configMap) {
+        return new Yaml(new DefaultYamlRepresenter()).dumpAsMap(configMap);
+    }
+    
+    /**
+     * Dump properties configuration.
+     *
+     * @param props props
+     * @return data
+     */
+    public static String dumpProperties(final Properties props) {
+        return new Yaml(new DefaultYamlRepresenter()).dumpAsMap(props);
     }
 }
