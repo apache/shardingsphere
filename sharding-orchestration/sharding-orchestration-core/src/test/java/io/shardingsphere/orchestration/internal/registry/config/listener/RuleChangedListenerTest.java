@@ -22,7 +22,6 @@ import io.shardingsphere.orchestration.internal.registry.config.event.ShardingRu
 import io.shardingsphere.orchestration.reg.api.RegistryCenter;
 import io.shardingsphere.orchestration.reg.listener.DataChangedEvent;
 import io.shardingsphere.orchestration.reg.listener.DataChangedEvent.ChangedType;
-import lombok.SneakyThrows;
 import org.junit.Before;
 import org.junit.Test;
 import org.junit.runner.RunWith;
@@ -35,9 +34,8 @@ import static org.junit.Assert.assertThat;
 @RunWith(MockitoJUnitRunner.class)
 public final class RuleChangedListenerTest {
     
-    private static final String SHARDING_RULE_YAML = "tables:\n" + "  t_order:\n" + "    actualDataNodes: ds_${0..1}.t_order_${0..1}\n"
-            + "    keyGeneratorColumnName: order_id\n" + "    logicTable: t_order\n" + "    tableStrategy:\n" + "      inline:\n"
-            + "        algorithmExpression: t_order_${order_id % 2}\n" + "        shardingColumn: order_id";
+    private static final String SHARDING_RULE_YAML = "tables:\n" + "  t_order:\n" + "    logicTable: t_order\n" + "    actualDataNodes: ds_${0..1}.t_order_${0..1}\n"
+            + "    tableStrategy:\n" + "      inline:\n" + "        algorithmExpression: t_order_${order_id % 2}\n" + "        shardingColumn: order_id";
     
     private static final String MASTER_SLAVE_RULE_YAML = "masterDataSourceName: master_ds\n" + "name: ms_ds\n" + "slaveDataSourceNames:\n" + "- slave_ds_0\n" + "- slave_ds_1\n";
     
@@ -47,23 +45,21 @@ public final class RuleChangedListenerTest {
     private RegistryCenter regCenter;
     
     @Before
-    @SneakyThrows
     public void setUp() {
         ruleChangedListener = new RuleChangedListener("test", regCenter, "sharding_schema");
     }
     
     @Test
     public void assertCreateShardingOrchestrationEventForSharding() {
-        DataChangedEvent dataChangedEvent = new DataChangedEvent("test", SHARDING_RULE_YAML, ChangedType.UPDATED);
-        ShardingRuleChangedEvent actual = (ShardingRuleChangedEvent) ruleChangedListener.createShardingOrchestrationEvent(dataChangedEvent);
+        ShardingRuleChangedEvent actual = (ShardingRuleChangedEvent) ruleChangedListener.createShardingOrchestrationEvent(new DataChangedEvent("test", SHARDING_RULE_YAML, ChangedType.UPDATED));
         assertThat(actual.getShardingSchemaName(), is("sharding_schema"));
         assertThat(actual.getShardingRuleConfiguration().getTableRuleConfigs().size(), is(1));
     }
     
     @Test
     public void assertCreateShardingOrchestrationEventForMasterSlave() {
-        DataChangedEvent dataChangedEvent = new DataChangedEvent("test", MASTER_SLAVE_RULE_YAML, ChangedType.UPDATED);
-        MasterSlaveRuleChangedEvent actual = (MasterSlaveRuleChangedEvent) ruleChangedListener.createShardingOrchestrationEvent(dataChangedEvent);
+        MasterSlaveRuleChangedEvent actual = (MasterSlaveRuleChangedEvent) ruleChangedListener.createShardingOrchestrationEvent(
+                new DataChangedEvent("test", MASTER_SLAVE_RULE_YAML, ChangedType.UPDATED));
         assertThat(actual.getShardingSchemaName(), is("sharding_schema"));
         assertThat(actual.getMasterSlaveRuleConfiguration().getMasterDataSourceName(), is("master_ds"));
     }

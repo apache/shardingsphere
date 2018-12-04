@@ -20,7 +20,6 @@ package io.shardingsphere.orchestration.internal.registry.config.listener;
 import io.shardingsphere.orchestration.reg.api.RegistryCenter;
 import io.shardingsphere.orchestration.reg.listener.DataChangedEvent;
 import io.shardingsphere.orchestration.reg.listener.DataChangedEvent.ChangedType;
-import lombok.SneakyThrows;
 import org.junit.Before;
 import org.junit.Test;
 import org.junit.runner.RunWith;
@@ -41,14 +40,12 @@ public final class PropertiesChangedListenerTest {
     private RegistryCenter regCenter;
     
     @Before
-    @SneakyThrows
     public void setUp() {
         propertiesChangedListener = new PropertiesChangedListener("test", regCenter);
     }
     
     @Test
     public void assertCreateShardingOrchestrationEvent() {
-        DataChangedEvent dataChangedEvent = new DataChangedEvent("test", PROPERTIES_YAML, ChangedType.UPDATED);
-        assertThat(propertiesChangedListener.createShardingOrchestrationEvent(dataChangedEvent).getProps().get("sql.show"), is((Object) true));
+        assertThat(propertiesChangedListener.createShardingOrchestrationEvent(new DataChangedEvent("test", PROPERTIES_YAML, ChangedType.UPDATED)).getProps().get("sql.show"), is((Object) true));
     }
 }

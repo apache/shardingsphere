@@ -43,7 +43,11 @@ public final class RuleChangedListener extends PostShardingOrchestrationEventLis
     
     @Override
     protected ShardingOrchestrationEvent createShardingOrchestrationEvent(final DataChangedEvent event) {
-        return event.getValue().contains("tables:\n") ? getShardingConfigurationChangedEvent(event) : getMasterSlaveConfigurationChangedEvent(event);
+        return isShardingRule(event) ? getShardingConfigurationChangedEvent(event) : getMasterSlaveConfigurationChangedEvent(event);
+    }
+    
+    private boolean isShardingRule(final DataChangedEvent event) {
+        return event.getValue().contains("tables:\n");
     }
     
     private ShardingRuleChangedEvent getShardingConfigurationChangedEvent(final DataChangedEvent event) {

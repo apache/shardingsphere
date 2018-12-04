@@ -138,7 +138,7 @@ public final class ConfigurationService {
     }
     
     /**
-     * Adjust is sharding rule or master-slave rule.
+     * Judge is sharding rule or master-slave rule.
      *
      * @param shardingSchemaName sharding schema name
      * @return is sharding rule or not
@@ -148,10 +148,10 @@ public final class ConfigurationService {
     }
     
     /**
-     * Load data sources.
+     * Load data source configurations.
      *
      * @param shardingSchemaName sharding schema name
-     * @return data sources map
+     * @return data source configurations
      */
     public Map<String, DataSourceConfiguration> loadDataSourceConfigurations(final String shardingSchemaName) {
         return ConfigurationYamlConverter.loadDataSourceConfigurations(regCenter.getDirectly(configNode.getDataSourcePath(shardingSchemaName)));

@@ -45,13 +45,11 @@ public final class InstanceStateChangedListenerTest {
     
     @Test
     public void assertCreateShardingOrchestrationEventWhenEnabled() {
-        DataChangedEvent dataChangedEvent = new DataChangedEvent("test/test_ds", "", ChangedType.UPDATED);
-        assertFalse(instanceStateChangedListener.createShardingOrchestrationEvent(dataChangedEvent).isCircuitBreak());
+        assertFalse(instanceStateChangedListener.createShardingOrchestrationEvent(new DataChangedEvent("test/test_ds", "", ChangedType.UPDATED)).isCircuitBreak());
     }
     
     @Test
     public void assertCreateShardingOrchestrationEventWhenDisabled() {
-        DataChangedEvent dataChangedEvent = new DataChangedEvent("test/test_ds", StateNodeStatus.DISABLED.name(), ChangedType.UPDATED);
-        assertTrue(instanceStateChangedListener.createShardingOrchestrationEvent(dataChangedEvent).isCircuitBreak());
+        assertTrue(instanceStateChangedListener.createShardingOrchestrationEvent(new DataChangedEvent("test/test_ds", StateNodeStatus.DISABLED.name(), ChangedType.UPDATED)).isCircuitBreak());
     }
 }
