@@ -32,7 +32,7 @@ import static org.junit.Assert.assertThat;
 @RunWith(MockitoJUnitRunner.class)
 public final class AuthenticationChangedListenerTest {
     
-    private static final String authenticationYaml = "password: root\nusername: root\n";
+    private static final String AUTHENTICATION_YAML = "password: root\nusername: root\n";
     
     private AuthenticationChangedListener authenticationChangedListener;
     
@@ -46,7 +46,7 @@ public final class AuthenticationChangedListenerTest {
     
     @Test
     public void assertCreateShardingOrchestrationEvent() {
-        DataChangedEvent dataChangedEvent = new DataChangedEvent("test", authenticationYaml, ChangedType.UPDATED);
+        DataChangedEvent dataChangedEvent = new DataChangedEvent("test", AUTHENTICATION_YAML, ChangedType.UPDATED);
         assertThat(authenticationChangedListener.createShardingOrchestrationEvent(dataChangedEvent).getAuthentication().getUsername(), is("root"));
     }
 }
