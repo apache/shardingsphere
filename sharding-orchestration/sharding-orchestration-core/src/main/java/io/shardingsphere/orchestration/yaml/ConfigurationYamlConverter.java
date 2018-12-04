@@ -41,7 +41,7 @@ import java.util.Properties;
  * @author panjuan
  */
 @NoArgsConstructor(access = AccessLevel.PRIVATE)
-public class ConfigurationYamlHandler {
+public class ConfigurationYamlConverter {
     
     /**
      * Load config map.
@@ -144,7 +144,7 @@ public class ConfigurationYamlHandler {
      * @return data
      */
     public static String dumpAuthentication(final Authentication authentication) {
-       return new Yaml(new DefaultYamlRepresenter()).dumpAsMap(authentication);
+        return new Yaml(new DefaultYamlRepresenter()).dumpAsMap(authentication);
     }
     
     /**
