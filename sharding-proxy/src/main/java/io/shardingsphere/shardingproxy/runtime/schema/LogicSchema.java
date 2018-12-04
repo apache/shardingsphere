@@ -17,6 +17,7 @@
 
 package io.shardingsphere.shardingproxy.runtime.schema;
 
+import com.google.common.eventbus.EventBus;
 import com.google.common.eventbus.Subscribe;
 import io.shardingsphere.core.metadata.ShardingMetaData;
 import io.shardingsphere.core.rule.DataSourceParameter;
@@ -42,6 +43,8 @@ public abstract class LogicSchema {
     
     private final Map<String, DataSourceParameter> dataSources;
     
+    private final EventBus eventBus = ShardingOrchestrationEventBus.getInstance();
+    
     private JDBCBackendDataSource backendDataSource;
     
     public LogicSchema(final String name, final Map<String, DataSourceParameter> dataSources) {
@@ -49,7 +52,7 @@ public abstract class LogicSchema {
         // TODO :jiaqi only use JDBC need connect db via JDBC, netty style should use SQL packet to get metadata
         this.dataSources = dataSources;
         backendDataSource = new JDBCBackendDataSource(dataSources);
-        ShardingOrchestrationEventBus.getInstance().register(this);
+        eventBus.register(this);
     }
     
     protected final Map<String, String> getDataSourceURLs(final Map<String, DataSourceParameter> dataSourceParameters) {

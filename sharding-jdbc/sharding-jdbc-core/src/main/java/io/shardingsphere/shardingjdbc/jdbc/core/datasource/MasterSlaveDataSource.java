@@ -34,7 +34,7 @@ import java.util.Map;
 import java.util.Properties;
 
 /**
- * Database that support master-slave.
+ * Master-slave data source.
  *
  * @author zhangliang
  * @author panjuan

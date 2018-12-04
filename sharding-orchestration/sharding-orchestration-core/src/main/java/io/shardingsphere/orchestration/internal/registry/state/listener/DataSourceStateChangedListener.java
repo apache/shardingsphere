@@ -20,9 +20,11 @@ package io.shardingsphere.orchestration.internal.registry.state.listener;
 import io.shardingsphere.orchestration.internal.registry.listener.PostShardingOrchestrationEventListener;
 import io.shardingsphere.orchestration.internal.registry.state.event.DisabledStateChangedEvent;
 import io.shardingsphere.orchestration.internal.registry.state.node.StateNode;
+import io.shardingsphere.orchestration.internal.registry.state.node.StateNodeStatus;
 import io.shardingsphere.orchestration.internal.registry.state.service.DataSourceService;
 import io.shardingsphere.orchestration.reg.api.RegistryCenter;
 import io.shardingsphere.orchestration.reg.listener.DataChangedEvent;
+import io.shardingsphere.orchestration.reg.listener.DataChangedEvent.ChangedType;
 
 /**
  * Data source state changed listener.
@@ -41,6 +43,11 @@ public final class DataSourceStateChangedListener extends PostShardingOrchestrat
     
     @Override
     protected DisabledStateChangedEvent createShardingOrchestrationEvent(final DataChangedEvent event) {
-        return new DisabledStateChangedEvent(dataSourceService.getDisabledSlaveSchemaGroup());
+        // TODO consider about instead of dataSourceService.getDisabledSlaveShardingSchema(event.getKey()) from event.getKey()
+        return new DisabledStateChangedEvent(dataSourceService.getDisabledSlaveShardingSchema(event.getKey()), isDataSourceDisabled(event));
+    }
+    
+    private boolean isDataSourceDisabled(final DataChangedEvent event) {
+        return StateNodeStatus.DISABLED.toString().equalsIgnoreCase(event.getValue()) && ChangedType.UPDATED == event.getChangedType();
     }
 }

@@ -94,7 +94,7 @@ optionsList
     ;
 
 alterUser
-    : ALTER USER userName optionsLists
+    : ALTER USER userName WITH optionsLists
     ;
 
 dropUser
@@ -102,11 +102,11 @@ dropUser
     ;
 
 createLogin
-    : CREATE LOGIN (windowsPrincipal | ID) (WITH  loginOptionList  | FROM  sources)
+    : CREATE LOGIN (windowsPrincipal | ID) (WITH  loginOptionList | FROM  sources)
     ;
 
 loginOptionList
-    : PASSWORD EQ_ STRING HASHED? MUST_CHANGE? (COMMA optionsList)*
+    : PASSWORD EQ_ (STRING | ID HASHED) MUST_CHANGE? (COMMA optionsList)*
     ;
 
 sources
@@ -118,7 +118,7 @@ alterLogin
     ;
 
 loginOption
-    :  PASSWORD EQ_ STRING HASHED? (OLD_PASSWORD EQ_ STRING | passwordOption (passwordOption )?)?
+    :  PASSWORD EQ_ (STRING | ID HASHED) (OLD_PASSWORD EQ_ STRING | passwordOption (passwordOption )?)?
     | DEFAULT_DATABASE EQ_ databaseName
     | optionsList
     | NO CREDENTIAL
@@ -141,10 +141,10 @@ createRole
     : CREATE ROLE roleName (AUTHORIZATION ID)
     ;    
 
- alterRole
-     : ALTER ROLE roleName ((ADD | DROP) MEMBER ID |  WITH NAME EQ_ ID  )
-     ;
+alterRole
+    : ALTER ROLE roleName ((ADD | DROP) MEMBER ID | WITH NAME EQ_ ID)
+    ;
 
-  dropRole
-      : DROP ROLE roleName
-      ;
+dropRole
+    : DROP ROLE (IF EXISTS)? roleName
+    ;

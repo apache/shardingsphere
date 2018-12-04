@@ -33,7 +33,7 @@ import org.antlr.v4.runtime.ParserRuleContext;
 public class ShowParamExtractor implements OptionalSQLSegmentExtractor {
     
     @Override
-    public Optional<? extends SQLSegment> extract(ParserRuleContext ancestorNode) {
+    public Optional<? extends SQLSegment> extract(final ParserRuleContext ancestorNode) {
         Optional<ParserRuleContext> showParamNode = ASTUtils.findFirstChildNode(ancestorNode, RuleName.SHOW_PARAM);
         if (!showParamNode.isPresent()) {
             return Optional.absent();

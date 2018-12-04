@@ -17,10 +17,11 @@
 
 package io.shardingsphere.orchestration.internal.registry.state.listener;
 
-import io.shardingsphere.orchestration.internal.registry.state.schema.OrchestrationShardingSchemaGroup;
+import io.shardingsphere.orchestration.internal.registry.state.schema.OrchestrationShardingSchema;
 import io.shardingsphere.orchestration.internal.registry.state.service.DataSourceService;
 import io.shardingsphere.orchestration.reg.api.RegistryCenter;
 import io.shardingsphere.orchestration.reg.listener.DataChangedEvent;
+import io.shardingsphere.orchestration.reg.listener.DataChangedEvent.ChangedType;
 import io.shardingsphere.orchestration.util.FieldUtil;
 import org.junit.Before;
 import org.junit.Test;
@@ -30,6 +31,7 @@ import org.mockito.junit.MockitoJUnitRunner;
 
 import static org.hamcrest.CoreMatchers.is;
 import static org.junit.Assert.assertThat;
+import static org.mockito.ArgumentMatchers.anyString;
 import static org.mockito.Mockito.mock;
 import static org.mockito.Mockito.when;
 
@@ -52,8 +54,9 @@ public final class DataSourceStateChangedListenerTest {
     
     @Test
     public void assertCreateShardingOrchestrationEvent() {
-        OrchestrationShardingSchemaGroup expected = mock(OrchestrationShardingSchemaGroup.class);
-        when(dataSourceService.getDisabledSlaveSchemaGroup()).thenReturn(expected);
-        assertThat(dataSourceStateChangedListener.createShardingOrchestrationEvent(mock(DataChangedEvent.class)).getDisabledGroup(), is(expected));
+        OrchestrationShardingSchema expected = mock(OrchestrationShardingSchema.class);
+        DataChangedEvent dataChangedEvent = new DataChangedEvent("test", "slave_0", ChangedType.UPDATED);
+        when(dataSourceService.getDisabledSlaveShardingSchema(anyString())).thenReturn(expected);
+        assertThat(dataSourceStateChangedListener.createShardingOrchestrationEvent(dataChangedEvent).getShardingSchema(), is(expected));
     }
 }

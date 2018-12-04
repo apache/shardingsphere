@@ -19,9 +19,9 @@ package io.shardingsphere.orchestration.internal.rule;
 
 import io.shardingsphere.api.algorithm.masterslave.RandomMasterSlaveLoadBalanceAlgorithm;
 import io.shardingsphere.api.config.MasterSlaveRuleConfiguration;
+import io.shardingsphere.core.constant.ShardingConstant;
 import io.shardingsphere.orchestration.internal.registry.state.event.DisabledStateChangedEvent;
 import io.shardingsphere.orchestration.internal.registry.state.schema.OrchestrationShardingSchema;
-import io.shardingsphere.orchestration.internal.registry.state.schema.OrchestrationShardingSchemaGroup;
 import org.junit.Before;
 import org.junit.Test;
 
@@ -64,8 +64,7 @@ public final class OrchestrationMasterSlaveRuleTest {
     }
     
     private DisabledStateChangedEvent getDisabledStateEvent() {
-        OrchestrationShardingSchemaGroup orchestrationShardingSchemaGroup = new OrchestrationShardingSchemaGroup();
-        orchestrationShardingSchemaGroup.add(new OrchestrationShardingSchema("slave_db_0"));
-        return new DisabledStateChangedEvent(orchestrationShardingSchemaGroup);
+        OrchestrationShardingSchema orchestrationShardingSchema = new OrchestrationShardingSchema(ShardingConstant.LOGIC_SCHEMA_NAME, "slave_db_0");
+        return new DisabledStateChangedEvent(orchestrationShardingSchema, true);
     }
 }
