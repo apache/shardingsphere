@@ -36,7 +36,7 @@ import java.util.Map;
 import java.util.Properties;
 
 /**
- * Configuration yaml loader.
+ * Configuration yaml converter.
  *
  * @author panjuan
  */
