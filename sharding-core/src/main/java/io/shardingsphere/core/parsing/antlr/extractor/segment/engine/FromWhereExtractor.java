@@ -22,6 +22,7 @@ import java.util.HashMap;
 import java.util.Map;
 
 import org.antlr.v4.runtime.ParserRuleContext;
+import org.antlr.v4.runtime.tree.TerminalNode;
 
 import com.google.common.base.Optional;
 
@@ -30,6 +31,7 @@ import io.shardingsphere.core.parsing.antlr.extractor.segment.constant.RuleName;
 import io.shardingsphere.core.parsing.antlr.extractor.util.ASTUtils;
 import io.shardingsphere.core.parsing.antlr.sql.segment.FromWhereSegment;
 import io.shardingsphere.core.parsing.antlr.sql.segment.condition.OrConditionSegment;
+import io.shardingsphere.core.parsing.antlr.sql.segment.expr.SubquerySegment;
 import io.shardingsphere.core.parsing.antlr.sql.segment.table.TableJoinSegment;
 import io.shardingsphere.core.parsing.antlr.sql.segment.table.TableSegment;
 
@@ -72,31 +74,56 @@ public final class FromWhereExtractor implements OptionalSQLSegmentExtractor {
                                             final Map<ParserRuleContext, Integer> questionNodeIndexMap) {
         for (ParserRuleContext each : tableReferenceNodes) {
             for (int i = 0; i < each.getChildCount(); i++) {
-                ParserRuleContext tableFactorNode = null;
-                boolean joinNode = false;
-                if (RuleName.JOIN_TABLE.getName().endsWith(each.getChild(i).getClass().getSimpleName())) {
-                    tableFactorNode = ASTUtils.findFirstChildNode((ParserRuleContext) each.getChild(i), RuleName.TABLE_FACTOR).get();
-                    joinNode = true;
-                } else {
-                    tableFactorNode = (ParserRuleContext) each.getChild(i);
+                if(each.getChild(i) instanceof TerminalNode) {
+                    continue;
                 }
-                //TODO subquery
-                Optional<TableSegment> tableSegment = tableNameExtractor.extract(tableFactorNode);
-                if (joinNode) {
-                    Optional<ParserRuleContext> joinConditionNode = ASTUtils.findFirstChildNode((ParserRuleContext) each.getChild(i), RuleName.JOIN_CONDITION);
-                    if (joinConditionNode.isPresent()) {
-                        TableJoinSegment tableJoinResult = new TableJoinSegment(tableSegment.get());
-                        Optional<OrConditionSegment> conditionResult = buildCondition(joinConditionNode.get(), questionNodeIndexMap, fromWhereSegment.getTableAliases());
-                        if (conditionResult.isPresent()) {
-                            tableJoinResult.getJoinConditions().getAndConditions().addAll(conditionResult.get().getAndConditions());
-                            fromWhereSegment.getConditions().getAndConditions().addAll(conditionResult.get().getAndConditions());
-                        }
-                        fillTableResult(fromWhereSegment, tableJoinResult);
+                ParserRuleContext childNode = (ParserRuleContext) each.getChild(i);
+                if (RuleName.TABLE_REFERENCES.getName().endsWith(childNode.getClass().getSimpleName())) {
+                    final Collection<ParserRuleContext> subTableReferenceNodes = ASTUtils.getAllDescendantNodes(childNode, RuleName.TABLE_REFERENCE);
+                    if(!subTableReferenceNodes.isEmpty()) {
+                        extractAndFillTableSegment(fromWhereSegment, subTableReferenceNodes, questionNodeIndexMap);
                     }
-                } else {
-                    fillTableResult(fromWhereSegment, tableSegment.get());
+                    continue;
                 }
+                if (RuleName.TABLE_FACTOR.getName().endsWith(childNode.getClass().getSimpleName())) {
+                    if(fillSubquery(fromWhereSegment, childNode)) {
+                        continue;
+                    }
+                } 
+                fillTable(fromWhereSegment, childNode, questionNodeIndexMap);
             }
+        }
+    }
+    
+    private boolean fillSubquery(final FromWhereSegment fromWhereSegment, final ParserRuleContext tableFactorNode) {
+        Optional<ParserRuleContext> subqueryNode = ASTUtils.findFirstChildNode(tableFactorNode, RuleName.SUBQUERY);
+        if(!subqueryNode.isPresent()) {
+            return false;
+        }
+        Optional<SubquerySegment> result = new SubqueryExtractor().extract(subqueryNode.get());
+        if(result.isPresent()) {
+            fromWhereSegment.getSubquerys().add(result.get());
+        }
+        return true;
+    }
+    
+    private void fillTable(final FromWhereSegment fromWhereSegment, final ParserRuleContext joinOrTableFactorNode, final Map<ParserRuleContext, Integer> questionNodeIndexMap) {
+        if (RuleName.JOIN_TABLE.getName().endsWith(joinOrTableFactorNode.getClass().getSimpleName())) {
+            Optional<ParserRuleContext> joinConditionNode = ASTUtils.findFirstChildNode(joinOrTableFactorNode, RuleName.JOIN_CONDITION);
+            if (joinConditionNode.isPresent()) {
+                ParserRuleContext tableFactorNode = ASTUtils.findFirstChildNode(joinOrTableFactorNode, RuleName.TABLE_FACTOR).get();
+                Optional<TableSegment> tableSegment = tableNameExtractor.extract(tableFactorNode);
+                TableJoinSegment tableJoinResult = new TableJoinSegment(tableSegment.get());
+                Optional<OrConditionSegment> conditionResult = buildCondition(joinConditionNode.get(), questionNodeIndexMap, fromWhereSegment.getTableAliases());
+                if (conditionResult.isPresent()) {
+                    tableJoinResult.getJoinConditions().getAndConditions().addAll(conditionResult.get().getAndConditions());
+                    fromWhereSegment.getConditions().getAndConditions().addAll(conditionResult.get().getAndConditions());
+                }
+                fillTableResult(fromWhereSegment, tableJoinResult);
+            }
+        } else {
+            Optional<TableSegment> tableSegment = tableNameExtractor.extract(joinOrTableFactorNode);
+            fillTableResult(fromWhereSegment, tableSegment.get());
         }
     }
     

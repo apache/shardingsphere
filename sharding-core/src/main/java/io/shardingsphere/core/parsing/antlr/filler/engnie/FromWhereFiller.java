@@ -32,9 +32,9 @@ import io.shardingsphere.core.parsing.antlr.sql.segment.column.ColumnSegment;
 import io.shardingsphere.core.parsing.antlr.sql.segment.condition.AndConditionSegment;
 import io.shardingsphere.core.parsing.antlr.sql.segment.condition.ConditionSegment;
 import io.shardingsphere.core.parsing.antlr.sql.segment.condition.OrConditionSegment;
-import io.shardingsphere.core.parsing.antlr.sql.segment.expr.SQLBetweenExpressionSegment;
-import io.shardingsphere.core.parsing.antlr.sql.segment.expr.SQLEqualsExpressionSegment;
-import io.shardingsphere.core.parsing.antlr.sql.segment.expr.SQLInExpressionSegment;
+import io.shardingsphere.core.parsing.antlr.sql.segment.expr.BetweenValueExpressionSegment;
+import io.shardingsphere.core.parsing.antlr.sql.segment.expr.EqualsValueExpressionSegment;
+import io.shardingsphere.core.parsing.antlr.sql.segment.expr.InValueExpressionSegment;
 import io.shardingsphere.core.parsing.parser.context.condition.AndCondition;
 import io.shardingsphere.core.parsing.parser.context.condition.Column;
 import io.shardingsphere.core.parsing.parser.context.condition.Condition;
@@ -142,13 +142,13 @@ public class FromWhereFiller implements SQLSegmentFiller {
             for (ConditionSegment eachCondition : shardingCondition) {
                 Column column = new Column(eachCondition.getColumn().getName(), eachCondition.getColumn().getTableName());
                 if (ShardingOperator.EQUAL == eachCondition.getOperator()) {
-                    SQLEqualsExpressionSegment expression = (SQLEqualsExpressionSegment) eachCondition.getExpression();
+                    EqualsValueExpressionSegment expression = (EqualsValueExpressionSegment) eachCondition.getExpression();
                     andConditionResult.getConditions().add(new Condition(column, expression.getExpression()));
                 } else if (ShardingOperator.IN == eachCondition.getOperator()) {
-                    SQLInExpressionSegment expression = (SQLInExpressionSegment) eachCondition.getExpression();
+                    InValueExpressionSegment expression = (InValueExpressionSegment) eachCondition.getExpression();
                     andConditionResult.getConditions().add(new Condition(column, expression.getSqlExpressions()));
                 } else if (ShardingOperator.BETWEEN == eachCondition.getOperator()) {
-                    SQLBetweenExpressionSegment expression = (SQLBetweenExpressionSegment) eachCondition.getExpression();
+                    BetweenValueExpressionSegment expression = (BetweenValueExpressionSegment) eachCondition.getExpression();
                     andConditionResult.getConditions().add(new Condition(column, expression.getBeginExpress(), expression.getEndExpress()));
                 }
             }
