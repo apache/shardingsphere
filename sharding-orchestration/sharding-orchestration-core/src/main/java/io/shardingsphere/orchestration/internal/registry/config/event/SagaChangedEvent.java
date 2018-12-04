@@ -15,9 +15,10 @@
  * </p>
  */
 
-package io.shardingsphere.orchestration.internal.config.event;
+package io.shardingsphere.orchestration.internal.registry.config.event;
 
 import io.shardingsphere.api.config.SagaConfiguration;
+import io.shardingsphere.orchestration.internal.registry.listener.ShardingOrchestrationEvent;
 import lombok.Getter;
 import lombok.RequiredArgsConstructor;
 
@@ -28,7 +29,7 @@ import lombok.RequiredArgsConstructor;
  */
 @RequiredArgsConstructor
 @Getter
-public class SagaChangedEvent {
+public class SagaChangedEvent implements ShardingOrchestrationEvent {
     
     private final SagaConfiguration sagaConfiguration;
 }

@@ -26,7 +26,7 @@ import io.shardingsphere.core.constant.ShardingConstant;
 import io.shardingsphere.core.rule.ShardingRule;
 import io.shardingsphere.orchestration.config.OrchestrationConfiguration;
 import io.shardingsphere.orchestration.internal.registry.ShardingOrchestrationFacade;
-import io.shardingsphere.orchestration.internal.config.event.SagaChangedEvent;
+import io.shardingsphere.orchestration.internal.registry.config.event.SagaChangedEvent;
 import io.shardingsphere.orchestration.internal.registry.config.event.ConfigMapChangedEvent;
 import io.shardingsphere.orchestration.internal.registry.config.event.DataSourceChangedEvent;
 import io.shardingsphere.orchestration.internal.registry.config.event.PropertiesChangedEvent;
