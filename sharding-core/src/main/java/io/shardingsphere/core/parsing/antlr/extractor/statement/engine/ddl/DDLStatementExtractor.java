@@ -29,7 +29,7 @@ import io.shardingsphere.core.parsing.parser.sql.ddl.DDLStatement;
 public class DDLStatementExtractor extends AbstractSQLStatementExtractor {
     
     @Override
-    protected SQLStatement createStatement() {
+    protected SQLStatement createSQLStatement(final String sql) {
         return new DDLStatement();
     }
 }

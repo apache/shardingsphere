@@ -17,14 +17,7 @@
 
 package io.shardingsphere.core.parsing.antlr.extractor.segment.engine;
 
-import java.util.Collection;
-import java.util.Collections;
-import java.util.LinkedList;
-
-import org.antlr.v4.runtime.ParserRuleContext;
-
 import com.google.common.base.Optional;
-
 import io.shardingsphere.core.constant.OrderDirection;
 import io.shardingsphere.core.parsing.antlr.extractor.segment.OptionalSQLSegmentExtractor;
 import io.shardingsphere.core.parsing.antlr.extractor.segment.constant.RuleName;
@@ -34,6 +27,11 @@ import io.shardingsphere.core.parsing.antlr.sql.segment.order.OrderBySegment;
 import io.shardingsphere.core.parsing.parser.token.OrderByToken;
 import io.shardingsphere.core.util.NumberUtil;
 import lombok.RequiredArgsConstructor;
+import org.antlr.v4.runtime.ParserRuleContext;
+
+import java.util.Collection;
+import java.util.Collections;
+import java.util.LinkedList;
 
 /**
  * Order by extractor.
@@ -84,7 +82,7 @@ public class OrderByExtractor implements OptionalSQLSegmentExtractor {
     }
     
     protected OrderByItemSegment buildSegment(final int index, final OrderDirection orderDirection, final int expressionStartPosition,
-                                              final int expressionEndPosition, final boolean isIdentifier, final int orderyItemStartPosition) {
-        return new OrderByItemSegment(index, expressionStartPosition, expressionEndPosition, isIdentifier, new OrderByToken(orderyItemStartPosition), orderDirection, OrderDirection.ASC);
+                                              final int expressionEndPosition, final boolean isIdentifier, final int orderByItemStartPosition) {
+        return new OrderByItemSegment(index, expressionStartPosition, expressionEndPosition, isIdentifier, new OrderByToken(orderByItemStartPosition), orderDirection, OrderDirection.ASC);
     }
 }

@@ -23,6 +23,7 @@ import io.shardingsphere.api.ConfigMapContext;
 import io.shardingsphere.api.config.RuleConfiguration;
 import io.shardingsphere.api.config.ShardingRuleConfiguration;
 import io.shardingsphere.core.constant.ShardingConstant;
+import io.shardingsphere.core.rule.MasterSlaveRule;
 import io.shardingsphere.core.rule.ShardingRule;
 import io.shardingsphere.orchestration.config.OrchestrationConfiguration;
 import io.shardingsphere.orchestration.internal.registry.ShardingOrchestrationFacade;
@@ -31,6 +32,9 @@ import io.shardingsphere.orchestration.internal.registry.config.event.DataSource
 import io.shardingsphere.orchestration.internal.registry.config.event.PropertiesChangedEvent;
 import io.shardingsphere.orchestration.internal.registry.config.event.ShardingRuleChangedEvent;
 import io.shardingsphere.orchestration.internal.registry.config.service.ConfigurationService;
+import io.shardingsphere.orchestration.internal.registry.state.event.DisabledStateChangedEvent;
+import io.shardingsphere.orchestration.internal.registry.state.schema.OrchestrationShardingSchema;
+import io.shardingsphere.orchestration.internal.rule.OrchestrationMasterSlaveRule;
 import io.shardingsphere.orchestration.internal.rule.OrchestrationShardingRule;
 import io.shardingsphere.shardingjdbc.jdbc.core.datasource.ShardingDataSource;
 import io.shardingsphere.shardingjdbc.orchestration.internal.circuit.datasource.CircuitBreakerDataSource;
@@ -134,5 +138,20 @@ public class OrchestrationShardingDataSource extends AbstractOrchestrationDataSo
     public final synchronized void renew(final ConfigMapChangedEvent configMapChangedEvent) {
         ConfigMapContext.getInstance().getConfigMap().clear();
         ConfigMapContext.getInstance().getConfigMap().putAll(configMapChangedEvent.getConfigMap());
+    }
+    
+    /**
+     * Renew disabled data source names.
+     *
+     * @param disabledStateChangedEvent disabled state changed event
+     */
+    @Subscribe
+    public synchronized void renew(final DisabledStateChangedEvent disabledStateChangedEvent) {
+        OrchestrationShardingSchema shardingSchema = disabledStateChangedEvent.getShardingSchema();
+        if (ShardingConstant.LOGIC_SCHEMA_NAME.equals(shardingSchema.getSchemaName())) {
+            for (MasterSlaveRule each : dataSource.getShardingContext().getShardingRule().getMasterSlaveRules()) {
+                ((OrchestrationMasterSlaveRule) each).updateDisabledDataSourceNames(shardingSchema.getDataSourceName(), disabledStateChangedEvent.isDisabled());
+            }
+        }
     }
 }

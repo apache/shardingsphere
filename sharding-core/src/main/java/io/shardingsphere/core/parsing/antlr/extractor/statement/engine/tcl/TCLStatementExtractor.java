@@ -29,7 +29,7 @@ import io.shardingsphere.core.parsing.parser.sql.tcl.TCLStatement;
 public final class TCLStatementExtractor extends AbstractSQLStatementExtractor {
     
     @Override
-    protected SQLStatement createStatement() {
+    protected SQLStatement createSQLStatement(final String sql) {
         return new TCLStatement();
     }
 }

@@ -38,27 +38,18 @@ public final class OrchestrationShardingRuleTest {
     
     @Before
     public void setUp() {
-        orchestrationShardingRule = new OrchestrationShardingRule(getShardingRuleConfiguration(), Arrays.asList("master_db", "slave_db_0", "slave_db_1"));
+        orchestrationShardingRule = new OrchestrationShardingRule(createShardingRuleConfiguration(), Arrays.asList("master_db", "slave_db_0", "slave_db_1"));
     }
     
-    private ShardingRuleConfiguration getShardingRuleConfiguration() {
+    private ShardingRuleConfiguration createShardingRuleConfiguration() {
         ShardingRuleConfiguration result = new ShardingRuleConfiguration();
         TableRuleConfiguration tableRuleConfig = new TableRuleConfiguration();
         tableRuleConfig.setLogicTable("t_order");
         tableRuleConfig.setActualDataNodes("ds_ms.t_order_${0..1}");
         result.getTableRuleConfigs().add(tableRuleConfig);
-        result.getMasterSlaveRuleConfigs().add(getMasterSlaveRuleConfiguration());
+        result.getMasterSlaveRuleConfigs().add(new MasterSlaveRuleConfiguration("ds_ms", "master_db", Arrays.asList("slave_db_0", "slave_db_1"), new RandomMasterSlaveLoadBalanceAlgorithm()));
         result.setDefaultDatabaseShardingStrategyConfig(new NoneShardingStrategyConfiguration());
         result.setDefaultTableShardingStrategyConfig(new InlineShardingStrategyConfiguration("order_id", "t_order_${order_id % 2}"));
-        return result;
-    }
-    
-    private MasterSlaveRuleConfiguration getMasterSlaveRuleConfiguration() {
-        MasterSlaveRuleConfiguration result = new MasterSlaveRuleConfiguration();
-        result.setName("ds_ms");
-        result.setLoadBalanceAlgorithm(new RandomMasterSlaveLoadBalanceAlgorithm());
-        result.setMasterDataSourceName("master_db");
-        result.setSlaveDataSourceNames(Arrays.asList("slave_db_0", "slave_db_1"));
         return result;
     }
     

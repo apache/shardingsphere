@@ -23,6 +23,8 @@ import io.shardingsphere.shardingjdbc.orchestration.internal.circuit.statement.C
 import org.junit.Test;
 
 import java.sql.Connection;
+import java.sql.ResultSet;
+import java.sql.Statement;
 
 import static org.hamcrest.CoreMatchers.is;
 import static org.junit.Assert.assertFalse;
@@ -108,9 +110,9 @@ public final class CircuitBreakerConnectionTest {
     @Test
     public void assertPrepareStatement() {
         assertTrue(connection.prepareStatement(sql) instanceof CircuitBreakerPreparedStatement);
-        assertTrue(connection.prepareStatement(sql, 0, 0) instanceof CircuitBreakerPreparedStatement);
-        assertTrue(connection.prepareStatement(sql, 0, 0, 0) instanceof CircuitBreakerPreparedStatement);
-        assertTrue(connection.prepareStatement(sql, 0) instanceof CircuitBreakerPreparedStatement);
+        assertTrue(connection.prepareStatement(sql, ResultSet.TYPE_FORWARD_ONLY, ResultSet.CONCUR_READ_ONLY) instanceof CircuitBreakerPreparedStatement);
+        assertTrue(connection.prepareStatement(sql, ResultSet.TYPE_FORWARD_ONLY, ResultSet.CONCUR_READ_ONLY, ResultSet.HOLD_CURSORS_OVER_COMMIT) instanceof CircuitBreakerPreparedStatement);
+        assertTrue(connection.prepareStatement(sql, Statement.NO_GENERATED_KEYS) instanceof CircuitBreakerPreparedStatement);
         assertTrue(connection.prepareStatement(sql, new int[]{0}) instanceof CircuitBreakerPreparedStatement);
         assertTrue(connection.prepareStatement(sql, new String[]{""}) instanceof CircuitBreakerPreparedStatement);
     }
@@ -118,8 +120,8 @@ public final class CircuitBreakerConnectionTest {
     @Test
     public void assertCreateStatement() {
         assertTrue(connection.createStatement() instanceof CircuitBreakerStatement);
-        assertTrue(connection.createStatement(0, 0) instanceof CircuitBreakerStatement);
-        assertTrue(connection.createStatement(0, 0, 0) instanceof CircuitBreakerStatement);
+        assertTrue(connection.createStatement(ResultSet.TYPE_FORWARD_ONLY, ResultSet.CONCUR_READ_ONLY) instanceof CircuitBreakerStatement);
+        assertTrue(connection.createStatement(ResultSet.TYPE_FORWARD_ONLY, ResultSet.CONCUR_READ_ONLY, ResultSet.HOLD_CURSORS_OVER_COMMIT) instanceof CircuitBreakerStatement);
     }
     
     @Test

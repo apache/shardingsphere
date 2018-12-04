@@ -105,7 +105,7 @@ public enum RuleName {
     
     ORDER_BY_ITEM("OrderByItem"),
     
-    COMPARSION_OPERATOR("ComparsionOperator"),
+    COMPARISON_OPERATOR("ComparisonOperator"),
     
     PREDICATE("Predicate"),
     

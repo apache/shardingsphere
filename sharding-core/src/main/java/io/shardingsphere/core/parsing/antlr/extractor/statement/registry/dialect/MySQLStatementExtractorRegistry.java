@@ -17,10 +17,6 @@
 
 package io.shardingsphere.core.parsing.antlr.extractor.statement.registry.dialect;
 
-import java.util.HashMap;
-import java.util.Map;
-
-import io.shardingsphere.core.parsing.antlr.extractor.sql.statement.dql.MySQLSelectExtractor;
 import io.shardingsphere.core.parsing.antlr.extractor.statement.SQLStatementExtractor;
 import io.shardingsphere.core.parsing.antlr.extractor.statement.SQLStatementType;
 import io.shardingsphere.core.parsing.antlr.extractor.statement.engine.ddl.CreateIndexExtractor;
@@ -29,8 +25,12 @@ import io.shardingsphere.core.parsing.antlr.extractor.statement.engine.ddl.DropI
 import io.shardingsphere.core.parsing.antlr.extractor.statement.engine.ddl.dialect.mysql.MySQLAlterTableExtractor;
 import io.shardingsphere.core.parsing.antlr.extractor.statement.engine.ddl.dialect.mysql.MySQLDropTableExtractor;
 import io.shardingsphere.core.parsing.antlr.extractor.statement.engine.ddl.dialect.mysql.MySQLTruncateTableExtractor;
+import io.shardingsphere.core.parsing.antlr.extractor.statement.engine.dql.dialect.mysql.MySQLSelectExtractor;
 import io.shardingsphere.core.parsing.antlr.extractor.statement.engine.tcl.TCLStatementExtractor;
 import io.shardingsphere.core.parsing.antlr.extractor.statement.registry.SQLStatementExtractorRegistry;
+
+import java.util.HashMap;
+import java.util.Map;
 
 /**
  * SQL statement extractor registry for MySQL.

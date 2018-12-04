@@ -1,6 +1,6 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <sql-cases>
-	<!--  
+    <!--  
     <sql-case id="assertSelectDistinctWithSingleTable" value="SELECT DISTINCT item_id FROM t_order_item ORDER BY item_id" />
     <sql-case id="assertSelectIntoSQL" value="SELECT * INTO t_order_new FROM t_order" />
     -->

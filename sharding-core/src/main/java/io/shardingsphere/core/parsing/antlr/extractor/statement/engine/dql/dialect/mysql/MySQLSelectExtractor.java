@@ -15,13 +15,10 @@
  * </p>
  */
 
-package io.shardingsphere.core.parsing.antlr.extractor.sql.statement.dql;
-
-import java.util.List;
+package io.shardingsphere.core.parsing.antlr.extractor.statement.engine.dql.dialect.mysql;
 
 import com.google.common.base.Optional;
 import com.google.common.base.Preconditions;
-
 import io.shardingsphere.core.constant.AggregationType;
 import io.shardingsphere.core.metadata.table.ShardingTableMetaData;
 import io.shardingsphere.core.parsing.antlr.extractor.segment.engine.FromWhereExtractor;
@@ -44,12 +41,14 @@ import io.shardingsphere.core.parsing.parser.sql.dql.select.SelectStatement;
 import io.shardingsphere.core.parsing.parser.token.ItemsToken;
 import io.shardingsphere.core.parsing.parser.token.OrderByToken;
 
+import java.util.List;
+
 /**
- * MySQL select extractor.
+ * Select extractor for MySQL.
  *
  * @author duhongjun
  */
-public class MySQLSelectExtractor extends AbstractSQLStatementExtractor {
+public final class MySQLSelectExtractor extends AbstractSQLStatementExtractor {
     
     public MySQLSelectExtractor() {
         addSQLSegmentExtractor(new TableNamesExtractor());
@@ -62,14 +61,10 @@ public class MySQLSelectExtractor extends AbstractSQLStatementExtractor {
     }
     
     @Override
-    protected SQLStatement createStatement(final String sql) {
+    protected SQLStatement createSQLStatement(final String sql) {
         SelectStatement result = new SelectStatement();
         result.setSql(sql);
         return result;
-    }
-    
-    protected SQLStatement createStatement() {
-        return null;
     }
     
     protected void postExtract(final SQLStatement sqlStatement, final ShardingTableMetaData shardingTableMetaData) {

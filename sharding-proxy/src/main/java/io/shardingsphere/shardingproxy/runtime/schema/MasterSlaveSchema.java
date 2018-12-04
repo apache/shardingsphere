@@ -21,7 +21,6 @@ import com.google.common.eventbus.Subscribe;
 import io.shardingsphere.api.config.MasterSlaveRuleConfiguration;
 import io.shardingsphere.api.config.ShardingRuleConfiguration;
 import io.shardingsphere.core.constant.DatabaseType;
-import io.shardingsphere.core.constant.ShardingConstant;
 import io.shardingsphere.core.constant.properties.ShardingPropertiesConstant;
 import io.shardingsphere.core.metadata.ShardingMetaData;
 import io.shardingsphere.core.rule.DataSourceParameter;
@@ -87,8 +86,7 @@ public final class MasterSlaveSchema extends LogicSchema {
     public synchronized void renew(final DisabledStateChangedEvent disabledStateChangedEvent) {
         OrchestrationShardingSchema shardingSchema = disabledStateChangedEvent.getShardingSchema();
         if (getName().equals(shardingSchema.getSchemaName())) {
-            ((OrchestrationMasterSlaveRule) masterSlaveRule).renew(
-                    new DisabledStateChangedEvent(new OrchestrationShardingSchema(ShardingConstant.LOGIC_SCHEMA_NAME, shardingSchema.getDataSourceName()), disabledStateChangedEvent.isDisabled()));
+            ((OrchestrationMasterSlaveRule) masterSlaveRule).updateDisabledDataSourceNames(shardingSchema.getDataSourceName(), disabledStateChangedEvent.isDisabled());
         }
     }
 }

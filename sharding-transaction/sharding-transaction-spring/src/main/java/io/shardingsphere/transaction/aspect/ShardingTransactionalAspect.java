@@ -41,7 +41,7 @@ import java.lang.reflect.Method;
 public final class ShardingTransactionalAspect {
     
     /**
-     * ShardingTransationnal AOP pointcut.
+     * Sharding transactional AOP pointcut.
      */
     @Pointcut("@annotation(io.shardingsphere.transaction.annotation.ShardingTransactional) || @within(io.shardingsphere.transaction.annotation.ShardingTransactional)")
     public void shardingTransactionalPointCut() {

@@ -51,10 +51,10 @@ public final class SQLASTParserFactory {
      * @return SQL statement parser
      */
     public static SQLASTParser newInstance(final DatabaseType databaseType, final String sql) {
-        return newParser(databaseType, newLexer(databaseType, sql));
+        return createParser(databaseType, createLexer(databaseType, sql));
     }
     
-    private static Lexer newLexer(final DatabaseType databaseType, final String sql) {
+    private static Lexer createLexer(final DatabaseType databaseType, final String sql) {
         CharStream sqlCharStream = CharStreams.fromString(sql);
         switch (databaseType) {
             case H2:
@@ -71,7 +71,7 @@ public final class SQLASTParserFactory {
         }
     }
     
-    private static SQLASTParser newParser(final DatabaseType databaseType, final Lexer lexer) {
+    private static SQLASTParser createParser(final DatabaseType databaseType, final Lexer lexer) {
         TokenStream tokenStream = new CommonTokenStream(lexer);
         switch (databaseType) {
             case H2:

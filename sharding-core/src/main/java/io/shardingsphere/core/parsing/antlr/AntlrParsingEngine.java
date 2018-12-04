@@ -17,9 +17,6 @@
 
 package io.shardingsphere.core.parsing.antlr;
 
-import org.antlr.v4.runtime.ParserRuleContext;
-import org.antlr.v4.runtime.tree.ErrorNodeImpl;
-
 import io.shardingsphere.core.constant.DatabaseType;
 import io.shardingsphere.core.metadata.table.ShardingTableMetaData;
 import io.shardingsphere.core.parsing.antlr.ast.SQLASTParserFactory;
@@ -31,6 +28,9 @@ import io.shardingsphere.core.parsing.parser.sql.SQLParser;
 import io.shardingsphere.core.parsing.parser.sql.SQLStatement;
 import io.shardingsphere.core.rule.ShardingRule;
 import lombok.AllArgsConstructor;
+import org.antlr.v4.runtime.ParserRuleContext;
+import org.antlr.v4.runtime.tree.ErrorNode;
+import org.antlr.v4.runtime.tree.ParseTree;
 
 /**
  * Parsing engine for Antlr.
@@ -40,7 +40,7 @@ import lombok.AllArgsConstructor;
 @AllArgsConstructor
 public final class AntlrParsingEngine implements SQLParser {
     
-    private DatabaseType dbType;
+    private DatabaseType databaseType;
     
     private String sql;
     
@@ -50,18 +50,22 @@ public final class AntlrParsingEngine implements SQLParser {
     
     @Override
     public SQLStatement parse() {
-        ParserRuleContext rootContext = SQLASTParserFactory.newInstance(dbType, sql).execute();
-        if (null == rootContext) {
+        return extractSQLStatement(parseAST());
+    }
+    
+    private ParseTree parseAST() {
+        ParseTree result = SQLASTParserFactory.newInstance(databaseType, sql).execute().getChild(0);
+        if (result instanceof ErrorNode) {
             throw new SQLParsingUnsupportedException(String.format("Unsupported SQL of `%s`", sql));
         }
-        if (rootContext.getChild(0) instanceof ErrorNodeImpl) {
-            throw new SQLParsingUnsupportedException(String.format("Unsupported SQL of `%s`", sql));
-        }
-        ParserRuleContext parserRuleContext = (ParserRuleContext) rootContext.getChild(0);
-        SQLStatementExtractor extractor = SQLStatementExtractorFactory.getInstance(dbType, SQLStatementType.nameOf(parserRuleContext.getClass().getSimpleName()));
+        return result;
+    }
+    
+    private SQLStatement extractSQLStatement(final ParseTree rootNode) {
+        SQLStatementExtractor extractor = SQLStatementExtractorFactory.getInstance(databaseType, SQLStatementType.nameOf(rootNode.getClass().getSimpleName()));
         if (null == extractor) {
-            throw new SQLParsingUnsupportedException(String.format("Unsupported SQL statement of `%s`", parserRuleContext.getClass().getSimpleName()));
+            throw new SQLParsingUnsupportedException(String.format("Unsupported SQL statement of `%s`", rootNode.getClass().getSimpleName()));
         }
-        return extractor.extract(sql, parserRuleContext, shardingRule, shardingTableMetaData);
+        return extractor.extract(sql, (ParserRuleContext) rootNode, shardingRule, shardingTableMetaData);
     }
 }

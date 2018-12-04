@@ -15,26 +15,27 @@
  * </p>
  */
 
-package io.shardingsphere.core.parsing.antlr.filler.engnie;
+package io.shardingsphere.core.parsing.antlr.filler.engine;
 
 import io.shardingsphere.core.metadata.table.ShardingTableMetaData;
 import io.shardingsphere.core.parsing.antlr.filler.SQLSegmentFiller;
 import io.shardingsphere.core.parsing.antlr.sql.segment.SQLSegment;
-import io.shardingsphere.core.parsing.antlr.sql.segment.constraint.DropPrimaryKeySegment;
+import io.shardingsphere.core.parsing.antlr.sql.segment.column.DropColumnSegment;
 import io.shardingsphere.core.parsing.antlr.sql.statement.ddl.AlterTableStatement;
 import io.shardingsphere.core.parsing.parser.sql.SQLStatement;
 import io.shardingsphere.core.rule.ShardingRule;
 
 /**
- * Drop primary key filler.
+ * Drop column filler.
  *
  * @author duhongjun
  */
-public final class DropPrimaryKeyFiller implements SQLSegmentFiller {
+public final class DropColumnFiller implements SQLSegmentFiller {
     
     @Override
     public void fill(final SQLSegment sqlSegment, final SQLStatement sqlStatement, final ShardingRule shardingRule, final ShardingTableMetaData shardingTableMetaData) {
+        DropColumnSegment dropColumnSegment = (DropColumnSegment) sqlSegment;
         AlterTableStatement alterTableStatement = (AlterTableStatement) sqlStatement;
-        alterTableStatement.setDropPrimaryKey(((DropPrimaryKeySegment) sqlSegment).isDropPrimaryKey());
+        alterTableStatement.getDropColumns().addAll(dropColumnSegment.getDropColumnNames());
     }
 }
