@@ -55,11 +55,11 @@ public enum SQLStatementType {
     SET_VARIABLE("SetVariable"),
     
     SELECT("Select"),
-
+    
     SET_PARAM("SetParam"),
-
+    
     RESET_PARAM("ResetParam"),
-
+    
     SHOW("Show");
     
     private final String name;

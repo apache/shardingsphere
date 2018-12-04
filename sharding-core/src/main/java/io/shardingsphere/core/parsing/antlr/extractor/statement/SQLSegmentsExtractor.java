@@ -18,26 +18,35 @@
 package io.shardingsphere.core.parsing.antlr.extractor.statement;
 
 import io.shardingsphere.core.metadata.table.ShardingTableMetaData;
+import io.shardingsphere.core.parsing.antlr.sql.segment.SQLSegment;
 import io.shardingsphere.core.parsing.parser.sql.SQLStatement;
 import io.shardingsphere.core.rule.ShardingRule;
-
 import org.antlr.v4.runtime.ParserRuleContext;
 
+import java.util.Collection;
+
 /**
- * SQL statement extractor interface.
+ * SQL segments extractor.
  * 
  * @author duhongjun
  */
-public interface SQLStatementExtractor {
+public interface SQLSegmentsExtractor {
     
     /** 
-     * Extract SQL statement from SQL AST.
+     * Extract SQL segments.
      * 
-     * @param sql SQL text
      * @param rootNode root node of AST
-     * @param shardingRule  databases and tables sharding rule
+     * @param shardingRule  sharding rule
      * @param shardingTableMetaData sharding table meta data
-     * @return SQL statement
+     * @return SQL segments
      */
-    SQLStatement extract(String sql, ParserRuleContext rootNode, ShardingRule shardingRule, ShardingTableMetaData shardingTableMetaData);
+    Collection<SQLSegment> extract(ParserRuleContext rootNode, ShardingRule shardingRule, ShardingTableMetaData shardingTableMetaData);
+    
+    /**
+     * Post extract.
+     *
+     * @param sqlStatement SQL statement
+     * @param shardingTableMetaData sharding table meta data
+     */
+    void postExtract(SQLStatement sqlStatement, ShardingTableMetaData shardingTableMetaData);
 }

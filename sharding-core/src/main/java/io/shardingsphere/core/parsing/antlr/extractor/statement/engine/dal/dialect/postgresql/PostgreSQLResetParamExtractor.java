@@ -17,19 +17,12 @@
 
 package io.shardingsphere.core.parsing.antlr.extractor.statement.engine.dal.dialect.postgresql;
 
-import io.shardingsphere.core.parsing.antlr.extractor.statement.engine.dal.DALStatementExtractor;
-import io.shardingsphere.core.parsing.parser.dialect.postgresql.statement.ResetParamStatement;
-import io.shardingsphere.core.parsing.parser.sql.SQLStatement;
+import io.shardingsphere.core.parsing.antlr.extractor.statement.engine.AbstractSQLSegmentsExtractor;
 
 /**
- * PostgreSQL reset param statement extractor.
+ * Reset param extractor for PostgreSQL.
  *
  * @author loxp
  */
-public class PostgreSQLResetParamExtractor extends DALStatementExtractor {
-    
-    @Override
-    protected SQLStatement createSQLStatement(final String sql) {
-        return new ResetParamStatement();
-    }
+public final class PostgreSQLResetParamExtractor extends AbstractSQLSegmentsExtractor {
 }

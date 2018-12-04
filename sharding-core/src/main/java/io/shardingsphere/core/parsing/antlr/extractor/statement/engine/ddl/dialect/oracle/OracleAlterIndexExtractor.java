@@ -18,14 +18,14 @@
 package io.shardingsphere.core.parsing.antlr.extractor.statement.engine.ddl.dialect.oracle;
 
 import io.shardingsphere.core.parsing.antlr.extractor.segment.engine.IndexNamesExtractor;
-import io.shardingsphere.core.parsing.antlr.extractor.statement.engine.ddl.DDLStatementExtractor;
+import io.shardingsphere.core.parsing.antlr.extractor.statement.engine.AbstractSQLSegmentsExtractor;
 
 /**
  * Oracle alter index statement extractor.
  * 
  * @author duhongjun
  */
-public final class OracleAlterIndexExtractor extends DDLStatementExtractor {
+public final class OracleAlterIndexExtractor extends AbstractSQLSegmentsExtractor {
     
     public OracleAlterIndexExtractor() {
         addSQLSegmentExtractor(new IndexNamesExtractor());
