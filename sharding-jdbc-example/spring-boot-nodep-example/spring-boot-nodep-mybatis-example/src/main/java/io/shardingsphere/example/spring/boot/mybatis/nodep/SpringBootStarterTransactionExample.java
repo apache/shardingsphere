@@ -20,6 +20,7 @@ package io.shardingsphere.example.spring.boot.mybatis.nodep;
 import org.mybatis.spring.annotation.MapperScan;
 import org.springframework.boot.SpringApplication;
 import org.springframework.boot.autoconfigure.SpringBootApplication;
+import org.springframework.boot.autoconfigure.transaction.jta.JtaAutoConfiguration;
 import org.springframework.context.ConfigurableApplicationContext;
 import org.springframework.context.annotation.ComponentScan;
 import org.springframework.context.annotation.ComponentScans;
@@ -33,7 +34,7 @@ import io.shardingsphere.example.repository.mybatis.service.SpringPojoTransactio
     @ComponentScan("io.shardingsphere.transaction.aspect")
 })
 @MapperScan(basePackages = "io.shardingsphere.example.repository.mybatis.repository")
-@SpringBootApplication
+@SpringBootApplication(exclude = JtaAutoConfiguration.class)
 public class SpringBootStarterTransactionExample {
     
     public static void main(final String[] args) {
@@ -49,6 +50,7 @@ public class SpringBootStarterTransactionExample {
         processFailureSingleTransaction(transactionService, TransactionType.LOCAL);
         processFailureSingleTransaction(transactionService, TransactionType.XA);
         processFailureSingleTransaction(transactionService, TransactionType.BASE);
+        processFailureSingleTransaction(transactionService, TransactionType.LOCAL);
         transactionService.cleanEnvironment();
     }
     

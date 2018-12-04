@@ -21,7 +21,7 @@ import io.shardingsphere.core.constant.transaction.TransactionType;
 import io.shardingsphere.core.transaction.TransactionTypeHolder;
 import io.shardingsphere.transaction.annotation.ShardingTransactional;
 
-public abstract class ShardingJdbcTransactionService extends CommonServiceImpl implements TransactionService {
+public abstract class ShardingJDBCTransactionService extends CommonServiceImpl implements TransactionService {
     
     @Override
     @ShardingTransactional

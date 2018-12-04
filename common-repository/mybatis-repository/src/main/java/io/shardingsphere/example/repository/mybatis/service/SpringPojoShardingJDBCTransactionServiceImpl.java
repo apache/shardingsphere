@@ -25,10 +25,10 @@ import io.shardingsphere.example.repository.api.entity.Order;
 import io.shardingsphere.example.repository.api.entity.OrderItem;
 import io.shardingsphere.example.repository.api.repository.OrderItemRepository;
 import io.shardingsphere.example.repository.api.repository.OrderRepository;
-import io.shardingsphere.example.repository.api.service.ShardingJdbcTransactionService;
+import io.shardingsphere.example.repository.api.service.ShardingJDBCTransactionService;
 
 @Service("jdbcTransactionService")
-public class SpringPojoShardingJdbcTransactionServiceImpl extends ShardingJdbcTransactionService implements SpringPojoTransactionService {
+public class SpringPojoShardingJDBCTransactionServiceImpl extends ShardingJDBCTransactionService implements SpringPojoTransactionService {
     
     @Resource
     private OrderRepository orderRepository;
