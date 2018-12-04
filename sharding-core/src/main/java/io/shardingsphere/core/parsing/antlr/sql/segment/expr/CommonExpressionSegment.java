@@ -29,7 +29,7 @@ import lombok.RequiredArgsConstructor;
  */
 @RequiredArgsConstructor
 @Getter
-public final class CommonExpressionSegment extends ExpressionSegment {
+public final class CommonExpressionSegment implements ExpressionSegment {
 
     private final String expression;
     

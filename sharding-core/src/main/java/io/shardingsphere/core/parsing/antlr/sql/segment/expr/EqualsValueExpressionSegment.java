@@ -22,15 +22,13 @@ import lombok.Getter;
 import lombok.RequiredArgsConstructor;
 
 /**
- * SQL between expression segment.
+ * Equals value expression segment.
  * 
  * @author duhongjun
  */
 @RequiredArgsConstructor
 @Getter
-public class SQLBetweenExpressionSegment implements SQLExpressionSegment {
+public class EqualsValueExpressionSegment implements SQLRightValueExpressionSegment {
     
-    private final SQLExpression beginExpress;
-    
-    private final SQLExpression endExpress;
+    private final SQLExpression expression;
 }

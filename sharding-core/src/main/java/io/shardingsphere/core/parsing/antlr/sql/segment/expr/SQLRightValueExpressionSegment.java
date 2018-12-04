@@ -17,18 +17,12 @@
 
 package io.shardingsphere.core.parsing.antlr.sql.segment.expr;
 
-import io.shardingsphere.core.parsing.parser.expression.SQLExpression;
-import lombok.Getter;
-import lombok.RequiredArgsConstructor;
+import io.shardingsphere.core.parsing.antlr.sql.segment.SQLSegment;
 
 /**
- * SQL equals expression segment.
+ * SQL right value expression segment.
  * 
  * @author duhongjun
  */
-@RequiredArgsConstructor
-@Getter
-public class SQLEqualsExpressionSegment implements SQLExpressionSegment {
-    
-    private final SQLExpression expression;
+public interface SQLRightValueExpressionSegment extends SQLSegment {
 }

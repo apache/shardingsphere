@@ -24,5 +24,5 @@ import io.shardingsphere.core.parsing.antlr.sql.segment.SQLSegment;
  *
  * @author duhongjun
  */
-public abstract class ExpressionSegment implements SQLSegment {
+public interface ExpressionSegment extends SQLSegment {
 }
