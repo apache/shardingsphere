@@ -17,9 +17,7 @@
 
 package io.shardingsphere.orchestration.internal.registry.state.service;
 
-import io.shardingsphere.orchestration.internal.registry.config.service.ConfigurationService;
 import io.shardingsphere.orchestration.reg.api.RegistryCenter;
-import io.shardingsphere.orchestration.util.FieldUtil;
 import org.junit.Before;
 import org.junit.Test;
 import org.junit.runner.RunWith;
@@ -34,15 +32,11 @@ public final class DataSourceServiceTest {
     @Mock
     private RegistryCenter regCenter;
     
-    @Mock
-    private ConfigurationService configService;
-    
     private DataSourceService dataSourceService;
     
     @Before
     public void setUp() {
         dataSourceService = new DataSourceService("test", regCenter);
-        FieldUtil.setField(dataSourceService, "configService", configService);
     }
     
     @Test

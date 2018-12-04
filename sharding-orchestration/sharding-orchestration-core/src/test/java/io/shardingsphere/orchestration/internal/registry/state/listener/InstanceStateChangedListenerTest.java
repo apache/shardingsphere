@@ -29,7 +29,6 @@ import org.mockito.junit.MockitoJUnitRunner;
 
 import static org.junit.Assert.assertFalse;
 import static org.junit.Assert.assertTrue;
-import static org.mockito.Mockito.when;
 
 @RunWith(MockitoJUnitRunner.class)
 public final class InstanceStateChangedListenerTest {
@@ -47,14 +46,12 @@ public final class InstanceStateChangedListenerTest {
     @Test
     public void assertCreateShardingOrchestrationEventWhenEnabled() {
         DataChangedEvent dataChangedEvent = new DataChangedEvent("test/test_ds", "", ChangedType.UPDATED);
-        when(regCenter.get("test/test_ds")).thenReturn("");
         assertFalse(instanceStateChangedListener.createShardingOrchestrationEvent(dataChangedEvent).isCircuitBreak());
     }
     
     @Test
     public void assertCreateShardingOrchestrationEventWhenDisabled() {
         DataChangedEvent dataChangedEvent = new DataChangedEvent("test/test_ds", StateNodeStatus.DISABLED.name(), ChangedType.UPDATED);
-        when(regCenter.get("test/test_ds")).thenReturn(StateNodeStatus.DISABLED.name());
         assertTrue(instanceStateChangedListener.createShardingOrchestrationEvent(dataChangedEvent).isCircuitBreak());
     }
 }
