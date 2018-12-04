@@ -113,33 +113,16 @@ public final class SagaShardingTransactionHandler extends ShardingTransactionHan
         return SagaRecoveryPolicy.FORWARD == transactionEvent.getSagaConfiguration().getRecoveryPolicy() ? new EmptyRevertEngine() : new RevertEngineImpl(transactionEvent.getDataSourceMap());
     }
     
-    /**
-     * listen Saga Sql execution event.
-     *
-     * @param sqlExecutionEvent saga sql execution event
-     * @throws SQLException SQL exception
-     */
-    public void handleSQLExecutionEvent(final SagaSQLExecutionEvent sqlExecutionEvent) throws SQLException {
-        switch (sqlExecutionEvent.getEventType()) {
-            case BEFORE_EXECUTE:
-                sagaDefinitionBuilderMap.get(sqlExecutionEvent.getTransactionId()).switchParents();
-                break;
-            case EXECUTE_SUCCESS:
-                //TODO generate revert sql by sql and params in event
-                RevertResult result = revertEngineMap.get(sqlExecutionEvent.getTransactionId()).revert(
-                        sqlExecutionEvent.getRouteUnit().getDataSourceName(),
-                        sqlExecutionEvent.getRouteUnit().getSqlUnit().getSql(),
-                        sqlExecutionEvent.getRouteUnit().getSqlUnit().getParameterSets());
-                sagaDefinitionBuilderMap.get(sqlExecutionEvent.getTransactionId()).addChildRequest(
-                        sqlExecutionEvent.getId(),
-                        sqlExecutionEvent.getRouteUnit().getDataSourceName(),
-                        sqlExecutionEvent.getRouteUnit().getSqlUnit().getSql(),
-                        copyList(sqlExecutionEvent.getRouteUnit().getSqlUnit().getParameterSets()),
-                        result.getRevertSQL(),
-                        result.getRevertSQLParams());
-                break;
-            case EXECUTE_FAILURE:
-            default:
+    private void handleSQLExecutionEvent(final SagaSQLExecutionEvent sqlExecutionEvent) throws SQLException {
+        if (sqlExecutionEvent.isSameLogicSQL()) {
+            //TODO generate revert sql by sql and params in event
+            RevertResult result = revertEngineMap.get(sqlExecutionEvent.getTransactionId()).revert(sqlExecutionEvent.getRouteUnit().getDataSourceName(),
+                sqlExecutionEvent.getRouteUnit().getSqlUnit().getSql(), sqlExecutionEvent.getRouteUnit().getSqlUnit().getParameterSets());
+            sagaDefinitionBuilderMap.get(sqlExecutionEvent.getTransactionId()).addChildRequest(sqlExecutionEvent.getId(), sqlExecutionEvent.getRouteUnit().getDataSourceName(),
+                sqlExecutionEvent.getRouteUnit().getSqlUnit().getSql(), copyList(sqlExecutionEvent.getRouteUnit().getSqlUnit().getParameterSets()),
+                result.getRevertSQL(), result.getRevertSQLParams());
+        } else {
+            sagaDefinitionBuilderMap.get(sqlExecutionEvent.getTransactionId()).switchParents();
         }
     }
     

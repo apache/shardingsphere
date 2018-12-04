@@ -18,7 +18,6 @@
 package io.shardingsphere.transaction.executor;
 
 import io.shardingsphere.core.constant.DatabaseType;
-import io.shardingsphere.core.constant.SQLType;
 import io.shardingsphere.core.constant.transaction.TransactionType;
 import io.shardingsphere.core.event.transaction.base.SagaSQLExecutionEvent;
 import io.shardingsphere.core.event.transaction.base.SagaTransactionEvent;
@@ -41,8 +40,8 @@ public abstract class SagaSQLExecuteCallback<T> extends SQLExecuteCallback<T> {
     
     private final ShardingTransactionHandler handler;
     
-    public SagaSQLExecuteCallback(final DatabaseType databaseType, final SQLType sqlType, final boolean isExceptionThrown) {
-        super(databaseType, sqlType, isExceptionThrown);
+    public SagaSQLExecuteCallback(final DatabaseType databaseType, final boolean isExceptionThrown) {
+        super(databaseType, isExceptionThrown);
         this.transactionId = SagaTransactionManager.getInstance().getTransactionId();
         this.handler = ShardingTransactionHandlerRegistry.getInstance().getHandler(TransactionType.BASE);
         handler.doInTransaction(new SagaTransactionEvent(new SagaSQLExecutionEvent(null, transactionId)));
@@ -58,7 +57,7 @@ public abstract class SagaSQLExecuteCallback<T> extends SQLExecuteCallback<T> {
     @Override
     protected T executeSQL(final StatementExecuteUnit executeUnit) throws SQLException {
         SagaSQLExecutionEvent event = new SagaSQLExecutionEvent(executeUnit.getRouteUnit(), transactionId);
-        event.setExecuteSuccess();
+        event.setSameLogicSQL(true);
         handler.doInTransaction(new SagaTransactionEvent(event));
         return executeResult();
     }

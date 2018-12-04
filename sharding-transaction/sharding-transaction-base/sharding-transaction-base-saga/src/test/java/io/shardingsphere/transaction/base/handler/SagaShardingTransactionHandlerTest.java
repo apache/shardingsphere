@@ -142,7 +142,7 @@ public class SagaShardingTransactionHandlerTest {
         builderMap.put(id, new SagaDefinitionBuilder(config.getRecoveryPolicy().getName(), config.getTransactionMaxRetries(), config.getCompensationMaxRetries(), config.getTransactionRetryDelay()));
         revertEngines.put(id, revertEngine);
         SagaSQLExecutionEvent event = new SagaSQLExecutionEvent(new RouteUnit("ds", new SQLUnit("", params)), id);
-        event.setExecuteSuccess();
+        event.setSameLogicSQL(true);
         handler.doInTransaction(new SagaTransactionEvent(event));
         assertThat(getRequestLength(), is(1));
         assertThat(getParentsLength(), is(0));
