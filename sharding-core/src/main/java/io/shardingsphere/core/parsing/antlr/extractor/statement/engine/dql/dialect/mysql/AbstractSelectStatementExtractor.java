@@ -15,7 +15,7 @@
  * </p>
  */
 
-package io.shardingsphere.core.parsing.antlr.extractor.sql.statement.dql;
+package io.shardingsphere.core.parsing.antlr.extractor.statement.engine.dql.dialect.mysql;
 
 import java.util.List;
 
@@ -62,16 +62,13 @@ public abstract class AbstractSelectStatementExtractor extends AbstractSQLStatem
     }
     
     @Override
-    protected SQLStatement createStatement(final String sql) {
+    protected SQLStatement createSQLStatement(final String sql) {
         SelectStatement result = new SelectStatement();
         result.setSql(sql);
         return result;
     }
     
-    protected SQLStatement createStatement() {
-        return null;
-    }
-    
+    @Override
     protected void postExtract(final SQLStatement sqlStatement, final ShardingTableMetaData shardingTableMetaData) {
         appendDerivedColumns((SelectStatement) sqlStatement, shardingTableMetaData);
         appendDerivedOrderBy((SelectStatement) sqlStatement);
