@@ -17,7 +17,6 @@
 
 package io.shardingsphere.core.parsing.antlr.extractor.statement.engine.ddl.dialect.oracle;
 
-import io.shardingsphere.core.parsing.antlr.extractor.segment.constant.RuleName;
 import io.shardingsphere.core.parsing.antlr.extractor.segment.engine.AddColumnExtractor;
 import io.shardingsphere.core.parsing.antlr.extractor.segment.engine.PrimaryKeyForAlterTableExtractor;
 import io.shardingsphere.core.parsing.antlr.extractor.segment.engine.RenameColumnExtractor;
@@ -36,7 +35,7 @@ public final class OracleAlterTableExtractor extends AlterTableExtractor {
         addSQLSegmentExtractor(new AddColumnExtractor());
         addSQLSegmentExtractor(new OracleModifyColumnExtractor());
         addSQLSegmentExtractor(new RenameColumnExtractor());
-        addSQLSegmentExtractor(new PrimaryKeyForAlterTableExtractor(RuleName.ADD_CONSTRAINT_CLAUSE));
+        addSQLSegmentExtractor(new PrimaryKeyForAlterTableExtractor());
         addSQLSegmentExtractor(new OracleDropPrimaryKeyExtractor());
     }
 }

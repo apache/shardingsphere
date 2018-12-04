@@ -17,8 +17,11 @@
 
 package io.shardingsphere.core.parsing.antlr.extractor.statement.engine.ddl.dialect.mysql;
 
+import java.util.Collections;
+import java.util.Iterator;
+import java.util.List;
+
 import io.shardingsphere.core.metadata.table.ColumnMetaData;
-import io.shardingsphere.core.parsing.antlr.extractor.segment.constant.RuleName;
 import io.shardingsphere.core.parsing.antlr.extractor.segment.engine.DropPrimaryKeyExtractor;
 import io.shardingsphere.core.parsing.antlr.extractor.segment.engine.PrimaryKeyForAlterTableExtractor;
 import io.shardingsphere.core.parsing.antlr.extractor.segment.engine.RenameIndexExtractor;
@@ -28,12 +31,8 @@ import io.shardingsphere.core.parsing.antlr.extractor.segment.engine.dialect.mys
 import io.shardingsphere.core.parsing.antlr.extractor.segment.engine.dialect.mysql.MySQLDropIndexExtractor;
 import io.shardingsphere.core.parsing.antlr.extractor.segment.engine.dialect.mysql.MySQLModifyColumnExtractor;
 import io.shardingsphere.core.parsing.antlr.extractor.statement.engine.ddl.AlterTableExtractor;
-import io.shardingsphere.core.parsing.antlr.sql.segment.ColumnPositionSegment;
+import io.shardingsphere.core.parsing.antlr.sql.segment.column.ColumnPositionSegment;
 import io.shardingsphere.core.parsing.antlr.sql.statement.ddl.AlterTableStatement;
-
-import java.util.Collections;
-import java.util.Iterator;
-import java.util.List;
 
 /**
  * MySQL alter table statement extractor.
@@ -47,7 +46,7 @@ public final class MySQLAlterTableExtractor extends AlterTableExtractor {
         addSQLSegmentExtractor(new MySQLAddIndexExtractor());
         addSQLSegmentExtractor(new MySQLDropIndexExtractor());
         addSQLSegmentExtractor(new RenameIndexExtractor());
-        addSQLSegmentExtractor(new PrimaryKeyForAlterTableExtractor(RuleName.ADD_CONSTRAINT));
+        addSQLSegmentExtractor(new PrimaryKeyForAlterTableExtractor());
         addSQLSegmentExtractor(new DropPrimaryKeyExtractor());
         addSQLSegmentExtractor(new MySQLChangeColumnExtractor());
         addSQLSegmentExtractor(new MySQLModifyColumnExtractor());

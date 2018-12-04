@@ -21,11 +21,12 @@ import com.google.common.base.Optional;
 import io.shardingsphere.core.parsing.antlr.extractor.segment.OptionalSQLSegmentExtractor;
 import io.shardingsphere.core.parsing.antlr.extractor.segment.constant.RuleName;
 import io.shardingsphere.core.parsing.antlr.extractor.util.ASTUtils;
-import io.shardingsphere.core.parsing.antlr.sql.segment.DropPrimaryKeySegment;
+import io.shardingsphere.core.parsing.antlr.sql.segment.constraint.DropPrimaryKeySegment;
+
 import org.antlr.v4.runtime.ParserRuleContext;
 
 /**
- * Drop primary key clause extractor.
+ * Drop primary key extractor.
  *
  * @author duhongjun
  */

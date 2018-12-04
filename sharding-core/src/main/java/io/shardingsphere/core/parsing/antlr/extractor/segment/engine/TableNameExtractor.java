@@ -22,7 +22,7 @@ import com.google.common.base.Splitter;
 import io.shardingsphere.core.parsing.antlr.extractor.segment.OptionalSQLSegmentExtractor;
 import io.shardingsphere.core.parsing.antlr.extractor.segment.constant.RuleName;
 import io.shardingsphere.core.parsing.antlr.extractor.util.ASTUtils;
-import io.shardingsphere.core.parsing.antlr.sql.segment.TableSegment;
+import io.shardingsphere.core.parsing.antlr.sql.segment.table.TableSegment;
 import io.shardingsphere.core.parsing.lexer.token.Symbol;
 import io.shardingsphere.core.parsing.parser.token.TableToken;
 import io.shardingsphere.core.util.SQLUtil;
@@ -60,9 +60,10 @@ public final class TableNameExtractor implements OptionalSQLSegmentExtractor {
         TableToken tableToken = new TableToken(tableNameNode.get().getStart().getStartIndex(), skippedSchemaNameLength, tableName);
         TableSegment result = new TableSegment(SQLUtil.getExactlyValue(tableName), tableToken);
         result.setSchemaName(schemaName.orNull());
-        Optional<ParserRuleContext> aliasNode = ASTUtils.findFirstChildNode(tableNameNode.get(), RuleName.ALIAS);
+        Optional<ParserRuleContext> aliasNode = ASTUtils.findFirstChildNode(tableNameNode.get().getParent(), RuleName.ALIAS);
         if (aliasNode.isPresent()) {
             result.setAlias(aliasNode.get().getText());
+            result.setAliasStartPosition(aliasNode.get().getStart().getStartIndex());
         }
         return Optional.of(result);
     }

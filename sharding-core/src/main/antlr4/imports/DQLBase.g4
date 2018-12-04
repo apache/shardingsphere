@@ -36,6 +36,12 @@ partitionClause
     
 selectExprs
     : selectExpr (COMMA selectExpr)*
+    | asterisk (COMMA selectExpr)*
+    | (selectExpr COMMA)+ asterisk (COMMA selectExpr)*
+    ; 
+    
+asterisk
+    : ASTERISK
     ;
     
 selectExpr
@@ -44,4 +50,8 @@ selectExpr
     
 tableReferences
     : 
+    ;
+    
+functionCall
+    : (ID | DATE) LP_ bitExprs? RP_
     ;

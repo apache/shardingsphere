@@ -18,39 +18,43 @@
 package io.shardingsphere.core.parsing.antlr.extractor.segment.engine;
 
 import com.google.common.base.Optional;
-import io.shardingsphere.core.parsing.antlr.extractor.segment.CollectionSQLSegmentExtractor;
+import io.shardingsphere.core.parsing.antlr.extractor.segment.OptionalSQLSegmentExtractor;
 import io.shardingsphere.core.parsing.antlr.extractor.segment.constant.RuleName;
 import io.shardingsphere.core.parsing.antlr.extractor.util.ASTUtils;
-import io.shardingsphere.core.parsing.antlr.sql.segment.ColumnDefinitionSegment;
+import io.shardingsphere.core.parsing.antlr.sql.segment.column.ColumnDefinitionSegment;
+
 import org.antlr.v4.runtime.ParserRuleContext;
 
-import java.util.Collection;
-import java.util.Collections;
-import java.util.LinkedList;
-
 /**
- * Column definition clause extractor.
- *
+ * Column definition extractor.
+ * 
  * @author duhongjun
+ * @author zhangliang
  */
-public final class ColumnDefinitionExtractor implements CollectionSQLSegmentExtractor {
-    
-    private final ColumnDefinitionPhraseExtractor columnDefinitionPhraseExtractor = new ColumnDefinitionPhraseExtractor();
+public final class ColumnDefinitionExtractor implements OptionalSQLSegmentExtractor {
     
     @Override
-    public Collection<ColumnDefinitionSegment> extract(final ParserRuleContext ancestorNode) {
-        Collection<ParserRuleContext> columnDefinitionNodes = ASTUtils.getAllDescendantNodes(ancestorNode, RuleName.COLUMN_DEFINITION);
-        if (columnDefinitionNodes.isEmpty()) {
-            return Collections.emptyList();
+    public Optional<ColumnDefinitionSegment> extract(final ParserRuleContext columnDefinitionNode) {
+        Optional<ParserRuleContext> columnNameNode = ASTUtils.findFirstChildNode(columnDefinitionNode, RuleName.COLUMN_NAME);
+        if (!columnNameNode.isPresent()) {
+            return Optional.absent();
         }
-        Collection<ColumnDefinitionSegment> result = new LinkedList<>();
-        for (ParserRuleContext each : columnDefinitionNodes) {
-            Optional<ColumnDefinitionSegment> columnDefinition = columnDefinitionPhraseExtractor.extract(each);
-            if (columnDefinition.isPresent()) {
-                columnDefinition.get().setAdd(true);
-                result.add(columnDefinition.get());
-            }
+        Optional<ParserRuleContext> dataTypeNode = ASTUtils.findFirstChildNode(columnDefinitionNode, RuleName.DATA_TYPE);
+        Optional<String> dataTypeText = dataTypeNode.isPresent() ? Optional.of(dataTypeNode.get().getChild(0).getText()) : Optional.<String>absent();
+        Optional<Integer> dataTypeLength = dataTypeNode.isPresent() ? getDataTypeLength(dataTypeNode.get()) : Optional.<Integer>absent();
+        boolean isPrimaryKey = ASTUtils.findFirstChildNode(columnDefinitionNode, RuleName.PRIMARY_KEY).isPresent();
+        return Optional.of(new ColumnDefinitionSegment(columnNameNode.get().getText(), dataTypeText.orNull(), dataTypeLength.orNull(), isPrimaryKey));
+    }
+    
+    private Optional<Integer> getDataTypeLength(final ParserRuleContext dataTypeContext) {
+        Optional<ParserRuleContext> dataTypeLengthNode = ASTUtils.findFirstChildNode(dataTypeContext, RuleName.DATA_TYPE_LENGTH);
+        if (!dataTypeLengthNode.isPresent() || dataTypeLengthNode.get().getChildCount() < 3) {
+            return Optional.absent();
         }
-        return result;
+        try {
+            return Optional.of(Integer.parseInt(dataTypeLengthNode.get().getChild(1).getText()));
+        } catch (final NumberFormatException ignored) {
+            return Optional.absent();
+        }
     }
 }

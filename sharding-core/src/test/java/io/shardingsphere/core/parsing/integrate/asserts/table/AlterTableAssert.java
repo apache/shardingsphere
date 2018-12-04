@@ -20,7 +20,7 @@ package io.shardingsphere.core.parsing.integrate.asserts.table;
 import com.google.common.base.Joiner;
 import io.shardingsphere.core.metadata.table.ColumnMetaData;
 import io.shardingsphere.core.metadata.table.TableMetaData;
-import io.shardingsphere.core.parsing.antlr.sql.segment.ColumnPositionSegment;
+import io.shardingsphere.core.parsing.antlr.sql.segment.column.ColumnPositionSegment;
 import io.shardingsphere.core.parsing.antlr.sql.statement.ddl.AlterTableStatement;
 import io.shardingsphere.core.parsing.antlr.sql.statement.ddl.ColumnDefinition;
 import io.shardingsphere.core.parsing.integrate.asserts.SQLStatementAssertMessage;

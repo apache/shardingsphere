@@ -71,11 +71,15 @@ public enum RuleName {
     
     ADD_CONSTRAINT("AddConstraint"),
     
-    ADD_CONSTRAINT_CLAUSE("AddConstraintClause"), 
-    
     DROP_CONSTRAINT_CLAUSE("DropConstraintClause"),
     
-    ALTER_TABLE_ADD_CONSTRAINT("AlterTableAddConstraint"),
+    SELECT_CLAUSE("SelectClause"),
+    
+    SELECT_EXPR("SelectExpr"),
+    
+    SELECT_EXPRS("SelectExprs"),
+    
+    FUNCTION_CALL("FunctionCall"),
     
     TABLE_CONSTRAINT("TableConstraint"),
     
@@ -100,6 +104,22 @@ public enum RuleName {
     ORDER_BY_CLAUSE("OrderByClause"),
     
     ORDER_BY_ITEM("OrderByItem"),
+    
+    COMPARSION_OPERATOR("ComparsionOperator"),
+    
+    PREDICATE("Predicate"),
+    
+    QUESTION("Question"),
+    
+    NUMBER("Number"),
+    
+    STRING("String"),
+    
+    SIMPLE_EXPR("SimpleExpr"),
+    
+    LIMIT_CLAUSE("LimitClause"),
+    
+    RANGE_CLAUSE("RangeClause"),
 
     SHOW_PARAM("ShowParam");
     

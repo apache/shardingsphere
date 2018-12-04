@@ -21,6 +21,7 @@ import lombok.Getter;
 import lombok.RequiredArgsConstructor;
 
 import java.util.Collection;
+import java.util.Collections;
 import java.util.Map;
 
 /**
@@ -83,6 +84,10 @@ public final class ShardingTableMetaData {
      * @return column names.
      */
     public Collection<String> getAllColumnNames(final String tableName) {
-        return tableMetaDataMap.get(tableName).getAllColumnNames();
+        TableMetaData tableMeta = tableMetaDataMap.get(tableName);
+        if (null == tableMeta) {
+            return Collections.emptyList();
+        }
+        return tableMeta.getAllColumnNames();
     }
 }

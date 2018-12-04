@@ -47,7 +47,7 @@ public final class LogicalOperator {
      * @return OR operator or not
      */
     public static boolean isOrOperator(final String token) {
-        return DefaultKeyword.OR.name().equalsIgnoreCase(token) || Symbol.DOUBLE_BAR.name().equalsIgnoreCase(token);
+        return DefaultKeyword.OR.name().equalsIgnoreCase(token) || Symbol.DOUBLE_BAR.getLiterals().equalsIgnoreCase(token);
     }
     
     /**
@@ -57,6 +57,6 @@ public final class LogicalOperator {
      * @return AND operator or not
      */
     public static boolean isAndOperator(final String token) {
-        return DefaultKeyword.AND.name().equalsIgnoreCase(token) || Symbol.DOUBLE_AMP.name().equalsIgnoreCase(token);
+        return DefaultKeyword.AND.name().equalsIgnoreCase(token) || Symbol.DOUBLE_AMP.getLiterals().equalsIgnoreCase(token);
     }
 }
