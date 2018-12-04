@@ -37,9 +37,9 @@ import io.shardingsphere.core.parsing.antlr.sql.segment.condition.AndConditionSe
 import io.shardingsphere.core.parsing.antlr.sql.segment.condition.ConditionSegment;
 import io.shardingsphere.core.parsing.antlr.sql.segment.condition.OrConditionSegment;
 import io.shardingsphere.core.parsing.antlr.sql.segment.condition.PredicateSegment;
-import io.shardingsphere.core.parsing.antlr.sql.segment.expr.SQLBetweenExpressionSegment;
-import io.shardingsphere.core.parsing.antlr.sql.segment.expr.SQLEqualsExpressionSegment;
-import io.shardingsphere.core.parsing.antlr.sql.segment.expr.SQLInExpressionSegment;
+import io.shardingsphere.core.parsing.antlr.sql.segment.expr.BetweenValueExpressionSegment;
+import io.shardingsphere.core.parsing.antlr.sql.segment.expr.EqualsValueExpressionSegment;
+import io.shardingsphere.core.parsing.antlr.sql.segment.expr.InValueExpressionSegment;
 import io.shardingsphere.core.parsing.lexer.token.DefaultKeyword;
 import io.shardingsphere.core.parsing.lexer.token.Symbol;
 import io.shardingsphere.core.parsing.parser.expression.SQLExpression;
@@ -184,7 +184,7 @@ public final class PredicateExtractor implements OptionalSQLSegmentExtractor {
         if (!sqlExpression.isPresent()) {
             return Optional.absent();
         }
-        return Optional.of(new ConditionSegment(column.get(), ShardingOperator.EQUAL, new SQLEqualsExpressionSegment(sqlExpression.get())));
+        return Optional.of(new ConditionSegment(column.get(), ShardingOperator.EQUAL, new EqualsValueExpressionSegment(sqlExpression.get())));
     }
     
     private Optional<SQLExpression> buildExperssion(final Map<ParserRuleContext, Integer> questionNodeIndexMap, final ParserRuleContext valueNode) {
@@ -238,7 +238,7 @@ public final class PredicateExtractor implements OptionalSQLSegmentExtractor {
         Optional<SQLExpression> endSQLExpression = buildExperssion(questionNodeIndexMap, (ParserRuleContext) predicateNode.getChild(4));
         if (beginSQLExpression.isPresent() && endSQLExpression.isPresent()) {
             
-            return Optional.of(new ConditionSegment(column.get(), ShardingOperator.BETWEEN, new SQLBetweenExpressionSegment(beginSQLExpression.get(), endSQLExpression.get())));
+            return Optional.of(new ConditionSegment(column.get(), ShardingOperator.BETWEEN, new BetweenValueExpressionSegment(beginSQLExpression.get(), endSQLExpression.get())));
         }
         return Optional.absent();
     }
@@ -260,7 +260,7 @@ public final class PredicateExtractor implements OptionalSQLSegmentExtractor {
             }
         }
         if (!sqlExpressions.isEmpty()) {
-            SQLInExpressionSegment inExpressionSegment = new SQLInExpressionSegment();
+            InValueExpressionSegment inExpressionSegment = new InValueExpressionSegment();
             inExpressionSegment.getSqlExpressions().addAll(sqlExpressions);
             return Optional.of(new ConditionSegment(column.get(), ShardingOperator.IN, inExpressionSegment));
         }

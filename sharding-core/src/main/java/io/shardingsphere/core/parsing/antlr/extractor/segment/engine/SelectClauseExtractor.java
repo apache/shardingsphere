@@ -34,6 +34,7 @@ import io.shardingsphere.core.parsing.antlr.sql.segment.expr.CommonExpressionSeg
 import io.shardingsphere.core.parsing.antlr.sql.segment.expr.FunctionExpressionSegment;
 import io.shardingsphere.core.parsing.antlr.sql.segment.expr.PropertyExpressionSegment;
 import io.shardingsphere.core.parsing.antlr.sql.segment.expr.StarExpressionSegment;
+import io.shardingsphere.core.parsing.antlr.sql.segment.expr.SubquerySegment;
 import io.shardingsphere.core.parsing.lexer.token.Symbol;
 import io.shardingsphere.core.util.SQLUtil;
 
@@ -69,32 +70,44 @@ public class SelectClauseExtractor implements OptionalSQLSegmentExtractor {
                 }
                 result.getExpressions().add(new StarExpressionSegment(((ParserRuleContext) childNode).getStart().getStartIndex(), owner));
             } else {
-                Optional<ParserRuleContext> aliasNode = ASTUtils.findFirstChildNode((ParserRuleContext) childNode, RuleName.ALIAS);
-                Optional<String> alias = null;
-                if (aliasNode.isPresent()) {
-                    alias = Optional.of(SQLUtil.getExactlyValue(aliasNode.get().getText()));
-                } else {
-                    alias = Optional.absent();
-                }
-                Optional<ParserRuleContext> functionCall = ASTUtils.findFirstChildNode((ParserRuleContext) childNode, RuleName.FUNCTION_CALL);
-                if (functionCall.isPresent()) {
-                    String name = functionCall.get().getChild(0).getText();
-                    int startIndex = functionCall.get().getStart().getStartIndex() + name.length();
-                    result.getExpressions().add(new FunctionExpressionSegment(name, alias, startIndex, functionCall.get().getStop().getStopIndex()));
-                } else {
-                    if (RuleName.COLUMN_NAME.getName().equals(childNode.getClass().getSimpleName())) {
-                        ParserRuleContext columnNode = (ParserRuleContext) childNode;
-                        Optional<ColumnSegment> columnSegment = new ColumnSegmentExtractor(new HashMap<String, String>()).extract(columnNode);
-                        PropertyExpressionSegment propertySegment = new PropertyExpressionSegment(columnSegment.get().getOwner(), columnSegment.get().getName(),
-                                columnNode.getStart().getStartIndex(), columnNode.getStop().getStopIndex(), alias);
-                        result.getExpressions().add(propertySegment);
-                    } else {
-                        result.getExpressions().add(new CommonExpressionSegment(getParseTreeText(childNode.getChild(0)), alias));
+                Optional<ParserRuleContext> subqueryNode = ASTUtils.findFirstChildNode((ParserRuleContext) childNode, RuleName.SUBQUERY);
+                if(subqueryNode.isPresent()) {
+                    Optional<SubquerySegment> subquerySegment = new SubqueryExtractor().extract(subqueryNode.get());
+                    if(subquerySegment.isPresent()) {
+                        result.getExpressions().add(subquerySegment.get());
                     }
+                    continue;
                 }
+                fillForPropertyOrFunction(result, (ParserRuleContext) childNode);
             }
         }
         return Optional.of(result);
+    }
+    
+    private void fillForPropertyOrFunction(final SelectClauseSegment selectClauseSegment, final ParserRuleContext node) {
+        Optional<ParserRuleContext> aliasNode = ASTUtils.findFirstChildNode(node, RuleName.ALIAS);
+        Optional<String> alias = null;
+        if (aliasNode.isPresent()) {
+            alias = Optional.of(SQLUtil.getExactlyValue(aliasNode.get().getText()));
+        } else {
+            alias = Optional.absent();
+        }
+        Optional<ParserRuleContext> functionCall = ASTUtils.findFirstChildNode(node, RuleName.FUNCTION_CALL);
+        if (functionCall.isPresent()) {
+            String name = functionCall.get().getChild(0).getText();
+            int startIndex = functionCall.get().getStart().getStartIndex() + name.length();
+            selectClauseSegment.getExpressions().add(new FunctionExpressionSegment(name, alias, startIndex, functionCall.get().getStop().getStopIndex()));
+        } else {
+            if (RuleName.COLUMN_NAME.getName().equals(node.getClass().getSimpleName())) {
+                ParserRuleContext columnNode = node;
+                Optional<ColumnSegment> columnSegment = new ColumnSegmentExtractor(new HashMap<String, String>()).extract(columnNode);
+                PropertyExpressionSegment propertySegment = new PropertyExpressionSegment(columnSegment.get().getOwner(), columnSegment.get().getName(),
+                        columnNode.getStart().getStartIndex(), columnNode.getStop().getStopIndex(), alias);
+                selectClauseSegment.getExpressions().add(propertySegment);
+            } else {
+                selectClauseSegment.getExpressions().add(new CommonExpressionSegment(getParseTreeText(node.getChild(0)), alias));
+            }
+        }
     }
     
     private String getParseTreeText(final ParseTree node) {
