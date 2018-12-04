@@ -28,12 +28,12 @@ import com.google.common.base.Optional;
 import io.shardingsphere.core.parsing.antlr.extractor.segment.OptionalSQLSegmentExtractor;
 import io.shardingsphere.core.parsing.antlr.extractor.segment.constant.RuleName;
 import io.shardingsphere.core.parsing.antlr.extractor.util.ASTUtils;
-import io.shardingsphere.core.parsing.antlr.sql.segment.ColumnSegment;
-import io.shardingsphere.core.parsing.antlr.sql.segment.CommonExpressionSegment;
-import io.shardingsphere.core.parsing.antlr.sql.segment.FunctionExpressionSegment;
-import io.shardingsphere.core.parsing.antlr.sql.segment.PropertyExpressionSegment;
 import io.shardingsphere.core.parsing.antlr.sql.segment.SelectClauseSegment;
-import io.shardingsphere.core.parsing.antlr.sql.segment.StarExpressionSegment;
+import io.shardingsphere.core.parsing.antlr.sql.segment.column.ColumnSegment;
+import io.shardingsphere.core.parsing.antlr.sql.segment.expr.CommonExpressionSegment;
+import io.shardingsphere.core.parsing.antlr.sql.segment.expr.FunctionExpressionSegment;
+import io.shardingsphere.core.parsing.antlr.sql.segment.expr.PropertyExpressionSegment;
+import io.shardingsphere.core.parsing.antlr.sql.segment.expr.StarExpressionSegment;
 import io.shardingsphere.core.parsing.lexer.token.Symbol;
 import io.shardingsphere.core.util.SQLUtil;
 

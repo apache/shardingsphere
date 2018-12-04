@@ -20,7 +20,7 @@ package io.shardingsphere.core.parsing.antlr.extractor.statement.engine.ddl;
 import io.shardingsphere.core.metadata.table.ColumnMetaData;
 import io.shardingsphere.core.metadata.table.ShardingTableMetaData;
 import io.shardingsphere.core.metadata.table.TableMetaData;
-import io.shardingsphere.core.parsing.antlr.extractor.segment.engine.ColumnDefinitionExtractor;
+import io.shardingsphere.core.parsing.antlr.extractor.segment.engine.ColumnDefinitionsExtractor;
 import io.shardingsphere.core.parsing.antlr.extractor.segment.engine.IndexNamesExtractor;
 import io.shardingsphere.core.parsing.antlr.extractor.segment.engine.PrimaryKeyForCreateTableExtractor;
 import io.shardingsphere.core.parsing.antlr.extractor.segment.engine.TableNamesExtractor;
@@ -40,7 +40,7 @@ public final class CreateTableExtractor extends DDLStatementExtractor {
     
     public CreateTableExtractor() {
         addSQLSegmentExtractor(new TableNamesExtractor());
-        addSQLSegmentExtractor(new ColumnDefinitionExtractor());
+        addSQLSegmentExtractor(new ColumnDefinitionsExtractor());
         addSQLSegmentExtractor(new IndexNamesExtractor());
         addSQLSegmentExtractor(new PrimaryKeyForCreateTableExtractor());
     }

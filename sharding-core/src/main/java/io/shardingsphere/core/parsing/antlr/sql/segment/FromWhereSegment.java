@@ -20,6 +20,7 @@ package io.shardingsphere.core.parsing.antlr.sql.segment;
 import java.util.HashMap;
 import java.util.Map;
 
+import io.shardingsphere.core.parsing.antlr.sql.segment.condition.OrConditionSegment;
 import lombok.Getter;
 import lombok.Setter;
 

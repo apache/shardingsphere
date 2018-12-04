@@ -29,9 +29,9 @@ import io.shardingsphere.core.parsing.antlr.extractor.segment.OptionalSQLSegment
 import io.shardingsphere.core.parsing.antlr.extractor.segment.constant.RuleName;
 import io.shardingsphere.core.parsing.antlr.extractor.util.ASTUtils;
 import io.shardingsphere.core.parsing.antlr.sql.segment.FromWhereSegment;
-import io.shardingsphere.core.parsing.antlr.sql.segment.OrConditionSegment;
-import io.shardingsphere.core.parsing.antlr.sql.segment.TableJoinSegment;
-import io.shardingsphere.core.parsing.antlr.sql.segment.TableSegment;
+import io.shardingsphere.core.parsing.antlr.sql.segment.condition.OrConditionSegment;
+import io.shardingsphere.core.parsing.antlr.sql.segment.table.TableJoinSegment;
+import io.shardingsphere.core.parsing.antlr.sql.segment.table.TableSegment;
 
 /**
  * From clause extractor.
@@ -42,7 +42,7 @@ public final class FromWhereExtractor implements OptionalSQLSegmentExtractor {
     
     private final TableNameExtractor tableNameExtractor = new TableNameExtractor();
     
-    private PredicateSegmentExtractor predicateSegmentExtractor;
+    private PredicateExtractor predicateSegmentExtractor;
     
     @Override
     public Optional<FromWhereSegment> extract(final ParserRuleContext ancestorNode) {
@@ -55,7 +55,7 @@ public final class FromWhereExtractor implements OptionalSQLSegmentExtractor {
             return Optional.absent();
         }
         FromWhereSegment result = new FromWhereSegment();
-        predicateSegmentExtractor = new PredicateSegmentExtractor(result.getTableAliases());
+        predicateSegmentExtractor = new PredicateExtractor(result.getTableAliases());
         Collection<ParserRuleContext> questionNodes = ASTUtils.getAllDescendantNodes(ancestorNode, RuleName.QUESTION);
         result.setParamenterCount(questionNodes.size());
         Map<ParserRuleContext, Integer> questionNodeIndexMap = new HashMap<>();

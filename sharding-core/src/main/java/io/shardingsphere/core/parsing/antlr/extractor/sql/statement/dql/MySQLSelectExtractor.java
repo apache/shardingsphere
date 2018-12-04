@@ -25,10 +25,10 @@ import com.google.common.base.Preconditions;
 import io.shardingsphere.core.constant.AggregationType;
 import io.shardingsphere.core.metadata.table.ShardingTableMetaData;
 import io.shardingsphere.core.parsing.antlr.extractor.segment.engine.FromWhereExtractor;
-import io.shardingsphere.core.parsing.antlr.extractor.segment.engine.GroupByClauseExtractor;
+import io.shardingsphere.core.parsing.antlr.extractor.segment.engine.GroupByExtractor;
 import io.shardingsphere.core.parsing.antlr.extractor.segment.engine.IndexNamesExtractor;
-import io.shardingsphere.core.parsing.antlr.extractor.segment.engine.LimitClauseExtractor;
-import io.shardingsphere.core.parsing.antlr.extractor.segment.engine.OrderByClauseExtractor;
+import io.shardingsphere.core.parsing.antlr.extractor.segment.engine.LimitExtractor;
+import io.shardingsphere.core.parsing.antlr.extractor.segment.engine.OrderByExtractor;
 import io.shardingsphere.core.parsing.antlr.extractor.segment.engine.SelectClauseExtractor;
 import io.shardingsphere.core.parsing.antlr.extractor.segment.engine.TableNamesExtractor;
 import io.shardingsphere.core.parsing.antlr.extractor.statement.engine.AbstractSQLStatementExtractor;
@@ -56,9 +56,9 @@ public class MySQLSelectExtractor extends AbstractSQLStatementExtractor {
         addSQLSegmentExtractor(new IndexNamesExtractor());
         addSQLSegmentExtractor(new SelectClauseExtractor());
         addSQLSegmentExtractor(new FromWhereExtractor());
-        addSQLSegmentExtractor(new GroupByClauseExtractor());
-        addSQLSegmentExtractor(new OrderByClauseExtractor());
-        addSQLSegmentExtractor(new LimitClauseExtractor());
+        addSQLSegmentExtractor(new GroupByExtractor());
+        addSQLSegmentExtractor(new OrderByExtractor());
+        addSQLSegmentExtractor(new LimitExtractor());
     }
     
     @Override

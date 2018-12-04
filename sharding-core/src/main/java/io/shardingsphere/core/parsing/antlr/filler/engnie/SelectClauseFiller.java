@@ -22,6 +22,11 @@ import io.shardingsphere.core.constant.AggregationType;
 import io.shardingsphere.core.metadata.table.ShardingTableMetaData;
 import io.shardingsphere.core.parsing.antlr.filler.SQLSegmentFiller;
 import io.shardingsphere.core.parsing.antlr.sql.segment.*;
+import io.shardingsphere.core.parsing.antlr.sql.segment.expr.CommonExpressionSegment;
+import io.shardingsphere.core.parsing.antlr.sql.segment.expr.PropertyExpressionSegment;
+import io.shardingsphere.core.parsing.antlr.sql.segment.expr.StarExpressionSegment;
+import io.shardingsphere.core.parsing.antlr.sql.segment.expr.ExpressionSegment;
+import io.shardingsphere.core.parsing.antlr.sql.segment.expr.FunctionExpressionSegment;
 import io.shardingsphere.core.parsing.parser.context.selectitem.AggregationSelectItem;
 import io.shardingsphere.core.parsing.parser.context.selectitem.CommonSelectItem;
 import io.shardingsphere.core.parsing.parser.context.selectitem.StarSelectItem;
@@ -42,7 +47,7 @@ public class SelectClauseFiller implements SQLSegmentFiller {
         SelectClauseSegment selectClauseSegment = (SelectClauseSegment) sqlSegment;
         SelectStatement selectStatement = (SelectStatement) sqlStatement;
         selectStatement.setSelectListLastPosition(selectClauseSegment.getSelectListLastPosition());
-        for (SelectExpressionSegment each : selectClauseSegment.getExpressions()) {
+        for (ExpressionSegment each : selectClauseSegment.getExpressions()) {
             if (each instanceof StarExpressionSegment) {
                 if (!selectStatement.isContainStar()) {
                     selectStatement.setContainStar(true);

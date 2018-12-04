@@ -22,7 +22,7 @@ import com.google.common.base.Splitter;
 import io.shardingsphere.core.parsing.antlr.extractor.segment.OptionalSQLSegmentExtractor;
 import io.shardingsphere.core.parsing.antlr.extractor.segment.constant.RuleName;
 import io.shardingsphere.core.parsing.antlr.extractor.util.ASTUtils;
-import io.shardingsphere.core.parsing.antlr.sql.segment.TableSegment;
+import io.shardingsphere.core.parsing.antlr.sql.segment.table.TableSegment;
 import io.shardingsphere.core.parsing.lexer.token.Symbol;
 import io.shardingsphere.core.parsing.parser.token.TableToken;
 import io.shardingsphere.core.util.SQLUtil;

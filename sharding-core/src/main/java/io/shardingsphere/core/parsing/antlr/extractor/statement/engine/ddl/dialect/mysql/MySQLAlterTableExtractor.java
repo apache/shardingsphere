@@ -31,7 +31,7 @@ import io.shardingsphere.core.parsing.antlr.extractor.segment.engine.dialect.mys
 import io.shardingsphere.core.parsing.antlr.extractor.segment.engine.dialect.mysql.MySQLDropIndexExtractor;
 import io.shardingsphere.core.parsing.antlr.extractor.segment.engine.dialect.mysql.MySQLModifyColumnExtractor;
 import io.shardingsphere.core.parsing.antlr.extractor.statement.engine.ddl.AlterTableExtractor;
-import io.shardingsphere.core.parsing.antlr.sql.segment.ColumnPositionSegment;
+import io.shardingsphere.core.parsing.antlr.sql.segment.column.ColumnPositionSegment;
 import io.shardingsphere.core.parsing.antlr.sql.statement.ddl.AlterTableStatement;
 
 /**

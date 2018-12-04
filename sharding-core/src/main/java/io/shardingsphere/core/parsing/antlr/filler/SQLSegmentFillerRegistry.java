@@ -22,33 +22,33 @@ import java.util.Map;
 
 import com.google.common.base.Optional;
 
-import io.shardingsphere.core.parsing.antlr.filler.engnie.ColumnDefinitionSegmentFiller;
-import io.shardingsphere.core.parsing.antlr.filler.engnie.ConstraintDefinitionSegmentFiller;
-import io.shardingsphere.core.parsing.antlr.filler.engnie.DropColumnSegmentFiller;
-import io.shardingsphere.core.parsing.antlr.filler.engnie.DropPrimaryKeySegmentFiller;
-import io.shardingsphere.core.parsing.antlr.filler.engnie.FromWhereSegmentFiller;
-import io.shardingsphere.core.parsing.antlr.filler.engnie.GroupBySegmentFiller;
-import io.shardingsphere.core.parsing.antlr.filler.engnie.IndexSegmentFiller;
-import io.shardingsphere.core.parsing.antlr.filler.engnie.LimitSegmentFiller;
-import io.shardingsphere.core.parsing.antlr.filler.engnie.OrderBySegmentFiller;
+import io.shardingsphere.core.parsing.antlr.filler.engnie.ColumnDefinitionFiller;
+import io.shardingsphere.core.parsing.antlr.filler.engnie.ConstraintDefinitionFiller;
+import io.shardingsphere.core.parsing.antlr.filler.engnie.DropColumnFiller;
+import io.shardingsphere.core.parsing.antlr.filler.engnie.DropPrimaryKeyFiller;
+import io.shardingsphere.core.parsing.antlr.filler.engnie.FromWhereFiller;
+import io.shardingsphere.core.parsing.antlr.filler.engnie.GroupByFiller;
+import io.shardingsphere.core.parsing.antlr.filler.engnie.IndexFiller;
+import io.shardingsphere.core.parsing.antlr.filler.engnie.LimitFiller;
+import io.shardingsphere.core.parsing.antlr.filler.engnie.OrderByFiller;
 import io.shardingsphere.core.parsing.antlr.filler.engnie.SelectClauseFiller;
-import io.shardingsphere.core.parsing.antlr.filler.engnie.ShowParamSegmentFiller;
-import io.shardingsphere.core.parsing.antlr.filler.engnie.TableJoinSegmentFiller;
-import io.shardingsphere.core.parsing.antlr.filler.engnie.TableSegmentFiller;
-import io.shardingsphere.core.parsing.antlr.sql.segment.ColumnDefinitionSegment;
-import io.shardingsphere.core.parsing.antlr.sql.segment.ConstraintDefinitionSegment;
-import io.shardingsphere.core.parsing.antlr.sql.segment.DropColumnSegment;
-import io.shardingsphere.core.parsing.antlr.sql.segment.DropPrimaryKeySegment;
+import io.shardingsphere.core.parsing.antlr.filler.engnie.ShowParamFiller;
+import io.shardingsphere.core.parsing.antlr.filler.engnie.TableJoinFiller;
+import io.shardingsphere.core.parsing.antlr.filler.engnie.TableFiller;
 import io.shardingsphere.core.parsing.antlr.sql.segment.FromWhereSegment;
-import io.shardingsphere.core.parsing.antlr.sql.segment.GroupBySegment;
 import io.shardingsphere.core.parsing.antlr.sql.segment.IndexSegment;
 import io.shardingsphere.core.parsing.antlr.sql.segment.LimitSegment;
-import io.shardingsphere.core.parsing.antlr.sql.segment.OrderBySegment;
 import io.shardingsphere.core.parsing.antlr.sql.segment.SQLSegment;
 import io.shardingsphere.core.parsing.antlr.sql.segment.SelectClauseSegment;
 import io.shardingsphere.core.parsing.antlr.sql.segment.ShowParamSegment;
-import io.shardingsphere.core.parsing.antlr.sql.segment.TableJoinSegment;
-import io.shardingsphere.core.parsing.antlr.sql.segment.TableSegment;
+import io.shardingsphere.core.parsing.antlr.sql.segment.column.ColumnDefinitionSegment;
+import io.shardingsphere.core.parsing.antlr.sql.segment.column.DropColumnSegment;
+import io.shardingsphere.core.parsing.antlr.sql.segment.constraint.ConstraintDefinitionSegment;
+import io.shardingsphere.core.parsing.antlr.sql.segment.constraint.DropPrimaryKeySegment;
+import io.shardingsphere.core.parsing.antlr.sql.segment.order.GroupBySegment;
+import io.shardingsphere.core.parsing.antlr.sql.segment.order.OrderBySegment;
+import io.shardingsphere.core.parsing.antlr.sql.segment.table.TableJoinSegment;
+import io.shardingsphere.core.parsing.antlr.sql.segment.table.TableSegment;
 
 /**
  * SQL Segment filler registry.
@@ -60,19 +60,19 @@ public final class SQLSegmentFillerRegistry {
     private static final Map<Class<?>, SQLSegmentFiller> FILLERS = new HashMap<>();
     
     static {
-        FILLERS.put(DropColumnSegment.class, new DropColumnSegmentFiller());
-        FILLERS.put(ConstraintDefinitionSegment.class, new ConstraintDefinitionSegmentFiller());
-        FILLERS.put(DropPrimaryKeySegment.class, new DropPrimaryKeySegmentFiller());
-        FILLERS.put(TableSegment.class, new TableSegmentFiller());
-        FILLERS.put(ColumnDefinitionSegment.class, new ColumnDefinitionSegmentFiller());
-        FILLERS.put(IndexSegment.class, new IndexSegmentFiller());
+        FILLERS.put(DropColumnSegment.class, new DropColumnFiller());
+        FILLERS.put(ConstraintDefinitionSegment.class, new ConstraintDefinitionFiller());
+        FILLERS.put(DropPrimaryKeySegment.class, new DropPrimaryKeyFiller());
+        FILLERS.put(TableSegment.class, new TableFiller());
+        FILLERS.put(ColumnDefinitionSegment.class, new ColumnDefinitionFiller());
+        FILLERS.put(IndexSegment.class, new IndexFiller());
         FILLERS.put(SelectClauseSegment.class, new SelectClauseFiller());
-        FILLERS.put(FromWhereSegment.class, new FromWhereSegmentFiller());
-        FILLERS.put(TableJoinSegment.class, new TableJoinSegmentFiller());
-        FILLERS.put(GroupBySegment.class, new GroupBySegmentFiller());
-        FILLERS.put(OrderBySegment.class, new OrderBySegmentFiller());
-        FILLERS.put(LimitSegment.class, new LimitSegmentFiller());
-        FILLERS.put(ShowParamSegment.class, new ShowParamSegmentFiller());
+        FILLERS.put(FromWhereSegment.class, new FromWhereFiller());
+        FILLERS.put(TableJoinSegment.class, new TableJoinFiller());
+        FILLERS.put(GroupBySegment.class, new GroupByFiller());
+        FILLERS.put(OrderBySegment.class, new OrderByFiller());
+        FILLERS.put(LimitSegment.class, new LimitFiller());
+        FILLERS.put(ShowParamSegment.class, new ShowParamFiller());
     }
     
     /**
