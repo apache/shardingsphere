@@ -33,7 +33,7 @@ import io.shardingsphere.orchestration.internal.eventbus.ShardingOrchestrationEv
 import io.shardingsphere.orchestration.internal.registry.config.event.AuthenticationChangedEvent;
 import io.shardingsphere.orchestration.internal.registry.config.event.ConfigMapChangedEvent;
 import io.shardingsphere.orchestration.internal.registry.config.event.PropertiesChangedEvent;
-import io.shardingsphere.orchestration.internal.config.event.SagaChangedEvent;
+import io.shardingsphere.orchestration.internal.registry.config.event.SagaChangedEvent;
 import io.shardingsphere.orchestration.internal.registry.state.event.CircuitStateChangedEvent;
 import io.shardingsphere.shardingproxy.runtime.schema.LogicSchema;
 import io.shardingsphere.shardingproxy.runtime.schema.MasterSlaveSchema;

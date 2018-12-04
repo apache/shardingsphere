@@ -26,6 +26,7 @@ import io.shardingsphere.shardingproxy.backend.BackendHandler;
 import io.shardingsphere.shardingproxy.backend.ResultPacket;
 import io.shardingsphere.shardingproxy.backend.jdbc.connection.BackendConnection;
 import io.shardingsphere.shardingproxy.backend.jdbc.connection.ConnectionStatus;
+import io.shardingsphere.shardingproxy.backend.jdbc.datasource.JDBCBackendDataSource;
 import io.shardingsphere.shardingproxy.frontend.common.FrontendHandler;
 import io.shardingsphere.shardingproxy.runtime.GlobalRegistry;
 import io.shardingsphere.shardingproxy.runtime.schema.ShardingSchema;
@@ -95,6 +96,8 @@ public final class ComQueryPacketTest {
     @SneakyThrows
     private void setShardingSchemas() {
         ShardingSchema shardingSchema = mock(ShardingSchema.class);
+        JDBCBackendDataSource backendDataSource = mock(JDBCBackendDataSource.class);
+        when(shardingSchema.getBackendDataSource()).thenReturn(backendDataSource);
         Map<String, ShardingSchema> shardingSchemas = new HashMap<>();
         shardingSchemas.put(ShardingConstant.LOGIC_SCHEMA_NAME, shardingSchema);
         Field field = GlobalRegistry.class.getDeclaredField("logicSchemas");

@@ -18,10 +18,13 @@
 package io.shardingsphere.shardingproxy.backend.jdbc.connection;
 
 import com.google.common.base.Preconditions;
+import io.shardingsphere.api.config.SagaConfiguration;
 import io.shardingsphere.core.constant.transaction.TransactionOperationType;
 import io.shardingsphere.core.constant.transaction.TransactionType;
 import io.shardingsphere.core.event.transaction.ShardingTransactionEvent;
+import io.shardingsphere.core.event.transaction.base.SagaTransactionEvent;
 import io.shardingsphere.core.event.transaction.xa.XATransactionEvent;
+import io.shardingsphere.shardingproxy.runtime.GlobalRegistry;
 import io.shardingsphere.spi.transaction.ShardingTransactionHandler;
 import io.shardingsphere.spi.transaction.ShardingTransactionHandlerRegistry;
 import lombok.RequiredArgsConstructor;
@@ -56,6 +59,10 @@ public final class BackendTransactionManager implements TransactionManager {
             if (TransactionOperationType.BEGIN != operationType) {
                 connection.getStateHandler().getAndSetStatus(ConnectionStatus.TERMINATED);
             }
+        } else if (TransactionType.BASE == transactionType) {
+            SagaConfiguration config = GlobalRegistry.getInstance().getSagaConfiguration();
+            shardingTransactionHandler.doInTransaction(new SagaTransactionEvent(operationType, connection.getCurrentSchema(),
+                GlobalRegistry.getInstance().getLogicSchema(connection.getCurrentSchema()).getBackendDataSource().getDataSources(), config));
         }
     }
 }

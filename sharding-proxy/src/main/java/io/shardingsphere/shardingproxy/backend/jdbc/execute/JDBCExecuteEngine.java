@@ -19,6 +19,7 @@ package io.shardingsphere.shardingproxy.backend.jdbc.execute;
 
 import io.shardingsphere.core.constant.ConnectionMode;
 import io.shardingsphere.core.constant.DatabaseType;
+import io.shardingsphere.core.constant.SQLType;
 import io.shardingsphere.core.constant.properties.ShardingPropertiesConstant;
 import io.shardingsphere.core.constant.transaction.TransactionType;
 import io.shardingsphere.core.executor.ShardingExecuteEngine;
@@ -114,12 +115,12 @@ public final class JDBCExecuteEngine implements SQLExecuteEngine {
         Collection<ShardingExecuteGroup<StatementExecuteUnit>> sqlExecuteGroups =
                 sqlExecutePrepareTemplate.getExecuteUnitGroups(routeResult.getRouteUnits(), new ProxyJDBCExecutePrepareCallback(isReturnGeneratedKeys));
         boolean isBASETransaction = TransactionType.BASE == GlobalRegistry.getInstance().getTransactionType()
-                && sqlType == SQLType.DML
+                && routeResult.getSqlStatement().getType() == SQLType.DML
                 && Status.STATUS_NO_TRANSACTION != SagaTransactionManager.getInstance().getStatus();
-        SQLExecuteCallback<ExecuteResponseUnit> firstProxySQLExecuteCallback = isBASETransaction ? new ProxySagaSQLExecuteCallback(sqlType, isExceptionThrown)
-                : new FirstProxyJDBCExecuteCallback(sqlType, isExceptionThrown, isReturnGeneratedKeys);
+        SQLExecuteCallback<ExecuteResponseUnit> firstProxySQLExecuteCallback = isBASETransaction ? new ProxySagaSQLExecuteCallback(isExceptionThrown)
+                : new FirstProxyJDBCExecuteCallback(isExceptionThrown, isReturnGeneratedKeys);
         SQLExecuteCallback<ExecuteResponseUnit> proxySQLExecuteCallback = isBASETransaction ? firstProxySQLExecuteCallback
-                : new ProxyJDBCExecuteCallback(sqlType, isExceptionThrown, isReturnGeneratedKeys);
+                : new ProxyJDBCExecuteCallback(isExceptionThrown, isReturnGeneratedKeys);
         Collection<ExecuteResponseUnit> executeResponseUnits = sqlExecuteTemplate.executeGroup((Collection) sqlExecuteGroups,
                 firstProxySQLExecuteCallback, proxySQLExecuteCallback);
         ExecuteResponseUnit firstExecuteResponseUnit = executeResponseUnits.iterator().next();
@@ -241,8 +242,8 @@ public final class JDBCExecuteEngine implements SQLExecuteEngine {
     
     private final class ProxySagaSQLExecuteCallback extends SagaSQLExecuteCallback<ExecuteResponseUnit> {
         
-        ProxySagaSQLExecuteCallback(final SQLType sqlType, final boolean isExceptionThrown) {
-            super(DatabaseType.MySQL, sqlType, isExceptionThrown);
+        ProxySagaSQLExecuteCallback(final boolean isExceptionThrown) {
+            super(DatabaseType.MySQL, isExceptionThrown);
         }
         
         @Override
