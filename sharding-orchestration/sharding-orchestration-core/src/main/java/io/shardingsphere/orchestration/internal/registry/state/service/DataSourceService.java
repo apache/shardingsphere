@@ -41,7 +41,7 @@ public final class DataSourceService {
     /**
      * Initialize data sources node.
      */
-    public void initDataSourcesNode() {
+    public void persistDataSourcesNode() {
         regCenter.persist(stateNode.getDataSourcesNodeFullRootPath(), "");
     }
 }

@@ -84,7 +84,7 @@ public final class ShardingOrchestrationFacadeTest {
         verify(configService).persistConfiguration(
                 "sharding_db", dataSourceConfigurationMap, ruleConfigurationMap.get("sharding_db"), authentication, Collections.<String, Object>emptyMap(), props, true);
         verify(instanceStateService).persistInstanceOnline();
-        verify(dataSourceService).initDataSourcesNode();
+        verify(dataSourceService).persistDataSourcesNode();
         verify(listenerManager).initListeners();
     }
     
@@ -92,7 +92,7 @@ public final class ShardingOrchestrationFacadeTest {
     public void assertInitWithoutParameters() {
         shardingOrchestrationFacade.init();
         verify(instanceStateService).persistInstanceOnline();
-        verify(dataSourceService).initDataSourcesNode();
+        verify(dataSourceService).persistDataSourcesNode();
         verify(listenerManager).initListeners();
     }
     

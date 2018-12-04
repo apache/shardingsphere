@@ -46,8 +46,8 @@ public final class DataSourceServiceTest {
     }
     
     @Test
-    public void assertInitDataSourcesNode() {
-        dataSourceService.initDataSourcesNode();
+    public void assertPersistDataSourcesNode() {
+        dataSourceService.persistDataSourcesNode();
         verify(regCenter).persist("/test/state/datasources", "");
     }
 }
