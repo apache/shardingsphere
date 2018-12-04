@@ -28,12 +28,10 @@ import io.shardingsphere.core.parsing.antlr.filler.SQLSegmentFillerRegistry;
 import io.shardingsphere.core.parsing.antlr.sql.segment.SQLSegment;
 import io.shardingsphere.core.parsing.parser.sql.SQLStatement;
 import io.shardingsphere.core.rule.ShardingRule;
-
 import org.antlr.v4.runtime.ParserRuleContext;
 
 import java.util.Collection;
 import java.util.LinkedList;
-import java.util.List;
 
 /**
  * Abstract SQL statement extractor.
@@ -44,40 +42,46 @@ public abstract class AbstractSQLStatementExtractor implements SQLStatementExtra
     
     private final Collection<SQLSegmentExtractor> sqlSegmentExtractors = new LinkedList<>();
     
+    protected final void addSQLSegmentExtractor(final SQLSegmentExtractor sqlSegmentExtractor) {
+        sqlSegmentExtractors.add(sqlSegmentExtractor);
+    }
+    
     @Override
     public final SQLStatement extract(final String sql, final ParserRuleContext rootNode, final ShardingRule shardingRule, final ShardingTableMetaData shardingTableMetaData) {
-        SQLStatement result = createStatement(sql);
-        List<SQLSegment> sqlSegments = new LinkedList<>();
+        Collection<SQLSegment> sqlSegments = extractSQLSegments(rootNode);
+        SQLStatement result = fillSQLStatement(sql, sqlSegments, shardingRule, shardingTableMetaData);
+        postExtract(result, shardingTableMetaData);
+        return result;
+    }
+    
+    private Collection<SQLSegment> extractSQLSegments(final ParserRuleContext rootNode) {
+        Collection<SQLSegment> result = new LinkedList<>();
         for (SQLSegmentExtractor each : sqlSegmentExtractors) {
             if (each instanceof OptionalSQLSegmentExtractor) {
                 Optional<? extends SQLSegment> sqlSegment = ((OptionalSQLSegmentExtractor) each).extract(rootNode);
                 if (sqlSegment.isPresent()) {
-                    sqlSegments.add(sqlSegment.get());
+                    result.add(sqlSegment.get());
                 }
             }
             if (each instanceof CollectionSQLSegmentExtractor) {
-                sqlSegments.addAll(((CollectionSQLSegmentExtractor) each).extract(rootNode));
+                result.addAll(((CollectionSQLSegmentExtractor) each).extract(rootNode));
             }
         }
+        return result;
+    }
+    
+    private SQLStatement fillSQLStatement(final String sql, final Collection<SQLSegment> sqlSegments, final ShardingRule shardingRule, final ShardingTableMetaData shardingTableMetaData) {
+        SQLStatement result = createSQLStatement(sql);
         for (SQLSegment each : sqlSegments) {
             Optional<SQLSegmentFiller> filler = SQLSegmentFillerRegistry.findFiller(each);
             if (filler.isPresent()) {
                 filler.get().fill(each, result, shardingRule, shardingTableMetaData);
             }
         }
-        postExtract(result, shardingTableMetaData);
         return result;
     }
     
-    protected final void addSQLSegmentExtractor(final SQLSegmentExtractor sqlSegmentExtractor) {
-        sqlSegmentExtractors.add(sqlSegmentExtractor);
-    }
-    
-    protected SQLStatement createStatement(final String sql) {
-        return createStatement();
-    }
-    
-    protected abstract SQLStatement createStatement();
+    protected abstract SQLStatement createSQLStatement(String sql);
     
     protected void postExtract(final SQLStatement sqlStatement, final ShardingTableMetaData shardingTableMetaData) {
     }

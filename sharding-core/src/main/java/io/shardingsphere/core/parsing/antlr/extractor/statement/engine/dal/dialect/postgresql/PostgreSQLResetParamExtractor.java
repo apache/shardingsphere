@@ -29,7 +29,7 @@ import io.shardingsphere.core.parsing.parser.sql.SQLStatement;
 public class PostgreSQLResetParamExtractor extends DALStatementExtractor {
     
     @Override
-    protected SQLStatement createStatement() {
+    protected SQLStatement createSQLStatement(final String sql) {
         return new ResetParamStatement();
     }
 }

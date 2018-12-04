@@ -17,11 +17,8 @@
 
 package io.shardingsphere.core.parsing.antlr.extractor.sql.statement.dql;
 
-import java.util.List;
-
 import com.google.common.base.Optional;
 import com.google.common.base.Preconditions;
-
 import io.shardingsphere.core.constant.AggregationType;
 import io.shardingsphere.core.metadata.table.ShardingTableMetaData;
 import io.shardingsphere.core.parsing.antlr.extractor.segment.engine.FromWhereExtractor;
@@ -44,6 +41,8 @@ import io.shardingsphere.core.parsing.parser.sql.dql.select.SelectStatement;
 import io.shardingsphere.core.parsing.parser.token.ItemsToken;
 import io.shardingsphere.core.parsing.parser.token.OrderByToken;
 
+import java.util.List;
+
 /**
  * MySQL select extractor.
  *
@@ -62,7 +61,7 @@ public class MySQLSelectExtractor extends AbstractSQLStatementExtractor {
     }
     
     @Override
-    protected SQLStatement createStatement(final String sql) {
+    protected SQLStatement createSQLStatement(final String sql) {
         SelectStatement result = new SelectStatement();
         result.setSql(sql);
         return result;
