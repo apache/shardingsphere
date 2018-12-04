@@ -58,7 +58,6 @@ public abstract class AbstractSelectStatementExtractor extends AbstractSQLStatem
         addSQLSegmentExtractor(new FromWhereExtractor());
         addSQLSegmentExtractor(new GroupByExtractor());
         addSQLSegmentExtractor(new OrderByExtractor());
-        addSQLSegmentExtractor(new SubqueryExtractor());
     }
     
     @Override

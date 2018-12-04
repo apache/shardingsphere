@@ -18,6 +18,7 @@
 package io.shardingsphere.core.parsing.antlr.filler.engine;
 
 import com.google.common.base.Optional;
+
 import io.shardingsphere.core.constant.AggregationType;
 import io.shardingsphere.core.metadata.table.ShardingTableMetaData;
 import io.shardingsphere.core.parsing.antlr.filler.SQLSegmentFiller;
@@ -28,6 +29,7 @@ import io.shardingsphere.core.parsing.antlr.sql.segment.expr.ExpressionSegment;
 import io.shardingsphere.core.parsing.antlr.sql.segment.expr.FunctionExpressionSegment;
 import io.shardingsphere.core.parsing.antlr.sql.segment.expr.PropertyExpressionSegment;
 import io.shardingsphere.core.parsing.antlr.sql.segment.expr.StarExpressionSegment;
+import io.shardingsphere.core.parsing.antlr.sql.segment.expr.SubquerySegment;
 import io.shardingsphere.core.parsing.parser.context.selectitem.AggregationSelectItem;
 import io.shardingsphere.core.parsing.parser.context.selectitem.CommonSelectItem;
 import io.shardingsphere.core.parsing.parser.context.selectitem.StarSelectItem;
@@ -74,6 +76,11 @@ public class SelectClauseFiller implements SQLSegmentFiller {
             if (each instanceof CommonExpressionSegment) {
                 CommonExpressionSegment commonSegment = (CommonExpressionSegment) each;
                 selectStatement.getItems().add(new CommonSelectItem(commonSegment.getExpression(), commonSegment.getAlias()));
+                continue;
+            }
+            if (each instanceof SubquerySegment) {
+                SubquerySegment subquerySegment = (SubquerySegment) each;
+                new SubqueryFiller().fill(subquerySegment, sqlStatement, shardingRule, shardingTableMetaData);
                 continue;
             }
             if (each instanceof FunctionExpressionSegment) {

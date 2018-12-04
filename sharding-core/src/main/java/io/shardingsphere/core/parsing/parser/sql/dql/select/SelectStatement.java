@@ -71,8 +71,6 @@ public final class SelectStatement extends DQLStatement {
     
     private String sql;
     
-    @Getter(AccessLevel.NONE)
-    @Setter(AccessLevel.NONE)
     private SelectStatement subQueryStatement;
     
     /**
