@@ -17,11 +17,7 @@
 
 package io.shardingsphere.orchestration.internal.registry.state.service;
 
-import io.shardingsphere.orchestration.internal.registry.config.service.ConfigurationService;
 import io.shardingsphere.orchestration.internal.registry.state.node.StateNode;
-import io.shardingsphere.orchestration.internal.registry.state.node.StateNodeStatus;
-import io.shardingsphere.orchestration.internal.registry.state.schema.OrchestrationShardingSchema;
-import io.shardingsphere.orchestration.internal.registry.state.schema.OrchestrationShardingSchemaGroup;
 import io.shardingsphere.orchestration.reg.api.RegistryCenter;
 
 /**
@@ -37,49 +33,15 @@ public final class DataSourceService {
     
     private final RegistryCenter regCenter;
     
-    private final ConfigurationService configService;
-    
     public DataSourceService(final String name, final RegistryCenter regCenter) {
         stateNode = new StateNode(name);
         this.regCenter = regCenter;
-        configService = new ConfigurationService(name, regCenter);
     }
     
     /**
      * Initialize data sources node.
      */
-    public void initDataSourcesNode() {
+    public void persistDataSourcesNode() {
         regCenter.persist(stateNode.getDataSourcesNodeFullRootPath(), "");
-    }
-    
-    /**
-     * Get disabled slave orchestration sharding schema group.
-     *
-     * @return disabled slave orchestration sharding schema group
-     */
-    public OrchestrationShardingSchemaGroup getDisabledSlaveSchemaGroup() {
-        OrchestrationShardingSchemaGroup result = new OrchestrationShardingSchemaGroup();
-        OrchestrationShardingSchemaGroup slaveGroup = configService.getAllSlaveDataSourceNames();
-        for (String each : regCenter.getChildrenKeys(stateNode.getDataSourcesNodeFullRootPath())) {
-            if (StateNodeStatus.DISABLED.toString().equalsIgnoreCase(regCenter.get(stateNode.getDataSourcesNodeFullPath(each)))) {
-                OrchestrationShardingSchema orchestrationShardingSchema = new OrchestrationShardingSchema(each);
-                if (slaveGroup.getDataSourceNames(orchestrationShardingSchema.getSchemaName()).contains(orchestrationShardingSchema.getDataSourceName())) {
-                    result.add(orchestrationShardingSchema);
-                }
-            }
-        }
-        return result;
-    }
-    
-    /**
-     * Get disabled slave sharding schema.
-     * @param dataSourceNodeFullPath data source node full path
-     * @return optional of OrchestrationShardingSchema
-     */
-    public OrchestrationShardingSchema getDisabledSlaveShardingSchema(final String dataSourceNodeFullPath) {
-        String schemaDataSource = dataSourceNodeFullPath.replace(stateNode.getDataSourcesNodeFullRootPath() + '/', "");
-        OrchestrationShardingSchema result = new OrchestrationShardingSchema(schemaDataSource);
-        OrchestrationShardingSchemaGroup slaveGroup = configService.getAllSlaveDataSourceNames();
-        return slaveGroup.getDataSourceNames(result.getSchemaName()).contains(result.getDataSourceName()) ? result : new OrchestrationShardingSchema(result.getSchemaName(), "");
     }
 }

@@ -17,12 +17,10 @@
 
 package io.shardingsphere.orchestration.internal.registry.config.listener;
 
-import io.shardingsphere.core.config.DataSourceConfiguration;
 import io.shardingsphere.orchestration.internal.registry.config.event.DataSourceChangedEvent;
-import io.shardingsphere.orchestration.internal.registry.config.service.ConfigurationService;
 import io.shardingsphere.orchestration.reg.api.RegistryCenter;
 import io.shardingsphere.orchestration.reg.listener.DataChangedEvent;
-import io.shardingsphere.orchestration.util.FieldUtil;
+import io.shardingsphere.orchestration.reg.listener.DataChangedEvent.ChangedType;
 import lombok.SneakyThrows;
 import org.junit.Before;
 import org.junit.Test;
@@ -30,39 +28,34 @@ import org.junit.runner.RunWith;
 import org.mockito.Mock;
 import org.mockito.junit.MockitoJUnitRunner;
 
-import java.util.HashMap;
-import java.util.Map;
-
 import static org.hamcrest.CoreMatchers.is;
 import static org.junit.Assert.assertThat;
-import static org.mockito.Mockito.mock;
-import static org.mockito.Mockito.when;
 
 @RunWith(MockitoJUnitRunner.class)
 public final class DataSourceChangedListenerTest {
+    
+    private static final String DATA_SOURCE_YAML = "master_ds: !!io.shardingsphere.orchestration.yaml.YamlDataSourceConfiguration\n"
+            + "  dataSourceClassName: com.zaxxer.hikari.HikariDataSource\n" + "  properties:\n" + "    DATA_SOURCE_POOL_CLASS_NAME: com.zaxxer.hikari.HikariDataSource\n"
+            + "    proxyDatasourceType: !!io.shardingsphere.core.constant.transaction.ProxyPoolType 'VENDOR'\n"
+            + "    url: jdbc:mysql://localhost:3306/demo_ds_master?serverTimezone=UTC&useSSL=false\n" + "    username: root\n" + "    password: null\n" + "    autoCommit: true\n"
+            + "    connectionTimeout: 30000\n" + "    idleTimeout: 60000\n" + "    maxLifetime: 1800000\n" + "    maximumPoolSize: 50";
     
     private DataSourceChangedListener dataSourceChangedListener;
     
     @Mock
     private RegistryCenter regCenter;
     
-    @Mock
-    private ConfigurationService configService;
-    
     @Before
     @SneakyThrows
     public void setUp() {
         dataSourceChangedListener = new DataSourceChangedListener("test", regCenter, "sharding_db");
-        FieldUtil.setField(dataSourceChangedListener, "configService", configService);
     }
     
     @Test
     public void assertCreateShardingOrchestrationEvent() {
-        Map<String, DataSourceConfiguration> expected = new HashMap<>(1, 1);
-        expected.put("sharding_db", mock(DataSourceConfiguration.class));
-        when(configService.loadDataSourceConfigurations("sharding_db")).thenReturn(expected);
-        DataSourceChangedEvent actual = dataSourceChangedListener.createShardingOrchestrationEvent(mock(DataChangedEvent.class));
+        DataChangedEvent dataChangedEvent = new DataChangedEvent("test", DATA_SOURCE_YAML, ChangedType.UPDATED);
+        DataSourceChangedEvent actual = dataSourceChangedListener.createShardingOrchestrationEvent(dataChangedEvent);
         assertThat(actual.getShardingSchemaName(), is("sharding_db"));
-        assertThat(actual.getDataSourceConfigurations(), is(expected));
+        assertThat(actual.getDataSourceConfigurations().size(), is(1));
     }
 }

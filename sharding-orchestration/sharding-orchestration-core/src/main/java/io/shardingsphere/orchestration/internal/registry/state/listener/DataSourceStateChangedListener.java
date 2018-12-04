@@ -21,7 +21,7 @@ import io.shardingsphere.orchestration.internal.registry.listener.PostShardingOr
 import io.shardingsphere.orchestration.internal.registry.state.event.DisabledStateChangedEvent;
 import io.shardingsphere.orchestration.internal.registry.state.node.StateNode;
 import io.shardingsphere.orchestration.internal.registry.state.node.StateNodeStatus;
-import io.shardingsphere.orchestration.internal.registry.state.service.DataSourceService;
+import io.shardingsphere.orchestration.internal.registry.state.schema.OrchestrationShardingSchema;
 import io.shardingsphere.orchestration.reg.api.RegistryCenter;
 import io.shardingsphere.orchestration.reg.listener.DataChangedEvent;
 import io.shardingsphere.orchestration.reg.listener.DataChangedEvent.ChangedType;
@@ -34,17 +34,20 @@ import io.shardingsphere.orchestration.reg.listener.DataChangedEvent.ChangedType
  */
 public final class DataSourceStateChangedListener extends PostShardingOrchestrationEventListener {
     
-    private final DataSourceService dataSourceService;
+    private final StateNode stateNode;
     
     public DataSourceStateChangedListener(final String name, final RegistryCenter regCenter) {
         super(regCenter, new StateNode(name).getDataSourcesNodeFullRootPath());
-        dataSourceService = new DataSourceService(name, regCenter);
+        stateNode = new StateNode(name);
     }
     
     @Override
     protected DisabledStateChangedEvent createShardingOrchestrationEvent(final DataChangedEvent event) {
-        // TODO consider about instead of dataSourceService.getDisabledSlaveShardingSchema(event.getKey()) from event.getKey()
-        return new DisabledStateChangedEvent(dataSourceService.getDisabledSlaveShardingSchema(event.getKey()), isDataSourceDisabled(event));
+        return new DisabledStateChangedEvent(getShardingSchema(event.getKey()), isDataSourceDisabled(event));
+    }
+    
+    private OrchestrationShardingSchema getShardingSchema(final String dataSourceNodeFullPath) {
+        return new OrchestrationShardingSchema(dataSourceNodeFullPath.replace(stateNode.getDataSourcesNodeFullRootPath() + '/', ""));
     }
     
     private boolean isDataSourceDisabled(final DataChangedEvent event) {

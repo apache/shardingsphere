@@ -82,7 +82,7 @@ public final class ShardingOrchestrationFacade implements AutoCloseable {
             configService.persistConfiguration(entry.getKey(), dataSourceConfigurationMap.get(entry.getKey()), schemaRuleMap.get(entry.getKey()), authentication, configMap, props, isOverwrite);
         }
         instanceStateService.persistInstanceOnline();
-        dataSourceService.initDataSourcesNode();
+        dataSourceService.persistDataSourcesNode();
         listenerManager.initListeners();
     }
     
@@ -91,7 +91,7 @@ public final class ShardingOrchestrationFacade implements AutoCloseable {
      */
     public void init() {
         instanceStateService.persistInstanceOnline();
-        dataSourceService.initDataSourcesNode();
+        dataSourceService.persistDataSourcesNode();
         listenerManager.initListeners();
     }
     

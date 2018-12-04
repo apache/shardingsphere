@@ -33,15 +33,12 @@ import io.shardingsphere.orchestration.reg.listener.DataChangedEvent;
  */
 public final class InstanceStateChangedListener extends PostShardingOrchestrationEventListener {
     
-    private final RegistryCenter regCenter;
-    
     public InstanceStateChangedListener(final String name, final RegistryCenter regCenter) {
         super(regCenter, new StateNode(name).getInstancesNodeFullPath(OrchestrationInstance.getInstance().getInstanceId()));
-        this.regCenter = regCenter;
     }
     
     @Override
     protected CircuitStateChangedEvent createShardingOrchestrationEvent(final DataChangedEvent event) {
-        return new CircuitStateChangedEvent(StateNodeStatus.DISABLED.toString().equalsIgnoreCase(regCenter.get(event.getKey())));
+        return new CircuitStateChangedEvent(StateNodeStatus.DISABLED.toString().equalsIgnoreCase(event.getValue()));
     }
 }

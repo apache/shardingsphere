@@ -17,14 +17,14 @@
 
 package io.shardingsphere.shardingjdbc.orchestration.internal.util;
 
-import com.google.common.base.Function;
-import com.google.common.collect.Maps;
 import io.shardingsphere.core.config.DataSourceConfiguration;
 import lombok.AccessLevel;
 import lombok.NoArgsConstructor;
 
 import javax.sql.DataSource;
+import java.util.LinkedHashMap;
 import java.util.Map;
+import java.util.Map.Entry;
 
 /**
  * Data source converter.
@@ -41,13 +41,11 @@ public final class DataSourceConverter {
      * @return data source map
      */
     public static Map<String, DataSource> getDataSourceMap(final Map<String, DataSourceConfiguration> dataSourceConfigurationMap) {
-        return Maps.transformValues(dataSourceConfigurationMap, new Function<DataSourceConfiguration, DataSource>() {
-            
-            @Override
-            public DataSource apply(final DataSourceConfiguration input) {
-                return input.createDataSource();
-            }
-        });
+        Map<String, DataSource> result = new LinkedHashMap<>(dataSourceConfigurationMap.size(), 1);
+        for (Entry<String, DataSourceConfiguration> entry : dataSourceConfigurationMap.entrySet()) {
+            result.put(entry.getKey(), entry.getValue().createDataSource());
+        }
+        return result;
     }
     
     /**
@@ -57,12 +55,10 @@ public final class DataSourceConverter {
      * @return data source configuration map
      */
     public static Map<String, DataSourceConfiguration> getDataSourceConfigurationMap(final Map<String, DataSource> dataSourceMap) {
-        return Maps.transformValues(dataSourceMap, new Function<DataSource, DataSourceConfiguration>() {
-            
-            @Override
-            public DataSourceConfiguration apply(final DataSource input) {
-                return DataSourceConfiguration.getDataSourceConfiguration(input);
-            }
-        });
+        Map<String, DataSourceConfiguration> result = new LinkedHashMap<>(dataSourceMap.size(), 1);
+        for (Entry<String, DataSource> entry : dataSourceMap.entrySet()) {
+            result.put(entry.getKey(), DataSourceConfiguration.getDataSourceConfiguration(entry.getValue()));
+        }
+        return result;
     }
 }
