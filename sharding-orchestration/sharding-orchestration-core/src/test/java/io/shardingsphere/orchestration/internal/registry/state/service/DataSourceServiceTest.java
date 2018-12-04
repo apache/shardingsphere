@@ -18,7 +18,6 @@
 package io.shardingsphere.orchestration.internal.registry.state.service;
 
 import io.shardingsphere.orchestration.internal.registry.config.service.ConfigurationService;
-import io.shardingsphere.orchestration.internal.registry.state.schema.OrchestrationShardingSchemaGroup;
 import io.shardingsphere.orchestration.reg.api.RegistryCenter;
 import io.shardingsphere.orchestration.util.FieldUtil;
 import org.junit.Before;
@@ -27,13 +26,7 @@ import org.junit.runner.RunWith;
 import org.mockito.Mock;
 import org.mockito.junit.MockitoJUnitRunner;
 
-import java.util.Arrays;
-import java.util.Collections;
-
-import static org.junit.Assert.assertTrue;
-import static org.mockito.Mockito.mock;
 import static org.mockito.Mockito.verify;
-import static org.mockito.Mockito.when;
 
 @RunWith(MockitoJUnitRunner.class)
 public final class DataSourceServiceTest {
@@ -56,19 +49,5 @@ public final class DataSourceServiceTest {
     public void assertInitDataSourcesNode() {
         dataSourceService.initDataSourcesNode();
         verify(regCenter).persist("/test/state/datasources", "");
-    }
-    
-    @Test
-    public void assertGetDisabledSlaveSchemaGroup() {
-        mockDisabledSlaveSchemaGroup();
-        assertTrue(dataSourceService.getDisabledSlaveSchemaGroup().getDataSourceNames("sharding_schema").contains("slave_ds_0"));
-    }
-    
-    private void mockDisabledSlaveSchemaGroup() {
-        OrchestrationShardingSchemaGroup slaveGroup = mock(OrchestrationShardingSchemaGroup.class);
-        when(slaveGroup.getDataSourceNames("sharding_schema")).thenReturn(Arrays.asList("slave_ds_0", "slave_ds_1"));
-        when(configService.getAllSlaveDataSourceNames()).thenReturn(slaveGroup);
-        when(regCenter.getChildrenKeys("/test/state/datasources")).thenReturn(Collections.singletonList("sharding_schema.slave_ds_0"));
-        when(regCenter.get("/test/state/datasources/sharding_schema.slave_ds_0")).thenReturn("disabled");
     }
 }
