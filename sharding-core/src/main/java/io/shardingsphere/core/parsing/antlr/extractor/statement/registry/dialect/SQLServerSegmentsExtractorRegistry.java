@@ -19,14 +19,14 @@ package io.shardingsphere.core.parsing.antlr.extractor.statement.registry.dialec
 
 import io.shardingsphere.core.parsing.antlr.parser.SQLStatementType;
 import io.shardingsphere.core.parsing.antlr.extractor.statement.SQLSegmentsExtractor;
-import io.shardingsphere.core.parsing.antlr.extractor.statement.engine.ddl.AlterIndexExtractor;
-import io.shardingsphere.core.parsing.antlr.extractor.statement.engine.ddl.CreateIndexExtractor;
-import io.shardingsphere.core.parsing.antlr.extractor.statement.engine.ddl.CreateTableExtractor;
-import io.shardingsphere.core.parsing.antlr.extractor.statement.engine.ddl.DropIndexExtractor;
-import io.shardingsphere.core.parsing.antlr.extractor.statement.engine.ddl.dialect.sqlserver.SQLServerAlterTableExtractor;
-import io.shardingsphere.core.parsing.antlr.extractor.statement.engine.ddl.dialect.sqlserver.SQLServerDropTableExtractor;
-import io.shardingsphere.core.parsing.antlr.extractor.statement.engine.ddl.dialect.sqlserver.SQLServerTruncateTableExtractor;
-import io.shardingsphere.core.parsing.antlr.extractor.statement.engine.tcl.TCLSegmentsExtractor;
+import io.shardingsphere.core.parsing.antlr.extractor.statement.impl.ddl.AlterIndexExtractor;
+import io.shardingsphere.core.parsing.antlr.extractor.statement.impl.ddl.CreateIndexExtractor;
+import io.shardingsphere.core.parsing.antlr.extractor.statement.impl.ddl.CreateTableExtractor;
+import io.shardingsphere.core.parsing.antlr.extractor.statement.impl.ddl.DropIndexExtractor;
+import io.shardingsphere.core.parsing.antlr.extractor.statement.impl.ddl.dialect.sqlserver.SQLServerAlterTableExtractor;
+import io.shardingsphere.core.parsing.antlr.extractor.statement.impl.ddl.dialect.sqlserver.SQLServerDropTableExtractor;
+import io.shardingsphere.core.parsing.antlr.extractor.statement.impl.ddl.dialect.sqlserver.SQLServerTruncateTableExtractor;
+import io.shardingsphere.core.parsing.antlr.extractor.statement.impl.tcl.TCLSegmentsExtractor;
 import io.shardingsphere.core.parsing.antlr.extractor.statement.registry.SQLSegmentsExtractorRegistry;
 
 import java.util.HashMap;
