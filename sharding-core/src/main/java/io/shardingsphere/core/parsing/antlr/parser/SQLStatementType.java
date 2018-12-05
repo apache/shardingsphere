@@ -17,8 +17,18 @@
 
 package io.shardingsphere.core.parsing.antlr.parser;
 
+import io.shardingsphere.core.parsing.antlr.sql.statement.ddl.AlterTableStatement;
+import io.shardingsphere.core.parsing.parser.dialect.postgresql.statement.ResetParamStatement;
+import io.shardingsphere.core.parsing.parser.dialect.postgresql.statement.SetParamStatement;
+import io.shardingsphere.core.parsing.parser.dialect.postgresql.statement.ShowStatement;
 import io.shardingsphere.core.parsing.parser.exception.SQLParsingUnsupportedException;
+import io.shardingsphere.core.parsing.parser.sql.SQLStatement;
+import io.shardingsphere.core.parsing.parser.sql.ddl.DDLStatement;
+import io.shardingsphere.core.parsing.parser.sql.ddl.create.table.CreateTableStatement;
+import io.shardingsphere.core.parsing.parser.sql.dql.select.SelectStatement;
+import io.shardingsphere.core.parsing.parser.sql.tcl.TCLStatement;
 import lombok.RequiredArgsConstructor;
+import lombok.SneakyThrows;
 
 /**
  * SQL statement type.
@@ -28,41 +38,53 @@ import lombok.RequiredArgsConstructor;
 @RequiredArgsConstructor
 public enum SQLStatementType {
     
-    CREATE_TABLE("CreateTable"),
+    CREATE_TABLE("CreateTable", CreateTableStatement.class),
     
-    ALTER_TABLE("AlterTable"),
+    ALTER_TABLE("AlterTable", AlterTableStatement.class),
     
-    DROP_TABLE("DropTable"),
+    DROP_TABLE("DropTable", DDLStatement.class),
     
-    TRUNCATE_TABLE("TruncateTable"),
+    TRUNCATE_TABLE("TruncateTable", DDLStatement.class),
     
-    CREATE_INDEX("CreateIndex"),
+    CREATE_INDEX("CreateIndex", DDLStatement.class),
     
-    ALTER_INDEX("AlterIndex"),
+    ALTER_INDEX("AlterIndex", DDLStatement.class),
     
-    DROP_INDEX("DropIndex"),
+    DROP_INDEX("DropIndex", DDLStatement.class),
     
-    SET_TRANSACTION("SetTransaction"),
+    SELECT("Select", SelectStatement.class),
     
-    COMMIT("Commit"),
+    SET_TRANSACTION("SetTransaction", TCLStatement.class),
     
-    ROLLBACK("Rollback"),
+    COMMIT("Commit", TCLStatement.class),
     
-    SAVEPOINT("Savepoint"),
+    ROLLBACK("Rollback", TCLStatement.class),
     
-    BEGIN_WORK("BeginWork"),
+    SAVEPOINT("Savepoint", TCLStatement.class),
     
-    SET_VARIABLE("SetVariable"),
+    BEGIN_WORK("BeginWork", TCLStatement.class),
     
-    SELECT("Select"),
+    SET_VARIABLE("SetVariable", TCLStatement.class),
     
-    SET_PARAM("SetParam"),
+    SHOW("Show", ShowStatement.class),
     
-    RESET_PARAM("ResetParam"),
+    SET_PARAM("SetParam", SetParamStatement.class),
     
-    SHOW("Show");
+    RESET_PARAM("ResetParam", ResetParamStatement.class);
     
     private final String name;
+    
+    private final Class<? extends SQLStatement> clazz;
+    
+    /**
+     * Create new instance for SQL statement.
+     * 
+     * @return new instance for SQL statement
+     */
+    @SneakyThrows
+    public SQLStatement newSQLStatement() {
+        return clazz.newInstance();
+    }
     
     /**
      * Get SQL statement type via name.

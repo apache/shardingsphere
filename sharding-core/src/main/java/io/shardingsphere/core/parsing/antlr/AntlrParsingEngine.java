@@ -19,13 +19,13 @@ package io.shardingsphere.core.parsing.antlr;
 
 import io.shardingsphere.core.constant.DatabaseType;
 import io.shardingsphere.core.metadata.table.ShardingTableMetaData;
-import io.shardingsphere.core.parsing.antlr.parser.SQLAST;
-import io.shardingsphere.core.parsing.antlr.parser.SQLParserEngine;
-import io.shardingsphere.core.parsing.antlr.parser.SQLStatementType;
 import io.shardingsphere.core.parsing.antlr.extractor.statement.SQLSegmentsExtractor;
 import io.shardingsphere.core.parsing.antlr.extractor.statement.SQLSegmentsExtractorFactory;
 import io.shardingsphere.core.parsing.antlr.filler.SQLStatementFillerEngine;
 import io.shardingsphere.core.parsing.antlr.optimizer.SQLStatementOptimizerEngine;
+import io.shardingsphere.core.parsing.antlr.parser.SQLAST;
+import io.shardingsphere.core.parsing.antlr.parser.SQLParserEngine;
+import io.shardingsphere.core.parsing.antlr.parser.SQLStatementType;
 import io.shardingsphere.core.parsing.antlr.sql.segment.SQLSegment;
 import io.shardingsphere.core.parsing.parser.exception.SQLParsingUnsupportedException;
 import io.shardingsphere.core.parsing.parser.sql.SQLParser;
@@ -59,7 +59,7 @@ public final class AntlrParsingEngine implements SQLParser {
         this.shardingRule = shardingRule;
         this.shardingTableMetaData = shardingTableMetaData;
         parserEngine = new SQLParserEngine(databaseType, sql);
-        fillerEngine = new SQLStatementFillerEngine(databaseType, sql, shardingRule, shardingTableMetaData);
+        fillerEngine = new SQLStatementFillerEngine(sql, shardingRule, shardingTableMetaData);
         optimizerEngine = new SQLStatementOptimizerEngine(databaseType, shardingTableMetaData);
     }
     
