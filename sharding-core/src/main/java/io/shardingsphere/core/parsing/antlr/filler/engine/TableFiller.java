@@ -35,7 +35,7 @@ import io.shardingsphere.core.rule.ShardingRule;
 public class TableFiller implements SQLSegmentFiller {
     
     @Override
-    public void fill(final SQLSegment sqlSegment, final SQLStatement sqlStatement, final ShardingRule shardingRule, final ShardingTableMetaData shardingTableMetaData) {
+    public void fill(final SQLSegment sqlSegment, final SQLStatement sqlStatement, final String sql, final ShardingRule shardingRule, final ShardingTableMetaData shardingTableMetaData) {
         TableSegment tableSegment = (TableSegment) sqlSegment;
         String tableName = tableSegment.getName();
         boolean needAdd = false;

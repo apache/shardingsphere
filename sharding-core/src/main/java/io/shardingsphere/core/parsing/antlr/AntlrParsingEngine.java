@@ -31,21 +31,18 @@ import io.shardingsphere.core.parsing.parser.exception.SQLParsingUnsupportedExce
 import io.shardingsphere.core.parsing.parser.sql.SQLParser;
 import io.shardingsphere.core.parsing.parser.sql.SQLStatement;
 import io.shardingsphere.core.rule.ShardingRule;
-import lombok.RequiredArgsConstructor;
 
 import java.util.Collection;
 
 /**
- * Parsing engine for Antlr.
+ * SQL parsing engine.
  *
  * @author duhongjun
+ * @author zhangliang
  */
-@RequiredArgsConstructor
 public final class AntlrParsingEngine implements SQLParser {
     
     private final DatabaseType databaseType;
-    
-    private final String sql;
     
     private final ShardingRule shardingRule;
     
@@ -59,7 +56,6 @@ public final class AntlrParsingEngine implements SQLParser {
     
     public AntlrParsingEngine(final DatabaseType databaseType, final String sql, final ShardingRule shardingRule, final ShardingTableMetaData shardingTableMetaData) {
         this.databaseType = databaseType;
-        this.sql = sql;
         this.shardingRule = shardingRule;
         this.shardingTableMetaData = shardingTableMetaData;
         parserEngine = new SQLParserEngine(databaseType, sql);

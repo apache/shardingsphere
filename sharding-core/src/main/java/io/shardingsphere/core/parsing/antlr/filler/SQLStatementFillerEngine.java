@@ -23,7 +23,6 @@ import io.shardingsphere.core.metadata.table.ShardingTableMetaData;
 import io.shardingsphere.core.parsing.antlr.ast.SQLStatementType;
 import io.shardingsphere.core.parsing.antlr.sql.segment.SQLSegment;
 import io.shardingsphere.core.parsing.parser.sql.SQLStatement;
-import io.shardingsphere.core.parsing.parser.sql.dql.select.SelectStatement;
 import io.shardingsphere.core.rule.ShardingRule;
 import lombok.RequiredArgsConstructor;
 
@@ -54,14 +53,10 @@ public final class SQLStatementFillerEngine {
      */
     public SQLStatement fill(final Collection<SQLSegment> sqlSegments, final SQLStatementType sqlStatementType) {
         SQLStatement result = SQLStatementFactory.getInstance(databaseType, sqlStatementType);
-        // TODO move to correct place
-        if (result instanceof SelectStatement) {
-            ((SelectStatement) result).setSql(sql);
-        }
         for (SQLSegment each : sqlSegments) {
             Optional<SQLSegmentFiller> filler = SQLSegmentFillerRegistry.findFiller(each);
             if (filler.isPresent()) {
-                filler.get().fill(each, result, shardingRule, shardingTableMetaData);
+                filler.get().fill(each, result, sql, shardingRule, shardingTableMetaData);
             }
         }
         return result;

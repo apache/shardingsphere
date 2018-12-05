@@ -34,10 +34,10 @@ import io.shardingsphere.core.rule.ShardingRule;
  *
  * @author duhongjun
  */
-public class LimitFiller implements SQLSegmentFiller {
+public final class LimitFiller implements SQLSegmentFiller {
     
     @Override
-    public void fill(final SQLSegment sqlSegment, final SQLStatement sqlStatement, final ShardingRule shardingRule, final ShardingTableMetaData shardingTableMetaData) {
+    public void fill(final SQLSegment sqlSegment, final SQLStatement sqlStatement, final String sql, final ShardingRule shardingRule, final ShardingTableMetaData shardingTableMetaData) {
         LimitSegment limitSegment = (LimitSegment) sqlSegment;
         SelectStatement selectStatement = (SelectStatement) sqlStatement;
         Limit limit = new Limit(limitSegment.getDatabaseType());

@@ -37,7 +37,7 @@ import io.shardingsphere.core.util.SQLUtil;
 public final class ColumnDefinitionFiller implements SQLSegmentFiller {
     
     @Override
-    public void fill(final SQLSegment sqlSegment, final SQLStatement sqlStatement, final ShardingRule shardingRule, final ShardingTableMetaData shardingTableMetaData) {
+    public void fill(final SQLSegment sqlSegment, final SQLStatement sqlStatement, final String sql, final ShardingRule shardingRule, final ShardingTableMetaData shardingTableMetaData) {
         ColumnDefinitionSegment columnExtractResult = (ColumnDefinitionSegment) sqlSegment;
         if (sqlStatement instanceof AlterTableStatement) {
             fillAlter(columnExtractResult, (AlterTableStatement) sqlStatement, shardingTableMetaData);

@@ -31,16 +31,16 @@ import io.shardingsphere.core.rule.ShardingRule;
  *
  * @author duhongjun
  */
-public class GroupByFiller implements SQLSegmentFiller {
+public final class GroupByFiller implements SQLSegmentFiller {
     
     @Override
-    public void fill(final SQLSegment sqlSegment, final SQLStatement sqlStatement, final ShardingRule shardingRule, final ShardingTableMetaData shardingTableMetaData) {
+    public void fill(final SQLSegment sqlSegment, final SQLStatement sqlStatement, final String sql, final ShardingRule shardingRule, final ShardingTableMetaData shardingTableMetaData) {
         GroupBySegment groupBySegment = (GroupBySegment) sqlSegment;
         SelectStatement selectStatement = (SelectStatement) sqlStatement;
         selectStatement.setGroupByLastPosition(groupBySegment.getGroupByLastPosition());
         OrderByFiller orderFiller = new OrderByFiller();
         for (OrderByItemSegment each : groupBySegment.getGroupByItems()) {
-            selectStatement.getGroupByItems().add(orderFiller.buildOrderItemAndFillToken(selectStatement, each));
+            selectStatement.getGroupByItems().add(orderFiller.buildOrderItemAndFillToken(selectStatement, sql, each));
         }
     }
 }

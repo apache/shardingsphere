@@ -48,11 +48,10 @@ import java.util.Map;
  *
  * @author duhongjun
  */
-public class FromWhereFiller implements SQLSegmentFiller {
+public final class FromWhereFiller implements SQLSegmentFiller {
     
     @Override
-    public void fill(final SQLSegment sqlSegment, final SQLStatement sqlStatement, final ShardingRule shardingRule,
-                     final ShardingTableMetaData shardingTableMetaData) {
+    public void fill(final SQLSegment sqlSegment, final SQLStatement sqlStatement, final String sql, final ShardingRule shardingRule, final ShardingTableMetaData shardingTableMetaData) {
         FromWhereSegment fromWhereSegment = (FromWhereSegment) sqlSegment;
         if (!fromWhereSegment.getConditions().getAndConditions().isEmpty()) {
             Map<String, String> columnNameToTable = new HashMap<>();
@@ -68,8 +67,8 @@ public class FromWhereFiller implements SQLSegmentFiller {
         }
     }
     
-    private void fillColumnTableMap(final SQLStatement sqlStatement, final ShardingTableMetaData shardingTableMetaData,
-                                    final Map<String, String> columnNameToTable, final Map<String, Integer> columnNameCount) {
+    private void fillColumnTableMap(
+            final SQLStatement sqlStatement, final ShardingTableMetaData shardingTableMetaData, final Map<String, String> columnNameToTable, final Map<String, Integer> columnNameCount) {
         if (null == shardingTableMetaData) {
             return;
         }

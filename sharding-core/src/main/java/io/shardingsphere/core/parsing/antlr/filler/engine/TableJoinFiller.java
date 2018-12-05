@@ -30,7 +30,7 @@ import io.shardingsphere.core.rule.ShardingRule;
 public final class TableJoinFiller extends TableFiller {
     
     @Override
-    public void fill(final SQLSegment sqlSegment, final SQLStatement sqlStatement, final ShardingRule shardingRule, final ShardingTableMetaData shardingTableMetaData) {
-        super.fill(sqlSegment, sqlStatement, shardingRule, shardingTableMetaData);
+    public void fill(final SQLSegment sqlSegment, final SQLStatement sqlStatement, final String sql, final ShardingRule shardingRule, final ShardingTableMetaData shardingTableMetaData) {
+        super.fill(sqlSegment, sqlStatement, sql, shardingRule, shardingTableMetaData);
     }
 }

@@ -35,8 +35,9 @@ public interface SQLSegmentFiller {
      *
      * @param sqlSegment SQL segment
      * @param sqlStatement SQL statement
+     * @param sql SQL
      * @param shardingRule  databases and tables sharding rule
      * @param shardingTableMetaData sharding table meta data
      */
-    void fill(SQLSegment sqlSegment, SQLStatement sqlStatement, ShardingRule shardingRule, ShardingTableMetaData shardingTableMetaData);
+    void fill(SQLSegment sqlSegment, SQLStatement sqlStatement, String sql, ShardingRule shardingRule, ShardingTableMetaData shardingTableMetaData);
 }

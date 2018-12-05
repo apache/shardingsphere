@@ -41,10 +41,10 @@ import io.shardingsphere.core.rule.ShardingRule;
  *
  * @author duhongjun
  */
-public class SelectClauseFiller implements SQLSegmentFiller {
+public final class SelectClauseFiller implements SQLSegmentFiller {
     
     @Override
-    public void fill(final SQLSegment sqlSegment, final SQLStatement sqlStatement, final ShardingRule shardingRule, final ShardingTableMetaData shardingTableMetaData) {
+    public void fill(final SQLSegment sqlSegment, final SQLStatement sqlStatement, final String sql, final ShardingRule shardingRule, final ShardingTableMetaData shardingTableMetaData) {
         SelectClauseSegment selectClauseSegment = (SelectClauseSegment) sqlSegment;
         SelectStatement selectStatement = (SelectStatement) sqlStatement;
         selectStatement.setSelectListLastPosition(selectClauseSegment.getSelectListLastPosition());
@@ -67,7 +67,7 @@ public class SelectClauseFiller implements SQLSegmentFiller {
                 if (owner.isPresent() && selectStatement.getTables().getTableNames().contains(owner.get())) {
                     selectStatement.addSQLToken(new TableToken(propertySegment.getStartPosition(), 0, owner.get()));
                 }
-                selectStatement.getItems().add(new CommonSelectItem(selectStatement.getSql().substring(propertySegment.getStartPosition(), propertySegment.getEndPosition() + 1),
+                selectStatement.getItems().add(new CommonSelectItem(sql.substring(propertySegment.getStartPosition(), propertySegment.getEndPosition() + 1),
                         propertySegment.getAlias()));
                 continue;
             }
@@ -85,7 +85,7 @@ public class SelectClauseFiller implements SQLSegmentFiller {
                         break;
                     }
                 }
-                String innerExpression = selectStatement.getSql().substring(functionSegment.getInnerExpressionStartIndex(), functionSegment.getInnerExpressionEndIndex() + 1);
+                String innerExpression = sql.substring(functionSegment.getInnerExpressionStartIndex(), functionSegment.getInnerExpressionEndIndex() + 1);
                 if (null != aggregationType) {
                     selectStatement.getItems().add(new AggregationSelectItem(aggregationType, innerExpression, functionSegment.getAlias()));
                 } else {
