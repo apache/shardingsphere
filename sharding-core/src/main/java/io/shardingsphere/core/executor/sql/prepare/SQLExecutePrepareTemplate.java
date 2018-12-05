@@ -19,12 +19,10 @@ package io.shardingsphere.core.executor.sql.prepare;
 
 import com.google.common.collect.Lists;
 import io.shardingsphere.core.constant.ConnectionMode;
-import io.shardingsphere.core.executor.ShardingExecuteEngine;
 import io.shardingsphere.core.executor.ShardingExecuteGroup;
 import io.shardingsphere.core.executor.StatementExecuteUnit;
 import io.shardingsphere.core.routing.RouteUnit;
 import io.shardingsphere.core.routing.SQLUnit;
-import lombok.AllArgsConstructor;
 import lombok.RequiredArgsConstructor;
 
 import java.sql.Connection;
@@ -44,12 +42,9 @@ import java.util.Map.Entry;
  * @author panjuan
  */
 @RequiredArgsConstructor
-@AllArgsConstructor
 public final class SQLExecutePrepareTemplate {
     
     private final int maxConnectionsSizePerQuery;
-    
-    private ShardingExecuteEngine shardingExecuteEngine;
     
     /**
      * Get execute unit groups.
