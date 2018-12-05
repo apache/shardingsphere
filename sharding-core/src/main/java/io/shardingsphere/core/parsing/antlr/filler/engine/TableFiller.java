@@ -37,22 +37,24 @@ public class TableFiller implements SQLSegmentFiller {
     @Override
     public void fill(final SQLSegment sqlSegment, final SQLStatement sqlStatement, final String sql, final ShardingRule shardingRule, final ShardingTableMetaData shardingTableMetaData) {
         TableSegment tableSegment = (TableSegment) sqlSegment;
-        String tableName = tableSegment.getName();
-        boolean needAdd = false;
+        if (!isNeedToFillTable(sqlStatement, shardingRule, tableSegment.getName())) {
+            return;
+        }
+        sqlStatement.getTables().add(new Table(tableSegment.getName(), tableSegment.getAlias()));
+        sqlStatement.getSQLTokens().add(tableSegment.getToken());
+        if (tableSegment.getAlias().isPresent() && sqlStatement.getTables().getTableNames().contains(tableSegment.getAlias().get())) {
+            sqlStatement.addSQLToken(new TableToken(tableSegment.getAliasStartPosition(), 0, tableSegment.getAlias().get()));
+        }
+    }
+    
+    private boolean isNeedToFillTable(final SQLStatement sqlStatement, final ShardingRule shardingRule, final String tableName) {
         if (!(sqlStatement instanceof SelectStatement)) {
-            needAdd = true;
-        } else if (shardingRule.tryFindTableRuleByLogicTable(tableName).isPresent() || shardingRule.isBroadcastTable(tableName) || shardingRule.findBindingTableRule(tableName).isPresent()
+            return true;
+        }
+        if (shardingRule.tryFindTableRuleByLogicTable(tableName).isPresent() || shardingRule.isBroadcastTable(tableName) || shardingRule.findBindingTableRule(tableName).isPresent()
                 || shardingRule.getShardingDataSourceNames().getDataSourceNames().contains(shardingRule.getShardingDataSourceNames().getDefaultDataSourceName())) {
-            needAdd = true;
+            return true;
         }
-        if (needAdd) {
-            sqlStatement.getTables().add(new Table(tableSegment.getName(), tableSegment.getAlias()));
-            sqlStatement.getSQLTokens().add(tableSegment.getToken());
-            if (tableSegment.getAlias().isPresent()) {
-                if (sqlStatement.getTables().getTableNames().contains(tableSegment.getAlias().get())) {
-                    sqlStatement.addSQLToken(new TableToken(tableSegment.getAliasStartPosition(), 0, tableSegment.getAlias().get()));
-                }
-            }
-        }
+        return false;
     }
 }
