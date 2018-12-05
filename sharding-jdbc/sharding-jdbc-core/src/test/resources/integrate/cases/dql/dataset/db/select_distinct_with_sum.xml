@@ -1,0 +1,6 @@
+<dataset>
+    <metadata>
+        <column name="SUM(DISTINCT order_id)" />
+    </metadata>
+    <row values="2001" />
+</dataset>
