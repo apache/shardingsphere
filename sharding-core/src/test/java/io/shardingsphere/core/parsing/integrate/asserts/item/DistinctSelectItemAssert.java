@@ -31,6 +31,7 @@ import java.util.Set;
 import static org.hamcrest.CoreMatchers.is;
 import static org.junit.Assert.assertNull;
 import static org.junit.Assert.assertThat;
+import static org.junit.Assert.assertTrue;
 
 /**
  * Distinct select item assert.
@@ -55,11 +56,8 @@ final class DistinctSelectItemAssert {
         assertThat(assertMessage.getFullAssertMessage("Distinct select item alias assertion error: "), actual.getAlias().orNull(), is(expected.getAlias()));
         assertThat(assertMessage.getFullAssertMessage("Distinct select item distinct column name size assertion error: "),
                 actual.getDistinctColumnNames().size(), is(expected.getDistinctColumnNames().size()));
-        int count = 0;
-        for (String each : actual.getDistinctColumnNames()) {
-            assertThat(assertMessage.getFullAssertMessage("Distinct select item distinct column name assertion error: "), each, is(expected.getDistinctColumnNames().get(count)));
-            count++;
-        }
+        assertTrue(assertMessage.getFullAssertMessage("Distinct select item distinct column name assertion error: "),
+                actual.getDistinctColumnNames().containsAll(expected.getDistinctColumnNames()) && expected.getDistinctColumnNames().containsAll(actual.getDistinctColumnNames()));
     }
     
     private Optional<DistinctSelectItem> getDistinctSelectItem(final Set<SelectItem> actual) {

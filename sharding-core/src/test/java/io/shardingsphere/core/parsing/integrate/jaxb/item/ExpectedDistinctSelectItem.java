@@ -25,8 +25,8 @@ import javax.xml.bind.annotation.XmlAccessorType;
 import javax.xml.bind.annotation.XmlAttribute;
 import javax.xml.bind.annotation.XmlElement;
 import javax.xml.bind.annotation.XmlElementWrapper;
-import java.util.LinkedList;
-import java.util.List;
+import java.util.HashSet;
+import java.util.Set;
 
 @Getter
 @Setter
@@ -38,5 +38,5 @@ public final class ExpectedDistinctSelectItem {
     
     @XmlElementWrapper(name = "distinct-columns")
     @XmlElement(name = "distinct-column")
-    private List<String> distinctColumnNames = new LinkedList<>();
+    private Set<String> distinctColumnNames = new HashSet<>();
 }
