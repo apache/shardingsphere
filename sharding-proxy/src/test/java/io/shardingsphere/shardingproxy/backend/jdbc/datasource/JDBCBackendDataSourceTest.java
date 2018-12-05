@@ -17,5 +17,127 @@
 
 package io.shardingsphere.shardingproxy.backend.jdbc.datasource;
 
+import io.shardingsphere.core.constant.ConnectionMode;
+import io.shardingsphere.core.constant.properties.ShardingProperties;
+import io.shardingsphere.core.exception.ShardingException;
+import io.shardingsphere.shardingproxy.runtime.GlobalRegistry;
+import lombok.RequiredArgsConstructor;
+import lombok.SneakyThrows;
+import org.junit.Before;
+import org.junit.BeforeClass;
+import org.junit.Test;
+
+import javax.sql.DataSource;
+import java.lang.reflect.Field;
+import java.sql.Connection;
+import java.sql.SQLException;
+import java.util.ArrayList;
+import java.util.HashMap;
+import java.util.List;
+import java.util.Map;
+import java.util.Properties;
+import java.util.concurrent.Callable;
+import java.util.concurrent.ExecutorService;
+import java.util.concurrent.Executors;
+import java.util.concurrent.Future;
+
+import static org.hamcrest.CoreMatchers.containsString;
+import static org.hamcrest.CoreMatchers.instanceOf;
+import static org.hamcrest.CoreMatchers.is;
+import static org.junit.Assert.assertEquals;
+import static org.junit.Assert.assertThat;
+import static org.junit.Assert.assertTrue;
+
 public class JDBCBackendDataSourceTest {
+    
+    private JDBCBackendDataSource jdbcBackendDataSource = new JDBCBackendDataSource();
+    
+    @BeforeClass
+    public static void beforeClass() {
+        initGlobalRegistry();
+    }
+    
+    @SneakyThrows
+    private static void initGlobalRegistry() {
+        Field field = GlobalRegistry.getInstance().getClass().getDeclaredField("shardingProperties");
+        field.setAccessible(true);
+        field.set(GlobalRegistry.getInstance(), new ShardingProperties(new Properties()));
+    }
+    
+    @Before
+    public void setUp() {
+        setDataSource();
+    }
+    
+    @SneakyThrows
+    private void setDataSource() {
+        Field field = jdbcBackendDataSource.getClass().getDeclaredField("dataSources");
+        field.setAccessible(true);
+        field.set(jdbcBackendDataSource, mockDataSources(2));
+    }
+    
+    private Map<String, DataSource> mockDataSources(final int size) {
+        Map<String, DataSource> result = new HashMap<>(size);
+        for (int i = 0; i < size; i++) {
+            result.put("ds_" + i, new MockDataSource());
+        }
+        return result;
+    }
+    
+    @Test
+    public void assertGetConnectionFixedOne() throws SQLException {
+        Connection actual = jdbcBackendDataSource.getConnection("ds_1");
+        assertThat(actual, instanceOf(Connection.class));
+    }
+    
+    @Test
+    public void assertGetConnectionsSucceed() throws SQLException {
+        List<Connection> actual = jdbcBackendDataSource.getConnections(ConnectionMode.MEMORY_STRICTLY, "ds_1", 5);
+        assertEquals(5, actual.size());
+    }
+    
+    @Test
+    public void assertGetConnectionsFailed() throws SQLException {
+        try {
+            jdbcBackendDataSource.getConnections(ConnectionMode.MEMORY_STRICTLY, "ds_1", 6);
+        } catch (ShardingException ex) {
+            assertThat(ex.getMessage(), is("Could't get 6 connections one time, partition succeed connection(5) have released!"));
+        }
+    }
+    
+    @Test
+    public void assertGetConnectionsByMultiThread() {
+        ExecutorService executorService = Executors.newFixedThreadPool(20);
+        List<Future<List<Connection>>> futures = new ArrayList<>();
+        for (int i = 0; i < 200; i++) {
+            futures.add(executorService.submit(new CallableTask(ConnectionMode.MEMORY_STRICTLY, "ds_1", 6)));
+        }
+        List<Connection> actual = new ArrayList<>();
+        for (Future<List<Connection>> each : futures) {
+            try {
+                actual.addAll(each.get());
+                // CHECKSTYLE:OFF
+            } catch (Exception ex) {
+                // CHECKSTYLE:ON
+                assertThat(ex.getMessage(), containsString("Could't get 6 connections one time, partition succeed connection(5) have released!"));
+            }
+        }
+        assertTrue(actual.isEmpty());
+        executorService.shutdown();
+    }
+    
+    @RequiredArgsConstructor
+    private class CallableTask implements Callable<List<Connection>> {
+        
+        private final ConnectionMode connectionMode;
+        
+        private final String datasourceName;
+        
+        private final int connectionSize;
+    
+        @Override
+        public List<Connection> call() throws SQLException {
+            return jdbcBackendDataSource.getConnections(connectionMode, datasourceName, connectionSize);
+        }
+    }
 }
