@@ -61,7 +61,7 @@ public final class ParserResult {
     @XmlElement(name = "or-condition")
     private ExpectedOrCondition orCondition = new ExpectedOrCondition();
     
-    @XmlElement
+    @XmlElement(name = "select-items")
     private ExpectedSelectItems selectItems = new ExpectedSelectItems();
     
     @XmlElement
