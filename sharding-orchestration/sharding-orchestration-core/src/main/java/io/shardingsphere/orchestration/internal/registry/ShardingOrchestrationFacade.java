@@ -24,7 +24,7 @@ import io.shardingsphere.orchestration.config.OrchestrationConfiguration;
 import io.shardingsphere.orchestration.internal.registry.config.service.ConfigurationService;
 import io.shardingsphere.orchestration.internal.registry.listener.ShardingOrchestrationListenerManager;
 import io.shardingsphere.orchestration.internal.registry.state.service.DataSourceService;
-import io.shardingsphere.orchestration.internal.registry.state.service.InstanceStateService;
+import io.shardingsphere.orchestration.internal.registry.state.service.StateService;
 import io.shardingsphere.orchestration.reg.api.RegistryCenter;
 import lombok.Getter;
 import lombok.extern.slf4j.Slf4j;
@@ -51,7 +51,7 @@ public final class ShardingOrchestrationFacade implements AutoCloseable {
     @Getter
     private final ConfigurationService configService;
     
-    private final InstanceStateService instanceStateService;
+    private final StateService stateService;
     
     private final DataSourceService dataSourceService;
     
@@ -61,7 +61,7 @@ public final class ShardingOrchestrationFacade implements AutoCloseable {
         regCenter = RegistryCenterLoader.load(orchestrationConfig.getRegCenterConfig());
         isOverwrite = orchestrationConfig.isOverwrite();
         configService = new ConfigurationService(orchestrationConfig.getName(), regCenter);
-        instanceStateService = new InstanceStateService(orchestrationConfig.getName(), regCenter);
+        stateService = new StateService(orchestrationConfig.getName(), regCenter);
         dataSourceService = new DataSourceService(orchestrationConfig.getName(), regCenter);
         listenerManager = shardingSchemaNames.isEmpty() ? new ShardingOrchestrationListenerManager(orchestrationConfig.getName(), regCenter, configService.getAllShardingSchemaNames())
                 : new ShardingOrchestrationListenerManager(orchestrationConfig.getName(), regCenter, shardingSchemaNames);
@@ -81,8 +81,8 @@ public final class ShardingOrchestrationFacade implements AutoCloseable {
         for (Entry<String, Map<String, DataSourceConfiguration>> entry : dataSourceConfigurationMap.entrySet()) {
             configService.persistConfiguration(entry.getKey(), dataSourceConfigurationMap.get(entry.getKey()), schemaRuleMap.get(entry.getKey()), authentication, configMap, props, isOverwrite);
         }
-        instanceStateService.persistInstanceOnline();
-        dataSourceService.persistDataSourcesNode();
+        stateService.persistInstanceOnline();
+        stateService.persistDataSourcesNode();
         listenerManager.initListeners();
     }
     
@@ -90,8 +90,8 @@ public final class ShardingOrchestrationFacade implements AutoCloseable {
      * Initialize for orchestration.
      */
     public void init() {
-        instanceStateService.persistInstanceOnline();
-        dataSourceService.persistDataSourcesNode();
+        stateService.persistInstanceOnline();
+        stateService.persistDataSourcesNode();
         listenerManager.initListeners();
     }
     
