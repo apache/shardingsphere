@@ -88,11 +88,11 @@ public final class SQLExecutePrepareTemplate {
             final String dataSourceName, final List<SQLUnit> sqlUnits, final SQLExecutePrepareCallback callback) throws SQLException {
         List<ShardingExecuteGroup<StatementExecuteUnit>> result = new LinkedList<>();
         int desiredPartitionSize = Math.max(sqlUnits.size() / maxConnectionsSizePerQuery, 1);
-        List<List<SQLUnit>> sqlUnitGroups = Lists.partition(sqlUnits, desiredPartitionSize);
+        List<List<SQLUnit>> sqlUnitPartitions = Lists.partition(sqlUnits, desiredPartitionSize);
         ConnectionMode connectionMode = maxConnectionsSizePerQuery < sqlUnits.size() ? ConnectionMode.CONNECTION_STRICTLY : ConnectionMode.MEMORY_STRICTLY;
-        List<Connection> connections = callback.getConnections(connectionMode, dataSourceName, sqlUnitGroups.size());
+        List<Connection> connections = callback.getConnections(connectionMode, dataSourceName, sqlUnitPartitions.size());
         int count = 0;
-        for (List<SQLUnit> each : sqlUnitGroups) {
+        for (List<SQLUnit> each : sqlUnitPartitions) {
             result.add(getSQLExecuteGroup(connectionMode, connections.get(count++), dataSourceName, each, callback));
         }
         return result;
