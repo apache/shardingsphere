@@ -37,19 +37,22 @@ import java.util.Collection;
 @RequiredArgsConstructor
 public final class SQLStatementFillerEngine {
     
+    private final DatabaseType databaseType;
+    
+    private final String sql;
+    
+    private final ShardingRule shardingRule;
+    
+    private final ShardingTableMetaData shardingTableMetaData;
+    
     /**
      * Fill SQL statement.
      *
-     * @param databaseType database type
      * @param sqlSegments SQL segments
-     * @param sql SQL
      * @param sqlStatementType SQL statement type
-     * @param shardingRule  sharding rule
-     * @param shardingTableMetaData sharding table meta data
      * @return SQL statement
      */
-    public SQLStatement fill(final DatabaseType databaseType, final Collection<SQLSegment> sqlSegments, 
-                             final String sql, final SQLStatementType sqlStatementType, final ShardingRule shardingRule, final ShardingTableMetaData shardingTableMetaData) {
+    public SQLStatement fill(final Collection<SQLSegment> sqlSegments, final SQLStatementType sqlStatementType) {
         SQLStatement result = SQLStatementFactory.getInstance(databaseType, sqlStatementType);
         // TODO move to correct place
         if (result instanceof SelectStatement) {

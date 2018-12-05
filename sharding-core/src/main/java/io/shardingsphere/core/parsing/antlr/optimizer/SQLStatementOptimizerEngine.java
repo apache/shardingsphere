@@ -24,23 +24,27 @@ import io.shardingsphere.core.parsing.antlr.ast.SQLStatementType;
 import io.shardingsphere.core.parsing.antlr.optimizer.impl.SQLStatementOptimizer;
 import io.shardingsphere.core.parsing.antlr.optimizer.impl.SQLStatementOptimizerFactory;
 import io.shardingsphere.core.parsing.parser.sql.SQLStatement;
+import lombok.RequiredArgsConstructor;
 
 /**
  * SQL statement optimizer engine.
  * 
  * @author zhangliang
  */
+@RequiredArgsConstructor
 public final class SQLStatementOptimizerEngine {
+    
+    private final DatabaseType databaseType;
+    
+    private final ShardingTableMetaData shardingTableMetaData;
     
     /**
      * Optimize SQL statement.
      *
-     * @param databaseType database type
      * @param sqlStatementType SQL statement type
      * @param sqlStatement SQL statement
-     * @param shardingTableMetaData sharding table meta data
      */
-    public void optimize(final DatabaseType databaseType, final SQLStatementType sqlStatementType, final SQLStatement sqlStatement, final ShardingTableMetaData shardingTableMetaData) {
+    public void optimize(final SQLStatementType sqlStatementType, final SQLStatement sqlStatement) {
         Optional<SQLStatementOptimizer> optimizer = SQLStatementOptimizerFactory.getInstance(databaseType, sqlStatementType);
         if (optimizer.isPresent()) {
             optimizer.get().optimize(sqlStatement, shardingTableMetaData);

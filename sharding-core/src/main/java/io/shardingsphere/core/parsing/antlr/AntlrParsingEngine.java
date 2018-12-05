@@ -51,19 +51,29 @@ public final class AntlrParsingEngine implements SQLParser {
     
     private final ShardingTableMetaData shardingTableMetaData;
     
-    private final SQLParserEngine parserEngine = new SQLParserEngine();
+    private final SQLParserEngine parserEngine;
     
-    private final SQLStatementFillerEngine fillerEngine = new SQLStatementFillerEngine(); 
+    private final SQLStatementFillerEngine fillerEngine; 
     
-    private final SQLStatementOptimizerEngine optimizerEngine = new SQLStatementOptimizerEngine();
+    private final SQLStatementOptimizerEngine optimizerEngine;
+    
+    public AntlrParsingEngine(final DatabaseType databaseType, final String sql, final ShardingRule shardingRule, final ShardingTableMetaData shardingTableMetaData) {
+        this.databaseType = databaseType;
+        this.sql = sql;
+        this.shardingRule = shardingRule;
+        this.shardingTableMetaData = shardingTableMetaData;
+        parserEngine = new SQLParserEngine(databaseType, sql);
+        fillerEngine = new SQLStatementFillerEngine(databaseType, sql, shardingRule, shardingTableMetaData);
+        optimizerEngine = new SQLStatementOptimizerEngine(databaseType, shardingTableMetaData);
+    }
     
     @Override
     public SQLStatement parse() {
-        SQLAST ast = parserEngine.parse(databaseType, sql);
+        SQLAST ast = parserEngine.parse();
         SQLSegmentsExtractor extractor = getExtractor(ast.getType());
         Collection<SQLSegment> sqlSegments = extractor.extract(ast.getParserRuleContext(), shardingRule, shardingTableMetaData);
-        SQLStatement result = fillerEngine.fill(databaseType, sqlSegments, sql, ast.getType(), shardingRule, shardingTableMetaData);
-        optimizerEngine.optimize(databaseType, ast.getType(), result, shardingTableMetaData);
+        SQLStatement result = fillerEngine.fill(sqlSegments, ast.getType());
+        optimizerEngine.optimize(ast.getType(), result);
         return result;
     }
     

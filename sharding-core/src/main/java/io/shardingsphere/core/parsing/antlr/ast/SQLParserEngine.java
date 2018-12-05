@@ -20,6 +20,7 @@ package io.shardingsphere.core.parsing.antlr.ast;
 import io.shardingsphere.core.constant.DatabaseType;
 import io.shardingsphere.core.parsing.antlr.ast.impl.SQLParserFactory;
 import io.shardingsphere.core.parsing.parser.exception.SQLParsingUnsupportedException;
+import lombok.RequiredArgsConstructor;
 import org.antlr.v4.runtime.ParserRuleContext;
 import org.antlr.v4.runtime.tree.ErrorNode;
 import org.antlr.v4.runtime.tree.ParseTree;
@@ -29,16 +30,19 @@ import org.antlr.v4.runtime.tree.ParseTree;
  * 
  * @author zhangliang
  */
+@RequiredArgsConstructor
 public final class SQLParserEngine {
+    
+    private final DatabaseType databaseType;
+    
+    private final String sql;
     
     /**
      * Parse SQL to AST.
      * 
-     * @param databaseType database type
-     * @param sql SQL
      * @return Abstract syntax tree of SQL
      */
-    public SQLAST parse(final DatabaseType databaseType, final String sql) {
+    public SQLAST parse() {
         ParseTree parseTree = SQLParserFactory.newInstance(databaseType, sql).execute().getChild(0);
         if (parseTree instanceof ErrorNode) {
             throw new SQLParsingUnsupportedException(String.format("Unsupported SQL of `%s`", sql));
