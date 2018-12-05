@@ -27,7 +27,7 @@ import io.shardingsphere.orchestration.reg.api.RegistryCenter;
  * @author caohao
  * @author panjuan
  */
-public final class InstanceStateService {
+public final class StateService {
     
     private final StateNode stateNode;
     
@@ -35,7 +35,7 @@ public final class InstanceStateService {
     
     private final OrchestrationInstance instance;
     
-    public InstanceStateService(final String name, final RegistryCenter regCenter) {
+    public StateService(final String name, final RegistryCenter regCenter) {
         stateNode = new StateNode(name);
         this.regCenter = regCenter;
         instance = OrchestrationInstance.getInstance();
@@ -46,5 +46,12 @@ public final class InstanceStateService {
      */
     public void persistInstanceOnline() {
         regCenter.persistEphemeral(stateNode.getInstancesNodeFullPath(instance.getInstanceId()), "");
+    }
+    
+    /**
+     * Initialize data sources node.
+     */
+    public void persistDataSourcesNode() {
+        regCenter.persist(stateNode.getDataSourcesNodeFullRootPath(), "");
     }
 }
