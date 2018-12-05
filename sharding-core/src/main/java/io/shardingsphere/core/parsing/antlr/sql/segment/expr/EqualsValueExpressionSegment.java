@@ -17,7 +17,6 @@
 
 package io.shardingsphere.core.parsing.antlr.sql.segment.expr;
 
-import io.shardingsphere.core.parsing.parser.expression.SQLExpression;
 import lombok.Getter;
 import lombok.RequiredArgsConstructor;
 
@@ -30,5 +29,5 @@ import lombok.RequiredArgsConstructor;
 @Getter
 public class EqualsValueExpressionSegment implements SQLRightValueExpressionSegment {
     
-    private final SQLExpression expression;
+    private final ExpressionSegment expression;
 }

@@ -23,6 +23,8 @@ import java.util.LinkedList;
 import java.util.List;
 import java.util.Map;
 
+import com.google.common.base.Optional;
+
 import io.shardingsphere.core.constant.ShardingOperator;
 import io.shardingsphere.core.metadata.table.ShardingTableMetaData;
 import io.shardingsphere.core.parsing.antlr.filler.SQLSegmentFiller;
@@ -33,12 +35,18 @@ import io.shardingsphere.core.parsing.antlr.sql.segment.condition.AndConditionSe
 import io.shardingsphere.core.parsing.antlr.sql.segment.condition.ConditionSegment;
 import io.shardingsphere.core.parsing.antlr.sql.segment.condition.OrConditionSegment;
 import io.shardingsphere.core.parsing.antlr.sql.segment.expr.BetweenValueExpressionSegment;
+import io.shardingsphere.core.parsing.antlr.sql.segment.expr.CommonExpressionSegment;
 import io.shardingsphere.core.parsing.antlr.sql.segment.expr.EqualsValueExpressionSegment;
+import io.shardingsphere.core.parsing.antlr.sql.segment.expr.ExpressionSegment;
 import io.shardingsphere.core.parsing.antlr.sql.segment.expr.InValueExpressionSegment;
 import io.shardingsphere.core.parsing.parser.context.condition.AndCondition;
 import io.shardingsphere.core.parsing.parser.context.condition.Column;
 import io.shardingsphere.core.parsing.parser.context.condition.Condition;
 import io.shardingsphere.core.parsing.parser.context.condition.OrCondition;
+import io.shardingsphere.core.parsing.parser.expression.SQLExpression;
+import io.shardingsphere.core.parsing.parser.expression.SQLNumberExpression;
+import io.shardingsphere.core.parsing.parser.expression.SQLPlaceholderExpression;
+import io.shardingsphere.core.parsing.parser.expression.SQLTextExpression;
 import io.shardingsphere.core.parsing.parser.sql.SQLStatement;
 import io.shardingsphere.core.parsing.parser.sql.dql.select.SelectStatement;
 import io.shardingsphere.core.parsing.parser.token.TableToken;
@@ -146,16 +154,54 @@ public class FromWhereFiller implements SQLSegmentFiller {
             for (ConditionSegment eachCondition : shardingCondition) {
                 Column column = new Column(eachCondition.getColumn().getName(), eachCondition.getColumn().getTableName());
                 if (ShardingOperator.EQUAL == eachCondition.getOperator()) {
-                    EqualsValueExpressionSegment expression = (EqualsValueExpressionSegment) eachCondition.getExpression();
-                    andConditionResult.getConditions().add(new Condition(column, expression.getExpression()));
+                    EqualsValueExpressionSegment expressionSegment = (EqualsValueExpressionSegment) eachCondition.getExpression();
+                    Optional<SQLExpression> expression = buildExpression((SelectStatement) sqlStatement, expressionSegment.getExpression());
+                    if(expression.isPresent()) {
+                        andConditionResult.getConditions().add(new Condition(column, expression.get()));
+                    }
                 } else if (ShardingOperator.IN == eachCondition.getOperator()) {
-                    InValueExpressionSegment expression = (InValueExpressionSegment) eachCondition.getExpression();
-                    andConditionResult.getConditions().add(new Condition(column, expression.getSqlExpressions()));
+                    InValueExpressionSegment expressionSegment = (InValueExpressionSegment) eachCondition.getExpression();
+                    List<SQLExpression> expressions = new LinkedList<>();
+                    for(ExpressionSegment each : expressionSegment.getSqlExpressions()) {
+                        Optional<SQLExpression> expression = buildExpression((SelectStatement) sqlStatement, each);
+                        if(expression.isPresent()) {
+                            expressions.add(expression.get());
+                        }else {
+                            expressions.clear();
+                            break;
+                        }
+                    }
+                    if(!expressions.isEmpty()) {
+                        andConditionResult.getConditions().add(new Condition(column, expressions));
+                    }
                 } else if (ShardingOperator.BETWEEN == eachCondition.getOperator()) {
-                    BetweenValueExpressionSegment expression = (BetweenValueExpressionSegment) eachCondition.getExpression();
-                    andConditionResult.getConditions().add(new Condition(column, expression.getBeginExpress(), expression.getEndExpress()));
+                    BetweenValueExpressionSegment expressionSegment = (BetweenValueExpressionSegment) eachCondition.getExpression();
+                    Optional<SQLExpression> beginExpress = buildExpression((SelectStatement) sqlStatement, expressionSegment.getBeginExpress());
+                    if(!beginExpress.isPresent()) {
+                        continue;
+                    }
+                    Optional<SQLExpression> endExpress = buildExpression((SelectStatement) sqlStatement, expressionSegment.getEndExpress());
+                    if(!endExpress.isPresent()) {
+                        continue;
+                    }
+                    andConditionResult.getConditions().add(new Condition(column, beginExpress.get(), endExpress.get()));
                 }
             }
         }
+    }
+    
+    private Optional<SQLExpression> buildExpression(final SelectStatement selectStatement, final ExpressionSegment expressionSegment) {
+        if(!(expressionSegment instanceof CommonExpressionSegment)) {
+            return Optional.absent();
+        }
+        CommonExpressionSegment commonExpressionSegment= (CommonExpressionSegment) expressionSegment;
+        if(-1 < commonExpressionSegment.getIndex()) {
+            return Optional.<SQLExpression>of(new SQLPlaceholderExpression(commonExpressionSegment.getIndex()));
+        }
+        if(null != commonExpressionSegment.getValue()) {
+            return Optional.<SQLExpression>of(new SQLNumberExpression(commonExpressionSegment.getValue()));
+        }
+        String expression = selectStatement.getSql().substring(commonExpressionSegment.getStartPosition(), commonExpressionSegment.getEndPosition() + 1);
+        return Optional.<SQLExpression>of(new SQLTextExpression(expression));
     }
 }

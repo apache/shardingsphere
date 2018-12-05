@@ -17,7 +17,6 @@
 
 package io.shardingsphere.core.parsing.antlr.sql.segment.expr;
 
-import io.shardingsphere.core.parsing.parser.expression.SQLExpression;
 import lombok.Getter;
 import lombok.RequiredArgsConstructor;
 
@@ -30,7 +29,7 @@ import lombok.RequiredArgsConstructor;
 @Getter
 public class BetweenValueExpressionSegment implements SQLRightValueExpressionSegment {
     
-    private final SQLExpression beginExpress;
+    private final ExpressionSegment beginExpress;
     
-    private final SQLExpression endExpress;
+    private final ExpressionSegment endExpress;
 }
