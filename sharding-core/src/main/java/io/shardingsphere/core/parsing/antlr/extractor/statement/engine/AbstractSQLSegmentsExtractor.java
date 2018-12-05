@@ -22,9 +22,7 @@ import io.shardingsphere.core.metadata.table.ShardingTableMetaData;
 import io.shardingsphere.core.parsing.antlr.extractor.segment.CollectionSQLSegmentExtractor;
 import io.shardingsphere.core.parsing.antlr.extractor.segment.OptionalSQLSegmentExtractor;
 import io.shardingsphere.core.parsing.antlr.extractor.segment.SQLSegmentExtractor;
-import io.shardingsphere.core.parsing.antlr.extractor.statement.SQLStatementExtractor;
-import io.shardingsphere.core.parsing.antlr.filler.SQLSegmentFiller;
-import io.shardingsphere.core.parsing.antlr.filler.SQLSegmentFillerRegistry;
+import io.shardingsphere.core.parsing.antlr.extractor.statement.SQLSegmentsExtractor;
 import io.shardingsphere.core.parsing.antlr.sql.segment.SQLSegment;
 import io.shardingsphere.core.parsing.parser.sql.SQLStatement;
 import io.shardingsphere.core.rule.ShardingRule;
@@ -34,11 +32,11 @@ import java.util.Collection;
 import java.util.LinkedList;
 
 /**
- * Abstract SQL statement extractor.
+ * Abstract SQL segments extractor.
  *
  * @author duhongjun
  */
-public abstract class AbstractSQLStatementExtractor implements SQLStatementExtractor {
+public abstract class AbstractSQLSegmentsExtractor implements SQLSegmentsExtractor {
     
     private final Collection<SQLSegmentExtractor> sqlSegmentExtractors = new LinkedList<>();
     
@@ -47,14 +45,7 @@ public abstract class AbstractSQLStatementExtractor implements SQLStatementExtra
     }
     
     @Override
-    public final SQLStatement extract(final String sql, final ParserRuleContext rootNode, final ShardingRule shardingRule, final ShardingTableMetaData shardingTableMetaData) {
-        Collection<SQLSegment> sqlSegments = extractSQLSegments(rootNode);
-        SQLStatement result = fillSQLStatement(sql, sqlSegments, shardingRule, shardingTableMetaData);
-        postExtract(result, shardingTableMetaData);
-        return result;
-    }
-    
-    private Collection<SQLSegment> extractSQLSegments(final ParserRuleContext rootNode) {
+    public final Collection<SQLSegment> extract(final ParserRuleContext rootNode, final ShardingRule shardingRule, final ShardingTableMetaData shardingTableMetaData) {
         Collection<SQLSegment> result = new LinkedList<>();
         for (SQLSegmentExtractor each : sqlSegmentExtractors) {
             if (each instanceof OptionalSQLSegmentExtractor) {
@@ -70,19 +61,7 @@ public abstract class AbstractSQLStatementExtractor implements SQLStatementExtra
         return result;
     }
     
-    private SQLStatement fillSQLStatement(final String sql, final Collection<SQLSegment> sqlSegments, final ShardingRule shardingRule, final ShardingTableMetaData shardingTableMetaData) {
-        SQLStatement result = createSQLStatement(sql);
-        for (SQLSegment each : sqlSegments) {
-            Optional<SQLSegmentFiller> filler = SQLSegmentFillerRegistry.findFiller(each);
-            if (filler.isPresent()) {
-                filler.get().fill(each, result, shardingRule, shardingTableMetaData);
-            }
-        }
-        return result;
-    }
-    
-    protected abstract SQLStatement createSQLStatement(String sql);
-    
-    protected void postExtract(final SQLStatement sqlStatement, final ShardingTableMetaData shardingTableMetaData) {
+    @Override
+    public void postExtract(final SQLStatement sqlStatement, final ShardingTableMetaData shardingTableMetaData) {
     }
 }

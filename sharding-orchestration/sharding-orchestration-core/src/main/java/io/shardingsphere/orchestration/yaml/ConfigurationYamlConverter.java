@@ -36,12 +36,65 @@ import java.util.Map;
 import java.util.Properties;
 
 /**
- * Configuration yaml converter.
+ * YAML converter for configuration.
  *
  * @author panjuan
  */
 @NoArgsConstructor(access = AccessLevel.PRIVATE)
-public class ConfigurationYamlConverter {
+public final class ConfigurationYamlConverter {
+    
+    /**
+     * Load data source configurations.
+     *
+     * @param data data
+     * @return data source configurations
+     */
+    @SuppressWarnings("unchecked")
+    public static Map<String, DataSourceConfiguration> loadDataSourceConfigurations(final String data) {
+        Map<String, YamlDataSourceConfiguration> result = (Map) new Yaml().load(data);
+        Preconditions.checkState(null != result && !result.isEmpty(), "No available data sources to load for orchestration.");
+        return Maps.transformValues(result, new Function<YamlDataSourceConfiguration, DataSourceConfiguration>() {
+            
+            @Override
+            public DataSourceConfiguration apply(final YamlDataSourceConfiguration input) {
+                DataSourceConfiguration result = new DataSourceConfiguration(input.getDataSourceClassName());
+                result.getProperties().putAll(input.getProperties());
+                return result;
+            }
+        });
+    }
+    
+    /**
+     * Load sharding rule configuration.
+     *
+     * @param data data
+     * @return sharding rule configuration
+     */
+    public static ShardingRuleConfiguration loadShardingRuleConfiguration(final String data) {
+        return new Yaml().loadAs(data, YamlShardingRuleConfiguration.class).getShardingRuleConfiguration();
+    }
+    
+    /**
+     * Load master-slave rule configuration.
+     *
+     * @param data data
+     * @return master-slave rule configuration
+     */
+    public static MasterSlaveRuleConfiguration loadMasterSlaveRuleConfiguration(final String data) {
+        return new Yaml().loadAs(data, YamlMasterSlaveRuleConfiguration.class).getMasterSlaveRuleConfiguration();
+    }
+    
+    /**
+     * Load authentication.
+     *
+     * @param data data
+     * @return authentication
+     */
+    public static Authentication loadAuthentication(final String data) {
+        Authentication result = new Yaml().loadAs(data, Authentication.class);
+        Preconditions.checkState(!Strings.isNullOrEmpty(result.getUsername()), "Authority configuration is invalid.");
+        return result;
+    }
     
     /**
      * Load config map.
@@ -65,63 +118,61 @@ public class ConfigurationYamlConverter {
     }
     
     /**
-     * Load authentication.
+     * Dump data sources configuration.
      *
-     * @param data data
-     * @return authentication
-     */
-    public static Authentication loadAuthentication(final String data) {
-        Authentication result = new Yaml().loadAs(data, Authentication.class);
-        Preconditions.checkState(!Strings.isNullOrEmpty(result.getUsername()), "Authority configuration is invalid.");
-        return result;
-    }
-    
-    /**
-     * Load master-slave rule configuration.
-     *
-     * @param data data
-     * @return master-slave rule configuration
-     */
-    public static MasterSlaveRuleConfiguration loadMasterSlaveRuleConfiguration(final String data) {
-        return new Yaml().loadAs(data, YamlMasterSlaveRuleConfiguration.class).getMasterSlaveRuleConfiguration();
-    }
-    
-    /**
-     * Load sharding rule configuration.
-     *
-     * @param data data
-     * @return sharding rule configuration
-     */
-    public static ShardingRuleConfiguration loadShardingRuleConfiguration(final String data) {
-        return new Yaml().loadAs(data, YamlShardingRuleConfiguration.class).getShardingRuleConfiguration();
-    }
-    
-    /**
-     * Load data sources.
-     *
-     * @param data data
-     * @return data sources map
+     * @param dataSourceConfigs data sources configurations
+     * @return YAML string
      */
     @SuppressWarnings("unchecked")
-    public static Map<String, DataSourceConfiguration> loadDataSourceConfigurations(final String data) {
-        Map<String, YamlDataSourceConfiguration> result = (Map) new Yaml().load(data);
-        Preconditions.checkState(null != result && !result.isEmpty(), "No available data sources to load for orchestration.");
-        return Maps.transformValues(result, new Function<YamlDataSourceConfiguration, DataSourceConfiguration>() {
-            
-            @Override
-            public DataSourceConfiguration apply(final YamlDataSourceConfiguration input) {
-                DataSourceConfiguration result = new DataSourceConfiguration(input.getDataSourceClassName());
-                result.getProperties().putAll(input.getProperties());
-                return result;
-            }
-        });
+    public static String dumpDataSourceConfigurations(final Map<String, DataSourceConfiguration> dataSourceConfigs) {
+        return new Yaml(new DefaultYamlRepresenter()).dumpAsMap(
+                Maps.transformValues(dataSourceConfigs, new Function<DataSourceConfiguration, YamlDataSourceConfiguration>() {
+                    
+                    @Override
+                    public YamlDataSourceConfiguration apply(final DataSourceConfiguration input) {
+                        YamlDataSourceConfiguration result = new YamlDataSourceConfiguration();
+                        result.setDataSourceClassName(input.getDataSourceClassName());
+                        result.setProperties(input.getProperties());
+                        return result;
+                    }
+                }));
+    }
+    
+    /**
+     * Dump sharding rule configuration.
+     *
+     * @param shardingRuleConfig sharding rule configuration
+     * @return YAML string
+     */
+    public static String dumpShardingRuleConfiguration(final ShardingRuleConfiguration shardingRuleConfig) {
+        return new Yaml(new DefaultYamlRepresenter()).dumpAsMap(new YamlShardingRuleConfiguration(shardingRuleConfig));
+    }
+    
+    /**
+     * Dump master-slave rule configuration.
+     *
+     * @param masterSlaveRuleConfig master-slave rule configuration
+     * @return YAML string
+     */
+    public static String dumpMasterSlaveRuleConfiguration(final MasterSlaveRuleConfiguration masterSlaveRuleConfig) {
+        return new Yaml(new DefaultYamlRepresenter()).dumpAsMap(new YamlMasterSlaveRuleConfiguration(masterSlaveRuleConfig));
+    }
+    
+    /**
+     * Dump authentication.
+     *
+     * @param authentication authentication
+     * @return YAML string
+     */
+    public static String dumpAuthentication(final Authentication authentication) {
+        return new Yaml(new DefaultYamlRepresenter()).dumpAsMap(authentication);
     }
     
     /**
      * Dump config map.
      *
      * @param configMap config map
-     * @return data
+     * @return YAML string
      */
     public static String dumpConfigMap(final Map<String, Object> configMap) {
         return new Yaml(new DefaultYamlRepresenter()).dumpAsMap(configMap);
@@ -131,60 +182,9 @@ public class ConfigurationYamlConverter {
      * Dump properties configuration.
      *
      * @param props props
-     * @return data
+     * @return YAML string
      */
     public static String dumpProperties(final Properties props) {
         return new Yaml(new DefaultYamlRepresenter()).dumpAsMap(props);
-    }
-    
-    /**
-     * Dump authentication.
-     *
-     * @param authentication authentication
-     * @return data
-     */
-    public static String dumpAuthentication(final Authentication authentication) {
-        return new Yaml(new DefaultYamlRepresenter()).dumpAsMap(authentication);
-    }
-    
-    /**
-     * Dump master-slave rule configuration.
-     *
-     * @param masterSlaveRuleConfig master-slave rule configuration
-     * @return data
-     */
-    public static String dumpMasterSlaveRuleConfiguration(final MasterSlaveRuleConfiguration masterSlaveRuleConfig) {
-        return new Yaml(new DefaultYamlRepresenter()).dumpAsMap(new YamlMasterSlaveRuleConfiguration(masterSlaveRuleConfig));
-    }
-    
-    /**
-     * Dump sharding rule configuration.
-     *
-     * @param shardingRuleConfig sharding rule configuration
-     * @return data
-     */
-    public static String dumpShardingRuleConfiguration(final ShardingRuleConfiguration shardingRuleConfig) {
-        return new Yaml(new DefaultYamlRepresenter()).dumpAsMap(new YamlShardingRuleConfiguration(shardingRuleConfig));
-    }
-    
-    /**
-     * Dump data sources.
-     *
-     * @param dataSourceConfigs data sources map
-     * @return data
-     */
-    @SuppressWarnings("unchecked")
-    public static String dumpDataSourceConfigurations(final Map<String, DataSourceConfiguration> dataSourceConfigs) {
-        return new Yaml(new DefaultYamlRepresenter()).dumpAsMap(
-                Maps.transformValues(dataSourceConfigs, new Function<DataSourceConfiguration, YamlDataSourceConfiguration>() {
-            
-                    @Override
-                    public YamlDataSourceConfiguration apply(final DataSourceConfiguration input) {
-                        YamlDataSourceConfiguration result = new YamlDataSourceConfiguration();
-                        result.setDataSourceClassName(input.getDataSourceClassName());
-                        result.setProperties(input.getProperties());
-                        return result;
-                    }
-                }));
     }
 }

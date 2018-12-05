@@ -19,13 +19,14 @@ package io.shardingsphere.core.parsing.antlr.extractor.statement.engine.ddl;
 
 import io.shardingsphere.core.parsing.antlr.extractor.segment.engine.IndexNameExtractor;
 import io.shardingsphere.core.parsing.antlr.extractor.segment.engine.TableNameExtractor;
+import io.shardingsphere.core.parsing.antlr.extractor.statement.engine.AbstractSQLSegmentsExtractor;
 
 /**
  * Alter index extractor.
  * 
  * @author duhongjun
  */
-public final class AlterIndexExtractor extends DDLStatementExtractor {
+public final class AlterIndexExtractor extends AbstractSQLSegmentsExtractor {
     
     public AlterIndexExtractor() {
         addSQLSegmentExtractor(new TableNameExtractor());

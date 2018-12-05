@@ -18,23 +18,16 @@
 package io.shardingsphere.core.parsing.antlr.extractor.statement.engine.dal.dialect.postgresql;
 
 import io.shardingsphere.core.parsing.antlr.extractor.segment.engine.dialect.postgresql.ShowParamExtractor;
-import io.shardingsphere.core.parsing.antlr.extractor.statement.engine.dal.DALStatementExtractor;
-import io.shardingsphere.core.parsing.parser.dialect.postgresql.statement.ShowStatement;
-import io.shardingsphere.core.parsing.parser.sql.SQLStatement;
+import io.shardingsphere.core.parsing.antlr.extractor.statement.engine.AbstractSQLSegmentsExtractor;
 
 /**
- * PostgreSQL show statement extractor.
+ * Show extractor for PostgreSQL.
  *
  * @author loxp
  */
-public final class PostgreSQLShowExtractor extends DALStatementExtractor {
+public final class PostgreSQLShowExtractor extends AbstractSQLSegmentsExtractor {
     
     public PostgreSQLShowExtractor() {
         addSQLSegmentExtractor(new ShowParamExtractor());
-    }
-
-    @Override
-    protected SQLStatement createSQLStatement(final String sql) {
-        return new ShowStatement();
     }
 }

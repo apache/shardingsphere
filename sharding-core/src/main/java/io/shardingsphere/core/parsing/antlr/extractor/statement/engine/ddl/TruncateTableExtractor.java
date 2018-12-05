@@ -17,10 +17,12 @@
 
 package io.shardingsphere.core.parsing.antlr.extractor.statement.engine.ddl;
 
+import io.shardingsphere.core.parsing.antlr.extractor.statement.engine.AbstractSQLSegmentsExtractor;
+
 /**
  * Truncate table extractor.
  * 
  * @author duhongjun
  */
-public abstract class TruncateTableExtractor extends DDLStatementExtractor {
+public abstract class TruncateTableExtractor extends AbstractSQLSegmentsExtractor {
 }

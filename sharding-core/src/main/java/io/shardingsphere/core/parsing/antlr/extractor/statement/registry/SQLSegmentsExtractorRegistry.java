@@ -15,21 +15,23 @@
  * </p>
  */
 
-package io.shardingsphere.core.parsing.antlr.extractor.statement.engine.ddl;
+package io.shardingsphere.core.parsing.antlr.extractor.statement.registry;
 
-import io.shardingsphere.core.parsing.antlr.extractor.statement.engine.AbstractSQLStatementExtractor;
-import io.shardingsphere.core.parsing.parser.sql.SQLStatement;
-import io.shardingsphere.core.parsing.parser.sql.ddl.DDLStatement;
+import io.shardingsphere.core.parsing.antlr.extractor.statement.SQLSegmentsExtractor;
+import io.shardingsphere.core.parsing.antlr.extractor.statement.SQLStatementType;
 
 /**
- * DDL statement extractor.
+ * SQL segments extractor registry.
  * 
- * @author duhongjun
+ * @author zhangliang
  */
-public class DDLStatementExtractor extends AbstractSQLStatementExtractor {
+public interface SQLSegmentsExtractorRegistry {
     
-    @Override
-    protected SQLStatement createSQLStatement(final String sql) {
-        return new DDLStatement();
-    }
+    /**
+     * Get SQL segments extractor.
+     * 
+     * @param type SQL statement type
+     * @return SQL segments extractor
+     */
+    SQLSegmentsExtractor getExtractor(SQLStatementType type);
 }

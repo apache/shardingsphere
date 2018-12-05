@@ -20,7 +20,6 @@ package io.shardingsphere.orchestration.internal.registry.config.listener;
 import io.shardingsphere.orchestration.reg.api.RegistryCenter;
 import io.shardingsphere.orchestration.reg.listener.DataChangedEvent;
 import io.shardingsphere.orchestration.reg.listener.DataChangedEvent.ChangedType;
-import lombok.SneakyThrows;
 import org.junit.Before;
 import org.junit.Test;
 import org.junit.runner.RunWith;
@@ -41,14 +40,12 @@ public final class ConfigMapChangedListenerTest {
     private RegistryCenter regCenter;
     
     @Before
-    @SneakyThrows
     public void setUp() {
         configMapChangedListener = new ConfigMapChangedListener("test", regCenter);
     }
     
     @Test
     public void assertCreateShardingOrchestrationEvent() {
-        DataChangedEvent dataChangedEvent = new DataChangedEvent("test", CONFIG_MAP_YAML, ChangedType.UPDATED);
-        assertThat(configMapChangedListener.createShardingOrchestrationEvent(dataChangedEvent).getConfigMap().size(), is(1));
+        assertThat(configMapChangedListener.createShardingOrchestrationEvent(new DataChangedEvent("test", CONFIG_MAP_YAML, ChangedType.UPDATED)).getConfigMap().size(), is(1));
     }
 }

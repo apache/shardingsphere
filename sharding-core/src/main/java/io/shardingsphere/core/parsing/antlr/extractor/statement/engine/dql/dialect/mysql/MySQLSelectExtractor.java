@@ -28,7 +28,7 @@ import io.shardingsphere.core.parsing.antlr.extractor.segment.engine.LimitExtrac
 import io.shardingsphere.core.parsing.antlr.extractor.segment.engine.OrderByExtractor;
 import io.shardingsphere.core.parsing.antlr.extractor.segment.engine.SelectClauseExtractor;
 import io.shardingsphere.core.parsing.antlr.extractor.segment.engine.TableNamesExtractor;
-import io.shardingsphere.core.parsing.antlr.extractor.statement.engine.AbstractSQLStatementExtractor;
+import io.shardingsphere.core.parsing.antlr.extractor.statement.engine.AbstractSQLSegmentsExtractor;
 import io.shardingsphere.core.parsing.parser.constant.DerivedColumn;
 import io.shardingsphere.core.parsing.parser.context.OrderItem;
 import io.shardingsphere.core.parsing.parser.context.selectitem.AggregationSelectItem;
@@ -48,7 +48,7 @@ import java.util.List;
  *
  * @author duhongjun
  */
-public final class MySQLSelectExtractor extends AbstractSQLStatementExtractor {
+public final class MySQLSelectExtractor extends AbstractSQLSegmentsExtractor {
     
     public MySQLSelectExtractor() {
         addSQLSegmentExtractor(new TableNamesExtractor());
@@ -61,13 +61,7 @@ public final class MySQLSelectExtractor extends AbstractSQLStatementExtractor {
     }
     
     @Override
-    protected SQLStatement createSQLStatement(final String sql) {
-        SelectStatement result = new SelectStatement();
-        result.setSql(sql);
-        return result;
-    }
-    
-    protected void postExtract(final SQLStatement sqlStatement, final ShardingTableMetaData shardingTableMetaData) {
+    public void postExtract(final SQLStatement sqlStatement, final ShardingTableMetaData shardingTableMetaData) {
         appendDerivedColumns((SelectStatement) sqlStatement, shardingTableMetaData);
         appendDerivedOrderBy((SelectStatement) sqlStatement);
     }

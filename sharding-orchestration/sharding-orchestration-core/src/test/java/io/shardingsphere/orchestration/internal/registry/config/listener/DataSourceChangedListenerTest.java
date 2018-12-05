@@ -21,7 +21,6 @@ import io.shardingsphere.orchestration.internal.registry.config.event.DataSource
 import io.shardingsphere.orchestration.reg.api.RegistryCenter;
 import io.shardingsphere.orchestration.reg.listener.DataChangedEvent;
 import io.shardingsphere.orchestration.reg.listener.DataChangedEvent.ChangedType;
-import lombok.SneakyThrows;
 import org.junit.Before;
 import org.junit.Test;
 import org.junit.runner.RunWith;
@@ -37,8 +36,7 @@ public final class DataSourceChangedListenerTest {
     private static final String DATA_SOURCE_YAML = "master_ds: !!io.shardingsphere.orchestration.yaml.YamlDataSourceConfiguration\n"
             + "  dataSourceClassName: com.zaxxer.hikari.HikariDataSource\n" + "  properties:\n" + "    DATA_SOURCE_POOL_CLASS_NAME: com.zaxxer.hikari.HikariDataSource\n"
             + "    proxyDatasourceType: !!io.shardingsphere.core.constant.transaction.ProxyPoolType 'VENDOR'\n"
-            + "    url: jdbc:mysql://localhost:3306/demo_ds_master?serverTimezone=UTC&useSSL=false\n" + "    username: root\n" + "    password: null\n" + "    autoCommit: true\n"
-            + "    connectionTimeout: 30000\n" + "    idleTimeout: 60000\n" + "    maxLifetime: 1800000\n" + "    maximumPoolSize: 50";
+            + "    url: jdbc:mysql://localhost:3306/demo_ds_master\n" + "    username: root\n" + "    password: null\n";
     
     private DataSourceChangedListener dataSourceChangedListener;
     
@@ -46,7 +44,6 @@ public final class DataSourceChangedListenerTest {
     private RegistryCenter regCenter;
     
     @Before
-    @SneakyThrows
     public void setUp() {
         dataSourceChangedListener = new DataSourceChangedListener("test", regCenter, "sharding_db");
     }
@@ -57,5 +54,6 @@ public final class DataSourceChangedListenerTest {
         DataSourceChangedEvent actual = dataSourceChangedListener.createShardingOrchestrationEvent(dataChangedEvent);
         assertThat(actual.getShardingSchemaName(), is("sharding_db"));
         assertThat(actual.getDataSourceConfigurations().size(), is(1));
+        assertThat(actual.getDataSourceConfigurations().get("master_ds").getDataSourceClassName(), is("com.zaxxer.hikari.HikariDataSource"));
     }
 }

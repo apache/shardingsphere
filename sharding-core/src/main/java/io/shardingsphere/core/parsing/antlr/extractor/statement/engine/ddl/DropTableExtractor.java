@@ -17,10 +17,12 @@
 
 package io.shardingsphere.core.parsing.antlr.extractor.statement.engine.ddl;
 
+import io.shardingsphere.core.parsing.antlr.extractor.statement.engine.AbstractSQLSegmentsExtractor;
+
 /**
  * Drop table extractor.
  * 
  * @author duhongjun
  */
-public abstract class DropTableExtractor extends DDLStatementExtractor {
+public abstract class DropTableExtractor extends AbstractSQLSegmentsExtractor {
 }

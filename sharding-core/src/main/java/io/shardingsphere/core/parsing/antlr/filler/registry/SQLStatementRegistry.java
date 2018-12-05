@@ -15,21 +15,23 @@
  * </p>
  */
 
-package io.shardingsphere.core.parsing.antlr.extractor.statement.engine.tcl;
+package io.shardingsphere.core.parsing.antlr.filler.registry;
 
-import io.shardingsphere.core.parsing.antlr.extractor.statement.engine.AbstractSQLStatementExtractor;
+import io.shardingsphere.core.parsing.antlr.extractor.statement.SQLStatementType;
 import io.shardingsphere.core.parsing.parser.sql.SQLStatement;
-import io.shardingsphere.core.parsing.parser.sql.tcl.TCLStatement;
 
 /**
- * TCL Statement extractor.
+ * SQL statement registry.
  * 
- * @author duhongjun
+ * @author zhangliang
  */
-public final class TCLStatementExtractor extends AbstractSQLStatementExtractor {
+public interface SQLStatementRegistry {
     
-    @Override
-    protected SQLStatement createSQLStatement(final String sql) {
-        return new TCLStatement();
-    }
+    /**
+     * Get SQL statement.
+     *
+     * @param type SQL statement type
+     * @return SQL statement
+     */
+    SQLStatement getSQLStatement(SQLStatementType type);
 }
