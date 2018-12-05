@@ -19,7 +19,6 @@ package io.shardingsphere.core.executor.sql.prepare;
 
 import com.google.common.collect.Lists;
 import io.shardingsphere.core.constant.ConnectionMode;
-import io.shardingsphere.core.executor.ShardingExecuteCallback;
 import io.shardingsphere.core.executor.ShardingExecuteEngine;
 import io.shardingsphere.core.executor.ShardingExecuteGroup;
 import io.shardingsphere.core.executor.StatementExecuteUnit;
@@ -61,7 +60,7 @@ public final class SQLExecutePrepareTemplate {
      * @throws SQLException SQL exception
      */
     public Collection<ShardingExecuteGroup<StatementExecuteUnit>> getExecuteUnitGroups(final Collection<RouteUnit> routeUnits, final SQLExecutePrepareCallback callback) throws SQLException {
-        return null == shardingExecuteEngine ? getSynchronizedExecuteUnitGroups(routeUnits, callback) : getAsynchronizedExecuteUnitGroups(routeUnits, callback);
+        return getSynchronizedExecuteUnitGroups(routeUnits, callback);
     }
     
     private Collection<ShardingExecuteGroup<StatementExecuteUnit>> getSynchronizedExecuteUnitGroups(
@@ -70,25 +69,6 @@ public final class SQLExecutePrepareTemplate {
         Collection<ShardingExecuteGroup<StatementExecuteUnit>> result = new LinkedList<>();
         for (Entry<String, List<SQLUnit>> entry : sqlUnitGroups.entrySet()) {
             result.addAll(getSQLExecuteGroups(entry.getKey(), entry.getValue(), callback));
-        }
-        return result;
-    }
-    
-    private Collection<ShardingExecuteGroup<StatementExecuteUnit>> getAsynchronizedExecuteUnitGroups(
-            final Collection<RouteUnit> routeUnits, final SQLExecutePrepareCallback callback) throws SQLException {
-        Map<String, List<SQLUnit>> sqlUnitGroups = getSQLUnitGroups(routeUnits);
-        List<Collection<ShardingExecuteGroup<StatementExecuteUnit>>> results = shardingExecuteEngine.execute(sqlUnitGroups.entrySet(),
-                new ShardingExecuteCallback<Entry<String, List<SQLUnit>>, Collection<ShardingExecuteGroup<StatementExecuteUnit>>>() {
-                    
-                    @Override
-                    public Collection<ShardingExecuteGroup<StatementExecuteUnit>> execute(final Entry<String, List<SQLUnit>> input, final boolean isTrunkThread,
-                                                                                          final Map<String, Object> shardingExecuteDataMap) throws SQLException {
-                        return getSQLExecuteGroups(input.getKey(), input.getValue(), callback);
-                    }
-                });
-        Collection<ShardingExecuteGroup<StatementExecuteUnit>> result = new LinkedList<>();
-        for (Collection<ShardingExecuteGroup<StatementExecuteUnit>> each : results) {
-            result.addAll(each);
         }
         return result;
     }
