@@ -24,20 +24,17 @@ import javax.xml.bind.annotation.XmlAccessType;
 import javax.xml.bind.annotation.XmlAccessorType;
 import javax.xml.bind.annotation.XmlAttribute;
 import javax.xml.bind.annotation.XmlElement;
-import java.util.HashSet;
-import java.util.Set;
+import java.util.ArrayList;
+import java.util.List;
 
 @Getter
 @Setter
 @XmlAccessorType(XmlAccessType.FIELD)
 public final class ExpectedDistinctSelectItem {
     
-    @XmlAttribute(name = "inner-expression")
-    private String innerExpression;
-    
     @XmlAttribute
     private String alias;
     
     @XmlElement(name = "distinct-column")
-    private Set<String> distinctColumnNames = new HashSet<>();
+    private List<String> distinctColumnNames = new ArrayList<>();
 }
