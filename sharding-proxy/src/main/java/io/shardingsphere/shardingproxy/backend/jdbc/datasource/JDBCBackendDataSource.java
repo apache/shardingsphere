@@ -23,6 +23,7 @@ import io.shardingsphere.core.rule.DataSourceParameter;
 import io.shardingsphere.shardingproxy.backend.BackendDataSource;
 import io.shardingsphere.shardingproxy.runtime.GlobalRegistry;
 import lombok.Getter;
+import lombok.extern.slf4j.Slf4j;
 
 import javax.sql.DataSource;
 import java.lang.reflect.Method;
@@ -43,6 +44,7 @@ import java.util.Map.Entry;
  * @author panjuan
  */
 @Getter
+@Slf4j
 public final class JDBCBackendDataSource implements BackendDataSource, AutoCloseable {
     
     @Getter
@@ -115,11 +117,25 @@ public final class JDBCBackendDataSource implements BackendDataSource, AutoClose
     }
     
     private List<Connection> createConnections(final DataSource dataSource, final int connectionSize) throws SQLException {
+        boolean hasException = false;
         List<Connection> result = new ArrayList<>(connectionSize);
         for (int i = 0; i < connectionSize; i++) {
-            result.add(dataSource.getConnection());
+            try {
+                result.add(dataSource.getConnection());
+            // CHECKSTYLE:OFF
+            } catch (Exception ex) {
+            // CHECKSTYLE:ON
+                hasException = true;
+            }
         }
-        return result;
+        if (hasException) {
+            for (Connection each : result) {
+                each.close();
+            }
+            throw new ShardingException(String.format("Could't get %d connections one time, partition succeed connection(%d) have released!", connectionSize, result.size()));
+        } else {
+            return result;
+        }
     }
     
     @Override
