@@ -314,23 +314,28 @@ simpleExpr
     | UNARY_BIT_COMPLEMENT simpleExpr
     | NOT_ simpleExpr
     | BINARY simpleExpr
-    | LP_ expr RP_
-    | ROW LP_ simpleExpr( COMMA simpleExpr)* RP_
+    | exprsWithParen
+    | ROW exprsWithParen
     | subquery
     | EXISTS subquery
     // | (identifier expr)
     //| match_expr
     | caseExpress
-    // | interval_expr
-    |privateExprOfDb
+    | intervalExpr
+    | privateExprOfDb
     ;
     
 functionCall
     : ID LP_ bitExprs? RP_
     ;
     
-caseExpress:
+intervalExpr
+    : matchNone
     ;
+       
+caseExpress
+    : matchNone
+    ; 
     
 privateExprOfDb
     : matchNone

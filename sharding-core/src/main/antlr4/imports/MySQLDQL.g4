@@ -99,3 +99,7 @@ selectExpr
     : (columnName | expr) AS? alias?
     | columnName DOT_ASTERISK
     ;
+    
+intervalExpr
+    : INTERVAL expr ID
+    ;    
