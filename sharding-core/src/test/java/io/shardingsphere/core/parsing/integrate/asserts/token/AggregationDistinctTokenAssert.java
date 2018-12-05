@@ -41,17 +41,17 @@ final class AggregationDistinctTokenAssert {
     
     private final SQLStatementAssertMessage assertMessage;
     
-    void assertSchemaTokens(final Collection<SQLToken> actual, final ExpectedTokens expected) {
+    void assertAggregationDistinctTokens(final Collection<SQLToken> actual, final ExpectedTokens expected) {
         List<AggregationDistinctToken> aggregationDistinctTokens = getAggregationDistinctTokens(actual);
         assertThat(assertMessage.getFullAssertMessage("Schema tokens size error: "), aggregationDistinctTokens.size(), is(expected.getSchemaTokens().size()));
         int count = 0;
         for (ExpectedAggregationDistinctToken each : expected.getAggregationDistinctTokens()) {
-            assertSchemaToken(aggregationDistinctTokens.get(count), each);
+            assertAggregationDistinctToken(aggregationDistinctTokens.get(count), each);
             count++;
         }
     }
     
-    private void assertSchemaToken(final AggregationDistinctToken actual, final ExpectedAggregationDistinctToken expected) {
+    private void assertAggregationDistinctToken(final AggregationDistinctToken actual, final ExpectedAggregationDistinctToken expected) {
         assertThat(assertMessage.getFullAssertMessage("Aggregation distinct tokens begin position assertion error: "), actual.getBeginPosition(), is(expected.getBeginPosition()));
         assertThat(assertMessage.getFullAssertMessage("Aggregation distinct tokens original literals assertion error: "), actual.getOriginalLiterals(), is(expected.getOriginalLiterals()));
         assertThat(assertMessage.getFullAssertMessage("Aggregation distinct tokens column name assertion error: "), actual.getColumnName(), is(expected.getColumnName()));
