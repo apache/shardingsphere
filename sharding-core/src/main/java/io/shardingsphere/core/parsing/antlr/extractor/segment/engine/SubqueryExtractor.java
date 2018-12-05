@@ -36,9 +36,18 @@ import io.shardingsphere.core.parsing.antlr.sql.segment.order.OrderBySegment;
  * @author duhongjun
  */
 public class SubqueryExtractor implements OptionalSQLSegmentExtractor {
-
+    
     @Override
     public Optional<SubquerySegment> extract(ParserRuleContext ancestorNode) {
+        boolean subqueryInFrom = false;
+        ParserRuleContext parentNode = ancestorNode.getParent();
+        while(null != parentNode) {
+            if(RuleName.FROM_CLAUSE.getName().equals(parentNode.getClass().getSimpleName())) {
+                subqueryInFrom = true;
+                break;
+            }
+            parentNode = parentNode.getParent();
+        }
         Optional<ParserRuleContext> subqueryNode = ASTUtils.findFirstChildNode(ancestorNode, RuleName.SUBQUERY);
         if (!subqueryNode.isPresent()) {
             return Optional.absent();
@@ -52,6 +61,6 @@ public class SubqueryExtractor implements OptionalSQLSegmentExtractor {
         if(aliasNode.isPresent()) {
             alias = Optional.of(aliasNode.get().getText());
         }
-        return Optional.of(new SubquerySegment(selectClauseSegment, fromWhereSegment, groupBySegment, orderBySegment, alias)) ;
+        return Optional.of(new SubquerySegment(selectClauseSegment, fromWhereSegment, groupBySegment, orderBySegment, alias, subqueryInFrom)) ;
     }
 }

@@ -40,7 +40,7 @@ public class OrderByFiller implements SQLSegmentFiller {
     public void fill(final SQLSegment sqlSegment, final SQLStatement sqlStatement, final ShardingRule shardingRule, final ShardingTableMetaData shardingTableMetaData) {
         OrderBySegment orderBySegment = (OrderBySegment) sqlSegment;
         SelectStatement selectStatement = (SelectStatement) sqlStatement;
-        if(null != selectStatement.getSubQueryStatement()) {
+        if(!selectStatement.getSubQueryStatements().isEmpty()) {
             return;
         }
         for (OrderByItemSegment each : orderBySegment.getOrderByItems()) {

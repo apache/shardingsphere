@@ -38,12 +38,15 @@ public class SubqueryFiller implements SQLSegmentFiller{
         SelectStatement selectStatement = (SelectStatement)sqlStatement;        
         SelectStatement subqueryStatement = new SelectStatement();
         subqueryStatement.setSql(selectStatement.getSql());
-        selectStatement.setSubQueryStatement(subqueryStatement);
+        selectStatement.getSubQueryStatements().add(subqueryStatement);
         if(subquerySegment.getSelectClauseSegment().isPresent()) {
             new SelectClauseFiller().fill(subquerySegment.getSelectClauseSegment().get(), subqueryStatement, shardingRule, shardingTableMetaData);
         }
         if(subquerySegment.getFromWhereSegment().isPresent()) {
             new FromWhereFiller().fill(subquerySegment.getFromWhereSegment().get(), subqueryStatement, shardingRule, shardingTableMetaData);
+        }
+        if(!subquerySegment.isSubqueryInFrom()) {
+            return;
         }
         if(subquerySegment.getGroupBySegment().isPresent()) {
             new GroupByFiller().fill(subquerySegment.getGroupBySegment().get(), subqueryStatement, shardingRule, shardingTableMetaData);

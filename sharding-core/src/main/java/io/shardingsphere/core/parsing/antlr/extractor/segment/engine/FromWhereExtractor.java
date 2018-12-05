@@ -66,7 +66,7 @@ public final class FromWhereExtractor implements OptionalSQLSegmentExtractor {
             questionNodeIndexMap.put(each, index++);
         }
         extractAndFillTableSegment(result, tableReferenceNodes, questionNodeIndexMap);
-        extractAndFillWhere(result, questionNodeIndexMap, ancestorNode);
+        extractAndFillWhere(result, questionNodeIndexMap, fromNode.get().getParent());
         return Optional.of(result);
     }
     
@@ -144,7 +144,7 @@ public final class FromWhereExtractor implements OptionalSQLSegmentExtractor {
     }
     
     private void extractAndFillWhere(final FromWhereSegment fromWhereSegment, final Map<ParserRuleContext, Integer> questionNodeIndexMap, final ParserRuleContext ancestorNode) {
-        Optional<ParserRuleContext> whereNode = ASTUtils.findFirstChildNode(ancestorNode, RuleName.WHERE_CLAUSE);
+        Optional<ParserRuleContext> whereNode = ASTUtils.findFirstChildNodeNoneRecursive(ancestorNode, RuleName.WHERE_CLAUSE);
         if (!whereNode.isPresent()) {
             return;
         }

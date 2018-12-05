@@ -44,4 +44,6 @@ public class SubquerySegment implements ExpressionSegment {
     private final Optional<OrderBySegment> orderBySegment;
     
     private final Optional<String> alias;
+    
+    private final boolean subqueryInFrom;
 }

@@ -39,6 +39,7 @@ import io.shardingsphere.core.parsing.antlr.sql.segment.expr.CommonExpressionSeg
 import io.shardingsphere.core.parsing.antlr.sql.segment.expr.EqualsValueExpressionSegment;
 import io.shardingsphere.core.parsing.antlr.sql.segment.expr.ExpressionSegment;
 import io.shardingsphere.core.parsing.antlr.sql.segment.expr.InValueExpressionSegment;
+import io.shardingsphere.core.parsing.antlr.sql.segment.expr.SubquerySegment;
 import io.shardingsphere.core.parsing.parser.context.condition.AndCondition;
 import io.shardingsphere.core.parsing.parser.context.condition.Column;
 import io.shardingsphere.core.parsing.parser.context.condition.Condition;
@@ -67,11 +68,13 @@ public class FromWhereFiller implements SQLSegmentFiller {
             Map<String, String> columnNameToTable = new HashMap<>();
             Map<String, Integer> columnNameCount = new HashMap<>();
             fillColumnTableMap(sqlStatement, shardingTableMetaData, columnNameToTable, columnNameCount);
-            OrCondition orCondition = filterShardingCondition(sqlStatement, fromWhereSegment.getConditions(), shardingRule, columnNameToTable, columnNameCount);
+            OrCondition orCondition = filterShardingCondition(sqlStatement, fromWhereSegment.getConditions(), shardingRule, columnNameToTable, columnNameCount, shardingTableMetaData);
             sqlStatement.getConditions().getOrCondition().getAndConditions().addAll(orCondition.getAndConditions());
         }
         if(!fromWhereSegment.getSubquerys().isEmpty()) {
-            new SubqueryFiller().fill(fromWhereSegment.getSubquerys().iterator().next(), sqlStatement, shardingRule, shardingTableMetaData);
+            for(SubquerySegment each : fromWhereSegment.getSubquerys()) {
+                new SubqueryFiller().fill(each, sqlStatement, shardingRule, shardingTableMetaData);
+            }
         }
         int count = 0;
         while (count < fromWhereSegment.getParameterCount()) {
@@ -101,7 +104,7 @@ public class FromWhereFiller implements SQLSegmentFiller {
     }
     
     private OrCondition filterShardingCondition(final SQLStatement sqlStatement, final OrConditionSegment orCondition, final ShardingRule shardingRule,
-                                                final Map<String, String> columnNameToTable, final Map<String, Integer> columnNameCount) {
+                                                final Map<String, String> columnNameToTable, final Map<String, Integer> columnNameCount, final ShardingTableMetaData shardingTableMetaData) {
         OrCondition result = new OrCondition();
         for (AndConditionSegment each : orCondition.getAndConditions()) {
             List<ConditionSegment> shardingCondition = new LinkedList<>();
@@ -138,7 +141,7 @@ public class FromWhereFiller implements SQLSegmentFiller {
                 }
             }
             if (needSharding) {
-                fillResult(result, sqlStatement, shardingCondition);
+                fillResult(result, sqlStatement, shardingCondition, shardingRule, shardingTableMetaData);
             } else {
                 result.getAndConditions().clear();
                 break;
@@ -147,7 +150,8 @@ public class FromWhereFiller implements SQLSegmentFiller {
         return result;
     }
     
-    private void fillResult(final OrCondition result, final SQLStatement sqlStatement, final List<ConditionSegment> shardingCondition) {
+    private void fillResult(final OrCondition result, final SQLStatement sqlStatement, final List<ConditionSegment> shardingCondition, final ShardingRule shardingRule,
+            final ShardingTableMetaData shardingTableMetaData) {
         if (!shardingCondition.isEmpty()) {
             AndCondition andConditionResult = new AndCondition();
             result.getAndConditions().add(andConditionResult);
@@ -155,7 +159,7 @@ public class FromWhereFiller implements SQLSegmentFiller {
                 Column column = new Column(eachCondition.getColumn().getName(), eachCondition.getColumn().getTableName());
                 if (ShardingOperator.EQUAL == eachCondition.getOperator()) {
                     EqualsValueExpressionSegment expressionSegment = (EqualsValueExpressionSegment) eachCondition.getExpression();
-                    Optional<SQLExpression> expression = buildExpression((SelectStatement) sqlStatement, expressionSegment.getExpression());
+                    Optional<SQLExpression> expression = buildExpression((SelectStatement) sqlStatement, expressionSegment.getExpression(), shardingRule, shardingTableMetaData);
                     if(expression.isPresent()) {
                         andConditionResult.getConditions().add(new Condition(column, expression.get()));
                     }
@@ -163,7 +167,7 @@ public class FromWhereFiller implements SQLSegmentFiller {
                     InValueExpressionSegment expressionSegment = (InValueExpressionSegment) eachCondition.getExpression();
                     List<SQLExpression> expressions = new LinkedList<>();
                     for(ExpressionSegment each : expressionSegment.getSqlExpressions()) {
-                        Optional<SQLExpression> expression = buildExpression((SelectStatement) sqlStatement, each);
+                        Optional<SQLExpression> expression = buildExpression((SelectStatement) sqlStatement, each, shardingRule, shardingTableMetaData);
                         if(expression.isPresent()) {
                             expressions.add(expression.get());
                         }else {
@@ -176,11 +180,11 @@ public class FromWhereFiller implements SQLSegmentFiller {
                     }
                 } else if (ShardingOperator.BETWEEN == eachCondition.getOperator()) {
                     BetweenValueExpressionSegment expressionSegment = (BetweenValueExpressionSegment) eachCondition.getExpression();
-                    Optional<SQLExpression> beginExpress = buildExpression((SelectStatement) sqlStatement, expressionSegment.getBeginExpress());
+                    Optional<SQLExpression> beginExpress = buildExpression((SelectStatement) sqlStatement, expressionSegment.getBeginExpress(), shardingRule, shardingTableMetaData);
                     if(!beginExpress.isPresent()) {
                         continue;
                     }
-                    Optional<SQLExpression> endExpress = buildExpression((SelectStatement) sqlStatement, expressionSegment.getEndExpress());
+                    Optional<SQLExpression> endExpress = buildExpression((SelectStatement) sqlStatement, expressionSegment.getEndExpress(), shardingRule, shardingTableMetaData);
                     if(!endExpress.isPresent()) {
                         continue;
                     }
@@ -190,8 +194,10 @@ public class FromWhereFiller implements SQLSegmentFiller {
         }
     }
     
-    private Optional<SQLExpression> buildExpression(final SelectStatement selectStatement, final ExpressionSegment expressionSegment) {
+    private Optional<SQLExpression> buildExpression(final SelectStatement selectStatement, final ExpressionSegment expressionSegment, final ShardingRule shardingRule,
+            final ShardingTableMetaData shardingTableMetaData) {
         if(!(expressionSegment instanceof CommonExpressionSegment)) {
+            new ExpressionFiller().fill(expressionSegment, selectStatement, shardingRule, shardingTableMetaData);
             return Optional.absent();
         }
         CommonExpressionSegment commonExpressionSegment= (CommonExpressionSegment) expressionSegment;
