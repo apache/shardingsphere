@@ -5,14 +5,14 @@
       background-color="#001529"
       text-color="#fff"
       active-text-color="#fff"
-      default-active="1-4-1"
+      default-active="0-0"
       class="el-menu-vertical-demo"
       @open="handleOpen"
       @close="handleClose">
       <s-logo/>
-      <el-submenu v-for="(item, index) in menuData" :key="index" :index="index">
+      <el-submenu v-for="(item, index) in menuData" :key="String(index)" :index="String(index)">
         <template slot="title">
-          <i class="el-icon-location"/>
+          <i class="el-icon-tickets"/>
           <span slot="title">{{ item.title }}</span>
         </template>
         <el-menu-item-group>
@@ -40,26 +40,15 @@ export default {
   },
   data() {
     return {
-      menuData: [
-        {
-          title: '数据治理',
-          child: [
-            {
-              title: '注册配置中心'
-            }, {
-              title: '配置管理'
-            }
-          ]
-        }
-      ]
+      menuData: this.$t('common').menuData
     }
   },
   methods: {
     handleOpen(key, keyPath) {
-      console.log(key, keyPath)
+      // console.log(key, keyPath)
     },
     handleClose(key, keyPath) {
-      console.log(key, keyPath)
+      // console.log(key, keyPath)
     }
   }
 }

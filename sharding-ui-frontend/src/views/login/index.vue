@@ -22,7 +22,7 @@
       </el-form-item>
       <el-form-item>
         <el-button :loading="loading" type="primary" style="width:100%;" @click.native.prevent="handleLogin">
-          Login
+          {{ $t("login.btnTxt") }}
         </el-button>
       </el-form-item>
     </el-form>
@@ -46,7 +46,7 @@ export default {
   },
   watch: {
     $route: {
-      handler: function(route) {
+      handler(route) {
         this.redirect = route.query && route.query.redirect
       },
       immediate: true
