@@ -22,7 +22,6 @@ import io.shardingsphere.core.constant.properties.ShardingProperties;
 import io.shardingsphere.core.constant.properties.ShardingPropertiesConstant;
 import io.shardingsphere.core.constant.transaction.TransactionType;
 import io.shardingsphere.core.executor.ShardingExecuteEngine;
-import io.shardingsphere.shardingproxy.backend.BackendExecutorContext;
 import io.shardingsphere.shardingproxy.frontend.mysql.CommandExecutor;
 import io.shardingsphere.shardingproxy.frontend.mysql.CommandExecutorContext;
 import io.shardingsphere.shardingproxy.runtime.GlobalRegistry;
@@ -33,6 +32,7 @@ import org.mockito.stubbing.Answer;
 
 import java.lang.reflect.Field;
 import java.lang.reflect.Modifier;
+import java.util.HashMap;
 import java.util.Map;
 import java.util.Properties;
 import java.util.concurrent.ExecutorService;
@@ -45,6 +45,8 @@ public final class ExecutorGroupTest {
     
     private TransactionType originalTransactionType = TransactionType.LOCAL;
     
+    private final Map<String, Boolean> assertMap = new HashMap<>();
+    
     @After
     public void tearDown() throws ReflectiveOperationException {
         setTransactionType(originalTransactionType);
@@ -56,15 +58,18 @@ public final class ExecutorGroupTest {
         CommandExecutor commandExecutor = mock(CommandExecutor.class);
         ChannelId channelId = mock(ChannelId.class);
         ShardingExecuteEngine commandExecuteEngine = mock(ShardingExecuteEngine.class);
+        assertMap.put("assert", false);
         doAnswer(new Answer<Object>() {
             @Override
             public Object answer(InvocationOnMock invocationOnMock) {
-                assertTrue("Use command execute engine.", true);
+                assertMap.put("assert", true);
                 return null;
             }
         }).when(commandExecuteEngine).execute(commandExecutor);
         setCommandExecuteEngine(commandExecuteEngine);
         new ExecutorGroup(channelId).execute(commandExecutor);
+        assertTrue("Use command execute engine.", assertMap.get("assert"));
+        assertMap.clear();
     }
     
     @Test
@@ -73,16 +78,19 @@ public final class ExecutorGroupTest {
         CommandExecutor commandExecutor = mock(CommandExecutor.class);
         final ExecutorService executorService = mock(ExecutorService.class);
         ChannelId channelId = mock(ChannelId.class);
+        assertMap.put("assert", false);
         doAnswer(new Answer() {
             @Override
             public Object answer(InvocationOnMock invocationOnMock) {
-                assertTrue("Use single executor to execute.", true);
+                assertMap.put("assert", true);
                 return null;
             }
         }).when(executorService).execute(commandExecutor);
         setExecuteService(channelId, executorService);
         new ExecutorGroup(channelId).execute(commandExecutor);
         ChannelThreadExecutorGroup.getInstance().unregister(channelId);
+        assertTrue("Use single executor to execute.", assertMap.get("assert"));
+        assertMap.clear();
     }
     
     private void setCommandExecuteEngine(ShardingExecuteEngine commandExecuteEngine) throws ReflectiveOperationException {
