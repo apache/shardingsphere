@@ -502,16 +502,25 @@
         </order-by-columns>
     </parser-result>
 
-    <!--<parser-result sql-case-id="select_distinct_with_multi_column" >-->
-        <!--<tables>-->
-            <!--<table name="t_order" />-->
-        <!--</tables>-->
-        <!--<tokens>-->
-            <!--<table-token begin-position="47" original-literals="t_order" />-->
-        <!--</tokens>-->
-        <!--<order-by-columns>-->
-            <!--<order-by-column name="item_id" order-direction="ASC" />-->
-        <!--</order-by-columns>-->
-    <!--</parser-result>-->
+    <parser-result sql-case-id="select_distinct_with_multi_column" >
+        <tables>
+            <table name="t_order" />
+        </tables>
+        <select-items>
+            <distinct-select-item>
+                <distinct-columns>
+                    <distinct-column>order_id</distinct-column>
+                    <distinct-column>user_id</distinct-column>
+                    <distinct-column>status</distinct-column>
+                </distinct-columns>
+            </distinct-select-item>
+        </select-items>
+        <tokens>
+            <table-token begin-position="47" original-literals="t_order" />
+        </tokens>
+        <order-by-columns>
+            <order-by-column name="order_id" order-direction="ASC" />
+        </order-by-columns>
+    </parser-result>
     
 </parser-result-sets>
