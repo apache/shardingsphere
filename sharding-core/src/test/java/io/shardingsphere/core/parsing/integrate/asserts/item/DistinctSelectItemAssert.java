@@ -18,9 +18,8 @@
 package io.shardingsphere.core.parsing.integrate.asserts.item;
 
 import io.shardingsphere.core.parsing.integrate.asserts.SQLStatementAssertMessage;
-import io.shardingsphere.core.parsing.integrate.jaxb.item.ExpectedAggregationSelectItem;
-import io.shardingsphere.core.parsing.parser.context.selectitem.AggregationDistinctSelectItem;
-import io.shardingsphere.core.parsing.parser.context.selectitem.AggregationSelectItem;
+import io.shardingsphere.core.parsing.integrate.jaxb.item.ExpectedDistinctSelectItem;
+import io.shardingsphere.core.parsing.parser.context.selectitem.DistinctSelectItem;
 import io.shardingsphere.core.parsing.parser.context.selectitem.SelectItem;
 import lombok.RequiredArgsConstructor;
 
@@ -41,39 +40,32 @@ final class DistinctSelectItemAssert {
     
     private final SQLStatementAssertMessage assertMessage;
     
-    void assertAggregationSelectItems(final Set<SelectItem> actual, final List<ExpectedAggregationSelectItem> expected) {
-        List<AggregationSelectItem> aggregationSelectItems = getAggregationSelectItems(actual);
-        assertThat(assertMessage.getFullAssertMessage("Table tokens size error: "), aggregationSelectItems.size(), is(expected.size()));
+    void assertDistinctSelectItems(final Set<SelectItem> actual, final List<ExpectedDistinctSelectItem> expected) {
+        List<DistinctSelectItem> distinctSelectItems = getDistinctSelectItems(actual);
+        assertThat(assertMessage.getFullAssertMessage("distinct select items size error: "), distinctSelectItems.size(), is(expected.size()));
         int count = 0;
-        for (AggregationSelectItem each : aggregationSelectItems) {
-            assertAggregationSelectItem(each, expected.get(count));
+        for (DistinctSelectItem each : distinctSelectItems) {
+            assertDistinctSelectItem(each, expected.get(count));
             count++;
         }
     }
     
-    private void assertAggregationSelectItem(final AggregationSelectItem actual, final ExpectedAggregationSelectItem expected) {
-        assertThat(assertMessage.getFullAssertMessage("Aggregation select item aggregation type assertion error: "), actual.getType().name(), is(expected.getType()));
-        assertThat(assertMessage.getFullAssertMessage("Aggregation select item inner expression assertion error: "), actual.getInnerExpression(), is(expected.getInnerExpression()));
-        assertThat(assertMessage.getFullAssertMessage("Aggregation select item alias assertion error: "), actual.getAlias().orNull(), is(expected.getAlias()));
-        assertThat(assertMessage.getFullAssertMessage("Aggregation select item index assertion error: "), actual.getIndex(), is(expected.getIndex()));
-        assertThat(assertMessage.getFullAssertMessage("Aggregation select item derived aggregation select items assertion error: "),
-                actual.getDerivedAggregationSelectItems().size(), is(expected.getDerivedColumns().size()));
-        if (actual instanceof AggregationDistinctSelectItem) {
-            assertThat(assertMessage.getFullAssertMessage("Aggregation select item distinct column assertion error: "),
-                    ((AggregationDistinctSelectItem) actual).getDistinctColumnName(), is(expected.getDistinctColumnName()));
-        }
+    private void assertDistinctSelectItem(final DistinctSelectItem actual, final ExpectedDistinctSelectItem expected) {
+        assertThat(assertMessage.getFullAssertMessage("Distinct select item alias assertion error: "), actual.getAlias().orNull(), is(expected.getAlias()));
+        assertThat(assertMessage.getFullAssertMessage("Distinct select item distinct column name size assertion error: "),
+                actual.getDistinctColumnNames().size(), is(expected.getDistinctColumnNames().size()));
         int count = 0;
-        for (AggregationSelectItem each : actual.getDerivedAggregationSelectItems()) {
-            assertAggregationSelectItem(each, expected.getDerivedColumns().get(count));
+        for (String each : actual.getDistinctColumnNames()) {
+            assertThat(assertMessage.getFullAssertMessage("Distinct select item distinct column name assertion error: "), each, is(expected.getDistinctColumnNames().get(count)));
             count++;
         }
     }
     
-    private List<AggregationSelectItem> getAggregationSelectItems(final Set<SelectItem> actual) {
-        List<AggregationSelectItem> result = new ArrayList<>(actual.size());
+    private List<DistinctSelectItem> getDistinctSelectItems(final Set<SelectItem> actual) {
+        List<DistinctSelectItem> result = new ArrayList<>(actual.size());
         for (SelectItem each : actual) {
-            if (each instanceof AggregationSelectItem) {
-                result.add((AggregationSelectItem) each);
+            if (each instanceof DistinctSelectItem) {
+                result.add((DistinctSelectItem) each);
             }
         }
         return result;
