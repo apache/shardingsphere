@@ -17,14 +17,14 @@
 
 package io.shardingsphere.shardingproxy.util;
 
-import com.google.common.base.Function;
-import com.google.common.collect.Maps;
 import io.shardingsphere.core.config.DataSourceConfiguration;
 import io.shardingsphere.core.rule.DataSourceParameter;
 import lombok.AccessLevel;
 import lombok.NoArgsConstructor;
 
+import java.util.LinkedHashMap;
 import java.util.Map;
+import java.util.Map.Entry;
 
 /**
  * Data source parameter converter.
@@ -41,28 +41,24 @@ public final class DataSourceConverter {
      * @return data source parameter map
      */
     public static Map<String, DataSourceParameter> getDataSourceParameterMap(final Map<String, DataSourceConfiguration> dataSourceConfigurationMap) {
-        return Maps.transformValues(dataSourceConfigurationMap, new Function<DataSourceConfiguration, DataSourceParameter>() {
-            
-            @Override
-            public DataSourceParameter apply(final DataSourceConfiguration input) {
-                return input.createDataSourceParameter();
-            }
-        });
+        Map<String, DataSourceParameter> result = new LinkedHashMap<>(dataSourceConfigurationMap.size(), 1);
+        for (Entry<String, DataSourceConfiguration> entry : dataSourceConfigurationMap.entrySet()) {
+            result.put(entry.getKey(), entry.getValue().createDataSourceParameter());
+        }
+        return result;
     }
     
-    /**
+    /**F
      * Get data source configuration map.
      *
      * @param dataSourceParameterMap data source map
      * @return data source configuration map
      */
     public static Map<String, DataSourceConfiguration> getDataSourceConfigurationMap(final Map<String, DataSourceParameter> dataSourceParameterMap) {
-        return Maps.transformValues(dataSourceParameterMap, new Function<DataSourceParameter, DataSourceConfiguration>() {
-            
-            @Override
-            public DataSourceConfiguration apply(final DataSourceParameter input) {
-                return DataSourceConfiguration.getDataSourceConfiguration(input);
-            }
-        });
+        Map<String, DataSourceConfiguration> result = new LinkedHashMap<>(dataSourceParameterMap.size());
+        for (Entry<String, DataSourceParameter> entry : dataSourceParameterMap.entrySet()) {
+            result.put(entry.getKey(), DataSourceConfiguration.getDataSourceConfiguration(entry.getValue()));
+        }
+        return result;
     }
 }

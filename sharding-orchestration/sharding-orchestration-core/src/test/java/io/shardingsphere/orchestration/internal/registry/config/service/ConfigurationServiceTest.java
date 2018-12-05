@@ -26,7 +26,6 @@ import io.shardingsphere.core.constant.properties.ShardingPropertiesConstant;
 import io.shardingsphere.core.rule.Authentication;
 import io.shardingsphere.core.yaml.masterslave.YamlMasterSlaveRuleConfiguration;
 import io.shardingsphere.core.yaml.sharding.YamlShardingRuleConfiguration;
-import io.shardingsphere.orchestration.internal.registry.state.schema.OrchestrationShardingSchemaGroup;
 import io.shardingsphere.orchestration.reg.api.RegistryCenter;
 import org.apache.commons.dbcp2.BasicDataSource;
 import org.hamcrest.CoreMatchers;
@@ -380,20 +379,5 @@ public final class ConfigurationServiceTest {
         assertThat(actual.size(), is(2));
         assertThat(actual, hasItems("sharding_db"));
         assertThat(actual, hasItems("masterslave_db"));
-    }
-    
-    @Test
-    public void assertGetAllSlaveDataSourceNames() {
-        when(regCenter.getChildrenKeys("/test/config/schema")).thenReturn(Arrays.asList("sharding_ms_db", "masterslave_db"));
-        when(regCenter.getDirectly("/test/config/schema/sharding_ms_db/rule")).thenReturn(SHARDING_MASTER_SLAVE_RULE_YAML);
-        when(regCenter.getDirectly("/test/config/schema/masterslave_db/rule")).thenReturn(MASTER_SLAVE_RULE_YAML);
-        ConfigurationService configurationService = new ConfigurationService("test", regCenter);
-        OrchestrationShardingSchemaGroup actual = configurationService.getAllSlaveDataSourceNames();
-        assertThat(actual.getDataSourceNames("sharding_ms_db").size(), is(2));
-        assertThat(actual.getDataSourceNames("sharding_ms_db"), hasItems("db0_slave"));
-        assertThat(actual.getDataSourceNames("sharding_ms_db"), hasItems("db1_slave"));
-        assertThat(actual.getDataSourceNames("masterslave_db").size(), is(2));
-        assertThat(actual.getDataSourceNames("masterslave_db"), hasItems("slave_ds_0"));
-        assertThat(actual.getDataSourceNames("masterslave_db"), hasItems("slave_ds_1"));
     }
 }

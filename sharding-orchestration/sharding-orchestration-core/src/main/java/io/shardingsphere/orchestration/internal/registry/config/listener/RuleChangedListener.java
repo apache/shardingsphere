@@ -20,11 +20,11 @@ package io.shardingsphere.orchestration.internal.registry.config.listener;
 import io.shardingsphere.orchestration.internal.registry.config.event.MasterSlaveRuleChangedEvent;
 import io.shardingsphere.orchestration.internal.registry.config.event.ShardingRuleChangedEvent;
 import io.shardingsphere.orchestration.internal.registry.config.node.ConfigurationNode;
-import io.shardingsphere.orchestration.internal.registry.config.service.ConfigurationService;
 import io.shardingsphere.orchestration.internal.registry.listener.PostShardingOrchestrationEventListener;
 import io.shardingsphere.orchestration.internal.registry.listener.ShardingOrchestrationEvent;
 import io.shardingsphere.orchestration.reg.api.RegistryCenter;
 import io.shardingsphere.orchestration.reg.listener.DataChangedEvent;
+import io.shardingsphere.orchestration.yaml.ConfigurationYamlConverter;
 
 /**
  * Rule changed listener.
@@ -36,24 +36,25 @@ public final class RuleChangedListener extends PostShardingOrchestrationEventLis
     
     private final String shardingSchemaName;
     
-    private final ConfigurationService configService;
-    
     public RuleChangedListener(final String name, final RegistryCenter regCenter, final String shardingSchemaName) {
         super(regCenter, new ConfigurationNode(name).getRulePath(shardingSchemaName));
         this.shardingSchemaName = shardingSchemaName;
-        configService = new ConfigurationService(name, regCenter);
     }
     
     @Override
     protected ShardingOrchestrationEvent createShardingOrchestrationEvent(final DataChangedEvent event) {
-        return configService.isShardingRule(shardingSchemaName) ? getShardingConfigurationChangedEvent() : getMasterSlaveConfigurationChangedEvent();
+        return isShardingRule(event) ? getShardingConfigurationChangedEvent(event) : getMasterSlaveConfigurationChangedEvent(event);
     }
     
-    private ShardingRuleChangedEvent getShardingConfigurationChangedEvent() {
-        return new ShardingRuleChangedEvent(shardingSchemaName, configService.loadShardingRuleConfiguration(shardingSchemaName));
+    private boolean isShardingRule(final DataChangedEvent event) {
+        return event.getValue().contains("tables:\n");
     }
     
-    private MasterSlaveRuleChangedEvent getMasterSlaveConfigurationChangedEvent() {
-        return new MasterSlaveRuleChangedEvent(shardingSchemaName, configService.loadMasterSlaveRuleConfiguration(shardingSchemaName));
+    private ShardingRuleChangedEvent getShardingConfigurationChangedEvent(final DataChangedEvent event) {
+        return new ShardingRuleChangedEvent(shardingSchemaName, ConfigurationYamlConverter.loadShardingRuleConfiguration(event.getValue()));
+    }
+    
+    private MasterSlaveRuleChangedEvent getMasterSlaveConfigurationChangedEvent(final DataChangedEvent event) {
+        return new MasterSlaveRuleChangedEvent(shardingSchemaName, ConfigurationYamlConverter.loadMasterSlaveRuleConfiguration(event.getValue()));
     }
 }

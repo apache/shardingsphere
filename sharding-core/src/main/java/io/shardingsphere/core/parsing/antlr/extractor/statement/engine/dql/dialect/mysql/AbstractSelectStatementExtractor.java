@@ -29,9 +29,8 @@ import io.shardingsphere.core.parsing.antlr.extractor.segment.engine.GroupByExtr
 import io.shardingsphere.core.parsing.antlr.extractor.segment.engine.IndexNamesExtractor;
 import io.shardingsphere.core.parsing.antlr.extractor.segment.engine.OrderByExtractor;
 import io.shardingsphere.core.parsing.antlr.extractor.segment.engine.SelectClauseExtractor;
-import io.shardingsphere.core.parsing.antlr.extractor.segment.engine.SubqueryExtractor;
 import io.shardingsphere.core.parsing.antlr.extractor.segment.engine.TableNamesExtractor;
-import io.shardingsphere.core.parsing.antlr.extractor.statement.engine.AbstractSQLStatementExtractor;
+import io.shardingsphere.core.parsing.antlr.extractor.statement.engine.AbstractSQLSegmentsExtractor;
 import io.shardingsphere.core.parsing.parser.constant.DerivedColumn;
 import io.shardingsphere.core.parsing.parser.context.OrderItem;
 import io.shardingsphere.core.parsing.parser.context.selectitem.AggregationSelectItem;
@@ -49,7 +48,7 @@ import io.shardingsphere.core.parsing.parser.token.OrderByToken;
  * 
  * @author duhongjun
  */
-public abstract class AbstractSelectStatementExtractor extends AbstractSQLStatementExtractor {
+public abstract class AbstractSelectStatementExtractor extends AbstractSQLSegmentsExtractor {
     
     public AbstractSelectStatementExtractor() {
         addSQLSegmentExtractor(new TableNamesExtractor());
@@ -61,14 +60,7 @@ public abstract class AbstractSelectStatementExtractor extends AbstractSQLStatem
     }
     
     @Override
-    protected SQLStatement createSQLStatement(final String sql) {
-        SelectStatement result = new SelectStatement();
-        result.setSql(sql);
-        return result;
-    }
-    
-    @Override
-    protected void postExtract(final SQLStatement sqlStatement, final ShardingTableMetaData shardingTableMetaData) {
+    public void postExtract(final SQLStatement sqlStatement, final ShardingTableMetaData shardingTableMetaData) {
         appendDerivedColumns((SelectStatement) sqlStatement, shardingTableMetaData);
         appendDerivedOrderBy((SelectStatement) sqlStatement);
         postExtractInternal(sqlStatement, shardingTableMetaData);

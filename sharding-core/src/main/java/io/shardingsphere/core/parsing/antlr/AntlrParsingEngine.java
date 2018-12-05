@@ -20,9 +20,11 @@ package io.shardingsphere.core.parsing.antlr;
 import io.shardingsphere.core.constant.DatabaseType;
 import io.shardingsphere.core.metadata.table.ShardingTableMetaData;
 import io.shardingsphere.core.parsing.antlr.ast.SQLASTParserFactory;
-import io.shardingsphere.core.parsing.antlr.extractor.statement.SQLStatementExtractor;
-import io.shardingsphere.core.parsing.antlr.extractor.statement.SQLStatementExtractorFactory;
+import io.shardingsphere.core.parsing.antlr.extractor.statement.SQLSegmentsExtractor;
+import io.shardingsphere.core.parsing.antlr.extractor.statement.SQLSegmentsExtractorFactory;
 import io.shardingsphere.core.parsing.antlr.extractor.statement.SQLStatementType;
+import io.shardingsphere.core.parsing.antlr.filler.SQLStatementFillerEngine;
+import io.shardingsphere.core.parsing.antlr.sql.segment.SQLSegment;
 import io.shardingsphere.core.parsing.parser.exception.SQLParsingUnsupportedException;
 import io.shardingsphere.core.parsing.parser.sql.SQLParser;
 import io.shardingsphere.core.parsing.parser.sql.SQLStatement;
@@ -31,6 +33,8 @@ import lombok.AllArgsConstructor;
 import org.antlr.v4.runtime.ParserRuleContext;
 import org.antlr.v4.runtime.tree.ErrorNode;
 import org.antlr.v4.runtime.tree.ParseTree;
+
+import java.util.Collection;
 
 /**
  * Parsing engine for Antlr.
@@ -50,7 +54,13 @@ public final class AntlrParsingEngine implements SQLParser {
     
     @Override
     public SQLStatement parse() {
-        return extractSQLStatement(parseAST());
+        ParseTree rootNode = parseAST();
+        SQLStatementType sqlStatementType = SQLStatementType.nameOf(rootNode.getClass().getSimpleName());
+        SQLSegmentsExtractor extractor = getExtractor(sqlStatementType);
+        Collection<SQLSegment> sqlSegments = extractor.extract((ParserRuleContext) rootNode, shardingRule, shardingTableMetaData);
+        SQLStatement result = new SQLStatementFillerEngine(databaseType).fill(sqlSegments, sql, sqlStatementType, shardingRule, shardingTableMetaData);
+        extractor.postExtract(result, shardingTableMetaData);
+        return result;
     }
     
     private ParseTree parseAST() {
@@ -61,11 +71,11 @@ public final class AntlrParsingEngine implements SQLParser {
         return result;
     }
     
-    private SQLStatement extractSQLStatement(final ParseTree rootNode) {
-        SQLStatementExtractor extractor = SQLStatementExtractorFactory.getInstance(databaseType, SQLStatementType.nameOf(rootNode.getClass().getSimpleName()));
-        if (null == extractor) {
-            throw new SQLParsingUnsupportedException(String.format("Unsupported SQL statement of `%s`", rootNode.getClass().getSimpleName()));
+    private SQLSegmentsExtractor getExtractor(final SQLStatementType sqlStatementType) {
+        SQLSegmentsExtractor result = SQLSegmentsExtractorFactory.getInstance(databaseType, sqlStatementType);
+        if (null == result) {
+            throw new SQLParsingUnsupportedException(String.format("Unsupported SQL statement of `%s`", sqlStatementType));
         }
-        return extractor.extract(sql, (ParserRuleContext) rootNode, shardingRule, shardingTableMetaData);
+        return result;
     }
 }

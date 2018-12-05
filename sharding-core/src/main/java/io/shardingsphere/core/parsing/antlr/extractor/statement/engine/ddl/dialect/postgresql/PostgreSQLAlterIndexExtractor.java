@@ -18,14 +18,14 @@
 package io.shardingsphere.core.parsing.antlr.extractor.statement.engine.ddl.dialect.postgresql;
 
 import io.shardingsphere.core.parsing.antlr.extractor.segment.engine.IndexNamesExtractor;
-import io.shardingsphere.core.parsing.antlr.extractor.statement.engine.ddl.DDLStatementExtractor;
+import io.shardingsphere.core.parsing.antlr.extractor.statement.engine.AbstractSQLSegmentsExtractor;
 
 /**
  * Postgre alter index statement extractor.
  * 
  * @author duhongjun
  */
-public final class PostgreSQLAlterIndexExtractor extends DDLStatementExtractor {
+public final class PostgreSQLAlterIndexExtractor extends AbstractSQLSegmentsExtractor {
     
     public PostgreSQLAlterIndexExtractor() {
         addSQLSegmentExtractor(new IndexNamesExtractor());

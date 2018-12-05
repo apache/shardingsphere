@@ -17,48 +17,35 @@
 
 package io.shardingsphere.orchestration.internal.registry.config.listener;
 
-import io.shardingsphere.core.constant.properties.ShardingPropertiesConstant;
-import io.shardingsphere.orchestration.internal.registry.config.service.ConfigurationService;
 import io.shardingsphere.orchestration.reg.api.RegistryCenter;
 import io.shardingsphere.orchestration.reg.listener.DataChangedEvent;
-import io.shardingsphere.orchestration.util.FieldUtil;
-import lombok.SneakyThrows;
+import io.shardingsphere.orchestration.reg.listener.DataChangedEvent.ChangedType;
 import org.junit.Before;
 import org.junit.Test;
 import org.junit.runner.RunWith;
 import org.mockito.Mock;
 import org.mockito.junit.MockitoJUnitRunner;
 
-import java.util.Properties;
-
 import static org.hamcrest.CoreMatchers.is;
 import static org.junit.Assert.assertThat;
-import static org.mockito.Mockito.mock;
-import static org.mockito.Mockito.when;
 
 @RunWith(MockitoJUnitRunner.class)
 public final class PropertiesChangedListenerTest {
+    
+    private static final String PROPERTIES_YAML = "executor.size: 16\nsql.show: true";
     
     private PropertiesChangedListener propertiesChangedListener;
     
     @Mock
     private RegistryCenter regCenter;
     
-    @Mock
-    private ConfigurationService configService;
-    
     @Before
-    @SneakyThrows
     public void setUp() {
         propertiesChangedListener = new PropertiesChangedListener("test", regCenter);
-        FieldUtil.setField(propertiesChangedListener, "configService", configService);
     }
     
     @Test
     public void assertCreateShardingOrchestrationEvent() {
-        Properties expected = new Properties();
-        expected.setProperty(ShardingPropertiesConstant.SQL_SHOW.getKey(), Boolean.TRUE.toString());
-        when(configService.loadProperties()).thenReturn(expected);
-        assertThat(propertiesChangedListener.createShardingOrchestrationEvent(mock(DataChangedEvent.class)).getProps(), is(expected));
+        assertThat(propertiesChangedListener.createShardingOrchestrationEvent(new DataChangedEvent("test", PROPERTIES_YAML, ChangedType.UPDATED)).getProps().get("sql.show"), is((Object) true));
     }
 }

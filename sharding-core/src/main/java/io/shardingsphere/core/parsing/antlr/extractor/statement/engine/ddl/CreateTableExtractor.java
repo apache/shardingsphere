@@ -24,6 +24,7 @@ import io.shardingsphere.core.parsing.antlr.extractor.segment.engine.ColumnDefin
 import io.shardingsphere.core.parsing.antlr.extractor.segment.engine.IndexNamesExtractor;
 import io.shardingsphere.core.parsing.antlr.extractor.segment.engine.PrimaryKeyForCreateTableExtractor;
 import io.shardingsphere.core.parsing.antlr.extractor.segment.engine.TableNamesExtractor;
+import io.shardingsphere.core.parsing.antlr.extractor.statement.engine.AbstractSQLSegmentsExtractor;
 import io.shardingsphere.core.parsing.parser.sql.SQLStatement;
 import io.shardingsphere.core.parsing.parser.sql.ddl.create.table.CreateTableStatement;
 
@@ -36,7 +37,7 @@ import java.util.List;
  * 
  * @author duhongjun
  */
-public final class CreateTableExtractor extends DDLStatementExtractor {
+public final class CreateTableExtractor extends AbstractSQLSegmentsExtractor {
     
     public CreateTableExtractor() {
         addSQLSegmentExtractor(new TableNamesExtractor());
@@ -46,12 +47,7 @@ public final class CreateTableExtractor extends DDLStatementExtractor {
     }
     
     @Override
-    protected SQLStatement createSQLStatement(final String sql) {
-        return new CreateTableStatement();
-    }
-    
-    @Override
-    protected void postExtract(final SQLStatement sqlStatement, final ShardingTableMetaData shardingTableMetaData) {
+    public void postExtract(final SQLStatement sqlStatement, final ShardingTableMetaData shardingTableMetaData) {
         CreateTableStatement createStatement = (CreateTableStatement) sqlStatement;
         Collection<ColumnMetaData> newColumnMetaDataList = new LinkedList<>();
         int position = 0;

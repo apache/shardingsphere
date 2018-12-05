@@ -23,6 +23,7 @@ import io.shardingsphere.core.metadata.table.TableMetaData;
 import io.shardingsphere.core.parsing.antlr.extractor.segment.engine.DropColumnExtractor;
 import io.shardingsphere.core.parsing.antlr.extractor.segment.engine.RenameTableExtractor;
 import io.shardingsphere.core.parsing.antlr.extractor.segment.engine.TableNamesExtractor;
+import io.shardingsphere.core.parsing.antlr.extractor.statement.engine.AbstractSQLSegmentsExtractor;
 import io.shardingsphere.core.parsing.antlr.sql.statement.ddl.AlterTableStatement;
 import io.shardingsphere.core.parsing.antlr.sql.statement.ddl.ColumnDefinition;
 import io.shardingsphere.core.parsing.parser.sql.SQLStatement;
@@ -32,11 +33,11 @@ import java.util.LinkedList;
 import java.util.List;
 
 /**
- * Abstract statement extractor, get information by each phrase extractor.
+ * Alter table extractor.
  * 
  * @author duhongjun
  */
-public abstract class AlterTableExtractor extends DDLStatementExtractor {
+public abstract class AlterTableExtractor extends AbstractSQLSegmentsExtractor {
     
     protected AlterTableExtractor() {
         addSQLSegmentExtractor(new TableNamesExtractor());
@@ -45,12 +46,7 @@ public abstract class AlterTableExtractor extends DDLStatementExtractor {
     }
     
     @Override
-    protected final SQLStatement createSQLStatement(final String sql) {
-        return new AlterTableStatement();
-    }
-    
-    @Override
-    protected final void postExtract(final SQLStatement sqlStatement, final ShardingTableMetaData shardingTableMetaData) {
+    public final void postExtract(final SQLStatement sqlStatement, final ShardingTableMetaData shardingTableMetaData) {
         AlterTableStatement alterTableStatement = (AlterTableStatement) sqlStatement;
         TableMetaData oldTableMetaData = shardingTableMetaData.get(alterTableStatement.getTables().getSingleTableName());
         if (null == oldTableMetaData) {

@@ -17,7 +17,7 @@
 
 package io.shardingsphere.core.parsing.antlr.extractor.statement.registry.dialect;
 
-import io.shardingsphere.core.parsing.antlr.extractor.statement.SQLStatementExtractor;
+import io.shardingsphere.core.parsing.antlr.extractor.statement.SQLSegmentsExtractor;
 import io.shardingsphere.core.parsing.antlr.extractor.statement.SQLStatementType;
 import io.shardingsphere.core.parsing.antlr.extractor.statement.engine.ddl.CreateIndexExtractor;
 import io.shardingsphere.core.parsing.antlr.extractor.statement.engine.ddl.CreateTableExtractor;
@@ -26,21 +26,21 @@ import io.shardingsphere.core.parsing.antlr.extractor.statement.engine.ddl.diale
 import io.shardingsphere.core.parsing.antlr.extractor.statement.engine.ddl.dialect.mysql.MySQLDropTableExtractor;
 import io.shardingsphere.core.parsing.antlr.extractor.statement.engine.ddl.dialect.mysql.MySQLTruncateTableExtractor;
 import io.shardingsphere.core.parsing.antlr.extractor.statement.engine.dql.dialect.mysql.MySQLSelectExtractor;
-import io.shardingsphere.core.parsing.antlr.extractor.statement.engine.tcl.TCLStatementExtractor;
-import io.shardingsphere.core.parsing.antlr.extractor.statement.registry.SQLStatementExtractorRegistry;
+import io.shardingsphere.core.parsing.antlr.extractor.statement.engine.tcl.TCLSegmentsExtractor;
+import io.shardingsphere.core.parsing.antlr.extractor.statement.registry.SQLSegmentsExtractorRegistry;
 
 import java.util.HashMap;
 import java.util.Map;
 
 /**
- * SQL statement extractor registry for MySQL.
+ * SQL segments extractor registry for MySQL.
  * 
  * @author duhongjun
  * @author zhangliang
  */
-public final class MySQLStatementExtractorRegistry implements SQLStatementExtractorRegistry {
+public final class MySQLSegmentsExtractorRegistry implements SQLSegmentsExtractorRegistry {
     
-    private static final Map<SQLStatementType, SQLStatementExtractor> EXTRACTORS = new HashMap<>();
+    private static final Map<SQLStatementType, SQLSegmentsExtractor> EXTRACTORS = new HashMap<>();
     
     static {
         registerDDL();
@@ -59,15 +59,15 @@ public final class MySQLStatementExtractorRegistry implements SQLStatementExtrac
     }
     
     private static void registerTCL() {
-        EXTRACTORS.put(SQLStatementType.SET_TRANSACTION, new TCLStatementExtractor());
-        EXTRACTORS.put(SQLStatementType.COMMIT, new TCLStatementExtractor());
-        EXTRACTORS.put(SQLStatementType.ROLLBACK, new TCLStatementExtractor());
-        EXTRACTORS.put(SQLStatementType.SAVEPOINT, new TCLStatementExtractor());
-        EXTRACTORS.put(SQLStatementType.BEGIN_WORK, new TCLStatementExtractor());
+        EXTRACTORS.put(SQLStatementType.SET_TRANSACTION, new TCLSegmentsExtractor());
+        EXTRACTORS.put(SQLStatementType.COMMIT, new TCLSegmentsExtractor());
+        EXTRACTORS.put(SQLStatementType.ROLLBACK, new TCLSegmentsExtractor());
+        EXTRACTORS.put(SQLStatementType.SAVEPOINT, new TCLSegmentsExtractor());
+        EXTRACTORS.put(SQLStatementType.BEGIN_WORK, new TCLSegmentsExtractor());
     }
     
     private static void registerDAL() {
-        EXTRACTORS.put(SQLStatementType.SET_VARIABLE, new TCLStatementExtractor());
+        EXTRACTORS.put(SQLStatementType.SET_VARIABLE, new TCLSegmentsExtractor());
     }
     
     private static void registerDQL() {
@@ -75,7 +75,7 @@ public final class MySQLStatementExtractorRegistry implements SQLStatementExtrac
     }
     
     @Override
-    public SQLStatementExtractor getSQLStatementExtractor(final SQLStatementType type) {
+    public SQLSegmentsExtractor getExtractor(final SQLStatementType type) {
         return EXTRACTORS.get(type);
     }
 }

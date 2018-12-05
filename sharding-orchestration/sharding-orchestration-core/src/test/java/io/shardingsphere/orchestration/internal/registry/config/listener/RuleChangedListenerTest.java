@@ -17,15 +17,11 @@
 
 package io.shardingsphere.orchestration.internal.registry.config.listener;
 
-import io.shardingsphere.api.config.MasterSlaveRuleConfiguration;
-import io.shardingsphere.api.config.ShardingRuleConfiguration;
 import io.shardingsphere.orchestration.internal.registry.config.event.MasterSlaveRuleChangedEvent;
 import io.shardingsphere.orchestration.internal.registry.config.event.ShardingRuleChangedEvent;
-import io.shardingsphere.orchestration.internal.registry.config.service.ConfigurationService;
 import io.shardingsphere.orchestration.reg.api.RegistryCenter;
 import io.shardingsphere.orchestration.reg.listener.DataChangedEvent;
-import io.shardingsphere.orchestration.util.FieldUtil;
-import lombok.SneakyThrows;
+import io.shardingsphere.orchestration.reg.listener.DataChangedEvent.ChangedType;
 import org.junit.Before;
 import org.junit.Test;
 import org.junit.runner.RunWith;
@@ -34,43 +30,37 @@ import org.mockito.junit.MockitoJUnitRunner;
 
 import static org.hamcrest.CoreMatchers.is;
 import static org.junit.Assert.assertThat;
-import static org.mockito.Mockito.mock;
-import static org.mockito.Mockito.when;
 
 @RunWith(MockitoJUnitRunner.class)
 public final class RuleChangedListenerTest {
+    
+    private static final String SHARDING_RULE_YAML = "tables:\n" + "  t_order:\n" + "    logicTable: t_order\n" + "    actualDataNodes: ds_${0..1}.t_order_${0..1}\n"
+            + "    tableStrategy:\n" + "      inline:\n" + "        algorithmExpression: t_order_${order_id % 2}\n" + "        shardingColumn: order_id";
+    
+    private static final String MASTER_SLAVE_RULE_YAML = "masterDataSourceName: master_ds\n" + "name: ms_ds\n" + "slaveDataSourceNames:\n" + "- slave_ds_0\n" + "- slave_ds_1\n";
     
     private RuleChangedListener ruleChangedListener;
     
     @Mock
     private RegistryCenter regCenter;
     
-    @Mock
-    private ConfigurationService configService;
-    
     @Before
-    @SneakyThrows
     public void setUp() {
         ruleChangedListener = new RuleChangedListener("test", regCenter, "sharding_schema");
-        FieldUtil.setField(ruleChangedListener, "configService", configService);
     }
     
     @Test
     public void assertCreateShardingOrchestrationEventForSharding() {
-        when(configService.isShardingRule("sharding_schema")).thenReturn(true);
-        ShardingRuleConfiguration expected = mock(ShardingRuleConfiguration.class);
-        when(configService.loadShardingRuleConfiguration("sharding_schema")).thenReturn(expected);
-        ShardingRuleChangedEvent actual = (ShardingRuleChangedEvent) ruleChangedListener.createShardingOrchestrationEvent(mock(DataChangedEvent.class));
+        ShardingRuleChangedEvent actual = (ShardingRuleChangedEvent) ruleChangedListener.createShardingOrchestrationEvent(new DataChangedEvent("test", SHARDING_RULE_YAML, ChangedType.UPDATED));
         assertThat(actual.getShardingSchemaName(), is("sharding_schema"));
-        assertThat(actual.getShardingRuleConfiguration(), is(expected));
+        assertThat(actual.getShardingRuleConfiguration().getTableRuleConfigs().size(), is(1));
     }
     
     @Test
     public void assertCreateShardingOrchestrationEventForMasterSlave() {
-        MasterSlaveRuleConfiguration expected = mock(MasterSlaveRuleConfiguration.class);
-        when(configService.loadMasterSlaveRuleConfiguration("sharding_schema")).thenReturn(expected);
-        MasterSlaveRuleChangedEvent actual = (MasterSlaveRuleChangedEvent) ruleChangedListener.createShardingOrchestrationEvent(mock(DataChangedEvent.class));
+        MasterSlaveRuleChangedEvent actual = (MasterSlaveRuleChangedEvent) ruleChangedListener.createShardingOrchestrationEvent(
+                new DataChangedEvent("test", MASTER_SLAVE_RULE_YAML, ChangedType.UPDATED));
         assertThat(actual.getShardingSchemaName(), is("sharding_schema"));
-        assertThat(actual.getMasterSlaveRuleConfiguration(), is(expected));
+        assertThat(actual.getMasterSlaveRuleConfiguration().getMasterDataSourceName(), is("master_ds"));
     }
 }
