@@ -43,7 +43,7 @@ final class AggregationDistinctTokenAssert {
     
     void assertAggregationDistinctTokens(final Collection<SQLToken> actual, final ExpectedTokens expected) {
         List<AggregationDistinctToken> aggregationDistinctTokens = getAggregationDistinctTokens(actual);
-        assertThat(assertMessage.getFullAssertMessage("Schema tokens size error: "), aggregationDistinctTokens.size(), is(expected.getSchemaTokens().size()));
+        assertThat(assertMessage.getFullAssertMessage("Aggregation distinct tokens size error: "), aggregationDistinctTokens.size(), is(expected.getAggregationDistinctTokens().size()));
         int count = 0;
         for (ExpectedAggregationDistinctToken each : expected.getAggregationDistinctTokens()) {
             assertAggregationDistinctToken(aggregationDistinctTokens.get(count), each);
