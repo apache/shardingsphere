@@ -20,9 +20,8 @@ package io.shardingsphere.core.parsing.antlr.extractor.segment.engine.dialect.sq
 import com.google.common.base.Optional;
 import io.shardingsphere.core.parsing.antlr.extractor.segment.OptionalSQLSegmentExtractor;
 import io.shardingsphere.core.parsing.antlr.extractor.segment.constant.RuleName;
-import io.shardingsphere.core.parsing.antlr.extractor.util.ASTUtils;
+import io.shardingsphere.core.parsing.antlr.extractor.util.ExtractorUtils;
 import io.shardingsphere.core.parsing.antlr.sql.segment.constraint.ConstraintDefinitionSegment;
-
 import org.antlr.v4.runtime.ParserRuleContext;
 import org.antlr.v4.runtime.tree.ParseTree;
 
@@ -37,19 +36,19 @@ public final class SQLServerAddPrimaryKeyExtractor implements OptionalSQLSegment
     
     @Override
     public Optional<ConstraintDefinitionSegment> extract(final ParserRuleContext ancestorNode) {
-        Optional<ParserRuleContext> addColumnNode = ASTUtils.findFirstChildNode(ancestorNode, RuleName.ADD_COLUMN);
+        Optional<ParserRuleContext> addColumnNode = ExtractorUtils.findFirstChildNode(ancestorNode, RuleName.ADD_COLUMN);
         if (!addColumnNode.isPresent()) {
             return Optional.absent();
         }
-        Optional<ParserRuleContext> tableConstraintNode = ASTUtils.findFirstChildNode(addColumnNode.get(), RuleName.TABLE_CONSTRAINT);
+        Optional<ParserRuleContext> tableConstraintNode = ExtractorUtils.findFirstChildNode(addColumnNode.get(), RuleName.TABLE_CONSTRAINT);
         if (!tableConstraintNode.isPresent()) {
             return Optional.absent();
         }
-        Optional<ParserRuleContext> primaryKeyNode = ASTUtils.findFirstChildNode(tableConstraintNode.get(), RuleName.PRIMARY_KEY);
+        Optional<ParserRuleContext> primaryKeyNode = ExtractorUtils.findFirstChildNode(tableConstraintNode.get(), RuleName.PRIMARY_KEY);
         if (!primaryKeyNode.isPresent()) {
             return Optional.absent();
         }
-        Collection<ParserRuleContext> columnNameNodes = ASTUtils.getAllDescendantNodes(tableConstraintNode.get(), RuleName.COLUMN_NAME);
+        Collection<ParserRuleContext> columnNameNodes = ExtractorUtils.getAllDescendantNodes(tableConstraintNode.get(), RuleName.COLUMN_NAME);
         if (columnNameNodes.isEmpty()) {
             return Optional.absent();
         }

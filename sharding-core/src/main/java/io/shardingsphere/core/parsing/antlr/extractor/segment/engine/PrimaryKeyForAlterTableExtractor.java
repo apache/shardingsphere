@@ -20,9 +20,8 @@ package io.shardingsphere.core.parsing.antlr.extractor.segment.engine;
 import com.google.common.base.Optional;
 import io.shardingsphere.core.parsing.antlr.extractor.segment.OptionalSQLSegmentExtractor;
 import io.shardingsphere.core.parsing.antlr.extractor.segment.constant.RuleName;
-import io.shardingsphere.core.parsing.antlr.extractor.util.ASTUtils;
+import io.shardingsphere.core.parsing.antlr.extractor.util.ExtractorUtils;
 import io.shardingsphere.core.parsing.antlr.sql.segment.constraint.ConstraintDefinitionSegment;
-
 import org.antlr.v4.runtime.ParserRuleContext;
 
 import java.util.Collection;
@@ -36,15 +35,15 @@ public final class PrimaryKeyForAlterTableExtractor implements OptionalSQLSegmen
     
     @Override
     public Optional<ConstraintDefinitionSegment> extract(final ParserRuleContext ancestorNode) {
-        Optional<ParserRuleContext> modifyColumnNode = ASTUtils.findFirstChildNode(ancestorNode, RuleName.ADD_CONSTRAINT);
+        Optional<ParserRuleContext> modifyColumnNode = ExtractorUtils.findFirstChildNode(ancestorNode, RuleName.ADD_CONSTRAINT);
         if (!modifyColumnNode.isPresent()) {
             return Optional.absent();
         }
-        Optional<ParserRuleContext> primaryKeyNode = ASTUtils.findFirstChildNode(modifyColumnNode.get(), RuleName.PRIMARY_KEY);
+        Optional<ParserRuleContext> primaryKeyNode = ExtractorUtils.findFirstChildNode(modifyColumnNode.get(), RuleName.PRIMARY_KEY);
         if (!primaryKeyNode.isPresent()) {
             return Optional.absent();
         }
-        Collection<ParserRuleContext> columnNameNodes = ASTUtils.getAllDescendantNodes(modifyColumnNode.get(), RuleName.COLUMN_NAME);
+        Collection<ParserRuleContext> columnNameNodes = ExtractorUtils.getAllDescendantNodes(modifyColumnNode.get(), RuleName.COLUMN_NAME);
         if (null == columnNameNodes) {
             return Optional.absent();
         }

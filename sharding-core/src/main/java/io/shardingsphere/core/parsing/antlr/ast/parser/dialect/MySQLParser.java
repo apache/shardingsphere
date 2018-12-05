@@ -15,27 +15,27 @@
  * </p>
  */
 
-package io.shardingsphere.core.parsing.antlr.ast.dialect;
+package io.shardingsphere.core.parsing.antlr.ast.parser.dialect;
 
-import io.shardingsphere.core.parsing.antlr.ast.SQLASTParser;
 import io.shardingsphere.core.parsing.antlr.ast.advanced.AdvancedErrorStrategy;
 import io.shardingsphere.core.parsing.antlr.ast.advanced.AdvancedMatchHandler;
 import io.shardingsphere.core.parsing.antlr.ast.advanced.AdvancedParserATNSimulator;
-import io.shardingsphere.core.parsing.antlr.autogen.PostgreSQLStatementParser;
+import io.shardingsphere.core.parsing.antlr.ast.parser.SQLParser;
+import io.shardingsphere.core.parsing.antlr.autogen.MySQLStatementParser;
 import org.antlr.v4.runtime.RecognitionException;
 import org.antlr.v4.runtime.Token;
 import org.antlr.v4.runtime.TokenStream;
 
 /**
- * Postgre statement AST parser.
+ * SQL parser for MySQL.
  * 
  * @author duhongjun
  */
-public final class PostgreSQLStatementASTParser extends PostgreSQLStatementParser implements SQLASTParser {
+public final class MySQLParser extends MySQLStatementParser implements SQLParser {
     
     private final AdvancedMatchHandler advancedMatchHandler;
     
-    public PostgreSQLStatementASTParser(final TokenStream input) {
+    public MySQLParser(final TokenStream input) {
         super(input);
         _interp = new AdvancedParserATNSimulator(this, _ATN, _decisionToDFA, _sharedContextCache, ID);
         _errHandler = new AdvancedErrorStrategy(ID);

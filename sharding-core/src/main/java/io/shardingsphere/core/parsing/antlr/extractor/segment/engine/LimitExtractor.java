@@ -21,7 +21,7 @@ import com.google.common.base.Optional;
 import io.shardingsphere.core.constant.DatabaseType;
 import io.shardingsphere.core.parsing.antlr.extractor.segment.OptionalSQLSegmentExtractor;
 import io.shardingsphere.core.parsing.antlr.extractor.segment.constant.RuleName;
-import io.shardingsphere.core.parsing.antlr.extractor.util.ASTUtils;
+import io.shardingsphere.core.parsing.antlr.extractor.util.ExtractorUtils;
 import io.shardingsphere.core.parsing.antlr.sql.segment.LimitSegment;
 import io.shardingsphere.core.parsing.antlr.sql.segment.LimitValueSegment;
 import io.shardingsphere.core.parsing.lexer.token.Symbol;
@@ -41,15 +41,15 @@ public class LimitExtractor implements OptionalSQLSegmentExtractor {
     
     @Override
     public Optional<LimitSegment> extract(final ParserRuleContext ancestorNode) {
-        Optional<ParserRuleContext> limitNode = ASTUtils.findFirstChildNode(ancestorNode, RuleName.LIMIT_CLAUSE);
+        Optional<ParserRuleContext> limitNode = ExtractorUtils.findFirstChildNode(ancestorNode, RuleName.LIMIT_CLAUSE);
         if (!limitNode.isPresent()) {
             return Optional.absent();
         }
-        Optional<ParserRuleContext> rangeNode = ASTUtils.findFirstChildNode(limitNode.get(), RuleName.RANGE_CLAUSE);
+        Optional<ParserRuleContext> rangeNode = ExtractorUtils.findFirstChildNode(limitNode.get(), RuleName.RANGE_CLAUSE);
         if (!rangeNode.isPresent()) {
             return Optional.absent();
         }
-        Collection<ParserRuleContext> questionNodes = ASTUtils.getAllDescendantNodes(ancestorNode, RuleName.QUESTION);
+        Collection<ParserRuleContext> questionNodes = ExtractorUtils.getAllDescendantNodes(ancestorNode, RuleName.QUESTION);
         Map<ParserRuleContext, Integer> questionNodeIndexMap = new HashMap<>();
         int index = 0;
         for (ParserRuleContext each : questionNodes) {

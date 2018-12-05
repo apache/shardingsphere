@@ -20,7 +20,7 @@ package io.shardingsphere.core.parsing.antlr.extractor.segment.engine;
 import com.google.common.base.Optional;
 import io.shardingsphere.core.parsing.antlr.extractor.segment.OptionalSQLSegmentExtractor;
 import io.shardingsphere.core.parsing.antlr.extractor.segment.constant.RuleName;
-import io.shardingsphere.core.parsing.antlr.extractor.util.ASTUtils;
+import io.shardingsphere.core.parsing.antlr.extractor.util.ExtractorUtils;
 import io.shardingsphere.core.parsing.antlr.sql.segment.SelectClauseSegment;
 import io.shardingsphere.core.parsing.antlr.sql.segment.column.ColumnSegment;
 import io.shardingsphere.core.parsing.antlr.sql.segment.expr.CommonExpressionSegment;
@@ -44,11 +44,11 @@ public class SelectClauseExtractor implements OptionalSQLSegmentExtractor {
     
     @Override
     public Optional<SelectClauseSegment> extract(final ParserRuleContext ancestorNode) {
-        Optional<ParserRuleContext> selectClauseNode = ASTUtils.findFirstChildNode(ancestorNode, RuleName.SELECT_CLAUSE);
+        Optional<ParserRuleContext> selectClauseNode = ExtractorUtils.findFirstChildNode(ancestorNode, RuleName.SELECT_CLAUSE);
         if (!selectClauseNode.isPresent()) {
             return Optional.absent();
         }
-        Optional<ParserRuleContext> selectExpressionNode = ASTUtils.findFirstChildNode(selectClauseNode.get(), RuleName.SELECT_EXPRS);
+        Optional<ParserRuleContext> selectExpressionNode = ExtractorUtils.findFirstChildNode(selectClauseNode.get(), RuleName.SELECT_EXPRS);
         if (!selectExpressionNode.isPresent()) {
             return Optional.absent();
         }
@@ -67,9 +67,9 @@ public class SelectClauseExtractor implements OptionalSQLSegmentExtractor {
                 }
                 result.getExpressions().add(new StarExpressionSegment(((ParserRuleContext) childNode).getStart().getStartIndex(), owner));
             } else {
-                Optional<ParserRuleContext> aliasNode = ASTUtils.findFirstChildNode((ParserRuleContext) childNode, RuleName.ALIAS);
+                Optional<ParserRuleContext> aliasNode = ExtractorUtils.findFirstChildNode((ParserRuleContext) childNode, RuleName.ALIAS);
                 Optional<String> alias = aliasNode.isPresent() ? Optional.of(SQLUtil.getExactlyValue(aliasNode.get().getText())) : Optional.<String>absent();
-                Optional<ParserRuleContext> functionCall = ASTUtils.findFirstChildNode((ParserRuleContext) childNode, RuleName.FUNCTION_CALL);
+                Optional<ParserRuleContext> functionCall = ExtractorUtils.findFirstChildNode((ParserRuleContext) childNode, RuleName.FUNCTION_CALL);
                 if (functionCall.isPresent()) {
                     String name = functionCall.get().getChild(0).getText();
                     int startIndex = functionCall.get().getStart().getStartIndex() + name.length();

@@ -15,23 +15,25 @@
  * </p>
  */
 
-package io.shardingsphere.core.parsing.antlr.filler.registry;
+package io.shardingsphere.core.parsing.antlr.ast;
 
-import io.shardingsphere.core.parsing.antlr.ast.SQLStatementType;
-import io.shardingsphere.core.parsing.parser.sql.SQLStatement;
+import lombok.Getter;
+import org.antlr.v4.runtime.ParserRuleContext;
 
 /**
- * SQL statement registry.
- * 
+ * Abstract syntax tree of SQL.
+ *
  * @author zhangliang
  */
-public interface SQLStatementRegistry {
+@Getter
+public final class SQLAST {
     
-    /**
-     * Get SQL statement.
-     *
-     * @param type SQL statement type
-     * @return SQL statement
-     */
-    SQLStatement getSQLStatement(SQLStatementType type);
+    private final ParserRuleContext parserRuleContext;
+    
+    private final SQLStatementType type;
+    
+    public SQLAST(final ParserRuleContext parserRuleContext) {
+        this.parserRuleContext = parserRuleContext;
+        type = SQLStatementType.nameOf(parserRuleContext.getClass().getSimpleName());
+    }
 }

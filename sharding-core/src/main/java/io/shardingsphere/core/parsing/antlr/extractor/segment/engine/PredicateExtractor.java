@@ -24,7 +24,7 @@ import io.shardingsphere.core.parsing.antlr.extractor.segment.OptionalSQLSegment
 import io.shardingsphere.core.parsing.antlr.extractor.segment.constant.LogicalOperator;
 import io.shardingsphere.core.parsing.antlr.extractor.segment.constant.Paren;
 import io.shardingsphere.core.parsing.antlr.extractor.segment.constant.RuleName;
-import io.shardingsphere.core.parsing.antlr.extractor.util.ASTUtils;
+import io.shardingsphere.core.parsing.antlr.extractor.util.ExtractorUtils;
 import io.shardingsphere.core.parsing.antlr.sql.segment.column.ColumnSegment;
 import io.shardingsphere.core.parsing.antlr.sql.segment.condition.AndConditionSegment;
 import io.shardingsphere.core.parsing.antlr.sql.segment.condition.ConditionSegment;
@@ -151,7 +151,7 @@ public final class PredicateExtractor implements OptionalSQLSegmentExtractor {
     }
     
     private Optional<ConditionSegment> buildEqualCondition(final Map<ParserRuleContext, Integer> questionNodeIndexMap, final ParserRuleContext exprNode) {
-        Optional<ParserRuleContext> comparisionNode = ASTUtils.findFirstChildNode(exprNode, RuleName.COMPARISON_OPERATOR);
+        Optional<ParserRuleContext> comparisionNode = ExtractorUtils.findFirstChildNode(exprNode, RuleName.COMPARISON_OPERATOR);
         if (!comparisionNode.isPresent()) {
             return Optional.absent();
         }
@@ -161,8 +161,8 @@ public final class PredicateExtractor implements OptionalSQLSegmentExtractor {
         if (!Symbol.EQ.getLiterals().equalsIgnoreCase(comparisionNode.get().getText())) {
             return Optional.absent();
         }
-        Optional<ParserRuleContext> leftNode = ASTUtils.findFirstChildNode((ParserRuleContext) comparisionNode.get().parent.getChild(0), RuleName.COLUMN_NAME);
-        Optional<ParserRuleContext> rightNode = ASTUtils.findFirstChildNode((ParserRuleContext) comparisionNode.get().parent.getChild(2), RuleName.COLUMN_NAME);
+        Optional<ParserRuleContext> leftNode = ExtractorUtils.findFirstChildNode((ParserRuleContext) comparisionNode.get().parent.getChild(0), RuleName.COLUMN_NAME);
+        Optional<ParserRuleContext> rightNode = ExtractorUtils.findFirstChildNode((ParserRuleContext) comparisionNode.get().parent.getChild(2), RuleName.COLUMN_NAME);
         if (!leftNode.isPresent() && !rightNode.isPresent()) {
             return Optional.absent();
         }
@@ -186,15 +186,15 @@ public final class PredicateExtractor implements OptionalSQLSegmentExtractor {
     }
     
     private Optional<SQLExpression> buildExpression(final Map<ParserRuleContext, Integer> questionNodeIndexMap, final ParserRuleContext valueNode) {
-        Optional<ParserRuleContext> expressionNode = ASTUtils.findFirstChildNode(valueNode, RuleName.STRING);
+        Optional<ParserRuleContext> expressionNode = ExtractorUtils.findFirstChildNode(valueNode, RuleName.STRING);
         if (expressionNode.isPresent()) {
             return Optional.<SQLExpression>of(new SQLTextExpression(expressionNode.get().getText()));
         }
-        expressionNode = ASTUtils.findFirstChildNode(valueNode, RuleName.NUMBER);
+        expressionNode = ExtractorUtils.findFirstChildNode(valueNode, RuleName.NUMBER);
         if (expressionNode.isPresent()) {
             return Optional.<SQLExpression>of(new SQLNumberExpression(NumberUtil.getExactlyNumber(expressionNode.get().getText(), 10)));
         }
-        expressionNode = ASTUtils.findFirstChildNode(valueNode, RuleName.QUESTION);
+        expressionNode = ExtractorUtils.findFirstChildNode(valueNode, RuleName.QUESTION);
         if (expressionNode.isPresent()) {
             Integer index = questionNodeIndexMap.get(expressionNode.get());
             if (null != index) {
@@ -205,7 +205,7 @@ public final class PredicateExtractor implements OptionalSQLSegmentExtractor {
     }
     
     private Optional<ConditionSegment> buildPredicateCondition(final Map<ParserRuleContext, Integer> questionNodeIndexMap, final ParserRuleContext exprNode) {
-        Optional<ParserRuleContext> predicateNode = ASTUtils.findFirstChildNode(exprNode, RuleName.PREDICATE);
+        Optional<ParserRuleContext> predicateNode = ExtractorUtils.findFirstChildNode(exprNode, RuleName.PREDICATE);
         if (!predicateNode.isPresent()) {
             return Optional.absent();
         }

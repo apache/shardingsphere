@@ -21,7 +21,7 @@ import com.google.common.base.Optional;
 import io.shardingsphere.core.parsing.antlr.extractor.segment.CollectionSQLSegmentExtractor;
 import io.shardingsphere.core.parsing.antlr.extractor.segment.constant.RuleName;
 import io.shardingsphere.core.parsing.antlr.extractor.segment.engine.IndexNameExtractor;
-import io.shardingsphere.core.parsing.antlr.extractor.util.ASTUtils;
+import io.shardingsphere.core.parsing.antlr.extractor.util.ExtractorUtils;
 import io.shardingsphere.core.parsing.antlr.sql.segment.IndexSegment;
 import org.antlr.v4.runtime.ParserRuleContext;
 import org.antlr.v4.runtime.tree.ParseTree;
@@ -41,7 +41,7 @@ public final class MySQLDropIndexExtractor implements CollectionSQLSegmentExtrac
     
     @Override
     public Collection<IndexSegment> extract(final ParserRuleContext ancestorNode) {
-        Collection<ParserRuleContext> dropIndexNodes = ASTUtils.getAllDescendantNodes(ancestorNode, RuleName.DROP_INDEX_REF);
+        Collection<ParserRuleContext> dropIndexNodes = ExtractorUtils.getAllDescendantNodes(ancestorNode, RuleName.DROP_INDEX_REF);
         if (dropIndexNodes.isEmpty()) {
             return Collections.emptyList();
         }

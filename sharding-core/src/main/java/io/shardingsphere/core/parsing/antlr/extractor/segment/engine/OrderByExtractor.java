@@ -21,7 +21,7 @@ import com.google.common.base.Optional;
 import io.shardingsphere.core.constant.OrderDirection;
 import io.shardingsphere.core.parsing.antlr.extractor.segment.OptionalSQLSegmentExtractor;
 import io.shardingsphere.core.parsing.antlr.extractor.segment.constant.RuleName;
-import io.shardingsphere.core.parsing.antlr.extractor.util.ASTUtils;
+import io.shardingsphere.core.parsing.antlr.extractor.util.ExtractorUtils;
 import io.shardingsphere.core.parsing.antlr.sql.segment.order.OrderByItemSegment;
 import io.shardingsphere.core.parsing.antlr.sql.segment.order.OrderBySegment;
 import io.shardingsphere.core.parsing.parser.token.OrderByToken;
@@ -43,7 +43,7 @@ public class OrderByExtractor implements OptionalSQLSegmentExtractor {
     
     @Override
     public Optional<OrderBySegment> extract(final ParserRuleContext ancestorNode) {
-        Optional<ParserRuleContext> orderByParentNode = ASTUtils.findFirstChildNode(ancestorNode, RuleName.ORDER_BY_CLAUSE);
+        Optional<ParserRuleContext> orderByParentNode = ExtractorUtils.findFirstChildNode(ancestorNode, RuleName.ORDER_BY_CLAUSE);
         if (!orderByParentNode.isPresent()) {
             return Optional.absent();
         }
@@ -53,7 +53,7 @@ public class OrderByExtractor implements OptionalSQLSegmentExtractor {
     }
     
     protected Collection<OrderByItemSegment> extractOrderBy(final ParserRuleContext orderByParentNode) {
-        Collection<ParserRuleContext> orderByNodes = ASTUtils.getAllDescendantNodes(orderByParentNode, RuleName.ORDER_BY_ITEM);
+        Collection<ParserRuleContext> orderByNodes = ExtractorUtils.getAllDescendantNodes(orderByParentNode, RuleName.ORDER_BY_ITEM);
         if (orderByNodes.isEmpty()) {
             return Collections.emptyList();
         }
@@ -64,7 +64,7 @@ public class OrderByExtractor implements OptionalSQLSegmentExtractor {
                 continue;
             }
             int index = -1;
-            Optional<ParserRuleContext> numberNode = ASTUtils.findFirstChildNode(each, RuleName.NUMBER);
+            Optional<ParserRuleContext> numberNode = ExtractorUtils.findFirstChildNode(each, RuleName.NUMBER);
             if (numberNode.isPresent()) {
                 index = NumberUtil.getExactlyNumber(numberNode.get().getText(), 10).intValue();
             }

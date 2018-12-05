@@ -15,27 +15,27 @@
  * </p>
  */
 
-package io.shardingsphere.core.parsing.antlr.ast.dialect;
+package io.shardingsphere.core.parsing.antlr.ast.parser.dialect;
 
-import io.shardingsphere.core.parsing.antlr.ast.SQLASTParser;
 import io.shardingsphere.core.parsing.antlr.ast.advanced.AdvancedErrorStrategy;
 import io.shardingsphere.core.parsing.antlr.ast.advanced.AdvancedMatchHandler;
 import io.shardingsphere.core.parsing.antlr.ast.advanced.AdvancedParserATNSimulator;
+import io.shardingsphere.core.parsing.antlr.ast.parser.SQLParser;
 import io.shardingsphere.core.parsing.antlr.autogen.OracleStatementParser;
 import org.antlr.v4.runtime.RecognitionException;
 import org.antlr.v4.runtime.Token;
 import org.antlr.v4.runtime.TokenStream;
 
 /**
- * Oracle statement AST parser.
+ * SQL parser for Oracle.
  * 
  * @author duhongjun
  */
-public final class OracleStatementASTParser extends OracleStatementParser implements SQLASTParser {
+public final class OracleParser extends OracleStatementParser implements SQLParser {
     
     private final AdvancedMatchHandler advancedMatchHandler;
     
-    public OracleStatementASTParser(final TokenStream input) {
+    public OracleParser(final TokenStream input) {
         super(input);
         _interp = new AdvancedParserATNSimulator(this, _ATN, _decisionToDFA, _sharedContextCache, ID);
         _errHandler = new AdvancedErrorStrategy(ID);

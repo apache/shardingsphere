@@ -15,13 +15,13 @@
  * </p>
  */
 
-package io.shardingsphere.core.parsing.antlr.ast;
+package io.shardingsphere.core.parsing.antlr.ast.parser;
 
 import io.shardingsphere.core.constant.DatabaseType;
-import io.shardingsphere.core.parsing.antlr.ast.dialect.MySQLStatementASTParser;
-import io.shardingsphere.core.parsing.antlr.ast.dialect.OracleStatementASTParser;
-import io.shardingsphere.core.parsing.antlr.ast.dialect.PostgreSQLStatementASTParser;
-import io.shardingsphere.core.parsing.antlr.ast.dialect.SQLServerStatementASTParser;
+import io.shardingsphere.core.parsing.antlr.ast.parser.dialect.MySQLParser;
+import io.shardingsphere.core.parsing.antlr.ast.parser.dialect.OracleParser;
+import io.shardingsphere.core.parsing.antlr.ast.parser.dialect.PostgreSQLParser;
+import io.shardingsphere.core.parsing.antlr.ast.parser.dialect.SQLServerParser;
 import io.shardingsphere.core.parsing.antlr.autogen.MySQLStatementLexer;
 import io.shardingsphere.core.parsing.antlr.autogen.OracleStatementLexer;
 import io.shardingsphere.core.parsing.antlr.autogen.PostgreSQLStatementLexer;
@@ -35,23 +35,23 @@ import org.antlr.v4.runtime.Lexer;
 import org.antlr.v4.runtime.TokenStream;
 
 /**
- * SQL AST parser factory.
+ * SQL parser factory.
  * 
  * @author duhongjun
  * @author zhangliang
  */
 @NoArgsConstructor(access = AccessLevel.PRIVATE)
-public final class SQLASTParserFactory {
+public final class SQLParserFactory {
     
     /** 
-     * New instance of SQL statement parser.
+     * New instance of SQL parser.
      * 
      * @param databaseType database type
      * @param sql SQL
-     * @return SQL statement parser
+     * @return SQL parser
      */
-    public static SQLASTParser newInstance(final DatabaseType databaseType, final String sql) {
-        return createParser(databaseType, createLexer(databaseType, sql));
+    public static SQLParser newInstance(final DatabaseType databaseType, final String sql) {
+        return createSQLParser(databaseType, createLexer(databaseType, sql));
     }
     
     private static Lexer createLexer(final DatabaseType databaseType, final String sql) {
@@ -71,18 +71,18 @@ public final class SQLASTParserFactory {
         }
     }
     
-    private static SQLASTParser createParser(final DatabaseType databaseType, final Lexer lexer) {
+    private static SQLParser createSQLParser(final DatabaseType databaseType, final Lexer lexer) {
         TokenStream tokenStream = new CommonTokenStream(lexer);
         switch (databaseType) {
             case H2:
             case MySQL:
-                return new MySQLStatementASTParser(tokenStream);
+                return new MySQLParser(tokenStream);
             case PostgreSQL:
-                return new PostgreSQLStatementASTParser(tokenStream);
+                return new PostgreSQLParser(tokenStream);
             case SQLServer:
-                return new SQLServerStatementASTParser(tokenStream);
+                return new SQLServerParser(tokenStream);
             case Oracle:
-                return new OracleStatementASTParser(tokenStream);
+                return new OracleParser(tokenStream);
             default:
                 throw new UnsupportedOperationException(String.format("Can not support database type [%s].", databaseType));
         }

@@ -20,7 +20,7 @@ package io.shardingsphere.core.parsing.antlr.extractor.segment.engine;
 import com.google.common.base.Optional;
 import io.shardingsphere.core.parsing.antlr.extractor.segment.CollectionSQLSegmentExtractor;
 import io.shardingsphere.core.parsing.antlr.extractor.segment.constant.RuleName;
-import io.shardingsphere.core.parsing.antlr.extractor.util.ASTUtils;
+import io.shardingsphere.core.parsing.antlr.extractor.util.ExtractorUtils;
 import io.shardingsphere.core.parsing.antlr.sql.segment.IndexSegment;
 import org.antlr.v4.runtime.ParserRuleContext;
 
@@ -39,7 +39,7 @@ public final class IndexNamesExtractor implements CollectionSQLSegmentExtractor 
     @Override
     public Collection<IndexSegment> extract(final ParserRuleContext ancestorNode) {
         Collection<IndexSegment> result = new LinkedList<>();
-        for (ParserRuleContext each : ASTUtils.getAllDescendantNodes(ancestorNode, RuleName.INDEX_NAME)) {
+        for (ParserRuleContext each : ExtractorUtils.getAllDescendantNodes(ancestorNode, RuleName.INDEX_NAME)) {
             Optional<IndexSegment> indexExtractResult = indexNameExtractor.extract(each);
             if (indexExtractResult.isPresent()) {
                 result.add(indexExtractResult.get());

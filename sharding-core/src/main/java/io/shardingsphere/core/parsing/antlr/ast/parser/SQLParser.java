@@ -15,16 +15,16 @@
  * </p>
  */
 
-package io.shardingsphere.core.parsing.antlr.ast;
+package io.shardingsphere.core.parsing.antlr.ast.parser;
 
 import org.antlr.v4.runtime.ParserRuleContext;
 
 /**
- * SQL AST parser.
+ * SQL parser.
  *
  * @author zhangliang
  */
-public interface SQLASTParser {
+public interface SQLParser {
     
     /**
      * Execute to parse SQL to AST.

@@ -28,12 +28,12 @@ import java.util.Collection;
 import java.util.LinkedList;
 
 /**
- * AST utility.
+ * Extractor utility.
  * 
  * @author duhongjun
  */
 @NoArgsConstructor(access = AccessLevel.PRIVATE)
-public final class ASTUtils {
+public final class ExtractorUtils {
     
     /**
      * Find first child node.

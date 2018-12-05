@@ -17,7 +17,7 @@
 
 package io.shardingsphere.core.parsing.antlr.filler.registry.dialect;
 
-import io.shardingsphere.core.parsing.antlr.extractor.statement.SQLStatementType;
+import io.shardingsphere.core.parsing.antlr.ast.SQLStatementType;
 import io.shardingsphere.core.parsing.antlr.filler.registry.SQLStatementRegistry;
 import io.shardingsphere.core.parsing.antlr.sql.statement.ddl.AlterTableStatement;
 import io.shardingsphere.core.parsing.parser.dialect.postgresql.statement.ResetParamStatement;

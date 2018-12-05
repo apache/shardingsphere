@@ -20,9 +20,8 @@ package io.shardingsphere.core.parsing.antlr.extractor.segment.engine;
 import com.google.common.base.Optional;
 import io.shardingsphere.core.parsing.antlr.extractor.segment.CollectionSQLSegmentExtractor;
 import io.shardingsphere.core.parsing.antlr.extractor.segment.constant.RuleName;
-import io.shardingsphere.core.parsing.antlr.extractor.util.ASTUtils;
+import io.shardingsphere.core.parsing.antlr.extractor.util.ExtractorUtils;
 import io.shardingsphere.core.parsing.antlr.sql.segment.column.ColumnDefinitionSegment;
-
 import org.antlr.v4.runtime.ParserRuleContext;
 
 import java.util.Collection;
@@ -40,7 +39,7 @@ public class ModifyColumnExtractor implements CollectionSQLSegmentExtractor {
     
     @Override
     public Collection<ColumnDefinitionSegment> extract(final ParserRuleContext ancestorNode) {
-        Collection<ParserRuleContext> modifyColumnNodes = ASTUtils.getAllDescendantNodes(ancestorNode, RuleName.MODIFY_COLUMN);
+        Collection<ParserRuleContext> modifyColumnNodes = ExtractorUtils.getAllDescendantNodes(ancestorNode, RuleName.MODIFY_COLUMN);
         if (modifyColumnNodes.isEmpty()) {
             return Collections.emptyList();
         }

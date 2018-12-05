@@ -20,9 +20,8 @@ package io.shardingsphere.core.parsing.antlr.extractor.segment.engine;
 import com.google.common.base.Optional;
 import io.shardingsphere.core.parsing.antlr.extractor.segment.OptionalSQLSegmentExtractor;
 import io.shardingsphere.core.parsing.antlr.extractor.segment.constant.RuleName;
-import io.shardingsphere.core.parsing.antlr.extractor.util.ASTUtils;
+import io.shardingsphere.core.parsing.antlr.extractor.util.ExtractorUtils;
 import io.shardingsphere.core.parsing.antlr.sql.segment.order.GroupBySegment;
-
 import org.antlr.v4.runtime.ParserRuleContext;
 
 /**
@@ -34,7 +33,7 @@ public final class GroupByExtractor implements OptionalSQLSegmentExtractor {
     
     @Override
     public Optional<GroupBySegment> extract(final ParserRuleContext ancestorNode) {
-        Optional<ParserRuleContext> orderByParentNode = ASTUtils.findFirstChildNode(ancestorNode, RuleName.GROUP_BY_CLAUSE);
+        Optional<ParserRuleContext> orderByParentNode = ExtractorUtils.findFirstChildNode(ancestorNode, RuleName.GROUP_BY_CLAUSE);
         if (!orderByParentNode.isPresent()) {
             return Optional.absent();
         }

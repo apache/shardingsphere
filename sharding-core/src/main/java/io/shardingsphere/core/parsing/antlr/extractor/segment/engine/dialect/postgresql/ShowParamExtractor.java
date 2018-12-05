@@ -20,7 +20,7 @@ package io.shardingsphere.core.parsing.antlr.extractor.segment.engine.dialect.po
 import com.google.common.base.Optional;
 import io.shardingsphere.core.parsing.antlr.extractor.segment.OptionalSQLSegmentExtractor;
 import io.shardingsphere.core.parsing.antlr.extractor.segment.constant.RuleName;
-import io.shardingsphere.core.parsing.antlr.extractor.util.ASTUtils;
+import io.shardingsphere.core.parsing.antlr.extractor.util.ExtractorUtils;
 import io.shardingsphere.core.parsing.antlr.sql.segment.SQLSegment;
 import io.shardingsphere.core.parsing.antlr.sql.segment.ShowParamSegment;
 import org.antlr.v4.runtime.ParserRuleContext;
@@ -34,7 +34,7 @@ public class ShowParamExtractor implements OptionalSQLSegmentExtractor {
     
     @Override
     public Optional<? extends SQLSegment> extract(final ParserRuleContext ancestorNode) {
-        Optional<ParserRuleContext> showParamNode = ASTUtils.findFirstChildNode(ancestorNode, RuleName.SHOW_PARAM);
+        Optional<ParserRuleContext> showParamNode = ExtractorUtils.findFirstChildNode(ancestorNode, RuleName.SHOW_PARAM);
         if (!showParamNode.isPresent()) {
             return Optional.absent();
         }

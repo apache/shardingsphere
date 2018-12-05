@@ -21,9 +21,8 @@ import com.google.common.base.Optional;
 import io.shardingsphere.core.parsing.antlr.extractor.segment.CollectionSQLSegmentExtractor;
 import io.shardingsphere.core.parsing.antlr.extractor.segment.constant.RuleName;
 import io.shardingsphere.core.parsing.antlr.extractor.segment.engine.ColumnDefinitionExtractor;
-import io.shardingsphere.core.parsing.antlr.extractor.util.ASTUtils;
+import io.shardingsphere.core.parsing.antlr.extractor.util.ExtractorUtils;
 import io.shardingsphere.core.parsing.antlr.sql.segment.column.ColumnDefinitionSegment;
-
 import org.antlr.v4.runtime.ParserRuleContext;
 
 import java.util.Collection;
@@ -41,13 +40,13 @@ public final class OracleModifyColumnExtractor implements CollectionSQLSegmentEx
     
     @Override
     public Collection<ColumnDefinitionSegment> extract(final ParserRuleContext ancestorNode) {
-        Collection<ParserRuleContext> modifyColumnNodes = ASTUtils.getAllDescendantNodes(ancestorNode, RuleName.MODIFY_COLUMN);
+        Collection<ParserRuleContext> modifyColumnNodes = ExtractorUtils.getAllDescendantNodes(ancestorNode, RuleName.MODIFY_COLUMN);
         if (modifyColumnNodes.isEmpty()) {
             return Collections.emptyList();
         }
         Collection<ColumnDefinitionSegment> result = new LinkedList<>();
         for (ParserRuleContext modifyColumnNode : modifyColumnNodes) {
-            for (ParserRuleContext each : ASTUtils.getAllDescendantNodes(modifyColumnNode, RuleName.MODIFY_COL_PROPERTIES)) {
+            for (ParserRuleContext each : ExtractorUtils.getAllDescendantNodes(modifyColumnNode, RuleName.MODIFY_COL_PROPERTIES)) {
                 // it`s not column definition, but can call this method
                 Optional<ColumnDefinitionSegment> columnDefinition = columnDefinitionPhraseExtractor.extract(each);
                 if (columnDefinition.isPresent()) {

@@ -20,7 +20,7 @@ package io.shardingsphere.core.parsing.antlr.extractor.segment.engine;
 import com.google.common.base.Optional;
 import io.shardingsphere.core.parsing.antlr.extractor.segment.OptionalSQLSegmentExtractor;
 import io.shardingsphere.core.parsing.antlr.extractor.segment.constant.RuleName;
-import io.shardingsphere.core.parsing.antlr.extractor.util.ASTUtils;
+import io.shardingsphere.core.parsing.antlr.extractor.util.ExtractorUtils;
 import io.shardingsphere.core.parsing.antlr.sql.segment.column.DropColumnSegment;
 import io.shardingsphere.core.util.SQLUtil;
 import org.antlr.v4.runtime.ParserRuleContext;
@@ -37,13 +37,13 @@ public final class DropColumnExtractor implements OptionalSQLSegmentExtractor {
     
     @Override
     public Optional<DropColumnSegment> extract(final ParserRuleContext ancestorNode) {
-        Collection<ParserRuleContext> dropColumnNodes = ASTUtils.getAllDescendantNodes(ancestorNode, RuleName.DROP_COLUMN);
+        Collection<ParserRuleContext> dropColumnNodes = ExtractorUtils.getAllDescendantNodes(ancestorNode, RuleName.DROP_COLUMN);
         if (dropColumnNodes.isEmpty()) {
             return Optional.absent();
         }
         DropColumnSegment result = new DropColumnSegment();
         for (ParserRuleContext each : dropColumnNodes) {
-            for (ParseTree columnNode : ASTUtils.getAllDescendantNodes(each, RuleName.COLUMN_NAME)) {
+            for (ParseTree columnNode : ExtractorUtils.getAllDescendantNodes(each, RuleName.COLUMN_NAME)) {
                 result.getDropColumnNames().add(SQLUtil.getExactlyValue(columnNode.getText()));
             }
         }

@@ -20,9 +20,8 @@ package io.shardingsphere.core.parsing.antlr.extractor.segment.engine;
 import com.google.common.base.Optional;
 import io.shardingsphere.core.parsing.antlr.extractor.segment.CollectionSQLSegmentExtractor;
 import io.shardingsphere.core.parsing.antlr.extractor.segment.constant.RuleName;
-import io.shardingsphere.core.parsing.antlr.extractor.util.ASTUtils;
+import io.shardingsphere.core.parsing.antlr.extractor.util.ExtractorUtils;
 import io.shardingsphere.core.parsing.antlr.sql.segment.column.ColumnDefinitionSegment;
-
 import org.antlr.v4.runtime.ParserRuleContext;
 import org.antlr.v4.runtime.tree.ParseTree;
 
@@ -41,7 +40,7 @@ public class AddColumnExtractor implements CollectionSQLSegmentExtractor {
     
     @Override
     public Collection<ColumnDefinitionSegment> extract(final ParserRuleContext ancestorNode) {
-        Collection<ParserRuleContext> addColumnNodes = ASTUtils.getAllDescendantNodes(ancestorNode, RuleName.ADD_COLUMN);
+        Collection<ParserRuleContext> addColumnNodes = ExtractorUtils.getAllDescendantNodes(ancestorNode, RuleName.ADD_COLUMN);
         if (addColumnNodes.isEmpty()) {
             return Collections.emptyList();
         }
@@ -53,7 +52,7 @@ public class AddColumnExtractor implements CollectionSQLSegmentExtractor {
     }
     
     private void extractAddColumn(final ParserRuleContext addColumnNode, final Collection<ColumnDefinitionSegment> result) {
-        for (ParserRuleContext each : ASTUtils.getAllDescendantNodes(addColumnNode, RuleName.COLUMN_DEFINITION)) {
+        for (ParserRuleContext each : ExtractorUtils.getAllDescendantNodes(addColumnNode, RuleName.COLUMN_DEFINITION)) {
             Optional<ColumnDefinitionSegment> columnDefinition = columnDefinitionPhraseExtractor.extract(each);
             if (columnDefinition.isPresent()) {
                 columnDefinition.get().setAdd(true);

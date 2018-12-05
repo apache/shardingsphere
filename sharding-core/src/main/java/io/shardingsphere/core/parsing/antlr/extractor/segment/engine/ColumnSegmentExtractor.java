@@ -17,19 +17,17 @@
 
 package io.shardingsphere.core.parsing.antlr.extractor.segment.engine;
 
-import java.util.Map;
-
-import org.antlr.v4.runtime.ParserRuleContext;
-
 import com.google.common.base.Optional;
-
 import io.shardingsphere.core.parsing.antlr.extractor.segment.OptionalSQLSegmentExtractor;
 import io.shardingsphere.core.parsing.antlr.extractor.segment.constant.RuleName;
-import io.shardingsphere.core.parsing.antlr.extractor.util.ASTUtils;
+import io.shardingsphere.core.parsing.antlr.extractor.util.ExtractorUtils;
 import io.shardingsphere.core.parsing.antlr.sql.segment.column.ColumnSegment;
 import io.shardingsphere.core.parsing.lexer.token.Symbol;
 import io.shardingsphere.core.util.SQLUtil;
 import lombok.RequiredArgsConstructor;
+import org.antlr.v4.runtime.ParserRuleContext;
+
+import java.util.Map;
 
 /**
  * Column extract extractor.
@@ -43,7 +41,7 @@ public final class ColumnSegmentExtractor implements OptionalSQLSegmentExtractor
     
     @Override
     public Optional<ColumnSegment> extract(final ParserRuleContext ancestorNode) {
-        Optional<ParserRuleContext> columnNode = ASTUtils.findFirstChildNode(ancestorNode, RuleName.COLUMN_NAME);
+        Optional<ParserRuleContext> columnNode = ExtractorUtils.findFirstChildNode(ancestorNode, RuleName.COLUMN_NAME);
         if (!columnNode.isPresent()) {
             return Optional.absent();
         }

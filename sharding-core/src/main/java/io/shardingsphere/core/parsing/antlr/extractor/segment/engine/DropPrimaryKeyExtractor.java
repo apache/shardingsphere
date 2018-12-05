@@ -20,9 +20,8 @@ package io.shardingsphere.core.parsing.antlr.extractor.segment.engine;
 import com.google.common.base.Optional;
 import io.shardingsphere.core.parsing.antlr.extractor.segment.OptionalSQLSegmentExtractor;
 import io.shardingsphere.core.parsing.antlr.extractor.segment.constant.RuleName;
-import io.shardingsphere.core.parsing.antlr.extractor.util.ASTUtils;
+import io.shardingsphere.core.parsing.antlr.extractor.util.ExtractorUtils;
 import io.shardingsphere.core.parsing.antlr.sql.segment.constraint.DropPrimaryKeySegment;
-
 import org.antlr.v4.runtime.ParserRuleContext;
 
 /**
@@ -34,7 +33,7 @@ public final class DropPrimaryKeyExtractor implements OptionalSQLSegmentExtracto
     
     @Override
     public Optional<DropPrimaryKeySegment> extract(final ParserRuleContext ancestorNode) {
-        Optional<ParserRuleContext> dropPrimaryKeyNode = ASTUtils.findFirstChildNode(ancestorNode, RuleName.DROP_PRIMARY_KEY);
+        Optional<ParserRuleContext> dropPrimaryKeyNode = ExtractorUtils.findFirstChildNode(ancestorNode, RuleName.DROP_PRIMARY_KEY);
         if (!dropPrimaryKeyNode.isPresent()) {
             return Optional.absent();
         }

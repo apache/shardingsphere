@@ -21,10 +21,9 @@ import com.google.common.base.Optional;
 import io.shardingsphere.core.parsing.antlr.extractor.segment.OptionalSQLSegmentExtractor;
 import io.shardingsphere.core.parsing.antlr.extractor.segment.constant.RuleName;
 import io.shardingsphere.core.parsing.antlr.extractor.segment.engine.ColumnDefinitionExtractor;
-import io.shardingsphere.core.parsing.antlr.extractor.util.ASTUtils;
+import io.shardingsphere.core.parsing.antlr.extractor.util.ExtractorUtils;
 import io.shardingsphere.core.parsing.antlr.sql.segment.column.ColumnDefinitionSegment;
 import io.shardingsphere.core.parsing.antlr.sql.segment.column.ColumnPositionSegment;
-
 import org.antlr.v4.runtime.ParserRuleContext;
 
 /**
@@ -38,15 +37,15 @@ public final class MySQLChangeColumnExtractor implements OptionalSQLSegmentExtra
     
     @Override
     public Optional<ColumnDefinitionSegment> extract(final ParserRuleContext ancestorNode) {
-        Optional<ParserRuleContext> changeColumnNode = ASTUtils.findFirstChildNode(ancestorNode, RuleName.CHANGE_COLUMN);
+        Optional<ParserRuleContext> changeColumnNode = ExtractorUtils.findFirstChildNode(ancestorNode, RuleName.CHANGE_COLUMN);
         if (!changeColumnNode.isPresent()) {
             return Optional.absent();
         }
-        Optional<ParserRuleContext> oldColumnNode = ASTUtils.findFirstChildNode(changeColumnNode.get(), RuleName.COLUMN_NAME);
+        Optional<ParserRuleContext> oldColumnNode = ExtractorUtils.findFirstChildNode(changeColumnNode.get(), RuleName.COLUMN_NAME);
         if (!oldColumnNode.isPresent()) {
             return Optional.absent();
         }
-        Optional<ParserRuleContext> columnDefinitionNode = ASTUtils.findFirstChildNode(changeColumnNode.get(), RuleName.COLUMN_DEFINITION);
+        Optional<ParserRuleContext> columnDefinitionNode = ExtractorUtils.findFirstChildNode(changeColumnNode.get(), RuleName.COLUMN_DEFINITION);
         if (!columnDefinitionNode.isPresent()) {
             return Optional.absent();
         }
