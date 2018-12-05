@@ -29,4 +29,5 @@
     <sql-case id="select_with_double_quotes" value="SELECT * FROM &quot;t_order_item&quot; WHERE &quot;item_id&quot; != ? ORDER BY &quot;item_id&quot;" db-types="PostgreSQL" />
     <sql-case id="select_distinct_with_single_column" value="SELECT DISTINCT item_id FROM t_order_item ORDER BY item_id" />
     <sql-case id="select_distinct_with_multi_column" value="SELECT DISTINCT order_id, user_id, status FROM t_order ORDER BY order_id" />
+    <sql-case id="select_distinct_with_star" value="SELECT DISTINCT * FROM t_order WHERE order_id > 1100 ORDER BY order_id" />
 </sql-cases>
