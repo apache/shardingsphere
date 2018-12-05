@@ -59,7 +59,8 @@ final class AggregationSelectItemAssert {
         assertThat(assertMessage.getFullAssertMessage("Aggregation select item derived aggregation select items assertion error: "),
                 actual.getDerivedAggregationSelectItems().size(), is(expected.getDerivedColumns().size()));
         if (actual instanceof AggregationDistinctSelectItem) {
-            assertThat(assertMessage.getFullAssertMessage("Aggregation select item distinct column assertion error: "), ((AggregationDistinctSelectItem) actual).getDistinctColumnName(), is(expected.getDistinctColumnName()));
+            assertThat(assertMessage.getFullAssertMessage("Aggregation select item distinct column assertion error: "),
+                    ((AggregationDistinctSelectItem) actual).getDistinctColumnName(), is(expected.getDistinctColumnName()));
         }
         int count = 0;
         for (AggregationSelectItem each : actual.getDerivedAggregationSelectItems()) {
