@@ -25,6 +25,7 @@ import io.shardingsphere.core.parsing.antlr.ast.SQLStatementType;
 import io.shardingsphere.core.parsing.antlr.extractor.statement.SQLSegmentsExtractor;
 import io.shardingsphere.core.parsing.antlr.extractor.statement.SQLSegmentsExtractorFactory;
 import io.shardingsphere.core.parsing.antlr.filler.SQLStatementFillerEngine;
+import io.shardingsphere.core.parsing.antlr.optimizer.SQLStatementOptimizerEngine;
 import io.shardingsphere.core.parsing.antlr.sql.segment.SQLSegment;
 import io.shardingsphere.core.parsing.parser.exception.SQLParsingUnsupportedException;
 import io.shardingsphere.core.parsing.parser.sql.SQLParser;
@@ -50,15 +51,19 @@ public final class AntlrParsingEngine implements SQLParser {
     
     private final ShardingTableMetaData shardingTableMetaData;
     
-    private final SQLParserEngine sqlParserEngine = new SQLParserEngine();
+    private final SQLParserEngine parserEngine = new SQLParserEngine();
+    
+    private final SQLStatementFillerEngine fillerEngine = new SQLStatementFillerEngine(); 
+    
+    private final SQLStatementOptimizerEngine optimizerEngine = new SQLStatementOptimizerEngine();
     
     @Override
     public SQLStatement parse() {
-        SQLAST ast = sqlParserEngine.parse(databaseType, sql);
+        SQLAST ast = parserEngine.parse(databaseType, sql);
         SQLSegmentsExtractor extractor = getExtractor(ast.getType());
         Collection<SQLSegment> sqlSegments = extractor.extract(ast.getParserRuleContext(), shardingRule, shardingTableMetaData);
-        SQLStatement result = new SQLStatementFillerEngine(databaseType).fill(sqlSegments, sql, ast.getType(), shardingRule, shardingTableMetaData);
-        extractor.postExtract(result, shardingTableMetaData);
+        SQLStatement result = fillerEngine.fill(databaseType, sqlSegments, sql, ast.getType(), shardingRule, shardingTableMetaData);
+        optimizerEngine.optimize(databaseType, ast.getType(), result, shardingTableMetaData);
         return result;
     }
     

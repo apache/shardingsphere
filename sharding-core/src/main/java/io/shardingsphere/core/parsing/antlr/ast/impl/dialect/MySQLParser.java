@@ -15,12 +15,12 @@
  * </p>
  */
 
-package io.shardingsphere.core.parsing.antlr.ast.parser.dialect;
+package io.shardingsphere.core.parsing.antlr.ast.impl.dialect;
 
 import io.shardingsphere.core.parsing.antlr.ast.advanced.AdvancedErrorStrategy;
 import io.shardingsphere.core.parsing.antlr.ast.advanced.AdvancedMatchHandler;
 import io.shardingsphere.core.parsing.antlr.ast.advanced.AdvancedParserATNSimulator;
-import io.shardingsphere.core.parsing.antlr.ast.parser.SQLParser;
+import io.shardingsphere.core.parsing.antlr.ast.impl.SQLParser;
 import io.shardingsphere.core.parsing.antlr.autogen.MySQLStatementParser;
 import org.antlr.v4.runtime.RecognitionException;
 import org.antlr.v4.runtime.Token;

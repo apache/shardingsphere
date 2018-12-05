@@ -19,10 +19,10 @@ package io.shardingsphere.core.parsing.antlr.ddl;
 
 import io.shardingsphere.core.constant.DatabaseType;
 import io.shardingsphere.core.parsing.antlr.AntlrParsingEngine;
-import io.shardingsphere.core.parsing.antlr.ast.parser.dialect.MySQLParser;
-import io.shardingsphere.core.parsing.antlr.ast.parser.dialect.OracleParser;
-import io.shardingsphere.core.parsing.antlr.ast.parser.dialect.PostgreSQLParser;
-import io.shardingsphere.core.parsing.antlr.ast.parser.dialect.SQLServerParser;
+import io.shardingsphere.core.parsing.antlr.ast.impl.dialect.MySQLParser;
+import io.shardingsphere.core.parsing.antlr.ast.impl.dialect.OracleParser;
+import io.shardingsphere.core.parsing.antlr.ast.impl.dialect.PostgreSQLParser;
+import io.shardingsphere.core.parsing.antlr.ast.impl.dialect.SQLServerParser;
 import io.shardingsphere.core.parsing.antlr.autogen.MySQLStatementLexer;
 import io.shardingsphere.core.parsing.antlr.autogen.OracleStatementLexer;
 import io.shardingsphere.core.parsing.antlr.autogen.PostgreSQLStatementLexer;

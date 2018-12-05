@@ -15,19 +15,23 @@
  * </p>
  */
 
-package io.shardingsphere.core.parsing.antlr.extractor.statement.engine.ddl.dialect.postgresql;
+package io.shardingsphere.core.parsing.antlr.optimizer.registry;
 
-import io.shardingsphere.core.parsing.antlr.extractor.segment.engine.IndexNamesExtractor;
-import io.shardingsphere.core.parsing.antlr.extractor.statement.engine.AbstractSQLSegmentsExtractor;
+import io.shardingsphere.core.parsing.antlr.ast.SQLStatementType;
+import io.shardingsphere.core.parsing.antlr.optimizer.impl.SQLStatementOptimizer;
 
 /**
- * Drop index statement extractor for PostgreSQL.
+ * SQL statement optimizer registry.
  * 
- * @author duhongjun
+ * @author zhangliang
  */
-public final class PostgreSQLDropIndexExtractor extends AbstractSQLSegmentsExtractor {
+public interface SQLStatementOptimizerRegistry {
     
-    public PostgreSQLDropIndexExtractor() {
-        addSQLSegmentExtractor(new IndexNamesExtractor());
-    }
+    /**
+     * Get SQL statement optimizer.
+     * 
+     * @param type SQL statement type
+     * @return SQL statement optimizer
+     */
+    SQLStatementOptimizer getOptimizer(SQLStatementType type);
 }

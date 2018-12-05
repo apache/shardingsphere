@@ -25,7 +25,7 @@ import io.shardingsphere.core.parsing.antlr.extractor.segment.engine.dialect.sql
 import io.shardingsphere.core.parsing.antlr.extractor.statement.engine.ddl.AlterTableExtractor;
 
 /**
- * SQLServer alter table statement extractor.
+ * Alter table statement extractor for SQLServer.
  * 
  * @author duhongjun
  */

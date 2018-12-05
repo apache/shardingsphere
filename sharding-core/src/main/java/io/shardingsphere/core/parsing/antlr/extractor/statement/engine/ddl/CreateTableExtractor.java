@@ -17,20 +17,11 @@
 
 package io.shardingsphere.core.parsing.antlr.extractor.statement.engine.ddl;
 
-import io.shardingsphere.core.metadata.table.ColumnMetaData;
-import io.shardingsphere.core.metadata.table.ShardingTableMetaData;
-import io.shardingsphere.core.metadata.table.TableMetaData;
 import io.shardingsphere.core.parsing.antlr.extractor.segment.engine.ColumnDefinitionsExtractor;
 import io.shardingsphere.core.parsing.antlr.extractor.segment.engine.IndexNamesExtractor;
 import io.shardingsphere.core.parsing.antlr.extractor.segment.engine.PrimaryKeyForCreateTableExtractor;
 import io.shardingsphere.core.parsing.antlr.extractor.segment.engine.TableNamesExtractor;
 import io.shardingsphere.core.parsing.antlr.extractor.statement.engine.AbstractSQLSegmentsExtractor;
-import io.shardingsphere.core.parsing.parser.sql.SQLStatement;
-import io.shardingsphere.core.parsing.parser.sql.ddl.create.table.CreateTableStatement;
-
-import java.util.Collection;
-import java.util.LinkedList;
-import java.util.List;
 
 /**
  * Create table extractor.
@@ -44,22 +35,5 @@ public final class CreateTableExtractor extends AbstractSQLSegmentsExtractor {
         addSQLSegmentExtractor(new ColumnDefinitionsExtractor());
         addSQLSegmentExtractor(new IndexNamesExtractor());
         addSQLSegmentExtractor(new PrimaryKeyForCreateTableExtractor());
-    }
-    
-    @Override
-    public void postExtract(final SQLStatement sqlStatement, final ShardingTableMetaData shardingTableMetaData) {
-        CreateTableStatement createStatement = (CreateTableStatement) sqlStatement;
-        Collection<ColumnMetaData> newColumnMetaDataList = new LinkedList<>();
-        int position = 0;
-        List<String> columnTypes = createStatement.getColumnTypes();
-        List<String> primaryKeyColumns = createStatement.getPrimaryKeyColumns();
-        for (String each : createStatement.getColumnNames()) {
-            String type = null;
-            if (columnTypes.size() > position) {
-                type = columnTypes.get(position);
-            }
-            newColumnMetaDataList.add(new ColumnMetaData(each, type, primaryKeyColumns.contains(each)));
-        }
-        createStatement.setTableMetaData(new TableMetaData(newColumnMetaDataList));
     }
 }

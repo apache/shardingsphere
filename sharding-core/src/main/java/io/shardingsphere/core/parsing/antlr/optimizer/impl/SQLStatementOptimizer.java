@@ -15,21 +15,23 @@
  * </p>
  */
 
-package io.shardingsphere.core.parsing.antlr.ast.parser;
+package io.shardingsphere.core.parsing.antlr.optimizer.impl;
 
-import org.antlr.v4.runtime.ParserRuleContext;
+import io.shardingsphere.core.metadata.table.ShardingTableMetaData;
+import io.shardingsphere.core.parsing.parser.sql.SQLStatement;
 
 /**
- * SQL parser.
+ * SQL statement optimizer.
  *
  * @author zhangliang
  */
-public interface SQLParser {
+public interface SQLStatementOptimizer {
     
     /**
-     * Execute to parse SQL to AST.
-     * 
-     * @return AST
+     * Optimize SQL statement.
+     *
+     * @param sqlStatement SQL statement
+     * @param shardingTableMetaData sharding table meta data
      */
-    ParserRuleContext execute();
+    void optimize(SQLStatement sqlStatement, ShardingTableMetaData shardingTableMetaData);
 }

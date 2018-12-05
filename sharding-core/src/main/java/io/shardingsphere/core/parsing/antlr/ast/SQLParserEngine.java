@@ -18,7 +18,7 @@
 package io.shardingsphere.core.parsing.antlr.ast;
 
 import io.shardingsphere.core.constant.DatabaseType;
-import io.shardingsphere.core.parsing.antlr.ast.parser.SQLParserFactory;
+import io.shardingsphere.core.parsing.antlr.ast.impl.SQLParserFactory;
 import io.shardingsphere.core.parsing.parser.exception.SQLParsingUnsupportedException;
 import org.antlr.v4.runtime.ParserRuleContext;
 import org.antlr.v4.runtime.tree.ErrorNode;

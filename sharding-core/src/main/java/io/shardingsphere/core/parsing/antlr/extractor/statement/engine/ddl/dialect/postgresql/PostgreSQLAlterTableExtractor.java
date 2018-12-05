@@ -24,7 +24,7 @@ import io.shardingsphere.core.parsing.antlr.extractor.segment.engine.RenameColum
 import io.shardingsphere.core.parsing.antlr.extractor.statement.engine.ddl.AlterTableExtractor;
 
 /**
- * Postgre alter table statement extractor.
+ * Alter table statement extractor for PostgreSQL.
  * 
  * @author duhongjun
  */

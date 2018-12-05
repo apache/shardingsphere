@@ -21,7 +21,7 @@ import io.shardingsphere.core.parsing.antlr.extractor.segment.engine.IndexNameEx
 import io.shardingsphere.core.parsing.antlr.extractor.statement.engine.AbstractSQLSegmentsExtractor;
 
 /**
- * Oracle drop index statement extractor.
+ * Drop index statement extractor for Oracle.
  * 
  * @author duhongjun
  */

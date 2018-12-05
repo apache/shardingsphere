@@ -25,7 +25,7 @@ import io.shardingsphere.core.parsing.antlr.extractor.segment.engine.dialect.ora
 import io.shardingsphere.core.parsing.antlr.extractor.statement.engine.ddl.AlterTableExtractor;
 
 /**
- * Oracle alter table statement extractor.
+ * Alter table statement extractor for Oracle.
  * 
  * @author duhongjun
  */

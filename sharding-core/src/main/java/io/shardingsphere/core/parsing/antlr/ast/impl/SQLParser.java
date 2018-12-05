@@ -15,19 +15,21 @@
  * </p>
  */
 
-package io.shardingsphere.core.parsing.antlr.extractor.statement.engine.ddl.dialect.postgresql;
+package io.shardingsphere.core.parsing.antlr.ast.impl;
 
-import io.shardingsphere.core.parsing.antlr.extractor.segment.engine.IndexNamesExtractor;
-import io.shardingsphere.core.parsing.antlr.extractor.statement.engine.AbstractSQLSegmentsExtractor;
+import org.antlr.v4.runtime.ParserRuleContext;
 
 /**
- * Drop index statement extractor for PostgreSQL.
- * 
- * @author duhongjun
+ * SQL parser.
+ *
+ * @author zhangliang
  */
-public final class PostgreSQLDropIndexExtractor extends AbstractSQLSegmentsExtractor {
+public interface SQLParser {
     
-    public PostgreSQLDropIndexExtractor() {
-        addSQLSegmentExtractor(new IndexNamesExtractor());
-    }
+    /**
+     * Execute to parse SQL to AST.
+     * 
+     * @return AST
+     */
+    ParserRuleContext execute();
 }

@@ -21,7 +21,7 @@ import io.shardingsphere.core.parsing.antlr.extractor.segment.engine.IndexNamesE
 import io.shardingsphere.core.parsing.antlr.extractor.statement.engine.AbstractSQLSegmentsExtractor;
 
 /**
- * Postgre alter index statement extractor.
+ * Alter index statement extractor for PostgreSQL.
  * 
  * @author duhongjun
  */

@@ -24,7 +24,6 @@ import io.shardingsphere.core.parsing.antlr.extractor.segment.OptionalSQLSegment
 import io.shardingsphere.core.parsing.antlr.extractor.segment.SQLSegmentExtractor;
 import io.shardingsphere.core.parsing.antlr.extractor.statement.SQLSegmentsExtractor;
 import io.shardingsphere.core.parsing.antlr.sql.segment.SQLSegment;
-import io.shardingsphere.core.parsing.parser.sql.SQLStatement;
 import io.shardingsphere.core.rule.ShardingRule;
 import org.antlr.v4.runtime.ParserRuleContext;
 
@@ -59,9 +58,5 @@ public abstract class AbstractSQLSegmentsExtractor implements SQLSegmentsExtract
             }
         }
         return result;
-    }
-    
-    @Override
-    public void postExtract(final SQLStatement sqlStatement, final ShardingTableMetaData shardingTableMetaData) {
     }
 }

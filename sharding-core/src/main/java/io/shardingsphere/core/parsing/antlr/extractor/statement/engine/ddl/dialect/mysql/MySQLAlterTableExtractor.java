@@ -17,11 +17,6 @@
 
 package io.shardingsphere.core.parsing.antlr.extractor.statement.engine.ddl.dialect.mysql;
 
-import java.util.Collections;
-import java.util.Iterator;
-import java.util.List;
-
-import io.shardingsphere.core.metadata.table.ColumnMetaData;
 import io.shardingsphere.core.parsing.antlr.extractor.segment.engine.DropPrimaryKeyExtractor;
 import io.shardingsphere.core.parsing.antlr.extractor.segment.engine.PrimaryKeyForAlterTableExtractor;
 import io.shardingsphere.core.parsing.antlr.extractor.segment.engine.RenameIndexExtractor;
@@ -31,11 +26,9 @@ import io.shardingsphere.core.parsing.antlr.extractor.segment.engine.dialect.mys
 import io.shardingsphere.core.parsing.antlr.extractor.segment.engine.dialect.mysql.MySQLDropIndexExtractor;
 import io.shardingsphere.core.parsing.antlr.extractor.segment.engine.dialect.mysql.MySQLModifyColumnExtractor;
 import io.shardingsphere.core.parsing.antlr.extractor.statement.engine.ddl.AlterTableExtractor;
-import io.shardingsphere.core.parsing.antlr.sql.segment.column.ColumnPositionSegment;
-import io.shardingsphere.core.parsing.antlr.sql.statement.ddl.AlterTableStatement;
 
 /**
- * MySQL alter table statement extractor.
+ * Alter table statement extractor for MySQL.
  * 
  * @author duhongjun
  */
@@ -50,61 +43,5 @@ public final class MySQLAlterTableExtractor extends AlterTableExtractor {
         addSQLSegmentExtractor(new DropPrimaryKeyExtractor());
         addSQLSegmentExtractor(new MySQLChangeColumnExtractor());
         addSQLSegmentExtractor(new MySQLModifyColumnExtractor());
-    }
-    
-    @Override
-    protected void adjustColumnDefinition(final AlterTableStatement alterTableStatement, final List<ColumnMetaData> newColumnMetaData) {
-        if (alterTableStatement.getPositionChangedColumns().isEmpty()) {
-            return;
-        }
-        if (alterTableStatement.getPositionChangedColumns().size() > 1) {
-            Collections.sort(alterTableStatement.getPositionChangedColumns());
-        }
-        for (ColumnPositionSegment each : alterTableStatement.getPositionChangedColumns()) {
-            if (null != each.getFirstColumn()) {
-                adjustFirst(newColumnMetaData, each.getFirstColumn());
-            } else {
-                adjustAfter(newColumnMetaData, each);
-            }
-        }
-    }
-    
-    private void adjustFirst(final List<ColumnMetaData> newColumnMetaData, final String columnName) {
-        ColumnMetaData firstMetaData = null;
-        Iterator<ColumnMetaData> iterator = newColumnMetaData.iterator();
-        while (iterator.hasNext()) {
-            ColumnMetaData each = iterator.next();
-            if (each.getColumnName().equals(columnName)) {
-                firstMetaData = each;
-                iterator.remove();
-                break;
-            }
-        }
-        if (null != firstMetaData) {
-            newColumnMetaData.add(0, firstMetaData);
-        }
-    }
-    
-    private void adjustAfter(final List<ColumnMetaData> newColumnMetaData, final ColumnPositionSegment columnPosition) {
-        int afterIndex = -1;
-        int adjustColumnIndex = -1;
-        for (int i = 0; i < newColumnMetaData.size(); i++) {
-            if (newColumnMetaData.get(i).getColumnName().equals(columnPosition.getColumnName())) {
-                adjustColumnIndex = i;
-            }
-            if (newColumnMetaData.get(i).getColumnName().equals(columnPosition.getAfterColumn())) {
-                afterIndex = i;
-            }
-            if (adjustColumnIndex >= 0 && afterIndex >= 0) {
-                break;
-            }
-        }
-        if (adjustColumnIndex >= 0 && afterIndex >= 0 && adjustColumnIndex != afterIndex + 1) {
-            ColumnMetaData adjustColumnMetaData = newColumnMetaData.remove(adjustColumnIndex);
-            if (afterIndex < adjustColumnIndex) {
-                afterIndex = afterIndex + 1;
-            }
-            newColumnMetaData.add(afterIndex, adjustColumnMetaData);
-        }
     }
 }
