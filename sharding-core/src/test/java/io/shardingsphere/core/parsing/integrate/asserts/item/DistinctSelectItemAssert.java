@@ -17,14 +17,14 @@
 
 package io.shardingsphere.core.parsing.integrate.asserts.item;
 
+import com.google.common.base.Predicate;
+import com.google.common.collect.Sets;
 import io.shardingsphere.core.parsing.integrate.asserts.SQLStatementAssertMessage;
 import io.shardingsphere.core.parsing.integrate.jaxb.item.ExpectedDistinctSelectItem;
 import io.shardingsphere.core.parsing.parser.context.selectitem.DistinctSelectItem;
 import io.shardingsphere.core.parsing.parser.context.selectitem.SelectItem;
 import lombok.RequiredArgsConstructor;
 
-import java.util.ArrayList;
-import java.util.List;
 import java.util.Set;
 
 import static org.hamcrest.CoreMatchers.is;
@@ -40,14 +40,8 @@ final class DistinctSelectItemAssert {
     
     private final SQLStatementAssertMessage assertMessage;
     
-    void assertDistinctSelectItems(final Set<SelectItem> actual, final List<ExpectedDistinctSelectItem> expected) {
-        List<DistinctSelectItem> distinctSelectItems = getDistinctSelectItems(actual);
-        assertThat(assertMessage.getFullAssertMessage("distinct select items size error: "), distinctSelectItems.size(), is(expected.size()));
-        int count = 0;
-        for (DistinctSelectItem each : distinctSelectItems) {
-            assertDistinctSelectItem(each, expected.get(count));
-            count++;
-        }
+    void assertDistinctSelectItems(final Set<SelectItem> actual, final ExpectedDistinctSelectItem expected) {
+        assertDistinctSelectItem(getDistinctSelectItem(actual), expected);
     }
     
     private void assertDistinctSelectItem(final DistinctSelectItem actual, final ExpectedDistinctSelectItem expected) {
@@ -61,13 +55,12 @@ final class DistinctSelectItemAssert {
         }
     }
     
-    private List<DistinctSelectItem> getDistinctSelectItems(final Set<SelectItem> actual) {
-        List<DistinctSelectItem> result = new ArrayList<>(actual.size());
-        for (SelectItem each : actual) {
-            if (each instanceof DistinctSelectItem) {
-                result.add((DistinctSelectItem) each);
+    private DistinctSelectItem getDistinctSelectItem(final Set<SelectItem> actual) {
+        return (DistinctSelectItem) (Sets.filter(actual, new Predicate<SelectItem>() {
+            @Override
+            public boolean apply(final SelectItem input) {
+                return input instanceof DistinctSelectItem;
             }
-        }
-        return result;
+        }).iterator().next());
     }
 }
