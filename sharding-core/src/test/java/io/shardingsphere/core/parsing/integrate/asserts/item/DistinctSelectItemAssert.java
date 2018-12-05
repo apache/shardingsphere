@@ -17,6 +17,7 @@
 
 package io.shardingsphere.core.parsing.integrate.asserts.item;
 
+import com.google.common.base.Optional;
 import com.google.common.base.Predicate;
 import com.google.common.collect.Sets;
 import io.shardingsphere.core.parsing.integrate.asserts.SQLStatementAssertMessage;
@@ -28,6 +29,7 @@ import lombok.RequiredArgsConstructor;
 import java.util.Set;
 
 import static org.hamcrest.CoreMatchers.is;
+import static org.junit.Assert.assertNull;
 import static org.junit.Assert.assertThat;
 
 /**
@@ -41,7 +43,12 @@ final class DistinctSelectItemAssert {
     private final SQLStatementAssertMessage assertMessage;
     
     void assertDistinctSelectItems(final Set<SelectItem> actual, final ExpectedDistinctSelectItem expected) {
-        assertDistinctSelectItem(getDistinctSelectItem(actual), expected);
+        Optional<DistinctSelectItem> distinctSelectItem = getDistinctSelectItem(actual);
+        if (distinctSelectItem.isPresent()) {
+            assertDistinctSelectItem(distinctSelectItem.get(), expected);
+        } else {
+            assertNull(assertMessage.getFullAssertMessage("distinct select item should not exist: "), expected);
+        }
     }
     
     private void assertDistinctSelectItem(final DistinctSelectItem actual, final ExpectedDistinctSelectItem expected) {
@@ -55,12 +62,13 @@ final class DistinctSelectItemAssert {
         }
     }
     
-    private DistinctSelectItem getDistinctSelectItem(final Set<SelectItem> actual) {
-        return (DistinctSelectItem) (Sets.filter(actual, new Predicate<SelectItem>() {
+    private Optional<DistinctSelectItem> getDistinctSelectItem(final Set<SelectItem> actual) {
+        Set<SelectItem> distinctItems = Sets.filter(actual, new Predicate<SelectItem>() {
             @Override
             public boolean apply(final SelectItem input) {
                 return input instanceof DistinctSelectItem;
             }
-        }).iterator().next());
+        });
+        return distinctItems.isEmpty() ? Optional.<DistinctSelectItem>absent() : Optional.of((DistinctSelectItem) distinctItems.iterator().next());
     }
 }
