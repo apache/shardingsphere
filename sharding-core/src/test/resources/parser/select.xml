@@ -203,9 +203,11 @@
                 </condition>
             </and-condition>
         </or-condition>
-        <aggregation-select-items>
-            <aggregation-select-item type="COUNT" inner-expression="(0)" alias="orders_count"/>
-        </aggregation-select-items>
+        <select-items>
+            <aggregation-select-items>
+                <aggregation-select-item type="COUNT" inner-expression="(0)" alias="orders_count"/>
+            </aggregation-select-items>
+        </select-items>
     </parser-result>
     
     <parser-result sql-case-id="select_sharding_route_with_binding_tables" parameters="1, 2, 9, 10">
@@ -485,6 +487,13 @@
         <tables>
             <table name="t_order_item" />
         </tables>
+        <select-items>
+            <distinct-select-item>
+                <distinct-columns>
+                    <distinct-column>item_id</distinct-column>
+                </distinct-columns>
+            </distinct-select-item>
+        </select-items>
         <tokens>
             <table-token begin-position="29" original-literals="t_order_item" />
         </tokens>
@@ -492,5 +501,17 @@
             <order-by-column name="item_id" order-direction="ASC" />
         </order-by-columns>
     </parser-result>
+
+    <!--<parser-result sql-case-id="select_distinct_with_multi_column" >-->
+        <!--<tables>-->
+            <!--<table name="t_order" />-->
+        <!--</tables>-->
+        <!--<tokens>-->
+            <!--<table-token begin-position="47" original-literals="t_order" />-->
+        <!--</tokens>-->
+        <!--<order-by-columns>-->
+            <!--<order-by-column name="item_id" order-direction="ASC" />-->
+        <!--</order-by-columns>-->
+    <!--</parser-result>-->
     
 </parser-result-sets>
