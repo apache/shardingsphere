@@ -481,7 +481,7 @@
         </order-by-columns>
     </parser-result>
 
-    <parser-result sql-case-id="select_distinct_with_single_table" >
+    <parser-result sql-case-id="select_distinct_with_single_column" >
         <tables>
             <table name="t_order_item" />
         </tables>
