@@ -18,10 +18,10 @@
 package io.shardingsphere.core.parsing.integrate.asserts.token;
 
 import io.shardingsphere.core.parsing.integrate.asserts.SQLStatementAssertMessage;
-import io.shardingsphere.core.parsing.integrate.jaxb.token.ExpectedSchemaToken;
+import io.shardingsphere.core.parsing.integrate.jaxb.token.ExpectedAggregationDistinctToken;
 import io.shardingsphere.core.parsing.integrate.jaxb.token.ExpectedTokens;
+import io.shardingsphere.core.parsing.parser.token.AggregationDistinctToken;
 import io.shardingsphere.core.parsing.parser.token.SQLToken;
-import io.shardingsphere.core.parsing.parser.token.SchemaToken;
 import lombok.RequiredArgsConstructor;
 
 import java.util.ArrayList;
@@ -42,26 +42,26 @@ final class AggregationDistinctTokenAssert {
     private final SQLStatementAssertMessage assertMessage;
     
     void assertSchemaTokens(final Collection<SQLToken> actual, final ExpectedTokens expected) {
-        List<SchemaToken> schemaTokens = getSchemaTokens(actual);
-        assertThat(assertMessage.getFullAssertMessage("Schema tokens size error: "), schemaTokens.size(), is(expected.getSchemaTokens().size()));
+        List<AggregationDistinctToken> aggregationDistinctTokens = getAggregationDistinctTokens(actual);
+        assertThat(assertMessage.getFullAssertMessage("Schema tokens size error: "), aggregationDistinctTokens.size(), is(expected.getSchemaTokens().size()));
         int count = 0;
-        for (ExpectedSchemaToken each : expected.getSchemaTokens()) {
-            assertSchemaToken(schemaTokens.get(count), each);
+        for (ExpectedAggregationDistinctToken each : expected.getAggregationDistinctTokens()) {
+            assertSchemaToken(aggregationDistinctTokens.get(count), each);
             count++;
         }
     }
     
-    private void assertSchemaToken(final SchemaToken actual, final ExpectedSchemaToken expected) {
-        assertThat(assertMessage.getFullAssertMessage("Schema tokens begin position assertion error: "), actual.getBeginPosition(), is(expected.getBeginPosition()));
-        assertThat(assertMessage.getFullAssertMessage("Schema tokens original literals assertion error: "), actual.getOriginalLiterals(), is(expected.getOriginalLiterals()));
-        assertThat(assertMessage.getFullAssertMessage("Schema tokens table name assertion error: "), actual.getTableName(), is(expected.getTableName()));
+    private void assertSchemaToken(final AggregationDistinctToken actual, final ExpectedAggregationDistinctToken expected) {
+        assertThat(assertMessage.getFullAssertMessage("Aggregation distinct tokens begin position assertion error: "), actual.getBeginPosition(), is(expected.getBeginPosition()));
+        assertThat(assertMessage.getFullAssertMessage("Aggregation distinct tokens original literals assertion error: "), actual.getOriginalLiterals(), is(expected.getOriginalLiterals()));
+        assertThat(assertMessage.getFullAssertMessage("Aggregation distinct tokens column name assertion error: "), actual.getColumnName(), is(expected.getColumnName()));
     }
     
-    private List<SchemaToken> getSchemaTokens(final Collection<SQLToken> actual) {
-        List<SchemaToken> result = new ArrayList<>(actual.size());
+    private List<AggregationDistinctToken> getAggregationDistinctTokens(final Collection<SQLToken> actual) {
+        List<AggregationDistinctToken> result = new ArrayList<>(actual.size());
         for (SQLToken each : actual) {
-            if (each instanceof SchemaToken) {
-                result.add((SchemaToken) each);
+            if (each instanceof AggregationDistinctToken) {
+                result.add((AggregationDistinctToken) each);
             }
         }
         return result;
