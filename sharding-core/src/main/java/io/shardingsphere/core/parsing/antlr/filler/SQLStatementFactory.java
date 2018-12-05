@@ -18,12 +18,12 @@
 package io.shardingsphere.core.parsing.antlr.filler;
 
 import io.shardingsphere.core.constant.DatabaseType;
+import io.shardingsphere.core.parsing.antlr.filler.registry.statement.SQLStatementRegistry;
+import io.shardingsphere.core.parsing.antlr.filler.registry.statement.dialect.MySQLStatementRegistry;
+import io.shardingsphere.core.parsing.antlr.filler.registry.statement.dialect.OracleStatementRegistry;
+import io.shardingsphere.core.parsing.antlr.filler.registry.statement.dialect.PostgreSQLStatementRegistry;
+import io.shardingsphere.core.parsing.antlr.filler.registry.statement.dialect.SQLServerStatementRegistry;
 import io.shardingsphere.core.parsing.antlr.parser.SQLStatementType;
-import io.shardingsphere.core.parsing.antlr.filler.registry.SQLStatementRegistry;
-import io.shardingsphere.core.parsing.antlr.filler.registry.dialect.MySQLStatementRegistry;
-import io.shardingsphere.core.parsing.antlr.filler.registry.dialect.OracleStatementRegistry;
-import io.shardingsphere.core.parsing.antlr.filler.registry.dialect.PostgreSQLStatementRegistry;
-import io.shardingsphere.core.parsing.antlr.filler.registry.dialect.SQLServerStatementRegistry;
 import io.shardingsphere.core.parsing.parser.sql.SQLStatement;
 import lombok.AccessLevel;
 import lombok.NoArgsConstructor;

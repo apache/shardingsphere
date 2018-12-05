@@ -20,6 +20,7 @@ package io.shardingsphere.core.parsing.antlr.filler;
 import com.google.common.base.Optional;
 import io.shardingsphere.core.constant.DatabaseType;
 import io.shardingsphere.core.metadata.table.ShardingTableMetaData;
+import io.shardingsphere.core.parsing.antlr.filler.registry.SQLStatementFillerRegistry;
 import io.shardingsphere.core.parsing.antlr.parser.SQLStatementType;
 import io.shardingsphere.core.parsing.antlr.sql.segment.SQLSegment;
 import io.shardingsphere.core.parsing.parser.sql.SQLStatement;
@@ -54,7 +55,7 @@ public final class SQLStatementFillerEngine {
     public SQLStatement fill(final Collection<SQLSegment> sqlSegments, final SQLStatementType sqlStatementType) {
         SQLStatement result = SQLStatementFactory.getInstance(databaseType, sqlStatementType);
         for (SQLSegment each : sqlSegments) {
-            Optional<SQLSegmentFiller> filler = SQLSegmentFillerRegistry.findFiller(each);
+            Optional<SQLStatementFiller> filler = SQLStatementFillerRegistry.findFiller(each);
             if (filler.isPresent()) {
                 filler.get().fill(each, result, sql, shardingRule, shardingTableMetaData);
             }

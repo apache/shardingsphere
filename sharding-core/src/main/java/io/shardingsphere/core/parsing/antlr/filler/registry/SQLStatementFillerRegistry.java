@@ -15,9 +15,10 @@
  * </p>
  */
 
-package io.shardingsphere.core.parsing.antlr.filler;
+package io.shardingsphere.core.parsing.antlr.filler.registry;
 
 import com.google.common.base.Optional;
+import io.shardingsphere.core.parsing.antlr.filler.SQLStatementFiller;
 import io.shardingsphere.core.parsing.antlr.filler.impl.ColumnDefinitionFiller;
 import io.shardingsphere.core.parsing.antlr.filler.impl.ConstraintDefinitionFiller;
 import io.shardingsphere.core.parsing.antlr.filler.impl.DropColumnFiller;
@@ -50,13 +51,13 @@ import java.util.HashMap;
 import java.util.Map;
 
 /**
- * SQL Segment filler registry.
+ * SQL statement filler registry.
  *
  * @author duhongjun
  */
-public final class SQLSegmentFillerRegistry {
+public final class SQLStatementFillerRegistry {
     
-    private static final Map<Class<?>, SQLSegmentFiller> FILLERS = new HashMap<>();
+    private static final Map<Class<?>, SQLStatementFiller> FILLERS = new HashMap<>();
     
     static {
         FILLERS.put(DropColumnSegment.class, new DropColumnFiller());
@@ -75,12 +76,12 @@ public final class SQLSegmentFillerRegistry {
     }
     
     /**
-     * Find SQL segment filler.
+     * Find SQL statement filler.
      *
      * @param sqlSegment sql segment
-     * @return instance of SQL segment filler
+     * @return instance of SQL statement filler
      */
-    public static Optional<SQLSegmentFiller> findFiller(final SQLSegment sqlSegment) {
+    public static Optional<SQLStatementFiller> findFiller(final SQLSegment sqlSegment) {
         return Optional.fromNullable(FILLERS.get(sqlSegment.getClass()));
     }
 }

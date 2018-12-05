@@ -15,11 +15,14 @@
  * </p>
  */
 
-package io.shardingsphere.core.parsing.antlr.filler.registry.dialect;
+package io.shardingsphere.core.parsing.antlr.filler.registry.statement.dialect;
 
+import io.shardingsphere.core.parsing.antlr.filler.registry.statement.SQLStatementRegistry;
 import io.shardingsphere.core.parsing.antlr.parser.SQLStatementType;
-import io.shardingsphere.core.parsing.antlr.filler.registry.SQLStatementRegistry;
 import io.shardingsphere.core.parsing.antlr.sql.statement.ddl.AlterTableStatement;
+import io.shardingsphere.core.parsing.parser.dialect.postgresql.statement.ResetParamStatement;
+import io.shardingsphere.core.parsing.parser.dialect.postgresql.statement.SetParamStatement;
+import io.shardingsphere.core.parsing.parser.dialect.postgresql.statement.ShowStatement;
 import io.shardingsphere.core.parsing.parser.sql.SQLStatement;
 import io.shardingsphere.core.parsing.parser.sql.ddl.DDLStatement;
 import io.shardingsphere.core.parsing.parser.sql.ddl.create.table.CreateTableStatement;
@@ -30,17 +33,18 @@ import java.util.HashMap;
 import java.util.Map;
 
 /**
- * SQL statement registry for SQL Server.
+ * SQL statement registry for PostgreSQL.
  * 
  * @author zhangliang
  */
-public final class SQLServerStatementRegistry implements SQLStatementRegistry {
+public final class PostgreSQLStatementRegistry implements SQLStatementRegistry {
     
     private static final Map<SQLStatementType, Class<? extends SQLStatement>> STATEMENTS = new HashMap<>();
     
     static {
         registerDDL();
         registerTCL();
+        registerDAL();
     }
     
     private static void registerDDL() {
@@ -59,6 +63,12 @@ public final class SQLServerStatementRegistry implements SQLStatementRegistry {
         STATEMENTS.put(SQLStatementType.ROLLBACK, TCLStatement.class);
         STATEMENTS.put(SQLStatementType.SAVEPOINT, TCLStatement.class);
         STATEMENTS.put(SQLStatementType.BEGIN_WORK, TCLStatement.class);
+    }
+    
+    private static void registerDAL() {
+        STATEMENTS.put(SQLStatementType.SHOW, ShowStatement.class);
+        STATEMENTS.put(SQLStatementType.SET_PARAM, SetParamStatement.class);
+        STATEMENTS.put(SQLStatementType.RESET_PARAM, ResetParamStatement.class);
     }
     
     @Override

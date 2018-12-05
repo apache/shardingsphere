@@ -23,15 +23,15 @@ import io.shardingsphere.core.parsing.parser.sql.SQLStatement;
 import io.shardingsphere.core.rule.ShardingRule;
 
 /**
- * SQL segment filler.
+ * SQL statement filler.
  * 
  * @author duhongjun
  * @author zhangliang
  */
-public interface SQLSegmentFiller {
+public interface SQLStatementFiller {
     
     /**
-     * Fill SQL segment result to SQL statement.
+     * Fill SQL segment to SQL statement.
      *
      * @param sqlSegment SQL segment
      * @param sqlStatement SQL statement

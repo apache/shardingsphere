@@ -15,17 +15,15 @@
  * </p>
  */
 
-package io.shardingsphere.core.parsing.antlr.filler.registry.dialect;
+package io.shardingsphere.core.parsing.antlr.filler.registry.statement.dialect;
 
+import io.shardingsphere.core.parsing.antlr.filler.registry.statement.SQLStatementRegistry;
 import io.shardingsphere.core.parsing.antlr.parser.SQLStatementType;
-import io.shardingsphere.core.parsing.antlr.filler.registry.SQLStatementRegistry;
 import io.shardingsphere.core.parsing.antlr.sql.statement.ddl.AlterTableStatement;
-import io.shardingsphere.core.parsing.parser.dialect.postgresql.statement.ResetParamStatement;
-import io.shardingsphere.core.parsing.parser.dialect.postgresql.statement.SetParamStatement;
-import io.shardingsphere.core.parsing.parser.dialect.postgresql.statement.ShowStatement;
 import io.shardingsphere.core.parsing.parser.sql.SQLStatement;
 import io.shardingsphere.core.parsing.parser.sql.ddl.DDLStatement;
 import io.shardingsphere.core.parsing.parser.sql.ddl.create.table.CreateTableStatement;
+import io.shardingsphere.core.parsing.parser.sql.dql.select.SelectStatement;
 import io.shardingsphere.core.parsing.parser.sql.tcl.TCLStatement;
 import lombok.SneakyThrows;
 
@@ -33,11 +31,11 @@ import java.util.HashMap;
 import java.util.Map;
 
 /**
- * SQL statement registry for PostgreSQL.
+ * SQL statement registry for MySQL.
  * 
  * @author zhangliang
  */
-public final class PostgreSQLStatementRegistry implements SQLStatementRegistry {
+public final class MySQLStatementRegistry implements SQLStatementRegistry {
     
     private static final Map<SQLStatementType, Class<? extends SQLStatement>> STATEMENTS = new HashMap<>();
     
@@ -45,6 +43,7 @@ public final class PostgreSQLStatementRegistry implements SQLStatementRegistry {
         registerDDL();
         registerTCL();
         registerDAL();
+        registerDQL();
     }
     
     private static void registerDDL() {
@@ -53,7 +52,6 @@ public final class PostgreSQLStatementRegistry implements SQLStatementRegistry {
         STATEMENTS.put(SQLStatementType.DROP_TABLE, DDLStatement.class);
         STATEMENTS.put(SQLStatementType.TRUNCATE_TABLE, DDLStatement.class);
         STATEMENTS.put(SQLStatementType.CREATE_INDEX, DDLStatement.class);
-        STATEMENTS.put(SQLStatementType.ALTER_INDEX, DDLStatement.class);
         STATEMENTS.put(SQLStatementType.DROP_INDEX, DDLStatement.class);
     }
     
@@ -66,9 +64,11 @@ public final class PostgreSQLStatementRegistry implements SQLStatementRegistry {
     }
     
     private static void registerDAL() {
-        STATEMENTS.put(SQLStatementType.SHOW, ShowStatement.class);
-        STATEMENTS.put(SQLStatementType.SET_PARAM, SetParamStatement.class);
-        STATEMENTS.put(SQLStatementType.RESET_PARAM, ResetParamStatement.class);
+        STATEMENTS.put(SQLStatementType.SET_VARIABLE, TCLStatement.class);
+    }
+    
+    private static void registerDQL() {
+        STATEMENTS.put(SQLStatementType.SELECT, SelectStatement.class);
     }
     
     @Override

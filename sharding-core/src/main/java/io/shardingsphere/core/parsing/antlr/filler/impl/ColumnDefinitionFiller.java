@@ -19,7 +19,7 @@ package io.shardingsphere.core.parsing.antlr.filler.impl;
 
 import com.google.common.base.Optional;
 import io.shardingsphere.core.metadata.table.ShardingTableMetaData;
-import io.shardingsphere.core.parsing.antlr.filler.SQLSegmentFiller;
+import io.shardingsphere.core.parsing.antlr.filler.SQLStatementFiller;
 import io.shardingsphere.core.parsing.antlr.sql.segment.SQLSegment;
 import io.shardingsphere.core.parsing.antlr.sql.segment.column.ColumnDefinitionSegment;
 import io.shardingsphere.core.parsing.antlr.sql.statement.ddl.AlterTableStatement;
@@ -34,7 +34,7 @@ import io.shardingsphere.core.util.SQLUtil;
  *
  * @author duhongjun
  */
-public final class ColumnDefinitionFiller implements SQLSegmentFiller {
+public final class ColumnDefinitionFiller implements SQLStatementFiller {
     
     @Override
     public void fill(final SQLSegment sqlSegment, final SQLStatement sqlStatement, final String sql, final ShardingRule shardingRule, final ShardingTableMetaData shardingTableMetaData) {

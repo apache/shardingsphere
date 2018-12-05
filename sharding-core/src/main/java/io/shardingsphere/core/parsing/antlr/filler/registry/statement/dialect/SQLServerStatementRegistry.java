@@ -15,10 +15,10 @@
  * </p>
  */
 
-package io.shardingsphere.core.parsing.antlr.filler.registry.dialect;
+package io.shardingsphere.core.parsing.antlr.filler.registry.statement.dialect;
 
+import io.shardingsphere.core.parsing.antlr.filler.registry.statement.SQLStatementRegistry;
 import io.shardingsphere.core.parsing.antlr.parser.SQLStatementType;
-import io.shardingsphere.core.parsing.antlr.filler.registry.SQLStatementRegistry;
 import io.shardingsphere.core.parsing.antlr.sql.statement.ddl.AlterTableStatement;
 import io.shardingsphere.core.parsing.parser.sql.SQLStatement;
 import io.shardingsphere.core.parsing.parser.sql.ddl.DDLStatement;
@@ -30,11 +30,11 @@ import java.util.HashMap;
 import java.util.Map;
 
 /**
- * SQL statement registry for Oracle.
+ * SQL statement registry for SQL Server.
  * 
  * @author zhangliang
  */
-public final class OracleStatementRegistry implements SQLStatementRegistry {
+public final class SQLServerStatementRegistry implements SQLStatementRegistry {
     
     private static final Map<SQLStatementType, Class<? extends SQLStatement>> STATEMENTS = new HashMap<>();
     
