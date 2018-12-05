@@ -56,6 +56,15 @@ public final class ShardingExecuteEngine implements AutoCloseable {
     /**
      * Execute.
      *
+     * @param task a task to be run
+     */
+    public void execute(final Runnable task) {
+        executorService.submit(task);
+    }
+    
+    /**
+     * Execute.
+     *
      * @param inputs input values
      * @param callback sharding execute callback
      * @param <I> type of input value

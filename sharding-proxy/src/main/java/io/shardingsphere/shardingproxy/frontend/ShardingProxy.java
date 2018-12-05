@@ -34,15 +34,10 @@ import io.shardingsphere.core.constant.properties.ShardingPropertiesConstant;
 import io.shardingsphere.shardingproxy.backend.BackendExecutorContext;
 import io.shardingsphere.shardingproxy.backend.netty.client.BackendNettyClientManager;
 import io.shardingsphere.shardingproxy.frontend.common.netty.ServerHandlerInitializer;
+import io.shardingsphere.shardingproxy.frontend.mysql.CommandExecutorContext;
 import io.shardingsphere.shardingproxy.runtime.GlobalRegistry;
 import lombok.AccessLevel;
-import lombok.Getter;
 import lombok.NoArgsConstructor;
-
-import java.util.concurrent.ExecutorService;
-import java.util.concurrent.LinkedBlockingQueue;
-import java.util.concurrent.ThreadPoolExecutor;
-import java.util.concurrent.TimeUnit;
 
 /**
  * Sharding-Proxy.
@@ -61,12 +56,11 @@ public final class ShardingProxy {
     
     private final BackendExecutorContext backendExecutorContext = BackendExecutorContext.getInstance();
     
+    private final CommandExecutorContext commandExecutorContext = CommandExecutorContext.getInstance();
+    
     private EventLoopGroup bossGroup;
     
     private EventLoopGroup workerGroup;
-    
-    @Getter
-    private ExecutorService commandExecutorService;
     
     /**
      * Get instance of proxy context.
@@ -87,7 +81,6 @@ public final class ShardingProxy {
         try {
             ServerBootstrap bootstrap = new ServerBootstrap();
             bossGroup = createEventLoopGroup();
-            commandExecutorService = createCommandExecutorService();
             if (bossGroup instanceof EpollEventLoopGroup) {
                 groupsEpoll(bootstrap);
             } else {
@@ -99,19 +92,14 @@ public final class ShardingProxy {
             }
             future.channel().closeFuture().sync();
         } finally {
-            commandExecutorService.shutdown();
             workerGroup.shutdownGracefully();
             bossGroup.shutdownGracefully();
             backendExecutorContext.getExecuteEngine().close();
+            commandExecutorContext.getExecuteEngine().close();
             if (GLOBAL_REGISTRY.getShardingProperties().<Boolean>getValue(ShardingPropertiesConstant.PROXY_BACKEND_USE_NIO)) {
                 BackendNettyClientManager.getInstance().stop();
             }
         }
-    }
-    
-    private ExecutorService createCommandExecutorService() {
-        int nThreads = GLOBAL_REGISTRY.getShardingProperties().<Integer>getValue(ShardingPropertiesConstant.ACCEPTOR_SIZE);
-        return new ThreadPoolExecutor(nThreads, nThreads, 0, TimeUnit.MILLISECONDS, new LinkedBlockingQueue<Runnable>(16));
     }
     
     private EventLoopGroup createEventLoopGroup() {

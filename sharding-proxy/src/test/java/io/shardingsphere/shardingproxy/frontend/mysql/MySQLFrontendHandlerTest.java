@@ -114,14 +114,7 @@ public final class MySQLFrontendHandlerTest {
         when(channel.id()).thenReturn(channelId);
         when(context.channel()).thenReturn(channel);
         setTransactionType();
-        setShardingProxyCommandExecutorService(executorService);
         mysqlFrontendHandler.executeCommand(context, mock(ByteBuf.class));
-    }
-    
-    private void setShardingProxyCommandExecutorService(final ExecutorService commandExecutorService) throws ReflectiveOperationException {
-        Field field = ShardingProxy.getInstance().getClass().getDeclaredField("commandExecutorService");
-        field.setAccessible(true);
-        field.set(ShardingProxy.getInstance(), commandExecutorService);
     }
     
     private void setAuthentication(final Object value) throws ReflectiveOperationException {

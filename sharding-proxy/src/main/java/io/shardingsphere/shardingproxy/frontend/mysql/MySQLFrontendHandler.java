@@ -76,7 +76,7 @@ public final class MySQLFrontendHandler extends FrontendHandler {
     
     @Override
     protected void executeCommand(final ChannelHandlerContext context, final ByteBuf message) {
-        new ExecutorGroup(context.channel().id()).getExecutorService().execute(new CommandExecutor(context, message, this));
+        new ExecutorGroup(context.channel().id()).execute(new CommandExecutor(context, message, this));
     }
     
     @Override
