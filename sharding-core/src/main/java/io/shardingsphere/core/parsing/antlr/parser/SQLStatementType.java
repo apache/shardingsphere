@@ -15,7 +15,7 @@
  * </p>
  */
 
-package io.shardingsphere.core.parsing.antlr.ast;
+package io.shardingsphere.core.parsing.antlr.parser;
 
 import io.shardingsphere.core.parsing.parser.exception.SQLParsingUnsupportedException;
 import lombok.RequiredArgsConstructor;

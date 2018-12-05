@@ -15,7 +15,7 @@
  * </p>
  */
 
-package io.shardingsphere.core.parsing.antlr.ast.impl;
+package io.shardingsphere.core.parsing.antlr.parser.impl;
 
 import org.antlr.v4.runtime.ParserRuleContext;
 

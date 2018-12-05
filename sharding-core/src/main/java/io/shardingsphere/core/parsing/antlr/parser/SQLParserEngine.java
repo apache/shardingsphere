@@ -15,10 +15,10 @@
  * </p>
  */
 
-package io.shardingsphere.core.parsing.antlr.ast;
+package io.shardingsphere.core.parsing.antlr.parser;
 
 import io.shardingsphere.core.constant.DatabaseType;
-import io.shardingsphere.core.parsing.antlr.ast.impl.SQLParserFactory;
+import io.shardingsphere.core.parsing.antlr.parser.impl.SQLParserFactory;
 import io.shardingsphere.core.parsing.parser.exception.SQLParsingUnsupportedException;
 import lombok.RequiredArgsConstructor;
 import org.antlr.v4.runtime.ParserRuleContext;

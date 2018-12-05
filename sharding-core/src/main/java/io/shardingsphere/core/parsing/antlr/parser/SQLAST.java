@@ -15,7 +15,7 @@
  * </p>
  */
 
-package io.shardingsphere.core.parsing.antlr.ast;
+package io.shardingsphere.core.parsing.antlr.parser;
 
 import lombok.Getter;
 import org.antlr.v4.runtime.ParserRuleContext;

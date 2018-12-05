@@ -19,9 +19,9 @@ package io.shardingsphere.core.parsing.antlr;
 
 import io.shardingsphere.core.constant.DatabaseType;
 import io.shardingsphere.core.metadata.table.ShardingTableMetaData;
-import io.shardingsphere.core.parsing.antlr.ast.SQLAST;
-import io.shardingsphere.core.parsing.antlr.ast.SQLParserEngine;
-import io.shardingsphere.core.parsing.antlr.ast.SQLStatementType;
+import io.shardingsphere.core.parsing.antlr.parser.SQLAST;
+import io.shardingsphere.core.parsing.antlr.parser.SQLParserEngine;
+import io.shardingsphere.core.parsing.antlr.parser.SQLStatementType;
 import io.shardingsphere.core.parsing.antlr.extractor.statement.SQLSegmentsExtractor;
 import io.shardingsphere.core.parsing.antlr.extractor.statement.SQLSegmentsExtractorFactory;
 import io.shardingsphere.core.parsing.antlr.filler.SQLStatementFillerEngine;

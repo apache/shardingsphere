@@ -17,7 +17,7 @@
 
 package io.shardingsphere.core.parsing.antlr.filler.registry;
 
-import io.shardingsphere.core.parsing.antlr.ast.SQLStatementType;
+import io.shardingsphere.core.parsing.antlr.parser.SQLStatementType;
 import io.shardingsphere.core.parsing.parser.sql.SQLStatement;
 
 /**

@@ -15,7 +15,7 @@
  * </p>
  */
 
-package io.shardingsphere.core.parsing.antlr.ast.advanced;
+package io.shardingsphere.core.parsing.antlr.parser.advanced;
 
 import lombok.RequiredArgsConstructor;
 import org.antlr.v4.runtime.CommonToken;

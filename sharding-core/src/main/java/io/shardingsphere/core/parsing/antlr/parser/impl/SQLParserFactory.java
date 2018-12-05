@@ -15,13 +15,13 @@
  * </p>
  */
 
-package io.shardingsphere.core.parsing.antlr.ast.impl;
+package io.shardingsphere.core.parsing.antlr.parser.impl;
 
 import io.shardingsphere.core.constant.DatabaseType;
-import io.shardingsphere.core.parsing.antlr.ast.impl.dialect.MySQLParser;
-import io.shardingsphere.core.parsing.antlr.ast.impl.dialect.OracleParser;
-import io.shardingsphere.core.parsing.antlr.ast.impl.dialect.PostgreSQLParser;
-import io.shardingsphere.core.parsing.antlr.ast.impl.dialect.SQLServerParser;
+import io.shardingsphere.core.parsing.antlr.parser.impl.dialect.MySQLParser;
+import io.shardingsphere.core.parsing.antlr.parser.impl.dialect.OracleParser;
+import io.shardingsphere.core.parsing.antlr.parser.impl.dialect.PostgreSQLParser;
+import io.shardingsphere.core.parsing.antlr.parser.impl.dialect.SQLServerParser;
 import io.shardingsphere.core.parsing.antlr.autogen.MySQLStatementLexer;
 import io.shardingsphere.core.parsing.antlr.autogen.OracleStatementLexer;
 import io.shardingsphere.core.parsing.antlr.autogen.PostgreSQLStatementLexer;
