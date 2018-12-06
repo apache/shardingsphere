@@ -17,8 +17,7 @@
 
 package io.shardingsphere.core.parsing.antlr.extractor.statement.registry.dialect;
 
-import io.shardingsphere.core.parsing.antlr.parser.SQLStatementType;
-import io.shardingsphere.core.parsing.antlr.extractor.statement.SQLSegmentsExtractor;
+import io.shardingsphere.core.parsing.antlr.extractor.statement.SQLStatementExtractor;
 import io.shardingsphere.core.parsing.antlr.extractor.statement.impl.ddl.AlterIndexExtractor;
 import io.shardingsphere.core.parsing.antlr.extractor.statement.impl.ddl.CreateIndexExtractor;
 import io.shardingsphere.core.parsing.antlr.extractor.statement.impl.ddl.CreateTableExtractor;
@@ -26,8 +25,8 @@ import io.shardingsphere.core.parsing.antlr.extractor.statement.impl.ddl.DropInd
 import io.shardingsphere.core.parsing.antlr.extractor.statement.impl.ddl.dialect.sqlserver.SQLServerAlterTableExtractor;
 import io.shardingsphere.core.parsing.antlr.extractor.statement.impl.ddl.dialect.sqlserver.SQLServerDropTableExtractor;
 import io.shardingsphere.core.parsing.antlr.extractor.statement.impl.ddl.dialect.sqlserver.SQLServerTruncateTableExtractor;
-import io.shardingsphere.core.parsing.antlr.extractor.statement.impl.tcl.TCLSegmentsExtractor;
 import io.shardingsphere.core.parsing.antlr.extractor.statement.registry.SQLSegmentsExtractorRegistry;
+import io.shardingsphere.core.parsing.antlr.parser.SQLStatementType;
 
 import java.util.HashMap;
 import java.util.Map;
@@ -40,11 +39,10 @@ import java.util.Map;
  */
 public final class SQLServerSegmentsExtractorRegistry implements SQLSegmentsExtractorRegistry {
     
-    private static final Map<SQLStatementType, SQLSegmentsExtractor> EXTRACTORS = new HashMap<>();
+    private static final Map<SQLStatementType, SQLStatementExtractor> EXTRACTORS = new HashMap<>();
     
     static {
         registerDDL();
-        registerTCL();
     }
     
     private static void registerDDL() {
@@ -57,16 +55,8 @@ public final class SQLServerSegmentsExtractorRegistry implements SQLSegmentsExtr
         EXTRACTORS.put(SQLStatementType.DROP_INDEX, new DropIndexExtractor());
     }
     
-    private static void registerTCL() {
-        EXTRACTORS.put(SQLStatementType.SET_TRANSACTION, new TCLSegmentsExtractor());
-        EXTRACTORS.put(SQLStatementType.COMMIT, new TCLSegmentsExtractor());
-        EXTRACTORS.put(SQLStatementType.ROLLBACK, new TCLSegmentsExtractor());
-        EXTRACTORS.put(SQLStatementType.SAVEPOINT, new TCLSegmentsExtractor());
-        EXTRACTORS.put(SQLStatementType.BEGIN_WORK, new TCLSegmentsExtractor());
-    }
-    
     @Override
-    public SQLSegmentsExtractor getExtractor(final SQLStatementType type) {
+    public SQLStatementExtractor getExtractor(final SQLStatementType type) {
         return EXTRACTORS.get(type);
     }
 }

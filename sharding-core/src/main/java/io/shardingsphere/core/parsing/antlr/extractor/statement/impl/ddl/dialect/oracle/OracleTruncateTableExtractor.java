@@ -17,17 +17,29 @@
 
 package io.shardingsphere.core.parsing.antlr.extractor.statement.impl.ddl.dialect.oracle;
 
+import io.shardingsphere.core.parsing.antlr.extractor.segment.SQLSegmentExtractor;
 import io.shardingsphere.core.parsing.antlr.extractor.segment.impl.TableNameExtractor;
-import io.shardingsphere.core.parsing.antlr.extractor.statement.impl.ddl.TruncateTableExtractor;
+import io.shardingsphere.core.parsing.antlr.extractor.statement.SQLStatementExtractor;
+
+import java.util.Collection;
+import java.util.LinkedList;
 
 /**
  * Truncate table extractor for Oracle.
  * 
  * @author duhongjun
+ * @author zhangliang
  */
-public final class OracleTruncateTableExtractor extends TruncateTableExtractor {
+public final class OracleTruncateTableExtractor implements SQLStatementExtractor {
     
-    public OracleTruncateTableExtractor() {
-        addSQLSegmentExtractor(new TableNameExtractor());
+    private static final Collection<SQLSegmentExtractor> EXTRACTORS = new LinkedList<>();
+    
+    static {
+        EXTRACTORS.add(new TableNameExtractor());
+    }
+    
+    @Override
+    public Collection<SQLSegmentExtractor> getExtractors() {
+        return EXTRACTORS;
     }
 }

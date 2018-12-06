@@ -17,23 +17,35 @@
 
 package io.shardingsphere.core.parsing.antlr.extractor.statement.impl.ddl;
 
+import io.shardingsphere.core.parsing.antlr.extractor.segment.SQLSegmentExtractor;
 import io.shardingsphere.core.parsing.antlr.extractor.segment.impl.ColumnDefinitionsExtractor;
 import io.shardingsphere.core.parsing.antlr.extractor.segment.impl.IndexNamesExtractor;
 import io.shardingsphere.core.parsing.antlr.extractor.segment.impl.PrimaryKeyForCreateTableExtractor;
 import io.shardingsphere.core.parsing.antlr.extractor.segment.impl.TableNamesExtractor;
-import io.shardingsphere.core.parsing.antlr.extractor.statement.impl.AbstractSQLSegmentsExtractor;
+import io.shardingsphere.core.parsing.antlr.extractor.statement.SQLStatementExtractor;
+
+import java.util.Collection;
+import java.util.LinkedList;
 
 /**
  * Create table extractor.
  * 
  * @author duhongjun
+ * @author zhangliang
  */
-public final class CreateTableExtractor extends AbstractSQLSegmentsExtractor {
+public final class CreateTableExtractor implements SQLStatementExtractor {
     
-    public CreateTableExtractor() {
-        addSQLSegmentExtractor(new TableNamesExtractor());
-        addSQLSegmentExtractor(new ColumnDefinitionsExtractor());
-        addSQLSegmentExtractor(new IndexNamesExtractor());
-        addSQLSegmentExtractor(new PrimaryKeyForCreateTableExtractor());
+    private static final Collection<SQLSegmentExtractor> EXTRACTORS = new LinkedList<>();
+    
+    static {
+        EXTRACTORS.add(new TableNamesExtractor());
+        EXTRACTORS.add(new ColumnDefinitionsExtractor());
+        EXTRACTORS.add(new IndexNamesExtractor());
+        EXTRACTORS.add(new PrimaryKeyForCreateTableExtractor());
+    }
+    
+    @Override
+    public Collection<SQLSegmentExtractor> getExtractors() {
+        return EXTRACTORS;
     }
 }

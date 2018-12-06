@@ -17,8 +17,8 @@
 
 package io.shardingsphere.core.parsing.antlr.extractor.statement.registry;
 
+import io.shardingsphere.core.parsing.antlr.extractor.statement.SQLStatementExtractor;
 import io.shardingsphere.core.parsing.antlr.parser.SQLStatementType;
-import io.shardingsphere.core.parsing.antlr.extractor.statement.SQLSegmentsExtractor;
 
 /**
  * SQL segments extractor registry.
@@ -33,5 +33,5 @@ public interface SQLSegmentsExtractorRegistry {
      * @param type SQL statement type
      * @return SQL segments extractor
      */
-    SQLSegmentsExtractor getExtractor(SQLStatementType type);
+    SQLStatementExtractor getExtractor(SQLStatementType type);
 }

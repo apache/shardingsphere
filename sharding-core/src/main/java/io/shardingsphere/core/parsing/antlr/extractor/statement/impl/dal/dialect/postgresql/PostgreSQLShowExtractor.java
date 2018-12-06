@@ -17,17 +17,29 @@
 
 package io.shardingsphere.core.parsing.antlr.extractor.statement.impl.dal.dialect.postgresql;
 
+import io.shardingsphere.core.parsing.antlr.extractor.segment.SQLSegmentExtractor;
 import io.shardingsphere.core.parsing.antlr.extractor.segment.impl.dialect.postgresql.ShowParamExtractor;
-import io.shardingsphere.core.parsing.antlr.extractor.statement.impl.AbstractSQLSegmentsExtractor;
+import io.shardingsphere.core.parsing.antlr.extractor.statement.SQLStatementExtractor;
+
+import java.util.Collection;
+import java.util.LinkedList;
 
 /**
  * Show extractor for PostgreSQL.
  *
  * @author loxp
+ * @author zhangliang
  */
-public final class PostgreSQLShowExtractor extends AbstractSQLSegmentsExtractor {
+public final class PostgreSQLShowExtractor implements SQLStatementExtractor {
     
-    public PostgreSQLShowExtractor() {
-        addSQLSegmentExtractor(new ShowParamExtractor());
+    private static final Collection<SQLSegmentExtractor> EXTRACTORS = new LinkedList<>();
+    
+    static {
+        EXTRACTORS.add(new ShowParamExtractor());
+    }
+    
+    @Override
+    public Collection<SQLSegmentExtractor> getExtractors() {
+        return EXTRACTORS;
     }
 }
