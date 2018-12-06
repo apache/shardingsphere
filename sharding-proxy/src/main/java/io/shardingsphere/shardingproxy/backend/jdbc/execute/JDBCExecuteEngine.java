@@ -20,7 +20,6 @@ package io.shardingsphere.shardingproxy.backend.jdbc.execute;
 import io.shardingsphere.core.constant.ConnectionMode;
 import io.shardingsphere.core.constant.DatabaseType;
 import io.shardingsphere.core.constant.properties.ShardingPropertiesConstant;
-import io.shardingsphere.core.constant.transaction.TransactionType;
 import io.shardingsphere.core.executor.ShardingExecuteEngine;
 import io.shardingsphere.core.executor.ShardingExecuteGroup;
 import io.shardingsphere.core.executor.StatementExecuteUnit;
@@ -98,8 +97,7 @@ public final class JDBCExecuteEngine implements SQLExecuteEngine {
         this.jdbcExecutorWrapper = jdbcExecutorWrapper;
         int maxConnectionsSizePerQuery = GlobalRegistry.getInstance().getShardingProperties().<Integer>getValue(ShardingPropertiesConstant.MAX_CONNECTIONS_SIZE_PER_QUERY);
         ShardingExecuteEngine executeEngine = BackendExecutorContext.getInstance().getExecuteEngine();
-        sqlExecutePrepareTemplate = TransactionType.XA == GlobalRegistry.getInstance().getTransactionType()
-                ? new SQLExecutePrepareTemplate(maxConnectionsSizePerQuery) : new SQLExecutePrepareTemplate(maxConnectionsSizePerQuery, executeEngine);
+        sqlExecutePrepareTemplate = new SQLExecutePrepareTemplate(maxConnectionsSizePerQuery);
         sqlExecuteTemplate = new SQLExecuteTemplate(executeEngine);
     }
     

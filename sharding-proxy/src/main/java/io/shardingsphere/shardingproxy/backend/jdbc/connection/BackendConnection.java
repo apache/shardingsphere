@@ -161,10 +161,12 @@ public final class BackendConnection implements AutoCloseable {
         return result;
     }
     
-    private synchronized List<Connection> getConnectionsWithoutTransaction(final ConnectionMode connectionMode, final String dataSourceName, final int connectionSize) throws SQLException {
+    private List<Connection> getConnectionsWithoutTransaction(final ConnectionMode connectionMode, final String dataSourceName, final int connectionSize) throws SQLException {
         Preconditions.checkNotNull(logicSchema, "current logic schema is null");
         List<Connection> result = logicSchema.getBackendDataSource().getConnections(connectionMode, dataSourceName, connectionSize);
-        cachedConnections.putAll(dataSourceName, result);
+        synchronized (cachedConnections) {
+            cachedConnections.putAll(dataSourceName, result);
+        }
         return result;
     }
     
