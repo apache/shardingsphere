@@ -28,7 +28,7 @@ import java.sql.SQLException;
  * 
  * @author chenqingyang
  */
-public final class SchemaUnicastBackendHandler implements BackendHandler {
+public final class SchemaUnicastBackendHandler extends AbstractBackendHandler {
     
     private final BackendHandler backendHandler;
     
@@ -37,7 +37,7 @@ public final class SchemaUnicastBackendHandler implements BackendHandler {
     }
     
     @Override
-    public CommandResponsePackets execute() {
+    protected CommandResponsePackets execute0() {
         return backendHandler.execute();
     }
     

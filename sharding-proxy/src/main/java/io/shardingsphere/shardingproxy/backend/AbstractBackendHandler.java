@@ -31,8 +31,13 @@ import java.sql.SQLException;
  */
 public abstract class AbstractBackendHandler implements BackendHandler {
     
+    /**
+     * default execute implement for adapter.
+     *
+     * @return command response packets
+     */
     @Override
-    public final CommandResponsePackets execute() {
+    public CommandResponsePackets execute() {
         try {
             return execute0();
             // CHECKSTYLE:OFF
@@ -63,5 +68,25 @@ public abstract class AbstractBackendHandler implements BackendHandler {
             return Optional.of((SQLException) exception.getCause().getCause());
         }
         return Optional.absent();
+    }
+    
+    /**
+     * default next implement for adapter .
+     *
+     * @return false
+     */
+    @Override
+    public boolean next() throws SQLException {
+        return false;
+    }
+    
+    /**
+     * default {@code getResultValue} implement for adapter.
+     *
+     * @return result packet
+     */
+    @Override
+    public ResultPacket getResultValue() throws SQLException {
+        return null;
     }
 }
