@@ -15,18 +15,16 @@
  * </p>
  */
 
-package io.shardingsphere.transaction;
+package io.shardingsphere.transaction.handler;
 
-import io.shardingsphere.transaction.handler.AllHandlerTests;
 import org.junit.runner.RunWith;
 import org.junit.runners.Suite;
 import org.junit.runners.Suite.SuiteClasses;
 
 @RunWith(Suite.class)
 @SuiteClasses({
-    AllHandlerTests.class,
-    ShardingTransactionalSpringBootTest.class,
-    ShardingTransactionalNameSpaceTest.class
+    DataSourceTransactionManagerHandlerTest.class,
+    JpaTransactionManagerHandlerTest.class
 })
-public class AllTests {
+public class AllHandlerTests {
 }
