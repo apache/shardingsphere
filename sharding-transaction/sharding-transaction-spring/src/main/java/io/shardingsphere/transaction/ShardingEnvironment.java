@@ -17,16 +17,12 @@
 
 package io.shardingsphere.transaction;
 
-import io.shardingsphere.transaction.handler.AllHandlerTests;
-import org.junit.runner.RunWith;
-import org.junit.runners.Suite;
-import org.junit.runners.Suite.SuiteClasses;
+/**
+ * Target environment of swithcing the transaction type.
+ *
+ * @author yangyi
+ */
 
-@RunWith(Suite.class)
-@SuiteClasses({
-    AllHandlerTests.class,
-    ShardingTransactionalSpringBootTest.class,
-    ShardingTransactionalNameSpaceTest.class
-})
-public class AllTests {
+public enum ShardingEnvironment {
+    JDBC, PROXY
 }

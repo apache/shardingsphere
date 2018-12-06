@@ -15,18 +15,28 @@
  * </p>
  */
 
-package io.shardingsphere.transaction;
+package io.shardingsphere.transaction.handler;
 
-import io.shardingsphere.transaction.handler.AllHandlerTests;
-import org.junit.runner.RunWith;
-import org.junit.runners.Suite;
-import org.junit.runners.Suite.SuiteClasses;
+import io.shardingsphere.core.constant.transaction.TransactionType;
 
-@RunWith(Suite.class)
-@SuiteClasses({
-    AllHandlerTests.class,
-    ShardingTransactionalSpringBootTest.class,
-    ShardingTransactionalNameSpaceTest.class
-})
-public class AllTests {
+/**
+ * Transaction manager handler interface.
+ *
+ * @author yangyi
+ */
+
+public interface TransactionManagerHandler {
+    
+    /**
+     * Send switch transaction type SQL to Sharding-Proxy.
+     *
+     * @param transactionType transaction type
+     */
+    void switchTransactionType(TransactionType transactionType);
+    
+    /**
+     * Unbind Resource.
+     */
+    void unbindResource();
+    
 }

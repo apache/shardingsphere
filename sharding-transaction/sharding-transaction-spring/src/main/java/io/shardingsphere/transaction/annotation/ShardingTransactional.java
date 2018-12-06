@@ -18,6 +18,7 @@
 package io.shardingsphere.transaction.annotation;
 
 import io.shardingsphere.core.constant.transaction.TransactionType;
+import io.shardingsphere.transaction.ShardingEnvironment;
 import org.springframework.core.annotation.AliasFor;
 import org.springframework.transaction.annotation.Isolation;
 import org.springframework.transaction.annotation.Propagation;
@@ -152,8 +153,4 @@ public @interface ShardingTransactional {
         attribute = "noRollbackForClassName"
     )
     String[] noRollbackForClassName() default {};
-    
-    enum ShardingEnvironment {
-        JDBC, PROXY
-    }
 }

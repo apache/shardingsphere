@@ -26,15 +26,11 @@ import io.shardingsphere.transaction.fixture.ShardingTransactionalTestService;
 import org.hibernate.engine.spi.SessionImplementor;
 import org.junit.Before;
 import org.junit.Test;
-import org.junit.runner.RunWith;
 import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.boot.autoconfigure.SpringBootApplication;
-import org.springframework.boot.test.context.SpringBootTest;
-import org.springframework.context.annotation.ComponentScan;
-import org.springframework.context.annotation.ComponentScans;
 import org.springframework.jdbc.datasource.DataSourceTransactionManager;
 import org.springframework.orm.jpa.JpaTransactionManager;
-import org.springframework.test.context.junit4.SpringJUnit4ClassRunner;
+import org.springframework.test.context.ContextConfiguration;
+import org.springframework.test.context.junit4.AbstractJUnit4SpringContextTests;
 import org.springframework.transaction.PlatformTransactionManager;
 
 import java.sql.Connection;
@@ -53,11 +49,8 @@ import static org.mockito.Mockito.times;
 import static org.mockito.Mockito.verify;
 import static org.mockito.Mockito.when;
 
-@RunWith(SpringJUnit4ClassRunner.class)
-@SpringBootTest(classes = ShardingTransactionalSpringBootTest.class)
-@SpringBootApplication
-@ComponentScans({@ComponentScan("io.shardingsphere.transaction.aspect"), @ComponentScan("io.shardingsphere.transaction.fixture")})
-public class ShardingTransactionalSpringBootTest {
+@ContextConfiguration(locations = "classpath:shardingTransactionTest.xml")
+public class ShardingTransactionalNameSpaceTest extends AbstractJUnit4SpringContextTests {
     
     @Autowired
     private ShardingTransactionalTestService testService;
@@ -122,9 +115,9 @@ public class ShardingTransactionalSpringBootTest {
     
     @Test(expected = ShardingException.class)
     public void assertChangeTransactionTypeForProxyFailed() throws SQLException {
-        
+
         when(statement.execute(anyString())).thenThrow(new SQLException("test switch exception"));
-        aspect.setTransactionManager(jpaTransactionManager);
+        aspect.setTransactionManager(dataSourceTransactionManager);
         
         testService.testChangeTransactionTypeToLOCALWithEnvironment();
     }
@@ -132,12 +125,12 @@ public class ShardingTransactionalSpringBootTest {
     @Test
     public void assertChangeTransactionTypeToLOCALForProxy() throws SQLException {
         when(statement.execute(anyString())).thenReturn(true);
-    
+        
         aspect.setTransactionManager(jpaTransactionManager);
         testService.testChangeTransactionTypeToLOCALWithEnvironment();
         aspect.setTransactionManager(dataSourceTransactionManager);
         testService.testChangeTransactionTypeToLOCALWithEnvironment();
-    
+        
         verify(statement, times(2)).execute("SET TRANSACTION_TYPE=LOCAL");
     }
     
@@ -156,12 +149,12 @@ public class ShardingTransactionalSpringBootTest {
     @Test
     public void assertChangeTransactionTypeToBASEForProxy() throws SQLException {
         when(statement.execute(anyString())).thenReturn(true);
-    
+        
         aspect.setTransactionManager(jpaTransactionManager);
         testService.testChangeTransactionTypeToBASEWithEnvironment();
         aspect.setTransactionManager(dataSourceTransactionManager);
         testService.testChangeTransactionTypeToBASEWithEnvironment();
-    
+        
         verify(statement, times(2)).execute("SET TRANSACTION_TYPE=BASE");
     }
 }

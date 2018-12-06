@@ -28,6 +28,7 @@ import io.shardingsphere.shardingjdbc.spring.boot.sharding.SpringBootShardingRul
 import io.shardingsphere.shardingjdbc.spring.boot.util.PropertyUtil;
 import io.shardingsphere.shardingjdbc.util.DataSourceUtil;
 import lombok.RequiredArgsConstructor;
+
 import org.springframework.boot.context.properties.EnableConfigurationProperties;
 import org.springframework.context.EnvironmentAware;
 import org.springframework.context.annotation.Bean;
@@ -64,13 +65,13 @@ public class SpringBootConfiguration implements EnvironmentAware {
     
     /**
      * Get data source bean.
-     * 
+     *
      * @return data source bean
      * @throws SQLException SQL exception
      */
     @Bean
     public DataSource dataSource() throws SQLException {
-        return null == masterSlaveProperties.getMasterDataSourceName() 
+        return null == masterSlaveProperties.getMasterDataSourceName()
                 ? ShardingDataSourceFactory.createDataSource(dataSourceMap, shardingProperties.getShardingRuleConfiguration(), configMapProperties.getConfigMap(), propMapProperties.getProps())
                 : MasterSlaveDataSourceFactory.createDataSource(
                         dataSourceMap, masterSlaveProperties.getMasterSlaveRuleConfiguration(), configMapProperties.getConfigMap(), propMapProperties.getProps());
