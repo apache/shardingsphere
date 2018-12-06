@@ -19,7 +19,7 @@ package io.shardingsphere.core.parsing.antlr.sql.segment.column;
 
 import com.google.common.base.Optional;
 
-import io.shardingsphere.core.parsing.antlr.sql.segment.expr.SQLExpressionSegment;
+import io.shardingsphere.core.parsing.antlr.sql.segment.expr.SQLRightValueExpressionSegment;
 import lombok.Getter;
 import lombok.RequiredArgsConstructor;
 import lombok.Setter;
@@ -31,7 +31,7 @@ import lombok.Setter;
  */
 @RequiredArgsConstructor
 @Getter
-public class ColumnSegment implements SQLExpressionSegment {
+public final class ColumnSegment implements SQLRightValueExpressionSegment {
     
     private final Optional<String> owner;
     

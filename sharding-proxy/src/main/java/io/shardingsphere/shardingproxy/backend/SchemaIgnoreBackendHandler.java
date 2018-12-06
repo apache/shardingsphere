@@ -48,7 +48,7 @@ import java.util.List;
  * @author chenqingyang
  */
 @RequiredArgsConstructor
-public final class SchemaIgnoreBackendHandler implements BackendHandler {
+public final class SchemaIgnoreBackendHandler extends AbstractBackendHandler {
     
     private static final GlobalRegistry GLOBAL_REGISTRY = GlobalRegistry.getInstance();
     
@@ -65,11 +65,11 @@ public final class SchemaIgnoreBackendHandler implements BackendHandler {
     private final List<ColumnType> columnTypes = new LinkedList<>();
     
     @Override
-    public CommandResponsePackets execute() {
+    protected CommandResponsePackets execute0() {
         if (sqlStatement instanceof UseStatement) {
             return handleUseStatement((UseStatement) sqlStatement);
         }
-        
+    
         if (sqlStatement instanceof ShowDatabasesStatement) {
             return handleShowDatabasesStatement();
         }

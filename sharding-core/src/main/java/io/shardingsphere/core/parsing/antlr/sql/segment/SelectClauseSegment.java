@@ -31,7 +31,7 @@ import lombok.RequiredArgsConstructor;
  */
 @RequiredArgsConstructor
 @Getter
-public class SelectClauseSegment implements SQLSegment {
+public final class SelectClauseSegment implements SQLSegment {
     
     private final int selectListLastPosition;
     

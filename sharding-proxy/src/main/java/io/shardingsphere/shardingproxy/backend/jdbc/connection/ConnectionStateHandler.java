@@ -58,7 +58,7 @@ public class ConnectionStateHandler {
      * Change connection status to running if necessary.
      */
     void setRunningStatusIfNecessary() {
-        if (ConnectionStatus.INIT == status.get() || ConnectionStatus.TERMINATED == status.get()) {
+        if (ConnectionStatus.TRANSACTION != status.get()) {
             status.getAndSet(ConnectionStatus.RUNNING);
         }
     }

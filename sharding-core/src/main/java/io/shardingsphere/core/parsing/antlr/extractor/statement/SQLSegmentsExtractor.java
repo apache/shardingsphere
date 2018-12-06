@@ -19,7 +19,6 @@ package io.shardingsphere.core.parsing.antlr.extractor.statement;
 
 import io.shardingsphere.core.metadata.table.ShardingTableMetaData;
 import io.shardingsphere.core.parsing.antlr.sql.segment.SQLSegment;
-import io.shardingsphere.core.parsing.parser.sql.SQLStatement;
 import io.shardingsphere.core.rule.ShardingRule;
 import org.antlr.v4.runtime.ParserRuleContext;
 
@@ -41,12 +40,4 @@ public interface SQLSegmentsExtractor {
      * @return SQL segments
      */
     Collection<SQLSegment> extract(ParserRuleContext rootNode, ShardingRule shardingRule, ShardingTableMetaData shardingTableMetaData);
-    
-    /**
-     * Post extract.
-     *
-     * @param sqlStatement SQL statement
-     * @param shardingTableMetaData sharding table meta data
-     */
-    void postExtract(SQLStatement sqlStatement, ShardingTableMetaData shardingTableMetaData);
 }

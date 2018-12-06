@@ -18,14 +18,7 @@
 package io.shardingsphere.shardingproxy.backend;
 
 import io.shardingsphere.core.constant.DatabaseType;
-import io.shardingsphere.core.constant.SQLType;
 import io.shardingsphere.core.constant.properties.ShardingPropertiesConstant;
-import io.shardingsphere.core.parsing.SQLJudgeEngine;
-import io.shardingsphere.core.parsing.parser.dialect.mysql.statement.SetStatement;
-import io.shardingsphere.core.parsing.parser.dialect.mysql.statement.ShowDatabasesStatement;
-import io.shardingsphere.core.parsing.parser.dialect.mysql.statement.ShowOtherStatement;
-import io.shardingsphere.core.parsing.parser.dialect.mysql.statement.UseStatement;
-import io.shardingsphere.core.parsing.parser.sql.SQLStatement;
 import io.shardingsphere.shardingproxy.backend.jdbc.JDBCBackendHandler;
 import io.shardingsphere.shardingproxy.backend.jdbc.connection.BackendConnection;
 import io.shardingsphere.shardingproxy.backend.jdbc.execute.JDBCExecuteEngine;
@@ -50,29 +43,6 @@ import java.util.List;
 public final class BackendHandlerFactory {
     
     private static final GlobalRegistry GLOBAL_REGISTRY = GlobalRegistry.getInstance();
-    
-    /**
-     * Create new com query backend handler instance by SQL judge.
-     *
-     * @param sequenceId sequence ID of SQL packet
-     * @param sql SQL to be executed
-     * @param backendConnection backend connection
-     * @param databaseType database type
-     * @return instance of backend handler
-     */
-    public static BackendHandler createBackendHandler(final int sequenceId, final String sql, final BackendConnection backendConnection, final DatabaseType databaseType) {
-        SQLStatement sqlStatement = new SQLJudgeEngine(sql).judge();
-        if (SQLType.DCL == sqlStatement.getType() || sqlStatement instanceof SetStatement) {
-            return new SchemaBroadcastBackendHandler(sequenceId, sql, backendConnection, databaseType);
-        }
-        if (sqlStatement instanceof UseStatement || sqlStatement instanceof ShowDatabasesStatement) {
-            return new SchemaIgnoreBackendHandler(sqlStatement, backendConnection);
-        }
-        if (sqlStatement instanceof ShowOtherStatement) {
-            return new SchemaUnicastBackendHandler(sequenceId, sql, backendConnection, DatabaseType.MySQL);
-        }
-        return newTextProtocolInstance(sequenceId, sql, backendConnection, DatabaseType.MySQL);
-    }
     
     /**
      * Create new instance of text protocol backend handler.

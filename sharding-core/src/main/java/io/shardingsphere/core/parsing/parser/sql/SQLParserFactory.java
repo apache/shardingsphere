@@ -72,14 +72,12 @@ public final class SQLParserFactory {
      */
     public static SQLParser newInstance(
             final DatabaseType dbType, final ShardingRule shardingRule, final LexerEngine lexerEngine, final ShardingTableMetaData shardingTableMetaData, final String sql) {
-        
         lexerEngine.nextToken();
         TokenType tokenType = lexerEngine.getCurrentToken().getType();
-        
         if (DQLStatement.isDQL(tokenType)) {
-            if (DatabaseType.MySQL == dbType) {
-                return new AntlrParsingEngine(dbType, sql, shardingRule, shardingTableMetaData);
-            }
+//            if (DatabaseType.MySQL == dbType) {
+//                return new AntlrParsingEngine(dbType, sql, shardingRule, shardingTableMetaData);
+//            }
             return getDQLParser(dbType, shardingRule, lexerEngine, shardingTableMetaData);
         }
         if (DMLStatement.isDML(tokenType)) {

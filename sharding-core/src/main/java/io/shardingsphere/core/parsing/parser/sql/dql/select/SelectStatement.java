@@ -17,8 +17,16 @@
 
 package io.shardingsphere.core.parsing.parser.sql.dql.select;
 
+import java.util.Collection;
+import java.util.HashSet;
+import java.util.LinkedList;
+import java.util.List;
+import java.util.Map;
+import java.util.Set;
+
 import com.google.common.base.Optional;
 import com.google.common.base.Preconditions;
+
 import io.shardingsphere.core.parsing.parser.context.OrderItem;
 import io.shardingsphere.core.parsing.parser.context.limit.Limit;
 import io.shardingsphere.core.parsing.parser.context.selectitem.AggregationDistinctSelectItem;
@@ -32,17 +40,9 @@ import io.shardingsphere.core.parsing.parser.token.OffsetToken;
 import io.shardingsphere.core.parsing.parser.token.RowCountToken;
 import io.shardingsphere.core.parsing.parser.token.SQLToken;
 import io.shardingsphere.core.util.SQLUtil;
-import lombok.AccessLevel;
 import lombok.Getter;
 import lombok.Setter;
 import lombok.ToString;
-
-import java.util.Collection;
-import java.util.HashSet;
-import java.util.LinkedList;
-import java.util.List;
-import java.util.Map;
-import java.util.Set;
 
 /**
  * Select statement.
@@ -69,11 +69,9 @@ public final class SelectStatement extends DQLStatement {
     
     private Limit limit;
     
-    private String sql;
-    
-    @Getter(AccessLevel.NONE)
-    @Setter(AccessLevel.NONE)
     private SelectStatement subQueryStatement;
+    
+    private Collection<SelectStatement> subQueryStatements = new LinkedList<>();
     
     /**
      * Get alias.

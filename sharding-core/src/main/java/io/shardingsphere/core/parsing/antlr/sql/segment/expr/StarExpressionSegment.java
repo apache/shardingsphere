@@ -29,7 +29,7 @@ import lombok.RequiredArgsConstructor;
  */
 @RequiredArgsConstructor
 @Getter
-public final class StarExpressionSegment extends ExpressionSegment {
+public final class StarExpressionSegment implements ExpressionSegment {
     
     private final int startPosition;
     
