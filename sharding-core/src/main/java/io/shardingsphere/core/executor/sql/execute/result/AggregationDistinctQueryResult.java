@@ -74,7 +74,7 @@ public final class AggregationDistinctQueryResult extends DistinctQueryResult {
     
             @Override
             public String apply(final AggregationDistinctSelectItem input) {
-                return input.getDistinctColumnName();
+                return input.getDistinctColumnLabel();
             }
         }));
         init(selectStatement);
@@ -82,7 +82,7 @@ public final class AggregationDistinctQueryResult extends DistinctQueryResult {
     
     private void init(final SelectStatement selectStatement) {
         for (AggregationDistinctSelectItem each : selectStatement.getAggregationDistinctSelectItems()) {
-            distinctAggregationColumnLabelAndIndexes.put(each.getColumnLabel(), super.getColumnIndex(each.getDistinctColumnName()));
+            distinctAggregationColumnLabelAndIndexes.put(each.getColumnLabel(), super.getColumnIndex(each.getDistinctColumnLabel()));
             initDerivedIndexAndDistinctIndexes(each);
             distinctAggregationIndexAndTypes.put(getColumnIndex(each.getColumnLabel()), each.getType());
         }
@@ -91,8 +91,8 @@ public final class AggregationDistinctQueryResult extends DistinctQueryResult {
     private void initDerivedIndexAndDistinctIndexes(final AggregationDistinctSelectItem selectItem) {
         List<AggregationSelectItem> derivedAggregationSelectItems = selectItem.getDerivedAggregationSelectItems();
         if (!derivedAggregationSelectItems.isEmpty()) {
-            derivedCountIndexAndDistinctIndexes.put(super.getColumnIndex(derivedAggregationSelectItems.get(0).getColumnLabel()), super.getColumnIndex(selectItem.getDistinctColumnName()));
-            derivedSumIndexAndDistinctIndexes.put(super.getColumnIndex(derivedAggregationSelectItems.get(1).getColumnLabel()), super.getColumnIndex(selectItem.getDistinctColumnName()));
+            derivedCountIndexAndDistinctIndexes.put(super.getColumnIndex(derivedAggregationSelectItems.get(0).getColumnLabel()), super.getColumnIndex(selectItem.getDistinctColumnLabel()));
+            derivedSumIndexAndDistinctIndexes.put(super.getColumnIndex(derivedAggregationSelectItems.get(1).getColumnLabel()), super.getColumnIndex(selectItem.getDistinctColumnLabel()));
         }
     }
     

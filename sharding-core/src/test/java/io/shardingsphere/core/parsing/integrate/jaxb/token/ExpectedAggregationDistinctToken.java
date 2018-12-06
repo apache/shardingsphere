@@ -15,7 +15,7 @@
  * </p>
  */
 
-package io.shardingsphere.core.parsing.integrate.jaxb.item;
+package io.shardingsphere.core.parsing.integrate.jaxb.token;
 
 import lombok.Getter;
 import lombok.Setter;
@@ -23,30 +23,18 @@ import lombok.Setter;
 import javax.xml.bind.annotation.XmlAccessType;
 import javax.xml.bind.annotation.XmlAccessorType;
 import javax.xml.bind.annotation.XmlAttribute;
-import javax.xml.bind.annotation.XmlElement;
-import java.util.ArrayList;
-import java.util.List;
 
 @Getter
 @Setter
 @XmlAccessorType(XmlAccessType.FIELD)
-public final class ExpectedAggregationSelectItem {
+public final class ExpectedAggregationDistinctToken {
     
-    @XmlAttribute(name = "type")
-    private String type;
+    @XmlAttribute(name = "begin-position")
+    private int beginPosition;
     
-    @XmlAttribute(name = "inner-expression")
-    private String innerExpression;
+    @XmlAttribute(name = "original-literals")
+    private String originalLiterals;
     
-    @XmlAttribute
-    private String alias;
-    
-    @XmlAttribute 
-    private Integer index = -1;
-    
-    @XmlAttribute(name = "distinct-column")
-    private String distinctColumnName;
-    
-    @XmlElement(name = "derived-column") 
-    private List<ExpectedAggregationSelectItem> derivedColumns = new ArrayList<>(2);
+    @XmlAttribute(name = "column-name")
+    private String columnName;
 }

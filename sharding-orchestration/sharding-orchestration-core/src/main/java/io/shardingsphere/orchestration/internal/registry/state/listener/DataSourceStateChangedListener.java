@@ -47,7 +47,7 @@ public final class DataSourceStateChangedListener extends PostShardingOrchestrat
     }
     
     private OrchestrationShardingSchema getShardingSchema(final String dataSourceNodeFullPath) {
-        return new OrchestrationShardingSchema(dataSourceNodeFullPath.replace(stateNode.getDataSourcesNodeFullRootPath() + '/', ""));
+        return stateNode.getOrchestrationShardingSchema(dataSourceNodeFullPath);
     }
     
     private boolean isDataSourceDisabled(final DataChangedEvent event) {

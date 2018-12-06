@@ -380,8 +380,27 @@
         <assertion parameters="100001:int" expected-data-file="select_not_equal_with_single_table.xml" />
     </dql-test-case>
 
-     <dql-test-case sql-case-id="select_distinct_with_single_table">
-        <assertion expected-data-file="select_distinct_with_single_table.xml" />
+     <dql-test-case sql-case-id="select_distinct_with_single_column">
+        <assertion expected-data-file="select_distinct_with_single_column.xml" />
     </dql-test-case>
-    
+
+    <dql-test-case sql-case-id="select_distinct_with_multi_column">
+        <assertion expected-data-file="select_distinct_with_multi_column.xml" />
+    </dql-test-case>
+
+    <dql-test-case sql-case-id="select_distinct_with_star">
+        <assertion expected-data-file="select_distinct_with_star.xml" />
+    </dql-test-case>
+
+    <dql-test-case sql-case-id="select_distinct_with_sum">
+        <assertion expected-data-file="select_distinct_with_sum.xml" />
+    </dql-test-case>
+
+    <dql-test-case sql-case-id="select_distinct_with_count">
+        <assertion expected-data-file="select_distinct_with_count.xml" />
+    </dql-test-case>
+
+    <dql-test-case sql-case-id="select_distinct_with_count_group_by">
+        <assertion expected-data-file="select_distinct_with_count_group_by.xml" />
+    </dql-test-case>
 </integrate-test-cases>

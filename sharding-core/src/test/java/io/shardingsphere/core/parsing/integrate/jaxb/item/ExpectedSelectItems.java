@@ -22,31 +22,20 @@ import lombok.Setter;
 
 import javax.xml.bind.annotation.XmlAccessType;
 import javax.xml.bind.annotation.XmlAccessorType;
-import javax.xml.bind.annotation.XmlAttribute;
 import javax.xml.bind.annotation.XmlElement;
-import java.util.ArrayList;
+import javax.xml.bind.annotation.XmlElementWrapper;
+import java.util.LinkedList;
 import java.util.List;
 
 @Getter
 @Setter
 @XmlAccessorType(XmlAccessType.FIELD)
-public final class ExpectedAggregationSelectItem {
+public final class ExpectedSelectItems {
     
-    @XmlAttribute(name = "type")
-    private String type;
+    @XmlElementWrapper(name = "aggregation-select-items")
+    @XmlElement(name = "aggregation-select-item")
+    private List<ExpectedAggregationSelectItem> aggregationSelectItems = new LinkedList<>();
     
-    @XmlAttribute(name = "inner-expression")
-    private String innerExpression;
-    
-    @XmlAttribute
-    private String alias;
-    
-    @XmlAttribute 
-    private Integer index = -1;
-    
-    @XmlAttribute(name = "distinct-column")
-    private String distinctColumnName;
-    
-    @XmlElement(name = "derived-column") 
-    private List<ExpectedAggregationSelectItem> derivedColumns = new ArrayList<>(2);
+    @XmlElement(name = "distinct-select-item")
+    private ExpectedDistinctSelectItem distinctSelectItem;
 }

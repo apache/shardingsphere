@@ -30,24 +30,30 @@ import static org.mockito.ArgumentMatchers.anyString;
 import static org.mockito.Mockito.verify;
 
 @RunWith(MockitoJUnitRunner.class)
-public final class InstanceStateServiceTest {
+public final class StateServiceTest {
     
     @Mock
     private RegistryCenter regCenter;
     
-    private InstanceStateService instanceStateService;
+    private StateService stateService;
     
     @Before
     public void setUp() throws ReflectiveOperationException {
-        instanceStateService = new InstanceStateService("test", regCenter);
-        Field field = instanceStateService.getClass().getDeclaredField("regCenter");
+        stateService = new StateService("test", regCenter);
+        Field field = stateService.getClass().getDeclaredField("regCenter");
         field.setAccessible(true);
-        field.set(instanceStateService, regCenter);
+        field.set(stateService, regCenter);
     }
     
     @Test
     public void assertPersistInstanceOnline() {
-        instanceStateService.persistInstanceOnline();
+        stateService.persistInstanceOnline();
         verify(regCenter).persistEphemeral(anyString(), anyString());
+    }
+    
+    @Test
+    public void assertPersistDataSourcesNode() {
+        stateService.persistDataSourcesNode();
+        verify(regCenter).persist("/test/state/datasources", "");
     }
 }
