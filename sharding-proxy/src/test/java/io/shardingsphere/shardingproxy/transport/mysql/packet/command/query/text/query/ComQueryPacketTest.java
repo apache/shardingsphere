@@ -98,10 +98,6 @@ public final class ComQueryPacketTest {
         field.set(GlobalRegistry.getInstance(), shardingSchemas);
     }
     
-//    private void setFrontendHandlerSchema() {
-//        when(frontendHandler.getCurrentSchema()).thenReturn(ShardingConstant.LOGIC_SCHEMA_NAME);
-//    }
-    
     @SneakyThrows
     private static void setGlobalRegistry() {
         Field field = GlobalRegistry.getInstance().getClass().getDeclaredField("shardingProperties");
@@ -121,15 +117,9 @@ public final class ComQueryPacketTest {
     @Test
     public void assertExecuteWithoutTransaction() throws SQLException {
         when(payload.readStringEOF()).thenReturn("SELECT id FROM tbl");
-        BackendHandler backendHandler = mock(BackendHandler.class);
-        when(backendHandler.next()).thenReturn(true, false);
-        when(backendHandler.getResultValue()).thenReturn(new ResultPacket(1, Collections.<Object>singletonList("id"), 1, Collections.singletonList(ColumnType.MYSQL_TYPE_VARCHAR)));
-        FieldCountPacket expectedFieldCountPacket = new FieldCountPacket(1, 1);
-        when(backendHandler.execute()).thenReturn(new CommandResponsePackets(expectedFieldCountPacket));
-        when(backendHandler.next()).thenReturn(true, false);
-        when(backendHandler.getResultValue()).thenReturn(new ResultPacket(2, Collections.<Object>singletonList(99999L), 1, Collections.singletonList(ColumnType.MYSQL_TYPE_LONG)));
         ComQueryPacket packet = new ComQueryPacket(1, payload, backendConnection);
-        setBackendHandler(packet, backendHandler);
+        FieldCountPacket expectedFieldCountPacket = new FieldCountPacket(1, 1);
+        setBackendHandler(packet, expectedFieldCountPacket);
         Optional<CommandResponsePackets> actual = packet.execute();
         assertTrue(actual.isPresent());
         assertThat(actual.get().getPackets().size(), is(1));
@@ -141,7 +131,13 @@ public final class ComQueryPacketTest {
     }
     
     @SneakyThrows
-    private void setBackendHandler(final ComQueryPacket packet, final BackendHandler backendHandler) {
+    private void setBackendHandler(final ComQueryPacket packet, final FieldCountPacket expectedFieldCountPacket) {
+        BackendHandler backendHandler = mock(BackendHandler.class);
+        when(backendHandler.next()).thenReturn(true, false);
+        when(backendHandler.getResultValue()).thenReturn(new ResultPacket(1, Collections.<Object>singletonList("id"), 1, Collections.singletonList(ColumnType.MYSQL_TYPE_VARCHAR)));
+        when(backendHandler.execute()).thenReturn(new CommandResponsePackets(expectedFieldCountPacket));
+        when(backendHandler.next()).thenReturn(true, false);
+        when(backendHandler.getResultValue()).thenReturn(new ResultPacket(2, Collections.<Object>singletonList(99999L), 1, Collections.singletonList(ColumnType.MYSQL_TYPE_LONG)));
         Field field = ComQueryPacket.class.getDeclaredField("backendHandler");
         field.setAccessible(true);
         field.set(packet, backendHandler);
