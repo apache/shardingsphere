@@ -62,9 +62,7 @@ public final class XATransactionManagerSPILoader {
                 return new AtomikosTransactionManager();
             }
             return xaTransactionManagers.iterator().next();
-            // CHECKSTYLE:OFF
-        } catch (Exception ex) {
-            // CHECKSTYLE:ON
+        } catch (final Exception ex) {
             throw new ShardingException("Can not initialize the xaTransaction manager failed with " + ex);
         }
     }

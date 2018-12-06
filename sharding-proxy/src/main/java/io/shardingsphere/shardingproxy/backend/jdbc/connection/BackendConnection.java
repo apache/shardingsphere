@@ -263,7 +263,7 @@ public final class BackendConnection implements AutoCloseable {
                     each.rollback();
                 }
                 each.close();
-            } catch (SQLException ex) {
+            } catch (final SQLException ex) {
                 result.add(ex);
             }
         }

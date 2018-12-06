@@ -38,8 +38,8 @@ public abstract class AbstractTransactionManagerHandler implements TransactionMa
         Connection connection = getConnectionFromTransactionManager();
         try (Statement statement = connection.createStatement()) {
             statement.execute(String.format(SET_TRANSACTION_TYPE_SQL, transactionType.name()));
-        } catch (SQLException e) {
-            throw new ShardingException("Switch transaction type for sharding-proxy failed: ", e);
+        } catch (final SQLException ex) {
+            throw new ShardingException("Switch transaction type for sharding-proxy failed: ", ex);
         }
     }
     

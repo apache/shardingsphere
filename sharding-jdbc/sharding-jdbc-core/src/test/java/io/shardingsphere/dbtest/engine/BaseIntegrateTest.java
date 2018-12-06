@@ -170,7 +170,7 @@ public abstract class BaseIntegrateTest {
             for (String each : integrateTestEnvironment.getShardingRuleTypes()) {
                 SchemaEnvironmentManager.createDatabase(each);
             }
-        } catch (Exception ex) {
+        } catch (final Exception ex) {
             ex.printStackTrace();
         }
     }
@@ -180,7 +180,7 @@ public abstract class BaseIntegrateTest {
             for (String each : integrateTestEnvironment.getShardingRuleTypes()) {
                 SchemaEnvironmentManager.createTable(each);
             }
-        } catch (Exception ex) {
+        } catch (final Exception ex) {
             ex.printStackTrace();
         }
     }
@@ -190,7 +190,7 @@ public abstract class BaseIntegrateTest {
             for (String each : integrateTestEnvironment.getShardingRuleTypes()) {
                 SchemaEnvironmentManager.dropDatabase(each);
             }
-        } catch (Exception ex) {
+        } catch (final Exception ex) {
             ex.printStackTrace();
         }
     }
@@ -200,7 +200,7 @@ public abstract class BaseIntegrateTest {
             for (String each : integrateTestEnvironment.getShardingRuleTypes()) {
                 SchemaEnvironmentManager.dropTable(each);
             }
-        } catch (Exception ex) {
+        } catch (final Exception ex) {
             ex.printStackTrace();
         }
     }

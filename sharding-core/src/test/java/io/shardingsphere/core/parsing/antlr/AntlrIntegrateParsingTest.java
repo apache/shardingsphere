@@ -18,14 +18,14 @@
 package io.shardingsphere.core.parsing.antlr;
 
 import io.shardingsphere.core.constant.DatabaseType;
-import io.shardingsphere.core.parsing.antlr.parser.impl.dialect.MySQLParser;
-import io.shardingsphere.core.parsing.antlr.parser.impl.dialect.OracleParser;
-import io.shardingsphere.core.parsing.antlr.parser.impl.dialect.PostgreSQLParser;
-import io.shardingsphere.core.parsing.antlr.parser.impl.dialect.SQLServerParser;
 import io.shardingsphere.core.parsing.antlr.autogen.MySQLStatementLexer;
 import io.shardingsphere.core.parsing.antlr.autogen.OracleStatementLexer;
 import io.shardingsphere.core.parsing.antlr.autogen.PostgreSQLStatementLexer;
 import io.shardingsphere.core.parsing.antlr.autogen.SQLServerStatementLexer;
+import io.shardingsphere.core.parsing.antlr.parser.impl.dialect.MySQLParser;
+import io.shardingsphere.core.parsing.antlr.parser.impl.dialect.OracleParser;
+import io.shardingsphere.core.parsing.antlr.parser.impl.dialect.PostgreSQLParser;
+import io.shardingsphere.core.parsing.antlr.parser.impl.dialect.SQLServerParser;
 import io.shardingsphere.core.parsing.integrate.asserts.AntlrParserResultSetLoader;
 import io.shardingsphere.core.parsing.integrate.asserts.SQLStatementAssert;
 import io.shardingsphere.core.parsing.integrate.engine.AbstractBaseIntegrateSQLParsingTest;
@@ -102,7 +102,7 @@ public final class AntlrIntegrateParsingTest extends AbstractBaseIntegrateSQLPar
         ParserResult parserResult = null;
         try {
             parserResult = parserResultSetLoader.getParserResult(sqlCaseId);
-        } catch (Exception ignored) {
+        } catch (final Exception ignored) {
         }
         if (null != parserResult) {
             String sql = sqlCasesLoader.getSupportedSQL(sqlCaseId, sqlCaseType, parserResult.getParameters());

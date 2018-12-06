@@ -67,7 +67,7 @@ public class BackendTransactionManagerTest {
         MockConnectionUtil.mockThrowException(backendConnection.getCachedConnections().values());
         try {
             backendTransactionManager.doInTransaction(TransactionOperationType.COMMIT);
-        } catch (SQLException ex) {
+        } catch (final SQLException ex) {
             assertThat(ex.getNextException().getNextException(), instanceOf(SQLException.class));
         }
         assertThat(backendConnection.getStateHandler().getStatus(), is(ConnectionStatus.TERMINATED));
@@ -91,7 +91,7 @@ public class BackendTransactionManagerTest {
         MockConnectionUtil.mockThrowException(backendConnection.getCachedConnections().values());
         try {
             backendTransactionManager.doInTransaction(TransactionOperationType.ROLLBACK);
-        } catch (SQLException ex) {
+        } catch (final SQLException ex) {
             assertThat(ex.getNextException().getNextException(), instanceOf(SQLException.class));
         }
         assertThat(backendConnection.getStateHandler().getStatus(), is(ConnectionStatus.TERMINATED));
