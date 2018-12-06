@@ -18,11 +18,10 @@
 package io.shardingsphere.transaction;
 
 /**
- * Target environment of swithcing the transaction type.
+ * Target environment of switch the transaction type.
  *
  * @author yangyi
  */
-
 public enum ShardingEnvironment {
     JDBC, PROXY
 }

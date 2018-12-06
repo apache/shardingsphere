@@ -19,17 +19,18 @@ package io.shardingsphere.transaction.handler;
 
 import io.shardingsphere.core.constant.transaction.TransactionType;
 import io.shardingsphere.core.exception.ShardingException;
-
 import org.hibernate.engine.spi.SessionImplementor;
 import org.junit.Before;
 import org.junit.Test;
+import org.junit.runner.RunWith;
+import org.mockito.Mock;
+import org.mockito.junit.MockitoJUnitRunner;
 import org.springframework.orm.jpa.EntityManagerHolder;
 import org.springframework.orm.jpa.JpaTransactionManager;
 import org.springframework.transaction.support.TransactionSynchronizationManager;
 
 import javax.persistence.EntityManager;
 import javax.persistence.EntityManagerFactory;
-
 import java.sql.Connection;
 import java.sql.SQLException;
 import java.sql.Statement;
@@ -40,41 +41,43 @@ import static org.mockito.Mockito.mock;
 import static org.mockito.Mockito.verify;
 import static org.mockito.Mockito.when;
 
-public class JpaTransactionManagerHandlerTest {
+@RunWith(MockitoJUnitRunner.class)
+public final class JpaTransactionManagerHandlerTest {
     
-    private final JpaTransactionManager transactionManager = mock(JpaTransactionManager.class);
+    @Mock
+    private JpaTransactionManager transactionManager;
     
-    private final JpaTransactionManagerHandler jpaTransactionManagerHandler = new JpaTransactionManagerHandler(transactionManager);
+    @Mock
+    private Statement statement;
     
-    private final Statement statement = mock(Statement.class);
+    @Mock
+    private EntityManagerFactory entityManagerFactory;
     
-    private final EntityManagerFactory entityManagerFactory = mock(EntityManagerFactory.class);
+    private JpaTransactionManagerHandler jpaTransactionManagerHandler;
     
     @Before
     public void setUp() throws SQLException {
         Connection connection = mock(Connection.class);
         EntityManager entityManager = mock(EntityManager.class);
         SessionImplementor sessionImplementor = mock(SessionImplementor.class);
-    
         when(connection.createStatement()).thenReturn(statement);
         when(sessionImplementor.connection()).thenReturn(connection);
         when(entityManager.unwrap(SessionImplementor.class)).thenReturn(sessionImplementor);
         when(entityManagerFactory.createEntityManager()).thenReturn(entityManager);
         when(transactionManager.getEntityManagerFactory()).thenReturn(entityManagerFactory);
+        jpaTransactionManagerHandler = new JpaTransactionManagerHandler(transactionManager);
     }
     
     @Test
     public void assertSwitchTransactionTypeSuccess() throws SQLException {
         jpaTransactionManagerHandler.switchTransactionType(TransactionType.XA);
         verify(statement).execute(anyString());
-        
         TransactionSynchronizationManager.unbindResourceIfPossible(entityManagerFactory);
     }
     
     @Test(expected = ShardingException.class)
     public void assertSwitchTransactionTypeFailExecute() throws SQLException {
         when(statement.execute(anyString())).thenThrow(new SQLException("Mock send switch transaction type SQL failed"));
-        
         try {
             jpaTransactionManagerHandler.switchTransactionType(TransactionType.XA);
         } finally {
@@ -88,7 +91,6 @@ public class JpaTransactionManagerHandlerTest {
         EntityManager entityManager = entityManagerFactory.createEntityManager();
         when(holder.getEntityManager()).thenReturn(entityManager);
         TransactionSynchronizationManager.bindResource(entityManagerFactory, holder);
-        
         jpaTransactionManagerHandler.unbindResource();
         assertNull(TransactionSynchronizationManager.getResource(entityManagerFactory));
     }

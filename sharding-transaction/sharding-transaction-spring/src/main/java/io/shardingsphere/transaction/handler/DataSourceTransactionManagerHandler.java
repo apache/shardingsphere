@@ -18,7 +18,6 @@
 package io.shardingsphere.transaction.handler;
 
 import io.shardingsphere.core.exception.ShardingException;
-
 import org.springframework.jdbc.datasource.ConnectionHolder;
 import org.springframework.jdbc.datasource.DataSourceTransactionManager;
 import org.springframework.jdbc.datasource.DataSourceUtils;
@@ -33,7 +32,6 @@ import java.sql.SQLException;
  *
  * @author yangyi
  */
-
 public final class DataSourceTransactionManagerHandler extends AbstractTransactionManagerHandler {
     
     private final DataSourceTransactionManager transactionManager;
@@ -50,13 +48,12 @@ public final class DataSourceTransactionManagerHandler extends AbstractTransacti
     
     @Override
     protected Connection getConnectionFromTransactionManager() {
-        Connection result = null;
         try {
-            result = transactionManager.getDataSource().getConnection();
+            Connection result = transactionManager.getDataSource().getConnection();
             TransactionSynchronizationManager.bindResource(transactionManager.getDataSource(), new ConnectionHolder(result));
-        } catch (SQLException e) {
-            throw new ShardingException("Could not open JDBC Connection before transaction", e);
+            return result;
+        } catch (final SQLException ex) {
+            throw new ShardingException("Could not open JDBC Connection before transaction", ex);
         }
-        return result;
     }
 }
