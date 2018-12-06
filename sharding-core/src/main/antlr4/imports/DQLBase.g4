@@ -53,5 +53,5 @@ tableReferences
     ;
     
 functionCall
-    : (ID | DATE) LP_ bitExprs? RP_
+    : (ID | DATE) LP_ distinct? (exprs | ASTERISK)? RP_
     ;

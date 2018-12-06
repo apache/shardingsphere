@@ -326,7 +326,11 @@ simpleExpr
     ;
     
 functionCall
-    : ID LP_ bitExprs? RP_
+    : ID LP_ distinct? (exprs | ASTERISK)? RP_
+    ;
+    
+distinct
+    : DISTINCT
     ;
     
 intervalExpr

@@ -28,6 +28,7 @@ import io.shardingsphere.core.parsing.antlr.sql.segment.expr.FunctionExpressionS
 import io.shardingsphere.core.parsing.antlr.sql.segment.expr.PropertyExpressionSegment;
 import io.shardingsphere.core.parsing.antlr.sql.segment.expr.StarExpressionSegment;
 import io.shardingsphere.core.parsing.antlr.sql.segment.expr.SubquerySegment;
+import io.shardingsphere.core.parsing.parser.context.selectitem.AggregationDistinctSelectItem;
 import io.shardingsphere.core.parsing.parser.context.selectitem.AggregationSelectItem;
 import io.shardingsphere.core.parsing.parser.context.selectitem.CommonSelectItem;
 import io.shardingsphere.core.parsing.parser.context.selectitem.StarSelectItem;
@@ -103,7 +104,12 @@ public class ExpressionFiller implements SQLStatementFiller {
         }
         String innerExpression = sql.substring(functionSegment.getInnerExpressionStartIndex(), functionSegment.getInnerExpressionEndIndex() + 1);
         if (null != aggregationType) {
-            selectStatement.getItems().add(new AggregationSelectItem(aggregationType, innerExpression, functionSegment.getAlias()));
+            if(functionSegment.isHasDistinct()) {
+                String columnName = sql.substring(functionSegment.getDinstinctColumnNameStartPosition(),functionSegment.getInnerExpressionEndIndex());
+                selectStatement.getItems().add(new AggregationDistinctSelectItem(aggregationType, innerExpression, functionSegment.getAlias(), columnName));
+            }else {
+                selectStatement.getItems().add(new AggregationSelectItem(aggregationType, innerExpression, functionSegment.getAlias()));
+            }
         } else {
             selectStatement.getItems().add(new CommonSelectItem(functionSegment.getName() + innerExpression, functionSegment.getAlias()));
         }

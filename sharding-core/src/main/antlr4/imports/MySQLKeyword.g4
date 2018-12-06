@@ -173,11 +173,7 @@ DISCARD
 DISK
     : D I S K
     ;
-
-DISTINCT
-    : D I S T I N C T
-    ;
-
+    
 DISTINCTROW
     : D I S T I N C T R O W
     ;

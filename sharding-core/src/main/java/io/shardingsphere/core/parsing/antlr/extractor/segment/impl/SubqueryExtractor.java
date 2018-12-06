@@ -32,20 +32,20 @@ import io.shardingsphere.core.parsing.antlr.sql.segment.order.OrderBySegment;
 
 /**
  * Subquery extractor.
- * 
+ *
  * @author duhongjun
  */
 public final class SubqueryExtractor implements OptionalSQLSegmentExtractor {
     
     @Override
-    public Optional<SubquerySegment> extract(ParserRuleContext subqueryNode) {
-        if(!RuleName.SUBQUERY.getName().endsWith(subqueryNode.getClass().getSimpleName())) {
+    public Optional<SubquerySegment> extract(final ParserRuleContext subqueryNode) {
+        if (!RuleName.SUBQUERY.getName().endsWith(subqueryNode.getClass().getSimpleName())) {
             return Optional.absent();
         }
         boolean subqueryInFrom = false;
         ParserRuleContext parentNode = subqueryNode.getParent();
-        while(null != parentNode) {
-            if(RuleName.FROM_CLAUSE.getName().equals(parentNode.getClass().getSimpleName())) {
+        while (null != parentNode) {
+            if (RuleName.FROM_CLAUSE.getName().equals(parentNode.getClass().getSimpleName())) {
                 subqueryInFrom = true;
                 break;
             }
@@ -57,9 +57,9 @@ public final class SubqueryExtractor implements OptionalSQLSegmentExtractor {
         Optional<OrderBySegment> orderBySegment = new OrderByExtractor().extract(subqueryNode);
         Optional<ParserRuleContext> aliasNode = ExtractorUtils.findFirstChildNode(subqueryNode.getParent(), RuleName.ALIAS);
         Optional<String> alias = Optional.absent();
-        if(aliasNode.isPresent()) {
+        if (aliasNode.isPresent()) {
             alias = Optional.of(aliasNode.get().getText());
         }
-        return Optional.of(new SubquerySegment(selectClauseSegment, fromWhereSegment, groupBySegment, orderBySegment, alias, subqueryInFrom)) ;
+        return Optional.of(new SubquerySegment(selectClauseSegment, fromWhereSegment, groupBySegment, orderBySegment, alias, subqueryInFrom));
     }
 }

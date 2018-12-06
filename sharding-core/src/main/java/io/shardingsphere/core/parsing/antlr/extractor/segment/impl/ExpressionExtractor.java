@@ -20,6 +20,8 @@ package io.shardingsphere.core.parsing.antlr.extractor.segment.impl;
 import java.util.HashMap;
 
 import org.antlr.v4.runtime.ParserRuleContext;
+import org.antlr.v4.runtime.tree.ParseTree;
+import org.antlr.v4.runtime.tree.TerminalNode;
 
 import com.google.common.base.Optional;
 
@@ -77,9 +79,13 @@ public class ExpressionExtractor implements OptionalSQLSegmentExtractor {
         if (functionCall.isPresent()) {
             String name = functionCall.get().getChild(0).getText();
             int startIndex = functionCall.get().getStart().getStartIndex() + name.length();
-            return Optional.<ExpressionSegment>of(new FunctionExpressionSegment(name, alias, startIndex, functionCall.get().getStop().getStopIndex()));
+            boolean hasDistinct = hasDistinct(node);
+            int dinstinctColumnNameStartPosition = -1;
+            if(hasDistinct) {
+                dinstinctColumnNameStartPosition = calculatedinstinctColumnNamePosition(functionCall.get());
+            }
+            return Optional.<ExpressionSegment>of(new FunctionExpressionSegment(name, alias, startIndex, functionCall.get().getStop().getStopIndex(), hasDistinct, dinstinctColumnNameStartPosition));
         } 
-        
         if (RuleName.COLUMN_NAME.getName().equals(node.getChild(0).getClass().getSimpleName())) {
             ParserRuleContext columnNode = (ParserRuleContext)node.getChild(0);
             Optional<ColumnSegment> columnSegment = new ColumnSegmentExtractor(new HashMap<String, String>()).extract(columnNode);
@@ -87,5 +93,20 @@ public class ExpressionExtractor implements OptionalSQLSegmentExtractor {
                     columnNode.getStart().getStartIndex(), columnNode.getStop().getStopIndex(), alias));
         } 
         return Optional.<ExpressionSegment>of(new CommonExpressionSegment(node.getStart().getStartIndex(), node.getStop().getStopIndex(), alias));
+    }
+    
+    private boolean hasDistinct(final ParserRuleContext node) {
+        return ExtractorUtils.findFirstChildNode(node, RuleName.DISTINCT).isPresent();
+    }
+    
+    private int calculatedinstinctColumnNamePosition(ParserRuleContext fucntionNode) {
+        ParseTree distinctItemNode = fucntionNode.getChild(3);
+        if(distinctItemNode instanceof TerminalNode) {
+            return ((TerminalNode)distinctItemNode).getSymbol().getStartIndex();
+        }
+        if(distinctItemNode instanceof ParserRuleContext) {
+            return ((ParserRuleContext)distinctItemNode).getStart().getStartIndex();
+        }
+        return -1;
     }
 }
