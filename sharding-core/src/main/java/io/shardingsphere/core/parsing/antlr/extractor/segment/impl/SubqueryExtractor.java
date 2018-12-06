@@ -38,9 +38,12 @@ import io.shardingsphere.core.parsing.antlr.sql.segment.order.OrderBySegment;
 public final class SubqueryExtractor implements OptionalSQLSegmentExtractor {
     
     @Override
-    public Optional<SubquerySegment> extract(ParserRuleContext ancestorNode) {
+    public Optional<SubquerySegment> extract(ParserRuleContext subqueryNode) {
+        if(!RuleName.SUBQUERY.getName().endsWith(subqueryNode.getClass().getSimpleName())) {
+            return Optional.absent();
+        }
         boolean subqueryInFrom = false;
-        ParserRuleContext parentNode = ancestorNode.getParent();
+        ParserRuleContext parentNode = subqueryNode.getParent();
         while(null != parentNode) {
             if(RuleName.FROM_CLAUSE.getName().equals(parentNode.getClass().getSimpleName())) {
                 subqueryInFrom = true;
@@ -48,15 +51,11 @@ public final class SubqueryExtractor implements OptionalSQLSegmentExtractor {
             }
             parentNode = parentNode.getParent();
         }
-        Optional<ParserRuleContext> subqueryNode = ExtractorUtils.findFirstChildNode(ancestorNode, RuleName.SUBQUERY);
-        if (!subqueryNode.isPresent()) {
-            return Optional.absent();
-        }
-        Optional<SelectClauseSegment> selectClauseSegment = new SelectClauseExtractor().extract(subqueryNode.get());
-        Optional<FromWhereSegment> fromWhereSegment = new FromWhereExtractor().extract(subqueryNode.get());
-        Optional<GroupBySegment> groupBySegment = new GroupByExtractor().extract(subqueryNode.get());
-        Optional<OrderBySegment> orderBySegment = new OrderByExtractor().extract(subqueryNode.get());
-        Optional<ParserRuleContext> aliasNode = ExtractorUtils.findFirstChildNode(ancestorNode, RuleName.SUBQUERY);
+        Optional<SelectClauseSegment> selectClauseSegment = new SelectClauseExtractor().extract(subqueryNode);
+        Optional<FromWhereSegment> fromWhereSegment = new FromWhereExtractor().extract(subqueryNode);
+        Optional<GroupBySegment> groupBySegment = new GroupByExtractor().extract(subqueryNode);
+        Optional<OrderBySegment> orderBySegment = new OrderByExtractor().extract(subqueryNode);
+        Optional<ParserRuleContext> aliasNode = ExtractorUtils.findFirstChildNode(subqueryNode.getParent(), RuleName.ALIAS);
         Optional<String> alias = Optional.absent();
         if(aliasNode.isPresent()) {
             alias = Optional.of(aliasNode.get().getText());
