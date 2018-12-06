@@ -24,7 +24,6 @@ import io.shardingsphere.core.constant.transaction.TransactionOperationType;
 import io.shardingsphere.core.parsing.SQLJudgeEngine;
 import io.shardingsphere.core.parsing.parser.dialect.mysql.statement.SetStatement;
 import io.shardingsphere.core.parsing.parser.dialect.mysql.statement.ShowDatabasesStatement;
-import io.shardingsphere.core.parsing.parser.dialect.mysql.statement.ShowOtherStatement;
 import io.shardingsphere.core.parsing.parser.dialect.mysql.statement.UseStatement;
 import io.shardingsphere.core.parsing.parser.sql.SQLStatement;
 import io.shardingsphere.shardingproxy.backend.jdbc.connection.BackendConnection;
@@ -53,13 +52,12 @@ public class ComQueryBackendHandlerFactory {
         SQLStatement sqlStatement = new SQLJudgeEngine(sql).judge();
         if (SQLType.DCL == sqlStatement.getType() || sqlStatement instanceof SetStatement) {
             return new SchemaBroadcastBackendHandler(sequenceId, sql, backendConnection, databaseType);
+        } else if (sqlStatement instanceof UseStatement) {
+            return new UseSchemaBackendHandler((UseStatement) sqlStatement, backendConnection);
+        } else if (sqlStatement instanceof ShowDatabasesStatement) {
+            return new ShowDatabasesBackendHandler();
+        } else {
+            return BackendHandlerFactory.newTextProtocolInstance(sequenceId, sql, backendConnection, DatabaseType.MySQL);
         }
-        if (sqlStatement instanceof UseStatement || sqlStatement instanceof ShowDatabasesStatement) {
-            return new SchemaIgnoreBackendHandler(sqlStatement, backendConnection);
-        }
-        if (sqlStatement instanceof ShowOtherStatement) {
-            return new SchemaUnicastBackendHandler(sequenceId, sql, backendConnection, DatabaseType.MySQL);
-        }
-        return BackendHandlerFactory.newTextProtocolInstance(sequenceId, sql, backendConnection, DatabaseType.MySQL);
     }
 }
