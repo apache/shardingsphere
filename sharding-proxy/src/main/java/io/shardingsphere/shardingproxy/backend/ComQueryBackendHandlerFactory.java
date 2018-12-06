@@ -35,8 +35,10 @@ import io.shardingsphere.shardingproxy.backend.jdbc.connection.BackendConnection
  */
 public class ComQueryBackendHandlerFactory {
     
+    private static final String SCTL_SET = "sctl:set";
+    
     /**
-     * Create new com query backend handler instance by SQL judge.
+     * Create new com query backend handler instance.
      *
      * @param sequenceId sequence ID of SQL packet
      * @param sql SQL to be executed
@@ -48,6 +50,9 @@ public class ComQueryBackendHandlerFactory {
         Optional<TransactionOperationType> transactionOperationType = TransactionOperationType.getOperationType(sql);
         if (transactionOperationType.isPresent()) {
             return new TransactionBackendHandler(transactionOperationType.get(), backendConnection);
+        }
+        if (sql.startsWith(SCTL_SET)) {
+            return new ShardingCTLBackendHandler(sql, backendConnection);
         }
         SQLStatement sqlStatement = new SQLJudgeEngine(sql).judge();
         if (SQLType.DCL == sqlStatement.getType() || sqlStatement instanceof SetStatement) {
