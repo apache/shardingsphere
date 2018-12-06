@@ -19,8 +19,8 @@ package io.shardingsphere.shardingproxy.frontend.common.executor;
 
 import io.netty.channel.ChannelId;
 import io.shardingsphere.core.constant.transaction.TransactionType;
-import io.shardingsphere.shardingproxy.frontend.mysql.CommandExecutorContext;
 import io.shardingsphere.shardingproxy.frontend.mysql.CommandExecutor;
+import io.shardingsphere.shardingproxy.frontend.mysql.CommandExecutorContext;
 import io.shardingsphere.shardingproxy.runtime.GlobalRegistry;
 import lombok.RequiredArgsConstructor;
 
@@ -46,6 +46,6 @@ public final class ExecutorGroup {
             ChannelThreadExecutorGroup.getInstance().get(channelId).execute(commandExecutor);
             return;
         }
-        CommandExecutorContext.getInstance().getExecuteEngine().execute(commandExecutor);
+        CommandExecutorContext.getInstance().getCommandExecuteEngine().execute(commandExecutor);
     }
 }

@@ -17,9 +17,6 @@
 
 package io.shardingsphere.shardingproxy.frontend.mysql;
 
-import io.shardingsphere.core.constant.properties.ShardingPropertiesConstant;
-import io.shardingsphere.core.executor.ShardingExecuteEngine;
-import io.shardingsphere.shardingproxy.runtime.GlobalRegistry;
 import lombok.AccessLevel;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
@@ -32,12 +29,10 @@ import lombok.NoArgsConstructor;
 @NoArgsConstructor(access = AccessLevel.PRIVATE)
 public final class CommandExecutorContext {
     
-    private static final GlobalRegistry GLOBAL_REGISTRY = GlobalRegistry.getInstance();
-    
     private static final CommandExecutorContext INSTANCE = new CommandExecutorContext();
     
     @Getter
-    private final ShardingExecuteEngine executeEngine = new ShardingExecuteEngine(GLOBAL_REGISTRY.getShardingProperties().<Integer>getValue(ShardingPropertiesConstant.ACCEPTOR_SIZE));
+    private final CommandExecuteEngine commandExecuteEngine = new CommandExecuteEngine();
     
     /**
      * Get command executor context instance.

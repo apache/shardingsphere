@@ -34,7 +34,6 @@ import io.shardingsphere.core.constant.properties.ShardingPropertiesConstant;
 import io.shardingsphere.shardingproxy.backend.BackendExecutorContext;
 import io.shardingsphere.shardingproxy.backend.netty.client.BackendNettyClientManager;
 import io.shardingsphere.shardingproxy.frontend.common.netty.ServerHandlerInitializer;
-import io.shardingsphere.shardingproxy.frontend.mysql.CommandExecutorContext;
 import io.shardingsphere.shardingproxy.runtime.GlobalRegistry;
 import lombok.AccessLevel;
 import lombok.NoArgsConstructor;
@@ -55,8 +54,6 @@ public final class ShardingProxy {
     private static final GlobalRegistry GLOBAL_REGISTRY = GlobalRegistry.getInstance();
     
     private final BackendExecutorContext backendExecutorContext = BackendExecutorContext.getInstance();
-    
-    private final CommandExecutorContext commandExecutorContext = CommandExecutorContext.getInstance();
     
     private EventLoopGroup bossGroup;
     
@@ -95,7 +92,6 @@ public final class ShardingProxy {
             workerGroup.shutdownGracefully();
             bossGroup.shutdownGracefully();
             backendExecutorContext.getExecuteEngine().close();
-            commandExecutorContext.getExecuteEngine().close();
             if (GLOBAL_REGISTRY.getShardingProperties().<Boolean>getValue(ShardingPropertiesConstant.PROXY_BACKEND_USE_NIO)) {
                 BackendNettyClientManager.getInstance().stop();
             }

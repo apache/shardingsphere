@@ -21,7 +21,7 @@ import io.netty.channel.ChannelId;
 import io.shardingsphere.core.constant.properties.ShardingProperties;
 import io.shardingsphere.core.constant.properties.ShardingPropertiesConstant;
 import io.shardingsphere.core.constant.transaction.TransactionType;
-import io.shardingsphere.core.executor.ShardingExecuteEngine;
+import io.shardingsphere.shardingproxy.frontend.mysql.CommandExecuteEngine;
 import io.shardingsphere.shardingproxy.frontend.mysql.CommandExecutor;
 import io.shardingsphere.shardingproxy.frontend.mysql.CommandExecutorContext;
 import io.shardingsphere.shardingproxy.runtime.GlobalRegistry;
@@ -57,7 +57,7 @@ public final class ExecutorGroupTest {
         setTransactionType(TransactionType.LOCAL);
         CommandExecutor commandExecutor = mock(CommandExecutor.class);
         ChannelId channelId = mock(ChannelId.class);
-        ShardingExecuteEngine commandExecuteEngine = mock(ShardingExecuteEngine.class);
+        CommandExecuteEngine commandExecuteEngine = mock(CommandExecuteEngine.class);
         assertMap.put("assert", false);
         doAnswer(new Answer<Object>() {
             @Override
@@ -93,8 +93,8 @@ public final class ExecutorGroupTest {
         assertMap.clear();
     }
     
-    private void setCommandExecuteEngine(ShardingExecuteEngine commandExecuteEngine) throws ReflectiveOperationException {
-        Field field = CommandExecutorContext.getInstance().getClass().getDeclaredField("executeEngine");
+    private void setCommandExecuteEngine(CommandExecuteEngine commandExecuteEngine) throws ReflectiveOperationException {
+        Field field = CommandExecutorContext.getInstance().getClass().getDeclaredField("commandExecuteEngine");
         field.setAccessible(true);
         Field modifiers = field.getClass().getDeclaredField("modifiers");
         modifiers.setAccessible(true);
