@@ -33,7 +33,7 @@ import lombok.RequiredArgsConstructor;
  */
 @RequiredArgsConstructor
 @Getter
-public class SubquerySegment implements ExpressionSegment {
+public final class SubquerySegment implements ExpressionSegment {
     
     private final Optional<SelectClauseSegment> selectClauseSegment;
     

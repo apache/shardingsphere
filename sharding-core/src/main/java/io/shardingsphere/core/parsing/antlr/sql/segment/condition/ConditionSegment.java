@@ -31,7 +31,7 @@ import lombok.RequiredArgsConstructor;
  */
 @RequiredArgsConstructor
 @Getter
-public class ConditionSegment implements SQLSegment {
+public final class ConditionSegment implements SQLSegment {
     
     private final ColumnSegment column;
     

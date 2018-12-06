@@ -69,8 +69,6 @@ public final class SelectStatement extends DQLStatement {
     
     private Limit limit;
     
-    private String sql;
-    
     private SelectStatement subQueryStatement;
     
     private Collection<SelectStatement> subQueryStatements = new LinkedList<>();

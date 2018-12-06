@@ -27,7 +27,7 @@ import lombok.RequiredArgsConstructor;
  */
 @RequiredArgsConstructor
 @Getter
-public class BetweenValueExpressionSegment implements SQLRightValueExpressionSegment {
+public final class BetweenValueExpressionSegment implements SQLRightValueExpressionSegment {
     
     private final ExpressionSegment beginExpress;
     

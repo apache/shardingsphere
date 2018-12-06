@@ -17,16 +17,16 @@
 
 package io.shardingsphere.core.parsing.antlr.extractor.statement.registry.dialect;
 
+import io.shardingsphere.core.parsing.antlr.parser.SQLStatementType;
 import io.shardingsphere.core.parsing.antlr.extractor.statement.SQLSegmentsExtractor;
-import io.shardingsphere.core.parsing.antlr.extractor.statement.SQLStatementType;
-import io.shardingsphere.core.parsing.antlr.extractor.statement.engine.ddl.CreateIndexExtractor;
-import io.shardingsphere.core.parsing.antlr.extractor.statement.engine.ddl.CreateTableExtractor;
-import io.shardingsphere.core.parsing.antlr.extractor.statement.engine.ddl.DropIndexExtractor;
-import io.shardingsphere.core.parsing.antlr.extractor.statement.engine.ddl.dialect.mysql.MySQLAlterTableExtractor;
-import io.shardingsphere.core.parsing.antlr.extractor.statement.engine.ddl.dialect.mysql.MySQLDropTableExtractor;
-import io.shardingsphere.core.parsing.antlr.extractor.statement.engine.ddl.dialect.mysql.MySQLTruncateTableExtractor;
-import io.shardingsphere.core.parsing.antlr.extractor.statement.engine.dql.dialect.mysql.MySQLSelectExtractor;
-import io.shardingsphere.core.parsing.antlr.extractor.statement.engine.tcl.TCLSegmentsExtractor;
+import io.shardingsphere.core.parsing.antlr.extractor.statement.impl.ddl.CreateIndexExtractor;
+import io.shardingsphere.core.parsing.antlr.extractor.statement.impl.ddl.CreateTableExtractor;
+import io.shardingsphere.core.parsing.antlr.extractor.statement.impl.ddl.DropIndexExtractor;
+import io.shardingsphere.core.parsing.antlr.extractor.statement.impl.ddl.dialect.mysql.MySQLAlterTableExtractor;
+import io.shardingsphere.core.parsing.antlr.extractor.statement.impl.ddl.dialect.mysql.MySQLDropTableExtractor;
+import io.shardingsphere.core.parsing.antlr.extractor.statement.impl.ddl.dialect.mysql.MySQLTruncateTableExtractor;
+import io.shardingsphere.core.parsing.antlr.extractor.statement.impl.dql.dialect.mysql.MySQLSelectExtractor;
+import io.shardingsphere.core.parsing.antlr.extractor.statement.impl.tcl.TCLSegmentsExtractor;
 import io.shardingsphere.core.parsing.antlr.extractor.statement.registry.SQLSegmentsExtractorRegistry;
 
 import java.util.HashMap;

@@ -31,7 +31,7 @@ import lombok.Setter;
  */
 @RequiredArgsConstructor
 @Getter
-public class ColumnSegment implements SQLRightValueExpressionSegment {
+public final class ColumnSegment implements SQLRightValueExpressionSegment {
     
     private final Optional<String> owner;
     

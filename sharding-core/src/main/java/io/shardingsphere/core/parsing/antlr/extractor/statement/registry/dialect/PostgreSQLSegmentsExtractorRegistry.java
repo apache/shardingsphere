@@ -17,19 +17,19 @@
 
 package io.shardingsphere.core.parsing.antlr.extractor.statement.registry.dialect;
 
+import io.shardingsphere.core.parsing.antlr.parser.SQLStatementType;
 import io.shardingsphere.core.parsing.antlr.extractor.statement.SQLSegmentsExtractor;
-import io.shardingsphere.core.parsing.antlr.extractor.statement.SQLStatementType;
-import io.shardingsphere.core.parsing.antlr.extractor.statement.engine.dal.dialect.postgresql.PostgreSQLResetParamExtractor;
-import io.shardingsphere.core.parsing.antlr.extractor.statement.engine.dal.dialect.postgresql.PostgreSQLSetParamExtractor;
-import io.shardingsphere.core.parsing.antlr.extractor.statement.engine.dal.dialect.postgresql.PostgreSQLShowExtractor;
-import io.shardingsphere.core.parsing.antlr.extractor.statement.engine.ddl.CreateIndexExtractor;
-import io.shardingsphere.core.parsing.antlr.extractor.statement.engine.ddl.CreateTableExtractor;
-import io.shardingsphere.core.parsing.antlr.extractor.statement.engine.ddl.dialect.postgresql.PostgreSQLAlterIndexExtractor;
-import io.shardingsphere.core.parsing.antlr.extractor.statement.engine.ddl.dialect.postgresql.PostgreSQLAlterTableExtractor;
-import io.shardingsphere.core.parsing.antlr.extractor.statement.engine.ddl.dialect.postgresql.PostgreSQLDropIndexExtractor;
-import io.shardingsphere.core.parsing.antlr.extractor.statement.engine.ddl.dialect.postgresql.PostgreSQLDropTableExtractor;
-import io.shardingsphere.core.parsing.antlr.extractor.statement.engine.ddl.dialect.postgresql.PostgreSQLTruncateTableExtractor;
-import io.shardingsphere.core.parsing.antlr.extractor.statement.engine.tcl.TCLSegmentsExtractor;
+import io.shardingsphere.core.parsing.antlr.extractor.statement.impl.dal.dialect.postgresql.PostgreSQLResetParamExtractor;
+import io.shardingsphere.core.parsing.antlr.extractor.statement.impl.dal.dialect.postgresql.PostgreSQLSetParamExtractor;
+import io.shardingsphere.core.parsing.antlr.extractor.statement.impl.dal.dialect.postgresql.PostgreSQLShowExtractor;
+import io.shardingsphere.core.parsing.antlr.extractor.statement.impl.ddl.CreateIndexExtractor;
+import io.shardingsphere.core.parsing.antlr.extractor.statement.impl.ddl.CreateTableExtractor;
+import io.shardingsphere.core.parsing.antlr.extractor.statement.impl.ddl.dialect.postgresql.PostgreSQLAlterIndexExtractor;
+import io.shardingsphere.core.parsing.antlr.extractor.statement.impl.ddl.dialect.postgresql.PostgreSQLAlterTableExtractor;
+import io.shardingsphere.core.parsing.antlr.extractor.statement.impl.ddl.dialect.postgresql.PostgreSQLDropIndexExtractor;
+import io.shardingsphere.core.parsing.antlr.extractor.statement.impl.ddl.dialect.postgresql.PostgreSQLDropTableExtractor;
+import io.shardingsphere.core.parsing.antlr.extractor.statement.impl.ddl.dialect.postgresql.PostgreSQLTruncateTableExtractor;
+import io.shardingsphere.core.parsing.antlr.extractor.statement.impl.tcl.TCLSegmentsExtractor;
 import io.shardingsphere.core.parsing.antlr.extractor.statement.registry.SQLSegmentsExtractorRegistry;
 
 import java.util.HashMap;

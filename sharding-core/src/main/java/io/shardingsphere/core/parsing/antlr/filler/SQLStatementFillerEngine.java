@@ -18,12 +18,11 @@
 package io.shardingsphere.core.parsing.antlr.filler;
 
 import com.google.common.base.Optional;
-import io.shardingsphere.core.constant.DatabaseType;
 import io.shardingsphere.core.metadata.table.ShardingTableMetaData;
-import io.shardingsphere.core.parsing.antlr.extractor.statement.SQLStatementType;
+import io.shardingsphere.core.parsing.antlr.filler.registry.SQLStatementFillerRegistry;
+import io.shardingsphere.core.parsing.antlr.parser.SQLStatementType;
 import io.shardingsphere.core.parsing.antlr.sql.segment.SQLSegment;
 import io.shardingsphere.core.parsing.parser.sql.SQLStatement;
-import io.shardingsphere.core.parsing.parser.sql.dql.select.SelectStatement;
 import io.shardingsphere.core.rule.ShardingRule;
 import lombok.RequiredArgsConstructor;
 
@@ -37,29 +36,25 @@ import java.util.Collection;
 @RequiredArgsConstructor
 public final class SQLStatementFillerEngine {
     
-    private final DatabaseType databaseType;
+    private final String sql;
+    
+    private final ShardingRule shardingRule;
+    
+    private final ShardingTableMetaData shardingTableMetaData;
     
     /**
      * Fill SQL statement.
      *
      * @param sqlSegments SQL segments
-     * @param sql SQL
      * @param sqlStatementType SQL statement type
-     * @param shardingRule  sharding rule
-     * @param shardingTableMetaData sharding table meta data
      * @return SQL statement
      */
-    public SQLStatement fill(final Collection<SQLSegment> sqlSegments, 
-                             final String sql, final SQLStatementType sqlStatementType, final ShardingRule shardingRule, final ShardingTableMetaData shardingTableMetaData) {
-        SQLStatement result = SQLStatementFactory.getInstance(databaseType, sqlStatementType);
-        // TODO move to correct place
-        if (result instanceof SelectStatement) {
-            ((SelectStatement) result).setSql(sql);
-        }
+    public SQLStatement fill(final Collection<SQLSegment> sqlSegments, final SQLStatementType sqlStatementType) {
+        SQLStatement result = sqlStatementType.newSQLStatement();
         for (SQLSegment each : sqlSegments) {
-            Optional<SQLSegmentFiller> filler = SQLSegmentFillerRegistry.findFiller(each);
+            Optional<SQLStatementFiller> filler = SQLStatementFillerRegistry.findFiller(each);
             if (filler.isPresent()) {
-                filler.get().fill(each, result, shardingRule, shardingTableMetaData);
+                filler.get().fill(each, result, sql, shardingRule, shardingTableMetaData);
             }
         }
         return result;

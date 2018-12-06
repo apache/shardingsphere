@@ -27,7 +27,7 @@ import lombok.RequiredArgsConstructor;
  */
 @RequiredArgsConstructor
 @Getter
-public class EqualsValueExpressionSegment implements SQLRightValueExpressionSegment {
+public final class EqualsValueExpressionSegment implements SQLRightValueExpressionSegment {
     
     private final ExpressionSegment expression;
 }

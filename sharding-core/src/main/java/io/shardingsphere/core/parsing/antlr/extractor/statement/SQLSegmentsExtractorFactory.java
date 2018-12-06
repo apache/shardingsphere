@@ -18,6 +18,7 @@
 package io.shardingsphere.core.parsing.antlr.extractor.statement;
 
 import io.shardingsphere.core.constant.DatabaseType;
+import io.shardingsphere.core.parsing.antlr.parser.SQLStatementType;
 import io.shardingsphere.core.parsing.antlr.extractor.statement.registry.SQLSegmentsExtractorRegistry;
 import io.shardingsphere.core.parsing.antlr.extractor.statement.registry.dialect.MySQLSegmentsExtractorRegistry;
 import io.shardingsphere.core.parsing.antlr.extractor.statement.registry.dialect.OracleSegmentsExtractorRegistry;

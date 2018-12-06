@@ -27,7 +27,7 @@ import lombok.RequiredArgsConstructor;
  */
 @RequiredArgsConstructor
 @Getter
-public class LimitValueSegment implements SQLSegment {
+public final class LimitValueSegment implements SQLSegment {
     
     private final int value;
 
