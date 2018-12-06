@@ -17,6 +17,7 @@
 
 package io.shardingsphere.core.parsing.antlr.extractor.statement.impl.dql.dialect.mysql;
 
+import io.shardingsphere.core.parsing.antlr.extractor.segment.SQLSegmentExtractor;
 import io.shardingsphere.core.parsing.antlr.extractor.segment.impl.FromWhereExtractor;
 import io.shardingsphere.core.parsing.antlr.extractor.segment.impl.GroupByExtractor;
 import io.shardingsphere.core.parsing.antlr.extractor.segment.impl.IndexNamesExtractor;
@@ -24,22 +25,33 @@ import io.shardingsphere.core.parsing.antlr.extractor.segment.impl.LimitExtracto
 import io.shardingsphere.core.parsing.antlr.extractor.segment.impl.OrderByExtractor;
 import io.shardingsphere.core.parsing.antlr.extractor.segment.impl.SelectClauseExtractor;
 import io.shardingsphere.core.parsing.antlr.extractor.segment.impl.TableNamesExtractor;
-import io.shardingsphere.core.parsing.antlr.extractor.statement.impl.AbstractSQLSegmentsExtractor;
+import io.shardingsphere.core.parsing.antlr.extractor.statement.SQLStatementExtractor;
+
+import java.util.Collection;
+import java.util.LinkedList;
 
 /**
  * Select extractor for MySQL.
  *
  * @author duhongjun
+ * @author zhangliang
  */
-public final class MySQLSelectExtractor extends AbstractSQLSegmentsExtractor {
+public final class MySQLSelectExtractor implements SQLStatementExtractor {
     
-    public MySQLSelectExtractor() {
-        addSQLSegmentExtractor(new TableNamesExtractor());
-        addSQLSegmentExtractor(new IndexNamesExtractor());
-        addSQLSegmentExtractor(new SelectClauseExtractor());
-        addSQLSegmentExtractor(new FromWhereExtractor());
-        addSQLSegmentExtractor(new GroupByExtractor());
-        addSQLSegmentExtractor(new OrderByExtractor());
-        addSQLSegmentExtractor(new LimitExtractor());
+    private static final Collection<SQLSegmentExtractor> EXTRACTORS = new LinkedList<>();
+    
+    static {
+        EXTRACTORS.add(new TableNamesExtractor());
+        EXTRACTORS.add(new IndexNamesExtractor());
+        EXTRACTORS.add(new SelectClauseExtractor());
+        EXTRACTORS.add(new FromWhereExtractor());
+        EXTRACTORS.add(new GroupByExtractor());
+        EXTRACTORS.add(new OrderByExtractor());
+        EXTRACTORS.add(new LimitExtractor());
+    }
+    
+    @Override
+    public Collection<SQLSegmentExtractor> getExtractors() {
+        return EXTRACTORS;
     }
 }

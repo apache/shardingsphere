@@ -17,23 +17,41 @@
 
 package io.shardingsphere.core.parsing.antlr.extractor.statement.impl.ddl.dialect.postgresql;
 
+import io.shardingsphere.core.parsing.antlr.extractor.segment.SQLSegmentExtractor;
 import io.shardingsphere.core.parsing.antlr.extractor.segment.impl.AddColumnExtractor;
+import io.shardingsphere.core.parsing.antlr.extractor.segment.impl.DropColumnExtractor;
 import io.shardingsphere.core.parsing.antlr.extractor.segment.impl.ModifyColumnExtractor;
 import io.shardingsphere.core.parsing.antlr.extractor.segment.impl.PrimaryKeyForAlterTableExtractor;
 import io.shardingsphere.core.parsing.antlr.extractor.segment.impl.RenameColumnExtractor;
-import io.shardingsphere.core.parsing.antlr.extractor.statement.impl.ddl.AlterTableExtractor;
+import io.shardingsphere.core.parsing.antlr.extractor.segment.impl.RenameTableExtractor;
+import io.shardingsphere.core.parsing.antlr.extractor.segment.impl.TableNamesExtractor;
+import io.shardingsphere.core.parsing.antlr.extractor.statement.SQLStatementExtractor;
+
+import java.util.Collection;
+import java.util.LinkedList;
 
 /**
- * Alter table statement extractor for PostgreSQL.
+ * Alter table extractor for PostgreSQL.
  * 
  * @author duhongjun
+ * @author zhangliang
  */
-public final class PostgreSQLAlterTableExtractor extends AlterTableExtractor {
+public final class PostgreSQLAlterTableExtractor implements SQLStatementExtractor {
     
-    public PostgreSQLAlterTableExtractor() {
-        addSQLSegmentExtractor(new AddColumnExtractor());
-        addSQLSegmentExtractor(new PrimaryKeyForAlterTableExtractor());
-        addSQLSegmentExtractor(new ModifyColumnExtractor());
-        addSQLSegmentExtractor(new RenameColumnExtractor());
+    private static final Collection<SQLSegmentExtractor> EXTRACTORS = new LinkedList<>();
+    
+    static {
+        EXTRACTORS.add(new TableNamesExtractor());
+        EXTRACTORS.add(new RenameTableExtractor());
+        EXTRACTORS.add(new DropColumnExtractor());
+        EXTRACTORS.add(new AddColumnExtractor());
+        EXTRACTORS.add(new PrimaryKeyForAlterTableExtractor());
+        EXTRACTORS.add(new ModifyColumnExtractor());
+        EXTRACTORS.add(new RenameColumnExtractor());
+    }
+    
+    @Override
+    public Collection<SQLSegmentExtractor> getExtractors() {
+        return EXTRACTORS;
     }
 }

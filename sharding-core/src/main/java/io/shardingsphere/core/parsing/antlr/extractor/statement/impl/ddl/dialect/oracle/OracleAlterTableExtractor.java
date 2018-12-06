@@ -17,25 +17,43 @@
 
 package io.shardingsphere.core.parsing.antlr.extractor.statement.impl.ddl.dialect.oracle;
 
+import io.shardingsphere.core.parsing.antlr.extractor.segment.SQLSegmentExtractor;
 import io.shardingsphere.core.parsing.antlr.extractor.segment.impl.AddColumnExtractor;
+import io.shardingsphere.core.parsing.antlr.extractor.segment.impl.DropColumnExtractor;
 import io.shardingsphere.core.parsing.antlr.extractor.segment.impl.PrimaryKeyForAlterTableExtractor;
 import io.shardingsphere.core.parsing.antlr.extractor.segment.impl.RenameColumnExtractor;
+import io.shardingsphere.core.parsing.antlr.extractor.segment.impl.RenameTableExtractor;
+import io.shardingsphere.core.parsing.antlr.extractor.segment.impl.TableNamesExtractor;
 import io.shardingsphere.core.parsing.antlr.extractor.segment.impl.dialect.oracle.OracleDropPrimaryKeyExtractor;
 import io.shardingsphere.core.parsing.antlr.extractor.segment.impl.dialect.oracle.OracleModifyColumnExtractor;
-import io.shardingsphere.core.parsing.antlr.extractor.statement.impl.ddl.AlterTableExtractor;
+import io.shardingsphere.core.parsing.antlr.extractor.statement.SQLStatementExtractor;
+
+import java.util.Collection;
+import java.util.LinkedList;
 
 /**
- * Alter table statement extractor for Oracle.
+ * Alter table extractor for Oracle.
  * 
  * @author duhongjun
+ * @author zhangliang
  */
-public final class OracleAlterTableExtractor extends AlterTableExtractor {
+public final class OracleAlterTableExtractor implements SQLStatementExtractor {
     
-    public OracleAlterTableExtractor() {
-        addSQLSegmentExtractor(new AddColumnExtractor());
-        addSQLSegmentExtractor(new OracleModifyColumnExtractor());
-        addSQLSegmentExtractor(new RenameColumnExtractor());
-        addSQLSegmentExtractor(new PrimaryKeyForAlterTableExtractor());
-        addSQLSegmentExtractor(new OracleDropPrimaryKeyExtractor());
+    private static final Collection<SQLSegmentExtractor> EXTRACTORS = new LinkedList<>();
+    
+    static {
+        EXTRACTORS.add(new TableNamesExtractor());
+        EXTRACTORS.add(new RenameTableExtractor());
+        EXTRACTORS.add(new DropColumnExtractor());
+        EXTRACTORS.add(new AddColumnExtractor());
+        EXTRACTORS.add(new OracleModifyColumnExtractor());
+        EXTRACTORS.add(new RenameColumnExtractor());
+        EXTRACTORS.add(new PrimaryKeyForAlterTableExtractor());
+        EXTRACTORS.add(new OracleDropPrimaryKeyExtractor());
+    }
+    
+    @Override
+    public Collection<SQLSegmentExtractor> getExtractors() {
+        return EXTRACTORS;
     }
 }

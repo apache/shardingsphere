@@ -17,31 +17,49 @@
 
 package io.shardingsphere.core.parsing.antlr.extractor.statement.impl.ddl.dialect.mysql;
 
+import io.shardingsphere.core.parsing.antlr.extractor.segment.SQLSegmentExtractor;
+import io.shardingsphere.core.parsing.antlr.extractor.segment.impl.DropColumnExtractor;
 import io.shardingsphere.core.parsing.antlr.extractor.segment.impl.DropPrimaryKeyExtractor;
 import io.shardingsphere.core.parsing.antlr.extractor.segment.impl.PrimaryKeyForAlterTableExtractor;
 import io.shardingsphere.core.parsing.antlr.extractor.segment.impl.RenameIndexExtractor;
+import io.shardingsphere.core.parsing.antlr.extractor.segment.impl.RenameTableExtractor;
+import io.shardingsphere.core.parsing.antlr.extractor.segment.impl.TableNamesExtractor;
 import io.shardingsphere.core.parsing.antlr.extractor.segment.impl.dialect.mysql.MySQLAddColumnExtractor;
 import io.shardingsphere.core.parsing.antlr.extractor.segment.impl.dialect.mysql.MySQLAddIndexExtractor;
 import io.shardingsphere.core.parsing.antlr.extractor.segment.impl.dialect.mysql.MySQLChangeColumnExtractor;
 import io.shardingsphere.core.parsing.antlr.extractor.segment.impl.dialect.mysql.MySQLDropIndexExtractor;
 import io.shardingsphere.core.parsing.antlr.extractor.segment.impl.dialect.mysql.MySQLModifyColumnExtractor;
-import io.shardingsphere.core.parsing.antlr.extractor.statement.impl.ddl.AlterTableExtractor;
+import io.shardingsphere.core.parsing.antlr.extractor.statement.SQLStatementExtractor;
+
+import java.util.Collection;
+import java.util.LinkedList;
 
 /**
- * Alter table statement extractor for MySQL.
+ * Alter table extractor for MySQL.
  * 
  * @author duhongjun
+ * @author zhangliang
  */
-public final class MySQLAlterTableExtractor extends AlterTableExtractor {
+public final class MySQLAlterTableExtractor implements SQLStatementExtractor {
     
-    public MySQLAlterTableExtractor() {
-        addSQLSegmentExtractor(new MySQLAddColumnExtractor());
-        addSQLSegmentExtractor(new MySQLAddIndexExtractor());
-        addSQLSegmentExtractor(new MySQLDropIndexExtractor());
-        addSQLSegmentExtractor(new RenameIndexExtractor());
-        addSQLSegmentExtractor(new PrimaryKeyForAlterTableExtractor());
-        addSQLSegmentExtractor(new DropPrimaryKeyExtractor());
-        addSQLSegmentExtractor(new MySQLChangeColumnExtractor());
-        addSQLSegmentExtractor(new MySQLModifyColumnExtractor());
+    private static final Collection<SQLSegmentExtractor> EXTRACTORS = new LinkedList<>();
+    
+    static {
+        EXTRACTORS.add(new TableNamesExtractor());
+        EXTRACTORS.add(new RenameTableExtractor());
+        EXTRACTORS.add(new DropColumnExtractor());
+        EXTRACTORS.add(new MySQLAddColumnExtractor());
+        EXTRACTORS.add(new MySQLAddIndexExtractor());
+        EXTRACTORS.add(new MySQLDropIndexExtractor());
+        EXTRACTORS.add(new RenameIndexExtractor());
+        EXTRACTORS.add(new PrimaryKeyForAlterTableExtractor());
+        EXTRACTORS.add(new DropPrimaryKeyExtractor());
+        EXTRACTORS.add(new MySQLChangeColumnExtractor());
+        EXTRACTORS.add(new MySQLModifyColumnExtractor());
+    }
+    
+    @Override
+    public Collection<SQLSegmentExtractor> getExtractors() {
+        return EXTRACTORS;
     }
 }

@@ -17,25 +17,43 @@
 
 package io.shardingsphere.core.parsing.antlr.extractor.statement.impl.ddl.dialect.sqlserver;
 
+import io.shardingsphere.core.parsing.antlr.extractor.segment.SQLSegmentExtractor;
 import io.shardingsphere.core.parsing.antlr.extractor.segment.impl.AddColumnExtractor;
+import io.shardingsphere.core.parsing.antlr.extractor.segment.impl.DropColumnExtractor;
 import io.shardingsphere.core.parsing.antlr.extractor.segment.impl.ModifyColumnExtractor;
+import io.shardingsphere.core.parsing.antlr.extractor.segment.impl.RenameTableExtractor;
+import io.shardingsphere.core.parsing.antlr.extractor.segment.impl.TableNamesExtractor;
 import io.shardingsphere.core.parsing.antlr.extractor.segment.impl.dialect.sqlserver.SQLServerAddIndexExtractor;
 import io.shardingsphere.core.parsing.antlr.extractor.segment.impl.dialect.sqlserver.SQLServerAddPrimaryKeyExtractor;
 import io.shardingsphere.core.parsing.antlr.extractor.segment.impl.dialect.sqlserver.SQLServerDropIndexExtractor;
-import io.shardingsphere.core.parsing.antlr.extractor.statement.impl.ddl.AlterTableExtractor;
+import io.shardingsphere.core.parsing.antlr.extractor.statement.SQLStatementExtractor;
+
+import java.util.Collection;
+import java.util.LinkedList;
 
 /**
- * Alter table statement extractor for SQLServer.
+ * Alter table extractor for SQLServer.
  * 
  * @author duhongjun
+ * @author zhangliang
  */
-public final class SQLServerAlterTableExtractor extends AlterTableExtractor {
+public final class SQLServerAlterTableExtractor implements SQLStatementExtractor {
     
-    public SQLServerAlterTableExtractor() {
-        addSQLSegmentExtractor(new AddColumnExtractor());
-        addSQLSegmentExtractor(new ModifyColumnExtractor()); 
-        addSQLSegmentExtractor(new SQLServerAddIndexExtractor()); 
-        addSQLSegmentExtractor(new SQLServerDropIndexExtractor());
-        addSQLSegmentExtractor(new SQLServerAddPrimaryKeyExtractor());
+    private static final Collection<SQLSegmentExtractor> EXTRACTORS = new LinkedList<>();
+    
+    static {
+        EXTRACTORS.add(new TableNamesExtractor());
+        EXTRACTORS.add(new RenameTableExtractor());
+        EXTRACTORS.add(new DropColumnExtractor());
+        EXTRACTORS.add(new AddColumnExtractor());
+        EXTRACTORS.add(new ModifyColumnExtractor());
+        EXTRACTORS.add(new SQLServerAddIndexExtractor());
+        EXTRACTORS.add(new SQLServerDropIndexExtractor());
+        EXTRACTORS.add(new SQLServerAddPrimaryKeyExtractor());
+    }
+    
+    @Override
+    public Collection<SQLSegmentExtractor> getExtractors() {
+        return EXTRACTORS;
     }
 }

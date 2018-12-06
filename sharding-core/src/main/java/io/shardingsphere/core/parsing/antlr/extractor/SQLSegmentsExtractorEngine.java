@@ -15,46 +15,48 @@
  * </p>
  */
 
-package io.shardingsphere.core.parsing.antlr.extractor.statement.impl;
+package io.shardingsphere.core.parsing.antlr.extractor;
 
 import com.google.common.base.Optional;
-import io.shardingsphere.core.metadata.table.ShardingTableMetaData;
+import io.shardingsphere.core.constant.DatabaseType;
 import io.shardingsphere.core.parsing.antlr.extractor.segment.CollectionSQLSegmentExtractor;
 import io.shardingsphere.core.parsing.antlr.extractor.segment.OptionalSQLSegmentExtractor;
 import io.shardingsphere.core.parsing.antlr.extractor.segment.SQLSegmentExtractor;
-import io.shardingsphere.core.parsing.antlr.extractor.statement.SQLSegmentsExtractor;
+import io.shardingsphere.core.parsing.antlr.extractor.statement.SQLSegmentsExtractorFactory;
+import io.shardingsphere.core.parsing.antlr.parser.SQLAST;
 import io.shardingsphere.core.parsing.antlr.sql.segment.SQLSegment;
-import io.shardingsphere.core.rule.ShardingRule;
-import org.antlr.v4.runtime.ParserRuleContext;
+import lombok.RequiredArgsConstructor;
 
 import java.util.Collection;
 import java.util.LinkedList;
 
 /**
- * Abstract SQL segments extractor.
- *
- * @author duhongjun
+ * SQL segments extractor engine.
+ * 
+ * @author zhangliang
  */
-public abstract class AbstractSQLSegmentsExtractor implements SQLSegmentsExtractor {
+@RequiredArgsConstructor
+public final class SQLSegmentsExtractorEngine {
     
-    private final Collection<SQLSegmentExtractor> sqlSegmentExtractors = new LinkedList<>();
+    private final DatabaseType databaseType;
     
-    protected final void addSQLSegmentExtractor(final SQLSegmentExtractor sqlSegmentExtractor) {
-        sqlSegmentExtractors.add(sqlSegmentExtractor);
-    }
-    
-    @Override
-    public final Collection<SQLSegment> extract(final ParserRuleContext rootNode, final ShardingRule shardingRule, final ShardingTableMetaData shardingTableMetaData) {
+    /** 
+     * Extract SQL segments.
+     * 
+     * @param ast SQL AST
+     * @return SQL segments
+     */
+    public Collection<SQLSegment> extract(final SQLAST ast) {
         Collection<SQLSegment> result = new LinkedList<>();
-        for (SQLSegmentExtractor each : sqlSegmentExtractors) {
+        for (SQLSegmentExtractor each : SQLSegmentsExtractorFactory.getInstance(databaseType, ast.getType()).getExtractors()) {
             if (each instanceof OptionalSQLSegmentExtractor) {
-                Optional<? extends SQLSegment> sqlSegment = ((OptionalSQLSegmentExtractor) each).extract(rootNode);
+                Optional<? extends SQLSegment> sqlSegment = ((OptionalSQLSegmentExtractor) each).extract(ast.getParserRuleContext());
                 if (sqlSegment.isPresent()) {
                     result.add(sqlSegment.get());
                 }
             }
             if (each instanceof CollectionSQLSegmentExtractor) {
-                result.addAll(((CollectionSQLSegmentExtractor) each).extract(rootNode));
+                result.addAll(((CollectionSQLSegmentExtractor) each).extract(ast.getParserRuleContext()));
             }
         }
         return result;

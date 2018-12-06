@@ -17,17 +17,29 @@
 
 package io.shardingsphere.core.parsing.antlr.extractor.statement.impl.ddl.dialect.oracle;
 
+import io.shardingsphere.core.parsing.antlr.extractor.segment.SQLSegmentExtractor;
 import io.shardingsphere.core.parsing.antlr.extractor.segment.impl.IndexNameExtractor;
-import io.shardingsphere.core.parsing.antlr.extractor.statement.impl.AbstractSQLSegmentsExtractor;
+import io.shardingsphere.core.parsing.antlr.extractor.statement.SQLStatementExtractor;
+
+import java.util.Collection;
+import java.util.LinkedList;
 
 /**
- * Drop index statement extractor for Oracle.
+ * Drop index extractor for Oracle.
  * 
  * @author duhongjun
+ * @author zhangliang
  */
-public final class OracleDropIndexExtractor extends AbstractSQLSegmentsExtractor {
+public final class OracleDropIndexExtractor implements SQLStatementExtractor {
     
-    public OracleDropIndexExtractor() {
-        addSQLSegmentExtractor(new IndexNameExtractor());
+    private static final Collection<SQLSegmentExtractor> EXTRACTORS = new LinkedList<>();
+    
+    static {
+        EXTRACTORS.add(new IndexNameExtractor());
+    }
+    
+    @Override
+    public Collection<SQLSegmentExtractor> getExtractors() {
+        return EXTRACTORS;
     }
 }

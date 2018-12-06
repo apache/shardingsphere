@@ -17,17 +17,29 @@
 
 package io.shardingsphere.core.parsing.antlr.extractor.statement.impl.ddl.dialect.sqlserver;
 
+import io.shardingsphere.core.parsing.antlr.extractor.segment.SQLSegmentExtractor;
 import io.shardingsphere.core.parsing.antlr.extractor.segment.impl.TableNamesExtractor;
-import io.shardingsphere.core.parsing.antlr.extractor.statement.impl.ddl.DropTableExtractor;
+import io.shardingsphere.core.parsing.antlr.extractor.statement.SQLStatementExtractor;
+
+import java.util.Collection;
+import java.util.LinkedList;
 
 /**
  * Drop table extractor for SQL Server.
  * 
  * @author duhongjun
+ * @author zhangliang
  */
-public final class SQLServerDropTableExtractor extends DropTableExtractor {
+public final class SQLServerDropTableExtractor implements SQLStatementExtractor {
     
-    public SQLServerDropTableExtractor() {
-        addSQLSegmentExtractor(new TableNamesExtractor());
+    private static final Collection<SQLSegmentExtractor> EXTRACTORS = new LinkedList<>();
+    
+    static {
+        EXTRACTORS.add(new TableNamesExtractor());
+    }
+    
+    @Override
+    public Collection<SQLSegmentExtractor> getExtractors() {
+        return EXTRACTORS;
     }
 }

@@ -17,17 +17,29 @@
 
 package io.shardingsphere.core.parsing.antlr.extractor.statement.impl.ddl.dialect.postgresql;
 
+import io.shardingsphere.core.parsing.antlr.extractor.segment.SQLSegmentExtractor;
 import io.shardingsphere.core.parsing.antlr.extractor.segment.impl.IndexNamesExtractor;
-import io.shardingsphere.core.parsing.antlr.extractor.statement.impl.AbstractSQLSegmentsExtractor;
+import io.shardingsphere.core.parsing.antlr.extractor.statement.SQLStatementExtractor;
+
+import java.util.Collection;
+import java.util.LinkedList;
 
 /**
- * Drop index statement extractor for PostgreSQL.
+ * Drop index extractor for PostgreSQL.
  * 
  * @author duhongjun
+ * @author zhangliang
  */
-public final class PostgreSQLDropIndexExtractor extends AbstractSQLSegmentsExtractor {
+public final class PostgreSQLDropIndexExtractor implements SQLStatementExtractor {
     
-    public PostgreSQLDropIndexExtractor() {
-        addSQLSegmentExtractor(new IndexNamesExtractor());
+    private static final Collection<SQLSegmentExtractor> EXTRACTORS = new LinkedList<>();
+    
+    static {
+        EXTRACTORS.add(new IndexNamesExtractor());
+    }
+    
+    @Override
+    public Collection<SQLSegmentExtractor> getExtractors() {
+        return EXTRACTORS;
     }
 }

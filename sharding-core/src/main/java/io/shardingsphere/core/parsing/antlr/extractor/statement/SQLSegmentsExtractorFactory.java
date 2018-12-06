@@ -18,12 +18,12 @@
 package io.shardingsphere.core.parsing.antlr.extractor.statement;
 
 import io.shardingsphere.core.constant.DatabaseType;
-import io.shardingsphere.core.parsing.antlr.parser.SQLStatementType;
 import io.shardingsphere.core.parsing.antlr.extractor.statement.registry.SQLSegmentsExtractorRegistry;
 import io.shardingsphere.core.parsing.antlr.extractor.statement.registry.dialect.MySQLSegmentsExtractorRegistry;
 import io.shardingsphere.core.parsing.antlr.extractor.statement.registry.dialect.OracleSegmentsExtractorRegistry;
 import io.shardingsphere.core.parsing.antlr.extractor.statement.registry.dialect.PostgreSQLSegmentsExtractorRegistry;
 import io.shardingsphere.core.parsing.antlr.extractor.statement.registry.dialect.SQLServerSegmentsExtractorRegistry;
+import io.shardingsphere.core.parsing.antlr.parser.SQLStatementType;
 import lombok.AccessLevel;
 import lombok.NoArgsConstructor;
 
@@ -56,7 +56,7 @@ public final class SQLSegmentsExtractorFactory {
      * @param sqlStatementType SQL statement type
      * @return SQL segments extractor
      */
-    public static SQLSegmentsExtractor getInstance(final DatabaseType databaseType, final SQLStatementType sqlStatementType) {
+    public static SQLStatementExtractor getInstance(final DatabaseType databaseType, final SQLStatementType sqlStatementType) {
         return EXTRACTOR_REGISTRY.get(databaseType).getExtractor(sqlStatementType);
     }
 }

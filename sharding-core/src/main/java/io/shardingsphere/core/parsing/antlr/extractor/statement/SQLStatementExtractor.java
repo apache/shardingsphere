@@ -15,14 +15,23 @@
  * </p>
  */
 
-package io.shardingsphere.core.parsing.antlr.extractor.statement.impl.tcl;
+package io.shardingsphere.core.parsing.antlr.extractor.statement;
 
-import io.shardingsphere.core.parsing.antlr.extractor.statement.impl.AbstractSQLSegmentsExtractor;
+import io.shardingsphere.core.parsing.antlr.extractor.segment.SQLSegmentExtractor;
+
+import java.util.Collection;
 
 /**
- * TCL segments extractor.
+ * SQL statement extractor.
  * 
- * @author duhongjun
+ * @author zhangliang
  */
-public final class TCLSegmentsExtractor extends AbstractSQLSegmentsExtractor {
+public interface SQLStatementExtractor {
+    
+    /** 
+     * Get SQL segment extractors.
+     * 
+     * @return SQL segment extractors
+     */
+    Collection<SQLSegmentExtractor> getExtractors();
 }

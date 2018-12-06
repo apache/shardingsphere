@@ -17,19 +17,31 @@
 
 package io.shardingsphere.core.parsing.antlr.extractor.statement.impl.ddl;
 
+import io.shardingsphere.core.parsing.antlr.extractor.segment.SQLSegmentExtractor;
 import io.shardingsphere.core.parsing.antlr.extractor.segment.impl.IndexNameExtractor;
 import io.shardingsphere.core.parsing.antlr.extractor.segment.impl.TableNameExtractor;
-import io.shardingsphere.core.parsing.antlr.extractor.statement.impl.AbstractSQLSegmentsExtractor;
+import io.shardingsphere.core.parsing.antlr.extractor.statement.SQLStatementExtractor;
+
+import java.util.Collection;
+import java.util.LinkedList;
 
 /**
  * Drop index extractor.
  * 
  * @author duhongjun
+ * @author zhangliang
  */
-public final class DropIndexExtractor extends AbstractSQLSegmentsExtractor {
+public final class DropIndexExtractor implements SQLStatementExtractor {
     
-    public DropIndexExtractor() {
-        addSQLSegmentExtractor(new TableNameExtractor());
-        addSQLSegmentExtractor(new IndexNameExtractor());
+    private static final Collection<SQLSegmentExtractor> EXTRACTORS = new LinkedList<>();
+    
+    static {
+        EXTRACTORS.add(new TableNameExtractor());
+        EXTRACTORS.add(new IndexNameExtractor());
+    }
+    
+    @Override
+    public Collection<SQLSegmentExtractor> getExtractors() {
+        return EXTRACTORS;
     }
 }

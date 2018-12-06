@@ -17,10 +17,7 @@
 
 package io.shardingsphere.core.parsing.antlr.extractor.statement.registry.dialect;
 
-import io.shardingsphere.core.parsing.antlr.parser.SQLStatementType;
-import io.shardingsphere.core.parsing.antlr.extractor.statement.SQLSegmentsExtractor;
-import io.shardingsphere.core.parsing.antlr.extractor.statement.impl.dal.dialect.postgresql.PostgreSQLResetParamExtractor;
-import io.shardingsphere.core.parsing.antlr.extractor.statement.impl.dal.dialect.postgresql.PostgreSQLSetParamExtractor;
+import io.shardingsphere.core.parsing.antlr.extractor.statement.SQLStatementExtractor;
 import io.shardingsphere.core.parsing.antlr.extractor.statement.impl.dal.dialect.postgresql.PostgreSQLShowExtractor;
 import io.shardingsphere.core.parsing.antlr.extractor.statement.impl.ddl.CreateIndexExtractor;
 import io.shardingsphere.core.parsing.antlr.extractor.statement.impl.ddl.CreateTableExtractor;
@@ -29,8 +26,8 @@ import io.shardingsphere.core.parsing.antlr.extractor.statement.impl.ddl.dialect
 import io.shardingsphere.core.parsing.antlr.extractor.statement.impl.ddl.dialect.postgresql.PostgreSQLDropIndexExtractor;
 import io.shardingsphere.core.parsing.antlr.extractor.statement.impl.ddl.dialect.postgresql.PostgreSQLDropTableExtractor;
 import io.shardingsphere.core.parsing.antlr.extractor.statement.impl.ddl.dialect.postgresql.PostgreSQLTruncateTableExtractor;
-import io.shardingsphere.core.parsing.antlr.extractor.statement.impl.tcl.TCLSegmentsExtractor;
 import io.shardingsphere.core.parsing.antlr.extractor.statement.registry.SQLSegmentsExtractorRegistry;
+import io.shardingsphere.core.parsing.antlr.parser.SQLStatementType;
 
 import java.util.HashMap;
 import java.util.Map;
@@ -43,11 +40,10 @@ import java.util.Map;
  */
 public final class PostgreSQLSegmentsExtractorRegistry implements SQLSegmentsExtractorRegistry {
     
-    private static final Map<SQLStatementType, SQLSegmentsExtractor> EXTRACTORS = new HashMap<>();
+    private static final Map<SQLStatementType, SQLStatementExtractor> EXTRACTORS = new HashMap<>();
     
     static {
         registerDDL();
-        registerTCL();
         registerDAL();
     }
     
@@ -61,22 +57,12 @@ public final class PostgreSQLSegmentsExtractorRegistry implements SQLSegmentsExt
         EXTRACTORS.put(SQLStatementType.DROP_INDEX, new PostgreSQLDropIndexExtractor());
     }
     
-    private static void registerTCL() {
-        EXTRACTORS.put(SQLStatementType.SET_TRANSACTION, new TCLSegmentsExtractor());
-        EXTRACTORS.put(SQLStatementType.COMMIT, new TCLSegmentsExtractor());
-        EXTRACTORS.put(SQLStatementType.ROLLBACK, new TCLSegmentsExtractor());
-        EXTRACTORS.put(SQLStatementType.SAVEPOINT, new TCLSegmentsExtractor());
-        EXTRACTORS.put(SQLStatementType.BEGIN_WORK, new TCLSegmentsExtractor());
-    }
-    
     private static void registerDAL() {
         EXTRACTORS.put(SQLStatementType.SHOW, new PostgreSQLShowExtractor());
-        EXTRACTORS.put(SQLStatementType.SET_PARAM, new PostgreSQLSetParamExtractor());
-        EXTRACTORS.put(SQLStatementType.RESET_PARAM, new PostgreSQLResetParamExtractor());
     }
 
     @Override
-    public SQLSegmentsExtractor getExtractor(final SQLStatementType type) {
+    public SQLStatementExtractor getExtractor(final SQLStatementType type) {
         return EXTRACTORS.get(type);
     }
 }

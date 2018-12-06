@@ -17,17 +17,29 @@
 
 package io.shardingsphere.core.parsing.antlr.extractor.statement.impl.ddl.dialect.mysql;
 
+import io.shardingsphere.core.parsing.antlr.extractor.segment.SQLSegmentExtractor;
 import io.shardingsphere.core.parsing.antlr.extractor.segment.impl.TableNamesExtractor;
-import io.shardingsphere.core.parsing.antlr.extractor.statement.impl.ddl.DropTableExtractor;
+import io.shardingsphere.core.parsing.antlr.extractor.statement.SQLStatementExtractor;
+
+import java.util.Collection;
+import java.util.LinkedList;
 
 /**
  * Drop table extractor for MySQL.
  * 
  * @author duhongjun
+ * @author zhangliang
  */
-public final class MySQLDropTableExtractor extends DropTableExtractor {
+public final class MySQLDropTableExtractor implements SQLStatementExtractor {
     
-    public MySQLDropTableExtractor() {
-        addSQLSegmentExtractor(new TableNamesExtractor());
+    private static final Collection<SQLSegmentExtractor> EXTRACTORS = new LinkedList<>();
+    
+    static {
+        EXTRACTORS.add(new TableNamesExtractor());
+    }
+    
+    @Override
+    public Collection<SQLSegmentExtractor> getExtractors() {
+        return EXTRACTORS;
     }
 }
