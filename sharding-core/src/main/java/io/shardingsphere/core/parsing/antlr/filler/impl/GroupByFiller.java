@@ -40,7 +40,7 @@ public final class GroupByFiller implements SQLStatementFiller {
         selectStatement.setGroupByLastPosition(groupBySegment.getGroupByLastPosition());
         OrderByFiller orderFiller = new OrderByFiller();
         for (OrderByItemSegment each : groupBySegment.getGroupByItems()) {
-            selectStatement.getGroupByItems().add(orderFiller.buildOrderItemAndFillToken(selectStatement, sql, each));
+            selectStatement.getGroupByItems().add(orderFiller.buildOrderItemAndFillToken(selectStatement, each, sql));
         }
     }
 }

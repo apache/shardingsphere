@@ -17,20 +17,33 @@
 
 package io.shardingsphere.core.parsing.antlr.sql.segment.expr;
 
-import io.shardingsphere.core.parsing.parser.expression.SQLExpression;
+import com.google.common.base.Optional;
+
+import io.shardingsphere.core.parsing.antlr.sql.segment.FromWhereSegment;
+import io.shardingsphere.core.parsing.antlr.sql.segment.SelectClauseSegment;
+import io.shardingsphere.core.parsing.antlr.sql.segment.order.GroupBySegment;
+import io.shardingsphere.core.parsing.antlr.sql.segment.order.OrderBySegment;
 import lombok.Getter;
 import lombok.RequiredArgsConstructor;
 
 /**
- * SQL between expression segment.
+ * Subquery expression segment.
  * 
  * @author duhongjun
  */
 @RequiredArgsConstructor
 @Getter
-public class SQLBetweenExpressionSegment implements SQLExpressionSegment {
+public final class SubquerySegment implements ExpressionSegment {
     
-    private final SQLExpression beginExpress;
+    private final Optional<SelectClauseSegment> selectClauseSegment;
     
-    private final SQLExpression endExpress;
+    private final Optional<FromWhereSegment> fromWhereSegment;
+    
+    private final Optional<GroupBySegment> groupBySegment;
+    
+    private final Optional<OrderBySegment> orderBySegment;
+    
+    private final Optional<String> alias;
+    
+    private final boolean subqueryInFrom;
 }

@@ -39,11 +39,15 @@ import java.util.LinkedList;
  * @author duhongjun
  */
 @RequiredArgsConstructor
-public class OrderByExtractor implements OptionalSQLSegmentExtractor {
+public final class OrderByExtractor implements OptionalSQLSegmentExtractor {
     
     @Override
     public Optional<OrderBySegment> extract(final ParserRuleContext ancestorNode) {
-        Optional<ParserRuleContext> orderByParentNode = ExtractorUtils.findFirstChildNode(ancestorNode, RuleName.ORDER_BY_CLAUSE);
+        Optional<ParserRuleContext> selectClauseNode = ExtractorUtils.findFirstChildNode(ancestorNode, RuleName.SELECT_CLAUSE);
+        if (!selectClauseNode.isPresent()) {
+            return Optional.absent();
+        }
+        Optional<ParserRuleContext> orderByParentNode = ExtractorUtils.findFirstChildNodeNoneRecursive(selectClauseNode.get().getParent(), RuleName.ORDER_BY_CLAUSE);
         if (!orderByParentNode.isPresent()) {
             return Optional.absent();
         }

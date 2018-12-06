@@ -17,7 +17,11 @@
 
 package io.shardingsphere.core.parsing.antlr.filler.registry;
 
+import java.util.HashMap;
+import java.util.Map;
+
 import com.google.common.base.Optional;
+
 import io.shardingsphere.core.parsing.antlr.filler.SQLStatementFiller;
 import io.shardingsphere.core.parsing.antlr.filler.impl.ColumnDefinitionFiller;
 import io.shardingsphere.core.parsing.antlr.filler.impl.ConstraintDefinitionFiller;
@@ -31,7 +35,6 @@ import io.shardingsphere.core.parsing.antlr.filler.impl.OrderByFiller;
 import io.shardingsphere.core.parsing.antlr.filler.impl.SelectClauseFiller;
 import io.shardingsphere.core.parsing.antlr.filler.impl.ShowParamFiller;
 import io.shardingsphere.core.parsing.antlr.filler.impl.TableFiller;
-import io.shardingsphere.core.parsing.antlr.filler.impl.TableJoinFiller;
 import io.shardingsphere.core.parsing.antlr.sql.segment.FromWhereSegment;
 import io.shardingsphere.core.parsing.antlr.sql.segment.IndexSegment;
 import io.shardingsphere.core.parsing.antlr.sql.segment.LimitSegment;
@@ -44,11 +47,7 @@ import io.shardingsphere.core.parsing.antlr.sql.segment.constraint.ConstraintDef
 import io.shardingsphere.core.parsing.antlr.sql.segment.constraint.DropPrimaryKeySegment;
 import io.shardingsphere.core.parsing.antlr.sql.segment.order.GroupBySegment;
 import io.shardingsphere.core.parsing.antlr.sql.segment.order.OrderBySegment;
-import io.shardingsphere.core.parsing.antlr.sql.segment.table.TableJoinSegment;
 import io.shardingsphere.core.parsing.antlr.sql.segment.table.TableSegment;
-
-import java.util.HashMap;
-import java.util.Map;
 
 /**
  * SQL statement filler registry.
@@ -68,7 +67,6 @@ public final class SQLStatementFillerRegistry {
         FILLERS.put(IndexSegment.class, new IndexFiller());
         FILLERS.put(SelectClauseSegment.class, new SelectClauseFiller());
         FILLERS.put(FromWhereSegment.class, new FromWhereFiller());
-        FILLERS.put(TableJoinSegment.class, new TableJoinFiller());
         FILLERS.put(GroupBySegment.class, new GroupByFiller());
         FILLERS.put(OrderBySegment.class, new OrderByFiller());
         FILLERS.put(LimitSegment.class, new LimitFiller());

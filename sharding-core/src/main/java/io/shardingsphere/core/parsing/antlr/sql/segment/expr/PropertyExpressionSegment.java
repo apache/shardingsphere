@@ -29,7 +29,7 @@ import lombok.RequiredArgsConstructor;
  */
 @RequiredArgsConstructor
 @Getter
-public class PropertyExpressionSegment extends ExpressionSegment {
+public final class PropertyExpressionSegment implements ExpressionSegment {
     
     private final Optional<String> owner;
     

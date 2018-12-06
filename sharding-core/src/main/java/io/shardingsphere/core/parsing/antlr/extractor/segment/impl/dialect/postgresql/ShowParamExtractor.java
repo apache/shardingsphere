@@ -30,7 +30,7 @@ import org.antlr.v4.runtime.ParserRuleContext;
  *
  * @author loxp
  */
-public class ShowParamExtractor implements OptionalSQLSegmentExtractor {
+public final class ShowParamExtractor implements OptionalSQLSegmentExtractor {
     
     @Override
     public Optional<? extends SQLSegment> extract(final ParserRuleContext ancestorNode) {

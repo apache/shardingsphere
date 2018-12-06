@@ -40,12 +40,15 @@ public final class OrderByFiller implements SQLStatementFiller {
     public void fill(final SQLSegment sqlSegment, final SQLStatement sqlStatement, final String sql, final ShardingRule shardingRule, final ShardingTableMetaData shardingTableMetaData) {
         OrderBySegment orderBySegment = (OrderBySegment) sqlSegment;
         SelectStatement selectStatement = (SelectStatement) sqlStatement;
+        if(!selectStatement.getSubQueryStatements().isEmpty()) {
+            return;
+        }
         for (OrderByItemSegment each : orderBySegment.getOrderByItems()) {
-            selectStatement.getOrderByItems().add(buildOrderItemAndFillToken(selectStatement, sql, each));
+            selectStatement.getOrderByItems().add(buildOrderItemAndFillToken(selectStatement, each, sql));
         }
     }
     
-    protected OrderItem buildOrderItemAndFillToken(final SelectStatement selectStatement, final String sql, final OrderByItemSegment orderByItemSegment) {
+    protected OrderItem buildOrderItemAndFillToken(final SelectStatement selectStatement, final OrderByItemSegment orderByItemSegment, final String sql) {
         if (-1 < orderByItemSegment.getIndex()) {
             return new OrderItem(orderByItemSegment.getIndex(), orderByItemSegment.getOrderDirection(), orderByItemSegment.getNullOrderDirection());
         }

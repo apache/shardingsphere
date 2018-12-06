@@ -17,12 +17,19 @@
 
 package io.shardingsphere.core.parsing.antlr.sql.segment.expr;
 
-import io.shardingsphere.core.parsing.antlr.sql.segment.SQLSegment;
+import lombok.Getter;
+import lombok.RequiredArgsConstructor;
 
 /**
- * SQL expression segment.
+ * Between value expression segment.
  * 
  * @author duhongjun
  */
-public interface SQLExpressionSegment extends SQLSegment {
+@RequiredArgsConstructor
+@Getter
+public final class BetweenValueExpressionSegment implements SQLRightValueExpressionSegment {
+    
+    private final ExpressionSegment beginExpress;
+    
+    private final ExpressionSegment endExpress;
 }

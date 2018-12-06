@@ -31,7 +31,7 @@ import lombok.RequiredArgsConstructor;
  */
 @RequiredArgsConstructor
 @Getter
-public class OrderBySegment implements SQLSegment {
+public final class OrderBySegment implements SQLSegment {
     
     private final Collection<OrderByItemSegment> orderByItems = new LinkedList<>();
     

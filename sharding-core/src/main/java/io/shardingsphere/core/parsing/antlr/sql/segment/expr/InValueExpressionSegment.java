@@ -17,18 +17,20 @@
 
 package io.shardingsphere.core.parsing.antlr.sql.segment.expr;
 
-import io.shardingsphere.core.parsing.parser.expression.SQLExpression;
+import java.util.LinkedList;
+import java.util.List;
+
 import lombok.Getter;
 import lombok.RequiredArgsConstructor;
 
 /**
- * SQL equals expression segment.
+ * In value expression segment.
  * 
  * @author duhongjun
  */
 @RequiredArgsConstructor
 @Getter
-public class SQLEqualsExpressionSegment implements SQLExpressionSegment {
+public final class InValueExpressionSegment implements SQLRightValueExpressionSegment {
     
-    private final SQLExpression expression;
+    private final List<ExpressionSegment> sqlExpressions = new LinkedList<>();
 }

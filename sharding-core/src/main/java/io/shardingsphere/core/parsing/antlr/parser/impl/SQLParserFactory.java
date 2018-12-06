@@ -17,22 +17,23 @@
 
 package io.shardingsphere.core.parsing.antlr.parser.impl;
 
-import io.shardingsphere.core.constant.DatabaseType;
-import io.shardingsphere.core.parsing.antlr.parser.impl.dialect.MySQLParser;
-import io.shardingsphere.core.parsing.antlr.parser.impl.dialect.OracleParser;
-import io.shardingsphere.core.parsing.antlr.parser.impl.dialect.PostgreSQLParser;
-import io.shardingsphere.core.parsing.antlr.parser.impl.dialect.SQLServerParser;
-import io.shardingsphere.core.parsing.antlr.autogen.MySQLStatementLexer;
-import io.shardingsphere.core.parsing.antlr.autogen.OracleStatementLexer;
-import io.shardingsphere.core.parsing.antlr.autogen.PostgreSQLStatementLexer;
-import io.shardingsphere.core.parsing.antlr.autogen.SQLServerStatementLexer;
-import lombok.AccessLevel;
-import lombok.NoArgsConstructor;
 import org.antlr.v4.runtime.CharStream;
 import org.antlr.v4.runtime.CharStreams;
 import org.antlr.v4.runtime.CommonTokenStream;
 import org.antlr.v4.runtime.Lexer;
 import org.antlr.v4.runtime.TokenStream;
+
+import io.shardingsphere.core.constant.DatabaseType;
+import io.shardingsphere.core.parsing.antlr.autogen.MySQLStatementLexer;
+import io.shardingsphere.core.parsing.antlr.autogen.OracleStatementLexer;
+import io.shardingsphere.core.parsing.antlr.autogen.PostgreSQLStatementLexer;
+import io.shardingsphere.core.parsing.antlr.autogen.SQLServerStatementLexer;
+import io.shardingsphere.core.parsing.antlr.parser.impl.dialect.MySQLParser;
+import io.shardingsphere.core.parsing.antlr.parser.impl.dialect.OracleParser;
+import io.shardingsphere.core.parsing.antlr.parser.impl.dialect.PostgreSQLParser;
+import io.shardingsphere.core.parsing.antlr.parser.impl.dialect.SQLServerParser;
+import lombok.AccessLevel;
+import lombok.NoArgsConstructor;
 
 /**
  * SQL parser factory.

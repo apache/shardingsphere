@@ -47,6 +47,14 @@ public final class MySQLSelectOptimizer implements SQLStatementOptimizer {
     public void optimize(final SQLStatement sqlStatement, final ShardingTableMetaData shardingTableMetaData) {
         appendDerivedColumns((SelectStatement) sqlStatement, shardingTableMetaData);
         appendDerivedOrderBy((SelectStatement) sqlStatement);
+        postExtractInternal(sqlStatement, shardingTableMetaData);
+    }
+    
+    protected void postExtractInternal(final SQLStatement sqlStatement, final ShardingTableMetaData shardingTableMetaData) {
+        SelectStatement selectStatement = (SelectStatement) sqlStatement;
+        for(SelectStatement each : selectStatement.getSubQueryStatements()) {
+            selectStatement.getConditions().getOrCondition().getAndConditions().addAll(each.getConditions().getOrCondition().getAndConditions());
+        }
     }
     
     private void appendDerivedColumns(final SelectStatement selectStatement, final ShardingTableMetaData shardingTableMetaData) {

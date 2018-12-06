@@ -33,7 +33,7 @@ import lombok.Setter;
 @RequiredArgsConstructor
 @Getter
 @Setter
-public class GroupBySegment implements SQLSegment {
+public final class GroupBySegment implements SQLSegment {
 
     private final int groupByLastPosition;
     

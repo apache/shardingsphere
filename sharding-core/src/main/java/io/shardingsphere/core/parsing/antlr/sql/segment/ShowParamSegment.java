@@ -29,6 +29,7 @@ import lombok.Setter;
 @RequiredArgsConstructor
 @Getter
 @Setter
-public class ShowParamSegment implements SQLSegment {
+public final class ShowParamSegment implements SQLSegment {
+    
     private final String name;
 }

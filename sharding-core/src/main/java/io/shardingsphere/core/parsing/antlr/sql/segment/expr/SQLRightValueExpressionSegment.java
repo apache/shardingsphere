@@ -15,22 +15,14 @@
  * </p>
  */
 
-package io.shardingsphere.core.parsing.antlr.filler.impl;
+package io.shardingsphere.core.parsing.antlr.sql.segment.expr;
 
-import io.shardingsphere.core.metadata.table.ShardingTableMetaData;
 import io.shardingsphere.core.parsing.antlr.sql.segment.SQLSegment;
-import io.shardingsphere.core.parsing.parser.sql.SQLStatement;
-import io.shardingsphere.core.rule.ShardingRule;
 
 /**
- * Join table filler.
+ * SQL right value expression segment.
  * 
  * @author duhongjun
  */
-public final class TableJoinFiller extends TableFiller {
-    
-    @Override
-    public void fill(final SQLSegment sqlSegment, final SQLStatement sqlStatement, final String sql, final ShardingRule shardingRule, final ShardingTableMetaData shardingTableMetaData) {
-        super.fill(sqlSegment, sqlStatement, sql, shardingRule, shardingTableMetaData);
-    }
+public interface SQLRightValueExpressionSegment extends SQLSegment {
 }
