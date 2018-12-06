@@ -48,7 +48,7 @@ public enum ShardingPropertiesConstant {
      *
      * <p>
      * Worker group accept tcp connection.
-     * User group accept MySQL command.
+     * Command execute engine accept MySQL command.
      * Default: CPU cores * 2.
      * </p>
      */

@@ -40,4 +40,9 @@ public final class StateNodeTest {
     public void assertGetDataSourcesNodeFullPath() {
         assertThat(stateNode.getDataSourcesNodeFullPath("sharding_db"), is("/test/state/datasources/sharding_db"));
     }
+    
+    @Test
+    public void assertGetOrchestrationShardingSchema() {
+        assertThat(stateNode.getOrchestrationShardingSchema("/test/state/datasources/master_slave_db.slave_ds_0").getSchemaName(), is("master_slave_db"));
+    }
 }

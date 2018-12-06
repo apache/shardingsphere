@@ -24,7 +24,7 @@ import io.shardingsphere.orchestration.config.OrchestrationConfiguration;
 import io.shardingsphere.orchestration.internal.registry.config.service.ConfigurationService;
 import io.shardingsphere.orchestration.internal.registry.listener.ShardingOrchestrationListenerManager;
 import io.shardingsphere.orchestration.internal.registry.state.service.DataSourceService;
-import io.shardingsphere.orchestration.internal.registry.state.service.InstanceStateService;
+import io.shardingsphere.orchestration.internal.registry.state.service.StateService;
 import io.shardingsphere.orchestration.reg.api.RegistryCenter;
 import io.shardingsphere.orchestration.reg.api.RegistryCenterConfiguration;
 import io.shardingsphere.orchestration.util.FieldUtil;
@@ -55,7 +55,7 @@ public final class ShardingOrchestrationFacadeTest {
     private ConfigurationService configService;
     
     @Mock
-    private InstanceStateService instanceStateService;
+    private StateService stateService;
     
     @Mock
     private DataSourceService dataSourceService;
@@ -68,7 +68,7 @@ public final class ShardingOrchestrationFacadeTest {
         shardingOrchestrationFacade = new ShardingOrchestrationFacade(new OrchestrationConfiguration("test", new RegistryCenterConfiguration(), true), Arrays.asList("sharding_db", "masterslave_db"));
         FieldUtil.setField(shardingOrchestrationFacade, "regCenter", regCenter);
         FieldUtil.setField(shardingOrchestrationFacade, "configService", configService);
-        FieldUtil.setField(shardingOrchestrationFacade, "instanceStateService", instanceStateService);
+        FieldUtil.setField(shardingOrchestrationFacade, "stateService", stateService);
         FieldUtil.setField(shardingOrchestrationFacade, "dataSourceService", dataSourceService);
         FieldUtil.setField(shardingOrchestrationFacade, "listenerManager", listenerManager);
     }
@@ -83,16 +83,16 @@ public final class ShardingOrchestrationFacadeTest {
                 Collections.singletonMap("sharding_db", dataSourceConfigurationMap), ruleConfigurationMap, authentication, Collections.<String, Object>emptyMap(), props);
         verify(configService).persistConfiguration(
                 "sharding_db", dataSourceConfigurationMap, ruleConfigurationMap.get("sharding_db"), authentication, Collections.<String, Object>emptyMap(), props, true);
-        verify(instanceStateService).persistInstanceOnline();
-        verify(dataSourceService).persistDataSourcesNode();
+        verify(stateService).persistInstanceOnline();
+        verify(stateService).persistDataSourcesNode();
         verify(listenerManager).initListeners();
     }
     
     @Test
     public void assertInitWithoutParameters() {
         shardingOrchestrationFacade.init();
-        verify(instanceStateService).persistInstanceOnline();
-        verify(dataSourceService).persistDataSourcesNode();
+        verify(stateService).persistInstanceOnline();
+        verify(stateService).persistDataSourcesNode();
         verify(listenerManager).initListeners();
     }
     

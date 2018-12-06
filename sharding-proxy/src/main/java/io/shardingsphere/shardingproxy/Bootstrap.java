@@ -34,7 +34,6 @@ import io.shardingsphere.shardingproxy.runtime.GlobalRegistry;
 import io.shardingsphere.shardingproxy.util.DataSourceConverter;
 import lombok.AccessLevel;
 import lombok.NoArgsConstructor;
-
 import java.io.IOException;
 import java.util.Collection;
 import java.util.HashMap;
@@ -89,7 +88,7 @@ public final class Bootstrap {
                                                    final Map<String, Object> configMap, final Properties prop, final int port) throws InterruptedException {
         GlobalRegistry.getInstance().init(getDataSourceParameterMap(ruleConfigs), getRuleConfiguration(ruleConfigs), authentication, configMap, prop);
         initOpenTracing();
-        new ShardingProxy().start(port);
+        ShardingProxy.getInstance().start(port);
     }
     
     private static void startWithRegistryCenter(final YamlProxyServerConfiguration serverConfig,
@@ -97,10 +96,10 @@ public final class Bootstrap {
         try (ShardingOrchestrationFacade shardingOrchestrationFacade = new ShardingOrchestrationFacade(serverConfig.getOrchestration().getOrchestrationConfiguration(), shardingSchemaNames)) {
             initShardingOrchestrationFacade(serverConfig, ruleConfigs, shardingOrchestrationFacade);
             GlobalRegistry.getInstance().init(getSchemaDataSourceParameterMap(shardingOrchestrationFacade), getSchemaRules(shardingOrchestrationFacade),
-                    shardingOrchestrationFacade.getConfigService().loadAuthentication(), shardingOrchestrationFacade.getConfigService().loadConfigMap(), 
+                    shardingOrchestrationFacade.getConfigService().loadAuthentication(), shardingOrchestrationFacade.getConfigService().loadConfigMap(),
                     shardingOrchestrationFacade.getConfigService().loadProperties(), true);
             initOpenTracing();
-            new ShardingProxy().start(port);
+            ShardingProxy.getInstance().start(port);
         }
     }
     

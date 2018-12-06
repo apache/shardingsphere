@@ -24,10 +24,8 @@ import io.shardingsphere.shardingproxy.runtime.GlobalRegistry;
 import lombok.SneakyThrows;
 import org.junit.BeforeClass;
 import org.junit.Test;
-
 import java.lang.reflect.Field;
 import java.util.Properties;
-
 import static org.hamcrest.CoreMatchers.instanceOf;
 import static org.junit.Assert.assertThat;
 
@@ -43,11 +41,11 @@ public final class FrontendHandlerFactoryTest {
     
     @Test
     public void assertCreateFrontendHandlerInstanceWithMySQL() {
-        assertThat(FrontendHandlerFactory.createFrontendHandlerInstance(DatabaseType.MySQL, null), instanceOf(MySQLFrontendHandler.class));
+        assertThat(FrontendHandlerFactory.createFrontendHandlerInstance(DatabaseType.MySQL), instanceOf(MySQLFrontendHandler.class));
     }
     
     @Test(expected = UnsupportedOperationException.class)
     public void assertCreateFrontendHandlerInstanceWhenUnsupported() {
-        FrontendHandlerFactory.createFrontendHandlerInstance(DatabaseType.Oracle, null);
+        FrontendHandlerFactory.createFrontendHandlerInstance(DatabaseType.Oracle);
     }
 }

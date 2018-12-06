@@ -18,12 +18,11 @@
 package io.shardingsphere.shardingproxy.frontend.common.executor;
 
 import io.netty.channel.ChannelId;
-import io.netty.channel.EventLoopGroup;
 import io.shardingsphere.core.constant.transaction.TransactionType;
+import io.shardingsphere.shardingproxy.frontend.mysql.CommandExecutor;
+import io.shardingsphere.shardingproxy.frontend.mysql.CommandExecutorContext;
 import io.shardingsphere.shardingproxy.runtime.GlobalRegistry;
 import lombok.RequiredArgsConstructor;
-
-import java.util.concurrent.ExecutorService;
 
 /**
  * Executor group.
@@ -35,16 +34,18 @@ public final class ExecutorGroup {
     
     private static final GlobalRegistry GLOBAL_REGISTRY = GlobalRegistry.getInstance();
     
-    private final EventLoopGroup eventLoopGroup;
-    
     private final ChannelId channelId;
     
     /**
-     * Get executor service.
-     * 
-     * @return executor service
+     * Execute command.
+     *
+     * @param commandExecutor a command executor to be run
      */
-    public ExecutorService getExecutorService() {
-        return TransactionType.XA == GLOBAL_REGISTRY.getTransactionType() ? ChannelThreadExecutorGroup.getInstance().get(channelId) : eventLoopGroup;
+    public void execute(final CommandExecutor commandExecutor) {
+        if (TransactionType.XA == GLOBAL_REGISTRY.getTransactionType()) {
+            ChannelThreadExecutorGroup.getInstance().get(channelId).execute(commandExecutor);
+            return;
+        }
+        CommandExecutorContext.getInstance().getCommandExecuteEngine().execute(commandExecutor);
     }
 }

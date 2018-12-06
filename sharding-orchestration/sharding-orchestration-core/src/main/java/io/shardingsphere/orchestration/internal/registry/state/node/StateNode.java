@@ -18,6 +18,7 @@
 package io.shardingsphere.orchestration.internal.registry.state.node;
 
 import com.google.common.base.Joiner;
+import io.shardingsphere.orchestration.internal.registry.state.schema.OrchestrationShardingSchema;
 import lombok.RequiredArgsConstructor;
 
 /**
@@ -63,5 +64,15 @@ public final class StateNode {
      */
     public String getDataSourcesNodeFullPath(final String schemaDataSourceName) {
         return Joiner.on("/").join("", name, ROOT, DATA_SOURCES_NODE_PATH, schemaDataSourceName);
+    }
+    
+    /**
+     * Get orchestration sharding schema.
+     *
+     * @param dataSourceNodeFullPath data source node full path
+     * @return orchestration sharding schema
+     */
+    public OrchestrationShardingSchema getOrchestrationShardingSchema(final String dataSourceNodeFullPath) {
+        return new OrchestrationShardingSchema(dataSourceNodeFullPath.replace(getDataSourcesNodeFullRootPath() + '/', ""));
     }
 }

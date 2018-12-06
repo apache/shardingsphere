@@ -17,18 +17,29 @@
 
 package io.shardingsphere.transaction.aspect;
 
+import io.shardingsphere.core.exception.ShardingException;
 import io.shardingsphere.core.transaction.TransactionTypeHolder;
 import io.shardingsphere.transaction.annotation.ShardingTransactional;
-import io.shardingsphere.transaction.annotation.ShardingTransactional.ShardingEnvironment;
+import io.shardingsphere.transaction.handler.DataSourceTransactionManagerHandler;
+import io.shardingsphere.transaction.handler.JpaTransactionManagerHandler;
+import io.shardingsphere.transaction.handler.TransactionManagerHandler;
+
 import org.aspectj.lang.JoinPoint;
+import org.aspectj.lang.annotation.After;
 import org.aspectj.lang.annotation.Aspect;
 import org.aspectj.lang.annotation.Before;
 import org.aspectj.lang.annotation.Pointcut;
 import org.aspectj.lang.reflect.MethodSignature;
+import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.core.Ordered;
 import org.springframework.core.annotation.Order;
 import org.springframework.stereotype.Component;
+import org.springframework.transaction.PlatformTransactionManager;
 
 import java.lang.reflect.Method;
+
+import lombok.Getter;
+import lombok.RequiredArgsConstructor;
 
 /**
  * Sharding transaction aspect.
@@ -37,8 +48,24 @@ import java.lang.reflect.Method;
  */
 @Aspect
 @Component
-@Order(2147483646)
+@Order(Ordered.LOWEST_PRECEDENCE - 1)
 public final class ShardingTransactionalAspect {
+    
+    private PlatformTransactionManager transactionManager;
+    
+    private TransactionManagerHandler transactionManagerHandler;
+    
+    /**
+     * Inject spring transactionManager.
+     * This transactionManager required when Switch transaction type for Sharding-Proxy.
+     *
+     * @param transactionManager spring transactionManager
+     */
+    @Autowired
+    public void setTransactionManager(final PlatformTransactionManager transactionManager) {
+        this.transactionManager = transactionManager;
+        setTransactionManagerHandler();
+    }
     
     /**
      * Sharding transactional AOP pointcut.
@@ -51,10 +78,47 @@ public final class ShardingTransactionalAspect {
     @Before(value = "shardingTransactionalPointCut()")
     public void setTransactionTypeBeforeTransaction(final JoinPoint joinPoint) {
         ShardingTransactional shardingTransactional = getAnnotation(joinPoint);
-        if (ShardingEnvironment.JDBC == shardingTransactional.environment()) {
-            TransactionTypeHolder.set(shardingTransactional.type());
+        
+        switch (shardingTransactional.environment()) {
+            case JDBC:
+                TransactionTypeHolder.set(shardingTransactional.type());
+                break;
+            case PROXY:
+                transactionManagerHandler.switchTransactionType(shardingTransactional.type());
+                break;
+            default:
+            
         }
-        // TODO :yangyi send set transaction type command/SQL to sharding-proxy
+    }
+    
+    @After(value = "shardingTransactionalPointCut()")
+    public void cleanTransactionTypeAfterTransaction(final JoinPoint joinPoint) {
+        ShardingTransactional shardingTransactional = getAnnotation(joinPoint);
+        
+        switch (shardingTransactional.environment()) {
+            case JDBC:
+                TransactionTypeHolder.clear();
+                break;
+            case PROXY:
+                transactionManagerHandler.unbindResource();
+                break;
+            default:
+            
+        }
+    }
+    
+    private void setTransactionManagerHandler() {
+        switch (TransactionManagerType.getTransactionManagerTypeByClassName(transactionManager.getClass().getName())) {
+            case DATASOURCE:
+                transactionManagerHandler = new DataSourceTransactionManagerHandler(transactionManager);
+                break;
+            case JPA:
+                transactionManagerHandler = new JpaTransactionManagerHandler(transactionManager);
+                break;
+            case UNSUPPORTED:
+            default:
+                throw new ShardingException(String.format("Switching transaction Type is unsupported for transaction manager %s", transactionManager.getClass().getName()));
+        }
     }
     
     private ShardingTransactional getAnnotation(final JoinPoint joinPoint) {
@@ -65,5 +129,36 @@ public final class ShardingTransactionalAspect {
             result = method.getDeclaringClass().getAnnotation(ShardingTransactional.class);
         }
         return result;
+    }
+    
+    @RequiredArgsConstructor
+    private enum TransactionManagerType {
+        
+        /**
+         * Spring DataSourceTransactionManager.
+         */
+        DATASOURCE("org.springframework.jdbc.datasource.DataSourceTransactionManager"),
+    
+        /**
+         * Spring JpaTransactionManager.
+         */
+        JPA("org.springframework.orm.jpa.JpaTransactionManager"),
+    
+        /**
+         * Other spring PlatformTransactionManager.
+         */
+        UNSUPPORTED("");
+        
+        @Getter
+        private final String className;
+        
+        private static TransactionManagerType getTransactionManagerTypeByClassName(final String className) {
+            for (TransactionManagerType each : TransactionManagerType.values()) {
+                if (each.getClassName().equals(className)) {
+                    return each;
+                }
+            }
+            return UNSUPPORTED;
+        }
     }
 }

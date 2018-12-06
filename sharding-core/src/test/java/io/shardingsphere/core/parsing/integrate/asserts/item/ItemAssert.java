@@ -18,23 +18,26 @@
 package io.shardingsphere.core.parsing.integrate.asserts.item;
 
 import io.shardingsphere.core.parsing.integrate.asserts.SQLStatementAssertMessage;
-import io.shardingsphere.core.parsing.integrate.jaxb.item.ExpectedAggregationSelectItem;
+import io.shardingsphere.core.parsing.integrate.jaxb.item.ExpectedSelectItems;
 import io.shardingsphere.core.parsing.parser.context.selectitem.SelectItem;
 
-import java.util.List;
 import java.util.Set;
 
 /**
  * Item assert.
  *
  * @author zhangliang
+ * @author panjuan
  */
 public final class ItemAssert {
     
     private final AggregationSelectItemAssert aggregationSelectItemAssert;
     
+    private final DistinctSelectItemAssert distinctSelectItemAssert;
+    
     public ItemAssert(final SQLStatementAssertMessage assertMessage) {
         aggregationSelectItemAssert = new AggregationSelectItemAssert(assertMessage);
+        distinctSelectItemAssert = new DistinctSelectItemAssert(assertMessage);
     }
     
     /**
@@ -43,10 +46,11 @@ public final class ItemAssert {
      * @param actual actual items
      * @param expected expected items
      */
-    public void assertItems(final Set<SelectItem> actual, final List<ExpectedAggregationSelectItem> expected) {
+    public void assertItems(final Set<SelectItem> actual, final ExpectedSelectItems expected) {
         // TODO assert SelectItems total size
         // TODO assert StarSelectItem
         // TODO assert CommonSelectItem
-        aggregationSelectItemAssert.assertAggregationSelectItems(actual, expected);
+        aggregationSelectItemAssert.assertAggregationSelectItems(actual, expected.getAggregationSelectItems());
+        distinctSelectItemAssert.assertDistinctSelectItems(actual, expected.getDistinctSelectItem());
     }
 }

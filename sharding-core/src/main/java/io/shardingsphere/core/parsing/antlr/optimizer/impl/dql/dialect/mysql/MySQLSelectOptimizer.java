@@ -158,7 +158,7 @@ public final class MySQLSelectOptimizer implements SQLStatementOptimizer {
             return false;
         }
         DistinctSelectItem distinctSelectItem = (DistinctSelectItem) selectItem;
-        return distinctSelectItem.getDistinctColumnNames().contains(orderItem.getColumnLabel()) || orderItem.getColumnLabel().equals(distinctSelectItem.getColumnLabel());
+        return distinctSelectItem.getDistinctColumnLabels().contains(orderItem.getColumnLabel());
     }
     
     private boolean isSameAlias(final SelectItem selectItem, final OrderItem orderItem) {

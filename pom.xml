@@ -67,7 +67,9 @@
         <mysql-connector-java.version>5.1.42</mysql-connector-java.version>
         <postgresql.version>9.4.1212</postgresql.version>
         <mssql.version>6.1.7.jre7-preview</mssql.version>
-        
+        <aspectjweaver.version>1.8.9</aspectjweaver.version>
+        <hibernate.version>5.3.7.Final</hibernate.version>
+    
         <maven-compiler-plugin.version>3.3</maven-compiler-plugin.version>
         <maven-assembly-plugin.version>3.1.0</maven-assembly-plugin.version>
         <maven-resources-plugin.version>2.7</maven-resources-plugin.version>
@@ -93,8 +95,6 @@
         <protobuf-maven-plugin.version>0.5.0</protobuf-maven-plugin.version>
         <os-maven-plugin.version>1.5.0.Final</os-maven-plugin.version>
         <docker-maven-plugin.version>0.4.14</docker-maven-plugin.version>
-        <servicecomb.saga.version>0.3.0-SNAPSHOT</servicecomb.saga.version>
-        <aspectjweaver.version>1.8.9</aspectjweaver.version>
     
         <javadocExecutable>${java.home}/../bin/javadoc</javadocExecutable>
     </properties>
@@ -252,8 +252,32 @@
             </dependency>
             <dependency>
                 <groupId>org.springframework.boot</groupId>
+                <artifactId>spring-boot-starter-jdbc</artifactId>
+                <version>${spring-boot.version}</version>
+                <scope>provided</scope>
+            </dependency>
+            <dependency>
+                <groupId>org.springframework</groupId>
+                <artifactId>spring-jdbc</artifactId>
+                <version>${springframework.version}</version>
+                <optional>true</optional>
+            </dependency>
+            <dependency>
+                <groupId>org.springframework</groupId>
+                <artifactId>spring-orm</artifactId>
+                <version>${springframework.version}</version>
+                <optional>true</optional>
+            </dependency>
+            <dependency>
+                <groupId>org.springframework.boot</groupId>
                 <artifactId>spring-boot-configuration-processor</artifactId>
                 <version>${spring-boot.version}</version>
+                <optional>true</optional>
+            </dependency>
+            <dependency>
+                <groupId>org.hibernate</groupId>
+                <artifactId>hibernate-core</artifactId>
+                <version>${hibernate.version}</version>
                 <optional>true</optional>
             </dependency>
             
@@ -371,17 +395,6 @@
                 <artifactId>opentracing-mock</artifactId>
                 <version>${opentracing.version}</version>
                 <scope>test</scope>
-            </dependency>
-            
-            <dependency>
-                <groupId>org.apache.servicecomb.saga</groupId>
-                <artifactId>saga-core</artifactId>
-                <version>${servicecomb.saga.version}</version>
-            </dependency>
-            <dependency>
-                <groupId>org.apache.servicecomb.saga</groupId>
-                <artifactId>saga-format</artifactId>
-                <version>${servicecomb.saga.version}</version>
             </dependency>
         </dependencies>
     </dependencyManagement>

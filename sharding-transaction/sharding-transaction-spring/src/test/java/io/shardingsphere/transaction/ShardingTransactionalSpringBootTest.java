@@ -18,8 +18,12 @@
 package io.shardingsphere.transaction;
 
 import io.shardingsphere.core.constant.transaction.TransactionType;
+import io.shardingsphere.core.exception.ShardingException;
 import io.shardingsphere.core.transaction.TransactionTypeHolder;
+import io.shardingsphere.transaction.aspect.ShardingTransactionalAspect;
 import io.shardingsphere.transaction.fixture.ShardingTransactionalTestService;
+
+import org.hibernate.engine.spi.SessionImplementor;
 import org.junit.Before;
 import org.junit.Test;
 import org.junit.runner.RunWith;
@@ -28,10 +32,26 @@ import org.springframework.boot.autoconfigure.SpringBootApplication;
 import org.springframework.boot.test.context.SpringBootTest;
 import org.springframework.context.annotation.ComponentScan;
 import org.springframework.context.annotation.ComponentScans;
+import org.springframework.jdbc.datasource.DataSourceTransactionManager;
+import org.springframework.orm.jpa.JpaTransactionManager;
 import org.springframework.test.context.junit4.SpringJUnit4ClassRunner;
+import org.springframework.transaction.PlatformTransactionManager;
+
+import java.sql.Connection;
+import java.sql.SQLException;
+import java.sql.Statement;
+
+import javax.persistence.EntityManager;
+import javax.persistence.EntityManagerFactory;
+import javax.sql.DataSource;
 
 import static org.hamcrest.CoreMatchers.is;
 import static org.junit.Assert.assertThat;
+import static org.mockito.ArgumentMatchers.anyString;
+import static org.mockito.Mockito.mock;
+import static org.mockito.Mockito.times;
+import static org.mockito.Mockito.verify;
+import static org.mockito.Mockito.when;
 
 @RunWith(SpringJUnit4ClassRunner.class)
 @SpringBootTest(classes = ShardingTransactionalSpringBootTest.class)
@@ -42,21 +62,42 @@ public class ShardingTransactionalSpringBootTest {
     @Autowired
     private ShardingTransactionalTestService testService;
     
+    @Autowired
+    private ShardingTransactionalAspect aspect;
+    
+    private final Statement statement = mock(Statement.class);
+    
+    private final JpaTransactionManager jpaTransactionManager = mock(JpaTransactionManager.class);
+    
+    private final DataSourceTransactionManager dataSourceTransactionManager = mock(DataSourceTransactionManager.class);
+    
     @Before
-    public void setUp() {
-        TransactionTypeHolder.set(TransactionType.LOCAL);
+    public void setUp() throws SQLException {
+        DataSource dataSource = mock(DataSource.class);
+        Connection connection = mock(Connection.class);
+        EntityManagerFactory entityManagerFactory = mock(EntityManagerFactory.class);
+        EntityManager entityManager = mock(EntityManager.class);
+        SessionImplementor sessionImplementor = mock(SessionImplementor.class);
+    
+        when(dataSource.getConnection()).thenReturn(connection);
+        when(connection.createStatement()).thenReturn(statement);
+        when(sessionImplementor.connection()).thenReturn(connection);
+        when(entityManager.unwrap(SessionImplementor.class)).thenReturn(sessionImplementor);
+        when(entityManagerFactory.createEntityManager()).thenReturn(entityManager);
+        when(jpaTransactionManager.getEntityManagerFactory()).thenReturn(entityManagerFactory);
+        when(dataSourceTransactionManager.getDataSource()).thenReturn(dataSource);
     }
     
     @Test
     public void assertChangeTransactionTypeToXA() {
         testService.testChangeTransactionTypeToXA();
-        assertThat(TransactionTypeHolder.get(), is(TransactionType.XA));
+        assertThat(TransactionTypeHolder.get(), is(TransactionType.LOCAL));
     }
     
     @Test
     public void assertChangeTransactionTypeToBASE() {
         testService.testChangeTransactionTypeToBASE();
-        assertThat(TransactionTypeHolder.get(), is(TransactionType.BASE));
+        assertThat(TransactionTypeHolder.get(), is(TransactionType.LOCAL));
     }
     
     @Test
@@ -69,12 +110,58 @@ public class ShardingTransactionalSpringBootTest {
     @Test
     public void assertChangeTransactionTypeInClass() {
         testService.testChangeTransactionTypeInClass();
-        assertThat(TransactionTypeHolder.get(), is(TransactionType.XA));
+        assertThat(TransactionTypeHolder.get(), is(TransactionType.LOCAL));
+    }
+    
+    @Test(expected = ShardingException.class)
+    public void assertChangeTransactionTypeForProxyWithIllegalTransactionManager() {
+        aspect.setTransactionManager(mock(PlatformTransactionManager.class));
+        
+        testService.testChangeTransactionTypeToLOCALWithEnvironment();
+    }
+    
+    @Test(expected = ShardingException.class)
+    public void assertChangeTransactionTypeForProxyFailed() throws SQLException {
+        
+        when(statement.execute(anyString())).thenThrow(new SQLException("test switch exception"));
+        aspect.setTransactionManager(jpaTransactionManager);
+        
+        testService.testChangeTransactionTypeToLOCALWithEnvironment();
     }
     
     @Test
-    public void assertChangeTransactionTypeWithEnvironment() {
-        testService.testChangeTransactionTypeWithEnvironment();
-        assertThat(TransactionTypeHolder.get(), is(TransactionType.LOCAL));
+    public void assertChangeTransactionTypeToLOCALForProxy() throws SQLException {
+        when(statement.execute(anyString())).thenReturn(true);
+    
+        aspect.setTransactionManager(jpaTransactionManager);
+        testService.testChangeTransactionTypeToLOCALWithEnvironment();
+        aspect.setTransactionManager(dataSourceTransactionManager);
+        testService.testChangeTransactionTypeToLOCALWithEnvironment();
+    
+        verify(statement, times(2)).execute("SET TRANSACTION_TYPE=LOCAL");
+    }
+    
+    @Test
+    public void assertChangeTransactionTypeToXAForProxy() throws SQLException {
+        when(statement.execute(anyString())).thenReturn(true);
+        
+        aspect.setTransactionManager(jpaTransactionManager);
+        testService.testChangeTransactionTypeToXAWithEnvironment();
+        aspect.setTransactionManager(dataSourceTransactionManager);
+        testService.testChangeTransactionTypeToXAWithEnvironment();
+        
+        verify(statement, times(2)).execute("SET TRANSACTION_TYPE=XA");
+    }
+    
+    @Test
+    public void assertChangeTransactionTypeToBASEForProxy() throws SQLException {
+        when(statement.execute(anyString())).thenReturn(true);
+    
+        aspect.setTransactionManager(jpaTransactionManager);
+        testService.testChangeTransactionTypeToBASEWithEnvironment();
+        aspect.setTransactionManager(dataSourceTransactionManager);
+        testService.testChangeTransactionTypeToBASEWithEnvironment();
+    
+        verify(statement, times(2)).execute("SET TRANSACTION_TYPE=BASE");
     }
 }
