@@ -25,7 +25,6 @@ import io.netty.channel.EventLoopGroup;
 import io.netty.channel.epoll.EpollChannelOption;
 import io.netty.channel.epoll.EpollEventLoopGroup;
 import io.netty.channel.epoll.EpollSocketChannel;
-import io.netty.channel.nio.NioEventLoopGroup;
 import io.netty.channel.pool.AbstractChannelPoolMap;
 import io.netty.channel.pool.ChannelPoolMap;
 import io.netty.channel.pool.FixedChannelPool;
@@ -38,7 +37,6 @@ import io.shardingsphere.shardingproxy.runtime.schema.LogicSchema;
 import lombok.Getter;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
-
 import java.util.concurrent.ExecutionException;
 import java.util.concurrent.TimeUnit;
 import java.util.concurrent.TimeoutException;
@@ -64,15 +62,16 @@ public final class BackendNettyClient {
     
     private final int connectionTimeoutSeconds;
     
-    private EventLoopGroup workerGroup;
+    private final EventLoopGroup workerGroup;
     
     @Getter
     private ChannelPoolMap<String, SimpleChannelPool> poolMap;
     
-    public BackendNettyClient(final LogicSchema logicSchema) {
+    public BackendNettyClient(final LogicSchema logicSchema, final EventLoopGroup workerGroup) {
         this.logicSchema = logicSchema;
         maxConnections = GLOBAL_REGISTRY.getShardingProperties().getValue(ShardingPropertiesConstant.PROXY_BACKEND_MAX_CONNECTIONS);
         connectionTimeoutSeconds = GLOBAL_REGISTRY.getShardingProperties().getValue(ShardingPropertiesConstant.PROXY_BACKEND_CONNECTION_TIMEOUT_SECONDS);
+        this.workerGroup = workerGroup;
     }
     
     /**
@@ -101,7 +100,6 @@ public final class BackendNettyClient {
     }
     
     private void groupsEpoll(final Bootstrap bootstrap) {
-        workerGroup = new EpollEventLoopGroup(WORKER_MAX_THREADS);
         bootstrap.group(workerGroup)
                 .channel(EpollSocketChannel.class)
                 .option(EpollChannelOption.TCP_CORK, true)
@@ -111,12 +109,10 @@ public final class BackendNettyClient {
     }
     
     private void groupsNio(final Bootstrap bootstrap) {
-        workerGroup = new NioEventLoopGroup(WORKER_MAX_THREADS);
         bootstrap.group(workerGroup)
                 .channel(NioSocketChannel.class)
                 .option(ChannelOption.SO_KEEPALIVE, true)
                 .option(ChannelOption.TCP_NODELAY, true)
-                .option(ChannelOption.SO_BACKLOG, 128)
                 .option(ChannelOption.CONNECT_TIMEOUT_MILLIS, 100)
                 .option(ChannelOption.ALLOCATOR, PooledByteBufAllocator.DEFAULT);
     }

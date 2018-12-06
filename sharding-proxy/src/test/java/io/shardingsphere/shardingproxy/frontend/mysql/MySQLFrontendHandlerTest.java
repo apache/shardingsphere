@@ -21,11 +21,11 @@ import io.netty.buffer.ByteBuf;
 import io.netty.channel.Channel;
 import io.netty.channel.ChannelHandlerContext;
 import io.netty.channel.ChannelId;
-import io.netty.channel.EventLoopGroup;
 import io.shardingsphere.core.constant.properties.ShardingProperties;
 import io.shardingsphere.core.constant.properties.ShardingPropertiesConstant;
 import io.shardingsphere.core.constant.transaction.TransactionType;
 import io.shardingsphere.core.rule.Authentication;
+import io.shardingsphere.shardingproxy.frontend.ShardingProxy;
 import io.shardingsphere.shardingproxy.runtime.GlobalRegistry;
 import io.shardingsphere.shardingproxy.transport.mysql.packet.generic.ErrPacket;
 import io.shardingsphere.shardingproxy.transport.mysql.packet.generic.OKPacket;
@@ -38,10 +38,9 @@ import org.junit.Test;
 import org.junit.runner.RunWith;
 import org.mockito.Mock;
 import org.mockito.junit.MockitoJUnitRunner;
-
 import java.lang.reflect.Field;
 import java.util.Properties;
-
+import java.util.concurrent.ExecutorService;
 import static org.mockito.ArgumentMatchers.isA;
 import static org.mockito.Mockito.mock;
 import static org.mockito.Mockito.verify;
@@ -53,7 +52,7 @@ public final class MySQLFrontendHandlerTest {
     private MySQLFrontendHandler mysqlFrontendHandler;
     
     @Mock
-    private EventLoopGroup eventLoopGroup;
+    private ExecutorService executorService;
     
     @Mock
     private ChannelHandlerContext context;
@@ -72,7 +71,7 @@ public final class MySQLFrontendHandlerTest {
         Field field = ConnectionIdGenerator.class.getDeclaredField("currentId");
         field.setAccessible(true);
         field.set(ConnectionIdGenerator.getInstance(), 0);
-        mysqlFrontendHandler = new MySQLFrontendHandler(eventLoopGroup);
+        mysqlFrontendHandler = new MySQLFrontendHandler();
     }
     
     @Test
