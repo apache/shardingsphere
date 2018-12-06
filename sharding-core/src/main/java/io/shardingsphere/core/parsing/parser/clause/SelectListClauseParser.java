@@ -116,7 +116,7 @@ public abstract class SelectListClauseParser implements SQLClauseParser {
     private void reviseDistinctSelectItems(final SelectStatement selectStatement, final Collection<SelectItem> selectItems) {
         for (SelectItem each : selectItems) {
             if (!(selectStatement.getDistinctSelectItems().isEmpty() || each instanceof StarSelectItem)) {
-                selectStatement.getDistinctSelectItems().get(0).getDistinctColumnNames().add(each.getExpression());
+                selectStatement.getDistinctSelectItems().get(0).getDistinctColumnNames().add(each.getAlias().isPresent() ? each.getAlias().get() : each.getExpression());
             }
         }
     }
