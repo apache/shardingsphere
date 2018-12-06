@@ -19,11 +19,7 @@ package io.shardingsphere.core.parsing.antlr.extractor;
 
 import com.google.common.base.Optional;
 import io.shardingsphere.core.constant.DatabaseType;
-import io.shardingsphere.core.parsing.antlr.extractor.segment.CollectionSQLSegmentExtractor;
-import io.shardingsphere.core.parsing.antlr.extractor.segment.OptionalSQLSegmentExtractor;
-import io.shardingsphere.core.parsing.antlr.extractor.segment.SQLSegmentExtractor;
-import io.shardingsphere.core.parsing.antlr.extractor.statement.SQLSegmentsExtractorFactory;
-import io.shardingsphere.core.parsing.antlr.extractor.statement.SQLStatementExtractor;
+import io.shardingsphere.core.parsing.antlr.extractor.registry.SQLSegmentsExtractorFactory;
 import io.shardingsphere.core.parsing.antlr.parser.SQLAST;
 import io.shardingsphere.core.parsing.antlr.sql.segment.SQLSegment;
 import lombok.RequiredArgsConstructor;
