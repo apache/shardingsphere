@@ -17,6 +17,7 @@
 
 package io.shardingsphere.core.parsing.antlr.extractor.statement;
 
+import com.google.common.base.Optional;
 import io.shardingsphere.core.constant.DatabaseType;
 import io.shardingsphere.core.parsing.antlr.extractor.statement.registry.SQLSegmentsExtractorRegistry;
 import io.shardingsphere.core.parsing.antlr.extractor.statement.registry.dialect.MySQLSegmentsExtractorRegistry;
@@ -56,7 +57,7 @@ public final class SQLSegmentsExtractorFactory {
      * @param sqlStatementType SQL statement type
      * @return SQL segments extractor
      */
-    public static SQLStatementExtractor getInstance(final DatabaseType databaseType, final SQLStatementType sqlStatementType) {
-        return EXTRACTOR_REGISTRY.get(databaseType).getExtractor(sqlStatementType);
+    public static Optional<SQLStatementExtractor> getInstance(final DatabaseType databaseType, final SQLStatementType sqlStatementType) {
+        return Optional.fromNullable(EXTRACTOR_REGISTRY.get(databaseType).getExtractor(sqlStatementType));
     }
 }
