@@ -71,7 +71,7 @@ public final class ExtractorUtils {
         }
         for (int i = 0; i < node.getChildCount(); i++) {
             if (node.getChild(i) instanceof ParserRuleContext) {
-                ParserRuleContext child = (ParserRuleContext)node.getChild(i);
+                ParserRuleContext child = (ParserRuleContext) node.getChild(i);
                 if (isMatchedNode(child, ruleName)) {
                     return Optional.of(child);
                 }

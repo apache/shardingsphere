@@ -17,10 +17,7 @@
 
 package io.shardingsphere.core.parsing.antlr.extractor.segment.impl;
 
-import org.antlr.v4.runtime.ParserRuleContext;
-
 import com.google.common.base.Optional;
-
 import io.shardingsphere.core.parsing.antlr.extractor.segment.OptionalSQLSegmentExtractor;
 import io.shardingsphere.core.parsing.antlr.extractor.segment.constant.RuleName;
 import io.shardingsphere.core.parsing.antlr.extractor.util.ExtractorUtils;
@@ -29,6 +26,7 @@ import io.shardingsphere.core.parsing.antlr.sql.segment.SelectClauseSegment;
 import io.shardingsphere.core.parsing.antlr.sql.segment.expr.SubquerySegment;
 import io.shardingsphere.core.parsing.antlr.sql.segment.order.GroupBySegment;
 import io.shardingsphere.core.parsing.antlr.sql.segment.order.OrderBySegment;
+import org.antlr.v4.runtime.ParserRuleContext;
 
 /**
  * Subquery extractor.

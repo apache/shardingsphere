@@ -18,7 +18,6 @@
 package io.shardingsphere.core.parsing.antlr.filler.impl;
 
 import com.google.common.base.Optional;
-
 import io.shardingsphere.core.constant.AggregationType;
 import io.shardingsphere.core.metadata.table.ShardingTableMetaData;
 import io.shardingsphere.core.parsing.antlr.filler.SQLStatementFiller;
@@ -42,11 +41,11 @@ import io.shardingsphere.core.rule.ShardingRule;
  * 
  * @author duhongjun
  */
-public class ExpressionFiller implements SQLStatementFiller {
+public final class ExpressionFiller implements SQLStatementFiller {
     
     @Override
-    public void fill(SQLSegment sqlSegment, SQLStatement sqlStatement, final String sql, ShardingRule shardingRule, ShardingTableMetaData shardingTableMetaData) {
-        if(!(sqlStatement instanceof SelectStatement)) {
+    public void fill(final SQLSegment sqlSegment, final SQLStatement sqlStatement, final String sql, final ShardingRule shardingRule, final ShardingTableMetaData shardingTableMetaData) {
+        if (!(sqlStatement instanceof SelectStatement)) {
             return;
         }
         SelectStatement selectStatement = (SelectStatement) sqlStatement;
@@ -61,7 +60,7 @@ public class ExpressionFiller implements SQLStatementFiller {
             return;
         }
         if (sqlSegment instanceof StarExpressionSegment) {
-            fillStarExpression((StarExpressionSegment)sqlSegment, selectStatement);
+            fillStarExpression((StarExpressionSegment) sqlSegment, selectStatement);
             return;
         }
         if (sqlSegment instanceof FunctionExpressionSegment) {
@@ -74,7 +73,7 @@ public class ExpressionFiller implements SQLStatementFiller {
         }
     }
 
-    private void fillStarExpression(StarExpressionSegment starSegment, SelectStatement selectStatement) {
+    private void fillStarExpression(final StarExpressionSegment starSegment, final SelectStatement selectStatement) {
         if (!selectStatement.isContainStar()) {
             selectStatement.setContainStar(true);
         }
@@ -85,16 +84,16 @@ public class ExpressionFiller implements SQLStatementFiller {
         }
     } 
     
-    private void fillPropertyExpression(PropertyExpressionSegment propertySegment, SelectStatement selectStatement, final String sql) {
+    private void fillPropertyExpression(final PropertyExpressionSegment propertySegment, final SelectStatement selectStatement, final String sql) {
         Optional<String> owner = propertySegment.getOwner();
         if (owner.isPresent() && selectStatement.getTables().getTableNames().contains(owner.get())) {
             selectStatement.addSQLToken(new TableToken(propertySegment.getStartPosition(), 0, owner.get()));
         }
         String expression = sql.substring(propertySegment.getStartPosition(), propertySegment.getEndPosition() + 1);
-        selectStatement.getItems().add(new CommonSelectItem(expression,propertySegment.getAlias()));
+        selectStatement.getItems().add(new CommonSelectItem(expression, propertySegment.getAlias()));
     }   
     
-    private void fillFunctionExpression(FunctionExpressionSegment functionSegment, SelectStatement selectStatement, final String sql) {
+    private void fillFunctionExpression(final FunctionExpressionSegment functionSegment, final SelectStatement selectStatement, final String sql) {
         AggregationType aggregationType = null;
         for (AggregationType eachType : AggregationType.values()) {
             if (eachType.name().equalsIgnoreCase(functionSegment.getName())) {

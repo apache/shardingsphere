@@ -61,8 +61,8 @@ public final class SelectClauseExtractor implements OptionalSQLSegmentExtractor 
             if (childNode instanceof TerminalNodeImpl) {
                 continue;
             }
-            Optional<ExpressionSegment> expressionSegment = expressionExtractor.extract((ParserRuleContext)childNode);
-            if(expressionSegment.isPresent()) {
+            Optional<ExpressionSegment> expressionSegment = expressionExtractor.extract((ParserRuleContext) childNode);
+            if (expressionSegment.isPresent()) {
                 result.getExpressions().add(expressionSegment.get());
             }
         }
