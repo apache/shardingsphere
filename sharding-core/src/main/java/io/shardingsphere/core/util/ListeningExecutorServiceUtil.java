@@ -22,7 +22,6 @@ import com.google.common.util.concurrent.MoreExecutors;
 import io.shardingsphere.core.executor.ShardingThreadFactoryBuilder;
 import lombok.AccessLevel;
 import lombok.AllArgsConstructor;
-
 import java.util.concurrent.ExecutorService;
 import java.util.concurrent.Executors;
 import java.util.concurrent.TimeUnit;

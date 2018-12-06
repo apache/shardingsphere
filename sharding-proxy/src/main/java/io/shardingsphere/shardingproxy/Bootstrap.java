@@ -34,7 +34,6 @@ import io.shardingsphere.shardingproxy.runtime.GlobalRegistry;
 import io.shardingsphere.shardingproxy.util.DataSourceConverter;
 import lombok.AccessLevel;
 import lombok.NoArgsConstructor;
-
 import java.io.IOException;
 import java.util.Collection;
 import java.util.HashMap;

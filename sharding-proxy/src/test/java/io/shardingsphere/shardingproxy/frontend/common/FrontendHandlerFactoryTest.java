@@ -24,10 +24,8 @@ import io.shardingsphere.shardingproxy.runtime.GlobalRegistry;
 import lombok.SneakyThrows;
 import org.junit.BeforeClass;
 import org.junit.Test;
-
 import java.lang.reflect.Field;
 import java.util.Properties;
-
 import static org.hamcrest.CoreMatchers.instanceOf;
 import static org.junit.Assert.assertThat;
 

@@ -22,7 +22,6 @@ import com.google.common.util.concurrent.ListenableFuture;
 import com.google.common.util.concurrent.ListeningExecutorService;
 import io.shardingsphere.core.exception.ShardingException;
 import io.shardingsphere.core.util.ListeningExecutorServiceUtil;
-
 import java.sql.SQLException;
 import java.util.ArrayList;
 import java.util.Collection;
