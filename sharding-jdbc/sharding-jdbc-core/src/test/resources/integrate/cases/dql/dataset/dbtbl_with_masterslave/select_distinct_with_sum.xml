@@ -1,6 +1,6 @@
 <dataset>
     <metadata>
-        <column name="SUM(DISTINCT order_id)" />
+        <column name="s" />
     </metadata>
     <row values="10045" />
 </dataset>
