@@ -30,5 +30,6 @@
     <sql-case id="select_distinct_with_single_column" value="SELECT DISTINCT item_id FROM t_order_item ORDER BY item_id" />
     <sql-case id="select_distinct_with_multi_column" value="SELECT DISTINCT order_id, user_id, status FROM t_order ORDER BY order_id" />
     <sql-case id="select_distinct_with_star" value="SELECT DISTINCT * FROM t_order WHERE order_id > 1100 ORDER BY order_id" />
-    <sql-case id="select_distinct_with_sum" value="SELECT SUM(DISTINCT order_id) FROM t_order WHERE order_id &lt; 1100" />
+    <sql-case id="select_distinct_with_sum" value="SELECT SUM(DISTINCT order_id) s FROM t_order WHERE order_id &lt; 1100" />
+    <sql-case id="select_distinct_with_count" value="SELECT COUNT(DISTINCT order_id) c FROM t_order WHERE order_id &lt; 1100" />
 </sql-cases>

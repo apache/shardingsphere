@@ -547,12 +547,27 @@
         </tables>
         <select-items>
             <aggregation-select-items>
-                <aggregation-select-item type="SUM" inner-expression="(DISTINCT order_id)" distinct-column="order_id" />
+                <aggregation-select-item type="SUM" inner-expression="(DISTINCT order_id)" distinct-column="order_id" alias="s" />
             </aggregation-select-items>
         </select-items>
         <tokens>
-            <table-token begin-position="35" original-literals="t_order" />
-            <aggregation-distinct-token begin-position="7" original-literals="SUM(DISTINCT order_id)" column-name="order_id" />
+            <table-token begin-position="37" original-literals="t_order" />
+            <aggregation-distinct-token begin-position="7" original-literals="SUM(DISTINCT order_id)" column-name="order_id" alias="s" />
+        </tokens>
+    </parser-result>
+
+    <parser-result sql-case-id="select_distinct_with_count" >
+        <tables>
+            <table name="t_order" />
+        </tables>
+        <select-items>
+            <aggregation-select-items>
+                <aggregation-select-item type="COUNT" inner-expression="(DISTINCT order_id)" distinct-column="order_id" alias="c" />
+            </aggregation-select-items>
+        </select-items>
+        <tokens>
+            <table-token begin-position="39" original-literals="t_order" />
+            <aggregation-distinct-token begin-position="7" original-literals="COUNT(DISTINCT order_id)" column-name="order_id" alias="c" />
         </tokens>
     </parser-result>
 </parser-result-sets>
