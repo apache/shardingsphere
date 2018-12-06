@@ -17,12 +17,7 @@
 
 package io.shardingsphere.core.parsing.antlr.extractor.segment.impl;
 
-import java.util.HashMap;
-
-import org.antlr.v4.runtime.ParserRuleContext;
-
 import com.google.common.base.Optional;
-
 import io.shardingsphere.core.parsing.antlr.extractor.segment.OptionalSQLSegmentExtractor;
 import io.shardingsphere.core.parsing.antlr.extractor.segment.constant.RuleName;
 import io.shardingsphere.core.parsing.antlr.extractor.util.ExtractorUtils;
@@ -35,6 +30,9 @@ import io.shardingsphere.core.parsing.antlr.sql.segment.expr.StarExpressionSegme
 import io.shardingsphere.core.parsing.antlr.sql.segment.expr.SubquerySegment;
 import io.shardingsphere.core.parsing.lexer.token.Symbol;
 import io.shardingsphere.core.util.SQLUtil;
+import org.antlr.v4.runtime.ParserRuleContext;
+
+import java.util.HashMap;
 
 /**
  * Expression extractor.
@@ -44,7 +42,7 @@ import io.shardingsphere.core.util.SQLUtil;
 public class ExpressionExtractor implements OptionalSQLSegmentExtractor {
     
     @Override
-    public Optional<ExpressionSegment> extract(ParserRuleContext expressionNode) {
+    public Optional<ExpressionSegment> extract(final ParserRuleContext expressionNode) {
         String firstChildText = expressionNode.getText();
         if (firstChildText.endsWith(Symbol.STAR.getLiterals())) {
             int position = firstChildText.indexOf(Symbol.DOT.getLiterals());
@@ -55,9 +53,9 @@ public class ExpressionExtractor implements OptionalSQLSegmentExtractor {
             return Optional.<ExpressionSegment>of(new StarExpressionSegment(expressionNode.getStart().getStartIndex(), owner));
         }
         Optional<ParserRuleContext> subqueryNode = ExtractorUtils.findFirstChildNode(expressionNode, RuleName.SUBQUERY);
-        if(subqueryNode.isPresent()) {
+        if (subqueryNode.isPresent()) {
             Optional<SubquerySegment> subquerySegment = new SubqueryExtractor().extract(subqueryNode.get());
-            if(subquerySegment.isPresent()) {
+            if (subquerySegment.isPresent()) {
                 return Optional.<ExpressionSegment>of(subquerySegment.get());
             }
             return Optional.absent();
@@ -81,7 +79,7 @@ public class ExpressionExtractor implements OptionalSQLSegmentExtractor {
         } 
         
         if (RuleName.COLUMN_NAME.getName().equals(node.getChild(0).getClass().getSimpleName())) {
-            ParserRuleContext columnNode = (ParserRuleContext)node.getChild(0);
+            ParserRuleContext columnNode = (ParserRuleContext) node.getChild(0);
             Optional<ColumnSegment> columnSegment = new ColumnSegmentExtractor(new HashMap<String, String>()).extract(columnNode);
             return Optional.<ExpressionSegment>of(new PropertyExpressionSegment(columnSegment.get().getOwner(), columnSegment.get().getName(),
                     columnNode.getStart().getStartIndex(), columnNode.getStop().getStopIndex(), alias));

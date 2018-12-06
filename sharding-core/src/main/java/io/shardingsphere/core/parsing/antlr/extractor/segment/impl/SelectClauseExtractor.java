@@ -17,17 +17,15 @@
 
 package io.shardingsphere.core.parsing.antlr.extractor.segment.impl;
 
-import org.antlr.v4.runtime.ParserRuleContext;
-import org.antlr.v4.runtime.tree.ParseTree;
-import org.antlr.v4.runtime.tree.TerminalNodeImpl;
-
 import com.google.common.base.Optional;
-
 import io.shardingsphere.core.parsing.antlr.extractor.segment.OptionalSQLSegmentExtractor;
 import io.shardingsphere.core.parsing.antlr.extractor.segment.constant.RuleName;
 import io.shardingsphere.core.parsing.antlr.extractor.util.ExtractorUtils;
 import io.shardingsphere.core.parsing.antlr.sql.segment.SelectClauseSegment;
 import io.shardingsphere.core.parsing.antlr.sql.segment.expr.ExpressionSegment;
+import org.antlr.v4.runtime.ParserRuleContext;
+import org.antlr.v4.runtime.tree.ParseTree;
+import org.antlr.v4.runtime.tree.TerminalNodeImpl;
 
 /**
  * Select clause extractor.
@@ -53,8 +51,8 @@ public final class SelectClauseExtractor implements OptionalSQLSegmentExtractor 
             if (childNode instanceof TerminalNodeImpl) {
                 continue;
             }
-            Optional<ExpressionSegment> expressionSegment = expressionExtractor.extract((ParserRuleContext)childNode);
-            if(expressionSegment.isPresent()) {
+            Optional<ExpressionSegment> expressionSegment = expressionExtractor.extract((ParserRuleContext) childNode);
+            if (expressionSegment.isPresent()) {
                 result.getExpressions().add(expressionSegment.get());
             }
         }

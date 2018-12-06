@@ -17,15 +17,8 @@
 
 package io.shardingsphere.core.parsing.antlr.extractor.segment.impl;
 
-import java.util.LinkedList;
-import java.util.List;
-import java.util.Map;
-
-import org.antlr.v4.runtime.ParserRuleContext;
-
 import com.google.common.base.Optional;
 import com.google.common.base.Preconditions;
-
 import io.shardingsphere.core.constant.ShardingOperator;
 import io.shardingsphere.core.parsing.antlr.extractor.segment.OptionalSQLSegmentExtractor;
 import io.shardingsphere.core.parsing.antlr.extractor.segment.constant.LogicalOperator;
@@ -46,6 +39,11 @@ import io.shardingsphere.core.parsing.lexer.token.DefaultKeyword;
 import io.shardingsphere.core.parsing.lexer.token.Symbol;
 import io.shardingsphere.core.util.NumberUtil;
 import lombok.RequiredArgsConstructor;
+import org.antlr.v4.runtime.ParserRuleContext;
+
+import java.util.LinkedList;
+import java.util.List;
+import java.util.Map;
 
 /**
  * Predicate extractor.
@@ -187,15 +185,15 @@ public final class PredicateExtractor implements OptionalSQLSegmentExtractor {
     
     private Optional<ExpressionSegment> buildExpression(final Map<ParserRuleContext, Integer> questionNodeIndexMap, final ParserRuleContext valueNode) {
         Optional<ExpressionSegment> sqlExpression = new ExpressionExtractor().extract(valueNode);
-        if(sqlExpression.isPresent() && sqlExpression.get() instanceof CommonExpressionSegment) {
+        if (sqlExpression.isPresent() && sqlExpression.get() instanceof CommonExpressionSegment) {
             CommonExpressionSegment commonExpressionSegment = (CommonExpressionSegment)sqlExpression.get();
             Optional<ParserRuleContext> expressionNode = ExtractorUtils.findFirstChildNode(valueNode, RuleName.QUESTION);
             if (expressionNode.isPresent()) {
                 Integer index = questionNodeIndexMap.get(expressionNode.get());
                 commonExpressionSegment.setIndex(index);
-            }else {
+            } else {
                 expressionNode = ExtractorUtils.findFirstChildNode(valueNode, RuleName.NUMBER);
-                if(expressionNode.isPresent()) {
+                if (expressionNode.isPresent()) {
                     commonExpressionSegment.setValue(NumberUtil.getExactlyNumber(expressionNode.get().getText(), 10));
                 }
             } 

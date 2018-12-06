@@ -30,27 +30,27 @@ import io.shardingsphere.core.rule.ShardingRule;
  * 
  * @author duhongjun
  */
-public final class SubqueryFiller implements SQLStatementFiller{
+public final class SubqueryFiller implements SQLStatementFiller {
     
     @Override
-    public void fill(SQLSegment sqlSegment, SQLStatement sqlStatement, final String sql, ShardingRule shardingRule, ShardingTableMetaData shardingTableMetaData) {
+    public void fill(final SQLSegment sqlSegment, final SQLStatement sqlStatement, final String sql, final ShardingRule shardingRule, final ShardingTableMetaData shardingTableMetaData) {
         SubquerySegment subquerySegment = (SubquerySegment) sqlSegment;
-        SelectStatement selectStatement = (SelectStatement)sqlStatement;        
+        SelectStatement selectStatement = (SelectStatement) sqlStatement;
         SelectStatement subqueryStatement = new SelectStatement();
         selectStatement.getSubQueryStatements().add(subqueryStatement);
-        if(subquerySegment.getSelectClauseSegment().isPresent()) {
+        if (subquerySegment.getSelectClauseSegment().isPresent()) {
             new SelectClauseFiller().fill(subquerySegment.getSelectClauseSegment().get(), subqueryStatement, sql, shardingRule, shardingTableMetaData);
         }
-        if(subquerySegment.getFromWhereSegment().isPresent()) {
+        if (subquerySegment.getFromWhereSegment().isPresent()) {
             new FromWhereFiller().fill(subquerySegment.getFromWhereSegment().get(), subqueryStatement, sql, shardingRule, shardingTableMetaData);
         }
-        if(!subquerySegment.isSubqueryInFrom()) {
+        if (!subquerySegment.isSubqueryInFrom()) {
             return;
         }
-        if(subquerySegment.getGroupBySegment().isPresent()) {
+        if (subquerySegment.getGroupBySegment().isPresent()) {
             new GroupByFiller().fill(subquerySegment.getGroupBySegment().get(), subqueryStatement, sql, shardingRule, shardingTableMetaData);
         }
-        if(subquerySegment.getOrderBySegment().isPresent()) {
+        if (subquerySegment.getOrderBySegment().isPresent()) {
             new OrderByFiller().fill(subquerySegment.getOrderBySegment().get(), subqueryStatement, sql, shardingRule, shardingTableMetaData);
         }
     }
