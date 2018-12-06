@@ -17,10 +17,6 @@
 
 package io.shardingsphere.example.repository.jpa.service;
 
-import javax.annotation.Resource;
-
-import org.springframework.stereotype.Service;
-
 import io.shardingsphere.example.repository.api.entity.Order;
 import io.shardingsphere.example.repository.api.entity.OrderItem;
 import io.shardingsphere.example.repository.api.repository.OrderItemRepository;
@@ -28,6 +24,10 @@ import io.shardingsphere.example.repository.api.repository.OrderRepository;
 import io.shardingsphere.example.repository.api.service.ShardingProxyTransactionService;
 import io.shardingsphere.example.repository.jpa.entity.OrderEntity;
 import io.shardingsphere.example.repository.jpa.entity.OrderItemEntity;
+
+import org.springframework.stereotype.Service;
+
+import javax.annotation.Resource;
 
 @Service("proxyTransactionService")
 public class SpringEntityShardingProxyTransactionServiceImpl extends ShardingProxyTransactionService implements SpringEntityTransactionService {

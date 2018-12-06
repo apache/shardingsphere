@@ -17,15 +17,15 @@
 
 package io.shardingsphere.example.repository.mybatis.service;
 
-import javax.annotation.Resource;
-
-import org.springframework.stereotype.Service;
-
 import io.shardingsphere.example.repository.api.entity.Order;
 import io.shardingsphere.example.repository.api.entity.OrderItem;
 import io.shardingsphere.example.repository.api.repository.OrderItemRepository;
 import io.shardingsphere.example.repository.api.repository.OrderRepository;
 import io.shardingsphere.example.repository.api.service.ShardingJDBCTransactionService;
+
+import org.springframework.stereotype.Service;
+
+import javax.annotation.Resource;
 
 @Service("jdbcTransactionService")
 public class SpringPojoShardingJDBCTransactionServiceImpl extends ShardingJDBCTransactionService implements SpringPojoTransactionService {

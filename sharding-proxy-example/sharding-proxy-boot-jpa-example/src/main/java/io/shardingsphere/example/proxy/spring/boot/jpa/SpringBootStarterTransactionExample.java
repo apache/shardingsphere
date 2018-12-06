@@ -17,6 +17,10 @@
 
 package io.shardingsphere.example.proxy.spring.boot.jpa;
 
+import io.shardingsphere.core.constant.transaction.TransactionType;
+import io.shardingsphere.example.repository.api.service.TransactionService;
+import io.shardingsphere.example.repository.jpa.service.SpringEntityTransactionService;
+
 import org.springframework.boot.SpringApplication;
 import org.springframework.boot.autoconfigure.SpringBootApplication;
 import org.springframework.boot.autoconfigure.domain.EntityScan;
@@ -24,10 +28,6 @@ import org.springframework.boot.autoconfigure.transaction.jta.JtaAutoConfigurati
 import org.springframework.context.ConfigurableApplicationContext;
 import org.springframework.context.annotation.ComponentScan;
 import org.springframework.context.annotation.ComponentScans;
-
-import io.shardingsphere.core.constant.transaction.TransactionType;
-import io.shardingsphere.example.repository.api.service.TransactionService;
-import io.shardingsphere.example.repository.jpa.service.SpringEntityTransactionService;
 
 @ComponentScans({
     @ComponentScan("io.shardingsphere.example.repository.jpa"),

@@ -17,6 +17,10 @@
 
 package io.shardingsphere.example.proxy.spring.boot.mybatis;
 
+import io.shardingsphere.core.constant.transaction.TransactionType;
+import io.shardingsphere.example.repository.api.service.TransactionService;
+import io.shardingsphere.example.repository.mybatis.service.SpringPojoTransactionService;
+
 import org.mybatis.spring.annotation.MapperScan;
 import org.springframework.boot.SpringApplication;
 import org.springframework.boot.autoconfigure.SpringBootApplication;
@@ -24,10 +28,6 @@ import org.springframework.boot.autoconfigure.transaction.jta.JtaAutoConfigurati
 import org.springframework.context.ConfigurableApplicationContext;
 import org.springframework.context.annotation.ComponentScan;
 import org.springframework.context.annotation.ComponentScans;
-
-import io.shardingsphere.core.constant.transaction.TransactionType;
-import io.shardingsphere.example.repository.api.service.TransactionService;
-import io.shardingsphere.example.repository.mybatis.service.SpringPojoTransactionService;
 
 @ComponentScans({
     @ComponentScan("io.shardingsphere.example.repository.mybatis"),
