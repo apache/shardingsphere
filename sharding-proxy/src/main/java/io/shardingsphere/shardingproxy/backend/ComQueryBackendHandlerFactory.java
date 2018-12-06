@@ -17,8 +17,10 @@
 
 package io.shardingsphere.shardingproxy.backend;
 
+import com.google.common.base.Optional;
 import io.shardingsphere.core.constant.DatabaseType;
 import io.shardingsphere.core.constant.SQLType;
+import io.shardingsphere.core.constant.transaction.TransactionOperationType;
 import io.shardingsphere.core.parsing.SQLJudgeEngine;
 import io.shardingsphere.core.parsing.parser.dialect.mysql.statement.SetStatement;
 import io.shardingsphere.core.parsing.parser.dialect.mysql.statement.ShowDatabasesStatement;
@@ -44,6 +46,10 @@ public class ComQueryBackendHandlerFactory {
      * @return instance of backend handler
      */
     public static BackendHandler createBackendHandler(final int sequenceId, final String sql, final BackendConnection backendConnection, final DatabaseType databaseType) {
+        Optional<TransactionOperationType> transactionOperationType = TransactionOperationType.getOperationType(sql);
+        if (transactionOperationType.isPresent()) {
+            return new TransactionBackendHandler(transactionOperationType.get(), backendConnection);
+        }
         SQLStatement sqlStatement = new SQLJudgeEngine(sql).judge();
         if (SQLType.DCL == sqlStatement.getType() || sqlStatement instanceof SetStatement) {
             return new SchemaBroadcastBackendHandler(sequenceId, sql, backendConnection, databaseType);

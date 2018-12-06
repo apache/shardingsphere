@@ -18,6 +18,7 @@
 package io.shardingsphere.shardingproxy.backend;
 
 import io.shardingsphere.core.constant.transaction.TransactionOperationType;
+import io.shardingsphere.shardingproxy.backend.jdbc.connection.BackendConnection;
 import io.shardingsphere.shardingproxy.backend.jdbc.connection.BackendTransactionManager;
 import io.shardingsphere.shardingproxy.transport.mysql.packet.command.CommandResponsePackets;
 import io.shardingsphere.shardingproxy.transport.mysql.packet.generic.OKPacket;
@@ -34,6 +35,11 @@ public final class TransactionBackendHandler extends AbstractBackendHandler {
     private final TransactionOperationType operationType;
     
     private final BackendTransactionManager backendTransactionManager;
+    
+    TransactionBackendHandler(final TransactionOperationType operationType, final BackendConnection backendConnection) {
+        this.operationType = operationType;
+        backendTransactionManager = new BackendTransactionManager(backendConnection);
+    }
     
     @Override
     protected CommandResponsePackets execute0() throws Exception {
