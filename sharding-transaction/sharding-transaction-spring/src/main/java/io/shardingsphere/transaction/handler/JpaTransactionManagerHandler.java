@@ -17,12 +17,6 @@
 
 package io.shardingsphere.transaction.handler;
 
-import java.sql.Connection;
-import java.util.Map;
-
-import javax.persistence.EntityManager;
-import javax.persistence.EntityManagerFactory;
-
 import org.hibernate.engine.spi.SessionImplementor;
 import org.springframework.orm.jpa.EntityManagerFactoryInfo;
 import org.springframework.orm.jpa.EntityManagerFactoryUtils;
@@ -31,6 +25,12 @@ import org.springframework.orm.jpa.JpaTransactionManager;
 import org.springframework.transaction.PlatformTransactionManager;
 import org.springframework.transaction.support.TransactionSynchronizationManager;
 import org.springframework.util.CollectionUtils;
+
+import javax.persistence.EntityManager;
+import javax.persistence.EntityManagerFactory;
+
+import java.sql.Connection;
+import java.util.Map;
 
 /**
  * Jpa transaction manager handler.

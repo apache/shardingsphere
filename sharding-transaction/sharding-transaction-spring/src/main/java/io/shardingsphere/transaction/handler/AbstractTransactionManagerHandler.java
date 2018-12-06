@@ -17,12 +17,12 @@
 
 package io.shardingsphere.transaction.handler;
 
+import io.shardingsphere.core.constant.transaction.TransactionType;
+import io.shardingsphere.core.exception.ShardingException;
+
 import java.sql.Connection;
 import java.sql.SQLException;
 import java.sql.Statement;
-
-import io.shardingsphere.core.constant.transaction.TransactionType;
-import io.shardingsphere.core.exception.ShardingException;
 
 /**
  * Abstract transaction manager handler.

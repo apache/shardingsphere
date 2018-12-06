@@ -20,6 +20,7 @@ package io.shardingsphere.transaction.aspect;
 import io.shardingsphere.core.exception.ShardingException;
 import io.shardingsphere.core.transaction.TransactionTypeHolder;
 import io.shardingsphere.transaction.annotation.ShardingTransactional;
+import io.shardingsphere.transaction.handler.DataSourceTransactionManagerHandler;
 import io.shardingsphere.transaction.handler.JpaTransactionManagerHandler;
 import io.shardingsphere.transaction.handler.TransactionManagerHandler;
 
@@ -109,6 +110,7 @@ public final class ShardingTransactionalAspect {
     private void setTransactionManagerHandler() {
         switch (TransactionManagerType.getTransactionManagerTypeByClassName(transactionManager.getClass().getName())) {
             case DATASOURCE:
+                transactionManagerHandler = new DataSourceTransactionManagerHandler(transactionManager);
                 break;
             case JPA:
                 transactionManagerHandler = new JpaTransactionManagerHandler(transactionManager);
