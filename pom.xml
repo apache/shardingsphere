@@ -67,7 +67,6 @@
         <mysql-connector-java.version>5.1.42</mysql-connector-java.version>
         <postgresql.version>9.4.1212</postgresql.version>
         <mssql.version>6.1.7.jre7-preview</mssql.version>
-        <servicecomb.saga.version>0.3.0-SNAPSHOT</servicecomb.saga.version>
         <aspectjweaver.version>1.8.9</aspectjweaver.version>
         <hibernate.version>5.3.7.Final</hibernate.version>
     
@@ -396,17 +395,6 @@
                 <artifactId>opentracing-mock</artifactId>
                 <version>${opentracing.version}</version>
                 <scope>test</scope>
-            </dependency>
-            
-            <dependency>
-                <groupId>org.apache.servicecomb.saga</groupId>
-                <artifactId>saga-core</artifactId>
-                <version>${servicecomb.saga.version}</version>
-            </dependency>
-            <dependency>
-                <groupId>org.apache.servicecomb.saga</groupId>
-                <artifactId>saga-format</artifactId>
-                <version>${servicecomb.saga.version}</version>
             </dependency>
         </dependencies>
     </dependencyManagement>
