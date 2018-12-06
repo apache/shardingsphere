@@ -123,9 +123,7 @@ public final class JDBCBackendDataSource implements BackendDataSource, AutoClose
         for (int i = 0; i < connectionSize; i++) {
             try {
                 result.add(dataSource.getConnection());
-            // CHECKSTYLE:OFF
-            } catch (Exception ex) {
-            // CHECKSTYLE:ON
+            } catch (final SQLException ignored) {
                 hasException = true;
             }
         }

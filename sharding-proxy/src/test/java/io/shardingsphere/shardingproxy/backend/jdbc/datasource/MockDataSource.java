@@ -17,8 +17,6 @@
 
 package io.shardingsphere.shardingproxy.backend.jdbc.datasource;
 
-import io.shardingsphere.core.exception.ShardingException;
-
 import javax.sql.DataSource;
 import java.io.PrintWriter;
 import java.sql.Array;
@@ -29,6 +27,7 @@ import java.sql.Connection;
 import java.sql.DatabaseMetaData;
 import java.sql.NClob;
 import java.sql.PreparedStatement;
+import java.sql.SQLException;
 import java.sql.SQLWarning;
 import java.sql.SQLXML;
 import java.sql.Savepoint;
@@ -50,16 +49,16 @@ public final class MockDataSource implements DataSource, AutoCloseable {
     private AtomicInteger count = new AtomicInteger(0);
     
     @Override
-    public Connection getConnection() {
+    public Connection getConnection() throws SQLException {
         if (5 <= count.get()) {
-            throw new ShardingException("datasource is not enough");
+            throw new SQLException("datasource is not enough");
         }
         count.getAndIncrement();
         return new MockConnection();
     }
     
     @Override
-    public Connection getConnection(final String username, final String password) {
+    public Connection getConnection(final String username, final String password) throws SQLException {
         return getConnection();
     }
     
