@@ -16,10 +16,10 @@
           <span slot="title">{{ item.title }}</span>
         </template>
         <el-menu-item-group>
-          <el-menu-item
-            v-for="(itm, idx) in item.child"
-            :key="idx"
-            :index="index + '-' + idx">{{ itm.title }}</el-menu-item>
+          <a v-for="(itm, idx) in item.child" :href="itm.href" :key="idx">
+            <el-menu-item
+              :index="index + '-' + idx">{{ itm.title }}</el-menu-item>
+          </a>
         </el-menu-item-group>
       </el-submenu>
     </el-menu>

@@ -3,9 +3,11 @@ export default {
     menuData: [{
       title: 'Data governance',
       child: [{
-        title: 'Registration configuration'
+        title: 'Registration configuration',
+        href: '/'
       }, {
-        title: 'Configuration management'
+        title: 'Configuration management',
+        href: '#/configuration-management'
       }]
     }],
     connect: 'connect',
