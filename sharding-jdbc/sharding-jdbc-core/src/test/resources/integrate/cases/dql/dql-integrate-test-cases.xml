@@ -399,4 +399,8 @@
     <dql-test-case sql-case-id="select_distinct_with_count">
         <assertion expected-data-file="select_distinct_with_count.xml" />
     </dql-test-case>
+
+    <dql-test-case sql-case-id="select_distinct_with_count_group_by">
+        <assertion expected-data-file="select_distinct_with_count_group_by.xml" />
+    </dql-test-case>
 </integrate-test-cases>
