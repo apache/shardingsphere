@@ -37,6 +37,8 @@ public class ComQueryBackendHandlerFactory {
     
     private static final String SCTL_SET = "sctl:set";
     
+    private static final String SKIP_SQL = "SET AUTOCOMMIT=1";
+    
     /**
      * Create new com query backend handler instance.
      *
@@ -53,6 +55,8 @@ public class ComQueryBackendHandlerFactory {
         }
         if (sql.startsWith(SCTL_SET)) {
             return new ShardingCTLBackendHandler(sql, backendConnection);
+        } else if (sql.toUpperCase().trim().contains(SKIP_SQL)) {
+            return new SkipBackendHandler();
         }
         SQLStatement sqlStatement = new SQLJudgeEngine(sql).judge();
         if (SQLType.DCL == sqlStatement.getType() || sqlStatement instanceof SetStatement) {
