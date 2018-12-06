@@ -39,4 +39,13 @@ public final class AggregationDistinctSelectItem extends AggregationSelectItem {
         super(type, innerExpression, alias);
         this.distinctColumnName = distinctColumnName;
     }
+    
+    /**
+     * Get distinct column label.
+     *
+     * @return distinct column label
+     */
+    public String getDistinctColumnLabel() {
+        return getAlias().isPresent() ? getAlias().get() : distinctColumnName;
+    }
 }
