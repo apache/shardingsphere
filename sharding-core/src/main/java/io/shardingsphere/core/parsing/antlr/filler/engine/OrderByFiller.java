@@ -34,7 +34,7 @@ import io.shardingsphere.core.util.SQLUtil;
  *
  * @author duhongjun
  */
-public class OrderByFiller implements SQLSegmentFiller {
+public final class OrderByFiller implements SQLSegmentFiller {
     
     @Override
     public void fill(final SQLSegment sqlSegment, final SQLStatement sqlStatement, final ShardingRule shardingRule, final ShardingTableMetaData shardingTableMetaData) {
@@ -48,13 +48,13 @@ public class OrderByFiller implements SQLSegmentFiller {
         }
     }
     
-    protected OrderItem buildOrderItemAndFillToken(final SelectStatement selectStatement, final OrderByItemSegment each) {
-        if (-1 < each.getIndex()) {
-            return new OrderItem(each.getIndex(), each.getOrderDirection(), each.getNullOrderDirection());
+    protected OrderItem buildOrderItemAndFillToken(final SelectStatement selectStatement, final OrderByItemSegment orderByItemSegment) {
+        if (-1 < orderByItemSegment.getIndex()) {
+            return new OrderItem(orderByItemSegment.getIndex(), orderByItemSegment.getOrderDirection(), orderByItemSegment.getNullOrderDirection());
         }
-        String expression = selectStatement.getSql().substring(each.getExpressionStartPosition(), each.getExpressionEndPosition() + 1);
-        if (!each.isIdentifier()) {
-            return new OrderItem(expression, each.getOrderDirection(), each.getNullOrderDirection(), selectStatement.getAlias(expression));
+        String expression = selectStatement.getSql().substring(orderByItemSegment.getExpressionStartPosition(), orderByItemSegment.getExpressionEndPosition() + 1);
+        if (!orderByItemSegment.isIdentifier()) {
+            return new OrderItem(expression, orderByItemSegment.getOrderDirection(), orderByItemSegment.getNullOrderDirection(), selectStatement.getAlias(expression));
         }
         expression = SQLUtil.getExactlyValue(expression);
         int dotPosition = expression.indexOf(".");
@@ -63,10 +63,10 @@ public class OrderByFiller implements SQLSegmentFiller {
             name = expression.substring(dotPosition + 1);
             String owner = expression.substring(0, dotPosition);
             if (selectStatement.getTables().getTableNames().contains(owner)) {
-                selectStatement.addSQLToken(new TableToken(each.getExpressionStartPosition(), 0, owner));
+                selectStatement.addSQLToken(new TableToken(orderByItemSegment.getExpressionStartPosition(), 0, owner));
             }
-            return new OrderItem(owner, name, each.getOrderDirection(), each.getNullOrderDirection(), selectStatement.getAlias(owner + "." + name));
+            return new OrderItem(owner, name, orderByItemSegment.getOrderDirection(), orderByItemSegment.getNullOrderDirection(), selectStatement.getAlias(owner + "." + name));
         }
-        return new OrderItem(name, each.getOrderDirection(), each.getNullOrderDirection(), selectStatement.getAlias(name));
+        return new OrderItem(name, orderByItemSegment.getOrderDirection(), orderByItemSegment.getNullOrderDirection(), selectStatement.getAlias(name));
     }
 }

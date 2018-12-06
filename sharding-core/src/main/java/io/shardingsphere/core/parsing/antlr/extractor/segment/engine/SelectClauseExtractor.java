@@ -35,7 +35,7 @@ import io.shardingsphere.core.parsing.antlr.sql.segment.expr.ExpressionSegment;
  *
  * @author duhongjun
  */
-public class SelectClauseExtractor implements OptionalSQLSegmentExtractor {
+public final class SelectClauseExtractor implements OptionalSQLSegmentExtractor {
     
     @Override
     public Optional<SelectClauseSegment> extract(final ParserRuleContext ancestorNode) {

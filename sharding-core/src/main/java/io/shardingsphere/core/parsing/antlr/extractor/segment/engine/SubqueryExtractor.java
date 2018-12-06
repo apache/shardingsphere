@@ -35,7 +35,7 @@ import io.shardingsphere.core.parsing.antlr.sql.segment.order.OrderBySegment;
  * 
  * @author duhongjun
  */
-public class SubqueryExtractor implements OptionalSQLSegmentExtractor {
+public final class SubqueryExtractor implements OptionalSQLSegmentExtractor {
     
     @Override
     public Optional<SubquerySegment> extract(ParserRuleContext ancestorNode) {

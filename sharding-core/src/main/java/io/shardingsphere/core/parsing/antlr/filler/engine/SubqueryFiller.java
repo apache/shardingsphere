@@ -30,7 +30,7 @@ import io.shardingsphere.core.rule.ShardingRule;
  * 
  * @author duhongjun
  */
-public class SubqueryFiller implements SQLSegmentFiller{
+public final class SubqueryFiller implements SQLSegmentFiller{
     
     @Override
     public void fill(SQLSegment sqlSegment, SQLStatement sqlStatement, ShardingRule shardingRule, ShardingTableMetaData shardingTableMetaData) {

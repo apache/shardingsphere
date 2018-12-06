@@ -37,7 +37,7 @@ import java.util.Map;
  *
  * @author duhongjun
  */
-public class LimitExtractor implements OptionalSQLSegmentExtractor {
+public final class LimitExtractor implements OptionalSQLSegmentExtractor {
     
     @Override
     public Optional<LimitSegment> extract(final ParserRuleContext ancestorNode) {
