@@ -10,13 +10,24 @@ export default {
         href: '#/configuration-management'
       }]
     }],
-    connect: 'connect',
-    del: 'delete'
+    connect: 'Connect',
+    del: 'Delete'
   },
   login: {
     btnTxt: 'Login'
   },
   index: {
-    btnTxt: 'ADD'
+    btnTxt: 'ADD',
+    registDialog: {
+      title: 'Add a registry',
+      name: 'Registration name',
+      address: 'Registration address',
+      namespaces: 'Namespaces',
+      btnConfirmTxt: 'Confirm',
+      btnCancelTxt: 'Cancel'
+    },
+    table: {
+      operate: 'operate'
+    }
   }
 }

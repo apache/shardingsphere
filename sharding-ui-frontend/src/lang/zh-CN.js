@@ -17,6 +17,17 @@ export default {
     btnTxt: '登陆'
   },
   index: {
-    btnTxt: '添加'
+    btnTxt: '添加',
+    registDialog: {
+      title: '添加注册中心',
+      name: '注册中心名称',
+      address: '注册中心地址',
+      namespaces: '命名空间',
+      btnConfirmTxt: '确定',
+      btnCancelTxt: '取消'
+    },
+    table: {
+      operate: '操作'
+    }
   }
 }
