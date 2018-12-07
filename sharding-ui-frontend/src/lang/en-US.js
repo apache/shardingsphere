@@ -7,7 +7,7 @@ export default {
         href: '/'
       }, {
         title: 'Configuration management',
-        href: '#/configuration-management'
+        href: '/config-manage'
       }]
     }],
     connect: 'Connect',

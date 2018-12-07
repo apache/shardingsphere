@@ -2,10 +2,10 @@
   <div class="s-menu">
     <el-menu
       :collapse="isCollapse"
+      :default-active="defActive"
       background-color="#001529"
       text-color="#fff"
       active-text-color="#fff"
-      default-active="0-0"
       class="el-menu-vertical-demo"
       @open="handleOpen"
       @close="handleClose">
@@ -16,9 +16,9 @@
           <span slot="title">{{ item.title }}</span>
         </template>
         <el-menu-item-group>
-          <a v-for="(itm, idx) in item.child" :href="itm.href" :key="idx">
+          <a v-for="(itm, idx) in item.child" :href="'#' + itm.href" :key="idx">
             <el-menu-item
-              :index="index + '-' + idx">{{ itm.title }}</el-menu-item>
+              :index="itm.href">{{ itm.title }}</el-menu-item>
           </a>
         </el-menu-item-group>
       </el-submenu>
@@ -40,7 +40,23 @@ export default {
   },
   data() {
     return {
-      menuData: this.$t('common').menuData
+      menuData: this.$t('common').menuData,
+      defActive: ''
+    }
+  },
+  watch: {
+    $route: {
+      handler(route) {
+        for (const v of this.menuData) {
+          for (const vv of v.child) {
+            if (route.path === vv.href) {
+              this.defActive = vv.href
+              break
+            }
+          }
+        }
+      },
+      immediate: true
     }
   },
   methods: {

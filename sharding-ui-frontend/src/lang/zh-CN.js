@@ -7,7 +7,7 @@ export default {
         href: '/'
       }, {
         title: '配置管理',
-        href: '#/configuration-management'
+        href: '/config-manage'
       }]
     }],
     connect: '连接',
