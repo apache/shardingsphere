@@ -60,13 +60,13 @@ public class ComQueryBackendHandlerFactory {
         }
         SQLStatement sqlStatement = new SQLJudgeEngine(sql).judge();
         if (SQLType.DCL == sqlStatement.getType() || sqlStatement instanceof SetStatement) {
-            return new SchemaBroadcastBackendHandler(sequenceId, sql, backendConnection, databaseType);
+            return new SchemaBroadcastBackendHandler(sequenceId, sql, backendConnection, databaseType, BackendHandlerFactory.getInstance());
         } else if (sqlStatement instanceof UseStatement) {
             return new UseSchemaBackendHandler((UseStatement) sqlStatement, backendConnection);
         } else if (sqlStatement instanceof ShowDatabasesStatement) {
             return new ShowDatabasesBackendHandler();
         } else {
-            return BackendHandlerFactory.newTextProtocolInstance(sequenceId, sql, backendConnection, DatabaseType.MySQL);
+            return BackendHandlerFactory.getInstance().newTextProtocolInstance(sequenceId, sql, backendConnection, DatabaseType.MySQL);
         }
     }
 }

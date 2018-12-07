@@ -42,7 +42,18 @@ import java.util.List;
 @NoArgsConstructor(access = AccessLevel.PRIVATE)
 public final class BackendHandlerFactory {
     
+    private static final BackendHandlerFactory INSTANCE = new BackendHandlerFactory();
+    
     private static final GlobalRegistry GLOBAL_REGISTRY = GlobalRegistry.getInstance();
+    
+    /**
+     * Get backend handler factory instance.
+     *
+     * @return backend handler factory
+     */
+    public static BackendHandlerFactory getInstance() {
+        return INSTANCE;
+    }
     
     /**
      * Create new instance of text protocol backend handler.
@@ -53,7 +64,7 @@ public final class BackendHandlerFactory {
      * @param databaseType database type
      * @return instance of text protocol backend handler
      */
-    public static BackendHandler newTextProtocolInstance(final int sequenceId, final String sql, final BackendConnection backendConnection, final DatabaseType databaseType) {
+    public BackendHandler newTextProtocolInstance(final int sequenceId, final String sql, final BackendConnection backendConnection, final DatabaseType databaseType) {
         LogicSchema logicSchema = backendConnection.getLogicSchema();
         return GLOBAL_REGISTRY.getShardingProperties().<Boolean>getValue(ShardingPropertiesConstant.PROXY_BACKEND_USE_NIO)
                 ? new NettyBackendHandler(logicSchema, backendConnection.getConnectionId(), sequenceId, sql, databaseType)
@@ -70,7 +81,7 @@ public final class BackendHandlerFactory {
      * @param databaseType database type
      * @return instance of text protocol backend handler
      */
-    public static BackendHandler newBinaryProtocolInstance(final int sequenceId, final String sql, final List<Object> parameters,
+    public BackendHandler newBinaryProtocolInstance(final int sequenceId, final String sql, final List<Object> parameters,
                                                            final BackendConnection backendConnection, final DatabaseType databaseType) {
         LogicSchema logicSchema = backendConnection.getLogicSchema();
         return GLOBAL_REGISTRY.getShardingProperties().<Boolean>getValue(ShardingPropertiesConstant.PROXY_BACKEND_USE_NIO)
