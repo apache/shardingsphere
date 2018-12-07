@@ -114,6 +114,11 @@ export default {
     },
     onConfirm() {
       this.regustDialogVisible = false
+      this.$notify({
+        title: this.$t('common').notify.title,
+        message: this.$t('common').notify.conSucMessage,
+        type: 'success'
+      })
     },
     add() {
       this.regustDialogVisible = true
