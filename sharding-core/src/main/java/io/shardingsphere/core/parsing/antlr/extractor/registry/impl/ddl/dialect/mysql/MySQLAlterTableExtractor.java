@@ -21,7 +21,7 @@ import io.shardingsphere.core.parsing.antlr.extractor.SQLSegmentExtractor;
 import io.shardingsphere.core.parsing.antlr.extractor.SQLStatementExtractor;
 import io.shardingsphere.core.parsing.antlr.extractor.impl.DropColumnExtractor;
 import io.shardingsphere.core.parsing.antlr.extractor.impl.DropPrimaryKeyExtractor;
-import io.shardingsphere.core.parsing.antlr.extractor.impl.PrimaryKeyForAlterTableExtractor;
+import io.shardingsphere.core.parsing.antlr.extractor.impl.OutlinePrimaryKeyExtractor;
 import io.shardingsphere.core.parsing.antlr.extractor.impl.RenameIndexExtractor;
 import io.shardingsphere.core.parsing.antlr.extractor.impl.RenameTableExtractor;
 import io.shardingsphere.core.parsing.antlr.extractor.impl.TableNamesExtractor;
@@ -52,7 +52,7 @@ public final class MySQLAlterTableExtractor implements SQLStatementExtractor {
         EXTRACTORS.add(new MySQLAddIndexExtractor());
         EXTRACTORS.add(new MySQLDropIndexExtractor());
         EXTRACTORS.add(new RenameIndexExtractor());
-        EXTRACTORS.add(new PrimaryKeyForAlterTableExtractor());
+        EXTRACTORS.add(new OutlinePrimaryKeyExtractor());
         EXTRACTORS.add(new DropPrimaryKeyExtractor());
         EXTRACTORS.add(new MySQLChangeColumnExtractor());
         EXTRACTORS.add(new MySQLModifyColumnExtractor());

@@ -22,7 +22,7 @@ import io.shardingsphere.core.parsing.antlr.extractor.SQLStatementExtractor;
 import io.shardingsphere.core.parsing.antlr.extractor.impl.AddColumnExtractor;
 import io.shardingsphere.core.parsing.antlr.extractor.impl.DropColumnExtractor;
 import io.shardingsphere.core.parsing.antlr.extractor.impl.ModifyColumnExtractor;
-import io.shardingsphere.core.parsing.antlr.extractor.impl.PrimaryKeyForAlterTableExtractor;
+import io.shardingsphere.core.parsing.antlr.extractor.impl.OutlinePrimaryKeyExtractor;
 import io.shardingsphere.core.parsing.antlr.extractor.impl.RenameColumnExtractor;
 import io.shardingsphere.core.parsing.antlr.extractor.impl.RenameTableExtractor;
 import io.shardingsphere.core.parsing.antlr.extractor.impl.TableNamesExtractor;
@@ -45,7 +45,7 @@ public final class PostgreSQLAlterTableExtractor implements SQLStatementExtracto
         EXTRACTORS.add(new RenameTableExtractor());
         EXTRACTORS.add(new DropColumnExtractor());
         EXTRACTORS.add(new AddColumnExtractor());
-        EXTRACTORS.add(new PrimaryKeyForAlterTableExtractor());
+        EXTRACTORS.add(new OutlinePrimaryKeyExtractor());
         EXTRACTORS.add(new ModifyColumnExtractor());
         EXTRACTORS.add(new RenameColumnExtractor());
     }
