@@ -6,6 +6,14 @@ ID:
     (BQ_?[a-zA-Z_$][a-zA-Z0-9_$]* BQ_? DOT)? (BQ_?[a-zA-Z_$][a-zA-Z0-9_$]* BQ_?)
     ;
     
+BLOCK_COMMENT
+    : SLASH ASTERISK .*? ASTERISK SLASH -> channel(HIDDEN)
+    ;
+    
+SL_COMMENT
+    : MINUS MINUS ~[\r\n]* -> channel(HIDDEN)
+    ;
+    
 schemaName
     : ID
     ;

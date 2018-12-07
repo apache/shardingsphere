@@ -44,8 +44,8 @@ public final class SelectClauseExtractor implements OptionalSQLSegmentExtractor 
             return Optional.absent();
         }
         boolean hasDistinct = false;
-        if(2 < selectClauseNode.get().getChildCount()) {
-            if(DefaultKeyword.DISTINCT.name().equalsIgnoreCase(selectClauseNode.get().getChild(1).getText())) {
+        if (2 < selectClauseNode.get().getChildCount()) {
+            if (DefaultKeyword.DISTINCT.name().equalsIgnoreCase(selectClauseNode.get().getChild(1).getText())) {
                 hasDistinct = true;
             }
         }

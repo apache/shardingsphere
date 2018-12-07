@@ -45,14 +45,16 @@ public final class TableFiller implements SQLStatementFiller {
                 || shardingRule.getShardingDataSourceNames().getDataSourceNames().contains(shardingRule.getShardingDataSourceNames().getDefaultDataSourceName())) {
             needAdd = true;
         }
-        if (needAdd) {
-            sqlStatement.getTables().add(new Table(tableSegment.getName(), tableSegment.getAlias()));
-            sqlStatement.getSQLTokens().add(tableSegment.getToken());
-            if (tableSegment.getAlias().isPresent()) {
-                if (sqlStatement.getTables().getTableNames().contains(tableSegment.getAlias().get())) {
-                    sqlStatement.addSQLToken(new TableToken(tableSegment.getAliasStartPosition(), 0, tableSegment.getAlias().get()));
-                }
-            }
+        if (!needAdd) {
+            return;
+        }
+        sqlStatement.getTables().add(new Table(tableSegment.getName(), tableSegment.getAlias()));
+        sqlStatement.getSQLTokens().add(tableSegment.getToken());
+        if (!tableSegment.getAlias().isPresent()) {
+            return;
+        }
+        if (sqlStatement.getTables().getTableNames().contains(tableSegment.getAlias().get())) {
+            sqlStatement.addSQLToken(new TableToken(tableSegment.getAliasStartPosition(), 0, tableSegment.getAlias().get()));
         }
     }
 }

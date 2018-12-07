@@ -162,7 +162,9 @@ public final class FromWhereFiller implements SQLStatementFiller {
                     if (expression.isPresent()) {
                         andConditionResult.getConditions().add(new Condition(column, expression.get()));
                     }
-                } else if (ShardingOperator.IN == eachCondition.getOperator()) {
+                    continue;
+                }
+                if (ShardingOperator.IN == eachCondition.getOperator()) {
                     InValueExpressionSegment expressionSegment = (InValueExpressionSegment) eachCondition.getExpression();
                     List<SQLExpression> expressions = new LinkedList<>();
                     for (ExpressionSegment each : expressionSegment.getSqlExpressions()) {
@@ -177,7 +179,9 @@ public final class FromWhereFiller implements SQLStatementFiller {
                     if (!expressions.isEmpty()) {
                         andConditionResult.getConditions().add(new Condition(column, expressions));
                     }
-                } else if (ShardingOperator.BETWEEN == eachCondition.getOperator()) {
+                    continue;
+                }
+                if (ShardingOperator.BETWEEN == eachCondition.getOperator()) {
                     BetweenValueExpressionSegment expressionSegment = (BetweenValueExpressionSegment) eachCondition.getExpression();
                     Optional<SQLExpression> beginExpress = buildExpression((SelectStatement) sqlStatement, expressionSegment.getBeginExpress(), sql, shardingRule, shardingTableMetaData);
                     if (!beginExpress.isPresent()) {

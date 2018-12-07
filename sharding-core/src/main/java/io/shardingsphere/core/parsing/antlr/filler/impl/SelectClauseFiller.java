@@ -47,12 +47,12 @@ public final class SelectClauseFiller implements SQLStatementFiller {
         SelectClauseSegment selectClauseSegment = (SelectClauseSegment) sqlSegment;
         SelectStatement selectStatement = (SelectStatement) sqlStatement;
         selectStatement.setSelectListLastPosition(selectClauseSegment.getSelectListLastPosition());
-        if(selectClauseSegment.getExpressions().isEmpty()) {
+        if (selectClauseSegment.getExpressions().isEmpty()) {
             return;
         }
-        if(selectClauseSegment.isHasDistinct()) {
+        if (selectClauseSegment.isHasDistinct()) {
             fillForDisinct(selectClauseSegment, selectStatement, sql, shardingRule, shardingTableMetaData);
-        }else {
+        } else {
             ExpressionFiller expressionFiller = new ExpressionFiller();
             for (ExpressionSegment each : selectClauseSegment.getExpressions()) {
                 expressionFiller.fill(each, sqlStatement, sql, shardingRule, shardingTableMetaData);
@@ -65,22 +65,22 @@ public final class SelectClauseFiller implements SQLStatementFiller {
         ExpressionSegment firstExpression = expressionIterator.next();
         ExpressionFiller expressionFiller = new ExpressionFiller();
         Set<String> distinctColumnNames = new HashSet<String>();
-        if(firstExpression instanceof StarExpressionSegment) {
+        if (firstExpression instanceof StarExpressionSegment) {
             expressionFiller.fill(firstExpression, selectStatement, sql, shardingRule, shardingTableMetaData);
             selectStatement.getItems().add(new DistinctSelectItem(distinctColumnNames, Optional.<String>absent()));
-        } else if(firstExpression instanceof PropertyExpressionSegment) {
+        } else if (firstExpression instanceof PropertyExpressionSegment) {
             PropertyExpressionSegment propertyExpressionSegment = (PropertyExpressionSegment) firstExpression;
             distinctColumnNames.add(propertyExpressionSegment.getName());
             selectStatement.getItems().add(new DistinctSelectItem(distinctColumnNames, propertyExpressionSegment.getAlias()));
-        }else{
+        } else {
             expressionFiller.fill(firstExpression, selectStatement, sql, shardingRule, shardingTableMetaData);
         }
-        while(expressionIterator.hasNext()) {
+        while (expressionIterator.hasNext()) {
             ExpressionSegment nextExpression = expressionIterator.next();
             expressionFiller.fill(nextExpression, selectStatement, sql, shardingRule, shardingTableMetaData);
-            if(nextExpression instanceof PropertyExpressionSegment) {
-                distinctColumnNames.add(((PropertyExpressionSegment)nextExpression).getName());
+            if (nextExpression instanceof PropertyExpressionSegment) {
+                distinctColumnNames.add(((PropertyExpressionSegment) nextExpression).getName());
             }
         }
-    } 
+    }
 }

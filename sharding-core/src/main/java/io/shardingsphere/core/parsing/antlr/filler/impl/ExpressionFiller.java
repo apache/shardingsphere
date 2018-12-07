@@ -38,7 +38,7 @@ import io.shardingsphere.core.rule.ShardingRule;
 
 /**
  * Expression filler.
- * 
+ *
  * @author duhongjun
  */
 public final class ExpressionFiller implements SQLStatementFiller {
@@ -72,7 +72,7 @@ public final class ExpressionFiller implements SQLStatementFiller {
             new SubqueryFiller().fill(subquerySegment, sqlStatement, sql, shardingRule, shardingTableMetaData);
         }
     }
-
+    
     private void fillStarExpression(final StarExpressionSegment starSegment, final SelectStatement selectStatement) {
         if (!selectStatement.isContainStar()) {
             selectStatement.setContainStar(true);
@@ -82,7 +82,7 @@ public final class ExpressionFiller implements SQLStatementFiller {
         if (owner.isPresent() && selectStatement.getTables().getTableNames().contains(owner.get())) {
             selectStatement.addSQLToken(new TableToken(starSegment.getStartPosition(), 0, owner.get()));
         }
-    } 
+    }
     
     private void fillPropertyExpression(final PropertyExpressionSegment propertySegment, final SelectStatement selectStatement, final String sql) {
         Optional<String> owner = propertySegment.getOwner();
@@ -91,7 +91,7 @@ public final class ExpressionFiller implements SQLStatementFiller {
         }
         String expression = sql.substring(propertySegment.getStartPosition(), propertySegment.getEndPosition() + 1);
         selectStatement.getItems().add(new CommonSelectItem(expression, propertySegment.getAlias()));
-    }   
+    }
     
     private void fillFunctionExpression(final FunctionExpressionSegment functionSegment, final SelectStatement selectStatement, final String sql) {
         AggregationType aggregationType = null;
@@ -103,14 +103,14 @@ public final class ExpressionFiller implements SQLStatementFiller {
         }
         String innerExpression = sql.substring(functionSegment.getInnerExpressionStartIndex(), functionSegment.getInnerExpressionEndIndex() + 1);
         if (null != aggregationType) {
-            if(functionSegment.isHasDistinct()) {
-                String columnName = sql.substring(functionSegment.getDinstinctColumnNameStartPosition(),functionSegment.getInnerExpressionEndIndex());
+            if (functionSegment.isHasDistinct()) {
+                String columnName = sql.substring(functionSegment.getDinstinctColumnNameStartPosition(), functionSegment.getInnerExpressionEndIndex());
                 selectStatement.getItems().add(new AggregationDistinctSelectItem(aggregationType, innerExpression, functionSegment.getAlias(), columnName));
-            }else {
+            } else {
                 selectStatement.getItems().add(new AggregationSelectItem(aggregationType, innerExpression, functionSegment.getAlias()));
             }
         } else {
             selectStatement.getItems().add(new CommonSelectItem(functionSegment.getName() + innerExpression, functionSegment.getAlias()));
         }
-    }   
+    }
 }

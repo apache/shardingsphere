@@ -1,6 +1,6 @@
 grammar DQLBase;
 
-import BaseRule, Keyword, Symbol, DataType;
+import BaseRule, Keyword, MySQLKeyword, Symbol, DataType;
 
 unionSelect
     : selectExpression (UNION ALL? selectExpression)*
@@ -54,4 +54,8 @@ tableReferences
     
 functionCall
     : (ID | DATE) LP_ distinct? (exprs | ASTERISK)? RP_
+    ;
+    
+variable
+    : (AT_ AT_)? (GLOBAL | PERSIST  | PERSIST_ONLY | SESSION)? DOT? ID
     ;
