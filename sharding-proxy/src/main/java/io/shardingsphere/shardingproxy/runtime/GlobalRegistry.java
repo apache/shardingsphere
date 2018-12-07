@@ -64,7 +64,7 @@ public final class GlobalRegistry {
     
     private final Map<String, LogicSchema> logicSchemas = new ConcurrentHashMap<>();
     
-    private ShardingProperties shardingProperties;
+    private ShardingProperties shardingProperties = new ShardingProperties(new Properties());
     
     private Authentication authentication;
     
@@ -115,7 +115,9 @@ public final class GlobalRegistry {
         if (!configMap.isEmpty()) {
             ConfigMapContext.getInstance().getConfigMap().putAll(configMap);
         }
-        shardingProperties = new ShardingProperties(null == props ? new Properties() : props);
+        if (null != props) {
+            shardingProperties = new ShardingProperties(props);
+        }
         this.authentication = authentication;
         initSchema(schemaDataSources, schemaRules, isUsingRegistry);
     }

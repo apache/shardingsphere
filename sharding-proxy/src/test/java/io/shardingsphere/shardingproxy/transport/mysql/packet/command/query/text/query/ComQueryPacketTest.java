@@ -19,7 +19,6 @@ package io.shardingsphere.shardingproxy.transport.mysql.packet.command.query.tex
 
 import com.google.common.base.Optional;
 import io.shardingsphere.core.constant.ShardingConstant;
-import io.shardingsphere.core.constant.properties.ShardingProperties;
 import io.shardingsphere.core.constant.transaction.TransactionType;
 import io.shardingsphere.core.event.transaction.ShardingTransactionEvent;
 import io.shardingsphere.shardingproxy.backend.BackendHandler;
@@ -52,7 +51,6 @@ import java.sql.SQLException;
 import java.util.Collections;
 import java.util.HashMap;
 import java.util.Map;
-import java.util.Properties;
 
 import static org.hamcrest.CoreMatchers.instanceOf;
 import static org.hamcrest.CoreMatchers.is;
@@ -73,7 +71,6 @@ public final class ComQueryPacketTest {
     
     @BeforeClass
     public static void init() {
-        setGlobalRegistry();
         ShardingTransactionHandlerRegistry.load();
     }
     
@@ -96,13 +93,6 @@ public final class ComQueryPacketTest {
         Field field = GlobalRegistry.class.getDeclaredField("logicSchemas");
         field.setAccessible(true);
         field.set(GlobalRegistry.getInstance(), shardingSchemas);
-    }
-    
-    @SneakyThrows
-    private static void setGlobalRegistry() {
-        Field field = GlobalRegistry.getInstance().getClass().getDeclaredField("shardingProperties");
-        field.setAccessible(true);
-        field.set(GlobalRegistry.getInstance(), new ShardingProperties(new Properties()));
     }
     
     @Test

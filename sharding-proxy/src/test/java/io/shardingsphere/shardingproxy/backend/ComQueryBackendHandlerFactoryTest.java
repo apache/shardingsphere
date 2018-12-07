@@ -18,19 +18,12 @@
 package io.shardingsphere.shardingproxy.backend;
 
 import io.shardingsphere.core.constant.DatabaseType;
-import io.shardingsphere.core.constant.properties.ShardingProperties;
 import io.shardingsphere.shardingproxy.backend.jdbc.JDBCBackendHandler;
 import io.shardingsphere.shardingproxy.backend.jdbc.connection.BackendConnection;
-import io.shardingsphere.shardingproxy.runtime.GlobalRegistry;
-import lombok.SneakyThrows;
-import org.junit.BeforeClass;
 import org.junit.Test;
 import org.junit.runner.RunWith;
 import org.mockito.Mock;
 import org.mockito.junit.MockitoJUnitRunner;
-
-import java.lang.reflect.Field;
-import java.util.Properties;
 
 import static org.hamcrest.CoreMatchers.instanceOf;
 import static org.junit.Assert.assertThat;
@@ -40,18 +33,6 @@ public class ComQueryBackendHandlerFactoryTest {
     
     @Mock
     private BackendConnection backendConnection;
-    
-    @BeforeClass
-    public static void init() {
-        setGlobalRegistry();
-    }
-    
-    @SneakyThrows
-    private static void setGlobalRegistry() {
-        Field field = GlobalRegistry.getInstance().getClass().getDeclaredField("shardingProperties");
-        field.setAccessible(true);
-        field.set(GlobalRegistry.getInstance(), new ShardingProperties(new Properties()));
-    }
     
     @Test
     public void assertCreateTransactionBackendHandler() {
