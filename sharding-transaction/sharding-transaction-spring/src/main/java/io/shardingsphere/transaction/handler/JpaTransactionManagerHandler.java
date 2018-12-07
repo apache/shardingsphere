@@ -64,7 +64,6 @@ public final class JpaTransactionManagerHandler extends AbstractTransactionManag
         if (entityManagerFactory instanceof EntityManagerFactoryInfo) {
             entityManagerFactory = ((EntityManagerFactoryInfo) entityManagerFactory).getNativeEntityManagerFactory();
         }
-        
         Map<String, Object> properties = transactionManager.getJpaPropertyMap();
         return !CollectionUtils.isEmpty(properties) ? entityManagerFactory.createEntityManager(properties) : entityManagerFactory.createEntityManager();
     }

@@ -40,6 +40,7 @@ import java.lang.annotation.Target;
 @Transactional
 @Inherited
 public @interface ShardingTransactional {
+    
     /**
      * Sharding transaction type, include LOCAL, XA, BASE.
      * default LOCAL.
