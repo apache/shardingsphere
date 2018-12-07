@@ -23,6 +23,8 @@ import io.shardingsphere.core.exception.ShardingException;
 import io.shardingsphere.core.metadata.datasource.dialect.MySQLDataSourceMetaData;
 import io.shardingsphere.core.metadata.datasource.dialect.PostgreSQLDataSourceMetaData;
 import io.shardingsphere.core.rule.DataSourceParameter;
+import lombok.AccessLevel;
+import lombok.NoArgsConstructor;
 
 import javax.sql.DataSource;
 
@@ -32,7 +34,19 @@ import javax.sql.DataSource;
  * @author zhaojun
  * @author zhangliang
  */
+@NoArgsConstructor(access = AccessLevel.PRIVATE)
 public final class JDBCRawBackendDataSourceFactory implements JDBCBackendDataSourceFactory {
+    
+    private static final JDBCRawBackendDataSourceFactory INSTANCE = new JDBCRawBackendDataSourceFactory();
+    
+    /**
+     * Get instance of {@code JDBCBackendDataSourceFactory}.
+     *
+     * @return JDBC backend data source factory
+     */
+    public static JDBCBackendDataSourceFactory getInstance() {
+        return INSTANCE;
+    }
     
     @Override
     public DataSource build(final String dataSourceName, final DataSourceParameter dataSourceParameter) {

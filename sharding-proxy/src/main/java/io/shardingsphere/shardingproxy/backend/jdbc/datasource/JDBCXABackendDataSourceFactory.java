@@ -22,6 +22,8 @@ import io.shardingsphere.core.rule.DataSourceParameter;
 import io.shardingsphere.transaction.xa.convert.dialect.XADataSourceFactory;
 import io.shardingsphere.transaction.manager.xa.XATransactionManager;
 import io.shardingsphere.transaction.xa.manager.XATransactionManagerSPILoader;
+import lombok.AccessLevel;
+import lombok.NoArgsConstructor;
 
 import javax.sql.DataSource;
 
@@ -31,7 +33,19 @@ import javax.sql.DataSource;
  * @author zhaojun
  * @author zhangliang
  */
+@NoArgsConstructor(access = AccessLevel.PRIVATE)
 public final class JDBCXABackendDataSourceFactory implements JDBCBackendDataSourceFactory {
+    
+    private static final JDBCXABackendDataSourceFactory INSTANCE = new JDBCXABackendDataSourceFactory();
+    
+    /**
+     * Get instance of {@code JDBCXABackendDataSourceFactory}.
+     *
+     * @return JDBC XA backend data source factory
+     */
+    public static JDBCBackendDataSourceFactory getInstance() {
+        return INSTANCE;
+    }
     
     @Override
     public DataSource build(final String dataSourceName, final DataSourceParameter dataSourceParameter) {
