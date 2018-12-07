@@ -19,7 +19,6 @@ package io.shardingsphere.shardingproxy.backend.sctl;
 
 import com.google.common.base.Optional;
 import io.shardingsphere.core.constant.transaction.TransactionType;
-import io.shardingsphere.core.exception.ShardingException;
 import io.shardingsphere.shardingproxy.backend.AbstractBackendHandler;
 import io.shardingsphere.shardingproxy.backend.jdbc.connection.BackendConnection;
 import io.shardingsphere.shardingproxy.transport.mysql.packet.command.CommandResponsePackets;
@@ -42,14 +41,14 @@ public final class ShardingCTLSetBackendHandler extends AbstractBackendHandler {
     protected CommandResponsePackets execute0() {
         Optional<ShardingCTLSetStatement> shardingTCLStatement = new ShardingCTLSetParser(sql).doParse();
         if (!shardingTCLStatement.isPresent()) {
-            throw new ShardingException("please review your sctl format, should be sctl:set xxx=yyy.");
+            return new CommandResponsePackets(new OKPacket(" please review your sctl format, should be sctl:set xxx=yyy."));
         }
         switch (shardingTCLStatement.get().getKey()) {
-            case "transaction_type":
+            case "TRANSACTION_TYPE":
                 backendConnection.setTransactionType(TransactionType.find(shardingTCLStatement.get().getValue()));
                 break;
             default:
-                throw new ShardingException(String.format("could not support this sctl grammar [%s].", sql));
+                return new CommandResponsePackets(new OKPacket(String.format(" could not support this sctl grammar [%s].", sql)));
         }
         return new CommandResponsePackets(new OKPacket(1));
     }

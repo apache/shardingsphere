@@ -18,7 +18,6 @@
 package io.shardingsphere.shardingproxy.backend.sctl;
 
 import com.google.common.base.Optional;
-import io.shardingsphere.core.exception.ShardingException;
 import io.shardingsphere.shardingproxy.backend.AbstractBackendHandler;
 import io.shardingsphere.shardingproxy.backend.jdbc.connection.BackendConnection;
 import io.shardingsphere.shardingproxy.transport.mysql.packet.command.CommandResponsePackets;
@@ -41,15 +40,15 @@ public final class ShardingCTLShowBackendHandler extends AbstractBackendHandler 
     protected CommandResponsePackets execute0() {
         Optional<ShardingCTLShowStatement> showStatement = new ShardingCTLShowParser(sql).doParse();
         if (!showStatement.isPresent()) {
-            throw new ShardingException("please review your sctl format, should be sctl:show xxxx.");
+            return new CommandResponsePackets(new OKPacket(" please review your sctl format, should be sctl:show xxxx."));
         }
         switch (showStatement.get().getValue()) {
-            case "transaction_type":
-                return new CommandResponsePackets(new OKPacket(String.format("current transaction type is: %s", backendConnection.getTransactionType().name())));
-            case "cached_connections":
-                return new CommandResponsePackets(new OKPacket(String.format("current channel cached connection size is: %s", backendConnection.getConnectionSize())));
+            case "TRANSACTION_TYPE":
+                return new CommandResponsePackets(new OKPacket(String.format(" current transaction type is: %s", backendConnection.getTransactionType().name())));
+            case "CACHED_CONNECTIONS":
+                return new CommandResponsePackets(new OKPacket(String.format(" current channel cached connection size is: %s", backendConnection.getConnectionSize())));
             default:
-                throw new ShardingException(String.format("could not support this sctl grammar [%s].", sql));
+                return new CommandResponsePackets(new OKPacket(String.format(" could not support this sctl grammar [%s].", sql)));
         }
     }
 }

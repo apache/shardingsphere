@@ -28,6 +28,7 @@ import io.shardingsphere.core.parsing.parser.dialect.mysql.statement.UseStatemen
 import io.shardingsphere.core.parsing.parser.sql.SQLStatement;
 import io.shardingsphere.shardingproxy.backend.jdbc.connection.BackendConnection;
 import io.shardingsphere.shardingproxy.backend.sctl.ShardingCTLSetBackendHandler;
+import io.shardingsphere.shardingproxy.backend.sctl.ShardingCTLShowBackendHandler;
 
 /**
  * Com query backend handler factory.
@@ -36,7 +37,9 @@ import io.shardingsphere.shardingproxy.backend.sctl.ShardingCTLSetBackendHandler
  */
 public class ComQueryBackendHandlerFactory {
     
-    private static final String SCTL_SET = "sctl:set";
+    private static final String SCTL_SET = "SCTL:SET";
+    
+    private static final String SCTL_SHOW = "SCTL:SHOW";
     
     private static final String SKIP_SQL = "SET AUTOCOMMIT=1";
     
@@ -56,7 +59,9 @@ public class ComQueryBackendHandlerFactory {
         }
         if (sql.startsWith(SCTL_SET)) {
             return new ShardingCTLSetBackendHandler(sql, backendConnection);
-        } else if (sql.toUpperCase().trim().contains(SKIP_SQL)) {
+        } else if (sql.startsWith(SCTL_SHOW)) {
+            return new ShardingCTLShowBackendHandler(sql, backendConnection);
+        } else if (sql.contains(SKIP_SQL)) {
             return new SkipBackendHandler();
         }
         SQLStatement sqlStatement = new SQLJudgeEngine(sql).judge();
