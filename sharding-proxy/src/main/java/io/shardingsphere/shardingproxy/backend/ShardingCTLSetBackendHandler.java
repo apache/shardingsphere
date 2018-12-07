@@ -35,7 +35,7 @@ import java.util.regex.Pattern;
  * @author zhaojun
  */
 @RequiredArgsConstructor
-public final class ShardingCTLBackendHandler extends AbstractBackendHandler {
+public final class ShardingCTLSetBackendHandler extends AbstractBackendHandler {
     
     private final String sql;
     

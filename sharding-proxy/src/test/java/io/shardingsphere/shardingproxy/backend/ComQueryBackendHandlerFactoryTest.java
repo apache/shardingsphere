@@ -45,7 +45,7 @@ public class ComQueryBackendHandlerFactoryTest {
     public void assertCreateShardingCTLBackendHandler() {
         String sql = "sctl:set transaction_type=XA";
         BackendHandler actual = ComQueryBackendHandlerFactory.createBackendHandler(1, sql, backendConnection, DatabaseType.MySQL);
-        assertThat(actual, instanceOf(ShardingCTLBackendHandler.class));
+        assertThat(actual, instanceOf(ShardingCTLSetBackendHandler.class));
     }
     
     @Test

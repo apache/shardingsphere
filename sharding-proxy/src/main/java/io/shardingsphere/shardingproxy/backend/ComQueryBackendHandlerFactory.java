@@ -54,7 +54,7 @@ public class ComQueryBackendHandlerFactory {
             return new TransactionBackendHandler(transactionOperationType.get(), backendConnection);
         }
         if (sql.startsWith(SCTL_SET)) {
-            return new ShardingCTLBackendHandler(sql, backendConnection);
+            return new ShardingCTLSetBackendHandler(sql, backendConnection);
         } else if (sql.toUpperCase().trim().contains(SKIP_SQL)) {
             return new SkipBackendHandler();
         }
