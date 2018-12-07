@@ -84,6 +84,9 @@ public final class BackendConnection implements AutoCloseable {
      * @param transactionType transaction type
      */
     public void setTransactionType(final TransactionType transactionType) {
+        if (null == schemaName) {
+            throw new ShardingException("Please select database, then switch transaction type.");
+        }
         if (isSwitchFailed()) {
             throw new ShardingException("Failed to switch transaction type, please terminate current transaction.");
         }

@@ -45,14 +45,14 @@ public final class ShardingCTLBackendHandler extends AbstractBackendHandler {
     protected CommandResponsePackets execute0() {
         Optional<ShardingTCLStatement> shardingTCLStatement = new ShardingCTLParser(sql).doParse();
         if (!shardingTCLStatement.isPresent()) {
-            throw new ShardingException("please make review your sctl format, should be sctl:set xxx=yyy");
+            throw new ShardingException("please review your sctl format, should be sctl:set xxx=yyy.");
         }
         switch (shardingTCLStatement.get().key) {
             case "transaction_type":
                 backendConnection.setTransactionType(TransactionType.find(shardingTCLStatement.get().value));
                 break;
             default:
-                throw new ShardingException(String.format("could not support this sctl grammar [%s]", sql));
+                throw new ShardingException(String.format("could not support this sctl grammar [%s].", sql));
         }
         return new CommandResponsePackets(new OKPacket(1));
     }
