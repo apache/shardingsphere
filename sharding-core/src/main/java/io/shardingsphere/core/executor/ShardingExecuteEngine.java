@@ -21,7 +21,7 @@ import com.google.common.collect.Lists;
 import com.google.common.util.concurrent.ListenableFuture;
 import com.google.common.util.concurrent.ListeningExecutorService;
 import io.shardingsphere.core.exception.ShardingException;
-import io.shardingsphere.core.util.ListeningExecutorServiceUtil;
+import io.shardingsphere.core.util.ShardingExecutorService;
 import java.sql.SQLException;
 import java.util.ArrayList;
 import java.util.Collection;
@@ -40,10 +40,13 @@ import java.util.concurrent.ExecutionException;
  */
 public final class ShardingExecuteEngine implements AutoCloseable {
     
-    private final ListeningExecutorService executorService;
+    private final ShardingExecutorService shardingExecutorService;
+    
+    private ListeningExecutorService executorService;
     
     public ShardingExecuteEngine(final int executorSize) {
-        executorService = ListeningExecutorServiceUtil.createAndGet(executorSize);
+        shardingExecutorService = new ShardingExecutorService(executorSize);
+        executorService = shardingExecutorService.getExecutorService();
     }
     
     /**
@@ -194,6 +197,6 @@ public final class ShardingExecuteEngine implements AutoCloseable {
     
     @Override
     public void close() {
-        ListeningExecutorServiceUtil.close(executorService);
+        shardingExecutorService.close();
     }
 }

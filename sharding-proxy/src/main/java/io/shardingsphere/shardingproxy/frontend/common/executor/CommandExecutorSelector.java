@@ -19,34 +19,27 @@ package io.shardingsphere.shardingproxy.frontend.common.executor;
 
 import io.netty.channel.ChannelId;
 import io.shardingsphere.core.constant.transaction.TransactionType;
-import io.shardingsphere.shardingproxy.frontend.mysql.CommandExecutor;
-import io.shardingsphere.shardingproxy.frontend.mysql.CommandExecutorContext;
-import io.shardingsphere.shardingproxy.runtime.GlobalRegistry;
 import lombok.RequiredArgsConstructor;
+
+import java.util.concurrent.ExecutorService;
 
 /**
  * Executor group.
  * 
  * @author zhangliang
+ * @author zhaojun
  */
 @RequiredArgsConstructor
-public final class ExecutorGroup {
-    
-    private static final GlobalRegistry GLOBAL_REGISTRY = GlobalRegistry.getInstance();
-    
-    private final ChannelId channelId;
+public final class CommandExecutorSelector {
     
     /**
-     * Execute command.
+     * Get executor service.
      *
-     * @param commandExecutor a command executor to be run
+     * @param transactionType transaction type
+     * @param channelId channel id
+     * @return executor service
      */
-    public void execute(final CommandExecutor commandExecutor) {
-        // TODO zhaojun: should use transaction type of backendConnection
-        if (TransactionType.XA == GLOBAL_REGISTRY.getTransactionType()) {
-            ChannelThreadExecutorGroup.getInstance().get(channelId).execute(commandExecutor);
-            return;
-        }
-        CommandExecutorContext.getInstance().getCommandExecuteEngine().execute(commandExecutor);
+    public static ExecutorService getExecutor(final TransactionType transactionType, final ChannelId channelId) {
+        return TransactionType.XA == transactionType ? ChannelThreadExecutorGroup.getInstance().get(channelId) : UserExecutorGroup.getInstance().getExecutorService();
     }
 }
