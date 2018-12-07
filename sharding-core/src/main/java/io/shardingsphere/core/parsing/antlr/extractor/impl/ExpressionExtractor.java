@@ -78,13 +78,14 @@ public final class ExpressionExtractor implements OptionalSQLSegmentExtractor {
         Optional<ParserRuleContext> functionCall = ExtractorUtils.findFirstChildNode(node, RuleName.FUNCTION_CALL);
         if (functionCall.isPresent()) {
             String name = functionCall.get().getChild(0).getText();
-            int startIndex = functionCall.get().getStart().getStartIndex() + name.length();
+            int startIndex = ((TerminalNode)functionCall.get().getChild(1)).getSymbol().getStartIndex();
             boolean hasDistinct = hasDistinct(node);
             int dinstinctColumnNameStartPosition = -1;
             if (hasDistinct) {
                 dinstinctColumnNameStartPosition = calculatedinstinctColumnNamePosition(functionCall.get());
             }
-            return Optional.<ExpressionSegment>of(new FunctionExpressionSegment(name, alias, startIndex, functionCall.get().getStop().getStopIndex(), hasDistinct, dinstinctColumnNameStartPosition));
+            return Optional.<ExpressionSegment>of(new FunctionExpressionSegment(name, alias, functionCall.get().getStart().getStartIndex(), 
+                                                  startIndex, functionCall.get().getStop().getStopIndex(), hasDistinct, dinstinctColumnNameStartPosition));
         }
         if (RuleName.COLUMN_NAME.getName().equals(node.getChild(0).getClass().getSimpleName())) {
             ParserRuleContext columnNode = (ParserRuleContext) node.getChild(0);
