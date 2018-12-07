@@ -50,7 +50,7 @@ public class SchemaBroadcastBackendHandlerTest {
     
     @Test
     public void assertExecuteSchemaBroadcast() {
-        MockGlobalRegistryUtil.setLogicSchemas(10);
+        MockGlobalRegistryUtil.setLogicSchemas("schema", 10);
         setUnderlyingHandler(new CommandResponsePackets(new OKPacket(1)));
         String sql = "grant select on testdb.* to root@'%'";
         SchemaBroadcastBackendHandler schemaBroadcastBackendHandler = new SchemaBroadcastBackendHandler(1, sql, backendConnection, DatabaseType.MySQL, backendHandlerFactory);
@@ -62,7 +62,7 @@ public class SchemaBroadcastBackendHandlerTest {
     
     @Test
     public void assertExecuteSchemaBroadcastFailed() {
-        MockGlobalRegistryUtil.setLogicSchemas(5);
+        MockGlobalRegistryUtil.setLogicSchemas("schema", 5);
         setUnderlyingHandler(new CommandResponsePackets(new ErrPacket(1, new SQLException("no reason", "X999", -1))));
         String sql = "grant select on testdb.* to root@'%'";
         SchemaBroadcastBackendHandler schemaBroadcastBackendHandler = new SchemaBroadcastBackendHandler(1, sql, backendConnection, DatabaseType.MySQL, backendHandlerFactory);

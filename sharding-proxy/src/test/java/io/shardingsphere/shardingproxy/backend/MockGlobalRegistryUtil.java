@@ -35,16 +35,16 @@ import static org.mockito.Mockito.mock;
 class MockGlobalRegistryUtil {
     
     @SneakyThrows
-    static void setLogicSchemas(final int size) {
+    static void setLogicSchemas(final String prefix, final int size) {
         Field field = GlobalRegistry.getInstance().getClass().getDeclaredField("logicSchemas");
         field.setAccessible(true);
-        field.set(GlobalRegistry.getInstance(), mockLogicSchemas(size));
+        field.set(GlobalRegistry.getInstance(), mockLogicSchemas(prefix, size));
     }
     
-    static Map<String, LogicSchema> mockLogicSchemas(final int size) {
+    static Map<String, LogicSchema> mockLogicSchemas(final String prefix, final int size) {
         Map<String, LogicSchema> result = new HashMap<>(size);
         for (int i = 0; i < size; i++) {
-            result.put("schema_" + i, mock(LogicSchema.class));
+            result.put(prefix + "_" + i, mock(LogicSchema.class));
         }
         return result;
     }
