@@ -15,7 +15,7 @@
  * </p>
  */
 
-package io.shardingsphere.core.parsing.antlr.extractor.impl;
+package io.shardingsphere.core.parsing.antlr.extractor.impl.dialect.mysql;
 
 import com.google.common.base.Optional;
 import io.shardingsphere.core.parsing.antlr.extractor.OptionalSQLSegmentExtractor;
@@ -25,11 +25,11 @@ import io.shardingsphere.core.parsing.antlr.sql.segment.constraint.DropPrimaryKe
 import org.antlr.v4.runtime.ParserRuleContext;
 
 /**
- * Drop primary key extractor.
+ * Drop primary key extractor for MySQL.
  *
  * @author duhongjun
  */
-public final class DropPrimaryKeyExtractor implements OptionalSQLSegmentExtractor {
+public final class MySQLDropPrimaryKeyExtractor implements OptionalSQLSegmentExtractor {
     
     @Override
     public Optional<DropPrimaryKeySegment> extract(final ParserRuleContext ancestorNode) {
