@@ -11,7 +11,14 @@ export default {
       }]
     }],
     connect: 'Connect',
-    del: 'Delete'
+    del: 'Delete',
+    notify: {
+      title: 'Prompt',
+      conSucMessage: 'Connection succeeded',
+      conFailMessage: 'Connection failed',
+      delSucMessage: 'Delete succeeded',
+      delFailMessage: 'Delete failed'
+    }
   },
   login: {
     btnTxt: 'Login'

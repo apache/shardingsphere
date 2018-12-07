@@ -11,7 +11,14 @@ export default {
       }]
     }],
     connect: '连接',
-    del: '删除'
+    del: '删除',
+    notify: {
+      title: '提示',
+      conSucMessage: '连接成功',
+      conFailMessage: '连接失败',
+      delSucMessage: '删除成功',
+      delFailMessage: '删除失败'
+    }
   },
   login: {
     btnTxt: '登陆'

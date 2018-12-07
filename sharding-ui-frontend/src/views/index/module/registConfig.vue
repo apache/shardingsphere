@@ -99,10 +99,18 @@ export default {
   },
   methods: {
     handleConnect(row) {
-      console.log(row)
+      this.$notify({
+        title: this.$t('common').notify.title,
+        message: this.$t('common').notify.conSucMessage,
+        type: 'success'
+      })
     },
     handlerDel(row) {
-
+      this.$notify({
+        title: this.$t('common').notify.title,
+        message: this.$t('common').notify.delSucMessage,
+        type: 'success'
+      })
     },
     onConfirm() {
       this.regustDialogVisible = false
