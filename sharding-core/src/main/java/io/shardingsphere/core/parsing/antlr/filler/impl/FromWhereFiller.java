@@ -150,51 +150,56 @@ public final class FromWhereFiller implements SQLStatementFiller {
     }
     
     private void fillResult(final OrCondition result, final SQLStatement sqlStatement, final List<ConditionSegment> shardingCondition, final String sql, final ShardingRule shardingRule,
-            final ShardingTableMetaData shardingTableMetaData) {
-        if (!shardingCondition.isEmpty()) {
-            AndCondition andConditionResult = new AndCondition();
-            result.getAndConditions().add(andConditionResult);
-            for (ConditionSegment eachCondition : shardingCondition) {
-                Column column = new Column(eachCondition.getColumn().getName(), eachCondition.getColumn().getTableName());
-                if (ShardingOperator.EQUAL == eachCondition.getOperator()) {
-                    EqualsValueExpressionSegment expressionSegment = (EqualsValueExpressionSegment) eachCondition.getExpression();
-                    Optional<SQLExpression> expression = buildExpression((SelectStatement) sqlStatement, expressionSegment.getExpression(), sql, shardingRule, shardingTableMetaData);
-                    if (expression.isPresent()) {
-                        andConditionResult.getConditions().add(new Condition(column, expression.get()));
-                    }
-                } else if (ShardingOperator.IN == eachCondition.getOperator()) {
-                    InValueExpressionSegment expressionSegment = (InValueExpressionSegment) eachCondition.getExpression();
-                    List<SQLExpression> expressions = new LinkedList<>();
-                    for (ExpressionSegment each : expressionSegment.getSqlExpressions()) {
-                        Optional<SQLExpression> expression = buildExpression((SelectStatement) sqlStatement, each, sql, shardingRule, shardingTableMetaData);
-                        if (expression.isPresent()) {
-                            expressions.add(expression.get());
-                        } else {
-                            expressions.clear();
-                            break;
-                        }
-                    }
-                    if (!expressions.isEmpty()) {
-                        andConditionResult.getConditions().add(new Condition(column, expressions));
-                    }
-                } else if (ShardingOperator.BETWEEN == eachCondition.getOperator()) {
-                    BetweenValueExpressionSegment expressionSegment = (BetweenValueExpressionSegment) eachCondition.getExpression();
-                    Optional<SQLExpression> beginExpress = buildExpression((SelectStatement) sqlStatement, expressionSegment.getBeginExpress(), sql, shardingRule, shardingTableMetaData);
-                    if (!beginExpress.isPresent()) {
-                        continue;
-                    }
-                    Optional<SQLExpression> endExpress = buildExpression((SelectStatement) sqlStatement, expressionSegment.getEndExpress(), sql, shardingRule, shardingTableMetaData);
-                    if (!endExpress.isPresent()) {
-                        continue;
-                    }
-                    andConditionResult.getConditions().add(new Condition(column, beginExpress.get(), endExpress.get()));
+                            final ShardingTableMetaData shardingTableMetaData) {
+        if (shardingCondition.isEmpty()) {
+            return;
+        }
+        AndCondition andConditionResult = new AndCondition();
+        result.getAndConditions().add(andConditionResult);
+        for (ConditionSegment eachCondition : shardingCondition) {
+            Column column = new Column(eachCondition.getColumn().getName(), eachCondition.getColumn().getTableName());
+            if (ShardingOperator.EQUAL == eachCondition.getOperator()) {
+                EqualsValueExpressionSegment expressionSegment = (EqualsValueExpressionSegment) eachCondition.getExpression();
+                Optional<SQLExpression> expression = buildExpression((SelectStatement) sqlStatement, expressionSegment.getExpression(), sql, shardingRule, shardingTableMetaData);
+                if (expression.isPresent()) {
+                    andConditionResult.getConditions().add(new Condition(column, expression.get()));
                 }
+                continue;
+            }
+            if (ShardingOperator.IN == eachCondition.getOperator()) {
+                InValueExpressionSegment expressionSegment = (InValueExpressionSegment) eachCondition.getExpression();
+                List<SQLExpression> expressions = new LinkedList<>();
+                for (ExpressionSegment each : expressionSegment.getSqlExpressions()) {
+                    Optional<SQLExpression> expression = buildExpression((SelectStatement) sqlStatement, each, sql, shardingRule, shardingTableMetaData);
+                    if (expression.isPresent()) {
+                        expressions.add(expression.get());
+                    } else {
+                        expressions.clear();
+                        break;
+                    }
+                }
+                if (!expressions.isEmpty()) {
+                    andConditionResult.getConditions().add(new Condition(column, expressions));
+                }
+                continue;
+            }
+            if (ShardingOperator.BETWEEN == eachCondition.getOperator()) {
+                BetweenValueExpressionSegment expressionSegment = (BetweenValueExpressionSegment) eachCondition.getExpression();
+                Optional<SQLExpression> beginExpress = buildExpression((SelectStatement) sqlStatement, expressionSegment.getBeginExpress(), sql, shardingRule, shardingTableMetaData);
+                if (!beginExpress.isPresent()) {
+                    continue;
+                }
+                Optional<SQLExpression> endExpress = buildExpression((SelectStatement) sqlStatement, expressionSegment.getEndExpress(), sql, shardingRule, shardingTableMetaData);
+                if (!endExpress.isPresent()) {
+                    continue;
+                }
+                andConditionResult.getConditions().add(new Condition(column, beginExpress.get(), endExpress.get()));
             }
         }
     }
     
     private Optional<SQLExpression> buildExpression(final SelectStatement selectStatement, final ExpressionSegment expressionSegment, final String sql, final ShardingRule shardingRule,
-            final ShardingTableMetaData shardingTableMetaData) {
+                                                    final ShardingTableMetaData shardingTableMetaData) {
         if (!(expressionSegment instanceof CommonExpressionSegment)) {
             new ExpressionFiller().fill(expressionSegment, selectStatement, sql, shardingRule, shardingTableMetaData);
             return Optional.absent();

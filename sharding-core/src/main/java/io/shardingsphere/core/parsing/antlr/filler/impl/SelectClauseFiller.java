@@ -17,11 +17,20 @@
 
 package io.shardingsphere.core.parsing.antlr.filler.impl;
 
+import java.util.HashSet;
+import java.util.Iterator;
+import java.util.Set;
+
+import com.google.common.base.Optional;
+
 import io.shardingsphere.core.metadata.table.ShardingTableMetaData;
 import io.shardingsphere.core.parsing.antlr.filler.SQLStatementFiller;
 import io.shardingsphere.core.parsing.antlr.sql.segment.SQLSegment;
 import io.shardingsphere.core.parsing.antlr.sql.segment.SelectClauseSegment;
 import io.shardingsphere.core.parsing.antlr.sql.segment.expr.ExpressionSegment;
+import io.shardingsphere.core.parsing.antlr.sql.segment.expr.PropertyExpressionSegment;
+import io.shardingsphere.core.parsing.antlr.sql.segment.expr.StarExpressionSegment;
+import io.shardingsphere.core.parsing.parser.context.selectitem.DistinctSelectItem;
 import io.shardingsphere.core.parsing.parser.sql.SQLStatement;
 import io.shardingsphere.core.parsing.parser.sql.dql.select.SelectStatement;
 import io.shardingsphere.core.rule.ShardingRule;
@@ -38,9 +47,40 @@ public final class SelectClauseFiller implements SQLStatementFiller {
         SelectClauseSegment selectClauseSegment = (SelectClauseSegment) sqlSegment;
         SelectStatement selectStatement = (SelectStatement) sqlStatement;
         selectStatement.setSelectListLastPosition(selectClauseSegment.getSelectListLastPosition());
+        if (selectClauseSegment.getExpressions().isEmpty()) {
+            return;
+        }
+        if (selectClauseSegment.isHasDistinct()) {
+            fillForDisinct(selectClauseSegment, selectStatement, sql, shardingRule, shardingTableMetaData);
+        } else {
+            ExpressionFiller expressionFiller = new ExpressionFiller();
+            for (ExpressionSegment each : selectClauseSegment.getExpressions()) {
+                expressionFiller.fill(each, sqlStatement, sql, shardingRule, shardingTableMetaData);
+            }
+        }
+    }
+    
+    private void fillForDisinct(SelectClauseSegment selectClauseSegment, SelectStatement selectStatement, final String sql, final ShardingRule shardingRule, final ShardingTableMetaData shardingTableMetaData) {
+        Iterator<ExpressionSegment> expressionIterator = selectClauseSegment.getExpressions().iterator();
+        ExpressionSegment firstExpression = expressionIterator.next();
         ExpressionFiller expressionFiller = new ExpressionFiller();
-        for (ExpressionSegment each : selectClauseSegment.getExpressions()) {
-            expressionFiller.fill(each, sqlStatement, sql, shardingRule, shardingTableMetaData);
+        Set<String> distinctColumnNames = new HashSet<String>();
+        if (firstExpression instanceof StarExpressionSegment) {
+            expressionFiller.fill(firstExpression, selectStatement, sql, shardingRule, shardingTableMetaData);
+            selectStatement.getItems().add(new DistinctSelectItem(distinctColumnNames, Optional.<String>absent()));
+        } else if (firstExpression instanceof PropertyExpressionSegment) {
+            PropertyExpressionSegment propertyExpressionSegment = (PropertyExpressionSegment) firstExpression;
+            distinctColumnNames.add(propertyExpressionSegment.getName());
+            selectStatement.getItems().add(new DistinctSelectItem(distinctColumnNames, propertyExpressionSegment.getAlias()));
+        } else {
+            expressionFiller.fill(firstExpression, selectStatement, sql, shardingRule, shardingTableMetaData);
+        }
+        while (expressionIterator.hasNext()) {
+            ExpressionSegment nextExpression = expressionIterator.next();
+            expressionFiller.fill(nextExpression, selectStatement, sql, shardingRule, shardingTableMetaData);
+            if (nextExpression instanceof PropertyExpressionSegment) {
+                distinctColumnNames.add(((PropertyExpressionSegment) nextExpression).getName());
+            }
         }
     }
 }

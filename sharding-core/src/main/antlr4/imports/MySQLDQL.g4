@@ -23,7 +23,7 @@ selectClause
     ;
     
 selectSpec
-    : (ALL | DISTINCT | DISTINCTROW)? HIGH_PRIORITY? STRAIGHT_JOIN? SQL_SMALL_RESULT?
+    : (ALL | distinct | DISTINCTROW)? HIGH_PRIORITY? STRAIGHT_JOIN? SQL_SMALL_RESULT?
     SQL_BIG_RESULT? SQL_BUFFER_RESULT? (SQL_CACHE | SQL_NO_CACHE)? SQL_CALC_FOUND_ROWS?
     ;
     
@@ -96,7 +96,7 @@ indexHint
     ;
 
 selectExpr
-    : (columnName | expr) AS? alias?
+    : (columnName | expr | variable) AS? alias?
     | columnName DOT_ASTERISK
     ;
     

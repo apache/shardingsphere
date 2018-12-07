@@ -245,7 +245,11 @@ DELETE
 DISABLE
     : D I S A B L E
     ;
-
+    
+DISTINCT
+    : D I S T I N C T
+    ;
+    
 DROP
     : D R O P
     ;

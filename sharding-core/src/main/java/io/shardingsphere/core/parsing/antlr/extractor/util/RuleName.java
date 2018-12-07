@@ -81,6 +81,8 @@ public enum RuleName {
     
     FUNCTION_CALL("FunctionCall"),
     
+    DISTINCT("Distinct"),
+    
     TABLE_CONSTRAINT("TableConstraint"),
     
     TABLE_REFERENCES("TableReference"),
