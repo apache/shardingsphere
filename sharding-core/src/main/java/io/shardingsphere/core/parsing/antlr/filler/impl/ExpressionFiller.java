@@ -18,6 +18,7 @@
 package io.shardingsphere.core.parsing.antlr.filler.impl;
 
 import com.google.common.base.Optional;
+
 import io.shardingsphere.core.constant.AggregationType;
 import io.shardingsphere.core.metadata.table.ShardingTableMetaData;
 import io.shardingsphere.core.parsing.antlr.filler.SQLStatementFiller;
@@ -33,6 +34,7 @@ import io.shardingsphere.core.parsing.parser.context.selectitem.CommonSelectItem
 import io.shardingsphere.core.parsing.parser.context.selectitem.StarSelectItem;
 import io.shardingsphere.core.parsing.parser.sql.SQLStatement;
 import io.shardingsphere.core.parsing.parser.sql.dql.select.SelectStatement;
+import io.shardingsphere.core.parsing.parser.token.AggregationDistinctToken;
 import io.shardingsphere.core.parsing.parser.token.TableToken;
 import io.shardingsphere.core.rule.ShardingRule;
 
@@ -102,15 +104,17 @@ public final class ExpressionFiller implements SQLStatementFiller {
             }
         }
         String innerExpression = sql.substring(functionSegment.getInnerExpressionStartIndex(), functionSegment.getInnerExpressionEndIndex() + 1);
+        String functionExpression = sql.substring(functionSegment.getFunctionStartIndex(), functionSegment.getInnerExpressionEndIndex() + 1);
         if (null != aggregationType) {
             if (functionSegment.isHasDistinct()) {
                 String columnName = sql.substring(functionSegment.getDinstinctColumnNameStartPosition(), functionSegment.getInnerExpressionEndIndex());
                 selectStatement.getItems().add(new AggregationDistinctSelectItem(aggregationType, innerExpression, functionSegment.getAlias(), columnName));
+                selectStatement.getSQLTokens().add(new AggregationDistinctToken(functionSegment.getFunctionStartIndex(), functionExpression, columnName));
             } else {
                 selectStatement.getItems().add(new AggregationSelectItem(aggregationType, innerExpression, functionSegment.getAlias()));
             }
         } else {
-            selectStatement.getItems().add(new CommonSelectItem(functionSegment.getName() + innerExpression, functionSegment.getAlias()));
+            selectStatement.getItems().add(new CommonSelectItem(functionExpression, functionSegment.getAlias()));
         }
     }
 }

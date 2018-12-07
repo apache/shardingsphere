@@ -60,18 +60,20 @@ public final class SelectClauseFiller implements SQLStatementFiller {
         }
     }
     
-    private void fillForDisinct(SelectClauseSegment selectClauseSegment, SelectStatement selectStatement, final String sql, final ShardingRule shardingRule, final ShardingTableMetaData shardingTableMetaData) {
+    private void fillForDisinct(final SelectClauseSegment selectClauseSegment, SelectStatement selectStatement, final String sql, final ShardingRule shardingRule, final ShardingTableMetaData shardingTableMetaData) {
         Iterator<ExpressionSegment> expressionIterator = selectClauseSegment.getExpressions().iterator();
         ExpressionSegment firstExpression = expressionIterator.next();
         ExpressionFiller expressionFiller = new ExpressionFiller();
         Set<String> distinctColumnNames = new HashSet<String>();
+        DistinctSelectItem distinctSelectItem = null;
         if (firstExpression instanceof StarExpressionSegment) {
             expressionFiller.fill(firstExpression, selectStatement, sql, shardingRule, shardingTableMetaData);
             selectStatement.getItems().add(new DistinctSelectItem(distinctColumnNames, Optional.<String>absent()));
         } else if (firstExpression instanceof PropertyExpressionSegment) {
             PropertyExpressionSegment propertyExpressionSegment = (PropertyExpressionSegment) firstExpression;
+            distinctSelectItem = new DistinctSelectItem(distinctColumnNames, propertyExpressionSegment.getAlias());
+            selectStatement.getItems().add(distinctSelectItem);
             distinctColumnNames.add(propertyExpressionSegment.getName());
-            selectStatement.getItems().add(new DistinctSelectItem(distinctColumnNames, propertyExpressionSegment.getAlias()));
         } else {
             expressionFiller.fill(firstExpression, selectStatement, sql, shardingRule, shardingTableMetaData);
         }
@@ -81,6 +83,9 @@ public final class SelectClauseFiller implements SQLStatementFiller {
             if (nextExpression instanceof PropertyExpressionSegment) {
                 distinctColumnNames.add(((PropertyExpressionSegment) nextExpression).getName());
             }
+        }
+        if(null != distinctSelectItem) {
+            distinctSelectItem.getDistinctColumnNames().addAll(distinctColumnNames);
         }
     }
 }
