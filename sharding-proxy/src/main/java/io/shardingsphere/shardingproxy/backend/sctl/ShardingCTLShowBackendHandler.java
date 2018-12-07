@@ -44,7 +44,7 @@ public final class ShardingCTLShowBackendHandler extends AbstractBackendHandler 
     protected CommandResponsePackets execute0() {
         Optional<ShardingCTLShowStatement> showStatement = new ShardingCTLShowParser(sql).doParse();
         if (!showStatement.isPresent()) {
-            return new CommandResponsePackets(new OKPacket(" please review your sctl format, should be sctl:show xxxx."));
+            return new CommandResponsePackets(new ErrPacket(" please review your sctl format, should be sctl:show xxxx."));
         }
         switch (showStatement.get().getValue()) {
             case "TRANSACTION_TYPE":
