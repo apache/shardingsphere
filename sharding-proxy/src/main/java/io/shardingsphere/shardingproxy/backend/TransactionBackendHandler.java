@@ -22,14 +22,12 @@ import io.shardingsphere.shardingproxy.backend.jdbc.connection.BackendConnection
 import io.shardingsphere.shardingproxy.backend.jdbc.connection.BackendTransactionManager;
 import io.shardingsphere.shardingproxy.transport.mysql.packet.command.CommandResponsePackets;
 import io.shardingsphere.shardingproxy.transport.mysql.packet.generic.OKPacket;
-import lombok.RequiredArgsConstructor;
 
 /**
  * Do transaction operation.
  *
  * @author zhaojun
  */
-@RequiredArgsConstructor
 public final class TransactionBackendHandler extends AbstractBackendHandler {
     
     private final TransactionOperationType operationType;

@@ -41,7 +41,7 @@ class MockGlobalRegistryUtil {
         field.set(GlobalRegistry.getInstance(), mockLogicSchemas(prefix, size));
     }
     
-    static Map<String, LogicSchema> mockLogicSchemas(final String prefix, final int size) {
+    private static Map<String, LogicSchema> mockLogicSchemas(final String prefix, final int size) {
         Map<String, LogicSchema> result = new HashMap<>(size);
         for (int i = 0; i < size; i++) {
             result.put(prefix + "_" + i, mock(LogicSchema.class));
