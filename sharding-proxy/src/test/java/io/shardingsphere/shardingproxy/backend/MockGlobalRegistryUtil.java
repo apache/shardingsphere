@@ -32,10 +32,15 @@ import static org.mockito.Mockito.mock;
  *
  * @author zhaojun
  */
-class MockGlobalRegistryUtil {
+public class MockGlobalRegistryUtil {
     
+    /**
+     * set logic schemas for global registry.
+     * @param prefix prefix of schema
+     * @param size size of schemas
+     */
     @SneakyThrows
-    static void setLogicSchemas(final String prefix, final int size) {
+    public static void setLogicSchemas(final String prefix, final int size) {
         Field field = GlobalRegistry.getInstance().getClass().getDeclaredField("logicSchemas");
         field.setAccessible(true);
         field.set(GlobalRegistry.getInstance(), mockLogicSchemas(prefix, size));

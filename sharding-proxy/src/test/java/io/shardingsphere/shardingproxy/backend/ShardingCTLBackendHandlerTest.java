@@ -34,6 +34,7 @@ public class ShardingCTLBackendHandlerTest {
     
     @Test
     public void assertSwitchTransactionTypeXA() {
+        backendConnection.setCurrentSchema("schema");
         ShardingCTLBackendHandler shardingCTLBackendHandler = new ShardingCTLBackendHandler("sctl:set transaction_type=XA", backendConnection);
         CommandResponsePackets actual = shardingCTLBackendHandler.execute();
         assertThat(actual.getHeadPacket(), instanceOf(OKPacket.class));
@@ -42,6 +43,7 @@ public class ShardingCTLBackendHandlerTest {
     
     @Test
     public void assertSwitchTransactionTypeBASE() {
+        backendConnection.setCurrentSchema("schema");
         ShardingCTLBackendHandler shardingCTLBackendHandler = new ShardingCTLBackendHandler("sctl:set  transaction_type=BASE", backendConnection);
         CommandResponsePackets actual = shardingCTLBackendHandler.execute();
         assertThat(actual.getHeadPacket(), instanceOf(OKPacket.class));
@@ -50,6 +52,7 @@ public class ShardingCTLBackendHandlerTest {
     
     @Test
     public void assertSwitchTransactionTypeLOCAL() {
+        backendConnection.setCurrentSchema("schema");
         ShardingCTLBackendHandler shardingCTLBackendHandler = new ShardingCTLBackendHandler("sctl:set transaction_type=LOCAL", backendConnection);
         CommandResponsePackets actual = shardingCTLBackendHandler.execute();
         assertThat(actual.getHeadPacket(), instanceOf(OKPacket.class));
@@ -58,6 +61,7 @@ public class ShardingCTLBackendHandlerTest {
     
     @Test
     public void assertSwitchTransactionTypeFailed() {
+        backendConnection.setCurrentSchema("schema");
         ShardingCTLBackendHandler shardingCTLBackendHandler = new ShardingCTLBackendHandler("sctl:set transaction_type=XXX", backendConnection);
         CommandResponsePackets actual = shardingCTLBackendHandler.execute();
         assertThat(actual.getHeadPacket(), instanceOf(ErrPacket.class));
