@@ -21,7 +21,7 @@ import io.shardingsphere.core.parsing.antlr.extractor.SQLSegmentExtractor;
 import io.shardingsphere.core.parsing.antlr.extractor.SQLStatementExtractor;
 import io.shardingsphere.core.parsing.antlr.extractor.impl.AddColumnExtractor;
 import io.shardingsphere.core.parsing.antlr.extractor.impl.DropColumnExtractor;
-import io.shardingsphere.core.parsing.antlr.extractor.impl.PrimaryKeyForAlterTableExtractor;
+import io.shardingsphere.core.parsing.antlr.extractor.impl.OutlinePrimaryKeyExtractor;
 import io.shardingsphere.core.parsing.antlr.extractor.impl.RenameColumnExtractor;
 import io.shardingsphere.core.parsing.antlr.extractor.impl.RenameTableExtractor;
 import io.shardingsphere.core.parsing.antlr.extractor.impl.TableNamesExtractor;
@@ -48,7 +48,7 @@ public final class OracleAlterTableExtractor implements SQLStatementExtractor {
         EXTRACTORS.add(new AddColumnExtractor());
         EXTRACTORS.add(new OracleModifyColumnExtractor());
         EXTRACTORS.add(new RenameColumnExtractor());
-        EXTRACTORS.add(new PrimaryKeyForAlterTableExtractor());
+        EXTRACTORS.add(new OutlinePrimaryKeyExtractor());
         EXTRACTORS.add(new OracleDropPrimaryKeyExtractor());
     }
     

@@ -27,11 +27,11 @@ import org.antlr.v4.runtime.ParserRuleContext;
 import java.util.Collection;
 
 /**
- * Primary key for create table extractor.
+ * Outline primary key extractor.
  *
  * @author duhongjun
  */
-public final class PrimaryKeyForCreateTableExtractor implements OptionalSQLSegmentExtractor {
+public final class OutlinePrimaryKeyExtractor implements OptionalSQLSegmentExtractor {
     
     @Override
     public Optional<ConstraintDefinitionSegment> extract(final ParserRuleContext ancestorNode) {

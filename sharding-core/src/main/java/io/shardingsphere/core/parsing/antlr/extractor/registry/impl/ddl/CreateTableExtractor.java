@@ -21,7 +21,7 @@ import io.shardingsphere.core.parsing.antlr.extractor.SQLSegmentExtractor;
 import io.shardingsphere.core.parsing.antlr.extractor.SQLStatementExtractor;
 import io.shardingsphere.core.parsing.antlr.extractor.impl.ColumnDefinitionsExtractor;
 import io.shardingsphere.core.parsing.antlr.extractor.impl.IndexNamesExtractor;
-import io.shardingsphere.core.parsing.antlr.extractor.impl.PrimaryKeyForCreateTableExtractor;
+import io.shardingsphere.core.parsing.antlr.extractor.impl.OutlinePrimaryKeyExtractor;
 import io.shardingsphere.core.parsing.antlr.extractor.impl.TableNamesExtractor;
 
 import java.util.Collection;
@@ -41,7 +41,7 @@ public final class CreateTableExtractor implements SQLStatementExtractor {
         EXTRACTORS.add(new TableNamesExtractor());
         EXTRACTORS.add(new ColumnDefinitionsExtractor());
         EXTRACTORS.add(new IndexNamesExtractor());
-        EXTRACTORS.add(new PrimaryKeyForCreateTableExtractor());
+        EXTRACTORS.add(new OutlinePrimaryKeyExtractor());
     }
     
     @Override
