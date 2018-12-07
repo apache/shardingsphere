@@ -196,7 +196,7 @@ public final class BackendConnectionTest {
             backendConnection.setTransactionType(TransactionType.XA);
             backendConnection.getStateHandler().getAndSetStatus(ConnectionStatus.TRANSACTION);
             MockConnectionUtil.setCachedConnections(backendConnection, "ds1", 10);
-            when(backendDataSource.getConnections((ConnectionMode) any(), anyString(), eq(2))).thenReturn(MockConnectionUtil.mockNewConnections(2));
+            when(backendDataSource.getConnections((ConnectionMode) any(), anyString(), eq(2), eq(TransactionType.XA))).thenReturn(MockConnectionUtil.mockNewConnections(2));
             backendConnection.getConnections(ConnectionMode.MEMORY_STRICTLY, "ds1", 12);
             backendConnection.getStateHandler().getAndSetStatus(ConnectionStatus.TERMINATED);
             mockResultSetAndStatement(backendConnection);
