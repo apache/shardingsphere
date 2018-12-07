@@ -21,20 +21,24 @@ import com.google.common.base.Optional;
 import io.shardingsphere.shardingproxy.backend.AbstractBackendHandler;
 import io.shardingsphere.shardingproxy.backend.jdbc.connection.BackendConnection;
 import io.shardingsphere.shardingproxy.transport.mysql.packet.command.CommandResponsePackets;
+import io.shardingsphere.shardingproxy.transport.mysql.packet.generic.ErrPacket;
 import io.shardingsphere.shardingproxy.transport.mysql.packet.generic.OKPacket;
-import lombok.RequiredArgsConstructor;
 
 /**
  * Sharding CTL show backend handler.
  *
  * @author zhaojun
  */
-@RequiredArgsConstructor
 public final class ShardingCTLShowBackendHandler extends AbstractBackendHandler {
     
     private final String sql;
     
     private final BackendConnection backendConnection;
+    
+    public ShardingCTLShowBackendHandler(final String sql, final BackendConnection backendConnection) {
+        this.sql = sql.toUpperCase().trim();
+        this.backendConnection = backendConnection;
+    }
     
     @Override
     protected CommandResponsePackets execute0() {
@@ -48,7 +52,7 @@ public final class ShardingCTLShowBackendHandler extends AbstractBackendHandler 
             case "CACHED_CONNECTIONS":
                 return new CommandResponsePackets(new OKPacket(String.format(" current channel cached connection size is: %s", backendConnection.getConnectionSize())));
             default:
-                return new CommandResponsePackets(new OKPacket(String.format(" could not support this sctl grammar [%s].", sql)));
+                return new CommandResponsePackets(new ErrPacket(String.format(" could not support this sctl grammar [%s].", sql)));
         }
     }
 }

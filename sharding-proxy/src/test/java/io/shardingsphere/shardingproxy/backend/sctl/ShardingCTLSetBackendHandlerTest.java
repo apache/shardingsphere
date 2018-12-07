@@ -19,7 +19,6 @@ package io.shardingsphere.shardingproxy.backend.sctl;
 
 import io.shardingsphere.core.constant.transaction.TransactionType;
 import io.shardingsphere.shardingproxy.backend.jdbc.connection.BackendConnection;
-import io.shardingsphere.shardingproxy.backend.sctl.ShardingCTLSetBackendHandler;
 import io.shardingsphere.shardingproxy.transport.mysql.packet.command.CommandResponsePackets;
 import io.shardingsphere.shardingproxy.transport.mysql.packet.generic.ErrPacket;
 import io.shardingsphere.shardingproxy.transport.mysql.packet.generic.OKPacket;
@@ -29,7 +28,7 @@ import static org.hamcrest.CoreMatchers.instanceOf;
 import static org.hamcrest.CoreMatchers.is;
 import static org.junit.Assert.assertThat;
 
-public class ShardingCTLBackendHandlerTest {
+public class ShardingCTLSetBackendHandlerTest {
     
     private BackendConnection backendConnection = new BackendConnection(TransactionType.LOCAL);
     

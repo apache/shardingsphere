@@ -22,33 +22,37 @@ import io.shardingsphere.core.constant.transaction.TransactionType;
 import io.shardingsphere.shardingproxy.backend.AbstractBackendHandler;
 import io.shardingsphere.shardingproxy.backend.jdbc.connection.BackendConnection;
 import io.shardingsphere.shardingproxy.transport.mysql.packet.command.CommandResponsePackets;
+import io.shardingsphere.shardingproxy.transport.mysql.packet.generic.ErrPacket;
 import io.shardingsphere.shardingproxy.transport.mysql.packet.generic.OKPacket;
-import lombok.RequiredArgsConstructor;
 
 /**
  * Sharding CTL backend handler.
  *
  * @author zhaojun
  */
-@RequiredArgsConstructor
 public final class ShardingCTLSetBackendHandler extends AbstractBackendHandler {
     
     private final String sql;
     
     private final BackendConnection backendConnection;
     
+    public ShardingCTLSetBackendHandler(final String sql, final BackendConnection backendConnection) {
+        this.sql = sql.toUpperCase().trim();
+        this.backendConnection = backendConnection;
+    }
+    
     @Override
     protected CommandResponsePackets execute0() {
         Optional<ShardingCTLSetStatement> shardingTCLStatement = new ShardingCTLSetParser(sql).doParse();
         if (!shardingTCLStatement.isPresent()) {
-            return new CommandResponsePackets(new OKPacket(" please review your sctl format, should be sctl:set xxx=yyy."));
+            return new CommandResponsePackets(new ErrPacket(" please review your sctl format, should be sctl:set xxx=yyy."));
         }
         switch (shardingTCLStatement.get().getKey()) {
             case "TRANSACTION_TYPE":
                 backendConnection.setTransactionType(TransactionType.find(shardingTCLStatement.get().getValue()));
                 break;
             default:
-                return new CommandResponsePackets(new OKPacket(String.format(" could not support this sctl grammar [%s].", sql)));
+                return new CommandResponsePackets(new ErrPacket(String.format(" could not support this sctl grammar [%s].", sql)));
         }
         return new CommandResponsePackets(new OKPacket(1));
     }

@@ -53,15 +53,15 @@ public class ComQueryBackendHandlerFactory {
      * @return instance of backend handler
      */
     public static BackendHandler createBackendHandler(final int sequenceId, final String sql, final BackendConnection backendConnection, final DatabaseType databaseType) {
-        Optional<TransactionOperationType> transactionOperationType = TransactionOperationType.getOperationType(sql);
+        Optional<TransactionOperationType> transactionOperationType = TransactionOperationType.getOperationType(sql.toUpperCase());
         if (transactionOperationType.isPresent()) {
             return new TransactionBackendHandler(transactionOperationType.get(), backendConnection);
         }
-        if (sql.startsWith(SCTL_SET)) {
+        if (sql.toUpperCase().startsWith(SCTL_SET)) {
             return new ShardingCTLSetBackendHandler(sql, backendConnection);
-        } else if (sql.startsWith(SCTL_SHOW)) {
+        } else if (sql.toUpperCase().startsWith(SCTL_SHOW)) {
             return new ShardingCTLShowBackendHandler(sql, backendConnection);
-        } else if (sql.contains(SKIP_SQL)) {
+        } else if (sql.toUpperCase().contains(SKIP_SQL)) {
             return new SkipBackendHandler();
         }
         SQLStatement sqlStatement = new SQLJudgeEngine(sql).judge();
