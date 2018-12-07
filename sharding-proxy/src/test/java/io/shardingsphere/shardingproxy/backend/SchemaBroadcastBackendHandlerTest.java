@@ -19,21 +19,15 @@ package io.shardingsphere.shardingproxy.backend;
 
 import io.shardingsphere.core.constant.DatabaseType;
 import io.shardingsphere.shardingproxy.backend.jdbc.connection.BackendConnection;
-import io.shardingsphere.shardingproxy.runtime.GlobalRegistry;
-import io.shardingsphere.shardingproxy.runtime.schema.LogicSchema;
 import io.shardingsphere.shardingproxy.transport.mysql.packet.command.CommandResponsePackets;
 import io.shardingsphere.shardingproxy.transport.mysql.packet.generic.ErrPacket;
 import io.shardingsphere.shardingproxy.transport.mysql.packet.generic.OKPacket;
-import lombok.SneakyThrows;
 import org.junit.Test;
 import org.junit.runner.RunWith;
 import org.mockito.Mock;
 import org.mockito.junit.MockitoJUnitRunner;
 
-import java.lang.reflect.Field;
 import java.sql.SQLException;
-import java.util.HashMap;
-import java.util.Map;
 
 import static org.hamcrest.CoreMatchers.instanceOf;
 import static org.junit.Assert.assertThat;
@@ -56,7 +50,7 @@ public class SchemaBroadcastBackendHandlerTest {
     
     @Test
     public void assertExecuteSchemaBroadcast() {
-        setGlobalRegistry(10);
+        MockGlobalRegistryUtil.setLogicSchemas(10);
         setUnderlyingHandler(new CommandResponsePackets(new OKPacket(1)));
         String sql = "grant select on testdb.* to root@'%'";
         SchemaBroadcastBackendHandler schemaBroadcastBackendHandler = new SchemaBroadcastBackendHandler(1, sql, backendConnection, DatabaseType.MySQL, backendHandlerFactory);
@@ -68,7 +62,7 @@ public class SchemaBroadcastBackendHandlerTest {
     
     @Test
     public void assertExecuteSchemaBroadcastFailed() {
-        setGlobalRegistry(5);
+        MockGlobalRegistryUtil.setLogicSchemas(5);
         setUnderlyingHandler(new CommandResponsePackets(new ErrPacket(1, new SQLException("no reason", "X999", -1))));
         String sql = "grant select on testdb.* to root@'%'";
         SchemaBroadcastBackendHandler schemaBroadcastBackendHandler = new SchemaBroadcastBackendHandler(1, sql, backendConnection, DatabaseType.MySQL, backendHandlerFactory);
@@ -82,21 +76,6 @@ public class SchemaBroadcastBackendHandlerTest {
         BackendHandler backendHandler = mock(BackendHandler.class);
         when(backendHandler.execute()).thenReturn(commandResponsePackets);
         when(backendHandlerFactory.newTextProtocolInstance(anyInt(), anyString(), (BackendConnection) any(), (DatabaseType) any())).thenReturn(backendHandler);
-    }
-    
-    @SneakyThrows
-    private void setGlobalRegistry(final int size) {
-        Field field = GlobalRegistry.getInstance().getClass().getDeclaredField("logicSchemas");
-        field.setAccessible(true);
-        field.set(GlobalRegistry.getInstance(), mockLogicSchemas(size));
-    }
-    
-    private Map<String, LogicSchema> mockLogicSchemas(final int size) {
-        Map<String, LogicSchema> result = new HashMap<>(size);
-        for (int i = 0; i < size; i++) {
-            result.put("schema_" + i, mock(LogicSchema.class));
-        }
-        return result;
     }
 }
 
