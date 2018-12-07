@@ -42,6 +42,7 @@ public final class ExecutorGroup {
      * @param commandExecutor a command executor to be run
      */
     public void execute(final CommandExecutor commandExecutor) {
+        // TODO zhaojun: should use transaction type of backendConnection
         if (TransactionType.XA == GLOBAL_REGISTRY.getTransactionType()) {
             ChannelThreadExecutorGroup.getInstance().get(channelId).execute(commandExecutor);
             return;
