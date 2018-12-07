@@ -20,6 +20,7 @@ package io.shardingsphere.shardingproxy.backend;
 import io.shardingsphere.core.constant.DatabaseType;
 import io.shardingsphere.shardingproxy.backend.jdbc.JDBCBackendHandler;
 import io.shardingsphere.shardingproxy.backend.jdbc.connection.BackendConnection;
+import io.shardingsphere.shardingproxy.backend.sctl.ShardingCTLSetBackendHandler;
 import org.junit.Test;
 import org.junit.runner.RunWith;
 import org.mockito.Mock;

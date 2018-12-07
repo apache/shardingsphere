@@ -27,6 +27,7 @@ import io.shardingsphere.core.parsing.parser.dialect.mysql.statement.ShowDatabas
 import io.shardingsphere.core.parsing.parser.dialect.mysql.statement.UseStatement;
 import io.shardingsphere.core.parsing.parser.sql.SQLStatement;
 import io.shardingsphere.shardingproxy.backend.jdbc.connection.BackendConnection;
+import io.shardingsphere.shardingproxy.backend.sctl.ShardingCTLSetBackendHandler;
 
 /**
  * Com query backend handler factory.
