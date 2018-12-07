@@ -29,7 +29,6 @@ import java.sql.Statement;
  *
  * @author yangyi
  */
-
 public abstract class AbstractTransactionManagerHandler implements TransactionManagerHandler {
     
     private static final String SET_TRANSACTION_TYPE_SQL = "SET TRANSACTION_TYPE=%s";
@@ -39,10 +38,8 @@ public abstract class AbstractTransactionManagerHandler implements TransactionMa
         Connection connection = getConnectionFromTransactionManager();
         try (Statement statement = connection.createStatement()) {
             statement.execute(String.format(SET_TRANSACTION_TYPE_SQL, transactionType.name()));
-        } catch (SQLException e) {
-            throw new ShardingException("Switch transaction type for sharding-proxy failed: ", e);
-        } finally {
-            connection = null;
+        } catch (final SQLException ex) {
+            throw new ShardingException("Switch transaction type for sharding-proxy failed: ", ex);
         }
     }
     

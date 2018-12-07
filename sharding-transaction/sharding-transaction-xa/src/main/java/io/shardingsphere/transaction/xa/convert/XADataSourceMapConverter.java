@@ -47,9 +47,7 @@ public final class XADataSourceMapConverter implements DataSourceMapConverter {
                 result.put(entry.getKey(), dataSource);
             }
             return result;
-            // CHECKSTYLE:OFF
-        } catch (Exception ex) {
-            // CHECKSTYLE:ON
+        } catch (final Exception ex) {
             return result;
         }
     }

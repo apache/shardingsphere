@@ -19,15 +19,16 @@ package io.shardingsphere.transaction.handler;
 
 import io.shardingsphere.core.constant.transaction.TransactionType;
 import io.shardingsphere.core.exception.ShardingException;
-
 import org.junit.Before;
 import org.junit.Test;
+import org.junit.runner.RunWith;
+import org.mockito.Mock;
+import org.mockito.junit.MockitoJUnitRunner;
 import org.springframework.jdbc.datasource.ConnectionHolder;
 import org.springframework.jdbc.datasource.DataSourceTransactionManager;
 import org.springframework.transaction.support.TransactionSynchronizationManager;
 
 import javax.sql.DataSource;
-
 import java.sql.Connection;
 import java.sql.SQLException;
 import java.sql.Statement;
@@ -38,17 +39,21 @@ import static org.mockito.Mockito.mock;
 import static org.mockito.Mockito.verify;
 import static org.mockito.Mockito.when;
 
-public class DataSourceTransactionManagerHandlerTest {
-
-    private final DataSource dataSource = mock(DataSource.class);
+@RunWith(MockitoJUnitRunner.class)
+public final class DataSourceTransactionManagerHandlerTest {
     
-    private final DataSourceTransactionManager transactionManager = mock(DataSourceTransactionManager.class);
+    @Mock
+    private DataSource dataSource;
     
-    private final DataSourceTransactionManagerHandler dataSourceTransactionManagerHandler = new DataSourceTransactionManagerHandler(transactionManager);
-
+    @Mock
+    private DataSourceTransactionManager transactionManager;
+    
+    private DataSourceTransactionManagerHandler dataSourceTransactionManagerHandler;
+    
     @Before
     public void setUp() {
         when(transactionManager.getDataSource()).thenReturn(dataSource);
+        dataSourceTransactionManagerHandler = new DataSourceTransactionManagerHandler(transactionManager);
     }
     
     @Test
@@ -57,10 +62,8 @@ public class DataSourceTransactionManagerHandlerTest {
         Statement statement = mock(Statement.class);
         when(dataSource.getConnection()).thenReturn(connection);
         when(connection.createStatement()).thenReturn(statement);
-        
         dataSourceTransactionManagerHandler.switchTransactionType(TransactionType.XA);
         verify(statement).execute(anyString());
-    
         TransactionSynchronizationManager.unbindResourceIfPossible(dataSource);
     }
     
@@ -71,7 +74,6 @@ public class DataSourceTransactionManagerHandlerTest {
         when(dataSource.getConnection()).thenReturn(connection);
         when(connection.createStatement()).thenReturn(statement);
         when(statement.execute(anyString())).thenThrow(new SQLException("Mock send switch transaction type SQL failed"));
-    
         try {
             dataSourceTransactionManagerHandler.switchTransactionType(TransactionType.XA);
         } finally {
@@ -82,7 +84,6 @@ public class DataSourceTransactionManagerHandlerTest {
     @Test(expected = ShardingException.class)
     public void assertSwitchTransactionTypeFailGetConnection() throws SQLException {
         when(dataSource.getConnection()).thenThrow(new SQLException("Mock get connection failed"));
-    
         try {
             dataSourceTransactionManagerHandler.switchTransactionType(TransactionType.XA);
         } finally {
@@ -96,7 +97,6 @@ public class DataSourceTransactionManagerHandlerTest {
         Connection connection = mock(Connection.class);
         when(holder.getConnection()).thenReturn(connection);
         TransactionSynchronizationManager.bindResource(dataSource, holder);
-        
         dataSourceTransactionManagerHandler.unbindResource();
         assertNull(TransactionSynchronizationManager.getResource(dataSource));
     }

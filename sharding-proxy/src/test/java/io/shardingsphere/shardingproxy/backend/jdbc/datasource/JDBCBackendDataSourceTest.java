@@ -100,7 +100,7 @@ public class JDBCBackendDataSourceTest {
     public void assertGetConnectionsFailed() throws SQLException {
         try {
             jdbcBackendDataSource.getConnections(ConnectionMode.MEMORY_STRICTLY, "ds_1", 6);
-        } catch (ShardingException ex) {
+        } catch (final ShardingException ex) {
             assertThat(ex.getMessage(), is("Could't get 6 connections one time, partition succeed connection(5) have released!"));
         }
     }
@@ -116,9 +116,7 @@ public class JDBCBackendDataSourceTest {
         for (Future<List<Connection>> each : futures) {
             try {
                 actual.addAll(each.get());
-                // CHECKSTYLE:OFF
-            } catch (Exception ex) {
-                // CHECKSTYLE:ON
+            } catch (final Exception ex) {
                 assertThat(ex.getMessage(), containsString("Could't get 6 connections one time, partition succeed connection(5) have released!"));
             }
         }

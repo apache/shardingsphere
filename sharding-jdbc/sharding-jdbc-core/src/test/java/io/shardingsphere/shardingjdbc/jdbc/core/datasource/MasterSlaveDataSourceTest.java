@@ -23,10 +23,10 @@ import io.shardingsphere.core.constant.DatabaseType;
 import io.shardingsphere.core.constant.transaction.TransactionType;
 import io.shardingsphere.core.hint.HintManagerHolder;
 import io.shardingsphere.core.routing.router.masterslave.MasterVisitedManager;
+import io.shardingsphere.core.transaction.TransactionTypeHolder;
 import io.shardingsphere.shardingjdbc.api.MasterSlaveDataSourceFactory;
 import io.shardingsphere.shardingjdbc.fixture.TestDataSource;
 import io.shardingsphere.shardingjdbc.jdbc.core.connection.MasterSlaveConnection;
-import io.shardingsphere.core.transaction.TransactionTypeHolder;
 import lombok.SneakyThrows;
 import org.junit.After;
 import org.junit.Before;
@@ -171,9 +171,7 @@ public final class MasterSlaveDataSourceTest {
         while (null != clazz) {
             try {
                 return clazz.getDeclaredField(fieldName);
-              // CHECKSTYLE:OFF
-            } catch (Exception ex) {
-              // CHECKSTYLE:ON
+            } catch (final Exception ex) {
                 clazz = clazz.getSuperclass();
             }
         }

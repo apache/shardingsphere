@@ -22,7 +22,6 @@ import lombok.AccessLevel;
 import lombok.NoArgsConstructor;
 import lombok.SneakyThrows;
 
-import java.lang.reflect.Array;
 import java.lang.reflect.Field;
 import java.lang.reflect.InvocationTargetException;
 import java.lang.reflect.Method;
@@ -61,10 +60,8 @@ public final class ReflectiveUtil {
         while (clazz != null) {
             try {
                 return clazz.getDeclaredField(fieldName);
-                // CHECKSTYLE:OFF
-            } catch (Exception ignored) {
+            } catch (final Exception ignored) {
             }
-            // CHECKSTYLE:ON
             clazz = clazz.getSuperclass();
         }
         return null;
@@ -83,27 +80,6 @@ public final class ReflectiveUtil {
         field.setAccessible(true);
         field.set(target, value);
     }
-    
-    /**
-     * Invoke target method.
-     *
-     * @param target target object
-     * @param methodName method name
-     * @param args args
-     * @return Object result
-     */
-    @SneakyThrows
-    public static Object methodInvoke(final Object target, final String methodName, final Object... args) {
-        Method method = getMethod(target, methodName, getParameterTypes(args));
-        Preconditions.checkNotNull(method);
-        method.setAccessible(true);
-        try {
-            return method.invoke(target, args);
-        } catch (InvocationTargetException ex) {
-            throw ex.getTargetException();
-        }
-    }
-    
     
     /**
      * Invoke target method when argument is nul.
@@ -132,23 +108,10 @@ public final class ReflectiveUtil {
         while (null != clazz) {
             try {
                 return clazz.getDeclaredMethod(methodName, parameterTypes);
-            // CHECKSTYLE:OFF
-            } catch (Exception ignored) {
+            } catch (final ReflectiveOperationException ignored) {
             }
-            // CHECKSTYLE:ON
             clazz = clazz.getSuperclass();
         }
         return null;
-    }
-    
-    private static Class<?>[] getParameterTypes(final Object[] args) {
-        if (null == args || 0 == args.length) {
-            return null;
-        }
-        Class<?>[] result = new Class[args.length];
-        for (int i = 0; i < args.length; i++) {
-            Array.set(result, i, args[i].getClass());
-        }
-        return result;
     }
 }

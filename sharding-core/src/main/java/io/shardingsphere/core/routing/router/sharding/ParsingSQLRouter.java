@@ -95,9 +95,7 @@ public final class ParsingSQLRouter implements ShardingRouter {
             SQLStatement result = new SQLParsingEngine(databaseType, logicSQL, shardingRule, shardingTableMetaData).parse(useCache);
             parsingHook.finishSuccess();
             return result;
-            // CHECKSTYLE:OFF
         } catch (final Exception ex) {
-            // CHECKSTYLE:ON
             parsingHook.finishFailure(ex);
             throw ex;
         }

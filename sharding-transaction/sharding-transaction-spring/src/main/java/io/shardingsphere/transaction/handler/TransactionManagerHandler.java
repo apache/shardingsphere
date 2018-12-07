@@ -24,7 +24,6 @@ import io.shardingsphere.core.constant.transaction.TransactionType;
  *
  * @author yangyi
  */
-
 public interface TransactionManagerHandler {
     
     /**
@@ -35,8 +34,7 @@ public interface TransactionManagerHandler {
     void switchTransactionType(TransactionType transactionType);
     
     /**
-     * Unbind Resource.
+     * Unbind resource.
      */
     void unbindResource();
-    
 }

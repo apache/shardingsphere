@@ -212,7 +212,7 @@ public final class BackendConnectionTest {
             mockResultSetAndStatement(backendConnection);
             mockResultSetAndStatementException(backendConnection);
             actual = backendConnection;
-        } catch (SQLException ex) {
+        } catch (final SQLException ex) {
             assertThat(ex.getNextException().getNextException(), instanceOf(SQLException.class));
         }
         assert actual != null;
