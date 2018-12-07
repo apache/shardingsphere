@@ -20,6 +20,7 @@ package io.shardingsphere.shardingproxy.backend;
 import com.google.common.base.Optional;
 import com.google.common.base.Preconditions;
 import io.shardingsphere.core.constant.transaction.TransactionType;
+import io.shardingsphere.core.exception.ShardingException;
 import io.shardingsphere.shardingproxy.backend.jdbc.connection.BackendConnection;
 import io.shardingsphere.shardingproxy.transport.mysql.packet.command.CommandResponsePackets;
 import io.shardingsphere.shardingproxy.transport.mysql.packet.generic.OKPacket;
@@ -43,13 +44,15 @@ public final class ShardingCTLBackendHandler extends AbstractBackendHandler {
     @Override
     protected CommandResponsePackets execute0() {
         Optional<ShardingTCLStatement> shardingTCLStatement = new ShardingCTLParser(sql).doParse();
-        if (shardingTCLStatement.isPresent()) {
-            switch (shardingTCLStatement.get().key) {
-                case "transaction_type":
-                    backendConnection.setTransactionType(TransactionType.find(shardingTCLStatement.get().value));
-                    break;
-                default:
-            }
+        if (!shardingTCLStatement.isPresent()) {
+            throw new ShardingException("please make review your sctl format, should be sctl:set xxx=yyy");
+        }
+        switch (shardingTCLStatement.get().key) {
+            case "transaction_type":
+                backendConnection.setTransactionType(TransactionType.find(shardingTCLStatement.get().value));
+                break;
+            default:
+                throw new ShardingException(String.format("could not support this sctl grammar [%s]", sql));
         }
         return new CommandResponsePackets(new OKPacket(1));
     }
@@ -68,8 +71,8 @@ public final class ShardingCTLBackendHandler extends AbstractBackendHandler {
             if (matcher.find()) {
                 String key = matcher.group(1);
                 String value = matcher.group(2);
-                Preconditions.checkNotNull(key, "sharding CTL key cannot be null.");
-                Preconditions.checkNotNull(value, "sharding CTL value cannot be null.");
+                Preconditions.checkNotNull(key, "sctl key cannot be null.");
+                Preconditions.checkNotNull(value, "sctl value cannot be null.");
                 return Optional.of(new ShardingTCLStatement(key, value));
             }
             return Optional.absent();
