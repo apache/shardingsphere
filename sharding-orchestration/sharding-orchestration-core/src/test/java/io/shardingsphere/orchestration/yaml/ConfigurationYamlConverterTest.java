@@ -17,11 +17,14 @@
 
 package io.shardingsphere.orchestration.yaml;
 
+import io.shardingsphere.api.config.MasterSlaveRuleConfiguration;
 import io.shardingsphere.api.config.ShardingRuleConfiguration;
 import io.shardingsphere.core.config.DataSourceConfiguration;
+import io.shardingsphere.core.rule.Authentication;
 import org.junit.Test;
 
 import java.util.Map;
+import java.util.Properties;
 
 import static org.hamcrest.MatcherAssert.assertThat;
 import static org.hamcrest.core.Is.is;
@@ -66,18 +69,30 @@ public class ConfigurationYamlConverterTest {
     
     @Test
     public void assertLoadMasterSlaveRuleConfiguration() {
+        MasterSlaveRuleConfiguration actual = ConfigurationYamlConverter.loadMasterSlaveRuleConfiguration(MASTER_SLAVE_RULE_YAML);
+        assertThat(actual.getMasterDataSourceName(), is("master_ds"));
+        assertThat(actual.getSlaveDataSourceNames().size(), is(2));
     }
     
     @Test
     public void assertLoadAuthentication() {
+        Authentication actual = ConfigurationYamlConverter.loadAuthentication(AUTHENTICATION_YAML);
+        assertThat(actual.getUsername(), is("root"));
+        assertThat(actual.getPassword(), is("root"));
     }
     
     @Test
     public void assertLoadConfigMap() {
+        Map<String, Object> actual = ConfigurationYamlConverter.loadConfigMap(CONFIG_MAP_YAML);
+        assertTrue(actual.containsKey("sharding-key1"));
+        assertTrue(actual.containsValue("sharding-value1"));
     }
     
     @Test
     public void assertLoadProperties() {
+        Properties actual = ConfigurationYamlConverter.loadProperties(PROPERTIES_YAML);
+        assertThat(actual.get("executor.size"), is((Object) 16));
+        assertThat(actual.get("sql.show"), is((Object) true));
     }
     
     @Test
