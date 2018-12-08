@@ -15,29 +15,20 @@
  * </p>
  */
 
-package io.shardingsphere.core.constant.transaction;
+package io.shardingsphere.shardingproxy.backend;
+
+import io.shardingsphere.shardingproxy.transport.mysql.packet.command.CommandResponsePackets;
+import io.shardingsphere.shardingproxy.transport.mysql.packet.generic.OKPacket;
 
 /**
- * Transaction type.
+ * Skip backend handler.
  *
  * @author zhaojun
  */
-public enum TransactionType {
+public final class SkipBackendHandler extends AbstractBackendHandler {
     
-    LOCAL, XA, BASE;
-    
-    /**
-     * Find transaction type by name.
-     *
-     * @param name name of transaction type
-     * @return transaction type
-     */
-    public static TransactionType find(final String name) {
-        for (TransactionType each : TransactionType.values()) {
-            if (name.equals(each.name())) {
-                return each;
-            }
-        }
-        throw new UnsupportedOperationException(String.format("Cannot find transaction type of [%s]", name));
+    @Override
+    protected CommandResponsePackets execute0() {
+        return new CommandResponsePackets(new OKPacket(1));
     }
 }

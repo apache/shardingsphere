@@ -21,8 +21,8 @@ import io.shardingsphere.core.constant.ConnectionMode;
 import io.shardingsphere.core.constant.transaction.TransactionOperationType;
 import io.shardingsphere.core.constant.transaction.TransactionType;
 import io.shardingsphere.core.exception.ShardingException;
+import io.shardingsphere.shardingproxy.backend.MockGlobalRegistryUtil;
 import io.shardingsphere.shardingproxy.backend.jdbc.datasource.JDBCBackendDataSource;
-import io.shardingsphere.shardingproxy.runtime.schema.LogicSchema;
 import lombok.SneakyThrows;
 import org.junit.Before;
 import org.junit.Test;
@@ -56,9 +56,6 @@ import static org.mockito.Mockito.when;
 public final class BackendConnectionTest {
     
     @Mock
-    private LogicSchema logicSchema;
-    
-    @Mock
     private JDBCBackendDataSource backendDataSource;
     
     private BackendConnection backendConnection = new BackendConnection(TransactionType.LOCAL);
@@ -66,16 +63,9 @@ public final class BackendConnectionTest {
     @Before
     @SneakyThrows
     public void setup() {
-        when(logicSchema.getBackendDataSource()).thenReturn(backendDataSource);
-        setLogicSchema(backendConnection);
-        
-    }
-    
-    @SneakyThrows
-    private void setLogicSchema(final BackendConnection backendConnection) {
-        Field field = backendConnection.getClass().getDeclaredField("logicSchema");
-        field.setAccessible(true);
-        field.set(backendConnection, logicSchema);
+        MockGlobalRegistryUtil.setLogicSchemas("schema", 2);
+        backendConnection.setCurrentSchema("schema_0");
+        when(backendConnection.getLogicSchema().getBackendDataSource()).thenReturn(backendDataSource);
     }
     
     @Test
@@ -166,7 +156,7 @@ public final class BackendConnectionTest {
     public void assertAutoCloseConnectionWithoutTransaction() throws SQLException {
         BackendConnection actual;
         try (BackendConnection backendConnection = new BackendConnection(TransactionType.LOCAL)) {
-            setLogicSchema(backendConnection);
+            backendConnection.setCurrentSchema("schema_0");
             when(backendDataSource.getConnections((ConnectionMode) any(), anyString(), eq(12))).thenReturn(MockConnectionUtil.mockNewConnections(12));
             backendConnection.getConnections(ConnectionMode.MEMORY_STRICTLY, "ds1", 12);
             assertThat(backendConnection.getStateHandler().getStatus(), is(ConnectionStatus.RUNNING));
@@ -184,7 +174,7 @@ public final class BackendConnectionTest {
     public void assertAutoCloseConnectionWithTransaction() throws SQLException {
         BackendConnection actual;
         try (BackendConnection backendConnection = new BackendConnection(TransactionType.LOCAL)) {
-            setLogicSchema(backendConnection);
+            backendConnection.setCurrentSchema("schema_0");
             MockConnectionUtil.setCachedConnections(backendConnection, "ds1", 10);
             when(backendDataSource.getConnections((ConnectionMode) any(), anyString(), eq(2))).thenReturn(MockConnectionUtil.mockNewConnections(2));
             backendConnection.getStateHandler().getAndSetStatus(ConnectionStatus.TRANSACTION);
@@ -202,11 +192,11 @@ public final class BackendConnectionTest {
     public void assertAutoCloseConnectionWithException() {
         BackendConnection actual = null;
         try (BackendConnection backendConnection = new BackendConnection(TransactionType.LOCAL)) {
-            setLogicSchema(backendConnection);
+            backendConnection.setCurrentSchema("schema_0");
             backendConnection.setTransactionType(TransactionType.XA);
             backendConnection.getStateHandler().getAndSetStatus(ConnectionStatus.TRANSACTION);
             MockConnectionUtil.setCachedConnections(backendConnection, "ds1", 10);
-            when(backendDataSource.getConnections((ConnectionMode) any(), anyString(), eq(2))).thenReturn(MockConnectionUtil.mockNewConnections(2));
+            when(backendDataSource.getConnections((ConnectionMode) any(), anyString(), eq(2), eq(TransactionType.XA))).thenReturn(MockConnectionUtil.mockNewConnections(2));
             backendConnection.getConnections(ConnectionMode.MEMORY_STRICTLY, "ds1", 12);
             backendConnection.getStateHandler().getAndSetStatus(ConnectionStatus.TERMINATED);
             mockResultSetAndStatement(backendConnection);

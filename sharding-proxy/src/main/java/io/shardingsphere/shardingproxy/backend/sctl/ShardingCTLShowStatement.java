@@ -15,29 +15,19 @@
  * </p>
  */
 
-package io.shardingsphere.core.constant.transaction;
+package io.shardingsphere.shardingproxy.backend.sctl;
+
+import lombok.Getter;
+import lombok.RequiredArgsConstructor;
 
 /**
- * Transaction type.
+ * Sharding CTL show statement.
  *
  * @author zhaojun
  */
-public enum TransactionType {
+@RequiredArgsConstructor
+@Getter
+public class ShardingCTLShowStatement {
     
-    LOCAL, XA, BASE;
-    
-    /**
-     * Find transaction type by name.
-     *
-     * @param name name of transaction type
-     * @return transaction type
-     */
-    public static TransactionType find(final String name) {
-        for (TransactionType each : TransactionType.values()) {
-            if (name.equals(each.name())) {
-                return each;
-            }
-        }
-        throw new UnsupportedOperationException(String.format("Cannot find transaction type of [%s]", name));
-    }
+    private final String value;
 }

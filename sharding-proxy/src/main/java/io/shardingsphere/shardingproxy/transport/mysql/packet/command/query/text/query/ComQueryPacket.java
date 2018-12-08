@@ -19,12 +19,10 @@ package io.shardingsphere.shardingproxy.transport.mysql.packet.command.query.tex
 
 import com.google.common.base.Optional;
 import io.shardingsphere.core.constant.DatabaseType;
-import io.shardingsphere.core.constant.transaction.TransactionOperationType;
 import io.shardingsphere.shardingproxy.backend.BackendHandler;
 import io.shardingsphere.shardingproxy.backend.ComQueryBackendHandlerFactory;
 import io.shardingsphere.shardingproxy.backend.ResultPacket;
 import io.shardingsphere.shardingproxy.backend.jdbc.connection.BackendConnection;
-import io.shardingsphere.shardingproxy.backend.jdbc.connection.BackendTransactionManager;
 import io.shardingsphere.shardingproxy.runtime.GlobalRegistry;
 import io.shardingsphere.shardingproxy.transport.common.packet.DatabasePacket;
 import io.shardingsphere.shardingproxy.transport.mysql.constant.ServerErrorCode;
@@ -34,9 +32,7 @@ import io.shardingsphere.shardingproxy.transport.mysql.packet.command.CommandRes
 import io.shardingsphere.shardingproxy.transport.mysql.packet.command.query.QueryCommandPacket;
 import io.shardingsphere.shardingproxy.transport.mysql.packet.command.query.text.TextResultSetRowPacket;
 import io.shardingsphere.shardingproxy.transport.mysql.packet.generic.ErrPacket;
-import io.shardingsphere.shardingproxy.transport.mysql.packet.generic.OKPacket;
 import lombok.Getter;
-import lombok.SneakyThrows;
 import lombok.extern.slf4j.Slf4j;
 
 import java.sql.SQLException;
@@ -59,20 +55,16 @@ public final class ComQueryPacket implements QueryCommandPacket {
     
     private final BackendHandler backendHandler;
     
-    private final BackendTransactionManager backendTransactionManager;
-    
     public ComQueryPacket(final int sequenceId, final MySQLPacketPayload payload, final BackendConnection backendConnection) {
         this.sequenceId = sequenceId;
         sql = payload.readStringEOF();
         backendHandler = ComQueryBackendHandlerFactory.createBackendHandler(sequenceId, sql, backendConnection, DatabaseType.MySQL);
-        backendTransactionManager = new BackendTransactionManager(backendConnection);
     }
     
     public ComQueryPacket(final int sequenceId, final String sql) {
         this.sequenceId = sequenceId;
         this.sql = sql;
         backendHandler = null;
-        this.backendTransactionManager = null;
     }
     
     @Override
@@ -82,18 +74,12 @@ public final class ComQueryPacket implements QueryCommandPacket {
     }
     
     @Override
-    @SneakyThrows
     public Optional<CommandResponsePackets> execute() {
         log.debug("COM_QUERY received for Sharding-Proxy: {}", sql);
         if (GlobalRegistry.getInstance().isCircuitBreak()) {
             return Optional.of(new CommandResponsePackets(new ErrPacket(1, ServerErrorCode.ER_CIRCUIT_BREAK_MODE)));
         }
-        Optional<TransactionOperationType> operationType = TransactionOperationType.getOperationType(sql);
-        if (!operationType.isPresent()) {
-            return Optional.of(backendHandler.execute());
-        }
-        backendTransactionManager.doInTransaction(operationType.get());
-        return Optional.of(new CommandResponsePackets(new OKPacket(1)));
+        return Optional.of(backendHandler.execute());
     }
     
     @Override

@@ -15,29 +15,22 @@
  * </p>
  */
 
-package io.shardingsphere.core.constant.transaction;
+package io.shardingsphere.shardingproxy.backend.sctl;
+
+import com.google.common.base.Optional;
 
 /**
- * Transaction type.
+ * Sharding CTL parser interface.
  *
  * @author zhaojun
  */
-public enum TransactionType {
-    
-    LOCAL, XA, BASE;
+public interface ShardingCTLParser<T> {
     
     /**
-     * Find transaction type by name.
+     * Do sharding CTL parse.
      *
-     * @param name name of transaction type
-     * @return transaction type
+     * @return sharding CTL statement.
      */
-    public static TransactionType find(final String name) {
-        for (TransactionType each : TransactionType.values()) {
-            if (name.equals(each.name())) {
-                return each;
-            }
-        }
-        throw new UnsupportedOperationException(String.format("Cannot find transaction type of [%s]", name));
-    }
+    Optional<T> doParse();
 }
+

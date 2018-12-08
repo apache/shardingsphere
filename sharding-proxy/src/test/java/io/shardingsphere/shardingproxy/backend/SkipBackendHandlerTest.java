@@ -15,24 +15,21 @@
  * </p>
  */
 
-package io.shardingsphere.shardingproxy.frontend.common;
+package io.shardingsphere.shardingproxy.backend;
 
-import io.shardingsphere.core.constant.DatabaseType;
-import io.shardingsphere.shardingproxy.frontend.mysql.MySQLFrontendHandler;
+import io.shardingsphere.shardingproxy.transport.mysql.packet.command.CommandResponsePackets;
+import io.shardingsphere.shardingproxy.transport.mysql.packet.generic.OKPacket;
 import org.junit.Test;
 
 import static org.hamcrest.CoreMatchers.instanceOf;
 import static org.junit.Assert.assertThat;
 
-public final class FrontendHandlerFactoryTest {
+public class SkipBackendHandlerTest {
     
     @Test
-    public void assertCreateFrontendHandlerInstanceWithMySQL() {
-        assertThat(FrontendHandlerFactory.createFrontendHandlerInstance(DatabaseType.MySQL), instanceOf(MySQLFrontendHandler.class));
-    }
-    
-    @Test(expected = UnsupportedOperationException.class)
-    public void assertCreateFrontendHandlerInstanceWhenUnsupported() {
-        FrontendHandlerFactory.createFrontendHandlerInstance(DatabaseType.Oracle);
+    public void assertExecuteSkipBackendHandler() {
+        SkipBackendHandler skipBackendHandler = new SkipBackendHandler();
+        CommandResponsePackets actual = skipBackendHandler.execute();
+        assertThat(actual.getHeadPacket(), instanceOf(OKPacket.class));
     }
 }
