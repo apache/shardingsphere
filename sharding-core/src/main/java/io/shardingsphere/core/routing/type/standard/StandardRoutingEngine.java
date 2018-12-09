@@ -79,11 +79,7 @@ public final class StandardRoutingEngine implements RoutingEngine {
     }
     
     private Collection<DataNode> routeByAllHint(final TableRule tableRule) {
-        Collection<DataNode> result = new LinkedList<>();
-        List<ShardingValue> databaseShardingValues = getDatabaseShardingValuesFromHint();
-        List<ShardingValue> tableShardingValues = getTableShardingValuesFromHint();
-        result.addAll(route(tableRule, databaseShardingValues, tableShardingValues));
-        return result;
+        return route(tableRule, getDatabaseShardingValuesFromHint(), getTableShardingValuesFromHint());
     }
     
     private Collection<DataNode> routeByAllShardingConditions(final TableRule tableRule) {
