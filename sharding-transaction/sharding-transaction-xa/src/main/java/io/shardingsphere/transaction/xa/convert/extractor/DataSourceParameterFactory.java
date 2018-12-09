@@ -17,6 +17,7 @@
 
 package io.shardingsphere.transaction.xa.convert.extractor;
 
+import com.google.common.base.Optional;
 import io.shardingsphere.core.constant.PoolType;
 import io.shardingsphere.core.rule.DataSourceParameter;
 import lombok.AccessLevel;
@@ -39,7 +40,11 @@ public class DataSourceParameterFactory {
      * @return datasource parameter
      */
     public static DataSourceParameter build(final DataSource dataSource) {
-        switch (PoolType.find(dataSource.getClass().getName())) {
+        Optional<PoolType> poolType = PoolType.find(dataSource.getClass().getName());
+        if (!poolType.isPresent()) {
+            return new DefaultDataSourceParameterExtractor(dataSource).extract();
+        }
+        switch (poolType.get()) {
             case DRUID:
                 return new DruidDataSourceParameterExtractor(dataSource).extract();
             case DBCP2:
