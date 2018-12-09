@@ -20,7 +20,6 @@ package io.shardingsphere.transaction.xa.convert.extractor;
 import io.shardingsphere.core.constant.transaction.ProxyPoolType;
 
 import javax.sql.DataSource;
-import java.util.Map;
 
 /**
  * Extract datasource parameter from DBCP connection pool.
@@ -35,11 +34,11 @@ public final class DBCPDataSourceParameterExtractor extends DataSourceParameterE
     
     @Override
     protected void convertProperties() {
-        Map<String, Object> properties = getDataSourceConfiguration().getProperties();
-        properties.put("maximumPoolSize", properties.get("maxTotal"));
-        properties.put("idleTimeout", properties.get("maxIdle"));
-        properties.put("connectionTimeout", properties.get("maxWaitMillis"));
-        properties.put("maxLifetime", properties.get("maxConnLifetimeMillis"));
-        properties.put("proxyDatasourceType", ProxyPoolType.TOMCAT_DBCP2);
+        AdvancedMapUpdater<String, Object> updater = new AdvancedMapUpdater<>(getDataSourceConfiguration().getProperties());
+        updater.transfer("maxTotal", "maximumPoolSize");
+        updater.transfer("maxIdle", "idleTimeout");
+        updater.transfer("maxWaitMillis", "connectionTimeout");
+        updater.transfer("maxConnLifetimeMillis", "maxLifetime");
+        updater.getDelegateMap().put("proxyDatasourceType", ProxyPoolType.TOMCAT_DBCP2);
     }
 }
