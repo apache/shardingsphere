@@ -32,6 +32,14 @@ public final class DataSourceParameter {
     
     public static final String DATA_SOURCE_POOL_CLASS_NAME = "com.zaxxer.hikari.HikariDataSource";
     
+    private static final long DEFAULT_CONNECTION_TIMEOUT_MILLIS = 30000;
+    
+    private static final long DEFAULT_IDLE_TIMEOUT_MILLIS = 60000;
+    
+    private static final long DEFAULT_MAX_LIFE_TIME_MILLIS = 1800000;
+    
+    private static final int DEFAULT_MAX_POOL_SIZE = 50;
+    
     private ProxyPoolType proxyDatasourceType = ProxyPoolType.VENDOR;
     
     private String url;
@@ -42,11 +50,11 @@ public final class DataSourceParameter {
     
     private boolean autoCommit;
     
-    private long connectionTimeout;
+    private long connectionTimeout = DEFAULT_CONNECTION_TIMEOUT_MILLIS;
     
-    private long idleTimeout;
+    private long idleTimeout = DEFAULT_IDLE_TIMEOUT_MILLIS;
     
-    private long maxLifetime;
+    private long maxLifetime = DEFAULT_MAX_LIFE_TIME_MILLIS;
     
-    private int maximumPoolSize;
+    private int maximumPoolSize = DEFAULT_MAX_POOL_SIZE;
 }
