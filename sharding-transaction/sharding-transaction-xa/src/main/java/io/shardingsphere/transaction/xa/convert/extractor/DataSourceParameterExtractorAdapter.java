@@ -33,8 +33,11 @@ public abstract class DataSourceParameterExtractorAdapter implements DataSourceP
     
     private final DataSourceConfiguration dataSourceConfiguration;
     
+    private final AdvancedMapUpdater<String, Object> updater;
+    
     DataSourceParameterExtractorAdapter(final DataSource dataSource) {
         dataSourceConfiguration = DataSourceConfiguration.getDataSourceConfiguration(dataSource);
+        updater = new AdvancedMapUpdater<>(dataSourceConfiguration.getProperties());
     }
     
     @Override

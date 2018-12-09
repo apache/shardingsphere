@@ -32,7 +32,6 @@ public final class HikariDataSourceParameterExtractor extends DataSourceParamete
     
     @Override
     protected void convertProperties() {
-        AdvancedMapUpdater<String, Object> updater = new AdvancedMapUpdater<>(getDataSourceConfiguration().getProperties());
-        updater.transfer("jdbcUrl", "url");
+        getUpdater().transfer("jdbcUrl", "url");
     }
 }

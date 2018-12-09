@@ -34,11 +34,10 @@ public final class DBCPDataSourceParameterExtractor extends DataSourceParameterE
     
     @Override
     protected void convertProperties() {
-        AdvancedMapUpdater<String, Object> updater = new AdvancedMapUpdater<>(getDataSourceConfiguration().getProperties());
-        updater.transfer("maxTotal", "maximumPoolSize");
-        updater.transfer("maxIdle", "idleTimeout");
-        updater.transfer("maxWaitMillis", "connectionTimeout");
-        updater.transfer("maxConnLifetimeMillis", "maxLifetime");
-        updater.getDelegateMap().put("proxyDatasourceType", ProxyPoolType.TOMCAT_DBCP2);
+        getUpdater().transfer("maxTotal", "maximumPoolSize");
+        getUpdater().transfer("maxIdle", "idleTimeout");
+        getUpdater().transfer("maxWaitMillis", "connectionTimeout");
+        getUpdater().transfer("maxConnLifetimeMillis", "maxLifetime");
+        getUpdater().getDelegateMap().put("proxyDatasourceType", ProxyPoolType.TOMCAT_DBCP2);
     }
 }
