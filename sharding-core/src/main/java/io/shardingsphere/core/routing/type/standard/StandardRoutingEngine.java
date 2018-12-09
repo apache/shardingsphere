@@ -62,8 +62,8 @@ public final class StandardRoutingEngine implements RoutingEngine {
     public RoutingResult route() {
         TableRule tableRule = shardingRule.getTableRuleByLogicTableName(logicTableName);
         Collection<DataNode> dataNodes = new LinkedList<>();
-        if (isRoutingByHint(tableRule)) {
-            dataNodes.addAll(routeByHint(tableRule));
+        if (isRoutingAllByHint(tableRule)) {
+            dataNodes.addAll(routeByAllHint(tableRule));
         } else {
             dataNodes.addAll(routeByShardingConditions(tableRule));
         }
@@ -79,7 +79,7 @@ public final class StandardRoutingEngine implements RoutingEngine {
         return result;
     }
     
-    private boolean isRoutingByHint(final TableRule tableRule) {
+    private boolean isRoutingAllByHint(final TableRule tableRule) {
         return shardingRule.getDatabaseShardingStrategy(tableRule) instanceof HintShardingStrategy && shardingRule.getTableShardingStrategy(tableRule) instanceof HintShardingStrategy;
     }
     
@@ -87,7 +87,7 @@ public final class StandardRoutingEngine implements RoutingEngine {
         return shardingStrategy instanceof HintShardingStrategy;
     }
     
-    private Collection<DataNode> routeByHint(final TableRule tableRule) {
+    private Collection<DataNode> routeByAllHint(final TableRule tableRule) {
         Collection<DataNode> result = new LinkedList<>();
         List<ShardingValue> databaseShardingValues = getDatabaseShardingValuesFromHint();
         List<ShardingValue> tableShardingValues = getTableShardingValuesFromHint();
