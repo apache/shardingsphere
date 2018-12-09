@@ -20,6 +20,7 @@ package io.shardingsphere.shardingjdbc.jdbc.adapter;
 import com.google.common.base.Preconditions;
 import io.shardingsphere.core.bootstrap.ShardingBootstrap;
 import io.shardingsphere.core.constant.DatabaseType;
+import io.shardingsphere.core.util.ReflectiveUtil;
 import io.shardingsphere.shardingjdbc.jdbc.unsupported.AbstractUnsupportedOperationDataSource;
 import io.shardingsphere.spi.transaction.xa.DataSourceMapConverter;
 import io.shardingsphere.spi.transaction.xa.SPIDataSourceMapConverter;
@@ -28,7 +29,6 @@ import lombok.Setter;
 
 import javax.sql.DataSource;
 import java.io.PrintWriter;
-import java.lang.reflect.Method;
 import java.sql.Connection;
 import java.sql.SQLException;
 import java.util.Collection;
@@ -114,22 +114,9 @@ public abstract class AbstractDataSourceAdapter extends AbstractUnsupportedOpera
     private void closeDataSource(final Map<String, DataSource> dataSourceMap) {
         for (DataSource each : dataSourceMap.values()) {
             try {
-                findMethod(each, "close").invoke(each);
+                ReflectiveUtil.findMethod(each, "close").invoke(each);
             } catch (final ReflectiveOperationException ignored) {
             }
         }
-    }
-    
-    @SuppressWarnings("unchecked")
-    private Method findMethod(final Object target, final String methodName, final Class<?>... parameterTypes) throws NoSuchMethodException {
-        Class clazz = target.getClass();
-        while (null != clazz) {
-            try {
-                return clazz.getDeclaredMethod(methodName, parameterTypes);
-            } catch (NoSuchMethodException ignored) {
-            }
-            clazz = clazz.getSuperclass();
-        }
-        throw new NoSuchMethodException(String.format("Cannot find method '%s' in %s", methodName, target.getClass().getName()));
     }
 }

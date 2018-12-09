@@ -30,7 +30,7 @@ import org.antlr.v4.runtime.ParserRuleContext;
 
 /**
  * Subquery extractor.
- * 
+ *
  * @author duhongjun
  */
 public final class SubqueryExtractor implements OptionalSQLSegmentExtractor {

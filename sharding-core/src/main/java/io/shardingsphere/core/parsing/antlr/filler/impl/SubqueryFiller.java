@@ -27,7 +27,7 @@ import io.shardingsphere.core.rule.ShardingRule;
 
 /**
  * Subquery filler.
- * 
+ *
  * @author duhongjun
  */
 public final class SubqueryFiller implements SQLStatementFiller {

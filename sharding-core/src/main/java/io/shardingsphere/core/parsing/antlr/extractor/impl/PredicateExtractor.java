@@ -98,19 +98,16 @@ public final class PredicateExtractor implements OptionalSQLSegmentExtractor {
             leftOrCondition.get().getAndConditions().addAll(rightOrCondition.get().getAndConditions());
             return leftOrCondition;
         }
-        if (LogicalOperator.isAndOperator(operator)) {
-            OrConditionSegment result = new OrConditionSegment();
-            for (AndConditionSegment each : leftOrCondition.get().getAndConditions()) {
-                for (AndConditionSegment eachRightOr : rightOrCondition.get().getAndConditions()) {
-                    AndConditionSegment tempList = new AndConditionSegment();
-                    tempList.getConditions().addAll(each.getConditions());
-                    tempList.getConditions().addAll(eachRightOr.getConditions());
-                    result.getAndConditions().add(tempList);
-                }
+        OrConditionSegment result = new OrConditionSegment();
+        for (AndConditionSegment each : leftOrCondition.get().getAndConditions()) {
+            for (AndConditionSegment eachRightOr : rightOrCondition.get().getAndConditions()) {
+                AndConditionSegment tempList = new AndConditionSegment();
+                tempList.getConditions().addAll(each.getConditions());
+                tempList.getConditions().addAll(eachRightOr.getConditions());
+                result.getAndConditions().add(tempList);
             }
-            return Optional.of(result);
         }
-        return Optional.absent();
+        return Optional.of(result);
     }
     
     private Optional<OrConditionSegment> extractConditionForParen(final Map<ParserRuleContext, Integer> questionNodeIndexMap, final ParserRuleContext exprNode) {
@@ -153,10 +150,10 @@ public final class PredicateExtractor implements OptionalSQLSegmentExtractor {
         if (!comparisionNode.isPresent()) {
             return Optional.absent();
         }
-        if (3 != comparisionNode.get().getParent().getChildCount()) {
+        if (!Symbol.EQ.getLiterals().equalsIgnoreCase(comparisionNode.get().getText())) {
             return Optional.absent();
         }
-        if (!Symbol.EQ.getLiterals().equalsIgnoreCase(comparisionNode.get().getText())) {
+        if (3 != comparisionNode.get().getParent().getChildCount()) {
             return Optional.absent();
         }
         Optional<ParserRuleContext> leftNode = ExtractorUtils.findFirstChildNode((ParserRuleContext) comparisionNode.get().parent.getChild(0), RuleName.COLUMN_NAME);
@@ -185,18 +182,19 @@ public final class PredicateExtractor implements OptionalSQLSegmentExtractor {
     
     private Optional<ExpressionSegment> buildExpression(final Map<ParserRuleContext, Integer> questionNodeIndexMap, final ParserRuleContext valueNode) {
         Optional<ExpressionSegment> sqlExpression = new ExpressionExtractor().extract(valueNode);
-        if (sqlExpression.isPresent() && sqlExpression.get() instanceof CommonExpressionSegment) {
-            CommonExpressionSegment commonExpressionSegment = (CommonExpressionSegment)sqlExpression.get();
-            Optional<ParserRuleContext> expressionNode = ExtractorUtils.findFirstChildNode(valueNode, RuleName.QUESTION);
+        if (!sqlExpression.isPresent() || !(sqlExpression.get() instanceof CommonExpressionSegment)) {
+            return sqlExpression;
+        }
+        CommonExpressionSegment commonExpressionSegment = (CommonExpressionSegment) sqlExpression.get();
+        Optional<ParserRuleContext> expressionNode = ExtractorUtils.findFirstChildNode(valueNode, RuleName.QUESTION);
+        if (expressionNode.isPresent()) {
+            Integer index = questionNodeIndexMap.get(expressionNode.get());
+            commonExpressionSegment.setIndex(index);
+        } else {
+            expressionNode = ExtractorUtils.findFirstChildNode(valueNode, RuleName.NUMBER);
             if (expressionNode.isPresent()) {
-                Integer index = questionNodeIndexMap.get(expressionNode.get());
-                commonExpressionSegment.setIndex(index);
-            } else {
-                expressionNode = ExtractorUtils.findFirstChildNode(valueNode, RuleName.NUMBER);
-                if (expressionNode.isPresent()) {
-                    commonExpressionSegment.setValue(NumberUtil.getExactlyNumber(expressionNode.get().getText(), 10));
-                }
-            } 
+                commonExpressionSegment.setValue(NumberUtil.getExactlyNumber(expressionNode.get().getText(), 10));
+            }
         }
         return sqlExpression;
     }

@@ -18,26 +18,13 @@
 package io.shardingsphere.shardingproxy.frontend.common;
 
 import io.shardingsphere.core.constant.DatabaseType;
-import io.shardingsphere.core.constant.properties.ShardingProperties;
 import io.shardingsphere.shardingproxy.frontend.mysql.MySQLFrontendHandler;
-import io.shardingsphere.shardingproxy.runtime.GlobalRegistry;
-import lombok.SneakyThrows;
-import org.junit.BeforeClass;
 import org.junit.Test;
-import java.lang.reflect.Field;
-import java.util.Properties;
+
 import static org.hamcrest.CoreMatchers.instanceOf;
 import static org.junit.Assert.assertThat;
 
 public final class FrontendHandlerFactoryTest {
-    
-    @BeforeClass
-    @SneakyThrows
-    public static void beforeClass() {
-        Field field = GlobalRegistry.getInstance().getClass().getDeclaredField("shardingProperties");
-        field.setAccessible(true);
-        field.set(GlobalRegistry.getInstance(), new ShardingProperties(new Properties()));
-    }
     
     @Test
     public void assertCreateFrontendHandlerInstanceWithMySQL() {

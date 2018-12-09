@@ -24,5 +24,20 @@ package io.shardingsphere.core.constant.transaction;
  */
 public enum TransactionType {
     
-    LOCAL, XA, BASE
+    LOCAL, XA, BASE;
+    
+    /**
+     * Find transaction type by name.
+     *
+     * @param name name of transaction type
+     * @return transaction type
+     */
+    public static TransactionType find(final String name) {
+        for (TransactionType each : TransactionType.values()) {
+            if (name.equals(each.name())) {
+                return each;
+            }
+        }
+        throw new UnsupportedOperationException(String.format("Cannot find transaction type of [%s]", name));
+    }
 }

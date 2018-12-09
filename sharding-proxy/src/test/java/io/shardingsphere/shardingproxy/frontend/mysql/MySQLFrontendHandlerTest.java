@@ -25,7 +25,6 @@ import io.shardingsphere.core.constant.properties.ShardingProperties;
 import io.shardingsphere.core.constant.properties.ShardingPropertiesConstant;
 import io.shardingsphere.core.constant.transaction.TransactionType;
 import io.shardingsphere.core.rule.Authentication;
-import io.shardingsphere.shardingproxy.frontend.ShardingProxy;
 import io.shardingsphere.shardingproxy.runtime.GlobalRegistry;
 import io.shardingsphere.shardingproxy.transport.mysql.packet.generic.ErrPacket;
 import io.shardingsphere.shardingproxy.transport.mysql.packet.generic.OKPacket;
@@ -33,14 +32,15 @@ import io.shardingsphere.shardingproxy.transport.mysql.packet.handshake.Connecti
 import io.shardingsphere.shardingproxy.transport.mysql.packet.handshake.HandshakePacket;
 import lombok.SneakyThrows;
 import org.junit.Before;
-import org.junit.BeforeClass;
 import org.junit.Test;
 import org.junit.runner.RunWith;
 import org.mockito.Mock;
 import org.mockito.junit.MockitoJUnitRunner;
+
 import java.lang.reflect.Field;
 import java.util.Properties;
 import java.util.concurrent.ExecutorService;
+
 import static org.mockito.ArgumentMatchers.isA;
 import static org.mockito.Mockito.mock;
 import static org.mockito.Mockito.verify;
@@ -56,14 +56,6 @@ public final class MySQLFrontendHandlerTest {
     
     @Mock
     private ChannelHandlerContext context;
-    
-    @BeforeClass
-    @SneakyThrows
-    public static void beforeClass() {
-        Field field = GlobalRegistry.getInstance().getClass().getDeclaredField("shardingProperties");
-        field.setAccessible(true);
-        field.set(GlobalRegistry.getInstance(), new ShardingProperties(new Properties()));
-    }
     
     @Before
     @SneakyThrows

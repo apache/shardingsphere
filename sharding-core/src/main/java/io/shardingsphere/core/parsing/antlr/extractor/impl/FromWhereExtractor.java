@@ -83,11 +83,9 @@ public final class FromWhereExtractor implements OptionalSQLSegmentExtractor {
                     }
                     continue;
                 }
-                if (RuleName.TABLE_FACTOR.getName().equals(childNode.getClass().getSimpleName())) {
-                    if (fillSubquery(fromWhereSegment, childNode)) {
-                        continue;
-                    }
-                } 
+                if (RuleName.TABLE_FACTOR.getName().equals(childNode.getClass().getSimpleName()) && fillSubquery(fromWhereSegment, childNode)) {
+                    continue;
+                }
                 fillTable(fromWhereSegment, childNode, questionNodeIndexMap);
             }
         }
@@ -106,22 +104,21 @@ public final class FromWhereExtractor implements OptionalSQLSegmentExtractor {
     }
     
     private void fillTable(final FromWhereSegment fromWhereSegment, final ParserRuleContext joinOrTableFactorNode, final Map<ParserRuleContext, Integer> questionNodeIndexMap) {
-        if (RuleName.JOIN_TABLE.getName().endsWith(joinOrTableFactorNode.getClass().getSimpleName())) {
-            Optional<ParserRuleContext> joinConditionNode = ExtractorUtils.findFirstChildNode(joinOrTableFactorNode, RuleName.JOIN_CONDITION);
-            if (joinConditionNode.isPresent()) {
-                ParserRuleContext tableFactorNode = ExtractorUtils.findFirstChildNode(joinOrTableFactorNode, RuleName.TABLE_FACTOR).get();
-                Optional<TableSegment> tableSegment = tableNameExtractor.extract(tableFactorNode);
-                TableJoinSegment tableJoinResult = new TableJoinSegment(tableSegment.get());
-                Optional<OrConditionSegment> conditionResult = buildCondition(joinConditionNode.get(), questionNodeIndexMap, fromWhereSegment.getTableAliases());
-                if (conditionResult.isPresent()) {
-                    tableJoinResult.getJoinConditions().getAndConditions().addAll(conditionResult.get().getAndConditions());
-                    fromWhereSegment.getConditions().getAndConditions().addAll(conditionResult.get().getAndConditions());
-                }
-                fillTableResult(fromWhereSegment, tableJoinResult);
-            }
-        } else {
+        if (!RuleName.JOIN_TABLE.getName().endsWith(joinOrTableFactorNode.getClass().getSimpleName())) {
             Optional<TableSegment> tableSegment = tableNameExtractor.extract(joinOrTableFactorNode);
             fillTableResult(fromWhereSegment, tableSegment.get());
+        }
+        Optional<ParserRuleContext> joinConditionNode = ExtractorUtils.findFirstChildNode(joinOrTableFactorNode, RuleName.JOIN_CONDITION);
+        if (joinConditionNode.isPresent()) {
+            ParserRuleContext tableFactorNode = ExtractorUtils.findFirstChildNode(joinOrTableFactorNode, RuleName.TABLE_FACTOR).get();
+            Optional<TableSegment> tableSegment = tableNameExtractor.extract(tableFactorNode);
+            TableJoinSegment tableJoinResult = new TableJoinSegment(tableSegment.get());
+            Optional<OrConditionSegment> conditionResult = buildCondition(joinConditionNode.get(), questionNodeIndexMap, fromWhereSegment.getTableAliases());
+            if (conditionResult.isPresent()) {
+                tableJoinResult.getJoinConditions().getAndConditions().addAll(conditionResult.get().getAndConditions());
+                fromWhereSegment.getConditions().getAndConditions().addAll(conditionResult.get().getAndConditions());
+            }
+            fillTableResult(fromWhereSegment, tableJoinResult);
         }
     }
     

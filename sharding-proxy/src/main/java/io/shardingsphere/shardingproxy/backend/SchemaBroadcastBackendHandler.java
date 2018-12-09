@@ -22,6 +22,7 @@ import io.shardingsphere.shardingproxy.backend.jdbc.connection.BackendConnection
 import io.shardingsphere.shardingproxy.runtime.GlobalRegistry;
 import io.shardingsphere.shardingproxy.transport.common.packet.DatabasePacket;
 import io.shardingsphere.shardingproxy.transport.mysql.packet.command.CommandResponsePackets;
+import io.shardingsphere.shardingproxy.transport.mysql.packet.generic.ErrPacket;
 import io.shardingsphere.shardingproxy.transport.mysql.packet.generic.OKPacket;
 import lombok.RequiredArgsConstructor;
 
@@ -46,15 +47,18 @@ public final class SchemaBroadcastBackendHandler extends AbstractBackendHandler 
     
     private final DatabaseType databaseType;
     
+    private final BackendHandlerFactory backendHandlerFactory;
+    
     @Override
     protected CommandResponsePackets execute0() {
         List<DatabasePacket> packets = new LinkedList<>();
+        String originSchemaName = backendConnection.getSchemaName();
         for (String each : GlobalRegistry.getInstance().getSchemaNames()) {
             backendConnection.setCurrentSchema(each);
-            BackendHandler backendHandler = BackendHandlerFactory.newTextProtocolInstance(sequenceId, sql, backendConnection, databaseType);
-            CommandResponsePackets commandResponsePackets = backendHandler.execute();
-            packets.addAll(commandResponsePackets.getPackets());
+            CommandResponsePackets responsePackets = backendHandlerFactory.newTextProtocolInstance(sequenceId, sql, backendConnection, databaseType).execute();
+            packets.addAll(responsePackets.getPackets());
         }
+        backendConnection.setCurrentSchema(originSchemaName);
         return merge(packets);
     }
     
@@ -62,6 +66,9 @@ public final class SchemaBroadcastBackendHandler extends AbstractBackendHandler 
         int affectedRows = 0;
         long lastInsertId = 0;
         for (DatabasePacket each : packets) {
+            if (each instanceof ErrPacket) {
+                return new CommandResponsePackets(each);
+            }
             if (each instanceof OKPacket) {
                 affectedRows += ((OKPacket) each).getAffectedRows();
                 if (((OKPacket) each).getLastInsertId() > lastInsertId) {

@@ -75,9 +75,9 @@ public final class SQLParserFactory {
         lexerEngine.nextToken();
         TokenType tokenType = lexerEngine.getCurrentToken().getType();
         if (DQLStatement.isDQL(tokenType)) {
-//            if (DatabaseType.MySQL == dbType) {
-//                return new AntlrParsingEngine(dbType, sql, shardingRule, shardingTableMetaData);
-//            }
+            if (DatabaseType.MySQL == dbType) {
+                return new AntlrParsingEngine(dbType, sql, shardingRule, shardingTableMetaData);
+            }
             return getDQLParser(dbType, shardingRule, lexerEngine, shardingTableMetaData);
         }
         if (DMLStatement.isDML(tokenType)) {

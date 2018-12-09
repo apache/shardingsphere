@@ -6,6 +6,14 @@ ID:
     (BQ_?[a-zA-Z_$][a-zA-Z0-9_$]* BQ_? DOT)? (BQ_?[a-zA-Z_$][a-zA-Z0-9_$]* BQ_?)
     ;
     
+BLOCK_COMMENT
+    : SLASH ASTERISK .*? ASTERISK SLASH -> channel(HIDDEN)
+    ;
+    
+SL_COMMENT
+    : MINUS MINUS ~[\r\n]* -> channel(HIDDEN)
+    ;
+    
 schemaName
     : ID
     ;
@@ -326,7 +334,11 @@ simpleExpr
     ;
     
 functionCall
-    : ID LP_ bitExprs? RP_
+    : ID LP_ distinct? (exprs | ASTERISK)? RP_
+    ;
+    
+distinct
+    : DISTINCT
     ;
     
 intervalExpr

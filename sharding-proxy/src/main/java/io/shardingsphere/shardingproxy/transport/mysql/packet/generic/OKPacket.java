@@ -57,6 +57,10 @@ public final class OKPacket implements MySQLPacket {
         this(sequenceId, 0L, 0L, 0, "");
     }
     
+    public OKPacket(final String info) {
+        this(1, 0L, 0L, 0, info);
+    }
+    
     public OKPacket(final int sequenceId, final long affectedRows, final long lastInsertId) {
         this(sequenceId, affectedRows, lastInsertId, 0, "");
     }

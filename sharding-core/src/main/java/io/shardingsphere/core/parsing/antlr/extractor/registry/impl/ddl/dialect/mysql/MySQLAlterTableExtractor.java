@@ -20,8 +20,7 @@ package io.shardingsphere.core.parsing.antlr.extractor.registry.impl.ddl.dialect
 import io.shardingsphere.core.parsing.antlr.extractor.SQLSegmentExtractor;
 import io.shardingsphere.core.parsing.antlr.extractor.SQLStatementExtractor;
 import io.shardingsphere.core.parsing.antlr.extractor.impl.DropColumnExtractor;
-import io.shardingsphere.core.parsing.antlr.extractor.impl.DropPrimaryKeyExtractor;
-import io.shardingsphere.core.parsing.antlr.extractor.impl.PrimaryKeyForAlterTableExtractor;
+import io.shardingsphere.core.parsing.antlr.extractor.impl.OutlinePrimaryKeyExtractor;
 import io.shardingsphere.core.parsing.antlr.extractor.impl.RenameIndexExtractor;
 import io.shardingsphere.core.parsing.antlr.extractor.impl.RenameTableExtractor;
 import io.shardingsphere.core.parsing.antlr.extractor.impl.TableNamesExtractor;
@@ -29,6 +28,7 @@ import io.shardingsphere.core.parsing.antlr.extractor.impl.dialect.mysql.MySQLAd
 import io.shardingsphere.core.parsing.antlr.extractor.impl.dialect.mysql.MySQLAddIndexExtractor;
 import io.shardingsphere.core.parsing.antlr.extractor.impl.dialect.mysql.MySQLChangeColumnExtractor;
 import io.shardingsphere.core.parsing.antlr.extractor.impl.dialect.mysql.MySQLDropIndexExtractor;
+import io.shardingsphere.core.parsing.antlr.extractor.impl.dialect.mysql.MySQLDropPrimaryKeyExtractor;
 import io.shardingsphere.core.parsing.antlr.extractor.impl.dialect.mysql.MySQLModifyColumnExtractor;
 
 import java.util.Collection;
@@ -52,8 +52,8 @@ public final class MySQLAlterTableExtractor implements SQLStatementExtractor {
         EXTRACTORS.add(new MySQLAddIndexExtractor());
         EXTRACTORS.add(new MySQLDropIndexExtractor());
         EXTRACTORS.add(new RenameIndexExtractor());
-        EXTRACTORS.add(new PrimaryKeyForAlterTableExtractor());
-        EXTRACTORS.add(new DropPrimaryKeyExtractor());
+        EXTRACTORS.add(new OutlinePrimaryKeyExtractor());
+        EXTRACTORS.add(new MySQLDropPrimaryKeyExtractor());
         EXTRACTORS.add(new MySQLChangeColumnExtractor());
         EXTRACTORS.add(new MySQLModifyColumnExtractor());
     }
