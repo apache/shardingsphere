@@ -72,7 +72,7 @@ public class ComQueryBackendHandlerFactory {
         } else if (sqlStatement instanceof ShowDatabasesStatement) {
             return new ShowDatabasesBackendHandler();
         } else if (SQLType.DAL == sqlStatement.getType()) {
-            return new UnicastSchemaBackendHandler(sequenceId, sql, backendConnection);
+            return new UnicastSchemaBackendHandler(sequenceId, sql, backendConnection, BackendHandlerFactory.getInstance());
         } else {
             return BackendHandlerFactory.getInstance().newTextProtocolInstance(sequenceId, sql, backendConnection, DatabaseType.MySQL);
         }

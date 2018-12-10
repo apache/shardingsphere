@@ -39,6 +39,8 @@ public final class UnicastSchemaBackendHandler extends AbstractBackendHandler {
     
     private final BackendConnection backendConnection;
     
+    private final BackendHandlerFactory backendHandlerFactory;
+    
     private BackendHandler delegate;
     
     @Override
@@ -46,7 +48,7 @@ public final class UnicastSchemaBackendHandler extends AbstractBackendHandler {
         if (null == backendConnection.getSchemaName()) {
             backendConnection.setCurrentSchema(GlobalRegistry.getInstance().getSchemaNames().iterator().next());
         }
-        delegate = BackendHandlerFactory.getInstance().newTextProtocolInstance(sequenceId, sql, backendConnection, DatabaseType.MySQL);
+        delegate = backendHandlerFactory.newTextProtocolInstance(sequenceId, sql, backendConnection, DatabaseType.MySQL);
         return delegate.execute();
     }
     
