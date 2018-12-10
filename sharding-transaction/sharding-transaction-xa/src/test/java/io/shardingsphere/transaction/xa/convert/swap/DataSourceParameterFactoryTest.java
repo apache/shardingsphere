@@ -26,6 +26,7 @@ import org.junit.Test;
 import javax.sql.DataSource;
 
 import static org.hamcrest.CoreMatchers.is;
+import static org.junit.Assert.assertNotNull;
 import static org.junit.Assert.assertThat;
 import static org.mockito.Mockito.mock;
 
@@ -57,10 +58,11 @@ public class DataSourceParameterFactoryTest {
         assertThatParameter(parameter);
     }
     
-    @Test(expected = UnsupportedOperationException.class)
+    @Test
     public void assertBuildParameterFromUnsupportedDataSource() {
         DataSource dataSource = mock(DataSource.class);
-        DataSourceParameterFactory.build(dataSource);
+        DataSourceParameter actual = DataSourceParameterFactory.build(dataSource);
+        assertNotNull(actual);
     }
     
     private void assertThatParameter(final DataSourceParameter parameter) {

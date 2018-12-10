@@ -17,7 +17,6 @@
 
 package io.shardingsphere.transaction.xa.convert.swap;
 
-import com.google.common.base.Optional;
 import io.shardingsphere.core.constant.PoolType;
 import io.shardingsphere.core.rule.DataSourceParameter;
 import lombok.AccessLevel;
@@ -40,11 +39,7 @@ public class DataSourceParameterFactory {
      * @return datasource parameter
      */
     public static DataSourceParameter build(final DataSource dataSource) {
-        Optional<PoolType> poolType = PoolType.find(dataSource.getClass().getName());
-        if (!poolType.isPresent()) {
-            return new DefaultDataSourceSwapper(dataSource).swap();
-        }
-        switch (poolType.get()) {
+        switch (PoolType.find(dataSource.getClass().getName())) {
             case DRUID:
                 return new DruidParameterSwapper(dataSource).swap();
             case DBCP2:
@@ -53,7 +48,7 @@ public class DataSourceParameterFactory {
             case HIKARI:
                 return new HikariParameterSwapper(dataSource).swap();
             default:
-                return new DataSourceParameter();
+                return new DefaultDataSourceSwapper(dataSource).swap();
         }
     }
 }

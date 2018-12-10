@@ -17,7 +17,6 @@
 
 package io.shardingsphere.core.constant;
 
-import com.google.common.base.Optional;
 import lombok.RequiredArgsConstructor;
 
 /**
@@ -31,7 +30,8 @@ public enum PoolType {
     HIKARI("com.zaxxer.hikari.HikariDataSource"),
     DRUID("com.alibaba.druid.pool.DruidDataSource"),
     DBCP2("org.apache.commons.dbcp2.BasicDataSource"),
-    DBCP2_TOMCAT("org.apache.tomcat.dbcp.dbcp2.BasicDataSource");
+    DBCP2_TOMCAT("org.apache.tomcat.dbcp.dbcp2.BasicDataSource"),
+    UNKNOWN("");
     
     private final String className;
     
@@ -41,13 +41,13 @@ public enum PoolType {
      * @param className class name
      * @return pool type
      */
-    public static Optional<PoolType> find(final String className) {
+    public static PoolType find(final String className) {
         for (PoolType each : PoolType.values()) {
             if (className.equals(each.className)) {
-                return Optional.of(each);
+                return each;
             }
         }
-        return Optional.absent();
+        return UNKNOWN;
     }
 }
 
