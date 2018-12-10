@@ -44,9 +44,9 @@ public final class AtomikosDataSourceBeanWrapper implements XADataSourceWrapper 
         AtomikosDataSourceBean result = new AtomikosDataSourceBean();
         result.setUniqueResourceName(dataSourceName);
         result.setMaxPoolSize(parameter.getMaximumPoolSize());
-        result.setMaxIdleTime((int) parameter.getIdleTimeout());
-        result.setBorrowConnectionTimeout((int) parameter.getConnectionTimeout());
-        result.setMaxLifetime((int) parameter.getMaxLifetime());
+        result.setMaxIdleTime((int) parameter.getIdleTimeout() / 1000);
+        result.setBorrowConnectionTimeout((int) parameter.getConnectionTimeout() / 1000);
+        result.setMaxLifetime((int) parameter.getMaxLifetime() / 1000);
         result.setTestQuery("SELECT 1");
         result.setXaDataSourceClassName(xaDataSource.getClass().getName());
         Properties xaProperties = XAPropertyFactory.build(XADatabaseType.find(xaDataSource.getClass().getName()), parameter);
