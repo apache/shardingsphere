@@ -101,7 +101,7 @@ public final class DefaultKeyGenerator implements KeyGenerator {
                 currentMillis = waitUntilNextTime(currentMillis);
             }
         } else {
-            sequence = 0;
+            sequence = (long) (Math.random() * 10);// 序列开始改为随机数，方便分片;
         }
         lastTime = currentMillis;
         return ((currentMillis - EPOCH) << TIMESTAMP_LEFT_SHIFT_BITS) | (workerId << WORKER_ID_LEFT_SHIFT_BITS) | sequence;
