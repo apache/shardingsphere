@@ -19,6 +19,8 @@ package io.shardingsphere.orchestration.yaml;
 
 import io.shardingsphere.api.config.MasterSlaveRuleConfiguration;
 import io.shardingsphere.api.config.ShardingRuleConfiguration;
+import io.shardingsphere.api.config.TableRuleConfiguration;
+import io.shardingsphere.api.config.strategy.InlineShardingStrategyConfiguration;
 import io.shardingsphere.core.config.DataSourceConfiguration;
 import io.shardingsphere.core.rule.Authentication;
 import io.shardingsphere.core.rule.DataSourceParameter;
@@ -100,23 +102,34 @@ public class ConfigurationYamlConverterTest {
     
     @Test
     public void assertDumpDataSourceConfigurations() {
-        String actual = ConfigurationYamlConverter.dumpDataSourceConfigurations(getDataSourceConfigurations());
+        String actual = ConfigurationYamlConverter.dumpDataSourceConfigurations(createDataSourceConfigurations());
         assertTrue(actual.contains("jdbc:h2:mem:test;DB_CLOSE_DELAY=-1;DATABASE_TO_UPPER=false;MODE=MySQL"));
     }
     
-    private Map<String, DataSourceConfiguration> getDataSourceConfigurations() {
+    private Map<String, DataSourceConfiguration> createDataSourceConfigurations() {
         Map<String, Object> properties = new HashMap<>();
         properties.put("driverClassName", "org.h2.Driver");
         properties.put("jdbcUrl", "jdbc:h2:mem:test;DB_CLOSE_DELAY=-1;DATABASE_TO_UPPER=false;MODE=MySQL");
         properties.put("username", "root");
         properties.put("password", "root");
-        DataSourceConfiguration dataSourceConfig = new DataSourceConfiguration(DataSourceParameter.DATA_SOURCE_POOL_CLASS_NAME);
-        dataSourceConfig.getProperties().putAll(properties);
-        return Collections.singletonMap("test", dataSourceConfig);
+        DataSourceConfiguration result = new DataSourceConfiguration(DataSourceParameter.DATA_SOURCE_POOL_CLASS_NAME);
+        result.getProperties().putAll(properties);
+        return Collections.singletonMap("test", result);
     }
     
     @Test
     public void assertDumpShardingRuleConfiguration() {
+    }
+    
+    private ShardingRuleConfiguration createShardingRuleConfiguration() {
+        ShardingRuleConfiguration result = new ShardingRuleConfiguration();
+        TableRuleConfiguration tableRuleConfig = new TableRuleConfiguration();
+        tableRuleConfig.setLogicTable("t_order");
+        tableRuleConfig.setActualDataNodes("ds_${0..1}.t_order_${0..1}");
+        result.getTableRuleConfigs().add(tableRuleConfig);
+        result.setDefaultDatabaseShardingStrategyConfig(new InlineShardingStrategyConfiguration("user_id", "ds_${user_id % 2}"));
+        result.setDefaultTableShardingStrategyConfig(new InlineShardingStrategyConfiguration("order_id", "t_order_${order_id % 2}"));
+        return result;
     }
     
     @Test
