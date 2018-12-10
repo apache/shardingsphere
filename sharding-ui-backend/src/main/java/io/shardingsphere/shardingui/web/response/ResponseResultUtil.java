@@ -17,31 +17,38 @@
 
 package io.shardingsphere.shardingui.web.response;
 
-import lombok.AllArgsConstructor;
-import lombok.Getter;
+import lombok.AccessLevel;
 import lombok.NoArgsConstructor;
-import lombok.Setter;
-
-import java.io.Serializable;
 
 /**
- * Restful Response result.
- * 
+ * Response result utility.
+ *
  * @author chenqingyang
  */
-@Getter
-@Setter
-@NoArgsConstructor
-@AllArgsConstructor
-public final class ResponseResult<T> implements Serializable {
+@NoArgsConstructor(access = AccessLevel.PRIVATE)
+public final class ResponseResultUtil {
     
-    private static final long serialVersionUID = 8144393142115317354L;
+    /**
+     * Build the successful response without data model.
+     *
+     * @return response result
+     */
+    public static ResponseResult success() {
+        return build(null);
+    }
     
-    private boolean success = true;
+    /**
+     * Build the successful response with data model.
+     *
+     * @param model data model
+     * @param <T> data model type
+     * @return response result
+     */
+    public static <T> ResponseResult<T> build(final T model) {
+        ResponseResult<T> t = new ResponseResult<>();
+        t.setSuccess(true);
+        t.setModel(model);
+        return t;
+    }
     
-    private int errorCode;
-    
-    private String errorMsg;
-    
-    private T model;
 }

@@ -60,9 +60,9 @@ public interface RegistryCenterConfigService {
     /**
      * Set activated registry center config.
      *
-     * @param config registry center config
+     * @param name registry center config name
      */
-    void setActivated(RegistryCenterConfig config);
+    void setActivated(String name);
     
     /**
      * Load all registry center configs.
