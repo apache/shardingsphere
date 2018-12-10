@@ -42,24 +42,33 @@ public final class BasicManageDataSourceWrapper implements XADataSourceWrapper {
     
     private final TransactionManager transactionManager;
     
+    private final BasicManagedDataSource delegate = new BasicManagedDataSource();
+    
     @Override
     public DataSource wrap(final XADataSource xaDataSource, final String dataSourceName, final DataSourceParameter parameter) throws PropertyException {
-        return createBasicManagedDataSource(xaDataSource, dataSourceName, parameter);
+        setBasicManagedDataSource(xaDataSource, dataSourceName, parameter);
+        return delegate;
     }
     
-    private BasicManagedDataSource createBasicManagedDataSource(final XADataSource xaDataSource, final String dataSourceName, final DataSourceParameter parameter) throws PropertyException {
-        BasicManagedDataSource result = new BasicManagedDataSource();
-        result.setTransactionManager(transactionManager);
-        result.setMaxTotal(parameter.getMaximumPoolSize());
-        result.setMaxWaitMillis(parameter.getConnectionTimeout());
-        result.setMaxIdle((int) parameter.getIdleTimeout());
-        result.setMaxConnLifetimeMillis(parameter.getMaxLifetime());
-        result.setXADataSource(xaDataSource.getClass().getName());
+    private void setBasicManagedDataSource(final XADataSource xaDataSource, final String dataSourceName, final DataSourceParameter parameter) throws PropertyException {
+        setPoolProperties(parameter);
+        setXAProperties(xaDataSource, parameter);
+        registerRecoveryResource(dataSourceName, xaDataSource);
+    }
+    
+    private void setPoolProperties(final DataSourceParameter parameter) {
+        delegate.setMaxTotal(parameter.getMaximumPoolSize());
+        delegate.setMaxWaitMillis(parameter.getConnectionTimeout());
+        delegate.setMinEvictableIdleTimeMillis(parameter.getIdleTimeout());
+        delegate.setMaxConnLifetimeMillis(parameter.getMaxLifetime());
+    }
+    
+    private void setXAProperties(final XADataSource xaDataSource, final DataSourceParameter parameter) throws PropertyException {
+        delegate.setTransactionManager(transactionManager);
+        delegate.setXADataSource(xaDataSource.getClass().getName());
         Properties xaProperties = XAPropertyFactory.build(XADatabaseType.find(xaDataSource.getClass().getName()), parameter);
         PropertyUtils.setProperties(xaDataSource, xaProperties);
-        result.setXaDataSourceInstance(xaDataSource);
-        registerRecoveryResource(dataSourceName, xaDataSource);
-        return result;
+        delegate.setXaDataSourceInstance(xaDataSource);
     }
     
     private void registerRecoveryResource(final String dataSourceName, final XADataSource xaDataSource) {

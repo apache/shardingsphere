@@ -63,5 +63,4 @@ public final class AtomikosDataSourceBeanWrapper implements XADataSourceWrapper 
         PropertyUtils.setProperties(xaDataSource, xaProperties);
         delegate.setXaDataSource(xaDataSource);
     }
-    
 }
