@@ -42,7 +42,7 @@ table_reference ([INNER] | {LEFT|RIGHT} [OUTER]) JOIN table_factor [JOIN ON cond
 
 Cannot support brackets redundancy, CASE WHEN, HAVING, UNION (ALL), can support subquery limited.
 
-Sharding-Sphere supports subquery similar with paging subquery ([Pagination]((/features/sharding/usage-standard/pagination)). No matter how many layers in a subquery, Sharding-Sphere can always find the first subquery that contains the table data, once the sub-subquery containing table data is found in the lower nest, Sharding-Sphere will throw an exception.
+Sharding-Sphere supports subquery similar with paging subquery ([Pagination]((/features/sharding/use-norms/pagination)). No matter how many layers in a subquery, Sharding-Sphere can always find the first subquery that contains the table data, once the sub-subquery containing table data is found in the lower nest, Sharding-Sphere will throw an exception.
 
 For example, the following subquery is ok: 
 
