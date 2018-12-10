@@ -47,9 +47,8 @@ public interface RegistryCenterConfigService {
      * Add registry center config.
      *
      * @param config registry center config
-     * @return whether add successful
      */
-    boolean add(RegistryCenterConfig config);
+    void add(RegistryCenterConfig config);
     
     /**
      * Delete registry center config.
@@ -60,7 +59,7 @@ public interface RegistryCenterConfigService {
     
     /**
      * Set activated registry center config.
-     * 
+     *
      * @param config registry center config
      */
     void setActivated(RegistryCenterConfig config);

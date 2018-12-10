@@ -18,9 +18,10 @@
 package io.shardingsphere.shardingui.common.domain;
 
 import lombok.Getter;
+import lombok.Setter;
 
-import java.util.LinkedHashSet;
-import java.util.Set;
+import java.util.ArrayList;
+import java.util.List;
 
 /**
  * Registry center configs.
@@ -28,7 +29,8 @@ import java.util.Set;
  * @author chenqingyang
  */
 @Getter
+@Setter
 public class RegistryCenterConfigs {
     
-    private Set<RegistryCenterConfig> registryCenterConfigs = new LinkedHashSet<>();
+    private List<RegistryCenterConfig> registryCenterConfigs = new ArrayList<>();
 }

@@ -24,9 +24,10 @@ import org.springframework.stereotype.Repository;
 import org.yaml.snakeyaml.Yaml;
 import org.yaml.snakeyaml.constructor.Constructor;
 
+import java.io.BufferedOutputStream;
 import java.io.File;
 import java.io.FileInputStream;
-import java.io.FileWriter;
+import java.io.FileOutputStream;
 import java.io.IOException;
 import java.io.InputStreamReader;
 
@@ -62,8 +63,9 @@ public final class YamlRegistryCenterConfigsRepositoryImpl implements RegistryCe
     @Override
     public void save(final RegistryCenterConfigs registryCenterConfigs) {
         Yaml yaml = new Yaml();
-        try (FileWriter fileWriter = new FileWriter(file)) {
-            yaml.dump(registryCenterConfigs, fileWriter);
+        try (BufferedOutputStream bufferedOutputStream = new BufferedOutputStream(new FileOutputStream(file))) {
+            bufferedOutputStream.write(yaml.dumpAsMap(registryCenterConfigs).getBytes());
+            bufferedOutputStream.flush();
         } catch (IOException e) {
             throw new ShardingUIException(e);
         }

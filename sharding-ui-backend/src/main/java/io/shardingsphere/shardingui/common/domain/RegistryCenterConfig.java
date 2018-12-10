@@ -17,15 +17,17 @@
 
 package io.shardingsphere.shardingui.common.domain;
 
-import lombok.Data;
+import lombok.Getter;
+import lombok.Setter;
 
 /**
  * Registry center config.
- * 
+ *
  * @author chenqingyang
  */
-@Data
-public final class RegistryCenterConfig {
+@Getter
+@Setter
+public class RegistryCenterConfig {
     
     private String name;
     
