@@ -33,5 +33,7 @@ public final class HikariParameterSwapper extends DataSourceSwapperAdapter {
     @Override
     protected void convertProperties() {
         getUpdater().transfer("jdbcUrl", "url");
+        getUpdater().transfer("maxPoolSize", "maximumPoolSize");
+        getUpdater().transfer("minIdle", "minimumPoolSize");
     }
 }

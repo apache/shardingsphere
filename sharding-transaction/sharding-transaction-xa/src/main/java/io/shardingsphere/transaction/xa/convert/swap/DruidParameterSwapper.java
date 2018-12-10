@@ -33,10 +33,9 @@ public final class DruidParameterSwapper extends DataSourceSwapperAdapter {
     @Override
     protected void convertProperties() {
         getUpdater().transfer("maxActive", "maximumPoolSize");
-        // TODO need to be researched for maxIdle
-        getUpdater().transfer("maxIdle", "idleTimeout");
+        getUpdater().transfer("minIdle", "minimumPoolSize");
         getUpdater().transfer("maxWait", "connectionTimeout");
-        // TODO need to be researched for minEvictableIdleTimeMillis
-        getUpdater().transfer("minEvictableIdleTimeMillis", "maxLifetime");
+        getUpdater().transfer("minEvictableIdleTimeMillis", "idleTimeout");
+        getUpdater().transfer("timeBetweenEvictionRunsMillis", "maintenanceInterval");
     }
 }

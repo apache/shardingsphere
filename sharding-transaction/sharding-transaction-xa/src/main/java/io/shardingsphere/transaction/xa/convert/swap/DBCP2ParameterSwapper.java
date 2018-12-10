@@ -35,9 +35,11 @@ public final class DBCP2ParameterSwapper extends DataSourceSwapperAdapter {
     @Override
     protected void convertProperties() {
         getUpdater().transfer("maxTotal", "maximumPoolSize");
-        getUpdater().transfer("maxIdle", "idleTimeout");
+        getUpdater().transfer("minIdle", "minimumPoolSize");
+        getUpdater().transfer("minEvictableIdleTimeMillis", "idleTimeout");
         getUpdater().transfer("maxWaitMillis", "connectionTimeout");
         getUpdater().transfer("maxConnLifetimeMillis", "maxLifetime");
+        getUpdater().transfer("timeBetweenEvictionRunsMillis", "maintenanceInterval");
         getUpdater().getDelegateMap().put("proxyDatasourceType", ProxyPoolType.TOMCAT_DBCP2);
     }
 }

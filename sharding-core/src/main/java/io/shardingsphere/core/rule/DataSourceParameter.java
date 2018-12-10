@@ -38,7 +38,7 @@ public final class DataSourceParameter {
     
     private static final long DEFAULT_MAINTENANCE_INTERVAL = 60 * 1000;
     
-    private static final long DEFAULT_MAX_LIFE_TIME_MILLIS = 30 * 60 * 1000;
+    private static final long DEFAULT_MAX_LIFE_TIME_MILLIS = 0;
     
     private static final int DEFAULT_MAX_POOL_SIZE = 50;
     
@@ -65,5 +65,4 @@ public final class DataSourceParameter {
     private int minimumPoolSize = DEFAULT_MIN_POOL_SIZE;
     
     private long maintenanceInterval = DEFAULT_MAINTENANCE_INTERVAL;
-    
 }
