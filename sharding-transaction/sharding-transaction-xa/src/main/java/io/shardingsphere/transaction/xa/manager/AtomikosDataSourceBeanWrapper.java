@@ -35,24 +35,33 @@ import java.util.Properties;
  */
 public final class AtomikosDataSourceBeanWrapper implements XADataSourceWrapper {
     
+    private final AtomikosDataSourceBean delegate = new AtomikosDataSourceBean();
+    
     @Override
     public DataSource wrap(final XADataSource xaDataSource, final String dataSourceName, final DataSourceParameter parameter) throws PropertyException {
-        return createAtomikosDatasourceBean(xaDataSource, dataSourceName, parameter);
+        setAtomikosDatasourceBean(xaDataSource, dataSourceName, parameter);
+        return delegate;
     }
     
-    private AtomikosDataSourceBean createAtomikosDatasourceBean(final XADataSource xaDataSource, final String dataSourceName, final DataSourceParameter parameter) throws PropertyException {
-        AtomikosDataSourceBean result = new AtomikosDataSourceBean();
-        result.setUniqueResourceName(dataSourceName);
-        result.setMaxPoolSize(parameter.getMaximumPoolSize());
-        result.setMaxIdleTime((int) parameter.getIdleTimeout() / 1000);
-        result.setBorrowConnectionTimeout((int) parameter.getConnectionTimeout() / 1000);
-        result.setMaxLifetime((int) parameter.getMaxLifetime() / 1000);
-        result.setTestQuery("SELECT 1");
-        result.setXaDataSourceClassName(xaDataSource.getClass().getName());
+    private void setAtomikosDatasourceBean(final XADataSource xaDataSource, final String dataSourceName, final DataSourceParameter parameter) throws PropertyException {
+        setPoolProperties(parameter);
+        setXAProperties(xaDataSource, dataSourceName, parameter);
+    }
+    
+    private void setPoolProperties(final DataSourceParameter parameter) {
+        delegate.setMaxPoolSize(parameter.getMaximumPoolSize());
+        delegate.setMaxIdleTime((int) parameter.getIdleTimeout() / 1000);
+        delegate.setBorrowConnectionTimeout((int) parameter.getConnectionTimeout() / 1000);
+        delegate.setMaxLifetime((int) parameter.getMaxLifetime() / 1000);
+        delegate.setTestQuery("SELECT 1");
+    }
+    
+    private void setXAProperties(final XADataSource xaDataSource, final String dataSourceName, final DataSourceParameter parameter) throws PropertyException {
+        delegate.setXaDataSourceClassName(xaDataSource.getClass().getName());
+        delegate.setUniqueResourceName(dataSourceName);
         Properties xaProperties = XAPropertyFactory.build(XADatabaseType.find(xaDataSource.getClass().getName()), parameter);
         PropertyUtils.setProperties(xaDataSource, xaProperties);
-        result.setXaDataSource(xaDataSource);
-        result.setXaProperties(xaProperties);
-        return result;
+        delegate.setXaDataSource(xaDataSource);
     }
+    
 }
