@@ -15,7 +15,7 @@
  * </p>
  */
 
-package io.shardingsphere.transaction.xa.convert.extractor;
+package io.shardingsphere.transaction.xa.convert.swap;
 
 import com.google.common.base.Optional;
 import io.shardingsphere.core.constant.PoolType;

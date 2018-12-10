@@ -15,23 +15,28 @@
  * </p>
  */
 
-package io.shardingsphere.transaction.xa.convert.extractor;
+package io.shardingsphere.transaction.xa.convert.swap;
 
 import javax.sql.DataSource;
 
 /**
- * Hikari datasource parameter swapper.
+ * Druid parameter swapper.
  *
  * @author zhaojun
  */
-public final class HikariParameterSwapper extends DataSourceSwapperAdapter {
+public final class DruidParameterSwapper extends DataSourceSwapperAdapter {
     
-    HikariParameterSwapper(final DataSource dataSource) {
+    DruidParameterSwapper(final DataSource dataSource) {
         super(dataSource);
     }
     
     @Override
     protected void convertProperties() {
-        getUpdater().transfer("jdbcUrl", "url");
+        getUpdater().transfer("maxActive", "maximumPoolSize");
+        // TODO need to be researched for maxIdle
+        getUpdater().transfer("maxIdle", "idleTimeout");
+        getUpdater().transfer("maxWait", "connectionTimeout");
+        // TODO need to be researched for minEvictableIdleTimeMillis
+        getUpdater().transfer("minEvictableIdleTimeMillis", "maxLifetime");
     }
 }

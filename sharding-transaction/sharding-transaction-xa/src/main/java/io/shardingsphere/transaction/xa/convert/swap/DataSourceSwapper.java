@@ -15,22 +15,22 @@
  * </p>
  */
 
-package io.shardingsphere.transaction.xa.convert.extractor;
+package io.shardingsphere.transaction.xa.convert.swap;
 
-import javax.sql.DataSource;
+import io.shardingsphere.core.rule.DataSourceParameter;
 
 /**
- * Default data source parameter swapper.
+ * Pick up property from datasource then swap to datasource parameter.
  *
  * @author zhaojun
  */
-public class DefaultDataSourceSwapper extends DataSourceSwapperAdapter {
+public interface DataSourceSwapper {
     
-    DefaultDataSourceSwapper(final DataSource dataSource) {
-        super(dataSource);
-    }
-    
-    @Override
-    protected void convertProperties() {
-    }
+    /**
+     * Pick up property from datasource then swap to datasource parameter.
+     *
+     * @return dataSource parameter
+     */
+    DataSourceParameter swap();
 }
+
