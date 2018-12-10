@@ -19,7 +19,6 @@ package io.shardingsphere.shardingproxy.transport.mysql.packet.command.query.tex
 
 import com.google.common.base.Optional;
 import io.shardingsphere.core.constant.ShardingConstant;
-import io.shardingsphere.core.constant.properties.ShardingProperties;
 import io.shardingsphere.core.constant.transaction.TransactionType;
 import io.shardingsphere.core.event.transaction.ShardingTransactionEvent;
 import io.shardingsphere.shardingproxy.backend.BackendHandler;
@@ -27,7 +26,6 @@ import io.shardingsphere.shardingproxy.backend.ResultPacket;
 import io.shardingsphere.shardingproxy.backend.jdbc.connection.BackendConnection;
 import io.shardingsphere.shardingproxy.backend.jdbc.connection.ConnectionStatus;
 import io.shardingsphere.shardingproxy.backend.jdbc.datasource.JDBCBackendDataSource;
-import io.shardingsphere.shardingproxy.frontend.common.FrontendHandler;
 import io.shardingsphere.shardingproxy.runtime.GlobalRegistry;
 import io.shardingsphere.shardingproxy.runtime.schema.ShardingSchema;
 import io.shardingsphere.shardingproxy.transport.common.packet.DatabasePacket;
@@ -54,7 +52,6 @@ import java.sql.SQLException;
 import java.util.Collections;
 import java.util.HashMap;
 import java.util.Map;
-import java.util.Properties;
 
 import static org.hamcrest.CoreMatchers.instanceOf;
 import static org.hamcrest.CoreMatchers.is;
@@ -73,12 +70,8 @@ public final class ComQueryPacketTest {
     
     private BackendConnection backendConnection = new BackendConnection(TransactionType.LOCAL);
     
-    @Mock
-    private FrontendHandler frontendHandler;
-    
     @BeforeClass
     public static void init() {
-        setGlobalRegistry();
         ShardingTransactionHandlerRegistry.load();
     }
     
@@ -105,17 +98,6 @@ public final class ComQueryPacketTest {
         field.set(GlobalRegistry.getInstance(), shardingSchemas);
     }
     
-//    private void setFrontendHandlerSchema() {
-//        when(frontendHandler.getCurrentSchema()).thenReturn(ShardingConstant.LOGIC_SCHEMA_NAME);
-//    }
-    
-    @SneakyThrows
-    private static void setGlobalRegistry() {
-        Field field = GlobalRegistry.getInstance().getClass().getDeclaredField("shardingProperties");
-        field.setAccessible(true);
-        field.set(GlobalRegistry.getInstance(), new ShardingProperties(new Properties()));
-    }
-    
     @Test
     public void assertWrite() {
         ComQueryPacket actual = new ComQueryPacket(1, "SELECT id FROM tbl");
@@ -128,15 +110,9 @@ public final class ComQueryPacketTest {
     @Test
     public void assertExecuteWithoutTransaction() throws SQLException {
         when(payload.readStringEOF()).thenReturn("SELECT id FROM tbl");
-        BackendHandler backendHandler = mock(BackendHandler.class);
-        when(backendHandler.next()).thenReturn(true, false);
-        when(backendHandler.getResultValue()).thenReturn(new ResultPacket(1, Collections.<Object>singletonList("id"), 1, Collections.singletonList(ColumnType.MYSQL_TYPE_VARCHAR)));
+        ComQueryPacket packet = new ComQueryPacket(1, payload, backendConnection);
         FieldCountPacket expectedFieldCountPacket = new FieldCountPacket(1, 1);
-        when(backendHandler.execute()).thenReturn(new CommandResponsePackets(expectedFieldCountPacket));
-        when(backendHandler.next()).thenReturn(true, false);
-        when(backendHandler.getResultValue()).thenReturn(new ResultPacket(2, Collections.<Object>singletonList(99999L), 1, Collections.singletonList(ColumnType.MYSQL_TYPE_LONG)));
-        ComQueryPacket packet = new ComQueryPacket(1, 1000, payload, backendConnection, frontendHandler);
-        setBackendHandler(packet, backendHandler);
+        setBackendHandler(packet, expectedFieldCountPacket);
         Optional<CommandResponsePackets> actual = packet.execute();
         assertTrue(actual.isPresent());
         assertThat(actual.get().getPackets().size(), is(1));
@@ -148,7 +124,13 @@ public final class ComQueryPacketTest {
     }
     
     @SneakyThrows
-    private void setBackendHandler(final ComQueryPacket packet, final BackendHandler backendHandler) {
+    private void setBackendHandler(final ComQueryPacket packet, final FieldCountPacket expectedFieldCountPacket) {
+        BackendHandler backendHandler = mock(BackendHandler.class);
+        when(backendHandler.next()).thenReturn(true, false);
+        when(backendHandler.getResultValue()).thenReturn(new ResultPacket(1, Collections.<Object>singletonList("id"), 1, Collections.singletonList(ColumnType.MYSQL_TYPE_VARCHAR)));
+        when(backendHandler.execute()).thenReturn(new CommandResponsePackets(expectedFieldCountPacket));
+        when(backendHandler.next()).thenReturn(true, false);
+        when(backendHandler.getResultValue()).thenReturn(new ResultPacket(2, Collections.<Object>singletonList(99999L), 1, Collections.singletonList(ColumnType.MYSQL_TYPE_LONG)));
         Field field = ComQueryPacket.class.getDeclaredField("backendHandler");
         field.setAccessible(true);
         field.set(packet, backendHandler);
@@ -157,7 +139,7 @@ public final class ComQueryPacketTest {
     @Test
     public void assertExecuteTCLWithLocalTransaction() {
         when(payload.readStringEOF()).thenReturn("COMMIT");
-        ComQueryPacket packet = new ComQueryPacket(1, 1000, payload, backendConnection, frontendHandler);
+        ComQueryPacket packet = new ComQueryPacket(1, payload, backendConnection);
         backendConnection.getStateHandler().getAndSetStatus(ConnectionStatus.TRANSACTION);
         Optional<CommandResponsePackets> actual = packet.execute();
         assertTrue(actual.isPresent());
@@ -168,7 +150,7 @@ public final class ComQueryPacketTest {
     public void assertExecuteTCLWithXATransaction() {
         backendConnection.setTransactionType(TransactionType.XA);
         when(payload.readStringEOF()).thenReturn("ROLLBACK");
-        ComQueryPacket packet = new ComQueryPacket(1, 1000, payload, backendConnection, frontendHandler);
+        ComQueryPacket packet = new ComQueryPacket(1, payload, backendConnection);
         backendConnection.getStateHandler().getAndSetStatus(ConnectionStatus.TRANSACTION);
         Optional<CommandResponsePackets> actual = packet.execute();
         assertTrue(actual.isPresent());
@@ -180,7 +162,7 @@ public final class ComQueryPacketTest {
     public void assertExecuteRollbackWithXATransaction() {
         backendConnection.setTransactionType(TransactionType.XA);
         when(payload.readStringEOF()).thenReturn("COMMIT");
-        ComQueryPacket packet = new ComQueryPacket(1, 1000, payload, backendConnection, frontendHandler);
+        ComQueryPacket packet = new ComQueryPacket(1, payload, backendConnection);
         backendConnection.getStateHandler().getAndSetStatus(ConnectionStatus.TRANSACTION);
         Optional<CommandResponsePackets> actual = packet.execute();
         assertTrue(actual.isPresent());

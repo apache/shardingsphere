@@ -43,4 +43,18 @@ public final class FieldUtil {
         field.setAccessible(true);
         field.set(target, fieldValue);
     }
+    
+    /**
+     * Get field value.
+     * 
+     * @param target target to be getter
+     * @param fieldName field name to be getter
+     * @return field value
+     */
+    @SneakyThrows
+    public static Object getFieldValue(final Object target, final String fieldName) {
+        Field field = target.getClass().getDeclaredField(fieldName);
+        field.setAccessible(true);
+        return field.get(target);
+    }
 }

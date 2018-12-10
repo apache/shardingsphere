@@ -20,8 +20,8 @@ package io.shardingsphere.core.executor;
 import com.google.common.collect.Lists;
 import com.google.common.util.concurrent.ListenableFuture;
 import com.google.common.util.concurrent.ListeningExecutorService;
-import com.google.common.util.concurrent.MoreExecutors;
 import io.shardingsphere.core.exception.ShardingException;
+import io.shardingsphere.core.util.ShardingExecutorService;
 import java.sql.SQLException;
 import java.util.ArrayList;
 import java.util.Collection;
@@ -32,9 +32,6 @@ import java.util.List;
 import java.util.Map;
 import java.util.concurrent.Callable;
 import java.util.concurrent.ExecutionException;
-import java.util.concurrent.ExecutorService;
-import java.util.concurrent.Executors;
-import java.util.concurrent.TimeUnit;
 
 /**
  * Sharding execute engine.
@@ -43,14 +40,13 @@ import java.util.concurrent.TimeUnit;
  */
 public final class ShardingExecuteEngine implements AutoCloseable {
     
-    private static final ExecutorService SHUTDOWN_EXECUTOR = Executors.newSingleThreadExecutor(ShardingThreadFactoryBuilder.build("Executor-Engine-Closer"));
+    private final ShardingExecutorService shardingExecutorService;
     
-    private final ListeningExecutorService executorService;
+    private ListeningExecutorService executorService;
     
     public ShardingExecuteEngine(final int executorSize) {
-        executorService = MoreExecutors.listeningDecorator(
-                0 == executorSize ? Executors.newCachedThreadPool(ShardingThreadFactoryBuilder.build()) : Executors.newFixedThreadPool(executorSize, ShardingThreadFactoryBuilder.build()));
-        MoreExecutors.addDelayedShutdownHook(executorService, 60, TimeUnit.SECONDS);
+        shardingExecutorService = new ShardingExecutorService(executorSize);
+        executorService = shardingExecutorService.getExecutorService();
     }
     
     /**
@@ -201,19 +197,6 @@ public final class ShardingExecuteEngine implements AutoCloseable {
     
     @Override
     public void close() {
-        SHUTDOWN_EXECUTOR.execute(new Runnable() {
-            
-            @Override
-            public void run() {
-                try {
-                    executorService.shutdown();
-                    while (!executorService.awaitTermination(5, TimeUnit.SECONDS)) {
-                        executorService.shutdownNow();
-                    }
-                } catch (final InterruptedException ex) {
-                    Thread.currentThread().interrupt();
-                }
-            }
-        });
+        shardingExecutorService.close();
     }
 }

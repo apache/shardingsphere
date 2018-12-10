@@ -22,10 +22,10 @@ import io.shardingsphere.api.ConfigMapContext;
 import io.shardingsphere.api.config.SagaConfiguration;
 import io.shardingsphere.core.constant.transaction.TransactionType;
 import io.shardingsphere.core.rule.ShardingRule;
+import io.shardingsphere.core.transaction.TransactionTypeHolder;
 import io.shardingsphere.shardingjdbc.jdbc.adapter.AbstractDataSourceAdapter;
 import io.shardingsphere.shardingjdbc.jdbc.core.ShardingContext;
 import io.shardingsphere.shardingjdbc.jdbc.core.connection.ShardingConnection;
-import io.shardingsphere.core.transaction.TransactionTypeHolder;
 import lombok.Getter;
 import lombok.extern.slf4j.Slf4j;
 
@@ -36,7 +36,7 @@ import java.util.Properties;
 import java.util.concurrent.ConcurrentHashMap;
 
 /**
- * Database that support sharding.
+ * Sharding data source.
  *
  * @author zhangliang
  * @author zhaojun

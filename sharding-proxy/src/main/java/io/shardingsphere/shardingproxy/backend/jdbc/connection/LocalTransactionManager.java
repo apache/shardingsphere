@@ -79,7 +79,7 @@ public final class LocalTransactionManager implements TransactionManager {
         for (Connection each : connection.getCachedConnections().values()) {
             try {
                 each.commit();
-            } catch (SQLException ex) {
+            } catch (final SQLException ex) {
                 result.add(ex);
             }
         }
@@ -91,7 +91,7 @@ public final class LocalTransactionManager implements TransactionManager {
         for (Connection each : connection.getCachedConnections().values()) {
             try {
                 each.rollback();
-            } catch (SQLException ex) {
+            } catch (final SQLException ex) {
                 result.add(ex);
             }
         }

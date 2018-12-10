@@ -21,7 +21,6 @@ import com.google.common.eventbus.Subscribe;
 import io.shardingsphere.api.config.MasterSlaveRuleConfiguration;
 import io.shardingsphere.api.config.ShardingRuleConfiguration;
 import io.shardingsphere.core.constant.DatabaseType;
-import io.shardingsphere.core.constant.ShardingConstant;
 import io.shardingsphere.core.constant.properties.ShardingPropertiesConstant;
 import io.shardingsphere.core.metadata.ShardingMetaData;
 import io.shardingsphere.core.rule.DataSourceParameter;
@@ -29,7 +28,7 @@ import io.shardingsphere.core.rule.MasterSlaveRule;
 import io.shardingsphere.core.rule.ShardingRule;
 import io.shardingsphere.orchestration.internal.registry.config.event.MasterSlaveRuleChangedEvent;
 import io.shardingsphere.orchestration.internal.registry.state.event.DisabledStateChangedEvent;
-import io.shardingsphere.orchestration.internal.registry.state.schema.OrchestrationShardingSchemaGroup;
+import io.shardingsphere.orchestration.internal.registry.state.schema.OrchestrationShardingSchema;
 import io.shardingsphere.orchestration.internal.rule.OrchestrationMasterSlaveRule;
 import io.shardingsphere.shardingproxy.backend.BackendExecutorContext;
 import io.shardingsphere.shardingproxy.runtime.GlobalRegistry;
@@ -52,15 +51,15 @@ public final class MasterSlaveSchema extends LogicSchema {
     
     public MasterSlaveSchema(final String name, final Map<String, DataSourceParameter> dataSources, final MasterSlaveRuleConfiguration masterSlaveRuleConfig, final boolean isUsingRegistry) {
         super(name, dataSources);
-        masterSlaveRule = getMasterSlaveRule(masterSlaveRuleConfig, isUsingRegistry);
-        metaData = getShardingMetaData();
+        masterSlaveRule = createMasterSlaveRule(masterSlaveRuleConfig, isUsingRegistry);
+        metaData = createShardingMetaData();
     }
     
-    private MasterSlaveRule getMasterSlaveRule(final MasterSlaveRuleConfiguration masterSlaveRule, final boolean isUsingRegistry) {
-        return isUsingRegistry ? new OrchestrationMasterSlaveRule(masterSlaveRule) : new MasterSlaveRule(masterSlaveRule);
+    private MasterSlaveRule createMasterSlaveRule(final MasterSlaveRuleConfiguration masterSlaveRuleConfig, final boolean isUsingRegistry) {
+        return isUsingRegistry ? new OrchestrationMasterSlaveRule(masterSlaveRuleConfig) : new MasterSlaveRule(masterSlaveRuleConfig);
     }
     
-    private ShardingMetaData getShardingMetaData() {
+    private ShardingMetaData createShardingMetaData() {
         return new ShardingMetaData(getDataSourceURLs(getDataSources()), new ShardingRule(new ShardingRuleConfiguration(), getDataSources().keySet()), 
                 DatabaseType.MySQL, BackendExecutorContext.getInstance().getExecuteEngine(), new ProxyTableMetaDataConnectionManager(getBackendDataSource()), 
                 GlobalRegistry.getInstance().getShardingProperties().<Integer>getValue(ShardingPropertiesConstant.MAX_CONNECTIONS_SIZE_PER_QUERY));
@@ -73,10 +72,9 @@ public final class MasterSlaveSchema extends LogicSchema {
      */
     @Subscribe
     public synchronized void renew(final MasterSlaveRuleChangedEvent masterSlaveRuleChangedEvent) {
-        if (!getName().equals(masterSlaveRuleChangedEvent.getShardingSchemaName())) {
-            return;
+        if (getName().equals(masterSlaveRuleChangedEvent.getShardingSchemaName())) {
+            masterSlaveRule = new OrchestrationMasterSlaveRule(masterSlaveRuleChangedEvent.getMasterSlaveRuleConfiguration());
         }
-        masterSlaveRule = new OrchestrationMasterSlaveRule(masterSlaveRuleChangedEvent.getMasterSlaveRuleConfiguration());
     }
     
     /**
@@ -86,8 +84,9 @@ public final class MasterSlaveSchema extends LogicSchema {
      */
     @Subscribe
     public synchronized void renew(final DisabledStateChangedEvent disabledStateChangedEvent) {
-        OrchestrationShardingSchemaGroup orchestrationShardingSchemaGroup = new OrchestrationShardingSchemaGroup();
-        orchestrationShardingSchemaGroup.put(ShardingConstant.LOGIC_SCHEMA_NAME, disabledStateChangedEvent.getDisabledGroup().getDataSourceNames(getName()));
-        ((OrchestrationMasterSlaveRule) masterSlaveRule).renew(new DisabledStateChangedEvent(orchestrationShardingSchemaGroup));
+        OrchestrationShardingSchema shardingSchema = disabledStateChangedEvent.getShardingSchema();
+        if (getName().equals(shardingSchema.getSchemaName())) {
+            ((OrchestrationMasterSlaveRule) masterSlaveRule).updateDisabledDataSourceNames(shardingSchema.getDataSourceName(), disabledStateChangedEvent.isDisabled());
+        }
     }
 }

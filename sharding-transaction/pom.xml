@@ -16,7 +16,6 @@
         <module>sharding-transaction-api</module>
         <module>sharding-transaction-xa</module>
         <module>sharding-transaction-base</module>
-        <module>sharding-transaction-spring</module>
     </modules>
     
     <dependencies>

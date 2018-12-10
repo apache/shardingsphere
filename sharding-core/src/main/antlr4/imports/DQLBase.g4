@@ -1,6 +1,6 @@
 grammar DQLBase;
 
-import BaseRule, Keyword, Symbol, DataType;
+import BaseRule, Keyword, MySQLKeyword, Symbol, DataType;
 
 unionSelect
     : selectExpression (UNION ALL? selectExpression)*
@@ -36,6 +36,12 @@ partitionClause
     
 selectExprs
     : selectExpr (COMMA selectExpr)*
+    | asterisk (COMMA selectExpr)*
+    | (selectExpr COMMA)+ asterisk (COMMA selectExpr)*
+    ; 
+    
+asterisk
+    : ASTERISK
     ;
     
 selectExpr
@@ -44,4 +50,12 @@ selectExpr
     
 tableReferences
     : 
+    ;
+    
+functionCall
+    : (ID | DATE) LP_ distinct? (exprs | ASTERISK)? RP_
+    ;
+    
+variable
+    : (AT_ AT_)? (GLOBAL | PERSIST  | PERSIST_ONLY | SESSION)? DOT? ID
     ;

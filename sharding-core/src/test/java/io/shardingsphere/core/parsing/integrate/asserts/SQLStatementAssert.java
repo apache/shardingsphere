@@ -107,7 +107,7 @@ public final class SQLStatementAssert {
     }
     
     private void assertSelectStatement(final SelectStatement actual) {
-        itemAssert.assertItems(actual.getItems(), expected.getAggregationSelectItems());
+        itemAssert.assertItems(actual.getItems(), expected.getSelectItems());
         groupByAssert.assertGroupByItems(actual.getGroupByItems(), expected.getGroupByColumns());
         orderByAssert.assertOrderByItems(actual.getOrderByItems(), expected.getOrderByColumns());
         limitAssert.assertLimit(actual.getLimit(), expected.getLimit());

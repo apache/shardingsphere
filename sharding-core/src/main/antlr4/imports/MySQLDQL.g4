@@ -1,6 +1,6 @@
 grammar MySQLDQL;
 
-import MySQLKeyword, Keyword, Symbol, DataType, BaseRule, DQLBase;
+import DQLBase, MySQLKeyword, Keyword, Symbol, DataType, BaseRule;
 
 select 
     : withClause | unionSelect
@@ -23,7 +23,7 @@ selectClause
     ;
     
 selectSpec
-    : (ALL | DISTINCT | DISTINCTROW)? HIGH_PRIORITY? STRAIGHT_JOIN? SQL_SMALL_RESULT?
+    : (ALL | distinct | DISTINCTROW)? HIGH_PRIORITY? STRAIGHT_JOIN? SQL_SMALL_RESULT?
     SQL_BIG_RESULT? SQL_BUFFER_RESULT? (SQL_CACHE | SQL_NO_CACHE)? SQL_CALC_FOUND_ROWS?
     ;
     
@@ -92,10 +92,14 @@ indexHintList
     ;
     
 indexHint
-    : USE (INDEX|KEY) (FOR (JOIN|ORDER BY|GROUP BY))* idList
-    | IGNORE (INDEX|KEY) (FOR (JOIN|ORDER BY|GROUP BY))* idList
+    : (USE | IGNORE | FORCE) (INDEX|KEY) (FOR (JOIN|ORDER BY|GROUP BY))* indexList
     ;
 
 selectExpr
-    : (columnName | ASTERISK | expr) AS? alias?
+    : (columnName | expr | variable) AS? alias?
+    | columnName DOT_ASTERISK
     ;
+    
+intervalExpr
+    : INTERVAL expr ID
+    ;    

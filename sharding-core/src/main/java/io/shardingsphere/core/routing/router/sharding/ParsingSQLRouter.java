@@ -30,6 +30,8 @@ import io.shardingsphere.core.parsing.parser.dialect.mysql.statement.ShowDatabas
 import io.shardingsphere.core.parsing.parser.dialect.mysql.statement.ShowTableStatusStatement;
 import io.shardingsphere.core.parsing.parser.dialect.mysql.statement.ShowTablesStatement;
 import io.shardingsphere.core.parsing.parser.dialect.mysql.statement.UseStatement;
+import io.shardingsphere.core.parsing.parser.dialect.postgresql.statement.ResetParamStatement;
+import io.shardingsphere.core.parsing.parser.dialect.postgresql.statement.SetParamStatement;
 import io.shardingsphere.core.parsing.parser.sql.SQLStatement;
 import io.shardingsphere.core.parsing.parser.sql.dal.DALStatement;
 import io.shardingsphere.core.parsing.parser.sql.dcl.DCLStatement;
@@ -93,9 +95,7 @@ public final class ParsingSQLRouter implements ShardingRouter {
             SQLStatement result = new SQLParsingEngine(databaseType, logicSQL, shardingRule, shardingTableMetaData).parse(useCache);
             parsingHook.finishSuccess();
             return result;
-            // CHECKSTYLE:OFF
         } catch (final Exception ex) {
-            // CHECKSTYLE:ON
             parsingHook.finishFailure(ex);
             throw ex;
         }
@@ -137,7 +137,8 @@ public final class ParsingSQLRouter implements ShardingRouter {
             routingEngine = new DatabaseBroadcastRoutingEngine(shardingRule);
         } else if (sqlStatement instanceof DDLStatement || (sqlStatement instanceof DCLStatement && ((DCLStatement) sqlStatement).isGrantForSingleTable())) {
             routingEngine = new TableBroadcastRoutingEngine(shardingRule, sqlStatement);
-        } else if (sqlStatement instanceof ShowDatabasesStatement || ((sqlStatement instanceof ShowTablesStatement || sqlStatement instanceof ShowTableStatusStatement) && tableNames.isEmpty())) {
+        } else if (sqlStatement instanceof ShowDatabasesStatement || ((sqlStatement instanceof ShowTablesStatement || sqlStatement instanceof ShowTableStatusStatement) && tableNames.isEmpty())
+                || sqlStatement instanceof SetParamStatement || sqlStatement instanceof ResetParamStatement) {
             routingEngine = new DatabaseBroadcastRoutingEngine(shardingRule);
         } else if (sqlStatement instanceof DCLStatement) {
             routingEngine = new InstanceBroadcastRoutingEngine(shardingRule, shardingDataSourceMetaData);

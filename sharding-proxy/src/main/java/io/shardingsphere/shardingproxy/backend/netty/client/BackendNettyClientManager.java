@@ -17,10 +17,10 @@
 
 package io.shardingsphere.shardingproxy.backend.netty.client;
 
+import io.netty.channel.EventLoopGroup;
 import io.shardingsphere.shardingproxy.runtime.GlobalRegistry;
 import lombok.AccessLevel;
 import lombok.NoArgsConstructor;
-
 import java.util.HashMap;
 import java.util.Map;
 
@@ -60,11 +60,12 @@ public final class BackendNettyClientManager {
     /**
      * Start all backend connection client for netty.
      *
+     * @param eventLoopGroup Worker thread group of IO is used for frontend connecting with client and backend connecting with DB.
      * @throws InterruptedException interrupted exception
      */
-    public void start() throws InterruptedException {
+    public void start(final EventLoopGroup eventLoopGroup) throws InterruptedException {
         for (String each : GLOBAL_REGISTRY.getSchemaNames()) {
-            BackendNettyClient backendNettyClient = new BackendNettyClient(GLOBAL_REGISTRY.getLogicSchema(each));
+            BackendNettyClient backendNettyClient = new BackendNettyClient(GLOBAL_REGISTRY.getLogicSchema(each), eventLoopGroup);
             clientMap.put(each, backendNettyClient);
             backendNettyClient.start();
         }

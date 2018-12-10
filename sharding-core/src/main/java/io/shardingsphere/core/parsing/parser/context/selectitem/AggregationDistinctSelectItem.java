@@ -21,7 +21,6 @@ import com.google.common.base.Optional;
 import io.shardingsphere.core.constant.AggregationType;
 import lombok.EqualsAndHashCode;
 import lombok.Getter;
-import lombok.Setter;
 import lombok.ToString;
 
 /**
@@ -36,11 +35,17 @@ public final class AggregationDistinctSelectItem extends AggregationSelectItem {
     
     private final String distinctColumnName;
     
-    @Setter
-    private int index;
-    
     public AggregationDistinctSelectItem(final AggregationType type, final String innerExpression, final Optional<String> alias, final String distinctColumnName) {
         super(type, innerExpression, alias);
         this.distinctColumnName = distinctColumnName;
+    }
+    
+    /**
+     * Get distinct column label.
+     *
+     * @return distinct column label
+     */
+    public String getDistinctColumnLabel() {
+        return getAlias().isPresent() ? getAlias().get() : distinctColumnName;
     }
 }

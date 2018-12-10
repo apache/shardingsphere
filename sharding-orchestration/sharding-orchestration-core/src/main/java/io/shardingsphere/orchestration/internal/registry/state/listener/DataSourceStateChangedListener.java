@@ -20,9 +20,11 @@ package io.shardingsphere.orchestration.internal.registry.state.listener;
 import io.shardingsphere.orchestration.internal.registry.listener.PostShardingOrchestrationEventListener;
 import io.shardingsphere.orchestration.internal.registry.state.event.DisabledStateChangedEvent;
 import io.shardingsphere.orchestration.internal.registry.state.node.StateNode;
-import io.shardingsphere.orchestration.internal.registry.state.service.DataSourceService;
+import io.shardingsphere.orchestration.internal.registry.state.node.StateNodeStatus;
+import io.shardingsphere.orchestration.internal.registry.state.schema.OrchestrationShardingSchema;
 import io.shardingsphere.orchestration.reg.api.RegistryCenter;
 import io.shardingsphere.orchestration.reg.listener.DataChangedEvent;
+import io.shardingsphere.orchestration.reg.listener.DataChangedEvent.ChangedType;
 
 /**
  * Data source state changed listener.
@@ -32,15 +34,23 @@ import io.shardingsphere.orchestration.reg.listener.DataChangedEvent;
  */
 public final class DataSourceStateChangedListener extends PostShardingOrchestrationEventListener {
     
-    private final DataSourceService dataSourceService;
+    private final StateNode stateNode;
     
     public DataSourceStateChangedListener(final String name, final RegistryCenter regCenter) {
         super(regCenter, new StateNode(name).getDataSourcesNodeFullRootPath());
-        dataSourceService = new DataSourceService(name, regCenter);
+        stateNode = new StateNode(name);
     }
     
     @Override
-    protected DisabledStateChangedEvent createOrchestrationEvent(final DataChangedEvent event) {
-        return new DisabledStateChangedEvent(dataSourceService.getDisabledSlaveSchemaGroup());
+    protected DisabledStateChangedEvent createShardingOrchestrationEvent(final DataChangedEvent event) {
+        return new DisabledStateChangedEvent(getShardingSchema(event.getKey()), isDataSourceDisabled(event));
+    }
+    
+    private OrchestrationShardingSchema getShardingSchema(final String dataSourceNodeFullPath) {
+        return stateNode.getOrchestrationShardingSchema(dataSourceNodeFullPath);
+    }
+    
+    private boolean isDataSourceDisabled(final DataChangedEvent event) {
+        return StateNodeStatus.DISABLED.toString().equalsIgnoreCase(event.getValue()) && ChangedType.UPDATED == event.getChangedType();
     }
 }

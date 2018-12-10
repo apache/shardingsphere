@@ -1,6 +1,6 @@
 grammar MySQLTCLStatement;
 
-import MySQLKeyword, Keyword, BaseRule, DataType, Symbol;
+import MySQLKeyword, Keyword, DQLBase, BaseRule, DataType, Symbol;
 
 setTransaction
     : SET (GLOBAL | SESSION) TRANSACTION setTransactionCharacteristic (COMMA setTransactionCharacteristic)*
@@ -54,6 +54,3 @@ assignment
     : variable EQ_ expr
     ;
 
-variable
-    : (AT_ AT_)? (GLOBAL | PERSIST  | PERSIST_ONLY | SESSION)? DOT? ID
-    ;

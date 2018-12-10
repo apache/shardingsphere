@@ -18,14 +18,14 @@
 package io.shardingsphere.core.parsing.antlr;
 
 import io.shardingsphere.core.constant.DatabaseType;
-import io.shardingsphere.core.parsing.antlr.ast.dialect.MySQLStatementASTParser;
-import io.shardingsphere.core.parsing.antlr.ast.dialect.OracleStatementASTParser;
-import io.shardingsphere.core.parsing.antlr.ast.dialect.PostgreSQLStatementASTParser;
-import io.shardingsphere.core.parsing.antlr.ast.dialect.SQLServerStatementASTParser;
 import io.shardingsphere.core.parsing.antlr.autogen.MySQLStatementLexer;
 import io.shardingsphere.core.parsing.antlr.autogen.OracleStatementLexer;
 import io.shardingsphere.core.parsing.antlr.autogen.PostgreSQLStatementLexer;
 import io.shardingsphere.core.parsing.antlr.autogen.SQLServerStatementLexer;
+import io.shardingsphere.core.parsing.antlr.parser.impl.dialect.MySQLParser;
+import io.shardingsphere.core.parsing.antlr.parser.impl.dialect.OracleParser;
+import io.shardingsphere.core.parsing.antlr.parser.impl.dialect.PostgreSQLParser;
+import io.shardingsphere.core.parsing.antlr.parser.impl.dialect.SQLServerParser;
 import io.shardingsphere.core.parsing.integrate.asserts.AntlrParserResultSetLoader;
 import io.shardingsphere.core.parsing.integrate.asserts.SQLStatementAssert;
 import io.shardingsphere.core.parsing.integrate.engine.AbstractBaseIntegrateSQLParsingTest;
@@ -47,6 +47,7 @@ import org.antlr.v4.runtime.TokenStream;
 import org.junit.Test;
 import org.junit.runner.RunWith;
 import org.junit.runners.Parameterized;
+import org.junit.runners.Parameterized.Parameters;
 
 import java.lang.reflect.Constructor;
 import java.lang.reflect.Method;
@@ -68,7 +69,7 @@ public final class AntlrIntegrateParsingTest extends AbstractBaseIntegrateSQLPar
     
     private final SQLCaseType sqlCaseType;
     
-    @Parameterized.Parameters(name = "{0} ({2}) -> {1}")
+    @Parameters(name = "{0} ({2}) -> {1}")
     public static Collection<Object[]> getTestParameters() {
         return sqlCasesLoader.getSupportedSQLTestParameters(Arrays.<Enum>asList(DatabaseType.values()), DatabaseType.class);
     }
@@ -80,16 +81,16 @@ public final class AntlrIntegrateParsingTest extends AbstractBaseIntegrateSQLPar
         switch (databaseType) {
             case H2:
             case MySQL:
-                execute(MySQLStatementLexer.class, MySQLStatementASTParser.class, charStream);
+                execute(MySQLStatementLexer.class, MySQLParser.class, charStream);
                 break;
             case Oracle:
-                execute(OracleStatementLexer.class, OracleStatementASTParser.class, charStream);
+                execute(OracleStatementLexer.class, OracleParser.class, charStream);
                 break;
             case PostgreSQL:
-                execute(PostgreSQLStatementLexer.class, PostgreSQLStatementASTParser.class, charStream);
+                execute(PostgreSQLStatementLexer.class, PostgreSQLParser.class, charStream);
                 break;
             case SQLServer:
-                execute(SQLServerStatementLexer.class, SQLServerStatementASTParser.class, charStream);
+                execute(SQLServerStatementLexer.class, SQLServerParser.class, charStream);
                 break;
             default:
                 break;
@@ -101,7 +102,7 @@ public final class AntlrIntegrateParsingTest extends AbstractBaseIntegrateSQLPar
         ParserResult parserResult = null;
         try {
             parserResult = parserResultSetLoader.getParserResult(sqlCaseId);
-        } catch (Exception ignored) {
+        } catch (final Exception ignored) {
         }
         if (null != parserResult) {
             String sql = sqlCasesLoader.getSupportedSQL(sqlCaseId, sqlCaseType, parserResult.getParameters());
@@ -109,13 +110,14 @@ public final class AntlrIntegrateParsingTest extends AbstractBaseIntegrateSQLPar
             if (DatabaseType.H2 == databaseType) {
                 execDatabaseType = DatabaseType.MySQL;
             }
-            new SQLStatementAssert(AntlrParsingEngine.parse(
-                    execDatabaseType, sql, getShardingRule(), getShardingTableMetaData()), sqlCaseId, sqlCaseType, sqlCasesLoader, parserResultSetLoader).assertSQLStatement();
+            new SQLStatementAssert(new AntlrParsingEngine(
+                    execDatabaseType, sql, getShardingRule(), getShardingTableMetaData()).parse(), sqlCaseId, sqlCaseType, sqlCasesLoader, parserResultSetLoader).assertSQLStatement();
         }
     }
     
     /**
      * Execute.
+     * 
      * @param lexerClass lexer class
      * @param parserClass parser class
      * @param charStream char stream

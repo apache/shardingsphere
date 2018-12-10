@@ -18,7 +18,7 @@
 package io.shardingsphere.orchestration.internal.registry.state.event;
 
 import io.shardingsphere.orchestration.internal.registry.listener.ShardingOrchestrationEvent;
-import io.shardingsphere.orchestration.internal.registry.state.schema.OrchestrationShardingSchemaGroup;
+import io.shardingsphere.orchestration.internal.registry.state.schema.OrchestrationShardingSchema;
 import lombok.Getter;
 import lombok.RequiredArgsConstructor;
 
@@ -31,5 +31,7 @@ import lombok.RequiredArgsConstructor;
 @Getter
 public final class DisabledStateChangedEvent implements ShardingOrchestrationEvent {
     
-    private final OrchestrationShardingSchemaGroup disabledGroup;
+    private final OrchestrationShardingSchema shardingSchema;
+    
+    private final boolean disabled;
 }

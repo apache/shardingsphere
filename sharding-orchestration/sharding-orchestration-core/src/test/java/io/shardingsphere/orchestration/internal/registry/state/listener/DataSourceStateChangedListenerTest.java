@@ -17,11 +17,10 @@
 
 package io.shardingsphere.orchestration.internal.registry.state.listener;
 
-import io.shardingsphere.orchestration.internal.registry.state.schema.OrchestrationShardingSchemaGroup;
-import io.shardingsphere.orchestration.internal.registry.state.service.DataSourceService;
+import io.shardingsphere.orchestration.internal.registry.state.schema.OrchestrationShardingSchema;
 import io.shardingsphere.orchestration.reg.api.RegistryCenter;
 import io.shardingsphere.orchestration.reg.listener.DataChangedEvent;
-import io.shardingsphere.orchestration.util.FieldUtil;
+import io.shardingsphere.orchestration.reg.listener.DataChangedEvent.ChangedType;
 import org.junit.Before;
 import org.junit.Test;
 import org.junit.runner.RunWith;
@@ -30,8 +29,6 @@ import org.mockito.junit.MockitoJUnitRunner;
 
 import static org.hamcrest.CoreMatchers.is;
 import static org.junit.Assert.assertThat;
-import static org.mockito.Mockito.mock;
-import static org.mockito.Mockito.when;
 
 @RunWith(MockitoJUnitRunner.class)
 public final class DataSourceStateChangedListenerTest {
@@ -41,19 +38,15 @@ public final class DataSourceStateChangedListenerTest {
     @Mock
     private RegistryCenter regCenter;
     
-    @Mock
-    private DataSourceService dataSourceService;
-    
     @Before
     public void setUp() {
         dataSourceStateChangedListener = new DataSourceStateChangedListener("test", regCenter);
-        FieldUtil.setField(dataSourceStateChangedListener, "dataSourceService", dataSourceService);
     }
     
     @Test
-    public void assertCreateOrchestrationEvent() {
-        OrchestrationShardingSchemaGroup expected = mock(OrchestrationShardingSchemaGroup.class);
-        when(dataSourceService.getDisabledSlaveSchemaGroup()).thenReturn(expected);
-        assertThat(dataSourceStateChangedListener.createOrchestrationEvent(mock(DataChangedEvent.class)).getDisabledGroup(), is(expected));
+    public void assertCreateShardingOrchestrationEvent() {
+        OrchestrationShardingSchema expected = new OrchestrationShardingSchema("master_slave_db", "slave_ds_0");
+        DataChangedEvent dataChangedEvent = new DataChangedEvent("/test/state/datasources/master_slave_db.slave_ds_0", "disabled", ChangedType.UPDATED);
+        assertThat(dataSourceStateChangedListener.createShardingOrchestrationEvent(dataChangedEvent).getShardingSchema().getSchemaName(), is(expected.getSchemaName()));
     }
 }

@@ -18,6 +18,7 @@
 package io.shardingsphere.shardingproxy.runtime;
 
 import com.google.common.base.Strings;
+import com.google.common.eventbus.EventBus;
 import com.google.common.eventbus.Subscribe;
 import io.shardingsphere.api.ConfigMapContext;
 import io.shardingsphere.api.config.MasterSlaveRuleConfiguration;
@@ -63,9 +64,11 @@ public final class GlobalRegistry {
     
     private static final GlobalRegistry INSTANCE = new GlobalRegistry();
     
+    private final EventBus eventBus = ShardingOrchestrationEventBus.getInstance();
+    
     private final Map<String, LogicSchema> logicSchemas = new ConcurrentHashMap<>();
     
-    private ShardingProperties shardingProperties;
+    private ShardingProperties shardingProperties = new ShardingProperties(new Properties());
     
     private Authentication authentication;
     
@@ -86,7 +89,7 @@ public final class GlobalRegistry {
      * Register listener.
      */
     public void register() {
-        ShardingOrchestrationEventBus.getInstance().register(this);
+        eventBus.register(this);
     }
     
     /**
@@ -121,7 +124,9 @@ public final class GlobalRegistry {
         if (!configMap.isEmpty()) {
             ConfigMapContext.getInstance().getConfigMap().putAll(configMap);
         }
-        shardingProperties = new ShardingProperties(null == props ? new Properties() : props);
+        if (null != props) {
+            shardingProperties = new ShardingProperties(props);
+        }
         this.authentication = authentication;
         this.sagaConfiguration = sagaConfiguration;
         initSchema(schemaDataSources, schemaRules, isUsingRegistry);

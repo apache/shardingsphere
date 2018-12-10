@@ -29,7 +29,6 @@ import org.mockito.junit.MockitoJUnitRunner;
 
 import static org.junit.Assert.assertFalse;
 import static org.junit.Assert.assertTrue;
-import static org.mockito.Mockito.when;
 
 @RunWith(MockitoJUnitRunner.class)
 public final class InstanceStateChangedListenerTest {
@@ -45,16 +44,12 @@ public final class InstanceStateChangedListenerTest {
     }
     
     @Test
-    public void assertCreateOrchestrationEventWhenEnabled() {
-        DataChangedEvent dataChangedEvent = new DataChangedEvent("test/test_ds", "", ChangedType.UPDATED);
-        when(regCenter.get("test/test_ds")).thenReturn("");
-        assertFalse(instanceStateChangedListener.createOrchestrationEvent(dataChangedEvent).isCircuitBreak());
+    public void assertCreateShardingOrchestrationEventWhenEnabled() {
+        assertFalse(instanceStateChangedListener.createShardingOrchestrationEvent(new DataChangedEvent("test/test_ds", "", ChangedType.UPDATED)).isCircuitBreak());
     }
     
     @Test
-    public void assertCreateOrchestrationEventWhenDisabled() {
-        DataChangedEvent dataChangedEvent = new DataChangedEvent("test/test_ds", StateNodeStatus.DISABLED.name(), ChangedType.UPDATED);
-        when(regCenter.get("test/test_ds")).thenReturn(StateNodeStatus.DISABLED.name());
-        assertTrue(instanceStateChangedListener.createOrchestrationEvent(dataChangedEvent).isCircuitBreak());
+    public void assertCreateShardingOrchestrationEventWhenDisabled() {
+        assertTrue(instanceStateChangedListener.createShardingOrchestrationEvent(new DataChangedEvent("test/test_ds", StateNodeStatus.DISABLED.name(), ChangedType.UPDATED)).isCircuitBreak());
     }
 }

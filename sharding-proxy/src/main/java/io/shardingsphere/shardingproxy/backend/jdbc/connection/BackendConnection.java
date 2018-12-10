@@ -20,7 +20,6 @@ package io.shardingsphere.shardingproxy.backend.jdbc.connection;
 import com.google.common.base.Preconditions;
 import com.google.common.collect.LinkedHashMultimap;
 import com.google.common.collect.Multimap;
-import io.netty.channel.ChannelHandlerContext;
 import io.shardingsphere.core.constant.ConnectionMode;
 import io.shardingsphere.core.constant.transaction.TransactionType;
 import io.shardingsphere.core.exception.ShardingException;
@@ -54,9 +53,14 @@ public final class BackendConnection implements AutoCloseable {
     
     private static final int MAXIMUM_RETRY_COUNT = 5;
     
-    private volatile String currentSchema;
+    private volatile String schemaName;
     
     private LogicSchema logicSchema;
+    
+    private TransactionType transactionType;
+    
+    @Setter
+    private int connectionId;
     
     private final Multimap<String, Connection> cachedConnections = LinkedHashMultimap.create();
     
@@ -70,11 +74,6 @@ public final class BackendConnection implements AutoCloseable {
     
     private final ConnectionStateHandler stateHandler = new ConnectionStateHandler(resourceSynchronizer);
     
-    private TransactionType transactionType;
-    
-    @Setter
-    private ChannelHandlerContext context;
-    
     public BackendConnection(final TransactionType transactionType) {
         this.transactionType = transactionType;
     }
@@ -85,6 +84,9 @@ public final class BackendConnection implements AutoCloseable {
      * @param transactionType transaction type
      */
     public void setTransactionType(final TransactionType transactionType) {
+        if (null == schemaName) {
+            throw new ShardingException("Please select database, then switch transaction type.");
+        }
         if (isSwitchFailed()) {
             throw new ShardingException("Failed to switch transaction type, please terminate current transaction.");
         }
@@ -94,14 +96,14 @@ public final class BackendConnection implements AutoCloseable {
     /**
      * Change logic schema of current channel.
      *
-     * @param currentSchema current schema
+     * @param schemaName schema name
      */
-    public void setCurrentSchema(final String currentSchema) {
+    public void setCurrentSchema(final String schemaName) {
         if (isSwitchFailed()) {
             throw new ShardingException("Failed to switch schema, please terminate current transaction.");
         }
-        this.currentSchema = currentSchema;
-        this.logicSchema = GlobalRegistry.getInstance().getLogicSchema(currentSchema);
+        this.schemaName = schemaName;
+        this.logicSchema = GlobalRegistry.getInstance().getLogicSchema(schemaName);
     }
     
     @SneakyThrows
@@ -125,7 +127,7 @@ public final class BackendConnection implements AutoCloseable {
      * @param connectionMode connection mode
      * @param dataSourceName data source name
      * @param connectionSize size of connections to be get
-     * @return connection
+     * @return connections
      * @throws SQLException SQL exception
      */
     public List<Connection> getConnections(final ConnectionMode connectionMode, final String dataSourceName, final int connectionSize) throws SQLException {
@@ -162,20 +164,28 @@ public final class BackendConnection implements AutoCloseable {
         return result;
     }
     
-    private synchronized List<Connection> getConnectionsWithoutTransaction(final ConnectionMode connectionMode, final String dataSourceName, final int connectionSize) throws SQLException {
+    private List<Connection> getConnectionsWithoutTransaction(final ConnectionMode connectionMode, final String dataSourceName, final int connectionSize) throws SQLException {
         Preconditions.checkNotNull(logicSchema, "current logic schema is null");
-        List<Connection> result = logicSchema.getBackendDataSource().getConnections(connectionMode, dataSourceName, connectionSize);
-        cachedConnections.putAll(dataSourceName, result);
+        List<Connection> result = getConnectionFromUnderlying(connectionMode, dataSourceName, connectionSize);
+        synchronized (cachedConnections) {
+            cachedConnections.putAll(dataSourceName, result);
+        }
         return result;
     }
     
     private List<Connection> createNewConnections(final ConnectionMode connectionMode, final String dataSourceName, final int connectionSize) throws SQLException {
         Preconditions.checkNotNull(logicSchema, "current logic schema is null");
-        List<Connection> result = logicSchema.getBackendDataSource().getConnections(connectionMode, dataSourceName, connectionSize);
+        List<Connection> result = getConnectionFromUnderlying(connectionMode, dataSourceName, connectionSize);
         for (Connection each : result) {
             replayMethodsInvocation(each);
         }
         return result;
+    }
+    
+    private List<Connection> getConnectionFromUnderlying(final ConnectionMode connectionMode, final String dataSourceName, final int connectionSize) throws SQLException {
+        return TransactionType.XA == transactionType
+            ? logicSchema.getBackendDataSource().getConnections(connectionMode, dataSourceName, connectionSize, TransactionType.XA)
+            : logicSchema.getBackendDataSource().getConnections(connectionMode, dataSourceName, connectionSize);
     }
     
     /**
@@ -262,7 +272,7 @@ public final class BackendConnection implements AutoCloseable {
                     each.rollback();
                 }
                 each.close();
-            } catch (SQLException ex) {
+            } catch (final SQLException ex) {
                 result.add(ex);
             }
         }

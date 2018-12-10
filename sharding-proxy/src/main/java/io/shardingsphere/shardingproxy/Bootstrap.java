@@ -35,7 +35,6 @@ import io.shardingsphere.shardingproxy.runtime.GlobalRegistry;
 import io.shardingsphere.shardingproxy.util.DataSourceConverter;
 import lombok.AccessLevel;
 import lombok.NoArgsConstructor;
-
 import java.io.IOException;
 import java.util.Collection;
 import java.util.HashMap;
@@ -92,7 +91,7 @@ public final class Bootstrap {
         GlobalRegistry.getInstance().init(getDataSourceParameterMap(ruleConfigs), getRuleConfiguration(ruleConfigs), authentication, configMap, prop,
                 sagaConfiguration == null ? new SagaConfiguration() : sagaConfiguration);
         initOpenTracing();
-        new ShardingProxy().start(port);
+        ShardingProxy.getInstance().start(port);
     }
     
     private static void startWithRegistryCenter(final YamlProxyServerConfiguration serverConfig,
@@ -103,7 +102,7 @@ public final class Bootstrap {
                     shardingOrchestrationFacade.getConfigService().loadAuthentication(), shardingOrchestrationFacade.getConfigService().loadConfigMap(),
                     shardingOrchestrationFacade.getConfigService().loadProperties(), shardingOrchestrationFacade.getConfigService().loadSagaConfiguration(), true);
             initOpenTracing();
-            new ShardingProxy().start(port);
+            ShardingProxy.getInstance().start(port);
         }
     }
     

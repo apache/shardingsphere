@@ -83,8 +83,8 @@ public final class ResultSetGetterAdapterTest extends AbstractShardingJDBCDataba
             try {
                 each.getValue().getBoolean(1);
                 fail("Expected an SQLException to be thrown");
-            } catch (final Exception exception) {
-                assertFalse(exception.getMessage().isEmpty());
+            } catch (final Exception ex) {
+                assertFalse(ex.getMessage().isEmpty());
             }
         }
     }
@@ -95,8 +95,8 @@ public final class ResultSetGetterAdapterTest extends AbstractShardingJDBCDataba
             try {
                 assertTrue(each.getValue().getBoolean(columnName));
                 fail("Expected an SQLException to be thrown");
-            } catch (final Exception exception) {
-                assertFalse(exception.getMessage().isEmpty());
+            } catch (final Exception ex) {
+                assertFalse(ex.getMessage().isEmpty());
             }
         }
     }
@@ -230,25 +230,25 @@ public final class ResultSetGetterAdapterTest extends AbstractShardingJDBCDataba
     }
     
     @Test
-    public void assertGetBytesForColumnIndex() throws SQLException {
+    public void assertGetBytesForColumnIndex() {
         for (ResultSet each : resultSets.values()) {
             try {
                 assertTrue(each.getBytes(1).length > 0);
                 fail("Expected an SQLException to be thrown");
-            } catch (final Exception exception) {
-                assertFalse(exception.getMessage().isEmpty());
+            } catch (final Exception ex) {
+                assertFalse(ex.getMessage().isEmpty());
             }
         }
     }
     
     @Test
-    public void assertGetBytesForColumnLabel() throws SQLException {
+    public void assertGetBytesForColumnLabel() {
         for (ResultSet each : resultSets.values()) {
             try {
                 assertTrue(each.getBytes(columnName).length > 0);
                 fail("Expected an SQLException to be thrown");
-            } catch (final Exception exception) {
-                assertFalse(exception.getMessage().isEmpty());
+            } catch (final Exception ex) {
+                assertFalse(ex.getMessage().isEmpty());
             }
         }
     }
@@ -259,8 +259,8 @@ public final class ResultSetGetterAdapterTest extends AbstractShardingJDBCDataba
             try {
                 each.getDate(1);
                 fail("Expected an SQLException to be thrown");
-            } catch (final Exception exception) {
-                assertFalse(exception.getMessage().isEmpty());
+            } catch (final Exception ex) {
+                assertFalse(ex.getMessage().isEmpty());
             }
         }
     }
@@ -271,8 +271,8 @@ public final class ResultSetGetterAdapterTest extends AbstractShardingJDBCDataba
             try {
                 each.getDate(columnName);
                 fail("Expected an SQLException to be thrown");
-            } catch (final Exception exception) {
-                assertFalse(exception.getMessage().isEmpty());
+            } catch (final Exception ex) {
+                assertFalse(ex.getMessage().isEmpty());
             }
         }
     }
@@ -283,8 +283,8 @@ public final class ResultSetGetterAdapterTest extends AbstractShardingJDBCDataba
             try {
                 each.getDate(1, Calendar.getInstance());
                 fail("Expected an SQLException to be thrown");
-            } catch (final Exception exception) {
-                assertFalse(exception.getMessage().isEmpty());
+            } catch (final Exception ex) {
+                assertFalse(ex.getMessage().isEmpty());
             }
         }
     }
@@ -295,8 +295,8 @@ public final class ResultSetGetterAdapterTest extends AbstractShardingJDBCDataba
             try {
                 each.getDate(columnName, Calendar.getInstance());
                 fail("Expected an SQLException to be thrown");
-            } catch (final Exception exception) {
-                assertFalse(exception.getMessage().isEmpty());
+            } catch (final Exception ex) {
+                assertFalse(ex.getMessage().isEmpty());
             }
         }
     }
@@ -307,8 +307,8 @@ public final class ResultSetGetterAdapterTest extends AbstractShardingJDBCDataba
             try {
                 each.getTime(1);
                 fail("Expected an SQLException to be thrown");
-            } catch (final Exception exception) {
-                assertFalse(exception.getMessage().isEmpty());
+            } catch (final Exception ex) {
+                assertFalse(ex.getMessage().isEmpty());
             }
         }
     }
@@ -319,8 +319,8 @@ public final class ResultSetGetterAdapterTest extends AbstractShardingJDBCDataba
             try {
                 each.getTime(columnName);
                 fail("Expected an SQLException to be thrown");
-            } catch (final Exception exception) {
-                assertFalse(exception.getMessage().isEmpty());
+            } catch (final Exception ex) {
+                assertFalse(ex.getMessage().isEmpty());
             }
         }
     }
@@ -331,8 +331,8 @@ public final class ResultSetGetterAdapterTest extends AbstractShardingJDBCDataba
             try {
                 each.getTime(1, Calendar.getInstance());
                 fail("Expected an SQLException to be thrown");
-            } catch (final Exception exception) {
-                assertFalse(exception.getMessage().isEmpty());
+            } catch (final Exception ex) {
+                assertFalse(ex.getMessage().isEmpty());
             }
         }
     }
@@ -343,8 +343,8 @@ public final class ResultSetGetterAdapterTest extends AbstractShardingJDBCDataba
             try {
                 each.getTime(columnName, Calendar.getInstance());
                 fail("Expected an SQLException to be thrown");
-            } catch (final Exception exception) {
-                assertFalse(exception.getMessage().isEmpty());
+            } catch (final Exception ex) {
+                assertFalse(ex.getMessage().isEmpty());
             }
         }
     }
@@ -358,8 +358,8 @@ public final class ResultSetGetterAdapterTest extends AbstractShardingJDBCDataba
                     continue;
                 }
                 fail("Expected an SQLException to be thrown");
-            } catch (final Exception exception) {
-                assertFalse(exception.getMessage().isEmpty());
+            } catch (final Exception ex) {
+                assertFalse(ex.getMessage().isEmpty());
             }
         }
     }
@@ -373,8 +373,8 @@ public final class ResultSetGetterAdapterTest extends AbstractShardingJDBCDataba
                     continue;
                 }
                 fail("Expected an SQLException to be thrown");
-            } catch (final Exception exception) {
-                assertFalse(exception.getMessage().isEmpty());
+            } catch (final Exception ex) {
+                assertFalse(ex.getMessage().isEmpty());
             }
         }
     }
@@ -388,8 +388,8 @@ public final class ResultSetGetterAdapterTest extends AbstractShardingJDBCDataba
                     continue;
                 }
                 fail("Expected an SQLException to be thrown");
-            } catch (final Exception exception) {
-                assertFalse(exception.getMessage().isEmpty());
+            } catch (final Exception ex) {
+                assertFalse(ex.getMessage().isEmpty());
             }
         }
     }
@@ -403,8 +403,8 @@ public final class ResultSetGetterAdapterTest extends AbstractShardingJDBCDataba
                     continue;
                 }
                 fail("Expected an SQLException to be thrown");
-            } catch (final Exception exception) {
-                assertFalse(exception.getMessage().isEmpty());
+            } catch (final Exception ex) {
+                assertFalse(ex.getMessage().isEmpty());
             }
         }
     }
@@ -518,8 +518,8 @@ public final class ResultSetGetterAdapterTest extends AbstractShardingJDBCDataba
                 try {
                     assertTrue(each.getValue().getBlob(1).length() > 0);
                     fail("Expected an SQLException to be thrown");
-                } catch (final Exception exception) {
-                    assertFalse(exception.getMessage().isEmpty());
+                } catch (final Exception ex) {
+                    assertFalse(ex.getMessage().isEmpty());
                 }
             }
         }
@@ -532,8 +532,8 @@ public final class ResultSetGetterAdapterTest extends AbstractShardingJDBCDataba
                 try {
                     assertTrue(each.getValue().getBlob(columnName).length() > 0);
                     fail("Expected an SQLException to be thrown");
-                } catch (final Exception exception) {
-                    assertFalse(exception.getMessage().isEmpty());
+                } catch (final Exception ex) {
+                    assertFalse(ex.getMessage().isEmpty());
                 }
             }
         }
@@ -545,8 +545,8 @@ public final class ResultSetGetterAdapterTest extends AbstractShardingJDBCDataba
             try {
                 assertThat(each.getValue().getClob(1).getSubString(1, 2), is("10"));
                 fail("Expected an SQLException to be thrown");
-            } catch (final Exception exception) {
-                assertFalse(exception.getMessage().isEmpty());
+            } catch (final Exception ex) {
+                assertFalse(ex.getMessage().isEmpty());
             }
         }
     }
@@ -557,8 +557,8 @@ public final class ResultSetGetterAdapterTest extends AbstractShardingJDBCDataba
             try {
                 assertThat(each.getValue().getClob(columnName).getSubString(1, 2), is("10"));
                 fail("Expected an SQLException to be thrown");
-            } catch (final Exception exception) {
-                assertFalse(exception.getMessage().isEmpty());
+            } catch (final Exception ex) {
+                assertFalse(ex.getMessage().isEmpty());
             }
         }
     }
@@ -569,8 +569,8 @@ public final class ResultSetGetterAdapterTest extends AbstractShardingJDBCDataba
             try {
                 each.getURL(1);
                 fail("Expected an SQLException to be thrown");
-            } catch (final Exception exception) {
-                assertFalse(exception.getMessage().isEmpty());
+            } catch (final Exception ex) {
+                assertFalse(ex.getMessage().isEmpty());
             }
         }
     }
@@ -581,8 +581,8 @@ public final class ResultSetGetterAdapterTest extends AbstractShardingJDBCDataba
             try {
                 each.getURL(columnName);
                 fail("Expected an SQLException to be thrown");
-            } catch (final Exception exception) {
-                assertFalse(exception.getMessage().isEmpty());
+            } catch (final Exception ex) {
+                assertFalse(ex.getMessage().isEmpty());
             }
         }
     }
@@ -597,8 +597,8 @@ public final class ResultSetGetterAdapterTest extends AbstractShardingJDBCDataba
                 try {
                     each.getValue().getSQLXML(1);
                     fail("Expected an SQLException to be thrown");
-                } catch (final Exception exception) {
-                    assertFalse(exception.getMessage().isEmpty());
+                } catch (final Exception ex) {
+                    assertFalse(ex.getMessage().isEmpty());
                 }
             } else {
                 assertThat(each.getValue().getSQLXML(1).getString(), is("10"));
@@ -616,8 +616,8 @@ public final class ResultSetGetterAdapterTest extends AbstractShardingJDBCDataba
                 try {
                     each.getValue().getSQLXML(columnName);
                     fail("Expected an SQLException to be thrown");
-                } catch (final Exception exception) {
-                    assertFalse(exception.getMessage().isEmpty());
+                } catch (final Exception ex) {
+                    assertFalse(ex.getMessage().isEmpty());
                 }
             } else {
                 assertThat(each.getValue().getSQLXML(columnName).getString(), is("10"));

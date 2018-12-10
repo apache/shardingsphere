@@ -22,6 +22,7 @@ import io.shardingsphere.shardingproxy.backend.jdbc.connection.BackendConnection
 import io.shardingsphere.shardingproxy.runtime.GlobalRegistry;
 import io.shardingsphere.shardingproxy.transport.common.packet.DatabasePacket;
 import io.shardingsphere.shardingproxy.transport.mysql.packet.command.CommandResponsePackets;
+import io.shardingsphere.shardingproxy.transport.mysql.packet.generic.ErrPacket;
 import io.shardingsphere.shardingproxy.transport.mysql.packet.generic.OKPacket;
 import lombok.RequiredArgsConstructor;
 
@@ -33,11 +34,10 @@ import java.util.List;
  * Backend handler for schema broadcast.
  *
  * @author chenqingyang
+ * @author zhaojun
  */
 @RequiredArgsConstructor
-public final class SchemaBroadcastBackendHandler implements BackendHandler {
-    
-    private final int connectionId;
+public final class SchemaBroadcastBackendHandler extends AbstractBackendHandler {
     
     private final int sequenceId;
     
@@ -47,32 +47,28 @@ public final class SchemaBroadcastBackendHandler implements BackendHandler {
     
     private final DatabaseType databaseType;
     
+    private final BackendHandlerFactory backendHandlerFactory;
+    
     @Override
-    public CommandResponsePackets execute() {
+    protected CommandResponsePackets execute0() {
         List<DatabasePacket> packets = new LinkedList<>();
-        for (String schema : GlobalRegistry.getInstance().getSchemaNames()) {
-            backendConnection.setCurrentSchema(schema);
-            BackendHandler backendHandler = BackendHandlerFactory.newTextProtocolInstance(connectionId, sequenceId, sql, backendConnection, databaseType);
-            CommandResponsePackets commandResponsePackets = backendHandler.execute();
-            packets.addAll(commandResponsePackets.getPackets());
+        String originSchemaName = backendConnection.getSchemaName();
+        for (String each : GlobalRegistry.getInstance().getSchemaNames()) {
+            backendConnection.setCurrentSchema(each);
+            CommandResponsePackets responsePackets = backendHandlerFactory.newTextProtocolInstance(sequenceId, sql, backendConnection, databaseType).execute();
+            packets.addAll(responsePackets.getPackets());
         }
+        backendConnection.setCurrentSchema(originSchemaName);
         return merge(packets);
-    }
-    
-    @Override
-    public boolean next() {
-        return false;
-    }
-    
-    @Override
-    public ResultPacket getResultValue() {
-        return null;
     }
     
     private CommandResponsePackets merge(final Collection<DatabasePacket> packets) {
         int affectedRows = 0;
         long lastInsertId = 0;
         for (DatabasePacket each : packets) {
+            if (each instanceof ErrPacket) {
+                return new CommandResponsePackets(each);
+            }
             if (each instanceof OKPacket) {
                 affectedRows += ((OKPacket) each).getAffectedRows();
                 if (((OKPacket) each).getLastInsertId() > lastInsertId) {
