@@ -21,8 +21,11 @@ import io.shardingsphere.api.config.MasterSlaveRuleConfiguration;
 import io.shardingsphere.api.config.ShardingRuleConfiguration;
 import io.shardingsphere.core.config.DataSourceConfiguration;
 import io.shardingsphere.core.rule.Authentication;
+import io.shardingsphere.core.rule.DataSourceParameter;
 import org.junit.Test;
 
+import java.util.Collections;
+import java.util.HashMap;
 import java.util.Map;
 import java.util.Properties;
 
@@ -97,6 +100,19 @@ public class ConfigurationYamlConverterTest {
     
     @Test
     public void assertDumpDataSourceConfigurations() {
+        String actual = ConfigurationYamlConverter.dumpDataSourceConfigurations(getDataSourceConfigurations());
+        assertTrue(actual.contains("jdbc:h2:mem:test;DB_CLOSE_DELAY=-1;DATABASE_TO_UPPER=false;MODE=MySQL"));
+    }
+    
+    private Map<String, DataSourceConfiguration> getDataSourceConfigurations() {
+        Map<String, Object> properties = new HashMap<>();
+        properties.put("driverClassName", "org.h2.Driver");
+        properties.put("jdbcUrl", "jdbc:h2:mem:test;DB_CLOSE_DELAY=-1;DATABASE_TO_UPPER=false;MODE=MySQL");
+        properties.put("username", "root");
+        properties.put("password", "root");
+        DataSourceConfiguration dataSourceConfig = new DataSourceConfiguration(DataSourceParameter.DATA_SOURCE_POOL_CLASS_NAME);
+        dataSourceConfig.getProperties().putAll(properties);
+        return Collections.singletonMap("test", dataSourceConfig);
     }
     
     @Test
