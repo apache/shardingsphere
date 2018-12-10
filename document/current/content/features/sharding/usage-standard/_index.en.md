@@ -1,12 +1,13 @@
 +++
 pre = "<b>3.1.3. </b>"
 toc = true
-title = "Usage standard"
+title = "Use Norms"
 weight = 3
 +++
 
-## background
+## Background
 
-Sharding-Sphere hopes keep best compatibilities with SQL and single node database's behaviours, but distributed scenario is more complicated than before. Sharding-Sphere will focus on big data for OLAP firstly. For OLAP related, Sharding-Sphere will supported little by little.
+Though ShardingSphere intends to be compatible with all the SQLs and stand-alone databases, distributed style has brought more complex situations to the database. 
+ShardingSphere wants to solve massive data OLTP problem first, and complete relevant OLAP support problem little by little.
 
-Please read [Supported SQL](/en/features/sharding/usage-standard/sql) and [Pagination](/en/features/sharding/usage-standard/pagination) for more details.
+Please further read the [SQL type that is available and unavailable for ShardingSphere](/en/features/sharding/usage-standard/sql) as well as problems aiming at [pagination](/en/features/sharding/usage-standard/pagination), the kind of problem that is highly related to the performance.
