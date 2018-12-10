@@ -21,6 +21,7 @@ import io.shardingsphere.core.constant.ConnectionMode;
 import io.shardingsphere.core.constant.DatabaseType;
 import io.shardingsphere.core.constant.SQLType;
 import io.shardingsphere.core.constant.properties.ShardingPropertiesConstant;
+import io.shardingsphere.core.constant.transaction.TransactionType;
 import io.shardingsphere.core.executor.ShardingExecuteEngine;
 import io.shardingsphere.core.executor.ShardingExecuteGroup;
 import io.shardingsphere.core.executor.StatementExecuteUnit;
@@ -74,6 +75,7 @@ import java.util.List;
  * @author zhaojun
  * @author zhangliang
  * @author panjuan
+ * @author yangyi
  */
 @RequiredArgsConstructor
 @Getter
@@ -112,7 +114,7 @@ public final class JDBCExecuteEngine implements SQLExecuteEngine {
         boolean isExceptionThrown = ExecutorExceptionHandler.isExceptionThrown();
         Collection<ShardingExecuteGroup<StatementExecuteUnit>> sqlExecuteGroups =
                 sqlExecutePrepareTemplate.getExecuteUnitGroups(routeResult.getRouteUnits(), new ProxyJDBCExecutePrepareCallback(isReturnGeneratedKeys));
-        boolean isBASETransaction = TransactionType.BASE == GlobalRegistry.getInstance().getTransactionType()
+        boolean isBASETransaction = TransactionType.BASE == backendConnection.getTransactionType()
                 && routeResult.getSqlStatement().getType() == SQLType.DML
                 && Status.STATUS_NO_TRANSACTION != SagaTransactionManager.getInstance().getStatus();
         SQLExecuteCallback<ExecuteResponseUnit> firstProxySQLExecuteCallback = isBASETransaction ? new ProxySagaSQLExecuteCallback(isExceptionThrown)

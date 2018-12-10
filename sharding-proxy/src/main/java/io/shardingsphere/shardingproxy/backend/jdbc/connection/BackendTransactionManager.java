@@ -35,6 +35,7 @@ import java.sql.SQLException;
  * Proxy transaction manager.
  *
  * @author zhaojun
+ * @author yangyi
  */
 @RequiredArgsConstructor
 public final class BackendTransactionManager implements TransactionManager {
@@ -61,8 +62,8 @@ public final class BackendTransactionManager implements TransactionManager {
             }
         } else if (TransactionType.BASE == transactionType) {
             SagaConfiguration config = GlobalRegistry.getInstance().getSagaConfiguration();
-            shardingTransactionHandler.doInTransaction(new SagaTransactionEvent(operationType, connection.getCurrentSchema(),
-                GlobalRegistry.getInstance().getLogicSchema(connection.getCurrentSchema()).getBackendDataSource().getDataSources(), config));
+            shardingTransactionHandler.doInTransaction(new SagaTransactionEvent(operationType, connection.getSchemaName(),
+                GlobalRegistry.getInstance().getLogicSchema(connection.getSchemaName()).getBackendDataSource().getDataSources(), config));
         }
     }
 }

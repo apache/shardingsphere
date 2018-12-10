@@ -20,6 +20,7 @@ package io.shardingsphere.shardingjdbc.transport;
 import io.shardingsphere.shardingjdbc.jdbc.adapter.AbstractConnectionAdapter;
 import io.shardingsphere.transaction.base.manager.servicecomb.AbstractSQLTransport;
 import lombok.AllArgsConstructor;
+import lombok.NoArgsConstructor;
 import lombok.Setter;
 import org.apache.servicecomb.saga.core.TransportFailedException;
 
@@ -31,6 +32,7 @@ import java.sql.SQLException;
  *
  * @author yangyi
  */
+@NoArgsConstructor
 @AllArgsConstructor
 public final class JDBCSQLTransport extends AbstractSQLTransport {
     

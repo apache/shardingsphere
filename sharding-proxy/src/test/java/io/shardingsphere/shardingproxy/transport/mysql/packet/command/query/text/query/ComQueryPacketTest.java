@@ -174,7 +174,7 @@ public final class ComQueryPacketTest {
     public void assertExecuteTCLWithBaseTransaction() {
         backendConnection.setTransactionType(TransactionType.BASE);
         when(payload.readStringEOF()).thenReturn("BEGIN");
-        ComQueryPacket packet = new ComQueryPacket(1, 1000, payload, backendConnection, frontendHandler);
+        ComQueryPacket packet = new ComQueryPacket(1, payload, backendConnection);
         Optional<CommandResponsePackets> actual = packet.execute();
         assertTrue(actual.isPresent());
         assertOKPacket(actual.get());
@@ -185,7 +185,7 @@ public final class ComQueryPacketTest {
     public void assertExecuteCommitWithBaseTransaction() {
         backendConnection.setTransactionType(TransactionType.BASE);
         when(payload.readStringEOF()).thenReturn("COMMIT");
-        ComQueryPacket packet = new ComQueryPacket(1, 1000, payload, backendConnection, frontendHandler);
+        ComQueryPacket packet = new ComQueryPacket(1, payload, backendConnection);
         Optional<CommandResponsePackets> actual = packet.execute();
         assertTrue(actual.isPresent());
         assertOKPacket(actual.get());

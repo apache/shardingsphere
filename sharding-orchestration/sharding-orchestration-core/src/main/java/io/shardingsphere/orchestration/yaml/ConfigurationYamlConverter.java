@@ -22,6 +22,7 @@ import com.google.common.base.Preconditions;
 import com.google.common.base.Strings;
 import com.google.common.collect.Maps;
 import io.shardingsphere.api.config.MasterSlaveRuleConfiguration;
+import io.shardingsphere.api.config.SagaConfiguration;
 import io.shardingsphere.api.config.ShardingRuleConfiguration;
 import io.shardingsphere.core.config.DataSourceConfiguration;
 import io.shardingsphere.core.rule.Authentication;
@@ -118,6 +119,16 @@ public final class ConfigurationYamlConverter {
     }
     
     /**
+     * Load saga configuration.
+     *
+     * @param data data
+     * @return saga configuration
+     */
+    public static SagaConfiguration loadSagaConfiguration(final String data) {
+        return Strings.isNullOrEmpty(data) ? new SagaConfiguration() : new Yaml().loadAs(data, SagaConfiguration.class);
+    }
+    
+    /**
      * Dump data sources configuration.
      *
      * @param dataSourceConfigs data sources configurations
@@ -186,5 +197,15 @@ public final class ConfigurationYamlConverter {
      */
     public static String dumpProperties(final Properties props) {
         return new Yaml(new DefaultYamlRepresenter()).dumpAsMap(props);
+    }
+    
+    /**
+     * Dump saga configuration.
+     *
+     * @param sagaConfiguration saga configuration
+     * @return YAML string
+     */
+    public static String dumpSagaConfiguration(final SagaConfiguration sagaConfiguration) {
+        return new Yaml(new DefaultYamlRepresenter()).dumpAsMap(sagaConfiguration);
     }
 }

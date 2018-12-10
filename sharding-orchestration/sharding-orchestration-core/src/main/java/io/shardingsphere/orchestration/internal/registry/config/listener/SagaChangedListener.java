@@ -19,28 +19,24 @@ package io.shardingsphere.orchestration.internal.registry.config.listener;
 
 import io.shardingsphere.orchestration.internal.registry.config.event.SagaChangedEvent;
 import io.shardingsphere.orchestration.internal.registry.config.node.ConfigurationNode;
-import io.shardingsphere.orchestration.internal.registry.config.service.ConfigurationService;
 import io.shardingsphere.orchestration.internal.registry.listener.PostShardingOrchestrationEventListener;
-import io.shardingsphere.orchestration.internal.registry.listener.ShardingOrchestrationEvent;
 import io.shardingsphere.orchestration.reg.api.RegistryCenter;
 import io.shardingsphere.orchestration.reg.listener.DataChangedEvent;
+import io.shardingsphere.orchestration.yaml.ConfigurationYamlConverter;
 
 /**
  * Saga configuration listener manager.
  *
  * @author yangyi
  */
-public final class SagaOrchestrationListener extends PostShardingOrchestrationEventListener {
+public final class SagaChangedListener extends PostShardingOrchestrationEventListener {
     
-    private final ConfigurationService configService;
-    
-    public SagaOrchestrationListener(final String name, final RegistryCenter regCenter) {
+    public SagaChangedListener(final String name, final RegistryCenter regCenter) {
         super(regCenter, new ConfigurationNode(name).getPropsPath());
-        configService = new ConfigurationService(name, regCenter);
     }
     
     @Override
-    protected ShardingOrchestrationEvent createOrchestrationEvent(final DataChangedEvent event) {
-        return new SagaChangedEvent(configService.loadSagaConfiguration());
+    protected SagaChangedEvent createShardingOrchestrationEvent(final DataChangedEvent event) {
+        return new SagaChangedEvent(ConfigurationYamlConverter.loadSagaConfiguration(event.getValue()));
     }
 }

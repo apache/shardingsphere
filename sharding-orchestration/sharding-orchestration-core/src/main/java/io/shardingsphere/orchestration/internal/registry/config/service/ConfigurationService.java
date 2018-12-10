@@ -65,7 +65,8 @@ public final class ConfigurationService {
      * @param isOverwrite is overwrite registry center's configuration
      */
     public void persistConfiguration(final String shardingSchemaName, final Map<String, DataSourceConfiguration> dataSourceConfigs, final RuleConfiguration ruleConfig,
-                                     final Authentication authentication, final Map<String, Object> configMap, final Properties props, final SagaConfiguration sagaConfiguration, final boolean isOverwrite) {
+                                     final Authentication authentication, final Map<String, Object> configMap, final Properties props,
+                                     final SagaConfiguration sagaConfiguration, final boolean isOverwrite) {
         persistDataSourceConfiguration(shardingSchemaName, dataSourceConfigs, isOverwrite);
         persistRuleConfiguration(shardingSchemaName, ruleConfig, isOverwrite);
         persistAuthentication(authentication, isOverwrite);
@@ -139,7 +140,7 @@ public final class ConfigurationService {
     
     private void presistSagaConfiguration(final SagaConfiguration sagaConfiguration, final boolean isOverwrite) {
         if (isOverwrite || !hasSagaConfiguration()) {
-            regCenter.persist(configNode.getSagaPath(), new Yaml(new DefaultYamlRepresenter()).dumpAsMap(sagaConfiguration));
+            regCenter.persist(configNode.getSagaPath(), ConfigurationYamlConverter.dumpSagaConfiguration(sagaConfiguration));
         }
     }
     
@@ -225,8 +226,7 @@ public final class ConfigurationService {
      * @return saga configuration
      */
     public SagaConfiguration loadSagaConfiguration() {
-        String data = regCenter.getDirectly(configNode.getSagaPath());
-        return Strings.isNullOrEmpty(data) ? new SagaConfiguration() : new Yaml().loadAs(data, SagaConfiguration.class);
+        return ConfigurationYamlConverter.loadSagaConfiguration(regCenter.getDirectly(configNode.getSagaPath()));
     }
     
     /**

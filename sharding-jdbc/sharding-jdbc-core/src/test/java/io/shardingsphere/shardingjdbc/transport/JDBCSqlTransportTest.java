@@ -37,7 +37,7 @@ import static org.mockito.Mockito.when;
 @RunWith(MockitoJUnitRunner.class)
 public class JDBCSqlTransportTest {
     
-    private final JDBCSqlTransport sqlTransport = new JDBCSqlTransport();
+    private final JDBCSQLTransport sqlTransport = new JDBCSQLTransport();
     
     private final String dsName = "ds";
     

@@ -45,7 +45,7 @@ public class JDBCTransportFactoryTest {
         
         jdbcTransportFactory.cacheTransport(new SagaTransactionEvent(TransactionOperationType.BEGIN, configuration));
         jdbcSqlTransport = jdbcTransportFactory.getTransport();
-        assertThat(jdbcSqlTransport, instanceOf(JDBCSqlTransport.class));
+        assertThat(jdbcSqlTransport, instanceOf(JDBCSQLTransport.class));
         
         jdbcTransportFactory.remove();
         jdbcSqlTransport = jdbcTransportFactory.getTransport();
