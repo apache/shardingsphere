@@ -64,9 +64,11 @@ public final class DataSourceUtils {
         result.setUsername("root");
         result.setPassword("root");
         result.setMaxTotal(10);
-        result.setMaxWaitMillis(2000);
-        result.setMaxIdle(200);
-        result.setMaxConnLifetimeMillis(100000);
+        result.setMinIdle(2);
+        result.setMaxWaitMillis(15 * 1000);
+        result.setMinEvictableIdleTimeMillis(40 * 1000);
+        result.setTimeBetweenEvictionRunsMillis(20 * 1000);
+        result.setMaxConnLifetimeMillis(500 * 1000);
         return result;
     }
     
@@ -76,9 +78,11 @@ public final class DataSourceUtils {
         result.setUsername("root");
         result.setPassword("root");
         result.setMaxTotal(10);
-        result.setMaxWaitMillis(2000);
-        result.setMaxIdle(200);
-        result.setMaxConnLifetimeMillis(100000);
+        result.setMinIdle(2);
+        result.setMaxWaitMillis(15 * 1000);
+        result.setMinEvictableIdleTimeMillis(40 * 1000);
+        result.setTimeBetweenEvictionRunsMillis(20 * 1000);
+        result.setMaxConnLifetimeMillis(500 * 1000);
         return result;
     }
     
@@ -88,9 +92,10 @@ public final class DataSourceUtils {
         result.setUsername("root");
         result.setPassword("root");
         result.setMaxActive(10);
-        result.setMaxWait(2000);
-        result.setMaxIdle(200);
-        result.setMinEvictableIdleTimeMillis(100000);
+        result.setMinIdle(2);
+        result.setMaxWait(15 * 1000);
+        result.setMinEvictableIdleTimeMillis(40 * 1000);
+        result.setTimeBetweenEvictionRunsMillis(20 * 1000);
         return result;
     }
     
@@ -100,9 +105,9 @@ public final class DataSourceUtils {
         result.setUsername("root");
         result.setPassword("root");
         result.setMaximumPoolSize(10);
-        result.setConnectionTimeout(2000);
-        result.setIdleTimeout(200);
-        result.setMaxLifetime(100000);
+        result.setMinimumIdle(2);
+        result.setConnectionTimeout(15 * 1000);
+        result.setIdleTimeout(40 * 1000);
         return result;
     }
     

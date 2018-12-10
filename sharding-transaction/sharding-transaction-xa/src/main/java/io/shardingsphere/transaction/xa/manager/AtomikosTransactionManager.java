@@ -17,7 +17,6 @@
 
 package io.shardingsphere.transaction.xa.manager;
 
-import com.atomikos.beans.PropertyException;
 import com.atomikos.icatch.jta.UserTransactionManager;
 import io.shardingsphere.core.event.transaction.xa.XATransactionEvent;
 import io.shardingsphere.core.exception.ShardingException;
@@ -109,7 +108,7 @@ public final class AtomikosTransactionManager implements XATransactionManager {
                 default:
                     return new AtomikosDataSourceBeanWrapper().wrap(xaDataSource, dataSourceName, dataSourceParameter);
             }
-        } catch (PropertyException ex) {
+        } catch (final Exception ex) {
             throw new ShardingException("Failed to wrap XADataSource to transactional datasource pool", ex);
         }
     }

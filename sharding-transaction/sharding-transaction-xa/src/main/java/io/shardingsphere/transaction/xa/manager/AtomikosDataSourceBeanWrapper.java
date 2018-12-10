@@ -63,6 +63,7 @@ public final class AtomikosDataSourceBeanWrapper implements XADataSourceWrapper 
         delegate.setUniqueResourceName(dataSourceName);
         Properties xaProperties = XAPropertyFactory.build(XADatabaseType.find(xaDataSource.getClass().getName()), parameter);
         PropertyUtils.setProperties(xaDataSource, xaProperties);
+        delegate.setXaProperties(xaProperties);
         delegate.setXaDataSource(xaDataSource);
     }
 }

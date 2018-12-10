@@ -125,7 +125,7 @@ public final class AtomikosTransactionManagerTest {
         atomikosTransactionManager.getStatus();
     }
     
-    @Test(expected = UnsupportedOperationException.class)
+    @Test(expected = ShardingException.class)
     public void assertWrapDataSourceForOtherDataSource() {
         XADataSource xaDataSource = mock(XADataSource.class);
         DataSourceParameter dataSourceParameter = new DataSourceParameter();
@@ -146,10 +146,8 @@ public final class AtomikosTransactionManagerTest {
     }
     
     @Test(expected = ShardingException.class)
-    @SneakyThrows
     public void assertWrapDataSourceFailed() {
         DataSourceParameter dataSourceParameter = new DataSourceParameter();
-        dataSourceParameter.setUsername("root");
         dataSourceParameter.setPassword("root");
         dataSourceParameter.setUrl("db:url");
         dataSourceParameter.setMaximumPoolSize(0);

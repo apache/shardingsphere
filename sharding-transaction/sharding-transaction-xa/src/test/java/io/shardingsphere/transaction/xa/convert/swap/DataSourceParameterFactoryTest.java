@@ -27,6 +27,7 @@ import javax.sql.DataSource;
 
 import static org.hamcrest.CoreMatchers.is;
 import static org.junit.Assert.assertNotNull;
+import static org.junit.Assert.assertNull;
 import static org.junit.Assert.assertThat;
 import static org.mockito.Mockito.mock;
 
@@ -38,24 +39,32 @@ public class DataSourceParameterFactoryTest {
     public void assertBuildParameterFromHikari() {
         DataSourceParameter parameter = DataSourceParameterFactory.build(DataSourceUtils.build(PoolType.HIKARI, DatabaseType.MySQL, databaseName));
         assertThatParameter(parameter);
+        assertThat(parameter.getMaintenanceInterval(), is(30 * 1000L));
+        assertThat(parameter.getMaxLifetime(), is(30 * 60 * 1000L));
     }
     
     @Test
     public void assertBuildParameterFromDruid() {
         DataSourceParameter parameter = DataSourceParameterFactory.build(DataSourceUtils.build(PoolType.DRUID, DatabaseType.MySQL, databaseName));
         assertThatParameter(parameter);
+        assertThat(parameter.getMaintenanceInterval(), is(20 * 1000L));
+        assertThat(parameter.getMaxLifetime(), is(0L));
     }
     
     @Test
     public void assertBuildParameterFromDBCPTomcat() {
         DataSourceParameter parameter = DataSourceParameterFactory.build(DataSourceUtils.build(PoolType.DBCP2_TOMCAT, DatabaseType.MySQL, databaseName));
         assertThatParameter(parameter);
+        assertThat(parameter.getMaintenanceInterval(), is(20 * 1000L));
+        assertThat(parameter.getMaxLifetime(), is(500 * 1000L));
     }
     
     @Test
     public void assertBuildParameterFromDBCP2() {
         DataSourceParameter parameter = DataSourceParameterFactory.build(DataSourceUtils.build(PoolType.DBCP2, DatabaseType.MySQL, databaseName));
         assertThatParameter(parameter);
+        assertThat(parameter.getMaintenanceInterval(), is(20 * 1000L));
+        assertThat(parameter.getMaxLifetime(), is(500 * 1000L));
     }
     
     @Test
@@ -63,6 +72,15 @@ public class DataSourceParameterFactoryTest {
         DataSource dataSource = mock(DataSource.class);
         DataSourceParameter actual = DataSourceParameterFactory.build(dataSource);
         assertNotNull(actual);
+        assertNull(actual.getUrl());
+        assertNull(actual.getUsername());
+        assertNull(actual.getPassword());
+        assertThat(actual.getMaximumPoolSize(), is(50));
+        assertThat(actual.getMinimumPoolSize(), is(5));
+        assertThat(actual.getConnectionTimeout(), is(30 * 1000L));
+        assertThat(actual.getIdleTimeout(), is(60 * 1000L));
+        assertThat(actual.getMaxLifetime(), is(0L));
+        assertThat(actual.getMaintenanceInterval(), is(30 * 1000L));
     }
     
     private void assertThatParameter(final DataSourceParameter parameter) {
@@ -70,8 +88,8 @@ public class DataSourceParameterFactoryTest {
         assertThat(parameter.getUsername(), is("root"));
         assertThat(parameter.getPassword(), is("root"));
         assertThat(parameter.getMaximumPoolSize(), is(10));
-        assertThat(parameter.getIdleTimeout(), is(200L));
-        assertThat(parameter.getConnectionTimeout(), is(2000L));
-        assertThat(parameter.getMaxLifetime(), is(100000L));
+        assertThat(parameter.getMinimumPoolSize(), is(2));
+        assertThat(parameter.getConnectionTimeout(), is(15 * 1000L));
+        assertThat(parameter.getIdleTimeout(), is(40 * 1000L));
     }
 }
