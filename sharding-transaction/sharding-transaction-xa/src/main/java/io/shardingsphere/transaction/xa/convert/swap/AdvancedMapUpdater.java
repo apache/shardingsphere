@@ -23,6 +23,11 @@ import lombok.RequiredArgsConstructor;
 
 import java.util.Map;
 
+/**
+ * Advanced map updater.
+ *
+ * @author zhaojun
+ */
 @RequiredArgsConstructor
 final class AdvancedMapUpdater<K, V> {
     
