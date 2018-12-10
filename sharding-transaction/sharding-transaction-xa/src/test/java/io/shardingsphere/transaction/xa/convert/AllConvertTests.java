@@ -19,7 +19,7 @@ package io.shardingsphere.transaction.xa.convert;
 
 import io.shardingsphere.transaction.xa.convert.dialect.XADataSourceFactoryTest;
 import io.shardingsphere.transaction.xa.convert.dialect.XAPropertyFactoryTest;
-import io.shardingsphere.transaction.xa.convert.extractor.DataSourceParameterFactoryTest;
+import io.shardingsphere.transaction.xa.convert.swap.DataSourceParameterFactoryTest;
 import org.junit.runner.RunWith;
 import org.junit.runners.Suite;
 

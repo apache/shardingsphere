@@ -15,7 +15,7 @@
  * </p>
  */
 
-package io.shardingsphere.transaction.xa.convert.extractor;
+package io.shardingsphere.transaction.xa.convert.swap;
 
 import io.shardingsphere.core.config.DataSourceConfiguration;
 import io.shardingsphere.core.rule.DataSourceParameter;
@@ -24,21 +24,24 @@ import lombok.Getter;
 import javax.sql.DataSource;
 
 /**
- * Abstract class for DataSourceParameterExtractor.
+ * Abstract class for {@code DataSourceSwapper}.
  *
  * @author zhaojun
  */
 @Getter
-public abstract class DataSourceParameterExtractorAdapter implements DataSourceParameterExtractor {
+public abstract class DataSourceSwapperAdapter implements DataSourceSwapper {
     
     private final DataSourceConfiguration dataSourceConfiguration;
     
-    DataSourceParameterExtractorAdapter(final DataSource dataSource) {
+    private final AdvancedMapUpdater<String, Object> updater;
+    
+    DataSourceSwapperAdapter(final DataSource dataSource) {
         dataSourceConfiguration = DataSourceConfiguration.getDataSourceConfiguration(dataSource);
+        updater = new AdvancedMapUpdater<>(dataSourceConfiguration.getProperties());
     }
     
     @Override
-    public final DataSourceParameter extract() {
+    public final DataSourceParameter swap() {
         convertProperties();
         return dataSourceConfiguration.createDataSourceParameter();
     }

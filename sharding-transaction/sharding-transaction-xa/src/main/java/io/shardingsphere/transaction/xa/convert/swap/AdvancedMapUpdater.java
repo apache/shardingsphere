@@ -15,39 +15,44 @@
  * </p>
  */
 
-package io.shardingsphere.core.constant;
+package io.shardingsphere.transaction.xa.convert.swap;
 
+import com.google.common.base.Optional;
+import lombok.Getter;
 import lombok.RequiredArgsConstructor;
 
+import java.util.Map;
+
 /**
- * DataSource pool type enum.
+ * Advanced map updater.
  *
  * @author zhaojun
  */
 @RequiredArgsConstructor
-public enum PoolType {
+final class AdvancedMapUpdater<K, V> {
     
-    HIKARI("com.zaxxer.hikari.HikariDataSource"),
-    DRUID("com.alibaba.druid.pool.DruidDataSource"),
-    DBCP2("org.apache.commons.dbcp2.BasicDataSource"),
-    DBCP2_TOMCAT("org.apache.tomcat.dbcp.dbcp2.BasicDataSource"),
-    UNKNOWN("");
-    
-    private final String className;
+    @Getter
+    private final Map<K, V> delegateMap;
     
     /**
-     * Find pool type by class name.
-     *
-     * @param className class name
-     * @return pool type
+     * Update delegate map if value is present.
+     * @param from old key
+     * @param to new key
      */
-    public static PoolType find(final String className) {
-        for (PoolType each : PoolType.values()) {
-            if (className.equals(each.className)) {
-                return each;
-            }
+    void transfer(final K from, final K to) {
+        Optional<V> originValue = get(from);
+        if (originValue.isPresent()) {
+            delegateMap.put(to, originValue.get());
         }
-        return UNKNOWN;
+    }
+    
+    /**
+     * Get value by key.
+     *
+     * @param key key
+     * @return optional value
+     */
+    private Optional<V> get(final K key) {
+        return Optional.fromNullable(delegateMap.get(key));
     }
 }
-

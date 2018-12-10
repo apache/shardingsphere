@@ -15,25 +15,27 @@
  * </p>
  */
 
-package io.shardingsphere.transaction.xa.convert.extractor;
+package io.shardingsphere.transaction.xa.convert.swap;
 
 import javax.sql.DataSource;
-import java.util.Map;
 
 /**
- * Hikari datasource parameter extractor.
+ * Druid parameter swapper.
  *
  * @author zhaojun
  */
-public final class HikariDataSourceParameterExtractor extends DataSourceParameterExtractorAdapter {
+public final class DruidParameterSwapper extends DataSourceSwapperAdapter {
     
-    HikariDataSourceParameterExtractor(final DataSource dataSource) {
+    DruidParameterSwapper(final DataSource dataSource) {
         super(dataSource);
     }
     
     @Override
     protected void convertProperties() {
-        Map<String, Object> properties = getDataSourceConfiguration().getProperties();
-        properties.put("url", properties.get("jdbcUrl"));
+        getUpdater().transfer("maxActive", "maximumPoolSize");
+        getUpdater().transfer("minIdle", "minimumPoolSize");
+        getUpdater().transfer("maxWait", "connectionTimeout");
+        getUpdater().transfer("minEvictableIdleTimeMillis", "idleTimeout");
+        getUpdater().transfer("timeBetweenEvictionRunsMillis", "maintenanceInterval");
     }
 }

@@ -15,18 +15,25 @@
  * </p>
  */
 
-package io.shardingsphere.transaction.xa.manager;
+package io.shardingsphere.transaction.xa.convert.swap;
 
-import org.junit.runner.RunWith;
-import org.junit.runners.Suite;
-import org.junit.runners.Suite.SuiteClasses;
+import javax.sql.DataSource;
 
-@RunWith(Suite.class)
-@SuiteClasses({
-        AtomikosTransactionManagerTest.class,
-        AtomikosDataSourceBeanWrapperTest.class,
-        BasicManagedDataSourceWrapperTest.class,
-        XATransactionManagerSPILoaderTest.class
-})
-public final class AllManagerTests {
+/**
+ * Hikari datasource parameter swapper.
+ *
+ * @author zhaojun
+ */
+public final class HikariParameterSwapper extends DataSourceSwapperAdapter {
+    
+    HikariParameterSwapper(final DataSource dataSource) {
+        super(dataSource);
+    }
+    
+    @Override
+    protected void convertProperties() {
+        getUpdater().transfer("jdbcUrl", "url");
+        getUpdater().transfer("maxPoolSize", "maximumPoolSize");
+        getUpdater().transfer("minimumIdle", "minimumPoolSize");
+    }
 }
