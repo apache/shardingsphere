@@ -76,6 +76,15 @@ They are all governed by mesh layer.
 | Decentralization        | Yes             | No                   | No                 |
 | Static Entry            | No              | Yes                  | No                 |
 
+### Hybrid Architecture
+
+Sharding-JDBC采用无中心化架构，适用于Java开发的高性能的轻量级OLTP应用；Sharding-Proxy提供静态入口以及异构语言的支持，适用于OLAP应用以及对分片数据库进行管理和运维的场景。
+
+ShardingSphere是多接入端共同组成的生态圈。
+通过混合使用Sharding-JDBC和Sharding-Proxy，并采用同一注册中心统一配置分片策略，能够灵活的搭建适用于各种场景的应用系统，使得架构师更加自由的调整适合与当前业务的最佳系统架构。
+
+![ShardingSphere Hybird Architecture](http://shardingsphere.jd.com/document/current/img/shardingsphere-hybrid.png)
+
 ## Features
 
 ### Data Sharding
