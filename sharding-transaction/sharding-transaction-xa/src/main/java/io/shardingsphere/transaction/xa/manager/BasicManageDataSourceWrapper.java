@@ -64,7 +64,7 @@ public final class BasicManageDataSourceWrapper implements XADataSourceWrapper {
     
     private void registerRecoveryResource(final String dataSourceName, final XADataSource xaDataSource) {
         JdbcTransactionalResource transactionalResource = new JdbcTransactionalResource(dataSourceName, xaDataSource);
-        synchronized (XATransactionDataSourceWrapper.class) {
+        synchronized (BasicManageDataSourceWrapper.class) {
             if (null == Configuration.getResource(dataSourceName)) {
                 Configuration.addResource(transactionalResource);
             }

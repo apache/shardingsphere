@@ -18,11 +18,10 @@
 package io.shardingsphere.transaction.xa.manager;
 
 import com.atomikos.beans.PropertyException;
-import com.atomikos.jdbc.AtomikosDataSourceBean;
+import com.atomikos.icatch.jta.UserTransactionManager;
 import io.shardingsphere.core.constant.DatabaseType;
 import io.shardingsphere.core.constant.transaction.ProxyPoolType;
 import io.shardingsphere.core.rule.DataSourceParameter;
-import io.shardingsphere.transaction.manager.xa.XATransactionManager;
 import io.shardingsphere.transaction.xa.convert.dialect.XADataSourceFactory;
 import io.shardingsphere.transaction.xa.convert.dialect.XADatabaseType;
 import io.shardingsphere.transaction.xa.fixture.ReflectiveUtil;
@@ -30,24 +29,26 @@ import org.apache.tomcat.dbcp.dbcp2.managed.BasicManagedDataSource;
 import org.hamcrest.MatcherAssert;
 import org.hamcrest.Matchers;
 import org.hamcrest.core.Is;
-import org.junit.After;
 import org.junit.Before;
 import org.junit.Test;
+import org.junit.runner.RunWith;
+import org.mockito.Mock;
+import org.mockito.junit.MockitoJUnitRunner;
 
 import javax.sql.XADataSource;
 
 import static org.hamcrest.CoreMatchers.is;
 import static org.junit.Assert.assertThat;
 
-public class XATransactionDataSourceWrapperTest {
+@RunWith(MockitoJUnitRunner.class)
+public class BasicManagedDataSourceWrapperTest {
     
-    private XATransactionManager xaTransactionManager = new AtomikosTransactionManager();
+    @Mock
+    private UserTransactionManager userTransactionManager;
     
     private final XADataSource xaDataSource = XADataSourceFactory.build(DatabaseType.MySQL);
     
     private final DataSourceParameter parameter = new DataSourceParameter();
-    
-    private final XATransactionDataSourceWrapper xaDataSourceWrapper = new XATransactionDataSourceWrapper(xaTransactionManager.getUnderlyingTransactionManager());
     
     @Before
     public void setup() {
@@ -57,29 +58,11 @@ public class XATransactionDataSourceWrapperTest {
         parameter.setMaximumPoolSize(10);
     }
     
-    @After
-    public void tearDown() {
-        xaTransactionManager.destroy();
-    }
-    
-    @Test
-    public void assertWrapToAtomikosDataSourceBean() throws PropertyException {
-        parameter.setProxyDatasourceType(ProxyPoolType.VENDOR);
-        AtomikosDataSourceBean targetDataSource = (AtomikosDataSourceBean) xaDataSourceWrapper.wrap(xaDataSource, "ds1", parameter);
-        assertThat(targetDataSource, Matchers.instanceOf(AtomikosDataSourceBean.class));
-        assertThat(targetDataSource.getXaDataSource(), is(xaDataSource));
-        assertThat(targetDataSource.getXaDataSourceClassName(), is(XADatabaseType.MySQL.getClassName()));
-        assertThat(targetDataSource.getUniqueResourceName(), is("ds1"));
-        assertThat(targetDataSource.getMaxPoolSize(), is(parameter.getMaximumPoolSize()));
-        assertThat(targetDataSource.getXaProperties().get("user"), Is.<Object>is(parameter.getUsername()));
-        assertThat(targetDataSource.getXaProperties().get("password"), Is.<Object>is(parameter.getPassword()));
-        assertThat(targetDataSource.getXaProperties().get("URL"), Is.<Object>is(parameter.getUrl()));
-    }
-    
     @Test
     public void assertWrapToTomcatDBCP() throws PropertyException, IllegalAccessException {
         parameter.setProxyDatasourceType(ProxyPoolType.TOMCAT_DBCP2);
-        BasicManagedDataSource targetDataSource = (BasicManagedDataSource) xaDataSourceWrapper.wrap(xaDataSource, "ds1", parameter);
+        BasicManageDataSourceWrapper basicManageDataSourceWrapper = new BasicManageDataSourceWrapper(userTransactionManager);
+        BasicManagedDataSource targetDataSource = (BasicManagedDataSource) basicManageDataSourceWrapper.wrap(xaDataSource, "ds1", parameter);
         assertThat(targetDataSource, Matchers.instanceOf(BasicManagedDataSource.class));
         assertThat(targetDataSource.getXaDataSourceInstance(), is(xaDataSource));
         assertThat(targetDataSource.getXADataSource(), is(XADatabaseType.MySQL.getClassName()));
