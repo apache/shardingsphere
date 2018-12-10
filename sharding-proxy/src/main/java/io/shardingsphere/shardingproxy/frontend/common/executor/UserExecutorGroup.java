@@ -33,7 +33,7 @@ public final class UserExecutorGroup implements AutoCloseable {
     
     private static final GlobalRegistry GLOBAL_REGISTRY = GlobalRegistry.getInstance();
     
-    private static final String NAME_FORMAT = "Command_";
+    private static final String NAME_FORMAT = "Command-%d";
     
     private static final UserExecutorGroup INSTANCE = new UserExecutorGroup();
     

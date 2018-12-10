@@ -37,6 +37,8 @@ import java.util.concurrent.TimeUnit;
 @AllArgsConstructor(access = AccessLevel.PRIVATE)
 public final class ShardingExecutorService {
     
+    private static final String DEFAULT_NAME_FORMAT = "%d";
+    
     private static final ExecutorService SHUTDOWN_EXECUTOR = Executors.newSingleThreadExecutor(ShardingThreadFactoryBuilder.build("Executor-Engine-Closer"));
     
     @Getter
@@ -50,7 +52,7 @@ public final class ShardingExecutorService {
     }
     
     public ShardingExecutorService(final int executorSize) {
-        this(executorSize, "");
+        this(executorSize, DEFAULT_NAME_FORMAT);
     }
     
     /**
