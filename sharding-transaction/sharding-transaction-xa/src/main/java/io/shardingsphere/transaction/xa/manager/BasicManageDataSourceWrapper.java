@@ -57,10 +57,14 @@ public final class BasicManageDataSourceWrapper implements XADataSourceWrapper {
     }
     
     private void setPoolProperties(final DataSourceParameter parameter) {
+        delegate.setMinIdle(parameter.getMinimumPoolSize());
         delegate.setMaxTotal(parameter.getMaximumPoolSize());
         delegate.setMaxWaitMillis(parameter.getConnectionTimeout());
+        delegate.setTimeBetweenEvictionRunsMillis(parameter.getMaintenanceInterval());
         delegate.setMinEvictableIdleTimeMillis(parameter.getIdleTimeout());
         delegate.setMaxConnLifetimeMillis(parameter.getMaxLifetime());
+        delegate.setValidationQuery("SELECT 1");
+        delegate.setTestOnBorrow(false);
     }
     
     private void setXAProperties(final XADataSource xaDataSource, final DataSourceParameter parameter) throws PropertyException {
