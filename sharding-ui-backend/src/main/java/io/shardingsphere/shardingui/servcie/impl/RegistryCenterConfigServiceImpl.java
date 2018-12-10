@@ -52,7 +52,7 @@ public final class RegistryCenterConfigServiceImpl implements RegistryCenterConf
         RegistryCenterConfigs configs = loadAll();
         RegistryCenterConfig existedConfig = find(config.getName(), configs);
         if (null != existedConfig) {
-            throw new ShardingUIException("Registry center already existed!");
+            throw new ShardingUIException(ShardingUIException.SERVER_ERROR, "Registry center already existed!");
         }
         configs.getRegistryCenterConfigs().add(config);
         registryCenterConfigsRepository.save(configs);
@@ -73,7 +73,7 @@ public final class RegistryCenterConfigServiceImpl implements RegistryCenterConf
         RegistryCenterConfigs configs = loadAll();
         RegistryCenterConfig config = find(name, configs);
         if (null == config) {
-            throw new ShardingUIException("Registry center not existed!");
+            throw new ShardingUIException(ShardingUIException.SERVER_ERROR, "Registry center not existed!");
         }
         RegistryCenterConfig activatedConfig = findActivatedRegistryCenterConfiguration(configs);
         if (!config.equals(activatedConfig)) {

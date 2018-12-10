@@ -17,19 +17,32 @@
 
 package io.shardingsphere.shardingui.common.exception;
 
+import lombok.Getter;
+import lombok.Setter;
+
 /**
  * Sharding UI system exception.
- * 
+ *
  * @author chenqingyang
  */
-public class ShardingUIException extends RuntimeException {
+@Getter
+@Setter
+public final class ShardingUIException extends RuntimeException {
     
-    public ShardingUIException(final String message) {
-        super(message);
-    }
+    public static final int INVALID_PARAM = 400;
     
-    public ShardingUIException(final Exception cause) {
-        super(cause);
+    public static final int NO_RIGHT = 403;
+    
+    public static final int SERVER_ERROR = 500;
+    
+    private final int errCode;
+    
+    private final String errMsg;
+    
+    public ShardingUIException(final int errCode, final String errMsg) {
+        super(errMsg);
+        this.errCode = errCode;
+        this.errMsg = errMsg;
     }
     
 }

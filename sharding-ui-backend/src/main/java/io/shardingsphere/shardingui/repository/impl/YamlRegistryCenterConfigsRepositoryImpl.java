@@ -55,7 +55,7 @@ public final class YamlRegistryCenterConfigsRepositoryImpl implements RegistryCe
              InputStreamReader inputStreamReader = new InputStreamReader(fileInputStream, "UTF-8")) {
             return new Yaml(new Constructor(RegistryCenterConfigs.class)).loadAs(inputStreamReader, RegistryCenterConfigs.class);
         } catch (IOException e) {
-            throw new ShardingUIException(e);
+            throw new ShardingUIException(ShardingUIException.SERVER_ERROR, "load config error");
         }
         
     }
@@ -67,7 +67,7 @@ public final class YamlRegistryCenterConfigsRepositoryImpl implements RegistryCe
             bufferedOutputStream.write(yaml.dumpAsMap(registryCenterConfigs).getBytes());
             bufferedOutputStream.flush();
         } catch (IOException e) {
-            throw new ShardingUIException(e);
+            throw new ShardingUIException(ShardingUIException.SERVER_ERROR, "save config error");
         }
     }
     

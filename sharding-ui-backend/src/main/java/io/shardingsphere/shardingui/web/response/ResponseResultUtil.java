@@ -17,6 +17,7 @@
 
 package io.shardingsphere.shardingui.web.response;
 
+import io.shardingsphere.shardingui.common.exception.ShardingUIException;
 import lombok.AccessLevel;
 import lombok.NoArgsConstructor;
 
@@ -45,10 +46,52 @@ public final class ResponseResultUtil {
      * @return response result
      */
     public static <T> ResponseResult<T> build(final T model) {
-        ResponseResult<T> t = new ResponseResult<>();
-        t.setSuccess(true);
-        t.setModel(model);
-        return t;
+        ResponseResult<T> result = new ResponseResult<>();
+        result.setSuccess(true);
+        result.setModel(model);
+        return result;
+    }
+    
+    /**
+     * Build the error response of illegal argument exception.
+     *
+     * @param errorMsg error message
+     * @return response result
+     */
+    public static ResponseResult handleIllegalArgumentException(final String errorMsg) {
+        ResponseResult result = new ResponseResult<>();
+        result.setSuccess(false);
+        result.setErrorCode(ShardingUIException.INVALID_PARAM);
+        result.setErrorMsg(errorMsg);
+        return result;
+    }
+    
+    /**
+     * Build the error response of sharding UI exception.
+     *
+     * @param exception sharding UI exception
+     * @return response result
+     */
+    public static ResponseResult handleShardingUIException(final ShardingUIException exception) {
+        ResponseResult result = new ResponseResult<>();
+        result.setSuccess(false);
+        result.setErrorCode(exception.getErrCode());
+        result.setErrorMsg(exception.getMessage());
+        return result;
+    }
+    
+    /**
+     * Build the error response of uncaught exception.
+     *
+     * @param errorMsg error message
+     * @return response result
+     */
+    public static ResponseResult handleUncaughtException(final String errorMsg) {
+        ResponseResult result = new ResponseResult<>();
+        result.setSuccess(false);
+        result.setErrorCode(ShardingUIException.SERVER_ERROR);
+        result.setErrorMsg(errorMsg);
+        return result;
     }
     
 }
