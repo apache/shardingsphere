@@ -55,7 +55,6 @@ public final class AtomikosDataSourceBeanWrapper implements XADataSourceWrapper 
         delegate.setBorrowConnectionTimeout((int) parameter.getConnectionTimeout() / 1000);
         delegate.setReapTimeout((int) parameter.getMaxLifetime() / 1000);
         delegate.setMaxIdleTime((int) parameter.getIdleTimeout() / 1000);
-        delegate.setTestQuery("SELECT 1");
     }
     
     private void setXAProperties(final XADataSource xaDataSource, final String dataSourceName, final DataSourceParameter parameter) throws PropertyException {

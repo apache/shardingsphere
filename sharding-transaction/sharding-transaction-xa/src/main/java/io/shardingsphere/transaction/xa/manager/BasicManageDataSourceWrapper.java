@@ -63,7 +63,6 @@ public final class BasicManageDataSourceWrapper implements XADataSourceWrapper {
         delegate.setTimeBetweenEvictionRunsMillis(parameter.getMaintenanceInterval());
         delegate.setMinEvictableIdleTimeMillis(parameter.getIdleTimeout());
         delegate.setMaxConnLifetimeMillis(parameter.getMaxLifetime());
-        delegate.setValidationQuery("SELECT 1");
         delegate.setTestOnBorrow(false);
     }
     
