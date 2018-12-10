@@ -17,20 +17,27 @@
 
 package io.shardingsphere.transaction.xa.convert.extractor;
 
+import io.shardingsphere.core.constant.transaction.ProxyPoolType;
+
 import javax.sql.DataSource;
 
 /**
- * Default data source parameter extractor.
+ * DBCP2 parameter swapper.
  *
  * @author zhaojun
  */
-public class DefaultDataSourceParameterExtractor extends DataSourceParameterExtractorAdapter {
+public final class DBCP2ParameterSwapper extends DataSourceSwapperAdapter {
     
-    DefaultDataSourceParameterExtractor(final DataSource dataSource) {
+    DBCP2ParameterSwapper(final DataSource dataSource) {
         super(dataSource);
     }
     
     @Override
     protected void convertProperties() {
+        getUpdater().transfer("maxTotal", "maximumPoolSize");
+        getUpdater().transfer("maxIdle", "idleTimeout");
+        getUpdater().transfer("maxWaitMillis", "connectionTimeout");
+        getUpdater().transfer("maxConnLifetimeMillis", "maxLifetime");
+        getUpdater().getDelegateMap().put("proxyDatasourceType", ProxyPoolType.TOMCAT_DBCP2);
     }
 }

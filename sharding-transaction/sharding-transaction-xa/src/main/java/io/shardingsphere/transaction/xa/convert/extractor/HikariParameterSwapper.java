@@ -20,13 +20,13 @@ package io.shardingsphere.transaction.xa.convert.extractor;
 import javax.sql.DataSource;
 
 /**
- * Hikari datasource parameter extractor.
+ * Hikari datasource parameter swapper.
  *
  * @author zhaojun
  */
-public final class HikariDataSourceParameterExtractor extends DataSourceParameterExtractorAdapter {
+public final class HikariParameterSwapper extends DataSourceSwapperAdapter {
     
-    HikariDataSourceParameterExtractor(final DataSource dataSource) {
+    HikariParameterSwapper(final DataSource dataSource) {
         super(dataSource);
     }
     

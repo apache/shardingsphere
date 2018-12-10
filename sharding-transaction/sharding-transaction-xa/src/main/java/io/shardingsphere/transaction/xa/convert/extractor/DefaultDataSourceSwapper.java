@@ -20,23 +20,17 @@ package io.shardingsphere.transaction.xa.convert.extractor;
 import javax.sql.DataSource;
 
 /**
- * Extract datasource parameter from Druid connection pool.
+ * Default data source parameter swapper.
  *
  * @author zhaojun
  */
-public final class DruidDataSourceParameterExtractor extends DataSourceParameterExtractorAdapter {
+public class DefaultDataSourceSwapper extends DataSourceSwapperAdapter {
     
-    DruidDataSourceParameterExtractor(final DataSource dataSource) {
+    DefaultDataSourceSwapper(final DataSource dataSource) {
         super(dataSource);
     }
     
     @Override
     protected void convertProperties() {
-        getUpdater().transfer("maxActive", "maximumPoolSize");
-        // TODO need to be researched for maxIdle
-        getUpdater().transfer("maxIdle", "idleTimeout");
-        getUpdater().transfer("maxWait", "connectionTimeout");
-        // TODO need to be researched for minEvictableIdleTimeMillis
-        getUpdater().transfer("minEvictableIdleTimeMillis", "maxLifetime");
     }
 }

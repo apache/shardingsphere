@@ -42,16 +42,16 @@ public class DataSourceParameterFactory {
     public static DataSourceParameter build(final DataSource dataSource) {
         Optional<PoolType> poolType = PoolType.find(dataSource.getClass().getName());
         if (!poolType.isPresent()) {
-            return new DefaultDataSourceParameterExtractor(dataSource).extract();
+            return new DefaultDataSourceSwapper(dataSource).swap();
         }
         switch (poolType.get()) {
             case DRUID:
-                return new DruidDataSourceParameterExtractor(dataSource).extract();
+                return new DruidParameterSwapper(dataSource).swap();
             case DBCP2:
             case DBCP2_TOMCAT:
-                return new DBCPDataSourceParameterExtractor(dataSource).extract();
+                return new DBCP2ParameterSwapper(dataSource).swap();
             case HIKARI:
-                return new HikariDataSourceParameterExtractor(dataSource).extract();
+                return new HikariParameterSwapper(dataSource).swap();
             default:
                 return new DataSourceParameter();
         }

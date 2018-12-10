@@ -24,24 +24,24 @@ import lombok.Getter;
 import javax.sql.DataSource;
 
 /**
- * Abstract class for DataSourceParameterExtractor.
+ * Abstract class for {@code DataSourceSwapper}.
  *
  * @author zhaojun
  */
 @Getter
-public abstract class DataSourceParameterExtractorAdapter implements DataSourceParameterExtractor {
+public abstract class DataSourceSwapperAdapter implements DataSourceSwapper {
     
     private final DataSourceConfiguration dataSourceConfiguration;
     
     private final AdvancedMapUpdater<String, Object> updater;
     
-    DataSourceParameterExtractorAdapter(final DataSource dataSource) {
+    DataSourceSwapperAdapter(final DataSource dataSource) {
         dataSourceConfiguration = DataSourceConfiguration.getDataSourceConfiguration(dataSource);
         updater = new AdvancedMapUpdater<>(dataSourceConfiguration.getProperties());
     }
     
     @Override
-    public final DataSourceParameter extract() {
+    public final DataSourceParameter swap() {
         convertProperties();
         return dataSourceConfiguration.createDataSourceParameter();
     }
