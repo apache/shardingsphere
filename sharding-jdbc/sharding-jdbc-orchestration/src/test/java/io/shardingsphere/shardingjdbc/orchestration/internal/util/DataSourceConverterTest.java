@@ -18,13 +18,16 @@
 package io.shardingsphere.shardingjdbc.orchestration.internal.util;
 
 import io.shardingsphere.core.config.DataSourceConfiguration;
+import org.apache.commons.dbcp2.BasicDataSource;
 import org.junit.Test;
 
 import javax.sql.DataSource;
 import java.util.HashMap;
+import java.util.LinkedHashMap;
 import java.util.Map;
 
 import static org.hamcrest.CoreMatchers.is;
+import static org.junit.Assert.assertNotNull;
 import static org.junit.Assert.assertThat;
 import static org.mockito.Mockito.mock;
 import static org.mockito.Mockito.when;
@@ -50,6 +53,25 @@ public class DataSourceConverterTest {
     
     @Test
     public void assertGetDataSourceConfigurationMap() {
+        Map<String, DataSourceConfiguration> actual = DataSourceConverter.getDataSourceConfigurationMap(createDataSourceMap());
+        assertThat(actual.size(), is(2));
+        assertNotNull(actual.get("ds_0"));
+        assertNotNull(actual.get("ds_1"));
+    }
+    
+    private Map<String, DataSource> createDataSourceMap() {
+        Map<String, DataSource> result = new LinkedHashMap<>(2, 1);
+        result.put("ds_0", createDataSource("ds_0"));
+        result.put("ds_1", createDataSource("ds_1"));
+        return result;
+    }
+    
+    private DataSource createDataSource(final String name) {
+        BasicDataSource result = new BasicDataSource();
+        result.setDriverClassName("com.mysql.jdbc.Driver");
+        result.setUrl("jdbc:mysql://localhost:3306/" + name);
+        result.setUsername("root");
+        result.setPassword("root");
+        return result;
     }
 }
-    
