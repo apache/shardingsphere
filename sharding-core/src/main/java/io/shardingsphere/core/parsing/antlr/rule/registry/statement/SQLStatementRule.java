@@ -17,6 +17,7 @@
 
 package io.shardingsphere.core.parsing.antlr.rule.registry.statement;
 
+import com.google.common.base.Optional;
 import io.shardingsphere.core.parsing.antlr.optimizer.impl.SQLStatementOptimizer;
 import io.shardingsphere.core.parsing.antlr.rule.registry.segment.SQLSegmentRule;
 import io.shardingsphere.core.parsing.parser.sql.SQLStatement;
@@ -41,5 +42,14 @@ public final class SQLStatementRule {
     
     private final Collection<SQLSegmentRule> sqlSegmentRules = new LinkedList<>();
     
-    private final Class<? extends SQLStatementOptimizer> optimizerClass;
+    private final SQLStatementOptimizer optimizer;
+    
+    /**
+     * Get SQL statement optimizer.
+     * 
+     * @return SQL statement optimizer
+     */
+    public Optional<SQLStatementOptimizer> getOptimizer() {
+        return Optional.fromNullable(optimizer);
+    }
 }

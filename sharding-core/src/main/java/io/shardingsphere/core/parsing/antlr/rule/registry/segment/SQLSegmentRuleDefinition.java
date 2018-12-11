@@ -19,6 +19,8 @@ package io.shardingsphere.core.parsing.antlr.rule.registry.segment;
 
 import com.google.common.base.Joiner;
 import com.google.common.base.Strings;
+import io.shardingsphere.core.parsing.antlr.extractor.SQLSegmentExtractor;
+import io.shardingsphere.core.parsing.antlr.filler.SQLStatementFiller;
 import io.shardingsphere.core.parsing.antlr.rule.jaxb.entity.segment.SQLSegmentRuleDefinitionEntity;
 import io.shardingsphere.core.parsing.antlr.rule.jaxb.entity.segment.SQLSegmentRuleEntity;
 import lombok.Getter;
@@ -51,16 +53,16 @@ public final class SQLSegmentRuleDefinition {
     }
     
     @SuppressWarnings("unchecked")
-    @SneakyThrows
     private void init(final SQLSegmentRuleDefinitionEntity ruleDefinitionEntity) {
         for (SQLSegmentRuleEntity each : ruleDefinitionEntity.getRules()) {
             rules.put(each.getId(), new SQLSegmentRule(each.getId(), 
-                    getActualClass(ruleDefinitionEntity.getBasePackage(), ruleDefinitionEntity.getExtractorBasePackage(), each.getExtractorClass()),
-                    getActualClass(ruleDefinitionEntity.getBasePackage(), ruleDefinitionEntity.getFillerBasePackage(), each.getFillerClass())));
+                    (SQLSegmentExtractor) newClassInstance(ruleDefinitionEntity.getBasePackage(), ruleDefinitionEntity.getExtractorBasePackage(), each.getExtractorClass()),
+                    (SQLStatementFiller) newClassInstance(ruleDefinitionEntity.getBasePackage(), ruleDefinitionEntity.getFillerBasePackage(), each.getFillerClass())));
         }
     }
     
-    private Class getActualClass(final String basePackage, final String classPackage, final String className) throws ClassNotFoundException {
-        return Strings.isNullOrEmpty(className) ? null : Class.forName(Joiner.on('.').join(basePackage, classPackage, className));
+    @SneakyThrows
+    private Object newClassInstance(final String basePackage, final String classPackage, final String className) {
+        return Strings.isNullOrEmpty(className) ? null : Class.forName(Joiner.on('.').join(basePackage, classPackage, className)).newInstance();
     }
 }

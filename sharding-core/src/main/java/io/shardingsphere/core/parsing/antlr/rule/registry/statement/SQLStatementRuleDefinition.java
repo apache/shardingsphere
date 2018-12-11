@@ -21,6 +21,7 @@ import com.google.common.base.CaseFormat;
 import com.google.common.base.Joiner;
 import com.google.common.base.Splitter;
 import com.google.common.base.Strings;
+import io.shardingsphere.core.parsing.antlr.optimizer.impl.SQLStatementOptimizer;
 import io.shardingsphere.core.parsing.antlr.rule.jaxb.entity.statement.SQLStatementRuleDefinitionEntity;
 import io.shardingsphere.core.parsing.antlr.rule.jaxb.entity.statement.SQLStatementRuleEntity;
 import io.shardingsphere.core.parsing.antlr.rule.registry.segment.SQLSegmentRule;
@@ -58,7 +59,7 @@ public final class SQLStatementRuleDefinition {
         for (SQLStatementRuleEntity each : dialectRuleDefinitionEntity.getRules()) {
             SQLStatementRule sqlStatementRule = new SQLStatementRule(each.getContext(), 
                     (Class<? extends SQLStatement>) Class.forName(each.getSqlStatementClass()),
-                    getActualClass(dialectRuleDefinitionEntity.getBasePackage(), dialectRuleDefinitionEntity.getOptimizerBasePackage(), each.getOptimizerClass()));
+                    (SQLStatementOptimizer) newClassInstance(dialectRuleDefinitionEntity.getBasePackage(), dialectRuleDefinitionEntity.getOptimizerBasePackage(), each.getOptimizerClass()));
             sqlStatementRule.getSqlSegmentRules().addAll(createSQLSegmentRules(each.getSqlSegmentRuleRefs(), sqlSegmentRuleDefinition));
             rules.put(getContextClassName(each.getContext()), sqlStatementRule);
         }
@@ -76,7 +77,8 @@ public final class SQLStatementRuleDefinition {
         return CaseFormat.LOWER_CAMEL.to(CaseFormat.UPPER_CAMEL, context + "Context");
     }
     
-    private Class getActualClass(final String basePackage, final String classPackage, final String className) throws ClassNotFoundException {
-        return Strings.isNullOrEmpty(className) ? null : Class.forName(Joiner.on('.').join(basePackage, classPackage, className));
+    @SneakyThrows
+    private Object newClassInstance(final String basePackage, final String classPackage, final String className) {
+        return Strings.isNullOrEmpty(className) ? null : Class.forName(Joiner.on('.').join(basePackage, classPackage, className)).newInstance();
     }
 }

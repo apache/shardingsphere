@@ -17,6 +17,7 @@
 
 package io.shardingsphere.core.parsing.antlr.rule.registry.segment;
 
+import com.google.common.base.Optional;
 import io.shardingsphere.core.parsing.antlr.extractor.SQLSegmentExtractor;
 import io.shardingsphere.core.parsing.antlr.filler.SQLStatementFiller;
 import lombok.Getter;
@@ -33,7 +34,16 @@ public final class SQLSegmentRule {
     
     private final String id;
     
-    private final Class<? extends SQLSegmentExtractor> extractorClass;
+    private final SQLSegmentExtractor extractor;
     
-    private final Class<? extends SQLStatementFiller> fillerClass;
+    private final SQLStatementFiller filler;
+    
+    /**
+     * Get SQL statement filler.
+     *
+     * @return SQL statement filler
+     */
+    public Optional<SQLStatementFiller> getFiller() {
+        return Optional.fromNullable(filler);
+    }
 }
