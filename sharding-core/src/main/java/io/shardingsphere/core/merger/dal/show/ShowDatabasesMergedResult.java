@@ -28,7 +28,6 @@ import java.sql.Clob;
 import java.sql.SQLException;
 import java.sql.SQLFeatureNotSupportedException;
 import java.sql.SQLXML;
-import java.util.Calendar;
 import java.util.Collections;
 import java.util.List;
 
@@ -38,7 +37,7 @@ import java.util.List;
  * @author chenqingyang
  */
 @RequiredArgsConstructor
-public final class ShowDatabasesMergedResult implements MergedResult {
+public final class ShowDatabasesMergedResult extends LocalMergedResultAdapter implements MergedResult {
     
     private final List<String> schemas;
     
@@ -50,11 +49,7 @@ public final class ShowDatabasesMergedResult implements MergedResult {
     
     @Override
     public boolean next() {
-        if (currentIndex < schemas.size()) {
-            currentIndex++;
-            return true;
-        }
-        return false;
+        return currentIndex++ < schemas.size();
     }
     
     @Override
@@ -63,35 +58,5 @@ public final class ShowDatabasesMergedResult implements MergedResult {
             throw new SQLFeatureNotSupportedException();
         }
         return schemas.get(currentIndex - 1);
-    }
-    
-    @Override
-    public Object getValue(final String columnLabel, final Class<?> type) throws SQLException {
-        return getValue(1, type);
-    }
-    
-    @Override
-    public Object getCalendarValue(final int columnIndex, final Class<?> type, final Calendar calendar) throws SQLException {
-        throw new SQLFeatureNotSupportedException();
-    }
-    
-    @Override
-    public Object getCalendarValue(final String columnLabel, final Class<?> type, final Calendar calendar) throws SQLException {
-        throw new SQLFeatureNotSupportedException();
-    }
-    
-    @Override
-    public InputStream getInputStream(final int columnIndex, final String type) throws SQLException {
-        throw new SQLFeatureNotSupportedException();
-    }
-    
-    @Override
-    public InputStream getInputStream(final String columnLabel, final String type) throws SQLException {
-        throw new SQLFeatureNotSupportedException();
-    }
-    
-    @Override
-    public boolean wasNull() {
-        return false;
     }
 }
