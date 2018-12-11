@@ -1,4 +1,5 @@
 import axios from 'axios'
+import { Message } from 'element-ui'
 
 const service = axios.create({
   baseURL: process.env.BASE_API,
@@ -7,7 +8,7 @@ const service = axios.create({
 
 service.interceptors.request.use(
   config => {
-    //todo
+    // todo
   },
   error => {
     console.log(error)
