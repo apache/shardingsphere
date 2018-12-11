@@ -23,20 +23,20 @@ import org.junit.Test;
 import static org.junit.Assert.assertFalse;
 import static org.junit.Assert.assertTrue;
 
-public final class ParsingRuleDefinitionRegistryTest {
+public final class ParsingRuleRegistryTest {
     
     @Test
     public void assertFindSQLStatementRule() {
-        assertTrue(ParsingRuleDefinitionRegistry.getInstance().findSQLStatementRule(DatabaseType.MySQL, "CreateTableContext").isPresent());
+        assertTrue(ParsingRuleRegistry.getInstance().findSQLStatementRule(DatabaseType.MySQL, "CreateTableContext").isPresent());
     }
     
     @Test
     public void assertNotFindSQLStatementRule() {
-        assertFalse(ParsingRuleDefinitionRegistry.getInstance().findSQLStatementRule(DatabaseType.MySQL, "Invalid").isPresent());
+        assertFalse(ParsingRuleRegistry.getInstance().findSQLStatementRule(DatabaseType.MySQL, "Invalid").isPresent());
     }
     
     @Test
     public void assertFindSQLStatementRuleWithH2() {
-        assertTrue(ParsingRuleDefinitionRegistry.getInstance().findSQLStatementRule(DatabaseType.H2, "CreateTableContext").isPresent());
+        assertTrue(ParsingRuleRegistry.getInstance().findSQLStatementRule(DatabaseType.H2, "CreateTableContext").isPresent());
     }
 }

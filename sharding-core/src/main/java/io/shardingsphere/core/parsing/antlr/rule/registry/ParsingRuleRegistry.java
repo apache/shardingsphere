@@ -31,14 +31,14 @@ import java.util.HashMap;
 import java.util.Map;
 
 /**
- * Parsing rule definition registry.
+ * Parsing rule registry.
  *
  * @author zhangliang
  */
 @NoArgsConstructor(access = AccessLevel.PRIVATE)
-public final class ParsingRuleDefinitionRegistry {
+public final class ParsingRuleRegistry {
     
-    private static volatile ParsingRuleDefinitionRegistry instance;
+    private static volatile ParsingRuleRegistry instance;
     
     private final Map<DatabaseType, SQLStatementRuleDefinition> sqlStatementRuleDefinitions = new HashMap<>(4, 1);
     
@@ -47,15 +47,15 @@ public final class ParsingRuleDefinitionRegistry {
     private final SQLStatementRuleDefinitionEntityLoader statementRuleDefinitionLoader = new SQLStatementRuleDefinitionEntityLoader();
     
     /**
-     * Get singleton instance of parsing rule definition registry.
+     * Get singleton instance of parsing rule registry.
      * 
-     * @return instance of parsing rule definition registry
+     * @return instance of parsing rule registry
      */
-    public static ParsingRuleDefinitionRegistry getInstance() {
+    public static ParsingRuleRegistry getInstance() {
         if (null == instance) {
-            synchronized (ParsingRuleDefinitionRegistry.class) {
+            synchronized (ParsingRuleRegistry.class) {
                 if (null == instance) {
-                    instance = new ParsingRuleDefinitionRegistry();
+                    instance = new ParsingRuleRegistry();
                     instance.init();
                 }
             }
