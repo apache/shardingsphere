@@ -4,7 +4,7 @@
                         sql-segment-rule-refs="tableNames, columnDefinitions, indexNames, outlinePrimaryKey" 
                         optimizer-class="ddl.CreateTableOptimizer" />
     <sql-statement-rule context="alterTable" sql-statement-class="io.shardingsphere.core.parsing.antlr.sql.statement.ddl.AlterTableStatement" 
-                        sql-segment-rule-refs="tableNames, renameTable, addColumn, dropColumn, changeColumn, modifyColumn, addIndex, dropIndex, renameIndex, dropPrimaryKey" 
+                        sql-segment-rule-refs="tableNames, outlinePrimaryKey, renameTable, addColumn, dropColumn, changeColumn, modifyColumn, addIndex, dropIndex, renameIndex, dropPrimaryKey" 
                         optimizer-class="ddl.dialect.mysql.MySQLAlterTableOptimizer" />
     <sql-statement-rule context="dropTable" sql-statement-class="io.shardingsphere.core.parsing.parser.sql.ddl.DDLStatement" sql-segment-rule-refs="tableNames" />
     <sql-statement-rule context="truncateTable" sql-statement-class="io.shardingsphere.core.parsing.parser.sql.ddl.DDLStatement" sql-segment-rule-refs="tableName" />
