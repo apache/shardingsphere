@@ -23,8 +23,7 @@ import io.shardingsphere.core.parsing.antlr.rule.jaxb.loader.RuleDefinitionEntit
 import lombok.SneakyThrows;
 
 import javax.xml.bind.JAXBContext;
-import java.io.File;
-import java.net.URL;
+import java.io.InputStream;
 
 /**
  * SQL segment rule definition entity loader for JAXB.
@@ -36,8 +35,8 @@ public final class SQLSegmentRuleDefinitionEntityLoader implements RuleDefinitio
     @Override
     @SneakyThrows
     public SQLSegmentRuleDefinitionEntity load(final String sqlSegmentRuleDefinitionFile) {
-        URL url = SQLSegmentRuleDefinitionEntityLoader.class.getClassLoader().getResource(sqlSegmentRuleDefinitionFile);
-        Preconditions.checkNotNull(url, "Cannot load SQL segment rule definition file.");
-        return (SQLSegmentRuleDefinitionEntity) JAXBContext.newInstance(SQLSegmentRuleDefinitionEntity.class).createUnmarshaller().unmarshal(new File(url.getPath()));
+        InputStream inputStream = SQLSegmentRuleDefinitionEntityLoader.class.getClassLoader().getResourceAsStream(sqlSegmentRuleDefinitionFile);
+        Preconditions.checkNotNull(inputStream, "Cannot load SQL segment rule definition file :%s, ", sqlSegmentRuleDefinitionFile);
+        return (SQLSegmentRuleDefinitionEntity) JAXBContext.newInstance(SQLSegmentRuleDefinitionEntity.class).createUnmarshaller().unmarshal(inputStream);
     }
 }

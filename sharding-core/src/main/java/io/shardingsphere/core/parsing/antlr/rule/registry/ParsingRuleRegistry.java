@@ -38,40 +38,25 @@ import java.util.Map;
 @NoArgsConstructor(access = AccessLevel.PRIVATE)
 public final class ParsingRuleRegistry {
     
-    private static volatile ParsingRuleRegistry instance;
+    private static final Map<DatabaseType, SQLStatementRuleDefinition> SQL_STATEMENT_RULE_DEFINITIONS = new HashMap<>(4, 1);
     
-    private final Map<DatabaseType, SQLStatementRuleDefinition> sqlStatementRuleDefinitions = new HashMap<>(4, 1);
-    
-    private final SQLSegmentRuleDefinitionEntityLoader segmentRuleDefinitionLoader = new SQLSegmentRuleDefinitionEntityLoader();
-    
-    private final SQLStatementRuleDefinitionEntityLoader statementRuleDefinitionLoader = new SQLStatementRuleDefinitionEntityLoader();
-    
-    /**
-     * Get singleton instance of parsing rule registry.
-     * 
-     * @return instance of parsing rule registry
-     */
-    public static ParsingRuleRegistry getInstance() {
-        if (null == instance) {
-            synchronized (ParsingRuleRegistry.class) {
-                if (null == instance) {
-                    instance = new ParsingRuleRegistry();
-                    instance.init();
-                }
-            }
-        }
-        return instance;
+    static {
+        init();
     }
     
-    private void init() {
+    private static void init() {
+        SQLSegmentRuleDefinitionEntityLoader segmentRuleDefinitionLoader = new SQLSegmentRuleDefinitionEntityLoader();
+        SQLStatementRuleDefinitionEntityLoader statementRuleDefinitionLoader = new SQLStatementRuleDefinitionEntityLoader();
         for (DatabaseType each : DatabaseType.values()) {
             if (DatabaseType.H2 != each) {
-                sqlStatementRuleDefinitions.put(each, init(DatabaseRuleDefinitionType.valueOf(each)));
+                SQL_STATEMENT_RULE_DEFINITIONS.put(each, init(segmentRuleDefinitionLoader, statementRuleDefinitionLoader, DatabaseRuleDefinitionType.valueOf(each)));
             }
         }
     }
     
-    private SQLStatementRuleDefinition init(final DatabaseRuleDefinitionType type) {
+    private static SQLStatementRuleDefinition init(
+            final SQLSegmentRuleDefinitionEntityLoader segmentRuleDefinitionLoader, final SQLStatementRuleDefinitionEntityLoader statementRuleDefinitionLoader, 
+            final DatabaseRuleDefinitionType type) {
         SQLSegmentRuleDefinition segmentRuleDefinition = new SQLSegmentRuleDefinition();
         segmentRuleDefinition.init(
                 segmentRuleDefinitionLoader.load(DatabaseRuleDefinitionType.COMMON_SQL_SEGMENT_RULE_DEFINITION), segmentRuleDefinitionLoader.load(type.getSqlSegmentRuleDefinitionFile()));
@@ -87,7 +72,7 @@ public final class ParsingRuleRegistry {
      * @param contextClassName context class name
      * @return SQL statement rule
      */
-    public Optional<SQLStatementRule> findSQLStatementRule(final DatabaseType databaseType, final String contextClassName) {
-        return Optional.fromNullable(sqlStatementRuleDefinitions.get(DatabaseType.H2 == databaseType ? DatabaseType.MySQL : databaseType).getRules().get(contextClassName));
+    public static Optional<SQLStatementRule> findSQLStatementRule(final DatabaseType databaseType, final String contextClassName) {
+        return Optional.fromNullable(SQL_STATEMENT_RULE_DEFINITIONS.get(DatabaseType.H2 == databaseType ? DatabaseType.MySQL : databaseType).getRules().get(contextClassName));
     }
 }
