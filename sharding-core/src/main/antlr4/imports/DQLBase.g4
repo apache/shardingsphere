@@ -26,8 +26,8 @@ havingClause
     : HAVING  expr
     ;
     
-limitClause:
-    LIMIT rangeClause
+limitClause
+    : LIMIT rangeClause
     ;
     
 partitionClause 

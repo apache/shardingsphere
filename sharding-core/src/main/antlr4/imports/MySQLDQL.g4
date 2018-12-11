@@ -34,43 +34,43 @@ subquery
 caseExpress
     : caseCond | caseComp
     ;
-
+    
 caseComp
     : CASE simpleExpr caseWhenComp+ elseResult? END  
     ;
-
+    
 caseWhenComp
     : WHEN simpleExpr THEN caseResult
     ;
-
+    
 caseCond
     : CASE whenResult+ elseResult? END
     ;
-
+    
 whenResult
     : WHEN booleanPrimary THEN caseResult
     ;
-
+    
 elseResult
     : ELSE caseResult
     ;
-
+    
 caseResult
     : expr
     ;
-
+    
 idListWithEmpty
     : LP_ RP_ | idList
     ;
-
+    
 tableReferences
     : tableReference(COMMA tableReference)*
     ;
-
+    
 tableReference
     : (tableFactor joinTable)+ | tableFactor joinTable+ | tableFactor
     ;
-
+    
 tableFactor
     : tableName (PARTITION idList)? (AS? alias)? indexHintList? | subquery AS? alias | LP_ tableReferences RP_
     ;

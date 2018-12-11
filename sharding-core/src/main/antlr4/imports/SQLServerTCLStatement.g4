@@ -1,7 +1,7 @@
 grammar SQLServerTCLStatement;
 
 import SQLServerKeyword, Keyword, SQLServerBase, DataType, Symbol;
-    
+
 setTransaction
     : SET TRANSACTION ISOLATION LEVEL
     (
@@ -12,7 +12,7 @@ setTransaction
         | ISOLATION LEVEL READ UNCOMMITTED
     )
     ;
-
+    
 commit
     : COMMIT 
     (
@@ -20,7 +20,7 @@ commit
         | WORK?
     )
     ;
-
+    
 rollback
     : ROLLBACK  
     (
@@ -28,11 +28,11 @@ rollback
         | WORK?
     )
     ;
-
+    
 savepoint
     : SAVE (TRAN | TRANSACTION) ID
     ;
-
+    
 beginWork
     : BEGIN (TRAN | TRANSACTION) (ID (WITH MARK STRING)?)?
     ;
