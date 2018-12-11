@@ -173,7 +173,13 @@ public class ConfigurationYamlConverterTest {
     
     @Test
     public void assertDumpProperties() {
+        String actual = ConfigurationYamlConverter.dumpProperties(createProperties());
+        assertTrue(actual.contains("key1"));
     }
     
-    
+    private Properties createProperties() {
+        Properties result = new Properties();
+        result.setProperty("key1", "value1");
+        return result;
+    }
 }
