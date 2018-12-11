@@ -29,6 +29,7 @@ import org.junit.Test;
 
 import java.util.Collections;
 import java.util.HashMap;
+import java.util.LinkedHashMap;
 import java.util.Map;
 import java.util.Properties;
 
@@ -160,9 +161,19 @@ public class ConfigurationYamlConverterTest {
     
     @Test
     public void assertDumpConfigMap() {
+        String actual = ConfigurationYamlConverter.dumpConfigMap(createConfigMap());
+        assertTrue(actual.contains("key1"));
+    }
+    
+    private Map<String, Object> createConfigMap() {
+        Map<String, Object> result = new LinkedHashMap<>();
+        result.put("key1", "value1");
+        return result;
     }
     
     @Test
     public void assertDumpProperties() {
     }
+    
+    
 }
