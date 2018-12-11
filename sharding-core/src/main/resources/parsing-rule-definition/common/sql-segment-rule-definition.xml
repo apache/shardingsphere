@@ -1,0 +1,18 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<sql-segment-rule-definition base-package="io.shardingsphere.core.parsing.antlr" extractor-base-package="extractor.impl" filler-base-package="filler.impl">
+    <sql-segment-rule id="tableName" extractor-class="TableNameExtractor" filler-class="TableFiller" />
+    <sql-segment-rule id="tableNames" extractor-class="TableNamesExtractor" filler-class="TableFiller" />
+    <sql-segment-rule id="indexName" extractor-class="IndexNameExtractor" filler-class="IndexFiller" />
+    <sql-segment-rule id="indexNames" extractor-class="IndexNamesExtractor" filler-class="IndexFiller" />
+    <sql-segment-rule id="columnDefinitions" extractor-class="ColumnDefinitionsExtractor" filler-class="ColumnDefinitionFiller" />
+    <sql-segment-rule id="outlinePrimaryKey" extractor-class="OutlinePrimaryKeyExtractor" filler-class="ConstraintDefinitionFiller" />
+    <sql-segment-rule id="renameTable" extractor-class="RenameTableExtractor" />
+    <sql-segment-rule id="renameIndex" extractor-class="RenameIndexExtractor" filler-class="IndexFiller" />
+    <sql-segment-rule id="dropColumn" extractor-class="DropColumnExtractor" filler-class="DropColumnFiller" />
+    <sql-segment-rule id="renameColumn" extractor-class="RenameColumnExtractor" />
+    <sql-segment-rule id="selectClause" extractor-class="SelectClauseExtractor" filler-class="SelectClauseFiller" />
+    <sql-segment-rule id="fromWhere" extractor-class="FromWhereExtractor" filler-class="FromWhereFiller" />
+    <sql-segment-rule id="groupBy" extractor-class="GroupByExtractor" filler-class="GroupByFiller" />
+    <sql-segment-rule id="orderBy" extractor-class="OrderByExtractor" filler-class="OrderByFiller" />
+    <sql-segment-rule id="limit" extractor-class="LimitExtractor" filler-class="LimitFiller" />
+</sql-segment-rule-definition>
