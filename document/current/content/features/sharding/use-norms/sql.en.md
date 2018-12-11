@@ -4,13 +4,18 @@ title = "SQL"
 weight = 1
 +++
 
-Because of the flexibility and complexity of SQL syntax and the different handling for SQL queries for distributed databases and single database, not all of the SQLs can be used in Sharding-Sphere.
+Since the syntax of SQL is flexible and complex and query situations of distributed databases and stand-alone databases are not identical with each other, SQLs incompatible with stand-alone databases are hard to avoid.
 
-This section lists the supported SQL syntax and the unsupported SQL syntax for user to look up. In the future, more and more SQL syntax will be supported in Sharding-Sphere.
+To try to avoid traps for users, this document has listed identified available SQL types and unavailable SQL types.
 
-## Supported SQL
+It is inevitably to have some SQLs that have not been listed yet, welcome to supplement for that. 
+We will also try to support those unavailable SQLs in future versions.
 
-Fully support DQL, DML and DDL. Support pagination, DISTINCT, ORDER BY, GROUP BY, aggregation and JOIN(cannot support cross database). Example for DQL: 
+## Available SQL
+
+Fully available for DQL, DML and DDL. 
+Available for pagination, DISTINCT, ORDER BY, GROUP BY, aggregation and JOIN(cannot support cross database). 
+Here is an example of a most complex kind of DQL:
 
 - Main SELECT
 
@@ -38,35 +43,37 @@ tbl_name [AS] alias] [index_hint_list] |
 table_reference ([INNER] | {LEFT|RIGHT} [OUTER]) JOIN table_factor [JOIN ON conditional_expr | USING (column_list)] | 
 ```
 
-## Unsupported SQL
+## Unavailable SQL
 
-Cannot support brackets redundancy, CASE WHEN, HAVING, UNION (ALL), can support subquery limited.
+Unavailable for redundant parentheses, CASE WHEN, HAVING and UNION (ALL) and partly available for sub-query.
 
-Sharding-Sphere supports subquery similar with paging subquery ([Pagination]((/features/sharding/use-norms/pagination)). No matter how many layers in a subquery, Sharding-Sphere can always find the first subquery that contains the table data, once the sub-subquery containing table data is found in the lower nest, Sharding-Sphere will throw an exception.
+Available for not only sub-query of pagination (see [pagination](http://shardingsphere.io/document/current/cn/features/sharding/usage-standard/pagination) for detail), but also sub-query with equivalent pattern. 
+No matter how many layers are nested, ShardingSphere can parse to the first sub-query that contains data table. 
+Once it finds another sub-query of this kind in the sub-level nested, it will directly throw a parsing exception.
 
-For example, the following subquery is ok: 
+For example, the following sub-query is available for ShardingSphere:
 
 ```sql
 SELECT COUNT(*) FROM (SELECT * FROM t_order o)
 ```
-
-But this subquery will cause exceptions: 
+ 
+The following sub-query is unavailable:
 
 ```sql
 SELECT COUNT(*) FROM (SELECT * FROM t_order o WHERE o.id IN (SELECT id FROM t_order WHERE status = ?))
 ```
 
-Simply speaking, none-functional subquery can be supported in most cases, such as pagination or statistics, etc, but subquery for business is not supported currently.
+To be simple, through sub-query, non-functional requirements are available in most cases, such as pagination, sum count and so on; but functional requirements are unavailable for now.
 
-In addition, subquery containing aggregate functions are not supported currently due to merge constraints.
+Due to the restriction of merger, sub-query that contains aggregate function is unavailable for now.
 
-Can not support SQL which include schema. Because of Sharding-Sphere is manage multiple data sources as one logic data source, so all SQL should be in one logic schema.
+SQL that contains schema is unavailable, for the concept of ShardingSphere is to use multiple data source as one data source, so all the SQL visits are based on one logic schema.
 
 ## Example
 
-### Supported SQL
+### Available SQL
 
-| SQL                                                                                         | Required condition                  |
+| SQL                                                                                         | Necessary conditions                |
 | ------------------------------------------------------------------------------------------- | ----------------------------------- |
 | SELECT * FROM tbl_name                                                                      |                                     |
 | SELECT * FROM tbl_name WHERE (col1 = ? or col2 = ?) and col3 = ?                            |                                     |
@@ -84,27 +91,26 @@ Can not support SQL which include schema. Because of Sharding-Sphere is manage m
 | TRUNCATE TABLE tbl_name                                                                     |                                     |
 | CREATE INDEX idx_name ON tbl_name                                                           |                                     |
 | DROP INDEX idx_name ON tbl_name                                                             |                                     |
-| DROP INDEX idx_name                                                                         |  Configure logic-index in TableRule |
-| SELECT DISTINCT * FROM tbl_name WHERE col1 = ?                                              |  Will support at 3.1.0, not released yet |
-| SELECT COUNT(DISTINCT col1) FROM tbl_name                                                   |  Will support at 3.1.0, not released yet |
+| DROP INDEX idx_name                                                                         |  Logic-index is configurated in TableRule |
+| SELECT DISTINCT * FROM tbl_name WHERE col1 = ?                                              |  Will be available in 3.1.0, no official release for now |
+| SELECT COUNT(DISTINCT col1) FROM tbl_name                                                   |  Will be available in 3.1.0, no official release for now |
 
-### Unsupported SQL
+### Available SQL
 
-| SQL                                                                                         | Unsupported reason                                      |
-| ------------------------------------------------------------------------------------------- |-------------------------------------------------------- |
-| INSERT INTO tbl_name (col1, col2, ...) SELECT col1, col2, ... FROM tbl_name WHERE col3 = ?  | INSERT .. SELECT                                        |
-| INSERT INTO tbl_name SET col1 = ?                                                           | INSERT .. SET                                           |
-| SELECT COUNT(col1) as count_alias FROM tbl_name GROUP BY col1 HAVING count_alias > ?        | HAVING                                                  |
-| SELECT * FROM tbl_name1 UNION SELECT * FROM tbl_name2                                       | UNION                                                   |
-| SELECT * FROM tbl_name1 UNION ALL SELECT * FROM tbl_name2                                   | UNION ALL                                               |
-| SELECT * FROM tbl_name1 WHERE (val1=?) AND (val1=?)                                         | brackets redundancy                                     |
-| SELECT * FROM ds.tbl_name1                                                                  | include schema                                          |
-| SELECT SUM(DISTINCT col1), SUM(col1) FROM tbl_name                                          | Please refer to the detail of supporting `DISTINCT`     |
+| SQL                                                                                         | Necessary conditions               |
+| ------------------------------------------------------------------------------------------- |----------------------------------- |
+| INSERT INTO tbl_name (col1, col2, ...) SELECT col1, col2, ... FROM tbl_name WHERE col3 = ?  | INSERT .. SELECT                   |
+| INSERT INTO tbl_name SET col1 = ?                                                           | INSERT .. SET                      |
+| SELECT COUNT(col1) as count_alias FROM tbl_name GROUP BY col1 HAVING count_alias > ?        | HAVING                             |
+| SELECT * FROM tbl_name1 UNION SELECT * FROM tbl_name2                                       | UNION                              |
+| SELECT * FROM tbl_name1 UNION ALL SELECT * FROM tbl_name2                                   | UNION ALL                          |
+| SELECT * FROM tbl_name1 WHERE (val1=?) AND (val1=?)                                         | Redundant parentheses              |
+| SELECT * FROM ds.tbl_name1                                                                  | Contain schema                     |
+| SELECT SUM(DISTINCT col1), SUM(col1) FROM tbl_name                                          | See `DISTINCT` availability detail |
 
+## `DISTINCT` Availability Detail (will be available in 3.1.0, no official release for now)
 
-## More detail of supporting `DISTINCT` syntax (Will support at 3.1.0, not released yet)
-
-### Supported SQL
+### Available SQL
 
 | SQL                                                                                         | Required condition                  |
 | ------------------------------------------------------------------------------------------- | ----------------------------------- |
@@ -118,13 +124,13 @@ Can not support SQL which include schema. Because of Sharding-Sphere is manage m
 | SELECT COUNT(DISTINCT col1) FROM tbl_name GROUP BY col1                                     |                                     |
 | SELECT COUNT(DISTINCT col1), col1 FROM tbl_name GROUP BY col1                               |                                     |
 
-### Unsupported SQL
+### Unavailable SQL
 
-| SQL                                                                                         | Unsupported reason                                      |
-| ------------------------------------------------------------------------------------------- |-------------------------------------------------------- |
-| SELECT DISTINCT(col1) FROM tbl_name                                                         | DISTINCT()                                              |
-| SELECT COUNT(DISTINCT col1 + col2) FROM tbl_name                                            | PLUS FUNCTION + DISTINCT                                |
-| SELECT AVG(DISTINCT col1) FROM tbl_name                                                     | AVG(DISTINCT)                                           |
-| SELECT COUNT(DISTINCT col1), SUM(DISTINCT col1) FROM tbl_name                               | use two of the aggregation functions of DISTINCT        |
-| SELECT SUM(DISTINCT col1), SUM(col1) FROM tbl_name                                          | use regular and DISTINCT aggregation functions together |
-| SELECT col1, COUNT(DISTINCT col1) FROM tbl_name GROUP BY col1                               | the order of COUNT(DISTINCT) and regular select item    |
+| SQL                                                                                         | Unavailable reasons                                                            |
+| ------------------------------------------------------------------------------------------- |------------------------------------------------------------------------------- |
+| SELECT DISTINCT(col1) FROM tbl_name                                                         | DISTINCT()                                                                     |
+| SELECT COUNT(DISTINCT col1 + col2) FROM tbl_name                                            | PLUS FUNCTION + DISTINCT                                                       |
+| SELECT AVG(DISTINCT col1) FROM tbl_name                                                     | AVG(DISTINCT)                                                                  |
+| SELECT COUNT(DISTINCT col1), SUM(DISTINCT col1) FROM tbl_name                               | Use two kinds of DISTINCT aggregate function in the same time                  |
+| SELECT SUM(DISTINCT col1), SUM(col1) FROM tbl_name                                          | Use normal aggregate function and DISTINCT aggregate function in the same time |
+| SELECT col1, COUNT(DISTINCT col1) FROM tbl_name GROUP BY col1                               | The problem of the order of COUNT (DISTINCT) and ordinary query items          |
