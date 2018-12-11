@@ -15,31 +15,31 @@
  * </p>
  */
 
-package io.shardingsphere.transaction.xa.convert.extractor;
+package io.shardingsphere.transaction.xa.convert.swap;
 
 import io.shardingsphere.core.constant.transaction.ProxyPoolType;
 
 import javax.sql.DataSource;
-import java.util.Map;
 
 /**
- * Extract datasource parameter from DBCP connection pool.
+ * DBCP2 parameter swapper.
  *
  * @author zhaojun
  */
-public final class DBCPDataSourceParameterExtractor extends DataSourceParameterExtractorAdapter {
+public final class DBCP2ParameterSwapper extends DataSourceSwapperAdapter {
     
-    DBCPDataSourceParameterExtractor(final DataSource dataSource) {
+    DBCP2ParameterSwapper(final DataSource dataSource) {
         super(dataSource);
     }
     
     @Override
     protected void convertProperties() {
-        Map<String, Object> properties = getDataSourceConfiguration().getProperties();
-        properties.put("maximumPoolSize", properties.get("maxTotal"));
-        properties.put("idleTimeout", properties.get("maxIdle"));
-        properties.put("connectionTimeout", properties.get("maxWaitMillis"));
-        properties.put("maxLifetime", properties.get("maxConnLifetimeMillis"));
-        properties.put("proxyDatasourceType", ProxyPoolType.TOMCAT_DBCP2);
+        getUpdater().transfer("maxTotal", "maximumPoolSize");
+        getUpdater().transfer("minIdle", "minimumPoolSize");
+        getUpdater().transfer("minEvictableIdleTimeMillis", "idleTimeout");
+        getUpdater().transfer("maxWaitMillis", "connectionTimeout");
+        getUpdater().transfer("maxConnLifetimeMillis", "maxLifetime");
+        getUpdater().transfer("timeBetweenEvictionRunsMillis", "maintenanceInterval");
+        getUpdater().getDelegateMap().put("proxyDatasourceType", ProxyPoolType.TOMCAT_DBCP2);
     }
 }

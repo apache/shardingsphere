@@ -15,22 +15,22 @@
  * </p>
  */
 
-package io.shardingsphere.transaction.xa.convert.extractor;
+package io.shardingsphere.transaction.xa.convert.swap;
 
 import io.shardingsphere.core.rule.DataSourceParameter;
 
 /**
- * Extract datasource parameter from datasource.
+ * Pick up property from datasource then swap to datasource parameter.
  *
  * @author zhaojun
  */
-public interface DataSourceParameterExtractor {
+public interface DataSourceSwapper {
     
     /**
-     * Get the DataSource pool property, then convert to datasource parameter.
+     * Pick up property from datasource then swap to datasource parameter.
      *
      * @return dataSource parameter
      */
-    DataSourceParameter extract();
+    DataSourceParameter swap();
 }
 

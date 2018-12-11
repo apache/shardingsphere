@@ -17,25 +17,27 @@
 
 package io.shardingsphere.transaction.xa.manager;
 
-import com.atomikos.datasource.xa.jdbc.JdbcTransactionalResource;
+import com.atomikos.beans.PropertyException;
+import io.shardingsphere.core.rule.DataSourceParameter;
 
+import javax.sql.DataSource;
 import javax.sql.XADataSource;
 
 /**
- * Sharding transactional recovery resource.
+ * XA data source wrapper.
  *
  * @author zhaojun
  */
-final class ShardingTransactionalResource extends JdbcTransactionalResource {
+public interface XADataSourceWrapper {
     
     /**
-     * Constructs a new instance with a given name and XADataSource.
+     * Get a wrapper datasource pool for XA.
      *
-     * @param serverName The unique name.
-     * @param xaDataSource XA data source
+     * @param xaDataSource xa data source
+     * @param dataSourceName data source name
+     * @param parameter data source parameter
+     * @return wrapper xa data source pool
+     * @throws PropertyException property exception
      */
-    ShardingTransactionalResource(final String serverName, final XADataSource xaDataSource) {
-        super(serverName, xaDataSource);
-        super.setAcceptAllXAResources(true);
-    }
+    DataSource wrap(XADataSource xaDataSource, String dataSourceName, DataSourceParameter parameter) throws PropertyException;
 }
