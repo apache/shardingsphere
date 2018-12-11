@@ -18,11 +18,16 @@
 package io.shardingsphere.shardingproxy.backend.sctl;
 
 import io.shardingsphere.core.constant.transaction.TransactionType;
+import io.shardingsphere.shardingproxy.backend.ResultPacket;
 import io.shardingsphere.shardingproxy.backend.jdbc.connection.BackendConnection;
 import io.shardingsphere.shardingproxy.transport.mysql.packet.command.CommandResponsePackets;
+import io.shardingsphere.shardingproxy.transport.mysql.packet.command.query.FieldCountPacket;
+import io.shardingsphere.shardingproxy.transport.mysql.packet.command.query.QueryResponsePackets;
 import io.shardingsphere.shardingproxy.transport.mysql.packet.generic.ErrPacket;
-import io.shardingsphere.shardingproxy.transport.mysql.packet.generic.OKPacket;
+import org.hamcrest.CoreMatchers;
 import org.junit.Test;
+
+import java.sql.SQLException;
 
 import static org.hamcrest.CoreMatchers.containsString;
 import static org.hamcrest.CoreMatchers.instanceOf;
@@ -34,23 +39,29 @@ public class ShardingCTLShowBackendHandlerTest {
     private BackendConnection backendConnection = new BackendConnection(TransactionType.LOCAL);
     
     @Test
-    public void assertShowTransactionType() {
+    public void assertShowTransactionType() throws SQLException {
         backendConnection.setCurrentSchema("schema");
         ShardingCTLShowBackendHandler backendHandler = new ShardingCTLShowBackendHandler("sctl:show transaction_type", backendConnection);
         CommandResponsePackets actual = backendHandler.execute();
-        assertThat(actual.getHeadPacket(), instanceOf(OKPacket.class));
-        OKPacket okPacket = (OKPacket) actual.getHeadPacket();
-        assertThat(okPacket.getInfo(), is(" current transaction type is: LOCAL"));
+        assertThat(actual, instanceOf(QueryResponsePackets.class));
+        assertThat(actual.getHeadPacket(), instanceOf(FieldCountPacket.class));
+        assertThat(actual.getPackets().size(), is(3));
+        backendHandler.next();
+        ResultPacket resultPacket = backendHandler.getResultValue();
+        assertThat(resultPacket.getData().iterator().next(), CoreMatchers.<Object>is("LOCAL"));
     }
     
     @Test
-    public void assertShowCachedConnections() {
+    public void assertShowCachedConnections() throws SQLException {
         backendConnection.setCurrentSchema("schema");
         ShardingCTLShowBackendHandler backendHandler = new ShardingCTLShowBackendHandler("sctl:show cached_connections", backendConnection);
         CommandResponsePackets actual = backendHandler.execute();
-        assertThat(actual.getHeadPacket(), instanceOf(OKPacket.class));
-        OKPacket okPacket = (OKPacket) actual.getHeadPacket();
-        assertThat(okPacket.getInfo(), is(" current channel cached connection size is: 0"));
+        assertThat(actual, instanceOf(QueryResponsePackets.class));
+        assertThat(actual.getHeadPacket(), instanceOf(FieldCountPacket.class));
+        assertThat(actual.getPackets().size(), is(3));
+        backendHandler.next();
+        ResultPacket resultPacket = backendHandler.getResultValue();
+        assertThat(resultPacket.getData().iterator().next(), CoreMatchers.<Object>is(0));
     }
     
     @Test
