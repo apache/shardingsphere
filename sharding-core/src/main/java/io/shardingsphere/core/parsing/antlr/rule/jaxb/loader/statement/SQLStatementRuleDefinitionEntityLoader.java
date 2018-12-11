@@ -20,9 +20,9 @@ package io.shardingsphere.core.parsing.antlr.rule.jaxb.loader.statement;
 import com.google.common.base.Preconditions;
 import io.shardingsphere.core.parsing.antlr.rule.jaxb.entity.statement.SQLStatementRuleDefinitionEntity;
 import io.shardingsphere.core.parsing.antlr.rule.jaxb.loader.RuleDefinitionEntityLoader;
+import lombok.SneakyThrows;
 
 import javax.xml.bind.JAXBContext;
-import javax.xml.bind.JAXBException;
 import java.io.File;
 import java.net.URL;
 
@@ -34,7 +34,8 @@ import java.net.URL;
 public final class SQLStatementRuleDefinitionEntityLoader implements RuleDefinitionEntityLoader {
     
     @Override
-    public SQLStatementRuleDefinitionEntity load(final String sqlStatementRuleDefinitionFile) throws JAXBException {
+    @SneakyThrows
+    public SQLStatementRuleDefinitionEntity load(final String sqlStatementRuleDefinitionFile) {
         URL url = SQLStatementRuleDefinitionEntityLoader.class.getClassLoader().getResource(sqlStatementRuleDefinitionFile);
         Preconditions.checkNotNull(url, "Cannot load SQL statement rule definition file.");
         return (SQLStatementRuleDefinitionEntity) JAXBContext.newInstance(SQLStatementRuleDefinitionEntity.class).createUnmarshaller().unmarshal(new File(url.getPath()));

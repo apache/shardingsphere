@@ -15,22 +15,25 @@
  * </p>
  */
 
-package io.shardingsphere.core.parsing.antlr.rule.jaxb.loader;
+package io.shardingsphere.core.parsing.antlr.rule.registry.segment;
 
-import io.shardingsphere.core.parsing.antlr.rule.jaxb.entity.RuleDefinitionEntity;
+import io.shardingsphere.core.parsing.antlr.extractor.SQLSegmentExtractor;
+import io.shardingsphere.core.parsing.antlr.filler.SQLStatementFiller;
+import lombok.Getter;
+import lombok.RequiredArgsConstructor;
 
 /**
- * Rule definition entity loader for JAXB.
+ * SQL segment rule.
  *
  * @author zhangliang
  */
-public interface RuleDefinitionEntityLoader {
+@RequiredArgsConstructor
+@Getter
+public final class SQLSegmentRule {
     
-    /**
-     * Load rule definition from XML.
-     * 
-     * @param ruleDefinitionFile rule definition file
-     * @return rule definition entity for JAXB
-     */
-    RuleDefinitionEntity load(String ruleDefinitionFile);
+    private final String id;
+    
+    private final Class<? extends SQLSegmentExtractor> extractorClass;
+    
+    private final Class<? extends SQLStatementFiller> fillerClass;
 }

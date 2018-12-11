@@ -20,9 +20,9 @@ package io.shardingsphere.core.parsing.antlr.rule.jaxb.loader.segment;
 import com.google.common.base.Preconditions;
 import io.shardingsphere.core.parsing.antlr.rule.jaxb.entity.segment.SQLSegmentRuleDefinitionEntity;
 import io.shardingsphere.core.parsing.antlr.rule.jaxb.loader.RuleDefinitionEntityLoader;
+import lombok.SneakyThrows;
 
 import javax.xml.bind.JAXBContext;
-import javax.xml.bind.JAXBException;
 import java.io.File;
 import java.net.URL;
 
@@ -34,7 +34,8 @@ import java.net.URL;
 public final class SQLSegmentRuleDefinitionEntityLoader implements RuleDefinitionEntityLoader {
     
     @Override
-    public SQLSegmentRuleDefinitionEntity load(final String sqlSegmentRuleDefinitionFile) throws JAXBException {
+    @SneakyThrows
+    public SQLSegmentRuleDefinitionEntity load(final String sqlSegmentRuleDefinitionFile) {
         URL url = SQLSegmentRuleDefinitionEntityLoader.class.getClassLoader().getResource(sqlSegmentRuleDefinitionFile);
         Preconditions.checkNotNull(url, "Cannot load SQL segment rule definition file.");
         return (SQLSegmentRuleDefinitionEntity) JAXBContext.newInstance(SQLSegmentRuleDefinitionEntity.class).createUnmarshaller().unmarshal(new File(url.getPath()));
