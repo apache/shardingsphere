@@ -19,8 +19,6 @@ package io.shardingsphere.transaction.xa.convert.swap;
 
 import io.shardingsphere.core.constant.transaction.ProxyPoolType;
 
-import javax.sql.DataSource;
-
 /**
  * DBCP2 parameter swapper.
  *
@@ -32,19 +30,15 @@ public final class DBCP2ParameterSwapper extends DataSourceSwapperAdapter {
     
     private static final String TOMCAT_DBCP2_CLASS_NAME = "org.apache.tomcat.dbcp.dbcp2.BasicDataSource";
     
-    DBCP2ParameterSwapper(final DataSource dataSource) {
-        super(dataSource);
-    }
-    
     @Override
-    protected void convertProperties() {
-        getUpdater().transfer("maxTotal", "maximumPoolSize");
-        getUpdater().transfer("minIdle", "minimumPoolSize");
-        getUpdater().transfer("minEvictableIdleTimeMillis", "idleTimeout");
-        getUpdater().transfer("maxWaitMillis", "connectionTimeout");
-        getUpdater().transfer("maxConnLifetimeMillis", "maxLifetime");
-        getUpdater().transfer("timeBetweenEvictionRunsMillis", "maintenanceInterval");
-        getUpdater().getDelegateMap().put("proxyDatasourceType", ProxyPoolType.TOMCAT_DBCP2);
+    protected void convertProperties(final AdvancedMapUpdater<String, Object> updater) {
+        updater.transfer("maxTotal", "maximumPoolSize");
+        updater.transfer("minIdle", "minimumPoolSize");
+        updater.transfer("minEvictableIdleTimeMillis", "idleTimeout");
+        updater.transfer("maxWaitMillis", "connectionTimeout");
+        updater.transfer("maxConnLifetimeMillis", "maxLifetime");
+        updater.transfer("timeBetweenEvictionRunsMillis", "maintenanceInterval");
+        updater.getDelegateMap().put("proxyDatasourceType", ProxyPoolType.TOMCAT_DBCP2);
     }
     
     @Override

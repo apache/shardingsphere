@@ -19,6 +19,8 @@ package io.shardingsphere.transaction.xa.convert.swap;
 
 import io.shardingsphere.core.rule.DataSourceParameter;
 
+import javax.sql.DataSource;
+
 /**
  * Pick up property from datasource then swap to datasource parameter.
  *
@@ -29,9 +31,10 @@ public interface DataSourceSwapper {
     /**
      * Pick up property from datasource then swap to datasource parameter.
      *
+     * @param dataSource data source
      * @return dataSource parameter
      */
-    DataSourceParameter swap();
+    DataSourceParameter swap(DataSource dataSource);
     
     /**
      * Origin class name of datasource pool.

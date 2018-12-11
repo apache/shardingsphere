@@ -17,8 +17,6 @@
 
 package io.shardingsphere.transaction.xa.convert.swap;
 
-import javax.sql.DataSource;
-
 /**
  * Default data source parameter swapper.
  *
@@ -26,12 +24,8 @@ import javax.sql.DataSource;
  */
 public final class DefaultDataSourceSwapper extends DataSourceSwapperAdapter {
     
-    DefaultDataSourceSwapper(final DataSource dataSource) {
-        super(dataSource);
-    }
-    
     @Override
-    protected void convertProperties() {
+    protected void convertProperties(final AdvancedMapUpdater<String, Object> updater) {
     }
     
     @Override

@@ -31,20 +31,12 @@ import javax.sql.DataSource;
 @Getter
 public abstract class DataSourceSwapperAdapter implements DataSourceSwapper {
     
-    private final DataSourceConfiguration dataSourceConfiguration;
-    
-    private final AdvancedMapUpdater<String, Object> updater;
-    
-    DataSourceSwapperAdapter(final DataSource dataSource) {
-        dataSourceConfiguration = DataSourceConfiguration.getDataSourceConfiguration(dataSource);
-        updater = new AdvancedMapUpdater<>(dataSourceConfiguration.getProperties());
-    }
-    
     @Override
-    public final DataSourceParameter swap() {
-        convertProperties();
+    public final DataSourceParameter swap(final DataSource dataSource) {
+        DataSourceConfiguration dataSourceConfiguration = DataSourceConfiguration.getDataSourceConfiguration(dataSource);
+        convertProperties(new AdvancedMapUpdater<>(dataSourceConfiguration.getProperties()));
         return dataSourceConfiguration.createDataSourceParameter();
     }
     
-    protected abstract void convertProperties();
+    protected abstract void convertProperties(AdvancedMapUpdater<String, Object> updater);
 }

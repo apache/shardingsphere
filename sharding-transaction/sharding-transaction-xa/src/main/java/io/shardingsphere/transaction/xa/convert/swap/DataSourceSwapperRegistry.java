@@ -20,6 +20,7 @@ package io.shardingsphere.transaction.xa.convert.swap;
 import com.google.common.base.Splitter;
 import lombok.extern.slf4j.Slf4j;
 
+import javax.sql.DataSource;
 import java.util.HashMap;
 import java.util.Map;
 import java.util.ServiceLoader;
@@ -68,10 +69,11 @@ public class DataSourceSwapperRegistry {
     /**
      * Get data source swapper by class name.
      *
-     * @param className class name
+     * @param dataSource pool data source
      * @return data source swapper implement
      */
-    public DataSourceSwapper getSwapper(final String className) {
-        return DATA_SOURCE_SWAPPER_MAP.get(className);
+    public DataSourceSwapper getSwapper(final DataSource dataSource) {
+        DataSourceSwapper result = DATA_SOURCE_SWAPPER_MAP.get(dataSource.getClass().getName());
+        return null == result ? new DefaultDataSourceSwapper() : result;
     }
 }

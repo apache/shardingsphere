@@ -17,8 +17,6 @@
 
 package io.shardingsphere.transaction.xa.convert.swap;
 
-import javax.sql.DataSource;
-
 /**
  * Hikari datasource parameter swapper.
  *
@@ -28,15 +26,11 @@ public final class HikariParameterSwapper extends DataSourceSwapperAdapter {
     
     private static final String HIKARI_CLASS_NAME = "com.zaxxer.hikari.HikariDataSource";
     
-    HikariParameterSwapper(final DataSource dataSource) {
-        super(dataSource);
-    }
-    
     @Override
-    protected void convertProperties() {
-        getUpdater().transfer("jdbcUrl", "url");
-        getUpdater().transfer("maxPoolSize", "maximumPoolSize");
-        getUpdater().transfer("minimumIdle", "minimumPoolSize");
+    protected void convertProperties(final AdvancedMapUpdater<String, Object> updater) {
+        updater.transfer("jdbcUrl", "url");
+        updater.transfer("maxPoolSize", "maximumPoolSize");
+        updater.transfer("minimumIdle", "minimumPoolSize");
     }
     
     @Override
