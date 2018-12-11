@@ -20,6 +20,7 @@ package io.shardingsphere.shardingui.servcie.impl;
 import com.google.common.base.Optional;
 import io.shardingsphere.shardingui.common.domain.RegistryCenterConfig;
 import io.shardingsphere.shardingui.common.domain.RegistryCenterConfigs;
+import io.shardingsphere.shardingui.common.exception.ShardingUIException;
 import io.shardingsphere.shardingui.repository.RegistryCenterConfigsRepository;
 import io.shardingsphere.shardingui.servcie.RegistryCenterConfigService;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -47,13 +48,14 @@ public final class RegistryCenterConfigServiceImpl implements RegistryCenterConf
     }
     
     @Override
-    public boolean add(final RegistryCenterConfig config) {
+    public void add(final RegistryCenterConfig config) {
         RegistryCenterConfigs configs = loadAll();
-        boolean result = configs.getRegistryCenterConfigs().add(config);
-        if (result) {
-            registryCenterConfigsRepository.save(configs);
+        RegistryCenterConfig existedConfig = find(config.getName(), configs);
+        if (null != existedConfig) {
+            throw new ShardingUIException(ShardingUIException.SERVER_ERROR, "Registry center already existed!");
         }
-        return result;
+        configs.getRegistryCenterConfigs().add(config);
+        registryCenterConfigsRepository.save(configs);
     }
     
     @Override
@@ -67,8 +69,12 @@ public final class RegistryCenterConfigServiceImpl implements RegistryCenterConf
     }
     
     @Override
-    public void setActivated(final RegistryCenterConfig config) {
+    public void setActivated(final String name) {
         RegistryCenterConfigs configs = loadAll();
+        RegistryCenterConfig config = find(name, configs);
+        if (null == config) {
+            throw new ShardingUIException(ShardingUIException.SERVER_ERROR, "Registry center not existed!");
+        }
         RegistryCenterConfig activatedConfig = findActivatedRegistryCenterConfiguration(configs);
         if (!config.equals(activatedConfig)) {
             if (null != activatedConfig) {

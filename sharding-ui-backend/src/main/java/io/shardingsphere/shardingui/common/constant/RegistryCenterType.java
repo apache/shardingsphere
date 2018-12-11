@@ -21,7 +21,7 @@ import io.shardingsphere.shardingui.common.exception.ShardingUIException;
 
 /**
  * Registry center type.
- * 
+ *
  * @author chenqingyang
  */
 public enum RegistryCenterType {
@@ -36,7 +36,7 @@ public enum RegistryCenterType {
     
     /**
      * Get registry center type via name.
-     * 
+     *
      * @param name registry center name
      * @return registry center type
      */
@@ -46,6 +46,6 @@ public enum RegistryCenterType {
                 return each;
             }
         }
-        throw new ShardingUIException(String.format("Unsupported registry center `%s`", name));
+        throw new ShardingUIException(ShardingUIException.SERVER_ERROR, String.format("Unsupported registry center `%s`", name));
     }
 }

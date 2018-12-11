@@ -33,7 +33,7 @@ import java.io.Serializable;
 @Setter
 @NoArgsConstructor
 @AllArgsConstructor
-public class ResponseResult<T> implements Serializable {
+public final class ResponseResult<T> implements Serializable {
     
     private static final long serialVersionUID = 8144393142115317354L;
     
