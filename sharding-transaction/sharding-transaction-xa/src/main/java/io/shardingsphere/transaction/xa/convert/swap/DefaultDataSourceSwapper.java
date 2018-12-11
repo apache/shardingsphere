@@ -24,7 +24,7 @@ import javax.sql.DataSource;
  *
  * @author zhaojun
  */
-public class DefaultDataSourceSwapper extends DataSourceSwapperAdapter {
+public final class DefaultDataSourceSwapper extends DataSourceSwapperAdapter {
     
     DefaultDataSourceSwapper(final DataSource dataSource) {
         super(dataSource);
@@ -32,5 +32,10 @@ public class DefaultDataSourceSwapper extends DataSourceSwapperAdapter {
     
     @Override
     protected void convertProperties() {
+    }
+    
+    @Override
+    public String originClassName() {
+        return "";
     }
 }

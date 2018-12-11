@@ -26,6 +26,8 @@ import javax.sql.DataSource;
  */
 public final class HikariParameterSwapper extends DataSourceSwapperAdapter {
     
+    private static final String HIKARI_CLASS_NAME = "com.zaxxer.hikari.HikariDataSource";
+    
     HikariParameterSwapper(final DataSource dataSource) {
         super(dataSource);
     }
@@ -35,5 +37,10 @@ public final class HikariParameterSwapper extends DataSourceSwapperAdapter {
         getUpdater().transfer("jdbcUrl", "url");
         getUpdater().transfer("maxPoolSize", "maximumPoolSize");
         getUpdater().transfer("minimumIdle", "minimumPoolSize");
+    }
+    
+    @Override
+    public String originClassName() {
+        return HIKARI_CLASS_NAME;
     }
 }

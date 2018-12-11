@@ -32,5 +32,12 @@ public interface DataSourceSwapper {
      * @return dataSource parameter
      */
     DataSourceParameter swap();
+    
+    /**
+     * Origin class name of datasource pool.
+     *
+     * @return full class name
+     */
+    String originClassName();
 }
 

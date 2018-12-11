@@ -26,6 +26,8 @@ import javax.sql.DataSource;
  */
 public final class DruidParameterSwapper extends DataSourceSwapperAdapter {
     
+    private static final String DRUID_CLASS_NAME = "com.alibaba.druid.pool.DruidDataSource";
+    
     DruidParameterSwapper(final DataSource dataSource) {
         super(dataSource);
     }
@@ -37,5 +39,10 @@ public final class DruidParameterSwapper extends DataSourceSwapperAdapter {
         getUpdater().transfer("maxWait", "connectionTimeout");
         getUpdater().transfer("minEvictableIdleTimeMillis", "idleTimeout");
         getUpdater().transfer("timeBetweenEvictionRunsMillis", "maintenanceInterval");
+    }
+    
+    @Override
+    public String originClassName() {
+        return DRUID_CLASS_NAME;
     }
 }

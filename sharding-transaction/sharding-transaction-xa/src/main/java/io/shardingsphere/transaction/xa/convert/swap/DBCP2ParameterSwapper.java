@@ -28,6 +28,10 @@ import javax.sql.DataSource;
  */
 public final class DBCP2ParameterSwapper extends DataSourceSwapperAdapter {
     
+    private static final String DBCP2_CLASS_NAME = "org.apache.commons.dbcp2.BasicDataSource";
+    
+    private static final String TOMCAT_DBCP2_CLASS_NAME = "org.apache.tomcat.dbcp.dbcp2.BasicDataSource";
+    
     DBCP2ParameterSwapper(final DataSource dataSource) {
         super(dataSource);
     }
@@ -41,5 +45,10 @@ public final class DBCP2ParameterSwapper extends DataSourceSwapperAdapter {
         getUpdater().transfer("maxConnLifetimeMillis", "maxLifetime");
         getUpdater().transfer("timeBetweenEvictionRunsMillis", "maintenanceInterval");
         getUpdater().getDelegateMap().put("proxyDatasourceType", ProxyPoolType.TOMCAT_DBCP2);
+    }
+    
+    @Override
+    public String originClassName() {
+        return DBCP2_CLASS_NAME + ":" + TOMCAT_DBCP2_CLASS_NAME;
     }
 }
