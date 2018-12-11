@@ -26,6 +26,7 @@ import io.shardingsphere.core.parsing.antlr.extractor.registry.impl.ddl.DropInde
 import io.shardingsphere.core.parsing.antlr.extractor.registry.impl.ddl.dialect.sqlserver.SQLServerAlterTableExtractor;
 import io.shardingsphere.core.parsing.antlr.extractor.registry.impl.ddl.dialect.sqlserver.SQLServerDropTableExtractor;
 import io.shardingsphere.core.parsing.antlr.extractor.registry.impl.ddl.dialect.sqlserver.SQLServerTruncateTableExtractor;
+import io.shardingsphere.core.parsing.antlr.extractor.registry.impl.tcl.dialect.sqlserver.SQLServerSetVariableExtractor;
 import io.shardingsphere.core.parsing.antlr.parser.SQLStatementType;
 
 import java.util.HashMap;
@@ -36,6 +37,7 @@ import java.util.Map;
  * 
  * @author duhongjun
  * @author zhangliang
+ * @author maxiaoguang
  */
 public final class SQLServerSegmentsExtractorRegistry implements SQLSegmentsExtractorRegistry {
     
@@ -43,6 +45,7 @@ public final class SQLServerSegmentsExtractorRegistry implements SQLSegmentsExtr
     
     static {
         registerDDL();
+        registerTCL();
     }
     
     private static void registerDDL() {
@@ -53,6 +56,10 @@ public final class SQLServerSegmentsExtractorRegistry implements SQLSegmentsExtr
         EXTRACTORS.put(SQLStatementType.CREATE_INDEX, new CreateIndexExtractor());
         EXTRACTORS.put(SQLStatementType.ALTER_INDEX, new AlterIndexExtractor());
         EXTRACTORS.put(SQLStatementType.DROP_INDEX, new DropIndexExtractor());
+    }
+    
+    private static void registerTCL() {
+        EXTRACTORS.put(SQLStatementType.SET_VARIABLE, new SQLServerSetVariableExtractor());
     }
     
     @Override

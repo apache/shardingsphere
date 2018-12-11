@@ -17,11 +17,7 @@
 
 package io.shardingsphere.core.parsing.antlr.filler.registry;
 
-import java.util.HashMap;
-import java.util.Map;
-
 import com.google.common.base.Optional;
-
 import io.shardingsphere.core.parsing.antlr.filler.SQLStatementFiller;
 import io.shardingsphere.core.parsing.antlr.filler.impl.ColumnDefinitionFiller;
 import io.shardingsphere.core.parsing.antlr.filler.impl.ConstraintDefinitionFiller;
@@ -35,12 +31,14 @@ import io.shardingsphere.core.parsing.antlr.filler.impl.OrderByFiller;
 import io.shardingsphere.core.parsing.antlr.filler.impl.SelectClauseFiller;
 import io.shardingsphere.core.parsing.antlr.filler.impl.ShowParamFiller;
 import io.shardingsphere.core.parsing.antlr.filler.impl.TableFiller;
+import io.shardingsphere.core.parsing.antlr.filler.impl.TransactionOperationTypeFiller;
 import io.shardingsphere.core.parsing.antlr.sql.segment.FromWhereSegment;
 import io.shardingsphere.core.parsing.antlr.sql.segment.IndexSegment;
 import io.shardingsphere.core.parsing.antlr.sql.segment.LimitSegment;
 import io.shardingsphere.core.parsing.antlr.sql.segment.SQLSegment;
 import io.shardingsphere.core.parsing.antlr.sql.segment.SelectClauseSegment;
 import io.shardingsphere.core.parsing.antlr.sql.segment.ShowParamSegment;
+import io.shardingsphere.core.parsing.antlr.sql.segment.TransactionOperationTypeSegment;
 import io.shardingsphere.core.parsing.antlr.sql.segment.column.ColumnDefinitionSegment;
 import io.shardingsphere.core.parsing.antlr.sql.segment.column.DropColumnSegment;
 import io.shardingsphere.core.parsing.antlr.sql.segment.constraint.ConstraintDefinitionSegment;
@@ -49,10 +47,14 @@ import io.shardingsphere.core.parsing.antlr.sql.segment.order.GroupBySegment;
 import io.shardingsphere.core.parsing.antlr.sql.segment.order.OrderBySegment;
 import io.shardingsphere.core.parsing.antlr.sql.segment.table.TableSegment;
 
+import java.util.HashMap;
+import java.util.Map;
+
 /**
  * SQL statement filler registry.
  *
  * @author duhongjun
+ * @author maxiaoguang
  */
 public final class SQLStatementFillerRegistry {
     
@@ -71,6 +73,7 @@ public final class SQLStatementFillerRegistry {
         FILLERS.put(OrderBySegment.class, new OrderByFiller());
         FILLERS.put(LimitSegment.class, new LimitFiller());
         FILLERS.put(ShowParamSegment.class, new ShowParamFiller());
+        FILLERS.put(TransactionOperationTypeSegment.class, new TransactionOperationTypeFiller());
     }
     
     /**

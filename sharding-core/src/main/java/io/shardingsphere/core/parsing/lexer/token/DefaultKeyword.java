@@ -44,6 +44,7 @@ public enum DefaultKeyword implements Keyword {
     OF,
     IF,
     ON,
+    OFF,
     FOR,
     WHILE,
     DO,
@@ -158,6 +159,8 @@ public enum DefaultKeyword implements Keyword {
     SAVEPOINT,
     BEGIN,
     TRANSACTION,
+    AUTOCOMMIT,
+    IMPLICIT_TRANSACTIONS,
     
     /*
     Other Command

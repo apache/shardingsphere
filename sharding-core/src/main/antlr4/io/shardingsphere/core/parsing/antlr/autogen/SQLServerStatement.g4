@@ -18,6 +18,7 @@ execute
     | rollback
     | savepoint
     | beginWork
+    | setVariable
     | grant
     | revoke
     | deny
