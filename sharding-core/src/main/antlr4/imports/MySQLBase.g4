@@ -2,6 +2,10 @@ grammar MySQLBase;
 
 import MySQLKeyword, Keyword, BaseRule, DataType, Symbol;
 
+alias
+    : ID | PASSWORD
+    ;
+    
 characterSet
     : (CHARACTER | CHAR) SET EQ_? charsetName | CHARSET EQ_? charsetName
     ;
