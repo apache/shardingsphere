@@ -61,6 +61,7 @@ import lombok.NoArgsConstructor;
  *
  * @author zhangliang
  * @author panjuan
+ * @author maxiaoguang
  */
 @NoArgsConstructor(access = AccessLevel.PRIVATE)
 public final class SQLParserFactory {
