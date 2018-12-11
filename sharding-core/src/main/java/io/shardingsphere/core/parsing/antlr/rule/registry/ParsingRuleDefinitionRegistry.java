@@ -38,7 +38,7 @@ import java.util.Map;
 @NoArgsConstructor(access = AccessLevel.PRIVATE)
 public final class ParsingRuleDefinitionRegistry {
     
-    private static final ParsingRuleDefinitionRegistry INSTANCE = new ParsingRuleDefinitionRegistry();
+    private static volatile ParsingRuleDefinitionRegistry instance;
     
     private final Map<DatabaseType, SQLStatementRuleDefinition> sqlStatementRuleDefinitions = new HashMap<>(4, 1);
     
@@ -51,14 +51,19 @@ public final class ParsingRuleDefinitionRegistry {
      * 
      * @return instance of parsing rule definition registry
      */
-    public ParsingRuleDefinitionRegistry getInstance() {
-        return INSTANCE;
+    public static ParsingRuleDefinitionRegistry getInstance() {
+        if (null == instance) {
+            synchronized (ParsingRuleDefinitionRegistry.class) {
+                if (null == instance) {
+                    instance = new ParsingRuleDefinitionRegistry();
+                    instance.init();
+                }
+            }
+        }
+        return instance;
     }
-
-    /**
-     * Initialize parsing rule definition registry.
-     */
-    public void init() {
+    
+    private void init() {
         for (DatabaseType each : DatabaseType.values()) {
             if (DatabaseType.H2 != each) {
                 sqlStatementRuleDefinitions.put(each, init(DatabaseRuleDefinitionType.valueOf(each)));
@@ -67,10 +72,10 @@ public final class ParsingRuleDefinitionRegistry {
     }
     
     private SQLStatementRuleDefinition init(final DatabaseRuleDefinitionType type) {
-        SQLSegmentRuleDefinition segmentRuleDefinition = new SQLSegmentRuleDefinition(type.getDatabaseType());
+        SQLSegmentRuleDefinition segmentRuleDefinition = new SQLSegmentRuleDefinition();
         segmentRuleDefinition.init(
                 segmentRuleDefinitionLoader.load(DatabaseRuleDefinitionType.COMMON_SQL_SEGMENT_RULE_DEFINITION), segmentRuleDefinitionLoader.load(type.getSqlSegmentRuleDefinitionFile()));
-        SQLStatementRuleDefinition result = new SQLStatementRuleDefinition(type.getDatabaseType());
+        SQLStatementRuleDefinition result = new SQLStatementRuleDefinition();
         result.init(statementRuleDefinitionLoader.load(type.getSqlStatementRuleDefinitionFile()), segmentRuleDefinition);
         return result;
     }

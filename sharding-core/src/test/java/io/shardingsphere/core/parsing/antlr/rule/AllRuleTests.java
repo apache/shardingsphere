@@ -20,6 +20,7 @@ package io.shardingsphere.core.parsing.antlr.rule;
 import io.shardingsphere.core.parsing.antlr.rule.jaxb.segment.SQLSegmentRuleDefinitionEntityLoaderTest;
 import io.shardingsphere.core.parsing.antlr.rule.jaxb.statement.SQLStatementRuleDefinitionEntityLoaderTest;
 import io.shardingsphere.core.parsing.antlr.rule.registry.DatabaseRuleDefinitionTypeTest;
+import io.shardingsphere.core.parsing.antlr.rule.registry.ParsingRuleDefinitionRegistryTest;
 import org.junit.runner.RunWith;
 import org.junit.runners.Suite;
 import org.junit.runners.Suite.SuiteClasses;
@@ -28,7 +29,8 @@ import org.junit.runners.Suite.SuiteClasses;
 @SuiteClasses({
         SQLStatementRuleDefinitionEntityLoaderTest.class, 
         SQLSegmentRuleDefinitionEntityLoaderTest.class,
-        DatabaseRuleDefinitionTypeTest.class
+        DatabaseRuleDefinitionTypeTest.class,
+        ParsingRuleDefinitionRegistryTest.class
 })
 public final class AllRuleTests {
 }

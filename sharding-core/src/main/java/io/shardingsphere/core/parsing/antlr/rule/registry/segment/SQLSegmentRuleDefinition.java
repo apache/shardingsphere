@@ -19,7 +19,6 @@ package io.shardingsphere.core.parsing.antlr.rule.registry.segment;
 
 import com.google.common.base.Joiner;
 import com.google.common.base.Strings;
-import io.shardingsphere.core.constant.DatabaseType;
 import io.shardingsphere.core.parsing.antlr.rule.jaxb.entity.segment.SQLSegmentRuleDefinitionEntity;
 import io.shardingsphere.core.parsing.antlr.rule.jaxb.entity.segment.SQLSegmentRuleEntity;
 import lombok.Getter;
@@ -37,8 +36,6 @@ import java.util.Map;
 @RequiredArgsConstructor
 @Getter
 public final class SQLSegmentRuleDefinition {
-    
-    private final DatabaseType databaseType;
     
     private final Map<String, SQLSegmentRule> rules = new LinkedHashMap<>();
     

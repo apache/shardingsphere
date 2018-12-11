@@ -6,7 +6,7 @@
     <sql-statement-rule context="alterTable" sql-statement-class="io.shardingsphere.core.parsing.antlr.sql.statement.ddl.AlterTableStatement" 
                         sql-segment-rule-refs="tableNames, renameTable, addColumn, dropColumn, changeColumn, modifyColumn, addIndex, dropIndex, renameIndex, dropPrimaryKey" 
                         optimizer-class="ddl.dialect.mysql.MySQLAlterTableOptimizer" />
-    <sql-statement-rule context="dropTable" sql-statement-class="io.shardingsphere.core.parsing.antlr.sql.statement.ddl.DDLStatement" sql-segment-rule-refs="tableNames" />
+    <sql-statement-rule context="dropTable" sql-statement-class="io.shardingsphere.core.parsing.parser.sql.ddl.DDLStatement" sql-segment-rule-refs="tableNames" />
     <sql-statement-rule context="truncateTable" sql-statement-class="io.shardingsphere.core.parsing.parser.sql.ddl.DDLStatement" sql-segment-rule-refs="tableName" />
     <sql-statement-rule context="createIndex" sql-statement-class="io.shardingsphere.core.parsing.parser.sql.ddl.DDLStatement" sql-segment-rule-refs="tableName, indexName" />
     <sql-statement-rule context="dropIndex" sql-statement-class="io.shardingsphere.core.parsing.parser.sql.ddl.DDLStatement" sql-segment-rule-refs="tableName, indexName" />

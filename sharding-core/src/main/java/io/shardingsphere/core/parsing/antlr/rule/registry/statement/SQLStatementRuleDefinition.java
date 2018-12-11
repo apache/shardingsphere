@@ -21,7 +21,6 @@ import com.google.common.base.CaseFormat;
 import com.google.common.base.Joiner;
 import com.google.common.base.Splitter;
 import com.google.common.base.Strings;
-import io.shardingsphere.core.constant.DatabaseType;
 import io.shardingsphere.core.parsing.antlr.rule.jaxb.entity.statement.SQLStatementRuleDefinitionEntity;
 import io.shardingsphere.core.parsing.antlr.rule.jaxb.entity.statement.SQLStatementRuleEntity;
 import io.shardingsphere.core.parsing.antlr.rule.registry.segment.SQLSegmentRule;
@@ -44,8 +43,6 @@ import java.util.Map;
 @RequiredArgsConstructor
 @Getter
 public final class SQLStatementRuleDefinition {
-    
-    private final DatabaseType databaseType;
     
     private final Map<String, SQLStatementRule> rules = new LinkedHashMap<>();
     
