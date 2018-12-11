@@ -15,19 +15,12 @@
  * </p>
  */
 
-package io.shardingsphere.core.parsing.antlr;
+package io.shardingsphere.core.parsing.antlr.rule.jaxb.entity;
 
-import io.shardingsphere.core.parsing.antlr.ddl.IntegrateDDLParsingCompatTest;
-import io.shardingsphere.core.parsing.antlr.rule.AllRuleTests;
-import org.junit.runner.RunWith;
-import org.junit.runners.Suite;
-import org.junit.runners.Suite.SuiteClasses;
-
-@RunWith(Suite.class)
-@SuiteClasses({
-        AllRuleTests.class,
-        AntlrIntegrateParsingTest.class,
-        IntegrateDDLParsingCompatTest.class
-})
-public final class AllAntlrParsingTests {
+/**
+ * Rule definition entity for JAXB.
+ *
+ * @author zhangliang
+ */
+public interface RuleDefinitionEntity {
 }

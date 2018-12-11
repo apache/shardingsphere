@@ -15,19 +15,18 @@
  * </p>
  */
 
-package io.shardingsphere.core.parsing.antlr;
+package io.shardingsphere.core.parsing.antlr.rule;
 
-import io.shardingsphere.core.parsing.antlr.ddl.IntegrateDDLParsingCompatTest;
-import io.shardingsphere.core.parsing.antlr.rule.AllRuleTests;
+import io.shardingsphere.core.parsing.antlr.rule.jaxb.segment.SQLSegmentRuleDefinitionEntityLoaderTest;
+import io.shardingsphere.core.parsing.antlr.rule.jaxb.statement.SQLStatementRuleDefinitionEntityLoaderTest;
 import org.junit.runner.RunWith;
 import org.junit.runners.Suite;
 import org.junit.runners.Suite.SuiteClasses;
 
 @RunWith(Suite.class)
 @SuiteClasses({
-        AllRuleTests.class,
-        AntlrIntegrateParsingTest.class,
-        IntegrateDDLParsingCompatTest.class
+        SQLStatementRuleDefinitionEntityLoaderTest.class, 
+        SQLSegmentRuleDefinitionEntityLoaderTest.class
 })
-public final class AllAntlrParsingTests {
+public final class AllRuleTests {
 }

@@ -15,23 +15,32 @@
  * </p>
  */
 
-package io.shardingsphere.core.parsing.integrate.jaxb.root;
+package io.shardingsphere.core.parsing.antlr.rule.jaxb.entity.statement;
 
 import lombok.Getter;
 
+import javax.xml.bind.annotation.XmlAccessType;
+import javax.xml.bind.annotation.XmlAccessorType;
 import javax.xml.bind.annotation.XmlAttribute;
-import javax.xml.bind.annotation.XmlElement;
-import javax.xml.bind.annotation.XmlRootElement;
-import java.util.LinkedList;
-import java.util.List;
 
-@XmlRootElement(name = "parser-result-sets")
+/**
+ * SQL statement rule entity for JAXB.
+ *
+ * @author zhangliang
+ */
+@XmlAccessorType(XmlAccessType.FIELD)
 @Getter
-public final class ParserResultSet {
+public final class SQLStatementRuleEntity {
     
-    @XmlAttribute
-    private String namespace;
+    @XmlAttribute(required = true)
+    private String context;
     
-    @XmlElement(name = "parser-result")
-    private List<ParserResult> parserResults = new LinkedList<>();
+    @XmlAttribute(name = "sql-statement-class", required = true)
+    private String sqlStatementClass;
+    
+    @XmlAttribute(name = "sql-segment-rule-refs", required = true)
+    private String sqlSegmentRuleRefs;
+    
+    @XmlAttribute(name = "optimizer-class")
+    private String optimizerClass;
 }

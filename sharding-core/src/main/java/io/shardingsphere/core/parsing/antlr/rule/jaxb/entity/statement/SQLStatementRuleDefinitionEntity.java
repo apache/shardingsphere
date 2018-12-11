@@ -15,23 +15,32 @@
  * </p>
  */
 
-package io.shardingsphere.core.parsing.integrate.jaxb.root;
+package io.shardingsphere.core.parsing.antlr.rule.jaxb.entity.statement;
 
+import io.shardingsphere.core.parsing.antlr.rule.jaxb.entity.RuleDefinitionEntity;
 import lombok.Getter;
 
 import javax.xml.bind.annotation.XmlAttribute;
 import javax.xml.bind.annotation.XmlElement;
 import javax.xml.bind.annotation.XmlRootElement;
+import java.util.Collection;
 import java.util.LinkedList;
-import java.util.List;
 
-@XmlRootElement(name = "parser-result-sets")
+/**
+ * SQL statement rule definition entity for JAXB.
+ *
+ * @author zhangliang
+ */
+@XmlRootElement(name = "sql-statement-rule-definition")
 @Getter
-public final class ParserResultSet {
+public final class SQLStatementRuleDefinitionEntity implements RuleDefinitionEntity {
     
-    @XmlAttribute
-    private String namespace;
+    @XmlAttribute(name = "base-package", required = true)
+    private String basePackage;
     
-    @XmlElement(name = "parser-result")
-    private List<ParserResult> parserResults = new LinkedList<>();
+    @XmlAttribute(name = "optimizer-base-package", required = true)
+    private String optimizerBasePackage;
+    
+    @XmlElement(name = "sql-statement-rule")
+    private Collection<SQLStatementRuleEntity> rules = new LinkedList<>();
 }

@@ -15,23 +15,35 @@
  * </p>
  */
 
-package io.shardingsphere.core.parsing.integrate.jaxb.root;
+package io.shardingsphere.core.parsing.antlr.rule.jaxb.entity.segment;
 
+import io.shardingsphere.core.parsing.antlr.rule.jaxb.entity.RuleDefinitionEntity;
 import lombok.Getter;
 
 import javax.xml.bind.annotation.XmlAttribute;
 import javax.xml.bind.annotation.XmlElement;
 import javax.xml.bind.annotation.XmlRootElement;
+import java.util.Collection;
 import java.util.LinkedList;
-import java.util.List;
 
-@XmlRootElement(name = "parser-result-sets")
+/**
+ * SQL segment rule definition entity for JAXB.
+ *
+ * @author zhangliang
+ */
+@XmlRootElement(name = "sql-segment-rule-definition")
 @Getter
-public final class ParserResultSet {
+public final class SQLSegmentRuleDefinitionEntity implements RuleDefinitionEntity {
     
-    @XmlAttribute
-    private String namespace;
+    @XmlAttribute(name = "base-package", required = true)
+    private String basePackage;
     
-    @XmlElement(name = "parser-result")
-    private List<ParserResult> parserResults = new LinkedList<>();
+    @XmlAttribute(name = "extractor-base-package", required = true)
+    private String extractorBasePackage;
+    
+    @XmlAttribute(name = "filler-base-package", required = true)
+    private String fillerBasePackage;
+    
+    @XmlElement(name = "sql-segment-rule")
+    private Collection<SQLSegmentRuleEntity> rules = new LinkedList<>();
 }
