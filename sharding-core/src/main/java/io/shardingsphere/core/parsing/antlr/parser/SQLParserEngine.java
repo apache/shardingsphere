@@ -36,6 +36,8 @@ import org.antlr.v4.runtime.tree.ParseTree;
 @RequiredArgsConstructor
 public final class SQLParserEngine {
     
+    private final ParsingRuleRegistry parsingRuleRegistry = ParsingRuleRegistry.getInstance();
+    
     private final DatabaseType databaseType;
     
     private final String sql;
@@ -50,7 +52,7 @@ public final class SQLParserEngine {
         if (parseTree instanceof ErrorNode) {
             throw new SQLParsingUnsupportedException(String.format("Unsupported SQL of `%s`", sql));
         }
-        Optional<SQLStatementRule> sqlStatementRule = ParsingRuleRegistry.findSQLStatementRule(databaseType, parseTree.getClass().getSimpleName());
+        Optional<SQLStatementRule> sqlStatementRule = parsingRuleRegistry.findSQLStatementRule(databaseType, parseTree.getClass().getSimpleName());
         if (!sqlStatementRule.isPresent()) {
             throw new SQLParsingUnsupportedException(String.format("Unsupported SQL of `%s`", sql));
         }

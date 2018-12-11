@@ -27,16 +27,16 @@ public final class ParsingRuleRegistryTest {
     
     @Test
     public void assertFindSQLStatementRule() {
-        assertTrue(ParsingRuleRegistry.findSQLStatementRule(DatabaseType.MySQL, "CreateTableContext").isPresent());
+        assertTrue(ParsingRuleRegistry.getInstance().findSQLStatementRule(DatabaseType.MySQL, "CreateTableContext").isPresent());
     }
     
     @Test
     public void assertNotFindSQLStatementRule() {
-        assertFalse(ParsingRuleRegistry.findSQLStatementRule(DatabaseType.MySQL, "Invalid").isPresent());
+        assertFalse(ParsingRuleRegistry.getInstance().findSQLStatementRule(DatabaseType.MySQL, "Invalid").isPresent());
     }
     
     @Test
     public void assertFindSQLStatementRuleWithH2() {
-        assertTrue(ParsingRuleRegistry.findSQLStatementRule(DatabaseType.H2, "CreateTableContext").isPresent());
+        assertTrue(ParsingRuleRegistry.getInstance().findSQLStatementRule(DatabaseType.H2, "CreateTableContext").isPresent());
     }
 }
