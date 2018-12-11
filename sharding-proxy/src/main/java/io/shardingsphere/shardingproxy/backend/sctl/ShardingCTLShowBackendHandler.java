@@ -18,11 +18,25 @@
 package io.shardingsphere.shardingproxy.backend.sctl;
 
 import com.google.common.base.Optional;
+import io.shardingsphere.core.merger.MergedResult;
+import io.shardingsphere.core.merger.dal.show.ShowShardingCTLMergedResult;
 import io.shardingsphere.shardingproxy.backend.AbstractBackendHandler;
+import io.shardingsphere.shardingproxy.backend.ResultPacket;
 import io.shardingsphere.shardingproxy.backend.jdbc.connection.BackendConnection;
+import io.shardingsphere.shardingproxy.transport.mysql.constant.ColumnType;
 import io.shardingsphere.shardingproxy.transport.mysql.packet.command.CommandResponsePackets;
+import io.shardingsphere.shardingproxy.transport.mysql.packet.command.query.ColumnDefinition41Packet;
+import io.shardingsphere.shardingproxy.transport.mysql.packet.command.query.FieldCountPacket;
+import io.shardingsphere.shardingproxy.transport.mysql.packet.command.query.QueryResponsePackets;
+import io.shardingsphere.shardingproxy.transport.mysql.packet.generic.EofPacket;
 import io.shardingsphere.shardingproxy.transport.mysql.packet.generic.ErrPacket;
-import io.shardingsphere.shardingproxy.transport.mysql.packet.generic.OKPacket;
+
+import java.sql.SQLException;
+import java.util.ArrayList;
+import java.util.Arrays;
+import java.util.Collection;
+import java.util.LinkedList;
+import java.util.List;
 
 /**
  * Sharding CTL show backend handler.
@@ -34,6 +48,14 @@ public final class ShardingCTLShowBackendHandler extends AbstractBackendHandler 
     private final String sql;
     
     private final BackendConnection backendConnection;
+    
+    private MergedResult mergedResult;
+    
+    private int currentSequenceId;
+    
+    private int columnCount;
+    
+    private final List<ColumnType> columnTypes = new LinkedList<>();
     
     public ShardingCTLShowBackendHandler(final String sql, final BackendConnection backendConnection) {
         this.sql = sql.toUpperCase().trim();
@@ -48,11 +70,38 @@ public final class ShardingCTLShowBackendHandler extends AbstractBackendHandler 
         }
         switch (showStatement.get().getValue()) {
             case "TRANSACTION_TYPE":
-                return new CommandResponsePackets(new OKPacket(String.format(" current transaction type is: %s", backendConnection.getTransactionType().name())));
+                return createResponsePackets("TRANSACTION_TYPE", backendConnection.getTransactionType().name());
             case "CACHED_CONNECTIONS":
-                return new CommandResponsePackets(new OKPacket(String.format(" current channel cached connection size is: %s", backendConnection.getConnectionSize())));
+                return createResponsePackets("CACHED_CONNECTIONS", backendConnection.getConnectionSize());
             default:
                 return new CommandResponsePackets(new ErrPacket(String.format(" could not support this sctl grammar [%s].", sql)));
         }
+    }
+    
+    private CommandResponsePackets createResponsePackets(final String columnName, final Object... values) {
+        mergedResult = new ShowShardingCTLMergedResult(Arrays.asList(values));
+        int sequenceId = 0;
+        FieldCountPacket fieldCountPacket = new FieldCountPacket(++sequenceId, 1);
+        Collection<ColumnDefinition41Packet> columnDefinition41Packets = new ArrayList<>(1);
+        columnDefinition41Packets.add(new ColumnDefinition41Packet(++sequenceId, "", "", "", columnName, "", 100, ColumnType.MYSQL_TYPE_VARCHAR, 0));
+        QueryResponsePackets queryResponsePackets = new QueryResponsePackets(fieldCountPacket, columnDefinition41Packets, new EofPacket(++sequenceId));
+        currentSequenceId = queryResponsePackets.getPackets().size();
+        columnCount = queryResponsePackets.getColumnCount();
+        columnTypes.addAll(queryResponsePackets.getColumnTypes());
+        return queryResponsePackets;
+    }
+    
+    @Override
+    public boolean next() throws SQLException {
+        return null != mergedResult && mergedResult.next();
+    }
+    
+    @Override
+    public ResultPacket getResultValue() throws SQLException {
+        List<Object> data = new ArrayList<>(columnCount);
+        for (int columnIndex = 1; columnIndex <= columnCount; columnIndex++) {
+            data.add(mergedResult.getValue(columnIndex, Object.class));
+        }
+        return new ResultPacket(++currentSequenceId, data, columnCount, columnTypes);
     }
 }

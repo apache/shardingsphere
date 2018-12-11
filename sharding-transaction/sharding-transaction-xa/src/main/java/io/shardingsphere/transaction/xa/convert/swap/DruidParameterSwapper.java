@@ -17,8 +17,6 @@
 
 package io.shardingsphere.transaction.xa.convert.swap;
 
-import javax.sql.DataSource;
-
 /**
  * Druid parameter swapper.
  *
@@ -26,16 +24,19 @@ import javax.sql.DataSource;
  */
 public final class DruidParameterSwapper extends DataSourceSwapperAdapter {
     
-    DruidParameterSwapper(final DataSource dataSource) {
-        super(dataSource);
+    private static final String DRUID_CLASS_NAME = "com.alibaba.druid.pool.DruidDataSource";
+    
+    @Override
+    protected void convertProperties(final AdvancedMapUpdater<String, Object> updater) {
+        updater.transfer("maxActive", "maximumPoolSize");
+        updater.transfer("minIdle", "minimumPoolSize");
+        updater.transfer("maxWait", "connectionTimeout");
+        updater.transfer("minEvictableIdleTimeMillis", "idleTimeout");
+        updater.transfer("timeBetweenEvictionRunsMillis", "maintenanceInterval");
     }
     
     @Override
-    protected void convertProperties() {
-        getUpdater().transfer("maxActive", "maximumPoolSize");
-        getUpdater().transfer("minIdle", "minimumPoolSize");
-        getUpdater().transfer("maxWait", "connectionTimeout");
-        getUpdater().transfer("minEvictableIdleTimeMillis", "idleTimeout");
-        getUpdater().transfer("timeBetweenEvictionRunsMillis", "maintenanceInterval");
+    public String originClassName() {
+        return DRUID_CLASS_NAME;
     }
 }

@@ -15,26 +15,32 @@
  * </p>
  */
 
-package io.shardingsphere.transaction.xa.convert.swap;
+package io.shardingsphere.core.merger.dal.show;
+
+import io.shardingsphere.core.merger.MergedResult;
+import lombok.RequiredArgsConstructor;
+
+import java.util.List;
 
 /**
- * Hikari datasource parameter swapper.
+ * Show sharding CTL merged result.
  *
  * @author zhaojun
  */
-public final class HikariParameterSwapper extends DataSourceSwapperAdapter {
+@RequiredArgsConstructor
+public final class ShowShardingCTLMergedResult extends LocalMergedResultAdapter implements MergedResult {
     
-    private static final String HIKARI_CLASS_NAME = "com.zaxxer.hikari.HikariDataSource";
+    private int currentIndex;
+    
+    private final List<Object> values;
     
     @Override
-    protected void convertProperties(final AdvancedMapUpdater<String, Object> updater) {
-        updater.transfer("jdbcUrl", "url");
-        updater.transfer("maxPoolSize", "maximumPoolSize");
-        updater.transfer("minimumIdle", "minimumPoolSize");
+    public boolean next() {
+        return currentIndex++ < values.size();
     }
     
     @Override
-    public String originClassName() {
-        return HIKARI_CLASS_NAME;
+    public Object getValue(final int columnIndex, final Class<?> type) {
+        return values.get(currentIndex - 1);
     }
 }
