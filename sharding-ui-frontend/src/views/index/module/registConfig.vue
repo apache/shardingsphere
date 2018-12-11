@@ -39,6 +39,7 @@
   </el-card>
 </template>
 <script>
+// import API from '../api'
 export default {
   name: 'RegistConfig',
   data() {
