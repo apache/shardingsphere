@@ -17,6 +17,7 @@
 
 package io.shardingsphere.orchestration.yaml;
 
+import io.shardingsphere.api.algorithm.masterslave.MasterSlaveLoadBalanceAlgorithmType;
 import io.shardingsphere.api.config.MasterSlaveRuleConfiguration;
 import io.shardingsphere.api.config.ShardingRuleConfiguration;
 import io.shardingsphere.api.config.TableRuleConfiguration;
@@ -119,6 +120,8 @@ public class ConfigurationYamlConverterTest {
     
     @Test
     public void assertDumpShardingRuleConfiguration() {
+        String actual = ConfigurationYamlConverter.dumpShardingRuleConfiguration(createShardingRuleConfiguration());
+        assertTrue(actual.contains("t_order"));
     }
     
     private ShardingRuleConfiguration createShardingRuleConfiguration() {
@@ -134,6 +137,12 @@ public class ConfigurationYamlConverterTest {
     
     @Test
     public void assertDumpMasterSlaveRuleConfiguration() {
+        String actual = ConfigurationYamlConverter.dumpMasterSlaveRuleConfiguration(createMasterSlaveRuleConfiguration());
+        assertTrue(actual.contains("ms_ds"));
+    }
+    
+    private MasterSlaveRuleConfiguration createMasterSlaveRuleConfiguration() {
+        return new MasterSlaveRuleConfiguration("ms_ds", "master_ds", Collections.singletonList("slave_ds"), MasterSlaveLoadBalanceAlgorithmType.ROUND_ROBIN.getAlgorithm());
     }
     
     @Test
