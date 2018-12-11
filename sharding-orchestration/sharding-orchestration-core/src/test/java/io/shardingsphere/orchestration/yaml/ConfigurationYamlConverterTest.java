@@ -147,6 +147,15 @@ public class ConfigurationYamlConverterTest {
     
     @Test
     public void assertDumpAuthentication() {
+        String actual = ConfigurationYamlConverter.dumpAuthentication(createAuthentication());
+        assertTrue(actual.contains("root"));
+    }
+    
+    private Authentication createAuthentication() {
+        Authentication result = new Authentication();
+        result.setUsername("root");
+        result.setPassword("root");
+        return result;
     }
     
     @Test
