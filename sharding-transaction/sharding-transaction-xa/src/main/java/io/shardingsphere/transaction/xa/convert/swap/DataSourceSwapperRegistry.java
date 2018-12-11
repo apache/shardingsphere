@@ -37,6 +37,10 @@ public class DataSourceSwapperRegistry {
     
     private static final DataSourceSwapperRegistry INSTANCE = new DataSourceSwapperRegistry();
     
+    static {
+        load();
+    }
+    
     /**
      * Load data source swapper.
      */
