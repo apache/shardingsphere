@@ -35,7 +35,7 @@ public enum DatabaseRuleDefinitionType {
     Oracle(DatabaseType.Oracle, "parsing-rule-definition/oracle/sql-statement-rule-definition.xml", "parsing-rule-definition/oracle/extractor-rule-definition.xml"),  
     SQLServer(DatabaseType.SQLServer, "parsing-rule-definition/sqlserver/sql-statement-rule-definition.xml", "parsing-rule-definition/sqlserver/extractor-rule-definition.xml");
     
-    public static final String COMMON_SQL_SEGMENT_RULE_DEFINITION = "parsing-rule-definition/common/extractor-rule-definition.xml";
+    public static final String COMMON_EXTRACTOR_RULE_DEFINITION = "parsing-rule-definition/common/extractor-rule-definition.xml";
     
     public static final String COMMON_FILLER_RULE_DEFINITION = "parsing-rule-definition/common/filler-rule-definition.xml";
     

@@ -38,8 +38,8 @@ public final class SQLStatementRuleEntity {
     @XmlAttribute(name = "sql-statement-class", required = true)
     private String sqlStatementClass;
     
-    @XmlAttribute(name = "sql-segment-rule-refs", required = true)
-    private String sqlSegmentRuleRefs;
+    @XmlAttribute(name = "extractor-rule-refs", required = true)
+    private String extractorRuleRefs;
     
     @XmlAttribute(name = "optimizer-class")
     private String optimizerClass;

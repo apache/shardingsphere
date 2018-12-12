@@ -20,11 +20,11 @@ package io.shardingsphere.core.parsing.antlr.rule.registry;
 import com.google.common.base.Optional;
 import io.shardingsphere.core.constant.DatabaseType;
 import io.shardingsphere.core.parsing.antlr.filler.SQLStatementFiller;
+import io.shardingsphere.core.parsing.antlr.rule.jaxb.loader.extractor.ExtractorRuleDefinitionEntityLoader;
 import io.shardingsphere.core.parsing.antlr.rule.jaxb.loader.filler.FillerRuleDefinitionEntityLoader;
-import io.shardingsphere.core.parsing.antlr.rule.jaxb.loader.segment.SQLSegmentRuleDefinitionEntityLoader;
 import io.shardingsphere.core.parsing.antlr.rule.jaxb.loader.statement.SQLStatementRuleDefinitionEntityLoader;
+import io.shardingsphere.core.parsing.antlr.rule.registry.extractor.ExtractorRuleDefinition;
 import io.shardingsphere.core.parsing.antlr.rule.registry.filler.FillerRuleDefinition;
-import io.shardingsphere.core.parsing.antlr.rule.registry.segment.SQLSegmentRuleDefinition;
 import io.shardingsphere.core.parsing.antlr.rule.registry.statement.SQLStatementRule;
 import io.shardingsphere.core.parsing.antlr.rule.registry.statement.SQLStatementRuleDefinition;
 import io.shardingsphere.core.parsing.antlr.sql.segment.SQLSegment;
@@ -46,7 +46,7 @@ public final class ParsingRuleRegistry {
     
     private final SQLStatementRuleDefinitionEntityLoader statementRuleDefinitionLoader = new SQLStatementRuleDefinitionEntityLoader();
     
-    private final SQLSegmentRuleDefinitionEntityLoader segmentRuleDefinitionLoader = new SQLSegmentRuleDefinitionEntityLoader();
+    private final ExtractorRuleDefinitionEntityLoader extractorRuleDefinitionLoader = new ExtractorRuleDefinitionEntityLoader();
     
     private final FillerRuleDefinitionEntityLoader fillerRuleDefinitionLoader = new FillerRuleDefinitionEntityLoader();
     
@@ -81,11 +81,11 @@ public final class ParsingRuleRegistry {
     }
     
     private SQLStatementRuleDefinition init(final DatabaseRuleDefinitionType type) {
-        SQLSegmentRuleDefinition segmentRuleDefinition = new SQLSegmentRuleDefinition();
-        segmentRuleDefinition.init(
-                segmentRuleDefinitionLoader.load(DatabaseRuleDefinitionType.COMMON_SQL_SEGMENT_RULE_DEFINITION), segmentRuleDefinitionLoader.load(type.getExtractorRuleDefinitionFile()));
+        ExtractorRuleDefinition extractorRuleDefinition = new ExtractorRuleDefinition();
+        extractorRuleDefinition.init(
+                extractorRuleDefinitionLoader.load(DatabaseRuleDefinitionType.COMMON_EXTRACTOR_RULE_DEFINITION), extractorRuleDefinitionLoader.load(type.getExtractorRuleDefinitionFile()));
         SQLStatementRuleDefinition result = new SQLStatementRuleDefinition();
-        result.init(statementRuleDefinitionLoader.load(type.getSqlStatementRuleDefinitionFile()), segmentRuleDefinition);
+        result.init(statementRuleDefinitionLoader.load(type.getSqlStatementRuleDefinitionFile()), extractorRuleDefinition);
         return result;
     }
     

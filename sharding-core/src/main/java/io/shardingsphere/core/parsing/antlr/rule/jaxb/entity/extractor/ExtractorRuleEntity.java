@@ -15,7 +15,7 @@
  * </p>
  */
 
-package io.shardingsphere.core.parsing.antlr.rule.jaxb.entity.segment;
+package io.shardingsphere.core.parsing.antlr.rule.jaxb.entity.extractor;
 
 import lombok.Getter;
 
@@ -24,20 +24,17 @@ import javax.xml.bind.annotation.XmlAccessorType;
 import javax.xml.bind.annotation.XmlAttribute;
 
 /**
- * SQL segment rule entity for JAXB.
+ * Extractor rule entity for JAXB.
  *
  * @author zhangliang
  */
 @XmlAccessorType(XmlAccessType.FIELD)
 @Getter
-public final class SQLSegmentRuleEntity {
+public final class ExtractorRuleEntity {
     
     @XmlAttribute(required = true)
     private String id;
     
     @XmlAttribute(name = "extractor-class", required = true)
     private String extractorClass;
-    
-    @XmlAttribute(name = "filler-class")
-    private String fillerClass;
 }
