@@ -15,10 +15,10 @@
  * </p>
  */
 
-package io.shardingsphere.core.parsing.antlr.rule.jaxb.loader.segment;
+package io.shardingsphere.core.parsing.antlr.rule.jaxb.loader.extractor;
 
 import com.google.common.base.Preconditions;
-import io.shardingsphere.core.parsing.antlr.rule.jaxb.entity.segment.SQLSegmentRuleDefinitionEntity;
+import io.shardingsphere.core.parsing.antlr.rule.jaxb.entity.extractor.ExtractorRuleDefinitionEntity;
 import io.shardingsphere.core.parsing.antlr.rule.jaxb.loader.RuleDefinitionEntityLoader;
 import lombok.SneakyThrows;
 
@@ -26,17 +26,17 @@ import javax.xml.bind.JAXBContext;
 import java.io.InputStream;
 
 /**
- * SQL segment rule definition entity loader for JAXB.
+ * Extractor rule definition entity loader for JAXB.
  *
  * @author zhangliang
  */
-public final class SQLSegmentRuleDefinitionEntityLoader implements RuleDefinitionEntityLoader {
+public final class ExtractorRuleDefinitionEntityLoader implements RuleDefinitionEntityLoader {
     
     @Override
     @SneakyThrows
-    public SQLSegmentRuleDefinitionEntity load(final String sqlSegmentRuleDefinitionFile) {
-        InputStream inputStream = SQLSegmentRuleDefinitionEntityLoader.class.getClassLoader().getResourceAsStream(sqlSegmentRuleDefinitionFile);
-        Preconditions.checkNotNull(inputStream, "Cannot load SQL segment rule definition file :%s, ", sqlSegmentRuleDefinitionFile);
-        return (SQLSegmentRuleDefinitionEntity) JAXBContext.newInstance(SQLSegmentRuleDefinitionEntity.class).createUnmarshaller().unmarshal(inputStream);
+    public ExtractorRuleDefinitionEntity load(final String extractorRuleDefinitionFile) {
+        InputStream inputStream = ExtractorRuleDefinitionEntityLoader.class.getClassLoader().getResourceAsStream(extractorRuleDefinitionFile);
+        Preconditions.checkNotNull(inputStream, "Cannot load extractor rule definition file :%s, ", extractorRuleDefinitionFile);
+        return (ExtractorRuleDefinitionEntity) JAXBContext.newInstance(ExtractorRuleDefinitionEntity.class).createUnmarshaller().unmarshal(inputStream);
     }
 }

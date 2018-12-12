@@ -1,6 +1,6 @@
 <?xml version="1.0" encoding="UTF-8"?>
-<extractor-rule-definition database-type="Oracle" base-package="io.shardingsphere.core.parsing.antlr" extractor-base-package="extractor.impl" filler-base-package="filler.impl">
-    <extractor-rule id="addColumn" extractor-class="AddColumnExtractor" filler-class="ColumnDefinitionFiller" />
+<extractor-rule-definition database-type="Oracle" extractor-base-package="io.shardingsphere.core.parsing.antlr.extractor.impl">
+    <extractor-rule id="addColumn" extractor-class="AddColumnExtractor"/>
     <extractor-rule id="modifyColumn" extractor-class="dialect.oracle.OracleModifyColumnExtractor" />
-    <extractor-rule id="dropPrimaryKey" extractor-class="dialect.oracle.OracleDropPrimaryKeyExtractor" filler-class="DropPrimaryKeyFiller" />
+    <extractor-rule id="dropPrimaryKey" extractor-class="dialect.oracle.OracleDropPrimaryKeyExtractor" />
 </extractor-rule-definition>

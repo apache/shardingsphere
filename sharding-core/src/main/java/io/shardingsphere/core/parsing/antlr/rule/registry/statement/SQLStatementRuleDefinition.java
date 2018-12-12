@@ -21,11 +21,11 @@ import com.google.common.base.CaseFormat;
 import com.google.common.base.Joiner;
 import com.google.common.base.Splitter;
 import com.google.common.base.Strings;
+import io.shardingsphere.core.parsing.antlr.extractor.SQLSegmentExtractor;
 import io.shardingsphere.core.parsing.antlr.optimizer.impl.SQLStatementOptimizer;
 import io.shardingsphere.core.parsing.antlr.rule.jaxb.entity.statement.SQLStatementRuleDefinitionEntity;
 import io.shardingsphere.core.parsing.antlr.rule.jaxb.entity.statement.SQLStatementRuleEntity;
-import io.shardingsphere.core.parsing.antlr.rule.registry.segment.SQLSegmentRule;
-import io.shardingsphere.core.parsing.antlr.rule.registry.segment.SQLSegmentRuleDefinition;
+import io.shardingsphere.core.parsing.antlr.rule.registry.extractor.ExtractorRuleDefinition;
 import io.shardingsphere.core.parsing.parser.sql.SQLStatement;
 import lombok.Getter;
 import lombok.SneakyThrows;
@@ -49,24 +49,24 @@ public final class SQLStatementRuleDefinition {
      * Initialize SQL statement rule definition.
      * 
      * @param dialectRuleDefinitionEntity SQL dialect statement rule definition entity
-     * @param sqlSegmentRuleDefinition SQL segment rule definition
+     * @param extractorRuleDefinition extractor rule definition
      */
     @SuppressWarnings("unchecked")
     @SneakyThrows
-    public void init(final SQLStatementRuleDefinitionEntity dialectRuleDefinitionEntity, final SQLSegmentRuleDefinition sqlSegmentRuleDefinition) {
+    public void init(final SQLStatementRuleDefinitionEntity dialectRuleDefinitionEntity, final ExtractorRuleDefinition extractorRuleDefinition) {
         for (SQLStatementRuleEntity each : dialectRuleDefinitionEntity.getRules()) {
             SQLStatementRule sqlStatementRule = new SQLStatementRule(each.getContext(), 
                     (Class<? extends SQLStatement>) Class.forName(each.getSqlStatementClass()),
                     (SQLStatementOptimizer) newClassInstance(dialectRuleDefinitionEntity.getBasePackage(), dialectRuleDefinitionEntity.getOptimizerBasePackage(), each.getOptimizerClass()));
-            sqlStatementRule.getSqlSegmentRules().addAll(createSQLSegmentRules(each.getSqlSegmentRuleRefs(), sqlSegmentRuleDefinition));
+            sqlStatementRule.getExtractors().addAll(createExtractors(each.getExtractorRuleRefs(), extractorRuleDefinition));
             rules.put(getContextClassName(each.getContext()), sqlStatementRule);
         }
     }
     
-    private Collection<SQLSegmentRule> createSQLSegmentRules(final String sqlSegmentRuleRefs, final SQLSegmentRuleDefinition sqlSegmentRuleDefinition) {
-        Collection<SQLSegmentRule> result = new LinkedList<>();
-        for (String each : Splitter.on(',').trimResults().splitToList(sqlSegmentRuleRefs)) {
-            result.add(sqlSegmentRuleDefinition.getRules().get(each));
+    private Collection<SQLSegmentExtractor> createExtractors(final String sqlExtractorRuleRefs, final ExtractorRuleDefinition extractorRuleDefinition) {
+        Collection<SQLSegmentExtractor> result = new LinkedList<>();
+        for (String each : Splitter.on(',').trimResults().splitToList(sqlExtractorRuleRefs)) {
+            result.add(extractorRuleDefinition.getRules().get(each));
         }
         return result;
     }

@@ -1,8 +1,9 @@
 <?xml version="1.0" encoding="UTF-8"?>
-<extractor-rule-definition database-type="SQLServer" base-package="io.shardingsphere.core.parsing.antlr" extractor-base-package="extractor.impl" filler-base-package="filler.impl">
-    <extractor-rule id="addColumn" extractor-class="AddColumnExtractor" filler-class="ColumnDefinitionFiller" />
+<extractor-rule-definition database-type="SQLServer" extractor-base-package="io.shardingsphere.core.parsing.antlr.extractor.impl">
+    <extractor-rule id="addColumn" extractor-class="AddColumnExtractor" />
     <extractor-rule id="modifyColumn" extractor-class="ModifyColumnExtractor" />
-    <extractor-rule id="addIndex" extractor-class="dialect.sqlserver.SQLServerAddIndexExtractor" filler-class="IndexFiller" />
-    <extractor-rule id="dropIndex" extractor-class="dialect.sqlserver.SQLServerDropIndexExtractor" filler-class="IndexFiller" />
-    <extractor-rule id="addPrimaryKey" filler-class="ConstraintDefinitionFiller" extractor-class="dialect.sqlserver.SQLServerAddPrimaryKeyExtractor" />
+    <extractor-rule id="addIndex" extractor-class="dialect.sqlserver.SQLServerAddIndexExtractor" />
+    <extractor-rule id="dropIndex" extractor-class="dialect.sqlserver.SQLServerDropIndexExtractor" />
+    <extractor-rule id="addPrimaryKey" extractor-class="dialect.sqlserver.SQLServerAddPrimaryKeyExtractor" />
+    <extractor-rule id="setAutoCommit" extractor-class="dialect.sqlserver.SQLServerAutoCommitExtractor" />
 </extractor-rule-definition>

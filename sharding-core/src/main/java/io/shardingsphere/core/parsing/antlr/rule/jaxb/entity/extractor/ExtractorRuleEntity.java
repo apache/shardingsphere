@@ -15,21 +15,26 @@
  * </p>
  */
 
-package io.shardingsphere.core.parsing.antlr.extractor;
+package io.shardingsphere.core.parsing.antlr.rule.jaxb.entity.extractor;
 
-import java.util.Collection;
+import lombok.Getter;
+
+import javax.xml.bind.annotation.XmlAccessType;
+import javax.xml.bind.annotation.XmlAccessorType;
+import javax.xml.bind.annotation.XmlAttribute;
 
 /**
- * SQL statement extractor.
- * 
+ * Extractor rule entity for JAXB.
+ *
  * @author zhangliang
  */
-public interface SQLStatementExtractor {
+@XmlAccessorType(XmlAccessType.FIELD)
+@Getter
+public final class ExtractorRuleEntity {
     
-    /** 
-     * Get SQL segment extractors.
-     * 
-     * @return SQL segment extractors
-     */
-    Collection<SQLSegmentExtractor> getExtractors();
+    @XmlAttribute(required = true)
+    private String id;
+    
+    @XmlAttribute(name = "extractor-class", required = true)
+    private String extractorClass;
 }
