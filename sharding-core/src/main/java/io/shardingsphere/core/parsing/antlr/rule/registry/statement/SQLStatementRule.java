@@ -19,7 +19,7 @@ package io.shardingsphere.core.parsing.antlr.rule.registry.statement;
 
 import shardingsphere.shaded.common.base.Optional;
 import io.shardingsphere.core.parsing.antlr.extractor.SQLSegmentExtractor;
-import io.shardingsphere.core.parsing.antlr.optimizer.impl.SQLStatementOptimizer;
+import io.shardingsphere.core.parsing.antlr.optimizer.SQLStatementOptimizer;
 import io.shardingsphere.core.parsing.parser.sql.SQLStatement;
 import lombok.Getter;
 import lombok.RequiredArgsConstructor;

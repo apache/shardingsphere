@@ -17,7 +17,7 @@
 
 package io.shardingsphere.core.parsing.antlr.optimizer.impl;
 
-import shardingsphere.shaded.common.base.Optional;
+import com.google.common.base.Optional;
 import io.shardingsphere.core.constant.DatabaseType;
 import io.shardingsphere.core.parsing.antlr.parser.SQLStatementType;
 import io.shardingsphere.core.parsing.antlr.optimizer.registry.SQLStatementOptimizerRegistry;
