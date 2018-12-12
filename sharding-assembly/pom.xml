@@ -13,8 +13,8 @@
     <name>${project.artifactId}</name>
 
     <properties>
-        <maven-shade-plugin.version>3.0.0</maven-shade-plugin.version>
         <guava.version>18.0</guava.version>
+        <maven-shade-plugin.version>3.0.0</maven-shade-plugin.version>
     </properties>
 
     <dependencyManagement>
@@ -31,6 +31,13 @@
         <dependency>
             <groupId>com.google.guava</groupId>
             <artifactId>guava</artifactId>
+            <version>${guava.version}</version>
+            <exclusions>
+                <exclusion>
+                    <groupId>*</groupId>
+                    <artifactId>*</artifactId>
+                </exclusion>
+            </exclusions>
         </dependency>
     </dependencies>
 
@@ -50,6 +57,9 @@
                 <groupId>org.apache.maven.plugins</groupId>
                 <artifactId>maven-shade-plugin</artifactId>
                 <version>${maven-shade-plugin.version}</version>
+                <configuration>
+                    <createDependencyReducedPom>false</createDependencyReducedPom>
+                </configuration>
                 <executions>
                     <execution>
                         <phase>package</phase>
@@ -57,12 +67,14 @@
                             <goal>shade</goal>
                         </goals>
                         <configuration>
-                            <shadedArtifactAttached>true</shadedArtifactAttached>
-                            <shadedClassifierName>shardingsphere.guava</shadedClassifierName>
                             <relocations>
                                 <relocation>
                                     <pattern>com.google.guava</pattern>
-                                    <shadedPattern>shardingsphere.guava</shadedPattern>
+                                    <shadedPattern>shardingsphere.shaded.guava</shadedPattern>
+                                </relocation>
+                                <relocation>
+                                    <pattern>com.google.common</pattern>
+                                    <shadedPattern>shardingsphere.shaded.common</shadedPattern>
                                 </relocation>
                             </relocations>
                         </configuration>
