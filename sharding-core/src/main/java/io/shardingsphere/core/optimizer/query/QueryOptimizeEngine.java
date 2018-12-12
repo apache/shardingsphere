@@ -17,8 +17,8 @@
 
 package io.shardingsphere.core.optimizer.query;
 
-import shardingsphere.shaded.common.collect.BoundType;
-import shardingsphere.shaded.common.collect.Range;
+import io.shardingsphere.shaded.com.google.common.collect.BoundType;
+import io.shardingsphere.shaded.com.google.common.collect.Range;
 import io.shardingsphere.api.algorithm.sharding.ListShardingValue;
 import io.shardingsphere.api.algorithm.sharding.RangeShardingValue;
 import io.shardingsphere.api.algorithm.sharding.ShardingValue;

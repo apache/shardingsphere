@@ -17,7 +17,7 @@
 
 package io.shardingsphere.core.optimizer;
 
-import shardingsphere.shaded.common.collect.Range;
+import io.shardingsphere.shaded.com.google.common.collect.Range;
 import io.shardingsphere.api.algorithm.sharding.ListShardingValue;
 import io.shardingsphere.api.algorithm.sharding.RangeShardingValue;
 import io.shardingsphere.api.algorithm.sharding.ShardingValue;

@@ -17,9 +17,9 @@
 
 package io.shardingsphere.shardingproxy.config;
 
-import shardingsphere.shaded.common.base.Optional;
-import shardingsphere.shaded.common.base.Preconditions;
-import shardingsphere.shaded.common.base.Strings;
+import io.shardingsphere.shaded.com.google.common.base.Optional;
+import io.shardingsphere.shaded.com.google.common.base.Preconditions;
+import io.shardingsphere.shaded.com.google.common.base.Strings;
 import io.shardingsphere.shardingproxy.config.yaml.YamlProxyRuleConfiguration;
 import io.shardingsphere.shardingproxy.config.yaml.YamlProxyServerConfiguration;
 import org.yaml.snakeyaml.Yaml;

@@ -17,7 +17,7 @@
 
 package io.shardingsphere.dbtest.fixture;
 
-import shardingsphere.shaded.common.collect.Range;
+import io.shardingsphere.shaded.com.google.common.collect.Range;
 import io.shardingsphere.api.algorithm.sharding.RangeShardingValue;
 import io.shardingsphere.api.algorithm.sharding.standard.RangeShardingAlgorithm;
 

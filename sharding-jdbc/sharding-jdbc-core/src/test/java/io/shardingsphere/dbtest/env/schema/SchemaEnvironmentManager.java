@@ -17,7 +17,7 @@
 
 package io.shardingsphere.dbtest.env.schema;
 
-import shardingsphere.shaded.common.base.Joiner;
+import io.shardingsphere.shaded.com.google.common.base.Joiner;
 import io.shardingsphere.core.constant.DatabaseType;
 import io.shardingsphere.dbtest.env.EnvironmentPath;
 import io.shardingsphere.dbtest.env.IntegrateTestEnvironment;

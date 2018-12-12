@@ -17,7 +17,7 @@
 
 package io.shardingsphere.shardingproxy.backend.sctl;
 
-import shardingsphere.shaded.common.base.Optional;
+import io.shardingsphere.shaded.com.google.common.base.Optional;
 import io.shardingsphere.core.merger.MergedResult;
 import io.shardingsphere.core.merger.dal.show.ShowShardingCTLMergedResult;
 import io.shardingsphere.shardingproxy.backend.AbstractBackendHandler;
