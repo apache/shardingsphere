@@ -17,7 +17,7 @@
 
 package io.shardingsphere.shardingproxy.frontend.common.executor;
 
-import com.google.common.util.concurrent.ListeningExecutorService;
+import shardingsphere.shaded.common.util.concurrent.ListeningExecutorService;
 import io.shardingsphere.core.constant.properties.ShardingPropertiesConstant;
 import io.shardingsphere.core.util.ShardingExecutorService;
 import io.shardingsphere.shardingproxy.runtime.GlobalRegistry;

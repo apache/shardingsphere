@@ -18,8 +18,8 @@
 package io.shardingsphere.shardingproxy.runtime;
 
 import shardingsphere.shaded.common.base.Strings;
-import com.google.common.eventbus.EventBus;
-import com.google.common.eventbus.Subscribe;
+import shardingsphere.shaded.common.eventbus.EventBus;
+import shardingsphere.shaded.common.eventbus.Subscribe;
 import io.shardingsphere.api.ConfigMapContext;
 import io.shardingsphere.api.config.MasterSlaveRuleConfiguration;
 import io.shardingsphere.api.config.RuleConfiguration;

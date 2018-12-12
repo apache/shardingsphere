@@ -17,8 +17,8 @@
 
 package io.shardingsphere.core.util;
 
-import com.google.common.util.concurrent.ListeningExecutorService;
-import com.google.common.util.concurrent.MoreExecutors;
+import shardingsphere.shaded.common.util.concurrent.ListeningExecutorService;
+import shardingsphere.shaded.common.util.concurrent.MoreExecutors;
 import io.shardingsphere.core.executor.ShardingThreadFactoryBuilder;
 import lombok.AccessLevel;
 import lombok.AllArgsConstructor;
