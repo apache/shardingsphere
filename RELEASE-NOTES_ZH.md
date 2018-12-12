@@ -1,28 +1,18 @@
-## 3.0.1
+## 3.1.0.M1
 
 ### API调整
 
-1. [ISSUE #1375](https://github.com/sharding-sphere/sharding-sphere/issues/1375) 调整数据库治理模块的注册中心存储结构
+1. 调整数据库治理模块的注册中心存储结构。
+1. 调整Sharding-JDBC API，包括MasterSlaveRuleConfiguration，ShardingRuleConfiguration和TableRuleConfiguration。
 
 ### 新功能
 
-#### Core
+1. 支持XA强一致事务。
+1. 路由至单一数据节点的SQL 100%全兼容（仅MySQL）。
+1. 支持`DISTINCT`语句。
+1. 支持广播表。
 
-1. [ISSUE #1412](https://github.com/sharding-sphere/sharding-sphere/issues/1412) 支持广播表
-1. [ISSUE #1486](https://github.com/sharding-sphere/sharding-sphere/issues/1486) 支持`DISTINCT`语法
-
-### 缺陷修正
-
-#### Core
-
-1. [ISSUE #1348](https://github.com/sharding-sphere/sharding-sphere/issues/1348) 使用`PreparedStatement`执行多库SELECT LIMIT语句时异常
-1. [ISSUE #1422](https://github.com/sharding-sphere/sharding-sphere/issues/1422) 同时使用`defaultDataSourceName`和`defaultDatabaseStrategy`时异常
-
-#### Sharding-Proxy
-
-1. [ISSUE #1403](https://github.com/sharding-sphere/sharding-sphere/issues/1403) 读写分离模式时，使用`PreparedStatement`异常
-1. [ISSUE #1414](https://github.com/sharding-sphere/sharding-sphere/issues/1414) 多逻辑数据源配置时，`SHOW CREATE TABLE tb_name`语句执行异常
-1. [ISSUE #1475](https://github.com/sharding-sphere/sharding-sphere/issues/1475) `SHOW [FUll] TABLES FROM db_name LIKE 'tb_name'`语句不能返回逻辑表的信息
+[Changelog for Issues and Pull requests](https://github.com/sharding-sphere/sharding-sphere/milestone/3)
 
 ## 3.0.0
 
