@@ -41,6 +41,15 @@ public final class ShardingTransactionHandlerRegistry {
     private static final ShardingTransactionHandlerRegistry INSTANCE = new ShardingTransactionHandlerRegistry();
     
     /**
+     * Get instance of sharding transaction handler registry.
+     *
+     * @return sharding transaction handler registry
+     */
+    public static ShardingTransactionHandlerRegistry getInstance() {
+        return INSTANCE;
+    }
+    
+    /**
      * Load sharding transaction handler.
      */
     @SuppressWarnings("unchecked")
@@ -53,15 +62,6 @@ public final class ShardingTransactionHandlerRegistry {
             }
             TRANSACTION_HANDLER_MAP.put(each.getTransactionType(), (ShardingTransactionHandler<ShardingTransactionEvent>) each);
         }
-    }
-    
-    /**
-     * Get instance of sharding transaction handler registry.
-     *
-     * @return sharding transaction handler registry
-     */
-    public static ShardingTransactionHandlerRegistry getInstance() {
-        return INSTANCE;
     }
     
     /**
