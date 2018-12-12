@@ -17,8 +17,8 @@
 
 package io.shardingsphere.core.yaml.sharding;
 
-import com.google.common.base.Preconditions;
-import com.google.common.base.Strings;
+import shardingsphere.shaded.common.base.Preconditions;
+import shardingsphere.shaded.common.base.Strings;
 import io.shardingsphere.api.config.TableRuleConfiguration;
 import io.shardingsphere.core.keygen.KeyGeneratorFactory;
 import lombok.Getter;
