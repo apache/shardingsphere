@@ -17,7 +17,7 @@
 
 package io.shardingsphere.core.parsing.antlr.filler.registry;
 
-import com.google.common.base.Optional;
+import shardingsphere.shaded.common.base.Optional;
 import io.shardingsphere.core.parsing.antlr.filler.SQLStatementFiller;
 import io.shardingsphere.core.parsing.antlr.filler.impl.ColumnDefinitionFiller;
 import io.shardingsphere.core.parsing.antlr.filler.impl.ConstraintDefinitionFiller;

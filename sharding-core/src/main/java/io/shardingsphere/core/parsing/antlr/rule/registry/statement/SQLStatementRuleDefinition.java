@@ -17,10 +17,10 @@
 
 package io.shardingsphere.core.parsing.antlr.rule.registry.statement;
 
-import com.google.common.base.CaseFormat;
-import com.google.common.base.Joiner;
-import com.google.common.base.Splitter;
-import com.google.common.base.Strings;
+import shardingsphere.shaded.common.base.CaseFormat;
+import shardingsphere.shaded.common.base.Joiner;
+import shardingsphere.shaded.common.base.Splitter;
+import shardingsphere.shaded.common.base.Strings;
 import io.shardingsphere.core.parsing.antlr.extractor.SQLSegmentExtractor;
 import io.shardingsphere.core.parsing.antlr.optimizer.impl.SQLStatementOptimizer;
 import io.shardingsphere.core.parsing.antlr.rule.jaxb.entity.statement.SQLStatementRuleDefinitionEntity;
