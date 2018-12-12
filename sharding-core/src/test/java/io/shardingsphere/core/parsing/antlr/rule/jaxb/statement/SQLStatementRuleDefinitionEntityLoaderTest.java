@@ -21,42 +21,41 @@ import io.shardingsphere.core.parsing.antlr.rule.jaxb.entity.statement.SQLStatem
 import io.shardingsphere.core.parsing.antlr.rule.jaxb.loader.statement.SQLStatementRuleDefinitionEntityLoader;
 import org.junit.Test;
 
-import javax.xml.bind.JAXBException;
-
 import static org.hamcrest.CoreMatchers.is;
+import static org.junit.Assert.assertFalse;
 import static org.junit.Assert.assertThat;
 
 public final class SQLStatementRuleDefinitionEntityLoaderTest {
     
     @Test
-    public void assertLoadForMySQL() throws JAXBException {
+    public void assertLoadForMySQL() {
         SQLStatementRuleDefinitionEntity actual = new SQLStatementRuleDefinitionEntityLoader().load("parsing-rule-definition/mysql/sql-statement-rule-definition.xml");
         assertThat(actual.getBasePackage(), is("io.shardingsphere.core.parsing.antlr"));
         assertThat(actual.getOptimizerBasePackage(), is("optimizer.impl"));
-        assertThat(actual.getRules().size(), is(7));
+        assertFalse(actual.getRules().isEmpty());
     }
     
     @Test
-    public void assertLoadForPostgreSQL() throws JAXBException {
+    public void assertLoadForPostgreSQL() {
         SQLStatementRuleDefinitionEntity actual = new SQLStatementRuleDefinitionEntityLoader().load("parsing-rule-definition/postgresql/sql-statement-rule-definition.xml");
         assertThat(actual.getBasePackage(), is("io.shardingsphere.core.parsing.antlr"));
         assertThat(actual.getOptimizerBasePackage(), is("optimizer.impl"));
-        assertThat(actual.getRules().size(), is(8));
+        assertFalse(actual.getRules().isEmpty());
     }
     
     @Test
-    public void assertLoadForOracle() throws JAXBException {
+    public void assertLoadForOracle() {
         SQLStatementRuleDefinitionEntity actual = new SQLStatementRuleDefinitionEntityLoader().load("parsing-rule-definition/oracle/sql-statement-rule-definition.xml");
         assertThat(actual.getBasePackage(), is("io.shardingsphere.core.parsing.antlr"));
         assertThat(actual.getOptimizerBasePackage(), is("optimizer.impl"));
-        assertThat(actual.getRules().size(), is(7));
+        assertFalse(actual.getRules().isEmpty());
     }
     
     @Test
-    public void assertLoadForSQLServer() throws JAXBException {
+    public void assertLoadForSQLServer() {
         SQLStatementRuleDefinitionEntity actual = new SQLStatementRuleDefinitionEntityLoader().load("parsing-rule-definition/sqlserver/sql-statement-rule-definition.xml");
         assertThat(actual.getBasePackage(), is("io.shardingsphere.core.parsing.antlr"));
         assertThat(actual.getOptimizerBasePackage(), is("optimizer.impl"));
-        assertThat(actual.getRules().size(), is(7));
+        assertFalse(actual.getRules().isEmpty());
     }
 }

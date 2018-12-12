@@ -22,6 +22,7 @@ import io.shardingsphere.core.parsing.antlr.rule.jaxb.loader.extractor.Extractor
 import org.junit.Test;
 
 import static org.hamcrest.CoreMatchers.is;
+import static org.junit.Assert.assertFalse;
 import static org.junit.Assert.assertThat;
 
 public final class ExtractorRuleDefinitionEntityLoaderTest {
@@ -30,34 +31,34 @@ public final class ExtractorRuleDefinitionEntityLoaderTest {
     public void assertLoadForCommon() {
         ExtractorRuleDefinitionEntity actual = new ExtractorRuleDefinitionEntityLoader().load("parsing-rule-definition/common/extractor-rule-definition.xml");
         assertThat(actual.getExtractorBasePackage(), is("io.shardingsphere.core.parsing.antlr.extractor.impl"));
-        assertThat(actual.getRules().size(), is(15));
+        assertFalse(actual.getRules().isEmpty());
     }
     
     @Test
     public void assertLoadForMySQL() {
         ExtractorRuleDefinitionEntity actual = new ExtractorRuleDefinitionEntityLoader().load("parsing-rule-definition/mysql/extractor-rule-definition.xml");
         assertThat(actual.getExtractorBasePackage(), is("io.shardingsphere.core.parsing.antlr.extractor.impl"));
-        assertThat(actual.getRules().size(), is(6));
+        assertFalse(actual.getRules().isEmpty());
     }
     
     @Test
     public void assertLoadForPostgreSQL() {
         ExtractorRuleDefinitionEntity actual = new ExtractorRuleDefinitionEntityLoader().load("parsing-rule-definition/postgresql/extractor-rule-definition.xml");
         assertThat(actual.getExtractorBasePackage(), is("io.shardingsphere.core.parsing.antlr.extractor.impl"));
-        assertThat(actual.getRules().size(), is(3));
+        assertFalse(actual.getRules().isEmpty());
     }
     
     @Test
     public void assertLoadForOracle() {
         ExtractorRuleDefinitionEntity actual = new ExtractorRuleDefinitionEntityLoader().load("parsing-rule-definition/oracle/extractor-rule-definition.xml");
         assertThat(actual.getExtractorBasePackage(), is("io.shardingsphere.core.parsing.antlr.extractor.impl"));
-        assertThat(actual.getRules().size(), is(3));
+        assertFalse(actual.getRules().isEmpty());
     }
     
     @Test
     public void assertLoadForSQLServer() {
         ExtractorRuleDefinitionEntity actual = new ExtractorRuleDefinitionEntityLoader().load("parsing-rule-definition/sqlserver/extractor-rule-definition.xml");
         assertThat(actual.getExtractorBasePackage(), is("io.shardingsphere.core.parsing.antlr.extractor.impl"));
-        assertThat(actual.getRules().size(), is(5));
+        assertFalse(actual.getRules().isEmpty());
     }
 }

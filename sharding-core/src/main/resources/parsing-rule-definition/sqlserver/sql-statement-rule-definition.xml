@@ -11,4 +11,5 @@
     <sql-statement-rule context="createIndex" sql-statement-class="io.shardingsphere.core.parsing.parser.sql.ddl.DDLStatement" extractor-rule-refs="tableName, indexName" />
     <sql-statement-rule context="alterIndex" sql-statement-class="io.shardingsphere.core.parsing.parser.sql.ddl.DDLStatement" extractor-rule-refs="tableName, indexName" />
     <sql-statement-rule context="dropIndex" sql-statement-class="io.shardingsphere.core.parsing.parser.sql.ddl.DDLStatement" extractor-rule-refs="tableName, indexName" />
+    <sql-statement-rule context="setVariable" sql-statement-class="io.shardingsphere.core.parsing.parser.sql.tcl.TCLStatement" extractor-rule-refs="setAutoCommit" />
 </sql-statement-rule-definition>
