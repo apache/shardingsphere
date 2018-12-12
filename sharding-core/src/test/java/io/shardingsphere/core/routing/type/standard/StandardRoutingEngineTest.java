@@ -17,6 +17,20 @@
 
 package io.shardingsphere.core.routing.type.standard;
 
+import static org.hamcrest.CoreMatchers.instanceOf;
+import static org.hamcrest.CoreMatchers.is;
+import static org.junit.Assert.assertThat;
+
+import java.util.ArrayList;
+import java.util.Arrays;
+import java.util.Collections;
+import java.util.List;
+
+import org.junit.Before;
+import org.junit.Test;
+
+import com.google.common.base.Optional;
+
 import io.shardingsphere.api.algorithm.sharding.ListShardingValue;
 import io.shardingsphere.api.algorithm.sharding.ShardingValue;
 import io.shardingsphere.api.config.ShardingRuleConfiguration;
@@ -24,19 +38,9 @@ import io.shardingsphere.api.config.TableRuleConfiguration;
 import io.shardingsphere.api.config.strategy.InlineShardingStrategyConfiguration;
 import io.shardingsphere.core.optimizer.condition.ShardingCondition;
 import io.shardingsphere.core.optimizer.condition.ShardingConditions;
+import io.shardingsphere.core.parsing.parser.sql.SQLStatement;
 import io.shardingsphere.core.routing.type.RoutingResult;
 import io.shardingsphere.core.rule.ShardingRule;
-import org.junit.Before;
-import org.junit.Test;
-
-import java.util.ArrayList;
-import java.util.Arrays;
-import java.util.Collections;
-import java.util.List;
-
-import static org.hamcrest.CoreMatchers.instanceOf;
-import static org.hamcrest.CoreMatchers.is;
-import static org.junit.Assert.assertThat;
 
 public final class StandardRoutingEngineTest {
     
@@ -59,7 +63,7 @@ public final class StandardRoutingEngineTest {
         shardingCondition.getShardingValues().add(shardingValue1);
         shardingCondition.getShardingValues().add(shardingValue2);
         shardingConditions.add(shardingCondition);
-        standardRoutingEngine = new StandardRoutingEngine(shardingRule, "t_order", new ShardingConditions(shardingConditions));
+        standardRoutingEngine = new StandardRoutingEngine(shardingRule, "t_order", new ShardingConditions(shardingConditions), Optional.<SQLStatement>absent());
     }
     
     @Test

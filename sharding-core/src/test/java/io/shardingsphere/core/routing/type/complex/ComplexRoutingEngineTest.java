@@ -17,6 +17,20 @@
 
 package io.shardingsphere.core.routing.type.complex;
 
+import static org.hamcrest.CoreMatchers.instanceOf;
+import static org.hamcrest.CoreMatchers.is;
+import static org.junit.Assert.assertThat;
+
+import java.util.ArrayList;
+import java.util.Arrays;
+import java.util.Collections;
+import java.util.List;
+
+import org.junit.Before;
+import org.junit.Test;
+
+import com.google.common.base.Optional;
+
 import io.shardingsphere.api.algorithm.sharding.ListShardingValue;
 import io.shardingsphere.api.algorithm.sharding.ShardingValue;
 import io.shardingsphere.api.config.ShardingRuleConfiguration;
@@ -24,19 +38,9 @@ import io.shardingsphere.api.config.TableRuleConfiguration;
 import io.shardingsphere.api.config.strategy.InlineShardingStrategyConfiguration;
 import io.shardingsphere.core.optimizer.condition.ShardingCondition;
 import io.shardingsphere.core.optimizer.condition.ShardingConditions;
+import io.shardingsphere.core.parsing.parser.sql.SQLStatement;
 import io.shardingsphere.core.routing.type.RoutingResult;
 import io.shardingsphere.core.rule.ShardingRule;
-import org.junit.Before;
-import org.junit.Test;
-
-import java.util.ArrayList;
-import java.util.Arrays;
-import java.util.Collections;
-import java.util.List;
-
-import static org.hamcrest.CoreMatchers.instanceOf;
-import static org.hamcrest.CoreMatchers.is;
-import static org.junit.Assert.assertThat;
 
 public final class ComplexRoutingEngineTest {
     
@@ -70,7 +74,7 @@ public final class ComplexRoutingEngineTest {
         shardingCondition.getShardingValues().add(shardingValue1);
         shardingCondition.getShardingValues().add(shardingValue2);
         shardingConditions.add(shardingCondition);
-        ComplexRoutingEngine complexRoutingEngine = new ComplexRoutingEngine(shardingRule, Arrays.asList("t_order", "t_order_item"), new ShardingConditions(shardingConditions));
+        ComplexRoutingEngine complexRoutingEngine = new ComplexRoutingEngine(shardingRule, Arrays.asList("t_order", "t_order_item"), new ShardingConditions(shardingConditions), Optional.<SQLStatement>absent());
         RoutingResult routingResult = complexRoutingEngine.route();
         assertThat(routingResult, instanceOf(RoutingResult.class));
         assertThat(routingResult.getTableUnits().getTableUnits().size(), is(1));
@@ -89,7 +93,7 @@ public final class ComplexRoutingEngineTest {
         shardingCondition.getShardingValues().add(shardingValue1);
         shardingCondition.getShardingValues().add(shardingValue2);
         shardingConditions.add(shardingCondition);
-        ComplexRoutingEngine complexRoutingEngine = new ComplexRoutingEngine(shardingRule, Arrays.asList("t_order", "t_config"), new ShardingConditions(shardingConditions));
+        ComplexRoutingEngine complexRoutingEngine = new ComplexRoutingEngine(shardingRule, Arrays.asList("t_order", "t_config"), new ShardingConditions(shardingConditions), Optional.<SQLStatement>absent());
         RoutingResult routingResult = complexRoutingEngine.route();
         assertThat(routingResult, instanceOf(RoutingResult.class));
         assertThat(routingResult.getTableUnits().getTableUnits().size(), is(1));

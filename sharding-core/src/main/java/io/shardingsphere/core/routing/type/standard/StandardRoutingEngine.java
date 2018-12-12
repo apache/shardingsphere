@@ -17,16 +17,28 @@
 
 package io.shardingsphere.core.routing.type.standard;
 
+import java.util.ArrayList;
+import java.util.Collection;
+import java.util.Collections;
+import java.util.HashMap;
+import java.util.LinkedHashSet;
+import java.util.LinkedList;
+import java.util.List;
+import java.util.Map;
+import java.util.Set;
+
 import com.google.common.base.Optional;
 import com.google.common.base.Preconditions;
+
 import io.shardingsphere.api.algorithm.sharding.ShardingValue;
 import io.shardingsphere.core.hint.HintManagerHolder;
 import io.shardingsphere.core.optimizer.condition.ShardingCondition;
 import io.shardingsphere.core.optimizer.condition.ShardingConditions;
 import io.shardingsphere.core.optimizer.insert.InsertShardingCondition;
+import io.shardingsphere.core.parsing.parser.sql.SQLStatement;
 import io.shardingsphere.core.routing.strategy.ShardingStrategy;
 import io.shardingsphere.core.routing.strategy.hint.HintShardingStrategy;
-import io.shardingsphere.core.routing.type.RoutingEngine;
+import io.shardingsphere.core.routing.type.AbstractRoutingEngine;
 import io.shardingsphere.core.routing.type.RoutingResult;
 import io.shardingsphere.core.routing.type.RoutingTable;
 import io.shardingsphere.core.routing.type.TableUnit;
@@ -34,13 +46,6 @@ import io.shardingsphere.core.rule.DataNode;
 import io.shardingsphere.core.rule.ShardingRule;
 import io.shardingsphere.core.rule.TableRule;
 import lombok.RequiredArgsConstructor;
-
-import java.util.ArrayList;
-import java.util.Collection;
-import java.util.Collections;
-import java.util.LinkedHashSet;
-import java.util.LinkedList;
-import java.util.List;
 
 /**
  * Standard routing engine.
@@ -50,13 +55,15 @@ import java.util.List;
  * @author panjuan
  */
 @RequiredArgsConstructor
-public final class StandardRoutingEngine implements RoutingEngine {
+public final class StandardRoutingEngine extends AbstractRoutingEngine {
     
     private final ShardingRule shardingRule;
     
     private final String logicTableName;
     
     private final ShardingConditions shardingConditions;
+    
+    private final Optional<SQLStatement> sqlStatement;
    
     @Override
     public RoutingResult route() {
@@ -67,7 +74,15 @@ public final class StandardRoutingEngine implements RoutingEngine {
         } else {
             dataNodes.addAll(routeByShardingConditions(tableRule));
         }
-        return generateRoutingResult(dataNodes);
+        RoutingResult routingResult = generateRoutingResult(dataNodes);
+        if(checkSharding(sqlStatement) && !shardingConditions.getShardingConditions().isEmpty()) {
+            Map<String, Set<String>> shardingSelectedDatasource = new HashMap<>();
+            fillTableDatasourceMapping(shardingSelectedDatasource, routingResult.getTableUnits().getTableUnits());
+            if(checkSharding(sqlStatement) && !shardingSelectedDatasource.isEmpty()) {
+                checkTableDatasourceMapping(shardingSelectedDatasource);
+            }
+        }
+        return routingResult;
     }
     
     private Collection<DataNode> route(final TableRule tableRule, final List<ShardingValue> databaseShardingValues, final List<ShardingValue> tableShardingValues) {
