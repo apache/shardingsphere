@@ -20,6 +20,7 @@ package io.shardingsphere.shardingjdbc.executor;
 import io.shardingsphere.core.constant.DatabaseType;
 import io.shardingsphere.core.constant.properties.ShardingProperties;
 import io.shardingsphere.core.constant.properties.ShardingPropertiesConstant;
+import io.shardingsphere.core.constant.transaction.TransactionType;
 import io.shardingsphere.core.executor.ShardingExecuteEngine;
 import io.shardingsphere.core.executor.sql.execute.threadlocal.ExecutorExceptionHandler;
 import io.shardingsphere.shardingjdbc.jdbc.core.ShardingContext;
@@ -65,7 +66,7 @@ public abstract class AbstractBaseExecutorTest {
         Map<String, DataSource> dataSourceSourceMap = new LinkedHashMap<>();
         dataSourceSourceMap.put("ds_0", dataSource);
         dataSourceSourceMap.put("ds_1", dataSource);
-        connection = new ShardingConnection(dataSourceSourceMap, shardingContext);
+        connection = new ShardingConnection(dataSourceSourceMap, shardingContext, TransactionType.LOCAL);
     }
     
     private ShardingProperties getShardingProperties() {

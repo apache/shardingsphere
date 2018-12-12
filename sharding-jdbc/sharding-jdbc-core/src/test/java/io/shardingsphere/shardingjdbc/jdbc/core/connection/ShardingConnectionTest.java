@@ -24,12 +24,12 @@ import io.shardingsphere.api.config.TableRuleConfiguration;
 import io.shardingsphere.core.constant.DatabaseType;
 import io.shardingsphere.core.constant.transaction.TransactionType;
 import io.shardingsphere.core.event.transaction.ShardingTransactionEvent;
+import io.shardingsphere.core.transaction.TransactionTypeHolder;
 import io.shardingsphere.shardingjdbc.fixture.TestDataSource;
 import io.shardingsphere.shardingjdbc.jdbc.core.ShardingContext;
 import io.shardingsphere.shardingjdbc.jdbc.core.datasource.FixedBaseShardingTransactionHandler;
 import io.shardingsphere.shardingjdbc.jdbc.core.datasource.FixedXAShardingTransactionHandler;
 import io.shardingsphere.shardingjdbc.jdbc.core.datasource.MasterSlaveDataSource;
-import io.shardingsphere.core.transaction.TransactionTypeHolder;
 import org.junit.After;
 import org.junit.Before;
 import org.junit.BeforeClass;
@@ -85,7 +85,7 @@ public final class ShardingConnectionTest {
         shardingRuleConfig.getTableRuleConfigs().add(tableRuleConfig);
         dataSourceMap = new HashMap<>(1, 1);
         dataSourceMap.put(DS_NAME, masterSlaveDataSource);
-        connection = new ShardingConnection(dataSourceMap, shardingContext);
+        connection = new ShardingConnection(dataSourceMap, shardingContext, TransactionType.LOCAL);
     }
     
     @After
