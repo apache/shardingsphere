@@ -22,7 +22,7 @@ import com.google.common.base.Joiner;
 import com.google.common.base.Splitter;
 import com.google.common.base.Strings;
 import io.shardingsphere.core.parsing.antlr.extractor.SQLSegmentExtractor;
-import io.shardingsphere.core.parsing.antlr.optimizer.impl.SQLStatementOptimizer;
+import io.shardingsphere.core.parsing.antlr.optimizer.SQLStatementOptimizer;
 import io.shardingsphere.core.parsing.antlr.rule.jaxb.entity.statement.SQLStatementRuleDefinitionEntity;
 import io.shardingsphere.core.parsing.antlr.rule.jaxb.entity.statement.SQLStatementRuleEntity;
 import io.shardingsphere.core.parsing.antlr.rule.registry.extractor.ExtractorRuleDefinition;
