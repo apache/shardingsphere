@@ -42,8 +42,8 @@ public final class SQLSegmentRuleDefinition {
     /**
      * Initialize SQL segment rule definition.
      * 
-     * @param commonRuleDefinitionEntity common SQL segment rule definition
-     * @param dialectRuleDefinitionEntity SQL dialect segment rule definition
+     * @param commonRuleDefinitionEntity common SQL segment rule definition entity
+     * @param dialectRuleDefinitionEntity SQL dialect segment rule definition entity
      */
     public void init(final SQLSegmentRuleDefinitionEntity commonRuleDefinitionEntity, final SQLSegmentRuleDefinitionEntity dialectRuleDefinitionEntity) {
         init(commonRuleDefinitionEntity);

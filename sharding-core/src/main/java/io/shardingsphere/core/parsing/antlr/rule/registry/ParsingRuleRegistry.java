@@ -107,6 +107,6 @@ public final class ParsingRuleRegistry {
      * @return SQL statement filler
      */
     public Optional<SQLStatementFiller> findSQLStatementFiller(final Class<? extends SQLSegment> sqlSegmentClass) {
-        return Optional.fromNullable(fillerRuleDefinition.getRules().containsKey(sqlSegmentClass) ? fillerRuleDefinition.getRules().get(sqlSegmentClass).getFiller() : null);
+        return Optional.fromNullable(fillerRuleDefinition.getRules().get(sqlSegmentClass));
     }
 }
