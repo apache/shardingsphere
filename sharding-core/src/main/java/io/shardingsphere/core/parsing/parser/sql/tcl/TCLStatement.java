@@ -17,7 +17,7 @@
 
 package io.shardingsphere.core.parsing.parser.sql.tcl;
 
-import com.google.common.base.Optional;
+import shardingsphere.shaded.common.base.Optional;
 import io.shardingsphere.core.constant.SQLType;
 import io.shardingsphere.core.constant.transaction.TransactionOperationType;
 import io.shardingsphere.core.parsing.lexer.token.DefaultKeyword;
