@@ -17,7 +17,7 @@
 
 package io.shardingsphere.core.routing.strategy.inline;
 
-import com.google.common.base.Preconditions;
+import shardingsphere.shaded.common.base.Preconditions;
 import groovy.lang.Closure;
 import groovy.util.Expando;
 import io.shardingsphere.api.algorithm.sharding.ListShardingValue;

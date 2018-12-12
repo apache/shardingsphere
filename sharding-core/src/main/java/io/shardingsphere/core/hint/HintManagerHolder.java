@@ -17,8 +17,8 @@
 
 package io.shardingsphere.core.hint;
 
-import com.google.common.base.Optional;
-import com.google.common.base.Preconditions;
+import shardingsphere.shaded.common.base.Optional;
+import shardingsphere.shaded.common.base.Preconditions;
 import io.shardingsphere.api.HintManager;
 import io.shardingsphere.api.algorithm.sharding.ListShardingValue;
 import io.shardingsphere.api.algorithm.sharding.ShardingValue;
