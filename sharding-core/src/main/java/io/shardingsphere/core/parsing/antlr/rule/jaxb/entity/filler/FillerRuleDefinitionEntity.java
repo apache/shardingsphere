@@ -15,7 +15,7 @@
  * </p>
  */
 
-package io.shardingsphere.core.parsing.antlr.rule.jaxb.entity.statement;
+package io.shardingsphere.core.parsing.antlr.rule.jaxb.entity.filler;
 
 import io.shardingsphere.core.parsing.antlr.rule.jaxb.entity.RuleDefinitionEntity;
 import lombok.Getter;
@@ -27,17 +27,20 @@ import java.util.Collection;
 import java.util.LinkedList;
 
 /**
- * SQL statement rule definition entity for JAXB.
+ * Filler rule definition entity for JAXB.
  *
  * @author zhangliang
  */
-@XmlRootElement(name = "sql-statement-rule-definition")
+@XmlRootElement(name = "filler-rule-definition")
 @Getter
-public final class SQLStatementRuleDefinitionEntity implements RuleDefinitionEntity {
+public final class FillerRuleDefinitionEntity implements RuleDefinitionEntity {
     
-    @XmlAttribute(name = "optimizer-base-package", required = true)
-    private String optimizerBasePackage;
+    @XmlAttribute(name = "sql-segment-base-package", required = true)
+    private String sqlSegmentBasePackage;
     
-    @XmlElement(name = "sql-statement-rule")
-    private Collection<SQLStatementRuleEntity> rules = new LinkedList<>();
+    @XmlAttribute(name = "filler-base-package", required = true)
+    private String fillerBasePackage;
+    
+    @XmlElement(name = "filler-rule")
+    private Collection<FillerRuleEntity> rules = new LinkedList<>();
 }

@@ -26,12 +26,11 @@ import io.shardingsphere.core.parsing.parser.sql.SQLStatement;
 import io.shardingsphere.core.parsing.parser.sql.ddl.DDLStatement;
 import io.shardingsphere.core.parsing.parser.sql.ddl.create.table.CreateTableStatement;
 import io.shardingsphere.core.parsing.parser.sql.dql.select.SelectStatement;
+import io.shardingsphere.core.parsing.parser.sql.tcl.TCLStatement;
 import io.shardingsphere.core.parsing.parser.sql.tcl.begin.BeginStatement;
 import io.shardingsphere.core.parsing.parser.sql.tcl.commit.CommitStatement;
 import io.shardingsphere.core.parsing.parser.sql.tcl.rollback.RollbackStatement;
-import io.shardingsphere.core.parsing.parser.sql.tcl.TCLStatement;
 import lombok.RequiredArgsConstructor;
-import lombok.SneakyThrows;
 
 /**
  * SQL statement type.
@@ -78,16 +77,6 @@ public enum SQLStatementType {
     private final String name;
     
     private final Class<? extends SQLStatement> clazz;
-    
-    /**
-     * Create new instance for SQL statement.
-     * 
-     * @return new instance for SQL statement
-     */
-    @SneakyThrows
-    public SQLStatement newSQLStatement() {
-        return clazz.newInstance();
-    }
     
     /**
      * Get SQL statement type via name.

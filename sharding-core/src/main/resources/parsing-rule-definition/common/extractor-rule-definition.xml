@@ -1,0 +1,18 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<extractor-rule-definition extractor-base-package="io.shardingsphere.core.parsing.antlr.extractor.impl">
+    <extractor-rule id="tableName" extractor-class="TableNameExtractor" />
+    <extractor-rule id="tableNames" extractor-class="TableNamesExtractor" />
+    <extractor-rule id="indexName" extractor-class="IndexNameExtractor" />
+    <extractor-rule id="indexNames" extractor-class="IndexNamesExtractor" />
+    <extractor-rule id="columnDefinitions" extractor-class="ColumnDefinitionsExtractor" />
+    <extractor-rule id="outlinePrimaryKey" extractor-class="OutlinePrimaryKeyExtractor" />
+    <extractor-rule id="renameTable" extractor-class="RenameTableExtractor" />
+    <extractor-rule id="renameIndex" extractor-class="RenameIndexExtractor" />
+    <extractor-rule id="dropColumn" extractor-class="DropColumnExtractor" />
+    <extractor-rule id="renameColumn" extractor-class="RenameColumnExtractor" />
+    <extractor-rule id="selectClause" extractor-class="SelectClauseExtractor" />
+    <extractor-rule id="fromWhere" extractor-class="FromWhereExtractor" />
+    <extractor-rule id="groupBy" extractor-class="GroupByExtractor" />
+    <extractor-rule id="orderBy" extractor-class="OrderByExtractor" />
+    <extractor-rule id="limit" extractor-class="LimitExtractor" />
+</extractor-rule-definition>

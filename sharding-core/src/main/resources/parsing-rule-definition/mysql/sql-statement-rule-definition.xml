@@ -1,16 +1,17 @@
 <?xml version="1.0" encoding="UTF-8"?>
-<sql-statement-rule-definition database-type="MySQL" base-package="io.shardingsphere.core.parsing.antlr" optimizer-base-package="optimizer.impl">
+<sql-statement-rule-definition database-type="MySQL" optimizer-base-package="io.shardingsphere.core.parsing.antlr.optimizer.impl">
     <sql-statement-rule context="createTable" sql-statement-class="io.shardingsphere.core.parsing.parser.sql.ddl.create.table.CreateTableStatement" 
-                        sql-segment-rule-refs="tableNames, columnDefinitions, indexNames, outlinePrimaryKey" 
+                        extractor-rule-refs="tableNames, columnDefinitions, indexNames, outlinePrimaryKey" 
                         optimizer-class="ddl.CreateTableOptimizer" />
     <sql-statement-rule context="alterTable" sql-statement-class="io.shardingsphere.core.parsing.antlr.sql.statement.ddl.AlterTableStatement" 
-                        sql-segment-rule-refs="tableNames, outlinePrimaryKey, renameTable, addColumn, dropColumn, changeColumn, modifyColumn, addIndex, dropIndex, renameIndex, dropPrimaryKey" 
+                        extractor-rule-refs="tableNames, outlinePrimaryKey, renameTable, addColumn, dropColumn, changeColumn, modifyColumn, addIndex, dropIndex, renameIndex, dropPrimaryKey" 
                         optimizer-class="ddl.dialect.mysql.MySQLAlterTableOptimizer" />
-    <sql-statement-rule context="dropTable" sql-statement-class="io.shardingsphere.core.parsing.parser.sql.ddl.DDLStatement" sql-segment-rule-refs="tableNames" />
-    <sql-statement-rule context="truncateTable" sql-statement-class="io.shardingsphere.core.parsing.parser.sql.ddl.DDLStatement" sql-segment-rule-refs="tableName" />
-    <sql-statement-rule context="createIndex" sql-statement-class="io.shardingsphere.core.parsing.parser.sql.ddl.DDLStatement" sql-segment-rule-refs="tableName, indexName" />
-    <sql-statement-rule context="dropIndex" sql-statement-class="io.shardingsphere.core.parsing.parser.sql.ddl.DDLStatement" sql-segment-rule-refs="tableName, indexName" />
+    <sql-statement-rule context="dropTable" sql-statement-class="io.shardingsphere.core.parsing.parser.sql.ddl.DDLStatement" extractor-rule-refs="tableNames" />
+    <sql-statement-rule context="truncateTable" sql-statement-class="io.shardingsphere.core.parsing.parser.sql.ddl.DDLStatement" extractor-rule-refs="tableName" />
+    <sql-statement-rule context="createIndex" sql-statement-class="io.shardingsphere.core.parsing.parser.sql.ddl.DDLStatement" extractor-rule-refs="tableName, indexName" />
+    <sql-statement-rule context="dropIndex" sql-statement-class="io.shardingsphere.core.parsing.parser.sql.ddl.DDLStatement" extractor-rule-refs="tableName, indexName" />
     <sql-statement-rule context="select" sql-statement-class="io.shardingsphere.core.parsing.parser.sql.dql.select.SelectStatement" 
-                        sql-segment-rule-refs="tableNames, indexNames, selectClause, fromWhere, groupBy, orderBy, limit" 
+                        extractor-rule-refs="tableNames, indexNames, selectClause, fromWhere, groupBy, orderBy, limit" 
                         optimizer-class="dql.dialect.mysql.MySQLSelectOptimizer" />
+    <sql-statement-rule context="setVariable" sql-statement-class="io.shardingsphere.core.parsing.parser.sql.tcl.TCLStatement" extractor-rule-refs="setAutoCommit" />
 </sql-statement-rule-definition>

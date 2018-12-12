@@ -18,8 +18,8 @@
 package io.shardingsphere.core.parsing.antlr.rule.registry.statement;
 
 import com.google.common.base.Optional;
-import io.shardingsphere.core.parsing.antlr.optimizer.impl.SQLStatementOptimizer;
-import io.shardingsphere.core.parsing.antlr.rule.registry.segment.SQLSegmentRule;
+import io.shardingsphere.core.parsing.antlr.extractor.SQLSegmentExtractor;
+import io.shardingsphere.core.parsing.antlr.optimizer.SQLStatementOptimizer;
 import io.shardingsphere.core.parsing.parser.sql.SQLStatement;
 import lombok.Getter;
 import lombok.RequiredArgsConstructor;
@@ -40,7 +40,7 @@ public final class SQLStatementRule {
     
     private final Class<? extends SQLStatement> sqlStatementClass;
     
-    private final Collection<SQLSegmentRule> sqlSegmentRules = new LinkedList<>();
+    private final Collection<SQLSegmentExtractor> extractors = new LinkedList<>();
     
     private final SQLStatementOptimizer optimizer;
     

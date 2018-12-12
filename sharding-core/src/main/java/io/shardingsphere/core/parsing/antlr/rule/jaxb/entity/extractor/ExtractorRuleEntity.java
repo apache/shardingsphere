@@ -15,29 +15,26 @@
  * </p>
  */
 
-package io.shardingsphere.core.parsing.antlr.rule.jaxb.entity.statement;
+package io.shardingsphere.core.parsing.antlr.rule.jaxb.entity.extractor;
 
-import io.shardingsphere.core.parsing.antlr.rule.jaxb.entity.RuleDefinitionEntity;
 import lombok.Getter;
 
+import javax.xml.bind.annotation.XmlAccessType;
+import javax.xml.bind.annotation.XmlAccessorType;
 import javax.xml.bind.annotation.XmlAttribute;
-import javax.xml.bind.annotation.XmlElement;
-import javax.xml.bind.annotation.XmlRootElement;
-import java.util.Collection;
-import java.util.LinkedList;
 
 /**
- * SQL statement rule definition entity for JAXB.
+ * Extractor rule entity for JAXB.
  *
  * @author zhangliang
  */
-@XmlRootElement(name = "sql-statement-rule-definition")
+@XmlAccessorType(XmlAccessType.FIELD)
 @Getter
-public final class SQLStatementRuleDefinitionEntity implements RuleDefinitionEntity {
+public final class ExtractorRuleEntity {
     
-    @XmlAttribute(name = "optimizer-base-package", required = true)
-    private String optimizerBasePackage;
+    @XmlAttribute(required = true)
+    private String id;
     
-    @XmlElement(name = "sql-statement-rule")
-    private Collection<SQLStatementRuleEntity> rules = new LinkedList<>();
+    @XmlAttribute(name = "extractor-class", required = true)
+    private String extractorClass;
 }

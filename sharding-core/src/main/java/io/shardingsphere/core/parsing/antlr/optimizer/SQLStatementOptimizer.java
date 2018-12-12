@@ -17,32 +17,21 @@
 
 package io.shardingsphere.core.parsing.antlr.optimizer;
 
-import com.google.common.base.Optional;
 import io.shardingsphere.core.metadata.table.ShardingTableMetaData;
-import io.shardingsphere.core.parsing.antlr.rule.registry.statement.SQLStatementRule;
 import io.shardingsphere.core.parsing.parser.sql.SQLStatement;
-import lombok.RequiredArgsConstructor;
 
 /**
- * SQL statement optimizer engine.
- * 
+ * SQL statement optimizer.
+ *
  * @author zhangliang
  */
-@RequiredArgsConstructor
-public final class SQLStatementOptimizerEngine {
-    
-    private final ShardingTableMetaData shardingTableMetaData;
+public interface SQLStatementOptimizer {
     
     /**
      * Optimize SQL statement.
      *
-     * @param rule SQL statement rule
      * @param sqlStatement SQL statement
+     * @param shardingTableMetaData sharding table meta data
      */
-    public void optimize(final SQLStatementRule rule, final SQLStatement sqlStatement) {
-        Optional<SQLStatementOptimizer> optimizer = rule.getOptimizer();
-        if (optimizer.isPresent()) {
-            optimizer.get().optimize(sqlStatement, shardingTableMetaData);
-        }
-    }
+    void optimize(SQLStatement sqlStatement, ShardingTableMetaData shardingTableMetaData);
 }

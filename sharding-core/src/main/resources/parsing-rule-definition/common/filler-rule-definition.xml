@@ -1,0 +1,16 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<filler-rule-definition sql-segment-base-package="io.shardingsphere.core.parsing.antlr.sql.segment" filler-base-package="io.shardingsphere.core.parsing.antlr.filler.impl">
+    <filler-rule sql-segment-class="column.DropColumnSegment" filler-class="DropColumnFiller" />
+    <filler-rule sql-segment-class="constraint.ConstraintDefinitionSegment" filler-class="ConstraintDefinitionFiller" />
+    <filler-rule sql-segment-class="constraint.DropPrimaryKeySegment" filler-class="DropPrimaryKeyFiller" />
+    <filler-rule sql-segment-class="table.TableSegment" filler-class="TableFiller" />
+    <filler-rule sql-segment-class="column.ColumnDefinitionSegment" filler-class="ColumnDefinitionFiller" />
+    <filler-rule sql-segment-class="IndexSegment" filler-class="IndexFiller" />
+    <filler-rule sql-segment-class="SelectClauseSegment" filler-class="SelectClauseFiller" />
+    <filler-rule sql-segment-class="FromWhereSegment" filler-class="FromWhereFiller" />
+    <filler-rule sql-segment-class="order.GroupBySegment" filler-class="GroupByFiller" />
+    <filler-rule sql-segment-class="order.OrderBySegment" filler-class="OrderByFiller" />
+    <filler-rule sql-segment-class="LimitSegment" filler-class="LimitFiller" />
+    <filler-rule sql-segment-class="ShowParamSegment" filler-class="ShowParamFiller" />
+    <filler-rule sql-segment-class="TransactionOperationTypeSegment" filler-class="TransactionOperationTypeFiller" />
+</filler-rule-definition>

@@ -30,18 +30,20 @@ import lombok.RequiredArgsConstructor;
 @Getter
 public enum DatabaseRuleDefinitionType {
     
-    MySQL(DatabaseType.MySQL, "parsing-rule-definition/mysql/sql-statement-rule-definition.xml", "parsing-rule-definition/mysql/sql-segment-rule-definition.xml"), 
-    PostgreSQL(DatabaseType.PostgreSQL, "parsing-rule-definition/postgresql/sql-statement-rule-definition.xml", "parsing-rule-definition/postgresql/sql-segment-rule-definition.xml"), 
-    Oracle(DatabaseType.Oracle, "parsing-rule-definition/oracle/sql-statement-rule-definition.xml", "parsing-rule-definition/oracle/sql-segment-rule-definition.xml"),  
-    SQLServer(DatabaseType.SQLServer, "parsing-rule-definition/sqlserver/sql-statement-rule-definition.xml", "parsing-rule-definition/sqlserver/sql-segment-rule-definition.xml");
+    MySQL(DatabaseType.MySQL, "parsing-rule-definition/mysql/sql-statement-rule-definition.xml", "parsing-rule-definition/mysql/extractor-rule-definition.xml"), 
+    PostgreSQL(DatabaseType.PostgreSQL, "parsing-rule-definition/postgresql/sql-statement-rule-definition.xml", "parsing-rule-definition/postgresql/extractor-rule-definition.xml"), 
+    Oracle(DatabaseType.Oracle, "parsing-rule-definition/oracle/sql-statement-rule-definition.xml", "parsing-rule-definition/oracle/extractor-rule-definition.xml"),  
+    SQLServer(DatabaseType.SQLServer, "parsing-rule-definition/sqlserver/sql-statement-rule-definition.xml", "parsing-rule-definition/sqlserver/extractor-rule-definition.xml");
     
-    public static final String COMMON_SQL_SEGMENT_RULE_DEFINITION = "parsing-rule-definition/common/sql-segment-rule-definition.xml";
+    public static final String COMMON_EXTRACTOR_RULE_DEFINITION = "parsing-rule-definition/common/extractor-rule-definition.xml";
+    
+    public static final String COMMON_FILLER_RULE_DEFINITION = "parsing-rule-definition/common/filler-rule-definition.xml";
     
     private final DatabaseType databaseType;
     
     private final String sqlStatementRuleDefinitionFile;
     
-    private final String sqlSegmentRuleDefinitionFile;
+    private final String extractorRuleDefinitionFile;
     
     /**
      * Value of database rule definition type via database type.

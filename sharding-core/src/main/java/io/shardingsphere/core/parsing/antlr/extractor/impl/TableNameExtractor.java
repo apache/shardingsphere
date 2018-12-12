@@ -51,7 +51,7 @@ public final class TableNameExtractor implements OptionalSQLSegmentExtractor {
             List<String> tableTextSegments = Splitter.on(Symbol.DOT.getLiterals()).splitToList(tableText);
             tableName = tableTextSegments.get(tableTextSegments.size() - 1);
             schemaName = Optional.of(tableTextSegments.get(tableTextSegments.size() - 2));
-            skippedSchemaNameLength = tableText.lastIndexOf(Symbol.DOT.getLiterals());
+            skippedSchemaNameLength = tableText.lastIndexOf(Symbol.DOT.getLiterals()) + 1;
         } else {
             tableName = tableText;
             schemaName = Optional.absent();
