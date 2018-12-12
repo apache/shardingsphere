@@ -18,7 +18,7 @@
 package io.shardingsphere.example.repository.api.service;
 
 import io.shardingsphere.core.constant.transaction.TransactionType;
-import io.shardingsphere.core.transaction.TransactionTypeHolder;
+import io.shardingsphere.example.repository.api.repository.TransactionTypeRepository;
 import io.shardingsphere.transaction.ShardingEnvironment;
 import io.shardingsphere.transaction.annotation.ShardingTransactional;
 
@@ -45,7 +45,10 @@ public abstract class ShardingProxyTransactionService extends CommonServiceImpl 
         super.processFailure();
     }
     
-    private void printTransactionType() {
-        System.out.println(String.format("-------------- Process With Transaction %s ---------------", TransactionTypeHolder.get()));
+    @Override
+    public void printTransactionType() {
+        System.out.println(String.format("-------------- Process With Transaction %s ---------------", getTransactionTypeRepository().showTransactionType()));
     }
+    
+    protected abstract TransactionTypeRepository getTransactionTypeRepository();
 }

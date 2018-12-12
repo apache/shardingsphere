@@ -15,15 +15,12 @@
  * </p>
  */
 
-package io.shardingsphere.example.repository.api.service;
+package io.shardingsphere.example.repository.api.repository;
 
-public interface TransactionService extends CommonService {
+import io.shardingsphere.example.repository.api.entity.TransactionType;
+
+public interface TransactionTypeRepository {
     
-    void processFailureWithLocal();
+    TransactionType showTransactionType();
     
-    void processFailureWithXa();
-    
-    void processFailureWithBase();
-    
-    void printTransactionType();
 }

@@ -15,15 +15,11 @@
  * </p>
  */
 
-package io.shardingsphere.example.repository.api.service;
+package io.shardingsphere.example.repository.mybatis.repository;
 
-public interface TransactionService extends CommonService {
-    
-    void processFailureWithLocal();
-    
-    void processFailureWithXa();
-    
-    void processFailureWithBase();
-    
-    void printTransactionType();
+import io.shardingsphere.example.repository.api.repository.TransactionTypeRepository;
+import org.apache.ibatis.annotations.Mapper;
+
+@Mapper
+public interface MybatisTransactionTypeRepository extends TransactionTypeRepository {
 }
