@@ -60,7 +60,7 @@ public final class PostgreSQLSegmentsExtractorRegistry implements SQLSegmentsExt
     private static void registerDAL() {
         EXTRACTORS.put(SQLStatementType.SHOW, new PostgreSQLShowExtractor());
     }
-
+    
     @Override
     public SQLStatementExtractor getExtractor(final SQLStatementType type) {
         return EXTRACTORS.get(type);

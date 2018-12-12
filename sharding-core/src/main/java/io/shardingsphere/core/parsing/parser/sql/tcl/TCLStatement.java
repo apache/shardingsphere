@@ -17,11 +17,15 @@
 
 package io.shardingsphere.core.parsing.parser.sql.tcl;
 
+import com.google.common.base.Optional;
 import io.shardingsphere.core.constant.SQLType;
+import io.shardingsphere.core.constant.transaction.TransactionOperationType;
 import io.shardingsphere.core.parsing.lexer.token.DefaultKeyword;
 import io.shardingsphere.core.parsing.lexer.token.Keyword;
 import io.shardingsphere.core.parsing.lexer.token.TokenType;
 import io.shardingsphere.core.parsing.parser.sql.AbstractSQLStatement;
+import lombok.Getter;
+import lombok.Setter;
 import lombok.ToString;
 
 import java.util.Arrays;
@@ -31,6 +35,7 @@ import java.util.Collection;
  * Transaction Control Language statement.
  *
  * @author zhangliang
+ * @author maxiaoguang
  */
 @ToString(callSuper = true)
 public class TCLStatement extends AbstractSQLStatement {
@@ -38,8 +43,18 @@ public class TCLStatement extends AbstractSQLStatement {
     private static final Collection<Keyword> STATEMENT_PREFIX = Arrays.<Keyword>asList(
             DefaultKeyword.SET, DefaultKeyword.COMMIT, DefaultKeyword.ROLLBACK, DefaultKeyword.SAVEPOINT, DefaultKeyword.BEGIN);
     
+    @Getter
+    @Setter
+    private Optional<TransactionOperationType> operationType;
+    
     public TCLStatement() {
         super(SQLType.TCL);
+        this.operationType = Optional.absent();
+    }
+    
+    public TCLStatement(final TransactionOperationType operationType) {
+        super(SQLType.TCL);
+        this.operationType = Optional.of(operationType);
     }
     
     /**

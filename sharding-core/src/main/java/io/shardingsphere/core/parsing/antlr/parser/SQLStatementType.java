@@ -26,6 +26,9 @@ import io.shardingsphere.core.parsing.parser.sql.SQLStatement;
 import io.shardingsphere.core.parsing.parser.sql.ddl.DDLStatement;
 import io.shardingsphere.core.parsing.parser.sql.ddl.create.table.CreateTableStatement;
 import io.shardingsphere.core.parsing.parser.sql.dql.select.SelectStatement;
+import io.shardingsphere.core.parsing.parser.sql.tcl.begin.BeginStatement;
+import io.shardingsphere.core.parsing.parser.sql.tcl.commit.CommitStatement;
+import io.shardingsphere.core.parsing.parser.sql.tcl.rollback.RollbackStatement;
 import io.shardingsphere.core.parsing.parser.sql.tcl.TCLStatement;
 import lombok.RequiredArgsConstructor;
 import lombok.SneakyThrows;
@@ -56,13 +59,13 @@ public enum SQLStatementType {
     
     SET_TRANSACTION("SetTransaction", TCLStatement.class),
     
-    COMMIT("Commit", TCLStatement.class),
+    COMMIT("Commit", CommitStatement.class),
     
-    ROLLBACK("Rollback", TCLStatement.class),
+    ROLLBACK("Rollback", RollbackStatement.class),
     
     SAVEPOINT("Savepoint", TCLStatement.class),
     
-    BEGIN_WORK("BeginWork", TCLStatement.class),
+    BEGIN_WORK("BeginWork", BeginStatement.class),
     
     SET_VARIABLE("SetVariable", TCLStatement.class),
     

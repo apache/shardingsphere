@@ -22,7 +22,6 @@ import io.shardingsphere.core.metadata.table.ShardingTableMetaData;
 import io.shardingsphere.core.parsing.antlr.AntlrParsingEngine;
 import io.shardingsphere.core.parsing.lexer.LexerEngine;
 import io.shardingsphere.core.parsing.lexer.dialect.mysql.MySQLKeyword;
-import io.shardingsphere.core.parsing.lexer.dialect.postgresql.PostgreSQLKeyword;
 import io.shardingsphere.core.parsing.lexer.token.DefaultKeyword;
 import io.shardingsphere.core.parsing.lexer.token.Keyword;
 import io.shardingsphere.core.parsing.lexer.token.TokenType;
@@ -48,6 +47,10 @@ import io.shardingsphere.core.parsing.parser.sql.dql.DQLStatement;
 import io.shardingsphere.core.parsing.parser.sql.dql.select.SelectParserFactory;
 import io.shardingsphere.core.parsing.parser.sql.tcl.TCLParserFactory;
 import io.shardingsphere.core.parsing.parser.sql.tcl.TCLStatement;
+import io.shardingsphere.core.parsing.parser.sql.tcl.begin.BeginParserFactory;
+import io.shardingsphere.core.parsing.parser.sql.tcl.commit.CommitParserFactory;
+import io.shardingsphere.core.parsing.parser.sql.tcl.rollback.RollbcakParserFactory;
+import io.shardingsphere.core.parsing.parser.sql.tcl.set.SetVariableParserFactory;
 import io.shardingsphere.core.rule.ShardingRule;
 import lombok.AccessLevel;
 import lombok.NoArgsConstructor;
@@ -57,6 +60,7 @@ import lombok.NoArgsConstructor;
  *
  * @author zhangliang
  * @author panjuan
+ * @author maxiaoguang
  */
 @NoArgsConstructor(access = AccessLevel.PRIVATE)
 public final class SQLParserFactory {
@@ -97,6 +101,15 @@ public final class SQLParserFactory {
         }
         if (DDLStatement.isDDL(tokenType, secondaryTokenType)) {
             return new AntlrParsingEngine(dbType, sql, shardingRule, shardingTableMetaData);
+        }
+        if (DCLStatement.isDCL(tokenType, secondaryTokenType)) {
+            return getDCLParser(dbType, tokenType, shardingRule, lexerEngine);
+        }
+        if (DatabaseType.SQLServer.equals(dbType)) {
+            lexerEngine.skipUntil(DefaultKeyword.IMPLICIT_TRANSACTIONS);
+        }
+        if (TCLStatement.isTCL(tokenType) || !lexerEngine.isEnd()) {
+            return getTCLParser(dbType, tokenType, secondaryTokenType, shardingRule, lexerEngine);
         }
         throw new SQLParsingUnsupportedException(tokenType);
     }
@@ -154,6 +167,28 @@ public final class SQLParserFactory {
                 return DenyUserParserFactory.newInstance(dbType, shardingRule, lexerEngine);
             default:
                 throw new SQLParsingUnsupportedException(tokenType);
+        }
+    }
+    
+    private static SQLParser getTCLParser(final DatabaseType dbType, final TokenType primaryTokenType,
+                                          final TokenType secondaryTokenType, final ShardingRule shardingRule, final LexerEngine lexerEngine) {
+        switch ((DefaultKeyword) primaryTokenType) {
+            case SET:
+                if (DefaultKeyword.TRANSACTION.equals(secondaryTokenType)) {
+                    return TCLParserFactory.newInstance(dbType, shardingRule, lexerEngine);
+                }
+            case IF:
+                return SetVariableParserFactory.newInstance(dbType, shardingRule, lexerEngine);
+            case COMMIT:
+                return CommitParserFactory.newInstance(dbType, shardingRule, lexerEngine);
+            case ROLLBACK:
+                return RollbcakParserFactory.newInstance(dbType, shardingRule, lexerEngine);
+            case SAVEPOINT:
+                return TCLParserFactory.newInstance(dbType, shardingRule, lexerEngine);
+            case BEGIN:
+                return BeginParserFactory.newInstance(dbType, shardingRule, lexerEngine);
+            default:
+                throw new SQLParsingUnsupportedException(primaryTokenType);
         }
     }
 }

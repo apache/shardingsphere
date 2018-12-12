@@ -17,8 +17,11 @@
 
 package io.shardingsphere.core.parsing.antlr.parser;
 
+import com.google.common.base.Optional;
 import io.shardingsphere.core.constant.DatabaseType;
 import io.shardingsphere.core.parsing.antlr.parser.impl.SQLParserFactory;
+import io.shardingsphere.core.parsing.antlr.rule.registry.ParsingRuleRegistry;
+import io.shardingsphere.core.parsing.antlr.rule.registry.statement.SQLStatementRule;
 import io.shardingsphere.core.parsing.parser.exception.SQLParsingUnsupportedException;
 import lombok.RequiredArgsConstructor;
 import org.antlr.v4.runtime.ParserRuleContext;
@@ -32,6 +35,8 @@ import org.antlr.v4.runtime.tree.ParseTree;
  */
 @RequiredArgsConstructor
 public final class SQLParserEngine {
+    
+    private final ParsingRuleRegistry parsingRuleRegistry = ParsingRuleRegistry.getInstance();
     
     private final DatabaseType databaseType;
     
@@ -47,6 +52,10 @@ public final class SQLParserEngine {
         if (parseTree instanceof ErrorNode) {
             throw new SQLParsingUnsupportedException(String.format("Unsupported SQL of `%s`", sql));
         }
-        return new SQLAST((ParserRuleContext) parseTree);
+        Optional<SQLStatementRule> sqlStatementRule = parsingRuleRegistry.findSQLStatementRule(databaseType, parseTree.getClass().getSimpleName());
+        if (!sqlStatementRule.isPresent()) {
+            throw new SQLParsingUnsupportedException(String.format("Unsupported SQL of `%s`", sql));
+        }
+        return new SQLAST((ParserRuleContext) parseTree, sqlStatementRule.get());
     }
 }

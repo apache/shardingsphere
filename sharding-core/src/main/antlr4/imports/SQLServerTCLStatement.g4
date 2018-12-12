@@ -36,3 +36,15 @@ savepoint
 beginWork
     : BEGIN (TRAN | TRANSACTION) (ID (WITH MARK STRING)?)?
     ;
+
+setVariable
+    : (IF AT_ AT_ TRANCOUNT GT NUMBER COMMIT TRAN)? SET setVariableAssignment
+    ;
+
+setVariableAssignment
+    : IMPLICIT_TRANSACTIONS variableValue
+    ;
+
+variableValue
+    : ON | OFF
+    ;
