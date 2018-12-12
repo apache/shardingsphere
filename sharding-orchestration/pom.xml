@@ -20,7 +20,7 @@
      <dependencies>
         <dependency>
             <groupId>io.shardingsphere</groupId>
-            <artifactId>sharding-assembly</artifactId>
+            <artifactId>sharding-shade</artifactId>
             <version>${project.version}</version>
         </dependency>
     </dependencies>
