@@ -17,7 +17,7 @@
 
 package io.shardingsphere.shardingjdbc.jdbc.core.datasource;
 
-import com.google.common.base.Preconditions;
+import shardingsphere.shaded.common.base.Preconditions;
 import io.shardingsphere.api.ConfigMapContext;
 import io.shardingsphere.core.constant.transaction.TransactionType;
 import io.shardingsphere.core.rule.ShardingRule;

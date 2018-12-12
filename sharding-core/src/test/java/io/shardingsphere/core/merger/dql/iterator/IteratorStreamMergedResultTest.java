@@ -17,7 +17,7 @@
 
 package io.shardingsphere.core.merger.dql.iterator;
 
-import com.google.common.collect.Lists;
+import shardingsphere.shaded.common.collect.Lists;
 import io.shardingsphere.core.merger.MergedResult;
 import io.shardingsphere.core.merger.QueryResult;
 import io.shardingsphere.core.merger.dql.DQLMergeEngine;

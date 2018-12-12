@@ -17,7 +17,7 @@
 
 package io.shardingsphere.transaction.xa.fixture;
 
-import com.google.common.base.Preconditions;
+import shardingsphere.shaded.common.base.Preconditions;
 import lombok.AccessLevel;
 import lombok.NoArgsConstructor;
 import lombok.SneakyThrows;

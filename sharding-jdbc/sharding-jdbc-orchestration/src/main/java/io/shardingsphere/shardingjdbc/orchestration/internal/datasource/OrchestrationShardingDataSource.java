@@ -17,7 +17,7 @@
 
 package io.shardingsphere.shardingjdbc.orchestration.internal.datasource;
 
-import com.google.common.base.Preconditions;
+import shardingsphere.shaded.common.base.Preconditions;
 import com.google.common.eventbus.Subscribe;
 import io.shardingsphere.api.ConfigMapContext;
 import io.shardingsphere.api.config.RuleConfiguration;

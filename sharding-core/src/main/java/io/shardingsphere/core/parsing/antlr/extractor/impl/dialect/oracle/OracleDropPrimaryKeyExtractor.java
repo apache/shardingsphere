@@ -17,7 +17,7 @@
 
 package io.shardingsphere.core.parsing.antlr.extractor.impl.dialect.oracle;
 
-import com.google.common.base.Optional;
+import shardingsphere.shaded.common.base.Optional;
 import io.shardingsphere.core.parsing.antlr.extractor.OptionalSQLSegmentExtractor;
 import io.shardingsphere.core.parsing.antlr.extractor.util.ExtractorUtils;
 import io.shardingsphere.core.parsing.antlr.extractor.util.RuleName;

@@ -24,8 +24,8 @@ import java.util.List;
 import java.util.Map;
 import java.util.Set;
 
-import com.google.common.base.Optional;
-import com.google.common.base.Preconditions;
+import shardingsphere.shaded.common.base.Optional;
+import shardingsphere.shaded.common.base.Preconditions;
 
 import io.shardingsphere.core.parsing.parser.context.OrderItem;
 import io.shardingsphere.core.parsing.parser.context.limit.Limit;

@@ -17,7 +17,7 @@
 
 package io.shardingsphere.core.rule;
 
-import com.google.common.collect.Sets;
+import shardingsphere.shaded.common.collect.Sets;
 import io.shardingsphere.api.algorithm.masterslave.MasterSlaveLoadBalanceAlgorithmType;
 import io.shardingsphere.api.config.MasterSlaveRuleConfiguration;
 import io.shardingsphere.api.config.ShardingRuleConfiguration;

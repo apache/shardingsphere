@@ -17,7 +17,7 @@
 
 package io.shardingsphere.core.metadata.datasource.dialect;
 
-import com.google.common.base.Strings;
+import shardingsphere.shaded.common.base.Strings;
 import io.shardingsphere.core.exception.ShardingException;
 import io.shardingsphere.core.metadata.datasource.DataSourceMetaData;
 import lombok.Getter;

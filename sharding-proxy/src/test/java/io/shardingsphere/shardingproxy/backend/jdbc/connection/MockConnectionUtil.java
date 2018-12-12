@@ -17,8 +17,8 @@
 
 package io.shardingsphere.shardingproxy.backend.jdbc.connection;
 
-import com.google.common.collect.HashMultimap;
-import com.google.common.collect.Multimap;
+import shardingsphere.shaded.common.collect.HashMultimap;
+import shardingsphere.shaded.common.collect.Multimap;
 import lombok.SneakyThrows;
 
 import java.lang.reflect.Field;

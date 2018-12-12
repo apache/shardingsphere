@@ -17,8 +17,8 @@
 
 package io.shardingsphere.core.constant.properties;
 
-import com.google.common.base.Joiner;
-import com.google.common.base.Strings;
+import shardingsphere.shaded.common.base.Joiner;
+import shardingsphere.shaded.common.base.Strings;
 import io.shardingsphere.core.util.StringUtil;
 import lombok.Getter;
 

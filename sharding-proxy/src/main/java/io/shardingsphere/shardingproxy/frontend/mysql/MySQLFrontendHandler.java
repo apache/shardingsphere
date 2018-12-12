@@ -17,7 +17,7 @@
 
 package io.shardingsphere.shardingproxy.frontend.mysql;
 
-import com.google.common.base.Strings;
+import shardingsphere.shaded.common.base.Strings;
 import io.netty.buffer.ByteBuf;
 import io.netty.channel.ChannelHandlerContext;
 import io.shardingsphere.shardingproxy.frontend.common.FrontendHandler;

@@ -17,7 +17,7 @@
 
 package io.shardingsphere.core.parsing.integrate.jaxb.root;
 
-import com.google.common.base.Splitter;
+import shardingsphere.shaded.common.base.Splitter;
 import io.shardingsphere.core.parsing.integrate.jaxb.condition.ExpectedOrCondition;
 import io.shardingsphere.core.parsing.integrate.jaxb.groupby.ExpectedGroupByColumn;
 import io.shardingsphere.core.parsing.integrate.jaxb.item.ExpectedSelectItems;

@@ -17,8 +17,8 @@
 
 package io.shardingsphere.core.parsing.antlr.optimizer.impl.dql.dialect.mysql;
 
-import com.google.common.base.Optional;
-import com.google.common.base.Preconditions;
+import shardingsphere.shaded.common.base.Optional;
+import shardingsphere.shaded.common.base.Preconditions;
 import io.shardingsphere.core.constant.AggregationType;
 import io.shardingsphere.core.metadata.table.ShardingTableMetaData;
 import io.shardingsphere.core.parsing.antlr.optimizer.impl.SQLStatementOptimizer;
