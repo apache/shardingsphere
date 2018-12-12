@@ -17,8 +17,8 @@
 
 package io.shardingsphere.core.parsing.parser.context.table;
 
-import com.google.common.base.Optional;
-import com.google.common.base.Preconditions;
+import shardingsphere.shaded.common.base.Optional;
+import shardingsphere.shaded.common.base.Preconditions;
 import lombok.ToString;
 
 import java.util.ArrayList;
