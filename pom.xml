@@ -10,7 +10,7 @@
     <name>${project.artifactId}</name>
     
     <modules>
-        <module>sharding-assembly</module>
+        <module>sharding-shade</module>
 
         <module>sharding-core</module>
         
@@ -27,13 +27,15 @@
     <properties>
         <java.version>1.7</java.version>
         <maven.version.range>[3.0.4,)</maven.version.range>
+
         <project.build.sourceEncoding>UTF-8</project.build.sourceEncoding>
         <project.build.locale>zh_CN</project.build.locale>
         
         <slf4j.version>1.7.7</slf4j.version>
         
         <antlr4.version>4.7.1</antlr4.version>
-        
+
+        <guava.version>18.0</guava.version>
         <groovy.version>2.4.5</groovy.version>
         <snakeyaml.version>1.16</snakeyaml.version>
         
@@ -91,6 +93,7 @@
         <protobuf-maven-plugin.version>0.5.0</protobuf-maven-plugin.version>
         <os-maven-plugin.version>1.5.0.Final</os-maven-plugin.version>
         <docker-maven-plugin.version>0.4.14</docker-maven-plugin.version>
+        <maven-shade-plugin.version>3.0.0</maven-shade-plugin.version>
 
         <javadocExecutable>${java.home}/../bin/javadoc</javadocExecutable>
     </properties>
