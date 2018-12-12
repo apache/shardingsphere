@@ -57,7 +57,7 @@ public final class SQLStatementRuleDefinition {
         for (SQLStatementRuleEntity each : dialectRuleDefinitionEntity.getRules()) {
             SQLStatementRule sqlStatementRule = new SQLStatementRule(each.getContext(), 
                     (Class<? extends SQLStatement>) Class.forName(each.getSqlStatementClass()),
-                    (SQLStatementOptimizer) newClassInstance(dialectRuleDefinitionEntity.getBasePackage(), dialectRuleDefinitionEntity.getOptimizerBasePackage(), each.getOptimizerClass()));
+                    (SQLStatementOptimizer) newClassInstance(dialectRuleDefinitionEntity.getOptimizerBasePackage(), each.getOptimizerClass()));
             sqlStatementRule.getExtractors().addAll(createExtractors(each.getExtractorRuleRefs(), extractorRuleDefinition));
             rules.put(getContextClassName(each.getContext()), sqlStatementRule);
         }
@@ -76,7 +76,7 @@ public final class SQLStatementRuleDefinition {
     }
     
     @SneakyThrows
-    private Object newClassInstance(final String basePackage, final String classPackage, final String className) {
-        return Strings.isNullOrEmpty(className) ? null : Class.forName(Joiner.on('.').join(basePackage, classPackage, className)).newInstance();
+    private Object newClassInstance(final String basePackage, final String className) {
+        return Strings.isNullOrEmpty(className) ? null : Class.forName(Joiner.on('.').join(basePackage, className)).newInstance();
     }
 }

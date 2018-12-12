@@ -35,9 +35,6 @@ import java.util.LinkedList;
 @Getter
 public final class SQLStatementRuleDefinitionEntity implements RuleDefinitionEntity {
     
-    @XmlAttribute(name = "base-package", required = true)
-    private String basePackage;
-    
     @XmlAttribute(name = "optimizer-base-package", required = true)
     private String optimizerBasePackage;
     
