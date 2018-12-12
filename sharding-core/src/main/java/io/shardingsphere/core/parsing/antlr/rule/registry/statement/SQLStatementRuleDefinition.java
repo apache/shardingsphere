@@ -28,7 +28,6 @@ import io.shardingsphere.core.parsing.antlr.rule.registry.segment.SQLSegmentRule
 import io.shardingsphere.core.parsing.antlr.rule.registry.segment.SQLSegmentRuleDefinition;
 import io.shardingsphere.core.parsing.parser.sql.SQLStatement;
 import lombok.Getter;
-import lombok.RequiredArgsConstructor;
 import lombok.SneakyThrows;
 
 import java.util.Collection;
@@ -41,7 +40,6 @@ import java.util.Map;
  *
  * @author zhangliang
  */
-@RequiredArgsConstructor
 @Getter
 public final class SQLStatementRuleDefinition {
     

@@ -18,6 +18,7 @@
 package io.shardingsphere.core.parsing.antlr.rule.registry;
 
 import io.shardingsphere.core.constant.DatabaseType;
+import io.shardingsphere.core.parsing.antlr.sql.segment.table.TableSegment;
 import org.junit.Test;
 
 import static org.junit.Assert.assertFalse;
@@ -38,5 +39,10 @@ public final class ParsingRuleRegistryTest {
     @Test
     public void assertFindSQLStatementRuleWithH2() {
         assertTrue(ParsingRuleRegistry.getInstance().findSQLStatementRule(DatabaseType.H2, "CreateTableContext").isPresent());
+    }
+    
+    @Test
+    public void assertFindFillerRule() {
+        assertTrue(ParsingRuleRegistry.getInstance().findFillerRule(TableSegment.class).isPresent());
     }
 }

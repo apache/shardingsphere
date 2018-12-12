@@ -24,7 +24,6 @@ import io.shardingsphere.core.parsing.antlr.filler.SQLStatementFiller;
 import io.shardingsphere.core.parsing.antlr.rule.jaxb.entity.segment.SQLSegmentRuleDefinitionEntity;
 import io.shardingsphere.core.parsing.antlr.rule.jaxb.entity.segment.SQLSegmentRuleEntity;
 import lombok.Getter;
-import lombok.RequiredArgsConstructor;
 import lombok.SneakyThrows;
 
 import java.util.LinkedHashMap;
@@ -35,7 +34,6 @@ import java.util.Map;
  *
  * @author zhangliang
  */
-@RequiredArgsConstructor
 @Getter
 public final class SQLSegmentRuleDefinition {
     

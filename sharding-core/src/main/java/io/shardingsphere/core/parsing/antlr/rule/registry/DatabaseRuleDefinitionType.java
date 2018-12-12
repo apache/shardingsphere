@@ -37,6 +37,8 @@ public enum DatabaseRuleDefinitionType {
     
     public static final String COMMON_SQL_SEGMENT_RULE_DEFINITION = "parsing-rule-definition/common/sql-segment-rule-definition.xml";
     
+    public static final String COMMON_FILLER_RULE_DEFINITION = "parsing-rule-definition/common/filler-rule-definition.xml";
+    
     private final DatabaseType databaseType;
     
     private final String sqlStatementRuleDefinitionFile;
