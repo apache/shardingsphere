@@ -26,6 +26,7 @@ import io.shardingsphere.core.parsing.antlr.extractor.registry.impl.ddl.dialect.
 import io.shardingsphere.core.parsing.antlr.extractor.registry.impl.ddl.dialect.mysql.MySQLDropTableExtractor;
 import io.shardingsphere.core.parsing.antlr.extractor.registry.impl.ddl.dialect.mysql.MySQLTruncateTableExtractor;
 import io.shardingsphere.core.parsing.antlr.extractor.registry.impl.dql.dialect.mysql.MySQLSelectExtractor;
+import io.shardingsphere.core.parsing.antlr.extractor.registry.impl.tcl.dialect.mysql.MysqlSetVariableExtractor;
 import io.shardingsphere.core.parsing.antlr.parser.SQLStatementType;
 
 import java.util.HashMap;
@@ -36,6 +37,7 @@ import java.util.Map;
  * 
  * @author duhongjun
  * @author zhangliang
+ * @author maxiaoguang
  */
 public final class MySQLSegmentsExtractorRegistry implements SQLSegmentsExtractorRegistry {
     
@@ -43,6 +45,7 @@ public final class MySQLSegmentsExtractorRegistry implements SQLSegmentsExtracto
     
     static {
         registerDDL();
+        registerTCL();
         registerDQL();
     }
     
@@ -53,6 +56,10 @@ public final class MySQLSegmentsExtractorRegistry implements SQLSegmentsExtracto
         EXTRACTORS.put(SQLStatementType.TRUNCATE_TABLE, new MySQLTruncateTableExtractor());
         EXTRACTORS.put(SQLStatementType.CREATE_INDEX, new CreateIndexExtractor());
         EXTRACTORS.put(SQLStatementType.DROP_INDEX, new DropIndexExtractor());
+    }
+    
+    private static void registerTCL() {
+        EXTRACTORS.put(SQLStatementType.SET_VARIABLE, new MysqlSetVariableExtractor());
     }
     
     private static void registerDQL() {

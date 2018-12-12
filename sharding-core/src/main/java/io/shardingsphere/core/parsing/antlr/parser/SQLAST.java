@@ -17,7 +17,9 @@
 
 package io.shardingsphere.core.parsing.antlr.parser;
 
+import io.shardingsphere.core.parsing.antlr.rule.registry.statement.SQLStatementRule;
 import lombok.Getter;
+import lombok.RequiredArgsConstructor;
 import org.antlr.v4.runtime.ParserRuleContext;
 
 /**
@@ -25,15 +27,11 @@ import org.antlr.v4.runtime.ParserRuleContext;
  *
  * @author zhangliang
  */
+@RequiredArgsConstructor
 @Getter
 public final class SQLAST {
     
     private final ParserRuleContext parserRuleContext;
     
-    private final SQLStatementType type;
-    
-    public SQLAST(final ParserRuleContext parserRuleContext) {
-        this.parserRuleContext = parserRuleContext;
-        type = SQLStatementType.nameOf(parserRuleContext.getClass().getSimpleName());
-    }
+    private final SQLStatementRule rule;
 }

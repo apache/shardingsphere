@@ -31,13 +31,14 @@ import static org.junit.Assert.assertNull;
 import static org.junit.Assert.assertThat;
 import static org.mockito.Mockito.mock;
 
-public class DataSourceParameterFactoryTest {
+public class DataSourceSwapperRegistryTest {
     
     private final String databaseName = "demo_ds";
     
     @Test
     public void assertBuildParameterFromHikari() {
-        DataSourceParameter parameter = DataSourceParameterFactory.build(DataSourceUtils.build(PoolType.HIKARI, DatabaseType.MySQL, databaseName));
+        DataSource dataSource = DataSourceUtils.build(PoolType.HIKARI, DatabaseType.MySQL, databaseName);
+        DataSourceParameter parameter = DataSourceSwapperRegistry.getInstance().getSwapper(dataSource).swap(dataSource);
         assertThatParameter(parameter);
         assertThat(parameter.getMaintenanceInterval(), is(30 * 1000L));
         assertThat(parameter.getMaxLifetime(), is(30 * 60 * 1000L));
@@ -45,7 +46,8 @@ public class DataSourceParameterFactoryTest {
     
     @Test
     public void assertBuildParameterFromDruid() {
-        DataSourceParameter parameter = DataSourceParameterFactory.build(DataSourceUtils.build(PoolType.DRUID, DatabaseType.MySQL, databaseName));
+        DataSource dataSource = DataSourceUtils.build(PoolType.DRUID, DatabaseType.MySQL, databaseName);
+        DataSourceParameter parameter = DataSourceSwapperRegistry.getInstance().getSwapper(dataSource).swap(dataSource);
         assertThatParameter(parameter);
         assertThat(parameter.getMaintenanceInterval(), is(20 * 1000L));
         assertThat(parameter.getMaxLifetime(), is(0L));
@@ -53,7 +55,8 @@ public class DataSourceParameterFactoryTest {
     
     @Test
     public void assertBuildParameterFromDBCPTomcat() {
-        DataSourceParameter parameter = DataSourceParameterFactory.build(DataSourceUtils.build(PoolType.DBCP2_TOMCAT, DatabaseType.MySQL, databaseName));
+        DataSource dataSource = DataSourceUtils.build(PoolType.DBCP2_TOMCAT, DatabaseType.MySQL, databaseName);
+        DataSourceParameter parameter = DataSourceSwapperRegistry.getInstance().getSwapper(dataSource).swap(dataSource);
         assertThatParameter(parameter);
         assertThat(parameter.getMaintenanceInterval(), is(20 * 1000L));
         assertThat(parameter.getMaxLifetime(), is(500 * 1000L));
@@ -61,7 +64,8 @@ public class DataSourceParameterFactoryTest {
     
     @Test
     public void assertBuildParameterFromDBCP2() {
-        DataSourceParameter parameter = DataSourceParameterFactory.build(DataSourceUtils.build(PoolType.DBCP2, DatabaseType.MySQL, databaseName));
+        DataSource dataSource = DataSourceUtils.build(PoolType.DBCP2, DatabaseType.MySQL, databaseName);
+        DataSourceParameter parameter = DataSourceSwapperRegistry.getInstance().getSwapper(dataSource).swap(dataSource);
         assertThatParameter(parameter);
         assertThat(parameter.getMaintenanceInterval(), is(20 * 1000L));
         assertThat(parameter.getMaxLifetime(), is(500 * 1000L));
@@ -70,7 +74,7 @@ public class DataSourceParameterFactoryTest {
     @Test
     public void assertBuildParameterFromUnsupportedDataSource() {
         DataSource dataSource = mock(DataSource.class);
-        DataSourceParameter actual = DataSourceParameterFactory.build(dataSource);
+        DataSourceParameter actual = DataSourceSwapperRegistry.getInstance().getSwapper(dataSource).swap(dataSource);
         assertNotNull(actual);
         assertNull(actual.getUrl());
         assertNull(actual.getUsername());

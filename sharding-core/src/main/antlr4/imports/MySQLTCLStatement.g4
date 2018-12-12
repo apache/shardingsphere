@@ -27,7 +27,7 @@ beginWork
     ;
 
 startTransaction
-    : START TRANSACTION startTransactionCharacteristic (COMMA startTransactionCharacteristic)*
+    : START TRANSACTION (startTransactionCharacteristic (COMMA startTransactionCharacteristic)*)?
     ;
 
 startTransactionCharacteristic
@@ -47,10 +47,17 @@ savepoint
     ;
 
 setVariable
-    : SET assignment (COMMA assignment)*
+    : SET setVariableAssignment (COMMA setVariableAssignment)*
     ;
 
-assignment
-    : variable EQ_ expr
+setVariableAssignment
+    : (AT_ AT_)? (GLOBAL | PERSIST  | PERSIST_ONLY | SESSION)? DOT? variableKey EQ_ variableValue
     ;
 
+variableKey
+    : ID
+    ;
+
+variableValue
+    : expr
+    ;

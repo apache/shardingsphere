@@ -266,6 +266,10 @@ IGNORE_DUP_KEY
     : I G N O R E UL_ D U P UL_ K E Y
     ;
 
+IMPLICIT_TRANSACTIONS
+    : I M P L I C I T UL_ T R A N S A C T I O N S
+    ;
+
 INBOUND
     : I N B O U N D
     ;
@@ -544,6 +548,10 @@ TEXTIMAGE_ON
 
 TRAN
     : T R A N
+    ;
+
+TRANCOUNT
+    : T R A N C O U N T
     ;
 
 TRIGGER

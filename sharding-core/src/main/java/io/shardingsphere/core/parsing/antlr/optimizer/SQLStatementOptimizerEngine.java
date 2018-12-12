@@ -18,11 +18,9 @@
 package io.shardingsphere.core.parsing.antlr.optimizer;
 
 import com.google.common.base.Optional;
-import io.shardingsphere.core.constant.DatabaseType;
 import io.shardingsphere.core.metadata.table.ShardingTableMetaData;
-import io.shardingsphere.core.parsing.antlr.parser.SQLStatementType;
 import io.shardingsphere.core.parsing.antlr.optimizer.impl.SQLStatementOptimizer;
-import io.shardingsphere.core.parsing.antlr.optimizer.impl.SQLStatementOptimizerFactory;
+import io.shardingsphere.core.parsing.antlr.rule.registry.statement.SQLStatementRule;
 import io.shardingsphere.core.parsing.parser.sql.SQLStatement;
 import lombok.RequiredArgsConstructor;
 
@@ -34,18 +32,16 @@ import lombok.RequiredArgsConstructor;
 @RequiredArgsConstructor
 public final class SQLStatementOptimizerEngine {
     
-    private final DatabaseType databaseType;
-    
     private final ShardingTableMetaData shardingTableMetaData;
     
     /**
      * Optimize SQL statement.
      *
-     * @param sqlStatementType SQL statement type
+     * @param rule SQL statement rule
      * @param sqlStatement SQL statement
      */
-    public void optimize(final SQLStatementType sqlStatementType, final SQLStatement sqlStatement) {
-        Optional<SQLStatementOptimizer> optimizer = SQLStatementOptimizerFactory.getInstance(databaseType, sqlStatementType);
+    public void optimize(final SQLStatementRule rule, final SQLStatement sqlStatement) {
+        Optional<SQLStatementOptimizer> optimizer = rule.getOptimizer();
         if (optimizer.isPresent()) {
             optimizer.get().optimize(sqlStatement, shardingTableMetaData);
         }

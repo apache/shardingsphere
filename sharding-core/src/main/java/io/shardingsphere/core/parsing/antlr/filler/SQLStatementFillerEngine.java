@@ -19,12 +19,13 @@ package io.shardingsphere.core.parsing.antlr.filler;
 
 import com.google.common.base.Optional;
 import io.shardingsphere.core.metadata.table.ShardingTableMetaData;
-import io.shardingsphere.core.parsing.antlr.filler.registry.SQLStatementFillerRegistry;
-import io.shardingsphere.core.parsing.antlr.parser.SQLStatementType;
+import io.shardingsphere.core.parsing.antlr.rule.registry.ParsingRuleRegistry;
+import io.shardingsphere.core.parsing.antlr.rule.registry.statement.SQLStatementRule;
 import io.shardingsphere.core.parsing.antlr.sql.segment.SQLSegment;
 import io.shardingsphere.core.parsing.parser.sql.SQLStatement;
 import io.shardingsphere.core.rule.ShardingRule;
 import lombok.RequiredArgsConstructor;
+import lombok.SneakyThrows;
 
 import java.util.Collection;
 
@@ -36,6 +37,8 @@ import java.util.Collection;
 @RequiredArgsConstructor
 public final class SQLStatementFillerEngine {
     
+    private final ParsingRuleRegistry parsingRuleRegistry = ParsingRuleRegistry.getInstance();
+    
     private final String sql;
     
     private final ShardingRule shardingRule;
@@ -46,13 +49,14 @@ public final class SQLStatementFillerEngine {
      * Fill SQL statement.
      *
      * @param sqlSegments SQL segments
-     * @param sqlStatementType SQL statement type
+     * @param rule SQL statement rule
      * @return SQL statement
      */
-    public SQLStatement fill(final Collection<SQLSegment> sqlSegments, final SQLStatementType sqlStatementType) {
-        SQLStatement result = sqlStatementType.newSQLStatement();
+    @SneakyThrows
+    public SQLStatement fill(final Collection<SQLSegment> sqlSegments, final SQLStatementRule rule) {
+        SQLStatement result = rule.getSqlStatementClass().newInstance();
         for (SQLSegment each : sqlSegments) {
-            Optional<SQLStatementFiller> filler = SQLStatementFillerRegistry.findFiller(each);
+            Optional<SQLStatementFiller> filler = parsingRuleRegistry.findSQLStatementFiller(each.getClass());
             if (filler.isPresent()) {
                 filler.get().fill(each, result, sql, shardingRule, shardingTableMetaData);
             }

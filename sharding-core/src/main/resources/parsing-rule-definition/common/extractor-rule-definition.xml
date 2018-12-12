@@ -1,0 +1,18 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<extractor-rule-definition base-package="io.shardingsphere.core.parsing.antlr" extractor-base-package="extractor.impl" filler-base-package="filler.impl">
+    <extractor-rule id="tableName" extractor-class="TableNameExtractor" filler-class="TableFiller" />
+    <extractor-rule id="tableNames" extractor-class="TableNamesExtractor" filler-class="TableFiller" />
+    <extractor-rule id="indexName" extractor-class="IndexNameExtractor" filler-class="IndexFiller" />
+    <extractor-rule id="indexNames" extractor-class="IndexNamesExtractor" filler-class="IndexFiller" />
+    <extractor-rule id="columnDefinitions" extractor-class="ColumnDefinitionsExtractor" filler-class="ColumnDefinitionFiller" />
+    <extractor-rule id="outlinePrimaryKey" extractor-class="OutlinePrimaryKeyExtractor" filler-class="ConstraintDefinitionFiller" />
+    <extractor-rule id="renameTable" extractor-class="RenameTableExtractor" />
+    <extractor-rule id="renameIndex" extractor-class="RenameIndexExtractor" filler-class="IndexFiller" />
+    <extractor-rule id="dropColumn" extractor-class="DropColumnExtractor" filler-class="DropColumnFiller" />
+    <extractor-rule id="renameColumn" extractor-class="RenameColumnExtractor" />
+    <extractor-rule id="selectClause" extractor-class="SelectClauseExtractor" filler-class="SelectClauseFiller" />
+    <extractor-rule id="fromWhere" extractor-class="FromWhereExtractor" filler-class="FromWhereFiller" />
+    <extractor-rule id="groupBy" extractor-class="GroupByExtractor" filler-class="GroupByFiller" />
+    <extractor-rule id="orderBy" extractor-class="OrderByExtractor" filler-class="OrderByFiller" />
+    <extractor-rule id="limit" extractor-class="LimitExtractor" filler-class="LimitFiller" />
+</extractor-rule-definition>
