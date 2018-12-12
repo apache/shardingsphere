@@ -17,7 +17,7 @@
 
 package io.shardingsphere.core.yaml.sharding;
 
-import shardingsphere.shaded.common.base.Preconditions;
+import io.shardingsphere.shaded.com.google.common.base.Preconditions;
 import io.shardingsphere.api.algorithm.sharding.complex.ComplexKeysShardingAlgorithm;
 import io.shardingsphere.api.algorithm.sharding.hint.HintShardingAlgorithm;
 import io.shardingsphere.api.algorithm.sharding.standard.PreciseShardingAlgorithm;

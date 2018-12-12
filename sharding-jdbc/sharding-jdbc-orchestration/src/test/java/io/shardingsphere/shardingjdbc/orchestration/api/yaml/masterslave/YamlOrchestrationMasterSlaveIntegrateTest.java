@@ -17,9 +17,9 @@
 
 package io.shardingsphere.shardingjdbc.orchestration.api.yaml.masterslave;
 
-import shardingsphere.shaded.common.base.Function;
-import shardingsphere.shaded.common.collect.Maps;
-import shardingsphere.shaded.common.collect.Sets;
+import io.shardingsphere.shaded.com.google.common.base.Function;
+import io.shardingsphere.shaded.com.google.common.collect.Maps;
+import io.shardingsphere.shaded.com.google.common.collect.Sets;
 import io.shardingsphere.shardingjdbc.orchestration.api.yaml.AbstractYamlDataSourceTest;
 import io.shardingsphere.shardingjdbc.orchestration.api.yaml.YamlOrchestrationMasterSlaveDataSourceFactory;
 import io.shardingsphere.shardingjdbc.orchestration.internal.datasource.OrchestrationMasterSlaveDataSource;
