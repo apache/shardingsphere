@@ -17,7 +17,7 @@
 
 package io.shardingsphere.shardingjdbc.common.base;
 
-import com.google.common.collect.Sets;
+import shardingsphere.shaded.common.collect.Sets;
 import io.shardingsphere.core.constant.DatabaseType;
 import io.shardingsphere.shardingjdbc.common.env.DatabaseEnvironment;
 import io.shardingsphere.shardingjdbc.jdbc.core.connection.ShardingConnection;

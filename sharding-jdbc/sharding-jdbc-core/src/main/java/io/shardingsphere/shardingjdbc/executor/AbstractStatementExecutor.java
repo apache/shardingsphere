@@ -17,8 +17,8 @@
 
 package io.shardingsphere.shardingjdbc.executor;
 
-import com.google.common.base.Function;
-import com.google.common.collect.Lists;
+import shardingsphere.shaded.common.base.Function;
+import shardingsphere.shaded.common.collect.Lists;
 import io.shardingsphere.core.constant.DatabaseType;
 import io.shardingsphere.core.constant.properties.ShardingPropertiesConstant;
 import io.shardingsphere.core.executor.ShardingExecuteEngine;

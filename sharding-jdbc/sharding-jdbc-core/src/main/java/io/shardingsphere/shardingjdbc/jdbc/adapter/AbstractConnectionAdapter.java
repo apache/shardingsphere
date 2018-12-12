@@ -17,9 +17,9 @@
 
 package io.shardingsphere.shardingjdbc.jdbc.adapter;
 
-import com.google.common.base.Preconditions;
-import com.google.common.collect.HashMultimap;
-import com.google.common.collect.Multimap;
+import shardingsphere.shaded.common.base.Preconditions;
+import shardingsphere.shaded.common.collect.HashMultimap;
+import shardingsphere.shaded.common.collect.Multimap;
 import io.shardingsphere.core.constant.ConnectionMode;
 import io.shardingsphere.core.constant.transaction.TransactionOperationType;
 import io.shardingsphere.core.constant.transaction.TransactionType;
