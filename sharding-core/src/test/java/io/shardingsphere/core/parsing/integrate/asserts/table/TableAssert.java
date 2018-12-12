@@ -17,7 +17,7 @@
 
 package io.shardingsphere.core.parsing.integrate.asserts.table;
 
-import shardingsphere.shaded.common.base.Optional;
+import io.shardingsphere.shaded.com.google.common.base.Optional;
 import io.shardingsphere.core.parsing.integrate.asserts.SQLStatementAssertMessage;
 import io.shardingsphere.core.parsing.integrate.jaxb.table.ExpectedTable;
 import io.shardingsphere.core.parsing.parser.context.table.Table;

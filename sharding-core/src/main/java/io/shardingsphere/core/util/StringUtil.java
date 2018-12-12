@@ -17,7 +17,7 @@
 
 package io.shardingsphere.core.util;
 
-import shardingsphere.shaded.common.base.Splitter;
+import io.shardingsphere.shaded.com.google.common.base.Splitter;
 import lombok.AccessLevel;
 import lombok.AllArgsConstructor;
 

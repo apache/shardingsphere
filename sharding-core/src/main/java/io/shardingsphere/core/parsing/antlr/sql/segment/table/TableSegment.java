@@ -17,7 +17,7 @@
 
 package io.shardingsphere.core.parsing.antlr.sql.segment.table;
 
-import shardingsphere.shaded.common.base.Optional;
+import io.shardingsphere.shaded.com.google.common.base.Optional;
 
 import io.shardingsphere.core.parsing.antlr.sql.segment.SQLSegment;
 import io.shardingsphere.core.parsing.parser.token.TableToken;
