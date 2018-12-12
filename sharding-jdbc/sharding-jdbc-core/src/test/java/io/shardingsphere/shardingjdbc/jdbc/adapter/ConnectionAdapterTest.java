@@ -18,10 +18,15 @@
 package io.shardingsphere.shardingjdbc.jdbc.adapter;
 
 import com.google.common.collect.Multimap;
+import io.shardingsphere.core.constant.transaction.TransactionType;
+import io.shardingsphere.core.transaction.TransactionTypeHolder;
 import io.shardingsphere.shardingjdbc.common.base.AbstractShardingJDBCDatabaseAndTableTest;
 import io.shardingsphere.shardingjdbc.jdbc.core.connection.ShardingConnection;
+import io.shardingsphere.shardingjdbc.jdbc.core.datasource.FixedBaseShardingTransactionHandler;
+import io.shardingsphere.shardingjdbc.jdbc.core.datasource.FixedXAShardingTransactionHandler;
 import io.shardingsphere.shardingjdbc.jdbc.util.JDBCTestSQL;
 import lombok.SneakyThrows;
+import org.junit.After;
 import org.junit.Test;
 
 import java.lang.reflect.Field;
@@ -37,6 +42,13 @@ import static org.junit.Assert.assertTrue;
 public final class ConnectionAdapterTest extends AbstractShardingJDBCDatabaseAndTableTest {
     
     private String sql = JDBCTestSQL.SELECT_GROUP_BY_USER_ID_SQL;
+    
+    @After
+    public void tearDown() {
+        TransactionTypeHolder.clear();
+        FixedXAShardingTransactionHandler.getInvokes().clear();
+        FixedBaseShardingTransactionHandler.getInvokes().clear();
+    }
     
     @Test
     public void assertSetAutoCommit() throws SQLException {
@@ -55,6 +67,26 @@ public final class ConnectionAdapterTest extends AbstractShardingJDBCDatabaseAnd
         for (Connection each : cachedConnections.values()) {
             assertThat(each.getAutoCommit(), is(autoCommit));
         }
+    }
+    
+    @Test
+    public void assertIgnoreAutoCommitForXA() throws SQLException {
+        TransactionTypeHolder.set(TransactionType.XA);
+        try (ShardingConnection actual = getShardingDataSource().getConnection()) {
+            actual.setAutoCommit(true);
+            assertNull(FixedXAShardingTransactionHandler.getInvokes().get("begin"));
+        }
+        TransactionTypeHolder.clear();
+    }
+    
+    @Test
+    public void assertIgnoreAutoCommitForBase() throws SQLException {
+        TransactionTypeHolder.set(TransactionType.BASE);
+        try (ShardingConnection actual = getShardingDataSource().getConnection()) {
+            actual.setAutoCommit(true);
+            assertNull(FixedBaseShardingTransactionHandler.getInvokes().get("begin"));
+        }
+        TransactionTypeHolder.clear();
     }
     
     @Test
