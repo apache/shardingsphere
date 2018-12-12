@@ -19,10 +19,10 @@ package io.shardingsphere.core.parsing.antlr.rule.registry;
 
 import com.google.common.base.Optional;
 import io.shardingsphere.core.constant.DatabaseType;
+import io.shardingsphere.core.parsing.antlr.filler.SQLStatementFiller;
 import io.shardingsphere.core.parsing.antlr.rule.jaxb.loader.filler.FillerRuleDefinitionEntityLoader;
 import io.shardingsphere.core.parsing.antlr.rule.jaxb.loader.segment.SQLSegmentRuleDefinitionEntityLoader;
 import io.shardingsphere.core.parsing.antlr.rule.jaxb.loader.statement.SQLStatementRuleDefinitionEntityLoader;
-import io.shardingsphere.core.parsing.antlr.rule.registry.filler.FillerRule;
 import io.shardingsphere.core.parsing.antlr.rule.registry.filler.FillerRuleDefinition;
 import io.shardingsphere.core.parsing.antlr.rule.registry.segment.SQLSegmentRuleDefinition;
 import io.shardingsphere.core.parsing.antlr.rule.registry.statement.SQLStatementRule;
@@ -101,12 +101,12 @@ public final class ParsingRuleRegistry {
     }
     
     /**
-     * Find filler rule.
+     * Find SQL statement filler.
      *
      * @param sqlSegmentClass SQL segment class
-     * @return filler rule
+     * @return SQL statement filler
      */
-    public Optional<FillerRule> findFillerRule(final Class<? extends SQLSegment> sqlSegmentClass) {
-        return Optional.fromNullable(fillerRuleDefinition.getRules().get(sqlSegmentClass));
+    public Optional<SQLStatementFiller> findSQLStatementFiller(final Class<? extends SQLSegment> sqlSegmentClass) {
+        return Optional.fromNullable(fillerRuleDefinition.getRules().containsKey(sqlSegmentClass) ? fillerRuleDefinition.getRules().get(sqlSegmentClass).getFiller() : null);
     }
 }
