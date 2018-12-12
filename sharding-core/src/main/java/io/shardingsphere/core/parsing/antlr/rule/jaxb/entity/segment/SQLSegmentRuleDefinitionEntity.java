@@ -31,7 +31,7 @@ import java.util.LinkedList;
  *
  * @author zhangliang
  */
-@XmlRootElement(name = "sql-segment-rule-definition")
+@XmlRootElement(name = "extractor-rule-definition")
 @Getter
 public final class SQLSegmentRuleDefinitionEntity implements RuleDefinitionEntity {
     
@@ -44,6 +44,6 @@ public final class SQLSegmentRuleDefinitionEntity implements RuleDefinitionEntit
     @XmlAttribute(name = "filler-base-package", required = true)
     private String fillerBasePackage;
     
-    @XmlElement(name = "sql-segment-rule")
+    @XmlElement(name = "extractor-rule")
     private Collection<SQLSegmentRuleEntity> rules = new LinkedList<>();
 }

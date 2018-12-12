@@ -21,16 +21,14 @@ import io.shardingsphere.core.parsing.antlr.rule.jaxb.entity.segment.SQLSegmentR
 import io.shardingsphere.core.parsing.antlr.rule.jaxb.loader.segment.SQLSegmentRuleDefinitionEntityLoader;
 import org.junit.Test;
 
-import javax.xml.bind.JAXBException;
-
 import static org.hamcrest.CoreMatchers.is;
 import static org.junit.Assert.assertThat;
 
 public final class SQLSegmentRuleDefinitionEntityLoaderTest {
     
     @Test
-    public void assertLoadForCommon() throws JAXBException {
-        SQLSegmentRuleDefinitionEntity actual = new SQLSegmentRuleDefinitionEntityLoader().load("parsing-rule-definition/common/sql-segment-rule-definition.xml");
+    public void assertLoadForCommon() {
+        SQLSegmentRuleDefinitionEntity actual = new SQLSegmentRuleDefinitionEntityLoader().load("parsing-rule-definition/common/extractor-rule-definition.xml");
         assertThat(actual.getBasePackage(), is("io.shardingsphere.core.parsing.antlr"));
         assertThat(actual.getExtractorBasePackage(), is("extractor.impl"));
         assertThat(actual.getFillerBasePackage(), is("filler.impl"));
@@ -38,8 +36,8 @@ public final class SQLSegmentRuleDefinitionEntityLoaderTest {
     }
     
     @Test
-    public void assertLoadForMySQL() throws JAXBException {
-        SQLSegmentRuleDefinitionEntity actual = new SQLSegmentRuleDefinitionEntityLoader().load("parsing-rule-definition/mysql/sql-segment-rule-definition.xml");
+    public void assertLoadForMySQL() {
+        SQLSegmentRuleDefinitionEntity actual = new SQLSegmentRuleDefinitionEntityLoader().load("parsing-rule-definition/mysql/extractor-rule-definition.xml");
         assertThat(actual.getBasePackage(), is("io.shardingsphere.core.parsing.antlr"));
         assertThat(actual.getExtractorBasePackage(), is("extractor.impl"));
         assertThat(actual.getFillerBasePackage(), is("filler.impl"));
@@ -47,8 +45,8 @@ public final class SQLSegmentRuleDefinitionEntityLoaderTest {
     }
     
     @Test
-    public void assertLoadForPostgreSQL() throws JAXBException {
-        SQLSegmentRuleDefinitionEntity actual = new SQLSegmentRuleDefinitionEntityLoader().load("parsing-rule-definition/postgresql/sql-segment-rule-definition.xml");
+    public void assertLoadForPostgreSQL() {
+        SQLSegmentRuleDefinitionEntity actual = new SQLSegmentRuleDefinitionEntityLoader().load("parsing-rule-definition/postgresql/extractor-rule-definition.xml");
         assertThat(actual.getBasePackage(), is("io.shardingsphere.core.parsing.antlr"));
         assertThat(actual.getExtractorBasePackage(), is("extractor.impl"));
         assertThat(actual.getFillerBasePackage(), is("filler.impl"));
@@ -56,8 +54,8 @@ public final class SQLSegmentRuleDefinitionEntityLoaderTest {
     }
     
     @Test
-    public void assertLoadForOracle() throws JAXBException {
-        SQLSegmentRuleDefinitionEntity actual = new SQLSegmentRuleDefinitionEntityLoader().load("parsing-rule-definition/oracle/sql-segment-rule-definition.xml");
+    public void assertLoadForOracle() {
+        SQLSegmentRuleDefinitionEntity actual = new SQLSegmentRuleDefinitionEntityLoader().load("parsing-rule-definition/oracle/extractor-rule-definition.xml");
         assertThat(actual.getBasePackage(), is("io.shardingsphere.core.parsing.antlr"));
         assertThat(actual.getExtractorBasePackage(), is("extractor.impl"));
         assertThat(actual.getFillerBasePackage(), is("filler.impl"));
@@ -65,8 +63,8 @@ public final class SQLSegmentRuleDefinitionEntityLoaderTest {
     }
     
     @Test
-    public void assertLoadSegmentRuleDefinitionForSQLServer() throws JAXBException {
-        SQLSegmentRuleDefinitionEntity actual = new SQLSegmentRuleDefinitionEntityLoader().load("parsing-rule-definition/sqlserver/sql-segment-rule-definition.xml");
+    public void assertLoadSegmentRuleDefinitionForSQLServer() {
+        SQLSegmentRuleDefinitionEntity actual = new SQLSegmentRuleDefinitionEntityLoader().load("parsing-rule-definition/sqlserver/extractor-rule-definition.xml");
         assertThat(actual.getBasePackage(), is("io.shardingsphere.core.parsing.antlr"));
         assertThat(actual.getExtractorBasePackage(), is("extractor.impl"));
         assertThat(actual.getFillerBasePackage(), is("filler.impl"));

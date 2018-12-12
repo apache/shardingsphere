@@ -83,7 +83,7 @@ public final class ParsingRuleRegistry {
     private SQLStatementRuleDefinition init(final DatabaseRuleDefinitionType type) {
         SQLSegmentRuleDefinition segmentRuleDefinition = new SQLSegmentRuleDefinition();
         segmentRuleDefinition.init(
-                segmentRuleDefinitionLoader.load(DatabaseRuleDefinitionType.COMMON_SQL_SEGMENT_RULE_DEFINITION), segmentRuleDefinitionLoader.load(type.getSqlSegmentRuleDefinitionFile()));
+                segmentRuleDefinitionLoader.load(DatabaseRuleDefinitionType.COMMON_SQL_SEGMENT_RULE_DEFINITION), segmentRuleDefinitionLoader.load(type.getExtractorRuleDefinitionFile()));
         SQLStatementRuleDefinition result = new SQLStatementRuleDefinition();
         result.init(statementRuleDefinitionLoader.load(type.getSqlStatementRuleDefinitionFile()), segmentRuleDefinition);
         return result;
