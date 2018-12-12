@@ -17,7 +17,7 @@
 
 package io.shardingsphere.core.parsing.antlr.rule.jaxb.loader.statement;
 
-import shardingsphere.shaded.common.base.Preconditions;
+import io.shardingsphere.shaded.com.google.common.base.Preconditions;
 import io.shardingsphere.core.parsing.antlr.rule.jaxb.entity.statement.SQLStatementRuleDefinitionEntity;
 import io.shardingsphere.core.parsing.antlr.rule.jaxb.loader.RuleDefinitionEntityLoader;
 import lombok.SneakyThrows;

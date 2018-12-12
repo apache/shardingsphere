@@ -17,9 +17,9 @@
 
 package io.shardingsphere.shardingjdbc.jdbc.core.statement;
 
-import shardingsphere.shaded.common.base.Function;
-import shardingsphere.shaded.common.base.Optional;
-import shardingsphere.shaded.common.collect.Collections2;
+import io.shardingsphere.shaded.com.google.common.base.Function;
+import io.shardingsphere.shaded.com.google.common.base.Optional;
+import io.shardingsphere.shaded.com.google.common.collect.Collections2;
 import io.shardingsphere.core.constant.SQLType;
 import io.shardingsphere.core.constant.properties.ShardingPropertiesConstant;
 import io.shardingsphere.core.executor.sql.execute.result.StreamQueryResult;

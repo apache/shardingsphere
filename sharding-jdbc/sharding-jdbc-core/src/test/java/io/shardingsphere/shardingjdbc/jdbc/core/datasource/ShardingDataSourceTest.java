@@ -17,7 +17,7 @@
 
 package io.shardingsphere.shardingjdbc.jdbc.core.datasource;
 
-import shardingsphere.shaded.common.base.Joiner;
+import io.shardingsphere.shaded.com.google.common.base.Joiner;
 import io.shardingsphere.api.algorithm.masterslave.MasterSlaveLoadBalanceAlgorithmType;
 import io.shardingsphere.api.config.MasterSlaveRuleConfiguration;
 import io.shardingsphere.api.config.ShardingRuleConfiguration;

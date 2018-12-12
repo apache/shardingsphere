@@ -17,7 +17,7 @@
 
 package io.shardingsphere.core.executor;
 
-import shardingsphere.shaded.common.util.concurrent.ThreadFactoryBuilder;
+import io.shardingsphere.shaded.com.google.common.util.concurrent.ThreadFactoryBuilder;
 import lombok.AccessLevel;
 import lombok.NoArgsConstructor;
 

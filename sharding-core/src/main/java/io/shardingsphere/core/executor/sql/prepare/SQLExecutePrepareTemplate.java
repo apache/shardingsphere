@@ -17,7 +17,7 @@
 
 package io.shardingsphere.core.executor.sql.prepare;
 
-import shardingsphere.shaded.common.collect.Lists;
+import io.shardingsphere.shaded.com.google.common.collect.Lists;
 import io.shardingsphere.core.constant.ConnectionMode;
 import io.shardingsphere.core.executor.ShardingExecuteGroup;
 import io.shardingsphere.core.executor.StatementExecuteUnit;

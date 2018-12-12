@@ -17,8 +17,8 @@
 
 package io.shardingsphere.api.algorithm.common;
 
-import shardingsphere.shaded.common.collect.Range;
-import shardingsphere.shaded.common.collect.Sets;
+import io.shardingsphere.shaded.com.google.common.collect.Range;
+import io.shardingsphere.shaded.com.google.common.collect.Sets;
 import io.shardingsphere.api.algorithm.fixture.TestComplexKeysShardingAlgorithm;
 import io.shardingsphere.api.algorithm.fixture.TestPreciseShardingAlgorithm;
 import io.shardingsphere.api.algorithm.fixture.TestRangeShardingAlgorithm;

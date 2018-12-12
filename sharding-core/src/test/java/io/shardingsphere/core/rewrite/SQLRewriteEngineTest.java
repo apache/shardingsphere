@@ -17,8 +17,8 @@
 
 package io.shardingsphere.core.rewrite;
 
-import shardingsphere.shaded.common.base.Optional;
-import shardingsphere.shaded.common.base.Preconditions;
+import io.shardingsphere.shaded.com.google.common.base.Optional;
+import io.shardingsphere.shaded.com.google.common.base.Preconditions;
 import io.shardingsphere.core.constant.DatabaseType;
 import io.shardingsphere.core.constant.OrderDirection;
 import io.shardingsphere.core.metadata.datasource.ShardingDataSourceMetaData;

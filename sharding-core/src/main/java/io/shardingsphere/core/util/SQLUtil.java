@@ -17,7 +17,7 @@
 
 package io.shardingsphere.core.util;
 
-import shardingsphere.shaded.common.base.CharMatcher;
+import io.shardingsphere.shaded.com.google.common.base.CharMatcher;
 import io.shardingsphere.core.constant.DatabaseType;
 import io.shardingsphere.core.parsing.lexer.dialect.mysql.MySQLKeyword;
 import io.shardingsphere.core.parsing.lexer.token.DefaultKeyword;
