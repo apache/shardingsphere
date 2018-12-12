@@ -17,7 +17,7 @@
 
 package io.shardingsphere.core.parsing.integrate.asserts;
 
-import shardingsphere.shaded.common.base.Preconditions;
+import io.shardingsphere.shaded.com.google.common.base.Preconditions;
 import io.shardingsphere.core.parsing.integrate.jaxb.root.ParserResult;
 import io.shardingsphere.core.parsing.integrate.jaxb.root.ParserResultSet;
 import lombok.SneakyThrows;

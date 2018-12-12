@@ -17,8 +17,8 @@
 
 package io.shardingsphere.shardingproxy.runtime.schema;
 
-import shardingsphere.shaded.common.eventbus.EventBus;
-import shardingsphere.shaded.common.eventbus.Subscribe;
+import io.shardingsphere.shaded.com.google.common.eventbus.EventBus;
+import io.shardingsphere.shaded.com.google.common.eventbus.Subscribe;
 import io.shardingsphere.core.metadata.ShardingMetaData;
 import io.shardingsphere.core.rule.DataSourceParameter;
 import io.shardingsphere.orchestration.internal.eventbus.ShardingOrchestrationEventBus;

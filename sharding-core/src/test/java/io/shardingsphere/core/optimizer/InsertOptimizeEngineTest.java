@@ -17,8 +17,8 @@
 
 package io.shardingsphere.core.optimizer;
 
-import shardingsphere.shaded.common.base.Optional;
-import shardingsphere.shaded.common.base.Preconditions;
+import io.shardingsphere.shaded.com.google.common.base.Optional;
+import io.shardingsphere.shaded.com.google.common.base.Preconditions;
 import io.shardingsphere.api.algorithm.sharding.ListShardingValue;
 import io.shardingsphere.core.optimizer.condition.ShardingConditions;
 import io.shardingsphere.core.optimizer.insert.InsertOptimizeEngine;

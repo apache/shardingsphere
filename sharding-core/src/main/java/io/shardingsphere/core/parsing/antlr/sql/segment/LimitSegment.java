@@ -17,7 +17,7 @@
 
 package io.shardingsphere.core.parsing.antlr.sql.segment;
 
-import shardingsphere.shaded.common.base.Optional;
+import io.shardingsphere.shaded.com.google.common.base.Optional;
 import io.shardingsphere.core.constant.DatabaseType;
 import lombok.Getter;
 

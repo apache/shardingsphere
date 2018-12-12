@@ -17,8 +17,8 @@
 
 package io.shardingsphere.api;
 
-import shardingsphere.shaded.common.collect.HashMultimap;
-import shardingsphere.shaded.common.collect.Multimap;
+import io.shardingsphere.shaded.com.google.common.collect.HashMultimap;
+import io.shardingsphere.shaded.com.google.common.collect.Multimap;
 import io.shardingsphere.core.hint.HintManagerHolder;
 import lombok.AccessLevel;
 import lombok.Getter;

@@ -17,7 +17,7 @@
 
 package io.shardingsphere.core.parsing.parser.context;
 
-import shardingsphere.shaded.common.base.Optional;
+import io.shardingsphere.shaded.com.google.common.base.Optional;
 import io.shardingsphere.core.constant.OrderDirection;
 import org.junit.Test;
 

@@ -17,7 +17,7 @@
 
 package io.shardingsphere.core.merger;
 
-import shardingsphere.shaded.common.collect.Lists;
+import io.shardingsphere.shaded.com.google.common.collect.Lists;
 import io.shardingsphere.core.merger.dal.DALMergeEngine;
 import io.shardingsphere.core.merger.dql.DQLMergeEngine;
 import io.shardingsphere.core.merger.fixture.TestQueryResult;

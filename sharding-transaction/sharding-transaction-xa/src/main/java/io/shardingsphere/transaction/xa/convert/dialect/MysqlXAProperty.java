@@ -17,7 +17,7 @@
 
 package io.shardingsphere.transaction.xa.convert.dialect;
 
-import shardingsphere.shaded.common.base.Optional;
+import io.shardingsphere.shaded.com.google.common.base.Optional;
 import io.shardingsphere.core.rule.DataSourceParameter;
 import lombok.RequiredArgsConstructor;
 

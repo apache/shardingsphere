@@ -17,7 +17,7 @@
 
 package io.shardingsphere.orchestration.internal.registry.state.schema;
 
-import shardingsphere.shaded.common.base.Splitter;
+import io.shardingsphere.shaded.com.google.common.base.Splitter;
 import io.shardingsphere.core.constant.ShardingConstant;
 import lombok.Getter;
 import lombok.RequiredArgsConstructor;
