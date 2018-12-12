@@ -49,17 +49,17 @@ public final class AntlrParsingEngine implements SQLParser {
     
     public AntlrParsingEngine(final DatabaseType databaseType, final String sql, final ShardingRule shardingRule, final ShardingTableMetaData shardingTableMetaData) {
         parserEngine = new SQLParserEngine(databaseType, sql);
-        extractorEngine = new SQLSegmentsExtractorEngine(databaseType);
+        extractorEngine = new SQLSegmentsExtractorEngine();
         fillerEngine = new SQLStatementFillerEngine(sql, shardingRule, shardingTableMetaData);
-        optimizerEngine = new SQLStatementOptimizerEngine(databaseType, shardingTableMetaData);
+        optimizerEngine = new SQLStatementOptimizerEngine(shardingTableMetaData);
     }
     
     @Override
     public SQLStatement parse() {
         SQLAST ast = parserEngine.parse();
         Collection<SQLSegment> sqlSegments = extractorEngine.extract(ast);
-        SQLStatement result = fillerEngine.fill(sqlSegments, ast.getType());
-        optimizerEngine.optimize(ast.getType(), result);
+        SQLStatement result = fillerEngine.fill(sqlSegments, ast.getRule());
+        optimizerEngine.optimize(ast.getRule(), result);
         return result;
     }
 }

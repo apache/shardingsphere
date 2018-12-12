@@ -127,7 +127,13 @@ public enum RuleName {
     
     SUBQUERY("Subquery"),
     
-    SHOW_PARAM("ShowParam");
+    SHOW_PARAM("ShowParam"),
+    
+    SET_VARIABLE_ASSIGNMENT("SetVariableAssignment"),
+    
+    VARIABLE_KEY("VariableKey"),
+    
+    VARIABLE_VALUE("VariableValue");
     
     private final String name;
     

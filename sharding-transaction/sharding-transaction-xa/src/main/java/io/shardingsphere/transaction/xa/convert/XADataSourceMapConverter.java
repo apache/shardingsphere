@@ -18,10 +18,11 @@
 package io.shardingsphere.transaction.xa.convert;
 
 import io.shardingsphere.core.constant.DatabaseType;
+import io.shardingsphere.core.rule.DataSourceParameter;
 import io.shardingsphere.spi.transaction.xa.DataSourceMapConverter;
 import io.shardingsphere.transaction.manager.xa.XATransactionManager;
 import io.shardingsphere.transaction.xa.convert.dialect.XADataSourceFactory;
-import io.shardingsphere.transaction.xa.convert.extractor.DataSourceParameterFactory;
+import io.shardingsphere.transaction.xa.convert.swap.DataSourceSwapperRegistry;
 import io.shardingsphere.transaction.xa.manager.XATransactionManagerSPILoader;
 
 import javax.sql.DataSource;
@@ -38,12 +39,15 @@ public final class XADataSourceMapConverter implements DataSourceMapConverter {
     
     private final XATransactionManager xaTransactionManager = XATransactionManagerSPILoader.getInstance().getTransactionManager();
     
+    private final DataSourceSwapperRegistry dataSourceSwapperRegistry = DataSourceSwapperRegistry.getInstance();
+    
     @Override
     public Map<String, DataSource> convert(final Map<String, DataSource> dataSourceMap, final DatabaseType databaseType) {
         Map<String, DataSource> result = new HashMap<>(dataSourceMap.size(), 1);
         try {
             for (Entry<String, DataSource> entry : dataSourceMap.entrySet()) {
-                DataSource dataSource = xaTransactionManager.wrapDataSource(XADataSourceFactory.build(databaseType), entry.getKey(), DataSourceParameterFactory.build(entry.getValue()));
+                DataSourceParameter parameter = dataSourceSwapperRegistry.getSwapper(entry.getValue()).swap(entry.getValue());
+                DataSource dataSource = xaTransactionManager.wrapDataSource(XADataSourceFactory.build(databaseType), entry.getKey(), parameter);
                 result.put(entry.getKey(), dataSource);
             }
             return result;

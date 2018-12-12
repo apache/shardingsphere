@@ -24,7 +24,8 @@ import org.junit.runners.Suite.SuiteClasses;
 @RunWith(Suite.class)
 @SuiteClasses({
         AtomikosTransactionManagerTest.class,
-        XATransactionDataSourceWrapperTest.class,
+        AtomikosDataSourceBeanWrapperTest.class,
+        BasicManagedDataSourceWrapperTest.class,
         XATransactionManagerSPILoaderTest.class
 })
 public final class AllManagerTests {

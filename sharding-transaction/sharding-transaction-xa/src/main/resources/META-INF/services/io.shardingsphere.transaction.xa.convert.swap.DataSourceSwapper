@@ -1,0 +1,5 @@
+io.shardingsphere.transaction.xa.convert.swap.DBCP2ParameterSwapper
+io.shardingsphere.transaction.xa.convert.swap.DruidParameterSwapper
+io.shardingsphere.transaction.xa.convert.swap.HikariParameterSwapper
+
+

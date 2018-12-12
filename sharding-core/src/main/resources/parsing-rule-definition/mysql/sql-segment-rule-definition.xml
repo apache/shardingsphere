@@ -1,0 +1,9 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<sql-segment-rule-definition database-type="MySQL" base-package="io.shardingsphere.core.parsing.antlr" extractor-base-package="extractor.impl" filler-base-package="filler.impl">
+    <sql-segment-rule id="addColumn" extractor-class="dialect.mysql.MySQLAddColumnExtractor" filler-class="ColumnDefinitionFiller" />
+    <sql-segment-rule id="modifyColumn" extractor-class="dialect.mysql.MySQLModifyColumnExtractor" />
+    <sql-segment-rule id="changeColumn" extractor-class="dialect.mysql.MySQLChangeColumnExtractor" filler-class="ColumnDefinitionFiller" />
+    <sql-segment-rule id="addIndex" extractor-class="dialect.mysql.MySQLAddIndexExtractor" filler-class="IndexFiller" />
+    <sql-segment-rule id="dropIndex" extractor-class="dialect.mysql.MySQLDropIndexExtractor" filler-class="IndexFiller" />
+    <sql-segment-rule id="dropPrimaryKey" extractor-class="dialect.mysql.MySQLDropPrimaryKeyExtractor" filler-class="DropPrimaryKeyFiller" />
+</sql-segment-rule-definition>

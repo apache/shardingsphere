@@ -18,6 +18,7 @@ execute
     | rollback
     | savepoint
     | beginWork
+    | startTransaction
     | grant
     | grantRole
     | revoke

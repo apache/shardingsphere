@@ -1,0 +1,6 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<sql-segment-rule-definition database-type="Oracle" base-package="io.shardingsphere.core.parsing.antlr" extractor-base-package="extractor.impl" filler-base-package="filler.impl">
+    <sql-segment-rule id="addColumn" extractor-class="AddColumnExtractor" filler-class="ColumnDefinitionFiller" />
+    <sql-segment-rule id="modifyColumn" extractor-class="dialect.oracle.OracleModifyColumnExtractor" />
+    <sql-segment-rule id="dropPrimaryKey" extractor-class="dialect.oracle.OracleDropPrimaryKeyExtractor" filler-class="DropPrimaryKeyFiller" />
+</sql-segment-rule-definition>
