@@ -20,6 +20,7 @@ package io.shardingsphere.core.parsing.antlr.rule.registry;
 import com.google.common.base.Optional;
 import io.shardingsphere.core.constant.DatabaseType;
 import io.shardingsphere.core.parsing.antlr.filler.SQLStatementFiller;
+import io.shardingsphere.core.parsing.antlr.rule.jaxb.loader.RuleDefinitionFileConstant;
 import io.shardingsphere.core.parsing.antlr.rule.jaxb.loader.extractor.ExtractorRuleDefinitionEntityLoader;
 import io.shardingsphere.core.parsing.antlr.rule.jaxb.loader.filler.FillerRuleDefinitionEntityLoader;
 import io.shardingsphere.core.parsing.antlr.rule.jaxb.loader.statement.SQLStatementRuleDefinitionEntityLoader;
@@ -74,18 +75,19 @@ public final class ParsingRuleRegistry {
     private synchronized void init() {
         for (DatabaseType each : DatabaseType.values()) {
             if (DatabaseType.H2 != each) {
-                statementRuleDefinitions.put(each, init(DatabaseRuleDefinitionType.valueOf(each)));
+                statementRuleDefinitions.put(each, init(each));
             }
         }
-        fillerRuleDefinition.init(fillerRuleDefinitionLoader.load(DatabaseRuleDefinitionType.COMMON_FILLER_RULE_DEFINITION));
+        fillerRuleDefinition.init(fillerRuleDefinitionLoader.load(RuleDefinitionFileConstant.getFillerRuleDefinitionFileName()));
     }
     
-    private SQLStatementRuleDefinition init(final DatabaseRuleDefinitionType type) {
+    private SQLStatementRuleDefinition init(final DatabaseType databaseType) {
         ExtractorRuleDefinition extractorRuleDefinition = new ExtractorRuleDefinition();
         extractorRuleDefinition.init(
-                extractorRuleDefinitionLoader.load(DatabaseRuleDefinitionType.COMMON_EXTRACTOR_RULE_DEFINITION), extractorRuleDefinitionLoader.load(type.getExtractorRuleDefinitionFile()));
+                extractorRuleDefinitionLoader.load(RuleDefinitionFileConstant.getCommonExtractorRuleDefinitionFileName()), 
+                extractorRuleDefinitionLoader.load(RuleDefinitionFileConstant.getExtractorRuleDefinitionFileName(databaseType)));
         SQLStatementRuleDefinition result = new SQLStatementRuleDefinition();
-        result.init(statementRuleDefinitionLoader.load(type.getSqlStatementRuleDefinitionFile()), extractorRuleDefinition);
+        result.init(statementRuleDefinitionLoader.load(RuleDefinitionFileConstant.getSQLStatementRuleDefinitionFileName(databaseType)), extractorRuleDefinition);
         return result;
     }
     
