@@ -35,6 +35,7 @@ import java.sql.ResultSet;
 import java.sql.SQLException;
 
 import static org.hamcrest.CoreMatchers.is;
+import static org.junit.Assert.assertNotNull;
 import static org.junit.Assert.assertNull;
 import static org.junit.Assert.assertThat;
 import static org.junit.Assert.assertTrue;
@@ -76,7 +77,6 @@ public final class ConnectionAdapterTest extends AbstractShardingJDBCDatabaseAnd
             actual.setAutoCommit(true);
             assertNull(FixedXAShardingTransactionHandler.getInvokes().get("begin"));
         }
-        TransactionTypeHolder.clear();
     }
     
     @Test
@@ -86,7 +86,6 @@ public final class ConnectionAdapterTest extends AbstractShardingJDBCDatabaseAnd
             actual.setAutoCommit(true);
             assertNull(FixedBaseShardingTransactionHandler.getInvokes().get("begin"));
         }
-        TransactionTypeHolder.clear();
     }
     
     @Test
@@ -100,12 +99,30 @@ public final class ConnectionAdapterTest extends AbstractShardingJDBCDatabaseAnd
     }
     
     @Test
+    public void assertXACommit() throws SQLException {
+        TransactionTypeHolder.set(TransactionType.XA);
+        try (ShardingConnection actual = getShardingDataSource().getConnection()) {
+            actual.commit();
+            assertNotNull(FixedXAShardingTransactionHandler.getInvokes().get("commit"));
+        }
+    }
+    
+    @Test
     // TODO 缺少断言，做柔性事务时补充
     public void assertRollback() throws SQLException {
         try (ShardingConnection actual = getShardingDataSource().getConnection()) {
             actual.setAutoCommit(false);
             actual.createStatement().executeQuery(sql);
             actual.rollback();
+        }
+    }
+    
+    @Test
+    public void assertXARollback() throws SQLException {
+        TransactionTypeHolder.set(TransactionType.XA);
+        try (ShardingConnection actual = getShardingDataSource().getConnection()) {
+            actual.rollback();
+            assertNotNull(FixedXAShardingTransactionHandler.getInvokes().get("rollback"));
         }
     }
     
