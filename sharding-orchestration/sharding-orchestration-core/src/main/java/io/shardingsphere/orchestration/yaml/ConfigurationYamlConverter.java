@@ -17,10 +17,10 @@
 
 package io.shardingsphere.orchestration.yaml;
 
-import com.google.common.base.Function;
-import com.google.common.base.Preconditions;
-import com.google.common.base.Strings;
-import com.google.common.collect.Maps;
+import shardingsphere.shaded.common.base.Function;
+import shardingsphere.shaded.common.base.Preconditions;
+import shardingsphere.shaded.common.base.Strings;
+import shardingsphere.shaded.common.collect.Maps;
 import io.shardingsphere.api.config.MasterSlaveRuleConfiguration;
 import io.shardingsphere.api.config.ShardingRuleConfiguration;
 import io.shardingsphere.core.config.DataSourceConfiguration;

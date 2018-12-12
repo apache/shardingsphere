@@ -17,9 +17,9 @@
 
 package io.shardingsphere.core.parsing.integrate.asserts.item;
 
-import com.google.common.base.Optional;
-import com.google.common.base.Predicate;
-import com.google.common.collect.Sets;
+import shardingsphere.shaded.common.base.Optional;
+import shardingsphere.shaded.common.base.Predicate;
+import shardingsphere.shaded.common.collect.Sets;
 import io.shardingsphere.core.parsing.integrate.asserts.SQLStatementAssertMessage;
 import io.shardingsphere.core.parsing.integrate.jaxb.item.ExpectedDistinctSelectItem;
 import io.shardingsphere.core.parsing.parser.context.selectitem.DistinctSelectItem;

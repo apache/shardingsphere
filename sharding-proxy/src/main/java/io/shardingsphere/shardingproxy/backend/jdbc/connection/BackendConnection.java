@@ -17,9 +17,9 @@
 
 package io.shardingsphere.shardingproxy.backend.jdbc.connection;
 
-import com.google.common.base.Preconditions;
-import com.google.common.collect.LinkedHashMultimap;
-import com.google.common.collect.Multimap;
+import shardingsphere.shaded.common.base.Preconditions;
+import shardingsphere.shaded.common.collect.LinkedHashMultimap;
+import shardingsphere.shaded.common.collect.Multimap;
 import io.shardingsphere.core.constant.ConnectionMode;
 import io.shardingsphere.core.constant.transaction.TransactionType;
 import io.shardingsphere.core.exception.ShardingException;

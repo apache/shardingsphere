@@ -17,7 +17,7 @@
 
 package io.shardingsphere.shardingproxy.transport.mysql.packet.generic;
 
-import com.google.common.base.Preconditions;
+import shardingsphere.shaded.common.base.Preconditions;
 import io.shardingsphere.shardingproxy.transport.mysql.constant.ServerErrorCode;
 import io.shardingsphere.shardingproxy.transport.mysql.packet.MySQLPacket;
 import io.shardingsphere.shardingproxy.transport.mysql.packet.MySQLPacketPayload;

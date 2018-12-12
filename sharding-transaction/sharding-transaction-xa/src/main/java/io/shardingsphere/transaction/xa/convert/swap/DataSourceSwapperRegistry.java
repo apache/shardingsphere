@@ -17,7 +17,7 @@
 
 package io.shardingsphere.transaction.xa.convert.swap;
 
-import com.google.common.base.Splitter;
+import shardingsphere.shaded.common.base.Splitter;
 import lombok.extern.slf4j.Slf4j;
 
 import javax.sql.DataSource;

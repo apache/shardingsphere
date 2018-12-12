@@ -17,10 +17,10 @@
 
 package io.shardingsphere.core.config;
 
-import com.google.common.base.CaseFormat;
-import com.google.common.base.Joiner;
-import com.google.common.base.Optional;
-import com.google.common.collect.Sets;
+import shardingsphere.shaded.common.base.CaseFormat;
+import shardingsphere.shaded.common.base.Joiner;
+import shardingsphere.shaded.common.base.Optional;
+import shardingsphere.shaded.common.collect.Sets;
 import io.shardingsphere.core.exception.ShardingConfigurationException;
 import io.shardingsphere.core.rule.DataSourceParameter;
 import lombok.Getter;

@@ -17,7 +17,7 @@
 
 package io.shardingsphere.dbtest.cases.dataset.row;
 
-import com.google.common.base.Splitter;
+import shardingsphere.shaded.common.base.Splitter;
 import lombok.Getter;
 
 import javax.xml.bind.annotation.XmlAccessType;

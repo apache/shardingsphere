@@ -17,7 +17,7 @@
 
 package io.shardingsphere.shardingproxy.frontend.mysql;
 
-import com.google.common.base.Optional;
+import shardingsphere.shaded.common.base.Optional;
 import io.netty.buffer.ByteBuf;
 import io.netty.channel.ChannelHandlerContext;
 import io.shardingsphere.shardingproxy.backend.jdbc.connection.BackendConnection;

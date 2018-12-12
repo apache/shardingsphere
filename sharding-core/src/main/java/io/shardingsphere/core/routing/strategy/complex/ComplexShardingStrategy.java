@@ -17,7 +17,7 @@
 
 package io.shardingsphere.core.routing.strategy.complex;
 
-import com.google.common.base.Preconditions;
+import shardingsphere.shaded.common.base.Preconditions;
 import io.shardingsphere.api.algorithm.sharding.ShardingValue;
 import io.shardingsphere.api.algorithm.sharding.complex.ComplexKeysShardingAlgorithm;
 import io.shardingsphere.api.config.strategy.ComplexShardingStrategyConfiguration;

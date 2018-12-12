@@ -17,7 +17,7 @@
 
 package io.shardingsphere.dbtest.engine;
 
-import com.google.common.base.Joiner;
+import shardingsphere.shaded.common.base.Joiner;
 import io.shardingsphere.core.constant.DatabaseType;
 import io.shardingsphere.core.metadata.datasource.DataSourceMetaData;
 import io.shardingsphere.core.metadata.datasource.DataSourceMetaDataFactory;

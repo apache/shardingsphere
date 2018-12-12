@@ -17,7 +17,7 @@
 
 package io.shardingsphere.shardingjdbc.jdbc.core.resultset;
 
-import com.google.common.base.Preconditions;
+import shardingsphere.shaded.common.base.Preconditions;
 import io.shardingsphere.shardingjdbc.jdbc.unsupported.AbstractUnsupportedGeneratedKeysResultSet;
 import lombok.RequiredArgsConstructor;
 

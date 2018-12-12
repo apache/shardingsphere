@@ -17,8 +17,8 @@
 
 package io.shardingsphere.core.rule;
 
-import com.google.common.base.Function;
-import com.google.common.collect.Lists;
+import shardingsphere.shaded.common.base.Function;
+import shardingsphere.shaded.common.collect.Lists;
 import io.shardingsphere.core.exception.ShardingConfigurationException;
 import lombok.Getter;
 import lombok.RequiredArgsConstructor;

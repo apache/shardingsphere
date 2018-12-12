@@ -17,7 +17,7 @@
 
 package io.shardingsphere.core.parsing.antlr.sql.segment.expr;
 
-import com.google.common.base.Optional;
+import shardingsphere.shaded.common.base.Optional;
 
 import lombok.Getter;
 import lombok.RequiredArgsConstructor;

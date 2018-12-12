@@ -17,7 +17,7 @@
 
 package io.shardingsphere.core.keygen;
 
-import com.google.common.base.Preconditions;
+import shardingsphere.shaded.common.base.Preconditions;
 import lombok.Setter;
 
 import java.util.Calendar;

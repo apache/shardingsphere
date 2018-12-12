@@ -17,9 +17,9 @@
 
 package io.shardingsphere.core.routing;
 
-import com.google.common.base.Function;
-import com.google.common.collect.Collections2;
-import com.google.common.collect.Lists;
+import shardingsphere.shaded.common.base.Function;
+import shardingsphere.shaded.common.collect.Collections2;
+import shardingsphere.shaded.common.collect.Lists;
 import io.shardingsphere.api.HintManager;
 import io.shardingsphere.api.config.ShardingRuleConfiguration;
 import io.shardingsphere.api.config.TableRuleConfiguration;

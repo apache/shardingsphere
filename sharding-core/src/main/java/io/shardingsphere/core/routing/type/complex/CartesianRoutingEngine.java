@@ -17,10 +17,10 @@
 
 package io.shardingsphere.core.routing.type.complex;
 
-import com.google.common.base.Function;
-import com.google.common.base.Optional;
-import com.google.common.collect.Lists;
-import com.google.common.collect.Sets;
+import shardingsphere.shaded.common.base.Function;
+import shardingsphere.shaded.common.base.Optional;
+import shardingsphere.shaded.common.collect.Lists;
+import shardingsphere.shaded.common.collect.Sets;
 import io.shardingsphere.core.routing.type.RoutingEngine;
 import io.shardingsphere.core.routing.type.RoutingResult;
 import io.shardingsphere.core.routing.type.RoutingTable;

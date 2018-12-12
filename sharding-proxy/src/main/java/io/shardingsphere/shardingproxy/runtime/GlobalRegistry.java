@@ -17,7 +17,7 @@
 
 package io.shardingsphere.shardingproxy.runtime;
 
-import com.google.common.base.Strings;
+import shardingsphere.shaded.common.base.Strings;
 import com.google.common.eventbus.EventBus;
 import com.google.common.eventbus.Subscribe;
 import io.shardingsphere.api.ConfigMapContext;

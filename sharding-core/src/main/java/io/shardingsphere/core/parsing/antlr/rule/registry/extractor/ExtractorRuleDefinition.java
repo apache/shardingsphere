@@ -17,7 +17,7 @@
 
 package io.shardingsphere.core.parsing.antlr.rule.registry.extractor;
 
-import com.google.common.base.Joiner;
+import shardingsphere.shaded.common.base.Joiner;
 import io.shardingsphere.core.parsing.antlr.extractor.SQLSegmentExtractor;
 import io.shardingsphere.core.parsing.antlr.rule.jaxb.entity.extractor.ExtractorRuleDefinitionEntity;
 import io.shardingsphere.core.parsing.antlr.rule.jaxb.entity.extractor.ExtractorRuleEntity;

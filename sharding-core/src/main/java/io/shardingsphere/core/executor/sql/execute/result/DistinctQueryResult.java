@@ -17,11 +17,11 @@
 
 package io.shardingsphere.core.executor.sql.execute.result;
 
-import com.google.common.base.Function;
-import com.google.common.collect.HashMultimap;
-import com.google.common.collect.Iterators;
-import com.google.common.collect.Lists;
-import com.google.common.collect.Multimap;
+import shardingsphere.shaded.common.base.Function;
+import shardingsphere.shaded.common.collect.HashMultimap;
+import shardingsphere.shaded.common.collect.Iterators;
+import shardingsphere.shaded.common.collect.Lists;
+import shardingsphere.shaded.common.collect.Multimap;
 import io.shardingsphere.core.executor.sql.execute.row.QueryRow;
 import io.shardingsphere.core.merger.QueryResult;
 import lombok.AccessLevel;
