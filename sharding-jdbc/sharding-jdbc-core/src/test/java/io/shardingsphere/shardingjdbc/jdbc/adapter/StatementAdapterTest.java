@@ -17,7 +17,7 @@
 
 package io.shardingsphere.shardingjdbc.jdbc.adapter;
 
-import com.google.common.collect.Lists;
+import shardingsphere.shaded.common.collect.Lists;
 import io.shardingsphere.core.constant.DatabaseType;
 import io.shardingsphere.shardingjdbc.common.base.AbstractShardingJDBCDatabaseAndTableTest;
 import io.shardingsphere.shardingjdbc.jdbc.core.connection.ShardingConnection;
