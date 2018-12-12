@@ -4,40 +4,18 @@
          xsi:schemaLocation="http://maven.apache.org/POM/4.0.0 http://maven.apache.org/xsd/maven-4.0.0.xsd">
     <modelVersion>4.0.0</modelVersion>
     <parent>
-        <artifactId>sharding-sphere</artifactId>
         <groupId>io.shardingsphere</groupId>
+        <artifactId>sharding-sphere</artifactId>
         <version>3.0.1-SNAPSHOT</version>
     </parent>
-
-    <artifactId>sharding-assembly</artifactId>
+    <artifactId>sharding-shade</artifactId>
     <name>${project.artifactId}</name>
-
-    <properties>
-        <guava.version>18.0</guava.version>
-        <maven-shade-plugin.version>3.0.0</maven-shade-plugin.version>
-    </properties>
-
-    <dependencyManagement>
-        <dependencies>
-            <dependency>
-                <groupId>com.google.guava</groupId>
-                <artifactId>guava</artifactId>
-                <version>${guava.version}</version>
-            </dependency>
-        </dependencies>
-    </dependencyManagement>
 
     <dependencies>
         <dependency>
             <groupId>com.google.guava</groupId>
             <artifactId>guava</artifactId>
             <version>${guava.version}</version>
-            <exclusions>
-                <exclusion>
-                    <groupId>*</groupId>
-                    <artifactId>*</artifactId>
-                </exclusion>
-            </exclusions>
         </dependency>
     </dependencies>
 
@@ -69,12 +47,8 @@
                         <configuration>
                             <relocations>
                                 <relocation>
-                                    <pattern>com.google.guava</pattern>
-                                    <shadedPattern>shardingsphere.shaded.guava</shadedPattern>
-                                </relocation>
-                                <relocation>
                                     <pattern>com.google.common</pattern>
-                                    <shadedPattern>shardingsphere.shaded.common</shadedPattern>
+                                    <shadedPattern>io.shardingsphere.shaded.com.google.common</shadedPattern>
                                 </relocation>
                             </relocations>
                         </configuration>
