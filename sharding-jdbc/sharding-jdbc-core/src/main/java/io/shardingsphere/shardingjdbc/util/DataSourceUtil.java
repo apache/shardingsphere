@@ -17,8 +17,8 @@
 
 package io.shardingsphere.shardingjdbc.util;
 
-import shardingsphere.shaded.common.base.CaseFormat;
-import shardingsphere.shaded.common.collect.Sets;
+import io.shardingsphere.shaded.com.google.common.base.CaseFormat;
+import io.shardingsphere.shaded.com.google.common.collect.Sets;
 import lombok.AccessLevel;
 import lombok.NoArgsConstructor;
 
