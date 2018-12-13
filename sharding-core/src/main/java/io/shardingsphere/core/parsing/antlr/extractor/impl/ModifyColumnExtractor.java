@@ -38,7 +38,7 @@ public class ModifyColumnExtractor implements CollectionSQLSegmentExtractor {
     private final ColumnDefinitionExtractor columnDefinitionPhraseExtractor = new ColumnDefinitionExtractor();
     
     @Override
-    public Collection<ColumnDefinitionSegment> extract(final ParserRuleContext ancestorNode) {
+    public final Collection<ColumnDefinitionSegment> extract(final ParserRuleContext ancestorNode) {
         Collection<ParserRuleContext> modifyColumnNodes = ExtractorUtils.getAllDescendantNodes(ancestorNode, RuleName.MODIFY_COLUMN);
         if (modifyColumnNodes.isEmpty()) {
             return Collections.emptyList();

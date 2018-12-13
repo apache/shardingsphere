@@ -105,7 +105,7 @@ public class ParserResultSetLoader {
      * @return parser assert
      */
     public ParserResult getParserResult(final String sqlCaseId) {
-        Preconditions.checkState(parserResultMap.containsKey(sqlCaseId), "Can't find SQL of id: " + sqlCaseId);
+        Preconditions.checkState(parserResultMap.containsKey(sqlCaseId), "Can't find SQL of id: %s", sqlCaseId);
         return parserResultMap.get(sqlCaseId);
     }
     
