@@ -21,7 +21,7 @@ import com.atomikos.icatch.jta.UserTransactionManager;
 import com.atomikos.jdbc.AtomikosDataSourceBean;
 import com.mysql.jdbc.jdbc2.optional.MysqlXADataSource;
 import io.shardingsphere.core.constant.transaction.TransactionOperationType;
-import io.shardingsphere.core.event.transaction.xa.XATransactionEvent;
+import io.shardingsphere.core.event.transaction.xa.XATransactionContext;
 import io.shardingsphere.core.exception.ShardingException;
 import io.shardingsphere.core.rule.DataSourceParameter;
 import io.shardingsphere.transaction.xa.fixture.ReflectiveUtil;
@@ -79,38 +79,38 @@ public final class AtomikosTransactionManagerTest {
     
     @Test
     public void assertBeginWithoutException() throws Exception {
-        atomikosTransactionManager.begin(new XATransactionEvent(TransactionOperationType.BEGIN));
+        atomikosTransactionManager.begin(new XATransactionContext(TransactionOperationType.BEGIN));
         verify(userTransactionManager).begin();
     }
     
     @Test(expected = ShardingException.class)
     public void assertBeginWithException() throws Exception {
         doThrow(SystemException.class).when(userTransactionManager).begin();
-        atomikosTransactionManager.begin(new XATransactionEvent(TransactionOperationType.BEGIN));
+        atomikosTransactionManager.begin(new XATransactionContext(TransactionOperationType.BEGIN));
     }
     
     @Test
     public void assertCommitWithoutException() throws Exception {
-        atomikosTransactionManager.commit(new XATransactionEvent(TransactionOperationType.COMMIT));
+        atomikosTransactionManager.commit(new XATransactionContext(TransactionOperationType.COMMIT));
         verify(userTransactionManager).commit();
     }
     
     @Test(expected = ShardingException.class)
     public void assertCommitWithException() throws Exception {
         doThrow(SystemException.class).when(userTransactionManager).commit();
-        atomikosTransactionManager.commit(new XATransactionEvent(TransactionOperationType.COMMIT));
+        atomikosTransactionManager.commit(new XATransactionContext(TransactionOperationType.COMMIT));
     }
     
     @Test
     public void assertRollbackWithoutException() throws Exception {
-        atomikosTransactionManager.rollback(new XATransactionEvent(TransactionOperationType.ROLLBACK));
+        atomikosTransactionManager.rollback(new XATransactionContext(TransactionOperationType.ROLLBACK));
         verify(userTransactionManager).rollback();
     }
     
     @Test(expected = ShardingException.class)
     public void assertRollbackWithException() throws Exception {
         doThrow(SystemException.class).when(userTransactionManager).rollback();
-        atomikosTransactionManager.rollback(new XATransactionEvent(TransactionOperationType.ROLLBACK));
+        atomikosTransactionManager.rollback(new XATransactionContext(TransactionOperationType.ROLLBACK));
     }
     
     @Test

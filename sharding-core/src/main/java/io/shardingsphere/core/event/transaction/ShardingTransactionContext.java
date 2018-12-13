@@ -20,12 +20,12 @@ package io.shardingsphere.core.event.transaction;
 import io.shardingsphere.core.constant.transaction.TransactionOperationType;
 
 /**
- * Sharding transaction event.
+ * Sharding transaction context.
  *
  * @author zhaojun
  * @author zhangliang
  */
-public interface ShardingTransactionEvent {
+public interface ShardingTransactionContext {
     
     /**
      * Get transaction operation type.

@@ -18,18 +18,18 @@
 package io.shardingsphere.core.event.transaction.xa;
 
 import io.shardingsphere.core.constant.transaction.TransactionOperationType;
-import io.shardingsphere.core.event.transaction.ShardingTransactionEvent;
+import io.shardingsphere.core.event.transaction.ShardingTransactionContext;
 import lombok.Getter;
 import lombok.RequiredArgsConstructor;
 
 /**
- * XA transaction event.
+ * XA transaction context.
  *
  * @author zhaojun
  */
 @RequiredArgsConstructor
 @Getter
-public final class XATransactionEvent implements ShardingTransactionEvent {
+public final class XATransactionContext implements ShardingTransactionContext {
     
     private final TransactionOperationType operationType;
 }

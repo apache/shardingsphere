@@ -18,7 +18,7 @@
 package io.shardingsphere.spi.transaction;
 
 import io.shardingsphere.core.constant.transaction.TransactionType;
-import io.shardingsphere.core.event.transaction.ShardingTransactionEvent;
+import io.shardingsphere.core.event.transaction.ShardingTransactionContext;
 import lombok.AccessLevel;
 import lombok.NoArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
@@ -36,7 +36,7 @@ import java.util.ServiceLoader;
 @Slf4j
 public final class ShardingTransactionHandlerRegistry {
     
-    private static final Map<TransactionType, ShardingTransactionHandler<ShardingTransactionEvent>> TRANSACTION_HANDLER_MAP = new HashMap<>();
+    private static final Map<TransactionType, ShardingTransactionHandler<ShardingTransactionContext>> TRANSACTION_HANDLER_MAP = new HashMap<>();
     
     private static final ShardingTransactionHandlerRegistry INSTANCE = new ShardingTransactionHandlerRegistry();
     
@@ -60,7 +60,7 @@ public final class ShardingTransactionHandlerRegistry {
                     each.getTransactionType(), TRANSACTION_HANDLER_MAP.get(each.getTransactionType()).getClass().getName());
                 continue;
             }
-            TRANSACTION_HANDLER_MAP.put(each.getTransactionType(), (ShardingTransactionHandler<ShardingTransactionEvent>) each);
+            TRANSACTION_HANDLER_MAP.put(each.getTransactionType(), (ShardingTransactionHandler<ShardingTransactionContext>) each);
         }
     }
     
@@ -70,7 +70,7 @@ public final class ShardingTransactionHandlerRegistry {
      * @param transactionType transaction type
      * @return sharding transaction handler implement
      */
-    public ShardingTransactionHandler<ShardingTransactionEvent> getHandler(final TransactionType transactionType) {
+    public ShardingTransactionHandler<ShardingTransactionContext> getHandler(final TransactionType transactionType) {
         return TRANSACTION_HANDLER_MAP.get(transactionType);
     }
 }

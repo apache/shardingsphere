@@ -18,7 +18,7 @@
 package io.shardingsphere.core.event.transaction.local;
 
 import io.shardingsphere.core.constant.transaction.TransactionOperationType;
-import io.shardingsphere.core.event.transaction.ShardingTransactionEvent;
+import io.shardingsphere.core.event.transaction.ShardingTransactionContext;
 import lombok.Getter;
 import lombok.RequiredArgsConstructor;
 
@@ -32,7 +32,7 @@ import java.util.Collection;
  */
 @RequiredArgsConstructor
 @Getter
-public final class LocalTransactionEvent implements ShardingTransactionEvent {
+public final class LocalTransactionContext implements ShardingTransactionContext {
     
     private final TransactionOperationType operationType;
             

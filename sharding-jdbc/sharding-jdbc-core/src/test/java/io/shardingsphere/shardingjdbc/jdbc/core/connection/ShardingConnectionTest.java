@@ -23,7 +23,7 @@ import io.shardingsphere.api.config.rule.ShardingRuleConfiguration;
 import io.shardingsphere.api.config.rule.TableRuleConfiguration;
 import io.shardingsphere.core.constant.DatabaseType;
 import io.shardingsphere.core.constant.transaction.TransactionType;
-import io.shardingsphere.core.event.transaction.ShardingTransactionEvent;
+import io.shardingsphere.core.event.transaction.ShardingTransactionContext;
 import io.shardingsphere.core.transaction.TransactionTypeHolder;
 import io.shardingsphere.shardingjdbc.fixture.TestDataSource;
 import io.shardingsphere.shardingjdbc.jdbc.core.ShardingContext;
@@ -120,21 +120,21 @@ public final class ShardingConnectionTest {
     public void assertXATransactionOperation() throws SQLException {
         connection = new ShardingConnection(dataSourceMap, shardingContext, TransactionType.XA);
         connection.setAutoCommit(false);
-        assertThat(FixedXAShardingTransactionHandler.getInvokes().get("begin"), instanceOf(ShardingTransactionEvent.class));
+        assertThat(FixedXAShardingTransactionHandler.getInvokes().get("begin"), instanceOf(ShardingTransactionContext.class));
         connection.commit();
-        assertThat(FixedXAShardingTransactionHandler.getInvokes().get("commit"), instanceOf(ShardingTransactionEvent.class));
+        assertThat(FixedXAShardingTransactionHandler.getInvokes().get("commit"), instanceOf(ShardingTransactionContext.class));
         connection.rollback();
-        assertThat(FixedXAShardingTransactionHandler.getInvokes().get("rollback"), instanceOf(ShardingTransactionEvent.class));
+        assertThat(FixedXAShardingTransactionHandler.getInvokes().get("rollback"), instanceOf(ShardingTransactionContext.class));
     }
     
     @Test
     public void assertBaseTransactionOperation() throws SQLException {
         connection = new ShardingConnection(dataSourceMap, shardingContext, TransactionType.BASE);
         connection.setAutoCommit(false);
-        assertThat(FixedBaseShardingTransactionHandler.getInvokes().get("begin"), instanceOf(ShardingTransactionEvent.class));
+        assertThat(FixedBaseShardingTransactionHandler.getInvokes().get("begin"), instanceOf(ShardingTransactionContext.class));
         connection.commit();
-        assertThat(FixedBaseShardingTransactionHandler.getInvokes().get("commit"), instanceOf(ShardingTransactionEvent.class));
+        assertThat(FixedBaseShardingTransactionHandler.getInvokes().get("commit"), instanceOf(ShardingTransactionContext.class));
         connection.rollback();
-        assertThat(FixedBaseShardingTransactionHandler.getInvokes().get("rollback"), instanceOf(ShardingTransactionEvent.class));
+        assertThat(FixedBaseShardingTransactionHandler.getInvokes().get("rollback"), instanceOf(ShardingTransactionContext.class));
     }
 }

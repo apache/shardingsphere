@@ -18,21 +18,21 @@
 package io.shardingsphere.spi.transaction;
 
 import io.shardingsphere.core.constant.transaction.TransactionType;
-import io.shardingsphere.core.event.transaction.ShardingTransactionEvent;
+import io.shardingsphere.core.event.transaction.ShardingTransactionContext;
 
 /**
  * Sharding transaction handler SPI.
  *
  * @author zhaojun
  */
-public interface ShardingTransactionHandler<T extends ShardingTransactionEvent> {
+public interface ShardingTransactionHandler<T extends ShardingTransactionContext> {
     
     /**
      * Do transaction operation using specific transaction manager.
      *
-     * @param event sharding transaction event
+     * @param context sharding transaction context
      */
-    void doInTransaction(T event);
+    void doInTransaction(T context);
     
     /**
      * Get transaction type.

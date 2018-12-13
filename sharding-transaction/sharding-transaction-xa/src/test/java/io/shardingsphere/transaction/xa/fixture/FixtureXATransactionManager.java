@@ -17,7 +17,7 @@
 
 package io.shardingsphere.transaction.xa.fixture;
 
-import io.shardingsphere.core.event.transaction.xa.XATransactionEvent;
+import io.shardingsphere.core.event.transaction.xa.XATransactionContext;
 import io.shardingsphere.core.rule.DataSourceParameter;
 import io.shardingsphere.transaction.manager.xa.XATransactionManager;
 
@@ -32,15 +32,15 @@ public final class FixtureXATransactionManager implements XATransactionManager {
     }
     
     @Override
-    public void begin(final XATransactionEvent transactionEvent) {
+    public void begin(final XATransactionContext transactionContext) {
     }
     
     @Override
-    public void commit(final XATransactionEvent transactionEvent) {
+    public void commit(final XATransactionContext transactionContext) {
     }
     
     @Override
-    public void rollback(final XATransactionEvent transactionEvent) {
+    public void rollback(final XATransactionContext transactionContext) {
     }
     
     @Override

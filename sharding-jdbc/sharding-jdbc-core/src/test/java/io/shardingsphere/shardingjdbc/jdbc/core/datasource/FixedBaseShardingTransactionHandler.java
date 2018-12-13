@@ -18,7 +18,7 @@
 package io.shardingsphere.shardingjdbc.jdbc.core.datasource;
 
 import io.shardingsphere.core.constant.transaction.TransactionType;
-import io.shardingsphere.core.event.transaction.ShardingTransactionEvent;
+import io.shardingsphere.core.event.transaction.ShardingTransactionContext;
 import io.shardingsphere.spi.transaction.ShardingTransactionHandler;
 
 import java.util.HashMap;
@@ -43,16 +43,16 @@ public final class FixedBaseShardingTransactionHandler implements ShardingTransa
     }
     
     @Override
-    public void doInTransaction(final ShardingTransactionEvent event) {
-        switch (event.getOperationType()) {
+    public void doInTransaction(final ShardingTransactionContext context) {
+        switch (context.getOperationType()) {
             case BEGIN:
-                INVOKES.put("begin", event);
+                INVOKES.put("begin", context);
                 return;
             case COMMIT:
-                INVOKES.put("commit", event);
+                INVOKES.put("commit", context);
                 return;
             case ROLLBACK:
-                INVOKES.put("rollback", event);
+                INVOKES.put("rollback", context);
                 return;
             default:
         }

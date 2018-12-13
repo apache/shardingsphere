@@ -20,7 +20,7 @@ package io.shardingsphere.shardingproxy.transport.mysql.packet.command.query.tex
 import com.google.common.base.Optional;
 import io.shardingsphere.core.constant.ShardingConstant;
 import io.shardingsphere.core.constant.transaction.TransactionType;
-import io.shardingsphere.core.event.transaction.ShardingTransactionEvent;
+import io.shardingsphere.core.event.transaction.ShardingTransactionContext;
 import io.shardingsphere.shardingproxy.backend.BackendHandler;
 import io.shardingsphere.shardingproxy.backend.ResultPacket;
 import io.shardingsphere.shardingproxy.backend.jdbc.connection.BackendConnection;
@@ -152,7 +152,7 @@ public final class ComQueryPacketTest {
         Optional<CommandResponsePackets> actual = packet.execute();
         assertTrue(actual.isPresent());
         assertOKPacket(actual.get());
-        assertThat(FixedXAShardingTransactionHandler.getInvokes().get("rollback"), instanceOf(ShardingTransactionEvent.class));
+        assertThat(FixedXAShardingTransactionHandler.getInvokes().get("rollback"), instanceOf(ShardingTransactionContext.class));
     }
     
     @Test
@@ -164,7 +164,7 @@ public final class ComQueryPacketTest {
         Optional<CommandResponsePackets> actual = packet.execute();
         assertTrue(actual.isPresent());
         assertOKPacket(actual.get());
-        assertThat(FixedXAShardingTransactionHandler.getInvokes().get("commit"), instanceOf(ShardingTransactionEvent.class));
+        assertThat(FixedXAShardingTransactionHandler.getInvokes().get("commit"), instanceOf(ShardingTransactionContext.class));
     }
     
     private void assertOKPacket(final CommandResponsePackets actual) {

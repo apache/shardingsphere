@@ -17,7 +17,7 @@
 
 package io.shardingsphere.transaction.manager.xa;
 
-import io.shardingsphere.core.event.transaction.xa.XATransactionEvent;
+import io.shardingsphere.core.event.transaction.xa.XATransactionContext;
 import io.shardingsphere.core.rule.DataSourceParameter;
 import io.shardingsphere.transaction.manager.ShardingTransactionManager;
 
@@ -31,7 +31,7 @@ import javax.transaction.TransactionManager;
  * @author zhangliang
  * @author zhaojun
  */
-public interface XATransactionManager extends ShardingTransactionManager<XATransactionEvent> {
+public interface XATransactionManager extends ShardingTransactionManager<XATransactionContext> {
     
     /**
      * destroy the transaction manager and could be helpful with shutdown gracefully.

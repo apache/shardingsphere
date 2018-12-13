@@ -19,7 +19,7 @@ package io.shardingsphere.transaction.xa.handler;
 
 import io.shardingsphere.core.constant.transaction.TransactionOperationType;
 import io.shardingsphere.core.constant.transaction.TransactionType;
-import io.shardingsphere.core.event.transaction.xa.XATransactionEvent;
+import io.shardingsphere.core.event.transaction.xa.XATransactionContext;
 import io.shardingsphere.transaction.manager.ShardingTransactionManager;
 import io.shardingsphere.transaction.xa.manager.AtomikosTransactionManager;
 import org.junit.Test;
@@ -34,11 +34,11 @@ public class XAShardingTransactionHandlerTest {
     
     private XAShardingTransactionHandler xaShardingTransactionHandler = new XAShardingTransactionHandler();
     
-    private XATransactionEvent beginEvent = new XATransactionEvent(TransactionOperationType.BEGIN);
+    private XATransactionContext beginContext = new XATransactionContext(TransactionOperationType.BEGIN);
     
-    private XATransactionEvent commitEvent = new XATransactionEvent(TransactionOperationType.COMMIT);
+    private XATransactionContext commitContext = new XATransactionContext(TransactionOperationType.COMMIT);
     
-    private XATransactionEvent rollbackEvent = new XATransactionEvent(TransactionOperationType.ROLLBACK);
+    private XATransactionContext rollbackContext = new XATransactionContext(TransactionOperationType.ROLLBACK);
     
     @Test
     public void assertGetTransactionManager() {
@@ -56,7 +56,7 @@ public class XAShardingTransactionHandlerTest {
         Thread thread = new Thread(new Runnable() {
             @Override
             public void run() {
-                xaShardingTransactionHandler.doInTransaction(beginEvent);
+                xaShardingTransactionHandler.doInTransaction(beginContext);
                 int actualStatus = xaShardingTransactionHandler.getShardingTransactionManager().getStatus();
                 assertThat(actualStatus, is(Status.STATUS_ACTIVE));
             }
@@ -70,8 +70,8 @@ public class XAShardingTransactionHandlerTest {
         Thread thread = new Thread(new Runnable() {
             @Override
             public void run() {
-                xaShardingTransactionHandler.doInTransaction(beginEvent);
-                xaShardingTransactionHandler.doInTransaction(commitEvent);
+                xaShardingTransactionHandler.doInTransaction(beginContext);
+                xaShardingTransactionHandler.doInTransaction(commitContext);
                 int actualStatus = xaShardingTransactionHandler.getShardingTransactionManager().getStatus();
                 assertThat(actualStatus, is(Status.STATUS_NO_TRANSACTION));
             }
@@ -85,8 +85,8 @@ public class XAShardingTransactionHandlerTest {
         Thread thread = new Thread(new Runnable() {
             @Override
             public void run() {
-                xaShardingTransactionHandler.doInTransaction(beginEvent);
-                xaShardingTransactionHandler.doInTransaction(rollbackEvent);
+                xaShardingTransactionHandler.doInTransaction(beginContext);
+                xaShardingTransactionHandler.doInTransaction(rollbackContext);
                 int actualStatus = xaShardingTransactionHandler.getShardingTransactionManager().getStatus();
                 assertThat(actualStatus, is(Status.STATUS_NO_TRANSACTION));
             }
@@ -100,9 +100,9 @@ public class XAShardingTransactionHandlerTest {
         Thread thread = new Thread(new Runnable() {
             @Override
             public void run() {
-                xaShardingTransactionHandler.doInTransaction(beginEvent);
-                xaShardingTransactionHandler.doInTransaction(commitEvent);
-                xaShardingTransactionHandler.doInTransaction(rollbackEvent);
+                xaShardingTransactionHandler.doInTransaction(beginContext);
+                xaShardingTransactionHandler.doInTransaction(commitContext);
+                xaShardingTransactionHandler.doInTransaction(rollbackContext);
                 int actualStatus = xaShardingTransactionHandler.getShardingTransactionManager().getStatus();
                 assertThat(actualStatus, is(Status.STATUS_NO_TRANSACTION));
             }

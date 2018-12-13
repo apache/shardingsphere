@@ -20,8 +20,8 @@ package io.shardingsphere.shardingproxy.backend.jdbc.connection;
 import com.google.common.base.Preconditions;
 import io.shardingsphere.core.constant.transaction.TransactionOperationType;
 import io.shardingsphere.core.constant.transaction.TransactionType;
-import io.shardingsphere.core.event.transaction.ShardingTransactionEvent;
-import io.shardingsphere.core.event.transaction.xa.XATransactionEvent;
+import io.shardingsphere.core.event.transaction.ShardingTransactionContext;
+import io.shardingsphere.core.event.transaction.xa.XATransactionContext;
 import io.shardingsphere.spi.transaction.ShardingTransactionHandler;
 import io.shardingsphere.spi.transaction.ShardingTransactionHandlerRegistry;
 import lombok.RequiredArgsConstructor;
@@ -41,7 +41,7 @@ public final class BackendTransactionManager implements TransactionManager {
     @Override
     public void doInTransaction(final TransactionOperationType operationType) throws SQLException {
         TransactionType transactionType = connection.getTransactionType();
-        ShardingTransactionHandler<ShardingTransactionEvent> shardingTransactionHandler = ShardingTransactionHandlerRegistry.getInstance().getHandler(transactionType);
+        ShardingTransactionHandler<ShardingTransactionContext> shardingTransactionHandler = ShardingTransactionHandlerRegistry.getInstance().getHandler(transactionType);
         if (null != transactionType && transactionType != TransactionType.LOCAL) {
             Preconditions.checkNotNull(shardingTransactionHandler, String.format("Cannot find transaction manager of [%s]", transactionType));
         }
@@ -52,7 +52,7 @@ public final class BackendTransactionManager implements TransactionManager {
         if (TransactionType.LOCAL == transactionType) {
             new LocalTransactionManager(connection).doInTransaction(operationType);
         } else if (TransactionType.XA == transactionType) {
-            shardingTransactionHandler.doInTransaction(new XATransactionEvent(operationType));
+            shardingTransactionHandler.doInTransaction(new XATransactionContext(operationType));
             if (TransactionOperationType.BEGIN != operationType) {
                 connection.getStateHandler().getAndSetStatus(ConnectionStatus.TERMINATED);
             }
