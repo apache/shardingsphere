@@ -19,7 +19,7 @@ package io.shardingsphere.shardingjdbc.jdbc.core.datasource;
 
 import com.zaxxer.hikari.HikariDataSource;
 import io.shardingsphere.core.constant.DatabaseType;
-import io.shardingsphere.spi.transaction.xa.DataSourceMapConverter;
+import io.shardingsphere.transaction.spi.DataSourceMapConverter;
 
 import javax.sql.DataSource;
 import java.util.HashMap;

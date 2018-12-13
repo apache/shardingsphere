@@ -15,10 +15,10 @@
  * </p>
  */
 
-package io.shardingsphere.core.event.transaction.base;
+package io.shardingsphere.transaction.context;
 
 import io.shardingsphere.core.constant.transaction.TransactionOperationType;
-import io.shardingsphere.core.event.transaction.ShardingTransactionContext;
+import io.shardingsphere.transaction.context.ShardingTransactionContext;
 import lombok.Getter;
 import lombok.Setter;
 

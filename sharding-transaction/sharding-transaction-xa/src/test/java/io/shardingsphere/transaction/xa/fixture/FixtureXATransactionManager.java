@@ -17,7 +17,7 @@
 
 package io.shardingsphere.transaction.xa.fixture;
 
-import io.shardingsphere.core.event.transaction.xa.XATransactionContext;
+import io.shardingsphere.transaction.context.XATransactionContext;
 import io.shardingsphere.core.rule.DataSourceParameter;
 import io.shardingsphere.transaction.spi.XATransactionManager;
 

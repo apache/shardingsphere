@@ -18,7 +18,7 @@
 package io.shardingsphere.transaction.xa.handler;
 
 import io.shardingsphere.core.constant.transaction.TransactionType;
-import io.shardingsphere.core.event.transaction.xa.XATransactionContext;
+import io.shardingsphere.transaction.context.XATransactionContext;
 import io.shardingsphere.transaction.spi.ShardingTransactionManager;
 import io.shardingsphere.transaction.core.handler.ShardingTransactionHandlerAdapter;
 import io.shardingsphere.transaction.xa.manager.XATransactionManagerSPILoader;

@@ -15,29 +15,27 @@
  * </p>
  */
 
-package io.shardingsphere.spi.transaction;
+package io.shardingsphere.transaction.spi;
 
-import io.shardingsphere.core.constant.transaction.TransactionType;
-import io.shardingsphere.core.event.transaction.ShardingTransactionContext;
+import io.shardingsphere.core.constant.DatabaseType;
+
+import javax.sql.DataSource;
+import java.util.Map;
 
 /**
- * Sharding transaction handler SPI.
+ * Data source map converter SPI.
  *
  * @author zhaojun
  */
-public interface ShardingTransactionHandler<T extends ShardingTransactionContext> {
+public interface DataSourceMapConverter {
     
     /**
-     * Do transaction operation using specific transaction manager.
+     * Do convert data source map.
      *
-     * @param context sharding transaction context
+     * @param dataSourceMap data source map
+     * @param databaseType database type
+     * @return data source map
      */
-    void doInTransaction(T context);
-    
-    /**
-     * Get transaction type.
-     *
-     * @return transaction type
-     */
-    TransactionType getTransactionType();
+    Map<String, DataSource> convert(Map<String, DataSource> dataSourceMap, DatabaseType databaseType);
 }
+

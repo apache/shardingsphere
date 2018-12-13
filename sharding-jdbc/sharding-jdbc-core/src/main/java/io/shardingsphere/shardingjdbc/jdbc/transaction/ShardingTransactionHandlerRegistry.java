@@ -15,10 +15,11 @@
  * </p>
  */
 
-package io.shardingsphere.spi.transaction;
+package io.shardingsphere.shardingjdbc.jdbc.transaction;
 
 import io.shardingsphere.core.constant.transaction.TransactionType;
-import io.shardingsphere.core.event.transaction.ShardingTransactionContext;
+import io.shardingsphere.transaction.ShardingTransactionHandler;
+import io.shardingsphere.transaction.context.ShardingTransactionContext;
 import lombok.AccessLevel;
 import lombok.NoArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
@@ -40,20 +41,15 @@ public final class ShardingTransactionHandlerRegistry {
     
     private static final ShardingTransactionHandlerRegistry INSTANCE = new ShardingTransactionHandlerRegistry();
     
-    /**
-     * Get instance of sharding transaction handler registry.
-     *
-     * @return sharding transaction handler registry
-     */
-    public static ShardingTransactionHandlerRegistry getInstance() {
-        return INSTANCE;
+    static {
+        load();
     }
     
     /**
      * Load sharding transaction handler.
      */
     @SuppressWarnings("unchecked")
-    public static void load() {
+    private static void load() {
         for (ShardingTransactionHandler each : ServiceLoader.load(ShardingTransactionHandler.class)) {
             if (TRANSACTION_HANDLER_MAP.containsKey(each.getTransactionType())) {
                 log.warn("Find more than one {} transaction handler implementation class, use `{}` now",
@@ -62,6 +58,15 @@ public final class ShardingTransactionHandlerRegistry {
             }
             TRANSACTION_HANDLER_MAP.put(each.getTransactionType(), (ShardingTransactionHandler<ShardingTransactionContext>) each);
         }
+    }
+    
+    /**
+     * Get instance of sharding transaction handler registry.
+     *
+     * @return sharding transaction handler registry
+     */
+    public static ShardingTransactionHandlerRegistry getInstance() {
+        return INSTANCE;
     }
     
     /**

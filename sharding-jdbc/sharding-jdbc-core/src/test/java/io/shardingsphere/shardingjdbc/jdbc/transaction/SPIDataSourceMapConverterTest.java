@@ -15,7 +15,7 @@
  * </p>
  */
 
-package io.shardingsphere.spi.transaction.xa;
+package io.shardingsphere.shardingjdbc.jdbc.transaction;
 
 import io.shardingsphere.core.constant.DatabaseType;
 import org.junit.Test;

@@ -15,10 +15,11 @@
  * </p>
  */
 
-package io.shardingsphere.spi.transaction.xa;
+package io.shardingsphere.shardingjdbc.jdbc.transaction;
 
 import io.shardingsphere.core.constant.DatabaseType;
 import io.shardingsphere.spi.NewInstanceServiceLoader;
+import io.shardingsphere.transaction.spi.DataSourceMapConverter;
 import lombok.extern.slf4j.Slf4j;
 
 import javax.sql.DataSource;

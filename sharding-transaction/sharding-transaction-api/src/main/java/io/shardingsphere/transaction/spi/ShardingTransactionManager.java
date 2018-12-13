@@ -17,7 +17,7 @@
 
 package io.shardingsphere.transaction.spi;
 
-import io.shardingsphere.core.event.transaction.ShardingTransactionContext;
+import io.shardingsphere.transaction.context.ShardingTransactionContext;
 import io.shardingsphere.core.exception.ShardingException;
 
 /**
