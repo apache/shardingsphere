@@ -8,7 +8,7 @@
         <artifactId>sharding-transaction</artifactId>
         <version>3.0.1-SNAPSHOT</version>
     </parent>
-    <artifactId>sharding-transaction-xa</artifactId>
+    <artifactId>sharding-transaction-reg-xa</artifactId>
     <name>${project.artifactId}</name>
 
     <properties>

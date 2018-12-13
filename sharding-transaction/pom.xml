@@ -13,8 +13,6 @@
     <packaging>pom</packaging>
     
     <modules>
-        <module>sharding-transaction-xa</module>
-        <module>sharding-transaction-base</module>
         <module>sharding-transaction-core</module>
         <module>sharding-transaction-reg</module>
     </modules>
