@@ -28,6 +28,8 @@ import java.util.List;
 import static org.hamcrest.CoreMatchers.is;
 import static org.junit.Assert.assertThat;
 
+import io.shardingsphere.transaction.base.servicecomb.definition.SagaDefinitionBuilder;
+
 public class SagaDefinitionBuilderTest {
     
     private static final String DS_0 = "ds_0";

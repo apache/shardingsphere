@@ -25,7 +25,7 @@ import io.shardingsphere.core.event.transaction.base.SagaTransactionEvent;
 import io.shardingsphere.core.exception.ShardingException;
 import io.shardingsphere.core.routing.RouteUnit;
 import io.shardingsphere.core.routing.SQLUnit;
-import io.shardingsphere.transaction.base.manager.servicecomb.SagaDefinitionBuilder;
+import io.shardingsphere.transaction.base.servicecomb.definition.SagaDefinitionBuilder;
 import io.shardingsphere.transaction.manager.base.BASETransactionManager;
 import io.shardingsphere.transaction.revert.RevertEngine;
 import io.shardingsphere.transaction.revert.RevertResult;

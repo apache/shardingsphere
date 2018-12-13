@@ -15,7 +15,7 @@
  * </p>
  */
 
-package io.shardingsphere.transaction.base.manager.servicecomb;
+package io.shardingsphere.transaction.base.servicecomb.transport;
 
 import com.google.common.base.Joiner;
 import lombok.extern.slf4j.Slf4j;
@@ -26,7 +26,7 @@ import org.apache.servicecomb.saga.transports.SQLTransport;
 import java.util.List;
 
 /**
- * Empty SQLTransport default implements.
+ * Empty SQL transport default implements.
  * used when no SPI found
  *
  * @author yangyi
@@ -35,8 +35,8 @@ import java.util.List;
 public class EmptySQLTransport implements SQLTransport {
     
     /**
-     * empty SQLTransport in transaction.
-     * just print log
+     * empty SQL transport in transaction.
+     * Just print log.
      *
      * @param datasource data source name for each SQL
      * @param sql SQL in transaction

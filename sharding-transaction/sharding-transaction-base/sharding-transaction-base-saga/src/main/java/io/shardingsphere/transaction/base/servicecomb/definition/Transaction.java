@@ -15,22 +15,25 @@
  * </p>
  */
 
-package io.shardingsphere.transaction.base.manager.servicecomb;
+package io.shardingsphere.transaction.base.servicecomb.definition;
 
-import org.apache.servicecomb.saga.format.JsonSuccessfulSagaResponse;
-import org.junit.Test;
+import lombok.AccessLevel;
+import lombok.Getter;
+import lombok.RequiredArgsConstructor;
+import java.util.List;
 
-import java.util.Collections;
-
-import static org.hamcrest.CoreMatchers.instanceOf;
-import static org.junit.Assert.assertThat;
-
-import io.shardingsphere.transaction.base.servicecomb.transport.EmptySQLTransport;
-
-public class EmptySQLTransportTest {
+/**
+ * Saga transaction content.
+ *
+ * @author yangyi
+ */
+@Getter
+@RequiredArgsConstructor(access = AccessLevel.PACKAGE)
+public class Transaction {
     
-    @Test
-    public void assertWith() {
-        assertThat(new EmptySQLTransport().with("ds", "sql", Collections.EMPTY_LIST), instanceOf(JsonSuccessfulSagaResponse.class));
-    }
+    private final String sql;
+    
+    private final List<List<Object>> params;
+    
+    private final int retries;
 }

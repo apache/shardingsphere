@@ -15,28 +15,32 @@
  * </p>
  */
 
-package io.shardingsphere.transaction.base.manager.servicecomb;
+package io.shardingsphere.transaction.base.servicecomb.definition;
 
-import io.shardingsphere.core.event.transaction.base.SagaTransactionEvent;
-import org.apache.servicecomb.saga.transports.SQLTransport;
-import org.apache.servicecomb.saga.transports.TransportFactory;
+import lombok.AccessLevel;
+import lombok.Getter;
+import lombok.RequiredArgsConstructor;
 
 /**
- * Extend interface for service comb saga TransportFactory.
+ * Saga request.
  *
  * @author yangyi
  */
-public interface ShardingTransportFactory extends TransportFactory<SQLTransport> {
+@Getter
+@RequiredArgsConstructor(access = AccessLevel.PACKAGE)
+public class SagaRequest {
     
-    /**
-     * cache Transport.
-     * @param event saga event
-     */
-    void cacheTransport(SagaTransactionEvent event);
+    private final String id;
     
-    /**
-     * remove cached SQLTransport.
-     */
-    void remove();
+    private final String datasource;
     
+    private final String type;
+    
+    private final Transaction transaction;
+    
+    private final Compensation compensation;
+    
+    private final String[] parents;
+    
+    private final int failRetryDelayMilliseconds;
 }

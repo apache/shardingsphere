@@ -26,7 +26,7 @@ import io.shardingsphere.core.event.transaction.base.SagaSQLExecutionEvent;
 import io.shardingsphere.core.event.transaction.base.SagaTransactionEvent;
 import io.shardingsphere.core.exception.ShardingException;
 import io.shardingsphere.transaction.base.manager.SagaTransactionManager;
-import io.shardingsphere.transaction.base.manager.servicecomb.SagaDefinitionBuilder;
+import io.shardingsphere.transaction.base.servicecomb.definition.SagaDefinitionBuilder;
 import io.shardingsphere.transaction.handler.ShardingTransactionHandlerAdapter;
 import io.shardingsphere.transaction.manager.ShardingTransactionManager;
 import io.shardingsphere.transaction.manager.base.BASETransactionManager;
@@ -57,6 +57,8 @@ public final class SagaShardingTransactionHandler extends ShardingTransactionHan
     
     private final Map<String, RevertEngine> revertEngineMap = new ConcurrentHashMap<>();
     
+    private final SagaSQLExecutionEventHandler sagaSQLExecutionEventHandler = new SagaSQLExecutionEventHandler();
+    
     @Override
     public TransactionType getTransactionType() {
         return TransactionType.BASE;
@@ -69,14 +71,17 @@ public final class SagaShardingTransactionHandler extends ShardingTransactionHan
     
     @Override
     public void doInTransaction(final SagaTransactionEvent transactionEvent) {
-        if (null != transactionEvent.getSagaSQLExecutionEvent()) {
-            try {
-                handleSQLExecutionEvent(transactionEvent.getSagaSQLExecutionEvent());
-                return;
-            } catch (SQLException e) {
-                throw new ShardingException("Handler SQL Execution Event error: ", e);
-            }
+        if (transactionEvent.isExecutionEvent()) {
+            sagaSQLExecutionEventHandler.handleSQLExecutionEvent(transactionEvent.getSagaSQLExecutionEvent());
         }
+//        if (null != transactionEvent.getSagaSQLExecutionEvent()) {
+//            try {
+//                handleSQLExecutionEvent(transactionEvent.getSagaSQLExecutionEvent());
+//                return;
+//            } catch (SQLException e) {
+//                throw new ShardingException("Handler SQL Execution Event error: ", e);
+//            }
+//        }
         switch (transactionEvent.getOperationType()) {
             case COMMIT:
                 if (Status.STATUS_ACTIVE != transactionManager.getStatus()) {

@@ -15,7 +15,7 @@
  * </p>
  */
 
-package io.shardingsphere.transaction.base.manager.servicecomb;
+package io.shardingsphere.transaction.base.servicecomb.transport;
 
 import lombok.extern.slf4j.Slf4j;
 import org.apache.servicecomb.saga.core.SagaResponse;
@@ -29,7 +29,7 @@ import java.sql.SQLException;
 import java.util.List;
 
 /**
- * Abstract implement for servicecomb {@code SQLTransport} interface.
+ * Abstract implement for service comb {@code SQLTransport} interface.
  *
  * @author yangyi
  */
@@ -37,11 +37,11 @@ import java.util.List;
 public abstract class AbstractSQLTransport implements SQLTransport {
     
     /**
-     * servicecomb saga would call this function for each SQL in transaction.
+     * Service comb saga would call this function for each SQL in transaction.
      *
      * @param datasource data source name for each SQL
-     * @param sql        SQL in transaction
-     * @param params     parameters for SQL
+     * @param sql SQL in transaction
+     * @param params parameters for SQL
      * @return saga execute response
      */
     @Override

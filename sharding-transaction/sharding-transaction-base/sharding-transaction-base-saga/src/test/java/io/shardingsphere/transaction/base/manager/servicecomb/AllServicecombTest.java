@@ -23,8 +23,7 @@ import org.junit.runners.Suite;
 @RunWith(Suite.class)
 @Suite.SuiteClasses({
         EmptySQLTransportTest.class,
-        SagaDefinitionBuilderTest.class,
-        ShardingTransportFactoryTest.class
+        SagaDefinitionBuilderTest.class
 })
 public class AllServicecombTest {
 }
