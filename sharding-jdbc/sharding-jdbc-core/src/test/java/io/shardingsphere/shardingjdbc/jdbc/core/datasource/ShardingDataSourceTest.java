@@ -28,6 +28,7 @@ import io.shardingsphere.core.rule.ShardingRule;
 import io.shardingsphere.core.transaction.TransactionTypeHolder;
 import io.shardingsphere.shardingjdbc.api.MasterSlaveDataSourceFactory;
 import io.shardingsphere.shardingjdbc.jdbc.core.connection.ShardingConnection;
+import io.shardingsphere.shardingjdbc.jdbc.core.fixed.FixedXAShardingTransactionHandler;
 import org.junit.After;
 import org.junit.Test;
 import org.mockito.ArgumentMatchers;

@@ -23,9 +23,6 @@ import com.google.common.collect.Multimap;
 import io.shardingsphere.core.constant.ConnectionMode;
 import io.shardingsphere.core.constant.transaction.TransactionOperationType;
 import io.shardingsphere.core.constant.transaction.TransactionType;
-import io.shardingsphere.core.event.transaction.ShardingTransactionEvent;
-import io.shardingsphere.core.event.transaction.base.SagaTransactionEvent;
-import io.shardingsphere.core.event.transaction.xa.XATransactionEvent;
 import io.shardingsphere.core.hint.HintManagerHolder;
 import io.shardingsphere.core.routing.router.masterslave.MasterVisitedManager;
 import io.shardingsphere.core.transaction.TransactionTypeHolder;
@@ -34,8 +31,11 @@ import io.shardingsphere.shardingjdbc.jdbc.adapter.executor.ForceExecuteTemplate
 import io.shardingsphere.shardingjdbc.jdbc.unsupported.AbstractUnsupportedOperationConnection;
 import io.shardingsphere.spi.root.RootInvokeHook;
 import io.shardingsphere.spi.root.SPIRootInvokeHook;
-import io.shardingsphere.spi.transaction.ShardingTransactionHandler;
-import io.shardingsphere.spi.transaction.ShardingTransactionHandlerRegistry;
+import io.shardingsphere.transaction.api.ShardingTransactionHandlerRegistry;
+import io.shardingsphere.transaction.internal.context.SagaTransactionContext;
+import io.shardingsphere.transaction.internal.context.ShardingTransactionContext;
+import io.shardingsphere.transaction.internal.context.XATransactionContext;
+import io.shardingsphere.transaction.spi.ShardingTransactionHandler;
 import lombok.Getter;
 
 import javax.sql.DataSource;
@@ -78,7 +78,7 @@ public abstract class AbstractConnectionAdapter extends AbstractUnsupportedOpera
     
     private final TransactionType transactionType;
     
-    private final ShardingTransactionHandler<ShardingTransactionEvent> shardingTransactionHandler;
+    private final ShardingTransactionHandler<ShardingTransactionContext> shardingTransactionHandler;
     
     protected AbstractConnectionAdapter(final TransactionType transactionType) {
         rootInvokeHook.start();
@@ -189,9 +189,9 @@ public abstract class AbstractConnectionAdapter extends AbstractUnsupportedOpera
         }
         if (!autoCommit) {
             if (TransactionType.XA == transactionType) {
-                shardingTransactionHandler.doInTransaction(new XATransactionEvent(TransactionOperationType.BEGIN));
+                shardingTransactionHandler.doInTransaction(new XATransactionContext(TransactionOperationType.BEGIN));
             } else if (TransactionType.BASE == transactionType) {
-                shardingTransactionHandler.doInTransaction(new SagaTransactionEvent(TransactionOperationType.BEGIN, this));
+                shardingTransactionHandler.doInTransaction(new SagaTransactionContext(TransactionOperationType.BEGIN, this));
             }
         }
     }
@@ -207,9 +207,9 @@ public abstract class AbstractConnectionAdapter extends AbstractUnsupportedOpera
                 }
             });
         } else if (TransactionType.XA == transactionType) {
-            shardingTransactionHandler.doInTransaction(new XATransactionEvent(TransactionOperationType.COMMIT));
+            shardingTransactionHandler.doInTransaction(new XATransactionContext(TransactionOperationType.COMMIT));
         } else if (TransactionType.BASE == transactionType) {
-            shardingTransactionHandler.doInTransaction(new SagaTransactionEvent(TransactionOperationType.COMMIT));
+            shardingTransactionHandler.doInTransaction(new SagaTransactionContext(TransactionOperationType.COMMIT));
         }
     }
     
@@ -224,9 +224,9 @@ public abstract class AbstractConnectionAdapter extends AbstractUnsupportedOpera
                 }
             });
         } else if (TransactionType.XA == transactionType) {
-            shardingTransactionHandler.doInTransaction(new XATransactionEvent(TransactionOperationType.ROLLBACK));
+            shardingTransactionHandler.doInTransaction(new XATransactionContext(TransactionOperationType.ROLLBACK));
         } else if (TransactionType.BASE == transactionType) {
-            shardingTransactionHandler.doInTransaction(new SagaTransactionEvent(TransactionOperationType.ROLLBACK));
+            shardingTransactionHandler.doInTransaction(new SagaTransactionContext(TransactionOperationType.ROLLBACK));
         }
     }
     
