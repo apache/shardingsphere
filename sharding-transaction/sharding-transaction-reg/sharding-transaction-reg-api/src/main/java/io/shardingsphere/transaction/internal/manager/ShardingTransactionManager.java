@@ -15,9 +15,9 @@
  * </p>
  */
 
-package io.shardingsphere.transaction.spi;
+package io.shardingsphere.transaction.internal.manager;
 
-import io.shardingsphere.transaction.context.ShardingTransactionContext;
+import io.shardingsphere.transaction.internal.context.ShardingTransactionContext;
 import io.shardingsphere.core.exception.ShardingException;
 
 /**

@@ -21,8 +21,8 @@ import com.google.common.base.Preconditions;
 import io.shardingsphere.core.constant.transaction.TransactionOperationType;
 import io.shardingsphere.core.constant.transaction.TransactionType;
 import io.shardingsphere.transaction.spi.ShardingTransactionHandler;
-import io.shardingsphere.transaction.context.ShardingTransactionContext;
-import io.shardingsphere.transaction.context.XATransactionContext;
+import io.shardingsphere.transaction.internal.context.ShardingTransactionContext;
+import io.shardingsphere.transaction.internal.context.XATransactionContext;
 import io.shardingsphere.transaction.api.ShardingTransactionHandlerRegistry;
 import lombok.RequiredArgsConstructor;
 

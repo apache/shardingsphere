@@ -15,22 +15,21 @@
  * </p>
  */
 
-package io.shardingsphere.transaction.context;
+package io.shardingsphere.transaction.internal.manager;
 
-import io.shardingsphere.core.constant.transaction.TransactionOperationType;
+import io.shardingsphere.transaction.internal.context.ShardingTransactionContext;
 
 /**
- * Sharding transaction context.
+ * BASE transaction manager.
  *
- * @author zhaojun
- * @author zhangliang
+ * @author yangyi
  */
-public interface ShardingTransactionContext {
+public interface BASETransactionManager<T extends ShardingTransactionContext> extends ShardingTransactionManager<T> {
     
     /**
-     * Get transaction operation type.
-     * 
-     * @return transaction operation type
+     * Get transaction id in current thread.
+     *
+     * @return transaction id in current thread
      */
-    TransactionOperationType getOperationType();
+    String getTransactionId();
 }

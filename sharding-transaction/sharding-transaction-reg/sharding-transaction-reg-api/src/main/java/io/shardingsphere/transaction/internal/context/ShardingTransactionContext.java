@@ -15,21 +15,22 @@
  * </p>
  */
 
-package io.shardingsphere.transaction.context;
+package io.shardingsphere.transaction.internal.context;
 
 import io.shardingsphere.core.constant.transaction.TransactionOperationType;
-import io.shardingsphere.transaction.context.ShardingTransactionContext;
-import lombok.Getter;
-import lombok.RequiredArgsConstructor;
 
 /**
- * XA transaction context.
+ * Sharding transaction context.
  *
  * @author zhaojun
+ * @author zhangliang
  */
-@RequiredArgsConstructor
-@Getter
-public final class XATransactionContext implements ShardingTransactionContext {
+public interface ShardingTransactionContext {
     
-    private final TransactionOperationType operationType;
+    /**
+     * Get transaction operation type.
+     * 
+     * @return transaction operation type
+     */
+    TransactionOperationType getOperationType();
 }

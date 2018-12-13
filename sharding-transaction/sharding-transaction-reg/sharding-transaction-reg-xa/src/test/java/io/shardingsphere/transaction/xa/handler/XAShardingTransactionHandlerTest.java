@@ -19,8 +19,8 @@ package io.shardingsphere.transaction.xa.handler;
 
 import io.shardingsphere.core.constant.transaction.TransactionOperationType;
 import io.shardingsphere.core.constant.transaction.TransactionType;
-import io.shardingsphere.transaction.context.XATransactionContext;
-import io.shardingsphere.transaction.spi.ShardingTransactionManager;
+import io.shardingsphere.transaction.internal.context.XATransactionContext;
+import io.shardingsphere.transaction.internal.manager.ShardingTransactionManager;
 import io.shardingsphere.transaction.xa.manager.AtomikosTransactionManager;
 import org.junit.Test;
 

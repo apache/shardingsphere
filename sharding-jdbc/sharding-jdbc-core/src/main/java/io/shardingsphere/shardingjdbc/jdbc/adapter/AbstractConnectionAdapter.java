@@ -23,9 +23,6 @@ import com.google.common.collect.Multimap;
 import io.shardingsphere.core.constant.ConnectionMode;
 import io.shardingsphere.core.constant.transaction.TransactionOperationType;
 import io.shardingsphere.core.constant.transaction.TransactionType;
-import io.shardingsphere.transaction.context.ShardingTransactionContext;
-import io.shardingsphere.transaction.context.SagaTransactionContext;
-import io.shardingsphere.transaction.context.XATransactionContext;
 import io.shardingsphere.core.hint.HintManagerHolder;
 import io.shardingsphere.core.routing.router.masterslave.MasterVisitedManager;
 import io.shardingsphere.core.transaction.TransactionTypeHolder;
@@ -34,8 +31,11 @@ import io.shardingsphere.shardingjdbc.jdbc.adapter.executor.ForceExecuteTemplate
 import io.shardingsphere.shardingjdbc.jdbc.unsupported.AbstractUnsupportedOperationConnection;
 import io.shardingsphere.spi.root.RootInvokeHook;
 import io.shardingsphere.spi.root.SPIRootInvokeHook;
-import io.shardingsphere.transaction.spi.ShardingTransactionHandler;
 import io.shardingsphere.transaction.api.ShardingTransactionHandlerRegistry;
+import io.shardingsphere.transaction.internal.context.SagaTransactionContext;
+import io.shardingsphere.transaction.internal.context.ShardingTransactionContext;
+import io.shardingsphere.transaction.internal.context.XATransactionContext;
+import io.shardingsphere.transaction.spi.ShardingTransactionHandler;
 import lombok.Getter;
 
 import javax.sql.DataSource;

@@ -15,10 +15,9 @@
  * </p>
  */
 
-package io.shardingsphere.transaction.context;
+package io.shardingsphere.transaction.internal.context;
 
 import io.shardingsphere.core.constant.transaction.TransactionOperationType;
-import io.shardingsphere.transaction.context.ShardingTransactionContext;
 import lombok.Getter;
 import lombok.Setter;
 
