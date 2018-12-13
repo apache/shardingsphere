@@ -11,7 +11,7 @@
     <artifactId>sharding-jdbc</artifactId>
     <name>${project.artifactId}</name>
     <packaging>pom</packaging>
-
+    
     <modules>
         <module>sharding-jdbc-core</module>
         <module>sharding-jdbc-orchestration</module>
