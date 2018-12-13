@@ -57,6 +57,9 @@ public final class ColumnSegmentExtractor implements OptionalSQLSegmentExtractor
         } else {
             ownerName = Optional.absent();
         }
+        if("".equals(tableName) && 1 == tableAlias.size()) {
+            tableName = tableAlias.values().iterator().next();
+        }
         columnName = SQLUtil.getExactlyValue(columnName);
         return Optional.of(new ColumnSegment(ownerName, columnName, tableName, columnNode.get().getStart().getStartIndex()));
     }
