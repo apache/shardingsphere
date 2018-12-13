@@ -17,9 +17,9 @@
 
 package io.shardingsphere.shardingproxy.runtime;
 
-import shardingsphere.shaded.common.base.Preconditions;
-import shardingsphere.shaded.common.cache.Cache;
-import shardingsphere.shaded.common.cache.CacheBuilder;
+import io.shardingsphere.shaded.com.google.common.base.Preconditions;
+import io.shardingsphere.shaded.com.google.common.cache.Cache;
+import io.shardingsphere.shaded.com.google.common.cache.CacheBuilder;
 import lombok.AccessLevel;
 import lombok.NoArgsConstructor;
 

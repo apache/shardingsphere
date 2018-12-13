@@ -17,7 +17,7 @@
 
 package io.shardingsphere.shardingproxy.transport.mysql.packet.command.query.binary.prepare;
 
-import shardingsphere.shaded.common.base.Optional;
+import io.shardingsphere.shaded.com.google.common.base.Optional;
 import io.shardingsphere.core.constant.ShardingConstant;
 import io.shardingsphere.core.constant.transaction.TransactionType;
 import io.shardingsphere.core.metadata.ShardingMetaData;

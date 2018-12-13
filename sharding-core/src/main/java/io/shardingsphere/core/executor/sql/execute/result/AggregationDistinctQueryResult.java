@@ -17,11 +17,11 @@
 
 package io.shardingsphere.core.executor.sql.execute.result;
 
-import shardingsphere.shaded.common.base.Function;
-import shardingsphere.shaded.common.collect.HashMultimap;
-import shardingsphere.shaded.common.collect.Iterators;
-import shardingsphere.shaded.common.collect.Lists;
-import shardingsphere.shaded.common.collect.Multimap;
+import io.shardingsphere.shaded.com.google.common.base.Function;
+import io.shardingsphere.shaded.com.google.common.collect.HashMultimap;
+import io.shardingsphere.shaded.com.google.common.collect.Iterators;
+import io.shardingsphere.shaded.com.google.common.collect.Lists;
+import io.shardingsphere.shaded.com.google.common.collect.Multimap;
 import io.shardingsphere.core.constant.AggregationType;
 import io.shardingsphere.core.executor.sql.execute.row.QueryRow;
 import io.shardingsphere.core.merger.QueryResult;

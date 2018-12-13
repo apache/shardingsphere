@@ -17,7 +17,7 @@
 
 package io.shardingsphere.core.parsing.parser.context.selectitem;
 
-import shardingsphere.shaded.common.base.Optional;
+import io.shardingsphere.shaded.com.google.common.base.Optional;
 import io.shardingsphere.core.constant.AggregationType;
 import lombok.EqualsAndHashCode;
 import lombok.Getter;

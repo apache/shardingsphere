@@ -17,7 +17,7 @@
 
 package io.shardingsphere.core.parsing.parser.context.condition;
 
-import shardingsphere.shaded.common.base.Objects;
+import io.shardingsphere.shaded.com.google.common.base.Objects;
 
 import lombok.Getter;
 import lombok.RequiredArgsConstructor;

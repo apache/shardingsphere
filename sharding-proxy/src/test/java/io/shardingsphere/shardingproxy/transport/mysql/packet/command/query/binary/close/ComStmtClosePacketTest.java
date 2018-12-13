@@ -17,7 +17,7 @@
 
 package io.shardingsphere.shardingproxy.transport.mysql.packet.command.query.binary.close;
 
-import shardingsphere.shaded.common.base.Optional;
+import io.shardingsphere.shaded.com.google.common.base.Optional;
 import io.shardingsphere.shardingproxy.transport.mysql.packet.MySQLPacketPayload;
 import io.shardingsphere.shardingproxy.transport.mysql.packet.command.CommandResponsePackets;
 import org.junit.Test;

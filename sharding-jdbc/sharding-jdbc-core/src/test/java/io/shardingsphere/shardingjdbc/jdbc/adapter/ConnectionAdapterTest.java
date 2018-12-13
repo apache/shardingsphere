@@ -17,7 +17,7 @@
 
 package io.shardingsphere.shardingjdbc.jdbc.adapter;
 
-import shardingsphere.shaded.common.collect.Multimap;
+import io.shardingsphere.shaded.com.google.common.collect.Multimap;
 import io.shardingsphere.shardingjdbc.common.base.AbstractShardingJDBCDatabaseAndTableTest;
 import io.shardingsphere.shardingjdbc.jdbc.core.connection.ShardingConnection;
 import io.shardingsphere.shardingjdbc.jdbc.util.JDBCTestSQL;

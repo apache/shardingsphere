@@ -17,11 +17,11 @@
 
 package io.shardingsphere.shardingjdbc.executor;
 
-import shardingsphere.shaded.common.base.Function;
-import shardingsphere.shaded.common.base.Optional;
-import shardingsphere.shaded.common.base.Predicate;
-import shardingsphere.shaded.common.collect.Iterators;
-import shardingsphere.shaded.common.collect.Lists;
+import io.shardingsphere.shaded.com.google.common.base.Function;
+import io.shardingsphere.shaded.com.google.common.base.Optional;
+import io.shardingsphere.shaded.com.google.common.base.Predicate;
+import io.shardingsphere.shaded.com.google.common.collect.Iterators;
+import io.shardingsphere.shaded.com.google.common.collect.Lists;
 import io.shardingsphere.core.constant.ConnectionMode;
 import io.shardingsphere.core.constant.DatabaseType;
 import io.shardingsphere.core.executor.ShardingExecuteGroup;

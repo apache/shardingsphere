@@ -35,8 +35,8 @@ import org.apache.zookeeper.CreateMode;
 import org.apache.zookeeper.KeeperException.OperationTimeoutException;
 import org.apache.zookeeper.ZooDefs;
 import org.apache.zookeeper.data.ACL;
-import shardingsphere.shaded.common.base.Charsets;
-import shardingsphere.shaded.common.base.Strings;
+import io.shardingsphere.shaded.com.google.common.base.Charsets;
+import io.shardingsphere.shaded.com.google.common.base.Strings;
 
 import java.io.UnsupportedEncodingException;
 import java.util.Collections;

@@ -17,9 +17,9 @@
 
 package io.shardingsphere.core.constant;
 
-import shardingsphere.shaded.common.base.Optional;
-import shardingsphere.shaded.common.base.Predicate;
-import shardingsphere.shaded.common.collect.Iterators;
+import io.shardingsphere.shaded.com.google.common.base.Optional;
+import io.shardingsphere.shaded.com.google.common.base.Predicate;
+import io.shardingsphere.shaded.com.google.common.collect.Iterators;
 
 import java.util.Arrays;
 

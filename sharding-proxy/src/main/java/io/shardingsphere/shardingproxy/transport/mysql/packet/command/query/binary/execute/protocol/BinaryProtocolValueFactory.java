@@ -17,7 +17,7 @@
 
 package io.shardingsphere.shardingproxy.transport.mysql.packet.command.query.binary.execute.protocol;
 
-import shardingsphere.shaded.common.base.Preconditions;
+import io.shardingsphere.shaded.com.google.common.base.Preconditions;
 import io.shardingsphere.shardingproxy.transport.mysql.constant.ColumnType;
 import lombok.AccessLevel;
 import lombok.NoArgsConstructor;

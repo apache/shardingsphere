@@ -17,7 +17,7 @@
 
 package io.shardingsphere.shardingproxy.transport.mysql.packet.command.query.text.fieldlist;
 
-import shardingsphere.shaded.common.base.Optional;
+import io.shardingsphere.shaded.com.google.common.base.Optional;
 import io.shardingsphere.core.constant.DatabaseType;
 import io.shardingsphere.shardingproxy.backend.BackendHandler;
 import io.shardingsphere.shardingproxy.backend.BackendHandlerFactory;

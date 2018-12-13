@@ -17,7 +17,7 @@
 
 package io.shardingsphere.shardingproxy.transport.mysql.packet.handshake;
 
-import shardingsphere.shaded.common.primitives.Bytes;
+import io.shardingsphere.shaded.com.google.common.primitives.Bytes;
 import org.junit.Test;
 
 import static org.hamcrest.CoreMatchers.is;
