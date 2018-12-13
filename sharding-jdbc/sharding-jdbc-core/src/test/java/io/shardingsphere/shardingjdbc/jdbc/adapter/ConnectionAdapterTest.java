@@ -17,7 +17,7 @@
 
 package io.shardingsphere.shardingjdbc.jdbc.adapter;
 
-import io.shardingsphere.shaded.com.google.common.collect.Multimap;
+import com.google.common.collect.Multimap;
 import io.shardingsphere.core.constant.transaction.TransactionType;
 import io.shardingsphere.core.transaction.TransactionTypeHolder;
 import io.shardingsphere.shardingjdbc.common.base.AbstractShardingJDBCDatabaseAndTableTest;

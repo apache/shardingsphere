@@ -17,7 +17,7 @@
 
 package io.shardingsphere.shardingproxy.transport.mysql.packet.handshake;
 
-import io.shardingsphere.shaded.com.google.common.base.Strings;
+import com.google.common.base.Strings;
 import io.shardingsphere.core.rule.Authentication;
 import io.shardingsphere.shardingproxy.runtime.GlobalRegistry;
 import lombok.Getter;

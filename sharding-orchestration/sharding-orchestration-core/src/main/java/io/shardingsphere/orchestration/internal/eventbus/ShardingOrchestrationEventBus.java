@@ -17,7 +17,7 @@
 
 package io.shardingsphere.orchestration.internal.eventbus;
 
-import io.shardingsphere.shaded.com.google.common.eventbus.EventBus;
+import com.google.common.eventbus.EventBus;
 import lombok.AccessLevel;
 import lombok.NoArgsConstructor;
 

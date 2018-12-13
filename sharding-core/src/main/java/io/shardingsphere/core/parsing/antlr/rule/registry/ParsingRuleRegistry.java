@@ -17,7 +17,7 @@
 
 package io.shardingsphere.core.parsing.antlr.rule.registry;
 
-import io.shardingsphere.shaded.com.google.common.base.Optional;
+import com.google.common.base.Optional;
 import io.shardingsphere.core.constant.DatabaseType;
 import io.shardingsphere.core.parsing.antlr.filler.SQLStatementFiller;
 import io.shardingsphere.core.parsing.antlr.rule.jaxb.loader.RuleDefinitionFileConstant;

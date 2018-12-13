@@ -17,7 +17,7 @@
 
 package io.shardingsphere.core.parsing.antlr.filler.impl;
 
-import io.shardingsphere.shaded.com.google.common.base.Optional;
+import com.google.common.base.Optional;
 
 import io.shardingsphere.core.constant.AggregationType;
 import io.shardingsphere.core.metadata.table.ShardingTableMetaData;

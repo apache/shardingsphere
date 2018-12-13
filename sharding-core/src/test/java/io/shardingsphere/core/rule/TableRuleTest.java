@@ -17,7 +17,7 @@
 
 package io.shardingsphere.core.rule;
 
-import io.shardingsphere.shaded.com.google.common.collect.Sets;
+import com.google.common.collect.Sets;
 import io.shardingsphere.api.config.ShardingRuleConfiguration;
 import io.shardingsphere.api.config.TableRuleConfiguration;
 import io.shardingsphere.api.config.strategy.NoneShardingStrategyConfiguration;

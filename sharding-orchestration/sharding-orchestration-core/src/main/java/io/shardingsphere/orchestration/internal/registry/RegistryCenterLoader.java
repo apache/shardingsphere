@@ -17,7 +17,7 @@
 
 package io.shardingsphere.orchestration.internal.registry;
 
-import io.shardingsphere.shaded.com.google.common.base.Preconditions;
+import com.google.common.base.Preconditions;
 import io.shardingsphere.orchestration.reg.api.RegistryCenter;
 import io.shardingsphere.orchestration.reg.api.RegistryCenterConfiguration;
 import lombok.extern.slf4j.Slf4j;

@@ -17,11 +17,11 @@
 
 package io.shardingsphere.core.parsing.parser.context.table;
 
+import com.google.common.base.Optional;
 import lombok.EqualsAndHashCode;
 import lombok.Getter;
 import lombok.RequiredArgsConstructor;
 import lombok.ToString;
-import io.shardingsphere.shaded.com.google.common.base.Optional;
 
 /**
  * Table.

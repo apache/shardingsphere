@@ -17,7 +17,7 @@
 
 package io.shardingsphere.core.parsing.lexer;
 
-import io.shardingsphere.shaded.com.google.common.collect.Sets;
+import com.google.common.collect.Sets;
 import io.shardingsphere.core.constant.DatabaseType;
 import io.shardingsphere.core.parsing.lexer.dialect.h2.H2Lexer;
 import io.shardingsphere.core.parsing.lexer.dialect.mysql.MySQLLexer;

@@ -17,8 +17,8 @@
 
 package io.shardingsphere.shardingproxy.backend.sctl;
 
-import io.shardingsphere.shaded.com.google.common.base.Optional;
-import io.shardingsphere.shaded.com.google.common.base.Preconditions;
+import com.google.common.base.Optional;
+import com.google.common.base.Preconditions;
 
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;

@@ -17,6 +17,9 @@
 
 package io.shardingsphere.shardingjdbc.orchestration.api.yaml.sharding;
 
+import com.google.common.base.Function;
+import com.google.common.collect.Maps;
+import com.google.common.collect.Sets;
 import io.shardingsphere.shardingjdbc.orchestration.api.yaml.AbstractYamlDataSourceTest;
 import io.shardingsphere.shardingjdbc.orchestration.api.yaml.YamlOrchestrationShardingDataSourceFactory;
 import io.shardingsphere.shardingjdbc.orchestration.internal.datasource.OrchestrationShardingDataSource;
@@ -24,9 +27,6 @@ import lombok.RequiredArgsConstructor;
 import org.junit.Test;
 import org.junit.runner.RunWith;
 import org.junit.runners.Parameterized;
-import io.shardingsphere.shaded.com.google.common.base.Function;
-import io.shardingsphere.shaded.com.google.common.collect.Maps;
-import io.shardingsphere.shaded.com.google.common.collect.Sets;
 
 import javax.sql.DataSource;
 import java.io.File;

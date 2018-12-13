@@ -17,7 +17,7 @@
 
 package io.shardingsphere.core.parsing.antlr.rule.registry.statement;
 
-import io.shardingsphere.shaded.com.google.common.base.Optional;
+import com.google.common.base.Optional;
 import io.shardingsphere.core.parsing.antlr.extractor.SQLSegmentExtractor;
 import io.shardingsphere.core.parsing.antlr.optimizer.SQLStatementOptimizer;
 import io.shardingsphere.core.parsing.parser.sql.SQLStatement;

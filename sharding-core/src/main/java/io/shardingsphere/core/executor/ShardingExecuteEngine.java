@@ -17,9 +17,9 @@
 
 package io.shardingsphere.core.executor;
 
-import io.shardingsphere.shaded.com.google.common.collect.Lists;
-import io.shardingsphere.shaded.com.google.common.util.concurrent.ListenableFuture;
-import io.shardingsphere.shaded.com.google.common.util.concurrent.ListeningExecutorService;
+import com.google.common.collect.Lists;
+import com.google.common.util.concurrent.ListenableFuture;
+import com.google.common.util.concurrent.ListeningExecutorService;
 import io.shardingsphere.core.exception.ShardingException;
 import io.shardingsphere.core.util.ShardingExecutorService;
 import java.sql.SQLException;

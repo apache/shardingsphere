@@ -17,7 +17,7 @@
 
 package io.shardingsphere.core.metadata.table.executor;
 
-import io.shardingsphere.shaded.com.google.common.collect.Lists;
+import com.google.common.collect.Lists;
 import io.shardingsphere.core.exception.ShardingException;
 import io.shardingsphere.core.executor.ShardingExecuteEngine;
 import io.shardingsphere.core.executor.ShardingExecuteGroup;

@@ -17,8 +17,8 @@
 
 package io.shardingsphere.core.parsing.parser.clause;
 
-import io.shardingsphere.shaded.com.google.common.base.Optional;
-import io.shardingsphere.shaded.com.google.common.base.Preconditions;
+import com.google.common.base.Optional;
+import com.google.common.base.Preconditions;
 import io.shardingsphere.core.metadata.table.ShardingTableMetaData;
 import io.shardingsphere.core.parsing.lexer.LexerEngine;
 import io.shardingsphere.core.parsing.lexer.token.Assist;
