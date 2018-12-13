@@ -17,7 +17,6 @@
 
 package io.shardingsphere.core.keygen;
 
-import io.shardingsphere.core.keygen.fixture.FixedTimeService;
 import lombok.SneakyThrows;
 import org.junit.Test;
 
@@ -51,23 +50,6 @@ public final class DefaultKeyGeneratorTest {
             }).get());
         }
         assertThat(generatedKeys.size(), is(taskNumber));
-    }
-    
-    @Test
-    public void assertMaxSequence() {
-        assertThat(maxId((1 << 12) - 1), is((1L << 12L) - 2));
-        assertThat(maxId(1 << 12), is((1L << 12L) - 1));
-        assertThat(maxId((1 << 12) + 1), is(1L << 22));
-    }
-    
-    private long maxId(final int maxSequence) {
-        DefaultKeyGenerator keyGenerator = new DefaultKeyGenerator();
-        DefaultKeyGenerator.setTimeService(new FixedTimeService(1 << 13));
-        long result = 0;
-        for (int i = 0; i < maxSequence; i++) {
-            result = keyGenerator.generateKey().longValue();
-        }
-        return result;
     }
     
     @Test(expected = IllegalArgumentException.class)

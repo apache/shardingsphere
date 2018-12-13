@@ -21,6 +21,7 @@ import com.google.common.base.Preconditions;
 import lombok.Setter;
 
 import java.util.Calendar;
+import java.util.Random;
 
 /**
  * Default distributed primary key generator.
@@ -73,6 +74,8 @@ public final class DefaultKeyGenerator implements KeyGenerator {
         EPOCH = calendar.getTimeInMillis();
     }
     
+    private final Random random = new Random();
+    
     private long sequence;
     
     private long lastTime;
@@ -101,17 +104,17 @@ public final class DefaultKeyGenerator implements KeyGenerator {
                 currentMillis = waitUntilNextTime(currentMillis);
             }
         } else {
-            sequence = 0;
+            sequence = random.nextInt(64);
         }
         lastTime = currentMillis;
         return ((currentMillis - EPOCH) << TIMESTAMP_LEFT_SHIFT_BITS) | (workerId << WORKER_ID_LEFT_SHIFT_BITS) | sequence;
     }
     
     private long waitUntilNextTime(final long lastTime) {
-        long time = timeService.getCurrentMillis();
-        while (time <= lastTime) {
-            time = timeService.getCurrentMillis();
+        long result = timeService.getCurrentMillis();
+        while (result <= lastTime) {
+            result = timeService.getCurrentMillis();
         }
-        return time;
+        return result;
     }
 }
