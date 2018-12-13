@@ -17,7 +17,7 @@
 
 package io.shardingsphere.shardingjdbc.jdbc.adapter;
 
-import shardingsphere.shaded.common.base.Preconditions;
+import io.shardingsphere.shaded.com.google.common.base.Preconditions;
 import io.shardingsphere.shardingjdbc.jdbc.unsupported.AbstractUnsupportedOperationPreparedStatement;
 
 import java.io.InputStream;
