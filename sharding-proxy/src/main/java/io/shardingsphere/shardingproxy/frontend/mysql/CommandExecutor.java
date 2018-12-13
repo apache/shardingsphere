@@ -53,6 +53,8 @@ public final class CommandExecutor implements Runnable {
     
     private final FrontendHandler frontendHandler;
     
+    private final int proxyFrontendFlushThreshold;
+    
     private int currentSequenceId;
     
     private final RootInvokeHook rootInvokeHook = new SPIRootInvokeHook();
@@ -70,19 +72,20 @@ public final class CommandExecutor implements Runnable {
                 return;
             }
             for (DatabasePacket each : responsePackets.get().getPackets()) {
-                context.writeAndFlush(each);
+                context.write(each);
             }
             if (commandPacket instanceof QueryCommandPacket && !(responsePackets.get().getHeadPacket() instanceof OKPacket) && !(responsePackets.get().getHeadPacket() instanceof ErrPacket)) {
                 writeMoreResults((QueryCommandPacket) commandPacket, responsePackets.get().getPackets().size());
             }
             connectionSize = backendConnection.getConnectionSize();
         } catch (final SQLException ex) {
-            context.writeAndFlush(new ErrPacket(++currentSequenceId, ex));
+            context.write(new ErrPacket(++currentSequenceId, ex));
             // CHECKSTYLE:OFF
         } catch (final Exception ex) {
             // CHECKSTYLE:ON
-            context.writeAndFlush(new ErrPacket(1, ServerErrorCode.ER_STD_UNKNOWN_EXCEPTION, ex.getMessage()));
+            context.write(new ErrPacket(1, ServerErrorCode.ER_STD_UNKNOWN_EXCEPTION, ex.getMessage()));
         } finally {
+            context.flush();
             rootInvokeHook.finish(connectionSize);
         }
     }
@@ -97,7 +100,9 @@ public final class CommandExecutor implements Runnable {
             return;
         }
         currentSequenceId = headPacketsCount;
+        int counter = 0;
         while (queryCommandPacket.next()) {
+            counter++;
             while (!context.channel().isWritable() && context.channel().isActive()) {
                 synchronized (frontendHandler) {
                     try {
@@ -108,9 +113,13 @@ public final class CommandExecutor implements Runnable {
             }
             DatabasePacket resultValue = queryCommandPacket.getResultValue();
             currentSequenceId = resultValue.getSequenceId();
-            context.writeAndFlush(resultValue);
+            context.write(resultValue);
+            if (proxyFrontendFlushThreshold == counter) {
+                context.flush();
+                counter = 0;
+            }
         }
-        context.writeAndFlush(new EofPacket(++currentSequenceId));
+        context.write(new EofPacket(++currentSequenceId));
     }
 }
 
