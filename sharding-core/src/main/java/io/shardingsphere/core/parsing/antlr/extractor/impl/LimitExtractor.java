@@ -55,9 +55,8 @@ public final class LimitExtractor implements OptionalSQLSegmentExtractor {
         if (rangeNode.get().getChildCount() >= 3) {
             LimitValueSegment rowCountLimitValue = createLimitValueSegment(placeholderAndNodeIndexMap, (ParserRuleContext) rangeNode.get().getChild(2));
             return Optional.of(new LimitSegment(DatabaseType.MySQL, rowCountLimitValue, Optional.of(firstLimitValue)));
-        } else {
-            return Optional.of(new LimitSegment(DatabaseType.MySQL, firstLimitValue));
         }
+        return Optional.of(new LimitSegment(DatabaseType.MySQL, firstLimitValue));
     }
     
     private Map<ParserRuleContext, Integer> getPlaceholderAndNodeIndexMap(final ParserRuleContext ancestorNode) {
