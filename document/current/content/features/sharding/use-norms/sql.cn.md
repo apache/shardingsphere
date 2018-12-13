@@ -69,7 +69,7 @@ SELECT COUNT(*) FROM (SELECT * FROM t_order o WHERE o.id IN (SELECT id FROM t_or
 ### 支持的SQL
 
 | SQL                                                                                         | 必要条件                    |
-| ------------------------------------------------------------------------------------------- | -------------------------- |
+| ------------------------------------------------------------------------------------------- | ---------------------------|
 | SELECT * FROM tbl_name                                                                      |                            |
 | SELECT * FROM tbl_name WHERE (col1 = ? or col2 = ?) and col3 = ?                            |                            |
 | SELECT * FROM tbl_name WHERE col1 = ? ORDER BY col2 DESC LIMIT ?                            |                            |
@@ -86,7 +86,7 @@ SELECT COUNT(*) FROM (SELECT * FROM t_order o WHERE o.id IN (SELECT id FROM t_or
 | TRUNCATE TABLE tbl_name                                                                     |                            |
 | CREATE INDEX idx_name ON tbl_name                                                           |                            |
 | DROP INDEX idx_name ON tbl_name                                                             |                            |
-| DROP INDEX idx_name                                                                         |  TableRule中配置logic-index |
+| DROP INDEX idx_name                                                                         |TableRule中配置logic-index    |
 | SELECT DISTINCT * FROM tbl_name WHERE col1 = ?                                              |在3.1.0支持，目前还未发布正式版本|
 | SELECT COUNT(DISTINCT col1) FROM tbl_name                                                   |在3.1.0支持，目前还未发布正式版本|
 

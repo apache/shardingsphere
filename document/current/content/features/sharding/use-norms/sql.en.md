@@ -95,9 +95,9 @@ SQL that contains schema is unavailable, for the concept of ShardingSphere is to
 | SELECT DISTINCT * FROM tbl_name WHERE col1 = ?                                              |  Will be available in 3.1.0, no official release for now |
 | SELECT COUNT(DISTINCT col1) FROM tbl_name                                                   |  Will be available in 3.1.0, no official release for now |
 
-### Available SQL
+### Unavailable SQL
 
-| SQL                                                                                         | Necessary conditions               |
+| SQL                                                                                         |  The reason of unavailability      |
 | ------------------------------------------------------------------------------------------- |----------------------------------- |
 | INSERT INTO tbl_name (col1, col2, ...) SELECT col1, col2, ... FROM tbl_name WHERE col3 = ?  | INSERT .. SELECT                   |
 | INSERT INTO tbl_name SET col1 = ?                                                           | INSERT .. SET                      |
