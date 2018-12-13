@@ -79,6 +79,9 @@ public class ConnectionStateHandler {
         if (status.compareAndSet(ConnectionStatus.RUNNING, ConnectionStatus.RELEASE)) {
             resourceSynchronizer.doNotify();
         }
+        if (status.compareAndSet(ConnectionStatus.TERMINATED, ConnectionStatus.RELEASE)) {
+            resourceSynchronizer.doNotify();
+        }
     }
     
     /**
@@ -87,7 +90,7 @@ public class ConnectionStateHandler {
      * @throws InterruptedException interrupted exception
      */
     public void waitUntilConnectionReleasedIfNecessary() throws InterruptedException {
-        if (ConnectionStatus.RUNNING == status.get()) {
+        if (ConnectionStatus.RUNNING == status.get() || ConnectionStatus.TERMINATED == status.get()) {
             while (!status.compareAndSet(ConnectionStatus.RELEASE, ConnectionStatus.RUNNING)) {
                 resourceSynchronizer.doAwait();
             }

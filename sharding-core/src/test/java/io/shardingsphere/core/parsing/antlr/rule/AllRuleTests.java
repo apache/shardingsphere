@@ -17,9 +17,9 @@
 
 package io.shardingsphere.core.parsing.antlr.rule;
 
+import io.shardingsphere.core.parsing.antlr.rule.jaxb.loader.RuleDefinitionFileConstantTest;
 import io.shardingsphere.core.parsing.antlr.rule.jaxb.segment.ExtractorRuleDefinitionEntityLoaderTest;
 import io.shardingsphere.core.parsing.antlr.rule.jaxb.statement.SQLStatementRuleDefinitionEntityLoaderTest;
-import io.shardingsphere.core.parsing.antlr.rule.registry.DatabaseRuleDefinitionTypeTest;
 import io.shardingsphere.core.parsing.antlr.rule.registry.ParsingRuleRegistryTest;
 import org.junit.runner.RunWith;
 import org.junit.runners.Suite;
@@ -27,9 +27,9 @@ import org.junit.runners.Suite.SuiteClasses;
 
 @RunWith(Suite.class)
 @SuiteClasses({
+        RuleDefinitionFileConstantTest.class, 
         SQLStatementRuleDefinitionEntityLoaderTest.class, 
         ExtractorRuleDefinitionEntityLoaderTest.class,
-        DatabaseRuleDefinitionTypeTest.class,
         ParsingRuleRegistryTest.class
 })
 public final class AllRuleTests {

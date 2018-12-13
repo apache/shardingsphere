@@ -58,4 +58,33 @@ public class ConnectionStateHandlerTest {
         notifyThread.join();
         assertTrue(flag.get());
     }
+    
+    @Test
+    public void assertWaitUntilConnectionReleaseForTransaction() throws InterruptedException {
+        final AtomicBoolean flag = new AtomicBoolean(true);
+        Thread waitThread = new Thread(new Runnable() {
+            @Override
+            @SneakyThrows
+            public void run() {
+                connectionStateHandler.getAndSetStatus(ConnectionStatus.TERMINATED);
+                connectionStateHandler.waitUntilConnectionReleasedIfNecessary();
+                if (ConnectionStatus.RUNNING != connectionStateHandler.getStatus()) {
+                    flag.getAndSet(false);
+                }
+            }
+        });
+        Thread notifyThread = new Thread(new Runnable() {
+            @Override
+            @SneakyThrows
+            public void run() {
+                Thread.sleep(2000);
+                connectionStateHandler.doNotifyIfNecessary();
+            }
+        });
+        waitThread.start();
+        notifyThread.start();
+        waitThread.join();
+        notifyThread.join();
+        assertTrue(flag.get());
+    }
 }

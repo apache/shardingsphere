@@ -18,10 +18,15 @@
 package io.shardingsphere.shardingjdbc.jdbc.adapter;
 
 import com.google.common.collect.Multimap;
+import io.shardingsphere.core.constant.transaction.TransactionType;
+import io.shardingsphere.core.transaction.TransactionTypeHolder;
 import io.shardingsphere.shardingjdbc.common.base.AbstractShardingJDBCDatabaseAndTableTest;
 import io.shardingsphere.shardingjdbc.jdbc.core.connection.ShardingConnection;
+import io.shardingsphere.shardingjdbc.jdbc.core.datasource.FixedBaseShardingTransactionHandler;
+import io.shardingsphere.shardingjdbc.jdbc.core.datasource.FixedXAShardingTransactionHandler;
 import io.shardingsphere.shardingjdbc.jdbc.util.JDBCTestSQL;
 import lombok.SneakyThrows;
+import org.junit.After;
 import org.junit.Test;
 
 import java.lang.reflect.Field;
@@ -30,6 +35,7 @@ import java.sql.ResultSet;
 import java.sql.SQLException;
 
 import static org.hamcrest.CoreMatchers.is;
+import static org.junit.Assert.assertNotNull;
 import static org.junit.Assert.assertNull;
 import static org.junit.Assert.assertThat;
 import static org.junit.Assert.assertTrue;
@@ -37,6 +43,13 @@ import static org.junit.Assert.assertTrue;
 public final class ConnectionAdapterTest extends AbstractShardingJDBCDatabaseAndTableTest {
     
     private String sql = JDBCTestSQL.SELECT_GROUP_BY_USER_ID_SQL;
+    
+    @After
+    public void tearDown() {
+        TransactionTypeHolder.clear();
+        FixedXAShardingTransactionHandler.getInvokes().clear();
+        FixedBaseShardingTransactionHandler.getInvokes().clear();
+    }
     
     @Test
     public void assertSetAutoCommit() throws SQLException {
@@ -58,6 +71,24 @@ public final class ConnectionAdapterTest extends AbstractShardingJDBCDatabaseAnd
     }
     
     @Test
+    public void assertIgnoreAutoCommitForXA() throws SQLException {
+        TransactionTypeHolder.set(TransactionType.XA);
+        try (ShardingConnection actual = getShardingDataSource().getConnection()) {
+            actual.setAutoCommit(true);
+            assertNull(FixedXAShardingTransactionHandler.getInvokes().get("begin"));
+        }
+    }
+    
+    @Test
+    public void assertIgnoreAutoCommitForBase() throws SQLException {
+        TransactionTypeHolder.set(TransactionType.BASE);
+        try (ShardingConnection actual = getShardingDataSource().getConnection()) {
+            actual.setAutoCommit(true);
+            assertNull(FixedBaseShardingTransactionHandler.getInvokes().get("begin"));
+        }
+    }
+    
+    @Test
     // TODO 缺少断言，做柔性事务时补充
     public void assertCommit() throws SQLException {
         try (ShardingConnection actual = getShardingDataSource().getConnection()) {
@@ -68,12 +99,30 @@ public final class ConnectionAdapterTest extends AbstractShardingJDBCDatabaseAnd
     }
     
     @Test
+    public void assertXACommit() throws SQLException {
+        TransactionTypeHolder.set(TransactionType.XA);
+        try (ShardingConnection actual = getShardingDataSource().getConnection()) {
+            actual.commit();
+            assertNotNull(FixedXAShardingTransactionHandler.getInvokes().get("commit"));
+        }
+    }
+    
+    @Test
     // TODO 缺少断言，做柔性事务时补充
     public void assertRollback() throws SQLException {
         try (ShardingConnection actual = getShardingDataSource().getConnection()) {
             actual.setAutoCommit(false);
             actual.createStatement().executeQuery(sql);
             actual.rollback();
+        }
+    }
+    
+    @Test
+    public void assertXARollback() throws SQLException {
+        TransactionTypeHolder.set(TransactionType.XA);
+        try (ShardingConnection actual = getShardingDataSource().getConnection()) {
+            actual.rollback();
+            assertNotNull(FixedXAShardingTransactionHandler.getInvokes().get("rollback"));
         }
     }
     

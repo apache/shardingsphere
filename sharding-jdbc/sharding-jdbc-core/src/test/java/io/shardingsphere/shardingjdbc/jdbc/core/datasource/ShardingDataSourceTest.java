@@ -179,7 +179,6 @@ public final class ShardingDataSourceTest {
         assertThat(shardingConnection.getDataSourceMap().size(), is(1));
         assertThat(shardingConnection.getTransactionType(), is(TransactionType.XA));
         assertThat(shardingConnection.getShardingTransactionHandler(), instanceOf(FixedXAShardingTransactionHandler.class));
-        
         TransactionTypeHolder.set(TransactionType.LOCAL);
         shardingConnection = shardingDataSource.getConnection();
         assertThat(shardingConnection.getConnection("ds"), is(dataSource.getConnection()));
