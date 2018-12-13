@@ -89,6 +89,8 @@ Sharding-Sphere uses the snowflake algorithm as the default distributed self-inc
 
 The last four bits of the primary key computed by the snowflake algorithm represent the incremental values in one millisecond. Therefore, if the concurrency of applications is not high in one millisecond, the chance of the last four being zero are high.
 
+This problem is solved at version 3.1.0, FIY: https://github.com/sharding-sphere/sharding-sphere/issues/1617
+
 #### 9. Why does a `ClassCastException: Integer can not cast to Long` arise where i specify a SingleKeyTableShardingAlgorithm generic for Long Type ?
 
 The answer is:
