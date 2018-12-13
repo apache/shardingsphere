@@ -1,1 +1,1 @@
-io.shardingsphere.shardingjdbc.jdbc.core.datasource.FixedDataSourceMapConverter
+io.shardingsphere.shardingjdbc.jdbc.core.fixed.FixedDataSourceMapConverter

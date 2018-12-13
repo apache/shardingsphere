@@ -23,7 +23,7 @@ import io.shardingsphere.core.constant.DatabaseType;
 import io.shardingsphere.core.util.ReflectiveUtil;
 import io.shardingsphere.shardingjdbc.jdbc.unsupported.AbstractUnsupportedOperationDataSource;
 import io.shardingsphere.transaction.spi.DataSourceMapConverter;
-import io.shardingsphere.shardingjdbc.jdbc.transaction.SPIDataSourceMapConverter;
+import io.shardingsphere.transaction.spi.reg.SPIDataSourceMapConverter;
 import lombok.Getter;
 import lombok.Setter;
 

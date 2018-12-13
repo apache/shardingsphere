@@ -15,7 +15,7 @@
  * </p>
  */
 
-package io.shardingsphere.shardingjdbc.jdbc.transaction;
+package io.shardingsphere.transaction.spi.reg;
 
 import io.shardingsphere.core.constant.DatabaseType;
 import io.shardingsphere.spi.NewInstanceServiceLoader;

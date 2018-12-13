@@ -15,11 +15,11 @@
  * </p>
  */
 
-package io.shardingsphere.shardingjdbc.jdbc.core.datasource;
+package io.shardingsphere.transaction.spi.reg;
 
 import io.shardingsphere.core.constant.transaction.TransactionType;
-import io.shardingsphere.transaction.context.ShardingTransactionContext;
 import io.shardingsphere.transaction.ShardingTransactionHandler;
+import io.shardingsphere.transaction.context.ShardingTransactionContext;
 
 import java.util.HashMap;
 import java.util.Map;
@@ -29,7 +29,7 @@ import java.util.Map;
  *
  * @author zhaojun
  */
-public final class FixedBaseShardingTransactionHandler implements ShardingTransactionHandler {
+public final class FixedXAShardingTransactionHandler implements ShardingTransactionHandler {
     
     private static final Map<String, Object> INVOKES = new HashMap<>();
     
@@ -60,6 +60,6 @@ public final class FixedBaseShardingTransactionHandler implements ShardingTransa
     
     @Override
     public TransactionType getTransactionType() {
-        return TransactionType.BASE;
+        return TransactionType.XA;
     }
 }

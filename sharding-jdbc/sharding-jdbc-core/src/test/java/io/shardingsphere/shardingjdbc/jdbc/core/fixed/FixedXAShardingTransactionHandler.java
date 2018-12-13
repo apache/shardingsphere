@@ -15,11 +15,11 @@
  * </p>
  */
 
-package io.shardingsphere.shardingjdbc.jdbc.core.datasource;
+package io.shardingsphere.shardingjdbc.jdbc.core.fixed;
 
 import io.shardingsphere.core.constant.transaction.TransactionType;
-import io.shardingsphere.transaction.context.ShardingTransactionContext;
 import io.shardingsphere.transaction.ShardingTransactionHandler;
+import io.shardingsphere.transaction.context.ShardingTransactionContext;
 
 import java.util.HashMap;
 import java.util.Map;

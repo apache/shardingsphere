@@ -15,7 +15,7 @@
  * </p>
  */
 
-package io.shardingsphere.shardingjdbc.jdbc.core.datasource;
+package io.shardingsphere.shardingjdbc.jdbc.core.fixed;
 
 import com.zaxxer.hikari.HikariDataSource;
 import io.shardingsphere.core.constant.DatabaseType;

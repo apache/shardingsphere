@@ -20,7 +20,6 @@ package io.shardingsphere.shardingproxy.transport.mysql.packet.command.query.tex
 import com.google.common.base.Optional;
 import io.shardingsphere.core.constant.ShardingConstant;
 import io.shardingsphere.core.constant.transaction.TransactionType;
-import io.shardingsphere.transaction.context.ShardingTransactionContext;
 import io.shardingsphere.shardingproxy.backend.BackendHandler;
 import io.shardingsphere.shardingproxy.backend.ResultPacket;
 import io.shardingsphere.shardingproxy.backend.jdbc.connection.BackendConnection;
@@ -35,12 +34,11 @@ import io.shardingsphere.shardingproxy.transport.mysql.packet.command.CommandRes
 import io.shardingsphere.shardingproxy.transport.mysql.packet.command.query.FieldCountPacket;
 import io.shardingsphere.shardingproxy.transport.mysql.packet.command.query.text.TextResultSetRowPacket;
 import io.shardingsphere.shardingproxy.transport.mysql.packet.generic.OKPacket;
-import io.shardingsphere.spi.transaction.ShardingTransactionHandlerRegistry;
+import io.shardingsphere.transaction.context.ShardingTransactionContext;
 import lombok.SneakyThrows;
 import org.hamcrest.CoreMatchers;
 import org.junit.After;
 import org.junit.Before;
-import org.junit.BeforeClass;
 import org.junit.Test;
 import org.junit.runner.RunWith;
 import org.mockito.Mock;
@@ -68,11 +66,6 @@ public final class ComQueryPacketTest {
     private MySQLPacketPayload payload;
     
     private BackendConnection backendConnection = new BackendConnection(TransactionType.LOCAL);
-    
-    @BeforeClass
-    public static void init() {
-        ShardingTransactionHandlerRegistry.load();
-    }
     
     @Before
     public void setUp() {
