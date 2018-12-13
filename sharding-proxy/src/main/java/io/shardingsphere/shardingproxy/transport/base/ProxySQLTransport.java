@@ -18,7 +18,7 @@
 package io.shardingsphere.shardingproxy.transport.base;
 
 import io.shardingsphere.shardingproxy.backend.jdbc.datasource.JDBCBackendDataSource;
-import io.shardingsphere.transaction.base.manager.servicecomb.AbstractSQLTransport;
+import io.shardingsphere.transaction.base.servicecomb.transport.AbstractSQLTransport;
 import lombok.RequiredArgsConstructor;
 import org.apache.servicecomb.saga.core.TransportFailedException;
 

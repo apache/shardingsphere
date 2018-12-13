@@ -22,8 +22,8 @@ import io.shardingsphere.core.constant.SQLType;
 import io.shardingsphere.core.constant.transaction.TransactionType;
 import io.shardingsphere.core.executor.StatementExecuteUnit;
 import io.shardingsphere.core.executor.sql.execute.SQLExecuteCallback;
+import io.shardingsphere.core.executor.sql.execute.SagaSQLExecuteCallback;
 import io.shardingsphere.core.transaction.TransactionTypeHolder;
-import io.shardingsphere.transaction.executor.SagaSQLExecuteCallback;
 
 import java.sql.PreparedStatement;
 import java.sql.SQLException;
@@ -36,7 +36,7 @@ import java.sql.SQLException;
 final class SQLExecuteCallbackFactory {
     
     /**
-     * Get update callback.
+     * Get prepared update callback.
      *
      * @param databaseType database type
      * @param sqlType sql type
@@ -57,7 +57,7 @@ final class SQLExecuteCallbackFactory {
     }
     
     /**
-     * Get execute callback.
+     * Get prepared execute callback.
      *
      * @param databaseType database type
      * @param sqlType sql type
@@ -78,12 +78,12 @@ final class SQLExecuteCallbackFactory {
     }
     
     /**
-     * Get batch SQLExecuteCallBack.
+     * Get batch execute callback.
      *
      * @param databaseType database type
      * @param sqlType sql type
      * @param isExceptionThrown is exception thrown
-     * @return batch SQLExecuteCallBack
+     * @return batch execute callback
      */
     static SQLExecuteCallback<int[]> getBatchPreparedSQLExecuteCallback(final DatabaseType databaseType, final SQLType sqlType, final boolean isExceptionThrown) {
         if (isSagaTransaction(sqlType)) {
@@ -99,13 +99,13 @@ final class SQLExecuteCallbackFactory {
     }
     
     /**
-     * Get single SQLExecuteCallBack.
+     * Get execute callback.
      *
      * @param databaseType database type
      * @param sqlType sql type
      * @param isExceptionThrown is exception thrown
-     * @param updater Updater defined in StatementExecutor
-     * @return single SQLExecuteCallback
+     * @param updater updater defined in {@code StatementExecutor}
+     * @return execute callback.
      */
     static SQLExecuteCallback<Integer> getSQLExecuteCallback(final DatabaseType databaseType, final SQLType sqlType, final boolean isExceptionThrown, final StatementExecutor.Updater updater) {
         if (isSagaTransaction(sqlType)) {
@@ -121,12 +121,12 @@ final class SQLExecuteCallbackFactory {
     }
     
     /**
-     * Get single SQLExecuteCallBack.
+     * Get execute callback.
      *
      * @param databaseType database type
      * @param sqlType sql type
      * @param isExceptionThrown is exception thrown
-     * @param executor Executor defined in StatementExecutor
+     * @param executor executor defined in {@code StatementExecutor}
      * @return single SQLExecuteCallback
      */
     static SQLExecuteCallback<Boolean> getSQLExecuteCallback(final DatabaseType databaseType, final SQLType sqlType, final boolean isExceptionThrown, final StatementExecutor.Executor executor) {

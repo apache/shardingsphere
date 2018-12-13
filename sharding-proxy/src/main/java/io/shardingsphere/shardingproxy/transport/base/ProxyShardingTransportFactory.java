@@ -19,7 +19,7 @@ package io.shardingsphere.shardingproxy.transport.base;
 
 import io.shardingsphere.core.event.transaction.base.SagaTransactionEvent;
 import io.shardingsphere.shardingproxy.runtime.GlobalRegistry;
-import io.shardingsphere.transaction.base.manager.servicecomb.ShardingTransportFactory;
+import io.shardingsphere.transaction.base.servicecomb.transport.ShardingTransportFactory;
 import org.apache.servicecomb.saga.transports.SQLTransport;
 
 /**

@@ -198,7 +198,7 @@ public abstract class AbstractConnectionAdapter extends AbstractUnsupportedOpera
         } else if (TransactionType.XA == transactionType) {
             shardingTransactionHandler.doInTransaction(new XATransactionEvent(TransactionOperationType.BEGIN));
         } else if (TransactionType.BASE == transactionType) {
-            shardingTransactionHandler.doInTransaction(new SagaTransactionEvent(TransactionOperationType.BEGIN, this, getDataSourceMap(), sagaConfiguration));
+            shardingTransactionHandler.doInTransaction(SagaTransactionEvent.createBeginSagaTransactionEvent(getDataSourceMap(), sagaConfiguration));
         }
     }
     
@@ -215,7 +215,7 @@ public abstract class AbstractConnectionAdapter extends AbstractUnsupportedOpera
         } else if (TransactionType.XA == transactionType) {
             shardingTransactionHandler.doInTransaction(new XATransactionEvent(TransactionOperationType.COMMIT));
         } else if (TransactionType.BASE == transactionType) {
-            shardingTransactionHandler.doInTransaction(new SagaTransactionEvent(TransactionOperationType.COMMIT, sagaConfiguration));
+            shardingTransactionHandler.doInTransaction(SagaTransactionEvent.createCommitSagaTransactionEvent(sagaConfiguration));
         }
     }
     
@@ -232,7 +232,7 @@ public abstract class AbstractConnectionAdapter extends AbstractUnsupportedOpera
         } else if (TransactionType.XA == transactionType) {
             shardingTransactionHandler.doInTransaction(new XATransactionEvent(TransactionOperationType.ROLLBACK));
         } else if (TransactionType.BASE == transactionType) {
-            shardingTransactionHandler.doInTransaction(new SagaTransactionEvent(TransactionOperationType.ROLLBACK, sagaConfiguration));
+            shardingTransactionHandler.doInTransaction(SagaTransactionEvent.createRollbackSagaTransactionEvent(sagaConfiguration));
         }
     }
     
