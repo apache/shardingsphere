@@ -71,4 +71,14 @@ public final class DefaultKeyGeneratorTest {
         assertThat(workerIdField.getLong(DefaultKeyGenerator.class), is(1L));
         DefaultKeyGenerator.setWorkerId(0L);
     }
+    
+    @Test
+    @SneakyThrows
+    public void assertSetMaxTolerateTimeDifferenceMilliseconds() {
+        DefaultKeyGenerator.setMaxTolerateTimeDifferenceMilliseconds(1);
+        Field maxTolerateTimeDifferenceMillisecondsField = DefaultKeyGenerator.class.getDeclaredField("maxTolerateTimeDifferenceMilliseconds");
+        maxTolerateTimeDifferenceMillisecondsField.setAccessible(true);
+        assertThat(maxTolerateTimeDifferenceMillisecondsField.getInt(DefaultKeyGenerator.class), is(1));
+        DefaultKeyGenerator.setMaxTolerateTimeDifferenceMilliseconds(0);
+    }
 }
