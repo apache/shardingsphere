@@ -20,11 +20,12 @@ package io.shardingsphere.core.event.transaction.base;
 import io.shardingsphere.api.config.SagaConfiguration;
 import io.shardingsphere.core.constant.transaction.TransactionOperationType;
 import io.shardingsphere.core.event.transaction.ShardingTransactionEvent;
+import lombok.AccessLevel;
 import lombok.Getter;
+import lombok.RequiredArgsConstructor;
 import lombok.Setter;
 
 import javax.sql.DataSource;
-import java.sql.Connection;
 import java.util.Map;
 
 /**
@@ -32,14 +33,11 @@ import java.util.Map;
  *
  * @author yangyi
  */
+@RequiredArgsConstructor(access = AccessLevel.PRIVATE)
 @Getter
 public class SagaTransactionEvent implements ShardingTransactionEvent {
     
     private final TransactionOperationType operationType;
-    
-    private final Connection connection;
-    
-    private final String proxySchema;
     
     private final Map<String, DataSource> dataSourceMap;
     
@@ -50,39 +48,53 @@ public class SagaTransactionEvent implements ShardingTransactionEvent {
     @Setter
     private String sagaJson;
     
-    public SagaTransactionEvent(final TransactionOperationType operationType, final SagaConfiguration sagaConfiguration) {
-        this.operationType = operationType;
-        this.sagaConfiguration = sagaConfiguration;
-        this.connection = null;
-        this.proxySchema = null;
-        this.dataSourceMap = null;
-        this.sagaSQLExecutionEvent = null;
+    /**
+     * Create begin saga transaction event.
+     *
+     * @param dataSourceMap sharding data source map
+     * @param sagaConfiguration saga configuration
+     * @return begin saga transaction event
+     */
+    public static SagaTransactionEvent createBeginSagaTransactionEvent(final Map<String, DataSource> dataSourceMap, final SagaConfiguration sagaConfiguration) {
+        return new SagaTransactionEvent(TransactionOperationType.BEGIN, dataSourceMap, sagaConfiguration, null);
     }
     
-    public SagaTransactionEvent(final TransactionOperationType operationType, final Connection connection, final Map<String, DataSource> dataSourceMap, final SagaConfiguration sagaConfiguration) {
-        this.operationType = operationType;
-        this.connection = connection;
-        this.proxySchema = null;
-        this.dataSourceMap = dataSourceMap;
-        this.sagaConfiguration = sagaConfiguration;
-        sagaSQLExecutionEvent = null;
+    /**
+     * Create commit saga transaction event.
+     *
+     * @param sagaConfiguration saga configuration
+     * @return commit saga transaction event
+     */
+    public static SagaTransactionEvent createCommitSagaTransactionEvent(final SagaConfiguration sagaConfiguration) {
+        return new SagaTransactionEvent(TransactionOperationType.COMMIT, null, sagaConfiguration, null);
     }
     
-    public SagaTransactionEvent(final TransactionOperationType operationType, final String proxySchema, final Map<String, DataSource> dataSourceMap, final SagaConfiguration sagaConfiguration) {
-        this.operationType = operationType;
-        this.connection = null;
-        this.proxySchema = proxySchema;
-        this.dataSourceMap = dataSourceMap;
-        this.sagaConfiguration = sagaConfiguration;
-        sagaSQLExecutionEvent = null;
+    /**
+     * Create rollback saga transaction event.
+     *
+     * @param sagaConfiguration saga configuration
+     * @return rollback saga transaction event
+     */
+    public static SagaTransactionEvent createRollbackSagaTransactionEvent(final SagaConfiguration sagaConfiguration) {
+        return new SagaTransactionEvent(TransactionOperationType.ROLLBACK, null, sagaConfiguration, null);
     }
     
-    public SagaTransactionEvent(final SagaSQLExecutionEvent event) {
-        this.operationType = TransactionOperationType.BEGIN;
-        this.connection = null;
-        this.proxySchema = null;
-        this.dataSourceMap = null;
-        this.sagaConfiguration = null;
-        this.sagaSQLExecutionEvent = event;
+    /**
+     * Create execution saga transaction event.
+     *
+     * @param sagaSQLExecutionEvent saga SQL execution event
+     * @return execution saga transaction event
+     */
+    public static SagaTransactionEvent createExecutionSagaTransactionEvent(final SagaSQLExecutionEvent sagaSQLExecutionEvent) {
+        return new SagaTransactionEvent(null, null, null, sagaSQLExecutionEvent);
+    }
+    
+    /**
+     * Judge whether event is execution event.
+     *
+     * @return true if event is execution event, else false
+     */
+    public boolean isExecutionEvent() {
+        return null != sagaSQLExecutionEvent;
     }
 }

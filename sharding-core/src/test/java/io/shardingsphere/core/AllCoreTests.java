@@ -19,6 +19,7 @@ package io.shardingsphere.core;
 
 import io.shardingsphere.core.config.AllConfigTests;
 import io.shardingsphere.core.constant.AllConstantsTests;
+import io.shardingsphere.core.event.AllEventTests;
 import io.shardingsphere.core.executor.AllExecutorTests;
 import io.shardingsphere.core.hint.AllHintTests;
 import io.shardingsphere.core.merger.AllMergerTests;
@@ -48,7 +49,8 @@ import org.junit.runners.Suite.SuiteClasses;
         AllMergerTests.class, 
         AllHintTests.class, 
         AllYamlTests.class,
-        AllTransactionTests.class
+        AllTransactionTests.class,
+        AllEventTests.class
     })
 public final class AllCoreTests {
 }
