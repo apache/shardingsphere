@@ -18,8 +18,8 @@
 package io.shardingsphere.shardingjdbc.api;
 
 import io.shardingsphere.api.ConfigMapContext;
-import io.shardingsphere.api.config.ShardingRuleConfiguration;
-import io.shardingsphere.api.config.TableRuleConfiguration;
+import io.shardingsphere.api.config.rule.ShardingRuleConfiguration;
+import io.shardingsphere.api.config.rule.TableRuleConfiguration;
 import io.shardingsphere.core.rule.ShardingRule;
 import io.shardingsphere.shardingjdbc.jdbc.core.ShardingContext;
 import lombok.SneakyThrows;

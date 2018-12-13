@@ -18,7 +18,7 @@
 package io.shardingsphere.shardingjdbc.jdbc.core.datasource;
 
 import io.shardingsphere.api.ConfigMapContext;
-import io.shardingsphere.api.config.MasterSlaveRuleConfiguration;
+import io.shardingsphere.api.config.rule.MasterSlaveRuleConfiguration;
 import io.shardingsphere.core.constant.properties.ShardingProperties;
 import io.shardingsphere.core.constant.transaction.TransactionType;
 import io.shardingsphere.core.rule.MasterSlaveRule;
