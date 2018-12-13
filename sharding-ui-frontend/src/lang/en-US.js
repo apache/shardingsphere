@@ -35,6 +35,11 @@ export default {
     },
     table: {
       operate: 'operate'
+    },
+    rules: {
+      name: 'Please enter the name of the registration center',
+      address: 'Please enter the registration center address',
+      namespaces: 'Please enter a namespace'
     }
   }
 }

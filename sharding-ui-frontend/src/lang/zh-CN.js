@@ -35,6 +35,11 @@ export default {
     },
     table: {
       operate: '操作'
+    },
+    rules: {
+      name: '请输入注册中心名称',
+      address: '请输入注册中心地址',
+      namespaces: '请输入命名空间'
     }
   }
 }

@@ -44,7 +44,7 @@ function ajax(url, type, options) {
       const success = data.success
       switch (success) {
         case true: {
-          resolve(result.model)
+          resolve(data)
           break
         }
         default: {

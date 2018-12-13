@@ -20,26 +20,26 @@
       </el-table>
     </div>
     <el-dialog :title="$t('index.registDialog.title')" :visible.sync="regustDialogVisible">
-      <el-form :model="form">
-        <el-form-item :label="$t('index.registDialog.name')">
+      <el-form ref="form" :model="form" :rules="rules">
+        <el-form-item :label="$t('index.registDialog.name')" prop="name">
           <el-input v-model="form.name" autocomplete="off"/>
         </el-form-item>
-        <el-form-item :label="$t('index.registDialog.address')">
+        <el-form-item :label="$t('index.registDialog.address')" prop="address">
           <el-input v-model="form.address" autocomplete="off"/>
         </el-form-item>
-        <el-form-item :label="$t('index.registDialog.namespaces')">
+        <el-form-item :label="$t('index.registDialog.namespaces')" prop="namespaces">
           <el-input v-model="form.namespaces" autocomplete="off"/>
         </el-form-item>
       </el-form>
       <div slot="footer" class="dialog-footer">
         <el-button @click="regustDialogVisible = false">{{ $t("index.registDialog.btnCancelTxt") }}</el-button>
-        <el-button type="primary" @click="onConfirm">{{ $t("index.registDialog.btnConfirmTxt") }}</el-button>
+        <el-button type="primary" @click="onConfirm('form')">{{ $t("index.registDialog.btnConfirmTxt") }}</el-button>
       </div>
     </el-dialog>
   </el-card>
 </template>
 <script>
-// import API from '../api'
+import API from '../api'
 export default {
   name: 'RegistConfig',
   data() {
@@ -48,15 +48,15 @@ export default {
       column: [
         {
           label: this.$t('index').registDialog.name,
-          prop: 'date'
-        },
-        {
-          label: this.$t('index').registDialog.address,
           prop: 'name'
         },
         {
+          label: this.$t('index').registDialog.address,
+          prop: 'serverLists'
+        },
+        {
           label: this.$t('index').registDialog.namespaces,
-          prop: 'ss'
+          prop: 'namespace'
         }
       ],
       form: {
@@ -64,30 +64,89 @@ export default {
         address: '',
         namespaces: ''
       },
+      rules: {
+        name: [
+          { required: true, message: this.$t('index').rules.name, trigger: 'change' }
+        ],
+        address: [
+          { required: true, message: this.$t('index').rules.address, trigger: 'change' }
+        ],
+        namespaces: [
+          { required: true, message: this.$t('index').rules.namespaces, trigger: 'change' }
+        ]
+      },
       tableData: []
     }
   },
+  created() {
+    this.getRegCenter()
+  },
   methods: {
+    getRegCenter() {
+      API.getRegCenter().then((res) => {
+        this.tableData = res.model
+      })
+    },
     handleConnect(row) {
-      this.$notify({
-        title: this.$t('common').notify.title,
-        message: this.$t('common').notify.conSucMessage,
-        type: 'success'
+      const params = {
+        activated: true,
+        digest: 'string',
+        name: this.form.name,
+        namespace: this.form.namespace,
+        orchestrationName: 'string',
+        registryCenterType: 'string',
+        serverLists: 'string'
+      }
+      API.postRegCenterConnect(params).then((res) => {
+        this.$notify({
+          title: this.$t('common').notify.title,
+          message: this.$t('common').notify.conSucMessage,
+          type: 'success'
+        })
       })
     },
     handlerDel(row) {
-      this.$notify({
-        title: this.$t('common').notify.title,
-        message: this.$t('common').notify.delSucMessage,
-        type: 'success'
+      const params = {
+        activated: true,
+        digest: 'string',
+        name: this.form.name,
+        namespace: this.form.namespace,
+        orchestrationName: 'string',
+        registryCenterType: 'string',
+        serverLists: 'string'
+      }
+      API.deleteRegCenter(params).then((res) => {
+        this.$notify({
+          title: this.$t('common').notify.title,
+          message: this.$t('common').notify.delSucMessage,
+          type: 'success'
+        })
       })
     },
-    onConfirm() {
-      this.regustDialogVisible = false
-      this.$notify({
-        title: this.$t('common').notify.title,
-        message: this.$t('common').notify.conSucMessage,
-        type: 'success'
+    onConfirm(formName) {
+      this.$refs[formName].validate((valid) => {
+        if (valid) {
+          const params = {
+            activated: true,
+            digest: 'string',
+            name: this.form.name,
+            namespace: this.form.namespace,
+            orchestrationName: 'string',
+            registryCenterType: 'string',
+            serverLists: 'string'
+          }
+          API.postRegCenter(params).then((res) => {
+            this.regustDialogVisible = false
+            this.$notify({
+              title: this.$t('common').notify.title,
+              message: this.$t('common').notify.conSucMessage,
+              type: 'success'
+            })
+          })
+        } else {
+          console.log('error submit!!')
+          return false
+        }
       })
     },
     add() {
