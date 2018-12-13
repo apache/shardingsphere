@@ -142,33 +142,33 @@ public final class ParsingSQLRouter implements ShardingRouter {
     }
     
     private void checkAndMergeShardingValue(final SQLStatement sqlStatement, final ShardingConditions shardingConditions) {
-        if(!(sqlStatement instanceof SelectStatement)) {
+        if (!(sqlStatement instanceof SelectStatement)) {
             return;
         }
         SelectStatement selectStatement = (SelectStatement) sqlStatement;
-        if(selectStatement.getSubQueryStatements().isEmpty()) {
+        if (selectStatement.getSubQueryStatements().isEmpty()) {
             return;
         }
-        for(AndCondition each : sqlStatement.getConditions().getOrCondition().getAndConditions()) {
-            for(Condition eachCondition : each.getConditions()) {
+        for (AndCondition each : sqlStatement.getConditions().getOrCondition().getAndConditions()) {
+            for (Condition eachCondition : each.getConditions()) {
                 Preconditions.checkState(ShardingOperator.EQUAL == eachCondition.getOperator(), "DQL only support '=' with subquery.");
             }
         }
         Preconditions.checkState(!shardingConditions.getShardingConditions().isEmpty(), "DQL must have sharding column with subquery.");
         ShardingCondition firstShardingCondition = shardingConditions.getShardingConditions().iterator().next();
         Iterator<ShardingCondition> iterator = shardingConditions.getShardingConditions().iterator();
-        if(!iterator.hasNext()) {
+        if (!iterator.hasNext()) {
             return;
         }
         int size = firstShardingCondition.getShardingValues().size();
-        while(iterator.hasNext()) {
+        while (iterator.hasNext()) {
             ShardingCondition each = iterator.next();
             Preconditions.checkState(size == each.getShardingValues().size(), "DQL sharding value size must be same with subquery.");
-            for(ShardingValue eachFirstValue : firstShardingCondition.getShardingValues()) {
+            for (ShardingValue eachFirstValue : firstShardingCondition.getShardingValues()) {
                 boolean ok = false;
-                for(ShardingValue eachValue : each.getShardingValues()) {
+                for (ShardingValue eachValue : each.getShardingValues()) {
                     ok = checkAndMergeShardingValue(iterator, eachFirstValue, eachValue);
-                    if(ok) {
+                    if (ok) {
                         break;
                     }
                 }
@@ -178,32 +178,32 @@ public final class ParsingSQLRouter implements ShardingRouter {
     }
     
     private boolean checkAndMergeShardingValue(final Iterator<ShardingCondition> iterator, final ShardingValue shardingValue1, final ShardingValue shardingValue2) {
-        if(shardingValue1.getClass() != shardingValue2.getClass()) {
+        if (shardingValue1.getClass() != shardingValue2.getClass()) {
             return false;
         }
-        if(!shardingValue1.getColumnName().equalsIgnoreCase(shardingValue2.getColumnName())) {
+        if (!shardingValue1.getColumnName().equalsIgnoreCase(shardingValue2.getColumnName())) {
             return false;
         }
-        if(!shardingValue1.getLogicTableName().equals(shardingValue2.getLogicTableName())) {
+        if (!shardingValue1.getLogicTableName().equals(shardingValue2.getLogicTableName())) {
             Optional<BindingTableRule> bindingRule = shardingRule.findBindingTableRule(shardingValue1.getLogicTableName());
-            if(!bindingRule.isPresent() || !bindingRule.get().hasLogicTable(shardingValue2.getLogicTableName())) {
+            if (!bindingRule.isPresent() || !bindingRule.get().hasLogicTable(shardingValue2.getLogicTableName())) {
                 return false;
             }
             iterator.remove();
         }
-        if(shardingValue1 instanceof PreciseShardingValue) {
-            if(0 == ((PreciseShardingValue)shardingValue1).getValue().compareTo(((PreciseShardingValue)shardingValue2).getValue())) {
+        if (shardingValue1 instanceof PreciseShardingValue) {
+            if (0 == ((PreciseShardingValue) shardingValue1).getValue().compareTo(((PreciseShardingValue) shardingValue2).getValue())) {
                 return true;
             }
         }
-        if(shardingValue1 instanceof ListShardingValue) {
-            Collection<?> values1 = ((ListShardingValue)shardingValue1).getValues();
-            Collection<?> values2 = ((ListShardingValue)shardingValue2).getValues();
-            if(values1.size() != values2.size()) {
+        if (shardingValue1 instanceof ListShardingValue) {
+            Collection<?> values1 = ((ListShardingValue) shardingValue1).getValues();
+            Collection<?> values2 = ((ListShardingValue) shardingValue2).getValues();
+            if (values1.size() != values2.size()) {
                 return false;
             }
-            for(Object each : values1) {
-                if(!values2.contains(each)) {
+            for (Object each : values1) {
+                if (!values2.contains(each)) {
                     return false;
                 }
             }

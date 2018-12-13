@@ -46,7 +46,7 @@ public final class FromWhereExtractor implements OptionalSQLSegmentExtractor {
     
     @Override
     public Optional<FromWhereSegment> extract(final ParserRuleContext ancestorNode) {
-        Optional<ParserRuleContext> selectClauseNode =ExtractorUtils.findFirstChildNode(ancestorNode, RuleName.SELECT_CLAUSE);
+        Optional<ParserRuleContext> selectClauseNode = ExtractorUtils.findFirstChildNode(ancestorNode, RuleName.SELECT_CLAUSE);
         if (!selectClauseNode.isPresent()) {
             return Optional.absent();
         }

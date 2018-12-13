@@ -40,7 +40,7 @@ import io.shardingsphere.core.rule.ShardingRule;
 
 public final class StandardRoutingEngineForSubQueryTest {
     
-    @Test(expected= IllegalStateException.class)
+    @Test(expected = IllegalStateException.class)
     public void assertOneTableError() {
         String sql = "select (select max(id) from t_order b where b.user_id =? ) from t_order a where user_id = ? ";
         List<Object> parameters = new LinkedList<>();
@@ -67,7 +67,7 @@ public final class StandardRoutingEngineForSubQueryTest {
         assertSubquery(sql, parameters);
     }
     
-    public void assertSubquery(String sql, List<Object> parameters) {
+    public void assertSubquery(final String sql, final List<Object> parameters) {
         ShardingRule shardingRule = createShardingRule();
         ShardingTableMetaData shardingTableMetaData = buildShardingTableMetaData();
         ShardingDataSourceMetaData shardingDataSourceMetaData = buildShardingDataSourceMetaData();
@@ -76,7 +76,7 @@ public final class StandardRoutingEngineForSubQueryTest {
         engine.route(parameters);
     }
     
-    @Test(expected= IllegalStateException.class)
+    @Test(expected = IllegalStateException.class)
     public void assertBindingTableWithDifferentValue() {
         String sql = "select (select max(id) from t_order_item b where b.user_id = ? ) from t_order a where user_id = ? ";
         List<Object> parameters = new LinkedList<>();
@@ -84,37 +84,38 @@ public final class StandardRoutingEngineForSubQueryTest {
         parameters.add(3);
         assertSubquery(sql, parameters);
     }
-
-	@Test(expected= IllegalStateException.class)
+    
+    @Test(expected = IllegalStateException.class)
     public void assertTwoTableWithDifferentOperator() {
-        String sql = "select (select max(id) from t_order_item b where b.user_id in(?,?)) from t_order a where user_id = ? ";
         List<Object> parameters = new LinkedList<>();
         parameters.add(1);
         parameters.add(3);
         parameters.add(1);
+        String sql = "select (select max(id) from t_order_item b where b.user_id in(?,?)) from t_order a where user_id = ? ";
         assertSubquery(sql, parameters);
     }
     
-	@Test(expected= IllegalStateException.class)
+    @Test(expected = IllegalStateException.class)
     public void assertTwoTableWithIn() {
-        String sql = "select (select max(id) from t_order_item b where b.user_id in(?,?)) from t_order a where user_id in(?,?) ";
         List<Object> parameters = new LinkedList<>();
         parameters.add(1);
         parameters.add(3);
         parameters.add(1);
         parameters.add(3);
+        String sql = "select (select max(id) from t_order_item b where b.user_id in(?,?)) from t_order a where user_id in(?,?) ";
         assertSubquery(sql, parameters);
     }
+    
     private static ShardingTableMetaData buildShardingTableMetaData() {
         Map<String, TableMetaData> tableMetaDataMap = new HashMap<>(3, 1);
-        tableMetaDataMap.put("t_order", 
+        tableMetaDataMap.put("t_order",
                 new TableMetaData(Arrays.asList(new ColumnMetaData("order_id", "int", true), new ColumnMetaData("user_id", "int", false), new ColumnMetaData("status", "int", false))));
-        tableMetaDataMap.put("t_order_item", new TableMetaData(Arrays.asList(new ColumnMetaData("item_id", "int", true), new ColumnMetaData("order_id", "int", false), 
+        tableMetaDataMap.put("t_order_item", new TableMetaData(Arrays.asList(new ColumnMetaData("item_id", "int", true), new ColumnMetaData("order_id", "int", false),
                 new ColumnMetaData("user_id", "int", false), new ColumnMetaData("status", "varchar", false), new ColumnMetaData("c_date", "timestamp", false))));
         return new ShardingTableMetaData(tableMetaDataMap);
     }
     
-    public ShardingDataSourceMetaData buildShardingDataSourceMetaData() {
+    private ShardingDataSourceMetaData buildShardingDataSourceMetaData() {
         Map<String, String> shardingDataSourceURLs = new LinkedHashMap<>();
         shardingDataSourceURLs.put("ds_0", "jdbc:mysql://127.0.0.1:3306/actual_db");
         shardingDataSourceURLs.put("ds_1", "jdbc:mysql://127.0.0.1:3306/actual_db");
@@ -124,16 +125,16 @@ public final class StandardRoutingEngineForSubQueryTest {
     
     private ShardingRule createShardingRule() {
         ShardingRuleConfiguration shardingRuleConfig = createShardingRuleConfiguration();
-        addTableRule(shardingRuleConfig,"t_order", "ds_${0..1}.t_order_${0..1}","user_id", "ds_${user_id % 2}");
-        addTableRule(shardingRuleConfig,"t_order_item", "ds_${0..1}.t_order_item_${0..1}","user_id", "ds_${user_id % 2}");
+        addTableRule(shardingRuleConfig, "t_order", "ds_${0..1}.t_order_${0..1}", "user_id", "ds_${user_id % 2}");
+        addTableRule(shardingRuleConfig, "t_order_item", "ds_${0..1}.t_order_item_${0..1}", "user_id", "ds_${user_id % 2}");
         shardingRuleConfig.getBindingTableGroups().add("t_order,t_order_item");
         return new ShardingRule(shardingRuleConfig, createDataSourceNames());
     }
     
     private ShardingRuleConfiguration createShardingRuleConfiguration() {
-    	ShardingRuleConfiguration result = new ShardingRuleConfiguration();
-    	result.setDefaultDatabaseShardingStrategyConfig(new InlineShardingStrategyConfiguration("order_id", "ds_${user_id % 2}"));
-    	result.setDefaultTableShardingStrategyConfig(new InlineShardingStrategyConfiguration("order_id", "t_order_${user_id % 2}"));
+        ShardingRuleConfiguration result = new ShardingRuleConfiguration();
+        result.setDefaultDatabaseShardingStrategyConfig(new InlineShardingStrategyConfiguration("order_id", "ds_${user_id % 2}"));
+        result.setDefaultTableShardingStrategyConfig(new InlineShardingStrategyConfiguration("order_id", "t_order_${user_id % 2}"));
         return result;
     }
     
@@ -141,13 +142,13 @@ public final class StandardRoutingEngineForSubQueryTest {
         return Arrays.asList("ds_0", "ds_1");
     }
     
-    private void addTableRule(ShardingRuleConfiguration shardingRuleConfig, String tableName, String actualDataNodes, String shardingColumn, String algorithmExpression) {
-    	TableRuleConfiguration orderTableRuleConfig = createTableRuleConfig(tableName, actualDataNodes, shardingColumn, algorithmExpression);
-    	shardingRuleConfig.getTableRuleConfigs().add(orderTableRuleConfig);
+    private void addTableRule(final ShardingRuleConfiguration shardingRuleConfig, final String tableName, final String actualDataNodes, final String shardingColumn, final String algorithmExpression) {
+        TableRuleConfiguration orderTableRuleConfig = createTableRuleConfig(tableName, actualDataNodes, shardingColumn, algorithmExpression);
+        shardingRuleConfig.getTableRuleConfigs().add(orderTableRuleConfig);
     }
     
-    private TableRuleConfiguration createTableRuleConfig(String tableName, String actualDataNodes, String shardingColumn, String algorithmExpression) {
-    	TableRuleConfiguration result = new TableRuleConfiguration();
+    private TableRuleConfiguration createTableRuleConfig(final String tableName, final String actualDataNodes, final String shardingColumn, final String algorithmExpression) {
+        TableRuleConfiguration result = new TableRuleConfiguration();
         result.setLogicTable(tableName);
         result.setTableShardingStrategyConfig(new InlineShardingStrategyConfiguration(shardingColumn, algorithmExpression));
         result.setDatabaseShardingStrategyConfig(new InlineShardingStrategyConfiguration(shardingColumn, algorithmExpression));

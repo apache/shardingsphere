@@ -52,7 +52,6 @@ public final class StandardRoutingEngineTest {
         shardingRuleConfig.getTableRuleConfigs().add(tableRuleConfig);
         shardingRuleConfig.setDefaultDatabaseShardingStrategyConfig(new InlineShardingStrategyConfiguration("user_id", "ds_${user_id % 2}"));
         shardingRuleConfig.setDefaultTableShardingStrategyConfig(new InlineShardingStrategyConfiguration("order_id", "t_order_${order_id % 2}"));
-        ShardingRule shardingRule = new ShardingRule(shardingRuleConfig, Arrays.asList("ds_0", "ds_1"));
         List<ShardingCondition> shardingConditions = new ArrayList<>();
         ShardingValue shardingValue1 = new ListShardingValue<>("t_order", "user_id", Collections.singleton(1L));
         ShardingValue shardingValue2 = new ListShardingValue<>("t_order", "order_id", Collections.singleton(1L));
@@ -60,6 +59,7 @@ public final class StandardRoutingEngineTest {
         shardingCondition.getShardingValues().add(shardingValue1);
         shardingCondition.getShardingValues().add(shardingValue2);
         shardingConditions.add(shardingCondition);
+        ShardingRule shardingRule = new ShardingRule(shardingRuleConfig, Arrays.asList("ds_0", "ds_1"));
         standardRoutingEngine = new StandardRoutingEngine(shardingRule, "t_order", new ShardingConditions(shardingConditions));
     }
     

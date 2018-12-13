@@ -17,20 +17,6 @@
 
 package io.shardingsphere.core.routing.type.complex;
 
-import static org.hamcrest.CoreMatchers.instanceOf;
-import static org.hamcrest.CoreMatchers.is;
-import static org.junit.Assert.assertThat;
-
-import java.util.ArrayList;
-import java.util.Arrays;
-import java.util.Collections;
-import java.util.List;
-
-import org.junit.Before;
-import org.junit.Test;
-
-import com.google.common.base.Optional;
-
 import io.shardingsphere.api.algorithm.sharding.ListShardingValue;
 import io.shardingsphere.api.algorithm.sharding.ShardingValue;
 import io.shardingsphere.api.config.ShardingRuleConfiguration;
@@ -38,9 +24,19 @@ import io.shardingsphere.api.config.TableRuleConfiguration;
 import io.shardingsphere.api.config.strategy.InlineShardingStrategyConfiguration;
 import io.shardingsphere.core.optimizer.condition.ShardingCondition;
 import io.shardingsphere.core.optimizer.condition.ShardingConditions;
-import io.shardingsphere.core.parsing.parser.sql.SQLStatement;
 import io.shardingsphere.core.routing.type.RoutingResult;
 import io.shardingsphere.core.rule.ShardingRule;
+import org.junit.Before;
+import org.junit.Test;
+
+import java.util.ArrayList;
+import java.util.Arrays;
+import java.util.Collections;
+import java.util.List;
+
+import static org.hamcrest.CoreMatchers.instanceOf;
+import static org.hamcrest.CoreMatchers.is;
+import static org.junit.Assert.assertThat;
 
 public final class ComplexRoutingEngineTest {
     
@@ -48,11 +44,11 @@ public final class ComplexRoutingEngineTest {
     
     @Before
     public void setEngineContext() {
-        ShardingRuleConfiguration shardingRuleConfig = new ShardingRuleConfiguration();
         TableRuleConfiguration tableRuleConfig1 = new TableRuleConfiguration();
         tableRuleConfig1.setLogicTable("t_order");
         tableRuleConfig1.setActualDataNodes("ds${0..1}.t_order_${0..2}");
         tableRuleConfig1.setTableShardingStrategyConfig(new InlineShardingStrategyConfiguration("order_id", "t_order_${order_id % 2}"));
+        ShardingRuleConfiguration shardingRuleConfig = new ShardingRuleConfiguration();
         shardingRuleConfig.getTableRuleConfigs().add(tableRuleConfig1);
         TableRuleConfiguration tableRuleConfig2 = new TableRuleConfiguration();
         tableRuleConfig2.setLogicTable("t_order_item");
