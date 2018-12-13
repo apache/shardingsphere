@@ -65,6 +65,8 @@ public enum ShardingPropertiesConstant {
      */
     EXECUTOR_SIZE("executor.size", String.valueOf(0), int.class),
     
+    PROXY_FRONTEND_FLUSH_THRESHOLD("proxy.frontend.flush.threshold", String.valueOf(100), int.class),
+    
     MAX_CONNECTIONS_SIZE_PER_QUERY("max.connections.size.per.query", String.valueOf(1), int.class),
     
     PROXY_TRANSACTION_ENABLED("proxy.transaction.enabled", String.valueOf(Boolean.FALSE), boolean.class),
