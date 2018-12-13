@@ -20,8 +20,10 @@ package io.shardingsphere.shardingproxy.frontend.mysql;
 import com.google.common.base.Optional;
 import io.netty.buffer.ByteBuf;
 import io.netty.channel.ChannelHandlerContext;
+import io.shardingsphere.core.constant.properties.ShardingPropertiesConstant;
 import io.shardingsphere.shardingproxy.backend.jdbc.connection.BackendConnection;
 import io.shardingsphere.shardingproxy.frontend.common.FrontendHandler;
+import io.shardingsphere.shardingproxy.runtime.GlobalRegistry;
 import io.shardingsphere.shardingproxy.transport.common.packet.DatabasePacket;
 import io.shardingsphere.shardingproxy.transport.mysql.constant.ServerErrorCode;
 import io.shardingsphere.shardingproxy.transport.mysql.packet.MySQLPacketPayload;
@@ -52,8 +54,6 @@ public final class CommandExecutor implements Runnable {
     private final ByteBuf message;
     
     private final FrontendHandler frontendHandler;
-    
-    private final int proxyFrontendFlushThreshold;
     
     private int currentSequenceId;
     
@@ -114,7 +114,7 @@ public final class CommandExecutor implements Runnable {
             DatabasePacket resultValue = queryCommandPacket.getResultValue();
             currentSequenceId = resultValue.getSequenceId();
             context.write(resultValue);
-            if (proxyFrontendFlushThreshold == counter) {
+            if (GlobalRegistry.getInstance().getShardingProperties().<Integer>getValue(ShardingPropertiesConstant.PROXY_FRONTEND_FLUSH_THRESHOLD) == counter) {
                 context.flush();
                 counter = 0;
             }
