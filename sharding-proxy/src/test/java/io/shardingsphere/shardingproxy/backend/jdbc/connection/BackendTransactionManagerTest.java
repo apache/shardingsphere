@@ -37,11 +37,6 @@ public class BackendTransactionManagerTest {
     
     private BackendTransactionManager backendTransactionManager = new BackendTransactionManager(backendConnection);
     
-//    @BeforeClass
-//    public static void beforeClass() {
-//        ShardingTransactionHandlerRegistry.load();
-//    }
-    
     @Test
     public void assertLocalTransactionCommit() throws SQLException {
         MockConnectionUtil.setCachedConnections(backendConnection, "ds1", 2);
