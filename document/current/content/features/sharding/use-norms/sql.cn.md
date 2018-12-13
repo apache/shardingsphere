@@ -69,7 +69,7 @@ SELECT COUNT(*) FROM (SELECT * FROM t_order o WHERE o.id IN (SELECT id FROM t_or
 ### 支持的SQL
 
 | SQL                                                                                         | 必要条件                    |
-| ------------------------------------------------------------------------------------------- | -------------------------- |
+| ------------------------------------------------------------------------------------------- | ---------------------------|
 | SELECT * FROM tbl_name                                                                      |                            |
 | SELECT * FROM tbl_name WHERE (col1 = ? or col2 = ?) and col3 = ?                            |                            |
 | SELECT * FROM tbl_name WHERE col1 = ? ORDER BY col2 DESC LIMIT ?                            |                            |
@@ -86,28 +86,31 @@ SELECT COUNT(*) FROM (SELECT * FROM t_order o WHERE o.id IN (SELECT id FROM t_or
 | TRUNCATE TABLE tbl_name                                                                     |                            |
 | CREATE INDEX idx_name ON tbl_name                                                           |                            |
 | DROP INDEX idx_name ON tbl_name                                                             |                            |
-| DROP INDEX idx_name                                                                         |  TableRule中配置logic-index |
+| DROP INDEX idx_name                                                                         |TableRule中配置logic-index    |
 | SELECT DISTINCT * FROM tbl_name WHERE col1 = ?                                              |在3.1.0支持，目前还未发布正式版本|
 | SELECT COUNT(DISTINCT col1) FROM tbl_name                                                   |在3.1.0支持，目前还未发布正式版本|
 
+
 ### 不支持的SQL
 
-| SQL                                                                                         | 不支持原因                        |  
-| ------------------------------------------------------------------------------------------- |--------------------------------- |                    
-| INSERT INTO tbl_name (col1, col2, ...) SELECT col1, col2, ... FROM tbl_name WHERE col3 = ?  | INSERT .. SEL                    |
-| INSERT INTO tbl_name SET col1 = ?                                                           | INSERT .. SET                    |
-| SELECT COUNT(col1) as count_alias FROM tbl_name GROUP BY col1 HAVING count_alias > ?        | HAVING                           |
-| SELECT * FROM tbl_name1 UNION SELECT * FROM tbl_name2                                       | UNION                            |
-| SELECT * FROM tbl_name1 UNION ALL SELECT * FROM tbl_name2                                   | UNION ALL                        |
-| SELECT * FROM tbl_name1 WHERE (val1=?) AND (val1=?)                                         | 冗余括号                          |
-| SELECT * FROM ds.tbl_name1                                                                  | 包含schema                        | 
-| SELECT SUM(DISTINCT col1), SUM(col1) FROM tbl_name                                          | 详见`DISTINCT`支持情况详细说明      |
+| SQL                                                                                           | 不支持原因                                         |
+| -------------------------------------------------------------------------------------         | ------------------------------ |
+| INSERT INTO tbl_name (col1, col2, ...) SELECT col1, col2, ... FROM tbl_name WHERE col3 = ?    | INSERT .. SEL                  |
+| INSERT INTO tbl_name SET col1 = ?                                                             | INSERT .. SET                  |
+| SELECT COUNT(col1) as count_alias FROM tbl_name GROUP BY col1 HAVING count_alias > ?          | HAVING                         |
+| SELECT * FROM tbl_name1 UNION SELECT * FROM tbl_name2                                         | UNION                          |
+| SELECT * FROM tbl_name1 UNION ALL SELECT * FROM tbl_name2                                     | UNION ALL                      |
+| SELECT * FROM tbl_name1 WHERE (val1=?) AND (val1=?)                                           | 冗余括号                        |
+| SELECT * FROM ds.tbl_name1                                                                    | 包含schema                     |
+| SELECT SUM(DISTINCT col1), SUM(col1) FROM tbl_name                                            | 详见`DISTINCT`支持情况详细说明    |
+
+
 
 ## `DISTINCT`支持情况详细说明（在3.1.0支持，目前还未发布正式版本）
 
 ### 支持的SQL
 
-| SQL                                                                                         | Required condition                  |
+| SQL                                                                                         | 所需条件                             |
 | ------------------------------------------------------------------------------------------- | ----------------------------------- |
 | SELECT DISTINCT * FROM tbl_name WHERE col1 = ?                                              |                                     |
 | SELECT DISTINCT col1 FROM tbl_name                                                          |                                     |
@@ -121,7 +124,7 @@ SELECT COUNT(*) FROM (SELECT * FROM t_order o WHERE o.id IN (SELECT id FROM t_or
 
 ### 不支持的SQL
 
-| SQL                                                                                         | 不支持原因                         |
+| SQL                                                                                         | 不支持原因                        |
 | ------------------------------------------------------------------------------------------- |--------------------------------- |
 | SELECT DISTINCT(col1) FROM tbl_name                                                         | DISTINCT()                       |
 | SELECT COUNT(DISTINCT col1 + col2) FROM tbl_name                                            | PLUS FUNCTION + DISTINCT         |
