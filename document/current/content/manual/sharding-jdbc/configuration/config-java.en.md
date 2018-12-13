@@ -143,16 +143,16 @@ weight = 1
 
 #### ShardingRuleConfiguration
 
-| *Name*                                    | *DataType*           | *Description*                                                                                                   |
-| ----------------------------------------- | ------------------------------------------ | ----------------------------------------------------------------------------------------- |
-| tableRuleConfigs                          | Collection\<TableRuleConfiguration\>       | Table rule configuration                                                                  |
-| bindingTableGroups (?)                    | Collection\<String\>                       | Binding table groups                                                                      |
-| broadcastTables (?)                       | Collection\<String\>                       | Binding table groups                                                                      |
-| defaultDataSourceName (?)                 | String                                     | If table not configure at table rule, will route to defaultDataSourceName                 |
-| defaultDatabaseShardingStrategyConfig (?) | ShardingStrategyConfiguration              | Default strategy for sharding databases                                                   |
-| defaultTableShardingStrategyConfig (?)    | ShardingStrategyConfiguration              | Default strategy for sharding tables                                                      |
+| *Name*                                    | *DataType*           | *Description*                                                                                                     |
+| ----------------------------------------- | ------------------------------------------ | ------------------------------------------------------------------------------------------- |
+| tableRuleConfigs                          | Collection\<TableRuleConfiguration\>       | Table rule configuration                                                                    |
+| bindingTableGroups (?)                    | Collection\<String\>                       | Binding table groups                                                                        |
+| broadcastTables (?)                       | Collection\<String\>                       | Broadcast table                                                                             |
+| defaultDataSourceName (?)                 | String                                     | If table not configure at table rule, will route to defaultDataSourceName                   |
+| defaultDatabaseShardingStrategyConfig (?) | ShardingStrategyConfiguration              | Default strategy for sharding databases                                                     |
+| defaultTableShardingStrategyConfig (?)    | ShardingStrategyConfiguration              | Default strategy for sharding tables                                                        |
 | defaultKeyGenerator (?)                   | KeyGenerator                               | Default key generator, default value is `io.shardingsphere.core.keygen.DefaultKeyGenerator` |
-| masterSlaveRuleConfigs (?)                | Collection\<MasterSlaveRuleConfiguration\> | Read-write splitting rule configuration                                                   |
+| masterSlaveRuleConfigs (?)                | Collection\<MasterSlaveRuleConfiguration\> | Read-write splitting rule configuration                                                     |
 
 #### TableRuleConfiguration
 

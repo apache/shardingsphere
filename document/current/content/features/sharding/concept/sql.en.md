@@ -19,7 +19,7 @@ The smallest unit of data sharding, consist of source data name and table name, 
 
 ## Binding Table
 
-It refers to the primary table and the copy table with the same sharding rules, 
+It refers to the primary table and the joiner table with the same sharding rules, 
 such as, `t_order` table and `t_order_item` table are both of order ID sharding, so they are binding tables of each other. 
 Cartesian product correlation will not appear in the multi-table correlating query, so the query efficiency will increases to a large extend. Take this one for example, if SQL is:
 
@@ -47,6 +47,11 @@ In them, table `t_order` in the left end of FROM will be taken by Sharding-Spher
 In a similar way, Sharding-Sphere will also take table `t_order` in the left end of FROM as the primary table of the whole binding table. 
 All the route computations will only use the sharding strategy of the primary table, so sharding computation of `t_order_item` table will use the conditions of `t_order`. 
 Due to this, sharding keys between binding tables should be totally identical.
+
+## Broadcast Table
+
+It refers to all database instance has same tables with consist table structure and data. 
+Best practice for broadcast table is for small data volume but need joiner query with big data volume scenario, for example: dictionary table.
 
 ## Logic Index
 

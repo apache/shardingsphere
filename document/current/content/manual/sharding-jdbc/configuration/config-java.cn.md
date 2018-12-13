@@ -151,7 +151,7 @@ weight = 1
 | ----------------------------------------- | ------------------------------------------ | ----------------------------------------------------------------------- |
 | tableRuleConfigs                          | Collection\<TableRuleConfiguration\>       | 分片规则列表                                                              |
 | bindingTableGroups (?)                    | Collection\<String\>                       | 绑定表规则列表                                                            |
-| broadcastTables (?)                       | Collection\<String\>                       | 绑定表规则列表                                                            |
+| broadcastTables (?)                       | Collection\<String\>                       | 广播表规则列表                                                            |
 | defaultDataSourceName (?)                 | String                                     | 未配置分片规则的表将通过默认数据源定位                                       |
 | defaultDatabaseShardingStrategyConfig (?) | ShardingStrategyConfiguration              | 默认分库策略                                                              |
 | defaultTableShardingStrategyConfig (?)    | ShardingStrategyConfiguration              | 默认分表策略                                                              |
