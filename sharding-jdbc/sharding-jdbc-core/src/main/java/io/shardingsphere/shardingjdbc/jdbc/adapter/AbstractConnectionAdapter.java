@@ -85,7 +85,7 @@ public abstract class AbstractConnectionAdapter extends AbstractUnsupportedOpera
         this.transactionType = transactionType;
         shardingTransactionHandler = ShardingTransactionHandlerRegistry.getInstance().getHandler(transactionType);
         if (TransactionType.LOCAL != transactionType) {
-            Preconditions.checkNotNull(shardingTransactionHandler, String.format("Cannot find transaction manager of [%s]", transactionType));
+            Preconditions.checkNotNull(shardingTransactionHandler, "Cannot find transaction manager of [%s]", transactionType);
         }
     }
     

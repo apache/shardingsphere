@@ -31,19 +31,19 @@ public final class LimitSegment implements SQLSegment {
     
     private final DatabaseType databaseType;
     
+    private final LimitValueSegment rowCount;
+    
     private final Optional<LimitValueSegment> offset;
     
-    private final Optional<LimitValueSegment> rowCount;
-    
-    public LimitSegment(final DatabaseType databaseType, final Optional<LimitValueSegment> offset, final Optional<LimitValueSegment> rowCount) {
+    public LimitSegment(final DatabaseType databaseType, final LimitValueSegment rowCount, final Optional<LimitValueSegment> offset) {
         this.databaseType = databaseType;
-        this.offset = offset;
         this.rowCount = rowCount;
+        this.offset = offset;
     }
     
-    public LimitSegment(final DatabaseType databaseType, final Optional<LimitValueSegment> rowCount) {
+    public LimitSegment(final DatabaseType databaseType, final LimitValueSegment rowCount) {
         this.databaseType = databaseType;
-        this.offset = Optional.absent();
         this.rowCount = rowCount;
+        this.offset = Optional.absent();
     }
 }
