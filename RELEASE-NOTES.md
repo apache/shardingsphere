@@ -1,28 +1,18 @@
-## 3.0.1
+## 3.1.0.M1
 
 ### API changes
 
-1. [ISSUE #1375](https://github.com/sharding-sphere/sharding-sphere/issues/1375) Adjust persist structure for orchestration's registry center
+1. Adjust persist structure for orchestration's registry center.
+1. Adjust Sharding-JDBC API for MasterSlaveRuleConfiguration, ShardingRuleConfiguration and TableRuleConfiguration.
 
 ### New Features
 
-#### Core
+1. XA Transaction available.
+1. All SQL 100% compatible if route to single data node (MySQL Only).
+1. `DISTINCT` SQL syntax available.
+1. Broadcast table available.
 
-1. [ISSUE #1412](https://github.com/sharding-sphere/sharding-sphere/issues/1412) Support broadcast table
-1. [ISSUE #1486](https://github.com/sharding-sphere/sharding-sphere/issues/1486) Support `DISTINCT` syntax
-
-### Bug Fixes
-
-#### Core
-
-1. [ISSUE #1348](https://github.com/sharding-sphere/sharding-sphere/issues/1348) Exception occur when using PreparedStatement to run SELECT LIMIT in multi datasources
-1. [ISSUE #1422](https://github.com/sharding-sphere/sharding-sphere/issues/1422) Exception occur when using defaultDataSourceName and defaultDatabaseStrategy at same time
-
-#### Sharding-Proxy
-
-1. [ISSUE #1403](https://github.com/sharding-sphere/sharding-sphere/issues/1403) master-slave mode exception when using PreparedStatement
-1. [ISSUE #1414](https://github.com/sharding-sphere/sharding-sphere/issues/1414) `SHOW CREATE TABLE tb_name` execution exception when configuring multiple logic schema
-1. [ISSUE #1475](https://github.com/sharding-sphere/sharding-sphere/issues/1475) `SHOW [FUll] TABLES FROM db_name LIKE 'tb_name'` failed to return the logic table
+[Changelog for Issues and Pull requests](https://github.com/sharding-sphere/sharding-sphere/milestone/3)
 
 ## 3.0.0
 

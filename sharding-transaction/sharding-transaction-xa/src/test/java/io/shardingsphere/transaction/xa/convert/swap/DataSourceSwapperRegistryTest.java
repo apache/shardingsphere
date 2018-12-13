@@ -80,7 +80,7 @@ public class DataSourceSwapperRegistryTest {
         assertNull(actual.getUsername());
         assertNull(actual.getPassword());
         assertThat(actual.getMaximumPoolSize(), is(50));
-        assertThat(actual.getMinimumPoolSize(), is(5));
+        assertThat(actual.getMinimumPoolSize(), is(1));
         assertThat(actual.getConnectionTimeout(), is(30 * 1000L));
         assertThat(actual.getIdleTimeout(), is(60 * 1000L));
         assertThat(actual.getMaxLifetime(), is(0L));
