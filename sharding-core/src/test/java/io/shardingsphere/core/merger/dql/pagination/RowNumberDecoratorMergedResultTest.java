@@ -17,7 +17,7 @@
 
 package io.shardingsphere.core.merger.dql.pagination;
 
-import io.shardingsphere.shaded.com.google.common.collect.Lists;
+import com.google.common.collect.Lists;
 import io.shardingsphere.core.constant.DatabaseType;
 import io.shardingsphere.core.merger.MergedResult;
 import io.shardingsphere.core.merger.QueryResult;

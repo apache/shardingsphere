@@ -17,7 +17,7 @@
 
 package io.shardingsphere.core.parsing.parser.dialect.postgresql.clause;
 
-import io.shardingsphere.shaded.com.google.common.base.Optional;
+import com.google.common.base.Optional;
 import io.shardingsphere.core.constant.DatabaseType;
 import io.shardingsphere.core.parsing.lexer.LexerEngine;
 import io.shardingsphere.core.parsing.lexer.dialect.postgresql.PostgreSQLKeyword;

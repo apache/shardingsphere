@@ -22,10 +22,10 @@ import com.github.rholder.retry.Retryer;
 import com.github.rholder.retry.RetryerBuilder;
 import com.github.rholder.retry.StopStrategies;
 import com.github.rholder.retry.WaitStrategies;
+import com.google.common.base.Optional;
 import io.shardingsphere.orchestration.reg.api.RegistryCenterConfiguration;
 import io.shardingsphere.orchestration.reg.exception.RegistryCenterException;
 import lombok.RequiredArgsConstructor;
-import io.shardingsphere.shaded.com.google.common.base.Optional;
 
 import java.util.concurrent.Callable;
 import java.util.concurrent.ExecutionException;

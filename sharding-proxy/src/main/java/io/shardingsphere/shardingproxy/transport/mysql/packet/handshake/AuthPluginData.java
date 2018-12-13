@@ -17,7 +17,7 @@
 
 package io.shardingsphere.shardingproxy.transport.mysql.packet.handshake;
 
-import io.shardingsphere.shaded.com.google.common.primitives.Bytes;
+import com.google.common.primitives.Bytes;
 import lombok.Getter;
 
 /**

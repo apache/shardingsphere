@@ -17,7 +17,7 @@
 
 package io.shardingsphere.core.parsing.integrate.asserts.meta;
 
-import io.shardingsphere.shaded.com.google.common.base.Joiner;
+import com.google.common.base.Joiner;
 import io.shardingsphere.core.parsing.integrate.asserts.SQLStatementAssertMessage;
 import io.shardingsphere.core.parsing.integrate.jaxb.meta.ExpectedTableMetaData;
 import lombok.RequiredArgsConstructor;

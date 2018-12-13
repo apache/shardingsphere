@@ -17,8 +17,8 @@
 
 package io.shardingsphere.core.parsing.parser.sql.dql.select;
 
-import io.shardingsphere.shaded.com.google.common.base.Optional;
-import io.shardingsphere.shaded.com.google.common.base.Preconditions;
+import com.google.common.base.Optional;
+import com.google.common.base.Preconditions;
 import io.shardingsphere.core.constant.AggregationType;
 import io.shardingsphere.core.metadata.table.ShardingTableMetaData;
 import io.shardingsphere.core.parsing.lexer.LexerEngine;

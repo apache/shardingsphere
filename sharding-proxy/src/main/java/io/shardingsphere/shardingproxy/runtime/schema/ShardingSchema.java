@@ -17,7 +17,7 @@
 
 package io.shardingsphere.shardingproxy.runtime.schema;
 
-import io.shardingsphere.shaded.com.google.common.eventbus.Subscribe;
+import com.google.common.eventbus.Subscribe;
 import io.shardingsphere.api.config.ShardingRuleConfiguration;
 import io.shardingsphere.core.constant.DatabaseType;
 import io.shardingsphere.core.constant.properties.ShardingPropertiesConstant;

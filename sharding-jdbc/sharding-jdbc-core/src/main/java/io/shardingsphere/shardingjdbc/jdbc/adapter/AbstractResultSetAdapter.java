@@ -17,7 +17,7 @@
 
 package io.shardingsphere.shardingjdbc.jdbc.adapter;
 
-import io.shardingsphere.shaded.com.google.common.base.Preconditions;
+import com.google.common.base.Preconditions;
 import io.shardingsphere.shardingjdbc.jdbc.adapter.executor.ForceExecuteCallback;
 import io.shardingsphere.shardingjdbc.jdbc.adapter.executor.ForceExecuteTemplate;
 import io.shardingsphere.shardingjdbc.jdbc.core.resultset.ShardingResultSetMetaData;

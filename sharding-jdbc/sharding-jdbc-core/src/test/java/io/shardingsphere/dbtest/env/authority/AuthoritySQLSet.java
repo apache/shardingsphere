@@ -17,7 +17,7 @@
 
 package io.shardingsphere.dbtest.env.authority;
 
-import io.shardingsphere.shaded.com.google.common.base.Splitter;
+import com.google.common.base.Splitter;
 import io.shardingsphere.core.constant.DatabaseType;
 
 import javax.xml.bind.annotation.XmlAccessType;

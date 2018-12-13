@@ -17,7 +17,7 @@
 
 package io.shardingsphere.core.parsing.antlr.sql.statement.ddl;
 
-import io.shardingsphere.shaded.com.google.common.base.Optional;
+import com.google.common.base.Optional;
 import io.shardingsphere.core.metadata.table.ColumnMetaData;
 import io.shardingsphere.core.metadata.table.ShardingTableMetaData;
 import io.shardingsphere.core.metadata.table.TableMetaData;
