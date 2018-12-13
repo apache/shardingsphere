@@ -19,7 +19,7 @@ package io.shardingsphere.transaction.xa.manager;
 
 import io.shardingsphere.core.exception.ShardingException;
 import io.shardingsphere.spi.NewInstanceServiceLoader;
-import io.shardingsphere.transaction.spi.XATransactionManager;
+import io.shardingsphere.transaction.spi.xa.XATransactionManager;
 import lombok.Getter;
 import lombok.extern.slf4j.Slf4j;
 

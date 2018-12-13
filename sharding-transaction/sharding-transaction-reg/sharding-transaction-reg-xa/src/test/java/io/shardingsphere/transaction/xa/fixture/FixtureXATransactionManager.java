@@ -19,7 +19,7 @@ package io.shardingsphere.transaction.xa.fixture;
 
 import io.shardingsphere.transaction.context.XATransactionContext;
 import io.shardingsphere.core.rule.DataSourceParameter;
-import io.shardingsphere.transaction.spi.XATransactionManager;
+import io.shardingsphere.transaction.spi.xa.XATransactionManager;
 
 import javax.sql.DataSource;
 import javax.sql.XADataSource;

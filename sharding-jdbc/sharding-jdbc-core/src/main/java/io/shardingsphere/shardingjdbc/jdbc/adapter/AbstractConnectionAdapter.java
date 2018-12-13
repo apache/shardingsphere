@@ -34,8 +34,8 @@ import io.shardingsphere.shardingjdbc.jdbc.adapter.executor.ForceExecuteTemplate
 import io.shardingsphere.shardingjdbc.jdbc.unsupported.AbstractUnsupportedOperationConnection;
 import io.shardingsphere.spi.root.RootInvokeHook;
 import io.shardingsphere.spi.root.SPIRootInvokeHook;
-import io.shardingsphere.transaction.ShardingTransactionHandler;
-import io.shardingsphere.transaction.spi.reg.ShardingTransactionHandlerRegistry;
+import io.shardingsphere.transaction.spi.ShardingTransactionHandler;
+import io.shardingsphere.transaction.api.ShardingTransactionHandlerRegistry;
 import lombok.Getter;
 
 import javax.sql.DataSource;

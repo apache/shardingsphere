@@ -21,7 +21,7 @@ import com.atomikos.icatch.jta.UserTransactionManager;
 import io.shardingsphere.transaction.context.XATransactionContext;
 import io.shardingsphere.core.exception.ShardingException;
 import io.shardingsphere.core.rule.DataSourceParameter;
-import io.shardingsphere.transaction.spi.XATransactionManager;
+import io.shardingsphere.transaction.spi.xa.XATransactionManager;
 
 import javax.sql.DataSource;
 import javax.sql.XADataSource;

@@ -15,10 +15,10 @@
  * </p>
  */
 
-package io.shardingsphere.transaction.spi.reg;
+package io.shardingsphere.transaction.api;
 
 import io.shardingsphere.core.constant.transaction.TransactionType;
-import io.shardingsphere.transaction.ShardingTransactionHandler;
+import io.shardingsphere.transaction.spi.ShardingTransactionHandler;
 import io.shardingsphere.transaction.context.ShardingTransactionContext;
 import lombok.AccessLevel;
 import lombok.NoArgsConstructor;

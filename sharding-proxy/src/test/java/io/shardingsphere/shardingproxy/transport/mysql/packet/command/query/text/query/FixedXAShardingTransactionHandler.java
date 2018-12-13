@@ -19,7 +19,7 @@ package io.shardingsphere.shardingproxy.transport.mysql.packet.command.query.tex
 
 import io.shardingsphere.core.constant.transaction.TransactionType;
 import io.shardingsphere.transaction.context.ShardingTransactionContext;
-import io.shardingsphere.transaction.ShardingTransactionHandler;
+import io.shardingsphere.transaction.spi.ShardingTransactionHandler;
 
 import java.util.HashMap;
 import java.util.Map;

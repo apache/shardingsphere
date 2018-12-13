@@ -15,10 +15,11 @@
  * </p>
  */
 
-package io.shardingsphere.transaction.spi;
+package io.shardingsphere.transaction.spi.xa;
 
 import io.shardingsphere.transaction.context.XATransactionContext;
 import io.shardingsphere.core.rule.DataSourceParameter;
+import io.shardingsphere.transaction.spi.ShardingTransactionManager;
 
 import javax.sql.DataSource;
 import javax.sql.XADataSource;

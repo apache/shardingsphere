@@ -18,7 +18,7 @@
 package io.shardingsphere.transaction.spi.reg;
 
 import io.shardingsphere.core.constant.transaction.TransactionType;
-import io.shardingsphere.transaction.ShardingTransactionHandler;
+import io.shardingsphere.transaction.spi.ShardingTransactionHandler;
 import io.shardingsphere.transaction.context.ShardingTransactionContext;
 
 import java.util.HashMap;

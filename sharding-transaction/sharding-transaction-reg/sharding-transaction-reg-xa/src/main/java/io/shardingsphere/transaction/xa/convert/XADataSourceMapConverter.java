@@ -19,8 +19,8 @@ package io.shardingsphere.transaction.xa.convert;
 
 import io.shardingsphere.core.constant.DatabaseType;
 import io.shardingsphere.core.rule.DataSourceParameter;
-import io.shardingsphere.transaction.spi.DataSourceMapConverter;
-import io.shardingsphere.transaction.spi.XATransactionManager;
+import io.shardingsphere.transaction.spi.xa.DataSourceMapConverter;
+import io.shardingsphere.transaction.spi.xa.XATransactionManager;
 import io.shardingsphere.transaction.xa.convert.dialect.XADataSourceFactory;
 import io.shardingsphere.transaction.xa.convert.swap.DataSourceSwapperRegistry;
 import io.shardingsphere.transaction.xa.manager.XATransactionManagerSPILoader;
