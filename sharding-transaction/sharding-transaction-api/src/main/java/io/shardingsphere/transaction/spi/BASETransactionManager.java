@@ -15,10 +15,9 @@
  * </p>
  */
 
-package io.shardingsphere.transaction.manager.base;
+package io.shardingsphere.transaction.spi;
 
 import io.shardingsphere.core.event.transaction.ShardingTransactionContext;
-import io.shardingsphere.transaction.manager.ShardingTransactionManager;
 
 /**
  * BASE transaction manager.

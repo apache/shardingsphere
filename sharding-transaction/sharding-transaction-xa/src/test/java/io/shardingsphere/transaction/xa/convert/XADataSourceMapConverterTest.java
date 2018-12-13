@@ -22,7 +22,7 @@ import io.shardingsphere.core.constant.DatabaseType;
 import io.shardingsphere.core.constant.PoolType;
 import io.shardingsphere.core.exception.ShardingException;
 import io.shardingsphere.core.rule.DataSourceParameter;
-import io.shardingsphere.transaction.manager.xa.XATransactionManager;
+import io.shardingsphere.transaction.spi.XATransactionManager;
 import io.shardingsphere.transaction.xa.fixture.DataSourceUtils;
 import io.shardingsphere.transaction.xa.fixture.ReflectiveUtil;
 import org.apache.tomcat.dbcp.dbcp2.managed.BasicManagedDataSource;
