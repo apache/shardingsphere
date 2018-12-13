@@ -17,7 +17,7 @@
 
 package io.shardingsphere.core.constant.transaction;
 
-import io.shardingsphere.shaded.com.google.common.base.Optional;
+import com.google.common.base.Optional;
 
 /**
  * Transaction operation type.

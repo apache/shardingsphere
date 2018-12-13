@@ -17,7 +17,7 @@
 
 package io.shardingsphere.core.routing.type;
 
-import io.shardingsphere.shaded.com.google.common.base.Optional;
+import com.google.common.base.Optional;
 import lombok.Getter;
 import lombok.ToString;
 

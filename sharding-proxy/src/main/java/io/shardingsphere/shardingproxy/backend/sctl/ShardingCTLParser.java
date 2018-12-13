@@ -17,7 +17,7 @@
 
 package io.shardingsphere.shardingproxy.backend.sctl;
 
-import io.shardingsphere.shaded.com.google.common.base.Optional;
+import com.google.common.base.Optional;
 
 /**
  * Sharding CTL parser interface.

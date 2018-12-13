@@ -17,7 +17,7 @@
 
 package io.shardingsphere.orchestration.internal.registry.config.node;
 
-import io.shardingsphere.shaded.com.google.common.base.Joiner;
+import com.google.common.base.Joiner;
 import lombok.RequiredArgsConstructor;
 
 /**

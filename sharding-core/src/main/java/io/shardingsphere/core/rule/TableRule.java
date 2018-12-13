@@ -17,8 +17,8 @@
 
 package io.shardingsphere.core.rule;
 
-import io.shardingsphere.shaded.com.google.common.base.Preconditions;
-import io.shardingsphere.api.config.rule.TableRuleConfiguration;
+import com.google.common.base.Preconditions;
+import io.shardingsphere.api.config.TableRuleConfiguration;
 import io.shardingsphere.core.exception.ShardingException;
 import io.shardingsphere.core.keygen.KeyGenerator;
 import io.shardingsphere.core.routing.strategy.ShardingStrategy;

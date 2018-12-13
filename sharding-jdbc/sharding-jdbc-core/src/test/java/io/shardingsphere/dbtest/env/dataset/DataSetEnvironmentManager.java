@@ -17,7 +17,7 @@
 
 package io.shardingsphere.dbtest.env.dataset;
 
-import io.shardingsphere.shaded.com.google.common.base.Joiner;
+import com.google.common.base.Joiner;
 import io.shardingsphere.core.constant.DatabaseType;
 import io.shardingsphere.core.rule.DataNode;
 import io.shardingsphere.core.util.InlineExpressionParser;

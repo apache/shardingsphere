@@ -17,10 +17,10 @@
 
 package io.shardingsphere.orchestration.internal.registry.config.service;
 
-import io.shardingsphere.shaded.com.google.common.base.Function;
-import io.shardingsphere.shaded.com.google.common.collect.Maps;
-import io.shardingsphere.api.config.rule.MasterSlaveRuleConfiguration;
-import io.shardingsphere.api.config.rule.ShardingRuleConfiguration;
+import com.google.common.base.Function;
+import com.google.common.collect.Maps;
+import io.shardingsphere.api.config.MasterSlaveRuleConfiguration;
+import io.shardingsphere.api.config.ShardingRuleConfiguration;
 import io.shardingsphere.core.config.DataSourceConfiguration;
 import io.shardingsphere.core.constant.properties.ShardingPropertiesConstant;
 import io.shardingsphere.core.rule.Authentication;

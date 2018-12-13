@@ -17,7 +17,7 @@
 
 package io.shardingsphere.core.parsing.antlr.extractor;
 
-import io.shardingsphere.shaded.com.google.common.base.Optional;
+import com.google.common.base.Optional;
 import io.shardingsphere.core.parsing.antlr.parser.SQLAST;
 import io.shardingsphere.core.parsing.antlr.sql.segment.SQLSegment;
 

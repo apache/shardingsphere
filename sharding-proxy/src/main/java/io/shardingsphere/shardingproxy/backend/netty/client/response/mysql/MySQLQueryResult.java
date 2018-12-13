@@ -17,7 +17,7 @@
 
 package io.shardingsphere.shardingproxy.backend.netty.client.response.mysql;
 
-import io.shardingsphere.shaded.com.google.common.collect.Lists;
+import com.google.common.collect.Lists;
 import io.shardingsphere.core.merger.QueryResult;
 import io.shardingsphere.shardingproxy.transport.mysql.packet.MySQLPacket;
 import io.shardingsphere.shardingproxy.transport.mysql.packet.MySQLPacketPayload;
