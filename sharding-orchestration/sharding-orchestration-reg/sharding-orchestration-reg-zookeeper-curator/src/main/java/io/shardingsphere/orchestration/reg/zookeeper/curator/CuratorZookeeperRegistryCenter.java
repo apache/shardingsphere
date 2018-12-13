@@ -17,8 +17,6 @@
 
 package io.shardingsphere.orchestration.reg.zookeeper.curator;
 
-import com.google.common.base.Charsets;
-import com.google.common.base.Strings;
 import io.shardingsphere.orchestration.reg.api.RegistryCenter;
 import io.shardingsphere.orchestration.reg.api.RegistryCenterConfiguration;
 import io.shardingsphere.orchestration.reg.listener.DataChangedEvent;
@@ -37,6 +35,8 @@ import org.apache.zookeeper.CreateMode;
 import org.apache.zookeeper.KeeperException.OperationTimeoutException;
 import org.apache.zookeeper.ZooDefs;
 import org.apache.zookeeper.data.ACL;
+import io.shardingsphere.shaded.com.google.common.base.Charsets;
+import io.shardingsphere.shaded.com.google.common.base.Strings;
 
 import java.io.UnsupportedEncodingException;
 import java.util.Collections;

@@ -17,7 +17,7 @@
 
 package io.shardingsphere.api.algorithm.sharding;
 
-import com.google.common.collect.Range;
+import io.shardingsphere.shaded.com.google.common.collect.Range;
 import lombok.Getter;
 import lombok.RequiredArgsConstructor;
 import lombok.ToString;

@@ -17,7 +17,7 @@
 
 package io.shardingsphere.core.merger.dql.groupby;
 
-import com.google.common.base.Preconditions;
+import io.shardingsphere.shaded.com.google.common.base.Preconditions;
 import io.shardingsphere.core.merger.dql.common.MemoryQueryResultRow;
 import io.shardingsphere.core.merger.dql.orderby.CompareUtil;
 import io.shardingsphere.core.parsing.parser.context.OrderItem;

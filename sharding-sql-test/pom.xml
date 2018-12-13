@@ -10,4 +10,12 @@
     </parent>
     <artifactId>sharding-sql-test</artifactId>
     <name>${project.artifactId}</name>
+    
+     <dependencies>
+        <dependency>
+            <groupId>io.shardingsphere</groupId>
+            <artifactId>sharding-shade</artifactId>
+            <version>${project.version}</version>
+        </dependency>
+     </dependencies>
 </project>

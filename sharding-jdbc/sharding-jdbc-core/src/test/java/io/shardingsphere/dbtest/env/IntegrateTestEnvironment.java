@@ -17,7 +17,7 @@
 
 package io.shardingsphere.dbtest.env;
 
-import com.google.common.base.Splitter;
+import io.shardingsphere.shaded.com.google.common.base.Splitter;
 import io.shardingsphere.core.constant.DatabaseType;
 import io.shardingsphere.dbtest.env.datasource.DatabaseEnvironment;
 import lombok.Getter;

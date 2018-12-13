@@ -17,7 +17,7 @@
 
 package io.shardingsphere.core.parsing.parser.context;
 
-import com.google.common.base.Optional;
+import io.shardingsphere.shaded.com.google.common.base.Optional;
 import io.shardingsphere.core.constant.OrderDirection;
 import lombok.EqualsAndHashCode;
 import lombok.Getter;

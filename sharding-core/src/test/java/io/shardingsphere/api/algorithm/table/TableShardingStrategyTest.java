@@ -17,7 +17,7 @@
 
 package io.shardingsphere.api.algorithm.table;
 
-import com.google.common.collect.Sets;
+import io.shardingsphere.shaded.com.google.common.collect.Sets;
 import io.shardingsphere.api.config.strategy.StandardShardingStrategyConfiguration;
 import io.shardingsphere.core.fixture.PreciseOrderShardingAlgorithm;
 import io.shardingsphere.core.routing.strategy.standard.StandardShardingStrategy;

@@ -20,19 +20,21 @@
         <module>sharding-opentracing</module>
         
         <module>sharding-sql-test</module>
+        <module>sharding-shade</module>
     </modules>
     
     <properties>
         <java.version>1.7</java.version>
         <maven.version.range>[3.0.4,)</maven.version.range>
+
         <project.build.sourceEncoding>UTF-8</project.build.sourceEncoding>
         <project.build.locale>zh_CN</project.build.locale>
         
-        <guava.version>18.0</guava.version>
         <slf4j.version>1.7.7</slf4j.version>
         
         <antlr4.version>4.7.1</antlr4.version>
-        
+
+        <guava.version>18.0</guava.version>
         <groovy.version>2.4.5</groovy.version>
         <snakeyaml.version>1.16</snakeyaml.version>
         
@@ -90,13 +92,14 @@
         <protobuf-maven-plugin.version>0.5.0</protobuf-maven-plugin.version>
         <os-maven-plugin.version>1.5.0.Final</os-maven-plugin.version>
         <docker-maven-plugin.version>0.4.14</docker-maven-plugin.version>
-    
+        <maven-shade-plugin.version>3.0.0</maven-shade-plugin.version>
+
         <javadocExecutable>${java.home}/../bin/javadoc</javadocExecutable>
     </properties>
     
     <dependencyManagement>
         <dependencies>
-            <dependency>
+             <dependency>
                 <groupId>com.google.guava</groupId>
                 <artifactId>guava</artifactId>
                 <version>${guava.version}</version>
@@ -330,10 +333,6 @@
     
     <dependencies>
         <dependency>
-            <groupId>com.google.guava</groupId>
-            <artifactId>guava</artifactId>
-        </dependency>
-        <dependency>
             <groupId>org.slf4j</groupId>
             <artifactId>slf4j-api</artifactId>
         </dependency>
@@ -406,6 +405,11 @@
                     <configuration>
                         <argLine>-Xmx1024m -XX:MaxPermSize=256m</argLine>
                     </configuration>
+                </plugin>
+                <plugin>
+                    <groupId>org.apache.maven.plugins</groupId>
+                    <artifactId>maven-shade-plugin</artifactId>
+                    <version>${maven-shade-plugin.version}</version>
                 </plugin>
                 <plugin>
                     <artifactId>maven-assembly-plugin</artifactId>

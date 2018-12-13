@@ -17,7 +17,7 @@
 
 package io.shardingsphere.core.parsing.parser.dialect.oracle.clause;
 
-import com.google.common.base.Optional;
+import io.shardingsphere.shaded.com.google.common.base.Optional;
 import io.shardingsphere.core.constant.DatabaseType;
 import io.shardingsphere.core.parsing.lexer.LexerEngine;
 import io.shardingsphere.core.parsing.lexer.token.Keyword;

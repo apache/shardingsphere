@@ -16,6 +16,12 @@
         <module>sharding-orchestration-core</module>
         <module>sharding-orchestration-reg</module>
     </modules>
+    
+     <dependencies>
+        <dependency>
+            <groupId>io.shardingsphere</groupId>
+            <artifactId>sharding-shade</artifactId>
+            <version>${project.version}</version>
+        </dependency>
+    </dependencies>
 </project>
-
-

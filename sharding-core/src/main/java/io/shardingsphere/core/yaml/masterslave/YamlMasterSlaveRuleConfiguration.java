@@ -17,7 +17,7 @@
 
 package io.shardingsphere.core.yaml.masterslave;
 
-import com.google.common.base.Strings;
+import io.shardingsphere.shaded.com.google.common.base.Strings;
 import io.shardingsphere.api.algorithm.masterslave.MasterSlaveLoadBalanceAlgorithm;
 import io.shardingsphere.api.algorithm.masterslave.MasterSlaveLoadBalanceAlgorithmType;
 import io.shardingsphere.api.config.MasterSlaveRuleConfiguration;

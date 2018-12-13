@@ -17,8 +17,8 @@
 
 package io.shardingsphere.test.sql;
 
-import com.google.common.base.Preconditions;
-import com.google.common.base.Strings;
+import io.shardingsphere.shaded.com.google.common.base.Preconditions;
+import io.shardingsphere.shaded.com.google.common.base.Strings;
 import lombok.SneakyThrows;
 
 import javax.xml.bind.JAXBContext;

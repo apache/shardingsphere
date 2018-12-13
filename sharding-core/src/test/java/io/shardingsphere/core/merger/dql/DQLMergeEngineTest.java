@@ -17,7 +17,7 @@
 
 package io.shardingsphere.core.merger.dql;
 
-import com.google.common.base.Optional;
+import io.shardingsphere.shaded.com.google.common.base.Optional;
 import io.shardingsphere.core.constant.AggregationType;
 import io.shardingsphere.core.constant.DatabaseType;
 import io.shardingsphere.core.constant.OrderDirection;

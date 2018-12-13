@@ -17,7 +17,7 @@
 
 package io.shardingsphere.core.merger.dql.orderby;
 
-import com.google.common.collect.Lists;
+import io.shardingsphere.shaded.com.google.common.collect.Lists;
 import io.shardingsphere.core.constant.OrderDirection;
 import io.shardingsphere.core.merger.MergedResult;
 import io.shardingsphere.core.merger.QueryResult;

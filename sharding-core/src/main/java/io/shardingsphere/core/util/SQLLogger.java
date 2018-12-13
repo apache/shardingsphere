@@ -17,7 +17,7 @@
 
 package io.shardingsphere.core.util;
 
-import com.google.common.base.Joiner;
+import io.shardingsphere.shaded.com.google.common.base.Joiner;
 import io.shardingsphere.core.parsing.parser.sql.SQLStatement;
 import io.shardingsphere.core.routing.RouteUnit;
 import lombok.AccessLevel;

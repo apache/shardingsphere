@@ -17,7 +17,7 @@
 
 package io.shardingsphere.dbtest.cases.assertion;
 
-import com.google.common.base.Preconditions;
+import io.shardingsphere.shaded.com.google.common.base.Preconditions;
 import io.shardingsphere.dbtest.cases.assertion.dcl.DCLIntegrateTestCase;
 import io.shardingsphere.dbtest.cases.assertion.dcl.DCLIntegrateTestCases;
 import io.shardingsphere.dbtest.cases.assertion.ddl.DDLIntegrateTestCase;

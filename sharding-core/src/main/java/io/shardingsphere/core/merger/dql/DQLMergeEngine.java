@@ -17,8 +17,8 @@
 
 package io.shardingsphere.core.merger.dql;
 
-import com.google.common.base.Function;
-import com.google.common.collect.Lists;
+import io.shardingsphere.shaded.com.google.common.base.Function;
+import io.shardingsphere.shaded.com.google.common.collect.Lists;
 import io.shardingsphere.core.constant.DatabaseType;
 import io.shardingsphere.core.executor.sql.execute.result.AggregationDistinctQueryResult;
 import io.shardingsphere.core.executor.sql.execute.result.DistinctQueryResult;

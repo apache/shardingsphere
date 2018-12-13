@@ -17,7 +17,7 @@
 
 package io.shardingsphere.core.parsing.integrate.asserts.token;
 
-import com.google.common.base.Optional;
+import io.shardingsphere.shaded.com.google.common.base.Optional;
 import io.shardingsphere.core.parsing.integrate.asserts.SQLStatementAssertMessage;
 import io.shardingsphere.core.parsing.integrate.jaxb.token.ExpectedRowCountToken;
 import io.shardingsphere.core.parsing.integrate.jaxb.token.ExpectedTokens;

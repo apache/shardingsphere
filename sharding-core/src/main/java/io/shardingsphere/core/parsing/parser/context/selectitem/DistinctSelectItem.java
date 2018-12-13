@@ -17,8 +17,8 @@
 
 package io.shardingsphere.core.parsing.parser.context.selectitem;
 
-import com.google.common.base.Joiner;
-import com.google.common.base.Optional;
+import io.shardingsphere.shaded.com.google.common.base.Joiner;
+import io.shardingsphere.shaded.com.google.common.base.Optional;
 import io.shardingsphere.core.parsing.lexer.token.DefaultKeyword;
 import io.shardingsphere.core.util.SQLUtil;
 import lombok.EqualsAndHashCode;

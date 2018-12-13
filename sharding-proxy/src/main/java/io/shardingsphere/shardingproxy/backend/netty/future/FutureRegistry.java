@@ -17,8 +17,8 @@
 
 package io.shardingsphere.shardingproxy.backend.netty.future;
 
-import com.google.common.cache.Cache;
-import com.google.common.cache.CacheBuilder;
+import io.shardingsphere.shaded.com.google.common.cache.Cache;
+import io.shardingsphere.shaded.com.google.common.cache.CacheBuilder;
 import lombok.AccessLevel;
 import lombok.NoArgsConstructor;
 

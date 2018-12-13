@@ -17,8 +17,8 @@
 
 package io.shardingsphere.core.routing.type.standard;
 
-import com.google.common.base.Optional;
-import com.google.common.base.Preconditions;
+import io.shardingsphere.shaded.com.google.common.base.Optional;
+import io.shardingsphere.shaded.com.google.common.base.Preconditions;
 import io.shardingsphere.api.algorithm.sharding.ShardingValue;
 import io.shardingsphere.core.hint.HintManagerHolder;
 import io.shardingsphere.core.optimizer.condition.ShardingCondition;

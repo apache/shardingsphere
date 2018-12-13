@@ -17,16 +17,16 @@
 
 package io.shardingsphere.core.util;
 
-import com.google.common.base.Function;
-import com.google.common.base.Joiner;
-import com.google.common.collect.Collections2;
-import com.google.common.collect.Sets;
+
 import groovy.lang.Closure;
 import groovy.lang.GString;
 import groovy.lang.GroovyShell;
 import groovy.lang.Script;
 import lombok.RequiredArgsConstructor;
-
+import io.shardingsphere.shaded.com.google.common.base.Function;
+import io.shardingsphere.shaded.com.google.common.base.Joiner;
+import io.shardingsphere.shaded.com.google.common.collect.Collections2;
+import io.shardingsphere.shaded.com.google.common.collect.Sets;
 import java.util.ArrayList;
 import java.util.Collection;
 import java.util.Collections;

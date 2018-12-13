@@ -57,6 +57,7 @@ public abstract class GroupByClauseParser implements SQLClauseParser {
     public final void parse(final SelectStatement selectStatement) {
         if (!lexerEngine.skipIfEqual(DefaultKeyword.GROUP)) {
             return;
+            
         }
         lexerEngine.accept(DefaultKeyword.BY);
         while (true) {

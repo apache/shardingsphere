@@ -17,7 +17,7 @@
 
 package io.shardingsphere.core.metadata.datasource;
 
-import com.google.common.collect.Lists;
+import io.shardingsphere.shaded.com.google.common.collect.Lists;
 import io.shardingsphere.api.algorithm.masterslave.MasterSlaveLoadBalanceAlgorithmType;
 import io.shardingsphere.api.config.MasterSlaveRuleConfiguration;
 import io.shardingsphere.api.config.ShardingRuleConfiguration;

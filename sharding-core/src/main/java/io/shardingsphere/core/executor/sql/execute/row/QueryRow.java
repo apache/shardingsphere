@@ -17,8 +17,8 @@
 
 package io.shardingsphere.core.executor.sql.execute.row;
 
-import com.google.common.base.Function;
-import com.google.common.collect.Lists;
+import io.shardingsphere.shaded.com.google.common.base.Function;
+import io.shardingsphere.shaded.com.google.common.collect.Lists;
 import lombok.Getter;
 import lombok.RequiredArgsConstructor;
 

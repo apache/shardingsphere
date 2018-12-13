@@ -17,8 +17,8 @@
 
 package io.shardingsphere.shardingjdbc.orchestration.internal.datasource;
 
-import com.google.common.eventbus.EventBus;
-import com.google.common.eventbus.Subscribe;
+import io.shardingsphere.shaded.com.google.common.eventbus.EventBus;
+import io.shardingsphere.shaded.com.google.common.eventbus.Subscribe;
 import io.shardingsphere.core.constant.ShardingConstant;
 import io.shardingsphere.orchestration.internal.eventbus.ShardingOrchestrationEventBus;
 import io.shardingsphere.orchestration.internal.registry.ShardingOrchestrationFacade;

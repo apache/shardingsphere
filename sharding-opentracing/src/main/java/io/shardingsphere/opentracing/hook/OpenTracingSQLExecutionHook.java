@@ -17,7 +17,7 @@
 
 package io.shardingsphere.opentracing.hook;
 
-import com.google.common.base.Joiner;
+import io.shardingsphere.shaded.com.google.common.base.Joiner;
 import io.opentracing.ActiveSpan;
 import io.opentracing.Span;
 import io.opentracing.tag.Tags;

@@ -17,8 +17,8 @@
 
 package io.shardingsphere.shardingproxy.transport.mysql.packet.command.query.binary.execute;
 
-import com.google.common.base.Optional;
-import com.google.common.base.Preconditions;
+import io.shardingsphere.shaded.com.google.common.base.Optional;
+import io.shardingsphere.shaded.com.google.common.base.Preconditions;
 import io.shardingsphere.core.constant.DatabaseType;
 import io.shardingsphere.shardingproxy.backend.BackendHandler;
 import io.shardingsphere.shardingproxy.backend.BackendHandlerFactory;

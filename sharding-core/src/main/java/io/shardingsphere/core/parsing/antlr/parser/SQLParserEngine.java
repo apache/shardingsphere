@@ -17,7 +17,7 @@
 
 package io.shardingsphere.core.parsing.antlr.parser;
 
-import com.google.common.base.Optional;
+import io.shardingsphere.shaded.com.google.common.base.Optional;
 import io.shardingsphere.core.constant.DatabaseType;
 import io.shardingsphere.core.parsing.antlr.parser.impl.SQLParserFactory;
 import io.shardingsphere.core.parsing.antlr.rule.registry.ParsingRuleRegistry;

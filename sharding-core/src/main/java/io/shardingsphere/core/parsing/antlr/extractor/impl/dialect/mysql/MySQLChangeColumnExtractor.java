@@ -17,7 +17,7 @@
 
 package io.shardingsphere.core.parsing.antlr.extractor.impl.dialect.mysql;
 
-import com.google.common.base.Optional;
+import io.shardingsphere.shaded.com.google.common.base.Optional;
 import io.shardingsphere.core.parsing.antlr.extractor.OptionalSQLSegmentExtractor;
 import io.shardingsphere.core.parsing.antlr.extractor.impl.ColumnDefinitionExtractor;
 import io.shardingsphere.core.parsing.antlr.extractor.util.ExtractorUtils;

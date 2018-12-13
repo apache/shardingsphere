@@ -17,8 +17,8 @@
 
 package io.shardingsphere.core.executor.sql.execute.result;
 
-import com.google.common.collect.HashMultimap;
-import com.google.common.collect.Multimap;
+import io.shardingsphere.shaded.com.google.common.collect.HashMultimap;
+import io.shardingsphere.shaded.com.google.common.collect.Multimap;
 import io.shardingsphere.core.executor.sql.execute.row.QueryRow;
 import io.shardingsphere.core.merger.QueryResult;
 
