@@ -10,8 +10,6 @@
     <name>${project.artifactId}</name>
     
     <modules>
-        <module>sharding-shade</module>
-
         <module>sharding-core</module>
         
         <module>sharding-jdbc</module>
@@ -22,6 +20,7 @@
         <module>sharding-opentracing</module>
         
         <module>sharding-sql-test</module>
+        <module>sharding-shade</module>
     </modules>
     
     <properties>
