@@ -15,7 +15,7 @@
  * </p>
  */
 
-package io.shardingsphere.api.config;
+package io.shardingsphere.api.config.rule;
 
 import io.shardingsphere.api.config.strategy.ShardingStrategyConfiguration;
 import io.shardingsphere.core.keygen.KeyGenerator;
