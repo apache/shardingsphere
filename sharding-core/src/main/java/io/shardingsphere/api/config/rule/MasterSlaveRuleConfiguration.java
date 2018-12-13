@@ -15,7 +15,7 @@
  * </p>
  */
 
-package io.shardingsphere.api.config;
+package io.shardingsphere.api.config.rule;
 
 import io.shardingsphere.api.algorithm.masterslave.MasterSlaveLoadBalanceAlgorithm;
 import lombok.AllArgsConstructor;
