@@ -100,9 +100,9 @@ public final class CommandExecutor implements Runnable {
             return;
         }
         currentSequenceId = headPacketsCount;
-        int counter = 0;
+        int count = 0;
         while (queryCommandPacket.next()) {
-            counter++;
+            count++;
             while (!context.channel().isWritable() && context.channel().isActive()) {
                 synchronized (frontendHandler) {
                     try {
@@ -114,12 +114,11 @@ public final class CommandExecutor implements Runnable {
             DatabasePacket resultValue = queryCommandPacket.getResultValue();
             currentSequenceId = resultValue.getSequenceId();
             context.write(resultValue);
-            if (GlobalRegistry.getInstance().getShardingProperties().<Integer>getValue(ShardingPropertiesConstant.PROXY_FRONTEND_FLUSH_THRESHOLD) == counter) {
+            if (GlobalRegistry.getInstance().getShardingProperties().<Integer>getValue(ShardingPropertiesConstant.PROXY_FRONTEND_FLUSH_THRESHOLD) == count) {
                 context.flush();
-                counter = 0;
+                count = 0;
             }
         }
         context.write(new EofPacket(++currentSequenceId));
     }
 }
-

@@ -22,8 +22,6 @@ import io.netty.channel.Channel;
 import io.netty.channel.ChannelHandlerContext;
 import io.netty.channel.ChannelId;
 import io.shardingsphere.core.constant.properties.ShardingProperties;
-import io.shardingsphere.core.constant.properties.ShardingPropertiesConstant;
-import io.shardingsphere.core.constant.transaction.TransactionType;
 import io.shardingsphere.core.rule.Authentication;
 import io.shardingsphere.shardingproxy.runtime.GlobalRegistry;
 import io.shardingsphere.shardingproxy.transport.mysql.packet.generic.ErrPacket;
@@ -39,7 +37,6 @@ import org.mockito.junit.MockitoJUnitRunner;
 
 import java.lang.reflect.Field;
 import java.util.Properties;
-import java.util.concurrent.ExecutorService;
 
 import static org.mockito.ArgumentMatchers.isA;
 import static org.mockito.Mockito.mock;
@@ -50,9 +47,6 @@ import static org.mockito.Mockito.when;
 public final class MySQLFrontendHandlerTest {
     
     private MySQLFrontendHandler mysqlFrontendHandler;
-    
-    @Mock
-    private ExecutorService executorService;
     
     @Mock
     private ChannelHandlerContext context;
@@ -116,12 +110,11 @@ public final class MySQLFrontendHandlerTest {
     private void setTransactionType() throws ReflectiveOperationException {
         Field field = GlobalRegistry.getInstance().getClass().getDeclaredField("shardingProperties");
         field.setAccessible(true);
-        field.set(GlobalRegistry.getInstance(), getShardingProperties(TransactionType.LOCAL));
+        field.set(GlobalRegistry.getInstance(), getShardingProperties());
     }
     
-    private ShardingProperties getShardingProperties(final TransactionType transactionType) {
+    private ShardingProperties getShardingProperties() {
         Properties props = new Properties();
-        props.setProperty(ShardingPropertiesConstant.PROXY_TRANSACTION_ENABLED.getKey(), String.valueOf(transactionType == TransactionType.XA));
         return new ShardingProperties(props);
     }
 }
