@@ -40,6 +40,7 @@ public class DataSourceSwapperRegistryTest {
         DataSource dataSource = DataSourceUtils.build(PoolType.HIKARI, DatabaseType.MySQL, databaseName);
         DataSourceParameter parameter = DataSourceSwapperRegistry.getInstance().getSwapper(dataSource).swap(dataSource);
         assertThatParameter(parameter);
+        assertThat(parameter.getMinimumPoolSize(), is(1));
         assertThat(parameter.getMaintenanceInterval(), is(30 * 1000L));
         assertThat(parameter.getMaxLifetime(), is(30 * 60 * 1000L));
     }
@@ -49,6 +50,7 @@ public class DataSourceSwapperRegistryTest {
         DataSource dataSource = DataSourceUtils.build(PoolType.DRUID, DatabaseType.MySQL, databaseName);
         DataSourceParameter parameter = DataSourceSwapperRegistry.getInstance().getSwapper(dataSource).swap(dataSource);
         assertThatParameter(parameter);
+        assertThat(parameter.getMinimumPoolSize(), is(2));
         assertThat(parameter.getMaintenanceInterval(), is(20 * 1000L));
         assertThat(parameter.getMaxLifetime(), is(0L));
     }
@@ -58,6 +60,7 @@ public class DataSourceSwapperRegistryTest {
         DataSource dataSource = DataSourceUtils.build(PoolType.DBCP2_TOMCAT, DatabaseType.MySQL, databaseName);
         DataSourceParameter parameter = DataSourceSwapperRegistry.getInstance().getSwapper(dataSource).swap(dataSource);
         assertThatParameter(parameter);
+        assertThat(parameter.getMinimumPoolSize(), is(2));
         assertThat(parameter.getMaintenanceInterval(), is(20 * 1000L));
         assertThat(parameter.getMaxLifetime(), is(500 * 1000L));
     }
@@ -67,6 +70,7 @@ public class DataSourceSwapperRegistryTest {
         DataSource dataSource = DataSourceUtils.build(PoolType.DBCP2, DatabaseType.MySQL, databaseName);
         DataSourceParameter parameter = DataSourceSwapperRegistry.getInstance().getSwapper(dataSource).swap(dataSource);
         assertThatParameter(parameter);
+        assertThat(parameter.getMinimumPoolSize(), is(2));
         assertThat(parameter.getMaintenanceInterval(), is(20 * 1000L));
         assertThat(parameter.getMaxLifetime(), is(500 * 1000L));
     }
@@ -92,7 +96,6 @@ public class DataSourceSwapperRegistryTest {
         assertThat(parameter.getUsername(), is("root"));
         assertThat(parameter.getPassword(), is("root"));
         assertThat(parameter.getMaximumPoolSize(), is(10));
-        assertThat(parameter.getMinimumPoolSize(), is(2));
         assertThat(parameter.getConnectionTimeout(), is(15 * 1000L));
         assertThat(parameter.getIdleTimeout(), is(40 * 1000L));
     }
