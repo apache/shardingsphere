@@ -17,16 +17,8 @@
 
 package io.shardingsphere.core.parsing.parser.sql.dql.select;
 
-import java.util.Collection;
-import java.util.HashSet;
-import java.util.LinkedList;
-import java.util.List;
-import java.util.Map;
-import java.util.Set;
-
 import com.google.common.base.Optional;
 import com.google.common.base.Preconditions;
-
 import io.shardingsphere.core.parsing.parser.context.OrderItem;
 import io.shardingsphere.core.parsing.parser.context.limit.Limit;
 import io.shardingsphere.core.parsing.parser.context.selectitem.AggregationDistinctSelectItem;
@@ -43,6 +35,13 @@ import io.shardingsphere.core.util.SQLUtil;
 import lombok.Getter;
 import lombok.Setter;
 import lombok.ToString;
+
+import java.util.Collection;
+import java.util.HashSet;
+import java.util.LinkedList;
+import java.util.List;
+import java.util.Map;
+import java.util.Set;
 
 /**
  * Select statement.
@@ -218,10 +217,10 @@ public final class SelectStatement extends DQLStatement {
     
     private void setIndexForAggregationItem(final Map<String, Integer> columnLabelIndexMap) {
         for (AggregationSelectItem each : getAggregationSelectItems()) {
-            Preconditions.checkState(columnLabelIndexMap.containsKey(each.getColumnLabel()), String.format("Can't find index: %s, please add alias for aggregate selections", each));
+            Preconditions.checkState(columnLabelIndexMap.containsKey(each.getColumnLabel()), "Can't find index: %s, please add alias for aggregate selections", each);
             each.setIndex(columnLabelIndexMap.get(each.getColumnLabel()));
             for (AggregationSelectItem derived : each.getDerivedAggregationSelectItems()) {
-                Preconditions.checkState(columnLabelIndexMap.containsKey(derived.getColumnLabel()), String.format("Can't find index: %s", derived));
+                Preconditions.checkState(columnLabelIndexMap.containsKey(derived.getColumnLabel()), "Can't find index: %s", derived);
                 derived.setIndex(columnLabelIndexMap.get(derived.getColumnLabel()));
             }
         }
@@ -232,7 +231,7 @@ public final class SelectStatement extends DQLStatement {
             if (-1 != each.getIndex()) {
                 continue;
             }
-            Preconditions.checkState(columnLabelIndexMap.containsKey(each.getColumnLabel()), String.format("Can't find index: %s", each));
+            Preconditions.checkState(columnLabelIndexMap.containsKey(each.getColumnLabel()), "Can't find index: %s", each);
             if (columnLabelIndexMap.containsKey(each.getColumnLabel())) {
                 each.setIndex(columnLabelIndexMap.get(each.getColumnLabel()));
             }
