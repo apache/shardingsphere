@@ -15,15 +15,26 @@
  * </p>
  */
 
-package io.shardingsphere.example.repository.api.service;
+package io.shardingsphere.example.repository.api.entity;
 
-public interface TransactionService extends CommonService {
+import java.io.Serializable;
+
+public class TransactionType implements Serializable {
     
-    void processFailureWithLocal();
+    private static final long serialVersionUID = -5333195312041231003L;
     
-    void processFailureWithXa();
+    private String transactionType;
     
-    void processFailureWithBase();
+    public String getTransactionType() {
+        return transactionType;
+    }
     
-    void printTransactionType();
+    public void setTransactionType(String transactionType) {
+        this.transactionType = transactionType;
+    }
+    
+    @Override
+    public String toString() {
+        return String.format("transactionType:%s", transactionType);
+    }
 }

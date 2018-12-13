@@ -21,6 +21,7 @@ import io.shardingsphere.example.repository.api.entity.Order;
 import io.shardingsphere.example.repository.api.entity.OrderItem;
 import io.shardingsphere.example.repository.api.repository.OrderItemRepository;
 import io.shardingsphere.example.repository.api.repository.OrderRepository;
+import io.shardingsphere.example.repository.api.repository.TransactionTypeRepository;
 import io.shardingsphere.example.repository.api.service.ShardingProxyTransactionService;
 
 import org.springframework.stereotype.Service;
@@ -35,6 +36,9 @@ public class SpringPojoShardingProxyTransactionServiceImpl extends ShardingProxy
     
     @Resource
     private OrderItemRepository orderItemRepository;
+    
+    @Resource
+    private TransactionTypeRepository transactionTypeRepository;
     
     @Override
     protected OrderRepository getOrderRepository() {
@@ -54,5 +58,10 @@ public class SpringPojoShardingProxyTransactionServiceImpl extends ShardingProxy
     @Override
     protected OrderItem newOrderItem() {
         return new OrderItem();
+    }
+    
+    @Override
+    protected TransactionTypeRepository getTransactionTypeRepository() {
+        return transactionTypeRepository;
     }
 }

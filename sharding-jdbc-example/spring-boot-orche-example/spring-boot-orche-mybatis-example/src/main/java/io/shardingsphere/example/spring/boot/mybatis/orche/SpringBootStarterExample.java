@@ -22,6 +22,7 @@ import io.shardingsphere.example.repository.mybatis.service.SpringPojoService;
 import org.mybatis.spring.annotation.MapperScan;
 import org.springframework.boot.SpringApplication;
 import org.springframework.boot.autoconfigure.SpringBootApplication;
+import org.springframework.boot.autoconfigure.transaction.jta.JtaAutoConfiguration;
 import org.springframework.context.ConfigurableApplicationContext;
 import org.springframework.context.annotation.ComponentScan;
 
@@ -31,7 +32,7 @@ import org.springframework.context.annotation.ComponentScan;
  */
 @ComponentScan("io.shardingsphere.example.repository.mybatis")
 @MapperScan(basePackages = "io.shardingsphere.example.repository.mybatis.repository")
-@SpringBootApplication
+@SpringBootApplication(exclude = JtaAutoConfiguration.class)
 public class SpringBootStarterExample {
     
     public static void main(final String[] args) {
