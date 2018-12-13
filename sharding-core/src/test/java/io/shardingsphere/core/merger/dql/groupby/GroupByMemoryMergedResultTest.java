@@ -17,8 +17,8 @@
 
 package io.shardingsphere.core.merger.dql.groupby;
 
-import shardingsphere.shaded.common.base.Optional;
-import shardingsphere.shaded.common.collect.Lists;
+import io.shardingsphere.shaded.com.google.common.base.Optional;
+import io.shardingsphere.shaded.com.google.common.collect.Lists;
 import io.shardingsphere.core.constant.AggregationType;
 import io.shardingsphere.core.constant.OrderDirection;
 import io.shardingsphere.core.merger.MergedResult;

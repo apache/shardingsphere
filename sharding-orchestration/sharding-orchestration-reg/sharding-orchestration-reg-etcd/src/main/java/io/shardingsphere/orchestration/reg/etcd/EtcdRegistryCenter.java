@@ -17,8 +17,8 @@
 
 package io.shardingsphere.orchestration.reg.etcd;
 
-import shardingsphere.shaded.common.base.Optional;
-import shardingsphere.shaded.common.base.Splitter;
+import io.shardingsphere.shaded.com.google.common.base.Optional;
+import io.shardingsphere.shaded.com.google.common.base.Splitter;
 import com.google.protobuf.ByteString;
 import etcdserverpb.KVGrpc;
 import etcdserverpb.KVGrpc.KVFutureStub;

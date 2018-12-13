@@ -17,9 +17,9 @@
 
 package io.shardingsphere.core.merger.dql.groupby;
 
-import shardingsphere.shaded.common.base.Function;
-import shardingsphere.shaded.common.base.Preconditions;
-import shardingsphere.shaded.common.collect.Maps;
+import io.shardingsphere.shaded.com.google.common.base.Function;
+import io.shardingsphere.shaded.com.google.common.base.Preconditions;
+import io.shardingsphere.shaded.com.google.common.collect.Maps;
 import io.shardingsphere.core.merger.QueryResult;
 import io.shardingsphere.core.merger.dql.common.MemoryMergedResult;
 import io.shardingsphere.core.merger.dql.common.MemoryQueryResultRow;

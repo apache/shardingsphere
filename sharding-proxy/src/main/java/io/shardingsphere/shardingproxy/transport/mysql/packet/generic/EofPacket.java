@@ -17,7 +17,7 @@
 
 package io.shardingsphere.shardingproxy.transport.mysql.packet.generic;
 
-import shardingsphere.shaded.common.base.Preconditions;
+import io.shardingsphere.shaded.com.google.common.base.Preconditions;
 import io.shardingsphere.shardingproxy.transport.mysql.constant.StatusFlag;
 import io.shardingsphere.shardingproxy.transport.mysql.packet.MySQLPacket;
 import io.shardingsphere.shardingproxy.transport.mysql.packet.MySQLPacketPayload;

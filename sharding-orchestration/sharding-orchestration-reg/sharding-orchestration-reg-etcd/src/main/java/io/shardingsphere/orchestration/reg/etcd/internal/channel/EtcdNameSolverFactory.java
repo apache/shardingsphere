@@ -17,8 +17,8 @@
 
 package io.shardingsphere.orchestration.reg.etcd.internal.channel;
 
-import shardingsphere.shaded.common.base.Strings;
-import shardingsphere.shaded.common.collect.Lists;
+import io.shardingsphere.shaded.com.google.common.base.Strings;
+import io.shardingsphere.shaded.com.google.common.collect.Lists;
 import io.grpc.Attributes;
 import io.grpc.EquivalentAddressGroup;
 import io.grpc.NameResolver;

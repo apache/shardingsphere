@@ -25,7 +25,7 @@ import com.github.rholder.retry.WaitStrategies;
 import io.shardingsphere.orchestration.reg.api.RegistryCenterConfiguration;
 import io.shardingsphere.orchestration.reg.exception.RegistryCenterException;
 import lombok.RequiredArgsConstructor;
-import shardingsphere.shaded.common.base.Optional;
+import io.shardingsphere.shaded.com.google.common.base.Optional;
 
 import java.util.concurrent.Callable;
 import java.util.concurrent.ExecutionException;

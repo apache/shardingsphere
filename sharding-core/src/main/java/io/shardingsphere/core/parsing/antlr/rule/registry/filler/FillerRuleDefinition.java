@@ -17,7 +17,7 @@
 
 package io.shardingsphere.core.parsing.antlr.rule.registry.filler;
 
-import shardingsphere.shaded.common.base.Joiner;
+import io.shardingsphere.shaded.com.google.common.base.Joiner;
 import io.shardingsphere.core.parsing.antlr.filler.SQLStatementFiller;
 import io.shardingsphere.core.parsing.antlr.rule.jaxb.entity.filler.FillerRuleDefinitionEntity;
 import io.shardingsphere.core.parsing.antlr.rule.jaxb.entity.filler.FillerRuleEntity;
