@@ -17,7 +17,7 @@
 
 package io.shardingsphere.core.routing.type.defaultdb;
 
-import io.shardingsphere.api.config.ShardingRuleConfiguration;
+import io.shardingsphere.api.config.rule.ShardingRuleConfiguration;
 import io.shardingsphere.core.routing.type.RoutingResult;
 import io.shardingsphere.core.rule.ShardingRule;
 import org.junit.Before;

@@ -17,7 +17,7 @@
 
 package io.shardingsphere.shardingproxy;
 
-import io.shardingsphere.api.config.RuleConfiguration;
+import io.shardingsphere.api.config.rule.RuleConfiguration;
 import io.shardingsphere.core.config.DataSourceConfiguration;
 import io.shardingsphere.core.constant.properties.ShardingPropertiesConstant;
 import io.shardingsphere.core.rule.Authentication;

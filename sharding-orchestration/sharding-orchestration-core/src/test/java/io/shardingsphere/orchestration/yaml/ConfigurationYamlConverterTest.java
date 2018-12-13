@@ -18,9 +18,9 @@
 package io.shardingsphere.orchestration.yaml;
 
 import io.shardingsphere.api.algorithm.masterslave.MasterSlaveLoadBalanceAlgorithmType;
-import io.shardingsphere.api.config.MasterSlaveRuleConfiguration;
-import io.shardingsphere.api.config.ShardingRuleConfiguration;
-import io.shardingsphere.api.config.TableRuleConfiguration;
+import io.shardingsphere.api.config.rule.MasterSlaveRuleConfiguration;
+import io.shardingsphere.api.config.rule.ShardingRuleConfiguration;
+import io.shardingsphere.api.config.rule.TableRuleConfiguration;
 import io.shardingsphere.api.config.strategy.InlineShardingStrategyConfiguration;
 import io.shardingsphere.core.config.DataSourceConfiguration;
 import io.shardingsphere.core.rule.Authentication;

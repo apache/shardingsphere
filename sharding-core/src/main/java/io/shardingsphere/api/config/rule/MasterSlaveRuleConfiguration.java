@@ -15,33 +15,33 @@
  * </p>
  */
 
-package io.shardingsphere.api.config;
+package io.shardingsphere.api.config.rule;
 
-import io.shardingsphere.api.config.strategy.ShardingStrategyConfiguration;
-import io.shardingsphere.core.keygen.KeyGenerator;
+import io.shardingsphere.api.algorithm.masterslave.MasterSlaveLoadBalanceAlgorithm;
+import lombok.AllArgsConstructor;
 import lombok.Getter;
+import lombok.NoArgsConstructor;
 import lombok.Setter;
 
+import java.util.Collection;
+
 /**
- * Table rule configuration.
+ * Master-slave rule configuration.
  * 
  * @author zhangliang
+ * @author panjuan
  */
+@NoArgsConstructor
+@AllArgsConstructor
 @Getter
 @Setter
-public final class TableRuleConfiguration implements RuleConfiguration {
+public final class MasterSlaveRuleConfiguration implements RuleConfiguration {
     
-    private String logicTable;
+    private String name;
     
-    private String actualDataNodes;
+    private String masterDataSourceName;
     
-    private ShardingStrategyConfiguration databaseShardingStrategyConfig;
+    private Collection<String> slaveDataSourceNames;
     
-    private ShardingStrategyConfiguration tableShardingStrategyConfig;
-    
-    private String keyGeneratorColumnName;
-    
-    private KeyGenerator keyGenerator;
-    
-    private String logicIndex;
+    private MasterSlaveLoadBalanceAlgorithm loadBalanceAlgorithm;
 }

@@ -17,7 +17,7 @@
 
 package io.shardingsphere.shardingjdbc.orchestration.api;
 
-import io.shardingsphere.api.config.ShardingRuleConfiguration;
+import io.shardingsphere.api.config.rule.ShardingRuleConfiguration;
 import io.shardingsphere.core.rule.ShardingRule;
 import io.shardingsphere.orchestration.config.OrchestrationConfiguration;
 import io.shardingsphere.shardingjdbc.jdbc.core.datasource.ShardingDataSource;

@@ -19,8 +19,8 @@ package io.shardingsphere.core.routing.type.standard;
 
 import io.shardingsphere.api.algorithm.sharding.ListShardingValue;
 import io.shardingsphere.api.algorithm.sharding.ShardingValue;
-import io.shardingsphere.api.config.ShardingRuleConfiguration;
-import io.shardingsphere.api.config.TableRuleConfiguration;
+import io.shardingsphere.api.config.rule.ShardingRuleConfiguration;
+import io.shardingsphere.api.config.rule.TableRuleConfiguration;
 import io.shardingsphere.api.config.strategy.InlineShardingStrategyConfiguration;
 import io.shardingsphere.core.optimizer.condition.ShardingCondition;
 import io.shardingsphere.core.optimizer.condition.ShardingConditions;

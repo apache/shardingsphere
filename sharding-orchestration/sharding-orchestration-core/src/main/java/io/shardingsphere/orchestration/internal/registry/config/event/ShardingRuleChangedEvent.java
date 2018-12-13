@@ -17,7 +17,7 @@
 
 package io.shardingsphere.orchestration.internal.registry.config.event;
 
-import io.shardingsphere.api.config.ShardingRuleConfiguration;
+import io.shardingsphere.api.config.rule.ShardingRuleConfiguration;
 import io.shardingsphere.orchestration.internal.registry.listener.ShardingOrchestrationEvent;
 import lombok.Getter;
 import lombok.RequiredArgsConstructor;

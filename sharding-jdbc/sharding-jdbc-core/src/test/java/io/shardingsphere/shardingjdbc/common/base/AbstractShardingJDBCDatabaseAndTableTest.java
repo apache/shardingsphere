@@ -18,8 +18,8 @@
 package io.shardingsphere.shardingjdbc.common.base;
 
 import com.google.common.base.Joiner;
-import io.shardingsphere.api.config.ShardingRuleConfiguration;
-import io.shardingsphere.api.config.TableRuleConfiguration;
+import io.shardingsphere.api.config.rule.ShardingRuleConfiguration;
+import io.shardingsphere.api.config.rule.TableRuleConfiguration;
 import io.shardingsphere.api.config.strategy.StandardShardingStrategyConfiguration;
 import io.shardingsphere.core.constant.DatabaseType;
 import io.shardingsphere.core.rule.ShardingRule;
