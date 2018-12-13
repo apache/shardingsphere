@@ -49,10 +49,6 @@
                                     <pattern>com.google.common</pattern>
                                     <shadedPattern>io.shardingsphere.shaded.com.google.common</shadedPattern>
                                 </relocation>
-                                 <relocation>
-                                    <pattern>com.google.guava</pattern>
-                                    <shadedPattern>io.shardingsphere.shaded.com.google.guava</shadedPattern>
-                                </relocation>
                             </relocations>
                         </configuration>
                     </execution>
