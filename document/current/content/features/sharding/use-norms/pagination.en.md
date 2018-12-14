@@ -4,82 +4,92 @@ title = "Pagination"
 weight = 2
 +++
 
-Sharding-Sphere supports the paging query of MySQL, PostgreSQL and Oracle. For SQLServer, due to its complex paging query, only partial queries can be executed.
+Totally available for pagination queries of MySQL, PostgreSQL and Oracle; partly available for SQLServer pagination query due to its complexity.
 
-## Pagination performance
+## Pagination Performance
 
-### Performance bottleneck
+### Performance Bottleneck
 
-The SQLs with excessive paging offset can result in the poor performance of the database. Take MySQL for example:
+Pagination with query offset too high can lead to a low data accessibility, take MySQL as an example: 
 
 ```sql
 SELECT * FROM t_order ORDER BY id LIMIT 1000000, 10
 ```
 
-This SQL makes MySQL to retrieve 10 records after skipping over 1000000 records, if no suitable index can be used. In the case of Sharding (assuming two databases for sharding), in order to ensure the result are correct, the SQL will be rewritten as:
+This SQL will make MySQL acquire 10 records after skipping 1,000,000 records when it is not able to use indexes. 
+Its performance can be seen from it. In sharding databases and sharding tables (suppose two databases), to ensure the data correctness, the SQL will be rewritten as this:
 
 ```sql
 SELECT * FROM t_order ORDER BY id LIMIT 0, 1000010
 ```
-The records before the offset are taken out, and only the last 10 of all the records ordered are obtained. If the database itself is stressed, the SQL will further exacerbate the performance bottleneck, for the original SQL only needs to send 10 records to the client, but the rewritten SQL will send 1000010*2 to the client.
 
-### Optimization in Sharding-Sphere
+It also means taking out all the records prior to the offset and only acquire the last 10 records after ordering. 
+It will further aggravate the performance bottleneck effect when the database is already slow enough in execution. 
+The reason for that is, formerly, the SQL only needs to transmit 10 records to the user end, but now it will transmit `1000010 * 2` records after the rewrite.
 
-Two of aspects is optimized in Sharding-Sphere.
+### Optimization of ShardingSphere
 
-First, uses streaming + merge sort to avoid excessive memory consumption. Sharding-Sphere uses the rewrote SQLs for the query, and necessarily takes up additional bandwidth, but does not cause the memory a sharp rise.
-Most of people think that Sharding-Sphere will load 1000010 * 2 records into memory, which will take up a lot of memory and cause a memory leak. However, because the records of each result set are ordered, Sharding-Sphere only compares the current record of each sharding at a time, and only saves the cursor of the current record in memory. The time complexity of merge sort is only O(n), and the loss of performance is very small.
+ShardingSphere has optimized in two ways.
 
-Second, Sharding-Sphere also optimizes queries that are only routed to a single slice. The query routing to a single slice can ensure the result are correct without the SQL rewriting. Therefore, Sharding-Sphere will save the bandwidth by means of not rewriting SQL.
+Firstly, it adopts stream process + merger ordering to avoid the excessive occupation of the memory. 
+SQL rewrite unavoidably occupies extra bandwidth, but will not lead to sharp increase in memory occupation. 
+Most people may assume that ShardingSphere would upload all the `1,000,010 * 2` records to the memory and occupy a large amount of it, which can lead to memory overflow. 
+But because the record of each result set has its own order, each comparison of ShardingSphere only acquires current result set record of each shard. 
+The record stored in the memory is only the current position pointed by the cursor in the result set of the shard routed to. 
+For the item to be sorted, merger ordering only has the time complexity of `O(n)`, with a very low performance consumption.
 
-## Better solution of pagination
+Secondly, ShardingSphere further optimizes the query that only falls into single shards. 
+Requests of this kind can guarantee the correctness of records without rewriting SQLs. 
+Under this kind of situation, ShardingSphere will not do that in order to save the bandwidth.
 
-Since the LIMIT queries the data not using the index, a better solution is that you operate paging by using ID, if the ID is sequential:
+## Pagination Solution Optimization
+
+For LIMIT cannot search for data through indexes, if the ID continuity can be guaranteed, pagination by ID is a better solution:
 
 ```sql
 SELECT * FROM t_order WHERE id > 100000 AND id <= 100010 ORDER BY id
 ```
 
-Or you can query the next page of data by recording the ID of the last record of the last query:
+Or use the ID of last record of the former query result to query the next page:
 
 ```sql
 SELECT * FROM t_order WHERE id > 100000 LIMIT 10
 ```
 
-## Paging-related subquery
+## Pagination Sub-query
 
-Paging for both Oracle and SQLServer need to be processed through subquery, and Sharding-Sphere supports paging-related subquery。
+Oracle and SQLServer pagination both need to be processed by sub-query, ShardingSphere is available for pagination related sub-query.
 
 - Oracle
 
-Sharding-Sphere supports to use rownum for paging:
+Available for rownum pagination:
 
 ```sql
 SELECT * FROM (SELECT row_.*, rownum rownum_ FROM (SELECT o.order_id as order_id FROM t_order o JOIN t_order_item i ON o.order_id = i.order_id) row_ WHERE rownum <= ?) WHERE rownum > ?
 ```
 
-At present, it does not supports rownum + BETWEEN for paging.
+Unavailable for rownum + BETWEEN pagination for now.
 
 - SQLServer
 
-Sharding-Sphere supports TOP + ROW_NUMBER() OVER for paging:
+Available for TOP + ROW_NUMBER() OVER pagination:
 
 ```sql
 SELECT * FROM (SELECT TOP (?) ROW_NUMBER() OVER (ORDER BY o.order_id DESC) AS rownum, * FROM t_order o) AS temp WHERE temp.rownum > ? ORDER BY temp.order_id
 ```
 
-Sharding-Sphere also supports OFFSET FETCH in SQLServer 2012 or above for paging:
+Available for OFFSET FETCH pagination after SQLServer 2012:
 
 ```sql
 SELECT * FROM t_order o ORDER BY id OFFSET ? ROW FETCH NEXT ? ROWS ONLY
 ```
 
-It does not support WITH xxx AS (SELECT ...) or two TOP + subquery for paging. 
-Because paging statements generated by Hibernate in SQLServer use the WITH statement, Sharding-Sphere currently does not support SQLServer paging based on Hibernate.
+Unavailable for `WITH xxx AS (SELECT ...)` pagination. 
+Because SQLServer automatically generated by Hibernate uses WITH statements, so Hibernate SQLServer pagination or two TOP + sub-query pagination is not available now.
 
 - MySQL, PostgreSQL
 
-Both MySQL and PostgreSQL support LIMIT for paging, and subquery is not needed：
+Both MySQL and PostgreSQL are available for LIMIT pagination, no need for sub-query:
 
 ```sql
 SELECT * FROM t_order o ORDER BY id LIMIT ? OFFSET ?
