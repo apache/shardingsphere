@@ -122,7 +122,7 @@ public final class DefaultKeyGenerator implements KeyGenerator {
                 currentMilliseconds = waitUntilNextTime(currentMilliseconds);
             }
         } else {
-            sequence = random.nextInt(64);
+            sequence = random.nextInt(8);
         }
         lastMilliseconds = currentMilliseconds;
         return ((currentMilliseconds - EPOCH) << TIMESTAMP_LEFT_SHIFT_BITS) | (workerId << WORKER_ID_LEFT_SHIFT_BITS) | sequence;
