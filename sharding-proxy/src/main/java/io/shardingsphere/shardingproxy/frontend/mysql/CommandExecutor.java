@@ -101,6 +101,7 @@ public final class CommandExecutor implements Runnable {
         }
         currentSequenceId = headPacketsCount;
         int count = 0;
+        int proxyFrontendFlushThreshold = GlobalRegistry.getInstance().getShardingProperties().<Integer>getValue(ShardingPropertiesConstant.PROXY_FRONTEND_FLUSH_THRESHOLD);
         while (queryCommandPacket.next()) {
             count++;
             while (!context.channel().isWritable() && context.channel().isActive()) {
@@ -114,7 +115,7 @@ public final class CommandExecutor implements Runnable {
             DatabasePacket resultValue = queryCommandPacket.getResultValue();
             currentSequenceId = resultValue.getSequenceId();
             context.write(resultValue);
-            if (GlobalRegistry.getInstance().getShardingProperties().<Integer>getValue(ShardingPropertiesConstant.PROXY_FRONTEND_FLUSH_THRESHOLD) == count) {
+            if (proxyFrontendFlushThreshold == count) {
                 context.flush();
                 count = 0;
             }
