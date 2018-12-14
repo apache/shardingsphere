@@ -81,12 +81,12 @@ In other databases (such as PostgreSQL), however, the index is created with the 
 
 In the table sharding situation, the same logic table will be separated into many physical tables in one database. 
 Therefore, index names created for those physical tables are not allowed to repeat. 
-As a result, Sharding-Sphere will revise the index name as the suffix of logic index names plus its physical table name.
+As a result, ShardingSphere will revise the index name as the suffix of logic index names plus its physical table name.
 
-In Sharding-Sphere, schema management method is similar as that of the table. 
+In ShardingSphere, schema management method is similar as that of the table. 
 It uses logic schema to manage a set of data, so it requires to replace the logic schema written by users in SQL with physical database schema.
 
-It is a regret that until this article is finished, Sharding-Sphere still does not support the use of schema in DQL and DML statement, for example:
+It is a regret that until this article is finished, ShardingSphere still does not support the use of schema in DQL and DML statement, for example:
 
 ```
 SHOW COLUMNS FROM t_order FROM order_ds;
@@ -97,7 +97,7 @@ Schema rewrite refers to rewriting logic schema to a right and real schema found
 ## Derived Column
 
 The derived column in query statements usually results from two situations. 
-First, in result merging, Sharding-Sphere needs to acquire the corresponding data, but it is not returned through the query SQL. 
+First, in result merging, ShardingSphere needs to acquire the corresponding data, but it is not returned through the query SQL. 
 This kind of situation aims mainly at GROUP BY and ORDER BY. 
 Result merging requires the sorting and ranking according to items of `GROUP BY` and `ORDER BY` field. 
 But if the sorting and ranking items are not included in the original SQL, it should be rewritten. 
@@ -156,7 +156,7 @@ Then it can calculate the right average value through result merging.
 The last kind of derived column happens in SQL with INSERT. 
 With database auto-increment key, there is no need to fill in primary key field. 
 But database auto-increment key cannot satisfy the requirement of only one primary key being in the distributed situation. 
-So Sharding-Sphere provides a generation strategy for distributed auto-increment key, through derived column, enabling users to replace the current auto-increment key with a distributed one without changing existing codes invisibly. 
+So ShardingSphere provides a generation strategy for distributed auto-increment key, through derived column, enabling users to replace the current auto-increment key with a distributed one without changing existing codes invisibly. 
 Distributed auto-increment key generation strategy will be expounded in the following part, here we only explain the content related with SQL rewrite. 
 For example, if the primary key of t_order is order_id, and the original SQL is:
 
@@ -165,7 +165,7 @@ INSERT INTO t_order (`field1`, `field2`) VALUES (10, 1);
 ```
 
 It can be seen that the SQL above does not include an auto-increment key, which will be filled by the database itself. 
-After Sharding-Sphere set an auto-increment key, the SQL will be rewritten as:
+After ShardingSphere set an auto-increment key, the SQL will be rewritten as:
 
 ```
 INSERT INTO t_order (`field1`, `field2`, order_id) VALUES (10, 1, xxxxx);
@@ -173,7 +173,7 @@ INSERT INTO t_order (`field1`, `field2`, order_id) VALUES (10, 1, xxxxx);
 
 Rewritten SQL will add auto-increment key name and its value generated automatically in the last part of INSERT FIELD and INSERT VALUE. 
 `xxxxx` in the SQL above stands for the latter one.
-If INSERT SQL does not contain the column name of the table, Sharding-Sphere can also automatically generate auto-increment key by comparing the number of parameter and column in the table meta-information. 
+If INSERT SQL does not contain the column name of the table, ShardingSphere can also automatically generate auto-increment key by comparing the number of parameter and column in the table meta-information. 
 For example, the original SQL is:
 
 ```
@@ -254,7 +254,7 @@ SELECT * FROM t_order_0 WHERE order_id IN (2);
 SELECT * FROM t_order_1 WHERE order_id IN (1, 3);
 ```
 
-The query performance will be further improved. For now, Sharding-Sphere has not realized this rewrite strategy, so the current rewrite result is:
+The query performance will be further improved. For now, ShardingSphere has not realized this rewrite strategy, so the current rewrite result is:
 
 ```
 SELECT * FROM t_order_0 WHERE order_id IN (1, 2, 3);

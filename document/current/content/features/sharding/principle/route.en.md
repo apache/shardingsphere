@@ -13,7 +13,7 @@ Cases built in the database is relatively simple, and strategies can generally b
 More flexible, sharding strategies set by users can be customized according to their needs. 
 Together with automatic data migration, database middle layer can automatically shard and balance the data without users paying attention to sharding strategies. 
 The elastic migration ability of the distributed database can be achieved thereby. 
-In the roadmap of Sharding-Sphere, elastic migration will start from 4.x version.
+In the roadmap of ShardingSphere, elastic migration will start from 4.x version.
 
 ## Sharding Route
 
@@ -25,7 +25,7 @@ On the premise of having database sharding but not table sharding, SQL parsing a
 Therefore, with the highest compatibility, it can execute any SQL in complex situations including sub-queries, self-defined functions. 
 Direct route can also be used in the situation where sharding keys are not in SQL.
 
-Standard route is the most recommended sharding method by Sharding-Sphere, its application range is the SQL that does not include joint query or only includes joint query between binding tables. 
+Standard route is the most recommended sharding method by ShardingSphere, its application range is the SQL that does not include joint query or only includes joint query between binding tables. 
 When the sharding operator is the equal mark, the route result will fall into single database (table); when sharding operators are BETWEEN or IN, the route result will not necessarily fall into the only database (table). 
 So one logic SQL can finally be split into multiple real SQL to enforce. 
 For example, if the data sharding is according to the odd number or even number, a single table query SQL is as the following:
@@ -94,7 +94,7 @@ Ignore route is used to block the operation of SQL to the database, for instance
 USE order_db;
 ```
 
-Because Sharding-Sphere uses logic Schema, there is no need to send the database schema shift order to the database.
+Because ShardingSphere uses logic Schema, there is no need to send the database schema shift order to the database.
 
 The overall structure division is as the following picture:
 

@@ -5,7 +5,7 @@ weight = 2
 chapter = true
 +++
 
-Sharding-Sphere的3个产品的数据分片主要流程是完全一致的。
+ShardingSphere的3个产品的数据分片主要流程是完全一致的。
 核心由SQL解析 => 执行器优化 => SQL路由 => SQL改写 => SQL执行 => 结果归并的流程组成。
 
 ![分片架构图](http://shardingsphere.jd.com/document/current/img/sharding/sharding_architecture_cn.png)

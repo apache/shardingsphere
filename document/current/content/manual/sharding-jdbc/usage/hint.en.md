@@ -6,7 +6,7 @@ weight = 3
 
 ## Introduction
 
-Sharding-Sphere uses ThreadLocal to manage sharding-columns and sharding-values. Developers can use HintManager to add sharding conditions by coding, sharding conditions effective only on current thread.
+ShardingSphere uses ThreadLocal to manage sharding-columns and sharding-values. Developers can use HintManager to add sharding conditions by coding, sharding conditions effective only on current thread.
 
 Main usages of Hint:
 

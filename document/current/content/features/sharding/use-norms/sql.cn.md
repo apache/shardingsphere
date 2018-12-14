@@ -44,7 +44,7 @@ table_reference ([INNER] | {LEFT|RIGHT} [OUTER]) JOIN table_factor [JOIN ON cond
 
 不支持冗余括号、CASE WHEN、HAVING、UNION (ALL)，有限支持子查询。
 
-除了分页子查询的支持之外(详情请参考[分页](/cn/features/sharding/use-norms/pagination))，也支持同等模式的子查询。无论嵌套多少层，Sharding-Sphere都可以解析至第一个包含数据表的子查询，一旦在下层嵌套中再次找到包含数据表的子查询将直接抛出解析异常。
+除了分页子查询的支持之外(详情请参考[分页](/cn/features/sharding/use-norms/pagination))，也支持同等模式的子查询。无论嵌套多少层，ShardingSphere都可以解析至第一个包含数据表的子查询，一旦在下层嵌套中再次找到包含数据表的子查询将直接抛出解析异常。
 
 例如，以下子查询可以支持：
 
@@ -62,7 +62,7 @@ SELECT COUNT(*) FROM (SELECT * FROM t_order o WHERE o.id IN (SELECT id FROM t_or
 
 由于归并的限制，子查询中包含聚合函数目前无法支持。
 
-不支持包含schema的SQL。因为Sharding-Sphere的理念是像使用一个数据源一样使用多数据源，因此对SQL的访问都是在同一个逻辑schema之上。
+不支持包含schema的SQL。因为ShardingSphere的理念是像使用一个数据源一样使用多数据源，因此对SQL的访问都是在同一个逻辑schema之上。
 
 ## 示例
 

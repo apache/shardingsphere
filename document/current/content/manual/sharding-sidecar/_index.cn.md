@@ -7,7 +7,7 @@ chapter = true
 
 ## 简介
 
-Sharding-Sidecar是Sharding-Sphere的第三个产品，目前仍然在`规划中`。
+Sharding-Sidecar是ShardingSphere的第三个产品，目前仍然在`规划中`。
 定位为Kubernetes或Mesos的云原生数据库代理，以DaemonSet的形式代理所有对数据库的访问。
 
 通过无中心、零侵入的方案提供与数据库交互的的啮合层，即Database Mesh，又可称数据网格。

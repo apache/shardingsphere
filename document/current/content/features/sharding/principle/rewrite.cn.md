@@ -78,12 +78,12 @@ SELECT t_order.order_id FROM t_order_1 AS t_order WHERE t_order.order_id=1 AND r
 而在另外的一些数据库中（如PostgreSQL），索引是以数据库为维度创建的，即使是作用在不同表上的索引，它们也要求其名称的唯一性。
 
 在分表的场景下，同一个逻辑表在同一个数据库中会拆分为多个真实表。那么，为这些真实表所建立的索引名称自然是不允许重复的。
-因此，Sharding-Sphere会将索引名称改写为逻辑索引名称的后缀加上其所作用的真实表名称。
+因此，ShardingSphere会将索引名称改写为逻辑索引名称的后缀加上其所作用的真实表名称。
 
-在Sharding-Sphere中，管理Schema的方式与管理表如出一辙，它采用逻辑Schema去管理一组数据源。
-因此，Sharding-Sphere需要将用户在SQL书写的逻辑Schema替换为真实的数据库Schema。
+在ShardingSphere中，管理Schema的方式与管理表如出一辙，它采用逻辑Schema去管理一组数据源。
+因此，ShardingSphere需要将用户在SQL书写的逻辑Schema替换为真实的数据库Schema。
 
-遗憾的是，截止到本书写作之时，Sharding-Sphere还不支持在DQL和DML语句中使用Schema。
+遗憾的是，截止到本书写作之时，ShardingSphere还不支持在DQL和DML语句中使用Schema。
 它目前仅支持在数据库管理语句中使用Schema，例如：
 
 ```sql
@@ -95,7 +95,7 @@ Schema的改写指的是将逻辑Schema采用单播路由的方式，改写为�
 ### 补列
 
 需要在查询语句中补列通常由两种情况导致。
-第一种情况是Sharding-Sphere需要在结果归并时获取相应数据，但该数据并能未通过查询的SQL返回。
+第一种情况是ShardingSphere需要在结果归并时获取相应数据，但该数据并能未通过查询的SQL返回。
 这种情况主要是针对GROUP BY和ORDER BY。结果归并时，需要根据`GROUP BY`和`ORDER BY`的字段项进行分组和排序，但如果原始SQL的选择项中若并未包含分组项或排序项，则需要对原始SQL进行改写。
 先看一下原始SQL中带有结果归并所需信息的场景：
 
@@ -146,7 +146,7 @@ SELECT COUNT(price) AS AVG_DERIVED_COUNT_0, SUM(price) AS AVG_DERIVED_ SUM _0 FR
 然后才能够通过结果归并正确的计算平均值。
 
 最后的一种补列是在INSERT的SQL时，如果使用数据库自增主键，是无需写入主键字段的。
-但数据库的自增主键是无法满足分布式场景下的主键唯一的，因此Sharding-Sphere提供了分布式自增主键的生成策略，并且可以通过补列，让使用方无需改动现有代码，即可将分布式自增主键透明的替换数据库现有的自增主键。
+但数据库的自增主键是无法满足分布式场景下的主键唯一的，因此ShardingSphere提供了分布式自增主键的生成策略，并且可以通过补列，让使用方无需改动现有代码，即可将分布式自增主键透明的替换数据库现有的自增主键。
 分布式自增主键的生成策略将在下文中详述，这里只阐述与SQL改写相关的内容。
 举例说明，假设表t_order的主键是order_id，原始的SQL为：
 
@@ -154,7 +154,7 @@ SELECT COUNT(price) AS AVG_DERIVED_COUNT_0, SUM(price) AS AVG_DERIVED_ SUM _0 FR
 INSERT INTO t_order (`field1`, `field2`) VALUES (10, 1);
 ```
 
-可以看到，上述SQL中并未包含自增主键，是需要数据库自行填充的。Sharding-Sphere配置自增主键后，SQL将改写为：
+可以看到，上述SQL中并未包含自增主键，是需要数据库自行填充的。ShardingSphere配置自增主键后，SQL将改写为：
 
 ```sql
 INSERT INTO t_order (`field1`, `field2`, order_id) VALUES (10, 1, xxxxx);
@@ -162,7 +162,7 @@ INSERT INTO t_order (`field1`, `field2`, order_id) VALUES (10, 1, xxxxx);
 
 改写后的SQL将在INSERT FIELD和INSERT VALUE的最后部分增加主键列名称以及自动生成的自增主键值。上述SQL中的`xxxxx`表示自动生成的自增主键值。
 
-如果INSERT的SQL中并未包含表的列名称，Sharding-Sphere也可以根据判断参数个数以及表元信息中的列数量对比，并自动生成自增主键。例如，原始的SQL为：
+如果INSERT的SQL中并未包含表的列名称，ShardingSphere也可以根据判断参数个数以及表元信息中的列数量对比，并自动生成自增主键。例如，原始的SQL为：
 
 ```sql
 INSERT INTO t_order VALUES (10, 1);
@@ -235,7 +235,7 @@ SELECT * FROM t_order_0 WHERE order_id IN (2);
 SELECT * FROM t_order_1 WHERE order_id IN (1, 3);
 ```
 
-可以进一步的提升查询性能。Sharding-Sphere暂时还未实现此改写策略，目前的改写结果是：
+可以进一步的提升查询性能。ShardingSphere暂时还未实现此改写策略，目前的改写结果是：
 
 ```sql
 SELECT * FROM t_order_0 WHERE order_id IN (1, 2, 3);

@@ -11,9 +11,9 @@ It is difficult to generate the global unique ID for different actual tables aft
 A simple solution is to generate the global unique ID by setting different initial value and increase step, but this requires additional maintenance. This solution make solution complicated. 
 
 There are lots of third-party solutions, such as UUID or global ID generation services, every solutions has their suitable scenario. 
-It is not flexibility if Sharding-Sphere dependent on any of the them.
+It is not flexibility if ShardingSphere dependent on any of the them.
 
-For those reasons, Sharding-Sphere just provide interface and default implement, it can switch key generator strategy by end users. 
+For those reasons, ShardingSphere just provide interface and default implement, it can switch key generator strategy by end users. 
 
 # Default distributed ID generator
 

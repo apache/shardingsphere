@@ -11,9 +11,9 @@ chapter = true
 [![GitHub watchers](https://img.shields.io/github/watchers/sharding-sphere/sharding-sphere.svg?style=social&label=Watch)](https://github.com/sharding-sphere/sharding-sphere/watchers)
 [![Stargazers over time](https://starcharts.herokuapp.com/sharding-sphere/sharding-sphere.svg)](https://starcharts.herokuapp.com/sharding-sphere/sharding-sphere)
 
-Sharding-Sphere is an open-source ecosphere consists of a set of distributed database middleware solutions, including 3 independent products, Sharding-JDBC, Sharding-Proxy & Sharding-Sidecar (todo).
+ShardingSphere is an open-source ecosphere consists of a set of distributed database middleware solutions, including 3 independent products, Sharding-JDBC, Sharding-Proxy & Sharding-Sidecar (todo).
 They all provide functions of data sharding, distributed transaction and database orchestration, applicable in a variety of situations such as Java isomorphism, heterogeneous language and cloud native. 
-Aiming at reasonably making full use of the computation and storage capacity of database in distributed system, Sharding-Sphere defines itself as a middleware, rather than a totally new type of database. 
+Aiming at reasonably making full use of the computation and storage capacity of database in distributed system, ShardingSphere defines itself as a middleware, rather than a totally new type of database. 
 As the cornerstone of many enterprises, relational database still takes a huge market share. 
 Therefore, at current stage, we prefer to focus on its increment instead of a total overturn.
 
@@ -27,7 +27,7 @@ Therefore, at current stage, we prefer to focus on its increment instead of a to
 [![OpenTracing-1.0 Badge](https://img.shields.io/badge/OpenTracing--1.0-enabled-blue.svg)](http://opentracing.io)
 [![Skywalking Tracing](https://img.shields.io/badge/Skywalking%20Tracing-enable-brightgreen.svg)](https://github.com/OpenSkywalking/skywalking)
 
-![Sharding-Sphere Scope](http://shardingsphere.jd.com/document/current/img/sharding-sphere-scope_en_v2.png)
+![ShardingSphere Scope](http://shardingsphere.jd.com/document/current/img/sharding-sphere-scope_en_v2.png)
 
 ## Introduction
 

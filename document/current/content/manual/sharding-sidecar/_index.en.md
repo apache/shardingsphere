@@ -7,7 +7,7 @@ chapter = true
 
 ## Introduction
 
-Sharding-Sidecar is third project of Sharding-Sphere, we just plan to do it in future.
+Sharding-Sidecar is third project of ShardingSphere, we just plan to do it in future.
 It can mesh interactions between applications and databases, must be running in Kubernetes or Mesos environment.
 It is a centre-less solution, and can support any languages, we call it as `Database Mesh`.
 

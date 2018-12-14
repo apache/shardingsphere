@@ -43,8 +43,8 @@ SELECT i.* FROM t_order_0 o JOIN t_order_item_0 i ON o.order_id=i.order_id WHERE
 SELECT i.* FROM t_order_1 o JOIN t_order_item_1 i ON o.order_id=i.order_id WHERE o.order_id in (10, 11);
 ```
 
-In them, table `t_order` in the left end of FROM will be taken by Sharding-Sphere as the primary table of query. 
-In a similar way, Sharding-Sphere will also take table `t_order` in the left end of FROM as the primary table of the whole binding table. 
+In them, table `t_order` in the left end of FROM will be taken by ShardingSphere as the primary table of query. 
+In a similar way, ShardingSphere will also take table `t_order` in the left end of FROM as the primary table of the whole binding table. 
 All the route computations will only use the sharding strategy of the primary table, so sharding computation of `t_order_item` table will use the conditions of `t_order`. 
 Due to this, sharding keys between binding tables should be totally identical.
 
