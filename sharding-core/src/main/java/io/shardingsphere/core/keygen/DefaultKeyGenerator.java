@@ -22,7 +22,6 @@ import lombok.Setter;
 import lombok.SneakyThrows;
 
 import java.util.Calendar;
-import java.util.Random;
 
 /**
  * Default distributed primary key generator.
@@ -81,7 +80,7 @@ public final class DefaultKeyGenerator implements KeyGenerator {
         EPOCH = calendar.getTimeInMillis();
     }
     
-    private final Random random = new Random();
+    private byte sequenceOffset;
     
     private long sequence;
     
@@ -122,7 +121,8 @@ public final class DefaultKeyGenerator implements KeyGenerator {
                 currentMilliseconds = waitUntilNextTime(currentMilliseconds);
             }
         } else {
-            sequence = random.nextInt(64);
+            vibrateSequenceOffset();
+            sequence = sequenceOffset;
         }
         lastMilliseconds = currentMilliseconds;
         return ((currentMilliseconds - EPOCH) << TIMESTAMP_LEFT_SHIFT_BITS) | (workerId << WORKER_ID_LEFT_SHIFT_BITS) | sequence;
@@ -146,5 +146,9 @@ public final class DefaultKeyGenerator implements KeyGenerator {
             result = timeService.getCurrentMillis();
         }
         return result;
+    }
+    
+    private void vibrateSequenceOffset() {
+        sequenceOffset = (byte) (~sequenceOffset & 1);
     }
 }
