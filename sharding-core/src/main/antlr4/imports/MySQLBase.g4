@@ -57,3 +57,61 @@ valueList
 value
     : DEFAULT | MAXVALUE | expr | exprsWithParen
     ;
+    
+functionCall
+    : (ID | DATE) LP_ distinct? (exprs | ASTERISK)? RP_
+    | groupConcat
+    | windowFunction
+    ;
+    
+groupConcat
+    : GROUP_CONCAT LP_ distinct? (exprs | ASTERISK)? (orderByClause SEPARATOR expr) RP_
+    ;
+    
+windowFunction
+    : ID exprsWithParen overClause
+    ;
+overClause
+    : OVER LP_ windowSpec RP_ 
+    | OVER ID
+    ;
+    
+windowSpec
+    : ID? windowPartitionClause? orderByClause? frameClause?
+    ;
+    
+windowPartitionClause
+    : PARTITION BY exprs
+    ;
+    
+frameClause
+    : frameUnits frameExtent
+    ;
+    
+frameUnits
+    : ROWS | RANGE
+    ;
+    
+frameExtent
+    : frameStart | frameBetween
+    ;
+    
+frameStart
+    :  CURRENT ROW
+    | UNBOUNDED PRECEDING
+    | UNBOUNDED FOLLOWING
+    | expr PRECEDING
+    | expr FOLLOWING
+    ;
+    
+frameBetween
+    : BETWEEN frameStart AND frameEnd
+    ;
+    
+frameEnd
+    : frameStart
+    ;
+        
+variable
+    : (AT_ AT_)? (GLOBAL | PERSIST  | PERSIST_ONLY | SESSION)? DOT? ID
+    ;

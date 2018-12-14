@@ -1,6 +1,6 @@
 grammar MySQLDQL;
 
-import DQLBase, MySQLBase, MySQLKeyword, Keyword, Symbol, DataType, BaseRule;
+import MySQLBase, DQLBase, MySQLKeyword, Keyword, Symbol, DataType, BaseRule;
 
 select 
     : withClause | unionSelect
@@ -15,7 +15,7 @@ cteClause
     ;
     
 selectExpression
-    : selectClause fromClause? whereClause? groupByClause? orderByClause? limitClause?
+    : selectClause fromClause? whereClause? groupByClause? havingClause?  windowClause? orderByClause? limitClause?
     ;
     
 selectClause
@@ -27,6 +27,14 @@ selectSpec
     SQL_BIG_RESULT? SQL_BUFFER_RESULT? (SQL_CACHE | SQL_NO_CACHE)? SQL_CALC_FOUND_ROWS?
     ;
     
+windowClause
+    : WINDOW windowItem (COMMA windowItem)* 
+    ;
+    
+windowItem
+    : ID AS LP_ windowSpec RP_
+    ;
+      
 subquery
     : LP_ unionSelect RP_
     ;
@@ -96,7 +104,7 @@ indexHint
     ;
 
 selectExpr
-    : (columnName | expr | variable) AS? alias?
+    : (columnName | expr) AS? alias?
     | columnName DOT_ASTERISK
     ;
     

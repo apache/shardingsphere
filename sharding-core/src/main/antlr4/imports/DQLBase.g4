@@ -19,7 +19,7 @@ whereClause
     ;
     
 groupByClause 
-    : GROUP BY orderByItem (COMMA orderByItem)* (WITH ROLLUP)? havingClause?
+    : GROUP BY orderByItem (COMMA orderByItem)* (WITH ROLLUP)?
     ;
     
 havingClause
@@ -50,12 +50,4 @@ selectExpr
     
 tableReferences
     : 
-    ;
-    
-functionCall
-    : (ID | DATE) LP_ distinct? (exprs | ASTERISK)? RP_
-    ;
-    
-variable
-    : (AT_ AT_)? (GLOBAL | PERSIST  | PERSIST_ONLY | SESSION)? DOT? ID
     ;
