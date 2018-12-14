@@ -11,6 +11,7 @@
 1. All SQL 100% compatible if route to single data node (MySQL Only).
 1. `DISTINCT` SQL syntax available.
 1. Broadcast table available.
+1. Solve data lean problem when using DefaultKeyGenerator with low TPS.
 
 [Changelog for Issues and Pull requests](https://github.com/sharding-sphere/sharding-sphere/milestone/3)
 

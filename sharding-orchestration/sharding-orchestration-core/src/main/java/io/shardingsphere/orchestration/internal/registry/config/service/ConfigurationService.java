@@ -19,9 +19,9 @@ package io.shardingsphere.orchestration.internal.registry.config.service;
 
 import com.google.common.base.Preconditions;
 import com.google.common.base.Strings;
-import io.shardingsphere.api.config.MasterSlaveRuleConfiguration;
-import io.shardingsphere.api.config.RuleConfiguration;
-import io.shardingsphere.api.config.ShardingRuleConfiguration;
+import io.shardingsphere.api.config.rule.MasterSlaveRuleConfiguration;
+import io.shardingsphere.api.config.rule.RuleConfiguration;
+import io.shardingsphere.api.config.rule.ShardingRuleConfiguration;
 import io.shardingsphere.core.config.DataSourceConfiguration;
 import io.shardingsphere.core.rule.Authentication;
 import io.shardingsphere.orchestration.internal.registry.config.node.ConfigurationNode;

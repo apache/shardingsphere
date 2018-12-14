@@ -18,8 +18,8 @@
 package io.shardingsphere.core.rule;
 
 import com.google.common.collect.Sets;
-import io.shardingsphere.api.config.ShardingRuleConfiguration;
-import io.shardingsphere.api.config.TableRuleConfiguration;
+import io.shardingsphere.api.config.rule.ShardingRuleConfiguration;
+import io.shardingsphere.api.config.rule.TableRuleConfiguration;
 import io.shardingsphere.api.config.strategy.NoneShardingStrategyConfiguration;
 import io.shardingsphere.core.keygen.fixture.IncrementKeyGenerator;
 import org.junit.Test;

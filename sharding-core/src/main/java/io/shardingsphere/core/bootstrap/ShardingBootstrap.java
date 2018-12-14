@@ -21,7 +21,6 @@ import io.shardingsphere.spi.NewInstanceServiceLoader;
 import io.shardingsphere.spi.executor.SQLExecutionHook;
 import io.shardingsphere.spi.parsing.ParsingHook;
 import io.shardingsphere.spi.root.RootInvokeHook;
-import io.shardingsphere.spi.transaction.ShardingTransactionHandlerRegistry;
 import lombok.AccessLevel;
 import lombok.NoArgsConstructor;
 
@@ -38,7 +37,6 @@ public final class ShardingBootstrap {
      * Initialize sharding bootstrap.
      */
     public static void init() {
-        ShardingTransactionHandlerRegistry.load();
         registerHookClasses(SQLExecutionHook.class, ParsingHook.class, RootInvokeHook.class);
     }
     

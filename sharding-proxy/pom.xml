@@ -19,7 +19,7 @@
         </dependency>
         <dependency>
             <groupId>io.shardingsphere</groupId>
-            <artifactId>sharding-transaction-xa</artifactId>
+            <artifactId>sharding-transaction-reg-xa</artifactId>
             <version>${project.parent.version}</version>
         </dependency>
         <dependency>
