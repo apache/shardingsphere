@@ -88,10 +88,10 @@ public final class PredicateExtractor implements OptionalSQLSegmentExtractor {
         if (!leftOrCondition.isPresent() && !rightOrCondition.isPresent()) {
             return Optional.absent();
         }
-        if (leftOrCondition.isPresent()) {
+        if (leftOrCondition.isPresent() && !rightOrCondition.isPresent()) {
             return leftOrCondition;
         }
-        if (rightOrCondition.isPresent()) {
+        if (rightOrCondition.isPresent() && !leftOrCondition.isPresent()) {
             return rightOrCondition;
         }
         if (LogicalOperator.isOrOperator(operator)) {
