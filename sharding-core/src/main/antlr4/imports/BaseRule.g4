@@ -304,8 +304,8 @@ bitExpr
     | bitExpr MOD bitExpr
     | bitExpr MOD_ bitExpr
     | bitExpr BIT_EXCLUSIVE_OR bitExpr
-    //| bitExpr '+' interval_expr
-    //| bitExpr '-' interval_expr
+    | bitExpr PLUS intervalExpr
+    | bitExpr MINUS intervalExpr
     | simpleExpr
     ;
     
@@ -315,7 +315,7 @@ simpleExpr
     | columnName
     | simpleExpr collateClause
     //| param_marker
-    //| variable
+    | variable
     | simpleExpr AND_ simpleExpr
     | PLUS simpleExpr
     | MINUS simpleExpr
@@ -350,6 +350,10 @@ caseExpress
     ; 
     
 privateExprOfDb
+    : matchNone
+    ;
+    
+variable
     : matchNone
     ;
     
