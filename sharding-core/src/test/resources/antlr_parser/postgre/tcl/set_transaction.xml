@@ -1,0 +1,7 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<parser-result-sets namespace="postgre.tcl.setTransaction">
+    <parser-result sql-case-id="set_transaction" transaction-operation-type="SET_TRANSACTION" />
+    <parser-result sql-case-id="set_transaction_read_only" transaction-operation-type="SET_TRANSACTION" />
+    <parser-result sql-case-id="set_transaction_snapshot" transaction-operation-type="SET_TRANSACTION" />
+    <parser-result sql-case-id="set_session_transaction" transaction-operation-type="SET_TRANSACTION" />
+</parser-result-sets>

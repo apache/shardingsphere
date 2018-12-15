@@ -1,0 +1,6 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<parser-result-sets namespace="postgre.tcl.rollback">
+    <parser-result sql-case-id="rollback" transaction-operation-type="ROLLBACK" />
+    <parser-result sql-case-id="rollback_prepare" transaction-operation-type="ROLLBACK" />
+    <parser-result sql-case-id="rollback_to_savepoint" transaction-operation-type="ROLLBACK" />
+</parser-result-sets>
