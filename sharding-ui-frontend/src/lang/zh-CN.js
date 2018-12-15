@@ -10,7 +10,8 @@ export default {
         href: '/config-manage'
       }]
     }],
-    connect: '连接',
+    connect: '已连接',
+    connection: '连接',
     del: '删除',
     notify: {
       title: '提示',
@@ -28,13 +29,22 @@ export default {
     registDialog: {
       title: '添加注册中心',
       name: '注册中心名称',
+      centerType: '注册中心类型',
       address: '注册中心地址',
+      orchestrationName: '数据治理实例',
       namespaces: '命名空间',
       btnConfirmTxt: '确定',
       btnCancelTxt: '取消'
     },
     table: {
       operate: '操作'
+    },
+    rules: {
+      name: '请输入注册中心名称',
+      centerType: '请选择注册中心类型',
+      namespaces: '请输入命名空间',
+      address: '请选输入注册中心地址',
+      orchestrationName: '请输入数据治理实例名称'
     }
   }
 }

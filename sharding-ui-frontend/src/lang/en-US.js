@@ -10,7 +10,8 @@ export default {
         href: '/config-manage'
       }]
     }],
-    connect: 'Connect',
+    connected: 'Connected',
+    connection: 'Connection',
     del: 'Delete',
     notify: {
       title: 'Prompt',
@@ -27,14 +28,23 @@ export default {
     btnTxt: 'ADD',
     registDialog: {
       title: 'Add a registry',
-      name: 'Registration name',
-      address: 'Registration address',
+      name: 'name',
+      centerType: 'centerType',
+      address: 'address',
+      orchestrationName: 'orchestrationName',
       namespaces: 'Namespaces',
       btnConfirmTxt: 'Confirm',
       btnCancelTxt: 'Cancel'
     },
     table: {
       operate: 'operate'
+    },
+    rules: {
+      name: 'Please enter the name of the registration center',
+      address: 'Please enter the registration center address',
+      namespaces: 'Please enter a namespace',
+      centerType: 'Please select a centerType',
+      orchestrationName: 'Please enter a orchestrationName'
     }
   }
 }
