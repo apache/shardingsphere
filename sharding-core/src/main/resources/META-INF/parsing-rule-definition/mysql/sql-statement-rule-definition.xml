@@ -13,5 +13,10 @@
     <sql-statement-rule context="select" sql-statement-class="io.shardingsphere.core.parsing.parser.sql.dql.select.SelectStatement" 
                         extractor-rule-refs="tableNames, indexNames, selectClause, fromWhere, groupBy, orderBy, limit" 
                         optimizer-class="dql.dialect.mysql.MySQLSelectOptimizer" />
-    <sql-statement-rule context="setVariable" sql-statement-class="io.shardingsphere.core.parsing.parser.sql.tcl.TCLStatement" extractor-rule-refs="setAutoCommit" />
+    <sql-statement-rule context="setTransaction" sql-statement-class="io.shardingsphere.core.parsing.parser.sql.tcl.set.transaction.SetTransactionStatement" />
+    <sql-statement-rule context="commit" sql-statement-class="io.shardingsphere.core.parsing.parser.sql.tcl.commit.CommitStatement" />
+    <sql-statement-rule context="rollback" sql-statement-class="io.shardingsphere.core.parsing.parser.sql.tcl.rollback.RollbackStatement" />
+    <sql-statement-rule context="savepoint" sql-statement-class="io.shardingsphere.core.parsing.parser.sql.tcl.savepoint.SavepointStatement" />
+    <sql-statement-rule context="beginWork" sql-statement-class="io.shardingsphere.core.parsing.parser.sql.tcl.begin.BeginStatement" />
+    <sql-statement-rule context="setAutoCommit" sql-statement-class="io.shardingsphere.core.parsing.parser.sql.tcl.set.autocommit.SetAutoCommitStatement" extractor-rule-refs="autoCommitValue" />
 </sql-statement-rule-definition>
