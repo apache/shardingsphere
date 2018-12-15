@@ -27,29 +27,21 @@ import io.shardingsphere.core.parsing.antlr.sql.segment.TransactionOperationType
 import io.shardingsphere.core.util.SQLUtil;
 import org.antlr.v4.runtime.ParserRuleContext;
 
-import java.util.Collection;
-
 /**
- * Auto commit clause extractor for MySQL.
+ * Auto commit value clause extractor for MySQL.
  *
  * @author maxiaoguang
  */
-public final class MySQLAutoCommitExtractor implements OptionalSQLSegmentExtractor {
+public final class MySQLAutoCommitValueExtractor implements OptionalSQLSegmentExtractor {
     
     @Override
     public Optional<TransactionOperationTypeSegment> extract(final ParserRuleContext ancestorNode) {
-        Collection<ParserRuleContext> setVariableAssignmentNodes = ExtractorUtils.getAllDescendantNodes(ancestorNode, RuleName.SET_VARIABLE_ASSIGNMENT);
-        for (ParserRuleContext each : setVariableAssignmentNodes) {
-            Optional<ParserRuleContext> variableKeyNode = ExtractorUtils.findFirstChildNode(each, RuleName.VARIABLE_KEY);
-            Preconditions.checkState(variableKeyNode.isPresent(), "Variable key is necessary.");
-            if ("autocommit".equals(SQLUtil.getExactlyValue(variableKeyNode.get().getText()))) {
-                Optional<ParserRuleContext> variableValueNode = ExtractorUtils.findFirstChildNode(each, RuleName.VARIABLE_VALUE);
-                Preconditions.checkState(variableValueNode.isPresent(), "Variable value is necessary.");
-                if ("1".equals(SQLUtil.getExactlyValue(variableValueNode.get().getText()))) {
-                    return Optional.of(new TransactionOperationTypeSegment(TransactionOperationType.BEGIN));
-                }
-            }
+        Optional<ParserRuleContext> autoCommitValueNode = ExtractorUtils.findFirstChildNode(ancestorNode, RuleName.AUTO_COMMIT_VALUE);
+        Preconditions.checkState(autoCommitValueNode.isPresent(), "Auto commit value is necessary.");
+        if ("1".equals(SQLUtil.getExactlyValue(autoCommitValueNode.get().getText()))) {
+            return Optional.of(new TransactionOperationTypeSegment(TransactionOperationType.AUTO_COMMIT_ON));
+        } else {
+            return Optional.of(new TransactionOperationTypeSegment(TransactionOperationType.AUTO_COMMIT_OFF));
         }
-        return Optional.absent();
     }
 }

@@ -65,8 +65,10 @@ public final class SQLStatementRuleDefinition {
     
     private Collection<SQLSegmentExtractor> createExtractors(final String sqlExtractorRuleRefs, final ExtractorRuleDefinition extractorRuleDefinition) {
         Collection<SQLSegmentExtractor> result = new LinkedList<>();
-        for (String each : Splitter.on(',').trimResults().splitToList(sqlExtractorRuleRefs)) {
-            result.add(extractorRuleDefinition.getRules().get(each));
+        if (sqlExtractorRuleRefs != null) {
+            for (String each : Splitter.on(',').trimResults().splitToList(sqlExtractorRuleRefs)) {
+                result.add(extractorRuleDefinition.getRules().get(each));
+            }
         }
         return result;
     }

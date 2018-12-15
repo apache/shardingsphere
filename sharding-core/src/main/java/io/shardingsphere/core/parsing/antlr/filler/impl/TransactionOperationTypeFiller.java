@@ -17,13 +17,12 @@
 
 package io.shardingsphere.core.parsing.antlr.filler.impl;
 
-import com.google.common.base.Optional;
 import io.shardingsphere.core.metadata.table.ShardingTableMetaData;
 import io.shardingsphere.core.parsing.antlr.filler.SQLStatementFiller;
 import io.shardingsphere.core.parsing.antlr.sql.segment.SQLSegment;
 import io.shardingsphere.core.parsing.antlr.sql.segment.TransactionOperationTypeSegment;
 import io.shardingsphere.core.parsing.parser.sql.SQLStatement;
-import io.shardingsphere.core.parsing.parser.sql.tcl.TCLStatement;
+import io.shardingsphere.core.parsing.parser.sql.tcl.set.autocommit.SetAutoCommitStatement;
 import io.shardingsphere.core.rule.ShardingRule;
 
 /**
@@ -36,7 +35,7 @@ public final class TransactionOperationTypeFiller implements SQLStatementFiller 
     @Override
     public void fill(final SQLSegment sqlSegment, final SQLStatement sqlStatement, final String sql, final ShardingRule shardingRule, final ShardingTableMetaData shardingTableMetaData) {
         TransactionOperationTypeSegment transactionOperationTypeSegment = (TransactionOperationTypeSegment) sqlSegment;
-        TCLStatement tclStatement = (TCLStatement) sqlStatement;
-        tclStatement.setOperationType(Optional.of(transactionOperationTypeSegment.getTransactionOperationType()));
+        SetAutoCommitStatement setAutoCommitStatement = (SetAutoCommitStatement) sqlStatement;
+        setAutoCommitStatement.setOperationType(transactionOperationTypeSegment.getTransactionOperationType());
     }
 }
