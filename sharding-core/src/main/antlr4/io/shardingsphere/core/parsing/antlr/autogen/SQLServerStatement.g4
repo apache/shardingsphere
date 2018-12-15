@@ -18,7 +18,7 @@ execute
     | rollback
     | savepoint
     | beginWork
-    | setVariable
+    | setAutoCommit
     | grant
     | revoke
     | deny
