@@ -34,10 +34,6 @@ BIT_NUM
     : B I T UL_ N U M
     ;
     
-BLOCK_COMMENT
-    : B L O C K UL_ C O M M E N T
-    ;
-    
 BY
     : B Y
     ;
@@ -148,10 +144,6 @@ ROW
     
 SET
     : S E T
-    ;
-    
-SL_COMMENT
-    : S L UL_ C O M M E N T
     ;
     
 SOUNDS
