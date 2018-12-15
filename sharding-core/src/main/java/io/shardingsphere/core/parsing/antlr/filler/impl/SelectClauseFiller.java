@@ -51,7 +51,7 @@ public final class SelectClauseFiller implements SQLStatementFiller {
             return;
         }
         if (selectClauseSegment.isHasDistinct()) {
-            fillForDisinct(selectClauseSegment, selectStatement, sql, shardingRule, shardingTableMetaData);
+            fillForDistinct(selectClauseSegment, selectStatement, sql, shardingRule, shardingTableMetaData);
         } else {
             ExpressionFiller expressionFiller = new ExpressionFiller();
             for (ExpressionSegment each : selectClauseSegment.getExpressions()) {
@@ -60,7 +60,8 @@ public final class SelectClauseFiller implements SQLStatementFiller {
         }
     }
     
-    private void fillForDisinct(final SelectClauseSegment selectClauseSegment, SelectStatement selectStatement, final String sql, final ShardingRule shardingRule, final ShardingTableMetaData shardingTableMetaData) {
+    private void fillForDistinct(final SelectClauseSegment selectClauseSegment, final SelectStatement selectStatement, final String sql, final ShardingRule shardingRule,
+                                 final ShardingTableMetaData shardingTableMetaData) {
         Iterator<ExpressionSegment> expressionIterator = selectClauseSegment.getExpressions().iterator();
         ExpressionSegment firstExpression = expressionIterator.next();
         ExpressionFiller expressionFiller = new ExpressionFiller();
@@ -84,7 +85,7 @@ public final class SelectClauseFiller implements SQLStatementFiller {
                 distinctColumnNames.add(((PropertyExpressionSegment) nextExpression).getName());
             }
         }
-        if(null != distinctSelectItem) {
+        if (null != distinctSelectItem) {
             distinctSelectItem.getDistinctColumnNames().addAll(distinctColumnNames);
         }
     }

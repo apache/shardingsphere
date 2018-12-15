@@ -380,7 +380,6 @@
         </order-by-columns>
     </parser-result>
     
-    <!--  
     <parser-result sql-case-id="select_alias_as_keyword" parameters="1">
         <tables>
             <table name="t_order_item" alias="length" />
@@ -396,7 +395,6 @@
             </and-condition>
         </or-condition>
     </parser-result>
-    -->
     
     <parser-result sql-case-id="select_with_force_index_join" parameters="1000">
         <tables>
@@ -589,6 +587,33 @@
         <tokens>
             <table-token begin-position="49" original-literals="t_order" />
             <aggregation-distinct-token begin-position="7" original-literals="COUNT(DISTINCT order_id)" column-name="order_id" alias="c" />
+        </tokens>
+    </parser-result>
+    
+    <parser-result sql-case-id="select_with_schema" >
+        <tables>
+            <table name="t_order" />
+        </tables>
+        <tokens>
+            <table-token begin-position="14" skipped-schema-name-length = "4" original-literals="t_order" />
+        </tokens>
+    </parser-result>
+    
+    <parser-result sql-case-id="select_escape_with_single_quota" >
+        <tables>
+            <table name="t_order" />
+        </tables>
+        <tokens>
+            <table-token begin-position="14" original-literals="t_order" />
+        </tokens>
+    </parser-result>
+    
+    <parser-result sql-case-id="select_escape_with_double_quota" >
+        <tables>
+            <table name="t_order" />
+        </tables>
+        <tokens>
+            <table-token begin-position="14" original-literals="t_order" />
         </tokens>
     </parser-result>
 </parser-result-sets>
