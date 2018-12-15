@@ -23,10 +23,11 @@ import com.google.common.base.Optional;
  * Transaction operation type.
  *
  * @author zhaojun
+ * @author maxiaoguang
  */
 public enum TransactionOperationType {
     
-    BEGIN, COMMIT, ROLLBACK;
+    UNKNOWN, AUTO_COMMIT_OFF, AUTO_COMMIT_ON, SET_TRANSACTION, COMMIT, ROLLBACK, SAVEPOINT, BEGIN;
     
     /**
      * Get operation type.
