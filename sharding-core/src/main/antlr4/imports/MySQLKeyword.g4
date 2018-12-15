@@ -33,6 +33,10 @@ AUDIT_ADMIN
 AUTO_INCREMENT
     : A U T O UL_ I N C R E M E N T
     ;
+
+AUTOCOMMIT
+    : A U T O C O M M I T
+    ;
     
 AVG_ROW_LENGTH
     : A V G UL_ R O W UL_ L E N G T H
