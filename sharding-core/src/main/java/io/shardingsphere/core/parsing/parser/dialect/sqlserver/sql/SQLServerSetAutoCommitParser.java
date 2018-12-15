@@ -21,31 +21,28 @@ import io.shardingsphere.core.constant.transaction.TransactionOperationType;
 import io.shardingsphere.core.parsing.lexer.LexerEngine;
 import io.shardingsphere.core.parsing.lexer.token.DefaultKeyword;
 import io.shardingsphere.core.parsing.parser.sql.tcl.TCLStatement;
-import io.shardingsphere.core.parsing.parser.sql.tcl.set.AbstractSetVariableParser;
+import io.shardingsphere.core.parsing.parser.sql.tcl.set.autocommit.AbstractSetAutoCommitParser;
 
 /**
- * Set variable parser for SQLServer.
+ * Set auto commit parser for SQLServer.
  *
  * @author maxiaoguang
  */
-public final class SQLServerSetVariableParser extends AbstractSetVariableParser {
+public final class SQLServerSetAutoCommitParser extends AbstractSetAutoCommitParser {
     
-    public SQLServerSetVariableParser(final LexerEngine lexerEngine) {
+    public SQLServerSetAutoCommitParser(final LexerEngine lexerEngine) {
         super(lexerEngine);
     }
     
     @Override
     public TCLStatement parse() {
-        boolean autoCommit = true;
-        while (!lexerEngine.isEnd()) {
-            lexerEngine.nextToken();
-            if (lexerEngine.equalAny(DefaultKeyword.OFF)) {
-                autoCommit = false;
-            } else {
-                autoCommit = true;
-            }
-            lexerEngine.skipUntil(DefaultKeyword.IMPLICIT_TRANSACTIONS);
+        boolean autoCommit;
+        getLexerEngine().nextToken();
+        if (DefaultKeyword.ON.equals(getLexerEngine().getCurrentToken().getType())) {
+            autoCommit = true;
+        } else {
+            autoCommit = false;
         }
-        return autoCommit ? new TCLStatement() : new TCLStatement(TransactionOperationType.BEGIN);
+        return autoCommit ? new TCLStatement(TransactionOperationType.AUTO_COMMIT_ON) : new TCLStatement(TransactionOperationType.AUTO_COMMIT_OFF);
     }
 }

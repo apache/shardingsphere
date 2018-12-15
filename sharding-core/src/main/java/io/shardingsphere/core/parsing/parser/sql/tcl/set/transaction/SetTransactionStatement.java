@@ -15,19 +15,19 @@
  * </p>
  */
 
-package io.shardingsphere.core.parsing.parser.sql.tcl.set;
+package io.shardingsphere.core.parsing.parser.sql.tcl.set.transaction;
 
-import io.shardingsphere.core.parsing.lexer.LexerEngine;
-import io.shardingsphere.core.parsing.parser.sql.SQLParser;
-import lombok.RequiredArgsConstructor;
+import io.shardingsphere.core.constant.transaction.TransactionOperationType;
+import io.shardingsphere.core.parsing.parser.sql.tcl.TCLStatement;
 
 /**
- * Set variable parser.
+ * Set transaction statement.
  *
  * @author maxiaoguang
  */
-@RequiredArgsConstructor
-public abstract class AbstractSetVariableParser implements SQLParser {
+public final class SetTransactionStatement extends TCLStatement {
     
-    protected final LexerEngine lexerEngine;
+    public SetTransactionStatement() {
+        super(TransactionOperationType.SET_TRANSACTION);
+    }
 }

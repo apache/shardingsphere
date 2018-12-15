@@ -15,25 +15,25 @@
  * </p>
  */
 
-package io.shardingsphere.core.parsing.parser.sql.tcl.commit;
+package io.shardingsphere.core.parsing.parser.sql.tcl.set.transaction;
 
 import lombok.AccessLevel;
 import lombok.NoArgsConstructor;
 
 /**
- * Commit parser factory.
+ * Set transaction parser factory.
  *
  * @author maxiaoguang
  */
 @NoArgsConstructor(access = AccessLevel.PRIVATE)
-public final class CommitParserFactory {
+public final class SetTransactionParserFactory {
     
     /**
-     * Create commit parser instance.
+     * Create savepoint parser instance.
      *
      * @return create parser instance
      */
-    public static CommitParser newInstance() {
-        return new CommitParser();
+    public static SetTransactionParser newInstance() {
+        return new SetTransactionParser();
     }
 }

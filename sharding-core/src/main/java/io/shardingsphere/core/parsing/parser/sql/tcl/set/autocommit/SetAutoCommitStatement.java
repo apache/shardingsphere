@@ -15,25 +15,19 @@
  * </p>
  */
 
-package io.shardingsphere.core.parsing.parser.sql.tcl.commit;
+package io.shardingsphere.core.parsing.parser.sql.tcl.set.autocommit;
 
-import lombok.AccessLevel;
-import lombok.NoArgsConstructor;
+import io.shardingsphere.core.constant.transaction.TransactionOperationType;
+import io.shardingsphere.core.parsing.parser.sql.tcl.TCLStatement;
 
 /**
- * Commit parser factory.
+ * Set transaction statement.
  *
  * @author maxiaoguang
  */
-@NoArgsConstructor(access = AccessLevel.PRIVATE)
-public final class CommitParserFactory {
+public final class SetAutoCommitStatement extends TCLStatement {
     
-    /**
-     * Create commit parser instance.
-     *
-     * @return create parser instance
-     */
-    public static CommitParser newInstance() {
-        return new CommitParser();
+    public SetAutoCommitStatement() {
+        super(TransactionOperationType.UNKNOWN);
     }
 }

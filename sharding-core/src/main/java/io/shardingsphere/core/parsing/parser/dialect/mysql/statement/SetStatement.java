@@ -17,12 +17,18 @@
 
 package io.shardingsphere.core.parsing.parser.dialect.mysql.statement;
 
-import io.shardingsphere.core.parsing.parser.sql.tcl.TCLStatement;
+import io.shardingsphere.core.constant.SQLType;
+import io.shardingsphere.core.parsing.parser.sql.AbstractSQLStatement;
 
 /**
  * Set statement.
  * 
  * @author chenqingyang
+ * @author maxiaoguang
  */
-public final class SetStatement extends TCLStatement {
+public final class SetStatement extends AbstractSQLStatement {
+    
+    public SetStatement() {
+        super(SQLType.DAL);
+    }
 }

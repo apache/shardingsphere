@@ -15,31 +15,25 @@
  * </p>
  */
 
-package io.shardingsphere.core.parsing.parser.sql.tcl;
+package io.shardingsphere.core.parsing.parser.sql.tcl.savepoint;
 
-import io.shardingsphere.core.constant.DatabaseType;
-import io.shardingsphere.core.parsing.lexer.LexerEngine;
-import io.shardingsphere.core.rule.ShardingRule;
 import lombok.AccessLevel;
 import lombok.NoArgsConstructor;
 
 /**
- * Transaction Control Language parser factory.
+ * Rollback parser factory.
  *
- * @author zhangliang
+ * @author maxiaoguang
  */
 @NoArgsConstructor(access = AccessLevel.PRIVATE)
-public final class TCLParserFactory {
+public final class SavepointParserFactory {
     
     /**
-     * Create TCL parser instance.
+     * Create savepoint parser instance.
      *
-     * @param dbType database type
-     * @param shardingRule databases and tables sharding rule
-     * @param lexerEngine lexical analysis engine.
      * @return create parser instance
      */
-    public static TCLParser newInstance(final DatabaseType dbType, final ShardingRule shardingRule, final LexerEngine lexerEngine) {
-        return new TCLParser();
+    public static SavepointParser newInstance() {
+        return new SavepointParser();
     }
 }

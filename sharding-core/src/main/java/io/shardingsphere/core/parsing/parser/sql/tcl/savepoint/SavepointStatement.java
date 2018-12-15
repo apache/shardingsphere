@@ -15,25 +15,19 @@
  * </p>
  */
 
-package io.shardingsphere.core.parsing.parser.sql.tcl.commit;
+package io.shardingsphere.core.parsing.parser.sql.tcl.savepoint;
 
-import lombok.AccessLevel;
-import lombok.NoArgsConstructor;
+import io.shardingsphere.core.constant.transaction.TransactionOperationType;
+import io.shardingsphere.core.parsing.parser.sql.tcl.TCLStatement;
 
 /**
- * Commit parser factory.
+ * Savapoint statement.
  *
  * @author maxiaoguang
  */
-@NoArgsConstructor(access = AccessLevel.PRIVATE)
-public final class CommitParserFactory {
+public final class SavepointStatement extends TCLStatement {
     
-    /**
-     * Create commit parser instance.
-     *
-     * @return create parser instance
-     */
-    public static CommitParser newInstance() {
-        return new CommitParser();
+    public SavepointStatement() {
+        super(TransactionOperationType.SAVEPOINT);
     }
 }

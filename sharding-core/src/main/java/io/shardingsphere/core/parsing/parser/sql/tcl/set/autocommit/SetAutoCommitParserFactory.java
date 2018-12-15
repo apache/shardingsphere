@@ -15,45 +15,37 @@
  * </p>
  */
 
-package io.shardingsphere.core.parsing.parser.sql.tcl.set;
+package io.shardingsphere.core.parsing.parser.sql.tcl.set.autocommit;
 
 import io.shardingsphere.core.constant.DatabaseType;
 import io.shardingsphere.core.parsing.lexer.LexerEngine;
-import io.shardingsphere.core.parsing.parser.dialect.mysql.sql.MySQLSetVariableParser;
-import io.shardingsphere.core.parsing.parser.dialect.oracle.sql.OracleSetVariableParser;
-import io.shardingsphere.core.parsing.parser.dialect.postgresql.sql.PostgreSQLSetVariableParser;
-import io.shardingsphere.core.parsing.parser.dialect.sqlserver.sql.SQLServerSetVariableParser;
-import io.shardingsphere.core.rule.ShardingRule;
+import io.shardingsphere.core.parsing.parser.dialect.mysql.sql.MySQLSetAutoCommitParser;
+import io.shardingsphere.core.parsing.parser.dialect.sqlserver.sql.SQLServerSetAutoCommitParser;
 import lombok.AccessLevel;
 import lombok.NoArgsConstructor;
 
 /**
- * Set variable parser factory.
+ * Set auto commit parser factory.
  *
  * @author maxiaoguang
  */
 @NoArgsConstructor(access = AccessLevel.PRIVATE)
-public final class SetVariableParserFactory {
+public final class SetAutoCommitParserFactory {
     
     /**
-     * Create set variable parser instance.
+     * Create set auto commit parser instance.
      *
      * @param dbType database type
-     * @param shardingRule databases and tables sharding rule
      * @param lexerEngine lexical analysis engine.
      * @return create parser instance
      */
-    public static AbstractSetVariableParser newInstance(final DatabaseType dbType, final ShardingRule shardingRule, final LexerEngine lexerEngine) {
+    public static AbstractSetAutoCommitParser newInstance(final DatabaseType dbType, final LexerEngine lexerEngine) {
         switch (dbType) {
             case H2:
             case MySQL:
-                return new MySQLSetVariableParser(lexerEngine);
-            case Oracle:
-                return new OracleSetVariableParser(lexerEngine);
+                return new MySQLSetAutoCommitParser(lexerEngine);
             case SQLServer:
-                return new SQLServerSetVariableParser(lexerEngine);
-            case PostgreSQL:
-                return new PostgreSQLSetVariableParser(lexerEngine);
+                return new SQLServerSetAutoCommitParser(lexerEngine);
             default:
                 throw new UnsupportedOperationException(String.format("Cannot support database [%s].", dbType));
         }

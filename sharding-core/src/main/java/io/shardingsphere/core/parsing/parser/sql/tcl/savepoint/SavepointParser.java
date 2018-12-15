@@ -15,26 +15,19 @@
  * </p>
  */
 
-package io.shardingsphere.core.parsing.parser.dialect.postgresql.sql;
+package io.shardingsphere.core.parsing.parser.sql.tcl.savepoint;
 
-import io.shardingsphere.core.parsing.lexer.LexerEngine;
-import io.shardingsphere.core.parsing.parser.sql.SQLStatement;
-import io.shardingsphere.core.parsing.parser.sql.tcl.TCLStatement;
-import io.shardingsphere.core.parsing.parser.sql.tcl.set.AbstractSetVariableParser;
+import io.shardingsphere.core.parsing.parser.sql.SQLParser;
 
 /**
- * Set variable parser for PostgreSQL.
+ * Savapoint parser.
  *
  * @author maxiaoguang
  */
-public final class PostgreSQLSetVariableParser extends AbstractSetVariableParser {
-    
-    public PostgreSQLSetVariableParser(final LexerEngine lexerEngine) {
-        super(lexerEngine);
-    }
+public final class SavepointParser implements SQLParser {
     
     @Override
-    public SQLStatement parse() {
-        return new TCLStatement();
+    public SavepointStatement parse() {
+        return new SavepointStatement();
     }
 }

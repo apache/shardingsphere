@@ -18,6 +18,7 @@
 package io.shardingsphere.core.parsing;
 
 import io.shardingsphere.core.constant.DatabaseType;
+import io.shardingsphere.core.constant.transaction.TransactionOperationType;
 import io.shardingsphere.core.parsing.lexer.LexerEngine;
 import io.shardingsphere.core.parsing.lexer.LexerEngineFactory;
 import io.shardingsphere.core.parsing.lexer.dialect.mysql.MySQLKeyword;
@@ -91,6 +92,12 @@ public final class SQLJudgeEngine {
                 if (DCLStatement.isDCL(tokenType, secondaryTokenType)) {
                     return getDCLStatement();
                 }
+                if (TCLStatement.isTCLUnsafe(DatabaseType.MySQL, tokenType, lexerEngine)) {
+                    return getTCLStatement(tokenType);
+                }
+                if (DefaultKeyword.SET.equals(tokenType)) {
+                    return new SetStatement();
+                }
             } else {
                 lexerEngine.nextToken();
             }
@@ -120,10 +127,7 @@ public final class SQLJudgeEngine {
     }
     
     private SQLStatement getTCLStatement(final TokenType tokenType) {
-        if (DefaultKeyword.SET == tokenType) {
-            return new SetStatement();
-        }
-        return new TCLStatement();
+        return new TCLStatement(TransactionOperationType.UNKNOWN);
     }
     
     private SQLStatement getDALStatement(final TokenType tokenType, final LexerEngine lexerEngine) {

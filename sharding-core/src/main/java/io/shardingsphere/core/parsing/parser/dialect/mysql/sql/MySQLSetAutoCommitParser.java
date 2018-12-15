@@ -19,36 +19,31 @@ package io.shardingsphere.core.parsing.parser.dialect.mysql.sql;
 
 import io.shardingsphere.core.constant.transaction.TransactionOperationType;
 import io.shardingsphere.core.parsing.lexer.LexerEngine;
-import io.shardingsphere.core.parsing.lexer.token.DefaultKeyword;
 import io.shardingsphere.core.parsing.lexer.token.Symbol;
 import io.shardingsphere.core.parsing.parser.sql.tcl.TCLStatement;
-import io.shardingsphere.core.parsing.parser.sql.tcl.set.AbstractSetVariableParser;
+import io.shardingsphere.core.parsing.parser.sql.tcl.set.autocommit.AbstractSetAutoCommitParser;
 
 /**
- * Set variable parser for MySQL.
+ * Set auto commit parser for MySQL.
  *
  * @author maxiaoguang
  */
-public final class MySQLSetVariableParser extends AbstractSetVariableParser {
+public final class MySQLSetAutoCommitParser extends AbstractSetAutoCommitParser {
     
-    public MySQLSetVariableParser(final LexerEngine lexerEngine) {
+    public MySQLSetAutoCommitParser(final LexerEngine lexerEngine) {
         super(lexerEngine);
     }
     
     @Override
     public TCLStatement parse() {
-        boolean autoCommit = true;
-        lexerEngine.skipUntil(DefaultKeyword.AUTOCOMMIT);
-        while (!lexerEngine.isEnd()) {
-            lexerEngine.nextToken();
-            lexerEngine.accept(Symbol.EQ);
-            if ("0".equals(lexerEngine.getCurrentToken().getLiterals())) {
-                autoCommit = false;
-            } else {
-                autoCommit = true;
-            }
-            lexerEngine.skipUntil(DefaultKeyword.AUTOCOMMIT);
+        boolean autoCommit;
+        getLexerEngine().nextToken();
+        getLexerEngine().accept(Symbol.EQ);
+        if ("1".equals(getLexerEngine().getCurrentToken().getLiterals())) {
+            autoCommit = true;
+        } else {
+            autoCommit = false;
         }
-        return autoCommit ? new TCLStatement() : new TCLStatement(TransactionOperationType.BEGIN);
+        return autoCommit ? new TCLStatement(TransactionOperationType.AUTO_COMMIT_ON) : new TCLStatement(TransactionOperationType.AUTO_COMMIT_OFF);
     }
 }

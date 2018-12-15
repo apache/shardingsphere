@@ -15,19 +15,21 @@
  * </p>
  */
 
-package io.shardingsphere.core.parsing.parser.sql.tcl;
+package io.shardingsphere.core.parsing.parser.sql.tcl.set.autocommit;
 
+import io.shardingsphere.core.parsing.lexer.LexerEngine;
 import io.shardingsphere.core.parsing.parser.sql.SQLParser;
+import lombok.Getter;
+import lombok.RequiredArgsConstructor;
 
 /**
- * TCL parser.
+ * Set variable parser.
  *
- * @author zhangliang
+ * @author maxiaoguang
  */
-public final class TCLParser implements SQLParser {
+@RequiredArgsConstructor
+public abstract class AbstractSetAutoCommitParser implements SQLParser {
     
-    @Override
-    public TCLStatement parse() {
-        return new TCLStatement();
-    }
+    @Getter
+    private final LexerEngine lexerEngine;
 }
