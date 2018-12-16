@@ -31,7 +31,7 @@ public final class RollbcakParserFactory {
     /**
      * Create rollback parser instance.
      *
-     * @return create parser instance
+     * @return rollback parser instance
      */
     public static RollbackParser newInstance() {
         return new RollbackParser();

@@ -31,7 +31,7 @@ public final class CommitParserFactory {
     /**
      * Create commit parser instance.
      *
-     * @return create parser instance
+     * @return commit parser instance
      */
     public static CommitParser newInstance() {
         return new CommitParser();

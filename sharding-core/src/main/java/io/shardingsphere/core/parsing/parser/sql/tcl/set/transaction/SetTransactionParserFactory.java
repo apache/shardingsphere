@@ -29,9 +29,9 @@ import lombok.NoArgsConstructor;
 public final class SetTransactionParserFactory {
     
     /**
-     * Create savepoint parser instance.
+     * Create set transaction parser instance.
      *
-     * @return create parser instance
+     * @return set transaction parser instance
      */
     public static SetTransactionParser newInstance() {
         return new SetTransactionParser();

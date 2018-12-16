@@ -31,7 +31,7 @@ public final class SavepointParserFactory {
     /**
      * Create savepoint parser instance.
      *
-     * @return create parser instance
+     * @return savepoint parser instance
      */
     public static SavepointParser newInstance() {
         return new SavepointParser();

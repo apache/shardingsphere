@@ -37,7 +37,7 @@ public final class SetAutoCommitParserFactory {
      *
      * @param dbType database type
      * @param lexerEngine lexical analysis engine.
-     * @return create parser instance
+     * @return set auto commit parser instance
      */
     public static AbstractSetAutoCommitParser newInstance(final DatabaseType dbType, final LexerEngine lexerEngine) {
         switch (dbType) {

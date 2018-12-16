@@ -31,7 +31,7 @@ public final class BeginParserFactory {
     /**
      * Create begin parser instance.
      *
-     * @return create parser instance
+     * @return begin parser instance
      */
     public static BeginParser newInstance() {
         return new BeginParser();
