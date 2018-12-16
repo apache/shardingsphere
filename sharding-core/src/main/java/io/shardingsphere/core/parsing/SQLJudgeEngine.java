@@ -28,7 +28,7 @@ import io.shardingsphere.core.parsing.lexer.token.Keyword;
 import io.shardingsphere.core.parsing.lexer.token.Symbol;
 import io.shardingsphere.core.parsing.lexer.token.TokenType;
 import io.shardingsphere.core.parsing.parser.dialect.mysql.statement.DescribeStatement;
-import io.shardingsphere.core.parsing.parser.dialect.mysql.statement.SetStatement;
+import io.shardingsphere.core.parsing.parser.sql.dal.set.SetStatement;
 import io.shardingsphere.core.parsing.parser.dialect.mysql.statement.ShowColumnsStatement;
 import io.shardingsphere.core.parsing.parser.dialect.mysql.statement.ShowCreateTableStatement;
 import io.shardingsphere.core.parsing.parser.dialect.mysql.statement.ShowDatabasesStatement;

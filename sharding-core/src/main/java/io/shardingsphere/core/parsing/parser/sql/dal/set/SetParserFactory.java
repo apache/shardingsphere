@@ -15,20 +15,25 @@
  * </p>
  */
 
-package io.shardingsphere.core.parsing.parser.dialect.mysql.statement;
+package io.shardingsphere.core.parsing.parser.sql.dal.set;
 
-import io.shardingsphere.core.constant.SQLType;
-import io.shardingsphere.core.parsing.parser.sql.AbstractSQLStatement;
+import lombok.AccessLevel;
+import lombok.NoArgsConstructor;
 
 /**
- * Set statement.
- * 
- * @author chenqingyang
+ * Set parser factory.
+ *
  * @author maxiaoguang
  */
-public final class SetStatement extends AbstractSQLStatement {
+@NoArgsConstructor(access = AccessLevel.PRIVATE)
+public final class SetParserFactory {
     
-    public SetStatement() {
-        super(SQLType.DAL);
+    /**
+     * Create set parser instance.
+     *
+     * @return set parser instance
+     */
+    public static SetParser newInstance() {
+        return new SetParser();
     }
 }

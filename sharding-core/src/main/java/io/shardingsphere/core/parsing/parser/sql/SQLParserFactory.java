@@ -28,6 +28,7 @@ import io.shardingsphere.core.parsing.lexer.token.TokenType;
 import io.shardingsphere.core.parsing.parser.exception.SQLParsingUnsupportedException;
 import io.shardingsphere.core.parsing.parser.sql.dal.DALStatement;
 import io.shardingsphere.core.parsing.parser.sql.dal.describe.DescribeParserFactory;
+import io.shardingsphere.core.parsing.parser.sql.dal.set.SetParserFactory;
 import io.shardingsphere.core.parsing.parser.sql.dal.show.ShowParserFactory;
 import io.shardingsphere.core.parsing.parser.sql.dal.use.UseParserFactory;
 import io.shardingsphere.core.parsing.parser.sql.dcl.DCLStatement;
@@ -108,6 +109,9 @@ public final class SQLParserFactory {
         }
         if (TCLStatement.isTCLUnsafe(dbType, tokenType, lexerEngine)) {
             return getTCLParser(dbType, tokenType, lexerEngine);
+        }
+        if (DefaultKeyword.SET.equals(tokenType)) {
+            return SetParserFactory.newInstance();
         }
         throw new SQLParsingUnsupportedException(tokenType);
     }
