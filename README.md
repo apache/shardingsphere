@@ -29,7 +29,7 @@ Aiming at reasonably making full use of the computation and storage capacity of 
 As the cornerstone of many enterprises, relational database still takes a huge market share. 
 Therefore, at current stage, we prefer to focus on its increment instead of a total overturn.
 
-![ShardingSphere Scope](http://ovfotjrsi.bkt.clouddn.com/sharding-sphere-scope_en_v2.png)
+![ShardingSphere Scope](http://shardingsphere.jd.com/document/current/img/shardingsphere-scope_en.png)
 
 ### Sharding-JDBC
 
@@ -43,7 +43,7 @@ It can be considered as an enhanced JDBC driver, which is fully compatible with 
 * Based on any third-party database connection pool, such as DBCP, C3P0, BoneCP, Druid, HikariCP.
 * Support any kind of database that conforms to JDBC standard: MySQL，Oracle，SQLServer and PostgreSQL for now.
 
-![Sharding-JDBC Architecture](http://ovfotjrsi.bkt.clouddn.com/sharding-jdbc-brief.png)
+![Sharding-JDBC Architecture](http://shardingsphere.jd.com/document/current/img/sharding-jdbc-brief.png)
 
 ### Sharding-Proxy
 
@@ -56,7 +56,7 @@ Friendlier to DBA, the MySQL version provided now can use any kind of client acc
 * Totally transparent to applications, it can be used directly as MySQL.
 * Applicable to any kind of compatible of client end that is compatible of MySQL protocol.
 
-![Sharding-Proxy Architecture](http://ovfotjrsi.bkt.clouddn.com/sharding-proxy-brief_v2.png)
+![Sharding-Proxy Architecture](http://shardingsphere.jd.com/document/current/img/sharding-proxy-brief_v2.png)
 
 ### Sharding-Sidecar(TBD)
 
@@ -68,7 +68,7 @@ Focusing on interaction, it effectively organizes the interaction between messy 
 The application and database that use Database Mesh to visit database will form a large grid system, where they just need to be put into the right position accordingly. 
 They are all governed by mesh layer.
 
-![Sharding-Sidecar Architecture](http://ovfotjrsi.bkt.clouddn.com/sharding-sidecar-brief_v2.png)
+![Sharding-Sidecar Architecture](http://shardingsphere.jd.com/document/current/img/sharding-sidecar-brief_v2.png)
 
 |                         | *Sharding-JDBC* | *Sharding-Proxy*     | *Sharding-Sidecar* |
 | ----------------------- | --------------- | -------------------- | ------------------ |
@@ -112,4 +112,4 @@ Architects can adjust the system architecture to the most applicable one to curr
 
 ## Roadmap
 
-![Roadmap](http://ovfotjrsi.bkt.clouddn.com/roadmap_en_v3.png)
+![Roadmap](http://shardingsphere.jd.com/document/current/img/shardingsphere-roadmap_en.png)
