@@ -78,7 +78,7 @@ Inline expression identifier can use `${...}` or `$->{...}`, but `${...}` is con
                 <sharding:binding-table-rule logic-tables="t_order, t_order_item" />
             </sharding:binding-table-rules>
             <sharding:broadcast-table-rules>
-                <sharding:broadcast-table-rule table="t_order" />
+                <sharding:broadcast-table-rule table="t_config" />
             </sharding:broadcast-table-rules>
         </sharding:sharding-rule>
     </sharding:data-source>
@@ -257,7 +257,7 @@ Inline expression identifier can use `${...}` or `$->{...}`, but `${...}` is con
                 <sharding:binding-table-rule logic-tables="t_order, t_order_item" />
             </sharding:binding-table-rules>
             <sharding:broadcast-table-rules>
-                <sharding:broadcast-table-rule table="t_order" />
+                <sharding:broadcast-table-rule table="t_config" />
             </sharding:broadcast-table-rules>
         </sharding:sharding-rule>
     </sharding:data-source>
