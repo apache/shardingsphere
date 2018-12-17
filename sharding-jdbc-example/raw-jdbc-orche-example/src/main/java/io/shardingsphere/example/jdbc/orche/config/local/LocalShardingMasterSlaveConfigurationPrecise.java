@@ -18,9 +18,9 @@
 package io.shardingsphere.example.jdbc.orche.config.local;
 
 import com.google.common.collect.Lists;
-import io.shardingsphere.api.config.MasterSlaveRuleConfiguration;
-import io.shardingsphere.api.config.ShardingRuleConfiguration;
-import io.shardingsphere.api.config.TableRuleConfiguration;
+import io.shardingsphere.api.config.rule.MasterSlaveRuleConfiguration;
+import io.shardingsphere.api.config.rule.ShardingRuleConfiguration;
+import io.shardingsphere.api.config.rule.TableRuleConfiguration;
 import io.shardingsphere.api.config.strategy.StandardShardingStrategyConfiguration;
 import io.shardingsphere.example.algorithm.PreciseModuloShardingDatabaseAlgorithm;
 import io.shardingsphere.example.algorithm.PreciseModuloShardingTableAlgorithm;
