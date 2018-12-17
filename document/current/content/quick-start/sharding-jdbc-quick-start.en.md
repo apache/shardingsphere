@@ -15,7 +15,7 @@ weight = 1
 </dependency>
 ```
 
-Note: Please change the ${latest.release.version} to the actual version.
+Note: Please change the `${latest.release.version}` to the actual version.
 
 ## 2. Configure sharding rule configuration
 
