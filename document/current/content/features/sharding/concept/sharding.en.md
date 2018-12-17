@@ -8,7 +8,8 @@ weight = 2
 
 The database field used in sharding refers to the key field in horizontal sharding of the database (table). 
 For example, in last number modulo of order ID sharding, order ID is taken as the sharding key. 
-The full route executed when there is no sharding field in SQL has a poor performance but supports multiple sharding fields.
+The full route executed when there is no sharding field in SQL has a poor performance.
+Beside single sharding column, ShardingSphere also supports multiple sharding columns.
 
 ## Sharding Algorithm
 
@@ -59,7 +60,7 @@ the combination of sharding keys and sharding operators are in the algorithm int
 
 Using Groovy expressions, `InlineShardingStrategy` provides single-key support for the sharding operation of `=` and `IN` in SQL. 
 Simple sharding algorithms can be used through a simple configuration to avoid laborious Java code developments. 
-For example, `t_user${u_id % 8}` means table t_user is divided into 8 tables according to u_id, with table names from t_user0 to t_user7.
+For example, `t_user_$->{u_id % 8}` means table t_user is divided into 8 tables according to u_id, with table names from `t_user_0` to `t_user_7`.
 
 - Hint Sharding Strategy
 
