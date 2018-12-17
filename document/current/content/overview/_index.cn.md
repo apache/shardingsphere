@@ -105,8 +105,7 @@ ShardingSphere是多接入端共同组成的生态圈。
 
 * 配置动态化
 * 熔断 & 禁用
-* Open Tracing
-* 多数据副本 (Planing)
+* 调用链路追踪
 * 弹性伸缩 (Planing)
 
 ## 规划线路图
