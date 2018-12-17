@@ -19,7 +19,7 @@
 
 ### Milestones
 
-1. Sharding-Proxy launch. Support the use of Sharding-Sphere in the form of database to support for MySQL CLI and GUI client
+1. Sharding-Proxy launch. Support the use of ShardingSphere in the form of database to support for MySQL CLI and GUI client
 
 ### New Features
 

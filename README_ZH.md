@@ -1,4 +1,4 @@
-# [Sharding-Sphere - 分布式数据库中间层生态圈](http://shardingsphere.io/index_zh.html)
+# [ShardingSphere - 分布式数据库中间层生态圈](http://shardingsphere.io/index_zh.html)
 
 官方网站: http://shardingsphere.io/
 
@@ -20,17 +20,17 @@
 
 ## 概述
 
-Sharding-Sphere是一套开源的分布式数据库中间件解决方案组成的生态圈，它由Sharding-JDBC、Sharding-Proxy和Sharding-Sidecar（计划中）这3款相互独立的产品组成。
+ShardingSphere是一套开源的分布式数据库中间件解决方案组成的生态圈，它由Sharding-JDBC、Sharding-Proxy和Sharding-Sidecar（计划中）这3款相互独立的产品组成。
 他们均提供标准化的数据分片、分布式事务和数据库治理功能，可适用于如Java同构、异构语言、容器、云原生等各种多样化的应用场景。
 
-Sharding-Sphere定位为关系型数据库中间件，旨在充分合理地在分布式的场景下利用关系型数据库的计算和存储能力，而并非实现一个全新的关系型数据库。
+ShardingSphere定位为关系型数据库中间件，旨在充分合理地在分布式的场景下利用关系型数据库的计算和存储能力，而并非实现一个全新的关系型数据库。
 它与NoSQL和NewSQL是并存而非互斥的关系。NoSQL和NewSQL作为新技术探索的前沿，放眼未来，拥抱变化，是非常值得推荐的。反之，也可以用另一种思路看待问题，放眼未来，关注不变的东西，进而抓住事物本质。
 关系型数据库当今依然占有巨大市场，是各个公司核心业务的基石，未来也难于撼动，我们目前阶段更加关注在原有基础上的增量，而非颠覆。
 
 ShardingSphere目前已经进入[Apache孵化器](http://incubator.apache.org/projects/shardingsphere.html)，
 欢迎通过[shardingsphere的dev邮件列表](mailto:dev@shardingsphere.incubator.apache.org)与我们讨论。
 
-![Sharding-Sphere Scope](http://ovfotjrsi.bkt.clouddn.com/sharding-sphere-scope_cn.png)
+![ShardingSphere Scope](http://ovfotjrsi.bkt.clouddn.com/sharding-sphere-scope_cn.png)
 
 ### Sharding-JDBC
 
