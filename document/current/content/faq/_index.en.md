@@ -5,7 +5,14 @@ weight = 5
 chapter = true
 +++
 
-#### 1. Why do Compilation Errors arise When Reading Sources?
+#### 1. How to debug SQL if it is not executed correctly in ShardingSphere？
+
+The answer is:
+
+Sharding-Proxy and version after Sharding-JDBC 1.5.0 supports to configure `sql.show` which can print the parsing of SQL, rewriting of SQL, and final routing information to the info log.
+The configuration of `sql.show` is OFF by default. To configure it ON.
+
+#### 2. Why do compilation errors arise when reading sources?
 
 The answer is:
 
@@ -13,38 +20,54 @@ ShardingSphere uses lombok to implement minimal code. For details, please refer 
 
 sharding-orchestration-reg module needs to perform ` mvn install` command to generate gRPC-related Java file according to the protobuf file.
 
-#### 2. How to solve the Error of Cloud not resolve placeholder ... in string value ...?
+#### 3. Why can not find xsd when using Spring namespace?
+
+The answer is:
+
+Deploying an XSD file to a public web address is not the requirement of the Spring namespace usage specification, but some users have such requirements, so we deploy the XSD file to the ShardingSphere website.
+In fact, META-INF\spring.schemas in the jar package of sharding-jdbc-spring-namespace configures the position of xsd file：META-INF\namespace\sharding.xsd and META-INF\namespace\master-slave.xsd.
+
+#### 4. How to solve the Error of Cloud not resolve placeholder ... in string value ...?
 
 The answer is:
 
 Inline expression identifier can use `${...}` or `$->{...}`, but `${...}` is conflict with spring placeholder of properties, so use `$->{...}` on spring environment is better.
 
-#### 3. Why does the inline expression return a floating point number as a result?
+#### 5. Why does the inline expression return a floating point number as a result?
 
 The answer is:
 
 In Java, the division result of two integers is an integer, but in the inline expression, the division result is a floating point number by using of an integer by using Groovy syntax.
 To return an integer, you need to change A/B to A.intdiv(B).
 
-#### 4. Why is the result not correct when using Proxool.
+#### 6. Do you need to configure tables without Sharding into sharding rules, if you only have partial databases or tables for Sharding?
 
 The answer is:
 
-When using Proxool to configuration multiple data sources, should set alias for every data sources. Because of get connection on Proxool will judge alias whether exist in the pool. If alias absent, Proxool will get connection from same data source.
+Yes. Because ShardingSphere combines multiple data sources into a single logical data source. Therefore, ShardingSphere can not route those tables not configured in configuration rules.
 
-Key source code of ProxoolDataSource.getConnection():
+But ShardingSphere provides two other ways to simplify the configuration.
 
-```java
-    if(!ConnectionPoolManager.getInstance().isPoolExists(this.alias)) {
-        this.registerPool();
-    }
-```
+Method 1: To configure default-data-source, thus if ShardingSphere does not find correct Sharding data source for tables, it will route the tables to the default data source.
 
-Read more details on alias, refer to [Proxool](http://proxool.sourceforge.net/configure.html)。
+Method 2: We can configure the datasources with Sharding and without Sharding in ShardingSphere, and to use different data sources in the application to handle the case of Sharding or not.
 
-PS: To visit sourceforge web, you need the VPN。
+#### 7. Does ShardingSphere support native self-incrementing primary keys in addition to supporting distributed self-incrementing primary keys?
 
-#### 5. Why is an exception thrown when the aggregate column without an alias is used in SQLSever and PostgreSQL?
+The answer is:
+
+Yes. However, there are restrictions on the use of native self-increment primary keys, which means that you cannot use native self-increment primary keys as Sharding columns at the same time.
+
+Because ShardingSphere does not know the table structure, and native self-increment primary key is not included in the original SQL, so that ShardingSphere cannot parse the key into Sharding column, resulting in SQL being routed to multiple tables.
+When the INSERT SQL is routed to one table, the native self-increment primary key has a value; When the INSERT SQL is routed to more than one table, it will be 0.
+
+#### 8. Why does an exception thrown as `ClassCastException: Integer can not cast to Long` when using generic Long Type with `SingleKeyTableShardingAlgorithm`?
+
+The answer is:
+
+To ensure that the type of Sharding column in the database are consistent with the type of columns in the Sharding algorithm. For example, the column type in the database is int(11) and the Sharding column is Integer. If the Sharding column is Long, the column type in the database is bigint.
+
+#### 9. Why is an exception thrown when the aggregate column without an alias is used in SQLSever and PostgreSQL?
 
 The answer is:
 
@@ -62,51 +85,7 @@ The correct SQL is：
 SELECT SUM(num) AS sum_num, SUM(num2) AS sum_num2 FROM tablexxx;
 ```
 
-#### 6. How to debug SQL if it is not executed correctly in ShardingSphere？
-
-The answer is:
-
-Sharding-Proxy and version after Sharding-JDBC 1.5.0 supports to configure sql.show which can print the parsing of SQL, rewriting of SQL, and final routing information to the info log.
-The configuration of sql.show is OFF by default. To configure it ON.
-
-#### 7. Do you need to configure tables without Sharding into sharding rules, if you only have partial databases or tables for Sharding?
-
-The answer is:
-
-Yes. Because ShardingSphere combines multiple data sources into a single logical data source. Therefore, ShardingSphere can not route those tables not configured in configuration rules.
-
-But ShardingSphere provides two other ways to simplify the configuration.
-
-Method 1: To configure default-data-source, thus if ShardingSphere does not find correct Sharding data source for tables, it will route the tables to the default data source.
-
-Method 2: We can configure the datasources with Sharding and without Sharding in ShardingSphere, and to use different data sources in the application to handle the case of Sharding or not.
-
-#### 8. Why does ShardingSphere provide the primary key generated by the default distributed auto-increment primary strategy is not continuous, and its mantissa mostly is even?
-
-The answer is:
-
-ShardingSphere uses the snowflake algorithm as the default distributed self-increasing primary key strategy to decentralized compute the unique self-increment primary key. Therefore, self-increment primary key can be increasing but not sequential.
-
-The last four bits of the primary key computed by the snowflake algorithm represent the incremental values in one millisecond. Therefore, if the concurrency of applications is not high in one millisecond, the chance of the last four being zero are high.
-
-This problem is solved at version 3.1.0, FIY: https://github.com/sharding-sphere/sharding-sphere/issues/1617
-
-#### 9. Why does a `ClassCastException: Integer can not cast to Long` arise where i specify a SingleKeyTableShardingAlgorithm generic for Long Type ?
-
-The answer is:
-
-To ensure that the type of Sharding column in the database are consistent with the type of columns in the Sharding algorithm. For example, the column type in the database is int(11) and the Sharding column is Integer. If the Sharding column is Long, the column type in the database is bigint.
-
-#### 10. Does ShardingSphere support native self-incrementing primary keys in addition to supporting distributed self-incrementing primary keys?
-
-The answer is:
-
-Yes. However, there are restrictions on the use of native self-increment primary keys, which means that you cannot use native self-increment primary keys as Sharding columns at the same time.
-
-Because ShardingSphere does not know the table structure, and native self-increment primary key is not included in the original SQL, so that ShardingSphere cannot parse the key into Sharding column, resulting in SQL being routed to multiple tables.
-When the INSERT SQL is routed to one table, the native self-increment primary key has a value; When the INSERT SQL is routed to more than one table, it will be 0.
-
-#### 11. Why does the Oracle throw an exception "Order by value must implements Comparable" when you use the Order By statement including Timestamp column?
+#### 10. Why does the Oracle throw an exception `Order by value must implements Comparable` when you use the Order By statement including Timestamp column?
 
 The answer is:
 
@@ -163,9 +142,28 @@ More detail, please refer to the ojdb sourcecode of coracle.jdbc.driver.Timestam
     }
 ```
 
-#### 12. Why can not find xsd when using Spring namespace?
+#### 11. Why is the result not correct when using `Proxool`.
 
 The answer is:
 
-Deploying an XSD file to a public web address is not the requirement of the Spring namespace usage specification, but some users have such requirements, so we deploy the XSD file to the ShardingSphere website.
-In fact, META-INF\spring.schemas in the jar package of sharding-jdbc-spring-namespace configures the position of xsd file：META-INF\namespace\sharding.xsd and META-INF\namespace\master-slave.xsd.
+When using Proxool to configuration multiple data sources, should set alias for every data sources. Because of get connection on Proxool will judge alias whether exist in the pool. If alias absent, Proxool will get connection from same data source.
+
+Key source code of ProxoolDataSource.getConnection():
+
+```java
+    if(!ConnectionPoolManager.getInstance().isPoolExists(this.alias)) {
+        this.registerPool();
+    }
+```
+
+Read more details on alias, refer to [Proxool](http://proxool.sourceforge.net/configure.html)。
+
+#### 12. Why does ShardingSphere provide the primary key generated by the default distributed auto-increment primary strategy is not continuous, and its mantissa mostly is even?
+
+The answer is:
+
+ShardingSphere uses the snowflake algorithm as the default distributed self-increasing primary key strategy to decentralized compute the unique self-increment primary key. Therefore, self-increment primary key can be increasing but not sequential.
+
+The last four bits of the primary key computed by the snowflake algorithm represent the incremental values in one millisecond. Therefore, if the concurrency of applications is not high in one millisecond, the chance of the last four being zero are high.
+
+The problem of mantissa mostly even is solved at version 3.1.0, FIY: https://github.com/sharding-sphere/sharding-sphere/issues/1617
