@@ -187,12 +187,13 @@ public abstract class AbstractConnectionAdapter extends AbstractUnsupportedOpera
                 }
             });
         }
-        if (!autoCommit) {
-            if (TransactionType.XA == transactionType) {
-                shardingTransactionHandler.doInTransaction(new XATransactionContext(TransactionOperationType.BEGIN));
-            } else if (TransactionType.BASE == transactionType) {
-                shardingTransactionHandler.doInTransaction(new SagaTransactionContext(TransactionOperationType.BEGIN, this));
-            }
+        if (autoCommit) {
+            return;
+        }
+        if (TransactionType.XA == transactionType) {
+            shardingTransactionHandler.doInTransaction(new XATransactionContext(TransactionOperationType.BEGIN));
+        } else if (TransactionType.BASE == transactionType) {
+            shardingTransactionHandler.doInTransaction(new SagaTransactionContext(TransactionOperationType.BEGIN, this));
         }
     }
     

@@ -18,13 +18,15 @@
 package io.shardingsphere.transaction.core.handler;
 
 import io.shardingsphere.transaction.internal.context.ShardingTransactionContext;
-import io.shardingsphere.transaction.spi.ShardingTransactionHandler;
 import io.shardingsphere.transaction.internal.manager.ShardingTransactionManager;
+import io.shardingsphere.transaction.spi.ShardingTransactionHandler;
 
 /**
  * Abstract class for sharding transaction handler.
  *
  * @author zhaojun
+ *
+ * @param <T> type of sharding transaction context
  */
 public abstract class ShardingTransactionHandlerAdapter<T extends ShardingTransactionContext> implements ShardingTransactionHandler<T> {
     
@@ -45,10 +47,5 @@ public abstract class ShardingTransactionHandlerAdapter<T extends ShardingTransa
         }
     }
     
-    /**
-     * Get sharding transaction manager.
-     *
-     * @return sharding transaction manager
-     */
     protected abstract ShardingTransactionManager getShardingTransactionManager();
 }

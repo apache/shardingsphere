@@ -29,7 +29,7 @@ import java.sql.Connection;
  * @author yangyi
  */
 @Getter
-public class SagaTransactionContext implements ShardingTransactionContext {
+public final class SagaTransactionContext implements ShardingTransactionContext {
     
     private final TransactionOperationType operationType;
     

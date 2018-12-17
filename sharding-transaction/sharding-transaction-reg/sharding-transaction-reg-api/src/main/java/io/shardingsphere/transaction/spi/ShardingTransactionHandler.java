@@ -24,6 +24,8 @@ import io.shardingsphere.transaction.internal.context.ShardingTransactionContext
  * Sharding transaction handler SPI.
  *
  * @author zhaojun
+ * 
+ * @param <T> type of sharding transaction context
  */
 public interface ShardingTransactionHandler<T extends ShardingTransactionContext> {
     
