@@ -43,6 +43,6 @@ public final class SQLServerSetAutoCommitParser extends AbstractSetAutoCommitPar
         } else {
             autoCommit = false;
         }
-        return autoCommit ? new TCLStatement(TransactionOperationType.AUTO_COMMIT_ON) : new TCLStatement(TransactionOperationType.AUTO_COMMIT_OFF);
+        return autoCommit ? new TCLStatement(TransactionOperationType.IGNORE) : new TCLStatement(TransactionOperationType.BEGIN);
     }
 }

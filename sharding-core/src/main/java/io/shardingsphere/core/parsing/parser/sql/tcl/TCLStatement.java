@@ -48,6 +48,10 @@ public class TCLStatement extends AbstractSQLStatement {
     @Setter
     private TransactionOperationType operationType;
     
+    public TCLStatement() {
+        super(SQLType.TCL);
+    }
+    
     public TCLStatement(final TransactionOperationType operationType) {
         super(SQLType.TCL);
         this.operationType = operationType;

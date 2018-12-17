@@ -28,6 +28,6 @@ import io.shardingsphere.core.parsing.parser.sql.tcl.TCLStatement;
 public final class SavepointStatement extends TCLStatement {
     
     public SavepointStatement() {
-        super(TransactionOperationType.SAVEPOINT);
+        super(TransactionOperationType.IGNORE);
     }
 }

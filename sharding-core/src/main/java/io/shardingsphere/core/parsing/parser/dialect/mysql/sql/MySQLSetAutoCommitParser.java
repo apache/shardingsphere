@@ -44,6 +44,6 @@ public final class MySQLSetAutoCommitParser extends AbstractSetAutoCommitParser 
         } else {
             autoCommit = false;
         }
-        return autoCommit ? new TCLStatement(TransactionOperationType.AUTO_COMMIT_ON) : new TCLStatement(TransactionOperationType.AUTO_COMMIT_OFF);
+        return autoCommit ? new TCLStatement(TransactionOperationType.IGNORE) : new TCLStatement(TransactionOperationType.BEGIN);
     }
 }

@@ -40,9 +40,9 @@ public final class SQLServerAutoCommitValueExtractor implements OptionalSQLSegme
         Optional<ParserRuleContext> autoCommitValueNode = ExtractorUtils.findFirstChildNode(ancestorNode, RuleName.AUTO_COMMIT_VALUE);
         Preconditions.checkState(autoCommitValueNode.isPresent(), "Auto commit value is necessary.");
         if (DefaultKeyword.ON.name().equalsIgnoreCase(SQLUtil.getExactlyValue(autoCommitValueNode.get().getText()))) {
-            return Optional.of(new TransactionOperationTypeSegment(TransactionOperationType.AUTO_COMMIT_ON));
+            return Optional.of(new TransactionOperationTypeSegment(TransactionOperationType.IGNORE));
         } else {
-            return Optional.of(new TransactionOperationTypeSegment(TransactionOperationType.AUTO_COMMIT_OFF));
+            return Optional.of(new TransactionOperationTypeSegment(TransactionOperationType.BEGIN));
         }
     }
 }
