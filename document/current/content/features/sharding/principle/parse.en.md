@@ -47,3 +47,7 @@ To compensate for this gap, ShardingSphere will use the SQL parsing tree of Prep
 Therefore, PreparedStatement is recommended to be used as the pre-compile method to improve the performance.
 
 ShardingSphere will provide options to include both of the parsing engines and give users the right to choose between the competitiveness and performance of SQL parsing.
+
+The overall structure division of 3rd parsing engine is shown in the following picture.
+
+![Parsing Engine](http://shardingsphere.jd.com/document/current/img/sharding/parsing_architecture_en.png)
