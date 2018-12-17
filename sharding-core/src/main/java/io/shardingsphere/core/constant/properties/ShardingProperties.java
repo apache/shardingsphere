@@ -24,8 +24,10 @@ import lombok.Getter;
 
 import java.util.ArrayList;
 import java.util.Collection;
+import java.util.Map;
 import java.util.Properties;
 import java.util.Set;
+import java.util.concurrent.ConcurrentHashMap;
 
 /**
  * Properties for sharding configuration.
@@ -38,6 +40,8 @@ public final class ShardingProperties {
     
     @Getter
     private final Properties props;
+    
+    private final Map<ShardingPropertiesConstant, Object> cachedProperties = new ConcurrentHashMap<>(64, 1);
     
     public ShardingProperties(final Properties props) {
         this.props = props;
@@ -56,13 +60,9 @@ public final class ShardingProperties {
             String value = props.getProperty(each);
             if (type == boolean.class && !StringUtil.isBooleanValue(value)) {
                 errorMessages.add(getErrorMessage(shardingPropertiesConstant, value));
-                continue;
-            }
-            if (type == int.class && !StringUtil.isIntValue(value)) {
+            } else if (type == int.class && !StringUtil.isIntValue(value)) {
                 errorMessages.add(getErrorMessage(shardingPropertiesConstant, value));
-                continue;
-            }
-            if (type == long.class && !StringUtil.isLongValue(value)) {
+            } else if (type == long.class && !StringUtil.isLongValue(value)) {
                 errorMessages.add(getErrorMessage(shardingPropertiesConstant, value));
             }
         }
@@ -77,31 +77,36 @@ public final class ShardingProperties {
     
     /**
      * Get property value.
-     * 
+     *
      * @param shardingPropertiesConstant sharding properties constant
      * @param <T> class type of return value
      * @return property value
      */
     @SuppressWarnings("unchecked")
     public <T> T getValue(final ShardingPropertiesConstant shardingPropertiesConstant) {
-        String result = props.getProperty(shardingPropertiesConstant.getKey());
-        if (Strings.isNullOrEmpty(result)) {
+        if (cachedProperties.containsKey(shardingPropertiesConstant)) {
+            return (T) cachedProperties.get(shardingPropertiesConstant);
+        }
+        String value = props.getProperty(shardingPropertiesConstant.getKey());
+        if (Strings.isNullOrEmpty(value)) {
             Object obj = props.get(shardingPropertiesConstant.getKey());
             if (null == obj) {
-                result = shardingPropertiesConstant.getDefaultValue(); 
+                value = shardingPropertiesConstant.getDefaultValue();
             } else {
-                result = obj.toString();
+                value = obj.toString();
             }
         }
+        Object result;
         if (boolean.class == shardingPropertiesConstant.getType()) {
-            return (T) Boolean.valueOf(result);
+            result = Boolean.valueOf(value);
+        } else if (int.class == shardingPropertiesConstant.getType()) {
+            result = Integer.valueOf(value);
+        } else if (long.class == shardingPropertiesConstant.getType()) {
+            result = Long.valueOf(value);
+        } else {
+            result = value;
         }
-        if (int.class == shardingPropertiesConstant.getType()) {
-            return (T) Integer.valueOf(result);
-        }
-        if (long.class == shardingPropertiesConstant.getType()) {
-            return (T) Long.valueOf(result);
-        }
+        cachedProperties.put(shardingPropertiesConstant, result);
         return (T) result;
     }
 }
