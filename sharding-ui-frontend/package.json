@@ -13,7 +13,9 @@
   "dependencies": {
     "axios": "^0.18.0",
     "element-ui": "^2.4.9",
+    "jsonp": "^0.2.1",
     "normalize.css": "^8.0.1",
+    "qs": "^6.6.0",
     "vue": "^2.5.2",
     "vue-i18n": "^8.4.0",
     "vue-router": "^3.0.1"
