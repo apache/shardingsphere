@@ -21,15 +21,13 @@ import io.shardingsphere.core.constant.ConnectionMode;
 import io.shardingsphere.core.constant.DatabaseType;
 import io.shardingsphere.core.constant.SQLType;
 import io.shardingsphere.core.constant.transaction.TransactionType;
-import io.shardingsphere.core.event.transaction.base.SagaTransactionEvent;
 import io.shardingsphere.core.executor.StatementExecuteUnit;
 import io.shardingsphere.core.executor.sql.execute.SQLExecuteCallback;
+import io.shardingsphere.core.executor.sql.execute.SagaSQLExecuteCallback;
 import io.shardingsphere.core.routing.RouteUnit;
 import io.shardingsphere.core.routing.SQLUnit;
 import io.shardingsphere.core.transaction.TransactionTypeHolder;
-import io.shardingsphere.shardingjdbc.jdbc.core.datasource.FixedBaseShardingTransactionHandler;
 import io.shardingsphere.spi.transaction.ShardingTransactionHandlerRegistry;
-import io.shardingsphere.transaction.executor.SagaSQLExecuteCallback;
 import org.junit.After;
 import org.junit.Before;
 import org.junit.BeforeClass;
@@ -38,13 +36,17 @@ import org.junit.runner.RunWith;
 import org.mockito.Mock;
 import org.mockito.junit.MockitoJUnitRunner;
 
-import java.sql.*;
+import java.sql.Connection;
+import java.sql.DatabaseMetaData;
+import java.sql.PreparedStatement;
+import java.sql.SQLException;
 import java.util.Collections;
 import java.util.List;
 
-import static org.hamcrest.CoreMatchers.instanceOf;
 import static org.hamcrest.CoreMatchers.is;
+import static org.junit.Assert.assertFalse;
 import static org.junit.Assert.assertThat;
+import static org.junit.Assert.assertTrue;
 import static org.mockito.Mockito.verify;
 import static org.mockito.Mockito.when;
 
@@ -54,9 +56,6 @@ public class SQLExecuteCallbackFactoryTest {
     
     @Mock
     private PreparedStatement preparedStatement;
-    
-    @Mock
-    private Statement statement;
     
     @Mock
     private StatementExecutor.Updater updater;
@@ -98,10 +97,9 @@ public class SQLExecuteCallbackFactoryTest {
         TransactionTypeHolder.set(TransactionType.BASE);
         sqlExecuteCallback = SQLExecuteCallbackFactory.getPreparedUpdateSQLExecuteCallback(DatabaseType.MySQL, SQLType.DML, true);
         assertThat(sqlExecuteCallback instanceof SagaSQLExecuteCallback, is(true));
-        assertThat(FixedBaseShardingTransactionHandler.getInvokes().get("begin"), instanceOf(SagaTransactionEvent.class));
-        FixedBaseShardingTransactionHandler.getInvokes().clear();
         sqlExecuteCallback.execute(unit, true, null);
-        assertThat(FixedBaseShardingTransactionHandler.getInvokes().get("begin"), instanceOf(SagaTransactionEvent.class));
+        int result = (int) sqlExecuteCallback.execute(unit, true, null);
+        assertThat(result, is(0));
     }
     
     @Test
@@ -112,10 +110,9 @@ public class SQLExecuteCallbackFactoryTest {
         TransactionTypeHolder.set(TransactionType.BASE);
         sqlExecuteCallback = SQLExecuteCallbackFactory.getPreparedSQLExecuteCallback(DatabaseType.MySQL, SQLType.DML, true);
         assertThat(sqlExecuteCallback instanceof SagaSQLExecuteCallback, is(true));
-        assertThat(FixedBaseShardingTransactionHandler.getInvokes().get("begin"), instanceOf(SagaTransactionEvent.class));
-        FixedBaseShardingTransactionHandler.getInvokes().clear();
         sqlExecuteCallback.execute(unit, true, null);
-        assertThat(FixedBaseShardingTransactionHandler.getInvokes().get("begin"), instanceOf(SagaTransactionEvent.class));
+        boolean result = (boolean) sqlExecuteCallback.execute(unit, true, null);
+        assertFalse(result);
     }
     
     @Test
@@ -126,10 +123,7 @@ public class SQLExecuteCallbackFactoryTest {
         TransactionTypeHolder.set(TransactionType.BASE);
         sqlExecuteCallback = SQLExecuteCallbackFactory.getBatchPreparedSQLExecuteCallback(DatabaseType.MySQL, SQLType.DML, true);
         assertThat(sqlExecuteCallback instanceof SagaSQLExecuteCallback, is(true));
-        assertThat(FixedBaseShardingTransactionHandler.getInvokes().get("begin"), instanceOf(SagaTransactionEvent.class));
-        FixedBaseShardingTransactionHandler.getInvokes().clear();
         sqlExecuteCallback.execute(unit, true, null);
-        assertThat(FixedBaseShardingTransactionHandler.getInvokes().get("begin"), instanceOf(SagaTransactionEvent.class));
     }
     
     @Test
@@ -140,10 +134,9 @@ public class SQLExecuteCallbackFactoryTest {
         TransactionTypeHolder.set(TransactionType.BASE);
         sqlExecuteCallback = SQLExecuteCallbackFactory.getSQLExecuteCallback(DatabaseType.MySQL, SQLType.DML, true, updater);
         assertThat(sqlExecuteCallback instanceof SagaSQLExecuteCallback, is(true));
-        assertThat(FixedBaseShardingTransactionHandler.getInvokes().get("begin"), instanceOf(SagaTransactionEvent.class));
-        FixedBaseShardingTransactionHandler.getInvokes().clear();
         sqlExecuteCallback.execute(unit, true, null);
-        assertThat(FixedBaseShardingTransactionHandler.getInvokes().get("begin"), instanceOf(SagaTransactionEvent.class));
+        int result = (int) sqlExecuteCallback.execute(unit, true, null);
+        assertThat(result, is(0));
     }
     
     @Test
@@ -153,10 +146,8 @@ public class SQLExecuteCallbackFactoryTest {
         verify(executor).execute(unit.getStatement(), unit.getRouteUnit().getSqlUnit().getSql());
         TransactionTypeHolder.set(TransactionType.BASE);
         sqlExecuteCallback = SQLExecuteCallbackFactory.getSQLExecuteCallback(DatabaseType.MySQL, SQLType.DML, true, executor);
-        assertThat(sqlExecuteCallback instanceof SagaSQLExecuteCallback, is(true));
-        assertThat(FixedBaseShardingTransactionHandler.getInvokes().get("begin"), instanceOf(SagaTransactionEvent.class));
-        FixedBaseShardingTransactionHandler.getInvokes().clear();
-        sqlExecuteCallback.execute(unit, true, null);
-        assertThat(FixedBaseShardingTransactionHandler.getInvokes().get("begin"), instanceOf(SagaTransactionEvent.class));
+        assertTrue(sqlExecuteCallback instanceof SagaSQLExecuteCallback);
+        boolean result = (boolean) sqlExecuteCallback.execute(unit, true, null);
+        assertFalse(result);
     }
 }

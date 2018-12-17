@@ -21,11 +21,14 @@ import com.google.common.base.Preconditions;
 import io.shardingsphere.api.config.SagaConfiguration;
 import io.shardingsphere.core.bootstrap.ShardingBootstrap;
 import io.shardingsphere.core.constant.DatabaseType;
+import io.shardingsphere.core.constant.transaction.TransactionType;
+import io.shardingsphere.core.event.transaction.base.SagaTransactionEvent;
 import io.shardingsphere.core.util.ReflectiveUtil;
 import io.shardingsphere.shardingjdbc.jdbc.unsupported.AbstractUnsupportedOperationDataSource;
+import io.shardingsphere.spi.transaction.ShardingTransactionHandler;
+import io.shardingsphere.spi.transaction.ShardingTransactionHandlerRegistry;
 import io.shardingsphere.spi.transaction.xa.DataSourceMapConverter;
 import io.shardingsphere.spi.transaction.xa.SPIDataSourceMapConverter;
-import io.shardingsphere.transaction.base.manager.SagaTransactionManager;
 import lombok.Getter;
 import lombok.Setter;
 
@@ -119,7 +122,10 @@ public abstract class AbstractDataSourceAdapter extends AbstractUnsupportedOpera
         if (null != xaDataSourceMap) {
             closeDataSource(xaDataSourceMap);
         }
-        SagaTransactionManager.getInstance().removeSagaExecutionComponent(sagaConfiguration);
+        ShardingTransactionHandler shardingTransactionHandler = ShardingTransactionHandlerRegistry.getInstance().getHandler(TransactionType.BASE);
+        if (null != shardingTransactionHandler) {
+            shardingTransactionHandler.doInTransaction(SagaTransactionEvent.createDestroyComponentEvent(sagaConfiguration));
+        }
     }
     
     private void closeDataSource(final Map<String, DataSource> dataSourceMap) {
