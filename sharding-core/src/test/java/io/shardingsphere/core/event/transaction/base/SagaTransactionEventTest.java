@@ -78,4 +78,14 @@ public class SagaTransactionEventTest {
         assertThat(sagaTransactionEvent.getSagaSQLExecutionEvent(), is(sagaSQLExecutionEvent));
         assertTrue(sagaTransactionEvent.isExecutionEvent());
     }
+    
+    @Test
+    public void assertCreateDestroyComponentEvent() {
+        SagaTransactionEvent sagaTransactionEvent = SagaTransactionEvent.createDestroyComponentEvent(sagaConfiguration);
+        assertNull(sagaTransactionEvent.getOperationType());
+        assertNull(sagaTransactionEvent.getDataSourceMap());
+        assertThat(sagaTransactionEvent.getSagaConfiguration(), is(sagaConfiguration));
+        assertNull(sagaTransactionEvent.getSagaSQLExecutionEvent());
+        assertTrue(sagaTransactionEvent.isDestroyComponent());
+    }
 }

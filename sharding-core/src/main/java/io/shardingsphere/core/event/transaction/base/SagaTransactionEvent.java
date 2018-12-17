@@ -21,9 +21,9 @@ import io.shardingsphere.api.config.SagaConfiguration;
 import io.shardingsphere.core.constant.transaction.TransactionOperationType;
 import io.shardingsphere.core.event.transaction.ShardingTransactionEvent;
 import lombok.AccessLevel;
+import lombok.AllArgsConstructor;
 import lombok.Getter;
 import lombok.RequiredArgsConstructor;
-import lombok.Setter;
 
 import javax.sql.DataSource;
 import java.util.Map;
@@ -34,6 +34,7 @@ import java.util.Map;
  * @author yangyi
  */
 @RequiredArgsConstructor(access = AccessLevel.PRIVATE)
+@AllArgsConstructor(access = AccessLevel.PRIVATE)
 @Getter
 public class SagaTransactionEvent implements ShardingTransactionEvent {
     
@@ -45,8 +46,7 @@ public class SagaTransactionEvent implements ShardingTransactionEvent {
     
     private final SagaSQLExecutionEvent sagaSQLExecutionEvent;
     
-    @Setter
-    private String sagaJson;
+    private boolean destroyComponent;
     
     /**
      * Create begin saga transaction event.
@@ -87,6 +87,16 @@ public class SagaTransactionEvent implements ShardingTransactionEvent {
      */
     public static SagaTransactionEvent createExecutionSagaTransactionEvent(final SagaSQLExecutionEvent sagaSQLExecutionEvent) {
         return new SagaTransactionEvent(null, null, null, sagaSQLExecutionEvent);
+    }
+    
+    /**
+     * Create destroy component event.
+     *
+     * @param sagaConfiguration saga configuration
+     * @return destroy component event
+     */
+    public static SagaTransactionEvent createDestroyComponentEvent(final SagaConfiguration sagaConfiguration) {
+        return new SagaTransactionEvent(null, null, sagaConfiguration, null, true);
     }
     
     /**
