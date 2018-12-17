@@ -1,7 +1,7 @@
 +++
 pre = "<b>3.4.2. </b>"
 toc = true
-title = "XA事务"
+title = "两阶段事务"
 weight = 2
 +++
 

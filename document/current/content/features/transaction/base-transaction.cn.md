@@ -1,7 +1,7 @@
 +++
 pre = "<b>3.4.3. </b>"
 toc = true
-title = "BASE事务"
+title = "柔性事务"
 weight = 3
 +++
 

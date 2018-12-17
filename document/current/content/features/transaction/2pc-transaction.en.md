@@ -1,7 +1,7 @@
 +++
 pre = "<b>3.4.2. </b>"
 toc = true
-title = "XA Transaction"
+title = "2PC Transaction"
 weight = 2
 +++
 
