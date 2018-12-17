@@ -31,7 +31,7 @@ ShardingSphere目前已经进入[Apache孵化器](http://incubator.apache.org/pr
 [![OpenTracing-1.0 Badge](https://img.shields.io/badge/OpenTracing--1.0-enabled-blue.svg)](http://opentracing.io)
 [![Skywalking Tracing](https://img.shields.io/badge/Skywalking%20Tracing-enable-brightgreen.svg)](https://github.com/OpenSkywalking/skywalking)
 
-![ShardingSphere Scope](http://shardingsphere.jd.com/document/current/img/sharding-sphere-scope_cn.png)
+![ShardingSphere Scope](http://shardingsphere.jd.com/document/current/img/shardingsphere-scope_cn.png)
 
 ## 简介
 
@@ -110,4 +110,4 @@ ShardingSphere是多接入端共同组成的生态圈。
 
 ## 规划线路图
 
-![Roadmap](http://shardingsphere.jd.com/document/current/img/roadmap_cn_v4.png)
+![Roadmap](http://shardingsphere.jd.com/document/current/img/shardingsphere-roadmap_cn.png)

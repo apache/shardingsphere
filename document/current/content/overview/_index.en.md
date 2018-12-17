@@ -27,7 +27,7 @@ Therefore, at current stage, we prefer to focus on its increment instead of a to
 [![OpenTracing-1.0 Badge](https://img.shields.io/badge/OpenTracing--1.0-enabled-blue.svg)](http://opentracing.io)
 [![Skywalking Tracing](https://img.shields.io/badge/Skywalking%20Tracing-enable-brightgreen.svg)](https://github.com/OpenSkywalking/skywalking)
 
-![ShardingSphere Scope](http://shardingsphere.jd.com/document/current/img/sharding-sphere-scope_en_v2.png)
+![ShardingSphere Scope](http://shardingsphere.jd.com/document/current/img/shardingsphere-scope_en.png)
 
 ## Introduction
 
@@ -112,4 +112,4 @@ Architects can adjust the system architecture to the most applicable one to curr
 
 ## Roadmap
 
-![Roadmap](http://shardingsphere.jd.com/document/current/img//roadmap_en_v4.png)
+![Roadmap](http://shardingsphere.jd.com/document/current/img/shardingsphere-roadmap_en.png)
