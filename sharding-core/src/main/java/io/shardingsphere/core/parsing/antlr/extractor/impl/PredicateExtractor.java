@@ -190,8 +190,9 @@ public final class PredicateExtractor implements OptionalSQLSegmentExtractor {
             Integer index = questionNodeIndexMap.get(expressionNode.get());
             commonExpressionSegment.setIndex(index);
         } else {
+            Optional<ParserRuleContext> bitExprNode = ExtractorUtils.findFirstChildNode(valueNode, RuleName.BITEXPR);
             expressionNode = ExtractorUtils.findFirstChildNode(valueNode, RuleName.NUMBER);
-            if (expressionNode.isPresent()) {
+            if (expressionNode.isPresent() && (!bitExprNode.isPresent() || 1 == bitExprNode.get().getChildCount())) {
                 commonExpressionSegment.setValue(NumberUtil.getExactlyNumber(expressionNode.get().getText(), 10));
             }
         }

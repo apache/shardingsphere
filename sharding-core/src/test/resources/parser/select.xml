@@ -616,4 +616,23 @@
             <table-token begin-position="14" original-literals="t_order" />
         </tokens>
     </parser-result>
+    
+    
+    <parser-result sql-case-id="select_with_block_comment" >
+        <tables>
+            <table name="t_order" />
+        </tables>
+        <tokens>
+            <table-token begin-position="83" original-literals="t_order" />
+        </tokens>
+    </parser-result>
+    
+    <parser-result sql-case-id="select_with_single_comment" >
+        <tables>
+            <table name="t_order" />
+        </tables>
+        <tokens>
+            <table-token begin-position="77" original-literals="t_order" />
+        </tokens>
+    </parser-result>
 </parser-result-sets>
