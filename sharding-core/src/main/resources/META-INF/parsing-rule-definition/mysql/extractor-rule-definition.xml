@@ -6,5 +6,5 @@
     <extractor-rule id="addIndex" extractor-class="dialect.mysql.MySQLAddIndexExtractor" />
     <extractor-rule id="dropIndex" extractor-class="dialect.mysql.MySQLDropIndexExtractor" />
     <extractor-rule id="dropPrimaryKey" extractor-class="dialect.mysql.MySQLDropPrimaryKeyExtractor" />
-    <extractor-rule id="setAutoCommit" extractor-class="dialect.mysql.MySQLAutoCommitExtractor" />
+    <extractor-rule id="autoCommitValue" extractor-class="dialect.mysql.MySQLAutoCommitValueExtractor" />
 </extractor-rule-definition>

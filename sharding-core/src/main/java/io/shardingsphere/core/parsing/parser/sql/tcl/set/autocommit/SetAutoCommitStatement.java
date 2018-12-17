@@ -15,26 +15,18 @@
  * </p>
  */
 
-package io.shardingsphere.core.parsing.parser.dialect.oracle.sql;
+package io.shardingsphere.core.parsing.parser.sql.tcl.set.autocommit;
 
-import io.shardingsphere.core.parsing.lexer.LexerEngine;
-import io.shardingsphere.core.parsing.parser.sql.SQLStatement;
 import io.shardingsphere.core.parsing.parser.sql.tcl.TCLStatement;
-import io.shardingsphere.core.parsing.parser.sql.tcl.set.AbstractSetVariableParser;
 
 /**
- * Set variable parser for Oracle.
+ * Set transaction statement.
  *
  * @author maxiaoguang
  */
-public final class OracleSetVariableParser extends AbstractSetVariableParser {
+public final class SetAutoCommitStatement extends TCLStatement {
     
-    public OracleSetVariableParser(final LexerEngine lexerEngine) {
-        super(lexerEngine);
-    }
-    
-    @Override
-    public SQLStatement parse() {
-        return new TCLStatement();
+    public SetAutoCommitStatement() {
+        super();
     }
 }

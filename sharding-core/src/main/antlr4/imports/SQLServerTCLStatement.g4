@@ -9,7 +9,6 @@ setTransaction
         | REPEATABLE READ
         | SNAPSHOT
         | SERIALIZABLE
-        | ISOLATION LEVEL READ UNCOMMITTED
     )
     ;
     
@@ -37,14 +36,10 @@ beginWork
     : BEGIN (TRAN | TRANSACTION) (ID (WITH MARK STRING)?)?
     ;
 
-setVariable
-    : (IF AT_ AT_ TRANCOUNT GT NUMBER COMMIT TRAN)? SET setVariableAssignment
+setAutoCommit
+    : (IF AT_ AT_ TRANCOUNT GT NUMBER COMMIT TRAN)? SET IMPLICIT_TRANSACTIONS autoCommitValue
     ;
 
-setVariableAssignment
-    : IMPLICIT_TRANSACTIONS variableValue
-    ;
-
-variableValue
+autoCommitValue
     : ON | OFF
     ;

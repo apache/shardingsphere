@@ -26,10 +26,12 @@ import io.shardingsphere.core.parsing.parser.sql.SQLStatement;
 import io.shardingsphere.core.parsing.parser.sql.ddl.DDLStatement;
 import io.shardingsphere.core.parsing.parser.sql.ddl.create.table.CreateTableStatement;
 import io.shardingsphere.core.parsing.parser.sql.dql.select.SelectStatement;
-import io.shardingsphere.core.parsing.parser.sql.tcl.TCLStatement;
 import io.shardingsphere.core.parsing.parser.sql.tcl.begin.BeginStatement;
 import io.shardingsphere.core.parsing.parser.sql.tcl.commit.CommitStatement;
 import io.shardingsphere.core.parsing.parser.sql.tcl.rollback.RollbackStatement;
+import io.shardingsphere.core.parsing.parser.sql.tcl.savepoint.SavepointStatement;
+import io.shardingsphere.core.parsing.parser.sql.tcl.set.autocommit.SetAutoCommitStatement;
+import io.shardingsphere.core.parsing.parser.sql.tcl.set.transaction.SetTransactionStatement;
 import lombok.RequiredArgsConstructor;
 
 /**
@@ -56,17 +58,17 @@ public enum SQLStatementType {
     
     SELECT("Select", SelectStatement.class),
     
-    SET_TRANSACTION("SetTransaction", TCLStatement.class),
+    SET_TRANSACTION("SetTransaction", SetTransactionStatement.class),
     
     COMMIT("Commit", CommitStatement.class),
     
     ROLLBACK("Rollback", RollbackStatement.class),
     
-    SAVEPOINT("Savepoint", TCLStatement.class),
+    SAVEPOINT("Savepoint", SavepointStatement.class),
     
     BEGIN_WORK("BeginWork", BeginStatement.class),
     
-    SET_VARIABLE("SetVariable", TCLStatement.class),
+    SET_AUTO_COMMIT("SetAutoCommit", SetAutoCommitStatement.class),
     
     SHOW("Show", ShowStatement.class),
     

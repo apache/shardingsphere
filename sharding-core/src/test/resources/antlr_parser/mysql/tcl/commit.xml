@@ -1,0 +1,4 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<parser-result-sets namespace="mysql.tcl.commit">
+    <parser-result sql-case-id="commit" transaction-operation-type="COMMIT" />
+</parser-result-sets>

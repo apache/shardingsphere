@@ -15,26 +15,25 @@
  * </p>
  */
 
-package io.shardingsphere.core.parsing.parser.dialect.postgresql.sql;
+package io.shardingsphere.core.parsing.parser.sql.tcl.set.transaction;
 
-import io.shardingsphere.core.parsing.lexer.LexerEngine;
-import io.shardingsphere.core.parsing.parser.sql.SQLStatement;
-import io.shardingsphere.core.parsing.parser.sql.tcl.TCLStatement;
-import io.shardingsphere.core.parsing.parser.sql.tcl.set.AbstractSetVariableParser;
+import lombok.AccessLevel;
+import lombok.NoArgsConstructor;
 
 /**
- * Set variable parser for PostgreSQL.
+ * Set transaction parser factory.
  *
  * @author maxiaoguang
  */
-public final class PostgreSQLSetVariableParser extends AbstractSetVariableParser {
+@NoArgsConstructor(access = AccessLevel.PRIVATE)
+public final class SetTransactionParserFactory {
     
-    public PostgreSQLSetVariableParser(final LexerEngine lexerEngine) {
-        super(lexerEngine);
-    }
-    
-    @Override
-    public SQLStatement parse() {
-        return new TCLStatement();
+    /**
+     * Create set transaction parser instance.
+     *
+     * @return set transaction parser instance
+     */
+    public static SetTransactionParser newInstance() {
+        return new SetTransactionParser();
     }
 }

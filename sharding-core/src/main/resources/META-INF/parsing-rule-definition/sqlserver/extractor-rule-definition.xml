@@ -5,5 +5,5 @@
     <extractor-rule id="addIndex" extractor-class="dialect.sqlserver.SQLServerAddIndexExtractor" />
     <extractor-rule id="dropIndex" extractor-class="dialect.sqlserver.SQLServerDropIndexExtractor" />
     <extractor-rule id="addPrimaryKey" extractor-class="dialect.sqlserver.SQLServerAddPrimaryKeyExtractor" />
-    <extractor-rule id="setAutoCommit" extractor-class="dialect.sqlserver.SQLServerAutoCommitExtractor" />
+    <extractor-rule id="autoCommitValue" extractor-class="dialect.sqlserver.SQLServerAutoCommitValueExtractor" />
 </extractor-rule-definition>

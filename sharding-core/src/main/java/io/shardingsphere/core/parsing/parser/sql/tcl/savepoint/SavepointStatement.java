@@ -15,14 +15,19 @@
  * </p>
  */
 
-package io.shardingsphere.core.parsing.parser.dialect.mysql.statement;
+package io.shardingsphere.core.parsing.parser.sql.tcl.savepoint;
 
+import io.shardingsphere.core.constant.transaction.TransactionOperationType;
 import io.shardingsphere.core.parsing.parser.sql.tcl.TCLStatement;
 
 /**
- * Set statement.
- * 
- * @author chenqingyang
+ * Savapoint statement.
+ *
+ * @author maxiaoguang
  */
-public final class SetStatement extends TCLStatement {
+public final class SavepointStatement extends TCLStatement {
+    
+    public SavepointStatement() {
+        super(TransactionOperationType.IGNORE);
+    }
 }

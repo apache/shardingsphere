@@ -15,19 +15,25 @@
  * </p>
  */
 
-package io.shardingsphere.core.parsing.parser.sql.tcl;
+package io.shardingsphere.core.parsing.parser.sql.dal.set;
 
-import io.shardingsphere.core.parsing.parser.sql.SQLParser;
+import lombok.AccessLevel;
+import lombok.NoArgsConstructor;
 
 /**
- * TCL parser.
+ * Set parser factory.
  *
- * @author zhangliang
+ * @author maxiaoguang
  */
-public final class TCLParser implements SQLParser {
+@NoArgsConstructor(access = AccessLevel.PRIVATE)
+public final class SetParserFactory {
     
-    @Override
-    public TCLStatement parse() {
-        return new TCLStatement();
+    /**
+     * Create set parser instance.
+     *
+     * @return set parser instance
+     */
+    public static SetParser newInstance() {
+        return new SetParser();
     }
 }

@@ -21,7 +21,7 @@ execute
     | rollback
     | savepoint
     | beginWork
-    | setVariable
+    | setAutoCommit
     | grant
     | grantProxy
     | grantRole

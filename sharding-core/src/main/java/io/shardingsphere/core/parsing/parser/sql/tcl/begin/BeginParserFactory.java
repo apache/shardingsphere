@@ -17,9 +17,6 @@
 
 package io.shardingsphere.core.parsing.parser.sql.tcl.begin;
 
-import io.shardingsphere.core.constant.DatabaseType;
-import io.shardingsphere.core.parsing.lexer.LexerEngine;
-import io.shardingsphere.core.rule.ShardingRule;
 import lombok.AccessLevel;
 import lombok.NoArgsConstructor;
 
@@ -34,12 +31,9 @@ public final class BeginParserFactory {
     /**
      * Create begin parser instance.
      *
-     * @param dbType database type
-     * @param shardingRule databases and tables sharding rule
-     * @param lexerEngine lexical analysis engine.
-     * @return create parser instance
+     * @return begin parser instance
      */
-    public static BeginParser newInstance(final DatabaseType dbType, final ShardingRule shardingRule, final LexerEngine lexerEngine) {
+    public static BeginParser newInstance() {
         return new BeginParser();
     }
 }

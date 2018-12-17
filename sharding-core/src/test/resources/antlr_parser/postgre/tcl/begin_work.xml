@@ -1,0 +1,6 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<parser-result-sets namespace="postgre.tcl.beginWork">
+    <parser-result sql-case-id="begin" transaction-operation-type="BEGIN" />
+    <parser-result sql-case-id="begin_read_committed" transaction-operation-type="BEGIN" />
+    <parser-result sql-case-id="begin_read_only" transaction-operation-type="BEGIN" />
+</parser-result-sets>

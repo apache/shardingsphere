@@ -15,31 +15,39 @@
  * </p>
  */
 
-package io.shardingsphere.core.parsing.parser.sql.tcl;
+package io.shardingsphere.core.parsing.parser.sql.tcl.set.autocommit;
 
 import io.shardingsphere.core.constant.DatabaseType;
 import io.shardingsphere.core.parsing.lexer.LexerEngine;
-import io.shardingsphere.core.rule.ShardingRule;
+import io.shardingsphere.core.parsing.parser.dialect.mysql.sql.MySQLSetAutoCommitParser;
+import io.shardingsphere.core.parsing.parser.dialect.sqlserver.sql.SQLServerSetAutoCommitParser;
 import lombok.AccessLevel;
 import lombok.NoArgsConstructor;
 
 /**
- * Transaction Control Language parser factory.
+ * Set auto commit parser factory.
  *
- * @author zhangliang
+ * @author maxiaoguang
  */
 @NoArgsConstructor(access = AccessLevel.PRIVATE)
-public final class TCLParserFactory {
+public final class SetAutoCommitParserFactory {
     
     /**
-     * Create TCL parser instance.
+     * Create set auto commit parser instance.
      *
      * @param dbType database type
-     * @param shardingRule databases and tables sharding rule
      * @param lexerEngine lexical analysis engine.
-     * @return create parser instance
+     * @return set auto commit parser instance
      */
-    public static TCLParser newInstance(final DatabaseType dbType, final ShardingRule shardingRule, final LexerEngine lexerEngine) {
-        return new TCLParser();
+    public static AbstractSetAutoCommitParser newInstance(final DatabaseType dbType, final LexerEngine lexerEngine) {
+        switch (dbType) {
+            case H2:
+            case MySQL:
+                return new MySQLSetAutoCommitParser(lexerEngine);
+            case SQLServer:
+                return new SQLServerSetAutoCommitParser(lexerEngine);
+            default:
+                throw new UnsupportedOperationException(String.format("Cannot support database [%s].", dbType));
+        }
     }
 }

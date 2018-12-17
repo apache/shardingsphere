@@ -8,7 +8,7 @@ setTransaction
         READ (ONLY | WRITE)
         | ISOLATION LEVEL (SERIALIZABLE | READ COMMITTED)
         | USE ROLLBACK SEGMENT ID
-    )(NAME STRING)?
+    )?
     | NAME STRING
     ;
     

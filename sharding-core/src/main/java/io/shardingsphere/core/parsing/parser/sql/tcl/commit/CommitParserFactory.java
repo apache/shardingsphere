@@ -17,9 +17,6 @@
 
 package io.shardingsphere.core.parsing.parser.sql.tcl.commit;
 
-import io.shardingsphere.core.constant.DatabaseType;
-import io.shardingsphere.core.parsing.lexer.LexerEngine;
-import io.shardingsphere.core.rule.ShardingRule;
 import lombok.AccessLevel;
 import lombok.NoArgsConstructor;
 
@@ -34,12 +31,9 @@ public final class CommitParserFactory {
     /**
      * Create commit parser instance.
      *
-     * @param dbType database type
-     * @param shardingRule databases and tables sharding rule
-     * @param lexerEngine lexical analysis engine.
-     * @return create parser instance
+     * @return commit parser instance
      */
-    public static CommitParser newInstance(final DatabaseType dbType, final ShardingRule shardingRule, final LexerEngine lexerEngine) {
+    public static CommitParser newInstance() {
         return new CommitParser();
     }
 }

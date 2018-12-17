@@ -3,11 +3,11 @@ grammar MySQLTCLStatement;
 import MySQLKeyword, Keyword, DQLBase, BaseRule, DataType, Symbol;
 
 setTransaction
-    : SET (GLOBAL | SESSION) TRANSACTION setTransactionCharacteristic (COMMA setTransactionCharacteristic)*
+    : SET (GLOBAL | SESSION)? TRANSACTION setTransactionCharacteristic (COMMA setTransactionCharacteristic)*
     ;
     
 setTransactionCharacteristic
-    : ISOLATION LEVEL level| accessMode
+    : ISOLATION LEVEL level | accessMode
     ;
     
 level
@@ -46,18 +46,10 @@ savepoint
     : SAVEPOINT ID 
     ;
     
-setVariable
-    : SET setVariableAssignment (COMMA setVariableAssignment)*
+setAutoCommit
+    : SET AUTOCOMMIT EQ_ autoCommitValue
     ;
-    
-setVariableAssignment
-    : (AT_ AT_)? (GLOBAL | PERSIST  | PERSIST_ONLY | SESSION)? DOT? variableKey EQ_ variableValue
-    ;
-    
-variableKey
-    : ID
-    ;
-    
-variableValue
-    : expr
+
+autoCommitValue
+    : NUMBER
     ;

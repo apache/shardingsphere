@@ -15,10 +15,11 @@
  * </p>
  */
 
-package io.shardingsphere.core.parsing.parser.sql.tcl.set;
+package io.shardingsphere.core.parsing.parser.sql.tcl.set.autocommit;
 
 import io.shardingsphere.core.parsing.lexer.LexerEngine;
 import io.shardingsphere.core.parsing.parser.sql.SQLParser;
+import lombok.Getter;
 import lombok.RequiredArgsConstructor;
 
 /**
@@ -27,7 +28,8 @@ import lombok.RequiredArgsConstructor;
  * @author maxiaoguang
  */
 @RequiredArgsConstructor
-public abstract class AbstractSetVariableParser implements SQLParser {
+public abstract class AbstractSetAutoCommitParser implements SQLParser {
     
-    protected final LexerEngine lexerEngine;
+    @Getter
+    private final LexerEngine lexerEngine;
 }

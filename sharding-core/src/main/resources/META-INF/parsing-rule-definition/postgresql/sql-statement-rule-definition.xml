@@ -12,4 +12,9 @@
     <sql-statement-rule context="alterIndex" sql-statement-class="io.shardingsphere.core.parsing.parser.sql.ddl.DDLStatement" extractor-rule-refs="indexNames" />
     <sql-statement-rule context="dropIndex" sql-statement-class="io.shardingsphere.core.parsing.parser.sql.ddl.DDLStatement" extractor-rule-refs="indexNames" />
     <sql-statement-rule context="show" sql-statement-class="io.shardingsphere.core.parsing.parser.dialect.postgresql.statement.ShowStatement" extractor-rule-refs="showParam" />
+    <sql-statement-rule context="setTransaction" sql-statement-class="io.shardingsphere.core.parsing.parser.sql.tcl.set.transaction.SetTransactionStatement" />
+    <sql-statement-rule context="commit" sql-statement-class="io.shardingsphere.core.parsing.parser.sql.tcl.commit.CommitStatement" />
+    <sql-statement-rule context="rollback" sql-statement-class="io.shardingsphere.core.parsing.parser.sql.tcl.rollback.RollbackStatement" />
+    <sql-statement-rule context="savepoint" sql-statement-class="io.shardingsphere.core.parsing.parser.sql.tcl.savepoint.SavepointStatement" />
+    <sql-statement-rule context="beginWork" sql-statement-class="io.shardingsphere.core.parsing.parser.sql.tcl.begin.BeginStatement" />
 </sql-statement-rule-definition>

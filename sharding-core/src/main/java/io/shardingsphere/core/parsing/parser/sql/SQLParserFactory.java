@@ -28,6 +28,7 @@ import io.shardingsphere.core.parsing.lexer.token.TokenType;
 import io.shardingsphere.core.parsing.parser.exception.SQLParsingUnsupportedException;
 import io.shardingsphere.core.parsing.parser.sql.dal.DALStatement;
 import io.shardingsphere.core.parsing.parser.sql.dal.describe.DescribeParserFactory;
+import io.shardingsphere.core.parsing.parser.sql.dal.set.SetParserFactory;
 import io.shardingsphere.core.parsing.parser.sql.dal.show.ShowParserFactory;
 import io.shardingsphere.core.parsing.parser.sql.dal.use.UseParserFactory;
 import io.shardingsphere.core.parsing.parser.sql.dcl.DCLStatement;
@@ -45,12 +46,13 @@ import io.shardingsphere.core.parsing.parser.sql.dml.insert.InsertParserFactory;
 import io.shardingsphere.core.parsing.parser.sql.dml.update.UpdateParserFactory;
 import io.shardingsphere.core.parsing.parser.sql.dql.DQLStatement;
 import io.shardingsphere.core.parsing.parser.sql.dql.select.SelectParserFactory;
-import io.shardingsphere.core.parsing.parser.sql.tcl.TCLParserFactory;
 import io.shardingsphere.core.parsing.parser.sql.tcl.TCLStatement;
 import io.shardingsphere.core.parsing.parser.sql.tcl.begin.BeginParserFactory;
 import io.shardingsphere.core.parsing.parser.sql.tcl.commit.CommitParserFactory;
 import io.shardingsphere.core.parsing.parser.sql.tcl.rollback.RollbcakParserFactory;
-import io.shardingsphere.core.parsing.parser.sql.tcl.set.SetVariableParserFactory;
+import io.shardingsphere.core.parsing.parser.sql.tcl.savepoint.SavepointParserFactory;
+import io.shardingsphere.core.parsing.parser.sql.tcl.set.autocommit.SetAutoCommitParserFactory;
+import io.shardingsphere.core.parsing.parser.sql.tcl.set.transaction.SetTransactionParserFactory;
 import io.shardingsphere.core.rule.ShardingRule;
 import lombok.AccessLevel;
 import lombok.NoArgsConstructor;
@@ -89,7 +91,7 @@ public final class SQLParserFactory {
             return getDMLParser(dbType, tokenType, shardingRule, lexerEngine, shardingTableMetaData);
         }
         if (TCLStatement.isTCL(tokenType)) {
-            return getTCLParser(dbType, shardingRule, lexerEngine);
+            return getTCLParser(dbType, tokenType, lexerEngine);
         }
         if (DALStatement.isDAL(tokenType)) {
             return getDALParser(dbType, (Keyword) tokenType, shardingRule, lexerEngine);
@@ -105,11 +107,11 @@ public final class SQLParserFactory {
         if (DCLStatement.isDCL(tokenType, secondaryTokenType)) {
             return getDCLParser(dbType, tokenType, shardingRule, lexerEngine);
         }
-        if (DatabaseType.SQLServer.equals(dbType)) {
-            lexerEngine.skipUntil(DefaultKeyword.IMPLICIT_TRANSACTIONS);
+        if (TCLStatement.isTCLUnsafe(dbType, tokenType, lexerEngine)) {
+            return getTCLParser(dbType, tokenType, lexerEngine);
         }
-        if (TCLStatement.isTCL(tokenType) || !lexerEngine.isEnd()) {
-            return getTCLParser(dbType, tokenType, secondaryTokenType, shardingRule, lexerEngine);
+        if (DefaultKeyword.SET.equals(tokenType)) {
+            return SetParserFactory.newInstance();
         }
         throw new SQLParsingUnsupportedException(tokenType);
     }
@@ -145,10 +147,6 @@ public final class SQLParserFactory {
         throw new SQLParsingUnsupportedException(tokenType);
     }
     
-    private static SQLParser getTCLParser(final DatabaseType dbType, final ShardingRule shardingRule, final LexerEngine lexerEngine) {
-        return TCLParserFactory.newInstance(dbType, shardingRule, lexerEngine);
-    }
-    
     private static SQLParser getDCLParser(final DatabaseType dbType, final TokenType tokenType, final ShardingRule shardingRule, final LexerEngine lexerEngine) {
         switch ((DefaultKeyword) tokenType) {
             case CREATE:
@@ -170,23 +168,26 @@ public final class SQLParserFactory {
         }
     }
     
-    private static SQLParser getTCLParser(final DatabaseType dbType, final TokenType primaryTokenType,
-                                          final TokenType secondaryTokenType, final ShardingRule shardingRule, final LexerEngine lexerEngine) {
+    private static SQLParser getTCLParser(final DatabaseType dbType, final TokenType primaryTokenType, final LexerEngine lexerEngine) {
         switch ((DefaultKeyword) primaryTokenType) {
             case SET:
-                if (DefaultKeyword.TRANSACTION.equals(secondaryTokenType)) {
-                    return TCLParserFactory.newInstance(dbType, shardingRule, lexerEngine);
+                if (DefaultKeyword.TRANSACTION.equals(lexerEngine.getCurrentToken().getType())) {
+                    return SetTransactionParserFactory.newInstance();
+                } else {
+                    return SetAutoCommitParserFactory.newInstance(dbType, lexerEngine);
                 }
-            case IF:
-                return SetVariableParserFactory.newInstance(dbType, shardingRule, lexerEngine);
             case COMMIT:
-                return CommitParserFactory.newInstance(dbType, shardingRule, lexerEngine);
+                return CommitParserFactory.newInstance();
             case ROLLBACK:
-                return RollbcakParserFactory.newInstance(dbType, shardingRule, lexerEngine);
+                return RollbcakParserFactory.newInstance();
             case SAVEPOINT:
-                return TCLParserFactory.newInstance(dbType, shardingRule, lexerEngine);
+                return SavepointParserFactory.newInstance();
             case BEGIN:
-                return BeginParserFactory.newInstance(dbType, shardingRule, lexerEngine);
+                return BeginParserFactory.newInstance();
+            case IF:
+                if (DatabaseType.SQLServer == dbType) {
+                    return SetAutoCommitParserFactory.newInstance(dbType, lexerEngine);
+                }
             default:
                 throw new SQLParsingUnsupportedException(primaryTokenType);
         }
