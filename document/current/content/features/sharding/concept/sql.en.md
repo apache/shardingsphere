@@ -20,7 +20,7 @@ The smallest unit of data sharding, consist of source data name and table name, 
 ## Binding Table
 
 It refers to the primary table and the joiner table with the same sharding rules, 
-such as, `t_order` table and `t_order_item` table are both of order ID sharding, so they are binding tables of each other. 
+such as, `t_order` table and `t_order_item` table are both of `order_id` sharding, so they are binding tables of each other. 
 Cartesian product correlation will not appear in the multi-table correlating query, so the query efficiency will increases to a large extend. Take this one for example, if SQL is:
 
 ```sql
@@ -57,5 +57,5 @@ Best practice for broadcast table is for small data volume but need joiner query
 
 Some databases (such as PostgreSQL) do not allow indexes with an identical name existing in the same database; 
 other databases (such as MySQL), however, only forbid indexes with an identical name existing in the same table. 
-Logic index is used in the former situation where it requires to rewrite index names in the same database but not in the same table as index name + table name, 
+Logic index is used in the former situation where it requires to rewrite index names in the same database but not in the same table as `index name + table name`, 
 and the previous index name becomes logic index. 
