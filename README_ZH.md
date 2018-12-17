@@ -77,6 +77,15 @@ Database Mesh的关注重点在于如何将分布式的数据访问应用与数�
 | 无中心化   | 是              | 否               | 是                  |
 | 静态入口   | 无              | 有               | 无                  |
 
+### 混合架构
+
+Sharding-JDBC采用无中心化架构，适用于Java开发的高性能的轻量级OLTP应用；Sharding-Proxy提供静态入口以及异构语言的支持，适用于OLAP应用以及对分片数据库进行管理和运维的场景。
+
+ShardingSphere是多接入端共同组成的生态圈。
+通过混合使用Sharding-JDBC和Sharding-Proxy，并采用同一注册中心统一配置分片策略，能够灵活的搭建适用于各种场景的应用系统，使得架构师更加自由的调整适合与当前业务的最佳系统架构。
+
+![ShardingSphere Hybird Architecture](http://shardingsphere.jd.com/document/current/img/shardingsphere-hybrid.png)
+
 ## 功能列表
 
 ### 数据分片
@@ -94,8 +103,7 @@ Database Mesh的关注重点在于如何将分布式的数据访问应用与数�
 
 * 配置动态化
 * 熔断 & 禁用
-* Open Tracing
-* 多数据副本 (Planing)
+* 调用链路追踪
 * 弹性伸缩 (Planing)
 
 ## Roadmap

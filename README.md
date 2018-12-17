@@ -79,6 +79,16 @@ They are all governed by mesh layer.
 | Decentralization        | Yes             | No                   | No                 |
 | Static Entry            | No              | Yes                  | No                 |
 
+### Hybrid Architecture
+
+Sharding-JDBC adopts decentralized architecture, applicable to high-performance light-weight OLTP application developed with Java; 
+Sharding-Proxy provides static entry and heterogeneous language support, applicable for OLAP application and the sharding databases management and operation situation.
+
+ShardingSphere is an ecosphere consists of multiple endpoints together.
+Through mixed use of Sharding-JDBC and Sharding-Proxy and unified sharding strategy by one registry center, ShardingSphere can build application system applicable to all kinds of situations. 
+Architects can adjust the system architecture to the most applicable one to current business more freely.
+
+![ShardingSphere Hybrid Architecture](http://shardingsphere.jd.com/document/current/img/shardingsphere-hybrid.png)
 
 ## Features
 
@@ -97,8 +107,7 @@ They are all governed by mesh layer.
 
 * Dynamic configuration
 * Fusing & Disabling
-* Open tracing
-* Multiple data replication (Planing)
+* Tracing
 * Elastic scaling out (Planing)
 
 ## Roadmap
