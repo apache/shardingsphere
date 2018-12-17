@@ -19,6 +19,7 @@ package io.shardingsphere.core.parsing.parser.dialect.mysql.sql;
 
 import io.shardingsphere.core.constant.transaction.TransactionOperationType;
 import io.shardingsphere.core.parsing.lexer.LexerEngine;
+import io.shardingsphere.core.parsing.lexer.token.DefaultKeyword;
 import io.shardingsphere.core.parsing.lexer.token.Symbol;
 import io.shardingsphere.core.parsing.parser.sql.tcl.TCLStatement;
 import io.shardingsphere.core.parsing.parser.sql.tcl.set.autocommit.AbstractSetAutoCommitParser;
@@ -36,13 +37,16 @@ public final class MySQLSetAutoCommitParser extends AbstractSetAutoCommitParser 
     
     @Override
     public TCLStatement parse() {
-        boolean autoCommit;
-        getLexerEngine().nextToken();
-        getLexerEngine().accept(Symbol.EQ);
-        if ("1".equals(getLexerEngine().getCurrentToken().getLiterals())) {
-            autoCommit = true;
-        } else {
-            autoCommit = false;
+        boolean autoCommit = false;
+        while (!getLexerEngine().isEnd()) {
+            getLexerEngine().nextToken();
+            getLexerEngine().accept(Symbol.EQ);
+            if ("1".equals(getLexerEngine().getCurrentToken().getLiterals())) {
+                autoCommit = true;
+            } else {
+                autoCommit = false;
+            }
+            getLexerEngine().skipUntil(DefaultKeyword.AUTOCOMMIT);
         }
         return autoCommit ? new TCLStatement(TransactionOperationType.IGNORE) : new TCLStatement(TransactionOperationType.BEGIN);
     }
