@@ -12,7 +12,13 @@ weight = 1
 
 ## 支持项
 
-全面支持DQL、DML和DDL。支持分页、去重、排序、分组、聚合、关联查询（不支持跨库关联）。以下用最为复杂的DQL举例：
+### 路由至单数据节点
+
+- 100%全兼容（目前仅MySQL，其他数据库完善中）。
+
+### 路由至多数据节点以及非MySQL
+
+全面支持DQL、DML、DDL、DCL、TCL和MySQL的部分DAL。支持分页、去重、排序、分组、聚合、关联查询（不支持跨库关联）。以下用最为复杂的DQL举例：
 
 - SELECT主语句
 
@@ -41,6 +47,12 @@ table_reference ([INNER] | {LEFT|RIGHT} [OUTER]) JOIN table_factor [JOIN ON cond
 ```
 
 ## 不支持项
+
+### 路由至单数据节点
+
+- 100%全兼容（目前仅MySQL，其他数据库完善中）。
+
+### 路由至多数据节点以及非MySQL
 
 不支持冗余括号、CASE WHEN、HAVING、UNION (ALL)，有限支持子查询。
 
@@ -104,9 +116,7 @@ SELECT COUNT(*) FROM (SELECT * FROM t_order o WHERE o.id IN (SELECT id FROM t_or
 | SELECT * FROM ds.tbl_name1                                                                    | 包含schema                     |
 | SELECT SUM(DISTINCT col1), SUM(col1) FROM tbl_name                                            | 详见`DISTINCT`支持情况详细说明    |
 
-
-
-## `DISTINCT`支持情况详细说明（在3.1.0支持，目前还未发布正式版本）
+## DISTINCT支持情况详细说明（在3.1.0支持，目前还未发布正式版本）
 
 ### 支持的SQL
 

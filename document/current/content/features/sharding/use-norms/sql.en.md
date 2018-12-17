@@ -13,7 +13,13 @@ We will also try to support those unavailable SQLs in future versions.
 
 ## Available SQL
 
-Fully available for DQL, DML and DDL. 
+### Route to single data node
+
+- 100% compatible（MySQL only, other database dialect is doing).
+
+### Route to multiple data nodes or database beside MySQL
+
+Fully available for DQL, DML, DDL, DCL, TCL and some DAL for MySQL. 
 Available for pagination, DISTINCT, ORDER BY, GROUP BY, aggregation and JOIN(cannot support cross database). 
 Here is an example of a most complex kind of DQL:
 
@@ -44,6 +50,12 @@ table_reference ([INNER] | {LEFT|RIGHT} [OUTER]) JOIN table_factor [JOIN ON cond
 ```
 
 ## Unavailable SQL
+
+### Route to single data node
+
+- 100% compatible（MySQL only, other database dialect is doing).
+
+### Route to multiple data nodes or database beside MySQL
 
 Unavailable for redundant parentheses, CASE WHEN, HAVING and UNION (ALL) and partly available for sub-query.
 
@@ -108,7 +120,7 @@ SQL that contains schema is unavailable, for the concept of ShardingSphere is to
 | SELECT * FROM ds.tbl_name1                                                                  | Contain schema                     |
 | SELECT SUM(DISTINCT col1), SUM(col1) FROM tbl_name                                          | See `DISTINCT` availability detail |
 
-## `DISTINCT` Availability Detail (will be available in 3.1.0, no official release for now)
+## DISTINCT Availability Detail (will be available in 3.1.0, no official release for now)
 
 ### Available SQL
 
