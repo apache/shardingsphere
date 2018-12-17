@@ -17,14 +17,7 @@
 
 package io.shardingsphere.core.parsing.antlr.extractor.impl;
 
-import java.util.HashMap;
-
-import org.antlr.v4.runtime.ParserRuleContext;
-import org.antlr.v4.runtime.tree.ParseTree;
-import org.antlr.v4.runtime.tree.TerminalNode;
-
 import com.google.common.base.Optional;
-
 import io.shardingsphere.core.parsing.antlr.extractor.OptionalSQLSegmentExtractor;
 import io.shardingsphere.core.parsing.antlr.extractor.util.ExtractorUtils;
 import io.shardingsphere.core.parsing.antlr.extractor.util.RuleName;
@@ -37,6 +30,11 @@ import io.shardingsphere.core.parsing.antlr.sql.segment.expr.StarExpressionSegme
 import io.shardingsphere.core.parsing.antlr.sql.segment.expr.SubquerySegment;
 import io.shardingsphere.core.parsing.lexer.token.Symbol;
 import io.shardingsphere.core.util.SQLUtil;
+import org.antlr.v4.runtime.ParserRuleContext;
+import org.antlr.v4.runtime.tree.ParseTree;
+import org.antlr.v4.runtime.tree.TerminalNode;
+
+import java.util.HashMap;
 
 /**
  * Expression extractor.
@@ -69,23 +67,15 @@ public final class ExpressionExtractor implements OptionalSQLSegmentExtractor {
     
     private Optional<ExpressionSegment> fillForPropertyOrFunction(final ParserRuleContext node) {
         Optional<ParserRuleContext> aliasNode = ExtractorUtils.findFirstChildNode(node, RuleName.ALIAS);
-        Optional<String> alias = null;
-        if (aliasNode.isPresent()) {
-            alias = Optional.of(SQLUtil.getExactlyValue(aliasNode.get().getText()));
-        } else {
-            alias = Optional.absent();
-        }
+        Optional<String> alias = aliasNode.isPresent() ? Optional.of(SQLUtil.getExactlyValue(aliasNode.get().getText())) : Optional.<String>absent();
         Optional<ParserRuleContext> functionCall = ExtractorUtils.findFirstChildNode(node, RuleName.FUNCTION_CALL);
         if (functionCall.isPresent()) {
             String name = functionCall.get().getChild(0).getText();
             int startIndex = ((TerminalNode) functionCall.get().getChild(1)).getSymbol().getStartIndex();
             boolean hasDistinct = hasDistinct(node);
-            int dinstinctColumnNameStartPosition = -1;
-            if (hasDistinct) {
-                dinstinctColumnNameStartPosition = calculatedinstinctColumnNamePosition(functionCall.get());
-            }
+            int distinctColumnNameStartPosition = hasDistinct ? calculateDistinctColumnNamePosition(functionCall.get()) : -1;
             return Optional.<ExpressionSegment>of(new FunctionExpressionSegment(name, alias, functionCall.get().getStart().getStartIndex(),
-                    startIndex, functionCall.get().getStop().getStopIndex(), hasDistinct, dinstinctColumnNameStartPosition));
+                    startIndex, functionCall.get().getStop().getStopIndex(), hasDistinct, distinctColumnNameStartPosition));
         }
         if (RuleName.COLUMN_NAME.getName().equals(node.getChild(0).getClass().getSimpleName())) {
             ParserRuleContext columnNode = (ParserRuleContext) node.getChild(0);
@@ -100,8 +90,8 @@ public final class ExpressionExtractor implements OptionalSQLSegmentExtractor {
         return ExtractorUtils.findFirstChildNode(node, RuleName.DISTINCT).isPresent();
     }
     
-    private int calculatedinstinctColumnNamePosition(final ParserRuleContext fucntionNode) {
-        ParseTree distinctItemNode = fucntionNode.getChild(3);
+    private int calculateDistinctColumnNamePosition(final ParserRuleContext functionNode) {
+        ParseTree distinctItemNode = functionNode.getChild(3);
         if (distinctItemNode instanceof TerminalNode) {
             return ((TerminalNode) distinctItemNode).getSymbol().getStartIndex();
         }

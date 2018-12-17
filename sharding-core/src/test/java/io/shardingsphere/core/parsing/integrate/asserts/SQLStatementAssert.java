@@ -129,6 +129,7 @@ public final class SQLStatementAssert {
             alterTableAssert.assertAlterTable(actual, expected.getAlterTable());
         }
     }
+    
     private void assertTCLStatement(final TCLStatement actual) {
         transactionAssert.assertTransactionOperationType(actual.getOperationType(), expected.getTransactionOperationType());
     }

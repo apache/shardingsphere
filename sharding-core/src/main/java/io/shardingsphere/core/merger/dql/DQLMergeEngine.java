@@ -59,9 +59,9 @@ public final class DQLMergeEngine implements MergeEngine {
     public DQLMergeEngine(final List<QueryResult> queryResults, final SelectStatement selectStatement) throws SQLException {
         this.selectStatement = selectStatement;
         List<QueryResult> realQueryResult = getRealQueryResults(queryResults);
-        if(!realQueryResult.isEmpty()) {
+        if (!realQueryResult.isEmpty()) {
             this.queryResults = realQueryResult;
-        }else {
+        } else {
             this.queryResults = queryResults;
         }
         columnLabelIndexMap = getColumnLabelIndexMap(this.queryResults.get(0));
