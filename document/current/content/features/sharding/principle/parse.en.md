@@ -20,11 +20,12 @@ For example, the following SQL:
 SELECT id, name FROM t_user WHERE status = 'ACTIVE' AND age > 18
 ```
 
-Its abstract grammar tree after parsing is as:
+Its AST(Abstract Syntax Tree) after parsing is as:
 
 ![SQL AST](http://shardingsphere.jd.com/document/current/img/sharding/sql_ast.png)
 
 To better understand, the Token of abstract syntax tree keywords is shown in green; that of variables is shown in red; what’s to be further divided is shown in grey.
+
 At last, through traversing the abstract syntax tree, the context needed by sharding is extracted and the place that may need to be rewritten is also marked out. 
 Parsing context for the use of sharding includes select items, table information, sharding conditions, auto-increment primary key information, Order By information, Group By information, and pagination information (Limit, Rownum and Top). 
 One-time parsing process of SQL is irreversible, each Token is parsed according to the original order of SQL with a high performance. 
@@ -32,22 +33,25 @@ Considering similarities and differences between SQL of all kinds of database di
 
 ## SQL Parsing Engine
 
-As the core of database sharding and table sharding, SQL parser takes the performance and compatibility as its most important index. 
-Common SQL parser includes `fdb`, `jsqlparser` and `Druid`. As the predecessor of ShardingSphere, Druid was used as the SQL parser of ShardingSphere before 1.4.x version. 
-As tested in practice, its performance exceeds other parsers a lot.
-ShardingSphere has adopted fully self-developed SQL parsing engine since its 1.5.x version. 
-Because of different purposes, ShardingSphere does not need to transform SQL into a totally abstract syntax tree or traverse twice through visitor pattern. 
-Using half parsing method, it only extracts the context required by data sharding, so the performance and compatibility of SQL parsing is further improved.
+As the core of database sharding and table sharding, SQL parser takes the performance and compatibility as its most important index.
+ShardingSphere SQL parser has undergone the upgrade and iteration of 3 generations of products.
 
-In the latest 3.x version, ShardingSphere tries to adopts `ANTLR` as the SQL parsing engine, and plans to replace the former parsing engine according to the order of `DDL -> TCL -> DAL –> DCL -> DML –>DQL`. 
+To pursue good performance and quick achievement, the first generation of SQL parser uses `Druid` before 1.4.x version. 
+As tested in practice, its performance exceeds other parsers a lot.
+
+The second generation of SQL parsing engine begins from 1.5.x version, ShardingSphere has adopted fully self-developed parsing engine ever since. 
+Because of different purposes, ShardingSphere does not need to transform SQL into a totally abstract syntax tree or traverse twice through visitor. 
+Using `half parsing` method, it only extracts the context required by data sharding, so the performance and compatibility of SQL parsing is further improved.
+
+The third generation of SQL parsing engine begins from 3.0.x version. 
+ShardingSphere tries to adopts ANTLR as the SQL parsing engine, and plans to replace the former parsing engine according to the order of `DDL -> TCL -> DAL –> DCL -> DML –>DQL`. 
+It is still in the process of replacement and iteration. 
 Hoping for a better compatibility with SQL, we use ANTLR in the parsing engine of ShardingSphere. 
 Though complex expressions, recursions, sub-queries and other sentences are not focused by the sharding core of ShardingSphere, they can influence the friendliness to understand SQL. 
-After testing in actual cases, the performance of ANTLR is about 3 times slower than the self-developed parsing engine when parsing SQL. 
-To compensate for this gap, ShardingSphere will use the SQL parsing tree of PreparedStatement to put in the cache. 
-Therefore, PreparedStatement is recommended to be used as the pre-compile method to improve the performance.
+After testing in actual cases, the performance of ANTLR is about 3-10 times slower than the self-developed parsing engine when parsing SQL. 
+To compensate for this gap, ShardingSphere will use the SQL parsing tree of `PreparedStatement` to put in the cache. 
+Therefore, `PreparedStatement` is recommended to be used as the pre-compile method to improve the performance.
 
-ShardingSphere will provide options to include both of the parsing engines and give users the right to choose between the competitiveness and performance of SQL parsing.
-
-The overall structure division of 3rd parsing engine is shown in the following picture.
+The overall structure division of the third generation of SQL parsing engine is shown in the following picture.
 
 ![Parsing Engine](http://shardingsphere.jd.com/document/current/img/sharding/parsing_architecture_en.png)
