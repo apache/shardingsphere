@@ -662,6 +662,7 @@
 .jdbcTopbar { height: 80px; background-color: rgba(0, 0, 0, 0.3); color: #fff; font-size: 18px; line-height: 80px; }
 .jdbcTopbar a:hover { color: #ccc; }
 .jdbcTopbar .logo { float: left; width: 270px; }
+.jdbcTopbar .logo img { margin-right: 20px; width: 270px;}
 .jdbcTopbar .itemBox { float: left; text-align: center; }
 .jdbcTopbar .item { display: inline-block; width: 200px; }
 .jdbcTopbar .i-dropBtn { -moz-user-select: -moz-none; -ms-user-select: none; -webkit-user-select: none; user-select: none; position: relative; display: inline-block; height: 50px; padding: 0 20px; line-height: 50px; cursor: pointer; }
@@ -677,6 +678,7 @@
 
 .jdbcHead { position: relative; height: 820px; overflow: hidden; }
 .jdbcHead .logo { margin-top: 50px; font-size: 42px; font-family: "Helvetica-Bold"; }
+.jdbcHead .logo-img { margin-right: 20px; vertical-align: bottom; width: 640px;}
 .jdbcHead .l-img { margin-right: 20px; vertical-align: bottom; width: 70px; height: 70px;}
 .jdbcHead .title { margin-top: 35px; font-size: 60px; font-family: "PingFang-SC-Medium"; }
 .jdbcHead .msg { margin-top: 25px; font-size: 18px; font-family: Helvetica; letter-spacing: 0.8px; line-height: 35px; }
