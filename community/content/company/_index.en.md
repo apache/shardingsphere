@@ -56,10 +56,11 @@ The list here will be shown in the registered order.
 ## O2O
 
 * [Dongfang789](http://www.dongfang789.com/)
-* [ChinaRoad](https://660pp.com)
+* [ChinaRoad](https://660pp.com/)
 * [Zhong Ce Auto Space](http://www.zcckj.com/)
 * [Shouqi](http://www.01zhuanche.com/)
 * [DiDi global](https://www.didiglobal.com/)
+* [dianwoda](https://www.dianwoda.com/)
 
 ## SNS
 
@@ -68,7 +69,7 @@ The list here will be shown in the registered order.
 ## Entertainment
 
 * [YY](http://www.yy.com/)
-* [Totoro live](http://www.tvlongmao.com)
+* [Totoro live](http://www.tvlongmao.com/)
 * [BBGame](http://www.bbgameonline.com/)
 * [500px](https://500px.me/)
 * [Bilibili](https://www.bilibili.com/)
@@ -94,7 +95,7 @@ The list here will be shown in the registered order.
 * [19pay](http://www.19pay.com.cn/)
 * [Chaojilanling](http://www.chaojilanling.cn/)
 * [Cloudansys](http://www.cloudansys.com/)
-* [HYDEE](http://www.hydee.cn)
+* [HYDEE](http://www.hydee.cn/)
 
 ## Government
 
