@@ -12,6 +12,7 @@
     <name>${project.artifactId}</name>
     <packaging>pom</packaging>
 
-
-
+    <modules>
+        <module>sharding-transaction-xa</module>
+    </modules>
 </project>
