@@ -56,7 +56,7 @@ TransactionTypeHolder.set(TransactionType.XA);
 ```xml
 <dependency>
     <groupId>io.shardingsphere</groupId>
-    <artifactId>sharding-transaction-spring </artifactId>
+    <artifactId>sharding-transaction-spring</artifactId>
     <version>${shardingsphere.version}</version>
 </dependency>
 ```

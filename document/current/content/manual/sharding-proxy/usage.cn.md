@@ -67,7 +67,7 @@ mysql> sctl: show transaction_type
 ```xml
 <dependency>
     <groupId>io.shardingsphere</groupId>
-    <artifactId>sharding-transaction-spring </artifactId>
+    <artifactId>sharding-transaction-spring</artifactId>
     <version>${shardingsphere.version}</version>
 </dependency>
 ```
