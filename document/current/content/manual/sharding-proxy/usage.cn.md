@@ -35,6 +35,61 @@ weight = 1
 1. 使用SPI方式实现相关逻辑编码，并将生成的jar包放到Sharding-Proxy的lib目录下。
 1. 按照[配置规则](/cn/manual/sharding-proxy/configuration/)进行注册中心的配置，即可使用。
 
+## 分布式事务
+
+Sharding-Proxy原生支持XA事务，不需要额外的配置。
+
+### 配置默认事务类型
+
+默认事务类型可在`server.yaml`中进行配置，例如：
+
+```yaml
+proxy.transaction.type: XA
+```
+
+### 切换运行时事务类型
+
+#### 命令行方式
+
+```shell
+mysql> sctl: set transantcion_type=XA
+mysql> sctl: show transaction_type
+```
+
+#### 原生JDBC方式
+
+如果通过JDBC-Driver的方式连接Sharding-Proxy，可以在获取连接后，发送“sctl:set transaction_type=XA”的SQL切换事务类型。
+
+#### Spring注解方式
+
+引入Maven依赖：
+
+```xml
+<dependency>
+    <groupId>io.shardingsphere</groupId>
+    <artifactId>sharding-transaction-spring </artifactId>
+    <version>${shardingsphere.version}</version>
+</dependency>
+```
+
+然后在需要事务的方法或类中添加相关注解即可，例如：
+
+```java
+@ShardingTransactional(type = TransactionType.LOCAL, environment = ShardingEnvironment.PROXY)
+```
+
+或
+
+```java
+@ShardingTransactional(type = TransactionType.XA, environment = ShardingEnvironment.PROXY)
+```
+
+### Atomikos参数配置
+
+ShardingSphere默认的XA事务管理器为Atomikos。
+可以通过在Sharding-Proxy的lib目录中添加`jta.properties`来定制化Atomikos配置项。
+具体的配置规则请参考Atomikos的[官方文档](https://www.atomikos.com/Documentation/JtaProperties)。
+
 ## 注意事项
 
 1. Sharding-Proxy默认使用3307端口，可以通过启动脚本追加参数作为启动端口号。如: `bin/start.sh 3308`
