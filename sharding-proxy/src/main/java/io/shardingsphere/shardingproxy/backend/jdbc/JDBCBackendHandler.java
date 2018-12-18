@@ -51,14 +51,12 @@ import io.shardingsphere.shardingproxy.transport.mysql.packet.command.query.Quer
 import io.shardingsphere.shardingproxy.transport.mysql.packet.generic.EofPacket;
 import io.shardingsphere.shardingproxy.transport.mysql.packet.generic.ErrPacket;
 import io.shardingsphere.shardingproxy.transport.mysql.packet.generic.OKPacket;
-import io.shardingsphere.transaction.base.manager.SagaTransactionManager;
 import lombok.RequiredArgsConstructor;
 
 import java.sql.SQLException;
 import java.util.ArrayList;
 import java.util.Collection;
 import java.util.List;
-import javax.transaction.Status;
 
 /**
  * Backend handler via JDBC to connect databases.
@@ -118,8 +116,8 @@ public final class JDBCBackendHandler extends AbstractBackendHandler {
     }
     
     private boolean isUnsupportedBASE(final SQLType sqlType) throws SQLException {
-        return TransactionType.BASE == GlobalRegistry.getInstance().getTransactionType() && SQLType.DDL == sqlType
-                && Status.STATUS_NO_TRANSACTION != SagaTransactionManager.getInstance().getStatus();
+        BackendConnection connection = executeEngine.getBackendConnection();
+        return TransactionType.BASE == connection.getTransactionType() && SQLType.DDL == sqlType && ConnectionStatus.TRANSACTION == connection.getStateHandler().getStatus();
     }
     
     private CommandResponsePackets merge(final SQLStatement sqlStatement) throws SQLException {

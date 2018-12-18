@@ -62,8 +62,21 @@ public final class BackendTransactionManager implements TransactionManager {
             }
         } else if (TransactionType.BASE == transactionType) {
             SagaConfiguration config = GlobalRegistry.getInstance().getSagaConfiguration();
-            shardingTransactionHandler.doInTransaction(new SagaTransactionEvent(operationType, connection.getSchemaName(),
-                GlobalRegistry.getInstance().getLogicSchema(connection.getSchemaName()).getBackendDataSource().getDataSources(), config));
+            switch (operationType) {
+                case BEGIN:
+                    shardingTransactionHandler.doInTransaction(SagaTransactionEvent.createBeginSagaTransactionEvent(
+                        GlobalRegistry.getInstance().getLogicSchema(connection.getSchemaName()).getBackendDataSource().getDataSources(), config));
+                    break;
+                case COMMIT:
+                    shardingTransactionHandler.doInTransaction(SagaTransactionEvent.createCommitSagaTransactionEvent(config));
+                    connection.getStateHandler().getAndSetStatus(ConnectionStatus.TERMINATED);
+                    break;
+                case ROLLBACK:
+                    shardingTransactionHandler.doInTransaction(SagaTransactionEvent.createRollbackSagaTransactionEvent(config));
+                    connection.getStateHandler().getAndSetStatus(ConnectionStatus.TERMINATED);
+                    break;
+                default:
+            }
         }
     }
 }

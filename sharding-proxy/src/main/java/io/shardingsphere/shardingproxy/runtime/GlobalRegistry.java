@@ -39,7 +39,7 @@ import io.shardingsphere.orchestration.internal.registry.state.event.CircuitStat
 import io.shardingsphere.shardingproxy.runtime.schema.LogicSchema;
 import io.shardingsphere.shardingproxy.runtime.schema.MasterSlaveSchema;
 import io.shardingsphere.shardingproxy.runtime.schema.ShardingSchema;
-import io.shardingsphere.transaction.base.manager.SagaTransactionManager;
+import io.shardingsphere.transaction.saga.manager.SagaTransactionManager;
 import lombok.AccessLevel;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
