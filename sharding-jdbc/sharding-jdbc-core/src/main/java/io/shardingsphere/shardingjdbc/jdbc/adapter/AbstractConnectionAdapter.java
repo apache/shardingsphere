@@ -31,7 +31,7 @@ import io.shardingsphere.shardingjdbc.jdbc.adapter.executor.ForceExecuteTemplate
 import io.shardingsphere.shardingjdbc.jdbc.unsupported.AbstractUnsupportedOperationConnection;
 import io.shardingsphere.spi.root.RootInvokeHook;
 import io.shardingsphere.spi.root.SPIRootInvokeHook;
-import io.shardingsphere.transaction.api.ShardingTransactionHandlerRegistry;
+import io.shardingsphere.transaction.core.api.ShardingTransactionHandlerRegistry;
 import io.shardingsphere.transaction.internal.context.SagaTransactionContext;
 import io.shardingsphere.transaction.internal.context.ShardingTransactionContext;
 import io.shardingsphere.transaction.internal.context.XATransactionContext;

@@ -15,7 +15,7 @@
  * </p>
  */
 
-package io.shardingsphere.transaction.api;
+package io.shardingsphere.transaction.core.api;
 
 import io.shardingsphere.core.constant.DatabaseType;
 import io.shardingsphere.spi.NewInstanceServiceLoader;
