@@ -14,7 +14,8 @@
     
     <modules>
         <module>sharding-transaction-core</module>
-        <module>sharding-transaction-reg</module>
+        <module>sharding-transaction-2pc</module>
+        <module>sharding-transaction-base</module>
     </modules>
     
     <dependencies>

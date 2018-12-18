@@ -18,7 +18,7 @@
 package io.shardingsphere.shardingjdbc.jdbc.transaction;
 
 import io.shardingsphere.core.constant.DatabaseType;
-import io.shardingsphere.transaction.api.SPIDataSourceMapConverter;
+import io.shardingsphere.transaction.core.loader.SPIDataSourceMapConverter;
 import org.junit.Test;
 
 import javax.sql.DataSource;

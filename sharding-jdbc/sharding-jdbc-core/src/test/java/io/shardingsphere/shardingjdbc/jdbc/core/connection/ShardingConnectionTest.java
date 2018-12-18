@@ -29,7 +29,7 @@ import io.shardingsphere.shardingjdbc.jdbc.core.ShardingContext;
 import io.shardingsphere.shardingjdbc.jdbc.core.datasource.MasterSlaveDataSource;
 import io.shardingsphere.shardingjdbc.jdbc.core.fixed.FixedBaseShardingTransactionHandler;
 import io.shardingsphere.shardingjdbc.jdbc.core.fixed.FixedXAShardingTransactionHandler;
-import io.shardingsphere.transaction.internal.context.ShardingTransactionContext;
+import io.shardingsphere.transaction.core.internal.context.ShardingTransactionContext;
 import org.junit.After;
 import org.junit.Before;
 import org.junit.BeforeClass;

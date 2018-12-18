@@ -31,10 +31,10 @@ import io.shardingsphere.shardingjdbc.jdbc.adapter.executor.ForceExecuteTemplate
 import io.shardingsphere.shardingjdbc.jdbc.unsupported.AbstractUnsupportedOperationConnection;
 import io.shardingsphere.spi.root.RootInvokeHook;
 import io.shardingsphere.spi.root.SPIRootInvokeHook;
-import io.shardingsphere.transaction.api.ShardingTransactionHandlerRegistry;
-import io.shardingsphere.transaction.internal.context.SagaTransactionContext;
-import io.shardingsphere.transaction.internal.context.ShardingTransactionContext;
-import io.shardingsphere.transaction.internal.context.XATransactionContext;
+import io.shardingsphere.transaction.core.loader.ShardingTransactionHandlerRegistry;
+import io.shardingsphere.transaction.core.internal.context.SagaTransactionContext;
+import io.shardingsphere.transaction.core.internal.context.ShardingTransactionContext;
+import io.shardingsphere.transaction.core.internal.context.XATransactionContext;
 import io.shardingsphere.transaction.spi.ShardingTransactionHandler;
 import lombok.Getter;
 

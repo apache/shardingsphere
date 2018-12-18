@@ -17,8 +17,8 @@
 
 package io.shardingsphere.transaction.core.handler;
 
-import io.shardingsphere.transaction.internal.context.ShardingTransactionContext;
-import io.shardingsphere.transaction.internal.manager.ShardingTransactionManager;
+import io.shardingsphere.transaction.core.internal.context.ShardingTransactionContext;
+import io.shardingsphere.transaction.core.internal.manager.ShardingTransactionManager;
 import io.shardingsphere.transaction.spi.ShardingTransactionHandler;
 
 /**

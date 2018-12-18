@@ -57,8 +57,8 @@
         <logback.version>1.2.0</logback.version>
         
         <hikari-cp.version>2.4.11</hikari-cp.version>
+        <alibaba.druid.version>1.1.11</alibaba.druid.version>
         <commons-dbcp2.version>2.2.0</commons-dbcp2.version>
-        <tomcat.commons-dbcp2.version>9.0.11</tomcat.commons-dbcp2.version>
         <commons-pool.version>1.6</commons-pool.version>
         <h2.version>1.4.196</h2.version>
         <mysql-connector-java.version>5.1.42</mysql-connector-java.version>
@@ -161,12 +161,7 @@
                 <artifactId>transactions-jdbc</artifactId>
                 <version>${atomikos.version}</version>
             </dependency>
-            <dependency>
-                <groupId>org.apache.tomcat</groupId>
-                <artifactId>tomcat-dbcp</artifactId>
-                <version>${tomcat.commons-dbcp2.version}</version>
-            </dependency>
-            
+
             <dependency>
                 <groupId>org.apache.curator</groupId>
                 <artifactId>curator-framework</artifactId>
@@ -269,6 +264,12 @@
                 <groupId>com.zaxxer</groupId>
                 <artifactId>HikariCP-java7</artifactId>
                 <version>${hikari-cp.version}</version>
+                <scope>test</scope>
+            </dependency>
+            <dependency>
+                <groupId>com.alibaba</groupId>
+                <artifactId>druid</artifactId>
+                <version>${alibaba.druid.version}</version>
                 <scope>test</scope>
             </dependency>
             <dependency>
