@@ -17,8 +17,6 @@
 
 package io.shardingsphere.transaction.xa.convert.swap;
 
-import io.shardingsphere.core.constant.transaction.ProxyPoolType;
-
 /**
  * DBCP2 parameter swapper.
  *
@@ -38,7 +36,6 @@ public final class DBCP2ParameterSwapper extends DataSourceSwapperAdapter {
         updater.transfer("maxWaitMillis", "connectionTimeout");
         updater.transfer("maxConnLifetimeMillis", "maxLifetime");
         updater.transfer("timeBetweenEvictionRunsMillis", "maintenanceInterval");
-        updater.getDelegateMap().put("proxyDatasourceType", ProxyPoolType.TOMCAT_DBCP2);
     }
     
     @Override
