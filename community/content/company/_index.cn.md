@@ -56,10 +56,11 @@ chapter = true
 ## O2O
 
 * [东方车联](http://www.dongfang789.com/)
-* [PP停车](https://660pp.com)
+* [PP停车](https://660pp.com/)
 * [中策车空间](http://www.zcckj.com/)
 * [首汽约车](http://www.01zhuanche.com/)
 * [滴滴小桔车服](https://www.didiglobal.com/)
+* [点我达](https://www.dianwoda.com/)
 
 ## 社交平台
 
@@ -68,7 +69,7 @@ chapter = true
 ## 文化娱乐
 
 * [欢聚时代YY](http://www.yy.com/)
-* [龙猫直播](http://www.tvlongmao.com)
+* [龙猫直播](http://www.tvlongmao.com/)
 * [BBGame](http://www.bbgameonline.com/)
 * [视觉中国](https://500px.me/)
 * [哔哩哔哩弹幕网](https://www.bilibili.com/)
@@ -94,7 +95,7 @@ chapter = true
 * [高阳捷迅](http://www.19pay.com.cn/)
 * [超级蓝领网络科技服务有限公司](http://www.chaojilanling.cn/)
 * [北京云庐科技有限公司](http://www.cloudansys.com/)
-* [海典软件](http://www.hydee.cn)
+* [海典软件](http://www.hydee.cn/)
 
 ## 政府
 
