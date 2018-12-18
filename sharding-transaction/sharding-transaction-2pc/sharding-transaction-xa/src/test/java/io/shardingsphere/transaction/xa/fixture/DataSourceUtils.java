@@ -22,7 +22,6 @@ import com.zaxxer.hikari.HikariDataSource;
 import io.shardingsphere.core.constant.DatabaseType;
 import io.shardingsphere.core.constant.PoolType;
 import lombok.NoArgsConstructor;
-import org.apache.tomcat.dbcp.dbcp2.BasicDataSource;
 import org.mockito.Mockito;
 
 import javax.sql.DataSource;
@@ -47,8 +46,6 @@ public final class DataSourceUtils {
         switch (poolType) {
             case DBCP2:
                 return newBasicDataSource(databaseType, databaseName);
-            case DBCP2_TOMCAT:
-                return newTomcatBasicDataSource(databaseType, databaseName);
             case HIKARI:
                 return newHikariDataSource(databaseType, databaseName);
             case DRUID:
@@ -60,20 +57,6 @@ public final class DataSourceUtils {
     
     private static org.apache.commons.dbcp2.BasicDataSource newBasicDataSource(final DatabaseType databaseType, final String databaseName) {
         org.apache.commons.dbcp2.BasicDataSource result = new org.apache.commons.dbcp2.BasicDataSource();
-        result.setUrl(getUrl(databaseType, databaseName));
-        result.setUsername("root");
-        result.setPassword("root");
-        result.setMaxTotal(10);
-        result.setMinIdle(2);
-        result.setMaxWaitMillis(15 * 1000);
-        result.setMinEvictableIdleTimeMillis(40 * 1000);
-        result.setTimeBetweenEvictionRunsMillis(20 * 1000);
-        result.setMaxConnLifetimeMillis(500 * 1000);
-        return result;
-    }
-    
-    private static BasicDataSource newTomcatBasicDataSource(final DatabaseType databaseType, final String databaseName) {
-        BasicDataSource result = new BasicDataSource();
         result.setUrl(getUrl(databaseType, databaseName));
         result.setUsername("root");
         result.setPassword("root");

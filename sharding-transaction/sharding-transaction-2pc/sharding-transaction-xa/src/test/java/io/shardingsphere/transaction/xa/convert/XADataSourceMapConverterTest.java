@@ -54,7 +54,7 @@ public class XADataSourceMapConverterTest {
     
     @Test
     public void assertGetH2XATransactionalDataSourceSuccess() {
-        Map<String, DataSource> xaDataSourceMap = xaDataSourceMapConverter.convert(createDataSourceMap(PoolType.DBCP2_TOMCAT, DatabaseType.H2), DatabaseType.H2);
+        Map<String, DataSource> xaDataSourceMap = xaDataSourceMapConverter.convert(createDataSourceMap(PoolType.DRUID, DatabaseType.H2), DatabaseType.H2);
         assertThat(xaDataSourceMap.size(), is(2));
         assertThat(xaDataSourceMap.get("ds1"), instanceOf(AtomikosDataSourceBean.class));
         assertThat(xaDataSourceMap.get("ds2"), instanceOf(AtomikosDataSourceBean.class));

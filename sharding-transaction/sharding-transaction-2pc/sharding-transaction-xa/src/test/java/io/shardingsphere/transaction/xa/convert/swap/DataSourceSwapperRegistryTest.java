@@ -56,16 +56,6 @@ public class DataSourceSwapperRegistryTest {
     }
     
     @Test
-    public void assertBuildParameterFromDBCPTomcat() {
-        DataSource dataSource = DataSourceUtils.build(PoolType.DBCP2_TOMCAT, DatabaseType.MySQL, databaseName);
-        DataSourceParameter parameter = DataSourceSwapperRegistry.getInstance().getSwapper(dataSource).swap(dataSource);
-        assertThatParameter(parameter);
-        assertThat(parameter.getMinimumPoolSize(), is(2));
-        assertThat(parameter.getMaintenanceInterval(), is(20 * 1000L));
-        assertThat(parameter.getMaxLifetime(), is(500 * 1000L));
-    }
-    
-    @Test
     public void assertBuildParameterFromDBCP2() {
         DataSource dataSource = DataSourceUtils.build(PoolType.DBCP2, DatabaseType.MySQL, databaseName);
         DataSourceParameter parameter = DataSourceSwapperRegistry.getInstance().getSwapper(dataSource).swap(dataSource);
