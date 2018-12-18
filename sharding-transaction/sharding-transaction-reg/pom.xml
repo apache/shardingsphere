@@ -13,7 +13,6 @@
     <packaging>pom</packaging>
 
     <modules>
-        <module>sharding-transaction-reg-api</module>
         <module>sharding-transaction-reg-xa</module>
         <module>sharding-transaction-reg-base</module>
     </modules>

@@ -1,8 +1,0 @@
-io.shardingsphere.transaction.spi.reg.FixedBaseShardingTransactionHandler
-io.shardingsphere.transaction.spi.reg.FixedXAShardingTransactionHandler
-
-
-
-
-
-

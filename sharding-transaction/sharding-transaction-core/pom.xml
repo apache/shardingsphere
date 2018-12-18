@@ -17,5 +17,14 @@
             <artifactId>sharding-transaction-reg-api</artifactId>
             <version>${project.parent.version}</version>
         </dependency>
+        <dependency>
+            <groupId>javax.transaction</groupId>
+            <artifactId>jta</artifactId>
+        </dependency>
+        <dependency>
+            <groupId>com.zaxxer</groupId>
+            <artifactId>HikariCP-java7</artifactId>
+            <scope>test</scope>
+        </dependency>
     </dependencies>
 </project>
