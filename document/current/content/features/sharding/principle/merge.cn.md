@@ -67,12 +67,12 @@ SELECT name, SUM(score) FROM t_score GROUP BY name ORDER BY name;
 
 在分组项与排序项完全一致的情况下，取得的数据是连续的，分组所需的数据全数存在于各个数据结果集的当前游标所指向的数据值，因此可以采用流式归并。如下图所示。
 
-![分组归并示例1](http://shardingsphere.jd.com/document/current/img/sharding/group_by_merge_1.png)
+![分组归并示例1](http://shardingsphere.jd.com/document/current/img/sharding/group_by_merge_1_v2.png)
 
 进行归并时，逻辑与排序归并类似。
 下图展现了进行next调用的时候，流式分组归并是如何进行的。
 
-![分组归并示例2](http://shardingsphere.jd.com/document/current/img/sharding/group_by_merge_2.png)
+![分组归并示例2](http://shardingsphere.jd.com/document/current/img/sharding/group_by_merge_2_v2.png)
 
 通过图中我们可以看到，当进行第一次next调用时，排在队列首位的t_score_java将会被弹出队列，并且将分组值同为“Jetty”的其他结果集中的数据一同弹出队列。
 在获取了所有的姓名为“Jetty”的同学的分数之后，进行累加操作，那么，在第一次next调用结束后，取出的结果集是“Jetty”的分数总和。
