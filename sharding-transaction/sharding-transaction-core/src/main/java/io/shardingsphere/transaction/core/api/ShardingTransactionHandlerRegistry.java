@@ -19,7 +19,7 @@ package io.shardingsphere.transaction.core.api;
 
 import io.shardingsphere.core.constant.transaction.TransactionType;
 import io.shardingsphere.transaction.spi.ShardingTransactionHandler;
-import io.shardingsphere.transaction.internal.context.ShardingTransactionContext;
+import io.shardingsphere.transaction.core.internal.context.ShardingTransactionContext;
 import lombok.AccessLevel;
 import lombok.NoArgsConstructor;
 import lombok.extern.slf4j.Slf4j;

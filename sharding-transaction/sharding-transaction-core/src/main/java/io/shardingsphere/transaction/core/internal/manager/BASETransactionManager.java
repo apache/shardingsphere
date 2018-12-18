@@ -15,20 +15,21 @@
  * </p>
  */
 
-package io.shardingsphere.transaction.internal.context;
+package io.shardingsphere.transaction.core.internal.manager;
 
-import io.shardingsphere.core.constant.transaction.TransactionOperationType;
-import lombok.Getter;
-import lombok.RequiredArgsConstructor;
+import io.shardingsphere.transaction.core.internal.context.ShardingTransactionContext;
 
 /**
- * XA transaction context.
+ * BASE transaction manager.
  *
- * @author zhaojun
+ * @author yangyi
  */
-@RequiredArgsConstructor
-@Getter
-public final class XATransactionContext implements ShardingTransactionContext {
+public interface BASETransactionManager<T extends ShardingTransactionContext> extends ShardingTransactionManager<T> {
     
-    private final TransactionOperationType operationType;
+    /**
+     * Get transaction id in current thread.
+     *
+     * @return transaction id in current thread
+     */
+    String getTransactionId();
 }
