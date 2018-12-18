@@ -6,10 +6,10 @@
     <packaging>pom</packaging>
     <parent>
         <groupId>io.shardingsphere</groupId>
-        <artifactId>sharding-transaction-reg</artifactId>
+        <artifactId>sharding-transaction</artifactId>
         <version>3.0.1-SNAPSHOT</version>
     </parent>
-    <artifactId>sharding-transaction-reg-base</artifactId>
+    <artifactId>sharding-transaction-base</artifactId>
     <name>${project.artifactId}</name>
     
     <dependencies>
