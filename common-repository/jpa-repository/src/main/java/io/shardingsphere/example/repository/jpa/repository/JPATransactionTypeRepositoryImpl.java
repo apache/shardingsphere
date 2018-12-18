@@ -25,7 +25,7 @@ import javax.persistence.EntityManager;
 import javax.persistence.PersistenceContext;
 
 @Repository
-public class JPATransactionTypeRepositoryimpl implements TransactionTypeRepository {
+public class JPATransactionTypeRepositoryImpl implements TransactionTypeRepository {
     
     @PersistenceContext
     private EntityManager entityManager;
