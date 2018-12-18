@@ -159,7 +159,7 @@ public final class SQLRewriteEngine {
             } else if (each instanceof IndexToken) {
                 appendIndexPlaceholder(result, (IndexToken) each, count);
             } else if (each instanceof ItemsToken) {
-                appendItemsToken(result, (ItemsToken) each, count);
+                appendItemsToken(result, (ItemsToken) each, count, isRewrite);
             } else if (each instanceof InsertValuesToken) {
                 appendInsertValuesToken(result, (InsertValuesToken) each, count);
             } else if (each instanceof RowCountToken) {
@@ -202,8 +202,9 @@ public final class SQLRewriteEngine {
         appendRest(sqlBuilder, count, beginPosition);
     }
     
-    private void appendItemsToken(final SQLBuilder sqlBuilder, final ItemsToken itemsToken, final int count) {
-        for (int i = 0; i < itemsToken.getItems().size(); i++) {
+    private void appendItemsToken(final SQLBuilder sqlBuilder, final ItemsToken itemsToken, final int count, final boolean isRewrite) {
+        boolean isRewriteItem = isRewrite || sqlStatement instanceof InsertStatement;
+        for (int i = 0; i < itemsToken.getItems().size() && isRewriteItem; i++) {
             if (itemsToken.isFirstOfItemsSpecial() && 0 == i) {
                 sqlBuilder.appendLiterals(SQLUtil.getOriginalValue(itemsToken.getItems().get(i), databaseType));
             } else {
@@ -268,7 +269,7 @@ public final class SQLRewriteEngine {
         if (!isRewrite) {
             sqlBuilder.appendLiterals(distinctToken.getOriginalLiterals()); 
         } else {
-            sqlBuilder.appendPlaceholder(new AggregationDistinctPlaceholder(distinctToken.getColumnName().toLowerCase(), "", distinctToken.getAutoAlias())); 
+            sqlBuilder.appendPlaceholder(new AggregationDistinctPlaceholder(distinctToken.getColumnName().toLowerCase(), "", distinctToken.getAutoAlias()));
         }
         int beginPosition = distinctToken.getBeginPosition() + distinctToken.getOriginalLiterals().length();
         appendRest(sqlBuilder, count, beginPosition);
