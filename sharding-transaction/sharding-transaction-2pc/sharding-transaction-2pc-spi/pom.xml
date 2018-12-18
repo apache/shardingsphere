@@ -2,18 +2,21 @@
 <project xmlns="http://maven.apache.org/POM/4.0.0"
          xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
          xsi:schemaLocation="http://maven.apache.org/POM/4.0.0 http://maven.apache.org/xsd/maven-4.0.0.xsd">
-    <modelVersion>4.0.0</modelVersion>
     <parent>
-        <artifactId>sharding-transaction</artifactId>
+        <artifactId>sharding-transaction-2pc</artifactId>
         <groupId>io.shardingsphere</groupId>
         <version>3.0.1-SNAPSHOT</version>
     </parent>
-    <artifactId>sharding-transaction-2pc</artifactId>
+    <artifactId>sharding-transaction-2pc-spi</artifactId>
     <name>${project.artifactId}</name>
-    <packaging>pom</packaging>
+    <modelVersion>4.0.0</modelVersion>
 
-    <modules>
-        <module>sharding-transaction-xa</module>
-        <module>sharding-transaction-2pc-spi</module>
-    </modules>
+    <dependencies>
+        <dependency>
+            <groupId>io.shardingsphere</groupId>
+            <artifactId>sharding-transaction-core</artifactId>
+            <version>${project.parent.version}</version>
+        </dependency>
+    </dependencies>
+
 </project>
