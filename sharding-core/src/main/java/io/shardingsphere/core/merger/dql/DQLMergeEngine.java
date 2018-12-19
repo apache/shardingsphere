@@ -120,7 +120,7 @@ public final class DQLMergeEngine implements MergeEngine {
     
     private MergedResult decorate(final MergedResult mergedResult) throws SQLException {
         Limit limit = selectStatement.getLimit();
-        if (null == limit) {
+        if (null == limit || 1 == queryResults.size()) {
             return mergedResult;
         }
         if (DatabaseType.MySQL == limit.getDatabaseType() || DatabaseType.PostgreSQL == limit.getDatabaseType() || DatabaseType.H2 == limit.getDatabaseType()) {
