@@ -71,7 +71,7 @@ public final class DataSourceConfiguration {
     public static DataSourceConfiguration getDataSourceConfiguration(final DataSource dataSource) {
         Map<String, Object> properties = new LinkedHashMap<>();
         try {
-            for (Method each : findAllGetterMethods(dataSource)) {
+            for (Method each : findAllGetterMethods(dataSource.getClass())) {
                 String propertyName = CaseFormat.UPPER_CAMEL.to(CaseFormat.LOWER_CAMEL, each.getName().substring(GETTER_PREFIX.length()));
                 if (GENERAL_CLASS_TYPE.contains(each.getReturnType()) && !SKIPPED_PROPERTY_NAMES.contains(propertyName)) {
                     properties.put(propertyName, each.invoke(dataSource));
@@ -103,9 +103,9 @@ public final class DataSourceConfiguration {
         return result;
     }
     
-    private static Collection<Method> findAllGetterMethods(final DataSource dataSource) {
+    private static Collection<Method> findAllGetterMethods(final Class<?> clz) {
         Collection<Method> result = new HashSet<>();
-        for (Method each : dataSource.getClass().getMethods()) {
+        for (Method each : clz.getMethods()) {
             if (each.getName().startsWith(GETTER_PREFIX) && 0 == each.getParameterTypes().length) {
                 result.add(each);
             }
