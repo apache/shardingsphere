@@ -50,8 +50,6 @@ public final class DataSourceParameter {
     
     private String password;
     
-    private boolean autoCommit;
-    
     private long connectionTimeoutMilliseconds = DEFAULT_CONNECTION_TIMEOUT_MILLISECONDS;
     
     private long idleTimeoutMilliseconds = DEFAULT_IDLE_TIMEOUT_MILLISECONDS;
