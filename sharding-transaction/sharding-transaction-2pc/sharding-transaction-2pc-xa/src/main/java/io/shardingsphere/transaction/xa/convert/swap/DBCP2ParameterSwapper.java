@@ -31,11 +31,11 @@ public final class DBCP2ParameterSwapper extends DataSourceSwapperAdapter {
     @Override
     protected void convertProperties(final AdvancedMapUpdater<String, Object> updater) {
         updater.transfer("maxTotal", "maxPoolSize");
-        updater.transfer("minIdle", "minimumPoolSize");
+        updater.transfer("minIdle", "minPoolSize");
         updater.transfer("minEvictableIdleTimeMillis", "idleTimeoutMilliseconds");
         updater.transfer("maxWaitMillis", "connectionTimeoutMilliseconds");
         updater.transfer("maxConnLifetimeMillis", "maxLifetimeMilliseconds");
-        updater.transfer("timeBetweenEvictionRunsMillis", "maintenanceInterval");
+        updater.transfer("timeBetweenEvictionRunsMillis", "maintenanceIntervalMilliseconds");
     }
     
     @Override

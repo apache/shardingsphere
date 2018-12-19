@@ -29,10 +29,10 @@ public final class DruidParameterSwapper extends DataSourceSwapperAdapter {
     @Override
     protected void convertProperties(final AdvancedMapUpdater<String, Object> updater) {
         updater.transfer("maxActive", "maxPoolSize");
-        updater.transfer("minIdle", "minimumPoolSize");
+        updater.transfer("minIdle", "minPoolSize");
         updater.transfer("maxWait", "connectionTimeoutMilliseconds");
         updater.transfer("minEvictableIdleTimeMillis", "idleTimeoutMilliseconds");
-        updater.transfer("timeBetweenEvictionRunsMillis", "maintenanceInterval");
+        updater.transfer("timeBetweenEvictionRunsMillis", "maintenanceIntervalMilliseconds");
     }
     
     @Override
