@@ -58,7 +58,7 @@ mysql> sctl: show transaction_type
 
 #### 原生JDBC方式
 
-如果通过JDBC-Driver的方式连接Sharding-Proxy，可以在获取连接后，发送“sctl:set transaction_type=XA”的SQL切换事务类型。
+如果通过JDBC-Driver的方式连接Sharding-Proxy，可以在获取连接后，发送`sctl:set transaction_type=XA`的SQL切换事务类型。
 
 #### Spring注解方式
 
@@ -75,19 +75,23 @@ mysql> sctl: show transaction_type
 然后在需要事务的方法或类中添加相关注解即可，例如：
 
 ```java
-@ShardingTransactional(type = TransactionType.LOCAL, environment = ShardingEnvironment.PROXY)
+@ShardingTransactionType(TransactionType.LOCAL)
+@Transactional
 ```
 
 或
 
 ```java
-@ShardingTransactional(type = TransactionType.XA, environment = ShardingEnvironment.PROXY)
+@ShardingTransactionType(TransactionType.XA)
+@Transactionnal
 ```
+
+注意：`@ShardingTransactionType`需要同Spring的`@Transactional`配套使用，事务才会生效。
 
 ### Atomikos参数配置
 
 ShardingSphere默认的XA事务管理器为Atomikos。
-可以通过在Sharding-Proxy的lib目录中添加`jta.properties`来定制化Atomikos配置项。
+可以通过在Sharding-Proxy的conf目录中添加`jta.properties`来定制化Atomikos配置项。
 具体的配置规则请参考Atomikos的[官方文档](https://www.atomikos.com/Documentation/JtaProperties)。
 
 ## 注意事项
