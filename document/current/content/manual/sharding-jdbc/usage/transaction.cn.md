@@ -20,16 +20,16 @@ XA事务管理器将以SPI的方式被Sharding-JDBC所加载。
 
 ShardingSphere支持将普通的数据库连接池，转换为支持XA事务的连接池，对HikariCP, Druid和DBCP2连接池内置支持，无需额外配置。
 其它连接池需要用户实现`DataSourceMapConverter`的SPI接口进行扩展，可以参考`io.shardingsphere.transaction.xa.convert.swap.HikariParameterSwapper`的实现。
-若ShardingSphere无法找到合适的swapper，则会按默认的配置创建XA事务连接池。默认属性如下：
+若ShardingSphere无法找到合适的实现，则会按默认的配置创建XA事务连接池。默认属性如下：
 
-| *属性名称*                         | *默认值*   |
-| --------------------------------- | --------- |
-| DEFAULT_CONNECTION_TIMEOUT_MILLIS | 30 * 1000 |
-| DEFAULT_IDLE_TIMEOUT_MILLIS       | 60 * 1000 |
-| DEFAULT_MAINTENANCE_INTERVAL      | 30 * 1000 |
-| DEFAULT_MAX_LIFE_TIME_MILLIS      | 0         |
-| DEFAULT_MAX_POOL_SIZE             | 50        |
-| DEFAULT_MIN_POOL_SIZE             | 1         |
+| *属性名称*              | *默认值*    |
+| -----------------------| ----------- |
+| connectionTimeout      | 30 * 1000 ms|
+| idleTimeout            | 60 * 1000 ms|
+| maintenanceInterval    | 30 * 1000 ms|
+| maxLifetime            | 0  (无限制) |
+| maximumPoolSize        | 50          |
+| minimumPoolSize        | 1           |
 
 ## 事务类型切换
 
@@ -64,14 +64,18 @@ TransactionTypeHolder.set(TransactionType.XA);
 然后在需要事务的方法或类中添加相关注解即可，例如：
 
 ```java
-@ShardingTransactional(type = TransactionType.LOCAL)
+@ShardingTransactionaType(TransactionType.LOCAL)
+@Transactional
 ```
 
 或
 
 ```java
-@ShardingTransactional(type = TransactionType.XA)
+@ShardingTransactionaType(TransactionType.LOCAL)
+@Transactionnal
 ```
+
+注意：`@ShardingTransactionType`需要同Spring的`@Transactional`配套使用，事务才会生效。
 
 ## Atomikos参数配置
 
