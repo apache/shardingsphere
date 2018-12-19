@@ -71,7 +71,7 @@ TransactionTypeHolder.set(TransactionType.XA);
 或
 
 ```java
-@ShardingTransactionaType(TransactionType.LOCAL)
+@ShardingTransactionaType(TransactionType.XA)
 @Transactionnal
 ```
 

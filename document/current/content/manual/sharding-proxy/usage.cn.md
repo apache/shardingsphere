@@ -82,7 +82,7 @@ mysql> sctl: show transaction_type
 或
 
 ```java
-@ShardingTransactionaType(TransactionType.LOCAL)
+@ShardingTransactionaType(TransactionType.XA)
 @Transactionnal
 ```
 
