@@ -19,26 +19,30 @@ package io.shardingsphere.example.repository.api.service;
 
 import io.shardingsphere.core.constant.transaction.TransactionType;
 import io.shardingsphere.core.transaction.TransactionTypeHolder;
-import io.shardingsphere.transaction.annotation.ShardingTransactional;
+import io.shardingsphere.transaction.annotation.ShardingTransactionalType;
+import org.springframework.transaction.annotation.Transactional;
 
 public abstract class ShardingJDBCTransactionService extends CommonServiceImpl implements TransactionService {
     
     @Override
-    @ShardingTransactional
+    @ShardingTransactionalType
+    @Transactional
     public void processFailureWithLocal() {
         printTransactionType();
         super.processFailure();
     }
     
     @Override
-    @ShardingTransactional(type = TransactionType.XA)
+    @ShardingTransactionalType(TransactionType.XA)
+    @Transactional
     public void processFailureWithXa() {
         printTransactionType();
         super.processFailure();
     }
     
     @Override
-    @ShardingTransactional(type = TransactionType.BASE)
+    @ShardingTransactionalType(TransactionType.BASE)
+    @Transactional
     public void processFailureWithBase() {
         printTransactionType();
         super.processFailure();
