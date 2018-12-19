@@ -45,7 +45,7 @@ public class AtomikosDataSourceBeanWrapperTest {
         parameter.setUsername("root");
         parameter.setPassword("root");
         parameter.setUrl("db:url");
-        parameter.setMaximumPoolSize(10);
+        parameter.setMaxPoolSize(10);
     }
     
     @Test
@@ -57,7 +57,7 @@ public class AtomikosDataSourceBeanWrapperTest {
         assertThat(targetDataSource.getXaDataSource(), is(xaDataSource));
         assertThat(targetDataSource.getXaDataSourceClassName(), is(XADatabaseType.MySQL.getClassName()));
         assertThat(targetDataSource.getUniqueResourceName(), is("ds1"));
-        assertThat(targetDataSource.getMaxPoolSize(), is(parameter.getMaximumPoolSize()));
+        assertThat(targetDataSource.getMaxPoolSize(), is(parameter.getMaxPoolSize()));
         assertThat(targetDataSource.getXaProperties().get("user"), Is.<Object>is(parameter.getUsername()));
         assertThat(targetDataSource.getXaProperties().get("password"), Is.<Object>is(parameter.getPassword()));
         assertThat(targetDataSource.getXaProperties().get("URL"), Is.<Object>is(parameter.getUrl()));

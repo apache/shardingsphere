@@ -92,9 +92,9 @@ public final class ShardingConfigurationLoaderTest {
         assertThat(actual.getUsername(), is("root"));
         assertNull(actual.getPassword());
         assertTrue(actual.isAutoCommit());
-        assertThat(actual.getConnectionTimeout(), is(30000L));
-        assertThat(actual.getIdleTimeout(), is(60000L));
-        assertThat(actual.getMaxLifetime(), is(1800000L));
-        assertThat(actual.getMaximumPoolSize(), is(50));
+        assertThat(actual.getConnectionTimeoutMilliseconds(), is(30000L));
+        assertThat(actual.getIdleTimeoutMilliseconds(), is(60000L));
+        assertThat(actual.getMaxLifetimeMilliseconds(), is(1800000L));
+        assertThat(actual.getMaxPoolSize(), is(50));
     }
 }

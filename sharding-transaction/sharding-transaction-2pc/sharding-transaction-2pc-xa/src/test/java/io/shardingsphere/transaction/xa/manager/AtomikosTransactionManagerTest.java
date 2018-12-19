@@ -129,7 +129,7 @@ public final class AtomikosTransactionManagerTest {
     public void assertWrapDataSourceForOtherDataSource() {
         XADataSource xaDataSource = mock(XADataSource.class);
         DataSourceParameter dataSourceParameter = new DataSourceParameter();
-        dataSourceParameter.setMaximumPoolSize(10);
+        dataSourceParameter.setMaxPoolSize(10);
         atomikosTransactionManager.wrapDataSource(xaDataSource, "ds_name", dataSourceParameter);
     }
     
@@ -140,7 +140,7 @@ public final class AtomikosTransactionManagerTest {
         dataSourceParameter.setUsername("root");
         dataSourceParameter.setPassword("root");
         dataSourceParameter.setUrl("db:url");
-        dataSourceParameter.setMaximumPoolSize(10);
+        dataSourceParameter.setMaxPoolSize(10);
         DataSource actual = atomikosTransactionManager.wrapDataSource(xaDataSource, "ds_name", dataSourceParameter);
         assertThat(actual, instanceOf(AtomikosDataSourceBean.class));
     }
@@ -150,7 +150,7 @@ public final class AtomikosTransactionManagerTest {
         DataSourceParameter dataSourceParameter = new DataSourceParameter();
         dataSourceParameter.setPassword("root");
         dataSourceParameter.setUrl("db:url");
-        dataSourceParameter.setMaximumPoolSize(0);
+        dataSourceParameter.setMaxPoolSize(0);
         XADataSource xaDataSource = new MysqlXADataSource();
         atomikosTransactionManager.wrapDataSource(xaDataSource, "ds_name", dataSourceParameter);
     }

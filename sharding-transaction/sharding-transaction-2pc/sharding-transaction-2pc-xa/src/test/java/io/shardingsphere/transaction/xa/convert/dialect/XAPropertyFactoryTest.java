@@ -36,10 +36,10 @@ public class XAPropertyFactoryTest {
         dataSourceParameter.setUrl("jdbc:mysql://127.0.0.1:3306/demo");
         dataSourceParameter.setUsername("root");
         dataSourceParameter.setPassword("root");
-        dataSourceParameter.setMaximumPoolSize(100);
-        dataSourceParameter.setConnectionTimeout(1000);
-        dataSourceParameter.setIdleTimeout(1000);
-        dataSourceParameter.setMaxLifetime(60000);
+        dataSourceParameter.setMaxPoolSize(100);
+        dataSourceParameter.setConnectionTimeoutMilliseconds(1000);
+        dataSourceParameter.setIdleTimeoutMilliseconds(1000);
+        dataSourceParameter.setMaxLifetimeMilliseconds(60000);
     }
     
     @Test
