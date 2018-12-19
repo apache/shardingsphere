@@ -35,7 +35,7 @@ Reserved sign bit, constantly to be zero.
 
 - timestamp bit (41bit)
 
-41bit timestamp can contain 2 to the power of 42 minus 1 milliseconds. One year can uses `365 * 24 * 60 * 60 * 1000` milliseconds. We can see from the calculation:
+41bit timestamp can contain 2 to the power of 41 milliseconds. One year can uses `365 * 24 * 60 * 60 * 1000` milliseconds. We can see from the calculation:
 
 ```java
 Math.pow(2, 41) / (365 * 24 * 60 * 60 * 1000L);
@@ -64,4 +64,4 @@ Please refer to the following picture for the detailed structure of snowflake al
 
 Structure of snowflake algorithm is below.
 
-![snowflake](http://shardingsphere.jd.com/document/current/img/sharding/snowflake_en.png)
+![snowflake](http://shardingsphere.jd.com/document/current/img/sharding/snowflake_en_v2.png)
