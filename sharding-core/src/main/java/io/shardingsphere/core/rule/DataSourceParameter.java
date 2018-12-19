@@ -32,13 +32,13 @@ public final class DataSourceParameter {
     
     public static final String DATA_SOURCE_POOL_CLASS_NAME = "com.zaxxer.hikari.HikariDataSource";
     
-    private static final long DEFAULT_CONNECTION_TIMEOUT_MILLIS = 30 * 1000;
+    private static final long DEFAULT_CONNECTION_TIMEOUT_MILLISECONDS = 30 * 1000;
     
-    private static final long DEFAULT_IDLE_TIMEOUT_MILLIS = 60 * 1000;
+    private static final long DEFAULT_IDLE_TIMEOUT_MILLISECONDS = 60 * 1000;
     
-    private static final long DEFAULT_MAINTENANCE_INTERVAL = 30 * 1000;
+    private static final long DEFAULT_MAINTENANCE_INTERVAL_MILLISECONDS = 30 * 1000;
     
-    private static final long DEFAULT_MAX_LIFE_TIME_MILLIS = 0;
+    private static final long DEFAULT_MAX_LIFE_TIME_MILLISECONDS = 0;
     
     private static final int DEFAULT_MAX_POOL_SIZE = 50;
     
@@ -54,15 +54,15 @@ public final class DataSourceParameter {
     
     private boolean autoCommit;
     
-    private long connectionTimeout = DEFAULT_CONNECTION_TIMEOUT_MILLIS;
+    private long connectionTimeoutMilliseconds = DEFAULT_CONNECTION_TIMEOUT_MILLISECONDS;
     
-    private long idleTimeout = DEFAULT_IDLE_TIMEOUT_MILLIS;
+    private long idleTimeoutMilliseconds = DEFAULT_IDLE_TIMEOUT_MILLISECONDS;
     
-    private long maxLifetime = DEFAULT_MAX_LIFE_TIME_MILLIS;
+    private long maxLifetimeMilliseconds = DEFAULT_MAX_LIFE_TIME_MILLISECONDS;
     
-    private int maximumPoolSize = DEFAULT_MAX_POOL_SIZE;
+    private int maxPoolSize = DEFAULT_MAX_POOL_SIZE;
     
-    private int minimumPoolSize = DEFAULT_MIN_POOL_SIZE;
+    private int minPoolSize = DEFAULT_MIN_POOL_SIZE;
     
-    private long maintenanceInterval = DEFAULT_MAINTENANCE_INTERVAL;
+    private long maintenanceIntervalMilliseconds = DEFAULT_MAINTENANCE_INTERVAL_MILLISECONDS;
 }
