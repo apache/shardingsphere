@@ -40,7 +40,7 @@ public class DataSourceSwapperRegistryTest {
         DataSource dataSource = DataSourceUtils.build(PoolType.HIKARI, DatabaseType.MySQL, databaseName);
         DataSourceParameter parameter = DataSourceSwapperRegistry.getInstance().getSwapper(dataSource).swap(dataSource);
         assertThatParameter(parameter);
-        assertThat(parameter.getMinPoolSize(), is(1));
+        assertThat(parameter.getMinPoolSize(), is(2));
         assertThat(parameter.getMaintenanceIntervalMilliseconds(), is(30 * 1000L));
         assertThat(parameter.getMaxLifetimeMilliseconds(), is(30 * 60 * 1000L));
     }

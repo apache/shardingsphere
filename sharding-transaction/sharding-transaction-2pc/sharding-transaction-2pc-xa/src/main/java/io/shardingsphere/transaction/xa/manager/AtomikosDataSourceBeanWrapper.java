@@ -50,7 +50,7 @@ public final class AtomikosDataSourceBeanWrapper implements XADataSourceWrapper 
     
     private void setPoolProperties(final DataSourceParameter parameter) {
         delegate.setMaintenanceInterval((int) (parameter.getMaintenanceIntervalMilliseconds() / 1000));
-        delegate.setMinPoolSize(parameter.getMinPoolSize());
+        delegate.setMinPoolSize(parameter.getMinPoolSize() < 0 ? 0 : parameter.getMinPoolSize());
         delegate.setMaxPoolSize(parameter.getMaxPoolSize());
         delegate.setBorrowConnectionTimeout((int) parameter.getConnectionTimeoutMilliseconds() / 1000);
         delegate.setReapTimeout((int) parameter.getMaxLifetimeMilliseconds() / 1000);
