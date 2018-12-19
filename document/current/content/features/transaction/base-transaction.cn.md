@@ -15,6 +15,4 @@ weight = 3
 
 ## 支持情况
 
-* Sharding-JDBC预计3.1.0支持
-
-* Sharding-Proxy预计3.1.0支持
+* 预计4.0.0支持

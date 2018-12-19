@@ -80,32 +80,32 @@ SELECT COUNT(*) FROM (SELECT * FROM t_order o WHERE o.id IN (SELECT id FROM t_or
 
 ### 支持的SQL
 
-| SQL                                                                                         | 必要条件                    |
-| ------------------------------------------------------------------------------------------- | ---------------------------|
-| SELECT * FROM tbl_name                                                                      |                            |
-| SELECT * FROM tbl_name WHERE (col1 = ? or col2 = ?) and col3 = ?                            |                            |
-| SELECT * FROM tbl_name WHERE col1 = ? ORDER BY col2 DESC LIMIT ?                            |                            |
-| SELECT COUNT(*), SUM(col1), MIN(col1), MAX(col1), AVG(col1) FROM tbl_name WHERE col1 = ?    |                            |
-| SELECT COUNT(col1) FROM tbl_name WHERE col2 = ? GROUP BY col1 ORDER BY col3 DESC LIMIT ?, ? |                            |
-| INSERT INTO tbl_name (col1, col2,...) VALUES (?, ?, ....)                                   |                            |
-| INSERT INTO tbl_name VALUES (?, ?,....)                                                     |                            |
-| INSERT INTO tbl_name (col1, col2, ...) VALUES (?, ?, ....), (?, ?, ....)                    |                            |
-| UPDATE tbl_name SET col1 = ? WHERE col2 = ?                                                 |                            |
-| DELETE FROM tbl_name WHERE col1 = ?                                                         |                            |
-| CREATE TABLE tbl_name (col1 int, ...)                                                       |                            |
-| ALTER TABLE tbl_name ADD col1 varchar(10)                                                   |                            |
-| DROP TABLE tbl_name                                                                         |                            |
-| TRUNCATE TABLE tbl_name                                                                     |                            |
-| CREATE INDEX idx_name ON tbl_name                                                           |                            |
-| DROP INDEX idx_name ON tbl_name                                                             |                            |
-| DROP INDEX idx_name                                                                         |TableRule中配置logic-index    |
-| SELECT DISTINCT * FROM tbl_name WHERE col1 = ?                                              |在3.1.0支持，目前还未发布正式版本|
-| SELECT COUNT(DISTINCT col1) FROM tbl_name                                                   |在3.1.0支持，目前还未发布正式版本|
+| SQL                                                                                         | 必要条件                  |
+| ------------------------------------------------------------------------------------------- | -------------------------|
+| SELECT * FROM tbl_name                                                                      |                          |
+| SELECT * FROM tbl_name WHERE (col1 = ? or col2 = ?) and col3 = ?                            |                          |
+| SELECT * FROM tbl_name WHERE col1 = ? ORDER BY col2 DESC LIMIT ?                            |                          |
+| SELECT COUNT(*), SUM(col1), MIN(col1), MAX(col1), AVG(col1) FROM tbl_name WHERE col1 = ?    |                          |
+| SELECT COUNT(col1) FROM tbl_name WHERE col2 = ? GROUP BY col1 ORDER BY col3 DESC LIMIT ?, ? |                          |
+| INSERT INTO tbl_name (col1, col2,...) VALUES (?, ?, ....)                                   |                          |
+| INSERT INTO tbl_name VALUES (?, ?,....)                                                     |                          |
+| INSERT INTO tbl_name (col1, col2, ...) VALUES (?, ?, ....), (?, ?, ....)                    |                          |
+| UPDATE tbl_name SET col1 = ? WHERE col2 = ?                                                 |                          |
+| DELETE FROM tbl_name WHERE col1 = ?                                                         |                          |
+| CREATE TABLE tbl_name (col1 int, ...)                                                       |                          |
+| ALTER TABLE tbl_name ADD col1 varchar(10)                                                   |                          |
+| DROP TABLE tbl_name                                                                         |                          |
+| TRUNCATE TABLE tbl_name                                                                     |                          |
+| CREATE INDEX idx_name ON tbl_name                                                           |                          |
+| DROP INDEX idx_name ON tbl_name                                                             |                          |
+| DROP INDEX idx_name                                                                         |TableRule中配置logic-index |
+| SELECT DISTINCT * FROM tbl_name WHERE col1 = ?                                              |                          |
+| SELECT COUNT(DISTINCT col1) FROM tbl_name                                                   |                          |
 
 
 ### 不支持的SQL
 
-| SQL                                                                                           | 不支持原因                                         |
+| SQL                                                                                           | 不支持原因                      |
 | -------------------------------------------------------------------------------------         | ------------------------------ |
 | INSERT INTO tbl_name (col1, col2, ...) SELECT col1, col2, ... FROM tbl_name WHERE col3 = ?    | INSERT .. SEL                  |
 | INSERT INTO tbl_name SET col1 = ?                                                             | INSERT .. SET                  |
@@ -114,9 +114,9 @@ SELECT COUNT(*) FROM (SELECT * FROM t_order o WHERE o.id IN (SELECT id FROM t_or
 | SELECT * FROM tbl_name1 UNION ALL SELECT * FROM tbl_name2                                     | UNION ALL                      |
 | SELECT * FROM tbl_name1 WHERE (val1=?) AND (val1=?)                                           | 冗余括号                        |
 | SELECT * FROM ds.tbl_name1                                                                    | 包含schema                     |
-| SELECT SUM(DISTINCT col1), SUM(col1) FROM tbl_name                                            | 详见`DISTINCT`支持情况详细说明    |
+| SELECT SUM(DISTINCT col1), SUM(col1) FROM tbl_name                                            | 详见`DISTINCT`支持情况详细说明   |
 
-## DISTINCT支持情况详细说明（在3.1.0支持，目前还未发布正式版本）
+## DISTINCT支持情况详细说明
 
 ### 支持的SQL
 

@@ -85,27 +85,27 @@ SQL that contains schema is unavailable, for the concept of ShardingSphere is to
 
 ### Available SQL
 
-| SQL                                                                                         | Necessary conditions                |
-| ------------------------------------------------------------------------------------------- | ----------------------------------- |
-| SELECT * FROM tbl_name                                                                      |                                     |
-| SELECT * FROM tbl_name WHERE (col1 = ? or col2 = ?) and col3 = ?                            |                                     |
-| SELECT * FROM tbl_name WHERE col1 = ? ORDER BY col2 DESC LIMIT ?                            |                                     |
-| SELECT COUNT(*), SUM(col1), MIN(col1), MAX(col1), AVG(col1) FROM tbl_name WHERE col1 = ?    |                                     |
-| SELECT COUNT(col1) FROM tbl_name WHERE col2 = ? GROUP BY col1 ORDER BY col3 DESC LIMIT ?, ? |                                     |
-| INSERT INTO tbl_name (col1, col2,...) VALUES (?, ?, ....)                                   |                                     |
-| INSERT INTO tbl_name VALUES (?, ?,....)                                                     |                                     |
-| INSERT INTO tbl_name (col1, col2, ...) VALUES (?, ?, ....), (?, ?, ....)                    |                                     |
-| UPDATE tbl_name SET col1 = ? WHERE col2 = ?                                                 |                                     |
-| DELETE FROM tbl_name WHERE col1 = ?                                                         |                                     |
-| CREATE TABLE tbl_name (col1 int, ...)                                                       |                                     |
-| ALTER TABLE tbl_name ADD col1 varchar(10)                                                   |                                     |
-| DROP TABLE tbl_name                                                                         |                                     |
-| TRUNCATE TABLE tbl_name                                                                     |                                     |
-| CREATE INDEX idx_name ON tbl_name                                                           |                                     |
-| DROP INDEX idx_name ON tbl_name                                                             |                                     |
-| DROP INDEX idx_name                                                                         |  Logic-index is configurated in TableRule |
-| SELECT DISTINCT * FROM tbl_name WHERE col1 = ?                                              |  Will be available in 3.1.0, no official release for now |
-| SELECT COUNT(DISTINCT col1) FROM tbl_name                                                   |  Will be available in 3.1.0, no official release for now |
+| SQL                                                                                         | Necessary conditions                    |
+| ------------------------------------------------------------------------------------------- | --------------------------------------- |
+| SELECT * FROM tbl_name                                                                      |                                         |
+| SELECT * FROM tbl_name WHERE (col1 = ? or col2 = ?) and col3 = ?                            |                                         |
+| SELECT * FROM tbl_name WHERE col1 = ? ORDER BY col2 DESC LIMIT ?                            |                                         |
+| SELECT COUNT(*), SUM(col1), MIN(col1), MAX(col1), AVG(col1) FROM tbl_name WHERE col1 = ?    |                                         |
+| SELECT COUNT(col1) FROM tbl_name WHERE col2 = ? GROUP BY col1 ORDER BY col3 DESC LIMIT ?, ? |                                         |
+| INSERT INTO tbl_name (col1, col2,...) VALUES (?, ?, ....)                                   |                                         |
+| INSERT INTO tbl_name VALUES (?, ?,....)                                                     |                                         |
+| INSERT INTO tbl_name (col1, col2, ...) VALUES (?, ?, ....), (?, ?, ....)                    |                                         |
+| UPDATE tbl_name SET col1 = ? WHERE col2 = ?                                                 |                                         |
+| DELETE FROM tbl_name WHERE col1 = ?                                                         |                                         |
+| CREATE TABLE tbl_name (col1 int, ...)                                                       |                                         |
+| ALTER TABLE tbl_name ADD col1 varchar(10)                                                   |                                         |
+| DROP TABLE tbl_name                                                                         |                                         |
+| TRUNCATE TABLE tbl_name                                                                     |                                         |
+| CREATE INDEX idx_name ON tbl_name                                                           |                                         |
+| DROP INDEX idx_name ON tbl_name                                                             |                                         |
+| DROP INDEX idx_name                                                                         |  Logic-index is configured in TableRule |
+| SELECT DISTINCT * FROM tbl_name WHERE col1 = ?                                              |                                         |
+| SELECT COUNT(DISTINCT col1) FROM tbl_name                                                   |                                         |
 
 ### Unavailable SQL
 
@@ -120,7 +120,7 @@ SQL that contains schema is unavailable, for the concept of ShardingSphere is to
 | SELECT * FROM ds.tbl_name1                                                                  | Contain schema                     |
 | SELECT SUM(DISTINCT col1), SUM(col1) FROM tbl_name                                          | See `DISTINCT` availability detail |
 
-## DISTINCT Availability Detail (will be available in 3.1.0, no official release for now)
+## DISTINCT Availability Detail
 
 ### Available SQL
 
