@@ -21,6 +21,7 @@ import com.google.common.base.CaseFormat;
 import com.google.common.base.Joiner;
 import com.google.common.base.Optional;
 import com.google.common.collect.Sets;
+import io.shardingsphere.core.constant.PoolType;
 import io.shardingsphere.core.exception.ShardingConfigurationException;
 import io.shardingsphere.core.rule.DataSourceParameter;
 import lombok.Getter;
@@ -69,19 +70,8 @@ public final class DataSourceConfiguration {
      * @return data source configuration
      */
     public static DataSourceConfiguration getDataSourceConfiguration(final DataSource dataSource) {
-        Map<String, Object> properties = new LinkedHashMap<>();
-        try {
-            for (Method each : findAllGetterMethods(dataSource.getClass())) {
-                String propertyName = CaseFormat.UPPER_CAMEL.to(CaseFormat.LOWER_CAMEL, each.getName().substring(GETTER_PREFIX.length()));
-                if (GENERAL_CLASS_TYPE.contains(each.getReturnType()) && !SKIPPED_PROPERTY_NAMES.contains(propertyName)) {
-                    properties.put(propertyName, each.invoke(dataSource));
-                }
-            }
-        } catch (final ReflectiveOperationException ex) {
-            throw new ShardingConfigurationException(ex);
-        }
         DataSourceConfiguration result = new DataSourceConfiguration(dataSource.getClass().getName());
-        result.getProperties().putAll(properties);
+        result.getProperties().putAll(findAllGetterProperties(dataSource));
         return result;
     }
     
@@ -92,13 +82,22 @@ public final class DataSourceConfiguration {
      * @return data source configuration
      */
     public static DataSourceConfiguration getDataSourceConfiguration(final DataSourceParameter dataSourceParameter) {
-        DataSourceConfiguration result = new DataSourceConfiguration(DataSourceParameter.DATA_SOURCE_POOL_CLASS_NAME);
-        for (Field each : dataSourceParameter.getClass().getDeclaredFields()) {
-            try {
-                each.setAccessible(true);
-                result.getProperties().put(each.getName(), each.get(dataSourceParameter));
-            } catch (final ReflectiveOperationException ignored) {
+        DataSourceConfiguration result = new DataSourceConfiguration(PoolType.HIKARI.getClassName());
+        result.getProperties().putAll(findAllGetterProperties(dataSourceParameter));
+        return result;
+    }
+    
+    private static Map<String, Object> findAllGetterProperties(final Object target) {
+        Map<String, Object> result = new LinkedHashMap<>();
+        try {
+            for (Method each : findAllGetterMethods(target.getClass())) {
+                String propertyName = CaseFormat.UPPER_CAMEL.to(CaseFormat.LOWER_CAMEL, each.getName().substring(GETTER_PREFIX.length()));
+                if (GENERAL_CLASS_TYPE.contains(each.getReturnType()) && !SKIPPED_PROPERTY_NAMES.contains(propertyName)) {
+                    result.put(propertyName, each.invoke(target));
+                }
             }
+        } catch (final ReflectiveOperationException ex) {
+            throw new ShardingConfigurationException(ex);
         }
         return result;
     }

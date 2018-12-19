@@ -30,8 +30,6 @@ import lombok.Setter;
 @Setter
 public final class DataSourceParameter {
     
-    public static final String DATA_SOURCE_POOL_CLASS_NAME = "com.zaxxer.hikari.HikariDataSource";
-    
     private static final long DEFAULT_CONNECTION_TIMEOUT_MILLISECONDS = 30 * 1000;
     
     private static final long DEFAULT_IDLE_TIMEOUT_MILLISECONDS = 60 * 1000;
