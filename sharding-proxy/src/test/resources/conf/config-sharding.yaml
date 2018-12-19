@@ -5,7 +5,6 @@ dataSources:
     url: jdbc:mysql://127.0.0.1:3306/ds_0
     username: root
     password:
-    autoCommit: true
     connectionTimeoutMilliseconds: 30000
     idleTimeoutMilliseconds: 60000
     maxLifetimeMilliseconds: 1800000
@@ -14,7 +13,6 @@ dataSources:
     url: jdbc:mysql://127.0.0.1:3306/ds_1
     username: root
     password:
-    autoCommit: true
     connectionTimeoutMilliseconds: 30000
     idleTimeoutMilliseconds: 60000
     maxLifetimeMilliseconds: 1800000

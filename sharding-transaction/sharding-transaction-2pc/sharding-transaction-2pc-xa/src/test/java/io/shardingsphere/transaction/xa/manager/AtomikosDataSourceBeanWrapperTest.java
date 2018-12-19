@@ -20,7 +20,6 @@ package io.shardingsphere.transaction.xa.manager;
 import com.atomikos.beans.PropertyException;
 import com.atomikos.jdbc.AtomikosDataSourceBean;
 import io.shardingsphere.core.constant.DatabaseType;
-import io.shardingsphere.core.constant.transaction.ProxyPoolType;
 import io.shardingsphere.core.rule.DataSourceParameter;
 import io.shardingsphere.transaction.xa.convert.dialect.XADataSourceFactory;
 import io.shardingsphere.transaction.xa.convert.dialect.XADatabaseType;
@@ -51,7 +50,6 @@ public class AtomikosDataSourceBeanWrapperTest {
     @Test
     public void assertWrapToAtomikosDataSourceBean() throws PropertyException {
         AtomikosDataSourceBeanWrapper atomikosDataSourceBeanWrapper = new AtomikosDataSourceBeanWrapper();
-        parameter.setProxyDatasourceType(ProxyPoolType.VENDOR);
         AtomikosDataSourceBean targetDataSource = (AtomikosDataSourceBean) atomikosDataSourceBeanWrapper.wrap(xaDataSource, "ds1", parameter);
         assertThat(targetDataSource, Matchers.instanceOf(AtomikosDataSourceBean.class));
         assertThat(targetDataSource.getXaDataSource(), is(xaDataSource));
