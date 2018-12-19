@@ -22,12 +22,12 @@ ShardingSphere支持将普通的数据库连接池，转换为支持XA事务的�
 其它连接池需要用户实现`DataSourceMapConverter`的SPI接口进行扩展，可以参考`io.shardingsphere.transaction.xa.convert.swap.HikariParameterSwapper`的实现。
 若ShardingSphere无法找到合适的实现，则会按默认的配置创建XA事务连接池。默认属性如下：
 
-| *属性名称*                         | *默认值*   |
+| *属性名称*                          | *默认值*   |
 | -----------------------------------| ----------|
 | connectionTimeoutMilliseconds      | 30 * 1000 |
 | idleTimeoutMilliseconds            | 60 * 1000 |
 | maintenanceIntervalMilliseconds    | 30 * 1000 |
-| maxLifetimeMilliseconds            | 0 (无限制)|
+| maxLifetimeMilliseconds            | 0 (无限制) |
 | maxPoolSize                        | 50        |
 | minPoolSize                        | 1         |
 
