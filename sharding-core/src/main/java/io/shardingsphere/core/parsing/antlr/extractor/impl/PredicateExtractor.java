@@ -17,8 +17,15 @@
 
 package io.shardingsphere.core.parsing.antlr.extractor.impl;
 
+import java.util.LinkedList;
+import java.util.List;
+import java.util.Map;
+
+import org.antlr.v4.runtime.ParserRuleContext;
+
 import com.google.common.base.Optional;
 import com.google.common.base.Preconditions;
+
 import io.shardingsphere.core.constant.ShardingOperator;
 import io.shardingsphere.core.parsing.antlr.extractor.OptionalSQLSegmentExtractor;
 import io.shardingsphere.core.parsing.antlr.extractor.util.ExtractorUtils;
@@ -39,11 +46,6 @@ import io.shardingsphere.core.parsing.lexer.token.DefaultKeyword;
 import io.shardingsphere.core.parsing.lexer.token.Symbol;
 import io.shardingsphere.core.util.NumberUtil;
 import lombok.RequiredArgsConstructor;
-import org.antlr.v4.runtime.ParserRuleContext;
-
-import java.util.LinkedList;
-import java.util.List;
-import java.util.Map;
 
 /**
  * Predicate extractor.
@@ -141,15 +143,36 @@ public final class PredicateExtractor implements OptionalSQLSegmentExtractor {
         if (result.isPresent()) {
             return result;
         }
+        result = buildIsCondition(questionNodeIndexMap, exprNode);
+        if (result.isPresent()) {
+            return result;
+        }
         return buildPredicateCondition(questionNodeIndexMap, exprNode);
+    }
+    
+    private Optional<ConditionSegment> buildIsCondition(final Map<ParserRuleContext, Integer> questionNodeIndexMap, final ParserRuleContext exprNode) {
+        Optional<ParserRuleContext> booleanPrimaryNode = ExtractorUtils.findFirstChildNode(exprNode, RuleName.BOOLEANPRIMARY);
+        if (!booleanPrimaryNode.isPresent()) {
+            return Optional.absent();
+        }
+        if (3 > booleanPrimaryNode.get().getParent().getChildCount()) {
+            return Optional.absent();
+        }
+        Optional<ColumnSegment> column = buildColumn(exprNode);
+        if (!column.isPresent()) {
+            column = Optional.of(new ColumnSegment(Optional.<String>absent(), booleanPrimaryNode.get().getChild(0).getText(), "", exprNode.getStart().getStartIndex()));
+        }
+        
+        Optional<ExpressionSegment> sqlExpression = buildExpression(questionNodeIndexMap, (ParserRuleContext) booleanPrimaryNode.get().getChild(2));
+        if (!sqlExpression.isPresent()) {
+            return Optional.absent();
+        }
+        return Optional.of(new ConditionSegment(column.get(), ShardingOperator.UNSUPPORTED, new EqualsValueExpressionSegment(sqlExpression.get())));
     }
     
     private Optional<ConditionSegment> buildEqualCondition(final Map<ParserRuleContext, Integer> questionNodeIndexMap, final ParserRuleContext exprNode) {
         Optional<ParserRuleContext> comparisionNode = ExtractorUtils.findFirstChildNode(exprNode, RuleName.COMPARISON_OPERATOR);
         if (!comparisionNode.isPresent()) {
-            return Optional.absent();
-        }
-        if (!Symbol.EQ.getLiterals().equalsIgnoreCase(comparisionNode.get().getText())) {
             return Optional.absent();
         }
         if (3 != comparisionNode.get().getParent().getChildCount()) {
@@ -160,10 +183,14 @@ public final class PredicateExtractor implements OptionalSQLSegmentExtractor {
         if (!leftNode.isPresent() && !rightNode.isPresent()) {
             return Optional.absent();
         }
+        ShardingOperator shardingOperator = ShardingOperator.UNSUPPORTED;
+        if (Symbol.EQ.getLiterals().equalsIgnoreCase(comparisionNode.get().getText())) {
+            shardingOperator = ShardingOperator.EQUAL;
+        }
         if (leftNode.isPresent() && rightNode.isPresent()) {
             Optional<ColumnSegment> column = buildColumn(leftNode.get());
             Optional<ColumnSegment> rightColumn = buildColumn(rightNode.get());
-            return Optional.of(new ConditionSegment(column.get(), ShardingOperator.EQUAL, rightColumn.get()));
+            return Optional.of(new ConditionSegment(column.get(), shardingOperator, rightColumn.get()));
         }
         Optional<ColumnSegment> column = buildColumn(exprNode);
         ParserRuleContext valueNode;
@@ -176,7 +203,7 @@ public final class PredicateExtractor implements OptionalSQLSegmentExtractor {
         if (!sqlExpression.isPresent()) {
             return Optional.absent();
         }
-        return Optional.of(new ConditionSegment(column.get(), ShardingOperator.EQUAL, new EqualsValueExpressionSegment(sqlExpression.get())));
+        return Optional.of(new ConditionSegment(column.get(), shardingOperator, new EqualsValueExpressionSegment(sqlExpression.get())));
     }
     
     private Optional<ExpressionSegment> buildExpression(final Map<ParserRuleContext, Integer> questionNodeIndexMap, final ParserRuleContext valueNode) {

@@ -113,6 +113,8 @@ public enum RuleName {
     
     PREDICATE("Predicate"),
     
+    BOOLEANPRIMARY("BooleanPrimary"),
+    
     BITEXPR("BitExpr"),
     
     QUESTION("Question"),

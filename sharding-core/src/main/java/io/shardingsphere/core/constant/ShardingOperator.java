@@ -31,7 +31,9 @@ public enum ShardingOperator {
     
     EQUAL("="), 
     BETWEEN("BETWEEN"), 
-    IN("IN");
+    IN("IN"),
+    UNSUPPORTED("UNSUPPORTED"),
+    ;
     
     private final String expression;
 }

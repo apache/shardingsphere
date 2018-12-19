@@ -112,6 +112,9 @@ public final class FromWhereFiller implements SQLStatementFiller {
                 if (null == condition.getColumn()) {
                     continue;
                 }
+                if (ShardingOperator.UNSUPPORTED == condition.getOperator()) {
+                    continue;
+                }
                 if (condition.getColumn().getOwner().isPresent() && sqlStatement.getTables().getTableNames().contains(condition.getColumn().getOwner().get())) {
                     sqlStatement.addSQLToken(new TableToken(condition.getColumn().getStartPosition(), 0, condition.getColumn().getOwner().get()));
                 }

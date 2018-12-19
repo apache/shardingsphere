@@ -266,7 +266,6 @@ exprRecursive
     
 booleanPrimary
     : booleanPrimary IS NOT? (TRUE | FALSE | UNKNOWN |NULL)
-    | booleanPrimary SAFE_EQ predicate
     | booleanPrimary comparisonOperator predicate
     | booleanPrimary comparisonOperator (ALL | ANY) subquery
     | predicate
@@ -280,6 +279,7 @@ comparisonOperator
     | LT
     | NEQ_
     | NEQ
+    | SAFE_EQ
     ;
     
 predicate
