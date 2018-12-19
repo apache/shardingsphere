@@ -54,7 +54,7 @@ public class SpringBootStarterTransactionExample {
         transactionService.cleanEnvironment();
     }
     
-    private static void processFailureSingleTransaction(TransactionService transactionService, TransactionType type) {
+    private static void processFailureSingleTransaction(final TransactionService transactionService, final TransactionType type) {
         try {
             switch (type) {
                 case LOCAL:

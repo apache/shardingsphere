@@ -29,7 +29,7 @@ public class TransactionType implements Serializable {
         return transactionType;
     }
     
-    public void setTransactionType(String transactionType) {
+    public void setTransactionType(final String transactionType) {
         this.transactionType = transactionType;
     }
     

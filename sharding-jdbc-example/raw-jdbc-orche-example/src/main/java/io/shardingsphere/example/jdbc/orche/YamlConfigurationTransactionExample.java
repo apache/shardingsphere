@@ -17,20 +17,10 @@
 
 package io.shardingsphere.example.jdbc.orche;
 
-import java.io.File;
-import java.io.IOException;
-import java.sql.SQLException;
-
-import javax.sql.DataSource;
-
 import io.shardingsphere.core.constant.transaction.TransactionType;
-import io.shardingsphere.example.repository.api.service.CommonService;
 import io.shardingsphere.example.repository.api.service.TransactionService;
-import io.shardingsphere.example.repository.jdbc.repository.JDBCOrderItemRepositoryImpl;
 import io.shardingsphere.example.repository.jdbc.repository.JDBCOrderItemTransactionRepositotyImpl;
-import io.shardingsphere.example.repository.jdbc.repository.JDBCOrderRepositoryImpl;
 import io.shardingsphere.example.repository.jdbc.repository.JDBCOrderTransacationRepositoryImpl;
-import io.shardingsphere.example.repository.jdbc.service.RawPojoService;
 import io.shardingsphere.example.repository.jdbc.service.RawPojoTransactionService;
 import io.shardingsphere.example.type.RegistryCenterType;
 import io.shardingsphere.example.type.ShardingType;
@@ -38,6 +28,11 @@ import io.shardingsphere.shardingjdbc.orchestration.api.yaml.YamlOrchestrationMa
 import io.shardingsphere.shardingjdbc.orchestration.api.yaml.YamlOrchestrationShardingDataSourceFactory;
 import io.shardingsphere.shardingjdbc.orchestration.internal.datasource.OrchestrationMasterSlaveDataSource;
 import io.shardingsphere.shardingjdbc.orchestration.internal.datasource.OrchestrationShardingDataSource;
+
+import javax.sql.DataSource;
+import java.io.File;
+import java.io.IOException;
+import java.sql.SQLException;
 
 /*
  * 1. Please make sure master-slave data sync on MySQL is running correctly. Otherwise this example will query empty data from slave.
@@ -103,7 +98,7 @@ public class YamlConfigurationTransactionExample {
         closeDataSource(dataSource);
     }
     
-    private static void processFailureSingleTransaction(TransactionService transactionService, TransactionType type) {
+    private static void processFailureSingleTransaction(final TransactionService transactionService, final TransactionType type) {
         try {
             switch (type) {
                 case LOCAL:
