@@ -19,6 +19,7 @@ package io.shardingsphere.shardingui.web.controller;
 
 import io.shardingsphere.shardingui.common.domain.RegistryCenterConfig;
 import io.shardingsphere.shardingui.servcie.RegistryCenterConfigService;
+import io.shardingsphere.shardingui.util.RegistryCenterFactory;
 import io.shardingsphere.shardingui.web.response.ResponseResult;
 import io.shardingsphere.shardingui.web.response.ResponseResultUtil;
 import lombok.extern.slf4j.Slf4j;
@@ -85,7 +86,7 @@ public final class RegistryCenterController {
      */
     @RequestMapping(value = "/connect", method = RequestMethod.POST)
     public ResponseResult<Boolean> connect(@RequestBody final RegistryCenterConfig config) {
-        //TODO connect registry center
+        RegistryCenterFactory.createRegistryCenter(config);
         registryCenterConfigService.setActivated(config.getName());
         return ResponseResultUtil.build(Boolean.TRUE);
     }
