@@ -40,8 +40,7 @@ import static org.junit.Assert.assertTrue;
 public class ConfigurationYamlConverterTest {
     
     private static final String DATA_SOURCE_YAML = "master_ds: !!io.shardingsphere.orchestration.yaml.YamlDataSourceConfiguration\n"
-            + "  dataSourceClassName: com.zaxxer.hikari.HikariDataSource\n" + "  properties:\n" + "    DATA_SOURCE_POOL_CLASS_NAME: com.zaxxer.hikari.HikariDataSource\n"
-            + "    proxyDatasourceType: !!io.shardingsphere.core.constant.transaction.ProxyPoolType 'VENDOR'\n"
+            + "  dataSourceClassName: com.zaxxer.hikari.HikariDataSource\n" + "  properties:\n"
             + "    url: jdbc:mysql://localhost:3306/demo_ds_master\n" + "    username: root\n" + "    password: null\n";
     
     private static final String SHARDING_RULE_YAML = "  tables:\n" + "    t_order:\n" + "      actualDataNodes: ds_${0..1}.t_order_${0..1}\n" + "      tableStrategy:\n"
