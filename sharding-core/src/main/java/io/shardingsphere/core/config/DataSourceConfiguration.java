@@ -102,9 +102,9 @@ public final class DataSourceConfiguration {
         return result;
     }
     
-    private static Collection<Method> findAllGetterMethods(final Class<?> clz) {
+    private static Collection<Method> findAllGetterMethods(final Class<?> clazz) {
         Collection<Method> result = new HashSet<>();
-        for (Method each : clz.getMethods()) {
+        for (Method each : clazz.getMethods()) {
             if (each.getName().startsWith(GETTER_PREFIX) && 0 == each.getParameterTypes().length) {
                 result.add(each);
             }
