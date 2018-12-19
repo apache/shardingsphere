@@ -19,13 +19,13 @@ package io.shardingsphere.example.repository.api.service;
 
 import io.shardingsphere.core.constant.transaction.TransactionType;
 import io.shardingsphere.core.transaction.TransactionTypeHolder;
-import io.shardingsphere.transaction.annotation.ShardingTransactionalType;
+import io.shardingsphere.transaction.annotation.ShardingTransactionType;
 import org.springframework.transaction.annotation.Transactional;
 
 public abstract class ShardingJDBCTransactionService extends CommonServiceImpl implements TransactionService {
     
     @Override
-    @ShardingTransactionalType
+    @ShardingTransactionType
     @Transactional
     public void processFailureWithLocal() {
         printTransactionType();
@@ -33,7 +33,7 @@ public abstract class ShardingJDBCTransactionService extends CommonServiceImpl i
     }
     
     @Override
-    @ShardingTransactionalType(TransactionType.XA)
+    @ShardingTransactionType(TransactionType.XA)
     @Transactional
     public void processFailureWithXa() {
         printTransactionType();
@@ -41,7 +41,7 @@ public abstract class ShardingJDBCTransactionService extends CommonServiceImpl i
     }
     
     @Override
-    @ShardingTransactionalType(TransactionType.BASE)
+    @ShardingTransactionType(TransactionType.BASE)
     @Transactional
     public void processFailureWithBase() {
         printTransactionType();
