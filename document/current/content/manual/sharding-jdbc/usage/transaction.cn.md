@@ -64,14 +64,14 @@ TransactionTypeHolder.set(TransactionType.XA);
 然后在需要事务的方法或类中添加相关注解即可，例如：
 
 ```java
-@ShardingTransactionaType(TransactionType.LOCAL)
+@ShardingTransactionType(TransactionType.LOCAL)
 @Transactional
 ```
 
 或
 
 ```java
-@ShardingTransactionaType(TransactionType.XA)
+@ShardingTransactionType(TransactionType.XA)
 @Transactionnal
 ```
 
