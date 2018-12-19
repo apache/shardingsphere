@@ -83,6 +83,7 @@ public final class DQLMergeEngineTest {
         mergeEngine = new DQLMergeEngine(queryResults, selectStatement);
         assertThat(mergeEngine.merge(), instanceOf(IteratorStreamMergedResult.class));
     }
+    
     @Test
     public void assertBuildIteratorStreamMergedResultWithLimit() throws SQLException {
         selectStatement.setLimit(new Limit(DatabaseType.MySQL));
