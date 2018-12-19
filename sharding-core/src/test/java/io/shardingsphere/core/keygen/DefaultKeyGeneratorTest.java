@@ -33,8 +33,10 @@ import static org.junit.Assert.assertThat;
 
 public final class DefaultKeyGeneratorTest {
     
+    static final long DEFAULT_SEQUENCE_BITS = 12L;
+    
     @Test
-    public void assertGenerateKey() throws ExecutionException, InterruptedException {
+    public void assertGenerateKeyWithMultipleThreads() throws ExecutionException, InterruptedException {
         int threadNumber = Runtime.getRuntime().availableProcessors() << 1;
         ExecutorService executor = Executors.newFixedThreadPool(threadNumber);
         final int taskNumber = threadNumber << 2;
@@ -51,7 +53,7 @@ public final class DefaultKeyGeneratorTest {
         }
         assertThat(generatedKeys.size(), is(taskNumber));
     }
-    
+  
     @Test(expected = IllegalArgumentException.class)
     public void assertSetWorkerIdFailureWhenNegative() {
         DefaultKeyGenerator.setWorkerId(-1L);
