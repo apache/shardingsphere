@@ -19,6 +19,7 @@ package io.shardingsphere.shardingproxy.util;
 
 import io.shardingsphere.core.config.DataSourceConfiguration;
 import io.shardingsphere.core.rule.DataSourceParameter;
+import org.hamcrest.CoreMatchers;
 import org.junit.Test;
 
 import java.util.HashMap;
@@ -52,11 +53,34 @@ public final class DataSourceConverterTest {
     @Test
     public void assertGetDataSourceConfigurationMap() {
         Map<String, DataSourceParameter> dataSourceParameterMap = new HashMap<>(2, 1);
-        dataSourceParameterMap.put("ds_0", new DataSourceParameter());
-        dataSourceParameterMap.put("ds_1", new DataSourceParameter());
+        dataSourceParameterMap.put("ds_0", crateDataSourceParameter());
+        dataSourceParameterMap.put("ds_1", crateDataSourceParameter());
         Map<String, DataSourceConfiguration> actual = DataSourceConverter.getDataSourceConfigurationMap(dataSourceParameterMap);
         assertThat(actual.size(), is(2));
         assertNotNull(actual.get("ds_0"));
         assertNotNull(actual.get("ds_1"));
+        assertThatParameter(actual.get("ds_0"));
+        assertThatParameter(actual.get("ds_1"));
+    }
+    
+    private DataSourceParameter crateDataSourceParameter() {
+        DataSourceParameter result = new DataSourceParameter();
+        result.setUsername("root");
+        result.setUrl("jdbc:mysql://localhost:3306/demo_ds");
+        result.setPassword("root");
+        return result;
+    }
+    
+    private void assertThatParameter(final DataSourceConfiguration actual) {
+        Map<String, Object> properties = actual.getProperties();
+        assertThat(properties.get("maxPoolSize"), CoreMatchers.<Object>is(50));
+        assertThat(properties.get("minPoolSize"), CoreMatchers.<Object>is(1));
+        assertThat(properties.get("connectionTimeoutMilliseconds"), CoreMatchers.<Object>is(30 * 1000L));
+        assertThat(properties.get("idleTimeoutMilliseconds"), CoreMatchers.<Object>is(60 * 1000L));
+        assertThat(properties.get("maxLifetimeMilliseconds"), CoreMatchers.<Object>is(0L));
+        assertThat(properties.get("maintenanceIntervalMilliseconds"), CoreMatchers.<Object>is(30 * 1000L));
+        assertThat(properties.get("url"), CoreMatchers.<Object>is("jdbc:mysql://localhost:3306/demo_ds"));
+        assertThat(properties.get("username"), CoreMatchers.<Object>is("root"));
+        assertThat(properties.get("password"), CoreMatchers.<Object>is("root"));
     }
 }
