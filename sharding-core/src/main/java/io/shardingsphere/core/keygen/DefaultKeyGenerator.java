@@ -68,7 +68,7 @@ public final class DefaultKeyGenerator implements KeyGenerator {
     
     private static long workerId;
     
-    private static int maxTolerateTimeDifferenceMilliseconds;
+    private static int maxTolerateTimeDifferenceMilliseconds = 10;
     
     static {
         Calendar calendar = Calendar.getInstance();
