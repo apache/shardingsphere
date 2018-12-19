@@ -18,6 +18,7 @@
 package io.shardingsphere.core.merger.dql;
 
 import com.google.common.base.Optional;
+import com.google.common.collect.Lists;
 import io.shardingsphere.core.constant.AggregationType;
 import io.shardingsphere.core.constant.DatabaseType;
 import io.shardingsphere.core.constant.OrderDirection;
@@ -41,6 +42,7 @@ import org.junit.Test;
 import java.sql.ResultSet;
 import java.sql.ResultSetMetaData;
 import java.sql.SQLException;
+import java.util.ArrayList;
 import java.util.Collections;
 import java.util.List;
 
@@ -52,6 +54,8 @@ import static org.mockito.Mockito.when;
 public final class DQLMergeEngineTest {
     
     private DQLMergeEngine mergeEngine;
+    
+    private List<QueryResult> singleQueryResult;
     
     private List<QueryResult> queryResults;
     
@@ -65,13 +69,25 @@ public final class DQLMergeEngineTest {
         when(resultSet.getMetaData()).thenReturn(resultSetMetaData);
         when(resultSetMetaData.getColumnCount()).thenReturn(1);
         when(resultSetMetaData.getColumnLabel(1)).thenReturn("count(*)");
-        queryResults = Collections.<QueryResult>singletonList(new TestQueryResult(resultSet));
+        singleQueryResult = Collections.<QueryResult>singletonList(new TestQueryResult(resultSet));
+        List<ResultSet> resultSets = Lists.newArrayList(resultSet, mock(ResultSet.class), mock(ResultSet.class), mock(ResultSet.class));
+        queryResults = new ArrayList<>(resultSets.size());
+        for (ResultSet each : resultSets) {
+            queryResults.add(new TestQueryResult(each));
+        }
         selectStatement = new SelectStatement();
     }
     
     @Test
     public void assertBuildIteratorStreamMergedResult() throws SQLException {
         mergeEngine = new DQLMergeEngine(queryResults, selectStatement);
+        assertThat(mergeEngine.merge(), instanceOf(IteratorStreamMergedResult.class));
+    }
+    
+    @Test
+    public void assertBuildIteratorStreamMergedResultWithLimit() throws SQLException {
+        selectStatement.setLimit(new Limit(DatabaseType.MySQL));
+        mergeEngine = new DQLMergeEngine(singleQueryResult, selectStatement);
         assertThat(mergeEngine.merge(), instanceOf(IteratorStreamMergedResult.class));
     }
     
