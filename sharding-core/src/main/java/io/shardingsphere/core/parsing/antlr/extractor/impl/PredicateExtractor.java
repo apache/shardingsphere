@@ -155,15 +155,17 @@ public final class PredicateExtractor implements OptionalSQLSegmentExtractor {
         if (!booleanPrimaryNode.isPresent()) {
             return Optional.absent();
         }
-        if (3 > booleanPrimaryNode.get().getParent().getChildCount()) {
+        if (3 > booleanPrimaryNode.get().getChildCount()) {
+            return Optional.absent();
+        }
+        if (!DefaultKeyword.IS.name().equalsIgnoreCase(booleanPrimaryNode.get().getChild(1).getText())) {
             return Optional.absent();
         }
         Optional<ColumnSegment> column = buildColumn(exprNode);
         if (!column.isPresent()) {
             column = Optional.of(new ColumnSegment(Optional.<String>absent(), booleanPrimaryNode.get().getChild(0).getText(), "", exprNode.getStart().getStartIndex()));
         }
-        
-        Optional<ExpressionSegment> sqlExpression = buildExpression(questionNodeIndexMap, (ParserRuleContext) booleanPrimaryNode.get().getChild(2));
+        Optional<ExpressionSegment> sqlExpression = buildExpression(questionNodeIndexMap, (ParserRuleContext) booleanPrimaryNode.get().getChild(booleanPrimaryNode.get().getChildCount() - 1));
         if (!sqlExpression.isPresent()) {
             return Optional.absent();
         }
