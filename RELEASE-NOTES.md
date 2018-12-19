@@ -13,7 +13,7 @@
 1. Broadcast table available.
 1. Solve data lean problem when using DefaultKeyGenerator with low TPS.
 
-[Changelog for Issues and Pull requests](https://github.com/sharding-sphere/sharding-sphere/milestone/3)
+[Change Logs for Issues and Pull requests](https://github.com/sharding-sphere/sharding-sphere/milestone/3)
 
 ## 3.0.0
 
