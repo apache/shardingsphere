@@ -7,10 +7,11 @@ weight = 2
 ## Motivation
 
 In traditional database software development, the automatic primary key generation technology is a basic requirement. 
-All kinds of databases have provided corresponding support for this requirement, such as MySQL auto-increment key, Oracle sequence and so on. 
+All kinds of databases have provided corresponding support for this requirement, such as MySQL auto-increment key, Oracle auto-increment sequence and so on. 
 It is a tricky problem that different data nodes only generate one primary key after sharding. 
 Auto-increment keys in different physical tables within the same logic table can not perceive each other and thereby generate repeated primary keys. 
 Though it is possible to avoid clashes by restricting the initiative value and increase step of auto-increment key, but introducing extra operation rules can make the solution lack integrity and scalability.
+
 Currently, there are many third-party solutions that can solve this problem perfectly, such as (UUID and others) relying on some particular algorithms to generate unrepeated keys, or leading in primary key generation services. 
 But it is for this diversity that ShardingSphere may restrict its own development if relying on any solution.
 
@@ -48,20 +49,18 @@ The result is approximately equal to 69.73 years. The time of ShardingSphere sno
 The sign is only in Java process. If applied in distributed deployment, each work ID should be different. 
 The default value is 0 and can be set by calling for statistic method `DefaultKeyGenerator.setWorkerId()`.
 
-- Sequence number bit (12bit)
+- sequence number bit (12bit)
 
-The sequence is used to generate different IDs in a millisecond. 
+The sequence number is used to generate different IDs in a millisecond. 
 If the number generated in that millisecond exceeds 4,096 (2 to the power of 12), the generator will wait till the next millisecond to continue.
 
 ## Clock-Back
 
-Server clock-back can lead to the generation of repeated sequence, so the default distributed primary key generator has provided a maximumly tolerant clock-back milliseconds. 
+Server clock-back can lead to the generation of repeated sequence, so the default distributed primary key generator has provided a maximumly tolerant clock-back millisecond number. 
 If the clock-back time has exceeded it, the program will report an error. 
 If it is within the tolerance range, the generator will wait till after the last generation time and then continue to work. 
 The default value of maximumly tolerant clock-back millisecond is 0 and can be set by calling for statistic method `DefaultKeyGenerator.setMaxTolerateTimeDifferenceMilliseconds()`.
 
 Please refer to the following picture for the detailed structure of snowflake algorithm primary key.
 
-Structure of snowflake algorithm is below.
-
-![snowflake](http://shardingsphere.jd.com/document/current/img/sharding/snowflake_en_v2.png)
+![snowflake](http://shardingsphere.jd.com/document/current/img/sharding/snowflake_en_v3.png)
