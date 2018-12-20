@@ -33,6 +33,7 @@ import java.util.concurrent.ExecutorService;
 import java.util.concurrent.Executors;
 
 import static org.hamcrest.CoreMatchers.is;
+import static org.junit.Assert.assertNotEquals;
 import static org.junit.Assert.assertThat;
 
 public final class DefaultKeyGeneratorTest {
@@ -97,6 +98,7 @@ public final class DefaultKeyGeneratorTest {
         for (int i = 0; i < 10; i++) {
             actual.add(keyGenerator.generateKey());
         }
+        assertNotEquals(actual.size(), 10);
     }
     
     private void setLastMilliseconds(final DefaultKeyGenerator keyGenerator, final Number value) throws NoSuchFieldException, IllegalAccessException {
