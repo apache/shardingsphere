@@ -15,10 +15,8 @@
  * </p>
  */
 
-package io.shardingsphere.transaction;
+package io.shardingsphere.transaction.api;
 
-import io.shardingsphere.transaction.api.TransactionType;
-import io.shardingsphere.transaction.api.TransactionTypeHolder;
 import org.junit.Before;
 import org.junit.Test;
 
