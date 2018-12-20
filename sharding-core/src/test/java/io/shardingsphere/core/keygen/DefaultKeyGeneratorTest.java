@@ -28,7 +28,6 @@ import java.util.HashSet;
 import java.util.List;
 import java.util.Set;
 import java.util.concurrent.Callable;
-import java.util.concurrent.ExecutionException;
 import java.util.concurrent.ExecutorService;
 import java.util.concurrent.Executors;
 
@@ -43,7 +42,8 @@ public final class DefaultKeyGeneratorTest {
     static final int DEFAULT_KEY_AMOUNT = 10;
     
     @Test
-    public void assertGenerateKeyWithMultipleThreads() throws ExecutionException, InterruptedException {
+    @SneakyThrows
+    public void assertGenerateKeyWithMultipleThreads() {
         int threadNumber = Runtime.getRuntime().availableProcessors() << 1;
         ExecutorService executor = Executors.newFixedThreadPool(threadNumber);
         int taskNumber = threadNumber << 2;
@@ -104,7 +104,6 @@ public final class DefaultKeyGeneratorTest {
     }
     
     @Test
-    @SneakyThrows
     public void assertGenerateKey2() {
         List<Number> expected = Arrays.<Number>asList(4194304L, 4194305L, 4194306L, 8388609L, 8388610L, 8388611L, 12582912L, 12582913L, 12582914L, 16777217L);
         final DefaultKeyGenerator keyGenerator = new DefaultKeyGenerator();
@@ -126,7 +125,8 @@ public final class DefaultKeyGeneratorTest {
         sequence.set(keyGenerator, value);
     }
     
-    private void setLastMilliseconds(final DefaultKeyGenerator keyGenerator, final Number value) throws NoSuchFieldException, IllegalAccessException {
+    @SneakyThrows
+    private void setLastMilliseconds(final DefaultKeyGenerator keyGenerator, final Number value) {
         Field lastMilliseconds = DefaultKeyGenerator.class.getDeclaredField("lastMilliseconds");
         lastMilliseconds.setAccessible(true);
         lastMilliseconds.set(keyGenerator, value);
