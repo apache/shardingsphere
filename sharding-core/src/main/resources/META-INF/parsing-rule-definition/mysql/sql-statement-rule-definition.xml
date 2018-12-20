@@ -14,7 +14,7 @@
                         extractor-rule-refs="tableNames, indexNames, selectClause, fromWhere, groupBy, orderBy, limit" 
                         optimizer-class="dql.dialect.mysql.MySQLSelectOptimizer" />
     
-    <sql-statement-rule context="beginWork" sql-statement-class="io.shardingsphere.core.parsing.parser.sql.tcl.begin.BeginTransactionStatement" />
+    <sql-statement-rule context="beginTransaction" sql-statement-class="io.shardingsphere.core.parsing.parser.sql.tcl.begin.BeginTransactionStatement" />
     <sql-statement-rule context="setAutoCommit" sql-statement-class="io.shardingsphere.core.parsing.parser.sql.tcl.set.autocommit.SetAutoCommitStatement" extractor-rule-refs="autoCommitValue" />
     <sql-statement-rule context="commit" sql-statement-class="io.shardingsphere.core.parsing.parser.sql.tcl.commit.CommitStatement" />
     <sql-statement-rule context="rollback" sql-statement-class="io.shardingsphere.core.parsing.parser.sql.tcl.rollback.RollbackStatement" />
