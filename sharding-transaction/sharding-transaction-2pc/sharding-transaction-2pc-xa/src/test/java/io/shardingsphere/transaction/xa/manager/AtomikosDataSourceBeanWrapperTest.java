@@ -22,7 +22,6 @@ import com.atomikos.jdbc.AtomikosDataSourceBean;
 import io.shardingsphere.core.constant.DatabaseType;
 import io.shardingsphere.core.rule.DataSourceParameter;
 import io.shardingsphere.transaction.xa.convert.datasource.XADataSourceFactory;
-import io.shardingsphere.transaction.xa.convert.datasource.XADataSourceRegistry;
 import org.hamcrest.Matchers;
 import org.hamcrest.core.Is;
 import org.junit.Before;
@@ -53,7 +52,6 @@ public class AtomikosDataSourceBeanWrapperTest {
         AtomikosDataSourceBean targetDataSource = (AtomikosDataSourceBean) atomikosDataSourceBeanWrapper.wrap(DatabaseType.MySQL, xaDataSource, "ds1", parameter);
         assertThat(targetDataSource, Matchers.instanceOf(AtomikosDataSourceBean.class));
         assertThat(targetDataSource.getXaDataSource(), is(xaDataSource));
-        assertThat(targetDataSource.getXaDataSourceClassName(), is(XADataSourceRegistry.getXADataSourceClassName(DatabaseType.MySQL)));
         assertThat(targetDataSource.getUniqueResourceName(), is("ds1"));
         assertThat(targetDataSource.getMaxPoolSize(), is(parameter.getMaxPoolSize()));
         assertThat(targetDataSource.getXaProperties().get("user"), Is.<Object>is(parameter.getUsername()));

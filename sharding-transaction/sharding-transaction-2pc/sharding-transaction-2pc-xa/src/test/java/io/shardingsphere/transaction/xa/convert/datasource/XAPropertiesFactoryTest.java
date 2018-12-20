@@ -23,37 +23,35 @@ import io.shardingsphere.transaction.xa.convert.datasource.dialect.MySQLXAProper
 import io.shardingsphere.transaction.xa.convert.datasource.dialect.OracleXAProperties;
 import io.shardingsphere.transaction.xa.convert.datasource.dialect.PostgreSQLXAProperties;
 import io.shardingsphere.transaction.xa.convert.datasource.dialect.SQLServerXAProperties;
-import lombok.AccessLevel;
-import lombok.NoArgsConstructor;
+import org.junit.Test;
 
-/**
- * XA properties factory.
- *
- * @author zhaojun
- */
-@NoArgsConstructor(access = AccessLevel.PRIVATE)
-public final class XAPropertiesFactory {
+import static org.hamcrest.CoreMatchers.instanceOf;
+import static org.junit.Assert.assertThat;
+
+public final class XAPropertiesFactoryTest {
     
-    /**
-     * Create XA properties.
-     * 
-     * @param databaseType database type
-     * @return XA properties
-     */
-    public static XAProperties createXAProperties(final DatabaseType databaseType) {
-        switch (databaseType) {
-            case H2:
-                return new H2XAProperties();
-            case MySQL:
-                return new MySQLXAProperties();
-            case PostgreSQL:
-                return new PostgreSQLXAProperties();
-            case Oracle:
-                return new OracleXAProperties();
-            case SQLServer:
-                return new SQLServerXAProperties();
-            default:
-                throw new UnsupportedOperationException(String.format("Cannot support database type: `%s`", databaseType));
-        }
+    @Test
+    public void assertCreateXAPropertiesForH2() {
+        assertThat(XAPropertiesFactory.createXAProperties(DatabaseType.H2), instanceOf(H2XAProperties.class));
+    }
+    
+    @Test
+    public void assertCreateXAPropertiesForMySQL() {
+        assertThat(XAPropertiesFactory.createXAProperties(DatabaseType.MySQL), instanceOf(MySQLXAProperties.class));
+    }
+    
+    @Test
+    public void assertCreateXAPropertiesForPostgreSQL() {
+        assertThat(XAPropertiesFactory.createXAProperties(DatabaseType.PostgreSQL), instanceOf(PostgreSQLXAProperties.class));
+    }
+    
+    @Test
+    public void assertCreateXAPropertiesForOracle() {
+        assertThat(XAPropertiesFactory.createXAProperties(DatabaseType.Oracle), instanceOf(OracleXAProperties.class));
+    }
+    
+    @Test
+    public void assertCreateXAPropertiesForSQLServer() {
+        assertThat(XAPropertiesFactory.createXAProperties(DatabaseType.SQLServer), instanceOf(SQLServerXAProperties.class));
     }
 }

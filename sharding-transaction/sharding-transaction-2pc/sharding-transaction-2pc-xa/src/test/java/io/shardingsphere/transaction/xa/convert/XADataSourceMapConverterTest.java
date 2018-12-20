@@ -40,7 +40,7 @@ import static org.mockito.ArgumentMatchers.anyString;
 import static org.mockito.Mockito.doThrow;
 import static org.mockito.Mockito.mock;
 
-public class XADataSourceMapConverterTest {
+public final class XADataSourceMapConverterTest {
     
     private XADataSourceMapConverter xaDataSourceMapConverter = new XADataSourceMapConverter();
     

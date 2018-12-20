@@ -58,10 +58,11 @@ public final class AtomikosDataSourceBeanWrapper implements XADataSourceWrapper 
         delegate.setMaxIdleTime((int) parameter.getIdleTimeoutMilliseconds() / 1000);
     }
     
-    private void setXAProperties(final DatabaseType databaseType, final XADataSource xaDataSource, final String dataSourceName, final DataSourceParameter parameter) throws PropertyException {
+    private void setXAProperties(
+            final DatabaseType databaseType, final XADataSource xaDataSource, final String dataSourceName, final DataSourceParameter dataSourceParameter) throws PropertyException {
         delegate.setXaDataSourceClassName(xaDataSource.getClass().getName());
         delegate.setUniqueResourceName(dataSourceName);
-        Properties xaProperties = XAPropertiesFactory.build(databaseType, parameter);
+        Properties xaProperties = XAPropertiesFactory.createXAProperties(databaseType).build(dataSourceParameter);
         PropertyUtils.setProperties(xaDataSource, xaProperties);
         delegate.setXaProperties(xaProperties);
         delegate.setXaDataSource(xaDataSource);

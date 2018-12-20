@@ -28,7 +28,7 @@ import javax.sql.XADataSource;
 import static org.hamcrest.CoreMatchers.instanceOf;
 import static org.junit.Assert.assertThat;
 
-public class XADataSourceFactoryTest {
+public final class XADataSourceFactoryTest {
     
     @Test
     public void assertCreateH2XADataSource() {

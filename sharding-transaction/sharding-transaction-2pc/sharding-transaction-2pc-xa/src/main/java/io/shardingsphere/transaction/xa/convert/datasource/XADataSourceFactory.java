@@ -23,6 +23,8 @@ import lombok.AccessLevel;
 import lombok.NoArgsConstructor;
 
 import javax.sql.XADataSource;
+import java.util.HashMap;
+import java.util.Map;
 
 /**
  * XA data source factory.
@@ -32,6 +34,16 @@ import javax.sql.XADataSource;
 @NoArgsConstructor(access = AccessLevel.PRIVATE)
 public final class XADataSourceFactory {
     
+    private static final Map<DatabaseType, String> XA_DRIVER_CLASS_NAMES = new HashMap<>(DatabaseType.values().length, 1);
+    
+    static {
+        XA_DRIVER_CLASS_NAMES.put(DatabaseType.H2, "org.h2.jdbcx.JdbcDataSource");
+        XA_DRIVER_CLASS_NAMES.put(DatabaseType.MySQL, "com.mysql.jdbc.jdbc2.optional.MysqlXADataSource");
+        XA_DRIVER_CLASS_NAMES.put(DatabaseType.PostgreSQL, "org.postgresql.xa.PGXADataSource");
+        XA_DRIVER_CLASS_NAMES.put(DatabaseType.Oracle, "oracle.jdbc.xa.client.OracleXADataSource");
+        XA_DRIVER_CLASS_NAMES.put(DatabaseType.SQLServer, "com.microsoft.sqlserver.jdbc.SQLServerXADataSource");
+    }
+    
     /**
      * Create XA DataSource instance.
      *
@@ -39,7 +51,7 @@ public final class XADataSourceFactory {
      * @return XA DataSource instance
      */
     public static XADataSource build(final DatabaseType databaseType) {
-        String xaDataSourceClassName = XADataSourceRegistry.getXADataSourceClassName(databaseType);
+        String xaDataSourceClassName = XA_DRIVER_CLASS_NAMES.get(databaseType);
         Class xaDataSourceClass;
         try {
             xaDataSourceClass = Thread.currentThread().getContextClassLoader().loadClass(xaDataSourceClassName);
