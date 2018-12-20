@@ -20,7 +20,6 @@ package io.shardingsphere.transaction.xa.manager;
 import com.atomikos.beans.PropertyException;
 import com.atomikos.jdbc.AtomikosDataSourceBean;
 import io.shardingsphere.core.constant.DatabaseType;
-import io.shardingsphere.core.constant.transaction.ProxyPoolType;
 import io.shardingsphere.core.rule.DataSourceParameter;
 import io.shardingsphere.transaction.xa.convert.dialect.XADataSourceFactory;
 import io.shardingsphere.transaction.xa.convert.dialect.XADatabaseType;
@@ -45,19 +44,18 @@ public class AtomikosDataSourceBeanWrapperTest {
         parameter.setUsername("root");
         parameter.setPassword("root");
         parameter.setUrl("db:url");
-        parameter.setMaximumPoolSize(10);
+        parameter.setMaxPoolSize(10);
     }
     
     @Test
     public void assertWrapToAtomikosDataSourceBean() throws PropertyException {
         AtomikosDataSourceBeanWrapper atomikosDataSourceBeanWrapper = new AtomikosDataSourceBeanWrapper();
-        parameter.setProxyDatasourceType(ProxyPoolType.VENDOR);
         AtomikosDataSourceBean targetDataSource = (AtomikosDataSourceBean) atomikosDataSourceBeanWrapper.wrap(xaDataSource, "ds1", parameter);
         assertThat(targetDataSource, Matchers.instanceOf(AtomikosDataSourceBean.class));
         assertThat(targetDataSource.getXaDataSource(), is(xaDataSource));
         assertThat(targetDataSource.getXaDataSourceClassName(), is(XADatabaseType.MySQL.getClassName()));
         assertThat(targetDataSource.getUniqueResourceName(), is("ds1"));
-        assertThat(targetDataSource.getMaxPoolSize(), is(parameter.getMaximumPoolSize()));
+        assertThat(targetDataSource.getMaxPoolSize(), is(parameter.getMaxPoolSize()));
         assertThat(targetDataSource.getXaProperties().get("user"), Is.<Object>is(parameter.getUsername()));
         assertThat(targetDataSource.getXaProperties().get("password"), Is.<Object>is(parameter.getPassword()));
         assertThat(targetDataSource.getXaProperties().get("URL"), Is.<Object>is(parameter.getUrl()));

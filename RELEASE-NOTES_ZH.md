@@ -13,7 +13,7 @@
 1. 支持广播表。
 1. 解决使用默认分布式自增主键在TPS不高的情况下可能导致数据倾斜的问题。
 
-[Changelog for Issues and Pull requests](https://github.com/sharding-sphere/sharding-sphere/milestone/3)
+[Change Logs for Issues and Pull requests](https://github.com/sharding-sphere/sharding-sphere/milestone/3)
 
 ## 3.0.0
 

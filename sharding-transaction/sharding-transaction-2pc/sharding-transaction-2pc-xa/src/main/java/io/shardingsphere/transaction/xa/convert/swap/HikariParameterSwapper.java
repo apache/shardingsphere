@@ -29,7 +29,11 @@ public final class HikariParameterSwapper extends DataSourceSwapperAdapter {
     @Override
     protected void convertProperties(final AdvancedMapUpdater<String, Object> updater) {
         updater.transfer("jdbcUrl", "url");
-        updater.transfer("maxPoolSize", "maximumPoolSize");
+        updater.transfer("maximumPoolSize", "maxPoolSize");
+        updater.transfer("minimumIdle", "minPoolSize");
+        updater.transfer("connectionTimeout", "connectionTimeoutMilliseconds");
+        updater.transfer("idleTimeout", "idleTimeoutMilliseconds");
+        updater.transfer("maxLifetime", "maxLifetimeMilliseconds");
     }
     
     @Override

@@ -17,6 +17,7 @@
 
 package io.shardingsphere.core.constant;
 
+import lombok.Getter;
 import lombok.RequiredArgsConstructor;
 
 /**
@@ -25,6 +26,7 @@ import lombok.RequiredArgsConstructor;
  * @author zhaojun
  */
 @RequiredArgsConstructor
+@Getter
 public enum PoolType {
     
     HIKARI("com.zaxxer.hikari.HikariDataSource"),

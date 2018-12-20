@@ -28,7 +28,7 @@ ShardingSphere定位为关系型数据库中间件，旨在充分合理地在分
 关系型数据库当今依然占有巨大市场，是各个公司核心业务的基石，未来也难于撼动，我们目前阶段更加关注在原有基础上的增量，而非颠覆。
 
 ShardingSphere目前已经进入[Apache孵化器](http://incubator.apache.org/projects/shardingsphere.html)，
-欢迎通过[shardingsphere的dev邮件列表](mailto:dev@shardingsphere.incubator.apache.org)与我们讨论。
+欢迎通过[shardingsphere的dev邮件列表](mailto:dev@shardingsphere.apache.org)与我们讨论。
 
 ![ShardingSphere Scope](http://shardingsphere.jd.com/document/current/img/shardingsphere-scope_cn.png)
 
