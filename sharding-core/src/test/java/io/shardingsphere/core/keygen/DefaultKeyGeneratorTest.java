@@ -40,6 +40,8 @@ public final class DefaultKeyGeneratorTest {
     
     static final long DEFAULT_SEQUENCE_BITS = 12L;
     
+    static final int DEFAULT_KEY_AMOUNT = 10;
+    
     @Test
     public void assertGenerateKeyWithMultipleThreads() throws ExecutionException, InterruptedException {
         int threadNumber = Runtime.getRuntime().availableProcessors() << 1;
@@ -65,7 +67,7 @@ public final class DefaultKeyGeneratorTest {
         DefaultKeyGenerator keyGenerator = new DefaultKeyGenerator();
         DefaultKeyGenerator.setTimeService(new FixedTimeService(1));
         List<Number> actual = new ArrayList<>();
-        for (int i = 0; i < 10; i++) {
+        for (int i = 0; i < DEFAULT_KEY_AMOUNT; i++) {
             actual.add(keyGenerator.generateKey());
         }
         assertThat(actual, is(expected));
@@ -80,7 +82,7 @@ public final class DefaultKeyGeneratorTest {
         DefaultKeyGenerator.setTimeService(timeService);
         setLastMilliseconds(keyGenerator, timeService.getCurrentMillis() + 2);
         List<Number> actual = new ArrayList<>();
-        for (int i = 0; i < 10; i++) {
+        for (int i = 0; i < DEFAULT_KEY_AMOUNT; i++) {
             actual.add(keyGenerator.generateKey());
         }
         assertThat(actual, is(expected));
@@ -89,16 +91,39 @@ public final class DefaultKeyGeneratorTest {
     @Test(expected = IllegalStateException.class)
     @SneakyThrows
     public void assertGenerateKeyWithClockCallBackBeyondTolerateTime() {
-        final DefaultKeyGenerator keyGenerator = new DefaultKeyGenerator();
+        DefaultKeyGenerator keyGenerator = new DefaultKeyGenerator();
         TimeService timeService = new FixedTimeService(1);
         DefaultKeyGenerator.setTimeService(timeService);
         DefaultKeyGenerator.setMaxTolerateTimeDifferenceMilliseconds(0);
         setLastMilliseconds(keyGenerator, timeService.getCurrentMillis() + 2);
         List<Number> actual = new ArrayList<>();
-        for (int i = 0; i < 10; i++) {
+        for (int i = 0; i < DEFAULT_KEY_AMOUNT; i++) {
             actual.add(keyGenerator.generateKey());
         }
         assertNotEquals(actual.size(), 10);
+    }
+    
+    @Test
+    @SneakyThrows
+    public void assertGenerateKey2() {
+        List<Number> expected = Arrays.<Number>asList(4194304L, 4194305L, 4194306L, 8388609L, 8388610L, 8388611L, 12582912L, 12582913L, 12582914L, 16777217L);
+        final DefaultKeyGenerator keyGenerator = new DefaultKeyGenerator();
+        TimeService timeService = new FixedTimeService(2);
+        DefaultKeyGenerator.setTimeService(timeService);
+        setLastMilliseconds(keyGenerator, timeService.getCurrentMillis());
+        setSequence(keyGenerator, (1 << DEFAULT_SEQUENCE_BITS) - 1);
+        List<Number> actual = new ArrayList<>();
+        for (int i = 0; i < DEFAULT_KEY_AMOUNT; i++) {
+            actual.add(keyGenerator.generateKey());
+        }
+        assertThat(actual, is(expected));
+    }
+    
+    @SneakyThrows
+    private void setSequence(final DefaultKeyGenerator keyGenerator, final Number value) {
+        Field sequence = DefaultKeyGenerator.class.getDeclaredField("sequence");
+        sequence.setAccessible(true);
+        sequence.set(keyGenerator, value);
     }
     
     private void setLastMilliseconds(final DefaultKeyGenerator keyGenerator, final Number value) throws NoSuchFieldException, IllegalAccessException {
