@@ -72,7 +72,7 @@ public final class DefaultKeyGeneratorTest {
     
     @Test
     @SneakyThrows
-    public void assertGenerateKey1() {
+    public void assertGenerateKeyWithClockCallBack() {
         List<Number> expected = Arrays.<Number>asList(4194305L, 8388608L, 8388609L, 12582913L, 12582914L, 16777216L, 16777217L, 20971521L, 20971522L, 25165824L);
         DefaultKeyGenerator keyGenerator = new DefaultKeyGenerator();
         TimeService timeService = new FixedTimeService(1);
