@@ -29,6 +29,7 @@ import org.springframework.web.bind.annotation.RequestMethod;
 import org.springframework.web.bind.annotation.RestController;
 
 import java.util.Collection;
+import java.util.Map;
 
 /**
  * RESTful API of schema configuration.
@@ -68,17 +69,17 @@ public final class SchemaConfigController {
      * Update rule configuration.
      *
      * @param schemaName schema name
-     * @param ruleConfig rule config
+     * @param configMap config map
      * @return response result
      */
     @RequestMapping(value = "/rule/{schemaName}", method = RequestMethod.PUT)
-    public ResponseResult updateRuleConfiguration(@PathVariable("schemaName") final String schemaName, @RequestBody final String ruleConfig) {
-        schemaConfigService.updateRuleConfiguration(schemaName, ruleConfig);
+    public ResponseResult updateRuleConfiguration(@PathVariable("schemaName") final String schemaName, @RequestBody final Map<String, String> configMap) {
+        schemaConfigService.updateRuleConfiguration(schemaName, configMap.get("ruleConfig"));
         return ResponseResultUtil.success();
     }
     
     /**
-     * Load datasource configuration.
+     * Load data source configuration.
      *
      * @param schemaName schema name
      * @return response result
@@ -89,15 +90,15 @@ public final class SchemaConfigController {
     }
     
     /**
-     * Update datasource configuration.
+     * Update data source configuration.
      *
      * @param schemaName schema name
-     * @param datasourceConfig datasource config
+     * @param configMap config map
      * @return response result
      */
     @RequestMapping(value = "/datasource/{schemaName}", method = RequestMethod.PUT)
-    public ResponseResult updateDataSourceConfiguration(@PathVariable("schemaName") final String schemaName, @RequestBody final String datasourceConfig) {
-        schemaConfigService.updateDataSourceConfiguration(schemaName, datasourceConfig);
+    public ResponseResult updateDataSourceConfiguration(@PathVariable("schemaName") final String schemaName, @RequestBody final Map<String, String> configMap) {
+        schemaConfigService.updateDataSourceConfiguration(schemaName, configMap.get("dataSourceConfig"));
         return ResponseResultUtil.success();
     }
     

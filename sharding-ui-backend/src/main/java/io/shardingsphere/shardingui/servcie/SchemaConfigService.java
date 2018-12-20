@@ -42,10 +42,10 @@ public interface SchemaConfigService {
     String getRuleConfiguration(String schemaName);
     
     /**
-     * Get datasource configuration.
+     * Get data source configuration.
      * 
      * @param schemaName schema name
-     * @return datasource configuration
+     * @return data source configuration
      */
     String getDataSourceConfiguration(String schemaName);
     
@@ -58,7 +58,7 @@ public interface SchemaConfigService {
     void updateRuleConfiguration(String schemaName, String configData);
     
     /**
-     * Update datasource configuration.
+     * Update data source configuration.
      * 
      * @param schemaName schema name
      * @param configData config data

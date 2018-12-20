@@ -17,12 +17,17 @@
 
 package io.shardingsphere.shardingui.servcie.impl;
 
+import com.google.common.base.Preconditions;
+import io.shardingsphere.api.config.RuleConfiguration;
+import io.shardingsphere.core.config.DataSourceConfiguration;
+import io.shardingsphere.orchestration.yaml.ConfigurationYamlConverter;
 import io.shardingsphere.shardingui.servcie.RegistryCenterService;
 import io.shardingsphere.shardingui.servcie.SchemaConfigService;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
 import java.util.Collection;
+import java.util.Map;
 
 /**
  * Implementation of schema config service.
@@ -52,12 +57,37 @@ public final class SchemaConfigServiceImpl implements SchemaConfigService {
     
     @Override
     public void updateRuleConfiguration(final String schemaName, final String configData) {
+        checkRuleConfiguration(configData);
         registryCenterService.getActivatedRegistryCenter().persist(registryCenterService.getActivateConfigurationNode().getRulePath(schemaName), configData);
     }
     
     @Override
     public void updateDataSourceConfiguration(final String schemaName, final String configData) {
+        checkDataSourceConfiguration(configData);
         registryCenterService.getActivatedRegistryCenter().persist(registryCenterService.getActivateConfigurationNode().getDataSourcePath(schemaName), configData);
+    }
+    
+    private void checkRuleConfiguration(final String configData) {
+        try {
+            RuleConfiguration ruleConfig = configData.contains("tables:\n")
+                    ? ConfigurationYamlConverter.loadShardingRuleConfiguration(configData) : ConfigurationYamlConverter.loadMasterSlaveRuleConfiguration(configData);
+            Preconditions.checkState(ruleConfig != null, "rule configuration is invalid.");
+            // CHECKSTYLE:OFF
+        } catch (final Exception ex) {
+            // CHECKSTYLE:ON
+            throw new IllegalArgumentException("rule configuration is invalid.");
+        }
+    }
+    
+    private void checkDataSourceConfiguration(final String configData) {
+        try {
+            Map<String, DataSourceConfiguration> dataSourceConfigs = ConfigurationYamlConverter.loadDataSourceConfigurations(configData);
+            Preconditions.checkState(!dataSourceConfigs.isEmpty(), "data source configuration is invalid.");
+            // CHECKSTYLE:OFF
+        } catch (final Exception ex) {
+            // CHECKSTYLE:ON
+            throw new IllegalArgumentException("data source configuration is invalid.");
+        }
     }
     
 }
