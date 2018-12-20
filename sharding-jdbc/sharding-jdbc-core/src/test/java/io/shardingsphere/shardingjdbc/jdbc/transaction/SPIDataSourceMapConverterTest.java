@@ -25,8 +25,7 @@ import javax.sql.DataSource;
 import java.util.HashMap;
 import java.util.Map;
 
-import static org.hamcrest.CoreMatchers.is;
-import static org.junit.Assert.assertThat;
+import static org.junit.Assert.assertTrue;
 
 public class SPIDataSourceMapConverterTest {
     
@@ -35,14 +34,13 @@ public class SPIDataSourceMapConverterTest {
     private Map<String, DataSource> dataSourceMap = new HashMap<>();
     
     @Test
-    public void createBackendDatasourceSuccess() {
-        Map<String, DataSource> backendDatasourceMap = converter.convert(dataSourceMap, DatabaseType.MySQL);
-        assertThat(backendDatasourceMap != null, is(true));
-        assertThat(backendDatasourceMap.size(), is(0));
+    public void assertCreateBackendDatasourceSuccess() {
+        Map<String, DataSource> backendDatasourceMap = converter.convert(DatabaseType.MySQL, dataSourceMap);
+        assertTrue(backendDatasourceMap.isEmpty());
     }
     
     @Test
-    public void createBackendDatasourceFailed() {
-    
+    public void assertCreateBackendDatasourceFailed() {
+        // TODO
     }
 }

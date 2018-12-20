@@ -29,7 +29,7 @@ import java.util.Map.Entry;
 public final class FixedDataSourceMapConverter implements DataSourceMapConverter {
     
     @Override
-    public Map<String, DataSource> convert(final Map<String, DataSource> dataSourceMap, final DatabaseType databaseType) {
+    public Map<String, DataSource> convert(final DatabaseType databaseType, final Map<String, DataSource> dataSourceMap) {
         Map<String, DataSource> result = new HashMap<>(dataSourceMap.size(), 1);
         for (Entry<String, DataSource> entry : dataSourceMap.entrySet()) {
             HikariDataSource dataSource = new HikariDataSource();

@@ -50,7 +50,7 @@ public class AtomikosDataSourceBeanWrapperTest {
     @Test
     public void assertWrapToAtomikosDataSourceBean() throws PropertyException {
         AtomikosDataSourceBeanWrapper atomikosDataSourceBeanWrapper = new AtomikosDataSourceBeanWrapper();
-        AtomikosDataSourceBean targetDataSource = (AtomikosDataSourceBean) atomikosDataSourceBeanWrapper.wrap(xaDataSource, "ds1", parameter);
+        AtomikosDataSourceBean targetDataSource = (AtomikosDataSourceBean) atomikosDataSourceBeanWrapper.wrap(DatabaseType.MySQL, xaDataSource, "ds1", parameter);
         assertThat(targetDataSource, Matchers.instanceOf(AtomikosDataSourceBean.class));
         assertThat(targetDataSource.getXaDataSource(), is(xaDataSource));
         assertThat(targetDataSource.getXaDataSourceClassName(), is(XADataSourceRegistry.getXADataSourceClassName(DatabaseType.MySQL)));

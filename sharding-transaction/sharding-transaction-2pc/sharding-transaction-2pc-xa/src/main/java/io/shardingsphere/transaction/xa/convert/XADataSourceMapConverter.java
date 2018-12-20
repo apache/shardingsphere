@@ -40,12 +40,12 @@ public final class XADataSourceMapConverter implements DataSourceMapConverter {
     private final XATransactionManager xaTransactionManager = XATransactionManagerSPILoader.getInstance().getTransactionManager();
     
     @Override
-    public Map<String, DataSource> convert(final Map<String, DataSource> dataSourceMap, final DatabaseType databaseType) {
+    public Map<String, DataSource> convert(final DatabaseType databaseType, final Map<String, DataSource> dataSourceMap) {
         Map<String, DataSource> result = new HashMap<>(dataSourceMap.size(), 1);
         try {
             for (Entry<String, DataSource> entry : dataSourceMap.entrySet()) {
                 DataSourceParameter parameter = DataSourceSwapperRegistry.getSwapper(entry.getValue().getClass()).swap(entry.getValue());
-                DataSource dataSource = xaTransactionManager.wrapDataSource(XADataSourceFactory.build(databaseType), entry.getKey(), parameter);
+                DataSource dataSource = xaTransactionManager.wrapDataSource(databaseType, XADataSourceFactory.build(databaseType), entry.getKey(), parameter);
                 result.put(entry.getKey(), dataSource);
             }
             return result;

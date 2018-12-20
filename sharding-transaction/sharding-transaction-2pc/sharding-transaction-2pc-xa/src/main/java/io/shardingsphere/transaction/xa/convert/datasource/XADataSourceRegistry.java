@@ -24,7 +24,6 @@ import lombok.NoArgsConstructor;
 
 import java.util.HashMap;
 import java.util.Map;
-import java.util.Map.Entry;
 
 /**
  * XA Data source registry.
@@ -53,20 +52,5 @@ public final class XADataSourceRegistry {
     public static String getXADataSourceClassName(final DatabaseType databaseType) {
         Preconditions.checkState(XA_DATA_SOURCE_NAMES.containsKey(databaseType), "Cannot support database type: `%s`", databaseType);
         return XA_DATA_SOURCE_NAMES.get(databaseType);
-    }
-    
-    /**
-     * Get database type.
-     *
-     * @param driverClassName driver class name
-     * @return database type
-     */
-    public static DatabaseType getDatabaseType(final String driverClassName) {
-        for (Entry<DatabaseType, String> entry : XA_DATA_SOURCE_NAMES.entrySet()) {
-            if (entry.getValue().equals(driverClassName)) {
-                return entry.getKey();
-            }
-        }
-        throw new IllegalArgumentException(String.format("Cannot find database type for `%s`", driverClassName));
     }
 }

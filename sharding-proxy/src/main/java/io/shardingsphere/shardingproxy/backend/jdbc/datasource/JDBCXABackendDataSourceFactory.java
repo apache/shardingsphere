@@ -50,6 +50,6 @@ public final class JDBCXABackendDataSourceFactory implements JDBCBackendDataSour
     @Override
     public DataSource build(final String dataSourceName, final DataSourceParameter dataSourceParameter) {
         XATransactionManager xaTransactionManager = XATransactionManagerSPILoader.getInstance().getTransactionManager();
-        return xaTransactionManager.wrapDataSource(XADataSourceFactory.build(DatabaseType.MySQL), dataSourceName, dataSourceParameter);
+        return xaTransactionManager.wrapDataSource(DatabaseType.MySQL, XADataSourceFactory.build(DatabaseType.MySQL), dataSourceName, dataSourceParameter);
     }
 }
