@@ -46,8 +46,8 @@ public abstract class AbstractSQLTransport implements SQLTransport {
      */
     @Override
     public SagaResponse with(final String datasource, final String sql, final List<List<String>> params) {
-        Connection connection = getConnection(datasource);
-        try (PreparedStatement statement = connection.prepareStatement(sql)) {
+        try (Connection connection = getConnection(datasource);
+            PreparedStatement statement = connection.prepareStatement(sql)) {
             if (params.isEmpty()) {
                 statement.executeUpdate();
             } else {

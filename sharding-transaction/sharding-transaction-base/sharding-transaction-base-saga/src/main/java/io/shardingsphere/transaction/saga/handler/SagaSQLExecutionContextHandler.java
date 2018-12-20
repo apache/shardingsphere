@@ -18,9 +18,9 @@
 package io.shardingsphere.transaction.saga.handler;
 
 import com.google.common.collect.Lists;
-import io.shardingsphere.core.event.transaction.base.SagaSQLExecutionEvent;
 import io.shardingsphere.core.exception.ShardingException;
 import io.shardingsphere.core.routing.RouteUnit;
+import io.shardingsphere.transaction.core.internal.context.SagaSQLExecutionContext;
 import io.shardingsphere.transaction.saga.manager.SagaTransactionManager;
 import io.shardingsphere.transaction.saga.revert.RevertResult;
 import lombok.extern.slf4j.Slf4j;
@@ -37,20 +37,21 @@ import java.util.concurrent.ConcurrentHashMap;
  * @author yangyi
  */
 @Slf4j
-final class SagaSQLExecutionEventHandler {
-    
-    private final SagaTransactionManager transactionManager = SagaTransactionManager.getInstance();
+public final class SagaSQLExecutionContextHandler {
     
     private final Map<String, String> transactionIdToLogicSQLIdMap = new ConcurrentHashMap<>();
     
     private final Map<String, String> logicSQLIdToTransactionIdMap = new ConcurrentHashMap<>();
+    
+    private SagaTransactionManager transactionManager;
     
     /**
      * Handle saga SQL execution event.
      *
      * @param sqlExecutionEvent saga SQL execution event
      */
-    void handleSQLExecutionEvent(final SagaSQLExecutionEvent sqlExecutionEvent) {
+    public void handle(final SagaSQLExecutionContext sqlExecutionEvent) {
+        checkTransactionManager();
         if (sqlExecutionEvent.isNewLogicSQL()) {
             transactionManager.getSagaDefinitionBuilder(transactionManager.getTransactionId()).switchParents();
             if (null != transactionIdToLogicSQLIdMap.get(transactionManager.getTransactionId())) {
@@ -68,7 +69,7 @@ final class SagaSQLExecutionEventHandler {
                 transactionManager.getSagaDefinitionBuilder(transactionId).addChildRequest(sqlExecutionEvent.getId(), routeUnit.getDataSourceName(),
                     routeUnit.getSqlUnit().getSql(), copyList(routeUnit.getSqlUnit().getParameterSets()), result.getRevertSQL(), result.getRevertSQLParams());
             } catch (SQLException e) {
-                throw new ShardingException("Failed to revert SQL: ", e);
+                throw new ShardingException("Failed to revert SQL", e);
             }
         }
     }
@@ -76,8 +77,15 @@ final class SagaSQLExecutionEventHandler {
     /**
      * Clean all cache about this transaction.
      */
-    void clean() {
+    public void clean() {
+        checkTransactionManager();
         logicSQLIdToTransactionIdMap.remove(transactionIdToLogicSQLIdMap.remove(transactionManager.getTransactionId()));
+    }
+    
+    private void checkTransactionManager() {
+        if (null == transactionManager) {
+            transactionManager = SagaTransactionManager.getInstance();
+        }
     }
     
     private List<List<Object>> copyList(final List<List<Object>> origin) {

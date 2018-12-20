@@ -19,9 +19,10 @@ package io.shardingsphere.transaction.saga.handler;
 
 import com.google.common.collect.Lists;
 
-import io.shardingsphere.core.event.transaction.base.SagaSQLExecutionEvent;
+import io.shardingsphere.core.exception.ShardingException;
 import io.shardingsphere.core.routing.RouteUnit;
 import io.shardingsphere.core.routing.SQLUnit;
+import io.shardingsphere.transaction.core.internal.context.SagaSQLExecutionContext;
 import io.shardingsphere.transaction.saga.manager.SagaTransactionManager;
 import io.shardingsphere.transaction.saga.revert.RevertEngine;
 import io.shardingsphere.transaction.saga.revert.RevertResult;
@@ -45,7 +46,7 @@ import static org.mockito.Mockito.verify;
 import static org.mockito.Mockito.when;
 
 @RunWith(MockitoJUnitRunner.class)
-public class SagaSQLExecutionEventHandlerTest {
+public class SagaSQLExecutionContextHandlerTest {
     
     @Mock
     private SagaTransactionManager transactionManager;
@@ -56,7 +57,7 @@ public class SagaSQLExecutionEventHandlerTest {
     @Mock
     private RevertEngine revertEngine;
     
-    private final SagaSQLExecutionEventHandler sagaSQLExecutionEventHandler = new SagaSQLExecutionEventHandler();
+    private final SagaSQLExecutionContextHandler sagaSQLExecutionContextHandler = new SagaSQLExecutionContextHandler();
     
     private final String txId = "1";
     
@@ -69,7 +70,7 @@ public class SagaSQLExecutionEventHandlerTest {
         when(transactionManager.getTransactionId()).thenReturn(txId);
         when(transactionManager.getSagaDefinitionBuilder(txId)).thenReturn(sagaDefinitionBuilder);
         when(transactionManager.getReverEngine(txId)).thenReturn(revertEngine);
-        reflectSagaSQLExecutionEventHandler();
+        reflectSagaSQLExecutionContextHandler();
     }
     
     @Test
@@ -78,24 +79,25 @@ public class SagaSQLExecutionEventHandlerTest {
         String logicId = "logicId-1";
         String sql = "Select 1";
         List<List<Object>> params = Lists.newArrayList();
+        params.add(Lists.newArrayList());
         RevertResult revertResult = mock(RevertResult.class);
         when(revertResult.getRevertSQL()).thenReturn(sql);
         when(revertEngine.revert(database, sql, params)).thenReturn(revertResult);
         RouteUnit routeUnit = new RouteUnit(database, new SQLUnit(sql, params));
-        SagaSQLExecutionEvent context = new SagaSQLExecutionEvent(null, logicId, true);
-        sagaSQLExecutionEventHandler.handleSQLExecutionEvent(context);
+        SagaSQLExecutionContext context = new SagaSQLExecutionContext(null, logicId, true);
+        sagaSQLExecutionContextHandler.handle(context);
         verify(sagaDefinitionBuilder).switchParents();
         assertThat(transactionIdToLogicSQLIdMap.size(), is(1));
         assertThat(transactionIdToLogicSQLIdMap.get(txId), is(logicId));
         assertThat(logicSQLIdToTransactionIdMap.size(), is(1));
         assertThat(logicSQLIdToTransactionIdMap.get(logicId), is(txId));
-        context = new SagaSQLExecutionEvent(routeUnit, logicId, false);
-        sagaSQLExecutionEventHandler.handleSQLExecutionEvent(context);
+        context = new SagaSQLExecutionContext(routeUnit, logicId, false);
+        sagaSQLExecutionContextHandler.handle(context);
         verify(revertEngine).revert(database, sql, params);
         verify(sagaDefinitionBuilder).addChildRequest(context.getId(), database, sql, params, sql, revertResult.getRevertSQLParams());
         logicId = "logicId-2";
-        context = new SagaSQLExecutionEvent(null, logicId, true);
-        sagaSQLExecutionEventHandler.handleSQLExecutionEvent(context);
+        context = new SagaSQLExecutionContext(null, logicId, true);
+        sagaSQLExecutionContextHandler.handle(context);
         verify(sagaDefinitionBuilder, new Times(2)).switchParents();
         assertThat(transactionIdToLogicSQLIdMap.size(), is(1));
         assertThat(transactionIdToLogicSQLIdMap.get(txId), is(logicId));
@@ -103,25 +105,44 @@ public class SagaSQLExecutionEventHandlerTest {
         assertThat(logicSQLIdToTransactionIdMap.get(logicId), is(txId));
     }
     
+    @Test(expected = ShardingException.class)
+    public void assertGetRevertFailure() throws SQLException {
+        String database = "test";
+        String logicId = "logicId-revert-failure";
+        String sql = "Select 1";
+        List<List<Object>> params = Lists.newArrayList();
+        when(revertEngine.revert(database, sql, params)).thenThrow(new SQLException("test"));
+        RouteUnit routeUnit = new RouteUnit(database, new SQLUnit(sql, params));
+        SagaSQLExecutionContext context = new SagaSQLExecutionContext(null, logicId, true);
+        sagaSQLExecutionContextHandler.handle(context);
+        verify(sagaDefinitionBuilder).switchParents();
+        assertThat(transactionIdToLogicSQLIdMap.size(), is(1));
+        assertThat(transactionIdToLogicSQLIdMap.get(txId), is(logicId));
+        assertThat(logicSQLIdToTransactionIdMap.size(), is(1));
+        assertThat(logicSQLIdToTransactionIdMap.get(logicId), is(txId));
+        context = new SagaSQLExecutionContext(routeUnit, logicId, false);
+        sagaSQLExecutionContextHandler.handle(context);
+    }
+    
     @Test
     public void assertClean() {
         String logicId = "logicId";
         transactionIdToLogicSQLIdMap.put(txId, logicId);
         logicSQLIdToTransactionIdMap.put(logicId, txId);
-        sagaSQLExecutionEventHandler.clean();
+        sagaSQLExecutionContextHandler.clean();
         assertThat(transactionIdToLogicSQLIdMap.size(), is(0));
         assertThat(logicSQLIdToTransactionIdMap.size(), is(0));
     }
     
-    private void reflectSagaSQLExecutionEventHandler() throws NoSuchFieldException, IllegalAccessException {
-        Field transactionManagerField = SagaSQLExecutionEventHandler.class.getDeclaredField("transactionManager");
+    private void reflectSagaSQLExecutionContextHandler() throws NoSuchFieldException, IllegalAccessException {
+        Field transactionManagerField = SagaSQLExecutionContextHandler.class.getDeclaredField("transactionManager");
         transactionManagerField.setAccessible(true);
-        transactionManagerField.set(sagaSQLExecutionEventHandler, transactionManager);
-        Field transactionIdToLogicSQLIdMapField = SagaSQLExecutionEventHandler.class.getDeclaredField("transactionIdToLogicSQLIdMap");
+        transactionManagerField.set(sagaSQLExecutionContextHandler, transactionManager);
+        Field transactionIdToLogicSQLIdMapField = SagaSQLExecutionContextHandler.class.getDeclaredField("transactionIdToLogicSQLIdMap");
         transactionIdToLogicSQLIdMapField.setAccessible(true);
-        transactionIdToLogicSQLIdMap = (Map<String, String>) transactionIdToLogicSQLIdMapField.get(sagaSQLExecutionEventHandler);
-        Field logicSQLIdToTransactionIdMapField = SagaSQLExecutionEventHandler.class.getDeclaredField("logicSQLIdToTransactionIdMap");
+        transactionIdToLogicSQLIdMap = (Map<String, String>) transactionIdToLogicSQLIdMapField.get(sagaSQLExecutionContextHandler);
+        Field logicSQLIdToTransactionIdMapField = SagaSQLExecutionContextHandler.class.getDeclaredField("logicSQLIdToTransactionIdMap");
         logicSQLIdToTransactionIdMapField.setAccessible(true);
-        logicSQLIdToTransactionIdMap = (Map<String, String>) logicSQLIdToTransactionIdMapField.get(sagaSQLExecutionEventHandler);
+        logicSQLIdToTransactionIdMap = (Map<String, String>) logicSQLIdToTransactionIdMapField.get(sagaSQLExecutionContextHandler);
     }
 }

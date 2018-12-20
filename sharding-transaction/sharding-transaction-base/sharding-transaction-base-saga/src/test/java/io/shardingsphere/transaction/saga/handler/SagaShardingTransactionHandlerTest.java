@@ -19,13 +19,13 @@ package io.shardingsphere.transaction.saga.handler;
 
 import io.shardingsphere.api.config.SagaConfiguration;
 import io.shardingsphere.core.constant.transaction.TransactionType;
-import io.shardingsphere.core.event.transaction.base.SagaSQLExecutionEvent;
-import io.shardingsphere.core.event.transaction.base.SagaTransactionEvent;
 import io.shardingsphere.core.exception.ShardingException;
 import io.shardingsphere.core.routing.RouteUnit;
 import io.shardingsphere.core.routing.SQLUnit;
-import io.shardingsphere.transaction.manager.ShardingTransactionManager;
-import io.shardingsphere.transaction.manager.base.BASETransactionManager;
+import io.shardingsphere.transaction.core.internal.context.SagaSQLExecutionContext;
+import io.shardingsphere.transaction.core.internal.context.SagaTransactionContext;
+import io.shardingsphere.transaction.core.internal.manager.ShardingTransactionManager;
+import io.shardingsphere.transaction.saga.manager.SagaTransactionManager;
 import org.hamcrest.CoreMatchers;
 import org.junit.Before;
 import org.junit.Test;
@@ -41,7 +41,9 @@ import java.util.List;
 
 import static org.hamcrest.CoreMatchers.equalTo;
 import static org.junit.Assert.assertThat;
-import static org.mockito.Mockito.*;
+import static org.mockito.Mockito.verify;
+import static org.mockito.Mockito.when;
+
 
 @RunWith(MockitoJUnitRunner.class)
 public class SagaShardingTransactionHandlerTest {
@@ -52,19 +54,13 @@ public class SagaShardingTransactionHandlerTest {
     private final List<List<Object>> params = new ArrayList<>();
     
     @Mock
-    private BASETransactionManager<SagaTransactionEvent> sagaTransactionManager;
-    
-    @Mock
-    private SagaSQLExecutionEventHandler sagaSQLExecutionEventHandler;
+    private SagaTransactionManager sagaTransactionManager;
     
     @Before
     public void setUp() throws NoSuchFieldException, IllegalAccessException, SQLException {
         Field transactionManagerField = SagaShardingTransactionHandler.class.getDeclaredField("transactionManager");
         transactionManagerField.setAccessible(true);
         transactionManagerField.set(handler, sagaTransactionManager);
-        Field sagaSQLExecutionEventHandlerField = SagaShardingTransactionHandler.class.getDeclaredField("sagaSQLExecutionEventHandler");
-        sagaSQLExecutionEventHandlerField.setAccessible(true);
-        sagaSQLExecutionEventHandlerField.set(handler, sagaSQLExecutionEventHandler);
     }
     
     @Test
@@ -80,7 +76,7 @@ public class SagaShardingTransactionHandlerTest {
     @Test
     public void assertBegin() throws SQLException {
         when(sagaTransactionManager.getStatus()).thenReturn(Status.STATUS_NO_TRANSACTION);
-        SagaTransactionEvent event = SagaTransactionEvent.createBeginSagaTransactionEvent(null, config);
+        SagaTransactionContext event = SagaTransactionContext.createBeginSagaTransactionContext(null, config);
         handler.doInTransaction(event);
         verify(sagaTransactionManager).begin(event);
     }
@@ -88,34 +84,37 @@ public class SagaShardingTransactionHandlerTest {
     @Test(expected = ShardingException.class)
     public void assertCommitWithoutBegin() throws SQLException {
         when(sagaTransactionManager.getStatus()).thenReturn(Status.STATUS_NO_TRANSACTION);
-        SagaTransactionEvent event = SagaTransactionEvent.createCommitSagaTransactionEvent(config);
+        SagaTransactionContext event = SagaTransactionContext.createCommitSagaTransactionContext(config);
         handler.doInTransaction(event);
     }
     
     @Test
     public void assertCommitWithBegin() throws SQLException {
         when(sagaTransactionManager.getStatus()).thenReturn(Status.STATUS_NO_TRANSACTION);
-        handler.doInTransaction(SagaTransactionEvent.createBeginSagaTransactionEvent(null, config));
+        handler.doInTransaction(SagaTransactionContext.createBeginSagaTransactionContext(null, config));
         when(sagaTransactionManager.getStatus()).thenReturn(Status.STATUS_ACTIVE);
-        SagaTransactionEvent event = SagaTransactionEvent.createCommitSagaTransactionEvent(config);
+        SagaTransactionContext event = SagaTransactionContext.createCommitSagaTransactionContext(config);
         handler.doInTransaction(event);
         verify(sagaTransactionManager).commit(event);
-        verify(sagaSQLExecutionEventHandler).clean();
     }
     
     @Test
     public void assertRollback() throws SQLException {
-        SagaTransactionEvent event = SagaTransactionEvent.createRollbackSagaTransactionEvent(config);
+        SagaTransactionContext event = SagaTransactionContext.createRollbackSagaTransactionContext(config);
         handler.doInTransaction(event);
         verify(sagaTransactionManager).rollback(event);
-        verify(sagaSQLExecutionEventHandler).clean();
     }
     
     @Test
-    public void assertSagaSQLExecutionEvent() throws NoSuchFieldException, IllegalAccessException {
-        SagaSQLExecutionEvent sqlExecutionEvent = new SagaSQLExecutionEvent(new RouteUnit("", new SQLUnit("", params)), "1", true);
-        SagaTransactionEvent event = SagaTransactionEvent.createExecutionSagaTransactionEvent(sqlExecutionEvent);
-        handler.doInTransaction(event);
-        verify(sagaSQLExecutionEventHandler).handleSQLExecutionEvent(sqlExecutionEvent);
+    public void assertSagaSQLExecutionContext() throws NoSuchFieldException, IllegalAccessException {
+        SagaSQLExecutionContext sqlExecutionContext = new SagaSQLExecutionContext(new RouteUnit("", new SQLUnit("", params)), "1", true);
+        handler.doInTransaction(SagaTransactionContext.createExecutionSagaTransactionContext(sqlExecutionContext));
+        verify(sagaTransactionManager).handleSQLExecutionEvent(sqlExecutionContext);
+    }
+    
+    @Test
+    public void assertDestroyComponent() {
+        handler.doInTransaction(SagaTransactionContext.createDestroyComponentContext(config));
+        verify(sagaTransactionManager).removeSagaExecutionComponent(config);
     }
 }

@@ -18,12 +18,13 @@
 package io.shardingsphere.transaction.saga.manager;
 
 import io.shardingsphere.api.config.SagaConfiguration;
-import io.shardingsphere.core.event.transaction.base.SagaTransactionEvent;
+import io.shardingsphere.transaction.core.internal.context.SagaSQLExecutionContext;
+import io.shardingsphere.transaction.core.internal.context.SagaTransactionContext;
+import io.shardingsphere.transaction.saga.handler.SagaSQLExecutionContextHandler;
 import io.shardingsphere.transaction.saga.revert.RevertEngine;
 import io.shardingsphere.transaction.saga.servicecomb.SagaExecutionComponentHolder;
 import io.shardingsphere.transaction.saga.servicecomb.definition.SagaDefinitionBuilder;
 import io.shardingsphere.transaction.saga.servicecomb.transport.ShardingTransportFactory;
-
 import org.apache.servicecomb.saga.core.application.SagaExecutionComponent;
 import org.junit.Before;
 import org.junit.Test;
@@ -40,6 +41,8 @@ import static org.junit.Assert.assertNotNull;
 import static org.junit.Assert.assertNull;
 import static org.junit.Assert.assertThat;
 import static org.mockito.ArgumentMatchers.anyString;
+import static org.mockito.Mockito.mock;
+import static org.mockito.Mockito.never;
 import static org.mockito.Mockito.verify;
 import static org.mockito.Mockito.when;
 
@@ -51,6 +54,9 @@ public final class SagaTransactionManagerTest {
     
     @Mock
     private SagaExecutionComponent sagaExecutionComponent;
+    
+    @Mock
+    private SagaSQLExecutionContextHandler sagaSQLExecutionContextHandler;
     
     private final SagaTransactionManager transactionManager = SagaTransactionManager.getInstance();
     
@@ -65,6 +71,9 @@ public final class SagaTransactionManagerTest {
         Field sagaExecutionComponentHolderField = SagaTransactionManager.class.getDeclaredField("sagaExecutionComponentHolder");
         sagaExecutionComponentHolderField.setAccessible(true);
         sagaExecutionComponentHolderField.set(transactionManager, sagaExecutionComponentHolder);
+        Field sagaSQLExecutionContextHandlerField = SagaTransactionManager.class.getDeclaredField("sagaSQLExecutionContextHandler");
+        sagaSQLExecutionContextHandlerField.setAccessible(true);
+        sagaSQLExecutionContextHandlerField.set(transactionManager, sagaSQLExecutionContextHandler);
         when(sagaExecutionComponentHolder.getSagaExecutionComponent(config)).thenReturn(sagaExecutionComponent);
         Field sagaDefinitionBuilderMapField = SagaTransactionManager.class.getDeclaredField("sagaDefinitionBuilderMap");
         sagaDefinitionBuilderMapField.setAccessible(true);
@@ -76,7 +85,7 @@ public final class SagaTransactionManagerTest {
     
     @Test
     public void assertBegin() {
-        transactionManager.begin(SagaTransactionEvent.createBeginSagaTransactionEvent(null, config));
+        transactionManager.begin(SagaTransactionContext.createBeginSagaTransactionContext(null, config));
         assertThat(36 == transactionManager.getTransactionId().length(), is(true));
         assertThat(sagaDefinitionBuilderMap.size(), is(1));
         assertNotNull(transactionManager.getReverEngine(transactionManager.getTransactionId()));
@@ -87,29 +96,51 @@ public final class SagaTransactionManagerTest {
     
     @Test
     public void assertCommit() {
-        transactionManager.begin(SagaTransactionEvent.createBeginSagaTransactionEvent(null, config));
-        transactionManager.commit(SagaTransactionEvent.createCommitSagaTransactionEvent(config));
+        transactionManager.begin(SagaTransactionContext.createBeginSagaTransactionContext(null, config));
+        transactionManager.commit(SagaTransactionContext.createCommitSagaTransactionContext(config));
         verify(sagaExecutionComponent).run(anyString());
         assertNull(transactionManager.getTransactionId());
         assertNull(ShardingTransportFactory.getInstance().getTransport());
         assertThat(sagaDefinitionBuilderMap.size(), is(0));
         assertThat(revertEngineMap.size(), is(0));
+        verify(sagaSQLExecutionContextHandler).clean();
     }
     
     @Test
     public void assertRollback() {
-        transactionManager.rollback(SagaTransactionEvent.createRollbackSagaTransactionEvent(config));
+        transactionManager.rollback(SagaTransactionContext.createRollbackSagaTransactionContext(config));
         assertNull(transactionManager.getTransactionId());
         assertNull(ShardingTransportFactory.getInstance().getTransport());
         assertThat(sagaDefinitionBuilderMap.size(), is(0));
         assertThat(revertEngineMap.size(), is(0));
+        verify(sagaSQLExecutionContextHandler, never()).clean();
+        transactionManager.begin(SagaTransactionContext.createBeginSagaTransactionContext(null, config));
+        transactionManager.rollback(SagaTransactionContext.createRollbackSagaTransactionContext(config));
+        assertNull(transactionManager.getTransactionId());
+        assertNull(ShardingTransportFactory.getInstance().getTransport());
+        assertThat(sagaDefinitionBuilderMap.size(), is(0));
+        assertThat(revertEngineMap.size(), is(0));
+        verify(sagaSQLExecutionContextHandler).clean();
     }
     
     @Test
     public void assertGetStatus() {
-        transactionManager.begin(SagaTransactionEvent.createBeginSagaTransactionEvent(null, config));
+        transactionManager.begin(SagaTransactionContext.createBeginSagaTransactionContext(null, config));
         assertThat(transactionManager.getStatus(), is(Status.STATUS_ACTIVE));
-        transactionManager.rollback(SagaTransactionEvent.createRollbackSagaTransactionEvent(config));
+        transactionManager.rollback(SagaTransactionContext.createRollbackSagaTransactionContext(config));
         assertThat(transactionManager.getStatus(), is(Status.STATUS_NO_TRANSACTION));
+    }
+    
+    @Test
+    public void assertRemoveSagaExecutionComponent() {
+        transactionManager.removeSagaExecutionComponent(config);
+        verify(sagaExecutionComponentHolder).removeSagaExecutionComponent(config);
+    }
+    
+    @Test
+    public void assertHandleSQLExecutionEvent() {
+        SagaSQLExecutionContext context = mock(SagaSQLExecutionContext.class);
+        transactionManager.handleSQLExecutionEvent(context);
+        verify(sagaSQLExecutionContextHandler).handle(context);
     }
 }

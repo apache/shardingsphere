@@ -20,14 +20,16 @@ package io.shardingsphere.transaction.saga.manager;
 import com.fasterxml.jackson.core.JsonProcessingException;
 import io.shardingsphere.api.config.SagaConfiguration;
 import io.shardingsphere.core.constant.SagaRecoveryPolicy;
-import io.shardingsphere.core.event.transaction.base.SagaTransactionEvent;
+import io.shardingsphere.transaction.core.internal.context.SagaSQLExecutionContext;
+import io.shardingsphere.transaction.core.internal.context.SagaTransactionContext;
+import io.shardingsphere.transaction.core.internal.manager.BASETransactionManager;
+import io.shardingsphere.transaction.saga.handler.SagaSQLExecutionContextHandler;
 import io.shardingsphere.transaction.saga.revert.EmptyRevertEngine;
 import io.shardingsphere.transaction.saga.revert.RevertEngine;
 import io.shardingsphere.transaction.saga.revert.RevertEngineImpl;
 import io.shardingsphere.transaction.saga.servicecomb.SagaExecutionComponentHolder;
 import io.shardingsphere.transaction.saga.servicecomb.definition.SagaDefinitionBuilder;
 import io.shardingsphere.transaction.saga.servicecomb.transport.ShardingTransportFactory;
-import io.shardingsphere.transaction.manager.base.BASETransactionManager;
 
 import javax.transaction.Status;
 import java.util.Map;
@@ -41,11 +43,13 @@ import java.util.concurrent.ConcurrentHashMap;
  * @author zhaojun
  * @author yangyi
  */
-public final class SagaTransactionManager implements BASETransactionManager<SagaTransactionEvent> {
+public final class SagaTransactionManager implements BASETransactionManager<SagaTransactionContext> {
     
     private static final SagaTransactionManager INSTANCE = new SagaTransactionManager();
     
     private static final ThreadLocal<String> TRANSACTION_IDS = new ThreadLocal<>();
+    
+    private final SagaSQLExecutionContextHandler sagaSQLExecutionContextHandler = new SagaSQLExecutionContextHandler();
 
     private final SagaExecutionComponentHolder sagaExecutionComponentHolder = new SagaExecutionComponentHolder();
     
@@ -54,28 +58,28 @@ public final class SagaTransactionManager implements BASETransactionManager<Saga
     private final Map<String, RevertEngine> revertEngineMap = new ConcurrentHashMap<>();
     
     @Override
-    public void begin(final SagaTransactionEvent transactionEvent) {
+    public void begin(final SagaTransactionContext transactionContext) {
         TRANSACTION_IDS.set(UUID.randomUUID().toString());
-        ShardingTransportFactory.getInstance().cacheTransport(transactionEvent);
-        SagaConfiguration sagaConfiguration = transactionEvent.getSagaConfiguration();
+        ShardingTransportFactory.getInstance().cacheTransport(transactionContext);
+        SagaConfiguration sagaConfiguration = transactionContext.getSagaConfiguration();
         sagaDefinitionBuilderMap.put(getTransactionId(), new SagaDefinitionBuilder(sagaConfiguration.getRecoveryPolicy().getName(),
             sagaConfiguration.getTransactionMaxRetries(), sagaConfiguration.getCompensationMaxRetries(), sagaConfiguration.getTransactionRetryDelay()));
         revertEngineMap.put(getTransactionId(),
-            SagaRecoveryPolicy.FORWARD == sagaConfiguration.getRecoveryPolicy() ? new EmptyRevertEngine() : new RevertEngineImpl(transactionEvent.getDataSourceMap()));
+            SagaRecoveryPolicy.FORWARD == sagaConfiguration.getRecoveryPolicy() ? new EmptyRevertEngine() : new RevertEngineImpl(transactionContext.getDataSourceMap()));
     }
     
     @Override
-    public void commit(final SagaTransactionEvent transactionEvent) {
+    public void commit(final SagaTransactionContext transactionContext) {
         try {
             // TODO Analyse the result of saga coordinator.run, if run failed, throw exception
-            sagaExecutionComponentHolder.getSagaExecutionComponent(transactionEvent.getSagaConfiguration()).run(sagaDefinitionBuilderMap.get(getTransactionId()).build());
+            sagaExecutionComponentHolder.getSagaExecutionComponent(transactionContext.getSagaConfiguration()).run(sagaDefinitionBuilderMap.get(getTransactionId()).build());
         } catch (JsonProcessingException ignored) {
         }
         cleanTransaction();
     }
     
     @Override
-    public void rollback(final SagaTransactionEvent transactionEvent) {
+    public void rollback(final SagaTransactionContext transactionContext) {
         cleanTransaction();
     }
     
@@ -111,6 +115,15 @@ public final class SagaTransactionManager implements BASETransactionManager<Saga
     }
     
     /**
+     * Handle saga SQL execution event.
+     *
+     * @param sagaSQLExecutionContext saga SQL execution event
+     */
+    public void handleSQLExecutionEvent(final SagaSQLExecutionContext sagaSQLExecutionContext) {
+        sagaSQLExecutionContextHandler.handle(sagaSQLExecutionContext);
+    }
+    
+    /**
      * Get saga definition builder for special transaction.
      *
      * @param transactionId transaction Id
@@ -134,6 +147,7 @@ public final class SagaTransactionManager implements BASETransactionManager<Saga
         if (null != getTransactionId()) {
             sagaDefinitionBuilderMap.remove(getTransactionId());
             revertEngineMap.remove(getTransactionId());
+            sagaSQLExecutionContextHandler.clean();
         }
         TRANSACTION_IDS.remove();
         ShardingTransportFactory.getInstance().remove();

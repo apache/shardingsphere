@@ -18,11 +18,11 @@
 package io.shardingsphere.transaction.saga.handler;
 
 import io.shardingsphere.core.constant.transaction.TransactionType;
-import io.shardingsphere.core.event.transaction.base.SagaTransactionEvent;
 import io.shardingsphere.core.exception.ShardingException;
+import io.shardingsphere.transaction.core.handler.ShardingTransactionHandlerAdapter;
+import io.shardingsphere.transaction.core.internal.context.SagaTransactionContext;
+import io.shardingsphere.transaction.core.internal.manager.ShardingTransactionManager;
 import io.shardingsphere.transaction.saga.manager.SagaTransactionManager;
-import io.shardingsphere.transaction.handler.ShardingTransactionHandlerAdapter;
-import io.shardingsphere.transaction.manager.ShardingTransactionManager;
 import lombok.extern.slf4j.Slf4j;
 
 import javax.transaction.Status;
@@ -33,11 +33,9 @@ import javax.transaction.Status;
  * @author yangyi
  */
 @Slf4j
-public final class SagaShardingTransactionHandler extends ShardingTransactionHandlerAdapter<SagaTransactionEvent> {
+public final class SagaShardingTransactionHandler extends ShardingTransactionHandlerAdapter<SagaTransactionContext> {
     
     private final SagaTransactionManager transactionManager = SagaTransactionManager.getInstance();
-    
-    private final SagaSQLExecutionEventHandler sagaSQLExecutionEventHandler = new SagaSQLExecutionEventHandler();
     
     @Override
     public TransactionType getTransactionType() {
@@ -50,31 +48,29 @@ public final class SagaShardingTransactionHandler extends ShardingTransactionHan
     }
     
     @Override
-    public void doInTransaction(final SagaTransactionEvent transactionEvent) {
-        if (transactionEvent.isDestroyComponent()) {
-            transactionManager.removeSagaExecutionComponent(transactionEvent.getSagaConfiguration());
+    public void doInTransaction(final SagaTransactionContext transactionContext) {
+        if (transactionContext.isDestroyComponent()) {
+            transactionManager.removeSagaExecutionComponent(transactionContext.getSagaConfiguration());
             return;
         }
-        if (transactionEvent.isExecutionEvent()) {
-            sagaSQLExecutionEventHandler.handleSQLExecutionEvent(transactionEvent.getSagaSQLExecutionEvent());
+        if (transactionContext.isExecutionEvent()) {
+            transactionManager.handleSQLExecutionEvent(transactionContext.getSagaSQLExecutionContext());
             return;
         }
-        switch (transactionEvent.getOperationType()) {
+        switch (transactionContext.getOperationType()) {
             case BEGIN:
                 if (Status.STATUS_NO_TRANSACTION == transactionManager.getStatus()) {
-                    super.doInTransaction(transactionEvent);
+                    super.doInTransaction(transactionContext);
                 }
                 break;
             case COMMIT:
                 if (Status.STATUS_ACTIVE != transactionManager.getStatus()) {
                     throw new ShardingException("No transaction begin in current thread connection");
                 }
-                sagaSQLExecutionEventHandler.clean();
-                super.doInTransaction(transactionEvent);
+                super.doInTransaction(transactionContext);
                 break;
             case ROLLBACK:
-                sagaSQLExecutionEventHandler.clean();
-                super.doInTransaction(transactionEvent);
+                super.doInTransaction(transactionContext);
                 break;
             default:
         }

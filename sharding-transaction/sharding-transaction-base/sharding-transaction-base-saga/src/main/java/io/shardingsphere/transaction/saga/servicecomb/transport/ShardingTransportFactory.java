@@ -17,7 +17,7 @@
 
 package io.shardingsphere.transaction.saga.servicecomb.transport;
 
-import io.shardingsphere.core.event.transaction.base.SagaTransactionEvent;
+import io.shardingsphere.transaction.core.internal.context.SagaTransactionContext;
 import org.apache.servicecomb.saga.transports.SQLTransport;
 import org.apache.servicecomb.saga.transports.TransportFactory;
 
@@ -48,10 +48,10 @@ public final class ShardingTransportFactory implements TransportFactory<SQLTrans
     
     /**
      * cache Transport.
-     * @param event saga event
+     * @param context saga context
      */
-    public void cacheTransport(final SagaTransactionEvent event) {
-        transports.set(new DataSourceMapSQLTransport(event.getDataSourceMap()));
+    public void cacheTransport(final SagaTransactionContext context) {
+        transports.set(new DataSourceMapSQLTransport(context.getDataSourceMap()));
     }
     
     /**
