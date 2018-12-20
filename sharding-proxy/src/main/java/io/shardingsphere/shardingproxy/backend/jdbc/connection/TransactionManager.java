@@ -17,7 +17,7 @@
 
 package io.shardingsphere.shardingproxy.backend.jdbc.connection;
 
-import io.shardingsphere.core.constant.transaction.TransactionOperationType;
+import io.shardingsphere.transaction.core.internal.TransactionOperationType;
 
 import java.sql.SQLException;
 

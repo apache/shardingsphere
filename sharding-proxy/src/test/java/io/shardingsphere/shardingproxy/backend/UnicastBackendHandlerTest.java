@@ -18,10 +18,10 @@
 package io.shardingsphere.shardingproxy.backend;
 
 import io.shardingsphere.core.constant.DatabaseType;
-import io.shardingsphere.core.constant.transaction.TransactionType;
 import io.shardingsphere.shardingproxy.backend.jdbc.connection.BackendConnection;
 import io.shardingsphere.shardingproxy.transport.mysql.packet.command.CommandResponsePackets;
 import io.shardingsphere.shardingproxy.transport.mysql.packet.generic.OKPacket;
+import io.shardingsphere.transaction.api.TransactionType;
 import org.junit.Before;
 import org.junit.Test;
 import org.junit.runner.RunWith;

@@ -19,7 +19,6 @@ package io.shardingsphere.shardingproxy.transport.mysql.packet.command.admin.ini
 
 import com.google.common.base.Optional;
 import io.shardingsphere.core.constant.ShardingConstant;
-import io.shardingsphere.core.constant.transaction.TransactionType;
 import io.shardingsphere.shardingproxy.backend.jdbc.connection.BackendConnection;
 import io.shardingsphere.shardingproxy.runtime.GlobalRegistry;
 import io.shardingsphere.shardingproxy.runtime.schema.LogicSchema;
@@ -29,6 +28,7 @@ import io.shardingsphere.shardingproxy.transport.mysql.packet.command.CommandPac
 import io.shardingsphere.shardingproxy.transport.mysql.packet.command.CommandResponsePackets;
 import io.shardingsphere.shardingproxy.transport.mysql.packet.generic.ErrPacket;
 import io.shardingsphere.shardingproxy.transport.mysql.packet.generic.OKPacket;
+import io.shardingsphere.transaction.api.TransactionType;
 import lombok.SneakyThrows;
 import org.junit.Before;
 import org.junit.Test;

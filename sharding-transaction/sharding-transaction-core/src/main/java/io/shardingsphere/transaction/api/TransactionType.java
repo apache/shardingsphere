@@ -15,7 +15,7 @@
  * </p>
  */
 
-package io.shardingsphere.core.constant.transaction;
+package io.shardingsphere.transaction.api;
 
 /**
  * Transaction type.

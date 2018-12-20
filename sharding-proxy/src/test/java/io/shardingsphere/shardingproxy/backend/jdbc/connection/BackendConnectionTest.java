@@ -18,11 +18,11 @@
 package io.shardingsphere.shardingproxy.backend.jdbc.connection;
 
 import io.shardingsphere.core.constant.ConnectionMode;
-import io.shardingsphere.core.constant.transaction.TransactionOperationType;
-import io.shardingsphere.core.constant.transaction.TransactionType;
 import io.shardingsphere.core.exception.ShardingException;
 import io.shardingsphere.shardingproxy.backend.MockGlobalRegistryUtil;
 import io.shardingsphere.shardingproxy.backend.jdbc.datasource.JDBCBackendDataSource;
+import io.shardingsphere.transaction.api.TransactionType;
+import io.shardingsphere.transaction.core.internal.TransactionOperationType;
 import lombok.SneakyThrows;
 import org.junit.Before;
 import org.junit.Test;

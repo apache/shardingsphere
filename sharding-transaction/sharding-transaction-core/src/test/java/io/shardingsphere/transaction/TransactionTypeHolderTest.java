@@ -15,10 +15,10 @@
  * </p>
  */
 
-package io.shardingsphere.core.transaction;
+package io.shardingsphere.transaction;
 
-import io.shardingsphere.core.constant.transaction.TransactionType;
-
+import io.shardingsphere.transaction.api.TransactionType;
+import io.shardingsphere.transaction.api.TransactionTypeHolder;
 import org.junit.Before;
 import org.junit.Test;
 
