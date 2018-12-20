@@ -87,7 +87,7 @@ public final class DefaultKeyGeneratorTest {
     
     @Test(expected = IllegalStateException.class)
     @SneakyThrows
-    public void assertGenerateKey3() {
+    public void assertGenerateKeyWithClockCallBackBeyondTolerateTime() {
         final DefaultKeyGenerator keyGenerator = new DefaultKeyGenerator();
         TimeService timeService = new FixedTimeService(1);
         DefaultKeyGenerator.setTimeService(timeService);
