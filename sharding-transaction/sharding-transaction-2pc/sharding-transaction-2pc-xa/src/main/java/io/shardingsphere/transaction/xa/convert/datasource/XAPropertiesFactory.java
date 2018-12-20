@@ -17,6 +17,7 @@
 
 package io.shardingsphere.transaction.xa.convert.datasource;
 
+import io.shardingsphere.core.constant.DatabaseType;
 import io.shardingsphere.core.rule.DataSourceParameter;
 import io.shardingsphere.transaction.xa.convert.datasource.dialect.H2XAProperties;
 import io.shardingsphere.transaction.xa.convert.datasource.dialect.MySQLXAProperties;
@@ -39,12 +40,12 @@ public final class XAPropertiesFactory {
     /**
      * Build properties for XA.
      *
-     * @param xaDatabaseType XA database type
+     * @param databaseType database type
      * @param dataSourceParameter data source parameter
      * @return properties for XA
      */
-    public static Properties build(final XADatabaseType xaDatabaseType, final DataSourceParameter dataSourceParameter) {
-        switch (xaDatabaseType) {
+    public static Properties build(final DatabaseType databaseType, final DataSourceParameter dataSourceParameter) {
+        switch (databaseType) {
             case H2:
                 return new H2XAProperties().build(dataSourceParameter);
             case MySQL:

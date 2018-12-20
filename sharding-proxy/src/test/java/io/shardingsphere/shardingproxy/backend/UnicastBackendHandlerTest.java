@@ -45,7 +45,7 @@ public class UnicastBackendHandlerTest {
     private BackendHandlerFactory backendHandlerFactory;
     
     @Before
-    public void setup() {
+    public void setUp() {
         MockGlobalRegistryUtil.setLogicSchemas("schema", 10);
         setUnderlyingHandler(new CommandResponsePackets(new OKPacket(1)));
     }

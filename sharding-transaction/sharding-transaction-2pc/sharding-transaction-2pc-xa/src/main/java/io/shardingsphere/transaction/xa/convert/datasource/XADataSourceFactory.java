@@ -25,7 +25,7 @@ import lombok.NoArgsConstructor;
 import javax.sql.XADataSource;
 
 /**
- * Create XADatasource based database type.
+ * XA data source factory.
  *
  * @author zhaojun
  */
@@ -39,38 +39,21 @@ public final class XADataSourceFactory {
      * @return XA DataSource instance
      */
     public static XADataSource build(final DatabaseType databaseType) {
-        switch (databaseType) {
-            case MySQL:
-                return newInstance(XADatabaseType.MySQL.getClassName());
-            case H2:
-                return newInstance(XADatabaseType.H2.getClassName());
-            case Oracle:
-                return newInstance(XADatabaseType.Oracle.getClassName());
-            case SQLServer:
-                return newInstance(XADatabaseType.SQLServer.getClassName());
-            case PostgreSQL:
-                return newInstance(XADatabaseType.PostgreSQL.getClassName());
-            default:
-                throw new UnsupportedOperationException(String.format("Database [%s] Cannot support XA.", databaseType));
-        }
-    }
-    
-    @SuppressWarnings("unchecked")
-    private static XADataSource newInstance(final String className) {
+        String xaDataSourceClassName = XADataSourceRegistry.getXADataSourceClassName(databaseType);
         Class xaDataSourceClass;
         try {
-            xaDataSourceClass = Thread.currentThread().getContextClassLoader().loadClass(className);
+            xaDataSourceClass = Thread.currentThread().getContextClassLoader().loadClass(xaDataSourceClassName);
         } catch (final ClassNotFoundException ignored) {
             try {
-                xaDataSourceClass = Class.forName(className);
+                xaDataSourceClass = Class.forName(xaDataSourceClassName);
             } catch (final ClassNotFoundException ex) {
-                throw new ShardingException(String.format("Failed to load [%s]", className));
+                throw new ShardingException("Failed to load [%s]", xaDataSourceClassName);
             }
         }
         try {
             return (XADataSource) xaDataSourceClass.newInstance();
         } catch (final InstantiationException | IllegalAccessException ex) {
-            throw new ShardingException(String.format("Failed to instance [%s]", className));
+            throw new ShardingException("Failed to instance [%s]", xaDataSourceClassName);
         }
     }
 }

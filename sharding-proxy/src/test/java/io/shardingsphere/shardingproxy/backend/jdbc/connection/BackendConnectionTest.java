@@ -62,7 +62,7 @@ public final class BackendConnectionTest {
     
     @Before
     @SneakyThrows
-    public void setup() {
+    public void setUp() {
         MockGlobalRegistryUtil.setLogicSchemas("schema", 2);
         backendConnection.setCurrentSchema("schema_0");
         when(backendConnection.getLogicSchema().getBackendDataSource()).thenReturn(backendDataSource);

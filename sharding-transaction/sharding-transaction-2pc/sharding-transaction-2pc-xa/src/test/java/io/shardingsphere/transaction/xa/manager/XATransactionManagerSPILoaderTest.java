@@ -45,7 +45,7 @@ public final class XATransactionManagerSPILoaderTest {
     private XATransactionManagerSPILoader spiLoader = XATransactionManagerSPILoader.getInstance();
     
     @Before
-    public void setup() {
+    public void setUp() {
         ReflectiveUtil.setProperty(spiLoader, "xaTransactionManagers", xaTransactionManagers);
     }
     

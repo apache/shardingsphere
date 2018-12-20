@@ -37,7 +37,7 @@ public class ShowDatabasesBackendHandlerTest {
     private ShowDatabasesBackendHandler showDatabasesBackendHandler = new ShowDatabasesBackendHandler();
     
     @Before
-    public void setup() {
+    public void setUp() {
         MockGlobalRegistryUtil.setLogicSchemas("schema", 5);
     }
     
