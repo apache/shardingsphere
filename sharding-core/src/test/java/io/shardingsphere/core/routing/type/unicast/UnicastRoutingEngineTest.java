@@ -20,12 +20,15 @@ package io.shardingsphere.core.routing.type.unicast;
 import io.shardingsphere.api.config.rule.ShardingRuleConfiguration;
 import io.shardingsphere.api.config.rule.TableRuleConfiguration;
 import io.shardingsphere.core.routing.type.RoutingResult;
+import io.shardingsphere.core.routing.type.TableUnit;
 import io.shardingsphere.core.rule.ShardingRule;
 import org.junit.Before;
 import org.junit.Test;
 
+import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.Collections;
+import java.util.List;
 
 import static org.hamcrest.CoreMatchers.instanceOf;
 import static org.hamcrest.CoreMatchers.is;
@@ -50,26 +53,29 @@ public final class UnicastRoutingEngineTest {
     public void assertRoutingForShardingTable() {
         UnicastRoutingEngine unicastRoutingEngine = new UnicastRoutingEngine(shardingRule, Collections.singleton("t_order"));
         RoutingResult routingResult = unicastRoutingEngine.route();
+        List<TableUnit> tableUnitList = new ArrayList<>(routingResult.getTableUnits().getTableUnits());
         assertThat(routingResult, instanceOf(RoutingResult.class));
         assertThat(routingResult.getTableUnits().getTableUnits().size(), is(1));
-        assertThat(routingResult.getTableUnits().getTableUnits().get(0).getDataSourceName(), is("ds0"));
+        assertThat(tableUnitList.get(0).getDataSourceName(), is("ds0"));
     }
     
     @Test
     public void assertRoutingForBroadcastTable() {
         UnicastRoutingEngine unicastRoutingEngine = new UnicastRoutingEngine(shardingRule, Collections.singleton("t_config"));
         RoutingResult routingResult = unicastRoutingEngine.route();
+        List<TableUnit> tableUnitList = new ArrayList<>(routingResult.getTableUnits().getTableUnits());
         assertThat(routingResult, instanceOf(RoutingResult.class));
         assertThat(routingResult.getTableUnits().getTableUnits().size(), is(1));
-        assertThat(routingResult.getTableUnits().getTableUnits().get(0).getDataSourceName(), is("ds0"));
+        assertThat(tableUnitList.get(0).getDataSourceName(), is("ds0"));
     }
     
     @Test
     public void assertRoutingForNoTable() {
         UnicastRoutingEngine unicastRoutingEngine = new UnicastRoutingEngine(shardingRule, Collections.<String>emptyList());
         RoutingResult routingResult = unicastRoutingEngine.route();
+        List<TableUnit> tableUnitList = new ArrayList<>(routingResult.getTableUnits().getTableUnits());
         assertThat(routingResult, instanceOf(RoutingResult.class));
         assertThat(routingResult.getTableUnits().getTableUnits().size(), is(1));
-        assertThat(routingResult.getTableUnits().getTableUnits().get(0).getDataSourceName(), is("ds0"));
+        assertThat(tableUnitList.get(0).getDataSourceName(), is("ds0"));
     }
 }
