@@ -12,5 +12,5 @@
     <filler-rule sql-segment-class="order.OrderBySegment" filler-class="OrderByFiller" />
     <filler-rule sql-segment-class="LimitSegment" filler-class="LimitFiller" />
     <filler-rule sql-segment-class="ShowParamSegment" filler-class="ShowParamFiller" />
-    <filler-rule sql-segment-class="TransactionOperationTypeSegment" filler-class="TransactionOperationTypeFiller" />
+    <filler-rule sql-segment-class="tcl.SetAutoCommitSegment" filler-class="tcl.SetAutoCommitFiller" />
 </filler-rule-definition>

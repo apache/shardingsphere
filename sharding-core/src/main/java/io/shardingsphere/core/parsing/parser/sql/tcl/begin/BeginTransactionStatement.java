@@ -15,19 +15,19 @@
  * </p>
  */
 
-package io.shardingsphere.core.parsing.parser.sql.tcl.savepoint;
+package io.shardingsphere.core.parsing.parser.sql.tcl.begin;
 
 import io.shardingsphere.core.constant.transaction.TransactionOperationType;
 import io.shardingsphere.core.parsing.parser.sql.tcl.TCLStatement;
 
 /**
- * Savepoint statement.
+ * Begin transaction statement.
  *
  * @author maxiaoguang
  */
-public final class SavepointStatement extends TCLStatement {
+public final class BeginTransactionStatement extends TCLStatement {
     
-    public SavepointStatement() {
-        super(TransactionOperationType.IGNORE);
+    public BeginTransactionStatement() {
+        super(TransactionOperationType.BEGIN);
     }
 }

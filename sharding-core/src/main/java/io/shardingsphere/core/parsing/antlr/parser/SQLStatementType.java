@@ -26,7 +26,7 @@ import io.shardingsphere.core.parsing.parser.sql.SQLStatement;
 import io.shardingsphere.core.parsing.parser.sql.ddl.DDLStatement;
 import io.shardingsphere.core.parsing.parser.sql.ddl.create.table.CreateTableStatement;
 import io.shardingsphere.core.parsing.parser.sql.dql.select.SelectStatement;
-import io.shardingsphere.core.parsing.parser.sql.tcl.begin.BeginStatement;
+import io.shardingsphere.core.parsing.parser.sql.tcl.begin.BeginTransactionStatement;
 import io.shardingsphere.core.parsing.parser.sql.tcl.commit.CommitStatement;
 import io.shardingsphere.core.parsing.parser.sql.tcl.rollback.RollbackStatement;
 import io.shardingsphere.core.parsing.parser.sql.tcl.savepoint.SavepointStatement;
@@ -66,7 +66,7 @@ public enum SQLStatementType {
     
     SAVEPOINT("Savepoint", SavepointStatement.class),
     
-    BEGIN_WORK("BeginWork", BeginStatement.class),
+    BEGIN_WORK("BeginWork", BeginTransactionStatement.class),
     
     SET_AUTO_COMMIT("SetAutoCommit", SetAutoCommitStatement.class),
     

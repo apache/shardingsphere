@@ -15,22 +15,19 @@
  * </p>
  */
 
-package io.shardingsphere.core.parsing.antlr.sql.segment;
+package io.shardingsphere.core.parsing.parser.sql.tcl.ignore;
 
 import io.shardingsphere.core.constant.transaction.TransactionOperationType;
-import lombok.Getter;
-import lombok.RequiredArgsConstructor;
-import lombok.Setter;
+import io.shardingsphere.core.parsing.parser.sql.tcl.TCLStatement;
 
 /**
- * Transaction operation type segment.
- * 
- * @author maxiaoguang
+ * Ignore statement.
+ *
+ * @author zhangliang
  */
-@RequiredArgsConstructor
-@Getter
-@Setter
-public class TransactionOperationTypeSegment implements SQLSegment {
+public final class IgnoreStatement extends TCLStatement {
     
-    private final TransactionOperationType transactionOperationType;
+    public IgnoreStatement() {
+        super(TransactionOperationType.IGNORE);
+    }
 }

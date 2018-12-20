@@ -38,14 +38,13 @@ import java.util.Collection;
  * @author zhangliang
  * @author maxiaoguang
  */
+@Getter
+@Setter
 @ToString(callSuper = true)
 public class TCLStatement extends AbstractSQLStatement {
     
-    private static final Collection<Keyword> STATEMENT_PREFIX = Arrays.<Keyword>asList(
-            DefaultKeyword.COMMIT, DefaultKeyword.ROLLBACK, DefaultKeyword.SAVEPOINT, DefaultKeyword.BEGIN);
+    private static final Collection<Keyword> STATEMENT_PREFIX = Arrays.<Keyword>asList(DefaultKeyword.COMMIT, DefaultKeyword.ROLLBACK, DefaultKeyword.SAVEPOINT, DefaultKeyword.BEGIN);
     
-    @Getter
-    @Setter
     private TransactionOperationType operationType;
     
     public TCLStatement() {

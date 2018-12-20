@@ -15,27 +15,26 @@
  * </p>
  */
 
-package io.shardingsphere.core.parsing.antlr.filler.impl;
+package io.shardingsphere.core.parsing.antlr.filler.impl.tcl;
 
 import io.shardingsphere.core.metadata.table.ShardingTableMetaData;
 import io.shardingsphere.core.parsing.antlr.filler.SQLStatementFiller;
 import io.shardingsphere.core.parsing.antlr.sql.segment.SQLSegment;
-import io.shardingsphere.core.parsing.antlr.sql.segment.TransactionOperationTypeSegment;
+import io.shardingsphere.core.parsing.antlr.sql.segment.tcl.SetAutoCommitSegment;
 import io.shardingsphere.core.parsing.parser.sql.SQLStatement;
 import io.shardingsphere.core.parsing.parser.sql.tcl.set.autocommit.SetAutoCommitStatement;
 import io.shardingsphere.core.rule.ShardingRule;
 
 /**
- * Transaction operation type filler.
+ * Set auto commit filler.
  *
- * @author maxiaoguang
+ * @author zhangliang
  */
-public final class TransactionOperationTypeFiller implements SQLStatementFiller {
+public final class SetAutoCommitFiller implements SQLStatementFiller {
     
     @Override
     public void fill(final SQLSegment sqlSegment, final SQLStatement sqlStatement, final String sql, final ShardingRule shardingRule, final ShardingTableMetaData shardingTableMetaData) {
-        TransactionOperationTypeSegment transactionOperationTypeSegment = (TransactionOperationTypeSegment) sqlSegment;
-        SetAutoCommitStatement setAutoCommitStatement = (SetAutoCommitStatement) sqlStatement;
-        setAutoCommitStatement.setOperationType(transactionOperationTypeSegment.getTransactionOperationType());
+        SetAutoCommitSegment setAutoCommitSegment = (SetAutoCommitSegment) sqlSegment;
+        ((SetAutoCommitStatement) sqlStatement).setAutoCommit(setAutoCommitSegment.isAutoCommit());
     }
 }

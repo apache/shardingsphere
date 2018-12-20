@@ -15,19 +15,20 @@
  * </p>
  */
 
-package io.shardingsphere.core.parsing.parser.sql.tcl.begin;
+package io.shardingsphere.core.parsing.antlr.sql.segment.tcl;
 
-import io.shardingsphere.core.constant.transaction.TransactionOperationType;
-import io.shardingsphere.core.parsing.parser.sql.tcl.TCLStatement;
+import io.shardingsphere.core.parsing.antlr.sql.segment.SQLSegment;
+import lombok.Getter;
+import lombok.RequiredArgsConstructor;
 
 /**
- * Begin statement.
- *
- * @author maxiaoguang
+ * Set auto commit segment.
+ * 
+ * @author zhangliang
  */
-public final class BeginStatement extends TCLStatement {
+@RequiredArgsConstructor
+@Getter
+public final class SetAutoCommitSegment implements SQLSegment {
     
-    public BeginStatement() {
-        super(TransactionOperationType.BEGIN);
-    }
+    private final boolean autoCommit;
 }
