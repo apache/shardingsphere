@@ -19,6 +19,7 @@ package io.shardingsphere.orchestration.internal.registry.config.service;
 
 import com.google.common.base.Preconditions;
 import com.google.common.base.Strings;
+import io.shardingsphere.api.config.SagaConfiguration;
 import io.shardingsphere.api.config.rule.MasterSlaveRuleConfiguration;
 import io.shardingsphere.api.config.rule.RuleConfiguration;
 import io.shardingsphere.api.config.rule.ShardingRuleConfiguration;
