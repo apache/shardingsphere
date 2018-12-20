@@ -85,6 +85,20 @@ public final class DefaultKeyGeneratorTest {
         assertThat(actual, is(expected));
     }
     
+    @Test(expected = IllegalStateException.class)
+    @SneakyThrows
+    public void assertGenerateKey3() {
+        final DefaultKeyGenerator keyGenerator = new DefaultKeyGenerator();
+        TimeService timeService = new FixedTimeService(1);
+        DefaultKeyGenerator.setTimeService(timeService);
+        DefaultKeyGenerator.setMaxTolerateTimeDifferenceMilliseconds(0);
+        setLastMilliseconds(keyGenerator, timeService.getCurrentMillis() + 2);
+        List<Number> actual = new ArrayList<>();
+        for (int i = 0; i < 10; i++) {
+            actual.add(keyGenerator.generateKey());
+        }
+    }
+    
     private void setLastMilliseconds(final DefaultKeyGenerator keyGenerator, final Number value) throws NoSuchFieldException, IllegalAccessException {
         Field lastMilliseconds = DefaultKeyGenerator.class.getDeclaredField("lastMilliseconds");
         lastMilliseconds.setAccessible(true);
