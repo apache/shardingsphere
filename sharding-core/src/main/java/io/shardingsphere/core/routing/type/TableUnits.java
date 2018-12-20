@@ -25,7 +25,7 @@ import java.util.ArrayList;
 import java.util.Collection;
 import java.util.HashMap;
 import java.util.HashSet;
-import java.util.LinkedList;
+import java.util.LinkedHashSet;
 import java.util.List;
 import java.util.Map;
 import java.util.Set;
@@ -40,7 +40,7 @@ import java.util.Set;
 @ToString
 public final class TableUnits {
     
-    private final List<TableUnit> tableUnits = new LinkedList<>();
+    private final Collection<TableUnit> tableUnits = new LinkedHashSet<>();
     
     /**
      * Get all data source names.
