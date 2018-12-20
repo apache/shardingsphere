@@ -57,6 +57,7 @@ import java.util.Map.Entry;
  * @author zhangliang
  * @author panjuan
  * @author zhaojun
+ * @author yangyi
  */
 @Getter
 public abstract class AbstractConnectionAdapter extends AbstractUnsupportedOperationConnection {
@@ -201,7 +202,7 @@ public abstract class AbstractConnectionAdapter extends AbstractUnsupportedOpera
         if (TransactionType.XA == transactionType) {
             shardingTransactionHandler.doInTransaction(new XATransactionContext(TransactionOperationType.BEGIN));
         } else if (TransactionType.BASE == transactionType) {
-            shardingTransactionHandler.doInTransaction(new SagaTransactionContext(TransactionOperationType.BEGIN, this));
+            shardingTransactionHandler.doInTransaction(SagaTransactionContext.createBeginSagaTransactionContext(getDataSourceMap(), sagaConfiguration));
         }
     }
     
@@ -218,7 +219,7 @@ public abstract class AbstractConnectionAdapter extends AbstractUnsupportedOpera
         } else if (TransactionType.XA == transactionType) {
             shardingTransactionHandler.doInTransaction(new XATransactionContext(TransactionOperationType.COMMIT));
         } else if (TransactionType.BASE == transactionType) {
-            shardingTransactionHandler.doInTransaction(new SagaTransactionContext(TransactionOperationType.COMMIT));
+            shardingTransactionHandler.doInTransaction(SagaTransactionContext.createCommitSagaTransactionContext(sagaConfiguration));
         }
     }
     
@@ -235,7 +236,7 @@ public abstract class AbstractConnectionAdapter extends AbstractUnsupportedOpera
         } else if (TransactionType.XA == transactionType) {
             shardingTransactionHandler.doInTransaction(new XATransactionContext(TransactionOperationType.ROLLBACK));
         } else if (TransactionType.BASE == transactionType) {
-            shardingTransactionHandler.doInTransaction(new SagaTransactionContext(TransactionOperationType.ROLLBACK));
+            shardingTransactionHandler.doInTransaction(SagaTransactionContext.createRollbackSagaTransactionContext(sagaConfiguration));
         }
     }
     
@@ -248,6 +249,9 @@ public abstract class AbstractConnectionAdapter extends AbstractUnsupportedOpera
         HintManagerHolder.clear();
         MasterVisitedManager.clear();
         TransactionTypeHolder.clear();
+        if (TransactionType.BASE == transactionType) {
+            shardingTransactionHandler.doInTransaction(SagaTransactionContext.createRollbackSagaTransactionContext(sagaConfiguration));
+        }
         int connectionSize = cachedConnections.size();
         try {
             forceExecuteTemplateForClose.execute(cachedConnections.entries(), new ForceExecuteCallback<Map.Entry<String, Connection>>() {

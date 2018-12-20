@@ -33,7 +33,7 @@
 #  master-slave-key0: master-slave-value0
 #  master-slave-key1: master-slave-value1
 #
-## Be valid when 'proxy.transaction.enabled' is true and 'proxy.transaction.type' is BASE.
+## Be valid when 'proxy.transaction.type' is BASE.
 #saga:
 #  executorSize: 5
 #  transactionMaxRetries: 5

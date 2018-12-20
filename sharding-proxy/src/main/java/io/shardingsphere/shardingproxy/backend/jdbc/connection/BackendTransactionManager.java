@@ -21,6 +21,8 @@ import com.google.common.base.Preconditions;
 import io.shardingsphere.api.config.SagaConfiguration;
 import io.shardingsphere.core.constant.transaction.TransactionOperationType;
 import io.shardingsphere.core.constant.transaction.TransactionType;
+import io.shardingsphere.shardingproxy.runtime.GlobalRegistry;
+import io.shardingsphere.transaction.core.internal.context.SagaTransactionContext;
 import io.shardingsphere.transaction.spi.ShardingTransactionHandler;
 import io.shardingsphere.transaction.core.internal.context.ShardingTransactionContext;
 import io.shardingsphere.transaction.core.internal.context.XATransactionContext;
@@ -62,15 +64,15 @@ public final class BackendTransactionManager implements TransactionManager {
             SagaConfiguration config = GlobalRegistry.getInstance().getSagaConfiguration();
             switch (operationType) {
                 case BEGIN:
-                    shardingTransactionHandler.doInTransaction(SagaTransactionEvent.createBeginSagaTransactionEvent(
+                    shardingTransactionHandler.doInTransaction(SagaTransactionContext.createBeginSagaTransactionContext(
                         GlobalRegistry.getInstance().getLogicSchema(connection.getSchemaName()).getBackendDataSource().getDataSources(), config));
                     break;
                 case COMMIT:
-                    shardingTransactionHandler.doInTransaction(SagaTransactionEvent.createCommitSagaTransactionEvent(config));
+                    shardingTransactionHandler.doInTransaction(SagaTransactionContext.createCommitSagaTransactionContext(config));
                     connection.getStateHandler().getAndSetStatus(ConnectionStatus.TERMINATED);
                     break;
                 case ROLLBACK:
-                    shardingTransactionHandler.doInTransaction(SagaTransactionEvent.createRollbackSagaTransactionEvent(config));
+                    shardingTransactionHandler.doInTransaction(SagaTransactionContext.createRollbackSagaTransactionContext(config));
                     connection.getStateHandler().getAndSetStatus(ConnectionStatus.TERMINATED);
                     break;
                 default:

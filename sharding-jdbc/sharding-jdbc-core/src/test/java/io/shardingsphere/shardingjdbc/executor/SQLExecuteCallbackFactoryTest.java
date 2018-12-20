@@ -23,14 +23,12 @@ import io.shardingsphere.core.constant.SQLType;
 import io.shardingsphere.core.constant.transaction.TransactionType;
 import io.shardingsphere.core.executor.StatementExecuteUnit;
 import io.shardingsphere.core.executor.sql.execute.SQLExecuteCallback;
-import io.shardingsphere.core.executor.sql.execute.SagaSQLExecuteCallback;
+import io.shardingsphere.transaction.core.internal.executor.SagaSQLExecuteCallback;
 import io.shardingsphere.core.routing.RouteUnit;
 import io.shardingsphere.core.routing.SQLUnit;
 import io.shardingsphere.core.transaction.TransactionTypeHolder;
-import io.shardingsphere.spi.transaction.ShardingTransactionHandlerRegistry;
 import org.junit.After;
 import org.junit.Before;
-import org.junit.BeforeClass;
 import org.junit.Test;
 import org.junit.runner.RunWith;
 import org.mockito.Mock;
@@ -70,11 +68,6 @@ public class SQLExecuteCallbackFactoryTest {
     private DatabaseMetaData metaData;
     
     private StatementExecuteUnit unit;
-    
-    @BeforeClass
-    public static void preLoad() {
-        ShardingTransactionHandlerRegistry.load();
-    }
     
     @Before
     public void setUp() throws SQLException {

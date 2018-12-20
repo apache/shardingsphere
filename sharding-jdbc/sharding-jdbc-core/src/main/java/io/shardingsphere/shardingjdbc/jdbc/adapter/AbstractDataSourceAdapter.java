@@ -24,6 +24,9 @@ import io.shardingsphere.core.constant.DatabaseType;
 import io.shardingsphere.core.constant.transaction.TransactionType;
 import io.shardingsphere.core.util.ReflectiveUtil;
 import io.shardingsphere.shardingjdbc.jdbc.unsupported.AbstractUnsupportedOperationDataSource;
+import io.shardingsphere.transaction.core.internal.context.SagaTransactionContext;
+import io.shardingsphere.transaction.core.loader.ShardingTransactionHandlerRegistry;
+import io.shardingsphere.transaction.spi.ShardingTransactionHandler;
 import io.shardingsphere.transaction.spi.xa.DataSourceMapConverter;
 import io.shardingsphere.transaction.core.loader.SPIDataSourceMapConverter;
 import lombok.Getter;
@@ -121,7 +124,7 @@ public abstract class AbstractDataSourceAdapter extends AbstractUnsupportedOpera
         }
         ShardingTransactionHandler shardingTransactionHandler = ShardingTransactionHandlerRegistry.getInstance().getHandler(TransactionType.BASE);
         if (null != shardingTransactionHandler) {
-            shardingTransactionHandler.doInTransaction(SagaTransactionEvent.createDestroyComponentEvent(sagaConfiguration));
+            shardingTransactionHandler.doInTransaction(SagaTransactionContext.createDestroyComponentContext(sagaConfiguration));
         }
     }
     
