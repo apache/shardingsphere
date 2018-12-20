@@ -43,7 +43,7 @@ public final class DefaultKeyGeneratorTest {
     public void assertGenerateKeyWithMultipleThreads() throws ExecutionException, InterruptedException {
         int threadNumber = Runtime.getRuntime().availableProcessors() << 1;
         ExecutorService executor = Executors.newFixedThreadPool(threadNumber);
-        final int taskNumber = threadNumber << 2;
+        int taskNumber = threadNumber << 2;
         final DefaultKeyGenerator keyGenerator = new DefaultKeyGenerator();
         Set<Number> actual = new HashSet<>();
         for (int i = 0; i < taskNumber; i++) {
@@ -68,6 +68,27 @@ public final class DefaultKeyGeneratorTest {
             actual.add(keyGenerator.generateKey());
         }
         assertThat(actual, is(expected));
+    }
+    
+    @Test
+    @SneakyThrows
+    public void assertGenerateKey1() {
+        List<Number> expected = Arrays.<Number>asList(4194305L, 8388608L, 8388609L, 12582913L, 12582914L, 16777216L, 16777217L, 20971521L, 20971522L, 25165824L);
+        DefaultKeyGenerator keyGenerator = new DefaultKeyGenerator();
+        TimeService timeService = new FixedTimeService(1);
+        DefaultKeyGenerator.setTimeService(timeService);
+        setLastMilliseconds(keyGenerator, timeService.getCurrentMillis() + 2);
+        List<Number> actual = new ArrayList<>();
+        for (int i = 0; i < 10; i++) {
+            actual.add(keyGenerator.generateKey());
+        }
+        assertThat(actual, is(expected));
+    }
+    
+    private void setLastMilliseconds(final DefaultKeyGenerator keyGenerator, final Number value) throws NoSuchFieldException, IllegalAccessException {
+        Field lastMilliseconds = DefaultKeyGenerator.class.getDeclaredField("lastMilliseconds");
+        lastMilliseconds.setAccessible(true);
+        lastMilliseconds.set(keyGenerator, value);
     }
     
     @Test(expected = IllegalArgumentException.class)
