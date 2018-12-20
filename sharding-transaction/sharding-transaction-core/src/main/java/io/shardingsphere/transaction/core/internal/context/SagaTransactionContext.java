@@ -19,7 +19,6 @@ package io.shardingsphere.transaction.core.internal.context;
 
 import io.shardingsphere.api.config.SagaConfiguration;
 import io.shardingsphere.core.constant.transaction.TransactionOperationType;
-import io.shardingsphere.core.event.transaction.ShardingTransactionEvent;
 import lombok.AccessLevel;
 import lombok.AllArgsConstructor;
 import lombok.Getter;
@@ -44,67 +43,67 @@ public final class SagaTransactionContext implements ShardingTransactionContext 
     
     private final SagaConfiguration sagaConfiguration;
     
-    private final SagaSQLExecutionEvent sagaSQLExecutionEvent;
+    private final SagaSQLExecutionContext sagaSQLExecutionContext;
     
     private boolean destroyComponent;
     
     /**
-     * Create begin saga transaction event.
+     * Create begin saga transaction context.
      *
      * @param dataSourceMap sharding data source map
      * @param sagaConfiguration saga configuration
-     * @return begin saga transaction event
+     * @return begin saga transaction context
      */
-    public static SagaTransactionEvent createBeginSagaTransactionEvent(final Map<String, DataSource> dataSourceMap, final SagaConfiguration sagaConfiguration) {
-        return new SagaTransactionEvent(TransactionOperationType.BEGIN, dataSourceMap, sagaConfiguration, null);
+    public static SagaTransactionContext createBeginSagaTransactionContext(final Map<String, DataSource> dataSourceMap, final SagaConfiguration sagaConfiguration) {
+        return new SagaTransactionContext(TransactionOperationType.BEGIN, dataSourceMap, sagaConfiguration, null);
     }
     
     /**
-     * Create commit saga transaction event.
+     * Create commit saga transaction context.
      *
      * @param sagaConfiguration saga configuration
-     * @return commit saga transaction event
+     * @return commit saga transaction context
      */
-    public static SagaTransactionEvent createCommitSagaTransactionEvent(final SagaConfiguration sagaConfiguration) {
-        return new SagaTransactionEvent(TransactionOperationType.COMMIT, null, sagaConfiguration, null);
+    public static SagaTransactionContext createCommitSagaTransactionContext(final SagaConfiguration sagaConfiguration) {
+        return new SagaTransactionContext(TransactionOperationType.COMMIT, null, sagaConfiguration, null);
     }
     
     /**
-     * Create rollback saga transaction event.
+     * Create rollback saga transaction context.
      *
      * @param sagaConfiguration saga configuration
-     * @return rollback saga transaction event
+     * @return rollback saga transaction context
      */
-    public static SagaTransactionEvent createRollbackSagaTransactionEvent(final SagaConfiguration sagaConfiguration) {
-        return new SagaTransactionEvent(TransactionOperationType.ROLLBACK, null, sagaConfiguration, null);
+    public static SagaTransactionContext createRollbackSagaTransactionContext(final SagaConfiguration sagaConfiguration) {
+        return new SagaTransactionContext(TransactionOperationType.ROLLBACK, null, sagaConfiguration, null);
     }
     
     /**
-     * Create execution saga transaction event.
+     * Create execution saga transaction context.
      *
-     * @param sagaSQLExecutionEvent saga SQL execution event
-     * @return execution saga transaction event
+     * @param sagaSQLExecutionContext saga SQL execution context
+     * @return execution saga transaction context
      */
-    public static SagaTransactionEvent createExecutionSagaTransactionEvent(final SagaSQLExecutionEvent sagaSQLExecutionEvent) {
-        return new SagaTransactionEvent(null, null, null, sagaSQLExecutionEvent);
+    public static SagaTransactionContext createExecutionSagaTransactionContext(final SagaSQLExecutionContext sagaSQLExecutionContext) {
+        return new SagaTransactionContext(null, null, null, sagaSQLExecutionContext);
     }
     
     /**
-     * Create destroy component event.
+     * Create destroy component context.
      *
      * @param sagaConfiguration saga configuration
-     * @return destroy component event
+     * @return destroy component context
      */
-    public static SagaTransactionEvent createDestroyComponentEvent(final SagaConfiguration sagaConfiguration) {
-        return new SagaTransactionEvent(null, null, sagaConfiguration, null, true);
+    public static SagaTransactionContext createDestroyComponentContext(final SagaConfiguration sagaConfiguration) {
+        return new SagaTransactionContext(null, null, sagaConfiguration, null, true);
     }
     
     /**
-     * Judge whether event is execution event.
+     * Judge whether context is execution context.
      *
-     * @return true if event is execution event, else false
+     * @return true if context is execution context, else false
      */
     public boolean isExecutionEvent() {
-        return null != sagaSQLExecutionEvent;
+        return null != sagaSQLExecutionContext;
     }
 }

@@ -15,16 +15,29 @@
  * </p>
  */
 
-package io.shardingsphere.core.event;
+package io.shardingsphere.transaction.core.internal.context;
 
-import io.shardingsphere.core.event.transaction.base.SagaTransactionEventTest;
-import org.junit.runner.RunWith;
-import org.junit.runners.Suite;
-import org.junit.runners.Suite.SuiteClasses;
+import java.util.UUID;
 
-@RunWith(Suite.class)
-@SuiteClasses({
-    SagaTransactionEventTest.class
-})
-public class AllEventTests {
+import io.shardingsphere.core.routing.RouteUnit;
+import lombok.Getter;
+import lombok.RequiredArgsConstructor;
+
+/**
+ * Saga SQL execution event.
+ *
+ * @author yangyi
+ */
+@Getter
+@RequiredArgsConstructor
+public final class SagaSQLExecutionContext {
+    
+    private final String id = UUID.randomUUID().toString();
+    
+    private final RouteUnit routeUnit;
+    
+    private final String logicSQLId;
+    
+    private final boolean newLogicSQL;
+    
 }

@@ -15,15 +15,16 @@
  * </p>
  */
 
-package io.shardingsphere.core.executor.sql.execute;
+package io.shardingsphere.transaction.core.internal.executor;
 
 import io.shardingsphere.core.constant.DatabaseType;
 import io.shardingsphere.core.constant.transaction.TransactionType;
-import io.shardingsphere.core.event.transaction.base.SagaSQLExecutionEvent;
-import io.shardingsphere.core.event.transaction.base.SagaTransactionEvent;
 import io.shardingsphere.core.executor.StatementExecuteUnit;
-import io.shardingsphere.spi.transaction.ShardingTransactionHandler;
-import io.shardingsphere.spi.transaction.ShardingTransactionHandlerRegistry;
+import io.shardingsphere.core.executor.sql.execute.SQLExecuteCallback;
+import io.shardingsphere.transaction.core.internal.context.SagaSQLExecutionContext;
+import io.shardingsphere.transaction.core.internal.context.SagaTransactionContext;
+import io.shardingsphere.transaction.core.loader.ShardingTransactionHandlerRegistry;
+import io.shardingsphere.transaction.spi.ShardingTransactionHandler;
 
 import java.sql.SQLException;
 import java.util.UUID;
@@ -42,7 +43,7 @@ public abstract class SagaSQLExecuteCallback<T> extends SQLExecuteCallback<T> {
     public SagaSQLExecuteCallback(final DatabaseType databaseType, final boolean isExceptionThrown) {
         super(databaseType, isExceptionThrown);
         this.handler = ShardingTransactionHandlerRegistry.getInstance().getHandler(TransactionType.BASE);
-        handler.doInTransaction(SagaTransactionEvent.createExecutionSagaTransactionEvent(new SagaSQLExecutionEvent(null, logicSQLId, true)));
+        handler.doInTransaction(SagaTransactionContext.createExecutionSagaTransactionContext(new SagaSQLExecutionContext(null, logicSQLId, true)));
     }
     
     /**
@@ -54,7 +55,7 @@ public abstract class SagaSQLExecuteCallback<T> extends SQLExecuteCallback<T> {
      */
     @Override
     protected T executeSQL(final StatementExecuteUnit executeUnit) throws SQLException {
-        handler.doInTransaction(SagaTransactionEvent.createExecutionSagaTransactionEvent(new SagaSQLExecutionEvent(executeUnit.getRouteUnit(), logicSQLId, false)));
+        handler.doInTransaction(SagaTransactionContext.createExecutionSagaTransactionContext(new SagaSQLExecutionContext(executeUnit.getRouteUnit(), logicSQLId, false)));
         return executeResult();
     }
     

@@ -32,7 +32,7 @@ public abstract class ShardingTransactionHandlerAdapter<T extends ShardingTransa
     
     @Override
     @SuppressWarnings("unchecked")
-    public final void doInTransaction(final T context) {
+    public void doInTransaction(final T context) {
         switch (context.getOperationType()) {
             case BEGIN:
                 getShardingTransactionManager().begin(context);
