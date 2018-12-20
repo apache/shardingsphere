@@ -15,20 +15,24 @@
  * </p>
  */
 
-package io.shardingsphere.transaction.xa.convert;
+package io.shardingsphere.transaction.xa.convert.datasource;
 
-import io.shardingsphere.transaction.xa.convert.datasource.XADataSourceFactoryTest;
-import io.shardingsphere.transaction.xa.convert.datasource.XAPropertyFactoryTest;
-import io.shardingsphere.transaction.xa.convert.swap.DataSourceSwapperRegistryTest;
-import org.junit.runner.RunWith;
-import org.junit.runners.Suite;
+import io.shardingsphere.core.rule.DataSourceParameter;
 
-@RunWith(Suite.class)
-@Suite.SuiteClasses({
-    XADataSourceMapConverterTest.class,
-    XADataSourceFactoryTest.class,
-    XAPropertyFactoryTest.class,
-    DataSourceSwapperRegistryTest.class
-})
-public class AllConvertTests {
+import java.util.Properties;
+
+/**
+ * XA properties.
+ *
+ * @author zhangliang
+ */
+public interface XAProperties {
+    
+    /**
+     * Build XA properties.
+     *
+     * @param dataSourceParameter data source parameter
+     * @return properties for XA
+     */
+    Properties build(DataSourceParameter dataSourceParameter);
 }

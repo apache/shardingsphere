@@ -15,7 +15,7 @@
  * </p>
  */
 
-package io.shardingsphere.transaction.xa.convert.dialect;
+package io.shardingsphere.transaction.xa.convert.datasource;
 
 import lombok.Getter;
 import lombok.RequiredArgsConstructor;

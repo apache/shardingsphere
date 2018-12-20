@@ -15,38 +15,31 @@
  * </p>
  */
 
-package io.shardingsphere.transaction.xa.convert.dialect;
+package io.shardingsphere.transaction.xa.convert.datasource.dialect;
 
 import com.google.common.base.Optional;
-import io.shardingsphere.core.metadata.datasource.dialect.PostgreSQLDataSourceMetaData;
+import io.shardingsphere.core.metadata.datasource.dialect.SQLServerDataSourceMetaData;
 import io.shardingsphere.core.rule.DataSourceParameter;
-import lombok.RequiredArgsConstructor;
+import io.shardingsphere.transaction.xa.convert.datasource.XAProperties;
 
 import java.util.Properties;
 
 /**
- * Create PostgreSQL XA property from datasource parameter.
+ * XA properties for SQLServer.
  *
  * @author zhaojun
  */
-@RequiredArgsConstructor
-public class PGXAProperty {
+public final class SQLServerXAProperties implements XAProperties {
     
-    private final DataSourceParameter dataSourceParameter;
-    
-    /**
-     * Build PostgreSQL XA properties.
-     *
-     * @return PostgreSQL XA properties
-     */
-    public Properties build() {
+    @Override
+    public Properties build(final DataSourceParameter dataSourceParameter) {
         Properties result = new Properties();
-        PostgreSQLDataSourceMetaData pgMetaData = new PostgreSQLDataSourceMetaData(dataSourceParameter.getUrl());
+        SQLServerDataSourceMetaData sqlServerMetaData = new SQLServerDataSourceMetaData(dataSourceParameter.getUrl());
         result.setProperty("user", dataSourceParameter.getUsername());
         result.setProperty("password", Optional.fromNullable(dataSourceParameter.getPassword()).or(""));
-        result.setProperty("serverName", pgMetaData.getHostName());
-        result.setProperty("portNumber", String.valueOf(pgMetaData.getPort()));
-        result.setProperty("databaseName", pgMetaData.getSchemeName());
+        result.setProperty("serverName", sqlServerMetaData.getHostName());
+        result.setProperty("portNumber", String.valueOf(sqlServerMetaData.getPort()));
+        result.setProperty("databaseName", sqlServerMetaData.getSchemeName());
         return result;
     }
 }

@@ -15,34 +15,31 @@
  * </p>
  */
 
-package io.shardingsphere.transaction.xa.convert.dialect;
+package io.shardingsphere.transaction.xa.convert.datasource.dialect;
 
 import com.google.common.base.Optional;
+import io.shardingsphere.core.metadata.datasource.dialect.OracleDataSourceMetaData;
 import io.shardingsphere.core.rule.DataSourceParameter;
-import lombok.RequiredArgsConstructor;
+import io.shardingsphere.transaction.xa.convert.datasource.XAProperties;
 
 import java.util.Properties;
 
 /**
- * Create H2 XA property from datasource parameter.
+ * XA properties for Oracle.
  *
  * @author zhaojun
  */
-@RequiredArgsConstructor
-public class H2XAProperty {
+public final class OracleXAProperties implements XAProperties {
     
-    private final DataSourceParameter dataSourceParameter;
-    
-    /**
-     * Build H2 XA properties.
-     *
-     * @return H2 XA properties
-     */
-    public Properties build() {
+    @Override
+    public Properties build(final DataSourceParameter dataSourceParameter) {
         Properties result = new Properties();
+        OracleDataSourceMetaData oracleMetaData = new OracleDataSourceMetaData(dataSourceParameter.getUrl());
         result.setProperty("user", dataSourceParameter.getUsername());
         result.setProperty("password", Optional.fromNullable(dataSourceParameter.getPassword()).or(""));
-        result.setProperty("URL", dataSourceParameter.getUrl());
+        result.setProperty("serverName", oracleMetaData.getHostName());
+        result.setProperty("portNumber", String.valueOf(oracleMetaData.getPort()));
+        result.setProperty("databaseName", oracleMetaData.getSchemeName());
         return result;
     }
 }

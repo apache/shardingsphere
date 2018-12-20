@@ -21,8 +21,8 @@ import com.atomikos.beans.PropertyException;
 import com.atomikos.beans.PropertyUtils;
 import com.atomikos.jdbc.AtomikosDataSourceBean;
 import io.shardingsphere.core.rule.DataSourceParameter;
-import io.shardingsphere.transaction.xa.convert.dialect.XADatabaseType;
-import io.shardingsphere.transaction.xa.convert.dialect.XAPropertyFactory;
+import io.shardingsphere.transaction.xa.convert.datasource.XADatabaseType;
+import io.shardingsphere.transaction.xa.convert.datasource.XAPropertiesFactory;
 
 import javax.sql.DataSource;
 import javax.sql.XADataSource;
@@ -60,7 +60,7 @@ public final class AtomikosDataSourceBeanWrapper implements XADataSourceWrapper 
     private void setXAProperties(final XADataSource xaDataSource, final String dataSourceName, final DataSourceParameter parameter) throws PropertyException {
         delegate.setXaDataSourceClassName(xaDataSource.getClass().getName());
         delegate.setUniqueResourceName(dataSourceName);
-        Properties xaProperties = XAPropertyFactory.build(XADatabaseType.find(xaDataSource.getClass().getName()), parameter);
+        Properties xaProperties = XAPropertiesFactory.build(XADatabaseType.find(xaDataSource.getClass().getName()), parameter);
         PropertyUtils.setProperties(xaDataSource, xaProperties);
         delegate.setXaProperties(xaProperties);
         delegate.setXaDataSource(xaDataSource);

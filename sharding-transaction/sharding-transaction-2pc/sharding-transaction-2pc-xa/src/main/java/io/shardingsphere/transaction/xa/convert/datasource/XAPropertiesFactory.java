@@ -15,41 +15,46 @@
  * </p>
  */
 
-package io.shardingsphere.transaction.xa.convert.dialect;
+package io.shardingsphere.transaction.xa.convert.datasource;
 
 import io.shardingsphere.core.rule.DataSourceParameter;
+import io.shardingsphere.transaction.xa.convert.datasource.dialect.H2XAProperties;
+import io.shardingsphere.transaction.xa.convert.datasource.dialect.MySQLXAProperties;
+import io.shardingsphere.transaction.xa.convert.datasource.dialect.OracleXAProperties;
+import io.shardingsphere.transaction.xa.convert.datasource.dialect.PostgreSQLXAProperties;
+import io.shardingsphere.transaction.xa.convert.datasource.dialect.SQLServerXAProperties;
 import lombok.AccessLevel;
 import lombok.NoArgsConstructor;
 
 import java.util.Properties;
 
 /**
- * XA property factory.
+ * XA properties factory.
  *
  * @author zhaojun
  */
 @NoArgsConstructor(access = AccessLevel.PRIVATE)
-public class XAPropertyFactory {
+public final class XAPropertiesFactory {
     
     /**
-     * Create XA properties using datasource parameter.
+     * Build properties for XA.
      *
      * @param xaDatabaseType XA database type
-     * @param dataSourceParameter datasource parameter
-     * @return XA properties
+     * @param dataSourceParameter data source parameter
+     * @return properties for XA
      */
     public static Properties build(final XADatabaseType xaDatabaseType, final DataSourceParameter dataSourceParameter) {
         switch (xaDatabaseType) {
-            case MySQL:
-                return new MysqlXAProperty(dataSourceParameter).build();
-            case PostgreSQL:
-                return new PGXAProperty(dataSourceParameter).build();
             case H2:
-                return new H2XAProperty(dataSourceParameter).build();
-            case SQLServer:
-                return new SQLServerXAProperty(dataSourceParameter).build();
+                return new H2XAProperties().build(dataSourceParameter);
+            case MySQL:
+                return new MySQLXAProperties().build(dataSourceParameter);
+            case PostgreSQL:
+                return new PostgreSQLXAProperties().build(dataSourceParameter);
             case Oracle:
-                return new OracleXAProperty(dataSourceParameter).build();
+                return new OracleXAProperties().build(dataSourceParameter);
+            case SQLServer:
+                return new SQLServerXAProperties().build(dataSourceParameter);
             default:
                 return new Properties();
         }

@@ -15,7 +15,7 @@
  * </p>
  */
 
-package io.shardingsphere.transaction.xa.convert.dialect;
+package io.shardingsphere.transaction.xa.convert.datasource;
 
 import com.microsoft.sqlserver.jdbc.SQLServerXADataSource;
 import io.shardingsphere.core.constant.DatabaseType;

@@ -15,30 +15,23 @@
  * </p>
  */
 
-package io.shardingsphere.transaction.xa.convert.dialect;
+package io.shardingsphere.transaction.xa.convert.datasource.dialect;
 
 import com.google.common.base.Optional;
 import io.shardingsphere.core.rule.DataSourceParameter;
-import lombok.RequiredArgsConstructor;
+import io.shardingsphere.transaction.xa.convert.datasource.XAProperties;
 
 import java.util.Properties;
 
 /**
- * Create Mysql XA property from datasource parameter.
+ * XA properties for MySQL.
  *
  * @author zhaojun
  */
-@RequiredArgsConstructor
-public class MysqlXAProperty {
+public final class MySQLXAProperties implements XAProperties {
     
-    private final DataSourceParameter dataSourceParameter;
-    
-    /**
-     * Build Mysql XA properties.
-     *
-     * @return Mysql XA properties
-     */
-    public Properties build() {
+    @Override
+    public Properties build(final DataSourceParameter dataSourceParameter) {
         Properties result = new Properties();
         result.setProperty("user", dataSourceParameter.getUsername());
         result.setProperty("password", Optional.fromNullable(dataSourceParameter.getPassword()).or(""));

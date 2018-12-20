@@ -17,7 +17,6 @@
 
 package io.shardingsphere.transaction.xa.convert.swap;
 
-import com.google.common.base.Optional;
 import lombok.Getter;
 import lombok.RequiredArgsConstructor;
 
@@ -29,7 +28,7 @@ import java.util.Map;
  * @author zhaojun
  */
 @RequiredArgsConstructor
-final class AdvancedMapUpdater<K, V> {
+public final class AdvancedMapUpdater<K, V> {
     
     @Getter
     private final Map<K, V> delegateMap;
@@ -39,20 +38,9 @@ final class AdvancedMapUpdater<K, V> {
      * @param from old key
      * @param to new key
      */
-    void transfer(final K from, final K to) {
-        Optional<V> originValue = get(from);
-        if (originValue.isPresent()) {
-            delegateMap.put(to, originValue.get());
+    public void transfer(final K from, final K to) {
+        if (delegateMap.containsKey(from)) {
+            delegateMap.put(to, delegateMap.get(from));
         }
-    }
-    
-    /**
-     * Get value by key.
-     *
-     * @param key key
-     * @return optional value
-     */
-    private Optional<V> get(final K key) {
-        return Optional.fromNullable(delegateMap.get(key));
     }
 }

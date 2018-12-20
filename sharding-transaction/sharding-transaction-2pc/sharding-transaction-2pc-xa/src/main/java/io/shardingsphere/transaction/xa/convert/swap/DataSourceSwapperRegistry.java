@@ -17,7 +17,8 @@
 
 package io.shardingsphere.transaction.xa.convert.swap;
 
-import com.google.common.base.Splitter;
+import lombok.AccessLevel;
+import lombok.NoArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 
 import javax.sql.DataSource;
@@ -30,54 +31,35 @@ import java.util.ServiceLoader;
  *
  * @author zhaojun
  */
+@NoArgsConstructor(access = AccessLevel.PRIVATE)
 @Slf4j
-public class DataSourceSwapperRegistry {
+public final class DataSourceSwapperRegistry {
     
-    private static final Map<String, DataSourceSwapper> DATA_SOURCE_SWAPPER_MAP = new HashMap<>();
-    
-    private static final DataSourceSwapperRegistry INSTANCE = new DataSourceSwapperRegistry();
+    private static final Map<String, DataSourceSwapper> SWAPPERS = new HashMap<>();
     
     static {
-        load();
-    }
-    
-    /**
-     * Load data source swapper.
-     */
-    public static void load() {
         for (DataSourceSwapper each : ServiceLoader.load(DataSourceSwapper.class)) {
-            loadOneSwapper(each);
+            loadSwapper(each);
         }
     }
     
-    private static void loadOneSwapper(final DataSourceSwapper swapper) {
-        for (String each : Splitter.on(":").split(swapper.originClassName())) {
-            if (DATA_SOURCE_SWAPPER_MAP.containsKey(each)) {
-                log.warn("Find more than one {} data source swapper implementation class, use `{}` now",
-                    each, DATA_SOURCE_SWAPPER_MAP.get(each).getClass().getName());
+    private static void loadSwapper(final DataSourceSwapper swapper) {
+        for (String each : swapper.getDataSourceClassNames()) {
+            if (SWAPPERS.containsKey(each)) {
+                log.warn("Find more than one {} data source swapper implementation class, use `{}` now", each, SWAPPERS.get(each).getClass().getName());
                 continue;
             }
-            DATA_SOURCE_SWAPPER_MAP.put(each, swapper);
+            SWAPPERS.put(each, swapper);
         }
     }
     
     /**
-     * Get instance of data source swapper registry.
+     * Get data source swapper.
      *
-     * @return instance of data source swapper registry
+     * @param dataSourceClass data source class
+     * @return data source swapper
      */
-    public static DataSourceSwapperRegistry getInstance() {
-        return INSTANCE;
-    }
-    
-    /**
-     * Get data source swapper by class name.
-     *
-     * @param dataSource pool data source
-     * @return data source swapper implement
-     */
-    public DataSourceSwapper getSwapper(final DataSource dataSource) {
-        DataSourceSwapper result = DATA_SOURCE_SWAPPER_MAP.get(dataSource.getClass().getName());
-        return null == result ? new DefaultDataSourceSwapper() : result;
+    public static DataSourceSwapper getSwapper(final Class<? extends DataSource> dataSourceClass) {
+        return SWAPPERS.containsKey(dataSourceClass.getName()) ? SWAPPERS.get(dataSourceClass.getName()) : new DefaultDataSourceSwapper();
     }
 }

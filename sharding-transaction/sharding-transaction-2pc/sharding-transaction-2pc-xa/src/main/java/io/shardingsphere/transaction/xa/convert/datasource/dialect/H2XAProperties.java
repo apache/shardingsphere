@@ -15,38 +15,27 @@
  * </p>
  */
 
-package io.shardingsphere.transaction.xa.convert.dialect;
+package io.shardingsphere.transaction.xa.convert.datasource.dialect;
 
 import com.google.common.base.Optional;
-import io.shardingsphere.core.metadata.datasource.dialect.SQLServerDataSourceMetaData;
 import io.shardingsphere.core.rule.DataSourceParameter;
-import lombok.RequiredArgsConstructor;
+import io.shardingsphere.transaction.xa.convert.datasource.XAProperties;
 
 import java.util.Properties;
 
 /**
- * Create SQLServer XA property from datasource parameter.
+ * XA properties for H2.
  *
  * @author zhaojun
  */
-@RequiredArgsConstructor
-public class SQLServerXAProperty {
+public final class H2XAProperties implements XAProperties {
     
-    private final DataSourceParameter dataSourceParameter;
-    
-    /**
-     * Build SQLServer XA properties.
-     *
-     * @return SQLServer XA properties
-     */
-    public Properties build() {
+    @Override
+    public Properties build(final DataSourceParameter dataSourceParameter) {
         Properties result = new Properties();
-        SQLServerDataSourceMetaData sqlServerMetaData = new SQLServerDataSourceMetaData(dataSourceParameter.getUrl());
         result.setProperty("user", dataSourceParameter.getUsername());
         result.setProperty("password", Optional.fromNullable(dataSourceParameter.getPassword()).or(""));
-        result.setProperty("serverName", sqlServerMetaData.getHostName());
-        result.setProperty("portNumber", String.valueOf(sqlServerMetaData.getPort()));
-        result.setProperty("databaseName", sqlServerMetaData.getSchemeName());
+        result.setProperty("URL", dataSourceParameter.getUrl());
         return result;
     }
 }

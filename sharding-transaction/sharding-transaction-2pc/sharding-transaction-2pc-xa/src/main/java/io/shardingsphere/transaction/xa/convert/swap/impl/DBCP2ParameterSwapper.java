@@ -15,28 +15,37 @@
  * </p>
  */
 
-package io.shardingsphere.transaction.xa.convert.swap;
+package io.shardingsphere.transaction.xa.convert.swap.impl;
+
+import io.shardingsphere.transaction.xa.convert.swap.AdvancedMapUpdater;
+import io.shardingsphere.transaction.xa.convert.swap.DataSourceSwapperAdapter;
+
+import java.util.Arrays;
+import java.util.Collection;
 
 /**
- * Druid parameter swapper.
+ * DBCP2 parameter swapper.
  *
  * @author zhaojun
  */
-public final class DruidParameterSwapper extends DataSourceSwapperAdapter {
+public final class DBCP2ParameterSwapper extends DataSourceSwapperAdapter {
     
-    private static final String DRUID_CLASS_NAME = "com.alibaba.druid.pool.DruidDataSource";
+    private static final String DBCP2_CLASS_NAME = "org.apache.commons.dbcp2.BasicDataSource";
+    
+    private static final String TOMCAT_DBCP2_CLASS_NAME = "org.apache.tomcat.dbcp.dbcp2.BasicDataSource";
     
     @Override
     protected void convertProperties(final AdvancedMapUpdater<String, Object> updater) {
-        updater.transfer("maxActive", "maxPoolSize");
+        updater.transfer("maxTotal", "maxPoolSize");
         updater.transfer("minIdle", "minPoolSize");
-        updater.transfer("maxWait", "connectionTimeoutMilliseconds");
         updater.transfer("minEvictableIdleTimeMillis", "idleTimeoutMilliseconds");
+        updater.transfer("maxWaitMillis", "connectionTimeoutMilliseconds");
+        updater.transfer("maxConnLifetimeMillis", "maxLifetimeMilliseconds");
         updater.transfer("timeBetweenEvictionRunsMillis", "maintenanceIntervalMilliseconds");
     }
     
     @Override
-    public String originClassName() {
-        return DRUID_CLASS_NAME;
+    public Collection<String> getDataSourceClassNames() {
+        return Arrays.asList(DBCP2_CLASS_NAME, TOMCAT_DBCP2_CLASS_NAME);
     }
 }

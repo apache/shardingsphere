@@ -15,7 +15,7 @@
  * </p>
  */
 
-package io.shardingsphere.transaction.xa.convert.dialect;
+package io.shardingsphere.transaction.xa.convert.datasource;
 
 import io.shardingsphere.core.rule.DataSourceParameter;
 import org.junit.Before;
@@ -44,7 +44,7 @@ public class XAPropertyFactoryTest {
     
     @Test
     public void assertGetMysqlXAProperties() {
-        Properties xaProperties = XAPropertyFactory.build(XADatabaseType.MySQL, dataSourceParameter);
+        Properties xaProperties = XAPropertiesFactory.build(XADatabaseType.MySQL, dataSourceParameter);
         assertThat(xaProperties.getProperty("user"), is("root"));
         assertThat(xaProperties.getProperty("password"), is("root"));
         assertThat(xaProperties.getProperty("URL"), is("jdbc:mysql://127.0.0.1:3306/demo"));
@@ -66,7 +66,7 @@ public class XAPropertyFactoryTest {
     @Test
     public void assertGetH2XAProperties() {
         dataSourceParameter.setUrl("jdbc:h2:mem:db0;DB_CLOSE_DELAY=-1;DATABASE_TO_UPPER=false;MODE=MYSQL");
-        Properties xaProperties = XAPropertyFactory.build(XADatabaseType.H2, dataSourceParameter);
+        Properties xaProperties = XAPropertiesFactory.build(XADatabaseType.H2, dataSourceParameter);
         assertThat(xaProperties.getProperty("user"), is("root"));
         assertThat(xaProperties.getProperty("password"), is("root"));
         assertThat(xaProperties.getProperty("URL"), is("jdbc:h2:mem:db0;DB_CLOSE_DELAY=-1;DATABASE_TO_UPPER=false;MODE=MYSQL"));
@@ -75,7 +75,7 @@ public class XAPropertyFactoryTest {
     @Test
     public void assertGetPGXAProperties() {
         dataSourceParameter.setUrl("jdbc:postgresql://db.psql:5432/test_db");
-        Properties xaProperties = XAPropertyFactory.build(XADatabaseType.PostgreSQL, dataSourceParameter);
+        Properties xaProperties = XAPropertiesFactory.build(XADatabaseType.PostgreSQL, dataSourceParameter);
         assertThat(xaProperties.getProperty("user"), is("root"));
         assertThat(xaProperties.getProperty("password"), is("root"));
         assertThat(xaProperties.getProperty("serverName"), is("db.psql"));
@@ -86,7 +86,7 @@ public class XAPropertyFactoryTest {
     @Test
     public void assertGetSQLServerXAProperties() {
         dataSourceParameter.setUrl("jdbc:sqlserver://db.sqlserver:1433;DatabaseName=test_db");
-        Properties xaProperties = XAPropertyFactory.build(XADatabaseType.SQLServer, dataSourceParameter);
+        Properties xaProperties = XAPropertiesFactory.build(XADatabaseType.SQLServer, dataSourceParameter);
         assertThat(xaProperties.getProperty("user"), is("root"));
         assertThat(xaProperties.getProperty("password"), is("root"));
         assertThat(xaProperties.getProperty("serverName"), is("db.sqlserver"));
@@ -97,7 +97,7 @@ public class XAPropertyFactoryTest {
     @Test
     public void assertGetOracleXAProperties() {
         dataSourceParameter.setUrl("jdbc:oracle:thin:@//db.oracle:9999/test_db");
-        Properties xaProperties = XAPropertyFactory.build(XADatabaseType.Oracle, dataSourceParameter);
+        Properties xaProperties = XAPropertiesFactory.build(XADatabaseType.Oracle, dataSourceParameter);
         assertThat(xaProperties.getProperty("user"), is("root"));
         assertThat(xaProperties.getProperty("password"), is("root"));
         assertThat(xaProperties.getProperty("serverName"), is("db.oracle"));

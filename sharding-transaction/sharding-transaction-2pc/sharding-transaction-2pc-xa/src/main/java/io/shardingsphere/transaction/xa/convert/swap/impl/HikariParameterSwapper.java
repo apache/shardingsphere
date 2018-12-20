@@ -15,7 +15,13 @@
  * </p>
  */
 
-package io.shardingsphere.transaction.xa.convert.swap;
+package io.shardingsphere.transaction.xa.convert.swap.impl;
+
+import io.shardingsphere.transaction.xa.convert.swap.AdvancedMapUpdater;
+import io.shardingsphere.transaction.xa.convert.swap.DataSourceSwapperAdapter;
+
+import java.util.Collection;
+import java.util.Collections;
 
 /**
  * Hikari datasource parameter swapper.
@@ -37,7 +43,7 @@ public final class HikariParameterSwapper extends DataSourceSwapperAdapter {
     }
     
     @Override
-    public String originClassName() {
-        return HIKARI_CLASS_NAME;
+    public Collection<String> getDataSourceClassNames() {
+        return Collections.singleton(HIKARI_CLASS_NAME);
     }
 }
