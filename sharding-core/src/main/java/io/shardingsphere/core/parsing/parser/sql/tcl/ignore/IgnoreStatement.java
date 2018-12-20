@@ -17,7 +17,6 @@
 
 package io.shardingsphere.core.parsing.parser.sql.tcl.ignore;
 
-import io.shardingsphere.core.constant.transaction.TransactionOperationType;
 import io.shardingsphere.core.parsing.parser.sql.tcl.TCLStatement;
 
 /**
@@ -26,8 +25,4 @@ import io.shardingsphere.core.parsing.parser.sql.tcl.TCLStatement;
  * @author zhangliang
  */
 public final class IgnoreStatement extends TCLStatement {
-    
-    public IgnoreStatement() {
-        super(TransactionOperationType.IGNORE);
-    }
 }

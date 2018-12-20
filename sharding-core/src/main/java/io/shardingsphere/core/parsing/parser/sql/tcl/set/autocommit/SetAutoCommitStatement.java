@@ -17,22 +17,18 @@
 
 package io.shardingsphere.core.parsing.parser.sql.tcl.set.autocommit;
 
-import io.shardingsphere.core.constant.transaction.TransactionOperationType;
 import io.shardingsphere.core.parsing.parser.sql.tcl.TCLStatement;
+import lombok.Getter;
+import lombok.Setter;
 
 /**
- * Set transaction statement.
+ * Set auto commit statement.
  *
  * @author zhangliang
  */
+@Getter
+@Setter
 public final class SetAutoCommitStatement extends TCLStatement {
     
-    /**
-     * Set auto commit.
-     * 
-     * @param autoCommit auto commit
-     */
-    public void setAutoCommit(final boolean autoCommit) {
-        setOperationType(autoCommit ? TransactionOperationType.IGNORE : TransactionOperationType.BEGIN);
-    }
+    private boolean autoCommit;
 }
