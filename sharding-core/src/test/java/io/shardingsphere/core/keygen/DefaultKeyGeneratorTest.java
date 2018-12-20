@@ -104,7 +104,7 @@ public final class DefaultKeyGeneratorTest {
     }
     
     @Test
-    public void assertGenerateKey2() {
+    public void assertGenerateKeyBeyondMaxSequencePerMilliSecond() {
         List<Number> expected = Arrays.<Number>asList(4194304L, 4194305L, 4194306L, 8388609L, 8388610L, 8388611L, 12582912L, 12582913L, 12582914L, 16777217L);
         final DefaultKeyGenerator keyGenerator = new DefaultKeyGenerator();
         TimeService timeService = new FixedTimeService(2);
