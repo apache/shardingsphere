@@ -59,7 +59,7 @@ public final class DefaultKeyGeneratorTest {
     }
     
     @Test
-    public void assertGenerateKey() {
+    public void assertGenerateKeyWithSingleThread() {
         List<Number> expected = Arrays.<Number>asList(1L, 4194304L, 4194305L, 8388609L, 8388610L, 12582912L, 12582913L, 16777217L, 16777218L, 20971520L);
         DefaultKeyGenerator keyGenerator = new DefaultKeyGenerator();
         DefaultKeyGenerator.setTimeService(new FixedTimeService(1));
