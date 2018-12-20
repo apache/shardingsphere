@@ -17,11 +17,15 @@
 
 package io.shardingsphere.core.keygen;
 
+import io.shardingsphere.core.keygen.fixture.FixedTimeService;
 import lombok.SneakyThrows;
 import org.junit.Test;
 
 import java.lang.reflect.Field;
+import java.util.ArrayList;
+import java.util.Arrays;
 import java.util.HashSet;
+import java.util.List;
 import java.util.Set;
 import java.util.concurrent.Callable;
 import java.util.concurrent.ExecutionException;
@@ -53,7 +57,19 @@ public final class DefaultKeyGeneratorTest {
         }
         assertThat(generatedKeys.size(), is(taskNumber));
     }
-  
+    
+    @Test
+    public void assertGenerateKey() {
+        List<Number> expected = Arrays.<Number>asList(1L, 4194304L, 4194305L, 8388609L, 8388610L, 12582912L, 12582913L, 16777217L, 16777218L, 20971520L);
+        DefaultKeyGenerator keyGenerator = new DefaultKeyGenerator();
+        DefaultKeyGenerator.setTimeService(new FixedTimeService(1));
+        List<Number> actual = new ArrayList<>();
+        for (int i = 0; i < 10; i++) {
+            actual.add(keyGenerator.generateKey());
+        }
+        assertThat(actual, is(expected));
+    }
+    
     @Test(expected = IllegalArgumentException.class)
     public void assertSetWorkerIdFailureWhenNegative() {
         DefaultKeyGenerator.setWorkerId(-1L);
