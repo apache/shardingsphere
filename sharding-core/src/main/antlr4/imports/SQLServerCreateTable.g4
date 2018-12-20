@@ -5,11 +5,11 @@ import SQLServerKeyword, DataType, Keyword, SQLServerTableBase, SQLServerBase, B
 createTable
     : createTableHeader createTableBody
     ;
-
+    
 createTableHeader
     : CREATE TABLE tableName
     ;
-
+    
 createTableBody
     : (AS FILETABLE)?
     LP_ createTableDefinition (COMMA createTableDefinition)* (COMMA periodClause)? RP_
@@ -18,15 +18,15 @@ createTableBody
     ((FILESTREAM_ON (schemaName) | fileGroup STRING))?
     (WITH LP_ tableOption (COMMA tableOption)*  RP_)?
     ;
-
+    
 createTableDefinition
     : columnDefinition | computedColumnDefinition | columnSetDefinition | tableConstraint | tableIndex
     ;
-
+    
 periodClause
     : PERIOD FOR SYSTEM_TIME LP_ columnName COMMA columnName RP_
     ;
-
+    
 tableIndex
     : INDEX indexName
     (
@@ -39,7 +39,7 @@ tableIndex
     (WITH LP_ indexOption ( COMMA indexOption)* RP_)? indexOnClause?
     (FILESTREAM_ON (groupName | schemaName | STRING))?
     ;
-
+    
 tableOption
     : DATA_COMPRESSION EQ_ (NONE | ROW | PAGE) (ON PARTITIONS LP_ partitionExpressions RP_)?
     | FILETABLE_DIRECTORY EQ_ directoryName 
@@ -53,25 +53,25 @@ tableOption
     | distributionOption
     | dataWareHouseTableOption     
     ;
-
+    
 tableOptOption
     : (MEMORY_OPTIMIZED EQ_ ON)   
     | (DURABILITY EQ_ (SCHEMA_ONLY | SCHEMA_AND_DATA)) 
     | (SYSTEM_VERSIONING EQ_ ON ( LP_  HISTORY_TABLE EQ_ tableName (COMMA DATA_CONSISTENCY_CHECK EQ_ ( ON | OFF ) )? RP_ )?)   
     ;
-
+    
 distributionOption
     : DISTRIBUTION EQ_ (HASH LP_ columnName RP_ | ROUND_ROBIN | REPLICATE) 
     ;
-
+    
 dataWareHouseTableOption
     : CLUSTERED COLUMNSTORE INDEX | HEAP | dataWareHousePartitionOption
     ;
-
+    
 dataWareHousePartitionOption
-     : (PARTITION LP_ columnName  RANGE (LEFT | RIGHT)? FOR VALUES LP_  simpleExpr (COMMA simpleExpr)* RP_  RP_)
-     ;
-
+    : (PARTITION LP_ columnName  RANGE (LEFT | RIGHT)? FOR VALUES LP_  simpleExpr (COMMA simpleExpr)* RP_  RP_)
+    ;
+    
 tableStretchOptions 
-     : (FILTER_PREDICATE EQ_ (NULL | functionCall) COMMA)? MIGRATION_STATE EQ_ (OUTBOUND | INBOUND | PAUSED)  
-     ;
+    : (FILTER_PREDICATE EQ_ (NULL | functionCall) COMMA)? MIGRATION_STATE EQ_ (OUTBOUND | INBOUND | PAUSED)  
+    ;

@@ -32,6 +32,7 @@ import java.util.Collection;
  * 
  * @author zhangliang
  * @author gaohongtao
+ * @author yangyi
  */
 @RequiredArgsConstructor
 public abstract class AbstractStatementAdapter extends AbstractUnsupportedOperationStatement {
@@ -158,8 +159,12 @@ public abstract class AbstractStatementAdapter extends AbstractUnsupportedOperat
     }
     
     @Override
-    public final boolean getMoreResults() {
-        return false;
+    public final boolean getMoreResults() throws SQLException {
+        boolean result = false;
+        for (Statement each : getRoutedStatements()) {
+            result = each.getMoreResults();
+        }
+        return result;
     }
     
     @Override

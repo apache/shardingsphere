@@ -19,15 +19,15 @@ whereClause
     ;
     
 groupByClause 
-    : GROUP BY orderByItem (COMMA orderByItem)* (WITH ROLLUP)? havingClause?
+    : GROUP BY orderByItem (COMMA orderByItem)* (WITH ROLLUP)?
     ;
     
 havingClause
     : HAVING  expr
     ;
     
-limitClause:
-    LIMIT rangeClause
+limitClause
+    : LIMIT rangeClause
     ;
     
 partitionClause 
@@ -35,9 +35,7 @@ partitionClause
     ;
     
 selectExprs
-    : selectExpr (COMMA selectExpr)*
-    | asterisk (COMMA selectExpr)*
-    | (selectExpr COMMA)+ asterisk (COMMA selectExpr)*
+    :  (asterisk |selectExpr) (COMMA selectExpr)*
     ; 
     
 asterisk
@@ -50,12 +48,4 @@ selectExpr
     
 tableReferences
     : 
-    ;
-    
-functionCall
-    : (ID | DATE) LP_ distinct? (exprs | ASTERISK)? RP_
-    ;
-    
-variable
-    : (AT_ AT_)? (GLOBAL | PERSIST  | PERSIST_ONLY | SESSION)? DOT? ID
     ;

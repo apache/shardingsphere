@@ -17,9 +17,6 @@
 
 package io.shardingsphere.core.parsing.parser.sql.tcl.rollback;
 
-import io.shardingsphere.core.constant.DatabaseType;
-import io.shardingsphere.core.parsing.lexer.LexerEngine;
-import io.shardingsphere.core.rule.ShardingRule;
 import lombok.AccessLevel;
 import lombok.NoArgsConstructor;
 
@@ -34,12 +31,9 @@ public final class RollbcakParserFactory {
     /**
      * Create rollback parser instance.
      *
-     * @param dbType database type
-     * @param shardingRule databases and tables sharding rule
-     * @param lexerEngine lexical analysis engine.
-     * @return create parser instance
+     * @return rollback parser instance
      */
-    public static RollbackParser newInstance(final DatabaseType dbType, final ShardingRule shardingRule, final LexerEngine lexerEngine) {
+    public static RollbackParser newInstance() {
         return new RollbackParser();
     }
 }

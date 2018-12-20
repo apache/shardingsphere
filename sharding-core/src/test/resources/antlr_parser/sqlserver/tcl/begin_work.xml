@@ -1,0 +1,5 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<parser-result-sets namespace="sqlserver.tcl.beginWork">
+    <parser-result sql-case-id="begin" transaction-operation-type="BEGIN" />
+    <parser-result sql-case-id="begin_with_name" transaction-operation-type="BEGIN" />
+</parser-result-sets>

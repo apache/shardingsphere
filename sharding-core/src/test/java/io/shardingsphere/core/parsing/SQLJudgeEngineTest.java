@@ -28,6 +28,7 @@ import io.shardingsphere.core.parsing.parser.dialect.mysql.statement.ShowTablesS
 import io.shardingsphere.core.parsing.parser.dialect.mysql.statement.UseStatement;
 import io.shardingsphere.core.parsing.parser.exception.SQLParsingException;
 import io.shardingsphere.core.parsing.parser.sql.SQLStatement;
+import io.shardingsphere.core.parsing.parser.sql.dal.set.SetStatement;
 import io.shardingsphere.core.parsing.parser.sql.dml.DMLStatement;
 import io.shardingsphere.core.parsing.parser.sql.dml.insert.InsertStatement;
 import io.shardingsphere.core.parsing.parser.sql.dql.DQLStatement;
@@ -35,8 +36,8 @@ import io.shardingsphere.core.parsing.parser.sql.tcl.TCLStatement;
 import org.junit.Test;
 
 import static org.hamcrest.CoreMatchers.instanceOf;
-import static org.junit.Assert.assertThat;
 import static org.hamcrest.CoreMatchers.is;
+import static org.junit.Assert.assertThat;
 
 public final class SQLJudgeEngineTest {
     
@@ -61,8 +62,18 @@ public final class SQLJudgeEngineTest {
     }
     
     @Test
-    public void assertJudgeForSet() {
+    public void assertJudgeForSetTransaction() {
+        assertThat(new SQLJudgeEngine(" /*+ HINT SELECT * FROM TT*/  \t \n  \r \fset\t\n  transaction  ").judge(), instanceOf(TCLStatement.class));
+    }
+    
+    @Test
+    public void assertJudgeForSetAutoCommit() {
         assertThat(new SQLJudgeEngine(" /*+ HINT SELECT * FROM TT*/  \t \n  \r \fset\t\n  autocommit  ").judge(), instanceOf(TCLStatement.class));
+    }
+    
+    @Test
+    public void assertJudgeForSetOther() {
+        assertThat(new SQLJudgeEngine(" /*+ HINT SELECT * FROM TT*/  \t \n  \r \fset\t\n  other  ").judge(), instanceOf(SetStatement.class));
     }
     
     @Test

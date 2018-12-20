@@ -113,6 +113,8 @@ public enum RuleName {
     
     PREDICATE("Predicate"),
     
+    BITEXPR("BitExpr"),
+    
     QUESTION("Question"),
     
     NUMBER("Number"),
@@ -129,11 +131,9 @@ public enum RuleName {
     
     SHOW_PARAM("ShowParam"),
     
-    SET_VARIABLE_ASSIGNMENT("SetVariableAssignment"),
+    SET_AUTO_COMMIT("SetAutoCommit"),
     
-    VARIABLE_KEY("VariableKey"),
-    
-    VARIABLE_VALUE("VariableValue");
+    AUTO_COMMIT_VALUE("AutoCommitValue");
     
     private final String name;
     

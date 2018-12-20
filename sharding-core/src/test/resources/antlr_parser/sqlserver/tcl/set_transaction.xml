@@ -1,0 +1,4 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<parser-result-sets namespace="sqlserver.tcl.setTransaction">
+    <parser-result sql-case-id="set_transaction" transaction-operation-type="SET_TRANSACTION" />
+</parser-result-sets>

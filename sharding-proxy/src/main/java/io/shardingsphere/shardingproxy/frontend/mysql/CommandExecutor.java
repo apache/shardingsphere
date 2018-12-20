@@ -20,8 +20,10 @@ package io.shardingsphere.shardingproxy.frontend.mysql;
 import com.google.common.base.Optional;
 import io.netty.buffer.ByteBuf;
 import io.netty.channel.ChannelHandlerContext;
+import io.shardingsphere.core.constant.properties.ShardingPropertiesConstant;
 import io.shardingsphere.shardingproxy.backend.jdbc.connection.BackendConnection;
 import io.shardingsphere.shardingproxy.frontend.common.FrontendHandler;
+import io.shardingsphere.shardingproxy.runtime.GlobalRegistry;
 import io.shardingsphere.shardingproxy.transport.common.packet.DatabasePacket;
 import io.shardingsphere.shardingproxy.transport.mysql.constant.ServerErrorCode;
 import io.shardingsphere.shardingproxy.transport.mysql.packet.MySQLPacketPayload;
@@ -70,19 +72,20 @@ public final class CommandExecutor implements Runnable {
                 return;
             }
             for (DatabasePacket each : responsePackets.get().getPackets()) {
-                context.writeAndFlush(each);
+                context.write(each);
             }
             if (commandPacket instanceof QueryCommandPacket && !(responsePackets.get().getHeadPacket() instanceof OKPacket) && !(responsePackets.get().getHeadPacket() instanceof ErrPacket)) {
                 writeMoreResults((QueryCommandPacket) commandPacket, responsePackets.get().getPackets().size());
             }
             connectionSize = backendConnection.getConnectionSize();
         } catch (final SQLException ex) {
-            context.writeAndFlush(new ErrPacket(++currentSequenceId, ex));
+            context.write(new ErrPacket(++currentSequenceId, ex));
             // CHECKSTYLE:OFF
         } catch (final Exception ex) {
             // CHECKSTYLE:ON
-            context.writeAndFlush(new ErrPacket(1, ServerErrorCode.ER_STD_UNKNOWN_EXCEPTION, ex.getMessage()));
+            context.write(new ErrPacket(1, ServerErrorCode.ER_STD_UNKNOWN_EXCEPTION, ex.getMessage()));
         } finally {
+            context.flush();
             rootInvokeHook.finish(connectionSize);
         }
     }
@@ -97,7 +100,10 @@ public final class CommandExecutor implements Runnable {
             return;
         }
         currentSequenceId = headPacketsCount;
+        int count = 0;
+        int proxyFrontendFlushThreshold = GlobalRegistry.getInstance().getShardingProperties().<Integer>getValue(ShardingPropertiesConstant.PROXY_FRONTEND_FLUSH_THRESHOLD);
         while (queryCommandPacket.next()) {
+            count++;
             while (!context.channel().isWritable() && context.channel().isActive()) {
                 synchronized (frontendHandler) {
                     try {
@@ -108,9 +114,12 @@ public final class CommandExecutor implements Runnable {
             }
             DatabasePacket resultValue = queryCommandPacket.getResultValue();
             currentSequenceId = resultValue.getSequenceId();
-            context.writeAndFlush(resultValue);
+            context.write(resultValue);
+            if (proxyFrontendFlushThreshold == count) {
+                context.flush();
+                count = 0;
+            }
         }
-        context.writeAndFlush(new EofPacket(++currentSequenceId));
+        context.write(new EofPacket(++currentSequenceId));
     }
 }
-

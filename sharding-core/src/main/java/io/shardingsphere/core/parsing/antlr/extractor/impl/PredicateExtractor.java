@@ -118,10 +118,9 @@ public final class PredicateExtractor implements OptionalSQLSegmentExtractor {
                 break;
             }
         }
-        if (0 <= index) {
-            Preconditions.checkState(exprNode.getChildCount() == index + 3, "Invalid expression.");
+        if (-1 != index) {
             Preconditions.checkState(Paren.match(exprNode.getChild(index).getText(), exprNode.getChild(index + 2).getText()), "Missing right paren.");
-            if (index >= 0 && RuleName.EXPR.getName().equals(exprNode.getChild(index + 1).getClass().getSimpleName())) {
+            if (RuleName.EXPR.getName().equals(exprNode.getChild(index + 1).getClass().getSimpleName())) {
                 return extractCondition(questionNodeIndexMap, (ParserRuleContext) exprNode.getChild(index + 1));
             }
             return Optional.absent();
@@ -167,10 +166,10 @@ public final class PredicateExtractor implements OptionalSQLSegmentExtractor {
             return Optional.of(new ConditionSegment(column.get(), ShardingOperator.EQUAL, rightColumn.get()));
         }
         Optional<ColumnSegment> column = buildColumn(exprNode);
-        ParserRuleContext valueNode = null;
+        ParserRuleContext valueNode;
         if (leftNode.isPresent()) {
             valueNode = (ParserRuleContext) comparisionNode.get().parent.getChild(2);
-        } else if (rightNode.isPresent()) {
+        } else {
             valueNode = (ParserRuleContext) comparisionNode.get().parent.getChild(0);
         }
         Optional<ExpressionSegment> sqlExpression = buildExpression(questionNodeIndexMap, valueNode);
@@ -191,8 +190,9 @@ public final class PredicateExtractor implements OptionalSQLSegmentExtractor {
             Integer index = questionNodeIndexMap.get(expressionNode.get());
             commonExpressionSegment.setIndex(index);
         } else {
+            Optional<ParserRuleContext> bitExprNode = ExtractorUtils.findFirstChildNode(valueNode, RuleName.BITEXPR);
             expressionNode = ExtractorUtils.findFirstChildNode(valueNode, RuleName.NUMBER);
-            if (expressionNode.isPresent()) {
+            if (expressionNode.isPresent() && (!bitExprNode.isPresent() || 1 == bitExprNode.get().getChildCount())) {
                 commonExpressionSegment.setValue(NumberUtil.getExactlyNumber(expressionNode.get().getText(), 10));
             }
         }

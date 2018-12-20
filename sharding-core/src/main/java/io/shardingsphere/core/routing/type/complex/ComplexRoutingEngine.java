@@ -17,9 +17,14 @@
 
 package io.shardingsphere.core.routing.type.complex;
 
+import java.util.ArrayList;
+import java.util.Collection;
+import java.util.TreeSet;
+
 import com.google.common.base.Function;
 import com.google.common.base.Optional;
 import com.google.common.collect.Lists;
+
 import io.shardingsphere.core.exception.ShardingException;
 import io.shardingsphere.core.optimizer.condition.ShardingConditions;
 import io.shardingsphere.core.routing.type.RoutingEngine;
@@ -29,10 +34,6 @@ import io.shardingsphere.core.rule.BindingTableRule;
 import io.shardingsphere.core.rule.ShardingRule;
 import io.shardingsphere.core.rule.TableRule;
 import lombok.RequiredArgsConstructor;
-
-import java.util.ArrayList;
-import java.util.Collection;
-import java.util.TreeSet;
 
 /**
  * Complex routing engine.

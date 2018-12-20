@@ -1,7 +1,7 @@
 grammar SQLServerTCLStatement;
 
 import SQLServerKeyword, Keyword, SQLServerBase, DataType, Symbol;
-    
+
 setTransaction
     : SET TRANSACTION ISOLATION LEVEL
     (
@@ -9,10 +9,9 @@ setTransaction
         | REPEATABLE READ
         | SNAPSHOT
         | SERIALIZABLE
-        | ISOLATION LEVEL READ UNCOMMITTED
     )
     ;
-
+    
 commit
     : COMMIT 
     (
@@ -20,7 +19,7 @@ commit
         | WORK?
     )
     ;
-
+    
 rollback
     : ROLLBACK  
     (
@@ -28,23 +27,19 @@ rollback
         | WORK?
     )
     ;
-
+    
 savepoint
     : SAVE (TRAN | TRANSACTION) ID
     ;
-
+    
 beginWork
     : BEGIN (TRAN | TRANSACTION) (ID (WITH MARK STRING)?)?
     ;
 
-setVariable
-    : (IF AT_ AT_ TRANCOUNT GT NUMBER COMMIT TRAN)? SET setVariableAssignment
+setAutoCommit
+    : (IF AT_ AT_ TRANCOUNT GT NUMBER COMMIT TRAN)? SET IMPLICIT_TRANSACTIONS autoCommitValue
     ;
 
-setVariableAssignment
-    : IMPLICIT_TRANSACTIONS variableValue
-    ;
-
-variableValue
+autoCommitValue
     : ON | OFF
     ;

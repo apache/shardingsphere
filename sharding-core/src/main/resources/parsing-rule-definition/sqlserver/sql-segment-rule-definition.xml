@@ -1,8 +1,0 @@
-<?xml version="1.0" encoding="UTF-8"?>
-<sql-segment-rule-definition database-type="SQLServer" base-package="io.shardingsphere.core.parsing.antlr" extractor-base-package="extractor.impl" filler-base-package="filler.impl">
-    <sql-segment-rule id="addColumn" extractor-class="AddColumnExtractor" filler-class="ColumnDefinitionFiller" />
-    <sql-segment-rule id="modifyColumn" extractor-class="ModifyColumnExtractor" />
-    <sql-segment-rule id="addIndex" extractor-class="dialect.sqlserver.SQLServerAddIndexExtractor" filler-class="IndexFiller" />
-    <sql-segment-rule id="dropIndex" extractor-class="dialect.sqlserver.SQLServerDropIndexExtractor" filler-class="IndexFiller" />
-    <sql-segment-rule id="addPrimaryKey" filler-class="ConstraintDefinitionFiller" extractor-class="dialect.sqlserver.SQLServerAddPrimaryKeyExtractor" />
-</sql-segment-rule-definition>

@@ -17,8 +17,8 @@
 
 package io.shardingsphere.orchestration.internal.registry;
 
-import io.shardingsphere.api.config.RuleConfiguration;
 import io.shardingsphere.api.config.SagaConfiguration;
+import io.shardingsphere.api.config.rule.RuleConfiguration;
 import io.shardingsphere.core.config.DataSourceConfiguration;
 import io.shardingsphere.core.rule.Authentication;
 import io.shardingsphere.orchestration.config.OrchestrationConfiguration;

@@ -1,0 +1,9 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<extractor-rule-definition extractor-base-package="io.shardingsphere.core.parsing.antlr.extractor.impl">
+    <extractor-rule id="addColumn" extractor-class="AddColumnExtractor" />
+    <extractor-rule id="modifyColumn" extractor-class="ModifyColumnExtractor" />
+    <extractor-rule id="addIndex" extractor-class="dialect.sqlserver.SQLServerAddIndexExtractor" />
+    <extractor-rule id="dropIndex" extractor-class="dialect.sqlserver.SQLServerDropIndexExtractor" />
+    <extractor-rule id="addPrimaryKey" extractor-class="dialect.sqlserver.SQLServerAddPrimaryKeyExtractor" />
+    <extractor-rule id="autoCommitValue" extractor-class="dialect.sqlserver.SQLServerAutoCommitValueExtractor" />
+</extractor-rule-definition>

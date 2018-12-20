@@ -19,7 +19,6 @@ package io.shardingsphere.core.parsing.antlr.extractor;
 
 import com.google.common.base.Optional;
 import io.shardingsphere.core.parsing.antlr.parser.SQLAST;
-import io.shardingsphere.core.parsing.antlr.rule.registry.segment.SQLSegmentRule;
 import io.shardingsphere.core.parsing.antlr.sql.segment.SQLSegment;
 
 import java.util.Collection;
@@ -40,15 +39,15 @@ public final class SQLSegmentsExtractorEngine {
      */
     public Collection<SQLSegment> extract(final SQLAST ast) {
         Collection<SQLSegment> result = new LinkedList<>();
-        for (SQLSegmentRule each : ast.getRule().getSqlSegmentRules()) {
-            if (each.getExtractor() instanceof OptionalSQLSegmentExtractor) {
-                Optional<? extends SQLSegment> sqlSegment = ((OptionalSQLSegmentExtractor) each.getExtractor()).extract(ast.getParserRuleContext());
+        for (SQLSegmentExtractor each : ast.getRule().getExtractors()) {
+            if (each instanceof OptionalSQLSegmentExtractor) {
+                Optional<? extends SQLSegment> sqlSegment = ((OptionalSQLSegmentExtractor) each).extract(ast.getParserRuleContext());
                 if (sqlSegment.isPresent()) {
                     result.add(sqlSegment.get());
                 }
             }
-            if (each.getExtractor() instanceof CollectionSQLSegmentExtractor) {
-                result.addAll(((CollectionSQLSegmentExtractor) each.getExtractor()).extract(ast.getParserRuleContext()));
+            if (each instanceof CollectionSQLSegmentExtractor) {
+                result.addAll(((CollectionSQLSegmentExtractor) each).extract(ast.getParserRuleContext()));
             }
         }
         return result;

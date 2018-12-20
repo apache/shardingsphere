@@ -49,7 +49,7 @@ public final class ShardingCTLSetBackendHandler extends AbstractBackendHandler {
         }
         switch (shardingTCLStatement.get().getKey()) {
             case "TRANSACTION_TYPE":
-                backendConnection.setTransactionType(TransactionType.find(shardingTCLStatement.get().getValue()));
+                backendConnection.setTransactionType(TransactionType.valueOf(shardingTCLStatement.get().getValue()));
                 break;
             default:
                 return new CommandResponsePackets(new ErrPacket(String.format(" could not support this sctl grammar [%s].", sql)));

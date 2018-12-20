@@ -1,8 +1,12 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <parser-result-sets>
-    <parser-result sql-case-id="setAutoCommit" />
-    <parser-result sql-case-id="commit" value="COMMIT" />
-    <parser-result sql-case-id="rollback" value="ROLLBACK" />
-    <parser-result sql-case-id="savepoint" value="SAVEPOINT" />
-    <parser-result sql-case-id="begin" value="BEGIN" />
+    <parser-result sql-case-id="setTransaction" transaction-operation-type="SET_TRANSACTION" />
+    <parser-result sql-case-id="commit" transaction-operation-type="COMMIT" />
+    <parser-result sql-case-id="rollback" transaction-operation-type="ROLLBACK" />
+    <parser-result sql-case-id="savepoint" transaction-operation-type="IGNORE" />
+    <parser-result sql-case-id="begin" transaction-operation-type="BEGIN" />
+    <parser-result sql-case-id="setAutoCommitOn" transaction-operation-type="IGNORE" />
+    <parser-result sql-case-id="setAutoCommitOff" transaction-operation-type="BEGIN" />
+    <parser-result sql-case-id="setImplicitTransactionsON" transaction-operation-type="IGNORE" />
+    <parser-result sql-case-id="setImplicitTransactionsOff" transaction-operation-type="BEGIN" />
 </parser-result-sets>

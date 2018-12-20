@@ -19,8 +19,8 @@ package io.shardingsphere.core.routing.type.complex;
 
 import io.shardingsphere.api.algorithm.sharding.ListShardingValue;
 import io.shardingsphere.api.algorithm.sharding.ShardingValue;
-import io.shardingsphere.api.config.ShardingRuleConfiguration;
-import io.shardingsphere.api.config.TableRuleConfiguration;
+import io.shardingsphere.api.config.rule.ShardingRuleConfiguration;
+import io.shardingsphere.api.config.rule.TableRuleConfiguration;
 import io.shardingsphere.api.config.strategy.InlineShardingStrategyConfiguration;
 import io.shardingsphere.core.optimizer.condition.ShardingCondition;
 import io.shardingsphere.core.optimizer.condition.ShardingConditions;
@@ -44,11 +44,11 @@ public final class ComplexRoutingEngineTest {
     
     @Before
     public void setEngineContext() {
-        ShardingRuleConfiguration shardingRuleConfig = new ShardingRuleConfiguration();
         TableRuleConfiguration tableRuleConfig1 = new TableRuleConfiguration();
         tableRuleConfig1.setLogicTable("t_order");
         tableRuleConfig1.setActualDataNodes("ds${0..1}.t_order_${0..2}");
         tableRuleConfig1.setTableShardingStrategyConfig(new InlineShardingStrategyConfiguration("order_id", "t_order_${order_id % 2}"));
+        ShardingRuleConfiguration shardingRuleConfig = new ShardingRuleConfiguration();
         shardingRuleConfig.getTableRuleConfigs().add(tableRuleConfig1);
         TableRuleConfiguration tableRuleConfig2 = new TableRuleConfiguration();
         tableRuleConfig2.setLogicTable("t_order_item");

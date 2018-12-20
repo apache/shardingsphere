@@ -6,15 +6,15 @@
     <parent>
         <groupId>io.shardingsphere</groupId>
         <artifactId>sharding-sphere</artifactId>
-        <version>3.0.1-SNAPSHOT</version>
+        <version>3.1.0-SNAPSHOT</version>
     </parent>
     <artifactId>sharding-transaction</artifactId>
     <name>${project.artifactId}</name>
     <packaging>pom</packaging>
     
     <modules>
-        <module>sharding-transaction-api</module>
-        <module>sharding-transaction-xa</module>
+        <module>sharding-transaction-core</module>
+        <module>sharding-transaction-2pc</module>
         <module>sharding-transaction-base</module>
     </modules>
     

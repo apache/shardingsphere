@@ -48,9 +48,9 @@ public final class LimitFiller implements SQLStatementFiller {
                 selectStatement.getSQLTokens().add(new OffsetToken(limitSegment.getOffset().get().getBeginPosition(), limitSegment.getOffset().get().getValue()));
             }
         }
-        limit.setRowCount(new LimitValue(limitSegment.getRowCount().get().getValue(), limitSegment.getRowCount().get().getIndex(), false));
-        if (-1 == limitSegment.getRowCount().get().getIndex()) {
-            selectStatement.getSQLTokens().add(new RowCountToken(limitSegment.getRowCount().get().getBeginPosition(), limitSegment.getRowCount().get().getValue()));
+        limit.setRowCount(new LimitValue(limitSegment.getRowCount().getValue(), limitSegment.getRowCount().getIndex(), false));
+        if (-1 == limitSegment.getRowCount().getIndex()) {
+            selectStatement.getSQLTokens().add(new RowCountToken(limitSegment.getRowCount().getBeginPosition(), limitSegment.getRowCount().getValue()));
         }
     }
 }

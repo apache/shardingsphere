@@ -17,9 +17,10 @@
 
 package io.shardingsphere.core.parsing.parser.sql.tcl;
 
-import com.google.common.base.Optional;
+import io.shardingsphere.core.constant.DatabaseType;
 import io.shardingsphere.core.constant.SQLType;
 import io.shardingsphere.core.constant.transaction.TransactionOperationType;
+import io.shardingsphere.core.parsing.lexer.LexerEngine;
 import io.shardingsphere.core.parsing.lexer.token.DefaultKeyword;
 import io.shardingsphere.core.parsing.lexer.token.Keyword;
 import io.shardingsphere.core.parsing.lexer.token.TokenType;
@@ -41,20 +42,19 @@ import java.util.Collection;
 public class TCLStatement extends AbstractSQLStatement {
     
     private static final Collection<Keyword> STATEMENT_PREFIX = Arrays.<Keyword>asList(
-            DefaultKeyword.SET, DefaultKeyword.COMMIT, DefaultKeyword.ROLLBACK, DefaultKeyword.SAVEPOINT, DefaultKeyword.BEGIN);
+            DefaultKeyword.COMMIT, DefaultKeyword.ROLLBACK, DefaultKeyword.SAVEPOINT, DefaultKeyword.BEGIN);
     
     @Getter
     @Setter
-    private Optional<TransactionOperationType> operationType;
+    private TransactionOperationType operationType;
     
     public TCLStatement() {
         super(SQLType.TCL);
-        this.operationType = Optional.absent();
     }
     
     public TCLStatement(final TransactionOperationType operationType) {
         super(SQLType.TCL);
-        this.operationType = Optional.of(operationType);
+        this.operationType = operationType;
     }
     
     /**
@@ -65,5 +65,23 @@ public class TCLStatement extends AbstractSQLStatement {
      */
     public static boolean isTCL(final TokenType tokenType) {
         return STATEMENT_PREFIX.contains(tokenType);
+    }
+    
+    /**
+     * Is TCL statement.
+     *
+     * @param dbType database type
+     * @param tokenType token type
+     * @param lexerEngine lexer engine
+     * @return is TCL or not
+     */
+    public static boolean isTCLUnsafe(final DatabaseType dbType, final TokenType tokenType, final LexerEngine lexerEngine) {
+        if (DefaultKeyword.SET.equals(tokenType) || DatabaseType.SQLServer.equals(dbType) && DefaultKeyword.IF.equals(tokenType)) {
+            lexerEngine.skipUntil(DefaultKeyword.TRANSACTION, DefaultKeyword.AUTOCOMMIT, DefaultKeyword.IMPLICIT_TRANSACTIONS);
+            if (!lexerEngine.isEnd()) {
+                return true;
+            }
+        }
+        return false;
     }
 }

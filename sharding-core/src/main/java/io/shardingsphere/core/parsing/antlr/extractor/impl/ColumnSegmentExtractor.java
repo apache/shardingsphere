@@ -31,7 +31,7 @@ import java.util.Map;
 
 /**
  * Column extract extractor.
- * 
+ *
  * @author duhongjun
  */
 @RequiredArgsConstructor
@@ -56,6 +56,9 @@ public final class ColumnSegmentExtractor implements OptionalSQLSegmentExtractor
             tableName = tableAlias.get(ownerName.get());
         } else {
             ownerName = Optional.absent();
+        }
+        if ("".equals(tableName) && 1 == tableAlias.size()) {
+            tableName = tableAlias.values().iterator().next();
         }
         columnName = SQLUtil.getExactlyValue(columnName);
         return Optional.of(new ColumnSegment(ownerName, columnName, tableName, columnNode.get().getStart().getStartIndex()));

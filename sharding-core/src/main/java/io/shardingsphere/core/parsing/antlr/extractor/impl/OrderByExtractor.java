@@ -85,8 +85,8 @@ public final class OrderByExtractor implements OptionalSQLSegmentExtractor {
         return result;
     }
     
-    protected OrderByItemSegment buildSegment(final int index, final OrderDirection orderDirection, final int expressionStartPosition,
-                                              final int expressionEndPosition, final boolean isIdentifier, final int orderByItemStartPosition) {
+    private OrderByItemSegment buildSegment(final int index, final OrderDirection orderDirection, 
+                                            final int expressionStartPosition, final int expressionEndPosition, final boolean isIdentifier, final int orderByItemStartPosition) {
         return new OrderByItemSegment(index, expressionStartPosition, expressionEndPosition, isIdentifier, new OrderByToken(orderByItemStartPosition), orderDirection, OrderDirection.ASC);
     }
 }

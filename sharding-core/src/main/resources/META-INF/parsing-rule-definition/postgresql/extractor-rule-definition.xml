@@ -1,0 +1,6 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<extractor-rule-definition extractor-base-package="io.shardingsphere.core.parsing.antlr.extractor.impl">
+    <extractor-rule id="addColumn" extractor-class="AddColumnExtractor" />
+    <extractor-rule id="modifyColumn" extractor-class="ModifyColumnExtractor" />
+    <extractor-rule id="showParam" extractor-class="dialect.postgresql.ShowParamExtractor" />
+</extractor-rule-definition>

@@ -53,6 +53,9 @@ final class TableTokenAssert {
     
     private void assertTableToken(final TableToken actual, final ExpectedTableToken expected) {
         assertThat(assertMessage.getFullAssertMessage("Table tokens begin position assertion error: "), actual.getBeginPosition(), is(expected.getBeginPosition()));
+        if (0 != expected.getSkippedSchemaNameLength()) {
+            assertThat(assertMessage.getFullAssertMessage("Table tokens skipped schema name length assertion error: "), actual.getSkippedSchemaNameLength(), is(expected.getSkippedSchemaNameLength()));
+        }
         assertThat(assertMessage.getFullAssertMessage("Table tokens original literals assertion error: "), actual.getOriginalLiterals(), is(expected.getOriginalLiterals()));
     }
     

@@ -1,0 +1,5 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<parser-result-sets namespace="mysql.tcl.setAutoCommit">
+    <parser-result sql-case-id="set_auto_commit_on" transaction-operation-type="IGNORE" />
+    <parser-result sql-case-id="set_auto_commit_off" transaction-operation-type="BEGIN" />
+</parser-result-sets>
