@@ -45,9 +45,9 @@ public final class DefaultKeyGeneratorTest {
         ExecutorService executor = Executors.newFixedThreadPool(threadNumber);
         final int taskNumber = threadNumber << 2;
         final DefaultKeyGenerator keyGenerator = new DefaultKeyGenerator();
-        Set<Number> generatedKeys = new HashSet<>();
+        Set<Number> actual = new HashSet<>();
         for (int i = 0; i < taskNumber; i++) {
-            generatedKeys.add(executor.submit(new Callable<Number>() {
+            actual.add(executor.submit(new Callable<Number>() {
                 
                 @Override
                 public Number call() {
@@ -55,7 +55,7 @@ public final class DefaultKeyGeneratorTest {
                 }
             }).get());
         }
-        assertThat(generatedKeys.size(), is(taskNumber));
+        assertThat(actual.size(), is(taskNumber));
     }
     
     @Test
