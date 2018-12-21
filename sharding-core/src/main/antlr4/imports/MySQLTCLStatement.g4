@@ -22,7 +22,7 @@ commit
     : COMMIT WORK? (AND NO? CHAIN)? (NO? RELEASE)?
     ;
     
-beginWork
+beginTransaction
     : BEGIN WORK? | startTransaction
     ;
     

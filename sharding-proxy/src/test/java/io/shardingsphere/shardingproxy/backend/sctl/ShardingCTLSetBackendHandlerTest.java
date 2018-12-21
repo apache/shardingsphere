@@ -17,11 +17,11 @@
 
 package io.shardingsphere.shardingproxy.backend.sctl;
 
-import io.shardingsphere.core.constant.transaction.TransactionType;
 import io.shardingsphere.shardingproxy.backend.jdbc.connection.BackendConnection;
 import io.shardingsphere.shardingproxy.transport.mysql.packet.command.CommandResponsePackets;
 import io.shardingsphere.shardingproxy.transport.mysql.packet.generic.ErrPacket;
 import io.shardingsphere.shardingproxy.transport.mysql.packet.generic.OKPacket;
+import io.shardingsphere.transaction.api.TransactionType;
 import org.junit.Test;
 
 import static org.hamcrest.CoreMatchers.instanceOf;

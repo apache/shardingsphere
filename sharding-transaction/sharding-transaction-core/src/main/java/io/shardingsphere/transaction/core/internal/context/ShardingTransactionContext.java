@@ -17,7 +17,7 @@
 
 package io.shardingsphere.transaction.core.internal.context;
 
-import io.shardingsphere.core.constant.transaction.TransactionOperationType;
+import io.shardingsphere.transaction.core.internal.TransactionOperationType;
 
 /**
  * Sharding transaction context.

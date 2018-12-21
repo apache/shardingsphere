@@ -17,7 +17,6 @@
 
 package io.shardingsphere.core.constant.properties;
 
-import io.shardingsphere.core.constant.transaction.TransactionType;
 import lombok.Getter;
 import lombok.RequiredArgsConstructor;
 
@@ -93,7 +92,7 @@ public enum ShardingPropertiesConstant {
      * Sharding-Proxy will run with BASE transaction.
      * </p>
      */
-    PROXY_TRANSACTION_TYPE("proxy.transaction.type", TransactionType.LOCAL.name(), String.class),
+    PROXY_TRANSACTION_TYPE("proxy.transaction.type", "LOCAL", String.class),
     
     /**
      * Enable opentracing for Sharding-Proxy.

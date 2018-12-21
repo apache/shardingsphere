@@ -17,18 +17,28 @@
 
 package io.shardingsphere.transaction.xa.convert;
 
-import io.shardingsphere.transaction.xa.convert.dialect.XADataSourceFactoryTest;
-import io.shardingsphere.transaction.xa.convert.dialect.XAPropertyFactoryTest;
+import io.shardingsphere.transaction.xa.convert.datasource.XADataSourceFactoryTest;
+import io.shardingsphere.transaction.xa.convert.datasource.XAPropertiesFactoryTest;
+import io.shardingsphere.transaction.xa.convert.datasource.dialect.H2XAPropertiesTest;
+import io.shardingsphere.transaction.xa.convert.datasource.dialect.MySQLXAPropertiesTest;
+import io.shardingsphere.transaction.xa.convert.datasource.dialect.OracleXAPropertiesTest;
+import io.shardingsphere.transaction.xa.convert.datasource.dialect.PostgreSQLXAPropertiesTest;
+import io.shardingsphere.transaction.xa.convert.datasource.dialect.SQLServerXAPropertiesTest;
 import io.shardingsphere.transaction.xa.convert.swap.DataSourceSwapperRegistryTest;
 import org.junit.runner.RunWith;
 import org.junit.runners.Suite;
 
 @RunWith(Suite.class)
 @Suite.SuiteClasses({
-    XADataSourceMapConverterTest.class,
-    XADataSourceFactoryTest.class,
-    XAPropertyFactoryTest.class,
-    DataSourceSwapperRegistryTest.class
+        XADataSourceMapConverterTest.class, 
+        XADataSourceFactoryTest.class, 
+        XAPropertiesFactoryTest.class, 
+        H2XAPropertiesTest.class, 
+        MySQLXAPropertiesTest.class, 
+        PostgreSQLXAPropertiesTest.class, 
+        OracleXAPropertiesTest.class, 
+        SQLServerXAPropertiesTest.class, 
+        DataSourceSwapperRegistryTest.class
 })
-public class AllConvertTests {
+public final class AllConvertTests {
 }

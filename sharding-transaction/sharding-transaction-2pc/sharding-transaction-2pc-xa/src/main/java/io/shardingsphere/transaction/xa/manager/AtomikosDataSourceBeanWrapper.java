@@ -20,9 +20,9 @@ package io.shardingsphere.transaction.xa.manager;
 import com.atomikos.beans.PropertyException;
 import com.atomikos.beans.PropertyUtils;
 import com.atomikos.jdbc.AtomikosDataSourceBean;
+import io.shardingsphere.core.constant.DatabaseType;
 import io.shardingsphere.core.rule.DataSourceParameter;
-import io.shardingsphere.transaction.xa.convert.dialect.XADatabaseType;
-import io.shardingsphere.transaction.xa.convert.dialect.XAPropertyFactory;
+import io.shardingsphere.transaction.xa.convert.datasource.XAPropertiesFactory;
 
 import javax.sql.DataSource;
 import javax.sql.XADataSource;
@@ -38,14 +38,15 @@ public final class AtomikosDataSourceBeanWrapper implements XADataSourceWrapper 
     private final AtomikosDataSourceBean delegate = new AtomikosDataSourceBean();
     
     @Override
-    public DataSource wrap(final XADataSource xaDataSource, final String dataSourceName, final DataSourceParameter parameter) throws PropertyException {
-        setAtomikosDatasourceBean(xaDataSource, dataSourceName, parameter);
+    public DataSource wrap(final DatabaseType databaseType, final XADataSource xaDataSource, final String dataSourceName, final DataSourceParameter parameter) throws PropertyException {
+        setAtomikosDatasourceBean(databaseType, xaDataSource, dataSourceName, parameter);
         return delegate;
     }
     
-    private void setAtomikosDatasourceBean(final XADataSource xaDataSource, final String dataSourceName, final DataSourceParameter parameter) throws PropertyException {
+    private void setAtomikosDatasourceBean(
+            final DatabaseType databaseType, final XADataSource xaDataSource, final String dataSourceName, final DataSourceParameter parameter) throws PropertyException {
         setPoolProperties(parameter);
-        setXAProperties(xaDataSource, dataSourceName, parameter);
+        setXAProperties(databaseType, xaDataSource, dataSourceName, parameter);
     }
     
     private void setPoolProperties(final DataSourceParameter parameter) {
@@ -57,10 +58,11 @@ public final class AtomikosDataSourceBeanWrapper implements XADataSourceWrapper 
         delegate.setMaxIdleTime((int) parameter.getIdleTimeoutMilliseconds() / 1000);
     }
     
-    private void setXAProperties(final XADataSource xaDataSource, final String dataSourceName, final DataSourceParameter parameter) throws PropertyException {
+    private void setXAProperties(
+            final DatabaseType databaseType, final XADataSource xaDataSource, final String dataSourceName, final DataSourceParameter dataSourceParameter) throws PropertyException {
         delegate.setXaDataSourceClassName(xaDataSource.getClass().getName());
         delegate.setUniqueResourceName(dataSourceName);
-        Properties xaProperties = XAPropertyFactory.build(XADatabaseType.find(xaDataSource.getClass().getName()), parameter);
+        Properties xaProperties = XAPropertiesFactory.createXAProperties(databaseType).build(dataSourceParameter);
         PropertyUtils.setProperties(xaDataSource, xaProperties);
         delegate.setXaProperties(xaProperties);
         delegate.setXaDataSource(xaDataSource);

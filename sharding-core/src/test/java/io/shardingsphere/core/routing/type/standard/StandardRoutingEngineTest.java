@@ -26,6 +26,7 @@ import java.util.Arrays;
 import java.util.Collections;
 import java.util.List;
 
+import io.shardingsphere.core.routing.type.TableUnit;
 import org.junit.Before;
 import org.junit.Test;
 
@@ -66,11 +67,12 @@ public final class StandardRoutingEngineTest {
     @Test
     public void assertRoute() {
         RoutingResult routingResult = standardRoutingEngine.route();
+        List<TableUnit> tableUnitList = new ArrayList<>(routingResult.getTableUnits().getTableUnits());
         assertThat(routingResult, instanceOf(RoutingResult.class));
         assertThat(routingResult.getTableUnits().getTableUnits().size(), is(1));
-        assertThat(routingResult.getTableUnits().getTableUnits().get(0).getDataSourceName(), is("ds_1"));
-        assertThat(routingResult.getTableUnits().getTableUnits().get(0).getRoutingTables().size(), is(1));
-        assertThat(routingResult.getTableUnits().getTableUnits().get(0).getRoutingTables().get(0).getActualTableName(), is("t_order_1"));
-        assertThat(routingResult.getTableUnits().getTableUnits().get(0).getRoutingTables().get(0).getLogicTableName(), is("t_order"));
+        assertThat(tableUnitList.get(0).getDataSourceName(), is("ds_1"));
+        assertThat(tableUnitList.get(0).getRoutingTables().size(), is(1));
+        assertThat(tableUnitList.get(0).getRoutingTables().get(0).getActualTableName(), is("t_order_1"));
+        assertThat(tableUnitList.get(0).getRoutingTables().get(0).getLogicTableName(), is("t_order"));
     }
 }

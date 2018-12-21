@@ -18,7 +18,6 @@
 package io.shardingsphere.core.parsing.integrate.jaxb.root;
 
 import com.google.common.base.Splitter;
-import io.shardingsphere.core.constant.transaction.TransactionOperationType;
 import io.shardingsphere.core.parsing.integrate.jaxb.condition.ExpectedOrCondition;
 import io.shardingsphere.core.parsing.integrate.jaxb.groupby.ExpectedGroupByColumn;
 import io.shardingsphere.core.parsing.integrate.jaxb.item.ExpectedSelectItems;
@@ -85,8 +84,8 @@ public final class ParserResult {
     @XmlElement(name = "alter-table")
     private ExpectedAlterTable alterTable;
     
-    @XmlAttribute(name = "transaction-operation-type")
-    private TransactionOperationType transactionOperationType;
+    @XmlAttribute(name = "tcl-actual-statement-class-type")
+    private String tclActualStatementClassType;
     
     /**
      * Get parameters.

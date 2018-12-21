@@ -27,7 +27,6 @@ import io.shardingsphere.core.optimizer.AllOptimizerTests;
 import io.shardingsphere.core.parsing.AllParsingTests;
 import io.shardingsphere.core.rewrite.AllRewriteTests;
 import io.shardingsphere.core.routing.AllRoutingTests;
-import io.shardingsphere.core.transaction.AllTransactionTests;
 import io.shardingsphere.core.util.AllUtilTests;
 import io.shardingsphere.core.yaml.AllYamlTests;
 import org.junit.runner.RunWith;
@@ -47,8 +46,7 @@ import org.junit.runners.Suite.SuiteClasses;
         AllExecutorTests.class, 
         AllMergerTests.class, 
         AllHintTests.class, 
-        AllYamlTests.class,
-        AllTransactionTests.class
+        AllYamlTests.class
     })
 public final class AllCoreTests {
 }

@@ -30,12 +30,12 @@ import java.util.Map;
 public interface DataSourceMapConverter {
     
     /**
-     * Do convert data source map.
+     * Convert data source map.
      *
-     * @param dataSourceMap data source map
      * @param databaseType database type
+     * @param dataSourceMap data source map
      * @return data source map
      */
-    Map<String, DataSource> convert(Map<String, DataSource> dataSourceMap, DatabaseType databaseType);
+    Map<String, DataSource> convert(DatabaseType databaseType, Map<String, DataSource> dataSourceMap);
 }
 
