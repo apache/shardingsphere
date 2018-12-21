@@ -72,7 +72,7 @@ TransactionTypeHolder.set(TransactionType.XA);
 
 ```java
 @ShardingTransactionType(TransactionType.XA)
-@Transactionnal
+@Transactional
 ```
 
 注意：`@ShardingTransactionType`需要同Spring的`@Transactional`配套使用，事务才会生效。
