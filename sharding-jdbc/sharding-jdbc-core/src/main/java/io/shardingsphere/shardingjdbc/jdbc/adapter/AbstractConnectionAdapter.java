@@ -219,6 +219,16 @@ public abstract class AbstractConnectionAdapter extends AbstractUnsupportedOpera
         } else if (TransactionType.XA == transactionType) {
             shardingTransactionHandler.doInTransaction(new XATransactionContext(TransactionOperationType.COMMIT));
         } else if (TransactionType.BASE == transactionType) {
+            synchronized (cachedConnections) {
+                forceExecuteTemplateForClose.execute(cachedConnections.entries(), new ForceExecuteCallback<Map.Entry<String, Connection>>() {
+        
+                    @Override
+                    public void execute(final Entry<String, Connection> cachedConnections) throws SQLException {
+                        cachedConnections.getValue().close();
+                    }
+                });
+                cachedConnections.clear();
+            }
             shardingTransactionHandler.doInTransaction(SagaTransactionContext.createCommitSagaTransactionContext(sagaConfiguration));
         }
     }
