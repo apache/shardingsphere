@@ -67,7 +67,7 @@ SELECT name, SUM(score) FROM t_score GROUP BY name ORDER BY name;
 
 在分组项与排序项完全一致的情况下，取得的数据是连续的，分组所需的数据全数存在于各个数据结果集的当前游标所指向的数据值，因此可以采用流式归并。如下图所示。
 
-![分组归并示例1](http://shardingsphere.jd.com/document/current/img/sharding/group_by_merge_1_v2.png)
+![分组归并示例1](http://shardingsphere.jd.com/document/current/img/sharding/group_by_merge_1_v3.png)
 
 进行归并时，逻辑与排序归并类似。
 下图展现了进行next调用的时候，流式分组归并是如何进行的。

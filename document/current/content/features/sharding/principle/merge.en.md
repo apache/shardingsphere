@@ -75,7 +75,7 @@ SELECT name, SUM(score) FROM t_score GROUP BY name ORDER BY name;
 When order-by item and group-by item are totally consistent, the data obtained are continuous. 
 For the data needed to group are all stored in the data value currently pointed by cursors of each data result set, stream group-by merger can be used, as illustrated by the diagram:
 
-![Group by merger examole 1](http://shardingsphere.jd.com/document/current/img/sharding/group_by_merge_1_v2.png)
+![Group by merger examole 1](http://shardingsphere.jd.com/document/current/img/sharding/group_by_merge_1_v3.png)
 
 The merging logic will be similar as that of order-by merger. The following picture shows how stream group-by merger works when using next invocation.
 
