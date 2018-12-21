@@ -31,44 +31,44 @@ import static org.junit.Assert.assertNull;
 import static org.junit.Assert.assertThat;
 import static org.mockito.Mockito.mock;
 
-public class DataSourceSwapperRegistryTest {
+public final class DataSourceSwapperRegistryTest {
     
-    private final String databaseName = "demo_ds";
+    private final String dataSourceName = "demo_ds";
     
     @Test
-    public void assertBuildParameterFromHikari() {
-        DataSource dataSource = DataSourceUtils.build(PoolType.HIKARI, DatabaseType.MySQL, databaseName);
-        DataSourceParameter parameter = DataSourceSwapperRegistry.getInstance().getSwapper(dataSource).swap(dataSource);
-        assertThatParameter(parameter);
+    public void assertSwapFromHikari() {
+        DataSource dataSource = DataSourceUtils.build(PoolType.HIKARI, DatabaseType.MySQL, dataSourceName);
+        DataSourceParameter parameter = DataSourceSwapperRegistry.getSwapper(dataSource.getClass()).swap(dataSource);
+        assertDataSourceParameter(parameter);
         assertThat(parameter.getMinPoolSize(), is(2));
         assertThat(parameter.getMaintenanceIntervalMilliseconds(), is(30 * 1000L));
         assertThat(parameter.getMaxLifetimeMilliseconds(), is(30 * 60 * 1000L));
     }
     
     @Test
-    public void assertBuildParameterFromDruid() {
-        DataSource dataSource = DataSourceUtils.build(PoolType.DRUID, DatabaseType.MySQL, databaseName);
-        DataSourceParameter parameter = DataSourceSwapperRegistry.getInstance().getSwapper(dataSource).swap(dataSource);
-        assertThatParameter(parameter);
+    public void assertSwapFromDruid() {
+        DataSource dataSource = DataSourceUtils.build(PoolType.DRUID, DatabaseType.MySQL, dataSourceName);
+        DataSourceParameter parameter = DataSourceSwapperRegistry.getSwapper(dataSource.getClass()).swap(dataSource);
+        assertDataSourceParameter(parameter);
         assertThat(parameter.getMinPoolSize(), is(2));
         assertThat(parameter.getMaintenanceIntervalMilliseconds(), is(20 * 1000L));
         assertThat(parameter.getMaxLifetimeMilliseconds(), is(0L));
     }
     
     @Test
-    public void assertBuildParameterFromDBCP2() {
-        DataSource dataSource = DataSourceUtils.build(PoolType.DBCP2, DatabaseType.MySQL, databaseName);
-        DataSourceParameter parameter = DataSourceSwapperRegistry.getInstance().getSwapper(dataSource).swap(dataSource);
-        assertThatParameter(parameter);
+    public void assertSwapFromDBCP2() {
+        DataSource dataSource = DataSourceUtils.build(PoolType.DBCP2, DatabaseType.MySQL, dataSourceName);
+        DataSourceParameter parameter = DataSourceSwapperRegistry.getSwapper(dataSource.getClass()).swap(dataSource);
+        assertDataSourceParameter(parameter);
         assertThat(parameter.getMinPoolSize(), is(2));
         assertThat(parameter.getMaintenanceIntervalMilliseconds(), is(20 * 1000L));
         assertThat(parameter.getMaxLifetimeMilliseconds(), is(500 * 1000L));
     }
     
     @Test
-    public void assertBuildParameterFromUnsupportedDataSource() {
+    public void assertSwapFromUnregisteredDataSource() {
         DataSource dataSource = mock(DataSource.class);
-        DataSourceParameter actual = DataSourceSwapperRegistry.getInstance().getSwapper(dataSource).swap(dataSource);
+        DataSourceParameter actual = DataSourceSwapperRegistry.getSwapper(dataSource.getClass()).swap(dataSource);
         assertNotNull(actual);
         assertNull(actual.getUrl());
         assertNull(actual.getUsername());
@@ -81,12 +81,12 @@ public class DataSourceSwapperRegistryTest {
         assertThat(actual.getMaintenanceIntervalMilliseconds(), is(30 * 1000L));
     }
     
-    private void assertThatParameter(final DataSourceParameter parameter) {
-        assertThat(parameter.getUrl(), is("jdbc:mysql://localhost:3306/demo_ds"));
-        assertThat(parameter.getUsername(), is("root"));
-        assertThat(parameter.getPassword(), is("root"));
-        assertThat(parameter.getMaxPoolSize(), is(10));
-        assertThat(parameter.getConnectionTimeoutMilliseconds(), is(15 * 1000L));
-        assertThat(parameter.getIdleTimeoutMilliseconds(), is(40 * 1000L));
+    private void assertDataSourceParameter(final DataSourceParameter dataSourceParameter) {
+        assertThat(dataSourceParameter.getUrl(), is("jdbc:mysql://localhost:3306/demo_ds"));
+        assertThat(dataSourceParameter.getUsername(), is("root"));
+        assertThat(dataSourceParameter.getPassword(), is("root"));
+        assertThat(dataSourceParameter.getMaxPoolSize(), is(10));
+        assertThat(dataSourceParameter.getConnectionTimeoutMilliseconds(), is(15 * 1000L));
+        assertThat(dataSourceParameter.getIdleTimeoutMilliseconds(), is(40 * 1000L));
     }
 }

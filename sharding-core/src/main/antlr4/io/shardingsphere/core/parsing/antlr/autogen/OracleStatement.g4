@@ -13,9 +13,9 @@ execute
     | alterTable
     | dropTable
     | truncateTable
-    | setTransaction
     | commit
     | rollback
+    | setTransaction
     | savepoint
     | grant
     | revoke

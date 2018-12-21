@@ -19,11 +19,10 @@ package io.shardingsphere.core.parsing.antlr.extractor.impl.dialect.mysql;
 
 import com.google.common.base.Optional;
 import com.google.common.base.Preconditions;
-import io.shardingsphere.core.constant.transaction.TransactionOperationType;
 import io.shardingsphere.core.parsing.antlr.extractor.OptionalSQLSegmentExtractor;
 import io.shardingsphere.core.parsing.antlr.extractor.util.ExtractorUtils;
 import io.shardingsphere.core.parsing.antlr.extractor.util.RuleName;
-import io.shardingsphere.core.parsing.antlr.sql.segment.TransactionOperationTypeSegment;
+import io.shardingsphere.core.parsing.antlr.sql.segment.tcl.SetAutoCommitSegment;
 import io.shardingsphere.core.util.SQLUtil;
 import org.antlr.v4.runtime.ParserRuleContext;
 
@@ -35,13 +34,9 @@ import org.antlr.v4.runtime.ParserRuleContext;
 public final class MySQLAutoCommitValueExtractor implements OptionalSQLSegmentExtractor {
     
     @Override
-    public Optional<TransactionOperationTypeSegment> extract(final ParserRuleContext ancestorNode) {
+    public Optional<SetAutoCommitSegment> extract(final ParserRuleContext ancestorNode) {
         Optional<ParserRuleContext> autoCommitValueNode = ExtractorUtils.findFirstChildNode(ancestorNode, RuleName.AUTO_COMMIT_VALUE);
         Preconditions.checkState(autoCommitValueNode.isPresent(), "Auto commit value is necessary.");
-        if ("1".equals(SQLUtil.getExactlyValue(autoCommitValueNode.get().getText()))) {
-            return Optional.of(new TransactionOperationTypeSegment(TransactionOperationType.IGNORE));
-        } else {
-            return Optional.of(new TransactionOperationTypeSegment(TransactionOperationType.BEGIN));
-        }
+        return Optional.of(new SetAutoCommitSegment("1".equals(SQLUtil.getExactlyValue(autoCommitValueNode.get().getText()))));
     }
 }

@@ -24,12 +24,15 @@ import io.shardingsphere.api.config.strategy.HintShardingStrategyConfiguration;
 import io.shardingsphere.core.fixture.OrderDatabaseHintShardingAlgorithm;
 import io.shardingsphere.core.routing.strategy.hint.HintShardingStrategy;
 import io.shardingsphere.core.routing.type.RoutingResult;
+import io.shardingsphere.core.routing.type.TableUnit;
 import io.shardingsphere.core.rule.ShardingRule;
 import org.junit.After;
 import org.junit.Before;
 import org.junit.Test;
 
+import java.util.ArrayList;
 import java.util.Arrays;
+import java.util.List;
 
 import static org.hamcrest.CoreMatchers.instanceOf;
 import static org.hamcrest.CoreMatchers.is;
@@ -63,8 +66,9 @@ public final class DatabaseHintRoutingEngineTest {
     public void assertRoute() {
         hintManager.setDatabaseShardingValue(1);
         RoutingResult routingResult = databaseHintRoutingEngine.route();
+        List<TableUnit> tableUnitList = new ArrayList<>(routingResult.getTableUnits().getTableUnits());
         assertThat(routingResult, instanceOf(RoutingResult.class));
         assertThat(routingResult.getTableUnits().getTableUnits().size(), is(1));
-        assertThat(routingResult.getTableUnits().getTableUnits().get(0).getDataSourceName(), is("ds_1"));
+        assertThat(tableUnitList.get(0).getDataSourceName(), is("ds_1"));
     }
 }

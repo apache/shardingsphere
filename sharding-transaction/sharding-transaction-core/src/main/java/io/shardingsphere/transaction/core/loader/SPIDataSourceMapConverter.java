@@ -49,15 +49,8 @@ public final class SPIDataSourceMapConverter implements DataSourceMapConverter {
         dataSourceMapConverter = converters.iterator().next();
     }
     
-    /**
-     * Convert normal datasource to xa transactional datasource.
-     *
-     * @param dataSourceMap data source map
-     * @param databaseType database type
-     * @return xa transactional datasource map
-     */
     @Override
-    public Map<String, DataSource> convert(final Map<String, DataSource> dataSourceMap, final DatabaseType databaseType) {
-        return null != dataSourceMapConverter ? dataSourceMapConverter.convert(dataSourceMap, databaseType) : null;
+    public Map<String, DataSource> convert(final DatabaseType databaseType, final Map<String, DataSource> dataSourceMap) {
+        return null == dataSourceMapConverter ? null : dataSourceMapConverter.convert(databaseType, dataSourceMap);
     }
 }

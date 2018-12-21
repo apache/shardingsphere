@@ -32,7 +32,7 @@ savepoint
     : SAVE (TRAN | TRANSACTION) ID
     ;
     
-beginWork
+beginTransaction
     : BEGIN (TRAN | TRANSACTION) (ID (WITH MARK STRING)?)?
     ;
 

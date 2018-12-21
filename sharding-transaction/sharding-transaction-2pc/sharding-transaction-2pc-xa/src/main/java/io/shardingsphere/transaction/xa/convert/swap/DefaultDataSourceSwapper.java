@@ -17,6 +17,9 @@
 
 package io.shardingsphere.transaction.xa.convert.swap;
 
+import java.util.Collection;
+import java.util.Collections;
+
 /**
  * Default data source parameter swapper.
  *
@@ -29,7 +32,7 @@ public final class DefaultDataSourceSwapper extends DataSourceSwapperAdapter {
     }
     
     @Override
-    public String originClassName() {
-        return "";
+    public Collection<String> getDataSourceClassNames() {
+        return Collections.emptyList();
     }
 }

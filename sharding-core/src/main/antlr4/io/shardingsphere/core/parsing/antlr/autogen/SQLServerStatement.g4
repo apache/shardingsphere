@@ -13,12 +13,12 @@ execute
     | alterTable
     | dropTable
     | truncateTable
-    | setTransaction
+    | beginTransaction
+    | setAutoCommit
     | commit
     | rollback
+    | setTransaction
     | savepoint
-    | beginWork
-    | setAutoCommit
     | grant
     | revoke
     | deny
