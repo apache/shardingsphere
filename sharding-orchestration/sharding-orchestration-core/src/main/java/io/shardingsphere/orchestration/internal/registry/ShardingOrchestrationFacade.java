@@ -23,7 +23,6 @@ import io.shardingsphere.core.rule.Authentication;
 import io.shardingsphere.orchestration.config.OrchestrationConfiguration;
 import io.shardingsphere.orchestration.internal.registry.config.service.ConfigurationService;
 import io.shardingsphere.orchestration.internal.registry.listener.ShardingOrchestrationListenerManager;
-import io.shardingsphere.orchestration.internal.registry.state.service.DataSourceService;
 import io.shardingsphere.orchestration.internal.registry.state.service.StateService;
 import io.shardingsphere.orchestration.reg.api.RegistryCenter;
 import lombok.Getter;
@@ -53,8 +52,6 @@ public final class ShardingOrchestrationFacade implements AutoCloseable {
     
     private final StateService stateService;
     
-    private final DataSourceService dataSourceService;
-    
     private final ShardingOrchestrationListenerManager listenerManager;
     
     public ShardingOrchestrationFacade(final OrchestrationConfiguration orchestrationConfig, final Collection<String> shardingSchemaNames) {
@@ -62,7 +59,6 @@ public final class ShardingOrchestrationFacade implements AutoCloseable {
         isOverwrite = orchestrationConfig.isOverwrite();
         configService = new ConfigurationService(orchestrationConfig.getName(), regCenter);
         stateService = new StateService(orchestrationConfig.getName(), regCenter);
-        dataSourceService = new DataSourceService(orchestrationConfig.getName(), regCenter);
         listenerManager = shardingSchemaNames.isEmpty() ? new ShardingOrchestrationListenerManager(orchestrationConfig.getName(), regCenter, configService.getAllShardingSchemaNames())
                 : new ShardingOrchestrationListenerManager(orchestrationConfig.getName(), regCenter, shardingSchemaNames);
     }

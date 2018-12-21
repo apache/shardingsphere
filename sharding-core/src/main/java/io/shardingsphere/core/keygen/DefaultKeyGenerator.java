@@ -68,7 +68,7 @@ public final class DefaultKeyGenerator implements KeyGenerator {
     
     private static long workerId;
     
-    private static int maxTolerateTimeDifferenceMilliseconds;
+    private static int maxTolerateTimeDifferenceMilliseconds = 10;
     
     static {
         Calendar calendar = Calendar.getInstance();
@@ -134,7 +134,7 @@ public final class DefaultKeyGenerator implements KeyGenerator {
             return false;
         }
         long timeDifferenceMilliseconds = lastMilliseconds - currentMilliseconds;
-        Preconditions.checkState(timeDifferenceMilliseconds > maxTolerateTimeDifferenceMilliseconds, 
+        Preconditions.checkState(timeDifferenceMilliseconds < maxTolerateTimeDifferenceMilliseconds, 
                 "Clock is moving backwards, last time is %d milliseconds, current time is %d milliseconds", lastMilliseconds, currentMilliseconds);
         Thread.sleep(timeDifferenceMilliseconds);
         return true;
