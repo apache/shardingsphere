@@ -20,9 +20,9 @@ package io.shardingsphere.core.parsing.parser.dialect.sqlserver.sql;
 import io.shardingsphere.core.parsing.lexer.LexerEngine;
 import io.shardingsphere.core.parsing.lexer.token.DefaultKeyword;
 import io.shardingsphere.core.parsing.parser.sql.tcl.TCLStatement;
-import io.shardingsphere.core.parsing.parser.sql.tcl.begin.BeginTransactionStatement;
 import io.shardingsphere.core.parsing.parser.sql.tcl.ignore.IgnoreStatement;
 import io.shardingsphere.core.parsing.parser.sql.tcl.set.autocommit.AbstractSetAutoCommitParser;
+import io.shardingsphere.core.parsing.parser.sql.tcl.set.autocommit.SetAutoCommitStatement;
 
 /**
  * Set auto commit parser for SQLServer.
@@ -38,6 +38,6 @@ public final class SQLServerSetAutoCommitParser extends AbstractSetAutoCommitPar
     @Override
     public TCLStatement parse() {
         getLexerEngine().nextToken();
-        return DefaultKeyword.ON.equals(getLexerEngine().getCurrentToken().getType()) ? new IgnoreStatement() : new BeginTransactionStatement();
+        return DefaultKeyword.ON.equals(getLexerEngine().getCurrentToken().getType()) ? new IgnoreStatement() : new SetAutoCommitStatement();
     }
 }
