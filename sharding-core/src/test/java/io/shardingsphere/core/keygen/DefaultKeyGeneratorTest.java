@@ -159,6 +159,6 @@ public final class DefaultKeyGeneratorTest {
         Field maxTolerateTimeDifferenceMillisecondsField = DefaultKeyGenerator.class.getDeclaredField("maxTolerateTimeDifferenceMilliseconds");
         maxTolerateTimeDifferenceMillisecondsField.setAccessible(true);
         assertThat(maxTolerateTimeDifferenceMillisecondsField.getInt(DefaultKeyGenerator.class), is(1));
-        DefaultKeyGenerator.setMaxTolerateTimeDifferenceMilliseconds(0);
+        DefaultKeyGenerator.setMaxTolerateTimeDifferenceMilliseconds(10);
     }
 }
