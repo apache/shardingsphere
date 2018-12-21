@@ -3,7 +3,7 @@ grammar MySQLBase;
 import MySQLKeyword, Keyword, BaseRule, DataType, Symbol;
 
 alias
-    : ID | PASSWORD
+    : ID | PASSWORD | STRING
     ;
     
 characterSet

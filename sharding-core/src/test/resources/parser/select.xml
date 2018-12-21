@@ -635,4 +635,23 @@
             <table-token begin-position="77" original-literals="t_order" />
         </tokens>
     </parser-result>
+    
+    
+    <parser-result sql-case-id="select_alias_as_single_quote_string">
+        <tables>
+            <table name="t_order"/>
+        </tables>
+        <tokens>
+            <table-token begin-position="31" original-literals="t_order" />
+        </tokens>
+    </parser-result>
+    
+    <parser-result sql-case-id="select_alias_as_string_double_quote">
+        <tables>
+            <table name="t_order"/>
+        </tables>
+        <tokens>
+            <table-token begin-position="31" original-literals="t_order" />
+        </tokens>
+    </parser-result>
 </parser-result-sets>

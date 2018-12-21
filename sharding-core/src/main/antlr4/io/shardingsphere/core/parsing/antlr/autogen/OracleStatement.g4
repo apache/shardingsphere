@@ -1,12 +1,12 @@
 grammar OracleStatement;
 
-import OracleKeyword, Keyword, OracleBase, OracleCreateIndex, OracleAlterIndex
+import OracleKeyword, Keyword, OracleBase, Symbol, OracleCreateIndex, OracleAlterIndex
        , OracleDropIndex, OracleCreateTable, OracleAlterTable, OracleDropTable, OracleTruncateTable
        , OracleTCLStatement, OracleDCLStatement
        ;
 
 execute
-    : createIndex
+    : (createIndex
     | alterIndex
     | dropIndex
     | createTable
@@ -25,4 +25,5 @@ execute
     | createRole
     | alterRole
     | dropRole
+    ) SEMI_?
     ;
