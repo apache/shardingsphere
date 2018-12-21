@@ -107,8 +107,7 @@ public class SagaExecutionComponentHolder {
         
         @Override
         public Map<String, List<EventEnvelope>> findPendingSagaEvents() {
-            //TODO find pending saga event from persistent store
-            return null;
+            return new HashMap<>(1);
         }
     
         @Override

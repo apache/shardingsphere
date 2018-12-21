@@ -38,7 +38,11 @@ public final class DataSourceMapSQLTransport extends AbstractSQLTransport {
     @Override
     protected Connection getConnection(final String datasource) throws TransportFailedException {
         try {
-            return dataSourceMap.get(datasource).getConnection();
+            Connection result = dataSourceMap.get(datasource).getConnection();
+            if (!result.getAutoCommit()) {
+                result.setAutoCommit(true);
+            }
+            return result;
         } catch (SQLException ex) {
             throw new TransportFailedException("get connection of [" + datasource + "] occur exception ", ex);
         }
