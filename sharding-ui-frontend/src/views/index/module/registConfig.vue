@@ -18,6 +18,14 @@
           </template>
         </el-table-column>
       </el-table>
+      <div class="pagination">
+        <el-pagination
+          :total="total"
+          :current-page="currentPage"
+          background
+          layout="prev, pager, next"
+          @current-change="handleCurrentChange"/>
+      </div>
     </div>
     <el-dialog :title="$t('index.registDialog.title')" :visible.sync="regustDialogVisible">
       <el-form ref="form" :model="form" :rules="rules" label-width="150px">
@@ -49,6 +57,7 @@
 </template>
 <script>
 import API from '../api'
+import _ from 'lodash'
 export default {
   name: 'RegistConfig',
   data() {
@@ -100,16 +109,27 @@ export default {
           { required: true, message: this.$t('index').rules.orchestrationName, trigger: 'change' }
         ]
       },
-      tableData: []
+      tableData: [],
+      cloneTableData: [],
+      currentPage: 1,
+      pageSize: 10,
+      total: null
     }
   },
   created() {
     this.getRegCenter()
   },
   methods: {
+    handleCurrentChange(val) {
+      const data = _.clone(this.cloneTableData)
+      this.tableData = data.splice(val - 1, this.pageSize)
+    },
     getRegCenter() {
       API.getRegCenter().then((res) => {
-        this.tableData = res.model
+        const data = res.model
+        this.total = data.length
+        this.cloneTableData = _.clone(res.model)
+        this.tableData = data.splice(0, this.pageSize)
       })
     },
     handleConnect(row) {
@@ -193,5 +213,9 @@ export default {
 <style lang='scss' scoped>
   .btn-group {
     margin-bottom: 20px;
+  }
+  .pagination {
+    float: right;
+    margin: 10px -10px 10px 0;
   }
 </style>

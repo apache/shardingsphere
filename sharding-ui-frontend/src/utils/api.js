@@ -1,9 +1,9 @@
 import axios from 'axios'
 import jsonp from 'jsonp'
 import qs from 'qs'
-import {
-  Message
-} from 'element-ui'
+// import {
+//   Message
+// } from 'element-ui'
 import C from './conf'
 
 axios.defaults.headers.post['Content-Type'] = 'application/jsoncharset=UTF-8'
@@ -48,11 +48,11 @@ function ajax(url, type, options) {
           break
         }
         default: {
-          Message({
-            message: result.errorMsg,
-            type: 'error',
-            duration: 2 * 1000
-          })
+          // Message({
+          //   message: result.errorMsg,
+          //   type: 'error',
+          //   duration: 2 * 1000
+          // })
           resolve({
             error: true,
             ...data
