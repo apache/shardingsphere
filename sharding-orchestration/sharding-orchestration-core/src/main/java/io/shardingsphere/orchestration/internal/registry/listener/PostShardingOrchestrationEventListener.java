@@ -57,15 +57,5 @@ public abstract class PostShardingOrchestrationEventListener implements Sharding
         });
     }
     
-    /**
-     * Judge whether it is parent node.
-     * 
-     * @param key key
-     * @return it is parent or not
-     */
-    protected boolean isParentNode(final String key) {
-        return !regCenter.getChildrenKeys(key).isEmpty();
-    }
-    
     protected abstract ShardingOrchestrationEvent createShardingOrchestrationEvent(DataChangedEvent event);
 }
