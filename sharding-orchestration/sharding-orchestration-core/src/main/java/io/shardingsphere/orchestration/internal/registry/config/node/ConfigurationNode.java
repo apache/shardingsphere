@@ -18,7 +18,6 @@
 package io.shardingsphere.orchestration.internal.registry.config.node;
 
 import com.google.common.base.Joiner;
-import io.shardingsphere.core.exception.ShardingException;
 import lombok.RequiredArgsConstructor;
 
 import java.util.regex.Matcher;
@@ -120,11 +119,12 @@ public final class ConfigurationNode {
      * @return schema name
      */
     public String getSchemaName(final String configNodeFullPath) {
+        String result = "";
         Pattern pattern = Pattern.compile(Joiner.on('/').join(getSchemaPath(), "(\\w+)", "(datasource|rule)/"), Pattern.CASE_INSENSITIVE);
         Matcher matcher = pattern.matcher(configNodeFullPath);
         if (matcher.find()) {
-            return matcher.group(1);
+            result = matcher.group(1);
         }
-        throw new ShardingException("The node Hierarchy of new schema is not correct. Please refer to this pattern: %s.", pattern.pattern());
+        return result;
     }
 }
