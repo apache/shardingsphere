@@ -18,11 +18,14 @@
 package io.shardingsphere.orchestration.internal.registry.config.listener;
 
 import io.shardingsphere.orchestration.internal.registry.config.event.ConfigMapChangedEvent;
+import io.shardingsphere.orchestration.internal.registry.config.event.DataSourceChangedEvent;
 import io.shardingsphere.orchestration.internal.registry.config.node.ConfigurationNode;
 import io.shardingsphere.orchestration.internal.registry.listener.PostShardingOrchestrationEventListener;
+import io.shardingsphere.orchestration.internal.registry.listener.ShardingOrchestrationEvent;
 import io.shardingsphere.orchestration.reg.api.RegistryCenter;
 import io.shardingsphere.orchestration.reg.listener.DataChangedEvent;
 import io.shardingsphere.orchestration.reg.listener.DataChangedEvent.ChangedType;
+import io.shardingsphere.orchestration.yaml.ConfigurationYamlConverter;
 
 import java.util.Collection;
 import java.util.Collections;
@@ -35,21 +38,38 @@ import java.util.LinkedList;
  */
 public final class SchemaChangedListener extends PostShardingOrchestrationEventListener {
     
-    private final Collection<String> currentSchemas = new LinkedList<>();
+    private final ConfigurationNode configurationNode;
+    
+    private final Collection<String> existedSchemas = new LinkedList<>();
     
     private final Collection<String> tmpSchemas = new LinkedList<>();
     
     public SchemaChangedListener(final String name, final RegistryCenter regCenter) {
         super(regCenter, new ConfigurationNode(name).getSchemaPath());
+        configurationNode = new ConfigurationNode(name);
     }
     
     @Override
-    protected ConfigMapChangedEvent createShardingOrchestrationEvent(final DataChangedEvent event) {
+    protected ShardingOrchestrationEvent createShardingOrchestrationEvent(final DataChangedEvent event) {
+        if (ChangedType.UPDATED == event.getChangedType()) {
+            String schemaName = configurationNode.getSchemaName(event.getKey());
+            if (existedSchemas.contains(schemaName)) {
+                if (event.getKey().equals(configurationNode.getDataSourcePath(schemaName))) {
+                    return createDataSourceChangedEvent(schemaName, event);
+                }
+            }
+        }
+        
+        
         System.out.println(event.getKey());
         System.out.println(event.getValue());
         if (ChangedType.DELETED == event.getChangedType()) {
             event.getKey();
         }
         return new ConfigMapChangedEvent(Collections.EMPTY_MAP);
+    }
+    
+    private DataSourceChangedEvent createDataSourceChangedEvent(final String schemaName, final DataChangedEvent event) {
+        return new DataSourceChangedEvent(schemaName, ConfigurationYamlConverter.loadDataSourceConfigurations(event.getValue()));
     }
 }
