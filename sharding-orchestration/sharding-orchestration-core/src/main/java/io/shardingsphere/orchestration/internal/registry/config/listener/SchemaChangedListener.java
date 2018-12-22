@@ -19,6 +19,8 @@ package io.shardingsphere.orchestration.internal.registry.config.listener;
 
 import io.shardingsphere.orchestration.internal.registry.config.event.ConfigMapChangedEvent;
 import io.shardingsphere.orchestration.internal.registry.config.event.DataSourceChangedEvent;
+import io.shardingsphere.orchestration.internal.registry.config.event.MasterSlaveRuleChangedEvent;
+import io.shardingsphere.orchestration.internal.registry.config.event.ShardingRuleChangedEvent;
 import io.shardingsphere.orchestration.internal.registry.config.node.ConfigurationNode;
 import io.shardingsphere.orchestration.internal.registry.listener.PostShardingOrchestrationEventListener;
 import io.shardingsphere.orchestration.internal.registry.listener.ShardingOrchestrationEvent;
@@ -56,6 +58,8 @@ public final class SchemaChangedListener extends PostShardingOrchestrationEventL
             if (existedSchemas.contains(schemaName)) {
                 if (event.getKey().equals(configurationNode.getDataSourcePath(schemaName))) {
                     return createDataSourceChangedEvent(schemaName, event);
+                } else {
+                    return 
                 }
             }
         }
@@ -71,5 +75,21 @@ public final class SchemaChangedListener extends PostShardingOrchestrationEventL
     
     private DataSourceChangedEvent createDataSourceChangedEvent(final String schemaName, final DataChangedEvent event) {
         return new DataSourceChangedEvent(schemaName, ConfigurationYamlConverter.loadDataSourceConfigurations(event.getValue()));
+    }
+    
+    protected ShardingOrchestrationEvent createRuleChangedEvent(final String schemaName, final DataChangedEvent event) {
+        return isShardingRule(event) ? getShardingConfigurationChangedEvent(schemaName, event.getValue()) : getMasterSlaveConfigurationChangedEvent(schemaName, event.getValue());
+    }
+    
+    private boolean isShardingRule(final DataChangedEvent event) {
+        return event.getValue().contains("tables:\n");
+    }
+    
+    private ShardingRuleChangedEvent getShardingConfigurationChangedEvent(final String schemaName, final String eventValue) {
+        return new ShardingRuleChangedEvent(schemaName, ConfigurationYamlConverter.loadShardingRuleConfiguration(eventValue));
+    }
+    
+    private MasterSlaveRuleChangedEvent getMasterSlaveConfigurationChangedEvent(final String schemaName,, final String eventValue) {
+        return new MasterSlaveRuleChangedEvent(schemaName, ConfigurationYamlConverter.loadMasterSlaveRuleConfiguration(eventValue));
     }
 }
