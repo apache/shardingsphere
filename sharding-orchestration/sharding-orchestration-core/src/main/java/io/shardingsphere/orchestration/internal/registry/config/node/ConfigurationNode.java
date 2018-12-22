@@ -113,7 +113,12 @@ public final class ConfigurationNode {
         return Joiner.on("/").join("", name, ROOT, node);
     }
     
-    
+    /**
+     * Get schema Name.
+     * 
+     * @param configNodeFullPath config node full path
+     * @return schema name
+     */
     public String getSchemaName(final String configNodeFullPath) {
         Pattern pattern = Pattern.compile(Joiner.on('/').join(getSchemaPath(), "(\\w+)", "(datasource|rule)/"), Pattern.CASE_INSENSITIVE);
         Matcher matcher = pattern.matcher(configNodeFullPath);
