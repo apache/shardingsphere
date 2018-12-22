@@ -120,7 +120,7 @@ public final class ConfigurationNode {
      */
     public String getSchemaName(final String configNodeFullPath) {
         String result = "";
-        Pattern pattern = Pattern.compile(Joiner.on('/').join(getSchemaPath(), "(\\w+)", "(datasource|rule)/"), Pattern.CASE_INSENSITIVE);
+        Pattern pattern = Pattern.compile(getSchemaPath() + "/(\\w+)" + "(/datasource|/rule)?", Pattern.CASE_INSENSITIVE);
         Matcher matcher = pattern.matcher(configNodeFullPath);
         if (matcher.find()) {
             result = matcher.group(1);
