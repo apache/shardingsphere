@@ -17,12 +17,16 @@
 
 package io.shardingsphere.orchestration.internal.registry.config.listener;
 
-import io.shardingsphere.orchestration.internal.registry.config.event.PropertiesChangedEvent;
+import io.shardingsphere.orchestration.internal.registry.config.event.ConfigMapChangedEvent;
 import io.shardingsphere.orchestration.internal.registry.config.node.ConfigurationNode;
 import io.shardingsphere.orchestration.internal.registry.listener.PostShardingOrchestrationEventListener;
 import io.shardingsphere.orchestration.reg.api.RegistryCenter;
 import io.shardingsphere.orchestration.reg.listener.DataChangedEvent;
-import io.shardingsphere.orchestration.yaml.ConfigurationYamlConverter;
+import io.shardingsphere.orchestration.reg.listener.DataChangedEvent.ChangedType;
+
+import java.util.Collection;
+import java.util.Collections;
+import java.util.LinkedList;
 
 /**
  * Schema changed listener.
@@ -31,12 +35,21 @@ import io.shardingsphere.orchestration.yaml.ConfigurationYamlConverter;
  */
 public final class SchemaChangedListener extends PostShardingOrchestrationEventListener {
     
+    private final Collection<String> currentSchemas = new LinkedList<>();
+    
+    private final Collection<String> tmpSchemas = new LinkedList<>();
+    
     public SchemaChangedListener(final String name, final RegistryCenter regCenter) {
-        super(regCenter, new ConfigurationNode(name).getPropsPath());
+        super(regCenter, new ConfigurationNode(name).getSchemaPath());
     }
     
     @Override
-    protected PropertiesChangedEvent createShardingOrchestrationEvent(final DataChangedEvent event) {
-        return new PropertiesChangedEvent(ConfigurationYamlConverter.loadProperties(event.getValue()));
+    protected ConfigMapChangedEvent createShardingOrchestrationEvent(final DataChangedEvent event) {
+        System.out.println(event.getKey());
+        System.out.println(event.getValue());
+        if (ChangedType.DELETED == event.getChangedType()) {
+            event.getKey();
+        }
+        return new ConfigMapChangedEvent(Collections.EMPTY_MAP);
     }
 }
