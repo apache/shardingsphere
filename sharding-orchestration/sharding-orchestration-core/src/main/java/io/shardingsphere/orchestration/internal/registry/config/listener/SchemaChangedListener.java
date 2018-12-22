@@ -44,8 +44,6 @@ public final class SchemaChangedListener extends PostShardingOrchestrationEventL
     
     private final Collection<String> existedSchemas = new LinkedList<>();
     
-    private final Collection<String> tmpSchemas = new LinkedList<>();
-    
     public SchemaChangedListener(final String name, final RegistryCenter regCenter) {
         super(regCenter, new ConfigurationNode(name).getSchemaPath());
         configurationNode = new ConfigurationNode(name);
@@ -59,7 +57,7 @@ public final class SchemaChangedListener extends PostShardingOrchestrationEventL
                 if (event.getKey().equals(configurationNode.getDataSourcePath(schemaName))) {
                     return createDataSourceChangedEvent(schemaName, event);
                 } else {
-                    return 
+                    return createRuleChangedEvent(schemaName, event);
                 }
             }
         }
