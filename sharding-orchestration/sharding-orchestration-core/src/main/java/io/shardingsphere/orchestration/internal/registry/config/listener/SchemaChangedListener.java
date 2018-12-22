@@ -85,11 +85,11 @@ public final class SchemaChangedListener extends PostShardingOrchestrationEventL
         return event.getValue().contains("tables:\n");
     }
     
-    private ShardingRuleChangedEvent getShardingConfigurationChangedEvent(final String schemaName, final String eventValue) {
-        return new ShardingRuleChangedEvent(schemaName, ConfigurationYamlConverter.loadShardingRuleConfiguration(eventValue));
+    private ShardingRuleChangedEvent getShardingConfigurationChangedEvent(final String schemaName, final String ruleValue) {
+        return new ShardingRuleChangedEvent(schemaName, ConfigurationYamlConverter.loadShardingRuleConfiguration(ruleValue));
     }
     
-    private MasterSlaveRuleChangedEvent getMasterSlaveConfigurationChangedEvent(final String schemaName,, final String eventValue) {
-        return new MasterSlaveRuleChangedEvent(schemaName, ConfigurationYamlConverter.loadMasterSlaveRuleConfiguration(eventValue));
+    private MasterSlaveRuleChangedEvent getMasterSlaveConfigurationChangedEvent(final String schemaName, final String ruleValue) {
+        return new MasterSlaveRuleChangedEvent(schemaName, ConfigurationYamlConverter.loadMasterSlaveRuleConfiguration(ruleValue));
     }
 }
