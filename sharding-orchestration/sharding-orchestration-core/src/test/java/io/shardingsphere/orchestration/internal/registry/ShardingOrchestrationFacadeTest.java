@@ -23,7 +23,6 @@ import io.shardingsphere.core.rule.Authentication;
 import io.shardingsphere.orchestration.config.OrchestrationConfiguration;
 import io.shardingsphere.orchestration.internal.registry.config.service.ConfigurationService;
 import io.shardingsphere.orchestration.internal.registry.listener.ShardingOrchestrationListenerManager;
-import io.shardingsphere.orchestration.internal.registry.state.service.DataSourceService;
 import io.shardingsphere.orchestration.internal.registry.state.service.StateService;
 import io.shardingsphere.orchestration.reg.api.RegistryCenter;
 import io.shardingsphere.orchestration.reg.api.RegistryCenterConfiguration;
@@ -58,9 +57,6 @@ public final class ShardingOrchestrationFacadeTest {
     private StateService stateService;
     
     @Mock
-    private DataSourceService dataSourceService;
-    
-    @Mock
     private ShardingOrchestrationListenerManager listenerManager;
     
     @Before
@@ -69,7 +65,6 @@ public final class ShardingOrchestrationFacadeTest {
         FieldUtil.setField(shardingOrchestrationFacade, "regCenter", regCenter);
         FieldUtil.setField(shardingOrchestrationFacade, "configService", configService);
         FieldUtil.setField(shardingOrchestrationFacade, "stateService", stateService);
-        FieldUtil.setField(shardingOrchestrationFacade, "dataSourceService", dataSourceService);
         FieldUtil.setField(shardingOrchestrationFacade, "listenerManager", listenerManager);
     }
     
