@@ -86,40 +86,32 @@ public final class SchemaChangedListener extends PostShardingOrchestrationEventL
         return createRuleChangedEvent(shardingSchemaName, event);
     }
     
-    private ShardingOrchestrationEvent createChangedEventForNewSchema(final String shardingSchemaName) {
-        if (isSufficientToInitialize(shardingSchemaName)) {
-            existedSchemaNames.add(shardingSchemaName);
-            return createSchemaChangedEvent(shardingSchemaName);
-        }
-        return new IgnoredChangedEvent();
-    }
-    
-    private ShardingOrchestrationEvent createDeleteChangedEvent(final String shardingSchemaName) {
-        existedSchemaNames.remove(shardingSchemaName);
-        return new SchemaDeleteChangedEvent(shardingSchemaName);
-    }
-    
-    
-    
-    
     private DataSourceChangedEvent createDataSourceChangedEvent(final String shardingSchemaName, final DataChangedEvent event) {
         return new DataSourceChangedEvent(shardingSchemaName, ConfigurationYamlConverter.loadDataSourceConfigurations(event.getValue()));
     }
     
     private ShardingOrchestrationEvent createRuleChangedEvent(final String shardingSchemaName, final DataChangedEvent event) {
-        return isShardingRule(event) ? getShardingRuleChangedEvent(shardingSchemaName, event.getValue()) : getMasterSlaveRuleChangedEvent(shardingSchemaName, event.getValue());
+        return isShardingRule(event) ? createShardingRuleChangedEvent(shardingSchemaName, event.getValue()) : createMasterSlaveRuleChangedEvent(shardingSchemaName, event.getValue());
     }
     
     private boolean isShardingRule(final DataChangedEvent event) {
         return event.getValue().contains("tables:\n");
     }
     
-    private ShardingRuleChangedEvent getShardingRuleChangedEvent(final String shardingSchemaName, final String ruleValue) {
+    private ShardingRuleChangedEvent createShardingRuleChangedEvent(final String shardingSchemaName, final String ruleValue) {
         return new ShardingRuleChangedEvent(shardingSchemaName, ConfigurationYamlConverter.loadShardingRuleConfiguration(ruleValue));
     }
     
-    private MasterSlaveRuleChangedEvent getMasterSlaveRuleChangedEvent(final String shardingSchemaName, final String ruleValue) {
+    private MasterSlaveRuleChangedEvent createMasterSlaveRuleChangedEvent(final String shardingSchemaName, final String ruleValue) {
         return new MasterSlaveRuleChangedEvent(shardingSchemaName, ConfigurationYamlConverter.loadMasterSlaveRuleConfiguration(ruleValue));
+    }
+    
+    private ShardingOrchestrationEvent createChangedEventForNewSchema(final String shardingSchemaName) {
+        if (isSufficientToInitialize(shardingSchemaName)) {
+            existedSchemaNames.add(shardingSchemaName);
+            return createSchemaChangedEvent(shardingSchemaName);
+        }
+        return new IgnoredChangedEvent();
     }
     
     private boolean isSufficientToInitialize(final String shardingSchemaName) {
@@ -132,5 +124,10 @@ public final class SchemaChangedListener extends PostShardingOrchestrationEventL
     
     private RuleConfiguration createRuleConfiguration(final String shardingSchemaName) {
         return configurationService.isShardingRule(shardingSchemaName) ? configurationService.loadShardingRuleConfiguration(shardingSchemaName) : configurationService.loadMasterSlaveRuleConfiguration(shardingSchemaName);
+    }
+    
+    private ShardingOrchestrationEvent createDeleteChangedEvent(final String shardingSchemaName) {
+        existedSchemaNames.remove(shardingSchemaName);
+        return new SchemaDeleteChangedEvent(shardingSchemaName);
     }
 }
