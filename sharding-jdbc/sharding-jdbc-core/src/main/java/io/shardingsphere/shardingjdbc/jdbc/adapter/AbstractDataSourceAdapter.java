@@ -22,7 +22,7 @@ import io.shardingsphere.core.bootstrap.ShardingBootstrap;
 import io.shardingsphere.core.constant.DatabaseType;
 import io.shardingsphere.core.util.ReflectiveUtil;
 import io.shardingsphere.shardingjdbc.jdbc.unsupported.AbstractUnsupportedOperationDataSource;
-import io.shardingsphere.transaction.core.datasource.ShardingTransactionalDataSources;
+import io.shardingsphere.transaction.core.datasource.ShardingTransactionalDataSource;
 import lombok.Getter;
 import lombok.Setter;
 
@@ -54,14 +54,14 @@ public abstract class AbstractDataSourceAdapter extends AbstractUnsupportedOpera
     
     private final DatabaseType databaseType;
     
-    private final ShardingTransactionalDataSources shardingTransactionalDataSources;
+    private final ShardingTransactionalDataSource shardingTransactionalDataSources;
     
     private PrintWriter logWriter = new PrintWriter(System.out);
     
     public AbstractDataSourceAdapter(final Map<String, DataSource> dataSourceMap) throws SQLException {
         this.dataSourceMap = dataSourceMap;
         databaseType = getDatabaseType(dataSourceMap.values());
-        shardingTransactionalDataSources = new ShardingTransactionalDataSources(databaseType, dataSourceMap);
+        shardingTransactionalDataSources = new ShardingTransactionalDataSource(databaseType, dataSourceMap);
     }
     
     protected final DatabaseType getDatabaseType(final Collection<DataSource> dataSources) throws SQLException {

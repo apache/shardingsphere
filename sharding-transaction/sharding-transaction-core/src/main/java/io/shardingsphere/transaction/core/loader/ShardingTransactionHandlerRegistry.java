@@ -18,7 +18,7 @@
 package io.shardingsphere.transaction.core.loader;
 
 import io.shardingsphere.transaction.api.TransactionType;
-import io.shardingsphere.transaction.core.internal.context.ShardingTransactionContext;
+import io.shardingsphere.transaction.core.context.ShardingTransactionContext;
 import io.shardingsphere.transaction.spi.ShardingTransactionHandler;
 import lombok.AccessLevel;
 import lombok.NoArgsConstructor;

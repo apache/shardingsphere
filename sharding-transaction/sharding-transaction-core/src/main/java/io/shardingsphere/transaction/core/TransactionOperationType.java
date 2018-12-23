@@ -15,7 +15,7 @@
  * </p>
  */
 
-package io.shardingsphere.transaction.core.internal;
+package io.shardingsphere.transaction.core;
 
 import com.google.common.base.Optional;
 

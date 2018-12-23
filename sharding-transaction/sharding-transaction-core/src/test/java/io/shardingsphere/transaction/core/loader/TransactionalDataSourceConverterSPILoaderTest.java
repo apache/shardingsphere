@@ -17,24 +17,25 @@
 
 package io.shardingsphere.transaction.core.loader;
 
-import io.shardingsphere.core.constant.DatabaseType;
 import io.shardingsphere.transaction.api.TransactionType;
+import io.shardingsphere.transaction.fixture.FixedDataSourceConverter;
 import org.junit.Test;
 
-import javax.sql.DataSource;
-import java.util.HashMap;
-import java.util.Map;
-
+import static org.hamcrest.CoreMatchers.instanceOf;
+import static org.junit.Assert.assertFalse;
+import static org.junit.Assert.assertThat;
 import static org.junit.Assert.assertTrue;
 
 public final class TransactionalDataSourceConverterSPILoaderTest {
     
-    private Map<String, DataSource> dataSourceMap = new HashMap<>();
+    @Test
+    public void assertFindConverter() {
+        assertTrue(TransactionalDataSourceConverterSPILoader.findConverter(TransactionType.XA).isPresent());
+        assertThat(TransactionalDataSourceConverterSPILoader.findConverter(TransactionType.XA).get(), instanceOf(FixedDataSourceConverter.class));
+    }
     
     @Test
-    public void assertCreateBackendDatasourceSuccess() {
-        assertTrue(TransactionalDataSourceConverterSPILoader.findConverter(TransactionType.XA).isPresent());
-        Map<String, DataSource> backendDatasourceMap = TransactionalDataSourceConverterSPILoader.findConverter(TransactionType.XA).get().convert(DatabaseType.MySQL, dataSourceMap);
-        assertTrue(backendDatasourceMap.isEmpty());
+    public void assertNotFindConverter() {
+        assertFalse(TransactionalDataSourceConverterSPILoader.findConverter(TransactionType.LOCAL).isPresent());
     }
 }

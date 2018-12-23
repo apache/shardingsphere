@@ -17,7 +17,7 @@
 
 package io.shardingsphere.shardingproxy.backend.jdbc.connection;
 
-import io.shardingsphere.transaction.core.internal.TransactionOperationType;
+import io.shardingsphere.transaction.core.TransactionOperationType;
 import lombok.RequiredArgsConstructor;
 import lombok.SneakyThrows;
 
