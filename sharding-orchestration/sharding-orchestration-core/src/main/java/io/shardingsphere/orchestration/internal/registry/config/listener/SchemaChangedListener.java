@@ -19,11 +19,11 @@ package io.shardingsphere.orchestration.internal.registry.config.listener;
 
 import com.google.common.base.Strings;
 import io.shardingsphere.api.config.rule.RuleConfiguration;
-import io.shardingsphere.orchestration.internal.registry.config.event.ConfigMapChangedEvent;
 import io.shardingsphere.orchestration.internal.registry.config.event.DataSourceChangedEvent;
 import io.shardingsphere.orchestration.internal.registry.config.event.IgnoredChangedEvent;
 import io.shardingsphere.orchestration.internal.registry.config.event.MasterSlaveRuleChangedEvent;
-import io.shardingsphere.orchestration.internal.registry.config.event.SchemaChangedEvent;
+import io.shardingsphere.orchestration.internal.registry.config.event.SchemaAddChangedEvent;
+import io.shardingsphere.orchestration.internal.registry.config.event.SchemaDeleteChangedEvent;
 import io.shardingsphere.orchestration.internal.registry.config.event.ShardingRuleChangedEvent;
 import io.shardingsphere.orchestration.internal.registry.config.node.ConfigurationNode;
 import io.shardingsphere.orchestration.internal.registry.config.service.ConfigurationService;
@@ -35,7 +35,6 @@ import io.shardingsphere.orchestration.reg.listener.DataChangedEvent.ChangedType
 import io.shardingsphere.orchestration.yaml.ConfigurationYamlConverter;
 
 import java.util.Collection;
-import java.util.Collections;
 import java.util.LinkedList;
 
 /**
@@ -51,10 +50,11 @@ public final class SchemaChangedListener extends PostShardingOrchestrationEventL
     
     private final Collection<String> existedSchemas = new LinkedList<>();
     
-    public SchemaChangedListener(final String name, final RegistryCenter regCenter, final ConfigurationService configurationService) {
+    public SchemaChangedListener(final String name, final RegistryCenter regCenter, final Collection<String> shardingSchemaNames, final ConfigurationService configurationService) {
         super(regCenter, new ConfigurationNode(name).getSchemaPath());
         this.configurationService = configurationService;
         configurationNode = new ConfigurationNode(name);
+        existedSchemas.addAll(shardingSchemaNames);
     }
     
     @Override
@@ -67,23 +67,21 @@ public final class SchemaChangedListener extends PostShardingOrchestrationEventL
             if (existedSchemas.contains(schemaName)) {
                 if (event.getKey().equals(configurationNode.getDataSourcePath(schemaName))) {
                     return createDataSourceChangedEvent(schemaName, event);
-                } else {
-                    return createRuleChangedEvent(schemaName, event);
                 }
+                return createRuleChangedEvent(schemaName, event);
             } else {
                 if (isSufficientToInitialize(schemaName)) {
-                    
+                    existedSchemas.add(schemaName);
+                    return createSchemaChangedEvent(schemaName);
                 }
+                return new IgnoredChangedEvent();
             }
         }
-        
-        
-        System.out.println(event.getKey());
-        System.out.println(event.getValue());
         if (ChangedType.DELETED == event.getChangedType()) {
-            event.getKey();
+            existedSchemas.remove(schemaName);
+            return new SchemaDeleteChangedEvent(schemaName);
         }
-        return new ConfigMapChangedEvent(Collections.EMPTY_MAP);
+        return new IgnoredChangedEvent();
     }
     
     private DataSourceChangedEvent createDataSourceChangedEvent(final String schemaName, final DataChangedEvent event) {
@@ -110,8 +108,8 @@ public final class SchemaChangedListener extends PostShardingOrchestrationEventL
         return configurationService.hasDataSourceConfiguration(schemaName) && configurationService.hasRuleConfiguration(schemaName);
     }
     
-    private SchemaChangedEvent createSchemaChangedEvent(final String schemaName) {
-        return new SchemaChangedEvent(schemaName, configurationService.loadDataSourceConfigurations(schemaName), createRuleConfiguration(schemaName));
+    private SchemaAddChangedEvent createSchemaChangedEvent(final String schemaName) {
+        return new SchemaAddChangedEvent(schemaName, configurationService.loadDataSourceConfigurations(schemaName), createRuleConfiguration(schemaName));
     }
     
     private RuleConfiguration createRuleConfiguration(final String schemaName) {
