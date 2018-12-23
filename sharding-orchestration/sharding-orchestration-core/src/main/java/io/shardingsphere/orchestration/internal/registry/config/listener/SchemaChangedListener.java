@@ -60,7 +60,7 @@ public final class SchemaChangedListener extends PostShardingOrchestrationEventL
     @Override
     protected ShardingOrchestrationEvent createShardingOrchestrationEvent(final DataChangedEvent event) {
         String shardingSchemaName = configurationNode.getSchemaName(event.getKey());
-        if (Strings.isNullOrEmpty(shardingSchemaName) || isValidNodeChangedEvent(shardingSchemaName, event.getKey())) {
+        if (Strings.isNullOrEmpty(shardingSchemaName) || !isValidNodeChangedEvent(shardingSchemaName, event.getKey())) {
             return new IgnoredChangedEvent();
         }
         if (ChangedType.UPDATED == event.getChangedType()) {
