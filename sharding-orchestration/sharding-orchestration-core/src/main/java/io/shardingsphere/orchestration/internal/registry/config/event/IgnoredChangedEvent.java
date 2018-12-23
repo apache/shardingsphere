@@ -26,7 +26,5 @@ import lombok.NoArgsConstructor;
  *
  * @author panjuan
  */
-@NoArgsConstructor
-@Getter
 public final class IgnoredChangedEvent implements ShardingOrchestrationEvent {
 }
