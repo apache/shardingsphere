@@ -17,10 +17,9 @@
 
 package io.shardingsphere.example.spring.boot.jpa.nodep;
 
-import io.shardingsphere.core.constant.transaction.TransactionType;
 import io.shardingsphere.example.repository.api.service.TransactionService;
 import io.shardingsphere.example.repository.jpa.service.SpringEntityTransactionService;
-
+import io.shardingsphere.transaction.api.TransactionType;
 import org.springframework.boot.SpringApplication;
 import org.springframework.boot.autoconfigure.SpringBootApplication;
 import org.springframework.boot.autoconfigure.domain.EntityScan;

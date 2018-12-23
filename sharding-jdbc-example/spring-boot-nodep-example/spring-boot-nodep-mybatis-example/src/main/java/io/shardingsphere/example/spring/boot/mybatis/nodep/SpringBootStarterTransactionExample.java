@@ -17,10 +17,9 @@
 
 package io.shardingsphere.example.spring.boot.mybatis.nodep;
 
-import io.shardingsphere.core.constant.transaction.TransactionType;
 import io.shardingsphere.example.repository.api.service.TransactionService;
 import io.shardingsphere.example.repository.mybatis.service.SpringPojoTransactionService;
-
+import io.shardingsphere.transaction.api.TransactionType;
 import org.mybatis.spring.annotation.MapperScan;
 import org.springframework.boot.SpringApplication;
 import org.springframework.boot.autoconfigure.SpringBootApplication;

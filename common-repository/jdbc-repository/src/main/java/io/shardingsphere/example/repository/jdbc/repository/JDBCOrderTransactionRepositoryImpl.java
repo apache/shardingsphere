@@ -28,13 +28,13 @@ import java.sql.SQLException;
 import java.sql.Statement;
 import java.util.List;
 
-public final class JDBCOrderTransacationRepositoryImpl implements OrderRepository {
+public final class JDBCOrderTransactionRepositoryImpl implements OrderRepository {
     
     private final JDBCOrderRepositoryImpl jdbcOrderRepository;
     
     private Connection insertConnection;
     
-    public JDBCOrderTransacationRepositoryImpl(final DataSource dataSource) {
+    public JDBCOrderTransactionRepositoryImpl(final DataSource dataSource) {
         this.jdbcOrderRepository = new JDBCOrderRepositoryImpl(dataSource);
     }
     

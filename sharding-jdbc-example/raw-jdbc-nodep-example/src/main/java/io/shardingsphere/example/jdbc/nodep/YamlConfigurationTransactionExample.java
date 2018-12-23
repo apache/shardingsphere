@@ -17,14 +17,14 @@
 
 package io.shardingsphere.example.jdbc.nodep;
 
-import io.shardingsphere.core.constant.transaction.TransactionType;
 import io.shardingsphere.example.repository.api.service.TransactionService;
 import io.shardingsphere.example.repository.jdbc.repository.JDBCOrderItemTransactionRepositotyImpl;
-import io.shardingsphere.example.repository.jdbc.repository.JDBCOrderTransacationRepositoryImpl;
+import io.shardingsphere.example.repository.jdbc.repository.JDBCOrderTransactionRepositoryImpl;
 import io.shardingsphere.example.repository.jdbc.service.RawPojoTransactionService;
 import io.shardingsphere.example.type.ShardingType;
 import io.shardingsphere.shardingjdbc.api.yaml.YamlMasterSlaveDataSourceFactory;
 import io.shardingsphere.shardingjdbc.api.yaml.YamlShardingDataSourceFactory;
+import io.shardingsphere.transaction.api.TransactionType;
 
 import javax.sql.DataSource;
 import java.io.File;
@@ -106,6 +106,6 @@ public class YamlConfigurationTransactionExample {
     }
     
     private static TransactionService getTransactionService(final DataSource dataSource) throws SQLException {
-        return new RawPojoTransactionService(new JDBCOrderTransacationRepositoryImpl(dataSource), new JDBCOrderItemTransactionRepositotyImpl(dataSource), dataSource);
+        return new RawPojoTransactionService(new JDBCOrderTransactionRepositoryImpl(dataSource), new JDBCOrderItemTransactionRepositotyImpl(dataSource), dataSource);
     }
 }

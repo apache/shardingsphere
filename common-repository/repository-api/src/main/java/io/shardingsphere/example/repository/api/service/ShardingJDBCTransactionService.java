@@ -17,9 +17,9 @@
 
 package io.shardingsphere.example.repository.api.service;
 
-import io.shardingsphere.core.constant.transaction.TransactionType;
-import io.shardingsphere.core.transaction.TransactionTypeHolder;
 import io.shardingsphere.transaction.annotation.ShardingTransactionType;
+import io.shardingsphere.transaction.api.TransactionType;
+import io.shardingsphere.transaction.api.TransactionTypeHolder;
 import org.springframework.transaction.annotation.Transactional;
 
 public abstract class ShardingJDBCTransactionService extends CommonServiceImpl implements TransactionService {

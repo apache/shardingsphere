@@ -17,8 +17,6 @@
 
 package io.shardingsphere.example.repository.jdbc.service;
 
-import io.shardingsphere.core.constant.transaction.TransactionType;
-import io.shardingsphere.core.transaction.TransactionTypeHolder;
 import io.shardingsphere.example.repository.api.entity.Order;
 import io.shardingsphere.example.repository.api.entity.OrderItem;
 import io.shardingsphere.example.repository.api.repository.OrderItemRepository;
@@ -26,7 +24,9 @@ import io.shardingsphere.example.repository.api.repository.OrderRepository;
 import io.shardingsphere.example.repository.api.service.CommonServiceImpl;
 import io.shardingsphere.example.repository.api.service.TransactionService;
 import io.shardingsphere.example.repository.jdbc.repository.JDBCOrderItemTransactionRepositotyImpl;
-import io.shardingsphere.example.repository.jdbc.repository.JDBCOrderTransacationRepositoryImpl;
+import io.shardingsphere.example.repository.jdbc.repository.JDBCOrderTransactionRepositoryImpl;
+import io.shardingsphere.transaction.api.TransactionType;
+import io.shardingsphere.transaction.api.TransactionTypeHolder;
 
 import javax.sql.DataSource;
 import java.sql.Connection;
@@ -34,13 +34,13 @@ import java.sql.SQLException;
 
 public final class RawPojoTransactionService extends CommonServiceImpl implements TransactionService {
     
-    private final JDBCOrderTransacationRepositoryImpl orderRepository;
+    private final JDBCOrderTransactionRepositoryImpl orderRepository;
     
     private final JDBCOrderItemTransactionRepositotyImpl orderItemRepository;
     
     private Connection insertConnection;
     
-    public RawPojoTransactionService(final JDBCOrderTransacationRepositoryImpl orderRepository,
+    public RawPojoTransactionService(final JDBCOrderTransactionRepositoryImpl orderRepository,
         final JDBCOrderItemTransactionRepositotyImpl orderItemRepository, final DataSource dataSource) throws SQLException {
         this.orderRepository = orderRepository;
         this.orderItemRepository = orderItemRepository;
