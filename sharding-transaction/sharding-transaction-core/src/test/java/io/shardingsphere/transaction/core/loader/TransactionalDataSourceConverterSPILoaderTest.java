@@ -15,11 +15,10 @@
  * </p>
  */
 
-package io.shardingsphere.shardingjdbc.jdbc.transaction;
+package io.shardingsphere.transaction.core.loader;
 
 import io.shardingsphere.core.constant.DatabaseType;
 import io.shardingsphere.transaction.api.TransactionType;
-import io.shardingsphere.transaction.core.loader.DataSourceMapConverterSPILoader;
 import org.junit.Test;
 
 import javax.sql.DataSource;
@@ -28,14 +27,14 @@ import java.util.Map;
 
 import static org.junit.Assert.assertTrue;
 
-public class SPIDataSourceMapConverterTest {
+public final class TransactionalDataSourceConverterSPILoaderTest {
     
     private Map<String, DataSource> dataSourceMap = new HashMap<>();
     
     @Test
     public void assertCreateBackendDatasourceSuccess() {
-        assertTrue(DataSourceMapConverterSPILoader.findDataSourceConverter(TransactionType.XA).isPresent());
-        Map<String, DataSource> backendDatasourceMap = DataSourceMapConverterSPILoader.findDataSourceConverter(TransactionType.XA).get().convert(DatabaseType.MySQL, dataSourceMap);
+        assertTrue(TransactionalDataSourceConverterSPILoader.findConverter(TransactionType.XA).isPresent());
+        Map<String, DataSource> backendDatasourceMap = TransactionalDataSourceConverterSPILoader.findConverter(TransactionType.XA).get().convert(DatabaseType.MySQL, dataSourceMap);
         assertTrue(backendDatasourceMap.isEmpty());
     }
 }

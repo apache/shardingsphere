@@ -20,7 +20,7 @@ package io.shardingsphere.transaction.core.loader;
 import com.google.common.base.Optional;
 import io.shardingsphere.spi.NewInstanceServiceLoader;
 import io.shardingsphere.transaction.api.TransactionType;
-import io.shardingsphere.transaction.spi.xa.DataSourceMapConverter;
+import io.shardingsphere.transaction.spi.TransactionalDataSourceConverter;
 import lombok.AccessLevel;
 import lombok.NoArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
@@ -29,29 +29,29 @@ import java.util.HashMap;
 import java.util.Map;
 
 /**
- * Data source converter SPI loader.
+ * Transactional data source converter SPI loader.
  *
  * @author zhaojun
  */
 @Slf4j
 @NoArgsConstructor(access = AccessLevel.PRIVATE)
-public final class DataSourceMapConverterSPILoader {
+public final class TransactionalDataSourceConverterSPILoader {
     
-    private static final Map<TransactionType, DataSourceMapConverter> DATA_SOURCE_CONVERTERS = new HashMap<>();
+    private static final Map<TransactionType, TransactionalDataSourceConverter> CONVERTERS = new HashMap<>();
     
     static {
-        for (DataSourceMapConverter each : NewInstanceServiceLoader.load(DataSourceMapConverter.class)) {
-            DATA_SOURCE_CONVERTERS.put(each.getType(), each);
+        for (TransactionalDataSourceConverter each : NewInstanceServiceLoader.load(TransactionalDataSourceConverter.class)) {
+            CONVERTERS.put(each.getType(), each);
         }
     }
     
     /**
-     * Find data source converter.
+     * Find transactional data source converter.
      * 
      * @param type transaction type
      * @return data source converter
      */
-    public static Optional<DataSourceMapConverter> findDataSourceConverter(final TransactionType type) {
-        return Optional.fromNullable(DATA_SOURCE_CONVERTERS.get(type));
+    public static Optional<TransactionalDataSourceConverter> findConverter(final TransactionType type) {
+        return Optional.fromNullable(CONVERTERS.get(type));
     }
 }

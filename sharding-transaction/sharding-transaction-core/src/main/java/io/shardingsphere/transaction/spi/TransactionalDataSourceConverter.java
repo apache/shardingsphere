@@ -15,7 +15,7 @@
  * </p>
  */
 
-package io.shardingsphere.transaction.spi.xa;
+package io.shardingsphere.transaction.spi;
 
 import io.shardingsphere.core.constant.DatabaseType;
 import io.shardingsphere.transaction.api.TransactionType;
@@ -24,11 +24,12 @@ import javax.sql.DataSource;
 import java.util.Map;
 
 /**
- * Data source map converter SPI.
+ * Transactional data source converter.
  *
  * @author zhaojun
+ * @author zhangliang
  */
-public interface DataSourceMapConverter {
+public interface TransactionalDataSourceConverter {
     
     /**
      * Get transaction type.
@@ -38,11 +39,11 @@ public interface DataSourceMapConverter {
     TransactionType getType();
     
     /**
-     * Convert data source map.
+     * Convert data sources.
      *
      * @param databaseType database type
-     * @param dataSourceMap data source map
-     * @return data source map
+     * @param dataSourceMap data source map to be converted
+     * @return transactional data source map
      */
     Map<String, DataSource> convert(DatabaseType databaseType, Map<String, DataSource> dataSourceMap);
 }

@@ -20,8 +20,8 @@ package io.shardingsphere.transaction.core.datasource;
 import com.google.common.base.Optional;
 import io.shardingsphere.core.constant.DatabaseType;
 import io.shardingsphere.transaction.api.TransactionType;
-import io.shardingsphere.transaction.core.loader.DataSourceMapConverterSPILoader;
-import io.shardingsphere.transaction.spi.xa.DataSourceMapConverter;
+import io.shardingsphere.transaction.core.loader.TransactionalDataSourceConverterSPILoader;
+import io.shardingsphere.transaction.spi.TransactionalDataSourceConverter;
 import lombok.Getter;
 
 import javax.sql.DataSource;
@@ -41,7 +41,7 @@ public final class ShardingTransactionalDataSource {
     
     public ShardingTransactionalDataSource(final DatabaseType databaseType, final TransactionType transactionType, final Map<String, DataSource> dataSourceMap) {
         type = transactionType;
-        Optional<DataSourceMapConverter> dataSourceConverter = DataSourceMapConverterSPILoader.findDataSourceConverter(type);
+        Optional<TransactionalDataSourceConverter> dataSourceConverter = TransactionalDataSourceConverterSPILoader.findConverter(type);
         this.dataSourceMap = dataSourceConverter.isPresent() ? dataSourceConverter.get().convert(databaseType, dataSourceMap) : dataSourceMap; 
     }
 }
