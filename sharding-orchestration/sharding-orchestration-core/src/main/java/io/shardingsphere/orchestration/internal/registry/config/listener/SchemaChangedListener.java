@@ -102,5 +102,7 @@ public final class SchemaChangedListener extends PostShardingOrchestrationEventL
         return new MasterSlaveRuleChangedEvent(schemaName, ConfigurationYamlConverter.loadMasterSlaveRuleConfiguration(ruleValue));
     }
     
-    private boolean isSufficientToInitialize()
+    private boolean isSufficientToInitialize(final String schemaName) {
+        return configurationService.hasDataSourceConfiguration(schemaName) && configurationService.hasRuleConfiguration(schemaName);
+    }
 }
