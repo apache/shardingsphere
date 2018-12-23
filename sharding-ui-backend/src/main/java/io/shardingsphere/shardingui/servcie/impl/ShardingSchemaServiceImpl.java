@@ -18,7 +18,7 @@
 package io.shardingsphere.shardingui.servcie.impl;
 
 import com.google.common.base.Preconditions;
-import io.shardingsphere.api.config.RuleConfiguration;
+import io.shardingsphere.api.config.rule.RuleConfiguration;
 import io.shardingsphere.core.config.DataSourceConfiguration;
 import io.shardingsphere.orchestration.yaml.ConfigurationYamlConverter;
 import io.shardingsphere.shardingui.servcie.RegistryCenterService;

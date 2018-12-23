@@ -5,7 +5,7 @@
     <modelVersion>4.0.0</modelVersion>
     <groupId>io.shardingsphere</groupId>
     <artifactId>sharding-ui</artifactId>
-    <version>3.0.1-SNAPSHOT</version>
+    <version>1.0.0-SNAPSHOT</version>
     <packaging>pom</packaging>
     <name>${project.artifactId}</name>
 
@@ -20,6 +20,7 @@
         <spring-boot.version>2.0.2.RELEASE</spring-boot.version>
         <lombok.version>1.16.4</lombok.version>
         <snakeyaml.version>1.16</snakeyaml.version>
+        <sharding-sphere.version>3.1.0.M1</sharding-sphere.version>
         <frontend-maven-plugin.version>1.6</frontend-maven-plugin.version>
         <maven-compiler-plugin.version>3.3</maven-compiler-plugin.version>
         <maven-resources-plugin.version>2.7</maven-resources-plugin.version>
@@ -34,17 +35,17 @@
             <dependency>
                 <groupId>io.shardingsphere</groupId>
                 <artifactId>sharding-orchestration-core</artifactId>
-                <version>${project.version}</version>
+                <version>${sharding-sphere.version}</version>
             </dependency>
             <dependency>
                 <groupId>io.shardingsphere</groupId>
                 <artifactId>sharding-orchestration-reg-zookeeper-curator</artifactId>
-                <version>${project.version}</version>
+                <version>${sharding-sphere.version}</version>
             </dependency>
             <dependency>
                 <groupId>io.shardingsphere</groupId>
                 <artifactId>sharding-orchestration-reg-etcd</artifactId>
-                <version>${project.version}</version>
+                <version>${sharding-sphere.version}</version>
             </dependency>
 
             <dependency>
