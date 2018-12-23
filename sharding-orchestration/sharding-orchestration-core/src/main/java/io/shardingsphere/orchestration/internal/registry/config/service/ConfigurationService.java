@@ -81,7 +81,7 @@ public final class ConfigurationService {
      * Judge whether schema has data source configuration.
      * 
      * @param shardingSchemaName shading schema name
-     * @return has or not
+     * @return has data source configuration or not
      */
     public boolean hasDataSourceConfiguration(final String shardingSchemaName) {
         return !Strings.isNullOrEmpty(regCenter.get(configNode.getDataSourcePath(shardingSchemaName)));
@@ -101,7 +101,7 @@ public final class ConfigurationService {
      * Judge whether schema has rule configuration.
      * 
      * @param shardingSchemaName sharding schema name
-     * @return has data source configuration or not
+     * @return has rule configuration or not
      */
     public boolean hasRuleConfiguration(final String shardingSchemaName) {
         return !Strings.isNullOrEmpty(regCenter.get(configNode.getRulePath(shardingSchemaName)));
