@@ -50,9 +50,9 @@ public final class SchemaChangedListener extends PostShardingOrchestrationEventL
     
     private final Collection<String> existedSchemaNames = new LinkedList<>();
     
-    public SchemaChangedListener(final String name, final RegistryCenter regCenter, final Collection<String> shardingSchemaNames, final ConfigurationService configurationService) {
+    public SchemaChangedListener(final String name, final RegistryCenter regCenter, final Collection<String> shardingSchemaNames) {
         super(regCenter, new ConfigurationNode(name).getSchemaPath());
-        this.configurationService = configurationService;
+        configurationService = new ConfigurationService(name, regCenter);
         configurationNode = new ConfigurationNode(name);
         existedSchemaNames.addAll(shardingSchemaNames);
     }
