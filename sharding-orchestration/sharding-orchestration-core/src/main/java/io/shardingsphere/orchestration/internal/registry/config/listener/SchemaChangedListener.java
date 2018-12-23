@@ -123,7 +123,8 @@ public final class SchemaChangedListener extends PostShardingOrchestrationEventL
     }
     
     private RuleConfiguration createRuleConfiguration(final String shardingSchemaName) {
-        return configurationService.isShardingRule(shardingSchemaName) ? configurationService.loadShardingRuleConfiguration(shardingSchemaName) : configurationService.loadMasterSlaveRuleConfiguration(shardingSchemaName);
+        return configurationService.isShardingRule(shardingSchemaName) 
+                ? configurationService.loadShardingRuleConfiguration(shardingSchemaName) : configurationService.loadMasterSlaveRuleConfiguration(shardingSchemaName);
     }
     
     private ShardingOrchestrationEvent createDeleteChangedEvent(final String shardingSchemaName) {
