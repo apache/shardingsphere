@@ -17,40 +17,41 @@
 
 package io.shardingsphere.transaction.core.loader;
 
-import io.shardingsphere.core.constant.DatabaseType;
+import com.google.common.base.Optional;
 import io.shardingsphere.spi.NewInstanceServiceLoader;
+import io.shardingsphere.transaction.api.TransactionType;
 import io.shardingsphere.transaction.spi.xa.DataSourceMapConverter;
+import lombok.AccessLevel;
+import lombok.NoArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 
-import javax.sql.DataSource;
-import java.util.Collection;
+import java.util.HashMap;
 import java.util.Map;
 
 /**
- * SPI data source map converter.
+ * Data source converter SPI loader.
  *
  * @author zhaojun
  */
 @Slf4j
-public final class SPIDataSourceMapConverter implements DataSourceMapConverter {
+@NoArgsConstructor(access = AccessLevel.PRIVATE)
+public final class DataSourceMapConverterSPILoader {
     
-    private static DataSourceMapConverter dataSourceMapConverter;
+    private static final Map<TransactionType, DataSourceMapConverter> DATA_SOURCE_CONVERTERS = new HashMap<>();
     
     static {
-        init();
-    }
-    
-    private static void init() {
-        Collection<DataSourceMapConverter> converters = NewInstanceServiceLoader.load(DataSourceMapConverter.class);
-        if (converters.isEmpty()) {
-            log.info("Could not find XA DataSourceConverter, XA transaction will not be effective");
-            return;
+        for (DataSourceMapConverter each : NewInstanceServiceLoader.load(DataSourceMapConverter.class)) {
+            DATA_SOURCE_CONVERTERS.put(each.getType(), each);
         }
-        dataSourceMapConverter = converters.iterator().next();
     }
     
-    @Override
-    public Map<String, DataSource> convert(final DatabaseType databaseType, final Map<String, DataSource> dataSourceMap) {
-        return null == dataSourceMapConverter ? null : dataSourceMapConverter.convert(databaseType, dataSourceMap);
+    /**
+     * Find data source converter.
+     * 
+     * @param type transaction type
+     * @return data source converter
+     */
+    public static Optional<DataSourceMapConverter> findDataSourceConverter(final TransactionType type) {
+        return Optional.fromNullable(DATA_SOURCE_CONVERTERS.get(type));
     }
 }

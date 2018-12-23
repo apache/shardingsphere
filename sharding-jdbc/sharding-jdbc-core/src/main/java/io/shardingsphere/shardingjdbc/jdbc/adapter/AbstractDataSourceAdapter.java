@@ -22,8 +22,7 @@ import io.shardingsphere.core.bootstrap.ShardingBootstrap;
 import io.shardingsphere.core.constant.DatabaseType;
 import io.shardingsphere.core.util.ReflectiveUtil;
 import io.shardingsphere.shardingjdbc.jdbc.unsupported.AbstractUnsupportedOperationDataSource;
-import io.shardingsphere.transaction.core.loader.SPIDataSourceMapConverter;
-import io.shardingsphere.transaction.spi.xa.DataSourceMapConverter;
+import io.shardingsphere.transaction.core.datasource.ShardingTransactionalDataSources;
 import lombok.Getter;
 import lombok.Setter;
 
@@ -50,20 +49,19 @@ public abstract class AbstractDataSourceAdapter extends AbstractUnsupportedOpera
         ShardingBootstrap.init();
     }
     
+    // TODO maybe can be remove after comb orchestration part
     private final Map<String, DataSource> dataSourceMap;
     
     private final DatabaseType databaseType;
     
-    private final Map<String, DataSource> xaDataSourceMap;
-    
-    private final DataSourceMapConverter dataSourceMapConverter = new SPIDataSourceMapConverter();
+    private final ShardingTransactionalDataSources shardingTransactionalDataSources;
     
     private PrintWriter logWriter = new PrintWriter(System.out);
     
     public AbstractDataSourceAdapter(final Map<String, DataSource> dataSourceMap) throws SQLException {
         this.dataSourceMap = dataSourceMap;
         databaseType = getDatabaseType(dataSourceMap.values());
-        xaDataSourceMap = dataSourceMapConverter.convert(databaseType, dataSourceMap);
+        shardingTransactionalDataSources = new ShardingTransactionalDataSources(databaseType, dataSourceMap);
     }
     
     protected final DatabaseType getDatabaseType(final Collection<DataSource> dataSources) throws SQLException {
@@ -85,13 +83,6 @@ public abstract class AbstractDataSourceAdapter extends AbstractUnsupportedOpera
         }
     }
     
-    /**
-     * Close original datasource.
-     */
-    public void close() {
-        closeOriginalDataSources();
-    }
-    
     @Override
     public final Logger getParentLogger() {
         return Logger.getLogger(Logger.GLOBAL_LOGGER_NAME);
@@ -102,16 +93,15 @@ public abstract class AbstractDataSourceAdapter extends AbstractUnsupportedOpera
         return getConnection();
     }
     
-    private void closeOriginalDataSources() {
+    @Override
+    public void close() {
         if (null != dataSourceMap) {
-            closeDataSource(dataSourceMap);
+            close(dataSourceMap);
         }
-        if (null != xaDataSourceMap) {
-            closeDataSource(xaDataSourceMap);
-        }
+        shardingTransactionalDataSources.close();
     }
     
-    private void closeDataSource(final Map<String, DataSource> dataSourceMap) {
+    private void close(final Map<String, DataSource> dataSourceMap) {
         for (DataSource each : dataSourceMap.values()) {
             try {
                 ReflectiveUtil.findMethod(each, "close").invoke(each);

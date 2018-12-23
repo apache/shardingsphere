@@ -15,27 +15,33 @@
  * </p>
  */
 
-package io.shardingsphere.shardingjdbc.jdbc.transaction;
+package io.shardingsphere.transaction.core.datasource;
 
+import com.google.common.base.Optional;
 import io.shardingsphere.core.constant.DatabaseType;
 import io.shardingsphere.transaction.api.TransactionType;
 import io.shardingsphere.transaction.core.loader.DataSourceMapConverterSPILoader;
-import org.junit.Test;
+import io.shardingsphere.transaction.spi.xa.DataSourceMapConverter;
+import lombok.Getter;
 
 import javax.sql.DataSource;
-import java.util.HashMap;
 import java.util.Map;
 
-import static org.junit.Assert.assertTrue;
-
-public class SPIDataSourceMapConverterTest {
+/**
+ * Sharding transactional data source.
+ *
+ * @author zhangliang
+ */
+@Getter
+public final class ShardingTransactionalDataSource {
     
-    private Map<String, DataSource> dataSourceMap = new HashMap<>();
+    private final TransactionType type;
     
-    @Test
-    public void assertCreateBackendDatasourceSuccess() {
-        assertTrue(DataSourceMapConverterSPILoader.findDataSourceConverter(TransactionType.XA).isPresent());
-        Map<String, DataSource> backendDatasourceMap = DataSourceMapConverterSPILoader.findDataSourceConverter(TransactionType.XA).get().convert(DatabaseType.MySQL, dataSourceMap);
-        assertTrue(backendDatasourceMap.isEmpty());
+    private final Map<String, DataSource> dataSourceMap;
+    
+    public ShardingTransactionalDataSource(final DatabaseType databaseType, final TransactionType transactionType, final Map<String, DataSource> dataSourceMap) {
+        type = transactionType;
+        Optional<DataSourceMapConverter> dataSourceConverter = DataSourceMapConverterSPILoader.findDataSourceConverter(type);
+        this.dataSourceMap = dataSourceConverter.isPresent() ? dataSourceConverter.get().convert(databaseType, dataSourceMap) : dataSourceMap; 
     }
 }

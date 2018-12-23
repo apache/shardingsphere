@@ -19,6 +19,7 @@ package io.shardingsphere.shardingjdbc.jdbc.core.fixed;
 
 import com.zaxxer.hikari.HikariDataSource;
 import io.shardingsphere.core.constant.DatabaseType;
+import io.shardingsphere.transaction.api.TransactionType;
 import io.shardingsphere.transaction.spi.xa.DataSourceMapConverter;
 
 import javax.sql.DataSource;
@@ -27,6 +28,11 @@ import java.util.Map;
 import java.util.Map.Entry;
 
 public final class FixedDataSourceMapConverter implements DataSourceMapConverter {
+    
+    @Override
+    public TransactionType getType() {
+        return TransactionType.XA;
+    }
     
     @Override
     public Map<String, DataSource> convert(final DatabaseType databaseType, final Map<String, DataSource> dataSourceMap) {

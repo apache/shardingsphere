@@ -19,6 +19,7 @@ package io.shardingsphere.transaction.xa.convert;
 
 import io.shardingsphere.core.constant.DatabaseType;
 import io.shardingsphere.core.rule.DataSourceParameter;
+import io.shardingsphere.transaction.api.TransactionType;
 import io.shardingsphere.transaction.spi.xa.DataSourceMapConverter;
 import io.shardingsphere.transaction.spi.xa.XATransactionManager;
 import io.shardingsphere.transaction.xa.convert.datasource.XADataSourceFactory;
@@ -38,6 +39,11 @@ import java.util.Map.Entry;
 public final class XADataSourceMapConverter implements DataSourceMapConverter {
     
     private final XATransactionManager xaTransactionManager = XATransactionManagerSPILoader.getInstance().getTransactionManager();
+    
+    @Override
+    public TransactionType getType() {
+        return TransactionType.XA;
+    }
     
     @Override
     public Map<String, DataSource> convert(final DatabaseType databaseType, final Map<String, DataSource> dataSourceMap) {

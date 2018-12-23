@@ -27,13 +27,11 @@ import io.shardingsphere.shardingjdbc.fixture.TestDataSource;
 import io.shardingsphere.shardingjdbc.jdbc.core.connection.MasterSlaveConnection;
 import io.shardingsphere.transaction.api.TransactionType;
 import io.shardingsphere.transaction.api.TransactionTypeHolder;
-import lombok.SneakyThrows;
 import org.junit.After;
 import org.junit.Before;
 import org.junit.Test;
 
 import javax.sql.DataSource;
-import java.lang.reflect.Field;
 import java.sql.Connection;
 import java.sql.DatabaseMetaData;
 import java.sql.SQLException;
@@ -143,38 +141,5 @@ public final class MasterSlaveDataSourceTest {
         assertNotNull(connection.getDataSourceMap());
         assertThat(connection.getDataSourceMap().values().size(), is(2));
         assertThat(connection.getTransactionType(), is(TransactionType.XA));
-    }
-    
-    @Test
-    public void assertGetXAConnectionButSPILoadedFailed() {
-        TransactionTypeHolder.set(TransactionType.XA);
-        setXaDataSourceMapEmpty();
-        MasterSlaveConnection connection = masterSlaveDataSource.getConnection();
-        assertNotNull(connection.getDataSourceMap());
-        assertThat(connection.getDataSourceMap().values().size(), is(2));
-        assertThat(connection.getTransactionType(), is(TransactionType.LOCAL));
-        
-    }
-    
-    @SneakyThrows
-    private void setXaDataSourceMapEmpty() {
-        Field xaDataSourceMap = getField(masterSlaveDataSource, "xaDataSourceMap");
-        if (null != xaDataSourceMap) {
-            xaDataSourceMap.setAccessible(true);
-            xaDataSourceMap.set(masterSlaveDataSource, new HashMap<>());
-        }
-    }
-    
-    @SneakyThrows
-    private Field getField(final Object masterDataSource, final String fieldName) {
-        Class clazz = masterDataSource.getClass();
-        while (null != clazz) {
-            try {
-                return clazz.getDeclaredField(fieldName);
-            } catch (final Exception ex) {
-                clazz = clazz.getSuperclass();
-            }
-        }
-        return null;
     }
 }
