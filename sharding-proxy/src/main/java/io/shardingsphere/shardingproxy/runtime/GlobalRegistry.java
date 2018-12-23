@@ -32,15 +32,18 @@ import io.shardingsphere.orchestration.internal.eventbus.ShardingOrchestrationEv
 import io.shardingsphere.orchestration.internal.registry.config.event.AuthenticationChangedEvent;
 import io.shardingsphere.orchestration.internal.registry.config.event.ConfigMapChangedEvent;
 import io.shardingsphere.orchestration.internal.registry.config.event.PropertiesChangedEvent;
+import io.shardingsphere.orchestration.internal.registry.config.event.SchemaAddChangedEvent;
 import io.shardingsphere.orchestration.internal.registry.state.event.CircuitStateChangedEvent;
 import io.shardingsphere.shardingproxy.runtime.schema.LogicSchema;
 import io.shardingsphere.shardingproxy.runtime.schema.MasterSlaveSchema;
 import io.shardingsphere.shardingproxy.runtime.schema.ShardingSchema;
+import io.shardingsphere.shardingproxy.util.DataSourceConverter;
 import io.shardingsphere.transaction.api.TransactionType;
 import lombok.AccessLevel;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
 
+import java.util.Collections;
 import java.util.LinkedList;
 import java.util.List;
 import java.util.Map;
@@ -213,5 +216,16 @@ public final class GlobalRegistry {
     @Subscribe
     public synchronized void renew(final CircuitStateChangedEvent circuitStateChangedEvent) {
         isCircuitBreak = circuitStateChangedEvent.isCircuitBreak();
+    }
+    
+    /**
+     * Renew to add new schema.
+     *
+     * @param schemaAddChangedEvent schema add changed event
+     */
+    @Subscribe
+    public synchronized void renew(final SchemaAddChangedEvent schemaAddChangedEvent) {
+        logicSchemas.put(schemaAddChangedEvent.getShardingSchemaName(), createLogicSchema(schemaAddChangedEvent.getShardingSchemaName(), Collections.singletonMap(schemaAddChangedEvent.getShardingSchemaName(), 
+                DataSourceConverter.getDataSourceParameterMap(schemaAddChangedEvent.getDataSourceConfigurations())), schemaAddChangedEvent.getRuleConfiguration(), true));
     }
 }
