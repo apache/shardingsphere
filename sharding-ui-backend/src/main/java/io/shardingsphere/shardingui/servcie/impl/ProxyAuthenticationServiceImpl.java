@@ -21,18 +21,18 @@ import com.google.common.base.Preconditions;
 import com.google.common.base.Strings;
 import io.shardingsphere.core.rule.Authentication;
 import io.shardingsphere.orchestration.yaml.ConfigurationYamlConverter;
-import io.shardingsphere.shardingui.servcie.AuthenticationConfigService;
+import io.shardingsphere.shardingui.servcie.ProxyAuthenticationService;
 import io.shardingsphere.shardingui.servcie.RegistryCenterService;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
 /**
- * Implementation of authentication config service.
+ * Implementation of sharding proxy authentication service.
  *
  * @author chenqingyang
  */
 @Service
-public final class AuthenticationConfigServiceImpl implements AuthenticationConfigService {
+public final class ProxyAuthenticationServiceImpl implements ProxyAuthenticationService {
     
     @Autowired
     private RegistryCenterService registryCenterService;

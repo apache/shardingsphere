@@ -20,11 +20,11 @@ package io.shardingsphere.shardingui.servcie;
 import java.util.Collection;
 
 /**
- * Schema config service.
+ * Sharding schema service.
  *
  * @author chenqingyang
  */
-public interface SchemaConfigService {
+public interface ShardingSchemaService {
     
     /**
      * Get all schema names.

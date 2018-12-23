@@ -20,11 +20,11 @@ package io.shardingsphere.shardingui.servcie;
 import io.shardingsphere.core.rule.Authentication;
 
 /**
- * Authentication config service.
+ * Sharding proxy Authentication service.
  * 
  * @author chenqingyang
  */
-public interface AuthenticationConfigService {
+public interface ProxyAuthenticationService {
     
     /**
      * Get authentication.

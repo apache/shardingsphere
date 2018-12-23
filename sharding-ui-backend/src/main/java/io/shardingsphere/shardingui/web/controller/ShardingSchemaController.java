@@ -17,7 +17,7 @@
 
 package io.shardingsphere.shardingui.web.controller;
 
-import io.shardingsphere.shardingui.servcie.SchemaConfigService;
+import io.shardingsphere.shardingui.servcie.ShardingSchemaService;
 import io.shardingsphere.shardingui.web.response.ResponseResult;
 import io.shardingsphere.shardingui.web.response.ResponseResultUtil;
 import lombok.extern.slf4j.Slf4j;
@@ -32,17 +32,17 @@ import java.util.Collection;
 import java.util.Map;
 
 /**
- * RESTful API of schema configuration.
+ * RESTful API of sharding schema configuration.
  *
  * @author chenqingyang
  */
 @Slf4j
 @RestController
 @RequestMapping("/api/schema")
-public final class SchemaConfigController {
+public final class ShardingSchemaController {
     
     @Autowired
-    private SchemaConfigService schemaConfigService;
+    private ShardingSchemaService shardingSchemaService;
     
     /**
      * Load all schema names.
@@ -51,7 +51,7 @@ public final class SchemaConfigController {
      */
     @RequestMapping(value = "", method = RequestMethod.GET)
     public ResponseResult<Collection<String>> loadAllSchemaNames() {
-        return ResponseResultUtil.build(schemaConfigService.getAllSchemaNames());
+        return ResponseResultUtil.build(shardingSchemaService.getAllSchemaNames());
     }
     
     /**
@@ -62,7 +62,7 @@ public final class SchemaConfigController {
      */
     @RequestMapping(value = "/rule/{schemaName}", method = RequestMethod.GET)
     public ResponseResult<String> loadRuleConfiguration(@PathVariable("schemaName") final String schemaName) {
-        return ResponseResultUtil.build(schemaConfigService.getRuleConfiguration(schemaName));
+        return ResponseResultUtil.build(shardingSchemaService.getRuleConfiguration(schemaName));
     }
     
     /**
@@ -74,7 +74,7 @@ public final class SchemaConfigController {
      */
     @RequestMapping(value = "/rule/{schemaName}", method = RequestMethod.PUT)
     public ResponseResult updateRuleConfiguration(@PathVariable("schemaName") final String schemaName, @RequestBody final Map<String, String> configMap) {
-        schemaConfigService.updateRuleConfiguration(schemaName, configMap.get("ruleConfig"));
+        shardingSchemaService.updateRuleConfiguration(schemaName, configMap.get("ruleConfig"));
         return ResponseResultUtil.success();
     }
     
@@ -86,7 +86,7 @@ public final class SchemaConfigController {
      */
     @RequestMapping(value = "/datasource/{schemaName}", method = RequestMethod.GET)
     public ResponseResult<String> loadDataSourceConfiguration(@PathVariable("schemaName") final String schemaName) {
-        return ResponseResultUtil.build(schemaConfigService.getDataSourceConfiguration(schemaName));
+        return ResponseResultUtil.build(shardingSchemaService.getDataSourceConfiguration(schemaName));
     }
     
     /**
@@ -98,7 +98,7 @@ public final class SchemaConfigController {
      */
     @RequestMapping(value = "/datasource/{schemaName}", method = RequestMethod.PUT)
     public ResponseResult updateDataSourceConfiguration(@PathVariable("schemaName") final String schemaName, @RequestBody final Map<String, String> configMap) {
-        schemaConfigService.updateDataSourceConfiguration(schemaName, configMap.get("dataSourceConfig"));
+        shardingSchemaService.updateDataSourceConfiguration(schemaName, configMap.get("dataSourceConfig"));
         return ResponseResultUtil.success();
     }
     

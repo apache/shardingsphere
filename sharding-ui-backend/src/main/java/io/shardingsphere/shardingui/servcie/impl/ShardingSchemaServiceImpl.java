@@ -22,7 +22,7 @@ import io.shardingsphere.api.config.RuleConfiguration;
 import io.shardingsphere.core.config.DataSourceConfiguration;
 import io.shardingsphere.orchestration.yaml.ConfigurationYamlConverter;
 import io.shardingsphere.shardingui.servcie.RegistryCenterService;
-import io.shardingsphere.shardingui.servcie.SchemaConfigService;
+import io.shardingsphere.shardingui.servcie.ShardingSchemaService;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
@@ -30,12 +30,12 @@ import java.util.Collection;
 import java.util.Map;
 
 /**
- * Implementation of schema config service.
+ * Implementation of sharding schema service.
  *
  * @author chenqingyang
  */
 @Service
-public final class SchemaConfigServiceImpl implements SchemaConfigService {
+public final class ShardingSchemaServiceImpl implements ShardingSchemaService {
     
     @Autowired
     private RegistryCenterService registryCenterService;

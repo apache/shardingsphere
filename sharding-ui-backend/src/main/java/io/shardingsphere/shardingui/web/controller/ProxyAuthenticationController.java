@@ -18,7 +18,7 @@
 package io.shardingsphere.shardingui.web.controller;
 
 import io.shardingsphere.core.rule.Authentication;
-import io.shardingsphere.shardingui.servcie.AuthenticationConfigService;
+import io.shardingsphere.shardingui.servcie.ProxyAuthenticationService;
 import io.shardingsphere.shardingui.web.response.ResponseResult;
 import io.shardingsphere.shardingui.web.response.ResponseResultUtil;
 import lombok.extern.slf4j.Slf4j;
@@ -29,17 +29,17 @@ import org.springframework.web.bind.annotation.RequestMethod;
 import org.springframework.web.bind.annotation.RestController;
 
 /**
- * RESTful API of authentication.
+ * RESTful API of sharding proxy authentication.
  * 
  * @author chenqingyang
  */
 @Slf4j
 @RestController
 @RequestMapping("/api/authentication")
-public final class AuthenticationConfigController {
+public final class ProxyAuthenticationController {
     
     @Autowired
-    private AuthenticationConfigService authenticationConfigService;
+    private ProxyAuthenticationService proxyAuthenticationService;
     
     /**
      * Load authentication.
@@ -48,7 +48,7 @@ public final class AuthenticationConfigController {
      */
     @RequestMapping(value = "", method = RequestMethod.GET)
     public ResponseResult<Authentication> loadAuthentication() {
-        return ResponseResultUtil.build(authenticationConfigService.getAuthentication());
+        return ResponseResultUtil.build(proxyAuthenticationService.getAuthentication());
     }
     
     /**
@@ -59,7 +59,7 @@ public final class AuthenticationConfigController {
      */
     @RequestMapping(value = "", method = RequestMethod.PUT)
     public ResponseResult updateAuthentication(@RequestBody final Authentication authentication) {
-        authenticationConfigService.updateAuthentication(authentication);
+        proxyAuthenticationService.updateAuthentication(authentication);
         return ResponseResultUtil.success();
     }
 }
