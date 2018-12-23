@@ -64,7 +64,7 @@ public final class SchemaChangedListener extends PostShardingOrchestrationEventL
             return new IgnoredChangedEvent();
         }
         if (ChangedType.UPDATED == event.getChangedType()) {
-            return createUpdateChangedEvent(event, shardingSchemaName);
+            return createUpdateChangedEvent(shardingSchemaName, event);
         }
         if (ChangedType.DELETED == event.getChangedType()) {
             return createDeleteChangedEvent(shardingSchemaName);
@@ -72,17 +72,17 @@ public final class SchemaChangedListener extends PostShardingOrchestrationEventL
         return new IgnoredChangedEvent();
     }
     
-    private ShardingOrchestrationEvent createDeleteChangedEvent(final String shardingSchemaName) {
-        existedSchemaNames.remove(shardingSchemaName);
-        return new SchemaDeleteChangedEvent(shardingSchemaName);
-    }
-    
-    private ShardingOrchestrationEvent createUpdateChangedEvent(final DataChangedEvent event, final String shardingSchemaName) {
+    private ShardingOrchestrationEvent createUpdateChangedEvent(final String shardingSchemaName, final DataChangedEvent event) {
         if (existedSchemaNames.contains(shardingSchemaName)) {
             return createChangedEventForExistedSchema(event, shardingSchemaName);
         } else {
             return createChangedEventForNewSchema(shardingSchemaName);
         }
+    }
+    
+    private ShardingOrchestrationEvent createDeleteChangedEvent(final String shardingSchemaName) {
+        existedSchemaNames.remove(shardingSchemaName);
+        return new SchemaDeleteChangedEvent(shardingSchemaName);
     }
     
     private ShardingOrchestrationEvent createChangedEventForNewSchema(final String shardingSchemaName) {
