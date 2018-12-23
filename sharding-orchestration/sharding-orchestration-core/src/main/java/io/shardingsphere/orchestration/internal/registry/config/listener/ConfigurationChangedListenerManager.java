@@ -21,18 +21,16 @@ import io.shardingsphere.orchestration.reg.api.RegistryCenter;
 import io.shardingsphere.orchestration.reg.listener.DataChangedEvent.ChangedType;
 
 import java.util.Collection;
-import java.util.LinkedList;
 
 /**
  * Configuration changed listener manager.
  *
  * @author zhangliang
+ * @author panjuan
  */
 public final class ConfigurationChangedListenerManager {
     
-    private final Collection<RuleChangedListener> ruleChangedListeners = new LinkedList<>();
-    
-    private final Collection<DataSourceChangedListener> dataSourceChangedListeners = new LinkedList<>();
+    private final SchemaChangedListener schemaChangedListener;
     
     private final PropertiesChangedListener propertiesChangedListener;
     
@@ -41,10 +39,7 @@ public final class ConfigurationChangedListenerManager {
     private final ConfigMapChangedListener configMapChangedListener;
     
     public ConfigurationChangedListenerManager(final String name, final RegistryCenter regCenter, final Collection<String> shardingSchemaNames) {
-        for (String each : shardingSchemaNames) {
-            ruleChangedListeners.add(new RuleChangedListener(name, regCenter, each));
-            dataSourceChangedListeners.add(new DataSourceChangedListener(name, regCenter, each));
-        }
+        schemaChangedListener = new SchemaChangedListener(name, regCenter, shardingSchemaNames);
         propertiesChangedListener = new PropertiesChangedListener(name, regCenter);
         authenticationChangedListener = new AuthenticationChangedListener(name, regCenter);
         configMapChangedListener = new ConfigMapChangedListener(name, regCenter);
@@ -54,12 +49,7 @@ public final class ConfigurationChangedListenerManager {
      * Initialize all configuration changed listeners.
      */
     public void initListeners() {
-        for (RuleChangedListener each : ruleChangedListeners) {
-            each.watch(ChangedType.UPDATED);
-        }
-        for (DataSourceChangedListener each : dataSourceChangedListeners) {
-            each.watch(ChangedType.UPDATED);
-        }
+        schemaChangedListener.watch(ChangedType.UPDATED, ChangedType.DELETED);
         propertiesChangedListener.watch(ChangedType.UPDATED);
         authenticationChangedListener.watch(ChangedType.UPDATED);
         configMapChangedListener.watch(ChangedType.UPDATED);
