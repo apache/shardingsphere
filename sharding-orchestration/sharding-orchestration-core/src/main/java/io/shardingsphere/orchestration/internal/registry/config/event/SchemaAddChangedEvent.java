@@ -26,7 +26,7 @@ import lombok.RequiredArgsConstructor;
 import java.util.Map;
 
 /**
- * Schema changed event.
+ * Schema add changed event.
  *
  * @author panjuan
  */
