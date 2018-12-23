@@ -97,7 +97,13 @@ public final class ConfigurationService {
         }
     }
     
-    private boolean hasRuleConfiguration(final String shardingSchemaName) {
+    /**
+     * Judge whether schema has rule configuration.
+     * 
+     * @param shardingSchemaName sharding schema name
+     * @return has or not
+     */
+    public boolean hasRuleConfiguration(final String shardingSchemaName) {
         return !Strings.isNullOrEmpty(regCenter.get(configNode.getRulePath(shardingSchemaName)));
     }
     
