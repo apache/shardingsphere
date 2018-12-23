@@ -86,7 +86,7 @@ As a result, ShardingSphere will revise the index name as the suffix of logic in
 In ShardingSphere, schema management method is similar as that of the table. 
 It uses logic schema to manage a set of data, so it requires to replace the logic schema written by users in SQL with physical database schema.
 
-It is a regret that until this article is finished, ShardingSphere still does not support the use of schema in DQL and DML statement, for example:
+ShardingSphere still does not support the use of schema in DQL and DML statement, for example:
 
 ```
 SHOW COLUMNS FROM t_order FROM order_ds;

@@ -83,7 +83,7 @@ SELECT t_order.order_id FROM t_order_1 AS t_order WHERE t_order.order_id=1 AND r
 在ShardingSphere中，管理Schema的方式与管理表如出一辙，它采用逻辑Schema去管理一组数据源。
 因此，ShardingSphere需要将用户在SQL书写的逻辑Schema替换为真实的数据库Schema。
 
-遗憾的是，截止到本书写作之时，ShardingSphere还不支持在DQL和DML语句中使用Schema。
+ShardingSphere目前还不支持在DQL和DML语句中使用Schema。
 它目前仅支持在数据库管理语句中使用Schema，例如：
 
 ```sql
