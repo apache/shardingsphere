@@ -34,8 +34,6 @@ import org.junit.runners.Suite.SuiteClasses;
         ConfigurationNodeTest.class, 
         ConfigurationServiceTest.class,
         ConfigurationChangedListenerManagerTest.class,
-        RuleChangedListenerTest.class, 
-        DataSourceChangedListenerTest.class, 
         PropertiesChangedListenerTest.class,
         AuthenticationChangedListenerTest.class,
         ConfigMapChangedListenerTest.class
