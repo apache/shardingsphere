@@ -32,7 +32,7 @@ import java.util.Map;
  */
 @RequiredArgsConstructor
 @Getter
-public final class SchemaChangedEvent implements ShardingOrchestrationEvent {
+public final class SchemaAddChangedEvent implements ShardingOrchestrationEvent {
     
     private final String shardingSchemaName;
     
