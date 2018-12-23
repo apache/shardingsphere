@@ -24,6 +24,7 @@ import io.shardingsphere.transaction.api.TransactionType;
 import io.shardingsphere.transaction.api.TransactionTypeHolder;
 import io.shardingsphere.transaction.core.loader.TransactionalDataSourceConverterSPILoader;
 import io.shardingsphere.transaction.spi.TransactionalDataSourceConverter;
+import lombok.Getter;
 import lombok.RequiredArgsConstructor;
 
 import javax.sql.DataSource;
@@ -39,6 +40,7 @@ import java.util.Map.Entry;
 @RequiredArgsConstructor
 public final class ShardingTransactionalDataSource implements AutoCloseable {
     
+    @Getter
     private final Map<String, DataSource> originalDataSourceMap;
     
     private final Map<TransactionType, Map<String, DataSource>> transactionalDataSourceMap;
@@ -65,6 +67,7 @@ public final class ShardingTransactionalDataSource implements AutoCloseable {
     
     @Override
     public void close() {
+        close(originalDataSourceMap);
         for (Entry<TransactionType, Map<String, DataSource>> entry : transactionalDataSourceMap.entrySet()) {
             close(entry.getValue());
         }

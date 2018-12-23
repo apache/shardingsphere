@@ -85,8 +85,7 @@ public final class ShardingDataSourceTest {
         Map<String, DataSource> dataSourceMap = new HashMap<>(2, 1);
         dataSourceMap.put("ds1", dataSource1);
         dataSourceMap.put("ds2", dataSource2);
-        assertDatabaseProductName(dataSourceMap, dataSource1.getConnection(), 
-                dataSource2.getDataSourceMap().get("masterDataSource").getConnection(), dataSource2.getDataSourceMap().get("slaveDataSource").getConnection());
+        assertDatabaseProductName(dataSourceMap, dataSource1.getConnection(), masterDataSource.getConnection(), slaveDataSource.getConnection());
     }
     
     @Test
