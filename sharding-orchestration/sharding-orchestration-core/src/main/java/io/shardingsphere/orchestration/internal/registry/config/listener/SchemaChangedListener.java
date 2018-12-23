@@ -64,24 +64,40 @@ public final class SchemaChangedListener extends PostShardingOrchestrationEventL
             return new IgnoredChangedEvent();
         }
         if (ChangedType.UPDATED == event.getChangedType()) {
-            if (existedSchemaNames.contains(shardingSchemaName)) {
-                if (event.getKey().equals(configurationNode.getDataSourcePath(shardingSchemaName))) {
-                    return createDataSourceChangedEvent(shardingSchemaName, event);
-                }
-                return createRuleChangedEvent(shardingSchemaName, event);
-            } else {
-                if (isSufficientToInitialize(shardingSchemaName)) {
-                    existedSchemaNames.add(shardingSchemaName);
-                    return createSchemaChangedEvent(shardingSchemaName);
-                }
-                return new IgnoredChangedEvent();
-            }
+            return createUpdateChangedEvent(event, shardingSchemaName);
         }
         if (ChangedType.DELETED == event.getChangedType()) {
-            existedSchemaNames.remove(shardingSchemaName);
-            return new SchemaDeleteChangedEvent(shardingSchemaName);
+            return createDeleteChangedEvent(shardingSchemaName);
         }
         return new IgnoredChangedEvent();
+    }
+    
+    private ShardingOrchestrationEvent createDeleteChangedEvent(final String shardingSchemaName) {
+        existedSchemaNames.remove(shardingSchemaName);
+        return new SchemaDeleteChangedEvent(shardingSchemaName);
+    }
+    
+    private ShardingOrchestrationEvent createUpdateChangedEvent(final DataChangedEvent event, final String shardingSchemaName) {
+        if (existedSchemaNames.contains(shardingSchemaName)) {
+            return createChangedEventForExistedSchema(event, shardingSchemaName);
+        } else {
+            return createChangedEventForNewSchema(shardingSchemaName);
+        }
+    }
+    
+    private ShardingOrchestrationEvent createChangedEventForNewSchema(final String shardingSchemaName) {
+        if (isSufficientToInitialize(shardingSchemaName)) {
+            existedSchemaNames.add(shardingSchemaName);
+            return createSchemaChangedEvent(shardingSchemaName);
+        }
+        return new IgnoredChangedEvent();
+    }
+    
+    private ShardingOrchestrationEvent createChangedEventForExistedSchema(final DataChangedEvent event, final String shardingSchemaName) {
+        if (event.getKey().equals(configurationNode.getDataSourcePath(shardingSchemaName))) {
+            return createDataSourceChangedEvent(shardingSchemaName, event);
+        }
+        return createRuleChangedEvent(shardingSchemaName, event);
     }
     
     private DataSourceChangedEvent createDataSourceChangedEvent(final String shardingSchemaName, final DataChangedEvent event) {
