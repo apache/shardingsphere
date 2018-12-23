@@ -18,6 +18,7 @@
 package io.shardingsphere.orchestration.internal.registry.config.listener;
 
 import com.google.common.base.Strings;
+import io.shardingsphere.api.config.rule.RuleConfiguration;
 import io.shardingsphere.orchestration.internal.registry.config.event.ConfigMapChangedEvent;
 import io.shardingsphere.orchestration.internal.registry.config.event.DataSourceChangedEvent;
 import io.shardingsphere.orchestration.internal.registry.config.event.IgnoredChangedEvent;
@@ -110,6 +111,10 @@ public final class SchemaChangedListener extends PostShardingOrchestrationEventL
     }
     
     private SchemaChangedEvent createSchemaChangedEvent(final String schemaName) {
-        return new SchemaChangedEvent(schemaName, configurationService.loadDataSourceConfigurations(schemaName), configurationService.isShardingRule(schemaName))
+        return new SchemaChangedEvent(schemaName, configurationService.loadDataSourceConfigurations(schemaName), createRuleConfiguration(schemaName));
+    }
+    
+    private RuleConfiguration createRuleConfiguration(final String schemaName) {
+        return configurationService.isShardingRule(schemaName) ? configurationService.loadShardingRuleConfiguration(schemaName) : configurationService.loadMasterSlaveRuleConfiguration(schemaName);
     }
 }
