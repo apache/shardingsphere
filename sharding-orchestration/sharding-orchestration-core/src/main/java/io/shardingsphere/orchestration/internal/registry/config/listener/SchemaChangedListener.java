@@ -22,6 +22,7 @@ import io.shardingsphere.orchestration.internal.registry.config.event.ConfigMapC
 import io.shardingsphere.orchestration.internal.registry.config.event.DataSourceChangedEvent;
 import io.shardingsphere.orchestration.internal.registry.config.event.IgnoredChangedEvent;
 import io.shardingsphere.orchestration.internal.registry.config.event.MasterSlaveRuleChangedEvent;
+import io.shardingsphere.orchestration.internal.registry.config.event.SchemaChangedEvent;
 import io.shardingsphere.orchestration.internal.registry.config.event.ShardingRuleChangedEvent;
 import io.shardingsphere.orchestration.internal.registry.config.node.ConfigurationNode;
 import io.shardingsphere.orchestration.internal.registry.config.service.ConfigurationService;
@@ -69,7 +70,9 @@ public final class SchemaChangedListener extends PostShardingOrchestrationEventL
                     return createRuleChangedEvent(schemaName, event);
                 }
             } else {
-                
+                if (isSufficientToInitialize(schemaName)) {
+                    
+                }
             }
         }
         
@@ -104,5 +107,9 @@ public final class SchemaChangedListener extends PostShardingOrchestrationEventL
     
     private boolean isSufficientToInitialize(final String schemaName) {
         return configurationService.hasDataSourceConfiguration(schemaName) && configurationService.hasRuleConfiguration(schemaName);
+    }
+    
+    private SchemaChangedEvent createSchemaChangedEvent(final String schemaName) {
+        return new SchemaChangedEvent(schemaName, configurationService.loadDataSourceConfigurations(schemaName), configurationService.isShardingRule(schemaName))
     }
 }
