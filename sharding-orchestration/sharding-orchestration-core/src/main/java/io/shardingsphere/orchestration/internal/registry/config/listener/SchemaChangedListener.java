@@ -81,7 +81,8 @@ public final class SchemaChangedListener extends PostShardingOrchestrationEventL
     }
     
     private ShardingOrchestrationEvent createChangedEventForExistedSchema(final DataChangedEvent event, final String shardingSchemaName) {
-        return event.getKey().equals(configurationNode.getDataSourcePath(shardingSchemaName)) ? createDataSourceChangedEvent(shardingSchemaName, event) : createRuleChangedEvent(shardingSchemaName, event);
+        return event.getKey().equals(configurationNode.getDataSourcePath(shardingSchemaName)) 
+                ? createDataSourceChangedEvent(shardingSchemaName, event) : createRuleChangedEvent(shardingSchemaName, event);
     }
     
     private DataSourceChangedEvent createDataSourceChangedEvent(final String shardingSchemaName, final DataChangedEvent event) {
