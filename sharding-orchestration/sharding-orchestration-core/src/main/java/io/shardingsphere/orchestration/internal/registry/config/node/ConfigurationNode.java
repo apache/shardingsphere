@@ -115,13 +115,13 @@ public final class ConfigurationNode {
     /**
      * Get schema name.
      * 
-     * @param configNodeFullPath config node full path
+     * @param configurationNodeFullPath configuration node full path
      * @return schema name
      */
-    public String getSchemaName(final String configNodeFullPath) {
+    public String getSchemaName(final String configurationNodeFullPath) {
         String result = "";
         Pattern pattern = Pattern.compile(getSchemaPath() + "/(\\w+)" + "(/datasource|/rule)?", Pattern.CASE_INSENSITIVE);
-        Matcher matcher = pattern.matcher(configNodeFullPath);
+        Matcher matcher = pattern.matcher(configurationNodeFullPath);
         if (matcher.find()) {
             result = matcher.group(1);
         }
