@@ -17,11 +17,14 @@
 
 package io.shardingsphere.orchestration.internal.registry.config.listener;
 
+import com.google.common.base.Strings;
 import io.shardingsphere.orchestration.internal.registry.config.event.ConfigMapChangedEvent;
 import io.shardingsphere.orchestration.internal.registry.config.event.DataSourceChangedEvent;
+import io.shardingsphere.orchestration.internal.registry.config.event.IgnoredChangedEvent;
 import io.shardingsphere.orchestration.internal.registry.config.event.MasterSlaveRuleChangedEvent;
 import io.shardingsphere.orchestration.internal.registry.config.event.ShardingRuleChangedEvent;
 import io.shardingsphere.orchestration.internal.registry.config.node.ConfigurationNode;
+import io.shardingsphere.orchestration.internal.registry.config.service.ConfigurationService;
 import io.shardingsphere.orchestration.internal.registry.listener.PostShardingOrchestrationEventListener;
 import io.shardingsphere.orchestration.internal.registry.listener.ShardingOrchestrationEvent;
 import io.shardingsphere.orchestration.reg.api.RegistryCenter;
@@ -40,25 +43,33 @@ import java.util.LinkedList;
  */
 public final class SchemaChangedListener extends PostShardingOrchestrationEventListener {
     
+    private final ConfigurationService configurationService;
+    
     private final ConfigurationNode configurationNode;
     
     private final Collection<String> existedSchemas = new LinkedList<>();
     
-    public SchemaChangedListener(final String name, final RegistryCenter regCenter) {
+    public SchemaChangedListener(final String name, final RegistryCenter regCenter, final ConfigurationService configurationService) {
         super(regCenter, new ConfigurationNode(name).getSchemaPath());
+        this.configurationService = configurationService;
         configurationNode = new ConfigurationNode(name);
     }
     
     @Override
     protected ShardingOrchestrationEvent createShardingOrchestrationEvent(final DataChangedEvent event) {
+        String schemaName = configurationNode.getSchemaName(event.getKey());
+        if (Strings.isNullOrEmpty(schemaName)) {
+            return new IgnoredChangedEvent();
+        }
         if (ChangedType.UPDATED == event.getChangedType()) {
-            String schemaName = configurationNode.getSchemaName(event.getKey());
             if (existedSchemas.contains(schemaName)) {
                 if (event.getKey().equals(configurationNode.getDataSourcePath(schemaName))) {
                     return createDataSourceChangedEvent(schemaName, event);
                 } else {
                     return createRuleChangedEvent(schemaName, event);
                 }
+            } else {
+                
             }
         }
         
@@ -75,7 +86,7 @@ public final class SchemaChangedListener extends PostShardingOrchestrationEventL
         return new DataSourceChangedEvent(schemaName, ConfigurationYamlConverter.loadDataSourceConfigurations(event.getValue()));
     }
     
-    protected ShardingOrchestrationEvent createRuleChangedEvent(final String schemaName, final DataChangedEvent event) {
+    private ShardingOrchestrationEvent createRuleChangedEvent(final String schemaName, final DataChangedEvent event) {
         return isShardingRule(event) ? getShardingRuleChangedEvent(schemaName, event.getValue()) : getMasterSlaveRuleChangedEvent(schemaName, event.getValue());
     }
     
@@ -90,4 +101,6 @@ public final class SchemaChangedListener extends PostShardingOrchestrationEventL
     private MasterSlaveRuleChangedEvent getMasterSlaveRuleChangedEvent(final String schemaName, final String ruleValue) {
         return new MasterSlaveRuleChangedEvent(schemaName, ConfigurationYamlConverter.loadMasterSlaveRuleConfiguration(ruleValue));
     }
+    
+    private boolean isSufficientToInitialize()
 }
