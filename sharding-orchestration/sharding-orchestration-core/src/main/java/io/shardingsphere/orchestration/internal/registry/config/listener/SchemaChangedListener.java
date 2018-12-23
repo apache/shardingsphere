@@ -77,10 +77,7 @@ public final class SchemaChangedListener extends PostShardingOrchestrationEventL
     }
     
     private ShardingOrchestrationEvent createUpdateChangedEvent(final String shardingSchemaName, final DataChangedEvent event) {
-        if (existedSchemaNames.contains(shardingSchemaName)) {
-            return createChangedEventForExistedSchema(event, shardingSchemaName);
-        }
-        return createChangedEventForNewSchema(shardingSchemaName);
+        return existedSchemaNames.contains(shardingSchemaName) ? createChangedEventForExistedSchema(event, shardingSchemaName) : createChangedEventForNewSchema(shardingSchemaName);
     }
     
     private ShardingOrchestrationEvent createChangedEventForExistedSchema(final DataChangedEvent event, final String shardingSchemaName) {
