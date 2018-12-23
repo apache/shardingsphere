@@ -18,8 +18,6 @@
 package io.shardingsphere.orchestration.internal.registry.config.event;
 
 import io.shardingsphere.orchestration.internal.registry.listener.ShardingOrchestrationEvent;
-import lombok.Getter;
-import lombok.NoArgsConstructor;
 
 /**
  * Ignored changed event.
