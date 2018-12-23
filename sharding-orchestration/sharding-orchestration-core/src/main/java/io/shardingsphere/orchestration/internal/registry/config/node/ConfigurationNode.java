@@ -113,7 +113,7 @@ public final class ConfigurationNode {
     }
     
     /**
-     * Get schema Name.
+     * Get schema name.
      * 
      * @param configNodeFullPath config node full path
      * @return schema name
