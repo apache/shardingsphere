@@ -22,7 +22,7 @@ import lombok.Getter;
 import lombok.RequiredArgsConstructor;
 
 /**
- * Schema delete changed event.
+ * Schema deleted event.
  *
  * @author panjuan
  */
