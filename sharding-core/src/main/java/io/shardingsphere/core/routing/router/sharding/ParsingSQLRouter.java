@@ -149,6 +149,9 @@ public final class ParsingSQLRouter implements ShardingRouter {
         if (selectStatement.getSubQueryStatements().isEmpty()) {
             return;
         }
+        if (selectStatement.getTables().isEmpty()) {
+            return;
+        }
         for (AndCondition each : sqlStatement.getConditions().getOrCondition().getAndConditions()) {
             for (Condition eachCondition : each.getConditions()) {
                 Preconditions.checkState(ShardingOperator.EQUAL == eachCondition.getOperator(), "DQL only support '=' with subquery.");

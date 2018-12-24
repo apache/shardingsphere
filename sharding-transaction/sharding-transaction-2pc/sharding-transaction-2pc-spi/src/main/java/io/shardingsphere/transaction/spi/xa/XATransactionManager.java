@@ -19,8 +19,8 @@ package io.shardingsphere.transaction.spi.xa;
 
 import io.shardingsphere.core.constant.DatabaseType;
 import io.shardingsphere.core.rule.DataSourceParameter;
-import io.shardingsphere.transaction.core.internal.context.XATransactionContext;
-import io.shardingsphere.transaction.core.internal.manager.ShardingTransactionManager;
+import io.shardingsphere.transaction.core.context.XATransactionContext;
+import io.shardingsphere.transaction.core.manager.ShardingTransactionManager;
 
 import javax.sql.DataSource;
 import javax.sql.XADataSource;

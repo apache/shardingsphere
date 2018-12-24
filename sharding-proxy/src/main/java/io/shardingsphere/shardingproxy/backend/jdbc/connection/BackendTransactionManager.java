@@ -19,9 +19,9 @@ package io.shardingsphere.shardingproxy.backend.jdbc.connection;
 
 import com.google.common.base.Preconditions;
 import io.shardingsphere.transaction.api.TransactionType;
-import io.shardingsphere.transaction.core.internal.TransactionOperationType;
-import io.shardingsphere.transaction.core.internal.context.ShardingTransactionContext;
-import io.shardingsphere.transaction.core.internal.context.XATransactionContext;
+import io.shardingsphere.transaction.core.TransactionOperationType;
+import io.shardingsphere.transaction.core.context.ShardingTransactionContext;
+import io.shardingsphere.transaction.core.context.XATransactionContext;
 import io.shardingsphere.transaction.core.loader.ShardingTransactionHandlerRegistry;
 import io.shardingsphere.transaction.spi.ShardingTransactionHandler;
 import lombok.RequiredArgsConstructor;

@@ -28,7 +28,7 @@ import io.shardingsphere.core.parsing.parser.sql.dal.set.SetStatement;
 import io.shardingsphere.shardingproxy.backend.jdbc.connection.BackendConnection;
 import io.shardingsphere.shardingproxy.backend.sctl.ShardingCTLSetBackendHandler;
 import io.shardingsphere.shardingproxy.backend.sctl.ShardingCTLShowBackendHandler;
-import io.shardingsphere.transaction.core.internal.TransactionOperationType;
+import io.shardingsphere.transaction.core.TransactionOperationType;
 
 /**
  * Com query backend handler factory.

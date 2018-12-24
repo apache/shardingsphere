@@ -15,10 +15,10 @@
  * </p>
  */
 
-package io.shardingsphere.transaction.core.internal.manager;
+package io.shardingsphere.transaction.core.manager;
 
-import io.shardingsphere.transaction.core.internal.context.ShardingTransactionContext;
 import io.shardingsphere.core.exception.ShardingException;
+import io.shardingsphere.transaction.core.context.ShardingTransactionContext;
 
 /**
  * Sharding transaction manager.

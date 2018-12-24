@@ -18,7 +18,7 @@
 package io.shardingsphere.transaction.spi;
 
 import io.shardingsphere.transaction.api.TransactionType;
-import io.shardingsphere.transaction.core.internal.context.ShardingTransactionContext;
+import io.shardingsphere.transaction.core.context.ShardingTransactionContext;
 
 /**
  * Sharding transaction handler SPI.

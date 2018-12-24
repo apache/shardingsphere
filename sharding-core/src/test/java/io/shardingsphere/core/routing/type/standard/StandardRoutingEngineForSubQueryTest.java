@@ -67,6 +67,15 @@ public final class StandardRoutingEngineForSubQueryTest {
         assertSubquery(sql, parameters);
     }
     
+    @Test
+    public void assertUnshardingTalbe() {
+        String sql = "select (select max(id) from t_user b where b.id = ?) from t_user a where id = ? ";
+        List<Object> parameters = new LinkedList<>();
+        parameters.add(1);
+        parameters.add(1);
+        assertSubquery(sql, parameters);
+    }
+    
     public void assertSubquery(final String sql, final List<Object> parameters) {
         ShardingRule shardingRule = createShardingRule();
         ShardingTableMetaData shardingTableMetaData = buildShardingTableMetaData();

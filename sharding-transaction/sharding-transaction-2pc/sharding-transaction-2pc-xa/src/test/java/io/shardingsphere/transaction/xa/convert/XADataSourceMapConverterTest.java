@@ -42,7 +42,7 @@ import static org.mockito.Mockito.mock;
 
 public final class XADataSourceMapConverterTest {
     
-    private XADataSourceMapConverter xaDataSourceMapConverter = new XADataSourceMapConverter();
+    private XADataSourceConverter xaDataSourceMapConverter = new XADataSourceConverter();
     
     @Test
     public void assertGetH2XATransactionalDataSourceSuccess() {

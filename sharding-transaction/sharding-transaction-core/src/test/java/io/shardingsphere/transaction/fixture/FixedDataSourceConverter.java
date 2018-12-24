@@ -15,18 +15,24 @@
  * </p>
  */
 
-package io.shardingsphere.shardingjdbc.jdbc.core.fixed;
+package io.shardingsphere.transaction.fixture;
 
 import com.zaxxer.hikari.HikariDataSource;
 import io.shardingsphere.core.constant.DatabaseType;
-import io.shardingsphere.transaction.spi.xa.DataSourceMapConverter;
+import io.shardingsphere.transaction.api.TransactionType;
+import io.shardingsphere.transaction.spi.TransactionalDataSourceConverter;
 
 import javax.sql.DataSource;
 import java.util.HashMap;
 import java.util.Map;
 import java.util.Map.Entry;
 
-public final class FixedDataSourceMapConverter implements DataSourceMapConverter {
+public final class FixedDataSourceConverter implements TransactionalDataSourceConverter {
+    
+    @Override
+    public TransactionType getType() {
+        return TransactionType.XA;
+    }
     
     @Override
     public Map<String, DataSource> convert(final DatabaseType databaseType, final Map<String, DataSource> dataSourceMap) {
