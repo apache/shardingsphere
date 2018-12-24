@@ -23,6 +23,7 @@ import io.shardingsphere.orchestration.internal.registry.config.event.DataSource
 import io.shardingsphere.orchestration.internal.registry.config.event.IgnoredShardingOrchestrationEvent;
 import io.shardingsphere.orchestration.internal.registry.config.event.MasterSlaveRuleChangedEvent;
 import io.shardingsphere.orchestration.internal.registry.config.event.SchemaAddedEvent;
+import io.shardingsphere.orchestration.internal.registry.config.event.SchemaDeletedEvent;
 import io.shardingsphere.orchestration.internal.registry.config.event.ShardingRuleChangedEvent;
 import io.shardingsphere.orchestration.internal.registry.listener.ShardingOrchestrationEvent;
 import io.shardingsphere.orchestration.reg.api.RegistryCenter;
@@ -128,5 +129,13 @@ public class SchemaChangedListenerTest {
         ShardingOrchestrationEvent actual = schemaChangedListener.createShardingOrchestrationEvent(dataChangedEvent);
         assertThat(actual, instanceOf(SchemaAddedEvent.class));
         assertThat(((SchemaAddedEvent) actual).getRuleConfiguration(), instanceOf(MasterSlaveRuleConfiguration.class));
+    }
+    
+    @Test
+    public void assertCreateSchemaDeletedEventForNewSchema() {
+        DataChangedEvent dataChangedEvent = new DataChangedEvent("/test/config/schema/logic_db/datasource", DATA_SOURCE_YAML, ChangedType.DELETED);
+        ShardingOrchestrationEvent actual = schemaChangedListener.createShardingOrchestrationEvent(dataChangedEvent);
+        assertThat(actual, instanceOf(SchemaDeletedEvent.class));
+        assertThat(((SchemaDeletedEvent) actual).getShardingSchemaName(), is("logic_db"));
     }
 }
