@@ -34,7 +34,6 @@ import java.util.Arrays;
 import static org.hamcrest.CoreMatchers.instanceOf;
 import static org.hamcrest.core.Is.is;
 import static org.junit.Assert.assertThat;
-import static org.mockito.Mockito.when;
 
 @RunWith(MockitoJUnitRunner.class)
 public class SchemaChangedListenerTest {
@@ -63,9 +62,7 @@ public class SchemaChangedListenerTest {
     
     @Test
     public void assertCreateDataSourceChangedEventForExistedSchema() {
-        when(regCenter.get("/test/config/schema/logic_db/rule")).thenReturn("rule");
-        when(regCenter.get("/test/config/schema/logic_db/datasource")).thenReturn("datasource");
-        DataChangedEvent dataChangedEvent = new DataChangedEvent("/test/config/schema/logic_db/datasource", DATA_SOURCE_YAML, ChangedType.UPDATED);
+        DataChangedEvent dataChangedEvent = new DataChangedEvent("/test/config/schema/sharding_db/datasource", DATA_SOURCE_YAML, ChangedType.UPDATED);
         ShardingOrchestrationEvent actual = schemaChangedListener.createShardingOrchestrationEvent(dataChangedEvent);
         assertThat(actual, instanceOf(DataSourceChangedEvent.class));
         assertThat(((DataSourceChangedEvent) actual).getShardingSchemaName(), is("sharding_db"));
