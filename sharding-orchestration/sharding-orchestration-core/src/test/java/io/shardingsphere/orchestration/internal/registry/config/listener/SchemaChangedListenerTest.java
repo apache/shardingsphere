@@ -36,6 +36,7 @@ import java.util.Arrays;
 import static org.hamcrest.CoreMatchers.instanceOf;
 import static org.hamcrest.core.Is.is;
 import static org.junit.Assert.assertThat;
+import static org.mockito.Mockito.when;
 
 @RunWith(MockitoJUnitRunner.class)
 public class SchemaChangedListenerTest {
@@ -91,5 +92,11 @@ public class SchemaChangedListenerTest {
         assertThat(actual, instanceOf(MasterSlaveRuleChangedEvent.class));
         assertThat(((MasterSlaveRuleChangedEvent) actual).getShardingSchemaName(), is("masterslave_db"));
         assertThat(((MasterSlaveRuleChangedEvent) actual).getMasterSlaveRuleConfiguration().getMasterDataSourceName(), is("master_ds"));
+    }
+    
+    @Test
+    public void assertCreateIgnoredShardingOrchestrationEventForNewSchema() {
+        when(regCenter.get("/test/config/schema/logic_db/rule")).thenReturn("");
+        when(regCenter.get("/test/config/schema/logic_db/datasource")).thenReturn("");
     }
 }
