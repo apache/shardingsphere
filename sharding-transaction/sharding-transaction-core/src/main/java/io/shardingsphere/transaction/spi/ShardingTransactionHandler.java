@@ -17,8 +17,13 @@
 
 package io.shardingsphere.transaction.spi;
 
+import io.shardingsphere.core.constant.DatabaseType;
 import io.shardingsphere.transaction.api.TransactionType;
 import io.shardingsphere.transaction.core.context.ShardingTransactionContext;
+
+import javax.sql.DataSource;
+import java.sql.SQLException;
+import java.util.Map;
 
 /**
  * Sharding transaction handler SPI.
@@ -44,9 +49,18 @@ public interface ShardingTransactionHandler<T extends ShardingTransactionContext
     TransactionType getTransactionType();
     
     /**
+     * Register transaction data source.
+     *
+     * @param databaseType database type
+     * @param dataSourceMap data source map
+     */
+    void registerTransactionDataSource(DatabaseType databaseType, Map<String, DataSource> dataSourceMap);
+    
+    /**
      * Synchronize transaction resource.
      *
      * @param context sharding transaction context
+     * @throws SQLException SQL exception
      */
-    void synchronizeTransactionResource(T context);
+    void synchronizeTransactionResource(T context) throws SQLException;
 }

@@ -17,6 +17,7 @@
 
 package io.shardingsphere.transaction.core.loader;
 
+import io.shardingsphere.core.constant.DatabaseType;
 import io.shardingsphere.transaction.api.TransactionType;
 import io.shardingsphere.transaction.core.context.ShardingTransactionContext;
 import io.shardingsphere.transaction.spi.ShardingTransactionHandler;
@@ -24,6 +25,7 @@ import lombok.AccessLevel;
 import lombok.NoArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 
+import javax.sql.DataSource;
 import java.util.HashMap;
 import java.util.Map;
 import java.util.ServiceLoader;
@@ -77,5 +79,16 @@ public final class ShardingTransactionHandlerRegistry {
      */
     public ShardingTransactionHandler<ShardingTransactionContext> getHandler(final TransactionType transactionType) {
         return TRANSACTION_HANDLER_MAP.get(transactionType);
+    }
+    
+    /**
+     * Register transaction resource.
+     * @param databaseType database type
+     * @param dataSourceMap data source map
+     */
+    public void registerTransactionResource(final DatabaseType databaseType, final Map<String, DataSource> dataSourceMap) {
+        for (Map.Entry<TransactionType, ShardingTransactionHandler<ShardingTransactionContext>> entry : TRANSACTION_HANDLER_MAP.entrySet()) {
+            entry.getValue().registerTransactionDataSource(databaseType, dataSourceMap);
+        }
     }
 }

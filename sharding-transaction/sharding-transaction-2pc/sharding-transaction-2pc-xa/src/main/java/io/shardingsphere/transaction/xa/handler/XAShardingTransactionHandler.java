@@ -17,18 +17,38 @@
 
 package io.shardingsphere.transaction.xa.handler;
 
+import com.google.common.base.Preconditions;
+import io.shardingsphere.core.constant.DatabaseType;
+import io.shardingsphere.core.rule.DataSourceParameter;
 import io.shardingsphere.transaction.api.TransactionType;
 import io.shardingsphere.transaction.core.context.XATransactionContext;
 import io.shardingsphere.transaction.core.handler.ShardingTransactionHandlerAdapter;
 import io.shardingsphere.transaction.core.manager.ShardingTransactionManager;
+import io.shardingsphere.transaction.spi.xa.XATransactionManager;
+import io.shardingsphere.transaction.xa.convert.datasource.ShardingXADataSource;
+import io.shardingsphere.transaction.xa.convert.datasource.ShardingXADataSourceUtil;
+import io.shardingsphere.transaction.xa.convert.swap.DataSourceSwapperRegistry;
 import io.shardingsphere.transaction.xa.manager.XATransactionManagerSPILoader;
+import lombok.extern.slf4j.Slf4j;
+
+import javax.sql.DataSource;
+import javax.sql.XAConnection;
+import javax.transaction.Transaction;
+import java.sql.SQLException;
+import java.util.Map;
+import java.util.concurrent.ConcurrentHashMap;
 
 /**
  * XA sharding transaction handler.
  *
  * @author zhaojun
  */
+@Slf4j
 public final class XAShardingTransactionHandler extends ShardingTransactionHandlerAdapter<XATransactionContext> {
+    
+    private static final Map<String, ShardingXADataSource> SHARDING_XA_DATA_SOURCE_MAP = new ConcurrentHashMap<>();
+    
+    private DatabaseType databaseType;
     
     @Override
     protected ShardingTransactionManager getShardingTransactionManager() {
@@ -41,7 +61,30 @@ public final class XAShardingTransactionHandler extends ShardingTransactionHandl
     }
     
     @Override
-    public void synchronizeTransactionResource(final XATransactionContext context) {
+    public void registerTransactionDataSource(final DatabaseType databaseType, final Map<String, DataSource> dataSourceMap) {
+        SHARDING_XA_DATA_SOURCE_MAP.clear();
+        this.databaseType = databaseType;
+        try {
+            for (Map.Entry<String, DataSource> entry : dataSourceMap.entrySet()) {
+                DataSourceParameter parameter = DataSourceSwapperRegistry.getSwapper(entry.getValue().getClass()).swap(entry.getValue());
+                ShardingXADataSource shardingXADataSource = ShardingXADataSourceUtil.createShardingXADataSource(databaseType, entry.getKey(), parameter);
+                SHARDING_XA_DATA_SOURCE_MAP.put(entry.getKey(), shardingXADataSource);
+            }
+        } catch (final Exception ex) {
+            log.error("Failed to register transaction datasource of XAShardingTransactionHandler");
+        }
+    }
     
+    @Override
+    public void synchronizeTransactionResource(final XATransactionContext context) throws SQLException {
+        try {
+            ShardingXADataSource shardingXADataSource = SHARDING_XA_DATA_SOURCE_MAP.get(context.getDatasourceName());
+            Preconditions.checkNotNull(shardingXADataSource, "Could not find ShardingXADataSource of `%s`", context.getDatasourceName());
+            XAConnection xaConnection = shardingXADataSource.wrapPhysicalConnection(context.getConnection(), databaseType);
+            Transaction transaction = ((XATransactionManager) getShardingTransactionManager()).getUnderlyingTransactionManager().getTransaction();
+            transaction.enlistResource(xaConnection.getXAResource());
+        } catch (final Exception ex) {
+            throw new SQLException(ex.getMessage());
+        }
     }
 }

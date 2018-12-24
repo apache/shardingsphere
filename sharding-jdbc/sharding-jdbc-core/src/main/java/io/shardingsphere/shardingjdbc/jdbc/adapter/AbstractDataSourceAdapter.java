@@ -22,6 +22,7 @@ import io.shardingsphere.core.bootstrap.ShardingBootstrap;
 import io.shardingsphere.core.constant.DatabaseType;
 import io.shardingsphere.shardingjdbc.jdbc.unsupported.AbstractUnsupportedOperationDataSource;
 import io.shardingsphere.transaction.core.datasource.ShardingTransactionalDataSource;
+import io.shardingsphere.transaction.core.loader.ShardingTransactionHandlerRegistry;
 import lombok.Getter;
 import lombok.Setter;
 
@@ -56,6 +57,7 @@ public abstract class AbstractDataSourceAdapter extends AbstractUnsupportedOpera
     
     public AbstractDataSourceAdapter(final Map<String, DataSource> dataSourceMap) throws SQLException {
         databaseType = getDatabaseType(dataSourceMap.values());
+        ShardingTransactionHandlerRegistry.getInstance().registerTransactionResource(databaseType, dataSourceMap);
         shardingTransactionalDataSources = new ShardingTransactionalDataSource(databaseType, dataSourceMap);
     }
     
