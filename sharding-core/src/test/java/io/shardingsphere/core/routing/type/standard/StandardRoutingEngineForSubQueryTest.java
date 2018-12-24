@@ -85,15 +85,6 @@ public final class StandardRoutingEngineForSubQueryTest {
         engine.route(parameters);
     }
     
-    public void assertSubquery(final String sql, final List<Object> parameters) {
-        ShardingRule shardingRule = createShardingRule();
-        ShardingTableMetaData shardingTableMetaData = buildShardingTableMetaData();
-        ShardingDataSourceMetaData shardingDataSourceMetaData = buildShardingDataSourceMetaData();
-        PreparedStatementRoutingEngine engine = new PreparedStatementRoutingEngine(sql, shardingRule,
-                shardingTableMetaData, DatabaseType.MySQL, true, shardingDataSourceMetaData);
-        engine.route(parameters);
-    }
-    
     @Test(expected = IllegalStateException.class)
     public void assertBindingTableWithDifferentValue() {
         String sql = "select (select max(id) from t_order_item b where b.user_id = ? ) from t_order a where user_id = ? ";
