@@ -39,4 +39,9 @@ public final class XAShardingTransactionHandler extends ShardingTransactionHandl
     public TransactionType getTransactionType() {
         return TransactionType.XA;
     }
+    
+    @Override
+    public void synchronizeTransactionResource(final XATransactionContext context) {
+    
+    }
 }

@@ -42,4 +42,11 @@ public interface ShardingTransactionHandler<T extends ShardingTransactionContext
      * @return transaction type
      */
     TransactionType getTransactionType();
+    
+    /**
+     * Synchronize transaction resource.
+     *
+     * @param context sharding transaction context
+     */
+    void synchronizeTransactionResource(T context);
 }
