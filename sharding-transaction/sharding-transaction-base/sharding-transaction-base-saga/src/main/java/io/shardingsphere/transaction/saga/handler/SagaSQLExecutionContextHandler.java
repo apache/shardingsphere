@@ -68,7 +68,7 @@ public final class SagaSQLExecutionContextHandler {
                 String transactionId = logicSQLIdToTransactionIdMap.get(sqlExecutionEvent.getLogicSQLId());
                 StatementExecuteUnit executeUnit = sqlExecutionEvent.getExecuteUnit();
                 RouteUnit routeUnit = executeUnit.getRouteUnit();
-                ((ConnectionMapSQLTransport) ShardingTransportFactory.getInstance().getTransportByTransactionId(transactionId)).cacheStatement(executeUnit);
+//                ((ConnectionMapSQLTransport) ShardingTransportFactory.getInstance().getTransportByTransactionId(transactionId)).cacheStatement(executeUnit);
                 RevertResult result = transactionManager.getReverEngine(transactionId).revert(routeUnit.getDataSourceName(), routeUnit.getSqlUnit().getSql(), routeUnit.getSqlUnit().getParameterSets());
                 transactionManager.getSagaDefinitionBuilder(transactionId).addChildRequest(sqlExecutionEvent.getId(), routeUnit.getDataSourceName(),
                     routeUnit.getSqlUnit().getSql(), copyList(routeUnit.getSqlUnit().getParameterSets()), result.getRevertSQL(), result.getRevertSQLParams());
