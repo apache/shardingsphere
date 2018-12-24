@@ -51,10 +51,6 @@ table_reference ([INNER] | {LEFT|RIGHT} [OUTER]) JOIN table_factor [JOIN ON cond
 
 ## Unavailable SQL
 
-### Route to single data node
-
-- 100% compatible（MySQL only, other database dialect is doing).
-
 ### Route to multiple data nodes or database beside MySQL
 
 Unavailable for redundant parentheses, CASE WHEN, HAVING and UNION (ALL) and partly available for sub-query.
