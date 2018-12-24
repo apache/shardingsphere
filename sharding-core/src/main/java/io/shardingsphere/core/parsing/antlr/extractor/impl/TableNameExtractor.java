@@ -25,7 +25,6 @@ import io.shardingsphere.core.parsing.antlr.extractor.util.RuleName;
 import io.shardingsphere.core.parsing.antlr.sql.segment.table.TableSegment;
 import io.shardingsphere.core.parsing.lexer.token.Symbol;
 import io.shardingsphere.core.parsing.parser.token.TableToken;
-import io.shardingsphere.core.util.SQLUtil;
 import org.antlr.v4.runtime.ParserRuleContext;
 
 import java.util.List;
@@ -57,8 +56,7 @@ public final class TableNameExtractor implements OptionalSQLSegmentExtractor {
             schemaName = Optional.absent();
             skippedSchemaNameLength = 0;
         }
-        TableToken tableToken = new TableToken(tableNameNode.get().getStart().getStartIndex(), skippedSchemaNameLength, tableName);
-        TableSegment result = new TableSegment(SQLUtil.getExactlyValue(tableName), tableToken);
+        TableSegment result = new TableSegment(new TableToken(tableNameNode.get().getStart().getStartIndex(), skippedSchemaNameLength, tableName));
         result.setSchemaName(schemaName.orNull());
         Optional<ParserRuleContext> aliasNode = ExtractorUtils.findFirstChildNode(tableNameNode.get().getParent(), RuleName.ALIAS);
         if (aliasNode.isPresent()) {
