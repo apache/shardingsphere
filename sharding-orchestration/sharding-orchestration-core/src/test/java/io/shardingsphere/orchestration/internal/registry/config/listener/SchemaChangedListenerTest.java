@@ -17,9 +17,11 @@
 
 package io.shardingsphere.orchestration.internal.registry.config.listener;
 
+import io.shardingsphere.api.config.rule.ShardingRuleConfiguration;
 import io.shardingsphere.orchestration.internal.registry.config.event.DataSourceChangedEvent;
 import io.shardingsphere.orchestration.internal.registry.config.event.IgnoredShardingOrchestrationEvent;
 import io.shardingsphere.orchestration.internal.registry.config.event.MasterSlaveRuleChangedEvent;
+import io.shardingsphere.orchestration.internal.registry.config.event.SchemaAddedEvent;
 import io.shardingsphere.orchestration.internal.registry.config.event.ShardingRuleChangedEvent;
 import io.shardingsphere.orchestration.internal.registry.listener.ShardingOrchestrationEvent;
 import io.shardingsphere.orchestration.reg.api.RegistryCenter;
@@ -101,5 +103,17 @@ public class SchemaChangedListenerTest {
         DataChangedEvent dataChangedEvent = new DataChangedEvent("/test/config/schema/logic_db/rule", "rule", ChangedType.UPDATED);
         ShardingOrchestrationEvent actual = schemaChangedListener.createShardingOrchestrationEvent(dataChangedEvent);
         assertThat(actual, instanceOf(IgnoredShardingOrchestrationEvent.class));
+    }
+    
+    @Test
+    public void assertCreateShardingSchemaAddedEventForNewSchema() {
+        when(regCenter.get("/test/config/schema/logic_db/rule")).thenReturn(SHARDING_RULE_YAML);
+        when(regCenter.get("/test/config/schema/logic_db/datasource")).thenReturn(DATA_SOURCE_YAML);
+        when(regCenter.getDirectly("/test/config/schema/logic_db/rule")).thenReturn(SHARDING_RULE_YAML);
+        when(regCenter.getDirectly("/test/config/schema/logic_db/datasource")).thenReturn(DATA_SOURCE_YAML);
+        DataChangedEvent dataChangedEvent = new DataChangedEvent("/test/config/schema/logic_db/datasource", DATA_SOURCE_YAML, ChangedType.UPDATED);
+        ShardingOrchestrationEvent actual = schemaChangedListener.createShardingOrchestrationEvent(dataChangedEvent);
+        assertThat(actual, instanceOf(SchemaAddedEvent.class));
+        assertThat(((SchemaAddedEvent) actual).getRuleConfiguration(), instanceOf(ShardingRuleConfiguration.class));
     }
 }
