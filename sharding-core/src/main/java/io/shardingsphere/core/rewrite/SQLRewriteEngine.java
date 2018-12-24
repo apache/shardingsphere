@@ -233,11 +233,11 @@ public final class SQLRewriteEngine {
     }
     
     private void appendDistinctPlaceholder(final SQLBuilder sqlBuilder, final AggregationDistinctToken distinctToken, final int count, final boolean isRewrite) {
-         if (!isRewrite) {
-             sqlBuilder.appendLiterals(distinctToken.getOriginalLiterals());
-         } else {
-             sqlBuilder.appendPlaceholder(new AggregationDistinctPlaceholder(distinctToken.getColumnName().toLowerCase(), ""));
-         }
+        if (!isRewrite) {
+            sqlBuilder.appendLiterals(distinctToken.getOriginalLiterals()); 
+        } else {
+            sqlBuilder.appendPlaceholder(new AggregationDistinctPlaceholder(distinctToken.getColumnName().toLowerCase(), "")); 
+        }
         int beginPosition = distinctToken.getBeginPosition() + distinctToken.getOriginalLiterals().length();
         appendRest(sqlBuilder, count, beginPosition);
     }
