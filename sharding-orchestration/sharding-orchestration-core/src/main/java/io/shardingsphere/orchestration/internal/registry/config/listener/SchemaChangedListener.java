@@ -67,7 +67,7 @@ public final class SchemaChangedListener extends PostShardingOrchestrationEventL
             return createUpdateChangedEvent(shardingSchemaName, event);
         }
         if (ChangedType.DELETED == event.getChangedType()) {
-            return createDeleteChangedEvent(shardingSchemaName);
+            return createDeletedEvent(shardingSchemaName);
         }
         return new IgnoredChangedEvent();
     }
@@ -126,7 +126,7 @@ public final class SchemaChangedListener extends PostShardingOrchestrationEventL
                 ? configurationService.loadShardingRuleConfiguration(shardingSchemaName) : configurationService.loadMasterSlaveRuleConfiguration(shardingSchemaName);
     }
     
-    private ShardingOrchestrationEvent createDeleteChangedEvent(final String shardingSchemaName) {
+    private ShardingOrchestrationEvent createDeletedEvent(final String shardingSchemaName) {
         existedSchemaNames.remove(shardingSchemaName);
         return new SchemaDeletedEvent(shardingSchemaName);
     }
