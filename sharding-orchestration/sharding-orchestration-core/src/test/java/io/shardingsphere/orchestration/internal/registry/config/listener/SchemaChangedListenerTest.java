@@ -44,7 +44,9 @@ public class SchemaChangedListenerTest {
     
     @Test
     public void assertCreateIgnoredEvent() {
-        assertThat(schemaChangedListener.createShardingOrchestrationEvent(new DataChangedEvent("/test/config/schema/logic_db", "test", ChangedType.UPDATED)), instanceOf(IgnoredShardingOrchestrationEvent.class));
-        assertThat(schemaChangedListener.createShardingOrchestrationEvent(new DataChangedEvent("/test/config/schema/logic_db/rule", "test", ChangedType.IGNORED)), instanceOf(IgnoredShardingOrchestrationEvent.class));
+        assertThat(schemaChangedListener.createShardingOrchestrationEvent(new DataChangedEvent("/test/config/schema/logic_db", "test", ChangedType.UPDATED)), 
+                instanceOf(IgnoredShardingOrchestrationEvent.class));
+        assertThat(schemaChangedListener.createShardingOrchestrationEvent(new DataChangedEvent("/test/config/schema/logic_db/rule", "test", ChangedType.IGNORED)), 
+                instanceOf(IgnoredShardingOrchestrationEvent.class));
     }
 }
