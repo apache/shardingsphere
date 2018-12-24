@@ -45,8 +45,8 @@ public class EmptySQLTransport implements SQLTransport {
      */
     @Override
     public SagaResponse with(final String datasource, final String sql, final List<List<String>> params) {
-        log.warn("This is empty SQLTransport, sql will not be executed actually.");
-        log.info("sql: " + sql + " param: " + Joiner.on(',').join(params) + " for datasource:" + datasource);
+//        log.warn("This is empty SQLTransport, sql will not be executed actually.");
+//        log.info("sql: " + sql + " param: " + Joiner.on(',').join(params) + " for datasource:" + datasource);
         return new JsonSuccessfulSagaResponse("{}");
     }
 }
