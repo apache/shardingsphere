@@ -17,7 +17,7 @@
 
 package io.shardingsphere.shardingui.web.controller;
 
-import io.shardingsphere.shardingui.servcie.ShardingPropertiesService;
+import io.shardingsphere.shardingui.servcie.ConfigMapService;
 import io.shardingsphere.shardingui.web.response.ResponseResult;
 import io.shardingsphere.shardingui.web.response.ResponseResultUtil;
 import lombok.extern.slf4j.Slf4j;
@@ -30,37 +30,37 @@ import org.springframework.web.bind.annotation.RestController;
 import java.util.Map;
 
 /**
- * RESTful API of sSharding properties.
- * 
+ * RESTful API of config map.
+ *
  * @author chenqingyang
  */
 @Slf4j
 @RestController
-@RequestMapping("/api/props")
-public final class ShardingPropertiesController {
+@RequestMapping("/api/config-map")
+public final class ConfigMapController {
     
     @Autowired
-    private ShardingPropertiesService shardingPropertiesService;
+    private ConfigMapService configMapService;
     
     /**
-     * Load sharding properties.
+     * Load config map.
      *
      * @return response result
      */
     @RequestMapping(value = "", method = RequestMethod.GET)
-    public ResponseResult<String> loadShardingProperties() {
-        return ResponseResultUtil.build(shardingPropertiesService.loadShardingProperties());
+    public ResponseResult<Map<String, Object>> loadConfigMap() {
+        return ResponseResultUtil.build(configMapService.loadConfigMap());
     }
     
     /**
-     * Update sharding properties.
+     * Update config map.
      *
      * @param configMap config map
      * @return response result
      */
     @RequestMapping(value = "", method = RequestMethod.PUT)
-    public ResponseResult updateShardingProperties(@RequestBody final Map<String, String> configMap) {
-        shardingPropertiesService.updateShardingProperties(configMap.get("props"));
+    public ResponseResult updateConfigMap(@RequestBody final Map<String, Object> configMap) {
+        configMapService.updateConfigMap(configMap);
         return ResponseResultUtil.success();
     }
 }
