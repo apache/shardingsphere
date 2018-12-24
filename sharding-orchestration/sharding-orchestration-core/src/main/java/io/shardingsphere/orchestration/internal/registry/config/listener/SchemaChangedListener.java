@@ -77,7 +77,7 @@ public final class SchemaChangedListener extends PostShardingOrchestrationEventL
     }
     
     private ShardingOrchestrationEvent createUpdatedEvent(final String shardingSchemaName, final DataChangedEvent event) {
-        return existedSchemaNames.contains(shardingSchemaName) ? createUpdatedEventForExistedSchema(event, shardingSchemaName) : createChangedEventForNewSchema(shardingSchemaName);
+        return existedSchemaNames.contains(shardingSchemaName) ? createUpdatedEventForExistedSchema(event, shardingSchemaName) : createUpdatedEventForNewSchema(shardingSchemaName);
     }
     
     private ShardingOrchestrationEvent createUpdatedEventForExistedSchema(final DataChangedEvent event, final String shardingSchemaName) {
@@ -105,7 +105,7 @@ public final class SchemaChangedListener extends PostShardingOrchestrationEventL
         return new MasterSlaveRuleChangedEvent(shardingSchemaName, ConfigurationYamlConverter.loadMasterSlaveRuleConfiguration(ruleValue));
     }
     
-    private ShardingOrchestrationEvent createChangedEventForNewSchema(final String shardingSchemaName) {
+    private ShardingOrchestrationEvent createUpdatedEventForNewSchema(final String shardingSchemaName) {
         if (isOwnCompleteConfigurations(shardingSchemaName)) {
             existedSchemaNames.add(shardingSchemaName);
             return createSchemaChangedEvent(shardingSchemaName);
