@@ -17,17 +17,34 @@
 
 package io.shardingsphere.orchestration.internal.registry.config.listener;
 
+import io.shardingsphere.orchestration.internal.registry.config.event.IgnoredShardingOrchestrationEvent;
+import io.shardingsphere.orchestration.reg.api.RegistryCenter;
+import io.shardingsphere.orchestration.reg.listener.DataChangedEvent;
+import io.shardingsphere.orchestration.reg.listener.DataChangedEvent.ChangedType;
 import org.junit.Before;
 import org.junit.Test;
+import org.mockito.Mock;
+
+import java.util.Arrays;
+
+import static org.hamcrest.CoreMatchers.instanceOf;
+import static org.junit.Assert.assertThat;
 
 public class SchemaChangedListenerTest {
     
+    private SchemaChangedListener schemaChangedListener;
+    
+    @Mock
+    private RegistryCenter regCenter;
+    
     @Before
     public void setUp() {
+        schemaChangedListener = new SchemaChangedListener("test", regCenter, Arrays.asList("sharding_db", "masterslave_db"));
     }
     
     @Test
-    public void testCreateShardingOrchestrationEvent() {
+    public void assertCreateIgnoredEvent() {
+        assertThat(schemaChangedListener.createShardingOrchestrationEvent(new DataChangedEvent("/test/config/schema/logic_db", "test", ChangedType.UPDATED)), instanceOf(IgnoredShardingOrchestrationEvent.class));
+        assertThat(schemaChangedListener.createShardingOrchestrationEvent(new DataChangedEvent("/test/config/schema/logic_db/rule", "test", ChangedType.IGNORED)), instanceOf(IgnoredShardingOrchestrationEvent.class));
     }
 }
-    
