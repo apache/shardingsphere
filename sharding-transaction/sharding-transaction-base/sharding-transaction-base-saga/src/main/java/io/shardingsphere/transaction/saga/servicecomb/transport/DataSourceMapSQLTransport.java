@@ -18,6 +18,8 @@
 package io.shardingsphere.transaction.saga.servicecomb.transport;
 
 import lombok.RequiredArgsConstructor;
+import lombok.extern.slf4j.Slf4j;
+
 import org.apache.servicecomb.saga.core.TransportFailedException;
 
 import javax.sql.DataSource;
@@ -30,6 +32,7 @@ import java.util.Map;
  *
  * @author yangyi
  */
+@Slf4j
 @RequiredArgsConstructor
 public final class DataSourceMapSQLTransport extends AbstractSQLTransport {
     
@@ -38,10 +41,12 @@ public final class DataSourceMapSQLTransport extends AbstractSQLTransport {
     @Override
     protected Connection getConnection(final String datasource) throws TransportFailedException {
         try {
+            long start = System.currentTimeMillis();
             Connection result = dataSourceMap.get(datasource).getConnection();
             if (!result.getAutoCommit()) {
                 result.setAutoCommit(true);
             }
+            log.info("get connection cost: {}", System.currentTimeMillis() - start);
             return result;
         } catch (SQLException ex) {
             throw new TransportFailedException("get connection of [" + datasource + "] occur exception ", ex);

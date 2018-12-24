@@ -21,6 +21,9 @@ import io.shardingsphere.transaction.core.internal.context.SagaTransactionContex
 import org.apache.servicecomb.saga.transports.SQLTransport;
 import org.apache.servicecomb.saga.transports.TransportFactory;
 
+import java.util.Map;
+import java.util.concurrent.ConcurrentHashMap;
+
 /**
  * Extend interface for service comb saga TransportFactory.
  *
@@ -31,6 +34,8 @@ public final class ShardingTransportFactory implements TransportFactory<SQLTrans
     private static final ShardingTransportFactory INSTANCE = new ShardingTransportFactory();
     
     private final ThreadLocal<SQLTransport> transports = new ThreadLocal<>();
+    
+    private final Map<String, SQLTransport> transactionIdToTransportMap = new ConcurrentHashMap<>();
     
     /**
      * Get sharding transport factory instance.
@@ -47,17 +52,36 @@ public final class ShardingTransportFactory implements TransportFactory<SQLTrans
     }
     
     /**
-     * cache Transport.
-     * @param context saga context
+     * Get transport for transaction id.
+     *
+     * @param transactionId transaction id
+     * @return SQL transport
      */
-    public void cacheTransport(final SagaTransactionContext context) {
-        transports.set(new DataSourceMapSQLTransport(context.getDataSourceMap()));
+    public SQLTransport getTransportByTransactionId(final String transactionId) {
+        return transactionIdToTransportMap.get(transactionId);
+    }
+    
+    /**
+     * cache Transport.
+     *
+     * @param context saga context
+     * @param transactionId transaction id
+     */
+    public void cacheTransport(final SagaTransactionContext context, final String transactionId) {
+        SQLTransport sqlTransport = new ConnectionMapSQLTransport(context.getDataSourceMap());
+        transports.set(sqlTransport);
+        transactionIdToTransportMap.put(transactionId, sqlTransport);
     }
     
     /**
      * remove cached SQLTransport.
+     *
+     * @param transactionId transaction id
      */
-    public void remove() {
+    public void remove(final String transactionId) {
+        if (null != transactionId) {
+            transactionIdToTransportMap.remove(transactionId);
+        }
         transports.remove();
     }
 }

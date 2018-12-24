@@ -17,11 +17,12 @@
 
 package io.shardingsphere.transaction.core.internal.context;
 
-import java.util.UUID;
-
+import io.shardingsphere.core.executor.StatementExecuteUnit;
 import io.shardingsphere.core.routing.RouteUnit;
 import lombok.Getter;
 import lombok.RequiredArgsConstructor;
+
+import java.util.UUID;
 
 /**
  * Saga SQL execution event.
@@ -34,7 +35,7 @@ public final class SagaSQLExecutionContext {
     
     private final String id = UUID.randomUUID().toString();
     
-    private final RouteUnit routeUnit;
+    private final StatementExecuteUnit executeUnit;
     
     private final String logicSQLId;
     

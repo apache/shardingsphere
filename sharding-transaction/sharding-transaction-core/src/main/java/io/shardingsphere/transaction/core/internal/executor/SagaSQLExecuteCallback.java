@@ -55,7 +55,7 @@ public abstract class SagaSQLExecuteCallback<T> extends SQLExecuteCallback<T> {
      */
     @Override
     protected T executeSQL(final StatementExecuteUnit executeUnit) throws SQLException {
-        handler.doInTransaction(SagaTransactionContext.createExecutionSagaTransactionContext(new SagaSQLExecutionContext(executeUnit.getRouteUnit(), logicSQLId, false)));
+        handler.doInTransaction(SagaTransactionContext.createExecutionSagaTransactionContext(new SagaSQLExecutionContext(executeUnit, logicSQLId, false)));
         return executeResult();
     }
     

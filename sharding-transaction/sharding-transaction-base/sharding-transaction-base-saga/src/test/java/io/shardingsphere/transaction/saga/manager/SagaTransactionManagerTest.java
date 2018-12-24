@@ -32,8 +32,10 @@ import org.junit.runner.RunWith;
 import org.mockito.Mock;
 import org.mockito.junit.MockitoJUnitRunner;
 
+import javax.sql.DataSource;
 import javax.transaction.Status;
 import java.lang.reflect.Field;
+import java.util.Collections;
 import java.util.Map;
 
 import static org.hamcrest.CoreMatchers.is;
@@ -85,7 +87,7 @@ public final class SagaTransactionManagerTest {
     
     @Test
     public void assertBegin() {
-        transactionManager.begin(SagaTransactionContext.createBeginSagaTransactionContext(null, config));
+        transactionManager.begin(SagaTransactionContext.createBeginSagaTransactionContext(Collections.<String, DataSource>emptyMap(), config));
         assertThat(36 == transactionManager.getTransactionId().length(), is(true));
         assertThat(sagaDefinitionBuilderMap.size(), is(1));
         assertNotNull(transactionManager.getReverEngine(transactionManager.getTransactionId()));
@@ -96,7 +98,7 @@ public final class SagaTransactionManagerTest {
     
     @Test
     public void assertCommit() {
-        transactionManager.begin(SagaTransactionContext.createBeginSagaTransactionContext(null, config));
+        transactionManager.begin(SagaTransactionContext.createBeginSagaTransactionContext(Collections.<String, DataSource>emptyMap(), config));
         transactionManager.commit(SagaTransactionContext.createCommitSagaTransactionContext(config));
         verify(sagaExecutionComponent).run(anyString());
         assertNull(transactionManager.getTransactionId());
@@ -114,7 +116,7 @@ public final class SagaTransactionManagerTest {
         assertThat(sagaDefinitionBuilderMap.size(), is(0));
         assertThat(revertEngineMap.size(), is(0));
         verify(sagaSQLExecutionContextHandler, never()).clean();
-        transactionManager.begin(SagaTransactionContext.createBeginSagaTransactionContext(null, config));
+        transactionManager.begin(SagaTransactionContext.createBeginSagaTransactionContext(Collections.<String, DataSource>emptyMap(), config));
         transactionManager.rollback(SagaTransactionContext.createRollbackSagaTransactionContext(config));
         assertNull(transactionManager.getTransactionId());
         assertNull(ShardingTransportFactory.getInstance().getTransport());
@@ -125,7 +127,7 @@ public final class SagaTransactionManagerTest {
     
     @Test
     public void assertGetStatus() {
-        transactionManager.begin(SagaTransactionContext.createBeginSagaTransactionContext(null, config));
+        transactionManager.begin(SagaTransactionContext.createBeginSagaTransactionContext(Collections.<String, DataSource>emptyMap(), config));
         assertThat(transactionManager.getStatus(), is(Status.STATUS_ACTIVE));
         transactionManager.rollback(SagaTransactionContext.createRollbackSagaTransactionContext(config));
         assertThat(transactionManager.getStatus(), is(Status.STATUS_NO_TRANSACTION));

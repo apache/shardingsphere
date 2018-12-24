@@ -19,10 +19,13 @@ package io.shardingsphere.transaction.saga.handler;
 
 import com.google.common.collect.Lists;
 import io.shardingsphere.core.exception.ShardingException;
+import io.shardingsphere.core.executor.StatementExecuteUnit;
 import io.shardingsphere.core.routing.RouteUnit;
 import io.shardingsphere.transaction.core.internal.context.SagaSQLExecutionContext;
 import io.shardingsphere.transaction.saga.manager.SagaTransactionManager;
 import io.shardingsphere.transaction.saga.revert.RevertResult;
+import io.shardingsphere.transaction.saga.servicecomb.transport.ShardingTransportFactory;
+import io.shardingsphere.transaction.saga.servicecomb.transport.ConnectionMapSQLTransport;
 import lombok.extern.slf4j.Slf4j;
 
 import java.sql.SQLException;
@@ -63,9 +66,10 @@ public final class SagaSQLExecutionContextHandler {
             //TODO generate revert sql by sql and params in event
             try {
                 String transactionId = logicSQLIdToTransactionIdMap.get(sqlExecutionEvent.getLogicSQLId());
-                RouteUnit routeUnit = sqlExecutionEvent.getRouteUnit();
-                RevertResult result = transactionManager.getReverEngine(transactionId).revert(sqlExecutionEvent.getRouteUnit().getDataSourceName(),
-                    sqlExecutionEvent.getRouteUnit().getSqlUnit().getSql(), sqlExecutionEvent.getRouteUnit().getSqlUnit().getParameterSets());
+                StatementExecuteUnit executeUnit = sqlExecutionEvent.getExecuteUnit();
+                RouteUnit routeUnit = executeUnit.getRouteUnit();
+                ((ConnectionMapSQLTransport) ShardingTransportFactory.getInstance().getTransportByTransactionId(transactionId)).cacheStatement(executeUnit);
+                RevertResult result = transactionManager.getReverEngine(transactionId).revert(routeUnit.getDataSourceName(), routeUnit.getSqlUnit().getSql(), routeUnit.getSqlUnit().getParameterSets());
                 transactionManager.getSagaDefinitionBuilder(transactionId).addChildRequest(sqlExecutionEvent.getId(), routeUnit.getDataSourceName(),
                     routeUnit.getSqlUnit().getSql(), copyList(routeUnit.getSqlUnit().getParameterSets()), result.getRevertSQL(), result.getRevertSQLParams());
             } catch (SQLException e) {

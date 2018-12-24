@@ -48,6 +48,7 @@ public abstract class AbstractSQLTransport implements SQLTransport {
     public SagaResponse with(final String datasource, final String sql, final List<List<String>> params) {
         try (Connection connection = getConnection(datasource);
             PreparedStatement statement = connection.prepareStatement(sql)) {
+            long start = System.currentTimeMillis();
             if (params.isEmpty()) {
                 statement.executeUpdate();
             } else {
@@ -59,6 +60,7 @@ public abstract class AbstractSQLTransport implements SQLTransport {
                 }
                 statement.executeBatch();
             }
+            log.info("execute sql cost: {}", System.currentTimeMillis() - start);
         } catch (SQLException e) {
             throw new TransportFailedException("execute SQL " + sql + " occur exception: ", e);
         }

@@ -36,6 +36,8 @@ import java.util.Map;
 import java.util.UUID;
 import java.util.concurrent.ConcurrentHashMap;
 
+import lombok.extern.slf4j.Slf4j;
+
 
 /**
  * Saga transaction manager.
@@ -43,6 +45,7 @@ import java.util.concurrent.ConcurrentHashMap;
  * @author zhaojun
  * @author yangyi
  */
+@Slf4j
 public final class SagaTransactionManager implements BASETransactionManager<SagaTransactionContext> {
     
     private static final SagaTransactionManager INSTANCE = new SagaTransactionManager();
@@ -60,7 +63,7 @@ public final class SagaTransactionManager implements BASETransactionManager<Saga
     @Override
     public void begin(final SagaTransactionContext transactionContext) {
         TRANSACTION_IDS.set(UUID.randomUUID().toString());
-        ShardingTransportFactory.getInstance().cacheTransport(transactionContext);
+        ShardingTransportFactory.getInstance().cacheTransport(transactionContext, getTransactionId());
         SagaConfiguration sagaConfiguration = transactionContext.getSagaConfiguration();
         sagaDefinitionBuilderMap.put(getTransactionId(), new SagaDefinitionBuilder(sagaConfiguration.getRecoveryPolicy().getName(),
             sagaConfiguration.getTransactionMaxRetries(), sagaConfiguration.getCompensationMaxRetries(), sagaConfiguration.getTransactionRetryDelay()));
@@ -72,7 +75,8 @@ public final class SagaTransactionManager implements BASETransactionManager<Saga
     public void commit(final SagaTransactionContext transactionContext) {
         try {
             // TODO Analyse the result of saga coordinator.run, if run failed, throw exception
-            sagaExecutionComponentHolder.getSagaExecutionComponent(transactionContext.getSagaConfiguration()).run(sagaDefinitionBuilderMap.get(getTransactionId()).build());
+            String json = sagaDefinitionBuilderMap.get(getTransactionId()).build();
+            sagaExecutionComponentHolder.getSagaExecutionComponent(transactionContext.getSagaConfiguration()).run(json);
         } catch (JsonProcessingException ignored) {
         }
         cleanTransaction();
@@ -144,12 +148,12 @@ public final class SagaTransactionManager implements BASETransactionManager<Saga
     }
     
     private void cleanTransaction() {
+        ShardingTransportFactory.getInstance().remove(getTransactionId());
         if (null != getTransactionId()) {
             sagaDefinitionBuilderMap.remove(getTransactionId());
             revertEngineMap.remove(getTransactionId());
             sagaSQLExecutionContextHandler.clean();
         }
         TRANSACTION_IDS.remove();
-        ShardingTransportFactory.getInstance().remove();
     }
 }
