@@ -36,16 +36,7 @@ public final class ConfigurationChangedListenerManagerTest {
     private RegistryCenter regCenter;
     
     @Mock
-    private RuleChangedListener ruleChangedListener0;
-    
-    @Mock
-    private RuleChangedListener ruleChangedListener1;
-    
-    @Mock
-    private DataSourceChangedListener dataSourceChangedListener0;
-    
-    @Mock
-    private DataSourceChangedListener dataSourceChangedListener1;
+    private SchemaChangedListener schemaChangedListener;
     
     @Mock
     private PropertiesChangedListener propertiesChangedListener;
@@ -59,16 +50,11 @@ public final class ConfigurationChangedListenerManagerTest {
     @Test
     public void assertInitListeners() {
         ConfigurationChangedListenerManager actual = new ConfigurationChangedListenerManager("test", regCenter, Arrays.asList("sharding_db", "masterslave_db"));
-        FieldUtil.setField(actual, "ruleChangedListeners", Arrays.asList(ruleChangedListener0, ruleChangedListener1));
-        FieldUtil.setField(actual, "dataSourceChangedListeners", Arrays.asList(dataSourceChangedListener0, dataSourceChangedListener1));
+        FieldUtil.setField(actual, "schemaChangedListener", schemaChangedListener);
         FieldUtil.setField(actual, "propertiesChangedListener", propertiesChangedListener);
         FieldUtil.setField(actual, "authenticationChangedListener", authenticationChangedListener);
         FieldUtil.setField(actual, "configMapChangedListener", configMapChangedListener);
         actual.initListeners();
-        verify(ruleChangedListener0).watch(ChangedType.UPDATED);
-        verify(ruleChangedListener1).watch(ChangedType.UPDATED);
-        verify(dataSourceChangedListener0).watch(ChangedType.UPDATED);
-        verify(dataSourceChangedListener1).watch(ChangedType.UPDATED);
         verify(propertiesChangedListener).watch(ChangedType.UPDATED);
         verify(authenticationChangedListener).watch(ChangedType.UPDATED);
         verify(configMapChangedListener).watch(ChangedType.UPDATED);

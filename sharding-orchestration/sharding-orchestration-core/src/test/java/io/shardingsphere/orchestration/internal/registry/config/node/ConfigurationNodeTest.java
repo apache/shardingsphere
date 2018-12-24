@@ -56,4 +56,9 @@ public final class ConfigurationNodeTest {
     public void assertGetPropsPath() {
         assertThat(configurationNode.getPropsPath(), is("/test/config/props"));
     }
+    
+    @Test
+    public void assertGetSchemaName() {
+        assertThat(configurationNode.getSchemaName("/test/config/schema/logic_db/rule"), is(ShardingConstant.LOGIC_SCHEMA_NAME));
+    }
 }

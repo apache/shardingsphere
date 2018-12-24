@@ -20,6 +20,9 @@ package io.shardingsphere.orchestration.internal.registry.config.node;
 import com.google.common.base.Joiner;
 import lombok.RequiredArgsConstructor;
 
+import java.util.regex.Matcher;
+import java.util.regex.Pattern;
+
 /**
  * Configuration node.
  *
@@ -107,5 +110,21 @@ public final class ConfigurationNode {
     
     private String getFullPath(final String node) {
         return Joiner.on("/").join("", name, ROOT, node);
+    }
+    
+    /**
+     * Get schema name.
+     * 
+     * @param configurationNodeFullPath configuration node full path
+     * @return schema name
+     */
+    public String getSchemaName(final String configurationNodeFullPath) {
+        String result = "";
+        Pattern pattern = Pattern.compile(getSchemaPath() + "/(\\w+)" + "(/datasource|/rule)?", Pattern.CASE_INSENSITIVE);
+        Matcher matcher = pattern.matcher(configurationNodeFullPath);
+        if (matcher.find()) {
+            result = matcher.group(1);
+        }
+        return result;
     }
 }
