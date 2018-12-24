@@ -19,6 +19,7 @@ package io.shardingsphere.orchestration.internal.registry.config.listener;
 
 import io.shardingsphere.orchestration.internal.registry.config.event.DataSourceChangedEvent;
 import io.shardingsphere.orchestration.internal.registry.config.event.IgnoredShardingOrchestrationEvent;
+import io.shardingsphere.orchestration.internal.registry.config.event.MasterSlaveRuleChangedEvent;
 import io.shardingsphere.orchestration.internal.registry.config.event.ShardingRuleChangedEvent;
 import io.shardingsphere.orchestration.internal.registry.listener.ShardingOrchestrationEvent;
 import io.shardingsphere.orchestration.reg.api.RegistryCenter;
@@ -81,5 +82,14 @@ public class SchemaChangedListenerTest {
         assertThat(actual, instanceOf(ShardingRuleChangedEvent.class));
         assertThat(((ShardingRuleChangedEvent) actual).getShardingSchemaName(), is("sharding_db"));
         assertThat(((ShardingRuleChangedEvent) actual).getShardingRuleConfiguration().getTableRuleConfigs().size(), is(1));
+    }
+    
+    @Test
+    public void assertCreateMasterSlaveRuleChangedEventForExistedSchema() {
+        DataChangedEvent dataChangedEvent = new DataChangedEvent("/test/config/schema/masterslave_db/rule", MASTER_SLAVE_RULE_YAML, ChangedType.UPDATED);
+        ShardingOrchestrationEvent actual = schemaChangedListener.createShardingOrchestrationEvent(dataChangedEvent);
+        assertThat(actual, instanceOf(MasterSlaveRuleChangedEvent.class));
+        assertThat(((MasterSlaveRuleChangedEvent) actual).getShardingSchemaName(), is("masterslave_db"));
+        assertThat(((MasterSlaveRuleChangedEvent) actual).getMasterSlaveRuleConfiguration().getMasterDataSourceName(), is("master_ds"));
     }
 }
