@@ -17,20 +17,31 @@
 
 package io.shardingsphere.orchestration.internal.registry.config.listener;
 
+import io.shardingsphere.orchestration.internal.registry.config.event.DataSourceChangedEvent;
 import io.shardingsphere.orchestration.internal.registry.config.event.IgnoredShardingOrchestrationEvent;
+import io.shardingsphere.orchestration.internal.registry.listener.ShardingOrchestrationEvent;
 import io.shardingsphere.orchestration.reg.api.RegistryCenter;
 import io.shardingsphere.orchestration.reg.listener.DataChangedEvent;
 import io.shardingsphere.orchestration.reg.listener.DataChangedEvent.ChangedType;
 import org.junit.Before;
 import org.junit.Test;
+import org.junit.runner.RunWith;
 import org.mockito.Mock;
+import org.mockito.junit.MockitoJUnitRunner;
 
 import java.util.Arrays;
 
 import static org.hamcrest.CoreMatchers.instanceOf;
+import static org.hamcrest.core.Is.is;
 import static org.junit.Assert.assertThat;
+import static org.mockito.Mockito.when;
 
+@RunWith(MockitoJUnitRunner.class)
 public class SchemaChangedListenerTest {
+    
+    private static final String DATA_SOURCE_YAML = "master_ds: !!io.shardingsphere.orchestration.yaml.YamlDataSourceConfiguration\n"
+            + "  dataSourceClassName: com.zaxxer.hikari.HikariDataSource\n" + "  properties:\n"
+            + "    url: jdbc:mysql://localhost:3306/demo_ds_master\n" + "    username: root\n" + "    password: null\n";
     
     private SchemaChangedListener schemaChangedListener;
     
@@ -48,5 +59,15 @@ public class SchemaChangedListenerTest {
                 instanceOf(IgnoredShardingOrchestrationEvent.class));
         assertThat(schemaChangedListener.createShardingOrchestrationEvent(new DataChangedEvent("/test/config/schema/logic_db/rule", "test", ChangedType.IGNORED)), 
                 instanceOf(IgnoredShardingOrchestrationEvent.class));
+    }
+    
+    @Test
+    public void assertCreateDataSourceChangedEventForExistedSchema() {
+        when(regCenter.get("/test/config/schema/logic_db/rule")).thenReturn("rule");
+        when(regCenter.get("/test/config/schema/logic_db/datasource")).thenReturn("datasource");
+        DataChangedEvent dataChangedEvent = new DataChangedEvent("/test/config/schema/logic_db/datasource", DATA_SOURCE_YAML, ChangedType.UPDATED);
+        ShardingOrchestrationEvent actual = schemaChangedListener.createShardingOrchestrationEvent(dataChangedEvent);
+        assertThat(actual, instanceOf(DataSourceChangedEvent.class));
+        assertThat(((DataSourceChangedEvent) actual).getShardingSchemaName(), is("sharding_db"));
     }
 }
