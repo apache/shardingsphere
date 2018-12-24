@@ -23,7 +23,7 @@ import io.shardingsphere.orchestration.internal.registry.config.event.DataSource
 import io.shardingsphere.orchestration.internal.registry.config.event.IgnoredChangedEvent;
 import io.shardingsphere.orchestration.internal.registry.config.event.MasterSlaveRuleChangedEvent;
 import io.shardingsphere.orchestration.internal.registry.config.event.SchemaAddChangedEvent;
-import io.shardingsphere.orchestration.internal.registry.config.event.SchemaDeleteChangedEvent;
+import io.shardingsphere.orchestration.internal.registry.config.event.SchemaDeletedEvent;
 import io.shardingsphere.orchestration.internal.registry.config.event.ShardingRuleChangedEvent;
 import io.shardingsphere.orchestration.internal.registry.config.node.ConfigurationNode;
 import io.shardingsphere.orchestration.internal.registry.config.service.ConfigurationService;
@@ -128,6 +128,6 @@ public final class SchemaChangedListener extends PostShardingOrchestrationEventL
     
     private ShardingOrchestrationEvent createDeleteChangedEvent(final String shardingSchemaName) {
         existedSchemaNames.remove(shardingSchemaName);
-        return new SchemaDeleteChangedEvent(shardingSchemaName);
+        return new SchemaDeletedEvent(shardingSchemaName);
     }
 }

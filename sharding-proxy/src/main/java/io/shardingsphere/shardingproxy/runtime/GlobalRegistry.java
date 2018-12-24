@@ -33,7 +33,7 @@ import io.shardingsphere.orchestration.internal.registry.config.event.Authentica
 import io.shardingsphere.orchestration.internal.registry.config.event.ConfigMapChangedEvent;
 import io.shardingsphere.orchestration.internal.registry.config.event.PropertiesChangedEvent;
 import io.shardingsphere.orchestration.internal.registry.config.event.SchemaAddChangedEvent;
-import io.shardingsphere.orchestration.internal.registry.config.event.SchemaDeleteChangedEvent;
+import io.shardingsphere.orchestration.internal.registry.config.event.SchemaDeletedEvent;
 import io.shardingsphere.orchestration.internal.registry.state.event.CircuitStateChangedEvent;
 import io.shardingsphere.shardingproxy.runtime.schema.LogicSchema;
 import io.shardingsphere.shardingproxy.runtime.schema.MasterSlaveSchema;
@@ -234,10 +234,10 @@ public final class GlobalRegistry {
     /**
      * Renew to delete new schema.
      *
-     * @param schemaDeleteChangedEvent schema delete changed event
+     * @param schemaDeletedEvent schema delete changed event
      */
     @Subscribe
-    public synchronized void renew(final SchemaDeleteChangedEvent schemaDeleteChangedEvent) {
-        logicSchemas.remove(schemaDeleteChangedEvent.getShardingSchemaName());
+    public synchronized void renew(final SchemaDeletedEvent schemaDeletedEvent) {
+        logicSchemas.remove(schemaDeletedEvent.getShardingSchemaName());
     }
 }

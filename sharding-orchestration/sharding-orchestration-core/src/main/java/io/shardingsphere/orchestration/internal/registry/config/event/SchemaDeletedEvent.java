@@ -28,7 +28,7 @@ import lombok.RequiredArgsConstructor;
  */
 @RequiredArgsConstructor
 @Getter
-public final class SchemaDeleteChangedEvent implements ShardingOrchestrationEvent {
+public final class SchemaDeletedEvent implements ShardingOrchestrationEvent {
     
     private final String shardingSchemaName;
 }
