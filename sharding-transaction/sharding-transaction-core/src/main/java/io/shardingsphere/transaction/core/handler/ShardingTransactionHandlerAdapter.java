@@ -17,7 +17,7 @@
 
 package io.shardingsphere.transaction.core.handler;
 
-import io.shardingsphere.transaction.core.context.ShardingTransactionContext;
+import io.shardingsphere.transaction.core.TransactionOperationType;
 import io.shardingsphere.transaction.core.manager.ShardingTransactionManager;
 import io.shardingsphere.transaction.spi.ShardingTransactionHandler;
 
@@ -26,22 +26,21 @@ import io.shardingsphere.transaction.spi.ShardingTransactionHandler;
  *
  * @author zhaojun
  *
- * @param <T> type of sharding transaction context
  */
-public abstract class ShardingTransactionHandlerAdapter<T extends ShardingTransactionContext> implements ShardingTransactionHandler<T> {
+public abstract class ShardingTransactionHandlerAdapter implements ShardingTransactionHandler {
     
     @Override
     @SuppressWarnings("unchecked")
-    public final void doInTransaction(final T context) {
-        switch (context.getOperationType()) {
+    public final void doInTransaction(final TransactionOperationType transactionOperationType) {
+        switch (transactionOperationType) {
             case BEGIN:
-                getShardingTransactionManager().begin(context);
+                getShardingTransactionManager().begin();
                 break;
             case COMMIT:
-                getShardingTransactionManager().commit(context);
+                getShardingTransactionManager().commit();
                 break;
             case ROLLBACK:
-                getShardingTransactionManager().rollback(context);
+                getShardingTransactionManager().rollback();
                 break;
             default:
         }

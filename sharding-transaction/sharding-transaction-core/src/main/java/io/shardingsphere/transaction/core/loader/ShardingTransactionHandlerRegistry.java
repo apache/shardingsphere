@@ -19,7 +19,6 @@ package io.shardingsphere.transaction.core.loader;
 
 import io.shardingsphere.core.constant.DatabaseType;
 import io.shardingsphere.transaction.api.TransactionType;
-import io.shardingsphere.transaction.core.context.ShardingTransactionContext;
 import io.shardingsphere.transaction.spi.ShardingTransactionHandler;
 import lombok.AccessLevel;
 import lombok.NoArgsConstructor;
@@ -39,7 +38,7 @@ import java.util.ServiceLoader;
 @Slf4j
 public final class ShardingTransactionHandlerRegistry {
     
-    private static final Map<TransactionType, ShardingTransactionHandler<ShardingTransactionContext>> TRANSACTION_HANDLER_MAP = new HashMap<>();
+    private static final Map<TransactionType, ShardingTransactionHandler> TRANSACTION_HANDLER_MAP = new HashMap<>();
     
     private static final ShardingTransactionHandlerRegistry INSTANCE = new ShardingTransactionHandlerRegistry();
     
@@ -58,7 +57,7 @@ public final class ShardingTransactionHandlerRegistry {
                     each.getTransactionType(), TRANSACTION_HANDLER_MAP.get(each.getTransactionType()).getClass().getName());
                 continue;
             }
-            TRANSACTION_HANDLER_MAP.put(each.getTransactionType(), (ShardingTransactionHandler<ShardingTransactionContext>) each);
+            TRANSACTION_HANDLER_MAP.put(each.getTransactionType(), each);
         }
     }
     
@@ -77,7 +76,7 @@ public final class ShardingTransactionHandlerRegistry {
      * @param transactionType transaction type
      * @return sharding transaction handler implement
      */
-    public ShardingTransactionHandler<ShardingTransactionContext> getHandler(final TransactionType transactionType) {
+    public ShardingTransactionHandler getHandler(final TransactionType transactionType) {
         return TRANSACTION_HANDLER_MAP.get(transactionType);
     }
     
@@ -87,7 +86,7 @@ public final class ShardingTransactionHandlerRegistry {
      * @param dataSourceMap data source map
      */
     public void registerTransactionResource(final DatabaseType databaseType, final Map<String, DataSource> dataSourceMap) {
-        for (Map.Entry<TransactionType, ShardingTransactionHandler<ShardingTransactionContext>> entry : TRANSACTION_HANDLER_MAP.entrySet()) {
+        for (Map.Entry<TransactionType, ShardingTransactionHandler> entry : TRANSACTION_HANDLER_MAP.entrySet()) {
             entry.getValue().registerTransactionDataSource(databaseType, dataSourceMap);
         }
     }

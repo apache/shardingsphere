@@ -17,14 +17,12 @@
 
 package io.shardingsphere.transaction.core.manager;
 
-import io.shardingsphere.transaction.core.context.ShardingTransactionContext;
-
 /**
  * BASE transaction manager.
  *
  * @author yangyi
  */
-public interface BASETransactionManager<T extends ShardingTransactionContext> extends ShardingTransactionManager<T> {
+public interface BASETransactionManager extends ShardingTransactionManager {
     
     /**
      * Get transaction id in current thread.

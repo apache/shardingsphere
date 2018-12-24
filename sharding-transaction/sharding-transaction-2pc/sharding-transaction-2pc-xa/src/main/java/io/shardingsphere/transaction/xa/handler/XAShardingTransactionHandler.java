@@ -21,7 +21,6 @@ import com.google.common.base.Preconditions;
 import io.shardingsphere.core.constant.DatabaseType;
 import io.shardingsphere.core.rule.DataSourceParameter;
 import io.shardingsphere.transaction.api.TransactionType;
-import io.shardingsphere.transaction.core.context.XATransactionContext;
 import io.shardingsphere.transaction.core.handler.ShardingTransactionHandlerAdapter;
 import io.shardingsphere.transaction.core.manager.ShardingTransactionManager;
 import io.shardingsphere.transaction.spi.xa.XATransactionManager;
@@ -34,7 +33,9 @@ import lombok.extern.slf4j.Slf4j;
 import javax.sql.DataSource;
 import javax.sql.XAConnection;
 import javax.transaction.Transaction;
+import java.sql.Connection;
 import java.sql.SQLException;
+import java.util.List;
 import java.util.Map;
 import java.util.concurrent.ConcurrentHashMap;
 
@@ -44,7 +45,7 @@ import java.util.concurrent.ConcurrentHashMap;
  * @author zhaojun
  */
 @Slf4j
-public final class XAShardingTransactionHandler extends ShardingTransactionHandlerAdapter<XATransactionContext> {
+public final class XAShardingTransactionHandler extends ShardingTransactionHandlerAdapter {
     
     private static final Map<String, ShardingXADataSource> SHARDING_XA_DATA_SOURCE_MAP = new ConcurrentHashMap<>();
     
@@ -76,13 +77,15 @@ public final class XAShardingTransactionHandler extends ShardingTransactionHandl
     }
     
     @Override
-    public void synchronizeTransactionResource(final XATransactionContext context) throws SQLException {
+    public void synchronizeTransactionResource(final String datasourceName, final List<Connection> connections, final Object... properties) throws SQLException {
         try {
-            ShardingXADataSource shardingXADataSource = SHARDING_XA_DATA_SOURCE_MAP.get(context.getDatasourceName());
-            Preconditions.checkNotNull(shardingXADataSource, "Could not find ShardingXADataSource of `%s`", context.getDatasourceName());
-            XAConnection xaConnection = shardingXADataSource.wrapPhysicalConnection(context.getConnection(), databaseType);
-            Transaction transaction = ((XATransactionManager) getShardingTransactionManager()).getUnderlyingTransactionManager().getTransaction();
-            transaction.enlistResource(xaConnection.getXAResource());
+            ShardingXADataSource shardingXADataSource = SHARDING_XA_DATA_SOURCE_MAP.get(datasourceName);
+            Preconditions.checkNotNull(shardingXADataSource, "Could not find ShardingXADataSource of `%s`", datasourceName);
+            for (Connection each : connections) {
+                XAConnection xaConnection = shardingXADataSource.wrapPhysicalConnection(each, databaseType);
+                Transaction transaction = ((XATransactionManager) getShardingTransactionManager()).getUnderlyingTransactionManager().getTransaction();
+                transaction.enlistResource(xaConnection.getXAResource());
+            }
         } catch (final Exception ex) {
             throw new SQLException(ex.getMessage());
         }

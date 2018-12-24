@@ -19,7 +19,6 @@ package io.shardingsphere.transaction.xa.handler;
 
 import io.shardingsphere.transaction.api.TransactionType;
 import io.shardingsphere.transaction.core.TransactionOperationType;
-import io.shardingsphere.transaction.core.context.XATransactionContext;
 import io.shardingsphere.transaction.core.manager.ShardingTransactionManager;
 import io.shardingsphere.transaction.xa.manager.AtomikosTransactionManager;
 import org.junit.Test;
@@ -33,12 +32,6 @@ import static org.junit.Assert.assertThat;
 public class XAShardingTransactionHandlerTest {
     
     private XAShardingTransactionHandler xaShardingTransactionHandler = new XAShardingTransactionHandler();
-    
-    private XATransactionContext beginContext = new XATransactionContext(TransactionOperationType.BEGIN);
-    
-    private XATransactionContext commitContext = new XATransactionContext(TransactionOperationType.COMMIT);
-    
-    private XATransactionContext rollbackContext = new XATransactionContext(TransactionOperationType.ROLLBACK);
     
     @Test
     public void assertGetTransactionManager() {
@@ -56,7 +49,7 @@ public class XAShardingTransactionHandlerTest {
         Thread thread = new Thread(new Runnable() {
             @Override
             public void run() {
-                xaShardingTransactionHandler.doInTransaction(beginContext);
+                xaShardingTransactionHandler.doInTransaction(TransactionOperationType.BEGIN);
                 int actualStatus = xaShardingTransactionHandler.getShardingTransactionManager().getStatus();
                 assertThat(actualStatus, is(Status.STATUS_ACTIVE));
             }
@@ -70,8 +63,8 @@ public class XAShardingTransactionHandlerTest {
         Thread thread = new Thread(new Runnable() {
             @Override
             public void run() {
-                xaShardingTransactionHandler.doInTransaction(beginContext);
-                xaShardingTransactionHandler.doInTransaction(commitContext);
+                xaShardingTransactionHandler.doInTransaction(TransactionOperationType.BEGIN);
+                xaShardingTransactionHandler.doInTransaction(TransactionOperationType.COMMIT);
                 int actualStatus = xaShardingTransactionHandler.getShardingTransactionManager().getStatus();
                 assertThat(actualStatus, is(Status.STATUS_NO_TRANSACTION));
             }
@@ -85,8 +78,8 @@ public class XAShardingTransactionHandlerTest {
         Thread thread = new Thread(new Runnable() {
             @Override
             public void run() {
-                xaShardingTransactionHandler.doInTransaction(beginContext);
-                xaShardingTransactionHandler.doInTransaction(rollbackContext);
+                xaShardingTransactionHandler.doInTransaction(TransactionOperationType.BEGIN);
+                xaShardingTransactionHandler.doInTransaction(TransactionOperationType.ROLLBACK);
                 int actualStatus = xaShardingTransactionHandler.getShardingTransactionManager().getStatus();
                 assertThat(actualStatus, is(Status.STATUS_NO_TRANSACTION));
             }
@@ -100,9 +93,9 @@ public class XAShardingTransactionHandlerTest {
         Thread thread = new Thread(new Runnable() {
             @Override
             public void run() {
-                xaShardingTransactionHandler.doInTransaction(beginContext);
-                xaShardingTransactionHandler.doInTransaction(commitContext);
-                xaShardingTransactionHandler.doInTransaction(rollbackContext);
+                xaShardingTransactionHandler.doInTransaction(TransactionOperationType.BEGIN);
+                xaShardingTransactionHandler.doInTransaction(TransactionOperationType.COMMIT);
+                xaShardingTransactionHandler.doInTransaction(TransactionOperationType.ROLLBACK);
                 int actualStatus = xaShardingTransactionHandler.getShardingTransactionManager().getStatus();
                 assertThat(actualStatus, is(Status.STATUS_NO_TRANSACTION));
             }

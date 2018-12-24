@@ -31,9 +31,6 @@ import io.shardingsphere.spi.root.SPIRootInvokeHook;
 import io.shardingsphere.transaction.api.TransactionType;
 import io.shardingsphere.transaction.api.TransactionTypeHolder;
 import io.shardingsphere.transaction.core.TransactionOperationType;
-import io.shardingsphere.transaction.core.context.SagaTransactionContext;
-import io.shardingsphere.transaction.core.context.ShardingTransactionContext;
-import io.shardingsphere.transaction.core.context.XATransactionContext;
 import io.shardingsphere.transaction.core.loader.ShardingTransactionHandlerRegistry;
 import io.shardingsphere.transaction.spi.ShardingTransactionHandler;
 import lombok.Getter;
@@ -79,7 +76,7 @@ public abstract class AbstractConnectionAdapter extends AbstractUnsupportedOpera
     
     private final TransactionType transactionType;
     
-    private final ShardingTransactionHandler<ShardingTransactionContext> shardingTransactionHandler;
+    private final ShardingTransactionHandler shardingTransactionHandler;
     
     protected AbstractConnectionAdapter(final TransactionType transactionType) {
         rootInvokeHook.start();
@@ -133,6 +130,9 @@ public abstract class AbstractConnectionAdapter extends AbstractUnsupportedOpera
             synchronized (cachedConnections) {
                 cachedConnections.putAll(dataSourceName, result);
             }
+        }
+        if (null != shardingTransactionHandler) {
+            shardingTransactionHandler.synchronizeTransactionResource(dataSourceName, result);
         }
         return result;
     }
@@ -190,14 +190,11 @@ public abstract class AbstractConnectionAdapter extends AbstractUnsupportedOpera
                     connection.setAutoCommit(autoCommit);
                 }
             });
-        }
-        if (autoCommit) {
-            return;
-        }
-        if (TransactionType.XA == transactionType) {
-            shardingTransactionHandler.doInTransaction(new XATransactionContext(TransactionOperationType.BEGIN));
-        } else if (TransactionType.BASE == transactionType) {
-            shardingTransactionHandler.doInTransaction(new SagaTransactionContext(TransactionOperationType.BEGIN, this));
+        } else {
+            if (autoCommit) {
+                return;
+            }
+            shardingTransactionHandler.doInTransaction(TransactionOperationType.BEGIN);
         }
     }
     
@@ -211,10 +208,8 @@ public abstract class AbstractConnectionAdapter extends AbstractUnsupportedOpera
                     connection.commit();
                 }
             });
-        } else if (TransactionType.XA == transactionType) {
-            shardingTransactionHandler.doInTransaction(new XATransactionContext(TransactionOperationType.COMMIT));
-        } else if (TransactionType.BASE == transactionType) {
-            shardingTransactionHandler.doInTransaction(new SagaTransactionContext(TransactionOperationType.COMMIT));
+        } else {
+            shardingTransactionHandler.doInTransaction(TransactionOperationType.COMMIT);
         }
     }
     
@@ -228,10 +223,8 @@ public abstract class AbstractConnectionAdapter extends AbstractUnsupportedOpera
                     connection.rollback();
                 }
             });
-        } else if (TransactionType.XA == transactionType) {
-            shardingTransactionHandler.doInTransaction(new XATransactionContext(TransactionOperationType.ROLLBACK));
-        } else if (TransactionType.BASE == transactionType) {
-            shardingTransactionHandler.doInTransaction(new SagaTransactionContext(TransactionOperationType.ROLLBACK));
+        } else {
+            shardingTransactionHandler.doInTransaction(TransactionOperationType.ROLLBACK);
         }
     }
     

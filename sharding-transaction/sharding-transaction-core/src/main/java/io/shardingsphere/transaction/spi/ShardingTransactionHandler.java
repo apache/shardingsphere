@@ -19,10 +19,12 @@ package io.shardingsphere.transaction.spi;
 
 import io.shardingsphere.core.constant.DatabaseType;
 import io.shardingsphere.transaction.api.TransactionType;
-import io.shardingsphere.transaction.core.context.ShardingTransactionContext;
+import io.shardingsphere.transaction.core.TransactionOperationType;
 
 import javax.sql.DataSource;
+import java.sql.Connection;
 import java.sql.SQLException;
+import java.util.List;
 import java.util.Map;
 
 /**
@@ -30,16 +32,15 @@ import java.util.Map;
  *
  * @author zhaojun
  * 
- * @param <T> type of sharding transaction context
  */
-public interface ShardingTransactionHandler<T extends ShardingTransactionContext> {
+public interface ShardingTransactionHandler {
     
     /**
      * Do transaction operation using specific transaction manager.
      *
-     * @param context sharding transaction context
+     * @param transactionOperationType transaction operation type
      */
-    void doInTransaction(T context);
+    void doInTransaction(TransactionOperationType transactionOperationType);
     
     /**
      * Get transaction type.
@@ -59,8 +60,10 @@ public interface ShardingTransactionHandler<T extends ShardingTransactionContext
     /**
      * Synchronize transaction resource.
      *
-     * @param context sharding transaction context
+     * @param datasourceName datasource name
+     * @param connections connection
+     * @param properties other properties
      * @throws SQLException SQL exception
      */
-    void synchronizeTransactionResource(T context) throws SQLException;
+    void synchronizeTransactionResource(String datasourceName, List<Connection> connections, Object... properties) throws SQLException;
 }
