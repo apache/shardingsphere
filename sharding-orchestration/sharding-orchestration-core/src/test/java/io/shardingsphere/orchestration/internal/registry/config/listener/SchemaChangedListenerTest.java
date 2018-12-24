@@ -98,5 +98,8 @@ public class SchemaChangedListenerTest {
     public void assertCreateIgnoredShardingOrchestrationEventForNewSchema() {
         when(regCenter.get("/test/config/schema/logic_db/rule")).thenReturn("");
         when(regCenter.get("/test/config/schema/logic_db/datasource")).thenReturn("");
+        DataChangedEvent dataChangedEvent = new DataChangedEvent("/test/config/schema/logic_db/rule", "rule", ChangedType.UPDATED);
+        ShardingOrchestrationEvent actual = schemaChangedListener.createShardingOrchestrationEvent(dataChangedEvent);
+        assertThat(actual, instanceOf(IgnoredShardingOrchestrationEvent.class));
     }
 }
