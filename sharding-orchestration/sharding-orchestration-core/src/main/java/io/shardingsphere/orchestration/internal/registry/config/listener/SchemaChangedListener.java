@@ -22,7 +22,7 @@ import io.shardingsphere.api.config.rule.RuleConfiguration;
 import io.shardingsphere.orchestration.internal.registry.config.event.DataSourceChangedEvent;
 import io.shardingsphere.orchestration.internal.registry.config.event.IgnoredChangedEvent;
 import io.shardingsphere.orchestration.internal.registry.config.event.MasterSlaveRuleChangedEvent;
-import io.shardingsphere.orchestration.internal.registry.config.event.SchemaAddChangedEvent;
+import io.shardingsphere.orchestration.internal.registry.config.event.SchemaAddedEvent;
 import io.shardingsphere.orchestration.internal.registry.config.event.SchemaDeletedEvent;
 import io.shardingsphere.orchestration.internal.registry.config.event.ShardingRuleChangedEvent;
 import io.shardingsphere.orchestration.internal.registry.config.node.ConfigurationNode;
@@ -117,8 +117,8 @@ public final class SchemaChangedListener extends PostShardingOrchestrationEventL
         return configurationService.hasDataSourceConfiguration(shardingSchemaName) && configurationService.hasRuleConfiguration(shardingSchemaName);
     }
     
-    private SchemaAddChangedEvent createSchemaChangedEvent(final String shardingSchemaName) {
-        return new SchemaAddChangedEvent(shardingSchemaName, configurationService.loadDataSourceConfigurations(shardingSchemaName), createRuleConfiguration(shardingSchemaName));
+    private SchemaAddedEvent createSchemaChangedEvent(final String shardingSchemaName) {
+        return new SchemaAddedEvent(shardingSchemaName, configurationService.loadDataSourceConfigurations(shardingSchemaName), createRuleConfiguration(shardingSchemaName));
     }
     
     private RuleConfiguration createRuleConfiguration(final String shardingSchemaName) {
