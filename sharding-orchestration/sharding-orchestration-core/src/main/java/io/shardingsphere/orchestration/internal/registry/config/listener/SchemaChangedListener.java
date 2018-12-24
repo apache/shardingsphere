@@ -20,7 +20,7 @@ package io.shardingsphere.orchestration.internal.registry.config.listener;
 import com.google.common.base.Strings;
 import io.shardingsphere.api.config.rule.RuleConfiguration;
 import io.shardingsphere.orchestration.internal.registry.config.event.DataSourceChangedEvent;
-import io.shardingsphere.orchestration.internal.registry.config.event.IgnoredChangedEvent;
+import io.shardingsphere.orchestration.internal.registry.config.event.IgnoredShardingOrchestrationEvent;
 import io.shardingsphere.orchestration.internal.registry.config.event.MasterSlaveRuleChangedEvent;
 import io.shardingsphere.orchestration.internal.registry.config.event.SchemaAddedEvent;
 import io.shardingsphere.orchestration.internal.registry.config.event.SchemaDeletedEvent;
@@ -61,7 +61,7 @@ public final class SchemaChangedListener extends PostShardingOrchestrationEventL
     protected ShardingOrchestrationEvent createShardingOrchestrationEvent(final DataChangedEvent event) {
         String shardingSchemaName = configurationNode.getSchemaName(event.getKey());
         if (Strings.isNullOrEmpty(shardingSchemaName) || !isValidNodeChangedEvent(shardingSchemaName, event.getKey())) {
-            return new IgnoredChangedEvent();
+            return new IgnoredShardingOrchestrationEvent();
         }
         if (ChangedType.UPDATED == event.getChangedType()) {
             return createUpdatedEvent(shardingSchemaName, event);
@@ -69,7 +69,7 @@ public final class SchemaChangedListener extends PostShardingOrchestrationEventL
         if (ChangedType.DELETED == event.getChangedType()) {
             return createDeletedEvent(shardingSchemaName);
         }
-        return new IgnoredChangedEvent();
+        return new IgnoredShardingOrchestrationEvent();
     }
     
     private boolean isValidNodeChangedEvent(final String shardingSchemaName, final String nodeFullPath) {
@@ -110,7 +110,7 @@ public final class SchemaChangedListener extends PostShardingOrchestrationEventL
             existedSchemaNames.add(shardingSchemaName);
             return createSchemaChangedEvent(shardingSchemaName);
         }
-        return new IgnoredChangedEvent();
+        return new IgnoredShardingOrchestrationEvent();
     }
     
     private boolean isOwnCompleteConfigurations(final String shardingSchemaName) {
