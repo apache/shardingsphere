@@ -20,9 +20,9 @@ package io.shardingsphere.orchestration.internal.registry.config.event;
 import io.shardingsphere.orchestration.internal.registry.listener.ShardingOrchestrationEvent;
 
 /**
- * Ignored changed event.
+ * Ignored sharding orchestration event event.
  *
  * @author panjuan
  */
-public final class IgnoredChangedEvent implements ShardingOrchestrationEvent {
+public final class IgnoredShardingOrchestrationEvent implements ShardingOrchestrationEvent {
 }
