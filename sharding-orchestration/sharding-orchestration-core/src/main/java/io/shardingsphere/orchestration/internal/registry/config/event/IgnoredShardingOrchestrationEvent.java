@@ -20,7 +20,7 @@ package io.shardingsphere.orchestration.internal.registry.config.event;
 import io.shardingsphere.orchestration.internal.registry.listener.ShardingOrchestrationEvent;
 
 /**
- * Ignored sharding orchestration event event.
+ * Ignored sharding orchestration event.
  *
  * @author panjuan
  */
