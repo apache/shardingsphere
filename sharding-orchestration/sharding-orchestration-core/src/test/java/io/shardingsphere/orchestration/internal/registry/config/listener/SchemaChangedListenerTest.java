@@ -19,6 +19,7 @@ package io.shardingsphere.orchestration.internal.registry.config.listener;
 
 import io.shardingsphere.orchestration.internal.registry.config.event.DataSourceChangedEvent;
 import io.shardingsphere.orchestration.internal.registry.config.event.IgnoredShardingOrchestrationEvent;
+import io.shardingsphere.orchestration.internal.registry.config.event.ShardingRuleChangedEvent;
 import io.shardingsphere.orchestration.internal.registry.listener.ShardingOrchestrationEvent;
 import io.shardingsphere.orchestration.reg.api.RegistryCenter;
 import io.shardingsphere.orchestration.reg.listener.DataChangedEvent;
@@ -75,9 +76,10 @@ public class SchemaChangedListenerTest {
     
     @Test
     public void assertCreateShardingRuleChangedEventForExistedSchema() {
-        DataChangedEvent dataChangedEvent = new DataChangedEvent("/test/config/schema/sharding_db/rule", DATA_SOURCE_YAML, ChangedType.UPDATED);
+        DataChangedEvent dataChangedEvent = new DataChangedEvent("/test/config/schema/sharding_db/rule", SHARDING_RULE_YAML, ChangedType.UPDATED);
         ShardingOrchestrationEvent actual = schemaChangedListener.createShardingOrchestrationEvent(dataChangedEvent);
-        assertThat(actual, instanceOf(DataSourceChangedEvent.class));
-        assertThat(((DataSourceChangedEvent) actual).getShardingSchemaName(), is("sharding_db"));
+        assertThat(actual, instanceOf(ShardingRuleChangedEvent.class));
+        assertThat(((ShardingRuleChangedEvent) actual).getShardingSchemaName(), is("sharding_db"));
+        assertThat(((ShardingRuleChangedEvent) actual).getShardingRuleConfiguration().getTableRuleConfigs().size(), is(1));
     }
 }
