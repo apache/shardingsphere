@@ -48,10 +48,6 @@ table_reference ([INNER] | {LEFT|RIGHT} [OUTER]) JOIN table_factor [JOIN ON cond
 
 ## 不支持项
 
-### 路由至单数据节点
-
-- 100%全兼容（目前仅MySQL，其他数据库完善中）。
-
 ### 路由至多数据节点以及非MySQL
 
 不支持冗余括号、CASE WHEN、HAVING、UNION (ALL)，有限支持子查询。
