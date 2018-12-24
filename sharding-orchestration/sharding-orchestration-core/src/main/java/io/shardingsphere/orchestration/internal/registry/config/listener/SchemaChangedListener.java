@@ -108,17 +108,13 @@ public final class SchemaChangedListener extends PostShardingOrchestrationEventL
     private ShardingOrchestrationEvent createUpdatedEventForNewSchema(final String shardingSchemaName) {
         if (isOwnCompleteConfigurations(shardingSchemaName)) {
             existedSchemaNames.add(shardingSchemaName);
-            return createSchemaChangedEvent(shardingSchemaName);
+            return new SchemaAddedEvent(shardingSchemaName, configurationService.loadDataSourceConfigurations(shardingSchemaName), createRuleConfiguration(shardingSchemaName));
         }
         return new IgnoredShardingOrchestrationEvent();
     }
     
     private boolean isOwnCompleteConfigurations(final String shardingSchemaName) {
         return configurationService.hasDataSourceConfiguration(shardingSchemaName) && configurationService.hasRuleConfiguration(shardingSchemaName);
-    }
-    
-    private SchemaAddedEvent createSchemaChangedEvent(final String shardingSchemaName) {
-        return new SchemaAddedEvent(shardingSchemaName, configurationService.loadDataSourceConfigurations(shardingSchemaName), createRuleConfiguration(shardingSchemaName));
     }
     
     private RuleConfiguration createRuleConfiguration(final String shardingSchemaName) {
