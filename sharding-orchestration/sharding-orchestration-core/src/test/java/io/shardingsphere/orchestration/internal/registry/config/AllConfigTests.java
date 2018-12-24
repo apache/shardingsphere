@@ -21,6 +21,7 @@ import io.shardingsphere.orchestration.internal.registry.config.listener.Authent
 import io.shardingsphere.orchestration.internal.registry.config.listener.ConfigMapChangedListenerTest;
 import io.shardingsphere.orchestration.internal.registry.config.listener.ConfigurationChangedListenerManagerTest;
 import io.shardingsphere.orchestration.internal.registry.config.listener.PropertiesChangedListenerTest;
+import io.shardingsphere.orchestration.internal.registry.config.listener.SchemaChangedListenerTest;
 import io.shardingsphere.orchestration.internal.registry.config.node.ConfigurationNodeTest;
 import io.shardingsphere.orchestration.internal.registry.config.service.ConfigurationServiceTest;
 import org.junit.runner.RunWith;
@@ -34,7 +35,8 @@ import org.junit.runners.Suite.SuiteClasses;
         ConfigurationChangedListenerManagerTest.class,
         PropertiesChangedListenerTest.class,
         AuthenticationChangedListenerTest.class,
-        ConfigMapChangedListenerTest.class
+        ConfigMapChangedListenerTest.class,
+        SchemaChangedListenerTest.class
 })
 public final class AllConfigTests {
 }
