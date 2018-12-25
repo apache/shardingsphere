@@ -40,8 +40,8 @@ public final class AggregationDistinctPlaceholder implements ShardingPlaceholder
     
     @Override
     public String toString() {
-        if(autoAlias.isPresent()) {
-            return DefaultKeyword.DISTINCT + " " + columnName + " "+autoAlias.get();
+        if (autoAlias.isPresent()) {
+            return DefaultKeyword.DISTINCT + " " + columnName + " " + autoAlias.get();
         }
         return DefaultKeyword.DISTINCT + " " + columnName;
     }

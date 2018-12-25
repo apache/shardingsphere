@@ -98,13 +98,13 @@ public final class SelectClauseFiller implements SQLStatementFiller {
     }
     
     private int setDistinctFunctionAlias(final ExpressionSegment expressionSegment, final int offset) {
-        if(expressionSegment instanceof FunctionExpressionSegment) {
-            FunctionExpressionSegment functionExpressionSegment = (FunctionExpressionSegment)expressionSegment;
+        if (expressionSegment instanceof FunctionExpressionSegment) {
+            FunctionExpressionSegment functionExpressionSegment = (FunctionExpressionSegment) expressionSegment;
             Optional<String> alias = functionExpressionSegment.getAlias();
-            if(functionExpressionSegment.isHasDistinct() && !alias.isPresent()) {
+            if (functionExpressionSegment.isHasDistinct() && !alias.isPresent()) {
                 alias = Optional.of(DerivedAlias.AGGREGATION_DISTINCT_DERIVED.getDerivedAlias(offset));
-                ((FunctionExpressionSegment)expressionSegment).setAlias(alias);
-                return offset+1;
+                ((FunctionExpressionSegment) expressionSegment).setAlias(alias);
+                return offset + 1;
             }
         }
         return offset;

@@ -28,7 +28,7 @@ import lombok.RequiredArgsConstructor;
 @RequiredArgsConstructor(access = AccessLevel.PRIVATE)
 public enum DerivedAlias {
     
-    AGGREGATION_DISTINCT_DERIVED("AGGREGATION_DISTINCT_DERIVED_"); //Aggregation
+    AGGREGATION_DISTINCT_DERIVED("AGGREGATION_DISTINCT_DERIVED_");
     
     private final String pattern;
     
