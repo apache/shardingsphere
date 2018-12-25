@@ -17,14 +17,9 @@
 
 package io.shardingsphere.core.routing.type.complex;
 
-import java.util.ArrayList;
-import java.util.Collection;
-import java.util.TreeSet;
-
 import com.google.common.base.Function;
 import com.google.common.base.Optional;
 import com.google.common.collect.Lists;
-
 import io.shardingsphere.core.exception.ShardingException;
 import io.shardingsphere.core.optimizer.condition.ShardingConditions;
 import io.shardingsphere.core.routing.type.RoutingEngine;
@@ -34,6 +29,10 @@ import io.shardingsphere.core.rule.BindingTableRule;
 import io.shardingsphere.core.rule.ShardingRule;
 import io.shardingsphere.core.rule.TableRule;
 import lombok.RequiredArgsConstructor;
+
+import java.util.ArrayList;
+import java.util.Collection;
+import java.util.TreeSet;
 
 /**
  * Complex routing engine.
@@ -55,7 +54,7 @@ public final class ComplexRoutingEngine implements RoutingEngine {
         Collection<RoutingResult> result = new ArrayList<>(logicTables.size());
         Collection<String> bindingTableNames = new TreeSet<>(String.CASE_INSENSITIVE_ORDER);
         for (String each : logicTables) {
-            Optional<TableRule> tableRule = shardingRule.tryFindTableRuleByLogicTable(each);
+            Optional<TableRule> tableRule = shardingRule.findTableRuleByLogicTable(each);
             if (tableRule.isPresent()) {
                 if (!bindingTableNames.contains(each)) {
                     result.add(new StandardRoutingEngine(shardingRule, tableRule.get().getLogicTable(), shardingConditions).route());

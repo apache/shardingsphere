@@ -108,8 +108,8 @@ public final class ShardingRuleTest {
         shardingRuleConfig.setDefaultDatabaseShardingStrategyConfig(new NoneShardingStrategyConfiguration());
         shardingRuleConfig.setDefaultTableShardingStrategyConfig(new NoneShardingStrategyConfiguration());
         ShardingRule actual = new ShardingRule(shardingRuleConfig, createDataSourceNames());
-        assertTrue(actual.tryFindTableRuleByLogicTable("logic_Table").isPresent());
-        assertFalse(actual.tryFindTableRuleByLogicTable("null").isPresent());
+        assertTrue(actual.findTableRuleByLogicTable("logic_Table").isPresent());
+        assertFalse(actual.findTableRuleByLogicTable("null").isPresent());
     }
     
     @Test
@@ -298,8 +298,8 @@ public final class ShardingRuleTest {
         TableRuleConfiguration tableRuleConfig = createTableRuleConfig();
         shardingRuleConfig.getTableRuleConfigs().add(tableRuleConfig);
         ShardingRule actual = new ShardingRule(shardingRuleConfig, createDataSourceNames());
-        assertTrue(actual.tryFindTableRuleByActualTable("table_0").isPresent());
-        assertFalse(actual.tryFindTableRuleByActualTable("table_3").isPresent());
+        assertTrue(actual.findTableRuleByActualTable("table_0").isPresent());
+        assertFalse(actual.findTableRuleByActualTable("table_3").isPresent());
     }
     
     @Test
@@ -415,6 +415,26 @@ public final class ShardingRuleTest {
         TableRuleConfiguration tableRuleConfig = createTableRuleConfigWithLogicIndex();
         shardingRuleConfig.getTableRuleConfigs().add(tableRuleConfig);
         assertTrue(new ShardingRule(shardingRuleConfig, createDataSourceNames()).isLogicIndex("index_table", "logic_table"));
+    }
+    
+    @Test
+    public void assertContainsWithTableRule() {
+        assertTrue(createShardingRule().contains("LOGIC_TABLE"));
+    }
+    
+    @Test
+    public void assertContainsWithBindingTableRule() {
+        assertTrue(createShardingRule().contains("SUB_LOGIC_TABLE"));
+    }
+    
+    @Test
+    public void assertContainsWithBroadcastTableRule() {
+        assertTrue(createShardingRule().contains("BROADCAST_LOGIC_TABLE"));
+    }
+    
+    @Test
+    public void assertNotContains() {
+        assertFalse(createShardingRule().contains("NEW_TABLE"));
     }
     
     private ShardingRule createShardingRule() {
