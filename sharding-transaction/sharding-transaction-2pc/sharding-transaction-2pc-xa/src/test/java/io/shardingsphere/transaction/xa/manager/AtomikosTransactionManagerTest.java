@@ -69,13 +69,6 @@ public final class AtomikosTransactionManagerTest {
         atomikosTransactionManager.destroy();
     }
     
-    @Test(expected = ShardingException.class)
-    @SneakyThrows
-    public void assertUnderlyingTransactionManagerInitFailed() {
-        doThrow(SystemException.class).when(userTransactionManager).init();
-        ReflectiveUtil.methodInvoke(atomikosTransactionManager, "init");
-    }
-    
     @Test
     public void assertBeginWithoutException() throws Exception {
         atomikosTransactionManager.begin();

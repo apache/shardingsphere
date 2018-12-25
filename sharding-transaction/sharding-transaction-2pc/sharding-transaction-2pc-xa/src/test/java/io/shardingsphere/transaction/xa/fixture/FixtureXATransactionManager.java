@@ -57,4 +57,14 @@ public final class FixtureXATransactionManager implements XATransactionManager {
     public TransactionManager getUnderlyingTransactionManager() {
         return null;
     }
+    
+    @Override
+    public void registerRecoveryResource(final String dataSourceName, final XADataSource xaDataSource) {
+    
+    }
+    
+    @Override
+    public void removeRecoveryResource(final String dataSourceName, final XADataSource xaDataSource) {
+    
+    }
 }
