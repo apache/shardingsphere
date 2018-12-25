@@ -91,8 +91,7 @@ public final class AggregationDistinctQueryResult extends DistinctQueryResult {
     private void initDerivedIndexAndDistinctIndexes(final AggregationDistinctSelectItem selectItem) {
         List<AggregationSelectItem> derivedAggregationSelectItems = selectItem.getDerivedAggregationSelectItems();
         if (!derivedAggregationSelectItems.isEmpty()) {
-            handleCountDerivedSelectItem(selectItem, derivedAggregationSelectItems);
-    
+            handleCountDerivedSelectItem(selectItem.getDistinctColumnLabel(), derivedAggregationSelectItems.get(0));
             String sumColumnLabel = derivedAggregationSelectItems.get(1).getColumnLabel();
             int sumColumnIndex = getColumnLabelAndIndexMap().size() + 2;
             getColumnLabelAndIndexMap().put(sumColumnLabel, sumColumnIndex);
