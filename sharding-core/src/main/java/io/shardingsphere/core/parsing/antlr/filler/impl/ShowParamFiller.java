@@ -19,7 +19,6 @@ package io.shardingsphere.core.parsing.antlr.filler.impl;
 
 import io.shardingsphere.core.metadata.table.ShardingTableMetaData;
 import io.shardingsphere.core.parsing.antlr.filler.SQLStatementFiller;
-import io.shardingsphere.core.parsing.antlr.sql.segment.SQLSegment;
 import io.shardingsphere.core.parsing.antlr.sql.segment.ShowParamSegment;
 import io.shardingsphere.core.parsing.parser.dialect.postgresql.statement.ShowStatement;
 import io.shardingsphere.core.parsing.parser.sql.SQLStatement;
@@ -30,12 +29,10 @@ import io.shardingsphere.core.rule.ShardingRule;
  *
  * @author loxp
  */
-public final class ShowParamFiller implements SQLStatementFiller {
+public final class ShowParamFiller implements SQLStatementFiller<ShowParamSegment> {
     
     @Override
-    public void fill(final SQLSegment sqlSegment, final SQLStatement sqlStatement, final String sql, final ShardingRule shardingRule, final ShardingTableMetaData shardingTableMetaData) {
-        ShowParamSegment segment = (ShowParamSegment) sqlSegment;
-        ShowStatement statement = (ShowStatement) sqlStatement;
-        statement.setName(segment.getName());
+    public void fill(final ShowParamSegment sqlSegment, final SQLStatement sqlStatement, final String sql, final ShardingRule shardingRule, final ShardingTableMetaData shardingTableMetaData) {
+        ((ShowStatement) sqlStatement).setName(sqlSegment.getName());
     }
 }

@@ -47,7 +47,7 @@
         
         <alter-table>
             <add-columns>
-                <add-column name="column4" type="VARCHAR" length="10"/>
+                <add-column name="column4" type="VARCHAR" />
             </add-columns>
             <new-meta column-names="order_id,user_id,status,column4" column-types="int,int,int,VARCHAR" primary-key-columns="order_id"/>
         </alter-table>
@@ -63,9 +63,9 @@
 
         <alter-table>
             <add-columns>
-                <add-column name="column4" type="VARCHAR" length="10"/>
-                <add-column name="column5" type="VARCHAR" length="10"/>
-                <add-column name="column6" type="VARCHAR" length="10"/>
+                <add-column name="column4" type="VARCHAR" />
+                <add-column name="column5" type="VARCHAR" />
+                <add-column name="column6" type="VARCHAR" />
             </add-columns>
             <new-meta column-names="order_id,user_id,status,column4,column5,column6" column-types="int,int,int,VARCHAR,VARCHAR,VARCHAR" primary-key-columns="order_id"/>
         </alter-table>
@@ -81,7 +81,7 @@
         
         <alter-table>
             <add-columns>
-                <add-column name="column3" type="VARCHAR" length="10"/>
+                <add-column name="column3" type="VARCHAR" />
             </add-columns>
             <position-changed-columns>
                 <position-changed-column first-column="column3" start-index="44"/>
@@ -100,7 +100,7 @@
         
         <alter-table>
             <add-columns>
-                <add-column name="column4" type="VARCHAR" length="10"/>
+                <add-column name="column4" type="VARCHAR" />
             </add-columns>
             <position-changed-columns>
                 <position-changed-column start-index="44" column-name="column4" after-column="order_id"/>
@@ -120,10 +120,10 @@
         
         <alter-table>
             <add-columns>
-                <add-column name="column5" type="VARCHAR" length="10"/>
-                <add-column name="column6" type="VARCHAR" length="10"/>
-                <add-column name="column7" type="VARCHAR" length="10"/>
-                <add-column name="column8" type="VARCHAR" length="10"/>
+                <add-column name="column5" type="VARCHAR" />
+                <add-column name="column6" type="VARCHAR" />
+                <add-column name="column7" type="VARCHAR" />
+                <add-column name="column8" type="VARCHAR" />
             </add-columns>
             <position-changed-columns>
                 <position-changed-column start-index="44" first-column="column5"/>
@@ -146,7 +146,7 @@
         
         <alter-table>
             <update-columns>
-                <update-column origin-column-name="column4" name="column4" type="VARCHAR" length="20"/>
+                <update-column origin-column-name="column4" name="column4" type="VARCHAR" />
             </update-columns>
             <new-meta column-names="order_id,user_id,status" column-types="int,int,int" primary-key-columns="order_id"/>
         
@@ -163,9 +163,9 @@
         
         <alter-table>
             <update-columns>
-                <update-column origin-column-name="column4" name="column4" type="VARCHAR" length="20"/>
-                <update-column origin-column-name="column5" name="column5" type="VARCHAR" length="20"/>
-                <update-column origin-column-name="column6" name="column6" type="VARCHAR" length="20"/>
+                <update-column origin-column-name="column4" name="column4" type="VARCHAR" />
+                <update-column origin-column-name="column5" name="column5" type="VARCHAR" />
+                <update-column origin-column-name="column6" name="column6" type="VARCHAR" />
             </update-columns>
             <new-meta column-names="order_id,user_id,status" column-types="int,int,int" primary-key-columns="order_id"/>
         </alter-table>
@@ -180,7 +180,7 @@
         </tokens>
         <alter-table>
             <update-columns>
-                <update-column origin-column-name="status" name="status" type="VARCHAR" length="20"/>
+                <update-column origin-column-name="status" name="status" type="VARCHAR" />
             </update-columns>
             <position-changed-columns>
                 <position-changed-column first-column="status" start-index="46"/>
@@ -198,7 +198,7 @@
         </tokens>
         <alter-table>
             <update-columns>
-                <update-column origin-column-name="status" name="status" type="VARCHAR" length="20"/>
+                <update-column origin-column-name="status" name="status" type="VARCHAR" />
             </update-columns>
             <position-changed-columns>
                 <position-changed-column column-name="status" after-column="order_id" start-index="46" />
@@ -216,7 +216,7 @@
         </tokens>
         <alter-table>
             <update-columns>
-                <update-column origin-column-name="status" name="status" type="VARCHAR" length="20"/>
+                <update-column origin-column-name="status" name="status" type="VARCHAR" />
                 <update-column origin-column-name="user_id" name="user_id" type="INT" />
             </update-columns>
             <position-changed-columns>
@@ -264,7 +264,7 @@
         
         <alter-table>
             <update-columns>
-                <update-column origin-column-name="user_id" name="column4" type="VARCHAR" length="10"/>
+                <update-column origin-column-name="user_id" name="column4" type="VARCHAR" />
             </update-columns>
             <new-meta column-names="order_id,column4,status" column-types="int,VARCHAR,int" primary-key-columns="order_id"/>
         </alter-table>

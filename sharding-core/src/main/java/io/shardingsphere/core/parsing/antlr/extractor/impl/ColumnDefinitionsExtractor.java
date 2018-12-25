@@ -25,7 +25,6 @@ import io.shardingsphere.core.parsing.antlr.sql.segment.column.ColumnDefinitionS
 import org.antlr.v4.runtime.ParserRuleContext;
 
 import java.util.Collection;
-import java.util.Collections;
 import java.util.LinkedList;
 
 /**
@@ -35,20 +34,16 @@ import java.util.LinkedList;
  */
 public final class ColumnDefinitionsExtractor implements CollectionSQLSegmentExtractor {
     
-    private final ColumnDefinitionExtractor columnDefinitionPhraseExtractor = new ColumnDefinitionExtractor();
+    private final ColumnDefinitionExtractor columnDefinitionExtractor = new ColumnDefinitionExtractor();
     
     @Override
     public Collection<ColumnDefinitionSegment> extract(final ParserRuleContext ancestorNode) {
-        Collection<ParserRuleContext> columnDefinitionNodes = ExtractorUtils.getAllDescendantNodes(ancestorNode, RuleName.COLUMN_DEFINITION);
-        if (columnDefinitionNodes.isEmpty()) {
-            return Collections.emptyList();
-        }
         Collection<ColumnDefinitionSegment> result = new LinkedList<>();
-        for (ParserRuleContext each : columnDefinitionNodes) {
-            Optional<ColumnDefinitionSegment> columnDefinition = columnDefinitionPhraseExtractor.extract(each);
-            if (columnDefinition.isPresent()) {
-                columnDefinition.get().setAdd(true);
-                result.add(columnDefinition.get());
+        for (ParserRuleContext each : ExtractorUtils.getAllDescendantNodes(ancestorNode, RuleName.COLUMN_DEFINITION)) {
+            Optional<ColumnDefinitionSegment> columnDefinitionSegment = columnDefinitionExtractor.extract(each);
+            if (columnDefinitionSegment.isPresent()) {
+                columnDefinitionSegment.get().setAdd(true);
+                result.add(columnDefinitionSegment.get());
             }
         }
         return result;

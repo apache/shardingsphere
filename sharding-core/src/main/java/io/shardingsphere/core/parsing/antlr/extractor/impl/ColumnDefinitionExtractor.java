@@ -33,27 +33,14 @@ import org.antlr.v4.runtime.ParserRuleContext;
 public final class ColumnDefinitionExtractor implements OptionalSQLSegmentExtractor {
     
     @Override
-    public Optional<ColumnDefinitionSegment> extract(final ParserRuleContext columnDefinitionNode) {
-        Optional<ParserRuleContext> columnNameNode = ExtractorUtils.findFirstChildNode(columnDefinitionNode, RuleName.COLUMN_NAME);
+    public Optional<ColumnDefinitionSegment> extract(final ParserRuleContext ancestorNode) {
+        Optional<ParserRuleContext> columnNameNode = ExtractorUtils.findFirstChildNode(ancestorNode, RuleName.COLUMN_NAME);
         if (!columnNameNode.isPresent()) {
             return Optional.absent();
         }
-        Optional<ParserRuleContext> dataTypeNode = ExtractorUtils.findFirstChildNode(columnDefinitionNode, RuleName.DATA_TYPE);
+        Optional<ParserRuleContext> dataTypeNode = ExtractorUtils.findFirstChildNode(ancestorNode, RuleName.DATA_TYPE);
         Optional<String> dataTypeText = dataTypeNode.isPresent() ? Optional.of(dataTypeNode.get().getChild(0).getText()) : Optional.<String>absent();
-        Optional<Integer> dataTypeLength = dataTypeNode.isPresent() ? getDataTypeLength(dataTypeNode.get()) : Optional.<Integer>absent();
-        boolean isPrimaryKey = ExtractorUtils.findFirstChildNode(columnDefinitionNode, RuleName.PRIMARY_KEY).isPresent();
-        return Optional.of(new ColumnDefinitionSegment(columnNameNode.get().getText(), dataTypeText.orNull(), dataTypeLength.orNull(), isPrimaryKey));
-    }
-    
-    private Optional<Integer> getDataTypeLength(final ParserRuleContext dataTypeContext) {
-        Optional<ParserRuleContext> dataTypeLengthNode = ExtractorUtils.findFirstChildNode(dataTypeContext, RuleName.DATA_TYPE_LENGTH);
-        if (!dataTypeLengthNode.isPresent() || dataTypeLengthNode.get().getChildCount() < 3) {
-            return Optional.absent();
-        }
-        try {
-            return Optional.of(Integer.parseInt(dataTypeLengthNode.get().getChild(1).getText()));
-        } catch (final NumberFormatException ignored) {
-            return Optional.absent();
-        }
+        boolean isPrimaryKey = ExtractorUtils.findFirstChildNode(ancestorNode, RuleName.PRIMARY_KEY).isPresent();
+        return Optional.of(new ColumnDefinitionSegment(columnNameNode.get().getText(), dataTypeText.orNull(), isPrimaryKey));
     }
 }

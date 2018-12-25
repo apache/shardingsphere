@@ -76,7 +76,6 @@ public final class AlterTableAssert {
     private void assertColumnDefinition(final ColumnDefinition actual, final ExpectedColumnDefinition expected) {
         assertThat(assertMessage.getFullAssertMessage("Column name assertion error: "), actual.getName(), is(expected.getName()));
         assertThat(assertMessage.getFullAssertMessage("Column " + actual.getName() + " type assertion error: "), actual.getType(), is(expected.getType()));
-        assertThat(assertMessage.getFullAssertMessage("Column " + actual.getName() + " length assertion error: "), actual.getLength(), is(expected.getLength()));
     }
     
     private void assertUpdateColumns(final AlterTableStatement actual, final List<ExpectedUpdateColumnDefinition> expected) {

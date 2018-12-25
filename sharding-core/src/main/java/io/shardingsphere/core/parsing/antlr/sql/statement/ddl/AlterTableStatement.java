@@ -79,7 +79,7 @@ public final class AlterTableStatement extends DDLStatement {
         }
         for (ColumnMetaData each : shardingTableMetaData.get(getTables().getSingleTableName()).getColumnMetaData()) {
             if (columnName.equalsIgnoreCase(each.getColumnName())) {
-                return Optional.of(new ColumnDefinition(columnName, each.getColumnType(), null, each.isPrimaryKey()));
+                return Optional.of(new ColumnDefinition(columnName, each.getColumnType(), each.isPrimaryKey()));
             }
         }
         return Optional.absent();

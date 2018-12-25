@@ -27,8 +27,10 @@ import io.shardingsphere.core.rule.ShardingRule;
  * 
  * @author duhongjun
  * @author zhangliang
+ * 
+ * @param <T> type of sql segment
  */
-public interface SQLStatementFiller {
+public interface SQLStatementFiller<T extends SQLSegment> {
     
     /**
      * Fill SQL segment to SQL statement.
@@ -39,5 +41,5 @@ public interface SQLStatementFiller {
      * @param shardingRule  databases and tables sharding rule
      * @param shardingTableMetaData sharding table meta data
      */
-    void fill(SQLSegment sqlSegment, SQLStatement sqlStatement, String sql, ShardingRule shardingRule, ShardingTableMetaData shardingTableMetaData);
+    void fill(T sqlSegment, SQLStatement sqlStatement, String sql, ShardingRule shardingRule, ShardingTableMetaData shardingTableMetaData);
 }

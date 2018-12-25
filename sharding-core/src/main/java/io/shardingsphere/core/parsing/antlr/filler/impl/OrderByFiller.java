@@ -19,7 +19,6 @@ package io.shardingsphere.core.parsing.antlr.filler.impl;
 
 import io.shardingsphere.core.metadata.table.ShardingTableMetaData;
 import io.shardingsphere.core.parsing.antlr.filler.SQLStatementFiller;
-import io.shardingsphere.core.parsing.antlr.sql.segment.SQLSegment;
 import io.shardingsphere.core.parsing.antlr.sql.segment.order.OrderByItemSegment;
 import io.shardingsphere.core.parsing.antlr.sql.segment.order.OrderBySegment;
 import io.shardingsphere.core.parsing.parser.context.OrderItem;
@@ -34,16 +33,15 @@ import io.shardingsphere.core.util.SQLUtil;
  *
  * @author duhongjun
  */
-public final class OrderByFiller implements SQLStatementFiller {
+public final class OrderByFiller implements SQLStatementFiller<OrderBySegment> {
     
     @Override
-    public void fill(final SQLSegment sqlSegment, final SQLStatement sqlStatement, final String sql, final ShardingRule shardingRule, final ShardingTableMetaData shardingTableMetaData) {
-        OrderBySegment orderBySegment = (OrderBySegment) sqlSegment;
+    public void fill(final OrderBySegment sqlSegment, final SQLStatement sqlStatement, final String sql, final ShardingRule shardingRule, final ShardingTableMetaData shardingTableMetaData) {
         SelectStatement selectStatement = (SelectStatement) sqlStatement;
         if (!selectStatement.getSubQueryStatements().isEmpty()) {
             return;
         }
-        for (OrderByItemSegment each : orderBySegment.getOrderByItems()) {
+        for (OrderByItemSegment each : sqlSegment.getOrderByItems()) {
             selectStatement.getOrderByItems().add(buildOrderItemAndFillToken(selectStatement, each, sql));
         }
     }

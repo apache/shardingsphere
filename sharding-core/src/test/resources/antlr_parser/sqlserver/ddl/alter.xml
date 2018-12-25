@@ -37,7 +37,7 @@
         
         <alter-table>
             <add-columns>
-                <add-column name="column4" type="VARCHAR" length="10"/>
+                <add-column name="column4" type="VARCHAR" />
             </add-columns>
             <new-meta column-names="order_id,user_id,status,column4" column-types="int,int,int,VARCHAR" primary-key-columns="order_id"/>
       </alter-table>
@@ -53,9 +53,9 @@
         
         <alter-table>
             <add-columns>
-                <add-column name="column4" type="VARCHAR" length="10"/>
-                <add-column name="column5" type="VARCHAR" length="10"/>
-                <add-column name="column6" type="VARCHAR" length="10"/>
+                <add-column name="column4" type="VARCHAR" />
+                <add-column name="column5" type="VARCHAR" />
+                <add-column name="column6" type="VARCHAR" />
             </add-columns>
             <new-meta column-names="order_id,user_id,status,column4,column5,column6" column-types="int,int,int,VARCHAR,VARCHAR,VARCHAR" primary-key-columns="order_id"/>
         </alter-table>
@@ -72,7 +72,7 @@
         
         <alter-table>
             <update-columns>
-                <update-column origin-column-name="column4" name="column4" type="VARCHAR" length="20"/>
+                <update-column origin-column-name="column4" name="column4" type="VARCHAR" />
             </update-columns>
         </alter-table>
     </parser-result>

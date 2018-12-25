@@ -25,8 +25,8 @@ import com.google.common.base.Optional;
 
 import io.shardingsphere.core.metadata.table.ShardingTableMetaData;
 import io.shardingsphere.core.parsing.antlr.filler.SQLStatementFiller;
-import io.shardingsphere.core.parsing.antlr.sql.segment.SQLSegment;
 import io.shardingsphere.core.parsing.antlr.sql.segment.SelectClauseSegment;
+import io.shardingsphere.core.parsing.antlr.sql.segment.expr.CommonExpressionSegment;
 import io.shardingsphere.core.parsing.antlr.sql.segment.expr.ExpressionSegment;
 import io.shardingsphere.core.parsing.antlr.sql.segment.expr.FunctionExpressionSegment;
 import io.shardingsphere.core.parsing.antlr.sql.segment.expr.PropertyExpressionSegment;
@@ -42,18 +42,17 @@ import io.shardingsphere.core.rule.ShardingRule;
  *
  * @author duhongjun
  */
-public final class SelectClauseFiller implements SQLStatementFiller {
+public final class SelectClauseFiller implements SQLStatementFiller<SelectClauseSegment> {
     
     @Override
-    public void fill(final SQLSegment sqlSegment, final SQLStatement sqlStatement, final String sql, final ShardingRule shardingRule, final ShardingTableMetaData shardingTableMetaData) {
-        SelectClauseSegment selectClauseSegment = (SelectClauseSegment) sqlSegment;
+    public void fill(final SelectClauseSegment selectClauseSegment, final SQLStatement sqlStatement, final String sql, final ShardingRule shardingRule, final ShardingTableMetaData shardingTableMetaData) {
         SelectStatement selectStatement = (SelectStatement) sqlStatement;
         selectStatement.setSelectListLastPosition(selectClauseSegment.getSelectListLastPosition());
         if (selectClauseSegment.getExpressions().isEmpty()) {
             return;
         }
         if (selectClauseSegment.isHasDistinct()) {
-            fillForDistinct(selectClauseSegment, selectStatement, sql, shardingRule, shardingTableMetaData);
+            fillDistinct(selectClauseSegment, selectStatement, sql, shardingRule, shardingTableMetaData);
         } else {
             ExpressionFiller expressionFiller = new ExpressionFiller();
             int offset = 0;
@@ -64,12 +63,12 @@ public final class SelectClauseFiller implements SQLStatementFiller {
         }
     }
     
-    private void fillForDistinct(final SelectClauseSegment selectClauseSegment, final SelectStatement selectStatement, final String sql, final ShardingRule shardingRule,
-                                 final ShardingTableMetaData shardingTableMetaData) {
+    private void fillDistinct(final SelectClauseSegment selectClauseSegment,
+                              final SelectStatement selectStatement, final String sql, final ShardingRule shardingRule, final ShardingTableMetaData shardingTableMetaData) {
         Iterator<ExpressionSegment> expressionIterator = selectClauseSegment.getExpressions().iterator();
         ExpressionSegment firstExpression = expressionIterator.next();
         ExpressionFiller expressionFiller = new ExpressionFiller();
-        Set<String> distinctColumnNames = new HashSet<String>();
+        Set<String> distinctColumnNames = new HashSet<>();
         DistinctSelectItem distinctSelectItem = null;
         int offset = 0;
         if (firstExpression instanceof StarExpressionSegment) {
@@ -80,6 +79,8 @@ public final class SelectClauseFiller implements SQLStatementFiller {
             distinctSelectItem = new DistinctSelectItem(distinctColumnNames, propertyExpressionSegment.getAlias());
             selectStatement.getItems().add(distinctSelectItem);
             distinctColumnNames.add(propertyExpressionSegment.getName());
+        } else if (firstExpression instanceof CommonExpressionSegment) {
+            distinctSelectItem = createDistinctCommonItem(selectStatement, sql, distinctColumnNames, (CommonExpressionSegment) firstExpression);
         } else {
             offset = setDistinctFunctionAlias(firstExpression, offset);
             expressionFiller.fill(firstExpression, selectStatement, sql, shardingRule, shardingTableMetaData);
@@ -108,5 +109,21 @@ public final class SelectClauseFiller implements SQLStatementFiller {
             }
         }
         return offset;
+    }
+    
+    private DistinctSelectItem createDistinctCommonItem(final SelectStatement selectStatement, final String sql, final Set<String> distinctColumnNames, final CommonExpressionSegment expressionSegment) {
+        DistinctSelectItem distinctSelectItem = new DistinctSelectItem(distinctColumnNames, expressionSegment.getAlias());
+        selectStatement.getItems().add(distinctSelectItem);
+        String commonExpression = sql.substring(expressionSegment.getStartPosition(), expressionSegment.getEndPosition() + 1);
+        int leftParenPosition = commonExpression.indexOf("(");
+        if (0 <= leftParenPosition) {
+            int rigthParenPosition = commonExpression.lastIndexOf(")");
+            if (0 > rigthParenPosition) {
+                rigthParenPosition = commonExpression.length();
+            }
+            distinctColumnNames.add(commonExpression.substring(leftParenPosition + 1, rigthParenPosition));
+        }
+        selectStatement.getItems().add(distinctSelectItem);
+        return distinctSelectItem;
     }
 }
