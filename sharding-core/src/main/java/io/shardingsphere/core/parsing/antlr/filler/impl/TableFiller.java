@@ -24,7 +24,6 @@ import io.shardingsphere.core.parsing.antlr.sql.segment.table.TableSegment;
 import io.shardingsphere.core.parsing.parser.context.table.Table;
 import io.shardingsphere.core.parsing.parser.sql.SQLStatement;
 import io.shardingsphere.core.parsing.parser.sql.dql.select.SelectStatement;
-import io.shardingsphere.core.parsing.parser.token.TableToken;
 import io.shardingsphere.core.rule.ShardingRule;
 
 /**
@@ -37,17 +36,9 @@ public final class TableFiller implements SQLStatementFiller {
     @Override
     public void fill(final SQLSegment sqlSegment, final SQLStatement sqlStatement, final String sql, final ShardingRule shardingRule, final ShardingTableMetaData shardingTableMetaData) {
         TableSegment tableSegment = (TableSegment) sqlSegment;
-        String tableName = tableSegment.getName();
-        if (sqlStatement instanceof SelectStatement && !shardingRule.contains(tableName)) {
-            return;
-        }
-        sqlStatement.getTables().add(new Table(tableSegment.getName(), tableSegment.getAlias()));
-        sqlStatement.getSQLTokens().add(tableSegment.getToken());
-        if (!tableSegment.getAlias().isPresent()) {
-            return;
-        }
-        if (sqlStatement.getTables().getTableNames().contains(tableSegment.getAlias().get())) {
-            sqlStatement.addSQLToken(new TableToken(tableSegment.getAliasStartPosition(), 0, tableSegment.getAlias().get()));
+        if (!(sqlStatement instanceof SelectStatement) || shardingRule.contains(tableSegment.getName())) {
+            sqlStatement.getTables().add(new Table(tableSegment.getName(), tableSegment.getAlias()));
+            sqlStatement.getSQLTokens().add(tableSegment.getToken());
         }
     }
 }

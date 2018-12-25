@@ -17,7 +17,6 @@
 
 package io.shardingsphere.core.parsing.parser.clause;
 
-import com.google.common.base.Optional;
 import io.shardingsphere.core.constant.AggregationType;
 import io.shardingsphere.core.parsing.lexer.LexerEngine;
 import io.shardingsphere.core.parsing.lexer.token.DefaultKeyword;
@@ -149,13 +148,13 @@ public abstract class SelectListClauseParser implements SQLClauseParser {
     private SelectItem parseStarSelectItem() {
         lexerEngine.nextToken();
         aliasExpressionParser.parseSelectItemAlias();
-        return new StarSelectItem(Optional.<String>absent());
+        return new StarSelectItem();
     }
     
     private SelectItem parseStarSelectItem(final String owner) {
         lexerEngine.nextToken();
         aliasExpressionParser.parseSelectItemAlias();
-        return new StarSelectItem(Optional.fromNullable(owner));
+        return new StarSelectItem(owner);
     }
     
     private SelectItem parseCommonOrStarSelectItem(final SelectStatement selectStatement) {
