@@ -116,7 +116,7 @@ public final class JDBCExecuteEngine implements SQLExecuteEngine {
         boolean isBASETransaction = TransactionType.BASE == backendConnection.getTransactionType()
                 && routeResult.getSqlStatement().getType() == SQLType.DML
                 && ConnectionStatus.TRANSACTION == backendConnection.getStateHandler().getStatus();
-        SQLExecuteCallback<ExecuteResponseUnit> firstProxySQLExecuteCallback = isBASETransaction ? new ProxySagaSQLExecuteCallback(isExceptionThrown)
+        SQLExecuteCallback<ExecuteResponseUnit> firstProxySQLExecuteCallback = isBASETransaction ? new ProxySagaSQLExecuteCallback(isExceptionThrown, isReturnGeneratedKeys)
                 : new FirstProxyJDBCExecuteCallback(isExceptionThrown, isReturnGeneratedKeys);
         SQLExecuteCallback<ExecuteResponseUnit> proxySQLExecuteCallback = isBASETransaction ? firstProxySQLExecuteCallback
                 : new ProxyJDBCExecuteCallback(isExceptionThrown, isReturnGeneratedKeys);
@@ -241,13 +241,16 @@ public final class JDBCExecuteEngine implements SQLExecuteEngine {
     
     private final class ProxySagaSQLExecuteCallback extends SagaSQLExecuteCallback<ExecuteResponseUnit> {
         
-        ProxySagaSQLExecuteCallback(final boolean isExceptionThrown) {
+        private final boolean isReturnGeneratedKeys;
+        
+        private ProxySagaSQLExecuteCallback(final boolean isExceptionThrown, final boolean isReturnGeneratedKeys) {
             super(DatabaseType.MySQL, isExceptionThrown);
+            this.isReturnGeneratedKeys = isReturnGeneratedKeys;
         }
         
         @Override
-        protected ExecuteResponseUnit executeResult() {
-            return new ExecuteUpdateResponseUnit(new OKPacket(1));
+        protected ExecuteResponseUnit executeResult(final StatementExecuteUnit executeUnit) throws SQLException {
+            return executeWithoutMetadata(executeUnit.getStatement(), executeUnit.getRouteUnit().getSqlUnit().getSql(), executeUnit.getConnectionMode(), isReturnGeneratedKeys);
         }
     }
 }

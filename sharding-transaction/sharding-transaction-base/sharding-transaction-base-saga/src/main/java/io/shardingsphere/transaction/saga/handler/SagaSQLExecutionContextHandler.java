@@ -24,8 +24,8 @@ import io.shardingsphere.core.routing.RouteUnit;
 import io.shardingsphere.transaction.core.internal.context.SagaSQLExecutionContext;
 import io.shardingsphere.transaction.saga.manager.SagaTransactionManager;
 import io.shardingsphere.transaction.saga.revert.RevertResult;
+import io.shardingsphere.transaction.saga.servicecomb.transport.ResultsSQLTransport;
 import io.shardingsphere.transaction.saga.servicecomb.transport.ShardingTransportFactory;
-import io.shardingsphere.transaction.saga.servicecomb.transport.ConnectionMapSQLTransport;
 import lombok.extern.slf4j.Slf4j;
 
 import java.sql.SQLException;
@@ -51,26 +51,26 @@ public final class SagaSQLExecutionContextHandler {
     /**
      * Handle saga SQL execution event.
      *
-     * @param sqlExecutionEvent saga SQL execution event
+     * @param sqlExecutionContext saga SQL execution event
      */
-    public void handle(final SagaSQLExecutionContext sqlExecutionEvent) {
+    public void handle(final SagaSQLExecutionContext sqlExecutionContext) {
         checkTransactionManager();
-        if (sqlExecutionEvent.isNewLogicSQL()) {
+        if (sqlExecutionContext.isNewLogicSQL()) {
             transactionManager.getSagaDefinitionBuilder(transactionManager.getTransactionId()).switchParents();
             if (null != transactionIdToLogicSQLIdMap.get(transactionManager.getTransactionId())) {
                 logicSQLIdToTransactionIdMap.remove(transactionIdToLogicSQLIdMap.get(transactionManager.getTransactionId()));
             }
-            logicSQLIdToTransactionIdMap.put(sqlExecutionEvent.getLogicSQLId(), transactionManager.getTransactionId());
-            transactionIdToLogicSQLIdMap.put(transactionManager.getTransactionId(), sqlExecutionEvent.getLogicSQLId());
+            logicSQLIdToTransactionIdMap.put(sqlExecutionContext.getLogicSQLId(), transactionManager.getTransactionId());
+            transactionIdToLogicSQLIdMap.put(transactionManager.getTransactionId(), sqlExecutionContext.getLogicSQLId());
         } else {
             //TODO generate revert sql by sql and params in event
             try {
-                String transactionId = logicSQLIdToTransactionIdMap.get(sqlExecutionEvent.getLogicSQLId());
-                StatementExecuteUnit executeUnit = sqlExecutionEvent.getExecuteUnit();
+                String transactionId = logicSQLIdToTransactionIdMap.get(sqlExecutionContext.getLogicSQLId());
+                StatementExecuteUnit executeUnit = sqlExecutionContext.getExecuteUnit();
                 RouteUnit routeUnit = executeUnit.getRouteUnit();
-//                ((ConnectionMapSQLTransport) ShardingTransportFactory.getInstance().getTransportByTransactionId(transactionId)).cacheStatement(executeUnit);
+                ((ResultsSQLTransport) ShardingTransportFactory.getInstance().getTransportByTransactionId(transactionId)).cacheResult(executeUnit, sqlExecutionContext.getExecutionResult());
                 RevertResult result = transactionManager.getReverEngine(transactionId).revert(routeUnit.getDataSourceName(), routeUnit.getSqlUnit().getSql(), routeUnit.getSqlUnit().getParameterSets());
-                transactionManager.getSagaDefinitionBuilder(transactionId).addChildRequest(sqlExecutionEvent.getId(), routeUnit.getDataSourceName(),
+                transactionManager.getSagaDefinitionBuilder(transactionId).addChildRequest(sqlExecutionContext.getId(), routeUnit.getDataSourceName(),
                     routeUnit.getSqlUnit().getSql(), copyList(routeUnit.getSqlUnit().getParameterSets()), result.getRevertSQL(), result.getRevertSQLParams());
             } catch (SQLException e) {
                 throw new ShardingException("Failed to revert SQL", e);

@@ -36,16 +36,12 @@ import java.util.Map;
 import java.util.UUID;
 import java.util.concurrent.ConcurrentHashMap;
 
-import lombok.extern.slf4j.Slf4j;
-
-
 /**
  * Saga transaction manager.
  *
  * @author zhaojun
  * @author yangyi
  */
-@Slf4j
 public final class SagaTransactionManager implements BASETransactionManager<SagaTransactionContext> {
     
     private static final SagaTransactionManager INSTANCE = new SagaTransactionManager();
@@ -73,17 +69,18 @@ public final class SagaTransactionManager implements BASETransactionManager<Saga
     
     @Override
     public void commit(final SagaTransactionContext transactionContext) {
-        try {
-            // TODO Analyse the result of saga coordinator.run, if run failed, throw exception
-            String json = sagaDefinitionBuilderMap.get(getTransactionId()).build();
-            sagaExecutionComponentHolder.getSagaExecutionComponent(transactionContext.getSagaConfiguration()).run(json);
-        } catch (JsonProcessingException ignored) {
-        }
         cleanTransaction();
     }
     
     @Override
     public void rollback(final SagaTransactionContext transactionContext) {
+        if (null != getTransactionId()) {
+            try {
+                String json = sagaDefinitionBuilderMap.get(getTransactionId()).build();
+                sagaExecutionComponentHolder.getSagaExecutionComponent(transactionContext.getSagaConfiguration()).run(json);
+            } catch (JsonProcessingException ignored) {
+            }
+        }
         cleanTransaction();
     }
     

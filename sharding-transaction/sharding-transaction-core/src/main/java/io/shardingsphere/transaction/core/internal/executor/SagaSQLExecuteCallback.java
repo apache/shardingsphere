@@ -21,6 +21,7 @@ import io.shardingsphere.core.constant.DatabaseType;
 import io.shardingsphere.core.constant.transaction.TransactionType;
 import io.shardingsphere.core.executor.StatementExecuteUnit;
 import io.shardingsphere.core.executor.sql.execute.SQLExecuteCallback;
+import io.shardingsphere.transaction.core.internal.constant.ExecutionResult;
 import io.shardingsphere.transaction.core.internal.context.SagaSQLExecutionContext;
 import io.shardingsphere.transaction.core.internal.context.SagaTransactionContext;
 import io.shardingsphere.transaction.core.loader.ShardingTransactionHandlerRegistry;
@@ -47,17 +48,23 @@ public abstract class SagaSQLExecuteCallback<T> extends SQLExecuteCallback<T> {
     }
     
     /**
-     * Saga transaction don't execute sql immediately, but send event to handler.
+     * Saga transaction execute sql immediately, and send result context to transaction handler.
      *
      * @param executeUnit execute unit
-     * @return return false if T is Boolean, 0 if T is Integer
+     * @return execute result
      * @throws SQLException sql exception
      */
     @Override
     protected T executeSQL(final StatementExecuteUnit executeUnit) throws SQLException {
-        handler.doInTransaction(SagaTransactionContext.createExecutionSagaTransactionContext(new SagaSQLExecutionContext(executeUnit, logicSQLId, false)));
-        return executeResult();
+        try {
+            T result = executeResult(executeUnit);
+            handler.doInTransaction(SagaTransactionContext.createExecutionSagaTransactionContext(new SagaSQLExecutionContext(executeUnit, logicSQLId, false, ExecutionResult.SUCCESS)));
+            return result;
+        } catch (SQLException ex) {
+            handler.doInTransaction(SagaTransactionContext.createExecutionSagaTransactionContext(new SagaSQLExecutionContext(executeUnit, logicSQLId, false, ExecutionResult.FAILURE)));
+            throw ex;
+        }
     }
     
-    protected abstract T executeResult();
+    protected abstract T executeResult(StatementExecuteUnit executeUnit) throws SQLException;
 }

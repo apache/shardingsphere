@@ -68,8 +68,7 @@ public final class ShardingTransportFactory implements TransportFactory<SQLTrans
      * @param transactionId transaction id
      */
     public void cacheTransport(final SagaTransactionContext context, final String transactionId) {
-//        SQLTransport sqlTransport = new ConnectionMapSQLTransport(context.getDataSourceMap());
-        SQLTransport sqlTransport = new EmptySQLTransport();
+        SQLTransport sqlTransport = new ResultsSQLTransport(context.getDataSourceMap());
         transports.set(sqlTransport);
         transactionIdToTransportMap.put(transactionId, sqlTransport);
     }

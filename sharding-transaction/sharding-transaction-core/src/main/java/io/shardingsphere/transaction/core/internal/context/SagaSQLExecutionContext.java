@@ -18,7 +18,8 @@
 package io.shardingsphere.transaction.core.internal.context;
 
 import io.shardingsphere.core.executor.StatementExecuteUnit;
-import io.shardingsphere.core.routing.RouteUnit;
+import io.shardingsphere.transaction.core.internal.constant.ExecutionResult;
+import lombok.AllArgsConstructor;
 import lombok.Getter;
 import lombok.RequiredArgsConstructor;
 
@@ -31,6 +32,7 @@ import java.util.UUID;
  */
 @Getter
 @RequiredArgsConstructor
+@AllArgsConstructor
 public final class SagaSQLExecutionContext {
     
     private final String id = UUID.randomUUID().toString();
@@ -41,4 +43,5 @@ public final class SagaSQLExecutionContext {
     
     private final boolean newLogicSQL;
     
+    private ExecutionResult executionResult;
 }

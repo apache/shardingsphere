@@ -21,7 +21,6 @@ import com.google.common.util.concurrent.MoreExecutors;
 import io.shardingsphere.api.config.SagaConfiguration;
 import io.shardingsphere.core.executor.ShardingThreadFactoryBuilder;
 import io.shardingsphere.transaction.saga.servicecomb.transport.ShardingTransportFactory;
-
 import org.apache.servicecomb.saga.core.EventEnvelope;
 import org.apache.servicecomb.saga.core.PersistentStore;
 import org.apache.servicecomb.saga.core.SagaDefinition;
@@ -97,7 +96,8 @@ public class SagaExecutionComponentHolder {
     }
     
     private ExecutorService createExecutors(final SagaConfiguration config) {
-        ExecutorService result = MoreExecutors.listeningDecorator(Executors.newFixedThreadPool(config.getExecutorSize(), ShardingThreadFactoryBuilder.build("Saga-%d")));
+        ExecutorService result = MoreExecutors.listeningDecorator(config.getExecutorSize() <= 0
+            ? Executors.newCachedThreadPool(ShardingThreadFactoryBuilder.build("Saga-%d")) : Executors.newFixedThreadPool(config.getExecutorSize(), ShardingThreadFactoryBuilder.build("Saga-%d")));
         MoreExecutors.addDelayedShutdownHook(result, 60, TimeUnit.SECONDS);
         executorCaches.put(config.getAlias(), result);
         return result;
