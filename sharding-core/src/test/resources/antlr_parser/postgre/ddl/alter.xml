@@ -37,7 +37,7 @@
 
         <alter-table>
             <add-columns>
-                <add-column name="column4" type="VARCHAR" length="10"/>
+                <add-column name="column4" type="VARCHAR" />
             </add-columns>
         </alter-table>
     </parser-result>
@@ -52,9 +52,9 @@
 
         <alter-table>
             <add-columns>
-                <add-column name="column4" type="VARCHAR" length="10"/>
-                <add-column name="column5" type="VARCHAR" length="10"/>
-                <add-column name="column6" type="VARCHAR" length="10"/>
+                <add-column name="column4" type="VARCHAR" />
+                <add-column name="column5" type="VARCHAR" />
+                <add-column name="column6" type="VARCHAR" />
             </add-columns>
         </alter-table>
     </parser-result>
@@ -69,7 +69,7 @@
 
         <alter-table>
             <update-columns>
-                <update-column origin-column-name="column4" name="column4" type="VARCHAR" length="20"/>
+                <update-column origin-column-name="column4" name="column4" type="VARCHAR" />
             </update-columns>
         </alter-table>
     </parser-result>
@@ -84,9 +84,9 @@
 
         <alter-table>
             <update-columns>
-                <update-column origin-column-name="column4" name="column4" type="VARCHAR" length="20"/>
-                <update-column origin-column-name="column5" name="column5" type="VARCHAR" length="20"/>
-                <update-column origin-column-name="column6" name="column6" type="VARCHAR" length="20"/>
+                <update-column origin-column-name="column4" name="column4" type="VARCHAR" />
+                <update-column origin-column-name="column5" name="column5" type="VARCHAR" />
+                <update-column origin-column-name="column6" name="column6" type="VARCHAR" />
             </update-columns>
         </alter-table>
     </parser-result>

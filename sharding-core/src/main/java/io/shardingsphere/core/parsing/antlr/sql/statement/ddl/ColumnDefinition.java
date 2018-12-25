@@ -34,16 +34,13 @@ public final class ColumnDefinition {
     
     private String type;
     
-    private Integer length;
-    
     private boolean primaryKey;
     
     private ColumnPositionSegment position;
     
-    public ColumnDefinition(final String name, final String type, final Integer length, final boolean primaryKey) {
+    public ColumnDefinition(final String name, final String type, final boolean primaryKey) {
         this.name = name;
         this.type = type;
-        this.length = length;
         this.primaryKey = primaryKey;
     }
 }

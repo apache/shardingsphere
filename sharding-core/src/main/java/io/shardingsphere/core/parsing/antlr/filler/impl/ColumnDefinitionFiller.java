@@ -56,12 +56,10 @@ public final class ColumnDefinitionFiller implements SQLStatementFiller {
             oldDefinition.get().setName(columnDefinitionSegment.getName());
             if (null != columnDefinitionSegment.getType()) {
                 oldDefinition.get().setType(columnDefinitionSegment.getType());
-                oldDefinition.get().setLength(columnDefinitionSegment.getLength());
             }
             alterTableStatement.getUpdateColumns().put(oldName, oldDefinition.get());
         } else {
-            ColumnDefinition columnDefinition = new ColumnDefinition(
-                    columnDefinitionSegment.getName(), columnDefinitionSegment.getType(), columnDefinitionSegment.getLength(), columnDefinitionSegment.isPrimaryKey());
+            ColumnDefinition columnDefinition = new ColumnDefinition(columnDefinitionSegment.getName(), columnDefinitionSegment.getType(), columnDefinitionSegment.isPrimaryKey());
             if (!columnDefinitionSegment.isAdd()) {
                 alterTableStatement.getUpdateColumns().put(columnDefinitionSegment.getName(), columnDefinition);
             } else if (!alterTableStatement.findColumnDefinitionFromMetaData(columnDefinitionSegment.getName(), shardingTableMetaData).isPresent()) {
