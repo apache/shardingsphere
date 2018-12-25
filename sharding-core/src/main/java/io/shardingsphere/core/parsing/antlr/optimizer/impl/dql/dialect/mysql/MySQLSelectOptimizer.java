@@ -74,7 +74,7 @@ public final class MySQLSelectOptimizer implements SQLStatementOptimizer {
     private void appendAvgDerivedColumns(final ItemsToken itemsToken, final SelectStatement selectStatement) {
         int derivedColumnOffset = 0;
         for (SelectItem each : selectStatement.getItems()) {
-            if (!(each instanceof AggregationSelectItem) || AggregationType.AVG != ((AggregationSelectItem) each).getType()) {
+            if (!isAvgItemNeededToHandle(each)) {
                 continue;
             }
             AggregationSelectItem avgItem = (AggregationSelectItem) each;
@@ -89,6 +89,10 @@ public final class MySQLSelectOptimizer implements SQLStatementOptimizer {
             itemsToken.getItems().add(sumItem.getExpression() + " AS " + sumAlias + " ");
             derivedColumnOffset++;
         }
+    }
+    
+    private boolean isAvgItemNeededToHandle(final SelectItem each) {
+        return each instanceof AggregationSelectItem && AggregationType.AVG == ((AggregationSelectItem) each).getType();
     }
     
     private void appendDerivedOrderColumns(final ItemsToken itemsToken, final List<OrderItem> orderItems, final SelectStatement selectStatement, final ShardingTableMetaData shardingTableMetaData) {
