@@ -42,7 +42,6 @@ public final class ColumnDefinitionsExtractor implements CollectionSQLSegmentExt
         for (ParserRuleContext each : ExtractorUtils.getAllDescendantNodes(ancestorNode, RuleName.COLUMN_DEFINITION)) {
             Optional<ColumnDefinitionSegment> columnDefinitionSegment = columnDefinitionExtractor.extract(each);
             if (columnDefinitionSegment.isPresent()) {
-                columnDefinitionSegment.get().setAdd(true);
                 result.add(columnDefinitionSegment.get());
             }
         }
