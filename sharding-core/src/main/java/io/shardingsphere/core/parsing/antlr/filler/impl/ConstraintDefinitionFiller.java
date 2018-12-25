@@ -23,8 +23,8 @@ import io.shardingsphere.core.parsing.antlr.filler.SQLStatementFiller;
 import io.shardingsphere.core.parsing.antlr.sql.segment.constraint.ConstraintDefinitionSegment;
 import io.shardingsphere.core.parsing.antlr.sql.statement.ddl.AlterTableStatement;
 import io.shardingsphere.core.parsing.antlr.sql.statement.ddl.ColumnDefinition;
+import io.shardingsphere.core.parsing.antlr.sql.statement.ddl.CreateTableStatement;
 import io.shardingsphere.core.parsing.parser.sql.SQLStatement;
-import io.shardingsphere.core.parsing.parser.sql.ddl.create.table.CreateTableStatement;
 import io.shardingsphere.core.rule.ShardingRule;
 
 /**
@@ -45,7 +45,11 @@ public final class ConstraintDefinitionFiller implements SQLStatementFiller<Cons
     }
     
     private void fill(final ConstraintDefinitionSegment sqlSegment, final CreateTableStatement createTableStatement) {
-        createTableStatement.getPrimaryKeyColumns().addAll(sqlSegment.getPrimaryKeyColumnNames());
+        for (ColumnDefinition each : createTableStatement.getColumnDefinitions()) {
+            if (sqlSegment.getPrimaryKeyColumnNames().contains(each.getName())) {
+                each.setPrimaryKey(true);
+            }
+        }
     }
     
     private void fill(final ConstraintDefinitionSegment sqlSegment, final AlterTableStatement alterTableStatement, final ShardingTableMetaData shardingTableMetaData) {
@@ -53,7 +57,7 @@ public final class ConstraintDefinitionFiller implements SQLStatementFiller<Cons
             Optional<ColumnDefinition> updatedColumn = alterTableStatement.findColumnDefinition(each, shardingTableMetaData);
             if (updatedColumn.isPresent()) {
                 updatedColumn.get().setPrimaryKey(true);
-                alterTableStatement.getUpdateColumns().put(each, updatedColumn.get());
+                alterTableStatement.getUpdatedColumnDefinitions().put(each, updatedColumn.get());
             }
         }
     }

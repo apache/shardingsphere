@@ -15,13 +15,16 @@
  * </p>
  */
 
-package io.shardingsphere.core.parsing.parser.sql.ddl;
+package io.shardingsphere.core.parsing.antlr.sql.statement.ddl;
 
 import io.shardingsphere.core.constant.SQLType;
+import io.shardingsphere.core.metadata.table.TableMetaData;
 import io.shardingsphere.core.parsing.lexer.token.DefaultKeyword;
 import io.shardingsphere.core.parsing.lexer.token.Keyword;
 import io.shardingsphere.core.parsing.lexer.token.TokenType;
 import io.shardingsphere.core.parsing.parser.sql.AbstractSQLStatement;
+import lombok.Getter;
+import lombok.Setter;
 
 import java.util.Arrays;
 import java.util.Collection;
@@ -31,11 +34,15 @@ import java.util.Collection;
  *
  * @author zhangliang
  */
+@Getter
+@Setter
 public class DDLStatement extends AbstractSQLStatement {
     
     private static final Collection<Keyword> PRIMARY_STATEMENT_PREFIX = Arrays.<Keyword>asList(DefaultKeyword.CREATE, DefaultKeyword.ALTER, DefaultKeyword.DROP, DefaultKeyword.TRUNCATE);
     
     private static final Collection<Keyword> NOT_SECONDARY_STATEMENT_PREFIX = Arrays.<Keyword>asList(DefaultKeyword.LOGIN, DefaultKeyword.USER, DefaultKeyword.ROLE);
+    
+    private TableMetaData tableMetaData;
     
     public DDLStatement() {
         super(SQLType.DDL);

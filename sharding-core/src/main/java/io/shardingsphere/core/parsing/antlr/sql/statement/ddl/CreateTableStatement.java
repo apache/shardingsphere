@@ -15,14 +15,20 @@
  * </p>
  */
 
-package io.shardingsphere.core.parsing.parser.sql.ddl.drop.table;
+package io.shardingsphere.core.parsing.antlr.sql.statement.ddl;
 
-import io.shardingsphere.core.parsing.parser.sql.ddl.DDLStatement;
+import lombok.Getter;
+
+import java.util.LinkedList;
+import java.util.List;
 
 /**
- * Drop table statement.
+ * Create table statement.
  *
  * @author zhangliang
  */
-public final class DropTableStatement extends DDLStatement {
+@Getter
+public final class CreateTableStatement extends DDLStatement {
+    
+    private final List<ColumnDefinition> columnDefinitions = new LinkedList<>();
 }

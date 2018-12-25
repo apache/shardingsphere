@@ -23,8 +23,8 @@ import io.shardingsphere.core.parsing.antlr.filler.SQLStatementFiller;
 import io.shardingsphere.core.parsing.antlr.sql.segment.column.ColumnDefinitionSegment;
 import io.shardingsphere.core.parsing.antlr.sql.statement.ddl.AlterTableStatement;
 import io.shardingsphere.core.parsing.antlr.sql.statement.ddl.ColumnDefinition;
+import io.shardingsphere.core.parsing.antlr.sql.statement.ddl.CreateTableStatement;
 import io.shardingsphere.core.parsing.parser.sql.SQLStatement;
-import io.shardingsphere.core.parsing.parser.sql.ddl.create.table.CreateTableStatement;
 import io.shardingsphere.core.rule.ShardingRule;
 import io.shardingsphere.core.util.SQLUtil;
 
@@ -45,11 +45,7 @@ public final class ColumnDefinitionFiller implements SQLStatementFiller<ColumnDe
     }
     
     private void fill(final ColumnDefinitionSegment sqlSegment, final CreateTableStatement createTableStatement) {
-        createTableStatement.getColumnNames().add(SQLUtil.getExactlyValue(sqlSegment.getName()));
-        createTableStatement.getColumnTypes().add(sqlSegment.getType());
-        if (sqlSegment.isPrimaryKey()) {
-            createTableStatement.getPrimaryKeyColumns().add(sqlSegment.getName());
-        }
+        createTableStatement.getColumnDefinitions().add(new ColumnDefinition(SQLUtil.getExactlyValue(sqlSegment.getName()), sqlSegment.getType(), sqlSegment.isPrimaryKey()));
     }
     
     private void fill(final ColumnDefinitionSegment sqlSegment, final AlterTableStatement alterTableStatement, final ShardingTableMetaData shardingTableMetaData) {
@@ -63,13 +59,13 @@ public final class ColumnDefinitionFiller implements SQLStatementFiller<ColumnDe
             if (null != sqlSegment.getType()) {
                 oldDefinition.get().setType(sqlSegment.getType());
             }
-            alterTableStatement.getUpdateColumns().put(oldName, oldDefinition.get());
+            alterTableStatement.getUpdatedColumnDefinitions().put(oldName, oldDefinition.get());
         } else {
             ColumnDefinition columnDefinition = new ColumnDefinition(sqlSegment.getName(), sqlSegment.getType(), sqlSegment.isPrimaryKey());
             if (!sqlSegment.isAdd()) {
-                alterTableStatement.getUpdateColumns().put(sqlSegment.getName(), columnDefinition);
+                alterTableStatement.getUpdatedColumnDefinitions().put(sqlSegment.getName(), columnDefinition);
             } else if (!alterTableStatement.findColumnDefinitionFromMetaData(sqlSegment.getName(), shardingTableMetaData).isPresent()) {
-                alterTableStatement.getAddColumns().add(columnDefinition);
+                alterTableStatement.getAddedColumnDefinitions().add(columnDefinition);
             }
         }
         if (null != sqlSegment.getPosition()) {

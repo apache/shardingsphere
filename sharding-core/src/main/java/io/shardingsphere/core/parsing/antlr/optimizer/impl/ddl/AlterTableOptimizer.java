@@ -53,7 +53,7 @@ public class AlterTableOptimizer implements SQLStatementOptimizer {
     private List<ColumnMetaData> getUpdatedColumnMetaDataList(final AlterTableStatement alterTableStatement, final TableMetaData oldTableMetaData) {
         List<ColumnMetaData> result = new LinkedList<>();
         for (ColumnMetaData each : oldTableMetaData.getColumnMetaData()) {
-            ColumnDefinition updatedColumnDefinition = alterTableStatement.getUpdateColumns().get(each.getColumnName());
+            ColumnDefinition updatedColumnDefinition = alterTableStatement.getUpdatedColumnDefinitions().get(each.getColumnName());
             String columnName;
             String columnType;
             boolean primaryKey;
@@ -72,7 +72,7 @@ public class AlterTableOptimizer implements SQLStatementOptimizer {
     }
     
     private void fillColumnDefinition(final AlterTableStatement alterTableStatement, final List<ColumnMetaData> newColumnMetaData) {
-        for (ColumnDefinition each : alterTableStatement.getAddColumns()) {
+        for (ColumnDefinition each : alterTableStatement.getAddedColumnDefinitions()) {
             newColumnMetaData.add(new ColumnMetaData(each.getName(), each.getType(), each.isPrimaryKey()));
         }
     }
@@ -84,7 +84,7 @@ public class AlterTableOptimizer implements SQLStatementOptimizer {
         Iterator<ColumnMetaData> iterator = newColumnMetaData.iterator();
         while (iterator.hasNext()) {
             ColumnMetaData each = iterator.next();
-            if (alterTableStatement.getDropColumns().contains(each.getColumnName())) {
+            if (alterTableStatement.getDropColumnNames().contains(each.getColumnName())) {
                 iterator.remove();
             }
         }

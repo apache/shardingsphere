@@ -20,9 +20,7 @@ package io.shardingsphere.core.parsing.antlr.sql.statement.ddl;
 import com.google.common.base.Optional;
 import io.shardingsphere.core.metadata.table.ColumnMetaData;
 import io.shardingsphere.core.metadata.table.ShardingTableMetaData;
-import io.shardingsphere.core.metadata.table.TableMetaData;
 import io.shardingsphere.core.parsing.antlr.sql.segment.column.ColumnPositionSegment;
-import io.shardingsphere.core.parsing.parser.sql.ddl.DDLStatement;
 import lombok.Getter;
 import lombok.Setter;
 
@@ -40,19 +38,17 @@ import java.util.Map;
 @Setter
 public final class AlterTableStatement extends DDLStatement {
     
-    private final List<ColumnDefinition> addColumns = new LinkedList<>();
+    private final List<ColumnDefinition> addedColumnDefinitions = new LinkedList<>();
     
-    private final List<String> dropColumns = new LinkedList<>();
+    private final List<String> dropColumnNames = new LinkedList<>();
     
-    private final Map<String, ColumnDefinition> updateColumns = new LinkedHashMap<>();
+    private final Map<String, ColumnDefinition> updatedColumnDefinitions = new LinkedHashMap<>();
     
     private final List<ColumnPositionSegment> positionChangedColumns = new LinkedList<>();
     
     private boolean dropPrimaryKey;
     
     private String newTableName;
-    
-    private TableMetaData tableMetaData;
     
     /**
      * Find column definition.
@@ -86,7 +82,7 @@ public final class AlterTableStatement extends DDLStatement {
     }
     
     private Optional<ColumnDefinition> findColumnDefinitionFromCurrentAddClause(final String columnName) {
-        for (ColumnDefinition each : addColumns) {
+        for (ColumnDefinition each : addedColumnDefinitions) {
             if (each.getName().equalsIgnoreCase(columnName)) {
                 return Optional.of(each);
             }
