@@ -18,8 +18,6 @@
 package io.shardingsphere.core.rewrite.placeholder;
 
 import com.google.common.base.Optional;
-
-import io.shardingsphere.core.parsing.lexer.token.DefaultKeyword;
 import lombok.Getter;
 import lombok.RequiredArgsConstructor;
 
@@ -41,8 +39,8 @@ public final class AggregationDistinctPlaceholder implements ShardingPlaceholder
     @Override
     public String toString() {
         if (autoAlias.isPresent()) {
-            return DefaultKeyword.DISTINCT + " " + columnName + " " + autoAlias.get();
+            return " " + columnName + " " + autoAlias.get();
         }
-        return DefaultKeyword.DISTINCT + " " + columnName;
+        return " " + columnName;
     }
 }
