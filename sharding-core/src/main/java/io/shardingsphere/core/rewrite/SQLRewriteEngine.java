@@ -138,7 +138,7 @@ public final class SQLRewriteEngine {
             } else if (each instanceof InsertColumnToken) {
                 appendSymbolToken(result, (InsertColumnToken) each, count);
             } else if (each instanceof AggregationDistinctToken) {
-                appendDistinctPlaceholder(result, (AggregationDistinctToken) each, count, isRewrite);
+                appendAggregationDistinctPlaceholder(result, (AggregationDistinctToken) each, count, isRewrite);
             } else if (each instanceof RemoveToken) {
                 appendRest(result, count, ((RemoveToken) each).getEndPosition());
             }
@@ -232,7 +232,7 @@ public final class SQLRewriteEngine {
         appendRest(sqlBuilder, count, insertColumnToken.getBeginPosition());
     }
     
-    private void appendDistinctPlaceholder(final SQLBuilder sqlBuilder, final AggregationDistinctToken distinctToken, final int count, final boolean isRewrite) {
+    private void appendAggregationDistinctPlaceholder(final SQLBuilder sqlBuilder, final AggregationDistinctToken distinctToken, final int count, final boolean isRewrite) {
         if (!isRewrite) {
             sqlBuilder.appendLiterals(distinctToken.getOriginalLiterals()); 
         } else {
