@@ -116,14 +116,16 @@ public final class SQLRewriteEngine {
             result.appendLiterals(originalSQL);
             return result;
         }
-        result.appendLiterals(originalSQL.substring(0, sqlTokens.get(0).getBeginPosition()));
-        
-        if ()
+        if (isRewrite && isContainAggregationDistinctToken()) {
+            int firstSelectItemStartPosition = ((SelectStatement) sqlStatement).getFirstSelectItemStartPosition();
+            result.appendLiterals(originalSQL.substring(0, firstSelectItemStartPosition));
+            result.appendLiterals(" DISTINCT ");
+            result.appendLiterals(originalSQL.substring(firstSelectItemStartPosition, sqlTokens.get(0).getBeginPosition()));
+        } else {
+            result.appendLiterals(originalSQL.substring(0, sqlTokens.get(0).getBeginPosition()));
+        }
         int count = 0;
         for (SQLToken each : sqlTokens) {
-//            if (0 == count) {
-//                result.appendLiterals(originalSQL.substring(0, each.getBeginPosition()));
-//            }
             if (each instanceof TableToken) {
                 appendTablePlaceholder(result, (TableToken) each, count);
             } else if (each instanceof SchemaToken) {
