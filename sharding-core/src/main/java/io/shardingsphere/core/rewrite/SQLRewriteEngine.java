@@ -117,6 +117,11 @@ public final class SQLRewriteEngine {
             return result;
         }
         appendInitialLiterals(isRewrite, result);
+        appendTokensAndPlaceholders(isRewrite, result);
+        return result;
+    }
+    
+    private void appendTokensAndPlaceholders(final boolean isRewrite, final SQLBuilder result) {
         int count = 0;
         for (SQLToken each : sqlTokens) {
             if (each instanceof TableToken) {
@@ -144,7 +149,6 @@ public final class SQLRewriteEngine {
             }
             count++;
         }
-        return result;
     }
     
     private void appendInitialLiterals(final boolean isRewrite, final SQLBuilder result) {
