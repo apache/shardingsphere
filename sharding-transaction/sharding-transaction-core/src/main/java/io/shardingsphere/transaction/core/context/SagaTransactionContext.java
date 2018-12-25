@@ -19,7 +19,6 @@ package io.shardingsphere.transaction.core.context;
 
 import io.shardingsphere.api.config.SagaConfiguration;
 import io.shardingsphere.transaction.core.TransactionOperationType;
-import io.shardingsphere.transaction.core.internal.context.SagaSQLExecutionContext;
 import lombok.AccessLevel;
 import lombok.AllArgsConstructor;
 import lombok.Getter;

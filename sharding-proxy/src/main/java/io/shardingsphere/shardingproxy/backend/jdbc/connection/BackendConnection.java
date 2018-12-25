@@ -26,7 +26,7 @@ import io.shardingsphere.core.routing.router.masterslave.MasterVisitedManager;
 import io.shardingsphere.shardingproxy.runtime.GlobalRegistry;
 import io.shardingsphere.shardingproxy.runtime.schema.LogicSchema;
 import io.shardingsphere.transaction.api.TransactionType;
-import io.shardingsphere.transaction.core.internal.context.SagaTransactionContext;
+import io.shardingsphere.transaction.core.context.SagaTransactionContext;
 import io.shardingsphere.transaction.core.loader.ShardingTransactionHandlerRegistry;
 import lombok.Getter;
 import lombok.Setter;

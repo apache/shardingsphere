@@ -15,10 +15,10 @@
  * </p>
  */
 
-package io.shardingsphere.transaction.core.internal.context;
+package io.shardingsphere.transaction.core.context;
 
 import io.shardingsphere.core.executor.StatementExecuteUnit;
-import io.shardingsphere.transaction.core.internal.constant.ExecutionResult;
+import io.shardingsphere.transaction.core.constant.ExecutionResult;
 import lombok.AllArgsConstructor;
 import lombok.Getter;
 import lombok.RequiredArgsConstructor;

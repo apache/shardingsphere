@@ -17,11 +17,11 @@
 
 package io.shardingsphere.transaction.saga.handler;
 
-import io.shardingsphere.core.constant.transaction.TransactionType;
 import io.shardingsphere.core.exception.ShardingException;
+import io.shardingsphere.transaction.api.TransactionType;
+import io.shardingsphere.transaction.core.context.SagaTransactionContext;
 import io.shardingsphere.transaction.core.handler.ShardingTransactionHandlerAdapter;
-import io.shardingsphere.transaction.core.internal.context.SagaTransactionContext;
-import io.shardingsphere.transaction.core.internal.manager.ShardingTransactionManager;
+import io.shardingsphere.transaction.core.manager.ShardingTransactionManager;
 import io.shardingsphere.transaction.saga.manager.SagaTransactionManager;
 import lombok.extern.slf4j.Slf4j;
 

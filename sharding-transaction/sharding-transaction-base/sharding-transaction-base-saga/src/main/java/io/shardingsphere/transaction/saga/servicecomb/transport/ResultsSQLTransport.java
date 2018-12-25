@@ -21,7 +21,7 @@ import com.google.common.base.Function;
 import com.google.common.base.Joiner;
 import com.google.common.collect.Lists;
 import io.shardingsphere.core.executor.StatementExecuteUnit;
-import io.shardingsphere.transaction.core.internal.constant.ExecutionResult;
+import io.shardingsphere.transaction.core.constant.ExecutionResult;
 import lombok.Getter;
 import lombok.RequiredArgsConstructor;
 import org.apache.servicecomb.saga.core.SagaResponse;

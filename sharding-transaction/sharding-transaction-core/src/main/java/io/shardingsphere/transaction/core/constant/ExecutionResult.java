@@ -15,7 +15,7 @@
  * </p>
  */
 
-package io.shardingsphere.transaction.core.internal.constant;
+package io.shardingsphere.transaction.core.constant;
 
 /**
  * SQL execution result.

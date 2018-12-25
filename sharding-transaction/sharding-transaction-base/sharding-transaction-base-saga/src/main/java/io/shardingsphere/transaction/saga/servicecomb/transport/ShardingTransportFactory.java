@@ -17,12 +17,14 @@
 
 package io.shardingsphere.transaction.saga.servicecomb.transport;
 
-import io.shardingsphere.transaction.core.internal.context.SagaTransactionContext;
+
 import org.apache.servicecomb.saga.transports.SQLTransport;
 import org.apache.servicecomb.saga.transports.TransportFactory;
 
 import java.util.Map;
 import java.util.concurrent.ConcurrentHashMap;
+
+import io.shardingsphere.transaction.core.context.SagaTransactionContext;
 
 /**
  * Extend interface for service comb saga TransportFactory.

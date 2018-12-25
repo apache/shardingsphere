@@ -19,11 +19,11 @@ package io.shardingsphere.shardingjdbc.executor;
 
 import io.shardingsphere.core.constant.DatabaseType;
 import io.shardingsphere.core.constant.SQLType;
-import io.shardingsphere.core.constant.transaction.TransactionType;
 import io.shardingsphere.core.executor.StatementExecuteUnit;
 import io.shardingsphere.core.executor.sql.execute.SQLExecuteCallback;
-import io.shardingsphere.transaction.core.internal.executor.SagaSQLExecuteCallback;
-import io.shardingsphere.core.transaction.TransactionTypeHolder;
+import io.shardingsphere.transaction.api.TransactionType;
+import io.shardingsphere.transaction.api.TransactionTypeHolder;
+import io.shardingsphere.transaction.core.executor.SagaSQLExecuteCallback;
 
 import java.sql.PreparedStatement;
 import java.sql.SQLException;
