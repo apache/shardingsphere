@@ -17,12 +17,7 @@
 
 package io.shardingsphere.core.parsing.antlr.filler.impl;
 
-import java.util.HashSet;
-import java.util.Iterator;
-import java.util.Set;
-
 import com.google.common.base.Optional;
-
 import io.shardingsphere.core.metadata.table.ShardingTableMetaData;
 import io.shardingsphere.core.parsing.antlr.filler.SQLStatementFiller;
 import io.shardingsphere.core.parsing.antlr.sql.segment.SelectClauseSegment;
@@ -37,6 +32,10 @@ import io.shardingsphere.core.parsing.parser.sql.SQLStatement;
 import io.shardingsphere.core.parsing.parser.sql.dql.select.SelectStatement;
 import io.shardingsphere.core.rule.ShardingRule;
 
+import java.util.HashSet;
+import java.util.Iterator;
+import java.util.Set;
+
 /**
  * Select clause filler.
  *
@@ -47,6 +46,7 @@ public final class SelectClauseFiller implements SQLStatementFiller<SelectClause
     @Override
     public void fill(final SelectClauseSegment selectClauseSegment, final SQLStatement sqlStatement, final String sql, final ShardingRule shardingRule, final ShardingTableMetaData shardingTableMetaData) {
         SelectStatement selectStatement = (SelectStatement) sqlStatement;
+        selectStatement.setFirstSelectItemStartPosition(selectClauseSegment.getFirstSelectItemStartPosition());
         selectStatement.setSelectListLastPosition(selectClauseSegment.getSelectListLastPosition());
         if (selectClauseSegment.getExpressions().isEmpty()) {
             return;
