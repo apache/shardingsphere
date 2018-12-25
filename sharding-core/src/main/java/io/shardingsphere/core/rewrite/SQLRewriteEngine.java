@@ -125,6 +125,30 @@ public final class SQLRewriteEngine {
         return result;
     }
     
+    private void appendInitialLiterals(final boolean isRewrite, final SQLBuilder result) {
+        if (isRewrite && isContainAggregationDistinctToken()) {
+            appendDistinctLiteral(result);
+        } else {
+            result.appendLiterals(originalSQL.substring(0, sqlTokens.get(0).getBeginPosition()));
+        }
+    }
+    
+    private boolean isContainAggregationDistinctToken() {
+        return Iterators.tryFind(sqlTokens.iterator(), new Predicate<SQLToken>() {
+            @Override
+            public boolean apply(final SQLToken input) {
+                return input instanceof AggregationDistinctToken;
+            }
+        }).isPresent();
+    }
+    
+    private void appendDistinctLiteral(final SQLBuilder result) {
+        int firstSelectItemStartPosition = ((SelectStatement) sqlStatement).getFirstSelectItemStartPosition();
+        result.appendLiterals(originalSQL.substring(0, firstSelectItemStartPosition));
+        result.appendLiterals("DISTINCT ");
+        result.appendLiterals(originalSQL.substring(firstSelectItemStartPosition, sqlTokens.get(0).getBeginPosition()));
+    }
+    
     private void appendTokensAndPlaceholders(final boolean isRewrite, final SQLBuilder result) {
         int count = 0;
         for (SQLToken each : sqlTokens) {
@@ -153,30 +177,6 @@ public final class SQLRewriteEngine {
             }
             count++;
         }
-    }
-    
-    private void appendInitialLiterals(final boolean isRewrite, final SQLBuilder result) {
-        if (isRewrite && isContainAggregationDistinctToken()) {
-            appendDistinctLiteral(result);
-        } else {
-            result.appendLiterals(originalSQL.substring(0, sqlTokens.get(0).getBeginPosition()));
-        }
-    }
-    
-    private void appendDistinctLiteral(final SQLBuilder result) {
-        int firstSelectItemStartPosition = ((SelectStatement) sqlStatement).getFirstSelectItemStartPosition();
-        result.appendLiterals(originalSQL.substring(0, firstSelectItemStartPosition));
-        result.appendLiterals("DISTINCT ");
-        result.appendLiterals(originalSQL.substring(firstSelectItemStartPosition, sqlTokens.get(0).getBeginPosition()));
-    }
-    
-    private boolean isContainAggregationDistinctToken() {
-        return Iterators.tryFind(sqlTokens.iterator(), new Predicate<SQLToken>() {
-            @Override
-            public boolean apply(final SQLToken input) {
-                return input instanceof AggregationDistinctToken;
-            }
-        }).isPresent();
     }
     
     private void appendTablePlaceholder(final SQLBuilder sqlBuilder, final TableToken tableToken, final int count) {
