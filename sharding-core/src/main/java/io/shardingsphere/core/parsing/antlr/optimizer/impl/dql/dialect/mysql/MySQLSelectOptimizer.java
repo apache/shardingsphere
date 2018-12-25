@@ -24,6 +24,7 @@ import io.shardingsphere.core.metadata.table.ShardingTableMetaData;
 import io.shardingsphere.core.parsing.antlr.optimizer.SQLStatementOptimizer;
 import io.shardingsphere.core.parsing.parser.constant.DerivedColumn;
 import io.shardingsphere.core.parsing.parser.context.OrderItem;
+import io.shardingsphere.core.parsing.parser.context.selectitem.AggregationDistinctSelectItem;
 import io.shardingsphere.core.parsing.parser.context.selectitem.AggregationSelectItem;
 import io.shardingsphere.core.parsing.parser.context.selectitem.DistinctSelectItem;
 import io.shardingsphere.core.parsing.parser.context.selectitem.SelectItem;
@@ -85,8 +86,10 @@ public final class MySQLSelectOptimizer implements SQLStatementOptimizer {
             avgItem.getDerivedAggregationSelectItems().add(countItem);
             avgItem.getDerivedAggregationSelectItems().add(sumItem);
             // TODO replace avg to constant, avoid calculate useless avg
-            itemsToken.getItems().add(countItem.getExpression() + " AS " + countAlias + " ");
-            itemsToken.getItems().add(sumItem.getExpression() + " AS " + sumAlias + " ");
+            if (!(avgItem instanceof AggregationDistinctSelectItem)) {
+                itemsToken.getItems().add(countItem.getExpression() + " AS " + countAlias + " ");
+                itemsToken.getItems().add(sumItem.getExpression() + " AS " + sumAlias + " ");
+            }
             derivedColumnOffset++;
         }
     }
