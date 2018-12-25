@@ -17,7 +17,6 @@
 
 package io.shardingsphere.core.parsing.parser.sql.tcl.commit;
 
-import io.shardingsphere.core.constant.transaction.TransactionOperationType;
 import io.shardingsphere.core.parsing.parser.sql.tcl.TCLStatement;
 
 /**
@@ -26,8 +25,4 @@ import io.shardingsphere.core.parsing.parser.sql.tcl.TCLStatement;
  * @author maxiaoguang
  */
 public final class CommitStatement extends TCLStatement {
-    
-    public CommitStatement() {
-        super(TransactionOperationType.COMMIT);
-    }
 }

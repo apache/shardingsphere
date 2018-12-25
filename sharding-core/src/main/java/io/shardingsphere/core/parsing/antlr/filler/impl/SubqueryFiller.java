@@ -19,7 +19,6 @@ package io.shardingsphere.core.parsing.antlr.filler.impl;
 
 import io.shardingsphere.core.metadata.table.ShardingTableMetaData;
 import io.shardingsphere.core.parsing.antlr.filler.SQLStatementFiller;
-import io.shardingsphere.core.parsing.antlr.sql.segment.SQLSegment;
 import io.shardingsphere.core.parsing.antlr.sql.segment.expr.SubquerySegment;
 import io.shardingsphere.core.parsing.parser.sql.SQLStatement;
 import io.shardingsphere.core.parsing.parser.sql.dql.select.SelectStatement;
@@ -30,28 +29,27 @@ import io.shardingsphere.core.rule.ShardingRule;
  *
  * @author duhongjun
  */
-public final class SubqueryFiller implements SQLStatementFiller {
+public final class SubqueryFiller implements SQLStatementFiller<SubquerySegment> {
     
     @Override
-    public void fill(final SQLSegment sqlSegment, final SQLStatement sqlStatement, final String sql, final ShardingRule shardingRule, final ShardingTableMetaData shardingTableMetaData) {
-        SubquerySegment subquerySegment = (SubquerySegment) sqlSegment;
+    public void fill(final SubquerySegment sqlSegment, final SQLStatement sqlStatement, final String sql, final ShardingRule shardingRule, final ShardingTableMetaData shardingTableMetaData) {
         SelectStatement selectStatement = (SelectStatement) sqlStatement;
         SelectStatement subqueryStatement = new SelectStatement();
         selectStatement.getSubQueryStatements().add(subqueryStatement);
-        if (subquerySegment.getSelectClauseSegment().isPresent()) {
-            new SelectClauseFiller().fill(subquerySegment.getSelectClauseSegment().get(), subqueryStatement, sql, shardingRule, shardingTableMetaData);
+        if (sqlSegment.getSelectClauseSegment().isPresent()) {
+            new SelectClauseFiller().fill(sqlSegment.getSelectClauseSegment().get(), subqueryStatement, sql, shardingRule, shardingTableMetaData);
         }
-        if (subquerySegment.getFromWhereSegment().isPresent()) {
-            new FromWhereFiller().fill(subquerySegment.getFromWhereSegment().get(), subqueryStatement, sql, shardingRule, shardingTableMetaData);
+        if (sqlSegment.getFromWhereSegment().isPresent()) {
+            new FromWhereFiller().fill(sqlSegment.getFromWhereSegment().get(), subqueryStatement, sql, shardingRule, shardingTableMetaData);
         }
-        if (!subquerySegment.isSubqueryInFrom()) {
+        if (!sqlSegment.isSubqueryInFrom()) {
             return;
         }
-        if (subquerySegment.getGroupBySegment().isPresent()) {
-            new GroupByFiller().fill(subquerySegment.getGroupBySegment().get(), subqueryStatement, sql, shardingRule, shardingTableMetaData);
+        if (sqlSegment.getGroupBySegment().isPresent()) {
+            new GroupByFiller().fill(sqlSegment.getGroupBySegment().get(), subqueryStatement, sql, shardingRule, shardingTableMetaData);
         }
-        if (subquerySegment.getOrderBySegment().isPresent()) {
-            new OrderByFiller().fill(subquerySegment.getOrderBySegment().get(), subqueryStatement, sql, shardingRule, shardingTableMetaData);
+        if (sqlSegment.getOrderBySegment().isPresent()) {
+            new OrderByFiller().fill(sqlSegment.getOrderBySegment().get(), subqueryStatement, sql, shardingRule, shardingTableMetaData);
         }
     }
 }

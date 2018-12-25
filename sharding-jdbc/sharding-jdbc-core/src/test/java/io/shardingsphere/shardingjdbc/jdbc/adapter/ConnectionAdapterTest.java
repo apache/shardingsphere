@@ -18,13 +18,13 @@
 package io.shardingsphere.shardingjdbc.jdbc.adapter;
 
 import com.google.common.collect.Multimap;
-import io.shardingsphere.core.constant.transaction.TransactionType;
-import io.shardingsphere.core.transaction.TransactionTypeHolder;
 import io.shardingsphere.shardingjdbc.common.base.AbstractShardingJDBCDatabaseAndTableTest;
 import io.shardingsphere.shardingjdbc.jdbc.core.connection.ShardingConnection;
 import io.shardingsphere.shardingjdbc.jdbc.core.fixed.FixedBaseShardingTransactionHandler;
 import io.shardingsphere.shardingjdbc.jdbc.core.fixed.FixedXAShardingTransactionHandler;
 import io.shardingsphere.shardingjdbc.jdbc.util.JDBCTestSQL;
+import io.shardingsphere.transaction.api.TransactionType;
+import io.shardingsphere.transaction.api.TransactionTypeHolder;
 import lombok.SneakyThrows;
 import org.junit.After;
 import org.junit.Test;

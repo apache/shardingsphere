@@ -27,7 +27,7 @@ import io.shardingsphere.core.parsing.parser.sql.SQLParser;
 public final class BeginParser implements SQLParser {
     
     @Override
-    public BeginStatement parse() {
-        return new BeginStatement();
+    public BeginTransactionStatement parse() {
+        return new BeginTransactionStatement();
     }
 }

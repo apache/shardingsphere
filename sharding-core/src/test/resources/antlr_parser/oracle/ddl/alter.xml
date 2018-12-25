@@ -37,7 +37,7 @@
 
         <alter-table>
             <add-columns>
-                <add-column name="column4" type="VARCHAR2" length="10"/>
+                <add-column name="column4" type="VARCHAR2" />
             </add-columns>
             <new-meta column-names="order_id,user_id,status,column4" column-types="int,int,int,VARCHAR2" primary-key-columns="order_id"/>
         </alter-table>
@@ -53,9 +53,9 @@
 
         <alter-table>
             <add-columns>
-                <add-column name="column4" type="VARCHAR2" length="10"/>
-                <add-column name="column5" type="VARCHAR2" length="10"/>
-                <add-column name="column6" type="VARCHAR2" length="10"/>
+                <add-column name="column4" type="VARCHAR2" />
+                <add-column name="column5" type="VARCHAR2" />
+                <add-column name="column6" type="VARCHAR2" />
             </add-columns>
             <new-meta column-names="order_id,user_id,status,column4,column5,column6" column-types="int,int,int,VARCHAR2,VARCHAR2,VARCHAR2" primary-key-columns="order_id"/>
         </alter-table>
@@ -71,7 +71,7 @@
 
         <alter-table>
             <update-columns>
-                <update-column origin-column-name="column4" name="column4" type="VARCHAR2" length="20"/>
+                <update-column origin-column-name="column4" name="column4" type="VARCHAR2" />
             </update-columns>
         </alter-table>
     </parser-result>
@@ -86,9 +86,9 @@
 
         <alter-table>
             <update-columns>
-                <update-column origin-column-name="column4" name="column4" type="VARCHAR2" length="20"/>
-                <update-column origin-column-name="column5" name="column5" type="VARCHAR2" length="20"/>
-                <update-column origin-column-name="column6" name="column6" type="VARCHAR2" length="20"/>
+                <update-column origin-column-name="column4" name="column4" type="VARCHAR2" />
+                <update-column origin-column-name="column5" name="column5" type="VARCHAR2" />
+                <update-column origin-column-name="column6" name="column6" type="VARCHAR2" />
             </update-columns>
         </alter-table>
     </parser-result>

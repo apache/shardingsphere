@@ -31,6 +31,7 @@ import io.shardingsphere.core.parsing.parser.context.selectitem.AggregationDisti
 import io.shardingsphere.core.parsing.parser.context.selectitem.AggregationSelectItem;
 import io.shardingsphere.core.parsing.parser.context.selectitem.CommonSelectItem;
 import io.shardingsphere.core.parsing.parser.context.selectitem.StarSelectItem;
+import io.shardingsphere.core.parsing.parser.context.table.Table;
 import io.shardingsphere.core.parsing.parser.sql.SQLStatement;
 import io.shardingsphere.core.parsing.parser.sql.dql.select.SelectStatement;
 import io.shardingsphere.core.parsing.parser.token.AggregationDistinctToken;
@@ -75,12 +76,14 @@ public final class ExpressionFiller implements SQLStatementFiller {
     }
     
     private void fillStarExpression(final StarExpressionSegment starSegment, final SelectStatement selectStatement) {
-        if (!selectStatement.isContainStar()) {
-            selectStatement.setContainStar(true);
-        }
-        selectStatement.getItems().add(new StarSelectItem(starSegment.getOwner()));
+        selectStatement.setContainStar(true);
         Optional<String> owner = starSegment.getOwner();
-        if (owner.isPresent() && selectStatement.getTables().getTableNames().contains(owner.get())) {
+        selectStatement.getItems().add(new StarSelectItem(owner.orNull()));
+        if (!owner.isPresent()) {
+            return;
+        }
+        Optional<Table> table = selectStatement.getTables().find(owner.get());
+        if (table.isPresent() && !table.get().getAlias().isPresent()) {
             selectStatement.addSQLToken(new TableToken(starSegment.getStartPosition(), 0, owner.get()));
         }
     }

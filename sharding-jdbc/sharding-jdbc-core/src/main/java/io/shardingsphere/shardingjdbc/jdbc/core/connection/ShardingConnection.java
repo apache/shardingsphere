@@ -18,12 +18,12 @@
 package io.shardingsphere.shardingjdbc.jdbc.core.connection;
 
 import io.shardingsphere.api.config.SagaConfiguration;
-import io.shardingsphere.core.constant.transaction.TransactionType;
 import io.shardingsphere.core.rule.MasterSlaveRule;
 import io.shardingsphere.shardingjdbc.jdbc.adapter.AbstractConnectionAdapter;
 import io.shardingsphere.shardingjdbc.jdbc.core.ShardingContext;
 import io.shardingsphere.shardingjdbc.jdbc.core.statement.ShardingPreparedStatement;
 import io.shardingsphere.shardingjdbc.jdbc.core.statement.ShardingStatement;
+import io.shardingsphere.transaction.api.TransactionType;
 import lombok.Getter;
 
 import javax.sql.DataSource;

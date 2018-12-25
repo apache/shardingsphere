@@ -20,20 +20,18 @@ package io.shardingsphere.shardingjdbc.jdbc.core.datasource;
 import io.shardingsphere.api.algorithm.masterslave.MasterSlaveLoadBalanceAlgorithmType;
 import io.shardingsphere.api.config.rule.MasterSlaveRuleConfiguration;
 import io.shardingsphere.core.constant.DatabaseType;
-import io.shardingsphere.core.constant.transaction.TransactionType;
 import io.shardingsphere.core.hint.HintManagerHolder;
 import io.shardingsphere.core.routing.router.masterslave.MasterVisitedManager;
-import io.shardingsphere.core.transaction.TransactionTypeHolder;
 import io.shardingsphere.shardingjdbc.api.MasterSlaveDataSourceFactory;
 import io.shardingsphere.shardingjdbc.fixture.TestDataSource;
 import io.shardingsphere.shardingjdbc.jdbc.core.connection.MasterSlaveConnection;
-import lombok.SneakyThrows;
+import io.shardingsphere.transaction.api.TransactionType;
+import io.shardingsphere.transaction.api.TransactionTypeHolder;
 import org.junit.After;
 import org.junit.Before;
 import org.junit.Test;
 
 import javax.sql.DataSource;
-import java.lang.reflect.Field;
 import java.sql.Connection;
 import java.sql.DatabaseMetaData;
 import java.sql.SQLException;
@@ -143,38 +141,5 @@ public final class MasterSlaveDataSourceTest {
         assertNotNull(connection.getDataSourceMap());
         assertThat(connection.getDataSourceMap().values().size(), is(2));
         assertThat(connection.getTransactionType(), is(TransactionType.XA));
-    }
-    
-    @Test
-    public void assertGetXAConnectionButSPILoadedFailed() {
-        TransactionTypeHolder.set(TransactionType.XA);
-        setXaDataSourceMapEmpty();
-        MasterSlaveConnection connection = masterSlaveDataSource.getConnection();
-        assertNotNull(connection.getDataSourceMap());
-        assertThat(connection.getDataSourceMap().values().size(), is(2));
-        assertThat(connection.getTransactionType(), is(TransactionType.LOCAL));
-        
-    }
-    
-    @SneakyThrows
-    private void setXaDataSourceMapEmpty() {
-        Field xaDataSourceMap = getField(masterSlaveDataSource, "xaDataSourceMap");
-        if (null != xaDataSourceMap) {
-            xaDataSourceMap.setAccessible(true);
-            xaDataSourceMap.set(masterSlaveDataSource, new HashMap<>());
-        }
-    }
-    
-    @SneakyThrows
-    private Field getField(final Object masterDataSource, final String fieldName) {
-        Class clazz = masterDataSource.getClass();
-        while (null != clazz) {
-            try {
-                return clazz.getDeclaredField(fieldName);
-            } catch (final Exception ex) {
-                clazz = clazz.getSuperclass();
-            }
-        }
-        return null;
     }
 }

@@ -17,8 +17,9 @@
 
 package io.shardingsphere.transaction.xa.fixture;
 
-import io.shardingsphere.transaction.core.internal.context.XATransactionContext;
+import io.shardingsphere.core.constant.DatabaseType;
 import io.shardingsphere.core.rule.DataSourceParameter;
+import io.shardingsphere.transaction.core.context.XATransactionContext;
 import io.shardingsphere.transaction.spi.xa.XATransactionManager;
 
 import javax.sql.DataSource;
@@ -49,7 +50,7 @@ public final class FixtureXATransactionManager implements XATransactionManager {
     }
     
     @Override
-    public DataSource wrapDataSource(final XADataSource xaDataSource, final String dataSourceName, final DataSourceParameter dataSourceParameter) {
+    public DataSource wrapDataSource(final DatabaseType databaseType, final XADataSource xaDataSource, final String dataSourceName, final DataSourceParameter dataSourceParameter) {
         return null;
     }
     

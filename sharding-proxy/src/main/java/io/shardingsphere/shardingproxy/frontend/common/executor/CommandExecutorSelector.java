@@ -18,7 +18,7 @@
 package io.shardingsphere.shardingproxy.frontend.common.executor;
 
 import io.netty.channel.ChannelId;
-import io.shardingsphere.core.constant.transaction.TransactionType;
+import io.shardingsphere.transaction.api.TransactionType;
 import lombok.RequiredArgsConstructor;
 
 import java.util.concurrent.ExecutorService;

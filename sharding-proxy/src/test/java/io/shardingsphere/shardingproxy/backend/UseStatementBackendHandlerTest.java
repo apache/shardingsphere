@@ -43,7 +43,7 @@ public class UseStatementBackendHandlerTest {
     private BackendConnection backendConnection;
     
     @Before
-    public void setup() {
+    public void setUp() {
         MockGlobalRegistryUtil.setLogicSchemas("schema", 10);
     }
     

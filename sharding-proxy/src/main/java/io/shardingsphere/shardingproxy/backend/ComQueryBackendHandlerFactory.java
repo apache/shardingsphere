@@ -20,15 +20,15 @@ package io.shardingsphere.shardingproxy.backend;
 import com.google.common.base.Optional;
 import io.shardingsphere.core.constant.DatabaseType;
 import io.shardingsphere.core.constant.SQLType;
-import io.shardingsphere.core.constant.transaction.TransactionOperationType;
 import io.shardingsphere.core.parsing.SQLJudgeEngine;
-import io.shardingsphere.core.parsing.parser.sql.dal.set.SetStatement;
 import io.shardingsphere.core.parsing.parser.dialect.mysql.statement.ShowDatabasesStatement;
 import io.shardingsphere.core.parsing.parser.dialect.mysql.statement.UseStatement;
 import io.shardingsphere.core.parsing.parser.sql.SQLStatement;
+import io.shardingsphere.core.parsing.parser.sql.dal.set.SetStatement;
 import io.shardingsphere.shardingproxy.backend.jdbc.connection.BackendConnection;
 import io.shardingsphere.shardingproxy.backend.sctl.ShardingCTLSetBackendHandler;
 import io.shardingsphere.shardingproxy.backend.sctl.ShardingCTLShowBackendHandler;
+import io.shardingsphere.transaction.core.TransactionOperationType;
 
 /**
  * Com query backend handler factory.

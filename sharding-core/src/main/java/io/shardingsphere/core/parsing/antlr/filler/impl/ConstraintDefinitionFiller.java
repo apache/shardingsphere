@@ -20,7 +20,6 @@ package io.shardingsphere.core.parsing.antlr.filler.impl;
 import com.google.common.base.Optional;
 import io.shardingsphere.core.metadata.table.ShardingTableMetaData;
 import io.shardingsphere.core.parsing.antlr.filler.SQLStatementFiller;
-import io.shardingsphere.core.parsing.antlr.sql.segment.SQLSegment;
 import io.shardingsphere.core.parsing.antlr.sql.segment.constraint.ConstraintDefinitionSegment;
 import io.shardingsphere.core.parsing.antlr.sql.statement.ddl.AlterTableStatement;
 import io.shardingsphere.core.parsing.antlr.sql.statement.ddl.ColumnDefinition;
@@ -33,30 +32,29 @@ import io.shardingsphere.core.rule.ShardingRule;
  *
  * @author duhongjun
  */
-public final class ConstraintDefinitionFiller implements SQLStatementFiller {
+public final class ConstraintDefinitionFiller implements SQLStatementFiller<ConstraintDefinitionSegment> {
     
     @Override
-    public void fill(final SQLSegment sqlSegment, final SQLStatement sqlStatement, final String sql, final ShardingRule shardingRule, final ShardingTableMetaData shardingTableMetaData) {
-        if (sqlStatement instanceof AlterTableStatement) {
-            fillAlter((ConstraintDefinitionSegment) sqlSegment, (AlterTableStatement) sqlStatement, shardingTableMetaData);
-        } else if (sqlStatement instanceof CreateTableStatement) {
-            fillCreate((ConstraintDefinitionSegment) sqlSegment, (CreateTableStatement) sqlStatement);
+    public void fill(final ConstraintDefinitionSegment sqlSegment, 
+                     final SQLStatement sqlStatement, final String sql, final ShardingRule shardingRule, final ShardingTableMetaData shardingTableMetaData) {
+        if (sqlStatement instanceof CreateTableStatement) {
+            fill(sqlSegment, (CreateTableStatement) sqlStatement);
+        } else if (sqlStatement instanceof AlterTableStatement) {
+            fill(sqlSegment, (AlterTableStatement) sqlStatement, shardingTableMetaData);
         }
     }
     
-    private void fillAlter(final ConstraintDefinitionSegment constraintDefinitionSegment, final AlterTableStatement alterTableStatement, final ShardingTableMetaData shardingTableMetaData) {
-        for (String each : constraintDefinitionSegment.getPrimaryKeyColumnNames()) {
-            Optional<ColumnDefinition> updateColumn = alterTableStatement.findColumnDefinition(each, shardingTableMetaData);
-            if (updateColumn.isPresent()) {
-                updateColumn.get().setPrimaryKey(true);
-                alterTableStatement.getUpdateColumns().put(each, updateColumn.get());
+    private void fill(final ConstraintDefinitionSegment sqlSegment, final CreateTableStatement createTableStatement) {
+        createTableStatement.getPrimaryKeyColumns().addAll(sqlSegment.getPrimaryKeyColumnNames());
+    }
+    
+    private void fill(final ConstraintDefinitionSegment sqlSegment, final AlterTableStatement alterTableStatement, final ShardingTableMetaData shardingTableMetaData) {
+        for (String each : sqlSegment.getPrimaryKeyColumnNames()) {
+            Optional<ColumnDefinition> updatedColumn = alterTableStatement.findColumnDefinition(each, shardingTableMetaData);
+            if (updatedColumn.isPresent()) {
+                updatedColumn.get().setPrimaryKey(true);
+                alterTableStatement.getUpdateColumns().put(each, updatedColumn.get());
             }
-        }
-    }
-    
-    private void fillCreate(final ConstraintDefinitionSegment constraintDefinitionSegment, final CreateTableStatement createTableStatement) {
-        for (String each : constraintDefinitionSegment.getPrimaryKeyColumnNames()) {
-            createTableStatement.getPrimaryKeyColumns().add(each);
         }
     }
 }

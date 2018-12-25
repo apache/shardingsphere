@@ -2,8 +2,8 @@
     <dql-test-case sql-case-id="select_constant_without_table">
         <assertion expected-data-file="select_constant_without_table.xml" />
     </dql-test-case>
-
-    <dql-test-case sql-case-id="select_with_alias">
+    
+    <dql-test-case sql-case-id="select_with_same_table_name_and_alias">
         <assertion parameters="10:int, 1000:int" expected-data-file="select_equal_with_single_table.xml" />
         <assertion parameters="12:int, 1000:int" expected-data-file="empty_order.xml" />
     </dql-test-case>

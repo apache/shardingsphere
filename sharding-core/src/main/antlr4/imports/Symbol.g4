@@ -41,6 +41,7 @@ BQ_: '`';
 UL_: '_';
 QUESTION: '?' ;
 AT_: '@';
+SEMI_:';';
 fragment A: [Aa];
 fragment B: [Bb];
 fragment C: [Cc];

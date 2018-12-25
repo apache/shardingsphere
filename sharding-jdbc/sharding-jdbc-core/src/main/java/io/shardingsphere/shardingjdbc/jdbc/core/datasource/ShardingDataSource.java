@@ -20,12 +20,12 @@ package io.shardingsphere.shardingjdbc.jdbc.core.datasource;
 import com.google.common.base.Preconditions;
 import io.shardingsphere.api.ConfigMapContext;
 import io.shardingsphere.api.config.SagaConfiguration;
-import io.shardingsphere.core.constant.transaction.TransactionType;
 import io.shardingsphere.core.rule.ShardingRule;
-import io.shardingsphere.core.transaction.TransactionTypeHolder;
 import io.shardingsphere.shardingjdbc.jdbc.adapter.AbstractDataSourceAdapter;
 import io.shardingsphere.shardingjdbc.jdbc.core.ShardingContext;
 import io.shardingsphere.shardingjdbc.jdbc.core.connection.ShardingConnection;
+import io.shardingsphere.transaction.api.TransactionType;
+import io.shardingsphere.transaction.api.TransactionTypeHolder;
 import lombok.Getter;
 import lombok.extern.slf4j.Slf4j;
 
@@ -71,16 +71,10 @@ public class ShardingDataSource extends AbstractDataSourceAdapter {
     
     @Override
     public final ShardingConnection getConnection() {
-        if (TransactionType.XA == TransactionTypeHolder.get()) {
-            if (null != getXaDataSourceMap() && !getXaDataSourceMap().isEmpty()) {
-                return new ShardingConnection(getXaDataSourceMap(), shardingContext, TransactionType.XA);
-            }
-            log.warn("XA transaction resource have not load, using Local transaction instead!");
-        }
         if (TransactionType.BASE == TransactionTypeHolder.get()) {
             return new ShardingConnection(getDataSourceMap(), shardingContext, TransactionType.BASE, getSagaConfiguration());
         }
-        return new ShardingConnection(getDataSourceMap(), shardingContext, TransactionType.LOCAL);
+        return new ShardingConnection(getShardingTransactionalDataSources().getDataSourceMap(), shardingContext, TransactionTypeHolder.get());
     }
     
     @Override

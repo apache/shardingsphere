@@ -40,9 +40,9 @@ public final class IndexNamesExtractor implements CollectionSQLSegmentExtractor 
     public Collection<IndexSegment> extract(final ParserRuleContext ancestorNode) {
         Collection<IndexSegment> result = new LinkedList<>();
         for (ParserRuleContext each : ExtractorUtils.getAllDescendantNodes(ancestorNode, RuleName.INDEX_NAME)) {
-            Optional<IndexSegment> indexExtractResult = indexNameExtractor.extract(each);
-            if (indexExtractResult.isPresent()) {
-                result.add(indexExtractResult.get());
+            Optional<IndexSegment> indexSegment = indexNameExtractor.extract(each);
+            if (indexSegment.isPresent()) {
+                result.add(indexSegment.get());
             }
         }
         return result;

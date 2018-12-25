@@ -20,10 +20,11 @@ package io.shardingsphere.transaction.xa.manager;
 import com.atomikos.icatch.jta.UserTransactionManager;
 import com.atomikos.jdbc.AtomikosDataSourceBean;
 import com.mysql.jdbc.jdbc2.optional.MysqlXADataSource;
-import io.shardingsphere.core.constant.transaction.TransactionOperationType;
-import io.shardingsphere.transaction.core.internal.context.XATransactionContext;
+import io.shardingsphere.core.constant.DatabaseType;
 import io.shardingsphere.core.exception.ShardingException;
 import io.shardingsphere.core.rule.DataSourceParameter;
+import io.shardingsphere.transaction.core.TransactionOperationType;
+import io.shardingsphere.transaction.core.context.XATransactionContext;
 import io.shardingsphere.transaction.xa.fixture.ReflectiveUtil;
 import lombok.SneakyThrows;
 import org.h2.jdbcx.JdbcDataSource;
@@ -130,7 +131,7 @@ public final class AtomikosTransactionManagerTest {
         XADataSource xaDataSource = mock(XADataSource.class);
         DataSourceParameter dataSourceParameter = new DataSourceParameter();
         dataSourceParameter.setMaxPoolSize(10);
-        atomikosTransactionManager.wrapDataSource(xaDataSource, "ds_name", dataSourceParameter);
+        atomikosTransactionManager.wrapDataSource(DatabaseType.MySQL, xaDataSource, "ds_name", dataSourceParameter);
     }
     
     @Test
@@ -141,7 +142,7 @@ public final class AtomikosTransactionManagerTest {
         dataSourceParameter.setPassword("root");
         dataSourceParameter.setUrl("db:url");
         dataSourceParameter.setMaxPoolSize(10);
-        DataSource actual = atomikosTransactionManager.wrapDataSource(xaDataSource, "ds_name", dataSourceParameter);
+        DataSource actual = atomikosTransactionManager.wrapDataSource(DatabaseType.H2, xaDataSource, "ds_name", dataSourceParameter);
         assertThat(actual, instanceOf(AtomikosDataSourceBean.class));
     }
     
@@ -152,6 +153,6 @@ public final class AtomikosTransactionManagerTest {
         dataSourceParameter.setUrl("db:url");
         dataSourceParameter.setMaxPoolSize(0);
         XADataSource xaDataSource = new MysqlXADataSource();
-        atomikosTransactionManager.wrapDataSource(xaDataSource, "ds_name", dataSourceParameter);
+        atomikosTransactionManager.wrapDataSource(DatabaseType.MySQL, xaDataSource, "ds_name", dataSourceParameter);
     }
 }

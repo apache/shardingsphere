@@ -17,14 +17,8 @@
 
 package io.shardingsphere.core.routing.router.sharding;
 
-import java.util.Collection;
-import java.util.Iterator;
-import java.util.LinkedList;
-import java.util.List;
-
 import com.google.common.base.Optional;
 import com.google.common.base.Preconditions;
-
 import io.shardingsphere.api.algorithm.sharding.ListShardingValue;
 import io.shardingsphere.api.algorithm.sharding.PreciseShardingValue;
 import io.shardingsphere.api.algorithm.sharding.ShardingValue;
@@ -74,6 +68,11 @@ import io.shardingsphere.core.util.SQLLogger;
 import io.shardingsphere.spi.parsing.ParsingHook;
 import io.shardingsphere.spi.parsing.SPIParsingHook;
 import lombok.RequiredArgsConstructor;
+
+import java.util.Collection;
+import java.util.Iterator;
+import java.util.LinkedList;
+import java.util.List;
 
 /**
  * Sharding router with parse.
@@ -147,6 +146,9 @@ public final class ParsingSQLRouter implements ShardingRouter {
         }
         SelectStatement selectStatement = (SelectStatement) sqlStatement;
         if (selectStatement.getSubQueryStatements().isEmpty()) {
+            return;
+        }
+        if (selectStatement.getTables().isEmpty()) {
             return;
         }
         for (AndCondition each : sqlStatement.getConditions().getOrCondition().getAndConditions()) {
@@ -261,7 +263,7 @@ public final class ParsingSQLRouter implements ShardingRouter {
             return result;
         }
         String logicTableName = insertStatement.getTables().getSingleTableName();
-        Optional<TableRule> tableRule = shardingRule.tryFindTableRuleByLogicTable(logicTableName);
+        Optional<TableRule> tableRule = shardingRule.findTableRuleByLogicTable(logicTableName);
         if (!tableRule.isPresent()) {
             return null;
         }

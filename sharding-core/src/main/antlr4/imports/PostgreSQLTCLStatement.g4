@@ -26,7 +26,7 @@ savepoint
     : SAVEPOINT ID 
     ;
     
-beginWork
+beginTransaction
     : BEGIN workOrTransaction? (transactionMode (COMMA transactionMode)*)?
     ;
     

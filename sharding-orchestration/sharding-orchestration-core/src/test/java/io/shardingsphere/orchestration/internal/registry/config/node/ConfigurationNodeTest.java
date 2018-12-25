@@ -58,6 +58,11 @@ public final class ConfigurationNodeTest {
     }
     
     @Test
+    public void assertGetSchemaName() {
+        assertThat(configurationNode.getSchemaName("/test/config/schema/logic_db/rule"), is(ShardingConstant.LOGIC_SCHEMA_NAME));
+    }
+    
+    @Test
     public void assertGetSagaPath() {
         assertThat(configurationNode.getSagaPath(), is("/test/config/saga"));
     }

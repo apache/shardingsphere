@@ -104,9 +104,6 @@ public final class SQLParserFactory {
         if (DDLStatement.isDDL(tokenType, secondaryTokenType)) {
             return new AntlrParsingEngine(dbType, sql, shardingRule, shardingTableMetaData);
         }
-        if (DCLStatement.isDCL(tokenType, secondaryTokenType)) {
-            return getDCLParser(dbType, tokenType, shardingRule, lexerEngine);
-        }
         if (TCLStatement.isTCLUnsafe(dbType, tokenType, lexerEngine)) {
             return getTCLParser(dbType, tokenType, lexerEngine);
         }

@@ -19,12 +19,10 @@ package io.shardingsphere.core.parsing.antlr.filler.impl;
 
 import io.shardingsphere.core.metadata.table.ShardingTableMetaData;
 import io.shardingsphere.core.parsing.antlr.filler.SQLStatementFiller;
-import io.shardingsphere.core.parsing.antlr.sql.segment.SQLSegment;
 import io.shardingsphere.core.parsing.antlr.sql.segment.table.TableSegment;
 import io.shardingsphere.core.parsing.parser.context.table.Table;
 import io.shardingsphere.core.parsing.parser.sql.SQLStatement;
 import io.shardingsphere.core.parsing.parser.sql.dql.select.SelectStatement;
-import io.shardingsphere.core.parsing.parser.token.TableToken;
 import io.shardingsphere.core.rule.ShardingRule;
 
 /**
@@ -32,29 +30,13 @@ import io.shardingsphere.core.rule.ShardingRule;
  *
  * @author duhongjun
  */
-public final class TableFiller implements SQLStatementFiller {
+public final class TableFiller implements SQLStatementFiller<TableSegment> {
     
     @Override
-    public void fill(final SQLSegment sqlSegment, final SQLStatement sqlStatement, final String sql, final ShardingRule shardingRule, final ShardingTableMetaData shardingTableMetaData) {
-        TableSegment tableSegment = (TableSegment) sqlSegment;
-        String tableName = tableSegment.getName();
-        boolean needAdd = false;
-        if (!(sqlStatement instanceof SelectStatement)) {
-            needAdd = true;
-        } else if (shardingRule.tryFindTableRuleByLogicTable(tableName).isPresent() || shardingRule.isBroadcastTable(tableName) || shardingRule.findBindingTableRule(tableName).isPresent()
-                || shardingRule.getShardingDataSourceNames().getDataSourceNames().contains(shardingRule.getShardingDataSourceNames().getDefaultDataSourceName())) {
-            needAdd = true;
-        }
-        if (!needAdd) {
-            return;
-        }
-        sqlStatement.getTables().add(new Table(tableSegment.getName(), tableSegment.getAlias()));
-        sqlStatement.getSQLTokens().add(tableSegment.getToken());
-        if (!tableSegment.getAlias().isPresent()) {
-            return;
-        }
-        if (sqlStatement.getTables().getTableNames().contains(tableSegment.getAlias().get())) {
-            sqlStatement.addSQLToken(new TableToken(tableSegment.getAliasStartPosition(), 0, tableSegment.getAlias().get()));
+    public void fill(final TableSegment sqlSegment, final SQLStatement sqlStatement, final String sql, final ShardingRule shardingRule, final ShardingTableMetaData shardingTableMetaData) {
+        if (!(sqlStatement instanceof SelectStatement) || shardingRule.contains(sqlSegment.getName())) {
+            sqlStatement.getTables().add(new Table(sqlSegment.getName(), sqlSegment.getAlias()));
+            sqlStatement.getSQLTokens().add(sqlSegment.getToken());
         }
     }
 }

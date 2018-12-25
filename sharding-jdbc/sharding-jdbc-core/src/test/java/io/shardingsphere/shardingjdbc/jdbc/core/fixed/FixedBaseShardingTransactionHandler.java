@@ -17,9 +17,9 @@
 
 package io.shardingsphere.shardingjdbc.jdbc.core.fixed;
 
-import io.shardingsphere.core.constant.transaction.TransactionType;
+import io.shardingsphere.transaction.api.TransactionType;
+import io.shardingsphere.transaction.core.context.ShardingTransactionContext;
 import io.shardingsphere.transaction.spi.ShardingTransactionHandler;
-import io.shardingsphere.transaction.core.internal.context.ShardingTransactionContext;
 
 import java.util.HashMap;
 import java.util.Map;

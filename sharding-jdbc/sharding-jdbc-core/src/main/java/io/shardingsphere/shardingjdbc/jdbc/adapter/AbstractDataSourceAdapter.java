@@ -21,14 +21,8 @@ import com.google.common.base.Preconditions;
 import io.shardingsphere.api.config.SagaConfiguration;
 import io.shardingsphere.core.bootstrap.ShardingBootstrap;
 import io.shardingsphere.core.constant.DatabaseType;
-import io.shardingsphere.core.constant.transaction.TransactionType;
-import io.shardingsphere.core.util.ReflectiveUtil;
 import io.shardingsphere.shardingjdbc.jdbc.unsupported.AbstractUnsupportedOperationDataSource;
-import io.shardingsphere.transaction.core.internal.context.SagaTransactionContext;
-import io.shardingsphere.transaction.core.loader.ShardingTransactionHandlerRegistry;
-import io.shardingsphere.transaction.spi.ShardingTransactionHandler;
-import io.shardingsphere.transaction.spi.xa.DataSourceMapConverter;
-import io.shardingsphere.transaction.core.loader.SPIDataSourceMapConverter;
+import io.shardingsphere.transaction.core.datasource.ShardingTransactionalDataSource;
 import lombok.Getter;
 import lombok.Setter;
 
@@ -56,13 +50,9 @@ public abstract class AbstractDataSourceAdapter extends AbstractUnsupportedOpera
         ShardingBootstrap.init();
     }
     
-    private final Map<String, DataSource> dataSourceMap;
-    
     private final DatabaseType databaseType;
     
-    private final Map<String, DataSource> xaDataSourceMap;
-    
-    private final DataSourceMapConverter dataSourceMapConverter = new SPIDataSourceMapConverter();
+    private final ShardingTransactionalDataSource shardingTransactionalDataSources;
     
     private final SagaConfiguration sagaConfiguration;
     
@@ -73,9 +63,8 @@ public abstract class AbstractDataSourceAdapter extends AbstractUnsupportedOpera
     }
     
     public AbstractDataSourceAdapter(final Map<String, DataSource> dataSourceMap, final SagaConfiguration sagaConfiguration) throws SQLException {
-        this.dataSourceMap = dataSourceMap;
         databaseType = getDatabaseType(dataSourceMap.values());
-        xaDataSourceMap = dataSourceMapConverter.convert(dataSourceMap, databaseType);
+        shardingTransactionalDataSources = new ShardingTransactionalDataSource(databaseType, dataSourceMap);
         this.sagaConfiguration = sagaConfiguration;
     }
     
@@ -99,10 +88,12 @@ public abstract class AbstractDataSourceAdapter extends AbstractUnsupportedOpera
     }
     
     /**
-     * Close original datasource.
+     * Get data source map.
+     *
+     * @return data source map
      */
-    public void close() {
-        closeOriginalDataSources();
+    public final Map<String, DataSource> getDataSourceMap() {
+        return shardingTransactionalDataSources.getOriginalDataSourceMap();
     }
     
     @Override
@@ -115,25 +106,8 @@ public abstract class AbstractDataSourceAdapter extends AbstractUnsupportedOpera
         return getConnection();
     }
     
-    private void closeOriginalDataSources() {
-        if (null != dataSourceMap) {
-            closeDataSource(dataSourceMap);
-        }
-        if (null != xaDataSourceMap) {
-            closeDataSource(xaDataSourceMap);
-        }
-        ShardingTransactionHandler shardingTransactionHandler = ShardingTransactionHandlerRegistry.getInstance().getHandler(TransactionType.BASE);
-        if (null != shardingTransactionHandler) {
-            shardingTransactionHandler.doInTransaction(SagaTransactionContext.createDestroyComponentContext(sagaConfiguration));
-        }
-    }
-    
-    private void closeDataSource(final Map<String, DataSource> dataSourceMap) {
-        for (DataSource each : dataSourceMap.values()) {
-            try {
-                ReflectiveUtil.findMethod(each, "close").invoke(each);
-            } catch (final ReflectiveOperationException ignored) {
-            }
-        }
+    @Override
+    public void close() {
+        shardingTransactionalDataSources.close();
     }
 }

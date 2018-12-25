@@ -18,11 +18,11 @@
 package io.shardingsphere.shardingproxy.backend.jdbc.connection;
 
 import io.shardingsphere.core.constant.ConnectionMode;
-import io.shardingsphere.core.constant.transaction.TransactionOperationType;
-import io.shardingsphere.core.constant.transaction.TransactionType;
 import io.shardingsphere.core.exception.ShardingException;
 import io.shardingsphere.shardingproxy.backend.MockGlobalRegistryUtil;
 import io.shardingsphere.shardingproxy.backend.jdbc.datasource.JDBCBackendDataSource;
+import io.shardingsphere.transaction.api.TransactionType;
+import io.shardingsphere.transaction.core.TransactionOperationType;
 import lombok.SneakyThrows;
 import org.junit.Before;
 import org.junit.Test;
@@ -62,7 +62,7 @@ public final class BackendConnectionTest {
     
     @Before
     @SneakyThrows
-    public void setup() {
+    public void setUp() {
         MockGlobalRegistryUtil.setLogicSchemas("schema", 2);
         backendConnection.setCurrentSchema("schema_0");
         when(backendConnection.getLogicSchema().getBackendDataSource()).thenReturn(backendDataSource);

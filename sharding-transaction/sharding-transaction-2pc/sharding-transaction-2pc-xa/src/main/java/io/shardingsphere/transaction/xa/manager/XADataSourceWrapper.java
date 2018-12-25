@@ -18,6 +18,7 @@
 package io.shardingsphere.transaction.xa.manager;
 
 import com.atomikos.beans.PropertyException;
+import io.shardingsphere.core.constant.DatabaseType;
 import io.shardingsphere.core.rule.DataSourceParameter;
 
 import javax.sql.DataSource;
@@ -33,11 +34,12 @@ public interface XADataSourceWrapper {
     /**
      * Get a wrapper datasource pool for XA.
      *
+     * @param databaseType database type
      * @param xaDataSource xa data source
      * @param dataSourceName data source name
      * @param parameter data source parameter
      * @return wrapper xa data source pool
      * @throws PropertyException property exception
      */
-    DataSource wrap(XADataSource xaDataSource, String dataSourceName, DataSourceParameter parameter) throws PropertyException;
+    DataSource wrap(DatabaseType databaseType, XADataSource xaDataSource, String dataSourceName, DataSourceParameter parameter) throws PropertyException;
 }

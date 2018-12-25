@@ -32,6 +32,7 @@ import java.util.Collection;
  * Post sharding orchestration event listener.
  *
  * @author zhangliang
+ * @author panjuan
  */
 @RequiredArgsConstructor
 public abstract class PostShardingOrchestrationEventListener implements ShardingOrchestrationListener {

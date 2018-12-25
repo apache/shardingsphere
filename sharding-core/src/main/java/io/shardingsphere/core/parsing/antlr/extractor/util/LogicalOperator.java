@@ -40,6 +40,10 @@ public final class LogicalOperator {
         return isAndOperator(token) || isOrOperator(token);
     }
     
+    private static boolean isAndOperator(final String token) {
+        return DefaultKeyword.AND.name().equalsIgnoreCase(token) || Symbol.DOUBLE_AMP.getLiterals().equalsIgnoreCase(token);
+    }
+    
     /**
      * Is OR operator or not.
      *
@@ -48,15 +52,5 @@ public final class LogicalOperator {
      */
     public static boolean isOrOperator(final String token) {
         return DefaultKeyword.OR.name().equalsIgnoreCase(token) || Symbol.DOUBLE_BAR.getLiterals().equalsIgnoreCase(token);
-    }
-    
-    /**
-     * Is AND operator or not.
-     *
-     * @param token token
-     * @return AND operator or not
-     */
-    public static boolean isAndOperator(final String token) {
-        return DefaultKeyword.AND.name().equalsIgnoreCase(token) || Symbol.DOUBLE_AMP.getLiterals().equalsIgnoreCase(token);
     }
 }

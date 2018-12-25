@@ -20,7 +20,6 @@ package io.shardingsphere.core.parsing.antlr.filler.impl;
 import io.shardingsphere.core.metadata.table.ShardingTableMetaData;
 import io.shardingsphere.core.parsing.antlr.filler.SQLStatementFiller;
 import io.shardingsphere.core.parsing.antlr.sql.segment.IndexSegment;
-import io.shardingsphere.core.parsing.antlr.sql.segment.SQLSegment;
 import io.shardingsphere.core.parsing.parser.sql.SQLStatement;
 import io.shardingsphere.core.parsing.parser.token.IndexToken;
 import io.shardingsphere.core.rule.ShardingRule;
@@ -30,16 +29,16 @@ import io.shardingsphere.core.rule.ShardingRule;
  *
  * @author duhongjun
  */
-public final class IndexFiller implements SQLStatementFiller {
+public final class IndexFiller implements SQLStatementFiller<IndexSegment> {
     
     @Override
-    public void fill(final SQLSegment sqlSegment, final SQLStatement sqlStatement, final String sql, final ShardingRule shardingRule, final ShardingTableMetaData shardingTableMetaData) {
-        IndexToken indexToken = ((IndexSegment) sqlSegment).getToken();
+    public void fill(final IndexSegment sqlSegment, final SQLStatement sqlStatement, final String sql, final ShardingRule shardingRule, final ShardingTableMetaData shardingTableMetaData) {
+        IndexToken indexToken = sqlSegment.getToken();
         if (!sqlStatement.getTables().isEmpty() && null == indexToken.getTableName()) {
             indexToken.setTableName(sqlStatement.getTables().getSingleTableName());
         } else {
             indexToken.setTableName("");
         }
-        sqlStatement.getSQLTokens().add(((IndexSegment) sqlSegment).getToken());
+        sqlStatement.getSQLTokens().add(sqlSegment.getToken());
     }
 }

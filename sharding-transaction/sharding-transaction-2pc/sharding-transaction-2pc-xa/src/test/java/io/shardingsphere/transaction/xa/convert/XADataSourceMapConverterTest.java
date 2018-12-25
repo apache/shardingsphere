@@ -40,37 +40,37 @@ import static org.mockito.ArgumentMatchers.anyString;
 import static org.mockito.Mockito.doThrow;
 import static org.mockito.Mockito.mock;
 
-public class XADataSourceMapConverterTest {
+public final class XADataSourceMapConverterTest {
     
-    private XADataSourceMapConverter xaDataSourceMapConverter = new XADataSourceMapConverter();
-    
-    @Test
-    public void assertGetMysqlXATransactionalDataSourceSuccess() {
-        Map<String, DataSource> xaDataSourceMap = xaDataSourceMapConverter.convert(createDataSourceMap(PoolType.DBCP2, DatabaseType.MySQL), DatabaseType.MySQL);
-        assertThat(xaDataSourceMap.size(), is(2));
-        assertThat(xaDataSourceMap.get("ds1"), instanceOf(AtomikosDataSourceBean.class));
-        assertThat(xaDataSourceMap.get("ds2"), instanceOf(AtomikosDataSourceBean.class));
-    }
+    private XADataSourceConverter xaDataSourceMapConverter = new XADataSourceConverter();
     
     @Test
     public void assertGetH2XATransactionalDataSourceSuccess() {
-        Map<String, DataSource> xaDataSourceMap = xaDataSourceMapConverter.convert(createDataSourceMap(PoolType.DRUID, DatabaseType.H2), DatabaseType.H2);
+        Map<String, DataSource> xaDataSourceMap = xaDataSourceMapConverter.convert(DatabaseType.H2, createDataSourceMap(PoolType.DRUID, DatabaseType.H2));
         assertThat(xaDataSourceMap.size(), is(2));
         assertThat(xaDataSourceMap.get("ds1"), instanceOf(AtomikosDataSourceBean.class));
         assertThat(xaDataSourceMap.get("ds2"), instanceOf(AtomikosDataSourceBean.class));
     }
     
     @Test
-    public void assertGetPGXATransactionalDataSourceSuccess() {
-        Map<String, DataSource> xaDataSourceMap = xaDataSourceMapConverter.convert(createDataSourceMap(PoolType.DRUID, DatabaseType.PostgreSQL), DatabaseType.PostgreSQL);
+    public void assertGetMySQLXATransactionalDataSourceSuccess() {
+        Map<String, DataSource> xaDataSourceMap = xaDataSourceMapConverter.convert(DatabaseType.MySQL, createDataSourceMap(PoolType.DBCP2, DatabaseType.MySQL));
         assertThat(xaDataSourceMap.size(), is(2));
         assertThat(xaDataSourceMap.get("ds1"), instanceOf(AtomikosDataSourceBean.class));
         assertThat(xaDataSourceMap.get("ds2"), instanceOf(AtomikosDataSourceBean.class));
     }
     
     @Test
-    public void assertGetMSXATransactionalDataSourceSuccess() {
-        Map<String, DataSource> xaDataSourceMap = xaDataSourceMapConverter.convert(createDataSourceMap(PoolType.HIKARI, DatabaseType.SQLServer), DatabaseType.SQLServer);
+    public void assertGetPostgreSQLXATransactionalDataSourceSuccess() {
+        Map<String, DataSource> xaDataSourceMap = xaDataSourceMapConverter.convert(DatabaseType.PostgreSQL, createDataSourceMap(PoolType.DRUID, DatabaseType.PostgreSQL));
+        assertThat(xaDataSourceMap.size(), is(2));
+        assertThat(xaDataSourceMap.get("ds1"), instanceOf(AtomikosDataSourceBean.class));
+        assertThat(xaDataSourceMap.get("ds2"), instanceOf(AtomikosDataSourceBean.class));
+    }
+    
+    @Test
+    public void assertGetSQLServerXATransactionalDataSourceSuccess() {
+        Map<String, DataSource> xaDataSourceMap = xaDataSourceMapConverter.convert(DatabaseType.SQLServer, createDataSourceMap(PoolType.HIKARI, DatabaseType.SQLServer));
         assertThat(xaDataSourceMap.size(), is(2));
         assertThat(xaDataSourceMap.get("ds1"), instanceOf(AtomikosDataSourceBean.class));
         assertThat(xaDataSourceMap.get("ds2"), instanceOf(AtomikosDataSourceBean.class));
@@ -79,9 +79,9 @@ public class XADataSourceMapConverterTest {
     @Test
     public void assertGetTransactionDataSourceFailed() {
         XATransactionManager xaTransactionManager = mock(XATransactionManager.class);
-        doThrow(ShardingException.class).when(xaTransactionManager).wrapDataSource((XADataSource) any(), anyString(), (DataSourceParameter) any());
+        doThrow(ShardingException.class).when(xaTransactionManager).wrapDataSource((DatabaseType) any(), (XADataSource) any(), anyString(), (DataSourceParameter) any());
         ReflectiveUtil.setProperty(xaDataSourceMapConverter, "xaTransactionManager", xaTransactionManager);
-        Map<String, DataSource> actualDataSourceMap = xaDataSourceMapConverter.convert(createDataSourceMap(PoolType.HIKARI, DatabaseType.SQLServer), DatabaseType.SQLServer);
+        Map<String, DataSource> actualDataSourceMap = xaDataSourceMapConverter.convert(DatabaseType.SQLServer, createDataSourceMap(PoolType.HIKARI, DatabaseType.SQLServer));
         assertThat(actualDataSourceMap.size(), is(0));
     }
     
