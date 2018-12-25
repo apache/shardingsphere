@@ -59,7 +59,6 @@ public final class RenameIndexExtractor implements CollectionSQLSegmentExtractor
     }
     
     private IndexSegment getIndexToken(final ParserRuleContext indexNode) {
-        String name = SQLUtil.getNameWithoutSchema(indexNode.getText());
-        return new IndexSegment(name, new IndexToken(indexNode.getStop().getStartIndex(), name));
+        return new IndexSegment(new IndexToken(indexNode.getStop().getStartIndex(), SQLUtil.getNameWithoutSchema(indexNode.getText())));
     }
 }

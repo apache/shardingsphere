@@ -22,7 +22,6 @@ import io.shardingsphere.core.constant.ShardingOperator;
 import io.shardingsphere.core.metadata.table.ShardingTableMetaData;
 import io.shardingsphere.core.parsing.antlr.filler.SQLStatementFiller;
 import io.shardingsphere.core.parsing.antlr.sql.segment.FromWhereSegment;
-import io.shardingsphere.core.parsing.antlr.sql.segment.SQLSegment;
 import io.shardingsphere.core.parsing.antlr.sql.segment.column.ColumnSegment;
 import io.shardingsphere.core.parsing.antlr.sql.segment.condition.AndConditionSegment;
 import io.shardingsphere.core.parsing.antlr.sql.segment.condition.ConditionSegment;
@@ -57,26 +56,24 @@ import java.util.Map;
  *
  * @author duhongjun
  */
-public final class FromWhereFiller implements SQLStatementFiller {
+public final class FromWhereFiller implements SQLStatementFiller<FromWhereSegment> {
     
     @Override
-    public void fill(final SQLSegment sqlSegment, final SQLStatement sqlStatement, final String sql, final ShardingRule shardingRule,
-                     final ShardingTableMetaData shardingTableMetaData) {
-        FromWhereSegment fromWhereSegment = (FromWhereSegment) sqlSegment;
-        if (!fromWhereSegment.getConditions().getAndConditions().isEmpty()) {
+    public void fill(final FromWhereSegment sqlSegment, final SQLStatement sqlStatement, final String sql, final ShardingRule shardingRule, final ShardingTableMetaData shardingTableMetaData) {
+        if (!sqlSegment.getConditions().getAndConditions().isEmpty()) {
             Map<String, String> columnNameToTable = new HashMap<>();
             Map<String, Integer> columnNameCount = new HashMap<>();
             fillColumnTableMap(sqlStatement, shardingTableMetaData, columnNameToTable, columnNameCount);
-            OrCondition orCondition = filterShardingCondition(sqlStatement, fromWhereSegment.getConditions(), sql, shardingRule, columnNameToTable, columnNameCount, shardingTableMetaData);
+            OrCondition orCondition = filterShardingCondition(sqlStatement, sqlSegment.getConditions(), sql, shardingRule, columnNameToTable, columnNameCount, shardingTableMetaData);
             sqlStatement.getConditions().getOrCondition().getAndConditions().addAll(orCondition.getAndConditions());
         }
-        if (!fromWhereSegment.getSubquerys().isEmpty()) {
-            for (SubquerySegment each : fromWhereSegment.getSubquerys()) {
+        if (!sqlSegment.getSubquerys().isEmpty()) {
+            for (SubquerySegment each : sqlSegment.getSubquerys()) {
                 new SubqueryFiller().fill(each, sqlStatement, sql, shardingRule, shardingTableMetaData);
             }
         }
         int count = 0;
-        while (count < fromWhereSegment.getParameterCount()) {
+        while (count < sqlSegment.getParameterCount()) {
             sqlStatement.increaseParametersIndex();
             count++;
         }

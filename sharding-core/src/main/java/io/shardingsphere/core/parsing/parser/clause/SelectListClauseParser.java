@@ -17,12 +17,22 @@
 
 package io.shardingsphere.core.parsing.parser.clause;
 
+import java.util.Collection;
+import java.util.Collections;
+import java.util.LinkedList;
+import java.util.List;
+import java.util.regex.Matcher;
+import java.util.regex.Pattern;
+
+import com.google.common.base.Optional;
+
 import io.shardingsphere.core.constant.AggregationType;
 import io.shardingsphere.core.parsing.lexer.LexerEngine;
 import io.shardingsphere.core.parsing.lexer.token.DefaultKeyword;
 import io.shardingsphere.core.parsing.lexer.token.Keyword;
 import io.shardingsphere.core.parsing.lexer.token.Symbol;
 import io.shardingsphere.core.parsing.parser.clause.expression.AliasExpressionParser;
+import io.shardingsphere.core.parsing.parser.constant.DerivedAlias;
 import io.shardingsphere.core.parsing.parser.context.selectitem.AggregationDistinctSelectItem;
 import io.shardingsphere.core.parsing.parser.context.selectitem.AggregationSelectItem;
 import io.shardingsphere.core.parsing.parser.context.selectitem.CommonSelectItem;
@@ -36,13 +46,6 @@ import io.shardingsphere.core.parsing.parser.token.TableToken;
 import io.shardingsphere.core.rule.ShardingRule;
 import io.shardingsphere.core.util.SQLUtil;
 import lombok.Getter;
-
-import java.util.Collection;
-import java.util.Collections;
-import java.util.LinkedList;
-import java.util.List;
-import java.util.regex.Matcher;
-import java.util.regex.Pattern;
 
 /**
  * Select list clause parser.
@@ -67,9 +70,9 @@ public abstract class SelectListClauseParser implements SQLClauseParser {
     
     /**
      * Parse select list.
-     * 
+     *
      * @param selectStatement select statement
-     * @param items select items
+     * @param items           select items
      */
     public void parse(final SelectStatement selectStatement, final List<SelectItem> items) {
         do {
@@ -197,9 +200,16 @@ public abstract class SelectListClauseParser implements SQLClauseParser {
     }
     
     private SelectItem getAggregationDistinctSelectItem(final SelectStatement selectStatement, final AggregationType aggregationType, final int beginPosition, final String innerExpression) {
+        Optional<String> alias = aliasExpressionParser.parseSelectItemAlias();
+        Optional<String> autoAlias = Optional.<String>absent();
+        if (!alias.isPresent()) {
+            autoAlias = Optional.of(DerivedAlias.AGGREGATION_DISTINCT_DERIVED.getDerivedAlias(selectStatement.getAggregationDistinctSelectItems().size()));
+            alias = autoAlias;
+        }
         AggregationDistinctSelectItem result = new AggregationDistinctSelectItem(
-                aggregationType, innerExpression, aliasExpressionParser.parseSelectItemAlias(), getDistinctColumnName(innerExpression));
-        selectStatement.getSQLTokens().add(new AggregationDistinctToken(beginPosition, SQLUtil.getExactlyValue(aggregationType.name() + innerExpression), result.getDistinctColumnName()));
+                aggregationType, innerExpression, alias, getDistinctColumnName(innerExpression));
+        
+        selectStatement.getSQLTokens().add(new AggregationDistinctToken(beginPosition, SQLUtil.getExactlyValue(aggregationType.name() + innerExpression), result.getDistinctColumnName(), autoAlias));
         return result;
     }
     

@@ -21,6 +21,7 @@ import io.shardingsphere.core.metadata.table.TableMetaData;
 import io.shardingsphere.core.parsing.parser.sql.ddl.DDLStatement;
 import lombok.Getter;
 import lombok.Setter;
+
 import java.util.LinkedList;
 import java.util.List;
 

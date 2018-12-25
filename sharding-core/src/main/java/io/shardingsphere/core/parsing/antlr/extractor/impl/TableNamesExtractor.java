@@ -40,9 +40,9 @@ public final class TableNamesExtractor implements CollectionSQLSegmentExtractor 
     public Collection<TableSegment> extract(final ParserRuleContext ancestorNode) {
         Collection<TableSegment> result = new LinkedList<>();
         for (ParserRuleContext each : ExtractorUtils.getAllDescendantNodes(ancestorNode, RuleName.TABLE_NAME)) {
-            Optional<TableSegment> tableExtractResult = tableNameExtractor.extract(each);
-            if (tableExtractResult.isPresent()) {
-                result.add(tableExtractResult.get());
+            Optional<TableSegment> tableSegment = tableNameExtractor.extract(each);
+            if (tableSegment.isPresent()) {
+                result.add(tableSegment.get());
             }
         }
         return result;

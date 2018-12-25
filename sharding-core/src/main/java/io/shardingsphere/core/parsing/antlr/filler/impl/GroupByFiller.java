@@ -19,7 +19,6 @@ package io.shardingsphere.core.parsing.antlr.filler.impl;
 
 import io.shardingsphere.core.metadata.table.ShardingTableMetaData;
 import io.shardingsphere.core.parsing.antlr.filler.SQLStatementFiller;
-import io.shardingsphere.core.parsing.antlr.sql.segment.SQLSegment;
 import io.shardingsphere.core.parsing.antlr.sql.segment.order.GroupBySegment;
 import io.shardingsphere.core.parsing.antlr.sql.segment.order.OrderByItemSegment;
 import io.shardingsphere.core.parsing.parser.sql.SQLStatement;
@@ -31,15 +30,14 @@ import io.shardingsphere.core.rule.ShardingRule;
  *
  * @author duhongjun
  */
-public final class GroupByFiller implements SQLStatementFiller {
+public final class GroupByFiller implements SQLStatementFiller<GroupBySegment> {
     
     @Override
-    public void fill(final SQLSegment sqlSegment, final SQLStatement sqlStatement, final String sql, final ShardingRule shardingRule, final ShardingTableMetaData shardingTableMetaData) {
-        GroupBySegment groupBySegment = (GroupBySegment) sqlSegment;
+    public void fill(final GroupBySegment sqlSegment, final SQLStatement sqlStatement, final String sql, final ShardingRule shardingRule, final ShardingTableMetaData shardingTableMetaData) {
         SelectStatement selectStatement = (SelectStatement) sqlStatement;
-        selectStatement.setGroupByLastPosition(groupBySegment.getGroupByLastPosition());
+        selectStatement.setGroupByLastPosition(sqlSegment.getGroupByLastPosition());
         OrderByFiller orderFiller = new OrderByFiller();
-        for (OrderByItemSegment each : groupBySegment.getGroupByItems()) {
+        for (OrderByItemSegment each : sqlSegment.getGroupByItems()) {
             selectStatement.getGroupByItems().add(orderFiller.buildOrderItemAndFillToken(selectStatement, each, sql));
         }
     }
