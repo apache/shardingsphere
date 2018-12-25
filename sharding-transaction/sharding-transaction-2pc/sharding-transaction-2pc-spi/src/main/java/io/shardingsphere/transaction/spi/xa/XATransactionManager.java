@@ -34,6 +34,11 @@ import javax.transaction.TransactionManager;
 public interface XATransactionManager extends ShardingTransactionManager {
     
     /**
+     * Startup XA transaction manager.
+     */
+    void startup();
+    
+    /**
      * destroy the transaction manager and could be helpful with shutdown gracefully.
      */
     void destroy();

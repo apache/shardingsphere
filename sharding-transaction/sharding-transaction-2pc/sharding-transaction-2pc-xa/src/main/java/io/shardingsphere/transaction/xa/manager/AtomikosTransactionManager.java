@@ -47,7 +47,8 @@ public final class AtomikosTransactionManager implements XATransactionManager {
     
     private final UserTransactionService userTransactionService = new UserTransactionServiceImp();
     
-    public AtomikosTransactionManager() {
+    @Override
+    public void startup() {
         userTransactionService.init();
     }
     

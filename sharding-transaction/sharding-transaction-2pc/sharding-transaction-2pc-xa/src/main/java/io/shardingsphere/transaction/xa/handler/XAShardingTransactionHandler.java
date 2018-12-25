@@ -76,6 +76,7 @@ public final class XAShardingTransactionHandler extends ShardingTransactionHandl
         } catch (final Exception ex) {
             log.error("Failed to register transaction datasource of XAShardingTransactionHandler");
         }
+        xaTransactionManager.startup();
     }
     
     private void removeTransactionDataSource() {
@@ -93,7 +94,7 @@ public final class XAShardingTransactionHandler extends ShardingTransactionHandl
             ShardingXADataSource shardingXADataSource = SHARDING_XA_DATA_SOURCE_MAP.get(datasourceName);
             Preconditions.checkNotNull(shardingXADataSource, "Could not find ShardingXADataSource of `%s`", datasourceName);
             XAConnection xaConnection = shardingXADataSource.wrapPhysicalConnection(connection, databaseType);
-            Transaction transaction = ((XATransactionManager) getShardingTransactionManager()).getUnderlyingTransactionManager().getTransaction();
+            Transaction transaction = xaTransactionManager.getUnderlyingTransactionManager().getTransaction();
             transaction.enlistResource(xaConnection.getXAResource());
         } catch (final Exception ex) {
             throw new SQLException(ex.getMessage());
