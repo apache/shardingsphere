@@ -113,11 +113,15 @@ public final class SQLRewriteEngine {
     public SQLBuilder rewrite(final boolean isRewrite) {
         SQLBuilder result = new SQLBuilder(parameters);
         if (sqlTokens.isEmpty()) {
-            result.appendLiterals(originalSQL);
-            return result;
+            return appendOriginalLiterals(result);
         }
         appendInitialLiterals(isRewrite, result);
         appendTokensAndPlaceholders(isRewrite, result);
+        return result;
+    }
+    
+    private SQLBuilder appendOriginalLiterals(final SQLBuilder result) {
+        result.appendLiterals(originalSQL);
         return result;
     }
     
