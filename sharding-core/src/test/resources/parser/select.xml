@@ -566,6 +566,24 @@
             <aggregation-distinct-token begin-position="7" original-literals="COUNT(DISTINCT order_id)" column-name="order_id" alias="c" />
         </tokens>
     </parser-result>
+        
+    <parser-result sql-case-id="select_distinct_with_avg" >
+        <tables>
+            <table name="t_order" />
+        </tables>
+        <select-items>
+            <aggregation-select-items>
+                <aggregation-select-item type="AVG" inner-expression="(DISTINCT order_id)" distinct-column="order_id" alias="AGGREGATION_DISTINCT_DERIVED_0">
+                    <derived-column type="COUNT" inner-expression="(DISTINCT order_id)" alias="AVG_DERIVED_COUNT_0" />
+                    <derived-column type="SUM" inner-expression="(DISTINCT order_id)" alias="AVG_DERIVED_SUM_0" />
+                </aggregation-select-item>
+            </aggregation-select-items>
+        </select-items>
+        <tokens>
+            <table-token begin-position="35" original-literals="t_order" />
+            <aggregation-distinct-token begin-position="7" original-literals="AVG(DISTINCT order_id)" column-name="order_id" alias="AGGREGATION_DISTINCT_DERIVED_0" />
+        </tokens>
+    </parser-result>
     
     <parser-result sql-case-id="select_distinct_with_aggregation_functions" >
         <tables>
