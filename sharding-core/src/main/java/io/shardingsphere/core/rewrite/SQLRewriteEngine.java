@@ -236,7 +236,7 @@ public final class SQLRewriteEngine {
         if (!isRewrite) {
             sqlBuilder.appendLiterals(distinctToken.getOriginalLiterals()); 
         } else {
-            sqlBuilder.appendPlaceholder(new AggregationDistinctPlaceholder(distinctToken.getColumnName().toLowerCase(), "")); 
+            sqlBuilder.appendPlaceholder(new AggregationDistinctPlaceholder(distinctToken.getColumnName().toLowerCase(), "", distinctToken.getAutoAlias())); 
         }
         int beginPosition = distinctToken.getBeginPosition() + distinctToken.getOriginalLiterals().length();
         appendRest(sqlBuilder, count, beginPosition);

@@ -17,6 +17,8 @@
 
 package io.shardingsphere.core.parsing.parser.token;
 
+import com.google.common.base.Optional;
+
 import lombok.Getter;
 import lombok.ToString;
 
@@ -33,9 +35,12 @@ public final class AggregationDistinctToken extends SQLToken {
     
     private String columnName;
     
-    public AggregationDistinctToken(final int beginPosition, final String originalLiterals, final String columnName) {
+    private Optional<String> autoAlias;
+    
+    public AggregationDistinctToken(final int beginPosition, final String originalLiterals, final String columnName, final Optional<String> autoAlias) {
         super(beginPosition);
         this.originalLiterals = originalLiterals;
         this.columnName = columnName;
+        this.autoAlias = autoAlias;
     }
 }
