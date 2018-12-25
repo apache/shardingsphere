@@ -24,6 +24,7 @@ import io.shardingsphere.core.parsing.lexer.token.DefaultKeyword;
 import io.shardingsphere.core.parsing.lexer.token.Keyword;
 import io.shardingsphere.core.parsing.lexer.token.Symbol;
 import io.shardingsphere.core.parsing.parser.clause.expression.AliasExpressionParser;
+import io.shardingsphere.core.parsing.parser.constant.DerivedAlias;
 import io.shardingsphere.core.parsing.parser.context.selectitem.AggregationDistinctSelectItem;
 import io.shardingsphere.core.parsing.parser.context.selectitem.AggregationSelectItem;
 import io.shardingsphere.core.parsing.parser.context.selectitem.CommonSelectItem;
@@ -198,9 +199,16 @@ public abstract class SelectListClauseParser implements SQLClauseParser {
     }
     
     private SelectItem getAggregationDistinctSelectItem(final SelectStatement selectStatement, final AggregationType aggregationType, final int beginPosition, final String innerExpression) {
+        Optional<String> alias = aliasExpressionParser.parseSelectItemAlias();
+        Optional<String> autoAlias = Optional.<String>absent();
+        if(!alias.isPresent()) {
+            autoAlias = Optional.of(DerivedAlias.AGGREGATION_DISTINCT_DERIVED.getDerivedAlias(selectStatement.getAggregationDistinctSelectItems().size()));
+            alias = autoAlias;
+        }
         AggregationDistinctSelectItem result = new AggregationDistinctSelectItem(
-                aggregationType, innerExpression, aliasExpressionParser.parseSelectItemAlias(), getDistinctColumnName(innerExpression));
-        selectStatement.getSQLTokens().add(new AggregationDistinctToken(beginPosition, SQLUtil.getExactlyValue(aggregationType.name() + innerExpression), result.getDistinctColumnName()));
+                aggregationType, innerExpression, alias, getDistinctColumnName(innerExpression));
+       
+        selectStatement.getSQLTokens().add(new AggregationDistinctToken(beginPosition, SQLUtil.getExactlyValue(aggregationType.name() + innerExpression), result.getDistinctColumnName(), autoAlias));
         return result;
     }
     
