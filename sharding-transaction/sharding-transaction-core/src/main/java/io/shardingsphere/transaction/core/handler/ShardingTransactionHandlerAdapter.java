@@ -18,7 +18,6 @@
 package io.shardingsphere.transaction.core.handler;
 
 import io.shardingsphere.transaction.core.TransactionOperationType;
-import io.shardingsphere.transaction.core.manager.ShardingTransactionManager;
 import io.shardingsphere.transaction.spi.ShardingTransactionHandler;
 
 /**
@@ -45,6 +44,4 @@ public abstract class ShardingTransactionHandlerAdapter implements ShardingTrans
             default:
         }
     }
-    
-    protected abstract ShardingTransactionManager getShardingTransactionManager();
 }

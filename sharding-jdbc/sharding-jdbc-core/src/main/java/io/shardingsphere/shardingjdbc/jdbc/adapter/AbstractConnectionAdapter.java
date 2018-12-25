@@ -120,41 +120,38 @@ public abstract class AbstractConnectionAdapter extends AbstractUnsupportedOpera
         } else if (!connections.isEmpty()) {
             result = new ArrayList<>(connectionSize);
             result.addAll(connections);
-            List<Connection> newConnections = createConnections(connectionMode, dataSource, connectionSize - connections.size());
+            List<Connection> newConnections = createConnections(dataSourceName, connectionMode, dataSource, connectionSize - connections.size());
             result.addAll(newConnections);
             synchronized (cachedConnections) {
                 cachedConnections.putAll(dataSourceName, newConnections);
             }
         } else {
-            result = new ArrayList<>(createConnections(connectionMode, dataSource, connectionSize));
+            result = new ArrayList<>(createConnections(dataSourceName, connectionMode, dataSource, connectionSize));
             synchronized (cachedConnections) {
                 cachedConnections.putAll(dataSourceName, result);
             }
-        }
-        if (null != shardingTransactionHandler) {
-            shardingTransactionHandler.synchronizeTransactionResource(dataSourceName, result);
         }
         return result;
     }
     
     @SuppressWarnings("SynchronizationOnLocalVariableOrMethodParameter")
-    private List<Connection> createConnections(final ConnectionMode connectionMode, final DataSource dataSource, final int connectionSize) throws SQLException {
+    private List<Connection> createConnections(final String dataSourceName, final ConnectionMode connectionMode, final DataSource dataSource, final int connectionSize) throws SQLException {
         if (1 == connectionSize) {
-            return Collections.singletonList(createConnection(dataSource));
+            return Collections.singletonList(createConnection(dataSourceName, dataSource));
         }
         if (ConnectionMode.CONNECTION_STRICTLY == connectionMode) {
-            return createConnections(dataSource, connectionSize);
+            return createConnections(dataSourceName, dataSource, connectionSize);
         }
         synchronized (dataSource) {
-            return createConnections(dataSource, connectionSize);
+            return createConnections(dataSourceName, dataSource, connectionSize);
         }
     }
     
-    private List<Connection> createConnections(final DataSource dataSource, final int connectionSize) throws SQLException {
+    private List<Connection> createConnections(final String dataSourceName, final DataSource dataSource, final int connectionSize) throws SQLException {
         List<Connection> result = new ArrayList<>(connectionSize);
         for (int i = 0; i < connectionSize; i++) {
             try {
-                result.add(createConnection(dataSource));
+                result.add(createConnection(dataSourceName, dataSource));
             } catch (final SQLException ex) {
                 for (Connection each : result) {
                     each.close();
@@ -165,9 +162,12 @@ public abstract class AbstractConnectionAdapter extends AbstractUnsupportedOpera
         return result;
     }
     
-    private Connection createConnection(final DataSource dataSource) throws SQLException {
+    private Connection createConnection(final String dataSourceName, final DataSource dataSource) throws SQLException {
         Connection result = dataSource.getConnection();
         replayMethodsInvocation(result);
+        if (null != shardingTransactionHandler && shardingTransactionHandler.getShardingTransactionManager().getStatus() != 6) {
+            shardingTransactionHandler.synchronizeTransactionResource(dataSourceName, result);
+        }
         return result;
     }
     

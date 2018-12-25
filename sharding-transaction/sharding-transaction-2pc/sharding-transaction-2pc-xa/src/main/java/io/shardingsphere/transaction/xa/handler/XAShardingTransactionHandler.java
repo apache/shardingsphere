@@ -35,7 +35,6 @@ import javax.sql.XAConnection;
 import javax.transaction.Transaction;
 import java.sql.Connection;
 import java.sql.SQLException;
-import java.util.List;
 import java.util.Map;
 import java.util.concurrent.ConcurrentHashMap;
 
@@ -52,7 +51,7 @@ public final class XAShardingTransactionHandler extends ShardingTransactionHandl
     private DatabaseType databaseType;
     
     @Override
-    protected ShardingTransactionManager getShardingTransactionManager() {
+    public ShardingTransactionManager getShardingTransactionManager() {
         return XATransactionManagerSPILoader.getInstance().getTransactionManager();
     }
     
@@ -77,15 +76,13 @@ public final class XAShardingTransactionHandler extends ShardingTransactionHandl
     }
     
     @Override
-    public void synchronizeTransactionResource(final String datasourceName, final List<Connection> connections, final Object... properties) throws SQLException {
+    public void synchronizeTransactionResource(final String datasourceName, final Connection connection, final Object... properties) throws SQLException {
         try {
             ShardingXADataSource shardingXADataSource = SHARDING_XA_DATA_SOURCE_MAP.get(datasourceName);
             Preconditions.checkNotNull(shardingXADataSource, "Could not find ShardingXADataSource of `%s`", datasourceName);
-            for (Connection each : connections) {
-                XAConnection xaConnection = shardingXADataSource.wrapPhysicalConnection(each, databaseType);
-                Transaction transaction = ((XATransactionManager) getShardingTransactionManager()).getUnderlyingTransactionManager().getTransaction();
-                transaction.enlistResource(xaConnection.getXAResource());
-            }
+            XAConnection xaConnection = shardingXADataSource.wrapPhysicalConnection(connection, databaseType);
+            Transaction transaction = ((XATransactionManager) getShardingTransactionManager()).getUnderlyingTransactionManager().getTransaction();
+            transaction.enlistResource(xaConnection.getXAResource());
         } catch (final Exception ex) {
             throw new SQLException(ex.getMessage());
         }

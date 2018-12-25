@@ -51,11 +51,12 @@ public final class ShardingXADataSource implements XADataSource {
      * @throws InvocationTargetException invocation target exception
      * @throws IllegalAccessException illegal access exception
      */
-    public XAConnection wrapPhysicalConnection(final Connection connection, final DatabaseType databaseType) throws NoSuchMethodException, InvocationTargetException, IllegalAccessException {
+    public XAConnection wrapPhysicalConnection(final Connection connection, final DatabaseType databaseType) throws NoSuchMethodException, InvocationTargetException, IllegalAccessException, ClassNotFoundException, SQLException {
         Class<?> clazz = xaDataSource.getClass();
         switch (databaseType) {
             case MySQL:
-                return (XAConnection) ReflectiveUtil.findMethod(xaDataSource, "wrapConnection", Connection.class).invoke(xaDataSource, connection);
+                Connection mysqlPhysicalConnection = (Connection) connection.unwrap(Class.forName("com.mysql.jdbc.Connection"));
+                return (XAConnection) ReflectiveUtil.findMethod(xaDataSource, "wrapConnection", Connection.class).invoke(xaDataSource, mysqlPhysicalConnection);
             default:
                 throw new UnsupportedOperationException(String.format("Cannot support database type: `%s`", databaseType));
         }

@@ -20,12 +20,12 @@ package io.shardingsphere.shardingproxy.transport.mysql.packet.command.query.tex
 import io.shardingsphere.core.constant.DatabaseType;
 import io.shardingsphere.transaction.api.TransactionType;
 import io.shardingsphere.transaction.core.TransactionOperationType;
+import io.shardingsphere.transaction.core.manager.ShardingTransactionManager;
 import io.shardingsphere.transaction.spi.ShardingTransactionHandler;
 
 import javax.sql.DataSource;
 import java.sql.Connection;
 import java.util.HashMap;
-import java.util.List;
 import java.util.Map;
 
 /**
@@ -63,6 +63,11 @@ public final class FixedXAShardingTransactionHandler implements ShardingTransact
     }
     
     @Override
+    public ShardingTransactionManager getShardingTransactionManager() {
+        return null;
+    }
+    
+    @Override
     public TransactionType getTransactionType() {
         return TransactionType.XA;
     }
@@ -73,7 +78,7 @@ public final class FixedXAShardingTransactionHandler implements ShardingTransact
     }
     
     @Override
-    public void synchronizeTransactionResource(final String datasourceName, final List<Connection> connections, final Object... properties) {
+    public void synchronizeTransactionResource(final String datasourceName, final Connection connection, final Object... properties) {
     
     }
 }
