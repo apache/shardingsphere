@@ -32,10 +32,10 @@ import org.antlr.v4.runtime.tree.ParseTree;
 public final class MySQLAddColumnExtractor extends AddColumnExtractor {
     
     @Override
-    protected void postExtractColumnDefinition(final ParseTree ancestorNode, final ColumnDefinitionSegment columnDefinition) {
-        Optional<ColumnPositionSegment> columnPosition = new MySQLColumnPositionExtractor(columnDefinition.getName()).extract((ParserRuleContext) ancestorNode);
+    protected void postExtractColumnDefinition(final ParseTree ancestorNode, final ColumnDefinitionSegment columnDefinitionSegment) {
+        Optional<ColumnPositionSegment> columnPosition = new MySQLColumnPositionExtractor(columnDefinitionSegment.getName()).extract((ParserRuleContext) ancestorNode);
         if (columnPosition.isPresent()) {
-            columnDefinition.setPosition(columnPosition.get());
+            columnDefinitionSegment.setPosition(columnPosition.get());
         }
     }
 }

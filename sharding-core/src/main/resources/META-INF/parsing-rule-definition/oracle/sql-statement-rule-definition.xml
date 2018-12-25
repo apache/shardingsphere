@@ -3,7 +3,7 @@
     <sql-statement-rule context="createTable" sql-statement-class="io.shardingsphere.core.parsing.antlr.sql.statement.ddl.CreateTableStatement" 
                         extractor-rule-refs="tableNames, columnDefinitions, indexNames, outlinePrimaryKey" />
     <sql-statement-rule context="alterTable" sql-statement-class="io.shardingsphere.core.parsing.antlr.sql.statement.ddl.AlterTableStatement" 
-                        extractor-rule-refs="tableNames, outlinePrimaryKey, renameTable, addColumn, dropColumn, modifyColumn, dropPrimaryKey, renameColumn" 
+                        extractor-rule-refs="tableNames, outlinePrimaryKey, addColumn, dropColumn, modifyColumn, dropPrimaryKey, renameTable, renameColumn" 
                         optimizer-class="ddl.AlterTableOptimizer" />
     <sql-statement-rule context="dropTable" sql-statement-class="io.shardingsphere.core.parsing.antlr.sql.statement.ddl.DDLStatement" extractor-rule-refs="tableName" />
     <sql-statement-rule context="truncateTable" sql-statement-class="io.shardingsphere.core.parsing.antlr.sql.statement.ddl.DDLStatement" extractor-rule-refs="tableName" />
