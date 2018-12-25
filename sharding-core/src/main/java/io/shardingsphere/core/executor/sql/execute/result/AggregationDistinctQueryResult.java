@@ -92,11 +92,14 @@ public final class AggregationDistinctQueryResult extends DistinctQueryResult {
         List<AggregationSelectItem> derivedAggregationSelectItems = selectItem.getDerivedAggregationSelectItems();
         if (!derivedAggregationSelectItems.isEmpty()) {
             handleCountDerivedSelectItem(selectItem.getDistinctColumnLabel(), derivedAggregationSelectItems.get(0));
-            String sumColumnLabel = derivedAggregationSelectItems.get(1).getColumnLabel();
-            int sumColumnIndex = getColumnLabelAndIndexMap().size() + 2;
-            getColumnLabelAndIndexMap().put(sumColumnLabel, sumColumnIndex);
-            derivedSumIndexAndDistinctIndexes.put(sumColumnIndex, super.getColumnIndex(selectItem.getDistinctColumnLabel()));
+            handleSumDerivedSelectItem(selectItem.getDistinctColumnLabel(), derivedAggregationSelectItems.get(1));
         }
+    }
+    
+    private void handleSumDerivedSelectItem(final String distinctColumnLabel, final AggregationSelectItem sumDerivedSelectItem) {
+        int sumColumnIndex = getColumnLabelAndIndexMap().size() + 1;
+        getColumnLabelAndIndexMap().put(sumDerivedSelectItem.getColumnLabel(), sumColumnIndex);
+        derivedSumIndexAndDistinctIndexes.put(sumColumnIndex, super.getColumnIndex(distinctColumnLabel));
     }
     
     private void handleCountDerivedSelectItem(final String distinctColumnLabel, final AggregationSelectItem countDerivedSelectItem) {
