@@ -741,7 +741,6 @@
         </tokens>
     </parser-result>
     
-    
     <parser-result sql-case-id="select_alias_as_single_quote_string">
         <tables>
             <table name="t_order"/>
