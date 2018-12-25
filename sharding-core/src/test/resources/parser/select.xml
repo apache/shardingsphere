@@ -478,7 +478,7 @@
             <order-by-column name="item_id" order-direction="ASC" />
         </order-by-columns>
     </parser-result>
-
+    
     <parser-result sql-case-id="select_distinct_with_single_column" >
         <tables>
             <table name="t_order_item" />
@@ -497,7 +497,7 @@
             <order-by-column name="item_id" order-direction="ASC" />
         </order-by-columns>
     </parser-result>
-
+    
     <parser-result sql-case-id="select_distinct_with_multi_column" >
         <tables>
             <table name="t_order" />
@@ -518,7 +518,7 @@
             <order-by-column name="order_id" order-direction="ASC" />
         </order-by-columns>
     </parser-result>
-
+    
     <parser-result sql-case-id="select_distinct_with_star" >
         <tables>
             <table name="t_order" />
@@ -536,7 +536,7 @@
             <order-by-column name="order_id" order-direction="ASC" />
         </order-by-columns>
     </parser-result>
-
+    
     <parser-result sql-case-id="select_distinct_with_sum" >
         <tables>
             <table name="t_order" />
@@ -564,61 +564,6 @@
         <tokens>
             <table-token begin-position="39" original-literals="t_order" />
             <aggregation-distinct-token begin-position="7" original-literals="COUNT(DISTINCT order_id)" column-name="order_id" alias="c" />
-        </tokens>
-    </parser-result>
-
-    <parser-result sql-case-id="select_distinct_with_count_group_by" >
-        <tables>
-            <table name="t_order" />
-        </tables>
-        <select-items>
-            <aggregation-select-items>
-                <aggregation-select-item type="COUNT" inner-expression="(DISTINCT order_id)" distinct-column="order_id" alias="c" />
-            </aggregation-select-items>
-        </select-items>
-        <group-by-columns>
-            <group-by-column name="order_id" order-direction="ASC" />
-        </group-by-columns>
-        <order-by-columns>
-            <order-by-column name="order_id" order-direction="ASC" />
-        </order-by-columns>
-        <tokens>
-            <table-token begin-position="49" original-literals="t_order" />
-            <aggregation-distinct-token begin-position="7" original-literals="COUNT(DISTINCT order_id)" column-name="order_id" alias="c" />
-        </tokens>
-    </parser-result>
-    
-    <parser-result sql-case-id="select_distinct_function" >
-        <tables>
-            <table name="t_order_item" />
-        </tables>
-        <select-items>
-            <distinct-select-item>
-                <distinct-columns>
-                    <distinct-column>item_id</distinct-column>
-                </distinct-columns>
-            </distinct-select-item>
-        </select-items>
-        <tokens>
-            <table-token begin-position="30" original-literals="t_order_item" />
-        </tokens>
-        <order-by-columns>
-            <order-by-column name="item_id" order-direction="ASC" />
-        </order-by-columns>
-    </parser-result>
-    
-    <parser-result sql-case-id="select_distinct_with_count_calculation" >
-        <tables>
-            <table name="t_order" />
-        </tables>
-        <select-items>
-            <aggregation-select-items>
-                <aggregation-select-item type="COUNT" inner-expression="(DISTINCT user_id + order_id)" distinct-column="user_id + order_id" alias="c" />
-            </aggregation-select-items>
-        </select-items>
-        <tokens>
-            <table-token begin-position="49" original-literals="t_order" />
-            <aggregation-distinct-token begin-position="7" original-literals="COUNT(DISTINCT user_id + order_id)" column-name="user_id + order_id" alias="c" />
         </tokens>
     </parser-result>
     
