@@ -18,11 +18,9 @@
 package io.shardingsphere.core.parsing.antlr.sql.segment.table;
 
 import com.google.common.base.Optional;
-
 import io.shardingsphere.core.parsing.antlr.sql.segment.SQLSegment;
 import io.shardingsphere.core.parsing.parser.token.TableToken;
 import lombok.Getter;
-import lombok.RequiredArgsConstructor;
 import lombok.Setter;
 
 /**
@@ -30,7 +28,6 @@ import lombok.Setter;
  * 
  * @author duhongjun
  */
-@RequiredArgsConstructor
 @Getter
 @Setter
 public class TableSegment implements SQLSegment {
@@ -44,6 +41,11 @@ public class TableSegment implements SQLSegment {
     private String alias;
     
     private int aliasStartPosition = -1;
+    
+    public TableSegment(final TableToken token) {
+        name = token.getTableName();
+        this.token = token;
+    }
     
     /**
      * Get schema name.

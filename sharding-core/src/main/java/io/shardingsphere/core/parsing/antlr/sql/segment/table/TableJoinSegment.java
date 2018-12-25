@@ -31,14 +31,14 @@ public final class TableJoinSegment extends TableSegment {
     
     private final OrConditionSegment joinConditions = new OrConditionSegment();
     
-    public TableJoinSegment(final String name, final String alias, final String schemaName, final TableToken token) {
-        super(name, token);
+    public TableJoinSegment(final String alias, final String schemaName, final TableToken token) {
+        super(token);
         setAlias(alias);
         setSchemaName(schemaName);
     }
     
     public TableJoinSegment(final TableSegment parent) {
-        super(parent.getName(), parent.getToken());
+        super(parent.getToken());
         setAlias(parent.getAlias().orNull());
         setSchemaName(parent.getSchemaName().orNull());
     }

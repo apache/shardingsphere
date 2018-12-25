@@ -105,10 +105,10 @@ public final class SQLRewriteEngine {
     /**
      * rewrite SQL.
      *
-     * @param isRewriteLimit is rewrite limit
+     * @param isRewrite is rewrite
      * @return SQL builder
      */
-    public SQLBuilder rewrite(final boolean isRewriteLimit) {
+    public SQLBuilder rewrite(final boolean isRewrite) {
         SQLBuilder result = new SQLBuilder(parameters);
         if (sqlTokens.isEmpty()) {
             result.appendLiterals(originalSQL);
@@ -130,15 +130,15 @@ public final class SQLRewriteEngine {
             } else if (each instanceof InsertValuesToken) {
                 appendInsertValuesToken(result, (InsertValuesToken) each, count);
             } else if (each instanceof RowCountToken) {
-                appendLimitRowCount(result, (RowCountToken) each, count, isRewriteLimit);
+                appendLimitRowCount(result, (RowCountToken) each, count, isRewrite);
             } else if (each instanceof OffsetToken) {
-                appendLimitOffsetToken(result, (OffsetToken) each, count, isRewriteLimit);
+                appendLimitOffsetToken(result, (OffsetToken) each, count, isRewrite);
             } else if (each instanceof OrderByToken) {
                 appendOrderByToken(result, count);
             } else if (each instanceof InsertColumnToken) {
                 appendSymbolToken(result, (InsertColumnToken) each, count);
             } else if (each instanceof AggregationDistinctToken) {
-                appendDistinctPlaceholder(result, (AggregationDistinctToken) each, count);
+                appendDistinctPlaceholder(result, (AggregationDistinctToken) each, count, isRewrite);
             } else if (each instanceof RemoveToken) {
                 appendRest(result, count, ((RemoveToken) each).getEndPosition());
             }
@@ -232,8 +232,12 @@ public final class SQLRewriteEngine {
         appendRest(sqlBuilder, count, insertColumnToken.getBeginPosition());
     }
     
-    private void appendDistinctPlaceholder(final SQLBuilder sqlBuilder, final AggregationDistinctToken distinctToken, final int count) {
-        sqlBuilder.appendPlaceholder(new AggregationDistinctPlaceholder(distinctToken.getColumnName().toLowerCase(), "", distinctToken.getAutoAlias()));
+    private void appendDistinctPlaceholder(final SQLBuilder sqlBuilder, final AggregationDistinctToken distinctToken, final int count, final boolean isRewrite) {
+        if (!isRewrite) {
+            sqlBuilder.appendLiterals(distinctToken.getOriginalLiterals()); 
+        } else {
+            sqlBuilder.appendPlaceholder(new AggregationDistinctPlaceholder(distinctToken.getColumnName().toLowerCase(), "", distinctToken.getAutoAlias())); 
+        }
         int beginPosition = distinctToken.getBeginPosition() + distinctToken.getOriginalLiterals().length();
         appendRest(sqlBuilder, count, beginPosition);
     }
