@@ -91,9 +91,19 @@ public final class AggregationDistinctQueryResult extends DistinctQueryResult {
     private void initDerivedIndexAndDistinctIndexes(final AggregationDistinctSelectItem selectItem) {
         List<AggregationSelectItem> derivedAggregationSelectItems = selectItem.getDerivedAggregationSelectItems();
         if (!derivedAggregationSelectItems.isEmpty()) {
-            derivedCountIndexAndDistinctIndexes.put(super.getColumnIndex(derivedAggregationSelectItems.get(0).getColumnLabel()), super.getColumnIndex(selectItem.getDistinctColumnLabel()));
-            derivedSumIndexAndDistinctIndexes.put(super.getColumnIndex(derivedAggregationSelectItems.get(1).getColumnLabel()), super.getColumnIndex(selectItem.getDistinctColumnLabel()));
+            handleCountDerivedSeleteItem(selectItem, derivedAggregationSelectItems);
+    
+            String sumColumnLabel = derivedAggregationSelectItems.get(1).getColumnLabel();
+            int sumColumnIndex = getColumnLabelAndIndexMap().size() + 2;
+            getColumnLabelAndIndexMap().put(sumColumnLabel, sumColumnIndex);
+            derivedSumIndexAndDistinctIndexes.put(sumColumnIndex, super.getColumnIndex(selectItem.getDistinctColumnLabel()));
         }
+    }
+    
+    private void handleCountDerivedSeleteItem(final String distinctColumnLabel, final AggregationSelectItem countDerivedSelectItem) {
+        int countColumnIndex = getColumnLabelAndIndexMap().size() + 1;
+        getColumnLabelAndIndexMap().put(countDerivedSelectItem.getColumnLabel(),  countColumnIndex);
+        derivedCountIndexAndDistinctIndexes.put(countColumnIndex, super.getColumnIndex(distinctColumnLabel));
     }
     
     /**
