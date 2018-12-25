@@ -18,7 +18,9 @@
 package io.shardingsphere.core.rewrite;
 
 import com.google.common.base.Optional;
+import com.google.common.base.Predicate;
 import com.google.common.base.Strings;
+import com.google.common.collect.Iterators;
 import io.shardingsphere.core.constant.DatabaseType;
 import io.shardingsphere.core.metadata.datasource.ShardingDataSourceMetaData;
 import io.shardingsphere.core.optimizer.condition.ShardingConditions;
@@ -111,14 +113,45 @@ public final class SQLRewriteEngine {
     public SQLBuilder rewrite(final boolean isRewrite) {
         SQLBuilder result = new SQLBuilder(parameters);
         if (sqlTokens.isEmpty()) {
-            result.appendLiterals(originalSQL);
-            return result;
+            return appendOriginalLiterals(result);
         }
+        appendInitialLiterals(isRewrite, result);
+        appendTokensAndPlaceholders(isRewrite, result);
+        return result;
+    }
+    
+    private SQLBuilder appendOriginalLiterals(final SQLBuilder result) {
+        result.appendLiterals(originalSQL);
+        return result;
+    }
+    
+    private void appendInitialLiterals(final boolean isRewrite, final SQLBuilder result) {
+        if (isRewrite && isContainAggregationDistinctToken()) {
+            appendDistinctLiteral(result);
+        } else {
+            result.appendLiterals(originalSQL.substring(0, sqlTokens.get(0).getBeginPosition()));
+        }
+    }
+    
+    private boolean isContainAggregationDistinctToken() {
+        return Iterators.tryFind(sqlTokens.iterator(), new Predicate<SQLToken>() {
+            @Override
+            public boolean apply(final SQLToken input) {
+                return input instanceof AggregationDistinctToken;
+            }
+        }).isPresent();
+    }
+    
+    private void appendDistinctLiteral(final SQLBuilder result) {
+        int firstSelectItemStartPosition = ((SelectStatement) sqlStatement).getFirstSelectItemStartPosition();
+        result.appendLiterals(originalSQL.substring(0, firstSelectItemStartPosition));
+        result.appendLiterals("DISTINCT ");
+        result.appendLiterals(originalSQL.substring(firstSelectItemStartPosition, sqlTokens.get(0).getBeginPosition()));
+    }
+    
+    private void appendTokensAndPlaceholders(final boolean isRewrite, final SQLBuilder result) {
         int count = 0;
         for (SQLToken each : sqlTokens) {
-            if (0 == count) {
-                result.appendLiterals(originalSQL.substring(0, each.getBeginPosition()));
-            }
             if (each instanceof TableToken) {
                 appendTablePlaceholder(result, (TableToken) each, count);
             } else if (each instanceof SchemaToken) {
@@ -138,13 +171,12 @@ public final class SQLRewriteEngine {
             } else if (each instanceof InsertColumnToken) {
                 appendSymbolToken(result, (InsertColumnToken) each, count);
             } else if (each instanceof AggregationDistinctToken) {
-                appendDistinctPlaceholder(result, (AggregationDistinctToken) each, count, isRewrite);
+                appendAggregationDistinctPlaceholder(result, (AggregationDistinctToken) each, count, isRewrite);
             } else if (each instanceof RemoveToken) {
                 appendRest(result, count, ((RemoveToken) each).getEndPosition());
             }
             count++;
         }
-        return result;
     }
     
     private void appendTablePlaceholder(final SQLBuilder sqlBuilder, final TableToken tableToken, final int count) {
@@ -232,7 +264,7 @@ public final class SQLRewriteEngine {
         appendRest(sqlBuilder, count, insertColumnToken.getBeginPosition());
     }
     
-    private void appendDistinctPlaceholder(final SQLBuilder sqlBuilder, final AggregationDistinctToken distinctToken, final int count, final boolean isRewrite) {
+    private void appendAggregationDistinctPlaceholder(final SQLBuilder sqlBuilder, final AggregationDistinctToken distinctToken, final int count, final boolean isRewrite) {
         if (!isRewrite) {
             sqlBuilder.appendLiterals(distinctToken.getOriginalLiterals()); 
         } else {

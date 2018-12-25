@@ -34,6 +34,7 @@ import io.shardingsphere.core.parsing.lexer.token.DefaultKeyword;
  * Select clause extractor.
  *
  * @author duhongjun
+ * @author panjuan
  */
 public final class SelectClauseExtractor implements OptionalSQLSegmentExtractor {
     
@@ -53,7 +54,7 @@ public final class SelectClauseExtractor implements OptionalSQLSegmentExtractor 
         if (!selectExpressionNode.isPresent()) {
             return Optional.absent();
         }
-        SelectClauseSegment result = new SelectClauseSegment(selectExpressionNode.get().getStop().getStopIndex() + 2);
+        SelectClauseSegment result = new SelectClauseSegment(selectExpressionNode.get().getStart().getStartIndex(), selectExpressionNode.get().getStop().getStopIndex() + 2);
         result.setHasDistinct(hasDistinct);
         ExpressionExtractor expressionExtractor = new ExpressionExtractor();
         for (int i = 0; i < selectExpressionNode.get().getChildCount(); i++) {

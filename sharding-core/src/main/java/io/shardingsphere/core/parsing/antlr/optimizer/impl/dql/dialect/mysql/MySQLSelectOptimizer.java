@@ -24,6 +24,7 @@ import io.shardingsphere.core.metadata.table.ShardingTableMetaData;
 import io.shardingsphere.core.parsing.antlr.optimizer.SQLStatementOptimizer;
 import io.shardingsphere.core.parsing.parser.constant.DerivedColumn;
 import io.shardingsphere.core.parsing.parser.context.OrderItem;
+import io.shardingsphere.core.parsing.parser.context.selectitem.AggregationDistinctSelectItem;
 import io.shardingsphere.core.parsing.parser.context.selectitem.AggregationSelectItem;
 import io.shardingsphere.core.parsing.parser.context.selectitem.DistinctSelectItem;
 import io.shardingsphere.core.parsing.parser.context.selectitem.SelectItem;
@@ -74,7 +75,7 @@ public final class MySQLSelectOptimizer implements SQLStatementOptimizer {
     private void appendAvgDerivedColumns(final ItemsToken itemsToken, final SelectStatement selectStatement) {
         int derivedColumnOffset = 0;
         for (SelectItem each : selectStatement.getItems()) {
-            if (!(each instanceof AggregationSelectItem) || AggregationType.AVG != ((AggregationSelectItem) each).getType()) {
+            if (!isAverageSelectItem(each)) {
                 continue;
             }
             AggregationSelectItem avgItem = (AggregationSelectItem) each;
@@ -85,10 +86,16 @@ public final class MySQLSelectOptimizer implements SQLStatementOptimizer {
             avgItem.getDerivedAggregationSelectItems().add(countItem);
             avgItem.getDerivedAggregationSelectItems().add(sumItem);
             // TODO replace avg to constant, avoid calculate useless avg
-            itemsToken.getItems().add(countItem.getExpression() + " AS " + countAlias + " ");
-            itemsToken.getItems().add(sumItem.getExpression() + " AS " + sumAlias + " ");
+            if (!(avgItem instanceof AggregationDistinctSelectItem)) {
+                itemsToken.getItems().add(countItem.getExpression() + " AS " + countAlias + " ");
+                itemsToken.getItems().add(sumItem.getExpression() + " AS " + sumAlias + " ");
+            }
             derivedColumnOffset++;
         }
+    }
+    
+    private boolean isAverageSelectItem(final SelectItem each) {
+        return each instanceof AggregationSelectItem && AggregationType.AVG == ((AggregationSelectItem) each).getType();
     }
     
     private void appendDerivedOrderColumns(final ItemsToken itemsToken, final List<OrderItem> orderItems, final SelectStatement selectStatement, final ShardingTableMetaData shardingTableMetaData) {
