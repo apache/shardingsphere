@@ -644,6 +644,25 @@
         </tokens>
     </parser-result>
     
+    <parser-result sql-case-id="select_distinct_function" >
+        <tables>
+            <table name="t_order_item" />
+        </tables>
+        <select-items>
+            <distinct-select-item>
+                <distinct-columns>
+                    <distinct-column>item_id</distinct-column>
+                </distinct-columns>
+            </distinct-select-item>
+        </select-items>
+        <tokens>
+            <table-token begin-position="30" original-literals="t_order_item" />
+        </tokens>
+        <order-by-columns>
+            <order-by-column name="item_id" order-direction="ASC" />
+        </order-by-columns>
+    </parser-result>
+    
     <parser-result sql-case-id="select_distinct_with_aggregation_functions" >
         <tables>
             <table name="t_order" />
