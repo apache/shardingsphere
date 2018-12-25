@@ -20,7 +20,6 @@ package io.shardingsphere.core.parsing.antlr.filler.impl;
 import com.google.common.base.Optional;
 import io.shardingsphere.core.metadata.table.ShardingTableMetaData;
 import io.shardingsphere.core.parsing.antlr.filler.SQLStatementFiller;
-import io.shardingsphere.core.parsing.antlr.sql.segment.SQLSegment;
 import io.shardingsphere.core.parsing.antlr.sql.segment.constraint.ConstraintDefinitionSegment;
 import io.shardingsphere.core.parsing.antlr.sql.statement.ddl.AlterTableStatement;
 import io.shardingsphere.core.parsing.antlr.sql.statement.ddl.ColumnDefinition;
@@ -33,14 +32,15 @@ import io.shardingsphere.core.rule.ShardingRule;
  *
  * @author duhongjun
  */
-public final class ConstraintDefinitionFiller implements SQLStatementFiller {
+public final class ConstraintDefinitionFiller implements SQLStatementFiller<ConstraintDefinitionSegment> {
     
     @Override
-    public void fill(final SQLSegment sqlSegment, final SQLStatement sqlStatement, final String sql, final ShardingRule shardingRule, final ShardingTableMetaData shardingTableMetaData) {
+    public void fill(
+            final ConstraintDefinitionSegment sqlSegment, final SQLStatement sqlStatement, final String sql, final ShardingRule shardingRule, final ShardingTableMetaData shardingTableMetaData) {
         if (sqlStatement instanceof AlterTableStatement) {
-            fillAlter((ConstraintDefinitionSegment) sqlSegment, (AlterTableStatement) sqlStatement, shardingTableMetaData);
+            fillAlter(sqlSegment, (AlterTableStatement) sqlStatement, shardingTableMetaData);
         } else if (sqlStatement instanceof CreateTableStatement) {
-            fillCreate((ConstraintDefinitionSegment) sqlSegment, (CreateTableStatement) sqlStatement);
+            fillCreate(sqlSegment, (CreateTableStatement) sqlStatement);
         }
     }
     
