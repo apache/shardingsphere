@@ -38,14 +38,7 @@ public final class TableFiller implements SQLStatementFiller {
     public void fill(final SQLSegment sqlSegment, final SQLStatement sqlStatement, final String sql, final ShardingRule shardingRule, final ShardingTableMetaData shardingTableMetaData) {
         TableSegment tableSegment = (TableSegment) sqlSegment;
         String tableName = tableSegment.getName();
-        boolean needAdd = false;
-        if (!(sqlStatement instanceof SelectStatement)) {
-            needAdd = true;
-        } else if (shardingRule.tryFindTableRuleByLogicTable(tableName).isPresent() || shardingRule.isBroadcastTable(tableName) || shardingRule.findBindingTableRule(tableName).isPresent()
-                || shardingRule.getShardingDataSourceNames().getDataSourceNames().contains(shardingRule.getShardingDataSourceNames().getDefaultDataSourceName())) {
-            needAdd = true;
-        }
-        if (!needAdd) {
+        if (sqlStatement instanceof SelectStatement && !shardingRule.contains(tableName)) {
             return;
         }
         sqlStatement.getTables().add(new Table(tableSegment.getName(), tableSegment.getAlias()));
