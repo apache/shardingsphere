@@ -30,7 +30,5 @@ import lombok.RequiredArgsConstructor;
 @Getter
 public final class IndexSegment implements SQLSegment {
     
-    private final String name;
-    
     private final IndexToken token;
 }

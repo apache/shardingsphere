@@ -37,43 +37,43 @@ public final class ColumnDefinitionFiller implements SQLStatementFiller<ColumnDe
     
     @Override
     public void fill(final ColumnDefinitionSegment sqlSegment, final SQLStatement sqlStatement, final String sql, final ShardingRule shardingRule, final ShardingTableMetaData shardingTableMetaData) {
-        if (sqlStatement instanceof AlterTableStatement) {
-            fillAlter(sqlSegment, (AlterTableStatement) sqlStatement, shardingTableMetaData);
-        } else if (sqlStatement instanceof CreateTableStatement) {
-            fillCreate(sqlSegment, (CreateTableStatement) sqlStatement);
+        if (sqlStatement instanceof CreateTableStatement) {
+            fill(sqlSegment, (CreateTableStatement) sqlStatement);
+        } else if (sqlStatement instanceof AlterTableStatement) {
+            fill(sqlSegment, (AlterTableStatement) sqlStatement, shardingTableMetaData);
+        } 
+    }
+    
+    private void fill(final ColumnDefinitionSegment sqlSegment, final CreateTableStatement createTableStatement) {
+        createTableStatement.getColumnNames().add(SQLUtil.getExactlyValue(sqlSegment.getName()));
+        createTableStatement.getColumnTypes().add(sqlSegment.getType());
+        if (sqlSegment.isPrimaryKey()) {
+            createTableStatement.getPrimaryKeyColumns().add(sqlSegment.getName());
         }
     }
     
-    private void fillAlter(final ColumnDefinitionSegment columnDefinitionSegment, final AlterTableStatement alterTableStatement, final ShardingTableMetaData shardingTableMetaData) {
-        String oldName = columnDefinitionSegment.getOldName();
+    private void fill(final ColumnDefinitionSegment sqlSegment, final AlterTableStatement alterTableStatement, final ShardingTableMetaData shardingTableMetaData) {
+        String oldName = sqlSegment.getOldName();
         if (null != oldName) {
             Optional<ColumnDefinition> oldDefinition = alterTableStatement.findColumnDefinition(oldName, shardingTableMetaData);
             if (!oldDefinition.isPresent()) {
                 return;
             }
-            oldDefinition.get().setName(columnDefinitionSegment.getName());
-            if (null != columnDefinitionSegment.getType()) {
-                oldDefinition.get().setType(columnDefinitionSegment.getType());
+            oldDefinition.get().setName(sqlSegment.getName());
+            if (null != sqlSegment.getType()) {
+                oldDefinition.get().setType(sqlSegment.getType());
             }
             alterTableStatement.getUpdateColumns().put(oldName, oldDefinition.get());
         } else {
-            ColumnDefinition columnDefinition = new ColumnDefinition(columnDefinitionSegment.getName(), columnDefinitionSegment.getType(), columnDefinitionSegment.isPrimaryKey());
-            if (!columnDefinitionSegment.isAdd()) {
-                alterTableStatement.getUpdateColumns().put(columnDefinitionSegment.getName(), columnDefinition);
-            } else if (!alterTableStatement.findColumnDefinitionFromMetaData(columnDefinitionSegment.getName(), shardingTableMetaData).isPresent()) {
+            ColumnDefinition columnDefinition = new ColumnDefinition(sqlSegment.getName(), sqlSegment.getType(), sqlSegment.isPrimaryKey());
+            if (!sqlSegment.isAdd()) {
+                alterTableStatement.getUpdateColumns().put(sqlSegment.getName(), columnDefinition);
+            } else if (!alterTableStatement.findColumnDefinitionFromMetaData(sqlSegment.getName(), shardingTableMetaData).isPresent()) {
                 alterTableStatement.getAddColumns().add(columnDefinition);
             }
         }
-        if (null != columnDefinitionSegment.getPosition()) {
-            alterTableStatement.getPositionChangedColumns().add(columnDefinitionSegment.getPosition());
-        }
-    }
-    
-    private void fillCreate(final ColumnDefinitionSegment columnDefinitionSegment, final CreateTableStatement createTableStatement) {
-        createTableStatement.getColumnNames().add(SQLUtil.getExactlyValue(columnDefinitionSegment.getName()));
-        createTableStatement.getColumnTypes().add(columnDefinitionSegment.getType());
-        if (columnDefinitionSegment.isPrimaryKey()) {
-            createTableStatement.getPrimaryKeyColumns().add(columnDefinitionSegment.getName());
+        if (null != sqlSegment.getPosition()) {
+            alterTableStatement.getPositionChangedColumns().add(sqlSegment.getPosition());
         }
     }
 }
