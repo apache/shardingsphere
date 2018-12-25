@@ -18,6 +18,7 @@
 package io.shardingsphere.transaction.xa.manager;
 
 import com.atomikos.datasource.xa.jdbc.JdbcTransactionalResource;
+import com.atomikos.icatch.config.Configuration;
 import com.atomikos.icatch.config.UserTransactionService;
 import com.atomikos.icatch.config.UserTransactionServiceImp;
 import com.atomikos.icatch.jta.UserTransactionManager;
@@ -35,6 +36,7 @@ import javax.transaction.RollbackException;
 import javax.transaction.Status;
 import javax.transaction.SystemException;
 import javax.transaction.TransactionManager;
+import javax.transaction.xa.XAResource;
 
 /**
  * Atomikos XA transaction manager.
@@ -117,6 +119,12 @@ public final class AtomikosTransactionManager implements XATransactionManager {
     @Override
     public void removeRecoveryResource(final String dataSourceName, final XADataSource xaDataSource) {
         userTransactionService.removeResource(new JdbcTransactionalResource(dataSourceName, xaDataSource));
+    }
+    
+    @Override
+    public XAResource getRecoveryXAResource(final String dataSourceName) {
+        JdbcTransactionalResource jdbcTransactionalResource = (JdbcTransactionalResource) Configuration.getResource(dataSourceName);
+        return jdbcTransactionalResource.getXAResource();
     }
 }
 

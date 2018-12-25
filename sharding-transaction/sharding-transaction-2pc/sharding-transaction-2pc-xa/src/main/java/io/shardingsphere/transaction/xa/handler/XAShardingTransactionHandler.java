@@ -17,8 +17,8 @@
 
 package io.shardingsphere.transaction.xa.handler;
 
-import com.google.common.base.Preconditions;
 import io.shardingsphere.core.constant.DatabaseType;
+import io.shardingsphere.core.exception.ShardingException;
 import io.shardingsphere.core.rule.DataSourceParameter;
 import io.shardingsphere.transaction.api.TransactionType;
 import io.shardingsphere.transaction.core.handler.ShardingTransactionHandlerAdapter;
@@ -31,10 +31,8 @@ import io.shardingsphere.transaction.xa.manager.XATransactionManagerSPILoader;
 import lombok.extern.slf4j.Slf4j;
 
 import javax.sql.DataSource;
-import javax.sql.XAConnection;
 import javax.transaction.Transaction;
 import java.sql.Connection;
-import java.sql.SQLException;
 import java.util.Map;
 import java.util.concurrent.ConcurrentHashMap;
 
@@ -89,15 +87,12 @@ public final class XAShardingTransactionHandler extends ShardingTransactionHandl
     }
     
     @Override
-    public synchronized void synchronizeTransactionResource(final String datasourceName, final Connection connection, final Object... properties) throws SQLException {
+    public synchronized void synchronizeTransactionResource(final String datasourceName, final Connection connection, final Object... properties) {
         try {
-            ShardingXADataSource shardingXADataSource = SHARDING_XA_DATA_SOURCE_MAP.get(datasourceName);
-            Preconditions.checkNotNull(shardingXADataSource, "Could not find ShardingXADataSource of `%s`", datasourceName);
-            XAConnection xaConnection = shardingXADataSource.wrapPhysicalConnection(connection, databaseType);
             Transaction transaction = xaTransactionManager.getUnderlyingTransactionManager().getTransaction();
-            transaction.enlistResource(xaConnection.getXAResource());
+            transaction.enlistResource(xaTransactionManager.getRecoveryXAResource(datasourceName));
         } catch (final Exception ex) {
-            throw new SQLException(ex.getMessage());
+            throw new ShardingException(ex);
         }
     }
 }
