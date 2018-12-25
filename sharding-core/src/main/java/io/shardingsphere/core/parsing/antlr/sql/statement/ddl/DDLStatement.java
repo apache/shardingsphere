@@ -15,7 +15,7 @@
  * </p>
  */
 
-package io.shardingsphere.core.parsing.parser.sql.ddl;
+package io.shardingsphere.core.parsing.antlr.sql.statement.ddl;
 
 import io.shardingsphere.core.constant.SQLType;
 import io.shardingsphere.core.parsing.lexer.token.DefaultKeyword;
