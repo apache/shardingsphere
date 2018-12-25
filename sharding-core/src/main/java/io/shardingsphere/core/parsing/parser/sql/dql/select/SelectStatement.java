@@ -17,16 +17,8 @@
 
 package io.shardingsphere.core.parsing.parser.sql.dql.select;
 
-import java.util.Collection;
-import java.util.LinkedHashSet;
-import java.util.LinkedList;
-import java.util.List;
-import java.util.Map;
-import java.util.Set;
-
 import com.google.common.base.Optional;
 import com.google.common.base.Preconditions;
-
 import io.shardingsphere.core.parsing.parser.context.OrderItem;
 import io.shardingsphere.core.parsing.parser.context.limit.Limit;
 import io.shardingsphere.core.parsing.parser.context.selectitem.AggregationDistinctSelectItem;
@@ -44,6 +36,13 @@ import lombok.Getter;
 import lombok.Setter;
 import lombok.ToString;
 
+import java.util.Collection;
+import java.util.LinkedHashSet;
+import java.util.LinkedList;
+import java.util.List;
+import java.util.Map;
+import java.util.Set;
+
 /**
  * Select statement.
  *
@@ -56,6 +55,8 @@ import lombok.ToString;
 public final class SelectStatement extends DQLStatement {
     
     private boolean containStar;
+    
+    private int firstSelectItemStartPosition;
     
     private int selectListLastPosition;
     
