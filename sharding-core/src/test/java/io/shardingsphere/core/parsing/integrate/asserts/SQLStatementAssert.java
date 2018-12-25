@@ -120,7 +120,7 @@ public final class SQLStatementAssert {
     }
     
     private void assertCreateTableStatement(final CreateTableStatement actual) {
-        metaAssert.assertMeta(actual.getColumnNames(), actual.getColumnTypes(), actual.getPrimaryKeyColumns(), expected.getMeta());
+        metaAssert.assertMeta(actual.getColumnDefinitions(), expected.getMeta());
     }
     
     private void assertAlterTableStatement(final AlterTableStatement actual) {

@@ -45,7 +45,11 @@ public final class ConstraintDefinitionFiller implements SQLStatementFiller<Cons
     }
     
     private void fill(final ConstraintDefinitionSegment sqlSegment, final CreateTableStatement createTableStatement) {
-        createTableStatement.getPrimaryKeyColumns().addAll(sqlSegment.getPrimaryKeyColumnNames());
+        for (ColumnDefinition each : createTableStatement.getColumnDefinitions()) {
+            if (sqlSegment.getPrimaryKeyColumnNames().contains(each.getName())) {
+                each.setPrimaryKey(true);
+            }
+        }
     }
     
     private void fill(final ConstraintDefinitionSegment sqlSegment, final AlterTableStatement alterTableStatement, final ShardingTableMetaData shardingTableMetaData) {

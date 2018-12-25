@@ -21,12 +21,12 @@ import io.shardingsphere.core.metadata.table.ColumnMetaData;
 import io.shardingsphere.core.metadata.table.ShardingTableMetaData;
 import io.shardingsphere.core.metadata.table.TableMetaData;
 import io.shardingsphere.core.parsing.antlr.optimizer.SQLStatementOptimizer;
+import io.shardingsphere.core.parsing.antlr.sql.statement.ddl.ColumnDefinition;
 import io.shardingsphere.core.parsing.antlr.sql.statement.ddl.CreateTableStatement;
 import io.shardingsphere.core.parsing.parser.sql.SQLStatement;
 
 import java.util.Collection;
 import java.util.LinkedList;
-import java.util.List;
 
 /**
  * Create table optimizer.
@@ -39,15 +39,8 @@ public final class CreateTableOptimizer implements SQLStatementOptimizer {
     public void optimize(final SQLStatement sqlStatement, final ShardingTableMetaData shardingTableMetaData) {
         CreateTableStatement createStatement = (CreateTableStatement) sqlStatement;
         Collection<ColumnMetaData> newColumnMetaDataList = new LinkedList<>();
-        int position = 0;
-        List<String> columnTypes = createStatement.getColumnTypes();
-        List<String> primaryKeyColumns = createStatement.getPrimaryKeyColumns();
-        for (String each : createStatement.getColumnNames()) {
-            String type = null;
-            if (columnTypes.size() > position) {
-                type = columnTypes.get(position);
-            }
-            newColumnMetaDataList.add(new ColumnMetaData(each, type, primaryKeyColumns.contains(each)));
+        for (ColumnDefinition each : createStatement.getColumnDefinitions()) {
+            newColumnMetaDataList.add(new ColumnMetaData(each.getName(), each.getType(), each.isPrimaryKey()));
         }
         createStatement.setTableMetaData(new TableMetaData(newColumnMetaDataList));
     }

@@ -33,11 +33,7 @@ import java.util.List;
 @Setter
 public final class CreateTableStatement extends DDLStatement {
     
-    private final List<String> columnNames = new LinkedList<>();
-    
-    private final List<String> columnTypes = new LinkedList<>();
-    
-    private final List<String> primaryKeyColumns = new LinkedList<>();
+    private final List<ColumnDefinition> columnDefinitions = new LinkedList<>();
     
     private TableMetaData tableMetaData;
 }
