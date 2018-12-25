@@ -17,9 +17,7 @@
 
 package io.shardingsphere.core.parsing.antlr.sql.statement.ddl;
 
-import io.shardingsphere.core.metadata.table.TableMetaData;
 import lombok.Getter;
-import lombok.Setter;
 
 import java.util.LinkedList;
 import java.util.List;
@@ -30,10 +28,7 @@ import java.util.List;
  * @author zhangliang
  */
 @Getter
-@Setter
 public final class CreateTableStatement extends DDLStatement {
     
     private final List<ColumnDefinition> columnDefinitions = new LinkedList<>();
-    
-    private TableMetaData tableMetaData;
 }

@@ -53,7 +53,7 @@ public final class AlterTableAssert {
      * @param expected expected alter table
      */
     public void assertAlterTable(final AlterTableStatement actual, final ExpectedAlterTable expected) {
-        assertThat(assertMessage.getFullAssertMessage("Drop names assertion error: "), Joiner.on(",").join(actual.getDropColumns()), is(expected.getDropColumns()));
+        assertThat(assertMessage.getFullAssertMessage("Drop names assertion error: "), Joiner.on(",").join(actual.getDropColumnNames()), is(expected.getDropColumns()));
         assertSame(assertMessage.getFullAssertMessage("Drop primary key assertion error: "), actual.isDropPrimaryKey(), expected.isDropPrimaryKey());
         assertThat(assertMessage.getFullAssertMessage("Rename new table name assertion error: "), actual.getNewTableName(), is(expected.getNewTableName()));
         assertAddColumns(actual, expected.getAddColumns());
@@ -65,9 +65,9 @@ public final class AlterTableAssert {
     }
     
     private void assertAddColumns(final AlterTableStatement actual, final List<ExpectedColumnDefinition> expected) {
-        assertThat(assertMessage.getFullAssertMessage("Add column size error: "), actual.getAddColumns().size(), is(expected.size()));
+        assertThat(assertMessage.getFullAssertMessage("Add column size error: "), actual.getAddedColumnDefinitions().size(), is(expected.size()));
         int count = 0;
-        for (ColumnDefinition each : actual.getAddColumns()) {
+        for (ColumnDefinition each : actual.getAddedColumnDefinitions()) {
             assertColumnDefinition(each, expected.get(count));
             count++;
         }
@@ -79,9 +79,9 @@ public final class AlterTableAssert {
     }
     
     private void assertUpdateColumns(final AlterTableStatement actual, final List<ExpectedUpdateColumnDefinition> expected) {
-        assertThat(assertMessage.getFullAssertMessage("Update column size error: "), actual.getUpdateColumns().size(), is(expected.size()));
+        assertThat(assertMessage.getFullAssertMessage("Update column size error: "), actual.getUpdatedColumnDefinitions().size(), is(expected.size()));
         int count = 0;
-        for (Entry<String, ColumnDefinition> each : actual.getUpdateColumns().entrySet()) {
+        for (Entry<String, ColumnDefinition> each : actual.getUpdatedColumnDefinitions().entrySet()) {
             assertUpdateColumnDefinition(each, expected.get(count));
             count++;
         }

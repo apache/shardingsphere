@@ -57,7 +57,7 @@ public final class ConstraintDefinitionFiller implements SQLStatementFiller<Cons
             Optional<ColumnDefinition> updatedColumn = alterTableStatement.findColumnDefinition(each, shardingTableMetaData);
             if (updatedColumn.isPresent()) {
                 updatedColumn.get().setPrimaryKey(true);
-                alterTableStatement.getUpdateColumns().put(each, updatedColumn.get());
+                alterTableStatement.getUpdatedColumnDefinitions().put(each, updatedColumn.get());
             }
         }
     }

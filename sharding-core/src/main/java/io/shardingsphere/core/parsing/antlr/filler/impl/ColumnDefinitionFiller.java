@@ -59,13 +59,13 @@ public final class ColumnDefinitionFiller implements SQLStatementFiller<ColumnDe
             if (null != sqlSegment.getType()) {
                 oldDefinition.get().setType(sqlSegment.getType());
             }
-            alterTableStatement.getUpdateColumns().put(oldName, oldDefinition.get());
+            alterTableStatement.getUpdatedColumnDefinitions().put(oldName, oldDefinition.get());
         } else {
             ColumnDefinition columnDefinition = new ColumnDefinition(sqlSegment.getName(), sqlSegment.getType(), sqlSegment.isPrimaryKey());
             if (!sqlSegment.isAdd()) {
-                alterTableStatement.getUpdateColumns().put(sqlSegment.getName(), columnDefinition);
+                alterTableStatement.getUpdatedColumnDefinitions().put(sqlSegment.getName(), columnDefinition);
             } else if (!alterTableStatement.findColumnDefinitionFromMetaData(sqlSegment.getName(), shardingTableMetaData).isPresent()) {
-                alterTableStatement.getAddColumns().add(columnDefinition);
+                alterTableStatement.getAddedColumnDefinitions().add(columnDefinition);
             }
         }
         if (null != sqlSegment.getPosition()) {
