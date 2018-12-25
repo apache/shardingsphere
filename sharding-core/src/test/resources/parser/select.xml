@@ -2,14 +2,12 @@
 <parser-result-sets>
     <parser-result sql-case-id="select_constant_without_table" />
     
-    <parser-result sql-case-id="select_with_alias" parameters="1, 1">
+    <parser-result sql-case-id="select_with_same_table_name_and_alias" parameters="1, 1">
         <tables>
             <table name="t_order" alias="t_order" />
         </tables>
         <tokens>
-            <table-token begin-position="7" original-literals="t_order" />
             <table-token begin-position="22" original-literals="t_order" />
-            <table-token begin-position="30" original-literals="t_order" />
         </tokens>
         <or-condition>
             <and-condition>
