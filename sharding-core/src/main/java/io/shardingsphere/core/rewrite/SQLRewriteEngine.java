@@ -18,7 +18,9 @@
 package io.shardingsphere.core.rewrite;
 
 import com.google.common.base.Optional;
+import com.google.common.base.Predicate;
 import com.google.common.base.Strings;
+import com.google.common.collect.Iterators;
 import io.shardingsphere.core.constant.DatabaseType;
 import io.shardingsphere.core.metadata.datasource.ShardingDataSourceMetaData;
 import io.shardingsphere.core.optimizer.condition.ShardingConditions;
@@ -114,11 +116,14 @@ public final class SQLRewriteEngine {
             result.appendLiterals(originalSQL);
             return result;
         }
+        result.appendLiterals(originalSQL.substring(0, sqlTokens.get(0).getBeginPosition()));
+        
+        if ()
         int count = 0;
         for (SQLToken each : sqlTokens) {
-            if (0 == count) {
-                result.appendLiterals(originalSQL.substring(0, each.getBeginPosition()));
-            }
+//            if (0 == count) {
+//                result.appendLiterals(originalSQL.substring(0, each.getBeginPosition()));
+//            }
             if (each instanceof TableToken) {
                 appendTablePlaceholder(result, (TableToken) each, count);
             } else if (each instanceof SchemaToken) {
@@ -145,6 +150,15 @@ public final class SQLRewriteEngine {
             count++;
         }
         return result;
+    }
+    
+    private boolean isContainAggregationDistinctToken() {
+        return Iterators.tryFind(sqlTokens.iterator(), new Predicate<SQLToken>() {
+            @Override
+            public boolean apply(final SQLToken input) {
+                return input instanceof AggregationDistinctToken;
+            }
+        }).isPresent();
     }
     
     private void appendTablePlaceholder(final SQLBuilder sqlBuilder, final TableToken tableToken, final int count) {
