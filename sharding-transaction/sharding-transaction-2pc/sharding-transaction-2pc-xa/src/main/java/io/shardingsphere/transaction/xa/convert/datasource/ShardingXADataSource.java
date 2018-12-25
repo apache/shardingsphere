@@ -19,6 +19,7 @@ package io.shardingsphere.transaction.xa.convert.datasource;
 
 import io.shardingsphere.core.constant.DatabaseType;
 import io.shardingsphere.core.util.ReflectiveUtil;
+import lombok.Getter;
 import lombok.RequiredArgsConstructor;
 
 import javax.sql.XAConnection;
@@ -36,6 +37,7 @@ import java.util.logging.Logger;
  * @author zhaojun
  */
 @RequiredArgsConstructor
+@Getter
 public final class ShardingXADataSource implements XADataSource {
     
     private final XADataSource xaDataSource;

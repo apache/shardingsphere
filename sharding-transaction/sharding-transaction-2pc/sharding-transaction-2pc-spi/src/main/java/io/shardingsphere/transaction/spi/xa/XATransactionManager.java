@@ -55,4 +55,18 @@ public interface XATransactionManager extends ShardingTransactionManager {
      * @return transaction manager
      */
     TransactionManager getUnderlyingTransactionManager();
+    
+    /**
+     * Register recovery resource.
+     * @param dataSourceName data source name
+     * @param xaDataSource XA data source
+     */
+    void registerRecoveryResource(String dataSourceName, XADataSource xaDataSource);
+    
+    /**
+     * Remove recovery resource.
+     * @param dataSourceName data source name
+     * @param xaDataSource XA data source
+     */
+    void removeRecoveryResource(String dataSourceName, XADataSource xaDataSource);
 }

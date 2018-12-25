@@ -17,6 +17,9 @@
 
 package io.shardingsphere.transaction.xa.manager;
 
+import com.atomikos.datasource.xa.jdbc.JdbcTransactionalResource;
+import com.atomikos.icatch.config.UserTransactionService;
+import com.atomikos.icatch.config.UserTransactionServiceImp;
 import com.atomikos.icatch.jta.UserTransactionManager;
 import io.shardingsphere.core.constant.DatabaseType;
 import io.shardingsphere.core.exception.ShardingException;
@@ -40,25 +43,17 @@ import javax.transaction.TransactionManager;
  */
 public final class AtomikosTransactionManager implements XATransactionManager {
     
-    private final UserTransactionManager underlyingTransactionManager;
+    private final UserTransactionManager underlyingTransactionManager = new UserTransactionManager();
+    
+    private final UserTransactionService userTransactionService = new UserTransactionServiceImp();
     
     public AtomikosTransactionManager() {
-        underlyingTransactionManager = new UserTransactionManager();
-        init();
-    }
-    
-    private void init() {
-        try {
-            underlyingTransactionManager.init();
-        } catch (SystemException ex) {
-            throw new ShardingException(ex);
-        }
+        userTransactionService.init();
     }
     
     @Override
     public void destroy() {
-        underlyingTransactionManager.setForceShutdown(true);
-        underlyingTransactionManager.close();
+        userTransactionService.shutdown(true);
     }
     
     @Override
@@ -112,4 +107,15 @@ public final class AtomikosTransactionManager implements XATransactionManager {
     public TransactionManager getUnderlyingTransactionManager() {
         return underlyingTransactionManager;
     }
+    
+    @Override
+    public void registerRecoveryResource(final String dataSourceName, final XADataSource xaDataSource) {
+        userTransactionService.registerResource(new JdbcTransactionalResource(dataSourceName, xaDataSource));
+    }
+    
+    @Override
+    public void removeRecoveryResource(final String dataSourceName, final XADataSource xaDataSource) {
+        userTransactionService.removeResource(new JdbcTransactionalResource(dataSourceName, xaDataSource));
+    }
 }
+

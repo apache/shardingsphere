@@ -50,9 +50,11 @@ public final class XAShardingTransactionHandler extends ShardingTransactionHandl
     
     private DatabaseType databaseType;
     
+    private final XATransactionManager xaTransactionManager = XATransactionManagerSPILoader.getInstance().getTransactionManager();
+    
     @Override
     public ShardingTransactionManager getShardingTransactionManager() {
-        return XATransactionManagerSPILoader.getInstance().getTransactionManager();
+        return xaTransactionManager;
     }
     
     @Override
@@ -62,21 +64,31 @@ public final class XAShardingTransactionHandler extends ShardingTransactionHandl
     
     @Override
     public void registerTransactionDataSource(final DatabaseType databaseType, final Map<String, DataSource> dataSourceMap) {
-        SHARDING_XA_DATA_SOURCE_MAP.clear();
+        removeTransactionDataSource();
         this.databaseType = databaseType;
         try {
             for (Map.Entry<String, DataSource> entry : dataSourceMap.entrySet()) {
                 DataSourceParameter parameter = DataSourceSwapperRegistry.getSwapper(entry.getValue().getClass()).swap(entry.getValue());
                 ShardingXADataSource shardingXADataSource = ShardingXADataSourceUtil.createShardingXADataSource(databaseType, entry.getKey(), parameter);
                 SHARDING_XA_DATA_SOURCE_MAP.put(entry.getKey(), shardingXADataSource);
+                xaTransactionManager.registerRecoveryResource(entry.getKey(), shardingXADataSource.getXaDataSource());
             }
         } catch (final Exception ex) {
             log.error("Failed to register transaction datasource of XAShardingTransactionHandler");
         }
     }
     
+    private void removeTransactionDataSource() {
+        if (!SHARDING_XA_DATA_SOURCE_MAP.isEmpty()) {
+            for (ShardingXADataSource each : SHARDING_XA_DATA_SOURCE_MAP.values()) {
+                xaTransactionManager.removeRecoveryResource(each.getDatasourceName(), each.getXaDataSource());
+            }
+        }
+        SHARDING_XA_DATA_SOURCE_MAP.clear();
+    }
+    
     @Override
-    public void synchronizeTransactionResource(final String datasourceName, final Connection connection, final Object... properties) throws SQLException {
+    public synchronized void synchronizeTransactionResource(final String datasourceName, final Connection connection, final Object... properties) throws SQLException {
         try {
             ShardingXADataSource shardingXADataSource = SHARDING_XA_DATA_SOURCE_MAP.get(datasourceName);
             Preconditions.checkNotNull(shardingXADataSource, "Could not find ShardingXADataSource of `%s`", datasourceName);
