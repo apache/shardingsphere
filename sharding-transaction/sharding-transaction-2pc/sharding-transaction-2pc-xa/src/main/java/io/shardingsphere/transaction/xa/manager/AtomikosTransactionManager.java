@@ -113,12 +113,12 @@ public final class AtomikosTransactionManager implements XATransactionManager {
     
     @Override
     public void registerRecoveryResource(final String dataSourceName, final XADataSource xaDataSource) {
-        userTransactionService.registerResource(new JdbcTransactionalResource(dataSourceName, xaDataSource));
+        userTransactionService.registerResource(new ShardingXARecoverableResource(dataSourceName, xaDataSource));
     }
     
     @Override
     public void removeRecoveryResource(final String dataSourceName, final XADataSource xaDataSource) {
-        userTransactionService.removeResource(new JdbcTransactionalResource(dataSourceName, xaDataSource));
+        userTransactionService.removeResource(new ShardingXARecoverableResource(dataSourceName, xaDataSource));
     }
     
     @Override
