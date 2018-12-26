@@ -50,7 +50,7 @@ export default {
       })
     },
     onConfirm() {
-      API.putProps({ propsConfig: this.textarea }).then((res) => {
+      API.putProps({ props: this.textarea }).then((res) => {
         if (res.success) {
           this.$notify({
             title: this.$t('common').notify.title,
