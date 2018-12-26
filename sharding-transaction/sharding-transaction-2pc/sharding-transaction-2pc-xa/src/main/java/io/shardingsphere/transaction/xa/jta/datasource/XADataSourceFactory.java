@@ -15,7 +15,7 @@
  * </p>
  */
 
-package io.shardingsphere.transaction.xa.convert.datasource;
+package io.shardingsphere.transaction.xa.jta.datasource;
 
 import io.shardingsphere.core.constant.DatabaseType;
 import io.shardingsphere.core.exception.ShardingException;

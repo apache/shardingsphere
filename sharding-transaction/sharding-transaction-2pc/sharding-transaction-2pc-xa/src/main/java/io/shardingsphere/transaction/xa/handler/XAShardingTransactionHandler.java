@@ -25,8 +25,8 @@ import io.shardingsphere.transaction.core.handler.ShardingTransactionHandlerAdap
 import io.shardingsphere.transaction.core.manager.ShardingTransactionManager;
 import io.shardingsphere.transaction.spi.xa.XATransactionManager;
 import io.shardingsphere.transaction.xa.jta.connection.ShardingXAConnection;
-import io.shardingsphere.transaction.xa.jta.ShardingXADataSource;
-import io.shardingsphere.transaction.xa.jta.ShardingXADataSourceUtil;
+import io.shardingsphere.transaction.xa.jta.datasource.ShardingXADataSource;
+import io.shardingsphere.transaction.xa.jta.datasource.ShardingXADataSourceUtil;
 import io.shardingsphere.transaction.xa.convert.swap.DataSourceSwapperRegistry;
 import io.shardingsphere.transaction.xa.manager.XATransactionManagerSPILoader;
 import lombok.extern.slf4j.Slf4j;

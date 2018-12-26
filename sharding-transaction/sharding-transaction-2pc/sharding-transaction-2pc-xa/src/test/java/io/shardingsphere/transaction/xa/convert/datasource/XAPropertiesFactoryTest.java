@@ -18,11 +18,12 @@
 package io.shardingsphere.transaction.xa.convert.datasource;
 
 import io.shardingsphere.core.constant.DatabaseType;
-import io.shardingsphere.transaction.xa.convert.datasource.dialect.H2XAProperties;
-import io.shardingsphere.transaction.xa.convert.datasource.dialect.MySQLXAProperties;
-import io.shardingsphere.transaction.xa.convert.datasource.dialect.OracleXAProperties;
-import io.shardingsphere.transaction.xa.convert.datasource.dialect.PostgreSQLXAProperties;
-import io.shardingsphere.transaction.xa.convert.datasource.dialect.SQLServerXAProperties;
+import io.shardingsphere.transaction.xa.jta.datasource.XAPropertiesFactory;
+import io.shardingsphere.transaction.xa.jta.datasource.dialect.H2XAProperties;
+import io.shardingsphere.transaction.xa.jta.datasource.dialect.MySQLXAProperties;
+import io.shardingsphere.transaction.xa.jta.datasource.dialect.OracleXAProperties;
+import io.shardingsphere.transaction.xa.jta.datasource.dialect.PostgreSQLXAProperties;
+import io.shardingsphere.transaction.xa.jta.datasource.dialect.SQLServerXAProperties;
 import org.junit.Test;
 
 import static org.hamcrest.CoreMatchers.instanceOf;

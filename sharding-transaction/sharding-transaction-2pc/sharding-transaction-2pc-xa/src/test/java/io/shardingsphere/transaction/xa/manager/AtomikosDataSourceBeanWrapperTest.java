@@ -21,7 +21,7 @@ import com.atomikos.beans.PropertyException;
 import com.atomikos.jdbc.AtomikosDataSourceBean;
 import io.shardingsphere.core.constant.DatabaseType;
 import io.shardingsphere.core.rule.DataSourceParameter;
-import io.shardingsphere.transaction.xa.convert.datasource.XADataSourceFactory;
+import io.shardingsphere.transaction.xa.jta.datasource.XADataSourceFactory;
 import org.hamcrest.Matchers;
 import org.hamcrest.core.Is;
 import org.junit.Before;

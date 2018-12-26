@@ -15,7 +15,7 @@
  * </p>
  */
 
-package io.shardingsphere.transaction.xa.jta;
+package io.shardingsphere.transaction.xa.jta.datasource;
 
 import io.shardingsphere.core.constant.DatabaseType;
 import io.shardingsphere.transaction.xa.jta.connection.ShardingXAConnection;

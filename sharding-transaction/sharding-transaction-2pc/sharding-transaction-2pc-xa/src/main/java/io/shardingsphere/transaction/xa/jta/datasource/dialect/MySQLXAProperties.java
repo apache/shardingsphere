@@ -15,20 +15,20 @@
  * </p>
  */
 
-package io.shardingsphere.transaction.xa.convert.datasource.dialect;
+package io.shardingsphere.transaction.xa.jta.datasource.dialect;
 
 import com.google.common.base.Optional;
 import io.shardingsphere.core.rule.DataSourceParameter;
-import io.shardingsphere.transaction.xa.convert.datasource.XAProperties;
+import io.shardingsphere.transaction.xa.jta.datasource.XAProperties;
 
 import java.util.Properties;
 
 /**
- * XA properties for H2.
+ * XA properties for MySQL.
  *
  * @author zhaojun
  */
-public final class H2XAProperties implements XAProperties {
+public final class MySQLXAProperties implements XAProperties {
     
     @Override
     public Properties build(final DataSourceParameter dataSourceParameter) {
@@ -36,6 +36,19 @@ public final class H2XAProperties implements XAProperties {
         result.setProperty("user", dataSourceParameter.getUsername());
         result.setProperty("password", Optional.fromNullable(dataSourceParameter.getPassword()).or(""));
         result.setProperty("URL", dataSourceParameter.getUrl());
+        result.setProperty("pinGlobalTxToPhysicalConnection", Boolean.TRUE.toString());
+        result.setProperty("autoReconnect", Boolean.TRUE.toString());
+        result.setProperty("useServerPrepStmts", Boolean.TRUE.toString());
+        result.setProperty("cachePrepStmts", Boolean.TRUE.toString());
+        result.setProperty("prepStmtCacheSize", "250");
+        result.setProperty("prepStmtCacheSqlLimit", "2048");
+        result.setProperty("useLocalSessionState", Boolean.TRUE.toString());
+        result.setProperty("rewriteBatchedStatements", Boolean.TRUE.toString());
+        result.setProperty("cacheResultSetMetadata", Boolean.TRUE.toString());
+        result.setProperty("cacheServerConfiguration", Boolean.TRUE.toString());
+        result.setProperty("elideSetAutoCommits", Boolean.TRUE.toString());
+        result.setProperty("maintainTimeStats", Boolean.FALSE.toString());
+        result.setProperty("netTimeoutForStreamingResults", "0");
         return result;
     }
 }

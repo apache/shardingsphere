@@ -15,31 +15,31 @@
  * </p>
  */
 
-package io.shardingsphere.transaction.xa.convert.datasource.dialect;
+package io.shardingsphere.transaction.xa.jta.datasource.dialect;
 
 import com.google.common.base.Optional;
-import io.shardingsphere.core.metadata.datasource.dialect.SQLServerDataSourceMetaData;
+import io.shardingsphere.core.metadata.datasource.dialect.OracleDataSourceMetaData;
 import io.shardingsphere.core.rule.DataSourceParameter;
-import io.shardingsphere.transaction.xa.convert.datasource.XAProperties;
+import io.shardingsphere.transaction.xa.jta.datasource.XAProperties;
 
 import java.util.Properties;
 
 /**
- * XA properties for SQLServer.
+ * XA properties for Oracle.
  *
  * @author zhaojun
  */
-public final class SQLServerXAProperties implements XAProperties {
+public final class OracleXAProperties implements XAProperties {
     
     @Override
     public Properties build(final DataSourceParameter dataSourceParameter) {
         Properties result = new Properties();
-        SQLServerDataSourceMetaData sqlServerMetaData = new SQLServerDataSourceMetaData(dataSourceParameter.getUrl());
+        OracleDataSourceMetaData oracleMetaData = new OracleDataSourceMetaData(dataSourceParameter.getUrl());
         result.setProperty("user", dataSourceParameter.getUsername());
         result.setProperty("password", Optional.fromNullable(dataSourceParameter.getPassword()).or(""));
-        result.setProperty("serverName", sqlServerMetaData.getHostName());
-        result.setProperty("portNumber", String.valueOf(sqlServerMetaData.getPort()));
-        result.setProperty("databaseName", sqlServerMetaData.getSchemeName());
+        result.setProperty("serverName", oracleMetaData.getHostName());
+        result.setProperty("portNumber", String.valueOf(oracleMetaData.getPort()));
+        result.setProperty("databaseName", oracleMetaData.getSchemeName());
         return result;
     }
 }

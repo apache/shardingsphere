@@ -15,31 +15,27 @@
  * </p>
  */
 
-package io.shardingsphere.transaction.xa.convert.datasource.dialect;
+package io.shardingsphere.transaction.xa.jta.datasource.dialect;
 
 import com.google.common.base.Optional;
-import io.shardingsphere.core.metadata.datasource.dialect.OracleDataSourceMetaData;
 import io.shardingsphere.core.rule.DataSourceParameter;
-import io.shardingsphere.transaction.xa.convert.datasource.XAProperties;
+import io.shardingsphere.transaction.xa.jta.datasource.XAProperties;
 
 import java.util.Properties;
 
 /**
- * XA properties for Oracle.
+ * XA properties for H2.
  *
  * @author zhaojun
  */
-public final class OracleXAProperties implements XAProperties {
+public final class H2XAProperties implements XAProperties {
     
     @Override
     public Properties build(final DataSourceParameter dataSourceParameter) {
         Properties result = new Properties();
-        OracleDataSourceMetaData oracleMetaData = new OracleDataSourceMetaData(dataSourceParameter.getUrl());
         result.setProperty("user", dataSourceParameter.getUsername());
         result.setProperty("password", Optional.fromNullable(dataSourceParameter.getPassword()).or(""));
-        result.setProperty("serverName", oracleMetaData.getHostName());
-        result.setProperty("portNumber", String.valueOf(oracleMetaData.getPort()));
-        result.setProperty("databaseName", oracleMetaData.getSchemeName());
+        result.setProperty("URL", dataSourceParameter.getUrl());
         return result;
     }
 }
