@@ -1,8 +1,7 @@
 <dataset>
     <metadata>
-        <column name="AGGREGATION_DISTINCT_DERIVED_0" />
-        <column name="AGGREGATION_DISTINCT_DERIVED_1" />
+        <column name="count(distinct order_id)" />
+        <column name="sum(distinct order_id)" />
     </metadata>
-    <row values="2" />
-    <row values="2001" />
+    <row values="2, 2001" />
 </dataset>
