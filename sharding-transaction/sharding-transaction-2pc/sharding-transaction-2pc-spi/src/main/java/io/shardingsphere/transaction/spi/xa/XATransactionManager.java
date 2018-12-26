@@ -24,7 +24,6 @@ import io.shardingsphere.transaction.core.manager.ShardingTransactionManager;
 import javax.sql.DataSource;
 import javax.sql.XADataSource;
 import javax.transaction.TransactionManager;
-import javax.transaction.xa.XAResource;
 
 /**
  * XA transaction manager.
@@ -64,23 +63,18 @@ public interface XATransactionManager extends ShardingTransactionManager {
     
     /**
      * Register recovery resource.
+     *
      * @param dataSourceName data source name
-     * @param xaDataSource XA data source
+     * @param xaDataSource   XA data source
      */
     void registerRecoveryResource(String dataSourceName, XADataSource xaDataSource);
     
     /**
      * Remove recovery resource.
+     *
      * @param dataSourceName data source name
-     * @param xaDataSource XA data source
+     * @param xaDataSource   XA data source
      */
     void removeRecoveryResource(String dataSourceName, XADataSource xaDataSource);
-    
-    /**
-     * Get recovery resource.
-     * @param dataSourceName data source name
-     * @return XA recovery resource
-     */
-    XAResource getRecoveryXAResource(String dataSourceName);
 }
 

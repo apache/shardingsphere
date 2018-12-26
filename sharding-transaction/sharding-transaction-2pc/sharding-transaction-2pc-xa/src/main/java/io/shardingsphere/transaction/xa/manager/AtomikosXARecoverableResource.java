@@ -28,11 +28,11 @@ import javax.transaction.xa.XAResource;
  *
  * @author zhaojun
  */
-public final class ShardingXARecoverableResource extends JdbcTransactionalResource {
+public final class AtomikosXARecoverableResource extends JdbcTransactionalResource {
     
     private final String resourceName;
     
-    public ShardingXARecoverableResource(final String serverName, final XADataSource xads) {
+    public AtomikosXARecoverableResource(final String serverName, final XADataSource xads) {
         super(serverName, xads);
         resourceName = serverName;
     }
