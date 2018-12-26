@@ -53,7 +53,7 @@ public class AlterTableOptimizer implements SQLStatementOptimizer {
     private List<ColumnMetaData> getUpdatedColumnMetaDataList(final AlterTableStatement alterTableStatement, final TableMetaData oldTableMetaData) {
         List<ColumnMetaData> result = new LinkedList<>();
         for (ColumnMetaData each : oldTableMetaData.getColumnMetaData()) {
-            ColumnDefinition updatedColumnDefinition = alterTableStatement.getUpdatedColumnDefinitions().get(each.getColumnName());
+            ColumnDefinition updatedColumnDefinition = alterTableStatement.getModifiedColumnDefinitions().get(each.getColumnName());
             String columnName;
             String columnType;
             boolean primaryKey;

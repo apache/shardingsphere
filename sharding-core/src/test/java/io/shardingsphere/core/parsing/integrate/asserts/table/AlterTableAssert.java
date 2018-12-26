@@ -79,9 +79,9 @@ public final class AlterTableAssert {
     }
     
     private void assertUpdateColumns(final AlterTableStatement actual, final List<ExpectedUpdateColumnDefinition> expected) {
-        assertThat(assertMessage.getFullAssertMessage("Update column size error: "), actual.getUpdatedColumnDefinitions().size(), is(expected.size()));
+        assertThat(assertMessage.getFullAssertMessage("Update column size error: "), actual.getModifiedColumnDefinitions().size(), is(expected.size()));
         int count = 0;
-        for (Entry<String, ColumnDefinition> each : actual.getUpdatedColumnDefinitions().entrySet()) {
+        for (Entry<String, ColumnDefinition> each : actual.getModifiedColumnDefinitions().entrySet()) {
             assertUpdateColumnDefinition(each, expected.get(count));
             count++;
         }

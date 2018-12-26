@@ -41,9 +41,9 @@ public final class AlterTableStatement extends DDLStatement {
     
     private final List<ColumnDefinition> addedColumnDefinitions = new LinkedList<>();
     
-    private final List<String> dropColumnNames = new LinkedList<>();
+    private final Map<String, ColumnDefinition> modifiedColumnDefinitions = new LinkedHashMap<>();
     
-    private final Map<String, ColumnDefinition> updatedColumnDefinitions = new LinkedHashMap<>();
+    private final List<String> dropColumnNames = new LinkedList<>();
     
     private final List<ColumnPositionSegment> positionChangedColumns = new LinkedList<>();
     
