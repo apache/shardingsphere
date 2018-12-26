@@ -2,6 +2,5 @@
     <metadata>
         <column name="c" />
     </metadata>
-    <row values="1010" />
-    <row values="1011" />
+    <row values="2" />
 </dataset>
