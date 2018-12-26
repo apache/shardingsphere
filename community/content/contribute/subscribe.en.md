@@ -1,5 +1,5 @@
 +++
-title = "订阅指南"
+title = "Subscribe Guide"
 weight = 1
 chapter = true
 +++
@@ -7,17 +7,18 @@ chapter = true
 在使用ShardingSphere的过程中，如果您发现任何问题，有新的想法、建议都可以通过**Apache邮件列表、gitHub提交issue的方式**参与到ShardingSphere的社区建设中。
 
 
-## 订阅Apache ShardingSphere（Incubating）的邮件列表
 
-- 发送订阅邮件
-用自己的邮箱向dev-subscribe@shardingsphere.apache.org发送一封邮件，主题和内容任意（建议用非163邮箱，易被拦截）
+## Subscribe Apache ShardingSphere (Incubating) mail-list
 
-- 接收确认邮件并回复
-完成步骤1后，您将收到一封来自dev-help@shardingsphere.apache.org的确认邮件（如未收到，请确认该邮件是否已被拦截，或已经被自动归入“订阅邮件”、“垃圾邮件”、“推广邮件”等文件夹）。直接回复该邮件，或点击邮件里的链接快捷回复即可，主题和内容任意。
- 
-- 接收欢迎邮件
-完成以上步骤后，您会收到一封主题为WELCOME to dev@shardingsphere.apache.org的邮件，至此您已成功订阅Apache ShardingSphere（Incubating）的邮件列表。
+- Send e-mail to subscribe
+Use your mailbox to send an e-mail to dev-subscribe@shardingsphere.apache.org with any subject or content.
+  
+- Receive and reply the confirmation e-mail
+After Step 1, you will receive a confirmation e-mail from dev-help@shardingsphere.apache.org (if you have not receive that, please check “RSS feeds”, “junk e-mail” or other items). Reply that e-mail directly or click the link in e-mail to reply, with any subject or content.
 
-## gitHub提交issue
+- Receive the welcome e-mail 
+After finishing the two steps above, an e-mail with the subject of WELCOME to dev@shardingsphere.apache.org will be sent to your e-mail address. Until now, you have succeeded in subscribing Apache ShardingSphere（Incubating）mail-list.
 
-可在[Issue列表](https://github.com/sharding-sphere/sharding-sphere/issues)以issue的方式提交您的问题和建议。
+## Raise the issue on gitHub
+
+You can raise the issue on [Issues](https://github.com/sharding-sphere/sharding-sphere/issues) to give your advices or ask questions.
