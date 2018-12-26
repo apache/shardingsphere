@@ -399,6 +399,16 @@
     <dql-test-case sql-case-id="select_distinct_with_count">
         <assertion expected-data-file="select_distinct_with_count.xml" />
     </dql-test-case>
+    
+     <dql-test-case sql-case-id="select_distinct_with_avg">
+        <assertion expected-data-file="select_distinct_with_avg.xml" />
+    </dql-test-case>
+    
+    <dql-test-case sql-case-id="select_distinct_function">
+        <assertion expected-data-file="select_distinct_function.xml" />
+    </dql-test-case>
+    
+    
 
     <dql-test-case sql-case-id="select_distinct_with_count_group_by">
         <assertion expected-data-file="select_distinct_with_count_group_by.xml" />
