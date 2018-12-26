@@ -15,8 +15,9 @@
  * </p>
  */
 
-package io.shardingsphere.transaction.xa.jta;
+package io.shardingsphere.transaction.xa.jta.connection;
 
+import io.shardingsphere.transaction.xa.jta.ShardingXAResource;
 import lombok.RequiredArgsConstructor;
 
 import javax.sql.ConnectionEventListener;

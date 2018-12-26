@@ -24,7 +24,7 @@ import io.shardingsphere.transaction.api.TransactionType;
 import io.shardingsphere.transaction.core.handler.ShardingTransactionHandlerAdapter;
 import io.shardingsphere.transaction.core.manager.ShardingTransactionManager;
 import io.shardingsphere.transaction.spi.xa.XATransactionManager;
-import io.shardingsphere.transaction.xa.jta.ShardingXAConnection;
+import io.shardingsphere.transaction.xa.jta.connection.ShardingXAConnection;
 import io.shardingsphere.transaction.xa.jta.ShardingXADataSource;
 import io.shardingsphere.transaction.xa.jta.ShardingXADataSourceUtil;
 import io.shardingsphere.transaction.xa.convert.swap.DataSourceSwapperRegistry;
@@ -81,7 +81,7 @@ public final class XAShardingTransactionHandler extends ShardingTransactionHandl
     private void removeTransactionDataSource() {
         if (!SHARDING_XA_DATA_SOURCE_MAP.isEmpty()) {
             for (ShardingXADataSource each : SHARDING_XA_DATA_SOURCE_MAP.values()) {
-                xaTransactionManager.removeRecoveryResource(each.getDatasourceName(), each.getXaDataSource());
+                xaTransactionManager.removeRecoveryResource(each.getResourceName(), each.getXaDataSource());
             }
         }
         SHARDING_XA_DATA_SOURCE_MAP.clear();
@@ -91,7 +91,7 @@ public final class XAShardingTransactionHandler extends ShardingTransactionHandl
     public synchronized void synchronizeTransactionResource(final String datasourceName, final Connection connection, final Object... properties) {
         try {
             ShardingXADataSource shardingXADataSource = SHARDING_XA_DATA_SOURCE_MAP.get(datasourceName);
-            ShardingXAConnection shardingXAConnection = shardingXADataSource.wrapPhysicalConnection(connection, databaseType);
+            ShardingXAConnection shardingXAConnection = shardingXADataSource.wrapPhysicalConnection(databaseType, connection);
             Transaction transaction = xaTransactionManager.getUnderlyingTransactionManager().getTransaction();
             transaction.enlistResource(shardingXAConnection.getXAResource());
         } catch (final Exception ex) {

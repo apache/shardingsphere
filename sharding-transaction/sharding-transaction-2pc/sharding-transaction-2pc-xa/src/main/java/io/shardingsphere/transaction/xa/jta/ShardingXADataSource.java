@@ -18,14 +18,14 @@
 package io.shardingsphere.transaction.xa.jta;
 
 import io.shardingsphere.core.constant.DatabaseType;
-import io.shardingsphere.core.util.ReflectiveUtil;
+import io.shardingsphere.transaction.xa.jta.connection.ShardingXAConnection;
+import io.shardingsphere.transaction.xa.jta.connection.ShardingXAConnectionFactory;
 import lombok.Getter;
 import lombok.RequiredArgsConstructor;
 
 import javax.sql.XAConnection;
 import javax.sql.XADataSource;
 import java.io.PrintWriter;
-import java.lang.reflect.InvocationTargetException;
 import java.sql.Connection;
 import java.sql.SQLException;
 import java.sql.SQLFeatureNotSupportedException;
@@ -40,40 +40,29 @@ import java.util.logging.Logger;
 @Getter
 public final class ShardingXADataSource implements XADataSource {
     
-    private final String datasourceName;
+    private final String resourceName;
     
     private final XADataSource xaDataSource;
     
     /**
-     * Wrap physical connection to sharding XA connection.
-     * @param connection connection
+     * Wrap a physical connection to sharding XA connection.
+     *
      * @param databaseType databaseType
-     * @return XA connection
-     * @throws NoSuchMethodException No such method exception
-     * @throws InvocationTargetException invocation target exception
-     * @throws IllegalAccessException illegal access exception
+     * @param connection connection
+     * @return sharding XA connection
      */
-    public ShardingXAConnection wrapPhysicalConnection(final Connection connection, final DatabaseType databaseType) throws NoSuchMethodException, InvocationTargetException, IllegalAccessException,
-        ClassNotFoundException, SQLException {
-        Class<?> clazz = xaDataSource.getClass();
-        switch (databaseType) {
-            case MySQL:
-                Connection mysqlPhysicalConnection = (Connection) connection.unwrap(Class.forName("com.mysql.jdbc.Connection"));
-                XAConnection xaConnection = (XAConnection) ReflectiveUtil.findMethod(xaDataSource, "wrapConnection", Connection.class).invoke(xaDataSource, mysqlPhysicalConnection);
-                return new ShardingXAConnection(datasourceName, xaConnection);
-            default:
-                throw new UnsupportedOperationException(String.format("Cannot support database type: `%s`", databaseType));
-        }
+    public ShardingXAConnection wrapPhysicalConnection(final DatabaseType databaseType, final Connection connection) {
+        return ShardingXAConnectionFactory.createShardingXAConnection(databaseType, resourceName, xaDataSource, connection);
     }
     
     @Override
     public XAConnection getXAConnection() throws SQLException {
-        return xaDataSource.getXAConnection();
+        return new ShardingXAConnection(resourceName, xaDataSource.getXAConnection());
     }
     
     @Override
     public XAConnection getXAConnection(final String user, final String password) throws SQLException {
-        return xaDataSource.getXAConnection(user, password);
+        return new ShardingXAConnection(resourceName, xaDataSource.getXAConnection(user, password));
     }
     
     @Override
