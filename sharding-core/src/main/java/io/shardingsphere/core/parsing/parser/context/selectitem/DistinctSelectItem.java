@@ -48,7 +48,7 @@ public final class DistinctSelectItem implements SelectItem {
         this.distinctColumnNames.addAll(distinctColumnNames);
         this.alias = alias;
     }
-
+    
     @Override
     public String getExpression() {
         return isSingleColumnAlias() ? DefaultKeyword.DISTINCT.name() + " " + distinctColumnNames.get(0) + "AS" + alias.get() 
@@ -62,15 +62,6 @@ public final class DistinctSelectItem implements SelectItem {
      */
     public Collection<String> getDistinctColumnLabels() {
         return isSingleColumnAlias() ? Collections.singletonList(alias.get()) : distinctColumnNames;
-    }
-    
-    private Collection<String> getDistinctColumnLabels(final String alias) {
-        if (1 == distinctColumnNames.size()) {
-            return Collections.singletonList(alias);
-        }
-        List<String> result = new LinkedList<>(distinctColumnNames);
-        result.set(0, alias);
-        return result;
     }
     
     private boolean isSingleColumnAlias() {
