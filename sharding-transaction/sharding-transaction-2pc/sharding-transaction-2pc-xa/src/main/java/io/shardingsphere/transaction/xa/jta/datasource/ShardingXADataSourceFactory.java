@@ -20,7 +20,9 @@ package io.shardingsphere.transaction.xa.jta.datasource;
 import com.atomikos.beans.PropertyException;
 import com.atomikos.beans.PropertyUtils;
 import io.shardingsphere.core.constant.DatabaseType;
+import io.shardingsphere.core.exception.ShardingException;
 import io.shardingsphere.core.rule.DataSourceParameter;
+import lombok.extern.slf4j.Slf4j;
 
 import javax.sql.XADataSource;
 import java.util.Properties;
@@ -30,7 +32,8 @@ import java.util.Properties;
  *
  * @author zhaojun
  */
-public class ShardingXADataSourceUtil {
+@Slf4j
+public class ShardingXADataSourceFactory {
     
     /**
      * Create sharding XA data source.
@@ -38,13 +41,17 @@ public class ShardingXADataSourceUtil {
      * @param dataSourceName data source name
      * @param dataSourceParameter data source parameter
      * @return sharding XA data source
-     * @throws PropertyException property exception
      */
     public static ShardingXADataSource createShardingXADataSource(
-        final DatabaseType databaseType, final String dataSourceName, final DataSourceParameter dataSourceParameter) throws PropertyException {
-        XADataSource xaDataSource = XADataSourceFactory.build(databaseType);
-        Properties xaProperties = XAPropertiesFactory.createXAProperties(databaseType).build(dataSourceParameter);
-        PropertyUtils.setProperties(xaDataSource, xaProperties);
-        return new ShardingXADataSource(dataSourceName, xaDataSource);
+        final DatabaseType databaseType, final String dataSourceName, final DataSourceParameter dataSourceParameter) {
+        try {
+            XADataSource xaDataSource = XADataSourceFactory.build(databaseType);
+            Properties xaProperties = XAPropertiesFactory.createXAProperties(databaseType).build(dataSourceParameter);
+            PropertyUtils.setProperties(xaDataSource, xaProperties);
+            return new ShardingXADataSource(dataSourceName, xaDataSource);
+        } catch (final PropertyException ex) {
+            log.error("Failed to create ShardingXADataSource");
+            throw new ShardingException(ex);
+        }
     }
 }

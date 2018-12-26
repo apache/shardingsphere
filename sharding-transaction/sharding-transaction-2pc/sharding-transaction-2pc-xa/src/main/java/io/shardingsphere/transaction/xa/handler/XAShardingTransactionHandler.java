@@ -24,10 +24,10 @@ import io.shardingsphere.transaction.api.TransactionType;
 import io.shardingsphere.transaction.core.handler.ShardingTransactionHandlerAdapter;
 import io.shardingsphere.transaction.core.manager.ShardingTransactionManager;
 import io.shardingsphere.transaction.spi.xa.XATransactionManager;
+import io.shardingsphere.transaction.xa.convert.swap.DataSourceSwapperRegistry;
 import io.shardingsphere.transaction.xa.jta.connection.ShardingXAConnection;
 import io.shardingsphere.transaction.xa.jta.datasource.ShardingXADataSource;
-import io.shardingsphere.transaction.xa.jta.datasource.ShardingXADataSourceUtil;
-import io.shardingsphere.transaction.xa.convert.swap.DataSourceSwapperRegistry;
+import io.shardingsphere.transaction.xa.jta.datasource.ShardingXADataSourceFactory;
 import io.shardingsphere.transaction.xa.manager.XATransactionManagerSPILoader;
 import lombok.extern.slf4j.Slf4j;
 
@@ -45,7 +45,7 @@ import java.util.concurrent.ConcurrentHashMap;
 @Slf4j
 public final class XAShardingTransactionHandler extends ShardingTransactionHandlerAdapter {
     
-    private static final Map<String, ShardingXADataSource> SHARDING_XA_DATA_SOURCE_MAP = new ConcurrentHashMap<>();
+    private static final Map<String, ShardingXADataSource> SHARDING_XA_DATASOURCE_MAP = new ConcurrentHashMap<>();
     
     private DatabaseType databaseType;
     
@@ -65,32 +65,28 @@ public final class XAShardingTransactionHandler extends ShardingTransactionHandl
     public void registerTransactionDataSource(final DatabaseType databaseType, final Map<String, DataSource> dataSourceMap) {
         removeTransactionDataSource();
         this.databaseType = databaseType;
-        try {
-            for (Map.Entry<String, DataSource> entry : dataSourceMap.entrySet()) {
-                DataSourceParameter parameter = DataSourceSwapperRegistry.getSwapper(entry.getValue().getClass()).swap(entry.getValue());
-                ShardingXADataSource shardingXADataSource = ShardingXADataSourceUtil.createShardingXADataSource(databaseType, entry.getKey(), parameter);
-                SHARDING_XA_DATA_SOURCE_MAP.put(entry.getKey(), shardingXADataSource);
-                xaTransactionManager.registerRecoveryResource(entry.getKey(), shardingXADataSource.getXaDataSource());
-            }
-        } catch (final Exception ex) {
-            log.error("Failed to register transaction datasource of XAShardingTransactionHandler");
+        for (Map.Entry<String, DataSource> entry : dataSourceMap.entrySet()) {
+            DataSourceParameter parameter = DataSourceSwapperRegistry.getSwapper(entry.getValue().getClass()).swap(entry.getValue());
+            ShardingXADataSource shardingXADataSource = ShardingXADataSourceFactory.createShardingXADataSource(databaseType, entry.getKey(), parameter);
+            SHARDING_XA_DATASOURCE_MAP.put(entry.getKey(), shardingXADataSource);
+            xaTransactionManager.registerRecoveryResource(entry.getKey(), shardingXADataSource.getXaDataSource());
         }
         xaTransactionManager.startup();
     }
     
     private void removeTransactionDataSource() {
-        if (!SHARDING_XA_DATA_SOURCE_MAP.isEmpty()) {
-            for (ShardingXADataSource each : SHARDING_XA_DATA_SOURCE_MAP.values()) {
+        if (!SHARDING_XA_DATASOURCE_MAP.isEmpty()) {
+            for (ShardingXADataSource each : SHARDING_XA_DATASOURCE_MAP.values()) {
                 xaTransactionManager.removeRecoveryResource(each.getResourceName(), each.getXaDataSource());
             }
         }
-        SHARDING_XA_DATA_SOURCE_MAP.clear();
+        SHARDING_XA_DATASOURCE_MAP.clear();
     }
     
     @Override
     public synchronized void synchronizeTransactionResource(final String datasourceName, final Connection connection, final Object... properties) {
         try {
-            ShardingXADataSource shardingXADataSource = SHARDING_XA_DATA_SOURCE_MAP.get(datasourceName);
+            ShardingXADataSource shardingXADataSource = SHARDING_XA_DATASOURCE_MAP.get(datasourceName);
             ShardingXAConnection shardingXAConnection = shardingXADataSource.wrapPhysicalConnection(databaseType, connection);
             Transaction transaction = xaTransactionManager.getUnderlyingTransactionManager().getTransaction();
             transaction.enlistResource(shardingXAConnection.getXAResource());
