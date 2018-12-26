@@ -1,0 +1,8 @@
+<dataset>
+    <metadata>
+        <column name="AGGREGATION_DISTINCT_DERIVED_0" />
+        <column name="AGGREGATION_DISTINCT_DERIVED_1" />
+    </metadata>
+    <row values="2" />
+    <row values="2001" />
+</dataset>
