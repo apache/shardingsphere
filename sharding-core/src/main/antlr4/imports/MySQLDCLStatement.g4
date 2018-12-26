@@ -125,7 +125,7 @@ revokeRole
 createUser
     : CREATE USER (IF NOT EXISTS)?
     userAuthOptions
-    DEFAULT ROLE roles
+    (DEFAULT ROLE roles)?
     (REQUIRE (NONE | tlsOption (COMMA AND? tlsOption)*))?
     (WITH resourceOption (COMMA resourceOption)*)?
     (passwordOption | lockOption)*
