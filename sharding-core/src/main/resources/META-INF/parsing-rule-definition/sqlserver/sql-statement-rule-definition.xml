@@ -17,4 +17,17 @@
     <sql-statement-rule context="rollback" sql-statement-class="io.shardingsphere.core.parsing.parser.sql.tcl.rollback.RollbackStatement" />
     <sql-statement-rule context="setTransaction" sql-statement-class="io.shardingsphere.core.parsing.parser.sql.tcl.set.transaction.SetTransactionStatement" />
     <sql-statement-rule context="savepoint" sql-statement-class="io.shardingsphere.core.parsing.parser.sql.tcl.savepoint.SavepointStatement" />
+    
+    <sql-statement-rule context="grant" sql-statement-class="io.shardingsphere.core.parsing.parser.sql.dcl.DCLStatement" extractor-rule-refs="tableNames" />
+    <sql-statement-rule context="revoke" sql-statement-class="io.shardingsphere.core.parsing.parser.sql.dcl.DCLStatement" extractor-rule-refs="tableNames" />
+    <sql-statement-rule context="deny" sql-statement-class="io.shardingsphere.core.parsing.parser.sql.dcl.DCLStatement" extractor-rule-refs="tableNames" />
+    <sql-statement-rule context="createUser" sql-statement-class="io.shardingsphere.core.parsing.parser.sql.dcl.DCLStatement" />
+    <sql-statement-rule context="alterUser" sql-statement-class="io.shardingsphere.core.parsing.parser.sql.dcl.DCLStatement" />
+    <sql-statement-rule context="dropUser" sql-statement-class="io.shardingsphere.core.parsing.parser.sql.dcl.DCLStatement" />
+    <sql-statement-rule context="createLogin" sql-statement-class="io.shardingsphere.core.parsing.parser.sql.dcl.DCLStatement" />
+    <sql-statement-rule context="alterLogin" sql-statement-class="io.shardingsphere.core.parsing.parser.sql.dcl.DCLStatement" />
+    <sql-statement-rule context="dropLogin" sql-statement-class="io.shardingsphere.core.parsing.parser.sql.dcl.DCLStatement" />
+    <sql-statement-rule context="createRole" sql-statement-class="io.shardingsphere.core.parsing.parser.sql.dcl.DCLStatement" />
+    <sql-statement-rule context="alterRole" sql-statement-class="io.shardingsphere.core.parsing.parser.sql.dcl.DCLStatement" />
+    <sql-statement-rule context="dropRole" sql-statement-class="io.shardingsphere.core.parsing.parser.sql.dcl.DCLStatement" /> 
 </sql-statement-rule-definition>

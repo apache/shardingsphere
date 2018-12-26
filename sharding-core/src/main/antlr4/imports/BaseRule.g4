@@ -179,7 +179,7 @@ domainNames
     : domainName (COMMA domainName)*
     ;
     
-tableNamesWithParen
+tableList
     : LP_ tableNames RP_
     ;
     

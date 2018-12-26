@@ -11,7 +11,7 @@ grantGeneral
     ;
     
 generalPrisOn
-    : (ALL PRIVILEGES? | permissionOnColumns (COMMA permissionOnColumns)*) (ON (ID COLON COLON)? ID)?
+    : (ALL PRIVILEGES? | permissionOnColumns (COMMA permissionOnColumns)*) (ON (ID COLON COLON)? tableName)?
     ;
     
 permissionOnColumns
@@ -45,7 +45,7 @@ revokeDW
     ;
     
 permissionWithClass
-    : permission (COMMA permission)* (ON (classType COLON COLON)? ID)?
+    : permission (COMMA permission)* (ON (classType COLON COLON)? tableName)?
     ;
     
 deny
