@@ -41,7 +41,7 @@ public final class MySQLDropIndexExtractor implements CollectionSQLSegmentExtrac
     
     @Override
     public Collection<IndexSegment> extract(final ParserRuleContext ancestorNode) {
-        Collection<ParserRuleContext> dropIndexNodes = ExtractorUtils.getAllDescendantNodes(ancestorNode, RuleName.DROP_INDEX_REF);
+        Collection<ParserRuleContext> dropIndexNodes = ExtractorUtils.getAllDescendantNodes(ancestorNode, RuleName.DROP_INDEX_DEF);
         if (dropIndexNodes.isEmpty()) {
             return Collections.emptyList();
         }

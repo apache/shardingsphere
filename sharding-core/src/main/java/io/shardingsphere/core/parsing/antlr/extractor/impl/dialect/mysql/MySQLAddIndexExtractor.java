@@ -17,15 +17,16 @@
 
 package io.shardingsphere.core.parsing.antlr.extractor.impl.dialect.mysql;
 
+import com.google.common.base.Optional;
 import io.shardingsphere.core.parsing.antlr.extractor.CollectionSQLSegmentExtractor;
-import io.shardingsphere.core.parsing.antlr.extractor.impl.IndexNamesExtractor;
+import io.shardingsphere.core.parsing.antlr.extractor.impl.IndexNameExtractor;
 import io.shardingsphere.core.parsing.antlr.extractor.util.ExtractorUtils;
 import io.shardingsphere.core.parsing.antlr.extractor.util.RuleName;
 import io.shardingsphere.core.parsing.antlr.sql.segment.IndexSegment;
 import org.antlr.v4.runtime.ParserRuleContext;
 
 import java.util.Collection;
-import java.util.Collections;
+import java.util.LinkedList;
 
 /**
  * Add index extractor for MySQL.
@@ -34,15 +35,18 @@ import java.util.Collections;
  */
 public final class MySQLAddIndexExtractor implements CollectionSQLSegmentExtractor {
     
-    private final IndexNamesExtractor indexesNameExtractor = new IndexNamesExtractor();
+    private final IndexNameExtractor indexNameExtractor = new IndexNameExtractor();
     
     @Override
     public Collection<IndexSegment> extract(final ParserRuleContext ancestorNode) {
+        Collection<IndexSegment> result = new LinkedList<>();
         Collection<ParserRuleContext> addIndexNodes = ExtractorUtils.getAllDescendantNodes(ancestorNode, RuleName.ADD_INDEX);
-        if (addIndexNodes.isEmpty()) {
-            return Collections.emptyList();
+        for (ParserRuleContext each : addIndexNodes) {
+            Optional<IndexSegment> indexSegment = indexNameExtractor.extract(each);
+            if (indexSegment.isPresent()) {
+                result.add(indexSegment.get());
+            }
         }
-       
-        return indexesNameExtractor.extract(ancestorNode);
+        return result;
     }
 }

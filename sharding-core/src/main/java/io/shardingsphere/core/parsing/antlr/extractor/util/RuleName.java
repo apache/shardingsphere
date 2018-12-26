@@ -65,9 +65,7 @@ public enum RuleName {
     
     INDEX_NAME("IndexName"),
     
-    DROP_INDEX_REF("DropIndexDef"),
-    
-    ALTER_DROP_INDEX("AlterDropIndex"),
+    DROP_INDEX_DEF("DropIndexDef"),
     
     ADD_CONSTRAINT("AddConstraint"),
     
