@@ -25,7 +25,6 @@ import io.shardingsphere.core.parsing.antlr.sql.segment.column.ColumnDefinitionS
 import org.antlr.v4.runtime.ParserRuleContext;
 
 import java.util.Collection;
-import java.util.Collections;
 import java.util.LinkedList;
 
 /**
@@ -35,25 +34,21 @@ import java.util.LinkedList;
  */
 public class ModifyColumnExtractor implements CollectionSQLSegmentExtractor {
     
-    private final ColumnDefinitionExtractor columnDefinitionPhraseExtractor = new ColumnDefinitionExtractor();
+    private final ColumnDefinitionExtractor columnDefinitionExtractor = new ColumnDefinitionExtractor();
     
     @Override
     public final Collection<ColumnDefinitionSegment> extract(final ParserRuleContext ancestorNode) {
-        Collection<ParserRuleContext> modifyColumnNodes = ExtractorUtils.getAllDescendantNodes(ancestorNode, RuleName.MODIFY_COLUMN);
-        if (modifyColumnNodes.isEmpty()) {
-            return Collections.emptyList();
-        }
         Collection<ColumnDefinitionSegment> result = new LinkedList<>();
-        for (ParserRuleContext each : modifyColumnNodes) {
-            Optional<ColumnDefinitionSegment> columnDefinition = columnDefinitionPhraseExtractor.extract(each);
-            if (columnDefinition.isPresent()) {
-                postExtractColumnDefinition(each, columnDefinition.get());
-                result.add(columnDefinition.get());
+        for (ParserRuleContext each : ExtractorUtils.getAllDescendantNodes(ancestorNode, RuleName.MODIFY_COLUMN)) {
+            Optional<ColumnDefinitionSegment> columnDefinitionSegment = columnDefinitionExtractor.extract(each);
+            if (columnDefinitionSegment.isPresent()) {
+                postExtractColumnDefinition(each, columnDefinitionSegment.get());
+                result.add(columnDefinitionSegment.get());
             }
         }
         return result;
     }
     
-    protected void postExtractColumnDefinition(final ParserRuleContext ancestorNode, final ColumnDefinitionSegment columnDefinition) {
+    protected void postExtractColumnDefinition(final ParserRuleContext modifyColumnNode, final ColumnDefinitionSegment columnDefinition) {
     }
 }

@@ -31,10 +31,10 @@ import org.antlr.v4.runtime.ParserRuleContext;
 public final class MySQLModifyColumnExtractor extends ModifyColumnExtractor {
     
     @Override
-    protected void postExtractColumnDefinition(final ParserRuleContext ancestorNode, final ColumnDefinitionSegment columnDefinition) {
-        Optional<ColumnPositionSegment> columnPosition = new MySQLColumnPositionExtractor(columnDefinition.getName()).extract(ancestorNode);
-        if (columnPosition.isPresent()) {
-            columnDefinition.setPosition(columnPosition.get());
+    protected void postExtractColumnDefinition(final ParserRuleContext modifyColumnNode, final ColumnDefinitionSegment columnDefinition) {
+        Optional<ColumnPositionSegment> columnPositionSegment = new MySQLColumnPositionExtractor(columnDefinition.getName()).extract(modifyColumnNode);
+        if (columnPositionSegment.isPresent()) {
+            columnDefinition.setPosition(columnPositionSegment.get());
         }
     }
 }
