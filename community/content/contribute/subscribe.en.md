@@ -4,9 +4,7 @@ weight = 1
 chapter = true
 +++
 
-在使用ShardingSphere的过程中，如果您发现任何问题，有新的想法、建议都可以通过**Apache邮件列表、gitHub提交issue的方式**参与到ShardingSphere的社区建设中。
-
-
+During the process of using ShardingSphere, if there is any problem, suggestion or new idea, you can use **Apache mail-list** or **submit GitHub issue** to participate in the community construction.
 
 ## Subscribe Apache ShardingSphere (Incubating) mail-list
 
