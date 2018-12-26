@@ -1,6 +1,6 @@
 <dataset>
     <metadata>
-        <column name="DISTINCT(item_id)" />
+        <column name="item_id" />
     </metadata>
     <row values="100000" />
     <row values="100001" />
