@@ -1,0 +1,94 @@
+<template>
+  <div class="props">
+    <el-row :gutter="20">
+      <el-col :span="12">
+        <span style="font-size: 18px; font-weight: bold;">Edit source here:</span>
+        <el-input
+          :rows="20"
+          v-model="textarea"
+          type="textarea"
+          class="edit-text"/>
+      </el-col>
+      <el-col :span="12">
+        <span style="font-size: 18px; font-weight: bold;">Result (JS object dump):</span>
+        <el-input
+          :rows="20"
+          v-model="textarea2"
+          type="textarea"
+          readonly
+          class="show-text"/>
+      </el-col>
+    </el-row>
+    <el-row>
+      <el-button class="props-btn" type="primary" @click="onConfirm">{{ $t('btn.submit') }}</el-button>
+    </el-row>
+  </div>
+</template>
+<script>
+import yaml from 'js-yaml'
+import API from '../api'
+
+export default {
+  name: 'Props',
+  data() {
+    return {
+      textarea: ``
+    }
+  },
+  computed: {
+    textarea2() {
+      return JSON.stringify(yaml.safeLoad(this.textarea), null, '\t')
+    }
+  },
+  created() {
+    this.getProps()
+  },
+  methods: {
+    getProps() {
+      API.getProps().then((res) => {
+        if (res.success) this.textarea = res.model
+      })
+    },
+    onConfirm() {
+      API.putProps({ props: this.textarea }).then((res) => {
+        if (res.success) {
+          this.$notify({
+            title: this.$t('common').notify.title,
+            message: this.$t('common').notify.updateCompletedMessage,
+            type: 'success'
+          })
+          this.centerDialogVisible = false
+        } else {
+          this.$notify({
+            title: this.$t('common').notify.title,
+            message: this.$t('common').notify.updateFaildMessage,
+            type: 'error'
+          })
+        }
+      })
+    }
+  }
+}
+</script>
+<style lang="scss">
+  .props {
+    margin-top: 20px;
+    .edit-text {
+      margin-top: 5px;
+      textarea {
+        background: #fffffb;
+      }
+    }
+    .show-text {
+      margin-top: 5px;
+      textarea {
+        background: rgb(246, 246, 246);
+      }
+    }
+    .props-btn {
+      margin-top: 10px;
+      float: right;
+    }
+  }
+</style>
+

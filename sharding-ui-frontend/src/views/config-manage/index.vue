@@ -1,37 +1,49 @@
 <template>
   <s-container>
     <el-card class="box-card">
-      <el-radio-group v-model="radioValue">
+      <el-radio-group v-model="radioValue" @change="onChange">
         <el-radio-button label="schema"/>
         <el-radio-button label="authentication"/>
-        <el-radio-button label="configmap"/>
+        <el-radio-button label="configMap"/>
         <el-radio-button label="props"/>
       </el-radio-group>
-      <el-tree :data="data" :props="defaultProps" class="tree-wrap" @node-click="handleNodeClick"/>
+      <component :is="currentView"/>
     </el-card>
   </s-container>
 </template>
 <script>
 import SContainer from '@/components/Container/index.vue'
+import MSchema from './module/schema'
+import MAuthentication from './module/authentication'
+import MProps from './module/props'
+import MConfigMap from './module/configMap'
 
 export default {
   name: 'ConfigManage',
   components: {
-    SContainer
+    SContainer,
+    MSchema,
+    MAuthentication,
+    MProps,
+    MConfigMap
   },
   data() {
     return {
       radioValue: 'schema',
-      data: [],
-      defaultProps: {
-        children: 'children',
-        label: 'label'
-      }
+      currentView: MSchema
     }
   },
   methods: {
-    handleNodeClick(data) {
-      console.log(data)
+    onChange(val) {
+      if (val === 'schema') {
+        this.currentView = MSchema
+      } else if (val === 'authentication') {
+        this.currentView = MAuthentication
+      } else if (val === 'props') {
+        this.currentView = MProps
+      } else {
+        this.currentView = MConfigMap
+      }
     }
   }
 }

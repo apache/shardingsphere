@@ -18,11 +18,24 @@ export default {
       conSucMessage: 'Connection succeeded',
       conFailMessage: 'Connection failed',
       delSucMessage: 'Delete succeeded',
-      delFailMessage: 'Delete failed'
+      delFailMessage: 'Delete failed',
+      updateCompletedMessage: 'Update completed',
+      updateFaildMessage: 'Update faild'
     }
   },
   login: {
-    btnTxt: 'Login'
+    btnTxt: 'Login',
+    labelUserName: 'Username',
+    labelPassword: 'Password'
+  },
+  btn: {
+    submit: 'Submit',
+    reset: 'Reset',
+    cancel: 'Cancel'
+  },
+  input: {
+    pUserName: 'Please enter user name',
+    pPaasword: 'Please enter your password'
   },
   index: {
     btnTxt: 'ADD',
