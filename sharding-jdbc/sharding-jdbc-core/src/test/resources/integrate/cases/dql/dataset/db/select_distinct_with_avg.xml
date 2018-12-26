@@ -1,6 +1,6 @@
 <dataset>
     <metadata>
-        <column name="AGGREGATION_DISTINCT_DERIVED_0" />
+        <column name="aggregation_distinct_derived_0" />
     </metadata>
-    <row values="1000.5" />
+    <row values="1000.5000" />
 </dataset>
