@@ -43,15 +43,15 @@ public final class ModifyColumnDefinitionFiller implements SQLStatementFiller<Mo
             if (!oldDefinition.isPresent()) {
                 return;
             }
-            oldDefinition.get().setName(sqlSegment.getColumnDefinition().getName());
-            if (null != sqlSegment.getColumnDefinition().getType()) {
-                oldDefinition.get().setType(sqlSegment.getColumnDefinition().getType());
+            oldDefinition.get().setName(sqlSegment.getColumnDefinition().getColumnName());
+            if (null != sqlSegment.getColumnDefinition().getDataType()) {
+                oldDefinition.get().setType(sqlSegment.getColumnDefinition().getDataType());
             }
             alterTableStatement.getUpdatedColumnDefinitions().put(oldColumnName.get(), oldDefinition.get());
         } else {
             ColumnDefinition columnDefinition = new ColumnDefinition(
-                    sqlSegment.getColumnDefinition().getName(), sqlSegment.getColumnDefinition().getType(), sqlSegment.getColumnDefinition().isPrimaryKey());
-            alterTableStatement.getUpdatedColumnDefinitions().put(sqlSegment.getColumnDefinition().getName(), columnDefinition);
+                    sqlSegment.getColumnDefinition().getColumnName(), sqlSegment.getColumnDefinition().getDataType(), sqlSegment.getColumnDefinition().isPrimaryKey());
+            alterTableStatement.getUpdatedColumnDefinitions().put(sqlSegment.getColumnDefinition().getColumnName(), columnDefinition);
         }
         if (null != sqlSegment.getColumnPosition()) {
             alterTableStatement.getPositionChangedColumns().add(sqlSegment.getColumnPosition());

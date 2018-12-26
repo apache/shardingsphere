@@ -19,26 +19,20 @@ package io.shardingsphere.core.parsing.antlr.sql.segment.definition.column;
 
 import io.shardingsphere.core.parsing.antlr.sql.segment.SQLSegment;
 import lombok.Getter;
-import lombok.Setter;
+import lombok.RequiredArgsConstructor;
 
 /**
  * Column definition segment.
  *
  * @author duhongjun
  */
+@RequiredArgsConstructor
 @Getter
-@Setter
 public final class ColumnDefinitionSegment implements SQLSegment {
     
-    private String name;
+    private final String columnName;
     
-    private String type;
+    private final String dataType;
     
-    private boolean primaryKey;
-    
-    public ColumnDefinitionSegment(final String name, final String type, final boolean primaryKey) {
-        this.name = name;
-        this.type = type;
-        this.primaryKey = primaryKey;
-    }
+    private final boolean primaryKey;
 }

@@ -37,8 +37,8 @@ public final class AddColumnDefinitionFiller implements SQLStatementFiller<AddCo
                      final SQLStatement sqlStatement, final String sql, final ShardingRule shardingRule, final ShardingTableMetaData shardingTableMetaData) {
         AlterTableStatement alterTableStatement = (AlterTableStatement) sqlStatement;
         ColumnDefinition columnDefinition = new ColumnDefinition(
-                sqlSegment.getColumnDefinition().getName(), sqlSegment.getColumnDefinition().getType(), sqlSegment.getColumnDefinition().isPrimaryKey());
-        if (!alterTableStatement.findColumnDefinitionFromMetaData(sqlSegment.getColumnDefinition().getName(), shardingTableMetaData).isPresent()) {
+                sqlSegment.getColumnDefinition().getColumnName(), sqlSegment.getColumnDefinition().getDataType(), sqlSegment.getColumnDefinition().isPrimaryKey());
+        if (!alterTableStatement.findColumnDefinitionFromMetaData(sqlSegment.getColumnDefinition().getColumnName(), shardingTableMetaData).isPresent()) {
             alterTableStatement.getAddedColumnDefinitions().add(columnDefinition);
         }
         if (null != sqlSegment.getColumnPosition()) {

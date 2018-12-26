@@ -35,6 +35,7 @@ public final class ColumnDefinitionFiller implements SQLStatementFiller<ColumnDe
     
     @Override
     public void fill(final ColumnDefinitionSegment sqlSegment, final SQLStatement sqlStatement, final String sql, final ShardingRule shardingRule, final ShardingTableMetaData shardingTableMetaData) {
-        ((CreateTableStatement) sqlStatement).getColumnDefinitions().add(new ColumnDefinition(SQLUtil.getExactlyValue(sqlSegment.getName()), sqlSegment.getType(), sqlSegment.isPrimaryKey()));
+        ((CreateTableStatement) sqlStatement).getColumnDefinitions().add(
+                new ColumnDefinition(SQLUtil.getExactlyValue(sqlSegment.getColumnName()), sqlSegment.getDataType(), sqlSegment.isPrimaryKey()));
     }
 }

@@ -53,7 +53,7 @@ public final class MySQLChangeColumnDefinitionExtractor implements OptionalSQLSe
         Optional<ColumnDefinitionSegment> columnDefinitionSegment = columnDefinitionExtractor.extract(columnDefinitionNode.get());
         if (columnDefinitionSegment.isPresent()) {
             ModifyColumnDefinitionSegment result = new ModifyColumnDefinitionSegment(oldColumnNameNode.get().getText(), columnDefinitionSegment.get());
-            Optional<ColumnPositionSegment> columnPositionSegment = new MySQLColumnPositionExtractor(columnDefinitionSegment.get().getName()).extract(changeColumnNode.get());
+            Optional<ColumnPositionSegment> columnPositionSegment = new MySQLColumnPositionExtractor(columnDefinitionSegment.get().getColumnName()).extract(changeColumnNode.get());
             if (columnPositionSegment.isPresent()) {
                 result.setColumnPosition(columnPositionSegment.get());
             }
