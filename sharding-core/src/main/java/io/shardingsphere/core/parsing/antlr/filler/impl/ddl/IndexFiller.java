@@ -15,27 +15,30 @@
  * </p>
  */
 
-package io.shardingsphere.core.parsing.antlr.filler.impl;
+package io.shardingsphere.core.parsing.antlr.filler.impl.ddl;
 
 import io.shardingsphere.core.metadata.table.ShardingTableMetaData;
 import io.shardingsphere.core.parsing.antlr.filler.SQLStatementFiller;
-import io.shardingsphere.core.parsing.antlr.sql.segment.definition.column.ColumnDefinitionSegment;
-import io.shardingsphere.core.parsing.antlr.sql.statement.ddl.ColumnDefinition;
-import io.shardingsphere.core.parsing.antlr.sql.statement.ddl.CreateTableStatement;
+import io.shardingsphere.core.parsing.antlr.sql.segment.IndexSegment;
 import io.shardingsphere.core.parsing.parser.sql.SQLStatement;
+import io.shardingsphere.core.parsing.parser.token.IndexToken;
 import io.shardingsphere.core.rule.ShardingRule;
-import io.shardingsphere.core.util.SQLUtil;
 
 /**
- * Column definition filler.
+ * Index filler.
  *
  * @author duhongjun
  */
-public final class ColumnDefinitionFiller implements SQLStatementFiller<ColumnDefinitionSegment> {
+public final class IndexFiller implements SQLStatementFiller<IndexSegment> {
     
     @Override
-    public void fill(final ColumnDefinitionSegment sqlSegment, final SQLStatement sqlStatement, final String sql, final ShardingRule shardingRule, final ShardingTableMetaData shardingTableMetaData) {
-        ((CreateTableStatement) sqlStatement).getColumnDefinitions().add(
-                new ColumnDefinition(SQLUtil.getExactlyValue(sqlSegment.getColumnName()), sqlSegment.getDataType(), sqlSegment.isPrimaryKey()));
+    public void fill(final IndexSegment sqlSegment, final SQLStatement sqlStatement, final String sql, final ShardingRule shardingRule, final ShardingTableMetaData shardingTableMetaData) {
+        IndexToken indexToken = sqlSegment.getToken();
+        if (!sqlStatement.getTables().isEmpty() && null == indexToken.getTableName()) {
+            indexToken.setTableName(sqlStatement.getTables().getSingleTableName());
+        } else {
+            indexToken.setTableName("");
+        }
+        sqlStatement.getSQLTokens().add(sqlSegment.getToken());
     }
 }
