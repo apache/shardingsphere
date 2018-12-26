@@ -89,6 +89,8 @@ public final class XAShardingTransactionHandler extends ShardingTransactionHandl
     @Override
     public synchronized void synchronizeTransactionResource(final String datasourceName, final Connection connection, final Object... properties) {
         try {
+            ShardingXADataSource shardingXADataSource = SHARDING_XA_DATA_SOURCE_MAP.get(datasourceName);
+            shardingXADataSource.wrapPhysicalConnection(connection, databaseType);
             Transaction transaction = xaTransactionManager.getUnderlyingTransactionManager().getTransaction();
             transaction.enlistResource(xaTransactionManager.getRecoveryXAResource(datasourceName));
         } catch (final Exception ex) {
