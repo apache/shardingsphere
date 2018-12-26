@@ -91,7 +91,7 @@ public final class SQLParserFactory {
             return getDMLParser(dbType, tokenType, shardingRule, lexerEngine, shardingTableMetaData);
         }
         if (TCLStatement.isTCL(tokenType)) {
-            return getTCLParser(dbType, tokenType, lexerEngine);
+            return new AntlrParsingEngine(dbType, sql, shardingRule, shardingTableMetaData);
         }
         if (DALStatement.isDAL(tokenType)) {
             return getDALParser(dbType, (Keyword) tokenType, shardingRule, lexerEngine);
@@ -105,7 +105,7 @@ public final class SQLParserFactory {
             return new AntlrParsingEngine(dbType, sql, shardingRule, shardingTableMetaData);
         }
         if (TCLStatement.isTCLUnsafe(dbType, tokenType, lexerEngine)) {
-            return getTCLParser(dbType, tokenType, lexerEngine);
+            return new AntlrParsingEngine(dbType, sql, shardingRule, shardingTableMetaData);
         }
         if (DefaultKeyword.SET.equals(tokenType)) {
             return SetParserFactory.newInstance();
