@@ -11,10 +11,6 @@ chapter = true
  - Obey the Code of Conduct
  - Submit high-quality content
  - Enable Google Two-factor authentication([2FA](/en/contribute/2fa/))
-
-## Current Committers
-
- - See [Organization](/en/organization/)
  
 ## Maintainers’ Responsibilities
 

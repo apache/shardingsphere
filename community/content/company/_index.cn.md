@@ -1,7 +1,7 @@
 +++
-pre = "<b>3. </b>"
+pre = "<b>2. </b>"
 title = "采用公司"
-weight = 3
+weight = 2
 chapter = true
 +++
 

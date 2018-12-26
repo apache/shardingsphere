@@ -1,7 +1,7 @@
 +++
-pre = "<b>2. </b>"
+pre = "<b>1. </b>"
 title = "Get Involved"
-weight = 2
+weight = 1
 chapter = true
 +++
 
