@@ -57,7 +57,7 @@ public abstract class AbstractDataSourceAdapter extends AbstractUnsupportedOpera
     
     public AbstractDataSourceAdapter(final Map<String, DataSource> dataSourceMap) throws SQLException {
         databaseType = getDatabaseType(dataSourceMap.values());
-        ShardingTransactionHandlerRegistry.getInstance().registerTransactionResource(databaseType, dataSourceMap);
+        ShardingTransactionHandlerRegistry.registerTransactionResource(databaseType, dataSourceMap);
         shardingTransactionalDataSources = new ShardingTransactionalDataSource(databaseType, dataSourceMap);
     }
     

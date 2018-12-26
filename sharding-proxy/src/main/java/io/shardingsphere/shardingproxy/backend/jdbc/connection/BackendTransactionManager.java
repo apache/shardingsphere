@@ -39,7 +39,7 @@ public final class BackendTransactionManager implements TransactionManager {
     @Override
     public void doInTransaction(final TransactionOperationType operationType) throws SQLException {
         TransactionType transactionType = connection.getTransactionType();
-        ShardingTransactionHandler shardingTransactionHandler = ShardingTransactionHandlerRegistry.getInstance().getHandler(transactionType);
+        ShardingTransactionHandler shardingTransactionHandler = ShardingTransactionHandlerRegistry.getHandler(transactionType);
         if (null != transactionType && transactionType != TransactionType.LOCAL) {
             Preconditions.checkNotNull(shardingTransactionHandler, String.format("Cannot find transaction manager of [%s]", transactionType));
         }

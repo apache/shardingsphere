@@ -32,8 +32,12 @@ import io.shardingsphere.transaction.xa.manager.XATransactionManagerSPILoader;
 import lombok.extern.slf4j.Slf4j;
 
 import javax.sql.DataSource;
+import javax.transaction.RollbackException;
+import javax.transaction.Status;
+import javax.transaction.SystemException;
 import javax.transaction.Transaction;
 import java.sql.Connection;
+import java.sql.SQLException;
 import java.util.Map;
 import java.util.concurrent.ConcurrentHashMap;
 
@@ -62,8 +66,7 @@ public final class XAShardingTransactionHandler extends ShardingTransactionHandl
     }
     
     @Override
-    public void registerTransactionDataSource(final DatabaseType databaseType, final Map<String, DataSource> dataSourceMap) {
-        removeTransactionDataSource();
+    public void registerTransactionalResource(final DatabaseType databaseType, final Map<String, DataSource> dataSourceMap) {
         this.databaseType = databaseType;
         for (Map.Entry<String, DataSource> entry : dataSourceMap.entrySet()) {
             DataSourceParameter parameter = DataSourceSwapperRegistry.getSwapper(entry.getValue().getClass()).swap(entry.getValue());
@@ -74,7 +77,8 @@ public final class XAShardingTransactionHandler extends ShardingTransactionHandl
         xaTransactionManager.startup();
     }
     
-    private void removeTransactionDataSource() {
+    @Override
+    public void clearTransactionalResource() {
         if (!SHARDING_XA_DATASOURCE_MAP.isEmpty()) {
             for (ShardingXADataSource each : SHARDING_XA_DATASOURCE_MAP.values()) {
                 xaTransactionManager.removeRecoveryResource(each.getResourceName(), each.getXaDataSource());
@@ -84,13 +88,16 @@ public final class XAShardingTransactionHandler extends ShardingTransactionHandl
     }
     
     @Override
-    public synchronized void synchronizeTransactionResource(final String datasourceName, final Connection connection, final Object... properties) {
+    public synchronized void synchronizeTransactionalResource(final String datasourceName, final Connection connection, final Object... properties) {
         try {
-            ShardingXADataSource shardingXADataSource = SHARDING_XA_DATASOURCE_MAP.get(datasourceName);
-            ShardingXAConnection shardingXAConnection = shardingXADataSource.wrapPhysicalConnection(databaseType, connection);
             Transaction transaction = xaTransactionManager.getUnderlyingTransactionManager().getTransaction();
-            transaction.enlistResource(shardingXAConnection.getXAResource());
-        } catch (final Exception ex) {
+            if (null != transaction && Status.STATUS_NO_TRANSACTION != transaction.getStatus()) {
+                ShardingXADataSource shardingXADataSource = SHARDING_XA_DATASOURCE_MAP.get(datasourceName);
+                ShardingXAConnection shardingXAConnection = shardingXADataSource.wrapPhysicalConnection(databaseType, connection);
+                transaction.enlistResource(shardingXAConnection.getXAResource());
+            }
+        } catch (final SQLException | RollbackException | SystemException ex) {
+            log.error("Failed to synchronize transactional resource");
             throw new ShardingException(ex);
         }
     }

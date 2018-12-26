@@ -81,7 +81,7 @@ public abstract class AbstractConnectionAdapter extends AbstractUnsupportedOpera
     protected AbstractConnectionAdapter(final TransactionType transactionType) {
         rootInvokeHook.start();
         this.transactionType = transactionType;
-        shardingTransactionHandler = ShardingTransactionHandlerRegistry.getInstance().getHandler(transactionType);
+        shardingTransactionHandler = ShardingTransactionHandlerRegistry.getHandler(transactionType);
         if (TransactionType.LOCAL != transactionType) {
             Preconditions.checkNotNull(shardingTransactionHandler, "Cannot find transaction manager of [%s]", transactionType);
         }
@@ -165,8 +165,8 @@ public abstract class AbstractConnectionAdapter extends AbstractUnsupportedOpera
     private Connection createConnection(final String dataSourceName, final DataSource dataSource) throws SQLException {
         Connection result = dataSource.getConnection();
         replayMethodsInvocation(result);
-        if (null != shardingTransactionHandler && shardingTransactionHandler.getShardingTransactionManager().getStatus() != 6) {
-            shardingTransactionHandler.synchronizeTransactionResource(dataSourceName, result);
+        if (null != shardingTransactionHandler) {
+            shardingTransactionHandler.synchronizeTransactionalResource(dataSourceName, result);
         }
         return result;
     }

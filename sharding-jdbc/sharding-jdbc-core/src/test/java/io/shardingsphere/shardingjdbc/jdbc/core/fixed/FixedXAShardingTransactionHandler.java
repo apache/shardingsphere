@@ -73,12 +73,17 @@ public final class FixedXAShardingTransactionHandler implements ShardingTransact
     }
     
     @Override
-    public void registerTransactionDataSource(final DatabaseType databaseType, final Map<String, DataSource> dataSourceMap) {
+    public void registerTransactionalResource(final DatabaseType databaseType, final Map<String, DataSource> dataSourceMap) {
     
     }
     
     @Override
-    public void synchronizeTransactionResource(final String datasourceName, final Connection connection, final Object... properties) {
+    public void clearTransactionalResource() {
+    
+    }
+    
+    @Override
+    public void synchronizeTransactionalResource(final String datasourceName, final Connection connection, final Object... properties) {
     
     }
 }

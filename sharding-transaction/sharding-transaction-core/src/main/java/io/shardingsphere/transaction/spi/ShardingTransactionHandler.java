@@ -62,7 +62,12 @@ public interface ShardingTransactionHandler {
      * @param databaseType database type
      * @param dataSourceMap data source map
      */
-    void registerTransactionDataSource(DatabaseType databaseType, Map<String, DataSource> dataSourceMap);
+    void registerTransactionalResource(DatabaseType databaseType, Map<String, DataSource> dataSourceMap);
+    
+    /**
+     * Clear transactional resource.
+     */
+    void clearTransactionalResource();
     
     /**
      * Synchronize transaction resource.
@@ -72,5 +77,5 @@ public interface ShardingTransactionHandler {
      * @param properties other properties
      * @throws SQLException SQL exception
      */
-    void synchronizeTransactionResource(String dataSourceName, Connection connection, Object... properties) throws SQLException;
+    void synchronizeTransactionalResource(String dataSourceName, Connection connection, Object... properties) throws SQLException;
 }

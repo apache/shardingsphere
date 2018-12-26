@@ -40,8 +40,6 @@ public final class ShardingTransactionHandlerRegistry {
     
     private static final Map<TransactionType, ShardingTransactionHandler> TRANSACTION_HANDLER_MAP = new HashMap<>();
     
-    private static final ShardingTransactionHandlerRegistry INSTANCE = new ShardingTransactionHandlerRegistry();
-    
     static {
         load();
     }
@@ -62,21 +60,12 @@ public final class ShardingTransactionHandlerRegistry {
     }
     
     /**
-     * Get instance of sharding transaction handler registry.
-     *
-     * @return sharding transaction handler registry
-     */
-    public static ShardingTransactionHandlerRegistry getInstance() {
-        return INSTANCE;
-    }
-    
-    /**
      * Get transaction handler by type.
      *
      * @param transactionType transaction type
      * @return sharding transaction handler implement
      */
-    public ShardingTransactionHandler getHandler(final TransactionType transactionType) {
+    public static ShardingTransactionHandler getHandler(final TransactionType transactionType) {
         return TRANSACTION_HANDLER_MAP.get(transactionType);
     }
     
@@ -85,9 +74,9 @@ public final class ShardingTransactionHandlerRegistry {
      * @param databaseType database type
      * @param dataSourceMap data source map
      */
-    public void registerTransactionResource(final DatabaseType databaseType, final Map<String, DataSource> dataSourceMap) {
+    public static void registerTransactionResource(final DatabaseType databaseType, final Map<String, DataSource> dataSourceMap) {
         for (Map.Entry<TransactionType, ShardingTransactionHandler> entry : TRANSACTION_HANDLER_MAP.entrySet()) {
-            entry.getValue().registerTransactionDataSource(databaseType, dataSourceMap);
+            entry.getValue().registerTransactionalResource(databaseType, dataSourceMap);
         }
     }
 }
