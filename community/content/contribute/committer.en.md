@@ -1,6 +1,6 @@
 +++
 title = "Committer Guide"
-weight = 2
+weight = 3
 chapter = true
 +++
 
