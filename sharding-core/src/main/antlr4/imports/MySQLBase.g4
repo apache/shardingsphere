@@ -6,6 +6,10 @@ alias
     : ID | PASSWORD | STRING
     ;
     
+tableName
+    : ID | ID DOT_ASTERISK | ASTERISK
+    ;
+    
 characterSet
     : (CHARACTER | CHAR) SET EQ_? charsetName | CHARSET EQ_? charsetName
     ;

@@ -23,7 +23,6 @@ import io.shardingsphere.core.parsing.antlr.extractor.util.ExtractorUtils;
 import io.shardingsphere.core.parsing.antlr.extractor.util.RuleName;
 import io.shardingsphere.core.parsing.antlr.sql.segment.column.ColumnDefinitionSegment;
 import org.antlr.v4.runtime.ParserRuleContext;
-import org.antlr.v4.runtime.tree.ParseTree;
 
 import java.util.Collection;
 import java.util.LinkedList;
@@ -59,6 +58,6 @@ public class AddColumnExtractor implements CollectionSQLSegmentExtractor {
         return result;
     }
     
-    protected void postExtractColumnDefinition(final ParseTree ancestorNode, final ColumnDefinitionSegment columnDefinitionSegment) {
+    protected void postExtractColumnDefinition(final ParserRuleContext addColumnNode, final ColumnDefinitionSegment columnDefinitionSegment) {
     }
 }

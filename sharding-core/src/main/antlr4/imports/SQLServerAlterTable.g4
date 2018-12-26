@@ -85,7 +85,7 @@ alterDrop
     (
         alterTableDropConstraint
         | dropColumn
-        | alterDropIndex
+        | dropIndexDef
         | PERIOD FOR SYSTEM_TIME
     )
     ;
@@ -114,7 +114,7 @@ dropColumn
     : COLUMN (IF EXISTS)? columnNames
     ;
     
-alterDropIndex
+dropIndexDef
     : INDEX (IF EXISTS)? indexName (COMMA indexName)*
     ;
     

@@ -19,6 +19,7 @@ package io.shardingsphere.core.parsing.antlr.sql.segment.column;
 
 import io.shardingsphere.core.parsing.antlr.sql.segment.SQLSegment;
 import lombok.Getter;
+import lombok.RequiredArgsConstructor;
 import lombok.Setter;
 
 /**
@@ -26,11 +27,12 @@ import lombok.Setter;
  * 
  * @author duhongjun
  */
+@RequiredArgsConstructor
 @Getter
 @Setter
 public final class ColumnPositionSegment implements SQLSegment, Comparable<ColumnPositionSegment> {
     
-    private int startIndex;
+    private final int startIndex;
     
     private String firstColumn;
     

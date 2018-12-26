@@ -1,6 +1,6 @@
 grammar MySQLDCLStatement;
 
-import MySQLKeyword, Keyword, BaseRule, DataType, Symbol;
+import MySQLKeyword, Keyword, MySQLBase, BaseRule, DataType, Symbol;
 
 grant
     : GRANT privType columnList? (COMMA privType columnList?)*
@@ -60,10 +60,7 @@ objectType
     ;
     
 privLevel
-    : ASTERISK
-    | ASTERISK DOT_ASTERISK
-    | schemaName DOT_ASTERISK
-    | schemaName DOT tableName
+    : ASTERISK DOT_ASTERISK
     | tableName
     | schemaName DOT routineName
     ;

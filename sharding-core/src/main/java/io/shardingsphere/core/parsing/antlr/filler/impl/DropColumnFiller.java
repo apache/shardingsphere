@@ -33,7 +33,6 @@ public final class DropColumnFiller implements SQLStatementFiller<DropColumnSegm
     
     @Override
     public void fill(final DropColumnSegment sqlSegment, final SQLStatement sqlStatement, final String sql, final ShardingRule shardingRule, final ShardingTableMetaData shardingTableMetaData) {
-        AlterTableStatement alterTableStatement = (AlterTableStatement) sqlStatement;
-        alterTableStatement.getDropColumnNames().addAll(sqlSegment.getDropColumnNames());
+        ((AlterTableStatement) sqlStatement).getDropColumnNames().add(sqlSegment.getColumnName());
     }
 }

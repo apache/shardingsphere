@@ -42,8 +42,7 @@ public final class MySQLColumnPositionExtractor implements OptionalSQLSegmentExt
             return Optional.absent();
         }
         Optional<ParserRuleContext> columnNameNode = ExtractorUtils.findFirstChildNode(firstOrAfterColumnNode.get(), RuleName.COLUMN_NAME);
-        ColumnPositionSegment result = new ColumnPositionSegment();
-        result.setStartIndex(firstOrAfterColumnNode.get().getStart().getStartIndex());
+        ColumnPositionSegment result = new ColumnPositionSegment(firstOrAfterColumnNode.get().getStart().getStartIndex());
         if (columnNameNode.isPresent()) {
             result.setColumnName(columnName);
             result.setAfterColumn(columnNameNode.get().getText());

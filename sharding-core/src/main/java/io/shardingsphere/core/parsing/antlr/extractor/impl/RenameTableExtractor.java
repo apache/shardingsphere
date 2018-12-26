@@ -35,7 +35,7 @@ public final class RenameTableExtractor implements OptionalSQLSegmentExtractor {
     @Override
     public Optional<SQLSegment> extract(final ParserRuleContext ancestorNode) {
         Optional<ParserRuleContext> renameTableNode = ExtractorUtils.findFirstChildNode(ancestorNode, RuleName.RENAME_TABLE);
-        if (!renameTableNode.isPresent() || 0 == renameTableNode.get().getChildCount()) {
+        if (!renameTableNode.isPresent()) {
             return Optional.absent();
         }
         throw new SQLParsingUnsupportedException("Unsupported SQL statement of rename table");

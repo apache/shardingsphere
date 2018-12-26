@@ -50,9 +50,9 @@ objectPrivilege
 onObjectClause
     : ON 
     (
-        schemaName? ID 
+       tableName 
        | USER userName ( COMMA userName)*
-       | (DIRECTORY | EDITION | MINING MODEL | JAVA (SOURCE | RESOURCE) | SQL TRANSLATION PROFILE) schemaName? ID 
+       | (DIRECTORY | EDITION | MINING MODEL | JAVA (SOURCE | RESOURCE) | SQL TRANSLATION PROFILE) tableName 
     )
     ;
     
@@ -65,7 +65,7 @@ programUnits
     ;
     
 programUnit
-    : (FUNCTION | PROCEDURE | PACKAGE) schemaName? ID
+    : (FUNCTION | PROCEDURE | PACKAGE) tableName
     ;
     
 revoke
@@ -133,7 +133,7 @@ containerDataClause
           SET CONTAINER_DATA EQ_ ( ALL | DEFAULT | idList )
           | (ADD |REMOVE) CONTAINER_DATA EQ_ idList
     )
-    (FOR schemaName? ID)?
+    (FOR tableName)?
     ;
     
 proxyClause
@@ -153,14 +153,14 @@ createRole
     : CREATE ROLE roleName
     ( 
         NOT IDENTIFIED
-        | IDENTIFIED (BY ID | USING schemaName? ID | EXTERNALLY | GLOBALLY)
+        | IDENTIFIED (BY ID | USING tableName | EXTERNALLY | GLOBALLY)
     )? 
     (CONTAINER EQ_ (CURRENT | ALL))? 
     ;
     
 alterRole
     : ALTER ROLE roleName
-    (NOT IDENTIFIED | IDENTIFIED (BY ID | USING schemaName? ID | EXTERNALLY | GLOBALLY))
+    (NOT IDENTIFIED | IDENTIFIED (BY ID | USING tableName | EXTERNALLY | GLOBALLY))
     (CONTAINER EQ_ (CURRENT | ALL))? 
     ;
     
