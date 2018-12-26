@@ -2,14 +2,5 @@
     <metadata>
         <column name="c" />
     </metadata>
-    <row values="1010" />
-    <row values="1011" />
-    <row values="1012" />
-    <row values="1013" />
-    <row values="1014" />
-    <row values="1015" />
-    <row values="1016" />
-    <row values="1017" />
-    <row values="1018" />
-    <row values="1019" />
+    <row values="10" />
 </dataset>
