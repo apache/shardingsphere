@@ -21,6 +21,7 @@ import com.google.common.base.Optional;
 import io.shardingsphere.core.parsing.antlr.extractor.CollectionSQLSegmentExtractor;
 import io.shardingsphere.core.parsing.antlr.extractor.util.ExtractorUtils;
 import io.shardingsphere.core.parsing.antlr.extractor.util.RuleName;
+import io.shardingsphere.core.parsing.antlr.sql.segment.column.AddColumnDefinitionSegment;
 import io.shardingsphere.core.parsing.antlr.sql.segment.column.ColumnDefinitionSegment;
 import org.antlr.v4.runtime.ParserRuleContext;
 
@@ -28,27 +29,36 @@ import java.util.Collection;
 import java.util.LinkedList;
 
 /**
- * Modify column extractor.
+ * Add column definition extractor.
  *
  * @author duhongjun
  */
-public class ModifyColumnExtractor implements CollectionSQLSegmentExtractor {
+public class AddColumnDefinitionExtractor implements CollectionSQLSegmentExtractor {
     
     private final ColumnDefinitionExtractor columnDefinitionExtractor = new ColumnDefinitionExtractor();
     
     @Override
-    public final Collection<ColumnDefinitionSegment> extract(final ParserRuleContext ancestorNode) {
-        Collection<ColumnDefinitionSegment> result = new LinkedList<>();
-        for (ParserRuleContext each : ExtractorUtils.getAllDescendantNodes(ancestorNode, RuleName.MODIFY_COLUMN)) {
+    public final Collection<AddColumnDefinitionSegment> extract(final ParserRuleContext ancestorNode) {
+        Collection<AddColumnDefinitionSegment> result = new LinkedList<>();
+        for (ParserRuleContext each : ExtractorUtils.getAllDescendantNodes(ancestorNode, RuleName.ADD_COLUMN)) {
+            result.addAll(extractAddColumnDefinitions(each));
+        }
+        return result;
+    }
+    
+    private Collection<AddColumnDefinitionSegment> extractAddColumnDefinitions(final ParserRuleContext addColumnNode) {
+        Collection<AddColumnDefinitionSegment> result = new LinkedList<>();
+        for (ParserRuleContext each : ExtractorUtils.getAllDescendantNodes(addColumnNode, RuleName.COLUMN_DEFINITION)) {
             Optional<ColumnDefinitionSegment> columnDefinitionSegment = columnDefinitionExtractor.extract(each);
             if (columnDefinitionSegment.isPresent()) {
-                postExtractColumnDefinition(each, columnDefinitionSegment.get());
-                result.add(columnDefinitionSegment.get());
+                AddColumnDefinitionSegment addColumnDefinitionSegment = new AddColumnDefinitionSegment(columnDefinitionSegment.get());
+                postExtractColumnDefinition(addColumnNode, addColumnDefinitionSegment);
+                result.add(addColumnDefinitionSegment);
             }
         }
         return result;
     }
     
-    protected void postExtractColumnDefinition(final ParserRuleContext modifyColumnNode, final ColumnDefinitionSegment columnDefinition) {
+    protected void postExtractColumnDefinition(final ParserRuleContext addColumnNode, final AddColumnDefinitionSegment addColumnDefinitionSegment) {
     }
 }

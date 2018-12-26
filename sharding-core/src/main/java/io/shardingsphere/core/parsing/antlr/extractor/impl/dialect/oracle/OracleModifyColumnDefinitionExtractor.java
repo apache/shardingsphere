@@ -23,6 +23,7 @@ import io.shardingsphere.core.parsing.antlr.extractor.impl.ColumnDefinitionExtra
 import io.shardingsphere.core.parsing.antlr.extractor.util.ExtractorUtils;
 import io.shardingsphere.core.parsing.antlr.extractor.util.RuleName;
 import io.shardingsphere.core.parsing.antlr.sql.segment.column.ColumnDefinitionSegment;
+import io.shardingsphere.core.parsing.antlr.sql.segment.column.ModifyColumnDefinitionSegment;
 import org.antlr.v4.runtime.ParserRuleContext;
 
 import java.util.Collection;
@@ -30,27 +31,27 @@ import java.util.Collections;
 import java.util.LinkedList;
 
 /**
- * Modify column extractor for Oracle.
+ * Modify column definition extractor for Oracle.
  *
  * @author duhongjun
  */
-public final class OracleModifyColumnExtractor implements CollectionSQLSegmentExtractor {
+public final class OracleModifyColumnDefinitionExtractor implements CollectionSQLSegmentExtractor {
     
     private final ColumnDefinitionExtractor columnDefinitionPhraseExtractor = new ColumnDefinitionExtractor();
     
     @Override
-    public Collection<ColumnDefinitionSegment> extract(final ParserRuleContext ancestorNode) {
+    public Collection<ModifyColumnDefinitionSegment> extract(final ParserRuleContext ancestorNode) {
         Collection<ParserRuleContext> modifyColumnNodes = ExtractorUtils.getAllDescendantNodes(ancestorNode, RuleName.MODIFY_COLUMN);
         if (modifyColumnNodes.isEmpty()) {
             return Collections.emptyList();
         }
-        Collection<ColumnDefinitionSegment> result = new LinkedList<>();
+        Collection<ModifyColumnDefinitionSegment> result = new LinkedList<>();
         for (ParserRuleContext modifyColumnNode : modifyColumnNodes) {
             for (ParserRuleContext each : ExtractorUtils.getAllDescendantNodes(modifyColumnNode, RuleName.MODIFY_COL_PROPERTIES)) {
                 // it`s not column definition, but can call this method
                 Optional<ColumnDefinitionSegment> columnDefinition = columnDefinitionPhraseExtractor.extract(each);
                 if (columnDefinition.isPresent()) {
-                    result.add(columnDefinition.get());
+                    result.add(new ModifyColumnDefinitionSegment(null, columnDefinition.get()));
                 }
             }
         }

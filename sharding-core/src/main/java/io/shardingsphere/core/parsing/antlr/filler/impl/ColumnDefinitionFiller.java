@@ -17,11 +17,9 @@
 
 package io.shardingsphere.core.parsing.antlr.filler.impl;
 
-import com.google.common.base.Optional;
 import io.shardingsphere.core.metadata.table.ShardingTableMetaData;
 import io.shardingsphere.core.parsing.antlr.filler.SQLStatementFiller;
 import io.shardingsphere.core.parsing.antlr.sql.segment.column.ColumnDefinitionSegment;
-import io.shardingsphere.core.parsing.antlr.sql.statement.ddl.AlterTableStatement;
 import io.shardingsphere.core.parsing.antlr.sql.statement.ddl.ColumnDefinition;
 import io.shardingsphere.core.parsing.antlr.sql.statement.ddl.CreateTableStatement;
 import io.shardingsphere.core.parsing.parser.sql.SQLStatement;
@@ -37,39 +35,6 @@ public final class ColumnDefinitionFiller implements SQLStatementFiller<ColumnDe
     
     @Override
     public void fill(final ColumnDefinitionSegment sqlSegment, final SQLStatement sqlStatement, final String sql, final ShardingRule shardingRule, final ShardingTableMetaData shardingTableMetaData) {
-        if (sqlStatement instanceof CreateTableStatement) {
-            fill(sqlSegment, (CreateTableStatement) sqlStatement);
-        } else if (sqlStatement instanceof AlterTableStatement) {
-            fill(sqlSegment, (AlterTableStatement) sqlStatement, shardingTableMetaData);
-        } 
-    }
-    
-    private void fill(final ColumnDefinitionSegment sqlSegment, final CreateTableStatement createTableStatement) {
-        createTableStatement.getColumnDefinitions().add(new ColumnDefinition(SQLUtil.getExactlyValue(sqlSegment.getName()), sqlSegment.getType(), sqlSegment.isPrimaryKey()));
-    }
-    
-    private void fill(final ColumnDefinitionSegment sqlSegment, final AlterTableStatement alterTableStatement, final ShardingTableMetaData shardingTableMetaData) {
-        String oldName = sqlSegment.getOldName();
-        if (null != oldName) {
-            Optional<ColumnDefinition> oldDefinition = alterTableStatement.findColumnDefinition(oldName, shardingTableMetaData);
-            if (!oldDefinition.isPresent()) {
-                return;
-            }
-            oldDefinition.get().setName(sqlSegment.getName());
-            if (null != sqlSegment.getType()) {
-                oldDefinition.get().setType(sqlSegment.getType());
-            }
-            alterTableStatement.getUpdatedColumnDefinitions().put(oldName, oldDefinition.get());
-        } else {
-            ColumnDefinition columnDefinition = new ColumnDefinition(sqlSegment.getName(), sqlSegment.getType(), sqlSegment.isPrimaryKey());
-            if (!sqlSegment.isAdd()) {
-                alterTableStatement.getUpdatedColumnDefinitions().put(sqlSegment.getName(), columnDefinition);
-            } else if (!alterTableStatement.findColumnDefinitionFromMetaData(sqlSegment.getName(), shardingTableMetaData).isPresent()) {
-                alterTableStatement.getAddedColumnDefinitions().add(columnDefinition);
-            }
-        }
-        if (null != sqlSegment.getPosition()) {
-            alterTableStatement.getPositionChangedColumns().add(sqlSegment.getPosition());
-        }
+        ((CreateTableStatement) sqlStatement).getColumnDefinitions().add(new ColumnDefinition(SQLUtil.getExactlyValue(sqlSegment.getName()), sqlSegment.getType(), sqlSegment.isPrimaryKey()));
     }
 }

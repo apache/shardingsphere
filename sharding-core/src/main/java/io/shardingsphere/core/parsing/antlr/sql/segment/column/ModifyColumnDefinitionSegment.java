@@ -17,20 +17,34 @@
 
 package io.shardingsphere.core.parsing.antlr.sql.segment.column;
 
+import com.google.common.base.Optional;
 import io.shardingsphere.core.parsing.antlr.sql.segment.SQLSegment;
-import lombok.EqualsAndHashCode;
 import lombok.Getter;
 import lombok.RequiredArgsConstructor;
+import lombok.Setter;
 
 /**
- * Drop column segment.
+ * Modify column definition segment.
  *
- * @author duhongjun
+ * @author zhangliang
  */
 @RequiredArgsConstructor
 @Getter
-@EqualsAndHashCode
-public final class DropColumnSegment implements SQLSegment {
+@Setter
+public final class ModifyColumnDefinitionSegment implements SQLSegment {
     
-    private final String columnName;
+    private final String oldColumnName;
+    
+    private final ColumnDefinitionSegment columnDefinition;
+    
+    private ColumnPositionSegment columnPosition;
+    
+    /**
+     * Get old column name.
+     * 
+     * @return old column name
+     */
+    public Optional<String> getOldColumnName() {
+        return Optional.fromNullable(oldColumnName);
+    }
 }

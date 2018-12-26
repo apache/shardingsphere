@@ -20,7 +20,7 @@ package io.shardingsphere.core.parsing.antlr.extractor.impl;
 import io.shardingsphere.core.parsing.antlr.extractor.CollectionSQLSegmentExtractor;
 import io.shardingsphere.core.parsing.antlr.extractor.util.ExtractorUtils;
 import io.shardingsphere.core.parsing.antlr.extractor.util.RuleName;
-import io.shardingsphere.core.parsing.antlr.sql.segment.column.DropColumnSegment;
+import io.shardingsphere.core.parsing.antlr.sql.segment.column.DropColumnDefinitionSegment;
 import io.shardingsphere.core.util.SQLUtil;
 import org.antlr.v4.runtime.ParserRuleContext;
 import org.antlr.v4.runtime.tree.ParseTree;
@@ -29,25 +29,25 @@ import java.util.Collection;
 import java.util.HashSet;
 
 /**
- * Drop column extractor.
+ * Drop column definition extractor.
  *
  * @author duhongjun
  */
-public final class DropColumnExtractor implements CollectionSQLSegmentExtractor {
+public final class DropColumnDefinitionExtractor implements CollectionSQLSegmentExtractor {
     
     @Override
-    public Collection<DropColumnSegment> extract(final ParserRuleContext ancestorNode) {
-        Collection<DropColumnSegment> result = new HashSet<>();
+    public Collection<DropColumnDefinitionSegment> extract(final ParserRuleContext ancestorNode) {
+        Collection<DropColumnDefinitionSegment> result = new HashSet<>();
         for (ParserRuleContext each : ExtractorUtils.getAllDescendantNodes(ancestorNode, RuleName.DROP_COLUMN)) {
             result.addAll(extractDropColumnSegments(each));
         }
         return result;
     }
     
-    private Collection<DropColumnSegment> extractDropColumnSegments(final ParserRuleContext dropColumnNode) {
-        Collection<DropColumnSegment> result = new HashSet<>();
+    private Collection<DropColumnDefinitionSegment> extractDropColumnSegments(final ParserRuleContext dropColumnNode) {
+        Collection<DropColumnDefinitionSegment> result = new HashSet<>();
         for (ParseTree each : ExtractorUtils.getAllDescendantNodes(dropColumnNode, RuleName.COLUMN_NAME)) {
-            result.add(new DropColumnSegment(SQLUtil.getExactlyValue(each.getText())));
+            result.add(new DropColumnDefinitionSegment(SQLUtil.getExactlyValue(each.getText())));
         }
         return result;
     }
