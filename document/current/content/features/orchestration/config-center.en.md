@@ -17,79 +17,74 @@ Config center is defined in the namespace under `config` node. It mainly include
 
 ```
 config
-    ├──authentication                            # Sharding-Proxy权限配置
-    ├──configMap                                 # 分库分表ConfigMap配置，以K/V形式存储，如：{"key1":"value1"}
-    ├──props                                     # 属性配置
-    ├──schema                                    # Schema配置
-    ├      ├──sharding_db                        # SchemaName配置
-    ├      ├      ├──datasource                  # 数据源配置
-    ├      ├      ├──rule                        # 分库分表规则配置
-    ├      ├──masterslave_db                     # SchemaName配置
-    ├      ├      ├──datasource                  # 数据源配置
-    ├      ├      ├──rule                        # 读写分离规则
+    ├──authentication                            # Authentation configuration of Sharding-Proxy
+    ├──configMap                                 # Config map stored in the form of K/V.
+    ├──props                                     # Properties configuration
+    ├──schema                                    # Schema configuration
+    ├      ├──sharding_db                        # SchemaName configuration
+    ├      ├      ├──datasource                  # Datasource configuration
+    ├      ├      ├──rule                        # Sharding rule configuration
+    ├      ├──masterslave_db                     # SchemaName configuration
+    ├      ├      ├──datasource                  # Datasource configuration
+    ├      ├      ├──rule                        # Master-slave rule configuration
 ```
 
-### config/datasource
+### config/authentication
+
+```yaml
+password: root
+username: root
+```
+
+### config/configmap
+
+Config map stored in the form of K/V.
+
+```yaml
+key2: value2
+```
+
+### config/sharding/props
+
+They are the Sharding Properties in sharding-sphere configuration.
+
+```yaml
+executor.size: 20
+sql.show: true
+```
+
+### config/schema/schemeName/datasource
 
 It is a collection of multiple database connection pools, and the properties of different connection pools should be configured by users, e.g. DBCP，C3P0，Druid, HikariCP.
 
 ```yaml
-ds_0: !!org.apache.commons.dbcp.BasicDataSource
-  defaultAutoCommit: true
-  defaultCatalog:
-  defaultReadOnly: false
-  defaultTransactionIsolation: -1
-  driverClassName: com.mysql.jdbc.Driver
-  initialSize: 0
-  logAbandoned: false
-  maxActive: 8
-  maxIdle: 8
-  maxOpenPreparedStatements: -1
-  maxWait: -1
-  minEvictableIdleTimeMillis: 1800000
-  minIdle: 0
-  numTestsPerEvictionRun: 3
-  password: ''
-  removeAbandoned: false
-  removeAbandonedTimeout: 300
-  testOnBorrow: false
-  testOnReturn: false
-  testWhileIdle: false
-  timeBetweenEvictionRunsMillis: -1
-  url: jdbc:mysql://localhost:3306/demo_ds_0
-  username: root
-  validationQuery:
-  validationQueryTimeout: -1
-ds_1: !!org.apache.commons.dbcp.BasicDataSource
-  defaultAutoCommit: true
-  defaultCatalog:
-  defaultReadOnly: false
-  defaultTransactionIsolation: -1
-  driverClassName: com.mysql.jdbc.Driver
-  initialSize: 0
-  logAbandoned: false
-  maxActive: 8
-  maxIdle: 8
-  maxOpenPreparedStatements: -1
-  maxWait: -1
-  minEvictableIdleTimeMillis: 1800000
-  minIdle: 0
-  numTestsPerEvictionRun: 3
-  password: ''
-  removeAbandoned: false
-  removeAbandonedTimeout: 300
-  testOnBorrow: false
-  testOnReturn: false
-  testWhileIdle: false
-  timeBetweenEvictionRunsMillis: -1
-  url: jdbc:mysql://localhost:3306/demo_ds_1
-  username: root
-  validationQuery:
-  validationQueryTimeout: -1
-
+ds_0: !!io.shardingsphere.orchestration.yaml.YamlDataSourceConfiguration
+  dataSourceClassName: com.zaxxer.hikari.HikariDataSource
+  properties:
+    url: jdbc:mysql://127.0.0.1:3306/demo_ds_0?serverTimezone=UTC&useSSL=false
+    password: null
+    maxPoolSize: 50
+    maintenanceIntervalMilliseconds: 30000
+    connectionTimeoutMilliseconds: 30000
+    idleTimeoutMilliseconds: 60000
+    minPoolSize: 1
+    username: root
+    maxLifetimeMilliseconds: 1800000
+ds_1: !!io.shardingsphere.orchestration.yaml.YamlDataSourceConfiguration
+  dataSourceClassName: com.zaxxer.hikari.HikariDataSource
+  properties:
+    url: jdbc:mysql://127.0.0.1:3306/demo_ds_1?serverTimezone=UTC&useSSL=false
+    password: null
+    maxPoolSize: 50
+    maintenanceIntervalMilliseconds: 30000
+    connectionTimeoutMilliseconds: 30000
+    idleTimeoutMilliseconds: 60000
+    minPoolSize: 1
+    username: root
+    maxLifetimeMilliseconds: 1800000
 ```
 
-### config/sharding/rule
+### config/schema/sharding_db/rule
 
 The configuration of Sharding, including the configs of  Sharding and Read-write splitting.
 
@@ -125,24 +120,7 @@ defaultDatabaseStrategy:
 masterSlaveRules: {}
 ```
 
-### config/sharding/configmap
-
-Config map of Sharding, stored in the form of K/V.
-
-```yaml
-key1: value1
-```
-
-### config/sharding/props
-
-They are the Sharding Properties in sharding-sphere configuration.
-
-```yaml
-executor.size: 20
-sql.show: true
-```
-
-### config/masterslave/rule
+### config/schema/masterslave/rule
 
 The configuration for using Read-write splitting standalone.
 
@@ -155,10 +133,6 @@ slaveDataSourceNames:
 loadBalanceAlgorithmType: ROUND_ROBIN
 ```
 
-### config/masterslave/configmap
+## Dynamically push to online
 
-Config map of read-write splitting, stored in the form of K/V.
-
-```yaml
-key2: value2
-```
+All of changes made in registry will be dynamically pushed to online and take effect immediately.
