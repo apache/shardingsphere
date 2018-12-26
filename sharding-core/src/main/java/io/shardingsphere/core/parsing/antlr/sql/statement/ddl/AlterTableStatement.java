@@ -21,7 +21,7 @@ import com.google.common.base.Optional;
 import io.shardingsphere.core.metadata.table.ColumnMetaData;
 import io.shardingsphere.core.metadata.table.ShardingTableMetaData;
 import io.shardingsphere.core.metadata.table.TableMetaData;
-import io.shardingsphere.core.parsing.antlr.sql.segment.column.ColumnPositionSegment;
+import io.shardingsphere.core.parsing.antlr.sql.segment.definition.column.ColumnPositionSegment;
 import lombok.Getter;
 import lombok.Setter;
 

@@ -15,20 +15,30 @@
  * </p>
  */
 
-package io.shardingsphere.core.parsing.antlr.sql.segment.constraint;
+package io.shardingsphere.core.parsing.antlr.sql.segment.definition.column;
 
 import io.shardingsphere.core.parsing.antlr.sql.segment.SQLSegment;
 import lombok.Getter;
-import lombok.RequiredArgsConstructor;
+import lombok.Setter;
 
 /**
- * Drop primary key segment.
- * 
+ * Column definition segment.
+ *
  * @author duhongjun
  */
-@RequiredArgsConstructor
 @Getter
-public final class DropPrimaryKeySegment implements SQLSegment {
+@Setter
+public final class ColumnDefinitionSegment implements SQLSegment {
     
-    private final boolean dropPrimaryKey;
+    private String name;
+    
+    private String type;
+    
+    private boolean primaryKey;
+    
+    public ColumnDefinitionSegment(final String name, final String type, final boolean primaryKey) {
+        this.name = name;
+        this.type = type;
+        this.primaryKey = primaryKey;
+    }
 }

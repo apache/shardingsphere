@@ -22,9 +22,9 @@ import io.shardingsphere.core.parsing.antlr.extractor.OptionalSQLSegmentExtracto
 import io.shardingsphere.core.parsing.antlr.extractor.impl.ColumnDefinitionExtractor;
 import io.shardingsphere.core.parsing.antlr.extractor.util.ExtractorUtils;
 import io.shardingsphere.core.parsing.antlr.extractor.util.RuleName;
-import io.shardingsphere.core.parsing.antlr.sql.segment.column.ColumnDefinitionSegment;
-import io.shardingsphere.core.parsing.antlr.sql.segment.column.ColumnPositionSegment;
-import io.shardingsphere.core.parsing.antlr.sql.segment.column.ModifyColumnDefinitionSegment;
+import io.shardingsphere.core.parsing.antlr.sql.segment.definition.column.ColumnDefinitionSegment;
+import io.shardingsphere.core.parsing.antlr.sql.segment.definition.column.ColumnPositionSegment;
+import io.shardingsphere.core.parsing.antlr.sql.segment.definition.column.alter.ModifyColumnDefinitionSegment;
 import org.antlr.v4.runtime.ParserRuleContext;
 
 /**

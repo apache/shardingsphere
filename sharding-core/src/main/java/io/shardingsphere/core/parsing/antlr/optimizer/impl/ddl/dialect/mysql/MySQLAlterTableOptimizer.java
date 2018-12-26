@@ -19,7 +19,7 @@ package io.shardingsphere.core.parsing.antlr.optimizer.impl.ddl.dialect.mysql;
 
 import io.shardingsphere.core.metadata.table.ColumnMetaData;
 import io.shardingsphere.core.parsing.antlr.optimizer.impl.ddl.AlterTableOptimizer;
-import io.shardingsphere.core.parsing.antlr.sql.segment.column.ColumnPositionSegment;
+import io.shardingsphere.core.parsing.antlr.sql.segment.definition.column.ColumnPositionSegment;
 import io.shardingsphere.core.parsing.antlr.sql.statement.ddl.AlterTableStatement;
 
 import java.util.Collections;

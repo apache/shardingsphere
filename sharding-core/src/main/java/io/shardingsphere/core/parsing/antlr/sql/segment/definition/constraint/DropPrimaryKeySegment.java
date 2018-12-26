@@ -15,22 +15,20 @@
  * </p>
  */
 
-package io.shardingsphere.core.parsing.antlr.sql.segment.constraint;
-
-import lombok.Getter;
-
-import java.util.Collection;
-import java.util.LinkedHashSet;
+package io.shardingsphere.core.parsing.antlr.sql.segment.definition.constraint;
 
 import io.shardingsphere.core.parsing.antlr.sql.segment.SQLSegment;
+import lombok.Getter;
+import lombok.RequiredArgsConstructor;
 
 /**
- * Constraint definition segment.
- *
+ * Drop primary key segment.
+ * 
  * @author duhongjun
  */
+@RequiredArgsConstructor
 @Getter
-public final class ConstraintDefinitionSegment implements SQLSegment {
+public final class DropPrimaryKeySegment implements SQLSegment {
     
-    private final Collection<String> primaryKeyColumnNames = new LinkedHashSet<>();
+    private final boolean dropPrimaryKey;
 }

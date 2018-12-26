@@ -15,30 +15,26 @@
  * </p>
  */
 
-package io.shardingsphere.core.parsing.antlr.sql.segment.column;
+package io.shardingsphere.core.parsing.antlr.sql.segment.definition.column.alter;
 
 import io.shardingsphere.core.parsing.antlr.sql.segment.SQLSegment;
+import io.shardingsphere.core.parsing.antlr.sql.segment.definition.column.ColumnDefinitionSegment;
+import io.shardingsphere.core.parsing.antlr.sql.segment.definition.column.ColumnPositionSegment;
 import lombok.Getter;
+import lombok.RequiredArgsConstructor;
 import lombok.Setter;
 
 /**
- * Column definition segment.
+ * Add column definition segment.
  *
- * @author duhongjun
+ * @author zhangliang
  */
+@RequiredArgsConstructor
 @Getter
 @Setter
-public final class ColumnDefinitionSegment implements SQLSegment {
+public final class AddColumnDefinitionSegment implements SQLSegment {
     
-    private String name;
+    private final ColumnDefinitionSegment columnDefinition;
     
-    private String type;
-    
-    private boolean primaryKey;
-    
-    public ColumnDefinitionSegment(final String name, final String type, final boolean primaryKey) {
-        this.name = name;
-        this.type = type;
-        this.primaryKey = primaryKey;
-    }
+    private ColumnPositionSegment columnPosition;
 }

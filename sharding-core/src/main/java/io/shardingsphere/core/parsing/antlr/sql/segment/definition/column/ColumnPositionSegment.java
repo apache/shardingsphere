@@ -15,22 +15,33 @@
  * </p>
  */
 
-package io.shardingsphere.core.parsing.antlr.sql.segment.column;
+package io.shardingsphere.core.parsing.antlr.sql.segment.definition.column;
 
 import io.shardingsphere.core.parsing.antlr.sql.segment.SQLSegment;
-import lombok.EqualsAndHashCode;
 import lombok.Getter;
 import lombok.RequiredArgsConstructor;
+import lombok.Setter;
 
 /**
- * Drop column definition segment.
- *
+ * Column position segment.
+ * 
  * @author duhongjun
  */
 @RequiredArgsConstructor
 @Getter
-@EqualsAndHashCode
-public final class DropColumnDefinitionSegment implements SQLSegment {
+@Setter
+public final class ColumnPositionSegment implements SQLSegment, Comparable<ColumnPositionSegment> {
     
-    private final String columnName;
+    private final int startIndex;
+    
+    private String firstColumn;
+    
+    private String columnName;
+    
+    private String afterColumn;
+    
+    @Override
+    public int compareTo(final ColumnPositionSegment o) {
+        return null == o ? -1 : startIndex - o.startIndex;
+    }
 }

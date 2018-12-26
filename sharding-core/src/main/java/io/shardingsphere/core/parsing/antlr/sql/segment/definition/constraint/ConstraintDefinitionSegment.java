@@ -15,33 +15,21 @@
  * </p>
  */
 
-package io.shardingsphere.core.parsing.antlr.sql.segment.column;
+package io.shardingsphere.core.parsing.antlr.sql.segment.definition.constraint;
 
 import io.shardingsphere.core.parsing.antlr.sql.segment.SQLSegment;
 import lombok.Getter;
-import lombok.RequiredArgsConstructor;
-import lombok.Setter;
+
+import java.util.Collection;
+import java.util.LinkedHashSet;
 
 /**
- * Column position segment.
- * 
+ * Constraint definition segment.
+ *
  * @author duhongjun
  */
-@RequiredArgsConstructor
 @Getter
-@Setter
-public final class ColumnPositionSegment implements SQLSegment, Comparable<ColumnPositionSegment> {
+public final class ConstraintDefinitionSegment implements SQLSegment {
     
-    private final int startIndex;
-    
-    private String firstColumn;
-    
-    private String columnName;
-    
-    private String afterColumn;
-    
-    @Override
-    public int compareTo(final ColumnPositionSegment o) {
-        return null == o ? -1 : startIndex - o.startIndex;
-    }
+    private final Collection<String> primaryKeyColumnNames = new LinkedHashSet<>();
 }
