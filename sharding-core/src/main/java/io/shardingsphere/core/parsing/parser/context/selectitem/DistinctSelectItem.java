@@ -51,7 +51,6 @@ public final class DistinctSelectItem implements SelectItem {
 
     @Override
     public String getExpression() {
-        
         return distinctColumnNames.isEmpty() ? DefaultKeyword.DISTINCT.name() : SQLUtil.getExactlyValue(DefaultKeyword.DISTINCT + " " + Joiner.on(", ").join(distinctColumnNames));
     }
     
