@@ -51,21 +51,12 @@ public final class DistinctSelectItem implements SelectItem {
 
     @Override
     public String getExpression() {
-        return isToAppendAlias() 
-                ? DefaultKeyword.DISTINCT.name() + " " + distinctColumnNames.get(0) + "AS" + alias.get() : SQLUtil.getExactlyValue(DefaultKeyword.DISTINCT + " " + Joiner.on(", ").join(distinctColumnNames));
+        return isSingleColumnAlias() ? DefaultKeyword.DISTINCT.name() + " " + distinctColumnNames.get(0) + "AS" + alias.get() 
+                : SQLUtil.getExactlyValue(DefaultKeyword.DISTINCT + " " + Joiner.on(", ").join(distinctColumnNames));
     }
     
-    private boolean isToAppendAlias() {
+    private boolean isSingleColumnAlias() {
         return 1 == distinctColumnNames.size() && alias.isPresent();
-    }
-    
-    /**
-     * Get column label.
-     *
-     * @return column label
-     */
-    public String getColumnLabel() {
-        return alias.isPresent() ? alias.get() : getExpression();
     }
     
     /**
