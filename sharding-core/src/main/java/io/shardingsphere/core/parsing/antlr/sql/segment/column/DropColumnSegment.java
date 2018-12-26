@@ -17,20 +17,20 @@
 
 package io.shardingsphere.core.parsing.antlr.sql.segment.column;
 
-import lombok.Getter;
-
-import java.util.Collection;
-import java.util.LinkedHashSet;
-
 import io.shardingsphere.core.parsing.antlr.sql.segment.SQLSegment;
+import lombok.EqualsAndHashCode;
+import lombok.Getter;
+import lombok.RequiredArgsConstructor;
 
 /**
  * Drop column segment.
  *
  * @author duhongjun
  */
+@RequiredArgsConstructor
 @Getter
+@EqualsAndHashCode
 public final class DropColumnSegment implements SQLSegment {
     
-    private final Collection<String> dropColumnNames = new LinkedHashSet<>();
+    private final String columnName;
 }

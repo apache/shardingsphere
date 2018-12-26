@@ -17,8 +17,7 @@
 
 package io.shardingsphere.core.parsing.antlr.extractor.impl;
 
-import com.google.common.base.Optional;
-import io.shardingsphere.core.parsing.antlr.extractor.OptionalSQLSegmentExtractor;
+import io.shardingsphere.core.parsing.antlr.extractor.CollectionSQLSegmentExtractor;
 import io.shardingsphere.core.parsing.antlr.extractor.util.ExtractorUtils;
 import io.shardingsphere.core.parsing.antlr.extractor.util.RuleName;
 import io.shardingsphere.core.parsing.antlr.sql.segment.column.DropColumnSegment;
@@ -27,26 +26,29 @@ import org.antlr.v4.runtime.ParserRuleContext;
 import org.antlr.v4.runtime.tree.ParseTree;
 
 import java.util.Collection;
+import java.util.HashSet;
 
 /**
  * Drop column extractor.
  *
  * @author duhongjun
  */
-public final class DropColumnExtractor implements OptionalSQLSegmentExtractor {
+public final class DropColumnExtractor implements CollectionSQLSegmentExtractor {
     
     @Override
-    public Optional<DropColumnSegment> extract(final ParserRuleContext ancestorNode) {
-        Collection<ParserRuleContext> dropColumnNodes = ExtractorUtils.getAllDescendantNodes(ancestorNode, RuleName.DROP_COLUMN);
-        if (dropColumnNodes.isEmpty()) {
-            return Optional.absent();
+    public Collection<DropColumnSegment> extract(final ParserRuleContext ancestorNode) {
+        Collection<DropColumnSegment> result = new HashSet<>();
+        for (ParserRuleContext each : ExtractorUtils.getAllDescendantNodes(ancestorNode, RuleName.DROP_COLUMN)) {
+            result.addAll(extractDropColumnSegments(each));
         }
-        DropColumnSegment result = new DropColumnSegment();
-        for (ParserRuleContext each : dropColumnNodes) {
-            for (ParseTree columnNode : ExtractorUtils.getAllDescendantNodes(each, RuleName.COLUMN_NAME)) {
-                result.getDropColumnNames().add(SQLUtil.getExactlyValue(columnNode.getText()));
-            }
+        return result;
+    }
+    
+    private Collection<DropColumnSegment> extractDropColumnSegments(final ParserRuleContext dropColumnNode) {
+        Collection<DropColumnSegment> result = new HashSet<>();
+        for (ParseTree each : ExtractorUtils.getAllDescendantNodes(dropColumnNode, RuleName.COLUMN_NAME)) {
+            result.add(new DropColumnSegment(SQLUtil.getExactlyValue(each.getText())));
         }
-        return Optional.of(result);
+        return result;
     }
 }
