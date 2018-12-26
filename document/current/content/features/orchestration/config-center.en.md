@@ -17,15 +17,16 @@ Config center is defined in the namespace under `config` node. It mainly include
 
 ```
 config
-    ├──datasource                                # The config of data source 
-    ├──sharding                                  # The root node of Sharding configuration
-    ├      ├──rule                               # The rule of Sharding
-    ├      ├──configmap                          # The ConfigMap config of Sharding, stored in the form of K/V, e.g. {"key1":"value1"}
-    ├      ├──props                              # The config of Properties
-    ├──masterslave                               # The config of Read-write splitting
-    ├      ├──rule                               # The rule of Read-write splitting 
-    ├      ├──configmap                          # The ConfigMap config of Read-write splitting, stored in the form of K/V, e.g. {"key1":"value1"}
-    ├      ├──props                              # The config of Properties
+    ├──authentication                            # Sharding-Proxy权限配置
+    ├──configMap                                 # 分库分表ConfigMap配置，以K/V形式存储，如：{"key1":"value1"}
+    ├──props                                     # 属性配置
+    ├──schema                                    # Schema配置
+    ├      ├──sharding_db                        # SchemaName配置
+    ├      ├      ├──datasource                  # 数据源配置
+    ├      ├      ├──rule                        # 分库分表规则配置
+    ├      ├──masterslave_db                     # SchemaName配置
+    ├      ├      ├──datasource                  # 数据源配置
+    ├      ├      ├──rule                        # 读写分离规则
 ```
 
 ### config/datasource
