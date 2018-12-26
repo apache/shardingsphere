@@ -18,6 +18,6 @@ chapter = true
 - 接收欢迎邮件
 完成以上步骤后，您会收到一封主题为WELCOME to dev@shardingsphere.apache.org的邮件，至此您已成功订阅Apache ShardingSphere（Incubating）的邮件列表。
 
-## gitHub提交Issue
+## gitHub提交issue
 
 可在[Issue列表](https://github.com/sharding-sphere/sharding-sphere/issues)以issue的方式提交您的问题和建议。
