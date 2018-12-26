@@ -121,20 +121,21 @@ SELECT COUNT(*) FROM (SELECT * FROM t_order o WHERE o.id IN (SELECT id FROM t_or
 | SELECT DISTINCT * FROM tbl_name WHERE col1 = ?                                              |                                     |
 | SELECT DISTINCT col1 FROM tbl_name                                                          |                                     |
 | SELECT DISTINCT col1, col2, col3 FROM tbl_name                                              |                                     |
-| SELECT COUNT(DISTINCT col1) FROM tbl_name                                                   |                                     |
-| SELECT SUM(DISTINCT col1) FROM tbl_name                                                     |                                     |
 | SELECT DISTINCT col1 FROM tbl_name ORDER BY col1                                            |                                     |
 | SELECT DISTINCT col1 FROM tbl_name ORDER BY col2                                            |                                     |
-| SELECT COUNT(DISTINCT col1) FROM tbl_name GROUP BY col1                                     |                                     |
-| SELECT COUNT(DISTINCT col1), col1 FROM tbl_name GROUP BY col1                               |                                     |
+| SELECT DISTINCT(col1) FROM tbl_name                                                         | MySQL                               |
+| SELECT AVG(DISTINCT col1) FROM tbl_name                                                     | MySQL                               |
+| SELECT SUM(DISTINCT col1) FROM tbl_name                                                     | MySQL                               |
+| SELECT COUNT(DISTINCT col1) FROM tbl_name                                                   | MySQL                               |
+| SELECT COUNT(DISTINCT col1) FROM tbl_name GROUP BY col1                                     | MySQL                               |
+| SELECT COUNT(DISTINCT col1 + col2) FROM tbl_name                                            | MySQL                               |
+| SELECT COUNT(DISTINCT col1), SUM(DISTINCT col1) FROM tbl_name                               | MySQL                               |
+| SELECT COUNT(DISTINCT col1), col1 FROM tbl_name GROUP BY col1                               | MySQL                               |
+| SELECT col1, COUNT(DISTINCT col1) FROM tbl_name GROUP BY col1                               | MySQL                               |
 
 ### 不支持的SQL
 
-| SQL                                                                                         | 不支持原因                        |
-| ------------------------------------------------------------------------------------------- |--------------------------------- |
-| SELECT DISTINCT(col1) FROM tbl_name                                                         | DISTINCT()                       |
-| SELECT COUNT(DISTINCT col1 + col2) FROM tbl_name                                            | PLUS FUNCTION + DISTINCT         |
-| SELECT AVG(DISTINCT col1) FROM tbl_name                                                     | AVG(DISTINCT)                    |
-| SELECT COUNT(DISTINCT col1), SUM(DISTINCT col1) FROM tbl_name                               | 同时使用2种DISTINCT的聚合函数       |
+| SQL                                                                                         | 不支持原因                         |
+| ------------------------------------------------------------------------------------------- |---------------------------------  |
 | SELECT SUM(DISTINCT col1), SUM(col1) FROM tbl_name                                          | 同时使用普通聚合函数和DISTINCT聚合函数|
-| SELECT col1, COUNT(DISTINCT col1) FROM tbl_name GROUP BY col1                               | COUNT(DISTINCT)和普通查询项的顺序问题|
+
