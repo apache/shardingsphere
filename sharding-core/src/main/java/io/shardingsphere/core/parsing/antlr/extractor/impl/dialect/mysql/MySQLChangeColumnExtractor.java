@@ -33,7 +33,7 @@ import org.antlr.v4.runtime.ParserRuleContext;
  */
 public final class MySQLChangeColumnExtractor implements OptionalSQLSegmentExtractor {
     
-    private final ColumnDefinitionExtractor columnDefinitionPhraseExtractor = new ColumnDefinitionExtractor();
+    private final ColumnDefinitionExtractor columnDefinitionExtractor = new ColumnDefinitionExtractor();
     
     @Override
     public Optional<ColumnDefinitionSegment> extract(final ParserRuleContext ancestorNode) {
@@ -41,17 +41,17 @@ public final class MySQLChangeColumnExtractor implements OptionalSQLSegmentExtra
         if (!changeColumnNode.isPresent()) {
             return Optional.absent();
         }
-        Optional<ParserRuleContext> oldColumnNode = ExtractorUtils.findFirstChildNode(changeColumnNode.get(), RuleName.COLUMN_NAME);
-        if (!oldColumnNode.isPresent()) {
+        Optional<ParserRuleContext> oldColumnNameNode = ExtractorUtils.findFirstChildNode(changeColumnNode.get(), RuleName.COLUMN_NAME);
+        if (!oldColumnNameNode.isPresent()) {
             return Optional.absent();
         }
         Optional<ParserRuleContext> columnDefinitionNode = ExtractorUtils.findFirstChildNode(changeColumnNode.get(), RuleName.COLUMN_DEFINITION);
         if (!columnDefinitionNode.isPresent()) {
             return Optional.absent();
         }
-        Optional<ColumnDefinitionSegment> result = columnDefinitionPhraseExtractor.extract(columnDefinitionNode.get());
+        Optional<ColumnDefinitionSegment> result = columnDefinitionExtractor.extract(columnDefinitionNode.get());
         if (result.isPresent()) {
-            result.get().setOldName(oldColumnNode.get().getText());
+            result.get().setOldName(oldColumnNameNode.get().getText());
             Optional<ColumnPositionSegment> columnPosition = new MySQLColumnPositionExtractor(result.get().getName()).extract(changeColumnNode.get());
             if (columnPosition.isPresent()) {
                 result.get().setPosition(columnPosition.get());
