@@ -21,12 +21,14 @@ import com.google.common.base.Optional;
 import com.google.common.base.Predicate;
 import com.google.common.base.Strings;
 import com.google.common.collect.Iterators;
+import io.shardingsphere.core.constant.AggregationType;
 import io.shardingsphere.core.constant.DatabaseType;
 import io.shardingsphere.core.metadata.datasource.ShardingDataSourceMetaData;
 import io.shardingsphere.core.optimizer.condition.ShardingConditions;
 import io.shardingsphere.core.parsing.lexer.token.DefaultKeyword;
 import io.shardingsphere.core.parsing.parser.context.OrderItem;
 import io.shardingsphere.core.parsing.parser.context.limit.Limit;
+import io.shardingsphere.core.parsing.parser.context.selectitem.AggregationSelectItem;
 import io.shardingsphere.core.parsing.parser.sql.SQLStatement;
 import io.shardingsphere.core.parsing.parser.sql.dml.insert.InsertStatement;
 import io.shardingsphere.core.parsing.parser.sql.dql.select.SelectStatement;
@@ -116,6 +118,9 @@ public final class SQLRewriteEngine {
             return appendOriginalLiterals(result);
         }
         appendInitialLiterals(isRewrite, result);
+        if (sqlStatement instanceof SelectStatement && !isRewrite) {
+            removeAppendItems();
+        }
         appendTokensAndPlaceholders(isRewrite, result);
         return result;
     }
@@ -149,6 +154,17 @@ public final class SQLRewriteEngine {
         result.appendLiterals(originalSQL.substring(firstSelectItemStartPosition, sqlTokens.get(0).getBeginPosition()));
     }
     
+    private void removeAppendItems() {
+        SelectStatement selectStatement = (SelectStatement) sqlStatement;
+        selectStatement.getOrderByItems().clear();
+        selectStatement.getGroupByItems().clear();
+        for (AggregationSelectItem each : selectStatement.getAggregationSelectItems()) {
+            if (AggregationType.AVG == each.getType()) {
+                each.getDerivedAggregationSelectItems().clear();
+            }
+        }
+    }
+    
     private void appendTokensAndPlaceholders(final boolean isRewrite, final SQLBuilder result) {
         int count = 0;
         for (SQLToken each : sqlTokens) {
@@ -159,7 +175,7 @@ public final class SQLRewriteEngine {
             } else if (each instanceof IndexToken) {
                 appendIndexPlaceholder(result, (IndexToken) each, count);
             } else if (each instanceof ItemsToken) {
-                appendItemsToken(result, (ItemsToken) each, count);
+                appendItemsToken(result, (ItemsToken) each, count, isRewrite);
             } else if (each instanceof InsertValuesToken) {
                 appendInsertValuesToken(result, (InsertValuesToken) each, count);
             } else if (each instanceof RowCountToken) {
@@ -167,7 +183,7 @@ public final class SQLRewriteEngine {
             } else if (each instanceof OffsetToken) {
                 appendLimitOffsetToken(result, (OffsetToken) each, count, isRewrite);
             } else if (each instanceof OrderByToken) {
-                appendOrderByToken(result, count);
+                appendOrderByToken(result, count, isRewrite);
             } else if (each instanceof InsertColumnToken) {
                 appendSymbolToken(result, (InsertColumnToken) each, count);
             } else if (each instanceof AggregationDistinctToken) {
@@ -202,8 +218,9 @@ public final class SQLRewriteEngine {
         appendRest(sqlBuilder, count, beginPosition);
     }
     
-    private void appendItemsToken(final SQLBuilder sqlBuilder, final ItemsToken itemsToken, final int count) {
-        for (int i = 0; i < itemsToken.getItems().size(); i++) {
+    private void appendItemsToken(final SQLBuilder sqlBuilder, final ItemsToken itemsToken, final int count, final boolean isRewrite) {
+        boolean isRewriteItem = isRewrite || sqlStatement instanceof InsertStatement;
+        for (int i = 0; i < itemsToken.getItems().size() && isRewriteItem; i++) {
             if (itemsToken.isFirstOfItemsSpecial() && 0 == i) {
                 sqlBuilder.appendLiterals(SQLUtil.getOriginalValue(itemsToken.getItems().get(i), databaseType));
             } else {
@@ -239,23 +256,26 @@ public final class SQLRewriteEngine {
         appendRest(sqlBuilder, count, beginPosition);
     }
     
-    private void appendOrderByToken(final SQLBuilder sqlBuilder, final int count) {
+    private void appendOrderByToken(final SQLBuilder sqlBuilder, final int count, final boolean isRewrite) {
         SelectStatement selectStatement = (SelectStatement) sqlStatement;
-        StringBuilder orderByLiterals = new StringBuilder();
-        orderByLiterals.append(" ").append(DefaultKeyword.ORDER).append(" ").append(DefaultKeyword.BY).append(" ");
-        int i = 0;
-        for (OrderItem each : selectStatement.getOrderByItems()) {
-            String columnLabel = Strings.isNullOrEmpty(each.getColumnLabel()) ? String.valueOf(each.getIndex()) : SQLUtil.getOriginalValue(each.getColumnLabel(), databaseType);
-            if (0 == i) {
-                orderByLiterals.append(columnLabel).append(" ").append(each.getOrderDirection().name());
-            } else {
-                orderByLiterals.append(",").append(columnLabel).append(" ").append(each.getOrderDirection().name());
+        if (isRewrite) {
+            StringBuilder orderByLiterals = new StringBuilder();
+            orderByLiterals.append(" ").append(DefaultKeyword.ORDER).append(" ").append(DefaultKeyword.BY).append(" ");
+            int i = 0;
+            for (OrderItem each : selectStatement.getOrderByItems()) {
+                String columnLabel = Strings.isNullOrEmpty(each.getColumnLabel()) ? String.valueOf(each.getIndex())
+                    : SQLUtil.getOriginalValue(each.getColumnLabel(), databaseType);
+                if (0 == i) {
+                    orderByLiterals.append(columnLabel).append(" ").append(each.getOrderDirection().name());
+                } else {
+                    orderByLiterals.append(",").append(columnLabel).append(" ").append(each.getOrderDirection().name());
+                }
+                i++;
             }
-            i++;
+            orderByLiterals.append(" ");
+            sqlBuilder.appendLiterals(orderByLiterals.toString());
         }
-        orderByLiterals.append(" ");
-        sqlBuilder.appendLiterals(orderByLiterals.toString());
-        int beginPosition = ((SelectStatement) sqlStatement).getGroupByLastPosition();
+        int beginPosition = selectStatement.getGroupByLastPosition();
         appendRest(sqlBuilder, count, beginPosition);
     }
     
@@ -268,7 +288,7 @@ public final class SQLRewriteEngine {
         if (!isRewrite) {
             sqlBuilder.appendLiterals(distinctToken.getOriginalLiterals()); 
         } else {
-            sqlBuilder.appendPlaceholder(new AggregationDistinctPlaceholder(distinctToken.getColumnName().toLowerCase(), "", distinctToken.getAutoAlias())); 
+            sqlBuilder.appendPlaceholder(new AggregationDistinctPlaceholder(distinctToken.getColumnName().toLowerCase(), "", distinctToken.getAutoAlias()));
         }
         int beginPosition = distinctToken.getBeginPosition() + distinctToken.getOriginalLiterals().length();
         appendRest(sqlBuilder, count, beginPosition);

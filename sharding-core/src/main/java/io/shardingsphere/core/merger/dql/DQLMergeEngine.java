@@ -99,6 +99,9 @@ public final class DQLMergeEngine implements MergeEngine {
     }
     
     private MergedResult build() throws SQLException {
+        if (queryResults.size() == 1) {
+            return new IteratorStreamMergedResult(queryResults);
+        }
         if (!selectStatement.getGroupByItems().isEmpty() || !selectStatement.getAggregationSelectItems().isEmpty()) {
             return getGroupByMergedResult();
         }
