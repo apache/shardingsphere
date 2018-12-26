@@ -7,7 +7,7 @@ chapter = true
 ## Becoming a Committer
 
  - Make contributions consistently during the past 6 months
- - Understand the core technology of Sharding-Sphere deeply
+ - Understand the core technology of ShardingSphere deeply
  - Obey the Code of Conduct
  - Submit high-quality content
  - Enable Google Two-factor authentication([2FA](/en/contribute/2fa/))
