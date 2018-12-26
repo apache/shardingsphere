@@ -46,8 +46,8 @@
         </el-col>
       </el-row>
       <span slot="footer" class="dialog-footer">
-        <el-button @click="centerDialogVisible = false">取 消</el-button>
-        <el-button type="primary" @click="onConfirm">确 定</el-button>
+        <el-button @click="centerDialogVisible = false">{{ $t('btn.cancel') }}</el-button>
+        <el-button type="primary" @click="onConfirm">{{ $t('btn.submit') }}</el-button>
       </span>
     </el-dialog>
   </div>
@@ -121,6 +121,12 @@ export default {
               type: 'success'
             })
             this.centerDialogVisible = false
+          } else {
+            this.$notify({
+              title: this.$t('common').notify.title,
+              message: this.$t('common').notify.updateFaildMessage,
+              type: 'error'
+            })
           }
         })
       } else {
@@ -132,6 +138,12 @@ export default {
               type: 'success'
             })
             this.centerDialogVisible = false
+          } else {
+            this.$notify({
+              title: this.$t('common').notify.title,
+              message: this.$t('common').notify.updateFaildMessage,
+              type: 'error'
+            })
           }
         })
       }

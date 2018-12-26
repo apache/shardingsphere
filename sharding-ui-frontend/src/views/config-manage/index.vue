@@ -1,30 +1,41 @@
 <template>
   <s-container>
     <el-card class="box-card">
-      <el-radio-group v-model="radioValue">
+      <el-radio-group v-model="radioValue" @change="onChange">
         <el-radio-button label="schema"/>
         <el-radio-button label="authentication"/>
         <el-radio-button label="configmap"/>
         <el-radio-button label="props"/>
       </el-radio-group>
-      <m-schema/>
+      <component :is="currentView"/>
     </el-card>
   </s-container>
 </template>
 <script>
-import yaml from 'js-yaml'
 import SContainer from '@/components/Container/index.vue'
 import MSchema from './module/schema'
+import MAuthentication from './module/authentication'
 
 export default {
   name: 'ConfigManage',
   components: {
     SContainer,
-    MSchema
+    MSchema,
+    MAuthentication
   },
   data() {
     return {
-      radioValue: 'schema'
+      radioValue: 'schema',
+      currentView: MSchema
+    }
+  },
+  methods: {
+    onChange(val) {
+      if (val === 'schema') {
+        this.currentView = MSchema
+      } else if (val === 'authentication') {
+        this.currentView = MAuthentication
+      }
     }
   }
 }
