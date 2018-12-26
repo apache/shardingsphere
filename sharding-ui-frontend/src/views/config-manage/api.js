@@ -9,5 +9,11 @@ export default {
   putSchemaDataSource: (schemaName, params = {}) => API.put(`/api/schema/datasource/${schemaName}`, params),
   // Authentication
   getAuth: () => API.get(`/api/authentication`),
-  putAuth: (params = {}) => API.put(`/api/authentication`, params)
+  putAuth: (params = {}) => API.put(`/api/authentication`, params),
+  // configMap
+  getConfigMap: () => API.get(`/api/config-map`),
+  putConfigMap: (params = {}) => API.put(`/api/config-map`, params),
+  // props
+  getProps: () => API.get(`/api/props`),
+  putProps: (params = {}) => API.put(`/api/props`, params)
 }

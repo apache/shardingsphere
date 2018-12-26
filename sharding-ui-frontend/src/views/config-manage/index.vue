@@ -4,7 +4,7 @@
       <el-radio-group v-model="radioValue" @change="onChange">
         <el-radio-button label="schema"/>
         <el-radio-button label="authentication"/>
-        <el-radio-button label="configmap"/>
+        <el-radio-button label="configMap"/>
         <el-radio-button label="props"/>
       </el-radio-group>
       <component :is="currentView"/>
@@ -15,13 +15,17 @@
 import SContainer from '@/components/Container/index.vue'
 import MSchema from './module/schema'
 import MAuthentication from './module/authentication'
+import MProps from './module/props'
+import MConfigMap from './module/configMap'
 
 export default {
   name: 'ConfigManage',
   components: {
     SContainer,
     MSchema,
-    MAuthentication
+    MAuthentication,
+    MProps,
+    MConfigMap
   },
   data() {
     return {
@@ -35,6 +39,10 @@ export default {
         this.currentView = MSchema
       } else if (val === 'authentication') {
         this.currentView = MAuthentication
+      } else if (val === 'props') {
+        this.currentView = MProps
+      } else {
+        this.currentView = MConfigMap
       }
     }
   }
