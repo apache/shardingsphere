@@ -47,9 +47,4 @@ public final class ColumnDefinitionSegment implements SQLSegment {
         this.type = type;
         this.primaryKey = primaryKey;
     }
-    
-    public ColumnDefinitionSegment(final String name, final String oldName) {
-        this.name = name;
-        this.oldName = oldName;
-    }
 }
