@@ -49,7 +49,35 @@ TransactionTypeHolder.set(TransactionType.LOCAL);
 TransactionTypeHolder.set(TransactionType.XA);
 ```
 
-### Spring注解方式
+### SpringBoot使用方式
+引入Maven依赖：
+
+```xml
+<dependency>
+    <groupId>io.shardingsphere</groupId>
+    <artifactId>sharding-transaction-spring</artifactId>
+    <version>${sharding-sphere.version}</version>
+</dependency>
+
+<dependency>
+    <groupId>org.springframework.boot</groupId>
+    <artifactId>spring-boot-starter-aop</artifactId>
+    <version>${spring-boot.version}</version>
+</dependency>
+
+<spring-boot.version>[1.5.0.RELEASE,2.0.0.M1)</spring-boot.version>
+
+```
+
+AutoConfiguration配置
+```java
+@SpringBootApplication(exclude = JtaAutoConfiguration.class)
+@ComponentScan("io.shardingsphere.transaction.aspect")
+public class StartMain {
+}
+```
+
+### Spring Namespace使用方式
 
 引入Maven依赖：
 
@@ -57,11 +85,31 @@ TransactionTypeHolder.set(TransactionType.XA);
 <dependency>
     <groupId>io.shardingsphere</groupId>
     <artifactId>sharding-transaction-spring</artifactId>
-    <version>${shardingsphere.version}</version>
+    <version>${sharding-sphere.version}</version>
 </dependency>
+
+<dependency>
+    <groupId>org.aspectj</groupId>
+    <artifactId>aspectjweaver</artifactId>
+    <version>${aspectjweaver.version}</version>
+</dependency>
+<dependency>
+    <groupId>org.springframework</groupId>
+    <artifactId>spring-context-support</artifactId>
+    <version>${springframework.version}</version>
+</dependency>
+
+<aspectjweaver.version>1.8.9</aspectjweaver.version>
+<springframework.version>[4.3.6.RELEASE,5.0.0.M1)</springframework.version>
+```
+加载切面配置信息
+```xml
+<import resource="classpath:META-INF/shardingTransaction.xml"/>
+
 ```
 
-然后在需要事务的方法或类中添加相关注解即可，例如：
+### 业务代码
+在需要事务的方法或类中添加相关注解即可，例如：
 
 ```java
 @ShardingTransactionType(TransactionType.LOCAL)
