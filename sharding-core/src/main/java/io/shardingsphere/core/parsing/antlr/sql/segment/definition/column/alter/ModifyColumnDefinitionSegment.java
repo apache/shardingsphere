@@ -49,4 +49,13 @@ public final class ModifyColumnDefinitionSegment implements SQLSegment {
     public Optional<String> getOldColumnName() {
         return Optional.fromNullable(oldColumnName);
     }
+    
+    /**
+     * Get column position.
+     *
+     * @return column position
+     */
+    public Optional<ColumnPositionSegment> getColumnPosition() {
+        return Optional.fromNullable(columnPosition);
+    }
 }

@@ -17,6 +17,7 @@
 
 package io.shardingsphere.core.parsing.antlr.sql.segment.definition.column.alter;
 
+import com.google.common.base.Optional;
 import io.shardingsphere.core.parsing.antlr.sql.segment.SQLSegment;
 import io.shardingsphere.core.parsing.antlr.sql.segment.definition.column.ColumnDefinitionSegment;
 import io.shardingsphere.core.parsing.antlr.sql.segment.definition.column.ColumnPositionSegment;
@@ -37,4 +38,13 @@ public final class AddColumnDefinitionSegment implements SQLSegment {
     private final ColumnDefinitionSegment columnDefinition;
     
     private ColumnPositionSegment columnPosition;
+    
+    /**
+     * Get column position.
+     * 
+     * @return column position
+     */
+    public Optional<ColumnPositionSegment> getColumnPosition() {
+        return Optional.fromNullable(columnPosition);
+    }
 }

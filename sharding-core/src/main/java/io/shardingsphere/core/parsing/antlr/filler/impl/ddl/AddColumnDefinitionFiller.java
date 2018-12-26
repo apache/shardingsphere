@@ -41,8 +41,8 @@ public final class AddColumnDefinitionFiller implements SQLStatementFiller<AddCo
         if (!alterTableStatement.findColumnDefinitionFromMetaData(sqlSegment.getColumnDefinition().getColumnName(), shardingTableMetaData).isPresent()) {
             alterTableStatement.getAddedColumnDefinitions().add(columnDefinition);
         }
-        if (null != sqlSegment.getColumnPosition()) {
-            alterTableStatement.getPositionChangedColumns().add(sqlSegment.getColumnPosition());
+        if (sqlSegment.getColumnPosition().isPresent()) {
+            alterTableStatement.getPositionChangedColumns().add(sqlSegment.getColumnPosition().get());
         }
     }
 }
