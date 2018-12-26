@@ -47,6 +47,6 @@ public class ShardingXADataSourceUtil {
         XADataSource xaDataSource = XADataSourceFactory.build(databaseType);
         Properties xaProperties = XAPropertiesFactory.createXAProperties(databaseType).build(dataSourceParameter);
         PropertyUtils.setProperties(xaDataSource, xaProperties);
-        return new ShardingXADataSource(xaDataSource, dataSourceName);
+        return new ShardingXADataSource(dataSourceName, xaDataSource);
     }
 }
