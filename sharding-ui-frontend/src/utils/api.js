@@ -1,6 +1,6 @@
 import axios from 'axios'
 import jsonp from 'jsonp'
-import qs from 'qs'
+// import qs from 'qs'
 // import {
 //   Message
 // } from 'element-ui'
@@ -15,10 +15,11 @@ const configData = (type, params) => {
     // params = qs.stringify(params)
     return params
   } else if (type === 'put') {
-    return qs.stringify({
-      ...params,
-      _method: 'put'
-    })
+    // return qs.stringify({
+    //   ...params,
+    //   _method: 'put'
+    // })
+    return params
   } else if (type === 'delete') {
     // return qs.stringify({
     //   ...params,

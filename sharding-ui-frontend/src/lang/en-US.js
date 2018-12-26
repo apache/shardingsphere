@@ -18,7 +18,8 @@ export default {
       conSucMessage: 'Connection succeeded',
       conFailMessage: 'Connection failed',
       delSucMessage: 'Delete succeeded',
-      delFailMessage: 'Delete failed'
+      delFailMessage: 'Delete failed',
+      updateCompletedMessage: 'Update completed'
     }
   },
   login: {

@@ -18,7 +18,8 @@ export default {
       conSucMessage: '连接成功',
       conFailMessage: '连接失败',
       delSucMessage: '删除成功',
-      delFailMessage: '删除失败'
+      delFailMessage: '删除失败',
+      updateCompletedMessage: '更新成功'
     }
   },
   login: {
