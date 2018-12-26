@@ -36,7 +36,7 @@ public final class SQLServerDropIndexExtractor implements OptionalSQLSegmentExtr
     
     @Override
     public Optional<IndexSegment> extract(final ParserRuleContext ancestorNode) {
-        Optional<ParserRuleContext> indexDefOptionNode = ExtractorUtils.findFirstChildNode(ancestorNode, RuleName.ALTER_DROP_INDEX);
+        Optional<ParserRuleContext> indexDefOptionNode = ExtractorUtils.findFirstChildNode(ancestorNode, RuleName.DROP_INDEX_DEF);
         if (!indexDefOptionNode.isPresent()) {
             return Optional.absent();
         }
