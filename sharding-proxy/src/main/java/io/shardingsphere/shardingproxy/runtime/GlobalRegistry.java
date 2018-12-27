@@ -123,20 +123,20 @@ public final class GlobalRegistry {
             shardingProperties = new ShardingProperties(props);
         }
         this.authentication = authentication;
-        initSchema(schemaDataSources, schemaRules, isUsingRegistry);
+        initSchema(schemaDataSources, schemaRules, shardingProperties.<Boolean>getValue(ShardingPropertiesConstant.CHECK_TABLE_METADATA_ENABLED), isUsingRegistry);
     }
     
-    private void initSchema(final Map<String, Map<String, DataSourceParameter>> schemaDataSources, final Map<String, RuleConfiguration> schemaRules, final boolean isUsingRegistry) {
+    private void initSchema(final Map<String, Map<String, DataSourceParameter>> schemaDataSources, final Map<String, RuleConfiguration> schemaRules, final boolean isCheckingMetaData, final boolean isUsingRegistry) {
         for (Entry<String, RuleConfiguration> entry : schemaRules.entrySet()) {
             String schemaName = entry.getKey();
-            logicSchemas.put(schemaName, createLogicSchema(schemaName, schemaDataSources, entry.getValue(), isUsingRegistry));
+            logicSchemas.put(schemaName, createLogicSchema(schemaName, schemaDataSources, entry.getValue(), isUsingRegistry, isUsingRegistry));
         }
     }
     
     private LogicSchema createLogicSchema(final String schemaName,
-                                          final Map<String, Map<String, DataSourceParameter>> schemaDataSources, final RuleConfiguration ruleConfiguration, final boolean isUsingRegistry) {
+                                          final Map<String, Map<String, DataSourceParameter>> schemaDataSources, final RuleConfiguration ruleConfiguration, final boolean isCheckingMetaData, final boolean isUsingRegistry) {
         return ruleConfiguration instanceof ShardingRuleConfiguration
-                ? new ShardingSchema(schemaName, schemaDataSources.get(schemaName), (ShardingRuleConfiguration) ruleConfiguration, isUsingRegistry)
+                ? new ShardingSchema(schemaName, schemaDataSources.get(schemaName), (ShardingRuleConfiguration) ruleConfiguration, isCheckingMetaData, isUsingRegistry)
                 : new MasterSlaveSchema(schemaName, schemaDataSources.get(schemaName), (MasterSlaveRuleConfiguration) ruleConfiguration, isUsingRegistry);
     }
     
