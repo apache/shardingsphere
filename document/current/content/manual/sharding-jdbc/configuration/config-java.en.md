@@ -215,7 +215,7 @@ Enumeration of properties.
 | sql.show (?)                       | boolean    | Print SQL parse and rewrite log, default value: false                          |
 | executor.size (?)                  | int        | The number of SQL execution threads, zero means no limit. default value: 0     |
 | max.connections.size.per.query (?) | int        | Max connection size for every query to every actual database. default value: 1 |
-| check.table.metadata.enabled (?)   | boolean    | Check the metadata consistency of all the tables, default value : true         |
+| check.table.metadata.enabled (?)   | boolean    | Check the metadata consistency of all the tables, default value : false         |
 
 #### configMap
 
@@ -254,7 +254,7 @@ Enumeration of properties.
 | sql.show (?)                       | boolean    | To show SQLS or not, default value: false                                      |
 | executor.size (?)                  | int        | The number of working threads, default value: CPU count                        |
 | max.connections.size.per.query (?) | int        | Max connection size for every query to every actual database. default value: 1 |
-| check.table.metadata.enabled (?)   | boolean    | Check the metadata consistency of all the tables, default value : true         |
+| check.table.metadata.enabled (?)   | boolean    | Check the metadata consistency of all the tables, default value : false         |
 
 ### Orchestration
 
