@@ -70,7 +70,7 @@ sharding.jdbc.config.masterslave.name=ms
 sharding.jdbc.config.masterslave.master-data-source-name=master
 sharding.jdbc.config.masterslave.slave-data-source-names=slave0,slave1
 
-sharding.jdbc.config.masterslave.props.sql.show=true
+sharding.jdbc.config.props.sql.show=true
 ```
 
 ### Sharding + Read-write splitting
@@ -238,16 +238,16 @@ sharding.jdbc.config.sharding.master-slave-rules.<master-slave-data-source-name>
 sharding.jdbc.config.sharding.master-slave-rules.<master-slave-data-source-name>.slave-data-source-names[x]= #more details can reference Read-write splitting part
 sharding.jdbc.config.sharding.master-slave-rules.<master-slave-data-source-name>.load-balance-algorithm-class-name= #more details can reference Read-write splitting part
 sharding.jdbc.config.sharding.master-slave-rules.<master-slave-data-source-name>.load-balance-algorithm-type= #more details can reference Read-write splitting part
-sharding.jdbc.config.sharding.master-slave-rules.<master-slave-data-source-name>.config.map.key1= #more details can reference Read-write splitting part
-sharding.jdbc.config.sharding.master-slave-rules.<master-slave-data-source-name>.config.map.key2= #more details can reference Read-write splitting part
-sharding.jdbc.config.sharding.master-slave-rules.<master-slave-data-source-name>.config.map.keyx= #more details can reference Read-write splitting part
+sharding.jdbc.config.config.map.key1= #more details can reference Read-write splitting part
+sharding.jdbc.config.config.map.key2= #more details can reference Read-write splitting part
+sharding.jdbc.config.config.map.keyx= #more details can reference Read-write splitting part
 
-sharding.jdbc.config.sharding.props.sql.show= #To show SQLS or not, default value: false
-sharding.jdbc.config.sharding.props.executor.size= #The number of working threads, default value: CPU count
+sharding.jdbc.config.props.sql.show= #To show SQLS or not, default value: false
+sharding.jdbc.config.props.executor.size= #The number of working threads, default value: CPU count
 
-sharding.jdbc.config.sharding.config.map.key1= #User-defined arguments
-sharding.jdbc.config.sharding.config.map.key2= #User-defined arguments
-sharding.jdbc.config.sharding.config.map.keyx= #User-defined arguments
+sharding.jdbc.config.config.map.key1= #User-defined arguments
+sharding.jdbc.config.config.map.key2= #User-defined arguments
+sharding.jdbc.config.config.map.keyx= #User-defined arguments
 ```
 
 ### Read-write splitting
@@ -262,12 +262,12 @@ sharding.jdbc.config.sharding.master-slave-rules.<master-slave-data-source-name>
 sharding.jdbc.config.sharding.master-slave-rules.<master-slave-data-source-name>.load-balance-algorithm-class-name= #Load balance algorithm class name. This class need to implements MasterSlaveLoadBalanceAlgorithm, and require a no argument constructor 
 sharding.jdbc.config.sharding.master-slave-rules.<master-slave-data-source-name>.load-balance-algorithm-type= #Load balance algorithm type, values should be: `ROUND_ROBIN` or `RANDOM`. Ignore if `load-balance-algorithm-class-name` is present 
 
-sharding.jdbc.config.sharding.master-slave-rules.<master-slave-data-source-name>.config.map.key1= #User-defined arguments
-sharding.jdbc.config.sharding.master-slave-rules.<master-slave-data-source-name>.config.map.key2= #User-defined arguments
-sharding.jdbc.config.sharding.master-slave-rules.<master-slave-data-source-name>.config.map.keyx= #User-defined arguments
+sharding.jdbc.config.config.map.key1= #User-defined arguments
+sharding.jdbc.config.config.map.key2= #User-defined arguments
+sharding.jdbc.config.config.map.keyx= #User-defined arguments
 
-sharding.jdbc.config.masterslave.props.sql.show= #To show SQLS or not, default value: false
-sharding.jdbc.config.masterslave.props.executor.size= #The number of working threads, default value: CPU count
+sharding.jdbc.config.props.sql.show= #To show SQLS or not, default value: false
+sharding.jdbc.config.props.executor.size= #The number of working threads, default value: CPU count
 ```
 
 ### Orchestration
