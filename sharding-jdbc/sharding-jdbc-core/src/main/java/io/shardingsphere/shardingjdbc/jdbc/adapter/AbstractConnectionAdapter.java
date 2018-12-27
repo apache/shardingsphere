@@ -163,11 +163,13 @@ public abstract class AbstractConnectionAdapter extends AbstractUnsupportedOpera
     }
     
     private Connection createConnection(final String dataSourceName, final DataSource dataSource) throws SQLException {
-        Connection result = dataSource.getConnection();
-        replayMethodsInvocation(result);
+        Connection result;
         if (null != shardingTransactionHandler) {
-            shardingTransactionHandler.synchronizeTransactionalResource(dataSourceName, result);
+            result = shardingTransactionHandler.createConnection(dataSourceName, dataSource);
+        } else {
+            result = dataSource.getConnection();
         }
+        replayMethodsInvocation(result);
         return result;
     }
     

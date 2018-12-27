@@ -32,8 +32,8 @@ public final class AtomikosXARecoverableResource extends JdbcTransactionalResour
     
     private final String resourceName;
     
-    public AtomikosXARecoverableResource(final String serverName, final XADataSource xads) {
-        super(serverName, xads);
+    public AtomikosXARecoverableResource(final String serverName, final XADataSource xaDataSource) {
+        super(serverName, xaDataSource);
         resourceName = serverName;
     }
     

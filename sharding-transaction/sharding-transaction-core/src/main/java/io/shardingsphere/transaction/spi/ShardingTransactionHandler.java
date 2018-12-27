@@ -24,7 +24,6 @@ import io.shardingsphere.transaction.core.manager.ShardingTransactionManager;
 
 import javax.sql.DataSource;
 import java.sql.Connection;
-import java.sql.SQLException;
 import java.util.Map;
 
 /**
@@ -70,12 +69,10 @@ public interface ShardingTransactionHandler {
     void clearTransactionalResource();
     
     /**
-     * Synchronize transaction resource.
-     *
+     * Create transactional connection.
      * @param dataSourceName data source name
-     * @param connection connection
-     * @param properties other properties
-     * @throws SQLException SQL exception
+     * @param dataSource data source
+     * @return connection
      */
-    void synchronizeTransactionalResource(String dataSourceName, Connection connection, Object... properties) throws SQLException;
+    Connection createConnection(String dataSourceName, DataSource dataSource);
 }

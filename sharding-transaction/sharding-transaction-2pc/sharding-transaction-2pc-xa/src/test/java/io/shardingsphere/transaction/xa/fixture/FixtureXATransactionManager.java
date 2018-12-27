@@ -25,7 +25,6 @@ import javax.sql.DataSource;
 import javax.sql.XADataSource;
 import javax.transaction.Status;
 import javax.transaction.TransactionManager;
-import javax.transaction.xa.XAResource;
 
 public final class FixtureXATransactionManager implements XATransactionManager {
     @Override
@@ -71,10 +70,5 @@ public final class FixtureXATransactionManager implements XATransactionManager {
     @Override
     public void removeRecoveryResource(final String dataSourceName, final XADataSource xaDataSource) {
     
-    }
-    
-    @Override
-    public XAResource getRecoveryXAResource(final String dataSourceName) {
-        return null;
     }
 }

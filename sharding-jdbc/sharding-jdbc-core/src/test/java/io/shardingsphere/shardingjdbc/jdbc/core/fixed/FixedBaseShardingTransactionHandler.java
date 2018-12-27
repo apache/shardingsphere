@@ -83,7 +83,7 @@ public final class FixedBaseShardingTransactionHandler implements ShardingTransa
     }
     
     @Override
-    public void synchronizeTransactionalResource(final String datasourceName, final Connection connection, final Object... properties) {
-    
+    public Connection createConnection(final String dataSourceName, final DataSource dataSource) {
+        return null;
     }
 }

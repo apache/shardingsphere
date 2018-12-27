@@ -18,7 +18,6 @@
 package io.shardingsphere.transaction.xa.handler;
 
 import com.atomikos.jdbc.AtomikosDataSourceBean;
-import com.atomikos.jdbc.AtomikosXAPooledConnection;
 import io.shardingsphere.core.constant.DatabaseType;
 import io.shardingsphere.core.exception.ShardingException;
 import io.shardingsphere.core.rule.DataSourceParameter;
@@ -73,11 +72,17 @@ public final class XAShardingTransactionHandler extends ShardingTransactionHandl
     public void registerTransactionalResource(final DatabaseType databaseType, final Map<String, DataSource> dataSourceMap) {
         this.databaseType = databaseType;
         for (Map.Entry<String, DataSource> entry : dataSourceMap.entrySet()) {
-            if (!(entry.getValue() instanceof XADataSource) && !(entry.getValue() instanceof AtomikosDataSourceBean)) {
+            if (entry.getValue() instanceof AtomikosDataSourceBean) {
+                continue;
+            }
+            ShardingXADataSource shardingXADataSource;
+            if (!(entry.getValue() instanceof XADataSource)) {
                 DataSourceParameter parameter = DataSourceSwapperRegistry.getSwapper(entry.getValue().getClass()).swap(entry.getValue());
-                ShardingXADataSource shardingXADataSource = ShardingXADataSourceFactory.createShardingXADataSource(databaseType, entry.getKey(), parameter);
+                shardingXADataSource = ShardingXADataSourceFactory.createShardingXADataSource(databaseType, entry.getKey(), parameter);
                 SHARDING_XA_DATASOURCE_MAP.put(entry.getKey(), shardingXADataSource);
                 xaTransactionManager.registerRecoveryResource(entry.getKey(), shardingXADataSource.getXaDataSource());
+            } else {
+                xaTransactionManager.registerRecoveryResource(entry.getKey(), (XADataSource) entry.getValue());
             }
         }
         xaTransactionManager.startup();
@@ -94,25 +99,30 @@ public final class XAShardingTransactionHandler extends ShardingTransactionHandl
     }
     
     @Override
-    public synchronized void synchronizeTransactionalResource(final String datasourceName, final Connection connection, final Object... properties) {
+    public Connection createConnection(final String dataSourceName, final DataSource dataSource) {
+        Connection result;
+        ShardingXAConnection shardingXAConnection;
         try {
-            if (connection instanceof AtomikosXAPooledConnection) {
-                return;
-            }
             Transaction transaction = xaTransactionManager.getUnderlyingTransactionManager().getTransaction();
             if (null != transaction && Status.STATUS_NO_TRANSACTION != transaction.getStatus()) {
-                ShardingXAConnection shardingXAConnection;
-                if (connection instanceof XAConnection) {
-                    shardingXAConnection = new ShardingXAConnection(datasourceName, (XAConnection) connection);
+                if (dataSource instanceof XADataSource) {
+                    XAConnection xaConnection = ((XADataSource) dataSource).getXAConnection();
+                    shardingXAConnection = new ShardingXAConnection(dataSourceName, xaConnection);
+                    result = xaConnection.getConnection();
                 } else {
-                    ShardingXADataSource shardingXADataSource = SHARDING_XA_DATASOURCE_MAP.get(datasourceName);
-                    shardingXAConnection = shardingXADataSource.wrapPhysicalConnection(databaseType, connection);
+                    result = dataSource.getConnection();
+                    ShardingXADataSource shardingXADataSource = SHARDING_XA_DATASOURCE_MAP.get(dataSourceName);
+                    shardingXAConnection = shardingXADataSource.wrapPhysicalConnection(databaseType, result);
                 }
                 transaction.enlistResource(shardingXAConnection.getXAResource());
+            } else {
+                result = dataSource.getConnection();
             }
         } catch (final SQLException | RollbackException | SystemException ex) {
             log.error("Failed to synchronize transactional resource");
             throw new ShardingException(ex);
         }
+        return result;
     }
 }
+    
