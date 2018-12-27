@@ -33,7 +33,6 @@ public final class DropPrimaryKeyFiller implements SQLStatementFiller<DropPrimar
     
     @Override
     public void fill(final DropPrimaryKeySegment sqlSegment, final SQLStatement sqlStatement, final String sql, final ShardingRule shardingRule, final ShardingTableMetaData shardingTableMetaData) {
-        AlterTableStatement alterTableStatement = (AlterTableStatement) sqlStatement;
-        alterTableStatement.setDropPrimaryKey(sqlSegment.isDropPrimaryKey());
+        ((AlterTableStatement) sqlStatement).setDropPrimaryKey(true);
     }
 }

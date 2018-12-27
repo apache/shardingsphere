@@ -17,6 +17,7 @@
 
 package io.shardingsphere.core.parsing.antlr.sql.statement.ddl;
 
+import io.shardingsphere.core.parsing.antlr.sql.segment.definition.column.ColumnDefinitionSegment;
 import lombok.Getter;
 
 import java.util.LinkedList;
@@ -30,5 +31,5 @@ import java.util.List;
 @Getter
 public final class CreateTableStatement extends DDLStatement {
     
-    private final List<ColumnDefinition> columnDefinitions = new LinkedList<>();
+    private final List<ColumnDefinitionSegment> columnDefinitions = new LinkedList<>();
 }

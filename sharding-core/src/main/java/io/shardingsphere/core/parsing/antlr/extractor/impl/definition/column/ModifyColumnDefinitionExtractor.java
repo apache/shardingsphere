@@ -15,50 +15,42 @@
  * </p>
  */
 
-package io.shardingsphere.core.parsing.antlr.extractor.impl;
+package io.shardingsphere.core.parsing.antlr.extractor.impl.definition.column;
 
 import com.google.common.base.Optional;
 import io.shardingsphere.core.parsing.antlr.extractor.CollectionSQLSegmentExtractor;
 import io.shardingsphere.core.parsing.antlr.extractor.util.ExtractorUtils;
 import io.shardingsphere.core.parsing.antlr.extractor.util.RuleName;
 import io.shardingsphere.core.parsing.antlr.sql.segment.definition.column.ColumnDefinitionSegment;
-import io.shardingsphere.core.parsing.antlr.sql.segment.definition.column.alter.AddColumnDefinitionSegment;
+import io.shardingsphere.core.parsing.antlr.sql.segment.definition.column.alter.ModifyColumnDefinitionSegment;
 import org.antlr.v4.runtime.ParserRuleContext;
 
 import java.util.Collection;
 import java.util.LinkedList;
 
 /**
- * Add column definition extractor.
+ * Modify column definition extractor.
  *
  * @author duhongjun
  */
-public class AddColumnDefinitionExtractor implements CollectionSQLSegmentExtractor {
+public class ModifyColumnDefinitionExtractor implements CollectionSQLSegmentExtractor {
     
     private final ColumnDefinitionExtractor columnDefinitionExtractor = new ColumnDefinitionExtractor();
     
     @Override
-    public final Collection<AddColumnDefinitionSegment> extract(final ParserRuleContext ancestorNode) {
-        Collection<AddColumnDefinitionSegment> result = new LinkedList<>();
-        for (ParserRuleContext each : ExtractorUtils.getAllDescendantNodes(ancestorNode, RuleName.ADD_COLUMN)) {
-            result.addAll(extractAddColumnDefinitions(each));
-        }
-        return result;
-    }
-    
-    private Collection<AddColumnDefinitionSegment> extractAddColumnDefinitions(final ParserRuleContext addColumnNode) {
-        Collection<AddColumnDefinitionSegment> result = new LinkedList<>();
-        for (ParserRuleContext each : ExtractorUtils.getAllDescendantNodes(addColumnNode, RuleName.COLUMN_DEFINITION)) {
+    public final Collection<ModifyColumnDefinitionSegment> extract(final ParserRuleContext ancestorNode) {
+        Collection<ModifyColumnDefinitionSegment> result = new LinkedList<>();
+        for (ParserRuleContext each : ExtractorUtils.getAllDescendantNodes(ancestorNode, RuleName.MODIFY_COLUMN)) {
             Optional<ColumnDefinitionSegment> columnDefinitionSegment = columnDefinitionExtractor.extract(each);
             if (columnDefinitionSegment.isPresent()) {
-                AddColumnDefinitionSegment addColumnDefinitionSegment = new AddColumnDefinitionSegment(columnDefinitionSegment.get());
-                postExtractColumnDefinition(addColumnNode, addColumnDefinitionSegment);
-                result.add(addColumnDefinitionSegment);
+                ModifyColumnDefinitionSegment modifyColumnDefinitionSegment = new ModifyColumnDefinitionSegment(null, columnDefinitionSegment.get());
+                postExtractColumnDefinition(each, modifyColumnDefinitionSegment);
+                result.add(modifyColumnDefinitionSegment);
             }
         }
         return result;
     }
     
-    protected void postExtractColumnDefinition(final ParserRuleContext addColumnNode, final AddColumnDefinitionSegment addColumnDefinitionSegment) {
+    protected void postExtractColumnDefinition(final ParserRuleContext modifyColumnNode, final ModifyColumnDefinitionSegment modifyColumnDefinitionSegment) {
     }
 }

@@ -36,7 +36,7 @@ import java.util.LinkedList;
 @ToString
 public final class TableMetaData {
     
-    private final Collection<ColumnMetaData> columnMetaData;
+    private final Collection<ColumnMetaData> columnMetaDataList;
     
     /**
      * Get all column names.
@@ -45,7 +45,7 @@ public final class TableMetaData {
      */
     public Collection<String> getAllColumnNames() {
         Collection<String> result = new LinkedList<>();
-        for (ColumnMetaData each : columnMetaData) {
+        for (ColumnMetaData each : columnMetaDataList) {
             result.add(each.getColumnName().toLowerCase());
         }
         return result;

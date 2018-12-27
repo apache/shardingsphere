@@ -21,8 +21,8 @@ import io.shardingsphere.core.metadata.table.ColumnMetaData;
 import io.shardingsphere.core.metadata.table.ShardingTableMetaData;
 import io.shardingsphere.core.metadata.table.TableMetaData;
 import io.shardingsphere.core.parsing.antlr.optimizer.SQLStatementOptimizer;
+import io.shardingsphere.core.parsing.antlr.sql.segment.definition.column.ColumnDefinitionSegment;
 import io.shardingsphere.core.parsing.antlr.sql.statement.ddl.AlterTableStatement;
-import io.shardingsphere.core.parsing.antlr.sql.statement.ddl.ColumnDefinition;
 import io.shardingsphere.core.parsing.parser.sql.SQLStatement;
 
 import java.util.Iterator;
@@ -43,28 +43,28 @@ public class AlterTableOptimizer implements SQLStatementOptimizer {
         if (null == oldTableMetaData) {
             return;
         }
-        List<ColumnMetaData> newColumnMetaData = getUpdatedColumnMetaDataList(alterTableStatement, oldTableMetaData);
+        List<ColumnMetaData> newColumnMetaData = getModifiedColumnMetaDataList(alterTableStatement, oldTableMetaData);
         fillColumnDefinition(alterTableStatement, newColumnMetaData);
         adjustColumnDefinition(alterTableStatement, newColumnMetaData);
         dropColumnDefinition(alterTableStatement, newColumnMetaData);
         alterTableStatement.setTableMetaData(new TableMetaData(newColumnMetaData));
     }
     
-    private List<ColumnMetaData> getUpdatedColumnMetaDataList(final AlterTableStatement alterTableStatement, final TableMetaData oldTableMetaData) {
+    private List<ColumnMetaData> getModifiedColumnMetaDataList(final AlterTableStatement alterTableStatement, final TableMetaData oldTableMetaData) {
         List<ColumnMetaData> result = new LinkedList<>();
-        for (ColumnMetaData each : oldTableMetaData.getColumnMetaData()) {
-            ColumnDefinition updatedColumnDefinition = alterTableStatement.getModifiedColumnDefinitions().get(each.getColumnName());
+        for (ColumnMetaData each : oldTableMetaData.getColumnMetaDataList()) {
+            ColumnDefinitionSegment modifiedColumnDefinition = alterTableStatement.getModifiedColumnDefinitions().get(each.getColumnName());
             String columnName;
             String columnType;
             boolean primaryKey;
-            if (null == updatedColumnDefinition) {
+            if (null == modifiedColumnDefinition) {
                 columnName = each.getColumnName();
-                columnType = each.getColumnType();
+                columnType = each.getDataType();
                 primaryKey = !alterTableStatement.isDropPrimaryKey() && each.isPrimaryKey();
             } else {
-                columnName = updatedColumnDefinition.getName();
-                columnType = updatedColumnDefinition.getType();
-                primaryKey = !alterTableStatement.isDropPrimaryKey() && updatedColumnDefinition.isPrimaryKey();
+                columnName = modifiedColumnDefinition.getColumnName();
+                columnType = modifiedColumnDefinition.getDataType();
+                primaryKey = !alterTableStatement.isDropPrimaryKey() && modifiedColumnDefinition.isPrimaryKey();
             }
             result.add(new ColumnMetaData(columnName, columnType, primaryKey));
         }
@@ -72,8 +72,8 @@ public class AlterTableOptimizer implements SQLStatementOptimizer {
     }
     
     private void fillColumnDefinition(final AlterTableStatement alterTableStatement, final List<ColumnMetaData> newColumnMetaData) {
-        for (ColumnDefinition each : alterTableStatement.getAddedColumnDefinitions()) {
-            newColumnMetaData.add(new ColumnMetaData(each.getName(), each.getType(), each.isPrimaryKey()));
+        for (ColumnDefinitionSegment each : alterTableStatement.getAddedColumnDefinitions()) {
+            newColumnMetaData.add(new ColumnMetaData(each.getColumnName(), each.getDataType(), each.isPrimaryKey()));
         }
     }
     

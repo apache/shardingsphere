@@ -15,7 +15,7 @@
  * </p>
  */
 
-package io.shardingsphere.core.parsing.antlr.extractor.impl;
+package io.shardingsphere.core.parsing.antlr.extractor.impl.definition.column;
 
 import java.util.Collection;
 import java.util.Iterator;
@@ -30,11 +30,11 @@ import io.shardingsphere.core.parsing.antlr.extractor.util.RuleName;
 import io.shardingsphere.core.parsing.antlr.sql.segment.definition.column.alter.RenameColumnSegment;
 
 /**
- * Rename column extractor.
+ * Rename column definition extractor.
  * 
  * @author duhongjun
  */
-public final class RenameColumnExtractor implements OptionalSQLSegmentExtractor {
+public final class RenameColumnDefinitionExtractor implements OptionalSQLSegmentExtractor {
     
     @Override
     public Optional<RenameColumnSegment> extract(final ParserRuleContext ancestorNode) {

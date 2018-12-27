@@ -21,9 +21,9 @@ import com.google.common.base.Optional;
 
 import io.shardingsphere.core.metadata.table.ShardingTableMetaData;
 import io.shardingsphere.core.parsing.antlr.filler.SQLStatementFiller;
+import io.shardingsphere.core.parsing.antlr.sql.segment.definition.column.ColumnDefinitionSegment;
 import io.shardingsphere.core.parsing.antlr.sql.segment.definition.column.alter.RenameColumnSegment;
 import io.shardingsphere.core.parsing.antlr.sql.statement.ddl.AlterTableStatement;
-import io.shardingsphere.core.parsing.antlr.sql.statement.ddl.ColumnDefinition;
 import io.shardingsphere.core.parsing.parser.sql.SQLStatement;
 import io.shardingsphere.core.rule.ShardingRule;
 
@@ -41,11 +41,11 @@ public class RenameColumnFiller implements SQLStatementFiller<RenameColumnSegmen
             return;
         }
         AlterTableStatement alterTableStatement = (AlterTableStatement) sqlStatement;
-        Optional<ColumnDefinition> oldDefinition = alterTableStatement.findColumnDefinition(sqlSegment.getOldColumnName(), shardingTableMetaData);
+        Optional<ColumnDefinitionSegment> oldDefinition = alterTableStatement.findColumnDefinition(sqlSegment.getOldColumnName(), shardingTableMetaData);
         if (!oldDefinition.isPresent()) {
             return;
         }
-        oldDefinition.get().setName(sqlSegment.getColumnName());
+        oldDefinition.get().setColumnName(sqlSegment.getColumnName());
         alterTableStatement.getModifiedColumnDefinitions().put(sqlSegment.getOldColumnName(), oldDefinition.get());
     }
 }

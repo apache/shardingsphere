@@ -21,7 +21,6 @@ import io.shardingsphere.core.metadata.table.ShardingTableMetaData;
 import io.shardingsphere.core.parsing.antlr.filler.SQLStatementFiller;
 import io.shardingsphere.core.parsing.antlr.sql.segment.definition.column.alter.AddColumnDefinitionSegment;
 import io.shardingsphere.core.parsing.antlr.sql.statement.ddl.AlterTableStatement;
-import io.shardingsphere.core.parsing.antlr.sql.statement.ddl.ColumnDefinition;
 import io.shardingsphere.core.parsing.parser.sql.SQLStatement;
 import io.shardingsphere.core.rule.ShardingRule;
 
@@ -36,10 +35,8 @@ public final class AddColumnDefinitionFiller implements SQLStatementFiller<AddCo
     public void fill(final AddColumnDefinitionSegment sqlSegment, 
                      final SQLStatement sqlStatement, final String sql, final ShardingRule shardingRule, final ShardingTableMetaData shardingTableMetaData) {
         AlterTableStatement alterTableStatement = (AlterTableStatement) sqlStatement;
-        ColumnDefinition columnDefinition = new ColumnDefinition(
-                sqlSegment.getColumnDefinition().getColumnName(), sqlSegment.getColumnDefinition().getDataType(), sqlSegment.getColumnDefinition().isPrimaryKey());
         if (!alterTableStatement.findColumnDefinitionFromMetaData(sqlSegment.getColumnDefinition().getColumnName(), shardingTableMetaData).isPresent()) {
-            alterTableStatement.getAddedColumnDefinitions().add(columnDefinition);
+            alterTableStatement.getAddedColumnDefinitions().add(sqlSegment.getColumnDefinition());
         }
         if (sqlSegment.getColumnPosition().isPresent()) {
             alterTableStatement.getPositionChangedColumns().add(sqlSegment.getColumnPosition().get());

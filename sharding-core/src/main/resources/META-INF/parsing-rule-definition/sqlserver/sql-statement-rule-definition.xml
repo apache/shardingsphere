@@ -1,7 +1,7 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <sql-statement-rule-definition optimizer-base-package="io.shardingsphere.core.parsing.antlr.optimizer.impl">
     <sql-statement-rule context="createTable" sql-statement-class="io.shardingsphere.core.parsing.antlr.sql.statement.ddl.CreateTableStatement" 
-                        extractor-rule-refs="tableNames, columnDefinitions, indexNames, outlinePrimaryKey" />
+                        extractor-rule-refs="tableNames, indexNames, columnDefinitions, outlinePrimaryKey" />
     <sql-statement-rule context="alterTable" sql-statement-class="io.shardingsphere.core.parsing.antlr.sql.statement.ddl.AlterTableStatement" 
                         extractor-rule-refs="tableNames, indexNames, addColumnDefinition, modifyColumnDefinition, dropColumnDefinition, addPrimaryKey, renameTable" 
                         optimizer-class="ddl.AlterTableOptimizer" />

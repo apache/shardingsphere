@@ -15,26 +15,26 @@
  * </p>
  */
 
-package io.shardingsphere.core.parsing.antlr.extractor.impl.dialect.mysql;
+package io.shardingsphere.core.parsing.antlr.extractor.impl.dialect.mysql.definition.column;
 
 import com.google.common.base.Optional;
-import io.shardingsphere.core.parsing.antlr.extractor.impl.ModifyColumnDefinitionExtractor;
+import io.shardingsphere.core.parsing.antlr.extractor.impl.definition.column.AddColumnDefinitionExtractor;
 import io.shardingsphere.core.parsing.antlr.sql.segment.definition.column.ColumnPositionSegment;
-import io.shardingsphere.core.parsing.antlr.sql.segment.definition.column.alter.ModifyColumnDefinitionSegment;
+import io.shardingsphere.core.parsing.antlr.sql.segment.definition.column.alter.AddColumnDefinitionSegment;
 import org.antlr.v4.runtime.ParserRuleContext;
 
 /**
- * Modify column definition extractor for MySQL.
+ * Add column definition extractor for MySQL.
  * 
  * @author duhongjun
  */
-public final class MySQLModifyColumnDefinitionExtractor extends ModifyColumnDefinitionExtractor {
+public final class MySQLAddColumnDefinitionExtractor extends AddColumnDefinitionExtractor {
     
     @Override
-    protected void postExtractColumnDefinition(final ParserRuleContext modifyColumnNode, final ModifyColumnDefinitionSegment modifyColumnDefinitionSegment) {
-        Optional<ColumnPositionSegment> columnPositionSegment = new MySQLColumnPositionExtractor(modifyColumnDefinitionSegment.getColumnDefinition().getColumnName()).extract(modifyColumnNode);
+    protected void postExtractColumnDefinition(final ParserRuleContext addColumnNode, final AddColumnDefinitionSegment addColumnDefinitionSegment) {
+        Optional<ColumnPositionSegment> columnPositionSegment = new MySQLColumnPositionExtractor(addColumnDefinitionSegment.getColumnDefinition().getColumnName()).extract(addColumnNode);
         if (columnPositionSegment.isPresent()) {
-            modifyColumnDefinitionSegment.setColumnPosition(columnPositionSegment.get());
+            addColumnDefinitionSegment.setColumnPosition(columnPositionSegment.get());
         }
     }
 }

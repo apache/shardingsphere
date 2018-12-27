@@ -18,17 +18,11 @@
 package io.shardingsphere.core.parsing.antlr.sql.segment.definition.constraint;
 
 import io.shardingsphere.core.parsing.antlr.sql.segment.SQLSegment;
-import lombok.Getter;
-import lombok.RequiredArgsConstructor;
 
 /**
  * Drop primary key segment.
  * 
  * @author duhongjun
  */
-@RequiredArgsConstructor
-@Getter
 public final class DropPrimaryKeySegment implements SQLSegment {
-    
-    private final boolean dropPrimaryKey;
 }
