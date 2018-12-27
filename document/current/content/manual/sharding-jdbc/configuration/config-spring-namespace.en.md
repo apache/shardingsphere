@@ -398,10 +398,12 @@ Namespace: http://shardingsphere.io/schema/shardingsphere/sharding/sharding.xsd
 
 #### \<sharding:props />
 
-| *Name*            | *Type*    | *Description*                                           |
-| ----------------- | --------- | ------------------------------------------------------- |
-| sql.show (?)      | Attribute | To show SQLS or not, default value: false               |
-| executor.size (?) | Attribute | The number of working threads, default value: CPU count |
+| *Name*                              | *Type*    | *Description*                                                                  |
+| ------------------------------------| --------- | ------------------------------------------------------------------------------ |
+| sql.show (?)                        | Attribute | To show SQLS or not, default value: false                                      |
+| executor.size (?)                   | Attribute | The number of working threads, default value: CPU count                        |
+| max.connections.size.per.query (?)  | int       | Max connection size for every query to every actual database. default value: 1 |
+| check.table.metadata.enabled (?)    | boolean   | Check the metadata consistency of all the tables, default value : true         |
 
 #### \<sharding:config-map />
 
@@ -425,10 +427,12 @@ Namespace: http://shardingsphere.io/schema/shardingsphere/masterslave/master-sla
 
 #### \<master-slave:props />
 
-| *Name*            | *Type*    | *Description*                                           |
-| ----------------- | --------- | ------------------------------------------------------- |
-| sql.show (?)      | Attribute | To show SQLS or not, default value: false               |
-| executor.size (?) | Attribute | The number of working threads, default value: CPU count |
+| *Name*                              | *Type*    | *Description*                                                                  |
+| ----------------------------------- | --------- | ------------------------------------------------------------------------------ |
+| sql.show (?)                        | Attribute | To show SQLS or not, default value: false                                      |
+| executor.size (?)                   | Attribute | The number of working threads, default value: CPU count                        |
+| max.connections.size.per.query (?)  | int       | Max connection size for every query to every actual database. default value: 1 |
+| check.table.metadata.enabled (?)    | boolean   | Check the metadata consistency of all the tables, default value : true         |
 
 ### Sharding + orchestration
 
