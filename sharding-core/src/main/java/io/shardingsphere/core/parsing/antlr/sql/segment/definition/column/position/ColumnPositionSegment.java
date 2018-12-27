@@ -15,13 +15,11 @@
  * </p>
  */
 
-package io.shardingsphere.core.parsing.antlr.sql.segment.definition.column;
+package io.shardingsphere.core.parsing.antlr.sql.segment.definition.column.position;
 
-import com.google.common.base.Optional;
 import io.shardingsphere.core.parsing.antlr.sql.segment.SQLSegment;
 import lombok.Getter;
 import lombok.RequiredArgsConstructor;
-import lombok.Setter;
 
 /**
  * Column position segment.
@@ -30,26 +28,14 @@ import lombok.Setter;
  */
 @RequiredArgsConstructor
 @Getter
-@Setter
-public final class ColumnPositionSegment implements SQLSegment, Comparable<ColumnPositionSegment> {
-    
-    private final int startIndex;
+public abstract class ColumnPositionSegment implements SQLSegment, Comparable<ColumnPositionSegment> {
     
     private final String columnName;
     
-    private String afterColumnName;
-    
-    /**
-     * Get after column name.
-     * 
-     * @return after column name
-     */
-    public Optional<String> getAfterColumnName() {
-        return Optional.fromNullable(afterColumnName);
-    }
+    private final int startIndex;
     
     @Override
-    public int compareTo(final ColumnPositionSegment o) {
+    public final int compareTo(final ColumnPositionSegment o) {
         return startIndex - o.startIndex;
     }
 }

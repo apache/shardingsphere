@@ -21,7 +21,9 @@ import com.google.common.base.Optional;
 import io.shardingsphere.core.parsing.antlr.extractor.OptionalSQLSegmentExtractor;
 import io.shardingsphere.core.parsing.antlr.extractor.util.ExtractorUtils;
 import io.shardingsphere.core.parsing.antlr.extractor.util.RuleName;
-import io.shardingsphere.core.parsing.antlr.sql.segment.definition.column.ColumnPositionSegment;
+import io.shardingsphere.core.parsing.antlr.sql.segment.definition.column.position.ColumnAfterPositionSegment;
+import io.shardingsphere.core.parsing.antlr.sql.segment.definition.column.position.ColumnFirstPositionSegment;
+import io.shardingsphere.core.parsing.antlr.sql.segment.definition.column.position.ColumnPositionSegment;
 import lombok.RequiredArgsConstructor;
 import org.antlr.v4.runtime.ParserRuleContext;
 
@@ -42,10 +44,9 @@ public final class MySQLColumnPositionExtractor implements OptionalSQLSegmentExt
             return Optional.absent();
         }
         Optional<ParserRuleContext> columnNameNode = ExtractorUtils.findFirstChildNode(firstOrAfterColumnNode.get(), RuleName.COLUMN_NAME);
-        ColumnPositionSegment result = new ColumnPositionSegment(firstOrAfterColumnNode.get().getStart().getStartIndex(), columnName);
-        if (columnNameNode.isPresent()) {
-            result.setAfterColumnName(columnNameNode.get().getText());
-        }
+        ColumnPositionSegment result = columnNameNode.isPresent()
+                ? new ColumnAfterPositionSegment(columnName, firstOrAfterColumnNode.get().getStart().getStartIndex(), columnNameNode.get().getText())
+                : new ColumnFirstPositionSegment(columnName, firstOrAfterColumnNode.get().getStart().getStartIndex());
         return Optional.of(result);
     }
 }

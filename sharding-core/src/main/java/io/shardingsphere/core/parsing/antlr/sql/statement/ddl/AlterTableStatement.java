@@ -22,7 +22,7 @@ import io.shardingsphere.core.metadata.table.ColumnMetaData;
 import io.shardingsphere.core.metadata.table.ShardingTableMetaData;
 import io.shardingsphere.core.metadata.table.TableMetaData;
 import io.shardingsphere.core.parsing.antlr.sql.segment.definition.column.ColumnDefinitionSegment;
-import io.shardingsphere.core.parsing.antlr.sql.segment.definition.column.ColumnPositionSegment;
+import io.shardingsphere.core.parsing.antlr.sql.segment.definition.column.position.ColumnPositionSegment;
 import lombok.Getter;
 import lombok.Setter;
 
@@ -47,7 +47,7 @@ public final class AlterTableStatement extends DDLStatement {
     
     private final Collection<String> dropColumnNames = new LinkedList<>();
     
-    private final Collection<ColumnPositionSegment> positionChangedColumns = new TreeSet<>();
+    private final Collection<ColumnPositionSegment> changedPositionColumns = new TreeSet<>();
     
     private boolean dropPrimaryKey;
     

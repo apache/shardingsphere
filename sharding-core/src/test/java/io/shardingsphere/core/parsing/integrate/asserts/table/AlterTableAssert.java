@@ -21,7 +21,8 @@ import com.google.common.base.Joiner;
 import io.shardingsphere.core.metadata.table.ColumnMetaData;
 import io.shardingsphere.core.metadata.table.TableMetaData;
 import io.shardingsphere.core.parsing.antlr.sql.segment.definition.column.ColumnDefinitionSegment;
-import io.shardingsphere.core.parsing.antlr.sql.segment.definition.column.ColumnPositionSegment;
+import io.shardingsphere.core.parsing.antlr.sql.segment.definition.column.position.ColumnAfterPositionSegment;
+import io.shardingsphere.core.parsing.antlr.sql.segment.definition.column.position.ColumnPositionSegment;
 import io.shardingsphere.core.parsing.antlr.sql.statement.ddl.AlterTableStatement;
 import io.shardingsphere.core.parsing.integrate.asserts.SQLStatementAssertMessage;
 import io.shardingsphere.core.parsing.integrate.jaxb.meta.ExpectedTableMetaData;
@@ -62,7 +63,7 @@ public final class AlterTableAssert {
         if (null != expected.getNewMeta()) {
             assertNewMeta(actual.getTableMetaData(), expected.getNewMeta());
         }
-        assertColumnPositions(actual.getPositionChangedColumns(), expected.getPositionChangedColumns());
+        assertColumnPositions(actual.getChangedPositionColumns(), expected.getPositionChangedColumns());
     }
     
     private void assertAddColumns(final AlterTableStatement actual, final List<ExpectedColumnDefinition> expected) {
@@ -108,9 +109,9 @@ public final class AlterTableAssert {
     private void assertColumnPosition(final ColumnPositionSegment actual, final ExpectedColumnPosition expected) {
         assertThat(assertMessage.getFullAssertMessage("Alter column position name assertion error: "), actual.getColumnName(), is(expected.getColumnName()));
         assertThat(assertMessage.getFullAssertMessage("Alter column [" + actual.getColumnName() + "]position startIndex assertion error: "), actual.getStartIndex(), is(expected.getStartIndex()));
-        if (actual.getAfterColumnName().isPresent()) {
-            assertThat(assertMessage.getFullAssertMessage(
-                    "Alter column [" + actual.getColumnName() + "]position afterColumnName assertion error: "), actual.getAfterColumnName().get(), is(expected.getAfterColumn()));
+        if (actual instanceof ColumnAfterPositionSegment) {
+            assertThat(assertMessage.getFullAssertMessage("Alter column [" + actual.getColumnName() + "]position afterColumnName assertion error: "), 
+                    ((ColumnAfterPositionSegment) actual).getAfterColumnName(), is(expected.getAfterColumn()));
         }
     }
     

@@ -52,7 +52,7 @@ public final class ModifyColumnDefinitionFiller implements SQLStatementFiller<Mo
             alterTableStatement.getModifiedColumnDefinitions().put(sqlSegment.getColumnDefinition().getColumnName(), sqlSegment.getColumnDefinition());
         }
         if (sqlSegment.getColumnPosition().isPresent()) {
-            alterTableStatement.getPositionChangedColumns().add(sqlSegment.getColumnPosition().get());
+            alterTableStatement.getChangedPositionColumns().add(sqlSegment.getColumnPosition().get());
         }
     }
 }

@@ -20,7 +20,7 @@ package io.shardingsphere.core.parsing.antlr.sql.segment.definition.column.alter
 import com.google.common.base.Optional;
 import io.shardingsphere.core.parsing.antlr.sql.segment.SQLSegment;
 import io.shardingsphere.core.parsing.antlr.sql.segment.definition.column.ColumnDefinitionSegment;
-import io.shardingsphere.core.parsing.antlr.sql.segment.definition.column.ColumnPositionSegment;
+import io.shardingsphere.core.parsing.antlr.sql.segment.definition.column.position.ColumnPositionSegment;
 import lombok.Getter;
 import lombok.RequiredArgsConstructor;
 import lombok.Setter;

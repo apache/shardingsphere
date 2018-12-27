@@ -19,8 +19,8 @@ package io.shardingsphere.core.parsing.antlr.extractor.impl.dialect.mysql.defini
 
 import com.google.common.base.Optional;
 import io.shardingsphere.core.parsing.antlr.extractor.impl.definition.column.ModifyColumnDefinitionExtractor;
-import io.shardingsphere.core.parsing.antlr.sql.segment.definition.column.ColumnPositionSegment;
 import io.shardingsphere.core.parsing.antlr.sql.segment.definition.column.alter.ModifyColumnDefinitionSegment;
+import io.shardingsphere.core.parsing.antlr.sql.segment.definition.column.position.ColumnPositionSegment;
 import org.antlr.v4.runtime.ParserRuleContext;
 
 /**
