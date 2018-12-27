@@ -102,6 +102,7 @@ SQL that contains schema is unavailable, for the concept of ShardingSphere is to
 | DROP INDEX idx_name                                                                         |  Logic-index is configured in TableRule |
 | SELECT DISTINCT * FROM tbl_name WHERE col1 = ?                                              |                                         |
 | SELECT COUNT(DISTINCT col1) FROM tbl_name                                                   |                                         |
+| SELECT * FROM tbl_name1 WHERE (val1=?) AND (val1=?)                                         | Redundant parentheses supported in MySQL|
 
 ### Unavailable SQL
 
@@ -112,7 +113,6 @@ SQL that contains schema is unavailable, for the concept of ShardingSphere is to
 | SELECT COUNT(col1) as count_alias FROM tbl_name GROUP BY col1 HAVING count_alias > ?        | HAVING                             |
 | SELECT * FROM tbl_name1 UNION SELECT * FROM tbl_name2                                       | UNION                              |
 | SELECT * FROM tbl_name1 UNION ALL SELECT * FROM tbl_name2                                   | UNION ALL                          |
-| SELECT * FROM tbl_name1 WHERE (val1=?) AND (val1=?)                                         | Redundant parentheses              |
 | SELECT * FROM ds.tbl_name1                                                                  | Contain schema                     |
 | SELECT SUM(DISTINCT col1), SUM(col1) FROM tbl_name                                          | See `DISTINCT` availability detail |
 

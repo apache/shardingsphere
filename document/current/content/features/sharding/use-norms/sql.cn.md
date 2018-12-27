@@ -97,6 +97,7 @@ SELECT COUNT(*) FROM (SELECT * FROM t_order o WHERE o.id IN (SELECT id FROM t_or
 | DROP INDEX idx_name                                                                         |TableRule中配置logic-index |
 | SELECT DISTINCT * FROM tbl_name WHERE col1 = ?                                              |                          |
 | SELECT COUNT(DISTINCT col1) FROM tbl_name                                                   |                          |
+| SELECT * FROM tbl_name1 WHERE (val1=?) AND (val1=?)                                         | 冗余括号问题目前只支持MySQL |
 
 
 ### 不支持的SQL
@@ -108,7 +109,6 @@ SELECT COUNT(*) FROM (SELECT * FROM t_order o WHERE o.id IN (SELECT id FROM t_or
 | SELECT COUNT(col1) as count_alias FROM tbl_name GROUP BY col1 HAVING count_alias > ?          | HAVING                         |
 | SELECT * FROM tbl_name1 UNION SELECT * FROM tbl_name2                                         | UNION                          |
 | SELECT * FROM tbl_name1 UNION ALL SELECT * FROM tbl_name2                                     | UNION ALL                      |
-| SELECT * FROM tbl_name1 WHERE (val1=?) AND (val1=?)                                           | 冗余括号                        |
 | SELECT * FROM ds.tbl_name1                                                                    | 包含schema                     |
 | SELECT SUM(DISTINCT col1), SUM(col1) FROM tbl_name                                            | 详见`DISTINCT`支持情况详细说明   |
 
