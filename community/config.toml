@@ -8,7 +8,7 @@ defaultContentLanguageInSubdir= true
 
 [Languages]
 [Languages.en]
-title = "Sharding-Sphere"
+title = "ShardingSphere"
 weight = 1
 languageName = "English"
 

@@ -68,7 +68,7 @@ Applications and databases need be placed in the grid system. They are all objec
 Sharding-Sphere was incubated at Dangdang in 2015 and open sourced on GitHub in 2016. In 2017, JingDong recognized its value and determined to sponsor this project. 
 Sharding-Sphere has contributors and users from many companies; we have set up the PMC Team and Committer Team. New contributors are guided and reviewed by existed PMC members. 
 When they are ready, PMC will start a vote to promote him/her to become a member of PMC or Committer Team. 
-See the details See the details [here](http://shardingsphere.io/community/en/organization/). Contributions are always welcomed and highly valued. 
+Contributions are always welcomed and highly valued. 
 
 ### Community
 
