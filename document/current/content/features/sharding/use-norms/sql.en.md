@@ -113,7 +113,7 @@ SQL that contains schema is unavailable, for the concept of ShardingSphere is to
 | SELECT * FROM tbl_name1 UNION SELECT * FROM tbl_name2                                       | UNION                              |
 | SELECT * FROM tbl_name1 UNION ALL SELECT * FROM tbl_name2                                   | UNION ALL                          |
 | SELECT * FROM tbl_name1 WHERE (val1=?) AND (val1=?)                                         | Redundant parentheses              |
-| SELECT * FROM ds.tbl_name1                                                                  | Contain schema                     |
+| SELECT * FROM ds.tbl_name1                                                                  | Contain schema(Supported if MySQL) |
 | SELECT SUM(DISTINCT col1), SUM(col1) FROM tbl_name                                          | See `DISTINCT` availability detail |
 
 ## DISTINCT Availability Detail
