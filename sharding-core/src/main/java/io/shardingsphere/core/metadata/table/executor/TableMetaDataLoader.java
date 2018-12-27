@@ -46,6 +46,7 @@ import java.util.Map.Entry;
  * Table meta data loader.
  *
  * @author zhangliang
+ * @author panjuan
  */
 @RequiredArgsConstructor
 public final class TableMetaDataLoader {
@@ -58,6 +59,8 @@ public final class TableMetaDataLoader {
     
     private final int maxConnectionsSizePerQuery;
     
+    private final boolean isCheckingMetaData;
+    
     /**
      * Load table meta data.
      *
@@ -67,7 +70,7 @@ public final class TableMetaDataLoader {
      * @throws SQLException SQL exception
      */
     public TableMetaData load(final String logicTableName, final ShardingRule shardingRule) throws SQLException {
-        List<TableMetaData> actualTableMetaDataList = load(shardingRule.getTableRuleByLogicTableName(logicTableName).getDataNodeGroups(), shardingRule.getShardingDataSourceNames());
+        List<TableMetaData> actualTableMetaDataList = load(getDataNodeGroups(logicTableName, shardingRule), shardingRule.getShardingDataSourceNames());
         checkUniformed(logicTableName, actualTableMetaDataList);
         return actualTableMetaDataList.iterator().next();
     }
@@ -94,6 +97,15 @@ public final class TableMetaDataLoader {
             }
         }
         return result;
+    }
+    
+    private Map<String, List<DataNode>> getDataNodeGroups(final String logicTableName, final ShardingRule shardingRule) {
+        Map<String, List<DataNode>> result = shardingRule.getTableRuleByLogicTableName(logicTableName).getDataNodeGroups();
+        if (isCheckingMetaData) {
+            return result;
+        }
+        String firstKey = result.keySet().iterator().next();
+        return Collections.singletonMap(firstKey, Collections.singletonList(result.get(firstKey).get(0)));
     }
     
     private Collection<ShardingExecuteGroup<DataNode>> getDataNodeGroups(final Map<String, List<DataNode>> dataNodeGroups) {
@@ -142,6 +154,9 @@ public final class TableMetaDataLoader {
     }
     
     private void checkUniformed(final String logicTableName, final List<TableMetaData> actualTableMetaDataList) {
+        if (!isCheckingMetaData) {
+            return;
+        }
         final TableMetaData sample = actualTableMetaDataList.iterator().next();
         for (TableMetaData each : actualTableMetaDataList) {
             if (!sample.equals(each)) {
