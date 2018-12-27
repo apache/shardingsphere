@@ -403,7 +403,7 @@ Namespace: http://shardingsphere.io/schema/shardingsphere/sharding/sharding.xsd
 | sql.show (?)                        | Attribute | To show SQLS or not, default value: false                                      |
 | executor.size (?)                   | Attribute | The number of working threads, default value: CPU count                        |
 | max.connections.size.per.query (?)  | int       | Max connection size for every query to every actual database. default value: 1 |
-| check.table.metadata.enabled (?)    | boolean   | Check the metadata consistency of all the tables, default value : true         |
+| check.table.metadata.enabled (?)    | boolean   | Check the metadata consistency of all the tables, default value : false         |
 
 #### \<sharding:config-map />
 
@@ -432,7 +432,7 @@ Namespace: http://shardingsphere.io/schema/shardingsphere/masterslave/master-sla
 | sql.show (?)                        | Attribute | To show SQLS or not, default value: false                                      |
 | executor.size (?)                   | Attribute | The number of working threads, default value: CPU count                        |
 | max.connections.size.per.query (?)  | int       | Max connection size for every query to every actual database. default value: 1 |
-| check.table.metadata.enabled (?)    | boolean   | Check the metadata consistency of all the tables, default value : true         |
+| check.table.metadata.enabled (?)    | boolean   | Check the metadata consistency of all the tables, default value : false         |
 
 ### Sharding + orchestration
 

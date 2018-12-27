@@ -394,7 +394,7 @@ weight = 4
 | sql.show (?)                       | 属性  | 是否开启SQL显示，默认值: false                    |
 | executor.size (?)                  | 属性  | 工作线程数量，默认值: CPU核数                      |
 | max.connections.size.per.query (?) | 属性  | 每个物理数据库为每次查询分配的最大连接数量。默认值: 1 |
-| check.table.metadata.enabled (?)   | 属性  | 是否在启动时检查分表元数据一致性，默认值: true       |
+| check.table.metadata.enabled (?)   | 属性  | 是否在启动时检查分表元数据一致性，默认值: false       |
 
 #### \<sharding:config-map />
 
@@ -423,7 +423,7 @@ weight = 4
 | sql.show (?)                       | 属性   | 是否开启SQL显示，默认值: false                    |
 | executor.size (?)                  | 属性   | 工作线程数量，默认值: CPU核数                      |
 | max.connections.size.per.query (?) | 属性   | 每个物理数据库为每次查询分配的最大连接数量。默认值: 1 |
-| check.table.metadata.enabled (?)   | 属性   | 是否在启动时检查分表元数据一致性，默认值: true       |
+| check.table.metadata.enabled (?)   | 属性   | 是否在启动时检查分表元数据一致性，默认值: false       |
 
 ### 数据分片 + 数据治理
 
