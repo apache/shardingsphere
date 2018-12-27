@@ -71,7 +71,6 @@ sharding.jdbc.config.masterslave.master-data-source-name=master
 sharding.jdbc.config.masterslave.slave-data-source-names=slave0,slave1
 
 sharding.jdbc.config.props.sql.show=true
-sharding.jdbc.config.props.check.table.metadata.enabled=true
 ```
 
 ### 数据分片 + 读写分离
