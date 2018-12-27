@@ -18,16 +18,16 @@
 package io.shardingsphere.transaction.xa.jta.connection;
 
 /**
- * Sharding XA connection builder.
+ * Sharding XA connection adapter.
  *
  * @author zhaojun
  */
-public interface ShardingXAConnectionWrapper {
+public interface ShardingXAConnectionAdapter {
     
     /**
-     * Wrap normal connection to sharding XA connection.
+     * Adapt normal connection to sharding XA connection.
      *
      * @return sharding XA connection
      */
-    ShardingXAConnection wrap();
+    ShardingXAConnection adapt();
 }

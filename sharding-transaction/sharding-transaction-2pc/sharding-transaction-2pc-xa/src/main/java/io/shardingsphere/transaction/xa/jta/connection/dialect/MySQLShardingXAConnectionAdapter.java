@@ -20,7 +20,7 @@ package io.shardingsphere.transaction.xa.jta.connection.dialect;
 import io.shardingsphere.core.exception.ShardingException;
 import io.shardingsphere.core.util.ReflectiveUtil;
 import io.shardingsphere.transaction.xa.jta.connection.ShardingXAConnection;
-import io.shardingsphere.transaction.xa.jta.connection.ShardingXAConnectionWrapper;
+import io.shardingsphere.transaction.xa.jta.connection.ShardingXAConnectionAdapter;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 
@@ -35,7 +35,7 @@ import java.sql.Connection;
  */
 @RequiredArgsConstructor
 @Slf4j
-public final class MySQLShardingXAConnectionWrapper implements ShardingXAConnectionWrapper {
+public final class MySQLShardingXAConnectionAdapter implements ShardingXAConnectionAdapter {
     
     private final String resourceName;
     
@@ -44,7 +44,7 @@ public final class MySQLShardingXAConnectionWrapper implements ShardingXAConnect
     private final Connection connection;
     
     @Override
-    public ShardingXAConnection wrap() {
+    public ShardingXAConnection adapt() {
         try {
             Connection mysqlPhysicalConnection = (Connection) connection.unwrap(Class.forName("com.mysql.jdbc.Connection"));
             XAConnection xaConnection = (XAConnection) ReflectiveUtil.findMethod(xaDataSource, "wrapConnection", Connection.class).invoke(xaDataSource, mysqlPhysicalConnection);
