@@ -81,7 +81,7 @@
                 <add-column name="column3" type="VARCHAR" />
             </add-columns>
             <position-changed-columns>
-                <position-changed-column first-column="column3" start-index="44"/>
+                <position-changed-column start-index="44" column-name="column3" />
             </position-changed-columns>
             <new-meta column-names="column3,order_id,user_id,status" column-types="VARCHAR,int,int,int" primary-key-columns="order_id"/>
         </alter-table>
@@ -120,8 +120,8 @@
                 <add-column name="column8" type="VARCHAR" />
             </add-columns>
             <position-changed-columns>
-                <position-changed-column start-index="44" first-column="column5"/>
-                <position-changed-column start-index="75" first-column="column6"/>
+                <position-changed-column start-index="44" column-name="column5"/>
+                <position-changed-column start-index="75" column-name="column6"/>
                 <position-changed-column start-index="106" column-name="column7" after-column="column5"/>
                 <position-changed-column start-index="145" column-name="column8" after-column="column6"/>
             </position-changed-columns>
@@ -175,7 +175,7 @@
                 <update-column origin-column-name="status" name="status" type="VARCHAR" />
             </update-columns>
             <position-changed-columns>
-                <position-changed-column first-column="status" start-index="46"/>
+                <position-changed-column start-index="46" column-name="status"/>
             </position-changed-columns>
             <new-meta column-names="status,order_id,user_id" column-types="VARCHAR,int,int" primary-key-columns="order_id"/>
         </alter-table>
@@ -212,8 +212,8 @@
                 <update-column origin-column-name="user_id" name="user_id" type="INT" />
             </update-columns>
             <position-changed-columns>
-                <position-changed-column first-column="status" start-index="46" />
-                <position-changed-column column-name="user_id" after-column="status" start-index="72" />
+                <position-changed-column start-index="46" column-name="status" />
+                <position-changed-column start-index="72" column-name="user_id" after-column="status" />
             </position-changed-columns>
             <new-meta column-names="status,user_id,order_id" column-types="VARCHAR,INT,int" primary-key-columns="order_id"/>
         </alter-table>

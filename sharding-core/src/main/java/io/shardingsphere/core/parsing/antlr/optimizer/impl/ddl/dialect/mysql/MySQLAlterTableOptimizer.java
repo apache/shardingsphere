@@ -22,7 +22,6 @@ import io.shardingsphere.core.parsing.antlr.optimizer.impl.ddl.AlterTableOptimiz
 import io.shardingsphere.core.parsing.antlr.sql.segment.definition.column.ColumnPositionSegment;
 import io.shardingsphere.core.parsing.antlr.sql.statement.ddl.AlterTableStatement;
 
-import java.util.Collections;
 import java.util.Iterator;
 import java.util.List;
 
@@ -38,12 +37,9 @@ public final class MySQLAlterTableOptimizer extends AlterTableOptimizer {
         if (alterTableStatement.getPositionChangedColumns().isEmpty()) {
             return;
         }
-        if (alterTableStatement.getPositionChangedColumns().size() > 1) {
-            Collections.sort(alterTableStatement.getPositionChangedColumns());
-        }
         for (ColumnPositionSegment each : alterTableStatement.getPositionChangedColumns()) {
-            if (null != each.getFirstColumn()) {
-                adjustFirst(newColumnMetaData, each.getFirstColumn());
+            if (!each.getAfterColumnName().isPresent()) {
+                adjustFirst(newColumnMetaData, each.getColumnName());
             } else {
                 adjustAfter(newColumnMetaData, each);
             }
@@ -73,7 +69,7 @@ public final class MySQLAlterTableOptimizer extends AlterTableOptimizer {
             if (newColumnMetaData.get(i).getColumnName().equals(columnPosition.getColumnName())) {
                 adjustColumnIndex = i;
             }
-            if (newColumnMetaData.get(i).getColumnName().equals(columnPosition.getAfterColumn())) {
+            if (newColumnMetaData.get(i).getColumnName().equals(columnPosition.getAfterColumnName().get())) {
                 afterIndex = i;
             }
             if (adjustColumnIndex >= 0 && afterIndex >= 0) {

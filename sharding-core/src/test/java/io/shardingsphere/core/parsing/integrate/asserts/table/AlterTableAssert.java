@@ -32,6 +32,7 @@ import io.shardingsphere.core.parsing.integrate.jaxb.token.ExpectedUpdateColumnD
 import lombok.RequiredArgsConstructor;
 
 import java.util.ArrayList;
+import java.util.Collection;
 import java.util.List;
 import java.util.Map.Entry;
 
@@ -92,7 +93,7 @@ public final class AlterTableAssert {
         assertColumnDefinition(actual.getValue(), expected);
     }
     
-    private void assertColumnPositions(final List<ColumnPositionSegment> actual, final List<ExpectedColumnPosition> expected) {
+    private void assertColumnPositions(final Collection<ColumnPositionSegment> actual, final List<ExpectedColumnPosition> expected) {
         if (null == expected) {
             return;
         }
@@ -107,8 +108,10 @@ public final class AlterTableAssert {
     private void assertColumnPosition(final ColumnPositionSegment actual, final ExpectedColumnPosition expected) {
         assertThat(assertMessage.getFullAssertMessage("Alter column position name assertion error: "), actual.getColumnName(), is(expected.getColumnName()));
         assertThat(assertMessage.getFullAssertMessage("Alter column [" + actual.getColumnName() + "]position startIndex assertion error: "), actual.getStartIndex(), is(expected.getStartIndex()));
-        assertThat(assertMessage.getFullAssertMessage("Alter column [" + actual.getColumnName() + "]position firstColumn assertion error: "), actual.getFirstColumn(), is(expected.getFirstColumn()));
-        assertThat(assertMessage.getFullAssertMessage("Alter column [" + actual.getColumnName() + "]position afterColumn assertion error: "), actual.getAfterColumn(), is(expected.getAfterColumn()));
+        if (actual.getAfterColumnName().isPresent()) {
+            assertThat(assertMessage.getFullAssertMessage(
+                    "Alter column [" + actual.getColumnName() + "]position afterColumnName assertion error: "), actual.getAfterColumnName().get(), is(expected.getAfterColumn()));
+        }
     }
     
     private void assertNewMeta(final TableMetaData actual, final ExpectedTableMetaData expected) {

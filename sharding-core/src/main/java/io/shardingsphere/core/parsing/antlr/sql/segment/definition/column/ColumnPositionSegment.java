@@ -17,6 +17,7 @@
 
 package io.shardingsphere.core.parsing.antlr.sql.segment.definition.column;
 
+import com.google.common.base.Optional;
 import io.shardingsphere.core.parsing.antlr.sql.segment.SQLSegment;
 import lombok.Getter;
 import lombok.RequiredArgsConstructor;
@@ -34,14 +35,21 @@ public final class ColumnPositionSegment implements SQLSegment, Comparable<Colum
     
     private final int startIndex;
     
-    private String firstColumn;
+    private final String columnName;
     
-    private String columnName;
+    private String afterColumnName;
     
-    private String afterColumn;
+    /**
+     * Get after column name.
+     * 
+     * @return after column name
+     */
+    public Optional<String> getAfterColumnName() {
+        return Optional.fromNullable(afterColumnName);
+    }
     
     @Override
     public int compareTo(final ColumnPositionSegment o) {
-        return null == o ? -1 : startIndex - o.startIndex;
+        return startIndex - o.startIndex;
     }
 }

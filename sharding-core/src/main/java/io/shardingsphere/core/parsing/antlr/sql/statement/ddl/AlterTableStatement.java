@@ -26,10 +26,11 @@ import io.shardingsphere.core.parsing.antlr.sql.segment.definition.column.Column
 import lombok.Getter;
 import lombok.Setter;
 
+import java.util.Collection;
 import java.util.LinkedHashMap;
 import java.util.LinkedList;
-import java.util.List;
 import java.util.Map;
+import java.util.TreeSet;
 
 /**
  * Alter table statement.
@@ -40,13 +41,13 @@ import java.util.Map;
 @Setter
 public final class AlterTableStatement extends DDLStatement {
     
-    private final List<ColumnDefinitionSegment> addedColumnDefinitions = new LinkedList<>();
+    private final Collection<ColumnDefinitionSegment> addedColumnDefinitions = new LinkedList<>();
     
     private final Map<String, ColumnDefinitionSegment> modifiedColumnDefinitions = new LinkedHashMap<>();
     
-    private final List<String> dropColumnNames = new LinkedList<>();
+    private final Collection<String> dropColumnNames = new LinkedList<>();
     
-    private final List<ColumnPositionSegment> positionChangedColumns = new LinkedList<>();
+    private final Collection<ColumnPositionSegment> positionChangedColumns = new TreeSet<>();
     
     private boolean dropPrimaryKey;
     
