@@ -38,6 +38,7 @@ import java.util.TreeSet;
  * @author duhongjun
  */
 @Getter
+@Setter
 public final class AlterTableStatement extends DDLStatement {
     
     private final Collection<ColumnDefinitionSegment> addedColumnDefinitions = new LinkedList<>();
@@ -48,13 +49,10 @@ public final class AlterTableStatement extends DDLStatement {
     
     private final Collection<ColumnPositionSegment> changedPositionColumns = new TreeSet<>();
     
-    @Setter
     private boolean dropPrimaryKey;
     
-    @Setter
     private String newTableName;
     
-    @Setter
     private TableMetaData tableMetaData;
     
     /**
