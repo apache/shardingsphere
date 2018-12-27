@@ -97,7 +97,7 @@ SELECT COUNT(*) FROM (SELECT * FROM t_order o WHERE o.id IN (SELECT id FROM t_or
 | DROP INDEX idx_name                                                                         |TableRule中配置logic-index |
 | SELECT DISTINCT * FROM tbl_name WHERE col1 = ?                                              |                          |
 | SELECT COUNT(DISTINCT col1) FROM tbl_name                                                   |                          |
-| SELECT * FROM tbl_name1 WHERE (val1=?) AND (val1=?)                                         | 冗余括号问题目前只支持MySQL |
+| SELECT * FROM tbl_name1 WHERE (val1=?) AND (val1=?)                                         | 支持在MySQL数据库上使用带有冗余括号的SQL，其他数据库正在进展中 |
 
 
 ### 不支持的SQL

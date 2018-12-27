@@ -102,8 +102,7 @@ SQL that contains schema is unavailable, for the concept of ShardingSphere is to
 | DROP INDEX idx_name                                                                         |  Logic-index is configured in TableRule |
 | SELECT DISTINCT * FROM tbl_name WHERE col1 = ?                                              |                                         |
 | SELECT COUNT(DISTINCT col1) FROM tbl_name                                                   |                                         |
-| SELECT * FROM tbl_name1 WHERE (val1=?) AND (val1=?)                                         | Redundant parentheses supported in MySQL|
-
+| SELECT * FROM tbl_name1 WHERE (val1=?) AND (val1=?)                                         | Redundant parentheses can be used in MySQL Database, and will be used in other databases in the near future.|
 ### Unavailable SQL
 
 | SQL                                                                                         |  The reason of unavailability      |
