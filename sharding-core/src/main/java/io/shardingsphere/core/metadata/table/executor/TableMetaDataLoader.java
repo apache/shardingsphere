@@ -70,12 +70,12 @@ public final class TableMetaDataLoader {
      * @throws SQLException SQL exception
      */
     public TableMetaData load(final String logicTableName, final ShardingRule shardingRule) throws SQLException {
-        List<TableMetaData> actualTableMetaDataList = load(createDataNodeGroups(logicTableName, shardingRule), shardingRule.getShardingDataSourceNames());
+        List<TableMetaData> actualTableMetaDataList = load(getDataNodeGroups(logicTableName, shardingRule), shardingRule.getShardingDataSourceNames());
         checkUniformed(logicTableName, actualTableMetaDataList);
         return actualTableMetaDataList.iterator().next();
     }
     
-    private Map<String, List<DataNode>> createDataNodeGroups(final String logicTableName, final ShardingRule shardingRule) {
+    private Map<String, List<DataNode>> getDataNodeGroups(final String logicTableName, final ShardingRule shardingRule) {
         Map<String, List<DataNode>> result = shardingRule.getTableRuleByLogicTableName(logicTableName).getDataNodeGroups();
         if (isCheckingMetaData) {
             return result;
