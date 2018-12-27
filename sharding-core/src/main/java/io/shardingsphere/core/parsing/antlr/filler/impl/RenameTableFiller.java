@@ -19,10 +19,9 @@ package io.shardingsphere.core.parsing.antlr.filler.impl;
 
 import io.shardingsphere.core.metadata.table.ShardingTableMetaData;
 import io.shardingsphere.core.parsing.antlr.filler.SQLStatementFiller;
-import io.shardingsphere.core.parsing.antlr.sql.segment.table.TableSegment;
-import io.shardingsphere.core.parsing.parser.context.table.Table;
+import io.shardingsphere.core.parsing.antlr.sql.segment.table.RenameTableSegment;
+import io.shardingsphere.core.parsing.antlr.sql.statement.ddl.AlterTableStatement;
 import io.shardingsphere.core.parsing.parser.sql.SQLStatement;
-import io.shardingsphere.core.parsing.parser.sql.dql.select.SelectStatement;
 import io.shardingsphere.core.rule.ShardingRule;
 
 /**
@@ -30,21 +29,15 @@ import io.shardingsphere.core.rule.ShardingRule;
  *
  * @author duhongjun
  */
-public final class TableFiller implements SQLStatementFiller<TableSegment> {
+public final class RenameTableFiller implements SQLStatementFiller<RenameTableSegment> {
     
     @Override
-    public void fill(final TableSegment sqlSegment, final SQLStatement sqlStatement, final String sql, final ShardingRule shardingRule, final ShardingTableMetaData shardingTableMetaData) {
-        boolean fill = false;
-        if (shardingRule.contains(sqlSegment.getName())) {
-            fill = true;
-        } else {
-            if(!(sqlStatement instanceof SelectStatement) && sqlStatement.getTables().isEmpty()) {
-                fill = true;
-            }
+    public void fill(final RenameTableSegment sqlSegment, final SQLStatement sqlStatement, final String sql, final ShardingRule shardingRule,
+                     final ShardingTableMetaData shardingTableMetaData) {
+        if (!(sqlStatement instanceof AlterTableStatement)) {
+            return;
         }
-        if (fill) {
-            sqlStatement.getTables().add(new Table(sqlSegment.getName(), sqlSegment.getAlias()));
-            sqlStatement.getSQLTokens().add(sqlSegment.getToken());
-        }
+        AlterTableStatement alterTableStatement = (AlterTableStatement) sqlStatement;
+        alterTableStatement.setNewTableName(sqlSegment.getNewTableName());
     }
 }

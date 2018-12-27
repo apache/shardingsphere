@@ -36,7 +36,6 @@ import java.util.Map;
  * @author duhongjun
  */
 @Getter
-@Setter
 public final class AlterTableStatement extends DDLStatement {
     
     private final List<ColumnDefinition> addedColumnDefinitions = new LinkedList<>();
@@ -47,10 +46,13 @@ public final class AlterTableStatement extends DDLStatement {
     
     private final List<ColumnPositionSegment> positionChangedColumns = new LinkedList<>();
     
+    @Setter
     private boolean dropPrimaryKey;
     
+    @Setter
     private String newTableName;
     
+    @Setter
     private TableMetaData tableMetaData;
     
     /**

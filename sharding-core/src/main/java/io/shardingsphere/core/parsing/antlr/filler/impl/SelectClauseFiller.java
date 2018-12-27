@@ -63,8 +63,8 @@ public final class SelectClauseFiller implements SQLStatementFiller<SelectClause
         }
     }
     
-    private void fillDistinct(final SelectClauseSegment selectClauseSegment,
-                              final SelectStatement selectStatement, final String sql, final ShardingRule shardingRule, final ShardingTableMetaData shardingTableMetaData) {
+    private void fillDistinct(final SelectClauseSegment selectClauseSegment, final SelectStatement selectStatement, final String sql, final ShardingRule shardingRule,
+                              final ShardingTableMetaData shardingTableMetaData) {
         Iterator<ExpressionSegment> expressionIterator = selectClauseSegment.getExpressions().iterator();
         ExpressionSegment firstExpression = expressionIterator.next();
         ExpressionFiller expressionFiller = new ExpressionFiller();
@@ -111,7 +111,8 @@ public final class SelectClauseFiller implements SQLStatementFiller<SelectClause
         return offset;
     }
     
-    private DistinctSelectItem createDistinctCommonItem(final SelectStatement selectStatement, final String sql, final Set<String> distinctColumnNames, final CommonExpressionSegment expressionSegment) {
+    private DistinctSelectItem createDistinctCommonItem(final SelectStatement selectStatement, final String sql, final Set<String> distinctColumnNames,
+                                                        final CommonExpressionSegment expressionSegment) {
         DistinctSelectItem distinctSelectItem = new DistinctSelectItem(distinctColumnNames, expressionSegment.getAlias());
         String commonExpression = sql.substring(expressionSegment.getStartPosition(), expressionSegment.getEndPosition() + 1);
         int leftParenPosition = commonExpression.indexOf("(");

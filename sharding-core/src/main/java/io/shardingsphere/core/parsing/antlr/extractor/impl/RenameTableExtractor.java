@@ -17,13 +17,15 @@
 
 package io.shardingsphere.core.parsing.antlr.extractor.impl;
 
+import org.antlr.v4.runtime.ParserRuleContext;
+
 import com.google.common.base.Optional;
+
 import io.shardingsphere.core.parsing.antlr.extractor.OptionalSQLSegmentExtractor;
 import io.shardingsphere.core.parsing.antlr.extractor.util.ExtractorUtils;
 import io.shardingsphere.core.parsing.antlr.extractor.util.RuleName;
-import io.shardingsphere.core.parsing.antlr.sql.segment.SQLSegment;
-import io.shardingsphere.core.parsing.parser.exception.SQLParsingUnsupportedException;
-import org.antlr.v4.runtime.ParserRuleContext;
+import io.shardingsphere.core.parsing.antlr.sql.segment.table.RenameTableSegment;
+import io.shardingsphere.core.parsing.antlr.sql.segment.table.TableSegment;
 
 /**
  * Rename table extractor.
@@ -33,11 +35,15 @@ import org.antlr.v4.runtime.ParserRuleContext;
 public final class RenameTableExtractor implements OptionalSQLSegmentExtractor {
     
     @Override
-    public Optional<SQLSegment> extract(final ParserRuleContext ancestorNode) {
+    public Optional<RenameTableSegment> extract(final ParserRuleContext ancestorNode) {
         Optional<ParserRuleContext> renameTableNode = ExtractorUtils.findFirstChildNode(ancestorNode, RuleName.RENAME_TABLE);
         if (!renameTableNode.isPresent()) {
             return Optional.absent();
         }
-        throw new SQLParsingUnsupportedException("Unsupported SQL statement of rename table");
+        Optional<TableSegment> tableSegment = new TableNameExtractor().extract(renameTableNode.get());
+        if (tableSegment.isPresent()) {
+            return Optional.of(new RenameTableSegment(tableSegment.get().getName()));
+        }
+        return Optional.absent();
     }
 }

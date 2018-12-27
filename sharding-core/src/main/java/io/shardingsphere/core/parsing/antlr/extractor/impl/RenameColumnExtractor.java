@@ -17,13 +17,17 @@
 
 package io.shardingsphere.core.parsing.antlr.extractor.impl;
 
+import java.util.Collection;
+import java.util.Iterator;
+
+import org.antlr.v4.runtime.ParserRuleContext;
+
 import com.google.common.base.Optional;
+
 import io.shardingsphere.core.parsing.antlr.extractor.OptionalSQLSegmentExtractor;
 import io.shardingsphere.core.parsing.antlr.extractor.util.ExtractorUtils;
 import io.shardingsphere.core.parsing.antlr.extractor.util.RuleName;
-import io.shardingsphere.core.parsing.antlr.sql.segment.SQLSegment;
-import io.shardingsphere.core.parsing.parser.exception.SQLParsingUnsupportedException;
-import org.antlr.v4.runtime.ParserRuleContext;
+import io.shardingsphere.core.parsing.antlr.sql.segment.definition.column.alter.RenameColumnSegment;
 
 /**
  * Rename column extractor.
@@ -33,11 +37,16 @@ import org.antlr.v4.runtime.ParserRuleContext;
 public final class RenameColumnExtractor implements OptionalSQLSegmentExtractor {
     
     @Override
-    public Optional<SQLSegment> extract(final ParserRuleContext ancestorNode) {
+    public Optional<RenameColumnSegment> extract(final ParserRuleContext ancestorNode) {
         Optional<ParserRuleContext> modifyColumnNode = ExtractorUtils.findFirstChildNode(ancestorNode, RuleName.RENAME_COLUMN);
         if (!modifyColumnNode.isPresent()) {
             return Optional.absent();
         }
-        throw new SQLParsingUnsupportedException("Unsupported SQL statement of rename column");
+        Collection<ParserRuleContext> columnNodes = ExtractorUtils.getAllDescendantNodes(modifyColumnNode.get(), RuleName.COLUMN_NAME);
+        if (2 != columnNodes.size()) {
+            return Optional.absent();
+        }
+        Iterator<ParserRuleContext> iterator = columnNodes.iterator();
+        return Optional.of(new RenameColumnSegment(iterator.next().getText(), iterator.next().getText()));
     }
 }
