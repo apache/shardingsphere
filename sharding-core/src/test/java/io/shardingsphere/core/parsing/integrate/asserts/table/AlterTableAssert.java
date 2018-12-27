@@ -116,9 +116,9 @@ public final class AlterTableAssert {
         List<String> columnNames = new ArrayList<>();
         List<String> columnTypes = new ArrayList<>();
         List<String> primaryColumns = new ArrayList<>();
-        for (ColumnMetaData each :actual.getColumnMetaData()) {
+        for (ColumnMetaData each :actual.getColumnMetaDataList()) {
             columnNames.add(each.getColumnName());
-            columnTypes.add(each.getColumnType());
+            columnTypes.add(each.getDataType());
             if (each.isPrimaryKey()) {
                 primaryColumns.add(each.getColumnName());
             }

@@ -43,23 +43,23 @@ public class AlterTableOptimizer implements SQLStatementOptimizer {
         if (null == oldTableMetaData) {
             return;
         }
-        List<ColumnMetaData> newColumnMetaData = getUpdatedColumnMetaDataList(alterTableStatement, oldTableMetaData);
+        List<ColumnMetaData> newColumnMetaData = getModifiedColumnMetaDataList(alterTableStatement, oldTableMetaData);
         fillColumnDefinition(alterTableStatement, newColumnMetaData);
         adjustColumnDefinition(alterTableStatement, newColumnMetaData);
         dropColumnDefinition(alterTableStatement, newColumnMetaData);
         alterTableStatement.setTableMetaData(new TableMetaData(newColumnMetaData));
     }
     
-    private List<ColumnMetaData> getUpdatedColumnMetaDataList(final AlterTableStatement alterTableStatement, final TableMetaData oldTableMetaData) {
+    private List<ColumnMetaData> getModifiedColumnMetaDataList(final AlterTableStatement alterTableStatement, final TableMetaData oldTableMetaData) {
         List<ColumnMetaData> result = new LinkedList<>();
-        for (ColumnMetaData each : oldTableMetaData.getColumnMetaData()) {
+        for (ColumnMetaData each : oldTableMetaData.getColumnMetaDataList()) {
             ColumnDefinitionSegment modifiedColumnDefinition = alterTableStatement.getModifiedColumnDefinitions().get(each.getColumnName());
             String columnName;
             String columnType;
             boolean primaryKey;
             if (null == modifiedColumnDefinition) {
                 columnName = each.getColumnName();
-                columnType = each.getColumnType();
+                columnType = each.getDataType();
                 primaryKey = !alterTableStatement.isDropPrimaryKey() && each.isPrimaryKey();
             } else {
                 columnName = modifiedColumnDefinition.getColumnName();
