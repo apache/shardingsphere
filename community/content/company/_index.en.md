@@ -1,11 +1,11 @@
 +++
-pre = "<b>3. </b>"
+pre = "<b>2. </b>"
 title = "Using Companies"
-weight = 3
+weight = 2
 chapter = true
 +++
 
-Welcome companies who have used Sharding-Sphere to register here, your support is our biggest encouragement.
+Welcome companies who have used ShardingSphere to register here, your support is our biggest encouragement.
 
 Please register [here](https://github.com/sharding-sphere/sharding-sphere/issues/234) with `company` + `homepage` + `company type`.
 

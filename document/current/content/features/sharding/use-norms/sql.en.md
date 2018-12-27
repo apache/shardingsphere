@@ -113,32 +113,32 @@ SQL that contains schema is unavailable, for the concept of ShardingSphere is to
 | SELECT * FROM tbl_name1 UNION SELECT * FROM tbl_name2                                       | UNION                              |
 | SELECT * FROM tbl_name1 UNION ALL SELECT * FROM tbl_name2                                   | UNION ALL                          |
 | SELECT * FROM tbl_name1 WHERE (val1=?) AND (val1=?)                                         | Redundant parentheses              |
-| SELECT * FROM ds.tbl_name1                                                                  | Contain schema                     |
+| SELECT * FROM ds.tbl_name1                                                                  | Contain schema(Supported if MySQL) |
 | SELECT SUM(DISTINCT col1), SUM(col1) FROM tbl_name                                          | See `DISTINCT` availability detail |
 
 ## DISTINCT Availability Detail
 
 ### Available SQL
 
-| SQL                                                                                         | Required condition                  |
+| SQL                                                                                         | 所需条件                             |
 | ------------------------------------------------------------------------------------------- | ----------------------------------- |
 | SELECT DISTINCT * FROM tbl_name WHERE col1 = ?                                              |                                     |
 | SELECT DISTINCT col1 FROM tbl_name                                                          |                                     |
 | SELECT DISTINCT col1, col2, col3 FROM tbl_name                                              |                                     |
-| SELECT COUNT(DISTINCT col1) FROM tbl_name                                                   |                                     |
-| SELECT SUM(DISTINCT col1) FROM tbl_name                                                     |                                     |
 | SELECT DISTINCT col1 FROM tbl_name ORDER BY col1                                            |                                     |
 | SELECT DISTINCT col1 FROM tbl_name ORDER BY col2                                            |                                     |
-| SELECT COUNT(DISTINCT col1) FROM tbl_name GROUP BY col1                                     |                                     |
-| SELECT COUNT(DISTINCT col1), col1 FROM tbl_name GROUP BY col1                               |                                     |
+| SELECT DISTINCT(col1) FROM tbl_name                                                         | MySQL                               |
+| SELECT AVG(DISTINCT col1) FROM tbl_name                                                     | MySQL                               |
+| SELECT SUM(DISTINCT col1) FROM tbl_name                                                     | MySQL                               |
+| SELECT COUNT(DISTINCT col1) FROM tbl_name                                                   | MySQL                               |
+| SELECT COUNT(DISTINCT col1) FROM tbl_name GROUP BY col1                                     | MySQL                               |
+| SELECT COUNT(DISTINCT col1 + col2) FROM tbl_name                                            | MySQL                               |
+| SELECT COUNT(DISTINCT col1), SUM(DISTINCT col1) FROM tbl_name                               | MySQL                               |
+| SELECT COUNT(DISTINCT col1), col1 FROM tbl_name GROUP BY col1                               | MySQL                               |
+| SELECT col1, COUNT(DISTINCT col1) FROM tbl_name GROUP BY col1                               | MySQL                               |
 
 ### Unavailable SQL
 
-| SQL                                                                                         | Unavailable reasons                                                            |
-| ------------------------------------------------------------------------------------------- |------------------------------------------------------------------------------- |
-| SELECT DISTINCT(col1) FROM tbl_name                                                         | DISTINCT()                                                                     |
-| SELECT COUNT(DISTINCT col1 + col2) FROM tbl_name                                            | PLUS FUNCTION + DISTINCT                                                       |
-| SELECT AVG(DISTINCT col1) FROM tbl_name                                                     | AVG(DISTINCT)                                                                  |
-| SELECT COUNT(DISTINCT col1), SUM(DISTINCT col1) FROM tbl_name                               | Use two kinds of DISTINCT aggregate function in the same time                  |
-| SELECT SUM(DISTINCT col1), SUM(col1) FROM tbl_name                                          | Use normal aggregate function and DISTINCT aggregate function in the same time |
-| SELECT col1, COUNT(DISTINCT col1) FROM tbl_name GROUP BY col1                               | The problem of the order of COUNT (DISTINCT) and ordinary query items          |
+| SQL                                                                                         | Unavailable reason                                                            |
+| ------------------------------------------------------------------------------------------- |------------------------------------------------------------------------------ |
+| SELECT SUM(DISTINCT col1), SUM(col1) FROM tbl_name                                          | Use normal aggregate function and DISTINCT aggregate function in the same time|

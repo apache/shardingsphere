@@ -70,7 +70,7 @@ sharding.jdbc.config.masterslave.name=ms
 sharding.jdbc.config.masterslave.master-data-source-name=master
 sharding.jdbc.config.masterslave.slave-data-source-names=slave0,slave1
 
-sharding.jdbc.config.masterslave.props.sql.show=true
+sharding.jdbc.config.props.sql.show=true
 ```
 
 ### 数据分片 + 读写分离
@@ -238,16 +238,16 @@ sharding.jdbc.config.sharding.master-slave-rules.<master-slave-data-source-name>
 sharding.jdbc.config.sharding.master-slave-rules.<master-slave-data-source-name>.slave-data-source-names[x]= #详见读写分离部分
 sharding.jdbc.config.sharding.master-slave-rules.<master-slave-data-source-name>.load-balance-algorithm-class-name= #详见读写分离部分
 sharding.jdbc.config.sharding.master-slave-rules.<master-slave-data-source-name>.load-balance-algorithm-type= #详见读写分离部分
-sharding.jdbc.config.sharding.master-slave-rules.<master-slave-data-source-name>.config.map.key1= #详见读写分离部分
-sharding.jdbc.config.sharding.master-slave-rules.<master-slave-data-source-name>.config.map.key2= #详见读写分离部分
-sharding.jdbc.config.sharding.master-slave-rules.<master-slave-data-source-name>.config.map.keyx= #详见读写分离部分
+sharding.jdbc.config.config.map.key1= #详见读写分离部分
+sharding.jdbc.config.config.map.key2= #详见读写分离部分
+sharding.jdbc.config.config.map.keyx= #详见读写分离部分
 
-sharding.jdbc.config.sharding.props.sql.show= #是否开启SQL显示，默认值: false
-sharding.jdbc.config.sharding.props.executor.size= #工作线程数量，默认值: CPU核数
+sharding.jdbc.config.props.sql.show= #是否开启SQL显示，默认值: false
+sharding.jdbc.config.props.executor.size= #工作线程数量，默认值: CPU核数
 
-sharding.jdbc.config.sharding.config.map.key1= #用户自定义配置
-sharding.jdbc.config.sharding.config.map.key2= #用户自定义配置
-sharding.jdbc.config.sharding.config.map.keyx= #用户自定义配置
+sharding.jdbc.config.config.map.key1= #用户自定义配置
+sharding.jdbc.config.config.map.key2= #用户自定义配置
+sharding.jdbc.config.config.map.keyx= #用户自定义配置
 ```
 
 ### 读写分离
@@ -262,12 +262,12 @@ sharding.jdbc.config.sharding.master-slave-rules.<master-slave-data-source-name>
 sharding.jdbc.config.sharding.master-slave-rules.<master-slave-data-source-name>.load-balance-algorithm-class-name= #从库负载均衡算法类名称。该类需实现MasterSlaveLoadBalanceAlgorithm接口且提供无参数构造器
 sharding.jdbc.config.sharding.master-slave-rules.<master-slave-data-source-name>.load-balance-algorithm-type= #从库负载均衡算法类型，可选值：ROUND_ROBIN，RANDOM。若`load-balance-algorithm-class-name`存在则忽略该配置
 
-sharding.jdbc.config.sharding.master-slave-rules.<master-slave-data-source-name>.config.map.key1= #用户自定义配置
-sharding.jdbc.config.sharding.master-slave-rules.<master-slave-data-source-name>.config.map.key2= #用户自定义配置
-sharding.jdbc.config.sharding.master-slave-rules.<master-slave-data-source-name>.config.map.keyx= #用户自定义配置
+sharding.jdbc.config.config.map.key1= #用户自定义配置
+sharding.jdbc.config.config.map.key2= #用户自定义配置
+sharding.jdbc.config.config.map.keyx= #用户自定义配置
 
-sharding.jdbc.config.masterslave.props.sql.show= #是否开启SQL显示，默认值: false
-sharding.jdbc.config.masterslave.props.executor.size= #工作线程数量，默认值: CPU核数
+sharding.jdbc.config.props.sql.show= #是否开启SQL显示，默认值: false
+sharding.jdbc.config.props.executor.size= #工作线程数量，默认值: CPU核数
 ```
 
 ### 数据治理

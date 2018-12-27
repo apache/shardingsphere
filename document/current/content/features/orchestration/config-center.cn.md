@@ -17,77 +17,74 @@ weight = 1
 
 ```
 config
-    ├──datasource                                # 数据源配置
-    ├──sharding                                  # 分库分表（包括分库分表+读写分离）配置根节点
-    ├      ├──rule                               # 分库分表（包括分库分表+读写分离）规则
-    ├      ├──configmap                          # 分库分表ConfigMap配置，以K/V形式存储，如：{"key1":"value1"}
-    ├      ├──props                              # 属性配置
-    ├──masterslave                               # 读写分离独立使用配置
-    ├      ├──rule                               # 读写分离规则
-    ├      ├──configmap                          # 读写分离ConfigMap配置，以K/V形式存储，如：{"key1":"value1"}
-    ├      ├──props                              # 属性配置
+    ├──authentication                            # Sharding-Proxy权限配置
+    ├──configMap                                 # 分库分表ConfigMap配置，以K/V形式存储，如：{"key1":"value1"}
+    ├──props                                     # 属性配置
+    ├──schema                                    # Schema配置
+    ├      ├──sharding_db                        # SchemaName配置
+    ├      ├      ├──datasource                  # 数据源配置
+    ├      ├      ├──rule                        # 分库分表规则配置
+    ├      ├──masterslave_db                     # SchemaName配置
+    ├      ├      ├──datasource                  # 数据源配置
+    ├      ├      ├──rule                        # 读写分离规则
 ```
 
-### config/datasource
+### config/authentication
+
+```yaml
+password: root
+username: root
+```
+
+### config/configmap
+
+读写分离ConfigMap配置，以K/V形式存储。
+
+```yaml
+key2: value2
+```
+
+### config/sharding/props
+
+相对于sharding-sphere配置里面的Sharding Properties。
+
+```yaml
+executor.size: 20
+sql.show: true
+```
+
+### config/schema/schemeName/datasource
 
 多个数据库连接池的集合，不同数据库连接池属性自适配（例如：DBCP，C3P0，Druid, HikariCP）。
 
 ```yaml
-ds_0: !!org.apache.commons.dbcp.BasicDataSource
-  defaultAutoCommit: true
-  defaultCatalog:
-  defaultReadOnly: false
-  defaultTransactionIsolation: -1
-  driverClassName: com.mysql.jdbc.Driver
-  initialSize: 0
-  logAbandoned: false
-  maxActive: 8
-  maxIdle: 8
-  maxOpenPreparedStatements: -1
-  maxWait: -1
-  minEvictableIdleTimeMillis: 1800000
-  minIdle: 0
-  numTestsPerEvictionRun: 3
-  password: ''
-  removeAbandoned: false
-  removeAbandonedTimeout: 300
-  testOnBorrow: false
-  testOnReturn: false
-  testWhileIdle: false
-  timeBetweenEvictionRunsMillis: -1
-  url: jdbc:mysql://localhost:3306/demo_ds_0
-  username: root
-  validationQuery:
-  validationQueryTimeout: -1
-ds_1: !!org.apache.commons.dbcp.BasicDataSource
-  defaultAutoCommit: true
-  defaultCatalog:
-  defaultReadOnly: false
-  defaultTransactionIsolation: -1
-  driverClassName: com.mysql.jdbc.Driver
-  initialSize: 0
-  logAbandoned: false
-  maxActive: 8
-  maxIdle: 8
-  maxOpenPreparedStatements: -1
-  maxWait: -1
-  minEvictableIdleTimeMillis: 1800000
-  minIdle: 0
-  numTestsPerEvictionRun: 3
-  password: ''
-  removeAbandoned: false
-  removeAbandonedTimeout: 300
-  testOnBorrow: false
-  testOnReturn: false
-  testWhileIdle: false
-  timeBetweenEvictionRunsMillis: -1
-  url: jdbc:mysql://localhost:3306/demo_ds_1
-  username: root
-  validationQuery:
-  validationQueryTimeout: -1
+ds_0: !!io.shardingsphere.orchestration.yaml.YamlDataSourceConfiguration
+  dataSourceClassName: com.zaxxer.hikari.HikariDataSource
+  properties:
+    url: jdbc:mysql://127.0.0.1:3306/demo_ds_0?serverTimezone=UTC&useSSL=false
+    password: null
+    maxPoolSize: 50
+    maintenanceIntervalMilliseconds: 30000
+    connectionTimeoutMilliseconds: 30000
+    idleTimeoutMilliseconds: 60000
+    minPoolSize: 1
+    username: root
+    maxLifetimeMilliseconds: 1800000
+ds_1: !!io.shardingsphere.orchestration.yaml.YamlDataSourceConfiguration
+  dataSourceClassName: com.zaxxer.hikari.HikariDataSource
+  properties:
+    url: jdbc:mysql://127.0.0.1:3306/demo_ds_1?serverTimezone=UTC&useSSL=false
+    password: null
+    maxPoolSize: 50
+    maintenanceIntervalMilliseconds: 30000
+    connectionTimeoutMilliseconds: 30000
+    idleTimeoutMilliseconds: 60000
+    minPoolSize: 1
+    username: root
+    maxLifetimeMilliseconds: 1800000
 ```
 
-### config/sharding/rule
+### config/schema/sharding_db/rule
 
 分库分表配置，包括分库分表 + 读写分离配置。
 
@@ -123,24 +120,7 @@ defaultDatabaseStrategy:
 masterSlaveRules: {}
 ```
 
-### config/sharding/configmap
-
-分库分表ConfigMap配置，以K/V形式存储。
-
-```yaml
-key1: value1
-```
-
-### config/sharding/props
-
-相对于sharding-sphere配置里面的Sharding Properties。
-
-```yaml
-executor.size: 20
-sql.show: true
-```
-
-### config/masterslave/rule
+### config/schema/masterslave/rule
 
 读写分离独立使用时使用该配置。
 
@@ -153,10 +133,5 @@ slaveDataSourceNames:
 loadBalanceAlgorithmType: ROUND_ROBIN
 ```
 
-### config/masterslave/configmap
-
-读写分离ConfigMap配置，以K/V形式存储。
-
-```yaml
-key2: value2
-```
+## 动态生效
+在注册中心上修改、删除、新增相关配置，会动态推送到生产环境并立即生效。
