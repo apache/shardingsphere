@@ -38,7 +38,6 @@
             <add-columns>
                 <add-column name="column4" type="VARCHAR" />
             </add-columns>
-            <new-meta column-names="order_id,user_id,status,column4" column-types="int,int,int,VARCHAR" primary-key-columns="order_id"/>
       </alter-table>
     </parser-result>
     
@@ -55,7 +54,6 @@
                 <add-column name="column5" type="VARCHAR" />
                 <add-column name="column6" type="VARCHAR" />
             </add-columns>
-            <new-meta column-names="order_id,user_id,status,column4,column5,column6" column-types="int,int,int,VARCHAR,VARCHAR,VARCHAR" primary-key-columns="order_id"/>
         </alter-table>
     </parser-result>
     
@@ -80,9 +78,7 @@
         <tokens>
             <table-token begin-position="12" original-literals="t_order" />
         </tokens>
-        <alter-table drop-columns="user_id">
-            <new-meta column-names="order_id,status" column-types="int,int" primary-key-columns="order_id"/>
-        </alter-table>
+        <alter-table drop-columns="user_id" />
     </parser-result>
     
     <parser-result sql-case-id="alter_table_drop_columns">
@@ -92,12 +88,10 @@
         <tokens>
             <table-token begin-position="12" original-literals="t_order" />
         </tokens>
-        <alter-table drop-columns="user_id,column5">
-            <new-meta column-names="order_id,status" column-types="int,int" primary-key-columns="order_id"/>
-        </alter-table>
+        <alter-table drop-columns="user_id,column5" />
     </parser-result>
     
-     <parser-result sql-case-id="alter_table_add_primary_key">
+    <parser-result sql-case-id="alter_table_add_primary_key">
         <tables>
             <table name="t_order" />
         </tables>
@@ -108,7 +102,6 @@
             <update-columns>
                 <update-column origin-column-name="user_id" name="user_id" type="int" primary-key="true"/>
             </update-columns>
-            <new-meta column-names="order_id,user_id,status" column-types="int,int,int" primary-key-columns="order_id,user_id"/>
         </alter-table>
     </parser-result>
     
@@ -125,7 +118,6 @@
                 <update-column origin-column-name="user_id" name="user_id" type="int" primary-key="true"/>
                 <update-column origin-column-name="status" name="status" type="int" primary-key="true"/>
             </update-columns>
-            <new-meta column-names="order_id,user_id,status" column-types="int,int,int" primary-key-columns="order_id,user_id,status"/>
         </alter-table>
     </parser-result>
     
@@ -171,7 +163,6 @@
             <update-columns>
                 <update-column origin-column-name="order_id" name="order_id" type="int" primary-key="true"/>
             </update-columns>
-            <new-meta column-names="item_id,order_id,user_id,status,c_date" column-types="int,int,int,varchar,timestamp" primary-key-columns="item_id,order_id"/>
         </alter-table>
     </parser-result>
     

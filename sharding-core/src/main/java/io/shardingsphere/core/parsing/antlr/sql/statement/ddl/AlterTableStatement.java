@@ -20,7 +20,6 @@ package io.shardingsphere.core.parsing.antlr.sql.statement.ddl;
 import com.google.common.base.Optional;
 import io.shardingsphere.core.metadata.table.ColumnMetaData;
 import io.shardingsphere.core.metadata.table.ShardingTableMetaData;
-import io.shardingsphere.core.metadata.table.TableMetaData;
 import io.shardingsphere.core.parsing.antlr.sql.segment.definition.column.ColumnDefinitionSegment;
 import io.shardingsphere.core.parsing.antlr.sql.segment.definition.column.position.ColumnPositionSegment;
 import lombok.Getter;
@@ -53,7 +52,14 @@ public final class AlterTableStatement extends DDLStatement {
     
     private String newTableName;
     
-    private TableMetaData tableMetaData;
+    /**
+     * Get new table name.
+     * 
+     * @return new table name
+     */
+    public Optional<String> getNewTableName() {
+        return Optional.fromNullable(newTableName);
+    }
     
     /**
      * Find column definition.

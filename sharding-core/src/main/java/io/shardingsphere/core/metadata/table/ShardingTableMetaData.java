@@ -57,6 +57,15 @@ public final class ShardingTableMetaData {
     }
     
     /**
+     * Remove table meta data.
+     *
+     * @param logicTableName logic table name
+     */
+    public void remove(final String logicTableName) {
+        tableMetaDataMap.remove(logicTableName);
+    }
+    
+    /**
      * Judge contains table from table meta data or not.
      *
      * @param tableName table name

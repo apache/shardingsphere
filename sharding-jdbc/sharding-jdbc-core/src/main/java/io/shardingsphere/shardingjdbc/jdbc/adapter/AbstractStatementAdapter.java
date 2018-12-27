@@ -18,6 +18,7 @@
 package io.shardingsphere.shardingjdbc.jdbc.adapter;
 
 import com.google.common.base.Function;
+import com.google.common.base.Optional;
 import com.google.common.collect.Lists;
 import io.shardingsphere.core.constant.SQLType;
 import io.shardingsphere.core.constant.properties.ShardingPropertiesConstant;
@@ -25,6 +26,9 @@ import io.shardingsphere.core.metadata.table.ColumnMetaData;
 import io.shardingsphere.core.metadata.table.TableMetaData;
 import io.shardingsphere.core.metadata.table.executor.TableMetaDataLoader;
 import io.shardingsphere.core.parsing.antlr.sql.segment.definition.column.ColumnDefinitionSegment;
+import io.shardingsphere.core.parsing.antlr.sql.segment.definition.column.position.ColumnAfterPositionSegment;
+import io.shardingsphere.core.parsing.antlr.sql.segment.definition.column.position.ColumnFirstPositionSegment;
+import io.shardingsphere.core.parsing.antlr.sql.segment.definition.column.position.ColumnPositionSegment;
 import io.shardingsphere.core.parsing.antlr.sql.statement.ddl.AlterTableStatement;
 import io.shardingsphere.core.parsing.antlr.sql.statement.ddl.CreateTableStatement;
 import io.shardingsphere.core.routing.SQLRouteResult;
@@ -39,6 +43,9 @@ import java.sql.SQLException;
 import java.sql.SQLWarning;
 import java.sql.Statement;
 import java.util.Collection;
+import java.util.Iterator;
+import java.util.LinkedList;
+import java.util.List;
 
 /**
  * Adapter for {@code Statement}.
@@ -267,7 +274,103 @@ public abstract class AbstractStatementAdapter extends AbstractUnsupportedOperat
     }
     
     private void alterTable(final String logicTableName, final ShardingConnection connection, final AlterTableStatement alterTableStatement) {
-        connection.getShardingContext().getMetaData().getTable().put(logicTableName, alterTableStatement.getTableMetaData());
+        List<ColumnMetaData> columnMetaDataList = createNewColumnMetaDataList(alterTableStatement, connection.getShardingContext().getMetaData().getTable().get(logicTableName));
+        fillAddedColumnDefinitions(alterTableStatement, columnMetaDataList);
+        changeColumnDefinitionPositions(alterTableStatement, columnMetaDataList);
+        dropColumnDefinitions(alterTableStatement, columnMetaDataList);
+        Optional<String> newTableName = alterTableStatement.getNewTableName();
+        if (newTableName.isPresent()) {
+            connection.getShardingContext().getMetaData().getTable().remove(logicTableName);
+            connection.getShardingContext().getMetaData().getTable().put(newTableName.get(), new TableMetaData(columnMetaDataList));
+        } else {
+            connection.getShardingContext().getMetaData().getTable().put(logicTableName, new TableMetaData(columnMetaDataList));
+        }
+    }
+    
+    private List<ColumnMetaData> createNewColumnMetaDataList(final AlterTableStatement alterTableStatement, final TableMetaData oldTableMetaData) {
+        List<ColumnMetaData> result = new LinkedList<>();
+        for (ColumnMetaData each : oldTableMetaData.getColumnMetaDataList()) {
+            String columnName;
+            String dataType;
+            boolean primaryKey;
+            if (alterTableStatement.getModifiedColumnDefinitions().containsKey(each.getColumnName())) {
+                ColumnDefinitionSegment modifiedColumnDefinition = alterTableStatement.getModifiedColumnDefinitions().get(each.getColumnName());
+                columnName = modifiedColumnDefinition.getColumnName();
+                dataType = modifiedColumnDefinition.getDataType();
+                primaryKey = !alterTableStatement.isDropPrimaryKey() && modifiedColumnDefinition.isPrimaryKey();
+            } else {
+                columnName = each.getColumnName();
+                dataType = each.getDataType();
+                primaryKey = !alterTableStatement.isDropPrimaryKey() && each.isPrimaryKey();
+            }
+            result.add(new ColumnMetaData(columnName, dataType, primaryKey));
+        }
+        return result;
+    }
+    
+    private void fillAddedColumnDefinitions(final AlterTableStatement alterTableStatement, final List<ColumnMetaData> columnMetaDataList) {
+        for (ColumnDefinitionSegment each : alterTableStatement.getAddedColumnDefinitions()) {
+            columnMetaDataList.add(new ColumnMetaData(each.getColumnName(), each.getDataType(), !alterTableStatement.isDropPrimaryKey() && each.isPrimaryKey()));
+        }
+    }
+    
+    private void changeColumnDefinitionPositions(final AlterTableStatement alterTableStatement, final List<ColumnMetaData> columnMetaDataList) {
+        for (ColumnPositionSegment each : alterTableStatement.getChangedPositionColumns()) {
+            if (each instanceof ColumnFirstPositionSegment) {
+                adjustFirst(columnMetaDataList, (ColumnFirstPositionSegment) each);
+            } else {
+                adjustAfter(columnMetaDataList, (ColumnAfterPositionSegment) each);
+            }
+        }
+    }
+    
+    private void adjustFirst(final List<ColumnMetaData> columnMetaDataList, final ColumnFirstPositionSegment columnFirstPositionSegment) {
+        ColumnMetaData firstColumnMetaData = null;
+        Iterator<ColumnMetaData> iterator = columnMetaDataList.iterator();
+        while (iterator.hasNext()) {
+            ColumnMetaData each = iterator.next();
+            if (each.getColumnName().equals(columnFirstPositionSegment.getColumnName())) {
+                firstColumnMetaData = each;
+                iterator.remove();
+                break;
+            }
+        }
+        if (null != firstColumnMetaData) {
+            columnMetaDataList.add(0, firstColumnMetaData);
+        }
+    }
+    
+    private void adjustAfter(final List<ColumnMetaData> columnMetaDataList, final ColumnAfterPositionSegment columnAfterPositionSegment) {
+        int afterIndex = -1;
+        int adjustColumnIndex = -1;
+        for (int i = 0; i < columnMetaDataList.size(); i++) {
+            if (columnMetaDataList.get(i).getColumnName().equals(columnAfterPositionSegment.getColumnName())) {
+                adjustColumnIndex = i;
+            }
+            if (columnMetaDataList.get(i).getColumnName().equals(columnAfterPositionSegment.getAfterColumnName())) {
+                afterIndex = i;
+            }
+            if (adjustColumnIndex >= 0 && afterIndex >= 0) {
+                break;
+            }
+        }
+        if (adjustColumnIndex >= 0 && afterIndex >= 0 && adjustColumnIndex != afterIndex + 1) {
+            ColumnMetaData adjustColumnMetaData = columnMetaDataList.remove(adjustColumnIndex);
+            if (afterIndex < adjustColumnIndex) {
+                afterIndex = afterIndex + 1;
+            }
+            columnMetaDataList.add(afterIndex, adjustColumnMetaData);
+        }
+    }
+    
+    private void dropColumnDefinitions(final AlterTableStatement alterTableStatement, final List<ColumnMetaData> newColumnMetaData) {
+        Iterator<ColumnMetaData> iterator = newColumnMetaData.iterator();
+        while (iterator.hasNext()) {
+            ColumnMetaData each = iterator.next();
+            if (alterTableStatement.getDropColumnNames().contains(each.getColumnName())) {
+                iterator.remove();
+            }
+        }
     }
     
     private void doOther(final String logicTableName, final ShardingConnection connection) throws SQLException {
