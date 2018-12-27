@@ -14,5 +14,5 @@
     <extractor-rule id="limit" extractor-class="LimitExtractor" />
     
     <extractor-rule id="renameTable" extractor-class="RenameTableExtractor" />
-    <extractor-rule id="renameColumn" extractor-class="RenameColumnExtractor" />
+    <extractor-rule id="renameColumnDefinition" extractor-class="RenameColumnDefinitionExtractor" />
 </extractor-rule-definition>

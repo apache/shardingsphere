@@ -26,11 +26,11 @@ import io.shardingsphere.core.parsing.parser.exception.SQLParsingUnsupportedExce
 import org.antlr.v4.runtime.ParserRuleContext;
 
 /**
- * Rename column extractor.
+ * Rename column definition extractor.
  * 
  * @author duhongjun
  */
-public final class RenameColumnExtractor implements OptionalSQLSegmentExtractor {
+public final class RenameColumnDefinitionExtractor implements OptionalSQLSegmentExtractor {
     
     @Override
     public Optional<SQLSegment> extract(final ParserRuleContext ancestorNode) {
@@ -38,6 +38,6 @@ public final class RenameColumnExtractor implements OptionalSQLSegmentExtractor 
         if (!modifyColumnNode.isPresent()) {
             return Optional.absent();
         }
-        throw new SQLParsingUnsupportedException("Unsupported SQL statement of rename column");
+        throw new SQLParsingUnsupportedException("Unsupported SQL statement of rename column definition");
     }
 }
