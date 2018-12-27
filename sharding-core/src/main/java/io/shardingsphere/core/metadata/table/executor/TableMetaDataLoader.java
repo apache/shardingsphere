@@ -75,15 +75,6 @@ public final class TableMetaDataLoader {
         return actualTableMetaDataList.iterator().next();
     }
     
-    private Map<String, List<DataNode>> getDataNodeGroups(final String logicTableName, final ShardingRule shardingRule) {
-        Map<String, List<DataNode>> result = shardingRule.getTableRuleByLogicTableName(logicTableName).getDataNodeGroups();
-        if (isCheckingMetaData) {
-            return result;
-        }
-        String firstKey = result.keySet().iterator().next();
-        return Collections.singletonMap(firstKey, Collections.singletonList(result.get(firstKey).get(0)));
-    }
-    
     private List<TableMetaData> load(final Map<String, List<DataNode>> dataNodeGroups, final ShardingDataSourceNames shardingDataSourceNames) throws SQLException {
         return executeEngine.groupExecute(getDataNodeGroups(dataNodeGroups), new ShardingGroupExecuteCallback<DataNode, TableMetaData>() {
             
@@ -106,6 +97,15 @@ public final class TableMetaDataLoader {
             }
         }
         return result;
+    }
+    
+    private Map<String, List<DataNode>> getDataNodeGroups(final String logicTableName, final ShardingRule shardingRule) {
+        Map<String, List<DataNode>> result = shardingRule.getTableRuleByLogicTableName(logicTableName).getDataNodeGroups();
+        if (isCheckingMetaData) {
+            return result;
+        }
+        String firstKey = result.keySet().iterator().next();
+        return Collections.singletonMap(firstKey, Collections.singletonList(result.get(firstKey).get(0)));
     }
     
     private Collection<ShardingExecuteGroup<DataNode>> getDataNodeGroups(final Map<String, List<DataNode>> dataNodeGroups) {
