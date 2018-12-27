@@ -15,29 +15,28 @@
  * </p>
  */
 
-package io.shardingsphere.core.parsing.antlr.extractor.impl;
+package io.shardingsphere.core.parsing.antlr.extractor.impl.dialect.mysql.definition.constraint;
 
 import com.google.common.base.Optional;
 import io.shardingsphere.core.parsing.antlr.extractor.OptionalSQLSegmentExtractor;
 import io.shardingsphere.core.parsing.antlr.extractor.util.ExtractorUtils;
 import io.shardingsphere.core.parsing.antlr.extractor.util.RuleName;
-import io.shardingsphere.core.parsing.antlr.sql.segment.SQLSegment;
-import io.shardingsphere.core.parsing.parser.exception.SQLParsingUnsupportedException;
+import io.shardingsphere.core.parsing.antlr.sql.segment.definition.constraint.DropPrimaryKeySegment;
 import org.antlr.v4.runtime.ParserRuleContext;
 
 /**
- * Rename column definition extractor.
- * 
+ * Drop primary key extractor for MySQL.
+ *
  * @author duhongjun
  */
-public final class RenameColumnDefinitionExtractor implements OptionalSQLSegmentExtractor {
+public final class MySQLDropPrimaryKeyExtractor implements OptionalSQLSegmentExtractor {
     
     @Override
-    public Optional<SQLSegment> extract(final ParserRuleContext ancestorNode) {
-        Optional<ParserRuleContext> modifyColumnNode = ExtractorUtils.findFirstChildNode(ancestorNode, RuleName.RENAME_COLUMN);
-        if (!modifyColumnNode.isPresent()) {
+    public Optional<DropPrimaryKeySegment> extract(final ParserRuleContext ancestorNode) {
+        Optional<ParserRuleContext> dropPrimaryKeyNode = ExtractorUtils.findFirstChildNode(ancestorNode, RuleName.DROP_PRIMARY_KEY);
+        if (!dropPrimaryKeyNode.isPresent()) {
             return Optional.absent();
         }
-        throw new SQLParsingUnsupportedException("Unsupported SQL statement of rename column definition");
+        return Optional.of(new DropPrimaryKeySegment(true));
     }
 }

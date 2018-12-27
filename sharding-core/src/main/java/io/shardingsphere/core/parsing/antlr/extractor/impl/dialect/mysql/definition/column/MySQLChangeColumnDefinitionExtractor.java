@@ -15,11 +15,11 @@
  * </p>
  */
 
-package io.shardingsphere.core.parsing.antlr.extractor.impl.dialect.mysql;
+package io.shardingsphere.core.parsing.antlr.extractor.impl.dialect.mysql.definition.column;
 
 import com.google.common.base.Optional;
 import io.shardingsphere.core.parsing.antlr.extractor.OptionalSQLSegmentExtractor;
-import io.shardingsphere.core.parsing.antlr.extractor.impl.ColumnDefinitionExtractor;
+import io.shardingsphere.core.parsing.antlr.extractor.impl.definition.column.ColumnDefinitionExtractor;
 import io.shardingsphere.core.parsing.antlr.extractor.util.ExtractorUtils;
 import io.shardingsphere.core.parsing.antlr.extractor.util.RuleName;
 import io.shardingsphere.core.parsing.antlr.sql.segment.definition.column.ColumnDefinitionSegment;

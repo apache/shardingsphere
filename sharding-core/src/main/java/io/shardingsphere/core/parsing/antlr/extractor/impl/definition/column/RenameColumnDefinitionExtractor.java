@@ -15,7 +15,7 @@
  * </p>
  */
 
-package io.shardingsphere.core.parsing.antlr.extractor.impl;
+package io.shardingsphere.core.parsing.antlr.extractor.impl.definition.column;
 
 import com.google.common.base.Optional;
 import io.shardingsphere.core.parsing.antlr.extractor.OptionalSQLSegmentExtractor;
@@ -26,18 +26,18 @@ import io.shardingsphere.core.parsing.parser.exception.SQLParsingUnsupportedExce
 import org.antlr.v4.runtime.ParserRuleContext;
 
 /**
- * Rename table extractor.
- *
+ * Rename column definition extractor.
+ * 
  * @author duhongjun
  */
-public final class RenameTableExtractor implements OptionalSQLSegmentExtractor {
+public final class RenameColumnDefinitionExtractor implements OptionalSQLSegmentExtractor {
     
     @Override
     public Optional<SQLSegment> extract(final ParserRuleContext ancestorNode) {
-        Optional<ParserRuleContext> renameTableNode = ExtractorUtils.findFirstChildNode(ancestorNode, RuleName.RENAME_TABLE);
-        if (!renameTableNode.isPresent()) {
+        Optional<ParserRuleContext> modifyColumnNode = ExtractorUtils.findFirstChildNode(ancestorNode, RuleName.RENAME_COLUMN);
+        if (!modifyColumnNode.isPresent()) {
             return Optional.absent();
         }
-        throw new SQLParsingUnsupportedException("Unsupported SQL statement of rename table");
+        throw new SQLParsingUnsupportedException("Unsupported SQL statement of rename column definition");
     }
 }

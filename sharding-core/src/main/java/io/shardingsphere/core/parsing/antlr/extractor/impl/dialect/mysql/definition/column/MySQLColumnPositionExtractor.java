@@ -15,7 +15,7 @@
  * </p>
  */
 
-package io.shardingsphere.core.parsing.antlr.extractor.impl.dialect.mysql;
+package io.shardingsphere.core.parsing.antlr.extractor.impl.dialect.mysql.definition.column;
 
 import com.google.common.base.Optional;
 import io.shardingsphere.core.parsing.antlr.extractor.OptionalSQLSegmentExtractor;
