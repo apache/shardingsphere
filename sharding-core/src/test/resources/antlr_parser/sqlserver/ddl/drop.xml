@@ -8,7 +8,7 @@
             <table-token begin-position="11" original-literals="t_order" />
         </tokens>
     </parser-result>
-
+    
     <parser-result sql-case-id="drop_table_with_space">
         <tables>
             <table name="t_order" />
@@ -17,7 +17,7 @@
             <table-token begin-position="23" original-literals="t_order" />
         </tokens>
     </parser-result>
-
+    
     <parser-result sql-case-id="drop_table_with_bracket">
         <tables>
             <table name="t_order" />
@@ -26,7 +26,7 @@
             <table-token begin-position="11" original-literals="[t_order]" />
         </tokens>
     </parser-result>
-
+    
     <parser-result sql-case-id="drop_tables">
         <tables>
             <table name="t_order_item" />
@@ -37,7 +37,7 @@
             <table-token begin-position="25" original-literals="t_order" />
         </tokens>
     </parser-result>
-
+    
     <parser-result sql-case-id="drop_table_if_exists">
         <tables>
             <table name="t_order" />
@@ -46,7 +46,7 @@
             <table-token begin-position="21" original-literals="t_order" />
         </tokens>
     </parser-result>
-
+    
     <parser-result sql-case-id="drop_index">
         <tables>
             <table name="t_order" />
@@ -56,7 +56,7 @@
             <table-token begin-position="27" original-literals="t_order" />
         </tokens>
     </parser-result>
-
+    
     <parser-result sql-case-id="drop_index_with_space">
         <tables>
             <table name="t_order" />
@@ -66,7 +66,7 @@
             <table-token begin-position="51" original-literals="t_order" />
         </tokens>
     </parser-result>
-
+    
     <parser-result sql-case-id="drop_index_with_bracket">
         <tables>
             <table name="t_order" />
@@ -76,7 +76,7 @@
             <table-token begin-position="29" original-literals="[t_order]" />
         </tokens>
     </parser-result>
-
+    
     <parser-result sql-case-id="drop_index_if_exists">
         <tables>
             <table name="t_order" />

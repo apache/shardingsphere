@@ -18,7 +18,7 @@
 package io.shardingsphere.core.parsing.integrate.asserts.meta;
 
 import com.google.common.base.Joiner;
-import io.shardingsphere.core.parsing.antlr.sql.statement.ddl.ColumnDefinition;
+import io.shardingsphere.core.parsing.antlr.sql.segment.definition.column.ColumnDefinitionSegment;
 import io.shardingsphere.core.parsing.integrate.asserts.SQLStatementAssertMessage;
 import io.shardingsphere.core.parsing.integrate.jaxb.meta.ExpectedTableMetaData;
 import lombok.RequiredArgsConstructor;
@@ -46,16 +46,16 @@ public final class TableMetaDataAssert {
      * @param actual actual column definitions
      * @param expected expected meta data
      */
-    public void assertMeta(final List<ColumnDefinition> actual, final ExpectedTableMetaData expected) {
+    public void assertMeta(final List<ColumnDefinitionSegment> actual, final ExpectedTableMetaData expected) {
         assertFalse(assertMessage.getFullAssertMessage("Column definitions should exist: "), actual.isEmpty());
         List<String> actualColumnNames = new LinkedList<>();
         List<String> actualColumnTypes = new LinkedList<>();
         List<String> actualPrimaryKeyColumns = new LinkedList<>();
-        for (ColumnDefinition each : actual) {
-            actualColumnNames.add(each.getName());
-            actualColumnTypes.add(each.getType());
+        for (ColumnDefinitionSegment each : actual) {
+            actualColumnNames.add(each.getColumnName());
+            actualColumnTypes.add(each.getDataType());
             if (each.isPrimaryKey()) {
-                actualPrimaryKeyColumns.add(each.getName());
+                actualPrimaryKeyColumns.add(each.getColumnName());
             }
         }
         assertThat(assertMessage.getFullAssertMessage("Column names assertion error: "), Joiner.on(",").join(actualColumnNames), is(expected.getColumnNames()));

@@ -94,14 +94,14 @@ public final class DQLMergeEngine implements MergeEngine {
     
     @Override
     public MergedResult merge() throws SQLException {
+        if (queryResults.size() == 1) {
+            return new IteratorStreamMergedResult(queryResults);
+        }
         selectStatement.setIndexForItems(columnLabelIndexMap);
         return decorate(build());
     }
     
     private MergedResult build() throws SQLException {
-        if (queryResults.size() == 1) {
-            return new IteratorStreamMergedResult(queryResults);
-        }
         if (!selectStatement.getGroupByItems().isEmpty() || !selectStatement.getAggregationSelectItems().isEmpty()) {
             return getGroupByMergedResult();
         }

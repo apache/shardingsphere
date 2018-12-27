@@ -19,10 +19,11 @@ package io.shardingsphere.core.parsing.antlr.optimizer.impl.ddl.dialect.mysql;
 
 import io.shardingsphere.core.metadata.table.ColumnMetaData;
 import io.shardingsphere.core.parsing.antlr.optimizer.impl.ddl.AlterTableOptimizer;
-import io.shardingsphere.core.parsing.antlr.sql.segment.column.ColumnPositionSegment;
+import io.shardingsphere.core.parsing.antlr.sql.segment.definition.column.position.ColumnAfterPositionSegment;
+import io.shardingsphere.core.parsing.antlr.sql.segment.definition.column.position.ColumnFirstPositionSegment;
+import io.shardingsphere.core.parsing.antlr.sql.segment.definition.column.position.ColumnPositionSegment;
 import io.shardingsphere.core.parsing.antlr.sql.statement.ddl.AlterTableStatement;
 
-import java.util.Collections;
 import java.util.Iterator;
 import java.util.List;
 
@@ -35,27 +36,21 @@ public final class MySQLAlterTableOptimizer extends AlterTableOptimizer {
     
     @Override
     protected void adjustColumnDefinition(final AlterTableStatement alterTableStatement, final List<ColumnMetaData> newColumnMetaData) {
-        if (alterTableStatement.getPositionChangedColumns().isEmpty()) {
-            return;
-        }
-        if (alterTableStatement.getPositionChangedColumns().size() > 1) {
-            Collections.sort(alterTableStatement.getPositionChangedColumns());
-        }
-        for (ColumnPositionSegment each : alterTableStatement.getPositionChangedColumns()) {
-            if (null != each.getFirstColumn()) {
-                adjustFirst(newColumnMetaData, each.getFirstColumn());
+        for (ColumnPositionSegment each : alterTableStatement.getChangedPositionColumns()) {
+            if (each instanceof ColumnFirstPositionSegment) {
+                adjustFirst(newColumnMetaData, (ColumnFirstPositionSegment) each);
             } else {
-                adjustAfter(newColumnMetaData, each);
+                adjustAfter(newColumnMetaData, (ColumnAfterPositionSegment) each);
             }
         }
     }
     
-    private void adjustFirst(final List<ColumnMetaData> newColumnMetaData, final String columnName) {
+    private void adjustFirst(final List<ColumnMetaData> newColumnMetaData, final ColumnFirstPositionSegment columnFirstPositionSegment) {
         ColumnMetaData firstMetaData = null;
         Iterator<ColumnMetaData> iterator = newColumnMetaData.iterator();
         while (iterator.hasNext()) {
             ColumnMetaData each = iterator.next();
-            if (each.getColumnName().equals(columnName)) {
+            if (each.getColumnName().equals(columnFirstPositionSegment.getColumnName())) {
                 firstMetaData = each;
                 iterator.remove();
                 break;
@@ -66,14 +61,14 @@ public final class MySQLAlterTableOptimizer extends AlterTableOptimizer {
         }
     }
     
-    private void adjustAfter(final List<ColumnMetaData> newColumnMetaData, final ColumnPositionSegment columnPosition) {
+    private void adjustAfter(final List<ColumnMetaData> newColumnMetaData, final ColumnAfterPositionSegment columnAfterPositionSegment) {
         int afterIndex = -1;
         int adjustColumnIndex = -1;
         for (int i = 0; i < newColumnMetaData.size(); i++) {
-            if (newColumnMetaData.get(i).getColumnName().equals(columnPosition.getColumnName())) {
+            if (newColumnMetaData.get(i).getColumnName().equals(columnAfterPositionSegment.getColumnName())) {
                 adjustColumnIndex = i;
             }
-            if (newColumnMetaData.get(i).getColumnName().equals(columnPosition.getAfterColumn())) {
+            if (newColumnMetaData.get(i).getColumnName().equals(columnAfterPositionSegment.getAfterColumnName())) {
                 afterIndex = i;
             }
             if (adjustColumnIndex >= 0 && afterIndex >= 0) {

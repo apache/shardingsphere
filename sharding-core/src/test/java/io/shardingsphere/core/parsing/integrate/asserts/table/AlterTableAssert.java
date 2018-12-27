@@ -20,9 +20,10 @@ package io.shardingsphere.core.parsing.integrate.asserts.table;
 import com.google.common.base.Joiner;
 import io.shardingsphere.core.metadata.table.ColumnMetaData;
 import io.shardingsphere.core.metadata.table.TableMetaData;
-import io.shardingsphere.core.parsing.antlr.sql.segment.column.ColumnPositionSegment;
+import io.shardingsphere.core.parsing.antlr.sql.segment.definition.column.ColumnDefinitionSegment;
+import io.shardingsphere.core.parsing.antlr.sql.segment.definition.column.position.ColumnAfterPositionSegment;
+import io.shardingsphere.core.parsing.antlr.sql.segment.definition.column.position.ColumnPositionSegment;
 import io.shardingsphere.core.parsing.antlr.sql.statement.ddl.AlterTableStatement;
-import io.shardingsphere.core.parsing.antlr.sql.statement.ddl.ColumnDefinition;
 import io.shardingsphere.core.parsing.integrate.asserts.SQLStatementAssertMessage;
 import io.shardingsphere.core.parsing.integrate.jaxb.meta.ExpectedTableMetaData;
 import io.shardingsphere.core.parsing.integrate.jaxb.table.ExpectedAlterTable;
@@ -32,6 +33,7 @@ import io.shardingsphere.core.parsing.integrate.jaxb.token.ExpectedUpdateColumnD
 import lombok.RequiredArgsConstructor;
 
 import java.util.ArrayList;
+import java.util.Collection;
 import java.util.List;
 import java.util.Map.Entry;
 
@@ -61,38 +63,38 @@ public final class AlterTableAssert {
         if (null != expected.getNewMeta()) {
             assertNewMeta(actual.getTableMetaData(), expected.getNewMeta());
         }
-        assertColumnPositions(actual.getPositionChangedColumns(), expected.getPositionChangedColumns());
+        assertColumnPositions(actual.getChangedPositionColumns(), expected.getPositionChangedColumns());
     }
     
     private void assertAddColumns(final AlterTableStatement actual, final List<ExpectedColumnDefinition> expected) {
         assertThat(assertMessage.getFullAssertMessage("Add column size error: "), actual.getAddedColumnDefinitions().size(), is(expected.size()));
         int count = 0;
-        for (ColumnDefinition each : actual.getAddedColumnDefinitions()) {
+        for (ColumnDefinitionSegment each : actual.getAddedColumnDefinitions()) {
             assertColumnDefinition(each, expected.get(count));
             count++;
         }
     }
     
-    private void assertColumnDefinition(final ColumnDefinition actual, final ExpectedColumnDefinition expected) {
-        assertThat(assertMessage.getFullAssertMessage("Column name assertion error: "), actual.getName(), is(expected.getName()));
-        assertThat(assertMessage.getFullAssertMessage("Column " + actual.getName() + " type assertion error: "), actual.getType(), is(expected.getType()));
+    private void assertColumnDefinition(final ColumnDefinitionSegment actual, final ExpectedColumnDefinition expected) {
+        assertThat(assertMessage.getFullAssertMessage("Column name assertion error: "), actual.getColumnName(), is(expected.getName()));
+        assertThat(assertMessage.getFullAssertMessage("Column " + actual.getColumnName() + " type assertion error: "), actual.getDataType(), is(expected.getType()));
     }
     
     private void assertUpdateColumns(final AlterTableStatement actual, final List<ExpectedUpdateColumnDefinition> expected) {
-        assertThat(assertMessage.getFullAssertMessage("Update column size error: "), actual.getUpdatedColumnDefinitions().size(), is(expected.size()));
+        assertThat(assertMessage.getFullAssertMessage("Update column size error: "), actual.getModifiedColumnDefinitions().size(), is(expected.size()));
         int count = 0;
-        for (Entry<String, ColumnDefinition> each : actual.getUpdatedColumnDefinitions().entrySet()) {
+        for (Entry<String, ColumnDefinitionSegment> each : actual.getModifiedColumnDefinitions().entrySet()) {
             assertUpdateColumnDefinition(each, expected.get(count));
             count++;
         }
     }
     
-    private void assertUpdateColumnDefinition(final Entry<String, ColumnDefinition> actual, final ExpectedUpdateColumnDefinition expected) {
+    private void assertUpdateColumnDefinition(final Entry<String, ColumnDefinitionSegment> actual, final ExpectedUpdateColumnDefinition expected) {
         assertThat(assertMessage.getFullAssertMessage("Origin column name assertion error: "), actual.getKey(), is(expected.getOriginColumnName()));
         assertColumnDefinition(actual.getValue(), expected);
     }
     
-    private void assertColumnPositions(final List<ColumnPositionSegment> actual, final List<ExpectedColumnPosition> expected) {
+    private void assertColumnPositions(final Collection<ColumnPositionSegment> actual, final List<ExpectedColumnPosition> expected) {
         if (null == expected) {
             return;
         }
@@ -107,8 +109,10 @@ public final class AlterTableAssert {
     private void assertColumnPosition(final ColumnPositionSegment actual, final ExpectedColumnPosition expected) {
         assertThat(assertMessage.getFullAssertMessage("Alter column position name assertion error: "), actual.getColumnName(), is(expected.getColumnName()));
         assertThat(assertMessage.getFullAssertMessage("Alter column [" + actual.getColumnName() + "]position startIndex assertion error: "), actual.getStartIndex(), is(expected.getStartIndex()));
-        assertThat(assertMessage.getFullAssertMessage("Alter column [" + actual.getColumnName() + "]position firstColumn assertion error: "), actual.getFirstColumn(), is(expected.getFirstColumn()));
-        assertThat(assertMessage.getFullAssertMessage("Alter column [" + actual.getColumnName() + "]position afterColumn assertion error: "), actual.getAfterColumn(), is(expected.getAfterColumn()));
+        if (actual instanceof ColumnAfterPositionSegment) {
+            assertThat(assertMessage.getFullAssertMessage("Alter column [" + actual.getColumnName() + "]position afterColumnName assertion error: "), 
+                    ((ColumnAfterPositionSegment) actual).getAfterColumnName(), is(expected.getAfterColumn()));
+        }
     }
     
     private void assertNewMeta(final TableMetaData actual, final ExpectedTableMetaData expected) {
@@ -116,9 +120,9 @@ public final class AlterTableAssert {
         List<String> columnNames = new ArrayList<>();
         List<String> columnTypes = new ArrayList<>();
         List<String> primaryColumns = new ArrayList<>();
-        for (ColumnMetaData each :actual.getColumnMetaData()) {
+        for (ColumnMetaData each :actual.getColumnMetaDataList()) {
             columnNames.add(each.getColumnName());
-            columnTypes.add(each.getColumnType());
+            columnTypes.add(each.getDataType());
             if (each.isPrimaryKey()) {
                 primaryColumns.add(each.getColumnName());
             }

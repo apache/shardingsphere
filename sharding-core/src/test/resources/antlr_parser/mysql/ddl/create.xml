@@ -171,7 +171,7 @@
         </tokens>
         <meta column-names="order_id,user_id,status,column1,column2,column3" column-types="INT,INT,VARCHAR,VARCHAR,VARCHAR,VARCHAR" />
     </parser-result>
-
+    
     <parser-result sql-case-id="create_table_with_out_of_line_composite_unique_key">
         <tables>
             <table name="t_order" />
@@ -215,7 +215,7 @@
         </tokens>
         <meta column-names="order_id,user_id,status,column1,column2,column3" column-types="INT,INT,VARCHAR,VARCHAR,VARCHAR,VARCHAR" />
     </parser-result>
-
+    
     <parser-result sql-case-id="create_table_with_out_of_line_constraints">
         <tables>
             <table name="t_order_item" />

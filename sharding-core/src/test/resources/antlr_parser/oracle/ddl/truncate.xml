@@ -8,7 +8,7 @@
             <table-token begin-position="15" original-literals="t_order" />
         </tokens>
     </parser-result>
-
+    
     <parser-result sql-case-id="truncate_table_with_space">
         <tables>
             <table name="t_order" />
@@ -17,7 +17,7 @@
             <table-token begin-position="27" original-literals="t_order" />
         </tokens>
     </parser-result>
-
+    
     <parser-result sql-case-id="truncate_table_with_quota">
         <tables>
             <table name="t_order" />

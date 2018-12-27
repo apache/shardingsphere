@@ -21,14 +21,16 @@ import com.google.common.base.Optional;
 import io.shardingsphere.core.metadata.table.ColumnMetaData;
 import io.shardingsphere.core.metadata.table.ShardingTableMetaData;
 import io.shardingsphere.core.metadata.table.TableMetaData;
-import io.shardingsphere.core.parsing.antlr.sql.segment.column.ColumnPositionSegment;
+import io.shardingsphere.core.parsing.antlr.sql.segment.definition.column.ColumnDefinitionSegment;
+import io.shardingsphere.core.parsing.antlr.sql.segment.definition.column.position.ColumnPositionSegment;
 import lombok.Getter;
 import lombok.Setter;
 
+import java.util.Collection;
 import java.util.LinkedHashMap;
 import java.util.LinkedList;
-import java.util.List;
 import java.util.Map;
+import java.util.TreeSet;
 
 /**
  * Alter table statement.
@@ -36,21 +38,23 @@ import java.util.Map;
  * @author duhongjun
  */
 @Getter
-@Setter
 public final class AlterTableStatement extends DDLStatement {
     
-    private final List<ColumnDefinition> addedColumnDefinitions = new LinkedList<>();
+    private final Collection<ColumnDefinitionSegment> addedColumnDefinitions = new LinkedList<>();
     
-    private final List<String> dropColumnNames = new LinkedList<>();
+    private final Map<String, ColumnDefinitionSegment> modifiedColumnDefinitions = new LinkedHashMap<>();
     
-    private final Map<String, ColumnDefinition> updatedColumnDefinitions = new LinkedHashMap<>();
+    private final Collection<String> dropColumnNames = new LinkedList<>();
     
-    private final List<ColumnPositionSegment> positionChangedColumns = new LinkedList<>();
+    private final Collection<ColumnPositionSegment> changedPositionColumns = new TreeSet<>();
     
+    @Setter
     private boolean dropPrimaryKey;
     
+    @Setter
     private String newTableName;
     
+    @Setter
     private TableMetaData tableMetaData;
     
     /**
@@ -60,8 +64,8 @@ public final class AlterTableStatement extends DDLStatement {
      * @param shardingTableMetaData sharding table meta data
      * @return column definition
      */
-    public Optional<ColumnDefinition> findColumnDefinition(final String columnName, final ShardingTableMetaData shardingTableMetaData) {
-        Optional<ColumnDefinition> result = findColumnDefinitionFromMetaData(columnName, shardingTableMetaData);
+    public Optional<ColumnDefinitionSegment> findColumnDefinition(final String columnName, final ShardingTableMetaData shardingTableMetaData) {
+        Optional<ColumnDefinitionSegment> result = findColumnDefinitionFromMetaData(columnName, shardingTableMetaData);
         return result.isPresent() ? result : findColumnDefinitionFromCurrentAddClause(columnName);
     }
     
@@ -72,21 +76,21 @@ public final class AlterTableStatement extends DDLStatement {
      * @param shardingTableMetaData sharding table meta data
      * @return column definition
      */
-    public Optional<ColumnDefinition> findColumnDefinitionFromMetaData(final String columnName, final ShardingTableMetaData shardingTableMetaData) {
+    public Optional<ColumnDefinitionSegment> findColumnDefinitionFromMetaData(final String columnName, final ShardingTableMetaData shardingTableMetaData) {
         if (!shardingTableMetaData.containsTable(getTables().getSingleTableName())) {
             return Optional.absent();
         }
-        for (ColumnMetaData each : shardingTableMetaData.get(getTables().getSingleTableName()).getColumnMetaData()) {
+        for (ColumnMetaData each : shardingTableMetaData.get(getTables().getSingleTableName()).getColumnMetaDataList()) {
             if (columnName.equalsIgnoreCase(each.getColumnName())) {
-                return Optional.of(new ColumnDefinition(columnName, each.getColumnType(), each.isPrimaryKey()));
+                return Optional.of(new ColumnDefinitionSegment(columnName, each.getDataType(), each.isPrimaryKey()));
             }
         }
         return Optional.absent();
     }
     
-    private Optional<ColumnDefinition> findColumnDefinitionFromCurrentAddClause(final String columnName) {
-        for (ColumnDefinition each : addedColumnDefinitions) {
-            if (each.getName().equalsIgnoreCase(columnName)) {
+    private Optional<ColumnDefinitionSegment> findColumnDefinitionFromCurrentAddClause(final String columnName) {
+        for (ColumnDefinitionSegment each : addedColumnDefinitions) {
+            if (each.getColumnName().equalsIgnoreCase(columnName)) {
                 return Optional.of(each);
             }
         }
