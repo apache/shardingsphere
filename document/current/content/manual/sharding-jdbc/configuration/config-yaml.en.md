@@ -250,7 +250,7 @@ shardingRule:
 props: #Properties
   sql.show: #To show SQLS or not, default value: false
   executor.size: #The number of working threads, default value: CPU count
-  check.table.metadata.enabled: #To check the metadata consistency of all the tables or not, default value : true
+  check.table.metadata.enabled: #To check the metadata consistency of all the tables or not, default value : false
     
 configMap: #User-defined arguments
   key1: value1
@@ -276,7 +276,7 @@ masterSlaveRule:
 props: #Properties
   sql.show: #To show SQLS or not, default value: false
   executor.size: #The number of working threads, default value: CPU count
-  check.table.metadata.enabled: #To check the metadata consistency of all the tables or not, default value : true
+  check.table.metadata.enabled: #To check the metadata consistency of all the tables or not, default value : false
 
 configMap: #User-defined arguments
   key1: value1

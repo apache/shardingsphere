@@ -250,7 +250,7 @@ shardingRule:
 props: #属性配置
   sql.show: #是否开启SQL显示，默认值: false
   executor.size: #工作线程数量，默认值: CPU核数
-  check.table.metadata.enabled: #是否在启动时检查分表元数据一致性，默认值: true
+  check.table.metadata.enabled: #是否在启动时检查分表元数据一致性，默认值: false
   
 configMap: #用户自定义配置
   key1: value1
@@ -276,7 +276,7 @@ masterSlaveRule:
 props: #属性配置
   sql.show: #是否开启SQL显示，默认值: false
   executor.size: #工作线程数量，默认值: CPU核数
-  check.table.metadata.enabled: #是否在启动时检查分表元数据一致性，默认值: true
+  check.table.metadata.enabled: #是否在启动时检查分表元数据一致性，默认值: false
   
 configMap: #用户自定义配置
   key1: value1
