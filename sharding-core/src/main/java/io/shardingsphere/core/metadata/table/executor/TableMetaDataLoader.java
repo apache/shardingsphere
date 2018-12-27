@@ -154,6 +154,9 @@ public final class TableMetaDataLoader {
     }
     
     private void checkUniformed(final String logicTableName, final List<TableMetaData> actualTableMetaDataList) {
+        if (!isCheckingMetaData) {
+            return;
+        }
         final TableMetaData sample = actualTableMetaDataList.iterator().next();
         for (TableMetaData each : actualTableMetaDataList) {
             if (!sample.equals(each)) {
