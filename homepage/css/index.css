@@ -45,10 +45,14 @@ nav {
   width: 260px;
 }
 .nav-item {
-  display: inline-block;
+  float: left;
   margin-right: 50px;
-  line-height: 48px;
+  line-height: 44px;
   font-size: 18px;
+}
+.nav-item.space {
+  border-left: 1px solid #cdcdcd;
+  padding-left: 50px;
 }
 .i-drop-btn {
   position: relative;
@@ -178,7 +182,39 @@ nav {
 .con-item {
   max-width: 1200px;
   margin: 0 auto;
-  text-align: center;
+}
+.l-msg {
+  text-align: left;
+  width: 48%;
+  min-width: 320px;
+  padding: 90px 0 90px 58px;
+  display: inline-block;
+  box-sizing: border-box;
+  vertical-align: middle;
+}
+.point-img {
+  vertical-align: middle;
+  padding: 55px 0;
+}
+.l-m-tit {
+  font-size: 24px;
+  color: #ee9a32;
+  margin-bottom: 32px;
+}
+.l-m-tit-hr {
+  border: none;
+  width: 80px;
+  height: 1px;
+  background-color: #ee9a32;
+  margin: 0 auto 44px 0;
+}
+.l-m-info {
+  font-size: 18px;
+  color: #cdcdcd;
+}
+.l-m-info p {
+  line-height: 36px;
+  margin: 0;
 }
 .con-footer {
   min-height: 160px;
@@ -198,45 +234,6 @@ nav {
 }
 .footer-icon > a > img {
   width: 100%;
-}
-.l-msg,
-.l-image {
-  text-align: left;
-  width: 48%;
-  min-width: 320px;
-}
-.l-msg {
-  box-sizing: border-box;
-  padding-left: 58px;
-}
-.l-image {
-  padding: 100px 0;
-}
-.l-m-tit {
-  font-size: 24px;
-  color: #ee9a32;
-  margin-bottom: 32px;
-}
-.l-m-tit-hr {
-  border: none;
-  width: 80px;
-  height: 1px;
-  background-color: #ee9a32;
-  margin: 0 auto 44px 0;
-}
-.l-m-info {
-  font-size: 18px;
-  color: #cdcdcd;
-  line-height: 38px;
-}
-.l-msg-orch {
-  margin: 100px 0;
-}
-.l-msg-tran {
-  margin: 130px 0;
-}
-.l-msg-shard {
-  margin: 90px 0;
 }
 footer {
   height: 126px;
