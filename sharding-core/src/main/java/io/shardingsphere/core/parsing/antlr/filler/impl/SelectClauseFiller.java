@@ -44,19 +44,19 @@ import java.util.Set;
 public final class SelectClauseFiller implements SQLStatementFiller<SelectClauseSegment> {
     
     @Override
-    public void fill(final SelectClauseSegment selectClauseSegment, final SQLStatement sqlStatement, final String sql, final ShardingRule shardingRule, final ShardingTableMetaData shardingTableMetaData) {
+    public void fill(final SelectClauseSegment sqlSegment, final SQLStatement sqlStatement, final String sql, final ShardingRule shardingRule, final ShardingTableMetaData shardingTableMetaData) {
         SelectStatement selectStatement = (SelectStatement) sqlStatement;
-        selectStatement.setFirstSelectItemStartPosition(selectClauseSegment.getFirstSelectItemStartPosition());
-        selectStatement.setSelectListLastPosition(selectClauseSegment.getSelectListLastPosition());
-        if (selectClauseSegment.getExpressions().isEmpty()) {
+        selectStatement.setFirstSelectItemStartPosition(sqlSegment.getFirstSelectItemStartPosition());
+        selectStatement.setSelectListLastPosition(sqlSegment.getSelectListLastPosition());
+        if (sqlSegment.getExpressions().isEmpty()) {
             return;
         }
-        if (selectClauseSegment.isHasDistinct()) {
-            fillDistinct(selectClauseSegment, selectStatement, sql, shardingRule, shardingTableMetaData);
+        if (sqlSegment.isHasDistinct()) {
+            fillDistinct(sqlSegment, selectStatement, sql, shardingRule, shardingTableMetaData);
         } else {
             ExpressionFiller expressionFiller = new ExpressionFiller();
             int offset = 0;
-            for (ExpressionSegment each : selectClauseSegment.getExpressions()) {
+            for (ExpressionSegment each : sqlSegment.getExpressions()) {
                 offset = setDistinctFunctionAlias(each, offset);
                 expressionFiller.fill(each, sqlStatement, sql, shardingRule, shardingTableMetaData);
             }

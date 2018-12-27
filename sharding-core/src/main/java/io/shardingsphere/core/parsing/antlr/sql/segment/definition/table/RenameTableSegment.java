@@ -15,19 +15,15 @@
  * </p>
  */
 
-package io.shardingsphere.core.parsing.parser.sql.tcl.savepoint;
+package io.shardingsphere.core.parsing.antlr.sql.segment.definition.table;
 
-import io.shardingsphere.core.parsing.parser.sql.SQLParser;
+import io.shardingsphere.core.parsing.antlr.sql.segment.SQLSegment;
+import lombok.Getter;
+import lombok.RequiredArgsConstructor;
 
-/**
- * Savepoint parser.
- *
- * @author maxiaoguang
- */
-public final class SavepointParser implements SQLParser {
+@RequiredArgsConstructor
+@Getter
+public final class RenameTableSegment implements SQLSegment {
     
-    @Override
-    public SavepointStatement parse() {
-        return new SavepointStatement();
-    }
+    private final String newTableName;
 }

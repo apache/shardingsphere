@@ -15,10 +15,9 @@
  * </p>
  */
 
-package io.shardingsphere.core.parsing.antlr.filler.impl.ddl;
+package io.shardingsphere.core.parsing.antlr.filler.impl.ddl.alter;
 
 import com.google.common.base.Optional;
-
 import io.shardingsphere.core.metadata.table.ShardingTableMetaData;
 import io.shardingsphere.core.parsing.antlr.filler.SQLStatementFiller;
 import io.shardingsphere.core.parsing.antlr.sql.segment.definition.column.ColumnDefinitionSegment;
@@ -28,24 +27,20 @@ import io.shardingsphere.core.parsing.parser.sql.SQLStatement;
 import io.shardingsphere.core.rule.ShardingRule;
 
 /**
- * Rename column filler.
+ * Rename column definition filler.
  *
  * @author duhongjun
  */
-public class RenameColumnFiller implements SQLStatementFiller<RenameColumnSegment> {
-
+public final class RenameDefinitionColumnFiller implements SQLStatementFiller<RenameColumnSegment> {
+    
     @Override
-    public void fill(final RenameColumnSegment sqlSegment, final SQLStatement sqlStatement, final String sql, final ShardingRule shardingRule,
-                     final ShardingTableMetaData shardingTableMetaData) {
-        if (!(sqlStatement instanceof AlterTableStatement)) {
-            return;
-        }
+    public void fill(final RenameColumnSegment sqlSegment, final SQLStatement sqlStatement, final String sql, final ShardingRule shardingRule, final ShardingTableMetaData shardingTableMetaData) {
         AlterTableStatement alterTableStatement = (AlterTableStatement) sqlStatement;
-        Optional<ColumnDefinitionSegment> oldDefinition = alterTableStatement.findColumnDefinition(sqlSegment.getOldColumnName(), shardingTableMetaData);
-        if (!oldDefinition.isPresent()) {
+        Optional<ColumnDefinitionSegment> oldColumnDefinition = alterTableStatement.findColumnDefinition(sqlSegment.getOldColumnName(), shardingTableMetaData);
+        if (!oldColumnDefinition.isPresent()) {
             return;
         }
-        oldDefinition.get().setColumnName(sqlSegment.getColumnName());
-        alterTableStatement.getModifiedColumnDefinitions().put(sqlSegment.getOldColumnName(), oldDefinition.get());
+        oldColumnDefinition.get().setColumnName(sqlSegment.getColumnName());
+        alterTableStatement.getModifiedColumnDefinitions().put(sqlSegment.getOldColumnName(), oldColumnDefinition.get());
     }
 }

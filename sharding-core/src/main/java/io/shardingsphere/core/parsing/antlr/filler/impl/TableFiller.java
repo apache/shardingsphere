@@ -38,7 +38,7 @@ public final class TableFiller implements SQLStatementFiller<TableSegment> {
         if (shardingRule.contains(sqlSegment.getName())) {
             fill = true;
         } else {
-            if(!(sqlStatement instanceof SelectStatement) && sqlStatement.getTables().isEmpty()) {
+            if (!(sqlStatement instanceof SelectStatement) && sqlStatement.getTables().isEmpty()) {
                 fill = true;
             }
         }
