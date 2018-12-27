@@ -21,14 +21,12 @@ import com.google.common.base.Optional;
 import com.google.common.base.Predicate;
 import com.google.common.base.Strings;
 import com.google.common.collect.Iterators;
-import io.shardingsphere.core.constant.AggregationType;
 import io.shardingsphere.core.constant.DatabaseType;
 import io.shardingsphere.core.metadata.datasource.ShardingDataSourceMetaData;
 import io.shardingsphere.core.optimizer.condition.ShardingConditions;
 import io.shardingsphere.core.parsing.lexer.token.DefaultKeyword;
 import io.shardingsphere.core.parsing.parser.context.OrderItem;
 import io.shardingsphere.core.parsing.parser.context.limit.Limit;
-import io.shardingsphere.core.parsing.parser.context.selectitem.AggregationSelectItem;
 import io.shardingsphere.core.parsing.parser.sql.SQLStatement;
 import io.shardingsphere.core.parsing.parser.sql.dml.insert.InsertStatement;
 import io.shardingsphere.core.parsing.parser.sql.dql.select.SelectStatement;
@@ -118,9 +116,6 @@ public final class SQLRewriteEngine {
             return appendOriginalLiterals(result);
         }
         appendInitialLiterals(isRewrite, result);
-        if (sqlStatement instanceof SelectStatement && !isRewrite) {
-            removeAppendItems();
-        }
         appendTokensAndPlaceholders(isRewrite, result);
         return result;
     }
@@ -152,17 +147,6 @@ public final class SQLRewriteEngine {
         result.appendLiterals(originalSQL.substring(0, firstSelectItemStartPosition));
         result.appendLiterals("DISTINCT ");
         result.appendLiterals(originalSQL.substring(firstSelectItemStartPosition, sqlTokens.get(0).getBeginPosition()));
-    }
-    
-    private void removeAppendItems() {
-        SelectStatement selectStatement = (SelectStatement) sqlStatement;
-        selectStatement.getOrderByItems().clear();
-        selectStatement.getGroupByItems().clear();
-        for (AggregationSelectItem each : selectStatement.getAggregationSelectItems()) {
-            if (AggregationType.AVG == each.getType()) {
-                each.getDerivedAggregationSelectItems().clear();
-            }
-        }
     }
     
     private void appendTokensAndPlaceholders(final boolean isRewrite, final SQLBuilder result) {
