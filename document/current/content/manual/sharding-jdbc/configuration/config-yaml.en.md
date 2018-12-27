@@ -50,8 +50,8 @@ shardingRule:
     none:
   defaultKeyGeneratorClassName: io.shardingsphere.core.keygen.DefaultKeyGenerator
   
-  props:
-    sql.show: true
+props:
+  sql.show: true
 ```
 
 ### Read-write splitting
@@ -81,9 +81,8 @@ masterSlaveRule:
     - ds_slave0
     - ds_slave1
        
-  props: #属性配置
-    sql.show: #是否开启SQL显示，默认值: false
-    executor.size: #工作线程数量，默认值: CPU核数
+props: 
+  sql.show: true
 ```
 
 ### Sharding + Read-write splitting
@@ -168,8 +167,8 @@ shardingRule:
         configMap:
           master-slave-key1: master-slave-value1
 
-  props:
-    sql.show: true
+props:
+  sql.show: true
 ```
 
 ### Orchestration
@@ -248,14 +247,15 @@ shardingRule:
           key2: value2
           keyx: valuex
   
-  props: #Properties
-    sql.show: #To show SQLS or not, default value: false
-    executor.size: #The number of working threads, default value: CPU count
+props: #Properties
+  sql.show: #To show SQLS or not, default value: false
+  executor.size: #The number of working threads, default value: CPU count
+  check.table.metadata.enabled: #To check the metadata consistency of all the tables or not, default value : false
     
-  configMap: #User-defined arguments
-    key1: value1
-    key2: value2
-    keyx: valuex
+configMap: #User-defined arguments
+  key1: value1
+  key2: value2
+  keyx: valuex
 ```
 
 ### Read-write splitting
@@ -273,10 +273,15 @@ masterSlaveRule:
   loadBalanceAlgorithmClassName: #Load balance algorithm class name. This class need to implements MasterSlaveLoadBalanceAlgorithm, and require a no argument constructor
   loadBalanceAlgorithmType: #Load balance algorithm type, values should be: `ROUND_ROBIN` or `RANDOM`. Ignore if `loadBalanceAlgorithmClassName` is present
   
-  configMap: #User-defined arguments
-    key1: value1
-    key2: value2
-    keyx: valuex
+props: #Properties
+  sql.show: #To show SQLS or not, default value: false
+  executor.size: #The number of working threads, default value: CPU count
+  check.table.metadata.enabled: #To check the metadata consistency of all the tables or not, default value : false
+
+configMap: #User-defined arguments
+  key1: value1
+  key2: value2
+  keyx: valuex
 ```
 
 ### Orchestration

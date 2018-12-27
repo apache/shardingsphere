@@ -50,8 +50,8 @@ shardingRule:
     none:
   defaultKeyGeneratorClassName: io.shardingsphere.core.keygen.DefaultKeyGenerator
   
-  props:
-    sql.show: true
+props:
+  sql.show: true
 ```
 
 ### 读写分离
@@ -80,6 +80,9 @@ masterSlaveRule:
   slaveDataSourceNames: 
     - ds_slave0
     - ds_slave1
+
+props:
+    sql.show: true
 ```
 
 ### 数据分片 + 读写分离
@@ -164,8 +167,8 @@ shardingRule:
         configMap:
           master-slave-key1: master-slave-value1
 
-  props:
-    sql.show: true
+props:
+  sql.show: true
 ```
 
 ### 数据治理
@@ -244,14 +247,15 @@ shardingRule:
           key2: value2
           keyx: valuex
   
-  props: #属性配置
-    sql.show: #是否开启SQL显示，默认值: false
-    executor.size: #工作线程数量，默认值: CPU核数
-    
-  configMap: #用户自定义配置
-    key1: value1
-    key2: value2
-    keyx: valuex
+props: #属性配置
+  sql.show: #是否开启SQL显示，默认值: false
+  executor.size: #工作线程数量，默认值: CPU核数
+  check.table.metadata.enabled: #是否在启动时检查分表元数据一致性，默认值: false
+  
+configMap: #用户自定义配置
+  key1: value1
+  key2: value2
+  keyx: valuex
 ```
 
 ### 读写分离
@@ -268,15 +272,16 @@ masterSlaveRule:
     - <data_source_name_x>
   loadBalanceAlgorithmClassName: #从库负载均衡算法类名称。该类需实现MasterSlaveLoadBalanceAlgorithm接口且提供无参数构造器
   loadBalanceAlgorithmType: #从库负载均衡算法类型，可选值：ROUND_ROBIN，RANDOM。若`loadBalanceAlgorithmClassName`存在则忽略该配置
-  
-  configMap: #用户自定义配置
-    key1: value1
-    key2: value2
-    keyx: valuex
     
-  props: #属性配置
-    sql.show: #是否开启SQL显示，默认值: false
-    executor.size: #工作线程数量，默认值: CPU核数
+props: #属性配置
+  sql.show: #是否开启SQL显示，默认值: false
+  executor.size: #工作线程数量，默认值: CPU核数
+  check.table.metadata.enabled: #是否在启动时检查分表元数据一致性，默认值: false
+  
+configMap: #用户自定义配置
+  key1: value1
+  key2: value2
+  keyx: valuex
 ```
 
 ### 数据治理

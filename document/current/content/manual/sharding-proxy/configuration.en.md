@@ -287,6 +287,7 @@ props:
   acceptor.size: #Max thread count to handle client's requests, default value is CPU*2
   proxy.transaction.enabled: #Enable transaction, only support XA now, default value is false
   proxy.opentracing.enabled: #Enable open tracing, default value is false. More details please reference[APM](/en/features/orchestration/apm/)
+  check.table.metadata.enabled: #To check the metadata consistency of all the tables or not, default value : false
 ```
 
 ### Authorization for Proxy

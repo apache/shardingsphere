@@ -268,6 +268,7 @@ sharding.jdbc.config.config.map.keyx= #User-defined arguments
 
 sharding.jdbc.config.props.sql.show= #To show SQLS or not, default value: false
 sharding.jdbc.config.props.executor.size= #The number of working threads, default value: CPU count
+sharding.jdbc.config.props.check.table.metadata.enabled= #Check the metadata consistency of all the tables, default value: false
 ```
 
 ### Orchestration
