@@ -25,19 +25,14 @@ import io.shardingsphere.core.parsing.parser.sql.SQLStatement;
 import io.shardingsphere.core.rule.ShardingRule;
 
 /**
- * Table filler.
+ * Rename table filler.
  *
  * @author duhongjun
  */
 public final class RenameTableFiller implements SQLStatementFiller<RenameTableSegment> {
     
     @Override
-    public void fill(final RenameTableSegment sqlSegment, final SQLStatement sqlStatement, final String sql, final ShardingRule shardingRule,
-                     final ShardingTableMetaData shardingTableMetaData) {
-        if (!(sqlStatement instanceof AlterTableStatement)) {
-            return;
-        }
-        AlterTableStatement alterTableStatement = (AlterTableStatement) sqlStatement;
-        alterTableStatement.setNewTableName(sqlSegment.getNewTableName());
+    public void fill(final RenameTableSegment sqlSegment, final SQLStatement sqlStatement, final String sql, final ShardingRule shardingRule, final ShardingTableMetaData shardingTableMetaData) {
+        ((AlterTableStatement) sqlStatement).setNewTableName(sqlSegment.getNewTableName());
     }
 }
