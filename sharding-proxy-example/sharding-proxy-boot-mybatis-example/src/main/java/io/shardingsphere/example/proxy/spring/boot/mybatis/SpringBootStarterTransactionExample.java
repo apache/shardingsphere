@@ -23,17 +23,12 @@ import io.shardingsphere.transaction.api.TransactionType;
 import org.mybatis.spring.annotation.MapperScan;
 import org.springframework.boot.SpringApplication;
 import org.springframework.boot.autoconfigure.SpringBootApplication;
-import org.springframework.boot.autoconfigure.transaction.jta.JtaAutoConfiguration;
 import org.springframework.context.ConfigurableApplicationContext;
 import org.springframework.context.annotation.ComponentScan;
-import org.springframework.context.annotation.ComponentScans;
 
-@ComponentScans({
-    @ComponentScan("io.shardingsphere.example.repository.mybatis"),
-    @ComponentScan("io.shardingsphere.transaction.aspect")
-})
+@ComponentScan("io.shardingsphere.example.repository.mybatis")
 @MapperScan(basePackages = "io.shardingsphere.example.repository.mybatis.repository")
-@SpringBootApplication(exclude = JtaAutoConfiguration.class)
+@SpringBootApplication
 public class SpringBootStarterTransactionExample {
     
     public static void main(final String[] args) {
