@@ -34,7 +34,6 @@
         <tokens>
             <table-token begin-position="12" original-literals="t_order" />
         </tokens>
-        
         <alter-table>
             <add-columns>
                 <add-column name="column4" type="VARCHAR" />
@@ -50,7 +49,6 @@
         <tokens>
             <table-token begin-position="12" original-literals="t_order" />
         </tokens>
-        
         <alter-table>
             <add-columns>
                 <add-column name="column4" type="VARCHAR" />
@@ -61,7 +59,6 @@
         </alter-table>
     </parser-result>
     
-    
     <parser-result sql-case-id="alter_table_modify_column">
         <tables>
             <table name="t_order" />
@@ -69,7 +66,6 @@
         <tokens>
             <table-token begin-position="12" original-literals="t_order" />
         </tokens>
-        
         <alter-table>
             <update-columns>
                 <update-column origin-column-name="column4" name="column4" type="VARCHAR" />
@@ -84,7 +80,6 @@
         <tokens>
             <table-token begin-position="12" original-literals="t_order" />
         </tokens>
-        
         <alter-table drop-columns="user_id">
             <new-meta column-names="order_id,status" column-types="int,int" primary-key-columns="order_id"/>
         </alter-table>
@@ -97,7 +92,6 @@
         <tokens>
             <table-token begin-position="12" original-literals="t_order" />
         </tokens>
-        
         <alter-table drop-columns="user_id,column5">
             <new-meta column-names="order_id,status" column-types="int,int" primary-key-columns="order_id"/>
         </alter-table>
@@ -110,7 +104,6 @@
         <tokens>
             <table-token begin-position="12" original-literals="t_order" />
         </tokens>
-        
         <alter-table>
             <update-columns>
                 <update-column origin-column-name="user_id" name="user_id" type="int" primary-key="true"/>
@@ -126,7 +119,6 @@
         <tokens>
             <table-token begin-position="12" original-literals="t_order" />
         </tokens>
-
         <alter-table>
             <update-columns>
                 <update-column origin-column-name="order_id" name="order_id" type="int" primary-key="true"/>
@@ -156,7 +148,7 @@
             <table-token begin-position="86" original-literals="t_order" />
         </tokens>
     </parser-result>
-
+    
     <parser-result sql-case-id="alter_table_add_check">
         <tables>
             <table name="t_order" />
@@ -175,7 +167,6 @@
             <table-token begin-position="12" original-literals="t_order_item" />
             <table-token begin-position="128" original-literals="t_order" />
         </tokens>
-        
         <alter-table>
             <update-columns>
                 <update-column origin-column-name="order_id" name="order_id" type="int" primary-key="true"/>
@@ -183,7 +174,6 @@
             <new-meta column-names="item_id,order_id,user_id,status,c_date" column-types="int,int,int,varchar,timestamp" primary-key-columns="item_id,order_id"/>
         </alter-table>
     </parser-result>
-    
     
     <parser-result sql-case-id="alter_table_drop_constraint">
         <tables>
@@ -193,7 +183,7 @@
             <table-token begin-position="12" original-literals="t_order" />
         </tokens>
     </parser-result>
-
+    
     <parser-result sql-case-id="alter_table_drop_constraints">
         <tables>
             <table name="t_order" />
@@ -232,6 +222,4 @@
             <table-token begin-position="30" original-literals="[t_order]" />
         </tokens>
     </parser-result>
-    
-    
 </parser-result-sets>
