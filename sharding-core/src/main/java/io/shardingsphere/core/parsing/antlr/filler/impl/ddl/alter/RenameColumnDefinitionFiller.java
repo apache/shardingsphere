@@ -31,7 +31,7 @@ import io.shardingsphere.core.rule.ShardingRule;
  *
  * @author duhongjun
  */
-public final class RenameDefinitionColumnFiller implements SQLStatementFiller<RenameColumnSegment> {
+public final class RenameColumnDefinitionFiller implements SQLStatementFiller<RenameColumnSegment> {
     
     @Override
     public void fill(final RenameColumnSegment sqlSegment, final SQLStatement sqlStatement, final String sql, final ShardingRule shardingRule, final ShardingTableMetaData shardingTableMetaData) {

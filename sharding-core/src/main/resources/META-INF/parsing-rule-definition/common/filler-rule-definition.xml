@@ -7,7 +7,7 @@
     <filler-rule sql-segment-class="definition.table.RenameTableSegment" filler-class="ddl.alter.RenameTableFiller" />
     <filler-rule sql-segment-class="definition.column.alter.AddColumnDefinitionSegment" filler-class="ddl.alter.AddColumnDefinitionFiller" />
     <filler-rule sql-segment-class="definition.column.alter.ModifyColumnDefinitionSegment" filler-class="ddl.alter.ModifyColumnDefinitionFiller" />
-    <filler-rule sql-segment-class="definition.column.alter.RenameColumnSegment" filler-class="ddl.alter.RenameDefinitionColumnFiller" />
+    <filler-rule sql-segment-class="definition.column.alter.RenameColumnSegment" filler-class="ddl.alter.RenameColumnDefinitionFiller" />
     <filler-rule sql-segment-class="definition.column.alter.DropColumnDefinitionSegment" filler-class="ddl.alter.DropColumnDefinitionFiller" />
     <filler-rule sql-segment-class="definition.constraint.DropPrimaryKeySegment" filler-class="ddl.alter.DropPrimaryKeyFiller" />
     <filler-rule sql-segment-class="SelectClauseSegment" filler-class="SelectClauseFiller" />
