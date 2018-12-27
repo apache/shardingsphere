@@ -15,29 +15,31 @@
  * </p>
  */
 
-package io.shardingsphere.core.parsing.antlr.filler.impl;
+package io.shardingsphere.core.parsing.antlr.filler.impl.ddl.alter;
 
 import io.shardingsphere.core.metadata.table.ShardingTableMetaData;
 import io.shardingsphere.core.parsing.antlr.filler.SQLStatementFiller;
-import io.shardingsphere.core.parsing.antlr.sql.segment.table.RenameTableSegment;
+import io.shardingsphere.core.parsing.antlr.sql.segment.definition.column.alter.AddColumnDefinitionSegment;
 import io.shardingsphere.core.parsing.antlr.sql.statement.ddl.AlterTableStatement;
 import io.shardingsphere.core.parsing.parser.sql.SQLStatement;
 import io.shardingsphere.core.rule.ShardingRule;
 
 /**
- * Table filler.
+ * Add column definition filler.
  *
  * @author duhongjun
  */
-public final class RenameTableFiller implements SQLStatementFiller<RenameTableSegment> {
+public final class AddColumnDefinitionFiller implements SQLStatementFiller<AddColumnDefinitionSegment> {
     
     @Override
-    public void fill(final RenameTableSegment sqlSegment, final SQLStatement sqlStatement, final String sql, final ShardingRule shardingRule,
-                     final ShardingTableMetaData shardingTableMetaData) {
-        if (!(sqlStatement instanceof AlterTableStatement)) {
-            return;
-        }
+    public void fill(final AddColumnDefinitionSegment sqlSegment, 
+                     final SQLStatement sqlStatement, final String sql, final ShardingRule shardingRule, final ShardingTableMetaData shardingTableMetaData) {
         AlterTableStatement alterTableStatement = (AlterTableStatement) sqlStatement;
-        alterTableStatement.setNewTableName(sqlSegment.getNewTableName());
+        if (!alterTableStatement.findColumnDefinitionFromMetaData(sqlSegment.getColumnDefinition().getColumnName(), shardingTableMetaData).isPresent()) {
+            alterTableStatement.getAddedColumnDefinitions().add(sqlSegment.getColumnDefinition());
+        }
+        if (sqlSegment.getColumnPosition().isPresent()) {
+            alterTableStatement.getChangedPositionColumns().add(sqlSegment.getColumnPosition().get());
+        }
     }
 }

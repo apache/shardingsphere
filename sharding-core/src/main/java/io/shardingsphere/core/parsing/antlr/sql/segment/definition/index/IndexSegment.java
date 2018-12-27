@@ -15,19 +15,21 @@
  * </p>
  */
 
-package io.shardingsphere.core.parsing.parser.sql.tcl.savepoint;
+package io.shardingsphere.core.parsing.antlr.sql.segment.definition.index;
 
-import io.shardingsphere.core.parsing.parser.sql.SQLParser;
+import io.shardingsphere.core.parsing.antlr.sql.segment.SQLSegment;
+import io.shardingsphere.core.parsing.parser.token.IndexToken;
+import lombok.Getter;
+import lombok.RequiredArgsConstructor;
 
 /**
- * Savepoint parser.
- *
- * @author maxiaoguang
+ * Index segment.
+ * 
+ * @author duhongjun
  */
-public final class SavepointParser implements SQLParser {
+@RequiredArgsConstructor
+@Getter
+public final class IndexSegment implements SQLSegment {
     
-    @Override
-    public SavepointStatement parse() {
-        return new SavepointStatement();
-    }
+    private final IndexToken token;
 }

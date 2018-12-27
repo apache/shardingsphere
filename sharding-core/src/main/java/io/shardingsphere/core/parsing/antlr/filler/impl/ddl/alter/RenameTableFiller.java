@@ -15,25 +15,29 @@
  * </p>
  */
 
-package io.shardingsphere.core.parsing.antlr.filler.impl.ddl;
+package io.shardingsphere.core.parsing.antlr.filler.impl.ddl.alter;
 
 import io.shardingsphere.core.metadata.table.ShardingTableMetaData;
 import io.shardingsphere.core.parsing.antlr.filler.SQLStatementFiller;
-import io.shardingsphere.core.parsing.antlr.sql.segment.definition.column.alter.DropColumnDefinitionSegment;
+import io.shardingsphere.core.parsing.antlr.sql.segment.definition.table.RenameTableSegment;
 import io.shardingsphere.core.parsing.antlr.sql.statement.ddl.AlterTableStatement;
 import io.shardingsphere.core.parsing.parser.sql.SQLStatement;
 import io.shardingsphere.core.rule.ShardingRule;
 
 /**
- * Drop column definition filler.
+ * Table filler.
  *
  * @author duhongjun
  */
-public final class DropColumnDefinitionFiller implements SQLStatementFiller<DropColumnDefinitionSegment> {
+public final class RenameTableFiller implements SQLStatementFiller<RenameTableSegment> {
     
     @Override
-    public void fill(final DropColumnDefinitionSegment sqlSegment, 
-                     final SQLStatement sqlStatement, final String sql, final ShardingRule shardingRule, final ShardingTableMetaData shardingTableMetaData) {
-        ((AlterTableStatement) sqlStatement).getDropColumnNames().add(sqlSegment.getColumnName());
+    public void fill(final RenameTableSegment sqlSegment, final SQLStatement sqlStatement, final String sql, final ShardingRule shardingRule,
+                     final ShardingTableMetaData shardingTableMetaData) {
+        if (!(sqlStatement instanceof AlterTableStatement)) {
+            return;
+        }
+        AlterTableStatement alterTableStatement = (AlterTableStatement) sqlStatement;
+        alterTableStatement.setNewTableName(sqlSegment.getNewTableName());
     }
 }

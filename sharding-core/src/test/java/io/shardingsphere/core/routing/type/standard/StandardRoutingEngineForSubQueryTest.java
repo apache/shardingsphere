@@ -17,16 +17,6 @@
 
 package io.shardingsphere.core.routing.type.standard;
 
-import java.util.Arrays;
-import java.util.Collection;
-import java.util.HashMap;
-import java.util.LinkedHashMap;
-import java.util.LinkedList;
-import java.util.List;
-import java.util.Map;
-
-import org.junit.Test;
-
 import io.shardingsphere.api.config.rule.ShardingRuleConfiguration;
 import io.shardingsphere.api.config.rule.TableRuleConfiguration;
 import io.shardingsphere.api.config.strategy.InlineShardingStrategyConfiguration;
@@ -37,6 +27,15 @@ import io.shardingsphere.core.metadata.table.ShardingTableMetaData;
 import io.shardingsphere.core.metadata.table.TableMetaData;
 import io.shardingsphere.core.routing.PreparedStatementRoutingEngine;
 import io.shardingsphere.core.rule.ShardingRule;
+import org.junit.Test;
+
+import java.util.Arrays;
+import java.util.Collection;
+import java.util.HashMap;
+import java.util.LinkedHashMap;
+import java.util.LinkedList;
+import java.util.List;
+import java.util.Map;
 
 public final class StandardRoutingEngineForSubQueryTest {
     
@@ -68,7 +67,7 @@ public final class StandardRoutingEngineForSubQueryTest {
     }
     
     @Test
-    public void assertUnshardingTalbe() {
+    public void assertNotShardingTable() {
         String sql = "select (select max(id) from t_user b where b.id = ?) from t_user a where id = ? ";
         List<Object> parameters = new LinkedList<>();
         parameters.add(1);
@@ -128,8 +127,7 @@ public final class StandardRoutingEngineForSubQueryTest {
         Map<String, String> shardingDataSourceURLs = new LinkedHashMap<>();
         shardingDataSourceURLs.put("ds_0", "jdbc:mysql://127.0.0.1:3306/actual_db");
         shardingDataSourceURLs.put("ds_1", "jdbc:mysql://127.0.0.1:3306/actual_db");
-        ShardingDataSourceMetaData shardingDataSourceMetaData = new ShardingDataSourceMetaData(shardingDataSourceURLs, createShardingRule(), DatabaseType.MySQL);
-        return shardingDataSourceMetaData;
+        return new ShardingDataSourceMetaData(shardingDataSourceURLs, createShardingRule(), DatabaseType.MySQL);
     }
     
     private ShardingRule createShardingRule() {

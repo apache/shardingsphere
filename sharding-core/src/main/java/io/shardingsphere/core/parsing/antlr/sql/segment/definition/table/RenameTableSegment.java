@@ -15,20 +15,15 @@
  * </p>
  */
 
-package io.shardingsphere.core.parsing.antlr.sql.segment;
+package io.shardingsphere.core.parsing.antlr.sql.segment.definition.table;
 
-import io.shardingsphere.core.parsing.parser.token.IndexToken;
+import io.shardingsphere.core.parsing.antlr.sql.segment.SQLSegment;
 import lombok.Getter;
 import lombok.RequiredArgsConstructor;
 
-/**
- * Index segment.
- * 
- * @author duhongjun
- */
 @RequiredArgsConstructor
 @Getter
-public final class IndexSegment implements SQLSegment {
+public final class RenameTableSegment implements SQLSegment {
     
-    private final IndexToken token;
+    private final String newTableName;
 }
