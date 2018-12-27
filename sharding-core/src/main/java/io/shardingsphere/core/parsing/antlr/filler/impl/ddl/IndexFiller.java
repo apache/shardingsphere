@@ -19,7 +19,7 @@ package io.shardingsphere.core.parsing.antlr.filler.impl.ddl;
 
 import io.shardingsphere.core.metadata.table.ShardingTableMetaData;
 import io.shardingsphere.core.parsing.antlr.filler.SQLStatementFiller;
-import io.shardingsphere.core.parsing.antlr.sql.segment.IndexSegment;
+import io.shardingsphere.core.parsing.antlr.sql.segment.definition.index.IndexSegment;
 import io.shardingsphere.core.parsing.parser.sql.SQLStatement;
 import io.shardingsphere.core.parsing.parser.token.IndexToken;
 import io.shardingsphere.core.rule.ShardingRule;

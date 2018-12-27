@@ -15,7 +15,7 @@
  * </p>
  */
 
-package io.shardingsphere.core.parsing.antlr.filler.impl.ddl;
+package io.shardingsphere.core.parsing.antlr.filler.impl.ddl.alter;
 
 import io.shardingsphere.core.metadata.table.ShardingTableMetaData;
 import io.shardingsphere.core.parsing.antlr.filler.SQLStatementFiller;

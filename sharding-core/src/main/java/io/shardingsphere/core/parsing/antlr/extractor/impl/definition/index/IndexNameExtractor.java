@@ -21,7 +21,7 @@ import com.google.common.base.Optional;
 import io.shardingsphere.core.parsing.antlr.extractor.OptionalSQLSegmentExtractor;
 import io.shardingsphere.core.parsing.antlr.extractor.util.ExtractorUtils;
 import io.shardingsphere.core.parsing.antlr.extractor.util.RuleName;
-import io.shardingsphere.core.parsing.antlr.sql.segment.IndexSegment;
+import io.shardingsphere.core.parsing.antlr.sql.segment.definition.index.IndexSegment;
 import io.shardingsphere.core.parsing.parser.token.IndexToken;
 import io.shardingsphere.core.util.SQLUtil;
 import org.antlr.v4.runtime.ParserRuleContext;

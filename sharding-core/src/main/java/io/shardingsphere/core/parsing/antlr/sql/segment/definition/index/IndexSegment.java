@@ -15,8 +15,9 @@
  * </p>
  */
 
-package io.shardingsphere.core.parsing.antlr.sql.segment;
+package io.shardingsphere.core.parsing.antlr.sql.segment.definition.index;
 
+import io.shardingsphere.core.parsing.antlr.sql.segment.SQLSegment;
 import io.shardingsphere.core.parsing.parser.token.IndexToken;
 import lombok.Getter;
 import lombok.RequiredArgsConstructor;

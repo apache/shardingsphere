@@ -5,7 +5,6 @@
     <filler-rule sql-segment-class="definition.column.alter.AddColumnDefinitionSegment" filler-class="ddl.AddColumnDefinitionFiller" />
     <filler-rule sql-segment-class="definition.column.alter.ModifyColumnDefinitionSegment" filler-class="ddl.ModifyColumnDefinitionFiller" />
     <filler-rule sql-segment-class="definition.column.alter.DropColumnDefinitionSegment" filler-class="ddl.DropColumnDefinitionFiller" />
-    <filler-rule sql-segment-class="definition.column.alter.RenameColumnSegment" filler-class="ddl.RenameColumnFiller" />
     <filler-rule sql-segment-class="definition.constraint.ConstraintDefinitionSegment" filler-class="ddl.ConstraintDefinitionFiller" />
     <filler-rule sql-segment-class="definition.constraint.DropPrimaryKeySegment" filler-class="ddl.DropPrimaryKeyFiller" />
     <filler-rule sql-segment-class="IndexSegment" filler-class="ddl.IndexFiller" />
@@ -16,5 +15,4 @@
     <filler-rule sql-segment-class="LimitSegment" filler-class="LimitFiller" />
     <filler-rule sql-segment-class="ShowParamSegment" filler-class="ShowParamFiller" />
     <filler-rule sql-segment-class="tcl.SetAutoCommitSegment" filler-class="tcl.SetAutoCommitFiller" />
-    <filler-rule sql-segment-class="table.RenameTableSegment" filler-class="RenameTableFiller" />
 </filler-rule-definition>
