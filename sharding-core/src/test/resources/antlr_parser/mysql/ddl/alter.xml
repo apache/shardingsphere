@@ -465,4 +465,25 @@
             <index-token begin-position="52" original-literals="idx_column1" table-name="t_order"/>
         </tokens>
     </parser-result>
+    
+    <parser-result sql-case-id="alter_table_composite_operate_columns">
+        <tables>
+            <table name="t_order" />
+        </tables>
+        <tokens>
+            <table-token begin-position="12" original-literals="t_order" />
+        </tokens>
+        
+        <alter-table drop-columns="status">
+            <add-columns>
+                <add-column name="column4" type="VARCHAR" />
+                <add-column name="column5" type="VARCHAR" />
+                <add-column name="column6" type="VARCHAR" />
+            </add-columns>
+            <update-columns>
+                <update-column origin-column-name="user_id" name="user_id" type="bigint" />
+            </update-columns>
+            <new-meta column-names="order_id,user_id,column4,column5,column6" column-types="int,bigint,VARCHAR,VARCHAR,VARCHAR" primary-key-columns="order_id"/>
+        </alter-table>
+    </parser-result>
 </parser-result-sets>

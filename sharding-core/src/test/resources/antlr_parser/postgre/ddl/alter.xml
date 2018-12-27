@@ -216,6 +216,31 @@
         </tokens>
     </parser-result>
     
+    <parser-result sql-case-id="alter_table_rename_table">
+        <tables>
+            <table name="t_order" />
+        </tables>
+        <tokens>
+            <table-token begin-position="12" original-literals="t_order" />
+        </tokens>
+        <alter-table new-table-name="t_order1">
+        </alter-table>
+    </parser-result>
+    
+    <parser-result sql-case-id="alter_table_rename_column">
+        <tables>
+            <table name="t_order" />
+        </tables>
+        <tokens>
+            <table-token begin-position="12" original-literals="t_order" />
+        </tokens>
+        <alter-table>
+        	<update-columns>
+                <update-column origin-column-name="user_id" name="user_id1" type="int"/>
+            </update-columns>
+        </alter-table>
+    </parser-result>
+    
     <!--<parser-result sql-case-id="create_table_with_exist_index">-->
         <!--<tables>-->
             <!--<table name="t_order" />-->
