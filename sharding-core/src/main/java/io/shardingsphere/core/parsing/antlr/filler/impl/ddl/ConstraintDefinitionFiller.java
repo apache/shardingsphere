@@ -20,9 +20,9 @@ package io.shardingsphere.core.parsing.antlr.filler.impl.ddl;
 import com.google.common.base.Optional;
 import io.shardingsphere.core.metadata.table.ShardingTableMetaData;
 import io.shardingsphere.core.parsing.antlr.filler.SQLStatementFiller;
+import io.shardingsphere.core.parsing.antlr.sql.segment.definition.column.ColumnDefinitionSegment;
 import io.shardingsphere.core.parsing.antlr.sql.segment.definition.constraint.ConstraintDefinitionSegment;
 import io.shardingsphere.core.parsing.antlr.sql.statement.ddl.AlterTableStatement;
-import io.shardingsphere.core.parsing.antlr.sql.statement.ddl.ColumnDefinition;
 import io.shardingsphere.core.parsing.antlr.sql.statement.ddl.CreateTableStatement;
 import io.shardingsphere.core.parsing.parser.sql.SQLStatement;
 import io.shardingsphere.core.rule.ShardingRule;
@@ -45,8 +45,8 @@ public final class ConstraintDefinitionFiller implements SQLStatementFiller<Cons
     }
     
     private void fill(final ConstraintDefinitionSegment sqlSegment, final CreateTableStatement createTableStatement) {
-        for (ColumnDefinition each : createTableStatement.getColumnDefinitions()) {
-            if (sqlSegment.getPrimaryKeyColumnNames().contains(each.getName())) {
+        for (ColumnDefinitionSegment each : createTableStatement.getColumnDefinitions()) {
+            if (sqlSegment.getPrimaryKeyColumnNames().contains(each.getColumnName())) {
                 each.setPrimaryKey(true);
             }
         }
@@ -54,10 +54,10 @@ public final class ConstraintDefinitionFiller implements SQLStatementFiller<Cons
     
     private void fill(final ConstraintDefinitionSegment sqlSegment, final AlterTableStatement alterTableStatement, final ShardingTableMetaData shardingTableMetaData) {
         for (String each : sqlSegment.getPrimaryKeyColumnNames()) {
-            Optional<ColumnDefinition> updatedColumn = alterTableStatement.findColumnDefinition(each, shardingTableMetaData);
-            if (updatedColumn.isPresent()) {
-                updatedColumn.get().setPrimaryKey(true);
-                alterTableStatement.getModifiedColumnDefinitions().put(each, updatedColumn.get());
+            Optional<ColumnDefinitionSegment> modifiedColumn = alterTableStatement.findColumnDefinition(each, shardingTableMetaData);
+            if (modifiedColumn.isPresent()) {
+                modifiedColumn.get().setPrimaryKey(true);
+                alterTableStatement.getModifiedColumnDefinitions().put(each, modifiedColumn.get());
             }
         }
     }

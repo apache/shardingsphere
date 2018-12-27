@@ -24,8 +24,8 @@ import io.shardingsphere.core.constant.properties.ShardingPropertiesConstant;
 import io.shardingsphere.core.metadata.table.ColumnMetaData;
 import io.shardingsphere.core.metadata.table.TableMetaData;
 import io.shardingsphere.core.metadata.table.executor.TableMetaDataLoader;
+import io.shardingsphere.core.parsing.antlr.sql.segment.definition.column.ColumnDefinitionSegment;
 import io.shardingsphere.core.parsing.antlr.sql.statement.ddl.AlterTableStatement;
-import io.shardingsphere.core.parsing.antlr.sql.statement.ddl.ColumnDefinition;
 import io.shardingsphere.core.parsing.antlr.sql.statement.ddl.CreateTableStatement;
 import io.shardingsphere.core.routing.SQLRouteResult;
 import io.shardingsphere.shardingjdbc.jdbc.adapter.executor.ForceExecuteCallback;
@@ -256,11 +256,11 @@ public abstract class AbstractStatementAdapter extends AbstractUnsupportedOperat
     }
     
     private void createTable(final String logicTableName, final ShardingConnection connection, final CreateTableStatement createTableStatement) {
-        TableMetaData tableMetaData = new TableMetaData(Lists.transform(createTableStatement.getColumnDefinitions(), new Function<ColumnDefinition, ColumnMetaData>() {
+        TableMetaData tableMetaData = new TableMetaData(Lists.transform(createTableStatement.getColumnDefinitions(), new Function<ColumnDefinitionSegment, ColumnMetaData>() {
             
             @Override
-            public ColumnMetaData apply(final ColumnDefinition input) {
-                return new ColumnMetaData(input.getName(), input.getType(), input.isPrimaryKey());
+            public ColumnMetaData apply(final ColumnDefinitionSegment input) {
+                return new ColumnMetaData(input.getColumnName(), input.getDataType(), input.isPrimaryKey());
             }
         }));
         connection.getShardingContext().getMetaData().getTable().put(logicTableName, tableMetaData);

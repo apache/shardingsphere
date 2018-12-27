@@ -20,11 +20,9 @@ package io.shardingsphere.core.parsing.antlr.filler.impl.ddl;
 import io.shardingsphere.core.metadata.table.ShardingTableMetaData;
 import io.shardingsphere.core.parsing.antlr.filler.SQLStatementFiller;
 import io.shardingsphere.core.parsing.antlr.sql.segment.definition.column.ColumnDefinitionSegment;
-import io.shardingsphere.core.parsing.antlr.sql.statement.ddl.ColumnDefinition;
 import io.shardingsphere.core.parsing.antlr.sql.statement.ddl.CreateTableStatement;
 import io.shardingsphere.core.parsing.parser.sql.SQLStatement;
 import io.shardingsphere.core.rule.ShardingRule;
-import io.shardingsphere.core.util.SQLUtil;
 
 /**
  * Column definition filler.
@@ -35,7 +33,6 @@ public final class ColumnDefinitionFiller implements SQLStatementFiller<ColumnDe
     
     @Override
     public void fill(final ColumnDefinitionSegment sqlSegment, final SQLStatement sqlStatement, final String sql, final ShardingRule shardingRule, final ShardingTableMetaData shardingTableMetaData) {
-        ((CreateTableStatement) sqlStatement).getColumnDefinitions().add(
-                new ColumnDefinition(SQLUtil.getExactlyValue(sqlSegment.getColumnName()), sqlSegment.getDataType(), sqlSegment.isPrimaryKey()));
+        ((CreateTableStatement) sqlStatement).getColumnDefinitions().add(sqlSegment);
     }
 }

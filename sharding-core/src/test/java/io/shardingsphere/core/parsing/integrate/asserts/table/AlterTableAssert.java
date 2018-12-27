@@ -20,9 +20,9 @@ package io.shardingsphere.core.parsing.integrate.asserts.table;
 import com.google.common.base.Joiner;
 import io.shardingsphere.core.metadata.table.ColumnMetaData;
 import io.shardingsphere.core.metadata.table.TableMetaData;
+import io.shardingsphere.core.parsing.antlr.sql.segment.definition.column.ColumnDefinitionSegment;
 import io.shardingsphere.core.parsing.antlr.sql.segment.definition.column.ColumnPositionSegment;
 import io.shardingsphere.core.parsing.antlr.sql.statement.ddl.AlterTableStatement;
-import io.shardingsphere.core.parsing.antlr.sql.statement.ddl.ColumnDefinition;
 import io.shardingsphere.core.parsing.integrate.asserts.SQLStatementAssertMessage;
 import io.shardingsphere.core.parsing.integrate.jaxb.meta.ExpectedTableMetaData;
 import io.shardingsphere.core.parsing.integrate.jaxb.table.ExpectedAlterTable;
@@ -67,27 +67,27 @@ public final class AlterTableAssert {
     private void assertAddColumns(final AlterTableStatement actual, final List<ExpectedColumnDefinition> expected) {
         assertThat(assertMessage.getFullAssertMessage("Add column size error: "), actual.getAddedColumnDefinitions().size(), is(expected.size()));
         int count = 0;
-        for (ColumnDefinition each : actual.getAddedColumnDefinitions()) {
+        for (ColumnDefinitionSegment each : actual.getAddedColumnDefinitions()) {
             assertColumnDefinition(each, expected.get(count));
             count++;
         }
     }
     
-    private void assertColumnDefinition(final ColumnDefinition actual, final ExpectedColumnDefinition expected) {
-        assertThat(assertMessage.getFullAssertMessage("Column name assertion error: "), actual.getName(), is(expected.getName()));
-        assertThat(assertMessage.getFullAssertMessage("Column " + actual.getName() + " type assertion error: "), actual.getType(), is(expected.getType()));
+    private void assertColumnDefinition(final ColumnDefinitionSegment actual, final ExpectedColumnDefinition expected) {
+        assertThat(assertMessage.getFullAssertMessage("Column name assertion error: "), actual.getColumnName(), is(expected.getName()));
+        assertThat(assertMessage.getFullAssertMessage("Column " + actual.getColumnName() + " type assertion error: "), actual.getDataType(), is(expected.getType()));
     }
     
     private void assertUpdateColumns(final AlterTableStatement actual, final List<ExpectedUpdateColumnDefinition> expected) {
         assertThat(assertMessage.getFullAssertMessage("Update column size error: "), actual.getModifiedColumnDefinitions().size(), is(expected.size()));
         int count = 0;
-        for (Entry<String, ColumnDefinition> each : actual.getModifiedColumnDefinitions().entrySet()) {
+        for (Entry<String, ColumnDefinitionSegment> each : actual.getModifiedColumnDefinitions().entrySet()) {
             assertUpdateColumnDefinition(each, expected.get(count));
             count++;
         }
     }
     
-    private void assertUpdateColumnDefinition(final Entry<String, ColumnDefinition> actual, final ExpectedUpdateColumnDefinition expected) {
+    private void assertUpdateColumnDefinition(final Entry<String, ColumnDefinitionSegment> actual, final ExpectedUpdateColumnDefinition expected) {
         assertThat(assertMessage.getFullAssertMessage("Origin column name assertion error: "), actual.getKey(), is(expected.getOriginColumnName()));
         assertColumnDefinition(actual.getValue(), expected);
     }
