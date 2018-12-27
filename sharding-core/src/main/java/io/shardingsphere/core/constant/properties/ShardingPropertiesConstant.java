@@ -103,7 +103,9 @@ public enum ShardingPropertiesConstant {
     
     PROXY_BACKEND_MAX_CONNECTIONS("proxy.backend.max.connections", String.valueOf(8), int.class),
     
-    PROXY_BACKEND_CONNECTION_TIMEOUT_SECONDS("proxy.backend.connection.timeout.seconds", String.valueOf(60), int.class);
+    PROXY_BACKEND_CONNECTION_TIMEOUT_SECONDS("proxy.backend.connection.timeout.seconds", String.valueOf(60), int.class),
+    
+    CHECK_METADATA_ENABLED("check.metadata.enabled", String.valueOf(Boolean.TRUE), boolean.class);
     
     private final String key;
     
