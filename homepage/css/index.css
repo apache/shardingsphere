@@ -102,7 +102,7 @@ nav {
   padding-top: 140px;
   padding-bottom: 40px;
   text-align: center;
-  font-size: 48px;
+  font-size: 56px;
   color: #ee9a32;
   font-weight: bold;
 }
@@ -213,7 +213,7 @@ nav {
   padding: 100px 0;
 }
 .l-m-tit {
-  font-size: 24px;
+  font-size: px;
   color: #ee9a32;
   margin-bottom: 32px;
 }
@@ -227,7 +227,7 @@ nav {
 .l-m-info {
   font-size: 18px;
   color: #cdcdcd;
-  line-height: 38px;
+  line-height: 18px;
 }
 .l-msg-orch {
   margin: 100px 0;
