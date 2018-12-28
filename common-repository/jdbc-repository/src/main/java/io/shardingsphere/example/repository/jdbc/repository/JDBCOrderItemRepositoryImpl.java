@@ -93,7 +93,7 @@ public final class JDBCOrderItemRepositoryImpl implements OrderItemRepository {
         try (Connection connection = dataSource.getConnection();
              PreparedStatement preparedStatement = connection.prepareStatement(sql)) {
             preparedStatement.setLong(1, orderItemId);
-            preparedStatement.executeUpdate(sql);
+            preparedStatement.executeUpdate();
         } catch (final SQLException ignored) {
         }
     }
