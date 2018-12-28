@@ -41,8 +41,10 @@ import lombok.Getter;
 
 import java.util.Collection;
 import java.util.Collections;
+import java.util.LinkedHashSet;
 import java.util.LinkedList;
 import java.util.List;
+import java.util.Set;
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
 
@@ -139,8 +141,9 @@ public abstract class SelectListClauseParser implements SQLClauseParser {
             return new DistinctSelectItem(Collections.<String>emptySet(), aliasExpressionParser.parseSelectItemAlias());
         }
         lexerEngine.nextToken();
-        distinctColumnName = SQLUtil.getExactlyValue(distinctColumnName + parseRestSelectItem(selectStatement));
-        return new DistinctSelectItem(Collections.singleton(distinctColumnName), aliasExpressionParser.parseSelectItemAlias());
+        Set<String> distinctColumnNames = new LinkedHashSet<>();
+        distinctColumnNames.add(SQLUtil.getExactlyValue(distinctColumnName + parseRestSelectItem(selectStatement)));
+        return new DistinctSelectItem(distinctColumnNames, aliasExpressionParser.parseSelectItemAlias());
     }
     
     private boolean isStarSelectItem() {
