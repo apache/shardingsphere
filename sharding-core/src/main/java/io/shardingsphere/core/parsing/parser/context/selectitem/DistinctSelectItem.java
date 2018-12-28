@@ -23,34 +23,31 @@ import io.shardingsphere.core.parsing.lexer.token.DefaultKeyword;
 import io.shardingsphere.core.util.SQLUtil;
 import lombok.EqualsAndHashCode;
 import lombok.Getter;
+import lombok.RequiredArgsConstructor;
 import lombok.ToString;
 
 import java.util.Collection;
 import java.util.Collections;
-import java.util.LinkedList;
-import java.util.List;
+import java.util.Set;
 
 /**
  * Distinct select item.
  *
  * @author panjuan
  */
+@RequiredArgsConstructor
 @Getter
 @EqualsAndHashCode
 @ToString
 public final class DistinctSelectItem implements SelectItem {
     
-    private final List<String> distinctColumnNames = new LinkedList<>();
-    private final Optional<String> alias;
+    private final Set<String> distinctColumnNames;
     
-    public DistinctSelectItem(final Collection<String> distinctColumnNames, final Optional<String> alias) {
-        this.distinctColumnNames.addAll(distinctColumnNames);
-        this.alias = alias;
-    }
+    private final Optional<String> alias;
     
     @Override
     public String getExpression() {
-        return isSingleColumnWithAlias() ? DefaultKeyword.DISTINCT.name() + " " + distinctColumnNames.get(0) + "AS" + alias.get() 
+        return isSingleColumnWithAlias() ? SQLUtil.getExactlyValue(DefaultKeyword.DISTINCT.name() + " " + distinctColumnNames.iterator().next() + "AS" + alias.get()) 
                 : SQLUtil.getExactlyValue(DefaultKeyword.DISTINCT + " " + Joiner.on(", ").join(distinctColumnNames));
     }
     
