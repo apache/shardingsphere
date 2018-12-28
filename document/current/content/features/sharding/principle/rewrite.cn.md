@@ -119,7 +119,7 @@ SELECT order_id FROM t_order ORDER BY user_id;
 SELECT order_id, user_id AS ORDER_BY_DERIVED_0 FROM t_order ORDER BY user_id;
 ```
 
-值得一提的是，补列只会补充缺失的列，不会全部补充，而且通过在SELECT中包含*的SQL，也会根据表的元数据信息选择性补列。下面是一个较为复杂的SQL补列场景：
+值得一提的是，补列只会补充缺失的列，不会全部补充，而且，在SELECT语句中包含*的SQL，也会根据表的元数据信息选择性补列。下面是一个较为复杂的SQL补列场景：
 
 ```sql
 SELECT o.* FROM t_order o, t_order_item i WHERE o.order_id=i.order_id ORDER BY user_id, order_item_id;
@@ -147,7 +147,7 @@ SELECT COUNT(price) AS AVG_DERIVED_COUNT_0, SUM(price) AS AVG_DERIVED_ SUM _0 FR
 
 然后才能够通过结果归并正确的计算平均值。
 
-最后的一种补列是在INSERT的SQL时，如果使用数据库自增主键，是无需写入主键字段的。
+最后一种补列是在执行INSERT的SQL语句时，如果使用数据库自增主键，是无需写入主键字段的。
 但数据库的自增主键是无法满足分布式场景下的主键唯一的，因此ShardingSphere提供了分布式自增主键的生成策略，并且可以通过补列，让使用方无需改动现有代码，即可将分布式自增主键透明的替换数据库现有的自增主键。
 分布式自增主键的生成策略将在下文中详述，这里只阐述与SQL改写相关的内容。
 举例说明，假设表t_order的主键是order_id，原始的SQL为：
@@ -202,7 +202,7 @@ SELECT score FROM t_score ORDER BY score DESC LIMIT 1, 2;
 ![改写SQL的分页执行结果](http://shardingsphere.jd.com/document/current/img/sharding/pagination_with_rewrite.png)
 
 越获取偏移量位置靠后数据，使用LIMIT分页方式的效率就越低。
-有很多方法可以避免使用LIMIT进行分页。比如构建记录行记录数和行偏移量的二级索引，或使用上次分页数据结尾ID作为下次查询条件的分页方式等。
+有很多方法可以避免使用LIMIT进行分页。比如构建行记录数量与行偏移量的二级索引，或使用上次分页数据结尾ID作为下次查询条件的分页方式等。
 
 分页信息修正时，如果使用占位符的方式书写SQL，则只需要改写参数列表即可，无需改写SQL本身。
 
@@ -216,7 +216,7 @@ SELECT score FROM t_score ORDER BY score DESC LIMIT 1, 2;
 INSERT INTO t_order (order_id, xxx) VALUES (1, 'xxx'), (2, 'xxx'), (3, 'xxx');
 ```
 
-假设数据库仍然是按照order_id的奇偶值分为2片，那么将这条SQL仅仅修改表名之后向数据库执行，则两个分片都会写入相同的记录。
+假设数据库仍然是按照order_id的奇偶值分为两片的，仅将这条SQL中的表名进行修改，然后发送至数据库完成SQL的执行 ，则两个分片都会写入相同的记录。
 虽然只有符合分片查询条件的数据才能够被查询语句取出，但存在冗余数据的实现方案并不合理。因此需要将SQL改写为：
 
 ```sql
@@ -252,8 +252,8 @@ SELECT * FROM t_order_1 WHERE order_id IN (1, 2, 3);
 
 ### 单节点优化
 
-它是指将路由至单节点的SQL停止改写的优化。
-当获得一次查询获得路由结果后，如果是路由至唯一的数据节点，则无需涉及到结果归并。因此补列和分页信息等改写都没有必要进行。
+路由至单节点的SQL，则无需优化改写。
+当获得一次查询的路由结果后，如果是路由至唯一的数据节点，则无需涉及到结果归并。因此补列和分页信息等改写都没有必要进行。
 尤其是分页信息的改写，无需将数据从第1条开始取，大量的降低了对数据库的压力，并且节省了网络带宽的无谓消耗。
 
 ### 流式归并优化
