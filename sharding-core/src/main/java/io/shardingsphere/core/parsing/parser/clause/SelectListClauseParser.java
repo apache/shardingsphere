@@ -17,15 +17,7 @@
 
 package io.shardingsphere.core.parsing.parser.clause;
 
-import java.util.Collection;
-import java.util.Collections;
-import java.util.LinkedList;
-import java.util.List;
-import java.util.regex.Matcher;
-import java.util.regex.Pattern;
-
 import com.google.common.base.Optional;
-
 import io.shardingsphere.core.constant.AggregationType;
 import io.shardingsphere.core.parsing.lexer.LexerEngine;
 import io.shardingsphere.core.parsing.lexer.token.DefaultKeyword;
@@ -46,6 +38,13 @@ import io.shardingsphere.core.parsing.parser.token.TableToken;
 import io.shardingsphere.core.rule.ShardingRule;
 import io.shardingsphere.core.util.SQLUtil;
 import lombok.Getter;
+
+import java.util.Collection;
+import java.util.Collections;
+import java.util.LinkedList;
+import java.util.List;
+import java.util.regex.Matcher;
+import java.util.regex.Pattern;
 
 /**
  * Select list clause parser.
@@ -137,11 +136,11 @@ public abstract class SelectListClauseParser implements SQLClauseParser {
         lexerEngine.nextToken();
         String distinctColumnName = lexerEngine.getCurrentToken().getLiterals();
         if (Symbol.STAR == lexerEngine.getCurrentToken().getType()) {
-            return new DistinctSelectItem(Collections.<String>emptyList(), aliasExpressionParser.parseSelectItemAlias());
+            return new DistinctSelectItem(Collections.<String>emptySet(), aliasExpressionParser.parseSelectItemAlias());
         }
         lexerEngine.nextToken();
         distinctColumnName = SQLUtil.getExactlyValue(distinctColumnName + parseRestSelectItem(selectStatement));
-        return new DistinctSelectItem(Collections.singletonList(distinctColumnName), aliasExpressionParser.parseSelectItemAlias());
+        return new DistinctSelectItem(Collections.singleton(distinctColumnName), aliasExpressionParser.parseSelectItemAlias());
     }
     
     private boolean isStarSelectItem() {
