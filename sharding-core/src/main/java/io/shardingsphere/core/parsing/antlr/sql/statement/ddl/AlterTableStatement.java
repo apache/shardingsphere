@@ -44,9 +44,9 @@ public final class AlterTableStatement extends DDLStatement {
     
     private final Map<String, ColumnDefinitionSegment> modifiedColumnDefinitions = new LinkedHashMap<>();
     
-    private final Collection<String> dropColumnNames = new LinkedList<>();
-    
     private final Collection<ColumnPositionSegment> changedPositionColumns = new TreeSet<>();
+    
+    private final Collection<String> droppedColumnNames = new LinkedList<>();
     
     private boolean dropPrimaryKey;
     
@@ -84,7 +84,7 @@ public final class AlterTableStatement extends DDLStatement {
         if (!shardingTableMetaData.containsTable(getTables().getSingleTableName())) {
             return Optional.absent();
         }
-        for (ColumnMetaData each : shardingTableMetaData.get(getTables().getSingleTableName()).getColumnMetaDataList()) {
+        for (ColumnMetaData each : shardingTableMetaData.get(getTables().getSingleTableName()).getColumns().values()) {
             if (columnName.equalsIgnoreCase(each.getColumnName())) {
                 return Optional.of(new ColumnDefinitionSegment(columnName, each.getDataType(), each.isPrimaryKey()));
             }

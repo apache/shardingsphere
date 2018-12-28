@@ -24,19 +24,21 @@ import io.shardingsphere.core.metadata.datasource.dialect.MySQLDataSourceMetaDat
 import io.shardingsphere.core.metadata.datasource.dialect.OracleDataSourceMetaDataTest;
 import io.shardingsphere.core.metadata.datasource.dialect.PostgreSQLDataSourceMetaDataTest;
 import io.shardingsphere.core.metadata.datasource.dialect.SQLServerDataSourceMetaDataTest;
+import io.shardingsphere.core.metadata.table.TableMetaDataFactoryTest;
 import org.junit.runner.RunWith;
 import org.junit.runners.Suite;
 import org.junit.runners.Suite.SuiteClasses;
 
 @RunWith(Suite.class)
 @SuiteClasses({
-        H2DataSourceMetaDataTest.class,
-        MySQLDataSourceMetaDataTest.class,
-        OracleDataSourceMetaDataTest.class,
-        PostgreSQLDataSourceMetaDataTest.class,
-        SQLServerDataSourceMetaDataTest.class,
-        DataSourceMetaDataFactoryTest.class,
-        ShardingDataSourceMetaDataTest.class
+        H2DataSourceMetaDataTest.class, 
+        MySQLDataSourceMetaDataTest.class, 
+        OracleDataSourceMetaDataTest.class, 
+        PostgreSQLDataSourceMetaDataTest.class, 
+        SQLServerDataSourceMetaDataTest.class, 
+        DataSourceMetaDataFactoryTest.class, 
+        ShardingDataSourceMetaDataTest.class, 
+        TableMetaDataFactoryTest.class
     })
 public final class AllMetaDataTests {
 }
