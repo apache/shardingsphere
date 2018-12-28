@@ -83,7 +83,7 @@ public final class ShardingTableMetaData {
      * @return contains column from table meta data or not
      */
     public boolean containsColumn(final String tableName, final String column) {
-        return containsTable(tableName) && tables.get(tableName).getAllColumnNames().contains(column.toLowerCase());
+        return containsTable(tableName) && tables.get(tableName).getColumns().keySet().contains(column.toLowerCase());
     }
     
     /**
@@ -93,10 +93,6 @@ public final class ShardingTableMetaData {
      * @return column names.
      */
     public Collection<String> getAllColumnNames(final String tableName) {
-        TableMetaData tableMeta = tables.get(tableName);
-        if (null == tableMeta) {
-            return Collections.emptyList();
-        }
-        return tableMeta.getAllColumnNames();
+        return tables.containsKey(tableName) ? tables.get(tableName).getColumns().keySet() : Collections.<String>emptyList();
     }
 }

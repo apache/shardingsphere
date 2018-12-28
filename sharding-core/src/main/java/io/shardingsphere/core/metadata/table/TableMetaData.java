@@ -18,6 +18,7 @@
 package io.shardingsphere.core.metadata.table;
 
 import lombok.EqualsAndHashCode;
+import lombok.Getter;
 import lombok.ToString;
 
 import java.util.Collection;
@@ -29,6 +30,7 @@ import java.util.Map;
  *
  * @author panjuan
  */
+@Getter
 @EqualsAndHashCode
 @ToString
 public final class TableMetaData {
@@ -40,23 +42,5 @@ public final class TableMetaData {
         for (ColumnMetaData each : columnMetaDataList) {
             columns.put(each.getColumnName(), each);
         }
-    }
-    
-    /**
-     * Get all column names.
-     *
-     * @return column names
-     */
-    public Collection<String> getAllColumnNames() {
-        return columns.keySet();
-    }
-    
-    /**
-     * Get all column meta data.
-     *
-     * @return column meta data
-     */
-    public Collection<ColumnMetaData> getAllColumns() {
-        return columns.values();
     }
 }
