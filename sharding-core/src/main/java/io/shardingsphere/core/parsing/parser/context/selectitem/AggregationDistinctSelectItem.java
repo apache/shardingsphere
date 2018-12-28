@@ -19,9 +19,7 @@ package io.shardingsphere.core.parsing.parser.context.selectitem;
 
 import com.google.common.base.Optional;
 import io.shardingsphere.core.constant.AggregationType;
-import lombok.EqualsAndHashCode;
 import lombok.Getter;
-import lombok.ToString;
 
 /**
  * Aggregation distinct select item.
@@ -29,8 +27,6 @@ import lombok.ToString;
  * @author panjuan
  */
 @Getter
-@EqualsAndHashCode(callSuper = true)
-@ToString
 public final class AggregationDistinctSelectItem extends AggregationSelectItem {
     
     private final String distinctColumnName;

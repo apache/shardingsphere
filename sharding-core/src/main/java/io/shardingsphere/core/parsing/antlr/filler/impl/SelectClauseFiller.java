@@ -32,8 +32,8 @@ import io.shardingsphere.core.parsing.parser.sql.SQLStatement;
 import io.shardingsphere.core.parsing.parser.sql.dql.select.SelectStatement;
 import io.shardingsphere.core.rule.ShardingRule;
 
-import java.util.HashSet;
 import java.util.Iterator;
+import java.util.LinkedHashSet;
 import java.util.Set;
 
 /**
@@ -68,7 +68,7 @@ public final class SelectClauseFiller implements SQLStatementFiller<SelectClause
         Iterator<ExpressionSegment> expressionIterator = selectClauseSegment.getExpressions().iterator();
         ExpressionSegment firstExpression = expressionIterator.next();
         ExpressionFiller expressionFiller = new ExpressionFiller();
-        Set<String> distinctColumnNames = new HashSet<>();
+        Set<String> distinctColumnNames = new LinkedHashSet<>();
         DistinctSelectItem distinctSelectItem = null;
         int offset = 0;
         if (firstExpression instanceof StarExpressionSegment) {

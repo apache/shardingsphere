@@ -34,13 +34,11 @@ public final class AggregationDistinctPlaceholder implements ShardingPlaceholder
     
     private final String logicTableName;
     
-    private final Optional<String> autoAlias;
+    private final Optional<String> alias;
     
     @Override
     public String toString() {
-        if (autoAlias.isPresent()) {
-            return " " + columnName + " " + autoAlias.get();
-        }
-        return " " + columnName;
+        String result = " " + columnName;
+        return alias.isPresent() ? result + "AS" + alias.get() : result;
     }
 }

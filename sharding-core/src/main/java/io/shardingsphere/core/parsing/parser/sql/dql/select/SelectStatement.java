@@ -114,19 +114,17 @@ public final class SelectStatement extends DQLStatement {
     }
     
     /**
-     * Get distinct select items.
+     * Get distinct select item optional.
      *
-     * @return aggregation distinct select items
+     * @return distinct select items
      */
-    public List<DistinctSelectItem> getDistinctSelectItems() {
-        List<DistinctSelectItem> result = new LinkedList<>();
+    public Optional<DistinctSelectItem> getDistinctSelectItem() {
         for (SelectItem each : items) {
             if (each instanceof DistinctSelectItem) {
-                DistinctSelectItem distinctSelectItem = (DistinctSelectItem) each;
-                result.add(distinctSelectItem);
+                return Optional.of((DistinctSelectItem) each);
             }
         }
-        return result;
+        return Optional.absent();
     }
     
     /**
@@ -138,8 +136,7 @@ public final class SelectStatement extends DQLStatement {
         List<AggregationDistinctSelectItem> result = new LinkedList<>();
         for (SelectItem each : items) {
             if (each instanceof AggregationDistinctSelectItem) {
-                AggregationDistinctSelectItem distinctSelectItem = (AggregationDistinctSelectItem) each;
-                result.add(distinctSelectItem);
+                result.add((AggregationDistinctSelectItem) each);
             }
         }
         return result;
