@@ -40,8 +40,8 @@ public final class ShardingMetaData {
     
     private final ShardingTableMetaData table;
     
-    public ShardingMetaData(final Map<String, String> dataSourceURLs, final ShardingRule shardingRule, final DatabaseType databaseType, 
-                            final ShardingExecuteEngine executeEngine, final TableMetaDataConnectionManager connectionManager, final int maxConnectionsSizePerQuery, final boolean isCheckingMetaData) {
+    public ShardingMetaData(final Map<String, String> dataSourceURLs, final ShardingRule shardingRule, final DatabaseType databaseType, final ShardingExecuteEngine executeEngine, 
+                            final TableMetaDataConnectionManager connectionManager, final int maxConnectionsSizePerQuery, final boolean isCheckingMetaData) {
         dataSource = new ShardingDataSourceMetaData(dataSourceURLs, shardingRule, databaseType);
         table = new ShardingTableMetaData(new TableMetaDataInitializer(dataSource, executeEngine, connectionManager, maxConnectionsSizePerQuery, isCheckingMetaData).load(shardingRule));
     }

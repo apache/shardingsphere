@@ -116,7 +116,6 @@ public final class MasterSlaveDataSourceTest {
                 new MasterSlaveRuleConfiguration("ds", "masterDataSource", Arrays.asList("slaveDataSource1", "slaveDataSource2"), MasterSlaveLoadBalanceAlgorithmType.ROUND_ROBIN.getAlgorithm()),
                 Collections.<String, Object>emptyMap(), new Properties())).getDatabaseType(),
                 is(DatabaseType.H2));
-        verify(masterConnection).close();
         verify(slaveConnection1).close();
         verify(slaveConnection2).close();
     }

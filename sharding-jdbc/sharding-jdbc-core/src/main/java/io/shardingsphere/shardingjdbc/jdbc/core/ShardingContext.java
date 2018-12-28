@@ -28,6 +28,7 @@ import lombok.Getter;
 
 import javax.sql.DataSource;
 import java.sql.Connection;
+import java.sql.DatabaseMetaData;
 import java.sql.SQLException;
 import java.util.LinkedHashMap;
 import java.util.Map;
@@ -43,6 +44,8 @@ import java.util.Properties;
 @Getter
 public final class ShardingContext implements AutoCloseable {
     
+    private final DatabaseMetaData databaseMetaData;
+    
     private final ShardingRule shardingRule;
     
     private final DatabaseType databaseType;
@@ -53,8 +56,9 @@ public final class ShardingContext implements AutoCloseable {
     
     private final ShardingMetaData metaData;
     
-    public ShardingContext(final Map<String, DataSource> dataSourceMap, final ShardingRule shardingRule,
+    public ShardingContext(final DatabaseMetaData databaseMetaData, final Map<String, DataSource> dataSourceMap, final ShardingRule shardingRule,
                            final DatabaseType databaseType, final Properties props) throws SQLException {
+        this.databaseMetaData = databaseMetaData;
         this.shardingRule = shardingRule;
         this.databaseType = databaseType;
         shardingProperties = new ShardingProperties(null == props ? new Properties() : props);

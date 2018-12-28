@@ -28,6 +28,8 @@ import lombok.Getter;
 import lombok.extern.slf4j.Slf4j;
 
 import javax.sql.DataSource;
+import java.sql.Connection;
+import java.sql.DatabaseMetaData;
 import java.sql.SQLException;
 import java.util.Map;
 import java.util.Properties;
@@ -45,6 +47,8 @@ public class MasterSlaveDataSource extends AbstractDataSourceAdapter {
     
     private final MasterSlaveRule masterSlaveRule;
     
+    private final DatabaseMetaData databaseMetaData;
+    
     private final ShardingProperties shardingProperties;
     
     public MasterSlaveDataSource(final Map<String, DataSource> dataSourceMap, final MasterSlaveRuleConfiguration masterSlaveRuleConfig,
@@ -54,6 +58,7 @@ public class MasterSlaveDataSource extends AbstractDataSourceAdapter {
             ConfigMapContext.getInstance().getConfigMap().putAll(configMap);
         }
         this.masterSlaveRule = new MasterSlaveRule(masterSlaveRuleConfig);
+        databaseMetaData = getDatabaseMetaData(dataSourceMap);
         shardingProperties = new ShardingProperties(null == props ? new Properties() : props);
     }
     
@@ -63,7 +68,14 @@ public class MasterSlaveDataSource extends AbstractDataSourceAdapter {
             ConfigMapContext.getInstance().getConfigMap().putAll(configMap);
         }
         this.masterSlaveRule = masterSlaveRule;
+        databaseMetaData = getDatabaseMetaData(dataSourceMap);
         shardingProperties = new ShardingProperties(null == props ? new Properties() : props);
+    }
+    
+    private DatabaseMetaData getDatabaseMetaData(final Map<String, DataSource> dataSourceMap) throws SQLException {
+        try (Connection connection = dataSourceMap.get(masterSlaveRule.getMasterDataSourceName()).getConnection()) {
+            return connection.getMetaData();
+        }
     }
     
     @Override
