@@ -122,8 +122,7 @@ public final class SelectStatement extends DQLStatement {
         List<DistinctSelectItem> result = new LinkedList<>();
         for (SelectItem each : items) {
             if (each instanceof DistinctSelectItem) {
-                DistinctSelectItem distinctSelectItem = (DistinctSelectItem) each;
-                result.add(distinctSelectItem);
+                result.add((DistinctSelectItem) each);
             }
         }
         return result;
@@ -138,8 +137,7 @@ public final class SelectStatement extends DQLStatement {
         List<AggregationDistinctSelectItem> result = new LinkedList<>();
         for (SelectItem each : items) {
             if (each instanceof AggregationDistinctSelectItem) {
-                AggregationDistinctSelectItem distinctSelectItem = (AggregationDistinctSelectItem) each;
-                result.add(distinctSelectItem);
+                result.add((AggregationDistinctSelectItem) each);
             }
         }
         return result;
