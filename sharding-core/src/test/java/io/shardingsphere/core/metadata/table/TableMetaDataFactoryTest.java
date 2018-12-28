@@ -50,8 +50,8 @@ public final class TableMetaDataFactoryTest {
         alterTableStatement.getAddedColumnDefinitions().add(new ColumnDefinitionSegment("new_column_2", "varchar", false));
         alterTableStatement.getModifiedColumnDefinitions().put("id", new ColumnDefinitionSegment("user_id", "bigint", true));
         alterTableStatement.getModifiedColumnDefinitions().put("status", new ColumnDefinitionSegment("status", "char", false));
-        alterTableStatement.getDropColumnNames().add("drop_column_1");
-        alterTableStatement.getDropColumnNames().add("drop_column_2");
+        alterTableStatement.getDroppedColumnNames().add("drop_column_1");
+        alterTableStatement.getDroppedColumnNames().add("drop_column_2");
         TableMetaData oldTableMetaData = new TableMetaData(Arrays.asList(new ColumnMetaData("id", "bigint", true), 
                 new ColumnMetaData("status", "varchar", false), new ColumnMetaData("drop_column_1", "varchar", false), new ColumnMetaData("drop_column_2", "varchar", false)));
         TableMetaData actual = TableMetaDataFactory.newInstance(alterTableStatement, oldTableMetaData);

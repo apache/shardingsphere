@@ -26,9 +26,11 @@ import io.shardingsphere.core.parsing.antlr.sql.segment.definition.column.positi
 import io.shardingsphere.core.parsing.antlr.sql.statement.ddl.AlterTableStatement;
 import io.shardingsphere.core.parsing.antlr.sql.statement.ddl.CreateTableStatement;
 
+import java.util.Collection;
 import java.util.Iterator;
 import java.util.LinkedList;
 import java.util.List;
+import java.util.Map;
 
 /**
  * Table meta data factory.
@@ -61,51 +63,48 @@ public final class TableMetaDataFactory {
      * @return instance of table meta data
      */
     public static TableMetaData newInstance(final AlterTableStatement alterTableStatement, final TableMetaData oldTableMetaData) {
-        List<ColumnMetaData> columnMetaDataList = createNewColumnMetaDataList(alterTableStatement, oldTableMetaData);
-        fillAddedColumnDefinitions(alterTableStatement, columnMetaDataList);
-        changeColumnDefinitionPositions(alterTableStatement, columnMetaDataList);
-        dropColumnDefinitions(alterTableStatement, columnMetaDataList);
-        return new TableMetaData(columnMetaDataList);
+        List<ColumnMetaData> result = createColumnMetaDataList(alterTableStatement.getModifiedColumnDefinitions(), alterTableStatement.isDropPrimaryKey(), oldTableMetaData);
+        result.addAll(createColumnMetaDataList(alterTableStatement.getAddedColumnDefinitions(), alterTableStatement.isDropPrimaryKey()));
+        changeColumnDefinitionPositions(alterTableStatement.getChangedPositionColumns(), result);
+        dropColumnDefinitions(alterTableStatement.getDroppedColumnNames(), result);
+        return new TableMetaData(result);
     }
     
-    private static List<ColumnMetaData> createNewColumnMetaDataList(final AlterTableStatement alterTableStatement, final TableMetaData oldTableMetaData) {
+    private static List<ColumnMetaData> createColumnMetaDataList(
+            final Map<String, ColumnDefinitionSegment> modifiedColumnDefinitions, final boolean dropPrimaryKey, final TableMetaData oldTableMetaData) {
         List<ColumnMetaData> result = new LinkedList<>();
         for (ColumnMetaData each : oldTableMetaData.getColumns().values()) {
-            String columnName;
-            String dataType;
-            boolean primaryKey;
-            if (alterTableStatement.getModifiedColumnDefinitions().containsKey(each.getColumnName())) {
-                ColumnDefinitionSegment modifiedColumnDefinition = alterTableStatement.getModifiedColumnDefinitions().get(each.getColumnName());
-                columnName = modifiedColumnDefinition.getColumnName();
-                dataType = modifiedColumnDefinition.getDataType();
-                primaryKey = !alterTableStatement.isDropPrimaryKey() && modifiedColumnDefinition.isPrimaryKey();
+            ColumnMetaData columnMetaData;
+            if (modifiedColumnDefinitions.containsKey(each.getColumnName())) {
+                ColumnDefinitionSegment columnDefinition = modifiedColumnDefinitions.get(each.getColumnName());
+                columnMetaData = new ColumnMetaData(columnDefinition.getColumnName(), columnDefinition.getDataType(), !dropPrimaryKey && columnDefinition.isPrimaryKey());
             } else {
-                columnName = each.getColumnName();
-                dataType = each.getDataType();
-                primaryKey = !alterTableStatement.isDropPrimaryKey() && each.isPrimaryKey();
+                columnMetaData = new ColumnMetaData(each.getColumnName(), each.getDataType(), !dropPrimaryKey && each.isPrimaryKey());
             }
-            result.add(new ColumnMetaData(columnName, dataType, primaryKey));
+            result.add(columnMetaData);
         }
         return result;
     }
     
-    private static void fillAddedColumnDefinitions(final AlterTableStatement alterTableStatement, final List<ColumnMetaData> columnMetaDataList) {
-        for (ColumnDefinitionSegment each : alterTableStatement.getAddedColumnDefinitions()) {
-            columnMetaDataList.add(new ColumnMetaData(each.getColumnName(), each.getDataType(), !alterTableStatement.isDropPrimaryKey() && each.isPrimaryKey()));
+    private static List<ColumnMetaData> createColumnMetaDataList(final Collection<ColumnDefinitionSegment> addedColumnDefinitions, final boolean dropPrimaryKey) {
+        List<ColumnMetaData> result = new LinkedList<>();
+        for (ColumnDefinitionSegment each : addedColumnDefinitions) {
+            result.add(new ColumnMetaData(each.getColumnName(), each.getDataType(), !dropPrimaryKey && each.isPrimaryKey()));
         }
+        return result;
     }
     
-    private static void changeColumnDefinitionPositions(final AlterTableStatement alterTableStatement, final List<ColumnMetaData> columnMetaDataList) {
-        for (ColumnPositionSegment each : alterTableStatement.getChangedPositionColumns()) {
+    private static void changeColumnDefinitionPositions(final Collection<ColumnPositionSegment> changedPositionColumns, final List<ColumnMetaData> columnMetaDataList) {
+        for (ColumnPositionSegment each : changedPositionColumns) {
             if (each instanceof ColumnFirstPositionSegment) {
-                adjustFirst(columnMetaDataList, (ColumnFirstPositionSegment) each);
+                changeColumnDefinitionPosition((ColumnFirstPositionSegment) each, columnMetaDataList);
             } else {
-                adjustAfter(columnMetaDataList, (ColumnAfterPositionSegment) each);
+                changeColumnDefinitionPosition((ColumnAfterPositionSegment) each, columnMetaDataList);
             }
         }
     }
     
-    private static void adjustFirst(final List<ColumnMetaData> columnMetaDataList, final ColumnFirstPositionSegment columnFirstPositionSegment) {
+    private static void changeColumnDefinitionPosition(final ColumnFirstPositionSegment columnFirstPositionSegment, final List<ColumnMetaData> columnMetaDataList) {
         ColumnMetaData firstColumnMetaData = null;
         Iterator<ColumnMetaData> iterator = columnMetaDataList.iterator();
         while (iterator.hasNext()) {
@@ -121,7 +120,7 @@ public final class TableMetaDataFactory {
         }
     }
     
-    private static void adjustAfter(final List<ColumnMetaData> columnMetaDataList, final ColumnAfterPositionSegment columnAfterPositionSegment) {
+    private static void changeColumnDefinitionPosition(final ColumnAfterPositionSegment columnAfterPositionSegment, final List<ColumnMetaData> columnMetaDataList) {
         int afterIndex = -1;
         int adjustColumnIndex = -1;
         for (int i = 0; i < columnMetaDataList.size(); i++) {
@@ -144,13 +143,13 @@ public final class TableMetaDataFactory {
         }
     }
     
-    private static void dropColumnDefinitions(final AlterTableStatement alterTableStatement, final List<ColumnMetaData> newColumnMetaData) {
-        Iterator<ColumnMetaData> iterator = newColumnMetaData.iterator();
-        while (iterator.hasNext()) {
-            ColumnMetaData each = iterator.next();
-            if (alterTableStatement.getDropColumnNames().contains(each.getColumnName())) {
-                iterator.remove();
+    private static void dropColumnDefinitions(final Collection<String> droppedColumnNames, final List<ColumnMetaData> columnMetaDataList) {
+        List<ColumnMetaData> droppedColumnMetaDataList = new LinkedList<>();
+        for (ColumnMetaData each : columnMetaDataList) {
+            if (droppedColumnNames.contains(each.getColumnName())) {
+                droppedColumnMetaDataList.add(each);
             }
         }
+        columnMetaDataList.removeAll(droppedColumnMetaDataList);
     }
 }

@@ -49,7 +49,7 @@ public final class AlterTableAssert {
      * @param expected expected alter table
      */
     public void assertAlterTable(final AlterTableStatement actual, final ExpectedAlterTable expected) {
-        assertThat(assertMessage.getFullAssertMessage("Drop names assertion error: "), Joiner.on(",").join(actual.getDropColumnNames()), is(expected.getDropColumns()));
+        assertThat(assertMessage.getFullAssertMessage("Drop names assertion error: "), Joiner.on(",").join(actual.getDroppedColumnNames()), is(expected.getDropColumns()));
         assertSame(assertMessage.getFullAssertMessage("Drop primary key assertion error: "), actual.isDropPrimaryKey(), expected.isDropPrimaryKey());
         assertThat(assertMessage.getFullAssertMessage("Rename new table name assertion error: "), actual.getNewTableName().orNull(), is(expected.getNewTableName()));
         assertAddColumns(actual, expected.getAddColumns());
