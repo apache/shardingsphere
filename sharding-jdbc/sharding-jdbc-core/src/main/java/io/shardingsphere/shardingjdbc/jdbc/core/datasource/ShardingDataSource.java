@@ -19,7 +19,6 @@ package io.shardingsphere.shardingjdbc.jdbc.core.datasource;
 
 import com.google.common.base.Preconditions;
 import io.shardingsphere.api.ConfigMapContext;
-import io.shardingsphere.core.rule.MasterSlaveRule;
 import io.shardingsphere.core.rule.ShardingRule;
 import io.shardingsphere.shardingjdbc.jdbc.adapter.AbstractDataSourceAdapter;
 import io.shardingsphere.shardingjdbc.jdbc.core.ShardingContext;
@@ -29,10 +28,7 @@ import lombok.Getter;
 import lombok.extern.slf4j.Slf4j;
 
 import javax.sql.DataSource;
-import java.sql.Connection;
-import java.sql.DatabaseMetaData;
 import java.sql.SQLException;
-import java.util.Collection;
 import java.util.Map;
 import java.util.Properties;
 import java.util.concurrent.ConcurrentHashMap;
@@ -60,31 +56,13 @@ public class ShardingDataSource extends AbstractDataSourceAdapter {
         if (!configMap.isEmpty()) {
             ConfigMapContext.getInstance().getConfigMap().putAll(configMap);
         }
-        Map<String, DataSource> originalDataSourceMap = getDataSourceMap();
-        shardingContext = new ShardingContext(getDatabaseMetaData(originalDataSourceMap, shardingRule), originalDataSourceMap, shardingRule, getDatabaseType(), props);
+        shardingContext = new ShardingContext(getDataSourceMap(), shardingRule, getDatabaseType(), props);
     }
     
     private void checkDataSourceType(final Map<String, DataSource> dataSourceMap) {
         for (DataSource each : dataSourceMap.values()) {
             Preconditions.checkArgument(!(each instanceof MasterSlaveDataSource), "Initialized data sources can not be master-slave data sources.");
         }
-    }
-    
-    private DatabaseMetaData getDatabaseMetaData(final Map<String, DataSource> dataSourceMap, final ShardingRule shardingRule) throws SQLException {
-        Collection<MasterSlaveRule> masterSlaveRules = shardingRule.getMasterSlaveRules();
-        if (masterSlaveRules.isEmpty()) {
-            try (Connection connection = dataSourceMap.values().iterator().next().getConnection()) {
-                return connection.getMetaData();
-            }
-        }
-        for (MasterSlaveRule each : masterSlaveRules) {
-            if (getDataSourceMap().containsKey(each.getMasterDataSourceName())) {
-                try (Connection connection = dataSourceMap.get(each.getMasterDataSourceName()).getConnection()) {
-                    return connection.getMetaData();
-                }
-            }
-        }
-        throw new UnsupportedOperationException();
     }
     
     @Override

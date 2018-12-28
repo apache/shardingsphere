@@ -45,35 +45,35 @@ import java.util.Properties;
 @Slf4j
 public class MasterSlaveDataSource extends AbstractDataSourceAdapter {
     
-    private final MasterSlaveRule masterSlaveRule;
-    
     private final DatabaseMetaData databaseMetaData;
+    
+    private final MasterSlaveRule masterSlaveRule;
     
     private final ShardingProperties shardingProperties;
     
     public MasterSlaveDataSource(final Map<String, DataSource> dataSourceMap, final MasterSlaveRuleConfiguration masterSlaveRuleConfig,
                                  final Map<String, Object> configMap, final Properties props) throws SQLException {
         super(dataSourceMap);
+        databaseMetaData = getDatabaseMetaData(dataSourceMap);
         if (!configMap.isEmpty()) {
             ConfigMapContext.getInstance().getConfigMap().putAll(configMap);
         }
         this.masterSlaveRule = new MasterSlaveRule(masterSlaveRuleConfig);
-        databaseMetaData = getDatabaseMetaData(dataSourceMap);
         shardingProperties = new ShardingProperties(null == props ? new Properties() : props);
     }
     
     public MasterSlaveDataSource(final Map<String, DataSource> dataSourceMap, final MasterSlaveRule masterSlaveRule, final Map<String, Object> configMap, final Properties props) throws SQLException {
         super(dataSourceMap);
+        databaseMetaData = getDatabaseMetaData(dataSourceMap);
         if (!configMap.isEmpty()) {
             ConfigMapContext.getInstance().getConfigMap().putAll(configMap);
         }
         this.masterSlaveRule = masterSlaveRule;
-        databaseMetaData = getDatabaseMetaData(dataSourceMap);
         shardingProperties = new ShardingProperties(null == props ? new Properties() : props);
     }
     
     private DatabaseMetaData getDatabaseMetaData(final Map<String, DataSource> dataSourceMap) throws SQLException {
-        try (Connection connection = dataSourceMap.get(masterSlaveRule.getMasterDataSourceName()).getConnection()) {
+        try (Connection connection = dataSourceMap.values().iterator().next().getConnection()) {
             return connection.getMetaData();
         }
     }

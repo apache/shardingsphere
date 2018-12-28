@@ -56,9 +56,8 @@ public final class ShardingContext implements AutoCloseable {
     
     private final ShardingMetaData metaData;
     
-    public ShardingContext(final DatabaseMetaData databaseMetaData, final Map<String, DataSource> dataSourceMap, final ShardingRule shardingRule,
-                           final DatabaseType databaseType, final Properties props) throws SQLException {
-        this.databaseMetaData = databaseMetaData;
+    public ShardingContext(final Map<String, DataSource> dataSourceMap, final ShardingRule shardingRule, final DatabaseType databaseType, final Properties props) throws SQLException {
+        this.databaseMetaData = getDatabaseMetaData(dataSourceMap);
         this.shardingRule = shardingRule;
         this.databaseType = databaseType;
         shardingProperties = new ShardingProperties(null == props ? new Properties() : props);
@@ -67,6 +66,12 @@ public final class ShardingContext implements AutoCloseable {
         metaData = new ShardingMetaData(getDataSourceURLs(dataSourceMap), shardingRule, databaseType, executeEngine, new JDBCTableMetaDataConnectionManager(dataSourceMap), 
                 shardingProperties.<Integer>getValue(ShardingPropertiesConstant.MAX_CONNECTIONS_SIZE_PER_QUERY), 
                 shardingProperties.<Boolean>getValue(ShardingPropertiesConstant.CHECK_TABLE_METADATA_ENABLED));
+    }
+    
+    private DatabaseMetaData getDatabaseMetaData(final Map<String, DataSource> dataSourceMap) throws SQLException {
+        try (Connection connection = dataSourceMap.values().iterator().next().getConnection()) {
+            return connection.getMetaData();
+        }
     }
     
     private Map<String, String> getDataSourceURLs(final Map<String, DataSource> dataSourceMap) throws SQLException {
