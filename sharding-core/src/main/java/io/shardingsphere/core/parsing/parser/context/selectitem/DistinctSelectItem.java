@@ -21,10 +21,8 @@ import com.google.common.base.Joiner;
 import com.google.common.base.Optional;
 import io.shardingsphere.core.parsing.lexer.token.DefaultKeyword;
 import io.shardingsphere.core.util.SQLUtil;
-import lombok.EqualsAndHashCode;
 import lombok.Getter;
 import lombok.RequiredArgsConstructor;
-import lombok.ToString;
 
 import java.util.Collection;
 import java.util.Collections;
@@ -37,8 +35,6 @@ import java.util.Set;
  */
 @RequiredArgsConstructor
 @Getter
-@EqualsAndHashCode
-@ToString
 public final class DistinctSelectItem implements SelectItem {
     
     private final Set<String> distinctColumnNames;
