@@ -41,7 +41,6 @@ import java.util.List;
 public final class DistinctSelectItem implements SelectItem {
     
     private final List<String> distinctColumnNames = new LinkedList<>();
-    
     private final Optional<String> alias;
     
     public DistinctSelectItem(final Collection<String> distinctColumnNames, final Optional<String> alias) {
@@ -51,7 +50,7 @@ public final class DistinctSelectItem implements SelectItem {
     
     @Override
     public String getExpression() {
-        return isSingleColumnAlias() ? DefaultKeyword.DISTINCT.name() + " " + distinctColumnNames.get(0) + "AS" + alias.get() 
+        return isSingleColumnWithAlias() ? DefaultKeyword.DISTINCT.name() + " " + distinctColumnNames.get(0) + "AS" + alias.get() 
                 : SQLUtil.getExactlyValue(DefaultKeyword.DISTINCT + " " + Joiner.on(", ").join(distinctColumnNames));
     }
     
@@ -61,10 +60,10 @@ public final class DistinctSelectItem implements SelectItem {
      * @return distinct column labels
      */
     public Collection<String> getDistinctColumnLabels() {
-        return isSingleColumnAlias() ? Collections.singletonList(alias.get()) : distinctColumnNames;
+        return isSingleColumnWithAlias() ? Collections.singletonList(alias.get()) : distinctColumnNames;
     }
     
-    private boolean isSingleColumnAlias() {
+    private boolean isSingleColumnWithAlias() {
         return 1 == distinctColumnNames.size() && alias.isPresent();
     }
 }
