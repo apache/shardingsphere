@@ -70,7 +70,7 @@ public final class TableMetaDataFactory {
     
     private static List<ColumnMetaData> createNewColumnMetaDataList(final AlterTableStatement alterTableStatement, final TableMetaData oldTableMetaData) {
         List<ColumnMetaData> result = new LinkedList<>();
-        for (ColumnMetaData each : oldTableMetaData.getColumnMetaDataList()) {
+        for (ColumnMetaData each : oldTableMetaData.getAllColumns()) {
             String columnName;
             String dataType;
             boolean primaryKey;
