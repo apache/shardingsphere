@@ -116,8 +116,8 @@ public abstract class SelectListClauseParser implements SQLClauseParser {
     
     private void reviseDistinctSelectItems(final SelectStatement selectStatement, final Collection<SelectItem> selectItems) {
         for (SelectItem each : selectItems) {
-            if (!(selectStatement.getDistinctSelectItems().isEmpty() || each instanceof StarSelectItem)) {
-                selectStatement.getDistinctSelectItems().get(0).getDistinctColumnNames().add(each.getAlias().isPresent() ? each.getAlias().get() : each.getExpression());
+            if (selectStatement.getDistinctSelectItem().isPresent() && !(each instanceof StarSelectItem)) {
+                selectStatement.getDistinctSelectItem().get().getDistinctColumnNames().add(each.getAlias().isPresent() ? each.getAlias().get() : each.getExpression());
             }
         }
     }
@@ -200,7 +200,7 @@ public abstract class SelectListClauseParser implements SQLClauseParser {
     
     private SelectItem getAggregationDistinctSelectItem(final SelectStatement selectStatement, final AggregationType aggregationType, final int beginPosition, final String innerExpression) {
         Optional<String> alias = aliasExpressionParser.parseSelectItemAlias();
-        Optional<String> autoAlias = Optional.<String>absent();
+        Optional<String> autoAlias = Optional.absent();
         if (!alias.isPresent()) {
             autoAlias = Optional.of(DerivedAlias.AGGREGATION_DISTINCT_DERIVED.getDerivedAlias(selectStatement.getAggregationDistinctSelectItems().size()));
             alias = autoAlias;
