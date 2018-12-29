@@ -21,7 +21,6 @@ import com.google.common.base.Preconditions;
 import com.google.common.collect.LinkedHashMultimap;
 import com.google.common.collect.Multimap;
 import io.shardingsphere.core.constant.ConnectionMode;
-import io.shardingsphere.core.exception.ShardingException;
 import io.shardingsphere.core.hint.HintManagerHolder;
 import io.shardingsphere.core.routing.router.masterslave.MasterVisitedManager;
 import io.shardingsphere.shardingjdbc.jdbc.adapter.executor.ForceExecuteCallback;
@@ -160,7 +159,7 @@ public abstract class AbstractConnectionAdapter extends AbstractUnsupportedOpera
                 for (Connection each : result) {
                     each.close();
                 }
-                throw new ShardingException(String.format("Could't get %d connections one time, partition succeed connection(%d) have released!", connectionSize, result.size()));
+                throw new SQLException(String.format("Could't get %d connections one time, partition succeed connection(%d) have released!", connectionSize, result.size()), ex);
             }
         }
         return result;

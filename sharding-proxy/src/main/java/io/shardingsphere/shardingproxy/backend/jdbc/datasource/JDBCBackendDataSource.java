@@ -130,11 +130,11 @@ public final class JDBCBackendDataSource implements BackendDataSource, AutoClose
         for (int i = 0; i < connectionSize; i++) {
             try {
                 result.add(dataSource.getConnection());
-            } catch (final SQLException ignored) {
+            } catch (final SQLException ex) {
                 for (Connection each : result) {
                     each.close();
                 }
-                throw new ShardingException(String.format("Could't get %d connections one time, partition succeed connection(%d) have released!", connectionSize, result.size()));
+                throw new SQLException(String.format("Could't get %d connections one time, partition succeed connection(%d) have released!", connectionSize, result.size()), ex);
             }
         }
         return result;
