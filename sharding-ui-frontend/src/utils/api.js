@@ -1,9 +1,9 @@
 import axios from 'axios'
 import jsonp from 'jsonp'
-import qs from 'qs'
-import {
-  Message
-} from 'element-ui'
+// import qs from 'qs'
+// import {
+//   Message
+// } from 'element-ui'
 import C from './conf'
 
 axios.defaults.headers.post['Content-Type'] = 'application/jsoncharset=UTF-8'
@@ -15,10 +15,11 @@ const configData = (type, params) => {
     // params = qs.stringify(params)
     return params
   } else if (type === 'put') {
-    return qs.stringify({
-      ...params,
-      _method: 'put'
-    })
+    // return qs.stringify({
+    //   ...params,
+    //   _method: 'put'
+    // })
+    return params
   } else if (type === 'delete') {
     // return qs.stringify({
     //   ...params,
@@ -48,11 +49,11 @@ function ajax(url, type, options) {
           break
         }
         default: {
-          Message({
-            message: result.errorMsg,
-            type: 'error',
-            duration: 2 * 1000
-          })
+          // Message({
+          //   message: result.errorMsg,
+          //   type: 'error',
+          //   duration: 2 * 1000
+          // })
           resolve({
             error: true,
             ...data

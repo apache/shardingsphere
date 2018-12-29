@@ -8,12 +8,15 @@
     "dev": "webpack-dev-server --inline --progress --config build/webpack.dev.conf.js",
     "start": "npm run dev",
     "lint": "eslint --ext .js,.vue src",
+    "test": "cross-env NODE_ENV=mock  webpack-dev-server --inline --progress --config build/webpack.dev.conf.js",
     "build": "node build/build.js"
   },
   "dependencies": {
     "axios": "^0.18.0",
     "element-ui": "^2.4.9",
+    "js-yaml": "^3.12.0",
     "jsonp": "^0.2.1",
+    "lodash": "^4.17.11",
     "normalize.css": "^8.0.1",
     "qs": "^6.6.0",
     "vue": "^2.5.2",
@@ -33,6 +36,7 @@
     "babel-preset-stage-2": "^6.22.0",
     "chalk": "^2.0.1",
     "copy-webpack-plugin": "^4.0.1",
+    "cross-env": "^5.2.0",
     "css-loader": "^0.28.0",
     "eslint": "^4.15.0",
     "eslint-config-standard": "^10.2.1",

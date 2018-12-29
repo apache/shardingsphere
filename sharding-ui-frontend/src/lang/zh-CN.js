@@ -18,11 +18,24 @@ export default {
       conSucMessage: '连接成功',
       conFailMessage: '连接失败',
       delSucMessage: '删除成功',
-      delFailMessage: '删除失败'
+      delFailMessage: '删除失败',
+      updateCompletedMessage: '更新成功',
+      updateFaildMessage: '更新失败'
     }
   },
   login: {
-    btnTxt: '登陆'
+    btnTxt: '登陆',
+    labelUserName: '用户名',
+    labelPassword: '密码'
+  },
+  btn: {
+    submit: '提交',
+    reset: '重置',
+    cancel: '取消'
+  },
+  input: {
+    pUserName: '请输入用户名',
+    pPaasword: '请输入密码'
   },
   index: {
     btnTxt: '添加',
