@@ -29,38 +29,20 @@ import io.shardingsphere.core.optimizer.OptimizeEngineFactory;
 import io.shardingsphere.core.optimizer.condition.ShardingCondition;
 import io.shardingsphere.core.optimizer.condition.ShardingConditions;
 import io.shardingsphere.core.parsing.SQLParsingEngine;
-import io.shardingsphere.core.parsing.antlr.sql.statement.dcl.DCLStatement;
-import io.shardingsphere.core.parsing.antlr.sql.statement.ddl.DDLStatement;
 import io.shardingsphere.core.parsing.parser.context.condition.AndCondition;
 import io.shardingsphere.core.parsing.parser.context.condition.Column;
 import io.shardingsphere.core.parsing.parser.context.condition.Condition;
 import io.shardingsphere.core.parsing.parser.context.condition.Conditions;
 import io.shardingsphere.core.parsing.parser.context.condition.GeneratedKeyCondition;
-import io.shardingsphere.core.parsing.parser.dialect.mysql.statement.ShowDatabasesStatement;
-import io.shardingsphere.core.parsing.parser.dialect.mysql.statement.ShowTableStatusStatement;
-import io.shardingsphere.core.parsing.parser.dialect.mysql.statement.ShowTablesStatement;
-import io.shardingsphere.core.parsing.parser.dialect.mysql.statement.UseStatement;
-import io.shardingsphere.core.parsing.parser.dialect.postgresql.statement.ResetParamStatement;
-import io.shardingsphere.core.parsing.parser.dialect.postgresql.statement.SetParamStatement;
 import io.shardingsphere.core.parsing.parser.sql.SQLStatement;
-import io.shardingsphere.core.parsing.parser.sql.dal.DALStatement;
 import io.shardingsphere.core.parsing.parser.sql.dml.insert.InsertStatement;
 import io.shardingsphere.core.parsing.parser.sql.dql.select.SelectStatement;
 import io.shardingsphere.core.rewrite.SQLBuilder;
 import io.shardingsphere.core.rewrite.SQLRewriteEngine;
 import io.shardingsphere.core.routing.RouteUnit;
 import io.shardingsphere.core.routing.SQLRouteResult;
-import io.shardingsphere.core.routing.type.RoutingEngine;
 import io.shardingsphere.core.routing.type.RoutingResult;
 import io.shardingsphere.core.routing.type.TableUnit;
-import io.shardingsphere.core.routing.type.broadcast.DatabaseBroadcastRoutingEngine;
-import io.shardingsphere.core.routing.type.broadcast.InstanceBroadcastRoutingEngine;
-import io.shardingsphere.core.routing.type.broadcast.TableBroadcastRoutingEngine;
-import io.shardingsphere.core.routing.type.complex.ComplexRoutingEngine;
-import io.shardingsphere.core.routing.type.defaultdb.DefaultDatabaseRoutingEngine;
-import io.shardingsphere.core.routing.type.ignore.IgnoreRoutingEngine;
-import io.shardingsphere.core.routing.type.standard.StandardRoutingEngine;
-import io.shardingsphere.core.routing.type.unicast.UnicastRoutingEngine;
 import io.shardingsphere.core.rule.BindingTableRule;
 import io.shardingsphere.core.rule.ShardingRule;
 import io.shardingsphere.core.rule.TableRule;
@@ -69,7 +51,6 @@ import io.shardingsphere.spi.parsing.ParsingHook;
 import io.shardingsphere.spi.parsing.SPIParsingHook;
 import lombok.RequiredArgsConstructor;
 
-import java.util.Collection;
 import java.util.LinkedList;
 import java.util.List;
 
@@ -121,7 +102,7 @@ public final class ParsingSQLRouter implements ShardingRouter {
         if (sqlStatement instanceof SelectStatement && !sqlStatement.getTables().isEmpty() && !((SelectStatement) sqlStatement).getSubQueryStatements().isEmpty()) {
             mergeShardingValueForSubQuery(sqlStatement.getConditions(), shardingConditions);
         }
-        RoutingResult routingResult = doRoute(sqlStatement, shardingConditions);
+        RoutingResult routingResult = RoutingEngineFactory.newInstance(shardingRule, shardingDataSourceMetaData, sqlStatement, shardingConditions).route();
         SQLRewriteEngine rewriteEngine = new SQLRewriteEngine(shardingRule, logicSQL, databaseType, sqlStatement, shardingConditions, parameters);
         if (sqlStatement instanceof SelectStatement && null != ((SelectStatement) sqlStatement).getLimit()) {
             processLimit(parameters, (SelectStatement) sqlStatement);
@@ -239,39 +220,6 @@ public final class ParsingSQLRouter implements ShardingRouter {
     private boolean isBindingTable(final ListShardingValue shardingValue1, final ListShardingValue shardingValue2) {
         Optional<BindingTableRule> bindingRule = shardingRule.findBindingTableRule(shardingValue1.getLogicTableName());
         return bindingRule.isPresent() && bindingRule.get().hasLogicTable(shardingValue2.getLogicTableName());
-    }
-    
-    private RoutingResult doRoute(final SQLStatement sqlStatement, final ShardingConditions shardingConditions) {
-        Collection<String> tableNames = sqlStatement.getTables().getTableNames();
-        RoutingEngine routingEngine;
-        if (sqlStatement instanceof UseStatement) {
-            routingEngine = new IgnoreRoutingEngine();
-        } else if (shardingRule.isAllBroadcastTables(tableNames) && !(sqlStatement instanceof SelectStatement)) {
-            routingEngine = new DatabaseBroadcastRoutingEngine(shardingRule);
-        } else if (sqlStatement instanceof DDLStatement || (sqlStatement instanceof DCLStatement && ((DCLStatement) sqlStatement).isGrantForSingleTable())) {
-            routingEngine = new TableBroadcastRoutingEngine(shardingRule, sqlStatement);
-        } else if (sqlStatement instanceof ShowDatabasesStatement || ((sqlStatement instanceof ShowTablesStatement || sqlStatement instanceof ShowTableStatusStatement) && tableNames.isEmpty())
-                || sqlStatement instanceof SetParamStatement || sqlStatement instanceof ResetParamStatement) {
-            routingEngine = new DatabaseBroadcastRoutingEngine(shardingRule);
-        } else if (sqlStatement instanceof DCLStatement) {
-            routingEngine = new InstanceBroadcastRoutingEngine(shardingRule, shardingDataSourceMetaData);
-        } else if (shardingRule.isAllInDefaultDataSource(tableNames)) {
-            routingEngine = new DefaultDatabaseRoutingEngine(shardingRule, tableNames);
-        } else if (shardingConditions.isAlwaysFalse()) {
-            routingEngine = new UnicastRoutingEngine(shardingRule, tableNames);
-        } else if (sqlStatement instanceof DALStatement) {
-            routingEngine = new UnicastRoutingEngine(shardingRule, tableNames);
-        } else if (tableNames.isEmpty() && sqlStatement instanceof SelectStatement || shardingRule.isAllBroadcastTables(tableNames) && sqlStatement instanceof SelectStatement) {
-            routingEngine = new UnicastRoutingEngine(shardingRule, tableNames);
-        } else if (tableNames.isEmpty()) {
-            routingEngine = new DatabaseBroadcastRoutingEngine(shardingRule);
-        } else if (1 == tableNames.size() || shardingRule.isAllBindingTables(tableNames)) {
-            routingEngine = new StandardRoutingEngine(shardingRule, tableNames.iterator().next(), shardingConditions);
-        } else {
-            // TODO config for cartesian set
-            routingEngine = new ComplexRoutingEngine(shardingRule, tableNames, shardingConditions);
-        }
-        return routingEngine.route();
     }
     
     private void processLimit(final List<Object> parameters, final SelectStatement selectStatement) {
