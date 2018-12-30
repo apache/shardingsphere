@@ -12,8 +12,8 @@
     
     <sql-statement-rule context="commit" sql-statement-class="io.shardingsphere.core.parsing.parser.sql.tcl.commit.CommitStatement" />
     <sql-statement-rule context="rollback" sql-statement-class="io.shardingsphere.core.parsing.parser.sql.tcl.rollback.RollbackStatement" />
-    <sql-statement-rule context="setTransaction" sql-statement-class="io.shardingsphere.core.parsing.parser.sql.tcl.set.transaction.SetTransactionStatement" />
     <sql-statement-rule context="savepoint" sql-statement-class="io.shardingsphere.core.parsing.parser.sql.tcl.savepoint.SavepointStatement" />
+    <sql-statement-rule context="setTransaction" sql-statement-class="io.shardingsphere.core.parsing.parser.sql.tcl.set.transaction.SetTransactionStatement" />
     
     <sql-statement-rule context="grant" sql-statement-class="io.shardingsphere.core.parsing.parser.sql.dcl.DCLStatement" extractor-rule-refs="tableNames" />
     <sql-statement-rule context="revoke" sql-statement-class="io.shardingsphere.core.parsing.parser.sql.dcl.DCLStatement" extractor-rule-refs="tableNames" />

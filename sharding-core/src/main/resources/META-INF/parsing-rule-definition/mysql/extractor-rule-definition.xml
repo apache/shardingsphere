@@ -4,5 +4,5 @@
     <extractor-rule id="modifyColumnDefinition" extractor-class="dialect.mysql.definition.column.MySQLModifyColumnDefinitionExtractor" />
     <extractor-rule id="changeColumnDefinition" extractor-class="dialect.mysql.definition.column.MySQLChangeColumnDefinitionExtractor" />
     <extractor-rule id="dropPrimaryKey" extractor-class="dialect.mysql.definition.constraint.MySQLDropPrimaryKeyExtractor" />
-    <extractor-rule id="autoCommitValue" extractor-class="dialect.mysql.MySQLAutoCommitValueExtractor" />
+    <extractor-rule id="setAutoCommit" extractor-class="SetAutoCommitExtractor" />
 </extractor-rule-definition>

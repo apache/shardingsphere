@@ -3,5 +3,5 @@
     <extractor-rule id="addColumnDefinition" extractor-class="definition.column.AddColumnDefinitionExtractor" />
     <extractor-rule id="modifyColumnDefinition" extractor-class="definition.column.ModifyColumnDefinitionExtractor" />
     <extractor-rule id="addPrimaryKey" extractor-class="dialect.sqlserver.definition.constraint.SQLServerAddPrimaryKeyExtractor" />
-    <extractor-rule id="autoCommitValue" extractor-class="dialect.sqlserver.SQLServerAutoCommitValueExtractor" />
+    <extractor-rule id="setAutoCommit" extractor-class="SetAutoCommitExtractor" />
 </extractor-rule-definition>

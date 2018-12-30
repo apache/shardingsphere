@@ -15,7 +15,7 @@
  * </p>
  */
 
-package io.shardingsphere.core.parsing.antlr.extractor.impl.dialect.mysql;
+package io.shardingsphere.core.parsing.antlr.extractor.impl;
 
 import com.google.common.base.Optional;
 import com.google.common.base.Preconditions;
@@ -27,11 +27,11 @@ import io.shardingsphere.core.util.SQLUtil;
 import org.antlr.v4.runtime.ParserRuleContext;
 
 /**
- * Auto commit value clause extractor for MySQL.
+ * Set auto commit extractor.
  *
  * @author maxiaoguang
  */
-public final class MySQLAutoCommitValueExtractor implements OptionalSQLSegmentExtractor {
+public final class SetAutoCommitExtractor implements OptionalSQLSegmentExtractor {
     
     @Override
     public Optional<SetAutoCommitSegment> extract(final ParserRuleContext ancestorNode) {
