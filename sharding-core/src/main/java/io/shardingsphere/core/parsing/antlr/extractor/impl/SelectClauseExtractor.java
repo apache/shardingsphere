@@ -36,7 +36,7 @@ import org.antlr.v4.runtime.tree.TerminalNodeImpl;
  */
 public final class SelectClauseExtractor implements OptionalSQLSegmentExtractor {
     
-    private ExpressionExtractor expressionExtractor = new ExpressionExtractor();
+    private final ExpressionExtractor expressionExtractor = new ExpressionExtractor();
     
     @Override
     public Optional<SelectClauseSegment> extract(final ParserRuleContext ancestorNode) {
@@ -55,7 +55,7 @@ public final class SelectClauseExtractor implements OptionalSQLSegmentExtractor 
             if (childNode instanceof TerminalNodeImpl) {
                 continue;
             }
-            Optional<ExpressionSegment> expressionSegment = expressionExtractor.extract((ParserRuleContext) childNode);
+            Optional<? extends ExpressionSegment> expressionSegment = expressionExtractor.extract((ParserRuleContext) childNode);
             if (expressionSegment.isPresent()) {
                 result.getExpressions().add(expressionSegment.get());
             }

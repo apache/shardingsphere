@@ -18,7 +18,6 @@
 package io.shardingsphere.core.parsing.antlr.sql.segment.expr;
 
 import com.google.common.base.Optional;
-
 import lombok.Getter;
 import lombok.RequiredArgsConstructor;
 import lombok.Setter;
@@ -30,12 +29,10 @@ import lombok.Setter;
  */
 @RequiredArgsConstructor
 @Getter
+@Setter
 public final class FunctionExpressionSegment implements ExpressionSegment {
     
     private final String name;
-    
-    @Setter
-    private Optional<String> alias;
     
     private final int functionStartIndex;
     
@@ -46,4 +43,15 @@ public final class FunctionExpressionSegment implements ExpressionSegment {
     private final boolean hasDistinct;
     
     private final int distinctColumnNameStartPosition;
+    
+    private String alias;
+    
+    /**
+     * Get alias.
+     * 
+     * @return alias
+     */
+    public Optional<String> getAlias() {
+        return Optional.fromNullable(alias);
+    }
 }

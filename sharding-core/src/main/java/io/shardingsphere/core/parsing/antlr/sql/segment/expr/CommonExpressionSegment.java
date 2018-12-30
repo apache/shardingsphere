@@ -18,7 +18,6 @@
 package io.shardingsphere.core.parsing.antlr.sql.segment.expr;
 
 import com.google.common.base.Optional;
-
 import lombok.Getter;
 import lombok.RequiredArgsConstructor;
 import lombok.Setter;
@@ -30,17 +29,25 @@ import lombok.Setter;
  */
 @RequiredArgsConstructor
 @Getter
+@Setter
 public final class CommonExpressionSegment implements ExpressionSegment {
     
     private final int startPosition;
     
     private final int endPosition;
     
-    private final Optional<String> alias;
+    private String alias;
     
-    @Setter
     private int index = -1;
     
-    @Setter
     private Number value = -1;
+    
+    /**
+     * Get alias.
+     *
+     * @return alias
+     */
+    public Optional<String> getAlias() {
+        return Optional.fromNullable(alias);
+    }
 }
