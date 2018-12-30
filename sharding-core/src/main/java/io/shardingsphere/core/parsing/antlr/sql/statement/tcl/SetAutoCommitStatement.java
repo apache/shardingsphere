@@ -15,14 +15,19 @@
  * </p>
  */
 
-package io.shardingsphere.core.parsing.parser.sql.tcl.commit;
+package io.shardingsphere.core.parsing.antlr.sql.statement.tcl;
 
-import io.shardingsphere.core.parsing.parser.sql.tcl.TCLStatement;
+import lombok.Getter;
+import lombok.Setter;
 
 /**
- * Commit statement.
+ * Set auto commit statement.
  *
- * @author maxiaoguang
+ * @author zhangliang
  */
-public final class CommitStatement extends TCLStatement {
+@Getter
+@Setter
+public final class SetAutoCommitStatement extends TCLStatement {
+    
+    private boolean autoCommit;
 }

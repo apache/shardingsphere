@@ -15,21 +15,12 @@
  * </p>
  */
 
-package io.shardingsphere.core.parsing.parser.sql.tcl.set.autocommit;
-
-import io.shardingsphere.core.parsing.lexer.LexerEngine;
-import io.shardingsphere.core.parsing.parser.sql.SQLParser;
-import lombok.Getter;
-import lombok.RequiredArgsConstructor;
+package io.shardingsphere.core.parsing.antlr.sql.statement.tcl;
 
 /**
- * Set variable parser.
+ * Rollback statement.
  *
  * @author maxiaoguang
  */
-@RequiredArgsConstructor
-public abstract class AbstractSetAutoCommitParser implements SQLParser {
-    
-    @Getter
-    private final LexerEngine lexerEngine;
+public final class RollbackStatement extends TCLStatement {
 }

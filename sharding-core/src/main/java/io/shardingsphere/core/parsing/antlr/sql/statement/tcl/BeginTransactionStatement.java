@@ -15,25 +15,12 @@
  * </p>
  */
 
-package io.shardingsphere.core.parsing.parser.sql.tcl.set.transaction;
-
-import lombok.AccessLevel;
-import lombok.NoArgsConstructor;
+package io.shardingsphere.core.parsing.antlr.sql.statement.tcl;
 
 /**
- * Set transaction parser factory.
+ * Begin transaction statement.
  *
  * @author maxiaoguang
  */
-@NoArgsConstructor(access = AccessLevel.PRIVATE)
-public final class SetTransactionParserFactory {
-    
-    /**
-     * Create set transaction parser instance.
-     *
-     * @return set transaction parser instance
-     */
-    public static SetTransactionParser newInstance() {
-        return new SetTransactionParser();
-    }
+public final class BeginTransactionStatement extends TCLStatement {
 }

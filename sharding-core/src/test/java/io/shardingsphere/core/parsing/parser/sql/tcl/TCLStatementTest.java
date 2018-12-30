@@ -18,6 +18,7 @@
 package io.shardingsphere.core.parsing.parser.sql.tcl;
 
 import io.shardingsphere.core.constant.DatabaseType;
+import io.shardingsphere.core.parsing.antlr.sql.statement.tcl.TCLStatement;
 import io.shardingsphere.core.parsing.lexer.LexerEngine;
 import io.shardingsphere.core.parsing.lexer.LexerEngineFactory;
 import io.shardingsphere.core.parsing.lexer.token.DefaultKeyword;

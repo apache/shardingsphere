@@ -13,12 +13,12 @@
                         extractor-rule-refs="tableNames, indexNames, selectClause, fromWhere, groupBy, orderBy, limit" 
                         optimizer-class="dql.dialect.mysql.MySQLSelectOptimizer" />
     
-    <sql-statement-rule context="beginTransaction" sql-statement-class="io.shardingsphere.core.parsing.parser.sql.tcl.begin.BeginTransactionStatement" />
-    <sql-statement-rule context="commit" sql-statement-class="io.shardingsphere.core.parsing.parser.sql.tcl.commit.CommitStatement" />
-    <sql-statement-rule context="rollback" sql-statement-class="io.shardingsphere.core.parsing.parser.sql.tcl.rollback.RollbackStatement" />
-    <sql-statement-rule context="savepoint" sql-statement-class="io.shardingsphere.core.parsing.parser.sql.tcl.savepoint.SavepointStatement" />
-    <sql-statement-rule context="setAutoCommit" sql-statement-class="io.shardingsphere.core.parsing.parser.sql.tcl.set.autocommit.SetAutoCommitStatement" extractor-rule-refs="setAutoCommit" />
-    <sql-statement-rule context="setTransaction" sql-statement-class="io.shardingsphere.core.parsing.parser.sql.tcl.set.transaction.SetTransactionStatement" />
+    <sql-statement-rule context="beginTransaction" sql-statement-class="io.shardingsphere.core.parsing.antlr.sql.statement.tcl.BeginTransactionStatement" />
+    <sql-statement-rule context="commit" sql-statement-class="io.shardingsphere.core.parsing.antlr.sql.statement.tcl.CommitStatement" />
+    <sql-statement-rule context="rollback" sql-statement-class="io.shardingsphere.core.parsing.antlr.sql.statement.tcl.RollbackStatement" />
+    <sql-statement-rule context="savepoint" sql-statement-class="io.shardingsphere.core.parsing.antlr.sql.statement.tcl.SavepointStatement" />
+    <sql-statement-rule context="setAutoCommit" sql-statement-class="io.shardingsphere.core.parsing.antlr.sql.statement.tcl.SetAutoCommitStatement" extractor-rule-refs="setAutoCommit" />
+    <sql-statement-rule context="setTransaction" sql-statement-class="io.shardingsphere.core.parsing.antlr.sql.statement.tcl.SetTransactionStatement" />
     
     <sql-statement-rule context="grant" sql-statement-class="io.shardingsphere.core.parsing.parser.sql.dcl.DCLStatement" extractor-rule-refs="tableNames" />
     <sql-statement-rule context="grantProxy" sql-statement-class="io.shardingsphere.core.parsing.parser.sql.dcl.DCLStatement" />

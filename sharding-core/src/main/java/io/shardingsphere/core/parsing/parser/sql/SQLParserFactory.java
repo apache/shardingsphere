@@ -21,6 +21,7 @@ import io.shardingsphere.core.constant.DatabaseType;
 import io.shardingsphere.core.metadata.table.ShardingTableMetaData;
 import io.shardingsphere.core.parsing.antlr.AntlrParsingEngine;
 import io.shardingsphere.core.parsing.antlr.sql.statement.ddl.DDLStatement;
+import io.shardingsphere.core.parsing.antlr.sql.statement.tcl.TCLStatement;
 import io.shardingsphere.core.parsing.lexer.LexerEngine;
 import io.shardingsphere.core.parsing.lexer.dialect.mysql.MySQLKeyword;
 import io.shardingsphere.core.parsing.lexer.token.DefaultKeyword;
@@ -46,13 +47,6 @@ import io.shardingsphere.core.parsing.parser.sql.dml.insert.InsertParserFactory;
 import io.shardingsphere.core.parsing.parser.sql.dml.update.UpdateParserFactory;
 import io.shardingsphere.core.parsing.parser.sql.dql.DQLStatement;
 import io.shardingsphere.core.parsing.parser.sql.dql.select.SelectParserFactory;
-import io.shardingsphere.core.parsing.parser.sql.tcl.TCLStatement;
-import io.shardingsphere.core.parsing.parser.sql.tcl.begin.BeginParserFactory;
-import io.shardingsphere.core.parsing.parser.sql.tcl.commit.CommitParserFactory;
-import io.shardingsphere.core.parsing.parser.sql.tcl.rollback.RollbcakParserFactory;
-import io.shardingsphere.core.parsing.parser.sql.tcl.savepoint.SavepointParserFactory;
-import io.shardingsphere.core.parsing.parser.sql.tcl.set.autocommit.SetAutoCommitParserFactory;
-import io.shardingsphere.core.parsing.parser.sql.tcl.set.transaction.SetTransactionParserFactory;
 import io.shardingsphere.core.rule.ShardingRule;
 import lombok.AccessLevel;
 import lombok.NoArgsConstructor;
@@ -162,31 +156,6 @@ public final class SQLParserFactory {
                 return DenyUserParserFactory.newInstance(dbType, shardingRule, lexerEngine);
             default:
                 throw new SQLParsingUnsupportedException(tokenType);
-        }
-    }
-    
-    private static SQLParser getTCLParser(final DatabaseType dbType, final TokenType primaryTokenType, final LexerEngine lexerEngine) {
-        switch ((DefaultKeyword) primaryTokenType) {
-            case SET:
-                if (DefaultKeyword.TRANSACTION.equals(lexerEngine.getCurrentToken().getType())) {
-                    return SetTransactionParserFactory.newInstance();
-                } else {
-                    return SetAutoCommitParserFactory.newInstance(dbType, lexerEngine);
-                }
-            case COMMIT:
-                return CommitParserFactory.newInstance();
-            case ROLLBACK:
-                return RollbcakParserFactory.newInstance();
-            case SAVEPOINT:
-                return SavepointParserFactory.newInstance();
-            case BEGIN:
-                return BeginParserFactory.newInstance();
-            case IF:
-                if (DatabaseType.SQLServer == dbType) {
-                    return SetAutoCommitParserFactory.newInstance(dbType, lexerEngine);
-                }
-            default:
-                throw new SQLParsingUnsupportedException(primaryTokenType);
         }
     }
 }
