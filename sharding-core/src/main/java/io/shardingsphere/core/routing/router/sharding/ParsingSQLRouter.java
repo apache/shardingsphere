@@ -23,8 +23,7 @@ import io.shardingsphere.api.algorithm.sharding.ListShardingValue;
 import io.shardingsphere.api.algorithm.sharding.ShardingValue;
 import io.shardingsphere.core.constant.DatabaseType;
 import io.shardingsphere.core.constant.ShardingOperator;
-import io.shardingsphere.core.metadata.datasource.ShardingDataSourceMetaData;
-import io.shardingsphere.core.metadata.table.ShardingTableMetaData;
+import io.shardingsphere.core.metadata.ShardingMetaData;
 import io.shardingsphere.core.optimizer.OptimizeEngineFactory;
 import io.shardingsphere.core.optimizer.condition.ShardingCondition;
 import io.shardingsphere.core.optimizer.condition.ShardingConditions;
@@ -66,7 +65,7 @@ public final class ParsingSQLRouter implements ShardingRouter {
     
     private final ShardingRule shardingRule;
     
-    private final ShardingTableMetaData shardingTableMetaData;
+    private final ShardingMetaData shardingMetaData;
     
     private final DatabaseType databaseType;
     
@@ -74,15 +73,13 @@ public final class ParsingSQLRouter implements ShardingRouter {
     
     private final List<Number> generatedKeys = new LinkedList<>();
     
-    private final ShardingDataSourceMetaData shardingDataSourceMetaData;
-    
     private final ParsingHook parsingHook = new SPIParsingHook();
     
     @Override
     public SQLStatement parse(final String logicSQL, final boolean useCache) {
         parsingHook.start(logicSQL);
         try {
-            SQLStatement result = new SQLParsingEngine(databaseType, logicSQL, shardingRule, shardingTableMetaData).parse(useCache);
+            SQLStatement result = new SQLParsingEngine(databaseType, logicSQL, shardingRule, shardingMetaData.getTable()).parse(useCache);
             parsingHook.finishSuccess();
             return result;
         } catch (final Exception ex) {
@@ -102,14 +99,14 @@ public final class ParsingSQLRouter implements ShardingRouter {
         if (sqlStatement instanceof SelectStatement && !sqlStatement.getTables().isEmpty() && !((SelectStatement) sqlStatement).getSubQueryStatements().isEmpty()) {
             mergeShardingValueForSubQuery(sqlStatement.getConditions(), shardingConditions);
         }
-        RoutingResult routingResult = RoutingEngineFactory.newInstance(shardingRule, shardingDataSourceMetaData, sqlStatement, shardingConditions).route();
+        RoutingResult routingResult = RoutingEngineFactory.newInstance(shardingRule, shardingMetaData.getDataSource(), sqlStatement, shardingConditions).route();
         SQLRewriteEngine rewriteEngine = new SQLRewriteEngine(shardingRule, logicSQL, databaseType, sqlStatement, shardingConditions, parameters);
         if (sqlStatement instanceof SelectStatement && null != ((SelectStatement) sqlStatement).getLimit()) {
             processLimit(parameters, (SelectStatement) sqlStatement);
         }
         SQLBuilder sqlBuilder = rewriteEngine.rewrite(!routingResult.isSingleRouting());
         for (TableUnit each : routingResult.getTableUnits().getTableUnits()) {
-            result.getRouteUnits().add(new RouteUnit(each.getDataSourceName(), rewriteEngine.generateSQL(each, sqlBuilder, shardingDataSourceMetaData)));
+            result.getRouteUnits().add(new RouteUnit(each.getDataSourceName(), rewriteEngine.generateSQL(each, sqlBuilder, shardingMetaData.getDataSource())));
         }
         if (showSQL) {
             SQLLogger.logSQL(logicSQL, sqlStatement, result.getRouteUnits());

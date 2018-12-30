@@ -21,6 +21,7 @@ import io.shardingsphere.api.config.rule.ShardingRuleConfiguration;
 import io.shardingsphere.api.config.rule.TableRuleConfiguration;
 import io.shardingsphere.api.config.strategy.InlineShardingStrategyConfiguration;
 import io.shardingsphere.core.constant.DatabaseType;
+import io.shardingsphere.core.metadata.ShardingMetaData;
 import io.shardingsphere.core.metadata.datasource.ShardingDataSourceMetaData;
 import io.shardingsphere.core.metadata.table.ColumnMetaData;
 import io.shardingsphere.core.metadata.table.ShardingTableMetaData;
@@ -107,20 +108,9 @@ public final class StandardRoutingEngineForSubQueryTest {
     
     private void assertSubquery(final String sql, final List<Object> parameters) {
         ShardingRule shardingRule = createShardingRule();
-        ShardingTableMetaData shardingTableMetaData = buildShardingTableMetaData();
-        ShardingDataSourceMetaData shardingDataSourceMetaData = buildShardingDataSourceMetaData();
-        PreparedStatementRoutingEngine engine = new PreparedStatementRoutingEngine(sql, shardingRule,
-                shardingTableMetaData, DatabaseType.MySQL, true, shardingDataSourceMetaData);
+        PreparedStatementRoutingEngine engine = new PreparedStatementRoutingEngine(
+                sql, shardingRule, new ShardingMetaData(buildShardingDataSourceMetaData(), buildShardingTableMetaData()), DatabaseType.MySQL, true);
         engine.route(parameters);
-    }
-    
-    private ShardingTableMetaData buildShardingTableMetaData() {
-        Map<String, TableMetaData> tableMetaDataMap = new HashMap<>(3, 1);
-        tableMetaDataMap.put("t_order",
-                new TableMetaData(Arrays.asList(new ColumnMetaData("order_id", "int", true), new ColumnMetaData("user_id", "int", false), new ColumnMetaData("status", "int", false))));
-        tableMetaDataMap.put("t_order_item", new TableMetaData(Arrays.asList(new ColumnMetaData("item_id", "int", true), new ColumnMetaData("order_id", "int", false),
-                new ColumnMetaData("user_id", "int", false), new ColumnMetaData("status", "varchar", false), new ColumnMetaData("c_date", "timestamp", false))));
-        return new ShardingTableMetaData(tableMetaDataMap);
     }
     
     private ShardingDataSourceMetaData buildShardingDataSourceMetaData() {
@@ -149,7 +139,8 @@ public final class StandardRoutingEngineForSubQueryTest {
         return Arrays.asList("ds_0", "ds_1");
     }
     
-    private void addTableRule(final ShardingRuleConfiguration shardingRuleConfig, final String tableName, final String actualDataNodes, final String shardingColumn, final String algorithmExpression) {
+    private void addTableRule(
+            final ShardingRuleConfiguration shardingRuleConfig, final String tableName, final String actualDataNodes, final String shardingColumn, final String algorithmExpression) {
         TableRuleConfiguration orderTableRuleConfig = createTableRuleConfig(tableName, actualDataNodes, shardingColumn, algorithmExpression);
         shardingRuleConfig.getTableRuleConfigs().add(orderTableRuleConfig);
     }
@@ -161,5 +152,14 @@ public final class StandardRoutingEngineForSubQueryTest {
         result.setDatabaseShardingStrategyConfig(new InlineShardingStrategyConfiguration(shardingColumn, algorithmExpression));
         result.setActualDataNodes(actualDataNodes);
         return result;
+    }
+    
+    private ShardingTableMetaData buildShardingTableMetaData() {
+        Map<String, TableMetaData> tableMetaDataMap = new HashMap<>(3, 1);
+        tableMetaDataMap.put("t_order",
+                new TableMetaData(Arrays.asList(new ColumnMetaData("order_id", "int", true), new ColumnMetaData("user_id", "int", false), new ColumnMetaData("status", "int", false))));
+        tableMetaDataMap.put("t_order_item", new TableMetaData(Arrays.asList(new ColumnMetaData("item_id", "int", true), new ColumnMetaData("order_id", "int", false),
+                new ColumnMetaData("user_id", "int", false), new ColumnMetaData("status", "varchar", false), new ColumnMetaData("c_date", "timestamp", false))));
+        return new ShardingTableMetaData(tableMetaDataMap);
     }
 }

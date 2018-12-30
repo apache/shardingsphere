@@ -68,8 +68,8 @@ public final class StatementExecutorWrapper implements JDBCExecutorWrapper {
     }
     
     private SQLRouteResult doShardingRoute(final String sql, final DatabaseType databaseType) {
-        StatementRoutingEngine routingEngine = new StatementRoutingEngine(((ShardingSchema) logicSchema).getShardingRule(), logicSchema.getMetaData().getTable(),
-                databaseType, GLOBAL_REGISTRY.getShardingProperties().<Boolean>getValue(ShardingPropertiesConstant.SQL_SHOW), logicSchema.getMetaData().getDataSource());
+        StatementRoutingEngine routingEngine = new StatementRoutingEngine(((ShardingSchema) logicSchema).getShardingRule(), logicSchema.getMetaData(),
+                databaseType, GLOBAL_REGISTRY.getShardingProperties().<Boolean>getValue(ShardingPropertiesConstant.SQL_SHOW));
         return routingEngine.route(sql);
     }
     

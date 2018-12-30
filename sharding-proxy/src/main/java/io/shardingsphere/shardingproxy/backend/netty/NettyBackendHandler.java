@@ -120,9 +120,8 @@ public final class NettyBackendHandler extends AbstractBackendHandler {
     }
     
     private CommandResponsePackets executeForSharding() throws InterruptedException, ExecutionException, TimeoutException {
-        StatementRoutingEngine routingEngine = new StatementRoutingEngine(
-                ((ShardingSchema) logicSchema).getShardingRule(), logicSchema.getMetaData().getTable(), databaseType,
-                GLOBAL_REGISTRY.getShardingProperties().<Boolean>getValue(ShardingPropertiesConstant.SQL_SHOW), logicSchema.getMetaData().getDataSource());
+        StatementRoutingEngine routingEngine = new StatementRoutingEngine(((ShardingSchema) logicSchema).getShardingRule(), 
+                logicSchema.getMetaData(), databaseType, GLOBAL_REGISTRY.getShardingProperties().<Boolean>getValue(ShardingPropertiesConstant.SQL_SHOW));
         SQLRouteResult routeResult = routingEngine.route(sql);
         if (routeResult.getRouteUnits().isEmpty()) {
             return new CommandResponsePackets(new OKPacket(1));

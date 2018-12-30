@@ -25,6 +25,7 @@ import io.shardingsphere.core.metadata.table.executor.TableMetaDataConnectionMan
 import io.shardingsphere.core.metadata.table.executor.TableMetaDataInitializer;
 import io.shardingsphere.core.rule.ShardingRule;
 import lombok.Getter;
+import lombok.RequiredArgsConstructor;
 
 import java.util.Map;
 
@@ -33,6 +34,8 @@ import java.util.Map;
  *
  * @author zhangliang
  */
+// TODO RequiredArgsConstructor for test only, should remove later
+@RequiredArgsConstructor
 @Getter
 public final class ShardingMetaData {
     
