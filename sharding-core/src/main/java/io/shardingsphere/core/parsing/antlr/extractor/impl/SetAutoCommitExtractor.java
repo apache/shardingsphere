@@ -18,7 +18,6 @@
 package io.shardingsphere.core.parsing.antlr.extractor.impl;
 
 import com.google.common.base.Optional;
-import com.google.common.base.Preconditions;
 import io.shardingsphere.core.parsing.antlr.extractor.OptionalSQLSegmentExtractor;
 import io.shardingsphere.core.parsing.antlr.extractor.util.ExtractorUtils;
 import io.shardingsphere.core.parsing.antlr.extractor.util.RuleName;
@@ -36,7 +35,7 @@ public final class SetAutoCommitExtractor implements OptionalSQLSegmentExtractor
     @Override
     public Optional<SetAutoCommitSegment> extract(final ParserRuleContext ancestorNode) {
         Optional<ParserRuleContext> autoCommitValueNode = ExtractorUtils.findFirstChildNode(ancestorNode, RuleName.AUTO_COMMIT_VALUE);
-        Preconditions.checkState(autoCommitValueNode.isPresent(), "Auto commit value is necessary.");
-        return Optional.of(new SetAutoCommitSegment("1".equals(SQLUtil.getExactlyValue(autoCommitValueNode.get().getText()))));
+        return autoCommitValueNode.isPresent()
+                ? Optional.of(new SetAutoCommitSegment("1".equals(SQLUtil.getExactlyValue(autoCommitValueNode.get().getText())))) : Optional.<SetAutoCommitSegment>absent();
     }
 }
