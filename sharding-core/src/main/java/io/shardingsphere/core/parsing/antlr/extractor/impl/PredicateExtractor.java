@@ -64,7 +64,7 @@ public final class PredicateExtractor implements OptionalSQLSegmentExtractor {
      * Extract SQL segment from SQL AST.
      *
      * @param questionNodeIndexMap question node map
-     * @param exprNode             expression node of AST
+     * @param exprNode expression node of AST
      * @return or condition
      */
     public Optional<OrConditionSegment> extractCondition(final Map<ParserRuleContext, Integer> questionNodeIndexMap, final ParserRuleContext exprNode) {
@@ -78,36 +78,29 @@ public final class PredicateExtractor implements OptionalSQLSegmentExtractor {
         if (index > 0) {
             Optional<OrConditionSegment> leftOrCondition = extractCondition(questionNodeIndexMap, (ParserRuleContext) exprNode.getChild(index - 1));
             Optional<OrConditionSegment> rightOrCondition = extractCondition(questionNodeIndexMap, (ParserRuleContext) exprNode.getChild(index + 1));
-            return mergeCondition(leftOrCondition, rightOrCondition, exprNode.getChild(index).getText());
-        } else {
-            return extractConditionForParen(questionNodeIndexMap, exprNode);
+            if (leftOrCondition.isPresent() && rightOrCondition.isPresent()) {
+                return Optional.of(mergeCondition(leftOrCondition.get(), rightOrCondition.get(), exprNode.getChild(index).getText()));
+            }
+            return leftOrCondition.isPresent() ? leftOrCondition : rightOrCondition;
         }
+        return extractConditionForParen(questionNodeIndexMap, exprNode);
     }
     
-    private Optional<OrConditionSegment> mergeCondition(final Optional<OrConditionSegment> leftOrCondition, final Optional<OrConditionSegment> rightOrCondition, final String operator) {
-        if (!leftOrCondition.isPresent() && !rightOrCondition.isPresent()) {
-            return Optional.absent();
-        }
-        if (leftOrCondition.isPresent() && !rightOrCondition.isPresent()) {
-            return leftOrCondition;
-        }
-        if (rightOrCondition.isPresent() && !leftOrCondition.isPresent()) {
-            return rightOrCondition;
-        }
+    private OrConditionSegment mergeCondition(final OrConditionSegment leftOrCondition, final OrConditionSegment rightOrCondition, final String operator) {
         if (LogicalOperator.isOrOperator(operator)) {
-            leftOrCondition.get().getAndConditions().addAll(rightOrCondition.get().getAndConditions());
+            leftOrCondition.getAndConditions().addAll(rightOrCondition.getAndConditions());
             return leftOrCondition;
         }
         OrConditionSegment result = new OrConditionSegment();
-        for (AndConditionSegment each : leftOrCondition.get().getAndConditions()) {
-            for (AndConditionSegment eachRightOr : rightOrCondition.get().getAndConditions()) {
+        for (AndConditionSegment each : leftOrCondition.getAndConditions()) {
+            for (AndConditionSegment eachRightOr : rightOrCondition.getAndConditions()) {
                 AndConditionSegment tempList = new AndConditionSegment();
                 tempList.getConditions().addAll(each.getConditions());
                 tempList.getConditions().addAll(eachRightOr.getConditions());
                 result.getAndConditions().add(tempList);
             }
         }
-        return Optional.of(result);
+        return result;
     }
     
     private Optional<OrConditionSegment> extractConditionForParen(final Map<ParserRuleContext, Integer> questionNodeIndexMap, final ParserRuleContext exprNode) {
@@ -126,14 +119,14 @@ public final class PredicateExtractor implements OptionalSQLSegmentExtractor {
             return Optional.absent();
         }
         Optional<ConditionSegment> condition = buildCondition(questionNodeIndexMap, exprNode);
-        if (condition.isPresent()) {
-            OrConditionSegment result = new OrConditionSegment();
-            AndConditionSegment newAndCondition = new AndConditionSegment();
-            newAndCondition.getConditions().add(condition.get());
-            result.getAndConditions().add(newAndCondition);
-            return Optional.of(result);
+        if (!condition.isPresent()) {
+            return Optional.absent();
         }
-        return Optional.absent();
+        OrConditionSegment result = new OrConditionSegment();
+        AndConditionSegment newAndCondition = new AndConditionSegment();
+        newAndCondition.getConditions().add(condition.get());
+        result.getAndConditions().add(newAndCondition);
+        return Optional.of(result);
     }
     
     private Optional<ConditionSegment> buildCondition(final Map<ParserRuleContext, Integer> questionNodeIndexMap, final ParserRuleContext exprNode) {
@@ -146,13 +139,7 @@ public final class PredicateExtractor implements OptionalSQLSegmentExtractor {
     
     private Optional<ConditionSegment> buildEqualCondition(final Map<ParserRuleContext, Integer> questionNodeIndexMap, final ParserRuleContext exprNode) {
         Optional<ParserRuleContext> comparisionNode = ExtractorUtils.findFirstChildNode(exprNode, RuleName.COMPARISON_OPERATOR);
-        if (!comparisionNode.isPresent()) {
-            return Optional.absent();
-        }
-        if (!Symbol.EQ.getLiterals().equalsIgnoreCase(comparisionNode.get().getText())) {
-            return Optional.absent();
-        }
-        if (3 != comparisionNode.get().getParent().getChildCount()) {
+        if (!comparisionNode.isPresent() || !isValidEqualCondition(comparisionNode.get())) {
             return Optional.absent();
         }
         Optional<ParserRuleContext> leftNode = ExtractorUtils.findFirstChildNode((ParserRuleContext) comparisionNode.get().parent.getChild(0), RuleName.COLUMN_NAME);
@@ -161,22 +148,21 @@ public final class PredicateExtractor implements OptionalSQLSegmentExtractor {
             return Optional.absent();
         }
         if (leftNode.isPresent() && rightNode.isPresent()) {
-            Optional<ColumnSegment> column = buildColumn(leftNode.get());
+            Optional<ColumnSegment> leftColumn = buildColumn(leftNode.get());
             Optional<ColumnSegment> rightColumn = buildColumn(rightNode.get());
-            return Optional.of(new ConditionSegment(column.get(), ShardingOperator.EQUAL, rightColumn.get()));
+            Preconditions.checkState(leftColumn.isPresent() && rightColumn.isPresent());
+            return Optional.of(new ConditionSegment(leftColumn.get(), ShardingOperator.EQUAL, rightColumn.get()));
         }
         Optional<ColumnSegment> column = buildColumn(exprNode);
-        ParserRuleContext valueNode;
-        if (leftNode.isPresent()) {
-            valueNode = (ParserRuleContext) comparisionNode.get().parent.getChild(2);
-        } else {
-            valueNode = (ParserRuleContext) comparisionNode.get().parent.getChild(0);
-        }
+        Preconditions.checkState(column.isPresent());
+        ParserRuleContext valueNode = leftNode.isPresent() ? (ParserRuleContext) comparisionNode.get().parent.getChild(2) : (ParserRuleContext) comparisionNode.get().parent.getChild(0);
         Optional<ExpressionSegment> sqlExpression = buildExpression(questionNodeIndexMap, valueNode);
-        if (!sqlExpression.isPresent()) {
-            return Optional.absent();
-        }
-        return Optional.of(new ConditionSegment(column.get(), ShardingOperator.EQUAL, new EqualsValueExpressionSegment(sqlExpression.get())));
+        return sqlExpression.isPresent()
+                ? Optional.of(new ConditionSegment(column.get(), ShardingOperator.EQUAL, new EqualsValueExpressionSegment(sqlExpression.get()))) : Optional.<ConditionSegment>absent();
+    }
+    
+    private boolean isValidEqualCondition(final ParserRuleContext comparisionNode) {
+        return Symbol.EQ.getLiterals().equalsIgnoreCase(comparisionNode.getText()) && 3 == comparisionNode.getParent().getChildCount();
     }
     
     private Optional<ExpressionSegment> buildExpression(final Map<ParserRuleContext, Integer> questionNodeIndexMap, final ParserRuleContext valueNode) {
