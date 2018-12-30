@@ -17,26 +17,17 @@
 
 package io.shardingsphere.shardingproxy.backend.jdbc;
 
-import com.google.common.base.Function;
-import com.google.common.collect.Lists;
 import io.shardingsphere.api.config.rule.ShardingRuleConfiguration;
 import io.shardingsphere.core.constant.DatabaseType;
 import io.shardingsphere.core.constant.SQLType;
-import io.shardingsphere.core.constant.properties.ShardingPropertiesConstant;
 import io.shardingsphere.core.merger.MergeEngineFactory;
 import io.shardingsphere.core.merger.MergedResult;
 import io.shardingsphere.core.merger.dal.show.ShowTablesMergedResult;
-import io.shardingsphere.core.metadata.table.ColumnMetaData;
-import io.shardingsphere.core.metadata.table.TableMetaData;
-import io.shardingsphere.core.metadata.table.executor.TableMetaDataLoader;
-import io.shardingsphere.core.parsing.antlr.sql.segment.definition.column.ColumnDefinitionSegment;
-import io.shardingsphere.core.parsing.antlr.sql.statement.ddl.CreateTableStatement;
 import io.shardingsphere.core.parsing.parser.constant.DerivedColumn;
 import io.shardingsphere.core.parsing.parser.sql.SQLStatement;
 import io.shardingsphere.core.routing.SQLRouteResult;
 import io.shardingsphere.core.rule.ShardingRule;
 import io.shardingsphere.shardingproxy.backend.AbstractBackendHandler;
-import io.shardingsphere.shardingproxy.backend.BackendExecutorContext;
 import io.shardingsphere.shardingproxy.backend.ResultPacket;
 import io.shardingsphere.shardingproxy.backend.jdbc.connection.BackendConnection;
 import io.shardingsphere.shardingproxy.backend.jdbc.connection.ConnectionStatus;
@@ -44,8 +35,6 @@ import io.shardingsphere.shardingproxy.backend.jdbc.execute.JDBCExecuteEngine;
 import io.shardingsphere.shardingproxy.backend.jdbc.execute.response.ExecuteQueryResponse;
 import io.shardingsphere.shardingproxy.backend.jdbc.execute.response.ExecuteResponse;
 import io.shardingsphere.shardingproxy.backend.jdbc.execute.response.ExecuteUpdateResponse;
-import io.shardingsphere.shardingproxy.runtime.GlobalRegistry;
-import io.shardingsphere.shardingproxy.runtime.metadata.ProxyTableMetaDataConnectionManager;
 import io.shardingsphere.shardingproxy.runtime.schema.LogicSchema;
 import io.shardingsphere.shardingproxy.runtime.schema.ShardingSchema;
 import io.shardingsphere.shardingproxy.transport.mysql.constant.ServerErrorCode;
@@ -73,8 +62,6 @@ import java.util.List;
  */
 @RequiredArgsConstructor
 public final class JDBCBackendHandler extends AbstractBackendHandler {
-    
-    private static final GlobalRegistry GLOBAL_REGISTRY = GlobalRegistry.getInstance();
     
     private final LogicSchema logicSchema;
     
@@ -105,31 +92,10 @@ public final class JDBCBackendHandler extends AbstractBackendHandler {
                     ServerErrorCode.ER_ERROR_ON_MODIFYING_GTID_EXECUTED_TABLE, sqlStatement.getTables().isSingleTable() ? sqlStatement.getTables().getSingleTableName() : "unknown_table"));
         }
         executeResponse = executeEngine.execute(routeResult);
-        if (logicSchema instanceof ShardingSchema && SQLType.DDL == sqlStatement.getType() && !sqlStatement.getTables().isEmpty()) {
-            String logicTableName = sqlStatement.getTables().getSingleTableName();
-            if (routeResult.getSqlStatement() instanceof CreateTableStatement) {
-                createTable(logicTableName, logicSchema, (CreateTableStatement) routeResult.getSqlStatement());
-            }else {
-                // TODO refresh table meta data by SQL parse result
-                TableMetaDataLoader tableMetaDataLoader = new TableMetaDataLoader(logicSchema.getMetaData().getDataSource(), BackendExecutorContext.getInstance().getExecuteEngine(),
-                        new ProxyTableMetaDataConnectionManager(logicSchema.getBackendDataSource()), 
-                        GLOBAL_REGISTRY.getShardingProperties().<Integer>getValue(ShardingPropertiesConstant.MAX_CONNECTIONS_SIZE_PER_QUERY),
-                        GLOBAL_REGISTRY.getShardingProperties().<Boolean>getValue(ShardingPropertiesConstant.CHECK_TABLE_METADATA_ENABLED));
-                logicSchema.getMetaData().getTable().put(logicTableName, tableMetaDataLoader.load(logicTableName, ((ShardingSchema) logicSchema).getShardingRule()));
-            }
+        if (logicSchema instanceof ShardingSchema) {
+            refreshTableMetaData(logicSchema, routeResult.getSqlStatement());
         }
         return merge(sqlStatement);
-    }
-    
-    private void createTable(final String logicTableName, final LogicSchema logicSchema, final CreateTableStatement createTableStatement) {
-        TableMetaData tableMetaData = new TableMetaData(Lists.transform(createTableStatement.getColumnDefinitions(), new Function<ColumnDefinitionSegment, ColumnMetaData>() {
-            
-            @Override
-            public ColumnMetaData apply(final ColumnDefinitionSegment input) {
-                return new ColumnMetaData(input.getColumnName(), input.getDataType(), input.isPrimaryKey());
-            }
-        }));
-        logicSchema.getMetaData().getTable().put(logicTableName, tableMetaData);
     }
     
     private boolean isUnsupportedXA(final SQLType sqlType) {
