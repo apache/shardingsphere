@@ -30,6 +30,7 @@ import io.shardingsphere.core.optimizer.OptimizeEngineFactory;
 import io.shardingsphere.core.optimizer.condition.ShardingCondition;
 import io.shardingsphere.core.optimizer.condition.ShardingConditions;
 import io.shardingsphere.core.parsing.SQLParsingEngine;
+import io.shardingsphere.core.parsing.antlr.sql.statement.dcl.DCLStatement;
 import io.shardingsphere.core.parsing.antlr.sql.statement.ddl.DDLStatement;
 import io.shardingsphere.core.parsing.parser.context.condition.AndCondition;
 import io.shardingsphere.core.parsing.parser.context.condition.Column;
@@ -43,7 +44,6 @@ import io.shardingsphere.core.parsing.parser.dialect.postgresql.statement.ResetP
 import io.shardingsphere.core.parsing.parser.dialect.postgresql.statement.SetParamStatement;
 import io.shardingsphere.core.parsing.parser.sql.SQLStatement;
 import io.shardingsphere.core.parsing.parser.sql.dal.DALStatement;
-import io.shardingsphere.core.parsing.parser.sql.dcl.DCLStatement;
 import io.shardingsphere.core.parsing.parser.sql.dml.insert.InsertStatement;
 import io.shardingsphere.core.parsing.parser.sql.dql.select.SelectStatement;
 import io.shardingsphere.core.rewrite.SQLBuilder;
@@ -124,7 +124,7 @@ public final class ParsingSQLRouter implements ShardingRouter {
             setGeneratedKeys(result, generatedKey);
         }
         checkAndMergeShardingValue(sqlStatement, shardingConditions);
-        RoutingResult routingResult = route(sqlStatement, shardingConditions);
+        RoutingResult routingResult = doRoute(sqlStatement, shardingConditions);
         SQLRewriteEngine rewriteEngine = new SQLRewriteEngine(shardingRule, logicSQL, databaseType, sqlStatement, shardingConditions, parameters);
         boolean isSingleRouting = routingResult.isSingleRouting();
         if (sqlStatement instanceof SelectStatement && null != ((SelectStatement) sqlStatement).getLimit()) {
@@ -145,10 +145,7 @@ public final class ParsingSQLRouter implements ShardingRouter {
             return;
         }
         SelectStatement selectStatement = (SelectStatement) sqlStatement;
-        if (selectStatement.getSubQueryStatements().isEmpty()) {
-            return;
-        }
-        if (selectStatement.getTables().isEmpty()) {
+        if (selectStatement.getSubQueryStatements().isEmpty() || selectStatement.getTables().isEmpty()) {
             return;
         }
         for (AndCondition each : sqlStatement.getConditions().getOrCondition().getAndConditions()) {
@@ -214,7 +211,7 @@ public final class ParsingSQLRouter implements ShardingRouter {
         return false;
     }
     
-    private RoutingResult route(final SQLStatement sqlStatement, final ShardingConditions shardingConditions) {
+    private RoutingResult doRoute(final SQLStatement sqlStatement, final ShardingConditions shardingConditions) {
         Collection<String> tableNames = sqlStatement.getTables().getTableNames();
         RoutingEngine routingEngine;
         if (sqlStatement instanceof UseStatement) {
