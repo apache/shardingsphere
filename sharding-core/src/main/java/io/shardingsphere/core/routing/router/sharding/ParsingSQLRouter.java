@@ -34,6 +34,7 @@ import io.shardingsphere.core.parsing.antlr.sql.statement.ddl.DDLStatement;
 import io.shardingsphere.core.parsing.parser.context.condition.AndCondition;
 import io.shardingsphere.core.parsing.parser.context.condition.Column;
 import io.shardingsphere.core.parsing.parser.context.condition.Condition;
+import io.shardingsphere.core.parsing.parser.context.condition.Conditions;
 import io.shardingsphere.core.parsing.parser.context.condition.GeneratedKeyCondition;
 import io.shardingsphere.core.parsing.parser.dialect.mysql.statement.ShowDatabasesStatement;
 import io.shardingsphere.core.parsing.parser.dialect.mysql.statement.ShowTableStatusStatement;
@@ -117,8 +118,8 @@ public final class ParsingSQLRouter implements ShardingRouter {
         if (generatedKey.isPresent()) {
             setGeneratedKeys(result, generatedKey.get());
         }
-        if (sqlStatement instanceof SelectStatement) {
-            checkAndMergeShardingValue((SelectStatement) sqlStatement, shardingConditions);
+        if (sqlStatement instanceof SelectStatement && !sqlStatement.getTables().isEmpty() && !((SelectStatement) sqlStatement).getSubQueryStatements().isEmpty()) {
+            mergeShardingValueForSubQuery(sqlStatement.getConditions(), shardingConditions);
         }
         RoutingResult routingResult = doRoute(sqlStatement, shardingConditions);
         SQLRewriteEngine rewriteEngine = new SQLRewriteEngine(shardingRule, logicSQL, databaseType, sqlStatement, shardingConditions, parameters);
@@ -171,23 +172,34 @@ public final class ParsingSQLRouter implements ShardingRouter {
         sqlRouteResult.getGeneratedKey().getGeneratedKeys().addAll(generatedKeys);
     }
     
-    private void checkAndMergeShardingValue(final SelectStatement selectStatement, final ShardingConditions shardingConditions) {
-        if (selectStatement.getSubQueryStatements().isEmpty() || selectStatement.getTables().isEmpty()) {
-            return;
-        }
+    private void mergeShardingValueForSubQuery(final Conditions conditions, final ShardingConditions shardingConditions) {
         Preconditions.checkState(!shardingConditions.getShardingConditions().isEmpty(), "Must have sharding column with subquery.");
-        for (AndCondition each : selectStatement.getConditions().getOrCondition().getAndConditions()) {
-            for (Condition eachCondition : each.getConditions()) {
-                Preconditions.checkState(ShardingOperator.EQUAL == eachCondition.getOperator(), "Only support sharding by '=' with subquery.");
-            }
-        }
-        ShardingCondition firstShardingCondition = shardingConditions.getShardingConditions().get(0);
+        Preconditions.checkState(isAllEqualShardingOperator(conditions), "Only support sharding by '=' with subquery.");
+        ShardingCondition firstShardingCondition = shardingConditions.getShardingConditions().remove(0);
         Preconditions.checkState(isListShardingValue(firstShardingCondition), "Only support sharding by '=' with subquery.");
         for (ShardingCondition each : shardingConditions.getShardingConditions()) {
             Preconditions.checkState(isSameShardingCondition(firstShardingCondition, each), "Sharding value must same with subquery.");
         }
         shardingConditions.getShardingConditions().clear();
         shardingConditions.getShardingConditions().add(firstShardingCondition);
+    }
+    
+    private boolean isAllEqualShardingOperator(final Conditions conditions) {
+        for (AndCondition each : conditions.getOrCondition().getAndConditions()) {
+            if (!isAllEqualShardingOperator(each)) {
+                return false;
+            }
+        }
+        return true;
+    }
+    
+    private boolean isAllEqualShardingOperator(final AndCondition andCondition) {
+        for (Condition each : andCondition.getConditions()) {
+            if (ShardingOperator.EQUAL != each.getOperator()) {
+                return false;
+            }
+        }
+        return true;
     }
     
     private boolean isListShardingValue(final ShardingCondition shardingCondition) {
