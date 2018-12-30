@@ -75,15 +75,6 @@ public final class StandardRoutingEngineForSubQueryTest {
         assertSubquery(sql, parameters);
     }
     
-    public void assertSubquery(final String sql, final List<Object> parameters) {
-        ShardingRule shardingRule = createShardingRule();
-        ShardingTableMetaData shardingTableMetaData = buildShardingTableMetaData();
-        ShardingDataSourceMetaData shardingDataSourceMetaData = buildShardingDataSourceMetaData();
-        PreparedStatementRoutingEngine engine = new PreparedStatementRoutingEngine(sql, shardingRule,
-                shardingTableMetaData, DatabaseType.MySQL, true, shardingDataSourceMetaData);
-        engine.route(parameters);
-    }
-    
     @Test(expected = IllegalStateException.class)
     public void assertBindingTableWithDifferentValue() {
         String sql = "select (select max(id) from t_order_item b where b.user_id = ? ) from t_order a where user_id = ? ";
@@ -114,7 +105,16 @@ public final class StandardRoutingEngineForSubQueryTest {
         assertSubquery(sql, parameters);
     }
     
-    private static ShardingTableMetaData buildShardingTableMetaData() {
+    private void assertSubquery(final String sql, final List<Object> parameters) {
+        ShardingRule shardingRule = createShardingRule();
+        ShardingTableMetaData shardingTableMetaData = buildShardingTableMetaData();
+        ShardingDataSourceMetaData shardingDataSourceMetaData = buildShardingDataSourceMetaData();
+        PreparedStatementRoutingEngine engine = new PreparedStatementRoutingEngine(sql, shardingRule,
+                shardingTableMetaData, DatabaseType.MySQL, true, shardingDataSourceMetaData);
+        engine.route(parameters);
+    }
+    
+    private ShardingTableMetaData buildShardingTableMetaData() {
         Map<String, TableMetaData> tableMetaDataMap = new HashMap<>(3, 1);
         tableMetaDataMap.put("t_order",
                 new TableMetaData(Arrays.asList(new ColumnMetaData("order_id", "int", true), new ColumnMetaData("user_id", "int", false), new ColumnMetaData("status", "int", false))));

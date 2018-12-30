@@ -20,7 +20,6 @@ package io.shardingsphere.core.routing.router.sharding;
 import com.google.common.base.Optional;
 import com.google.common.base.Preconditions;
 import io.shardingsphere.api.algorithm.sharding.ListShardingValue;
-import io.shardingsphere.api.algorithm.sharding.PreciseShardingValue;
 import io.shardingsphere.api.algorithm.sharding.ShardingValue;
 import io.shardingsphere.core.constant.DatabaseType;
 import io.shardingsphere.core.constant.ShardingOperator;
@@ -70,7 +69,6 @@ import io.shardingsphere.spi.parsing.SPIParsingHook;
 import lombok.RequiredArgsConstructor;
 
 import java.util.Collection;
-import java.util.Iterator;
 import java.util.LinkedList;
 import java.util.List;
 
@@ -183,62 +181,52 @@ public final class ParsingSQLRouter implements ShardingRouter {
                 Preconditions.checkState(ShardingOperator.EQUAL == eachCondition.getOperator(), "Only support sharding by '=' with subquery.");
             }
         }
-        ShardingCondition firstShardingCondition = shardingConditions.getShardingConditions().iterator().next();
-        Iterator<ShardingCondition> iterator = shardingConditions.getShardingConditions().iterator();
-        if (!iterator.hasNext()) {
-            return;
+        ShardingCondition firstShardingCondition = shardingConditions.getShardingConditions().get(0);
+        Preconditions.checkState(isListShardingValue(firstShardingCondition), "Only support sharding by '=' with subquery.");
+        for (ShardingCondition each : shardingConditions.getShardingConditions()) {
+            Preconditions.checkState(isSameShardingCondition(firstShardingCondition, each), "Sharding value must same with subquery.");
         }
-        int size = firstShardingCondition.getShardingValues().size();
-        while (iterator.hasNext()) {
-            ShardingCondition each = iterator.next();
-            Preconditions.checkState(size == each.getShardingValues().size(), "Sharding value size must be same with subquery.");
-            for (ShardingValue eachFirstValue : firstShardingCondition.getShardingValues()) {
-                boolean ok = false;
-                for (ShardingValue eachValue : each.getShardingValues()) {
-                    ok = checkAndMergeShardingValue(iterator, eachFirstValue, eachValue);
-                    if (ok) {
-                        break;
-                    }
-                }
-                Preconditions.checkState(ok, "Sharding value must be in single sharding with subquery.");
-            }
-        }
+        shardingConditions.getShardingConditions().clear();
+        shardingConditions.getShardingConditions().add(firstShardingCondition);
     }
     
-    @SuppressWarnings("unchecked")
-    private boolean checkAndMergeShardingValue(final Iterator<ShardingCondition> iterator, final ShardingValue shardingValue1, final ShardingValue shardingValue2) {
-        if (shardingValue1.getClass() != shardingValue2.getClass()) {
-            return false;
-        }
-        if (!shardingValue1.getColumnName().equalsIgnoreCase(shardingValue2.getColumnName())) {
-            return false;
-        }
-        if (!shardingValue1.getLogicTableName().equals(shardingValue2.getLogicTableName())) {
-            Optional<BindingTableRule> bindingRule = shardingRule.findBindingTableRule(shardingValue1.getLogicTableName());
-            if (!bindingRule.isPresent() || !bindingRule.get().hasLogicTable(shardingValue2.getLogicTableName())) {
+    private boolean isListShardingValue(final ShardingCondition shardingCondition) {
+        for (ShardingValue each : shardingCondition.getShardingValues()) {
+            if (!(each instanceof ListShardingValue)) {
                 return false;
             }
-            iterator.remove();
         }
-        if (shardingValue1 instanceof PreciseShardingValue) {
-            if (0 == ((PreciseShardingValue) shardingValue1).getValue().compareTo(((PreciseShardingValue) shardingValue2).getValue())) {
-                return true;
-            }
+        return true;
+    }
+    
+    private boolean isSameShardingCondition(final ShardingCondition shardingCondition1, final ShardingCondition shardingCondition2) {
+        if (shardingCondition1.getShardingValues().size() != shardingCondition2.getShardingValues().size()) {
+            return false;
         }
-        if (shardingValue1 instanceof ListShardingValue) {
-            Collection<?> values1 = ((ListShardingValue) shardingValue1).getValues();
-            Collection<?> values2 = ((ListShardingValue) shardingValue2).getValues();
-            if (values1.size() != values2.size()) {
+        for (int i = 0; i < shardingCondition1.getShardingValues().size(); i++) {
+            ShardingValue shardingValue1 = shardingCondition1.getShardingValues().get(i);
+            ShardingValue shardingValue2 = shardingCondition2.getShardingValues().get(i);
+            Preconditions.checkArgument(shardingValue1 instanceof ListShardingValue, "Only support sharding by '=' with subquery.");
+            Preconditions.checkArgument(shardingValue2 instanceof ListShardingValue, "Only support sharding by '=' with subquery.");
+            if (!isSameShardingValue((ListShardingValue) shardingValue1, (ListShardingValue) shardingValue2)) {
                 return false;
             }
-            for (Object each : values1) {
-                if (!values2.contains(each)) {
-                    return false;
-                }
-            }
-            return true;
         }
-        return false;
+        return true;
+    }
+    
+    private boolean isSameShardingValue(final ListShardingValue shardingValue1, final ListShardingValue shardingValue2) {
+        return isSameLogicTable(shardingValue1, shardingValue2) 
+                && shardingValue1.getColumnName().equals(shardingValue2.getColumnName()) && shardingValue1.getValues().equals(shardingValue2.getValues());
+    }
+    
+    private boolean isSameLogicTable(final ListShardingValue shardingValue1, final ListShardingValue shardingValue2) {
+        return shardingValue1.getLogicTableName().equals(shardingValue2.getLogicTableName()) || isBindingTable(shardingValue1, shardingValue2);
+    }
+    
+    private boolean isBindingTable(final ListShardingValue shardingValue1, final ListShardingValue shardingValue2) {
+        Optional<BindingTableRule> bindingRule = shardingRule.findBindingTableRule(shardingValue1.getLogicTableName());
+        return bindingRule.isPresent() && bindingRule.get().hasLogicTable(shardingValue2.getLogicTableName());
     }
     
     private RoutingResult doRoute(final SQLStatement sqlStatement, final ShardingConditions shardingConditions) {
