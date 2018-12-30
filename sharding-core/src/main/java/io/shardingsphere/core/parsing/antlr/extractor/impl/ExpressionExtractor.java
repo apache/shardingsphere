@@ -25,6 +25,7 @@ import io.shardingsphere.core.parsing.antlr.extractor.util.RuleName;
 import io.shardingsphere.core.parsing.antlr.sql.segment.column.ColumnSegment;
 import io.shardingsphere.core.parsing.antlr.sql.segment.expr.CommonExpressionSegment;
 import io.shardingsphere.core.parsing.antlr.sql.segment.expr.ExpressionSegment;
+import io.shardingsphere.core.parsing.antlr.sql.segment.expr.ExpressionWithAliasSegment;
 import io.shardingsphere.core.parsing.antlr.sql.segment.expr.FunctionExpressionSegment;
 import io.shardingsphere.core.parsing.antlr.sql.segment.expr.PropertyExpressionSegment;
 import io.shardingsphere.core.parsing.antlr.sql.segment.expr.StarExpressionSegment;
@@ -52,7 +53,7 @@ public final class ExpressionExtractor implements OptionalSQLSegmentExtractor {
             return Optional.of(getStarExpressionSegment(expressionNode, firstChildText));
         }
         Optional<ParserRuleContext> subqueryNode = ExtractorUtils.findFirstChildNode(expressionNode, RuleName.SUBQUERY);
-        return subqueryNode.isPresent() ? subqueryExtractor.extract(subqueryNode.get()) : Optional.of(fillForPropertyOrFunction(expressionNode));
+        return subqueryNode.isPresent() ? subqueryExtractor.extract(subqueryNode.get()) : Optional.of(getExpressionWithAliasSegment(expressionNode));
     }
     
     private ExpressionSegment getStarExpressionSegment(final ParserRuleContext expressionNode, final String text) {
@@ -63,15 +64,16 @@ public final class ExpressionExtractor implements OptionalSQLSegmentExtractor {
         return result;
     }
     
-    private ExpressionSegment fillForPropertyOrFunction(final ParserRuleContext expressionNode) {
+    private ExpressionWithAliasSegment getExpressionWithAliasSegment(final ParserRuleContext expressionNode) {
+        ExpressionWithAliasSegment result;
         Optional<ParserRuleContext> functionNode = ExtractorUtils.findFirstChildNode(expressionNode, RuleName.FUNCTION_CALL);
         if (functionNode.isPresent()) {
-            return getFunctionExpressionSegment(expressionNode, functionNode.get());
+            result = getFunctionExpressionSegment(expressionNode, functionNode.get());
+        } else if (RuleName.COLUMN_NAME.getName().equals(expressionNode.getChild(0).getClass().getSimpleName())) {
+            result = getPropertyExpressionSegment(expressionNode);
+        } else {
+            result = new CommonExpressionSegment(expressionNode.getStart().getStartIndex(), expressionNode.getStop().getStopIndex());
         }
-        if (RuleName.COLUMN_NAME.getName().equals(expressionNode.getChild(0).getClass().getSimpleName())) {
-            return getPropertyExpressionSegment(expressionNode);
-        }
-        CommonExpressionSegment result = new CommonExpressionSegment(expressionNode.getStart().getStartIndex(), expressionNode.getStop().getStopIndex());
         Optional<String> alias = getAlias(expressionNode);
         if (alias.isPresent()) {
             result.setAlias(alias.get());
@@ -79,22 +81,11 @@ public final class ExpressionExtractor implements OptionalSQLSegmentExtractor {
         return result;
     }
     
-    private ExpressionSegment getFunctionExpressionSegment(final ParserRuleContext expressionNode, final ParserRuleContext functionNode) {
+    private ExpressionWithAliasSegment getFunctionExpressionSegment(final ParserRuleContext expressionNode, final ParserRuleContext functionNode) {
         String functionName = functionNode.getChild(0).getText();
         int startIndex = ((TerminalNode) functionNode.getChild(1)).getSymbol().getStartIndex();
-        boolean hasDistinct = hasDistinct(expressionNode);
-        int distinctColumnNameStartPosition = hasDistinct ? calculateDistinctColumnNamePosition(functionNode) : -1;
-        FunctionExpressionSegment result = new FunctionExpressionSegment(functionName, 
-                functionNode.getStart().getStartIndex(), startIndex, functionNode.getStop().getStopIndex(), hasDistinct, distinctColumnNameStartPosition);
-        Optional<String> alias = getAlias(expressionNode);
-        if (alias.isPresent()) {
-            result.setAlias(alias.get());
-        }
-        return result;
-    }
-    
-    private boolean hasDistinct(final ParserRuleContext expressionNode) {
-        return ExtractorUtils.findFirstChildNode(expressionNode, RuleName.DISTINCT).isPresent();
+        int distinctColumnNameStartPosition = ExtractorUtils.findFirstChildNode(expressionNode, RuleName.DISTINCT).isPresent() ? calculateDistinctColumnNamePosition(functionNode) : -1;
+        return new FunctionExpressionSegment(functionName, functionNode.getStart().getStartIndex(), startIndex, functionNode.getStop().getStopIndex(), distinctColumnNameStartPosition);
     }
     
     private int calculateDistinctColumnNamePosition(final ParserRuleContext functionNode) {
@@ -108,17 +99,11 @@ public final class ExpressionExtractor implements OptionalSQLSegmentExtractor {
         return -1;
     }
     
-    private ExpressionSegment getPropertyExpressionSegment(final ParserRuleContext expressionNode) {
+    private ExpressionWithAliasSegment getPropertyExpressionSegment(final ParserRuleContext expressionNode) {
         ParserRuleContext columnNode = (ParserRuleContext) expressionNode.getChild(0);
         Optional<ColumnSegment> columnSegment = new ColumnSegmentExtractor(new HashMap<String, String>()).extract(columnNode);
         Preconditions.checkState(columnSegment.isPresent());
-        PropertyExpressionSegment result = new PropertyExpressionSegment(
-                columnSegment.get().getOwner(), columnSegment.get().getName(), columnNode.getStart().getStartIndex(), columnNode.getStop().getStopIndex());
-        Optional<String> alias = getAlias(expressionNode);
-        if (alias.isPresent()) {
-            result.setAlias(alias.get());
-        }
-        return result;
+        return new PropertyExpressionSegment(columnSegment.get().getOwner(), columnSegment.get().getName(), columnNode.getStart().getStartIndex(), columnNode.getStop().getStopIndex());
     }
     
     private Optional<String> getAlias(final ParserRuleContext expressionNode) {

@@ -17,34 +17,25 @@
 
 package io.shardingsphere.core.parsing.antlr.sql.segment.expr;
 
-import lombok.Getter;
-import lombok.RequiredArgsConstructor;
+import com.google.common.base.Optional;
+import lombok.Setter;
 
 /**
- * Function expression segment.
+ * Expression with Alias segment.
  * 
- * @author duhongjun
+ * @author zhangliang
  */
-@RequiredArgsConstructor
-@Getter
-public final class FunctionExpressionSegment extends ExpressionWithAliasSegment {
+@Setter
+public abstract class ExpressionWithAliasSegment implements ExpressionSegment {
     
-    private final String functionName;
-    
-    private final int functionStartIndex;
-    
-    private final int innerExpressionStartIndex;
-    
-    private final int innerExpressionEndIndex; 
-    
-    private final int distinctColumnNameStartPosition;
+    private String alias;
     
     /**
-     * Judge has distinct or not.
+     * Get alias.
      * 
-     * @return has distinct or not
+     * @return alias
      */
-    public boolean hasDistinct() {
-        return -1 != distinctColumnNameStartPosition;
+    public final Optional<String> getAlias() {
+        return Optional.fromNullable(alias);
     }
 }
