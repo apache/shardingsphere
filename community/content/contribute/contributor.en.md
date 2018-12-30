@@ -34,7 +34,7 @@ You can report a bug, submit a new function enhancement recommendation, or submi
  - After choosing the relevant issue, please reply with a deadline to indicate that you are working on it.
  - Find a mentor from the [Developer List](http://incubator.apache.org/projects/shardingsphere.html) and he/she will give you feedback about the design and the implementation of function in time.
  - Fork a branch to your own repo to work.
- - Please obey the [Code of Conduct](/en/contribute/code_conduct/) during the process of development and finish the check before submitting the pull request.
+ - Please obey the [Code of Conduct](/en/contribute/code-conduct/) during the process of development and finish the check before submitting the pull request.
  - Send a pull request to the dev branch rather than the master branch of shardingsphere after it is finished.
  - The mentor will do code review before discussing some details (including the design, the implementation and the performance) with you. The request will be merged into the branch of current development version after the edit is well enough.
  - At last, congratulate to be an official contributor of ShardingSphere!
