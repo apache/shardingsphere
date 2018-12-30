@@ -4,10 +4,11 @@
                         extractor-rule-refs="tableNames, indexNames, columnDefinitions, outlinePrimaryKey" />
     <sql-statement-rule context="alterTable" sql-statement-class="io.shardingsphere.core.parsing.antlr.sql.statement.ddl.AlterTableStatement" 
                         extractor-rule-refs="tableNames, indexNames, addColumnDefinition, modifyColumnDefinition, changeColumnDefinition, dropColumnDefinition, outlinePrimaryKey, dropPrimaryKey, renameTable" />
-    <sql-statement-rule context="dropTable" sql-statement-class="io.shardingsphere.core.parsing.antlr.sql.statement.ddl.DDLStatement" extractor-rule-refs="tableNames" />
+    <sql-statement-rule context="dropTable" sql-statement-class="io.shardingsphere.core.parsing.antlr.sql.statement.ddl.DropTableStatement" extractor-rule-refs="tableNames" />
     <sql-statement-rule context="truncateTable" sql-statement-class="io.shardingsphere.core.parsing.antlr.sql.statement.ddl.DDLStatement" extractor-rule-refs="tableName" />
     <sql-statement-rule context="createIndex" sql-statement-class="io.shardingsphere.core.parsing.antlr.sql.statement.ddl.DDLStatement" extractor-rule-refs="tableName, indexName" />
     <sql-statement-rule context="dropIndex" sql-statement-class="io.shardingsphere.core.parsing.antlr.sql.statement.ddl.DDLStatement" extractor-rule-refs="tableName, indexName" />
+    
     <sql-statement-rule context="select" sql-statement-class="io.shardingsphere.core.parsing.parser.sql.dql.select.SelectStatement" 
                         extractor-rule-refs="tableNames, indexNames, selectClause, fromWhere, groupBy, orderBy, limit" 
                         optimizer-class="dql.dialect.mysql.MySQLSelectOptimizer" />
