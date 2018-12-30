@@ -4,7 +4,7 @@
                         extractor-rule-refs="tableNames, indexNames, columnDefinitions, outlinePrimaryKey" />
     <sql-statement-rule context="alterTable" sql-statement-class="io.shardingsphere.core.parsing.antlr.sql.statement.ddl.AlterTableStatement" 
                         extractor-rule-refs="tableNames, addColumnDefinition, modifyColumnDefinition, renameColumnDefinition, dropColumnDefinition, outlinePrimaryKey, dropPrimaryKey, renameTable" />
-    <sql-statement-rule context="dropTable" sql-statement-class="io.shardingsphere.core.parsing.antlr.sql.statement.ddl.DDLStatement" extractor-rule-refs="tableName" />
+    <sql-statement-rule context="dropTable" sql-statement-class="io.shardingsphere.core.parsing.antlr.sql.statement.ddl.DropTableStatement" extractor-rule-refs="tableName" />
     <sql-statement-rule context="truncateTable" sql-statement-class="io.shardingsphere.core.parsing.antlr.sql.statement.ddl.DDLStatement" extractor-rule-refs="tableName" />
     <sql-statement-rule context="createIndex" sql-statement-class="io.shardingsphere.core.parsing.antlr.sql.statement.ddl.DDLStatement" extractor-rule-refs="tableName, indexName" />
     <sql-statement-rule context="alterIndex" sql-statement-class="io.shardingsphere.core.parsing.antlr.sql.statement.ddl.DDLStatement" extractor-rule-refs="indexNames" />
