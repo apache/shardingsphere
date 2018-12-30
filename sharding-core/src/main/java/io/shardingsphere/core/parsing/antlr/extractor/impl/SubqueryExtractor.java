@@ -35,6 +35,12 @@ import org.antlr.v4.runtime.ParserRuleContext;
  */
 public final class SubqueryExtractor implements OptionalSQLSegmentExtractor {
     
+    private final FromWhereExtractor fromWhereExtractor = new FromWhereExtractor();
+    
+    private final GroupByExtractor groupByExtractor = new GroupByExtractor();
+    
+    private final OrderByExtractor orderByExtractor = new OrderByExtractor();
+    
     @Override
     public Optional<SubquerySegment> extract(final ParserRuleContext subqueryNode) {
         if (!RuleName.SUBQUERY.getName().endsWith(subqueryNode.getClass().getSimpleName())) {
@@ -49,15 +55,27 @@ public final class SubqueryExtractor implements OptionalSQLSegmentExtractor {
             }
             parentNode = parentNode.getParent();
         }
+        SubquerySegment result = new SubquerySegment(subqueryInFrom);
         Optional<SelectClauseSegment> selectClauseSegment = new SelectClauseExtractor().extract(subqueryNode);
-        Optional<FromWhereSegment> fromWhereSegment = new FromWhereExtractor().extract(subqueryNode);
-        Optional<GroupBySegment> groupBySegment = new GroupByExtractor().extract(subqueryNode);
-        Optional<OrderBySegment> orderBySegment = new OrderByExtractor().extract(subqueryNode);
-        Optional<ParserRuleContext> aliasNode = ExtractorUtils.findFirstChildNode(subqueryNode.getParent(), RuleName.ALIAS);
-        Optional<String> alias = Optional.absent();
-        if (aliasNode.isPresent()) {
-            alias = Optional.of(aliasNode.get().getText());
+        if (selectClauseSegment.isPresent()) {
+            result.setSelectClauseSegment(selectClauseSegment.get());
         }
-        return Optional.of(new SubquerySegment(selectClauseSegment, fromWhereSegment, groupBySegment, orderBySegment, alias, subqueryInFrom));
+        Optional<FromWhereSegment> fromWhereSegment = fromWhereExtractor.extract(subqueryNode);
+        if (fromWhereSegment.isPresent()) {
+            result.setFromWhereSegment(fromWhereSegment.get());
+        }
+        Optional<GroupBySegment> groupBySegment = groupByExtractor.extract(subqueryNode);
+        if (groupBySegment.isPresent()) {
+            result.setGroupBySegment(groupBySegment.get());
+        }
+        Optional<OrderBySegment> orderBySegment = orderByExtractor.extract(subqueryNode);
+        if (orderBySegment.isPresent()) {
+            result.setOrderBySegment(orderBySegment.get());
+        }
+        Optional<ParserRuleContext> aliasNode = ExtractorUtils.findFirstChildNode(subqueryNode.getParent(), RuleName.ALIAS);
+        if (aliasNode.isPresent()) {
+            result.setAlias(aliasNode.get().getText());
+        }
+        return Optional.of(result);
     }
 }
