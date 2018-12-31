@@ -18,6 +18,7 @@
 package io.shardingsphere.core.executor.sql.execute.result;
 
 import com.google.common.base.Optional;
+import com.google.common.collect.Multimap;
 import io.shardingsphere.core.constant.AggregationType;
 import io.shardingsphere.core.parsing.parser.context.selectitem.AggregationDistinctSelectItem;
 import io.shardingsphere.core.parsing.parser.context.selectitem.AggregationSelectItem;
@@ -37,12 +38,12 @@ public final class AggregationDistinctQueryMetaData {
     
     private final Collection<AggregationDistinctColumnMetaData> columnMetaDatas;
     
-    public AggregationDistinctQueryMetaData(final Collection<AggregationDistinctSelectItem> aggregationDistinctSelectItems, final int aggregationDistinctColumnIndex, final int derivedBeginIndex) {
+    public AggregationDistinctQueryMetaData(final Collection<AggregationDistinctSelectItem> aggregationDistinctSelectItems, final Multimap<String, Integer> columnLabelAndIndexMap) {
         columnMetaDatas = new LinkedList<>();
-        List<Integer> derivedBeginPosition = new ArrayList<>(1);
-        derivedBeginPosition.add(derivedBeginIndex);
+        List<Integer> derivedBeginIndex = new ArrayList<>(1);
+        derivedBeginIndex.add(columnLabelAndIndexMap.size() + 1);
         for (AggregationDistinctSelectItem each : aggregationDistinctSelectItems) {
-            columnMetaDatas.add(getAggregationDistinctColumnMetaData(each, aggregationDistinctColumnIndex, derivedBeginPosition));
+            columnMetaDatas.add(getAggregationDistinctColumnMetaData(each, new ArrayList<>(columnLabelAndIndexMap.get(each.getColumnLabel())).get(0), derivedBeginIndex));
         }
     }
     
