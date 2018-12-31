@@ -17,7 +17,9 @@
 
 package io.shardingsphere.core.executor.sql.execute.result;
 
+import com.google.common.base.Function;
 import com.google.common.base.Optional;
+import com.google.common.collect.Collections2;
 import com.google.common.collect.Multimap;
 import io.shardingsphere.core.constant.AggregationType;
 import io.shardingsphere.core.parsing.parser.context.selectitem.AggregationDistinctSelectItem;
@@ -59,6 +61,21 @@ public final class AggregationDistinctQueryMetaData {
     private void reviseColumnLabelAndIndexMap(final Multimap<String, Integer> columnLabelAndIndexMap, final AggregationDistinctSelectItem selectItem, final int countDerivedIndex, final int sumDerivedIndex) {
         columnLabelAndIndexMap.put(selectItem.getDerivedAggregationSelectItems().get(0).getColumnLabel(), countDerivedIndex);
         columnLabelAndIndexMap.put(selectItem.getDerivedAggregationSelectItems().get(1).getColumnLabel(), sumDerivedIndex);
+    }
+    
+    /**
+     * Get aggregation distinct column indexes.
+     * 
+     * @return aggregation distinct column indexes
+     */
+    public Collection<Integer> getAggregationDistinctColumnIndexes() {
+        
+        return Collections2.transform(columnMetaDatas, new Function<AggregationDistinctColumnMetaData, Integer>() {
+            @Override
+            public Integer apply(final AggregationDistinctColumnMetaData input) {
+                return input.columnIndex;
+            }
+        });
     }
     
     @RequiredArgsConstructor 
