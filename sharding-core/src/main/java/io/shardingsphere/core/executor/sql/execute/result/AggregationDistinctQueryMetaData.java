@@ -145,6 +145,21 @@ public final class AggregationDistinctQueryMetaData {
     /**
      * Get aggregation distinct column index.
      *
+     * @param aggregationDistinctColumnLabel aggregation distinct column label
+     * @return aggregation distinct column index
+     */
+    public int getAggregationDistinctColumnIndex(final String aggregationDistinctColumnLabel) {
+        return Collections2.filter(columnMetaDataList, new Predicate<AggregationDistinctColumnMetaData>() {
+            @Override
+            public boolean apply(final AggregationDistinctColumnMetaData input) {
+                return aggregationDistinctColumnLabel.equals(input.getColumnLabel());
+            }
+        }).iterator().next().getColumnIndex();
+    }
+    
+    /**
+     * Get aggregation distinct column index.
+     *
      * @param derivedSumIndex derived sum index
      * @return aggregation distinct column index
      */
