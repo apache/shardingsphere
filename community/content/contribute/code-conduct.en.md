@@ -27,17 +27,17 @@ chapter = true
  - Return values are named with `result`; Variables in the loop structure are named with `each`; Replace `each` with `entry` in map.
  - Exceptions when catch are named with `ex`; Exceptions when catch but do nothing are named with `ignored`.
  - Name property files with camel-case and lowercase first letters.
+ - Split codes that need to add notes with it into small methods, which are explained with method names.
  - Have constants on the left and variable on the right in `=` and `equals` conditional expressions; Have variable on the left and constants on the right in `greater than` and `less than` conditional expressions.
- - Use `LinkedList`  in priority. Use `ArrayList` for use index to get element only.
- - Use capacity based `Collection` such as `ArrayList`, `HashMap` must indicate initial capacity to avoid recalculate capacity.
  - Design class as `final` class expect abstract class for extend.
  - Make nested loop structures a new method.
  - Use guard clauses in priority.
  - Minimize the access permission for classes and methods.
  - Private method should be just next to the method in which it is used; writing private methods should be in the same as the appearance order of private methods.
  - No `null` parameters or return values.
- - Split codes that need to add notes with it into small methods, which are explained with method names.
  - Replace constructors, getters, setter methods and log variable with lombok in priority.
+ - Use `LinkedList`  in priority. Use `ArrayList` for use index to get element only.
+ - Use capacity based `Collection` such as `ArrayList`, `HashMap` must indicate initial capacity to avoid recalculate capacity.
  - Use English in all the logs and javadoc.
  - Include Javadoc, todo and fixme only in the comments.
  - Only `public` classes and methods need javadoc, other methods, classes and override methods do not need javadoc.
