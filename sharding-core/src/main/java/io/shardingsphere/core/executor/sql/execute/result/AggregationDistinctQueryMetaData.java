@@ -68,21 +68,6 @@ public final class AggregationDistinctQueryMetaData {
     }
     
     /**
-     * Get aggregation distinct column labels.
-     * 
-     * @return aggregation distinct column labels
-     */
-    public Collection<String> getAggregationDistinctColumnLabels() {
-        
-        return Collections2.transform(columnMetaDataList, new Function<AggregationDistinctColumnMetaData, String>() {
-            @Override
-            public String apply(final AggregationDistinctColumnMetaData input) {
-                return input.getColumnLabel();
-            }
-        });
-    }
-    
-    /**
      * Get aggregation distinct column indexes.
      *
      * @return aggregation distinct column indexes
@@ -93,6 +78,21 @@ public final class AggregationDistinctQueryMetaData {
             @Override
             public Integer apply(final AggregationDistinctColumnMetaData input) {
                 return input.getColumnIndex();
+            }
+        });
+    }
+    
+    /**
+     * Get aggregation distinct column labels.
+     *
+     * @return aggregation distinct column labels
+     */
+    public Collection<String> getAggregationDistinctColumnLabels() {
+        
+        return Collections2.transform(columnMetaDataList, new Function<AggregationDistinctColumnMetaData, String>() {
+            @Override
+            public String apply(final AggregationDistinctColumnMetaData input) {
+                return input.getColumnLabel();
             }
         });
     }
@@ -155,6 +155,22 @@ public final class AggregationDistinctQueryMetaData {
                 return derivedSumIndex == input.getDerivedSumIndex();
             }
         }).iterator().next().getColumnIndex();
+    }
+    
+    /**
+     * Get aggregation distinct column label.
+     *
+     * @param aggregationDistinctColumnIndex aggregation distinct column index
+     * @return aggregation distinct column label
+     */
+    public String getAggregationDistinctColumnLabel(final int aggregationDistinctColumnIndex) {
+        return Collections2.filter(columnMetaDataList, new Predicate<AggregationDistinctColumnMetaData>() {
+            @Override
+            public boolean apply(final AggregationDistinctColumnMetaData input) {
+                return aggregationDistinctColumnIndex == input.getColumnIndex();
+            }
+        }).iterator().next().getColumnLabel();
+        
     }
     
     @RequiredArgsConstructor 
