@@ -153,8 +153,12 @@ public final class AggregationDistinctQueryMetaData {
         
         private final AggregationType aggregationType;
         
-        private final Optional<Integer> derivedCountIndex;
+        private final int derivedCountIndex;
         
-        private final Optional<Integer> derivedSumIndex;
+        private final int derivedSumIndex;
+        
+        private AggregationDistinctColumnMetaData(final int columnIndex, final String columnLabel, final AggregationType aggregationType) {
+            this(columnIndex, columnLabel, aggregationType, -1, -1);
+        }
     }
 }
