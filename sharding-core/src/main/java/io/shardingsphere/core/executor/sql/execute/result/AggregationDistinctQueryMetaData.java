@@ -47,13 +47,13 @@ public final class AggregationDistinctQueryMetaData {
         }
     }
     
-    private AggregationDistinctColumnMetaData getAggregationDistinctColumnMetaData(final AggregationDistinctSelectItem selectItem, final int aggregationDistinctColumnIndex, final List<Integer> derivedBeginPosition) {
+    private AggregationDistinctColumnMetaData getAggregationDistinctColumnMetaData(final AggregationDistinctSelectItem selectItem, final int aggregationDistinctColumnIndex, final List<Integer> derivedBeginIndex) {
         List<AggregationSelectItem> derivedSelectItems = selectItem.getDerivedAggregationSelectItems();
         if (derivedSelectItems.isEmpty()) {
             return new AggregationDistinctColumnMetaData(aggregationDistinctColumnIndex, selectItem.getColumnLabel(), selectItem.getType(), Optional.<Integer>absent(), Optional.<Integer>absent());
         }
-        derivedBeginPosition.set(0, derivedBeginPosition.get(0) + 2);
-        return new AggregationDistinctColumnMetaData(aggregationDistinctColumnIndex, selectItem.getColumnLabel(), selectItem.getType(), Optional.of(derivedBeginPosition.get(0)), Optional.of(derivedBeginPosition.get(0) + 1));
+        derivedBeginIndex.set(0, derivedBeginIndex.get(0) + 2);
+        return new AggregationDistinctColumnMetaData(aggregationDistinctColumnIndex, selectItem.getColumnLabel(), selectItem.getType(), Optional.of(derivedBeginIndex.get(0)), Optional.of(derivedBeginIndex.get(0) + 1));
     }
     
     @RequiredArgsConstructor 
