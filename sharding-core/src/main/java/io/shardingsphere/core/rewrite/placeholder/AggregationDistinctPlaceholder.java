@@ -39,6 +39,6 @@ public final class AggregationDistinctPlaceholder implements ShardingPlaceholder
     @Override
     public String toString() {
         String result = " " + columnName;
-        return alias.isPresent() ? result + "AS" + alias.get() : result;
+        return alias.isPresent() ? result + " AS " + alias.get() : result;
     }
 }
