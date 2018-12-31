@@ -26,7 +26,6 @@ import io.shardingsphere.core.parsing.antlr.sql.segment.order.OrderByItemSegment
 import io.shardingsphere.core.parsing.antlr.sql.segment.order.OrderBySegment;
 import io.shardingsphere.core.parsing.parser.token.OrderByToken;
 import io.shardingsphere.core.util.NumberUtil;
-import lombok.RequiredArgsConstructor;
 import org.antlr.v4.runtime.ParserRuleContext;
 
 import java.util.Collection;
@@ -38,28 +37,27 @@ import java.util.LinkedList;
  *
  * @author duhongjun
  */
-@RequiredArgsConstructor
 public final class OrderByExtractor implements OptionalSQLSegmentExtractor {
     
     @Override
     public Optional<OrderBySegment> extract(final ParserRuleContext ancestorNode) {
-        Optional<ParserRuleContext> orderByParentNode = ExtractorUtils.findFirstChildNode(ancestorNode, RuleName.ORDER_BY_CLAUSE);
-        if (!orderByParentNode.isPresent()) {
+        Optional<ParserRuleContext> orderByNode = ExtractorUtils.findFirstChildNode(ancestorNode, RuleName.ORDER_BY_CLAUSE);
+        if (!orderByNode.isPresent()) {
             return Optional.absent();
         }
         OrderBySegment result = new OrderBySegment();
-        result.getOrderByItems().addAll(extractOrderBy(orderByParentNode.get()));
+        result.getOrderByItems().addAll(extractOrderBy(orderByNode.get()));
         return Optional.of(result);
     }
     
     /**
      * Extract order by.
      * 
-     * @param orderByParentNode parent node of order by
+     * @param orderByNode order by node
      * @return order by item segment
      */
-    public Collection<OrderByItemSegment> extractOrderBy(final ParserRuleContext orderByParentNode) {
-        Collection<ParserRuleContext> orderByNodes = ExtractorUtils.getAllDescendantNodes(orderByParentNode, RuleName.ORDER_BY_ITEM);
+    public Collection<OrderByItemSegment> extractOrderBy(final ParserRuleContext orderByNode) {
+        Collection<ParserRuleContext> orderByNodes = ExtractorUtils.getAllDescendantNodes(orderByNode, RuleName.ORDER_BY_ITEM);
         if (orderByNodes.isEmpty()) {
             return Collections.emptyList();
         }
@@ -83,7 +81,7 @@ public final class OrderByExtractor implements OptionalSQLSegmentExtractor {
             }
             ParserRuleContext firstChild = (ParserRuleContext) each.getChild(0);
             result.add(buildOrderByItemSegment(index, orderDirection, 
-                    firstChild.getStart().getStartIndex(), firstChild.getStop().getStopIndex(), isIdentifier, orderByParentNode.getStart().getStartIndex()));
+                    firstChild.getStart().getStartIndex(), firstChild.getStop().getStopIndex(), isIdentifier, orderByNode.getStart().getStartIndex()));
         }
         return result;
     }
