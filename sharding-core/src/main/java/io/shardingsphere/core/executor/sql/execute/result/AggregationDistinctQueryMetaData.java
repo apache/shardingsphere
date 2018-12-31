@@ -98,6 +98,21 @@ public final class AggregationDistinctQueryMetaData {
         }).iterator().next().getAggregationType();
     }
     
+    /**
+     * Get derived count column indexes.
+     *
+     * @return derived count column indexes
+     */
+    public Collection<Integer> getDerivedCountColumnIndexes() {
+        Collection<Integer> result = new LinkedList<>();
+        for (AggregationDistinctColumnMetaData each : columnMetaDatas) {
+            if (each.getDerivedCountIndex().isPresent()) {
+                result.add(each.getDerivedCountIndex().get());
+            }
+        }
+        return result;
+    }
+    
     @RequiredArgsConstructor 
     @Getter(AccessLevel.PRIVATE)
     private final class AggregationDistinctColumnMetaData {
