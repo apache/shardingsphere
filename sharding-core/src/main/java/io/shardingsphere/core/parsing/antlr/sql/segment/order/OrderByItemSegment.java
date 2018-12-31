@@ -21,12 +21,14 @@ import io.shardingsphere.core.constant.OrderDirection;
 import io.shardingsphere.core.parsing.antlr.sql.segment.SQLSegment;
 import io.shardingsphere.core.parsing.parser.token.OrderByToken;
 import lombok.Getter;
+import lombok.RequiredArgsConstructor;
 
 /**
  * Order by item segment.
  * 
  * @author duhongjun
  */
+@RequiredArgsConstructor
 @Getter
 public final class OrderByItemSegment implements SQLSegment {
     
@@ -43,19 +45,4 @@ public final class OrderByItemSegment implements SQLSegment {
     private final OrderDirection orderDirection;
     
     private final OrderDirection nullOrderDirection;
-    
-    public OrderByItemSegment(final int index, final int expressionStartPosition, final int expressionEndPosition, final boolean isIdentifier,
-                              final OrderByToken orderByToken, final OrderDirection orderDirection, final OrderDirection nullOrderDirection) {
-        this.index = index;
-        this.expressionStartPosition = expressionStartPosition;
-        this.expressionEndPosition = expressionEndPosition;
-        this.isIdentifier = isIdentifier;
-        this.orderByToken = orderByToken;
-        this.orderDirection = orderDirection;
-        this.nullOrderDirection = nullOrderDirection;
-    }
-    
-    public OrderByItemSegment(final int index, final int expressionStartPosition, final int endPosition, final boolean isIdentifier, final OrderByToken orderByToken) {
-        this(index, expressionStartPosition, endPosition, isIdentifier, orderByToken, OrderDirection.ASC, OrderDirection.ASC);
-    }
 }
