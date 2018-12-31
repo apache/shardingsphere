@@ -67,8 +67,8 @@ public final class FromWhereFiller implements SQLStatementFiller<FromWhereSegmen
             OrCondition orCondition = filterShardingCondition(sqlStatement, sqlSegment.getConditions(), sql, shardingRule, columnNameToTable, columnNameCount, shardingTableMetaData);
             sqlStatement.getConditions().getOrCondition().getAndConditions().addAll(orCondition.getAndConditions());
         }
-        if (!sqlSegment.getSubQuerys().isEmpty()) {
-            for (SubquerySegment each : sqlSegment.getSubQuerys()) {
+        if (!sqlSegment.getSubQueries().isEmpty()) {
+            for (SubquerySegment each : sqlSegment.getSubQueries()) {
                 new SubqueryFiller().fill(each, sqlStatement, sql, shardingRule, shardingTableMetaData);
             }
         }

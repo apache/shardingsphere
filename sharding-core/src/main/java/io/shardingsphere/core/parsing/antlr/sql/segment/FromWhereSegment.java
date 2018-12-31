@@ -39,8 +39,8 @@ public final class FromWhereSegment implements SQLSegment {
     
     private final OrConditionSegment conditions = new OrConditionSegment();
     
-    private final Collection<SubquerySegment> subQuerys = new LinkedList<>();
+    private final Collection<SubquerySegment> subQueries = new LinkedList<>();
     
     @Setter
-    private Integer parameterCount;
+    private int parameterCount;
 }
