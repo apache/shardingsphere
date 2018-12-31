@@ -79,7 +79,7 @@ public final class AggregationDistinctQueryMetaData {
     }
     
     @RequiredArgsConstructor 
-    final class AggregationDistinctColumnMetaData {
+    private final class AggregationDistinctColumnMetaData {
         
         private final int columnIndex;
         
