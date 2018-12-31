@@ -63,13 +63,13 @@ public final class FromWhereExtractor implements OptionalSQLSegmentExtractor {
         predicateSegmentExtractor = new PredicateExtractor(result.getTableAliases());
         Collection<ParserRuleContext> questionNodes = ExtractorUtils.getAllDescendantNodes(ancestorNode, RuleName.QUESTION);
         result.setParameterCount(questionNodes.size());
-        Map<ParserRuleContext, Integer> questionNodeIndexMap = getQuestionNodeIndexMap(questionNodes);
+        Map<ParserRuleContext, Integer> questionNodeIndexMap = getPlaceholderAndNodeIndexMap(questionNodes);
         extractAndFillTableSegment(result, tableReferenceNodes, questionNodeIndexMap);
         extractAndFillWhere(result, questionNodeIndexMap, fromNode.get().getParent());
         return Optional.of(result);
     }
     
-    private Map<ParserRuleContext, Integer> getQuestionNodeIndexMap(final Collection<ParserRuleContext> questionNodes) {
+    private Map<ParserRuleContext, Integer> getPlaceholderAndNodeIndexMap(final Collection<ParserRuleContext> questionNodes) {
         Map<ParserRuleContext, Integer> result = new HashMap<>(questionNodes.size(), 1);
         int index = 0;
         for (ParserRuleContext each : questionNodes) {

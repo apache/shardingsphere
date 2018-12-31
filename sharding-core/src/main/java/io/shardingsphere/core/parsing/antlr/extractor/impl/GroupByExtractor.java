@@ -37,12 +37,12 @@ public final class GroupByExtractor implements OptionalSQLSegmentExtractor {
         if (!selectClauseNode.isPresent()) {
             return Optional.absent();
         }
-        Optional<ParserRuleContext> orderByParentNode = ExtractorUtils.findFirstChildNodeNoneRecursive(selectClauseNode.get().getParent(), RuleName.GROUP_BY_CLAUSE);
-        if (!orderByParentNode.isPresent()) {
+        Optional<ParserRuleContext> groupByParentNode = ExtractorUtils.findFirstChildNodeNoneRecursive(selectClauseNode.get().getParent(), RuleName.GROUP_BY_CLAUSE);
+        if (!groupByParentNode.isPresent()) {
             return Optional.absent();
         }
-        GroupBySegment result = new GroupBySegment(orderByParentNode.get().getStop().getStopIndex() + 1);
-        result.getGroupByItems().addAll(new OrderByExtractor().extractOrderBy(orderByParentNode.get()));
+        GroupBySegment result = new GroupBySegment(groupByParentNode.get().getStop().getStopIndex() + 1);
+        result.getGroupByItems().addAll(new OrderByExtractor().extractOrderBy(groupByParentNode.get()));
         return Optional.of(result);
     }
 }

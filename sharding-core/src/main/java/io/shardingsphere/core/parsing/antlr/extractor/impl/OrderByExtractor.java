@@ -56,7 +56,13 @@ public final class OrderByExtractor implements OptionalSQLSegmentExtractor {
         return Optional.of(result);
     }
     
-    protected Collection<OrderByItemSegment> extractOrderBy(final ParserRuleContext orderByParentNode) {
+    /**
+     * Extract order by.
+     * 
+     * @param orderByParentNode parent node of order by
+     * @return order by item segment
+     */
+    public Collection<OrderByItemSegment> extractOrderBy(final ParserRuleContext orderByParentNode) {
         Collection<ParserRuleContext> orderByNodes = ExtractorUtils.getAllDescendantNodes(orderByParentNode, RuleName.ORDER_BY_ITEM);
         if (orderByNodes.isEmpty()) {
             return Collections.emptyList();
@@ -80,13 +86,14 @@ public final class OrderByExtractor implements OptionalSQLSegmentExtractor {
                 }
             }
             ParserRuleContext firstChild = (ParserRuleContext) each.getChild(0);
-            result.add(buildSegment(index, orderDirection, firstChild.getStart().getStartIndex(), firstChild.getStop().getStopIndex(), isIdentifier, orderByParentNode.getStart().getStartIndex()));
+            result.add(buildOrderByItemSegment(index, orderDirection, 
+                    firstChild.getStart().getStartIndex(), firstChild.getStop().getStopIndex(), isIdentifier, orderByParentNode.getStart().getStartIndex()));
         }
         return result;
     }
     
-    private OrderByItemSegment buildSegment(final int index, final OrderDirection orderDirection, 
-                                            final int expressionStartPosition, final int expressionEndPosition, final boolean isIdentifier, final int orderByItemStartPosition) {
+    private OrderByItemSegment buildOrderByItemSegment(final int index, final OrderDirection orderDirection,
+                                                       final int expressionStartPosition, final int expressionEndPosition, final boolean isIdentifier, final int orderByItemStartPosition) {
         return new OrderByItemSegment(index, expressionStartPosition, expressionEndPosition, isIdentifier, new OrderByToken(orderByItemStartPosition), orderDirection, OrderDirection.ASC);
     }
 }
