@@ -18,7 +18,6 @@
 package io.shardingsphere.shardingproxy.backend.jdbc.datasource;
 
 import io.shardingsphere.core.constant.ConnectionMode;
-import io.shardingsphere.core.exception.ShardingException;
 import lombok.RequiredArgsConstructor;
 import lombok.SneakyThrows;
 import org.junit.Before;
@@ -39,7 +38,6 @@ import java.util.concurrent.Future;
 
 import static org.hamcrest.CoreMatchers.containsString;
 import static org.hamcrest.CoreMatchers.instanceOf;
-import static org.hamcrest.CoreMatchers.is;
 import static org.junit.Assert.assertEquals;
 import static org.junit.Assert.assertThat;
 import static org.junit.Assert.assertTrue;
@@ -80,13 +78,9 @@ public class JDBCBackendDataSourceTest {
         assertEquals(5, actual.size());
     }
     
-    @Test
+    @Test(expected = SQLException.class)
     public void assertGetConnectionsFailed() throws SQLException {
-        try {
-            jdbcBackendDataSource.getConnections(ConnectionMode.MEMORY_STRICTLY, "ds_1", 6);
-        } catch (final ShardingException ex) {
-            assertThat(ex.getMessage(), is("Could't get 6 connections one time, partition succeed connection(5) have released!"));
-        }
+        jdbcBackendDataSource.getConnections(ConnectionMode.MEMORY_STRICTLY, "ds_1", 6);
     }
     
     @Test

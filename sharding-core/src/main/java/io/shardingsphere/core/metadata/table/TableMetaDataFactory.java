@@ -18,6 +18,7 @@
 package io.shardingsphere.core.metadata.table;
 
 import com.google.common.base.Function;
+import com.google.common.base.Optional;
 import com.google.common.collect.Lists;
 import io.shardingsphere.core.parsing.antlr.sql.segment.definition.column.ColumnDefinitionSegment;
 import io.shardingsphere.core.parsing.antlr.sql.segment.definition.column.position.ColumnAfterPositionSegment;
@@ -27,7 +28,6 @@ import io.shardingsphere.core.parsing.antlr.sql.statement.ddl.AlterTableStatemen
 import io.shardingsphere.core.parsing.antlr.sql.statement.ddl.CreateTableStatement;
 
 import java.util.Collection;
-import java.util.Iterator;
 import java.util.LinkedList;
 import java.util.List;
 import java.util.Map;
@@ -105,42 +105,29 @@ public final class TableMetaDataFactory {
     }
     
     private static void changeColumnDefinitionPosition(final ColumnFirstPositionSegment columnFirstPositionSegment, final List<ColumnMetaData> columnMetaDataList) {
-        ColumnMetaData firstColumnMetaData = null;
-        Iterator<ColumnMetaData> iterator = columnMetaDataList.iterator();
-        while (iterator.hasNext()) {
-            ColumnMetaData each = iterator.next();
-            if (each.getColumnName().equals(columnFirstPositionSegment.getColumnName())) {
-                firstColumnMetaData = each;
-                iterator.remove();
-                break;
-            }
-        }
-        if (null != firstColumnMetaData) {
-            columnMetaDataList.add(0, firstColumnMetaData);
+        Optional<ColumnMetaData> columnMetaData = find(columnFirstPositionSegment.getColumnName(), columnMetaDataList);
+        if (columnMetaData.isPresent()) {
+            columnMetaDataList.remove(columnMetaData.get());
+            columnMetaDataList.add(0, columnMetaData.get());
         }
     }
     
     private static void changeColumnDefinitionPosition(final ColumnAfterPositionSegment columnAfterPositionSegment, final List<ColumnMetaData> columnMetaDataList) {
-        int afterIndex = -1;
-        int adjustColumnIndex = -1;
-        for (int i = 0; i < columnMetaDataList.size(); i++) {
-            if (columnMetaDataList.get(i).getColumnName().equals(columnAfterPositionSegment.getColumnName())) {
-                adjustColumnIndex = i;
-            }
-            if (columnMetaDataList.get(i).getColumnName().equals(columnAfterPositionSegment.getAfterColumnName())) {
-                afterIndex = i;
-            }
-            if (adjustColumnIndex >= 0 && afterIndex >= 0) {
-                break;
+        Optional<ColumnMetaData> columnMetaData = find(columnAfterPositionSegment.getColumnName(), columnMetaDataList);
+        Optional<ColumnMetaData> afterColumnMetaData = find(columnAfterPositionSegment.getAfterColumnName(), columnMetaDataList);
+        if (columnMetaData.isPresent() && afterColumnMetaData.isPresent()) {
+            columnMetaDataList.remove(columnMetaData.get());
+            columnMetaDataList.add(columnMetaDataList.indexOf(afterColumnMetaData.get()) + 1, columnMetaData.get());
+        }
+    }
+    
+    private static Optional<ColumnMetaData> find(final String columnName, final List<ColumnMetaData> columnMetaDataList) {
+        for (ColumnMetaData each : columnMetaDataList) {
+            if (columnName.equals(each.getColumnName())) {
+                return Optional.of(each);
             }
         }
-        if (adjustColumnIndex >= 0 && afterIndex >= 0 && adjustColumnIndex != afterIndex + 1) {
-            ColumnMetaData adjustColumnMetaData = columnMetaDataList.remove(adjustColumnIndex);
-            if (afterIndex < adjustColumnIndex) {
-                afterIndex = afterIndex + 1;
-            }
-            columnMetaDataList.add(afterIndex, adjustColumnMetaData);
-        }
+        return Optional.absent();
     }
     
     private static void dropColumnDefinitions(final Collection<String> droppedColumnNames, final List<ColumnMetaData> columnMetaDataList) {

@@ -15,14 +15,15 @@
  * </p>
  */
 
-package io.shardingsphere.core.parsing.parser.sql.tcl.commit;
+package io.shardingsphere.core.parsing.antlr.sql.statement.ddl;
 
-import io.shardingsphere.core.parsing.parser.sql.tcl.TCLStatement;
+import lombok.Getter;
 
 /**
- * Commit statement.
+ * Drop table statement.
  *
- * @author maxiaoguang
+ * @author zhangliang
  */
-public final class CommitStatement extends TCLStatement {
+@Getter
+public final class DropTableStatement extends DDLStatement {
 }

@@ -25,7 +25,6 @@ import io.shardingsphere.core.constant.properties.ShardingPropertiesConstant;
 import io.shardingsphere.core.merger.MergeEngineFactory;
 import io.shardingsphere.core.merger.MergedResult;
 import io.shardingsphere.core.merger.QueryResult;
-import io.shardingsphere.core.metadata.table.executor.TableMetaDataLoader;
 import io.shardingsphere.core.parsing.SQLJudgeEngine;
 import io.shardingsphere.core.parsing.parser.sql.SQLStatement;
 import io.shardingsphere.core.routing.RouteUnit;
@@ -33,7 +32,6 @@ import io.shardingsphere.core.routing.SQLRouteResult;
 import io.shardingsphere.core.routing.StatementRoutingEngine;
 import io.shardingsphere.core.routing.router.masterslave.MasterSlaveRouter;
 import io.shardingsphere.shardingproxy.backend.AbstractBackendHandler;
-import io.shardingsphere.shardingproxy.backend.BackendExecutorContext;
 import io.shardingsphere.shardingproxy.backend.ResultPacket;
 import io.shardingsphere.shardingproxy.backend.netty.client.BackendNettyClientManager;
 import io.shardingsphere.shardingproxy.backend.netty.client.response.mysql.MySQLQueryResult;
@@ -41,7 +39,6 @@ import io.shardingsphere.shardingproxy.backend.netty.future.FutureRegistry;
 import io.shardingsphere.shardingproxy.backend.netty.future.SynchronizedFuture;
 import io.shardingsphere.shardingproxy.runtime.ChannelRegistry;
 import io.shardingsphere.shardingproxy.runtime.GlobalRegistry;
-import io.shardingsphere.shardingproxy.runtime.metadata.ProxyTableMetaDataConnectionManager;
 import io.shardingsphere.shardingproxy.runtime.schema.LogicSchema;
 import io.shardingsphere.shardingproxy.runtime.schema.MasterSlaveSchema;
 import io.shardingsphere.shardingproxy.runtime.schema.ShardingSchema;
@@ -102,7 +99,7 @@ public final class NettyBackendHandler extends AbstractBackendHandler {
     private MergedResult mergedResult;
     
     @Override
-    protected CommandResponsePackets execute0() throws InterruptedException, ExecutionException, TimeoutException, SQLException {
+    protected CommandResponsePackets execute0() throws InterruptedException, ExecutionException, TimeoutException {
         return logicSchema instanceof MasterSlaveSchema ? executeForMasterSlave() : executeForSharding();
     }
     
@@ -122,10 +119,9 @@ public final class NettyBackendHandler extends AbstractBackendHandler {
         return merge(new SQLJudgeEngine(sql).judge(), packets, queryResults);
     }
     
-    private CommandResponsePackets executeForSharding() throws InterruptedException, ExecutionException, TimeoutException, SQLException {
-        StatementRoutingEngine routingEngine = new StatementRoutingEngine(
-                ((ShardingSchema) logicSchema).getShardingRule(), logicSchema.getMetaData().getTable(), databaseType,
-                GLOBAL_REGISTRY.getShardingProperties().<Boolean>getValue(ShardingPropertiesConstant.SQL_SHOW), logicSchema.getMetaData().getDataSource());
+    private CommandResponsePackets executeForSharding() throws InterruptedException, ExecutionException, TimeoutException {
+        StatementRoutingEngine routingEngine = new StatementRoutingEngine(((ShardingSchema) logicSchema).getShardingRule(), 
+                logicSchema.getMetaData(), databaseType, GLOBAL_REGISTRY.getShardingProperties().<Boolean>getValue(ShardingPropertiesConstant.SQL_SHOW));
         SQLRouteResult routeResult = routingEngine.route(sql);
         if (routeResult.getRouteUnits().isEmpty()) {
             return new CommandResponsePackets(new OKPacket(1));
@@ -151,9 +147,7 @@ public final class NettyBackendHandler extends AbstractBackendHandler {
         }
         SQLStatement sqlStatement = routeResult.getSqlStatement();
         CommandResponsePackets result = merge(sqlStatement, packets, queryResults);
-        if (SQLType.DDL == sqlStatement.getType() && !sqlStatement.getTables().isEmpty()) {
-            refreshTableMetaData(sqlStatement.getTables().getSingleTableName());
-        }
+        refreshTableMetaData(logicSchema, sqlStatement);
         return result;
     }
     
@@ -210,16 +204,6 @@ public final class NettyBackendHandler extends AbstractBackendHandler {
             return new CommandResponsePackets(new ErrPacket(1, ex));
         }
         return packets.get(0);
-    }
-    
-    // TODO :jiaqi use sql packet to refresh meta data
-    // TODO refresh table meta data by SQL parse result
-    private void refreshTableMetaData(final String logicTableName) throws SQLException {
-        TableMetaDataLoader tableMetaDataLoader = new TableMetaDataLoader(
-                logicSchema.getMetaData().getDataSource(), BackendExecutorContext.getInstance().getExecuteEngine(), new ProxyTableMetaDataConnectionManager(logicSchema.getBackendDataSource()), 
-                GLOBAL_REGISTRY.getShardingProperties().<Integer>getValue(ShardingPropertiesConstant.MAX_CONNECTIONS_SIZE_PER_QUERY), 
-                GLOBAL_REGISTRY.getShardingProperties().<Boolean>getValue(ShardingPropertiesConstant.CHECK_TABLE_METADATA_ENABLED));
-        logicSchema.getMetaData().getTable().put(logicTableName, tableMetaDataLoader.load(logicTableName, ((ShardingSchema) logicSchema).getShardingRule()));
     }
     
     @Override

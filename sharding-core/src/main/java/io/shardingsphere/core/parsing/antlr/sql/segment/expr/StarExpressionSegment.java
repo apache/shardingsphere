@@ -18,9 +18,9 @@
 package io.shardingsphere.core.parsing.antlr.sql.segment.expr;
 
 import com.google.common.base.Optional;
-
 import lombok.Getter;
 import lombok.RequiredArgsConstructor;
+import lombok.Setter;
 
 /**
  * Star expression segment.
@@ -29,9 +29,19 @@ import lombok.RequiredArgsConstructor;
  */
 @RequiredArgsConstructor
 @Getter
+@Setter
 public final class StarExpressionSegment implements ExpressionSegment {
     
     private final int startPosition;
     
-    private final Optional<String> owner;
+    private String owner;
+    
+    /**
+     * Get owner.
+     * 
+     * @return owner
+     */
+    public Optional<String> getOwner() {
+        return Optional.fromNullable(owner);
+    }
 }

@@ -15,9 +15,7 @@
  * </p>
  */
 
-package io.shardingsphere.core.parsing.parser.sql.tcl.rollback;
-
-import io.shardingsphere.core.parsing.parser.sql.tcl.TCLStatement;
+package io.shardingsphere.core.parsing.antlr.sql.statement.tcl;
 
 /**
  * Rollback statement.

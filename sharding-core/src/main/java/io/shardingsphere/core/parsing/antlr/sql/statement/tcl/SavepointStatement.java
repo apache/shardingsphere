@@ -15,14 +15,12 @@
  * </p>
  */
 
-package io.shardingsphere.core.parsing.parser.sql.tcl.set.transaction;
-
-import io.shardingsphere.core.parsing.parser.sql.tcl.TCLStatement;
+package io.shardingsphere.core.parsing.antlr.sql.statement.tcl;
 
 /**
- * Set transaction statement.
+ * Savepoint statement.
  *
  * @author maxiaoguang
  */
-public final class SetTransactionStatement extends TCLStatement {
+public final class SavepointStatement extends TCLStatement {
 }

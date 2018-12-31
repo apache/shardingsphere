@@ -92,8 +92,8 @@ public final class ShardingPreparedStatement extends AbstractShardingPreparedSta
             final ShardingConnection connection, final String sql, final int resultSetType, final int resultSetConcurrency, final int resultSetHoldability, final boolean returnGeneratedKeys) {
         this.connection = connection;
         ShardingContext shardingContext = connection.getShardingContext();
-        routingEngine = new PreparedStatementRoutingEngine(sql, shardingContext.getShardingRule(), shardingContext.getMetaData().getTable(), shardingContext.getDatabaseType(), 
-                shardingContext.getShardingProperties().<Boolean>getValue(ShardingPropertiesConstant.SQL_SHOW), shardingContext.getMetaData().getDataSource());
+        routingEngine = new PreparedStatementRoutingEngine(sql, shardingContext.getShardingRule(), shardingContext.getMetaData(), shardingContext.getDatabaseType(), 
+                shardingContext.getShardingProperties().<Boolean>getValue(ShardingPropertiesConstant.SQL_SHOW));
         preparedStatementExecutor = new PreparedStatementExecutor(resultSetType, resultSetConcurrency, resultSetHoldability, returnGeneratedKeys, connection);
         batchPreparedStatementExecutor = new BatchPreparedStatementExecutor(resultSetType, resultSetConcurrency, resultSetHoldability, returnGeneratedKeys, connection);
     }
@@ -123,7 +123,7 @@ public final class ShardingPreparedStatement extends AbstractShardingPreparedSta
             initPreparedStatementExecutor();
             return preparedStatementExecutor.executeUpdate();
         } finally {
-            refreshTableMetaData(connection, routeResult);
+            refreshTableMetaData(connection.getShardingContext(), routeResult.getSqlStatement());
             clearBatch();
         }
     }
@@ -136,7 +136,7 @@ public final class ShardingPreparedStatement extends AbstractShardingPreparedSta
             initPreparedStatementExecutor();
             return preparedStatementExecutor.execute();
         } finally {
-            refreshTableMetaData(connection, routeResult);
+            refreshTableMetaData(connection.getShardingContext(), routeResult.getSqlStatement());
             clearBatch();
         }
     }

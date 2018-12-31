@@ -107,7 +107,7 @@ public final class ShardingStatement extends AbstractStatementAdapter {
             initStatementExecutor();
             return statementExecutor.executeUpdate();
         } finally {
-            refreshTableMetaData(connection, routeResult);
+            refreshTableMetaData(connection.getShardingContext(), routeResult.getSqlStatement());
             currentResultSet = null;
         }
     }
@@ -161,7 +161,7 @@ public final class ShardingStatement extends AbstractStatementAdapter {
             initStatementExecutor();
             return statementExecutor.execute();
         } finally {
-            refreshTableMetaData(connection, routeResult);
+            refreshTableMetaData(connection.getShardingContext(), routeResult.getSqlStatement());
             currentResultSet = null;
         }
     }
@@ -245,8 +245,8 @@ public final class ShardingStatement extends AbstractStatementAdapter {
     
     private void sqlRoute(final String sql) {
         ShardingContext shardingContext = connection.getShardingContext();
-        routeResult = new StatementRoutingEngine(shardingContext.getShardingRule(), shardingContext.getMetaData().getTable(), shardingContext.getDatabaseType(), 
-                shardingContext.getShardingProperties().<Boolean>getValue(ShardingPropertiesConstant.SQL_SHOW), shardingContext.getMetaData().getDataSource()).route(sql);
+        routeResult = new StatementRoutingEngine(shardingContext.getShardingRule(), 
+                shardingContext.getMetaData(), shardingContext.getDatabaseType(), shardingContext.getShardingProperties().<Boolean>getValue(ShardingPropertiesConstant.SQL_SHOW)).route(sql);
     }
     
     private void clearPrevious() throws SQLException {

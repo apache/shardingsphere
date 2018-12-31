@@ -17,6 +17,7 @@
 
 package io.shardingsphere.core.parsing;
 
+import io.shardingsphere.core.parsing.antlr.sql.statement.tcl.TCLStatement;
 import io.shardingsphere.core.parsing.parser.dialect.mysql.statement.DescribeStatement;
 import io.shardingsphere.core.parsing.parser.dialect.mysql.statement.ShowColumnsStatement;
 import io.shardingsphere.core.parsing.parser.dialect.mysql.statement.ShowCreateTableStatement;
@@ -32,7 +33,6 @@ import io.shardingsphere.core.parsing.parser.sql.dal.set.SetStatement;
 import io.shardingsphere.core.parsing.parser.sql.dml.DMLStatement;
 import io.shardingsphere.core.parsing.parser.sql.dml.insert.InsertStatement;
 import io.shardingsphere.core.parsing.parser.sql.dql.DQLStatement;
-import io.shardingsphere.core.parsing.parser.sql.tcl.TCLStatement;
 import org.junit.Test;
 
 import static org.hamcrest.CoreMatchers.instanceOf;

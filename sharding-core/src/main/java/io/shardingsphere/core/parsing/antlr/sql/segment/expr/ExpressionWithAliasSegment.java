@@ -15,19 +15,27 @@
  * </p>
  */
 
-package io.shardingsphere.core.parsing.parser.sql.tcl.savepoint;
+package io.shardingsphere.core.parsing.antlr.sql.segment.expr;
 
-import io.shardingsphere.core.parsing.parser.sql.SQLParser;
+import com.google.common.base.Optional;
+import lombok.Setter;
 
 /**
- * Savepoint parser.
- *
- * @author maxiaoguang
+ * Expression with Alias segment.
+ * 
+ * @author zhangliang
  */
-public final class SavepointParser implements SQLParser {
+@Setter
+public abstract class ExpressionWithAliasSegment implements ExpressionSegment {
     
-    @Override
-    public SavepointStatement parse() {
-        return new SavepointStatement();
+    private String alias;
+    
+    /**
+     * Get alias.
+     * 
+     * @return alias
+     */
+    public final Optional<String> getAlias() {
+        return Optional.fromNullable(alias);
     }
 }

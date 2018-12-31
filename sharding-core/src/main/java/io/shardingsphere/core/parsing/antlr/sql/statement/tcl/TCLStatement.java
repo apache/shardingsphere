@@ -15,7 +15,7 @@
  * </p>
  */
 
-package io.shardingsphere.core.parsing.parser.sql.tcl;
+package io.shardingsphere.core.parsing.antlr.sql.statement.tcl;
 
 import io.shardingsphere.core.constant.DatabaseType;
 import io.shardingsphere.core.constant.SQLType;

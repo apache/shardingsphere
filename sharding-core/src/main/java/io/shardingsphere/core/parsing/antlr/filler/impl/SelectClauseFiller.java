@@ -102,9 +102,8 @@ public final class SelectClauseFiller implements SQLStatementFiller<SelectClause
         if (expressionSegment instanceof FunctionExpressionSegment) {
             FunctionExpressionSegment functionExpressionSegment = (FunctionExpressionSegment) expressionSegment;
             Optional<String> alias = functionExpressionSegment.getAlias();
-            if (functionExpressionSegment.isHasDistinct() && !alias.isPresent()) {
-                alias = Optional.of(DerivedAlias.AGGREGATION_DISTINCT_DERIVED.getDerivedAlias(offset));
-                ((FunctionExpressionSegment) expressionSegment).setAlias(alias);
+            if (functionExpressionSegment.hasDistinct() && !alias.isPresent()) {
+                ((FunctionExpressionSegment) expressionSegment).setAlias(DerivedAlias.AGGREGATION_DISTINCT_DERIVED.getDerivedAlias(offset));
                 return offset + 1;
             }
         }

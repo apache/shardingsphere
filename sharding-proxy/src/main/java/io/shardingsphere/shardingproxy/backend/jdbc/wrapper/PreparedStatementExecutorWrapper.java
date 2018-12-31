@@ -74,8 +74,8 @@ public final class PreparedStatementExecutorWrapper implements JDBCExecutorWrapp
     }
     
     private SQLRouteResult doShardingRoute(final String sql, final DatabaseType databaseType) {
-        return new PreparedStatementRoutingEngine(sql, ((ShardingSchema) logicSchema).getShardingRule(), logicSchema.getMetaData().getTable(),
-                databaseType, GLOBAL_REGISTRY.getShardingProperties().<Boolean>getValue(ShardingPropertiesConstant.SQL_SHOW), logicSchema.getMetaData().getDataSource()).route(parameters);
+        return new PreparedStatementRoutingEngine(sql, ((ShardingSchema) logicSchema).getShardingRule(), logicSchema.getMetaData(),
+                databaseType, GLOBAL_REGISTRY.getShardingProperties().<Boolean>getValue(ShardingPropertiesConstant.SQL_SHOW)).route(parameters);
     }
     
     @Override
