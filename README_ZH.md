@@ -7,6 +7,7 @@
 [![GitHub release](https://img.shields.io/github/release/sharding-sphere/sharding-sphere.svg)](https://github.com/sharding-sphere/sharding-sphere/releases)
 [![Stargazers over time](https://starcharts.herokuapp.com/sharding-sphere/sharding-sphere.svg)](https://starcharts.herokuapp.com/sharding-sphere/sharding-sphere)
 
+[![Total Lines](https://tokei.rs/b1/github/sharding-sphere/sharding-sphere?category=lines)](https://github.com/sharding-sphere/sharding-sphere)
 [![Build Status](https://api.travis-ci.org/sharding-sphere/sharding-sphere.png?branch=master)](https://travis-ci.org/sharding-sphere/sharding-sphere)
 [![Coverage Status](https://coveralls.io/repos/github/sharding-sphere/sharding-sphere/badge.svg?branch=dev)](https://coveralls.io/github/sharding-sphere/sharding-sphere?branch=dev)
 [![snyk](https://snyk.io/test/github/sharding-sphere/sharding-sphere/badge.svg?targetFile=pom.xml)](https://snyk.io/test/github/sharding-sphere/sharding-sphere?targetFile=pom.xml)
