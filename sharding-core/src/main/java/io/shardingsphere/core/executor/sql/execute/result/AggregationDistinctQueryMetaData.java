@@ -19,11 +19,14 @@ package io.shardingsphere.core.executor.sql.execute.result;
 
 import com.google.common.base.Function;
 import com.google.common.base.Optional;
+import com.google.common.base.Predicate;
 import com.google.common.collect.Collections2;
 import com.google.common.collect.Multimap;
 import io.shardingsphere.core.constant.AggregationType;
 import io.shardingsphere.core.parsing.parser.context.selectitem.AggregationDistinctSelectItem;
 import io.shardingsphere.core.parsing.parser.context.selectitem.AggregationSelectItem;
+import lombok.AccessLevel;
+import lombok.Getter;
 import lombok.RequiredArgsConstructor;
 
 import java.util.ArrayList;
@@ -47,7 +50,8 @@ public final class AggregationDistinctQueryMetaData {
         }
     }
     
-    private AggregationDistinctColumnMetaData getAggregationDistinctColumnMetaData(final AggregationDistinctSelectItem selectItem, final int aggregationDistinctColumnIndex, final Multimap<String, Integer> columnLabelAndIndexMap) {
+    private AggregationDistinctColumnMetaData getAggregationDistinctColumnMetaData(final AggregationDistinctSelectItem selectItem, 
+                                                                                   final int aggregationDistinctColumnIndex, final Multimap<String, Integer> columnLabelAndIndexMap) {
         List<AggregationSelectItem> derivedSelectItems = selectItem.getDerivedAggregationSelectItems();
         if (derivedSelectItems.isEmpty()) {
             return new AggregationDistinctColumnMetaData(aggregationDistinctColumnIndex, selectItem.getColumnLabel(), selectItem.getType(), Optional.<Integer>absent(), Optional.<Integer>absent());
@@ -58,7 +62,8 @@ public final class AggregationDistinctQueryMetaData {
         return new AggregationDistinctColumnMetaData(aggregationDistinctColumnIndex, selectItem.getColumnLabel(), selectItem.getType(), Optional.of(countDerivedIndex), Optional.of(sumDerivedIndex));
     }
     
-    private void reviseColumnLabelAndIndexMap(final Multimap<String, Integer> columnLabelAndIndexMap, final AggregationDistinctSelectItem selectItem, final int countDerivedIndex, final int sumDerivedIndex) {
+    private void reviseColumnLabelAndIndexMap(final Multimap<String, Integer> columnLabelAndIndexMap, 
+                                              final AggregationDistinctSelectItem selectItem, final int countDerivedIndex, final int sumDerivedIndex) {
         columnLabelAndIndexMap.put(selectItem.getDerivedAggregationSelectItems().get(0).getColumnLabel(), countDerivedIndex);
         columnLabelAndIndexMap.put(selectItem.getDerivedAggregationSelectItems().get(1).getColumnLabel(), sumDerivedIndex);
     }
@@ -73,12 +78,28 @@ public final class AggregationDistinctQueryMetaData {
         return Collections2.transform(columnMetaDatas, new Function<AggregationDistinctColumnMetaData, Integer>() {
             @Override
             public Integer apply(final AggregationDistinctColumnMetaData input) {
-                return input.columnIndex;
+                return input.getColumnIndex();
             }
         });
     }
     
+    /**
+     * Get aggregation type.
+     * 
+     * @param distinctColumnIndex distinct column index
+     * @return aggregation type
+     */
+    public AggregationType getAggregationType(final int distinctColumnIndex) {
+        return Collections2.filter(columnMetaDatas, new Predicate<AggregationDistinctColumnMetaData>() {
+            @Override
+            public boolean apply(final AggregationDistinctColumnMetaData input) {
+                return distinctColumnIndex == input.columnIndex;
+            }
+        }).iterator().next().getAggregationType();
+    }
+    
     @RequiredArgsConstructor 
+    @Getter(AccessLevel.PRIVATE)
     private final class AggregationDistinctColumnMetaData {
         
         private final int columnIndex;
