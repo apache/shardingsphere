@@ -23,6 +23,7 @@ import io.shardingsphere.core.parsing.parser.context.selectitem.AggregationDisti
 import io.shardingsphere.core.parsing.parser.context.selectitem.AggregationSelectItem;
 import lombok.RequiredArgsConstructor;
 
+import java.util.ArrayList;
 import java.util.Collection;
 import java.util.LinkedList;
 import java.util.List;
@@ -36,19 +37,22 @@ public final class AggregationDistinctQueryMetaData {
     
     private final Collection<AggregationDistinctColumnMetaData> columnMetaDatas;
     
-    public AggregationDistinctQueryMetaData(final Collection<AggregationDistinctSelectItem> aggregationDistinctSelectItems) {
+    public AggregationDistinctQueryMetaData(final Collection<AggregationDistinctSelectItem> aggregationDistinctSelectItems, final int aggregationDistinctColumnIndex, final int derivedBeginIndex) {
         columnMetaDatas = new LinkedList<>();
+        List<Integer> derivedBeginPosition = new ArrayList<>(1);
+        derivedBeginPosition.add(derivedBeginIndex);
         for (AggregationDistinctSelectItem each : aggregationDistinctSelectItems) {
-            columnMetaDatas.add(getAggregationDistinctColumnMetaData(each));
+            columnMetaDatas.add(getAggregationDistinctColumnMetaData(each, aggregationDistinctColumnIndex, derivedBeginPosition));
         }
     }
     
-    private AggregationDistinctColumnMetaData getAggregationDistinctColumnMetaData(final AggregationDistinctSelectItem selectItem) {
+    private AggregationDistinctColumnMetaData getAggregationDistinctColumnMetaData(final AggregationDistinctSelectItem selectItem, final int aggregationDistinctColumnIndex, final List<Integer> derivedBeginPosition) {
         List<AggregationSelectItem> derivedSelectItems = selectItem.getDerivedAggregationSelectItems();
         if (derivedSelectItems.isEmpty()) {
-            return new AggregationDistinctColumnMetaData(selectItem.getIndex(), selectItem.getColumnLabel(), selectItem.getType(), Optional.<Integer>absent(), Optional.<Integer>absent());
+            return new AggregationDistinctColumnMetaData(aggregationDistinctColumnIndex, selectItem.getColumnLabel(), selectItem.getType(), Optional.<Integer>absent(), Optional.<Integer>absent());
         }
-        return new AggregationDistinctColumnMetaData(selectItem.getIndex(), selectItem.getColumnLabel(), selectItem.getType(), Optional.of(derivedSelectItems.get(0).getIndex()), Optional.of(derivedSelectItems.get(1).getIndex()));
+        derivedBeginPosition.set(0, derivedBeginPosition.get(0) + 2);
+        return new AggregationDistinctColumnMetaData(aggregationDistinctColumnIndex, selectItem.getColumnLabel(), selectItem.getType(), Optional.of(derivedBeginPosition.get(0)), Optional.of(derivedBeginPosition.get(0) + 1));
     }
     
     @RequiredArgsConstructor 
