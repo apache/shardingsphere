@@ -128,6 +128,21 @@ public final class AggregationDistinctQueryMetaData {
         return result;
     }
     
+    /**
+     * Get aggregation distinct column index.
+     *
+     * @param derivedSumIndex derived sum index
+     * @return aggregation distinct column index
+     */
+    public int getAggregationDistinctColumnIndex(final int derivedSumIndex) {
+        return Collections2.filter(columnMetaDataList, new Predicate<AggregationDistinctColumnMetaData>() {
+            @Override
+            public boolean apply(final AggregationDistinctColumnMetaData input) {
+                return derivedSumIndex == input.derivedSumIndex.get();
+            }
+        }).iterator().next().getColumnIndex();
+    }
+    
     @RequiredArgsConstructor 
     @Getter(AccessLevel.PRIVATE)
     private final class AggregationDistinctColumnMetaData {
