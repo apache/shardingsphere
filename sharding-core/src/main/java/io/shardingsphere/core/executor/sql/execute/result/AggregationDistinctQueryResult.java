@@ -50,6 +50,8 @@ import java.util.Set;
  */
 public final class AggregationDistinctQueryResult extends DistinctQueryResult {
     
+    private final AggregationDistinctQueryMetaData metaData;
+    
     private final Multimap<String, Integer> distinctAggregationColumnLabelAndIndexes = HashMultimap.create();
     
     private final Map<Integer, AggregationType> distinctAggregationIndexAndTypes = new LinkedHashMap<>();
@@ -58,14 +60,9 @@ public final class AggregationDistinctQueryResult extends DistinctQueryResult {
     
     private final Map<Integer, Integer> derivedSumIndexAndDistinctIndexes = new LinkedHashMap<>();
     
-    private AggregationDistinctQueryResult(final Multimap<String, Integer> columnLabelAndIndexMap, final Iterator<QueryRow> resultData,
-                                           final Multimap<String, Integer> distinctAggregationColumnLabelAndIndexes, final Map<Integer, AggregationType> distinctAggregationIndexAndTypes,
-                                           final Map<Integer, Integer> derivedCountIndexAndDistinctIndexes, final Map<Integer, Integer> derivedSumIndexAndDistinctIndexes) {
+    private AggregationDistinctQueryResult(final Multimap<String, Integer> columnLabelAndIndexMap, final Iterator<QueryRow> resultData, final AggregationDistinctQueryMetaData distinctQueryMetaData) {
         super(columnLabelAndIndexMap, resultData);
-        this.distinctAggregationColumnLabelAndIndexes.putAll(distinctAggregationColumnLabelAndIndexes);
-        this.distinctAggregationIndexAndTypes.putAll(distinctAggregationIndexAndTypes);
-        this.derivedCountIndexAndDistinctIndexes.putAll(derivedCountIndexAndDistinctIndexes);
-        this.derivedSumIndexAndDistinctIndexes.putAll(derivedSumIndexAndDistinctIndexes);
+        metaData = distinctQueryMetaData;
     }
     
     @SneakyThrows
@@ -77,7 +74,7 @@ public final class AggregationDistinctQueryResult extends DistinctQueryResult {
                 return input.getDistinctColumnLabel();
             }
         }));
-        init(selectStatement);
+        metaData = new AggregationDistinctQueryMetaData(selectStatement.getAggregationDistinctSelectItems(), getColumnLabelAndIndexMap());
     }
     
     private void init(final SelectStatement selectStatement) {
