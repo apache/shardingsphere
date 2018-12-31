@@ -18,7 +18,6 @@
 package io.shardingsphere.core.executor.sql.execute.result;
 
 import com.google.common.base.Function;
-import com.google.common.collect.HashMultimap;
 import com.google.common.collect.Iterators;
 import com.google.common.collect.Lists;
 import com.google.common.collect.Multimap;
@@ -26,20 +25,16 @@ import io.shardingsphere.core.constant.AggregationType;
 import io.shardingsphere.core.executor.sql.execute.row.QueryRow;
 import io.shardingsphere.core.merger.QueryResult;
 import io.shardingsphere.core.parsing.parser.context.selectitem.AggregationDistinctSelectItem;
-import io.shardingsphere.core.parsing.parser.context.selectitem.AggregationSelectItem;
 import io.shardingsphere.core.parsing.parser.sql.dql.select.SelectStatement;
 import lombok.SneakyThrows;
 
 import java.io.InputStream;
 import java.sql.SQLException;
-import java.util.ArrayList;
 import java.util.Calendar;
 import java.util.Collection;
 import java.util.Iterator;
-import java.util.LinkedHashMap;
 import java.util.LinkedHashSet;
 import java.util.List;
-import java.util.Map;
 import java.util.Map.Entry;
 import java.util.Set;
 
@@ -88,14 +83,14 @@ public final class AggregationDistinctQueryResult extends DistinctQueryResult {
     }
     
     private Object getValue(final int columnIndex) {
-        if (distinctAggregationIndexAndTypes.keySet().contains(columnIndex)) {
-            return AggregationType.COUNT == distinctAggregationIndexAndTypes.get(columnIndex) ? 1 : super.getValue(columnIndex, Object.class);
+        if (metaData.getAggregationDistinctColumnIndexes().contains(columnIndex)) {
+            return AggregationType.COUNT == metaData.getAggregationType(columnIndex) ? 1 : super.getValue(columnIndex, Object.class);
         }
-        if (derivedCountIndexAndDistinctIndexes.keySet().contains(columnIndex)) {
+        if (metaData.getDerivedCountColumnIndexes().contains(columnIndex)) {
             return 1;
         }
-        if (derivedSumIndexAndDistinctIndexes.keySet().contains(columnIndex)) {
-            return super.getValue(derivedSumIndexAndDistinctIndexes.get(columnIndex), Object.class);
+        if (metaData.getDerivedSumColumnIndexes().contains(columnIndex)) {
+            return super.getValue(metaData.getAggregationDistinctColumnIndex(columnIndex), Object.class);
         }
         return super.getValue(columnIndex, Object.class);
     }
@@ -146,10 +141,8 @@ public final class AggregationDistinctQueryResult extends DistinctQueryResult {
     
     @Override
     public String getColumnLabel(final int columnIndex) throws SQLException {
-        for (Entry<String, Integer> entry : distinctAggregationColumnLabelAndIndexes.entries()) {
-            if (columnIndex == entry.getValue()) {
-                return entry.getKey();
-            }
+        if (metaData.getAggregationDistinctColumnIndexes().contains(columnIndex)) {
+            return metaData.getAggregationDistinctColumnLabel(columnIndex);
         }
         for (Entry<String, Integer> entry : getColumnLabelAndIndexMap().entries()) {
             if (columnIndex == entry.getValue()) {
@@ -161,10 +154,10 @@ public final class AggregationDistinctQueryResult extends DistinctQueryResult {
     
     @Override
     protected Integer getColumnIndex(final String columnLabel) {
-        return isContainColumnLabel(columnLabel) ? new ArrayList<>(distinctAggregationColumnLabelAndIndexes.get(columnLabel)).get(0) : super.getColumnIndex(columnLabel);
+        return isContainColumnLabel(columnLabel) ? metaData.getAggregationDistinctColumnIndex(columnLabel) : super.getColumnIndex(columnLabel);
     }
     
     private boolean isContainColumnLabel(final String columnLabel) {
-        return null != distinctAggregationColumnLabelAndIndexes && distinctAggregationColumnLabelAndIndexes.containsKey(columnLabel);
+        return null != metaData && metaData.getAggregationDistinctColumnLabels().contains(columnLabel);
     }
 }
