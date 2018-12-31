@@ -19,9 +19,13 @@ package io.shardingsphere.core.executor.sql.execute.result;
 
 import com.google.common.base.Optional;
 import io.shardingsphere.core.constant.AggregationType;
+import io.shardingsphere.core.parsing.parser.context.selectitem.AggregationDistinctSelectItem;
+import io.shardingsphere.core.parsing.parser.context.selectitem.AggregationSelectItem;
 import lombok.RequiredArgsConstructor;
 
 import java.util.Collection;
+import java.util.LinkedList;
+import java.util.List;
 
 /**
  * Aggregation distinct query metadata.
@@ -30,7 +34,22 @@ import java.util.Collection;
  */
 public final class AggregationDistinctQueryMetaData {
     
-    private Collection<AggregationDistinctColumnMetaData> columnMetaDatas;
+    private final Collection<AggregationDistinctColumnMetaData> columnMetaDatas;
+    
+    public AggregationDistinctQueryMetaData(final Collection<AggregationDistinctSelectItem> aggregationDistinctSelectItems) {
+        columnMetaDatas = new LinkedList<>();
+        for (AggregationDistinctSelectItem each : aggregationDistinctSelectItems) {
+            columnMetaDatas.add(getAggregationDistinctColumnMetaData(each));
+        }
+    }
+    
+    private AggregationDistinctColumnMetaData getAggregationDistinctColumnMetaData(final AggregationDistinctSelectItem selectItem) {
+        List<AggregationSelectItem> derivedSelectItems = selectItem.getDerivedAggregationSelectItems();
+        if (derivedSelectItems.isEmpty()) {
+            return new AggregationDistinctColumnMetaData(selectItem.getIndex(), selectItem.getColumnLabel(), selectItem.getType(), Optional.<Integer>absent(), Optional.<Integer>absent());
+        }
+        return new AggregationDistinctColumnMetaData(selectItem.getIndex(), selectItem.getColumnLabel(), selectItem.getType(), Optional.of(derivedSelectItems.get(0).getIndex()), Optional.of(derivedSelectItems.get(1).getIndex()));
+    }
     
     @RequiredArgsConstructor 
     final class AggregationDistinctColumnMetaData {
