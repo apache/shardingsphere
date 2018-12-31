@@ -31,7 +31,7 @@ import org.antlr.v4.runtime.ParserRuleContext;
  */
 public final class GroupByExtractor implements OptionalSQLSegmentExtractor {
     
-    private final OrderByExtractor orderByExtractor = new OrderByExtractor();
+    private final OrderByItemExtractor orderByItemExtractor = new OrderByItemExtractor();
         
     @Override
     public Optional<GroupBySegment> extract(final ParserRuleContext ancestorNode) {
@@ -40,7 +40,7 @@ public final class GroupByExtractor implements OptionalSQLSegmentExtractor {
             return Optional.absent();
         }
         GroupBySegment result = new GroupBySegment(groupByNode.get().getStop().getStopIndex() + 1);
-        result.getGroupByItems().addAll(orderByExtractor.extractOrderBy(groupByNode.get()));
+        result.getGroupByItems().addAll(orderByItemExtractor.extract(groupByNode.get()));
         return Optional.of(result);
     }
 }

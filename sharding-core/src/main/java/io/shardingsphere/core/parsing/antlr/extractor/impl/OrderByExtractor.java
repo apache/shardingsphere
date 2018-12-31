@@ -18,19 +18,11 @@
 package io.shardingsphere.core.parsing.antlr.extractor.impl;
 
 import com.google.common.base.Optional;
-import io.shardingsphere.core.constant.OrderDirection;
 import io.shardingsphere.core.parsing.antlr.extractor.OptionalSQLSegmentExtractor;
 import io.shardingsphere.core.parsing.antlr.extractor.util.ExtractorUtils;
 import io.shardingsphere.core.parsing.antlr.extractor.util.RuleName;
-import io.shardingsphere.core.parsing.antlr.sql.segment.order.OrderByItemSegment;
 import io.shardingsphere.core.parsing.antlr.sql.segment.order.OrderBySegment;
-import io.shardingsphere.core.parsing.parser.token.OrderByToken;
-import io.shardingsphere.core.util.NumberUtil;
 import org.antlr.v4.runtime.ParserRuleContext;
-
-import java.util.Collection;
-import java.util.Collections;
-import java.util.LinkedList;
 
 /**
  * Order by extractor.
@@ -39,6 +31,8 @@ import java.util.LinkedList;
  */
 public final class OrderByExtractor implements OptionalSQLSegmentExtractor {
     
+    private final OrderByItemExtractor orderByItemExtractor = new OrderByItemExtractor();
+    
     @Override
     public Optional<OrderBySegment> extract(final ParserRuleContext ancestorNode) {
         Optional<ParserRuleContext> orderByNode = ExtractorUtils.findFirstChildNode(ancestorNode, RuleName.ORDER_BY_CLAUSE);
@@ -46,48 +40,7 @@ public final class OrderByExtractor implements OptionalSQLSegmentExtractor {
             return Optional.absent();
         }
         OrderBySegment result = new OrderBySegment();
-        result.getOrderByItems().addAll(extractOrderBy(orderByNode.get()));
+        result.getOrderByItems().addAll(orderByItemExtractor.extract(orderByNode.get()));
         return Optional.of(result);
-    }
-    
-    /**
-     * Extract order by.
-     * 
-     * @param orderByNode order by node
-     * @return order by item segment
-     */
-    public Collection<OrderByItemSegment> extractOrderBy(final ParserRuleContext orderByNode) {
-        Collection<ParserRuleContext> orderByNodes = ExtractorUtils.getAllDescendantNodes(orderByNode, RuleName.ORDER_BY_ITEM);
-        if (orderByNodes.isEmpty()) {
-            return Collections.emptyList();
-        }
-        Collection<OrderByItemSegment> result = new LinkedList<>();
-        for (ParserRuleContext each : orderByNodes) {
-            int count = each.getChildCount();
-            if (count == 0) {
-                continue;
-            }
-            int index = -1;
-            Optional<ParserRuleContext> numberNode = ExtractorUtils.findFirstChildNode(each, RuleName.NUMBER);
-            if (numberNode.isPresent()) {
-                index = NumberUtil.getExactlyNumber(numberNode.get().getText(), 10).intValue();
-            }
-            boolean isIdentifier = RuleName.COLUMN_NAME.getName().equalsIgnoreCase(each.getChild(0).getClass().getSimpleName());
-            OrderDirection orderDirection = OrderDirection.ASC;
-            if (1 < count) {
-                if (OrderDirection.DESC.name().equalsIgnoreCase(each.getChild(count - 1).getText())) {
-                    orderDirection = OrderDirection.DESC;
-                }
-            }
-            ParserRuleContext firstChild = (ParserRuleContext) each.getChild(0);
-            result.add(buildOrderByItemSegment(index, orderDirection, 
-                    firstChild.getStart().getStartIndex(), firstChild.getStop().getStopIndex(), isIdentifier, orderByNode.getStart().getStartIndex()));
-        }
-        return result;
-    }
-    
-    private OrderByItemSegment buildOrderByItemSegment(final int index, final OrderDirection orderDirection,
-                                                       final int expressionStartPosition, final int expressionEndPosition, final boolean isIdentifier, final int orderByItemStartPosition) {
-        return new OrderByItemSegment(index, expressionStartPosition, expressionEndPosition, isIdentifier, new OrderByToken(orderByItemStartPosition), orderDirection, OrderDirection.ASC);
     }
 }
