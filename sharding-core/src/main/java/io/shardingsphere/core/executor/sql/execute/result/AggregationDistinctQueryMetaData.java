@@ -68,8 +68,23 @@ public final class AggregationDistinctQueryMetaData {
     }
     
     /**
-     * Get aggregation distinct column indexes.
+     * Get aggregation distinct column labels.
      * 
+     * @return aggregation distinct column labels
+     */
+    public Collection<String> getAggregationDistinctColumnLabels() {
+        
+        return Collections2.transform(columnMetaDataList, new Function<AggregationDistinctColumnMetaData, String>() {
+            @Override
+            public String apply(final AggregationDistinctColumnMetaData input) {
+                return input.getColumnLabel();
+            }
+        });
+    }
+    
+    /**
+     * Get aggregation distinct column indexes.
+     *
      * @return aggregation distinct column indexes
      */
     public Collection<Integer> getAggregationDistinctColumnIndexes() {
@@ -92,7 +107,7 @@ public final class AggregationDistinctQueryMetaData {
         return Collections2.filter(columnMetaDataList, new Predicate<AggregationDistinctColumnMetaData>() {
             @Override
             public boolean apply(final AggregationDistinctColumnMetaData input) {
-                return distinctColumnIndex == input.columnIndex;
+                return distinctColumnIndex == input.getColumnIndex();
             }
         }).iterator().next().getAggregationType();
     }
