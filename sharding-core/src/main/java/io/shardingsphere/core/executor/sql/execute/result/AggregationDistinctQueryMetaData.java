@@ -18,7 +18,6 @@
 package io.shardingsphere.core.executor.sql.execute.result;
 
 import com.google.common.base.Function;
-import com.google.common.base.Optional;
 import com.google.common.base.Predicate;
 import com.google.common.collect.Collections2;
 import com.google.common.collect.Multimap;
@@ -54,12 +53,12 @@ public final class AggregationDistinctQueryMetaData {
                                                                                    final int aggregationDistinctColumnIndex, final Multimap<String, Integer> columnLabelAndIndexMap) {
         List<AggregationSelectItem> derivedSelectItems = selectItem.getDerivedAggregationSelectItems();
         if (derivedSelectItems.isEmpty()) {
-            return new AggregationDistinctColumnMetaData(aggregationDistinctColumnIndex, selectItem.getColumnLabel(), selectItem.getType(), Optional.<Integer>absent(), Optional.<Integer>absent());
+            return new AggregationDistinctColumnMetaData(aggregationDistinctColumnIndex, selectItem.getColumnLabel(), selectItem.getType());
         }
         int countDerivedIndex = columnLabelAndIndexMap.size() + 1;
         int sumDerivedIndex = countDerivedIndex + 1;
         reviseColumnLabelAndIndexMap(columnLabelAndIndexMap, selectItem, countDerivedIndex, sumDerivedIndex);
-        return new AggregationDistinctColumnMetaData(aggregationDistinctColumnIndex, selectItem.getColumnLabel(), selectItem.getType(), Optional.of(countDerivedIndex), Optional.of(sumDerivedIndex));
+        return new AggregationDistinctColumnMetaData(aggregationDistinctColumnIndex, selectItem.getColumnLabel(), selectItem.getType(), countDerivedIndex, sumDerivedIndex);
     }
     
     private void reviseColumnLabelAndIndexMap(final Multimap<String, Integer> columnLabelAndIndexMap, 
@@ -106,8 +105,8 @@ public final class AggregationDistinctQueryMetaData {
     public Collection<Integer> getDerivedCountColumnIndexes() {
         Collection<Integer> result = new LinkedList<>();
         for (AggregationDistinctColumnMetaData each : columnMetaDataList) {
-            if (each.getDerivedCountIndex().isPresent()) {
-                result.add(each.getDerivedCountIndex().get());
+            if (-1 != each.getDerivedCountIndex()) {
+                result.add(each.getDerivedCountIndex());
             }
         }
         return result;
@@ -121,8 +120,8 @@ public final class AggregationDistinctQueryMetaData {
     public Collection<Integer> getDerivedSumColumnIndexes() {
         Collection<Integer> result = new LinkedList<>();
         for (AggregationDistinctColumnMetaData each : columnMetaDataList) {
-            if (each.getDerivedSumIndex().isPresent()) {
-                result.add(each.getDerivedSumIndex().get());
+            if (-1 != each.getDerivedSumIndex()) {
+                result.add(each.getDerivedSumIndex());
             }
         }
         return result;
@@ -138,7 +137,7 @@ public final class AggregationDistinctQueryMetaData {
         return Collections2.filter(columnMetaDataList, new Predicate<AggregationDistinctColumnMetaData>() {
             @Override
             public boolean apply(final AggregationDistinctColumnMetaData input) {
-                return derivedSumIndex == input.derivedSumIndex.get();
+                return derivedSumIndex == input.getDerivedSumIndex();
             }
         }).iterator().next().getColumnIndex();
     }
