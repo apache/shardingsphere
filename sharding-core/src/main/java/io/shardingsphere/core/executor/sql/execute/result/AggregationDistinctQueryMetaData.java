@@ -41,12 +41,12 @@ import java.util.List;
  */
 public final class AggregationDistinctQueryMetaData {
     
-    private final Collection<AggregationDistinctColumnMetaData> columnMetaDatas;
+    private final Collection<AggregationDistinctColumnMetaData> columnMetaDataList;
     
     public AggregationDistinctQueryMetaData(final Collection<AggregationDistinctSelectItem> aggregationDistinctSelectItems, final Multimap<String, Integer> columnLabelAndIndexMap) {
-        columnMetaDatas = new LinkedList<>();
+        columnMetaDataList = new LinkedList<>();
         for (AggregationDistinctSelectItem each : aggregationDistinctSelectItems) {
-            columnMetaDatas.add(getAggregationDistinctColumnMetaData(each, new ArrayList<>(columnLabelAndIndexMap.get(each.getColumnLabel())).get(0), columnLabelAndIndexMap));
+            columnMetaDataList.add(getAggregationDistinctColumnMetaData(each, new ArrayList<>(columnLabelAndIndexMap.get(each.getColumnLabel())).get(0), columnLabelAndIndexMap));
         }
     }
     
@@ -75,7 +75,7 @@ public final class AggregationDistinctQueryMetaData {
      */
     public Collection<Integer> getAggregationDistinctColumnIndexes() {
         
-        return Collections2.transform(columnMetaDatas, new Function<AggregationDistinctColumnMetaData, Integer>() {
+        return Collections2.transform(columnMetaDataList, new Function<AggregationDistinctColumnMetaData, Integer>() {
             @Override
             public Integer apply(final AggregationDistinctColumnMetaData input) {
                 return input.getColumnIndex();
@@ -90,7 +90,7 @@ public final class AggregationDistinctQueryMetaData {
      * @return aggregation type
      */
     public AggregationType getAggregationType(final int distinctColumnIndex) {
-        return Collections2.filter(columnMetaDatas, new Predicate<AggregationDistinctColumnMetaData>() {
+        return Collections2.filter(columnMetaDataList, new Predicate<AggregationDistinctColumnMetaData>() {
             @Override
             public boolean apply(final AggregationDistinctColumnMetaData input) {
                 return distinctColumnIndex == input.columnIndex;
@@ -105,9 +105,24 @@ public final class AggregationDistinctQueryMetaData {
      */
     public Collection<Integer> getDerivedCountColumnIndexes() {
         Collection<Integer> result = new LinkedList<>();
-        for (AggregationDistinctColumnMetaData each : columnMetaDatas) {
+        for (AggregationDistinctColumnMetaData each : columnMetaDataList) {
             if (each.getDerivedCountIndex().isPresent()) {
                 result.add(each.getDerivedCountIndex().get());
+            }
+        }
+        return result;
+    }
+    
+    /**
+     * Get derived sum column indexes.
+     *
+     * @return derived sum column indexes
+     */
+    public Collection<Integer> getDerivedSumColumnIndexes() {
+        Collection<Integer> result = new LinkedList<>();
+        for (AggregationDistinctColumnMetaData each : columnMetaDataList) {
+            if (each.getDerivedSumIndex().isPresent()) {
+                result.add(each.getDerivedSumIndex().get());
             }
         }
         return result;
