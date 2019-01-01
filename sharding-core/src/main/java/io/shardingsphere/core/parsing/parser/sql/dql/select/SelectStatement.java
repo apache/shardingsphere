@@ -86,7 +86,7 @@ public final class SelectStatement extends DQLStatement {
         }
         String rawName = SQLUtil.getExactlyValue(name);
         for (SelectItem each : items) {
-            if (rawName.equalsIgnoreCase(SQLUtil.getExactlyValue(each.getExpression()))) {
+            if (SQLUtil.getExactlyExpression(rawName).equalsIgnoreCase(SQLUtil.getExactlyExpression(SQLUtil.getExactlyValue(each.getExpression())))) {
                 return each.getAlias();
             }
             if (rawName.equalsIgnoreCase(each.getAlias().orNull())) {

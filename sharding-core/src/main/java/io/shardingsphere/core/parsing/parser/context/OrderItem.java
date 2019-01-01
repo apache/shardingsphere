@@ -45,6 +45,8 @@ public final class OrderItem {
     
     private int index = -1;
     
+    private String expression;
+    
     private Optional<String> alias;
     
     public OrderItem(final String name, final OrderDirection orderDirection, final OrderDirection nullOrderDirection, final Optional<String> alias) {

@@ -18,6 +18,7 @@
 package io.shardingsphere.core.parsing.antlr.sql.segment.order;
 
 import io.shardingsphere.core.parsing.antlr.sql.segment.SQLSegment;
+import io.shardingsphere.core.parsing.antlr.sql.segment.order.item.OrderByItemSegment;
 import lombok.Getter;
 import lombok.RequiredArgsConstructor;
 

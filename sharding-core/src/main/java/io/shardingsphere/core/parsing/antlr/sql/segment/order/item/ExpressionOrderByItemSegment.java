@@ -15,23 +15,23 @@
  * </p>
  */
 
-package io.shardingsphere.core.parsing.antlr.sql.segment.order;
+package io.shardingsphere.core.parsing.antlr.sql.segment.order.item;
 
-import io.shardingsphere.core.parsing.antlr.sql.segment.SQLSegment;
-import io.shardingsphere.core.parsing.antlr.sql.segment.order.item.OrderByItemSegment;
+import io.shardingsphere.core.constant.OrderDirection;
 import lombok.Getter;
 
-import java.util.Collection;
-import java.util.LinkedList;
-
 /**
- * Order by segment.
+ * Order by item segment for expression.
  * 
- * @author duhongjun
+ * @author zhangliang
  */
 @Getter
-public final class OrderBySegment implements SQLSegment {
+public final class ExpressionOrderByItemSegment extends OrderByItemSegment {
     
-    private final Collection<OrderByItemSegment> orderByItems = new LinkedList<>();
+    private final String expression;
     
+    public ExpressionOrderByItemSegment(final String expression, final OrderDirection orderDirection, final OrderDirection nullOrderDirection) {
+        super(orderDirection, nullOrderDirection);
+        this.expression = expression;
+    }
 }

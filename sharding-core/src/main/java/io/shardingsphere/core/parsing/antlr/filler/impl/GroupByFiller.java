@@ -20,7 +20,7 @@ package io.shardingsphere.core.parsing.antlr.filler.impl;
 import io.shardingsphere.core.metadata.table.ShardingTableMetaData;
 import io.shardingsphere.core.parsing.antlr.filler.SQLStatementFiller;
 import io.shardingsphere.core.parsing.antlr.sql.segment.order.GroupBySegment;
-import io.shardingsphere.core.parsing.antlr.sql.segment.order.OrderByItemSegment;
+import io.shardingsphere.core.parsing.antlr.sql.segment.order.item.OrderByItemSegment;
 import io.shardingsphere.core.parsing.parser.sql.SQLStatement;
 import io.shardingsphere.core.parsing.parser.sql.dql.select.SelectStatement;
 import io.shardingsphere.core.rule.ShardingRule;
@@ -38,7 +38,7 @@ public final class GroupByFiller implements SQLStatementFiller<GroupBySegment> {
         selectStatement.setGroupByLastPosition(sqlSegment.getGroupByLastPosition());
         OrderByFiller orderFiller = new OrderByFiller();
         for (OrderByItemSegment each : sqlSegment.getGroupByItems()) {
-            selectStatement.getGroupByItems().add(orderFiller.buildOrderItemAndFillToken(selectStatement, each, sql));
+            selectStatement.getGroupByItems().add(orderFiller.createOrderItem(selectStatement, each));
         }
     }
 }
