@@ -24,8 +24,6 @@ import com.google.common.collect.Multimap;
 import io.shardingsphere.core.constant.AggregationType;
 import io.shardingsphere.core.parsing.parser.context.selectitem.AggregationDistinctSelectItem;
 import io.shardingsphere.core.parsing.parser.context.selectitem.AggregationSelectItem;
-import lombok.AccessLevel;
-import lombok.Getter;
 import lombok.RequiredArgsConstructor;
 
 import java.util.ArrayList;
@@ -78,7 +76,7 @@ public final class AggregationDistinctQueryMetaData {
             
             @Override
             public Integer apply(final AggregationDistinctColumnMetaData input) {
-                return input.getColumnIndex();
+                return input.columnIndex;
             }
         });
     }
@@ -94,7 +92,7 @@ public final class AggregationDistinctQueryMetaData {
             
             @Override
             public String apply(final AggregationDistinctColumnMetaData input) {
-                return input.getColumnLabel();
+                return input.columnLabel;
             }
         });
     }
@@ -110,9 +108,9 @@ public final class AggregationDistinctQueryMetaData {
             
             @Override
             public boolean apply(final AggregationDistinctColumnMetaData input) {
-                return distinctColumnIndex == input.getColumnIndex();
+                return distinctColumnIndex == input.columnIndex;
             }
-        }).iterator().next().getAggregationType();
+        }).iterator().next().aggregationType;
     }
     
     /**
@@ -123,8 +121,8 @@ public final class AggregationDistinctQueryMetaData {
     public Collection<Integer> getDerivedCountColumnIndexes() {
         Collection<Integer> result = new LinkedList<>();
         for (AggregationDistinctColumnMetaData each : columnMetaDataList) {
-            if (-1 != each.getDerivedCountIndex()) {
-                result.add(each.getDerivedCountIndex());
+            if (-1 != each.derivedCountIndex) {
+                result.add(each.derivedCountIndex);
             }
         }
         return result;
@@ -138,8 +136,8 @@ public final class AggregationDistinctQueryMetaData {
     public Collection<Integer> getDerivedSumColumnIndexes() {
         Collection<Integer> result = new LinkedList<>();
         for (AggregationDistinctColumnMetaData each : columnMetaDataList) {
-            if (-1 != each.getDerivedSumIndex()) {
-                result.add(each.getDerivedSumIndex());
+            if (-1 != each.derivedSumIndex) {
+                result.add(each.derivedSumIndex);
             }
         }
         return result;
@@ -156,9 +154,9 @@ public final class AggregationDistinctQueryMetaData {
             
             @Override
             public boolean apply(final AggregationDistinctColumnMetaData input) {
-                return aggregationDistinctColumnLabel.equals(input.getColumnLabel());
+                return aggregationDistinctColumnLabel.equals(input.columnLabel);
             }
-        }).iterator().next().getColumnIndex();
+        }).iterator().next().columnIndex;
     }
     
     /**
@@ -172,9 +170,9 @@ public final class AggregationDistinctQueryMetaData {
             
             @Override
             public boolean apply(final AggregationDistinctColumnMetaData input) {
-                return derivedSumIndex == input.getDerivedSumIndex();
+                return derivedSumIndex == input.derivedSumIndex;
             }
-        }).iterator().next().getColumnIndex();
+        }).iterator().next().columnIndex;
     }
     
     /**
@@ -188,14 +186,13 @@ public final class AggregationDistinctQueryMetaData {
             
             @Override
             public boolean apply(final AggregationDistinctColumnMetaData input) {
-                return aggregationDistinctColumnIndex == input.getColumnIndex();
+                return aggregationDistinctColumnIndex == input.columnIndex;
             }
-        }).iterator().next().getColumnLabel();
+        }).iterator().next().columnLabel;
         
     }
     
     @RequiredArgsConstructor 
-    @Getter(AccessLevel.PRIVATE)
     private final class AggregationDistinctColumnMetaData {
         
         private final int columnIndex;
