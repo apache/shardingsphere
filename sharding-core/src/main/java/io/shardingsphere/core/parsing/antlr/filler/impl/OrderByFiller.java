@@ -17,6 +17,7 @@
 
 package io.shardingsphere.core.parsing.antlr.filler.impl;
 
+import com.google.common.base.Optional;
 import com.google.common.base.Splitter;
 import io.shardingsphere.core.metadata.table.ShardingTableMetaData;
 import io.shardingsphere.core.parsing.antlr.filler.SQLStatementFiller;
@@ -25,7 +26,7 @@ import io.shardingsphere.core.parsing.antlr.sql.segment.order.item.ColumnNameOrd
 import io.shardingsphere.core.parsing.antlr.sql.segment.order.item.ExpressionOrderByItemSegment;
 import io.shardingsphere.core.parsing.antlr.sql.segment.order.item.IndexOrderByItemSegment;
 import io.shardingsphere.core.parsing.antlr.sql.segment.order.item.OrderByItemSegment;
-import io.shardingsphere.core.parsing.parser.context.OrderItem;
+import io.shardingsphere.core.parsing.parser.context.orderby.OrderItem;
 import io.shardingsphere.core.parsing.parser.sql.SQLStatement;
 import io.shardingsphere.core.parsing.parser.sql.dql.select.SelectStatement;
 import io.shardingsphere.core.parsing.parser.token.TableToken;
@@ -79,7 +80,12 @@ public final class OrderByFiller implements SQLStatementFiller<OrderBySegment> {
     private OrderItem createOrderItem(final SelectStatement selectStatement, final ColumnNameOrderByItemSegment columnNameOrderByItemSegment) {
         String columnName = SQLUtil.getExactlyValue(columnNameOrderByItemSegment.getColumnName());
         if (!columnName.contains(".")) {
-            return new OrderItem(columnName, columnNameOrderByItemSegment.getOrderDirection(), columnNameOrderByItemSegment.getNullOrderDirection(), selectStatement.getAlias(columnName));
+            OrderItem result = new OrderItem(columnName, columnNameOrderByItemSegment.getOrderDirection(), columnNameOrderByItemSegment.getNullOrderDirection());
+            Optional<String> alias = selectStatement.getAlias(columnName);
+            if (alias.isPresent()) {
+                result.setAlias(alias.get());
+            }
+            return result;
         }
         List<String> values = Splitter.on(".").splitToList(columnName);
         String owner = values.get(0);
@@ -87,11 +93,20 @@ public final class OrderByFiller implements SQLStatementFiller<OrderBySegment> {
         if (selectStatement.getTables().getTableNames().contains(owner)) {
             selectStatement.addSQLToken(new TableToken(columnNameOrderByItemSegment.getBeginPosition(), 0, owner));
         }
-        return new OrderItem(owner, name, columnNameOrderByItemSegment.getOrderDirection(), columnNameOrderByItemSegment.getNullOrderDirection(), selectStatement.getAlias(owner + "." + name));
+        OrderItem result = new OrderItem(owner, name, columnNameOrderByItemSegment.getOrderDirection(), columnNameOrderByItemSegment.getNullOrderDirection());
+        Optional<String> alias = selectStatement.getAlias(owner + "." + name);
+        if (alias.isPresent()) {
+            result.setAlias(alias.get());
+        }
+        return result;
     }
     
     private OrderItem createOrderItem(final SelectStatement selectStatement, final ExpressionOrderByItemSegment expressionOrderByItemSegment) {
-        return new OrderItem(expressionOrderByItemSegment.getExpression(), 
-                expressionOrderByItemSegment.getOrderDirection(), expressionOrderByItemSegment.getNullOrderDirection(), selectStatement.getAlias(expressionOrderByItemSegment.getExpression()));
+        OrderItem result = new OrderItem(expressionOrderByItemSegment.getExpression(), expressionOrderByItemSegment.getOrderDirection(), expressionOrderByItemSegment.getNullOrderDirection());
+        Optional<String> alias = selectStatement.getAlias(expressionOrderByItemSegment.getExpression());
+        if (alias.isPresent()) {
+            result.setAlias(alias.get());
+        }
+        return result;
     }
 }
