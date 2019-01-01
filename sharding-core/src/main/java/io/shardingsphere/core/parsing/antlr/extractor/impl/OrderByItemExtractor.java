@@ -41,16 +41,13 @@ public final class OrderByItemExtractor implements CollectionSQLSegmentExtractor
     public Collection<OrderByItemSegment> extract(final ParserRuleContext ancestorNode) {
         Collection<OrderByItemSegment> result = new LinkedList<>();
         for (ParserRuleContext each : ExtractorUtils.getAllDescendantNodes(ancestorNode, RuleName.ORDER_BY_ITEM)) {
-            // FIXME when will count be zero?
-            int count = each.getChildCount();
-            if (0 == count) {
-                continue;
-            }
+            int childCount = each.getChildCount();
             Optional<ParserRuleContext> numberNode = ExtractorUtils.findFirstChildNode(each, RuleName.NUMBER);
             int index = numberNode.isPresent() ? NumberUtil.getExactlyNumber(numberNode.get().getText(), 10).intValue() : -1;
-            boolean isIdentifier = RuleName.COLUMN_NAME.getName().equalsIgnoreCase(each.getChild(0).getClass().getSimpleName());
-            OrderDirection orderDirection = count > 1 && OrderDirection.DESC.name().equalsIgnoreCase(each.getChild(count - 1).getText()) ? OrderDirection.DESC : OrderDirection.ASC;
+            // TODO remove isIdentifier, extract real column name
             ParserRuleContext firstChild = (ParserRuleContext) each.getChild(0);
+            boolean isIdentifier = RuleName.COLUMN_NAME.getName().equalsIgnoreCase(firstChild.getClass().getSimpleName());
+            OrderDirection orderDirection = 2 == childCount && OrderDirection.DESC.name().equalsIgnoreCase(each.getChild(1).getText()) ? OrderDirection.DESC : OrderDirection.ASC;
             result.add(new OrderByItemSegment(index, firstChild.getStart().getStartIndex(), firstChild.getStop().getStopIndex(), 
                     isIdentifier, new OrderByToken(ancestorNode.getStart().getStartIndex()), orderDirection, OrderDirection.ASC));
         }
