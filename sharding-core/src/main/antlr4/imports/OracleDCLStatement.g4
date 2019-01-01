@@ -27,7 +27,7 @@ grantees
     ;
     
 grantee
-    : userName  | roleName | PUBLIC 
+    : userName | roleName | PUBLIC 
     ;
     
 granteeIdentifiedBy
@@ -141,7 +141,7 @@ proxyClause
     ;
     
 dbUserProxyClauses
-    : (WITH (ROLE  (ALL EXCEPT)? roleNames | NO ROLES))?
+    : (WITH (ROLE (ALL EXCEPT)? roleNames | NO ROLES))?
     (AUTHENTICATION REQUIRED )?
     ;
     

@@ -8,7 +8,7 @@ ID
     ;
     
 dataType
-    : typeName (dataTypeLength | LP_ MAX RP_ | LP_ (CONTENT | DOCUMENT)? xmlSchemaCollection RP_)?   
+    : typeName (dataTypeLength | LP_ MAX RP_ | LP_ (CONTENT | DOCUMENT)? xmlSchemaCollection RP_)?
     ;
     
 privateExprOfDb
@@ -20,11 +20,11 @@ atTimeZoneExpr
     ;
     
 castExpr
-    : CAST LP_ expr AS dataType (LP_  NUMBER RP_)? RP_  
+    : CAST LP_ expr AS dataType (LP_ NUMBER RP_)? RP_
     ;
     
 convertExpr
-    : CONVERT ( dataType (LP_  NUMBER RP_)? COMMA expr (COMMA NUMBER)?)
+    : CONVERT ( dataType (LP_ NUMBER RP_)? COMMA expr (COMMA NUMBER)?)
     ;
     
 windowedFunction
@@ -36,10 +36,10 @@ overClause
     ;
     
 partitionByClause
-    : PARTITION BY expr (COMMA expr)*  
+    : PARTITION BY expr (COMMA expr)*
     ;
     
-orderByClause   
+orderByClause
     : ORDER BY orderByExpr (COMMA orderByExpr)*
     ;
     
@@ -54,21 +54,21 @@ rowRangeClause
 windowFrameExtent
     : windowFramePreceding | windowFrameBetween 
     ;
-
+    
 windowFrameBetween
-    : BETWEEN windowFrameBound AND windowFrameBound  
+    : BETWEEN windowFrameBound AND windowFrameBound
     ;
-
-windowFrameBound  
+    
+windowFrameBound
     : windowFramePreceding | windowFrameFollowing 
     ;
     
-windowFramePreceding  
-    : UNBOUNDED PRECEDING | NUMBER PRECEDING | CURRENT ROW  
+windowFramePreceding
+    : UNBOUNDED PRECEDING | NUMBER PRECEDING | CURRENT ROW
     ;
     
 windowFrameFollowing
-    : UNBOUNDED FOLLOWING | NUMBER FOLLOWING | CURRENT ROW  
+    : UNBOUNDED FOLLOWING | NUMBER FOLLOWING | CURRENT ROW
     ;
     
 columnList
@@ -100,7 +100,7 @@ eqOnOffOption
     ;
     
 eqKey
-    :  PAD_INDEX
+    : PAD_INDEX
     | SORT_IN_TEMPDB
     | IGNORE_DUP_KEY
     | STATISTICS_NORECOMPUTE
@@ -130,8 +130,8 @@ partitionExpression
     : NUMBER | numberRange
     ;
     
-numberRange   
-    : NUMBER TO NUMBER  
+numberRange
+    : NUMBER TO NUMBER
     ;
     
 lowPriorityLockWait

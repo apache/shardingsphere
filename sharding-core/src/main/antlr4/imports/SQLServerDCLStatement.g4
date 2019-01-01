@@ -23,12 +23,12 @@ permission
     ;
     
 grantDW
-    : GRANT permission (COMMA permission)* (ON (classType COLON COLON)? ID)?   
+    : GRANT permission (COMMA permission)* (ON (classType COLON COLON)? ID)?
     TO ids (WITH GRANT OPTION)?
     ;
     
 classType
-    : LOGIN | DATABASE | OBJECT | ROLE | SCHEMA | USER  
+    : LOGIN | DATABASE | OBJECT | ROLE | SCHEMA | USER
     ;
     
 revoke
@@ -102,7 +102,7 @@ dropUser
     ;
     
 createLogin
-    : CREATE LOGIN (windowsPrincipal | ID) (WITH  loginOptionList | FROM  sources)
+    : CREATE LOGIN (windowsPrincipal | ID) (WITH loginOptionList | FROM sources)
     ;
     
 loginOptionList
@@ -118,7 +118,7 @@ alterLogin
     ;
     
 loginOption
-    :  PASSWORD EQ_ (STRING | ID HASHED) (OLD_PASSWORD EQ_ STRING | passwordOption (passwordOption )?)?
+    : PASSWORD EQ_ (STRING | ID HASHED) (OLD_PASSWORD EQ_ STRING | passwordOption (passwordOption )?)?
     | DEFAULT_DATABASE EQ_ databaseName
     | optionsList
     | NO CREDENTIAL
@@ -139,7 +139,7 @@ dropLogin
     
 createRole
     : CREATE ROLE roleName (AUTHORIZATION ID)
-    ;    
+    ;
     
 alterRole
     : ALTER ROLE roleName ((ADD | DROP) MEMBER ID | WITH NAME EQ_ ID)
