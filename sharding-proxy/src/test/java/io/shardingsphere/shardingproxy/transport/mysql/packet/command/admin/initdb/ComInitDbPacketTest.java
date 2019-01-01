@@ -20,7 +20,9 @@ package io.shardingsphere.shardingproxy.transport.mysql.packet.command.admin.ini
 import com.google.common.base.Optional;
 import io.shardingsphere.core.constant.ShardingConstant;
 import io.shardingsphere.shardingproxy.backend.jdbc.connection.BackendConnection;
+import io.shardingsphere.shardingproxy.frontend.mysql.CommandExecutor;
 import io.shardingsphere.shardingproxy.runtime.GlobalRegistry;
+import io.shardingsphere.shardingproxy.runtime.RuntimeContext;
 import io.shardingsphere.shardingproxy.runtime.schema.LogicSchema;
 import io.shardingsphere.shardingproxy.transport.mysql.constant.ServerErrorCode;
 import io.shardingsphere.shardingproxy.transport.mysql.packet.MySQLPacketPayload;
@@ -39,6 +41,7 @@ import org.mockito.junit.MockitoJUnitRunner;
 import java.lang.reflect.Field;
 import java.util.Collections;
 import java.util.Map;
+import java.util.UUID;
 
 import static org.hamcrest.CoreMatchers.is;
 import static org.junit.Assert.assertThat;
@@ -49,6 +52,8 @@ import static org.mockito.Mockito.when;
 
 @RunWith(MockitoJUnitRunner.class)
 public final class ComInitDbPacketTest {
+    
+    private static final RuntimeContext RUNTIME_CONTEXT = RuntimeContext.getInstance();
     
     @Mock
     private MySQLPacketPayload payload;
@@ -67,6 +72,7 @@ public final class ComInitDbPacketTest {
     @Test
     public void assertExecuteWithValidSchemaName() {
         when(payload.readStringEOF()).thenReturn(ShardingConstant.LOGIC_SCHEMA_NAME);
+        setCommandExecutor();
         Optional<CommandResponsePackets> actual = new ComInitDbPacket(1, payload, backendConnection).execute();
         assertTrue(actual.isPresent());
         assertThat(actual.get().getPackets().size(), is(1));
@@ -81,6 +87,7 @@ public final class ComInitDbPacketTest {
     public void assertExecuteWithInvalidSchemaName() {
         String invalidSchema = "invalid_schema";
         when(payload.readStringEOF()).thenReturn(invalidSchema);
+        setCommandExecutor();
         Optional<CommandResponsePackets> actual = new ComInitDbPacket(1, payload, backendConnection).execute();
         assertTrue(actual.isPresent());
         assertThat(actual.get().getPackets().size(), is(1));
@@ -98,5 +105,12 @@ public final class ComInitDbPacketTest {
         actual.write(payload);
         verify(payload).writeInt1(CommandPacketType.COM_INIT_DB.getValue());
         verify(payload).writeStringEOF(ShardingConstant.LOGIC_SCHEMA_NAME);
+    }
+    
+    private void setCommandExecutor() {
+        CommandExecutor commandExecutor = mock(CommandExecutor.class);
+        String uuid = UUID.randomUUID().toString();
+        RUNTIME_CONTEXT.getCommandPacketId().set(uuid);
+        RUNTIME_CONTEXT.getUniqueCommandExecutor().put(uuid, commandExecutor);
     }
 }

@@ -21,11 +21,13 @@ import com.google.common.eventbus.EventBus;
 import com.google.common.eventbus.Subscribe;
 import io.shardingsphere.core.metadata.ShardingMetaData;
 import io.shardingsphere.core.rule.DataSourceParameter;
+import io.shardingsphere.core.rule.ShardingRule;
 import io.shardingsphere.orchestration.internal.eventbus.ShardingOrchestrationEventBus;
 import io.shardingsphere.orchestration.internal.registry.config.event.DataSourceChangedEvent;
 import io.shardingsphere.shardingproxy.backend.jdbc.datasource.JDBCBackendDataSource;
 import io.shardingsphere.shardingproxy.util.DataSourceConverter;
 import lombok.Getter;
+import lombok.Setter;
 
 import java.util.LinkedHashMap;
 import java.util.Map;
@@ -46,6 +48,9 @@ public abstract class LogicSchema {
     private final EventBus eventBus = ShardingOrchestrationEventBus.getInstance();
     
     private JDBCBackendDataSource backendDataSource;
+    
+    @Setter
+    private ShardingRule shardingRule;
     
     public LogicSchema(final String name, final Map<String, DataSourceParameter> dataSources) {
         this.name = name;

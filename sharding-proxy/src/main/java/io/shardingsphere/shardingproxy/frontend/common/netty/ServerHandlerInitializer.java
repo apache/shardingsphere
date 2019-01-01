@@ -17,27 +17,41 @@
 
 package io.shardingsphere.shardingproxy.frontend.common.netty;
 
+import io.netty.channel.ChannelHandlerContext;
 import io.netty.channel.ChannelInitializer;
 import io.netty.channel.ChannelPipeline;
 import io.netty.channel.socket.SocketChannel;
 import io.shardingsphere.core.constant.DatabaseType;
+import io.shardingsphere.shardingproxy.frontend.common.FrontendHandler;
 import io.shardingsphere.shardingproxy.frontend.common.FrontendHandlerFactory;
+import io.shardingsphere.shardingproxy.runtime.RuntimeContext;
 import io.shardingsphere.shardingproxy.transport.common.codec.PacketCodecFactory;
+import io.shardingsphere.shardingproxy.util.ChannelUtils;
 import lombok.RequiredArgsConstructor;
 
 /**
  * Channel initializer.
- * 
+ *
  * @author xiaoyu
  */
 @RequiredArgsConstructor
 public final class ServerHandlerInitializer extends ChannelInitializer<SocketChannel> {
+    
+    private static final RuntimeContext RUNTIME_CONTEXT = RuntimeContext.getInstance();
     
     @Override
     protected void initChannel(final SocketChannel socketChannel) {
         ChannelPipeline pipeline = socketChannel.pipeline();
         // TODO load database type from yaml or startup arguments
         pipeline.addLast(PacketCodecFactory.newInstance(DatabaseType.MySQL));
-        pipeline.addLast(FrontendHandlerFactory.createFrontendHandlerInstance(DatabaseType.MySQL));
+        FrontendHandler frontendHandler = FrontendHandlerFactory.createFrontendHandlerInstance(DatabaseType.MySQL);
+        pipeline.addLast(frontendHandler);
+        RUNTIME_CONTEXT.getFrontendChannelHandler().put(ChannelUtils.getLongTextId(socketChannel), frontendHandler);
+    }
+    
+    @Override
+    public void channelInactive(final ChannelHandlerContext ctx) throws Exception {
+        RUNTIME_CONTEXT.getFrontendChannelHandler().remove(ChannelUtils.getLongTextId(ctx.channel()));
+        ctx.fireChannelInactive();
     }
 }

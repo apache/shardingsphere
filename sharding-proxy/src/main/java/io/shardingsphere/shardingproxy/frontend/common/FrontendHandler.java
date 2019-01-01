@@ -22,26 +22,35 @@ import io.netty.channel.ChannelHandlerContext;
 import io.netty.channel.ChannelInboundHandlerAdapter;
 import io.shardingsphere.shardingproxy.backend.jdbc.connection.BackendConnection;
 import io.shardingsphere.shardingproxy.frontend.common.executor.ChannelThreadExecutorGroup;
+import io.shardingsphere.shardingproxy.frontend.mysql.CommandResponseSequencer;
 import io.shardingsphere.shardingproxy.runtime.GlobalRegistry;
+import io.shardingsphere.shardingproxy.runtime.RuntimeContext;
+import io.shardingsphere.shardingproxy.util.ChannelUtils;
 import lombok.Getter;
 import lombok.SneakyThrows;
 
 /**
  * Frontend handler.
- * 
- * @author zhangliang 
+ *
+ * @author zhangliang
  */
 public abstract class FrontendHandler extends ChannelInboundHandlerAdapter {
+    
+    private static final RuntimeContext RUNTIME_CONTEXT = RuntimeContext.getInstance();
     
     private volatile boolean authorized;
     
     @Getter
     private volatile BackendConnection backendConnection = new BackendConnection(GlobalRegistry.getInstance().getTransactionType());
-
+    
+    @Getter
+    private final CommandResponseSequencer commandSequencer = new CommandResponseSequencer();
+    
     @Override
     public final void channelActive(final ChannelHandlerContext context) {
         ChannelThreadExecutorGroup.getInstance().register(context.channel().id());
         handshake(context);
+        RUNTIME_CONTEXT.getFrontendChannel().put(ChannelUtils.getLongTextId(context.channel()), context.channel());
     }
     
     protected abstract void handshake(ChannelHandlerContext context);
@@ -66,5 +75,8 @@ public abstract class FrontendHandler extends ChannelInboundHandlerAdapter {
         context.fireChannelInactive();
         backendConnection.close(true);
         ChannelThreadExecutorGroup.getInstance().unregister(context.channel().id());
+        String longTextId = ChannelUtils.getLongTextId(context.channel());
+        RUNTIME_CONTEXT.getFrontendChannel().remove(longTextId);
+        RUNTIME_CONTEXT.getFrontendChannelHandler().remove(longTextId);
     }
 }

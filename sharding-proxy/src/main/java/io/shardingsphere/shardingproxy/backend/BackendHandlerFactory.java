@@ -29,7 +29,6 @@ import io.shardingsphere.shardingproxy.runtime.GlobalRegistry;
 import io.shardingsphere.shardingproxy.runtime.schema.LogicSchema;
 import lombok.AccessLevel;
 import lombok.NoArgsConstructor;
-
 import java.util.List;
 
 /**
@@ -67,7 +66,7 @@ public final class BackendHandlerFactory {
     public BackendHandler newTextProtocolInstance(final int sequenceId, final String sql, final BackendConnection backendConnection, final DatabaseType databaseType) {
         LogicSchema logicSchema = backendConnection.getLogicSchema();
         return GLOBAL_REGISTRY.getShardingProperties().<Boolean>getValue(ShardingPropertiesConstant.PROXY_BACKEND_USE_NIO)
-                ? new NettyBackendHandler(logicSchema, backendConnection.getConnectionId(), sequenceId, sql, databaseType)
+                ? new NettyBackendHandler(logicSchema, sequenceId, sql, databaseType)
                 : new JDBCBackendHandler(logicSchema, sql, new JDBCExecuteEngine(backendConnection, new StatementExecutorWrapper(logicSchema)));
     }
     
@@ -82,10 +81,10 @@ public final class BackendHandlerFactory {
      * @return instance of text protocol backend handler
      */
     public BackendHandler newBinaryProtocolInstance(final int sequenceId, final String sql, final List<Object> parameters,
-                                                           final BackendConnection backendConnection, final DatabaseType databaseType) {
+                                                    final BackendConnection backendConnection, final DatabaseType databaseType) {
         LogicSchema logicSchema = backendConnection.getLogicSchema();
         return GLOBAL_REGISTRY.getShardingProperties().<Boolean>getValue(ShardingPropertiesConstant.PROXY_BACKEND_USE_NIO)
-                ? new NettyBackendHandler(logicSchema, backendConnection.getConnectionId(), sequenceId, sql, databaseType)
+                ? new NettyBackendHandler(logicSchema, sequenceId, sql, databaseType)
                 : new JDBCBackendHandler(logicSchema, sql, new JDBCExecuteEngine(backendConnection, new PreparedStatementExecutorWrapper(logicSchema, parameters)));
     }
 }

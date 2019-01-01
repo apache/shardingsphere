@@ -18,6 +18,7 @@
 package io.shardingsphere.shardingproxy.backend;
 
 import io.shardingsphere.core.constant.DatabaseType;
+import io.shardingsphere.core.constant.properties.ShardingPropertiesConstant;
 import io.shardingsphere.shardingproxy.backend.jdbc.connection.BackendConnection;
 import io.shardingsphere.shardingproxy.runtime.GlobalRegistry;
 import io.shardingsphere.shardingproxy.transport.common.packet.DatabasePacket;
@@ -25,7 +26,6 @@ import io.shardingsphere.shardingproxy.transport.mysql.packet.command.CommandRes
 import io.shardingsphere.shardingproxy.transport.mysql.packet.generic.ErrPacket;
 import io.shardingsphere.shardingproxy.transport.mysql.packet.generic.OKPacket;
 import lombok.RequiredArgsConstructor;
-
 import java.util.Collection;
 import java.util.LinkedList;
 import java.util.List;
@@ -38,6 +38,8 @@ import java.util.List;
  */
 @RequiredArgsConstructor
 public final class SchemaBroadcastBackendHandler extends AbstractBackendHandler {
+    
+    private static final GlobalRegistry GLOBAL_REGISTRY = GlobalRegistry.getInstance();
     
     private final int sequenceId;
     
@@ -56,7 +58,9 @@ public final class SchemaBroadcastBackendHandler extends AbstractBackendHandler 
         for (String each : GlobalRegistry.getInstance().getSchemaNames()) {
             backendConnection.setCurrentSchema(each);
             CommandResponsePackets responsePackets = backendHandlerFactory.newTextProtocolInstance(sequenceId, sql, backendConnection, databaseType).execute();
-            packets.addAll(responsePackets.getPackets());
+            if (!GLOBAL_REGISTRY.getShardingProperties().<Boolean>getValue(ShardingPropertiesConstant.PROXY_BACKEND_USE_NIO)) {
+                packets.addAll(responsePackets.getPackets());
+            }
         }
         backendConnection.setCurrentSchema(originSchemaName);
         return merge(packets);

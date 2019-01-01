@@ -50,14 +50,12 @@ import java.util.Map;
 @Getter
 public final class ShardingSchema extends LogicSchema {
     
-    private ShardingRule shardingRule;
-    
     private final ShardingMetaData metaData;
     
     public ShardingSchema(final String name, 
                           final Map<String, DataSourceParameter> dataSources, final ShardingRuleConfiguration shardingRuleConfig, final boolean isCheckingMetaData, final boolean isUsingRegistry) {
         super(name, dataSources);
-        shardingRule = createShardingRule(shardingRuleConfig, dataSources.keySet(), isUsingRegistry);
+        setShardingRule(createShardingRule(shardingRuleConfig, dataSources.keySet(), isUsingRegistry));
         metaData = createShardingMetaData(isCheckingMetaData);
     }
     
@@ -66,7 +64,7 @@ public final class ShardingSchema extends LogicSchema {
     }
     
     private ShardingMetaData createShardingMetaData(final boolean isCheckingMetaData) {
-        return new ShardingMetaData(getDataSourceURLs(getDataSources()), shardingRule, DatabaseType.MySQL, 
+        return new ShardingMetaData(getDataSourceURLs(getDataSources()), getShardingRule(), DatabaseType.MySQL,
                 BackendExecutorContext.getInstance().getExecuteEngine(), new ProxyTableMetaDataConnectionManager(getBackendDataSource()), 
                 GlobalRegistry.getInstance().getShardingProperties().<Integer>getValue(ShardingPropertiesConstant.MAX_CONNECTIONS_SIZE_PER_QUERY), isCheckingMetaData);
     }
@@ -79,7 +77,7 @@ public final class ShardingSchema extends LogicSchema {
     @Subscribe
     public synchronized void renew(final ShardingRuleChangedEvent shardingRuleChangedEvent) {
         if (getName().equals(shardingRuleChangedEvent.getShardingSchemaName())) {
-            shardingRule = new OrchestrationShardingRule(shardingRuleChangedEvent.getShardingRuleConfiguration(), getDataSources().keySet());
+            setShardingRule(new OrchestrationShardingRule(shardingRuleChangedEvent.getShardingRuleConfiguration(), getDataSources().keySet()));
         }
     }
     
@@ -92,7 +90,7 @@ public final class ShardingSchema extends LogicSchema {
     public synchronized void renew(final DisabledStateChangedEvent disabledStateChangedEvent) {
         OrchestrationShardingSchema shardingSchema = disabledStateChangedEvent.getShardingSchema();
         if (getName().equals(shardingSchema.getSchemaName())) {
-            for (MasterSlaveRule each : shardingRule.getMasterSlaveRules()) {
+            for (MasterSlaveRule each : getShardingRule().getMasterSlaveRules()) {
                 ((OrchestrationMasterSlaveRule) each).updateDisabledDataSourceNames(shardingSchema.getDataSourceName(), disabledStateChangedEvent.isDisabled());
             }
         }

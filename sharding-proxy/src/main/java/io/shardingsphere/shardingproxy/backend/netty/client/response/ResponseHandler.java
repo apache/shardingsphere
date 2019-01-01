@@ -20,6 +20,7 @@ package io.shardingsphere.shardingproxy.backend.netty.client.response;
 import io.netty.buffer.ByteBuf;
 import io.netty.channel.ChannelHandlerContext;
 import io.netty.channel.ChannelInboundHandlerAdapter;
+import io.netty.util.ReferenceCountUtil;
 
 /**
  * SQL executed response handler.
@@ -41,6 +42,9 @@ public abstract class ResponseHandler extends ChannelInboundHandlerAdapter {
             authorized = true;
         } else {
             executeCommand(context, byteBuf, header);
+        }
+        if (ReferenceCountUtil.refCnt(byteBuf) == 1) {
+            byteBuf.release();
         }
     }
     

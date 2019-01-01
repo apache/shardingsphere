@@ -44,6 +44,8 @@ public enum ServerErrorCode {
     
     ER_STD_UNKNOWN_EXCEPTION(3054, "HY000", "Unknown exception: %s"),
     
+    ER_EXHAUSTION_BACKEND_CHANNEL_ERROR(9997, "X9997", "Exhaustion of backend channel"),
+    
     ER_CIRCUIT_BREAK_MODE(9998, "X9998", "Circuit break mode is ON"),
     
     ER_UNSUPPORTED_COMMAND(9999, "X9999", "Unsupported command packet: '%s'");

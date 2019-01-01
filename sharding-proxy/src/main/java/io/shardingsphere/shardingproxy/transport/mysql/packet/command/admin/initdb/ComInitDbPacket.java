@@ -18,8 +18,11 @@
 package io.shardingsphere.shardingproxy.transport.mysql.packet.command.admin.initdb;
 
 import com.google.common.base.Optional;
+import io.shardingsphere.core.constant.properties.ShardingPropertiesConstant;
 import io.shardingsphere.shardingproxy.backend.jdbc.connection.BackendConnection;
+import io.shardingsphere.shardingproxy.frontend.mysql.CommandExecutor;
 import io.shardingsphere.shardingproxy.runtime.GlobalRegistry;
+import io.shardingsphere.shardingproxy.runtime.RuntimeContext;
 import io.shardingsphere.shardingproxy.transport.mysql.constant.ServerErrorCode;
 import io.shardingsphere.shardingproxy.transport.mysql.packet.MySQLPacketPayload;
 import io.shardingsphere.shardingproxy.transport.mysql.packet.command.CommandPacket;
@@ -38,6 +41,10 @@ import lombok.extern.slf4j.Slf4j;
  */
 @Slf4j
 public final class ComInitDbPacket implements CommandPacket {
+    
+    private static final GlobalRegistry GLOBAL_REGISTRY = GlobalRegistry.getInstance();
+    
+    private static final RuntimeContext RUNTIME_CONTEXT = RuntimeContext.getInstance();
     
     @Getter
     private final int sequenceId;
@@ -61,10 +68,19 @@ public final class ComInitDbPacket implements CommandPacket {
     @Override
     public Optional<CommandResponsePackets> execute() {
         log.debug("Schema name received for Sharding-Proxy: {}", schema);
+        CommandResponsePackets commandResponsePackets;
         if (GlobalRegistry.getInstance().schemaExists(schema)) {
             backendConnection.setCurrentSchema(schema);
-            return Optional.of(new CommandResponsePackets(new OKPacket(getSequenceId() + 1)));
+            commandResponsePackets = new CommandResponsePackets(new OKPacket(getSequenceId() + 1));
+        } else {
+            commandResponsePackets = new CommandResponsePackets(new ErrPacket(getSequenceId() + 1, ServerErrorCode.ER_BAD_DB_ERROR, schema));
         }
-        return Optional.of(new CommandResponsePackets(new ErrPacket(getSequenceId() + 1, ServerErrorCode.ER_BAD_DB_ERROR, schema)));
+        if (GLOBAL_REGISTRY.getShardingProperties().<Boolean>getValue(ShardingPropertiesConstant.PROXY_BACKEND_USE_NIO)) {
+            CommandExecutor commandExecutor = RUNTIME_CONTEXT.getUniqueCommandExecutor().get(RUNTIME_CONTEXT.getCommandPacketId().get());
+            commandExecutor.writeResult(commandResponsePackets);
+            return Optional.of(commandResponsePackets);
+        } else {
+            return Optional.of(commandResponsePackets);
+        }
     }
 }

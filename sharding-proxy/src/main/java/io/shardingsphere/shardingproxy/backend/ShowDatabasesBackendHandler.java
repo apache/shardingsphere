@@ -17,16 +17,18 @@
 
 package io.shardingsphere.shardingproxy.backend;
 
+import io.shardingsphere.core.constant.properties.ShardingPropertiesConstant;
 import io.shardingsphere.core.merger.MergedResult;
 import io.shardingsphere.core.merger.dal.show.ShowDatabasesMergedResult;
+import io.shardingsphere.shardingproxy.frontend.mysql.CommandExecutor;
 import io.shardingsphere.shardingproxy.runtime.GlobalRegistry;
+import io.shardingsphere.shardingproxy.runtime.RuntimeContext;
 import io.shardingsphere.shardingproxy.transport.mysql.constant.ColumnType;
 import io.shardingsphere.shardingproxy.transport.mysql.packet.command.CommandResponsePackets;
 import io.shardingsphere.shardingproxy.transport.mysql.packet.command.query.ColumnDefinition41Packet;
 import io.shardingsphere.shardingproxy.transport.mysql.packet.command.query.FieldCountPacket;
 import io.shardingsphere.shardingproxy.transport.mysql.packet.command.query.QueryResponsePackets;
 import io.shardingsphere.shardingproxy.transport.mysql.packet.generic.EofPacket;
-
 import java.sql.SQLException;
 import java.util.ArrayList;
 import java.util.Collection;
@@ -41,6 +43,10 @@ import java.util.List;
  */
 public final class ShowDatabasesBackendHandler extends AbstractBackendHandler {
     
+    private static final GlobalRegistry GLOBAL_REGISTRY = GlobalRegistry.getInstance();
+    
+    private static final RuntimeContext RUNTIME_CONTEXT = RuntimeContext.getInstance();
+    
     private MergedResult mergedResult;
     
     private int currentSequenceId;
@@ -51,7 +57,13 @@ public final class ShowDatabasesBackendHandler extends AbstractBackendHandler {
     
     @Override
     protected CommandResponsePackets execute0() {
-        return handleShowDatabasesStatement();
+        CommandResponsePackets result = handleShowDatabasesStatement();
+        if (GLOBAL_REGISTRY.getShardingProperties().<Boolean>getValue(ShardingPropertiesConstant.PROXY_BACKEND_USE_NIO)) {
+            CommandExecutor commandExecutor = RUNTIME_CONTEXT.getUniqueCommandExecutor().get(RUNTIME_CONTEXT.getCommandPacketId().get());
+            commandExecutor.writeResult(result);
+            return null;
+        }
+        return result;
     }
     
     private CommandResponsePackets handleShowDatabasesStatement() {

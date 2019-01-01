@@ -28,7 +28,6 @@ import io.shardingsphere.shardingproxy.runtime.schema.LogicSchema;
 import io.shardingsphere.shardingproxy.transport.mysql.constant.ServerErrorCode;
 import io.shardingsphere.shardingproxy.transport.mysql.packet.command.CommandResponsePackets;
 import io.shardingsphere.shardingproxy.transport.mysql.packet.generic.ErrPacket;
-
 import java.sql.SQLException;
 
 /**
@@ -87,7 +86,13 @@ public abstract class AbstractBackendHandler implements BackendHandler {
         return null;
     }
     
-    protected final void refreshTableMetaData(final LogicSchema logicSchema, final SQLStatement sqlStatement) {
+    /**
+     * Refresh table meta data.
+     *
+     * @param logicSchema Logic schema
+     * @param sqlStatement The statement of SQL.
+     */
+    public final void refreshTableMetaData(final LogicSchema logicSchema, final SQLStatement sqlStatement) {
         if (sqlStatement instanceof CreateTableStatement) {
             refreshTableMetaData(logicSchema, (CreateTableStatement) sqlStatement);
         } else if (sqlStatement instanceof AlterTableStatement) {

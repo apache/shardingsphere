@@ -24,21 +24,24 @@ import io.shardingsphere.core.constant.properties.ShardingPropertiesConstant;
 import io.shardingsphere.shardingproxy.backend.jdbc.connection.BackendConnection;
 import io.shardingsphere.shardingproxy.frontend.common.FrontendHandler;
 import io.shardingsphere.shardingproxy.runtime.GlobalRegistry;
+import io.shardingsphere.shardingproxy.runtime.RuntimeContext;
 import io.shardingsphere.shardingproxy.transport.common.packet.DatabasePacket;
 import io.shardingsphere.shardingproxy.transport.mysql.constant.ServerErrorCode;
 import io.shardingsphere.shardingproxy.transport.mysql.packet.MySQLPacketPayload;
 import io.shardingsphere.shardingproxy.transport.mysql.packet.command.CommandPacket;
 import io.shardingsphere.shardingproxy.transport.mysql.packet.command.CommandPacketFactory;
 import io.shardingsphere.shardingproxy.transport.mysql.packet.command.CommandResponsePackets;
+import io.shardingsphere.shardingproxy.transport.mysql.packet.command.admin.quit.ComQuitPacket;
 import io.shardingsphere.shardingproxy.transport.mysql.packet.command.query.QueryCommandPacket;
 import io.shardingsphere.shardingproxy.transport.mysql.packet.generic.EofPacket;
 import io.shardingsphere.shardingproxy.transport.mysql.packet.generic.ErrPacket;
 import io.shardingsphere.shardingproxy.transport.mysql.packet.generic.OKPacket;
 import io.shardingsphere.spi.root.RootInvokeHook;
 import io.shardingsphere.spi.root.SPIRootInvokeHook;
+import lombok.Getter;
 import lombok.RequiredArgsConstructor;
-
 import java.sql.SQLException;
+import java.util.UUID;
 
 /**
  * Command executor.
@@ -49,6 +52,10 @@ import java.sql.SQLException;
 @RequiredArgsConstructor
 public final class CommandExecutor implements Runnable {
     
+    private static final GlobalRegistry GLOBAL_REGISTRY = GlobalRegistry.getInstance();
+    
+    private static final RuntimeContext RUNTIME_CONTEXT = RuntimeContext.getInstance();
+    
     private final ChannelHandlerContext context;
     
     private final ByteBuf message;
@@ -57,7 +64,12 @@ public final class CommandExecutor implements Runnable {
     
     private int currentSequenceId;
     
+    @Getter
+    private String commandPacketId;
+    
     private final RootInvokeHook rootInvokeHook = new SPIRootInvokeHook();
+    
+    private CommandPacket commandPacket;
     
     @Override
     public void run() {
@@ -66,31 +78,94 @@ public final class CommandExecutor implements Runnable {
         try (MySQLPacketPayload payload = new MySQLPacketPayload(message);
              BackendConnection backendConnection = frontendHandler.getBackendConnection()) {
             backendConnection.getStateHandler().waitUntilConnectionReleasedIfNecessary();
-            CommandPacket commandPacket = getCommandPacket(payload, backendConnection, frontendHandler);
+            commandPacketId = UUID.randomUUID().toString();
+            if (GLOBAL_REGISTRY.getShardingProperties().<Boolean>getValue(ShardingPropertiesConstant.PROXY_BACKEND_USE_NIO)) {
+                RUNTIME_CONTEXT.getLocalFrontendChannel().set(context.channel());
+                RUNTIME_CONTEXT.getCommandPacketId().set(commandPacketId);
+                commandPacket = getCommandPacket(payload, backendConnection);
+                frontendHandler.getCommandSequencer().addCommandPacketId(commandPacketId);
+                RUNTIME_CONTEXT.getUniqueCommandExecutor().put(commandPacketId, this);
+                commandPacket.execute();
+                if (commandPacket instanceof ComQuitPacket) {
+                    release();
+                }
+                return;
+            }
+            commandPacket = getCommandPacket(payload, backendConnection);
             Optional<CommandResponsePackets> responsePackets = commandPacket.execute();
             if (!responsePackets.isPresent()) {
                 return;
             }
-            for (DatabasePacket each : responsePackets.get().getPackets()) {
-                context.write(each);
-            }
-            if (commandPacket instanceof QueryCommandPacket && !(responsePackets.get().getHeadPacket() instanceof OKPacket) && !(responsePackets.get().getHeadPacket() instanceof ErrPacket)) {
-                writeMoreResults((QueryCommandPacket) commandPacket, responsePackets.get().getPackets().size());
-            }
+            writeResult(responsePackets.get());
             connectionSize = backendConnection.getConnectionSize();
         } catch (final SQLException ex) {
-            context.write(new ErrPacket(++currentSequenceId, ex));
+            writeErrPacket(ex);
             // CHECKSTYLE:OFF
         } catch (final Exception ex) {
             // CHECKSTYLE:ON
             context.write(new ErrPacket(1, ServerErrorCode.ER_STD_UNKNOWN_EXCEPTION, ex.getMessage()));
         } finally {
-            context.flush();
+            flush();
             rootInvokeHook.finish(connectionSize);
         }
     }
     
-    private CommandPacket getCommandPacket(final MySQLPacketPayload payload, final BackendConnection backendConnection, final FrontendHandler frontendHandler) throws SQLException {
+    /**
+     * Output result to client.
+     *
+     * @param responsePackets the response packets of executing SQL
+     */
+    public void writeResult(final CommandResponsePackets responsePackets) {
+        if (GLOBAL_REGISTRY.getShardingProperties().<Boolean>getValue(ShardingPropertiesConstant.PROXY_BACKEND_USE_NIO)) {
+            this.frontendHandler.getCommandSequencer().reorderAndWriteResponse(this, responsePackets);
+        } else {
+            doWriteResult(responsePackets);
+        }
+    }
+    
+    /**
+     * Write and flush response packets to client.
+     *
+     * @param responsePackets command response packets
+     */
+    protected void doWriteResult(final CommandResponsePackets responsePackets) {
+        if (!context.channel().isActive()) {
+            return;
+        }
+        for (DatabasePacket each : responsePackets.getPackets()) {
+            context.channel().write(each);
+        }
+        if (commandPacket instanceof QueryCommandPacket && !(responsePackets.getHeadPacket() instanceof OKPacket) && !(responsePackets.getHeadPacket() instanceof ErrPacket)) {
+            try {
+                writeMoreResults((QueryCommandPacket) commandPacket, responsePackets.getPackets().size());
+            } catch (SQLException ex) {
+                writeErrPacket(ex);
+            }
+        }
+        release();
+    }
+    
+    /**
+     * Flush data to client.
+     */
+    public void flush() {
+        context.flush();
+    }
+    
+    private void release() {
+        RUNTIME_CONTEXT.getUniqueCommandExecutor().remove(commandPacketId);
+    }
+    
+    /**
+     * Output error packet to client.
+     *
+     * @param ex SQL exception
+     */
+    public void writeErrPacket(final SQLException ex) {
+        context.write(new ErrPacket(++currentSequenceId, ex));
+    }
+    
+    private CommandPacket getCommandPacket(final MySQLPacketPayload payload, final BackendConnection backendConnection) throws SQLException {
         int sequenceId = payload.readInt1();
         return CommandPacketFactory.newInstance(sequenceId, payload, backendConnection);
     }
@@ -116,10 +191,11 @@ public final class CommandExecutor implements Runnable {
             currentSequenceId = resultValue.getSequenceId();
             context.write(resultValue);
             if (proxyFrontendFlushThreshold == count) {
-                context.flush();
+                flush();
                 count = 0;
             }
         }
-        context.write(new EofPacket(++currentSequenceId));
+        EofPacket eofPacket = new EofPacket(++currentSequenceId);
+        context.write(eofPacket);
     }
 }

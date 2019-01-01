@@ -70,13 +70,4 @@ public final class BackendNettyClientManager {
             backendNettyClient.start();
         }
     }
-    
-    /**
-     * Stop all backend connection client for netty.
-     */
-    public void stop() {
-        for (BackendNettyClient backendNettyClient : clientMap.values()) {
-            backendNettyClient.stop();
-        }
-    }
 }

@@ -20,8 +20,9 @@ package io.shardingsphere.shardingproxy.frontend.mysql;
 import io.netty.buffer.ByteBuf;
 import io.netty.channel.Channel;
 import io.netty.channel.ChannelHandlerContext;
-import io.netty.channel.ChannelId;
+import io.netty.channel.EventLoop;
 import io.shardingsphere.core.constant.properties.ShardingProperties;
+import io.shardingsphere.core.constant.properties.ShardingPropertiesConstant;
 import io.shardingsphere.core.rule.Authentication;
 import io.shardingsphere.shardingproxy.runtime.GlobalRegistry;
 import io.shardingsphere.shardingproxy.transport.mysql.packet.generic.ErrPacket;
@@ -46,6 +47,8 @@ import static org.mockito.Mockito.when;
 @RunWith(MockitoJUnitRunner.class)
 public final class MySQLFrontendHandlerTest {
     
+    private static final GlobalRegistry GLOBAL_REGISTRY = GlobalRegistry.getInstance();
+    
     private MySQLFrontendHandler mysqlFrontendHandler;
     
     @Mock
@@ -62,11 +65,6 @@ public final class MySQLFrontendHandlerTest {
     
     @Test
     public void assertHandshake() {
-        Channel channel = mock(Channel.class);
-        ChannelId channelId = mock(ChannelId.class);
-        when(channelId.asShortText()).thenReturn("1");
-        when(channel.id()).thenReturn(channelId);
-        when(context.channel()).thenReturn(channel);
         mysqlFrontendHandler.handshake(context);
         verify(context).writeAndFlush(isA(HandshakePacket.class));
     }
@@ -94,9 +92,11 @@ public final class MySQLFrontendHandlerTest {
     @Test
     public void assertExecuteCommand() throws ReflectiveOperationException {
         Channel channel = mock(Channel.class);
-        ChannelId channelId = mock(ChannelId.class);
-        when(channel.id()).thenReturn(channelId);
         when(context.channel()).thenReturn(channel);
+        if (GLOBAL_REGISTRY.getShardingProperties().<Boolean>getValue(ShardingPropertiesConstant.PROXY_BACKEND_USE_NIO)) {
+            EventLoop eventLoop = mock(EventLoop.class);
+            when(channel.eventLoop()).thenReturn(eventLoop);
+        }
         setTransactionType();
         mysqlFrontendHandler.executeCommand(context, mock(ByteBuf.class));
     }

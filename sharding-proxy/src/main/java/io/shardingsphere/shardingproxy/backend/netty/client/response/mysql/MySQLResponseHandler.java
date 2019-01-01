@@ -18,13 +18,22 @@
 package io.shardingsphere.shardingproxy.backend.netty.client.response.mysql;
 
 import io.netty.buffer.ByteBuf;
+import io.netty.channel.Channel;
 import io.netty.channel.ChannelHandlerContext;
+import io.netty.channel.EventLoop;
+import io.netty.channel.pool.ChannelPool;
+import io.netty.channel.pool.ChannelPoolMap;
+import io.netty.channel.pool.SimpleChannelPool;
+import io.shardingsphere.core.constant.SQLType;
 import io.shardingsphere.core.metadata.datasource.DataSourceMetaData;
 import io.shardingsphere.core.rule.DataSourceParameter;
+import io.shardingsphere.shardingproxy.backend.netty.client.BackendNettyClientManager;
 import io.shardingsphere.shardingproxy.backend.netty.client.response.ResponseHandler;
-import io.shardingsphere.shardingproxy.backend.netty.future.FutureRegistry;
-import io.shardingsphere.shardingproxy.runtime.ChannelRegistry;
+import io.shardingsphere.shardingproxy.backend.netty.result.collector.QueryResultCollector;
+import io.shardingsphere.shardingproxy.backend.netty.result.executor.QueryResultExecutor;
+import io.shardingsphere.shardingproxy.frontend.common.executor.UserExecutorGroup;
 import io.shardingsphere.shardingproxy.runtime.GlobalRegistry;
+import io.shardingsphere.shardingproxy.runtime.RuntimeContext;
 import io.shardingsphere.shardingproxy.transport.mysql.constant.CapabilityFlag;
 import io.shardingsphere.shardingproxy.transport.mysql.constant.ServerInfo;
 import io.shardingsphere.shardingproxy.transport.mysql.packet.MySQLPacketPayload;
@@ -35,10 +44,9 @@ import io.shardingsphere.shardingproxy.transport.mysql.packet.generic.ErrPacket;
 import io.shardingsphere.shardingproxy.transport.mysql.packet.generic.OKPacket;
 import io.shardingsphere.shardingproxy.transport.mysql.packet.handshake.HandshakePacket;
 import io.shardingsphere.shardingproxy.transport.mysql.packet.handshake.HandshakeResponse41Packet;
+import io.shardingsphere.shardingproxy.util.ChannelUtils;
 import lombok.RequiredArgsConstructor;
 import lombok.SneakyThrows;
-import lombok.extern.slf4j.Slf4j;
-
 import java.security.MessageDigest;
 import java.util.HashMap;
 import java.util.Map;
@@ -49,22 +57,29 @@ import java.util.Map;
  * @author wangkai
  * @author linjiaqi
  */
-@Slf4j
 @RequiredArgsConstructor
 public final class MySQLResponseHandler extends ResponseHandler {
     
     private static final GlobalRegistry GLOBAL_REGISTRY = GlobalRegistry.getInstance();
     
+    private static final RuntimeContext RUNTIME_CONTEXT = RuntimeContext.getInstance();
+    
     private final DataSourceParameter dataSourceParameter;
     
     private final DataSourceMetaData dataSourceMetaData;
     
-    private final Map<Integer, MySQLQueryResult> resultMap;
+    private final Map<String, MySQLQueryResult> backendChannelResultMap;
+    
+    private final String logicSchemaName;
+    
+    private final String dataSourceName;
     
     public MySQLResponseHandler(final String dataSourceName, final String schema) {
         dataSourceParameter = GLOBAL_REGISTRY.getLogicSchema(schema).getDataSources().get(dataSourceName);
         dataSourceMetaData = GLOBAL_REGISTRY.getLogicSchema(schema).getMetaData().getDataSource().getActualDataSourceMetaData(dataSourceName);
-        resultMap = new HashMap<>();
+        backendChannelResultMap = new HashMap<>();
+        this.dataSourceName = dataSourceName;
+        this.logicSchemaName = schema;
     }
     
     @Override
@@ -86,7 +101,6 @@ public final class MySQLResponseHandler extends ResponseHandler {
             HandshakeResponse41Packet handshakeResponse41Packet = new HandshakeResponse41Packet(
                     handshakePacket.getSequenceId() + 1, CapabilityFlag.calculateHandshakeCapabilityFlagsLower(), 16777215, ServerInfo.CHARSET,
                     dataSourceParameter.getUsername(), authResponse, dataSourceMetaData.getSchemeName());
-            ChannelRegistry.getInstance().putConnectionId(context.channel().id().asShortText(), handshakePacket.getConnectionId());
             context.writeAndFlush(handshakeResponse41Packet);
         }
     }
@@ -124,61 +138,92 @@ public final class MySQLResponseHandler extends ResponseHandler {
     }
     
     private void okPacket(final ChannelHandlerContext context, final ByteBuf byteBuf) {
-        int connectionId = ChannelRegistry.getInstance().getConnectionId(context.channel().id().asShortText());
+        Channel backendChannel = context.channel();
         try (MySQLPacketPayload payload = new MySQLPacketPayload(byteBuf)) {
             MySQLQueryResult mysqlQueryResult = new MySQLQueryResult();
             mysqlQueryResult.setGenericResponse(new OKPacket(payload));
-            resultMap.put(connectionId, mysqlQueryResult);
-            setResponse(context);
+            backendChannelResultMap.put(ChannelUtils.getLongTextId(backendChannel), mysqlQueryResult);
+            setResponse(context, mysqlQueryResult);
         } finally {
-            resultMap.remove(connectionId);
+            release(backendChannel);
         }
     }
     
     private void errPacket(final ChannelHandlerContext context, final ByteBuf byteBuf) {
-        int connectionId = ChannelRegistry.getInstance().getConnectionId(context.channel().id().asShortText());
+        Channel backendChannel = context.channel();
         try (MySQLPacketPayload payload = new MySQLPacketPayload(byteBuf)) {
             MySQLQueryResult mysqlQueryResult = new MySQLQueryResult();
             mysqlQueryResult.setGenericResponse(new ErrPacket(payload));
-            resultMap.put(connectionId, mysqlQueryResult);
-            setResponse(context);
+            backendChannelResultMap.put(ChannelUtils.getLongTextId(backendChannel), mysqlQueryResult);
+            setResponse(context, mysqlQueryResult);
         } finally {
-            resultMap.remove(connectionId);
+            release(backendChannel);
         }
     }
     
     private void eofPacket(final ChannelHandlerContext context, final ByteBuf byteBuf) {
-        int connectionId = ChannelRegistry.getInstance().getConnectionId(context.channel().id().asShortText());
-        MySQLQueryResult mysqlQueryResult = resultMap.get(connectionId);
+        Channel backendChannel = context.channel();
+        MySQLQueryResult mysqlQueryResult = backendChannelResultMap.get(ChannelUtils.getLongTextId(backendChannel));
         MySQLPacketPayload payload = new MySQLPacketPayload(byteBuf);
         if (mysqlQueryResult.isColumnFinished()) {
             mysqlQueryResult.setRowFinished(new EofPacket(payload));
-            resultMap.remove(connectionId);
-            payload.close();
+            try {
+                payload.close();
+                triggerFinish(context);
+            } finally {
+                release(backendChannel);
+            }
         } else {
             mysqlQueryResult.setColumnFinished(new EofPacket(payload));
-            setResponse(context);
+            setResponse(context, mysqlQueryResult);
         }
     }
     
-    private void setResponse(final ChannelHandlerContext context) {
-        int connectionId = ChannelRegistry.getInstance().getConnectionId(context.channel().id().asShortText());
-        if (null != FutureRegistry.getInstance().get(connectionId)) {
-            FutureRegistry.getInstance().get(connectionId).setResponse(resultMap.get(connectionId));
+    private void setResponse(final ChannelHandlerContext context, final MySQLQueryResult queryResult) {
+        final QueryResultCollector queryResultCollector = RUNTIME_CONTEXT.getBackendChannelQueryResultCollector().get(ChannelUtils.getLongTextId(context.channel()));
+        if (queryResultCollector == null) {
+            return;
+        }
+        queryResultCollector.setResponse(queryResult);
+        triggerFinish(context);
+    }
+    
+    private void triggerFinish(final ChannelHandlerContext context) {
+        final QueryResultCollector queryResultCollector = RUNTIME_CONTEXT.getBackendChannelQueryResultCollector().get(ChannelUtils.getLongTextId(context.channel()));
+        if (!queryResultCollector.isDone() || queryResultCollector.isBackendChannelExhausted()) {
+            return;
+        }
+        if (queryResultCollector.getSqlStatement().getType() == SQLType.DQL) {
+            UserExecutorGroup.getInstance().getExecutorService().execute(new QueryResultExecutor(queryResultCollector));
+        } else {
+            context.channel().eventLoop().execute(new QueryResultExecutor(queryResultCollector));
         }
     }
     
     private void commandPacket(final ChannelHandlerContext context, final ByteBuf byteBuf) {
-        int connectionId = ChannelRegistry.getInstance().getConnectionId(context.channel().id().asShortText());
-        MySQLQueryResult mysqlQueryResult = resultMap.get(connectionId);
+        MySQLQueryResult mysqlQueryResult = backendChannelResultMap.get(ChannelUtils.getLongTextId(context.channel()));
         MySQLPacketPayload payload = new MySQLPacketPayload(byteBuf);
         if (null == mysqlQueryResult) {
             mysqlQueryResult = new MySQLQueryResult(payload);
-            resultMap.put(connectionId, mysqlQueryResult);
+            backendChannelResultMap.put(ChannelUtils.getLongTextId(context.channel()), mysqlQueryResult);
         } else if (mysqlQueryResult.needColumnDefinition()) {
             mysqlQueryResult.addColumnDefinition(new ColumnDefinition41Packet(payload));
         } else {
             mysqlQueryResult.addTextResultSetRow(new TextResultSetRowPacket(payload, mysqlQueryResult.getColumnCount()));
         }
+    }
+    
+    private void release(final Channel backendChannel) {
+        String backendLongTextId = ChannelUtils.getLongTextId(backendChannel);
+        backendChannelResultMap.remove(backendLongTextId);
+        RUNTIME_CONTEXT.getBackendChannelQueryResultCollector().remove(backendLongTextId);
+        EventLoop eventLoop = backendChannel.eventLoop();
+        ChannelPoolMap<String, SimpleChannelPool> channelPoolMap = BackendNettyClientManager.getInstance().getBackendNettyClient(logicSchemaName).getEventLoopChannelPoolMap()
+                .get(eventLoop);
+        if (channelPoolMap == null) {
+            return;
+        }
+        ChannelPool channelPool = channelPoolMap.get(dataSourceName);
+        channelPool.release(backendChannel);
     }
 }

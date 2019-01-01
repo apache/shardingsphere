@@ -79,7 +79,7 @@ public final class ComQueryPacket implements QueryCommandPacket {
         if (GlobalRegistry.getInstance().isCircuitBreak()) {
             return Optional.of(new CommandResponsePackets(new ErrPacket(1, ServerErrorCode.ER_CIRCUIT_BREAK_MODE)));
         }
-        return Optional.of(backendHandler.execute());
+        return Optional.fromNullable(backendHandler.execute());
     }
     
     @Override

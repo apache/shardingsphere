@@ -20,9 +20,9 @@ package io.shardingsphere.shardingproxy.frontend.mysql;
 import com.google.common.base.Strings;
 import io.netty.buffer.ByteBuf;
 import io.netty.channel.ChannelHandlerContext;
+import io.shardingsphere.core.constant.properties.ShardingPropertiesConstant;
 import io.shardingsphere.shardingproxy.frontend.common.FrontendHandler;
 import io.shardingsphere.shardingproxy.frontend.common.executor.CommandExecutorSelector;
-import io.shardingsphere.shardingproxy.runtime.ChannelRegistry;
 import io.shardingsphere.shardingproxy.runtime.GlobalRegistry;
 import io.shardingsphere.shardingproxy.transport.mysql.constant.ServerErrorCode;
 import io.shardingsphere.shardingproxy.transport.mysql.packet.MySQLPacketPayload;
@@ -45,13 +45,13 @@ import lombok.RequiredArgsConstructor;
 @RequiredArgsConstructor
 public final class MySQLFrontendHandler extends FrontendHandler {
     
+    private static final GlobalRegistry GLOBAL_REGISTRY = GlobalRegistry.getInstance();
+    
     private final AuthenticationHandler authenticationHandler = new AuthenticationHandler();
     
     @Override
     protected void handshake(final ChannelHandlerContext context) {
         int connectionId = ConnectionIdGenerator.getInstance().nextId();
-        ChannelRegistry.getInstance().putConnectionId(context.channel().id().asShortText(), connectionId);
-        getBackendConnection().setConnectionId(connectionId);
         context.writeAndFlush(new HandshakePacket(connectionId, authenticationHandler.getAuthPluginData()));
     }
     
@@ -69,14 +69,18 @@ public final class MySQLFrontendHandler extends FrontendHandler {
             } else {
                 // TODO localhost should replace to real ip address
                 context.writeAndFlush(new ErrPacket(response41.getSequenceId() + 1,
-                    ServerErrorCode.ER_ACCESS_DENIED_ERROR, response41.getUsername(), "localhost", 0 == response41.getAuthResponse().length ? "NO" : "YES"));
+                        ServerErrorCode.ER_ACCESS_DENIED_ERROR, response41.getUsername(), "localhost", 0 == response41.getAuthResponse().length ? "NO" : "YES"));
             }
         }
     }
     
     @Override
     protected void executeCommand(final ChannelHandlerContext context, final ByteBuf message) {
-        CommandExecutorSelector.getExecutor(getBackendConnection().getTransactionType(), context.channel().id()).execute(new CommandExecutor(context, message, this));
+        if (GLOBAL_REGISTRY.getShardingProperties().<Boolean>getValue(ShardingPropertiesConstant.PROXY_BACKEND_USE_NIO)) {
+            context.channel().eventLoop().execute(new CommandExecutor(context, message, this));
+        } else {
+            CommandExecutorSelector.getExecutor(getBackendConnection().getTransactionType(), context.channel().id()).execute(new CommandExecutor(context, message, this));
+        }
     }
     
     @Override

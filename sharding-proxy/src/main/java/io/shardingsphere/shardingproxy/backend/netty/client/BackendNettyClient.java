@@ -21,6 +21,7 @@ import io.netty.bootstrap.Bootstrap;
 import io.netty.buffer.PooledByteBufAllocator;
 import io.netty.channel.Channel;
 import io.netty.channel.ChannelOption;
+import io.netty.channel.EventLoop;
 import io.netty.channel.EventLoopGroup;
 import io.netty.channel.epoll.EpollChannelOption;
 import io.netty.channel.epoll.EpollEventLoopGroup;
@@ -30,13 +31,18 @@ import io.netty.channel.pool.ChannelPoolMap;
 import io.netty.channel.pool.FixedChannelPool;
 import io.netty.channel.pool.SimpleChannelPool;
 import io.netty.channel.socket.nio.NioSocketChannel;
+import io.netty.util.concurrent.EventExecutor;
 import io.shardingsphere.core.constant.properties.ShardingPropertiesConstant;
+import io.shardingsphere.core.exception.ShardingException;
 import io.shardingsphere.core.metadata.datasource.DataSourceMetaData;
 import io.shardingsphere.shardingproxy.runtime.GlobalRegistry;
 import io.shardingsphere.shardingproxy.runtime.schema.LogicSchema;
 import lombok.Getter;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
+import java.util.HashMap;
+import java.util.Iterator;
+import java.util.Map;
 import java.util.concurrent.ExecutionException;
 import java.util.concurrent.TimeUnit;
 import java.util.concurrent.TimeoutException;
@@ -52,9 +58,9 @@ import java.util.concurrent.TimeoutException;
 @Slf4j
 public final class BackendNettyClient {
     
-    private static final int WORKER_MAX_THREADS = Runtime.getRuntime().availableProcessors();
-    
     private static final GlobalRegistry GLOBAL_REGISTRY = GlobalRegistry.getInstance();
+    
+    private static final String ESTABLISH_CONNECTION_FAILED_MESSAGE = "Can't establish connection with database:%s";
     
     private final LogicSchema logicSchema;
     
@@ -67,11 +73,18 @@ public final class BackendNettyClient {
     @Getter
     private ChannelPoolMap<String, SimpleChannelPool> poolMap;
     
+    private final boolean isEpoll;
+    
+    @Getter
+    private final Map<EventLoop, ChannelPoolMap<String, SimpleChannelPool>> eventLoopChannelPoolMap;
+    
     public BackendNettyClient(final LogicSchema logicSchema, final EventLoopGroup workerGroup) {
         this.logicSchema = logicSchema;
         maxConnections = GLOBAL_REGISTRY.getShardingProperties().getValue(ShardingPropertiesConstant.PROXY_BACKEND_MAX_CONNECTIONS);
         connectionTimeoutSeconds = GLOBAL_REGISTRY.getShardingProperties().getValue(ShardingPropertiesConstant.PROXY_BACKEND_CONNECTION_TIMEOUT_SECONDS);
         this.workerGroup = workerGroup;
+        this.isEpoll = workerGroup instanceof EpollEventLoopGroup;
+        eventLoopChannelPoolMap = new HashMap<>();
     }
     
     /**
@@ -79,52 +92,41 @@ public final class BackendNettyClient {
      *
      * @throws InterruptedException interrupted exception
      */
-    public void start() throws InterruptedException {
-        Bootstrap bootstrap = new Bootstrap();
-        // TODO :jiaqi where to init workerGroup?
-        if (workerGroup instanceof EpollEventLoopGroup) {
-            groupsEpoll(bootstrap);
-        } else {
-            groupsNio(bootstrap);
-        }
-        initPoolMap(bootstrap);
-    }
-    
-    /**
-     * Stop backend connection client for netty.
-     */
-    public void stop() {
-        if (null != workerGroup) {
-            workerGroup.shutdownGracefully();
+    protected void start() throws InterruptedException {
+        for (Iterator<EventExecutor> it = workerGroup.iterator(); it.hasNext();) {
+            EventLoop key = (EventLoop) it.next();
+            initPoolMap(key);
         }
     }
     
-    private void groupsEpoll(final Bootstrap bootstrap) {
-        bootstrap.group(workerGroup)
+    private Bootstrap groupsEpoll(final EventLoop eventLoop) {
+        return new Bootstrap().group(eventLoop)
                 .channel(EpollSocketChannel.class)
                 .option(EpollChannelOption.TCP_CORK, true)
                 .option(EpollChannelOption.SO_KEEPALIVE, true)
                 .option(EpollChannelOption.SO_BACKLOG, 128)
+                .option(ChannelOption.CONNECT_TIMEOUT_MILLIS, connectionTimeoutSeconds * 1000)
                 .option(EpollChannelOption.ALLOCATOR, PooledByteBufAllocator.DEFAULT);
     }
     
-    private void groupsNio(final Bootstrap bootstrap) {
-        bootstrap.group(workerGroup)
+    private Bootstrap groupsNio(final EventLoop eventLoop) {
+        return new Bootstrap().group(eventLoop)
                 .channel(NioSocketChannel.class)
                 .option(ChannelOption.SO_KEEPALIVE, true)
                 .option(ChannelOption.TCP_NODELAY, true)
-                .option(ChannelOption.CONNECT_TIMEOUT_MILLIS, 100)
+                .option(ChannelOption.CONNECT_TIMEOUT_MILLIS, connectionTimeoutSeconds * 1000)
                 .option(ChannelOption.ALLOCATOR, PooledByteBufAllocator.DEFAULT);
     }
     
-    private void initPoolMap(final Bootstrap bootstrap) throws InterruptedException {
+    private void initPoolMap(final EventLoop eventLoop) throws InterruptedException {
         poolMap = new AbstractChannelPoolMap<String, SimpleChannelPool>() {
             
             @Override
             protected SimpleChannelPool newPool(final String dataSourceName) {
                 DataSourceMetaData dataSourceMetaData = logicSchema.getMetaData().getDataSource().getActualDataSourceMetaData(dataSourceName);
+                Bootstrap bootstrap = isEpoll ? groupsEpoll(eventLoop) : groupsNio(eventLoop);
                 return new FixedChannelPool(
-                        bootstrap.remoteAddress(dataSourceMetaData.getHostName(), dataSourceMetaData.getPort()), 
+                        bootstrap.remoteAddress(dataSourceMetaData.getHostName(), dataSourceMetaData.getPort()),
                         new BackendNettyClientChannelPoolHandler(dataSourceName, logicSchema.getName()), maxConnections);
             }
         };
@@ -138,9 +140,19 @@ public final class BackendNettyClient {
                     log.error(ex.getMessage(), ex);
                 }
             }
+            boolean establishedChannelNotExists = true;
             for (int i = 0; i < maxConnections; i++) {
-                pool.release(channels[i]);
+                Channel channel = channels[i];
+                if (channel == null) {
+                    continue;
+                }
+                pool.release(channel);
+                establishedChannelNotExists = false;
+            }
+            if (establishedChannelNotExists) {
+                throw new ShardingException(ESTABLISH_CONNECTION_FAILED_MESSAGE, each);
             }
         }
+        eventLoopChannelPoolMap.put(eventLoop, poolMap);
     }
 }

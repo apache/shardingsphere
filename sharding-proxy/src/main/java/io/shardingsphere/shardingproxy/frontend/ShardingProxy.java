@@ -92,9 +92,6 @@ public final class ShardingProxy {
             workerGroup.shutdownGracefully();
             bossGroup.shutdownGracefully();
             backendExecutorContext.getExecuteEngine().close();
-            if (GLOBAL_REGISTRY.getShardingProperties().<Boolean>getValue(ShardingPropertiesConstant.PROXY_BACKEND_USE_NIO)) {
-                BackendNettyClientManager.getInstance().stop();
-            }
         }
     }
     
