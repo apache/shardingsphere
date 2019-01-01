@@ -75,6 +75,7 @@ public final class AggregationDistinctQueryMetaData {
     public Collection<Integer> getAggregationDistinctColumnIndexes() {
         
         return Collections2.transform(columnMetaDataList, new Function<AggregationDistinctColumnMetaData, Integer>() {
+            
             @Override
             public Integer apply(final AggregationDistinctColumnMetaData input) {
                 return input.getColumnIndex();
@@ -90,6 +91,7 @@ public final class AggregationDistinctQueryMetaData {
     public Collection<String> getAggregationDistinctColumnLabels() {
         
         return Collections2.transform(columnMetaDataList, new Function<AggregationDistinctColumnMetaData, String>() {
+            
             @Override
             public String apply(final AggregationDistinctColumnMetaData input) {
                 return input.getColumnLabel();
@@ -105,6 +107,7 @@ public final class AggregationDistinctQueryMetaData {
      */
     public AggregationType getAggregationType(final int distinctColumnIndex) {
         return Collections2.filter(columnMetaDataList, new Predicate<AggregationDistinctColumnMetaData>() {
+            
             @Override
             public boolean apply(final AggregationDistinctColumnMetaData input) {
                 return distinctColumnIndex == input.getColumnIndex();
@@ -150,6 +153,7 @@ public final class AggregationDistinctQueryMetaData {
      */
     public int getAggregationDistinctColumnIndex(final String aggregationDistinctColumnLabel) {
         return Collections2.filter(columnMetaDataList, new Predicate<AggregationDistinctColumnMetaData>() {
+            
             @Override
             public boolean apply(final AggregationDistinctColumnMetaData input) {
                 return aggregationDistinctColumnLabel.equals(input.getColumnLabel());
@@ -165,6 +169,7 @@ public final class AggregationDistinctQueryMetaData {
      */
     public int getAggregationDistinctColumnIndex(final int derivedSumIndex) {
         return Collections2.filter(columnMetaDataList, new Predicate<AggregationDistinctColumnMetaData>() {
+            
             @Override
             public boolean apply(final AggregationDistinctColumnMetaData input) {
                 return derivedSumIndex == input.getDerivedSumIndex();
@@ -180,6 +185,7 @@ public final class AggregationDistinctQueryMetaData {
      */
     public String getAggregationDistinctColumnLabel(final int aggregationDistinctColumnIndex) {
         return Collections2.filter(columnMetaDataList, new Predicate<AggregationDistinctColumnMetaData>() {
+            
             @Override
             public boolean apply(final AggregationDistinctColumnMetaData input) {
                 return aggregationDistinctColumnIndex == input.getColumnIndex();
