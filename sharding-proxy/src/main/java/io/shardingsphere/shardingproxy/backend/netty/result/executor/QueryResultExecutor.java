@@ -67,13 +67,6 @@ public class QueryResultExecutor implements Runnable {
         }
         CommandResponsePackets responsePackets = nettyBackendHandler.merge(sqlStatement, packets, queryResults);
         if (!queryResultCollector.isMasterSlaveSchema()) {
-//            if (SQLType.DDL == sqlStatement.getType() && !sqlStatement.getTables().isEmpty()) {
-//                try {
-//                    nettyBackendHandler.refreshTableMetaData(sqlStatement.getTables().getSingleTableName());
-//                } catch (SQLException ex) {
-//                    commandExecutor.writeErrPacket(ex);
-//                }
-//            }
             nettyBackendHandler.refreshTableMetaData(queryResultCollector.getLogicSchema(), sqlStatement);
         }
         commandExecutor.writeResult(responsePackets);
