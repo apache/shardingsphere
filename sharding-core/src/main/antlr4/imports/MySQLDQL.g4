@@ -44,7 +44,7 @@ caseExpress
     ;
     
 caseComp
-    : CASE simpleExpr caseWhenComp+ elseResult? END  
+    : CASE simpleExpr caseWhenComp+ elseResult? END
     ;
     
 caseWhenComp
@@ -87,8 +87,8 @@ joinTable
     : (INNER | CROSS)? JOIN tableFactor joinCondition?
     | STRAIGHT_JOIN tableFactor
     | STRAIGHT_JOIN tableFactor joinCondition
-    | (LEFT|RIGHT) OUTER? JOIN tableFactor joinCondition
-    | NATURAL (INNER | (LEFT|RIGHT) (OUTER))? JOIN tableFactor
+    | (LEFT | RIGHT) OUTER? JOIN tableFactor joinCondition
+    | NATURAL (INNER | (LEFT | RIGHT) (OUTER))? JOIN tableFactor
     ;
     
 joinCondition
@@ -96,13 +96,13 @@ joinCondition
     ;
     
 indexHintList
-    : indexHint(COMMA  indexHint)*
+    : indexHint(COMMA indexHint)*
     ;
     
 indexHint
-    : (USE | IGNORE | FORCE) (INDEX|KEY) (FOR (JOIN|ORDER BY|GROUP BY))* indexList
+    : (USE | IGNORE | FORCE) (INDEX | KEY) (FOR (JOIN | ORDER BY | GROUP BY))* indexList
     ;
-
+    
 selectExpr
     : (columnName | expr) AS? alias?
     | columnName DOT_ASTERISK
@@ -110,4 +110,4 @@ selectExpr
     
 intervalExpr
     : INTERVAL expr ID
-    ;    
+    ;

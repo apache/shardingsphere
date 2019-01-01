@@ -3,7 +3,7 @@ lexer grammar DataType;
 import Keyword, Symbol;
 
 STRING
-    : DQ_ ('\\"'|.)*? DQ_ | SQ_ (SQ_ |.)*? SQ_
+    : DQ_ ('\\"' | .)*? DQ_ | SQ_ (SQ_ | .)*? SQ_
     ;
     
 NUMBER
@@ -18,7 +18,7 @@ EXP
     : E [+\-]? INT_
     ;
     
-fragment HEX  
+fragment HEX
     : [0-9a-fA-F] 
     ;
     
@@ -27,9 +27,9 @@ HEX_DIGIT
     ;
     
 BIT_NUM
-    : '0b' ('0'|'1')+ | B SQ_ ('0'|'1')+ SQ_
+    : '0b' ('0' | '1')+ | B SQ_ ('0' | '1')+ SQ_
     ;
     
-WS  
+WS
     : [ \t\r\n] + ->skip
     ;

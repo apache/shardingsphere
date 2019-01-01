@@ -15,7 +15,7 @@ alterSpecification
     | addColumn
     | addIndex
     | addConstraint
-    | ALGORITHM EQ_? (DEFAULT | INPLACE|COPY)
+    | ALGORITHM EQ_? (DEFAULT | INPLACE | COPY)
     | ALTER COLUMN? columnName (SET DEFAULT | DROP DEFAULT)
     | changeColumn
     | DEFAULT? characterSet collateClause?
@@ -40,7 +40,7 @@ alterSpecification
     | TRUNCATE PARTITION (partitionNames | ALL)
     | COALESCE PARTITION NUMBER
     | REORGANIZE PARTITION partitionNames INTO partitionDefinitions
-    | EXCHANGE PARTITION partitionName WITH TABLE tableName ((WITH|WITHOUT) VALIDATION)?
+    | EXCHANGE PARTITION partitionName WITH TABLE tableName ((WITH | WITHOUT) VALIDATION)?
     | ANALYZE PARTITION (partitionNames | ALL)
     | CHECK PARTITION (partitionNames | ALL)
     | OPTIMIZE PARTITION (partitionNames | ALL)
@@ -107,7 +107,7 @@ renameIndex
     ;
     
 renameTable
-    : RENAME (TO|AS)? tableName
+    : RENAME (TO | AS)? tableName
     ;
     
 partitionNames

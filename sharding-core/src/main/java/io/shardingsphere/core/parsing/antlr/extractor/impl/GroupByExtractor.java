@@ -31,18 +31,16 @@ import org.antlr.v4.runtime.ParserRuleContext;
  */
 public final class GroupByExtractor implements OptionalSQLSegmentExtractor {
     
+    private final OrderByItemExtractor orderByItemExtractor = new OrderByItemExtractor();
+        
     @Override
     public Optional<GroupBySegment> extract(final ParserRuleContext ancestorNode) {
-        Optional<ParserRuleContext> selectClauseNode = ExtractorUtils.findFirstChildNode(ancestorNode, RuleName.SELECT_CLAUSE);
-        if (!selectClauseNode.isPresent()) {
+        Optional<ParserRuleContext> groupByNode = ExtractorUtils.findFirstChildNode(ancestorNode, RuleName.GROUP_BY_CLAUSE);
+        if (!groupByNode.isPresent()) {
             return Optional.absent();
         }
-        Optional<ParserRuleContext> orderByParentNode = ExtractorUtils.findFirstChildNodeNoneRecursive(selectClauseNode.get().getParent(), RuleName.GROUP_BY_CLAUSE);
-        if (!orderByParentNode.isPresent()) {
-            return Optional.absent();
-        }
-        GroupBySegment result = new GroupBySegment(orderByParentNode.get().getStop().getStopIndex() + 1);
-        result.getGroupByItems().addAll(new OrderByExtractor().extractOrderBy(orderByParentNode.get()));
+        GroupBySegment result = new GroupBySegment(groupByNode.get().getStop().getStopIndex() + 1);
+        result.getGroupByItems().addAll(orderByItemExtractor.extract(groupByNode.get()));
         return Optional.of(result);
     }
 }

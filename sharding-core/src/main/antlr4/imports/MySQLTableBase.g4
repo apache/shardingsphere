@@ -11,7 +11,7 @@ dataType
     | typeName (LP_ STRING (COMMA STRING)* RP_ characterSet? collateClause?)
     ;
     
- typeName
+typeName
     : DOUBLE PRECISION | ID
     ;
     
@@ -45,7 +45,7 @@ referenceDefinition
     ;
     
 referenceType
-    : ON (UPDATE  | DELETE) referenceOption
+    : ON (UPDATE | DELETE) referenceOption
     ;
     
 referenceOption
