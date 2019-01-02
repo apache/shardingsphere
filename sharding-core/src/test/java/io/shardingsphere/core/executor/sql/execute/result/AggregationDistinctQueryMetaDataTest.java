@@ -67,6 +67,8 @@ public class AggregationDistinctQueryMetaDataTest {
     
     @Test
     public void assertGetAggregationType() {
+        AggregationType actual = distinctQueryMetaData.getAggregationType(2);
+        assertThat(actual, is(AggregationType.AVG));
     }
     
     @Test
