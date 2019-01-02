@@ -35,6 +35,7 @@ import java.util.List;
 import static org.hamcrest.CoreMatchers.is;
 import static org.junit.Assert.assertEquals;
 import static org.junit.Assert.assertFalse;
+import static org.junit.Assert.assertNotEquals;
 import static org.junit.Assert.assertThat;
 import static org.junit.Assert.assertTrue;
 import static org.mockito.Mockito.mock;
@@ -135,6 +136,7 @@ public class DistinctQueryResultTest {
     
     @Test
     public void assertGetColumnCount() {
+        assertNotEquals(1, distinctQueryResult.getColumnCount());
     }
     
     @Test
