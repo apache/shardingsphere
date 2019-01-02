@@ -104,7 +104,7 @@ public final class ParsingSQLRouter implements ShardingRouter {
         if (sqlStatement instanceof SelectStatement && null != ((SelectStatement) sqlStatement).getLimit()) {
             processLimit(parameters, (SelectStatement) sqlStatement);
         }
-        SQLBuilder sqlBuilder = rewriteEngine.rewrite(!routingResult.isSingleRouting());
+        SQLBuilder sqlBuilder = rewriteEngine.rewrite(routingResult.isSingleRouting());
         for (TableUnit each : routingResult.getTableUnits().getTableUnits()) {
             result.getRouteUnits().add(new RouteUnit(each.getDataSourceName(), rewriteEngine.generateSQL(each, sqlBuilder, shardingMetaData.getDataSource())));
         }
