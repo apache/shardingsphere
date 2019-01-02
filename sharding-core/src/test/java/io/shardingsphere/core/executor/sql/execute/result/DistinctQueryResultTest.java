@@ -106,7 +106,7 @@ public class DistinctQueryResultTest {
     
     @Test
     @SneakyThrows
-    public void assertGetInputStream() {
+    public void assertGetInputStreamByColumnIndex() {
         distinctQueryResult.next();
         assertEquals(getInputStream(10).read(), distinctQueryResult.getInputStream(1, "Unicode").read());
     }
@@ -122,7 +122,10 @@ public class DistinctQueryResultTest {
     }
     
     @Test
-    public void assertGetInputStream1() {
+    @SneakyThrows
+    public void assertGetInputStreamByColumnLabel() {
+        distinctQueryResult.next();
+        assertEquals(getInputStream(10).read(), distinctQueryResult.getInputStream("order_id", "Unicode").read());
     }
     
     @Test
