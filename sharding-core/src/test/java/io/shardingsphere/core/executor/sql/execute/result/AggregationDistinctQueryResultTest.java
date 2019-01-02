@@ -32,6 +32,8 @@ import java.util.Collection;
 import java.util.LinkedList;
 import java.util.List;
 
+import static org.hamcrest.CoreMatchers.is;
+import static org.junit.Assert.assertThat;
 import static org.mockito.Mockito.mock;
 import static org.mockito.Mockito.when;
 
@@ -72,13 +74,17 @@ public class AggregationDistinctQueryResultTest {
         result.add(distinctCountSelectItem);
         result.add(distinctAvgSelectItem);
         Multimap<String, Integer> columnLabelAndIndexMap = HashMultimap.create();
-        columnLabelAndIndexMap.put("c", 1);
-        columnLabelAndIndexMap.put("a", 2);
+        columnLabelAndIndexMap.put("order_id", 1);
+        columnLabelAndIndexMap.put("c", 2);
+        columnLabelAndIndexMap.put("a", 3);
         return result;
     }
     
     @Test
-    public void testDivide() {
+    public void assertDivide() {
+        List<DistinctQueryResult> actual = aggregationDistinctQueryResult.divide();
+        assertThat(actual.size(), is(2));
+        assertThat(actual.iterator().next().getColumnCount(), is((Object) 5));
     }
     
     @Test
