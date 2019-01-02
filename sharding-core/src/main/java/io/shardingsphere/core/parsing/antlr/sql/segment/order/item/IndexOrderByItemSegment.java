@@ -15,34 +15,23 @@
  * </p>
  */
 
-package io.shardingsphere.core.parsing.antlr.sql.segment.order;
+package io.shardingsphere.core.parsing.antlr.sql.segment.order.item;
 
 import io.shardingsphere.core.constant.OrderDirection;
-import io.shardingsphere.core.parsing.antlr.sql.segment.SQLSegment;
-import io.shardingsphere.core.parsing.parser.token.OrderByToken;
 import lombok.Getter;
-import lombok.RequiredArgsConstructor;
 
 /**
- * Order by item segment.
+ * Order by item segment for index.
  * 
- * @author duhongjun
+ * @author zhangliang
  */
-@RequiredArgsConstructor
 @Getter
-public final class OrderByItemSegment implements SQLSegment {
+public final class IndexOrderByItemSegment extends OrderByItemSegment {
     
     private final int index;
     
-    private final int expressionStartPosition;
-    
-    private final int expressionEndPosition;
-    
-    private final boolean isIdentifier;
-    
-    private final OrderByToken orderByToken;
-    
-    private final OrderDirection orderDirection;
-    
-    private final OrderDirection nullOrderDirection;
+    public IndexOrderByItemSegment(final int index, final OrderDirection orderDirection, final OrderDirection nullOrderDirection) {
+        super(orderDirection, nullOrderDirection);
+        this.index = index;
+    }
 }

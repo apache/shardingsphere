@@ -94,7 +94,7 @@ public final class DQLMergeEngine implements MergeEngine {
     
     @Override
     public MergedResult merge() throws SQLException {
-        if (queryResults.size() == 1) {
+        if (1 == queryResults.size()) {
             return new IteratorStreamMergedResult(queryResults);
         }
         selectStatement.setIndexForItems(columnLabelIndexMap);

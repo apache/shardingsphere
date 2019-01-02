@@ -7,7 +7,7 @@ caseExpress
     ;
     
 caseComp
-    : CASE simpleExpr caseWhenComp+ elseResult? END  
+    : CASE simpleExpr caseWhenComp+ elseResult? END
     ;
     
 caseWhenComp
@@ -31,7 +31,7 @@ caseResult
     ;
     
 selectExpr
-    : (bitExpr| caseExpress) AS? alias?
+    : (bitExpr | caseExpress) AS? alias?
     ;
     
 deleteClause
@@ -43,7 +43,7 @@ fromSingle
     ;
     
 fromMulti
-    : ID ('.*')? (COMMA ID ('.*')?)* FROM  tableReferences
+    : ID ('.*')? (COMMA ID ('.*')?)* FROM tableReferences
     | FROM (ID ('.*')? (COMMA ID ('.*')?)* USING tableReferences)
     ;
     

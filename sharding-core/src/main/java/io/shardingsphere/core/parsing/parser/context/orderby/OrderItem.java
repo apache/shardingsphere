@@ -15,12 +15,13 @@
  * </p>
  */
 
-package io.shardingsphere.core.parsing.parser.context;
+package io.shardingsphere.core.parsing.parser.context.orderby;
 
 import com.google.common.base.Optional;
 import io.shardingsphere.core.constant.OrderDirection;
 import lombok.EqualsAndHashCode;
 import lombok.Getter;
+import lombok.RequiredArgsConstructor;
 import lombok.Setter;
 import lombok.ToString;
 
@@ -29,15 +30,16 @@ import lombok.ToString;
  *
  * @author zhangliang
  */
+@RequiredArgsConstructor
 @Getter
 @Setter
 @EqualsAndHashCode
 @ToString
 public final class OrderItem {
     
-    private final Optional<String> owner;
+    private final String owner;
     
-    private final Optional<String> name;
+    private final String name;
     
     private final OrderDirection orderDirection;
     
@@ -45,39 +47,44 @@ public final class OrderItem {
     
     private int index = -1;
     
-    private Optional<String> alias;
+    private String expression;
     
-    public OrderItem(final String name, final OrderDirection orderDirection, final OrderDirection nullOrderDirection, final Optional<String> alias) {
-        this.owner = Optional.absent();
-        this.name = Optional.of(name);
-        this.orderDirection = orderDirection;
-        this.nullOrderDirection = nullOrderDirection;
-        this.alias = alias;
-    }
+    private String alias;
     
-    public OrderItem(final String owner, final String name, final OrderDirection orderDirection, final OrderDirection nullOrderDirection, final Optional<String> alias) {
-        this.owner = Optional.of(owner);
-        this.name = Optional.of(name);
-        this.orderDirection = orderDirection;
-        this.nullOrderDirection = nullOrderDirection;
-        this.alias = alias;
+    public OrderItem(final String name, final OrderDirection orderDirection, final OrderDirection nullOrderDirection) {
+        this(null, name, orderDirection, nullOrderDirection);
     }
     
     public OrderItem(final int index, final OrderDirection orderDirection, final OrderDirection nullOrderDirection) {
-        owner = Optional.absent();
-        name = Optional.absent();
+        this(null, null, orderDirection, nullOrderDirection);
         this.index = index;
-        this.orderDirection = orderDirection;
-        this.nullOrderDirection = nullOrderDirection;
-        alias = Optional.absent();
     }
     
-    public OrderItem(final String name, final OrderDirection orderDirection, final OrderDirection nullOrderDirection) {
-        owner = Optional.absent();
-        this.name = Optional.of(name);
-        this.orderDirection = orderDirection;
-        this.nullOrderDirection = nullOrderDirection;
-        alias = Optional.absent();
+    /**
+     * Get owner.
+     *
+     * @return owner
+     */
+    public Optional<String> getOwner() {
+        return Optional.fromNullable(owner);
+    }
+    
+    /**
+     * Get name.
+     *
+     * @return name
+     */
+    public Optional<String> getName() {
+        return Optional.fromNullable(name);
+    }
+    
+    /**
+     * Get alias.
+     *
+     * @return alias
+     */
+    public Optional<String> getAlias() {
+        return Optional.fromNullable(alias);
     }
     
     /**
@@ -86,7 +93,7 @@ public final class OrderItem {
      * @return column label
      */
     public String getColumnLabel() {
-        return alias.isPresent() ? alias.get() : name.orNull();
+        return null == alias ? name : alias;
     }
     
     /**
@@ -95,10 +102,10 @@ public final class OrderItem {
      * @return qualified name
      */
     public Optional<String> getQualifiedName() {
-        if (!name.isPresent()) {
+        if (null == name) {
             return Optional.absent();
         }
-        return owner.isPresent() ? Optional.of(owner.get() + "." + name.get()) : name;
+        return null == owner ? Optional.of(name) : Optional.of(owner + "." + name);
     }
     
     /**

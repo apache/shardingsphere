@@ -24,7 +24,7 @@ import io.shardingsphere.core.parsing.lexer.dialect.oracle.OracleKeyword;
 import io.shardingsphere.core.parsing.lexer.token.DefaultKeyword;
 import io.shardingsphere.core.parsing.lexer.token.Symbol;
 import io.shardingsphere.core.parsing.parser.clause.expression.BasicExpressionParser;
-import io.shardingsphere.core.parsing.parser.context.OrderItem;
+import io.shardingsphere.core.parsing.parser.context.orderby.OrderItem;
 import io.shardingsphere.core.parsing.parser.dialect.ExpressionParserFactory;
 import io.shardingsphere.core.parsing.parser.exception.SQLParsingException;
 import io.shardingsphere.core.parsing.parser.expression.SQLExpression;
@@ -94,18 +94,31 @@ public abstract class OrderByClauseParser implements SQLClauseParser {
             return Optional.of(new OrderItem(((SQLNumberExpression) sqlExpression).getNumber().intValue(), orderDirection, getNullOrderDirection()));
         }
         if (sqlExpression instanceof SQLIdentifierExpression) {
-            return Optional.of(new OrderItem(SQLUtil.getExactlyValue(((SQLIdentifierExpression) sqlExpression).getName()),
-                    orderDirection, getNullOrderDirection(), selectStatement.getAlias(SQLUtil.getExactlyValue(((SQLIdentifierExpression) sqlExpression).getName()))));
+            OrderItem result = new OrderItem(SQLUtil.getExactlyValue(((SQLIdentifierExpression) sqlExpression).getName()), orderDirection, getNullOrderDirection());
+            Optional<String> alias = selectStatement.getAlias(SQLUtil.getExactlyValue(((SQLIdentifierExpression) sqlExpression).getName()));
+            if (alias.isPresent()) {
+                result.setAlias(alias.get());
+            }
+            return Optional.of(result);
         }
         if (sqlExpression instanceof SQLPropertyExpression) {
             SQLPropertyExpression sqlPropertyExpression = (SQLPropertyExpression) sqlExpression;
-            return Optional.of(
-                new OrderItem(SQLUtil.getExactlyValue(sqlPropertyExpression.getOwner().getName()), SQLUtil.getExactlyValue(sqlPropertyExpression.getName()), orderDirection, getNullOrderDirection(),
-                    selectStatement.getAlias(SQLUtil.getExactlyValue(sqlPropertyExpression.getOwner().getName()) + "." + SQLUtil.getExactlyValue(sqlPropertyExpression.getName()))));
+            OrderItem result = new OrderItem(
+                    SQLUtil.getExactlyValue(sqlPropertyExpression.getOwner().getName()), SQLUtil.getExactlyValue(sqlPropertyExpression.getName()), orderDirection, getNullOrderDirection());
+            Optional<String> alias = selectStatement.getAlias(SQLUtil.getExactlyValue(sqlPropertyExpression.getOwner().getName()) + "." + SQLUtil.getExactlyValue(sqlPropertyExpression.getName()));
+            if (alias.isPresent()) {
+                result.setAlias(alias.get());
+            }
+            return Optional.of(result);
         }
         if (sqlExpression instanceof SQLIgnoreExpression) {
             SQLIgnoreExpression sqlIgnoreExpression = (SQLIgnoreExpression) sqlExpression;
-            return Optional.of(new OrderItem(sqlIgnoreExpression.getExpression(), orderDirection, getNullOrderDirection(), selectStatement.getAlias(sqlIgnoreExpression.getExpression())));
+            OrderItem result = new OrderItem(sqlIgnoreExpression.getExpression(), orderDirection, getNullOrderDirection());
+            Optional<String> alias = selectStatement.getAlias(sqlIgnoreExpression.getExpression());
+            if (alias.isPresent()) {
+                result.setAlias(alias.get());
+            }
+            return Optional.of(result);
         }
         if (sqlExpression instanceof SQLPlaceholderExpression) {
             return Optional.absent();

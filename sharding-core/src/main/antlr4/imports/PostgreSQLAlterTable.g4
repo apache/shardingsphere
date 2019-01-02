@@ -27,7 +27,7 @@ alterTableAction
     | ALTER CONSTRAINT constraintName constraintOptionalParam
     | VALIDATE CONSTRAINT constraintName
     | DROP CONSTRAINT (IF EXISTS)? constraintName (RESTRICT | CASCADE)?
-    | (DISABLE |ENABLE) TRIGGER (triggerName | ALL | USER )?
+    | (DISABLE | ENABLE) TRIGGER (triggerName | ALL | USER )?
     | ENABLE (REPLICA | ALWAYS) TRIGGER triggerName
     | (DISABLE | ENABLE) RULE rewriteRuleName
     | ENABLE (REPLICA | ALWAYS) RULE rewriteRuleName
@@ -54,7 +54,7 @@ tableConstraintUsingIndex
     ;
     
 constraintOptionalParam
-    : (NOT? DEFERRABLE)? (INITIALLY (DEFERRED |IMMEDIATE))?
+    : (NOT? DEFERRABLE)? (INITIALLY (DEFERRED | IMMEDIATE))?
     ;
     
 addColumn
@@ -71,7 +71,7 @@ modifyColumn
     | alterColumn DROP DEFAULT
     | alterColumn (SET | DROP) NOT NULL
     | alterColumn ADD GENERATED (ALWAYS | (BY DEFAULT)) AS IDENTITY (LP_ sequenceOptions RP_)?
-    | alterColumn  alterColumnSetOption alterColumnSetOption*
+    | alterColumn alterColumnSetOption alterColumnSetOption*
     | alterColumn DROP IDENTITY (IF EXISTS)?
     | alterColumn SET STATISTICS NUMBER
     | alterColumn SET LP_ attributeOptions RP_
@@ -79,7 +79,7 @@ modifyColumn
     | alterColumn SET STORAGE (PLAIN | EXTERNAL | EXTENDED | MAIN)
     ;
     
-alterColumn     
+alterColumn
     : ALTER COLUMN? columnName
     ;
     
@@ -95,7 +95,7 @@ attributeOption
     : ID EQ_ simpleExpr
     ;
     
-addConstraint       
+addConstraint
     : ADD (tableConstraint (NOT VALID)? | tableConstraintUsingIndex)
     ;
     

@@ -92,7 +92,7 @@ action
     ;
 
 constraintOptionalParam
-    : (NOT? DEFERRABLE)? (INITIALLY (DEFERRED |IMMEDIATE))?
+    : (NOT? DEFERRABLE)? (INITIALLY (DEFERRED | IMMEDIATE))?
     ;
     
 tableConstraint
@@ -120,10 +120,10 @@ excludeElement
     
 privateExprOfDb
     : aggregateExpression
-    |windowFunction
-    |arrayConstructorWithCast
-    |(TIMESTAMP (WITH TIME ZONE)? STRING)
-    |extractFromFunction
+    | windowFunction
+    | arrayConstructorWithCast
+    | (TIMESTAMP (WITH TIME ZONE)? STRING)
+    | extractFromFunction
     ;
     
 pgExpr
@@ -131,8 +131,8 @@ pgExpr
     ;
     
 aggregateExpression
-    : ID (LP_ (ALL | DISTINCT)? exprs  orderByClause? RP_) asteriskWithParen
-    (LP_ exprs RP_  WITHIN GROUP LP_ orderByClause RP_) filterClause?
+    : ID (LP_ (ALL | DISTINCT)? exprs orderByClause? RP_) asteriskWithParen
+    (LP_ exprs RP_ WITHIN GROUP LP_ orderByClause RP_) filterClause?
     ;
     
 filterClause
@@ -159,7 +159,7 @@ windowDefinition
     ;
     
 orderByExpr
-    : ORDER BY expr (ASC | DESC | USING operator)?  (NULLS (FIRST | LAST ))?
+    : ORDER BY expr (ASC | DESC | USING operator)? (NULLS (FIRST | LAST ))?
     ;
     
 operator
@@ -207,7 +207,7 @@ collateExpr
     ;
 arrayConstructorWithCast
     : arrayConstructor castExprWithColon?
-    | ARRAY LBT_ RBT_ castExprWithColon  
+    | ARRAY LBT_ RBT_ castExprWithColon
     ;
     
 arrayConstructor

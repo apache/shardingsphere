@@ -40,7 +40,18 @@ public final class OrConditionFiller implements SQLStatementFiller<OrConditionSe
         sqlStatement.getConditions().getOrCondition().getAndConditions().addAll(buildCondition(sqlSegment, sqlStatement, sql, shardingRule, shardingTableMetaData).getAndConditions());
     }
     
-    public OrCondition buildCondition(final OrConditionSegment sqlSegment, final SQLStatement sqlStatement, final String sql, final ShardingRule shardingRule, final ShardingTableMetaData shardingTableMetaData) {
+    /**
+     * build condition.
+     *
+     * @param sqlSegment SQL segment
+     * @param sqlStatement SQL statement
+     * @param sql SQL
+     * @param shardingRule  databases and tables sharding rule
+     * @param shardingTableMetaData sharding table meta data
+     * @return Or Condition
+     */
+    public OrCondition buildCondition(final OrConditionSegment sqlSegment, final SQLStatement sqlStatement, final String sql, final ShardingRule shardingRule,
+                                      final ShardingTableMetaData shardingTableMetaData) {
         Map<String, String> columnNameToTable = new HashMap<>();
         Map<String, Integer> columnNameCount = new HashMap<>();
         fillColumnTableMap(sqlStatement, shardingTableMetaData, columnNameToTable, columnNameCount);
@@ -125,7 +136,7 @@ public final class OrConditionFiller implements SQLStatementFiller<OrConditionSe
             Column column = new Column(eachCondition.getColumn().getName(), eachCondition.getColumn().getTableName());
             if (ShardingOperator.EQUAL == eachCondition.getOperator()) {
                 EqualsValueExpressionSegment expressionSegment = (EqualsValueExpressionSegment) eachCondition.getExpression();
-                com.google.common.base.Optional<SQLExpression> expression = buildExpression((SelectStatement) sqlStatement, expressionSegment.getExpression(), sql, shardingRule, shardingTableMetaData);
+                Optional<SQLExpression> expression = buildExpression((SelectStatement) sqlStatement, expressionSegment.getExpression(), sql, shardingRule, shardingTableMetaData);
                 if (expression.isPresent()) {
                     andConditionResult.getConditions().add(new Condition(column, expression.get()));
                 }
@@ -150,11 +161,12 @@ public final class OrConditionFiller implements SQLStatementFiller<OrConditionSe
             }
             if (ShardingOperator.BETWEEN == eachCondition.getOperator()) {
                 BetweenValueExpressionSegment expressionSegment = (BetweenValueExpressionSegment) eachCondition.getExpression();
-                com.google.common.base.Optional<SQLExpression> beginExpress = buildExpression((SelectStatement) sqlStatement, expressionSegment.getBeginExpress(), sql, shardingRule, shardingTableMetaData);
+                com.google.common.base.Optional<SQLExpression> beginExpress = buildExpression((SelectStatement) sqlStatement,
+                        expressionSegment.getBeginExpress(), sql, shardingRule, shardingTableMetaData);
                 if (!beginExpress.isPresent()) {
                     continue;
                 }
-                com.google.common.base.Optional<SQLExpression> endExpress = buildExpression((SelectStatement) sqlStatement, expressionSegment.getEndExpress(), sql, shardingRule, shardingTableMetaData);
+                Optional<SQLExpression> endExpress = buildExpression((SelectStatement) sqlStatement, expressionSegment.getEndExpress(), sql, shardingRule, shardingTableMetaData);
                 if (!endExpress.isPresent()) {
                     continue;
                 }
@@ -163,8 +175,8 @@ public final class OrConditionFiller implements SQLStatementFiller<OrConditionSe
         }
     }
     
-    private com.google.common.base.Optional<SQLExpression> buildExpression(final SelectStatement selectStatement, final ExpressionSegment expressionSegment, final String sql, final ShardingRule shardingRule,
-                                                                           final ShardingTableMetaData shardingTableMetaData) {
+    private com.google.common.base.Optional<SQLExpression> buildExpression(final SelectStatement selectStatement, final ExpressionSegment expressionSegment, final String sql,
+                                                                           final ShardingRule shardingRule, final ShardingTableMetaData shardingTableMetaData) {
         if (!(expressionSegment instanceof CommonExpressionSegment)) {
             new ExpressionFiller().fill(expressionSegment, selectStatement, sql, shardingRule, shardingTableMetaData);
             return com.google.common.base.Optional.absent();

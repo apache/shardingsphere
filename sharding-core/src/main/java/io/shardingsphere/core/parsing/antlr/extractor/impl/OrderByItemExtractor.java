@@ -22,8 +22,10 @@ import io.shardingsphere.core.constant.OrderDirection;
 import io.shardingsphere.core.parsing.antlr.extractor.CollectionSQLSegmentExtractor;
 import io.shardingsphere.core.parsing.antlr.extractor.util.ExtractorUtils;
 import io.shardingsphere.core.parsing.antlr.extractor.util.RuleName;
-import io.shardingsphere.core.parsing.antlr.sql.segment.order.OrderByItemSegment;
-import io.shardingsphere.core.parsing.parser.token.OrderByToken;
+import io.shardingsphere.core.parsing.antlr.sql.segment.order.item.ColumnNameOrderByItemSegment;
+import io.shardingsphere.core.parsing.antlr.sql.segment.order.item.ExpressionOrderByItemSegment;
+import io.shardingsphere.core.parsing.antlr.sql.segment.order.item.IndexOrderByItemSegment;
+import io.shardingsphere.core.parsing.antlr.sql.segment.order.item.OrderByItemSegment;
 import io.shardingsphere.core.util.NumberUtil;
 import org.antlr.v4.runtime.ParserRuleContext;
 
@@ -41,18 +43,21 @@ public final class OrderByItemExtractor implements CollectionSQLSegmentExtractor
     public Collection<OrderByItemSegment> extract(final ParserRuleContext ancestorNode) {
         Collection<OrderByItemSegment> result = new LinkedList<>();
         for (ParserRuleContext each : ExtractorUtils.getAllDescendantNodes(ancestorNode, RuleName.ORDER_BY_ITEM)) {
-            // FIXME when will count be zero?
-            int count = each.getChildCount();
-            if (0 == count) {
+            OrderDirection orderDirection = 2 == each.getChildCount() && OrderDirection.DESC.name().equalsIgnoreCase(each.getChild(1).getText()) ? OrderDirection.DESC : OrderDirection.ASC;
+            Optional<ParserRuleContext> indexNode = ExtractorUtils.findFirstChildNode(each, RuleName.NUMBER);
+            if (indexNode.isPresent()) {
+                result.add(new IndexOrderByItemSegment(NumberUtil.getExactlyNumber(indexNode.get().getText(), 10).intValue(), orderDirection, OrderDirection.ASC));
                 continue;
             }
-            Optional<ParserRuleContext> numberNode = ExtractorUtils.findFirstChildNode(each, RuleName.NUMBER);
-            int index = numberNode.isPresent() ? NumberUtil.getExactlyNumber(numberNode.get().getText(), 10).intValue() : -1;
-            boolean isIdentifier = RuleName.COLUMN_NAME.getName().equalsIgnoreCase(each.getChild(0).getClass().getSimpleName());
-            OrderDirection orderDirection = count > 1 && OrderDirection.DESC.name().equalsIgnoreCase(each.getChild(count - 1).getText()) ? OrderDirection.DESC : OrderDirection.ASC;
-            ParserRuleContext firstChild = (ParserRuleContext) each.getChild(0);
-            result.add(new OrderByItemSegment(index, firstChild.getStart().getStartIndex(), firstChild.getStop().getStopIndex(), 
-                    isIdentifier, new OrderByToken(ancestorNode.getStart().getStartIndex()), orderDirection, OrderDirection.ASC));
+            Optional<ParserRuleContext> expressionNode = ExtractorUtils.findFirstChildNode(each, RuleName.EXPR);
+            if (expressionNode.isPresent()) {
+                result.add(new ExpressionOrderByItemSegment(expressionNode.get().getText(), orderDirection, OrderDirection.ASC));
+                continue;
+            }
+            Optional<ParserRuleContext> columnNameNode = ExtractorUtils.findFirstChildNode(each, RuleName.COLUMN_NAME);
+            if (columnNameNode.isPresent()) {
+                result.add(new ColumnNameOrderByItemSegment(columnNameNode.get().getText(), ((ParserRuleContext) each.getChild(0)).getStart().getStartIndex(), orderDirection, OrderDirection.ASC));
+            }
         }
         return result;
     }
