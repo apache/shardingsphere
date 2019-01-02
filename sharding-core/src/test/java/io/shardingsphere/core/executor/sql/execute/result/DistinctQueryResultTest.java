@@ -19,7 +19,6 @@ package io.shardingsphere.core.executor.sql.execute.result;
 
 import com.google.common.collect.HashMultimap;
 import com.google.common.collect.Multimap;
-import io.shardingsphere.core.exception.ShardingException;
 import io.shardingsphere.core.merger.QueryResult;
 import lombok.SneakyThrows;
 import org.junit.Before;
@@ -29,6 +28,7 @@ import java.io.ByteArrayInputStream;
 import java.io.ByteArrayOutputStream;
 import java.io.InputStream;
 import java.io.ObjectOutputStream;
+import java.sql.SQLException;
 import java.util.Calendar;
 import java.util.Collection;
 import java.util.Collections;
@@ -146,7 +146,7 @@ public class DistinctQueryResultTest {
         assertThat(distinctQueryResult.getColumnLabel(1), is("order_id"));
     }
     
-    @Test(expected = ShardingException.class)
+    @Test(expected = SQLException.class)
     @SneakyThrows
     public void assertGetColumnLabelWithException() {
         assertThat(distinctQueryResult.getColumnLabel(2), is("order_id"));
@@ -166,6 +166,7 @@ public class DistinctQueryResultTest {
     
     @Test
     public void assertGetResultData() {
+        assertThat(distinctQueryResult.getResultData().next().getColumnValue(1), is((Object) 10));
     }
     
     @Test
