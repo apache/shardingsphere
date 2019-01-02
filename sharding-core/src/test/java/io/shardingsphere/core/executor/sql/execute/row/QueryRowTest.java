@@ -17,9 +17,22 @@
 
 package io.shardingsphere.core.executor.sql.execute.row;
 
+import org.junit.Before;
 import org.junit.Test;
 
+import java.util.Collections;
+
+import static org.hamcrest.CoreMatchers.is;
+import static org.junit.Assert.assertThat;
+
 public class QueryRowTest {
+    
+    private QueryRow queryRow;
+    
+    @Before
+    public void setUp() {
+        queryRow = new QueryRow(Collections.singletonList((Object) 10), Collections.singletonList(1));
+    }
     
     @Test
     public void assertGetColumnValue() {
