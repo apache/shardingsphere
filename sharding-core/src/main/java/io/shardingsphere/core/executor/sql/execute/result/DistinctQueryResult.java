@@ -28,7 +28,10 @@ import lombok.AccessLevel;
 import lombok.Getter;
 import lombok.SneakyThrows;
 
+import java.io.ByteArrayInputStream;
+import java.io.ByteArrayOutputStream;
 import java.io.InputStream;
+import java.io.ObjectOutputStream;
 import java.sql.SQLException;
 import java.util.ArrayList;
 import java.util.Calendar;
@@ -148,12 +151,22 @@ public class DistinctQueryResult implements QueryResult {
     
     @Override
     public InputStream getInputStream(final int columnIndex, final String type) {
-        return (InputStream) currentRow.getColumnValue(columnIndex);
+        return getInputStream(currentRow.getColumnValue(columnIndex));
     }
     
     @Override
     public InputStream getInputStream(final String columnLabel, final String type) {
-        return (InputStream) currentRow.getColumnValue(getColumnIndex(columnLabel));
+        return getInputStream(currentRow.getColumnValue(getColumnIndex(columnLabel)));
+    }
+    
+    @SneakyThrows
+    private InputStream getInputStream(final Object value) {
+        ByteArrayOutputStream byteArrayOutputStream = new ByteArrayOutputStream();
+        ObjectOutputStream objectOutputStream = new ObjectOutputStream(byteArrayOutputStream);
+        objectOutputStream.writeObject(value);
+        objectOutputStream.flush();
+        objectOutputStream.close();
+        return new ByteArrayInputStream(byteArrayOutputStream.toByteArray());
     }
     
     @Override
