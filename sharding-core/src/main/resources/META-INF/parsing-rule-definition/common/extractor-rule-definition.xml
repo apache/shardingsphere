@@ -15,4 +15,5 @@
     <extractor-rule id="groupBy" extractor-class="GroupByExtractor" />
     <extractor-rule id="orderBy" extractor-class="OrderByExtractor" />
     <extractor-rule id="limit" extractor-class="LimitExtractor" />
+    <extractor-rule id="subQueryCondition" extractor-class="SubQueryConditionExtractor" />
 </extractor-rule-definition>

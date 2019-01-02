@@ -32,6 +32,7 @@ import org.antlr.v4.runtime.tree.TerminalNode;
 
 import java.util.Collection;
 import java.util.HashMap;
+import java.util.LinkedList;
 import java.util.Map;
 
 /**
@@ -44,6 +45,8 @@ public final class FromWhereExtractor implements OptionalSQLSegmentExtractor {
     private final TableNameExtractor tableNameExtractor = new TableNameExtractor();
     
     private PredicateExtractor predicateSegmentExtractor;
+    
+    private Collection<ParserRuleContext> questionNodes = new LinkedList<>();
     
     @Override
     public Optional<FromWhereSegment> extract(final ParserRuleContext ancestorNode) {
@@ -61,12 +64,18 @@ public final class FromWhereExtractor implements OptionalSQLSegmentExtractor {
         }
         FromWhereSegment result = new FromWhereSegment();
         predicateSegmentExtractor = new PredicateExtractor(result.getTableAliases());
-        Collection<ParserRuleContext> questionNodes = ExtractorUtils.getAllDescendantNodes(ancestorNode, RuleName.QUESTION);
+        if (questionNodes.isEmpty()) {
+            questionNodes = ExtractorUtils.getAllDescendantNodes(ancestorNode, RuleName.QUESTION);
+        }
         result.setParameterCount(questionNodes.size());
         Map<ParserRuleContext, Integer> questionNodeIndexMap = getPlaceholderAndNodeIndexMap(questionNodes);
         extractAndFillTableSegment(result, tableReferenceNodes, questionNodeIndexMap);
         extractAndFillWhere(result, questionNodeIndexMap, fromNode.get().getParent());
         return Optional.of(result);
+    }
+    
+    protected void setQuestionNodes(final ParserRuleContext ancestorNode) {
+        questionNodes = ExtractorUtils.getAllDescendantNodes(ancestorNode, RuleName.QUESTION);
     }
     
     private Map<ParserRuleContext, Integer> getPlaceholderAndNodeIndexMap(final Collection<ParserRuleContext> questionNodes) {
@@ -78,7 +87,7 @@ public final class FromWhereExtractor implements OptionalSQLSegmentExtractor {
         return result;
     }
     
-    private void extractAndFillTableSegment(final FromWhereSegment fromWhereSegment, 
+    private void extractAndFillTableSegment(final FromWhereSegment fromWhereSegment,
                                             final Collection<ParserRuleContext> tableReferenceNodes, final Map<ParserRuleContext, Integer> questionNodeIndexMap) {
         for (ParserRuleContext each : tableReferenceNodes) {
             for (int i = 0; i < each.getChildCount(); i++) {
@@ -91,9 +100,6 @@ public final class FromWhereExtractor implements OptionalSQLSegmentExtractor {
                     if (!subTableReferenceNodes.isEmpty()) {
                         extractAndFillTableSegment(fromWhereSegment, subTableReferenceNodes, questionNodeIndexMap);
                     }
-                    continue;
-                }
-                if (RuleName.TABLE_FACTOR.getName().equals(childNode.getClass().getSimpleName()) && fillSubQuery(fromWhereSegment, childNode)) {
                     continue;
                 }
                 fillTable(fromWhereSegment, childNode, questionNodeIndexMap);

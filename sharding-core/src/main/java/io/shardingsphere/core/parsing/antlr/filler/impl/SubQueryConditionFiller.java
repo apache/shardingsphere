@@ -19,24 +19,25 @@ package io.shardingsphere.core.parsing.antlr.filler.impl;
 
 import io.shardingsphere.core.metadata.table.ShardingTableMetaData;
 import io.shardingsphere.core.parsing.antlr.filler.SQLStatementFiller;
-import io.shardingsphere.core.parsing.antlr.sql.segment.FromWhereSegment;
+import io.shardingsphere.core.parsing.antlr.sql.segment.condition.OrConditionSegment;
+import io.shardingsphere.core.parsing.antlr.sql.segment.condition.SubQueryConditionSegment;
 import io.shardingsphere.core.parsing.parser.sql.SQLStatement;
+import io.shardingsphere.core.parsing.parser.sql.dql.select.SelectStatement;
 import io.shardingsphere.core.rule.ShardingRule;
 
 /**
- * From where filler.
+ * SubQuery condition filler.
  *
  * @author duhongjun
  */
-public final class FromWhereFiller implements SQLStatementFiller<FromWhereSegment> {
+public final class SubQueryConditionFiller implements SQLStatementFiller<SubQueryConditionSegment> {
     
     @Override
-    public void fill(final FromWhereSegment sqlSegment, final SQLStatement sqlStatement, final String sql, final ShardingRule shardingRule, final ShardingTableMetaData shardingTableMetaData) {
-        new OrConditionFiller().fill(sqlSegment.getConditions(), sqlStatement, sql, shardingRule, shardingTableMetaData);
-        int count = 0;
-        while (count < sqlSegment.getParameterCount()) {
-            sqlStatement.increaseParametersIndex();
-            count++;
+    public void fill(final SubQueryConditionSegment sqlSegment, final SQLStatement sqlStatement, final String sql, final ShardingRule shardingRule, final ShardingTableMetaData shardingTableMetaData) {
+        SelectStatement selectStatement = (SelectStatement) sqlStatement;
+        OrConditionFiller orConditionFiller = new OrConditionFiller();
+        for (OrConditionSegment each : sqlSegment.getOrConditions()) {
+            selectStatement.getSubQueryConditions().add(orConditionFiller.buildCondition(each, sqlStatement, sql, shardingRule, shardingTableMetaData));
         }
     }
 }

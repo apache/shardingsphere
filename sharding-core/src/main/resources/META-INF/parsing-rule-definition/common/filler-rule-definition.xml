@@ -12,6 +12,7 @@
     <filler-rule sql-segment-class="definition.constraint.DropPrimaryKeySegment" filler-class="ddl.alter.DropPrimaryKeyFiller" />
     <filler-rule sql-segment-class="SelectClauseSegment" filler-class="SelectClauseFiller" />
     <filler-rule sql-segment-class="FromWhereSegment" filler-class="FromWhereFiller" />
+    <filler-rule sql-segment-class="condition.SubQueryConditionSegment" filler-class="SubQueryConditionFiller" />
     <filler-rule sql-segment-class="order.GroupBySegment" filler-class="GroupByFiller" />
     <filler-rule sql-segment-class="order.OrderBySegment" filler-class="OrderByFiller" />
     <filler-rule sql-segment-class="LimitSegment" filler-class="LimitFiller" />
