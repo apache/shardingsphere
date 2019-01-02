@@ -101,6 +101,8 @@ public class AggregationDistinctQueryMetaDataTest {
     }
     
     @Test
-    public void assertGetAggregationDistinctColumnLabel() {
+    public void assertGetAggregationDistinctColumnLabel() { 
+        String actual = distinctQueryMetaData.getAggregationDistinctColumnLabel(1);
+        assertThat(actual, is("c"));
     }
 }
