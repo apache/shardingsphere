@@ -17,44 +17,52 @@
 
 package io.shardingsphere.core.executor.sql.execute.result;
 
+import com.google.common.collect.Multimap;
+import io.shardingsphere.core.parsing.parser.context.selectitem.AggregationDistinctSelectItem;
 import org.junit.Before;
 import org.junit.Test;
 
+import java.util.Collection;
+
 public class AggregationDistinctQueryMetaDataTest {
+    
+    private Collection<AggregationDistinctSelectItem> aggregationDistinctSelectItems;
+    
+    private Multimap<String, Integer> columnLabelAndIndexMap;
     
     @Before
     public void setUp() {
     }
     
     @Test
-    public void testGetAggregationDistinctColumnIndexes() {
+    public void assertGetAggregationDistinctColumnIndexes() {
     }
     
     @Test
-    public void testGetAggregationDistinctColumnLabels() {
+    public void assertGetAggregationDistinctColumnLabels() {
     }
     
     @Test
-    public void testGetAggregationType() {
+    public void assertGetAggregationType() {
     }
     
     @Test
-    public void testGetDerivedCountColumnIndexes() {
+    public void assertGetDerivedCountColumnIndexes() {
     }
     
     @Test
-    public void testGetDerivedSumColumnIndexes() {
+    public void assertGetDerivedSumColumnIndexes() {
     }
     
     @Test
-    public void testGetAggregationDistinctColumnIndex() {
+    public void assertGetAggregationDistinctColumnIndex() {
     }
     
     @Test
-    public void testGetAggregationDistinctColumnIndex1() {
+    public void assertGetAggregationDistinctColumnIndex1() {
     }
     
     @Test
-    public void testGetAggregationDistinctColumnLabel() {
+    public void assertGetAggregationDistinctColumnLabel() {
     }
 }
