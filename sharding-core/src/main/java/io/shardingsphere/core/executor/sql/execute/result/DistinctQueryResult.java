@@ -160,7 +160,7 @@ public class DistinctQueryResult implements QueryResult {
     }
     
     @SneakyThrows
-    private InputStream getInputStream(final Object value) {
+    protected InputStream getInputStream(final Object value) {
         ByteArrayOutputStream byteArrayOutputStream = new ByteArrayOutputStream();
         ObjectOutputStream objectOutputStream = new ObjectOutputStream(byteArrayOutputStream);
         objectOutputStream.writeObject(value);
