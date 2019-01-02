@@ -24,7 +24,6 @@ import io.shardingsphere.core.parsing.antlr.extractor.util.ExtractorUtils;
 import io.shardingsphere.core.parsing.antlr.extractor.util.RuleName;
 import io.shardingsphere.core.parsing.antlr.sql.segment.FromWhereSegment;
 import io.shardingsphere.core.parsing.antlr.sql.segment.condition.OrConditionSegment;
-import io.shardingsphere.core.parsing.antlr.sql.segment.expr.SubquerySegment;
 import io.shardingsphere.core.parsing.antlr.sql.segment.table.TableJoinSegment;
 import io.shardingsphere.core.parsing.antlr.sql.segment.table.TableSegment;
 import org.antlr.v4.runtime.ParserRuleContext;
@@ -32,7 +31,6 @@ import org.antlr.v4.runtime.tree.TerminalNode;
 
 import java.util.Collection;
 import java.util.HashMap;
-import java.util.LinkedList;
 import java.util.Map;
 
 /**
@@ -46,10 +44,19 @@ public final class FromWhereExtractor implements OptionalSQLSegmentExtractor {
     
     private PredicateExtractor predicateSegmentExtractor;
     
-    private Collection<ParserRuleContext> questionNodes = new LinkedList<>();
-    
     @Override
     public Optional<FromWhereSegment> extract(final ParserRuleContext ancestorNode) {
+        return extract(ancestorNode, ancestorNode);
+    }
+    
+    /**
+     * Extract SQL segment from SQL AST.
+     *
+     * @param ancestorNode ancestor node of AST
+     * @param rootNode root node of AST
+     * @return SQL segment
+     */
+    public Optional<FromWhereSegment> extract(final ParserRuleContext ancestorNode, final ParserRuleContext rootNode) {
         Optional<ParserRuleContext> selectClauseNode = ExtractorUtils.findFirstChildNode(ancestorNode, RuleName.SELECT_CLAUSE);
         if (!selectClauseNode.isPresent()) {
             return Optional.absent();
@@ -64,18 +71,12 @@ public final class FromWhereExtractor implements OptionalSQLSegmentExtractor {
         }
         FromWhereSegment result = new FromWhereSegment();
         predicateSegmentExtractor = new PredicateExtractor(result.getTableAliases());
-        if (questionNodes.isEmpty()) {
-            questionNodes = ExtractorUtils.getAllDescendantNodes(ancestorNode, RuleName.QUESTION);
-        }
+        Collection<ParserRuleContext> questionNodes = ExtractorUtils.getAllDescendantNodes(rootNode, RuleName.QUESTION);
         result.setParameterCount(questionNodes.size());
         Map<ParserRuleContext, Integer> questionNodeIndexMap = getPlaceholderAndNodeIndexMap(questionNodes);
         extractAndFillTableSegment(result, tableReferenceNodes, questionNodeIndexMap);
         extractAndFillWhere(result, questionNodeIndexMap, fromNode.get().getParent());
         return Optional.of(result);
-    }
-    
-    protected void setQuestionNodes(final ParserRuleContext ancestorNode) {
-        questionNodes = ExtractorUtils.getAllDescendantNodes(ancestorNode, RuleName.QUESTION);
     }
     
     private Map<ParserRuleContext, Integer> getPlaceholderAndNodeIndexMap(final Collection<ParserRuleContext> questionNodes) {
@@ -105,18 +106,6 @@ public final class FromWhereExtractor implements OptionalSQLSegmentExtractor {
                 fillTable(fromWhereSegment, childNode, questionNodeIndexMap);
             }
         }
-    }
-    
-    private boolean fillSubQuery(final FromWhereSegment fromWhereSegment, final ParserRuleContext tableFactorNode) {
-        Optional<ParserRuleContext> subQueryNode = ExtractorUtils.findFirstChildNode(tableFactorNode, RuleName.SUBQUERY);
-        if (!subQueryNode.isPresent()) {
-            return false;
-        }
-        Optional<SubquerySegment> result = new SubqueryExtractor().extract(subQueryNode.get());
-        if (result.isPresent()) {
-            fromWhereSegment.getSubQueries().add(result.get());
-        }
-        return true;
     }
     
     private void fillTable(final FromWhereSegment fromWhereSegment, final ParserRuleContext joinOrTableFactorNode, final Map<ParserRuleContext, Integer> questionNodeIndexMap) {
