@@ -36,6 +36,7 @@ public class QueryRowTest {
     
     @Test
     public void assertGetColumnValue() {
+        assertThat(queryRow.getColumnValue(1), is((Object) 10));
     }
     
     @Test
