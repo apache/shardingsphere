@@ -17,13 +17,13 @@
 
 package io.shardingsphere.core.executor.sql.execute.row;
 
-import org.junit.Assert;
 import org.junit.Before;
 import org.junit.Test;
 
 import java.util.Collections;
 
 import static org.hamcrest.CoreMatchers.is;
+import static org.junit.Assert.assertEquals;
 import static org.junit.Assert.assertFalse;
 import static org.junit.Assert.assertThat;
 import static org.junit.Assert.assertTrue;
@@ -43,20 +43,20 @@ public class QueryRowTest {
     }
     
     @Test
-    public void assertEquals() {
+    public void assertEqual() {
         QueryRow queryRow1 = new QueryRow(Collections.singletonList((Object) 10), Collections.<Integer>emptyList());
         assertTrue(queryRow1.equals(queryRow));
     }
     
     @Test
-    public void assertEqualsPartly() {
+    public void assertEqualPartly() {
         QueryRow queryRow1 = new QueryRow(Collections.singletonList((Object) 10), Collections.<Integer>emptyList());
         assertFalse(queryRow.equals(queryRow1));
     }
     
     @Test
     public void assertHashCode() {
-        Assert.assertEquals(41, queryRow.hashCode());
+        assertEquals(41, queryRow.hashCode());
     }
     
     @Test
@@ -66,5 +66,6 @@ public class QueryRowTest {
     
     @Test
     public void assertGetDistinctColumnIndexes() {
+        assertThat(queryRow.getDistinctColumnIndexes(), is(Collections.singletonList(1)));
     }
 }
