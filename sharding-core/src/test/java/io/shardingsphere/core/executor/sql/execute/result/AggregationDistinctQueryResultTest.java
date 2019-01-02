@@ -17,13 +17,43 @@
 
 package io.shardingsphere.core.executor.sql.execute.result;
 
+import io.shardingsphere.core.merger.QueryResult;
+import lombok.SneakyThrows;
 import org.junit.Before;
 import org.junit.Test;
 
+import java.util.Collection;
+import java.util.LinkedList;
+
+import static org.mockito.Mockito.mock;
+import static org.mockito.Mockito.when;
+
 public class AggregationDistinctQueryResultTest {
+    
+    private AggregationDistinctQueryResult aggregationDistinctQueryResult;
     
     @Before
     public void setUp() {
+        
+    }
+    
+    @SneakyThrows
+    private Collection<QueryResult> getQueryResults() {
+        Collection<QueryResult> result = new LinkedList<>();
+        for (int i = 1; i <= 2; i++) {
+            QueryResult queryResult = mock(QueryResult.class);
+            when(queryResult.next()).thenReturn(true).thenReturn(false);
+            when(queryResult.getColumnCount()).thenReturn(3);
+            when(queryResult.getColumnLabel(1)).thenReturn("order_id");
+            when(queryResult.getColumnLabel(2)).thenReturn("order_id");
+            when(queryResult.getColumnLabel(3)).thenReturn("order_id");
+            when(queryResult.getValue(1, Object.class)).thenReturn(10 * i);
+            when(queryResult.getValue(2, Object.class)).thenReturn(10 * i);
+            when(queryResult.getValue(3, Object.class)).thenReturn(10 * i);
+            result.add(queryResult);
+            result.add(queryResult);
+        }
+        return result;
     }
     
     @Test
