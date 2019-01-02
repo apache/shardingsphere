@@ -36,7 +36,6 @@ import java.util.List;
 import static org.hamcrest.CoreMatchers.is;
 import static org.junit.Assert.assertEquals;
 import static org.junit.Assert.assertFalse;
-import static org.junit.Assert.assertNotEquals;
 import static org.junit.Assert.assertThat;
 import static org.junit.Assert.assertTrue;
 import static org.mockito.Mockito.mock;
@@ -103,14 +102,14 @@ public class DistinctQueryResultTest {
     @Test
     public void assertGetCalendarValueByColumnLabel() {
         distinctQueryResult.next();
-        assertEquals(10, distinctQueryResult.getCalendarValue("order_id", Object.class, Calendar.getInstance()));
+        assertThat(distinctQueryResult.getCalendarValue("order_id", Object.class, Calendar.getInstance()), is((Object) 10));
     }
     
     @Test
     @SneakyThrows
     public void assertGetInputStreamByColumnIndex() {
         distinctQueryResult.next();
-        assertEquals(getInputStream(10).read(), distinctQueryResult.getInputStream(1, "Unicode").read());
+        assertThat(distinctQueryResult.getInputStream(1, "Unicode").read(), is(getInputStream(10).read()));
     }
     
     @SneakyThrows
@@ -127,7 +126,7 @@ public class DistinctQueryResultTest {
     @SneakyThrows
     public void assertGetInputStreamByColumnLabel() {
         distinctQueryResult.next();
-        assertEquals(getInputStream(10).read(), distinctQueryResult.getInputStream("order_id", "Unicode").read());
+        assertThat(distinctQueryResult.getInputStream("order_id", "Unicode").read(), is(getInputStream(10).read()));
     }
     
     @Test
@@ -137,19 +136,19 @@ public class DistinctQueryResultTest {
     
     @Test
     public void assertGetColumnCount() {
-        assertEquals(1, distinctQueryResult.getColumnCount());
+        assertThat(distinctQueryResult.getColumnCount(), is(1));
     }
     
     @Test
     @SneakyThrows
     public void assertGetColumnLabel() {
-        assertEquals("order_id", distinctQueryResult.getColumnLabel(1));
+        assertThat(distinctQueryResult.getColumnLabel(1), is("order_id"));
     }
     
     @Test(expected = ShardingException.class)
     @SneakyThrows
     public void assertGetColumnLabelWithException() {
-        assertEquals("order_id", distinctQueryResult.getColumnLabel(2));
+        assertThat(distinctQueryResult.getColumnLabel(2), is("order_id"));
     }
     
     @Test
@@ -159,6 +158,7 @@ public class DistinctQueryResultTest {
     
     @Test
     public void assertGetColumnLabelAndIndexMap() {
+        assertThat(distinctQueryResult.getColumnLabelAndIndexMap())
     }
     
     @Test
