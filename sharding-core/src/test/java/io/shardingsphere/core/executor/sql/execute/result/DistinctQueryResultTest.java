@@ -171,5 +171,7 @@ public class DistinctQueryResultTest {
     
     @Test
     public void assertGetCurrentRow() {
+        distinctQueryResult.next();
+        assertThat(distinctQueryResult.getCurrentRow().getColumnValue(1), is((Object) 10));
     }
 }
