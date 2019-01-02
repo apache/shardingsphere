@@ -17,6 +17,7 @@
 
 package io.shardingsphere.core.executor.sql.execute.result;
 
+import io.shardingsphere.core.exception.ShardingException;
 import io.shardingsphere.core.merger.QueryResult;
 import lombok.SneakyThrows;
 import org.junit.Before;
@@ -143,6 +144,12 @@ public class DistinctQueryResultTest {
     @SneakyThrows
     public void assertGetColumnLabel() {
         assertEquals("order_id", distinctQueryResult.getColumnLabel(1));
+    }
+    
+    @Test(expected = ShardingException.class)
+    @SneakyThrows
+    public void assertGetColumnLabelWithException() {
+        assertEquals("order_id", distinctQueryResult.getColumnLabel(2));
     }
     
     @Test
