@@ -22,6 +22,10 @@ import lombok.SneakyThrows;
 import org.junit.Before;
 import org.junit.Test;
 
+import java.io.ByteArrayInputStream;
+import java.io.ByteArrayOutputStream;
+import java.io.InputStream;
+import java.io.ObjectOutputStream;
 import java.util.Calendar;
 import java.util.Collection;
 import java.util.Collections;
@@ -101,7 +105,21 @@ public class DistinctQueryResultTest {
     }
     
     @Test
+    @SneakyThrows
     public void assertGetInputStream() {
+        InputStream inputStream = mock(InputStream.class);
+        distinctQueryResult.next();
+        assertEquals(, distinctQueryResult.getInputStream(1, "Unicode"));
+    }
+    
+    @SneakyThrows
+    private InputStream getInputStream(final Object value) {
+        ByteArrayOutputStream byteArrayOutputStream = new ByteArrayOutputStream();
+        ObjectOutputStream objectOutputStream = new ObjectOutputStream(byteArrayOutputStream);
+        objectOutputStream.writeObject(value);
+        objectOutputStream.flush();
+        objectOutputStream.close();
+        return new ByteArrayInputStream(byteArrayOutputStream.toByteArray());
     }
     
     @Test
