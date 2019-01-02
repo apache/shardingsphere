@@ -107,9 +107,8 @@ public class DistinctQueryResultTest {
     @Test
     @SneakyThrows
     public void assertGetInputStream() {
-        InputStream inputStream = mock(InputStream.class);
         distinctQueryResult.next();
-        assertEquals(, distinctQueryResult.getInputStream(1, "Unicode"));
+        assertEquals(getInputStream(10).read(), distinctQueryResult.getInputStream(1, "Unicode").read());
     }
     
     @SneakyThrows
