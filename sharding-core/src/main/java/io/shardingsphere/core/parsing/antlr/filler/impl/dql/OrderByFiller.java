@@ -35,9 +35,6 @@ public final class OrderByFiller implements SQLStatementFiller<OrderBySegment> {
     @Override
     public void fill(final OrderBySegment sqlSegment, final SQLStatement sqlStatement, final String sql, final ShardingRule shardingRule, final ShardingTableMetaData shardingTableMetaData) {
         SelectStatement selectStatement = (SelectStatement) sqlStatement;
-        if (!selectStatement.getSubQueryStatements().isEmpty()) {
-            return;
-        }
         for (OrderByItemSegment each : sqlSegment.getOrderByItems()) {
             selectStatement.getOrderByItems().add(new OrderItemBuilder(selectStatement, each).createOrderItem());
         }

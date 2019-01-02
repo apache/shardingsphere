@@ -19,6 +19,9 @@ package io.shardingsphere.core.parsing.antlr.extractor.impl;
 
 import com.google.common.base.Optional;
 import io.shardingsphere.core.parsing.antlr.extractor.OptionalSQLSegmentExtractor;
+import io.shardingsphere.core.parsing.antlr.extractor.impl.dql.GroupByExtractor;
+import io.shardingsphere.core.parsing.antlr.extractor.impl.dql.OrderByExtractor;
+import io.shardingsphere.core.parsing.antlr.extractor.impl.dql.SelectClauseExtractor;
 import io.shardingsphere.core.parsing.antlr.extractor.util.ExtractorUtils;
 import io.shardingsphere.core.parsing.antlr.extractor.util.RuleName;
 import io.shardingsphere.core.parsing.antlr.sql.segment.FromWhereSegment;
