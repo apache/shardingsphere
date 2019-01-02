@@ -17,21 +17,31 @@
 
 package io.shardingsphere.core.executor.sql.execute.result;
 
+import com.google.common.base.Optional;
+import com.google.common.collect.HashMultimap;
 import com.google.common.collect.Multimap;
+import io.shardingsphere.core.constant.AggregationType;
 import io.shardingsphere.core.parsing.parser.context.selectitem.AggregationDistinctSelectItem;
 import org.junit.Before;
 import org.junit.Test;
 
 import java.util.Collection;
+import java.util.LinkedList;
 
 public class AggregationDistinctQueryMetaDataTest {
     
-    private Collection<AggregationDistinctSelectItem> aggregationDistinctSelectItems;
+    private final Collection<AggregationDistinctSelectItem> aggregationDistinctSelectItems = new LinkedList<>();
     
-    private Multimap<String, Integer> columnLabelAndIndexMap;
+    private final Multimap<String, Integer> columnLabelAndIndexMap = HashMultimap.create();
     
     @Before
     public void setUp() {
+        AggregationDistinctSelectItem distinctCountSelectItem = new AggregationDistinctSelectItem(AggregationType.COUNT, "(DISTINCT order_id)", Optional.of("c"), "order_id");
+        AggregationDistinctSelectItem distinctAvgSelectItem = new AggregationDistinctSelectItem(AggregationType.AVG, "(DISTINCT order_id)", Optional.of("a"), "order_id");
+        aggregationDistinctSelectItems.add(distinctCountSelectItem);
+        aggregationDistinctSelectItems.add(distinctAvgSelectItem);
+        columnLabelAndIndexMap.put("c", 1);
+        columnLabelAndIndexMap.put("a", 2);
     }
     
     @Test
