@@ -121,12 +121,12 @@ public final class AggregationDistinctQueryResult extends DistinctQueryResult {
     
     @Override
     public InputStream getInputStream(final int columnIndex, final String type) {
-        return (InputStream) getValue(columnIndex);
+        return getInputStream(getValue(columnIndex));
     }
     
     @Override
     public InputStream getInputStream(final String columnLabel, final String type) {
-        return (InputStream) getValue(columnLabel);
+        return getInputStream(getValue(columnLabel));
     }
     
     @Override
