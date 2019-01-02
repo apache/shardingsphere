@@ -44,14 +44,16 @@ public class QueryRowTest {
     
     @Test
     public void assertEqual() {
-        QueryRow queryRow1 = new QueryRow(Collections.singletonList((Object) 10), Collections.<Integer>emptyList());
+        QueryRow queryRow1 = new QueryRow(Collections.singletonList((Object) 10));
         assertTrue(queryRow1.equals(queryRow));
     }
     
     @Test
     public void assertEqualPartly() {
-        QueryRow queryRow1 = new QueryRow(Collections.singletonList((Object) 10), Collections.<Integer>emptyList());
-        assertFalse(queryRow.equals(queryRow1));
+        QueryRow queryRow1 = new QueryRow(Collections.singletonList((Object) 10), Collections.singletonList(1));
+        QueryRow queryRow2 = new QueryRow(Collections.singletonList((Object) 8), Collections.singletonList(1));
+        assertTrue(queryRow.equals(queryRow1));
+        assertFalse(queryRow.equals(queryRow2));
     }
     
     @Test
