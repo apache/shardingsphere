@@ -27,62 +27,62 @@ public class DistinctQueryResultTest {
     }
     
     @Test
-    public void testDivide() {
+    public void assertDivide() {
     }
     
     @Test
-    public void testNext() {
+    public void assertNext() {
     }
     
     @Test
-    public void testGetValue() {
+    public void assertGetValue() {
     }
     
     @Test
-    public void testGetValue1() {
+    public void assertGetValue1() {
     }
     
     @Test
-    public void testGetCalendarValue() {
+    public void assertGetCalendarValue() {
     }
     
     @Test
-    public void testGetCalendarValue1() {
+    public void assertGetCalendarValue1() {
     }
     
     @Test
-    public void testGetInputStream() {
+    public void assertGetInputStream() {
     }
     
     @Test
-    public void testGetInputStream1() {
+    public void assertGetInputStream1() {
     }
     
     @Test
-    public void testWasNull() {
+    public void assertWasNull() {
     }
     
     @Test
-    public void testGetColumnCount() {
+    public void assertGetColumnCount() {
     }
     
     @Test
-    public void testGetColumnLabel() {
+    public void assertGetColumnLabel() {
     }
     
     @Test
-    public void testGetColumnIndex() {
+    public void assertGetColumnIndex() {
     }
     
     @Test
-    public void testGetColumnLabelAndIndexMap() {
+    public void assertGetColumnLabelAndIndexMap() {
     }
     
     @Test
-    public void testGetResultData() {
+    public void assertGetResultData() {
     }
     
     @Test
-    public void testGetCurrentRow() {
+    public void assertGetCurrentRow() {
     }
 }
