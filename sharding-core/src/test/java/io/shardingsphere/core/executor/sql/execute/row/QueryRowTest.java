@@ -22,22 +22,22 @@ import org.junit.Test;
 public class QueryRowTest {
     
     @Test
-    public void testGetColumnValue() {
+    public void assertGetColumnValue() {
     }
     
     @Test
-    public void testEquals() {
+    public void assertEquals() {
     }
     
     @Test
-    public void testHashCode() {
+    public void assertHashCode() {
     }
     
     @Test
-    public void testGetRowData() {
+    public void assertGetRowData() {
     }
     
     @Test
-    public void testGetDistinctColumnIndexes() {
+    public void assertGetDistinctColumnIndexes() {
     }
 }
