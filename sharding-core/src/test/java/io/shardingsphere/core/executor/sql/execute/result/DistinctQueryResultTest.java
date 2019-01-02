@@ -84,19 +84,19 @@ public class DistinctQueryResultTest {
     @Test
     public void assertGetValueByColumnIndex() {
         distinctQueryResult.next();
-        assertEquals(10, distinctQueryResult.getValue(1, Object.class));
+        assertThat(distinctQueryResult.getValue(1, Object.class), is((Object) 10));
     }
     
     @Test
     public void assertGetValueByColumnLabel() {
         distinctQueryResult.next();
-        assertEquals(10, distinctQueryResult.getValue("order_id", Object.class));
+        assertThat(distinctQueryResult.getValue("order_id", Object.class), is((Object) 10));
     }
     
     @Test
     public void assertGetCalendarValueByColumnIndex() {
         distinctQueryResult.next();
-        assertEquals(10, distinctQueryResult.getCalendarValue(1, Object.class, Calendar.getInstance()));
+        assertThat(distinctQueryResult.getCalendarValue(1, Object.class, Calendar.getInstance()), is((Object) 10));
     }
     
     @Test
