@@ -65,7 +65,12 @@ public final class OrderByFiller implements SQLStatementFiller<OrderBySegment> {
             return createOrderItem((IndexOrderByItemSegment) orderByItemSegment);
         }
         if (orderByItemSegment instanceof ColumnNameOrderByItemSegment) {
-            return createOrderItem(selectStatement, (ColumnNameOrderByItemSegment) orderByItemSegment);
+            OrderItem result = createOrderItem(selectStatement, (ColumnNameOrderByItemSegment) orderByItemSegment);
+            if (result.getOwner().isPresent() && selectStatement.getTables().getTableNames().contains(result.getOwner().get())) {
+                // TODO check if order by `xxx`.xx, maybe has problem
+                selectStatement.addSQLToken(new TableToken(((ColumnNameOrderByItemSegment) orderByItemSegment).getBeginPosition(), 0, result.getOwner().get()));
+            }
+            return result;
         }
         if (orderByItemSegment instanceof ExpressionOrderByItemSegment) {
             return createOrderItem(selectStatement, (ExpressionOrderByItemSegment) orderByItemSegment);
@@ -78,23 +83,15 @@ public final class OrderByFiller implements SQLStatementFiller<OrderBySegment> {
     }
     
     private OrderItem createOrderItem(final SelectStatement selectStatement, final ColumnNameOrderByItemSegment columnNameOrderByItemSegment) {
+        OrderItem result;
         String columnName = SQLUtil.getExactlyValue(columnNameOrderByItemSegment.getColumnName());
-        if (!columnName.contains(".")) {
-            OrderItem result = new OrderItem(columnName, columnNameOrderByItemSegment.getOrderDirection(), columnNameOrderByItemSegment.getNullOrderDirection());
-            Optional<String> alias = selectStatement.getAlias(columnName);
-            if (alias.isPresent()) {
-                result.setAlias(alias.get());
-            }
-            return result;
+        if (columnName.contains(".")) {
+            List<String> values = Splitter.on(".").splitToList(columnName);
+            result = new OrderItem(values.get(0), values.get(1), columnNameOrderByItemSegment.getOrderDirection(), columnNameOrderByItemSegment.getNullOrderDirection());
+        } else {
+            result = new OrderItem(columnName, columnNameOrderByItemSegment.getOrderDirection(), columnNameOrderByItemSegment.getNullOrderDirection());
         }
-        List<String> values = Splitter.on(".").splitToList(columnName);
-        String owner = values.get(0);
-        String name = values.get(1);
-        if (selectStatement.getTables().getTableNames().contains(owner)) {
-            selectStatement.addSQLToken(new TableToken(columnNameOrderByItemSegment.getBeginPosition(), 0, owner));
-        }
-        OrderItem result = new OrderItem(owner, name, columnNameOrderByItemSegment.getOrderDirection(), columnNameOrderByItemSegment.getNullOrderDirection());
-        Optional<String> alias = selectStatement.getAlias(owner + "." + name);
+        Optional<String> alias = selectStatement.getAlias(columnName);
         if (alias.isPresent()) {
             result.setAlias(alias.get());
         }
