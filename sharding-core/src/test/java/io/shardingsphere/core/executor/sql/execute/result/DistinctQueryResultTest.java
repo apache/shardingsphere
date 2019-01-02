@@ -96,6 +96,8 @@ public class DistinctQueryResultTest {
     
     @Test
     public void assertGetCalendarValueByColumnLabel() {
+        distinctQueryResult.next();
+        assertEquals(10, distinctQueryResult.getCalendarValue("order_id", Object.class, Calendar.getInstance()));
     }
     
     @Test
