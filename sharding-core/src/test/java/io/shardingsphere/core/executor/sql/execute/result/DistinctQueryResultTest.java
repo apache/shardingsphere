@@ -22,6 +22,7 @@ import lombok.SneakyThrows;
 import org.junit.Before;
 import org.junit.Test;
 
+import java.util.Calendar;
 import java.util.Collection;
 import java.util.Collections;
 import java.util.LinkedList;
@@ -88,11 +89,13 @@ public class DistinctQueryResultTest {
     }
     
     @Test
-    public void assertGetCalendarValue() {
+    public void assertGetCalendarValueByColumnIndex() {
+        distinctQueryResult.next();
+        assertEquals(10, distinctQueryResult.getCalendarValue(1, Object.class, Calendar.getInstance()));
     }
     
     @Test
-    public void assertGetCalendarValue1() {
+    public void assertGetCalendarValueByColumnLabel() {
     }
     
     @Test
