@@ -30,6 +30,7 @@ import org.junit.Test;
 
 import java.util.Collection;
 import java.util.LinkedList;
+import java.util.List;
 
 import static org.mockito.Mockito.mock;
 import static org.mockito.Mockito.when;
@@ -40,7 +41,7 @@ public class AggregationDistinctQueryResultTest {
     
     @Before
     public void setUp() {
-        
+        aggregationDistinctQueryResult = new AggregationDistinctQueryResult(getQueryResults(), getAggregationDistinctSelectItems());
     }
     
     @SneakyThrows
@@ -62,8 +63,8 @@ public class AggregationDistinctQueryResultTest {
         return result;
     }
     
-    private Collection<AggregationDistinctSelectItem> getAggregationDistinctSelectItems() {
-        Collection<AggregationDistinctSelectItem> result = new LinkedList<>();
+    private List<AggregationDistinctSelectItem> getAggregationDistinctSelectItems() {
+        List<AggregationDistinctSelectItem> result = new LinkedList<>();
         AggregationDistinctSelectItem distinctCountSelectItem = new AggregationDistinctSelectItem(AggregationType.COUNT, "(DISTINCT order_id)", Optional.of("c"), "order_id");
         AggregationDistinctSelectItem distinctAvgSelectItem = new AggregationDistinctSelectItem(AggregationType.AVG, "(DISTINCT order_id)", Optional.of("a"), "order_id");
         distinctAvgSelectItem.getDerivedAggregationSelectItems().add(new AggregationSelectItem(AggregationType.COUNT, "(DISTINCT order_id)", Optional.of("AVG_DERIVED_COUNT_0")));
