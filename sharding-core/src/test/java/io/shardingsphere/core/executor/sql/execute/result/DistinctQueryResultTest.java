@@ -33,13 +33,21 @@ public class DistinctQueryResultTest {
     private DistinctQueryResult distinctQueryResult;
     
     @Before
-    @SneakyThrows
     public void setUp() {
-        Collection<QueryResult> queryResults = new LinkedList<>();
-        QueryResult queryResult1 = mock(QueryResult.class);
-        when(queryResult1.getColumnCount()).thenReturn(1);
-        when(queryResult1.getColumnLabel(1)).thenReturn("order_id");
-        when(queryResult1.getValue(1, Object.class)).thenReturn(10);
+        Collection<QueryResult> queryResults = getQueryResults();
+    }
+    
+    @SneakyThrows
+    private Collection<QueryResult> getQueryResults() {
+        Collection<QueryResult> result = new LinkedList<>();
+        for (int i = 1; i <= 3; i++) {
+            QueryResult queryResult = mock(QueryResult.class);
+            when(queryResult.getColumnCount()).thenReturn(1);
+            when(queryResult.getColumnLabel(i)).thenReturn("order_id");
+            when(queryResult.getValue(i, Object.class)).thenReturn(10 * i);
+            result.add(queryResult);
+        }
+        return result;
     }
     
     @Test
