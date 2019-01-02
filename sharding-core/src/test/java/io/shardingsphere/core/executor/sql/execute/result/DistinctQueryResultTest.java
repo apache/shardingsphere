@@ -130,6 +130,7 @@ public class DistinctQueryResultTest {
     
     @Test
     public void assertWasNull() {
+        assertTrue(distinctQueryResult.wasNull());
     }
     
     @Test
