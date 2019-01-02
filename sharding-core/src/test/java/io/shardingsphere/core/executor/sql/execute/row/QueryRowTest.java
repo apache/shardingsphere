@@ -17,6 +17,7 @@
 
 package io.shardingsphere.core.executor.sql.execute.row;
 
+import org.junit.Assert;
 import org.junit.Before;
 import org.junit.Test;
 
@@ -55,6 +56,7 @@ public class QueryRowTest {
     
     @Test
     public void assertHashCode() {
+        Assert.assertEquals(41, queryRow.hashCode());
     }
     
     @Test
