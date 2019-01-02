@@ -22,6 +22,7 @@ import com.google.common.collect.HashMultimap;
 import com.google.common.collect.Multimap;
 import io.shardingsphere.core.constant.AggregationType;
 import io.shardingsphere.core.parsing.parser.context.selectitem.AggregationDistinctSelectItem;
+import io.shardingsphere.core.parsing.parser.context.selectitem.AggregationSelectItem;
 import org.junit.Before;
 import org.junit.Test;
 
@@ -42,6 +43,8 @@ public class AggregationDistinctQueryMetaDataTest {
         Multimap<String, Integer> columnLabelAndIndexMap = HashMultimap.create();
         AggregationDistinctSelectItem distinctCountSelectItem = new AggregationDistinctSelectItem(AggregationType.COUNT, "(DISTINCT order_id)", Optional.of("c"), "order_id");
         AggregationDistinctSelectItem distinctAvgSelectItem = new AggregationDistinctSelectItem(AggregationType.AVG, "(DISTINCT order_id)", Optional.of("a"), "order_id");
+        distinctAvgSelectItem.getDerivedAggregationSelectItems().add(new AggregationSelectItem(AggregationType.COUNT, "(DISTINCT order_id)", Optional.of("AVG_DERIVED_COUNT_0")));
+        distinctAvgSelectItem.getDerivedAggregationSelectItems().add(new AggregationSelectItem(AggregationType.SUM, "(DISTINCT order_id)", Optional.of("AVG_DERIVED_SUM_0")));
         aggregationDistinctSelectItems.add(distinctCountSelectItem);
         aggregationDistinctSelectItems.add(distinctAvgSelectItem);
         columnLabelAndIndexMap.put("c", 1);
@@ -73,6 +76,9 @@ public class AggregationDistinctQueryMetaDataTest {
     
     @Test
     public void assertGetDerivedCountColumnIndexes() {
+        Collection<Integer> actual = distinctQueryMetaData.getDerivedCountColumnIndexes();
+        assertThat(actual.size(), is(1));
+        assertThat(actual.iterator().next(), is(3));
     }
     
     @Test
