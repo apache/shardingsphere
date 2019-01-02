@@ -15,52 +15,40 @@
  * </p>
  */
 
-package io.shardingsphere.core.parsing.antlr.filler.impl;
+package io.shardingsphere.core.parsing.antlr.filler.impl.dql;
 
 import com.google.common.base.Optional;
 import com.google.common.base.Splitter;
-import io.shardingsphere.core.metadata.table.ShardingTableMetaData;
-import io.shardingsphere.core.parsing.antlr.filler.SQLStatementFiller;
-import io.shardingsphere.core.parsing.antlr.sql.segment.order.OrderBySegment;
 import io.shardingsphere.core.parsing.antlr.sql.segment.order.item.ColumnNameOrderByItemSegment;
 import io.shardingsphere.core.parsing.antlr.sql.segment.order.item.ExpressionOrderByItemSegment;
 import io.shardingsphere.core.parsing.antlr.sql.segment.order.item.IndexOrderByItemSegment;
 import io.shardingsphere.core.parsing.antlr.sql.segment.order.item.OrderByItemSegment;
 import io.shardingsphere.core.parsing.parser.context.orderby.OrderItem;
-import io.shardingsphere.core.parsing.parser.sql.SQLStatement;
 import io.shardingsphere.core.parsing.parser.sql.dql.select.SelectStatement;
 import io.shardingsphere.core.parsing.parser.token.TableToken;
-import io.shardingsphere.core.rule.ShardingRule;
 import io.shardingsphere.core.util.SQLUtil;
+import lombok.RequiredArgsConstructor;
 
 import java.util.List;
 
 /**
- * Order by filler.
+ * Order item builder.
  *
- * @author duhongjun
+ * @author zhangliang
  */
-public final class OrderByFiller implements SQLStatementFiller<OrderBySegment> {
+@RequiredArgsConstructor
+public final class OrderItemBuilder {
     
-    @Override
-    public void fill(final OrderBySegment sqlSegment, final SQLStatement sqlStatement, final String sql, final ShardingRule shardingRule, final ShardingTableMetaData shardingTableMetaData) {
-        SelectStatement selectStatement = (SelectStatement) sqlStatement;
-        if (!selectStatement.getSubQueryStatements().isEmpty()) {
-            return;
-        }
-        for (OrderByItemSegment each : sqlSegment.getOrderByItems()) {
-            selectStatement.getOrderByItems().add(createOrderItem(selectStatement, each));
-        }
-    }
+    private final SelectStatement selectStatement;
+    
+    private final OrderByItemSegment orderByItemSegment;
     
     /**
-     * create order item.
+     * Create order item.
      * 
-     * @param selectStatement select statement
-     * @param orderByItemSegment order by item segment
      * @return order item
      */
-    public OrderItem createOrderItem(final SelectStatement selectStatement, final OrderByItemSegment orderByItemSegment) {
+    public OrderItem createOrderItem() {
         if (orderByItemSegment instanceof IndexOrderByItemSegment) {
             return createOrderItem((IndexOrderByItemSegment) orderByItemSegment);
         }

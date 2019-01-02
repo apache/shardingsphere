@@ -10,12 +10,12 @@
     <filler-rule sql-segment-class="definition.column.alter.RenameColumnSegment" filler-class="ddl.alter.RenameColumnDefinitionFiller" />
     <filler-rule sql-segment-class="definition.column.alter.DropColumnDefinitionSegment" filler-class="ddl.alter.DropColumnDefinitionFiller" />
     <filler-rule sql-segment-class="definition.constraint.DropPrimaryKeySegment" filler-class="ddl.alter.DropPrimaryKeyFiller" />
-    <filler-rule sql-segment-class="SelectClauseSegment" filler-class="SelectClauseFiller" />
+    <filler-rule sql-segment-class="SelectClauseSegment" filler-class="dql.SelectClauseFiller" />
     <filler-rule sql-segment-class="FromWhereSegment" filler-class="FromWhereFiller" />
     <filler-rule sql-segment-class="condition.SubQueryConditionSegment" filler-class="SubQueryConditionFiller" />
-    <filler-rule sql-segment-class="order.GroupBySegment" filler-class="GroupByFiller" />
-    <filler-rule sql-segment-class="order.OrderBySegment" filler-class="OrderByFiller" />
-    <filler-rule sql-segment-class="LimitSegment" filler-class="LimitFiller" />
+    <filler-rule sql-segment-class="order.GroupBySegment" filler-class="dql.GroupByFiller" />
+    <filler-rule sql-segment-class="order.OrderBySegment" filler-class="dql.OrderByFiller" />
+    <filler-rule sql-segment-class="LimitSegment" filler-class="dql.LimitFiller" />
     <filler-rule sql-segment-class="ShowParamSegment" filler-class="ShowParamFiller" />
     <filler-rule sql-segment-class="tcl.SetAutoCommitSegment" filler-class="tcl.SetAutoCommitFiller" />
 </filler-rule-definition>
