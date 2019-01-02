@@ -174,4 +174,32 @@ public class DistinctQueryResultTest {
         distinctQueryResult.next();
         assertThat(distinctQueryResult.getCurrentRow().getColumnValue(1), is((Object) 10));
     }
+    
+    @Test(expected = SQLException.class)
+    @SneakyThrows
+    public void assertGetColumnLabelAndIndexMapWithException() {
+        Collection<QueryResult> queryResults = new LinkedList<>();
+        QueryResult queryResult = mock(QueryResult.class);
+        when(queryResult.next()).thenReturn(true).thenReturn(false);
+        when(queryResult.getColumnCount()).thenThrow(SQLException.class);
+        when(queryResult.getColumnLabel(1)).thenReturn("order_id");
+        when(queryResult.getValue(1, Object.class)).thenReturn(10);
+        queryResults.add(queryResult);
+        List<String> distinctColumnLabels = Collections.singletonList("order_id");
+        distinctQueryResult = new DistinctQueryResult(queryResults, distinctColumnLabels);
+    }
+    
+    @Test(expected = SQLException.class)
+    @SneakyThrows
+    public void assertGetResultDataWithException() {
+        Collection<QueryResult> queryResults = new LinkedList<>();
+        QueryResult queryResult = mock(QueryResult.class);
+        when(queryResult.next()).thenThrow(SQLException.class);
+        when(queryResult.getColumnCount()).thenReturn(1);
+        when(queryResult.getColumnLabel(1)).thenReturn("order_id");
+        when(queryResult.getValue(1, Object.class)).thenReturn(10);
+        queryResults.add(queryResult);
+        List<String> distinctColumnLabels = Collections.singletonList("order_id");
+        distinctQueryResult = new DistinctQueryResult(queryResults, distinctColumnLabels);
+    }
 }
