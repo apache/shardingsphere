@@ -17,6 +17,8 @@
 
 package io.shardingsphere.core.executor.sql.execute.result;
 
+import com.google.common.collect.HashMultimap;
+import com.google.common.collect.Multimap;
 import io.shardingsphere.core.exception.ShardingException;
 import io.shardingsphere.core.merger.QueryResult;
 import lombok.SneakyThrows;
@@ -34,7 +36,6 @@ import java.util.LinkedList;
 import java.util.List;
 
 import static org.hamcrest.CoreMatchers.is;
-import static org.junit.Assert.assertEquals;
 import static org.junit.Assert.assertFalse;
 import static org.junit.Assert.assertThat;
 import static org.junit.Assert.assertTrue;
@@ -158,7 +159,9 @@ public class DistinctQueryResultTest {
     
     @Test
     public void assertGetColumnLabelAndIndexMap() {
-        assertThat(distinctQueryResult.getColumnLabelAndIndexMap())
+        Multimap<String, Integer> expected = HashMultimap.create();
+        expected.put("order_id", 1);
+        assertThat(distinctQueryResult.getColumnLabelAndIndexMap(), is(expected));
     }
     
     @Test
