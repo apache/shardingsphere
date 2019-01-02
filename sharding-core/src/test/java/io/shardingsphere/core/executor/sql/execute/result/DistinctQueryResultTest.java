@@ -83,6 +83,8 @@ public class DistinctQueryResultTest {
     
     @Test
     public void assertGetValueByColumnLabel() {
+        distinctQueryResult.next();
+        assertEquals(10, distinctQueryResult.getValue("order_id", Object.class));
     }
     
     @Test
