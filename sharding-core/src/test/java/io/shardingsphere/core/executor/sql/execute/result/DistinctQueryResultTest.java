@@ -28,6 +28,7 @@ import java.util.LinkedList;
 import java.util.List;
 
 import static org.hamcrest.CoreMatchers.is;
+import static org.junit.Assert.assertEquals;
 import static org.junit.Assert.assertFalse;
 import static org.junit.Assert.assertThat;
 import static org.junit.Assert.assertTrue;
@@ -75,11 +76,13 @@ public class DistinctQueryResultTest {
     }
     
     @Test
-    public void assertGetValue() {
+    public void assertGetValueByColumnIndex() {
+        distinctQueryResult.next();
+        assertEquals(10, distinctQueryResult.getValue(1, Object.class));
     }
     
     @Test
-    public void assertGetValue1() {
+    public void assertGetValueByColumnLabel() {
     }
     
     @Test
