@@ -24,6 +24,7 @@ import java.util.Collections;
 
 import static org.hamcrest.CoreMatchers.is;
 import static org.junit.Assert.assertThat;
+import static org.junit.Assert.assertTrue;
 
 public class QueryRowTest {
     
@@ -41,6 +42,8 @@ public class QueryRowTest {
     
     @Test
     public void assertEquals() {
+        QueryRow queryRow1 = new QueryRow(Collections.singletonList((Object) 10), Collections.<Integer>emptyList());
+        assertTrue(queryRow1.equals(queryRow));
     }
     
     @Test
