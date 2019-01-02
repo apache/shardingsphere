@@ -23,6 +23,7 @@ import org.junit.Test;
 import java.util.Collections;
 
 import static org.hamcrest.CoreMatchers.is;
+import static org.junit.Assert.assertFalse;
 import static org.junit.Assert.assertThat;
 import static org.junit.Assert.assertTrue;
 
@@ -44,6 +45,12 @@ public class QueryRowTest {
     public void assertEquals() {
         QueryRow queryRow1 = new QueryRow(Collections.singletonList((Object) 10), Collections.<Integer>emptyList());
         assertTrue(queryRow1.equals(queryRow));
+    }
+    
+    @Test
+    public void assertEqualsPartly() {
+        QueryRow queryRow1 = new QueryRow(Collections.singletonList((Object) 10), Collections.<Integer>emptyList());
+        assertFalse(queryRow.equals(queryRow1));
     }
     
     @Test
