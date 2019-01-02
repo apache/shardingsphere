@@ -88,7 +88,11 @@ public class AggregationDistinctQueryResultTest {
     }
     
     @Test
-    public void testGetValue() {
+    public void assertGetValue() {
+        aggregationDistinctQueryResult.next();
+        assertThat(aggregationDistinctQueryResult.getValue(1, Object.class), is((Object) 10));
+        assertThat(aggregationDistinctQueryResult.getValue(2, Object.class), is((Object) 1));
+        assertThat(aggregationDistinctQueryResult.getValue(3, Object.class), is((Object) 10));
     }
     
     @Test
