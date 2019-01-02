@@ -6,6 +6,10 @@ alias
     : ID | PASSWORD | STRING
     ;
     
+tableName
+    : ID | ID DOT_ASTERISK | ASTERISK
+    ;
+    
 characterSet
     : (CHARACTER | CHAR) SET EQ_? charsetName | CHARSET EQ_? charsetName
     ;
@@ -97,7 +101,7 @@ frameExtent
     ;
     
 frameStart
-    :  CURRENT ROW
+    : CURRENT ROW
     | UNBOUNDED PRECEDING
     | UNBOUNDED FOLLOWING
     | expr PRECEDING
@@ -111,7 +115,7 @@ frameBetween
 frameEnd
     : frameStart
     ;
-        
+    
 variable
-    : (AT_ AT_)? (GLOBAL | PERSIST  | PERSIST_ONLY | SESSION)? DOT? ID
+    : (AT_ AT_)? (GLOBAL | PERSIST | PERSIST_ONLY | SESSION)? DOT? ID
     ;

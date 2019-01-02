@@ -11,7 +11,7 @@ dataType
     | typeName (LP_ STRING (COMMA STRING)* RP_ characterSet? collateClause?)
     ;
     
- typeName
+typeName
     : DOUBLE PRECISION | ID
     ;
     
@@ -45,7 +45,7 @@ referenceDefinition
     ;
     
 referenceType
-    : ON (UPDATE  | DELETE) referenceOption
+    : ON (UPDATE | DELETE) referenceOption
     ;
     
 referenceOption
@@ -103,7 +103,7 @@ tableOption
     | STATS_PERSISTENT EQ_? (DEFAULT | NUMBER)
     | STATS_SAMPLE_PAGES EQ_? NUMBER
     | TABLESPACE tablespaceName (STORAGE (DISK | MEMORY | DEFAULT))?
-    | UNION EQ_? tableNamesWithParen
+    | UNION EQ_? tableList
     ;
     
 engineName

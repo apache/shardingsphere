@@ -18,6 +18,8 @@
 package io.shardingsphere.core.parsing.integrate.asserts;
 
 import io.shardingsphere.core.parsing.antlr.sql.statement.ddl.AlterTableStatement;
+import io.shardingsphere.core.parsing.antlr.sql.statement.ddl.CreateTableStatement;
+import io.shardingsphere.core.parsing.antlr.sql.statement.tcl.TCLStatement;
 import io.shardingsphere.core.parsing.integrate.asserts.condition.ConditionAssert;
 import io.shardingsphere.core.parsing.integrate.asserts.groupby.GroupByAssert;
 import io.shardingsphere.core.parsing.integrate.asserts.index.IndexAssert;
@@ -30,9 +32,7 @@ import io.shardingsphere.core.parsing.integrate.asserts.table.TableAssert;
 import io.shardingsphere.core.parsing.integrate.asserts.token.TokenAssert;
 import io.shardingsphere.core.parsing.integrate.jaxb.root.ParserResult;
 import io.shardingsphere.core.parsing.parser.sql.SQLStatement;
-import io.shardingsphere.core.parsing.parser.sql.ddl.create.table.CreateTableStatement;
 import io.shardingsphere.core.parsing.parser.sql.dql.select.SelectStatement;
-import io.shardingsphere.core.parsing.parser.sql.tcl.TCLStatement;
 import io.shardingsphere.test.sql.SQLCaseType;
 import io.shardingsphere.test.sql.SQLCasesLoader;
 
@@ -120,7 +120,7 @@ public final class SQLStatementAssert {
     }
     
     private void assertCreateTableStatement(final CreateTableStatement actual) {
-        metaAssert.assertMeta(actual.getColumnNames(), actual.getColumnTypes(), actual.getPrimaryKeyColumns(), expected.getMeta());
+        metaAssert.assertMeta(actual.getColumnDefinitions(), expected.getMeta());
     }
     
     private void assertAlterTableStatement(final AlterTableStatement actual) {

@@ -62,10 +62,10 @@ public final class QueryRow {
         if (distinctColumnIndexes.isEmpty()) {
             return rowData.equals(queryRow.getRowData());
         }
-        return distinctColumnIndexes.equals(queryRow.getDistinctColumnIndexes()) && isEqualByPart(queryRow);
+        return distinctColumnIndexes.equals(queryRow.getDistinctColumnIndexes()) && isEqualPartly(queryRow);
     }
     
-    private boolean isEqualByPart(final QueryRow queryRow) {
+    private boolean isEqualPartly(final QueryRow queryRow) {
         for (int i = 0; i < distinctColumnIndexes.size(); i++) {
             if (!rowData.get(i).equals(queryRow.getRowData().get(i))) {
                 return false;

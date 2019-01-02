@@ -55,8 +55,8 @@ public final class MasterSlaveConnection extends AbstractConnectionAdapter {
     }
     
     @Override
-    public DatabaseMetaData getMetaData() throws SQLException {
-        return getConnection(masterSlaveDataSource.getMasterSlaveRule().getMasterDataSourceName()).getMetaData();
+    public DatabaseMetaData getMetaData() {
+        return masterSlaveDataSource.getDatabaseMetaData();
     }
     
     @Override

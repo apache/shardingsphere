@@ -37,10 +37,7 @@ columnOrVirtualDefinition
     
 modifyColumn
     : MODIFY 
-    ( 
-        LP_? modifyColProperties (COMMA modifyColProperties)* RP_?
-       | modifyColSubstitutable
-    )
+    (LP_? modifyColProperties (COMMA modifyColProperties)* RP_? | modifyColSubstitutable)
     ;
     
 modifyColProperties
@@ -107,8 +104,7 @@ renameConstraintClause
 dropConstraintClause
     : DROP
     (
-        constraintPrimaryOrUnique CASCADE? ((KEEP | DROP) INDEX)?
-       | (CONSTRAINT constraintName CASCADE?)
+    constraintPrimaryOrUnique CASCADE? ((KEEP | DROP) INDEX)? | (CONSTRAINT constraintName CASCADE?)
     ) 
     ;
     

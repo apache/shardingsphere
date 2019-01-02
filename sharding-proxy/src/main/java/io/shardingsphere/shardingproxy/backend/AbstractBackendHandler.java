@@ -18,6 +18,13 @@
 package io.shardingsphere.shardingproxy.backend;
 
 import com.google.common.base.Optional;
+import io.shardingsphere.core.metadata.table.TableMetaData;
+import io.shardingsphere.core.metadata.table.TableMetaDataFactory;
+import io.shardingsphere.core.parsing.antlr.sql.statement.ddl.AlterTableStatement;
+import io.shardingsphere.core.parsing.antlr.sql.statement.ddl.CreateTableStatement;
+import io.shardingsphere.core.parsing.antlr.sql.statement.ddl.DropTableStatement;
+import io.shardingsphere.core.parsing.parser.sql.SQLStatement;
+import io.shardingsphere.shardingproxy.runtime.schema.LogicSchema;
 import io.shardingsphere.shardingproxy.transport.mysql.constant.ServerErrorCode;
 import io.shardingsphere.shardingproxy.transport.mysql.packet.command.CommandResponsePackets;
 import io.shardingsphere.shardingproxy.transport.mysql.packet.generic.ErrPacket;
@@ -70,23 +77,45 @@ public abstract class AbstractBackendHandler implements BackendHandler {
         return Optional.absent();
     }
     
-    /**
-     * default next implement for adapter .
-     *
-     * @return false
-     */
     @Override
     public boolean next() throws SQLException {
         return false;
     }
     
-    /**
-     * default {@code getResultValue} implement for adapter.
-     *
-     * @return result packet
-     */
     @Override
     public ResultPacket getResultValue() throws SQLException {
         return null;
+    }
+    
+    protected final void refreshTableMetaData(final LogicSchema logicSchema, final SQLStatement sqlStatement) {
+        if (sqlStatement instanceof CreateTableStatement) {
+            refreshTableMetaData(logicSchema, (CreateTableStatement) sqlStatement);
+        } else if (sqlStatement instanceof AlterTableStatement) {
+            refreshTableMetaData(logicSchema, (AlterTableStatement) sqlStatement);
+        } else if (sqlStatement instanceof DropTableStatement) {
+            refreshTableMetaData(logicSchema, (DropTableStatement) sqlStatement);
+        }
+    }
+    
+    private void refreshTableMetaData(final LogicSchema logicSchema, final CreateTableStatement createTableStatement) {
+        logicSchema.getMetaData().getTable().put(createTableStatement.getTables().getSingleTableName(), TableMetaDataFactory.newInstance(createTableStatement));
+    }
+    
+    private void refreshTableMetaData(final LogicSchema logicSchema, final AlterTableStatement alterTableStatement) {
+        String logicTableName = alterTableStatement.getTables().getSingleTableName();
+        TableMetaData newTableMetaData = TableMetaDataFactory.newInstance(alterTableStatement, logicSchema.getMetaData().getTable().get(logicTableName));
+        Optional<String> newTableName = alterTableStatement.getNewTableName();
+        if (newTableName.isPresent()) {
+            logicSchema.getMetaData().getTable().put(newTableName.get(), newTableMetaData);
+            logicSchema.getMetaData().getTable().remove(logicTableName);
+        } else {
+            logicSchema.getMetaData().getTable().put(logicTableName, newTableMetaData);
+        }
+    }
+    
+    private void refreshTableMetaData(final LogicSchema logicSchema, final DropTableStatement dropTableStatement) {
+        for (String each : dropTableStatement.getTables().getTableNames()) {
+            logicSchema.getMetaData().getTable().remove(each);
+        }
     }
 }

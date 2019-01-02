@@ -1,6 +1,6 @@
 grammar MySQLDCLStatement;
 
-import MySQLKeyword, Keyword, BaseRule, DataType, Symbol;
+import MySQLKeyword, Keyword, MySQLBase, BaseRule, DataType, Symbol;
 
 grant
     : GRANT privType columnList? (COMMA privType columnList?)*
@@ -60,10 +60,7 @@ objectType
     ;
     
 privLevel
-    : ASTERISK
-    | ASTERISK DOT_ASTERISK
-    | schemaName DOT_ASTERISK
-    | schemaName DOT tableName
+    : ASTERISK DOT_ASTERISK
     | tableName
     | schemaName DOT routineName
     ;
@@ -128,7 +125,7 @@ revokeRole
 createUser
     : CREATE USER (IF NOT EXISTS)?
     userAuthOptions
-    DEFAULT ROLE roles
+    (DEFAULT ROLE roles)?
     (REQUIRE (NONE | tlsOption (COMMA AND? tlsOption)*))?
     (WITH resourceOption (COMMA resourceOption)*)?
     (passwordOption | lockOption)*
@@ -205,7 +202,7 @@ dropUser
 renameUser
     : RENAME USER user TO user (user TO user)*
     ;
-
+    
 createRole
     : CREATE ROLE (IF NOT EXISTS)? roles
     ;

@@ -22,7 +22,8 @@
     <sql-case id="alter_table_drop_constraint" value="ALTER TABLE t_order DROP CONSTRAINT pk_order_id" />
     <sql-case id="alter_table_drop_constraints" value="ALTER TABLE t_order DROP CONSTRAINT pk_order_id, DROP CONSTRAINT uk_order_id, DROP CONSTRAINT idx_order_id" />
     <sql-case id="alter_table_rename_constraints" value="ALTER TABLE t_order RENAME CONSTRAINT idx_order_id_bak TO idx_order_id" />
-    
+    <sql-case id="alter_table_rename_table" value="ALTER TABLE t_order RENAME to t_order1" />
+    <sql-case id="alter_table_rename_column" value="ALTER TABLE t_order RENAME COLUMN user_id to user_id1" />
     <!--  
     <sql-case id="create_table_with_exist_index" value="ALTER TABLE t_order ADD PRIMARY KEY USING INDEX idx_order_id" />
     -->

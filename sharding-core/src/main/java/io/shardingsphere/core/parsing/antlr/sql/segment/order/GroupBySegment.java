@@ -17,13 +17,13 @@
 
 package io.shardingsphere.core.parsing.antlr.sql.segment.order;
 
-import java.util.Collection;
-import java.util.LinkedList;
-
 import io.shardingsphere.core.parsing.antlr.sql.segment.SQLSegment;
+import io.shardingsphere.core.parsing.antlr.sql.segment.order.item.OrderByItemSegment;
 import lombok.Getter;
 import lombok.RequiredArgsConstructor;
-import lombok.Setter;
+
+import java.util.Collection;
+import java.util.LinkedList;
 
 /**
  * Group by segment.
@@ -32,7 +32,6 @@ import lombok.Setter;
  */
 @RequiredArgsConstructor
 @Getter
-@Setter
 public final class GroupBySegment implements SQLSegment {
 
     private final int groupByLastPosition;

@@ -146,7 +146,8 @@ public final class GlobalRegistry {
     private LogicSchema createLogicSchema(final String schemaName,
                                           final Map<String, Map<String, DataSourceParameter>> schemaDataSources, final RuleConfiguration ruleConfiguration, final boolean isUsingRegistry) {
         return ruleConfiguration instanceof ShardingRuleConfiguration
-                ? new ShardingSchema(schemaName, schemaDataSources.get(schemaName), (ShardingRuleConfiguration) ruleConfiguration, isUsingRegistry)
+                ? new ShardingSchema(schemaName, schemaDataSources.get(schemaName), (ShardingRuleConfiguration) ruleConfiguration, 
+                shardingProperties.<Boolean>getValue(ShardingPropertiesConstant.CHECK_TABLE_METADATA_ENABLED), isUsingRegistry) 
                 : new MasterSlaveSchema(schemaName, schemaDataSources.get(schemaName), (MasterSlaveRuleConfiguration) ruleConfiguration, isUsingRegistry);
     }
     

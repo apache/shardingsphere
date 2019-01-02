@@ -35,7 +35,7 @@ import java.util.Map;
 public final class ShardingTableMetaData {
     
     @Getter
-    private final Map<String, TableMetaData> tableMetaDataMap;
+    private final Map<String, TableMetaData> tables;
     
     /**
      * Get table meta data by table name.
@@ -43,7 +43,7 @@ public final class ShardingTableMetaData {
      * @return table mata data
      */
     public TableMetaData get(final String logicTableName) {
-        return tableMetaDataMap.get(logicTableName);
+        return tables.get(logicTableName);
     }
     
     /**
@@ -53,7 +53,16 @@ public final class ShardingTableMetaData {
      * @param tableMetaData table meta data
      */
     public void put(final String logicTableName, final TableMetaData tableMetaData) {
-        tableMetaDataMap.put(logicTableName, tableMetaData);
+        tables.put(logicTableName, tableMetaData);
+    }
+    
+    /**
+     * Remove table meta data.
+     *
+     * @param logicTableName logic table name
+     */
+    public void remove(final String logicTableName) {
+        tables.remove(logicTableName);
     }
     
     /**
@@ -63,7 +72,7 @@ public final class ShardingTableMetaData {
      * @return contains table from table meta data or not
      */
     public boolean containsTable(final String tableName) {
-        return tableMetaDataMap.containsKey(tableName);
+        return tables.containsKey(tableName);
     }
     
     /**
@@ -74,7 +83,7 @@ public final class ShardingTableMetaData {
      * @return contains column from table meta data or not
      */
     public boolean containsColumn(final String tableName, final String column) {
-        return containsTable(tableName) && tableMetaDataMap.get(tableName).getAllColumnNames().contains(column.toLowerCase());
+        return containsTable(tableName) && tables.get(tableName).getColumns().keySet().contains(column.toLowerCase());
     }
     
     /**
@@ -84,10 +93,6 @@ public final class ShardingTableMetaData {
      * @return column names.
      */
     public Collection<String> getAllColumnNames(final String tableName) {
-        TableMetaData tableMeta = tableMetaDataMap.get(tableName);
-        if (null == tableMeta) {
-            return Collections.emptyList();
-        }
-        return tableMeta.getAllColumnNames();
+        return tables.containsKey(tableName) ? tables.get(tableName).getColumns().keySet() : Collections.<String>emptyList();
     }
 }

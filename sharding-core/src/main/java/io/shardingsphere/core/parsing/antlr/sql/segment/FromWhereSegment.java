@@ -17,15 +17,15 @@
 
 package io.shardingsphere.core.parsing.antlr.sql.segment;
 
-import java.util.Collection;
-import java.util.HashMap;
-import java.util.LinkedList;
-import java.util.Map;
-
 import io.shardingsphere.core.parsing.antlr.sql.segment.condition.OrConditionSegment;
 import io.shardingsphere.core.parsing.antlr.sql.segment.expr.SubquerySegment;
 import lombok.Getter;
 import lombok.Setter;
+
+import java.util.Collection;
+import java.util.HashMap;
+import java.util.LinkedList;
+import java.util.Map;
 
 /**
  * From where segment.
@@ -39,8 +39,8 @@ public final class FromWhereSegment implements SQLSegment {
     
     private final OrConditionSegment conditions = new OrConditionSegment();
     
-    private final Collection<SubquerySegment> subquerys = new LinkedList<>();
+    private final Collection<SubquerySegment> subQueries = new LinkedList<>();
     
     @Setter
-    private Integer parameterCount;
+    private int parameterCount;
 }

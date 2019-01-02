@@ -17,25 +17,26 @@
 
 package io.shardingsphere.core.parsing.antlr.extractor.impl;
 
-import org.antlr.v4.runtime.ParserRuleContext;
-import org.antlr.v4.runtime.tree.ParseTree;
-import org.antlr.v4.runtime.tree.TerminalNodeImpl;
-
 import com.google.common.base.Optional;
-
 import io.shardingsphere.core.parsing.antlr.extractor.OptionalSQLSegmentExtractor;
 import io.shardingsphere.core.parsing.antlr.extractor.util.ExtractorUtils;
 import io.shardingsphere.core.parsing.antlr.extractor.util.RuleName;
 import io.shardingsphere.core.parsing.antlr.sql.segment.SelectClauseSegment;
 import io.shardingsphere.core.parsing.antlr.sql.segment.expr.ExpressionSegment;
 import io.shardingsphere.core.parsing.lexer.token.DefaultKeyword;
+import org.antlr.v4.runtime.ParserRuleContext;
+import org.antlr.v4.runtime.tree.ParseTree;
+import org.antlr.v4.runtime.tree.TerminalNodeImpl;
 
 /**
  * Select clause extractor.
  *
  * @author duhongjun
+ * @author panjuan
  */
 public final class SelectClauseExtractor implements OptionalSQLSegmentExtractor {
+    
+    private final ExpressionExtractor expressionExtractor = new ExpressionExtractor();
     
     @Override
     public Optional<SelectClauseSegment> extract(final ParserRuleContext ancestorNode) {
@@ -43,29 +44,26 @@ public final class SelectClauseExtractor implements OptionalSQLSegmentExtractor 
         if (!selectClauseNode.isPresent()) {
             return Optional.absent();
         }
-        boolean hasDistinct = false;
-        if (2 < selectClauseNode.get().getChildCount()) {
-            if (DefaultKeyword.DISTINCT.name().equalsIgnoreCase(selectClauseNode.get().getChild(1).getText())) {
-                hasDistinct = true;
-            }
-        }
-        Optional<ParserRuleContext> selectExpressionNode = ExtractorUtils.findFirstChildNode(selectClauseNode.get(), RuleName.SELECT_EXPRS);
-        if (!selectExpressionNode.isPresent()) {
+        Optional<ParserRuleContext> selectExpressionsNode = ExtractorUtils.findFirstChildNode(selectClauseNode.get(), RuleName.SELECT_EXPRS);
+        if (!selectExpressionsNode.isPresent()) {
             return Optional.absent();
         }
-        SelectClauseSegment result = new SelectClauseSegment(selectExpressionNode.get().getStop().getStopIndex() + 2);
-        result.setHasDistinct(hasDistinct);
-        ExpressionExtractor expressionExtractor = new ExpressionExtractor();
-        for (int i = 0; i < selectExpressionNode.get().getChildCount(); i++) {
-            ParseTree childNode = selectExpressionNode.get().getChild(i);
+        SelectClauseSegment result = new SelectClauseSegment(
+                selectExpressionsNode.get().getStart().getStartIndex(), selectExpressionsNode.get().getStop().getStopIndex() + 2, hasDistinct(selectClauseNode.get()));
+        for (int i = 0; i < selectExpressionsNode.get().getChildCount(); i++) {
+            ParseTree childNode = selectExpressionsNode.get().getChild(i);
             if (childNode instanceof TerminalNodeImpl) {
                 continue;
             }
-            Optional<ExpressionSegment> expressionSegment = expressionExtractor.extract((ParserRuleContext) childNode);
+            Optional<? extends ExpressionSegment> expressionSegment = expressionExtractor.extract((ParserRuleContext) childNode);
             if (expressionSegment.isPresent()) {
                 result.getExpressions().add(expressionSegment.get());
             }
         }
         return Optional.of(result);
+    }
+    
+    private boolean hasDistinct(final ParserRuleContext selectClauseNode) {
+        return selectClauseNode.getChildCount() > 2 && DefaultKeyword.DISTINCT.name().equalsIgnoreCase(selectClauseNode.getChild(1).getText());
     }
 }

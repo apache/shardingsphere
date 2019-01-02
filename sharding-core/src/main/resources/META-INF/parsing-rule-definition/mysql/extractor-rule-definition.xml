@@ -1,10 +1,8 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <extractor-rule-definition extractor-base-package="io.shardingsphere.core.parsing.antlr.extractor.impl">
-    <extractor-rule id="addColumn" extractor-class="dialect.mysql.MySQLAddColumnExtractor" />
-    <extractor-rule id="modifyColumn" extractor-class="dialect.mysql.MySQLModifyColumnExtractor" />
-    <extractor-rule id="changeColumn" extractor-class="dialect.mysql.MySQLChangeColumnExtractor" />
-    <extractor-rule id="addIndex" extractor-class="dialect.mysql.MySQLAddIndexExtractor" />
-    <extractor-rule id="dropIndex" extractor-class="dialect.mysql.MySQLDropIndexExtractor" />
-    <extractor-rule id="dropPrimaryKey" extractor-class="dialect.mysql.MySQLDropPrimaryKeyExtractor" />
-    <extractor-rule id="autoCommitValue" extractor-class="dialect.mysql.MySQLAutoCommitValueExtractor" />
+    <extractor-rule id="addColumnDefinition" extractor-class="dialect.mysql.definition.column.MySQLAddColumnDefinitionExtractor" />
+    <extractor-rule id="modifyColumnDefinition" extractor-class="dialect.mysql.definition.column.MySQLModifyColumnDefinitionExtractor" />
+    <extractor-rule id="changeColumnDefinition" extractor-class="dialect.mysql.definition.column.MySQLChangeColumnDefinitionExtractor" />
+    <extractor-rule id="dropPrimaryKey" extractor-class="dialect.mysql.definition.constraint.MySQLDropPrimaryKeyExtractor" />
+    <extractor-rule id="setAutoCommit" extractor-class="SetAutoCommitExtractor" />
 </extractor-rule-definition>

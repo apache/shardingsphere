@@ -16,7 +16,7 @@ createTableBody
     (ON (schemaName LP_ columnName RP_ | fileGroup | STRING))?
     (TEXTIMAGE_ON (fileGroup | STRING))?
     ((FILESTREAM_ON (schemaName) | fileGroup STRING))?
-    (WITH LP_ tableOption (COMMA tableOption)*  RP_)?
+    (WITH LP_ tableOption (COMMA tableOption)* RP_)?
     ;
     
 createTableDefinition
@@ -33,7 +33,7 @@ tableIndex
         (CLUSTERED | NONCLUSTERED )? columnList
         | CLUSTERED COLUMNSTORE
         | NONCLUSTERED? (COLUMNSTORE columnList | hashWithBucket) 
-        | CLUSTERED COLUMNSTORE (WITH LP_  COMPRESSION_DELAY EQ_ (NUMBER MINUTES?) RP_)?
+        | CLUSTERED COLUMNSTORE (WITH LP_ COMPRESSION_DELAY EQ_ (NUMBER MINUTES?) RP_)?
     )
     (WHERE expr)?
     (WITH LP_ indexOption ( COMMA indexOption)* RP_)? indexOnClause?
@@ -48,16 +48,16 @@ tableOption
     | FILETABLE_STREAMID_UNIQUE_CONSTRAINT_NAME EQ_ constraintName
     | FILETABLE_FULLPATH_UNIQUE_CONSTRAINT_NAME EQ_ constraintName
     | SYSTEM_VERSIONING EQ_ ON (LP_ HISTORY_TABLE EQ_ tableName (COMMA DATA_CONSISTENCY_CHECK EQ_ (ON | OFF))? RP_)?
-    | REMOTE_DATA_ARCHIVE EQ_ (ON (LP_ tableStretchOptions (COMMA tableStretchOptions)* RP_)? | OFF LP_  MIGRATION_STATE EQ_ PAUSED RP_)
+    | REMOTE_DATA_ARCHIVE EQ_ (ON (LP_ tableStretchOptions (COMMA tableStretchOptions)* RP_)? | OFF LP_ MIGRATION_STATE EQ_ PAUSED RP_)
     | tableOptOption
     | distributionOption
-    | dataWareHouseTableOption     
+    | dataWareHouseTableOption
     ;
     
 tableOptOption
-    : (MEMORY_OPTIMIZED EQ_ ON)   
+    : (MEMORY_OPTIMIZED EQ_ ON)
     | (DURABILITY EQ_ (SCHEMA_ONLY | SCHEMA_AND_DATA)) 
-    | (SYSTEM_VERSIONING EQ_ ON ( LP_  HISTORY_TABLE EQ_ tableName (COMMA DATA_CONSISTENCY_CHECK EQ_ ( ON | OFF ) )? RP_ )?)   
+    | (SYSTEM_VERSIONING EQ_ ON ( LP_ HISTORY_TABLE EQ_ tableName (COMMA DATA_CONSISTENCY_CHECK EQ_ ( ON | OFF ) )? RP_ )?)
     ;
     
 distributionOption
@@ -69,9 +69,9 @@ dataWareHouseTableOption
     ;
     
 dataWareHousePartitionOption
-    : (PARTITION LP_ columnName  RANGE (LEFT | RIGHT)? FOR VALUES LP_  simpleExpr (COMMA simpleExpr)* RP_  RP_)
+    : (PARTITION LP_ columnName RANGE (LEFT | RIGHT)? FOR VALUES LP_ simpleExpr (COMMA simpleExpr)* RP_ RP_)
     ;
     
 tableStretchOptions 
-    : (FILTER_PREDICATE EQ_ (NULL | functionCall) COMMA)? MIGRATION_STATE EQ_ (OUTBOUND | INBOUND | PAUSED)  
+    : (FILTER_PREDICATE EQ_ (NULL | functionCall) COMMA)? MIGRATION_STATE EQ_ (OUTBOUND | INBOUND | PAUSED)
     ;

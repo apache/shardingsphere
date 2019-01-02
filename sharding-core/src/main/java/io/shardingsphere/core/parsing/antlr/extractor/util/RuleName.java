@@ -65,9 +65,7 @@ public enum RuleName {
     
     INDEX_NAME("IndexName"),
     
-    DROP_INDEX_REF("DropIndexDef"),
-    
-    ALTER_DROP_INDEX("AlterDropIndex"),
+    DROP_INDEX_DEF("DropIndexDef"),
     
     ADD_CONSTRAINT("AddConstraint"),
     
@@ -97,7 +95,17 @@ public enum RuleName {
     
     ALIAS("Alias"),
     
+    QUESTION("Question"),
+    
+    NUMBER("Number"),
+    
+    STRING("String"),
+    
     EXPR("Expr"),
+    
+    SIMPLE_EXPR("SimpleExpr"),
+    
+    BIT_EXPR("BitExpr"),
     
     FROM_CLAUSE("FromClause"),
     
@@ -113,16 +121,6 @@ public enum RuleName {
     
     PREDICATE("Predicate"),
     
-    BITEXPR("BitExpr"),
-    
-    QUESTION("Question"),
-    
-    NUMBER("Number"),
-    
-    STRING("String"),
-    
-    SIMPLE_EXPR("SimpleExpr"),
-    
     LIMIT_CLAUSE("LimitClause"),
     
     RANGE_CLAUSE("RangeClause"),
@@ -130,8 +128,6 @@ public enum RuleName {
     SUBQUERY("Subquery"),
     
     SHOW_PARAM("ShowParam"),
-    
-    SET_AUTO_COMMIT("SetAutoCommit"),
     
     AUTO_COMMIT_VALUE("AutoCommitValue");
     

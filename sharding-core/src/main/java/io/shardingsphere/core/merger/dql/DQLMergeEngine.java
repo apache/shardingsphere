@@ -69,8 +69,8 @@ public final class DQLMergeEngine implements MergeEngine {
         if (!selectStatement.getAggregationDistinctSelectItems().isEmpty()) {
             return getDividedQueryResults(new AggregationDistinctQueryResult(queryResults, selectStatement));
         }
-        if (!selectStatement.getDistinctSelectItems().isEmpty()) {
-            return getDividedQueryResults(new DistinctQueryResult(queryResults, new ArrayList<>(selectStatement.getDistinctSelectItems().get(0).getDistinctColumnLabels())));
+        if (selectStatement.getDistinctSelectItem().isPresent()) {
+            return getDividedQueryResults(new DistinctQueryResult(queryResults, new ArrayList<>(selectStatement.getDistinctSelectItem().get().getDistinctColumnLabels())));
         }
         return queryResults;
     }
@@ -94,6 +94,9 @@ public final class DQLMergeEngine implements MergeEngine {
     
     @Override
     public MergedResult merge() throws SQLException {
+        if (1 == queryResults.size()) {
+            return new IteratorStreamMergedResult(queryResults);
+        }
         selectStatement.setIndexForItems(columnLabelIndexMap);
         return decorate(build());
     }
