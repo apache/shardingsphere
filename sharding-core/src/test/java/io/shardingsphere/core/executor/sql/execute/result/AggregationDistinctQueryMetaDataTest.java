@@ -29,23 +29,25 @@ import java.util.Collection;
 import java.util.LinkedList;
 
 public class AggregationDistinctQueryMetaDataTest {
-    
-    private final Collection<AggregationDistinctSelectItem> aggregationDistinctSelectItems = new LinkedList<>();
-    
-    private final Multimap<String, Integer> columnLabelAndIndexMap = HashMultimap.create();
+
+    private AggregationDistinctQueryMetaData distinctQueryMetaData; 
     
     @Before
     public void setUp() {
+        Collection<AggregationDistinctSelectItem> aggregationDistinctSelectItems = new LinkedList<>();
+        Multimap<String, Integer> columnLabelAndIndexMap = HashMultimap.create();
         AggregationDistinctSelectItem distinctCountSelectItem = new AggregationDistinctSelectItem(AggregationType.COUNT, "(DISTINCT order_id)", Optional.of("c"), "order_id");
         AggregationDistinctSelectItem distinctAvgSelectItem = new AggregationDistinctSelectItem(AggregationType.AVG, "(DISTINCT order_id)", Optional.of("a"), "order_id");
         aggregationDistinctSelectItems.add(distinctCountSelectItem);
         aggregationDistinctSelectItems.add(distinctAvgSelectItem);
         columnLabelAndIndexMap.put("c", 1);
         columnLabelAndIndexMap.put("a", 2);
+        distinctQueryMetaData = new AggregationDistinctQueryMetaData(aggregationDistinctSelectItems, columnLabelAndIndexMap);
     }
     
     @Test
     public void assertGetAggregationDistinctColumnIndexes() {
+        
     }
     
     @Test
