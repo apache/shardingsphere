@@ -19,7 +19,10 @@ package io.shardingsphere.core.parsing.antlr.filler.impl.dql;
 
 import io.shardingsphere.core.metadata.table.ShardingTableMetaData;
 import io.shardingsphere.core.parsing.antlr.filler.SQLStatementFiller;
-import io.shardingsphere.core.parsing.antlr.sql.segment.LimitSegment;
+import io.shardingsphere.core.parsing.antlr.sql.segment.limit.LimitSegment;
+import io.shardingsphere.core.parsing.antlr.sql.segment.limit.LimitValueSegment;
+import io.shardingsphere.core.parsing.antlr.sql.segment.limit.LiteralLimitValueSegment;
+import io.shardingsphere.core.parsing.antlr.sql.segment.limit.PlaceholderLimitValueSegment;
 import io.shardingsphere.core.parsing.parser.context.limit.Limit;
 import io.shardingsphere.core.parsing.parser.context.limit.LimitValue;
 import io.shardingsphere.core.parsing.parser.sql.SQLStatement;
@@ -38,17 +41,30 @@ public final class LimitFiller implements SQLStatementFiller<LimitSegment> {
     @Override
     public void fill(final LimitSegment sqlSegment, final SQLStatement sqlStatement, final String sql, final ShardingRule shardingRule, final ShardingTableMetaData shardingTableMetaData) {
         SelectStatement selectStatement = (SelectStatement) sqlStatement;
-        Limit limit = new Limit(sqlSegment.getDatabaseType());
-        selectStatement.setLimit(limit);
+        selectStatement.setLimit(new Limit(sqlSegment.getDatabaseType()));
         if (sqlSegment.getOffset().isPresent()) {
-            limit.setOffset(new LimitValue(sqlSegment.getOffset().get().getValue(), sqlSegment.getOffset().get().getIndex(), false));
-            if (-1 == sqlSegment.getOffset().get().getIndex()) {
-                selectStatement.getSQLTokens().add(new OffsetToken(sqlSegment.getOffset().get().getBeginPosition(), sqlSegment.getOffset().get().getValue()));
-            }
+            setOffset(sqlSegment.getOffset().get(), selectStatement);
         }
-        limit.setRowCount(new LimitValue(sqlSegment.getRowCount().getValue(), sqlSegment.getRowCount().getIndex(), false));
-        if (-1 == sqlSegment.getRowCount().getIndex()) {
-            selectStatement.getSQLTokens().add(new RowCountToken(sqlSegment.getRowCount().getBeginPosition(), sqlSegment.getRowCount().getValue()));
+        setRowCount(sqlSegment.getRowCount(), selectStatement);
+    }
+    
+    private void setOffset(final LimitValueSegment offsetSegment, final SelectStatement selectStatement) {
+        if (offsetSegment instanceof LiteralLimitValueSegment) {
+            int value = ((LiteralLimitValueSegment) offsetSegment).getValue();
+            selectStatement.getLimit().setOffset(new LimitValue(value, -1, false));
+            selectStatement.getSQLTokens().add(new OffsetToken(offsetSegment.getBeginPosition(), value));
+        } else {
+            selectStatement.getLimit().setOffset(new LimitValue(-1, ((PlaceholderLimitValueSegment) offsetSegment).getParameterIndex(), false));
+        }
+    }
+    
+    private void setRowCount(final LimitValueSegment rowCountSegment, final SelectStatement selectStatement) {
+        if (rowCountSegment instanceof LiteralLimitValueSegment) {
+            int value = ((LiteralLimitValueSegment) rowCountSegment).getValue();
+            selectStatement.getLimit().setRowCount(new LimitValue(value, -1, false));
+            selectStatement.getSQLTokens().add(new RowCountToken(rowCountSegment.getBeginPosition(), value));
+        } else {
+            selectStatement.getLimit().setRowCount(new LimitValue(-1, ((PlaceholderLimitValueSegment) rowCountSegment).getParameterIndex(), false));
         }
     }
 }

@@ -15,7 +15,7 @@
     <filler-rule sql-segment-class="io.shardingsphere.core.parsing.antlr.sql.segment.condition.SubQueryConditionSegment" filler-class="io.shardingsphere.core.parsing.antlr.filler.impl.dql.SubQueryConditionFiller" />
     <filler-rule sql-segment-class="io.shardingsphere.core.parsing.antlr.sql.segment.order.GroupBySegment" filler-class="io.shardingsphere.core.parsing.antlr.filler.impl.dql.GroupByFiller" />
     <filler-rule sql-segment-class="io.shardingsphere.core.parsing.antlr.sql.segment.order.OrderBySegment" filler-class="io.shardingsphere.core.parsing.antlr.filler.impl.dql.OrderByFiller" />
-    <filler-rule sql-segment-class="io.shardingsphere.core.parsing.antlr.sql.segment.LimitSegment" filler-class="io.shardingsphere.core.parsing.antlr.filler.impl.dql.LimitFiller" />
+    <filler-rule sql-segment-class="io.shardingsphere.core.parsing.antlr.sql.segment.limit.LimitSegment" filler-class="io.shardingsphere.core.parsing.antlr.filler.impl.dql.LimitFiller" />
     <filler-rule sql-segment-class="io.shardingsphere.core.parsing.antlr.sql.segment.ShowParamSegment" filler-class="io.shardingsphere.core.parsing.antlr.filler.impl.ShowParamFiller" />
     <filler-rule sql-segment-class="io.shardingsphere.core.parsing.antlr.sql.segment.tcl.SetAutoCommitSegment" filler-class="io.shardingsphere.core.parsing.antlr.filler.impl.tcl.SetAutoCommitFiller" />
 </filler-rule-definition>

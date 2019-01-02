@@ -15,38 +15,20 @@
  * </p>
  */
 
-package io.shardingsphere.core.parsing.antlr.sql.segment;
+package io.shardingsphere.core.parsing.antlr.sql.segment.limit;
 
-import com.google.common.base.Optional;
-import io.shardingsphere.core.constant.DatabaseType;
+import io.shardingsphere.core.parsing.antlr.sql.segment.SQLSegment;
 import lombok.Getter;
 import lombok.RequiredArgsConstructor;
 
 /**
- * Limit segment.
+ * Limit value segment.
  * 
- * @author duhongjun
+ * @author zhangliang
  */
 @RequiredArgsConstructor
 @Getter
-public final class LimitSegment implements SQLSegment {
+public abstract class LimitValueSegment implements SQLSegment {
     
-    private final DatabaseType databaseType;
-    
-    private final LimitValueSegment rowCount;
-    
-    private final LimitValueSegment offset;
-    
-    public LimitSegment(final DatabaseType databaseType, final LimitValueSegment rowCount) {
-        this(databaseType, rowCount, null);
-    }
-    
-    /**
-     * Get offset.
-     * 
-     * @return offset
-     */
-    public Optional<LimitValueSegment> getOffset() {
-        return Optional.fromNullable(offset);
-    }
+    private final int beginPosition;
 }

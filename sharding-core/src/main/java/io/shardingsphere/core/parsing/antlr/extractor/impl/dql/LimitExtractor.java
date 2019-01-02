@@ -22,8 +22,10 @@ import io.shardingsphere.core.constant.DatabaseType;
 import io.shardingsphere.core.parsing.antlr.extractor.OptionalSQLSegmentExtractor;
 import io.shardingsphere.core.parsing.antlr.extractor.util.ExtractorUtils;
 import io.shardingsphere.core.parsing.antlr.extractor.util.RuleName;
-import io.shardingsphere.core.parsing.antlr.sql.segment.LimitSegment;
-import io.shardingsphere.core.parsing.antlr.sql.segment.LimitValueSegment;
+import io.shardingsphere.core.parsing.antlr.sql.segment.limit.LimitSegment;
+import io.shardingsphere.core.parsing.antlr.sql.segment.limit.LimitValueSegment;
+import io.shardingsphere.core.parsing.antlr.sql.segment.limit.LiteralLimitValueSegment;
+import io.shardingsphere.core.parsing.antlr.sql.segment.limit.PlaceholderLimitValueSegment;
 import io.shardingsphere.core.parsing.lexer.token.Symbol;
 import io.shardingsphere.core.util.NumberUtil;
 import lombok.RequiredArgsConstructor;
@@ -73,7 +75,7 @@ public abstract class LimitExtractor implements OptionalSQLSegmentExtractor {
     private LimitValueSegment createLimitValueSegment(final Map<ParserRuleContext, Integer> placeholderAndNodeIndexMap, final ParserRuleContext node) {
         return Symbol.QUESTION.getLiterals().equals(node.getText()) 
                 // FIXME check node.getChild(0) should be node.getChild(0) or node.getChild(2) ?
-                ? new LimitValueSegment(-1, placeholderAndNodeIndexMap.get(node.getChild(0)), ((ParserRuleContext) node.getChild(0)).getStart().getStartIndex())
-                : new LimitValueSegment(NumberUtil.getExactlyNumber(node.getText(), 10).intValue(), -1, node.getStart().getStartIndex());
+                ? new PlaceholderLimitValueSegment(placeholderAndNodeIndexMap.get(node.getChild(0)), ((ParserRuleContext) node.getChild(0)).getStart().getStartIndex())
+                : new LiteralLimitValueSegment(NumberUtil.getExactlyNumber(node.getText(), 10).intValue(), node.getStart().getStartIndex());
     }
 }

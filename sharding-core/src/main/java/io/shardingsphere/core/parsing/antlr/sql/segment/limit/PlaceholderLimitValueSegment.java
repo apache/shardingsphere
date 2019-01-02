@@ -15,23 +15,22 @@
  * </p>
  */
 
-package io.shardingsphere.core.parsing.antlr.sql.segment;
+package io.shardingsphere.core.parsing.antlr.sql.segment.limit;
 
 import lombok.Getter;
-import lombok.RequiredArgsConstructor;
 
 /**
- * Limit value segment.
+ * Limit value segment for placeholder.
  * 
- * @author duhongjun
+ * @author zhangliang
  */
-@RequiredArgsConstructor
 @Getter
-public final class LimitValueSegment implements SQLSegment {
+public final class PlaceholderLimitValueSegment extends LimitValueSegment {
     
-    private final int value;
-
-    private final int index;
+    private final int parameterIndex;
     
-    private final int beginPosition;
+    public PlaceholderLimitValueSegment(final int parameterIndex, final int beginPosition) {
+        super(beginPosition);
+        this.parameterIndex = parameterIndex;
+    }
 }
