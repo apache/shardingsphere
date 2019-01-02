@@ -17,7 +17,6 @@
 
 package io.shardingsphere.core.parsing.antlr.rule.registry.extractor;
 
-import com.google.common.base.Joiner;
 import io.shardingsphere.core.parsing.antlr.extractor.SQLSegmentExtractor;
 import io.shardingsphere.core.parsing.antlr.rule.jaxb.entity.extractor.ExtractorRuleDefinitionEntity;
 import io.shardingsphere.core.parsing.antlr.rule.jaxb.entity.extractor.ExtractorRuleEntity;
@@ -48,15 +47,10 @@ public final class ExtractorRuleDefinition {
         init(dialectRuleDefinitionEntity);
     }
     
-    @SuppressWarnings("unchecked")
+    @SneakyThrows
     private void init(final ExtractorRuleDefinitionEntity ruleDefinitionEntity) {
         for (ExtractorRuleEntity each : ruleDefinitionEntity.getRules()) {
-            rules.put(each.getId(), (SQLSegmentExtractor) newClassInstance(ruleDefinitionEntity.getExtractorBasePackage(), each.getExtractorClass()));
+            rules.put(each.getId(), (SQLSegmentExtractor) Class.forName(each.getExtractorClass()).newInstance());
         }
-    }
-    
-    @SneakyThrows
-    private Object newClassInstance(final String basePackage, final String className) {
-        return Class.forName(Joiner.on('.').join(basePackage, className)).newInstance();
     }
 }
