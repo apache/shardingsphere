@@ -27,6 +27,8 @@ import java.util.Collections;
 import java.util.LinkedList;
 import java.util.List;
 
+import static org.hamcrest.CoreMatchers.is;
+import static org.junit.Assert.assertThat;
 import static org.mockito.Mockito.mock;
 import static org.mockito.Mockito.when;
 
@@ -44,11 +46,13 @@ public class DistinctQueryResultTest {
     @SneakyThrows
     private Collection<QueryResult> getQueryResults() {
         Collection<QueryResult> result = new LinkedList<>();
-        for (int i = 1; i <= 3; i++) {
+        for (int i = 1; i <= 2; i++) {
             QueryResult queryResult = mock(QueryResult.class);
+            when(queryResult.next()).thenReturn(true).thenReturn(false);
             when(queryResult.getColumnCount()).thenReturn(1);
             when(queryResult.getColumnLabel(i)).thenReturn("order_id");
             when(queryResult.getValue(i, Object.class)).thenReturn(10 * i);
+            result.add(queryResult);
             result.add(queryResult);
         }
         return result;
@@ -56,6 +60,9 @@ public class DistinctQueryResultTest {
     
     @Test
     public void assertDivide() {
+        List<DistinctQueryResult> actual = distinctQueryResult.divide();
+        assertThat(actual.size(), is(2));
+        assertThat(actual.iterator().next().getColumnCount(), is((Object) 1));
     }
     
     @Test
