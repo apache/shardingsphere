@@ -59,6 +59,10 @@ public class AggregationDistinctQueryMetaDataTest {
     
     @Test
     public void assertGetAggregationDistinctColumnLabels() {
+        Collection<String> actual = distinctQueryMetaData.getAggregationDistinctColumnLabels();
+        Collection<String> expected = Arrays.asList("c", "a");
+        assertThat(actual.size(), is(2));
+        assertThat(actual.iterator().next(), is(expected.iterator().next()));
     }
     
     @Test
