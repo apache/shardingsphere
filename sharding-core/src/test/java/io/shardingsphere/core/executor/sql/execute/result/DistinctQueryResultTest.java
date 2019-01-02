@@ -61,7 +61,7 @@ public class DistinctQueryResultTest {
             when(queryResult.next()).thenReturn(true).thenReturn(false);
             when(queryResult.getColumnCount()).thenReturn(1);
             when(queryResult.getColumnLabel(1)).thenReturn("order_id");
-            when(queryResult.getValue(i, Object.class)).thenReturn(10 * i);
+            when(queryResult.getValue(1, Object.class)).thenReturn(10 * i);
             result.add(queryResult);
             result.add(queryResult);
         }
