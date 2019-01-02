@@ -60,7 +60,7 @@ public class DistinctQueryResultTest {
             QueryResult queryResult = mock(QueryResult.class);
             when(queryResult.next()).thenReturn(true).thenReturn(false);
             when(queryResult.getColumnCount()).thenReturn(1);
-            when(queryResult.getColumnLabel(i)).thenReturn("order_id");
+            when(queryResult.getColumnLabel(1)).thenReturn("order_id");
             when(queryResult.getValue(i, Object.class)).thenReturn(10 * i);
             result.add(queryResult);
             result.add(queryResult);
