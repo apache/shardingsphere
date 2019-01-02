@@ -23,7 +23,9 @@ import org.junit.Before;
 import org.junit.Test;
 
 import java.util.Collection;
+import java.util.Collections;
 import java.util.LinkedList;
+import java.util.List;
 
 import static org.mockito.Mockito.mock;
 import static org.mockito.Mockito.when;
@@ -35,6 +37,8 @@ public class DistinctQueryResultTest {
     @Before
     public void setUp() {
         Collection<QueryResult> queryResults = getQueryResults();
+        List<String> distinctColumnLabels = Collections.singletonList("order_id");
+        distinctQueryResult = new DistinctQueryResult(queryResults, distinctColumnLabels);
     }
     
     @SneakyThrows
