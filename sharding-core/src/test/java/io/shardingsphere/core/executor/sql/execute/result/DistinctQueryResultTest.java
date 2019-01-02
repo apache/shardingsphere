@@ -28,7 +28,9 @@ import java.util.LinkedList;
 import java.util.List;
 
 import static org.hamcrest.CoreMatchers.is;
+import static org.junit.Assert.assertFalse;
 import static org.junit.Assert.assertThat;
+import static org.junit.Assert.assertTrue;
 import static org.mockito.Mockito.mock;
 import static org.mockito.Mockito.when;
 
@@ -67,6 +69,9 @@ public class DistinctQueryResultTest {
     
     @Test
     public void assertNext() {
+        assertTrue(distinctQueryResult.next());
+        assertTrue(distinctQueryResult.next());
+        assertFalse(distinctQueryResult.next());
     }
     
     @Test
