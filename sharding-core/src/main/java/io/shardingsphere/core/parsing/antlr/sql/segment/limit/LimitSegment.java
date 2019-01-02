@@ -18,7 +18,6 @@
 package io.shardingsphere.core.parsing.antlr.sql.segment.limit;
 
 import com.google.common.base.Optional;
-import io.shardingsphere.core.constant.DatabaseType;
 import io.shardingsphere.core.parsing.antlr.sql.segment.SQLSegment;
 import lombok.Getter;
 import lombok.RequiredArgsConstructor;
@@ -32,14 +31,12 @@ import lombok.RequiredArgsConstructor;
 @Getter
 public final class LimitSegment implements SQLSegment {
     
-    private final DatabaseType databaseType;
-    
     private final LimitValueSegment rowCount;
     
     private final LimitValueSegment offset;
     
-    public LimitSegment(final DatabaseType databaseType, final LimitValueSegment rowCount) {
-        this(databaseType, rowCount, null);
+    public LimitSegment(final LimitValueSegment rowCount) {
+        this(rowCount, null);
     }
     
     /**

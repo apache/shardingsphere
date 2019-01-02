@@ -289,7 +289,7 @@ public abstract class WhereClauseParser implements SQLClauseParser {
         int endPosition = lexerEngine.getCurrentToken().getEndPosition();
         SQLExpression sqlExpression = basicExpressionParser.parse(selectStatement);
         if (null == selectStatement.getLimit()) {
-            selectStatement.setLimit(new Limit(databaseType));
+            selectStatement.setLimit(new Limit());
         }
         if (sqlExpression instanceof SQLNumberExpression) {
             int rowCount = ((SQLNumberExpression) sqlExpression).getNumber().intValue();
@@ -303,7 +303,7 @@ public abstract class WhereClauseParser implements SQLClauseParser {
     private void parseOffsetCondition(final SelectStatement selectStatement, final boolean includeOffset) {
         SQLExpression sqlExpression = basicExpressionParser.parse(selectStatement);
         if (null == selectStatement.getLimit()) {
-            selectStatement.setLimit(new Limit(databaseType));
+            selectStatement.setLimit(new Limit());
         }
         if (sqlExpression instanceof SQLNumberExpression) {
             int offset = ((SQLNumberExpression) sqlExpression).getNumber().intValue();

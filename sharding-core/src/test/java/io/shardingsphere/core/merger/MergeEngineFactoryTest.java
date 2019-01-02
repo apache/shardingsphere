@@ -18,6 +18,7 @@
 package io.shardingsphere.core.merger;
 
 import com.google.common.collect.Lists;
+import io.shardingsphere.core.constant.DatabaseType;
 import io.shardingsphere.core.merger.dal.DALMergeEngine;
 import io.shardingsphere.core.merger.dql.DQLMergeEngine;
 import io.shardingsphere.core.merger.fixture.TestQueryResult;
@@ -58,18 +59,18 @@ public final class MergeEngineFactoryTest {
     @Test
     public void assertNewInstanceWithSelectStatement() throws SQLException {
         SQLStatement selectStatement = new SelectStatement();
-        assertThat(MergeEngineFactory.newInstance(null, queryResults, selectStatement, null), instanceOf(DQLMergeEngine.class));
+        assertThat(MergeEngineFactory.newInstance(DatabaseType.MySQL, null, selectStatement, null, queryResults), instanceOf(DQLMergeEngine.class));
     }
 
     @Test
     public void assertNewInstanceWithDALStatement() throws SQLException {
         SQLStatement dalStatement = new DALStatement();
-        assertThat(MergeEngineFactory.newInstance(null, queryResults, dalStatement, null), instanceOf(DALMergeEngine.class));
+        assertThat(MergeEngineFactory.newInstance(DatabaseType.MySQL, null, dalStatement, null, queryResults), instanceOf(DALMergeEngine.class));
     }
     
     @Test(expected = UnsupportedOperationException.class)
     public void assertNewInstanceWithOtherStatement() throws SQLException {
         SQLStatement insertStatement = new InsertStatement();
-        MergeEngineFactory.newInstance(null, queryResults, insertStatement, null);
+        MergeEngineFactory.newInstance(DatabaseType.MySQL, null, insertStatement, null, queryResults);
     }
 }

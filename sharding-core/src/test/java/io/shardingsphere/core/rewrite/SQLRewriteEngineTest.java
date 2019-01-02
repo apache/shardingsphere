@@ -273,7 +273,7 @@ public final class SQLRewriteEngineTest {
     
     @Test
     public void assertRewriteForLimit() {
-        selectStatement.setLimit(new Limit(DatabaseType.MySQL));
+        selectStatement.setLimit(new Limit());
         selectStatement.getLimit().setOffset(new LimitValue(2, -1, true));
         selectStatement.getLimit().setRowCount(new LimitValue(2, -1, false));
         selectStatement.addSQLToken(new TableToken(17, 0, "table_x"));
@@ -285,7 +285,7 @@ public final class SQLRewriteEngineTest {
     
     @Test
     public void assertRewriteForRowNum() {
-        selectStatement.setLimit(new Limit(DatabaseType.Oracle));
+        selectStatement.setLimit(new Limit());
         selectStatement.getLimit().setOffset(new LimitValue(2, -1, true));
         selectStatement.getLimit().setRowCount(new LimitValue(4, -1, false));
         selectStatement.addSQLToken(new TableToken(68, 0, "table_x"));
@@ -299,7 +299,7 @@ public final class SQLRewriteEngineTest {
     
     @Test
     public void assertRewriteForTopAndRowNumber() {
-        selectStatement.setLimit(new Limit(DatabaseType.SQLServer));
+        selectStatement.setLimit(new Limit());
         selectStatement.getLimit().setOffset(new LimitValue(2, -1, true));
         selectStatement.getLimit().setRowCount(new LimitValue(4, -1, false));
         selectStatement.addSQLToken(new TableToken(85, 0, "table_x"));
@@ -314,7 +314,7 @@ public final class SQLRewriteEngineTest {
     
     @Test
     public void assertRewriteForLimitForMemoryGroupBy() {
-        selectStatement.setLimit(new Limit(DatabaseType.MySQL));
+        selectStatement.setLimit(new Limit());
         selectStatement.getLimit().setOffset(new LimitValue(2, -1, true));
         selectStatement.getLimit().setRowCount(new LimitValue(2, -1, false));
         selectStatement.getOrderByItems().add(new OrderItem("x", "id", OrderDirection.ASC, OrderDirection.ASC));
@@ -328,7 +328,7 @@ public final class SQLRewriteEngineTest {
     
     @Test
     public void assertRewriteForRowNumForMemoryGroupBy() {
-        selectStatement.setLimit(new Limit(DatabaseType.Oracle));
+        selectStatement.setLimit(new Limit());
         selectStatement.getLimit().setOffset(new LimitValue(2, -1, true));
         selectStatement.getLimit().setRowCount(new LimitValue(4, -1, false));
         selectStatement.addSQLToken(new TableToken(68, 0, "table_x"));
@@ -344,7 +344,7 @@ public final class SQLRewriteEngineTest {
     
     @Test
     public void assertRewriteForTopAndRowNumberForMemoryGroupBy() {
-        selectStatement.setLimit(new Limit(DatabaseType.SQLServer));
+        selectStatement.setLimit(new Limit());
         selectStatement.getLimit().setOffset(new LimitValue(2, -1, true));
         selectStatement.getLimit().setRowCount(new LimitValue(4, -1, false));
         selectStatement.addSQLToken(new TableToken(85, 0, "table_x"));
@@ -361,7 +361,7 @@ public final class SQLRewriteEngineTest {
     
     @Test
     public void assertRewriteForLimitForNotRewriteLimit() {
-        selectStatement.setLimit(new Limit(DatabaseType.MySQL));
+        selectStatement.setLimit(new Limit());
         selectStatement.getLimit().setOffset(new LimitValue(2, -1, true));
         selectStatement.getLimit().setRowCount(new LimitValue(2, -1, false));
         selectStatement.addSQLToken(new TableToken(17, 0, "table_x"));
@@ -373,7 +373,7 @@ public final class SQLRewriteEngineTest {
     
     @Test
     public void assertRewriteForRowNumForNotRewriteLimit() {
-        selectStatement.setLimit(new Limit(DatabaseType.Oracle));
+        selectStatement.setLimit(new Limit());
         selectStatement.getLimit().setOffset(new LimitValue(2, -1, true));
         selectStatement.getLimit().setRowCount(new LimitValue(4, -1, false));
         selectStatement.addSQLToken(new TableToken(68, 0, "table_x"));
@@ -387,7 +387,7 @@ public final class SQLRewriteEngineTest {
     
     @Test
     public void assertRewriteForTopAndRowNumberForNotRewriteLimit() {
-        selectStatement.setLimit(new Limit(DatabaseType.SQLServer));
+        selectStatement.setLimit(new Limit());
         selectStatement.getLimit().setOffset(new LimitValue(2, -1, true));
         selectStatement.getLimit().setRowCount(new LimitValue(4, -1, false));
         selectStatement.addSQLToken(new TableToken(85, 0, "table_x"));

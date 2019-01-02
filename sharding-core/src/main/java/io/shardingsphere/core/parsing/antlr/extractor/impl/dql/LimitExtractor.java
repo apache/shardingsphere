@@ -18,7 +18,6 @@
 package io.shardingsphere.core.parsing.antlr.extractor.impl.dql;
 
 import com.google.common.base.Optional;
-import io.shardingsphere.core.constant.DatabaseType;
 import io.shardingsphere.core.parsing.antlr.extractor.OptionalSQLSegmentExtractor;
 import io.shardingsphere.core.parsing.antlr.extractor.util.ExtractorUtils;
 import io.shardingsphere.core.parsing.antlr.extractor.util.RuleName;
@@ -28,7 +27,6 @@ import io.shardingsphere.core.parsing.antlr.sql.segment.limit.LiteralLimitValueS
 import io.shardingsphere.core.parsing.antlr.sql.segment.limit.PlaceholderLimitValueSegment;
 import io.shardingsphere.core.parsing.lexer.token.Symbol;
 import io.shardingsphere.core.util.NumberUtil;
-import lombok.RequiredArgsConstructor;
 import org.antlr.v4.runtime.ParserRuleContext;
 
 import java.util.HashMap;
@@ -39,13 +37,10 @@ import java.util.Map;
  *
  * @author duhongjun
  */
-@RequiredArgsConstructor
-public abstract class LimitExtractor implements OptionalSQLSegmentExtractor {
-    
-    private final DatabaseType databaseType;
+public final class LimitExtractor implements OptionalSQLSegmentExtractor {
     
     @Override
-    public final Optional<LimitSegment> extract(final ParserRuleContext ancestorNode) {
+    public Optional<LimitSegment> extract(final ParserRuleContext ancestorNode) {
         Optional<ParserRuleContext> limitNode = ExtractorUtils.findFirstChildNode(ancestorNode, RuleName.LIMIT_CLAUSE);
         if (!limitNode.isPresent()) {
             return Optional.absent();
@@ -58,9 +53,9 @@ public abstract class LimitExtractor implements OptionalSQLSegmentExtractor {
         LimitValueSegment firstLimitValue = createLimitValueSegment(placeholderAndNodeIndexMap, (ParserRuleContext) rangeNode.get().getChild(0));
         if (rangeNode.get().getChildCount() >= 3) {
             LimitValueSegment rowCountLimitValue = createLimitValueSegment(placeholderAndNodeIndexMap, (ParserRuleContext) rangeNode.get().getChild(2));
-            return Optional.of(new LimitSegment(databaseType, rowCountLimitValue, firstLimitValue));
+            return Optional.of(new LimitSegment(rowCountLimitValue, firstLimitValue));
         }
-        return Optional.of(new LimitSegment(databaseType, firstLimitValue));
+        return Optional.of(new LimitSegment(firstLimitValue));
     }
     
     private Map<ParserRuleContext, Integer> getPlaceholderAndNodeIndexMap(final ParserRuleContext ancestorNode) {

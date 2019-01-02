@@ -41,7 +41,7 @@ public final class LimitFiller implements SQLStatementFiller<LimitSegment> {
     @Override
     public void fill(final LimitSegment sqlSegment, final SQLStatement sqlStatement, final String sql, final ShardingRule shardingRule, final ShardingTableMetaData shardingTableMetaData) {
         SelectStatement selectStatement = (SelectStatement) sqlStatement;
-        selectStatement.setLimit(new Limit(sqlSegment.getDatabaseType()));
+        selectStatement.setLimit(new Limit());
         if (sqlSegment.getOffset().isPresent()) {
             setOffset(sqlSegment.getOffset().get(), selectStatement);
         }
