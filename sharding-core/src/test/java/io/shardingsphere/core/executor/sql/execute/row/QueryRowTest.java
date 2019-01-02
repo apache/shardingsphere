@@ -61,6 +61,7 @@ public class QueryRowTest {
     
     @Test
     public void assertGetRowData() {
+        assertThat(queryRow.getRowData(), is(Collections.singletonList((Object) 10)));
     }
     
     @Test
