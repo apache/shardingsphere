@@ -140,7 +140,9 @@ public class DistinctQueryResultTest {
     }
     
     @Test
+    @SneakyThrows
     public void assertGetColumnLabel() {
+        assertEquals("order_id", distinctQueryResult.getColumnLabel(1));
     }
     
     @Test
