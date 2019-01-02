@@ -17,13 +17,29 @@
 
 package io.shardingsphere.core.executor.sql.execute.result;
 
+import io.shardingsphere.core.merger.QueryResult;
+import lombok.SneakyThrows;
 import org.junit.Before;
 import org.junit.Test;
 
+import java.util.Collection;
+import java.util.LinkedList;
+
+import static org.mockito.Mockito.mock;
+import static org.mockito.Mockito.when;
+
 public class DistinctQueryResultTest {
     
+    private DistinctQueryResult distinctQueryResult;
+    
     @Before
+    @SneakyThrows
     public void setUp() {
+        Collection<QueryResult> queryResults = new LinkedList<>();
+        QueryResult queryResult1 = mock(QueryResult.class);
+        when(queryResult1.getColumnCount()).thenReturn(1);
+        when(queryResult1.getColumnLabel(1)).thenReturn("order_id");
+        when(queryResult1.getValue(1, Object.class)).thenReturn(10);
     }
     
     @Test
