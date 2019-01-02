@@ -90,6 +90,8 @@ public class AggregationDistinctQueryMetaDataTest {
     
     @Test
     public void assertGetAggregationDistinctColumnIndex() {
+        int actual = distinctQueryMetaData.getAggregationDistinctColumnIndex("a");
+        assertThat(actual, is(2));
     }
     
     @Test
