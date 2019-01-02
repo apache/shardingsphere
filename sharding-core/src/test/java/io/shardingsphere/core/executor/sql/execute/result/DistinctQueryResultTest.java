@@ -137,7 +137,7 @@ public class DistinctQueryResultTest {
     
     @Test
     public void assertGetColumnCount() {
-        assertNotEquals(1, distinctQueryResult.getColumnCount());
+        assertEquals(1, distinctQueryResult.getColumnCount());
     }
     
     @Test
@@ -154,6 +154,7 @@ public class DistinctQueryResultTest {
     
     @Test
     public void assertGetColumnIndex() {
+        assertThat(distinctQueryResult.getColumnIndex("order_id"), is(1));
     }
     
     @Test
