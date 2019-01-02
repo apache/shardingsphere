@@ -113,6 +113,64 @@ public final class StandardRoutingEngineForSubQueryTest {
         engine.route(parameters);
     }
     
+    @Test(expected = IllegalStateException.class)
+    public void assertSubQueryInSubQueryError() {
+        List<Object> parameters = new LinkedList<>();
+        parameters.add(11);
+        parameters.add(1);
+        parameters.add(1);
+        parameters.add(1);
+        String sql = "select (select status from t_order b where b.user_id =? and status = (select status from t_order b where b.user_id =?)) as c from t_order a "
+                + "where status = (select status from t_order b where b.user_id =? and status = (select status from t_order b where b.user_id =?))";
+        assertSubquery(sql, parameters);
+    }
+    
+    @Test
+    public void assertSubQueryInSubQuery() {
+        List<Object> parameters = new LinkedList<>();
+        parameters.add(1);
+        parameters.add(1);
+        parameters.add(1);
+        parameters.add(1);
+        String sql = "select (select status from t_order b where b.user_id =? and status = (select status from t_order b where b.user_id =?)) as c from t_order a "
+                + "where status = (select status from t_order b where b.user_id =? and status = (select status from t_order b where b.user_id =?))";
+        assertSubquery(sql, parameters);
+    }
+    
+    @Test(expected = IllegalStateException.class)
+    public void assertSubQueryInFromError() {
+        String sql = "select status from t_order b join (select user_id,status from t_order b where b.user_id =?) c on b.user_id = c.user_id where b.user_id =? ";
+        List<Object> parameters = new LinkedList<>();
+        parameters.add(11);
+        parameters.add(1);
+        assertSubquery(sql, parameters);
+    }
+    
+    @Test
+    public void assertSubQueryInFrom() {
+        String sql = "select status from t_order b join (select user_id,status from t_order b where b.user_id =?) c on b.user_id = c.user_id where b.user_id =? ";
+        List<Object> parameters = new LinkedList<>();
+        parameters.add(1);
+        parameters.add(1);
+        assertSubquery(sql, parameters);
+    }
+    
+    @Test
+    public void assertSubQueryForAggregation() {
+        String sql = "select count(*) from t_order where c.user_id = (select user_id from t_order where user_id =?) ";
+        List<Object> parameters = new LinkedList<>();
+        parameters.add(1);
+        assertSubquery(sql, parameters);
+    }
+    
+    @Test
+    public void assertSubQueryForBingding() {
+        String sql = "select count(*) from t_order where user_id = (select user_id from t_order_item where user_id =?) ";
+        List<Object> parameters = new LinkedList<>();
+        parameters.add(1);
+        assertSubquery(sql, parameters);
+    }
+    
     private ShardingDataSourceMetaData buildShardingDataSourceMetaData() {
         Map<String, String> shardingDataSourceURLs = new LinkedHashMap<>();
         shardingDataSourceURLs.put("ds_0", "jdbc:mysql://127.0.0.1:3306/actual_db");
