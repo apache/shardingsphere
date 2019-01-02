@@ -40,13 +40,13 @@ public class AggregationDistinctQueryMetaDataTest {
     @Before
     public void setUp() {
         Collection<AggregationDistinctSelectItem> aggregationDistinctSelectItems = new LinkedList<>();
-        Multimap<String, Integer> columnLabelAndIndexMap = HashMultimap.create();
         AggregationDistinctSelectItem distinctCountSelectItem = new AggregationDistinctSelectItem(AggregationType.COUNT, "(DISTINCT order_id)", Optional.of("c"), "order_id");
         AggregationDistinctSelectItem distinctAvgSelectItem = new AggregationDistinctSelectItem(AggregationType.AVG, "(DISTINCT order_id)", Optional.of("a"), "order_id");
         distinctAvgSelectItem.getDerivedAggregationSelectItems().add(new AggregationSelectItem(AggregationType.COUNT, "(DISTINCT order_id)", Optional.of("AVG_DERIVED_COUNT_0")));
         distinctAvgSelectItem.getDerivedAggregationSelectItems().add(new AggregationSelectItem(AggregationType.SUM, "(DISTINCT order_id)", Optional.of("AVG_DERIVED_SUM_0")));
         aggregationDistinctSelectItems.add(distinctCountSelectItem);
         aggregationDistinctSelectItems.add(distinctAvgSelectItem);
+        Multimap<String, Integer> columnLabelAndIndexMap = HashMultimap.create();
         columnLabelAndIndexMap.put("c", 1);
         columnLabelAndIndexMap.put("a", 2);
         distinctQueryMetaData = new AggregationDistinctQueryMetaData(aggregationDistinctSelectItems, columnLabelAndIndexMap);
@@ -89,13 +89,15 @@ public class AggregationDistinctQueryMetaDataTest {
     }
     
     @Test
-    public void assertGetAggregationDistinctColumnIndex() {
+    public void assertGetAggregationDistinctColumnIndexByColumnLabel() {
         int actual = distinctQueryMetaData.getAggregationDistinctColumnIndex("a");
         assertThat(actual, is(2));
     }
     
     @Test
-    public void assertGetAggregationDistinctColumnIndex1() {
+    public void assertGetAggregationDistinctColumnIndexBySumIndex() {
+        int actual = distinctQueryMetaData.getAggregationDistinctColumnIndex(4);
+        assertThat(actual, is(2));
     }
     
     @Test
