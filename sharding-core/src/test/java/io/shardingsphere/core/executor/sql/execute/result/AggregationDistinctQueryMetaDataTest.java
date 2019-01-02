@@ -25,8 +25,12 @@ import io.shardingsphere.core.parsing.parser.context.selectitem.AggregationDisti
 import org.junit.Before;
 import org.junit.Test;
 
+import java.util.Arrays;
 import java.util.Collection;
 import java.util.LinkedList;
+
+import static org.hamcrest.CoreMatchers.is;
+import static org.junit.Assert.assertThat;
 
 public class AggregationDistinctQueryMetaDataTest {
 
@@ -47,7 +51,10 @@ public class AggregationDistinctQueryMetaDataTest {
     
     @Test
     public void assertGetAggregationDistinctColumnIndexes() {
-        
+        Collection<Integer> actual = distinctQueryMetaData.getAggregationDistinctColumnIndexes();
+        Collection<Integer> expected = Arrays.asList(1, 2);
+        assertThat(actual.size(), is(2));
+        assertThat(actual.iterator().next(), is(expected.iterator().next()));
     }
     
     @Test
