@@ -29,7 +29,10 @@ import lombok.Getter;
 import lombok.RequiredArgsConstructor;
 import lombok.SneakyThrows;
 
+import java.io.ByteArrayInputStream;
+import java.io.ByteArrayOutputStream;
 import java.io.InputStream;
+import java.io.ObjectOutputStream;
 import java.sql.SQLException;
 import java.util.ArrayList;
 import java.util.Calendar;
@@ -86,7 +89,8 @@ public class DistinctQueryResult implements QueryResult {
         return result.iterator();
     }
     
-    private void fill(final Set<QueryRow> resultData, final QueryResult queryResult, final List<Integer> distinctColumnIndexes) throws SQLException {
+    @SneakyThrows
+    private void fill(final Set<QueryRow> resultData, final QueryResult queryResult, final List<Integer> distinctColumnIndexes) {
         while (queryResult.next()) {
             List<Object> rowData = new ArrayList<>(queryResult.getColumnCount());
             for (int columnIndex = 1; columnIndex <= queryResult.getColumnCount(); columnIndex++) {
@@ -145,12 +149,22 @@ public class DistinctQueryResult implements QueryResult {
     
     @Override
     public InputStream getInputStream(final int columnIndex, final String type) {
-        return (InputStream) currentRow.getColumnValue(columnIndex);
+        return getInputStream(currentRow.getColumnValue(columnIndex));
     }
     
     @Override
     public InputStream getInputStream(final String columnLabel, final String type) {
-        return (InputStream) currentRow.getColumnValue(getColumnIndex(columnLabel));
+        return getInputStream(currentRow.getColumnValue(getColumnIndex(columnLabel)));
+    }
+    
+    @SneakyThrows
+    protected InputStream getInputStream(final Object value) {
+        ByteArrayOutputStream byteArrayOutputStream = new ByteArrayOutputStream();
+        ObjectOutputStream objectOutputStream = new ObjectOutputStream(byteArrayOutputStream);
+        objectOutputStream.writeObject(value);
+        objectOutputStream.flush();
+        objectOutputStream.close();
+        return new ByteArrayInputStream(byteArrayOutputStream.toByteArray());
     }
     
     @Override
