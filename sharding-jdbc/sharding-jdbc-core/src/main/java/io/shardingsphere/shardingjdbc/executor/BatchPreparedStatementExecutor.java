@@ -110,7 +110,6 @@ public final class BatchPreparedStatementExecutor extends AbstractStatementExecu
      * @param routeResult route result
      */
     public void addBatchForRouteUnits(final SQLRouteResult routeResult) {
-        setSqlType(routeResult.getSqlStatement().getType());
         handleOldRouteUnits(createBatchRouteUnits(routeResult.getRouteUnits()));
         handleNewRouteUnits(createBatchRouteUnits(routeResult.getRouteUnits()));
         batchCount++;
@@ -159,7 +158,7 @@ public final class BatchPreparedStatementExecutor extends AbstractStatementExecu
      */
     public int[] executeBatch() throws SQLException {
         final boolean isExceptionThrown = ExecutorExceptionHandler.isExceptionThrown();
-        SQLExecuteCallback<int[]> callback = SQLExecuteCallbackFactory.getBatchPreparedSQLExecuteCallback(getDatabaseType(), getSqlType(), isExceptionThrown);
+        SQLExecuteCallback<int[]> callback = SQLExecuteCallbackFactory.getBatchPreparedSQLExecuteCallback(getDatabaseType(), isExceptionThrown);
         return accumulate(executeCallback(callback));
     }
     

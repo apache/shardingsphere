@@ -19,12 +19,10 @@ package io.shardingsphere.shardingjdbc.executor;
 
 import io.shardingsphere.core.constant.ConnectionMode;
 import io.shardingsphere.core.constant.DatabaseType;
-import io.shardingsphere.core.constant.SQLType;
 import io.shardingsphere.core.executor.StatementExecuteUnit;
 import io.shardingsphere.core.executor.sql.execute.SQLExecuteCallback;
 import io.shardingsphere.transaction.api.TransactionType;
 import io.shardingsphere.transaction.api.TransactionTypeHolder;
-import io.shardingsphere.transaction.core.executor.SagaSQLExecuteCallback;
 import io.shardingsphere.core.routing.RouteUnit;
 import io.shardingsphere.core.routing.SQLUnit;
 import org.junit.After;
@@ -41,10 +39,6 @@ import java.sql.SQLException;
 import java.util.Collections;
 import java.util.List;
 
-import static org.hamcrest.CoreMatchers.is;
-import static org.junit.Assert.assertFalse;
-import static org.junit.Assert.assertThat;
-import static org.junit.Assert.assertTrue;
 import static org.mockito.Mockito.verify;
 import static org.mockito.Mockito.when;
 
@@ -84,63 +78,36 @@ public class SQLExecuteCallbackFactoryTest {
     
     @Test
     public void assertGetPreparedUpdateSQLExecuteCallback() throws SQLException {
-        SQLExecuteCallback sqlExecuteCallback = SQLExecuteCallbackFactory.getPreparedUpdateSQLExecuteCallback(DatabaseType.MySQL, SQLType.DML, true);
+        SQLExecuteCallback sqlExecuteCallback = SQLExecuteCallbackFactory.getPreparedUpdateSQLExecuteCallback(DatabaseType.MySQL, true);
         sqlExecuteCallback.execute(unit, true, null);
         verify(preparedStatement).executeUpdate();
-        TransactionTypeHolder.set(TransactionType.BASE);
-        sqlExecuteCallback = SQLExecuteCallbackFactory.getPreparedUpdateSQLExecuteCallback(DatabaseType.MySQL, SQLType.DML, true);
-        assertThat(sqlExecuteCallback instanceof SagaSQLExecuteCallback, is(true));
-        sqlExecuteCallback.execute(unit, true, null);
-        int result = (int) sqlExecuteCallback.execute(unit, true, null);
-        assertThat(result, is(0));
     }
     
     @Test
     public void assertGetPreparedSQLExecuteCallback() throws SQLException {
-        SQLExecuteCallback sqlExecuteCallback = SQLExecuteCallbackFactory.getPreparedSQLExecuteCallback(DatabaseType.MySQL, SQLType.DML, true);
+        SQLExecuteCallback sqlExecuteCallback = SQLExecuteCallbackFactory.getPreparedSQLExecuteCallback(DatabaseType.MySQL, true);
         sqlExecuteCallback.execute(unit, true, null);
         verify(preparedStatement).execute();
-        TransactionTypeHolder.set(TransactionType.BASE);
-        sqlExecuteCallback = SQLExecuteCallbackFactory.getPreparedSQLExecuteCallback(DatabaseType.MySQL, SQLType.DML, true);
-        assertThat(sqlExecuteCallback instanceof SagaSQLExecuteCallback, is(true));
-        sqlExecuteCallback.execute(unit, true, null);
-        boolean result = (boolean) sqlExecuteCallback.execute(unit, true, null);
-        assertFalse(result);
     }
     
     @Test
     public void assertGetBatchPreparedSQLExecuteCallback() throws SQLException {
-        SQLExecuteCallback sqlExecuteCallback = SQLExecuteCallbackFactory.getBatchPreparedSQLExecuteCallback(DatabaseType.MySQL, SQLType.DML, true);
+        SQLExecuteCallback sqlExecuteCallback = SQLExecuteCallbackFactory.getBatchPreparedSQLExecuteCallback(DatabaseType.MySQL, true);
         sqlExecuteCallback.execute(unit, true, null);
         verify(preparedStatement).executeBatch();
-        TransactionTypeHolder.set(TransactionType.BASE);
-        sqlExecuteCallback = SQLExecuteCallbackFactory.getBatchPreparedSQLExecuteCallback(DatabaseType.MySQL, SQLType.DML, true);
-        assertThat(sqlExecuteCallback instanceof SagaSQLExecuteCallback, is(true));
-        sqlExecuteCallback.execute(unit, true, null);
     }
     
     @Test
     public void assertGetSQLExecuteCallbackWithUpdater() throws SQLException {
-        SQLExecuteCallback sqlExecuteCallback = SQLExecuteCallbackFactory.getSQLExecuteCallback(DatabaseType.MySQL, SQLType.DML, true, updater);
+        SQLExecuteCallback sqlExecuteCallback = SQLExecuteCallbackFactory.getSQLExecuteCallback(DatabaseType.MySQL, true, updater);
         sqlExecuteCallback.execute(unit, true, null);
         verify(updater).executeUpdate(unit.getStatement(), unit.getRouteUnit().getSqlUnit().getSql());
-        TransactionTypeHolder.set(TransactionType.BASE);
-        sqlExecuteCallback = SQLExecuteCallbackFactory.getSQLExecuteCallback(DatabaseType.MySQL, SQLType.DML, true, updater);
-        assertThat(sqlExecuteCallback instanceof SagaSQLExecuteCallback, is(true));
-        sqlExecuteCallback.execute(unit, true, null);
-        int result = (int) sqlExecuteCallback.execute(unit, true, null);
-        assertThat(result, is(0));
     }
     
     @Test
     public void assertGetSQLExecuteCallbackWithExecutor() throws SQLException {
-        SQLExecuteCallback sqlExecuteCallback = SQLExecuteCallbackFactory.getSQLExecuteCallback(DatabaseType.MySQL, SQLType.DML, true, executor);
+        SQLExecuteCallback sqlExecuteCallback = SQLExecuteCallbackFactory.getSQLExecuteCallback(DatabaseType.MySQL, true, executor);
         sqlExecuteCallback.execute(unit, true, null);
         verify(executor).execute(unit.getStatement(), unit.getRouteUnit().getSqlUnit().getSql());
-        TransactionTypeHolder.set(TransactionType.BASE);
-        sqlExecuteCallback = SQLExecuteCallbackFactory.getSQLExecuteCallback(DatabaseType.MySQL, SQLType.DML, true, executor);
-        assertTrue(sqlExecuteCallback instanceof SagaSQLExecuteCallback);
-        boolean result = (boolean) sqlExecuteCallback.execute(unit, true, null);
-        assertFalse(result);
     }
 }

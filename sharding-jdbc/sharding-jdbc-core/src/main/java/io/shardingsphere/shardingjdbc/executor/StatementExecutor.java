@@ -60,7 +60,6 @@ public final class StatementExecutor extends AbstractStatementExecutor {
      * @throws SQLException SQL exception
      */
     public void init(final SQLRouteResult routeResult) throws SQLException {
-        setSqlType(routeResult.getSqlStatement().getType());
         getExecuteGroups().addAll(obtainExecuteGroups(routeResult.getRouteUnits()));
         cacheStatements();
     }
@@ -174,7 +173,7 @@ public final class StatementExecutor extends AbstractStatementExecutor {
     
     private int executeUpdate(final Updater updater) throws SQLException {
         final boolean isExceptionThrown = ExecutorExceptionHandler.isExceptionThrown();
-        SQLExecuteCallback<Integer> executeCallback = SQLExecuteCallbackFactory.getSQLExecuteCallback(getDatabaseType(), getSqlType(), isExceptionThrown, updater);
+        SQLExecuteCallback<Integer> executeCallback = SQLExecuteCallbackFactory.getSQLExecuteCallback(getDatabaseType(), isExceptionThrown, updater);
         List<Integer> results = executeCallback(executeCallback);
         return accumulate(results);
     }
@@ -256,7 +255,7 @@ public final class StatementExecutor extends AbstractStatementExecutor {
     
     private boolean execute(final Executor executor) throws SQLException {
         final boolean isExceptionThrown = ExecutorExceptionHandler.isExceptionThrown();
-        SQLExecuteCallback<Boolean> executeCallback = SQLExecuteCallbackFactory.getSQLExecuteCallback(getDatabaseType(), getSqlType(), isExceptionThrown, executor);
+        SQLExecuteCallback<Boolean> executeCallback = SQLExecuteCallbackFactory.getSQLExecuteCallback(getDatabaseType(), isExceptionThrown, executor);
         List<Boolean> result = executeCallback(executeCallback);
         if (null == result || result.isEmpty() || null == result.get(0)) {
             return false;

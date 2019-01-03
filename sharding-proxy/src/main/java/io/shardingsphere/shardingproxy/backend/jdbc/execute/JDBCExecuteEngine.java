@@ -19,15 +19,12 @@ package io.shardingsphere.shardingproxy.backend.jdbc.execute;
 
 import io.shardingsphere.core.constant.ConnectionMode;
 import io.shardingsphere.core.constant.DatabaseType;
-import io.shardingsphere.core.constant.SQLType;
 import io.shardingsphere.core.constant.properties.ShardingPropertiesConstant;
 import io.shardingsphere.core.executor.ShardingExecuteEngine;
 import io.shardingsphere.core.executor.ShardingExecuteGroup;
 import io.shardingsphere.core.executor.StatementExecuteUnit;
 import io.shardingsphere.core.executor.sql.execute.SQLExecuteCallback;
 import io.shardingsphere.core.executor.sql.execute.SQLExecuteTemplate;
-import io.shardingsphere.transaction.api.TransactionType;
-import io.shardingsphere.transaction.core.executor.SagaSQLExecuteCallback;
 import io.shardingsphere.core.executor.sql.execute.result.MemoryQueryResult;
 import io.shardingsphere.core.executor.sql.execute.result.StreamQueryResult;
 import io.shardingsphere.core.executor.sql.execute.threadlocal.ExecutorExceptionHandler;
@@ -40,7 +37,6 @@ import io.shardingsphere.core.routing.SQLRouteResult;
 import io.shardingsphere.shardingproxy.backend.BackendExecutorContext;
 import io.shardingsphere.shardingproxy.backend.SQLExecuteEngine;
 import io.shardingsphere.shardingproxy.backend.jdbc.connection.BackendConnection;
-import io.shardingsphere.shardingproxy.backend.jdbc.connection.ConnectionStatus;
 import io.shardingsphere.shardingproxy.backend.jdbc.execute.response.ExecuteQueryResponse;
 import io.shardingsphere.shardingproxy.backend.jdbc.execute.response.ExecuteResponse;
 import io.shardingsphere.shardingproxy.backend.jdbc.execute.response.ExecuteUpdateResponse;
@@ -112,19 +108,14 @@ public final class JDBCExecuteEngine implements SQLExecuteEngine {
         boolean isReturnGeneratedKeys = routeResult.getSqlStatement() instanceof InsertStatement;
         boolean isExceptionThrown = ExecutorExceptionHandler.isExceptionThrown();
         Collection<ShardingExecuteGroup<StatementExecuteUnit>> sqlExecuteGroups =
-                sqlExecutePrepareTemplate.getExecuteUnitGroups(routeResult.getRouteUnits(), new ProxyJDBCExecutePrepareCallback(isReturnGeneratedKeys));
-        boolean isBASETransaction = TransactionType.BASE == backendConnection.getTransactionType()
-                && routeResult.getSqlStatement().getType() == SQLType.DML
-                && ConnectionStatus.TRANSACTION == backendConnection.getStateHandler().getStatus();
-        SQLExecuteCallback<ExecuteResponseUnit> firstProxySQLExecuteCallback = isBASETransaction ? new ProxySagaSQLExecuteCallback(isExceptionThrown, isReturnGeneratedKeys)
-                : new FirstProxyJDBCExecuteCallback(isExceptionThrown, isReturnGeneratedKeys);
-        SQLExecuteCallback<ExecuteResponseUnit> proxySQLExecuteCallback = isBASETransaction ? firstProxySQLExecuteCallback
-                : new ProxyJDBCExecuteCallback(isExceptionThrown, isReturnGeneratedKeys);
+            sqlExecutePrepareTemplate.getExecuteUnitGroups(routeResult.getRouteUnits(), new ProxyJDBCExecutePrepareCallback(isReturnGeneratedKeys));
+        SQLExecuteCallback<ExecuteResponseUnit> firstProxySQLExecuteCallback = new FirstProxyJDBCExecuteCallback(isExceptionThrown, isReturnGeneratedKeys);
+        SQLExecuteCallback<ExecuteResponseUnit> proxySQLExecuteCallback = new ProxyJDBCExecuteCallback(isExceptionThrown, isReturnGeneratedKeys);
         Collection<ExecuteResponseUnit> executeResponseUnits = sqlExecuteTemplate.executeGroup((Collection) sqlExecuteGroups,
-                firstProxySQLExecuteCallback, proxySQLExecuteCallback);
+            firstProxySQLExecuteCallback, proxySQLExecuteCallback);
         ExecuteResponseUnit firstExecuteResponseUnit = executeResponseUnits.iterator().next();
         return firstExecuteResponseUnit instanceof ExecuteQueryResponseUnit
-                ? getExecuteQueryResponse(((ExecuteQueryResponseUnit) firstExecuteResponseUnit).getQueryResponsePackets(), executeResponseUnits) : new ExecuteUpdateResponse(executeResponseUnits);
+            ? getExecuteQueryResponse(((ExecuteQueryResponseUnit) firstExecuteResponseUnit).getQueryResponsePackets(), executeResponseUnits) : new ExecuteUpdateResponse(executeResponseUnits);
     }
     
     private ExecuteResponse getExecuteQueryResponse(final QueryResponsePackets queryResponsePackets, final Collection<ExecuteResponseUnit> executeResponseUnits) {
@@ -236,21 +227,6 @@ public final class JDBCExecuteEngine implements SQLExecuteEngine {
         public ExecuteResponseUnit executeSQL(final StatementExecuteUnit statementExecuteUnit) throws SQLException {
             return executeWithoutMetadata(
                     statementExecuteUnit.getStatement(), statementExecuteUnit.getRouteUnit().getSqlUnit().getSql(), statementExecuteUnit.getConnectionMode(), isReturnGeneratedKeys);
-        }
-    }
-    
-    private final class ProxySagaSQLExecuteCallback extends SagaSQLExecuteCallback<ExecuteResponseUnit> {
-        
-        private final boolean isReturnGeneratedKeys;
-        
-        private ProxySagaSQLExecuteCallback(final boolean isExceptionThrown, final boolean isReturnGeneratedKeys) {
-            super(DatabaseType.MySQL, isExceptionThrown);
-            this.isReturnGeneratedKeys = isReturnGeneratedKeys;
-        }
-        
-        @Override
-        protected ExecuteResponseUnit executeResult(final StatementExecuteUnit executeUnit) throws SQLException {
-            return executeWithoutMetadata(executeUnit.getStatement(), executeUnit.getRouteUnit().getSqlUnit().getSql(), executeUnit.getConnectionMode(), isReturnGeneratedKeys);
         }
     }
 }

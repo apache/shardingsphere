@@ -20,7 +20,6 @@ package io.shardingsphere.shardingjdbc.executor;
 import com.google.common.base.Function;
 import com.google.common.collect.Lists;
 import io.shardingsphere.core.constant.DatabaseType;
-import io.shardingsphere.core.constant.SQLType;
 import io.shardingsphere.core.constant.properties.ShardingPropertiesConstant;
 import io.shardingsphere.core.executor.ShardingExecuteEngine;
 import io.shardingsphere.core.executor.ShardingExecuteGroup;
@@ -31,7 +30,6 @@ import io.shardingsphere.core.executor.sql.prepare.SQLExecutePrepareTemplate;
 import io.shardingsphere.shardingjdbc.jdbc.core.connection.ShardingConnection;
 import lombok.AccessLevel;
 import lombok.Getter;
-import lombok.Setter;
 
 import java.sql.Connection;
 import java.sql.ResultSet;
@@ -79,10 +77,6 @@ public class AbstractStatementExecutor {
     private final List<ResultSet> resultSets = new CopyOnWriteArrayList<>();
     
     private final Collection<ShardingExecuteGroup<StatementExecuteUnit>> executeGroups = new LinkedList<>();
-    
-    @Getter(AccessLevel.PROTECTED)
-    @Setter
-    private SQLType sqlType;
     
     public AbstractStatementExecutor(final int resultSetType, final int resultSetConcurrency, final int resultSetHoldability, final ShardingConnection shardingConnection) {
         this.databaseType = shardingConnection.getShardingContext().getDatabaseType();
