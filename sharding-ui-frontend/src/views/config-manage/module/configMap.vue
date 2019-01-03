@@ -46,7 +46,13 @@ export default {
   methods: {
     getConfigMap() {
       API.getConfigMap().then((res) => {
-        if (res.success) this.textarea = res.model
+        if (!res.success) return
+        const model = res.model
+        if (Object.prototype.toString.call(model) === '[object String]') {
+          this.textarea = model
+        } else {
+          this.textarea = JSON.stringify(model, null, '\t')
+        }
       })
     },
     onConfirm() {

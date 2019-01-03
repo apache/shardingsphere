@@ -81,17 +81,29 @@ export default {
     handlerClick(parent, child) {
       if (child === 'rule') {
         API.getSchemaRule(parent).then((res) => {
+          if (!res.success) return
+          const model = res.model
+          if (Object.prototype.toString.call(model) === '[object String]') {
+            this.textarea = model
+          } else {
+            this.textarea = JSON.stringify(model, null, '\t')
+          }
           this.sname = parent
           this.scname = child
-          this.textarea = res.model
           this.type = `${parent}-${child}`
           this.centerDialogVisible = true
         })
       } else {
         API.getSchemaDataSource(parent).then((res) => {
+          if (!res.success) return
+          const model = res.model
+          if (Object.prototype.toString.call(model) === '[object String]') {
+            this.textarea = model
+          } else {
+            this.textarea = JSON.stringify(model, null, '\t')
+          }
           this.sname = parent
           this.scname = child
-          this.textarea = res.model
           this.type = `${parent}-${child}`
           this.centerDialogVisible = true
         })
