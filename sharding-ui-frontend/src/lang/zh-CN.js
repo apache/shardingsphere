@@ -46,6 +46,7 @@ export default {
       address: '注册中心地址',
       orchestrationName: '数据治理实例',
       namespaces: '命名空间',
+      digest: 'Digest',
       btnConfirmTxt: '确定',
       btnCancelTxt: '取消'
     },
@@ -57,7 +58,8 @@ export default {
       centerType: '请选择注册中心类型',
       namespaces: '请输入命名空间',
       address: '请选输入注册中心地址',
-      orchestrationName: '请输入数据治理实例名称'
+      orchestrationName: '请输入数据治理实例名称',
+      digest: 'Digest'
     }
   }
 }

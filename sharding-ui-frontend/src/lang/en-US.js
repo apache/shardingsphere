@@ -46,6 +46,7 @@ export default {
       address: 'address',
       orchestrationName: 'orchestrationName',
       namespaces: 'Namespaces',
+      digest: 'Digest',
       btnConfirmTxt: 'Confirm',
       btnCancelTxt: 'Cancel'
     },
@@ -57,7 +58,8 @@ export default {
       address: 'Please enter the registration center address',
       namespaces: 'Please enter a namespace',
       centerType: 'Please select a centerType',
-      orchestrationName: 'Please enter a orchestrationName'
+      orchestrationName: 'Please enter a orchestrationName',
+      digest: 'Please enter a digest'
     }
   }
 }

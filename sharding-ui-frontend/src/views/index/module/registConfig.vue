@@ -47,6 +47,9 @@
         <el-form-item :label="$t('index.registDialog.namespaces')" prop="namespaces">
           <el-input v-model="form.namespaces" autocomplete="off"/>
         </el-form-item>
+        <el-form-item :label="$t('index.registDialog.digest')" prop="digest">
+          <el-input v-model="form.digest" autocomplete="off"/>
+        </el-form-item>
       </el-form>
       <div slot="footer" class="dialog-footer">
         <el-button @click="regustDialogVisible = false">{{ $t("index.registDialog.btnCancelTxt") }}</el-button>
@@ -90,7 +93,8 @@ export default {
         address: '',
         namespaces: '',
         centerType: 'Zookeeper',
-        orchestrationName: ''
+        orchestrationName: '',
+        digest: ''
       },
       rules: {
         name: [
@@ -107,6 +111,9 @@ export default {
         ],
         orchestrationName: [
           { required: true, message: this.$t('index').rules.orchestrationName, trigger: 'change' }
+        ],
+        digest: [
+          { required: true, message: this.$t('index').rules.address, trigger: 'change' }
         ]
       },
       tableData: [],
@@ -182,7 +189,7 @@ export default {
       this.$refs[formName].validate((valid) => {
         if (valid) {
           const params = {
-            // digest: 'string',
+            digest: this.form.digest,
             name: this.form.name,
             namespace: this.form.namespaces,
             orchestrationName: this.form.orchestrationName,
