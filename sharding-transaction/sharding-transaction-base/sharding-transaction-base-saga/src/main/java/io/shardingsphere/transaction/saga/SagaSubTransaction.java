@@ -15,33 +15,29 @@
  * </p>
  */
 
-package io.shardingsphere.transaction.core.context;
+package io.shardingsphere.transaction.saga;
 
-import io.shardingsphere.core.executor.StatementExecuteUnit;
-import io.shardingsphere.transaction.core.constant.ExecutionResult;
-import lombok.AllArgsConstructor;
+import java.util.List;
+
+import lombok.EqualsAndHashCode;
 import lombok.Getter;
 import lombok.RequiredArgsConstructor;
-
-import java.util.UUID;
+import lombok.ToString;
 
 /**
- * Saga SQL execution event.
+ * Saga sub transaction.
  *
  * @author yangyi
  */
-@Getter
 @RequiredArgsConstructor
-@AllArgsConstructor
-public final class SagaSQLExecutionContext {
+@EqualsAndHashCode
+@Getter
+@ToString
+public class SagaSubTransaction {
     
-    private final String id = UUID.randomUUID().toString();
+    private final String dataSourceName;
     
-    private final StatementExecuteUnit executeUnit;
+    private final String sql;
     
-    private final String logicSQLId;
-    
-    private final boolean newLogicSQL;
-    
-    private ExecutionResult executionResult;
+    private final List<List<Object>> parameterSets;
 }

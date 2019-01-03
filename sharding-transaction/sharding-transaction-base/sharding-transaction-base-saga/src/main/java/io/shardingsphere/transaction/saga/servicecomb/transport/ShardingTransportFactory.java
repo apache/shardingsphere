@@ -17,17 +17,12 @@
 
 package io.shardingsphere.transaction.saga.servicecomb.transport;
 
-
+import io.shardingsphere.transaction.saga.SagaTransaction;
 import org.apache.servicecomb.saga.transports.SQLTransport;
 import org.apache.servicecomb.saga.transports.TransportFactory;
 
-import java.util.Map;
-import java.util.concurrent.ConcurrentHashMap;
-
-import io.shardingsphere.transaction.core.context.SagaTransactionContext;
-
 /**
- * Extend interface for service comb saga TransportFactory.
+ * Sharding transport factory for service comb saga {@code TransportFactory}.
  *
  * @author yangyi
  */
@@ -36,8 +31,6 @@ public final class ShardingTransportFactory implements TransportFactory<SQLTrans
     private static final ShardingTransportFactory INSTANCE = new ShardingTransportFactory();
     
     private final ThreadLocal<SQLTransport> transports = new ThreadLocal<>();
-    
-    private final Map<String, SQLTransport> transactionIdToTransportMap = new ConcurrentHashMap<>();
     
     /**
      * Get sharding transport factory instance.
@@ -54,36 +47,19 @@ public final class ShardingTransportFactory implements TransportFactory<SQLTrans
     }
     
     /**
-     * Get transport for transaction id.
+     * cache transport.
      *
-     * @param transactionId transaction id
-     * @return SQL transport
+     * @param sagaTransaction saga transaction
      */
-    public SQLTransport getTransportByTransactionId(final String transactionId) {
-        return transactionIdToTransportMap.get(transactionId);
-    }
-    
-    /**
-     * cache Transport.
-     *
-     * @param context saga context
-     * @param transactionId transaction id
-     */
-    public void cacheTransport(final SagaTransactionContext context, final String transactionId) {
-        SQLTransport sqlTransport = new ResultsSQLTransport(context.getDataSourceMap());
+    public void cacheTransport(final SagaTransaction sagaTransaction) {
+        SQLTransport sqlTransport = new ShardingSQLTransport(sagaTransaction);
         transports.set(sqlTransport);
-        transactionIdToTransportMap.put(transactionId, sqlTransport);
     }
     
     /**
-     * remove cached SQLTransport.
-     *
-     * @param transactionId transaction id
+     * remove cached transport.
      */
-    public void remove(final String transactionId) {
-        if (null != transactionId) {
-            transactionIdToTransportMap.remove(transactionId);
-        }
+    public void remove() {
         transports.remove();
     }
 }

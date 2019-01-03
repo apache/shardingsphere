@@ -53,18 +53,14 @@ public final class SagaShardingTransactionHandler extends ShardingTransactionHan
             transactionManager.removeSagaExecutionComponent(transactionContext.getSagaConfiguration());
             return;
         }
-        if (transactionContext.isExecutionEvent()) {
-            transactionManager.handleSQLExecutionEvent(transactionContext.getSagaSQLExecutionContext());
-            return;
-        }
         switch (transactionContext.getOperationType()) {
             case BEGIN:
-                if (Status.STATUS_NO_TRANSACTION == transactionManager.getStatus()) {
+                if (!isInTransaction()) {
                     super.doInTransaction(transactionContext);
                 }
                 break;
             case COMMIT:
-                if (Status.STATUS_ACTIVE != transactionManager.getStatus()) {
+                if (!isInTransaction()) {
                     throw new ShardingException("No transaction begin in current thread connection");
                 }
                 super.doInTransaction(transactionContext);
@@ -74,5 +70,9 @@ public final class SagaShardingTransactionHandler extends ShardingTransactionHan
                 break;
             default:
         }
+    }
+    
+    private boolean isInTransaction() {
+        return Status.STATUS_ACTIVE == transactionManager.getStatus();
     }
 }
