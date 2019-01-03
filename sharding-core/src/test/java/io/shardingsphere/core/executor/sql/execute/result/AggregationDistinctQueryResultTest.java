@@ -161,6 +161,7 @@ public class AggregationDistinctQueryResultTest {
     @SneakyThrows
     public void assertGetColumnLabel() {
         assertThat(aggregationDistinctQueryResult.getColumnLabel(3), is("a"));
+        assertThat(aggregationDistinctQueryResult.getColumnLabel(1), is("order_id"));
     }
     
     @Test(expected = SQLException.class)
