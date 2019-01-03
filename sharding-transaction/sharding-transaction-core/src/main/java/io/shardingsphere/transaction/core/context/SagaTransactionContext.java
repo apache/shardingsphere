@@ -43,8 +43,6 @@ public final class SagaTransactionContext implements ShardingTransactionContext 
     
     private final SagaConfiguration sagaConfiguration;
     
-    private final SagaSQLExecutionContext sagaSQLExecutionContext;
-    
     private boolean destroyComponent;
     
     /**
@@ -55,7 +53,7 @@ public final class SagaTransactionContext implements ShardingTransactionContext 
      * @return begin saga transaction context
      */
     public static SagaTransactionContext createBeginSagaTransactionContext(final Map<String, DataSource> dataSourceMap, final SagaConfiguration sagaConfiguration) {
-        return new SagaTransactionContext(TransactionOperationType.BEGIN, dataSourceMap, sagaConfiguration, null);
+        return new SagaTransactionContext(TransactionOperationType.BEGIN, dataSourceMap, sagaConfiguration);
     }
     
     /**
@@ -65,7 +63,7 @@ public final class SagaTransactionContext implements ShardingTransactionContext 
      * @return commit saga transaction context
      */
     public static SagaTransactionContext createCommitSagaTransactionContext(final SagaConfiguration sagaConfiguration) {
-        return new SagaTransactionContext(TransactionOperationType.COMMIT, null, sagaConfiguration, null);
+        return new SagaTransactionContext(TransactionOperationType.COMMIT, null, sagaConfiguration);
     }
     
     /**
@@ -75,17 +73,7 @@ public final class SagaTransactionContext implements ShardingTransactionContext 
      * @return rollback saga transaction context
      */
     public static SagaTransactionContext createRollbackSagaTransactionContext(final SagaConfiguration sagaConfiguration) {
-        return new SagaTransactionContext(TransactionOperationType.ROLLBACK, null, sagaConfiguration, null);
-    }
-    
-    /**
-     * Create execution saga transaction context.
-     *
-     * @param sagaSQLExecutionContext saga SQL execution context
-     * @return execution saga transaction context
-     */
-    public static SagaTransactionContext createExecutionSagaTransactionContext(final SagaSQLExecutionContext sagaSQLExecutionContext) {
-        return new SagaTransactionContext(null, null, null, sagaSQLExecutionContext);
+        return new SagaTransactionContext(TransactionOperationType.ROLLBACK, null, sagaConfiguration);
     }
     
     /**
@@ -95,15 +83,6 @@ public final class SagaTransactionContext implements ShardingTransactionContext 
      * @return destroy component context
      */
     public static SagaTransactionContext createDestroyComponentContext(final SagaConfiguration sagaConfiguration) {
-        return new SagaTransactionContext(null, null, sagaConfiguration, null, true);
-    }
-    
-    /**
-     * Judge whether context is execution context.
-     *
-     * @return true if context is execution context, else false
-     */
-    public boolean isExecutionEvent() {
-        return null != sagaSQLExecutionContext;
+        return new SagaTransactionContext(null, null, sagaConfiguration, true);
     }
 }
