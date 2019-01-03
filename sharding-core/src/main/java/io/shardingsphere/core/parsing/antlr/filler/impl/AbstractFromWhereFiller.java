@@ -1,30 +1,6 @@
-/*
- * Copyright 2016-2018 shardingsphere.io.
- * <p>
- * Licensed under the Apache License, Version 2.0 (the "License");
- * you may not use this file except in compliance with the License.
- * You may obtain a copy of the License at
- *
- *     http://www.apache.org/licenses/LICENSE-2.0
- *
- * Unless required by applicable law or agreed to in writing, software
- * distributed under the License is distributed on an "AS IS" BASIS,
- * WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
- * See the License for the specific language governing permissions and
- * limitations under the License.
- * </p>
- */
-
 package io.shardingsphere.core.parsing.antlr.filler.impl;
 
-import java.util.Collection;
-import java.util.HashMap;
-import java.util.LinkedList;
-import java.util.List;
-import java.util.Map;
-
 import com.google.common.base.Optional;
-
 import io.shardingsphere.core.constant.ShardingOperator;
 import io.shardingsphere.core.metadata.table.ShardingTableMetaData;
 import io.shardingsphere.core.parsing.antlr.filler.SQLStatementFiller;
@@ -33,12 +9,7 @@ import io.shardingsphere.core.parsing.antlr.sql.segment.column.ColumnSegment;
 import io.shardingsphere.core.parsing.antlr.sql.segment.condition.AndConditionSegment;
 import io.shardingsphere.core.parsing.antlr.sql.segment.condition.ConditionSegment;
 import io.shardingsphere.core.parsing.antlr.sql.segment.condition.OrConditionSegment;
-import io.shardingsphere.core.parsing.antlr.sql.segment.expr.BetweenValueExpressionSegment;
-import io.shardingsphere.core.parsing.antlr.sql.segment.expr.CommonExpressionSegment;
-import io.shardingsphere.core.parsing.antlr.sql.segment.expr.EqualsValueExpressionSegment;
-import io.shardingsphere.core.parsing.antlr.sql.segment.expr.ExpressionSegment;
-import io.shardingsphere.core.parsing.antlr.sql.segment.expr.InValueExpressionSegment;
-import io.shardingsphere.core.parsing.antlr.sql.segment.expr.SubquerySegment;
+import io.shardingsphere.core.parsing.antlr.sql.segment.expr.*;
 import io.shardingsphere.core.parsing.parser.context.condition.AndCondition;
 import io.shardingsphere.core.parsing.parser.context.condition.Column;
 import io.shardingsphere.core.parsing.parser.context.condition.Condition;
@@ -51,12 +22,9 @@ import io.shardingsphere.core.parsing.parser.sql.SQLStatement;
 import io.shardingsphere.core.parsing.parser.token.TableToken;
 import io.shardingsphere.core.rule.ShardingRule;
 
-/**
- * From where filler.
- *
- * @author duhongjun
- */
-public final class FromWhereFiller implements SQLStatementFiller<FromWhereSegment> {
+import java.util.*;
+
+public abstract class AbstractFromWhereFiller implements SQLStatementFiller<FromWhereSegment> {
     
     @Override
     public void fill(final FromWhereSegment sqlSegment, final SQLStatement sqlStatement, final String sql, final ShardingRule shardingRule, final ShardingTableMetaData shardingTableMetaData) {
@@ -157,7 +125,7 @@ public final class FromWhereFiller implements SQLStatementFiller<FromWhereSegmen
             Column column = new Column(eachCondition.getColumn().getName(), eachCondition.getColumn().getTableName());
             if (ShardingOperator.EQUAL == eachCondition.getOperator()) {
                 EqualsValueExpressionSegment expressionSegment = (EqualsValueExpressionSegment) eachCondition.getExpression();
-                Optional<SQLExpression> expression = buildExpression(sqlStatement, expressionSegment.getExpression(), sql, shardingRule, shardingTableMetaData);
+                com.google.common.base.Optional<SQLExpression> expression = buildExpression(sqlStatement, expressionSegment.getExpression(), sql, shardingRule, shardingTableMetaData);
                 if (expression.isPresent()) {
                     andConditionResult.getConditions().add(new Condition(column, expression.get()));
                 }
@@ -167,7 +135,7 @@ public final class FromWhereFiller implements SQLStatementFiller<FromWhereSegmen
                 InValueExpressionSegment expressionSegment = (InValueExpressionSegment) eachCondition.getExpression();
                 List<SQLExpression> expressions = new LinkedList<>();
                 for (ExpressionSegment each : expressionSegment.getSqlExpressions()) {
-                    Optional<SQLExpression> expression = buildExpression(sqlStatement, each, sql, shardingRule, shardingTableMetaData);
+                    com.google.common.base.Optional<SQLExpression> expression = buildExpression(sqlStatement, each, sql, shardingRule, shardingTableMetaData);
                     if (expression.isPresent()) {
                         expressions.add(expression.get());
                     } else {
@@ -182,11 +150,11 @@ public final class FromWhereFiller implements SQLStatementFiller<FromWhereSegmen
             }
             if (ShardingOperator.BETWEEN == eachCondition.getOperator()) {
                 BetweenValueExpressionSegment expressionSegment = (BetweenValueExpressionSegment) eachCondition.getExpression();
-                Optional<SQLExpression> beginExpress = buildExpression(sqlStatement, expressionSegment.getBeginExpress(), sql, shardingRule, shardingTableMetaData);
+                com.google.common.base.Optional<SQLExpression> beginExpress = buildExpression(sqlStatement, expressionSegment.getBeginExpress(), sql, shardingRule, shardingTableMetaData);
                 if (!beginExpress.isPresent()) {
                     continue;
                 }
-                Optional<SQLExpression> endExpress = buildExpression(sqlStatement, expressionSegment.getEndExpress(), sql, shardingRule, shardingTableMetaData);
+                com.google.common.base.Optional<SQLExpression> endExpress = buildExpression(sqlStatement, expressionSegment.getEndExpress(), sql, shardingRule, shardingTableMetaData);
                 if (!endExpress.isPresent()) {
                     continue;
                 }
@@ -195,18 +163,18 @@ public final class FromWhereFiller implements SQLStatementFiller<FromWhereSegmen
         }
     }
     
-    private Optional<SQLExpression> buildExpression(final SQLStatement sqlStatement, final ExpressionSegment expressionSegment, final String sql, final ShardingRule shardingRule,
-                                                    final ShardingTableMetaData shardingTableMetaData) {
+    private com.google.common.base.Optional<SQLExpression> buildExpression(final SQLStatement sqlStatement, final ExpressionSegment expressionSegment, final String sql, final ShardingRule shardingRule,
+                                                                           final ShardingTableMetaData shardingTableMetaData) {
         if (!(expressionSegment instanceof CommonExpressionSegment)) {
             //new ExpressionFiller().fill(expressionSegment, selectStatement, sql, shardingRule, shardingTableMetaData);
-            return Optional.absent();
+            return com.google.common.base.Optional.absent();
         }
         CommonExpressionSegment commonExpressionSegment = (CommonExpressionSegment) expressionSegment;
         if (-1 < commonExpressionSegment.getIndex()) {
-            return Optional.<SQLExpression>of(new SQLPlaceholderExpression(commonExpressionSegment.getIndex()));
+            return com.google.common.base.Optional.<SQLExpression>of(new SQLPlaceholderExpression(commonExpressionSegment.getIndex()));
         }
         if (null != commonExpressionSegment.getValue()) {
-            return Optional.<SQLExpression>of(new SQLNumberExpression(commonExpressionSegment.getValue()));
+            return com.google.common.base.Optional.<SQLExpression>of(new SQLNumberExpression(commonExpressionSegment.getValue()));
         }
         String expression = sql.substring(commonExpressionSegment.getStartPosition(), commonExpressionSegment.getEndPosition() + 1);
         return Optional.<SQLExpression>of(new SQLTextExpression(expression));

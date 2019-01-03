@@ -38,4 +38,5 @@
     <sql-statement-rule context="setDefaultRole" sql-statement-class="io.shardingsphere.core.parsing.parser.sql.dcl.DCLStatement" />
     <sql-statement-rule context="alterUserRole" sql-statement-class="io.shardingsphere.core.parsing.parser.sql.dcl.DCLStatement" />
     <sql-statement-rule context="setRole" sql-statement-class="io.shardingsphere.core.parsing.parser.sql.dcl.DCLStatement" />
+    <sql-statement-rule context="Delete" sql-statement-class="io.shardingsphere.core.parsing.parser.sql.dml.DMLStatement" extractor-rule-refs="tableNames,deleteFromWhere"/>
 </sql-statement-rule-definition>

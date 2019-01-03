@@ -39,12 +39,20 @@ deleteClause
     ;
     
 fromSingle
-    : FROM ID partitionClause?
+    : FROM tableName partitionClause?
     ;
     
 fromMulti
-    : ID ('.*')? (COMMA ID ('.*')?)* FROM  tableReferences
-    | FROM (ID ('.*')? (COMMA ID ('.*')?)* USING tableReferences)
+    : fromMultiAliases FROM  tableReferences
+    | FROM fromMultiAliases USING tableReferences
+    ;
+    
+fromMultiAliases
+    : fromMultiAlias (COMMA fromMultiAlias)*
+    ;
+    
+fromMultiAlias
+    : alias ('.*')?
     ;
     
 deleteSpec

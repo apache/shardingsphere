@@ -17,25 +17,19 @@
 
 package io.shardingsphere.core.parsing.antlr.extractor.impl;
 
-import org.antlr.v4.runtime.ParserRuleContext;
-
 import com.google.common.base.Optional;
-
 import io.shardingsphere.core.parsing.antlr.extractor.util.ExtractorUtils;
 import io.shardingsphere.core.parsing.antlr.extractor.util.RuleName;
+import org.antlr.v4.runtime.ParserRuleContext;
 
 /**
  * From clause extractor.
  *
  * @author duhongjun
  */
-public final class FromWhereExtractor extends AbstractFromWhereExtractor {
+public final class DeleteFromWhereExtractor extends AbstractFromWhereExtractor {
     
     protected  Optional<ParserRuleContext> findTableReferenceParent(final ParserRuleContext ancestorNode){
-        Optional<ParserRuleContext> selectClauseNode = ExtractorUtils.findFirstChildNode(ancestorNode, RuleName.SELECT_CLAUSE);
-        if (!selectClauseNode.isPresent()) {
-            return Optional.absent();
-        }
-        return ExtractorUtils.findFirstChildNodeNoneRecursive(selectClauseNode.get().getParent(), RuleName.FROM_CLAUSE);
+        return ExtractorUtils.findFirstChildNode(ancestorNode, RuleName.DELETE);
     }
 }

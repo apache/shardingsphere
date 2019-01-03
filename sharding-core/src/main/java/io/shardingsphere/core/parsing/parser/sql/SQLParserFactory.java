@@ -88,7 +88,7 @@ public final class SQLParserFactory {
             return getDQLParser(dbType, shardingRule, lexerEngine, shardingTableMetaData);
         }
         if (DMLStatement.isDML(tokenType)) {
-            return getDMLParser(dbType, tokenType, shardingRule, lexerEngine, shardingTableMetaData);
+        	return new AntlrParsingEngine(dbType, sql, shardingRule, shardingTableMetaData);
         }
         if (TCLStatement.isTCL(tokenType)) {
             return new AntlrParsingEngine(dbType, sql, shardingRule, shardingTableMetaData);

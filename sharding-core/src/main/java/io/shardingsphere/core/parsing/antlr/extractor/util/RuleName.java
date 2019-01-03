@@ -131,7 +131,11 @@ public enum RuleName {
     
     SET_AUTO_COMMIT("SetAutoCommit"),
     
-    AUTO_COMMIT_VALUE("AutoCommitValue");
+    AUTO_COMMIT_VALUE("AutoCommitValue"),
+    
+    DELETE("Delete"),
+    
+    DELETE_CLAUSE("DeleteClause");
     
     private final String name;
     
