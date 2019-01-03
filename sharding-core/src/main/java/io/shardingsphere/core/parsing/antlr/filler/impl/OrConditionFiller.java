@@ -46,7 +46,6 @@ import io.shardingsphere.core.parsing.parser.expression.SQLNumberExpression;
 import io.shardingsphere.core.parsing.parser.expression.SQLPlaceholderExpression;
 import io.shardingsphere.core.parsing.parser.expression.SQLTextExpression;
 import io.shardingsphere.core.parsing.parser.sql.SQLStatement;
-import io.shardingsphere.core.parsing.parser.sql.dql.select.SelectStatement;
 import io.shardingsphere.core.parsing.parser.token.TableToken;
 import io.shardingsphere.core.rule.ShardingRule;
 
@@ -158,7 +157,7 @@ public final class OrConditionFiller implements SQLStatementFiller<OrConditionSe
             Column column = new Column(eachCondition.getColumn().getName(), eachCondition.getColumn().getTableName());
             if (ShardingOperator.EQUAL == eachCondition.getOperator()) {
                 EqualsValueExpressionSegment expressionSegment = (EqualsValueExpressionSegment) eachCondition.getExpression();
-                Optional<SQLExpression> expression = buildExpression((SelectStatement) sqlStatement, expressionSegment.getExpression(), sql, shardingRule, shardingTableMetaData);
+                Optional<SQLExpression> expression = buildExpression(expressionSegment.getExpression(), sql, shardingRule, shardingTableMetaData);
                 if (expression.isPresent()) {
                     andConditionResult.getConditions().add(new Condition(column, expression.get()));
                 }
@@ -168,7 +167,7 @@ public final class OrConditionFiller implements SQLStatementFiller<OrConditionSe
                 InValueExpressionSegment expressionSegment = (InValueExpressionSegment) eachCondition.getExpression();
                 List<SQLExpression> expressions = new LinkedList<>();
                 for (ExpressionSegment each : expressionSegment.getSqlExpressions()) {
-                    com.google.common.base.Optional<SQLExpression> expression = buildExpression((SelectStatement) sqlStatement, each, sql, shardingRule, shardingTableMetaData);
+                    Optional<SQLExpression> expression = buildExpression(each, sql, shardingRule, shardingTableMetaData);
                     if (expression.isPresent()) {
                         expressions.add(expression.get());
                     } else {
@@ -183,12 +182,11 @@ public final class OrConditionFiller implements SQLStatementFiller<OrConditionSe
             }
             if (ShardingOperator.BETWEEN == eachCondition.getOperator()) {
                 BetweenValueExpressionSegment expressionSegment = (BetweenValueExpressionSegment) eachCondition.getExpression();
-                com.google.common.base.Optional<SQLExpression> beginExpress = buildExpression((SelectStatement) sqlStatement,
-                        expressionSegment.getBeginExpress(), sql, shardingRule, shardingTableMetaData);
+                Optional<SQLExpression> beginExpress = buildExpression(expressionSegment.getBeginExpress(), sql, shardingRule, shardingTableMetaData);
                 if (!beginExpress.isPresent()) {
                     continue;
                 }
-                Optional<SQLExpression> endExpress = buildExpression((SelectStatement) sqlStatement, expressionSegment.getEndExpress(), sql, shardingRule, shardingTableMetaData);
+                Optional<SQLExpression> endExpress = buildExpression(expressionSegment.getEndExpress(), sql, shardingRule, shardingTableMetaData);
                 if (!endExpress.isPresent()) {
                     continue;
                 }
@@ -197,18 +195,16 @@ public final class OrConditionFiller implements SQLStatementFiller<OrConditionSe
         }
     }
     
-    private com.google.common.base.Optional<SQLExpression> buildExpression(final SelectStatement selectStatement, final ExpressionSegment expressionSegment, final String sql,
-                                                                           final ShardingRule shardingRule, final ShardingTableMetaData shardingTableMetaData) {
+    private Optional<SQLExpression> buildExpression(final ExpressionSegment expressionSegment, final String sql, final ShardingRule shardingRule, final ShardingTableMetaData shardingTableMetaData) {
         if (!(expressionSegment instanceof CommonExpressionSegment)) {
-            new ExpressionFiller().fill(expressionSegment, selectStatement, sql, shardingRule, shardingTableMetaData);
-            return com.google.common.base.Optional.absent();
+            return Optional.absent();
         }
         CommonExpressionSegment commonExpressionSegment = (CommonExpressionSegment) expressionSegment;
         if (-1 < commonExpressionSegment.getIndex()) {
-            return com.google.common.base.Optional.<SQLExpression>of(new SQLPlaceholderExpression(commonExpressionSegment.getIndex()));
+            return Optional.<SQLExpression>of(new SQLPlaceholderExpression(commonExpressionSegment.getIndex()));
         }
         if (null != commonExpressionSegment.getValue()) {
-            return com.google.common.base.Optional.<SQLExpression>of(new SQLNumberExpression(commonExpressionSegment.getValue()));
+            return Optional.<SQLExpression>of(new SQLNumberExpression(commonExpressionSegment.getValue()));
         }
         String expression = sql.substring(commonExpressionSegment.getStartPosition(), commonExpressionSegment.getEndPosition() + 1);
         return Optional.<SQLExpression>of(new SQLTextExpression(expression));

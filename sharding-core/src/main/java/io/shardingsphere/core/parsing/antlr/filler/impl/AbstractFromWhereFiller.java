@@ -35,11 +35,6 @@ public abstract class AbstractFromWhereFiller implements SQLStatementFiller<From
             OrCondition orCondition = filterShardingCondition(sqlStatement, sqlSegment.getConditions(), sql, shardingRule, columnNameToTable, columnNameCount, shardingTableMetaData);
             sqlStatement.getConditions().getOrCondition().getAndConditions().addAll(orCondition.getAndConditions());
         }
-        if (!sqlSegment.getSubquerys().isEmpty()) {
-            for (SubquerySegment each : sqlSegment.getSubquerys()) {
-                new SubqueryFiller().fill(each, sqlStatement, sql, shardingRule, shardingTableMetaData);
-            }
-        }
         int count = 0;
         while (count < sqlSegment.getParameterCount()) {
             sqlStatement.increaseParametersIndex();

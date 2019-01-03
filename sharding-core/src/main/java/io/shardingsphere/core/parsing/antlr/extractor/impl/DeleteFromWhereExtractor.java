@@ -20,16 +20,27 @@ package io.shardingsphere.core.parsing.antlr.extractor.impl;
 import com.google.common.base.Optional;
 import io.shardingsphere.core.parsing.antlr.extractor.util.ExtractorUtils;
 import io.shardingsphere.core.parsing.antlr.extractor.util.RuleName;
+import io.shardingsphere.core.parsing.antlr.sql.segment.FromWhereSegment;
+import io.shardingsphere.core.parsing.antlr.sql.segment.table.TableSegment;
 import org.antlr.v4.runtime.ParserRuleContext;
 
+import java.util.Map;
+
 /**
- * From clause extractor.
+ * Delete from extractor.
  *
  * @author duhongjun
  */
 public final class DeleteFromWhereExtractor extends AbstractFromWhereExtractor {
     
-    protected  Optional<ParserRuleContext> findTableReferenceParent(final ParserRuleContext ancestorNode){
-        return ExtractorUtils.findFirstChildNode(ancestorNode, RuleName.DELETE);
+    @Override
+    protected Optional<ParserRuleContext> extractTable(final FromWhereSegment fromWhereSegment, final ParserRuleContext ancestorNode, final Map<ParserRuleContext, Integer> questionNodeIndexMap) {
+        for(TableSegment each : new TableNamesExtractor().extract(ancestorNode)){
+            fillTableResult(fromWhereSegment, each);
+        }
+        if(fromWhereSegment.getTableAliases().isEmpty()){
+            return Optional.absent();
+        }
+        return ExtractorUtils.findFirstChildNodeNoneRecursive(ancestorNode, RuleName.WHERE_CLAUSE);
     }
 }
