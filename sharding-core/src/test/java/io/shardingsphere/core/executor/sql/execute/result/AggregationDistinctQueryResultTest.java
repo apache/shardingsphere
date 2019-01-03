@@ -162,6 +162,7 @@ public class AggregationDistinctQueryResultTest {
     }
     
     @Test
-    public void testGetColumnIndex() {
+    public void assertGetColumnIndex() {
+        assertThat(aggregationDistinctQueryResult.getColumnIndex("c"), is(2));
     }
 }
