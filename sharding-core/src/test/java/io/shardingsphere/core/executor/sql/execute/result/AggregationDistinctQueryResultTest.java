@@ -33,12 +33,14 @@ import java.io.ByteArrayOutputStream;
 import java.io.InputStream;
 import java.io.ObjectOutputStream;
 import java.sql.SQLException;
+import java.util.Calendar;
 import java.util.Collection;
 import java.util.LinkedList;
 import java.util.List;
 
 import static org.hamcrest.CoreMatchers.is;
 import static org.junit.Assert.assertThat;
+import static org.junit.Assert.assertTrue;
 import static org.mockito.Mockito.mock;
 import static org.mockito.Mockito.when;
 
@@ -112,13 +114,13 @@ public class AggregationDistinctQueryResultTest {
     @Test
     public void assertGetCalendarValueByColumnIndex() {
         aggregationDistinctQueryResult.next();
-        assertThat(aggregationDistinctQueryResult.getValue(1, Object.class), is((Object) 10));
+        assertThat(aggregationDistinctQueryResult.getCalendarValue(1, Object.class, Calendar.getInstance()), is((Object) 10));
     }
     
     @Test
     public void assertGetCalendarValueByColumnLabel() {
         aggregationDistinctQueryResult.next();
-        assertThat(aggregationDistinctQueryResult.getValue("order_id", Object.class), is((Object) 10));
+        assertThat(aggregationDistinctQueryResult.getCalendarValue("order_id", Object.class, Calendar.getInstance()), is((Object) 10));
     }
     
     @Test
@@ -137,6 +139,7 @@ public class AggregationDistinctQueryResultTest {
     
     @Test
     public void assertWasNull() {
+        assertTrue(aggregationDistinctQueryResult.wasNull());
     }
     
     @SneakyThrows
