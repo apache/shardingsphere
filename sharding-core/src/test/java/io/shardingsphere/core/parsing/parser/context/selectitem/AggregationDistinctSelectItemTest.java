@@ -35,5 +35,6 @@ public class AggregationDistinctSelectItemTest {
     
     @Test
     public void assertGetDistinctColumnName() {
+        assertThat(aggregationDistinctSelectItem.getDistinctColumnName(), is("order_id"));
     }
 }
