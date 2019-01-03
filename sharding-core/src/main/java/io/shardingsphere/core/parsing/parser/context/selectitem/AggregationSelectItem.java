@@ -44,7 +44,7 @@ public class AggregationSelectItem implements SelectItem {
     
     private final String innerExpression;
     
-    private final String alias;
+    private final Optional<String> alias;
     
     private final List<AggregationSelectItem> derivedAggregationSelectItems = new ArrayList<>(2);
     
@@ -63,10 +63,5 @@ public class AggregationSelectItem implements SelectItem {
      */
     public String getColumnLabel() {
         return alias.isPresent() ? alias.get() : getExpression();
-    }
-    
-    @Override
-    public Optional<String> getAlias() {
-        return null == alias ? Optional.<String>absent() : Optional.of(alias);
     }
 }
