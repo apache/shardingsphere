@@ -26,6 +26,7 @@ import io.shardingsphere.core.executor.sql.execute.row.QueryRow;
 import io.shardingsphere.core.merger.QueryResult;
 import lombok.AccessLevel;
 import lombok.Getter;
+import lombok.RequiredArgsConstructor;
 import lombok.SneakyThrows;
 
 import java.io.ByteArrayInputStream;
@@ -47,6 +48,7 @@ import java.util.Set;
  *
  * @author panjuan
  */
+@RequiredArgsConstructor
 @Getter(AccessLevel.PROTECTED)
 public class DistinctQueryResult implements QueryResult {
     
@@ -55,11 +57,6 @@ public class DistinctQueryResult implements QueryResult {
     private final Iterator<QueryRow> resultData;
     
     private QueryRow currentRow;
-    
-    protected DistinctQueryResult(final Multimap<String, Integer> columnLabelAndIndexMap, final Iterator<QueryRow> resultData) {
-        this.columnLabelAndIndexMap = columnLabelAndIndexMap;
-        this.resultData = resultData;
-    }
     
     @SneakyThrows
     public DistinctQueryResult(final Collection<QueryResult> queryResults, final List<String> distinctColumnLabels) {
@@ -78,18 +75,18 @@ public class DistinctQueryResult implements QueryResult {
     
     @SneakyThrows
     private Iterator<QueryRow> getResultData(final Collection<QueryResult> queryResults, final List<String> distinctColumnLabels) {
-        Set<QueryRow> resultData = new LinkedHashSet<>();
+        Set<QueryRow> result = new LinkedHashSet<>();
         List<Integer> distinctColumnIndexes = Lists.transform(distinctColumnLabels, new Function<String, Integer>() {
-    
+            
             @Override
             public Integer apply(final String input) {
                 return getColumnIndex(input);
             }
         });
         for (QueryResult each : queryResults) {
-            fill(resultData, each, distinctColumnIndexes);
+            fill(result, each, distinctColumnIndexes);
         }
-        return resultData.iterator();
+        return result.iterator();
     }
     
     @SneakyThrows
@@ -110,7 +107,7 @@ public class DistinctQueryResult implements QueryResult {
      */
     public List<DistinctQueryResult> divide() {
         return Lists.newArrayList(Iterators.transform(resultData, new Function<QueryRow, DistinctQueryResult>() {
-    
+            
             @Override
             public DistinctQueryResult apply(final QueryRow row) {
                 Set<QueryRow> resultData = new LinkedHashSet<>();
@@ -121,7 +118,7 @@ public class DistinctQueryResult implements QueryResult {
     }
     
     @Override
-    public boolean next() {
+    public final boolean next() {
         if (resultData.hasNext()) {
             currentRow = resultData.next();
             return true;

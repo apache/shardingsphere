@@ -20,6 +20,7 @@ package io.shardingsphere.core.merger.dql.groupby;
 import com.google.common.base.Optional;
 import com.google.common.collect.Lists;
 import io.shardingsphere.core.constant.AggregationType;
+import io.shardingsphere.core.constant.DatabaseType;
 import io.shardingsphere.core.constant.OrderDirection;
 import io.shardingsphere.core.merger.MergedResult;
 import io.shardingsphere.core.merger.QueryResult;
@@ -94,14 +95,14 @@ public final class GroupByMemoryMergedResultTest {
     
     @Test
     public void assertNextForResultSetsAllEmpty() throws SQLException {
-        mergeEngine = new DQLMergeEngine(queryResults, selectStatement);
+        mergeEngine = new DQLMergeEngine(DatabaseType.MySQL, selectStatement, queryResults);
         MergedResult actual = mergeEngine.merge();
         assertFalse(actual.next());
     }
     
     @Test
     public void assertNextForSomeResultSetsEmpty() throws SQLException {
-        mergeEngine = new DQLMergeEngine(queryResults, selectStatement);
+        mergeEngine = new DQLMergeEngine(DatabaseType.MySQL, selectStatement, queryResults);
         when(resultSets.get(0).next()).thenReturn(true, false);
         when(resultSets.get(0).getObject(1)).thenReturn(20);
         when(resultSets.get(0).getObject(2)).thenReturn(0);

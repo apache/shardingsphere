@@ -96,7 +96,7 @@ public final class ParsingSQLRouter implements ShardingRouter {
         if (generatedKey.isPresent()) {
             setGeneratedKeys(result, generatedKey.get());
         }
-        if (sqlStatement instanceof SelectStatement && !sqlStatement.getTables().isEmpty() && !((SelectStatement) sqlStatement).getSubQueryStatements().isEmpty()) {
+        if (sqlStatement instanceof SelectStatement && !sqlStatement.getTables().isEmpty() && !((SelectStatement) sqlStatement).getSubQueryConditions().isEmpty()) {
             mergeShardingValueForSubQuery(sqlStatement.getConditions(), shardingConditions);
         }
         RoutingResult routingResult = RoutingEngineFactory.newInstance(shardingRule, shardingMetaData.getDataSource(), sqlStatement, shardingConditions).route();
@@ -104,7 +104,7 @@ public final class ParsingSQLRouter implements ShardingRouter {
         if (sqlStatement instanceof SelectStatement && null != ((SelectStatement) sqlStatement).getLimit()) {
             processLimit(parameters, (SelectStatement) sqlStatement);
         }
-        SQLBuilder sqlBuilder = rewriteEngine.rewrite(!routingResult.isSingleRouting());
+        SQLBuilder sqlBuilder = rewriteEngine.rewrite(routingResult.isSingleRouting());
         for (TableUnit each : routingResult.getTableUnits().getTableUnits()) {
             result.getRouteUnits().add(new RouteUnit(each.getDataSourceName(), rewriteEngine.generateSQL(each, sqlBuilder, shardingMetaData.getDataSource())));
         }
@@ -221,6 +221,6 @@ public final class ParsingSQLRouter implements ShardingRouter {
     
     private void processLimit(final List<Object> parameters, final SelectStatement selectStatement) {
         boolean isNeedFetchAll = (!selectStatement.getGroupByItems().isEmpty() || !selectStatement.getAggregationSelectItems().isEmpty()) && !selectStatement.isSameGroupByAndOrderByItems();
-        selectStatement.getLimit().processParameters(parameters, isNeedFetchAll);
+        selectStatement.getLimit().processParameters(parameters, isNeedFetchAll, databaseType);
     }
 }

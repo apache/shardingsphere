@@ -17,16 +17,8 @@
 
 package io.shardingsphere.core.routing.type.standard;
 
-import java.util.ArrayList;
-import java.util.Collection;
-import java.util.Collections;
-import java.util.LinkedHashSet;
-import java.util.LinkedList;
-import java.util.List;
-
 import com.google.common.base.Optional;
 import com.google.common.base.Preconditions;
-
 import io.shardingsphere.api.algorithm.sharding.ShardingValue;
 import io.shardingsphere.core.hint.HintManagerHolder;
 import io.shardingsphere.core.optimizer.condition.ShardingCondition;
@@ -38,10 +30,18 @@ import io.shardingsphere.core.routing.type.RoutingEngine;
 import io.shardingsphere.core.routing.type.RoutingResult;
 import io.shardingsphere.core.routing.type.RoutingTable;
 import io.shardingsphere.core.routing.type.TableUnit;
+import io.shardingsphere.core.rule.BindingTableRule;
 import io.shardingsphere.core.rule.DataNode;
 import io.shardingsphere.core.rule.ShardingRule;
 import io.shardingsphere.core.rule.TableRule;
 import lombok.RequiredArgsConstructor;
+
+import java.util.ArrayList;
+import java.util.Collection;
+import java.util.Collections;
+import java.util.LinkedHashSet;
+import java.util.LinkedList;
+import java.util.List;
 
 /**
  * Standard routing engine.
@@ -162,7 +162,9 @@ public final class StandardRoutingEngine implements RoutingEngine {
     private List<ShardingValue> getShardingValuesFromShardingConditions(final Collection<String> shardingColumns, final ShardingCondition shardingCondition) {
         List<ShardingValue> result = new ArrayList<>(shardingColumns.size());
         for (ShardingValue each : shardingCondition.getShardingValues()) {
-            if (logicTableName.equals(each.getLogicTableName()) && shardingColumns.contains(each.getColumnName())) {
+            Optional<BindingTableRule> bindingTableRule = shardingRule.findBindingTableRule(logicTableName);
+            if ((logicTableName.equals(each.getLogicTableName()) || bindingTableRule.isPresent() && bindingTableRule.get().hasLogicTable(logicTableName)) 
+                    && shardingColumns.contains(each.getColumnName())) {
                 result.add(each);
             }
         }

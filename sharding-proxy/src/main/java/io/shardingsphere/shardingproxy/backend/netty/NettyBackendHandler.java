@@ -199,7 +199,8 @@ public final class NettyBackendHandler extends AbstractBackendHandler {
     
     private CommandResponsePackets mergeDQLorDAL(final SQLStatement sqlStatement, final List<CommandResponsePackets> packets, final List<QueryResult> queryResults) {
         try {
-            mergedResult = MergeEngineFactory.newInstance(((ShardingSchema) logicSchema).getShardingRule(), queryResults, sqlStatement, logicSchema.getMetaData().getTable()).merge();
+            mergedResult = MergeEngineFactory.newInstance(
+                    DatabaseType.MySQL, ((ShardingSchema) logicSchema).getShardingRule(), sqlStatement, logicSchema.getMetaData().getTable(), queryResults).merge();
         } catch (final SQLException ex) {
             return new CommandResponsePackets(new ErrPacket(1, ex));
         }
