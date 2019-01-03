@@ -7,8 +7,8 @@ import locale from 'element-ui/lib/locale/lang/en'
 import VueI18n from 'vue-i18n'
 import Language from './lang/index'
 import 'normalize.css/normalize.css'
-import '@/styles/index.scss'
-import '@/icons'
+import '@/assets/styles/index.scss'
+import '@/assets/icons'
 
 Vue.config.productionTip = false
 Vue.use(ElementUI, { locale })

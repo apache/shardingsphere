@@ -13,8 +13,8 @@
           :width="item.width"/>
         <el-table-column :label="$t('index.table.operate')" fixed="right" width="140">
           <template slot-scope="scope">
-            <el-button type="text" size="small" @click="handleConnect(scope.row)">{{ scope.row.activated ? $t("common.connected") : $t("common.connection") }}</el-button>
-            <el-button type="text" size="small" @click="handlerDel(scope.row)">{{ $t("common.del") }}</el-button>
+            <el-button :disabled="scope.row.activated" type="primary" icon="icon-link iconfont" size="small" @click="handleConnect(scope.row)"/>
+            <el-button size="small" type="danger" icon="el-icon-delete" @click="handlerDel(scope.row)"/>
           </template>
         </el-table-column>
       </el-table>
