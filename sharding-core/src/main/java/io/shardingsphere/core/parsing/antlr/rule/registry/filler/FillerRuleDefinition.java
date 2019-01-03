@@ -17,7 +17,6 @@
 
 package io.shardingsphere.core.parsing.antlr.rule.registry.filler;
 
-import com.google.common.base.Joiner;
 import io.shardingsphere.core.parsing.antlr.filler.SQLStatementFiller;
 import io.shardingsphere.core.parsing.antlr.rule.jaxb.entity.filler.FillerRuleDefinitionEntity;
 import io.shardingsphere.core.parsing.antlr.rule.jaxb.entity.filler.FillerRuleEntity;
@@ -47,12 +46,7 @@ public final class FillerRuleDefinition {
     @SneakyThrows
     public void init(final FillerRuleDefinitionEntity fillerRuleDefinitionEntity) {
         for (FillerRuleEntity each : fillerRuleDefinitionEntity.getRules()) {
-            Class<? extends SQLSegment> sqlSegmentClass = getClass(fillerRuleDefinitionEntity.getSqlSegmentBasePackage(), each.getSqlSegmentClass());
-            rules.put(sqlSegmentClass, (SQLStatementFiller) getClass(fillerRuleDefinitionEntity.getFillerBasePackage(), each.getFillerClass()).newInstance());
+            rules.put((Class<? extends SQLSegment>) Class.forName(each.getSqlSegmentClass()), (SQLStatementFiller) Class.forName(each.getFillerClass()).newInstance());
         }
-    }
-    
-    private Class getClass(final String basePackage, final String className) throws ClassNotFoundException {
-        return Class.forName(Joiner.on('.').join(basePackage, className));
     }
 }

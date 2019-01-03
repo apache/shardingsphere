@@ -20,6 +20,7 @@ package io.shardingsphere.core.parsing.antlr.extractor.impl;
 import com.google.common.base.Optional;
 import com.google.common.base.Preconditions;
 import io.shardingsphere.core.parsing.antlr.extractor.OptionalSQLSegmentExtractor;
+import io.shardingsphere.core.parsing.antlr.extractor.impl.dql.SubqueryExtractor;
 import io.shardingsphere.core.parsing.antlr.extractor.util.ExtractorUtils;
 import io.shardingsphere.core.parsing.antlr.extractor.util.RuleName;
 import io.shardingsphere.core.parsing.antlr.sql.segment.column.ColumnSegment;

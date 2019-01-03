@@ -18,6 +18,7 @@
 package io.shardingsphere.core.merger.dql.orderby;
 
 import com.google.common.collect.Lists;
+import io.shardingsphere.core.constant.DatabaseType;
 import io.shardingsphere.core.constant.OrderDirection;
 import io.shardingsphere.core.merger.MergedResult;
 import io.shardingsphere.core.merger.QueryResult;
@@ -61,14 +62,14 @@ public final class OrderByStreamMergedResultTest {
     
     @Test
     public void assertNextForResultSetsAllEmpty() throws SQLException {
-        mergeEngine = new DQLMergeEngine(queryResults, selectStatement);
+        mergeEngine = new DQLMergeEngine(DatabaseType.MySQL, selectStatement, queryResults);
         MergedResult actual = mergeEngine.merge();
         assertFalse(actual.next());
     }
     
     @Test
     public void assertNextForSomeResultSetsEmpty() throws SQLException {
-        mergeEngine = new DQLMergeEngine(queryResults, selectStatement);
+        mergeEngine = new DQLMergeEngine(DatabaseType.MySQL, selectStatement, queryResults);
         when(queryResults.get(0).next()).thenReturn(true, false);
         when(queryResults.get(0).getValue(1, Object.class)).thenReturn("2");
         when(queryResults.get(2).next()).thenReturn(true, true, false);
@@ -85,7 +86,7 @@ public final class OrderByStreamMergedResultTest {
     
     @Test
     public void assertNextForMix() throws SQLException {
-        mergeEngine = new DQLMergeEngine(queryResults, selectStatement);
+        mergeEngine = new DQLMergeEngine(DatabaseType.MySQL, selectStatement, queryResults);
         when(queryResults.get(0).next()).thenReturn(true, false);
         when(queryResults.get(0).getValue(1, Object.class)).thenReturn("2");
         when(queryResults.get(1).next()).thenReturn(true, true, true, false);

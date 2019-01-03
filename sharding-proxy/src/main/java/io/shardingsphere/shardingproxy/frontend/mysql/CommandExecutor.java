@@ -105,6 +105,7 @@ public final class CommandExecutor implements Runnable {
         while (queryCommandPacket.next()) {
             count++;
             while (!context.channel().isWritable() && context.channel().isActive()) {
+                context.flush();
                 synchronized (frontendHandler) {
                     try {
                         frontendHandler.wait();
