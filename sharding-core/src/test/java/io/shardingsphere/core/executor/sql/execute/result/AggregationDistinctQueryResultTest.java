@@ -111,7 +111,7 @@ public class AggregationDistinctQueryResultTest {
     }
     
     @Test
-    public void testGetCalendarValue1() {
+    public void testGetCalendarValueByColumnLabel() {
         aggregationDistinctQueryResult.next();
         assertThat(aggregationDistinctQueryResult.getValue("order_id", Object.class), is((Object) 10));
     }
