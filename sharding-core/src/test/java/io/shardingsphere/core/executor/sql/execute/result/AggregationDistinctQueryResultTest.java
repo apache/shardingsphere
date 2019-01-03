@@ -156,7 +156,9 @@ public class AggregationDistinctQueryResultTest {
     }
     
     @Test
-    public void testGetColumnLabel() {
+    @SneakyThrows
+    public void assertGetColumnLabel() {
+        assertThat(aggregationDistinctQueryResult.getColumnLabel(3), is("a"));
     }
     
     @Test
