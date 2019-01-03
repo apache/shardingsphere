@@ -103,7 +103,7 @@ public class SagaExecutionComponentHolder {
         return result;
     }
     
-    private static final class EmptyPersistentStore implements PersistentStore {
+    private final class EmptyPersistentStore implements PersistentStore {
         
         @Override
         public Map<String, List<EventEnvelope>> findPendingSagaEvents() {
