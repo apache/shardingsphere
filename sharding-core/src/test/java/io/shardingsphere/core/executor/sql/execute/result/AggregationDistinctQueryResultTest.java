@@ -118,14 +118,15 @@ public class AggregationDistinctQueryResultTest {
     }
     
     @Test
-    public void assertGetInputStream() {
+    public void assertGetInputStreamByColumnIndex() {
         aggregationDistinctQueryResult.next();
         assertThat(aggregationDistinctQueryResult.getCalendarValue(1, Object.class, Calendar.getInstance()), is((Object) 10));
-    
     }
     
     @Test
     public void testGetInputStream1() {
+        aggregationDistinctQueryResult.next();
+        assertThat(aggregationDistinctQueryResult.getCalendarValue("order_id", Object.class, Calendar.getInstance()), is((Object) 10));
     }
     
     @Test
