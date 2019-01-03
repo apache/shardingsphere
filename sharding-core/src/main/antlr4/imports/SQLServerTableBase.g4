@@ -7,24 +7,24 @@ columnDefinition
     ;
     
 columnDefinitionOption
-    : FILESTREAM  
+    : FILESTREAM
     | COLLATE collationName
-    | SPARSE  
-    | MASKED WITH LP_  FUNCTION EQ_ STRING RP_
+    | SPARSE
+    | MASKED WITH LP_ FUNCTION EQ_ STRING RP_
     | (CONSTRAINT constraintName)? DEFAULT expr
-    | IDENTITY (LP_  NUMBER COMMA NUMBER RP_ )?
+    | IDENTITY (LP_ NUMBER COMMA NUMBER RP_ )?
     | NOT FOR REPLICATION
     | GENERATED ALWAYS AS ROW (START | END) HIDDEN_?
     | NOT? NULL
     | ROWGUIDCOL 
     | ENCRYPTED WITH 
       LP_ COLUMN_ENCRYPTION_KEY EQ_ keyName COMMA ENCRYPTION_TYPE EQ_ ( DETERMINISTIC | RANDOMIZED )
-      COMMA  ALGORITHM EQ_ STRING RP_ 
+      COMMA ALGORITHM EQ_ STRING RP_ 
     | columnConstraint (COMMA columnConstraint)*
     | columnIndex
     ;
     
-columnConstraint  
+columnConstraint
     : (CONSTRAINT constraintName)? (primaryKeyConstraint | columnForeignKeyConstraint | checkConstraint)
     ;
     
@@ -37,7 +37,7 @@ diskTablePrimaryKeyConstraintOption
     ;
     
 columnForeignKeyConstraint
-    : (FOREIGN KEY)? REFERENCES tableName LP_  columnName RP_ foreignKeyOnAction*
+    : (FOREIGN KEY)? REFERENCES tableName LP_ columnName RP_ foreignKeyOnAction*
     ;
     
 foreignKeyOnAction
@@ -45,7 +45,7 @@ foreignKeyOnAction
     ;
     
 foreignKeyOn
-    : NO ACTION  | CASCADE | SET (NULL | DEFAULT)
+    : NO ACTION | CASCADE | SET (NULL | DEFAULT)
     ;
     
 memoryTablePrimaryKeyConstraintOption
@@ -61,7 +61,7 @@ withBucket
     ;
     
 primaryKeyWithClause
-    : WITH (FILLFACTOR EQ_ NUMBER | LP_  indexOption (COMMA indexOption)* RP_)
+    : WITH (FILLFACTOR EQ_ NUMBER | LP_ indexOption (COMMA indexOption)* RP_)
     ;
     
 primaryKeyOnClause
@@ -69,7 +69,7 @@ primaryKeyOnClause
     ;
     
 onSchemaColumn
-    : ON schemaName LP_  columnName RP_
+    : ON schemaName LP_ columnName RP_
     ;
     
 onFileGroup
@@ -81,14 +81,14 @@ onString
     ;
     
 checkConstraint:
-    CHECK(NOT FOR REPLICATION)? LP_  expr RP_  
+    CHECK(NOT FOR REPLICATION)? LP_ expr RP_
     ;
     
 columnIndex
-    : INDEX indexName ( CLUSTERED | NONCLUSTERED )?  
-    (WITH LP_  indexOption (COMMA indexOption)*  RP_)?  
-    indexOnClause?   
-    (FILESTREAM_ON (fileGroup | schemaName | STRING))?  
+    : INDEX indexName ( CLUSTERED | NONCLUSTERED )?
+    (WITH LP_ indexOption (COMMA indexOption)* RP_)?
+    indexOnClause?
+    (FILESTREAM_ON (fileGroup | schemaName | STRING))?
     ;
     
 indexOnClause
@@ -111,11 +111,11 @@ primaryKeyUnique
     : primaryKey | UNIQUE
     ;
     
-diskTablePrimaryConstraintOption    
+diskTablePrimaryConstraintOption
     : (CLUSTERED | NONCLUSTERED)? columnList primaryKeyWithClause? primaryKeyOnClause?
     ;
     
-memoryTablePrimaryConstraintOption    
+memoryTablePrimaryConstraintOption
     : NONCLUSTERED (columnList | hashWithBucket)
     ;
     
@@ -123,10 +123,10 @@ tableForeignKeyConstraint
     : (FOREIGN KEY)? columnList REFERENCES tableName columnList foreignKeyOnAction*
     ;
     
-computedColumnDefinition  
-    : columnName AS expr (PERSISTED( NOT NULL)?)? columnConstraint?   
+computedColumnDefinition
+    : columnName AS expr (PERSISTED( NOT NULL)?)? columnConstraint?
     ;
     
 columnSetDefinition 
-    : columnSetName ID COLUMN_SET FOR ALL_SPARSE_COLUMNS  
+    : columnSetName ID COLUMN_SET FOR ALL_SPARSE_COLUMNS
     ;

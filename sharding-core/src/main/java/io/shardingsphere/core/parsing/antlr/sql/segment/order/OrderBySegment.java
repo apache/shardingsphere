@@ -17,19 +17,18 @@
 
 package io.shardingsphere.core.parsing.antlr.sql.segment.order;
 
+import io.shardingsphere.core.parsing.antlr.sql.segment.SQLSegment;
+import io.shardingsphere.core.parsing.antlr.sql.segment.order.item.OrderByItemSegment;
+import lombok.Getter;
+
 import java.util.Collection;
 import java.util.LinkedList;
-
-import io.shardingsphere.core.parsing.antlr.sql.segment.SQLSegment;
-import lombok.Getter;
-import lombok.RequiredArgsConstructor;
 
 /**
  * Order by segment.
  * 
  * @author duhongjun
  */
-@RequiredArgsConstructor
 @Getter
 public final class OrderBySegment implements SQLSegment {
     

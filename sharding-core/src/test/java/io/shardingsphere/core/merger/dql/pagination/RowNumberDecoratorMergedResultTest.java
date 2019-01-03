@@ -66,19 +66,19 @@ public final class RowNumberDecoratorMergedResultTest {
     
     @Test
     public void assertNextForSkipAll() throws SQLException {
-        Limit limit = new Limit(DatabaseType.Oracle);
+        Limit limit = new Limit();
         limit.setOffset(new LimitValue(Integer.MAX_VALUE, -1, true));
         selectStatement.setLimit(limit);
-        mergeEngine = new DQLMergeEngine(queryResults, selectStatement);
+        mergeEngine = new DQLMergeEngine(DatabaseType.Oracle, selectStatement, queryResults);
         MergedResult actual = mergeEngine.merge();
         assertFalse(actual.next());
     }
     
     @Test
     public void assertNextWithoutOffsetWithoutRowCount() throws SQLException {
-        Limit limit = new Limit(DatabaseType.Oracle);
+        Limit limit = new Limit();
         selectStatement.setLimit(limit);
-        mergeEngine = new DQLMergeEngine(queryResults, selectStatement);
+        mergeEngine = new DQLMergeEngine(DatabaseType.Oracle, selectStatement, queryResults);
         MergedResult actual = mergeEngine.merge();
         for (int i = 0; i < 8; i++) {
             assertTrue(actual.next());
@@ -88,11 +88,11 @@ public final class RowNumberDecoratorMergedResultTest {
     
     @Test
     public void assertNextForRowCountBoundOpenedFalse() throws SQLException {
-        Limit limit = new Limit(DatabaseType.Oracle);
+        Limit limit = new Limit();
         limit.setOffset(new LimitValue(2, -1, true));
         limit.setRowCount(new LimitValue(4, -1, false));
         selectStatement.setLimit(limit);
-        mergeEngine = new DQLMergeEngine(queryResults, selectStatement);
+        mergeEngine = new DQLMergeEngine(DatabaseType.Oracle, selectStatement, queryResults);
         MergedResult actual = mergeEngine.merge();
         assertTrue(actual.next());
         assertTrue(actual.next());
@@ -101,11 +101,11 @@ public final class RowNumberDecoratorMergedResultTest {
     
     @Test
     public void assertNextForRowCountBoundOpenedTrue() throws SQLException {
-        Limit limit = new Limit(DatabaseType.Oracle);
+        Limit limit = new Limit();
         limit.setOffset(new LimitValue(2, -1, true));
         limit.setRowCount(new LimitValue(4, -1, true));
         selectStatement.setLimit(limit);
-        mergeEngine = new DQLMergeEngine(queryResults, selectStatement);
+        mergeEngine = new DQLMergeEngine(DatabaseType.Oracle, selectStatement, queryResults);
         MergedResult actual = mergeEngine.merge();
         assertTrue(actual.next());
         assertTrue(actual.next());

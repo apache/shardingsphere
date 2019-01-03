@@ -23,7 +23,8 @@ import io.shardingsphere.core.constant.AggregationType;
 import io.shardingsphere.core.metadata.table.ShardingTableMetaData;
 import io.shardingsphere.core.parsing.antlr.optimizer.SQLStatementOptimizer;
 import io.shardingsphere.core.parsing.parser.constant.DerivedColumn;
-import io.shardingsphere.core.parsing.parser.context.OrderItem;
+import io.shardingsphere.core.parsing.parser.context.condition.OrCondition;
+import io.shardingsphere.core.parsing.parser.context.orderby.OrderItem;
 import io.shardingsphere.core.parsing.parser.context.selectitem.AggregationDistinctSelectItem;
 import io.shardingsphere.core.parsing.parser.context.selectitem.AggregationSelectItem;
 import io.shardingsphere.core.parsing.parser.context.selectitem.DistinctSelectItem;
@@ -51,10 +52,10 @@ public final class MySQLSelectOptimizer implements SQLStatementOptimizer {
         postExtractInternal(sqlStatement, shardingTableMetaData);
     }
     
-    protected void postExtractInternal(final SQLStatement sqlStatement, final ShardingTableMetaData shardingTableMetaData) {
+    private void postExtractInternal(final SQLStatement sqlStatement, final ShardingTableMetaData shardingTableMetaData) {
         SelectStatement selectStatement = (SelectStatement) sqlStatement;
-        for (SelectStatement each : selectStatement.getSubQueryStatements()) {
-            selectStatement.getConditions().getOrCondition().getAndConditions().addAll(each.getConditions().getOrCondition().getAndConditions());
+        for (OrCondition each : selectStatement.getSubQueryConditions()) {
+            selectStatement.getConditions().getOrCondition().getAndConditions().addAll(each.getAndConditions());
         }
     }
     
@@ -103,7 +104,7 @@ public final class MySQLSelectOptimizer implements SQLStatementOptimizer {
         for (OrderItem each : orderItems) {
             if (!containsItem(selectStatement, each, shardingTableMetaData)) {
                 String alias = DerivedColumn.ORDER_BY_ALIAS.getDerivedColumnAlias(derivedColumnOffset++);
-                each.setAlias(Optional.of(alias));
+                each.setAlias(alias);
                 itemsToken.getItems().add(each.getQualifiedName().get() + " AS " + alias + " ");
             }
         }
@@ -114,7 +115,7 @@ public final class MySQLSelectOptimizer implements SQLStatementOptimizer {
         for (OrderItem each : orderItems) {
             if (!containsItem(selectStatement, each, shardingTableMetaData)) {
                 String alias = DerivedColumn.GROUP_BY_ALIAS.getDerivedColumnAlias(derivedColumnOffset++);
-                each.setAlias(Optional.of(alias));
+                each.setAlias(alias);
                 itemsToken.getItems().add(each.getQualifiedName().get() + " AS " + alias + " ");
             }
         }

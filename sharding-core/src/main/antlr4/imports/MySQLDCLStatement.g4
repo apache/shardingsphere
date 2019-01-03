@@ -202,7 +202,7 @@ dropUser
 renameUser
     : RENAME USER user TO user (user TO user)*
     ;
-
+    
 createRole
     : CREATE ROLE (IF NOT EXISTS)? roles
     ;

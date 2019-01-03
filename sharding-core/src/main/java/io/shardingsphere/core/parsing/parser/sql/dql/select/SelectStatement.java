@@ -19,8 +19,9 @@ package io.shardingsphere.core.parsing.parser.sql.dql.select;
 
 import com.google.common.base.Optional;
 import com.google.common.base.Preconditions;
-import io.shardingsphere.core.parsing.parser.context.OrderItem;
+import io.shardingsphere.core.parsing.parser.context.condition.OrCondition;
 import io.shardingsphere.core.parsing.parser.context.limit.Limit;
+import io.shardingsphere.core.parsing.parser.context.orderby.OrderItem;
 import io.shardingsphere.core.parsing.parser.context.selectitem.AggregationDistinctSelectItem;
 import io.shardingsphere.core.parsing.parser.context.selectitem.AggregationSelectItem;
 import io.shardingsphere.core.parsing.parser.context.selectitem.DistinctSelectItem;
@@ -74,6 +75,8 @@ public final class SelectStatement extends DQLStatement {
     
     private Collection<SelectStatement> subQueryStatements = new LinkedList<>();
     
+    private Collection<OrCondition> subQueryConditions = new LinkedList<>();
+    
     /**
      * Get alias.
      * 
@@ -86,7 +89,7 @@ public final class SelectStatement extends DQLStatement {
         }
         String rawName = SQLUtil.getExactlyValue(name);
         for (SelectItem each : items) {
-            if (rawName.equalsIgnoreCase(SQLUtil.getExactlyValue(each.getExpression()))) {
+            if (SQLUtil.getExactlyExpression(rawName).equalsIgnoreCase(SQLUtil.getExactlyExpression(SQLUtil.getExactlyValue(each.getExpression())))) {
                 return each.getAlias();
             }
             if (rawName.equalsIgnoreCase(each.getAlias().orNull())) {

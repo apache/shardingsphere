@@ -18,16 +18,18 @@
 package io.shardingsphere.core.parsing.antlr.extractor.impl;
 
 import com.google.common.base.Optional;
+import com.google.common.base.Preconditions;
 import io.shardingsphere.core.parsing.antlr.extractor.OptionalSQLSegmentExtractor;
+import io.shardingsphere.core.parsing.antlr.extractor.impl.dql.SubqueryExtractor;
 import io.shardingsphere.core.parsing.antlr.extractor.util.ExtractorUtils;
 import io.shardingsphere.core.parsing.antlr.extractor.util.RuleName;
 import io.shardingsphere.core.parsing.antlr.sql.segment.column.ColumnSegment;
 import io.shardingsphere.core.parsing.antlr.sql.segment.expr.CommonExpressionSegment;
 import io.shardingsphere.core.parsing.antlr.sql.segment.expr.ExpressionSegment;
+import io.shardingsphere.core.parsing.antlr.sql.segment.expr.ExpressionWithAliasSegment;
 import io.shardingsphere.core.parsing.antlr.sql.segment.expr.FunctionExpressionSegment;
 import io.shardingsphere.core.parsing.antlr.sql.segment.expr.PropertyExpressionSegment;
 import io.shardingsphere.core.parsing.antlr.sql.segment.expr.StarExpressionSegment;
-import io.shardingsphere.core.parsing.antlr.sql.segment.expr.SubquerySegment;
 import io.shardingsphere.core.parsing.lexer.token.Symbol;
 import io.shardingsphere.core.util.SQLUtil;
 import org.antlr.v4.runtime.ParserRuleContext;
@@ -43,53 +45,48 @@ import java.util.HashMap;
  */
 public final class ExpressionExtractor implements OptionalSQLSegmentExtractor {
     
+    private final SubqueryExtractor subqueryExtractor = new SubqueryExtractor();
+    
     @Override
-    public Optional<ExpressionSegment> extract(final ParserRuleContext expressionNode) {
+    public Optional<? extends ExpressionSegment> extract(final ParserRuleContext expressionNode) {
         String firstChildText = expressionNode.getText();
         if (firstChildText.endsWith(Symbol.STAR.getLiterals())) {
-            int position = firstChildText.indexOf(Symbol.DOT.getLiterals());
-            Optional<String> owner = Optional.absent();
-            if (0 < position) {
-                owner = Optional.of(SQLUtil.getExactlyValue(firstChildText.substring(0, position)));
-            }
-            return Optional.<ExpressionSegment>of(new StarExpressionSegment(expressionNode.getStart().getStartIndex(), owner));
+            return Optional.of(getStarExpressionSegment(expressionNode, firstChildText));
         }
         Optional<ParserRuleContext> subqueryNode = ExtractorUtils.findFirstChildNode(expressionNode, RuleName.SUBQUERY);
-        if (subqueryNode.isPresent()) {
-            Optional<SubquerySegment> subquerySegment = new SubqueryExtractor().extract(subqueryNode.get());
-            if (subquerySegment.isPresent()) {
-                return Optional.<ExpressionSegment>of(subquerySegment.get());
-            }
-            return Optional.absent();
-        }
-        return fillForPropertyOrFunction(expressionNode);
+        return subqueryNode.isPresent() ? subqueryExtractor.extract(subqueryNode.get()) : Optional.of(getExpressionWithAliasSegment(expressionNode));
     }
     
-    private Optional<ExpressionSegment> fillForPropertyOrFunction(final ParserRuleContext node) {
-        Optional<ParserRuleContext> aliasNode = ExtractorUtils.findFirstChildNode(node, RuleName.ALIAS);
-        Optional<String> alias = aliasNode.isPresent() ? Optional.of(SQLUtil.getExactlyValue(aliasNode.get().getText())) : Optional.<String>absent();
-        Optional<ParserRuleContext> functionCall = ExtractorUtils.findFirstChildNode(node, RuleName.FUNCTION_CALL);
-        if (functionCall.isPresent()) {
-            String name = functionCall.get().getChild(0).getText();
-            int startIndex = ((TerminalNode) functionCall.get().getChild(1)).getSymbol().getStartIndex();
-            boolean hasDistinct = hasDistinct(node);
-            int distinctColumnNameStartPosition = hasDistinct ? calculateDistinctColumnNamePosition(functionCall.get()) : -1;
-            FunctionExpressionSegment functionExpressionSegment = new FunctionExpressionSegment(name, functionCall.get().getStart().getStartIndex(),
-                    startIndex, functionCall.get().getStop().getStopIndex(), hasDistinct, distinctColumnNameStartPosition);
-            functionExpressionSegment.setAlias(alias);
-            return Optional.<ExpressionSegment>of(functionExpressionSegment);
+    private ExpressionSegment getStarExpressionSegment(final ParserRuleContext expressionNode, final String text) {
+        StarExpressionSegment result = new StarExpressionSegment(expressionNode.getStart().getStartIndex());
+        if (text.contains(Symbol.DOT.getLiterals())) {
+            result.setOwner(SQLUtil.getExactlyValue(text.substring(0, text.indexOf(Symbol.DOT.getLiterals()))));
         }
-        if (RuleName.COLUMN_NAME.getName().equals(node.getChild(0).getClass().getSimpleName())) {
-            ParserRuleContext columnNode = (ParserRuleContext) node.getChild(0);
-            Optional<ColumnSegment> columnSegment = new ColumnSegmentExtractor(new HashMap<String, String>()).extract(columnNode);
-            return Optional.<ExpressionSegment>of(new PropertyExpressionSegment(columnSegment.get().getOwner(), columnSegment.get().getName(),
-                    columnNode.getStart().getStartIndex(), columnNode.getStop().getStopIndex(), alias));
-        }
-        return Optional.<ExpressionSegment>of(new CommonExpressionSegment(node.getStart().getStartIndex(), node.getStop().getStopIndex(), alias));
+        return result;
     }
     
-    private boolean hasDistinct(final ParserRuleContext node) {
-        return ExtractorUtils.findFirstChildNode(node, RuleName.DISTINCT).isPresent();
+    private ExpressionWithAliasSegment getExpressionWithAliasSegment(final ParserRuleContext expressionNode) {
+        ExpressionWithAliasSegment result;
+        Optional<ParserRuleContext> functionNode = ExtractorUtils.findFirstChildNode(expressionNode, RuleName.FUNCTION_CALL);
+        if (functionNode.isPresent()) {
+            result = getFunctionExpressionSegment(expressionNode, functionNode.get());
+        } else if (RuleName.COLUMN_NAME.getName().equals(expressionNode.getChild(0).getClass().getSimpleName())) {
+            result = getPropertyExpressionSegment(expressionNode);
+        } else {
+            result = new CommonExpressionSegment(expressionNode.getStart().getStartIndex(), expressionNode.getStop().getStopIndex());
+        }
+        Optional<String> alias = getAlias(expressionNode);
+        if (alias.isPresent()) {
+            result.setAlias(alias.get());
+        }
+        return result;
+    }
+    
+    private ExpressionWithAliasSegment getFunctionExpressionSegment(final ParserRuleContext expressionNode, final ParserRuleContext functionNode) {
+        String functionName = functionNode.getChild(0).getText();
+        int startIndex = ((TerminalNode) functionNode.getChild(1)).getSymbol().getStartIndex();
+        int distinctColumnNameStartPosition = ExtractorUtils.findFirstChildNode(expressionNode, RuleName.DISTINCT).isPresent() ? calculateDistinctColumnNamePosition(functionNode) : -1;
+        return new FunctionExpressionSegment(functionName, functionNode.getStart().getStartIndex(), startIndex, functionNode.getStop().getStopIndex(), distinctColumnNameStartPosition);
     }
     
     private int calculateDistinctColumnNamePosition(final ParserRuleContext functionNode) {
@@ -101,5 +98,17 @@ public final class ExpressionExtractor implements OptionalSQLSegmentExtractor {
             return ((ParserRuleContext) distinctItemNode).getStart().getStartIndex();
         }
         return -1;
+    }
+    
+    private ExpressionWithAliasSegment getPropertyExpressionSegment(final ParserRuleContext expressionNode) {
+        ParserRuleContext columnNode = (ParserRuleContext) expressionNode.getChild(0);
+        Optional<ColumnSegment> columnSegment = new ColumnSegmentExtractor(new HashMap<String, String>()).extract(columnNode);
+        Preconditions.checkState(columnSegment.isPresent());
+        return new PropertyExpressionSegment(columnSegment.get().getOwner(), columnSegment.get().getName(), columnNode.getStart().getStartIndex(), columnNode.getStop().getStopIndex());
+    }
+    
+    private Optional<String> getAlias(final ParserRuleContext expressionNode) {
+        Optional<ParserRuleContext> aliasNode = ExtractorUtils.findFirstChildNode(expressionNode, RuleName.ALIAS);
+        return aliasNode.isPresent() ? Optional.of(SQLUtil.getExactlyValue(aliasNode.get().getText())) : Optional.<String>absent();
     }
 }

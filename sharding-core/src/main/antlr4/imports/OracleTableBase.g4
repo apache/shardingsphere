@@ -64,12 +64,12 @@ initiallyClause:
     ;
     
 exceptionsClause
-    : EXCEPTIONS INTO  
+    : EXCEPTIONS INTO
     ;
     
 usingIndexClause
     : USING INDEX
-    (  indexName
+    (indexName
     | (LP_ createIndex RP_) 
     )?
     ;
@@ -96,7 +96,7 @@ outOfLineConstraint
     ;
     
 outOfLineRefConstraint
-    : SCOPE FOR LP_ lobItem RP_ IS  tableName
+    : SCOPE FOR LP_ lobItem RP_ IS tableName
     | REF LP_ lobItem RP_ WITH ROWID
     | (CONSTRAINT constraintName)? FOREIGN KEY lobItemList referencesClause constraintState*
     ;

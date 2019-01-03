@@ -3,7 +3,7 @@ grammar OracleCreateIndex;
 import OracleKeyword, Keyword, DataType, OracleBase, BaseRule, Symbol;
 
 createIndex
-    : CREATE ( UNIQUE | BITMAP)? INDEX  indexName
+    : CREATE ( UNIQUE | BITMAP)? INDEX indexName
     ON (tableIndexClause | bitmapJoinIndexClause)
     ;
     
@@ -34,7 +34,7 @@ domainIndexClause
     ;
     
 bitmapJoinIndexClause
-    : tableName LP_  columnSortClause( COMMA columnSortClause)* RP_ 
+    : tableName LP_ columnSortClause( COMMA columnSortClause)* RP_ 
     FROM tableAndAlias (COMMA tableAndAlias)*
     WHERE expr
     ;

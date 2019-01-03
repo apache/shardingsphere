@@ -228,8 +228,8 @@
             <table name="t_order_item" />
         </tables>
         <tokens>
-            <table-token begin-position="90" original-literals="`t_order_item`" />
-            <order-by-token placeholder-begin-position="177" literal-begin-position="183" />
+            <table-token begin-position="91" original-literals="`t_order_item`" />
+            <order-by-token placeholder-begin-position="178" literal-begin-position="184" />
         </tokens>
         <or-condition>
             <and-condition>
@@ -245,10 +245,10 @@
             </aggregation-select-items>
         </select-items>
         <group-by-columns>
-            <group-by-column name="date_format(creation_date, '%y-%m-%d')" order-direction="ASC" alias="creation_date" />
+            <group-by-column name="date_format(creation_date,'%y-%m-%d')" order-direction="ASC" alias="creation_date" />
         </group-by-columns>
         <order-by-columns>
-            <order-by-column name="date_format(creation_date, '%y-%m-%d')" order-direction="ASC" alias="creation_date" />
+            <order-by-column name="date_format(creation_date,'%y-%m-%d')" order-direction="ASC" alias="creation_date" />
         </order-by-columns>
     </parser-result>
     

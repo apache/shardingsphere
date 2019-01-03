@@ -83,7 +83,7 @@ public enum RuleName {
     
     TABLE_CONSTRAINT("TableConstraint"),
     
-    TABLE_REFERENCES("TableReference"),
+    TABLE_REFERENCES("TableReferences"),
     
     TABLE_REFERENCE("TableReference"),
     
@@ -95,7 +95,17 @@ public enum RuleName {
     
     ALIAS("Alias"),
     
+    QUESTION("Question"),
+    
+    NUMBER("Number"),
+    
+    STRING("String"),
+    
     EXPR("Expr"),
+    
+    SIMPLE_EXPR("SimpleExpr"),
+    
+    BIT_EXPR("BitExpr"),
     
     FROM_CLAUSE("FromClause"),
     
@@ -111,16 +121,6 @@ public enum RuleName {
     
     PREDICATE("Predicate"),
     
-    BITEXPR("BitExpr"),
-    
-    QUESTION("Question"),
-    
-    NUMBER("Number"),
-    
-    STRING("String"),
-    
-    SIMPLE_EXPR("SimpleExpr"),
-    
     LIMIT_CLAUSE("LimitClause"),
     
     RANGE_CLAUSE("RangeClause"),
@@ -128,8 +128,6 @@ public enum RuleName {
     SUBQUERY("Subquery"),
     
     SHOW_PARAM("ShowParam"),
-    
-    SET_AUTO_COMMIT("SetAutoCommit"),
     
     AUTO_COMMIT_VALUE("AutoCommitValue"),
     

@@ -19,7 +19,7 @@ package io.shardingsphere.core.merger.dql.orderby;
 
 import com.google.common.base.Preconditions;
 import io.shardingsphere.core.merger.QueryResult;
-import io.shardingsphere.core.parsing.parser.context.OrderItem;
+import io.shardingsphere.core.parsing.parser.context.orderby.OrderItem;
 import lombok.Getter;
 import lombok.RequiredArgsConstructor;
 

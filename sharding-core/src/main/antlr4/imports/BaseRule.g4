@@ -152,7 +152,7 @@ matchNone
     ;
     
 ids
-    : ID (COMMA  ID)*
+    : ID (COMMA ID)*
     ;
     
 idList
@@ -160,12 +160,12 @@ idList
     ;
     
 rangeClause
-    : rangeItem (COMMA  rangeItem)* | rangeItem OFFSET rangeItem
+    : rangeItem (COMMA rangeItem)* | rangeItem OFFSET rangeItem
     ;
     
 rangeItem
     : number | question
-    ;    
+    ;
     
 schemaNames
     : schemaName (COMMA schemaName)*
@@ -366,8 +366,8 @@ liter
     | LBE_ ID STRING RBE_
     | HEX_DIGIT
     | string
-    | ID STRING  collateClause?
-    | (DATE | TIME |TIMESTAMP) STRING
+    | ID STRING collateClause?
+    | (DATE | TIME | TIMESTAMP) STRING
     | ID? BIT_NUM collateClause?
     ;
     
@@ -396,5 +396,5 @@ orderByClause
     ;
     
 orderByItem
-    : (columnName | number |expr) (ASC|DESC)?
+    : (columnName | number | expr) (ASC | DESC)?
     ;

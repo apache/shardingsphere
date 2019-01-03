@@ -15,7 +15,7 @@ whereClause
     ;
     
 havingClause
-    : HAVING  expr
+    : HAVING expr
     ;
     
 orderByClause

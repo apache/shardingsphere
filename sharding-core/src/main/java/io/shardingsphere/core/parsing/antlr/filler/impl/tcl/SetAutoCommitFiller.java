@@ -21,8 +21,8 @@ import io.shardingsphere.core.metadata.table.ShardingTableMetaData;
 import io.shardingsphere.core.parsing.antlr.filler.SQLStatementFiller;
 import io.shardingsphere.core.parsing.antlr.sql.segment.SQLSegment;
 import io.shardingsphere.core.parsing.antlr.sql.segment.tcl.SetAutoCommitSegment;
+import io.shardingsphere.core.parsing.antlr.sql.statement.tcl.SetAutoCommitStatement;
 import io.shardingsphere.core.parsing.parser.sql.SQLStatement;
-import io.shardingsphere.core.parsing.parser.sql.tcl.set.autocommit.SetAutoCommitStatement;
 import io.shardingsphere.core.rule.ShardingRule;
 
 /**

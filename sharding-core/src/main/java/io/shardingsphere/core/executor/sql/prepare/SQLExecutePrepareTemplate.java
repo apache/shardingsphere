@@ -40,6 +40,7 @@ import java.util.Map.Entry;
  * @author zhaojun
  * @author zhangliang
  * @author panjuan
+ * @author maxiaoguang
  */
 @RequiredArgsConstructor
 public final class SQLExecutePrepareTemplate {
@@ -82,7 +83,7 @@ public final class SQLExecutePrepareTemplate {
     private List<ShardingExecuteGroup<StatementExecuteUnit>> getSQLExecuteGroups(
             final String dataSourceName, final List<SQLUnit> sqlUnits, final SQLExecutePrepareCallback callback) throws SQLException {
         List<ShardingExecuteGroup<StatementExecuteUnit>> result = new LinkedList<>();
-        int desiredPartitionSize = Math.max(sqlUnits.size() / maxConnectionsSizePerQuery, 1);
+        int desiredPartitionSize = Math.max(0 == sqlUnits.size() % maxConnectionsSizePerQuery ? sqlUnits.size() / maxConnectionsSizePerQuery : sqlUnits.size() / maxConnectionsSizePerQuery + 1, 1);
         List<List<SQLUnit>> sqlUnitPartitions = Lists.partition(sqlUnits, desiredPartitionSize);
         ConnectionMode connectionMode = maxConnectionsSizePerQuery < sqlUnits.size() ? ConnectionMode.CONNECTION_STRICTLY : ConnectionMode.MEMORY_STRICTLY;
         List<Connection> connections = callback.getConnections(connectionMode, dataSourceName, sqlUnitPartitions.size());

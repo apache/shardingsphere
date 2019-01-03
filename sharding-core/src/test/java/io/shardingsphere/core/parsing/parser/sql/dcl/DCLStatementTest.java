@@ -17,6 +17,7 @@
 
 package io.shardingsphere.core.parsing.parser.sql.dcl;
 
+import io.shardingsphere.core.parsing.antlr.sql.statement.dcl.DCLStatement;
 import io.shardingsphere.core.parsing.lexer.token.DefaultKeyword;
 import org.junit.Test;
 

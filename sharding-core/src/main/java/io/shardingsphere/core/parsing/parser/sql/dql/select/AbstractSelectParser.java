@@ -27,7 +27,7 @@ import io.shardingsphere.core.parsing.lexer.token.DefaultKeyword;
 import io.shardingsphere.core.parsing.lexer.token.Symbol;
 import io.shardingsphere.core.parsing.parser.clause.facade.AbstractSelectClauseParserFacade;
 import io.shardingsphere.core.parsing.parser.constant.DerivedColumn;
-import io.shardingsphere.core.parsing.parser.context.OrderItem;
+import io.shardingsphere.core.parsing.parser.context.orderby.OrderItem;
 import io.shardingsphere.core.parsing.parser.context.selectitem.AggregationSelectItem;
 import io.shardingsphere.core.parsing.parser.context.selectitem.DistinctSelectItem;
 import io.shardingsphere.core.parsing.parser.context.selectitem.SelectItem;
@@ -160,7 +160,7 @@ public abstract class AbstractSelectParser implements SQLParser {
         for (OrderItem each : orderItems) {
             if (!containsItem(selectStatement, each)) {
                 String alias = DerivedColumn.ORDER_BY_ALIAS.getDerivedColumnAlias(derivedColumnOffset++);
-                each.setAlias(Optional.of(alias));
+                each.setAlias(alias);
                 itemsToken.getItems().add(each.getQualifiedName().get() + " AS " + alias + " ");
             }
         }
@@ -171,7 +171,7 @@ public abstract class AbstractSelectParser implements SQLParser {
         for (OrderItem each : orderItems) {
             if (!containsItem(selectStatement, each)) {
                 String alias = DerivedColumn.GROUP_BY_ALIAS.getDerivedColumnAlias(derivedColumnOffset++);
-                each.setAlias(Optional.of(alias));
+                each.setAlias(alias);
                 itemsToken.getItems().add(each.getQualifiedName().get() + " AS " + alias + " ");
             }
         }

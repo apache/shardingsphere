@@ -23,7 +23,7 @@ groupByClause
     ;
     
 havingClause
-    : HAVING  expr
+    : HAVING expr
     ;
     
 limitClause
@@ -35,7 +35,7 @@ partitionClause
     ;
     
 selectExprs
-    :  (asterisk |selectExpr) (COMMA selectExpr)*
+    : (asterisk | selectExpr) (COMMA selectExpr)*
     ; 
     
 asterisk

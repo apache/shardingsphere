@@ -17,7 +17,6 @@
 
 package io.shardingsphere.core.parsing.parser.dialect.sqlserver.clause;
 
-import io.shardingsphere.core.constant.DatabaseType;
 import io.shardingsphere.core.parsing.lexer.LexerEngine;
 import io.shardingsphere.core.parsing.lexer.dialect.sqlserver.SQLServerKeyword;
 import io.shardingsphere.core.parsing.lexer.token.DefaultKeyword;
@@ -78,7 +77,7 @@ public final class SQLServerTopClauseParser implements SQLClauseParser {
         lexerEngine.unsupportedIfEqual(SQLServerKeyword.PERCENT);
         lexerEngine.skipIfEqual(DefaultKeyword.WITH, SQLServerKeyword.TIES);
         if (null == selectStatement.getLimit()) {
-            Limit limit = new Limit(DatabaseType.SQLServer);
+            Limit limit = new Limit();
             limit.setRowCount(rowCountValue);
             selectStatement.setLimit(limit);
         } else {

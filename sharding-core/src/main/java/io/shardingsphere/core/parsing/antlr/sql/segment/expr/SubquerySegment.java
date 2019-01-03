@@ -18,13 +18,13 @@
 package io.shardingsphere.core.parsing.antlr.sql.segment.expr;
 
 import com.google.common.base.Optional;
-
 import io.shardingsphere.core.parsing.antlr.sql.segment.FromWhereSegment;
 import io.shardingsphere.core.parsing.antlr.sql.segment.SelectClauseSegment;
 import io.shardingsphere.core.parsing.antlr.sql.segment.order.GroupBySegment;
 import io.shardingsphere.core.parsing.antlr.sql.segment.order.OrderBySegment;
 import lombok.Getter;
 import lombok.RequiredArgsConstructor;
+import lombok.Setter;
 
 /**
  * Subquery expression segment.
@@ -33,17 +33,52 @@ import lombok.RequiredArgsConstructor;
  */
 @RequiredArgsConstructor
 @Getter
-public final class SubquerySegment implements ExpressionSegment {
-    
-    private final Optional<SelectClauseSegment> selectClauseSegment;
-    
-    private final Optional<FromWhereSegment> fromWhereSegment;
-    
-    private final Optional<GroupBySegment> groupBySegment;
-    
-    private final Optional<OrderBySegment> orderBySegment;
-    
-    private final Optional<String> alias;
+@Setter
+public final class SubquerySegment extends ExpressionWithAliasSegment {
     
     private final boolean subqueryInFrom;
+    
+    private SelectClauseSegment selectClauseSegment;
+    
+    private FromWhereSegment fromWhereSegment;
+    
+    private GroupBySegment groupBySegment;
+    
+    private OrderBySegment orderBySegment;
+    
+    /**
+     * Get select clause segment.
+     * 
+     * @return select clause segment
+     */
+    public Optional<SelectClauseSegment> getSelectClauseSegment() {
+        return Optional.fromNullable(selectClauseSegment);
+    }
+    
+    /**
+     * Get from where segment.
+     *
+     * @return from where segment
+     */
+    public Optional<FromWhereSegment> getFromWhereSegment() {
+        return Optional.fromNullable(fromWhereSegment);
+    }
+    
+    /**
+     * Get group by segment.
+     *
+     * @return group by segment
+     */
+    public Optional<GroupBySegment> getGroupBySegment() {
+        return Optional.fromNullable(groupBySegment);
+    }
+    
+    /**
+     * Get order by segment.
+     *
+     * @return order by segment
+     */
+    public Optional<OrderBySegment> getOrderBySegment() {
+        return Optional.fromNullable(orderBySegment);
+    }
 }

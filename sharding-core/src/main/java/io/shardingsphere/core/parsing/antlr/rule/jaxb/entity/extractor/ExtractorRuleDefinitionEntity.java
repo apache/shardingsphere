@@ -20,7 +20,6 @@ package io.shardingsphere.core.parsing.antlr.rule.jaxb.entity.extractor;
 import io.shardingsphere.core.parsing.antlr.rule.jaxb.entity.RuleDefinitionEntity;
 import lombok.Getter;
 
-import javax.xml.bind.annotation.XmlAttribute;
 import javax.xml.bind.annotation.XmlElement;
 import javax.xml.bind.annotation.XmlRootElement;
 import java.util.Collection;
@@ -34,9 +33,6 @@ import java.util.LinkedList;
 @XmlRootElement(name = "extractor-rule-definition")
 @Getter
 public final class ExtractorRuleDefinitionEntity implements RuleDefinitionEntity {
-    
-    @XmlAttribute(name = "extractor-base-package", required = true)
-    private String extractorBasePackage;
     
     @XmlElement(name = "extractor-rule")
     private Collection<ExtractorRuleEntity> rules = new LinkedList<>();
