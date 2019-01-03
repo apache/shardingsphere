@@ -32,6 +32,7 @@ import java.io.ByteArrayInputStream;
 import java.io.ByteArrayOutputStream;
 import java.io.InputStream;
 import java.io.ObjectOutputStream;
+import java.sql.SQLException;
 import java.util.Calendar;
 import java.util.Collection;
 import java.util.LinkedList;
@@ -159,6 +160,12 @@ public class AggregationDistinctQueryResultTest {
     @SneakyThrows
     public void assertGetColumnLabel() {
         assertThat(aggregationDistinctQueryResult.getColumnLabel(3), is("a"));
+    }
+    
+    @Test(expected = SQLException.class)
+    @SneakyThrows
+    public void assertGetColumnLabelWithException() {
+        assertThat(aggregationDistinctQueryResult.getColumnLabel(6), is("order_id"));
     }
     
     @Test
