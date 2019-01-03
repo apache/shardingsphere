@@ -24,5 +24,5 @@ package io.shardingsphere.transaction.core.constant;
  */
 public enum ExecutionResult {
     
-    SUCCESS, FAILURE;
+    EXECUTING, SUCCESS, FAILURE;
 }
