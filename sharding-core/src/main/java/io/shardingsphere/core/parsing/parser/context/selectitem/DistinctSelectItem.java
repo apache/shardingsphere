@@ -39,11 +39,11 @@ public final class DistinctSelectItem implements SelectItem {
     
     private final Set<String> distinctColumnNames;
     
-    private final String alias;
+    private final Optional<String> alias;
     
     @Override
     public String getExpression() {
-        return isSingleColumnWithAlias() ? SQLUtil.getExactlyValue(DefaultKeyword.DISTINCT.name() + " " + distinctColumnNames.iterator().next() + "AS" + alias) 
+        return isSingleColumnWithAlias() ? SQLUtil.getExactlyValue(DefaultKeyword.DISTINCT.name() + " " + distinctColumnNames.iterator().next() + "AS" + alias.get()) 
                 : SQLUtil.getExactlyValue(DefaultKeyword.DISTINCT + " " + Joiner.on(", ").join(distinctColumnNames));
     }
     
@@ -53,15 +53,10 @@ public final class DistinctSelectItem implements SelectItem {
      * @return distinct column labels
      */
     public Collection<String> getDistinctColumnLabels() {
-        return isSingleColumnWithAlias() ? Collections.singletonList(alias) : distinctColumnNames;
+        return isSingleColumnWithAlias() ? Collections.singletonList(alias.get()) : distinctColumnNames;
     }
     
     private boolean isSingleColumnWithAlias() {
-        return 1 == distinctColumnNames.size() && getAlias().isPresent();
-    }
-    
-    @Override
-    public Optional<String> getAlias() {
-        return null == alias ? Optional.<String>absent() : Optional.of(alias);
+        return 1 == distinctColumnNames.size() && alias.isPresent();
     }
 }
