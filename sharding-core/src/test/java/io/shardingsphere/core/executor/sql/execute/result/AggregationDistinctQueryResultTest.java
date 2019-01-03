@@ -151,7 +151,8 @@ public class AggregationDistinctQueryResultTest {
     }
     
     @Test
-    public void testGetColumnCount() {
+    public void assertGetColumnCount() {
+        assertThat(aggregationDistinctQueryResult.getColumnCount(), is(5));
     }
     
     @Test
