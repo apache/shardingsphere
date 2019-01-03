@@ -33,7 +33,6 @@ import java.io.ByteArrayOutputStream;
 import java.io.InputStream;
 import java.io.ObjectOutputStream;
 import java.sql.SQLException;
-import java.util.Calendar;
 import java.util.Collection;
 import java.util.LinkedList;
 import java.util.List;
@@ -123,22 +122,21 @@ public class AggregationDistinctQueryResultTest {
     }
     
     @Test
+    @SneakyThrows
     public void assertGetInputStreamByColumnIndex() {
         aggregationDistinctQueryResult.next();
-        assertThat(aggregationDistinctQueryResult.getCalendarValue(1, Object.class, Calendar.getInstance()), is((Object) 10));
+        assertThat(aggregationDistinctQueryResult.getInputStream(1, "Unicode").read(), is(getInputStream(10).read()));
     }
     
     @Test
+    @SneakyThrows 
     public void assertGetInputStreamByColumnLabel() {
         aggregationDistinctQueryResult.next();
-        assertThat(aggregationDistinctQueryResult.getCalendarValue("order_id", Object.class, Calendar.getInstance()), is((Object) 10));
+        assertThat(aggregationDistinctQueryResult.getInputStream("order_id", "Unicode").read(), is(getInputStream(10).read()));
     }
     
     @Test
-    @SneakyThrows
     public void assertWasNull() {
-        aggregationDistinctQueryResult.next();
-        assertThat(aggregationDistinctQueryResult.getInputStream(1, "Unicode").read(), is(getInputStream(10).read()));
     }
     
     @SneakyThrows
