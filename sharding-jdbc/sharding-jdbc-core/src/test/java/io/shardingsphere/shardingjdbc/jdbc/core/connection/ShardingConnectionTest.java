@@ -36,7 +36,6 @@ import org.junit.BeforeClass;
 import org.junit.Test;
 
 import javax.sql.DataSource;
-import java.sql.Connection;
 import java.sql.SQLException;
 import java.util.Collections;
 import java.util.HashMap;
@@ -45,7 +44,6 @@ import java.util.Properties;
 
 import static org.hamcrest.CoreMatchers.instanceOf;
 import static org.hamcrest.CoreMatchers.is;
-import static org.junit.Assert.assertNotSame;
 import static org.junit.Assert.assertThat;
 import static org.mockito.Mockito.mock;
 import static org.mockito.Mockito.when;
@@ -107,13 +105,6 @@ public final class ShardingConnectionTest {
     @Test(expected = IllegalStateException.class)
     public void assertGetConnectionFailure() throws SQLException {
         connection.getConnection("not_exist");
-    }
-    
-    @Test
-    public void assertRelease() throws SQLException {
-        Connection conn = connection.getConnection(DS_NAME);
-        connection.release(conn);
-        assertNotSame(conn, connection.getConnection(DS_NAME));
     }
     
     @Test
