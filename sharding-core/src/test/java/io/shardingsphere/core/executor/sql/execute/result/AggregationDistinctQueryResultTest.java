@@ -105,7 +105,7 @@ public class AggregationDistinctQueryResultTest {
     }
     
     @Test
-    public void testGetCalendarValue() {
+    public void testGetCalendarValueByColumnIndex() {
         aggregationDistinctQueryResult.next();
         assertThat(aggregationDistinctQueryResult.getValue(1, Object.class), is((Object) 10));
     }
