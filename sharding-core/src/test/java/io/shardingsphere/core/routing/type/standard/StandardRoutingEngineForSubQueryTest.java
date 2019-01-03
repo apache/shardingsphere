@@ -28,7 +28,6 @@ import io.shardingsphere.core.metadata.table.ShardingTableMetaData;
 import io.shardingsphere.core.metadata.table.TableMetaData;
 import io.shardingsphere.core.routing.PreparedStatementRoutingEngine;
 import io.shardingsphere.core.rule.ShardingRule;
-import org.junit.Ignore;
 import org.junit.Test;
 
 import java.util.Arrays;
