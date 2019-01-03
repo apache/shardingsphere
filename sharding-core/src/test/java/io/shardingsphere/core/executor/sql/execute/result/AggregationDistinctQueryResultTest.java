@@ -88,23 +88,32 @@ public class AggregationDistinctQueryResultTest {
     }
     
     @Test
-    public void assertGetValue() {
+    public void assertGetValueByColumnIndex() {
         aggregationDistinctQueryResult.next();
         assertThat(aggregationDistinctQueryResult.getValue(1, Object.class), is((Object) 10));
         assertThat(aggregationDistinctQueryResult.getValue(2, Object.class), is((Object) 1));
         assertThat(aggregationDistinctQueryResult.getValue(3, Object.class), is((Object) 10));
+        assertThat(aggregationDistinctQueryResult.getValue(4, Object.class), is((Object) 1));
+        assertThat(aggregationDistinctQueryResult.getValue(5, Object.class), is((Object) 10));
     }
     
     @Test
-    public void testGetValue1() {
+    public void testGetValueByColumnLabel() {
+        aggregationDistinctQueryResult.next();
+        assertThat(aggregationDistinctQueryResult.getValue("order_id", Object.class), is((Object) 10));
+        assertThat(aggregationDistinctQueryResult.getValue("a", Object.class), is((Object) 10));
     }
     
     @Test
     public void testGetCalendarValue() {
+        aggregationDistinctQueryResult.next();
+        assertThat(aggregationDistinctQueryResult.getValue(1, Object.class), is((Object) 10));
     }
     
     @Test
     public void testGetCalendarValue1() {
+        aggregationDistinctQueryResult.next();
+        assertThat(aggregationDistinctQueryResult.getValue("order_id", Object.class), is((Object) 10));
     }
     
     @Test
