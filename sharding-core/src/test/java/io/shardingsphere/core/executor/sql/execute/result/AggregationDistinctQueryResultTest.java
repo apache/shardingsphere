@@ -28,6 +28,7 @@ import lombok.SneakyThrows;
 import org.junit.Before;
 import org.junit.Test;
 
+import java.util.Calendar;
 import java.util.Collection;
 import java.util.LinkedList;
 import java.util.List;
@@ -117,7 +118,10 @@ public class AggregationDistinctQueryResultTest {
     }
     
     @Test
-    public void testGetInputStream() {
+    public void assertGetInputStream() {
+        aggregationDistinctQueryResult.next();
+        assertThat(aggregationDistinctQueryResult.getCalendarValue(1, Object.class, Calendar.getInstance()), is((Object) 10));
+    
     }
     
     @Test
