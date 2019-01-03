@@ -41,14 +41,12 @@ import static org.junit.Assert.assertThat;
 import static org.mockito.Mockito.verify;
 import static org.mockito.Mockito.when;
 
-
 @RunWith(MockitoJUnitRunner.class)
 public class SagaShardingTransactionHandlerTest {
+    
     private final SagaConfiguration config = new SagaConfiguration();
     
     private final SagaShardingTransactionHandler handler = new SagaShardingTransactionHandler();
-    
-    private final List<List<Object>> params = new ArrayList<>();
     
     @Mock
     private SagaTransactionManager sagaTransactionManager;
@@ -73,16 +71,16 @@ public class SagaShardingTransactionHandlerTest {
     @Test
     public void assertBegin() throws SQLException {
         when(sagaTransactionManager.getStatus()).thenReturn(Status.STATUS_NO_TRANSACTION);
-        SagaTransactionContext event = SagaTransactionContext.createBeginSagaTransactionContext(null, config);
-        handler.doInTransaction(event);
-        verify(sagaTransactionManager).begin(event);
+        SagaTransactionContext context = SagaTransactionContext.createBeginSagaTransactionContext(null, config);
+        handler.doInTransaction(context);
+        verify(sagaTransactionManager).begin(context);
     }
     
     @Test(expected = ShardingException.class)
     public void assertCommitWithoutBegin() throws SQLException {
         when(sagaTransactionManager.getStatus()).thenReturn(Status.STATUS_NO_TRANSACTION);
-        SagaTransactionContext event = SagaTransactionContext.createCommitSagaTransactionContext(config);
-        handler.doInTransaction(event);
+        SagaTransactionContext context = SagaTransactionContext.createCommitSagaTransactionContext(config);
+        handler.doInTransaction(context);
     }
     
     @Test
@@ -90,23 +88,16 @@ public class SagaShardingTransactionHandlerTest {
         when(sagaTransactionManager.getStatus()).thenReturn(Status.STATUS_NO_TRANSACTION);
         handler.doInTransaction(SagaTransactionContext.createBeginSagaTransactionContext(null, config));
         when(sagaTransactionManager.getStatus()).thenReturn(Status.STATUS_ACTIVE);
-        SagaTransactionContext event = SagaTransactionContext.createCommitSagaTransactionContext(config);
-        handler.doInTransaction(event);
-        verify(sagaTransactionManager).commit(event);
+        SagaTransactionContext context = SagaTransactionContext.createCommitSagaTransactionContext(config);
+        handler.doInTransaction(context);
+        verify(sagaTransactionManager).commit(context);
     }
     
     @Test
     public void assertRollback() throws SQLException {
-        SagaTransactionContext event = SagaTransactionContext.createRollbackSagaTransactionContext(config);
-        handler.doInTransaction(event);
-        verify(sagaTransactionManager).rollback(event);
-    }
-    
-//    @Test
-    public void assertSagaSQLExecutionContext() throws NoSuchFieldException, IllegalAccessException {
-//        SagaSQLExecutionContext sqlExecutionContext = new SagaSQLExecutionContext(new RouteUnit("", new SQLUnit("", params)), "1", true);
-//        handler.doInTransaction(SagaTransactionContext.createExecutionSagaTransactionContext(sqlExecutionContext));
-//        verify(sagaTransactionManager).handleSQLExecutionEvent(sqlExecutionContext);
+        SagaTransactionContext context = SagaTransactionContext.createRollbackSagaTransactionContext(config);
+        handler.doInTransaction(context);
+        verify(sagaTransactionManager).rollback(context);
     }
     
     @Test

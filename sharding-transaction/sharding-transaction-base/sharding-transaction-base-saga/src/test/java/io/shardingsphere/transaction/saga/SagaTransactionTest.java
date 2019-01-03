@@ -1,0 +1,98 @@
+/*
+ * Copyright 2016-2018 shardingsphere.io.
+ * <p>
+ * Licensed under the Apache License, Version 2.0 (the "License");
+ * you may not use this file except in compliance with the License.
+ * You may obtain a copy of the License at
+ *
+ *     http://www.apache.org/licenses/LICENSE-2.0
+ *
+ * Unless required by applicable law or agreed to in writing, software
+ * distributed under the License is distributed on an "AS IS" BASIS,
+ * WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
+ * See the License for the specific language governing permissions and
+ * limitations under the License.
+ * </p>
+ */
+
+package io.shardingsphere.transaction.saga;
+
+import com.fasterxml.jackson.databind.ObjectMapper;
+import io.shardingsphere.api.config.SagaConfiguration;
+import io.shardingsphere.core.constant.SagaRecoveryPolicy;
+import io.shardingsphere.transaction.core.constant.ExecutionResult;
+import io.shardingsphere.transaction.saga.servicecomb.definition.SagaDefinitionBuilder;
+import org.junit.Before;
+import org.junit.Test;
+
+import javax.sql.DataSource;
+
+import java.io.IOException;
+import java.lang.reflect.Field;
+import java.util.HashMap;
+import java.util.List;
+import java.util.Map;
+
+import static org.hamcrest.CoreMatchers.instanceOf;
+import static org.junit.Assert.assertEquals;
+import static org.junit.Assert.assertFalse;
+import static org.junit.Assert.assertThat;
+import static org.junit.Assert.assertTrue;
+import static org.mockito.Mockito.mock;
+
+public class SagaTransactionTest {
+    
+    private final SagaTransaction sagaTransaction = new SagaTransaction(new SagaConfiguration(), new HashMap<String, DataSource>());
+    
+    private Map<SagaSubTransaction, ExecutionResult> executionResultMap;
+    
+    @Before
+    public void setUp() throws Exception {
+        Field executionResultMapField = SagaTransaction.class.getDeclaredField("executionResultMap");
+        executionResultMapField.setAccessible(true);
+        executionResultMap = (Map<SagaSubTransaction, ExecutionResult>) executionResultMapField.get(sagaTransaction);
+    }
+    
+    @Test
+    public void assertRecordResult() {
+        SagaSubTransaction sagaSubTransaction = mock(SagaSubTransaction.class);
+        sagaTransaction.recordResult(sagaSubTransaction, ExecutionResult.EXECUTING);
+        assertEquals(executionResultMap.size(), 1);
+        assertTrue(executionResultMap.containsKey(sagaSubTransaction));
+        assertEquals(executionResultMap.get(sagaSubTransaction), ExecutionResult.EXECUTING);
+        assertFalse(sagaTransaction.isContainException());
+        sagaTransaction.recordResult(sagaSubTransaction, ExecutionResult.SUCCESS);
+        assertEquals(executionResultMap.size(), 1);
+        assertTrue(executionResultMap.containsKey(sagaSubTransaction));
+        assertEquals(executionResultMap.get(sagaSubTransaction), ExecutionResult.SUCCESS);
+        assertFalse(sagaTransaction.isContainException());
+        sagaTransaction.recordResult(sagaSubTransaction, ExecutionResult.FAILURE);
+        assertEquals(executionResultMap.size(), 1);
+        assertTrue(executionResultMap.containsKey(sagaSubTransaction));
+        assertEquals(executionResultMap.get(sagaSubTransaction), ExecutionResult.FAILURE);
+        assertTrue(sagaTransaction.isContainException());
+    }
+    
+    @Test
+    public void assertGetSagaDefinitionBuilder() throws IOException {
+        SagaSubTransaction sagaSubTransaction = mock(SagaSubTransaction.class);
+        sagaTransaction.recordResult(sagaSubTransaction, ExecutionResult.SUCCESS);
+        SagaDefinitionBuilder builder = sagaTransaction.getSagaDefinitionBuilder();
+        ObjectMapper jacksonObjectMapper = new ObjectMapper();
+        Map<String, Object> sagaDefinitionMap = jacksonObjectMapper.readValue(builder.build(), Map.class);
+        assertEquals(sagaDefinitionMap.get("policy"), SagaRecoveryPolicy.FORWARD.getName());
+        assertThat(sagaDefinitionMap.get("requests"), instanceOf(List.class));
+        List<Object> requests = (List<Object>) sagaDefinitionMap.get("requests");
+        assertEquals(requests.size(), 1);
+        assertThat(requests.get(0), instanceOf(Map.class));
+        Map<String, Object> request = (Map<String, Object>) requests.get(0);
+        assertEquals(request.size(), 7);
+        assertTrue(request.containsKey("id"));
+        assertTrue(request.containsKey("datasource"));
+        assertTrue(request.containsKey("type"));
+        assertTrue(request.containsKey("transaction"));
+        assertTrue(request.containsKey("compensation"));
+        assertTrue(request.containsKey("parents"));
+        assertTrue(request.containsKey("failRetryDelayMilliseconds"));
+    }
+}

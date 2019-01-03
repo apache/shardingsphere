@@ -15,8 +15,9 @@
  * </p>
  */
 
-package io.shardingsphere.transaction;
+package io.shardingsphere.transaction.saga;
 
+import io.shardingsphere.transaction.saga.executor.SagaSQLExecutionHookTest;
 import io.shardingsphere.transaction.saga.handler.AllHandlerTests;
 import io.shardingsphere.transaction.saga.manager.SagaTransactionManagerTest;
 import io.shardingsphere.transaction.saga.servicecomb.AllServicecombTest;
@@ -27,8 +28,10 @@ import org.junit.runners.Suite.SuiteClasses;
 
 @RunWith(Suite.class)
 @SuiteClasses({
-        AllHandlerTests.class,
         SagaTransactionManagerTest.class,
+        SagaSQLExecutionHookTest.class,
+        SagaTransactionTest.class,
+        AllHandlerTests.class,
         AllServicecombTest.class,
         AllRevertTest.class
 })
