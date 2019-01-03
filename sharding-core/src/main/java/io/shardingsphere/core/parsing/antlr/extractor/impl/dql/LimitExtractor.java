@@ -67,10 +67,9 @@ public final class LimitExtractor implements OptionalSQLSegmentExtractor {
         return result;
     }
     
-    private LimitValueSegment createLimitValueSegment(final Map<ParserRuleContext, Integer> placeholderAndNodeIndexMap, final ParserRuleContext node) {
-        return Symbol.QUESTION.getLiterals().equals(node.getText()) 
-                // FIXME check node.getChild(0) should be node.getChild(0) or node.getChild(2) ?
-                ? new PlaceholderLimitValueSegment(placeholderAndNodeIndexMap.get(node.getChild(0)), ((ParserRuleContext) node.getChild(0)).getStart().getStartIndex())
-                : new LiteralLimitValueSegment(NumberUtil.getExactlyNumber(node.getText(), 10).intValue(), node.getStart().getStartIndex());
+    private LimitValueSegment createLimitValueSegment(final Map<ParserRuleContext, Integer> placeholderAndNodeIndexMap, final ParserRuleContext limitValueNode) {
+        return Symbol.QUESTION.getLiterals().equals(limitValueNode.getText()) 
+                ? new PlaceholderLimitValueSegment(placeholderAndNodeIndexMap.get(limitValueNode.getChild(0)), ((ParserRuleContext) limitValueNode.getChild(0)).getStart().getStartIndex())
+                : new LiteralLimitValueSegment(NumberUtil.getExactlyNumber(limitValueNode.getText(), 10).intValue(), limitValueNode.getStart().getStartIndex());
     }
 }
