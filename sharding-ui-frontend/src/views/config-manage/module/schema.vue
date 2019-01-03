@@ -71,7 +71,14 @@ export default {
   },
   computed: {
     textarea2() {
-      return JSON.stringify(yaml.safeLoad(this.textarea), null, '\t')
+      const dsYamlType = new yaml.Type('tag:yaml.org,2002:io.shardingsphere.orchestration.yaml.YamlDataSourceConfiguration', {
+        kind: 'mapping',
+        construct(data) {
+          return data !== null ? data : {}
+        }
+      })
+      const DS_SCHEMA = yaml.Schema.create(dsYamlType)
+      return JSON.stringify(yaml.load(this.textarea, { schema: DS_SCHEMA }), null, '\t')
     }
   },
   created() {
