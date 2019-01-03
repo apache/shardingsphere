@@ -119,3 +119,11 @@ frameEnd
 variable
     : (AT_ AT_)? (GLOBAL | PERSIST | PERSIST_ONLY | SESSION)? DOT? ID
     ;
+
+assignmentList
+    : assignment (COMMA assignment)*
+    ;
+
+assignment
+    : columnName EQ_ value
+    ;

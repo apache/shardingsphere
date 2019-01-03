@@ -48,11 +48,7 @@ fromMulti
     ;
     
 fromMultiAliases
-    : fromMultiAlias (COMMA fromMultiAlias)*
-    ;
-    
-fromMultiAlias
-    : alias ('.*')?
+    : tableName DOT_ASTERISK?
     ;
     
 deleteSpec
@@ -99,10 +95,4 @@ assignment
     : columnName EQ_ value
     ;
     
-updateClause 
-    : UPDATE updateSpec tableReferences
-    ;
-    
-updateSpec
-    : LOW_PRIORITY? IGNORE?
-    ;
+
