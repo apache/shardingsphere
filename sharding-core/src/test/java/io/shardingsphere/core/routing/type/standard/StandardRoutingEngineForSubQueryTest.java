@@ -201,17 +201,17 @@ public final class StandardRoutingEngineForSubQueryTest {
     }
     
     private void addTableRule(final ShardingRuleConfiguration shardingRuleConfig, final String tableName, final String actualDataNodes,
-                              final String shardingColumn, final String tableAlgorithmExpression, final String dsAlgorithmExpression) {
-        TableRuleConfiguration orderTableRuleConfig = createTableRuleConfig(tableName, actualDataNodes, shardingColumn, tableAlgorithmExpression, dsAlgorithmExpression);
+                              final String shardingColumn, final String tableAlgorithmExpression, final String dataSourceAlgorithmExpression) {
+        TableRuleConfiguration orderTableRuleConfig = createTableRuleConfig(tableName, actualDataNodes, shardingColumn, tableAlgorithmExpression, dataSourceAlgorithmExpression);
         shardingRuleConfig.getTableRuleConfigs().add(orderTableRuleConfig);
     }
     
     private TableRuleConfiguration createTableRuleConfig(final String tableName, final String actualDataNodes, final String shardingColumn,
-                                                         final String algorithmExpression, final String dsAlgorithmExpression) {
+                                                         final String algorithmExpression, final String dataSourceAlgorithmExpression) {
         TableRuleConfiguration result = new TableRuleConfiguration();
         result.setLogicTable(tableName);
         result.setTableShardingStrategyConfig(new InlineShardingStrategyConfiguration(shardingColumn, algorithmExpression));
-        result.setDatabaseShardingStrategyConfig(new InlineShardingStrategyConfiguration(shardingColumn, dsAlgorithmExpression));
+        result.setDatabaseShardingStrategyConfig(new InlineShardingStrategyConfiguration(shardingColumn, dataSourceAlgorithmExpression));
         result.setActualDataNodes(actualDataNodes);
         return result;
     }
