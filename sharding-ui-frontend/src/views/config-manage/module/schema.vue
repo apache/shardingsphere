@@ -22,7 +22,7 @@
     </el-row>
     <el-dialog
       :visible.sync="centerDialogVisible"
-      :title="type + '编辑'"
+      :title="type"
       width="80%">
       <el-row :gutter="20">
         <el-col :span="12">
@@ -88,33 +88,26 @@ export default {
     handlerClick(parent, child) {
       if (child === 'rule') {
         API.getSchemaRule(parent).then((res) => {
-          if (!res.success) return
-          const model = res.model
-          if (Object.prototype.toString.call(model) === '[object String]') {
-            this.textarea = model
-          } else {
-            this.textarea = JSON.stringify(model, null, '\t')
-          }
-          this.sname = parent
-          this.scname = child
-          this.type = `${parent}-${child}`
-          this.centerDialogVisible = true
+          this.renderYaml(parent, child, res)
         })
       } else {
         API.getSchemaDataSource(parent).then((res) => {
-          if (!res.success) return
-          const model = res.model
-          if (Object.prototype.toString.call(model) === '[object String]') {
-            this.textarea = model
-          } else {
-            this.textarea = JSON.stringify(model, null, '\t')
-          }
-          this.sname = parent
-          this.scname = child
-          this.type = `${parent}-${child}`
-          this.centerDialogVisible = true
+          this.renderYaml(parent, child, res)
         })
       }
+    },
+    renderYaml(parent, child, res) {
+      if (!res.success) return
+      const model = res.model
+      if (Object.prototype.toString.call(model) === '[object String]') {
+        this.textarea = model
+      } else {
+        this.textarea = JSON.stringify(model, null, '\t')
+      }
+      this.sname = parent
+      this.scname = child
+      this.type = `${parent}-${child}`
+      this.centerDialogVisible = true
     },
     getSchema() {
       API.getSchema().then((res) => {
@@ -133,37 +126,27 @@ export default {
     onConfirm() {
       if (this.scname === 'rule') {
         API.putSchemaRule(this.sname, { ruleConfig: this.textarea }).then((res) => {
-          if (res.success) {
-            this.$notify({
-              title: this.$t('common').notify.title,
-              message: this.$t('common').notify.updateCompletedMessage,
-              type: 'success'
-            })
-            this.centerDialogVisible = false
-          } else {
-            this.$notify({
-              title: this.$t('common').notify.title,
-              message: this.$t('common').notify.updateFaildMessage,
-              type: 'error'
-            })
-          }
+          this._onConfirm(res)
         })
       } else {
         API.putSchemaDataSource(this.sname, { dataSourceConfig: this.textarea }).then((res) => {
-          if (res.success) {
-            this.$notify({
-              title: this.$t('common').notify.title,
-              message: this.$t('common').notify.updateCompletedMessage,
-              type: 'success'
-            })
-            this.centerDialogVisible = false
-          } else {
-            this.$notify({
-              title: this.$t('common').notify.title,
-              message: this.$t('common').notify.updateFaildMessage,
-              type: 'error'
-            })
-          }
+          this._onConfirm(res)
+        })
+      }
+    },
+    _onConfirm(res) {
+      if (res.success) {
+        this.$notify({
+          title: this.$t('common').notify.title,
+          message: this.$t('common').notify.updateCompletedMessage,
+          type: 'success'
+        })
+        this.centerDialogVisible = false
+      } else {
+        this.$notify({
+          title: this.$t('common').notify.title,
+          message: this.$t('common').notify.updateFaildMessage,
+          type: 'error'
         })
       }
     }
