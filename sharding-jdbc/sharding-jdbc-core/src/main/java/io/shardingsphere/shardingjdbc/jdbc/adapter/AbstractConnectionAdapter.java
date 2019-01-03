@@ -251,6 +251,7 @@ public abstract class AbstractConnectionAdapter extends AbstractUnsupportedOpera
                 }
             });
         } finally {
+            cachedConnections.clear();
             rootInvokeHook.finish(connectionSize);
         }
     }
