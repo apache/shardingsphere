@@ -17,12 +17,20 @@
 
 package io.shardingsphere.core.parsing.parser.context.selectitem;
 
+import com.google.common.base.Optional;
+import io.shardingsphere.core.constant.AggregationType;
 import org.junit.Test;
+
+import static org.hamcrest.core.Is.is;
+import static org.junit.Assert.assertThat;
 
 public class AggregationDistinctSelectItemTest {
     
+    private final AggregationDistinctSelectItem aggregationDistinctSelectItem = new AggregationDistinctSelectItem(AggregationType.COUNT, "(DISTINCT order_id)", Optional.of("c"), "order_id");
+    
     @Test
     public void assertGetDistinctColumnLabel() {
+        assertThat(aggregationDistinctSelectItem.getDistinctColumnLabel(), is("c"));
     }
     
     @Test
