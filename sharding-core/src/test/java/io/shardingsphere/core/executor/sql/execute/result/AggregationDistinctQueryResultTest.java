@@ -28,6 +28,10 @@ import lombok.SneakyThrows;
 import org.junit.Before;
 import org.junit.Test;
 
+import java.io.ByteArrayInputStream;
+import java.io.ByteArrayOutputStream;
+import java.io.InputStream;
+import java.io.ObjectOutputStream;
 import java.util.Calendar;
 import java.util.Collection;
 import java.util.LinkedList;
@@ -130,7 +134,20 @@ public class AggregationDistinctQueryResultTest {
     }
     
     @Test
-    public void testWasNull() {
+    @SneakyThrows
+    public void assertWasNull() {
+        aggregationDistinctQueryResult.next();
+        assertThat(aggregationDistinctQueryResult.getInputStream(1, "Unicode").read(), is(getInputStream(10).read()));
+    }
+    
+    @SneakyThrows
+    private InputStream getInputStream(final Object value) {
+        ByteArrayOutputStream byteArrayOutputStream = new ByteArrayOutputStream();
+        ObjectOutputStream objectOutputStream = new ObjectOutputStream(byteArrayOutputStream);
+        objectOutputStream.writeObject(value);
+        objectOutputStream.flush();
+        objectOutputStream.close();
+        return new ByteArrayInputStream(byteArrayOutputStream.toByteArray());
     }
     
     @Test
