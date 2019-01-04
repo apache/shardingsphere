@@ -115,7 +115,7 @@ public final class SagaTransactionManager implements BASETransactionManager<Saga
     
     private void cleanTransaction() {
         ShardingTransportFactory.getInstance().remove();
-        ShardingExecuteDataMap.setDataMap(null);
+        ShardingExecuteDataMap.getDataMap().clear();
         TRANSACTIONS.remove();
     }
 }

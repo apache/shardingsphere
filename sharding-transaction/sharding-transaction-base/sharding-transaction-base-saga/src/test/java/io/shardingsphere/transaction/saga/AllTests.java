@@ -31,6 +31,7 @@ import org.junit.runners.Suite.SuiteClasses;
         SagaTransactionManagerTest.class,
         SagaSQLExecutionHookTest.class,
         SagaTransactionTest.class,
+        SagaSubTransaction.class,
         AllHandlerTests.class,
         AllServicecombTest.class,
         AllRevertTest.class

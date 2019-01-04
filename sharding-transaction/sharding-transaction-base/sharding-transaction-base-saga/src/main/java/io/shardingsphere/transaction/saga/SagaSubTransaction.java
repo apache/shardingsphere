@@ -17,12 +17,11 @@
 
 package io.shardingsphere.transaction.saga;
 
-import java.util.List;
-
-import lombok.EqualsAndHashCode;
 import lombok.Getter;
 import lombok.RequiredArgsConstructor;
 import lombok.ToString;
+
+import java.util.List;
 
 /**
  * Saga sub transaction.
@@ -30,14 +29,23 @@ import lombok.ToString;
  * @author yangyi
  */
 @RequiredArgsConstructor
-@EqualsAndHashCode
 @Getter
 @ToString
-public class SagaSubTransaction {
+public final class SagaSubTransaction {
     
     private final String dataSourceName;
     
     private final String sql;
     
     private final List<List<Object>> parameterSets;
+    
+    @Override
+    public int hashCode() {
+        return toString().hashCode();
+    }
+    
+    @Override
+    public boolean equals(final Object obj) {
+        return this == obj || obj instanceof SagaSubTransaction && this.toString().equals(obj.toString());
+    }
 }
