@@ -5,6 +5,6 @@ title = "Unsupported Items"
 weight = 3
 +++
 
-1. Data synchronization between Master and Slaves.
-1. Inconsistency of data between Master and Slaves due to transmission delay.
-1. Multiple Masters to provide writing operations.
+1. Data replication between the master and the slave database.
+1. Data inconsistency caused by replication delay between the master database and the slave database.
+1. Double or multiple master databases to provide write operation.

@@ -5,7 +5,7 @@ title = "Core Features"
 weight = 2
 +++
 
-1. To configure Read-write splitting on single master and multiple slaves. You can use this function independently or along with sharding.
-1. Provide SQL passthrough when the Read-write splitting is used independently .
-1. In order to ensure data consistency, if there is a write operation, the later read operations in the same thread and the same connection are executed in the Master.
-1. Mandatory Master rounting strategy based in SQL Hint.
+1. Provide the read-write split configuration of one master database with multiple slave databases, which can be used alone as well as with sharding table and database.
+1. SQL pass-through is available when using read-write split alone.
+1. If there is write operation in the same thread and database connection, all the following read operations must be from the master database to ensure data consistency.
+1. Mandatory master database route strategy based on SQL Hint.
