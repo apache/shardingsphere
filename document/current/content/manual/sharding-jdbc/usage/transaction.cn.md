@@ -49,6 +49,16 @@ TransactionTypeHolder.set(TransactionType.LOCAL);
 TransactionTypeHolder.set(TransactionType.XA);
 ```
 
+### SpringBootStarter使用方式
+引入Maven依赖：
+```xml
+<dependency>
+    <groupId>io.shardingsphere</groupId>
+    <artifactId>sharding-transaction-spring-boot-starter</artifactId>
+    <version>${sharding-sphere.version}</version>
+</dependency>
+```
+
 ### SpringBoot使用方式
 引入Maven依赖：
 
