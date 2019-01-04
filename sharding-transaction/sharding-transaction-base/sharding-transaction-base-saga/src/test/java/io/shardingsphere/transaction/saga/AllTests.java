@@ -17,7 +17,7 @@
 
 package io.shardingsphere.transaction.saga;
 
-import io.shardingsphere.transaction.saga.executor.SagaSQLExecutionHookTest;
+import io.shardingsphere.transaction.saga.hook.SagaSQLExecutionHookTest;
 import io.shardingsphere.transaction.saga.handler.AllHandlerTests;
 import io.shardingsphere.transaction.saga.manager.SagaTransactionManagerTest;
 import io.shardingsphere.transaction.saga.servicecomb.AllServicecombTest;
