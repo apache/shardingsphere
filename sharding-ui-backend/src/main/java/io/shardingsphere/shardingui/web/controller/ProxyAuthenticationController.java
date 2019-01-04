@@ -21,7 +21,6 @@ import io.shardingsphere.core.rule.Authentication;
 import io.shardingsphere.shardingui.servcie.ProxyAuthenticationService;
 import io.shardingsphere.shardingui.web.response.ResponseResult;
 import io.shardingsphere.shardingui.web.response.ResponseResultUtil;
-import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestMapping;
@@ -33,7 +32,6 @@ import org.springframework.web.bind.annotation.RestController;
  * 
  * @author chenqingyang
  */
-@Slf4j
 @RestController
 @RequestMapping("/api/authentication")
 public final class ProxyAuthenticationController {

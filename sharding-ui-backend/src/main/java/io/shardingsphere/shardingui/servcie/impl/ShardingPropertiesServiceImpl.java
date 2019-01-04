@@ -55,7 +55,7 @@ public final class ShardingPropertiesServiceImpl implements ShardingPropertiesSe
             // CHECKSTYLE:OFF
         } catch (final Exception ex) {
             // CHECKSTYLE:ON
-            throw new IllegalArgumentException("sharding properties is invalid.");
+            throw new IllegalArgumentException("Sharding properties is invalid.");
         }
     }
 }

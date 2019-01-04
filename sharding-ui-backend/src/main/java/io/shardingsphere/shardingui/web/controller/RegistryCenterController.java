@@ -22,7 +22,6 @@ import io.shardingsphere.shardingui.servcie.RegistryCenterConfigService;
 import io.shardingsphere.shardingui.util.RegistryCenterFactory;
 import io.shardingsphere.shardingui.web.response.ResponseResult;
 import io.shardingsphere.shardingui.web.response.ResponseResultUtil;
-import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestMapping;
@@ -36,7 +35,6 @@ import java.util.List;
  *
  * @author chenqingyang
  */
-@Slf4j
 @RestController
 @RequestMapping("/api/reg-center")
 public final class RegistryCenterController {
