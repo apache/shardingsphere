@@ -18,7 +18,8 @@
 package io.shardingsphere.shardingui.web.controller;
 
 import io.shardingsphere.shardingui.common.dto.InstanceDTO;
-import io.shardingsphere.shardingui.servcie.InstanceService;
+import io.shardingsphere.shardingui.common.dto.SlaveDataSourceDTO;
+import io.shardingsphere.shardingui.servcie.OrchestrationService;
 import io.shardingsphere.shardingui.web.response.ResponseResult;
 import io.shardingsphere.shardingui.web.response.ResponseResultUtil;
 import lombok.extern.slf4j.Slf4j;
@@ -31,26 +32,26 @@ import org.springframework.web.bind.annotation.RestController;
 import java.util.Collection;
 
 /**
- * RESTful API of instance operation.
+ * RESTful API of orchestration operation.
  *
  * @author chenqingyang
  */
 @Slf4j
 @RestController
-@RequestMapping("/api/instance")
-public class InstanceController {
+@RequestMapping("/api/orchestration")
+public final class OrchestrationController {
     
     @Autowired
-    private InstanceService instanceService;
+    private OrchestrationService orchestrationService;
     
     /**
      * Load all instances.
      *
      * @return response result
      */
-    @RequestMapping(value = "", method = RequestMethod.GET)
+    @RequestMapping(value = "/instance", method = RequestMethod.GET)
     public ResponseResult<Collection<InstanceDTO>> loadAllInstances() {
-        return ResponseResultUtil.build(instanceService.getALLInstance());
+        return ResponseResultUtil.build(orchestrationService.getALLInstance());
     }
     
     /**
@@ -59,9 +60,32 @@ public class InstanceController {
      * @param instanceDTO instance DTO
      * @return response result
      */
-    @RequestMapping(value = "", method = RequestMethod.PUT)
+    @RequestMapping(value = "/instance", method = RequestMethod.PUT)
     public ResponseResult updateInstanceStatus(@RequestBody final InstanceDTO instanceDTO) {
-        instanceService.updateInstanceStatus(instanceDTO.getInstanceId(), instanceDTO.isEnabled());
+        orchestrationService.updateInstanceStatus(instanceDTO.getInstanceId(), instanceDTO.isEnabled());
         return ResponseResultUtil.success();
     }
+    
+    /**
+     * Load all slave data sources.
+     *
+     * @return response result
+     */
+    @RequestMapping(value = "/datasource", method = RequestMethod.GET)
+    public ResponseResult<Collection<SlaveDataSourceDTO>> loadAllSlaveDataSources() {
+        return ResponseResultUtil.build(orchestrationService.getAllSlaveDataSource());
+    }
+    
+    /**
+     * Update slave data source status.
+     *
+     * @param slaveDataSourceDTO slave data source DTO
+     * @return response result
+     */
+    @RequestMapping(value = "/datasource/", method = RequestMethod.PUT)
+    public ResponseResult updateSlaveDataSourceStatus(@RequestBody final SlaveDataSourceDTO slaveDataSourceDTO) {
+        orchestrationService.updateSlaveDataSourceStatus(slaveDataSourceDTO.getSchema(), slaveDataSourceDTO.getSlaveDataSourceName(), slaveDataSourceDTO.isEnabled());
+        return ResponseResultUtil.success();
+    }
+    
 }

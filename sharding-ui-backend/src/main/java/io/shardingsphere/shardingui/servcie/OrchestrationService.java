@@ -18,15 +18,16 @@
 package io.shardingsphere.shardingui.servcie;
 
 import io.shardingsphere.shardingui.common.dto.InstanceDTO;
+import io.shardingsphere.shardingui.common.dto.SlaveDataSourceDTO;
 
 import java.util.Collection;
 
 /**
- * Instance operation service.
+ * Orchestration operation service.
  *
  * @author chenqingyang
  */
-public interface InstanceService {
+public interface OrchestrationService {
     
     /**
      * Get all instances.
@@ -42,4 +43,20 @@ public interface InstanceService {
      * @param enabled enabled
      */
     void updateInstanceStatus(String instanceId, boolean enabled);
+    
+    /**
+     * Get all slave data source.
+     *
+     * @return all slaver data source dto
+     */
+    Collection<SlaveDataSourceDTO> getAllSlaveDataSource();
+    
+    /**
+     * update slave data source status.
+     *
+     * @param schemaNames schema name
+     * @param slaveDataSourceName slave data source name
+     * @param enabled enabled
+     */
+    void updateSlaveDataSourceStatus(String schemaNames, String slaveDataSourceName, boolean enabled);
 }
