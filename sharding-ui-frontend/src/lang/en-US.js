@@ -8,6 +8,9 @@ export default {
       }, {
         title: 'Configuration management',
         href: '/config-manage'
+      }, {
+        title: 'Orchestration',
+        href: '/orchestration'
       }]
     }],
     connected: 'Connected',
@@ -60,6 +63,19 @@ export default {
       centerType: 'Please select a centerType',
       orchestrationName: 'Please enter a orchestrationName',
       digest: 'Please enter a digest'
+    }
+  },
+  orchestration: {
+    serviceNode: 'Service node',
+    slaveDataSourceName: 'Slave DataSource Info',
+    dataSource: {
+      schema: 'Schema',
+      masterDataSourceName: 'Master DataSource Name',
+      slaveDataSourceName: 'Slave DataSource Name'
+    },
+    instance: {
+      instanceId: 'Instance Id',
+      serverIp: 'Server Ip'
     }
   }
 }

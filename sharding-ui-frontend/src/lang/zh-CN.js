@@ -8,6 +8,9 @@ export default {
       }, {
         title: '配置管理',
         href: '/config-manage'
+      }, {
+        title: 'Orchestration',
+        href: '/orchestration'
       }]
     }],
     connect: '已连接',
@@ -60,6 +63,19 @@ export default {
       address: '请选输入注册中心地址',
       orchestrationName: '请输入数据治理实例名称',
       digest: '请输入登录凭证'
+    }
+  },
+  orchestration: {
+    serviceNode: '服务节点',
+    slaveDataSourceName: '从库信息',
+    dataSource: {
+      schema: '逻辑库名',
+      masterDataSourceName: '主库名',
+      slaveDataSourceName: '从库名'
+    },
+    instance: {
+      instanceId: '节点标识',
+      serverIp: '服务ip'
     }
   }
 }
