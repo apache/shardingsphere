@@ -20,6 +20,7 @@ package io.shardingsphere.shardingjdbc.jdbc.core;
 import io.shardingsphere.shardingjdbc.jdbc.core.connection.ShardingConnectionTest;
 import io.shardingsphere.shardingjdbc.jdbc.core.datasource.MasterSlaveDataSourceTest;
 import io.shardingsphere.shardingjdbc.jdbc.core.datasource.ShardingDataSourceTest;
+import io.shardingsphere.shardingjdbc.jdbc.core.datasource.metadata.CachedDatabaseMetaDataTest;
 import io.shardingsphere.shardingjdbc.jdbc.core.resultset.GeneratedKeysResultSetMetaDataTest;
 import io.shardingsphere.shardingjdbc.jdbc.core.resultset.GeneratedKeysResultSetTest;
 import io.shardingsphere.shardingjdbc.jdbc.core.resultset.ResultSetUtilTest;
@@ -33,6 +34,7 @@ import org.junit.runners.Suite.SuiteClasses;
 @RunWith(Suite.class)
 @SuiteClasses({
         ShardingDataSourceTest.class, 
+        CachedDatabaseMetaDataTest.class, 
         MasterSlaveDataSourceTest.class, 
         ShardingConnectionTest.class, 
         ShardingStatementTest.class, 
