@@ -5,4 +5,4 @@ weight = 4
 chapter = true
 +++
 
-This chapter describe ho to use projects of Sharding-Sphere: Sharding-JDBC, Sharding-Proxy and Sharding-Sidecar.
+This chapter describe ho to use projects of ShardingSphere: Sharding-JDBC, Sharding-Proxy and Sharding-Sidecar.

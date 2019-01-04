@@ -36,21 +36,22 @@ shardingRule:
         inline:
           shardingColumn: order_id
           algorithmExpression: t_order_item${order_id % 2}  
-  
   bindingTables:
     - t_order,t_order_item
+  broadcastTables:
+    - t_config
   
+  defaultDataSourceName: ds0
   defaultDatabaseStrategy:
     inline:
       shardingColumn: user_id
       algorithmExpression: ds${user_id % 2}
-  
   defaultTableStrategy:
     none:
   defaultKeyGeneratorClassName: io.shardingsphere.core.keygen.DefaultKeyGenerator
   
-  props:
-    sql.show: true
+props:
+  sql.show: true
 ```
 
 ### Read-write splitting
@@ -80,9 +81,8 @@ masterSlaveRule:
     - ds_slave0
     - ds_slave1
        
-  props: #属性配置
-    sql.show: #是否开启SQL显示，默认值: false
-    executor.size: #工作线程数量，默认值: CPU核数
+props: 
+  sql.show: true
 ```
 
 ### Sharding + Read-write splitting
@@ -135,15 +135,16 @@ shardingRule:
         inline:
           shardingColumn: order_id
           algorithmExpression: t_order_item${order_id % 2}  
-  
   bindingTables:
     - t_order,t_order_item
+  broadcastTables:
+    - t_config
   
+  defaultDataSourceName: ds0
   defaultDatabaseStrategy:
     inline:
       shardingColumn: user_id
       algorithmExpression: ms_ds${user_id % 2}
-  
   defaultTableStrategy:
     none:
   defaultKeyGeneratorClassName: io.shardingsphere.core.keygen.DefaultKeyGenerator
@@ -166,8 +167,8 @@ shardingRule:
         configMap:
           master-slave-key1: master-slave-value1
 
-  props:
-    sql.show: true
+props:
+  sql.show: true
 ```
 
 ### Orchestration
@@ -225,6 +226,10 @@ shardingRule:
   - <logic_table_name1, logic_table_name2, ...> 
   - <logic_table_name3, logic_table_name4, ...>
   - <logic_table_name_x, logic_table_name_y, ...>
+  bindingTables: #Broadcast table rule configurations
+  - table_name1
+  - table_name2
+  - table_name_x
   
   defaultDataSourceName: #If table not configure at table rule, will route to defaultDataSourceName  
   defaultDatabaseStrategy: #Default strategy for sharding databases, same as databases sharding strategy
@@ -242,14 +247,15 @@ shardingRule:
           key2: value2
           keyx: valuex
   
-  props: #Properties
-    sql.show: #To show SQLS or not, default value: false
-    executor.size: #The number of working threads, default value: CPU count
+props: #Properties
+  sql.show: #To show SQLS or not, default value: false
+  executor.size: #The number of working threads, default value: CPU count
+  check.table.metadata.enabled: #To check the metadata consistency of all the tables or not, default value : false
     
-  configMap: #User-defined arguments
-    key1: value1
-    key2: value2
-    keyx: valuex
+configMap: #User-defined arguments
+  key1: value1
+  key2: value2
+  keyx: valuex
 ```
 
 ### Read-write splitting
@@ -267,10 +273,15 @@ masterSlaveRule:
   loadBalanceAlgorithmClassName: #Load balance algorithm class name. This class need to implements MasterSlaveLoadBalanceAlgorithm, and require a no argument constructor
   loadBalanceAlgorithmType: #Load balance algorithm type, values should be: `ROUND_ROBIN` or `RANDOM`. Ignore if `loadBalanceAlgorithmClassName` is present
   
-  configMap: #User-defined arguments
-    key1: value1
-    key2: value2
-    keyx: valuex
+props: #Properties
+  sql.show: #To show SQLS or not, default value: false
+  executor.size: #The number of working threads, default value: CPU count
+  check.table.metadata.enabled: #To check the metadata consistency of all the tables or not, default value : false
+
+configMap: #User-defined arguments
+  key1: value1
+  key2: value2
+  keyx: valuex
 ```
 
 ### Orchestration

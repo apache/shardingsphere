@@ -6,7 +6,7 @@ weight = 3
 
 ## 简介
 
-Sharding-Sphere使用ThreadLocal管理分片键值进行Hint强制路由。可以通过编程的方式向HintManager中添加分片条件，该分片条件仅在当前线程内生效。
+ShardingSphere使用ThreadLocal管理分片键值进行Hint强制路由。可以通过编程的方式向HintManager中添加分片条件，该分片条件仅在当前线程内生效。
 Hint方式主要使用场景：
 
 1.分片字段不存在SQL中、数据库表结构中，而存在于外部业务逻辑。因此，通过Hint实现外部指定分片结果进行数据操作。

@@ -27,17 +27,19 @@ sharding.jdbc.datasource.ds1.url=jdbc:mysql://localhost:3306/ds1
 sharding.jdbc.datasource.ds1.username=root
 sharding.jdbc.datasource.ds1.password=
 
+sharding.jdbc.config.sharding.tables.t_order.actual-data-nodes=ds$->{0..1}.t_order$->{0..1}
+sharding.jdbc.config.sharding.tables.t_order.table-strategy.inline.sharding-column=order_id
+sharding.jdbc.config.sharding.tables.t_order.table-strategy.inline.algorithm-expression=t_order$->{order_id % 2}
+sharding.jdbc.config.sharding.tables.t_order.key-generator-column-name=order_id
+sharding.jdbc.config.sharding.tables.t_order_item.actual-data-nodes=ds$->{0..1}.t_order_item$->{0..1}
+sharding.jdbc.config.sharding.tables.t_order_item.table-strategy.inline.sharding-column=order_id
+sharding.jdbc.config.sharding.tables.t_order_item.table-strategy.inline.algorithm-expression=t_order_item$->{order_id % 2}
+sharding.jdbc.config.sharding.tables.t_order_item.key-generator-column-name=order_item_id
+sharding.jdbc.config.sharding.binding-tables=t_order,t_order_item
+sharding.jdbc.config.sharding.broadcast-tables=t_config
+
 sharding.jdbc.config.sharding.default-database-strategy.inline.sharding-column=user_id
 sharding.jdbc.config.sharding.default-database-strategy.inline.algorithm-expression=ds$->{user_id % 2}
-
-sharding.jdbc.config.sharding.tables.t-order.actual-data-nodes=ds$->{0..1}.t_order$->{0..1}
-sharding.jdbc.config.sharding.tables.t-order.table-strategy.inline.sharding-column=order_id
-sharding.jdbc.config.sharding.tables.t-order.table-strategy.inline.algorithm-expression=t_order$->{order_id % 2}
-sharding.jdbc.config.sharding.tables.t-order.key-generator-column-name=order_id
-sharding.jdbc.config.sharding.tables.t-order-item.actual-data-nodes=ds$->{0..1}.t_order_item$->{0..1}
-sharding.jdbc.config.sharding.tables.t-order-item.table-strategy.inline.sharding-column=order_id
-sharding.jdbc.config.sharding.tables.t-order-item.table-strategy.inline.algorithm-expression=t_order_item$->{order_id % 2}
-sharding.jdbc.config.sharding.tables.t-order-item.key-generator-column-name=order_item_id
 ```
 
 ### 读写分离
@@ -68,7 +70,7 @@ sharding.jdbc.config.masterslave.name=ms
 sharding.jdbc.config.masterslave.master-data-source-name=master
 sharding.jdbc.config.masterslave.slave-data-source-names=slave0,slave1
 
-sharding.jdbc.config.masterslave.props.sql.show=true
+sharding.jdbc.config.props.sql.show=true
 ```
 
 ### 数据分片 + 读写分离
@@ -110,17 +112,19 @@ sharding.jdbc.datasource.master1slave1.url=jdbc:mysql://localhost:3306/master1sl
 sharding.jdbc.datasource.master1slave1.username=root
 sharding.jdbc.datasource.master1slave1.password=
 
+sharding.jdbc.config.sharding.tables.t_order.actual-data-nodes=ds$->{0..1}.t_order$->{0..1}
+sharding.jdbc.config.sharding.tables.t_order.table-strategy.inline.sharding-column=order_id
+sharding.jdbc.config.sharding.tables.t_order.table-strategy.inline.algorithm-expression=t_order$->{order_id % 2}
+sharding.jdbc.config.sharding.tables.t_order.key-generator-column-name=order_id
+sharding.jdbc.config.sharding.tables.t_order_item.actual-data-nodes=ds$->{0..1}.t_order_item$->{0..1}
+sharding.jdbc.config.sharding.tables.t_order_item.table-strategy.inline.sharding-column=order_id
+sharding.jdbc.config.sharding.tables.t_order_item.table-strategy.inline.algorithm-expression=t_order_item$->{order_id % 2}
+sharding.jdbc.config.sharding.tables.t_order_item.key-generator-column-name=order_item_id
+sharding.jdbc.config.sharding.binding-tables=t_order,t_order_item
+sharding.jdbc.config.sharding.broadcast-tables=t_config
+
 sharding.jdbc.config.sharding.default-database-strategy.inline.sharding-column=user_id
 sharding.jdbc.config.sharding.default-database-strategy.inline.algorithm-expression=master$->{user_id % 2}
-
-sharding.jdbc.config.sharding.tables.t-order.actual-data-nodes=ds$->{0..1}.t_order$->{0..1}
-sharding.jdbc.config.sharding.tables.t-order.table-strategy.inline.sharding-column=order_id
-sharding.jdbc.config.sharding.tables.t-order.table-strategy.inline.algorithm-expression=t_order$->{order_id % 2}
-sharding.jdbc.config.sharding.tables.t-order.key-generator-column-name=order_id
-sharding.jdbc.config.sharding.tables.t-order-item.actual-data-nodes=ds$->{0..1}.t_order_item$->{0..1}
-sharding.jdbc.config.sharding.tables.t-order-item.table-strategy.inline.sharding-column=order_id
-sharding.jdbc.config.sharding.tables.t-order-item.table-strategy.inline.algorithm-expression=t_order_item$->{order_id % 2}
-sharding.jdbc.config.sharding.tables.t-order-item.key-generator-column-name=order_item_id
 
 sharding.jdbc.config.sharding.master-slave-rules.ds0.master-data-source-name=master0
 sharding.jdbc.config.sharding.master-slave-rules.ds0.slave-data-source-names=master0slave0, master0slave1
@@ -153,14 +157,19 @@ sharding.jdbc.datasource.ds1.password=
 sharding.jdbc.config.sharding.default-data-source-name=ds
 sharding.jdbc.config.sharding.default-database-strategy.inline.sharding-column=user_id
 sharding.jdbc.config.sharding.default-database-strategy.inline.algorithm-expression=ds$->{user_id % 2}
-sharding.jdbc.config.sharding.tables.t-order.actual-data-nodes=ds$->{0..1}.t_order$->{0..1}
-sharding.jdbc.config.sharding.tables.t-order.table-strategy.inline.sharding-column=order_id
-sharding.jdbc.config.sharding.tables.t-order.table-strategy.inline.algorithm-expression=t_order$->{order_id % 2}
-sharding.jdbc.config.sharding.tables.t-order.key-generator-column-name=order_id
-sharding.jdbc.config.sharding.tables.t-order-item.actual-data-nodes=ds$->{0..1}.t_order_item$->{0..1}
-sharding.jdbc.config.sharding.tables.t-order-item.table-strategy.inline.sharding-column=order_id
-sharding.jdbc.config.sharding.tables.t-order-item.table-strategy.inline.algorithm-expression=t_order_item$->{order_id % 2}
-sharding.jdbc.config.sharding.tables.t-order-item.key-generator-column-name=order_item_id
+sharding.jdbc.config.sharding.tables.t_order.actual-data-nodes=ds$->{0..1}.t_order$->{0..1}
+sharding.jdbc.config.sharding.tables.t_order.table-strategy.inline.sharding-column=order_id
+sharding.jdbc.config.sharding.tables.t_order.table-strategy.inline.algorithm-expression=t_order$->{order_id % 2}
+sharding.jdbc.config.sharding.tables.t_order.key-generator-column-name=order_id
+sharding.jdbc.config.sharding.tables.t_order_item.actual-data-nodes=ds$->{0..1}.t_order_item$->{0..1}
+sharding.jdbc.config.sharding.tables.t_order_item.table-strategy.inline.sharding-column=order_id
+sharding.jdbc.config.sharding.tables.t_order_item.table-strategy.inline.algorithm-expression=t_order_item$->{order_id % 2}
+sharding.jdbc.config.sharding.tables.t_order_item.key-generator-column-name=order_item_id
+sharding.jdbc.config.sharding.binding-tables=t_order,t_order_item
+sharding.jdbc.config.sharding.broadcast-tables=t_config
+
+sharding.jdbc.config.sharding.default-database-strategy.inline.sharding-column=user_id
+sharding.jdbc.config.sharding.default-database-strategy.inline.algorithm-expression=master$->{user_id % 2}
 
 sharding.jdbc.config.orchestration.name=spring_boot_ds_sharding
 sharding.jdbc.config.orchestration.overwrite=true
@@ -214,6 +223,10 @@ sharding.jdbc.config.sharding.binding-tables[0]= #绑定表规则列表
 sharding.jdbc.config.sharding.binding-tables[1]= #绑定表规则列表
 sharding.jdbc.config.sharding.binding-tables[x]= #绑定表规则列表
 
+sharding.jdbc.config.sharding.broadcast-tables[0]= #广播表规则列表
+sharding.jdbc.config.sharding.broadcast-tables[1]= #广播表规则列表
+sharding.jdbc.config.sharding.broadcast-tables[x]= #广播表规则列表
+
 sharding.jdbc.config.sharding.default-data-source-name= #未配置分片规则的表将通过默认数据源定位
 sharding.jdbc.config.sharding.default-database-strategy.xxx= #默认数据库分片策略，同分库策略
 sharding.jdbc.config.sharding.default-table-strategy.xxx= #默认表分片策略，同分表策略
@@ -225,16 +238,16 @@ sharding.jdbc.config.sharding.master-slave-rules.<master-slave-data-source-name>
 sharding.jdbc.config.sharding.master-slave-rules.<master-slave-data-source-name>.slave-data-source-names[x]= #详见读写分离部分
 sharding.jdbc.config.sharding.master-slave-rules.<master-slave-data-source-name>.load-balance-algorithm-class-name= #详见读写分离部分
 sharding.jdbc.config.sharding.master-slave-rules.<master-slave-data-source-name>.load-balance-algorithm-type= #详见读写分离部分
-sharding.jdbc.config.sharding.master-slave-rules.<master-slave-data-source-name>.config.map.key1= #详见读写分离部分
-sharding.jdbc.config.sharding.master-slave-rules.<master-slave-data-source-name>.config.map.key2= #详见读写分离部分
-sharding.jdbc.config.sharding.master-slave-rules.<master-slave-data-source-name>.config.map.keyx= #详见读写分离部分
+sharding.jdbc.config.config.map.key1= #详见读写分离部分
+sharding.jdbc.config.config.map.key2= #详见读写分离部分
+sharding.jdbc.config.config.map.keyx= #详见读写分离部分
 
-sharding.jdbc.config.sharding.props.sql.show= #是否开启SQL显示，默认值: false
-sharding.jdbc.config.sharding.props.executor.size= #工作线程数量，默认值: CPU核数
+sharding.jdbc.config.props.sql.show= #是否开启SQL显示，默认值: false
+sharding.jdbc.config.props.executor.size= #工作线程数量，默认值: CPU核数
 
-sharding.jdbc.config.sharding.config.map.key1= #用户自定义配置
-sharding.jdbc.config.sharding.config.map.key2= #用户自定义配置
-sharding.jdbc.config.sharding.config.map.keyx= #用户自定义配置
+sharding.jdbc.config.config.map.key1= #用户自定义配置
+sharding.jdbc.config.config.map.key2= #用户自定义配置
+sharding.jdbc.config.config.map.keyx= #用户自定义配置
 ```
 
 ### 读写分离
@@ -249,12 +262,13 @@ sharding.jdbc.config.sharding.master-slave-rules.<master-slave-data-source-name>
 sharding.jdbc.config.sharding.master-slave-rules.<master-slave-data-source-name>.load-balance-algorithm-class-name= #从库负载均衡算法类名称。该类需实现MasterSlaveLoadBalanceAlgorithm接口且提供无参数构造器
 sharding.jdbc.config.sharding.master-slave-rules.<master-slave-data-source-name>.load-balance-algorithm-type= #从库负载均衡算法类型，可选值：ROUND_ROBIN，RANDOM。若`load-balance-algorithm-class-name`存在则忽略该配置
 
-sharding.jdbc.config.sharding.master-slave-rules.<master-slave-data-source-name>.config.map.key1= #用户自定义配置
-sharding.jdbc.config.sharding.master-slave-rules.<master-slave-data-source-name>.config.map.key2= #用户自定义配置
-sharding.jdbc.config.sharding.master-slave-rules.<master-slave-data-source-name>.config.map.keyx= #用户自定义配置
+sharding.jdbc.config.config.map.key1= #用户自定义配置
+sharding.jdbc.config.config.map.key2= #用户自定义配置
+sharding.jdbc.config.config.map.keyx= #用户自定义配置
 
-sharding.jdbc.config.masterslave.props.sql.show= #是否开启SQL显示，默认值: false
-sharding.jdbc.config.masterslave.props.executor.size= #工作线程数量，默认值: CPU核数
+sharding.jdbc.config.props.sql.show= #是否开启SQL显示，默认值: false
+sharding.jdbc.config.props.executor.size= #工作线程数量，默认值: CPU核数
+sharding.jdbc.config.props.check.table.metadata.enabled= #是否在启动时检查分表元数据一致性，默认值: false
 ```
 
 ### 数据治理

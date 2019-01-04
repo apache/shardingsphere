@@ -1,41 +1,66 @@
 +++
 toc = true
-title = "Distributed sequence"
+title = "Distributed Primary Key"
 weight = 2
 +++
 
 ## Motivation
 
-In traditional database, primary key generation is mostly required. Every database has already support this feature, such as auto increment key on MySQL, sequence on Oracle, etc. 
-It is difficult to generate the global unique ID for different actual tables after Sharding.
-A simple solution is to generate the global unique ID by setting different initial value and increase step, but this requires additional maintenance. This solution make solution complicated. 
+In traditional database software development, the automatic primary key generation technology is a basic requirement. 
+All kinds of databases have provided corresponding support for this requirement, such as MySQL auto-increment key, Oracle auto-increment sequence and so on. 
+It is a tricky problem that different data nodes only generate one primary key after sharding. 
+Auto-increment keys in different physical tables within the same logic table can not perceive each other and thereby generate repeated primary keys. 
+Though it is possible to avoid clashes by restricting the initiative value and increase step of auto-increment key, but introducing extra operation rules can make the solution lack integrity and scalability.
 
-There are lots of third-party solutions, such as UUID or global ID generation services, every solutions has their suitable scenario. 
-It is not flexibility if Sharding-Sphere dependent on any of the them.
+Currently, there are many third-party solutions that can solve this problem perfectly, such as (UUID and others) relying on some particular algorithms to generate unrepeated keys, or leading in primary key generation services. 
+But it is for this diversity that ShardingSphere may restrict its own development if relying on any solution.
 
-For those reasons, Sharding-Sphere just provide interface and default implement, it can switch key generator strategy by end users. 
+For above reasons, ShardingSphere uses interfaces to access generated primary keys and separates the detailed underlying primary key generation.
 
-# Default distributed ID generator
+## Default Distributed Primary Key Generator
 
-Use snowflake algorithm to generate 64-bit primary key for long type.
+ShardingSphere provides flexible distributed primary key generation strategies. 
+Users can configure the primary key generation strategy of each table in sharding rule configuration module, with default snowflake algorithm generating 64bit long integral data.
 
-Binary data contains 4 parts: 1 bit for symbol-bit(0), 41 bits for timestamp, 10 bits for worker id and 12 bits for sequence in millisecond.
+As the distributed primary key generation algorithm published by Twitter, snowflake algorithm can ensure the primary key of different processes are not repeated and those of the same process are ordered.
 
-For different process, snowflake guarantee generate different ID by worker ID; for same process, snowflake guarantee generate different ID by timestamp and sequence in millisecond.
-Because of timestamp is monotonically increasing, generated key by snowflake is orderly which guarantee performance for indexed insert. 
+In the same process, it makes sure of unrepeated ID through time at first, or through order if the time is identical. 
+In the same time,with monotonously increasing time, if servers are adjusted to be generally synchronized, it can be assumed that generated primary keys are overall ordered in distributed environment. 
+This can guarantee the effectiveness in index field insertion, like the primary key of MySQL Innodb storage engine.
 
-Database should be save in a number column whose length is >= 64 bits, such as BIGINT in MySQL.
+In the primary key generated with snowflake algorithm, binary form has 4 parts, and from high to low they are 1 bit sign, 41bit timestamp, 10bit work ID and 12bit sequence number.
 
-Class: `io.shardingsphere.core.keygen.DefaultKeyGenerator`
+- sign bit (1bit)
 
-### Timestamp(41 bits)
+Reserved sign bit, constantly to be zero.
 
-The number of milliseconds from 00:00 on Nov 1, 2016 to the present and the high limit of year is 2156.
+- timestamp bit (41bit)
 
-### Work id(10 bits)
+41bit timestamp can contain 2 to the power of 41 milliseconds. One year can uses `365 * 24 * 60 * 60 * 1000` milliseconds. We can see from the calculation:
 
-This flag is unique in the Java process, and you should ensure that every process ID is different in distributed applications. The default value is 0, and can be configured by calling `DefaultKeyGenerator.setWorkerId("xxxx")`.
+```java
+Math.pow(2, 41) / (365 * 24 * 60 * 60 * 1000L);
+```
 
-### Sequence(12 bits)
+The result is approximately equal to 69.73 years. The time of ShardingSphere snowflake algorithm starts from November 1st, 2016, and can be used until the year of 2086, which we believe can satisfy the requirement of most systems.
 
-It is used to generate different IDs in one millisecond. If the amount of generated IDs in this millisecond is more than 4096(2 to the power 12), the generator will not generate ID until the next millisecond.
+- work ID bit (10bit)
+
+The sign is only in Java process. If applied in distributed deployment, each work ID should be different. 
+The default value is 0 and can be set by calling for statistic method `DefaultKeyGenerator.setWorkerId()`.
+
+- sequence number bit (12bit)
+
+The sequence number is used to generate different IDs in a millisecond. 
+If the number generated in that millisecond exceeds 4,096 (2 to the power of 12), the generator will wait till the next millisecond to continue.
+
+## Clock-Back
+
+Server clock-back can lead to the generation of repeated sequence, so the default distributed primary key generator has provided a maximumly tolerant clock-back millisecond number. 
+If the clock-back time has exceeded it, the program will report an error. 
+If it is within the tolerance range, the generator will wait till after the last generation time and then continue to work. 
+The default value of maximumly tolerant clock-back millisecond is 0 and can be set by calling for statistic method `DefaultKeyGenerator.setMaxTolerateTimeDifferenceMilliseconds()`.
+
+Please refer to the following picture for the detailed structure of snowflake algorithm primary key.
+
+![snowflake](http://shardingsphere.jd.com/document/current/img/sharding/snowflake_en_v3.png)

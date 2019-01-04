@@ -7,7 +7,7 @@ chapter = true
 
 ## Introduction
 
-Sharding-Proxy is second project of Sharding-Sphere.
+Sharding-Proxy is second project of ShardingSphere.
 It is a database proxy, is deployed as a stateless server, and supports MySQL protocol now.
 
 * Use standard MySQL protocol, application do not care about whether proxy or real MySQL.

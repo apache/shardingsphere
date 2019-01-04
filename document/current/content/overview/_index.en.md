@@ -9,21 +9,27 @@ chapter = true
 [![GitHub stars](https://img.shields.io/github/stars/sharding-sphere/sharding-sphere.svg?style=social&label=Star)](https://github.com/sharding-sphere/sharding-sphere/stargazers)&nbsp;
 [![GitHub forks](https://img.shields.io/github/forks/sharding-sphere/sharding-sphere.svg?style=social&label=Fork)](https://github.com/sharding-sphere/sharding-sphere/fork)&nbsp;
 [![GitHub watchers](https://img.shields.io/github/watchers/sharding-sphere/sharding-sphere.svg?style=social&label=Watch)](https://github.com/sharding-sphere/sharding-sphere/watchers)
+[![Stargazers over time](https://starcharts.herokuapp.com/sharding-sphere/sharding-sphere.svg)](https://starcharts.herokuapp.com/sharding-sphere/sharding-sphere)
 
-Sharding-Sphere is an open-source ecosystem consisted of a set of distributed database middleware solutions, including 3 independent products, Sharding-JDBC, Sharding-Proxy & Sharding-Sidecar (todo). They all provide functions of data sharding, distributed transaction and database orchestration, applicable in a variety of situations such as Java isomorphism, heterogeneous language and cloud native.
-Aiming at reasonably making full use of the computation and storage capacity of database in distributed system, Sharding-Sphere defines itself as a middleware, rather than a totally new type of database. As the cornerstone of many enterprises, relational database still takes a huge market share. Therefore, at current stage, we prefer to focus on its increment instead of a total overturn.
+ShardingSphere is an open-source ecosphere consists of a set of distributed database middleware solutions, including 3 independent products, Sharding-JDBC, Sharding-Proxy & Sharding-Sidecar (todo).
+They all provide functions of data sharding, distributed transaction and database orchestration, applicable in a variety of situations such as Java isomorphism, heterogeneous language and cloud native. 
+Aiming at reasonably making full use of the computation and storage capacity of database in distributed system, ShardingSphere defines itself as a middleware, rather than a totally new type of database. 
+As the cornerstone of many enterprises, relational database still takes a huge market share. 
+Therefore, at current stage, we prefer to focus on its increment instead of a total overturn.
 
 [![License](https://img.shields.io/badge/license-Apache%202-4EB1BA.svg)](https://www.apache.org/licenses/LICENSE-2.0.html)
 [![Gitter](https://badges.gitter.im/shardingsphere/shardingsphere.svg)](https://gitter.im/shardingsphere/Lobby)
 
 [![GitHub release](https://img.shields.io/github/release/sharding-sphere/sharding-sphere.svg)](https://github.com/sharding-sphere/sharding-sphere/releases)
 
+[![Total Lines](https://tokei.rs/b1/github/sharding-sphere/sharding-sphere?category=lines)](https://github.com/sharding-sphere/sharding-sphere)
 [![Build Status](https://api.travis-ci.org/sharding-sphere/sharding-sphere.png?branch=master)](https://travis-ci.org/sharding-sphere/sharding-sphere)
 [![Coverage Status](https://coveralls.io/repos/github/sharding-sphere/sharding-sphere/badge.svg?branch=dev)](https://coveralls.io/github/sharding-sphere/sharding-sphere?branch=dev)
+[![Codacy Badge](https://api.codacy.com/project/badge/Grade/278600ed40ad48e988ab485b439abbcd)](https://www.codacy.com/app/terrymanu/sharding-sphere?utm_source=github.com&amp;utm_medium=referral&amp;utm_content=sharding-sphere/sharding-sphere&amp;utm_campaign=Badge_Grade)
 [![OpenTracing-1.0 Badge](https://img.shields.io/badge/OpenTracing--1.0-enabled-blue.svg)](http://opentracing.io)
 [![Skywalking Tracing](https://img.shields.io/badge/Skywalking%20Tracing-enable-brightgreen.svg)](https://github.com/OpenSkywalking/skywalking)
 
-![Sharding-Sphere Scope](http://shardingsphere.jd.com/document/current/img/sharding-sphere-scope_en_v2.png)
+![ShardingSphere Scope](http://shardingsphere.jd.com/document/current/img/shardingsphere-scope_en.png)
 
 ## Introduction
 
@@ -75,6 +81,17 @@ They are all governed by mesh layer.
 | Decentralization        | Yes             | No                   | No                 |
 | Static Entry            | No              | Yes                  | No                 |
 
+### Hybrid Architecture
+
+Sharding-JDBC adopts decentralized architecture, applicable to high-performance light-weight OLTP application developed with Java; 
+Sharding-Proxy provides static entry and heterogeneous language support, applicable for OLAP application and the sharding databases management and operation situation.
+
+ShardingSphere is an ecosphere consists of multiple endpoints together.
+Through mixed use of Sharding-JDBC and Sharding-Proxy and unified sharding strategy by one registry center, ShardingSphere can build application system applicable to all kinds of situations. 
+Architects can adjust the system architecture to the most applicable one to current business more freely.
+
+![ShardingSphere Hybrid Architecture](http://shardingsphere.jd.com/document/current/img/shardingsphere-hybrid.png)
+
 ## Features
 
 ### Data Sharding
@@ -92,10 +109,9 @@ They are all governed by mesh layer.
 
 * Dynamic configuration
 * Fusing & Disabling
-* Open tracing
-* Multiple data replication (Planing)
+* Tracing
 * Elastic scaling out (Planing)
 
 ## Roadmap
 
-![Roadmap](http://shardingsphere.jd.com/document/current/img//roadmap_en_v4.png)
+![Roadmap](http://shardingsphere.jd.com/document/current/img/shardingsphere-roadmap_en.png)

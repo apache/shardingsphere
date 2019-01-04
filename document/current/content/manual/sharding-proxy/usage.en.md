@@ -13,7 +13,6 @@ weight = 1
 1. Run `bin/start.sh` on Linux, or `bin/start.bat` on Windows to start Sharding-Proxy. If you want to set port and configuration file, please refer to [quick-start](/en/quick-start/sharding-proxy-quick-start/).
 1. Connect to it by means of any client tools, e.g. `mysql -u root -h 127.0.0.1 -P 3307`
 
-
 ## Registry usage
 
 If you want to use the orchestration for Sharding-Proxy, the registry is necessary. Please refer to [Supported Registry Centers](/en/features/orchestration/supported-registry-repo/) for more detail.

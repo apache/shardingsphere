@@ -1,167 +1,251 @@
 <!DOCTYPE html>
-<html>
-<head>
-    <meta http-equiv="Content-Type" content="text/html; charset=utf-8"/>
-    <meta name="description" content="Sharding-Sphere官网"/>
-    <meta name="Keywords" content="Sharding-Sphere,Sharding-JDBC,Sharding-Proxy,Sharding-Sidecar,数据库中间件,分布式"/>
-    <title>Sharding-Sphere</title>
-    <link rel="icon" href="http://shardingsphere.jd.com/images/favicon.png" type="image/x-icon"/>
-    <link rel="stylesheet" href="http://static.360buyimg.com/finance/base/1.2.0/css/base.css"/>
-    <link rel="stylesheet" type="text/css" href="./css/index.css">
-</head>
-<body>
-    <div class="jdbc">
-        <div class="jdbcTopbar">
-            <div class="w1200 clearfix">
-                <div class="logo">
-                    <img src="http://shardingsphere.jd.com/images/white-logo.png" alt="">
-                    Sharding-Sphere
-                </div>
-                <div class="itemBox">
-                    <div class="item">
-                        <div class="i-dropBtn">
-                            文档<em class="i-d-caret"></em>
-                            <div class="i-d-pop">
-                                <a class="i-d-list" href="http://shardingsphere.io/document/current/cn/" target="_blank">3.x(当前)</a>
-                                <em class="i-d-line"></em>
-                                <a class="i-d-list" href="http://shardingsphere.io/document/legacy/2.x/cn/" target="_blank">2.x(遗留)</a>
-                                <em class="i-d-line"></em>
-                                <a class="i-d-list" href="http://shardingsphere.io/document/legacy/1.x/cn/" target="_blank">1.x(遗留)</a>
-                            </div>
-                        </div>
-                    </div>
-
-                    <div class="item">
-                        <div class="i-dropBtn">
-                            源码<em class="i-d-caret"></em>
-                            <div class="i-d-pop">
-                                <a class="i-d-list" href="https://github.com/sharding-sphere/sharding-sphere" target="_blank">Github</a>
-                                <em class="i-d-line"></em>
-                                <a class="i-d-list" href="https://gitee.com/sharding-sphere/sharding-sphere" target="_blank">码云</a>
-                            </div>
-                        </div>
-                    </div>
-                    <div class="item"><a href="http://shardingsphere.io/community/cn/" target="_blank">社区</a></div>
-                </div>
-                <div class="languageBox">
-                    <a class="lan" href="index_zh.html">中文</a>
-                    <a class="lan" href="index.html">EN</a>
-                </div>
+<html lang="zh-CN">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <meta name="description" content="ShardingSphere官网" />
+    <meta
+      name="Keywords"
+      content="ShardingSphere,Sharding-JDBC,Sharding-Proxy,Sharding-Sidecar,数据库中间件,分布式"
+    />
+    <title>ShardingSphere</title>
+    <link
+      rel="icon"
+      href="http://shardingsphere.jd.com/images/favicon.png"
+      type="image/x-icon"
+    />
+    <link
+      rel="stylesheet"
+      type="text/css"
+      href="http://shardingsphere.jd.com/css/index.css"
+    />
+  </head>
+  <body>
+    <header>
+      <nav class="clearfix">
+        <div class="float-left">
+          <img
+            class="nav-img"
+            src="http://shardingsphere.jd.com/images/logo_top.png"
+            alt=""
+          />
+        </div>
+        <div class="float-right">
+          <div class="nav-item">
+            <div id="btn-document" class="i-drop-btn">
+              文档<em class="i-d-caret"></em>
+              <div class="i-drop-pop">
+                <a
+                  class="i-drop-list"
+                  href="http://shardingsphere.io/document/current/cn/overview/"
+                  target="_blank"
+                  >3.x(当前)</a
+                >
+                <em class="i-drop-line"></em>
+                <a
+                  class="i-drop-list"
+                  href="http://shardingsphere.io/document/legacy/2.x/cn/"
+                  target="_blank"
+                  >2.x(遗留)</a
+                >
+                <em class="i-drop-line"></em>
+                <a
+                  class="i-drop-list"
+                  href="http://shardingsphere.io/document/legacy/1.x/cn/"
+                  target="_blank"
+                  >1.x(遗留)</a
+                >
+              </div>
             </div>
-        </div>
-        <div class="jdbcHead">
-            <div class="w1200">
-                <div class="logo">
-                    <img class="l-img" src="http://shardingsphere.jd.com/images/blue-logo.png" alt="">
-                    Sharding-Sphere
-                </div>
-                <div class="title">开源&emsp;极客&emsp;社区</div>
-                <div class="msg">Sharding-Sphere是一套开源的分布式数据库中间件解决方案组成的生态圈，它由Sharding-JDBC、Sharding-Proxy和Sharding-Sidecar（计划中）这3款相互独立的产品组成。他们均提供标准化的数据分片、分布式事务和数据库治理功能，可适用于如Java同构、异构语言、容器、云原生等各种多样化的应用场景。</div>
-                <div class="msg">Sharding-Sphere定位为关系型数据库中间件，旨在充分合理地在分布式的场景下利用关系型数据库的计算和存储能力，而并非实现一个全新的关系型数据库。它通过关注不变，进而抓住事物本质。关系型数据库当今依然占有巨大市场，是各个公司核心业务的基石，未来也难于撼动，我们目前阶段更加关注在原有基础上的增量，而非颠覆。</div>
-                <div class="button"><a class="btn" href="http://shardingsphere.io/document/current/cn/" target="_blank">了解更多</a></div>
-                <div class="other">
-                    <div class="o-list">
-                        <p><img src="http://shardingsphere.jd.com/images/sharding-jdbc.png" class="nl-img" alt=""></p>
-                        <p>Sharding-JDBC</p>
-                    </div>
-                    <div class="o-list">
-                        <p><img src="http://shardingsphere.jd.com/images/sharding-proxy.png" class="nl-img" alt=""></p>
-                        <p>Sharding-Proxy</p>
-                    </div>
-                    <div class="o-list">
-                        <p><img src="http://shardingsphere.jd.com/images/sharding-sidecar.png" class="nl-img" alt=""></p>
-                        <p>Sharding-Sidecar</p>
-                    </div>
-                </div>
+          </div>
+          <div class="nav-item">
+            <div id="btn-source" class="i-drop-btn">
+              源码<em class="i-drop-caret"></em>
+              <div class="i-drop-pop">
+                <a
+                  class="i-drop-list"
+                  href="https://github.com/sharding-sphere/sharding-sphere"
+                  target="_blank"
+                  >Github</a
+                >
+                <em class="i-drop-line"></em>
+                <a
+                  class="i-drop-list"
+                  href="https://gitee.com/sharding-sphere/sharding-sphere"
+                  target="_blank"
+                  >码云</a
+                >
+              </div>
             </div>
+          </div>
+          <div class="nav-item">
+            <a href="http://shardingsphere.io/community/cn/contribute/" target="_blank"
+              >社区</a
+            >
+          </div>
+          <div class="nav-item space">
+            <a href="index_zh.html" target="_blank">中文</a>
+          </div>
+          <div class="nav-item" style="margin-right:0">
+            <a href="index.html" target="_blank">EN</a>
+          </div>
         </div>
-        <div class="jdbcMsg">
-            <ul class="ulist">
-                <li class="list">
-                    <div class="w1200">
-                        <div class="l-image">
-                            <img src="http://shardingsphere.jd.com/images/sharding.png" class="nl-img" alt="">
-                        </div>
-                        <div class="l-msg">
-                            <div class="l-m-tit">数据分片</div>
-                            <div class="l-m-info">
-                                <p>分库 & 分表</p>
-                                <p>读写分离</p>
-                                <p>分布式主键</p>
-                            </div>
-                        </div>
-                    </div>
-                </li>
-                <li class="list">
-                    <div class="w1200">
-                        <div class="l-image">
-                            <img src="http://shardingsphere.jd.com/images/base-transaction.png" class="nl-img" alt="">
-                        </div>
-                        <div class="l-msg">
-                            <div class="l-m-tit">分布式事务</div>
-                            <div class="l-m-info">
-                                <p>XA强一致事务</p>
-                                <p>柔性事务</p>
-                            </div>
-                        </div>
-                    </div>
-                </li>
-                <li class="list">
-                    <div class="w1200">
-                        <div class="l-image">
-                            <img src="http://shardingsphere.jd.com/images/orchestration.png" class="nl-img" alt="">
-                        </div>
-                        <div class="l-msg">
-                            <div class="l-m-tit">数据库治理</div>
-                            <div class="l-m-info">
-                                <p>配置动态化</p>
-                                <p>熔断 & 禁用</p>
-                                <p>Open Tracing</p>
-                                <p>多数据副本 (规划中)</p>
-                                <p>弹性伸缩 (规划中)</p>
-                            </div>
-                        </div>
-                    </div>
-                </li>
-                <li class="list">
-                    <div class="w1200">
-                        <div class="l-image">
-                            <img src="http://shardingsphere.jd.com/images/compatibility.png" class="nl-img" alt="">
-                        </div>
-                        <div class="l-msg">
-                            <div class="l-m-tit">兼容性</div>
-                            <div class="l-m-info">
-                                <p>Sharding-JDBC兼容所有的Java ORM框架以及数据库连接池</p>
-                                <p>Sharding-Proxy兼容全部异构语言</p>
-                                <p>Sharding-Sidecar在Kubernetes/Mesos环境提供云原生支持 (规划中)</p>
-                            </div>
-                        </div>
-                    </div>
-                </li>
-            </ul>
-        </div>
-    </div>
-</body>
-<footer>
-    <main class="footer">
-        <div class="social">
+      </nav>
+      <div id="content" class="content">
+        <div class="sub-title">HTAP & 云原生 & 零侵入</div>
+        <hr class="sub-hr" />
+        <p class="sub-text">
+          ShardingSphere是一套开源的分布式数据库中间件解决方案组成的生态圈，它由Sharding-JDBC、Sharding-Proxy和Sharding-Sidecar（规划中）这3款相互独立，却又能够混合部署配合使用的产品组成。它们均提供标准化的数据分片、分布式事务和数据库治理功能，可适用于如Java同构、异构语言、容器、云原生等各种多样化的应用场景。
+        </p>
+        <p class="sub-text">
+          ShardingSphere定位为关系型数据库中间件，旨在充分合理地在分布式的场景下利用关系型数据库的计算和存储能力，而并非实现一个全新的关系型数据库。它通过关注不变，进而抓住事物本质。关系型数据库当今依然占有巨大市场，是各个公司核心业务的基石，未来也难于撼动，我们目前阶段更加关注在原有基础上的增量，而非颠覆。
+        </p>
+        <a
+          class="sub-button"
+          href="http://shardingsphere.io/document/current/cn/"
+          target="_blank"
+          >了解更多</a
+        >
+        <hr class="sub-btn-hr" />
+        <div class="sub-point">
+          <div class="sub-point-list">
             <div>
-                <a href="https://twitter.com/ShardingSphere" class="twitter"><span>twitter</span></a>
-                <a href="https://github.com/sharding-sphere" class="github"><span>Github</span></a>
-                <a href="https://gitee.com/sharding-sphere/sharding-sphere" class="gitee"><span>Gitee</span></a>
+              <img
+                src="http://shardingsphere.jd.com/images/sharding_jdbc.png"
+                class="nl-img"
+                alt=""
+              />
             </div>
+            <p>Sharding-JDBC</p>
+          </div>
+          <div class="sub-point-list">
             <div>
-                <a href="https://zhuanlan.zhihu.com/p/36819829" class="zhihu"><span>Zhi Hu</span></a>
-                <a href="mailto:sharding+subscribe@googlegroups.com" class="mailing-list"><span>Mailing List</span></a>
-                <a href="https://mp.weixin.qq.com/s/aXgWJyT1pskzyfr-AkEQtQ" class="wechart"><span>WeChart</span></a>
-                <a href="https://sharding.slack.com" class="slack"><span>Slack</span></a>
+              <img
+                src="http://shardingsphere.jd.com/images/sharding_proxy.png"
+                class="nl-img"
+                alt=""
+              />
             </div>
-        </div>
-        <div class="list">
-            <div class="copyright">
-                @Sharding-Sphere
+            <p>Sharding-Proxy</p>
+          </div>
+          <div class="sub-point-list">
+            <div>
+              <img
+                src="http://shardingsphere.jd.com/images/sharding_sidecar.png"
+                class="nl-img"
+                alt=""
+              />
             </div>
+            <p>Sharding-Sidecar</p>
+          </div>
         </div>
-    </main>
-</footer>
+      </div>
+    </header>
+    <section>
+      <div class="con-shard">
+        <div class="con-item">
+          <div class="l-msg">
+            <div class="l-m-tit">数据分片</div>
+            <hr class="l-m-tit-hr" />
+            <div class="l-m-info">
+              <p>分库 & 分表</p>
+              <p>读写分离</p>
+              <p>分片策略定制化</p>
+              <p>无中心化分布式主键</p>
+            </div>
+          </div>
+            <img
+              src="http://shardingsphere.jd.com/images/db_sharding.png"
+              class="point-img"
+              alt=""
+            />
+        </div>
+      </div>
+      <div class="con-tran">
+        <div class="con-item">
+          <div class="l-msg">
+            <div class="l-m-tit">分布式事务</div>
+            <hr class="l-m-tit-hr" />
+            <div class="l-m-info">
+              <p>两阶段提交事务</p>
+              <p>柔性事务</p>
+            </div>
+          </div>
+            <img
+              src="http://shardingsphere.jd.com/images/db_transaction.png"
+              class="point-img"
+              alt=""
+            />
+        </div>
+      </div>
+      <div class="con-orch">
+        <div class="con-item">
+          <div class="l-msg">
+            <div class="l-m-tit">数据库治理</div>
+            <hr class="l-m-tit-hr" />
+            <div class="l-m-info">
+              <p>配置动态化</p>
+              <p>编排 & 治理</p>
+              <p>可视化链路追踪</p>
+              <p>弹性伸缩 (规划中)</p>
+            </div>
+          </div>
+            <img
+              src="http://shardingsphere.jd.com/images/db_orchestration.png"
+              class="point-img"
+              alt=""
+            />
+        </div>
+      </div>
+      <div class="con-footer">
+        <hr class="con-footer-hr" />
+        <div class="con-item clearfix">
+          <div class="float-left">
+            <img
+              src="http://shardingsphere.jd.com/images/logo_bottom.png"
+              class="footer-logo"
+              alt=""
+            />
+          </div>
+          <div class="float-right footer-icon">
+            <a href="https://twitter.com/ShardingSphere" class="social-icon">
+              <img
+                src="http://shardingsphere.jd.com/images/icon_twitter.png"
+                alt="twitter"
+              />
+            </a>
+            <a href="https://github.com/sharding-sphere" class="social-icon">
+              <img
+                src="http://shardingsphere.jd.com/images/icon_github.png"
+                alt="github"
+              />
+            </a>
+            <a href="https://gitee.com/Sharding-Sphere/" class="social-icon">
+              <img
+                src="http://shardingsphere.jd.com/images/icon_gitee.png"
+                alt="gitee"
+              />
+            </a>
+            <a href="https://www.zhihu.com/people/sharding-sphere/" class="social-icon">
+              <img
+                src="http://shardingsphere.jd.com/images/icon_zhihu.png"
+                alt="zhihu"
+              />
+            </a>
+          </div>
+        </div>
+      </div>
+    </section>
+    <footer>@ShardingSphere</footer>
+    <script>
+      !(function() {
+        var $btnDoc = document.getElementById("btn-document");
+        var $btnSour = document.getElementById("btn-source");
+        var $content = document.getElementById("content");
+        $btnDoc.addEventListener("touchstart", function() {}, false);
+        $btnSour.addEventListener("touchstart", function() {}, false);
+        $content.addEventListener("touchstart", function() {}, false);
+      })();
+    </script>
+  </body>
 </html>

@@ -9,7 +9,7 @@ weight = 4
 
 `APM` is the abbreviation of Application Performance Monitoring. Currently its core function is the performance diagnosis of distributed system, including call chain demonstration, application topology analysis, etc.
 
-[Sharding-Sphere](http://shardingsphere.io) Team work with [SkyWalking](http://skywalking.io) Team to introduce an automatic monitor agent of `Sharding-Sphere` to send tracing data of `Sharding-Sphere` to `SkyWalking`.
+[ShardingSphere](http://shardingsphere.io) Team work with [SkyWalking](http://skywalking.io) Team to introduce an automatic monitor agent of `ShardingSphere` to send tracing data of `ShardingSphere` to `SkyWalking`.
 
 ## Usage
 
@@ -26,7 +26,7 @@ weight = 4
     shardingTracer.init(new SkywalkingTracer())   
 ```
 
-*Notices: When using SkyWalking's OpenTracing monitor agent, disabling the original Sharding-Sphere monitor agent plugin is necessary to avoid conflicting with each other.*
+*Notices: When using SkyWalking's OpenTracing monitor agent, disabling the original ShardingSphere monitor agent plugin is necessary to avoid conflicting with each other.*
 
 ### Using SkyWalking
 

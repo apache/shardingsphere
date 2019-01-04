@@ -14,6 +14,7 @@ weight = 1
          shardingRuleConfig.getTableRuleConfigs().add(getOrderTableRuleConfiguration());
          shardingRuleConfig.getTableRuleConfigs().add(getOrderItemTableRuleConfiguration());
          shardingRuleConfig.getBindingTableGroups().add("t_order, t_order_item");
+         shardingRuleConfig.getBroadcastTables().add("t_config");
          shardingRuleConfig.setDefaultDatabaseShardingStrategyConfig(new InlineShardingStrategyConfiguration("user_id", "ds${user_id % 2}"));
          shardingRuleConfig.setDefaultTableShardingStrategyConfig(new StandardShardingStrategyConfiguration("order_id", new ModuloShardingTableAlgorithm()));
          return ShardingDataSourceFactory.createDataSource(createDataSourceMap(), shardingRuleConfig);
@@ -70,6 +71,7 @@ weight = 1
         shardingRuleConfig.getTableRuleConfigs().add(getOrderTableRuleConfiguration());
         shardingRuleConfig.getTableRuleConfigs().add(getOrderItemTableRuleConfiguration());
         shardingRuleConfig.getBindingTableGroups().add("t_order, t_order_item");
+        shardingRuleConfig.getBroadcastTables().add("t_config");
         shardingRuleConfig.setDefaultDatabaseShardingStrategyConfig(new StandardShardingStrategyConfiguration("user_id", new ModuloShardingDatabaseAlgorithm()));
         shardingRuleConfig.setDefaultTableShardingStrategyConfig(new StandardShardingStrategyConfiguration("order_id", new ModuloShardingTableAlgorithm()));
         shardingRuleConfig.setMasterSlaveRuleConfigs(getMasterSlaveRuleConfigurations());
@@ -149,6 +151,7 @@ weight = 1
 | ----------------------------------------- | ------------------------------------------ | ----------------------------------------------------------------------- |
 | tableRuleConfigs                          | Collection\<TableRuleConfiguration\>       | 分片规则列表                                                              |
 | bindingTableGroups (?)                    | Collection\<String\>                       | 绑定表规则列表                                                            |
+| broadcastTables (?)                       | Collection\<String\>                       | 广播表规则列表                                                            |
 | defaultDataSourceName (?)                 | String                                     | 未配置分片规则的表将通过默认数据源定位                                       |
 | defaultDatabaseShardingStrategyConfig (?) | ShardingStrategyConfiguration              | 默认分库策略                                                              |
 | defaultTableShardingStrategyConfig (?)    | ShardingStrategyConfiguration              | 默认分表策略                                                              |
@@ -213,10 +216,12 @@ ShardingStrategyConfiguration的实现类，用于配置不分片的策略。
 
 属性配置项，可以为以下属性。
 
-| *名称*             | *数据类型* | *说明*                      |
-| ----------------- | --------- | --------------------------- |
-| sql.show (?)      | boolean   | 是否开启SQL显示，默认值: false |
-| executor.size (?) | int       | 工作线程数量，默认值: CPU核数  |
+| *名称*                             | *数据类型*  | *说明*                                          |
+| ----------------------------------| --------- | -------------------------------------------------|
+| sql.show (?)                      | boolean   | 是否开启SQL显示，默认值: false                      |
+| executor.size (?)                 | int       | 工作线程数量，默认值: CPU核数                       |
+| max.connections.size.per.query (?)| int       | 每个物理数据库为每次查询分配的最大连接数量。默认值: 1   |
+| check.table.metadata.enabled (?)  | boolean   | 是否在启动时检查分表元数据一致性，默认值: false        |
 
 #### configMap
 
@@ -254,11 +259,12 @@ ShardingStrategyConfiguration的实现类，用于配置不分片的策略。
 
 属性配置项，可以为以下属性。
 
-| *名称*                             | *数据类型* | *说明*                                            |
+| *名称*                              | *数据类型* | *说明*                                            |
 | ---------------------------------- | --------- | ------------------------------------------------- |
 | sql.show (?)                       | boolean   | 是否打印SQL解析和改写日志，默认值: false              |
-| executor.size (?)                  | int       | 用于SQL执行的工作线程数量，为零则表示无限制。默认值: 0  |
+| executor.size (?)                  | int       | 用于SQL执行的工作线程数量，为零则表示无限制。默认值: 0   |
 | max.connections.size.per.query (?) | int       | 每个物理数据库为每次查询分配的最大连接数量。默认值: 1    |
+| check.table.metadata.enabled (?)   | boolean   | 是否在启动时检查分表元数据一致性，默认值: false         |
 
 
 ### 数据治理

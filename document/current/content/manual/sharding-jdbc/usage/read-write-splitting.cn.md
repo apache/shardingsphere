@@ -82,7 +82,7 @@ masterSlaveRule:
   
   props:
       sql.show: true
-    configMap:
+  configMap:
       key1: value1
 ```
 
@@ -159,7 +159,7 @@ sharding.jdbc.config.masterslave.name=ms
 sharding.jdbc.config.masterslave.master-data-source-name=master
 sharding.jdbc.config.masterslave.slave-data-source-names=slave0,slave1
 
-sharding.jdbc.config.masterslave.props.sql.show=true
+sharding.jdbc.config.props.sql.show=true
 ```
 
 ### 基于Spring命名空间的规则配置

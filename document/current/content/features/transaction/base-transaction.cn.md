@@ -1,7 +1,7 @@
 +++
 pre = "<b>3.4.3. </b>"
 toc = true
-title = "BASE事务"
+title = "柔性事务"
 weight = 3
 +++
 
@@ -15,6 +15,4 @@ weight = 3
 
 ## 支持情况
 
-* Sharding-JDBC预计3.1.0支持
-
-* Sharding-Proxy预计3.1.0支持
+* 预计4.0.0支持

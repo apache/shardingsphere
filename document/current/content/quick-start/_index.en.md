@@ -5,4 +5,4 @@ weight = 2
 chapter = true
 +++
 
-User can take a glance at Sharding-Sphere for quick start.
+User can take a glance at ShardingSphere for quick start.

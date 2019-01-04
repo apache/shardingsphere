@@ -49,9 +49,13 @@ shardingRule:
       tableStrategy:
         inline:
           shardingColumn: order_id
-          algorithmExpression: t_order_item${order_id % 2}  
+          algorithmExpression: t_order_item${order_id % 2}   
   bindingTables:
     - t_order,t_order_item
+  broadcastTables:
+    - t_config
+  
+  defaultDataSourceName: ds0
   defaultDatabaseStrategy:
     inline:
       shardingColumn: user_id
@@ -283,6 +287,7 @@ props:
   acceptor.size: #Max thread count to handle client's requests, default value is CPU*2
   proxy.transaction.enabled: #Enable transaction, only support XA now, default value is false
   proxy.opentracing.enabled: #Enable open tracing, default value is false. More details please reference[APM](/en/features/orchestration/apm/)
+  check.table.metadata.enabled: #To check the metadata consistency of all the tables or not, default value : false
 ```
 
 ### Authorization for Proxy

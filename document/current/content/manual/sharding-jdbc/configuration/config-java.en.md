@@ -14,6 +14,7 @@ weight = 1
          shardingRuleConfig.getTableRuleConfigs().add(getOrderTableRuleConfiguration());
          shardingRuleConfig.getTableRuleConfigs().add(getOrderItemTableRuleConfiguration());
          shardingRuleConfig.getBindingTableGroups().add("t_order, t_order_item");
+         shardingRuleConfig.getBroadcastTables().add("t_config");
          shardingRuleConfig.setDefaultDatabaseShardingStrategyConfig(new InlineShardingStrategyConfiguration("user_id", "ds${user_id % 2}"));
          shardingRuleConfig.setDefaultTableShardingStrategyConfig(new StandardShardingStrategyConfiguration("order_id", new ModuloShardingTableAlgorithm()));
          return ShardingDataSourceFactory.createDataSource(createDataSourceMap(), shardingRuleConfig);
@@ -70,6 +71,7 @@ weight = 1
         shardingRuleConfig.getTableRuleConfigs().add(getOrderTableRuleConfiguration());
         shardingRuleConfig.getTableRuleConfigs().add(getOrderItemTableRuleConfiguration());
         shardingRuleConfig.getBindingTableGroups().add("t_order, t_order_item");
+        shardingRuleConfig.getBroadcastTables().add("t_config");
         shardingRuleConfig.setDefaultDatabaseShardingStrategyConfig(new StandardShardingStrategyConfiguration("user_id", new ModuloShardingDatabaseAlgorithm()));
         shardingRuleConfig.setDefaultTableShardingStrategyConfig(new StandardShardingStrategyConfiguration("order_id", new ModuloShardingTableAlgorithm()));
         shardingRuleConfig.setMasterSlaveRuleConfigs(getMasterSlaveRuleConfigurations());
@@ -141,15 +143,16 @@ weight = 1
 
 #### ShardingRuleConfiguration
 
-| *Name*                                    | *DataType*           | *Description*                                                                                                   |
-| ----------------------------------------- | ------------------------------------------ | ----------------------------------------------------------------------------------------- |
-| tableRuleConfigs                          | Collection\<TableRuleConfiguration\>       | Table rule configuration                                                                  |
-| bindingTableGroups (?)                    | Collection\<String\>                       | Binding table groups                                                                      |
-| defaultDataSourceName (?)                 | String                                     | If table not configure at table rule, will route to defaultDataSourceName                 |
-| defaultDatabaseShardingStrategyConfig (?) | ShardingStrategyConfiguration              | Default strategy for sharding databases                                                   |
-| defaultTableShardingStrategyConfig (?)    | ShardingStrategyConfiguration              | Default strategy for sharding tables                                                      |
+| *Name*                                    | *DataType*           | *Description*                                                                                                     |
+| ----------------------------------------- | ------------------------------------------ | ------------------------------------------------------------------------------------------- |
+| tableRuleConfigs                          | Collection\<TableRuleConfiguration\>       | Table rule configuration                                                                    |
+| bindingTableGroups (?)                    | Collection\<String\>                       | Binding table groups                                                                        |
+| broadcastTables (?)                       | Collection\<String\>                       | Broadcast table                                                                             |
+| defaultDataSourceName (?)                 | String                                     | If table not configure at table rule, will route to defaultDataSourceName                   |
+| defaultDatabaseShardingStrategyConfig (?) | ShardingStrategyConfiguration              | Default strategy for sharding databases                                                     |
+| defaultTableShardingStrategyConfig (?)    | ShardingStrategyConfiguration              | Default strategy for sharding tables                                                        |
 | defaultKeyGenerator (?)                   | KeyGenerator                               | Default key generator, default value is `io.shardingsphere.core.keygen.DefaultKeyGenerator` |
-| masterSlaveRuleConfigs (?)                | Collection\<MasterSlaveRuleConfiguration\> | Read-write splitting rule configuration                                                   |
+| masterSlaveRuleConfigs (?)                | Collection\<MasterSlaveRuleConfiguration\> | Read-write splitting rule configuration                                                     |
 
 #### TableRuleConfiguration
 
@@ -212,6 +215,7 @@ Enumeration of properties.
 | sql.show (?)                       | boolean    | Print SQL parse and rewrite log, default value: false                          |
 | executor.size (?)                  | int        | The number of SQL execution threads, zero means no limit. default value: 0     |
 | max.connections.size.per.query (?) | int        | Max connection size for every query to every actual database. default value: 1 |
+| check.table.metadata.enabled (?)   | boolean    | Check the metadata consistency of all the tables, default value : false         |
 
 #### configMap
 
@@ -245,10 +249,12 @@ User-defined arguments.
 
 Enumeration of properties.
 
-| *Name*            | *DataType* | *Description*                                           |
-| ----------------- | ---------- | ------------------------------------------------------- |
-| sql.show (?)      | boolean    | To show SQLS or not, default value: false               |
-| executor.size (?) | int        | The number of working threads, default value: CPU count |
+| *Name*                             | *DataType* | *Description*                                                                  |
+| ---------------------------------- | ---------- | ------------------------------------------------------------------------------ |
+| sql.show (?)                       | boolean    | To show SQLS or not, default value: false                                      |
+| executor.size (?)                  | int        | The number of working threads, default value: CPU count                        |
+| max.connections.size.per.query (?) | int        | Max connection size for every query to every actual database. default value: 1 |
+| check.table.metadata.enabled (?)   | boolean    | Check the metadata consistency of all the tables, default value : false         |
 
 ### Orchestration
 

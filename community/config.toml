@@ -1,19 +1,19 @@
 baseURL = "http://shardingsphere.io/community/"
 canonifyurls = true
 languageCode = "en-us"
-title = "Sharding-Sphere"
+title = "ShardingSphere"
 theme = "hugo-theme-learn"
 defaultContentLanguage = "en"
 defaultContentLanguageInSubdir= true
 
 [Languages]
 [Languages.en]
-title = "Sharding-Sphere"
+title = "ShardingSphere"
 weight = 1
 languageName = "English"
 
 [Languages.cn]
-title = "Sharding-Sphere"
+title = "ShardingSphere"
 weight = 2
 languageName = "Chinese"
 [params]

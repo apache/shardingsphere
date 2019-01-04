@@ -12,4 +12,3 @@ This chapter is to introduce core concepts of data sharding, including:
 - Core concepts of SQL
 - Core concepts of sharding
 - Core concepts of configuration
-- Core process

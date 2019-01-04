@@ -1,11 +1,11 @@
 +++
-pre = "<b>3. </b>"
+pre = "<b>2. </b>"
 title = "采用公司"
-weight = 3
+weight = 2
 chapter = true
 +++
 
-欢迎采用了Sharding-Sphere的公司在此登记，您的支持是我们最大的动力。
+欢迎采用了ShardingSphere的公司在此登记，您的支持是我们最大的动力。
 
 请按`公司名` + `首页` + `公司类型`的格式在[此处](https://github.com/sharding-sphere/sharding-sphere/issues/234)登记。
 
@@ -14,6 +14,7 @@ chapter = true
 ## 电子商务
 
 * [当当](http://www.dangdang.com/)
+* [转转](http://www.zhuanzhuan.com/)
 * [搜好货](http://www.912688.com/)
 * [唯品会](http://www.vip.com/)
 * [TCL](http://www.tcl.com/)
@@ -24,6 +25,9 @@ chapter = true
 * 京东大数据与智能供应链
 * [每日优鲜便利购](https://www.imrfresh.com/)
 * [大易有塑](https://www.dayi35.com/)
+* [瓜子二手车](https://www.guazi.com/)
+* [大搜车](https://www.souche.com/zh/)
+* [蜂网](https://www.newbeescm.com/)
 
 ## 互联网金融
 
@@ -52,12 +56,11 @@ chapter = true
 ## O2O
 
 * [东方车联](http://www.dongfang789.com/)
-* [转转](http://www.zhuanzhuan.com/)
-* [PP停车](https://660pp.com)
+* [PP停车](https://660pp.com/)
 * [中策车空间](http://www.zcckj.com/)
 * [首汽约车](http://www.01zhuanche.com/)
 * [滴滴小桔车服](https://www.didiglobal.com/)
-* [瓜子二手车](https://www.guazi.com/)
+* [点我达](https://www.dianwoda.com/)
 
 ## 社交平台
 
@@ -66,7 +69,7 @@ chapter = true
 ## 文化娱乐
 
 * [欢聚时代YY](http://www.yy.com/)
-* [龙猫直播](http://www.tvlongmao.com)
+* [龙猫直播](http://www.tvlongmao.com/)
 * [BBGame](http://www.bbgameonline.com/)
 * [视觉中国](https://500px.me/)
 * [哔哩哔哩弹幕网](https://www.bilibili.com/)
@@ -92,6 +95,7 @@ chapter = true
 * [高阳捷迅](http://www.19pay.com.cn/)
 * [超级蓝领网络科技服务有限公司](http://www.chaojilanling.cn/)
 * [北京云庐科技有限公司](http://www.cloudansys.com/)
+* [海典软件](http://www.hydee.cn/)
 
 ## 政府
 

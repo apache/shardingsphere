@@ -6,14 +6,17 @@ weight = 3
 
 ## Motivation
 
-Sharding by sharding-column and sharding-value which parsed from SQL is a good way to compatible with original database access layer. But if the sharding condition is not exist in SQL, then will route to all data nodes.
+ShardingSphere can be compatible with SQL in way of extracting sharding columns and values to shard after parsing SQL statements. 
+Without sharding conditions in SQL statement, it is impossible to shard but requires full route.
 
-In some special scenario, sharding condition exist at outside logic, not in SQL. So there need a new route method for this, in Sharding-Sphere, we call it as `Hint`.
+In some application situations, sharding conditions do not exist in SQL but in external business logic. 
+So it requires to provide an externally designated sharding result method, which is referred to as `Hint` in ShardingSphere.
 
 ## Mechanism
 
-Sharding-Sphere use `ThreadLocal` to manage sharding-columns and sharding-values. Developers can use `HintManager` to add sharding conditions by coding, sharding conditions effective only on current thread.
+ShardingSphere uses `ThreadLocal` to manage sharding key values. 
+Users can add sharding conditions to `HintManager` through programming, but the condition is only effective within the current thread.
 
-Expect coding, Sharding-Sphere plan to add hint into SQL comments, make developers use it easier.
+In addition to using sharding hint through programming, ShardingSphere also plans to cite Hint through special notation in SQL, so that users can use that function in a more transparent way.
 
-When using hint, SQL will ignore original sharding strategy, route to indicated data nodes directly. 
+The SQL that is designated with sharding hint will ignore the former sharding logic but will directly route to the designated data node.

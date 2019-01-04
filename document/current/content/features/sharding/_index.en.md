@@ -75,4 +75,4 @@ They usually replace strongly consistent transactions with eventually consistent
 
 ## Goal
 
-**The main design goal of the data sharding modular of Sharding-Sphere is to try to reduce the influence of database sharding and table sharding, in order to let users use horizontal sharding database group like one database.**
+**The main design goal of the data sharding modular of ShardingSphere is to try to reduce the influence of database sharding and table sharding, in order to let users use horizontal sharding database group like one database.**
