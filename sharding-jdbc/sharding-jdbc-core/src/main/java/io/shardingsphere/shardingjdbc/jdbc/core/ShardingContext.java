@@ -23,6 +23,7 @@ import io.shardingsphere.core.constant.properties.ShardingPropertiesConstant;
 import io.shardingsphere.core.executor.ShardingExecuteEngine;
 import io.shardingsphere.core.metadata.ShardingMetaData;
 import io.shardingsphere.core.rule.ShardingRule;
+import io.shardingsphere.shardingjdbc.jdbc.core.datasource.metadata.CachedDatabaseMetaData;
 import io.shardingsphere.shardingjdbc.jdbc.metadata.JDBCTableMetaDataConnectionManager;
 import lombok.Getter;
 
@@ -44,7 +45,7 @@ import java.util.Properties;
 @Getter
 public final class ShardingContext implements AutoCloseable {
     
-    private final DatabaseMetaData databaseMetaData;
+    private final DatabaseMetaData cachedDatabaseMetaData;
     
     private final ShardingRule shardingRule;
     
@@ -57,9 +58,10 @@ public final class ShardingContext implements AutoCloseable {
     private final ShardingMetaData metaData;
     
     public ShardingContext(final Map<String, DataSource> dataSourceMap, final ShardingRule shardingRule, final DatabaseType databaseType, final Properties props) throws SQLException {
-        this.databaseMetaData = getDatabaseMetaData(dataSourceMap);
+        this.cachedDatabaseMetaData = createCachedDatabaseMetaData(dataSourceMap);
         this.shardingRule = shardingRule;
         this.databaseType = databaseType;
+        
         shardingProperties = new ShardingProperties(null == props ? new Properties() : props);
         int executorSize = shardingProperties.getValue(ShardingPropertiesConstant.EXECUTOR_SIZE);
         executeEngine = new ShardingExecuteEngine(executorSize);
@@ -68,9 +70,9 @@ public final class ShardingContext implements AutoCloseable {
                 shardingProperties.<Boolean>getValue(ShardingPropertiesConstant.CHECK_TABLE_METADATA_ENABLED));
     }
     
-    private DatabaseMetaData getDatabaseMetaData(final Map<String, DataSource> dataSourceMap) throws SQLException {
+    private DatabaseMetaData createCachedDatabaseMetaData(final Map<String, DataSource> dataSourceMap) throws SQLException {
         try (Connection connection = dataSourceMap.values().iterator().next().getConnection()) {
-            return connection.getMetaData();
+            return new CachedDatabaseMetaData(connection.getMetaData());
         }
     }
     

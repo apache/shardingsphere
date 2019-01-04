@@ -27,6 +27,7 @@ import lombok.Getter;
 import javax.sql.DataSource;
 import java.sql.DatabaseMetaData;
 import java.sql.PreparedStatement;
+import java.sql.SQLException;
 import java.sql.Statement;
 import java.util.Map;
 
@@ -52,8 +53,8 @@ public final class ShardingConnection extends AbstractConnectionAdapter {
     }
     
     @Override
-    public DatabaseMetaData getMetaData() {
-        return shardingContext.getDatabaseMetaData();
+    public DatabaseMetaData getMetaData() throws SQLException {
+        return getCachedConnections().isEmpty() ? shardingContext.getCachedDatabaseMetaData() : getCachedConnections().values().iterator().next().getMetaData();
     }
     
     @Override
