@@ -13,17 +13,17 @@ weight = 1
 
 ## 配置中心数据结构
 
-配置中心在定义的命名空间的config下，以YAML格式存储，包括数据源，分库分表，读写分离、ConfigMap及Properties配置，可通过修改节点来实现对于配置的动态管理。
+配置中心在定义的命名空间的config下，以YAML格式存储，包括数据源，数据分片，读写分离、ConfigMap及Properties配置，可通过修改节点来实现对于配置的动态管理。
 
 ```
 config
     ├──authentication                            # Sharding-Proxy权限配置
-    ├──configMap                                 # 分库分表ConfigMap配置，以K/V形式存储，如：{"key1":"value1"}
+    ├──configMap                                 # 数据分片ConfigMap配置，以K/V形式存储，如：{"key1":"value1"}
     ├──props                                     # 属性配置
     ├──schema                                    # Schema配置
     ├      ├──sharding_db                        # SchemaName配置
     ├      ├      ├──datasource                  # 数据源配置
-    ├      ├      ├──rule                        # 分库分表规则配置
+    ├      ├      ├──rule                        # 数据分片规则配置
     ├      ├──masterslave_db                     # SchemaName配置
     ├      ├      ├──datasource                  # 数据源配置
     ├      ├      ├──rule                        # 读写分离规则
@@ -86,7 +86,7 @@ ds_1: !!io.shardingsphere.orchestration.yaml.YamlDataSourceConfiguration
 
 ### config/schema/sharding_db/rule
 
-分库分表配置，包括分库分表 + 读写分离配置。
+数据分片配置，包括数据分片 + 读写分离配置。
 
 ```yaml
 tables:

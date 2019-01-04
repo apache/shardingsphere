@@ -5,6 +5,6 @@ weight = 3
 chapter = true
 +++
 
-## Background
+## Navigation
 
-Provide registry center, dynamic configuration, database disable and apm features.
+Provide orchestration of registry center, dynamic configuration, database & application disabling, and APM.
