@@ -6,7 +6,7 @@
     <parent>
         <groupId>io.shardingsphere</groupId>
         <artifactId>sharding-transaction-2pc</artifactId>
-        <version>3.1.0-SNAPSHOT</version>
+        <version>4.0.0.M1-SNAPSHOT</version>
     </parent>
     <artifactId>sharding-transaction-2pc-xa</artifactId>
     <name>${project.artifactId}</name>

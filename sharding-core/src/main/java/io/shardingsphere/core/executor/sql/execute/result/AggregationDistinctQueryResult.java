@@ -25,7 +25,6 @@ import io.shardingsphere.core.constant.AggregationType;
 import io.shardingsphere.core.executor.sql.execute.row.QueryRow;
 import io.shardingsphere.core.merger.QueryResult;
 import io.shardingsphere.core.parsing.parser.context.selectitem.AggregationDistinctSelectItem;
-import io.shardingsphere.core.parsing.parser.sql.dql.select.SelectStatement;
 import lombok.SneakyThrows;
 
 import java.io.InputStream;
@@ -53,15 +52,15 @@ public final class AggregationDistinctQueryResult extends DistinctQueryResult {
     }
     
     @SneakyThrows
-    public AggregationDistinctQueryResult(final Collection<QueryResult> queryResults, final SelectStatement selectStatement) {
-        super(queryResults, Lists.transform(selectStatement.getAggregationDistinctSelectItems(), new Function<AggregationDistinctSelectItem, String>() {
+    public AggregationDistinctQueryResult(final Collection<QueryResult> queryResults, final List<AggregationDistinctSelectItem> aggregationDistinctSelectItems) {
+        super(queryResults, Lists.transform(aggregationDistinctSelectItems, new Function<AggregationDistinctSelectItem, String>() {
     
             @Override
             public String apply(final AggregationDistinctSelectItem input) {
                 return input.getDistinctColumnLabel();
             }
         }));
-        metaData = new AggregationDistinctQueryMetaData(selectStatement.getAggregationDistinctSelectItems(), getColumnLabelAndIndexMap());
+        metaData = new AggregationDistinctQueryMetaData(aggregationDistinctSelectItems, getColumnLabelAndIndexMap());
     }
     
     /**
@@ -121,12 +120,12 @@ public final class AggregationDistinctQueryResult extends DistinctQueryResult {
     
     @Override
     public InputStream getInputStream(final int columnIndex, final String type) {
-        return (InputStream) getValue(columnIndex);
+        return getInputStream(getValue(columnIndex));
     }
     
     @Override
     public InputStream getInputStream(final String columnLabel, final String type) {
-        return (InputStream) getValue(columnLabel);
+        return getInputStream(getValue(columnLabel));
     }
     
     @Override

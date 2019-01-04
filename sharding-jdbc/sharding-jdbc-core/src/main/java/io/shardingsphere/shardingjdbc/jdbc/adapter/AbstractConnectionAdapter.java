@@ -67,7 +67,7 @@ public abstract class AbstractConnectionAdapter extends AbstractUnsupportedOpera
     
     private boolean readOnly = true;
     
-    private boolean closed;
+    private volatile boolean closed;
     
     private int transactionIsolation = TRANSACTION_READ_UNCOMMITTED;
     
@@ -173,10 +173,6 @@ public abstract class AbstractConnectionAdapter extends AbstractUnsupportedOpera
     
     protected abstract Map<String, DataSource> getDataSourceMap();
     
-    protected final void removeCache(final Connection connection) {
-        cachedConnections.values().remove(connection);
-    }
-    
     @Override
     public final boolean getAutoCommit() {
         return autoCommit;
@@ -241,9 +237,6 @@ public abstract class AbstractConnectionAdapter extends AbstractUnsupportedOpera
     
     @Override
     public final void close() throws SQLException {
-        if (closed) {
-            return;
-        }
         closed = true;
         HintManagerHolder.clear();
         MasterVisitedManager.clear();
@@ -258,6 +251,7 @@ public abstract class AbstractConnectionAdapter extends AbstractUnsupportedOpera
                 }
             });
         } finally {
+            cachedConnections.clear();
             rootInvokeHook.finish(connectionSize);
         }
     }
