@@ -23,7 +23,7 @@ import io.shardingsphere.core.constant.properties.ShardingPropertiesConstant;
 import io.shardingsphere.core.executor.ShardingExecuteEngine;
 import io.shardingsphere.core.metadata.ShardingMetaData;
 import io.shardingsphere.core.rule.ShardingRule;
-import io.shardingsphere.shardingjdbc.jdbc.core.datasource.CachedDatabaseMetaData;
+import io.shardingsphere.shardingjdbc.jdbc.core.datasource.metadata.CachedDatabaseMetaData;
 import io.shardingsphere.shardingjdbc.jdbc.metadata.JDBCTableMetaDataConnectionManager;
 import lombok.Getter;
 

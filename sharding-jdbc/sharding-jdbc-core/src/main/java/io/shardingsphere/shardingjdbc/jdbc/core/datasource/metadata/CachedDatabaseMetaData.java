@@ -15,23 +15,18 @@
  * </p>
  */
 
-package io.shardingsphere.shardingjdbc.jdbc.core.datasource;
+package io.shardingsphere.shardingjdbc.jdbc.core.datasource.metadata;
 
-import io.shardingsphere.shardingjdbc.jdbc.adapter.WrapperAdapter;
-
-import java.sql.Connection;
 import java.sql.DatabaseMetaData;
-import java.sql.ResultSet;
 import java.sql.RowIdLifetime;
 import java.sql.SQLException;
-import java.sql.SQLFeatureNotSupportedException;
 
 /**
  * Cached database meta data.
  *
  * @author zhangliang
  */
-public final class CachedDatabaseMetaData extends WrapperAdapter implements DatabaseMetaData {
+public final class CachedDatabaseMetaData extends CachedDatabaseMetaDataAdapter {
     
     private final String url;
     
@@ -293,9 +288,9 @@ public final class CachedDatabaseMetaData extends WrapperAdapter implements Data
     
     private final boolean autoCommitFailureClosesAllResultSets;
     
-    private final boolean generatedKeyAlwaysReturned;
-    
     private final RowIdLifetime rowIdLifetime;
+    
+    private final boolean generatedKeyAlwaysReturned;
     
     public CachedDatabaseMetaData(final DatabaseMetaData databaseMetaData) throws SQLException {
         url = databaseMetaData.getURL();
@@ -428,13 +423,16 @@ public final class CachedDatabaseMetaData extends WrapperAdapter implements Data
         supportsStatementPooling = databaseMetaData.supportsStatementPooling();
         supportsStoredFunctionsUsingCallSyntax = databaseMetaData.supportsStoredFunctionsUsingCallSyntax();
         autoCommitFailureClosesAllResultSets = databaseMetaData.autoCommitFailureClosesAllResultSets();
-        boolean value = false;
-        try {
-            value = databaseMetaData.generatedKeyAlwaysReturned();
-        } catch (final AbstractMethodError ignore) {
-        }
-        generatedKeyAlwaysReturned = value;
         rowIdLifetime = databaseMetaData.getRowIdLifetime();
+        generatedKeyAlwaysReturned = isGeneratedKeyAlwaysReturned(databaseMetaData);
+    }
+    
+    private boolean isGeneratedKeyAlwaysReturned(final DatabaseMetaData databaseMetaData) throws SQLException {
+        try {
+            return databaseMetaData.generatedKeyAlwaysReturned();
+        } catch (final AbstractMethodError ignore) {
+            return false;
+        }
     }
     
     @Override
@@ -1098,213 +1096,12 @@ public final class CachedDatabaseMetaData extends WrapperAdapter implements Data
     }
     
     @Override
-    public boolean generatedKeyAlwaysReturned() {
-        return generatedKeyAlwaysReturned;
-    }
-    
-    @Override
     public RowIdLifetime getRowIdLifetime() {
         return rowIdLifetime;
     }
     
     @Override
-    public boolean supportsTransactionIsolationLevel(final int level) {
-        return true;
-    }
-    
-    @Override
-    public boolean supportsResultSetType(final int type) {
-        return true;
-    }
-    
-    @Override
-    public boolean supportsResultSetConcurrency(final int type, final int concurrency) {
-        return true;
-    }
-    
-    @Override
-    public boolean ownUpdatesAreVisible(final int type) {
-        return true;
-    }
-    
-    @Override
-    public boolean ownDeletesAreVisible(final int type) {
-        return true;
-    }
-    
-    @Override
-    public boolean ownInsertsAreVisible(final int type) {
-        return true;
-    }
-    
-    @Override
-    public boolean othersUpdatesAreVisible(final int type) {
-        return true;
-    }
-    
-    @Override
-    public boolean othersDeletesAreVisible(final int type) {
-        return true;
-    }
-    
-    @Override
-    public boolean othersInsertsAreVisible(final int type) {
-        return true;
-    }
-    
-    @Override
-    public boolean updatesAreDetected(final int type) {
-        return true;
-    }
-    
-    @Override
-    public boolean deletesAreDetected(final int type) {
-        return true;
-    }
-    
-    @Override
-    public boolean insertsAreDetected(final int type) {
-        return true;
-    }
-    
-    @Override
-    public boolean supportsResultSetHoldability(final int holdability) {
-        return true;
-    }
-    
-    @Override
-    public ResultSet getSuperTypes(final String catalog, final String schemaPattern, final String typeNamePattern) throws SQLException {
-        throw new SQLFeatureNotSupportedException();
-    }
-    
-    @Override
-    public ResultSet getSuperTables(final String catalog, final String schemaPattern, final String tableNamePattern) throws SQLException {
-        throw new SQLFeatureNotSupportedException();
-    }
-    
-    @Override
-    public ResultSet getAttributes(final String catalog, final String schemaPattern, final String typeNamePattern, final String attributeNamePattern) throws SQLException {
-        throw new SQLFeatureNotSupportedException();
-    }
-    
-    @Override
-    public ResultSet getProcedures(final String catalog, final String schemaPattern, final String procedureNamePattern) throws SQLException {
-        throw new SQLFeatureNotSupportedException();
-    }
-    
-    @Override
-    public ResultSet getProcedureColumns(final String catalog, final String schemaPattern, final String procedureNamePattern, final String columnNamePattern) throws SQLException {
-        throw new SQLFeatureNotSupportedException();
-    }
-    
-    @Override
-    public ResultSet getTables(final String catalog, final String schemaPattern, final String tableNamePattern, final String[] types) throws SQLException {
-        throw new SQLFeatureNotSupportedException();
-    }
-    
-    @Override
-    public ResultSet getSchemas() throws SQLException {
-        throw new SQLFeatureNotSupportedException();
-    }
-    
-    @Override
-    public ResultSet getSchemas(final String catalog, final String schemaPattern) throws SQLException {
-        throw new SQLFeatureNotSupportedException();
-    }
-    
-    @Override
-    public ResultSet getCatalogs() throws SQLException {
-        throw new SQLFeatureNotSupportedException();
-    }
-    
-    @Override
-    public ResultSet getTableTypes() throws SQLException {
-        throw new SQLFeatureNotSupportedException();
-    }
-    
-    @Override
-    public ResultSet getColumns(final String catalog, final String schemaPattern, final String tableNamePattern, final String columnNamePattern) throws SQLException {
-        throw new SQLFeatureNotSupportedException();
-    }
-    
-    @Override
-    public ResultSet getColumnPrivileges(final String catalog, final String schema, final String table, final String columnNamePattern) throws SQLException {
-        throw new SQLFeatureNotSupportedException();
-    }
-    
-    @Override
-    public ResultSet getTablePrivileges(final String catalog, final String schemaPattern, final String tableNamePattern) throws SQLException {
-        throw new SQLFeatureNotSupportedException();
-    }
-    
-    @Override
-    public ResultSet getBestRowIdentifier(final String catalog, final String schema, final String table, final int scope, final boolean nullable) throws SQLException {
-        throw new SQLFeatureNotSupportedException();
-    }
-    
-    @Override
-    public ResultSet getVersionColumns(final String catalog, final String schema, final String table) throws SQLException {
-        throw new SQLFeatureNotSupportedException();
-    }
-    
-    @Override
-    public ResultSet getPrimaryKeys(final String catalog, final String schema, final String table) throws SQLException {
-        throw new SQLFeatureNotSupportedException();
-    }
-    
-    @Override
-    public ResultSet getImportedKeys(final String catalog, final String schema, final String table) throws SQLException {
-        throw new SQLFeatureNotSupportedException();
-    }
-    
-    @Override
-    public ResultSet getExportedKeys(final String catalog, final String schema, final String table) throws SQLException {
-        throw new SQLFeatureNotSupportedException();
-    }
-    
-    @Override
-    public ResultSet getCrossReference(final String parentCatalog,
-                                       final String parentSchema, final String parentTable, final String foreignCatalog, final String foreignSchema, final String foreignTable) throws SQLException {
-        throw new SQLFeatureNotSupportedException();
-    }
-    
-    @Override
-    public ResultSet getTypeInfo() throws SQLException {
-        throw new SQLFeatureNotSupportedException();
-    }
-    
-    @Override
-    public ResultSet getIndexInfo(final String catalog, final String schema, final String table, final boolean unique, final boolean approximate) throws SQLException {
-        throw new SQLFeatureNotSupportedException();
-    }
-    
-    @Override
-    public ResultSet getUDTs(final String catalog, final String schemaPattern, final String typeNamePattern, final int[] types) throws SQLException {
-        throw new SQLFeatureNotSupportedException();
-    }
-    
-    @Override
-    public Connection getConnection() throws SQLException {
-        throw new SQLFeatureNotSupportedException();
-    }
-    
-    @Override
-    public ResultSet getClientInfoProperties() throws SQLException {
-        throw new SQLFeatureNotSupportedException();
-    }
-    
-    @Override
-    public ResultSet getFunctions(final String catalog, final String schemaPattern, final String functionNamePattern) throws SQLException {
-        throw new SQLFeatureNotSupportedException();
-    }
-    
-    @Override
-    public ResultSet getFunctionColumns(final String catalog, final String schemaPattern, final String functionNamePattern, final String columnNamePattern) throws SQLException {
-        throw new SQLFeatureNotSupportedException();
-    }
-    
-    @Override
-    public ResultSet getPseudoColumns(final String catalog, final String schemaPattern, final String tableNamePattern, final String columnNamePattern) throws SQLException {
-        throw new SQLFeatureNotSupportedException();
+    public boolean generatedKeyAlwaysReturned() {
+        return generatedKeyAlwaysReturned;
     }
 }

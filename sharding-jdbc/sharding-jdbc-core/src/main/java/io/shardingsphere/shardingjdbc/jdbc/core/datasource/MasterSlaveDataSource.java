@@ -23,6 +23,7 @@ import io.shardingsphere.core.constant.properties.ShardingProperties;
 import io.shardingsphere.core.rule.MasterSlaveRule;
 import io.shardingsphere.shardingjdbc.jdbc.adapter.AbstractDataSourceAdapter;
 import io.shardingsphere.shardingjdbc.jdbc.core.connection.MasterSlaveConnection;
+import io.shardingsphere.shardingjdbc.jdbc.core.datasource.metadata.CachedDatabaseMetaData;
 import io.shardingsphere.transaction.api.TransactionTypeHolder;
 import lombok.Getter;
 import lombok.extern.slf4j.Slf4j;
