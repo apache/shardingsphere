@@ -35,10 +35,12 @@ public final class TableFiller implements SQLStatementFiller<TableSegment> {
     @Override
     public void fill(final TableSegment sqlSegment, final SQLStatement sqlStatement, final String sql, final ShardingRule shardingRule, final ShardingTableMetaData shardingTableMetaData) {
         boolean fill = false;
-        if (shardingRule.contains(sqlSegment.getName())) {
+        String tableName = sqlSegment.getName();
+        if (shardingRule.contains(tableName) || shardingRule.isBroadcastTable(tableName) || shardingRule.findBindingTableRule(tableName).isPresent()
+                || shardingRule.getShardingDataSourceNames().getDataSourceNames().contains(shardingRule.getShardingDataSourceNames().getDefaultDataSourceName())) {
             fill = true;
         } else {
-            if (!(sqlStatement instanceof SelectStatement) && sqlStatement.getTables().isEmpty()) {
+            if (!(sqlStatement instanceof SelectStatement) && tableName.isEmpty()) {
                 fill = true;
             }
         }
