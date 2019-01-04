@@ -99,6 +99,15 @@ public final class SagaTransactionManager implements BASETransactionManager<Saga
         sagaExecutionComponentHolder.removeSagaExecutionComponent(sagaConfiguration);
     }
     
+    /**
+     * Get saga transaction object for current thread.
+     *
+     * @return saga transaction object
+     */
+    public SagaTransaction getTransaction() {
+        return TRANSACTIONS.get();
+    }
+    
     private void initExecuteDataMap(final SagaTransaction transaction) {
         Map<String, Object> sagaExecuteDataMap = new HashMap<>(1);
         sagaExecuteDataMap.put(TRANSACTION_KEY, transaction);

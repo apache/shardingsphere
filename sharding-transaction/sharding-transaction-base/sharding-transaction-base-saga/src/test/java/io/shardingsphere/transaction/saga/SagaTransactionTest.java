@@ -22,13 +22,13 @@ import io.shardingsphere.api.config.SagaConfiguration;
 import io.shardingsphere.core.constant.SagaRecoveryPolicy;
 import io.shardingsphere.transaction.core.constant.ExecutionResult;
 import io.shardingsphere.transaction.saga.servicecomb.definition.SagaDefinitionBuilder;
+
 import org.junit.Before;
 import org.junit.Test;
 
 import javax.sql.DataSource;
 
 import java.io.IOException;
-import java.lang.reflect.Field;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
@@ -36,45 +36,56 @@ import java.util.Map;
 import static org.hamcrest.CoreMatchers.instanceOf;
 import static org.junit.Assert.assertEquals;
 import static org.junit.Assert.assertFalse;
+import static org.junit.Assert.assertNotNull;
 import static org.junit.Assert.assertThat;
 import static org.junit.Assert.assertTrue;
 import static org.mockito.Mockito.mock;
 
 public class SagaTransactionTest {
     
-    private final SagaTransaction sagaTransaction = new SagaTransaction(new SagaConfiguration(), new HashMap<String, DataSource>());
-    
-    private Map<SagaSubTransaction, ExecutionResult> executionResultMap;
+    private SagaTransaction sagaTransaction;
     
     @Before
-    public void setUp() throws Exception {
-        Field executionResultMapField = SagaTransaction.class.getDeclaredField("executionResultMap");
-        executionResultMapField.setAccessible(true);
-        executionResultMap = (Map<SagaSubTransaction, ExecutionResult>) executionResultMapField.get(sagaTransaction);
+    public void setUp() {
+        sagaTransaction = new SagaTransaction(new SagaConfiguration(), new HashMap<String, DataSource>());
+    }
+    
+    @Test
+    public void assertNextLogicSQL() {
+        sagaTransaction.nextLogicSQL();
+        assertNotNull(sagaTransaction.getCurrentLogicSQL());
+        assertEquals(sagaTransaction.getLogicSQLs().size(), 1);
+        sagaTransaction.nextLogicSQL();
+        assertEquals(sagaTransaction.getLogicSQLs().size(), 2);
     }
     
     @Test
     public void assertRecordResult() {
+        sagaTransaction.nextLogicSQL();
         SagaSubTransaction sagaSubTransaction = mock(SagaSubTransaction.class);
         sagaTransaction.recordResult(sagaSubTransaction, ExecutionResult.EXECUTING);
-        assertEquals(executionResultMap.size(), 1);
-        assertTrue(executionResultMap.containsKey(sagaSubTransaction));
-        assertEquals(executionResultMap.get(sagaSubTransaction), ExecutionResult.EXECUTING);
+        assertEquals(sagaTransaction.getExecutionResultMap().size(), 1);
+        assertTrue(sagaTransaction.getExecutionResultMap().containsKey(sagaSubTransaction));
+        assertEquals(sagaTransaction.getExecutionResultMap().get(sagaSubTransaction), ExecutionResult.EXECUTING);
         assertFalse(sagaTransaction.isContainException());
+        assertEquals(sagaTransaction.getCurrentLogicSQL().size(), 1);
         sagaTransaction.recordResult(sagaSubTransaction, ExecutionResult.SUCCESS);
-        assertEquals(executionResultMap.size(), 1);
-        assertTrue(executionResultMap.containsKey(sagaSubTransaction));
-        assertEquals(executionResultMap.get(sagaSubTransaction), ExecutionResult.SUCCESS);
+        assertEquals(sagaTransaction.getExecutionResultMap().size(), 1);
+        assertTrue(sagaTransaction.getExecutionResultMap().containsKey(sagaSubTransaction));
+        assertEquals(sagaTransaction.getExecutionResultMap().get(sagaSubTransaction), ExecutionResult.SUCCESS);
         assertFalse(sagaTransaction.isContainException());
+        assertEquals(sagaTransaction.getCurrentLogicSQL().size(), 1);
         sagaTransaction.recordResult(sagaSubTransaction, ExecutionResult.FAILURE);
-        assertEquals(executionResultMap.size(), 1);
-        assertTrue(executionResultMap.containsKey(sagaSubTransaction));
-        assertEquals(executionResultMap.get(sagaSubTransaction), ExecutionResult.FAILURE);
+        assertEquals(sagaTransaction.getExecutionResultMap().size(), 1);
+        assertTrue(sagaTransaction.getExecutionResultMap().containsKey(sagaSubTransaction));
+        assertEquals(sagaTransaction.getExecutionResultMap().get(sagaSubTransaction), ExecutionResult.FAILURE);
         assertTrue(sagaTransaction.isContainException());
+        assertEquals(sagaTransaction.getCurrentLogicSQL().size(), 1);
     }
     
     @Test
     public void assertGetSagaDefinitionBuilder() throws IOException {
+        sagaTransaction.nextLogicSQL();
         SagaSubTransaction sagaSubTransaction = mock(SagaSubTransaction.class);
         sagaTransaction.recordResult(sagaSubTransaction, ExecutionResult.SUCCESS);
         SagaDefinitionBuilder builder = sagaTransaction.getSagaDefinitionBuilder();

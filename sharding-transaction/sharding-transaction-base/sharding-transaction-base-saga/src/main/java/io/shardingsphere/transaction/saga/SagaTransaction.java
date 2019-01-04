@@ -30,7 +30,12 @@ import lombok.Getter;
 import lombok.RequiredArgsConstructor;
 
 import java.sql.SQLException;
+import java.util.Collections;
+import java.util.HashSet;
+import java.util.LinkedList;
+import java.util.List;
 import java.util.Map;
+import java.util.Set;
 import java.util.UUID;
 import java.util.concurrent.ConcurrentHashMap;
 
@@ -53,6 +58,10 @@ public final class SagaTransaction {
     
     private final Map<SagaSubTransaction, ExecutionResult> executionResultMap = new ConcurrentHashMap<>();
     
+    private final List<Set<SagaSubTransaction>> logicSQLs = new LinkedList<>();
+    
+    private Set<SagaSubTransaction> currentLogicSQL;
+    
     private volatile boolean containException;
     
     /**
@@ -66,6 +75,15 @@ public final class SagaTransaction {
             containException = true;
         }
         executionResultMap.put(sagaSubTransaction, result);
+        currentLogicSQL.add(sagaSubTransaction);
+    }
+    
+    /**
+     * Transaction start next logic SQL.
+     */
+    public void nextLogicSQL() {
+        currentLogicSQL = Collections.synchronizedSet(new HashSet<SagaSubTransaction>());
+        logicSQLs.add(currentLogicSQL);
     }
     
     /**
@@ -75,17 +93,24 @@ public final class SagaTransaction {
      */
     public SagaDefinitionBuilder getSagaDefinitionBuilder() {
         SagaDefinitionBuilder result = createDefinitionBuilder();
+        for (Set<SagaSubTransaction> each : logicSQLs) {
+            result.switchParents();
+            initSagaDefinitionForLogicSQL(result, each);
+        }
+        return result;
+    }
+    
+    private void initSagaDefinitionForLogicSQL(final SagaDefinitionBuilder sagaDefinitionBuilder, final Set<SagaSubTransaction> sagaSubTransactions) {
         RevertEngine revertEngine = SagaRecoveryPolicy.FORWARD == sagaConfiguration.getRecoveryPolicy() ? new EmptyRevertEngine() : new RevertEngineImpl(dataSourceMap);
-        for (SagaSubTransaction each : executionResultMap.keySet()) {
+        for (SagaSubTransaction each : sagaSubTransactions) {
             try {
                 RevertResult revertResult = revertEngine.revert(each.getDataSourceName(), each.getSql(), each.getParameterSets());
-                result.addChildRequest(String.valueOf(each.hashCode()), each.getDataSourceName(), each.getSql(), each.getParameterSets(),
-                                       revertResult.getRevertSQL(), revertResult.getRevertSQLParams());
+                sagaDefinitionBuilder.addChildRequest(String.valueOf(each.hashCode()), each.getDataSourceName(), each.getSql(),
+                                                      each.getParameterSets(), revertResult.getRevertSQL(), revertResult.getRevertSQLParams());
             } catch (SQLException ex) {
                 throw new ShardingException(String.format("Revert SQL %s failed: ", each.toString()), ex);
             }
         }
-        return result;
     }
     
     private SagaDefinitionBuilder createDefinitionBuilder() {

@@ -15,26 +15,17 @@
  * </p>
  */
 
-package io.shardingsphere.transaction.saga;
+package io.shardingsphere.transaction.saga.hook;
 
-import io.shardingsphere.transaction.saga.hook.AllHookTests;
-import io.shardingsphere.transaction.saga.handler.AllHandlerTests;
-import io.shardingsphere.transaction.saga.manager.SagaTransactionManagerTest;
-import io.shardingsphere.transaction.saga.servicecomb.AllServicecombTest;
-import io.shardingsphere.transaction.saga.revert.AllRevertTest;
+
 import org.junit.runner.RunWith;
 import org.junit.runners.Suite;
 import org.junit.runners.Suite.SuiteClasses;
 
 @RunWith(Suite.class)
 @SuiteClasses({
-        SagaTransactionManagerTest.class,
-        SagaTransactionTest.class,
-        SagaSubTransactionTest.class,
-        AllHandlerTests.class,
-        AllHookTests.class,
-        AllServicecombTest.class,
-        AllRevertTest.class
+        SagaSQLExecutionHookTest.class,
+        SagaSQLParsingHookTest.class
 })
-public final class AllTests {
+public class AllHookTests {
 }
