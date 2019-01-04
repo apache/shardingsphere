@@ -47,6 +47,7 @@ chapter = true
 
  - Test codes and production codes should follow the same kind of code of conduct.
  - Without particular reasons, test cases should be fully covered.
+ - Every test case need precised assertion.
  - Environment preparation codes should be separate from test codes.
  - Only those that relate to junit `Assert`, hamcrest `CoreMatchers` and `Mockito` can use static import.
  - For single parameter asserts, `assertTrue`, `assertFalse`, `assertNull` and `assertNotNull` should be used.

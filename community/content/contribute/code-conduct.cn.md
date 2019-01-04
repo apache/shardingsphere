@@ -51,6 +51,7 @@ chapter = true
 
  - 测试代码和生产代码需遵守相同代码规范。
  - 如无特殊理由，测试需全覆盖。
+ - 每个测试用例需精确断言。
  - 准备环境的代码和测试代码分离。
  - 只有junit `Assert`，hamcrest `CoreMatchers`，Mockito相关可以使用static import。
  - 单数据断言，应使用`assertTrue`，`assertFalse`，`assertNull`和`assertNotNull`。
