@@ -32,7 +32,6 @@
 
     <dependencyManagement>
         <dependencies>
-
             <dependency>
                 <groupId>io.shardingsphere</groupId>
                 <artifactId>sharding-orchestration-core</artifactId>
@@ -63,13 +62,11 @@
                 <version>${lombok.version}</version>
                 <scope>provided</scope>
             </dependency>
-
             <dependency>
                 <groupId>org.yaml</groupId>
                 <artifactId>snakeyaml</artifactId>
                 <version>${snakeyaml.version}</version>
             </dependency>
-
             <dependency>
                 <groupId>commons-codec</groupId>
                 <artifactId>commons-codec</artifactId>
@@ -77,7 +74,6 @@
             </dependency>
         </dependencies>
     </dependencyManagement>
-
 
     <build>
         <pluginManagement>
@@ -128,5 +124,4 @@
             </plugins>
         </pluginManagement>
     </build>
-
 </project>

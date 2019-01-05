@@ -45,7 +45,6 @@
         </dependency>
     </dependencies>
 
-
     <build>
         <finalName>sharding-ui</finalName>
         <plugins>
@@ -104,5 +103,4 @@
             </plugin>
         </plugins>
     </build>
-
 </project>
