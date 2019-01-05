@@ -67,6 +67,20 @@ public final class ResponseResultUtil {
     }
     
     /**
+     * Build the error response of unauthorized exception.
+     *
+     * @param errorMsg error message
+     * @return response result
+     */
+    public static ResponseResult handleUnauthorizedException(final String errorMsg) {
+        ResponseResult result = new ResponseResult<>();
+        result.setSuccess(false);
+        result.setErrorCode(ShardingUIException.NO_RIGHT);
+        result.setErrorMsg(errorMsg);
+        return result;
+    }
+    
+    /**
      * Build the error response of sharding UI exception.
      *
      * @param exception sharding UI exception

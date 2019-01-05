@@ -20,6 +20,7 @@
         <spring-boot.version>2.0.2.RELEASE</spring-boot.version>
         <lombok.version>1.16.4</lombok.version>
         <snakeyaml.version>1.16</snakeyaml.version>
+        <commons-codec.version>1.11</commons-codec.version>
         <sharding-sphere.version>3.1.0.M1</sharding-sphere.version>
         <frontend-maven-plugin.version>1.6</frontend-maven-plugin.version>
         <maven-compiler-plugin.version>3.3</maven-compiler-plugin.version>
@@ -67,6 +68,12 @@
                 <groupId>org.yaml</groupId>
                 <artifactId>snakeyaml</artifactId>
                 <version>${snakeyaml.version}</version>
+            </dependency>
+
+            <dependency>
+                <groupId>commons-codec</groupId>
+                <artifactId>commons-codec</artifactId>
+                <version>${commons-codec.version}</version>
             </dependency>
         </dependencies>
     </dependencyManagement>

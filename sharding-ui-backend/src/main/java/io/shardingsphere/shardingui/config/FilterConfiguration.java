@@ -17,7 +17,10 @@
 
 package io.shardingsphere.shardingui.config;
 
+import io.shardingsphere.shardingui.security.AuthenticationFilter;
+import io.shardingsphere.shardingui.security.UserAuthenticationService;
 import io.shardingsphere.shardingui.web.filter.CORSFilter;
+import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.web.servlet.FilterRegistrationBean;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
@@ -33,6 +36,9 @@ import java.util.List;
 @Configuration
 public class FilterConfiguration {
     
+    @Autowired
+    private UserAuthenticationService userAuthenticationService;
+    
     /**
      * Register the CORS filter.
      *
@@ -43,6 +49,23 @@ public class FilterConfiguration {
         CORSFilter corsFilter = new CORSFilter();
         FilterRegistrationBean filterRegBean = new FilterRegistrationBean();
         filterRegBean.setFilter(corsFilter);
+        List<String> urlPatterns = new ArrayList<>();
+        urlPatterns.add("/*");
+        filterRegBean.setUrlPatterns(urlPatterns);
+        return filterRegBean;
+    }
+    
+    /**
+     * Register the authentication filter.
+     *
+     * @return filter registration bean
+     */
+    @Bean
+    public FilterRegistrationBean authenticationFilter() {
+        AuthenticationFilter authenticationFilter = new AuthenticationFilter();
+        authenticationFilter.setUserAuthenticationService(userAuthenticationService);
+        FilterRegistrationBean filterRegBean = new FilterRegistrationBean();
+        filterRegBean.setFilter(authenticationFilter);
         List<String> urlPatterns = new ArrayList<>();
         urlPatterns.add("/*");
         filterRegBean.setUrlPatterns(urlPatterns);
