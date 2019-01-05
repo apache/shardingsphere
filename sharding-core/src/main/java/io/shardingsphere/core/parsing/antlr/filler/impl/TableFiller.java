@@ -40,7 +40,7 @@ public final class TableFiller implements SQLStatementFiller<TableSegment> {
                 || shardingRule.getShardingDataSourceNames().getDataSourceNames().contains(shardingRule.getShardingDataSourceNames().getDefaultDataSourceName())) {
             fill = true;
         } else {
-            if (!(sqlStatement instanceof SelectStatement) && tableName.isEmpty()) {
+            if (!(sqlStatement instanceof SelectStatement) && sqlStatement.getTables().isEmpty()) {
                 fill = true;
             }
         }

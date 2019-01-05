@@ -155,7 +155,7 @@ public final class ParsingSQLRouter implements ShardingRouter {
         if (!(sqlStatement instanceof SelectStatement)) {
             return false;
         }
-        boolean hasSubQuery = ((SelectStatement) sqlStatement).getSubQueryConditions().isEmpty();
+        boolean hasSubQuery = !((SelectStatement) sqlStatement).getSubQueryConditions().isEmpty();
         for (String each : sqlStatement.getTables().getTableNames()) {
             if (hasSubQuery && shardingRule.findTableRuleByLogicTable(each).isPresent()) {
                 return true;
