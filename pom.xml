@@ -28,6 +28,8 @@
         <maven-jar-plugin.version>2.6</maven-jar-plugin.version>
         <maven-source-plugin.version>2.4</maven-source-plugin.version>
         <maven-assembly-plugin.version>3.1.0</maven-assembly-plugin.version>
+        <coveralls-maven-plugin.version>4.3.0</coveralls-maven-plugin.version>
+        <cobertura-maven-plugin.version>2.7</cobertura-maven-plugin.version>
     </properties>
 
     <dependencyManagement>
@@ -120,6 +122,41 @@
                             </goals>
                         </execution>
                     </executions>
+                </plugin>
+                <plugin>
+                    <groupId>org.eluder.coveralls</groupId>
+                    <artifactId>coveralls-maven-plugin</artifactId>
+                    <version>${coveralls-maven-plugin.version}</version>
+                </plugin>
+                <plugin>
+                    <groupId>org.codehaus.mojo</groupId>
+                    <artifactId>cobertura-maven-plugin</artifactId>
+                    <version>${cobertura-maven-plugin.version}</version>
+                    <configuration>
+                        <check>
+                            <!--<branchRate>85</branchRate>-->
+                            <!--<lineRate>85</lineRate>-->
+                            <!--<haltOnFailure>true</haltOnFailure>-->
+                            <!--<totalBranchRate>85</totalBranchRate>-->
+                            <!--<totalLineRate>85</totalLineRate>-->
+                            <!--<packageLineRate>85</packageLineRate>-->
+                            <!--<packageBranchRate>85</packageBranchRate>-->
+                        </check>
+                        <aggregate>true</aggregate>
+                        <encoding>${project.build.sourceEncoding}</encoding>
+                        <quiet>true</quiet>
+                        <format>xml</format>
+                        <instrumentation>
+                            <ignoreTrivial>true</ignoreTrivial>
+                            <ignoreMethodAnnotations>
+                                <ignoreMethodAnnotation>lombok.Generated</ignoreMethodAnnotation>
+                            </ignoreMethodAnnotations>
+                            <excludes>
+                                <exclude>io/shardingsphere/**/*Test.class</exclude>
+                                <exclude>io/shardingsphere/**/Test*.class</exclude>
+                            </excludes>
+                        </instrumentation>
+                    </configuration>
                 </plugin>
             </plugins>
         </pluginManagement>
