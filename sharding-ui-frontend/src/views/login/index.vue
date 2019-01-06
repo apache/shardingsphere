@@ -30,14 +30,14 @@
 </template>
 
 <script>
-
+import API from './api'
 export default {
   name: 'Login',
   data() {
     return {
       loginForm: {
         username: 'admin',
-        password: 'admin'
+        password: '123'
       },
       loading: false,
       pwdType: 'password',
@@ -52,9 +52,22 @@ export default {
       immediate: true
     }
   },
+  created() {
+    if (window.localStorage.getItem('Access-Token')) {
+      location.href = '/'
+    }
+  },
   methods: {
     handleLogin() {
-      console.log('login')
+      const params = {
+        username: this.loginForm.username,
+        password: this.loginForm.password
+      }
+      API.getLogin(params).then((res) => {
+        const data = res.model
+        window.localStorage.setItem('Access-Token', data.accessToken)
+        location.href = '/'
+      })
     }
   }
 }
