@@ -44,6 +44,7 @@ import lombok.AccessLevel;
 import lombok.NoArgsConstructor;
 
 import java.util.Collection;
+import java.util.LinkedList;
 
 /**
  * Routing engine factory.
@@ -65,6 +66,7 @@ public final class RoutingEngineFactory {
     public static RoutingEngine newInstance(final ShardingRule shardingRule, 
                                             final ShardingDataSourceMetaData shardingDataSourceMetaData, final SQLStatement sqlStatement, final ShardingConditions shardingConditions) {
         Collection<String> tableNames = sqlStatement.getTables().getTableNames();
+        Collection<String> WithOutBroadcastTableNames = removeBroadcastTables(shardingRule, tableNames);
         RoutingEngine result;
         if (sqlStatement instanceof UseStatement) {
             result = new IgnoreRoutingEngine();
@@ -87,11 +89,21 @@ public final class RoutingEngineFactory {
             result = new UnicastRoutingEngine(shardingRule, tableNames);
         } else if (tableNames.isEmpty()) {
             result = new DatabaseBroadcastRoutingEngine(shardingRule);
-        } else if (1 == tableNames.size() || shardingRule.isAllBindingTables(tableNames)) {
-            result = new StandardRoutingEngine(shardingRule, tableNames.iterator().next(), shardingConditions);
+        } else if (1 == WithOutBroadcastTableNames.size() || shardingRule.isAllBindingTables(WithOutBroadcastTableNames)) {
+            result = new StandardRoutingEngine(shardingRule, WithOutBroadcastTableNames.iterator().next(), shardingConditions);
         } else {
             // TODO config for cartesian set
             result = new ComplexRoutingEngine(shardingRule, tableNames, shardingConditions);
+        }
+        return result;
+    }
+    
+    private static Collection<String> removeBroadcastTables(final ShardingRule shardingRule, final Collection<String> tableNames) {
+        Collection<String> result = new LinkedList<>();
+        for (String each : tableNames) {
+            if (!shardingRule.getBroadcastTables().contains(each)) {
+                result.add(each);
+            }
         }
         return result;
     }
