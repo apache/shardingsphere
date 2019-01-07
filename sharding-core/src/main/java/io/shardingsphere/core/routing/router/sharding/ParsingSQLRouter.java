@@ -17,12 +17,8 @@
 
 package io.shardingsphere.core.routing.router.sharding;
 
-import java.util.LinkedList;
-import java.util.List;
-
 import com.google.common.base.Optional;
 import com.google.common.base.Preconditions;
-
 import io.shardingsphere.api.algorithm.sharding.ListShardingValue;
 import io.shardingsphere.api.algorithm.sharding.ShardingValue;
 import io.shardingsphere.core.constant.DatabaseType;
@@ -53,6 +49,9 @@ import io.shardingsphere.core.util.SQLLogger;
 import io.shardingsphere.spi.parsing.ParsingHook;
 import io.shardingsphere.spi.parsing.SPIParsingHook;
 import lombok.RequiredArgsConstructor;
+
+import java.util.LinkedList;
+import java.util.List;
 
 /**
  * Sharding router with parse.
@@ -98,7 +97,7 @@ public final class ParsingSQLRouter implements ShardingRouter {
             setGeneratedKeys(result, generatedKey.get());
         }
         if (needMerge(sqlStatement, shardingRule)) {
-            mergeShardingValueForSubQuery(sqlStatement.getConditions(), shardingConditions);
+            mergeShardingValueForSubquery(sqlStatement.getConditions(), shardingConditions);
         }
         RoutingResult routingResult = RoutingEngineFactory.newInstance(shardingRule, shardingMetaData.getDataSource(), sqlStatement, shardingConditions).route();
         SQLRewriteEngine rewriteEngine = new SQLRewriteEngine(shardingRule, logicSQL, databaseType, sqlStatement, shardingConditions, parameters);
@@ -155,16 +154,16 @@ public final class ParsingSQLRouter implements ShardingRouter {
         if (!(sqlStatement instanceof SelectStatement)) {
             return false;
         }
-        boolean hasSubQuery = !((SelectStatement) sqlStatement).getSubQueryConditions().isEmpty();
+        boolean hasSubquery = !((SelectStatement) sqlStatement).getSubqueryConditions().isEmpty();
         for (String each : sqlStatement.getTables().getTableNames()) {
-            if (hasSubQuery && shardingRule.findTableRuleByLogicTable(each).isPresent()) {
+            if (hasSubquery && shardingRule.findTableRuleByLogicTable(each).isPresent()) {
                 return true;
             }
         }
         return false;
     }
     
-    private void mergeShardingValueForSubQuery(final Conditions conditions, final ShardingConditions shardingConditions) {
+    private void mergeShardingValueForSubquery(final Conditions conditions, final ShardingConditions shardingConditions) {
         Preconditions.checkState(!shardingConditions.getShardingConditions().isEmpty(), "Must have sharding column with subquery.");
         Preconditions.checkState(isAllEqualShardingOperator(conditions), "Only support sharding by '=' with subquery.");
         ShardingCondition firstShardingCondition = shardingConditions.getShardingConditions().remove(0);

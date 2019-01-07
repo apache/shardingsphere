@@ -137,7 +137,7 @@ public class TableReferencesClauseParser implements SQLClauseParser {
     private void parseJoinTable(final SQLStatement sqlStatement) {
         while (parseJoinType()) {
             if (lexerEngine.equalAny(Symbol.LEFT_PAREN)) {
-                throw new SQLParsingUnsupportedException("Cannot support sub query for join table.");
+                throw new SQLParsingUnsupportedException("Cannot support subquery for join table.");
             }
             parseTableFactor(sqlStatement, false);
             parseJoinCondition(sqlStatement);
