@@ -61,6 +61,10 @@ public final class ErrPacket implements MySQLPacket {
         this(sequenceId, cause.getErrorCode(), cause.getSQLState(), cause.getMessage());
     }
     
+    public ErrPacket(final String errorMessage) {
+        this(1, 0, "", errorMessage);
+    }
+    
     public ErrPacket(final MySQLPacketPayload payload) {
         sequenceId = payload.readInt1();
         Preconditions.checkArgument(HEADER == payload.readInt1());

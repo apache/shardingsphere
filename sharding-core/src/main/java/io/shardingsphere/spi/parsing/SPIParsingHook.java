@@ -28,9 +28,7 @@ import java.util.Collection;
  */
 public final class SPIParsingHook implements ParsingHook {
     
-    private static final NewInstanceServiceLoader<ParsingHook> SERVICE_LOADER = NewInstanceServiceLoader.load(ParsingHook.class);
-    
-    private final Collection<ParsingHook> parsingHooks = SERVICE_LOADER.newServiceInstances();
+    private final Collection<ParsingHook> parsingHooks = NewInstanceServiceLoader.newServiceInstances(ParsingHook.class);
     
     @Override
     public void start(final String sql) {

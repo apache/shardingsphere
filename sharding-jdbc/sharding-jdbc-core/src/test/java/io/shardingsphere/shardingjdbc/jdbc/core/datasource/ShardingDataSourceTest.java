@@ -18,12 +18,18 @@
 package io.shardingsphere.shardingjdbc.jdbc.core.datasource;
 
 import com.google.common.base.Joiner;
-import io.shardingsphere.api.config.MasterSlaveRuleConfiguration;
-import io.shardingsphere.api.config.ShardingRuleConfiguration;
-import io.shardingsphere.api.config.TableRuleConfiguration;
+import io.shardingsphere.api.algorithm.masterslave.MasterSlaveLoadBalanceAlgorithmType;
+import io.shardingsphere.api.config.rule.MasterSlaveRuleConfiguration;
+import io.shardingsphere.api.config.rule.ShardingRuleConfiguration;
+import io.shardingsphere.api.config.rule.TableRuleConfiguration;
 import io.shardingsphere.core.constant.DatabaseType;
 import io.shardingsphere.core.rule.ShardingRule;
 import io.shardingsphere.shardingjdbc.api.MasterSlaveDataSourceFactory;
+import io.shardingsphere.shardingjdbc.jdbc.core.connection.ShardingConnection;
+import io.shardingsphere.shardingjdbc.jdbc.core.fixed.FixedXAShardingTransactionHandler;
+import io.shardingsphere.transaction.api.TransactionType;
+import io.shardingsphere.transaction.api.TransactionTypeHolder;
+import org.junit.After;
 import org.junit.Test;
 import org.mockito.ArgumentMatchers;
 
@@ -40,6 +46,7 @@ import java.util.List;
 import java.util.Map;
 import java.util.Properties;
 
+import static org.hamcrest.CoreMatchers.instanceOf;
 import static org.hamcrest.CoreMatchers.is;
 import static org.junit.Assert.assertThat;
 import static org.mockito.Mockito.atLeast;
@@ -48,6 +55,11 @@ import static org.mockito.Mockito.verify;
 import static org.mockito.Mockito.when;
 
 public final class ShardingDataSourceTest {
+    
+    @After
+    public void tearDown() {
+        TransactionTypeHolder.set(TransactionType.LOCAL);
+    }
     
     @Test(expected = IllegalStateException.class)
     public void assertGetDatabaseProductNameWhenDataBaseProductNameDifferent() throws SQLException {
@@ -68,12 +80,12 @@ public final class ShardingDataSourceTest {
         masterSlaveDataSourceMap.put("masterDataSource", masterDataSource);
         masterSlaveDataSourceMap.put("slaveDataSource", slaveDataSource);
         MasterSlaveDataSource dataSource2 = (MasterSlaveDataSource) MasterSlaveDataSourceFactory.createDataSource(masterSlaveDataSourceMap, 
-                new MasterSlaveRuleConfiguration("ds", "masterDataSource", Collections.singletonList("slaveDataSource")), Collections.<String, Object>emptyMap(), new Properties());
+                new MasterSlaveRuleConfiguration("ds", "masterDataSource", Collections.singletonList("slaveDataSource"), MasterSlaveLoadBalanceAlgorithmType.ROUND_ROBIN.getAlgorithm()), 
+                Collections.<String, Object>emptyMap(), new Properties());
         Map<String, DataSource> dataSourceMap = new HashMap<>(2, 1);
         dataSourceMap.put("ds1", dataSource1);
         dataSourceMap.put("ds2", dataSource2);
-        assertDatabaseProductName(dataSourceMap, dataSource1.getConnection(), 
-                dataSource2.getDataSourceMap().get("masterDataSource").getConnection(), dataSource2.getDataSourceMap().get("slaveDataSource").getConnection());
+        assertDatabaseProductName(dataSourceMap, dataSource1.getConnection(), masterDataSource.getConnection(), slaveDataSource.getConnection());
     }
     
     @Test
@@ -142,6 +154,37 @@ public final class ShardingDataSourceTest {
         Map<String, DataSource> dataSourceMap = new HashMap<>(1, 1);
         dataSourceMap.put("ds", dataSource);
         assertThat(createShardingDataSource(dataSourceMap).getConnection().getConnection("ds"), is(dataSource.getConnection()));
+    }
+    
+    @Test
+    public void assertGetXaConnection() throws SQLException {
+        DataSource dataSource = mockDataSource("MySQL");
+        Map<String, DataSource> dataSourceMap = new HashMap<>(1, 1);
+        dataSourceMap.put("ds", dataSource);
+        TransactionTypeHolder.set(TransactionType.XA);
+        ShardingDataSource shardingDataSource = createShardingDataSource(dataSourceMap);
+        assertThat(shardingDataSource.getShardingTransactionalDataSources().getDataSourceMap().size(), is(1));
+        ShardingConnection shardingConnection = shardingDataSource.getConnection();
+        assertThat(shardingConnection.getDataSourceMap().size(), is(1));
+    }
+    
+    @Test
+    public void assertGetXaConnectionThenGetLocalConnection() throws SQLException {
+        DataSource dataSource = mockDataSource("MySQL");
+        Map<String, DataSource> dataSourceMap = new HashMap<>(1, 1);
+        dataSourceMap.put("ds", dataSource);
+        TransactionTypeHolder.set(TransactionType.XA);
+        ShardingDataSource shardingDataSource = createShardingDataSource(dataSourceMap);
+        ShardingConnection shardingConnection = shardingDataSource.getConnection();
+        assertThat(shardingConnection.getDataSourceMap().size(), is(1));
+        assertThat(shardingConnection.getTransactionType(), is(TransactionType.XA));
+        assertThat(shardingConnection.getShardingTransactionHandler(), instanceOf(FixedXAShardingTransactionHandler.class));
+        TransactionTypeHolder.set(TransactionType.LOCAL);
+        shardingConnection = shardingDataSource.getConnection();
+        assertThat(shardingConnection.getConnection("ds"), is(dataSource.getConnection()));
+        assertThat(shardingConnection.getDataSourceMap(), is(dataSourceMap));
+        assertThat(shardingConnection.getTransactionType(), is(TransactionType.LOCAL));
+        assertThat(shardingConnection.getShardingTransactionHandler() == null, is(true));
     }
     
     private ShardingDataSource createShardingDataSource(final Map<String, DataSource> dataSourceMap) throws SQLException {

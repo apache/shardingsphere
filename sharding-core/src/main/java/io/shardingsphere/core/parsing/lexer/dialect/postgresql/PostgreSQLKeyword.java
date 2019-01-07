@@ -65,5 +65,6 @@ public enum PostgreSQLKeyword implements Keyword {
     INITIALLY,
     DEFERRED,
     IMMEDIATE,
-    EXTRACT
+    EXTRACT,
+    CONSTRAINTS
 }

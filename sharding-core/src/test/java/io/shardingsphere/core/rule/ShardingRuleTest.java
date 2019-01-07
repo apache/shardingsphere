@@ -18,8 +18,8 @@
 package io.shardingsphere.core.rule;
 
 import io.shardingsphere.api.algorithm.fixture.TestPreciseShardingAlgorithm;
-import io.shardingsphere.api.config.ShardingRuleConfiguration;
-import io.shardingsphere.api.config.TableRuleConfiguration;
+import io.shardingsphere.api.config.rule.ShardingRuleConfiguration;
+import io.shardingsphere.api.config.rule.TableRuleConfiguration;
 import io.shardingsphere.api.config.strategy.NoneShardingStrategyConfiguration;
 import io.shardingsphere.api.config.strategy.ShardingStrategyConfiguration;
 import io.shardingsphere.api.config.strategy.StandardShardingStrategyConfiguration;
@@ -41,6 +41,13 @@ import static org.junit.Assert.assertThat;
 import static org.junit.Assert.assertTrue;
 
 public final class ShardingRuleTest {
+    
+    @Test
+    public void assertShardingRuleWithBroadcastTableRule() {
+        ShardingRule actual = createShardingRule();
+        assertThat(actual.getBroadcastTables().size(), is(1));
+        assertThat(actual.getBroadcastTables().iterator().next(), is("BROADCAST_LOGIC_TABLE"));
+    }
     
     @Test
     public void assertShardingRuleWithoutStrategy() {
@@ -101,8 +108,8 @@ public final class ShardingRuleTest {
         shardingRuleConfig.setDefaultDatabaseShardingStrategyConfig(new NoneShardingStrategyConfiguration());
         shardingRuleConfig.setDefaultTableShardingStrategyConfig(new NoneShardingStrategyConfiguration());
         ShardingRule actual = new ShardingRule(shardingRuleConfig, createDataSourceNames());
-        assertTrue(actual.tryFindTableRuleByLogicTable("logic_Table").isPresent());
-        assertFalse(actual.tryFindTableRuleByLogicTable("null").isPresent());
+        assertTrue(actual.findTableRuleByLogicTable("logic_Table").isPresent());
+        assertFalse(actual.findTableRuleByLogicTable("null").isPresent());
     }
     
     @Test
@@ -238,7 +245,7 @@ public final class ShardingRuleTest {
         ShardingRuleConfiguration shardingRuleConfig = new ShardingRuleConfiguration();
         shardingRuleConfig.getTableRuleConfigs().add(createTableRuleConfigWithAllStrategies());
         shardingRuleConfig.setDefaultDatabaseShardingStrategyConfig(new StandardShardingStrategyConfiguration("column", new TestPreciseShardingAlgorithm()));
-        assertTrue(new ShardingRule(shardingRuleConfig, createDataSourceNames()).isShardingColumn(new Column("column", "")));
+        assertTrue(new ShardingRule(shardingRuleConfig, createDataSourceNames()).isShardingColumn(new Column("column", "LOGIC_TABLE")));
     }
     
     @Test
@@ -246,7 +253,7 @@ public final class ShardingRuleTest {
         ShardingRuleConfiguration shardingRuleConfig = new ShardingRuleConfiguration();
         shardingRuleConfig.getTableRuleConfigs().add(createTableRuleConfigWithAllStrategies());
         shardingRuleConfig.setDefaultTableShardingStrategyConfig(new StandardShardingStrategyConfiguration("column", new TestPreciseShardingAlgorithm()));
-        assertTrue(new ShardingRule(shardingRuleConfig, createDataSourceNames()).isShardingColumn(new Column("column", "")));
+        assertTrue(new ShardingRule(shardingRuleConfig, createDataSourceNames()).isShardingColumn(new Column("column", "LOGIC_TABLE")));
     }
     
     @Test
@@ -291,8 +298,28 @@ public final class ShardingRuleTest {
         TableRuleConfiguration tableRuleConfig = createTableRuleConfig();
         shardingRuleConfig.getTableRuleConfigs().add(tableRuleConfig);
         ShardingRule actual = new ShardingRule(shardingRuleConfig, createDataSourceNames());
-        assertTrue(actual.tryFindTableRuleByActualTable("table_0").isPresent());
-        assertFalse(actual.tryFindTableRuleByActualTable("table_3").isPresent());
+        assertTrue(actual.findTableRuleByActualTable("table_0").isPresent());
+        assertFalse(actual.findTableRuleByActualTable("table_3").isPresent());
+    }
+    
+    @Test
+    public void assertIsBroadcastTable() {
+        ShardingRuleConfiguration shardingRuleConfig = new ShardingRuleConfiguration();
+        shardingRuleConfig.getBroadcastTables().add("table_0");
+        ShardingRule actual = new ShardingRule(shardingRuleConfig, createDataSourceNames());
+        assertTrue(actual.isBroadcastTable("table_0"));
+        assertFalse(actual.isBroadcastTable("logic_table"));
+    }
+    
+    @Test
+    public void assertIsAllBroadcastTable() {
+        ShardingRuleConfiguration shardingRuleConfig = new ShardingRuleConfiguration();
+        shardingRuleConfig.getBroadcastTables().add("table_0");
+        shardingRuleConfig.getBroadcastTables().add("table_1");
+        ShardingRule actual = new ShardingRule(shardingRuleConfig, createDataSourceNames());
+        assertTrue(actual.isAllBroadcastTables(Arrays.asList("table_0", "table_1")));
+        assertFalse(actual.isAllBroadcastTables(Arrays.asList("table_0", "table_2")));
+        assertFalse(actual.isAllBroadcastTables(Arrays.asList("table_2", "table_3")));
     }
     
     @Test
@@ -390,6 +417,26 @@ public final class ShardingRuleTest {
         assertTrue(new ShardingRule(shardingRuleConfig, createDataSourceNames()).isLogicIndex("index_table", "logic_table"));
     }
     
+    @Test
+    public void assertContainsWithTableRule() {
+        assertTrue(createShardingRule().contains("LOGIC_TABLE"));
+    }
+    
+    @Test
+    public void assertContainsWithBindingTableRule() {
+        assertTrue(createShardingRule().contains("SUB_LOGIC_TABLE"));
+    }
+    
+    @Test
+    public void assertContainsWithBroadcastTableRule() {
+        assertTrue(createShardingRule().contains("BROADCAST_LOGIC_TABLE"));
+    }
+    
+    @Test
+    public void assertNotContains() {
+        assertFalse(createShardingRule().contains("NEW_TABLE"));
+    }
+    
     private ShardingRule createShardingRule() {
         ShardingRuleConfiguration shardingRuleConfig = new ShardingRuleConfiguration();
         TableRuleConfiguration tableRuleConfig = createTableRuleConfig();
@@ -397,6 +444,7 @@ public final class ShardingRuleTest {
         shardingRuleConfig.getTableRuleConfigs().add(tableRuleConfig);
         shardingRuleConfig.getTableRuleConfigs().add(subTableRuleConfig);
         shardingRuleConfig.getBindingTableGroups().add(createTableRuleConfig().getLogicTable() + "," + createSubTableRuleConfig().getLogicTable());
+        shardingRuleConfig.getBroadcastTables().add("BROADCAST_LOGIC_TABLE");
         return new ShardingRule(shardingRuleConfig, createDataSourceNames());
     }
     
@@ -408,6 +456,13 @@ public final class ShardingRuleTest {
         TableRuleConfiguration result = new TableRuleConfiguration();
         result.setLogicTable("LOGIC_TABLE");
         result.setActualDataNodes("ds${0..1}.table_${0..2}");
+        return result;
+    }
+    
+    private TableRuleConfiguration createSubTableRuleConfig() {
+        TableRuleConfiguration result = new TableRuleConfiguration();
+        result.setLogicTable("SUB_LOGIC_TABLE");
+        result.setActualDataNodes("ds${0..1}.sub_table_${0..2}");
         return result;
     }
     
@@ -432,13 +487,6 @@ public final class ShardingRuleTest {
         result.setLogicTable("LOGIC_TABLE");
         result.setActualDataNodes("ds${0..1}.table_${0..2}");
         result.setTableShardingStrategyConfig(strategyConfig);
-        return result;
-    }
-    
-    private TableRuleConfiguration createSubTableRuleConfig() {
-        TableRuleConfiguration result = new TableRuleConfiguration();
-        result.setLogicTable("SUB_LOGIC_TABLE");
-        result.setActualDataNodes("ds${0..1}.sub_table_${0..2}");
         return result;
     }
     

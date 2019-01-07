@@ -19,8 +19,8 @@ package io.shardingsphere.core.merger.dal.show;
 
 import com.google.common.collect.Lists;
 import io.shardingsphere.api.algorithm.fixture.TestComplexKeysShardingAlgorithm;
-import io.shardingsphere.api.config.ShardingRuleConfiguration;
-import io.shardingsphere.api.config.TableRuleConfiguration;
+import io.shardingsphere.api.config.rule.ShardingRuleConfiguration;
+import io.shardingsphere.api.config.rule.TableRuleConfiguration;
 import io.shardingsphere.api.config.strategy.ComplexShardingStrategyConfiguration;
 import io.shardingsphere.core.merger.QueryResult;
 import io.shardingsphere.core.merger.fixture.TestQueryResult;

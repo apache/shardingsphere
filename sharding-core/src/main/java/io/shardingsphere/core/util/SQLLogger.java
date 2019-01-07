@@ -32,7 +32,7 @@ import java.util.Collection;
  * @author zhangliang
  * @author maxiaoguang
  */
-@Slf4j(topic = "Sharding-Sphere-SQL")
+@Slf4j(topic = "ShardingSphere-SQL")
 @NoArgsConstructor(access = AccessLevel.PRIVATE)
 public final class SQLLogger {
     

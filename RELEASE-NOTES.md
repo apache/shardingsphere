@@ -1,8 +1,27 @@
+## 3.1.0
+
+### API Changes
+
+1. Adjust persist structure for orchestration's registry center.
+1. Adjust Sharding-JDBC configuration API.
+
+### New Features
+
+1. XA Transaction available.
+1. All SQL 100% compatible if route to single data node (MySQL Only).
+1. DISTINCT SQL syntax available.
+1. Broadcast table available.
+1. Solve data lean problem when using DefaultKeyGenerator with low TPS.
+
+###  Change Logs
+1. [MILESTONE #3](https://github.com/sharding-sphere/sharding-sphere/milestone/3)
+1. [MILESTONE #4](https://github.com/sharding-sphere/sharding-sphere/milestone/4)
+
 ## 3.0.0
 
 ### Milestones
 
-1. Sharding-Proxy launch. Support the use of Sharding-Sphere in the form of database to support for MySQL CLI and GUI client
+1. Sharding-Proxy launch. Support the use of ShardingSphere in the form of database to support for MySQL CLI and GUI client
 
 ### New Features
 

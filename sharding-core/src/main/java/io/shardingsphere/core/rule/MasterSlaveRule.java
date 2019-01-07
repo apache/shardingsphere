@@ -20,7 +20,7 @@ package io.shardingsphere.core.rule;
 import com.google.common.base.Preconditions;
 import io.shardingsphere.api.algorithm.masterslave.MasterSlaveLoadBalanceAlgorithm;
 import io.shardingsphere.api.algorithm.masterslave.MasterSlaveLoadBalanceAlgorithmType;
-import io.shardingsphere.api.config.MasterSlaveRuleConfiguration;
+import io.shardingsphere.api.config.rule.MasterSlaveRuleConfiguration;
 import lombok.Getter;
 
 import java.util.Collection;

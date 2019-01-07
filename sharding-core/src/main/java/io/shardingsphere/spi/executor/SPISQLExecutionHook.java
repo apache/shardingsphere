@@ -22,6 +22,7 @@ import io.shardingsphere.core.routing.RouteUnit;
 import io.shardingsphere.spi.NewInstanceServiceLoader;
 
 import java.util.Collection;
+import java.util.Map;
 
 /**
  * SQL Execution hook for SPI.
@@ -30,14 +31,12 @@ import java.util.Collection;
  */
 public final class SPISQLExecutionHook implements SQLExecutionHook {
     
-    private static final NewInstanceServiceLoader<SQLExecutionHook> SERVICE_LOADER = NewInstanceServiceLoader.load(SQLExecutionHook.class);
-    
-    private final Collection<SQLExecutionHook> sqlExecutionHooks = SERVICE_LOADER.newServiceInstances();
+    private final Collection<SQLExecutionHook> sqlExecutionHooks = NewInstanceServiceLoader.newServiceInstances(SQLExecutionHook.class);
     
     @Override
-    public void start(final RouteUnit routeUnit, final DataSourceMetaData dataSourceMetaData, final boolean isTrunkThread) {
+    public void start(final RouteUnit routeUnit, final DataSourceMetaData dataSourceMetaData, final boolean isTrunkThread, final Map<String, Object> shardingExecuteDataMap) {
         for (SQLExecutionHook each : sqlExecutionHooks) {
-            each.start(routeUnit, dataSourceMetaData, isTrunkThread);
+            each.start(routeUnit, dataSourceMetaData, isTrunkThread, shardingExecuteDataMap);
         }
     }
     

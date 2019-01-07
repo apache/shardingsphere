@@ -23,6 +23,7 @@ masterSlaveRule:
     - slave_ds_1
   loadBalanceAlgorithmType: ROUND_ROBIN
   loadBalanceAlgorithmClassName: TestAlgorithmClass
-  configMap:
-    key1: value1
-    key2: value2
+
+configMap:
+  key1: value1
+  key2: value2

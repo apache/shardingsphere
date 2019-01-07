@@ -20,8 +20,8 @@ package io.shardingsphere.shardingproxy.config;
 import io.shardingsphere.core.rule.DataSourceParameter;
 import io.shardingsphere.core.yaml.masterslave.YamlMasterSlaveRuleConfiguration;
 import io.shardingsphere.core.yaml.sharding.YamlShardingRuleConfiguration;
-import io.shardingsphere.orchestration.internal.yaml.YamlOrchestrationConfiguration;
-import io.shardingsphere.shardingproxy.config.yaml.ProxyYamlRuleConfiguration;
+import io.shardingsphere.orchestration.yaml.YamlOrchestrationConfiguration;
+import io.shardingsphere.shardingproxy.config.yaml.YamlProxyRuleConfiguration;
 import org.junit.Test;
 
 import java.io.IOException;
@@ -50,7 +50,7 @@ public final class ShardingConfigurationLoaderTest {
         assertThat(actual.getRegistry().getServerLists(), is("localhost:2181"));
     }
     
-    private void assertShardingRuleConfiguration(final ProxyYamlRuleConfiguration actual) {
+    private void assertShardingRuleConfiguration(final YamlProxyRuleConfiguration actual) {
         assertThat(actual.getSchemaName(), is("sharding_db"));
         assertThat(actual.getDataSources().size(), is(2));
         assertDataSourceParameter(actual.getDataSources().get("ds_0"), "jdbc:mysql://127.0.0.1:3306/ds_0");
@@ -68,7 +68,7 @@ public final class ShardingConfigurationLoaderTest {
         assertThat(actual.getTables().get("t_order").getTableStrategy().getInline().getAlgorithmExpression(), is("t_order_${order_id % 2}"));
     }
     
-    private void assertMasterSlaveRuleConfiguration(final ProxyYamlRuleConfiguration actual) {
+    private void assertMasterSlaveRuleConfiguration(final YamlProxyRuleConfiguration actual) {
         assertThat(actual.getSchemaName(), is("master_slave_db"));
         assertThat(actual.getDataSources().size(), is(3));
         assertDataSourceParameter(actual.getDataSources().get("master_ds"), "jdbc:mysql://127.0.0.1:3306/master_ds");
@@ -91,10 +91,9 @@ public final class ShardingConfigurationLoaderTest {
         assertThat(actual.getUrl(), is(expectedURL));
         assertThat(actual.getUsername(), is("root"));
         assertNull(actual.getPassword());
-        assertTrue(actual.isAutoCommit());
-        assertThat(actual.getConnectionTimeout(), is(30000L));
-        assertThat(actual.getIdleTimeout(), is(60000L));
-        assertThat(actual.getMaxLifetime(), is(1800000L));
-        assertThat(actual.getMaximumPoolSize(), is(50));
+        assertThat(actual.getConnectionTimeoutMilliseconds(), is(30000L));
+        assertThat(actual.getIdleTimeoutMilliseconds(), is(60000L));
+        assertThat(actual.getMaxLifetimeMilliseconds(), is(1800000L));
+        assertThat(actual.getMaxPoolSize(), is(50));
     }
 }

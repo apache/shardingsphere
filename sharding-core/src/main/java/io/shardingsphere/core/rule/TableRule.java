@@ -18,7 +18,7 @@
 package io.shardingsphere.core.rule;
 
 import com.google.common.base.Preconditions;
-import io.shardingsphere.api.config.TableRuleConfiguration;
+import io.shardingsphere.api.config.rule.TableRuleConfiguration;
 import io.shardingsphere.core.exception.ShardingException;
 import io.shardingsphere.core.keygen.KeyGenerator;
 import io.shardingsphere.core.routing.strategy.ShardingStrategy;
@@ -67,6 +67,17 @@ public final class TableRule {
         logicTable = logicTableName.toLowerCase();
         actualDataNodes = Collections.singletonList(new DataNode(defaultDataSourceName, logicTableName));
         dataNodeIndexMap = Collections.emptyMap();
+        databaseShardingStrategy = null;
+        tableShardingStrategy = null;
+        generateKeyColumn = null;
+        keyGenerator = null;
+        logicIndex = null;
+    }
+    
+    public TableRule(final Collection<String> dataSourceNames, final String logicTableName) {
+        logicTable = logicTableName.toLowerCase();
+        dataNodeIndexMap = new HashMap<>(dataSourceNames.size(), 1);
+        actualDataNodes = generateDataNodes(logicTableName, dataSourceNames);
         databaseShardingStrategy = null;
         tableShardingStrategy = null;
         generateKeyColumn = null;

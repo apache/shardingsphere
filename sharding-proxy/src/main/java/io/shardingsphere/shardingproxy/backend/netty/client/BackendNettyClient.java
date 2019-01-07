@@ -25,19 +25,18 @@ import io.netty.channel.EventLoopGroup;
 import io.netty.channel.epoll.EpollChannelOption;
 import io.netty.channel.epoll.EpollEventLoopGroup;
 import io.netty.channel.epoll.EpollSocketChannel;
-import io.netty.channel.nio.NioEventLoopGroup;
 import io.netty.channel.pool.AbstractChannelPoolMap;
 import io.netty.channel.pool.ChannelPoolMap;
 import io.netty.channel.pool.FixedChannelPool;
 import io.netty.channel.pool.SimpleChannelPool;
 import io.netty.channel.socket.nio.NioSocketChannel;
+import io.shardingsphere.core.constant.properties.ShardingPropertiesConstant;
 import io.shardingsphere.core.metadata.datasource.DataSourceMetaData;
 import io.shardingsphere.shardingproxy.runtime.GlobalRegistry;
-import io.shardingsphere.shardingproxy.runtime.ShardingSchema;
+import io.shardingsphere.shardingproxy.runtime.schema.LogicSchema;
 import lombok.Getter;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
-
 import java.util.concurrent.ExecutionException;
 import java.util.concurrent.TimeUnit;
 import java.util.concurrent.TimeoutException;
@@ -47,6 +46,7 @@ import java.util.concurrent.TimeoutException;
  *
  * @author wangkai
  * @author linjiaqi
+ * @author panjuan
  */
 @RequiredArgsConstructor
 @Slf4j
@@ -56,21 +56,22 @@ public final class BackendNettyClient {
     
     private static final GlobalRegistry GLOBAL_REGISTRY = GlobalRegistry.getInstance();
     
-    private final ShardingSchema shardingSchema;
+    private final LogicSchema logicSchema;
     
     private final int maxConnections;
     
     private final int connectionTimeoutSeconds;
     
-    private EventLoopGroup workerGroup;
+    private final EventLoopGroup workerGroup;
     
     @Getter
     private ChannelPoolMap<String, SimpleChannelPool> poolMap;
     
-    public BackendNettyClient(final ShardingSchema shardingSchema) {
-        this.shardingSchema = shardingSchema;
-        maxConnections = GLOBAL_REGISTRY.getBackendNIOConfig().getMaxConnections();
-        connectionTimeoutSeconds = GLOBAL_REGISTRY.getBackendNIOConfig().getConnectionTimeoutSeconds();
+    public BackendNettyClient(final LogicSchema logicSchema, final EventLoopGroup workerGroup) {
+        this.logicSchema = logicSchema;
+        maxConnections = GLOBAL_REGISTRY.getShardingProperties().getValue(ShardingPropertiesConstant.PROXY_BACKEND_MAX_CONNECTIONS);
+        connectionTimeoutSeconds = GLOBAL_REGISTRY.getShardingProperties().getValue(ShardingPropertiesConstant.PROXY_BACKEND_CONNECTION_TIMEOUT_SECONDS);
+        this.workerGroup = workerGroup;
     }
     
     /**
@@ -99,7 +100,6 @@ public final class BackendNettyClient {
     }
     
     private void groupsEpoll(final Bootstrap bootstrap) {
-        workerGroup = new EpollEventLoopGroup(WORKER_MAX_THREADS);
         bootstrap.group(workerGroup)
                 .channel(EpollSocketChannel.class)
                 .option(EpollChannelOption.TCP_CORK, true)
@@ -109,12 +109,10 @@ public final class BackendNettyClient {
     }
     
     private void groupsNio(final Bootstrap bootstrap) {
-        workerGroup = new NioEventLoopGroup(WORKER_MAX_THREADS);
         bootstrap.group(workerGroup)
                 .channel(NioSocketChannel.class)
                 .option(ChannelOption.SO_KEEPALIVE, true)
                 .option(ChannelOption.TCP_NODELAY, true)
-                .option(ChannelOption.SO_BACKLOG, 128)
                 .option(ChannelOption.CONNECT_TIMEOUT_MILLIS, 100)
                 .option(ChannelOption.ALLOCATOR, PooledByteBufAllocator.DEFAULT);
     }
@@ -124,13 +122,13 @@ public final class BackendNettyClient {
             
             @Override
             protected SimpleChannelPool newPool(final String dataSourceName) {
-                DataSourceMetaData dataSourceMetaData = shardingSchema.getMetaData().getDataSource().getActualDataSourceMetaData(dataSourceName);
+                DataSourceMetaData dataSourceMetaData = logicSchema.getMetaData().getDataSource().getActualDataSourceMetaData(dataSourceName);
                 return new FixedChannelPool(
                         bootstrap.remoteAddress(dataSourceMetaData.getHostName(), dataSourceMetaData.getPort()), 
-                        new BackendNettyClientChannelPoolHandler(dataSourceName, shardingSchema.getName()), maxConnections);
+                        new BackendNettyClientChannelPoolHandler(dataSourceName, logicSchema.getName()), maxConnections);
             }
         };
-        for (String each : shardingSchema.getDataSources().keySet()) {
+        for (String each : logicSchema.getDataSources().keySet()) {
             SimpleChannelPool pool = poolMap.get(each);
             Channel[] channels = new Channel[maxConnections];
             for (int i = 0; i < maxConnections; i++) {

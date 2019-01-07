@@ -28,9 +28,7 @@ import java.util.Collection;
  */
 public final class SPIRootInvokeHook implements RootInvokeHook {
     
-    private static final NewInstanceServiceLoader<RootInvokeHook> SERVICE_LOADER = NewInstanceServiceLoader.load(RootInvokeHook.class);
-    
-    private final Collection<RootInvokeHook> rootInvokeHooks = SERVICE_LOADER.newServiceInstances();
+    private final Collection<RootInvokeHook> rootInvokeHooks = NewInstanceServiceLoader.newServiceInstances(RootInvokeHook.class);
     
     @Override
     public void start() {

@@ -26,6 +26,7 @@ shardingRule:
         inline:
           shardingColumn: order_id
           algorithmExpression: t_order_item_${order_id % 2}
+  
   bindingTables:
     - t_order,t_order_item
   defaultDatabaseStrategy:
@@ -44,8 +45,6 @@ shardingRule:
       masterDataSourceName: db1_master
       slaveDataSourceNames:
         - db1_slave
-  props:
-    sql.show: true
 
 orchestration:
   name: demo_ds_ms

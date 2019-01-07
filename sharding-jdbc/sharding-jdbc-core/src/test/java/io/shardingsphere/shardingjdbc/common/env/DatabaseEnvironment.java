@@ -54,7 +54,7 @@ public final class DatabaseEnvironment {
     }
     
     private void fillH2() {
-        DRIVER_CLASS_NAME.put(DatabaseType.H2, org.h2.Driver.class.getName());
+        DRIVER_CLASS_NAME.put(DatabaseType.H2, "org.h2.Driver");
         URL.put(DatabaseType.H2, "jdbc:h2:mem:%s;DB_CLOSE_DELAY=-1;DATABASE_TO_UPPER=false;MODE=MySQL");
         USERNAME.put(DatabaseType.H2, "sa");
         PASSWORD.put(DatabaseType.H2, "");
@@ -62,7 +62,7 @@ public final class DatabaseEnvironment {
     }
     
     private void fillMySQL() {
-        DRIVER_CLASS_NAME.put(DatabaseType.MySQL, com.mysql.jdbc.Driver.class.getName());
+        DRIVER_CLASS_NAME.put(DatabaseType.MySQL, "com.mysql.jdbc.Driver");
         URL.put(DatabaseType.MySQL, "jdbc:mysql://db.mysql:3306/%s?serverTimezone=UTC&useSSL=false");
         USERNAME.put(DatabaseType.MySQL, "root");
         PASSWORD.put(DatabaseType.MySQL, "");
@@ -70,7 +70,7 @@ public final class DatabaseEnvironment {
     }
     
     private void fillPostgreSQL() {
-        DRIVER_CLASS_NAME.put(DatabaseType.PostgreSQL, org.postgresql.Driver.class.getName());
+        DRIVER_CLASS_NAME.put(DatabaseType.PostgreSQL, "org.postgresql.Driver");
         URL.put(DatabaseType.PostgreSQL, "jdbc:postgresql://db.psql:5432/%s");
         USERNAME.put(DatabaseType.PostgreSQL, "postgres");
         PASSWORD.put(DatabaseType.PostgreSQL, "");
@@ -78,7 +78,7 @@ public final class DatabaseEnvironment {
     }
     
     private void fillSQLServer() {
-        DRIVER_CLASS_NAME.put(DatabaseType.SQLServer, com.microsoft.sqlserver.jdbc.SQLServerDriver.class.getName());
+        DRIVER_CLASS_NAME.put(DatabaseType.SQLServer, "com.microsoft.sqlserver.jdbc.SQLServerDriver");
         URL.put(DatabaseType.SQLServer, "jdbc:sqlserver://db.mssql:1433;DatabaseName=%s");
         USERNAME.put(DatabaseType.SQLServer, "sa");
         PASSWORD.put(DatabaseType.SQLServer, "Jdbc1234");

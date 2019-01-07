@@ -6,7 +6,8 @@
     <parent>
         <groupId>io.shardingsphere</groupId>
         <artifactId>sharding-orchestration-reg</artifactId>
-        <version>3.0.0</version>
+        <version>3.1.0</version>
     </parent>
     <artifactId>sharding-orchestration-reg-api</artifactId>
+    <name>${project.artifactId}</name>
 </project>

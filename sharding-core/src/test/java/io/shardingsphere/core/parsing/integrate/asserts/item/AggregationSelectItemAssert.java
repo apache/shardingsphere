@@ -19,6 +19,7 @@ package io.shardingsphere.core.parsing.integrate.asserts.item;
 
 import io.shardingsphere.core.parsing.integrate.asserts.SQLStatementAssertMessage;
 import io.shardingsphere.core.parsing.integrate.jaxb.item.ExpectedAggregationSelectItem;
+import io.shardingsphere.core.parsing.parser.context.selectitem.AggregationDistinctSelectItem;
 import io.shardingsphere.core.parsing.parser.context.selectitem.AggregationSelectItem;
 import io.shardingsphere.core.parsing.parser.context.selectitem.SelectItem;
 import lombok.RequiredArgsConstructor;
@@ -57,6 +58,10 @@ final class AggregationSelectItemAssert {
         assertThat(assertMessage.getFullAssertMessage("Aggregation select item index assertion error: "), actual.getIndex(), is(expected.getIndex()));
         assertThat(assertMessage.getFullAssertMessage("Aggregation select item derived aggregation select items assertion error: "),
                 actual.getDerivedAggregationSelectItems().size(), is(expected.getDerivedColumns().size()));
+        if (actual instanceof AggregationDistinctSelectItem) {
+            assertThat(assertMessage.getFullAssertMessage("Aggregation select item distinct column assertion error: "),
+                    ((AggregationDistinctSelectItem) actual).getDistinctColumnName(), is(expected.getDistinctColumnName()));
+        }
         int count = 0;
         for (AggregationSelectItem each : actual.getDerivedAggregationSelectItems()) {
             assertAggregationSelectItem(each, expected.getDerivedColumns().get(count));

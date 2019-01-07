@@ -56,7 +56,11 @@ public final class TextResultSetRowPacket implements MySQLPacket {
             if (null == each) {
                 payload.writeInt1(NULL);
             } else {
-                payload.writeStringLenenc(each.toString());
+                if (each instanceof byte[]) {
+                    payload.writeBytesLenenc((byte[]) each);
+                } else {
+                    payload.writeStringLenenc(each.toString());
+                }
             }
         }
     }

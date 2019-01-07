@@ -19,7 +19,6 @@ package io.shardingsphere.shardingproxy.frontend.common.netty;
 
 import io.netty.channel.ChannelInitializer;
 import io.netty.channel.ChannelPipeline;
-import io.netty.channel.EventLoopGroup;
 import io.netty.channel.socket.SocketChannel;
 import io.shardingsphere.core.constant.DatabaseType;
 import io.shardingsphere.shardingproxy.frontend.common.FrontendHandlerFactory;
@@ -34,13 +33,11 @@ import lombok.RequiredArgsConstructor;
 @RequiredArgsConstructor
 public final class ServerHandlerInitializer extends ChannelInitializer<SocketChannel> {
     
-    private final EventLoopGroup userGroup;
-    
     @Override
     protected void initChannel(final SocketChannel socketChannel) {
         ChannelPipeline pipeline = socketChannel.pipeline();
         // TODO load database type from yaml or startup arguments
         pipeline.addLast(PacketCodecFactory.newInstance(DatabaseType.MySQL));
-        pipeline.addLast(FrontendHandlerFactory.createFrontendHandlerInstance(DatabaseType.MySQL, userGroup));
+        pipeline.addLast(FrontendHandlerFactory.createFrontendHandlerInstance(DatabaseType.MySQL));
     }
 }

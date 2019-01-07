@@ -20,9 +20,9 @@ package io.shardingsphere.core.rule;
 import com.google.common.base.Optional;
 import com.google.common.base.Preconditions;
 import com.google.common.base.Strings;
-import io.shardingsphere.api.config.MasterSlaveRuleConfiguration;
-import io.shardingsphere.api.config.ShardingRuleConfiguration;
-import io.shardingsphere.api.config.TableRuleConfiguration;
+import io.shardingsphere.api.config.rule.MasterSlaveRuleConfiguration;
+import io.shardingsphere.api.config.rule.ShardingRuleConfiguration;
+import io.shardingsphere.api.config.rule.TableRuleConfiguration;
 import io.shardingsphere.core.exception.ShardingConfigurationException;
 import io.shardingsphere.core.exception.ShardingException;
 import io.shardingsphere.core.keygen.DefaultKeyGenerator;
@@ -57,6 +57,8 @@ public class ShardingRule {
     
     private final Collection<BindingTableRule> bindingTableRules = new LinkedList<>();
     
+    private final Collection<String> broadcastTables = new LinkedList<>();
+    
     private final ShardingStrategy defaultDatabaseShardingStrategy;
     
     private final ShardingStrategy defaultTableShardingStrategy;
@@ -80,6 +82,7 @@ public class ShardingRule {
             }
             bindingTableRules.add(new BindingTableRule(tableRulesForBinding));
         }
+        broadcastTables.addAll(shardingRuleConfig.getBroadcastTables());
         defaultDatabaseShardingStrategy = null == shardingRuleConfig.getDefaultDatabaseShardingStrategyConfig()
                 ? new NoneShardingStrategy() : ShardingStrategyFactory.newInstance(shardingRuleConfig.getDefaultDatabaseShardingStrategyConfig());
         defaultTableShardingStrategy = null == shardingRuleConfig.getDefaultTableShardingStrategyConfig()
@@ -91,12 +94,12 @@ public class ShardingRule {
     }
     
     /**
-     * Try to find table rule though logic table name.
+     * Find table rule though logic table name.
      *
      * @param logicTableName logic table name
      * @return table rule
      */
-    public Optional<TableRule> tryFindTableRuleByLogicTable(final String logicTableName) {
+    public Optional<TableRule> findTableRuleByLogicTable(final String logicTableName) {
         for (TableRule each : tableRules) {
             if (each.getLogicTable().equals(logicTableName.toLowerCase())) {
                 return Optional.of(each);
@@ -106,12 +109,12 @@ public class ShardingRule {
     }
     
     /**
-     * Try to find table rule though actual table name.
+     * Find table rule though actual table name.
      *
      * @param actualTableName actual table name
      * @return table rule
      */
-    public Optional<TableRule> tryFindTableRuleByActualTable(final String actualTableName) {
+    public Optional<TableRule> findTableRuleByActualTable(final String actualTableName) {
         for (TableRule each : tableRules) {
             if (each.isExisted(actualTableName)) {
                 return Optional.of(each);
@@ -127,9 +130,12 @@ public class ShardingRule {
      * @return table rule
      */
     public TableRule getTableRuleByLogicTableName(final String logicTableName) {
-        Optional<TableRule> tableRule = tryFindTableRuleByLogicTable(logicTableName.toLowerCase());
+        Optional<TableRule> tableRule = findTableRuleByLogicTable(logicTableName.toLowerCase());
         if (tableRule.isPresent()) {
             return tableRule.get();
+        }
+        if (isBroadcastTable(logicTableName)) {
+            return new TableRule(shardingDataSourceNames.getDataSourceNames(), logicTableName);
         }
         if (!Strings.isNullOrEmpty(shardingDataSourceNames.getDefaultDataSourceName())) {
             return new TableRule(shardingDataSourceNames.getDefaultDataSourceName(), logicTableName);
@@ -166,6 +172,34 @@ public class ShardingRule {
     }
     
     /**
+     * Adjust logic table is belong to broadcast tables.
+     *
+     * @param logicTable logic table name
+     * @return logic table is belong to broadcast tables or not
+     */
+    public boolean isBroadcastTable(final String logicTable) {
+        return broadcastTables.contains(logicTable);
+    }
+    
+    /**
+     * Adjust logic tables is all belong to broadcast tables.
+     *
+     * @param logicTables names of logic tables
+     * @return logic tables is all belong to broadcast tables or not
+     */
+    public boolean isAllBroadcastTables(final Collection<String> logicTables) {
+        if (logicTables.isEmpty()) {
+            return false;
+        }
+        for (String each : logicTables) {
+            if (!isBroadcastTable(each)) {
+                return false;
+            }
+        }
+        return true;
+    }
+    
+    /**
      * Adjust logic tables is all belong to binding tables.
      *
      * @param logicTables names of logic tables
@@ -192,7 +226,10 @@ public class ShardingRule {
      */
     public boolean isAllInDefaultDataSource(final Collection<String> logicTables) {
         for (String each : logicTables) {
-            if (tryFindTableRuleByLogicTable(each).isPresent()) {
+            if (findTableRuleByLogicTable(each).isPresent()) {
+                return false;
+            }
+            if (isBroadcastTable(each)) {
                 return false;
             }
         }
@@ -231,19 +268,16 @@ public class ShardingRule {
      * @return is sharding column or not
      */
     public boolean isShardingColumn(final Column column) {
-        if (defaultDatabaseShardingStrategy.getShardingColumns().contains(column.getName()) || defaultTableShardingStrategy.getShardingColumns().contains(column.getName())) {
-            return true;
-        }
         for (TableRule each : tableRules) {
             if (!each.getLogicTable().equalsIgnoreCase(column.getTableName())) {
                 continue;
             }
-            if (null != each.getDatabaseShardingStrategy() && each.getDatabaseShardingStrategy().getShardingColumns().contains(column.getName())) {
+            ShardingStrategy databaseShardingStrategy = getDatabaseShardingStrategy(each);
+            if (null != databaseShardingStrategy && databaseShardingStrategy.getShardingColumns().contains(column.getName())) {
                 return true;
             }
-            if (null != each.getTableShardingStrategy() && each.getTableShardingStrategy().getShardingColumns().contains(column.getName())) {
-                return true;
-            }
+            ShardingStrategy tableShardingStrategy = getTableShardingStrategy(each);
+            return null != tableShardingStrategy && tableShardingStrategy.getShardingColumns().contains(column.getName());
         }
         return false;
     }
@@ -270,7 +304,7 @@ public class ShardingRule {
      * @return generated key
      */
     public Number generateKey(final String logicTableName) {
-        Optional<TableRule> tableRule = tryFindTableRuleByLogicTable(logicTableName);
+        Optional<TableRule> tableRule = findTableRuleByLogicTable(logicTableName);
         if (!tableRule.isPresent()) {
             throw new ShardingConfigurationException("Cannot find strategy for generate keys.");
         }
@@ -383,7 +417,7 @@ public class ShardingRule {
      * @return actual data source name
      */
     public String getActualDataSourceNameByActualTableName(final String actualTableName) {
-        Optional<TableRule> tableRule = tryFindTableRuleByActualTable(actualTableName);
+        Optional<TableRule> tableRule = findTableRuleByActualTable(actualTableName);
         if (tableRule.isPresent()) {
             return tableRule.get().getActualDatasourceNames().iterator().next();
         }
@@ -391,5 +425,15 @@ public class ShardingRule {
             return getShardingDataSourceNames().getDefaultDataSourceName();
         }
         throw new ShardingException("Cannot found actual data source name of '%s' in sharding rule.", actualTableName);
+    }
+    
+    /**
+     * Adjust contains table in sharding rule.
+     * 
+     * @param tableName table name
+     * @return contains table in sharding rule or not
+     */
+    public boolean contains(final String tableName) {
+        return findTableRuleByLogicTable(tableName).isPresent() || findBindingTableRule(tableName).isPresent() || isBroadcastTable(tableName);
     }
 }

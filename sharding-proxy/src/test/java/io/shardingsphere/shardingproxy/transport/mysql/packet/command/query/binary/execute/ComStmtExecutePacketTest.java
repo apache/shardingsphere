@@ -21,8 +21,6 @@ import com.google.common.base.Optional;
 import io.shardingsphere.shardingproxy.backend.BackendHandler;
 import io.shardingsphere.shardingproxy.backend.ResultPacket;
 import io.shardingsphere.shardingproxy.backend.jdbc.connection.BackendConnection;
-import io.shardingsphere.shardingproxy.frontend.common.FrontendHandler;
-import io.shardingsphere.shardingproxy.runtime.GlobalRegistry;
 import io.shardingsphere.shardingproxy.transport.common.packet.DatabasePacket;
 import io.shardingsphere.shardingproxy.transport.mysql.constant.ColumnType;
 import io.shardingsphere.shardingproxy.transport.mysql.packet.MySQLPacketPayload;
@@ -59,25 +57,10 @@ public final class ComStmtExecutePacketTest {
     @Mock
     private BackendConnection backendConnection;
     
-    @Mock
-    private FrontendHandler frontendHandler;
-    
-    @Before
-    public void setUp() {
-        setNIOConfig();
-    }
-    
     @Before
     @After
     public void reset() {
         BinaryStatementRegistryUtil.reset();
-    }
-    
-    @SneakyThrows
-    private void setNIOConfig() {
-        Field field = GlobalRegistry.class.getDeclaredField("useNIO");
-        field.setAccessible(true);
-        field.set(GlobalRegistry.getInstance(), true);
     }
     
     @Test
@@ -85,7 +68,7 @@ public final class ComStmtExecutePacketTest {
         BinaryStatementRegistry.getInstance().register("SELECT id FROM tbl WHERE id=?", 1);
         when(payload.readInt4()).thenReturn(1);
         when(payload.readInt1()).thenReturn(0, 1);
-        ComStmtExecutePacket actual = new ComStmtExecutePacket(1, 1000, payload, backendConnection, frontendHandler);
+        ComStmtExecutePacket actual = new ComStmtExecutePacket(1, payload, backendConnection);
         assertThat(actual.getSequenceId(), is(1));
         actual.write(payload);
         verify(payload, times(2)).writeInt4(1);
@@ -104,7 +87,7 @@ public final class ComStmtExecutePacketTest {
         when(backendHandler.execute()).thenReturn(expectedCommandResponsePackets);
         when(backendHandler.next()).thenReturn(true, false);
         when(backendHandler.getResultValue()).thenReturn(new ResultPacket(2, Collections.<Object>singletonList(99999L), 1, Collections.singletonList(ColumnType.MYSQL_TYPE_LONG)));
-        ComStmtExecutePacket packet = new ComStmtExecutePacket(1, 1000, payload, backendConnection, frontendHandler);
+        ComStmtExecutePacket packet = new ComStmtExecutePacket(1, payload, backendConnection);
         setBackendHandler(packet, backendHandler);
         Optional<CommandResponsePackets> actualCommandResponsePackets = packet.execute();
         assertTrue(actualCommandResponsePackets.isPresent());

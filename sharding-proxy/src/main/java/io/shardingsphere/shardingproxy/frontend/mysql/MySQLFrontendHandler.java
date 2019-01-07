@@ -17,35 +17,22 @@
 
 package io.shardingsphere.shardingproxy.frontend.mysql;
 
-import com.google.common.base.Optional;
 import com.google.common.base.Strings;
 import io.netty.buffer.ByteBuf;
 import io.netty.channel.ChannelHandlerContext;
-import io.netty.channel.EventLoopGroup;
-import io.shardingsphere.shardingproxy.backend.jdbc.connection.BackendConnection;
 import io.shardingsphere.shardingproxy.frontend.common.FrontendHandler;
-import io.shardingsphere.shardingproxy.frontend.common.executor.ExecutorGroup;
+import io.shardingsphere.shardingproxy.frontend.common.executor.CommandExecutorSelector;
 import io.shardingsphere.shardingproxy.runtime.ChannelRegistry;
 import io.shardingsphere.shardingproxy.runtime.GlobalRegistry;
-import io.shardingsphere.shardingproxy.transport.common.packet.DatabasePacket;
 import io.shardingsphere.shardingproxy.transport.mysql.constant.ServerErrorCode;
 import io.shardingsphere.shardingproxy.transport.mysql.packet.MySQLPacketPayload;
-import io.shardingsphere.shardingproxy.transport.mysql.packet.command.CommandPacket;
-import io.shardingsphere.shardingproxy.transport.mysql.packet.command.CommandPacketFactory;
-import io.shardingsphere.shardingproxy.transport.mysql.packet.command.CommandResponsePackets;
-import io.shardingsphere.shardingproxy.transport.mysql.packet.command.query.QueryCommandPacket;
-import io.shardingsphere.shardingproxy.transport.mysql.packet.generic.EofPacket;
 import io.shardingsphere.shardingproxy.transport.mysql.packet.generic.ErrPacket;
 import io.shardingsphere.shardingproxy.transport.mysql.packet.generic.OKPacket;
 import io.shardingsphere.shardingproxy.transport.mysql.packet.handshake.AuthenticationHandler;
 import io.shardingsphere.shardingproxy.transport.mysql.packet.handshake.ConnectionIdGenerator;
 import io.shardingsphere.shardingproxy.transport.mysql.packet.handshake.HandshakePacket;
 import io.shardingsphere.shardingproxy.transport.mysql.packet.handshake.HandshakeResponse41Packet;
-import io.shardingsphere.spi.root.RootInvokeHook;
-import io.shardingsphere.spi.root.SPIRootInvokeHook;
 import lombok.RequiredArgsConstructor;
-
-import java.sql.SQLException;
 
 /**
  * MySQL frontend handler.
@@ -53,20 +40,18 @@ import java.sql.SQLException;
  * @author zhangliang
  * @author panjuan
  * @author wangkai
+ * @author zhangyonglun
  */
 @RequiredArgsConstructor
 public final class MySQLFrontendHandler extends FrontendHandler {
     
-    private final EventLoopGroup eventLoopGroup;
-    
     private final AuthenticationHandler authenticationHandler = new AuthenticationHandler();
-    
-    private final RootInvokeHook rootInvokeHook = new SPIRootInvokeHook();
     
     @Override
     protected void handshake(final ChannelHandlerContext context) {
         int connectionId = ConnectionIdGenerator.getInstance().nextId();
         ChannelRegistry.getInstance().putConnectionId(context.channel().id().asShortText(), connectionId);
+        getBackendConnection().setConnectionId(connectionId);
         context.writeAndFlush(new HandshakePacket(connectionId, authenticationHandler.getAuthPluginData()));
     }
     
@@ -79,19 +64,19 @@ public final class MySQLFrontendHandler extends FrontendHandler {
                     context.writeAndFlush(new ErrPacket(response41.getSequenceId() + 1, ServerErrorCode.ER_BAD_DB_ERROR, response41.getDatabase()));
                     return;
                 }
-                setCurrentSchema(response41.getDatabase());
+                getBackendConnection().setCurrentSchema(response41.getDatabase());
                 context.writeAndFlush(new OKPacket(response41.getSequenceId() + 1));
             } else {
                 // TODO localhost should replace to real ip address
                 context.writeAndFlush(new ErrPacket(response41.getSequenceId() + 1,
-                        ServerErrorCode.ER_ACCESS_DENIED_ERROR, response41.getUsername(), "localhost", 0 == response41.getAuthResponse().length ? "NO" : "YES"));
+                    ServerErrorCode.ER_ACCESS_DENIED_ERROR, response41.getUsername(), "localhost", 0 == response41.getAuthResponse().length ? "NO" : "YES"));
             }
         }
     }
     
     @Override
     protected void executeCommand(final ChannelHandlerContext context, final ByteBuf message) {
-        new ExecutorGroup(eventLoopGroup, context.channel().id()).getExecutorService().execute(new CommandExecutor(context, message, this));
+        CommandExecutorSelector.getExecutor(getBackendConnection().getTransactionType(), context.channel().id()).execute(new CommandExecutor(context, message, this));
     }
     
     @Override
@@ -100,75 +85,6 @@ public final class MySQLFrontendHandler extends FrontendHandler {
             synchronized (this) {
                 this.notifyAll();
             }
-        }
-    }
-    
-    @RequiredArgsConstructor
-    class CommandExecutor implements Runnable {
-        
-        private final ChannelHandlerContext context;
-        
-        private final ByteBuf message;
-        
-        private final FrontendHandler frontendHandler;
-        
-        private int currentSequenceId;
-        
-        @Override
-        public void run() {
-            rootInvokeHook.start();
-            int connectionSize = 0;
-            try (MySQLPacketPayload payload = new MySQLPacketPayload(message);
-                 BackendConnection backendConnection = new BackendConnection()) {
-                setBackendConnection(backendConnection);
-                CommandPacket commandPacket = getCommandPacket(payload, backendConnection, frontendHandler);
-                Optional<CommandResponsePackets> responsePackets = commandPacket.execute();
-                if (!responsePackets.isPresent()) {
-                    return;
-                }
-                for (DatabasePacket each : responsePackets.get().getPackets()) {
-                    context.writeAndFlush(each);
-                }
-                if (commandPacket instanceof QueryCommandPacket && !(responsePackets.get().getHeadPacket() instanceof OKPacket) && !(responsePackets.get().getHeadPacket() instanceof ErrPacket)) {
-                    writeMoreResults((QueryCommandPacket) commandPacket, responsePackets.get().getPackets().size());
-                }
-                connectionSize = backendConnection.getConnectionSize();
-            } catch (final SQLException ex) {
-                context.writeAndFlush(new ErrPacket(++currentSequenceId, ex));
-                // CHECKSTYLE:OFF
-            } catch (final Exception ex) {
-                // CHECKSTYLE:ON
-                context.writeAndFlush(new ErrPacket(1, ServerErrorCode.ER_STD_UNKNOWN_EXCEPTION, ex.getMessage()));
-            } finally {
-                rootInvokeHook.finish(connectionSize);
-            }
-        }
-        
-        private CommandPacket getCommandPacket(final MySQLPacketPayload payload, final BackendConnection backendConnection, final FrontendHandler frontendHandler) throws SQLException {
-            int sequenceId = payload.readInt1();
-            int connectionId = ChannelRegistry.getInstance().getConnectionId(context.channel().id().asShortText());
-            return CommandPacketFactory.newInstance(sequenceId, connectionId, payload, backendConnection, frontendHandler);
-        }
-        
-        private void writeMoreResults(final QueryCommandPacket queryCommandPacket, final int headPacketsCount) throws SQLException {
-            if (!context.channel().isActive()) {
-                return;
-            }
-            currentSequenceId = headPacketsCount;
-            while (queryCommandPacket.next()) {
-                while (!context.channel().isWritable() && context.channel().isActive()) {
-                    synchronized (MySQLFrontendHandler.this) {
-                        try {
-                            MySQLFrontendHandler.this.wait();
-                        } catch (final InterruptedException ignore) {
-                        }
-                    }
-                }
-                DatabasePacket resultValue = queryCommandPacket.getResultValue();
-                currentSequenceId = resultValue.getSequenceId();
-                context.writeAndFlush(resultValue);
-            }
-            context.writeAndFlush(new EofPacket(++currentSequenceId));
         }
     }
 }

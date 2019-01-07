@@ -9,7 +9,7 @@
 - [x] Statement
 - [x] Prepared Statement
 - [x] Result Set
-- [x] Result Set Metadata
+- [ ] Result Set Metadata
 
 ### Database
 - [x] MySQL
@@ -22,6 +22,7 @@
 - [x] YAML
 - [x] Spring Namespace
 - [x] Spring Boot Starter
+- [x] Inline expression
 
 ## Sharding-Proxy
 
@@ -45,6 +46,7 @@
 
 ### Configuration
 - [x] YAML
+- [x] Inline expression
 
 ## Sharding-Sidecar
 - [ ] TODO
@@ -63,7 +65,7 @@
     - [x] LIMIT, rownum, TOP
     - [x] Simple Sub Query
     - [x] OR
-    - [ ] DISTINCT
+    - [x] DISTINCT
     - [ ] HAVING
     - [ ] UNION, UNION ALL
     - [ ] Calculate Expression, eg: SUM(pv) / COUNT(uv)

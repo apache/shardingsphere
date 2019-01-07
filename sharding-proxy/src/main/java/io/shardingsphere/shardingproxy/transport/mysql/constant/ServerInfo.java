@@ -36,7 +36,7 @@ public final class ServerInfo {
     /**
      * Server version.
      */
-    public static final String SERVER_VERSION = "5.6.0-Sharding-Proxy 3.0.0";
+    public static final String SERVER_VERSION = "5.6.0-Sharding-Proxy 3.1.0";
     
     /**
      * Charset code 0x21 is utf8_general_ci.

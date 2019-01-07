@@ -30,6 +30,7 @@ import io.shardingsphere.core.rule.ShardingRule;
  * Select parser for MySQL.
  *
  * @author zhangliang
+ * @author panjuan
  */
 public final class MySQLSelectParser extends AbstractSelectParser {
     
@@ -45,7 +46,6 @@ public final class MySQLSelectParser extends AbstractSelectParser {
     
     @Override
     protected void parseInternal(final SelectStatement selectStatement) {
-        parseDistinct();
         parseSelectOption();
         parseSelectList(selectStatement, getItems());
         parseFrom(selectStatement);

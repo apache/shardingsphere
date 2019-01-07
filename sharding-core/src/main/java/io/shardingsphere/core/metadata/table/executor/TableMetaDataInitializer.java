@@ -20,6 +20,7 @@ package io.shardingsphere.core.metadata.table.executor;
 import com.google.common.base.Optional;
 import io.shardingsphere.core.exception.ShardingException;
 import io.shardingsphere.core.executor.ShardingExecuteEngine;
+import io.shardingsphere.core.metadata.datasource.DataSourceMetaData;
 import io.shardingsphere.core.metadata.datasource.ShardingDataSourceMetaData;
 import io.shardingsphere.core.metadata.table.TableMetaData;
 import io.shardingsphere.core.rule.ShardingRule;
@@ -40,14 +41,17 @@ import java.util.Map;
  */
 public final class TableMetaDataInitializer {
     
+    private final ShardingDataSourceMetaData shardingDataSourceMetaData;
+    
     private final TableMetaDataConnectionManager connectionManager;
     
     private final TableMetaDataLoader tableMetaDataLoader;
     
-    public TableMetaDataInitializer(final ShardingDataSourceMetaData shardingDataSourceMetaData, 
-                                    final ShardingExecuteEngine executeEngine, final TableMetaDataConnectionManager connectionManager, final int maxConnectionsSizePerQuery) {
+    public TableMetaDataInitializer(final ShardingDataSourceMetaData shardingDataSourceMetaData, final ShardingExecuteEngine executeEngine, 
+                                    final TableMetaDataConnectionManager connectionManager, final int maxConnectionsSizePerQuery, final boolean isCheckingMetaData) {
+        this.shardingDataSourceMetaData = shardingDataSourceMetaData;
         this.connectionManager = connectionManager;
-        tableMetaDataLoader = new TableMetaDataLoader(shardingDataSourceMetaData, executeEngine, connectionManager, maxConnectionsSizePerQuery);
+        tableMetaDataLoader = new TableMetaDataLoader(shardingDataSourceMetaData, executeEngine, connectionManager, maxConnectionsSizePerQuery, isCheckingMetaData);
     }
     
     /**
@@ -88,8 +92,10 @@ public final class TableMetaDataInitializer {
     
     private Collection<String> getAllTableNames(final String dataSourceName) throws SQLException {
         Collection<String> result = new LinkedHashSet<>();
+        DataSourceMetaData dataSourceMetaData = shardingDataSourceMetaData.getActualDataSourceMetaData(dataSourceName);
+        String catalog = null == dataSourceMetaData ? null : dataSourceMetaData.getSchemeName();
         try (Connection connection = connectionManager.getConnection(dataSourceName);
-             ResultSet resultSet = connection.getMetaData().getTables(dataSourceName, null, null, new String[]{"TABLE"})) {
+             ResultSet resultSet = connection.getMetaData().getTables(catalog, null, null, new String[]{"TABLE"})) {
             while (resultSet.next()) {
                 String tableName = resultSet.getString("TABLE_NAME");
                 if (!tableName.contains("$")) {

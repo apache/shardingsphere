@@ -56,8 +56,7 @@ public final class SQLParsingEngine {
             return cachedSQLStatement.get();
         }
         LexerEngine lexerEngine = LexerEngineFactory.newInstance(dbType, sql);
-        lexerEngine.nextToken();
-        SQLStatement result = SQLParserFactory.newInstance(dbType, lexerEngine.getCurrentToken().getType(), shardingRule, lexerEngine, shardingTableMetaData).parse();
+        SQLStatement result = SQLParserFactory.newInstance(dbType, shardingRule, lexerEngine, shardingTableMetaData, sql).parse();
         if (useCache) {
             ParsingResultCache.getInstance().put(sql, result);
         }

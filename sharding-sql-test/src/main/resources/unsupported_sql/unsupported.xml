@@ -1,7 +1,9 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <sql-cases>
+    <!--  
     <sql-case id="assertSelectDistinctWithSingleTable" value="SELECT DISTINCT item_id FROM t_order_item ORDER BY item_id" />
     <sql-case id="assertSelectIntoSQL" value="SELECT * INTO t_order_new FROM t_order" />
+    -->
     <sql-case id="assertSelectWindow" value="SELECT * FROM t_order WINDOW w AS (PARTITION BY order_id)" db-types="PostgreSQL" />
     <sql-case id="assertSelectFetch" value="SELECT * FROM t_order FETCH NEXT 1 ROW ONLY" db-types="PostgreSQL" />
     <sql-case id="assertSelectFor" value="SELECT * FROM t_order FOR UPDATE OF t_order" db-types="PostgreSQL" />

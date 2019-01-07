@@ -84,5 +84,6 @@ shardingRule:
       slaveDataSourceNames:
         - slave_db_9
       loadBalanceAlgorithmType: ROUND_ROBIN
-  configMap:
-    key1: value1
+
+configMap:
+  key1: value1
