@@ -17,7 +17,6 @@
 
 package io.shardingsphere.core.parsing.parser.context.condition;
 
-import io.shardingsphere.core.parsing.parser.expression.SQLNumberExpression;
 import io.shardingsphere.core.parsing.parser.expression.SQLTextExpression;
 import lombok.Getter;
 import lombok.ToString;
@@ -42,15 +41,8 @@ public final class GeneratedKeyCondition extends Condition {
     
     private final Comparable<?> value;
     
-    public GeneratedKeyCondition(final Column column, final int index, final Number value) {
-        super(column, new SQLNumberExpression(value));
-        this.column = column;
-        this.index = index;
-        this.value = (Comparable<?>) value;
-    }
-    
-    public GeneratedKeyCondition(final Column column, final int index, final String value) {
-        super(column, new SQLTextExpression(value));
+    public GeneratedKeyCondition(final Column column, final int index, final Comparable<?> value) {
+        super(column, new SQLTextExpression(String.valueOf(value)));
         this.column = column;
         this.index = index;
         this.value = value;
