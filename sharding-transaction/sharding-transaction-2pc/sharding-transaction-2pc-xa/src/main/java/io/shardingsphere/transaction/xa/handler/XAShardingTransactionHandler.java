@@ -28,7 +28,6 @@ import io.shardingsphere.transaction.spi.xa.XATransactionManager;
 import io.shardingsphere.transaction.xa.convert.swap.DataSourceSwapperRegistry;
 import io.shardingsphere.transaction.xa.jta.connection.ShardingXAConnection;
 import io.shardingsphere.transaction.xa.jta.datasource.ShardingXADataSource;
-import io.shardingsphere.transaction.xa.jta.datasource.ShardingXADataSourceFactory;
 import io.shardingsphere.transaction.xa.manager.XATransactionManagerSPILoader;
 import lombok.extern.slf4j.Slf4j;
 
@@ -78,7 +77,7 @@ public final class XAShardingTransactionHandler extends ShardingTransactionHandl
             ShardingXADataSource shardingXADataSource;
             if (!(entry.getValue() instanceof XADataSource)) {
                 DataSourceParameter parameter = DataSourceSwapperRegistry.getSwapper(entry.getValue().getClass()).swap(entry.getValue());
-                shardingXADataSource = ShardingXADataSourceFactory.createShardingXADataSource(databaseType, entry.getKey(), parameter);
+                shardingXADataSource = new ShardingXADataSource(databaseType, entry.getKey(), parameter);
                 SHARDING_XA_DATASOURCE_MAP.put(entry.getKey(), shardingXADataSource);
                 xaTransactionManager.registerRecoveryResource(entry.getKey(), shardingXADataSource.getXaDataSource());
             } else {
