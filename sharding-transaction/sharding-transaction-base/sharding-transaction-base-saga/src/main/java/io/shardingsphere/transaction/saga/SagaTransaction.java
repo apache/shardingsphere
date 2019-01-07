@@ -68,13 +68,13 @@ public final class SagaTransaction {
      * Record and cache result for sub transaction.
      *
      * @param sagaSubTransaction saga sub transaction
-     * @param result execution result
+     * @param executionResult execution result
      */
-    public void recordResult(final SagaSubTransaction sagaSubTransaction, final ExecutionResult result) {
-        if (ExecutionResult.FAILURE == result) {
+    public void recordResult(final SagaSubTransaction sagaSubTransaction, final ExecutionResult executionResult) {
+        if (ExecutionResult.FAILURE == executionResult) {
             containException = true;
         }
-        executionResultMap.put(sagaSubTransaction, result);
+        executionResultMap.put(sagaSubTransaction, executionResult);
         currentLogicSQL.add(sagaSubTransaction);
     }
     
