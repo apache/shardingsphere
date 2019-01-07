@@ -45,6 +45,7 @@ public class AbstractSQLRouteTest {
         ShardingRuleConfiguration shardingRuleConfig = createShardingRuleConfiguration();
         addTableRule(shardingRuleConfig, "t_order", "ds_${0..1}.t_order_${0..1}", "user_id", "t_order_${user_id % 2}", "ds_${user_id % 2}");
         addTableRule(shardingRuleConfig, "t_order_item", "ds_${0..1}.t_order_item_${0..1}", "user_id", "t_order_item_${user_id % 2}", "ds_${user_id % 2}");
+        addTableRule(shardingRuleConfig, "t_user", "ds_${0..1}.t_user_${0..1}", "user_id", "t_user_${user_id % 2}", "ds_${user_id % 2}");
         shardingRuleConfig.getBindingTableGroups().add("t_order,t_order_item");
         shardingRuleConfig.setDefaultDataSourceName("main");
         return new ShardingRule(shardingRuleConfig, createDataSourceNames());
@@ -52,6 +53,7 @@ public class AbstractSQLRouteTest {
     
     private ShardingRuleConfiguration createShardingRuleConfiguration() {
         ShardingRuleConfiguration result = new ShardingRuleConfiguration();
+        result.getBroadcastTables().add("t_product");
         result.setDefaultDatabaseShardingStrategyConfig(new InlineShardingStrategyConfiguration("order_id", "ds_${user_id % 2}"));
         return result;
     }

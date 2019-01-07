@@ -53,7 +53,7 @@ public final class SubQueryRouteTest extends AbstractSQLRouteTest {
     
     @Test
     public void assertNotShardingTable() {
-        String sql = "select (select max(id) from t_user b where b.id = ?) from t_user a where id = ? ";
+        String sql = "select (select max(id) from t_category b where b.id = ?) from t_category a where id = ? ";
         List<Object> parameters = new LinkedList<>();
         parameters.add(1);
         parameters.add(1);
