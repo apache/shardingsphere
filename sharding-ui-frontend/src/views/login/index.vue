@@ -3,22 +3,25 @@
     <el-form ref="loginForm" :model="loginForm" class="login-form" auto-complete="off" label-position="left">
       <h3 class="title"><img style="margin-right:10px;" src="@/assets/logo.png">ShardingSphere</h3>
       <el-form-item prop="username">
-        <span class="svg-container">
-          <svg-icon icon-class="user" />
-        </span>
-        <el-input v-model="loginForm.username" name="username" type="text" auto-complete="off" placeholder="username" />
+        <el-input
+          v-model="loginForm.username"
+          name="username"
+          type="text"
+          auto-complete="off"
+          placeholder="username">
+          <i slot="prefix" class="icon-yonghu iconfont"/>
+        </el-input>
       </el-form-item>
       <el-form-item prop="password">
-        <span class="svg-container">
-          <svg-icon icon-class="password" />
-        </span>
         <el-input
           :type="pwdType"
           v-model="loginForm.password"
           name="password"
           auto-complete="on"
           placeholder="password"
-          @keyup.enter.native="handleLogin" />
+          @keyup.enter.native="handleLogin">
+          <i slot="prefix" class="icon-mima iconfont"/>
+        </el-input>
       </el-form-item>
       <el-form-item>
         <el-button :loading="loading" type="primary" style="width:100%;" @click.native.prevent="handleLogin">
@@ -26,13 +29,18 @@
         </el-button>
       </el-form-item>
     </el-form>
+    <s-footer style="position: fixed;bottom: 0;"/>
   </div>
 </template>
 
 <script>
+import SFooter from '../../components/Footer/index'
 import API from './api'
 export default {
   name: 'Login',
+  components: {
+    SFooter
+  },
   data() {
     return {
       loginForm: {
@@ -54,7 +62,7 @@ export default {
   },
   created() {
     if (window.localStorage.getItem('Access-Token')) {
-      location.href = '/'
+      location.href = '#/config-regist'
     }
   },
   methods: {
@@ -65,8 +73,10 @@ export default {
       }
       API.getLogin(params).then((res) => {
         const data = res.model
-        window.localStorage.setItem('Access-Token', data.accessToken)
-        location.href = '/'
+        const store = window.localStorage
+        store.setItem('Access-Token', data.accessToken)
+        store.setItem('username', data.username)
+        location.href = '#/config-regist'
       })
     }
   }
@@ -81,16 +91,16 @@ $light_gray:#eee;
 .login-container {
   .el-input {
     display: inline-block;
-    height: 47px;
+    // height: 47px;
     width: 85%;
     input {
       background: transparent;
       border: 0px;
       -webkit-appearance: none;
       border-radius: 0px;
-      padding: 12px 5px 12px 15px;
+      padding: 12px 5px 12px 30px;
       color: $light_gray;
-      height: 47px;
+      // height: 47px;
       &:-webkit-autofill {
         -webkit-box-shadow: 0 0 0px 1000px $bg inset !important;
         -webkit-text-fill-color: #fff !important;

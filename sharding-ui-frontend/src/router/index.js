@@ -5,7 +5,11 @@ Vue.use(Router)
 
 export const constantRouterMap = [
   {
-    path: '/',
+    path: '*',
+    redirect: '/config-regist'
+  },
+  {
+    path: '/config-regist',
     component: () => import('@/views/index/index'), hidden: true },
   { path: '/login',
     component: () => import('@/views/login/index'), hidden: true },

@@ -4,7 +4,7 @@ export default {
       title: '数据治理',
       child: [{
         title: '注册配置中心',
-        href: '/'
+        href: '/config-regist'
       }, {
         title: '配置管理',
         href: '/config-manage'

@@ -3,10 +3,10 @@ export default {
     menuData: [{
       title: 'Data governance',
       child: [{
-        title: 'Registration configuration',
-        href: '/'
+        title: 'Config regist',
+        href: '/config-regist'
       }, {
-        title: 'Configuration management',
+        title: 'Config manage',
         href: '/config-manage'
       }, {
         title: 'Orchestration',

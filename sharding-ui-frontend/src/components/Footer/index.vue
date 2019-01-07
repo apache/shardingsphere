@@ -1,7 +1,7 @@
 <template>
   <div class="footer-wrapper">
     Copyright
-    <svg-icon icon-class="copyright" /> 2016 - 2018 The Apache Software Foundation, Licensed under the Apache License, Version 2.0.
+    <i class="icon-copyright iconfont"/> 2016 - 2018 The Apache Software Foundation, Licensed under the Apache License, Version 2.0.
   </div>
 </template>
 <script>
