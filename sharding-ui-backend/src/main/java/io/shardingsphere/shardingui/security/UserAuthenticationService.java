@@ -49,7 +49,7 @@ public final class UserAuthenticationService {
      * @return check success or failure
      */
     public boolean checkUser(final UserAccount userAccount) {
-        if (Strings.isNullOrEmpty(userAccount.getUsername()) || Strings.isNullOrEmpty(userAccount.getPassword())) {
+        if (userAccount == null || Strings.isNullOrEmpty(userAccount.getUsername()) || Strings.isNullOrEmpty(userAccount.getPassword())) {
             return false;
         }
         if (!username.equals(userAccount.getUsername()) || !password.equals(userAccount.getPassword())) {

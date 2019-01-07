@@ -80,7 +80,7 @@ public final class OrchestrationController {
      * @param slaveDataSourceDTO slave data source DTO
      * @return response result
      */
-    @RequestMapping(value = "/datasource/", method = RequestMethod.PUT)
+    @RequestMapping(value = "/datasource", method = RequestMethod.PUT)
     public ResponseResult updateSlaveDataSourceStatus(@RequestBody final SlaveDataSourceDTO slaveDataSourceDTO) {
         orchestrationService.updateSlaveDataSourceStatus(slaveDataSourceDTO.getSchema(), slaveDataSourceDTO.getSlaveDataSourceName(), slaveDataSourceDTO.isEnabled());
         return ResponseResultUtil.success();
