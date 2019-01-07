@@ -17,10 +17,6 @@
 
 package io.shardingsphere.core.routing;
 
-import org.junit.runner.RunWith;
-import org.junit.runners.Suite;
-import org.junit.runners.Suite.SuiteClasses;
-
 import io.shardingsphere.core.routing.router.DatabaseHintSQLRouterTest;
 import io.shardingsphere.core.routing.type.broadcast.DatabaseBroadcastRoutingEngineTest;
 import io.shardingsphere.core.routing.type.broadcast.TableBroadcastRoutingEngineTest;
@@ -29,7 +25,10 @@ import io.shardingsphere.core.routing.type.hint.DatabaseHintRoutingEngineTest;
 import io.shardingsphere.core.routing.type.ignore.IgnoreRoutingEngineTest;
 import io.shardingsphere.core.routing.type.standard.SQLRouteTest;
 import io.shardingsphere.core.routing.type.standard.StandardRoutingEngineTest;
-import io.shardingsphere.core.routing.type.standard.SubQueryRouteTest;
+import io.shardingsphere.core.routing.type.standard.SubqueryRouteTest;
+import org.junit.runner.RunWith;
+import org.junit.runners.Suite;
+import org.junit.runners.Suite.SuiteClasses;
 
 @RunWith(Suite.class)
 @SuiteClasses({
@@ -41,7 +40,7 @@ import io.shardingsphere.core.routing.type.standard.SubQueryRouteTest;
         DatabaseHintRoutingEngineTest.class,
         IgnoreRoutingEngineTest.class,
         StandardRoutingEngineTest.class,
-        SubQueryRouteTest.class,
+        SubqueryRouteTest.class,
         SQLRouteTest.class
 })
 public final class AllRoutingTests {
