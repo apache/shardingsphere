@@ -141,12 +141,12 @@ public abstract class InsertValuesClauseParser implements SQLClauseParser {
     
     private GeneratedKeyCondition createGeneratedKeyCondition(final Column column, final SQLExpression sqlExpression) {
         if (sqlExpression instanceof SQLPlaceholderExpression) {
-            return new GeneratedKeyCondition(column, ((SQLPlaceholderExpression) sqlExpression).getIndex(), null);
-            if (sqlExpression instanceof SQLNumberExpression) {
-                return new GeneratedKeyCondition(column, -1, ((SQLNumberExpression) sqlExpression).getNumber());
-            }
-            return new GeneratedKeyCondition(column, -1, ((SQLTextExpression) sqlExpression).getText());
+            return new GeneratedKeyCondition(column, ((SQLPlaceholderExpression) sqlExpression).getIndex());
         }
+        if (sqlExpression instanceof SQLNumberExpression) {
+            return new GeneratedKeyCondition(column, -1, ((SQLNumberExpression) sqlExpression).getNumber());
+        }
+        return new GeneratedKeyCondition(column, -1, ((SQLTextExpression) sqlExpression).getText());
     }
     
     private void skipsDoubleColon() {
