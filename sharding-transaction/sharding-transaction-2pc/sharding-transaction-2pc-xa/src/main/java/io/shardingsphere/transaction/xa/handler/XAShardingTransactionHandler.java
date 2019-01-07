@@ -40,8 +40,8 @@ import javax.transaction.SystemException;
 import javax.transaction.Transaction;
 import java.sql.Connection;
 import java.sql.SQLException;
+import java.util.HashMap;
 import java.util.Map;
-import java.util.concurrent.ConcurrentHashMap;
 
 /**
  * XA sharding transaction handler.
@@ -51,7 +51,7 @@ import java.util.concurrent.ConcurrentHashMap;
 @Slf4j
 public final class XAShardingTransactionHandler extends ShardingTransactionHandlerAdapter {
     
-    private static final Map<String, ShardingXADataSource> SHARDING_XA_DATASOURCE_MAP = new ConcurrentHashMap<>();
+    private final Map<String, ShardingXADataSource> cachedAdapterXADataSourceMap = new HashMap<>();
     
     private DatabaseType databaseType;
     
@@ -78,7 +78,7 @@ public final class XAShardingTransactionHandler extends ShardingTransactionHandl
             if (!(entry.getValue() instanceof XADataSource)) {
                 DataSourceParameter parameter = DataSourceSwapperRegistry.getSwapper(entry.getValue().getClass()).swap(entry.getValue());
                 shardingXADataSource = new ShardingXADataSource(databaseType, entry.getKey(), parameter);
-                SHARDING_XA_DATASOURCE_MAP.put(entry.getKey(), shardingXADataSource);
+                cachedAdapterXADataSourceMap.put(entry.getKey(), shardingXADataSource);
                 xaTransactionManager.registerRecoveryResource(entry.getKey(), shardingXADataSource.getXaDataSource());
             } else {
                 xaTransactionManager.registerRecoveryResource(entry.getKey(), (XADataSource) entry.getValue());
@@ -89,12 +89,12 @@ public final class XAShardingTransactionHandler extends ShardingTransactionHandl
     
     @Override
     public void clearTransactionalResource() {
-        if (!SHARDING_XA_DATASOURCE_MAP.isEmpty()) {
-            for (ShardingXADataSource each : SHARDING_XA_DATASOURCE_MAP.values()) {
+        if (!cachedAdapterXADataSourceMap.isEmpty()) {
+            for (ShardingXADataSource each : cachedAdapterXADataSourceMap.values()) {
                 xaTransactionManager.removeRecoveryResource(each.getResourceName(), each.getXaDataSource());
             }
         }
-        SHARDING_XA_DATASOURCE_MAP.clear();
+        cachedAdapterXADataSourceMap.clear();
     }
     
     @Override
@@ -110,7 +110,7 @@ public final class XAShardingTransactionHandler extends ShardingTransactionHandl
                     result = xaConnection.getConnection();
                 } else {
                     result = dataSource.getConnection();
-                    ShardingXADataSource shardingXADataSource = SHARDING_XA_DATASOURCE_MAP.get(dataSourceName);
+                    ShardingXADataSource shardingXADataSource = cachedAdapterXADataSourceMap.get(dataSourceName);
                     shardingXAConnection = shardingXADataSource.wrapPhysicalConnection(databaseType, result);
                 }
                 transaction.enlistResource(shardingXAConnection.getXAResource());
