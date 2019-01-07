@@ -21,6 +21,7 @@ package io.shardingsphere.core.keygen;
  * Key generator interface.
  *
  * @author zhangliang
+ * @author panjuan
  */
 public interface KeyGenerator {
     
@@ -29,5 +30,5 @@ public interface KeyGenerator {
      * 
      * @return generated key
      */
-    Number generateKey();
+    Comparable<?> generateKey();
 }
