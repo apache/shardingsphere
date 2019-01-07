@@ -56,6 +56,13 @@ public final class GeneratedKeyCondition extends Condition {
         this.value = value;
     }
     
+    public GeneratedKeyCondition(final Column column, final int index) {
+        super(column, new SQLTextExpression(null));
+        this.column = column;
+        this.index = index;
+        this.value = null;
+    }
+    
     @Override
     public List<Comparable<?>> getConditionValues(final List<?> parameters) {
         Comparable<?> result = null == value ? (Comparable<?>) parameters.get(index) : value;
