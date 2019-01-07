@@ -130,19 +130,15 @@ public final class ConnectionAdapterTest extends AbstractShardingJDBCDatabaseAnd
     public void assertClose() throws SQLException {
         try (ShardingConnection actual = getShardingDataSource().getConnection()) {
             actual.createStatement().executeQuery(sql);
-            assertClose(actual, false);
             actual.close();
-            assertClose(actual, true);
+            assertClose(actual);
         }
     }
     
-    private void assertClose(final ShardingConnection actual, final boolean closed) throws SQLException {
-        assertThat(actual.isClosed(), is(closed));
+    private void assertClose(final ShardingConnection actual) {
+        assertTrue(actual.isClosed());
         Multimap<String, Connection> cachedConnections = getCachedConnections(actual);
-        assertThat(cachedConnections.size(), is(2));
-        for (Connection each : cachedConnections.values()) {
-            assertThat(each.isClosed(), is(closed));
-        }
+        assertTrue(cachedConnections.isEmpty());
     }
     
     @Test

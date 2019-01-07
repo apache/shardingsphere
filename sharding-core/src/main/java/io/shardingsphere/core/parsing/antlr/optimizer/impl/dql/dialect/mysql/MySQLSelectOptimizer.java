@@ -23,6 +23,7 @@ import io.shardingsphere.core.constant.AggregationType;
 import io.shardingsphere.core.metadata.table.ShardingTableMetaData;
 import io.shardingsphere.core.parsing.antlr.optimizer.SQLStatementOptimizer;
 import io.shardingsphere.core.parsing.parser.constant.DerivedColumn;
+import io.shardingsphere.core.parsing.parser.context.condition.OrCondition;
 import io.shardingsphere.core.parsing.parser.context.orderby.OrderItem;
 import io.shardingsphere.core.parsing.parser.context.selectitem.AggregationDistinctSelectItem;
 import io.shardingsphere.core.parsing.parser.context.selectitem.AggregationSelectItem;
@@ -53,8 +54,8 @@ public final class MySQLSelectOptimizer implements SQLStatementOptimizer {
     
     private void postExtractInternal(final SQLStatement sqlStatement, final ShardingTableMetaData shardingTableMetaData) {
         SelectStatement selectStatement = (SelectStatement) sqlStatement;
-        for (SelectStatement each : selectStatement.getSubQueryStatements()) {
-            selectStatement.getConditions().getOrCondition().getAndConditions().addAll(each.getConditions().getOrCondition().getAndConditions());
+        for (OrCondition each : selectStatement.getSubQueryConditions()) {
+            selectStatement.getConditions().getOrCondition().getAndConditions().addAll(each.getAndConditions());
         }
     }
     

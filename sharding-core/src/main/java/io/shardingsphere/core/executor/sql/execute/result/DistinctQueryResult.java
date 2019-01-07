@@ -26,9 +26,13 @@ import io.shardingsphere.core.executor.sql.execute.row.QueryRow;
 import io.shardingsphere.core.merger.QueryResult;
 import lombok.AccessLevel;
 import lombok.Getter;
+import lombok.RequiredArgsConstructor;
 import lombok.SneakyThrows;
 
+import java.io.ByteArrayInputStream;
+import java.io.ByteArrayOutputStream;
 import java.io.InputStream;
+import java.io.ObjectOutputStream;
 import java.sql.SQLException;
 import java.util.ArrayList;
 import java.util.Calendar;
@@ -44,6 +48,7 @@ import java.util.Set;
  *
  * @author panjuan
  */
+@RequiredArgsConstructor
 @Getter(AccessLevel.PROTECTED)
 public class DistinctQueryResult implements QueryResult {
     
@@ -52,11 +57,6 @@ public class DistinctQueryResult implements QueryResult {
     private final Iterator<QueryRow> resultData;
     
     private QueryRow currentRow;
-    
-    protected DistinctQueryResult(final Multimap<String, Integer> columnLabelAndIndexMap, final Iterator<QueryRow> resultData) {
-        this.columnLabelAndIndexMap = columnLabelAndIndexMap;
-        this.resultData = resultData;
-    }
     
     @SneakyThrows
     public DistinctQueryResult(final Collection<QueryResult> queryResults, final List<String> distinctColumnLabels) {
@@ -75,21 +75,22 @@ public class DistinctQueryResult implements QueryResult {
     
     @SneakyThrows
     private Iterator<QueryRow> getResultData(final Collection<QueryResult> queryResults, final List<String> distinctColumnLabels) {
-        Set<QueryRow> resultData = new LinkedHashSet<>();
+        Set<QueryRow> result = new LinkedHashSet<>();
         List<Integer> distinctColumnIndexes = Lists.transform(distinctColumnLabels, new Function<String, Integer>() {
-    
+            
             @Override
             public Integer apply(final String input) {
                 return getColumnIndex(input);
             }
         });
         for (QueryResult each : queryResults) {
-            fill(resultData, each, distinctColumnIndexes);
+            fill(result, each, distinctColumnIndexes);
         }
-        return resultData.iterator();
+        return result.iterator();
     }
     
-    private void fill(final Set<QueryRow> resultData, final QueryResult queryResult, final List<Integer> distinctColumnIndexes) throws SQLException {
+    @SneakyThrows
+    private void fill(final Set<QueryRow> resultData, final QueryResult queryResult, final List<Integer> distinctColumnIndexes) {
         while (queryResult.next()) {
             List<Object> rowData = new ArrayList<>(queryResult.getColumnCount());
             for (int columnIndex = 1; columnIndex <= queryResult.getColumnCount(); columnIndex++) {
@@ -106,7 +107,7 @@ public class DistinctQueryResult implements QueryResult {
      */
     public List<DistinctQueryResult> divide() {
         return Lists.newArrayList(Iterators.transform(resultData, new Function<QueryRow, DistinctQueryResult>() {
-    
+            
             @Override
             public DistinctQueryResult apply(final QueryRow row) {
                 Set<QueryRow> resultData = new LinkedHashSet<>();
@@ -117,7 +118,7 @@ public class DistinctQueryResult implements QueryResult {
     }
     
     @Override
-    public boolean next() {
+    public final boolean next() {
         if (resultData.hasNext()) {
             currentRow = resultData.next();
             return true;
@@ -148,12 +149,22 @@ public class DistinctQueryResult implements QueryResult {
     
     @Override
     public InputStream getInputStream(final int columnIndex, final String type) {
-        return (InputStream) currentRow.getColumnValue(columnIndex);
+        return getInputStream(currentRow.getColumnValue(columnIndex));
     }
     
     @Override
     public InputStream getInputStream(final String columnLabel, final String type) {
-        return (InputStream) currentRow.getColumnValue(getColumnIndex(columnLabel));
+        return getInputStream(currentRow.getColumnValue(getColumnIndex(columnLabel)));
+    }
+    
+    @SneakyThrows
+    protected InputStream getInputStream(final Object value) {
+        ByteArrayOutputStream byteArrayOutputStream = new ByteArrayOutputStream();
+        ObjectOutputStream objectOutputStream = new ObjectOutputStream(byteArrayOutputStream);
+        objectOutputStream.writeObject(value);
+        objectOutputStream.flush();
+        objectOutputStream.close();
+        return new ByteArrayInputStream(byteArrayOutputStream.toByteArray());
     }
     
     @Override

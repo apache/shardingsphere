@@ -52,6 +52,7 @@ public final class SQLStatementFillerEngine {
      * @param rule SQL statement rule
      * @return SQL statement
      */
+    @SuppressWarnings("unchecked")
     @SneakyThrows
     public SQLStatement fill(final Collection<SQLSegment> sqlSegments, final SQLStatementRule rule) {
         SQLStatement result = rule.getSqlStatementClass().newInstance();

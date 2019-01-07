@@ -1,6 +1,6 @@
-## 3.1.0.M1
+## 3.1.0
 
-### API changes
+### API Changes
 
 1. Adjust persist structure for orchestration's registry center.
 1. Adjust Sharding-JDBC configuration API.
@@ -13,7 +13,9 @@
 1. Broadcast table available.
 1. Solve data lean problem when using DefaultKeyGenerator with low TPS.
 
-[Change Logs for Issues and Pull requests](https://github.com/sharding-sphere/sharding-sphere/milestone/3)
+###  Change Logs
+1. [MILESTONE #3](https://github.com/sharding-sphere/sharding-sphere/milestone/3)
+1. [MILESTONE #4](https://github.com/sharding-sphere/sharding-sphere/milestone/4)
 
 ## 3.0.0
 

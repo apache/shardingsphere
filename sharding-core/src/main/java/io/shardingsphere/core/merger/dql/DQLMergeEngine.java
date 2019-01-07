@@ -50,13 +50,16 @@ import java.util.TreeMap;
  */
 public final class DQLMergeEngine implements MergeEngine {
     
+    private final DatabaseType databaseType;
+    
     private final SelectStatement selectStatement;
     
     private final List<QueryResult> queryResults;
     
     private final Map<String, Integer> columnLabelIndexMap;
     
-    public DQLMergeEngine(final List<QueryResult> queryResults, final SelectStatement selectStatement) throws SQLException {
+    public DQLMergeEngine(final DatabaseType databaseType, final SelectStatement selectStatement, final List<QueryResult> queryResults) throws SQLException {
+        this.databaseType = databaseType;
         this.selectStatement = selectStatement;
         this.queryResults = getRealQueryResults(queryResults);
         columnLabelIndexMap = getColumnLabelIndexMap(this.queryResults.get(0));
@@ -67,7 +70,7 @@ public final class DQLMergeEngine implements MergeEngine {
             return queryResults;
         }
         if (!selectStatement.getAggregationDistinctSelectItems().isEmpty()) {
-            return getDividedQueryResults(new AggregationDistinctQueryResult(queryResults, selectStatement));
+            return getDividedQueryResults(new AggregationDistinctQueryResult(queryResults, selectStatement.getAggregationDistinctSelectItems()));
         }
         if (selectStatement.getDistinctSelectItem().isPresent()) {
             return getDividedQueryResults(new DistinctQueryResult(queryResults, new ArrayList<>(selectStatement.getDistinctSelectItem().get().getDistinctColumnLabels())));
@@ -77,6 +80,7 @@ public final class DQLMergeEngine implements MergeEngine {
     
     private List<QueryResult> getDividedQueryResults(final DistinctQueryResult distinctQueryResult) {
         return Lists.transform(distinctQueryResult.divide(), new Function<DistinctQueryResult, QueryResult>() {
+            
             @Override
             public QueryResult apply(final DistinctQueryResult input) {
                 return input;
@@ -124,13 +128,13 @@ public final class DQLMergeEngine implements MergeEngine {
         if (null == limit || 1 == queryResults.size()) {
             return mergedResult;
         }
-        if (DatabaseType.MySQL == limit.getDatabaseType() || DatabaseType.PostgreSQL == limit.getDatabaseType() || DatabaseType.H2 == limit.getDatabaseType()) {
+        if (DatabaseType.MySQL == databaseType || DatabaseType.PostgreSQL == databaseType || DatabaseType.H2 == databaseType) {
             return new LimitDecoratorMergedResult(mergedResult, selectStatement.getLimit());
         }
-        if (DatabaseType.Oracle == limit.getDatabaseType()) {
+        if (DatabaseType.Oracle == databaseType) {
             return new RowNumberDecoratorMergedResult(mergedResult, selectStatement.getLimit());
         }
-        if (DatabaseType.SQLServer == limit.getDatabaseType()) {
+        if (DatabaseType.SQLServer == databaseType) {
             return new TopAndRowNumberDecoratorMergedResult(mergedResult, selectStatement.getLimit());
         }
         return mergedResult;

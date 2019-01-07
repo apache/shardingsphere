@@ -20,7 +20,6 @@ package io.shardingsphere.core.parsing.antlr.rule.jaxb.entity.filler;
 import io.shardingsphere.core.parsing.antlr.rule.jaxb.entity.RuleDefinitionEntity;
 import lombok.Getter;
 
-import javax.xml.bind.annotation.XmlAttribute;
 import javax.xml.bind.annotation.XmlElement;
 import javax.xml.bind.annotation.XmlRootElement;
 import java.util.Collection;
@@ -34,12 +33,6 @@ import java.util.LinkedList;
 @XmlRootElement(name = "filler-rule-definition")
 @Getter
 public final class FillerRuleDefinitionEntity implements RuleDefinitionEntity {
-    
-    @XmlAttribute(name = "sql-segment-base-package", required = true)
-    private String sqlSegmentBasePackage;
-    
-    @XmlAttribute(name = "filler-base-package", required = true)
-    private String fillerBasePackage;
     
     @XmlElement(name = "filler-rule")
     private Collection<FillerRuleEntity> rules = new LinkedList<>();

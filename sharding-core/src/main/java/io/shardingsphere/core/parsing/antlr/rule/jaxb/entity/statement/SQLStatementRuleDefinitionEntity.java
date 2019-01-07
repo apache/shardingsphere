@@ -20,7 +20,6 @@ package io.shardingsphere.core.parsing.antlr.rule.jaxb.entity.statement;
 import io.shardingsphere.core.parsing.antlr.rule.jaxb.entity.RuleDefinitionEntity;
 import lombok.Getter;
 
-import javax.xml.bind.annotation.XmlAttribute;
 import javax.xml.bind.annotation.XmlElement;
 import javax.xml.bind.annotation.XmlRootElement;
 import java.util.Collection;
@@ -34,9 +33,6 @@ import java.util.LinkedList;
 @XmlRootElement(name = "sql-statement-rule-definition")
 @Getter
 public final class SQLStatementRuleDefinitionEntity implements RuleDefinitionEntity {
-    
-    @XmlAttribute(name = "optimizer-base-package", required = true)
-    private String optimizerBasePackage;
     
     @XmlElement(name = "sql-statement-rule")
     private Collection<SQLStatementRuleEntity> rules = new LinkedList<>();

@@ -22,7 +22,7 @@ import com.google.common.collect.Lists;
 import lombok.Getter;
 import lombok.RequiredArgsConstructor;
 
-import java.util.LinkedList;
+import java.util.Collections;
 import java.util.List;
 
 /**
@@ -36,11 +36,10 @@ public final class QueryRow {
     
     private final List<Object> rowData;
     
-    private final List<Integer> distinctColumnIndexes = new LinkedList<>();
+    private final List<Integer> distinctColumnIndexes;
     
-    public QueryRow(final List<Object> rowData, final List<Integer> distinctColumnIndexes) {
-        this.rowData = rowData;
-        this.distinctColumnIndexes.addAll(distinctColumnIndexes);
+    public QueryRow(final List<Object> rowData) {
+        this(rowData, Collections.<Integer>emptyList());
     }
     
     /**

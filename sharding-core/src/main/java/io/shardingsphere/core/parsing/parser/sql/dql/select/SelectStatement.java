@@ -19,6 +19,7 @@ package io.shardingsphere.core.parsing.parser.sql.dql.select;
 
 import com.google.common.base.Optional;
 import com.google.common.base.Preconditions;
+import io.shardingsphere.core.parsing.parser.context.condition.OrCondition;
 import io.shardingsphere.core.parsing.parser.context.limit.Limit;
 import io.shardingsphere.core.parsing.parser.context.orderby.OrderItem;
 import io.shardingsphere.core.parsing.parser.context.selectitem.AggregationDistinctSelectItem;
@@ -73,6 +74,8 @@ public final class SelectStatement extends DQLStatement {
     private SelectStatement subQueryStatement;
     
     private Collection<SelectStatement> subQueryStatements = new LinkedList<>();
+    
+    private Collection<OrCondition> subQueryConditions = new LinkedList<>();
     
     /**
      * Get alias.

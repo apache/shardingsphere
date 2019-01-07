@@ -28,6 +28,7 @@ import io.shardingsphere.core.metadata.table.ShardingTableMetaData;
 import io.shardingsphere.core.metadata.table.TableMetaData;
 import io.shardingsphere.core.routing.PreparedStatementRoutingEngine;
 import io.shardingsphere.core.rule.ShardingRule;
+import org.junit.Ignore;
 import org.junit.Test;
 
 import java.util.Arrays;
@@ -38,6 +39,9 @@ import java.util.LinkedList;
 import java.util.List;
 import java.util.Map;
 
+import static org.hamcrest.CoreMatchers.is;
+import static org.junit.Assert.assertThat;
+
 public final class StandardRoutingEngineForSubQueryTest {
     
     @Test(expected = IllegalStateException.class)
@@ -46,7 +50,7 @@ public final class StandardRoutingEngineForSubQueryTest {
         List<Object> parameters = new LinkedList<>();
         parameters.add(3);
         parameters.add(2);
-        assertSubquery(sql, parameters);
+        assertSubQuery(sql, parameters);
     }
     
     @Test
@@ -55,7 +59,7 @@ public final class StandardRoutingEngineForSubQueryTest {
         List<Object> parameters = new LinkedList<>();
         parameters.add(1);
         parameters.add(1);
-        assertSubquery(sql, parameters);
+        assertSubQuery(sql, parameters);
     }
     
     @Test
@@ -64,7 +68,7 @@ public final class StandardRoutingEngineForSubQueryTest {
         List<Object> parameters = new LinkedList<>();
         parameters.add(1);
         parameters.add(1);
-        assertSubquery(sql, parameters);
+        assertSubQuery(sql, parameters);
     }
     
     @Test
@@ -73,7 +77,7 @@ public final class StandardRoutingEngineForSubQueryTest {
         List<Object> parameters = new LinkedList<>();
         parameters.add(1);
         parameters.add(1);
-        assertSubquery(sql, parameters);
+        assertSubQuery(sql, parameters);
     }
     
     @Test(expected = IllegalStateException.class)
@@ -82,7 +86,7 @@ public final class StandardRoutingEngineForSubQueryTest {
         List<Object> parameters = new LinkedList<>();
         parameters.add(1);
         parameters.add(3);
-        assertSubquery(sql, parameters);
+        assertSubQuery(sql, parameters);
     }
     
     @Test(expected = IllegalStateException.class)
@@ -92,7 +96,7 @@ public final class StandardRoutingEngineForSubQueryTest {
         parameters.add(3);
         parameters.add(1);
         String sql = "select (select max(id) from t_order_item b where b.user_id in(?,?)) from t_order a where user_id = ? ";
-        assertSubquery(sql, parameters);
+        assertSubQuery(sql, parameters);
     }
     
     @Test(expected = IllegalStateException.class)
@@ -103,14 +107,72 @@ public final class StandardRoutingEngineForSubQueryTest {
         parameters.add(1);
         parameters.add(3);
         String sql = "select (select max(id) from t_order_item b where b.user_id in(?,?)) from t_order a where user_id in(?,?) ";
-        assertSubquery(sql, parameters);
+        assertSubQuery(sql, parameters);
     }
     
-    private void assertSubquery(final String sql, final List<Object> parameters) {
+    private void assertSubQuery(final String sql, final List<Object> parameters) {
         ShardingRule shardingRule = createShardingRule();
         PreparedStatementRoutingEngine engine = new PreparedStatementRoutingEngine(
                 sql, shardingRule, new ShardingMetaData(buildShardingDataSourceMetaData(), buildShardingTableMetaData()), DatabaseType.MySQL, true);
-        engine.route(parameters);
+        assertThat(engine.route(parameters).getRouteUnits().size(), is(1));
+    }
+    
+    @Test(expected = IllegalStateException.class)
+    public void assertSubQueryInSubQueryError() {
+        List<Object> parameters = new LinkedList<>();
+        parameters.add(11);
+        parameters.add(1);
+        parameters.add(1);
+        parameters.add(1);
+        String sql = "select (select status from t_order b where b.user_id =? and status = (select status from t_order b where b.user_id =?)) as c from t_order a "
+                + "where status = (select status from t_order b where b.user_id =? and status = (select status from t_order b where b.user_id =?))";
+        assertSubQuery(sql, parameters);
+    }
+    
+    @Test
+    public void assertSubQueryInSubQuery() {
+        List<Object> parameters = new LinkedList<>();
+        parameters.add(1);
+        parameters.add(1);
+        parameters.add(1);
+        parameters.add(1);
+        String sql = "select (select status from t_order b where b.user_id =? and status = (select status from t_order b where b.user_id =?)) as c from t_order a "
+                + "where status = (select status from t_order b where b.user_id =? and status = (select status from t_order b where b.user_id =?))";
+        assertSubQuery(sql, parameters);
+    }
+    
+    @Test(expected = IllegalStateException.class)
+    public void assertSubQueryInFromError() {
+        String sql = "select status from t_order b join (select user_id,status from t_order b where b.user_id =?) c on b.user_id = c.user_id where b.user_id =? ";
+        List<Object> parameters = new LinkedList<>();
+        parameters.add(11);
+        parameters.add(1);
+        assertSubQuery(sql, parameters);
+    }
+    
+    @Test
+    public void assertSubQueryInFrom() {
+        String sql = "select status from t_order b join (select user_id,status from t_order b where b.user_id =?) c on b.user_id = c.user_id where b.user_id =? ";
+        List<Object> parameters = new LinkedList<>();
+        parameters.add(1);
+        parameters.add(1);
+        assertSubQuery(sql, parameters);
+    }
+    
+    @Test
+    public void assertSubQueryForAggregation() {
+        String sql = "select count(*) from t_order where c.user_id = (select user_id from t_order where user_id =?) ";
+        List<Object> parameters = new LinkedList<>();
+        parameters.add(1);
+        assertSubQuery(sql, parameters);
+    }
+    
+    @Test
+    public void assertSubQueryForBinding() {
+        String sql = "select count(*) from t_order where user_id = (select user_id from t_order_item where user_id =?) ";
+        List<Object> parameters = new LinkedList<>();
+        parameters.add(1);
+        assertSubQuery(sql, parameters);
     }
     
     private ShardingDataSourceMetaData buildShardingDataSourceMetaData() {
@@ -122,8 +184,8 @@ public final class StandardRoutingEngineForSubQueryTest {
     
     private ShardingRule createShardingRule() {
         ShardingRuleConfiguration shardingRuleConfig = createShardingRuleConfiguration();
-        addTableRule(shardingRuleConfig, "t_order", "ds_${0..1}.t_order_${0..1}", "user_id", "ds_${user_id % 2}");
-        addTableRule(shardingRuleConfig, "t_order_item", "ds_${0..1}.t_order_item_${0..1}", "user_id", "ds_${user_id % 2}");
+        addTableRule(shardingRuleConfig, "t_order", "ds_${0..1}.t_order_${0..1}", "user_id", "t_order_${user_id % 2}", "ds_${user_id % 2}");
+        addTableRule(shardingRuleConfig, "t_order_item", "ds_${0..1}.t_order_item_${0..1}", "user_id", "t_order_item_${user_id % 2}", "ds_${user_id % 2}");
         shardingRuleConfig.getBindingTableGroups().add("t_order,t_order_item");
         return new ShardingRule(shardingRuleConfig, createDataSourceNames());
     }
@@ -131,7 +193,6 @@ public final class StandardRoutingEngineForSubQueryTest {
     private ShardingRuleConfiguration createShardingRuleConfiguration() {
         ShardingRuleConfiguration result = new ShardingRuleConfiguration();
         result.setDefaultDatabaseShardingStrategyConfig(new InlineShardingStrategyConfiguration("order_id", "ds_${user_id % 2}"));
-        result.setDefaultTableShardingStrategyConfig(new InlineShardingStrategyConfiguration("order_id", "t_order_${user_id % 2}"));
         return result;
     }
     
@@ -139,17 +200,18 @@ public final class StandardRoutingEngineForSubQueryTest {
         return Arrays.asList("ds_0", "ds_1");
     }
     
-    private void addTableRule(
-            final ShardingRuleConfiguration shardingRuleConfig, final String tableName, final String actualDataNodes, final String shardingColumn, final String algorithmExpression) {
-        TableRuleConfiguration orderTableRuleConfig = createTableRuleConfig(tableName, actualDataNodes, shardingColumn, algorithmExpression);
+    private void addTableRule(final ShardingRuleConfiguration shardingRuleConfig, final String tableName, final String actualDataNodes,
+                              final String shardingColumn, final String tableAlgorithmExpression, final String dataSourceAlgorithmExpression) {
+        TableRuleConfiguration orderTableRuleConfig = createTableRuleConfig(tableName, actualDataNodes, shardingColumn, tableAlgorithmExpression, dataSourceAlgorithmExpression);
         shardingRuleConfig.getTableRuleConfigs().add(orderTableRuleConfig);
     }
     
-    private TableRuleConfiguration createTableRuleConfig(final String tableName, final String actualDataNodes, final String shardingColumn, final String algorithmExpression) {
+    private TableRuleConfiguration createTableRuleConfig(final String tableName, final String actualDataNodes, final String shardingColumn,
+                                                         final String algorithmExpression, final String dataSourceAlgorithmExpression) {
         TableRuleConfiguration result = new TableRuleConfiguration();
         result.setLogicTable(tableName);
         result.setTableShardingStrategyConfig(new InlineShardingStrategyConfiguration(shardingColumn, algorithmExpression));
-        result.setDatabaseShardingStrategyConfig(new InlineShardingStrategyConfiguration(shardingColumn, algorithmExpression));
+        result.setDatabaseShardingStrategyConfig(new InlineShardingStrategyConfiguration(shardingColumn, dataSourceAlgorithmExpression));
         result.setActualDataNodes(actualDataNodes);
         return result;
     }

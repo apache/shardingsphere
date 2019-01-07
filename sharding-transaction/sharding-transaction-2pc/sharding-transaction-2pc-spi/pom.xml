@@ -4,13 +4,13 @@
          xsi:schemaLocation="http://maven.apache.org/POM/4.0.0 http://maven.apache.org/xsd/maven-4.0.0.xsd">
     <modelVersion>4.0.0</modelVersion>
     <parent>
-        <artifactId>sharding-transaction-2pc</artifactId>
         <groupId>io.shardingsphere</groupId>
-        <version>3.1.0-SNAPSHOT</version>
+        <artifactId>sharding-transaction-2pc</artifactId>
+        <version>4.0.0.M1-SNAPSHOT</version>
     </parent>
     <artifactId>sharding-transaction-2pc-spi</artifactId>
     <name>${project.artifactId}</name>
-
+    
     <dependencies>
         <dependency>
             <groupId>io.shardingsphere</groupId>
@@ -22,5 +22,4 @@
             <artifactId>jta</artifactId>
         </dependency>
     </dependencies>
-
 </project>

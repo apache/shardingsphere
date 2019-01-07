@@ -18,7 +18,6 @@
 package io.shardingsphere.core.parsing.antlr.rule.registry.statement;
 
 import com.google.common.base.CaseFormat;
-import com.google.common.base.Joiner;
 import com.google.common.base.Splitter;
 import com.google.common.base.Strings;
 import io.shardingsphere.core.parsing.antlr.extractor.SQLSegmentExtractor;
@@ -57,7 +56,7 @@ public final class SQLStatementRuleDefinition {
         for (SQLStatementRuleEntity each : dialectRuleDefinitionEntity.getRules()) {
             SQLStatementRule sqlStatementRule = new SQLStatementRule(each.getContext(), 
                     (Class<? extends SQLStatement>) Class.forName(each.getSqlStatementClass()),
-                    (SQLStatementOptimizer) newClassInstance(dialectRuleDefinitionEntity.getOptimizerBasePackage(), each.getOptimizerClass()));
+                    (SQLStatementOptimizer) newClassInstance(each.getOptimizerClass()));
             sqlStatementRule.getExtractors().addAll(createExtractors(each.getExtractorRuleRefs(), extractorRuleDefinition));
             rules.put(getContextClassName(each.getContext()), sqlStatementRule);
         }
@@ -78,7 +77,7 @@ public final class SQLStatementRuleDefinition {
     }
     
     @SneakyThrows
-    private Object newClassInstance(final String basePackage, final String className) {
-        return Strings.isNullOrEmpty(className) ? null : Class.forName(Joiner.on('.').join(basePackage, className)).newInstance();
+    private Object newClassInstance(final String className) {
+        return Strings.isNullOrEmpty(className) ? null : Class.forName(className).newInstance();
     }
 }

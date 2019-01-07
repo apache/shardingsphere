@@ -26,7 +26,6 @@ import io.shardingsphere.transaction.api.TransactionType;
 import lombok.Getter;
 
 import javax.sql.DataSource;
-import java.sql.Connection;
 import java.sql.DatabaseMetaData;
 import java.sql.PreparedStatement;
 import java.sql.SQLException;
@@ -60,22 +59,9 @@ public final class ShardingConnection extends AbstractConnectionAdapter {
         this.shardingContext = shardingContext;
     }
     
-    /**
-     * Release connection.
-     *
-     * @param connection to be released connection
-     */
-    void release(final Connection connection) {
-        removeCache(connection);
-        try {
-            connection.close();
-        } catch (final SQLException ignored) {
-        }
-    }
-    
     @Override
-    public DatabaseMetaData getMetaData() {
-        return shardingContext.getDatabaseMetaData();
+    public DatabaseMetaData getMetaData() throws SQLException {
+        return getCachedConnections().isEmpty() ? shardingContext.getCachedDatabaseMetaData() : getCachedConnections().values().iterator().next().getMetaData();
     }
     
     @Override

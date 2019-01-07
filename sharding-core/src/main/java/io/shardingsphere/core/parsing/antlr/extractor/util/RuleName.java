@@ -83,7 +83,7 @@ public enum RuleName {
     
     TABLE_CONSTRAINT("TableConstraint"),
     
-    TABLE_REFERENCES("TableReference"),
+    TABLE_REFERENCES("TableReferences"),
     
     TABLE_REFERENCE("TableReference"),
     
