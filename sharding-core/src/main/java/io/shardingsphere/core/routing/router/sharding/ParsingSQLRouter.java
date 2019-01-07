@@ -17,12 +17,8 @@
 
 package io.shardingsphere.core.routing.router.sharding;
 
-import java.util.LinkedList;
-import java.util.List;
-
 import com.google.common.base.Optional;
 import com.google.common.base.Preconditions;
-
 import io.shardingsphere.api.algorithm.sharding.ListShardingValue;
 import io.shardingsphere.api.algorithm.sharding.ShardingValue;
 import io.shardingsphere.core.constant.DatabaseType;
@@ -54,6 +50,9 @@ import io.shardingsphere.spi.parsing.ParsingHook;
 import io.shardingsphere.spi.parsing.SPIParsingHook;
 import lombok.RequiredArgsConstructor;
 
+import java.util.LinkedList;
+import java.util.List;
+
 /**
  * Sharding router with parse.
  *
@@ -72,7 +71,7 @@ public final class ParsingSQLRouter implements ShardingRouter {
     
     private final boolean showSQL;
     
-    private final List<Number> generatedKeys = new LinkedList<>();
+    private final List<Comparable<?>> generatedKeys = new LinkedList<>();
     
     private final ParsingHook parsingHook = new SPIParsingHook();
     
@@ -125,7 +124,7 @@ public final class ParsingSQLRouter implements ShardingRouter {
                 if (-1 == generatedKeyCondition.getIndex()) {
                     result.getGeneratedKeys().add(generatedKeyCondition.getValue());
                 } else {
-                    result.getGeneratedKeys().add((Number) parameters.get(generatedKeyCondition.getIndex()));
+                    result.getGeneratedKeys().add((Comparable<?>) parameters.get(generatedKeyCondition.getIndex()));
                 }
             }
             return Optional.fromNullable(result);
