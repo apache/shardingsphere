@@ -36,7 +36,7 @@ public final class SubqueryFiller implements SQLStatementFiller<SubquerySegment>
     public void fill(final SubquerySegment sqlSegment, final SQLStatement sqlStatement, final String sql, final ShardingRule shardingRule, final ShardingTableMetaData shardingTableMetaData) {
         SelectStatement selectStatement = (SelectStatement) sqlStatement;
         SelectStatement subqueryStatement = new SelectStatement();
-        selectStatement.getSubQueryStatements().add(subqueryStatement);
+        selectStatement.getSubqueryStatements().add(subqueryStatement);
         if (sqlSegment.getSelectClauseSegment().isPresent()) {
             new SelectClauseFiller().fill(sqlSegment.getSelectClauseSegment().get(), subqueryStatement, sql, shardingRule, shardingTableMetaData);
         }

@@ -23,6 +23,7 @@ import io.shardingsphere.core.constant.properties.ShardingProperties;
 import io.shardingsphere.core.rule.MasterSlaveRule;
 import io.shardingsphere.shardingjdbc.jdbc.adapter.AbstractDataSourceAdapter;
 import io.shardingsphere.shardingjdbc.jdbc.core.connection.MasterSlaveConnection;
+import io.shardingsphere.shardingjdbc.jdbc.core.datasource.metadata.CachedDatabaseMetaData;
 import io.shardingsphere.transaction.api.TransactionTypeHolder;
 import lombok.Getter;
 import lombok.extern.slf4j.Slf4j;
@@ -45,7 +46,7 @@ import java.util.Properties;
 @Slf4j
 public class MasterSlaveDataSource extends AbstractDataSourceAdapter {
     
-    private final DatabaseMetaData databaseMetaData;
+    private final DatabaseMetaData cachedDatabaseMetaData;
     
     private final MasterSlaveRule masterSlaveRule;
     
@@ -54,7 +55,7 @@ public class MasterSlaveDataSource extends AbstractDataSourceAdapter {
     public MasterSlaveDataSource(final Map<String, DataSource> dataSourceMap, final MasterSlaveRuleConfiguration masterSlaveRuleConfig,
                                  final Map<String, Object> configMap, final Properties props) throws SQLException {
         super(dataSourceMap);
-        databaseMetaData = getDatabaseMetaData(dataSourceMap);
+        cachedDatabaseMetaData = createCachedDatabaseMetaData(dataSourceMap);
         if (!configMap.isEmpty()) {
             ConfigMapContext.getInstance().getConfigMap().putAll(configMap);
         }
@@ -64,7 +65,7 @@ public class MasterSlaveDataSource extends AbstractDataSourceAdapter {
     
     public MasterSlaveDataSource(final Map<String, DataSource> dataSourceMap, final MasterSlaveRule masterSlaveRule, final Map<String, Object> configMap, final Properties props) throws SQLException {
         super(dataSourceMap);
-        databaseMetaData = getDatabaseMetaData(dataSourceMap);
+        cachedDatabaseMetaData = createCachedDatabaseMetaData(dataSourceMap);
         if (!configMap.isEmpty()) {
             ConfigMapContext.getInstance().getConfigMap().putAll(configMap);
         }
@@ -72,9 +73,9 @@ public class MasterSlaveDataSource extends AbstractDataSourceAdapter {
         shardingProperties = new ShardingProperties(null == props ? new Properties() : props);
     }
     
-    private DatabaseMetaData getDatabaseMetaData(final Map<String, DataSource> dataSourceMap) throws SQLException {
+    private DatabaseMetaData createCachedDatabaseMetaData(final Map<String, DataSource> dataSourceMap) throws SQLException {
         try (Connection connection = dataSourceMap.values().iterator().next().getConnection()) {
-            return connection.getMetaData();
+            return new CachedDatabaseMetaData(connection.getMetaData());
         }
     }
     

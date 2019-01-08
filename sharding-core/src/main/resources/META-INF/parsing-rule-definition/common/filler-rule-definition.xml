@@ -12,7 +12,7 @@
     <filler-rule sql-segment-class="io.shardingsphere.core.parsing.antlr.sql.segment.definition.constraint.DropPrimaryKeySegment" filler-class="io.shardingsphere.core.parsing.antlr.filler.impl.ddl.alter.DropPrimaryKeyFiller" />
     <filler-rule sql-segment-class="io.shardingsphere.core.parsing.antlr.sql.segment.SelectClauseSegment" filler-class="io.shardingsphere.core.parsing.antlr.filler.impl.dql.SelectClauseFiller" />
     <filler-rule sql-segment-class="io.shardingsphere.core.parsing.antlr.sql.segment.FromWhereSegment" filler-class="io.shardingsphere.core.parsing.antlr.filler.impl.FromWhereFiller" />
-    <filler-rule sql-segment-class="io.shardingsphere.core.parsing.antlr.sql.segment.condition.SubQueryConditionSegment" filler-class="io.shardingsphere.core.parsing.antlr.filler.impl.dql.SubQueryConditionFiller" />
+    <filler-rule sql-segment-class="io.shardingsphere.core.parsing.antlr.sql.segment.condition.SubqueryConditionSegment" filler-class="io.shardingsphere.core.parsing.antlr.filler.impl.dql.SubqueryConditionFiller" />
     <filler-rule sql-segment-class="io.shardingsphere.core.parsing.antlr.sql.segment.order.GroupBySegment" filler-class="io.shardingsphere.core.parsing.antlr.filler.impl.dql.GroupByFiller" />
     <filler-rule sql-segment-class="io.shardingsphere.core.parsing.antlr.sql.segment.order.OrderBySegment" filler-class="io.shardingsphere.core.parsing.antlr.filler.impl.dql.OrderByFiller" />
     <filler-rule sql-segment-class="io.shardingsphere.core.parsing.antlr.sql.segment.limit.LimitSegment" filler-class="io.shardingsphere.core.parsing.antlr.filler.impl.dql.LimitFiller" />

@@ -9,7 +9,11 @@ alias
 tableName
     : ID | ID DOT_ASTERISK | ASTERISK
     ;
-    
+
+columnName
+    : ID | ROW
+    ;
+
 characterSet
     : (CHARACTER | CHAR) SET EQ_? charsetName | CHARSET EQ_? charsetName
     ;

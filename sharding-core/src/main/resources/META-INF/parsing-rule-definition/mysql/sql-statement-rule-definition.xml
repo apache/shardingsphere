@@ -10,7 +10,7 @@
     <sql-statement-rule context="dropIndex" sql-statement-class="io.shardingsphere.core.parsing.antlr.sql.statement.ddl.DDLStatement" extractor-rule-refs="tableName, indexName" />
     
     <sql-statement-rule context="select" sql-statement-class="io.shardingsphere.core.parsing.parser.sql.dql.select.SelectStatement" 
-                        extractor-rule-refs="tableNames, indexNames, selectClause, fromWhere, groupBy, orderBy, limit, subQueryCondition"
+                        extractor-rule-refs="tableNames, indexNames, selectClause, fromWhere, groupBy, orderBy, limit, subqueryCondition"
                         optimizer-class="io.shardingsphere.core.parsing.antlr.optimizer.impl.dql.dialect.mysql.MySQLSelectOptimizer" />
     
     <sql-statement-rule context="beginTransaction" sql-statement-class="io.shardingsphere.core.parsing.antlr.sql.statement.tcl.BeginTransactionStatement" />

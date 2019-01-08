@@ -24,12 +24,12 @@ import java.util.Collection;
 import java.util.LinkedList;
 
 /**
- * SubQuery condition segment.
+ * Subquery condition segment.
  *
  * @author duhongjun
  */
 @Getter
-public final class SubQueryConditionSegment implements SQLSegment {
+public final class SubqueryConditionSegment implements SQLSegment {
     
     private Collection<OrConditionSegment> orConditions = new LinkedList<>();
 }

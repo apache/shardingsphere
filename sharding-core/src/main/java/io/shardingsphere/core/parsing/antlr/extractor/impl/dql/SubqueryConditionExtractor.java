@@ -23,22 +23,22 @@ import io.shardingsphere.core.parsing.antlr.extractor.impl.FromWhereExtractor;
 import io.shardingsphere.core.parsing.antlr.extractor.util.ExtractorUtils;
 import io.shardingsphere.core.parsing.antlr.extractor.util.RuleName;
 import io.shardingsphere.core.parsing.antlr.sql.segment.FromWhereSegment;
-import io.shardingsphere.core.parsing.antlr.sql.segment.condition.SubQueryConditionSegment;
+import io.shardingsphere.core.parsing.antlr.sql.segment.condition.SubqueryConditionSegment;
 import org.antlr.v4.runtime.ParserRuleContext;
 
 import java.util.Collection;
 
 /**
- * SubQuery condition extractor.
+ * Subquery condition extractor.
  *
  * @author duhongjun
  */
-public final class SubQueryConditionExtractor implements OptionalSQLSegmentExtractor {
+public final class SubqueryConditionExtractor implements OptionalSQLSegmentExtractor {
     
     @Override
-    public Optional<SubQueryConditionSegment> extract(final ParserRuleContext ancestorNode) {
+    public Optional<SubqueryConditionSegment> extract(final ParserRuleContext ancestorNode) {
         Collection<ParserRuleContext> suQueryNodes = ExtractorUtils.getAllDescendantNodes(ancestorNode, RuleName.SUBQUERY);
-        SubQueryConditionSegment result = new SubQueryConditionSegment();
+        SubqueryConditionSegment result = new SubqueryConditionSegment();
         FromWhereExtractor fromWhereExtractor = new FromWhereExtractor();
         for (ParserRuleContext each : suQueryNodes) {
             Optional<FromWhereSegment> condition = fromWhereExtractor.extract(each, ancestorNode);

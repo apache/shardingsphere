@@ -63,13 +63,13 @@
     - [x] GROUP BY
     - [x] Aggregation Functions
     - [x] LIMIT, rownum, TOP
-    - [x] Simple Sub Query
+    - [x] Simple Subquery
     - [x] OR
     - [x] DISTINCT
     - [ ] HAVING
     - [ ] UNION, UNION ALL
     - [ ] Calculate Expression, eg: SUM(pv) / COUNT(uv)
-    - [ ] Complicated Sub Query
+    - [ ] Complicated Subquery
     - [ ] SQL Hint
 - [x] DML
     - [x] INSERT INTO

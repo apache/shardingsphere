@@ -54,7 +54,7 @@ public final class MySQLSelectOptimizer implements SQLStatementOptimizer {
     
     private void postExtractInternal(final SQLStatement sqlStatement, final ShardingTableMetaData shardingTableMetaData) {
         SelectStatement selectStatement = (SelectStatement) sqlStatement;
-        for (OrCondition each : selectStatement.getSubQueryConditions()) {
+        for (OrCondition each : selectStatement.getSubqueryConditions()) {
             selectStatement.getConditions().getOrCondition().getAndConditions().addAll(each.getAndConditions());
         }
     }
