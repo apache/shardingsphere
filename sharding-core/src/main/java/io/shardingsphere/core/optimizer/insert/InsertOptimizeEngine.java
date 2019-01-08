@@ -75,7 +75,7 @@ public final class InsertOptimizeEngine implements OptimizeEngine {
                 result.add(insertShardingCondition);
             }
         } else {
-            Iterator<Comparable<?>> generatedKeys = createGeneratedKeys();
+            Iterator<Comparable<?>> generatedKeys = generatedKey.getGeneratedKeys().iterator();
             for (int i = 0; i < andConditions.size(); i++) {
                 InsertValue insertValue = insertValues.get(i);
                 List<Object> currentParameters = new ArrayList<>(insertValue.getParametersCount() + 1);
@@ -98,9 +98,6 @@ public final class InsertOptimizeEngine implements OptimizeEngine {
     }
     
     private InsertShardingCondition getInsertShardingCondition(final Comparable<?> currentGeneratedKey, final InsertValue insertValue, final List<Object> currentParameters) {
-        if (!isNeededToAppendGeneratedKey()) {
-            return new InsertShardingCondition(insertValue.getExpression(), currentParameters);
-        }
         Column generateKeyColumn = shardingRule.getGenerateKeyColumn(insertStatement.getTables().getSingleTableName()).get();
         String expression = getExpression(insertValue, currentGeneratedKey, generateKeyColumn, currentParameters);
         InsertShardingCondition result = new InsertShardingCondition(expression, currentParameters);
