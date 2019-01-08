@@ -17,7 +17,6 @@
 
 package io.shardingsphere.core.optimizer.insert;
 
-import com.google.common.base.Optional;
 import io.shardingsphere.api.algorithm.sharding.ListShardingValue;
 import io.shardingsphere.core.optimizer.OptimizeEngine;
 import io.shardingsphere.core.optimizer.condition.ShardingCondition;
@@ -63,51 +62,57 @@ public final class InsertOptimizeEngine implements OptimizeEngine {
         List<InsertValue> insertValues = insertStatement.getInsertValues().getInsertValues();
         List<ShardingCondition> result = new ArrayList<>(andConditions.size());
         Iterator<Comparable<?>> generatedKeys = createGeneratedKeys();
-        int count = 0;
         int parametersCount = 0;
-        for (AndCondition each : andConditions) {
-            InsertValue insertValue = insertValues.get(count);
+        for (int i = 0; i < andConditions.size(); i++) {
+            InsertValue insertValue = insertValues.get(i);
             List<Object> currentParameters = new ArrayList<>(insertValue.getParametersCount() + 1);
-            parametersCount = calParametersCount(parametersCount, insertValue, currentParameters);
-            InsertShardingCondition insertShardingCondition;
-            if (!isToHandleGeneratedKey()) {
-                insertShardingCondition = new InsertShardingCondition(insertValue.getExpression(), currentParameters);
-            } else {
-                Optional<Column> generateKeyColumn = shardingRule.getGenerateKeyColumn(insertStatement.getTables().getSingleTableName());
-                String expression;
-                Comparable<?> currentGeneratedKey = generatedKeys.next();
-                if (parameters.isEmpty()) {
-                    boolean isStringTypeOfGeneratedKey = currentGeneratedKey.getClass() == String.class;
-                    if (DefaultKeyword.VALUES.equals(insertValue.getType())) {
-                        if (isStringTypeOfGeneratedKey) {
-                            expression = insertValue.getExpression().substring(0, insertValue.getExpression().lastIndexOf(")")) + ", " + '"' + currentGeneratedKey + '"' + ")";
-                        } else {
-                            expression = insertValue.getExpression().substring(0, insertValue.getExpression().lastIndexOf(")")) + ", " + currentGeneratedKey + ")";
-                        }
-                    } else {
-                        if (isStringTypeOfGeneratedKey) {
-                            expression = generateKeyColumn.get().getName() + " = " + '"' + currentGeneratedKey + '"' + ", " + insertValue.getExpression();
-                        } else {
-                            expression = generateKeyColumn.get().getName() + " = " + currentGeneratedKey + ", " + insertValue.getExpression();
-                        }
-                    }
-                } else {
-                    if (DefaultKeyword.VALUES.equals(insertValue.getType())) {
-                        expression = insertValue.getExpression().substring(0, insertValue.getExpression().lastIndexOf(")")) + ", ?)";
-                        currentParameters.add(currentGeneratedKey);
-                    } else {
-                        expression = generateKeyColumn.get().getName() + " = ?, " + insertValue.getExpression();
-                        currentParameters.add(0, currentGeneratedKey);
-                    }
-                }
-                insertShardingCondition = new InsertShardingCondition(expression, currentParameters);
-                insertShardingCondition.getShardingValues().add(getShardingCondition(generateKeyColumn.get(), currentGeneratedKey));
+            if (0 != insertValue.getParametersCount()) {
+                currentParameters = getCurrentParameters(parametersCount, insertValue.getParametersCount());
+                parametersCount = parametersCount + insertValue.getParametersCount();
             }
-            insertShardingCondition.getShardingValues().addAll(getShardingCondition(each));
+            InsertShardingCondition insertShardingCondition = getInsertShardingCondition(generatedKeys, insertValue, currentParameters);
+            insertShardingCondition.getShardingValues().addAll(getShardingCondition(andConditions.get(i)));
             result.add(insertShardingCondition);
-            count++;
         }
         return new ShardingConditions(result);
+    }
+    
+    private InsertShardingCondition getInsertShardingCondition(final Iterator<Comparable<?>> generatedKeys, final InsertValue insertValue, final List<Object> currentParameters) {
+        if (!isToHandleGeneratedKey()) {
+            return new InsertShardingCondition(insertValue.getExpression(), currentParameters);
+        }
+        InsertShardingCondition insertShardingCondition;
+        Column generateKeyColumn = shardingRule.getGenerateKeyColumn(insertStatement.getTables().getSingleTableName()).get();
+        String expression;
+        Comparable<?> currentGeneratedKey = generatedKeys.next();
+        if (parameters.isEmpty()) {
+            boolean isStringTypeOfGeneratedKey = currentGeneratedKey.getClass() == String.class;
+            if (DefaultKeyword.VALUES.equals(insertValue.getType())) {
+                expression = getExpressionWithValues(insertValue, currentGeneratedKey, isStringTypeOfGeneratedKey);
+            } else {
+                if (isStringTypeOfGeneratedKey) {
+                    expression = generateKeyColumn.getName() + " = " + '"' + currentGeneratedKey + '"' + ", " + insertValue.getExpression();
+                } else {
+                    expression = generateKeyColumn.getName() + " = " + currentGeneratedKey + ", " + insertValue.getExpression();
+                }
+            }
+        } else {
+            if (DefaultKeyword.VALUES.equals(insertValue.getType())) {
+                expression = insertValue.getExpression().substring(0, insertValue.getExpression().lastIndexOf(")")) + ", ?)";
+                currentParameters.add(currentGeneratedKey);
+            } else {
+                expression = generateKeyColumn.getName() + " = ?, " + insertValue.getExpression();
+                currentParameters.add(0, currentGeneratedKey);
+            }
+        }
+        insertShardingCondition = new InsertShardingCondition(expression, currentParameters);
+        insertShardingCondition.getShardingValues().add(getShardingCondition(generateKeyColumn, currentGeneratedKey));
+        return insertShardingCondition;
+    }
+    
+    private String getExpressionWithValues(final InsertValue insertValue, final Comparable<?> currentGeneratedKey, final boolean isStringTypeOfGeneratedKey) {
+        return isStringTypeOfGeneratedKey ? insertValue.getExpression().substring(0, insertValue.getExpression().lastIndexOf(")")) + ", " + '"' + currentGeneratedKey + '"' + ")" 
+                : insertValue.getExpression().substring(0, insertValue.getExpression().lastIndexOf(")")) + ", " + currentGeneratedKey + ")";
     }
     
     private Iterator<Comparable<?>> createGeneratedKeys() {
@@ -118,13 +123,14 @@ public final class InsertOptimizeEngine implements OptimizeEngine {
         return -1 == insertStatement.getGenerateKeyColumnIndex() && shardingRule.getGenerateKeyColumn(insertStatement.getTables().getSingleTableName()).isPresent();
     }
     
-    private int calParametersCount(final int parametersCount, final InsertValue insertValue, final List<Object> currentParameters) {
-        int result = parametersCount;
-        if (insertValue.getParametersCount() > 0) {
-            result += insertValue.getParametersCount();
-            currentParameters.addAll(parameters.subList(parametersCount, result));
-        }
+    private List<Object> getCurrentParameters(final int beginCount, final int increment) {
+        List<Object> result = new ArrayList<>(increment + 1);
+        result.addAll(parameters.subList(beginCount, beginCount + increment));
         return result;
+    }
+    
+    private int getParametersCount(final int parametersCount, final InsertValue insertValue) {
+        return insertValue.getParametersCount() > 0 ? parametersCount + insertValue.getParametersCount() : parametersCount;
     }
     
     private ListShardingValue getShardingCondition(final Column column, final Comparable<?> value) {
