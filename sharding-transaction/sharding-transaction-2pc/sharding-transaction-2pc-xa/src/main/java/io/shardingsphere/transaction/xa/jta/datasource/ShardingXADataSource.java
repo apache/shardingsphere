@@ -17,12 +17,7 @@
 
 package io.shardingsphere.transaction.xa.jta.datasource;
 
-import com.atomikos.beans.PropertyException;
-import com.atomikos.beans.PropertyUtils;
 import io.shardingsphere.core.constant.DatabaseType;
-import io.shardingsphere.core.exception.ShardingException;
-import io.shardingsphere.core.rule.DataSourceParameter;
-import io.shardingsphere.transaction.xa.convert.swap.DataSourceSwapperRegistry;
 import io.shardingsphere.transaction.xa.jta.connection.ShardingXAConnection;
 import io.shardingsphere.transaction.xa.jta.connection.ShardingXAConnectionFactory;
 import lombok.Getter;
@@ -32,7 +27,6 @@ import javax.sql.DataSource;
 import javax.sql.XADataSource;
 import java.sql.Connection;
 import java.sql.SQLException;
-import java.util.Properties;
 
 /**
  * Sharding XA data source.
@@ -61,20 +55,7 @@ public final class ShardingXADataSource extends AbstractUnsupportedShardingXADat
             this.xaDataSource = (XADataSource) dataSource;
             this.isOriginalXADataSource = true;
         } else {
-            this.xaDataSource = buildXADataSource(dataSource);
-        }
-    }
-    
-    private XADataSource buildXADataSource(final DataSource dataSource) {
-        try {
-            DataSourceParameter dataSourceParameter = DataSourceSwapperRegistry.getSwapper(dataSource.getClass()).swap(dataSource);
-            XADataSource result = XADataSourceFactory.build(databaseType);
-            Properties xaProperties = XAPropertiesFactory.createXAProperties(databaseType).build(dataSourceParameter);
-            PropertyUtils.setProperties(result, xaProperties);
-            return result;
-        } catch (final PropertyException ex) {
-            log.error("Failed to create ShardingXADataSource");
-            throw new ShardingException(ex);
+            this.xaDataSource = XADataSourceFactory.build(databaseType, dataSource);
         }
     }
     

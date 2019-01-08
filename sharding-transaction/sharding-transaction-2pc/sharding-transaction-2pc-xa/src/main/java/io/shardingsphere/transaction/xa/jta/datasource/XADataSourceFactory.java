@@ -17,14 +17,21 @@
 
 package io.shardingsphere.transaction.xa.jta.datasource;
 
+import com.atomikos.beans.PropertyException;
+import com.atomikos.beans.PropertyUtils;
 import io.shardingsphere.core.constant.DatabaseType;
 import io.shardingsphere.core.exception.ShardingException;
+import io.shardingsphere.core.rule.DataSourceParameter;
+import io.shardingsphere.transaction.xa.convert.swap.DataSourceSwapperRegistry;
 import lombok.AccessLevel;
 import lombok.NoArgsConstructor;
+import lombok.extern.slf4j.Slf4j;
 
+import javax.sql.DataSource;
 import javax.sql.XADataSource;
 import java.util.HashMap;
 import java.util.Map;
+import java.util.Properties;
 
 /**
  * XA data source factory.
@@ -32,6 +39,7 @@ import java.util.Map;
  * @author zhaojun
  */
 @NoArgsConstructor(access = AccessLevel.PRIVATE)
+@Slf4j
 public final class XADataSourceFactory {
     
     private static final Map<DatabaseType, String> XA_DRIVER_CLASS_NAMES = new HashMap<>(DatabaseType.values().length, 1);
@@ -51,6 +59,30 @@ public final class XADataSourceFactory {
      * @return XA DataSource instance
      */
     public static XADataSource build(final DatabaseType databaseType) {
+        return newXADataSourceInstance(databaseType);
+    }
+    
+    /**
+     * Create XA data source through general data source.
+     *
+     * @param databaseType database type
+     * @param dataSource data source
+     * @return XA data source
+     */
+    public static XADataSource build(final DatabaseType databaseType, final DataSource dataSource) {
+        try {
+            DataSourceParameter dataSourceParameter = DataSourceSwapperRegistry.getSwapper(dataSource.getClass()).swap(dataSource);
+            XADataSource xaDataSource = newXADataSourceInstance(databaseType);
+            Properties xaProperties = XAPropertiesFactory.createXAProperties(databaseType).build(dataSourceParameter);
+            PropertyUtils.setProperties(xaDataSource, xaProperties);
+            return xaDataSource;
+        } catch (final PropertyException ex) {
+            log.error("Failed to create ShardingXADataSource");
+            throw new ShardingException(ex);
+        }
+    }
+    
+    private static XADataSource newXADataSourceInstance(final DatabaseType databaseType) {
         String xaDataSourceClassName = XA_DRIVER_CLASS_NAMES.get(databaseType);
         Class xaDataSourceClass;
         try {
