@@ -70,8 +70,7 @@ public final class InsertOptimizeEngine implements OptimizeEngine {
             if (insertValue.getParametersCount() > 0) {
                 currentParameters.addAll(parameters.subList(parametersCount, parametersCount += insertValue.getParametersCount()));
             }
-            String logicTableName = insertStatement.getTables().getSingleTableName();
-            Optional<Column> generateKeyColumn = shardingRule.getGenerateKeyColumn(logicTableName);
+            Optional<Column> generateKeyColumn = shardingRule.getGenerateKeyColumn(insertStatement.getTables().getSingleTableName());
             InsertShardingCondition insertShardingCondition;
             if (-1 != insertStatement.getGenerateKeyColumnIndex() || !generateKeyColumn.isPresent()) {
                 insertShardingCondition = new InsertShardingCondition(insertValue.getExpression(), currentParameters);
@@ -82,10 +81,19 @@ public final class InsertOptimizeEngine implements OptimizeEngine {
                 String expression;
                 Comparable<?> currentGeneratedKey = generatedKeys.next();
                 if (parameters.isEmpty()) {
+                    boolean isStringTypeOfGeneratedKey = currentGeneratedKey.getClass() == String.class;
                     if (DefaultKeyword.VALUES.equals(insertValue.getType())) {
-                        expression = insertValue.getExpression().substring(0, insertValue.getExpression().lastIndexOf(")")) + ", " + currentGeneratedKey.toString() + ")";
+                        if (isStringTypeOfGeneratedKey) {
+                            expression = insertValue.getExpression().substring(0, insertValue.getExpression().lastIndexOf(")")) + ", " + '"' + currentGeneratedKey + '"' + ")";
+                        } else {
+                            expression = insertValue.getExpression().substring(0, insertValue.getExpression().lastIndexOf(")")) + ", " + currentGeneratedKey + ")";
+                        }
                     } else {
-                        expression = generateKeyColumn.get().getName() + " = " + currentGeneratedKey + ", " + insertValue.getExpression();
+                        if (isStringTypeOfGeneratedKey) {
+                            expression = generateKeyColumn.get().getName() + " = " + '"' + currentGeneratedKey + '"' + ", " + insertValue.getExpression();
+                        } else {
+                            expression = generateKeyColumn.get().getName() + " = " + currentGeneratedKey + ", " + insertValue.getExpression();
+                        }
                     }
                 } else {
                     if (DefaultKeyword.VALUES.equals(insertValue.getType())) {
