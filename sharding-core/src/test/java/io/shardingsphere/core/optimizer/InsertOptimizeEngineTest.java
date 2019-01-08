@@ -75,6 +75,7 @@ public final class InsertOptimizeEngineTest {
         shardingRule = yamlShardingConfig.getShardingRule(yamlShardingConfig.getDataSources().keySet());
         initializeWithValuesWithPlaceHolder();
         initializeInsertWithValuesWithoutPlaceHolder();
+        initializeInsertWithoutValuesWithoutPlaceHolder()
         parameters = new ArrayList<>(4);
         parameters.add(10);
         parameters.add("init");
@@ -120,15 +121,17 @@ public final class InsertOptimizeEngineTest {
         insertStatementWithoutValuesWithoutPlaceHolder.getTables().add(new Table("t_order", Optional.<String>absent()));
         insertStatementWithoutValuesWithoutPlaceHolder.setParametersIndex(0);
         insertStatementWithoutValuesWithoutPlaceHolder.setInsertValuesListLastPosition(50);
+        insertStatementWithoutValuesWithoutPlaceHolder.setColumnsListLastPosition(19);
+        insertStatementWithoutValuesWithoutPlaceHolder.setGenerateKeyColumnIndex(-1);
         insertStatementWithoutValuesWithoutPlaceHolder.addSQLToken(new TableToken(12, 0, "t_order"));
-        insertStatementWithoutValuesWithoutPlaceHolder.addSQLToken(new InsertValuesToken(42, "t_order"));
-        ItemsToken itemsToken = new ItemsToken(34);
-        itemsToken.getItems().add("order_id");
-        insertStatementWithoutValuesWithoutPlaceHolder.addSQLToken(itemsToken);
+        insertStatementWithoutValuesWithoutPlaceHolder.addSQLToken(new InsertValuesToken(24, "t_order"));
+        insertStatementWithoutValuesWithoutPlaceHolder.getColumns().add(new Column("order_id", "t_order"));
+        insertStatementWithoutValuesWithoutPlaceHolder.getColumns().add(new Column("status", "t_order"));
+        insertStatementWithoutValuesWithoutPlaceHolder.getColumns().add(new Column("user_id", "t_order"));
         AndCondition andCondition = new AndCondition();
         andCondition.getConditions().add(new Condition(new Column("user_id", "t_order"), new SQLNumberExpression(12)));
         insertStatementWithoutValuesWithoutPlaceHolder.getConditions().getOrCondition().getAndConditions().add(andCondition);
-        insertStatementWithoutValuesWithoutPlaceHolder.getInsertValues().getInsertValues().add(new InsertValue(DefaultKeyword.VALUES, "(12,'a')", 0));
+        insertStatementWithoutValuesWithoutPlaceHolder.getInsertValues().getInsertValues().add(new InsertValue(DefaultKeyword.SET, "user_id = 12, status = 'a'", 0));
     }
     
     @Test
