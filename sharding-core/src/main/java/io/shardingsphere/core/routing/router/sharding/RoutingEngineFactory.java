@@ -29,6 +29,7 @@ import io.shardingsphere.core.parsing.parser.dialect.postgresql.statement.ResetP
 import io.shardingsphere.core.parsing.parser.dialect.postgresql.statement.SetParamStatement;
 import io.shardingsphere.core.parsing.parser.sql.SQLStatement;
 import io.shardingsphere.core.parsing.parser.sql.dal.DALStatement;
+import io.shardingsphere.core.parsing.parser.sql.dml.DMLStatement;
 import io.shardingsphere.core.parsing.parser.sql.dql.select.SelectStatement;
 import io.shardingsphere.core.routing.type.RoutingEngine;
 import io.shardingsphere.core.routing.type.broadcast.DatabaseBroadcastRoutingEngine;
@@ -65,34 +66,55 @@ public final class RoutingEngineFactory {
     public static RoutingEngine newInstance(final ShardingRule shardingRule, 
                                             final ShardingDataSourceMetaData shardingDataSourceMetaData, final SQLStatement sqlStatement, final ShardingConditions shardingConditions) {
         Collection<String> tableNames = sqlStatement.getTables().getTableNames();
-        RoutingEngine result;
         if (sqlStatement instanceof UseStatement) {
-            result = new IgnoreRoutingEngine();
-        } else if (shardingRule.isAllBroadcastTables(tableNames) && !(sqlStatement instanceof SelectStatement)) {
-            result = new DatabaseBroadcastRoutingEngine(shardingRule);
-        } else if (sqlStatement instanceof DDLStatement || (sqlStatement instanceof DCLStatement && ((DCLStatement) sqlStatement).isGrantForSingleTable())) {
-            result = new TableBroadcastRoutingEngine(shardingRule, sqlStatement);
-        } else if (sqlStatement instanceof ShowDatabasesStatement || ((sqlStatement instanceof ShowTablesStatement || sqlStatement instanceof ShowTableStatusStatement) && tableNames.isEmpty())
-                || sqlStatement instanceof SetParamStatement || sqlStatement instanceof ResetParamStatement) {
-            result = new DatabaseBroadcastRoutingEngine(shardingRule);
-        } else if (sqlStatement instanceof DCLStatement) {
-            result = new InstanceBroadcastRoutingEngine(shardingRule, shardingDataSourceMetaData);
-        } else if (shardingRule.isAllInDefaultDataSource(tableNames)) {
-            result = new DefaultDatabaseRoutingEngine(shardingRule, tableNames);
-        } else if (shardingConditions.isAlwaysFalse()) {
-            result = new UnicastRoutingEngine(shardingRule, tableNames);
-        } else if (sqlStatement instanceof DALStatement) {
-            result = new UnicastRoutingEngine(shardingRule, tableNames);
-        } else if (tableNames.isEmpty() && sqlStatement instanceof SelectStatement || shardingRule.isAllBroadcastTables(tableNames) && sqlStatement instanceof SelectStatement) {
-            result = new UnicastRoutingEngine(shardingRule, tableNames);
-        } else if (tableNames.isEmpty()) {
-            result = new DatabaseBroadcastRoutingEngine(shardingRule);
-        } else if (1 == tableNames.size() || shardingRule.isAllBindingTables(tableNames)) {
-            result = new StandardRoutingEngine(shardingRule, tableNames.iterator().next(), shardingConditions);
-        } else {
-            // TODO config for cartesian set
-            result = new ComplexRoutingEngine(shardingRule, tableNames, shardingConditions);
+            return new IgnoreRoutingEngine();
         }
-        return result;
+        if (isDatabaseAdministrationCommand(sqlStatement, tableNames) || isDMLBroadcastTable(shardingRule, sqlStatement, tableNames)) {
+            return new DatabaseBroadcastRoutingEngine(shardingRule);
+        }
+        if (sqlStatement instanceof DDLStatement || isDCLForTable(sqlStatement)) {
+            return new TableBroadcastRoutingEngine(shardingRule, sqlStatement);
+        }
+        if (sqlStatement instanceof DCLStatement) {
+            return new InstanceBroadcastRoutingEngine(shardingRule, shardingDataSourceMetaData);
+        }
+        if (shardingRule.isAllInDefaultDataSource(tableNames)) {
+            return new DefaultDatabaseRoutingEngine(shardingRule, tableNames);
+        }
+        if (shardingConditions.isAlwaysFalse()) {
+            return new UnicastRoutingEngine(shardingRule, tableNames);
+        }
+        if (sqlStatement instanceof DALStatement) {
+            return new UnicastRoutingEngine(shardingRule, tableNames);
+        }
+        if (isUnicastDQL(shardingRule, sqlStatement, tableNames)) {
+            return new UnicastRoutingEngine(shardingRule, tableNames);
+        }
+        if (tableNames.isEmpty()) {
+            return new DatabaseBroadcastRoutingEngine(shardingRule);
+        }
+        Collection<String> shardingTableNames = shardingRule.getShardingLogicTableNames(tableNames);
+        if (1 == shardingTableNames.size() || shardingRule.isAllBindingTables(shardingTableNames)) {
+            return new StandardRoutingEngine(shardingRule, shardingTableNames.iterator().next(), shardingConditions);
+        }
+        // TODO config for cartesian set
+        return new ComplexRoutingEngine(shardingRule, tableNames, shardingConditions);
+    }
+    
+    private static boolean isDatabaseAdministrationCommand(final SQLStatement sqlStatement, final Collection<String> tableNames) {
+        return sqlStatement instanceof ShowDatabasesStatement || ((sqlStatement instanceof ShowTablesStatement || sqlStatement instanceof ShowTableStatusStatement) && tableNames.isEmpty())
+                || sqlStatement instanceof SetParamStatement || sqlStatement instanceof ResetParamStatement;
+    }
+    
+    private static boolean isDMLBroadcastTable(final ShardingRule shardingRule, final SQLStatement sqlStatement, final Collection<String> tableNames) {
+        return sqlStatement instanceof DMLStatement && shardingRule.isAllBroadcastTables(tableNames);
+    }
+    
+    private static boolean isDCLForTable(final SQLStatement sqlStatement) {
+        return sqlStatement instanceof DCLStatement && ((DCLStatement) sqlStatement).isGrantForSingleTable();
+    }
+    
+    private static boolean isUnicastDQL(final ShardingRule shardingRule, final SQLStatement sqlStatement, final Collection<String> tableNames) {
+        return sqlStatement instanceof SelectStatement && (tableNames.isEmpty() || shardingRule.isAllBroadcastTables(tableNames));
     }
 }

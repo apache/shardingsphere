@@ -172,17 +172,22 @@ public class ShardingRule {
     }
     
     /**
-     * Adjust logic table is belong to broadcast tables.
+     * Judge logic table is belong to broadcast tables.
      *
-     * @param logicTable logic table name
+     * @param logicTableName logic table name
      * @return logic table is belong to broadcast tables or not
      */
-    public boolean isBroadcastTable(final String logicTable) {
-        return broadcastTables.contains(logicTable);
+    public boolean isBroadcastTable(final String logicTableName) {
+        for (String each : broadcastTables) {
+            if (each.equalsIgnoreCase(logicTableName)) {
+                return true;
+            }
+        }
+        return false;
     }
     
     /**
-     * Adjust logic tables is all belong to broadcast tables.
+     * Judge logic tables is all belong to broadcast tables.
      *
      * @param logicTables names of logic tables
      * @return logic tables is all belong to broadcast tables or not
@@ -200,7 +205,7 @@ public class ShardingRule {
     }
     
     /**
-     * Adjust logic tables is all belong to binding tables.
+     * Judge logic tables is all belong to binding tables.
      *
      * @param logicTables names of logic tables
      * @return logic tables is all belong to binding tables or not
@@ -219,21 +224,18 @@ public class ShardingRule {
     }
     
     /**
-     * Adjust logic tables is all belong to default data source.
+     * Judge logic tables is all belong to default data source.
      *
-     * @param logicTables names of logic tables
+     * @param logicTableNames logic table names
      * @return logic tables is all belong to default data source
      */
-    public boolean isAllInDefaultDataSource(final Collection<String> logicTables) {
-        for (String each : logicTables) {
-            if (findTableRuleByLogicTable(each).isPresent()) {
-                return false;
-            }
-            if (isBroadcastTable(each)) {
+    public boolean isAllInDefaultDataSource(final Collection<String> logicTableNames) {
+        for (String each : logicTableNames) {
+            if (findTableRuleByLogicTable(each).isPresent() || isBroadcastTable(each)) {
                 return false;
             }
         }
-        return !logicTables.isEmpty();
+        return !logicTableNames.isEmpty();
     }
     
     private Optional<BindingTableRule> findBindingTableRule(final Collection<String> logicTables) {
@@ -262,7 +264,7 @@ public class ShardingRule {
     }
     
     /**
-     * Adjust is sharding column or not.
+     * Judge is sharding column or not.
      *
      * @param column column object
      * @return is sharding column or not
@@ -361,7 +363,7 @@ public class ShardingRule {
     }
     
     /**
-     * Adjust is logic index or not.
+     * Judge is logic index or not.
      *
      * @param logicIndexName logic index name
      * @param logicTableName logic table name
@@ -428,12 +430,29 @@ public class ShardingRule {
     }
     
     /**
-     * Adjust contains table in sharding rule.
+     * Judge contains table in sharding rule.
      * 
      * @param tableName table name
      * @return contains table in sharding rule or not
      */
     public boolean contains(final String tableName) {
         return findTableRuleByLogicTable(tableName).isPresent() || findBindingTableRule(tableName).isPresent() || isBroadcastTable(tableName);
+    }
+    
+    /**
+     * Get sharding logic table names.
+     * 
+     * @param logicTableNames logic table names
+     * @return sharding logic table names
+     */
+    public Collection<String> getShardingLogicTableNames(final Collection<String> logicTableNames) {
+        Collection<String> result = new LinkedList<>();
+        for (String each : logicTableNames) {
+            Optional<TableRule> tableRule = findTableRuleByLogicTable(each);
+            if (tableRule.isPresent()) {
+                result.add(each);
+            }
+        }
+        return result;
     }
 }

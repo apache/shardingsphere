@@ -36,7 +36,7 @@ public final class ShardingConditions {
     private final List<ShardingCondition> shardingConditions;
     
     /**
-     * Adjust sharding conditions is always false or not.
+     * Judge sharding conditions is always false or not.
      *
      * @return sharding conditions is always false or not
      */

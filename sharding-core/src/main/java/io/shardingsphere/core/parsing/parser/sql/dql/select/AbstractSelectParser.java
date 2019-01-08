@@ -66,8 +66,8 @@ public abstract class AbstractSelectParser implements SQLParser {
     @Override
     public final SelectStatement parse() {
         SelectStatement result = parseInternal();
-        if (result.containsSubQuery()) {
-            result = result.mergeSubQueryStatement();
+        if (result.containsSubquery()) {
+            result = result.mergeSubqueryStatement();
         }
         // TODO move to rewrite
         appendDerivedColumns(result);
@@ -97,7 +97,7 @@ public abstract class AbstractSelectParser implements SQLParser {
     
     private void parseTable(final SelectStatement selectStatement) {
         if (lexerEngine.skipIfEqual(Symbol.LEFT_PAREN)) {
-            selectStatement.setSubQueryStatement(parseInternal());
+            selectStatement.setSubqueryStatement(parseInternal());
             if (lexerEngine.equalAny(DefaultKeyword.WHERE, Assist.END)) {
                 return;
             }
