@@ -21,7 +21,6 @@ import com.atomikos.jdbc.AtomikosDataSourceBean;
 import io.shardingsphere.core.constant.DatabaseType;
 import io.shardingsphere.core.constant.PoolType;
 import io.shardingsphere.transaction.api.TransactionType;
-import io.shardingsphere.transaction.core.TransactionOperationType;
 import io.shardingsphere.transaction.core.manager.ShardingTransactionManager;
 import io.shardingsphere.transaction.spi.xa.XATransactionManager;
 import io.shardingsphere.transaction.xa.fixture.DataSourceUtils;
@@ -32,7 +31,6 @@ import org.junit.Test;
 
 import javax.sql.DataSource;
 import javax.sql.XADataSource;
-import javax.transaction.Status;
 import java.lang.reflect.Field;
 import java.util.HashMap;
 import java.util.Map;
@@ -59,66 +57,6 @@ public class XAShardingTransactionHandlerTest {
     @Test
     public void assertGetTransactionType() {
         assertThat(xaShardingTransactionHandler.getTransactionType(), is(TransactionType.XA));
-    }
-    
-    @Test
-    public void assertDoXATransactionBegin() throws InterruptedException {
-        Thread thread = new Thread(new Runnable() {
-            @Override
-            public void run() {
-                xaShardingTransactionHandler.doInTransaction(TransactionOperationType.BEGIN);
-                int actualStatus = xaShardingTransactionHandler.getShardingTransactionManager().getStatus();
-                assertThat(actualStatus, is(Status.STATUS_ACTIVE));
-            }
-        });
-        thread.start();
-        thread.join();
-    }
-    
-    @Test
-    public void assertDoXATransactionCommit() throws InterruptedException {
-        Thread thread = new Thread(new Runnable() {
-            @Override
-            public void run() {
-                xaShardingTransactionHandler.doInTransaction(TransactionOperationType.BEGIN);
-                xaShardingTransactionHandler.doInTransaction(TransactionOperationType.COMMIT);
-                int actualStatus = xaShardingTransactionHandler.getShardingTransactionManager().getStatus();
-                assertThat(actualStatus, is(Status.STATUS_NO_TRANSACTION));
-            }
-        });
-        thread.start();
-        thread.join();
-    }
-    
-    @Test
-    public void assertDoXATransactionRollback() throws InterruptedException {
-        Thread thread = new Thread(new Runnable() {
-            @Override
-            public void run() {
-                xaShardingTransactionHandler.doInTransaction(TransactionOperationType.BEGIN);
-                xaShardingTransactionHandler.doInTransaction(TransactionOperationType.ROLLBACK);
-                int actualStatus = xaShardingTransactionHandler.getShardingTransactionManager().getStatus();
-                assertThat(actualStatus, is(Status.STATUS_NO_TRANSACTION));
-            }
-        });
-        thread.start();
-        thread.join();
-    }
-    
-    @Test
-    public void assertDoXATransactionCommitRollback() throws InterruptedException {
-        Thread thread = new Thread(new Runnable() {
-            @Override
-            public void run() {
-                xaShardingTransactionHandler.doInTransaction(TransactionOperationType.BEGIN);
-                xaShardingTransactionHandler.doInTransaction(TransactionOperationType.COMMIT);
-                xaShardingTransactionHandler.doInTransaction(TransactionOperationType.ROLLBACK);
-                int actualStatus = xaShardingTransactionHandler.getShardingTransactionManager().getStatus();
-                assertThat(actualStatus, is(Status.STATUS_NO_TRANSACTION));
-            }
-        });
-        thread.start();
-        thread.join();
     }
     
     @Test
