@@ -17,7 +17,7 @@
 
 package io.shardingsphere.transaction.saga.servicecomb;
 
-import io.shardingsphere.api.config.SagaConfiguration;
+import io.shardingsphere.transaction.saga.SagaConfiguration;
 import org.apache.servicecomb.saga.core.application.SagaExecutionComponent;
 import org.junit.Before;
 import org.junit.Test;

@@ -19,6 +19,7 @@ package io.shardingsphere.transaction.saga.hook;
 
 import com.google.common.collect.Lists;
 import io.shardingsphere.core.executor.ShardingExecuteDataMap;
+import io.shardingsphere.core.executor.sql.execute.threadlocal.ExecutorExceptionHandler;
 import io.shardingsphere.core.routing.RouteUnit;
 import io.shardingsphere.core.routing.SQLUnit;
 import io.shardingsphere.transaction.core.constant.ExecutionResult;
@@ -33,6 +34,7 @@ import org.mockito.junit.MockitoJUnitRunner;
 import java.util.HashMap;
 import java.util.List;
 
+import static org.junit.Assert.assertFalse;
 import static org.mockito.ArgumentMatchers.any;
 import static org.mockito.ArgumentMatchers.eq;
 import static org.mockito.Mockito.verify;
@@ -70,5 +72,6 @@ public class SagaSQLExecutionHookTest {
         sagaSQLExecutionHook.start(routeUnit, null, true, ShardingExecuteDataMap.getDataMap());
         sagaSQLExecutionHook.finishFailure(new RuntimeException());
         verify(sagaTransaction).recordResult(any(SagaSubTransaction.class), eq(ExecutionResult.FAILURE));
+        assertFalse(ExecutorExceptionHandler.isExceptionThrown());
     }
 }

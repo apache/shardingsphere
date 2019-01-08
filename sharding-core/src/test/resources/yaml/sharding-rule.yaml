@@ -106,11 +106,3 @@ configMap:
 
 props:
   sql.show: true
-
-saga:
-  executorSize: 10
-  transactionMaxRetries: 10
-  transactionRetryDelay: 1000
-  compensationMaxRetries: 5
-  compensationRetryDelay: 2000
-  recoveryPolicy: BACKWARD

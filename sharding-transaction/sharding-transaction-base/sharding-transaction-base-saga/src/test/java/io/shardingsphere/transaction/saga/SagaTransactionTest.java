@@ -18,8 +18,6 @@
 package io.shardingsphere.transaction.saga;
 
 import com.fasterxml.jackson.databind.ObjectMapper;
-import io.shardingsphere.api.config.SagaConfiguration;
-import io.shardingsphere.core.constant.SagaRecoveryPolicy;
 import io.shardingsphere.transaction.core.constant.ExecutionResult;
 import io.shardingsphere.transaction.saga.servicecomb.definition.SagaDefinitionBuilder;
 
@@ -27,7 +25,6 @@ import org.junit.Before;
 import org.junit.Test;
 
 import javax.sql.DataSource;
-
 import java.io.IOException;
 import java.util.HashMap;
 import java.util.List;

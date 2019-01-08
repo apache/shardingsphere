@@ -49,10 +49,6 @@ public final class SagaShardingTransactionHandler extends ShardingTransactionHan
     
     @Override
     public void doInTransaction(final SagaTransactionContext transactionContext) {
-        if (transactionContext.isDestroyComponent()) {
-            transactionManager.removeSagaExecutionComponent(transactionContext.getSagaConfiguration());
-            return;
-        }
         switch (transactionContext.getOperationType()) {
             case BEGIN:
                 if (!isInTransaction()) {

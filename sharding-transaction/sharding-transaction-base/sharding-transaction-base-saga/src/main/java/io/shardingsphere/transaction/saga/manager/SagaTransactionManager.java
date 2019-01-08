@@ -18,16 +18,15 @@
 package io.shardingsphere.transaction.saga.manager;
 
 import com.fasterxml.jackson.core.JsonProcessingException;
-import io.shardingsphere.api.config.SagaConfiguration;
 import io.shardingsphere.core.executor.ShardingExecuteDataMap;
 import io.shardingsphere.transaction.core.context.SagaTransactionContext;
 import io.shardingsphere.transaction.core.manager.BASETransactionManager;
+import io.shardingsphere.transaction.saga.SagaConfiguration;
 import io.shardingsphere.transaction.saga.SagaTransaction;
 import io.shardingsphere.transaction.saga.servicecomb.SagaExecutionComponentHolder;
 import io.shardingsphere.transaction.saga.servicecomb.transport.ShardingTransportFactory;
 
 import javax.transaction.Status;
-
 import java.util.HashMap;
 import java.util.Map;
 
@@ -47,9 +46,11 @@ public final class SagaTransactionManager implements BASETransactionManager<Saga
 
     private final SagaExecutionComponentHolder sagaExecutionComponentHolder = new SagaExecutionComponentHolder();
     
+    private final SagaConfiguration sagaConfiguration = new SagaConfiguration();
+    
     @Override
     public void begin(final SagaTransactionContext transactionContext) {
-        SagaTransaction transaction = new SagaTransaction(transactionContext.getSagaConfiguration(), transactionContext.getDataSourceMap());
+        SagaTransaction transaction = new SagaTransaction(sagaConfiguration, transactionContext.getDataSourceMap());
         initExecuteDataMap(transaction);
         TRANSACTIONS.set(transaction);
         ShardingTransportFactory.getInstance().cacheTransport(transaction);
@@ -58,7 +59,7 @@ public final class SagaTransactionManager implements BASETransactionManager<Saga
     @Override
     public void commit(final SagaTransactionContext transactionContext) {
         if (null != TRANSACTIONS.get() && TRANSACTIONS.get().isContainException()) {
-            doComponent(transactionContext);
+            doComponent();
         }
         cleanTransaction();
     }
@@ -66,7 +67,7 @@ public final class SagaTransactionManager implements BASETransactionManager<Saga
     @Override
     public void rollback(final SagaTransactionContext transactionContext) {
         if (null != TRANSACTIONS.get()) {
-            doComponent(transactionContext);
+            doComponent();
         }
         cleanTransaction();
     }
@@ -114,10 +115,10 @@ public final class SagaTransactionManager implements BASETransactionManager<Saga
         ShardingExecuteDataMap.setDataMap(sagaExecuteDataMap);
     }
     
-    private void doComponent(final SagaTransactionContext transactionContext) {
+    private void doComponent() {
         try {
             String json = TRANSACTIONS.get().getSagaDefinitionBuilder().build();
-            sagaExecutionComponentHolder.getSagaExecutionComponent(transactionContext.getSagaConfiguration()).run(json);
+            sagaExecutionComponentHolder.getSagaExecutionComponent(sagaConfiguration).run(json);
         } catch (JsonProcessingException ignored) {
         }
     }

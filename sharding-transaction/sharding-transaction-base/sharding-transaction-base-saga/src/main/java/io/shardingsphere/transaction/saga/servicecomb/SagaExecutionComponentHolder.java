@@ -18,8 +18,8 @@
 package io.shardingsphere.transaction.saga.servicecomb;
 
 import com.google.common.util.concurrent.MoreExecutors;
-import io.shardingsphere.api.config.SagaConfiguration;
 import io.shardingsphere.core.executor.ShardingThreadFactoryBuilder;
+import io.shardingsphere.transaction.saga.SagaConfiguration;
 import io.shardingsphere.transaction.saga.servicecomb.transport.ShardingTransportFactory;
 import org.apache.servicecomb.saga.core.EventEnvelope;
 import org.apache.servicecomb.saga.core.PersistentStore;

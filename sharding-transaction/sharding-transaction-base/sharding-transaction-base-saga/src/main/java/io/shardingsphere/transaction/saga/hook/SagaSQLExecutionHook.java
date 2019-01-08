@@ -17,6 +17,7 @@
 
 package io.shardingsphere.transaction.saga.hook;
 
+import io.shardingsphere.core.executor.sql.execute.threadlocal.ExecutorExceptionHandler;
 import io.shardingsphere.core.metadata.datasource.DataSourceMetaData;
 import io.shardingsphere.core.routing.RouteUnit;
 import io.shardingsphere.spi.executor.SQLExecutionHook;
@@ -57,6 +58,7 @@ public final class SagaSQLExecutionHook implements SQLExecutionHook {
     
     @Override
     public void finishFailure(final Exception cause) {
+        ExecutorExceptionHandler.setExceptionThrown(false);
         if (null != sagaTransaction && null != sagaSubTransaction) {
             sagaTransaction.recordResult(sagaSubTransaction, ExecutionResult.FAILURE);
         }

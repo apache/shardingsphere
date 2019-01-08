@@ -17,10 +17,7 @@
 
 package io.shardingsphere.transaction.core.context;
 
-import io.shardingsphere.api.config.SagaConfiguration;
 import io.shardingsphere.transaction.core.TransactionOperationType;
-import lombok.AccessLevel;
-import lombok.AllArgsConstructor;
 import lombok.Getter;
 import lombok.RequiredArgsConstructor;
 
@@ -32,57 +29,11 @@ import java.util.Map;
  *
  * @author yangyi
  */
-@RequiredArgsConstructor(access = AccessLevel.PRIVATE)
-@AllArgsConstructor(access = AccessLevel.PRIVATE)
+@RequiredArgsConstructor
 @Getter
 public final class SagaTransactionContext implements ShardingTransactionContext {
     
     private final TransactionOperationType operationType;
     
     private final Map<String, DataSource> dataSourceMap;
-    
-    private final SagaConfiguration sagaConfiguration;
-    
-    private boolean destroyComponent;
-    
-    /**
-     * Create begin saga transaction context.
-     *
-     * @param dataSourceMap sharding data source map
-     * @param sagaConfiguration saga configuration
-     * @return begin saga transaction context
-     */
-    public static SagaTransactionContext createBeginSagaTransactionContext(final Map<String, DataSource> dataSourceMap, final SagaConfiguration sagaConfiguration) {
-        return new SagaTransactionContext(TransactionOperationType.BEGIN, dataSourceMap, sagaConfiguration);
-    }
-    
-    /**
-     * Create commit saga transaction context.
-     *
-     * @param sagaConfiguration saga configuration
-     * @return commit saga transaction context
-     */
-    public static SagaTransactionContext createCommitSagaTransactionContext(final SagaConfiguration sagaConfiguration) {
-        return new SagaTransactionContext(TransactionOperationType.COMMIT, null, sagaConfiguration);
-    }
-    
-    /**
-     * Create rollback saga transaction context.
-     *
-     * @param sagaConfiguration saga configuration
-     * @return rollback saga transaction context
-     */
-    public static SagaTransactionContext createRollbackSagaTransactionContext(final SagaConfiguration sagaConfiguration) {
-        return new SagaTransactionContext(TransactionOperationType.ROLLBACK, null, sagaConfiguration);
-    }
-    
-    /**
-     * Create destroy component context.
-     *
-     * @param sagaConfiguration saga configuration
-     * @return destroy component context
-     */
-    public static SagaTransactionContext createDestroyComponentContext(final SagaConfiguration sagaConfiguration) {
-        return new SagaTransactionContext(null, null, sagaConfiguration, true);
-    }
 }

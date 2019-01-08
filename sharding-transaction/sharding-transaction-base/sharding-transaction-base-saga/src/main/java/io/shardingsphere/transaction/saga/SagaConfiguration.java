@@ -15,9 +15,8 @@
  * </p>
  */
 
-package io.shardingsphere.api.config;
+package io.shardingsphere.transaction.saga;
 
-import io.shardingsphere.core.constant.SagaRecoveryPolicy;
 import lombok.Getter;
 import lombok.RequiredArgsConstructor;
 import lombok.Setter;
@@ -34,7 +33,7 @@ import java.util.UUID;
 @RequiredArgsConstructor
 public final class SagaConfiguration {
     
-    private final String alias;
+    private final String alias = UUID.randomUUID().toString();
     
     private int executorSize = 5;
     
@@ -47,8 +46,4 @@ public final class SagaConfiguration {
     private int compensationRetryDelay = 3000;
     
     private SagaRecoveryPolicy recoveryPolicy = SagaRecoveryPolicy.FORWARD;
-    
-    public SagaConfiguration() {
-        this.alias = UUID.randomUUID().toString();
-    }
 }

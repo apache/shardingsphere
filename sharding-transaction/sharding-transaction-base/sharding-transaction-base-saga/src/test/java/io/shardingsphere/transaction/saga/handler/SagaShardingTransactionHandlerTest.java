@@ -17,11 +17,12 @@
 
 package io.shardingsphere.transaction.saga.handler;
 
-import io.shardingsphere.api.config.SagaConfiguration;
 import io.shardingsphere.core.exception.ShardingException;
 import io.shardingsphere.transaction.api.TransactionType;
+import io.shardingsphere.transaction.core.TransactionOperationType;
 import io.shardingsphere.transaction.core.context.SagaTransactionContext;
 import io.shardingsphere.transaction.core.manager.ShardingTransactionManager;
+import io.shardingsphere.transaction.saga.SagaConfiguration;
 import io.shardingsphere.transaction.saga.manager.SagaTransactionManager;
 import org.hamcrest.CoreMatchers;
 import org.junit.Before;
@@ -33,8 +34,6 @@ import org.mockito.junit.MockitoJUnitRunner;
 import javax.transaction.Status;
 import java.lang.reflect.Field;
 import java.sql.SQLException;
-import java.util.ArrayList;
-import java.util.List;
 
 import static org.hamcrest.CoreMatchers.equalTo;
 import static org.junit.Assert.assertThat;
@@ -71,7 +70,7 @@ public class SagaShardingTransactionHandlerTest {
     @Test
     public void assertBegin() throws SQLException {
         when(sagaTransactionManager.getStatus()).thenReturn(Status.STATUS_NO_TRANSACTION);
-        SagaTransactionContext context = SagaTransactionContext.createBeginSagaTransactionContext(null, config);
+        SagaTransactionContext context = new SagaTransactionContext(TransactionOperationType.BEGIN, null);
         handler.doInTransaction(context);
         verify(sagaTransactionManager).begin(context);
     }
@@ -79,30 +78,24 @@ public class SagaShardingTransactionHandlerTest {
     @Test(expected = ShardingException.class)
     public void assertCommitWithoutBegin() throws SQLException {
         when(sagaTransactionManager.getStatus()).thenReturn(Status.STATUS_NO_TRANSACTION);
-        SagaTransactionContext context = SagaTransactionContext.createCommitSagaTransactionContext(config);
+        SagaTransactionContext context = new SagaTransactionContext(TransactionOperationType.COMMIT, null);
         handler.doInTransaction(context);
     }
     
     @Test
     public void assertCommitWithBegin() throws SQLException {
         when(sagaTransactionManager.getStatus()).thenReturn(Status.STATUS_NO_TRANSACTION);
-        handler.doInTransaction(SagaTransactionContext.createBeginSagaTransactionContext(null, config));
+        handler.doInTransaction(new SagaTransactionContext(TransactionOperationType.BEGIN, null));
         when(sagaTransactionManager.getStatus()).thenReturn(Status.STATUS_ACTIVE);
-        SagaTransactionContext context = SagaTransactionContext.createCommitSagaTransactionContext(config);
+        SagaTransactionContext context = new SagaTransactionContext(TransactionOperationType.COMMIT, null);
         handler.doInTransaction(context);
         verify(sagaTransactionManager).commit(context);
     }
     
     @Test
     public void assertRollback() throws SQLException {
-        SagaTransactionContext context = SagaTransactionContext.createRollbackSagaTransactionContext(config);
+        SagaTransactionContext context = new SagaTransactionContext(TransactionOperationType.ROLLBACK, null);
         handler.doInTransaction(context);
         verify(sagaTransactionManager).rollback(context);
-    }
-    
-    @Test
-    public void assertDestroyComponent() {
-        handler.doInTransaction(SagaTransactionContext.createDestroyComponentContext(config));
-        verify(sagaTransactionManager).removeSagaExecutionComponent(config);
     }
 }
