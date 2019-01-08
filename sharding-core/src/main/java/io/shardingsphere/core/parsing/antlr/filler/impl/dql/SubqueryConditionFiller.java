@@ -21,25 +21,25 @@ import io.shardingsphere.core.metadata.table.ShardingTableMetaData;
 import io.shardingsphere.core.parsing.antlr.filler.SQLStatementFiller;
 import io.shardingsphere.core.parsing.antlr.filler.impl.OrConditionFiller;
 import io.shardingsphere.core.parsing.antlr.sql.segment.condition.OrConditionSegment;
-import io.shardingsphere.core.parsing.antlr.sql.segment.condition.SubQueryConditionSegment;
+import io.shardingsphere.core.parsing.antlr.sql.segment.condition.SubqueryConditionSegment;
 import io.shardingsphere.core.parsing.parser.sql.SQLStatement;
 import io.shardingsphere.core.parsing.parser.sql.dql.select.SelectStatement;
 import io.shardingsphere.core.rule.ShardingRule;
 
 /**
- * SubQuery condition filler.
+ * Subquery condition filler.
  *
  * @author duhongjun
  */
-public final class SubQueryConditionFiller implements SQLStatementFiller<SubQueryConditionSegment> {
+public final class SubqueryConditionFiller implements SQLStatementFiller<SubqueryConditionSegment> {
     
     @Override
-    public void fill(final SubQueryConditionSegment sqlSegment, final SQLStatement sqlStatement, final String sql,
+    public void fill(final SubqueryConditionSegment sqlSegment, final SQLStatement sqlStatement, final String sql,
                      final ShardingRule shardingRule, final ShardingTableMetaData shardingTableMetaData) {
         SelectStatement selectStatement = (SelectStatement) sqlStatement;
         OrConditionFiller orConditionFiller = new OrConditionFiller();
         for (OrConditionSegment each : sqlSegment.getOrConditions()) {
-            selectStatement.getSubQueryConditions().add(orConditionFiller.buildCondition(each, sqlStatement, sql, shardingRule, shardingTableMetaData));
+            selectStatement.getSubqueryConditions().add(orConditionFiller.buildCondition(each, sqlStatement, sql, shardingRule, shardingTableMetaData));
         }
     }
 }

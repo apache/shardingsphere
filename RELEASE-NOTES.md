@@ -435,7 +435,7 @@ Automatic generation key implementation, including
 
 1. [ISSUE #43](https://github.com/sharding-sphere/sharding-sphere/issues/43) The yaml file contains Chinese, and the operating system mode is not UTF-8 encoding, resulting in yaml can not be parsed
 1. [ISSUE #48](https://github.com/sharding-sphere/sharding-sphere/issues/48) Yaml file is not closed after reading
-1. [ISSUE #57](https://github.com/sharding-sphere/sharding-sphere/issues/57) At the analytic level, we can identify sub queries to ensure that the behavior of supplementary columns can be accurately positioned
+1. [ISSUE #57](https://github.com/sharding-sphere/sharding-sphere/issues/57) At the analytic level, we can identify subqueries to ensure that the behavior of supplementary columns can be accurately positioned
 
 ## 1.1.0
 
