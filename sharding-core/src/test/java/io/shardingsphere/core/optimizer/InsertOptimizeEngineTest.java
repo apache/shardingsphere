@@ -111,7 +111,7 @@ public final class InsertOptimizeEngineTest {
     }
     
     @Test
-    public void assertOptimizeWithGeneratedKey() {
+    public void assertOptimizeWithPlaceHolderWithGeneratedKey() {
         GeneratedKey generatedKey = new GeneratedKey(new Column("order_id", "t_order"));
         generatedKey.getGeneratedKeys().add(1);
         generatedKey.getGeneratedKeys().add(2);
@@ -137,7 +137,7 @@ public final class InsertOptimizeEngineTest {
     }
     
     @Test
-    public void assertOptimizeWithoutGeneratedKey() {
+    public void assertOptimizeWithPlaceHolderWithoutGeneratedKey() {
         insertStatementWithPlaceHolder.setGenerateKeyColumnIndex(1);
         ShardingConditions actual = new InsertOptimizeEngine(shardingRule, insertStatementWithPlaceHolder, parameters, null).optimize();
         assertFalse(actual.isAlwaysFalse());
@@ -160,4 +160,6 @@ public final class InsertOptimizeEngineTest {
         assertThat(actual.getValues().size(), is(1));
         assertThat((int) actual.getValues().iterator().next(), is(expected));
     }
+    
+    public void 
 }
