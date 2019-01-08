@@ -334,7 +334,7 @@ public class ShardingRule {
      * @param logicTableName logic table name
      * @return generated key
      */
-    public Number generateKey(final String logicTableName) {
+    public Comparable<?> generateKey(final String logicTableName) {
         Optional<TableRule> tableRule = findTableRuleByLogicTable(logicTableName);
         if (!tableRule.isPresent()) {
             throw new ShardingConfigurationException("Cannot find strategy for generate keys.");

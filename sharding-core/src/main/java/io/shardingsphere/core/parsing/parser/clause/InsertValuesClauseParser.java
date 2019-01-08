@@ -18,7 +18,6 @@
 package io.shardingsphere.core.parsing.parser.clause;
 
 import com.google.common.base.Optional;
-import io.shardingsphere.core.exception.ShardingException;
 import io.shardingsphere.core.parsing.lexer.LexerEngine;
 import io.shardingsphere.core.parsing.lexer.token.DefaultKeyword;
 import io.shardingsphere.core.parsing.lexer.token.Keyword;
@@ -141,15 +140,13 @@ public abstract class InsertValuesClauseParser implements SQLClauseParser {
     }
     
     private GeneratedKeyCondition createGeneratedKeyCondition(final Column column, final SQLExpression sqlExpression) {
-        GeneratedKeyCondition result;
         if (sqlExpression instanceof SQLPlaceholderExpression) {
-            result = new GeneratedKeyCondition(column, ((SQLPlaceholderExpression) sqlExpression).getIndex(), null);
-        } else if (sqlExpression instanceof SQLNumberExpression) {
-            result = new GeneratedKeyCondition(column, -1, ((SQLNumberExpression) sqlExpression).getNumber());
-        } else {
-            throw new ShardingException("Generated key only support number.");
+            return new GeneratedKeyCondition(column, ((SQLPlaceholderExpression) sqlExpression).getIndex(), null);
         }
-        return result;
+        if (sqlExpression instanceof SQLNumberExpression) {
+            return new GeneratedKeyCondition(column, -1, (Comparable<?>) ((SQLNumberExpression) sqlExpression).getNumber());
+        }
+        return new GeneratedKeyCondition(column, -1, ((SQLTextExpression) sqlExpression).getText());
     }
     
     private void skipsDoubleColon() {

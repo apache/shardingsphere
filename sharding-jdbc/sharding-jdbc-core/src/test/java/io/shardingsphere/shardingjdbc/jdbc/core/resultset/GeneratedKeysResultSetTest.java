@@ -39,7 +39,7 @@ public class GeneratedKeysResultSetTest {
     
     @Before
     public void init() {
-        actualResultSet = new GeneratedKeysResultSet(Arrays.<Number>asList(1L, 2L).iterator(), "order_id", STATEMENT);
+        actualResultSet = new GeneratedKeysResultSet(Arrays.<Comparable<?>>asList(1L, 2L).iterator(), "order_id", STATEMENT);
     }
     
     @Test

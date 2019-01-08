@@ -26,7 +26,7 @@ public final class IncrementKeyGenerator implements KeyGenerator {
     private final AtomicInteger count = new AtomicInteger();
     
     @Override
-    public Number generateKey() {
+    public Comparable<?> generateKey() {
         return count.incrementAndGet();
     }
 }

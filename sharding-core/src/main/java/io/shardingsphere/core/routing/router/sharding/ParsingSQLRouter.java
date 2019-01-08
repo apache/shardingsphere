@@ -71,7 +71,7 @@ public final class ParsingSQLRouter implements ShardingRouter {
     
     private final boolean showSQL;
     
-    private final List<Number> generatedKeys = new LinkedList<>();
+    private final List<Comparable<?>> generatedKeys = new LinkedList<>();
     
     private final ParsingHook parsingHook = new SPIParsingHook();
     
@@ -125,7 +125,7 @@ public final class ParsingSQLRouter implements ShardingRouter {
                 if (-1 == generatedKeyCondition.getIndex()) {
                     result.getGeneratedKeys().add(generatedKeyCondition.getValue());
                 } else {
-                    result.getGeneratedKeys().add((Number) parameters.get(generatedKeyCondition.getIndex()));
+                    result.getGeneratedKeys().add((Comparable<?>) parameters.get(generatedKeyCondition.getIndex()));
                 }
             }
             return Optional.fromNullable(result);
