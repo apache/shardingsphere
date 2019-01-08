@@ -71,7 +71,7 @@ public final class InsertOptimizeEngine implements OptimizeEngine {
             parametersCount = calParametersCount(parametersCount, insertValue, currentParameters);
             Optional<Column> generateKeyColumn = shardingRule.getGenerateKeyColumn(insertStatement.getTables().getSingleTableName());
             InsertShardingCondition insertShardingCondition;
-            if (-1 != insertStatement.getGenerateKeyColumnIndex() || !generateKeyColumn.isPresent()) {
+            if (!isToHandleGeneratedKey()) {
                 insertShardingCondition = new InsertShardingCondition(insertValue.getExpression(), currentParameters);
             } else {
                 if (null == generatedKeys) {
@@ -111,6 +111,10 @@ public final class InsertOptimizeEngine implements OptimizeEngine {
             count++;
         }
         return new ShardingConditions(result);
+    }
+    
+    private boolean isToHandleGeneratedKey() {
+        return -1 != insertStatement.getGenerateKeyColumnIndex() || !shardingRule.getGenerateKeyColumn(insertStatement.getTables().getSingleTableName()).isPresent();
     }
     
     private int calParametersCount(final int parametersCount, final InsertValue insertValue, final List<Object> currentParameters) {
