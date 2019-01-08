@@ -87,21 +87,28 @@ public final class InsertOptimizeEngine implements OptimizeEngine {
         Comparable<?> currentGeneratedKey = generatedKeys.next();
         if (parameters.isEmpty()) {
             boolean isStringTypeOfGeneratedKey = currentGeneratedKey.getClass() == String.class;
-            if (DefaultKeyword.VALUES.equals(insertValue.getType())) {
-                expression = getExpressionWithValues(insertValue, currentGeneratedKey, isStringTypeOfGeneratedKey);
-            } else {
-                expression = getExpressionWithoutValues(insertValue, currentGeneratedKey, generateKeyColumn, isStringTypeOfGeneratedKey);
-            }
+            expression = getExpression(insertValue, generateKeyColumn, currentGeneratedKey, isStringTypeOfGeneratedKey);
         } else {
-            if (DefaultKeyword.VALUES.equals(insertValue.getType())) {
-                expression = getExpressionWithValues(insertValue, currentGeneratedKey, currentParameters);
-            } else {
-                expression = getExpressionWithoutValues(insertValue, currentGeneratedKey, generateKeyColumn, currentParameters);
-            }
+            expression = getExpression(insertValue, currentParameters, generateKeyColumn, currentGeneratedKey);
         }
         insertShardingCondition = new InsertShardingCondition(expression, currentParameters);
         insertShardingCondition.getShardingValues().add(getShardingCondition(generateKeyColumn, currentGeneratedKey));
         return insertShardingCondition;
+    }
+    
+    private String getExpression(final InsertValue insertValue, final List<Object> currentParameters, final Column generateKeyColumn, final Comparable<?> currentGeneratedKey) {
+        return DefaultKeyword.VALUES.equals(insertValue.getType()) ? getExpressionWithValues(insertValue, currentGeneratedKey, currentParameters) 
+                : getExpressionWithoutValues(insertValue, currentGeneratedKey, generateKeyColumn, currentParameters);
+    }
+    
+    private String getExpression(final InsertValue insertValue, final Column generateKeyColumn, final Comparable<?> currentGeneratedKey, final boolean isStringTypeOfGeneratedKey) {
+        final String expression;
+        if (DefaultKeyword.VALUES.equals(insertValue.getType())) {
+            expression = getExpressionWithValues(insertValue, currentGeneratedKey, isStringTypeOfGeneratedKey);
+        } else {
+            expression = getExpressionWithoutValues(insertValue, currentGeneratedKey, generateKeyColumn, isStringTypeOfGeneratedKey);
+        }
+        return expression;
     }
     
     private String getExpressionWithoutValues(final InsertValue insertValue, final Comparable<?> currentGeneratedKey, final Column generateKeyColumn, final List<Object> currentParameters) {
