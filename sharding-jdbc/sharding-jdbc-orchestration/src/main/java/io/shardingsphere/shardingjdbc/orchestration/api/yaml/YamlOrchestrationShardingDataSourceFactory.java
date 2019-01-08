@@ -17,7 +17,6 @@
 
 package io.shardingsphere.shardingjdbc.orchestration.api.yaml;
 
-import io.shardingsphere.api.config.SagaConfiguration;
 import io.shardingsphere.core.rule.ShardingRule;
 import io.shardingsphere.core.yaml.sharding.YamlShardingRuleConfiguration;
 import io.shardingsphere.orchestration.config.OrchestrationConfiguration;
@@ -59,8 +58,7 @@ public final class YamlOrchestrationShardingDataSourceFactory {
      */
     public static DataSource createDataSource(final File yamlFile) throws SQLException, IOException {
         YamlOrchestrationShardingRuleConfiguration config = unmarshal(yamlFile);
-        return createDataSource(
-                config.getDataSources(), config.getShardingRule(), config.getConfigMap(), config.getProps(), config.getOrchestration().getOrchestrationConfiguration(), config.getSaga());
+        return createDataSource(config.getDataSources(), config.getShardingRule(), config.getConfigMap(), config.getProps(), config.getOrchestration().getOrchestrationConfiguration());
     }
     
     /**
@@ -74,7 +72,7 @@ public final class YamlOrchestrationShardingDataSourceFactory {
      */
     public static DataSource createDataSource(final Map<String, DataSource> dataSourceMap, final File yamlFile) throws SQLException, IOException {
         YamlOrchestrationShardingRuleConfiguration config = unmarshal(yamlFile);
-        return createDataSource(dataSourceMap, config.getShardingRule(), config.getConfigMap(), config.getProps(), config.getOrchestration().getOrchestrationConfiguration(), config.getSaga());
+        return createDataSource(dataSourceMap, config.getShardingRule(), config.getConfigMap(), config.getProps(), config.getOrchestration().getOrchestrationConfiguration());
     }
     
     /**
@@ -86,8 +84,7 @@ public final class YamlOrchestrationShardingDataSourceFactory {
      */
     public static DataSource createDataSource(final byte[] yamlByteArray) throws SQLException {
         YamlOrchestrationShardingRuleConfiguration config = unmarshal(yamlByteArray);
-        return createDataSource(
-                config.getDataSources(), config.getShardingRule(), config.getConfigMap(), config.getProps(), config.getOrchestration().getOrchestrationConfiguration(), config.getSaga());
+        return createDataSource(config.getDataSources(), config.getShardingRule(), config.getConfigMap(), config.getProps(), config.getOrchestration().getOrchestrationConfiguration());
     }
     
     /**
@@ -100,17 +97,15 @@ public final class YamlOrchestrationShardingDataSourceFactory {
      */
     public static DataSource createDataSource(final Map<String, DataSource> dataSourceMap, final byte[] yamlByteArray) throws SQLException {
         YamlOrchestrationShardingRuleConfiguration config = unmarshal(yamlByteArray);
-        return createDataSource(dataSourceMap, config.getShardingRule(), config.getConfigMap(), config.getProps(), config.getOrchestration().getOrchestrationConfiguration(), config.getSaga());
+        return createDataSource(dataSourceMap, config.getShardingRule(), config.getConfigMap(), config.getProps(), config.getOrchestration().getOrchestrationConfiguration());
     }
     
     private static DataSource createDataSource(final Map<String, DataSource> dataSourceMap, final YamlShardingRuleConfiguration yamlConfig,
-                                               final Map<String, Object> configMap, final Properties props, final OrchestrationConfiguration orchestrationConfig,
-                                               final SagaConfiguration sagaConfiguration) throws SQLException {
+                                               final Map<String, Object> configMap, final Properties props, final OrchestrationConfiguration orchestrationConfig) throws SQLException {
         if (null == yamlConfig) {
             return new OrchestrationShardingDataSource(orchestrationConfig);
         } else {
-            ShardingDataSource shardingDataSource = new ShardingDataSource(
-                    dataSourceMap, new ShardingRule(yamlConfig.getShardingRuleConfiguration(), dataSourceMap.keySet()), configMap, props, sagaConfiguration);
+            ShardingDataSource shardingDataSource = new ShardingDataSource(dataSourceMap, new ShardingRule(yamlConfig.getShardingRuleConfiguration(), dataSourceMap.keySet()), configMap, props);
             return new OrchestrationShardingDataSource(shardingDataSource, orchestrationConfig);
         }
     }
