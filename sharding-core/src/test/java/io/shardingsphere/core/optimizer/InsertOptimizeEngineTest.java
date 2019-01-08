@@ -32,8 +32,8 @@ import io.shardingsphere.core.parsing.parser.context.table.Table;
 import io.shardingsphere.core.parsing.parser.expression.SQLNumberExpression;
 import io.shardingsphere.core.parsing.parser.expression.SQLPlaceholderExpression;
 import io.shardingsphere.core.parsing.parser.sql.dml.insert.InsertStatement;
-import io.shardingsphere.core.parsing.parser.token.InsertColumnToken;
 import io.shardingsphere.core.parsing.parser.token.InsertValuesToken;
+import io.shardingsphere.core.parsing.parser.token.ItemsToken;
 import io.shardingsphere.core.parsing.parser.token.TableToken;
 import io.shardingsphere.core.routing.router.sharding.GeneratedKey;
 import io.shardingsphere.core.rule.ShardingRule;
@@ -69,7 +69,7 @@ public final class InsertOptimizeEngineTest {
         YamlShardingConfiguration yamlShardingConfig = YamlShardingConfiguration.unmarshal(new File(url.getFile()));
         shardingRule = yamlShardingConfig.getShardingRule(yamlShardingConfig.getDataSources().keySet());
         initializeInsertStatementWithPlaceHolder();
-        
+        initializeInsertStatementWithoutPlaceHolder();
         parameters = new ArrayList<>(4);
         parameters.add(10);
         parameters.add("init");
@@ -98,18 +98,16 @@ public final class InsertOptimizeEngineTest {
         insertStatementWithoutPlaceHolder = new InsertStatement();
         insertStatementWithoutPlaceHolder.getTables().add(new Table("t_order", Optional.<String>absent()));
         insertStatementWithoutPlaceHolder.setParametersIndex(0);
-        insertStatementWithoutPlaceHolder.setInsertValuesListLastPosition(34);
+        insertStatementWithoutPlaceHolder.setInsertValuesListLastPosition(50);
         insertStatementWithoutPlaceHolder.addSQLToken(new TableToken(12, 0, "t_order"));
-        insertStatementWithoutPlaceHolder.addSQLToken(new InsertValuesToken(26, "t_order"));
-        insertStatementWithoutPlaceHolder.addSQLToken(new InsertColumnToken(19, "("));
-        insertStatementWithoutPlaceHolder.addSQLToken(new InsertColumnToken(19, ")"));
-        AndCondition andCondition1 = new AndCondition();
-        andCondition1.getConditions().add(new Condition(new Column("order_id", "t_order"), new SQLNumberExpression(11)));
-        insertStatementWithoutPlaceHolder.getConditions().getOrCondition().getAndConditions().add(andCondition1);
-        AndCondition andCondition2 = new AndCondition();
-        andCondition2.getConditions().add(new Condition(new Column("user_id", "t_order"), new SQLNumberExpression(11)));
-        insertStatementWithoutPlaceHolder.getConditions().getOrCondition().getAndConditions().add(andCondition2);
-        insertStatementWithoutPlaceHolder.getInsertValues().getInsertValues().add(new InsertValue(DefaultKeyword.VALUES, "(11, 11)", 0));
+        insertStatementWithoutPlaceHolder.addSQLToken(new InsertValuesToken(42, "t_order"));
+        ItemsToken itemsToken = new ItemsToken(34);
+        itemsToken.getItems().add("order_id");
+        insertStatementWithoutPlaceHolder.addSQLToken(itemsToken);
+        AndCondition andCondition = new AndCondition();
+        andCondition.getConditions().add(new Condition(new Column("user_id", "t_order"), new SQLNumberExpression(12)));
+        insertStatementWithoutPlaceHolder.getConditions().getOrCondition().getAndConditions().add(andCondition);
+        insertStatementWithoutPlaceHolder.getInsertValues().getInsertValues().add(new InsertValue(DefaultKeyword.VALUES, "(12,'a')", 0));
     }
     
     @Test
