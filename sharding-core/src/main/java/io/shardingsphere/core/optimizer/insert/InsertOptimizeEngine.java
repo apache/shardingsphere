@@ -44,6 +44,7 @@ import java.util.List;
  *
  * @author zhangliang
  * @author maxiaoguang
+ * @author panjuan
  */
 @RequiredArgsConstructor
 public final class InsertOptimizeEngine implements OptimizeEngine {
@@ -67,9 +68,7 @@ public final class InsertOptimizeEngine implements OptimizeEngine {
         for (AndCondition each : andConditions) {
             InsertValue insertValue = insertValues.get(count);
             List<Object> currentParameters = new ArrayList<>(insertValue.getParametersCount() + 1);
-            if (insertValue.getParametersCount() > 0) {
-                currentParameters.addAll(parameters.subList(parametersCount, parametersCount += insertValue.getParametersCount()));
-            }
+            parametersCount = calParametersCount(parametersCount, insertValue, currentParameters);
             Optional<Column> generateKeyColumn = shardingRule.getGenerateKeyColumn(insertStatement.getTables().getSingleTableName());
             InsertShardingCondition insertShardingCondition;
             if (-1 != insertStatement.getGenerateKeyColumnIndex() || !generateKeyColumn.isPresent()) {
@@ -112,6 +111,15 @@ public final class InsertOptimizeEngine implements OptimizeEngine {
             count++;
         }
         return new ShardingConditions(result);
+    }
+    
+    private int calParametersCount(final int parametersCount, final InsertValue insertValue, final List<Object> currentParameters) {
+        int result = parametersCount;
+        if (insertValue.getParametersCount() > 0) {
+            result += insertValue.getParametersCount();
+            currentParameters.addAll(parameters.subList(parametersCount, result));
+        }
+        return result;
     }
     
     private ListShardingValue getShardingCondition(final Column column, final Comparable<?> value) {
