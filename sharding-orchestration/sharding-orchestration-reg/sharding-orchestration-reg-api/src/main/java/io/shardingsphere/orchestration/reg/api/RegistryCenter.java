@@ -56,7 +56,7 @@ public interface RegistryCenter extends AutoCloseable {
     String getDirectly(String key);
     
     /**
-     * Adjust data is existed or not.
+     * Judge data is existed or not.
      * 
      * @param key key of data
      * @return data is existed or not

@@ -27,6 +27,7 @@ import io.shardingsphere.core.exception.ShardingConfigurationException;
 import io.shardingsphere.core.keygen.fixture.IncrementKeyGenerator;
 import io.shardingsphere.core.parsing.parser.context.condition.Column;
 import io.shardingsphere.core.routing.strategy.none.NoneShardingStrategy;
+import org.hamcrest.CoreMatchers;
 import org.junit.Test;
 
 import java.util.Arrays;
@@ -324,12 +325,20 @@ public final class ShardingRuleTest {
     
     @Test
     public void assertIsAllInDefaultDataSource() {
-        ShardingRuleConfiguration shardingRuleConfig = new ShardingRuleConfiguration();
-        TableRuleConfiguration tableRuleConfig = createTableRuleConfig();
-        shardingRuleConfig.getTableRuleConfigs().add(tableRuleConfig);
-        ShardingRule actual = new ShardingRule(shardingRuleConfig, createDataSourceNames());
+        ShardingRule actual = createShardingRule();
         assertTrue(actual.isAllInDefaultDataSource(Collections.singletonList("table_0")));
-        assertFalse(actual.isAllInDefaultDataSource(Collections.singletonList("logic_table")));
+    }
+    
+    @Test
+    public void assertIsNotAllInDefaultDataSourceWithShardingTable() {
+        ShardingRule actual = createShardingRule();
+        assertFalse(actual.isAllInDefaultDataSource(Arrays.asList("table_0", "logic_table")));
+    }
+    
+    @Test
+    public void assertIsNotAllInDefaultDataSourceWithBroadcastTable() {
+        ShardingRule actual = createShardingRule();
+        assertFalse(actual.isAllInDefaultDataSource(Arrays.asList("table_0", "broadcast_logic_table")));
     }
     
     @Test
@@ -435,6 +444,12 @@ public final class ShardingRuleTest {
     @Test
     public void assertNotContains() {
         assertFalse(createShardingRule().contains("NEW_TABLE"));
+    }
+    
+    @Test
+    public void assertGetShardingLogicTableNames() {
+        ShardingRule actual = createShardingRule();
+        assertThat(actual.getShardingLogicTableNames(Arrays.asList("LOGIC_TABLE", "BROADCAST_LOGIC_TABLE")), CoreMatchers.<Collection<String>>is(Collections.singletonList("LOGIC_TABLE")));
     }
     
     private ShardingRule createShardingRule() {

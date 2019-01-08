@@ -35,7 +35,7 @@ public final class MasterVisitedManager {
     };
     
     /**
-     * Adjust master data source visited in current thread.
+     * Judge master data source visited in current thread.
      * 
      * @return master data source visited or not in current thread
      */

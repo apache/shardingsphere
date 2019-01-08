@@ -96,7 +96,7 @@ public final class ParsingSQLRouter implements ShardingRouter {
         if (generatedKey.isPresent()) {
             setGeneratedKeys(result, generatedKey.get());
         }
-        if (isNeedMergeShardingValues(sqlStatement)) {
+        if (sqlStatement instanceof SelectStatement && isNeedMergeShardingValues((SelectStatement) sqlStatement)) {
             checkSubqueryShardingValues(sqlStatement.getConditions(), shardingConditions);
             mergeShardingValues(shardingConditions);
         }
@@ -151,16 +151,8 @@ public final class ParsingSQLRouter implements ShardingRouter {
         sqlRouteResult.getGeneratedKey().getGeneratedKeys().addAll(generatedKeys);
     }
     
-    private boolean isNeedMergeShardingValues(final SQLStatement sqlStatement) {
-        if (!(sqlStatement instanceof SelectStatement) || ((SelectStatement) sqlStatement).getSubqueryConditions().isEmpty()) {
-            return false;
-        }
-        for (String each : sqlStatement.getTables().getTableNames()) {
-            if (shardingRule.findTableRuleByLogicTable(each).isPresent()) {
-                return true;
-            }
-        }
-        return false;
+    private boolean isNeedMergeShardingValues(final SelectStatement selectStatement) {
+        return !selectStatement.getSubqueryConditions().isEmpty() && !shardingRule.getShardingLogicTableNames(selectStatement.getTables().getTableNames()).isEmpty();
     }
     
     private void checkSubqueryShardingValues(final Conditions conditions, final ShardingConditions shardingConditions) {

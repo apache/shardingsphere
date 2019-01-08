@@ -32,9 +32,9 @@ import java.util.List;
 public final class StringUtil {
     
     /**
-     * Adjust is boolean value or not.
+     * Judge is boolean value or not.
      * 
-     * @param value to be adjusted string value
+     * @param value to be judged string value
      * @return is boolean value or not
      */
     public static boolean isBooleanValue(final String value) {
@@ -42,9 +42,9 @@ public final class StringUtil {
     }
     
     /**
-     * Adjust is int value or not.
+     * Judge is int value or not.
      * 
-     * @param value to be adjusted string value
+     * @param value to be judged string value
      * @return is int value or not
      */
     public static boolean isIntValue(final String value) {
@@ -57,9 +57,9 @@ public final class StringUtil {
     }
     
     /**
-     * Adjust is long value or not.
+     * Judge is long value or not.
      *
-     * @param value to be adjusted string value
+     * @param value to be judged string value
      * @return is long value or not
      */
     public static boolean isLongValue(final String value) {
