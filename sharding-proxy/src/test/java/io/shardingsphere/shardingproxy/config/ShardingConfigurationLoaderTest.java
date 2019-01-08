@@ -17,8 +17,6 @@
 
 package io.shardingsphere.shardingproxy.config;
 
-import io.shardingsphere.api.config.SagaConfiguration;
-import io.shardingsphere.core.constant.SagaRecoveryPolicy;
 import io.shardingsphere.core.rule.DataSourceParameter;
 import io.shardingsphere.core.yaml.masterslave.YamlMasterSlaveRuleConfiguration;
 import io.shardingsphere.core.yaml.sharding.YamlShardingRuleConfiguration;
@@ -41,7 +39,6 @@ public final class ShardingConfigurationLoaderTest {
         assertThat(actual.getRuleConfigurationMap().size(), is(2));
         assertShardingRuleConfiguration(actual.getRuleConfigurationMap().get("sharding_db"));
         assertMasterSlaveRuleConfiguration(actual.getRuleConfigurationMap().get("master_slave_db"));
-        assertSagaConfiguration(actual.getServerConfiguration().getSaga());
     }
     
     private void assertOrchestrationConfiguration(final YamlOrchestrationConfiguration actual) {
@@ -96,16 +93,5 @@ public final class ShardingConfigurationLoaderTest {
         assertThat(actual.getIdleTimeoutMilliseconds(), is(60000L));
         assertThat(actual.getMaxLifetimeMilliseconds(), is(1800000L));
         assertThat(actual.getMaxPoolSize(), is(50));
-    }
-    
-    private void assertSagaConfiguration(final SagaConfiguration actual) {
-        assertNotNull(actual.getAlias());
-        assertThat(actual.getAlias().length() ,is(36));
-        assertThat(actual.getExecutorSize(), is(10));
-        assertThat(actual.getTransactionMaxRetries(), is(10));
-        assertThat(actual.getTransactionRetryDelay(), is(1000));
-        assertThat(actual.getCompensationMaxRetries(), is(5));
-        assertThat(actual.getCompensationRetryDelay(), is(2000));
-        assertThat(actual.getRecoveryPolicy(), is(SagaRecoveryPolicy.BACKWARD));
     }
 }

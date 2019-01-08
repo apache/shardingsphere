@@ -32,12 +32,3 @@
 #  sharding-key2: sharding-value2
 #  master-slave-key0: master-slave-value0
 #  master-slave-key1: master-slave-value1
-#
-## Be valid when 'proxy.transaction.type' is BASE.
-#saga:
-#  executorSize: 5
-#  transactionMaxRetries: 5
-#  transactionRetryDelay: 5000
-#  compensationMaxRetries: 3
-#  compensationRetryDelay: 3000
-#  recoveryPolicy: FORWARD

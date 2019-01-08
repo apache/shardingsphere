@@ -21,7 +21,6 @@ import com.google.common.base.Strings;
 import com.google.common.eventbus.EventBus;
 import com.google.common.eventbus.Subscribe;
 import io.shardingsphere.api.ConfigMapContext;
-import io.shardingsphere.api.config.SagaConfiguration;
 import io.shardingsphere.api.config.rule.MasterSlaveRuleConfiguration;
 import io.shardingsphere.api.config.rule.RuleConfiguration;
 import io.shardingsphere.api.config.rule.ShardingRuleConfiguration;
@@ -35,14 +34,12 @@ import io.shardingsphere.orchestration.internal.registry.config.event.ConfigMapC
 import io.shardingsphere.orchestration.internal.registry.config.event.PropertiesChangedEvent;
 import io.shardingsphere.orchestration.internal.registry.config.event.SchemaAddedEvent;
 import io.shardingsphere.orchestration.internal.registry.config.event.SchemaDeletedEvent;
-import io.shardingsphere.orchestration.internal.registry.config.event.SagaChangedEvent;
 import io.shardingsphere.orchestration.internal.registry.state.event.CircuitStateChangedEvent;
 import io.shardingsphere.shardingproxy.runtime.schema.LogicSchema;
 import io.shardingsphere.shardingproxy.runtime.schema.MasterSlaveSchema;
 import io.shardingsphere.shardingproxy.runtime.schema.ShardingSchema;
 import io.shardingsphere.shardingproxy.util.DataSourceConverter;
 import io.shardingsphere.transaction.api.TransactionType;
-import io.shardingsphere.transaction.saga.manager.SagaTransactionManager;
 import lombok.AccessLevel;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
@@ -60,7 +57,6 @@ import java.util.concurrent.ConcurrentHashMap;
  *
  * @author chenqingyang
  * @author panjuan
- * @author yangyi
  */
 @NoArgsConstructor(access = AccessLevel.PRIVATE)
 @Getter
@@ -75,8 +71,6 @@ public final class GlobalRegistry {
     private ShardingProperties shardingProperties = new ShardingProperties(new Properties());
     
     private Authentication authentication;
-    
-    private SagaConfiguration sagaConfiguration;
     
     private boolean isCircuitBreak;
     
@@ -104,12 +98,10 @@ public final class GlobalRegistry {
      * @param authentication authentication
      * @param configMap config map
      * @param props properties
-     * @param sagaConfiguration saga configuration
      */
     public void init(final Map<String, Map<String, DataSourceParameter>> schemaDataSources,
-                     final Map<String, RuleConfiguration> schemaRules, final Authentication authentication,
-                     final Map<String, Object> configMap, final Properties props, final SagaConfiguration sagaConfiguration) {
-        init(schemaDataSources, schemaRules, authentication, configMap, props, sagaConfiguration, false);
+        final Map<String, RuleConfiguration> schemaRules, final Authentication authentication, final Map<String, Object> configMap, final Properties props) {
+        init(schemaDataSources, schemaRules, authentication, configMap, props, false);
     }
     
     /**
@@ -120,11 +112,10 @@ public final class GlobalRegistry {
      * @param authentication authentication
      * @param configMap config map
      * @param props properties
-     * @param sagaConfiguration saga configuration
      * @param isUsingRegistry is using registry or not
      */
     public void init(final Map<String, Map<String, DataSourceParameter>> schemaDataSources, final Map<String, RuleConfiguration> schemaRules,
-                     final Authentication authentication, final Map<String, Object> configMap, final Properties props, final SagaConfiguration sagaConfiguration, final boolean isUsingRegistry) {
+        final Authentication authentication, final Map<String, Object> configMap, final Properties props, final boolean isUsingRegistry) {
         if (!configMap.isEmpty()) {
             ConfigMapContext.getInstance().getConfigMap().putAll(configMap);
         }
@@ -132,7 +123,6 @@ public final class GlobalRegistry {
             shardingProperties = new ShardingProperties(props);
         }
         this.authentication = authentication;
-        this.sagaConfiguration = sagaConfiguration;
         initSchema(schemaDataSources, schemaRules, isUsingRegistry);
     }
     
@@ -144,11 +134,11 @@ public final class GlobalRegistry {
     }
     
     private LogicSchema createLogicSchema(final String schemaName,
-                                          final Map<String, Map<String, DataSourceParameter>> schemaDataSources, final RuleConfiguration ruleConfiguration, final boolean isUsingRegistry) {
+        final Map<String, Map<String, DataSourceParameter>> schemaDataSources, final RuleConfiguration ruleConfiguration, final boolean isUsingRegistry) {
         return ruleConfiguration instanceof ShardingRuleConfiguration
-                ? new ShardingSchema(schemaName, schemaDataSources.get(schemaName), (ShardingRuleConfiguration) ruleConfiguration, 
-                shardingProperties.<Boolean>getValue(ShardingPropertiesConstant.CHECK_TABLE_METADATA_ENABLED), isUsingRegistry) 
-                : new MasterSlaveSchema(schemaName, schemaDataSources.get(schemaName), (MasterSlaveRuleConfiguration) ruleConfiguration, isUsingRegistry);
+            ? new ShardingSchema(schemaName, schemaDataSources.get(schemaName), (ShardingRuleConfiguration) ruleConfiguration,
+            shardingProperties.<Boolean>getValue(ShardingPropertiesConstant.CHECK_TABLE_METADATA_ENABLED), isUsingRegistry)
+            : new MasterSlaveSchema(schemaName, schemaDataSources.get(schemaName), (MasterSlaveRuleConfiguration) ruleConfiguration, isUsingRegistry);
     }
     
     /**
@@ -238,8 +228,8 @@ public final class GlobalRegistry {
     @Subscribe
     public synchronized void renew(final SchemaAddedEvent schemaAddedEvent) {
         logicSchemas.put(schemaAddedEvent.getShardingSchemaName(), createLogicSchema(schemaAddedEvent.getShardingSchemaName(),
-                Collections.singletonMap(schemaAddedEvent.getShardingSchemaName(), DataSourceConverter.getDataSourceParameterMap(schemaAddedEvent.getDataSourceConfigurations())),
-                schemaAddedEvent.getRuleConfiguration(), true));
+            Collections.singletonMap(schemaAddedEvent.getShardingSchemaName(), DataSourceConverter.getDataSourceParameterMap(schemaAddedEvent.getDataSourceConfigurations())),
+            schemaAddedEvent.getRuleConfiguration(), true));
     }
     
     /**
@@ -250,16 +240,5 @@ public final class GlobalRegistry {
     @Subscribe
     public synchronized void renew(final SchemaDeletedEvent schemaDeletedEvent) {
         logicSchemas.remove(schemaDeletedEvent.getShardingSchemaName());
-    }
-    
-    /**
-     * Renew Saga configuration.
-     *
-     * @param sagaChangedEvent saga configuration changed event
-     */
-    @Subscribe
-    public void renewSagaConfiguration(final SagaChangedEvent sagaChangedEvent) {
-        SagaTransactionManager.getInstance().removeSagaExecutionComponent(sagaConfiguration);
-        this.sagaConfiguration = sagaChangedEvent.getSagaConfiguration();
     }
 }

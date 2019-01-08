@@ -18,8 +18,7 @@
 package io.shardingsphere.shardingproxy.backend.jdbc.connection;
 
 import com.google.common.base.Preconditions;
-import io.shardingsphere.api.config.SagaConfiguration;
-import io.shardingsphere.shardingproxy.runtime.GlobalRegistry;
+
 import io.shardingsphere.transaction.api.TransactionType;
 import io.shardingsphere.transaction.core.TransactionOperationType;
 import io.shardingsphere.transaction.core.context.SagaTransactionContext;
@@ -35,7 +34,6 @@ import java.sql.SQLException;
  * Proxy transaction manager.
  *
  * @author zhaojun
- * @author yangyi
  */
 @RequiredArgsConstructor
 public final class BackendTransactionManager implements TransactionManager {
@@ -61,21 +59,9 @@ public final class BackendTransactionManager implements TransactionManager {
                 connection.getStateHandler().getAndSetStatus(ConnectionStatus.TERMINATED);
             }
         } else if (TransactionType.BASE == transactionType) {
-            SagaConfiguration config = GlobalRegistry.getInstance().getSagaConfiguration();
-            switch (operationType) {
-                case BEGIN:
-                    shardingTransactionHandler.doInTransaction(SagaTransactionContext.createBeginSagaTransactionContext(
-                        GlobalRegistry.getInstance().getLogicSchema(connection.getSchemaName()).getBackendDataSource().getDataSources(), config));
-                    break;
-                case COMMIT:
-                    shardingTransactionHandler.doInTransaction(SagaTransactionContext.createCommitSagaTransactionContext(config));
-                    connection.getStateHandler().getAndSetStatus(ConnectionStatus.TERMINATED);
-                    break;
-                case ROLLBACK:
-                    shardingTransactionHandler.doInTransaction(SagaTransactionContext.createRollbackSagaTransactionContext(config));
-                    connection.getStateHandler().getAndSetStatus(ConnectionStatus.TERMINATED);
-                    break;
-                default:
+            shardingTransactionHandler.doInTransaction(new SagaTransactionContext(operationType, connection.getLogicSchema().getBackendDataSource().getDataSources()));
+            if (TransactionOperationType.BEGIN != operationType) {
+                connection.getStateHandler().getAndSetStatus(ConnectionStatus.TERMINATED);
             }
         }
     }

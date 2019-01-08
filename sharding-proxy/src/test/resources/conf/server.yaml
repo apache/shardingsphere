@@ -12,11 +12,3 @@ authentication:
 props:
   max.connections.size.per.query: 1
   sql.show: false
-
-saga:
-  executorSize: 10
-  transactionMaxRetries: 10
-  transactionRetryDelay: 1000
-  compensationMaxRetries: 5
-  compensationRetryDelay: 2000
-  recoveryPolicy: BACKWARD
