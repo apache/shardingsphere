@@ -62,21 +62,18 @@ public final class InsertOptimizeEngine implements OptimizeEngine {
         List<AndCondition> andConditions = insertStatement.getConditions().getOrCondition().getAndConditions();
         List<InsertValue> insertValues = insertStatement.getInsertValues().getInsertValues();
         List<ShardingCondition> result = new ArrayList<>(andConditions.size());
-        Iterator<Comparable<?>> generatedKeys = null;
+        Iterator<Comparable<?>> generatedKeys = createGeneratedKeys();
         int count = 0;
         int parametersCount = 0;
         for (AndCondition each : andConditions) {
             InsertValue insertValue = insertValues.get(count);
             List<Object> currentParameters = new ArrayList<>(insertValue.getParametersCount() + 1);
             parametersCount = calParametersCount(parametersCount, insertValue, currentParameters);
-            Optional<Column> generateKeyColumn = shardingRule.getGenerateKeyColumn(insertStatement.getTables().getSingleTableName());
             InsertShardingCondition insertShardingCondition;
             if (!isToHandleGeneratedKey()) {
                 insertShardingCondition = new InsertShardingCondition(insertValue.getExpression(), currentParameters);
             } else {
-                if (null == generatedKeys) {
-                    generatedKeys = generatedKey.getGeneratedKeys().iterator();
-                }
+                Optional<Column> generateKeyColumn = shardingRule.getGenerateKeyColumn(insertStatement.getTables().getSingleTableName());
                 String expression;
                 Comparable<?> currentGeneratedKey = generatedKeys.next();
                 if (parameters.isEmpty()) {
@@ -113,8 +110,12 @@ public final class InsertOptimizeEngine implements OptimizeEngine {
         return new ShardingConditions(result);
     }
     
+    private Iterator<Comparable<?>> createGeneratedKeys() {
+        return isToHandleGeneratedKey() ? generatedKey.getGeneratedKeys().iterator() : null;
+    }
+    
     private boolean isToHandleGeneratedKey() {
-        return -1 != insertStatement.getGenerateKeyColumnIndex() || !shardingRule.getGenerateKeyColumn(insertStatement.getTables().getSingleTableName()).isPresent();
+        return -1 == insertStatement.getGenerateKeyColumnIndex() && shardingRule.getGenerateKeyColumn(insertStatement.getTables().getSingleTableName()).isPresent();
     }
     
     private int calParametersCount(final int parametersCount, final InsertValue insertValue, final List<Object> currentParameters) {
