@@ -24,6 +24,7 @@ import io.shardingsphere.transaction.api.TransactionType;
 import io.shardingsphere.transaction.core.manager.ShardingTransactionManager;
 import io.shardingsphere.transaction.spi.xa.XATransactionManager;
 import io.shardingsphere.transaction.xa.fixture.DataSourceUtils;
+import io.shardingsphere.transaction.xa.jta.connection.ShardingXAConnection;
 import io.shardingsphere.transaction.xa.jta.datasource.ShardingXADataSource;
 import lombok.SneakyThrows;
 import org.junit.Before;
@@ -34,6 +35,9 @@ import org.mockito.junit.MockitoJUnitRunner;
 
 import javax.sql.DataSource;
 import javax.sql.XADataSource;
+import javax.transaction.Status;
+import javax.transaction.Transaction;
+import javax.transaction.TransactionManager;
 import java.lang.reflect.Field;
 import java.util.HashMap;
 import java.util.Map;
@@ -43,8 +47,10 @@ import static org.hamcrest.CoreMatchers.is;
 import static org.junit.Assert.assertThat;
 import static org.mockito.ArgumentMatchers.any;
 import static org.mockito.ArgumentMatchers.anyString;
+import static org.mockito.Mockito.mock;
 import static org.mockito.Mockito.times;
 import static org.mockito.Mockito.verify;
+import static org.mockito.Mockito.when;
 
 @RunWith(MockitoJUnitRunner.class)
 public class XAShardingTransactionHandlerTest {
@@ -54,9 +60,18 @@ public class XAShardingTransactionHandlerTest {
     @Mock
     private XATransactionManager xaTransactionManager;
     
+    @Mock
+    private TransactionManager transactionManager;
+    
+    @Mock
+    private Transaction transaction;
+    
     @Before
+    @SneakyThrows
     public void setUp() {
         setMockXATransactionManager(xaShardingTransactionHandler, xaTransactionManager);
+        when(xaTransactionManager.getUnderlyingTransactionManager()).thenReturn(transactionManager);
+        when(transactionManager.getTransaction()).thenReturn(transaction);
     }
     
     @SneakyThrows
@@ -102,12 +117,23 @@ public class XAShardingTransactionHandlerTest {
     }
     
     @Test
+    @SneakyThrows
     public void assertCreateNoneTransactionalConnection() {
+        when(transaction.getStatus()).thenReturn(Status.STATUS_NO_TRANSACTION);
+        DataSource dataSource = mock(DataSource.class);
+        setCachedShardingXADataSourceMap("ds1");
+        ShardingXADataSource shardingXADataSource = getCachedShardingXADataSourceMap().get("ds1");
+        xaShardingTransactionHandler.createConnection("ds1", dataSource);
+        verify(shardingXADataSource).getConnection();
     }
     
     @Test
+    @SneakyThrows
     public void assertCreateXATransactionalConnection() {
-    
+        when(transaction.getStatus()).thenReturn(Status.STATUS_ACTIVE);
+        DataSource dataSource = mock(DataSource.class);
+        setCachedShardingXADataSourceMap("ds1");
+        xaShardingTransactionHandler.createConnection("ds1", dataSource);
     }
     
     @Test
@@ -123,6 +149,24 @@ public class XAShardingTransactionHandlerTest {
         return (Map<String, ShardingXADataSource>) field.get(xaShardingTransactionHandler);
     }
     
+    @SneakyThrows
+    private void setCachedShardingXADataSourceMap(final String datasourceName) {
+        Field field = xaShardingTransactionHandler.getClass().getDeclaredField("cachedShardingXADataSourceMap");
+        field.setAccessible(true);
+        field.set(xaShardingTransactionHandler, createMockShardingXADataSourceMap(datasourceName));
+    }
+    
+    @SneakyThrows
+    private Map<String, ShardingXADataSource> createMockShardingXADataSourceMap(final String datasourceName) {
+        ShardingXADataSource shardingXADataSource = mock(ShardingXADataSource.class);
+        ShardingXAConnection shardingXAConnection = mock(ShardingXAConnection.class);
+        when(shardingXADataSource.getXAConnection()).thenReturn(shardingXAConnection);
+        when(shardingXADataSource.getXAConnection()).thenReturn(shardingXAConnection);
+        Map<String, ShardingXADataSource> result = new HashMap<>();
+        result.put(datasourceName, shardingXADataSource);
+        return result;
+    }
+    
     private Map<String, DataSource> createDataSourceMap(final PoolType poolType, final DatabaseType databaseType) {
         Map<String, DataSource> result = new HashMap<>();
         result.put("ds1", DataSourceUtils.build(poolType, databaseType, "demo_ds_1"));
@@ -134,6 +178,13 @@ public class XAShardingTransactionHandlerTest {
         Map<String, DataSource> result = new HashMap<>();
         result.put("ds1", new AtomikosDataSourceBean());
         result.put("ds2", new AtomikosDataSourceBean());
+        return result;
+    }
+    
+    private Map<String, DataSource> createMockDataSourceMap(final String datasourceName) {
+        Map<String, DataSource> result = new HashMap<>();
+        DataSource dataSource = mock(DataSource.class);
+        result.put(datasourceName, dataSource);
         return result;
     }
 }

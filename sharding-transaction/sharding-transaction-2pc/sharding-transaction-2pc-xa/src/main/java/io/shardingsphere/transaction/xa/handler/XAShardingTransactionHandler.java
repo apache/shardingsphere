@@ -91,14 +91,15 @@ public final class XAShardingTransactionHandler extends ShardingTransactionHandl
     @Override
     public Connection createConnection(final String dataSourceName, final DataSource dataSource) {
         Connection result;
+        ShardingXADataSource shardingXADataSource = cachedShardingXADataSourceMap.get(dataSourceName);
         try {
             Transaction transaction = xaTransactionManager.getUnderlyingTransactionManager().getTransaction();
             if (null != transaction && Status.STATUS_NO_TRANSACTION != transaction.getStatus()) {
-                ShardingXAConnection shardingXAConnection = cachedShardingXADataSourceMap.get(dataSourceName).getXAConnection(databaseType, dataSourceName, dataSource);
+                ShardingXAConnection shardingXAConnection = shardingXADataSource.getXAConnection();
                 transaction.enlistResource(shardingXAConnection.getXAResource());
                 result = shardingXAConnection.getConnection();
             } else {
-                result = dataSource.getConnection();
+                result = shardingXADataSource.getConnection();
             }
         } catch (final SQLException | RollbackException | SystemException ex) {
             log.error("Failed to synchronize transactional resource");

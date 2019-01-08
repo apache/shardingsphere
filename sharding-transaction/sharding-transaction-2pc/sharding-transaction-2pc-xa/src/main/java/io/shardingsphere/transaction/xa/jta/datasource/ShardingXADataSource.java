@@ -49,55 +49,44 @@ import java.util.logging.Logger;
 @Slf4j
 public final class ShardingXADataSource implements XADataSource {
     
+    private final DatabaseType databaseType;
+    
     private final String resourceName;
+    
+    private final DataSource originalDataSource;
     
     private final XADataSource xaDataSource;
     
+    private boolean isOriginalXADataSource;
+    
     public ShardingXADataSource(final DatabaseType databaseType, final String resourceName, final DataSource dataSource) {
+        this.databaseType = databaseType;
+        this.resourceName = resourceName;
+        this.originalDataSource = dataSource;
+        if (dataSource instanceof XADataSource) {
+            this.xaDataSource = (XADataSource) dataSource;
+            this.isOriginalXADataSource = true;
+        } else {
+            this.xaDataSource = buildXADataSource(dataSource);
+        }
+    }
+    
+    private XADataSource buildXADataSource(final DataSource dataSource) {
         try {
-            if (!(dataSource instanceof XADataSource)) {
-                DataSourceParameter dataSourceParameter = DataSourceSwapperRegistry.getSwapper(dataSource.getClass()).swap(dataSource);
-                XADataSource xaDataSource = XADataSourceFactory.build(databaseType);
-                Properties xaProperties = XAPropertiesFactory.createXAProperties(databaseType).build(dataSourceParameter);
-                PropertyUtils.setProperties(xaDataSource, xaProperties);
-                this.xaDataSource = xaDataSource;
-            } else {
-                this.xaDataSource = (XADataSource) dataSource;
-            }
-            this.resourceName = resourceName;
+            DataSourceParameter dataSourceParameter = DataSourceSwapperRegistry.getSwapper(dataSource.getClass()).swap(dataSource);
+            XADataSource result = XADataSourceFactory.build(databaseType);
+            Properties xaProperties = XAPropertiesFactory.createXAProperties(databaseType).build(dataSourceParameter);
+            PropertyUtils.setProperties(result, xaProperties);
+            return result;
         } catch (final PropertyException ex) {
             log.error("Failed to create ShardingXADataSource");
             throw new ShardingException(ex);
         }
     }
     
-    /**
-     * Get XA connection.
-     *
-     * @param databaseType database type
-     * @param dataSourceName data source name
-     * @param dataSource data source
-     * @return sharding XA connection
-     * @throws SQLException SQL exception
-     */
-    public ShardingXAConnection getXAConnection(final DatabaseType databaseType, final String dataSourceName, final DataSource dataSource) throws SQLException {
-        ShardingXAConnection result;
-        if (dataSource instanceof XADataSource) {
-            XAConnection xaConnection = ((XADataSource) dataSource).getXAConnection();
-            result = new ShardingXAConnection(dataSourceName, xaConnection);
-        } else {
-            result = this.wrapPhysicalConnection(databaseType, dataSource.getConnection());
-        }
-        return result;
-    }
-    
-    private ShardingXAConnection wrapPhysicalConnection(final DatabaseType databaseType, final Connection connection) {
-        return ShardingXAConnectionFactory.createShardingXAConnection(databaseType, resourceName, xaDataSource, connection);
-    }
-    
     @Override
-    public XAConnection getXAConnection() throws SQLException {
-        return new ShardingXAConnection(resourceName, xaDataSource.getXAConnection());
+    public ShardingXAConnection getXAConnection() throws SQLException {
+        return isOriginalXADataSource ? new ShardingXAConnection(resourceName, xaDataSource.getXAConnection()) : this.wrapPhysicalConnection(databaseType, originalDataSource.getConnection());
     }
     
     @Override
@@ -128,5 +117,19 @@ public final class ShardingXADataSource implements XADataSource {
     @Override
     public Logger getParentLogger() throws SQLFeatureNotSupportedException {
         return xaDataSource.getParentLogger();
+    }
+    
+    /**
+     * Get connection from original data source.
+     *
+     * @return connection
+     * @throws SQLException SQL exception
+     */
+    public Connection getConnection() throws SQLException {
+        return originalDataSource.getConnection();
+    }
+    
+    private ShardingXAConnection wrapPhysicalConnection(final DatabaseType databaseType, final Connection connection) {
+        return ShardingXAConnectionFactory.createShardingXAConnection(databaseType, resourceName, xaDataSource, connection);
     }
 }
