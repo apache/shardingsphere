@@ -47,7 +47,7 @@
         <el-form-item :label="$t('index.registDialog.namespaces')" prop="namespaces">
           <el-input v-model="form.namespaces" autocomplete="off"/>
         </el-form-item>
-        <el-form-item :label="$t('index.registDialog.digest')" prop="digest">
+        <el-form-item :label="$t('index.registDialog.digest')">
           <el-input v-model="form.digest" autocomplete="off"/>
         </el-form-item>
       </el-form>
@@ -59,8 +59,9 @@
   </el-card>
 </template>
 <script>
-import API from '../api'
+import { mapActions } from 'vuex'
 import _ from 'lodash'
+import API from '../api'
 export default {
   name: 'RegistConfig',
   data() {
@@ -111,9 +112,6 @@ export default {
         ],
         orchestrationName: [
           { required: true, message: this.$t('index').rules.orchestrationName, trigger: 'change' }
-        ],
-        digest: [
-          { required: true, message: this.$t('index').rules.address, trigger: 'change' }
         ]
       },
       tableData: [],
@@ -127,6 +125,9 @@ export default {
     this.getRegCenter()
   },
   methods: {
+    ...mapActions([
+      'setRegCenterActivated'
+    ]),
     handleCurrentChange(val) {
       const data = _.clone(this.cloneTableData)
       this.tableData = data.splice(val - 1, this.pageSize)
@@ -137,6 +138,12 @@ export default {
         this.total = data.length
         this.cloneTableData = _.clone(res.model)
         this.tableData = data.splice(0, this.pageSize)
+      })
+      this.getRegCenterActivated()
+    },
+    getRegCenterActivated() {
+      API.getRegCenterActivated().then((res) => {
+        this.setRegCenterActivated(res.model.name)
       })
     },
     handleConnect(row) {

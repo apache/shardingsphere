@@ -10,6 +10,5 @@ if (process.env.NODE_ENV === 'mock') {
 }
 
 export default {
-  HOST,
-  JSONP_HOST: ''
+  HOST
 }

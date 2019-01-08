@@ -10,7 +10,7 @@
       <el-table-column :label="$t('index.table.operate')" fixed="right" width="80" align="center">
         <template slot-scope="scope">
           <el-switch
-            :value="scope.row.enabled"
+            v-model="scope.row.enabled"
             active-color="#13ce66"
             inactive-color="#ff4949"
             @change="handleChange(scope.row)"/>

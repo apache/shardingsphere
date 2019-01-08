@@ -24,7 +24,8 @@ export default {
       delFailMessage: 'Delete failed',
       updateCompletedMessage: 'Update completed',
       updateFaildMessage: 'Update faild'
-    }
+    },
+    loginOut: 'Sign out'
   },
   login: {
     btnTxt: 'Login',

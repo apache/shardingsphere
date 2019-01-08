@@ -37,7 +37,7 @@ function ajax(url, type, options) {
       timeout: 10000,
       // responseType:'stream',
       headers: {
-        'Access-Token': window.localStorage.getItem('Access-Token')
+        'Access-Token': window.localStorage.getItem('Access-Token') || ''
       },
       params: type === 'get' ? options : null,
       data: configData(type, options)

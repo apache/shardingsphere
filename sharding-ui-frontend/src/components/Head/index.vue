@@ -2,15 +2,12 @@
   <div class="s-layout-header">
     <div class="s-pro-components-header">
       <i :class="classes" @click="togger"/>
-      <el-breadcrumb separator="/" class="bread-nav">
-        <el-breadcrumb-item><a>{{ breadcrumbTxt }}</a></el-breadcrumb-item>
-      </el-breadcrumb>
       <div class="s-pro-components-header-right">
         <div class="avatar">
           <el-dropdown @command="handlerClick">
             <span class="el-dropdown-link">{{ username || '未登陆' }}</span>
             <el-dropdown-menu slot="dropdown">
-              <el-dropdown-item>退出登陆</el-dropdown-item>
+              <el-dropdown-item>{{ $t("common.loginOut") }}</el-dropdown-item>
             </el-dropdown-menu>
           </el-dropdown>
         </div>
@@ -18,12 +15,15 @@
           <el-dropdown>
             <i class="icon-duoyuyan iconfont"/>
             <el-dropdown-menu slot="dropdown">
-              <el-dropdown-item>英文</el-dropdown-item>
-              <el-dropdown-item disabled>中文</el-dropdown-item>
+              <el-dropdown-item>English</el-dropdown-item>
+              <el-dropdown-item disabled>Chinese</el-dropdown-item>
             </el-dropdown-menu>
           </el-dropdown>
         </div>
       </div>
+      <el-breadcrumb separator="/" class="bread-nav">
+        <el-breadcrumb-item><a>{{ $store.state.regCenterActivated || '' }}</a></el-breadcrumb-item>
+      </el-breadcrumb>
     </div>
   </div>
 </template>
@@ -51,21 +51,21 @@ export default {
   created() {
     const store = window.localStorage
     this.username = store.getItem('username')
-    this.showBreadcrumbTxt()
+    // this.showBreadcrumbTxt()
   },
   methods: {
-    showBreadcrumbTxt() {
-      const menuData = this.$t('common').menuData
-      const hash = location.hash.split('#')[1]
-      for (const v of menuData) {
-        for (const vv of v.child) {
-          if (vv.href.includes(hash)) {
-            this.breadcrumbTxt = vv.title
-            break
-          }
-        }
-      }
-    },
+    // showBreadcrumbTxt() {
+    //   const menuData = this.$t('common').menuData
+    //   const hash = location.hash.split('#')[1]
+    //   for (const v of menuData) {
+    //     for (const vv of v.child) {
+    //       if (vv.href.includes(hash)) {
+    //         this.breadcrumbTxt = vv.title
+    //         break
+    //       }
+    //     }
+    //   }
+    // },
     togger() {
       this.isCollapse = !this.isCollapse
       this.$emit('on-togger', this.isCollapse)
@@ -87,9 +87,10 @@ export default {
   line-height: 64px;
   width: 100%;
   .bread-nav {
-    float: left;
+    float: right;
     height: 64px;
     line-height: 64px;
+    padding-right: 20px;
   }
   .s-pro-components-header {
     height: 64px;

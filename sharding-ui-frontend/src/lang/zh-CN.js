@@ -24,7 +24,8 @@ export default {
       delFailMessage: '删除失败',
       updateCompletedMessage: '更新成功',
       updateFaildMessage: '更新失败'
-    }
+    },
+    loginOut: '退出登陆'
   },
   login: {
     btnTxt: '登陆',

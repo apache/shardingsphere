@@ -42,4 +42,7 @@ export default {
 </script>
 
 <style lang="scss" scoped>
+  .el-main {
+    overflow: inherit;
+  }
 </style>
