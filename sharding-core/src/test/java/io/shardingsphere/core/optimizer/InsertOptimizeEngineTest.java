@@ -54,7 +54,9 @@ public final class InsertOptimizeEngineTest {
     
     private ShardingRule shardingRule;
     
-    private InsertStatement insertStatement;
+    private InsertStatement insertStatementWithPlaceHolder;
+    
+    private InsertStatement insertStatementWithoutPlaceHolder;
     
     private List<Object> parameters;
     
@@ -64,20 +66,7 @@ public final class InsertOptimizeEngineTest {
         Preconditions.checkNotNull(url, "Cannot found rewrite rule yaml configuration.");
         YamlShardingConfiguration yamlShardingConfig = YamlShardingConfiguration.unmarshal(new File(url.getFile()));
         shardingRule = yamlShardingConfig.getShardingRule(yamlShardingConfig.getDataSources().keySet());
-        insertStatement = new InsertStatement();
-        insertStatement.getTables().add(new Table("t_order", Optional.<String>absent()));
-        insertStatement.setParametersIndex(4);
-        insertStatement.setInsertValuesListLastPosition(45);
-        insertStatement.addSQLToken(new TableToken(12, 0, "t_order"));
-        insertStatement.addSQLToken(new InsertValuesToken(39, "t_order"));
-        AndCondition andCondition1 = new AndCondition();
-        andCondition1.getConditions().add(new Condition(new Column("user_id", "t_order"), new SQLPlaceholderExpression(0)));
-        insertStatement.getConditions().getOrCondition().getAndConditions().add(andCondition1);
-        AndCondition andCondition2 = new AndCondition();
-        andCondition2.getConditions().add(new Condition(new Column("user_id", "t_order"), new SQLPlaceholderExpression(2)));
-        insertStatement.getConditions().getOrCondition().getAndConditions().add(andCondition2);
-        insertStatement.getInsertValues().getInsertValues().add(new InsertValue(DefaultKeyword.VALUES, "(?, ?)", 2));
-        insertStatement.getInsertValues().getInsertValues().add(new InsertValue(DefaultKeyword.VALUES, "(?, ?)", 2));
+        initializeInsertStatementWithPlaceHolder();
         parameters = new ArrayList<>(4);
         parameters.add(10);
         parameters.add("init");
@@ -85,12 +74,29 @@ public final class InsertOptimizeEngineTest {
         parameters.add("init");
     }
     
+    private void initializeInsertStatementWithPlaceHolder() {
+        insertStatementWithPlaceHolder = new InsertStatement();
+        insertStatementWithPlaceHolder.getTables().add(new Table("t_order", Optional.<String>absent()));
+        insertStatementWithPlaceHolder.setParametersIndex(4);
+        insertStatementWithPlaceHolder.setInsertValuesListLastPosition(45);
+        insertStatementWithPlaceHolder.addSQLToken(new TableToken(12, 0, "t_order"));
+        insertStatementWithPlaceHolder.addSQLToken(new InsertValuesToken(39, "t_order"));
+        AndCondition andCondition1 = new AndCondition();
+        andCondition1.getConditions().add(new Condition(new Column("user_id", "t_order"), new SQLPlaceholderExpression(0)));
+        insertStatementWithPlaceHolder.getConditions().getOrCondition().getAndConditions().add(andCondition1);
+        AndCondition andCondition2 = new AndCondition();
+        andCondition2.getConditions().add(new Condition(new Column("user_id", "t_order"), new SQLPlaceholderExpression(2)));
+        insertStatementWithPlaceHolder.getConditions().getOrCondition().getAndConditions().add(andCondition2);
+        insertStatementWithPlaceHolder.getInsertValues().getInsertValues().add(new InsertValue(DefaultKeyword.VALUES, "(?, ?)", 2));
+        insertStatementWithPlaceHolder.getInsertValues().getInsertValues().add(new InsertValue(DefaultKeyword.VALUES, "(?, ?)", 2));
+    }
+    
     @Test
     public void assertOptimizeWithGeneratedKey() {
         GeneratedKey generatedKey = new GeneratedKey(new Column("order_id", "t_order"));
         generatedKey.getGeneratedKeys().add(1);
         generatedKey.getGeneratedKeys().add(2);
-        ShardingConditions actual = new InsertOptimizeEngine(shardingRule, insertStatement, parameters, generatedKey).optimize();
+        ShardingConditions actual = new InsertOptimizeEngine(shardingRule, insertStatementWithPlaceHolder, parameters, generatedKey).optimize();
         assertFalse(actual.isAlwaysFalse());
         assertThat(actual.getShardingConditions().size(), is(2));
         assertThat(((InsertShardingCondition) actual.getShardingConditions().get(0)).getParameters().size(), is(3));
@@ -113,8 +119,8 @@ public final class InsertOptimizeEngineTest {
     
     @Test
     public void assertOptimizeWithoutGeneratedKey() {
-        insertStatement.setGenerateKeyColumnIndex(1);
-        ShardingConditions actual = new InsertOptimizeEngine(shardingRule, insertStatement, parameters, null).optimize();
+        insertStatementWithPlaceHolder.setGenerateKeyColumnIndex(1);
+        ShardingConditions actual = new InsertOptimizeEngine(shardingRule, insertStatementWithPlaceHolder, parameters, null).optimize();
         assertFalse(actual.isAlwaysFalse());
         assertThat(actual.getShardingConditions().size(), is(2));
         assertThat(((InsertShardingCondition) actual.getShardingConditions().get(0)).getParameters().size(), is(2));
