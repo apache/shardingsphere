@@ -15,7 +15,7 @@
  * </p>
  */
 
-package io.shardingsphere.transaction.saga;
+package io.shardingsphere.transaction.saga.config;
 
 import lombok.Getter;
 import lombok.RequiredArgsConstructor;

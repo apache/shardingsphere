@@ -15,7 +15,7 @@
  * </p>
  */
 
-package io.shardingsphere.transaction.saga;
+package io.shardingsphere.transaction.saga.config;
 
 import lombok.AccessLevel;
 import lombok.Getter;
@@ -29,6 +29,7 @@ import lombok.RequiredArgsConstructor;
 
 @RequiredArgsConstructor(access = AccessLevel.PRIVATE)
 public enum SagaRecoveryPolicy {
+    
     FORWARD("ForwardRecovery"), BACKWARD("BackwardRecovery");
     
     @Getter
