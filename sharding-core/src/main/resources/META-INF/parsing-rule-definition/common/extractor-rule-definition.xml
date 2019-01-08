@@ -16,5 +16,4 @@
     <extractor-rule id="orderBy" extractor-class="io.shardingsphere.core.parsing.antlr.extractor.impl.dql.OrderByExtractor" />
     <extractor-rule id="limit" extractor-class="io.shardingsphere.core.parsing.antlr.extractor.impl.dql.LimitExtractor" />
     <extractor-rule id="subQueryCondition" extractor-class="io.shardingsphere.core.parsing.antlr.extractor.impl.dql.SubQueryConditionExtractor" />
-    <extractor-rule id="deleteFromWhere" extractor-class="io.shardingsphere.core.parsing.antlr.extractor.impl.DeleteFromWhereExtractor" />
 </extractor-rule-definition>
