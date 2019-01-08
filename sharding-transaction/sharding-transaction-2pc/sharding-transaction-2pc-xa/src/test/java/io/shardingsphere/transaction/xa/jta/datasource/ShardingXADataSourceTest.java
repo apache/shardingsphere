@@ -17,12 +17,14 @@
 
 package io.shardingsphere.transaction.xa.jta.datasource;
 
+import com.alibaba.druid.pool.xa.DruidPooledXAConnection;
 import io.shardingsphere.core.constant.DatabaseType;
 import io.shardingsphere.core.constant.PoolType;
 import io.shardingsphere.transaction.xa.fixture.DataSourceUtils;
 import io.shardingsphere.transaction.xa.jta.connection.ShardingXAConnection;
 import lombok.SneakyThrows;
 import org.h2.jdbcx.JdbcDataSource;
+import org.h2.jdbcx.JdbcXAConnection;
 import org.junit.Test;
 
 import javax.sql.DataSource;
@@ -69,6 +71,8 @@ public class ShardingXADataSourceTest {
         ShardingXADataSource shardingXADataSource = new ShardingXADataSource(DatabaseType.H2, "ds1", dataSource);
         ShardingXAConnection actual = shardingXADataSource.getXAConnection();
         assertThat(actual.getConnection(), instanceOf(Connection.class));
+        assertThat(actual.getResourceName(), is("ds1"));
+        assertThat(actual.getDelegate(), instanceOf(DruidPooledXAConnection.class));
     }
     
     @Test
@@ -78,5 +82,7 @@ public class ShardingXADataSourceTest {
         ShardingXADataSource shardingXADataSource = new ShardingXADataSource(DatabaseType.H2, "ds1", dataSource);
         ShardingXAConnection actual = shardingXADataSource.getXAConnection();
         assertThat(actual.getConnection(), instanceOf(Connection.class));
+        assertThat(actual.getResourceName(), is("ds1"));
+        assertThat(actual.getDelegate(), instanceOf(JdbcXAConnection.class));
     }
 }

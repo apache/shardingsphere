@@ -18,6 +18,7 @@
 package io.shardingsphere.transaction.xa.jta.connection;
 
 import io.shardingsphere.core.constant.DatabaseType;
+import io.shardingsphere.transaction.xa.jta.connection.dialect.H2ShardingXAConnectionWrapper;
 import io.shardingsphere.transaction.xa.jta.connection.dialect.MySQLShardingXAConnectionWrapper;
 import lombok.RequiredArgsConstructor;
 
@@ -45,6 +46,8 @@ public class ShardingXAConnectionFactory {
         switch (databaseType) {
             case MySQL:
                 return new MySQLShardingXAConnectionWrapper().wrap(resourceName, xaDataSource, connection);
+            case H2:
+                return new H2ShardingXAConnectionWrapper().wrap(resourceName, xaDataSource, connection);
             default:
                 throw new UnsupportedOperationException(String.format("Cannot support database type: `%s`", databaseType));
         }
