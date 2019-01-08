@@ -15,15 +15,19 @@
  * </p>
  */
 
-package io.shardingsphere.transaction.saga.revert;
+package io.shardingsphere.transaction.saga.servicecomb;
 
 import org.junit.runner.RunWith;
 import org.junit.runners.Suite;
 
+import io.shardingsphere.transaction.saga.servicecomb.definition.SagaDefinitionBuilderTest;
+import io.shardingsphere.transaction.saga.servicecomb.transport.AllTransportTests;
+
 @RunWith(Suite.class)
 @Suite.SuiteClasses({
-        EmptyRevertEngineTest.class,
-        RevertEngineImplTest.class
+        AllTransportTests.class,
+        SagaDefinitionBuilderTest.class,
+        SagaExecutionComponentFactoryTest.class
 })
-public class AllRevertTest {
+public class AllServicecombTests {
 }

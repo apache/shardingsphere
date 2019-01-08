@@ -22,7 +22,7 @@ import io.shardingsphere.transaction.api.TransactionType;
 import io.shardingsphere.transaction.core.TransactionOperationType;
 import io.shardingsphere.transaction.core.context.SagaTransactionContext;
 import io.shardingsphere.transaction.core.manager.ShardingTransactionManager;
-import io.shardingsphere.transaction.saga.SagaConfiguration;
+import io.shardingsphere.transaction.saga.config.SagaConfiguration;
 import io.shardingsphere.transaction.saga.manager.SagaTransactionManager;
 import org.hamcrest.CoreMatchers;
 import org.junit.Before;

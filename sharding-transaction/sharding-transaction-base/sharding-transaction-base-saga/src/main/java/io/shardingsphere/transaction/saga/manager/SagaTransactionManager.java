@@ -21,13 +21,11 @@ import com.fasterxml.jackson.core.JsonProcessingException;
 import io.shardingsphere.core.executor.ShardingExecuteDataMap;
 import io.shardingsphere.transaction.core.context.SagaTransactionContext;
 import io.shardingsphere.transaction.core.manager.BASETransactionManager;
-import io.shardingsphere.transaction.saga.SagaConfiguration;
 import io.shardingsphere.transaction.saga.SagaTransaction;
-import io.shardingsphere.transaction.saga.servicecomb.SagaExecutionComponentHolder;
 import io.shardingsphere.transaction.saga.servicecomb.transport.ShardingTransportFactory;
+import lombok.Getter;
 
 import javax.transaction.Status;
-import java.util.HashMap;
 import java.util.Map;
 
 /**
@@ -43,14 +41,13 @@ public final class SagaTransactionManager implements BASETransactionManager<Saga
     private static final SagaTransactionManager INSTANCE = new SagaTransactionManager();
     
     private static final ThreadLocal<SagaTransaction> TRANSACTIONS = new ThreadLocal<>();
-
-    private final SagaExecutionComponentHolder sagaExecutionComponentHolder = new SagaExecutionComponentHolder();
     
-    private final SagaConfiguration sagaConfiguration = new SagaConfiguration();
+    @Getter
+    private final SagaResourceManager resourceManager = new SagaResourceManager();
     
     @Override
     public void begin(final SagaTransactionContext transactionContext) {
-        SagaTransaction transaction = new SagaTransaction(sagaConfiguration, transactionContext.getDataSourceMap());
+        SagaTransaction transaction = new SagaTransaction(resourceManager.getSagaConfiguration(), transactionContext.getDataSourceMap());
         initExecuteDataMap(transaction);
         TRANSACTIONS.set(transaction);
         ShardingTransportFactory.getInstance().cacheTransport(transaction);
@@ -59,7 +56,7 @@ public final class SagaTransactionManager implements BASETransactionManager<Saga
     @Override
     public void commit(final SagaTransactionContext transactionContext) {
         if (null != TRANSACTIONS.get() && TRANSACTIONS.get().isContainException()) {
-            doComponent();
+            submitToActuator();
         }
         cleanTransaction();
     }
@@ -67,7 +64,7 @@ public final class SagaTransactionManager implements BASETransactionManager<Saga
     @Override
     public void rollback(final SagaTransactionContext transactionContext) {
         if (null != TRANSACTIONS.get()) {
-            doComponent();
+            submitToActuator();
         }
         cleanTransaction();
     }
@@ -92,15 +89,6 @@ public final class SagaTransactionManager implements BASETransactionManager<Saga
     }
     
     /**
-     * Remove saga execution component from caches if exist.
-     *
-     * @param sagaConfiguration saga configuration
-     */
-    public void removeSagaExecutionComponent(final SagaConfiguration sagaConfiguration) {
-        sagaExecutionComponentHolder.removeSagaExecutionComponent(sagaConfiguration);
-    }
-    
-    /**
      * Get saga transaction object for current thread.
      *
      * @return saga transaction object
@@ -110,22 +98,21 @@ public final class SagaTransactionManager implements BASETransactionManager<Saga
     }
     
     private void initExecuteDataMap(final SagaTransaction transaction) {
-        Map<String, Object> sagaExecuteDataMap = new HashMap<>(1);
+        Map<String, Object> sagaExecuteDataMap = ShardingExecuteDataMap.getDataMap();
         sagaExecuteDataMap.put(TRANSACTION_KEY, transaction);
-        ShardingExecuteDataMap.setDataMap(sagaExecuteDataMap);
     }
     
-    private void doComponent() {
+    private void submitToActuator() {
         try {
             String json = TRANSACTIONS.get().getSagaDefinitionBuilder().build();
-            sagaExecutionComponentHolder.getSagaExecutionComponent(sagaConfiguration).run(json);
+            resourceManager.getSagaExecutionComponent().run(json);
         } catch (JsonProcessingException ignored) {
         }
     }
     
     private void cleanTransaction() {
         ShardingTransportFactory.getInstance().remove();
-        ShardingExecuteDataMap.getDataMap().clear();
+        ShardingExecuteDataMap.getDataMap().remove(TRANSACTION_KEY);
         TRANSACTIONS.remove();
     }
 }

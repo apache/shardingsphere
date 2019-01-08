@@ -17,24 +17,26 @@
 
 package io.shardingsphere.transaction.saga;
 
+import io.shardingsphere.transaction.saga.config.SagaConfigurationLoaderTest;
 import io.shardingsphere.transaction.saga.hook.AllHookTests;
 import io.shardingsphere.transaction.saga.handler.AllHandlerTests;
-import io.shardingsphere.transaction.saga.manager.SagaTransactionManagerTest;
-import io.shardingsphere.transaction.saga.servicecomb.AllServicecombTest;
-import io.shardingsphere.transaction.saga.revert.AllRevertTest;
+import io.shardingsphere.transaction.saga.manager.AllManagerTests;
+import io.shardingsphere.transaction.saga.servicecomb.AllServicecombTests;
+import io.shardingsphere.transaction.saga.revert.AllRevertTests;
 import org.junit.runner.RunWith;
 import org.junit.runners.Suite;
 import org.junit.runners.Suite.SuiteClasses;
 
 @RunWith(Suite.class)
 @SuiteClasses({
-        SagaTransactionManagerTest.class,
+        SagaConfigurationLoaderTest.class,
         SagaTransactionTest.class,
         SagaSubTransactionTest.class,
         AllHandlerTests.class,
         AllHookTests.class,
-        AllServicecombTest.class,
-        AllRevertTest.class
+        AllManagerTests.class,
+        AllRevertTests.class,
+        AllServicecombTests.class
 })
 public final class AllTests {
 }

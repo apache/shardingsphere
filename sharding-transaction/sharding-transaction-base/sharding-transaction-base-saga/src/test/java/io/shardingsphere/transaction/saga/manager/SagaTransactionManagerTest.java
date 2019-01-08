@@ -20,9 +20,8 @@ package io.shardingsphere.transaction.saga.manager;
 import io.shardingsphere.core.executor.ShardingExecuteDataMap;
 import io.shardingsphere.transaction.core.TransactionOperationType;
 import io.shardingsphere.transaction.core.context.SagaTransactionContext;
-import io.shardingsphere.transaction.saga.SagaConfiguration;
+import io.shardingsphere.transaction.saga.config.SagaConfiguration;
 import io.shardingsphere.transaction.saga.SagaTransaction;
-import io.shardingsphere.transaction.saga.servicecomb.SagaExecutionComponentHolder;
 import io.shardingsphere.transaction.saga.servicecomb.transport.ShardingSQLTransport;
 import io.shardingsphere.transaction.saga.servicecomb.transport.ShardingTransportFactory;
 import org.apache.servicecomb.saga.core.application.SagaExecutionComponent;
@@ -40,6 +39,7 @@ import java.util.Collections;
 import static org.hamcrest.CoreMatchers.instanceOf;
 import static org.hamcrest.CoreMatchers.is;
 import static org.junit.Assert.assertEquals;
+import static org.junit.Assert.assertNotNull;
 import static org.junit.Assert.assertNull;
 import static org.junit.Assert.assertThat;
 import static org.junit.Assert.assertTrue;
@@ -52,7 +52,7 @@ import static org.mockito.Mockito.when;
 public final class SagaTransactionManagerTest {
     
     @Mock
-    private SagaExecutionComponentHolder sagaExecutionComponentHolder;
+    private SagaResourceManager resourceManager;
     
     @Mock
     private SagaExecutionComponent sagaExecutionComponent;
@@ -61,22 +61,22 @@ public final class SagaTransactionManagerTest {
     
     private final SagaTransactionManager transactionManager = SagaTransactionManager.getInstance();
     
-    private static SagaConfiguration config = new SagaConfiguration();
+    private final SagaConfiguration config = new SagaConfiguration();
     
     @Before
     public void setUp() throws NoSuchFieldException, IllegalAccessException, NoSuchMethodException {
-        Field sagaExecutionComponentHolderField = SagaTransactionManager.class.getDeclaredField("sagaExecutionComponentHolder");
-        sagaExecutionComponentHolderField.setAccessible(true);
-        sagaExecutionComponentHolderField.set(transactionManager, sagaExecutionComponentHolder);
-        Field sagaConfigurationField = SagaTransactionManager.class.getDeclaredField("sagaConfiguration");
-        sagaConfigurationField.setAccessible(true);
-        sagaConfigurationField.set(transactionManager, config);
-        when(sagaExecutionComponentHolder.getSagaExecutionComponent(config)).thenReturn(sagaExecutionComponent);
+        when(resourceManager.getSagaConfiguration()).thenReturn(config);
+        when(resourceManager.getSagaExecutionComponent()).thenReturn(sagaExecutionComponent);
+        Field resourceManagerField = SagaTransactionManager.class.getDeclaredField("resourceManager");
+        resourceManagerField.setAccessible(true);
+        resourceManagerField.set(transactionManager, resourceManager);
     }
     
     @Test
     public void assertBegin() {
-        transactionManager.begin(new SagaTransactionContext(TransactionOperationType.BEGIN,Collections.<String, DataSource>emptyMap()));
+        transactionManager.begin(new SagaTransactionContext(TransactionOperationType.BEGIN, Collections.<String, DataSource>emptyMap()));
+        verify(resourceManager).getSagaConfiguration();
+        assertNotNull(transactionManager.getTransaction());
         assertThat(36 == transactionManager.getTransactionId().length(), is(true));
         assertTrue(ShardingExecuteDataMap.getDataMap().containsKey(transactionKey));
         assertThat(ShardingExecuteDataMap.getDataMap().get(transactionKey), instanceOf(SagaTransaction.class));
@@ -94,7 +94,7 @@ public final class SagaTransactionManagerTest {
     
     @Test
     public void assertCommitWithBegin() throws NoSuchFieldException, IllegalAccessException {
-        mockWithourException();
+        mockWithoutException();
         mockWithException();
     }
     
@@ -109,8 +109,9 @@ public final class SagaTransactionManagerTest {
     
     @Test
     public void assertRollbackWithBegin() {
-        transactionManager.begin(new SagaTransactionContext(TransactionOperationType.BEGIN,Collections.<String, DataSource>emptyMap()));
+        transactionManager.begin(new SagaTransactionContext(TransactionOperationType.BEGIN, Collections.<String, DataSource>emptyMap()));
         transactionManager.rollback(new SagaTransactionContext(TransactionOperationType.ROLLBACK, null));
+        verify(resourceManager).getSagaExecutionComponent();
         verify(sagaExecutionComponent).run(anyString());
         assertNull(transactionManager.getTransactionId());
         assertEquals(ShardingExecuteDataMap.getDataMap().size(), 0);
@@ -119,20 +120,14 @@ public final class SagaTransactionManagerTest {
     
     @Test
     public void assertGetStatus() {
-        transactionManager.begin(new SagaTransactionContext(TransactionOperationType.BEGIN,Collections.<String, DataSource>emptyMap()));
+        transactionManager.begin(new SagaTransactionContext(TransactionOperationType.BEGIN, Collections.<String, DataSource>emptyMap()));
         assertThat(transactionManager.getStatus(), is(Status.STATUS_ACTIVE));
         transactionManager.rollback(new SagaTransactionContext(TransactionOperationType.ROLLBACK, null));
         assertThat(transactionManager.getStatus(), is(Status.STATUS_NO_TRANSACTION));
     }
     
-    @Test
-    public void assertRemoveSagaExecutionComponent() {
-        transactionManager.removeSagaExecutionComponent(config);
-        verify(sagaExecutionComponentHolder).removeSagaExecutionComponent(config);
-    }
-    
-    private void mockWithourException() {
-        transactionManager.begin(new SagaTransactionContext(TransactionOperationType.BEGIN,Collections.<String, DataSource>emptyMap()));
+    private void mockWithoutException() {
+        transactionManager.begin(new SagaTransactionContext(TransactionOperationType.BEGIN, Collections.<String, DataSource>emptyMap()));
         transactionManager.commit(new SagaTransactionContext(TransactionOperationType.COMMIT, null));
         verify(sagaExecutionComponent, never()).run(anyString());
         assertNull(transactionManager.getTransactionId());
@@ -141,11 +136,12 @@ public final class SagaTransactionManagerTest {
     }
     
     private void mockWithException() throws NoSuchFieldException, IllegalAccessException {
-        transactionManager.begin(new SagaTransactionContext(TransactionOperationType.BEGIN,Collections.<String, DataSource>emptyMap()));
+        transactionManager.begin(new SagaTransactionContext(TransactionOperationType.BEGIN, Collections.<String, DataSource>emptyMap()));
         Field containExceptionField = SagaTransaction.class.getDeclaredField("containException");
         containExceptionField.setAccessible(true);
         containExceptionField.set(ShardingExecuteDataMap.getDataMap().get(transactionKey), true);
         transactionManager.commit(new SagaTransactionContext(TransactionOperationType.COMMIT, null));
+        verify(resourceManager).getSagaExecutionComponent();
         verify(sagaExecutionComponent).run(anyString());
         assertNull(transactionManager.getTransactionId());
         assertEquals(ShardingExecuteDataMap.getDataMap().size(), 0);

@@ -15,19 +15,16 @@
  * </p>
  */
 
-package io.shardingsphere.transaction.saga.servicecomb;
+package io.shardingsphere.transaction.saga.manager;
 
 import org.junit.runner.RunWith;
 import org.junit.runners.Suite;
-
-import io.shardingsphere.transaction.saga.servicecomb.definition.SagaDefinitionBuilderTest;
-import io.shardingsphere.transaction.saga.servicecomb.transport.AllTransportTests;
+import org.junit.runners.Suite.SuiteClasses;
 
 @RunWith(Suite.class)
-@Suite.SuiteClasses({
-        AllTransportTests.class,
-        SagaDefinitionBuilderTest.class,
-        SagaExecutionComponentHolderTest.class
+@SuiteClasses({
+        SagaResourceManagerTest.class,
+        SagaTransactionManagerTest.class
 })
-public class AllServicecombTest {
+public class AllManagerTests {
 }
