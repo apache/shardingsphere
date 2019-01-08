@@ -100,7 +100,7 @@ public final class TableMetaDataLoader {
     }
     
     private Map<String, List<DataNode>> getDataNodeGroups(final String logicTableName, final ShardingRule shardingRule) {
-        Map<String, List<DataNode>> result = shardingRule.getTableRuleByLogicTableName(logicTableName).getDataNodeGroups();
+        Map<String, List<DataNode>> result = shardingRule.getTableRule(logicTableName).getDataNodeGroups();
         if (isCheckingMetaData) {
             return result;
         }

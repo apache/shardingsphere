@@ -101,7 +101,7 @@ public class TableReferencesClauseParser implements SQLClauseParser {
         if (Strings.isNullOrEmpty(tableName)) {
             return;
         }
-        if (isSingleTableOnly || shardingRule.findTableRuleByLogicTable(tableName).isPresent()
+        if (isSingleTableOnly || shardingRule.findTableRule(tableName).isPresent()
                 || shardingRule.isBroadcastTable(tableName) || shardingRule.findBindingTableRule(tableName).isPresent()
                 || shardingRule.getShardingDataSourceNames().getDataSourceNames().contains(shardingRule.getShardingDataSourceNames().getDefaultDataSourceName())) {
             sqlStatement.addSQLToken(new TableToken(beginPosition, skippedSchemaNameLength, literals));

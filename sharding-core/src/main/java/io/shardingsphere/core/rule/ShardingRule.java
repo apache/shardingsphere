@@ -101,7 +101,7 @@ public class ShardingRule {
     private BindingTableRule createBindingTableRule(final String bindingTableGroup) {
         List<TableRule> tableRules = new LinkedList<>();
         for (String each : Splitter.on(",").trimResults().splitToList(bindingTableGroup)) {
-            tableRules.add(getTableRuleByLogicTableName(each));
+            tableRules.add(getTableRule(each));
         }
         return new BindingTableRule(tableRules);
     }
@@ -123,14 +123,14 @@ public class ShardingRule {
     }
     
     /**
-     * Find table rule though logic table name.
+     * Find table rule.
      *
      * @param logicTableName logic table name
      * @return table rule
      */
-    public Optional<TableRule> findTableRuleByLogicTable(final String logicTableName) {
+    public Optional<TableRule> findTableRule(final String logicTableName) {
         for (TableRule each : tableRules) {
-            if (each.getLogicTable().equals(logicTableName.toLowerCase())) {
+            if (each.getLogicTable().equalsIgnoreCase(logicTableName)) {
                 return Optional.of(each);
             }
         }
@@ -138,7 +138,7 @@ public class ShardingRule {
     }
     
     /**
-     * Find table rule though actual table name.
+     * Find table rule via actual table name.
      *
      * @param actualTableName actual table name
      * @return table rule
@@ -153,13 +153,13 @@ public class ShardingRule {
     }
     
     /**
-     * Find table rule though logic table name.
+     * Get table rule though logic table name.
      *
      * @param logicTableName logic table name
      * @return table rule
      */
-    public TableRule getTableRuleByLogicTableName(final String logicTableName) {
-        Optional<TableRule> tableRule = findTableRuleByLogicTable(logicTableName.toLowerCase());
+    public TableRule getTableRule(final String logicTableName) {
+        Optional<TableRule> tableRule = findTableRule(logicTableName);
         if (tableRule.isPresent()) {
             return tableRule.get();
         }
@@ -201,21 +201,6 @@ public class ShardingRule {
     }
     
     /**
-     * Judge logic table is belong to broadcast tables.
-     *
-     * @param logicTableName logic table name
-     * @return logic table is belong to broadcast tables or not
-     */
-    public boolean isBroadcastTable(final String logicTableName) {
-        for (String each : broadcastTables) {
-            if (each.equalsIgnoreCase(logicTableName)) {
-                return true;
-            }
-        }
-        return false;
-    }
-    
-    /**
      * Judge logic tables is all belong to broadcast tables.
      *
      * @param logicTables names of logic tables
@@ -231,6 +216,21 @@ public class ShardingRule {
             }
         }
         return true;
+    }
+    
+    /**
+     * Judge logic table is belong to broadcast tables.
+     *
+     * @param logicTableName logic table name
+     * @return logic table is belong to broadcast tables or not
+     */
+    public boolean isBroadcastTable(final String logicTableName) {
+        for (String each : broadcastTables) {
+            if (each.equalsIgnoreCase(logicTableName)) {
+                return true;
+            }
+        }
+        return false;
     }
     
     /**
@@ -260,7 +260,7 @@ public class ShardingRule {
      */
     public boolean isAllInDefaultDataSource(final Collection<String> logicTableNames) {
         for (String each : logicTableNames) {
-            if (findTableRuleByLogicTable(each).isPresent() || isBroadcastTable(each)) {
+            if (findTableRule(each).isPresent() || isBroadcastTable(each)) {
                 return false;
             }
         }
@@ -335,7 +335,7 @@ public class ShardingRule {
      * @return generated key
      */
     public Comparable<?> generateKey(final String logicTableName) {
-        Optional<TableRule> tableRule = findTableRuleByLogicTable(logicTableName);
+        Optional<TableRule> tableRule = findTableRule(logicTableName);
         if (!tableRule.isPresent()) {
             throw new ShardingConfigurationException("Cannot find strategy for generate keys.");
         }
@@ -378,7 +378,7 @@ public class ShardingRule {
      * @return data node
      */
     public DataNode findDataNode(final String dataSourceName, final String logicTableName) {
-        TableRule tableRule = getTableRuleByLogicTableName(logicTableName);
+        TableRule tableRule = getTableRule(logicTableName);
         for (DataNode each : tableRule.getActualDataNodes()) {
             if (shardingDataSourceNames.getDataSourceNames().contains(each.getDataSourceName()) && (null == dataSourceName || each.getDataSourceName().equals(dataSourceName))) {
                 return each;
@@ -399,7 +399,7 @@ public class ShardingRule {
      * @return is logic index or not
      */
     public boolean isLogicIndex(final String logicIndexName, final String logicTableName) {
-        return logicIndexName.equals(getTableRuleByLogicTableName(logicTableName).getLogicIndex());
+        return logicIndexName.equals(getTableRule(logicTableName).getLogicIndex());
     }
     
     /**
@@ -465,7 +465,7 @@ public class ShardingRule {
      * @return contains table in sharding rule or not
      */
     public boolean contains(final String tableName) {
-        return findTableRuleByLogicTable(tableName).isPresent() || findBindingTableRule(tableName).isPresent() || isBroadcastTable(tableName);
+        return findTableRule(tableName).isPresent() || findBindingTableRule(tableName).isPresent() || isBroadcastTable(tableName);
     }
     
     /**
@@ -477,7 +477,7 @@ public class ShardingRule {
     public Collection<String> getShardingLogicTableNames(final Collection<String> logicTableNames) {
         Collection<String> result = new LinkedList<>();
         for (String each : logicTableNames) {
-            Optional<TableRule> tableRule = findTableRuleByLogicTable(each);
+            Optional<TableRule> tableRule = findTableRule(each);
             if (tableRule.isPresent()) {
                 result.add(each);
             }

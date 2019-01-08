@@ -131,7 +131,7 @@ public final class ParsingSQLRouter implements ShardingRouter {
             return Optional.fromNullable(result);
         }
         String logicTableName = insertStatement.getTables().getSingleTableName();
-        Optional<TableRule> tableRule = shardingRule.findTableRuleByLogicTable(logicTableName);
+        Optional<TableRule> tableRule = shardingRule.findTableRule(logicTableName);
         if (!tableRule.isPresent()) {
             return Optional.absent();
         }
