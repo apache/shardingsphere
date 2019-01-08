@@ -140,6 +140,15 @@ public class XAShardingTransactionHandlerTest {
         verify(transaction).enlistResource(any(XAResource.class));
     }
     
+    @Test
+    public void assertClearTransactionalDataSource() {
+        setCachedShardingXADataSourceMap("ds1");
+        xaShardingTransactionHandler.clearTransactionalResource();
+        Map<String, ShardingXADataSource> cachedShardingXADataSourceMap = getCachedShardingXADataSourceMap();
+        verify(xaTransactionManager).removeRecoveryResource(anyString(), any(XADataSource.class));
+        assertThat(cachedShardingXADataSourceMap.size(), is(0));
+    }
+    
     @SneakyThrows
     @SuppressWarnings("unchecked")
     private Map<String, ShardingXADataSource> getCachedShardingXADataSourceMap() {
@@ -159,11 +168,14 @@ public class XAShardingTransactionHandlerTest {
     private Map<String, ShardingXADataSource> createMockShardingXADataSourceMap(final String datasourceName) {
         ShardingXADataSource shardingXADataSource = mock(ShardingXADataSource.class);
         ShardingXAConnection shardingXAConnection = mock(ShardingXAConnection.class);
+        XADataSource xaDataSource = mock(XADataSource.class);
         XAResource xaResource = mock(XAResource.class);
         Connection connection = mock(Connection.class);
         when(shardingXAConnection.getConnection()).thenReturn(connection);
         when(shardingXAConnection.getXAResource()).thenReturn(xaResource);
         when(shardingXADataSource.getXAConnection()).thenReturn(shardingXAConnection);
+        when(shardingXADataSource.getResourceName()).thenReturn(datasourceName);
+        when(shardingXADataSource.getXaDataSource()).thenReturn(xaDataSource);
         Map<String, ShardingXADataSource> result = new HashMap<>();
         result.put(datasourceName, shardingXADataSource);
         return result;

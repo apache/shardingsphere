@@ -49,8 +49,6 @@ public final class XAShardingTransactionHandler extends ShardingTransactionHandl
     
     private final Map<String, ShardingXADataSource> cachedShardingXADataSourceMap = new HashMap<>();
     
-    private DatabaseType databaseType;
-    
     private final XATransactionManager xaTransactionManager = XATransactionManagerSPILoader.getInstance().getTransactionManager();
     
     @Override
@@ -65,7 +63,6 @@ public final class XAShardingTransactionHandler extends ShardingTransactionHandl
     
     @Override
     public void registerTransactionalResource(final DatabaseType databaseType, final Map<String, DataSource> dataSourceMap) {
-        this.databaseType = databaseType;
         for (Map.Entry<String, DataSource> entry : dataSourceMap.entrySet()) {
             DataSource dataSource = entry.getValue();
             if (dataSource instanceof AtomikosDataSourceBean) {
