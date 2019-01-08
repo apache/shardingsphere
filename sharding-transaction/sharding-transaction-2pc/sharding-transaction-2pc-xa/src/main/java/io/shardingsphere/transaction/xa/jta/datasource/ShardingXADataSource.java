@@ -26,7 +26,6 @@ import io.shardingsphere.transaction.xa.convert.swap.DataSourceSwapperRegistry;
 import io.shardingsphere.transaction.xa.jta.connection.ShardingXAConnection;
 import io.shardingsphere.transaction.xa.jta.connection.ShardingXAConnectionFactory;
 import lombok.Getter;
-import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 
 import javax.sql.DataSource;
@@ -44,7 +43,6 @@ import java.util.logging.Logger;
  *
  * @author zhaojun
  */
-@RequiredArgsConstructor
 @Getter
 @Slf4j
 public final class ShardingXADataSource implements XADataSource {
