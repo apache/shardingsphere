@@ -65,7 +65,9 @@ public final class InsertOptimizeEngineTest {
     
     private InsertStatement insertStatementWithoutValuesWithoutPlaceHolder;
     
-    private List<Object> parameters;
+    private List<Object> parametersWithValues;
+    
+    private List<Object> parametersWithoutValues;
     
     @Before
     public void setUp() throws IOException {
@@ -76,11 +78,11 @@ public final class InsertOptimizeEngineTest {
         initializeWithValuesWithPlaceHolder();
         initializeInsertWithValuesWithoutPlaceHolder();
         initializeInsertWithoutValuesWithoutPlaceHolder();
-        parameters = new ArrayList<>(4);
-        parameters.add(10);
-        parameters.add("init");
-        parameters.add(11);
-        parameters.add("init");
+        parametersWithValues = new ArrayList<>(4);
+        parametersWithValues.add(10);
+        parametersWithValues.add("init");
+        parametersWithValues.add(11);
+        parametersWithValues.add("init");
     }
     
     private void initializeWithValuesWithPlaceHolder() {
@@ -116,6 +118,24 @@ public final class InsertOptimizeEngineTest {
         insertStatementWithValuesWithoutPlaceHolder.getInsertValues().getInsertValues().add(new InsertValue(DefaultKeyword.VALUES, "(12,'a')", 0));
     }
     
+    private void initializeInsertWithoutValuesWithPlaceHolder() {
+        insertStatementWithoutValuesWithPlaceHolder = new InsertStatement();
+        insertStatementWithoutValuesWithPlaceHolder.getTables().add(new Table("t_order", Optional.<String>absent()));
+        insertStatementWithoutValuesWithPlaceHolder.setParametersIndex(0);
+        insertStatementWithoutValuesWithPlaceHolder.setInsertValuesListLastPosition(47);
+        insertStatementWithoutValuesWithPlaceHolder.setColumnsListLastPosition(19);
+        insertStatementWithoutValuesWithPlaceHolder.setGenerateKeyColumnIndex(-1);
+        insertStatementWithoutValuesWithPlaceHolder.addSQLToken(new TableToken(12, 0, "t_order"));
+        insertStatementWithoutValuesWithPlaceHolder.addSQLToken(new InsertValuesToken(24, "t_order"));
+        insertStatementWithoutValuesWithPlaceHolder.getColumns().add(new Column("order_id", "t_order"));
+        insertStatementWithoutValuesWithPlaceHolder.getColumns().add(new Column("status", "t_order"));
+        insertStatementWithoutValuesWithPlaceHolder.getColumns().add(new Column("user_id", "t_order"));
+        AndCondition andCondition = new AndCondition();
+        andCondition.getConditions().add(new Condition(new Column("user_id", "t_order"), new SQLNumberExpression(12)));
+        insertStatementWithoutValuesWithPlaceHolder.getConditions().getOrCondition().getAndConditions().add(andCondition);
+        insertStatementWithoutValuesWithPlaceHolder.getInsertValues().getInsertValues().add(new InsertValue(DefaultKeyword.SET, "user_id = ?, status = ?", 2));
+    }
+    
     private void initializeInsertWithoutValuesWithoutPlaceHolder() {
         insertStatementWithoutValuesWithoutPlaceHolder = new InsertStatement();
         insertStatementWithoutValuesWithoutPlaceHolder.getTables().add(new Table("t_order", Optional.<String>absent()));
@@ -139,7 +159,7 @@ public final class InsertOptimizeEngineTest {
         GeneratedKey generatedKey = new GeneratedKey(new Column("order_id", "t_order"));
         generatedKey.getGeneratedKeys().add(1);
         generatedKey.getGeneratedKeys().add(2);
-        ShardingConditions actual = new InsertOptimizeEngine(shardingRule, insertStatementWithValuesWithPlaceHolder, parameters, generatedKey).optimize();
+        ShardingConditions actual = new InsertOptimizeEngine(shardingRule, insertStatementWithValuesWithPlaceHolder, parametersWithValues, generatedKey).optimize();
         assertFalse(actual.isAlwaysFalse());
         assertThat(actual.getShardingConditions().size(), is(2));
         assertThat(((InsertShardingCondition) actual.getShardingConditions().get(0)).getParameters().size(), is(3));
@@ -163,7 +183,7 @@ public final class InsertOptimizeEngineTest {
     @Test
     public void assertOptimizeWithValuesWithPlaceHolderWithoutGeneratedKey() {
         insertStatementWithValuesWithPlaceHolder.setGenerateKeyColumnIndex(1);
-        ShardingConditions actual = new InsertOptimizeEngine(shardingRule, insertStatementWithValuesWithPlaceHolder, parameters, null).optimize();
+        ShardingConditions actual = new InsertOptimizeEngine(shardingRule, insertStatementWithValuesWithPlaceHolder, parametersWithValues, null).optimize();
         assertFalse(actual.isAlwaysFalse());
         assertThat(actual.getShardingConditions().size(), is(2));
         assertThat(((InsertShardingCondition) actual.getShardingConditions().get(0)).getParameters().size(), is(2));
