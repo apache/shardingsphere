@@ -78,6 +78,14 @@ public final class InsertOptimizeEngine implements OptimizeEngine {
         return new ShardingConditions(result);
     }
     
+    private Iterator<Comparable<?>> createGeneratedKeys() {
+        return isNeededToAppendGeneratedKey() ? generatedKey.getGeneratedKeys().iterator() : null;
+    }
+    
+    private boolean isNeededToAppendGeneratedKey() {
+        return -1 == insertStatement.getGenerateKeyColumnIndex() && shardingRule.getGenerateKeyColumn(insertStatement.getTables().getSingleTableName()).isPresent();
+    }
+    
     private List<Object> getCurrentParameters(final int beginCount, final int increment) {
         List<Object> result = new ArrayList<>(increment + 1);
         result.addAll(parameters.subList(beginCount, beginCount + increment));
@@ -126,14 +134,6 @@ public final class InsertOptimizeEngine implements OptimizeEngine {
     private String getExpressionWithValues(final InsertValue insertValue, final Comparable<?> currentGeneratedKey, final boolean isStringTypeOfGeneratedKey) {
         return isStringTypeOfGeneratedKey ? insertValue.getExpression().substring(0, insertValue.getExpression().lastIndexOf(")")) + ", " + '"' + currentGeneratedKey + '"' + ")" 
                 : insertValue.getExpression().substring(0, insertValue.getExpression().lastIndexOf(")")) + ", " + currentGeneratedKey + ")";
-    }
-    
-    private Iterator<Comparable<?>> createGeneratedKeys() {
-        return isNeededToAppendGeneratedKey() ? generatedKey.getGeneratedKeys().iterator() : null;
-    }
-    
-    private boolean isNeededToAppendGeneratedKey() {
-        return -1 == insertStatement.getGenerateKeyColumnIndex() && shardingRule.getGenerateKeyColumn(insertStatement.getTables().getSingleTableName()).isPresent();
     }
     
     private ListShardingValue getShardingCondition(final Column column, final Comparable<?> value) {
