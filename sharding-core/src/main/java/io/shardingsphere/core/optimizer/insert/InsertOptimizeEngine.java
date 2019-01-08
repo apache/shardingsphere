@@ -87,21 +87,21 @@ public final class InsertOptimizeEngine implements OptimizeEngine {
         Comparable<?> currentGeneratedKey = generatedKeys.next();
         if (parameters.isEmpty()) {
             boolean isStringTypeOfGeneratedKey = currentGeneratedKey.getClass() == String.class;
-            expression = getExpression(insertValue, generateKeyColumn, currentGeneratedKey, isStringTypeOfGeneratedKey);
+            expression = getExpression(insertValue, currentGeneratedKey, generateKeyColumn, isStringTypeOfGeneratedKey);
         } else {
-            expression = getExpression(insertValue, currentParameters, generateKeyColumn, currentGeneratedKey);
+            expression = getExpression(insertValue, currentGeneratedKey, generateKeyColumn, currentParameters);
         }
         insertShardingCondition = new InsertShardingCondition(expression, currentParameters);
         insertShardingCondition.getShardingValues().add(getShardingCondition(generateKeyColumn, currentGeneratedKey));
         return insertShardingCondition;
     }
     
-    private String getExpression(final InsertValue insertValue, final List<Object> currentParameters, final Column generateKeyColumn, final Comparable<?> currentGeneratedKey) {
+    private String getExpression(final InsertValue insertValue, final Comparable<?> currentGeneratedKey, final Column generateKeyColumn, final List<Object> currentParameters) {
         return DefaultKeyword.VALUES.equals(insertValue.getType()) ? getExpressionWithValues(insertValue, currentGeneratedKey, currentParameters) 
                 : getExpressionWithoutValues(insertValue, currentGeneratedKey, generateKeyColumn, currentParameters);
     }
     
-    private String getExpression(final InsertValue insertValue, final Column generateKeyColumn, final Comparable<?> currentGeneratedKey, final boolean isStringTypeOfGeneratedKey) {
+    private String getExpression(final InsertValue insertValue, final Comparable<?> currentGeneratedKey, final Column generateKeyColumn, final boolean isStringTypeOfGeneratedKey) {
         return DefaultKeyword.VALUES.equals(insertValue.getType()) ? getExpressionWithValues(insertValue, currentGeneratedKey, isStringTypeOfGeneratedKey) 
                 : getExpressionWithoutValues(insertValue, currentGeneratedKey, generateKeyColumn, isStringTypeOfGeneratedKey);
     }
