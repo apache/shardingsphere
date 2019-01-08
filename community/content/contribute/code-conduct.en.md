@@ -31,6 +31,7 @@ chapter = true
  - Have constants on the left and variable on the right in `=` and `equals` conditional expressions; Have variable on the left and constants on the right in `greater than` and `less than` conditional expressions.
  - Design class as `final` class expect abstract class for extend.
  - Make nested loop structures a new method.
+ - Order of members definition and parameters should be consistent during classes and methods.
  - Use guard clauses in priority.
  - Minimize the access permission for classes and methods.
  - Private method should be just next to the method in which it is used; writing private methods should be in the same as the appearance order of private methods.
