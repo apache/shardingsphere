@@ -203,14 +203,14 @@ public class ShardingRule {
     /**
      * Judge logic tables is all belong to broadcast tables.
      *
-     * @param logicTables names of logic tables
+     * @param logicTableNames  logic table names
      * @return logic tables is all belong to broadcast tables or not
      */
-    public boolean isAllBroadcastTables(final Collection<String> logicTables) {
-        if (logicTables.isEmpty()) {
+    public boolean isAllBroadcastTables(final Collection<String> logicTableNames) {
+        if (logicTableNames.isEmpty()) {
             return false;
         }
-        for (String each : logicTables) {
+        for (String each : logicTableNames) {
             if (!isBroadcastTable(each)) {
                 return false;
             }

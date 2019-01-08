@@ -42,9 +42,10 @@ import java.util.Collections;
 import static org.hamcrest.CoreMatchers.instanceOf;
 import static org.hamcrest.CoreMatchers.is;
 import static org.junit.Assert.assertFalse;
-import static org.junit.Assert.assertNotNull;
 import static org.junit.Assert.assertThat;
 import static org.junit.Assert.assertTrue;
+import static org.mockito.Mockito.mock;
+import static org.mockito.Mockito.when;
 
 public final class ShardingRuleTest {
     
@@ -126,63 +127,26 @@ public final class ShardingRuleTest {
     
     @Test
     public void assertGetDatabaseShardingStrategyFromTableRule() {
-        ShardingRuleConfiguration shardingRuleConfig = new ShardingRuleConfiguration();
-        TableRuleConfiguration tableRuleConfig = createTableRuleConfigWithDatabaseShardingStrategy(new NoneShardingStrategyConfiguration());
-        shardingRuleConfig.getTableRuleConfigs().add(tableRuleConfig);
-        ShardingRule actual = new ShardingRule(shardingRuleConfig, createDataSourceNames());
-        assertThat(actual.getDatabaseShardingStrategy(actual.getTableRule("logic_Table")), instanceOf(NoneShardingStrategy.class));
+        TableRule tableRule = mock(TableRule.class);
+        when(tableRule.getDatabaseShardingStrategy()).thenReturn(new NoneShardingStrategy());
+        assertThat(createMaximumShardingRule().getDatabaseShardingStrategy(tableRule), instanceOf(NoneShardingStrategy.class));
     }
     
     @Test
     public void assertGetDatabaseShardingStrategyFromDefault() {
-        ShardingRule actual = createMaximumShardingRule();
-        assertThat(actual.getDatabaseShardingStrategy(actual.getTableRule("logic_Table")), instanceOf(InlineShardingStrategy.class));
-    }
-    
-    @Test
-    public void assertGetDatabaseShardingStrategyWithDefaultDataSource() {
-        ShardingRuleConfiguration shardingRuleConfig = new ShardingRuleConfiguration();
-        shardingRuleConfig.setDefaultDataSourceName("ds_0");
-        TableRuleConfiguration tableRuleConfig = createTableRuleConfigWithDatabaseShardingStrategy(new NoneShardingStrategyConfiguration());
-        shardingRuleConfig.getTableRuleConfigs().add(tableRuleConfig);
-        ShardingRule actual = new ShardingRule(shardingRuleConfig, createDataSourceNames());
-        assertThat(actual.getDatabaseShardingStrategy(actual.getTableRule("other_Table")), instanceOf(NoneShardingStrategy.class));
-    }
-    
-    @Test(expected = ShardingConfigurationException.class)
-    public void assertGetNoDatabaseShardingStrategy() {
-        ShardingRuleConfiguration shardingRuleConfig = new ShardingRuleConfiguration();
-        TableRuleConfiguration tableRuleConfig = createTableRuleConfigWithDatabaseShardingStrategy(new NoneShardingStrategyConfiguration());
-        shardingRuleConfig.getTableRuleConfigs().add(tableRuleConfig);
-        ShardingRule actual = new ShardingRule(shardingRuleConfig, createDataSourceNames());
-        actual.getDatabaseShardingStrategy(actual.getTableRule("other_Table"));
-    }
-    
-    @Test
-    public void assertGetDatabaseShardingStrategyForNullValue() {
-        ShardingRule actual = createMaximumShardingRule();
-        assertNotNull(actual.getDatabaseShardingStrategy(actual.getTableRule("logic_Table")));
+        assertThat(createMaximumShardingRule().getDatabaseShardingStrategy(mock(TableRule.class)), instanceOf(InlineShardingStrategy.class));
     }
     
     @Test
     public void assertGetTableShardingStrategyFromTableRule() {
-        ShardingRuleConfiguration shardingRuleConfig = new ShardingRuleConfiguration();
-        TableRuleConfiguration tableRuleConfig = createTableRuleConfigWithTableShardingStrategy(new NoneShardingStrategyConfiguration());
-        shardingRuleConfig.getTableRuleConfigs().add(tableRuleConfig);
-        ShardingRule actual = new ShardingRule(shardingRuleConfig, createDataSourceNames());
-        assertThat(actual.getDatabaseShardingStrategy(actual.getTableRule("logic_Table")), instanceOf(NoneShardingStrategy.class));
+        TableRule tableRule = mock(TableRule.class);
+        when(tableRule.getTableShardingStrategy()).thenReturn(new NoneShardingStrategy());
+        assertThat(createMaximumShardingRule().getTableShardingStrategy(tableRule), instanceOf(NoneShardingStrategy.class));
     }
     
     @Test
     public void assertGetTableShardingStrategyFromDefault() {
-        ShardingRule actual = createMaximumShardingRule();
-        assertThat(actual.getTableShardingStrategy(actual.getTableRule("logic_Table")), instanceOf(InlineShardingStrategy.class));
-    }
-    
-    @Test
-    public void assertGetTableShardingStrategyForNullValue() {
-        ShardingRule actual = createMaximumShardingRule();
-        assertNotNull(actual.getTableShardingStrategy(actual.getTableRule("logic_Table")));
+        assertThat(createMaximumShardingRule().getTableShardingStrategy(mock(TableRule.class)), instanceOf(InlineShardingStrategy.class));
     }
     
     @Test
