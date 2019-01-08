@@ -115,13 +115,8 @@ public final class InsertOptimizeEngine implements OptimizeEngine {
     }
     
     private String getExpressionWithoutValues(final InsertValue insertValue, final Comparable<?> currentGeneratedKey, final Column generateKeyColumn, final boolean isStringTypeOfGeneratedKey) {
-        final String expression;
-        if (isStringTypeOfGeneratedKey) {
-            expression = generateKeyColumn.getName() + " = " + '"' + currentGeneratedKey + '"' + ", " + insertValue.getExpression();
-        } else {
-            expression = generateKeyColumn.getName() + " = " + currentGeneratedKey + ", " + insertValue.getExpression();
-        }
-        return expression;
+        return isStringTypeOfGeneratedKey ? generateKeyColumn.getName() + " = " + '"' + currentGeneratedKey + '"' + ", " + insertValue.getExpression() 
+                : generateKeyColumn.getName() + " = " + currentGeneratedKey + ", " + insertValue.getExpression();
     }
     
     private String getExpressionWithValues(final InsertValue insertValue, final Comparable<?> currentGeneratedKey, final boolean isStringTypeOfGeneratedKey) {
