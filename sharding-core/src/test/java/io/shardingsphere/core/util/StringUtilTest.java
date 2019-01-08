@@ -19,11 +19,7 @@ package io.shardingsphere.core.util;
 
 import org.junit.Test;
 
-import java.util.Arrays;
-
-import static org.hamcrest.CoreMatchers.is;
 import static org.junit.Assert.assertFalse;
-import static org.junit.Assert.assertThat;
 import static org.junit.Assert.assertTrue;
 
 public class StringUtilTest {
@@ -48,10 +44,5 @@ public class StringUtilTest {
         assertTrue(StringUtil.isLongValue("10"));
         assertFalse(StringUtil.isLongValue("0.1"));
         assertFalse(StringUtil.isLongValue("A"));
-    }
-    
-    @Test
-    public void assertSplitWithComma() {
-        assertThat(StringUtil.splitWithComma(" 1, 2 "), is(Arrays.asList("1", "2")));
     }
 }

@@ -19,10 +19,12 @@ package io.shardingsphere.core.rule;
 
 import com.google.common.base.Optional;
 import com.google.common.base.Preconditions;
+import com.google.common.base.Splitter;
 import com.google.common.base.Strings;
 import io.shardingsphere.api.config.rule.MasterSlaveRuleConfiguration;
 import io.shardingsphere.api.config.rule.ShardingRuleConfiguration;
 import io.shardingsphere.api.config.rule.TableRuleConfiguration;
+import io.shardingsphere.api.config.strategy.ShardingStrategyConfiguration;
 import io.shardingsphere.core.exception.ShardingConfigurationException;
 import io.shardingsphere.core.exception.ShardingException;
 import io.shardingsphere.core.keygen.DefaultKeyGenerator;
@@ -31,9 +33,9 @@ import io.shardingsphere.core.parsing.parser.context.condition.Column;
 import io.shardingsphere.core.routing.strategy.ShardingStrategy;
 import io.shardingsphere.core.routing.strategy.ShardingStrategyFactory;
 import io.shardingsphere.core.routing.strategy.none.NoneShardingStrategy;
-import io.shardingsphere.core.util.StringUtil;
 import lombok.Getter;
 
+import java.util.ArrayList;
 import java.util.Collection;
 import java.util.LinkedList;
 import java.util.List;
@@ -53,11 +55,11 @@ public class ShardingRule {
     
     private final ShardingDataSourceNames shardingDataSourceNames;
     
-    private final Collection<TableRule> tableRules = new LinkedList<>();
+    private final Collection<TableRule> tableRules;
     
-    private final Collection<BindingTableRule> bindingTableRules = new LinkedList<>();
+    private final Collection<BindingTableRule> bindingTableRules;
     
-    private final Collection<String> broadcastTables = new LinkedList<>();
+    private final Collection<String> broadcastTables;
     
     private final ShardingStrategy defaultDatabaseShardingStrategy;
     
@@ -65,32 +67,59 @@ public class ShardingRule {
     
     private final KeyGenerator defaultKeyGenerator;
     
-    private final Collection<MasterSlaveRule> masterSlaveRules = new LinkedList<>();
+    private final Collection<MasterSlaveRule> masterSlaveRules;
     
     public ShardingRule(final ShardingRuleConfiguration shardingRuleConfig, final Collection<String> dataSourceNames) {
-        Preconditions.checkNotNull(dataSourceNames, "Data sources cannot be null.");
         Preconditions.checkArgument(!dataSourceNames.isEmpty(), "Data sources cannot be empty.");
         this.shardingRuleConfig = shardingRuleConfig;
         shardingDataSourceNames = new ShardingDataSourceNames(shardingRuleConfig, dataSourceNames);
-        for (TableRuleConfiguration each : shardingRuleConfig.getTableRuleConfigs()) {
-            tableRules.add(new TableRule(each, shardingDataSourceNames));
+        tableRules = createTableRules(shardingRuleConfig.getTableRuleConfigs());
+        bindingTableRules = createBindingTableRules(shardingRuleConfig.getBindingTableGroups());
+        broadcastTables = shardingRuleConfig.getBroadcastTables();
+        defaultDatabaseShardingStrategy = createDefaultShardingStrategy(shardingRuleConfig.getDefaultDatabaseShardingStrategyConfig());
+        defaultTableShardingStrategy = createDefaultShardingStrategy(shardingRuleConfig.getDefaultTableShardingStrategyConfig());
+        defaultKeyGenerator = createDefaultKeyGenerator(shardingRuleConfig.getDefaultKeyGenerator());
+        masterSlaveRules = createMasterSlaveRules(shardingRuleConfig.getMasterSlaveRuleConfigs());
+    }
+    
+    private Collection<TableRule> createTableRules(final Collection<TableRuleConfiguration> tableRuleConfigurations) {
+        Collection<TableRule> result = new ArrayList<>(tableRuleConfigurations.size());
+        for (TableRuleConfiguration each : tableRuleConfigurations) {
+            result.add(new TableRule(each, shardingDataSourceNames));
         }
-        for (String group : shardingRuleConfig.getBindingTableGroups()) {
-            List<TableRule> tableRulesForBinding = new LinkedList<>();
-            for (String logicTableNameForBindingTable : StringUtil.splitWithComma(group)) {
-                tableRulesForBinding.add(getTableRuleByLogicTableName(logicTableNameForBindingTable));
-            }
-            bindingTableRules.add(new BindingTableRule(tableRulesForBinding));
+        return result;
+    }
+    
+    private Collection<BindingTableRule> createBindingTableRules(final Collection<String> bindingTableGroups) {
+        Collection<BindingTableRule> result = new ArrayList<>(bindingTableGroups.size());
+        for (String each : bindingTableGroups) {
+            result.add(createBindingTableRule(each));
         }
-        broadcastTables.addAll(shardingRuleConfig.getBroadcastTables());
-        defaultDatabaseShardingStrategy = null == shardingRuleConfig.getDefaultDatabaseShardingStrategyConfig()
-                ? new NoneShardingStrategy() : ShardingStrategyFactory.newInstance(shardingRuleConfig.getDefaultDatabaseShardingStrategyConfig());
-        defaultTableShardingStrategy = null == shardingRuleConfig.getDefaultTableShardingStrategyConfig()
-                ? new NoneShardingStrategy() : ShardingStrategyFactory.newInstance(shardingRuleConfig.getDefaultTableShardingStrategyConfig());
-        defaultKeyGenerator = null == shardingRuleConfig.getDefaultKeyGenerator() ? new DefaultKeyGenerator() : shardingRuleConfig.getDefaultKeyGenerator();
-        for (MasterSlaveRuleConfiguration each : shardingRuleConfig.getMasterSlaveRuleConfigs()) {
-            masterSlaveRules.add(new MasterSlaveRule(each));
+        return result;
+    }
+    
+    private BindingTableRule createBindingTableRule(final String bindingTableGroup) {
+        List<TableRule> tableRules = new LinkedList<>();
+        for (String each : Splitter.on(",").trimResults().splitToList(bindingTableGroup)) {
+            tableRules.add(getTableRuleByLogicTableName(each));
         }
+        return new BindingTableRule(tableRules);
+    }
+    
+    private ShardingStrategy createDefaultShardingStrategy(final ShardingStrategyConfiguration shardingStrategyConfiguration) {
+        return null == shardingStrategyConfiguration ? new NoneShardingStrategy() : ShardingStrategyFactory.newInstance(shardingStrategyConfiguration);
+    }
+    
+    private KeyGenerator createDefaultKeyGenerator(final KeyGenerator defaultKeyGenerator) {
+        return null == defaultKeyGenerator ? new DefaultKeyGenerator() : defaultKeyGenerator;
+    }
+    
+    private Collection<MasterSlaveRule> createMasterSlaveRules(final Collection<MasterSlaveRuleConfiguration> masterSlaveRuleConfigurations) {
+        Collection<MasterSlaveRule> result = new ArrayList<>(masterSlaveRuleConfigurations.size());
+        for (MasterSlaveRuleConfiguration each : masterSlaveRuleConfigurations) {
+            result.add(new MasterSlaveRule(each));
+        }
+        return result;
     }
     
     /**
@@ -423,8 +452,8 @@ public class ShardingRule {
         if (tableRule.isPresent()) {
             return tableRule.get().getActualDatasourceNames().iterator().next();
         }
-        if (!Strings.isNullOrEmpty(getShardingDataSourceNames().getDefaultDataSourceName())) {
-            return getShardingDataSourceNames().getDefaultDataSourceName();
+        if (!Strings.isNullOrEmpty(shardingDataSourceNames.getDefaultDataSourceName())) {
+            return shardingDataSourceNames.getDefaultDataSourceName();
         }
         throw new ShardingException("Cannot found actual data source name of '%s' in sharding rule.", actualTableName);
     }

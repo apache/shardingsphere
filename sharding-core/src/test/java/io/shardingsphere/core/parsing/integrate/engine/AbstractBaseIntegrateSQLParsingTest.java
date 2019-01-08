@@ -55,7 +55,7 @@ public abstract class AbstractBaseIntegrateSQLParsingTest {
         URL url = AbstractBaseIntegrateSQLParsingTest.class.getClassLoader().getResource("yaml/parser-rule.yaml");
         Preconditions.checkNotNull(url, "Cannot found parser rule yaml configuration.");
         YamlShardingConfiguration yamlShardingConfig = YamlShardingConfiguration.unmarshal(new File(url.getFile()));
-        return yamlShardingConfig.getShardingRule(yamlShardingConfig.getDataSources().keySet());
+        return new ShardingRule(yamlShardingConfig.getShardingRule().getShardingRuleConfiguration(), yamlShardingConfig.getDataSources().keySet());
     }
     
     private static ShardingTableMetaData buildShardingTableMetaData() {
