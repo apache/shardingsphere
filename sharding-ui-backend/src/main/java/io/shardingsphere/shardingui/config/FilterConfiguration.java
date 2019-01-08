@@ -50,7 +50,7 @@ public class FilterConfiguration {
         FilterRegistrationBean filterRegBean = new FilterRegistrationBean();
         filterRegBean.setFilter(corsFilter);
         List<String> urlPatterns = new ArrayList<>();
-        urlPatterns.add("/*");
+        urlPatterns.add("/api/*");
         filterRegBean.setUrlPatterns(urlPatterns);
         return filterRegBean;
     }
@@ -67,7 +67,7 @@ public class FilterConfiguration {
         FilterRegistrationBean filterRegBean = new FilterRegistrationBean();
         filterRegBean.setFilter(authenticationFilter);
         List<String> urlPatterns = new ArrayList<>();
-        urlPatterns.add("/*");
+        urlPatterns.add("/api/*");
         filterRegBean.setUrlPatterns(urlPatterns);
         return filterRegBean;
     }
