@@ -61,18 +61,32 @@ public final class InsertOptimizeEngine implements OptimizeEngine {
         List<AndCondition> andConditions = insertStatement.getConditions().getOrCondition().getAndConditions();
         List<InsertValue> insertValues = insertStatement.getInsertValues().getInsertValues();
         List<ShardingCondition> result = new ArrayList<>(andConditions.size());
-        Iterator<Comparable<?>> generatedKeys = createGeneratedKeys();
         int parametersCount = 0;
-        for (int i = 0; i < andConditions.size(); i++) {
-            InsertValue insertValue = insertValues.get(i);
-            List<Object> currentParameters = new ArrayList<>(insertValue.getParametersCount() + 1);
-            if (0 != insertValue.getParametersCount()) {
-                currentParameters = getCurrentParameters(parametersCount, insertValue.getParametersCount());
-                parametersCount = parametersCount + insertValue.getParametersCount();
+        if (!isNeededToAppendGeneratedKey()) {
+            for (int i = 0; i < andConditions.size(); i++) {
+                InsertValue insertValue = insertValues.get(i);
+                List<Object> currentParameters = new ArrayList<>(insertValue.getParametersCount() + 1);
+                if (0 != insertValue.getParametersCount()) {
+                    currentParameters = getCurrentParameters(parametersCount, insertValue.getParametersCount());
+                    parametersCount = parametersCount + insertValue.getParametersCount();
+                }
+                InsertShardingCondition insertShardingCondition = new InsertShardingCondition(insertValue.getExpression(), currentParameters);
+                insertShardingCondition.getShardingValues().addAll(getShardingCondition(andConditions.get(i)));
+                result.add(insertShardingCondition);
             }
-            InsertShardingCondition insertShardingCondition = getInsertShardingCondition(generatedKeys.next(), insertValue, currentParameters);
-            insertShardingCondition.getShardingValues().addAll(getShardingCondition(andConditions.get(i)));
-            result.add(insertShardingCondition);
+        } else {
+            Iterator<Comparable<?>> generatedKeys = createGeneratedKeys();
+            for (int i = 0; i < andConditions.size(); i++) {
+                InsertValue insertValue = insertValues.get(i);
+                List<Object> currentParameters = new ArrayList<>(insertValue.getParametersCount() + 1);
+                if (0 != insertValue.getParametersCount()) {
+                    currentParameters = getCurrentParameters(parametersCount, insertValue.getParametersCount());
+                    parametersCount = parametersCount + insertValue.getParametersCount();
+                }
+                InsertShardingCondition insertShardingCondition = getInsertShardingCondition(generatedKeys.next(), insertValue, currentParameters);
+                insertShardingCondition.getShardingValues().addAll(getShardingCondition(andConditions.get(i)));
+                result.add(insertShardingCondition);
+            }
         }
         return new ShardingConditions(result);
     }
@@ -129,11 +143,7 @@ public final class InsertOptimizeEngine implements OptimizeEngine {
         return isStringTypeOfGeneratedKey ? insertValue.getExpression().substring(0, insertValue.getExpression().lastIndexOf(")")) + ", " + '"' + currentGeneratedKey + '"' + ")" 
                 : insertValue.getExpression().substring(0, insertValue.getExpression().lastIndexOf(")")) + ", " + currentGeneratedKey + ")";
     }
-    
-    private Iterator<Comparable<?>> createGeneratedKeys() {
-        return isNeededToAppendGeneratedKey() ? generatedKey.getGeneratedKeys().iterator() : null;
-    }
-    
+
     private boolean isNeededToAppendGeneratedKey() {
         return -1 == insertStatement.getGenerateKeyColumnIndex() && shardingRule.getGenerateKeyColumn(insertStatement.getTables().getSingleTableName()).isPresent();
     }
