@@ -20,7 +20,6 @@ package io.shardingsphere.shardingjdbc.jdbc.adapter;
 import com.google.common.base.Preconditions;
 import com.google.common.collect.LinkedHashMultimap;
 import com.google.common.collect.Multimap;
-import io.shardingsphere.api.config.SagaConfiguration;
 import io.shardingsphere.core.constant.ConnectionMode;
 import io.shardingsphere.core.hint.HintManagerHolder;
 import io.shardingsphere.core.routing.router.masterslave.MasterVisitedManager;
@@ -83,20 +82,13 @@ public abstract class AbstractConnectionAdapter extends AbstractUnsupportedOpera
     
     private final ShardingTransactionHandler<ShardingTransactionContext> shardingTransactionHandler;
     
-    private final SagaConfiguration sagaConfiguration;
-    
     protected AbstractConnectionAdapter(final TransactionType transactionType) {
-        this(transactionType, null);
-    }
-    
-    protected AbstractConnectionAdapter(final TransactionType transactionType, final SagaConfiguration sagaConfiguration) {
         rootInvokeHook.start();
         this.transactionType = transactionType;
         shardingTransactionHandler = ShardingTransactionHandlerRegistry.getInstance().getHandler(transactionType);
         if (TransactionType.LOCAL != transactionType) {
             Preconditions.checkNotNull(shardingTransactionHandler, "Cannot find transaction manager of [%s]", transactionType);
         }
-        this.sagaConfiguration = sagaConfiguration;
     }
     
     /**
@@ -206,7 +198,7 @@ public abstract class AbstractConnectionAdapter extends AbstractUnsupportedOpera
         if (TransactionType.XA == transactionType) {
             shardingTransactionHandler.doInTransaction(new XATransactionContext(TransactionOperationType.BEGIN));
         } else if (TransactionType.BASE == transactionType) {
-            shardingTransactionHandler.doInTransaction(SagaTransactionContext.createBeginSagaTransactionContext(getDataSourceMap(), sagaConfiguration));
+            shardingTransactionHandler.doInTransaction(new SagaTransactionContext(TransactionOperationType.BEGIN, getDataSourceMap()));
         }
     }
     
@@ -223,7 +215,7 @@ public abstract class AbstractConnectionAdapter extends AbstractUnsupportedOpera
         } else if (TransactionType.XA == transactionType) {
             shardingTransactionHandler.doInTransaction(new XATransactionContext(TransactionOperationType.COMMIT));
         } else if (TransactionType.BASE == transactionType) {
-            shardingTransactionHandler.doInTransaction(SagaTransactionContext.createCommitSagaTransactionContext(sagaConfiguration));
+            shardingTransactionHandler.doInTransaction(new SagaTransactionContext(TransactionOperationType.COMMIT, getDataSourceMap()));
         }
     }
     
@@ -240,7 +232,7 @@ public abstract class AbstractConnectionAdapter extends AbstractUnsupportedOpera
         } else if (TransactionType.XA == transactionType) {
             shardingTransactionHandler.doInTransaction(new XATransactionContext(TransactionOperationType.ROLLBACK));
         } else if (TransactionType.BASE == transactionType) {
-            shardingTransactionHandler.doInTransaction(SagaTransactionContext.createRollbackSagaTransactionContext(sagaConfiguration));
+            shardingTransactionHandler.doInTransaction(new SagaTransactionContext(TransactionOperationType.ROLLBACK, getDataSourceMap()));
         }
     }
     
@@ -251,7 +243,7 @@ public abstract class AbstractConnectionAdapter extends AbstractUnsupportedOpera
         MasterVisitedManager.clear();
         TransactionTypeHolder.clear();
         if (TransactionType.BASE == transactionType) {
-            shardingTransactionHandler.doInTransaction(SagaTransactionContext.createRollbackSagaTransactionContext(sagaConfiguration));
+            shardingTransactionHandler.doInTransaction(new SagaTransactionContext(TransactionOperationType.ROLLBACK, null));
         }
         int connectionSize = cachedConnections.size();
         try {

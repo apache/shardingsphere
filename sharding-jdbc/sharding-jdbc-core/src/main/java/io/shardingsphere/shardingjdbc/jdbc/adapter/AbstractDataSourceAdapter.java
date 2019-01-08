@@ -18,7 +18,6 @@
 package io.shardingsphere.shardingjdbc.jdbc.adapter;
 
 import com.google.common.base.Preconditions;
-import io.shardingsphere.api.config.SagaConfiguration;
 import io.shardingsphere.core.bootstrap.ShardingBootstrap;
 import io.shardingsphere.core.constant.DatabaseType;
 import io.shardingsphere.shardingjdbc.jdbc.unsupported.AbstractUnsupportedOperationDataSource;
@@ -54,18 +53,11 @@ public abstract class AbstractDataSourceAdapter extends AbstractUnsupportedOpera
     
     private final ShardingTransactionalDataSource shardingTransactionalDataSources;
     
-    private final SagaConfiguration sagaConfiguration;
-    
     private PrintWriter logWriter = new PrintWriter(System.out);
     
     public AbstractDataSourceAdapter(final Map<String, DataSource> dataSourceMap) throws SQLException {
-        this(dataSourceMap, new SagaConfiguration());
-    }
-    
-    public AbstractDataSourceAdapter(final Map<String, DataSource> dataSourceMap, final SagaConfiguration sagaConfiguration) throws SQLException {
         databaseType = getDatabaseType(dataSourceMap.values());
         shardingTransactionalDataSources = new ShardingTransactionalDataSource(databaseType, dataSourceMap);
-        this.sagaConfiguration = sagaConfiguration;
     }
     
     protected final DatabaseType getDatabaseType(final Collection<DataSource> dataSources) throws SQLException {

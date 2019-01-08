@@ -17,7 +17,6 @@
 
 package io.shardingsphere.shardingjdbc.api;
 
-import io.shardingsphere.api.config.SagaConfiguration;
 import io.shardingsphere.api.config.rule.ShardingRuleConfiguration;
 import io.shardingsphere.core.rule.ShardingRule;
 import io.shardingsphere.shardingjdbc.jdbc.core.datasource.ShardingDataSource;
@@ -44,13 +43,11 @@ public final class ShardingDataSourceFactory {
      * @param shardingRuleConfig rule configuration for databases and tables sharding
      * @param configMap config map
      * @param props properties for data source
-     * @param sagaConfiguration saga configuration
      * @return sharding data source
      * @throws SQLException SQL exception
      */
     public static DataSource createDataSource(
-            final Map<String, DataSource> dataSourceMap, final ShardingRuleConfiguration shardingRuleConfig,
-            final Map<String, Object> configMap, final Properties props, final SagaConfiguration sagaConfiguration) throws SQLException {
-        return new ShardingDataSource(dataSourceMap, new ShardingRule(shardingRuleConfig, dataSourceMap.keySet()), configMap, props, sagaConfiguration);
+        final Map<String, DataSource> dataSourceMap, final ShardingRuleConfiguration shardingRuleConfig, final Map<String, Object> configMap, final Properties props) throws SQLException {
+        return new ShardingDataSource(dataSourceMap, new ShardingRule(shardingRuleConfig, dataSourceMap.keySet()), configMap, props);
     }
 }

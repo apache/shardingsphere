@@ -20,7 +20,6 @@ package io.shardingsphere.shardingjdbc.api;
 import io.shardingsphere.api.ConfigMapContext;
 import io.shardingsphere.api.config.rule.ShardingRuleConfiguration;
 import io.shardingsphere.api.config.rule.TableRuleConfiguration;
-import io.shardingsphere.api.config.SagaConfiguration;
 import io.shardingsphere.core.rule.ShardingRule;
 import io.shardingsphere.shardingjdbc.jdbc.core.ShardingContext;
 import io.shardingsphere.shardingjdbc.jdbc.core.datasource.ShardingDataSource;
@@ -61,11 +60,10 @@ public final class ShardingDataSourceFactoryTest {
         Properties props = new Properties();
         Map<String, Object> configMap = new ConcurrentHashMap<>();
         configMap.put("key1", "value1");
-        DataSource dataSource = ShardingDataSourceFactory.createDataSource(getDataSourceMap(), shardingRuleConfig, configMap, props, createSagaConfiguration());
+        DataSource dataSource = ShardingDataSourceFactory.createDataSource(getDataSourceMap(), shardingRuleConfig, configMap, props);
         assertNotNull(getShardingRule(dataSource));
         assertThat(ConfigMapContext.getInstance().getConfigMap(), is(configMap));
         assertThat(getShardingProperties(dataSource), is(props));
-        assertThat(((ShardingDataSource) dataSource).getSagaConfiguration().getExecutorSize(), is(10));
     }
     
     private Map<String, DataSource> getDataSourceMap() throws SQLException {
@@ -97,12 +95,6 @@ public final class ShardingDataSourceFactoryTest {
         tableRuleConfig.setLogicTable("logicTable");
         tableRuleConfig.setActualDataNodes("ds.table_${0..2}");
         result.getTableRuleConfigs().add(tableRuleConfig);
-        return result;
-    }
-    
-    private SagaConfiguration createSagaConfiguration() {
-        SagaConfiguration result = new SagaConfiguration();
-        result.setExecutorSize(10);
         return result;
     }
     

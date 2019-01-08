@@ -201,7 +201,6 @@ public final class ShardingDataSourceTest {
         assertThat(shardingConnection.getDataSourceMap().size(), is(1));
         assertThat(shardingConnection.getTransactionType(), is(TransactionType.BASE));
         assertThat(shardingConnection.getShardingTransactionHandler(), instanceOf(FixedBaseShardingTransactionHandler.class));
-        assertNotNull(shardingConnection.getSagaConfiguration());
     }
     
     @Test
@@ -215,7 +214,6 @@ public final class ShardingDataSourceTest {
         assertThat(shardingConnection.getDataSourceMap().size(), is(1));
         assertThat(shardingConnection.getTransactionType(), is(TransactionType.BASE));
         assertThat(shardingConnection.getShardingTransactionHandler(), instanceOf(FixedBaseShardingTransactionHandler.class));
-        assertNotNull(shardingConnection.getSagaConfiguration());
         
         TransactionTypeHolder.set(TransactionType.LOCAL);
         shardingConnection = shardingDataSource.getConnection();
@@ -223,7 +221,6 @@ public final class ShardingDataSourceTest {
         assertThat(shardingConnection.getDataSourceMap(), is(dataSourceMap));
         assertThat(shardingConnection.getTransactionType(), is(TransactionType.LOCAL));
         assertNull(shardingConnection.getShardingTransactionHandler());
-        assertNull(shardingConnection.getSagaConfiguration());
     }
     
     private ShardingDataSource createShardingDataSource(final Map<String, DataSource> dataSourceMap) throws SQLException {
