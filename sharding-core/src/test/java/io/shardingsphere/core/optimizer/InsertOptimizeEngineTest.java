@@ -212,16 +212,10 @@ public final class InsertOptimizeEngineTest {
         assertShardingValue((ListShardingValue) actual.getShardingConditions().get(1).getShardingValues().get(0), 11);
     }
     
-    private void assertShardingValue(final ListShardingValue actual, final int expected) {
-        assertThat(actual.getValues().size(), is(1));
-        assertThat((int) actual.getValues().iterator().next(), is(expected));
-    }
-    
     @Test
     public void assertOptimizeWithValuesWithoutPlaceHolderWithGeneratedKey() {
         GeneratedKey generatedKey = new GeneratedKey(new Column("order_id", "t_order"));
         generatedKey.getGeneratedKeys().add(1);
-        generatedKey.getGeneratedKeys().add(2);
         ShardingConditions actual = new InsertOptimizeEngine(shardingRule, insertStatementWithValuesWithoutPlaceHolder, Collections.emptyList(), generatedKey).optimize();
         assertThat(actual.getShardingConditions().size(), is(1));
         assertThat(((InsertShardingCondition) actual.getShardingConditions().get(0)).getParameters().size(), is(0));
@@ -248,12 +242,16 @@ public final class InsertOptimizeEngineTest {
     public void assertOptimizeWithoutValuesWithoutPlaceHolderWithGeneratedKey() {
         GeneratedKey generatedKey = new GeneratedKey(new Column("order_id", "t_order"));
         generatedKey.getGeneratedKeys().add(1);
-        generatedKey.getGeneratedKeys().add(2);
         ShardingConditions actual = new InsertOptimizeEngine(shardingRule, insertStatementWithoutValuesWithoutPlaceHolder, Collections.emptyList(), generatedKey).optimize();
         assertThat(actual.getShardingConditions().size(), is(1));
         assertThat(((InsertShardingCondition) actual.getShardingConditions().get(0)).getParameters().size(), is(0));
         assertThat(((InsertShardingCondition) actual.getShardingConditions().get(0)).getInsertValueExpression(), is("order_id = 1, user_id = 12, status = 'a'"));
         assertShardingValue((ListShardingValue) actual.getShardingConditions().get(0).getShardingValues().get(0), 1);
         assertShardingValue((ListShardingValue) actual.getShardingConditions().get(0).getShardingValues().get(1), 12);
+    }
+    
+    private void assertShardingValue(final ListShardingValue actual, final int expected) {
+        assertThat(actual.getValues().size(), is(1));
+        assertThat((int) actual.getValues().iterator().next(), is(expected));
     }
 }
