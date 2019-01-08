@@ -22,7 +22,7 @@
         </div>
       </div>
       <el-breadcrumb separator="/" class="bread-nav">
-        <el-breadcrumb-item><a>{{ $store.state.regCenterActivated || '' }}</a></el-breadcrumb-item>
+        <el-breadcrumb-item><a style="font-weight: bold;">{{ $store.state.global.regCenterActivated || '' }}</a></el-breadcrumb-item>
       </el-breadcrumb>
     </div>
   </div>
