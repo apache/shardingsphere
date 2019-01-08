@@ -79,6 +79,7 @@ public final class InsertOptimizeEngineTest {
         initializeInsertWithValuesWithoutPlaceHolder();
         initializeInsertWithoutValuesWithoutPlaceHolder();
         initializeParametersWithValues();
+        initializeParametersWithoutValues()
     }
     
     private void initializeParametersWithValues() {
@@ -87,6 +88,12 @@ public final class InsertOptimizeEngineTest {
         parametersWithValues.add("init");
         parametersWithValues.add(11);
         parametersWithValues.add("init");
+    }
+    
+    private void initializeParametersWithoutValues() {
+        parametersWithoutValues = new ArrayList<>(2);
+        parametersWithoutValues.add(12);
+        parametersWithoutValues.add("a");
     }
     
     private void initializeWithValuesWithPlaceHolder() {
