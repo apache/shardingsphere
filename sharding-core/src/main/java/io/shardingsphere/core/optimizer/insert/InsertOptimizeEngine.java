@@ -89,14 +89,9 @@ public final class InsertOptimizeEngine implements OptimizeEngine {
     }
     
     private String getExpression(final InsertValue insertValue, final Comparable<?> currentGeneratedKey, final Column generateKeyColumn, final List<Object> currentParameters) {
-        String expression;
-        if (parameters.isEmpty()) {
-            boolean isStringTypeOfGeneratedKey = currentGeneratedKey.getClass() == String.class;
-            expression = getExpressionWithoutPlaceHolders(insertValue, currentGeneratedKey, generateKeyColumn, isStringTypeOfGeneratedKey);
-        } else {
-            expression = getExpressionWithPlaceHolders(insertValue, currentGeneratedKey, generateKeyColumn, currentParameters);
-        }
-        return expression;
+        boolean isStringTypeOfGeneratedKey = currentGeneratedKey.getClass() == String.class;
+        return parameters.isEmpty() ? getExpressionWithoutPlaceHolders(insertValue, currentGeneratedKey, generateKeyColumn, isStringTypeOfGeneratedKey) 
+                : getExpressionWithPlaceHolders(insertValue, currentGeneratedKey, generateKeyColumn, currentParameters);
     }
     
     private String getExpressionWithPlaceHolders(final InsertValue insertValue, final Comparable<?> currentGeneratedKey, final Column generateKeyColumn, final List<Object> currentParameters) {
