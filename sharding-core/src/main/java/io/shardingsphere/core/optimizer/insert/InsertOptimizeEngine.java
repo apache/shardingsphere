@@ -96,13 +96,17 @@ public final class InsertOptimizeEngine implements OptimizeEngine {
             if (DefaultKeyword.VALUES.equals(insertValue.getType())) {
                 expression = getExpressionWithValues(insertValue, currentGeneratedKey, currentParameters);
             } else {
-                expression = generateKeyColumn.getName() + " = ?, " + insertValue.getExpression();
-                currentParameters.add(0, currentGeneratedKey);
+                expression = getExpressionWithoutValues(insertValue, currentGeneratedKey, generateKeyColumn, currentParameters);
             }
         }
         insertShardingCondition = new InsertShardingCondition(expression, currentParameters);
         insertShardingCondition.getShardingValues().add(getShardingCondition(generateKeyColumn, currentGeneratedKey));
         return insertShardingCondition;
+    }
+    
+    private String getExpressionWithoutValues(final InsertValue insertValue, final Comparable<?> currentGeneratedKey, final Column generateKeyColumn, final List<Object> currentParameters) {
+        currentParameters.add(0, currentGeneratedKey);
+        return generateKeyColumn.getName() + " = ?, " + insertValue.getExpression();
     }
     
     private String getExpressionWithValues(final InsertValue insertValue, final Comparable<?> currentGeneratedKey, final List<Object> currentParameters) {
