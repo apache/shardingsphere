@@ -96,7 +96,7 @@ public final class XAShardingTransactionHandler extends ShardingTransactionHandl
                 transaction.enlistResource(shardingXAConnection.getXAResource());
                 result = shardingXAConnection.getConnection();
             } else {
-                result = shardingXADataSource.getConnection();
+                result = shardingXADataSource.getConnectionFromOriginalDataSource();
             }
         } catch (final SQLException | RollbackException | SystemException ex) {
             log.error("Failed to synchronize transactional resource");

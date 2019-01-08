@@ -29,14 +29,10 @@ import lombok.Getter;
 import lombok.extern.slf4j.Slf4j;
 
 import javax.sql.DataSource;
-import javax.sql.XAConnection;
 import javax.sql.XADataSource;
-import java.io.PrintWriter;
 import java.sql.Connection;
 import java.sql.SQLException;
-import java.sql.SQLFeatureNotSupportedException;
 import java.util.Properties;
-import java.util.logging.Logger;
 
 /**
  * Sharding XA data source.
@@ -45,7 +41,7 @@ import java.util.logging.Logger;
  */
 @Getter
 @Slf4j
-public final class ShardingXADataSource implements XADataSource {
+public final class ShardingXADataSource extends AbstractUnsupportedShardingXADataSource {
     
     private final DatabaseType databaseType;
     
@@ -88,43 +84,13 @@ public final class ShardingXADataSource implements XADataSource {
             : ShardingXAConnectionFactory.createShardingXAConnection(databaseType, resourceName, xaDataSource, originalDataSource.getConnection());
     }
     
-    @Override
-    public XAConnection getXAConnection(final String user, final String password) throws SQLException {
-        return new ShardingXAConnection(resourceName, xaDataSource.getXAConnection(user, password));
-    }
-    
-    @Override
-    public PrintWriter getLogWriter() throws SQLException {
-        return xaDataSource.getLogWriter();
-    }
-    
-    @Override
-    public void setLogWriter(final PrintWriter out) throws SQLException {
-        xaDataSource.setLogWriter(out);
-    }
-    
-    @Override
-    public void setLoginTimeout(final int seconds) throws SQLException {
-        xaDataSource.setLoginTimeout(seconds);
-    }
-    
-    @Override
-    public int getLoginTimeout() throws SQLException {
-        return xaDataSource.getLoginTimeout();
-    }
-    
-    @Override
-    public Logger getParentLogger() throws SQLFeatureNotSupportedException {
-        return xaDataSource.getParentLogger();
-    }
-    
     /**
      * Get connection from original data source.
      *
      * @return connection
      * @throws SQLException SQL exception
      */
-    public Connection getConnection() throws SQLException {
+    public Connection getConnectionFromOriginalDataSource() throws SQLException {
         return originalDataSource.getConnection();
     }
 }

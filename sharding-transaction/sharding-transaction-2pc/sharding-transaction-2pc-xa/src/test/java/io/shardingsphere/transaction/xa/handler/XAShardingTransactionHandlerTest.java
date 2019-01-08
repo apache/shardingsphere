@@ -126,7 +126,7 @@ public class XAShardingTransactionHandlerTest {
         setCachedShardingXADataSourceMap("ds1");
         ShardingXADataSource shardingXADataSource = getCachedShardingXADataSourceMap().get("ds1");
         xaShardingTransactionHandler.createConnection("ds1", dataSource);
-        verify(shardingXADataSource).getConnection();
+        verify(shardingXADataSource).getConnectionFromOriginalDataSource();
     }
     
     @Test
