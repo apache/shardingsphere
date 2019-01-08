@@ -115,6 +115,22 @@ public final class InsertOptimizeEngineTest {
         insertStatementWithValuesWithoutPlaceHolder.getInsertValues().getInsertValues().add(new InsertValue(DefaultKeyword.VALUES, "(12,'a')", 0));
     }
     
+    private void initializeInsertWithoutValuesWithoutPlaceHolder() {
+        insertStatementWithoutValuesWithoutPlaceHolder = new InsertStatement();
+        insertStatementWithoutValuesWithoutPlaceHolder.getTables().add(new Table("t_order", Optional.<String>absent()));
+        insertStatementWithoutValuesWithoutPlaceHolder.setParametersIndex(0);
+        insertStatementWithoutValuesWithoutPlaceHolder.setInsertValuesListLastPosition(50);
+        insertStatementWithoutValuesWithoutPlaceHolder.addSQLToken(new TableToken(12, 0, "t_order"));
+        insertStatementWithoutValuesWithoutPlaceHolder.addSQLToken(new InsertValuesToken(42, "t_order"));
+        ItemsToken itemsToken = new ItemsToken(34);
+        itemsToken.getItems().add("order_id");
+        insertStatementWithoutValuesWithoutPlaceHolder.addSQLToken(itemsToken);
+        AndCondition andCondition = new AndCondition();
+        andCondition.getConditions().add(new Condition(new Column("user_id", "t_order"), new SQLNumberExpression(12)));
+        insertStatementWithoutValuesWithoutPlaceHolder.getConditions().getOrCondition().getAndConditions().add(andCondition);
+        insertStatementWithoutValuesWithoutPlaceHolder.getInsertValues().getInsertValues().add(new InsertValue(DefaultKeyword.VALUES, "(12,'a')", 0));
+    }
+    
     @Test
     public void assertOptimizeWithValuesWithPlaceHolderWithGeneratedKey() {
         GeneratedKey generatedKey = new GeneratedKey(new Column("order_id", "t_order"));
