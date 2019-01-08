@@ -77,6 +77,12 @@ public final class InsertOptimizeEngine implements OptimizeEngine {
         return new ShardingConditions(result);
     }
     
+    private List<Object> getCurrentParameters(final int beginCount, final int increment) {
+        List<Object> result = new ArrayList<>(increment + 1);
+        result.addAll(parameters.subList(beginCount, beginCount + increment));
+        return result;
+    }
+    
     private InsertShardingCondition getInsertShardingCondition(final Comparable<?> currentGeneratedKey, final InsertValue insertValue, final List<Object> currentParameters) {
         if (!isNeededToAppendGeneratedKey()) {
             return new InsertShardingCondition(insertValue.getExpression(), currentParameters);
@@ -130,12 +136,6 @@ public final class InsertOptimizeEngine implements OptimizeEngine {
     
     private boolean isNeededToAppendGeneratedKey() {
         return -1 == insertStatement.getGenerateKeyColumnIndex() && shardingRule.getGenerateKeyColumn(insertStatement.getTables().getSingleTableName()).isPresent();
-    }
-    
-    private List<Object> getCurrentParameters(final int beginCount, final int increment) {
-        List<Object> result = new ArrayList<>(increment + 1);
-        result.addAll(parameters.subList(beginCount, beginCount + increment));
-        return result;
     }
     
     private ListShardingValue getShardingCondition(final Column column, final Comparable<?> value) {
