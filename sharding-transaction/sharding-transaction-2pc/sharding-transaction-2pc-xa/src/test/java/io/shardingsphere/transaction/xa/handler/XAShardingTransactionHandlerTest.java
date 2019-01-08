@@ -25,9 +25,12 @@ import io.shardingsphere.transaction.core.manager.ShardingTransactionManager;
 import io.shardingsphere.transaction.spi.xa.XATransactionManager;
 import io.shardingsphere.transaction.xa.fixture.DataSourceUtils;
 import io.shardingsphere.transaction.xa.jta.datasource.ShardingXADataSource;
-import io.shardingsphere.transaction.xa.manager.AtomikosTransactionManager;
 import lombok.SneakyThrows;
+import org.junit.Before;
 import org.junit.Test;
+import org.junit.runner.RunWith;
+import org.mockito.Mock;
+import org.mockito.junit.MockitoJUnitRunner;
 
 import javax.sql.DataSource;
 import javax.sql.XADataSource;
@@ -40,18 +43,33 @@ import static org.hamcrest.CoreMatchers.is;
 import static org.junit.Assert.assertThat;
 import static org.mockito.ArgumentMatchers.any;
 import static org.mockito.ArgumentMatchers.anyString;
-import static org.mockito.Mockito.mock;
 import static org.mockito.Mockito.times;
 import static org.mockito.Mockito.verify;
 
+@RunWith(MockitoJUnitRunner.class)
 public class XAShardingTransactionHandlerTest {
     
     private XAShardingTransactionHandler xaShardingTransactionHandler = new XAShardingTransactionHandler();
     
+    @Mock
+    private XATransactionManager xaTransactionManager;
+    
+    @Before
+    public void setUp() {
+        setMockXATransactionManager(xaShardingTransactionHandler, xaTransactionManager);
+    }
+    
+    @SneakyThrows
+    private void setMockXATransactionManager(final XAShardingTransactionHandler xaShardingTransactionHandler, final XATransactionManager xaTransactionManager) {
+        Field field = xaShardingTransactionHandler.getClass().getDeclaredField("xaTransactionManager");
+        field.setAccessible(true);
+        field.set(xaShardingTransactionHandler, xaTransactionManager);
+    }
+    
     @Test
     public void assertGetTransactionManager() {
         ShardingTransactionManager shardingTransactionManager = xaShardingTransactionHandler.getShardingTransactionManager();
-        assertThat(shardingTransactionManager, instanceOf(AtomikosTransactionManager.class));
+        assertThat(shardingTransactionManager, instanceOf(XATransactionManager.class));
     }
     
     @Test
@@ -61,8 +79,6 @@ public class XAShardingTransactionHandlerTest {
     
     @Test
     public void assertRegisterXATransactionalDataSource() {
-        XATransactionManager xaTransactionManager = mock(XATransactionManager.class);
-        setMockXATransactionManager(xaShardingTransactionHandler, xaTransactionManager);
         Map<String, DataSource> dataSourceMap = createDataSourceMap(PoolType.DRUID_XA, DatabaseType.MySQL);
         xaShardingTransactionHandler.registerTransactionalResource(DatabaseType.MySQL, dataSourceMap);
         for (Map.Entry<String, DataSource> entry : dataSourceMap.entrySet()) {
@@ -72,8 +88,6 @@ public class XAShardingTransactionHandlerTest {
     
     @Test
     public void assertRegisterAtomikosDataSourceBean() {
-        XATransactionManager xaTransactionManager = mock(XATransactionManager.class);
-        setMockXATransactionManager(xaShardingTransactionHandler, xaTransactionManager);
         Map<String, DataSource> dataSourceMap = createAtomikosDataSourceBeanMap();
         xaShardingTransactionHandler.registerTransactionalResource(DatabaseType.MySQL, dataSourceMap);
         verify(xaTransactionManager, times(0)).registerRecoveryResource(anyString(), any(XADataSource.class));
@@ -81,8 +95,6 @@ public class XAShardingTransactionHandlerTest {
     
     @Test
     public void assertRegisterNoneXATransactionalDAtaSource() {
-        XATransactionManager xaTransactionManager = mock(XATransactionManager.class);
-        setMockXATransactionManager(xaShardingTransactionHandler, xaTransactionManager);
         Map<String, DataSource> dataSourceMap = createDataSourceMap(PoolType.HIKARI, DatabaseType.MySQL);
         xaShardingTransactionHandler.registerTransactionalResource(DatabaseType.MySQL, dataSourceMap);
         Map<String, ShardingXADataSource> cachedXADatasourceMap = getCachedShardingXADataSourceMap();
@@ -101,13 +113,6 @@ public class XAShardingTransactionHandlerTest {
     @Test
     public void assertCreateNoneXATransactionalConnection() {
     
-    }
-    
-    @SneakyThrows
-    private void setMockXATransactionManager(final XAShardingTransactionHandler xaShardingTransactionHandler, final XATransactionManager xaTransactionManager) {
-        Field field = xaShardingTransactionHandler.getClass().getDeclaredField("xaTransactionManager");
-        field.setAccessible(true);
-        field.set(xaShardingTransactionHandler, xaTransactionManager);
     }
     
     @SneakyThrows
