@@ -22,12 +22,14 @@ import com.atomikos.beans.PropertyUtils;
 import io.shardingsphere.core.constant.DatabaseType;
 import io.shardingsphere.core.exception.ShardingException;
 import io.shardingsphere.core.rule.DataSourceParameter;
+import io.shardingsphere.transaction.xa.convert.swap.DataSourceSwapperRegistry;
 import io.shardingsphere.transaction.xa.jta.connection.ShardingXAConnection;
 import io.shardingsphere.transaction.xa.jta.connection.ShardingXAConnectionFactory;
 import lombok.Getter;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 
+import javax.sql.DataSource;
 import javax.sql.XAConnection;
 import javax.sql.XADataSource;
 import java.io.PrintWriter;
@@ -51,13 +53,18 @@ public final class ShardingXADataSource implements XADataSource {
     
     private final XADataSource xaDataSource;
     
-    public ShardingXADataSource(final DatabaseType databaseType, final String resourceName, final DataSourceParameter dataSourceParameter) {
+    public ShardingXADataSource(final DatabaseType databaseType, final String resourceName, final DataSource dataSource) {
         try {
-            XADataSource xaDataSource = XADataSourceFactory.build(databaseType);
-            Properties xaProperties = XAPropertiesFactory.createXAProperties(databaseType).build(dataSourceParameter);
-            PropertyUtils.setProperties(xaDataSource, xaProperties);
+            if (!(dataSource instanceof XADataSource)) {
+                DataSourceParameter dataSourceParameter = DataSourceSwapperRegistry.getSwapper(dataSource.getClass()).swap(dataSource);
+                XADataSource xaDataSource = XADataSourceFactory.build(databaseType);
+                Properties xaProperties = XAPropertiesFactory.createXAProperties(databaseType).build(dataSourceParameter);
+                PropertyUtils.setProperties(xaDataSource, xaProperties);
+                this.xaDataSource = xaDataSource;
+            } else {
+                this.xaDataSource = (XADataSource) dataSource;
+            }
             this.resourceName = resourceName;
-            this.xaDataSource = xaDataSource;
         } catch (final PropertyException ex) {
             log.error("Failed to create ShardingXADataSource");
             throw new ShardingException(ex);
@@ -65,13 +72,26 @@ public final class ShardingXADataSource implements XADataSource {
     }
     
     /**
-     * Wrap a physical connection to sharding XA connection.
+     * Get XA connection.
      *
-     * @param databaseType databaseType
-     * @param connection connection
+     * @param databaseType database type
+     * @param dataSourceName data source name
+     * @param dataSource data source
      * @return sharding XA connection
+     * @throws SQLException SQL exception
      */
-    public ShardingXAConnection wrapPhysicalConnection(final DatabaseType databaseType, final Connection connection) {
+    public ShardingXAConnection getXAConnection(final DatabaseType databaseType, final String dataSourceName, final DataSource dataSource) throws SQLException {
+        ShardingXAConnection result;
+        if (dataSource instanceof XADataSource) {
+            XAConnection xaConnection = ((XADataSource) dataSource).getXAConnection();
+            result = new ShardingXAConnection(dataSourceName, xaConnection);
+        } else {
+            result = this.wrapPhysicalConnection(databaseType, dataSource.getConnection());
+        }
+        return result;
+    }
+    
+    private ShardingXAConnection wrapPhysicalConnection(final DatabaseType databaseType, final Connection connection) {
         return ShardingXAConnectionFactory.createShardingXAConnection(databaseType, resourceName, xaDataSource, connection);
     }
     

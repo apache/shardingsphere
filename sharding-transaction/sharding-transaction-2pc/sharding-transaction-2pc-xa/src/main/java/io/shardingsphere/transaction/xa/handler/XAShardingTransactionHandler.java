@@ -20,20 +20,16 @@ package io.shardingsphere.transaction.xa.handler;
 import com.atomikos.jdbc.AtomikosDataSourceBean;
 import io.shardingsphere.core.constant.DatabaseType;
 import io.shardingsphere.core.exception.ShardingException;
-import io.shardingsphere.core.rule.DataSourceParameter;
 import io.shardingsphere.transaction.api.TransactionType;
 import io.shardingsphere.transaction.core.handler.ShardingTransactionHandlerAdapter;
 import io.shardingsphere.transaction.core.manager.ShardingTransactionManager;
 import io.shardingsphere.transaction.spi.xa.XATransactionManager;
-import io.shardingsphere.transaction.xa.convert.swap.DataSourceSwapperRegistry;
 import io.shardingsphere.transaction.xa.jta.connection.ShardingXAConnection;
 import io.shardingsphere.transaction.xa.jta.datasource.ShardingXADataSource;
 import io.shardingsphere.transaction.xa.manager.XATransactionManagerSPILoader;
 import lombok.extern.slf4j.Slf4j;
 
 import javax.sql.DataSource;
-import javax.sql.XAConnection;
-import javax.sql.XADataSource;
 import javax.transaction.RollbackException;
 import javax.transaction.Status;
 import javax.transaction.SystemException;
@@ -51,7 +47,7 @@ import java.util.Map;
 @Slf4j
 public final class XAShardingTransactionHandler extends ShardingTransactionHandlerAdapter {
     
-    private final Map<String, ShardingXADataSource> cachedAdapterXADataSourceMap = new HashMap<>();
+    private final Map<String, ShardingXADataSource> cachedShardingXADataSourceMap = new HashMap<>();
     
     private DatabaseType databaseType;
     
@@ -71,49 +67,36 @@ public final class XAShardingTransactionHandler extends ShardingTransactionHandl
     public void registerTransactionalResource(final DatabaseType databaseType, final Map<String, DataSource> dataSourceMap) {
         this.databaseType = databaseType;
         for (Map.Entry<String, DataSource> entry : dataSourceMap.entrySet()) {
-            if (entry.getValue() instanceof AtomikosDataSourceBean) {
+            DataSource dataSource = entry.getValue();
+            if (dataSource instanceof AtomikosDataSourceBean) {
                 continue;
             }
-            ShardingXADataSource shardingXADataSource;
-            if (!(entry.getValue() instanceof XADataSource)) {
-                DataSourceParameter parameter = DataSourceSwapperRegistry.getSwapper(entry.getValue().getClass()).swap(entry.getValue());
-                shardingXADataSource = new ShardingXADataSource(databaseType, entry.getKey(), parameter);
-                cachedAdapterXADataSourceMap.put(entry.getKey(), shardingXADataSource);
-                xaTransactionManager.registerRecoveryResource(entry.getKey(), shardingXADataSource.getXaDataSource());
-            } else {
-                xaTransactionManager.registerRecoveryResource(entry.getKey(), (XADataSource) entry.getValue());
-            }
+            ShardingXADataSource shardingXADataSource = new ShardingXADataSource(databaseType, entry.getKey(), entry.getValue());
+            cachedShardingXADataSourceMap.put(entry.getKey(), shardingXADataSource);
+            xaTransactionManager.registerRecoveryResource(entry.getKey(), shardingXADataSource.getXaDataSource());
         }
         xaTransactionManager.startup();
     }
     
     @Override
     public void clearTransactionalResource() {
-        if (!cachedAdapterXADataSourceMap.isEmpty()) {
-            for (ShardingXADataSource each : cachedAdapterXADataSourceMap.values()) {
+        if (!cachedShardingXADataSourceMap.isEmpty()) {
+            for (ShardingXADataSource each : cachedShardingXADataSourceMap.values()) {
                 xaTransactionManager.removeRecoveryResource(each.getResourceName(), each.getXaDataSource());
             }
         }
-        cachedAdapterXADataSourceMap.clear();
+        cachedShardingXADataSourceMap.clear();
     }
     
     @Override
     public Connection createConnection(final String dataSourceName, final DataSource dataSource) {
         Connection result;
-        ShardingXAConnection shardingXAConnection;
         try {
             Transaction transaction = xaTransactionManager.getUnderlyingTransactionManager().getTransaction();
             if (null != transaction && Status.STATUS_NO_TRANSACTION != transaction.getStatus()) {
-                if (dataSource instanceof XADataSource) {
-                    XAConnection xaConnection = ((XADataSource) dataSource).getXAConnection();
-                    shardingXAConnection = new ShardingXAConnection(dataSourceName, xaConnection);
-                    result = xaConnection.getConnection();
-                } else {
-                    result = dataSource.getConnection();
-                    ShardingXADataSource shardingXADataSource = cachedAdapterXADataSourceMap.get(dataSourceName);
-                    shardingXAConnection = shardingXADataSource.wrapPhysicalConnection(databaseType, result);
-                }
+                ShardingXAConnection shardingXAConnection = cachedShardingXADataSourceMap.get(dataSourceName).getXAConnection(databaseType, dataSourceName, dataSource);
                 transaction.enlistResource(shardingXAConnection.getXAResource());
+                result = shardingXAConnection.getConnection();
             } else {
                 result = dataSource.getConnection();
             }

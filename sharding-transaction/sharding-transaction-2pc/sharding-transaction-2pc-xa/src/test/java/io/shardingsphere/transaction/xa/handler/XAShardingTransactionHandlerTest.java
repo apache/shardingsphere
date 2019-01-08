@@ -175,7 +175,7 @@ public class XAShardingTransactionHandlerTest {
     @SneakyThrows
     @SuppressWarnings("unchecked")
     private Map<String, ShardingXADataSource> getCachedShardingXADataSourceMap() {
-        Field field = xaShardingTransactionHandler.getClass().getDeclaredField("cachedAdapterXADataSourceMap");
+        Field field = xaShardingTransactionHandler.getClass().getDeclaredField("cachedShardingXADataSourceMap");
         field.setAccessible(true);
         return (Map<String, ShardingXADataSource>) field.get(xaShardingTransactionHandler);
     }
