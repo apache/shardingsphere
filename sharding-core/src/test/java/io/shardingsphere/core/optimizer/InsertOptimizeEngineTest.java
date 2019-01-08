@@ -78,8 +78,9 @@ public final class InsertOptimizeEngineTest {
         initializeWithValuesWithPlaceHolder();
         initializeInsertWithValuesWithoutPlaceHolder();
         initializeInsertWithoutValuesWithoutPlaceHolder();
+        initializeInsertWithoutValuesWithPlaceHolder();
         initializeParametersWithValues();
-        initializeParametersWithoutValues()
+        initializeParametersWithoutValues();
     }
     
     private void initializeParametersWithValues() {
@@ -227,6 +228,20 @@ public final class InsertOptimizeEngineTest {
         assertThat(((InsertShardingCondition) actual.getShardingConditions().get(0)).getInsertValueExpression(), is("(12,'a', 1)"));
         assertShardingValue((ListShardingValue) actual.getShardingConditions().get(0).getShardingValues().get(0), 1);
         assertShardingValue((ListShardingValue) actual.getShardingConditions().get(0).getShardingValues().get(1), 12);
+    }
+    
+    @Test
+    public void assertOptimizeWithoutValuesWithPlaceHolderWithGeneratedKey() {
+        GeneratedKey generatedKey = new GeneratedKey(new Column("order_id", "t_order"));
+        generatedKey.getGeneratedKeys().add(1);
+        ShardingConditions actual = new InsertOptimizeEngine(shardingRule, insertStatementWithoutValuesWithPlaceHolder, parametersWithoutValues, generatedKey).optimize();
+        assertThat(actual.getShardingConditions().size(), is(1));
+        assertThat(((InsertShardingCondition) actual.getShardingConditions().get(0)).getParameters().size(), is(3));
+        assertThat(((InsertShardingCondition) actual.getShardingConditions().get(0)).getParameters().get(0), CoreMatchers.<Object>is(1));
+        assertThat(((InsertShardingCondition) actual.getShardingConditions().get(0)).getParameters().get(1), CoreMatchers.<Object>is(12));
+        assertThat(((InsertShardingCondition) actual.getShardingConditions().get(0)).getParameters().get(2), CoreMatchers.<Object>is("a"));
+        assertThat(((InsertShardingCondition) actual.getShardingConditions().get(0)).getInsertValueExpression(), is("order_id = ?, user_id = ?, status = ?"));
+        assertShardingValue((ListShardingValue) actual.getShardingConditions().get(0).getShardingValues().get(0), 1);
     }
     
     @Test
