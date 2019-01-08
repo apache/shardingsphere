@@ -143,10 +143,6 @@ public final class InsertOptimizeEngine implements OptimizeEngine {
         return result;
     }
     
-    private int getParametersCount(final int parametersCount, final InsertValue insertValue) {
-        return insertValue.getParametersCount() > 0 ? parametersCount + insertValue.getParametersCount() : parametersCount;
-    }
-    
     private ListShardingValue getShardingCondition(final Column column, final Comparable<?> value) {
         return new ListShardingValue<>(column.getTableName(), column.getName(),
                 new GeneratedKeyCondition(column, -1, value).getConditionValues(parameters));
