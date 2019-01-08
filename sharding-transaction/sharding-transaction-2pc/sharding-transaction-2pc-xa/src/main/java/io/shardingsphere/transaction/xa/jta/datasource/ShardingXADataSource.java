@@ -86,7 +86,8 @@ public final class ShardingXADataSource implements XADataSource {
     
     @Override
     public ShardingXAConnection getXAConnection() throws SQLException {
-        return isOriginalXADataSource ? new ShardingXAConnection(resourceName, xaDataSource.getXAConnection()) : this.wrapPhysicalConnection(databaseType, originalDataSource.getConnection());
+        return isOriginalXADataSource ? new ShardingXAConnection(resourceName, xaDataSource.getXAConnection())
+            : ShardingXAConnectionFactory.createShardingXAConnection(databaseType, resourceName, xaDataSource, originalDataSource.getConnection());
     }
     
     @Override
@@ -127,9 +128,5 @@ public final class ShardingXADataSource implements XADataSource {
      */
     public Connection getConnection() throws SQLException {
         return originalDataSource.getConnection();
-    }
-    
-    private ShardingXAConnection wrapPhysicalConnection(final DatabaseType databaseType, final Connection connection) {
-        return ShardingXAConnectionFactory.createShardingXAConnection(databaseType, resourceName, xaDataSource, connection);
     }
 }

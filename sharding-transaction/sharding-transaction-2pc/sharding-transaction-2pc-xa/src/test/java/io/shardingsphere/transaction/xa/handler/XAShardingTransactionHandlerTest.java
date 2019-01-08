@@ -38,7 +38,9 @@ import javax.sql.XADataSource;
 import javax.transaction.Status;
 import javax.transaction.Transaction;
 import javax.transaction.TransactionManager;
+import javax.transaction.xa.XAResource;
 import java.lang.reflect.Field;
+import java.sql.Connection;
 import java.util.HashMap;
 import java.util.Map;
 
@@ -129,16 +131,13 @@ public class XAShardingTransactionHandlerTest {
     
     @Test
     @SneakyThrows
-    public void assertCreateXATransactionalConnection() {
+    public void assertCreateTransactionalConnection() {
         when(transaction.getStatus()).thenReturn(Status.STATUS_ACTIVE);
         DataSource dataSource = mock(DataSource.class);
         setCachedShardingXADataSourceMap("ds1");
-        xaShardingTransactionHandler.createConnection("ds1", dataSource);
-    }
-    
-    @Test
-    public void assertCreateNoneXATransactionalConnection() {
-    
+        Connection actual = xaShardingTransactionHandler.createConnection("ds1", dataSource);
+        assertThat(actual, instanceOf(Connection.class));
+        verify(transaction).enlistResource(any(XAResource.class));
     }
     
     @SneakyThrows
@@ -160,7 +159,10 @@ public class XAShardingTransactionHandlerTest {
     private Map<String, ShardingXADataSource> createMockShardingXADataSourceMap(final String datasourceName) {
         ShardingXADataSource shardingXADataSource = mock(ShardingXADataSource.class);
         ShardingXAConnection shardingXAConnection = mock(ShardingXAConnection.class);
-        when(shardingXADataSource.getXAConnection()).thenReturn(shardingXAConnection);
+        XAResource xaResource = mock(XAResource.class);
+        Connection connection = mock(Connection.class);
+        when(shardingXAConnection.getConnection()).thenReturn(connection);
+        when(shardingXAConnection.getXAResource()).thenReturn(xaResource);
         when(shardingXADataSource.getXAConnection()).thenReturn(shardingXAConnection);
         Map<String, ShardingXADataSource> result = new HashMap<>();
         result.put(datasourceName, shardingXADataSource);
@@ -178,13 +180,6 @@ public class XAShardingTransactionHandlerTest {
         Map<String, DataSource> result = new HashMap<>();
         result.put("ds1", new AtomikosDataSourceBean());
         result.put("ds2", new AtomikosDataSourceBean());
-        return result;
-    }
-    
-    private Map<String, DataSource> createMockDataSourceMap(final String datasourceName) {
-        Map<String, DataSource> result = new HashMap<>();
-        DataSource dataSource = mock(DataSource.class);
-        result.put(datasourceName, dataSource);
         return result;
     }
 }
