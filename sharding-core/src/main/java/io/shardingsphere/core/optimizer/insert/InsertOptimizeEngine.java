@@ -82,24 +82,29 @@ public final class InsertOptimizeEngine implements OptimizeEngine {
             return new InsertShardingCondition(insertValue.getExpression(), currentParameters);
         }
         Column generateKeyColumn = shardingRule.getGenerateKeyColumn(insertStatement.getTables().getSingleTableName()).get();
-        String expression;
-        if (parameters.isEmpty()) {
-            boolean isStringTypeOfGeneratedKey = currentGeneratedKey.getClass() == String.class;
-            expression = getExpression(insertValue, currentGeneratedKey, generateKeyColumn, isStringTypeOfGeneratedKey);
-        } else {
-            expression = getExpression(insertValue, currentGeneratedKey, generateKeyColumn, currentParameters);
-        }
+        String expression = getExpression(insertValue, currentGeneratedKey, generateKeyColumn, currentParameters);
         InsertShardingCondition result = new InsertShardingCondition(expression, currentParameters);
         result.getShardingValues().add(getShardingCondition(generateKeyColumn, currentGeneratedKey));
         return result;
     }
     
     private String getExpression(final InsertValue insertValue, final Comparable<?> currentGeneratedKey, final Column generateKeyColumn, final List<Object> currentParameters) {
+        String expression;
+        if (parameters.isEmpty()) {
+            boolean isStringTypeOfGeneratedKey = currentGeneratedKey.getClass() == String.class;
+            expression = getExpressionWithoutPlaceHolders(insertValue, currentGeneratedKey, generateKeyColumn, isStringTypeOfGeneratedKey);
+        } else {
+            expression = getExpressionWithPlaceHolders(insertValue, currentGeneratedKey, generateKeyColumn, currentParameters);
+        }
+        return expression;
+    }
+    
+    private String getExpressionWithPlaceHolders(final InsertValue insertValue, final Comparable<?> currentGeneratedKey, final Column generateKeyColumn, final List<Object> currentParameters) {
         return DefaultKeyword.VALUES.equals(insertValue.getType()) ? getExpressionWithValues(insertValue, currentGeneratedKey, currentParameters) 
                 : getExpressionWithoutValues(insertValue, currentGeneratedKey, generateKeyColumn, currentParameters);
     }
     
-    private String getExpression(final InsertValue insertValue, final Comparable<?> currentGeneratedKey, final Column generateKeyColumn, final boolean isStringTypeOfGeneratedKey) {
+    private String getExpressionWithoutPlaceHolders(final InsertValue insertValue, final Comparable<?> currentGeneratedKey, final Column generateKeyColumn, final boolean isStringTypeOfGeneratedKey) {
         return DefaultKeyword.VALUES.equals(insertValue.getType()) ? getExpressionWithValues(insertValue, currentGeneratedKey, isStringTypeOfGeneratedKey) 
                 : getExpressionWithoutValues(insertValue, currentGeneratedKey, generateKeyColumn, isStringTypeOfGeneratedKey);
     }
