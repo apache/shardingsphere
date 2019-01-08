@@ -46,6 +46,7 @@ import java.io.File;
 import java.io.IOException;
 import java.net.URL;
 import java.util.ArrayList;
+import java.util.Collections;
 import java.util.List;
 
 import static org.hamcrest.CoreMatchers.is;
@@ -161,5 +162,13 @@ public final class InsertOptimizeEngineTest {
         assertThat((int) actual.getValues().iterator().next(), is(expected));
     }
     
-    public void 
+    @Test
+    public void assertOptimizeWithoutPlaceHolderWithGeneratedKey() {
+        GeneratedKey generatedKey = new GeneratedKey(new Column("order_id", "t_order"));
+        generatedKey.getGeneratedKeys().add(1);
+        generatedKey.getGeneratedKeys().add(2);
+        ShardingConditions actual = new InsertOptimizeEngine(shardingRule, insertStatementWithoutPlaceHolder, Collections.emptyList(), generatedKey).optimize();
+        assertThat(actual.getShardingConditions().size(), is(2));
+        
+    }
 }
