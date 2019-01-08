@@ -20,7 +20,8 @@ package io.shardingsphere.transaction.xa.jta.connection;
 import io.shardingsphere.core.constant.DatabaseType;
 import io.shardingsphere.transaction.xa.jta.connection.dialect.H2ShardingXAConnectionWrapper;
 import io.shardingsphere.transaction.xa.jta.connection.dialect.MySQLShardingXAConnectionWrapper;
-import lombok.RequiredArgsConstructor;
+import lombok.AccessLevel;
+import lombok.NoArgsConstructor;
 
 import javax.sql.XADataSource;
 import java.sql.Connection;
@@ -30,7 +31,7 @@ import java.sql.Connection;
  *
  * @author zhaojun
  */
-@RequiredArgsConstructor
+@NoArgsConstructor(access = AccessLevel.PRIVATE)
 public class ShardingXAConnectionFactory {
     
     /**

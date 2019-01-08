@@ -26,6 +26,7 @@ import lombok.extern.slf4j.Slf4j;
 
 import javax.sql.XAConnection;
 import javax.sql.XADataSource;
+import java.lang.reflect.Method;
 import java.sql.Connection;
 
 /**
@@ -41,7 +42,8 @@ public final class MySQLShardingXAConnectionWrapper implements ShardingXAConnect
     public ShardingXAConnection wrap(final String resourceName, final XADataSource xaDataSource, final Connection connection) {
         try {
             Connection mysqlPhysicalConnection = (Connection) connection.unwrap(Class.forName("com.mysql.jdbc.Connection"));
-            XAConnection xaConnection = (XAConnection) ReflectiveUtil.findMethod(xaDataSource, "wrapConnection", Connection.class).invoke(xaDataSource, mysqlPhysicalConnection);
+            Method wrapConnectionMethod = ReflectiveUtil.findMethod(xaDataSource, "wrapConnection", Connection.class);
+            XAConnection xaConnection = (XAConnection) wrapConnectionMethod.invoke(xaDataSource, mysqlPhysicalConnection);
             return new ShardingXAConnection(resourceName, xaConnection);
         } catch (final Exception ex) {
             log.error("Failed to wrap a connection to ShardingXAConnection");
