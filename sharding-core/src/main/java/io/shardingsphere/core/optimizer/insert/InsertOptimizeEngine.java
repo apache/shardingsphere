@@ -70,30 +70,28 @@ public final class InsertOptimizeEngine implements OptimizeEngine {
                 currentParameters = getCurrentParameters(parametersCount, insertValue.getParametersCount());
                 parametersCount = parametersCount + insertValue.getParametersCount();
             }
-            InsertShardingCondition insertShardingCondition = getInsertShardingCondition(generatedKeys, insertValue, currentParameters);
+            InsertShardingCondition insertShardingCondition = getInsertShardingCondition(generatedKeys.next(), insertValue, currentParameters);
             insertShardingCondition.getShardingValues().addAll(getShardingCondition(andConditions.get(i)));
             result.add(insertShardingCondition);
         }
         return new ShardingConditions(result);
     }
     
-    private InsertShardingCondition getInsertShardingCondition(final Iterator<Comparable<?>> generatedKeys, final InsertValue insertValue, final List<Object> currentParameters) {
-        if (!isToHandleGeneratedKey()) {
+    private InsertShardingCondition getInsertShardingCondition(final Comparable<?> currentGeneratedKey, final InsertValue insertValue, final List<Object> currentParameters) {
+        if (!isNeededToAppendGeneratedKey()) {
             return new InsertShardingCondition(insertValue.getExpression(), currentParameters);
         }
-        InsertShardingCondition insertShardingCondition;
         Column generateKeyColumn = shardingRule.getGenerateKeyColumn(insertStatement.getTables().getSingleTableName()).get();
         String expression;
-        Comparable<?> currentGeneratedKey = generatedKeys.next();
         if (parameters.isEmpty()) {
             boolean isStringTypeOfGeneratedKey = currentGeneratedKey.getClass() == String.class;
             expression = getExpression(insertValue, currentGeneratedKey, generateKeyColumn, isStringTypeOfGeneratedKey);
         } else {
             expression = getExpression(insertValue, currentGeneratedKey, generateKeyColumn, currentParameters);
         }
-        insertShardingCondition = new InsertShardingCondition(expression, currentParameters);
-        insertShardingCondition.getShardingValues().add(getShardingCondition(generateKeyColumn, currentGeneratedKey));
-        return insertShardingCondition;
+        InsertShardingCondition result = new InsertShardingCondition(expression, currentParameters);
+        result.getShardingValues().add(getShardingCondition(generateKeyColumn, currentGeneratedKey));
+        return result;
     }
     
     private String getExpression(final InsertValue insertValue, final Comparable<?> currentGeneratedKey, final Column generateKeyColumn, final List<Object> currentParameters) {
@@ -132,10 +130,10 @@ public final class InsertOptimizeEngine implements OptimizeEngine {
     }
     
     private Iterator<Comparable<?>> createGeneratedKeys() {
-        return isToHandleGeneratedKey() ? generatedKey.getGeneratedKeys().iterator() : null;
+        return isNeededToAppendGeneratedKey() ? generatedKey.getGeneratedKeys().iterator() : null;
     }
     
-    private boolean isToHandleGeneratedKey() {
+    private boolean isNeededToAppendGeneratedKey() {
         return -1 == insertStatement.getGenerateKeyColumnIndex() && shardingRule.getGenerateKeyColumn(insertStatement.getTables().getSingleTableName()).isPresent();
     }
     
