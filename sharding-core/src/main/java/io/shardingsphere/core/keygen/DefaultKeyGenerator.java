@@ -72,8 +72,6 @@ public final class DefaultKeyGenerator implements KeyGenerator {
     
     private ShardingProperties props;
     
-    private static int maxTolerateTimeDifferenceMilliseconds = 10;
-    
     static {
         Calendar calendar = Calendar.getInstance();
         calendar.set(2016, Calendar.NOVEMBER, 1);
@@ -106,13 +104,8 @@ public final class DefaultKeyGenerator implements KeyGenerator {
         return result;
     }
     
-    /**
-     * Set max tolerate time difference milliseconds.
-     *
-     * @param maxTolerateTimeDifferenceMilliseconds max tolerate time difference milliseconds
-     */
-    public static void setMaxTolerateTimeDifferenceMilliseconds(final int maxTolerateTimeDifferenceMilliseconds) {
-        DefaultKeyGenerator.maxTolerateTimeDifferenceMilliseconds = maxTolerateTimeDifferenceMilliseconds;
+    private int getMaxTolerateTimeDifferenceMilliseconds() {
+        return props.getValue(ShardingPropertiesConstant.MAX_TOLERATE_TIME_DIFFERENCE_MILLISECONDS);
     }
     
     /**
@@ -144,7 +137,7 @@ public final class DefaultKeyGenerator implements KeyGenerator {
             return false;
         }
         long timeDifferenceMilliseconds = lastMilliseconds - currentMilliseconds;
-        Preconditions.checkState(timeDifferenceMilliseconds < maxTolerateTimeDifferenceMilliseconds, 
+        Preconditions.checkState(timeDifferenceMilliseconds < getMaxTolerateTimeDifferenceMilliseconds(), 
                 "Clock is moving backwards, last time is %d milliseconds, current time is %d milliseconds", lastMilliseconds, currentMilliseconds);
         Thread.sleep(timeDifferenceMilliseconds);
         return true;
