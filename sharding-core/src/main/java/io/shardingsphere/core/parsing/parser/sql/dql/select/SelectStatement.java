@@ -198,7 +198,7 @@ public final class SelectStatement extends DQLStatement {
     }
     
     /**
-     * Adjust group by and order by sequence is same or not.
+     * Judge group by and order by sequence is same or not.
      *
      * @return group by and order by sequence is same or not
      */
@@ -251,7 +251,7 @@ public final class SelectStatement extends DQLStatement {
     }
     
     /**
-     * Adjust contains subquery statement or not.
+     * Judge contains subquery statement or not.
      * 
      * @return contains subquery statement or not
      */

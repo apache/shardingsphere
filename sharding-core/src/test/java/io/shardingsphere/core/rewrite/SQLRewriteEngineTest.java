@@ -89,7 +89,7 @@ public final class SQLRewriteEngineTest {
         URL url = SQLRewriteEngineTest.class.getClassLoader().getResource("yaml/rewrite-rule.yaml");
         Preconditions.checkNotNull(url, "Cannot found rewrite rule yaml configuration.");
         YamlShardingConfiguration yamlShardingConfig = YamlShardingConfiguration.unmarshal(new File(url.getFile()));
-        shardingRule = yamlShardingConfig.getShardingRule(yamlShardingConfig.getDataSources().keySet());
+        shardingRule = new ShardingRule(yamlShardingConfig.getShardingRule().getShardingRuleConfiguration(), yamlShardingConfig.getDataSources().keySet());
         selectStatement = new SelectStatement();
         insertStatement = new InsertStatement();
         showTablesStatement = new DALStatement();

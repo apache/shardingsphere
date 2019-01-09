@@ -48,12 +48,12 @@ public final class DefaultKeyGeneratorTest {
         ExecutorService executor = Executors.newFixedThreadPool(threadNumber);
         int taskNumber = threadNumber << 2;
         final DefaultKeyGenerator keyGenerator = new DefaultKeyGenerator();
-        Set<Number> actual = new HashSet<>();
+        Set<Comparable<?>> actual = new HashSet<>();
         for (int i = 0; i < taskNumber; i++) {
-            actual.add(executor.submit(new Callable<Number>() {
+            actual.add(executor.submit(new Callable<Comparable<?>>() {
                 
                 @Override
-                public Number call() {
+                public Comparable<?> call() {
                     return keyGenerator.generateKey();
                 }
             }).get());
@@ -63,10 +63,10 @@ public final class DefaultKeyGeneratorTest {
     
     @Test
     public void assertGenerateKeyWithSingleThread() {
-        List<Number> expected = Arrays.<Number>asList(1L, 4194304L, 4194305L, 8388609L, 8388610L, 12582912L, 12582913L, 16777217L, 16777218L, 20971520L);
+        List<Comparable<?>> expected = Arrays.<Comparable<?>>asList(1L, 4194304L, 4194305L, 8388609L, 8388610L, 12582912L, 12582913L, 16777217L, 16777218L, 20971520L);
         DefaultKeyGenerator keyGenerator = new DefaultKeyGenerator();
         DefaultKeyGenerator.setTimeService(new FixedTimeService(1));
-        List<Number> actual = new ArrayList<>();
+        List<Comparable<?>> actual = new ArrayList<>();
         for (int i = 0; i < DEFAULT_KEY_AMOUNT; i++) {
             actual.add(keyGenerator.generateKey());
         }
@@ -76,12 +76,12 @@ public final class DefaultKeyGeneratorTest {
     @Test
     @SneakyThrows
     public void assertGenerateKeyWithClockCallBack() {
-        List<Number> expected = Arrays.<Number>asList(4194305L, 8388608L, 8388609L, 12582913L, 12582914L, 16777216L, 16777217L, 20971521L, 20971522L, 25165824L);
         DefaultKeyGenerator keyGenerator = new DefaultKeyGenerator();
         TimeService timeService = new FixedTimeService(1);
         DefaultKeyGenerator.setTimeService(timeService);
         setLastMilliseconds(keyGenerator, timeService.getCurrentMillis() + 2);
-        List<Number> actual = new ArrayList<>();
+        List<Comparable<?>> expected = Arrays.<Comparable<?>>asList(4194305L, 8388608L, 8388609L, 12582913L, 12582914L, 16777216L, 16777217L, 20971521L, 20971522L, 25165824L);
+        List<Comparable<?>> actual = new ArrayList<>();
         for (int i = 0; i < DEFAULT_KEY_AMOUNT; i++) {
             actual.add(keyGenerator.generateKey());
         }
@@ -96,7 +96,7 @@ public final class DefaultKeyGeneratorTest {
         DefaultKeyGenerator.setTimeService(timeService);
         DefaultKeyGenerator.setMaxTolerateTimeDifferenceMilliseconds(0);
         setLastMilliseconds(keyGenerator, timeService.getCurrentMillis() + 2);
-        List<Number> actual = new ArrayList<>();
+        List<Comparable<?>> actual = new ArrayList<>();
         for (int i = 0; i < DEFAULT_KEY_AMOUNT; i++) {
             actual.add(keyGenerator.generateKey());
         }
@@ -105,13 +105,13 @@ public final class DefaultKeyGeneratorTest {
     
     @Test
     public void assertGenerateKeyBeyondMaxSequencePerMilliSecond() {
-        List<Number> expected = Arrays.<Number>asList(4194304L, 4194305L, 4194306L, 8388609L, 8388610L, 8388611L, 12582912L, 12582913L, 12582914L, 16777217L);
         final DefaultKeyGenerator keyGenerator = new DefaultKeyGenerator();
         TimeService timeService = new FixedTimeService(2);
         DefaultKeyGenerator.setTimeService(timeService);
         setLastMilliseconds(keyGenerator, timeService.getCurrentMillis());
         setSequence(keyGenerator, (1 << DEFAULT_SEQUENCE_BITS) - 1);
-        List<Number> actual = new ArrayList<>();
+        List<Comparable<?>> expected = Arrays.<Comparable<?>>asList(4194304L, 4194305L, 4194306L, 8388609L, 8388610L, 8388611L, 12582912L, 12582913L, 12582914L, 16777217L);
+        List<Comparable<?>> actual = new ArrayList<>();
         for (int i = 0; i < DEFAULT_KEY_AMOUNT; i++) {
             actual.add(keyGenerator.generateKey());
         }

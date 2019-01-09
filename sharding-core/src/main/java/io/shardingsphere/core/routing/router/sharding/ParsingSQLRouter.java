@@ -71,7 +71,7 @@ public final class ParsingSQLRouter implements ShardingRouter {
     
     private final boolean showSQL;
     
-    private final List<Number> generatedKeys = new LinkedList<>();
+    private final List<Comparable<?>> generatedKeys = new LinkedList<>();
     
     private final ParsingHook parsingHook = new SPIParsingHook();
     
@@ -96,7 +96,7 @@ public final class ParsingSQLRouter implements ShardingRouter {
         if (generatedKey.isPresent()) {
             setGeneratedKeys(result, generatedKey.get());
         }
-        if (isNeedMergeShardingValues(sqlStatement)) {
+        if (sqlStatement instanceof SelectStatement && isNeedMergeShardingValues((SelectStatement) sqlStatement)) {
             checkSubqueryShardingValues(sqlStatement.getConditions(), shardingConditions);
             mergeShardingValues(shardingConditions);
         }
@@ -125,13 +125,13 @@ public final class ParsingSQLRouter implements ShardingRouter {
                 if (-1 == generatedKeyCondition.getIndex()) {
                     result.getGeneratedKeys().add(generatedKeyCondition.getValue());
                 } else {
-                    result.getGeneratedKeys().add((Number) parameters.get(generatedKeyCondition.getIndex()));
+                    result.getGeneratedKeys().add((Comparable<?>) parameters.get(generatedKeyCondition.getIndex()));
                 }
             }
             return Optional.fromNullable(result);
         }
         String logicTableName = insertStatement.getTables().getSingleTableName();
-        Optional<TableRule> tableRule = shardingRule.findTableRuleByLogicTable(logicTableName);
+        Optional<TableRule> tableRule = shardingRule.findTableRule(logicTableName);
         if (!tableRule.isPresent()) {
             return Optional.absent();
         }
@@ -151,16 +151,8 @@ public final class ParsingSQLRouter implements ShardingRouter {
         sqlRouteResult.getGeneratedKey().getGeneratedKeys().addAll(generatedKeys);
     }
     
-    private boolean isNeedMergeShardingValues(final SQLStatement sqlStatement) {
-        if (!(sqlStatement instanceof SelectStatement) || ((SelectStatement) sqlStatement).getSubqueryConditions().isEmpty()) {
-            return false;
-        }
-        for (String each : sqlStatement.getTables().getTableNames()) {
-            if (shardingRule.findTableRuleByLogicTable(each).isPresent()) {
-                return true;
-            }
-        }
-        return false;
+    private boolean isNeedMergeShardingValues(final SelectStatement selectStatement) {
+        return !selectStatement.getSubqueryConditions().isEmpty() && !shardingRule.getShardingLogicTableNames(selectStatement.getTables().getTableNames()).isEmpty();
     }
     
     private void checkSubqueryShardingValues(final Conditions conditions, final ShardingConditions shardingConditions) {

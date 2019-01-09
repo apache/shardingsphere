@@ -17,7 +17,6 @@
 
 package io.shardingsphere.core.yaml.sharding;
 
-import io.shardingsphere.core.rule.ShardingRule;
 import lombok.Getter;
 import lombok.Setter;
 import org.yaml.snakeyaml.Yaml;
@@ -30,7 +29,6 @@ import java.io.FileInputStream;
 import java.io.IOException;
 import java.io.InputStream;
 import java.io.InputStreamReader;
-import java.util.Collection;
 import java.util.HashMap;
 import java.util.LinkedHashMap;
 import java.util.Map;
@@ -81,15 +79,5 @@ public class YamlShardingConfiguration {
         try (InputStream inputStream = new ByteArrayInputStream(yamlBytes)) {
             return new Yaml(new Constructor(YamlShardingConfiguration.class)).loadAs(inputStream, YamlShardingConfiguration.class);
         }
-    }
-    
-    /**
-     * Get sharding rule from yaml.
-     *
-     * @param dataSourceNames data source names
-     * @return sharding rule from yaml
-     */
-    public ShardingRule getShardingRule(final Collection<String> dataSourceNames) {
-        return new ShardingRule(shardingRule.getShardingRuleConfiguration(), dataSourceNames.isEmpty() ? dataSources.keySet() : dataSourceNames);
     }
 }
