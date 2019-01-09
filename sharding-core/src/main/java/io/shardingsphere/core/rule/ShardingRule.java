@@ -27,7 +27,6 @@ import io.shardingsphere.api.config.rule.TableRuleConfiguration;
 import io.shardingsphere.api.config.strategy.ShardingStrategyConfiguration;
 import io.shardingsphere.core.exception.ShardingConfigurationException;
 import io.shardingsphere.core.exception.ShardingException;
-import io.shardingsphere.core.keygen.DefaultKeyGenerator;
 import io.shardingsphere.core.keygen.KeyGenerator;
 import io.shardingsphere.core.parsing.parser.context.condition.Column;
 import io.shardingsphere.core.routing.strategy.ShardingStrategy;
@@ -78,7 +77,7 @@ public class ShardingRule {
         broadcastTables = shardingRuleConfig.getBroadcastTables();
         defaultDatabaseShardingStrategy = createDefaultShardingStrategy(shardingRuleConfig.getDefaultDatabaseShardingStrategyConfig());
         defaultTableShardingStrategy = createDefaultShardingStrategy(shardingRuleConfig.getDefaultTableShardingStrategyConfig());
-        defaultKeyGenerator = createDefaultKeyGenerator(shardingRuleConfig.getDefaultKeyGenerator());
+        defaultKeyGenerator = shardingRuleConfig.getDefaultKeyGenerator();
         masterSlaveRules = createMasterSlaveRules(shardingRuleConfig.getMasterSlaveRuleConfigs());
     }
     
@@ -108,10 +107,6 @@ public class ShardingRule {
     
     private ShardingStrategy createDefaultShardingStrategy(final ShardingStrategyConfiguration shardingStrategyConfiguration) {
         return null == shardingStrategyConfiguration ? new NoneShardingStrategy() : ShardingStrategyFactory.newInstance(shardingStrategyConfiguration);
-    }
-    
-    private KeyGenerator createDefaultKeyGenerator(final KeyGenerator defaultKeyGenerator) {
-        return null == defaultKeyGenerator ? new DefaultKeyGenerator() : defaultKeyGenerator;
     }
     
     private Collection<MasterSlaveRule> createMasterSlaveRules(final Collection<MasterSlaveRuleConfiguration> masterSlaveRuleConfigurations) {
