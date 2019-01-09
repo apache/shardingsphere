@@ -18,6 +18,7 @@
 package io.shardingsphere.core.yaml.sharding;
 
 import com.google.common.base.Strings;
+import io.shardingsphere.core.exception.ShardingConfigurationException;
 import io.shardingsphere.core.keygen.BuiltinKeyGeneratorType;
 import io.shardingsphere.core.keygen.KeyGenerator;
 import io.shardingsphere.core.keygen.KeyGeneratorFactory;
@@ -61,5 +62,18 @@ public class YamlKeyGeneratorConfiguration {
         }
         result.setProperties(props);
         return result;
+    }
+    
+    private String getKeyGeneratorClassName() {
+        if (keyGeneratorType.equalsIgnoreCase(BuiltinKeyGeneratorType.SNOWFLAKE.name())) {
+            return BuiltinKeyGeneratorType.SNOWFLAKE.getKeyGeneratorClassName();
+        }
+        if (keyGeneratorType.equalsIgnoreCase(BuiltinKeyGeneratorType.UUID.name())) {
+            return BuiltinKeyGeneratorType.UUID.getKeyGeneratorClassName();
+        }
+        if (keyGeneratorType.equalsIgnoreCase(BuiltinKeyGeneratorType.LEAF.name())) {
+            return BuiltinKeyGeneratorType.LEAF.getKeyGeneratorClassName();
+        }
+        throw new ShardingConfigurationException("Invalid built-in key generator type.");
     }
 }
