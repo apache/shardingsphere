@@ -18,10 +18,12 @@
 package io.shardingsphere.core.keygen;
 
 import com.google.common.base.Preconditions;
+import lombok.Getter;
 import lombok.Setter;
 import lombok.SneakyThrows;
 
 import java.util.Calendar;
+import java.util.Properties;
 
 /**
  * Default distributed primary key generator.
@@ -31,7 +33,7 @@ import java.util.Calendar;
  * </p>
  * 
  * <pre>
- * 1bit   sign bit.
+ * 1bit sign bit.
  * 41bits timestamp offset from 2016.11.01(ShardingSphere distributed primary key published data) to now.
  * 10bits worker process id.
  * 12bits auto increment offset in one mills
@@ -46,6 +48,7 @@ import java.util.Calendar;
  * </p>
  * 
  * @author gaohongtao
+ * @author panjuan
  */
 public final class DefaultKeyGenerator implements KeyGenerator {
     
@@ -65,6 +68,10 @@ public final class DefaultKeyGenerator implements KeyGenerator {
     
     @Setter
     private static TimeService timeService = new TimeService();
+    
+    @Getter
+    @Setter
+    private Properties properties;
     
     private static long workerId;
     
