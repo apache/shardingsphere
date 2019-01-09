@@ -67,10 +67,10 @@ public final class DefaultKeyGeneratorTest {
     
     @Test
     public void assertGenerateKeyWithSingleThread() {
-        List<Comparable<?>> expected = Arrays.<Comparable<?>>asList(1L, 4194304L, 4194305L, 8388609L, 8388610L, 12582912L, 12582913L, 16777217L, 16777218L, 20971520L);
         DefaultKeyGenerator keyGenerator = new DefaultKeyGenerator();
         keyGenerator.setKeyGeneratorProperties(new Properties());
         DefaultKeyGenerator.setTimeService(new FixedTimeService(1));
+        List<Comparable<?>> expected = Arrays.<Comparable<?>>asList(1L, 4194304L, 4194305L, 8388609L, 8388610L, 12582912L, 12582913L, 16777217L, 16777218L, 20971520L);
         List<Comparable<?>> actual = new ArrayList<>();
         for (int i = 0; i < DEFAULT_KEY_AMOUNT; i++) {
             actual.add(keyGenerator.generateKey());
@@ -181,6 +181,6 @@ public final class DefaultKeyGeneratorTest {
         keyGenerator.setKeyGeneratorProperties(properties);
         Field props = keyGenerator.getClass().getDeclaredField("props");
         props.setAccessible(true);
-        assertThat(((Properties) props.get(keyGenerator)).get("max.tolerate.time.difference.milliseconds"), is((Object) 1));
+        assertThat(((ShardingProperties) props.get(keyGenerator)).getValue(ShardingPropertiesConstant.MAX_TOLERATE_TIME_DIFFERENCE_MILLISECONDS), is((Object) 1));
     }
 }
