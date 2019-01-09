@@ -135,7 +135,7 @@ public final class DefaultKeyGenerator implements KeyGenerator {
             sequence = sequenceOffset;
         }
         lastMilliseconds = currentMilliseconds;
-        return ((currentMilliseconds - EPOCH) << TIMESTAMP_LEFT_SHIFT_BITS) | (workerId << WORKER_ID_LEFT_SHIFT_BITS) | sequence;
+        return ((currentMilliseconds - EPOCH) << TIMESTAMP_LEFT_SHIFT_BITS) | (getWorkerId() << WORKER_ID_LEFT_SHIFT_BITS) | sequence;
     }
     
     @SneakyThrows
