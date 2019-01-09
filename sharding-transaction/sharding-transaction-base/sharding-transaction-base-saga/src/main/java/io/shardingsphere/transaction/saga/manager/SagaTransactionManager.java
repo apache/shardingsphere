@@ -26,7 +26,6 @@ import io.shardingsphere.transaction.saga.servicecomb.transport.ShardingTranspor
 import lombok.Getter;
 
 import javax.transaction.Status;
-import java.util.Map;
 
 /**
  * Saga transaction manager.
@@ -48,7 +47,7 @@ public final class SagaTransactionManager implements ShardingTransactionManager<
     @Override
     public void begin(final SagaTransactionContext transactionContext) {
         SagaTransaction transaction = new SagaTransaction(resourceManager.getSagaConfiguration(), transactionContext.getDataSourceMap());
-        initExecuteDataMap(transaction);
+        ShardingExecuteDataMap.getDataMap().put(TRANSACTION_KEY, transaction);
         TRANSACTIONS.set(transaction);
         ShardingTransportFactory.getInstance().cacheTransport(transaction);
     }
@@ -90,11 +89,6 @@ public final class SagaTransactionManager implements ShardingTransactionManager<
      */
     public SagaTransaction getTransaction() {
         return TRANSACTIONS.get();
-    }
-    
-    private void initExecuteDataMap(final SagaTransaction transaction) {
-        Map<String, Object> sagaExecuteDataMap = ShardingExecuteDataMap.getDataMap();
-        sagaExecuteDataMap.put(TRANSACTION_KEY, transaction);
     }
     
     private void submitToActuator() {
