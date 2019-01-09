@@ -18,12 +18,19 @@
 package io.shardingsphere.shardingjdbc.orchestration.api.yaml.fixture;
 
 import io.shardingsphere.core.keygen.KeyGenerator;
+import lombok.Getter;
+import lombok.Setter;
 
+import java.util.Properties;
 import java.util.concurrent.atomic.AtomicInteger;
 
 public final class IncrementKeyGenerator implements KeyGenerator {
     
     private static final AtomicInteger SEQUENCE = new AtomicInteger(100);
+    
+    @Getter
+    @Setter
+    private Properties keyGeneratorProperties = new Properties();
     
     @Override
     public Comparable<?> generateKey() {
