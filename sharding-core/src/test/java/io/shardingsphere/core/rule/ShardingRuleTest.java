@@ -24,7 +24,6 @@ import io.shardingsphere.api.config.rule.ShardingRuleConfiguration;
 import io.shardingsphere.api.config.rule.TableRuleConfiguration;
 import io.shardingsphere.api.config.strategy.InlineShardingStrategyConfiguration;
 import io.shardingsphere.api.config.strategy.NoneShardingStrategyConfiguration;
-import io.shardingsphere.api.config.strategy.ShardingStrategyConfiguration;
 import io.shardingsphere.api.config.strategy.StandardShardingStrategyConfiguration;
 import io.shardingsphere.core.exception.ShardingConfigurationException;
 import io.shardingsphere.core.keygen.DefaultKeyGenerator;
@@ -423,22 +422,6 @@ public final class ShardingRuleTest {
         result.setLogicTable("LOGIC_TABLE");
         result.setLogicIndex("INDEX_TABLE");
         result.setActualDataNodes("ds_${0..1}.table_${0..2}");
-        return result;
-    }
-    
-    private TableRuleConfiguration createTableRuleConfigWithDatabaseShardingStrategy(final ShardingStrategyConfiguration strategyConfig) {
-        TableRuleConfiguration result = new TableRuleConfiguration();
-        result.setLogicTable("LOGIC_TABLE");
-        result.setActualDataNodes("ds_${0..1}.table_${0..2}");
-        result.setDatabaseShardingStrategyConfig(strategyConfig);
-        return result;
-    }
-    
-    private TableRuleConfiguration createTableRuleConfigWithTableShardingStrategy(final ShardingStrategyConfiguration strategyConfig) {
-        TableRuleConfiguration result = new TableRuleConfiguration();
-        result.setLogicTable("LOGIC_TABLE");
-        result.setActualDataNodes("ds_${0..1}.table_${0..2}");
-        result.setTableShardingStrategyConfig(strategyConfig);
         return result;
     }
     
