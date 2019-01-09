@@ -75,6 +75,12 @@ public enum ShardingPropertiesConstant {
     PROXY_FRONTEND_FLUSH_THRESHOLD("proxy.frontend.flush.threshold", String.valueOf(128), int.class),
     
     /**
+     * SnowFlake work id.
+     * 
+     */
+    WORK_ID("work.id", String.valueOf(0), long.class),
+    
+    /**
      * Transaction type of proxy.
      *
      * <p>
