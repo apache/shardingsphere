@@ -17,8 +17,14 @@
 
 package io.shardingsphere.transaction.core.handler;
 
+import io.shardingsphere.core.constant.DatabaseType;
 import io.shardingsphere.transaction.core.TransactionOperationType;
 import io.shardingsphere.transaction.spi.ShardingTransactionHandler;
+
+import javax.sql.DataSource;
+import java.sql.Connection;
+import java.sql.SQLException;
+import java.util.Map;
 
 /**
  * Abstract class for sharding transaction handler.
@@ -28,9 +34,12 @@ import io.shardingsphere.transaction.spi.ShardingTransactionHandler;
  */
 public abstract class ShardingTransactionHandlerAdapter implements ShardingTransactionHandler {
     
+    /**
+     * Default implement for do in transaction.
+     */
     @Override
     @SuppressWarnings("unchecked")
-    public final void doInTransaction(final TransactionOperationType transactionOperationType) {
+    public void doInTransaction(final TransactionOperationType transactionOperationType) {
         switch (transactionOperationType) {
             case BEGIN:
                 getShardingTransactionManager().begin();
@@ -43,5 +52,29 @@ public abstract class ShardingTransactionHandlerAdapter implements ShardingTrans
                 break;
             default:
         }
+    }
+    
+    /**
+     * Default implement for register transaction resource.
+     */
+    @Override
+    public void registerTransactionalResource(final DatabaseType databaseType, final Map<String, DataSource> dataSourceMap) {
+        // adapter
+    }
+    
+    /**
+     * Default implement for clear transactional resource.
+     */
+    @Override
+    public void clearTransactionalResource() {
+        // adapter
+    }
+    
+    /**
+     * Default implement for create connection.
+     */
+    @Override
+    public Connection createConnection(final String dataSourceName, final DataSource dataSource) throws SQLException {
+        return dataSource.getConnection();
     }
 }

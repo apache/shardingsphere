@@ -24,6 +24,7 @@ import io.shardingsphere.transaction.core.manager.ShardingTransactionManager;
 
 import javax.sql.DataSource;
 import java.sql.Connection;
+import java.sql.SQLException;
 import java.util.Map;
 
 /**
@@ -70,9 +71,11 @@ public interface ShardingTransactionHandler {
     
     /**
      * Create transactional connection.
+     *
      * @param dataSourceName data source name
      * @param dataSource data source
      * @return connection
+     * @throws SQLException SQL exception
      */
-    Connection createConnection(String dataSourceName, DataSource dataSource);
+    Connection createConnection(String dataSourceName, DataSource dataSource) throws SQLException;
 }

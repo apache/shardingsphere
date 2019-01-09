@@ -17,14 +17,11 @@
 
 package io.shardingsphere.shardingjdbc.jdbc.core.fixed;
 
-import io.shardingsphere.core.constant.DatabaseType;
 import io.shardingsphere.transaction.api.TransactionType;
 import io.shardingsphere.transaction.core.TransactionOperationType;
+import io.shardingsphere.transaction.core.handler.ShardingTransactionHandlerAdapter;
 import io.shardingsphere.transaction.core.manager.ShardingTransactionManager;
-import io.shardingsphere.transaction.spi.ShardingTransactionHandler;
 
-import javax.sql.DataSource;
-import java.sql.Connection;
 import java.util.HashMap;
 import java.util.Map;
 
@@ -33,7 +30,7 @@ import java.util.Map;
  *
  * @author zhaojun
  */
-public final class FixedXAShardingTransactionHandler implements ShardingTransactionHandler {
+public final class FixedXAShardingTransactionHandler extends ShardingTransactionHandlerAdapter {
     
     private static final Map<String, TransactionOperationType> INVOKES = new HashMap<>();
     
@@ -70,20 +67,5 @@ public final class FixedXAShardingTransactionHandler implements ShardingTransact
     @Override
     public TransactionType getTransactionType() {
         return TransactionType.XA;
-    }
-    
-    @Override
-    public void registerTransactionalResource(final DatabaseType databaseType, final Map<String, DataSource> dataSourceMap) {
-    
-    }
-    
-    @Override
-    public void clearTransactionalResource() {
-    
-    }
-    
-    @Override
-    public Connection createConnection(final String dataSourceName, final DataSource dataSource) {
-        return null;
     }
 }

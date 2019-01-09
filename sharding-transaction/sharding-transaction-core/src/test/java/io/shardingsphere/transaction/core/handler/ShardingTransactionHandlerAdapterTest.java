@@ -17,16 +17,25 @@
 
 package io.shardingsphere.transaction.core.handler;
 
+import io.shardingsphere.core.constant.DatabaseType;
+import io.shardingsphere.transaction.api.TransactionType;
 import io.shardingsphere.transaction.core.TransactionOperationType;
 import io.shardingsphere.transaction.core.manager.ShardingTransactionManager;
-import io.shardingsphere.transaction.spi.ShardingTransactionHandler;
 import org.junit.Test;
+import org.junit.runner.RunWith;
+import org.mockito.junit.MockitoJUnitRunner;
 
+import javax.sql.DataSource;
+import java.sql.Connection;
+import java.util.Map;
+
+import static org.mockito.Mockito.mock;
 import static org.mockito.Mockito.verify;
 
+@RunWith(MockitoJUnitRunner.class)
 public class ShardingTransactionHandlerAdapterTest {
     
-    private ShardingTransactionHandler fixedShardingTransactionHandler = new FixedShardingTransactionHandler();
+    private FixedShardingTransactionHandler fixedShardingTransactionHandler = new FixedShardingTransactionHandler();
     
     private ShardingTransactionManager shardingTransactionManager = fixedShardingTransactionHandler.getShardingTransactionManager();
     
@@ -46,5 +55,35 @@ public class ShardingTransactionHandlerAdapterTest {
     public void assertDoXATransactionRollback() {
         fixedShardingTransactionHandler.doInTransaction(TransactionOperationType.ROLLBACK);
         verify(shardingTransactionManager).rollback();
+    }
+    
+    private static final class FixedShardingTransactionHandler extends ShardingTransactionHandlerAdapter {
+        
+        private ShardingTransactionManager shardingTransactionManager = mock(ShardingTransactionManager.class);
+        
+        @Override
+        public ShardingTransactionManager getShardingTransactionManager() {
+            return shardingTransactionManager;
+        }
+        
+        @Override
+        public TransactionType getTransactionType() {
+            return null;
+        }
+        
+        @Override
+        public void registerTransactionalResource(final DatabaseType databaseType, final Map<String, DataSource> dataSourceMap) {
+        
+        }
+        
+        @Override
+        public void clearTransactionalResource() {
+        
+        }
+        
+        @Override
+        public Connection createConnection(final String dataSourceName, final DataSource dataSource) {
+            return null;
+        }
     }
 }
