@@ -60,7 +60,7 @@ public class YamlKeyGeneratorConfiguration {
         } else {
             result = KeyGeneratorFactory.newInstance(BuiltinKeyGeneratorType.SNOWFLAKE.getKeyGeneratorClassName());
         }
-        result.setProperties(props);
+        result.setKeyGeneratorProperties(props);
         return result;
     }
     
