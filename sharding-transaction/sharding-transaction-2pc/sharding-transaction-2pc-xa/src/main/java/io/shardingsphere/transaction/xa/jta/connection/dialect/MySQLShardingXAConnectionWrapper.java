@@ -46,7 +46,7 @@ public final class MySQLShardingXAConnectionWrapper implements ShardingXAConnect
             XAConnection xaConnection = (XAConnection) wrapConnectionMethod.invoke(xaDataSource, mysqlPhysicalConnection);
             return new ShardingXAConnection(resourceName, xaConnection);
         } catch (final Exception ex) {
-            log.error("Failed to wrap a connection to ShardingXAConnection");
+            log.error("Failed to wrap a connection to ShardingXAConnection.");
             throw new ShardingException(ex);
         }
     }

@@ -33,7 +33,6 @@ import java.lang.reflect.Method;
 import java.sql.Connection;
 import java.sql.SQLException;
 
-
 /**
  * H2 sharding XA connection wrapper.
  *
@@ -56,7 +55,7 @@ public final class H2ShardingXAConnectionWrapper implements ShardingXAConnection
             h2XAConnectionConstructor.setAccessible(true);
             return h2XAConnectionConstructor;
         } catch (final NoSuchMethodException ex) {
-            throw new ShardingException("Could not find constructor of H2 XA connection");
+            throw new ShardingException("Could not find constructor of H2 XA connection.");
         }
     }
     
@@ -66,7 +65,7 @@ public final class H2ShardingXAConnectionWrapper implements ShardingXAConnection
             method.setAccessible(true);
             return method;
         } catch (final NoSuchMethodException ex) {
-            throw new ShardingException("Could not find getNextId of H2 XA DataSource");
+            throw new ShardingException("Could not find getNextId of H2 XA DataSource.");
         }
     }
     
@@ -77,7 +76,7 @@ public final class H2ShardingXAConnectionWrapper implements ShardingXAConnection
             JdbcXAConnection jdbcXAConnection = CONSTRUCTOR.newInstance(FACTORY, NEXT_ID.invoke(null, XA_DATA_SOURCE), h2PhysicalConnection);
             return new ShardingXAConnection(resourceName, jdbcXAConnection);
         } catch (final ClassNotFoundException | SQLException | IllegalAccessException | InvocationTargetException | InstantiationException ex) {
-            log.error("Failed to wrap a connection to ShardingXAConnection");
+            log.error("Failed to wrap a connection to ShardingXAConnection.");
             throw new ShardingException(ex);
         }
     }
