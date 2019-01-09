@@ -57,7 +57,7 @@ public class YamlShardingRuleConfiguration {
     
     private YamlShardingStrategyConfiguration defaultTableStrategy;
     
-    private YamlKeyGeneratorConfiguration defaultKeyGenerator;
+    private YamlKeyGeneratorConfiguration defaultKeyGenerator = new YamlKeyGeneratorConfiguration();
     
     private Map<String, YamlMasterSlaveRuleConfiguration> masterSlaveRules = new LinkedHashMap<>();
     
