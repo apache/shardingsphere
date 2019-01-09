@@ -130,7 +130,7 @@ public final class YamlShardingConfigurationTest {
         assertThat(actual.getShardingRule().getDefaultDataSourceName(), is("default_ds"));
         assertThat(actual.getShardingRule().getDefaultDatabaseStrategy().getInline().getShardingColumn(), is("order_id"));
         assertThat(actual.getShardingRule().getDefaultDatabaseStrategy().getInline().getAlgorithmExpression(), is("ds_${order_id % 2}"));
-        assertThat(actual.getShardingRule().getDefaultKeyGenerator().getKeyGeneratorClassName(), is(DefaultKeyGenerator.class.getName()));
+        assertThat(actual.getShardingRule().getDefaultKeyGenerator().getKeyGenerator().getClass().getName(), is(DefaultKeyGenerator.class.getName()));
     }
     
     private void assertMasterSlaveRules(final YamlShardingConfiguration actual) {
