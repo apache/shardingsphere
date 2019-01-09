@@ -30,7 +30,8 @@ import java.util.Collections;
  */
 public final class DruidParameterSwapper extends DataSourceSwapperAdapter {
     
-    private static final String DRUID_CLASS_NAME = "com.alibaba.druid.pool.DruidDataSource";
+    private static final String
+        DRUID_CLASS_NAME = "com.alibaba.druid.pool.DruidDataSource";
     
     @Override
     protected void convertProperties(final AdvancedMapUpdater<String, Object> updater) {

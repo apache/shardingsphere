@@ -81,6 +81,6 @@ public class MasterSlaveDataSource extends AbstractDataSourceAdapter {
     
     @Override
     public final MasterSlaveConnection getConnection() {
-        return new MasterSlaveConnection(this, getShardingTransactionalDataSources().getDataSourceMap(), TransactionTypeHolder.get());
+        return new MasterSlaveConnection(this, getDataSourceMap(), TransactionTypeHolder.get());
     }
 }

@@ -21,6 +21,8 @@ import io.shardingsphere.transaction.core.TransactionOperationType;
 import lombok.Getter;
 import lombok.RequiredArgsConstructor;
 
+import java.sql.Connection;
+
 /**
  * XA transaction context.
  *
@@ -31,4 +33,14 @@ import lombok.RequiredArgsConstructor;
 public final class XATransactionContext implements ShardingTransactionContext {
     
     private final TransactionOperationType operationType;
+    
+    private final Connection connection;
+    
+    private final String datasourceName;
+    
+    public XATransactionContext(final TransactionOperationType operationType) {
+        this.operationType = operationType;
+        connection = null;
+        datasourceName = null;
+    }
 }

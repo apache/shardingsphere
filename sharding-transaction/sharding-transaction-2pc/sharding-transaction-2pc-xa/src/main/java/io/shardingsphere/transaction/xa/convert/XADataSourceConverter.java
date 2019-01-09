@@ -22,7 +22,7 @@ import io.shardingsphere.core.rule.DataSourceParameter;
 import io.shardingsphere.transaction.api.TransactionType;
 import io.shardingsphere.transaction.spi.TransactionalDataSourceConverter;
 import io.shardingsphere.transaction.spi.xa.XATransactionManager;
-import io.shardingsphere.transaction.xa.convert.datasource.XADataSourceFactory;
+import io.shardingsphere.transaction.xa.jta.datasource.XADataSourceFactory;
 import io.shardingsphere.transaction.xa.convert.swap.DataSourceSwapperRegistry;
 import io.shardingsphere.transaction.xa.manager.XATransactionManagerSPILoader;
 
