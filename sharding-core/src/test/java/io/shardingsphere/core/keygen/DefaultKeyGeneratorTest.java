@@ -38,9 +38,9 @@ import static org.junit.Assert.assertThat;
 
 public final class DefaultKeyGeneratorTest {
     
-    static final long DEFAULT_SEQUENCE_BITS = 12L;
+    private static final long DEFAULT_SEQUENCE_BITS = 12L;
     
-    static final int DEFAULT_KEY_AMOUNT = 10;
+    private static final int DEFAULT_KEY_AMOUNT = 10;
     
     @Test
     @SneakyThrows
@@ -137,31 +137,41 @@ public final class DefaultKeyGeneratorTest {
     
     @Test(expected = IllegalArgumentException.class)
     public void assertSetWorkerIdFailureWhenNegative() {
-        DefaultKeyGenerator.setWorkerId(-1L);
+        DefaultKeyGenerator keyGenerator = new DefaultKeyGenerator();
+        Properties properties = new Properties();
+        properties.setProperty("work.id", String.valueOf(-1L));
+        keyGenerator.setKeyGeneratorProperties(properties);
     }
     
     @Test(expected = IllegalArgumentException.class)
     public void assertSetWorkerIdFailureWhenTooMuch() {
-        DefaultKeyGenerator.setWorkerId(-Long.MAX_VALUE);
+        DefaultKeyGenerator keyGenerator = new DefaultKeyGenerator();
+        Properties properties = new Properties();
+        properties.setProperty("work.id", String.valueOf(-Long.MAX_VALUE));
+        keyGenerator.setKeyGeneratorProperties(properties);
     }
     
     @Test
     @SneakyThrows
     public void assertSetWorkerIdSuccess() {
-        DefaultKeyGenerator.setWorkerId(1L);
-        Field workerIdField = DefaultKeyGenerator.class.getDeclaredField("workerId");
-        workerIdField.setAccessible(true);
-        assertThat(workerIdField.getLong(DefaultKeyGenerator.class), is(1L));
-        DefaultKeyGenerator.setWorkerId(0L);
+        DefaultKeyGenerator keyGenerator = new DefaultKeyGenerator();
+        Properties properties = new Properties();
+        properties.setProperty("work.id", String.valueOf(1L));
+        keyGenerator.setKeyGeneratorProperties(properties);
+        Field props = keyGenerator.getClass().getDeclaredField("props");
+        props.setAccessible(true);
+        assertThat(((Properties) props.get(keyGenerator)).get("work.id"), is((Object) 1L));
     }
     
     @Test
     @SneakyThrows
     public void assertSetMaxTolerateTimeDifferenceMilliseconds() {
-        DefaultKeyGenerator.setMaxTolerateTimeDifferenceMilliseconds(1);
-        Field maxTolerateTimeDifferenceMillisecondsField = DefaultKeyGenerator.class.getDeclaredField("maxTolerateTimeDifferenceMilliseconds");
-        maxTolerateTimeDifferenceMillisecondsField.setAccessible(true);
-        assertThat(maxTolerateTimeDifferenceMillisecondsField.getInt(DefaultKeyGenerator.class), is(1));
-        DefaultKeyGenerator.setMaxTolerateTimeDifferenceMilliseconds(10);
+        DefaultKeyGenerator keyGenerator = new DefaultKeyGenerator();
+        Properties properties = new Properties();
+        properties.setProperty("max.tolerate.time.difference.milliseconds", String.valueOf(1));
+        keyGenerator.setKeyGeneratorProperties(properties);
+        Field props = keyGenerator.getClass().getDeclaredField("props");
+        props.setAccessible(true);
+        assertThat(((Properties) props.get(keyGenerator)).get("max.tolerate.time.difference.milliseconds"), is((Object) 1));
     }
 }
