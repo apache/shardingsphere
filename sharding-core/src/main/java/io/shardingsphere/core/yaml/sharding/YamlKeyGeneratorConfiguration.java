@@ -17,13 +17,15 @@
 
 package io.shardingsphere.core.yaml.sharding;
 
-import com.google.common.base.Preconditions;
 import com.google.common.base.Strings;
-import io.shardingsphere.api.config.rule.TableRuleConfiguration;
+import io.shardingsphere.core.keygen.BuiltinKeyGeneratorType;
+import io.shardingsphere.core.keygen.KeyGenerator;
 import io.shardingsphere.core.keygen.KeyGeneratorFactory;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
 import lombok.Setter;
+
+import java.util.Properties;
 
 /**
  * Yaml key generator configuration.
@@ -35,51 +37,29 @@ import lombok.Setter;
 @Setter
 public class YamlKeyGeneratorConfiguration {
     
-    private String logicTable;
-    
-    private String actualDataNodes;
-    
-    private YamlShardingStrategyConfiguration databaseStrategy;
-    
-    private YamlShardingStrategyConfiguration tableStrategy;
-    
     private String keyGeneratorColumnName;
+    
+    private String keyGeneratorType;
     
     private String keyGeneratorClassName;
     
-    private String logicIndex;
-    
-    public YamlKeyGeneratorConfiguration(final TableRuleConfiguration tableRuleConfiguration) {
-        logicTable = tableRuleConfiguration.getLogicTable();
-        actualDataNodes = tableRuleConfiguration.getActualDataNodes();
-        databaseStrategy = new YamlShardingStrategyConfiguration(tableRuleConfiguration.getDatabaseShardingStrategyConfig());
-        tableStrategy = new YamlShardingStrategyConfiguration(tableRuleConfiguration.getTableShardingStrategyConfig());
-        keyGeneratorColumnName = tableRuleConfiguration.getKeyGeneratorColumnName();
-        keyGeneratorClassName = null == tableRuleConfiguration.getKeyGenerator()
-                ? null : tableRuleConfiguration.getKeyGenerator().getClass().getName();
-    }
+    private Properties props = new Properties();
     
     /**
      * Build table rule configuration.
      *
      * @return table rule configuration
      */
-    public TableRuleConfiguration build() {
-        Preconditions.checkNotNull(logicTable, "Logic table cannot be null.");
-        TableRuleConfiguration result = new TableRuleConfiguration();
-        result.setLogicTable(logicTable);
-        result.setActualDataNodes(actualDataNodes);
-        if (null != databaseStrategy) {
-            result.setDatabaseShardingStrategyConfig(databaseStrategy.build());
-        }
-        if (null != tableStrategy) {
-            result.setTableShardingStrategyConfig(tableStrategy.build());
-        }
+    public KeyGenerator getKeyGenerator() {
+        KeyGenerator result;
         if (!Strings.isNullOrEmpty(keyGeneratorClassName)) {
-            result.setKeyGenerator(KeyGeneratorFactory.newInstance(keyGeneratorClassName));
+            result = KeyGeneratorFactory.newInstance(keyGeneratorClassName);
+        } else if (!Strings.isNullOrEmpty(keyGeneratorType)) {
+            result = KeyGeneratorFactory.newInstance(getKeyGeneratorClassName());
+        } else {
+            result = KeyGeneratorFactory.newInstance(BuiltinKeyGeneratorType.SNOWFLAKE.getKeyGeneratorClassName());
         }
-        result.setKeyGeneratorColumnName(keyGeneratorColumnName);
-        result.setLogicIndex(logicIndex);
+        result.setProperties(props);
         return result;
     }
 }
