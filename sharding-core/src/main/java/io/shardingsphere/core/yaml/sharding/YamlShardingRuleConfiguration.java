@@ -20,6 +20,7 @@ package io.shardingsphere.core.yaml.sharding;
 import io.shardingsphere.api.config.rule.MasterSlaveRuleConfiguration;
 import io.shardingsphere.api.config.rule.ShardingRuleConfiguration;
 import io.shardingsphere.api.config.rule.TableRuleConfiguration;
+import io.shardingsphere.core.keygen.BuiltinKeyGeneratorType;
 import io.shardingsphere.core.keygen.KeyGeneratorFactory;
 import io.shardingsphere.core.yaml.masterslave.YamlMasterSlaveRuleConfiguration;
 import lombok.Getter;
@@ -57,7 +58,7 @@ public class YamlShardingRuleConfiguration {
     
     private YamlShardingStrategyConfiguration defaultTableStrategy;
     
-    private String defaultKeyGeneratorClassName;
+    private YamlKeyGeneratorConfiguration defaultKeyGenerator;
     
     private Map<String, YamlMasterSlaveRuleConfiguration> masterSlaveRules = new LinkedHashMap<>();
     
@@ -70,10 +71,23 @@ public class YamlShardingRuleConfiguration {
         bindingTables.addAll(shardingRuleConfiguration.getBroadcastTables());
         defaultDatabaseStrategy = new YamlShardingStrategyConfiguration(shardingRuleConfiguration.getDefaultDatabaseShardingStrategyConfig());
         defaultTableStrategy = new YamlShardingStrategyConfiguration(shardingRuleConfiguration.getDefaultTableShardingStrategyConfig());
-        defaultKeyGeneratorClassName = null == shardingRuleConfiguration.getDefaultKeyGenerator() ? null : shardingRuleConfiguration.getDefaultKeyGenerator().getClass().getName();
+        defaultKeyGenerator = null == shardingRuleConfiguration.getDefaultKeyGenerator() ? null : getYamlKeyGeneratorConfiguration(shardingRuleConfiguration);
         for (MasterSlaveRuleConfiguration each : shardingRuleConfiguration.getMasterSlaveRuleConfigs()) {
             masterSlaveRules.put(each.getName(), new YamlMasterSlaveRuleConfiguration(each));
         }
+    }
+    
+    private YamlKeyGeneratorConfiguration getYamlKeyGeneratorConfiguration(final ShardingRuleConfiguration shardingRuleConfiguration) {
+        YamlKeyGeneratorConfiguration result = new YamlKeyGeneratorConfiguration();
+        String keyGeneratorClassName = shardingRuleConfiguration.getDefaultKeyGenerator().getClass().getName();
+        BuiltinKeyGeneratorType keyGeneratorType = BuiltinKeyGeneratorType.getBuiltinKeyGeneratorType(keyGeneratorClassName);
+        if (null == keyGeneratorType) {
+            result.setKeyGeneratorClassName(keyGeneratorClassName);
+        } else {
+            result.setKeyGeneratorType(keyGeneratorType.name());
+        }
+        result.setProps(shardingRuleConfiguration.getDefaultKeyGenerator().getProperties());
+        return result;
     }
     
     /**
