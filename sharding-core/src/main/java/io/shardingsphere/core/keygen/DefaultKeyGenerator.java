@@ -19,7 +19,7 @@ package io.shardingsphere.core.keygen;
 
 import com.google.common.base.Preconditions;
 import io.shardingsphere.core.constant.properties.ShardingProperties;
-import lombok.Getter;
+import io.shardingsphere.core.constant.properties.ShardingPropertiesConstant;
 import lombok.Setter;
 import lombok.SneakyThrows;
 
@@ -72,8 +72,6 @@ public final class DefaultKeyGenerator implements KeyGenerator {
     
     private ShardingProperties props;
     
-    private static long workerId;
-    
     private static int maxTolerateTimeDifferenceMilliseconds = 10;
     
     static {
@@ -102,10 +100,10 @@ public final class DefaultKeyGenerator implements KeyGenerator {
         return props.getProps();
     }
     
-    private void getWorkerId() {
-        long result = 
-        Preconditions.checkArgument(workerId >= 0L && workerId < WORKER_ID_MAX_VALUE);
-        DefaultKeyGenerator.workerId = workerId;
+    private long getWorkerId() {
+        long result = props.getValue(ShardingPropertiesConstant.WORK_ID);
+        Preconditions.checkArgument(result >= 0L && result < WORKER_ID_MAX_VALUE);
+        return result;
     }
     
     /**
