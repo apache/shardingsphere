@@ -44,7 +44,7 @@ public interface KeyGenerator {
     /**
      * Set Properties.
      * 
-     * @param props props
+     * @param properties properties
      */
-    void setKeyGeneratorProperties(Properties props);
+    void setKeyGeneratorProperties(Properties properties);
 }
