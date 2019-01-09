@@ -56,7 +56,7 @@ public class YamlKeyGeneratorConfiguration {
         if (!Strings.isNullOrEmpty(keyGeneratorClassName)) {
             result = KeyGeneratorFactory.newInstance(keyGeneratorClassName);
         } else if (!Strings.isNullOrEmpty(keyGeneratorType)) {
-            result = KeyGeneratorFactory.newInstance(getKeyGeneratorClassName());
+            result = KeyGeneratorFactory.newInstance(getBuiltinKeyGeneratorClassName());
         } else {
             result = KeyGeneratorFactory.newInstance(BuiltinKeyGeneratorType.SNOWFLAKE.getKeyGeneratorClassName());
         }
@@ -64,7 +64,7 @@ public class YamlKeyGeneratorConfiguration {
         return result;
     }
     
-    private String getKeyGeneratorClassName() {
+    private String getBuiltinKeyGeneratorClassName() {
         if (keyGeneratorType.equalsIgnoreCase(BuiltinKeyGeneratorType.SNOWFLAKE.name())) {
             return BuiltinKeyGeneratorType.SNOWFLAKE.getKeyGeneratorClassName();
         }
