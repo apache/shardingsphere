@@ -33,5 +33,20 @@ public enum BuiltinKeyGeneratorType {
     UUID(""),
     LEAF("");
     
-    private final String className;
+    private final String keyGeneratorClassName;
+    
+    /**
+     * get built-in key generator type.
+     * 
+     * @param keyGeneratorClassName key generator class name
+     * @return built-in key generator type
+     */
+    public static BuiltinKeyGeneratorType getBuiltinKeyGeneratorType(final String keyGeneratorClassName) {
+        for (BuiltinKeyGeneratorType each : BuiltinKeyGeneratorType.values()) {
+            if (each.getKeyGeneratorClassName().equals(keyGeneratorClassName)) {
+                return each;
+            }
+        }
+        return null;
+    }
 }
