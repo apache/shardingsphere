@@ -17,6 +17,8 @@
 
 package io.shardingsphere.core.keygen;
 
+import io.shardingsphere.core.constant.properties.ShardingProperties;
+import io.shardingsphere.core.constant.properties.ShardingPropertiesConstant;
 import io.shardingsphere.core.keygen.fixture.FixedTimeService;
 import lombok.SneakyThrows;
 import org.junit.Test;
@@ -167,7 +169,7 @@ public final class DefaultKeyGeneratorTest {
         keyGenerator.setKeyGeneratorProperties(properties);
         Field props = keyGenerator.getClass().getDeclaredField("props");
         props.setAccessible(true);
-        assertThat(((Properties) props.get(keyGenerator)).get("work.id"), is((Object) 1L));
+        assertThat(((ShardingProperties) props.get(keyGenerator)).getValue(ShardingPropertiesConstant.WORK_ID), is((Object) 1L));
     }
     
     @Test
