@@ -20,7 +20,7 @@ package io.shardingsphere.transaction.saga.manager;
 import com.fasterxml.jackson.core.JsonProcessingException;
 import io.shardingsphere.core.executor.ShardingExecuteDataMap;
 import io.shardingsphere.transaction.core.context.SagaTransactionContext;
-import io.shardingsphere.transaction.core.manager.BASETransactionManager;
+import io.shardingsphere.transaction.core.manager.ShardingTransactionManager;
 import io.shardingsphere.transaction.saga.SagaTransaction;
 import io.shardingsphere.transaction.saga.servicecomb.transport.ShardingTransportFactory;
 import lombok.Getter;
@@ -34,7 +34,7 @@ import java.util.Map;
  * @author zhaojun
  * @author yangyi
  */
-public final class SagaTransactionManager implements BASETransactionManager<SagaTransactionContext> {
+public final class SagaTransactionManager implements ShardingTransactionManager<SagaTransactionContext> {
     
     private static final String TRANSACTION_KEY = "transaction";
     
@@ -72,11 +72,6 @@ public final class SagaTransactionManager implements BASETransactionManager<Saga
     @Override
     public int getStatus() {
         return null == TRANSACTIONS.get() ? Status.STATUS_NO_TRANSACTION : Status.STATUS_ACTIVE;
-    }
-    
-    @Override
-    public String getTransactionId() {
-        return null == TRANSACTIONS.get() ? null : TRANSACTIONS.get().getId();
     }
     
     /**
