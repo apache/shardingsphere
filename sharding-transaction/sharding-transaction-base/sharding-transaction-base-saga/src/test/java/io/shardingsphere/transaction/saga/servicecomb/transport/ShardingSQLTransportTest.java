@@ -18,7 +18,7 @@
 package io.shardingsphere.transaction.saga.servicecomb.transport;
 
 import com.google.common.collect.Lists;
-import io.shardingsphere.transaction.core.constant.ExecutionResult;
+import io.shardingsphere.transaction.saga.constant.ExecutionResult;
 import io.shardingsphere.transaction.saga.SagaSubTransaction;
 import io.shardingsphere.transaction.saga.SagaTransaction;
 import org.apache.servicecomb.saga.core.TransportFailedException;

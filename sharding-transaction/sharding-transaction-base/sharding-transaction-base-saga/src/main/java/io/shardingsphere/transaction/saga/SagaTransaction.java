@@ -18,7 +18,7 @@
 package io.shardingsphere.transaction.saga;
 
 import io.shardingsphere.core.exception.ShardingException;
-import io.shardingsphere.transaction.core.constant.ExecutionResult;
+import io.shardingsphere.transaction.saga.constant.ExecutionResult;
 import io.shardingsphere.transaction.saga.config.SagaConfiguration;
 import io.shardingsphere.transaction.saga.config.SagaRecoveryPolicy;
 import io.shardingsphere.transaction.saga.revert.EmptyRevertEngine;

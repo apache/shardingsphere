@@ -21,7 +21,7 @@ import io.shardingsphere.core.executor.sql.execute.threadlocal.ExecutorException
 import io.shardingsphere.core.metadata.datasource.DataSourceMetaData;
 import io.shardingsphere.core.routing.RouteUnit;
 import io.shardingsphere.spi.executor.SQLExecutionHook;
-import io.shardingsphere.transaction.core.constant.ExecutionResult;
+import io.shardingsphere.transaction.saga.constant.ExecutionResult;
 import io.shardingsphere.transaction.saga.SagaSubTransaction;
 import io.shardingsphere.transaction.saga.SagaTransaction;
 
