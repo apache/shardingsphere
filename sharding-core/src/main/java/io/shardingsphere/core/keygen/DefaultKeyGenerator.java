@@ -70,7 +70,7 @@ public final class DefaultKeyGenerator implements KeyGenerator {
     @Setter
     private static TimeService timeService = new TimeService();
     
-    private ShardingProperties props;
+    private ShardingProperties props = new ShardingProperties(new Properties());
     
     static {
         Calendar calendar = Calendar.getInstance();
