@@ -49,6 +49,7 @@ public final class DefaultKeyGeneratorTest {
         ExecutorService executor = Executors.newFixedThreadPool(threadNumber);
         int taskNumber = threadNumber << 2;
         final DefaultKeyGenerator keyGenerator = new DefaultKeyGenerator();
+        keyGenerator.setKeyGeneratorProperties(new Properties());
         Set<Comparable<?>> actual = new HashSet<>();
         for (int i = 0; i < taskNumber; i++) {
             actual.add(executor.submit(new Callable<Comparable<?>>() {
@@ -66,6 +67,7 @@ public final class DefaultKeyGeneratorTest {
     public void assertGenerateKeyWithSingleThread() {
         List<Comparable<?>> expected = Arrays.<Comparable<?>>asList(1L, 4194304L, 4194305L, 8388609L, 8388610L, 12582912L, 12582913L, 16777217L, 16777218L, 20971520L);
         DefaultKeyGenerator keyGenerator = new DefaultKeyGenerator();
+        keyGenerator.setKeyGeneratorProperties(new Properties());
         DefaultKeyGenerator.setTimeService(new FixedTimeService(1));
         List<Comparable<?>> actual = new ArrayList<>();
         for (int i = 0; i < DEFAULT_KEY_AMOUNT; i++) {
@@ -80,6 +82,7 @@ public final class DefaultKeyGeneratorTest {
         DefaultKeyGenerator keyGenerator = new DefaultKeyGenerator();
         TimeService timeService = new FixedTimeService(1);
         DefaultKeyGenerator.setTimeService(timeService);
+        keyGenerator.setKeyGeneratorProperties(new Properties());
         setLastMilliseconds(keyGenerator, timeService.getCurrentMillis() + 2);
         List<Comparable<?>> expected = Arrays.<Comparable<?>>asList(4194305L, 8388608L, 8388609L, 12582913L, 12582914L, 16777216L, 16777217L, 20971521L, 20971522L, 25165824L);
         List<Comparable<?>> actual = new ArrayList<>();
@@ -95,6 +98,7 @@ public final class DefaultKeyGeneratorTest {
         DefaultKeyGenerator keyGenerator = new DefaultKeyGenerator();
         TimeService timeService = new FixedTimeService(1);
         DefaultKeyGenerator.setTimeService(timeService);
+        keyGenerator.setKeyGeneratorProperties(new Properties());
         Properties properties = new Properties();
         properties.setProperty("max.tolerate.time.difference.milliseconds", String.valueOf(0));
         keyGenerator.setKeyGeneratorProperties(properties);
@@ -111,6 +115,7 @@ public final class DefaultKeyGeneratorTest {
         final DefaultKeyGenerator keyGenerator = new DefaultKeyGenerator();
         TimeService timeService = new FixedTimeService(2);
         DefaultKeyGenerator.setTimeService(timeService);
+        keyGenerator.setKeyGeneratorProperties(new Properties());
         setLastMilliseconds(keyGenerator, timeService.getCurrentMillis());
         setSequence(keyGenerator, (1 << DEFAULT_SEQUENCE_BITS) - 1);
         List<Comparable<?>> expected = Arrays.<Comparable<?>>asList(4194304L, 4194305L, 4194306L, 8388609L, 8388610L, 8388611L, 12582912L, 12582913L, 12582914L, 16777217L);
@@ -141,6 +146,7 @@ public final class DefaultKeyGeneratorTest {
         Properties properties = new Properties();
         properties.setProperty("work.id", String.valueOf(-1L));
         keyGenerator.setKeyGeneratorProperties(properties);
+        keyGenerator.generateKey();
     }
     
     @Test(expected = IllegalArgumentException.class)
@@ -149,6 +155,7 @@ public final class DefaultKeyGeneratorTest {
         Properties properties = new Properties();
         properties.setProperty("work.id", String.valueOf(-Long.MAX_VALUE));
         keyGenerator.setKeyGeneratorProperties(properties);
+        keyGenerator.generateKey();
     }
     
     @Test
