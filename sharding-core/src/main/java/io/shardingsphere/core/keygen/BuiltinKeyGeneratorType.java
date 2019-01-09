@@ -17,10 +17,21 @@
 
 package io.shardingsphere.core.keygen;
 
+import lombok.Getter;
+import lombok.RequiredArgsConstructor;
+
 /**
  * Built-in key generator type.
  *
  * @author panjuan
  */
-public class BuiltinKeyGeneratorType {
+@RequiredArgsConstructor
+@Getter
+public enum BuiltinKeyGeneratorType {
+    
+    SNOWFLAKE("io.shardingsphere.core.keygen.DefaultKeyGenerator"),
+    UUID(""),
+    LEAF("");
+    
+    private final String className;
 }
