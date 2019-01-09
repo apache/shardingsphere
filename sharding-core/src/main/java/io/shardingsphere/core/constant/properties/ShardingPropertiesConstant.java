@@ -76,9 +76,13 @@ public enum ShardingPropertiesConstant {
     
     /**
      * SnowFlake work id.
-     * 
      */
     WORK_ID("work.id", String.valueOf(0), long.class),
+    
+    /**
+     * Max tolerate time difference milliseconds.
+     */
+    MAX_TOLERATE_TIME_DIFFERENCE_MILLISECONDS("max.tolerate.time.difference.milliseconds", String.valueOf(10), int.class),
     
     /**
      * Transaction type of proxy.
