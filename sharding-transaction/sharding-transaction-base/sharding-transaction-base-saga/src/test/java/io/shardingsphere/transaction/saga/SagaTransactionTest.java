@@ -20,7 +20,7 @@ package io.shardingsphere.transaction.saga;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import io.shardingsphere.transaction.saga.constant.ExecutionResult;
 import io.shardingsphere.transaction.saga.config.SagaConfiguration;
-import io.shardingsphere.transaction.saga.config.SagaRecoveryPolicy;
+import io.shardingsphere.transaction.saga.constant.SagaRecoveryPolicy;
 import io.shardingsphere.transaction.saga.servicecomb.definition.SagaDefinitionBuilder;
 
 import org.junit.Before;

@@ -18,6 +18,8 @@
 package io.shardingsphere.transaction.saga.config;
 
 import com.google.common.base.Optional;
+import io.shardingsphere.core.exception.ShardingException;
+import io.shardingsphere.transaction.saga.constant.SagaRecoveryPolicy;
 import lombok.extern.slf4j.Slf4j;
 
 import java.io.File;
@@ -25,8 +27,6 @@ import java.io.FileInputStream;
 import java.io.IOException;
 import java.net.URL;
 import java.util.Properties;
-
-import io.shardingsphere.core.exception.ShardingException;
 
 /**
  * Saga configuration loader.

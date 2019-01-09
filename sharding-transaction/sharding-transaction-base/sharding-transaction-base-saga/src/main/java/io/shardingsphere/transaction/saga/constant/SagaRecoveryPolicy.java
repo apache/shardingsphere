@@ -15,7 +15,7 @@
  * </p>
  */
 
-package io.shardingsphere.transaction.saga.config;
+package io.shardingsphere.transaction.saga.constant;
 
 import lombok.AccessLevel;
 import lombok.Getter;

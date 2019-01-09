@@ -20,7 +20,7 @@ package io.shardingsphere.transaction.saga;
 import io.shardingsphere.core.exception.ShardingException;
 import io.shardingsphere.transaction.saga.constant.ExecutionResult;
 import io.shardingsphere.transaction.saga.config.SagaConfiguration;
-import io.shardingsphere.transaction.saga.config.SagaRecoveryPolicy;
+import io.shardingsphere.transaction.saga.constant.SagaRecoveryPolicy;
 import io.shardingsphere.transaction.saga.revert.EmptyRevertEngine;
 import io.shardingsphere.transaction.saga.revert.RevertEngine;
 import io.shardingsphere.transaction.saga.revert.RevertEngineImpl;

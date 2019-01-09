@@ -17,6 +17,7 @@
 
 package io.shardingsphere.transaction.saga.config;
 
+import io.shardingsphere.transaction.saga.constant.SagaRecoveryPolicy;
 import org.junit.Test;
 
 import static org.junit.Assert.assertEquals;
