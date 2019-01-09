@@ -26,6 +26,7 @@ import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.HashSet;
 import java.util.List;
+import java.util.Properties;
 import java.util.Set;
 import java.util.concurrent.Callable;
 import java.util.concurrent.ExecutorService;
@@ -94,7 +95,9 @@ public final class DefaultKeyGeneratorTest {
         DefaultKeyGenerator keyGenerator = new DefaultKeyGenerator();
         TimeService timeService = new FixedTimeService(1);
         DefaultKeyGenerator.setTimeService(timeService);
-        DefaultKeyGenerator.setMaxTolerateTimeDifferenceMilliseconds(0);
+        Properties properties = new Properties();
+        properties.setProperty("max.tolerate.time.difference.milliseconds", String.valueOf(0));
+        keyGenerator.setKeyGeneratorProperties(properties);
         setLastMilliseconds(keyGenerator, timeService.getCurrentMillis() + 2);
         List<Comparable<?>> actual = new ArrayList<>();
         for (int i = 0; i < DEFAULT_KEY_AMOUNT; i++) {
