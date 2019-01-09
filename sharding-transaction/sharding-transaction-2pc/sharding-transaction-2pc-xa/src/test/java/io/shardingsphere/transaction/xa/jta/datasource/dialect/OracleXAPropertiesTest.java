@@ -15,9 +15,8 @@
  * </p>
  */
 
-package io.shardingsphere.transaction.xa.convert.datasource.dialect;
+package io.shardingsphere.transaction.xa.jta.datasource.dialect;
 
-import io.shardingsphere.transaction.xa.jta.datasource.dialect.PostgreSQLXAProperties;
 import org.junit.Test;
 
 import java.util.Properties;
@@ -25,16 +24,16 @@ import java.util.Properties;
 import static org.hamcrest.CoreMatchers.is;
 import static org.junit.Assert.assertThat;
 
-public final class PostgreSQLXAPropertiesTest extends BaseXAPropertiesTest {
+public final class OracleXAPropertiesTest extends BaseXAPropertiesTest {
     
     @Test
     public void assertBuild() {
-        getDataSourceParameter().setUrl("jdbc:postgresql://db.psql:5432/test_db");
-        Properties actual = new PostgreSQLXAProperties().build(getDataSourceParameter());
+        getDataSourceParameter().setUrl("jdbc:oracle:thin:@//db.oracle:9999/test_db");
+        Properties actual = new OracleXAProperties().build(getDataSourceParameter());
         assertThat(actual.getProperty("user"), is("root"));
         assertThat(actual.getProperty("password"), is("root"));
-        assertThat(actual.getProperty("serverName"), is("db.psql"));
-        assertThat(actual.getProperty("portNumber"), is("5432"));
+        assertThat(actual.getProperty("serverName"), is("db.oracle"));
+        assertThat(actual.getProperty("portNumber"), is("9999"));
         assertThat(actual.getProperty("databaseName"), is("test_db"));
     }
 }

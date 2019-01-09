@@ -15,10 +15,9 @@
  * </p>
  */
 
-package io.shardingsphere.transaction.xa.convert.datasource;
+package io.shardingsphere.transaction.xa.jta.datasource;
 
 import io.shardingsphere.core.constant.DatabaseType;
-import io.shardingsphere.transaction.xa.jta.datasource.XAPropertiesFactory;
 import io.shardingsphere.transaction.xa.jta.datasource.dialect.H2XAProperties;
 import io.shardingsphere.transaction.xa.jta.datasource.dialect.MySQLXAProperties;
 import io.shardingsphere.transaction.xa.jta.datasource.dialect.OracleXAProperties;

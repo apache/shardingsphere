@@ -15,9 +15,8 @@
  * </p>
  */
 
-package io.shardingsphere.transaction.xa.convert.datasource.dialect;
+package io.shardingsphere.transaction.xa.jta.datasource.dialect;
 
-import io.shardingsphere.transaction.xa.jta.datasource.dialect.SQLServerXAProperties;
 import org.junit.Test;
 
 import java.util.Properties;

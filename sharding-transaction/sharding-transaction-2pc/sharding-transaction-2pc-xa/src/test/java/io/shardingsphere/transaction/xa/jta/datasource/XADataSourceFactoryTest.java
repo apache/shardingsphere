@@ -15,11 +15,10 @@
  * </p>
  */
 
-package io.shardingsphere.transaction.xa.convert.datasource;
+package io.shardingsphere.transaction.xa.jta.datasource;
 
 import com.microsoft.sqlserver.jdbc.SQLServerXADataSource;
 import io.shardingsphere.core.constant.DatabaseType;
-import io.shardingsphere.transaction.xa.jta.datasource.XADataSourceFactory;
 import org.h2.jdbcx.JdbcDataSource;
 import org.junit.Test;
 import org.postgresql.xa.PGXADataSource;

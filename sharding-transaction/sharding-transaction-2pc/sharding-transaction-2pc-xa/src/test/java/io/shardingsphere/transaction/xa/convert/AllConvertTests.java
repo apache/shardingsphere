@@ -17,14 +17,9 @@
 
 package io.shardingsphere.transaction.xa.convert;
 
-import io.shardingsphere.transaction.xa.convert.datasource.XADataSourceFactoryTest;
-import io.shardingsphere.transaction.xa.convert.datasource.XAPropertiesFactoryTest;
-import io.shardingsphere.transaction.xa.convert.datasource.dialect.H2XAPropertiesTest;
-import io.shardingsphere.transaction.xa.convert.datasource.dialect.MySQLXAPropertiesTest;
-import io.shardingsphere.transaction.xa.convert.datasource.dialect.OracleXAPropertiesTest;
-import io.shardingsphere.transaction.xa.convert.datasource.dialect.PostgreSQLXAPropertiesTest;
-import io.shardingsphere.transaction.xa.convert.datasource.dialect.SQLServerXAPropertiesTest;
 import io.shardingsphere.transaction.xa.convert.swap.DataSourceSwapperRegistryTest;
+import io.shardingsphere.transaction.xa.jta.datasource.XADataSourceFactoryTest;
+import io.shardingsphere.transaction.xa.jta.datasource.XAPropertiesFactoryTest;
 import org.junit.runner.RunWith;
 import org.junit.runners.Suite;
 
@@ -33,11 +28,6 @@ import org.junit.runners.Suite;
         XADataSourceMapConverterTest.class, 
         XADataSourceFactoryTest.class, 
         XAPropertiesFactoryTest.class, 
-        H2XAPropertiesTest.class, 
-        MySQLXAPropertiesTest.class, 
-        PostgreSQLXAPropertiesTest.class, 
-        OracleXAPropertiesTest.class, 
-        SQLServerXAPropertiesTest.class, 
         DataSourceSwapperRegistryTest.class
 })
 public final class AllConvertTests {
