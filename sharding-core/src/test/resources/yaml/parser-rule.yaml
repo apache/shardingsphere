@@ -25,7 +25,9 @@ shardingRule:
         complex:
           shardingColumns: user_id, order_id, item_id
           algorithmClassName: io.shardingsphere.api.algorithm.fixture.TestComplexKeysShardingAlgorithm 
-      keyGeneratorColumnName: item_id
+      keyGenerator:
+        keyGeneratorColumnName: order_id
+        keyGeneratorClassName: io.shardingsphere.core.keygen.DefaultKeyGenerator
     t_place:
       actualDataNodes: db${0..1}.t_place
       tableStrategy: 
@@ -34,4 +36,5 @@ shardingRule:
           algorithmClassName: io.shardingsphere.api.algorithm.fixture.TestComplexKeysShardingAlgorithm
   bindingTables:
     - t_order, t_order_item
-  defaultKeyGeneratorClassName: io.shardingsphere.core.keygen.fixture.IncrementKeyGenerator
+  defaultKeyGenerator:
+    keyGeneratorType: SNOWFLAKE
