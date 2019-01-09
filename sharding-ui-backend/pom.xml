@@ -53,7 +53,7 @@
                 <artifactId>maven-resources-plugin</artifactId>
                 <configuration>
                     <encoding>${project.build.sourceEncoding}</encoding>
-                    <outputDirectory>${project.build.directory}</outputDirectory>
+                    <outputDirectory>${project.build.outputDirectory}</outputDirectory>
                     <resources>
                         <resource>
                             <targetPath>${project.build.directory}/classes/public</targetPath>
