@@ -43,7 +43,7 @@ public class YamlTableRuleConfiguration {
     
     private YamlShardingStrategyConfiguration tableStrategy;
     
-    private YamlKeyGeneratorConfiguration keyGenerator;
+    private YamlKeyGeneratorConfiguration keyGenerator = new YamlKeyGeneratorConfiguration();
     
     private String logicIndex;
     
