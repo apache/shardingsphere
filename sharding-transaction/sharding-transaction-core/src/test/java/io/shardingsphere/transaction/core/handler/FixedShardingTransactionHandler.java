@@ -34,9 +34,11 @@ import static org.mockito.Mockito.mock;
  */
 public final class FixedShardingTransactionHandler extends ShardingTransactionHandlerAdapter {
     
+    private ShardingTransactionManager shardingTransactionManager = mock(ShardingTransactionManager.class);
+    
     @Override
     public ShardingTransactionManager getShardingTransactionManager() {
-        return mock(ShardingTransactionManager.class);
+        return shardingTransactionManager;
     }
     
     @Override
