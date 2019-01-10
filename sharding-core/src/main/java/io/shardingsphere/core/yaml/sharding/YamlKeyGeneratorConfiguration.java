@@ -72,6 +72,6 @@ public final class YamlKeyGeneratorConfiguration {
         if (type.equalsIgnoreCase(KeyGeneratorType.LEAF.name())) {
             return KeyGeneratorType.LEAF.getKeyGeneratorClassName();
         }
-        throw new ShardingConfigurationException("Invalid built-in key generator type.");
+        throw new ShardingConfigurationException("Invalid key generator type.");
     }
 }
