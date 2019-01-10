@@ -58,7 +58,7 @@ public class YamlTableRuleConfiguration {
     private YamlKeyGeneratorConfiguration getYamlKeyGeneratorConfiguration(final TableRuleConfiguration tableRuleConfiguration) {
         YamlKeyGeneratorConfiguration result = new YamlKeyGeneratorConfiguration();
         String keyGeneratorClassName = tableRuleConfiguration.getKeyGenerator().getClass().getName();
-        KeyGeneratorType keyGeneratorType = KeyGeneratorType.getBuiltinKeyGeneratorType(keyGeneratorClassName);
+        KeyGeneratorType keyGeneratorType = KeyGeneratorType.getKeyGeneratorType(keyGeneratorClassName);
         if (null == keyGeneratorType) {
             result.setClassName(keyGeneratorClassName);
         } else {
