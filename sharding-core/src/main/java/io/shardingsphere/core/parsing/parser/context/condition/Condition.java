@@ -17,11 +17,6 @@
 
 package io.shardingsphere.core.parsing.parser.context.condition;
 
-import com.google.common.collect.BoundType;
-import com.google.common.collect.Range;
-import io.shardingsphere.api.algorithm.sharding.ListShardingValue;
-import io.shardingsphere.api.algorithm.sharding.RangeShardingValue;
-import io.shardingsphere.api.algorithm.sharding.ShardingValue;
 import io.shardingsphere.core.constant.ShardingOperator;
 import io.shardingsphere.core.exception.ShardingException;
 import io.shardingsphere.core.parsing.parser.expression.SQLExpression;
@@ -92,27 +87,6 @@ public class Condition {
             positionValueMap.put(position, ((SQLTextExpression) sqlExpression).getText());
         } else if (sqlExpression instanceof SQLNumberExpression) {
             positionValueMap.put(position, (Comparable) ((SQLNumberExpression) sqlExpression).getNumber());
-        }
-    }
-    
-    /**
-     * Get sharding value via condition.
-     *
-     * @param parameters parameters
-     * @return sharding value
-     * @deprecated only test call
-     */
-    @Deprecated
-    public ShardingValue getShardingValue(final List<?> parameters) {
-        List<Comparable<?>> conditionValues = getConditionValues(parameters);
-        switch (operator) {
-            case EQUAL:
-            case IN:
-                return new ListShardingValue<>(column.getTableName(), column.getName(), conditionValues);
-            case BETWEEN:
-                return new RangeShardingValue<>(column.getTableName(), column.getName(), Range.range(conditionValues.get(0), BoundType.CLOSED, conditionValues.get(1), BoundType.CLOSED));
-            default:
-                throw new UnsupportedOperationException(operator.getExpression());
         }
     }
     
