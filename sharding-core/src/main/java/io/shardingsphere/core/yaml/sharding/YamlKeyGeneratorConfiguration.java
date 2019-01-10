@@ -19,11 +19,10 @@ package io.shardingsphere.core.yaml.sharding;
 
 import com.google.common.base.Strings;
 import io.shardingsphere.core.exception.ShardingConfigurationException;
-import io.shardingsphere.core.keygen.KeyGeneratorType;
 import io.shardingsphere.core.keygen.KeyGenerator;
 import io.shardingsphere.core.keygen.KeyGeneratorFactory;
+import io.shardingsphere.core.keygen.KeyGeneratorType;
 import lombok.Getter;
-import lombok.NoArgsConstructor;
 import lombok.Setter;
 
 import java.util.Properties;
@@ -35,7 +34,7 @@ import java.util.Properties;
  */
 @Getter
 @Setter
-public class YamlKeyGeneratorConfiguration {
+public final class YamlKeyGeneratorConfiguration {
     
     private String column;
     
