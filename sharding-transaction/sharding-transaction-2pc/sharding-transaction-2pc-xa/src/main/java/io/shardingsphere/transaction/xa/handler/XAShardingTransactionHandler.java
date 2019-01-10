@@ -21,7 +21,7 @@ import com.atomikos.jdbc.AtomikosDataSourceBean;
 import io.shardingsphere.core.constant.DatabaseType;
 import io.shardingsphere.core.exception.ShardingException;
 import io.shardingsphere.transaction.api.TransactionType;
-import io.shardingsphere.transaction.core.handler.ShardingTransactionHandlerAdapter;
+import io.shardingsphere.transaction.spi.ShardingTransactionHandler;
 import io.shardingsphere.transaction.spi.xa.XATransactionManager;
 import io.shardingsphere.transaction.xa.jta.connection.ShardingXAConnection;
 import io.shardingsphere.transaction.xa.jta.datasource.ShardingXADataSource;
@@ -45,7 +45,7 @@ import java.util.Map.Entry;
  * @author zhaojun
  */
 @Slf4j
-public final class XAShardingTransactionHandler extends ShardingTransactionHandlerAdapter {
+public final class XAShardingTransactionHandler implements ShardingTransactionHandler {
     
     private final Map<String, ShardingXADataSource> cachedShardingXADataSourceMap = new HashMap<>();
     
