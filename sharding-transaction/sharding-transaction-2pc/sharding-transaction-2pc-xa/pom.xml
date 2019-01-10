@@ -30,7 +30,7 @@
             <groupId>com.atomikos</groupId>
             <artifactId>transactions-jdbc</artifactId>
         </dependency>
-
+        
         <dependency>
             <groupId>com.h2database</groupId>
             <artifactId>h2</artifactId>
