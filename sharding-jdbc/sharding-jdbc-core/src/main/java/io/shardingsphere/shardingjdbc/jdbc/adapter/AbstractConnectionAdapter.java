@@ -163,12 +163,7 @@ public abstract class AbstractConnectionAdapter extends AbstractUnsupportedOpera
     }
     
     private Connection createConnection(final String dataSourceName, final DataSource dataSource) throws SQLException {
-        Connection result;
-        if (null != shardingTransactionHandler) {
-            result = shardingTransactionHandler.createConnection(dataSourceName, dataSource);
-        } else {
-            result = dataSource.getConnection();
-        }
+        Connection result = null == shardingTransactionHandler ? dataSource.getConnection() : shardingTransactionHandler.createConnection(dataSourceName, dataSource);
         replayMethodsInvocation(result);
         return result;
     }
@@ -184,50 +179,59 @@ public abstract class AbstractConnectionAdapter extends AbstractUnsupportedOpera
     public final void setAutoCommit(final boolean autoCommit) throws SQLException {
         this.autoCommit = autoCommit;
         if (TransactionType.LOCAL == transactionType) {
-            recordMethodInvocation(Connection.class, "setAutoCommit", new Class[]{boolean.class}, new Object[]{autoCommit});
-            forceExecuteTemplate.execute(cachedConnections.values(), new ForceExecuteCallback<Connection>() {
-                
-                @Override
-                public void execute(final Connection connection) throws SQLException {
-                    connection.setAutoCommit(autoCommit);
-                }
-            });
-        } else {
-            if (autoCommit) {
-                return;
-            }
+            setAutoCommitForLocalTransaction(autoCommit);
+        } else if (!autoCommit) {
             shardingTransactionHandler.doInTransaction(TransactionOperationType.BEGIN);
         }
+    }
+    
+    private void setAutoCommitForLocalTransaction(final boolean autoCommit) throws SQLException {
+        recordMethodInvocation(Connection.class, "setAutoCommit", new Class[]{boolean.class}, new Object[]{autoCommit});
+        forceExecuteTemplate.execute(cachedConnections.values(), new ForceExecuteCallback<Connection>() {
+            
+            @Override
+            public void execute(final Connection connection) throws SQLException {
+                connection.setAutoCommit(autoCommit);
+            }
+        });
     }
     
     @Override
     public final void commit() throws SQLException {
         if (TransactionType.LOCAL == transactionType) {
-            forceExecuteTemplate.execute(cachedConnections.values(), new ForceExecuteCallback<Connection>() {
-                
-                @Override
-                public void execute(final Connection connection) throws SQLException {
-                    connection.commit();
-                }
-            });
+            commitForLocalTransaction();
         } else {
             shardingTransactionHandler.doInTransaction(TransactionOperationType.COMMIT);
         }
     }
     
+    private void commitForLocalTransaction() throws SQLException {
+        forceExecuteTemplate.execute(cachedConnections.values(), new ForceExecuteCallback<Connection>() {
+            
+            @Override
+            public void execute(final Connection connection) throws SQLException {
+                connection.commit();
+            }
+        });
+    }
+    
     @Override
     public final void rollback() throws SQLException {
         if (TransactionType.LOCAL == transactionType) {
-            forceExecuteTemplate.execute(cachedConnections.values(), new ForceExecuteCallback<Connection>() {
-                
-                @Override
-                public void execute(final Connection connection) throws SQLException {
-                    connection.rollback();
-                }
-            });
+            rollbackForLocalTransaction();
         } else {
             shardingTransactionHandler.doInTransaction(TransactionOperationType.ROLLBACK);
         }
+    }
+    
+    private void rollbackForLocalTransaction() throws SQLException {
+        forceExecuteTemplate.execute(cachedConnections.values(), new ForceExecuteCallback<Connection>() {
+            
+            @Override
+            public void execute(final Connection connection) throws SQLException {
+                connection.rollback();
+            }
+        });
     }
     
     @Override
