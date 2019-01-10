@@ -44,4 +44,18 @@ public class YamlKeyGeneratorConfigurationTest {
         YamlKeyGeneratorConfiguration keyGeneratorConfiguration = new YamlKeyGeneratorConfiguration();
         assertThat(keyGeneratorConfiguration.getKeyGenerator().getClass().getName(), is(SnowflakeKeyGenerator.class.getName()));
     }
+    
+    @Test(expected = IllegalArgumentException.class)
+    public void assertGetKeyGeneratorClassNameWithLeaf() {
+        YamlKeyGeneratorConfiguration keyGeneratorConfiguration = new YamlKeyGeneratorConfiguration();
+        keyGeneratorConfiguration.setType("LEAF");
+        keyGeneratorConfiguration.getKeyGenerator();
+    }
+    
+    @Test(expected = IllegalArgumentException.class)
+    public void assertGetKeyGeneratorClassNameWithUUID() {
+        YamlKeyGeneratorConfiguration keyGeneratorConfiguration = new YamlKeyGeneratorConfiguration();
+        keyGeneratorConfiguration.setType("UUID");
+        keyGeneratorConfiguration.getKeyGenerator();
+    }
 }
