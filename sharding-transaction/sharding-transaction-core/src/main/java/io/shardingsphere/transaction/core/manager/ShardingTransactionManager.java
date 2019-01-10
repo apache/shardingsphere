@@ -18,7 +18,6 @@
 package io.shardingsphere.transaction.core.manager;
 
 import io.shardingsphere.core.exception.ShardingException;
-import io.shardingsphere.transaction.core.context.ShardingTransactionContext;
 
 /**
  * Sharding transaction manager.
@@ -26,33 +25,29 @@ import io.shardingsphere.transaction.core.context.ShardingTransactionContext;
  * @author zhaojun
  * @author zhangliang
  * 
- * @param <T> transaction context type
  */
-public interface ShardingTransactionManager<T extends ShardingTransactionContext> {
+public interface ShardingTransactionManager {
     
     /**
      * Begin transaction.
      *
-     * @param transactionContext transaction context
      * @throws ShardingException sharding exception
      */
-    void begin(T transactionContext) throws ShardingException;
+    void begin() throws ShardingException;
     
     /**
      * Commit transaction.
      *
-     * @param transactionContext transaction context
      * @throws ShardingException sharding exception
      */
-    void commit(T transactionContext) throws ShardingException;
+    void commit() throws ShardingException;
     
     /**
      * Rollback transaction.
      *
-     * @param transactionContext transaction context
      * @throws ShardingException sharding exception
      */
-    void rollback(T transactionContext) throws ShardingException;
+    void rollback() throws ShardingException;
     
     /**
      * Obtain the status of the transaction associated with the current thread.

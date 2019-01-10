@@ -17,11 +17,12 @@
 
 package io.shardingsphere.transaction.xa.manager;
 
+import com.atomikos.icatch.config.UserTransactionService;
+import com.atomikos.icatch.config.UserTransactionServiceImp;
 import com.atomikos.icatch.jta.UserTransactionManager;
 import io.shardingsphere.core.constant.DatabaseType;
 import io.shardingsphere.core.exception.ShardingException;
 import io.shardingsphere.core.rule.DataSourceParameter;
-import io.shardingsphere.transaction.core.context.XATransactionContext;
 import io.shardingsphere.transaction.spi.xa.XATransactionManager;
 
 import javax.sql.DataSource;
@@ -41,29 +42,22 @@ import javax.transaction.TransactionManager;
  */
 public final class AtomikosTransactionManager implements XATransactionManager {
     
-    private final UserTransactionManager underlyingTransactionManager;
+    private final UserTransactionManager underlyingTransactionManager = new UserTransactionManager();
     
-    public AtomikosTransactionManager() {
-        underlyingTransactionManager = new UserTransactionManager();
-        init();
-    }
+    private final UserTransactionService userTransactionService = new UserTransactionServiceImp();
     
-    private void init() {
-        try {
-            underlyingTransactionManager.init();
-        } catch (SystemException ex) {
-            throw new ShardingException(ex);
-        }
+    @Override
+    public void startup() {
+        userTransactionService.init();
     }
     
     @Override
     public void destroy() {
-        underlyingTransactionManager.setForceShutdown(true);
-        underlyingTransactionManager.close();
+        userTransactionService.shutdown(true);
     }
     
     @Override
-    public void begin(final XATransactionContext transactionContext) throws ShardingException {
+    public void begin() throws ShardingException {
         try {
             underlyingTransactionManager.begin();
         } catch (final SystemException | NotSupportedException ex) {
@@ -72,7 +66,7 @@ public final class AtomikosTransactionManager implements XATransactionManager {
     }
     
     @Override
-    public void commit(final XATransactionContext transactionContext) throws ShardingException {
+    public void commit() throws ShardingException {
         try {
             underlyingTransactionManager.commit();
         } catch (final RollbackException | HeuristicMixedException | HeuristicRollbackException | SystemException ex) {
@@ -81,7 +75,7 @@ public final class AtomikosTransactionManager implements XATransactionManager {
     }
     
     @Override
-    public void rollback(final XATransactionContext transactionContext) throws ShardingException {
+    public void rollback() throws ShardingException {
         try {
             if (Status.STATUS_NO_TRANSACTION != getStatus()) {
                 underlyingTransactionManager.rollback();
@@ -113,4 +107,15 @@ public final class AtomikosTransactionManager implements XATransactionManager {
     public TransactionManager getUnderlyingTransactionManager() {
         return underlyingTransactionManager;
     }
+    
+    @Override
+    public void registerRecoveryResource(final String dataSourceName, final XADataSource xaDataSource) {
+        userTransactionService.registerResource(new AtomikosXARecoverableResource(dataSourceName, xaDataSource));
+    }
+    
+    @Override
+    public void removeRecoveryResource(final String dataSourceName, final XADataSource xaDataSource) {
+        userTransactionService.removeResource(new AtomikosXARecoverableResource(dataSourceName, xaDataSource));
+    }
 }
+

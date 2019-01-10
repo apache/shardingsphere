@@ -18,8 +18,9 @@
 package io.shardingsphere.shardingproxy.transport.mysql.packet.command.query.text.query;
 
 import io.shardingsphere.transaction.api.TransactionType;
-import io.shardingsphere.transaction.core.context.ShardingTransactionContext;
-import io.shardingsphere.transaction.spi.ShardingTransactionHandler;
+import io.shardingsphere.transaction.core.TransactionOperationType;
+import io.shardingsphere.transaction.core.handler.ShardingTransactionHandlerAdapter;
+import io.shardingsphere.transaction.core.manager.ShardingTransactionManager;
 
 import java.util.HashMap;
 import java.util.Map;
@@ -29,33 +30,38 @@ import java.util.Map;
  *
  * @author zhaojun
  */
-public final class FixedXAShardingTransactionHandler implements ShardingTransactionHandler {
+public final class FixedXAShardingTransactionHandler extends ShardingTransactionHandlerAdapter {
     
-    private static final Map<String, Object> INVOKES = new HashMap<>();
+    private static final Map<String, TransactionOperationType> INVOKES = new HashMap<>();
     
     /**
      * Get invoke map.
      *
      * @return map
      */
-    static Map<String, Object> getInvokes() {
+    static Map<String, TransactionOperationType> getInvokes() {
         return INVOKES;
     }
     
     @Override
-    public void doInTransaction(final ShardingTransactionContext context) {
-        switch (context.getOperationType()) {
+    public void doInTransaction(final TransactionOperationType transactionOperationType) {
+        switch (transactionOperationType) {
             case BEGIN:
-                INVOKES.put("begin", context);
+                INVOKES.put("begin", transactionOperationType);
                 return;
             case COMMIT:
-                INVOKES.put("commit", context);
+                INVOKES.put("commit", transactionOperationType);
                 return;
             case ROLLBACK:
-                INVOKES.put("rollback", context);
+                INVOKES.put("rollback", transactionOperationType);
                 return;
             default:
         }
+    }
+    
+    @Override
+    public ShardingTransactionManager getShardingTransactionManager() {
+        return null;
     }
     
     @Override

@@ -25,6 +25,7 @@ import io.shardingsphere.shardingjdbc.jdbc.core.fixed.FixedXAShardingTransaction
 import io.shardingsphere.shardingjdbc.jdbc.util.JDBCTestSQL;
 import io.shardingsphere.transaction.api.TransactionType;
 import io.shardingsphere.transaction.api.TransactionTypeHolder;
+import io.shardingsphere.transaction.core.TransactionOperationType;
 import lombok.SneakyThrows;
 import org.junit.After;
 import org.junit.Test;
@@ -35,7 +36,6 @@ import java.sql.ResultSet;
 import java.sql.SQLException;
 
 import static org.hamcrest.CoreMatchers.is;
-import static org.junit.Assert.assertNotNull;
 import static org.junit.Assert.assertNull;
 import static org.junit.Assert.assertThat;
 import static org.junit.Assert.assertTrue;
@@ -103,7 +103,7 @@ public final class ConnectionAdapterTest extends AbstractShardingJDBCDatabaseAnd
         TransactionTypeHolder.set(TransactionType.XA);
         try (ShardingConnection actual = getShardingDataSource().getConnection()) {
             actual.commit();
-            assertNotNull(FixedXAShardingTransactionHandler.getInvokes().get("commit"));
+            assertThat(FixedXAShardingTransactionHandler.getInvokes().get("commit"), is(TransactionOperationType.COMMIT));
         }
     }
     
@@ -122,7 +122,7 @@ public final class ConnectionAdapterTest extends AbstractShardingJDBCDatabaseAnd
         TransactionTypeHolder.set(TransactionType.XA);
         try (ShardingConnection actual = getShardingDataSource().getConnection()) {
             actual.rollback();
-            assertNotNull(FixedXAShardingTransactionHandler.getInvokes().get("rollback"));
+            assertThat(FixedXAShardingTransactionHandler.getInvokes().get("rollback"), is(TransactionOperationType.ROLLBACK));
         }
     }
     

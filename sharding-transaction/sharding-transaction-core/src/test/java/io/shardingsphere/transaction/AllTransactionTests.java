@@ -18,7 +18,6 @@
 package io.shardingsphere.transaction;
 
 import io.shardingsphere.transaction.api.TransactionTypeHolderTest;
-import io.shardingsphere.transaction.core.datasource.ShardingTransactionalDataSourceTest;
 import io.shardingsphere.transaction.core.loader.TransactionalDataSourceConverterSPILoaderTest;
 import org.junit.runner.RunWith;
 import org.junit.runners.Suite;
@@ -27,8 +26,7 @@ import org.junit.runners.Suite.SuiteClasses;
 @RunWith(Suite.class)
 @SuiteClasses({
         TransactionTypeHolderTest.class, 
-        TransactionalDataSourceConverterSPILoaderTest.class, 
-        ShardingTransactionalDataSourceTest.class
+        TransactionalDataSourceConverterSPILoaderTest.class
 })
 public final class AllTransactionTests {
 }
