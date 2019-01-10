@@ -17,13 +17,11 @@
 
 package io.shardingsphere.transaction.core.handler;
 
-import io.shardingsphere.core.constant.DatabaseType;
 import io.shardingsphere.transaction.spi.ShardingTransactionHandler;
 
 import javax.sql.DataSource;
 import java.sql.Connection;
 import java.sql.SQLException;
-import java.util.Map;
 
 /**
  * Abstract class for sharding transaction handler.
@@ -33,40 +31,6 @@ import java.util.Map;
  */
 public abstract class ShardingTransactionHandlerAdapter implements ShardingTransactionHandler {
     
-    @Override
-    public void begin() {
-        getShardingTransactionManager().begin();
-    }
-    
-    @Override
-    public void commit() {
-        getShardingTransactionManager().commit();
-    }
-    
-    @Override
-    public void rollback() {
-        getShardingTransactionManager().rollback();
-    }
-    
-    /**
-     * Default implement for register transaction resource.
-     */
-    @Override
-    public void registerTransactionalResource(final DatabaseType databaseType, final Map<String, DataSource> dataSourceMap) {
-        // adapter
-    }
-    
-    /**
-     * Default implement for clear transactional resource.
-     */
-    @Override
-    public void clearTransactionalResource() {
-        // adapter
-    }
-    
-    /**
-     * Default implement for create connection.
-     */
     @Override
     public Connection createConnection(final String dataSourceName, final DataSource dataSource) throws SQLException {
         return dataSource.getConnection();

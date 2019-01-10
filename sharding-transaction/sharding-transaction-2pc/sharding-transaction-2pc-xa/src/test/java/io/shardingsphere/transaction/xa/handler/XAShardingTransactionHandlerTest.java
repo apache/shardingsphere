@@ -21,7 +21,6 @@ import com.atomikos.jdbc.AtomikosDataSourceBean;
 import io.shardingsphere.core.constant.DatabaseType;
 import io.shardingsphere.core.constant.PoolType;
 import io.shardingsphere.transaction.api.TransactionType;
-import io.shardingsphere.transaction.core.manager.ShardingTransactionManager;
 import io.shardingsphere.transaction.spi.xa.XATransactionManager;
 import io.shardingsphere.transaction.xa.fixture.DataSourceUtils;
 import io.shardingsphere.transaction.xa.jta.connection.ShardingXAConnection;
@@ -43,6 +42,7 @@ import java.lang.reflect.Field;
 import java.sql.Connection;
 import java.util.HashMap;
 import java.util.Map;
+import java.util.Map.Entry;
 
 import static org.hamcrest.CoreMatchers.instanceOf;
 import static org.hamcrest.CoreMatchers.is;
@@ -84,12 +84,6 @@ public class XAShardingTransactionHandlerTest {
     }
     
     @Test
-    public void assertGetTransactionManager() {
-        ShardingTransactionManager shardingTransactionManager = xaShardingTransactionHandler.getShardingTransactionManager();
-        assertThat(shardingTransactionManager, instanceOf(XATransactionManager.class));
-    }
-    
-    @Test
     public void assertGetTransactionType() {
         assertThat(xaShardingTransactionHandler.getTransactionType(), is(TransactionType.XA));
     }
@@ -98,7 +92,7 @@ public class XAShardingTransactionHandlerTest {
     public void assertRegisterXATransactionalDataSource() {
         Map<String, DataSource> dataSourceMap = createDataSourceMap(PoolType.DRUID_XA, DatabaseType.MySQL);
         xaShardingTransactionHandler.registerTransactionalResource(DatabaseType.MySQL, dataSourceMap);
-        for (Map.Entry<String, DataSource> entry : dataSourceMap.entrySet()) {
+        for (Entry<String, DataSource> entry : dataSourceMap.entrySet()) {
             verify(xaTransactionManager).registerRecoveryResource(entry.getKey(), (XADataSource) entry.getValue());
         }
     }

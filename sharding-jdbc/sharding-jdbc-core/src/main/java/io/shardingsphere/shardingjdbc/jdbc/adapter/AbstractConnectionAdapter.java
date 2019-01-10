@@ -241,7 +241,7 @@ public abstract class AbstractConnectionAdapter extends AbstractUnsupportedOpera
         TransactionTypeHolder.clear();
         int connectionSize = cachedConnections.size();
         try {
-            forceExecuteTemplateForClose.execute(cachedConnections.entries(), new ForceExecuteCallback<Map.Entry<String, Connection>>() {
+            forceExecuteTemplateForClose.execute(cachedConnections.entries(), new ForceExecuteCallback<Entry<String, Connection>>() {
         
                 @Override
                 public void execute(final Entry<String, Connection> cachedConnections) throws SQLException {

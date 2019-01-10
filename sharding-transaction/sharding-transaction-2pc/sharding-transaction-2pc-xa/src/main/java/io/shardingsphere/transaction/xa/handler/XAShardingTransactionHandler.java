@@ -22,7 +22,6 @@ import io.shardingsphere.core.constant.DatabaseType;
 import io.shardingsphere.core.exception.ShardingException;
 import io.shardingsphere.transaction.api.TransactionType;
 import io.shardingsphere.transaction.core.handler.ShardingTransactionHandlerAdapter;
-import io.shardingsphere.transaction.core.manager.ShardingTransactionManager;
 import io.shardingsphere.transaction.spi.xa.XATransactionManager;
 import io.shardingsphere.transaction.xa.jta.connection.ShardingXAConnection;
 import io.shardingsphere.transaction.xa.jta.datasource.ShardingXADataSource;
@@ -38,6 +37,7 @@ import java.sql.Connection;
 import java.sql.SQLException;
 import java.util.HashMap;
 import java.util.Map;
+import java.util.Map.Entry;
 
 /**
  * XA sharding transaction handler.
@@ -52,18 +52,28 @@ public final class XAShardingTransactionHandler extends ShardingTransactionHandl
     private final XATransactionManager xaTransactionManager = XATransactionManagerSPILoader.getInstance().getTransactionManager();
     
     @Override
-    public ShardingTransactionManager getShardingTransactionManager() {
-        return xaTransactionManager;
-    }
-    
-    @Override
     public TransactionType getTransactionType() {
         return TransactionType.XA;
     }
     
     @Override
+    public void begin() {
+        xaTransactionManager.begin();
+    }
+    
+    @Override
+    public void commit() {
+        xaTransactionManager.commit();
+    }
+    
+    @Override
+    public void rollback() {
+        xaTransactionManager.rollback();
+    }
+    
+    @Override
     public void registerTransactionalResource(final DatabaseType databaseType, final Map<String, DataSource> dataSourceMap) {
-        for (Map.Entry<String, DataSource> entry : dataSourceMap.entrySet()) {
+        for (Entry<String, DataSource> entry : dataSourceMap.entrySet()) {
             DataSource dataSource = entry.getValue();
             if (dataSource instanceof AtomikosDataSourceBean) {
                 continue;

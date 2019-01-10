@@ -27,6 +27,7 @@ import lombok.extern.slf4j.Slf4j;
 import javax.sql.DataSource;
 import java.util.HashMap;
 import java.util.Map;
+import java.util.Map.Entry;
 import java.util.ServiceLoader;
 
 /**
@@ -71,11 +72,12 @@ public final class ShardingTransactionHandlerRegistry {
     
     /**
      * Register transaction resource.
+     * 
      * @param databaseType database type
      * @param dataSourceMap data source map
      */
     public static void registerTransactionResource(final DatabaseType databaseType, final Map<String, DataSource> dataSourceMap) {
-        for (Map.Entry<TransactionType, ShardingTransactionHandler> entry : TRANSACTION_HANDLER_MAP.entrySet()) {
+        for (Entry<TransactionType, ShardingTransactionHandler> entry : TRANSACTION_HANDLER_MAP.entrySet()) {
             entry.getValue().registerTransactionalResource(databaseType, dataSourceMap);
         }
     }
