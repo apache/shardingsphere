@@ -67,6 +67,10 @@ public final class DefaultKeyGenerator implements KeyGenerator {
     
     private static final long WORKER_ID_MAX_VALUE = 1L << WORKER_ID_BITS;
     
+    private static final long WORK_ID = 0;
+    
+    private static final int MAX_TOLERATE_TIME_DIFFERENCE_MILLISECONDS = 10;
+    
     @Setter
     private static TimeService timeService = new TimeService();
     
