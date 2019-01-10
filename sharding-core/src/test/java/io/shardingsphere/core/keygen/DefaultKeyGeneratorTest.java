@@ -51,7 +51,7 @@ public final class DefaultKeyGeneratorTest {
         ExecutorService executor = Executors.newFixedThreadPool(threadNumber);
         int taskNumber = threadNumber << 2;
         final DefaultKeyGenerator keyGenerator = new DefaultKeyGenerator();
-        keyGenerator.setKeyGeneratorProperties(new Properties());
+        keyGenerator.setProperties(new Properties());
         Set<Comparable<?>> actual = new HashSet<>();
         for (int i = 0; i < taskNumber; i++) {
             actual.add(executor.submit(new Callable<Comparable<?>>() {
@@ -68,7 +68,7 @@ public final class DefaultKeyGeneratorTest {
     @Test
     public void assertGenerateKeyWithSingleThread() {
         DefaultKeyGenerator keyGenerator = new DefaultKeyGenerator();
-        keyGenerator.setKeyGeneratorProperties(new Properties());
+        keyGenerator.setProperties(new Properties());
         DefaultKeyGenerator.setTimeService(new FixedTimeService(1));
         List<Comparable<?>> expected = Arrays.<Comparable<?>>asList(1L, 4194304L, 4194305L, 8388609L, 8388610L, 12582912L, 12582913L, 16777217L, 16777218L, 20971520L);
         List<Comparable<?>> actual = new ArrayList<>();
@@ -84,7 +84,7 @@ public final class DefaultKeyGeneratorTest {
         DefaultKeyGenerator keyGenerator = new DefaultKeyGenerator();
         TimeService timeService = new FixedTimeService(1);
         DefaultKeyGenerator.setTimeService(timeService);
-        keyGenerator.setKeyGeneratorProperties(new Properties());
+        keyGenerator.setProperties(new Properties());
         setLastMilliseconds(keyGenerator, timeService.getCurrentMillis() + 2);
         List<Comparable<?>> expected = Arrays.<Comparable<?>>asList(4194305L, 8388608L, 8388609L, 12582913L, 12582914L, 16777216L, 16777217L, 20971521L, 20971522L, 25165824L);
         List<Comparable<?>> actual = new ArrayList<>();
@@ -100,10 +100,10 @@ public final class DefaultKeyGeneratorTest {
         DefaultKeyGenerator keyGenerator = new DefaultKeyGenerator();
         TimeService timeService = new FixedTimeService(1);
         DefaultKeyGenerator.setTimeService(timeService);
-        keyGenerator.setKeyGeneratorProperties(new Properties());
+        keyGenerator.setProperties(new Properties());
         Properties properties = new Properties();
         properties.setProperty("max.tolerate.time.difference.milliseconds", String.valueOf(0));
-        keyGenerator.setKeyGeneratorProperties(properties);
+        keyGenerator.setProperties(properties);
         setLastMilliseconds(keyGenerator, timeService.getCurrentMillis() + 2);
         List<Comparable<?>> actual = new ArrayList<>();
         for (int i = 0; i < DEFAULT_KEY_AMOUNT; i++) {
@@ -117,7 +117,7 @@ public final class DefaultKeyGeneratorTest {
         final DefaultKeyGenerator keyGenerator = new DefaultKeyGenerator();
         TimeService timeService = new FixedTimeService(2);
         DefaultKeyGenerator.setTimeService(timeService);
-        keyGenerator.setKeyGeneratorProperties(new Properties());
+        keyGenerator.setProperties(new Properties());
         setLastMilliseconds(keyGenerator, timeService.getCurrentMillis());
         setSequence(keyGenerator, (1 << DEFAULT_SEQUENCE_BITS) - 1);
         List<Comparable<?>> expected = Arrays.<Comparable<?>>asList(4194304L, 4194305L, 4194306L, 8388609L, 8388610L, 8388611L, 12582912L, 12582913L, 12582914L, 16777217L);
@@ -147,7 +147,7 @@ public final class DefaultKeyGeneratorTest {
         DefaultKeyGenerator keyGenerator = new DefaultKeyGenerator();
         Properties properties = new Properties();
         properties.setProperty("work.id", String.valueOf(-1L));
-        keyGenerator.setKeyGeneratorProperties(properties);
+        keyGenerator.setProperties(properties);
         keyGenerator.generateKey();
     }
     
@@ -156,7 +156,7 @@ public final class DefaultKeyGeneratorTest {
         DefaultKeyGenerator keyGenerator = new DefaultKeyGenerator();
         Properties properties = new Properties();
         properties.setProperty("work.id", String.valueOf(-Long.MAX_VALUE));
-        keyGenerator.setKeyGeneratorProperties(properties);
+        keyGenerator.setProperties(properties);
         keyGenerator.generateKey();
     }
     
@@ -166,8 +166,8 @@ public final class DefaultKeyGeneratorTest {
         DefaultKeyGenerator keyGenerator = new DefaultKeyGenerator();
         Properties properties = new Properties();
         properties.setProperty("work.id", String.valueOf(1L));
-        keyGenerator.setKeyGeneratorProperties(properties);
-        Field props = keyGenerator.getClass().getDeclaredField("props");
+        keyGenerator.setProperties(properties);
+        Field props = keyGenerator.getClass().getDeclaredField("properties");
         props.setAccessible(true);
         assertThat(((ShardingProperties) props.get(keyGenerator)).getValue(ShardingPropertiesConstant.WORK_ID), is((Object) 1L));
     }
@@ -178,8 +178,8 @@ public final class DefaultKeyGeneratorTest {
         DefaultKeyGenerator keyGenerator = new DefaultKeyGenerator();
         Properties properties = new Properties();
         properties.setProperty("max.tolerate.time.difference.milliseconds", String.valueOf(1));
-        keyGenerator.setKeyGeneratorProperties(properties);
-        Field props = keyGenerator.getClass().getDeclaredField("props");
+        keyGenerator.setProperties(properties);
+        Field props = keyGenerator.getClass().getDeclaredField("properties");
         props.setAccessible(true);
         assertThat(((ShardingProperties) props.get(keyGenerator)).getValue(ShardingPropertiesConstant.MAX_TOLERATE_TIME_DIFFERENCE_MILLISECONDS), is((Object) 1));
     }

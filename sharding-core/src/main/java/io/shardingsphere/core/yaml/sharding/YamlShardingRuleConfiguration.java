@@ -86,7 +86,7 @@ public class YamlShardingRuleConfiguration {
         } else {
             result.setType(keyGeneratorType.get().name());
         }
-        result.setProps(shardingRuleConfiguration.getDefaultKeyGenerator().getKeyGeneratorProperties());
+        result.setProps(shardingRuleConfiguration.getDefaultKeyGenerator().getProperties());
         return result;
     }
     

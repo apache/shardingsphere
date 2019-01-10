@@ -66,7 +66,7 @@ public class YamlTableRuleConfiguration {
             result.setType(keyGeneratorType.get().name());
         }
         result.setColumn(tableRuleConfiguration.getKeyGeneratorColumnName());
-        result.setProps(tableRuleConfiguration.getKeyGenerator().getKeyGeneratorProperties());
+        result.setProps(tableRuleConfiguration.getKeyGenerator().getProperties());
         return result;
     }
     
