@@ -39,12 +39,12 @@ public interface KeyGenerator {
      * 
      * @return The properties of key generator
      */
-    Properties getKeyGeneratorProperties();
+    Properties getProperties();
     
     /**
      * Set Properties.
      * 
      * @param properties properties
      */
-    void setKeyGeneratorProperties(Properties properties);
+    void setProperties(Properties properties);
 }
