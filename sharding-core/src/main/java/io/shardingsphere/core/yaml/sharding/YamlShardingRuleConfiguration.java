@@ -17,6 +17,7 @@
 
 package io.shardingsphere.core.yaml.sharding;
 
+import com.google.common.base.Optional;
 import io.shardingsphere.api.config.rule.MasterSlaveRuleConfiguration;
 import io.shardingsphere.api.config.rule.ShardingRuleConfiguration;
 import io.shardingsphere.api.config.rule.TableRuleConfiguration;
@@ -79,11 +80,11 @@ public class YamlShardingRuleConfiguration {
     private YamlKeyGeneratorConfiguration getYamlKeyGeneratorConfiguration(final ShardingRuleConfiguration shardingRuleConfiguration) {
         YamlKeyGeneratorConfiguration result = new YamlKeyGeneratorConfiguration();
         String keyGeneratorClassName = shardingRuleConfiguration.getDefaultKeyGenerator().getClass().getName();
-        KeyGeneratorType keyGeneratorType = KeyGeneratorType.getKeyGeneratorType(keyGeneratorClassName);
-        if (null == keyGeneratorType) {
+        Optional<KeyGeneratorType> keyGeneratorType = KeyGeneratorType.getKeyGeneratorType(keyGeneratorClassName);
+        if (!keyGeneratorType.isPresent()) {
             result.setClassName(keyGeneratorClassName);
         } else {
-            result.setType(keyGeneratorType.name());
+            result.setType(keyGeneratorType.get().name());
         }
         result.setProps(shardingRuleConfiguration.getDefaultKeyGenerator().getKeyGeneratorProperties());
         return result;
