@@ -20,6 +20,7 @@ package io.shardingsphere.core.keygen;
 import com.google.common.base.Preconditions;
 import io.shardingsphere.core.constant.properties.ShardingProperties;
 import io.shardingsphere.core.constant.properties.ShardingPropertiesConstant;
+import lombok.Getter;
 import lombok.Setter;
 import lombok.SneakyThrows;
 
@@ -74,7 +75,9 @@ public final class DefaultKeyGenerator implements KeyGenerator {
     @Setter
     private static TimeService timeService = new TimeService();
     
-    private ShardingProperties props = new ShardingProperties(new Properties());
+    @Getter
+    @Setter
+    private Properties props = new Properties();
     
     static {
         Calendar calendar = Calendar.getInstance();
@@ -91,16 +94,6 @@ public final class DefaultKeyGenerator implements KeyGenerator {
     private long sequence;
     
     private long lastMilliseconds;
-    
-    @Override
-    public void setKeyGeneratorProperties(final Properties properties) {
-        props = new ShardingProperties(properties);
-    }
-    
-    @Override
-    public Properties getKeyGeneratorProperties() {
-        return props.getProps();
-    }
     
     private long getWorkerId() {
         long result = props.getValue(ShardingPropertiesConstant.WORK_ID);
