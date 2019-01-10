@@ -38,11 +38,11 @@ import java.util.Properties;
 @Setter
 public class YamlKeyGeneratorConfiguration {
     
-    private String keyGeneratorColumnName;
+    private String column;
     
-    private String keyGeneratorType;
+    private String type;
     
-    private String keyGeneratorClassName;
+    private String className;
     
     private Properties props = new Properties();
     
@@ -53,9 +53,9 @@ public class YamlKeyGeneratorConfiguration {
      */
     public KeyGenerator getKeyGenerator() {
         KeyGenerator result;
-        if (!Strings.isNullOrEmpty(keyGeneratorClassName)) {
-            result = KeyGeneratorFactory.newInstance(keyGeneratorClassName);
-        } else if (!Strings.isNullOrEmpty(keyGeneratorType)) {
+        if (!Strings.isNullOrEmpty(className)) {
+            result = KeyGeneratorFactory.newInstance(className);
+        } else if (!Strings.isNullOrEmpty(type)) {
             result = KeyGeneratorFactory.newInstance(getBuiltinKeyGeneratorClassName());
         } else {
             result = KeyGeneratorFactory.newInstance(BuiltinKeyGeneratorType.SNOWFLAKE.getKeyGeneratorClassName());
@@ -65,13 +65,13 @@ public class YamlKeyGeneratorConfiguration {
     }
     
     private String getBuiltinKeyGeneratorClassName() {
-        if (keyGeneratorType.equalsIgnoreCase(BuiltinKeyGeneratorType.SNOWFLAKE.name())) {
+        if (type.equalsIgnoreCase(BuiltinKeyGeneratorType.SNOWFLAKE.name())) {
             return BuiltinKeyGeneratorType.SNOWFLAKE.getKeyGeneratorClassName();
         }
-        if (keyGeneratorType.equalsIgnoreCase(BuiltinKeyGeneratorType.UUID.name())) {
+        if (type.equalsIgnoreCase(BuiltinKeyGeneratorType.UUID.name())) {
             return BuiltinKeyGeneratorType.UUID.getKeyGeneratorClassName();
         }
-        if (keyGeneratorType.equalsIgnoreCase(BuiltinKeyGeneratorType.LEAF.name())) {
+        if (type.equalsIgnoreCase(BuiltinKeyGeneratorType.LEAF.name())) {
             return BuiltinKeyGeneratorType.LEAF.getKeyGeneratorClassName();
         }
         throw new ShardingConfigurationException("Invalid built-in key generator type.");

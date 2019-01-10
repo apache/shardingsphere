@@ -104,8 +104,8 @@ public final class YamlShardingConfigurationTest {
         assertThat(actual.getShardingRule().getTables().get("t_order").getActualDataNodes(), is("ds_${0..1}.t_order_${0..1}"));
         assertThat(actual.getShardingRule().getTables().get("t_order").getTableStrategy().getInline().getShardingColumn(), is("order_id"));
         assertThat(actual.getShardingRule().getTables().get("t_order").getTableStrategy().getInline().getAlgorithmExpression(), is("t_order_${order_id % 2}"));
-        assertThat(actual.getShardingRule().getTables().get("t_order").getKeyGenerator().getKeyGeneratorColumnName(), is("order_id"));
-        assertThat(actual.getShardingRule().getTables().get("t_order").getKeyGenerator().getKeyGeneratorClassName(), is(DefaultKeyGenerator.class.getName()));
+        assertThat(actual.getShardingRule().getTables().get("t_order").getKeyGenerator().getColumn(), is("order_id"));
+        assertThat(actual.getShardingRule().getTables().get("t_order").getKeyGenerator().getClassName(), is(DefaultKeyGenerator.class.getName()));
         assertThat(actual.getShardingRule().getTables().get("t_order").getLogicIndex(), is("order_index"));
     }
     

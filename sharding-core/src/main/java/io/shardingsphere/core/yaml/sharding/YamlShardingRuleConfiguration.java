@@ -81,9 +81,9 @@ public class YamlShardingRuleConfiguration {
         String keyGeneratorClassName = shardingRuleConfiguration.getDefaultKeyGenerator().getClass().getName();
         BuiltinKeyGeneratorType keyGeneratorType = BuiltinKeyGeneratorType.getBuiltinKeyGeneratorType(keyGeneratorClassName);
         if (null == keyGeneratorType) {
-            result.setKeyGeneratorClassName(keyGeneratorClassName);
+            result.setClassName(keyGeneratorClassName);
         } else {
-            result.setKeyGeneratorType(keyGeneratorType.name());
+            result.setType(keyGeneratorType.name());
         }
         result.setProps(shardingRuleConfiguration.getDefaultKeyGenerator().getKeyGeneratorProperties());
         return result;
