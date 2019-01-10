@@ -27,7 +27,7 @@ import lombok.RequiredArgsConstructor;
  */
 @RequiredArgsConstructor
 @Getter
-public enum BuiltinKeyGeneratorType {
+public enum KeyGeneratorType {
     
     SNOWFLAKE("io.shardingsphere.core.keygen.DefaultKeyGenerator"),
     UUID(""),
@@ -41,8 +41,8 @@ public enum BuiltinKeyGeneratorType {
      * @param keyGeneratorClassName key generator class name
      * @return built-in key generator type
      */
-    public static BuiltinKeyGeneratorType getBuiltinKeyGeneratorType(final String keyGeneratorClassName) {
-        for (BuiltinKeyGeneratorType each : BuiltinKeyGeneratorType.values()) {
+    public static KeyGeneratorType getBuiltinKeyGeneratorType(final String keyGeneratorClassName) {
+        for (KeyGeneratorType each : KeyGeneratorType.values()) {
             if (each.getKeyGeneratorClassName().equals(keyGeneratorClassName)) {
                 return each;
             }
