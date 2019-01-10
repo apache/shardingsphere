@@ -70,9 +70,9 @@ public final class ConfigurationServiceTest {
             + "ds_1: !!io.shardingsphere.core.rule.DataSourceParameter\n"
             + "  url: jdbc:mysql://localhost:3306/ds_1\n" + "  username: root\n" + "  password: root\n";
     
-    private static final String SHARDING_RULE_YAML = "tables:\n" + "  t_order:\n"
-            + "    actualDataNodes: ds_${0..1}.t_order_${0..1}\n" + "    logicTable: t_order\n" + "    "
-            + "tableStrategy:\n" + "      inline:\n" + "        algorithmExpression: t_order_${order_id % 2}\n" + "        shardingColumn: order_id\n";
+    private static final String SHARDING_RULE_YAML = "tables:\n" + "  t_order:\n" + "    actualDataNodes: ds_${0..1}.t_order_${0..1}\n" + "    keyGenerator:\n" 
+            + "      keyGeneratorType: SNOWFLAKE\n" + "    logicTable: t_order\n" + "    tableStrategy:\n" + "      inline:\n" + "        algorithmExpression: t_order_${order_id % 2}\n" 
+            + "        shardingColumn: order_id\n";
     
     private static final String MASTER_SLAVE_RULE_YAML = "masterDataSourceName: master_ds\n" + "name: ms_ds\n" + "slaveDataSourceNames:\n" + "- slave_ds_0\n" + "- slave_ds_1\n";
     
