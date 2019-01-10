@@ -66,7 +66,7 @@ public abstract class ShardingTransactionHandlerAdapter implements ShardingTrans
      * Default implement for clear transactional resource.
      */
     @Override
-    public void clearTransactionalResource() {
+    public void clearTransactionalResource(final Map<String, DataSource> dataSourceMap) {
         // adapter
     }
     

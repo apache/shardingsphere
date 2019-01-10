@@ -26,7 +26,7 @@ import org.junit.runner.RunWith;
 import org.mockito.junit.MockitoJUnitRunner;
 
 import javax.sql.DataSource;
-import java.sql.Connection;
+import java.sql.SQLException;
 import java.util.Map;
 
 import static org.mockito.Mockito.mock;
@@ -40,21 +40,28 @@ public class ShardingTransactionHandlerAdapterTest {
     private ShardingTransactionManager shardingTransactionManager = fixedShardingTransactionHandler.getShardingTransactionManager();
     
     @Test
-    public void assertDoXATransactionBegin() {
+    public void assertDoTransactionBegin() {
         fixedShardingTransactionHandler.doInTransaction(TransactionOperationType.BEGIN);
         verify(shardingTransactionManager).begin();
     }
     
     @Test
-    public void assertDoXATransactionCommit() {
+    public void assertDoTransactionCommit() {
         fixedShardingTransactionHandler.doInTransaction(TransactionOperationType.COMMIT);
         verify(shardingTransactionManager).commit();
     }
     
     @Test
-    public void assertDoXATransactionRollback() {
+    public void assertDoTransactionRollback() {
         fixedShardingTransactionHandler.doInTransaction(TransactionOperationType.ROLLBACK);
         verify(shardingTransactionManager).rollback();
+    }
+    
+    @Test
+    public void assertGetConnection() throws SQLException {
+        DataSource dataSource = mock(DataSource.class);
+        fixedShardingTransactionHandler.createConnection("test", dataSource);
+        verify(dataSource).getConnection();
     }
     
     private static final class FixedShardingTransactionHandler extends ShardingTransactionHandlerAdapter {
@@ -77,13 +84,8 @@ public class ShardingTransactionHandlerAdapterTest {
         }
         
         @Override
-        public void clearTransactionalResource() {
+        public void clearTransactionalResource(final Map<String, DataSource> dataSourceMap) {
         
-        }
-        
-        @Override
-        public Connection createConnection(final String dataSourceName, final DataSource dataSource) {
-            return null;
         }
     }
 }

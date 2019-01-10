@@ -66,8 +66,10 @@ public interface ShardingTransactionHandler {
     
     /**
      * Clear transactional resource.
+     *
+     * @param dataSourceMap data source map
      */
-    void clearTransactionalResource();
+    void clearTransactionalResource(Map<String, DataSource> dataSourceMap);
     
     /**
      * Create transactional connection.
