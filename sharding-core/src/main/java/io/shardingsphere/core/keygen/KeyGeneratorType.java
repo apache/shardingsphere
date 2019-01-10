@@ -36,12 +36,12 @@ public enum KeyGeneratorType {
     private final String keyGeneratorClassName;
     
     /**
-     * get built-in key generator type.
+     * Get built-in key generator type.
      * 
      * @param keyGeneratorClassName key generator class name
      * @return built-in key generator type
      */
-    public static KeyGeneratorType getBuiltinKeyGeneratorType(final String keyGeneratorClassName) {
+    public static KeyGeneratorType getKeyGeneratorType(final String keyGeneratorClassName) {
         for (KeyGeneratorType each : KeyGeneratorType.values()) {
             if (each.getKeyGeneratorClassName().equals(keyGeneratorClassName)) {
                 return each;
