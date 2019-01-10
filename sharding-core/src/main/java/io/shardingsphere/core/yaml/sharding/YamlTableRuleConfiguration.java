@@ -60,11 +60,11 @@ public class YamlTableRuleConfiguration {
         String keyGeneratorClassName = tableRuleConfiguration.getKeyGenerator().getClass().getName();
         BuiltinKeyGeneratorType keyGeneratorType = BuiltinKeyGeneratorType.getBuiltinKeyGeneratorType(keyGeneratorClassName);
         if (null == keyGeneratorType) {
-            result.setKeyGeneratorClassName(keyGeneratorClassName);
+            result.setClassName(keyGeneratorClassName);
         } else {
-            result.setKeyGeneratorType(keyGeneratorType.name());
+            result.setType(keyGeneratorType.name());
         }
-        result.setKeyGeneratorColumnName(tableRuleConfiguration.getKeyGeneratorColumnName());
+        result.setColumn(tableRuleConfiguration.getKeyGeneratorColumnName());
         result.setProps(tableRuleConfiguration.getKeyGenerator().getKeyGeneratorProperties());
         return result;
     }
@@ -87,7 +87,7 @@ public class YamlTableRuleConfiguration {
         }
         if (null != keyGenerator) {
             result.setKeyGenerator(keyGenerator.getKeyGenerator());
-            result.setKeyGeneratorColumnName(keyGenerator.getKeyGeneratorColumnName());
+            result.setKeyGeneratorColumnName(keyGenerator.getColumn());
         }
         result.setLogicIndex(logicIndex);
         return result;
