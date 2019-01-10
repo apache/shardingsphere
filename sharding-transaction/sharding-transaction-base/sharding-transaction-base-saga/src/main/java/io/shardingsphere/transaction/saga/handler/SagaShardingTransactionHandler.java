@@ -17,15 +17,15 @@
 
 package io.shardingsphere.transaction.saga.handler;
 
-import io.shardingsphere.core.exception.ShardingException;
+import io.shardingsphere.core.constant.DatabaseType;
 import io.shardingsphere.transaction.api.TransactionType;
-import io.shardingsphere.transaction.core.context.SagaTransactionContext;
 import io.shardingsphere.transaction.core.handler.ShardingTransactionHandlerAdapter;
 import io.shardingsphere.transaction.core.manager.ShardingTransactionManager;
 import io.shardingsphere.transaction.saga.manager.SagaTransactionManager;
 import lombok.extern.slf4j.Slf4j;
 
-import javax.transaction.Status;
+import javax.sql.DataSource;
+import java.util.Map;
 
 /**
  * Saga transaction handler.
@@ -33,9 +33,14 @@ import javax.transaction.Status;
  * @author yangyi
  */
 @Slf4j
-public final class SagaShardingTransactionHandler extends ShardingTransactionHandlerAdapter<SagaTransactionContext> {
+public final class SagaShardingTransactionHandler extends ShardingTransactionHandlerAdapter {
     
     private final SagaTransactionManager transactionManager = SagaTransactionManager.getInstance();
+    
+    @Override
+    public ShardingTransactionManager getShardingTransactionManager() {
+        return transactionManager;
+    }
     
     @Override
     public TransactionType getTransactionType() {
@@ -43,32 +48,12 @@ public final class SagaShardingTransactionHandler extends ShardingTransactionHan
     }
     
     @Override
-    protected ShardingTransactionManager getShardingTransactionManager() {
-        return transactionManager;
+    public void registerTransactionalResource(final DatabaseType databaseType, final Map<String, DataSource> dataSourceMap) {
+        transactionManager.getResourceManager().registerDataSourceMap(dataSourceMap);
     }
     
     @Override
-    public void doInTransaction(final SagaTransactionContext transactionContext) {
-        switch (transactionContext.getOperationType()) {
-            case BEGIN:
-                if (!isInTransaction()) {
-                    super.doInTransaction(transactionContext);
-                }
-                break;
-            case COMMIT:
-                if (!isInTransaction()) {
-                    throw new ShardingException("No transaction begin in current thread connection");
-                }
-                super.doInTransaction(transactionContext);
-                break;
-            case ROLLBACK:
-                super.doInTransaction(transactionContext);
-                break;
-            default:
-        }
-    }
-    
-    private boolean isInTransaction() {
-        return Status.STATUS_ACTIVE == transactionManager.getStatus();
+    public void clearTransactionalResource(final Map<String, DataSource> dataSourceMap) {
+        transactionManager.getResourceManager().releaseDataSourceMap(dataSourceMap);
     }
 }

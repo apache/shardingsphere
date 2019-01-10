@@ -17,12 +17,10 @@
 
 package io.shardingsphere.transaction.saga.handler;
 
-import io.shardingsphere.core.exception.ShardingException;
+import io.shardingsphere.core.constant.DatabaseType;
 import io.shardingsphere.transaction.api.TransactionType;
-import io.shardingsphere.transaction.core.TransactionOperationType;
-import io.shardingsphere.transaction.core.context.SagaTransactionContext;
 import io.shardingsphere.transaction.core.manager.ShardingTransactionManager;
-import io.shardingsphere.transaction.saga.config.SagaConfiguration;
+import io.shardingsphere.transaction.saga.manager.SagaResourceManager;
 import io.shardingsphere.transaction.saga.manager.SagaTransactionManager;
 import org.hamcrest.CoreMatchers;
 import org.junit.Before;
@@ -31,30 +29,35 @@ import org.junit.runner.RunWith;
 import org.mockito.Mock;
 import org.mockito.junit.MockitoJUnitRunner;
 
-import javax.transaction.Status;
 import java.lang.reflect.Field;
 import java.sql.SQLException;
+import java.util.HashMap;
+import java.util.Map;
 
 import static org.hamcrest.CoreMatchers.equalTo;
 import static org.junit.Assert.assertThat;
 import static org.mockito.Mockito.verify;
 import static org.mockito.Mockito.when;
 
+import javax.sql.DataSource;
+
 @RunWith(MockitoJUnitRunner.class)
 public class SagaShardingTransactionHandlerTest {
-    
-    private final SagaConfiguration config = new SagaConfiguration();
     
     private final SagaShardingTransactionHandler handler = new SagaShardingTransactionHandler();
     
     @Mock
     private SagaTransactionManager sagaTransactionManager;
     
+    @Mock
+    private SagaResourceManager sagaResourceManager;
+    
     @Before
     public void setUp() throws NoSuchFieldException, IllegalAccessException, SQLException {
         Field transactionManagerField = SagaShardingTransactionHandler.class.getDeclaredField("transactionManager");
         transactionManagerField.setAccessible(true);
         transactionManagerField.set(handler, sagaTransactionManager);
+        when(sagaTransactionManager.getResourceManager()).thenReturn(sagaResourceManager);
     }
     
     @Test
@@ -68,34 +71,16 @@ public class SagaShardingTransactionHandlerTest {
     }
     
     @Test
-    public void assertBegin() throws SQLException {
-        when(sagaTransactionManager.getStatus()).thenReturn(Status.STATUS_NO_TRANSACTION);
-        SagaTransactionContext context = new SagaTransactionContext(TransactionOperationType.BEGIN, null);
-        handler.doInTransaction(context);
-        verify(sagaTransactionManager).begin(context);
-    }
-    
-    @Test(expected = ShardingException.class)
-    public void assertCommitWithoutBegin() throws SQLException {
-        when(sagaTransactionManager.getStatus()).thenReturn(Status.STATUS_NO_TRANSACTION);
-        SagaTransactionContext context = new SagaTransactionContext(TransactionOperationType.COMMIT, null);
-        handler.doInTransaction(context);
+    public void assertRegisterTransactionalResource() {
+        Map<String, DataSource> dataSourceMap = new HashMap<>();
+        handler.registerTransactionalResource(DatabaseType.MySQL, dataSourceMap);
+        verify(sagaResourceManager).registerDataSourceMap(dataSourceMap);
     }
     
     @Test
-    public void assertCommitWithBegin() throws SQLException {
-        when(sagaTransactionManager.getStatus()).thenReturn(Status.STATUS_NO_TRANSACTION);
-        handler.doInTransaction(new SagaTransactionContext(TransactionOperationType.BEGIN, null));
-        when(sagaTransactionManager.getStatus()).thenReturn(Status.STATUS_ACTIVE);
-        SagaTransactionContext context = new SagaTransactionContext(TransactionOperationType.COMMIT, null);
-        handler.doInTransaction(context);
-        verify(sagaTransactionManager).commit(context);
-    }
-    
-    @Test
-    public void assertRollback() throws SQLException {
-        SagaTransactionContext context = new SagaTransactionContext(TransactionOperationType.ROLLBACK, null);
-        handler.doInTransaction(context);
-        verify(sagaTransactionManager).rollback(context);
+    public void assertClearTransactionalResource() {
+        Map<String, DataSource> dataSourceMap = new HashMap<>();
+        handler.clearTransactionalResource(dataSourceMap);
+        verify(sagaResourceManager).releaseDataSourceMap(dataSourceMap);
     }
 }

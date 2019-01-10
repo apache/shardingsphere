@@ -19,7 +19,6 @@ package io.shardingsphere.transaction.saga.manager;
 
 import com.fasterxml.jackson.core.JsonProcessingException;
 import io.shardingsphere.core.executor.ShardingExecuteDataMap;
-import io.shardingsphere.transaction.core.context.SagaTransactionContext;
 import io.shardingsphere.transaction.core.manager.ShardingTransactionManager;
 import io.shardingsphere.transaction.saga.SagaTransaction;
 import io.shardingsphere.transaction.saga.servicecomb.transport.ShardingTransportFactory;
@@ -33,7 +32,7 @@ import javax.transaction.Status;
  * @author zhaojun
  * @author yangyi
  */
-public final class SagaTransactionManager implements ShardingTransactionManager<SagaTransactionContext> {
+public final class SagaTransactionManager implements ShardingTransactionManager {
     
     private static final String TRANSACTION_KEY = "transaction";
     
@@ -45,15 +44,17 @@ public final class SagaTransactionManager implements ShardingTransactionManager<
     private final SagaResourceManager resourceManager = new SagaResourceManager();
     
     @Override
-    public void begin(final SagaTransactionContext transactionContext) {
-        SagaTransaction transaction = new SagaTransaction(resourceManager.getSagaConfiguration(), transactionContext.getDataSourceMap());
-        ShardingExecuteDataMap.getDataMap().put(TRANSACTION_KEY, transaction);
-        TRANSACTIONS.set(transaction);
-        ShardingTransportFactory.getInstance().cacheTransport(transaction);
+    public void begin() {
+        if (null == TRANSACTIONS.get()) {
+            SagaTransaction transaction = new SagaTransaction(resourceManager.getSagaConfiguration(), resourceManager.getDataSourceMap());
+            ShardingExecuteDataMap.getDataMap().put(TRANSACTION_KEY, transaction);
+            TRANSACTIONS.set(transaction);
+            ShardingTransportFactory.getInstance().cacheTransport(transaction);
+        }
     }
     
     @Override
-    public void commit(final SagaTransactionContext transactionContext) {
+    public void commit() {
         if (null != TRANSACTIONS.get() && TRANSACTIONS.get().isContainException()) {
             submitToActuator();
         }
@@ -61,10 +62,7 @@ public final class SagaTransactionManager implements ShardingTransactionManager<
     }
     
     @Override
-    public void rollback(final SagaTransactionContext transactionContext) {
-        if (null != TRANSACTIONS.get()) {
-            submitToActuator();
-        }
+    public void rollback() {
         cleanTransaction();
     }
     
