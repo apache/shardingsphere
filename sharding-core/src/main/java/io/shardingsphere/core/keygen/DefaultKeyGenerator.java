@@ -18,8 +18,6 @@
 package io.shardingsphere.core.keygen;
 
 import com.google.common.base.Preconditions;
-import io.shardingsphere.core.constant.properties.ShardingProperties;
-import io.shardingsphere.core.constant.properties.ShardingPropertiesConstant;
 import lombok.Getter;
 import lombok.Setter;
 import lombok.SneakyThrows;
@@ -77,7 +75,7 @@ public final class DefaultKeyGenerator implements KeyGenerator {
     
     @Getter
     @Setter
-    private Properties props = new Properties();
+    private Properties properties = new Properties();
     
     static {
         Calendar calendar = Calendar.getInstance();
@@ -96,13 +94,13 @@ public final class DefaultKeyGenerator implements KeyGenerator {
     private long lastMilliseconds;
     
     private long getWorkerId() {
-        long result = Long.valueOf(props.getProperty("work.id", String.valueOf(WORK_ID)));
+        long result = Long.valueOf(properties.getProperty("work.id", String.valueOf(WORK_ID)));
         Preconditions.checkArgument(result >= 0L && result < WORKER_ID_MAX_VALUE);
         return result;
     }
     
     private int getMaxTolerateTimeDifferenceMilliseconds() {
-        return Integer.valueOf(props.getProperty("max.tolerate.time.difference.milliseconds", String.valueOf(MAX_TOLERATE_TIME_DIFFERENCE_MILLISECONDS)));
+        return Integer.valueOf(properties.getProperty("max.tolerate.time.difference.milliseconds", String.valueOf(MAX_TOLERATE_TIME_DIFFERENCE_MILLISECONDS)));
     }
     
     /**
