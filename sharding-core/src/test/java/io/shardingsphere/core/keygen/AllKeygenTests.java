@@ -23,7 +23,7 @@ import org.junit.runners.Suite.SuiteClasses;
 
 @RunWith(Suite.class)
 @SuiteClasses({
-        DefaultKeyGeneratorTest.class, 
+        SnowflakeKeyGeneratorTest.class, 
         KeyGeneratorFactoryTest.class
     })
 public final class AllKeygenTests {

@@ -30,7 +30,7 @@ import lombok.RequiredArgsConstructor;
 @Getter
 public enum KeyGeneratorType {
     
-    SNOWFLAKE("io.shardingsphere.core.keygen.DefaultKeyGenerator"),
+    SNOWFLAKE("io.shardingsphere.core.keygen.SnowflakeKeyGenerator"),
     UUID(""),
     LEAF("");
     

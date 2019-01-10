@@ -33,7 +33,7 @@ public final class KeyGeneratorFactoryTest {
     
     @Test
     public void assertCreateKeyGeneratorSuccess() {
-        assertThat(KeyGeneratorFactory.newInstance(DefaultKeyGenerator.class.getName()), instanceOf(DefaultKeyGenerator.class));
+        assertThat(KeyGeneratorFactory.newInstance(SnowflakeKeyGenerator.class.getName()), instanceOf(SnowflakeKeyGenerator.class));
     }
     
     @Test(expected = IllegalArgumentException.class)
