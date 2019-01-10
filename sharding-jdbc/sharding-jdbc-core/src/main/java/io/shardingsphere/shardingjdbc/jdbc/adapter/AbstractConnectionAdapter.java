@@ -30,8 +30,8 @@ import io.shardingsphere.spi.root.RootInvokeHook;
 import io.shardingsphere.spi.root.SPIRootInvokeHook;
 import io.shardingsphere.transaction.api.TransactionType;
 import io.shardingsphere.transaction.api.TransactionTypeHolder;
-import io.shardingsphere.transaction.core.loader.ShardingTransactionHandlerRegistry;
-import io.shardingsphere.transaction.spi.ShardingTransactionHandler;
+import io.shardingsphere.transaction.core.loader.ShardingTransactionEngineRegistry;
+import io.shardingsphere.transaction.spi.ShardingTransactionEngine;
 import lombok.Getter;
 
 import javax.sql.DataSource;
@@ -75,14 +75,14 @@ public abstract class AbstractConnectionAdapter extends AbstractUnsupportedOpera
     
     private final TransactionType transactionType;
     
-    private final ShardingTransactionHandler shardingTransactionHandler;
+    private final ShardingTransactionEngine shardingTransactionEngine;
     
     protected AbstractConnectionAdapter(final TransactionType transactionType) {
         rootInvokeHook.start();
         this.transactionType = transactionType;
-        shardingTransactionHandler = ShardingTransactionHandlerRegistry.getHandler(transactionType);
+        shardingTransactionEngine = ShardingTransactionEngineRegistry.getShardingTransactionEngine(transactionType);
         if (TransactionType.LOCAL != transactionType) {
-            Preconditions.checkNotNull(shardingTransactionHandler, "Cannot find transaction manager of [%s]", transactionType);
+            Preconditions.checkNotNull(shardingTransactionEngine, "Cannot find transaction manager of [%s]", transactionType);
         }
     }
     
@@ -162,7 +162,7 @@ public abstract class AbstractConnectionAdapter extends AbstractUnsupportedOpera
     }
     
     private Connection createConnection(final String dataSourceName, final DataSource dataSource) throws SQLException {
-        Connection result = null == shardingTransactionHandler ? dataSource.getConnection() : shardingTransactionHandler.createConnection(dataSourceName, dataSource);
+        Connection result = null == shardingTransactionEngine ? dataSource.getConnection() : shardingTransactionEngine.createConnection(dataSourceName, dataSource);
         replayMethodsInvocation(result);
         return result;
     }
@@ -180,7 +180,7 @@ public abstract class AbstractConnectionAdapter extends AbstractUnsupportedOpera
         if (TransactionType.LOCAL == transactionType) {
             setAutoCommitForLocalTransaction(autoCommit);
         } else if (!autoCommit) {
-            shardingTransactionHandler.begin();
+            shardingTransactionEngine.begin();
         }
     }
     
@@ -200,7 +200,7 @@ public abstract class AbstractConnectionAdapter extends AbstractUnsupportedOpera
         if (TransactionType.LOCAL == transactionType) {
             commitForLocalTransaction();
         } else {
-            shardingTransactionHandler.commit();
+            shardingTransactionEngine.commit();
         }
     }
     
@@ -219,7 +219,7 @@ public abstract class AbstractConnectionAdapter extends AbstractUnsupportedOpera
         if (TransactionType.LOCAL == transactionType) {
             rollbackForLocalTransaction();
         } else {
-            shardingTransactionHandler.rollback();
+            shardingTransactionEngine.rollback();
         }
     }
     

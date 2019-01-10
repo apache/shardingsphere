@@ -74,7 +74,7 @@ public final class ComQueryPacketTest {
     
     @After
     public void tearDown() {
-        FixedXAShardingTransactionHandler.getInvokes().clear();
+        FixedXAShardingTransactionEngine.getInvokes().clear();
     }
     
     @SneakyThrows
@@ -144,7 +144,7 @@ public final class ComQueryPacketTest {
         Optional<CommandResponsePackets> actual = packet.execute();
         assertTrue(actual.isPresent());
         assertOKPacket(actual.get());
-        assertThat(FixedXAShardingTransactionHandler.getInvokes().get("rollback"), is(TransactionOperationType.ROLLBACK));
+        assertThat(FixedXAShardingTransactionEngine.getInvokes().get("rollback"), is(TransactionOperationType.ROLLBACK));
     }
     
     @Test
@@ -156,7 +156,7 @@ public final class ComQueryPacketTest {
         Optional<CommandResponsePackets> actual = packet.execute();
         assertTrue(actual.isPresent());
         assertOKPacket(actual.get());
-        assertThat(FixedXAShardingTransactionHandler.getInvokes().get("commit"), is(TransactionOperationType.COMMIT));
+        assertThat(FixedXAShardingTransactionEngine.getInvokes().get("commit"), is(TransactionOperationType.COMMIT));
     }
     
     private void assertOKPacket(final CommandResponsePackets actual) {

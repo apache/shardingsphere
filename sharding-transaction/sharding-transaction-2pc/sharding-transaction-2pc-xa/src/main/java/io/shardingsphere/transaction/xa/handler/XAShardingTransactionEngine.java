@@ -21,7 +21,7 @@ import com.atomikos.jdbc.AtomikosDataSourceBean;
 import io.shardingsphere.core.constant.DatabaseType;
 import io.shardingsphere.core.exception.ShardingException;
 import io.shardingsphere.transaction.api.TransactionType;
-import io.shardingsphere.transaction.spi.ShardingTransactionHandler;
+import io.shardingsphere.transaction.spi.ShardingTransactionEngine;
 import io.shardingsphere.transaction.spi.xa.XATransactionManager;
 import io.shardingsphere.transaction.xa.jta.connection.ShardingXAConnection;
 import io.shardingsphere.transaction.xa.jta.datasource.ShardingXADataSource;
@@ -40,12 +40,12 @@ import java.util.Map;
 import java.util.Map.Entry;
 
 /**
- * XA sharding transaction handler.
+ * Sharding transaction engine for XA.
  *
  * @author zhaojun
  */
 @Slf4j
-public final class XAShardingTransactionHandler implements ShardingTransactionHandler {
+public final class XAShardingTransactionEngine implements ShardingTransactionEngine {
     
     private final Map<String, ShardingXADataSource> cachedShardingXADataSourceMap = new HashMap<>();
     
@@ -54,21 +54,6 @@ public final class XAShardingTransactionHandler implements ShardingTransactionHa
     @Override
     public TransactionType getTransactionType() {
         return TransactionType.XA;
-    }
-    
-    @Override
-    public void begin() {
-        xaTransactionManager.begin();
-    }
-    
-    @Override
-    public void commit() {
-        xaTransactionManager.commit();
-    }
-    
-    @Override
-    public void rollback() {
-        xaTransactionManager.rollback();
     }
     
     @Override
@@ -86,7 +71,7 @@ public final class XAShardingTransactionHandler implements ShardingTransactionHa
     }
     
     @Override
-    public void clearTransactionalResource() {
+    public void clearTransactionalResources() {
         if (!cachedShardingXADataSourceMap.isEmpty()) {
             for (ShardingXADataSource each : cachedShardingXADataSourceMap.values()) {
                 xaTransactionManager.removeRecoveryResource(each.getResourceName(), each.getXaDataSource());
@@ -114,5 +99,19 @@ public final class XAShardingTransactionHandler implements ShardingTransactionHa
         }
         return result;
     }
-}
     
+    @Override
+    public void begin() {
+        xaTransactionManager.begin();
+    }
+    
+    @Override
+    public void commit() {
+        xaTransactionManager.commit();
+    }
+    
+    @Override
+    public void rollback() {
+        xaTransactionManager.rollback();
+    }
+}

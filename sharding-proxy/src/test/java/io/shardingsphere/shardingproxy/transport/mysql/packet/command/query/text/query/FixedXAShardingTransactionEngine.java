@@ -15,12 +15,12 @@
  * </p>
  */
 
-package io.shardingsphere.shardingjdbc.jdbc.core.fixed;
+package io.shardingsphere.shardingproxy.transport.mysql.packet.command.query.text.query;
 
 import io.shardingsphere.core.constant.DatabaseType;
 import io.shardingsphere.transaction.api.TransactionType;
 import io.shardingsphere.transaction.core.TransactionOperationType;
-import io.shardingsphere.transaction.spi.ShardingTransactionHandler;
+import io.shardingsphere.transaction.spi.ShardingTransactionEngine;
 
 import javax.sql.DataSource;
 import java.sql.Connection;
@@ -29,26 +29,34 @@ import java.util.HashMap;
 import java.util.Map;
 
 /**
- * Fixed base sharding transaction handler.
+ * Fixed base sharding transaction engine.
  *
  * @author zhaojun
  */
-public final class FixedBaseShardingTransactionHandler implements ShardingTransactionHandler {
+public final class FixedXAShardingTransactionEngine implements ShardingTransactionEngine {
     
     private static final Map<String, TransactionOperationType> INVOKES = new HashMap<>();
     
-    /**
-     * Get invoke map.
-     *
-     * @return map
-     */
-    public static Map<String, TransactionOperationType> getInvokes() {
+    static Map<String, TransactionOperationType> getInvokes() {
         return INVOKES;
     }
     
     @Override
     public TransactionType getTransactionType() {
-        return TransactionType.BASE;
+        return TransactionType.XA;
+    }
+    
+    @Override
+    public void registerTransactionalResource(final DatabaseType databaseType, final Map<String, DataSource> dataSourceMap) {
+    }
+    
+    @Override
+    public void clearTransactionalResources() {
+    }
+    
+    @Override
+    public Connection createConnection(final String dataSourceName, final DataSource dataSource) throws SQLException {
+        return dataSource.getConnection();
     }
     
     @Override
@@ -64,18 +72,5 @@ public final class FixedBaseShardingTransactionHandler implements ShardingTransa
     @Override
     public void rollback() {
         INVOKES.put("rollback", TransactionOperationType.ROLLBACK);
-    }
-    
-    @Override
-    public void registerTransactionalResource(final DatabaseType databaseType, final Map<String, DataSource> dataSourceMap) {
-    }
-    
-    @Override
-    public void clearTransactionalResource() {
-    }
-    
-    @Override
-    public Connection createConnection(final String dataSourceName, final DataSource dataSource) throws SQLException {
-        return dataSource.getConnection();
     }
 }

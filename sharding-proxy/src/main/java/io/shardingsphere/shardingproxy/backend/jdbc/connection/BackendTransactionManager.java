@@ -20,8 +20,8 @@ package io.shardingsphere.shardingproxy.backend.jdbc.connection;
 import com.google.common.base.Optional;
 import com.google.common.base.Preconditions;
 import io.shardingsphere.transaction.api.TransactionType;
-import io.shardingsphere.transaction.core.loader.ShardingTransactionHandlerRegistry;
-import io.shardingsphere.transaction.spi.ShardingTransactionHandler;
+import io.shardingsphere.transaction.core.loader.ShardingTransactionEngineRegistry;
+import io.shardingsphere.transaction.spi.ShardingTransactionEngine;
 import lombok.RequiredArgsConstructor;
 
 import java.sql.SQLException;
@@ -38,43 +38,43 @@ public final class BackendTransactionManager implements TransactionManager {
     
     @Override
     public void begin() {
-        Optional<ShardingTransactionHandler> shardingTransactionHandler = getShardingTransactionHandler(connection);
+        Optional<ShardingTransactionEngine> shardingTransactionEngine = getShardingTransactionEngine(connection);
         if (!connection.getStateHandler().isInTransaction()) {
             connection.getStateHandler().getAndSetStatus(ConnectionStatus.TRANSACTION);
             connection.releaseConnections(false);
         }
-        if (!shardingTransactionHandler.isPresent()) {
+        if (!shardingTransactionEngine.isPresent()) {
             new LocalTransactionManager(connection).begin();
-        } else if (TransactionType.XA == shardingTransactionHandler.get().getTransactionType()) {
-            shardingTransactionHandler.get().begin();
+        } else if (TransactionType.XA == shardingTransactionEngine.get().getTransactionType()) {
+            shardingTransactionEngine.get().begin();
         }
     }
     
     @Override
     public void commit() throws SQLException {
-        Optional<ShardingTransactionHandler> shardingTransactionHandler = getShardingTransactionHandler(connection);
-        if (!shardingTransactionHandler.isPresent()) {
+        Optional<ShardingTransactionEngine> shardingTransactionEngine = getShardingTransactionEngine(connection);
+        if (!shardingTransactionEngine.isPresent()) {
             new LocalTransactionManager(connection).commit();
-        } else if (TransactionType.XA == shardingTransactionHandler.get().getTransactionType()) {
-            shardingTransactionHandler.get().commit();
+        } else if (TransactionType.XA == shardingTransactionEngine.get().getTransactionType()) {
+            shardingTransactionEngine.get().commit();
             connection.getStateHandler().getAndSetStatus(ConnectionStatus.TERMINATED);
         }
     }
     
     @Override
     public void rollback() throws SQLException {
-        Optional<ShardingTransactionHandler> shardingTransactionHandler = getShardingTransactionHandler(connection);
-        if (!shardingTransactionHandler.isPresent()) {
+        Optional<ShardingTransactionEngine> shardingTransactionEngine = getShardingTransactionEngine(connection);
+        if (!shardingTransactionEngine.isPresent()) {
             new LocalTransactionManager(connection).rollback();
-        } else if (TransactionType.XA == shardingTransactionHandler.get().getTransactionType()) {
-            shardingTransactionHandler.get().rollback();
+        } else if (TransactionType.XA == shardingTransactionEngine.get().getTransactionType()) {
+            shardingTransactionEngine.get().rollback();
             connection.getStateHandler().getAndSetStatus(ConnectionStatus.TERMINATED);
         }
     }
     
-    private Optional<ShardingTransactionHandler> getShardingTransactionHandler(final BackendConnection connection) {
+    private Optional<ShardingTransactionEngine> getShardingTransactionEngine(final BackendConnection connection) {
         TransactionType transactionType = connection.getTransactionType();
-        ShardingTransactionHandler result = ShardingTransactionHandlerRegistry.getHandler(transactionType);
+        ShardingTransactionEngine result = ShardingTransactionEngineRegistry.getShardingTransactionEngine(transactionType);
         if (null != transactionType && transactionType != TransactionType.LOCAL) {
             Preconditions.checkNotNull(result, String.format("Cannot find transaction manager of [%s]", transactionType));
         }

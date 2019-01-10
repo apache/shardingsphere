@@ -26,12 +26,12 @@ import java.sql.SQLException;
 import java.util.Map;
 
 /**
- * Sharding transaction handler SPI.
+ * Sharding transaction engine.
  *
  * @author zhaojun
  * 
  */
-public interface ShardingTransactionHandler {
+public interface ShardingTransactionEngine {
     
     /**
      * Get transaction type.
@@ -39,6 +39,29 @@ public interface ShardingTransactionHandler {
      * @return transaction type
      */
     TransactionType getTransactionType();
+    
+    /**
+     * Register transaction data source.
+     *
+     * @param databaseType database type
+     * @param dataSourceMap data source map
+     */
+    void registerTransactionalResource(DatabaseType databaseType, Map<String, DataSource> dataSourceMap);
+    
+    /**
+     * Clear transactional resources.
+     */
+    void clearTransactionalResources();
+    
+    /**
+     * Create transactional connection.
+     *
+     * @param dataSourceName data source name
+     * @param dataSource data source
+     * @return connection
+     * @throws SQLException SQL exception
+     */
+    Connection createConnection(String dataSourceName, DataSource dataSource) throws SQLException;
     
     /**
      * Begin transaction.
@@ -54,27 +77,4 @@ public interface ShardingTransactionHandler {
      * Rollback transaction.
      */
     void rollback();
-    
-    /**
-     * Register transaction data source.
-     *
-     * @param databaseType database type
-     * @param dataSourceMap data source map
-     */
-    void registerTransactionalResource(DatabaseType databaseType, Map<String, DataSource> dataSourceMap);
-    
-    /**
-     * Clear transactional resource.
-     */
-    void clearTransactionalResource();
-    
-    /**
-     * Create transactional connection.
-     *
-     * @param dataSourceName data source name
-     * @param dataSource data source
-     * @return connection
-     * @throws SQLException SQL exception
-     */
-    Connection createConnection(String dataSourceName, DataSource dataSource) throws SQLException;
 }
