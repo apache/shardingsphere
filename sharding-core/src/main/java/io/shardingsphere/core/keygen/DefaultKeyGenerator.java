@@ -96,13 +96,13 @@ public final class DefaultKeyGenerator implements KeyGenerator {
     private long lastMilliseconds;
     
     private long getWorkerId() {
-        long result = props.getValue(ShardingPropertiesConstant.WORK_ID);
+        long result = Long.valueOf(props.getProperty("work.id", String.valueOf(WORK_ID)));
         Preconditions.checkArgument(result >= 0L && result < WORKER_ID_MAX_VALUE);
         return result;
     }
     
     private int getMaxTolerateTimeDifferenceMilliseconds() {
-        return props.getValue(ShardingPropertiesConstant.MAX_TOLERATE_TIME_DIFFERENCE_MILLISECONDS);
+        return Integer.valueOf(props.getProperty("max.tolerate.time.difference.milliseconds", String.valueOf(MAX_TOLERATE_TIME_DIFFERENCE_MILLISECONDS)));
     }
     
     /**
