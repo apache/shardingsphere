@@ -133,7 +133,7 @@ public final class TableMetaDataLoader {
     private List<ColumnMetaData> getColumnMetaDataList(final Connection connection, final String catalog, final String actualTableName) throws SQLException {
         List<ColumnMetaData> result = new LinkedList<>();
         Collection<String> primaryKeys = getPrimaryKeys(connection, catalog, actualTableName);
-        try (ResultSet resultSet = connection.getMetaData().getColumns(catalog, null, actualTableName, null)) {
+        try (ResultSet resultSet = connection.getMetaData().getColumns(catalog, null, actualTableName, "%")) {
             while (resultSet.next()) {
                 String columnName = resultSet.getString("COLUMN_NAME");
                 String columnType = resultSet.getString("TYPE_NAME");

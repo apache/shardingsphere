@@ -18,6 +18,7 @@
 package io.shardingsphere.transaction.xa.fixture;
 
 import com.alibaba.druid.pool.DruidDataSource;
+import com.alibaba.druid.pool.xa.DruidXADataSource;
 import com.zaxxer.hikari.HikariDataSource;
 import io.shardingsphere.core.constant.DatabaseType;
 import io.shardingsphere.core.constant.PoolType;
@@ -50,6 +51,8 @@ public final class DataSourceUtils {
                 return newHikariDataSource(databaseType, databaseName);
             case DRUID:
                 return newDruidDataSource(databaseType, databaseName);
+            case DRUID_XA:
+                return newDruidXADataSource(databaseType, databaseName);
             default:
                 return Mockito.mock(DataSource.class);
         }
@@ -71,15 +74,25 @@ public final class DataSourceUtils {
     
     private static DruidDataSource newDruidDataSource(final DatabaseType databaseType, final String databaseName) {
         DruidDataSource result = new DruidDataSource();
-        result.setUrl(getUrl(databaseType, databaseName));
-        result.setUsername("root");
-        result.setPassword("root");
-        result.setMaxActive(10);
-        result.setMinIdle(2);
-        result.setMaxWait(15 * 1000);
-        result.setMinEvictableIdleTimeMillis(40 * 1000);
-        result.setTimeBetweenEvictionRunsMillis(20 * 1000);
+        configDruidDataSource(result, databaseType, databaseName);
         return result;
+    }
+    
+    private static DruidXADataSource newDruidXADataSource(final DatabaseType databaseType, final String databaseName) {
+        DruidXADataSource result = new DruidXADataSource();
+        configDruidDataSource(result, databaseType, databaseName);
+        return result;
+    }
+    
+    private static void configDruidDataSource(final DruidDataSource druidDataSource, final DatabaseType databaseType, final String databaseName) {
+        druidDataSource.setUrl(getUrl(databaseType, databaseName));
+        druidDataSource.setUsername("root");
+        druidDataSource.setPassword("root");
+        druidDataSource.setMaxActive(10);
+        druidDataSource.setMinIdle(2);
+        druidDataSource.setMaxWait(15 * 1000);
+        druidDataSource.setMinEvictableIdleTimeMillis(40 * 1000);
+        druidDataSource.setTimeBetweenEvictionRunsMillis(20 * 1000);
     }
     
     private static HikariDataSource newHikariDataSource(final DatabaseType databaseType, final String databaseName) {

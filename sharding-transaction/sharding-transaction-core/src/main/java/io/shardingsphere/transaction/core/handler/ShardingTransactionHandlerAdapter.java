@@ -17,35 +17,64 @@
 
 package io.shardingsphere.transaction.core.handler;
 
-import io.shardingsphere.transaction.core.context.ShardingTransactionContext;
-import io.shardingsphere.transaction.core.manager.ShardingTransactionManager;
+import io.shardingsphere.core.constant.DatabaseType;
+import io.shardingsphere.transaction.core.TransactionOperationType;
 import io.shardingsphere.transaction.spi.ShardingTransactionHandler;
+
+import javax.sql.DataSource;
+import java.sql.Connection;
+import java.sql.SQLException;
+import java.util.Map;
 
 /**
  * Abstract class for sharding transaction handler.
  *
  * @author zhaojun
  *
- * @param <T> type of sharding transaction context
  */
-public abstract class ShardingTransactionHandlerAdapter<T extends ShardingTransactionContext> implements ShardingTransactionHandler<T> {
+public abstract class ShardingTransactionHandlerAdapter implements ShardingTransactionHandler {
     
+    /**
+     * Default implement for do in transaction.
+     */
     @Override
     @SuppressWarnings("unchecked")
-    public void doInTransaction(final T context) {
-        switch (context.getOperationType()) {
+    public void doInTransaction(final TransactionOperationType transactionOperationType) {
+        switch (transactionOperationType) {
             case BEGIN:
-                getShardingTransactionManager().begin(context);
+                getShardingTransactionManager().begin();
                 break;
             case COMMIT:
-                getShardingTransactionManager().commit(context);
+                getShardingTransactionManager().commit();
                 break;
             case ROLLBACK:
-                getShardingTransactionManager().rollback(context);
+                getShardingTransactionManager().rollback();
                 break;
             default:
         }
     }
     
-    protected abstract ShardingTransactionManager getShardingTransactionManager();
+    /**
+     * Default implement for register transaction resource.
+     */
+    @Override
+    public void registerTransactionalResource(final DatabaseType databaseType, final Map<String, DataSource> dataSourceMap) {
+        // adapter
+    }
+    
+    /**
+     * Default implement for clear transactional resource.
+     */
+    @Override
+    public void clearTransactionalResource() {
+        // adapter
+    }
+    
+    /**
+     * Default implement for create connection.
+     */
+    @Override
+    public Connection createConnection(final String dataSourceName, final DataSource dataSource) throws SQLException {
+        return dataSource.getConnection();
+    }
 }

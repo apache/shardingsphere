@@ -40,7 +40,7 @@
         <commons-codec.version>1.10</commons-codec.version>
         
         <javax.transaction.version>1.1</javax.transaction.version>
-        <atomikos.version>4.0.4</atomikos.version>
+        <atomikos.version>4.0.6</atomikos.version>
         <servicecomb.saga.version>0.3.0</servicecomb.saga.version>
         
         <curator.version>2.10.0</curator.version>

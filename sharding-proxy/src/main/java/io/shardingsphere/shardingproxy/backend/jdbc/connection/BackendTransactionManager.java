@@ -18,12 +18,8 @@
 package io.shardingsphere.shardingproxy.backend.jdbc.connection;
 
 import com.google.common.base.Preconditions;
-
 import io.shardingsphere.transaction.api.TransactionType;
 import io.shardingsphere.transaction.core.TransactionOperationType;
-import io.shardingsphere.transaction.core.context.SagaTransactionContext;
-import io.shardingsphere.transaction.core.context.ShardingTransactionContext;
-import io.shardingsphere.transaction.core.context.XATransactionContext;
 import io.shardingsphere.transaction.core.loader.ShardingTransactionHandlerRegistry;
 import io.shardingsphere.transaction.spi.ShardingTransactionHandler;
 import lombok.RequiredArgsConstructor;
@@ -43,7 +39,7 @@ public final class BackendTransactionManager implements TransactionManager {
     @Override
     public void doInTransaction(final TransactionOperationType operationType) throws SQLException {
         TransactionType transactionType = connection.getTransactionType();
-        ShardingTransactionHandler<ShardingTransactionContext> shardingTransactionHandler = ShardingTransactionHandlerRegistry.getInstance().getHandler(transactionType);
+        ShardingTransactionHandler shardingTransactionHandler = ShardingTransactionHandlerRegistry.getHandler(transactionType);
         if (null != transactionType && transactionType != TransactionType.LOCAL) {
             Preconditions.checkNotNull(shardingTransactionHandler, String.format("Cannot find transaction manager of [%s]", transactionType));
         }
@@ -54,12 +50,7 @@ public final class BackendTransactionManager implements TransactionManager {
         if (TransactionType.LOCAL == transactionType) {
             new LocalTransactionManager(connection).doInTransaction(operationType);
         } else if (TransactionType.XA == transactionType) {
-            shardingTransactionHandler.doInTransaction(new XATransactionContext(operationType));
-            if (TransactionOperationType.BEGIN != operationType) {
-                connection.getStateHandler().getAndSetStatus(ConnectionStatus.TERMINATED);
-            }
-        } else if (TransactionType.BASE == transactionType) {
-            shardingTransactionHandler.doInTransaction(new SagaTransactionContext(operationType, connection.getLogicSchema().getBackendDataSource().getDataSources()));
+            shardingTransactionHandler.doInTransaction(operationType);
             if (TransactionOperationType.BEGIN != operationType) {
                 connection.getStateHandler().getAndSetStatus(ConnectionStatus.TERMINATED);
             }

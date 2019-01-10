@@ -31,6 +31,7 @@ public enum PoolType {
     
     HIKARI("com.zaxxer.hikari.HikariDataSource"),
     DRUID("com.alibaba.druid.pool.DruidDataSource"),
+    DRUID_XA("com.alibaba.druid.pool.xa.DruidXADataSource"),
     DBCP2("org.apache.commons.dbcp2.BasicDataSource"),
     DBCP2_TOMCAT("org.apache.tomcat.dbcp.dbcp2.BasicDataSource"),
     UNKNOWN("");

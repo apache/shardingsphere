@@ -20,8 +20,9 @@ package io.shardingsphere.shardingjdbc.jdbc.adapter;
 import com.google.common.base.Preconditions;
 import io.shardingsphere.core.bootstrap.ShardingBootstrap;
 import io.shardingsphere.core.constant.DatabaseType;
+import io.shardingsphere.core.util.ReflectiveUtil;
 import io.shardingsphere.shardingjdbc.jdbc.unsupported.AbstractUnsupportedOperationDataSource;
-import io.shardingsphere.transaction.core.datasource.ShardingTransactionalDataSource;
+import io.shardingsphere.transaction.core.loader.ShardingTransactionHandlerRegistry;
 import lombok.Getter;
 import lombok.Setter;
 
@@ -51,13 +52,14 @@ public abstract class AbstractDataSourceAdapter extends AbstractUnsupportedOpera
     
     private final DatabaseType databaseType;
     
-    private final ShardingTransactionalDataSource shardingTransactionalDataSources;
+    private final Map<String, DataSource> dataSourceMap;
     
     private PrintWriter logWriter = new PrintWriter(System.out);
     
     public AbstractDataSourceAdapter(final Map<String, DataSource> dataSourceMap) throws SQLException {
         databaseType = getDatabaseType(dataSourceMap.values());
-        shardingTransactionalDataSources = new ShardingTransactionalDataSource(databaseType, dataSourceMap);
+        ShardingTransactionHandlerRegistry.registerTransactionResource(databaseType, dataSourceMap);
+        this.dataSourceMap = dataSourceMap;
     }
     
     protected final DatabaseType getDatabaseType(final Collection<DataSource> dataSources) throws SQLException {
@@ -79,15 +81,6 @@ public abstract class AbstractDataSourceAdapter extends AbstractUnsupportedOpera
         }
     }
     
-    /**
-     * Get data source map.
-     *
-     * @return data source map
-     */
-    public final Map<String, DataSource> getDataSourceMap() {
-        return shardingTransactionalDataSources.getOriginalDataSourceMap();
-    }
-    
     @Override
     public final Logger getParentLogger() {
         return Logger.getLogger(Logger.GLOBAL_LOGGER_NAME);
@@ -100,6 +93,11 @@ public abstract class AbstractDataSourceAdapter extends AbstractUnsupportedOpera
     
     @Override
     public void close() {
-        shardingTransactionalDataSources.close();
+        for (DataSource each : dataSourceMap.values()) {
+            try {
+                ReflectiveUtil.findMethod(each, "close").invoke(each);
+            } catch (final ReflectiveOperationException ignored) {
+            }
+        }
     }
 }

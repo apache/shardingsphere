@@ -201,6 +201,50 @@ public class ShardingRule {
     }
     
     /**
+     * Judge logic tables is all belong to binding tables.
+     *
+     * @param logicTableNames logic table names
+     * @return logic tables is all belong to binding tables or not
+     */
+    public boolean isAllBindingTables(final Collection<String> logicTableNames) {
+        if (logicTableNames.isEmpty()) {
+            return false;
+        }
+        Optional<BindingTableRule> bindingTableRule = findBindingTableRule(logicTableNames);
+        if (!bindingTableRule.isPresent()) {
+            return false;
+        }
+        Collection<String> result = new TreeSet<>(String.CASE_INSENSITIVE_ORDER);
+        result.addAll(bindingTableRule.get().getAllLogicTables());
+        return !result.isEmpty() && result.containsAll(logicTableNames);
+    }
+    
+    private Optional<BindingTableRule> findBindingTableRule(final Collection<String> logicTableNames) {
+        for (String each : logicTableNames) {
+            Optional<BindingTableRule> result = findBindingTableRule(each);
+            if (result.isPresent()) {
+                return result;
+            }
+        }
+        return Optional.absent();
+    }
+    
+    /**
+     * Find binding table rule via logic table name.
+     *
+     * @param logicTableName logic table name
+     * @return binding table rule
+     */
+    public Optional<BindingTableRule> findBindingTableRule(final String logicTableName) {
+        for (BindingTableRule each : bindingTableRules) {
+            if (each.hasLogicTable(logicTableName)) {
+                return Optional.of(each);
+            }
+        }
+        return Optional.absent();
+    }
+    
+    /**
      * Judge logic tables is all belong to broadcast tables.
      *
      * @param logicTableNames  logic table names
@@ -234,25 +278,6 @@ public class ShardingRule {
     }
     
     /**
-     * Judge logic tables is all belong to binding tables.
-     *
-     * @param logicTables names of logic tables
-     * @return logic tables is all belong to binding tables or not
-     */
-    public boolean isAllBindingTables(final Collection<String> logicTables) {
-        if (logicTables.isEmpty()) {
-            return false;
-        }
-        Optional<BindingTableRule> bindingTableRule = findBindingTableRule(logicTables);
-        if (!bindingTableRule.isPresent()) {
-            return false;
-        }
-        Collection<String> result = new TreeSet<>(String.CASE_INSENSITIVE_ORDER);
-        result.addAll(bindingTableRule.get().getAllLogicTables());
-        return !result.isEmpty() && result.containsAll(logicTables);
-    }
-    
-    /**
      * Judge logic tables is all belong to default data source.
      *
      * @param logicTableNames logic table names
@@ -267,31 +292,6 @@ public class ShardingRule {
         return !logicTableNames.isEmpty();
     }
     
-    private Optional<BindingTableRule> findBindingTableRule(final Collection<String> logicTables) {
-        for (String each : logicTables) {
-            Optional<BindingTableRule> result = findBindingTableRule(each);
-            if (result.isPresent()) {
-                return result;
-            }
-        }
-        return Optional.absent();
-    }
-    
-    /**
-     * Get binding table rule via logic table name.
-     *
-     * @param logicTable logic table name
-     * @return binding table rule
-     */
-    public Optional<BindingTableRule> findBindingTableRule(final String logicTable) {
-        for (BindingTableRule each : bindingTableRules) {
-            if (each.hasLogicTable(logicTable)) {
-                return Optional.of(each);
-            }
-        }
-        return Optional.absent();
-    }
-    
     /**
      * Judge is sharding column or not.
      *
@@ -300,21 +300,19 @@ public class ShardingRule {
      */
     public boolean isShardingColumn(final Column column) {
         for (TableRule each : tableRules) {
-            if (!each.getLogicTable().equalsIgnoreCase(column.getTableName())) {
-                continue;
-            }
-            ShardingStrategy databaseShardingStrategy = getDatabaseShardingStrategy(each);
-            if (null != databaseShardingStrategy && databaseShardingStrategy.getShardingColumns().contains(column.getName())) {
+            if (each.getLogicTable().equalsIgnoreCase(column.getTableName()) && isShardingColumn(each, column)) {
                 return true;
             }
-            ShardingStrategy tableShardingStrategy = getTableShardingStrategy(each);
-            return null != tableShardingStrategy && tableShardingStrategy.getShardingColumns().contains(column.getName());
         }
         return false;
     }
     
+    private boolean isShardingColumn(final TableRule tableRule, final Column column) {
+        return getDatabaseShardingStrategy(tableRule).getShardingColumns().contains(column.getName()) || getTableShardingStrategy(tableRule).getShardingColumns().contains(column.getName());
+    }
+    
     /**
-     * get generated key's column.
+     * Get column of generated key.
      *
      * @param logicTableName logic table name
      * @return generated key's column
@@ -339,10 +337,8 @@ public class ShardingRule {
         if (!tableRule.isPresent()) {
             throw new ShardingConfigurationException("Cannot find strategy for generate keys.");
         }
-        if (null != tableRule.get().getKeyGenerator()) {
-            return tableRule.get().getKeyGenerator().generateKey();
-        }
-        return defaultKeyGenerator.generateKey();
+        KeyGenerator keyGenerator = null == tableRule.get().getKeyGenerator() ? defaultKeyGenerator : tableRule.get().getKeyGenerator();
+        return keyGenerator.generateKey();
     }
     
     /**
@@ -361,7 +357,7 @@ public class ShardingRule {
     }
     
     /**
-     * Find data node by logic table.
+     * Find data node by logic table name.
      *
      * @param logicTableName logic table name
      * @return data node
@@ -461,11 +457,11 @@ public class ShardingRule {
     /**
      * Judge contains table in sharding rule.
      * 
-     * @param tableName table name
+     * @param logicTableName logic table name
      * @return contains table in sharding rule or not
      */
-    public boolean contains(final String tableName) {
-        return findTableRule(tableName).isPresent() || findBindingTableRule(tableName).isPresent() || isBroadcastTable(tableName);
+    public boolean contains(final String logicTableName) {
+        return findTableRule(logicTableName).isPresent() || findBindingTableRule(logicTableName).isPresent() || isBroadcastTable(logicTableName);
     }
     
     /**

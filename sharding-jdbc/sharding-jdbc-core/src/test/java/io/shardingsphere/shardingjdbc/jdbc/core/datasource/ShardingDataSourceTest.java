@@ -166,7 +166,7 @@ public final class ShardingDataSourceTest {
         dataSourceMap.put("ds", dataSource);
         TransactionTypeHolder.set(TransactionType.XA);
         ShardingDataSource shardingDataSource = createShardingDataSource(dataSourceMap);
-        assertThat(shardingDataSource.getShardingTransactionalDataSources().getDataSourceMap().size(), is(1));
+        assertThat(shardingDataSource.getDataSourceMap().size(), is(1));
         ShardingConnection shardingConnection = shardingDataSource.getConnection();
         assertThat(shardingConnection.getDataSourceMap().size(), is(1));
     }

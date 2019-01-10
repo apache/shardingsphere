@@ -22,7 +22,7 @@ import com.atomikos.beans.PropertyUtils;
 import com.atomikos.jdbc.AtomikosDataSourceBean;
 import io.shardingsphere.core.constant.DatabaseType;
 import io.shardingsphere.core.rule.DataSourceParameter;
-import io.shardingsphere.transaction.xa.convert.datasource.XAPropertiesFactory;
+import io.shardingsphere.transaction.xa.jta.datasource.XAPropertiesFactory;
 
 import javax.sql.DataSource;
 import javax.sql.XADataSource;

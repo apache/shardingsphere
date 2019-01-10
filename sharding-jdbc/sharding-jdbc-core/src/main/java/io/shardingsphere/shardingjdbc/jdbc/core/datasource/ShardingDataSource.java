@@ -23,7 +23,6 @@ import io.shardingsphere.core.rule.ShardingRule;
 import io.shardingsphere.shardingjdbc.jdbc.adapter.AbstractDataSourceAdapter;
 import io.shardingsphere.shardingjdbc.jdbc.core.ShardingContext;
 import io.shardingsphere.shardingjdbc.jdbc.core.connection.ShardingConnection;
-import io.shardingsphere.transaction.api.TransactionType;
 import io.shardingsphere.transaction.api.TransactionTypeHolder;
 import lombok.Getter;
 import lombok.extern.slf4j.Slf4j;
@@ -40,7 +39,6 @@ import java.util.concurrent.ConcurrentHashMap;
  * @author zhangliang
  * @author zhaojun
  * @author panjuan
- * @author yangyi
  */
 @Getter
 @Slf4j
@@ -69,10 +67,7 @@ public class ShardingDataSource extends AbstractDataSourceAdapter {
     
     @Override
     public final ShardingConnection getConnection() {
-        if (TransactionType.BASE == TransactionTypeHolder.get()) {
-            return new ShardingConnection(getDataSourceMap(), shardingContext, TransactionType.BASE);
-        }
-        return new ShardingConnection(getShardingTransactionalDataSources().getDataSourceMap(), shardingContext, TransactionTypeHolder.get());
+        return new ShardingConnection(getDataSourceMap(), shardingContext, TransactionTypeHolder.get());
     }
     
     @Override
