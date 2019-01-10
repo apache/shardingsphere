@@ -17,6 +17,7 @@
 
 package io.shardingsphere.core.yaml.sharding;
 
+import io.shardingsphere.core.exception.ShardingConfigurationException;
 import io.shardingsphere.core.keygen.SnowflakeKeyGenerator;
 import org.junit.Test;
 
@@ -56,6 +57,13 @@ public class YamlKeyGeneratorConfigurationTest {
     public void assertGetKeyGeneratorClassNameWithUUID() {
         YamlKeyGeneratorConfiguration keyGeneratorConfiguration = new YamlKeyGeneratorConfiguration();
         keyGeneratorConfiguration.setType("UUID");
+        keyGeneratorConfiguration.getKeyGenerator();
+    }
+    
+    @Test(expected = ShardingConfigurationException.class)
+    public void assertGetKeyGeneratorClassNameWithException() {
+        YamlKeyGeneratorConfiguration keyGeneratorConfiguration = new YamlKeyGeneratorConfiguration();
+        keyGeneratorConfiguration.setType("DEFAULT");
         keyGeneratorConfiguration.getKeyGenerator();
     }
 }
