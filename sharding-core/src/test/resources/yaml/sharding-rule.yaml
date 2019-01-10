@@ -62,8 +62,8 @@ shardingRule:
           shardingColumn: order_id
           algorithmExpression: t_order_${order_id % 2}
       keyGenerator:
-        keyGeneratorColumnName: order_id
-        keyGeneratorClassName: io.shardingsphere.core.keygen.DefaultKeyGenerator
+        column: order_id
+        className: io.shardingsphere.core.keygen.DefaultKeyGenerator
       logicIndex: order_index
     t_order_item:
       actualDataNodes: ds_${0..1}.t_order_item_${0..1}
@@ -84,7 +84,7 @@ shardingRule:
   defaultTableStrategy: 
     none:
   defaultKeyGenerator:
-    keyGeneratorType: SNOWFLAKE
+    type: SNOWFLAKE
   
   masterSlaveRules:
     ds_0:

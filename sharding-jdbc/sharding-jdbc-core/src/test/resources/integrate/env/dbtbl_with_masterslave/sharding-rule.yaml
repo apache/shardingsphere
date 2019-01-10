@@ -28,8 +28,8 @@ shardingRule:
           preciseAlgorithmClassName: io.shardingsphere.dbtest.fixture.PreciseModuloAlgorithm
           rangeAlgorithmClassName: io.shardingsphere.dbtest.fixture.RangeModuloAlgorithm
       keyGenerator:
-        keyGeneratorColumnName: item_id
-        keyGeneratorClassName: io.shardingsphere.dbtest.fixture.ConstantKeyGenerator
+        column: item_id
+        className: io.shardingsphere.dbtest.fixture.ConstantKeyGenerator
   bindingTables:
     - t_order,t_order_item
   defaultDataSourceName: db_ms_0
