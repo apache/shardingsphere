@@ -81,8 +81,6 @@ public final class ComQueryPacketTest {
     @SneakyThrows
     private void setShardingSchemas() {
         ShardingSchema shardingSchema = mock(ShardingSchema.class);
-        JDBCBackendDataSource backendDataSource = mock(JDBCBackendDataSource.class);
-        when(shardingSchema.getBackendDataSource()).thenReturn(backendDataSource);
         Map<String, ShardingSchema> shardingSchemas = new HashMap<>();
         shardingSchemas.put(ShardingConstant.LOGIC_SCHEMA_NAME, shardingSchema);
         Field field = GlobalRegistry.class.getDeclaredField("logicSchemas");
@@ -170,7 +168,7 @@ public final class ComQueryPacketTest {
         Optional<CommandResponsePackets> actual = packet.execute();
         assertTrue(actual.isPresent());
         assertOKPacket(actual.get());
-        assertThat(FixedBaseShardingTransactionHandler.getInvokes().get("begin"), instanceOf(ShardingTransactionContext.class));
+        assertThat(FixedBaseShardingTransactionHandler.getInvokes().get("begin"), is(TransactionOperationType.BEGIN));
     }
     
     @Test
@@ -181,7 +179,7 @@ public final class ComQueryPacketTest {
         Optional<CommandResponsePackets> actual = packet.execute();
         assertTrue(actual.isPresent());
         assertOKPacket(actual.get());
-        assertThat(FixedBaseShardingTransactionHandler.getInvokes().get("commit"), instanceOf(ShardingTransactionContext.class));
+        assertThat(FixedBaseShardingTransactionHandler.getInvokes().get("commit"), is(TransactionOperationType.COMMIT));
     }
     
     private void assertOKPacket(final CommandResponsePackets actual) {

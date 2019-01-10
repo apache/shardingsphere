@@ -17,49 +17,61 @@
 
 package io.shardingsphere.shardingproxy.transport.mysql.packet.command.query.text.query;
 
+import io.shardingsphere.core.constant.DatabaseType;
 import io.shardingsphere.transaction.api.TransactionType;
-import io.shardingsphere.transaction.core.context.ShardingTransactionContext;
-import io.shardingsphere.transaction.spi.ShardingTransactionHandler;
+import io.shardingsphere.transaction.core.TransactionOperationType;
+import io.shardingsphere.transaction.core.handler.ShardingTransactionHandlerAdapter;
+import io.shardingsphere.transaction.core.manager.ShardingTransactionManager;
 
+import java.sql.Connection;
+import java.sql.SQLException;
 import java.util.HashMap;
 import java.util.Map;
+
+import javax.sql.DataSource;
 
 /**
  * Fixed base sharding transaction handler.
  *
  * @author zhaojun
  */
-public final class FixedBaseShardingTransactionHandler implements ShardingTransactionHandler {
+public final class FixedBaseShardingTransactionHandler extends ShardingTransactionHandlerAdapter {
     
-    private static final Map<String, Object> INVOKES = new HashMap<>();
+    private static final Map<String, TransactionOperationType> INVOKES = new HashMap<>();
     
     /**
      * Get invoke map.
      *
      * @return map
      */
-    static Map<String, Object> getInvokes() {
+    static Map<String, TransactionOperationType> getInvokes() {
         return INVOKES;
     }
     
     @Override
-    public void doInTransaction(final ShardingTransactionContext context) {
-        switch (context.getOperationType()) {
+    public void doInTransaction(final TransactionOperationType transactionOperationType) {
+        switch (transactionOperationType) {
             case BEGIN:
-                INVOKES.put("begin", context);
+                INVOKES.put("begin", transactionOperationType);
                 return;
             case COMMIT:
-                INVOKES.put("commit", context);
+                INVOKES.put("commit", transactionOperationType);
                 return;
             case ROLLBACK:
-                INVOKES.put("rollback", context);
+                INVOKES.put("rollback", transactionOperationType);
                 return;
             default:
         }
     }
     
     @Override
+    public ShardingTransactionManager getShardingTransactionManager() {
+        return null;
+    }
+    
+    @Override
     public TransactionType getTransactionType() {
         return TransactionType.BASE;
     }
+    
 }

@@ -49,7 +49,7 @@ public final class BackendTransactionManager implements TransactionManager {
         }
         if (TransactionType.LOCAL == transactionType) {
             new LocalTransactionManager(connection).doInTransaction(operationType);
-        } else if (TransactionType.XA == transactionType) {
+        } else {
             shardingTransactionHandler.doInTransaction(operationType);
             if (TransactionOperationType.BEGIN != operationType) {
                 connection.getStateHandler().getAndSetStatus(ConnectionStatus.TERMINATED);

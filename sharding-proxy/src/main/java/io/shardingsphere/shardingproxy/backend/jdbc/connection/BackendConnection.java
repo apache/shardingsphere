@@ -27,7 +27,6 @@ import io.shardingsphere.shardingproxy.runtime.GlobalRegistry;
 import io.shardingsphere.shardingproxy.runtime.schema.LogicSchema;
 import io.shardingsphere.transaction.api.TransactionType;
 import io.shardingsphere.transaction.core.TransactionOperationType;
-import io.shardingsphere.transaction.core.context.SagaTransactionContext;
 import io.shardingsphere.transaction.core.loader.ShardingTransactionHandlerRegistry;
 import lombok.Getter;
 import lombok.Setter;
@@ -236,7 +235,7 @@ public final class BackendConnection implements AutoCloseable {
         exceptions.addAll(closeResultSets());
         if (!stateHandler.isInTransaction() || forceClose) {
             if (transactionType == TransactionType.BASE) {
-                ShardingTransactionHandlerRegistry.getInstance().getHandler(transactionType).doInTransaction(new SagaTransactionContext(TransactionOperationType.ROLLBACK, null));
+                ShardingTransactionHandlerRegistry.getHandler(transactionType).doInTransaction(TransactionOperationType.ROLLBACK);
             }
             exceptions.addAll(releaseConnections(forceClose));
         }
