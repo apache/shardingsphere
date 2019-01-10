@@ -26,7 +26,7 @@ import java.util.Calendar;
 import java.util.Properties;
 
 /**
- * Default distributed primary key generator.
+ * Snowflake distributed primary key generator.
  * 
  * <p>
  * Use snowflake algorithm. Length is 64 bit.
@@ -40,17 +40,17 @@ import java.util.Properties;
  * </pre>
  * 
  * <p>
- * Call @{@code DefaultKeyGenerator.setWorkerId} to set worker id, default value is 0.
+ * Call @{@code SnowflakeKeyGenerator.setWorkerId} to set worker id, default value is 0.
  * </p>
  * 
  * <p>
- * Call @{@code DefaultKeyGenerator.setMaxTolerateTimeDifferenceMilliseconds} to set max tolerate time difference milliseconds, default value is 0.
+ * Call @{@code SnowflakeKeyGenerator.setMaxTolerateTimeDifferenceMilliseconds} to set max tolerate time difference milliseconds, default value is 0.
  * </p>
  * 
  * @author gaohongtao
  * @author panjuan
  */
-public final class DefaultKeyGenerator implements KeyGenerator {
+public final class SnowflakeKeyGenerator implements KeyGenerator {
     
     public static final long EPOCH;
     
