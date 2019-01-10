@@ -33,7 +33,6 @@ import java.util.Properties;
  *
  * @author panjuan
  */
-@NoArgsConstructor
 @Getter
 @Setter
 public class YamlKeyGeneratorConfiguration {
