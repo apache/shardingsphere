@@ -18,7 +18,6 @@
 package io.shardingsphere.transaction.core.handler;
 
 import io.shardingsphere.core.constant.DatabaseType;
-import io.shardingsphere.transaction.core.TransactionOperationType;
 import io.shardingsphere.transaction.spi.ShardingTransactionHandler;
 
 import javax.sql.DataSource;
@@ -34,24 +33,19 @@ import java.util.Map;
  */
 public abstract class ShardingTransactionHandlerAdapter implements ShardingTransactionHandler {
     
-    /**
-     * Default implement for do in transaction.
-     */
     @Override
-    @SuppressWarnings("unchecked")
-    public void doInTransaction(final TransactionOperationType transactionOperationType) {
-        switch (transactionOperationType) {
-            case BEGIN:
-                getShardingTransactionManager().begin();
-                break;
-            case COMMIT:
-                getShardingTransactionManager().commit();
-                break;
-            case ROLLBACK:
-                getShardingTransactionManager().rollback();
-                break;
-            default:
-        }
+    public void begin() {
+        getShardingTransactionManager().begin();
+    }
+    
+    @Override
+    public void commit() {
+        getShardingTransactionManager().commit();
+    }
+    
+    @Override
+    public void rollback() {
+        getShardingTransactionManager().rollback();
     }
     
     /**

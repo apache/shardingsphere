@@ -22,7 +22,6 @@ import io.shardingsphere.core.exception.ShardingException;
 import io.shardingsphere.shardingproxy.backend.MockGlobalRegistryUtil;
 import io.shardingsphere.shardingproxy.backend.jdbc.datasource.JDBCBackendDataSource;
 import io.shardingsphere.transaction.api.TransactionType;
-import io.shardingsphere.transaction.core.TransactionOperationType;
 import lombok.SneakyThrows;
 import org.junit.Before;
 import org.junit.Test;
@@ -229,16 +228,16 @@ public final class BackendConnectionTest {
     }
     
     @Test(expected = ShardingException.class)
-    public void assertFailedSwitchTransactionTypeWhileBegin() throws SQLException {
+    public void assertFailedSwitchTransactionTypeWhileBegin() {
         BackendTransactionManager transactionManager = new BackendTransactionManager(backendConnection);
-        transactionManager.doInTransaction(TransactionOperationType.BEGIN);
+        transactionManager.begin();
         backendConnection.setTransactionType(TransactionType.XA);
     }
     
     @Test(expected = ShardingException.class)
-    public void assertFailedSwitchLogicSchemaWhileBegin() throws SQLException {
+    public void assertFailedSwitchLogicSchemaWhileBegin() {
         BackendTransactionManager transactionManager = new BackendTransactionManager(backendConnection);
-        transactionManager.doInTransaction(TransactionOperationType.BEGIN);
+        transactionManager.begin();
         backendConnection.setCurrentSchema("newSchema");
     }
 }

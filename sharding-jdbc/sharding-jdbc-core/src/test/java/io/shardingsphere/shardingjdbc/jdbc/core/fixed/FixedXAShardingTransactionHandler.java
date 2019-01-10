@@ -44,19 +44,18 @@ public final class FixedXAShardingTransactionHandler extends ShardingTransaction
     }
     
     @Override
-    public void doInTransaction(final TransactionOperationType transactionOperationType) {
-        switch (transactionOperationType) {
-            case BEGIN:
-                INVOKES.put("begin", transactionOperationType);
-                return;
-            case COMMIT:
-                INVOKES.put("commit", transactionOperationType);
-                return;
-            case ROLLBACK:
-                INVOKES.put("rollback", transactionOperationType);
-                return;
-            default:
-        }
+    public void begin() {
+        INVOKES.put("begin", TransactionOperationType.BEGIN);
+    }
+    
+    @Override
+    public void commit() {
+        INVOKES.put("commit", TransactionOperationType.COMMIT);
+    }
+    
+    @Override
+    public void rollback() {
+        INVOKES.put("rollback", TransactionOperationType.ROLLBACK);
     }
     
     @Override

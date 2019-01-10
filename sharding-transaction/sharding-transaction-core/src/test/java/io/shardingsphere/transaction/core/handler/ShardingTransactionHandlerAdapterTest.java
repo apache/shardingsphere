@@ -19,7 +19,6 @@ package io.shardingsphere.transaction.core.handler;
 
 import io.shardingsphere.core.constant.DatabaseType;
 import io.shardingsphere.transaction.api.TransactionType;
-import io.shardingsphere.transaction.core.TransactionOperationType;
 import io.shardingsphere.transaction.core.manager.ShardingTransactionManager;
 import org.junit.Test;
 import org.junit.runner.RunWith;
@@ -40,20 +39,20 @@ public class ShardingTransactionHandlerAdapterTest {
     private ShardingTransactionManager shardingTransactionManager = fixedShardingTransactionHandler.getShardingTransactionManager();
     
     @Test
-    public void assertDoXATransactionBegin() {
-        fixedShardingTransactionHandler.doInTransaction(TransactionOperationType.BEGIN);
+    public void assertBeginForXATransaction() {
+        fixedShardingTransactionHandler.begin();
         verify(shardingTransactionManager).begin();
     }
     
     @Test
-    public void assertDoXATransactionCommit() {
-        fixedShardingTransactionHandler.doInTransaction(TransactionOperationType.COMMIT);
+    public void assertCommitForXATransaction() {
+        fixedShardingTransactionHandler.commit();
         verify(shardingTransactionManager).commit();
     }
     
     @Test
-    public void assertDoXATransactionRollback() {
-        fixedShardingTransactionHandler.doInTransaction(TransactionOperationType.ROLLBACK);
+    public void assertRollbackXATransaction() {
+        fixedShardingTransactionHandler.rollback();
         verify(shardingTransactionManager).rollback();
     }
     

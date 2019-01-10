@@ -41,7 +41,19 @@ public final class TransactionBackendHandler extends AbstractBackendHandler {
     
     @Override
     protected CommandResponsePackets execute0() throws Exception {
-        backendTransactionManager.doInTransaction(operationType);
+        switch (operationType) {
+            case BEGIN:
+                backendTransactionManager.begin();
+                break;
+            case COMMIT:
+                backendTransactionManager.commit();
+                break;
+            case ROLLBACK:
+                backendTransactionManager.rollback();
+                break;
+            default:
+                throw new UnsupportedOperationException(operationType.name());
+        }
         return new CommandResponsePackets(new OKPacket(1));
     }
 }

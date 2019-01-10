@@ -30,7 +30,6 @@ import io.shardingsphere.spi.root.RootInvokeHook;
 import io.shardingsphere.spi.root.SPIRootInvokeHook;
 import io.shardingsphere.transaction.api.TransactionType;
 import io.shardingsphere.transaction.api.TransactionTypeHolder;
-import io.shardingsphere.transaction.core.TransactionOperationType;
 import io.shardingsphere.transaction.core.loader.ShardingTransactionHandlerRegistry;
 import io.shardingsphere.transaction.spi.ShardingTransactionHandler;
 import lombok.Getter;
@@ -181,7 +180,7 @@ public abstract class AbstractConnectionAdapter extends AbstractUnsupportedOpera
         if (TransactionType.LOCAL == transactionType) {
             setAutoCommitForLocalTransaction(autoCommit);
         } else if (!autoCommit) {
-            shardingTransactionHandler.doInTransaction(TransactionOperationType.BEGIN);
+            shardingTransactionHandler.begin();
         }
     }
     
@@ -201,7 +200,7 @@ public abstract class AbstractConnectionAdapter extends AbstractUnsupportedOpera
         if (TransactionType.LOCAL == transactionType) {
             commitForLocalTransaction();
         } else {
-            shardingTransactionHandler.doInTransaction(TransactionOperationType.COMMIT);
+            shardingTransactionHandler.commit();
         }
     }
     
@@ -220,7 +219,7 @@ public abstract class AbstractConnectionAdapter extends AbstractUnsupportedOpera
         if (TransactionType.LOCAL == transactionType) {
             rollbackForLocalTransaction();
         } else {
-            shardingTransactionHandler.doInTransaction(TransactionOperationType.ROLLBACK);
+            shardingTransactionHandler.rollback();
         }
     }
     

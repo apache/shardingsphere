@@ -19,7 +19,6 @@ package io.shardingsphere.transaction.spi;
 
 import io.shardingsphere.core.constant.DatabaseType;
 import io.shardingsphere.transaction.api.TransactionType;
-import io.shardingsphere.transaction.core.TransactionOperationType;
 import io.shardingsphere.transaction.core.manager.ShardingTransactionManager;
 
 import javax.sql.DataSource;
@@ -36,11 +35,19 @@ import java.util.Map;
 public interface ShardingTransactionHandler {
     
     /**
-     * Do transaction operation using specific transaction manager.
-     *
-     * @param transactionOperationType transaction operation type
+     * Begin transaction.
      */
-    void doInTransaction(TransactionOperationType transactionOperationType);
+    void begin();
+    
+    /**
+     * Commit transaction.
+     */
+    void commit();
+    
+    /**
+     * Rollback transaction.
+     */
+    void rollback();
     
     /**
      * Get sharding transaction manager.
