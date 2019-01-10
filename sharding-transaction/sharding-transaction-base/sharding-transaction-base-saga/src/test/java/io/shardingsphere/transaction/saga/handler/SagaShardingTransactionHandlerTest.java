@@ -19,6 +19,7 @@ package io.shardingsphere.transaction.saga.handler;
 
 import io.shardingsphere.core.constant.DatabaseType;
 import io.shardingsphere.transaction.api.TransactionType;
+import io.shardingsphere.transaction.core.TransactionOperationType;
 import io.shardingsphere.transaction.core.manager.ShardingTransactionManager;
 import io.shardingsphere.transaction.saga.manager.SagaResourceManager;
 import io.shardingsphere.transaction.saga.manager.SagaTransactionManager;
@@ -29,6 +30,7 @@ import org.junit.runner.RunWith;
 import org.mockito.Mock;
 import org.mockito.junit.MockitoJUnitRunner;
 
+import javax.sql.DataSource;
 import java.lang.reflect.Field;
 import java.sql.SQLException;
 import java.util.HashMap;
@@ -38,8 +40,6 @@ import static org.hamcrest.CoreMatchers.equalTo;
 import static org.junit.Assert.assertThat;
 import static org.mockito.Mockito.verify;
 import static org.mockito.Mockito.when;
-
-import javax.sql.DataSource;
 
 @RunWith(MockitoJUnitRunner.class)
 public class SagaShardingTransactionHandlerTest {
@@ -58,6 +58,18 @@ public class SagaShardingTransactionHandlerTest {
         transactionManagerField.setAccessible(true);
         transactionManagerField.set(handler, sagaTransactionManager);
         when(sagaTransactionManager.getResourceManager()).thenReturn(sagaResourceManager);
+    }
+    
+    @Test
+    public void assertDoInTransaction() {
+        handler.doInTransaction(TransactionOperationType.BEGIN);
+        verify(sagaTransactionManager).begin();
+        handler.doInTransaction(TransactionOperationType.ROLLBACK);
+        verify(sagaTransactionManager).rollback();
+        handler.doInTransaction(TransactionOperationType.COMMIT);
+        verify(sagaTransactionManager).commit();
+        handler.doInTransaction(TransactionOperationType.CLOSE);
+        verify(sagaTransactionManager).cleanTransaction();
     }
     
     @Test

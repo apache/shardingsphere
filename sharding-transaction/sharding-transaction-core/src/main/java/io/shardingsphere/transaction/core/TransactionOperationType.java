@@ -27,7 +27,7 @@ import com.google.common.base.Optional;
  */
 public enum TransactionOperationType {
     
-    BEGIN, COMMIT, ROLLBACK, SET_TRANSACTION, IGNORE;
+    BEGIN, COMMIT, ROLLBACK, SET_TRANSACTION, IGNORE, CLOSE;
     
     /**
      * Get operation type.

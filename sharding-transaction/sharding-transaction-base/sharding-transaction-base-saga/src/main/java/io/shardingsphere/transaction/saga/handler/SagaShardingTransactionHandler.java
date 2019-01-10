@@ -19,6 +19,7 @@ package io.shardingsphere.transaction.saga.handler;
 
 import io.shardingsphere.core.constant.DatabaseType;
 import io.shardingsphere.transaction.api.TransactionType;
+import io.shardingsphere.transaction.core.TransactionOperationType;
 import io.shardingsphere.transaction.core.handler.ShardingTransactionHandlerAdapter;
 import io.shardingsphere.transaction.core.manager.ShardingTransactionManager;
 import io.shardingsphere.transaction.saga.manager.SagaTransactionManager;
@@ -36,6 +37,17 @@ import java.util.Map;
 public final class SagaShardingTransactionHandler extends ShardingTransactionHandlerAdapter {
     
     private final SagaTransactionManager transactionManager = SagaTransactionManager.getInstance();
+    
+    @Override
+    public void doInTransaction(final TransactionOperationType transactionOperationType) {
+        switch (transactionOperationType) {
+            case CLOSE:
+                transactionManager.cleanTransaction();
+                break;
+            default:
+                super.doInTransaction(transactionOperationType);
+        }
+    }
     
     @Override
     public ShardingTransactionManager getShardingTransactionManager() {

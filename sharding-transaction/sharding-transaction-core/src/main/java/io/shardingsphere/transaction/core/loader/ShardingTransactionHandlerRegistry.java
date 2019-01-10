@@ -79,4 +79,14 @@ public final class ShardingTransactionHandlerRegistry {
             entry.getValue().registerTransactionalResource(databaseType, dataSourceMap);
         }
     }
+    
+    /**
+     * Clear transaction resource.
+     * @param dataSourceMap data source map
+     */
+    public static void clearTransactionResource(final Map<String, DataSource> dataSourceMap) {
+        for (Map.Entry<TransactionType, ShardingTransactionHandler> entry : TRANSACTION_HANDLER_MAP.entrySet()) {
+            entry.getValue().clearTransactionalResource(dataSourceMap);
+        }
+    }
 }

@@ -89,17 +89,20 @@ public final class SagaTransactionManager implements ShardingTransactionManager 
         return TRANSACTIONS.get();
     }
     
+    /**
+     * Clean context of current transaction.
+     */
+    public void cleanTransaction() {
+        ShardingTransportFactory.getInstance().remove();
+        ShardingExecuteDataMap.getDataMap().remove(TRANSACTION_KEY);
+        TRANSACTIONS.remove();
+    }
+    
     private void submitToActuator() {
         try {
             String json = TRANSACTIONS.get().getSagaDefinitionBuilder().build();
             resourceManager.getSagaExecutionComponent().run(json);
         } catch (JsonProcessingException ignored) {
         }
-    }
-    
-    private void cleanTransaction() {
-        ShardingTransportFactory.getInstance().remove();
-        ShardingExecuteDataMap.getDataMap().remove(TRANSACTION_KEY);
-        TRANSACTIONS.remove();
     }
 }
