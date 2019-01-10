@@ -17,6 +17,7 @@
 
 package io.shardingsphere.core.keygen;
 
+import com.google.common.base.Optional;
 import lombok.Getter;
 import lombok.RequiredArgsConstructor;
 
@@ -36,17 +37,17 @@ public enum KeyGeneratorType {
     private final String keyGeneratorClassName;
     
     /**
-     * Get built-in key generator type.
+     * Get key generator type.
      * 
      * @param keyGeneratorClassName key generator class name
-     * @return built-in key generator type
+     * @return key generator type
      */
-    public static KeyGeneratorType getKeyGeneratorType(final String keyGeneratorClassName) {
+    public static Optional<KeyGeneratorType> getKeyGeneratorType(final String keyGeneratorClassName) {
         for (KeyGeneratorType each : KeyGeneratorType.values()) {
             if (each.getKeyGeneratorClassName().equals(keyGeneratorClassName)) {
-                return each;
+                return Optional.of(each);
             }
         }
-        return null;
+        return Optional.absent();
     }
 }
