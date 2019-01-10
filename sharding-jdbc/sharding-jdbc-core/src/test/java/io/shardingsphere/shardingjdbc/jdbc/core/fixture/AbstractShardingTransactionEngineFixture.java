@@ -18,64 +18,52 @@
 package io.shardingsphere.shardingjdbc.jdbc.core.fixture;
 
 import io.shardingsphere.core.constant.DatabaseType;
-import io.shardingsphere.transaction.api.TransactionType;
 import io.shardingsphere.transaction.core.TransactionOperationType;
 import io.shardingsphere.transaction.spi.ShardingTransactionEngine;
+import lombok.Getter;
 
 import javax.sql.DataSource;
 import java.sql.Connection;
 import java.sql.SQLException;
-import java.util.HashMap;
+import java.util.Collection;
+import java.util.LinkedList;
 import java.util.Map;
 
 /**
- * Fixed base sharding transaction engine.
+ * Abstract sharding transaction engine fixture.
  *
- * @author zhaojun
+ * @author zhangliang
  */
-public final class FixedBaseShardingTransactionEngine implements ShardingTransactionEngine {
+public abstract class AbstractShardingTransactionEngineFixture implements ShardingTransactionEngine {
     
-    private static final Map<String, TransactionOperationType> INVOKES = new HashMap<>();
+    @Getter
+    private static Collection<TransactionOperationType> invocations = new LinkedList<>();
     
-    /**
-     * Get invoke map.
-     *
-     * @return map
-     */
-    public static Map<String, TransactionOperationType> getInvokes() {
-        return INVOKES;
+    @Override
+    public final void registerTransactionalResource(final DatabaseType databaseType, final Map<String, DataSource> dataSourceMap) {
     }
     
     @Override
-    public TransactionType getTransactionType() {
-        return TransactionType.BASE;
+    public final void clearTransactionalResources() {
     }
     
     @Override
-    public void registerTransactionalResource(final DatabaseType databaseType, final Map<String, DataSource> dataSourceMap) {
-    }
-    
-    @Override
-    public void clearTransactionalResources() {
-    }
-    
-    @Override
-    public Connection createConnection(final String dataSourceName, final DataSource dataSource) throws SQLException {
+    public final Connection createConnection(final String dataSourceName, final DataSource dataSource) throws SQLException {
         return dataSource.getConnection();
     }
     
     @Override
-    public void begin() {
-        INVOKES.put("begin", TransactionOperationType.BEGIN);
+    public final void begin() {
+        invocations.add(TransactionOperationType.BEGIN);
     }
     
     @Override
-    public void commit() {
-        INVOKES.put("commit", TransactionOperationType.COMMIT);
+    public final void commit() {
+        invocations.add(TransactionOperationType.COMMIT);
     }
     
     @Override
-    public void rollback() {
-        INVOKES.put("rollback", TransactionOperationType.ROLLBACK);
+    public final void rollback() {
+        invocations.add(TransactionOperationType.ROLLBACK);
     }
 }

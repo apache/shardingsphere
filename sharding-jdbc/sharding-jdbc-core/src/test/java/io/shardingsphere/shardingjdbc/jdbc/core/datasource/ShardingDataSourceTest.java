@@ -26,7 +26,7 @@ import io.shardingsphere.core.constant.DatabaseType;
 import io.shardingsphere.core.rule.ShardingRule;
 import io.shardingsphere.shardingjdbc.api.MasterSlaveDataSourceFactory;
 import io.shardingsphere.shardingjdbc.jdbc.core.connection.ShardingConnection;
-import io.shardingsphere.shardingjdbc.jdbc.core.fixture.FixedXAShardingTransactionEngine;
+import io.shardingsphere.shardingjdbc.jdbc.core.fixture.XAShardingTransactionEngineFixture;
 import io.shardingsphere.transaction.api.TransactionType;
 import io.shardingsphere.transaction.api.TransactionTypeHolder;
 import org.junit.After;
@@ -178,7 +178,7 @@ public final class ShardingDataSourceTest {
         ShardingConnection shardingConnection = shardingDataSource.getConnection();
         assertThat(shardingConnection.getDataSourceMap().size(), is(1));
         assertThat(shardingConnection.getTransactionType(), is(TransactionType.XA));
-        assertThat(shardingConnection.getShardingTransactionEngine(), instanceOf(FixedXAShardingTransactionEngine.class));
+        assertThat(shardingConnection.getShardingTransactionEngine(), instanceOf(XAShardingTransactionEngineFixture.class));
         TransactionTypeHolder.set(TransactionType.LOCAL);
         shardingConnection = shardingDataSource.getConnection();
         assertThat(shardingConnection.getConnection("ds"), is(dataSource.getConnection()));

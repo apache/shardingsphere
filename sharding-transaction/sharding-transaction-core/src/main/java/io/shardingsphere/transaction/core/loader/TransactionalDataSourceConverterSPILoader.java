@@ -23,7 +23,6 @@ import io.shardingsphere.transaction.api.TransactionType;
 import io.shardingsphere.transaction.spi.TransactionalDataSourceConverter;
 import lombok.AccessLevel;
 import lombok.NoArgsConstructor;
-import lombok.extern.slf4j.Slf4j;
 
 import java.util.HashMap;
 import java.util.Map;
@@ -33,7 +32,6 @@ import java.util.Map;
  *
  * @author zhaojun
  */
-@Slf4j
 @NoArgsConstructor(access = AccessLevel.PRIVATE)
 public final class TransactionalDataSourceConverterSPILoader {
     

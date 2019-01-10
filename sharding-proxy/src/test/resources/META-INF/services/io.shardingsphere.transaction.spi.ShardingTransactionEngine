@@ -1,4 +1,4 @@
-io.shardingsphere.shardingproxy.transport.mysql.packet.command.query.text.query.FixedXAShardingTransactionEngine
+io.shardingsphere.shardingproxy.transport.mysql.packet.command.query.text.query.fixture.ShardingTransactionEngineFixture
 
 
 

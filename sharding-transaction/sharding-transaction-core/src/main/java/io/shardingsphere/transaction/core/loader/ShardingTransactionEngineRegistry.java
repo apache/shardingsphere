@@ -48,7 +48,6 @@ public final class ShardingTransactionEngineRegistry {
     /**
      * Load sharding transaction engines.
      */
-    @SuppressWarnings("unchecked")
     private static void load() {
         for (ShardingTransactionEngine each : ServiceLoader.load(ShardingTransactionEngine.class)) {
             if (TRANSACTION_ENGINES.containsKey(each.getTransactionType())) {

@@ -15,19 +15,19 @@
  * </p>
  */
 
-package io.shardingsphere.transaction.core.manager;
+package io.shardingsphere.shardingjdbc.jdbc.core.fixture;
+
+import io.shardingsphere.transaction.api.TransactionType;
 
 /**
- * BASE transaction manager.
+ * XA sharding transaction engine fixture.
  *
- * @author yangyi
+ * @author zhaojun
  */
-public interface BASETransactionManager extends ShardingTransactionManager {
+public final class XAShardingTransactionEngineFixture extends AbstractShardingTransactionEngineFixture {
     
-    /**
-     * Get transaction id in current thread.
-     *
-     * @return transaction id in current thread
-     */
-    String getTransactionId();
+    @Override
+    public TransactionType getTransactionType() {
+        return TransactionType.XA;
+    }
 }
