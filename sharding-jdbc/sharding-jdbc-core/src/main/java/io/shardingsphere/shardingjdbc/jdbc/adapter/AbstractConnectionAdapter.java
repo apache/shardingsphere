@@ -250,7 +250,9 @@ public abstract class AbstractConnectionAdapter extends AbstractUnsupportedOpera
             cachedConnections.clear();
             rootInvokeHook.finish(connectionSize);
         }
-        shardingTransactionHandler.doInTransaction(TransactionOperationType.CLOSE);
+        if (null != shardingTransactionHandler) {
+            shardingTransactionHandler.doInTransaction(TransactionOperationType.CLOSE);
+        }
     }
     
     @Override
