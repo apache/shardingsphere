@@ -94,7 +94,7 @@ public final class DefaultKeyGenerator implements KeyGenerator {
     private long lastMilliseconds;
     
     private long getWorkerId() {
-        long result = Long.valueOf(properties.getProperty("work.id", String.valueOf(WORKER_ID)));
+        long result = Long.valueOf(properties.getProperty("worker.id", String.valueOf(WORKER_ID)));
         Preconditions.checkArgument(result >= 0L && result < WORKER_ID_MAX_VALUE);
         return result;
     }

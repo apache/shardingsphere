@@ -144,7 +144,7 @@ public final class DefaultKeyGeneratorTest {
     public void assertSetWorkerIdFailureWhenNegative() {
         DefaultKeyGenerator keyGenerator = new DefaultKeyGenerator();
         Properties properties = new Properties();
-        properties.setProperty("work.id", String.valueOf(-1L));
+        properties.setProperty("worker.id", String.valueOf(-1L));
         keyGenerator.setProperties(properties);
         keyGenerator.generateKey();
     }
@@ -153,7 +153,7 @@ public final class DefaultKeyGeneratorTest {
     public void assertSetWorkerIdFailureWhenTooMuch() {
         DefaultKeyGenerator keyGenerator = new DefaultKeyGenerator();
         Properties properties = new Properties();
-        properties.setProperty("work.id", String.valueOf(-Long.MAX_VALUE));
+        properties.setProperty("worker.id", String.valueOf(-Long.MAX_VALUE));
         keyGenerator.setProperties(properties);
         keyGenerator.generateKey();
     }
@@ -163,11 +163,11 @@ public final class DefaultKeyGeneratorTest {
     public void assertSetWorkerIdSuccess() {
         DefaultKeyGenerator keyGenerator = new DefaultKeyGenerator();
         Properties properties = new Properties();
-        properties.setProperty("work.id", String.valueOf(1L));
+        properties.setProperty("worker.id", String.valueOf(1L));
         keyGenerator.setProperties(properties);
         Field props = keyGenerator.getClass().getDeclaredField("properties");
         props.setAccessible(true);
-        assertThat(((Properties) props.get(keyGenerator)).get("work.id"), is((Object) "1"));
+        assertThat(((Properties) props.get(keyGenerator)).get("worker.id"), is((Object) "1"));
     }
     
     @Test
