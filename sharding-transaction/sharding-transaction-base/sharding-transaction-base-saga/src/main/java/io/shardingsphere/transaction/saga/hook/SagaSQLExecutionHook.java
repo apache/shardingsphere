@@ -28,7 +28,7 @@ import io.shardingsphere.transaction.saga.SagaTransaction;
 import java.util.Map;
 
 /**
- * SQL execution hook for saga.
+ * Saga SQL execution hook.
  *
  * @author yangyi
  */

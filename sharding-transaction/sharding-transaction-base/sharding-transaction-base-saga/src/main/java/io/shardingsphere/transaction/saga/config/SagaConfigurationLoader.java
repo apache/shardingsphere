@@ -18,6 +18,7 @@
 package io.shardingsphere.transaction.saga.config;
 
 import com.google.common.base.Optional;
+import com.google.common.base.Strings;
 import io.shardingsphere.core.exception.ShardingException;
 import io.shardingsphere.transaction.saga.constant.SagaRecoveryPolicy;
 import lombok.extern.slf4j.Slf4j;
@@ -71,39 +72,39 @@ public class SagaConfigurationLoader {
     }
     
     private static Optional<File> lookingForSagaPropertiesFile() {
-        URL propertiesFileURL = SagaConfigurationLoader.class.getClassLoader().getResource(CONFIGURATION_FILE);
-        if (null == propertiesFileURL) {
+        URL propertiesFileUrl = SagaConfigurationLoader.class.getClassLoader().getResource(CONFIGURATION_FILE);
+        if (null == propertiesFileUrl) {
             log.warn("{} not found at your root classpath, will use default saga configuration", CONFIGURATION_FILE);
             return Optional.absent();
         }
-        return Optional.of(new File(propertiesFileURL.getFile()));
+        return Optional.of(new File(propertiesFileUrl.getFile()));
     }
     
     private static void initSagaConfiguration(final SagaConfiguration sagaConfiguration, final File propertiesFile) throws IOException {
         Properties sagaProperties = new Properties();
         sagaProperties.load(new FileInputStream(propertiesFile));
         String executorSize = sagaProperties.getProperty(EXECUTOR_SIZE);
-        if (null != executorSize) {
+        if (!Strings.isNullOrEmpty(executorSize)) {
             sagaConfiguration.setExecutorSize(Integer.parseInt(executorSize));
         }
         String transactionMaxRetries = sagaProperties.getProperty(TRANSACTION_MAX_RERTIES);
-        if (null != transactionMaxRetries) {
+        if (!Strings.isNullOrEmpty(transactionMaxRetries)) {
             sagaConfiguration.setTransactionMaxRetries(Integer.parseInt(transactionMaxRetries));
         }
         String compensationMaxRetries = sagaProperties.getProperty(COMPENSATION_MAX_RERTIES);
-        if (null != transactionMaxRetries) {
+        if (!Strings.isNullOrEmpty(transactionMaxRetries)) {
             sagaConfiguration.setCompensationMaxRetries(Integer.parseInt(compensationMaxRetries));
         }
         String transactionRetryDelay = sagaProperties.getProperty(TRANSACTION_RERTY_DELAY);
-        if (null != transactionMaxRetries) {
+        if (!Strings.isNullOrEmpty(transactionMaxRetries)) {
             sagaConfiguration.setTransactionRetryDelay(Integer.parseInt(transactionRetryDelay));
         }
         String compensationRetryDelay = sagaProperties.getProperty(COMPENSATION_RERTY_DELAY);
-        if (null != transactionMaxRetries) {
+        if (!Strings.isNullOrEmpty(transactionMaxRetries)) {
             sagaConfiguration.setCompensationRetryDelay(Integer.parseInt(compensationRetryDelay));
         }
         String recoveryPolicy = sagaProperties.getProperty(RECOVERY_POLICY);
-        if (null != recoveryPolicy) {
+        if (!Strings.isNullOrEmpty(recoveryPolicy)) {
             sagaConfiguration.setRecoveryPolicy(SagaRecoveryPolicy.find(recoveryPolicy));
         }
     }
