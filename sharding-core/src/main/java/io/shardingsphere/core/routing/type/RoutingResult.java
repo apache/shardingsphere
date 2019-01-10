@@ -30,7 +30,7 @@ public class RoutingResult {
     private final TableUnits tableUnits = new TableUnits();
     
     /**
-     * Adjust is route for single database and table only or not.
+     * Judge is route for single database and table only or not.
      *
      * @return is route for single database and table only or not
      */

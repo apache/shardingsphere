@@ -37,10 +37,13 @@ public class ReflectiveUtil {
      */
     @SuppressWarnings("unchecked")
     public static Method findMethod(final Object target, final String methodName, final Class<?>... parameterTypes) throws NoSuchMethodException {
+        Method result;
         Class clazz = target.getClass();
         while (null != clazz) {
             try {
-                return clazz.getDeclaredMethod(methodName, parameterTypes);
+                result = clazz.getDeclaredMethod(methodName, parameterTypes);
+                result.setAccessible(true);
+                return result;
             } catch (NoSuchMethodException ignored) {
             }
             clazz = clazz.getSuperclass();

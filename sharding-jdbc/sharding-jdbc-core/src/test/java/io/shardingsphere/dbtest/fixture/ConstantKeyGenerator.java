@@ -22,7 +22,7 @@ import io.shardingsphere.core.keygen.KeyGenerator;
 public final class ConstantKeyGenerator implements KeyGenerator {
     
     @Override
-    public Number generateKey() {
+    public Comparable<?> generateKey() {
         return 1;
     }
 }

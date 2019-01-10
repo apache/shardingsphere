@@ -58,7 +58,7 @@ public class ComQueryBackendHandlerFactoryTest {
     
     @Test
     public void assertCreateSchemaBroadcastBackendHandler() {
-        String sql = "grant select on testdb.* to root@'%'";
+        String sql = "grant select on test_db.* to root@'%'";
         BackendHandler actual = ComQueryBackendHandlerFactory.createBackendHandler(1, sql, backendConnection, DatabaseType.MySQL);
         assertThat(actual, instanceOf(SchemaBroadcastBackendHandler.class));
         sql = "set @num=1";

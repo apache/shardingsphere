@@ -111,7 +111,7 @@ public final class DefaultKeyGenerator implements KeyGenerator {
      * @return key type is @{@link Long}.
      */
     @Override
-    public synchronized Number generateKey() {
+    public synchronized Comparable<?> generateKey() {
         long currentMilliseconds = timeService.getCurrentMillis();
         if (waitTolerateTimeDifferenceIfNeed(currentMilliseconds)) {
             currentMilliseconds = timeService.getCurrentMillis();

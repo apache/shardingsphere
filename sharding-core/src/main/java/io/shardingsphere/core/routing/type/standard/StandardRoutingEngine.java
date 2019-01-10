@@ -61,7 +61,7 @@ public final class StandardRoutingEngine implements RoutingEngine {
    
     @Override
     public RoutingResult route() {
-        return generateRoutingResult(getDataNodes(shardingRule.getTableRuleByLogicTableName(logicTableName)));
+        return generateRoutingResult(getDataNodes(shardingRule.getTableRule(logicTableName)));
     }
     
     private RoutingResult generateRoutingResult(final Collection<DataNode> routedDataNodes) {

@@ -29,6 +29,7 @@ import java.util.List;
  *
  * @author zhangliang
  * @author maxiaoguang
+ * @author panjuan
  */
 @RequiredArgsConstructor
 @Getter
@@ -36,5 +37,5 @@ public final class GeneratedKey {
     
     private final Column column;
     
-    private final List<Number> generatedKeys = new LinkedList<>();
+    private final List<Comparable<?>> generatedKeys = new LinkedList<>();
 }

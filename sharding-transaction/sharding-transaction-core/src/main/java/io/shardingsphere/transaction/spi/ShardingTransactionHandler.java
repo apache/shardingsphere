@@ -17,24 +17,37 @@
 
 package io.shardingsphere.transaction.spi;
 
+import io.shardingsphere.core.constant.DatabaseType;
 import io.shardingsphere.transaction.api.TransactionType;
-import io.shardingsphere.transaction.core.context.ShardingTransactionContext;
+import io.shardingsphere.transaction.core.TransactionOperationType;
+import io.shardingsphere.transaction.core.manager.ShardingTransactionManager;
+
+import javax.sql.DataSource;
+import java.sql.Connection;
+import java.sql.SQLException;
+import java.util.Map;
 
 /**
  * Sharding transaction handler SPI.
  *
  * @author zhaojun
  * 
- * @param <T> type of sharding transaction context
  */
-public interface ShardingTransactionHandler<T extends ShardingTransactionContext> {
+public interface ShardingTransactionHandler {
     
     /**
      * Do transaction operation using specific transaction manager.
      *
-     * @param context sharding transaction context
+     * @param transactionOperationType transaction operation type
      */
-    void doInTransaction(T context);
+    void doInTransaction(TransactionOperationType transactionOperationType);
+    
+    /**
+     * Get sharding transaction manager.
+     *
+     * @return sharding transaction manager
+     */
+    ShardingTransactionManager getShardingTransactionManager();
     
     /**
      * Get transaction type.
@@ -42,4 +55,27 @@ public interface ShardingTransactionHandler<T extends ShardingTransactionContext
      * @return transaction type
      */
     TransactionType getTransactionType();
+    
+    /**
+     * Register transaction data source.
+     *
+     * @param databaseType database type
+     * @param dataSourceMap data source map
+     */
+    void registerTransactionalResource(DatabaseType databaseType, Map<String, DataSource> dataSourceMap);
+    
+    /**
+     * Clear transactional resource.
+     */
+    void clearTransactionalResource();
+    
+    /**
+     * Create transactional connection.
+     *
+     * @param dataSourceName data source name
+     * @param dataSource data source
+     * @return connection
+     * @throws SQLException SQL exception
+     */
+    Connection createConnection(String dataSourceName, DataSource dataSource) throws SQLException;
 }

@@ -125,9 +125,9 @@ public final class LexerEngine {
     }
     
     /**
-     * Adjust current token equals one of input tokens or not.
+     * Judge current token equals one of input tokens or not.
      *
-     * @param tokenTypes to be adjusted token types
+     * @param tokenTypes to be judged token types
      * @return current token equals one of input tokens or not
      */
     public boolean equalAny(final TokenType... tokenTypes) {
@@ -142,7 +142,7 @@ public final class LexerEngine {
     /**
      * Skip current token if equals one of input tokens.
      *
-     * @param tokenTypes to be adjusted token types
+     * @param tokenTypes to be judged token types
      * @return skipped current token or not
      */
     public boolean skipIfEqual(final TokenType... tokenTypes) {
@@ -181,7 +181,7 @@ public final class LexerEngine {
     /**
      * Throw unsupported exception if current token equals one of input tokens.
      * 
-     * @param tokenTypes to be adjusted token types
+     * @param tokenTypes to be judged token types
      */
     public void unsupportedIfEqual(final TokenType... tokenTypes) {
         if (equalAny(tokenTypes)) {
@@ -192,7 +192,7 @@ public final class LexerEngine {
     /**
      * Throw unsupported exception if current token not equals one of input tokens.
      *
-     * @param tokenTypes to be adjusted token types
+     * @param tokenTypes to be judged token types
      */
     public void unsupportedIfNotSkip(final TokenType... tokenTypes) {
         if (!skipIfEqual(tokenTypes)) {

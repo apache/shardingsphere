@@ -48,7 +48,7 @@ public final class KeyGeneratorFactoryTest {
         private final int field;
         
         @Override
-        public Number generateKey() {
+        public Comparable<?> generateKey() {
             return null;
         }
     }
@@ -57,7 +57,7 @@ public final class KeyGeneratorFactoryTest {
     public static final class IllegalAccessKeyGenerator implements KeyGenerator {
         
         @Override
-        public Number generateKey() {
+        public Comparable<?> generateKey() {
             return null;
         }
     }

@@ -29,7 +29,7 @@ import io.shardingsphere.shardingjdbc.jdbc.core.fixed.FixedBaseShardingTransacti
 import io.shardingsphere.shardingjdbc.jdbc.core.fixed.FixedXAShardingTransactionHandler;
 import io.shardingsphere.transaction.api.TransactionType;
 import io.shardingsphere.transaction.api.TransactionTypeHolder;
-import io.shardingsphere.transaction.core.context.ShardingTransactionContext;
+import io.shardingsphere.transaction.core.TransactionOperationType;
 import org.junit.After;
 import org.junit.Before;
 import org.junit.BeforeClass;
@@ -42,7 +42,6 @@ import java.util.HashMap;
 import java.util.Map;
 import java.util.Properties;
 
-import static org.hamcrest.CoreMatchers.instanceOf;
 import static org.hamcrest.CoreMatchers.is;
 import static org.junit.Assert.assertThat;
 import static org.mockito.Mockito.mock;
@@ -111,21 +110,21 @@ public final class ShardingConnectionTest {
     public void assertXATransactionOperation() throws SQLException {
         connection = new ShardingConnection(dataSourceMap, shardingContext, TransactionType.XA);
         connection.setAutoCommit(false);
-        assertThat(FixedXAShardingTransactionHandler.getInvokes().get("begin"), instanceOf(ShardingTransactionContext.class));
+        assertThat(FixedXAShardingTransactionHandler.getInvokes().get("begin"), is(TransactionOperationType.BEGIN));
         connection.commit();
-        assertThat(FixedXAShardingTransactionHandler.getInvokes().get("commit"), instanceOf(ShardingTransactionContext.class));
+        assertThat(FixedXAShardingTransactionHandler.getInvokes().get("commit"), is(TransactionOperationType.COMMIT));
         connection.rollback();
-        assertThat(FixedXAShardingTransactionHandler.getInvokes().get("rollback"), instanceOf(ShardingTransactionContext.class));
+        assertThat(FixedXAShardingTransactionHandler.getInvokes().get("rollback"), is(TransactionOperationType.ROLLBACK));
     }
     
     @Test
     public void assertBaseTransactionOperation() throws SQLException {
         connection = new ShardingConnection(dataSourceMap, shardingContext, TransactionType.BASE);
         connection.setAutoCommit(false);
-        assertThat(FixedBaseShardingTransactionHandler.getInvokes().get("begin"), instanceOf(ShardingTransactionContext.class));
+        assertThat(FixedBaseShardingTransactionHandler.getInvokes().get("begin"), is(TransactionOperationType.BEGIN));
         connection.commit();
-        assertThat(FixedBaseShardingTransactionHandler.getInvokes().get("commit"), instanceOf(ShardingTransactionContext.class));
+        assertThat(FixedBaseShardingTransactionHandler.getInvokes().get("commit"), is(TransactionOperationType.COMMIT));
         connection.rollback();
-        assertThat(FixedBaseShardingTransactionHandler.getInvokes().get("rollback"), instanceOf(ShardingTransactionContext.class));
+        assertThat(FixedBaseShardingTransactionHandler.getInvokes().get("rollback"), is(TransactionOperationType.ROLLBACK));
     }
 }
