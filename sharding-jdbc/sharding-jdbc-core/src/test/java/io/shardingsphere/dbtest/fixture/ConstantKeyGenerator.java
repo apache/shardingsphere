@@ -27,7 +27,7 @@ public final class ConstantKeyGenerator implements KeyGenerator {
     
     @Getter
     @Setter
-    private Properties keyGeneratorProperties = new Properties();
+    private Properties properties = new Properties();
     
     @Override
     public Comparable<?> generateKey() {
