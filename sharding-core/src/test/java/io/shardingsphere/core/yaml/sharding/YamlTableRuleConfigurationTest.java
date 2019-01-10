@@ -19,7 +19,7 @@ package io.shardingsphere.core.yaml.sharding;
 
 import io.shardingsphere.api.config.rule.TableRuleConfiguration;
 import io.shardingsphere.api.config.strategy.NoneShardingStrategyConfiguration;
-import io.shardingsphere.core.keygen.DefaultKeyGenerator;
+import io.shardingsphere.core.keygen.SnowflakeKeyGenerator;
 import io.shardingsphere.core.yaml.sharding.strategy.YamlNoneShardingStrategyConfiguration;
 import org.junit.Test;
 
@@ -55,7 +55,7 @@ public final class YamlTableRuleConfigurationTest {
         result.setActualDataNodes("ds_${0..1}.t_order_${0..1}");
         result.setKeyGenerator(new YamlKeyGeneratorConfiguration());
         result.getKeyGenerator().setColumn("order_id");
-        result.getKeyGenerator().setClassName(DefaultKeyGenerator.class.getName());
+        result.getKeyGenerator().setClassName(SnowflakeKeyGenerator.class.getName());
         result.setLogicIndex("order_index");
         return result;
     }
@@ -73,7 +73,7 @@ public final class YamlTableRuleConfigurationTest {
         assertThat(actual.getLogicTable(), is("t_order"));
         assertThat(actual.getActualDataNodes(), is("ds_${0..1}.t_order_${0..1}"));
         assertThat(actual.getKeyGeneratorColumnName(), is("order_id"));
-        assertThat(actual.getKeyGenerator(), instanceOf(DefaultKeyGenerator.class));
+        assertThat(actual.getKeyGenerator(), instanceOf(SnowflakeKeyGenerator.class));
         assertThat(actual.getLogicIndex(), is("order_index"));
     }
     
