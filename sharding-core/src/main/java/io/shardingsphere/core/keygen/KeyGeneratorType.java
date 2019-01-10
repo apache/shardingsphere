@@ -22,7 +22,7 @@ import lombok.Getter;
 import lombok.RequiredArgsConstructor;
 
 /**
- * Built-in key generator type.
+ * Key generator type.
  *
  * @author panjuan
  */
