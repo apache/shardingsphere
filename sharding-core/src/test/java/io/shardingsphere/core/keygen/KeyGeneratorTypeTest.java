@@ -17,12 +17,19 @@
 
 package io.shardingsphere.core.keygen;
 
+import com.google.common.base.Optional;
 import org.junit.Test;
+
+import static org.hamcrest.CoreMatchers.is;
+import static org.junit.Assert.assertThat;
 
 public class KeyGeneratorTypeTest {
     
     @Test
     public void assertGetKeyGeneratorType() {
+        assertThat(KeyGeneratorType.getKeyGeneratorType("io.shardingsphere.core.keygen.SnowflakeKeyGenerator"), 
+                is(Optional.of(KeyGeneratorType.SNOWFLAKE)));
+        
     }
 }
     
