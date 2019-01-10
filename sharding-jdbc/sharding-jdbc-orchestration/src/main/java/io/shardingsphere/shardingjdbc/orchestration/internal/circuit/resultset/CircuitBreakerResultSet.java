@@ -217,11 +217,13 @@ public final class CircuitBreakerResultSet extends AbstractUnsupportedOperationR
         return null;
     }
     
+    @SuppressWarnings("deprecation")
     @Override
     public InputStream getUnicodeStream(final int columnIndex) {
         return null;
     }
     
+    @SuppressWarnings("deprecation")
     @Override
     public InputStream getUnicodeStream(final String columnLabel) {
         return null;
@@ -287,11 +289,13 @@ public final class CircuitBreakerResultSet extends AbstractUnsupportedOperationR
         return null;
     }
     
+    @SuppressWarnings("deprecation")
     @Override
     public BigDecimal getBigDecimal(final int columnIndex, final int scale) {
         return null;
     }
     
+    @SuppressWarnings("deprecation")
     @Override
     public BigDecimal getBigDecimal(final String columnLabel, final int scale) {
         return null;
