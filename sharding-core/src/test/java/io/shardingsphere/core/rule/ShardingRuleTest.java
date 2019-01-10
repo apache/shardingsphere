@@ -26,7 +26,7 @@ import io.shardingsphere.api.config.strategy.InlineShardingStrategyConfiguration
 import io.shardingsphere.api.config.strategy.NoneShardingStrategyConfiguration;
 import io.shardingsphere.api.config.strategy.StandardShardingStrategyConfiguration;
 import io.shardingsphere.core.exception.ShardingConfigurationException;
-import io.shardingsphere.core.keygen.DefaultKeyGenerator;
+import io.shardingsphere.core.keygen.SnowflakeKeyGenerator;
 import io.shardingsphere.core.keygen.fixture.IncrementKeyGenerator;
 import io.shardingsphere.core.parsing.parser.context.condition.Column;
 import io.shardingsphere.core.routing.strategy.inline.InlineShardingStrategy;
@@ -73,7 +73,7 @@ public final class ShardingRuleTest {
         assertTrue(actual.getBroadcastTables().isEmpty());
         assertThat(actual.getDefaultDatabaseShardingStrategy(), instanceOf(NoneShardingStrategy.class));
         assertThat(actual.getDefaultTableShardingStrategy(), instanceOf(NoneShardingStrategy.class));
-        assertThat(actual.getDefaultKeyGenerator(), instanceOf(DefaultKeyGenerator.class));
+        assertThat(actual.getDefaultKeyGenerator(), instanceOf(SnowflakeKeyGenerator.class));
     }
     
     @Test

@@ -27,7 +27,7 @@ import io.shardingsphere.api.config.rule.TableRuleConfiguration;
 import io.shardingsphere.api.config.strategy.ShardingStrategyConfiguration;
 import io.shardingsphere.core.exception.ShardingConfigurationException;
 import io.shardingsphere.core.exception.ShardingException;
-import io.shardingsphere.core.keygen.DefaultKeyGenerator;
+import io.shardingsphere.core.keygen.SnowflakeKeyGenerator;
 import io.shardingsphere.core.keygen.KeyGenerator;
 import io.shardingsphere.core.parsing.parser.context.condition.Column;
 import io.shardingsphere.core.routing.strategy.ShardingStrategy;
@@ -111,7 +111,7 @@ public class ShardingRule {
     }
     
     private KeyGenerator createDefaultKeyGenerator(final KeyGenerator defaultKeyGenerator) {
-        return null == defaultKeyGenerator ? new DefaultKeyGenerator() : defaultKeyGenerator;
+        return null == defaultKeyGenerator ? new SnowflakeKeyGenerator() : defaultKeyGenerator;
     }
     
     private Collection<MasterSlaveRule> createMasterSlaveRules(final Collection<MasterSlaveRuleConfiguration> masterSlaveRuleConfigurations) {

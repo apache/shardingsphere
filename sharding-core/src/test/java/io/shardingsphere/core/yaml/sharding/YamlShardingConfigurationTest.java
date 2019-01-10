@@ -18,7 +18,7 @@
 package io.shardingsphere.core.yaml.sharding;
 
 import io.shardingsphere.api.algorithm.masterslave.MasterSlaveLoadBalanceAlgorithmType;
-import io.shardingsphere.core.keygen.DefaultKeyGenerator;
+import io.shardingsphere.core.keygen.SnowflakeKeyGenerator;
 import org.hamcrest.CoreMatchers;
 import org.junit.Test;
 
@@ -104,8 +104,8 @@ public final class YamlShardingConfigurationTest {
         assertThat(actual.getShardingRule().getTables().get("t_order").getActualDataNodes(), is("ds_${0..1}.t_order_${0..1}"));
         assertThat(actual.getShardingRule().getTables().get("t_order").getTableStrategy().getInline().getShardingColumn(), is("order_id"));
         assertThat(actual.getShardingRule().getTables().get("t_order").getTableStrategy().getInline().getAlgorithmExpression(), is("t_order_${order_id % 2}"));
-        assertThat(actual.getShardingRule().getTables().get("t_order").getKeyGeneratorColumnName(), is("order_id"));
-        assertThat(actual.getShardingRule().getTables().get("t_order").getKeyGeneratorClassName(), is(DefaultKeyGenerator.class.getName()));
+        assertThat(actual.getShardingRule().getTables().get("t_order").getKeyGenerator().getColumn(), is("order_id"));
+        assertThat(actual.getShardingRule().getTables().get("t_order").getKeyGenerator().getClassName(), is(SnowflakeKeyGenerator.class.getName()));
         assertThat(actual.getShardingRule().getTables().get("t_order").getLogicIndex(), is("order_index"));
     }
     
@@ -130,7 +130,7 @@ public final class YamlShardingConfigurationTest {
         assertThat(actual.getShardingRule().getDefaultDataSourceName(), is("default_ds"));
         assertThat(actual.getShardingRule().getDefaultDatabaseStrategy().getInline().getShardingColumn(), is("order_id"));
         assertThat(actual.getShardingRule().getDefaultDatabaseStrategy().getInline().getAlgorithmExpression(), is("ds_${order_id % 2}"));
-        assertThat(actual.getShardingRule().getDefaultKeyGeneratorClassName(), is(DefaultKeyGenerator.class.getName()));
+        assertThat(actual.getShardingRule().getDefaultKeyGenerator().getKeyGenerator().getClass().getName(), is(SnowflakeKeyGenerator.class.getName()));
     }
     
     private void assertMasterSlaveRules(final YamlShardingConfiguration actual) {

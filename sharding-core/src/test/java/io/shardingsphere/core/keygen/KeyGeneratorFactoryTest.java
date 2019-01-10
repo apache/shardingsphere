@@ -18,9 +18,13 @@
 package io.shardingsphere.core.keygen;
 
 import lombok.AccessLevel;
+import lombok.Getter;
 import lombok.NoArgsConstructor;
 import lombok.RequiredArgsConstructor;
+import lombok.Setter;
 import org.junit.Test;
+
+import java.util.Properties;
 
 import static org.hamcrest.CoreMatchers.instanceOf;
 import static org.junit.Assert.assertThat;
@@ -29,7 +33,7 @@ public final class KeyGeneratorFactoryTest {
     
     @Test
     public void assertCreateKeyGeneratorSuccess() {
-        assertThat(KeyGeneratorFactory.newInstance(DefaultKeyGenerator.class.getName()), instanceOf(DefaultKeyGenerator.class));
+        assertThat(KeyGeneratorFactory.newInstance(SnowflakeKeyGenerator.class.getName()), instanceOf(SnowflakeKeyGenerator.class));
     }
     
     @Test(expected = IllegalArgumentException.class)
@@ -46,6 +50,10 @@ public final class KeyGeneratorFactoryTest {
     public static final class InstantiationKeyGenerator implements KeyGenerator {
         
         private final int field;
+    
+        @Getter
+        @Setter
+        private Properties properties = new Properties();
         
         @Override
         public Comparable<?> generateKey() {
@@ -55,6 +63,10 @@ public final class KeyGeneratorFactoryTest {
     
     @NoArgsConstructor(access = AccessLevel.PRIVATE)
     public static final class IllegalAccessKeyGenerator implements KeyGenerator {
+    
+        @Getter
+        @Setter
+        private Properties properties = new Properties();
         
         @Override
         public Comparable<?> generateKey() {
