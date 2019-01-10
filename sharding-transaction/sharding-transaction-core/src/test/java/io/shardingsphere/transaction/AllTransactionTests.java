@@ -18,11 +18,15 @@
 package io.shardingsphere.transaction;
 
 import io.shardingsphere.transaction.api.TransactionTypeHolderTest;
+import io.shardingsphere.transaction.core.ShardingTransactionEngineRegistryTest;
 import org.junit.runner.RunWith;
 import org.junit.runners.Suite;
 import org.junit.runners.Suite.SuiteClasses;
 
 @RunWith(Suite.class)
-@SuiteClasses(TransactionTypeHolderTest.class)
+@SuiteClasses({
+        TransactionTypeHolderTest.class,
+        ShardingTransactionEngineRegistryTest.class
+})
 public final class AllTransactionTests {
 }

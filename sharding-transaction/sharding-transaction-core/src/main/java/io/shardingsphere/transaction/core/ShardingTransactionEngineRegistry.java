@@ -39,7 +39,7 @@ import java.util.ServiceLoader;
 @Slf4j
 public final class ShardingTransactionEngineRegistry {
     
-    private static final Map<TransactionType, ShardingTransactionEngine> TRANSACTION_ENGINES = new HashMap<>();
+    private static final Map<TransactionType, ShardingTransactionEngine> ENGINES = new HashMap<>();
     
     static {
         load();
@@ -50,12 +50,12 @@ public final class ShardingTransactionEngineRegistry {
      */
     private static void load() {
         for (ShardingTransactionEngine each : ServiceLoader.load(ShardingTransactionEngine.class)) {
-            if (TRANSACTION_ENGINES.containsKey(each.getTransactionType())) {
+            if (ENGINES.containsKey(each.getTransactionType())) {
                 log.warn("Find more than one {} transaction engine implementation class, use `{}` now",
-                    each.getTransactionType(), TRANSACTION_ENGINES.get(each.getTransactionType()).getClass().getName());
+                    each.getTransactionType(), ENGINES.get(each.getTransactionType()).getClass().getName());
                 continue;
             }
-            TRANSACTION_ENGINES.put(each.getTransactionType(), each);
+            ENGINES.put(each.getTransactionType(), each);
         }
     }
     
@@ -65,8 +65,8 @@ public final class ShardingTransactionEngineRegistry {
      * @param transactionType transaction type
      * @return sharding transaction engine
      */
-    public static ShardingTransactionEngine getShardingTransactionEngine(final TransactionType transactionType) {
-        return TRANSACTION_ENGINES.get(transactionType);
+    public static ShardingTransactionEngine getEngine(final TransactionType transactionType) {
+        return ENGINES.get(transactionType);
     }
     
     /**
@@ -76,7 +76,7 @@ public final class ShardingTransactionEngineRegistry {
      * @param dataSourceMap data source map
      */
     public static void registerTransactionResource(final DatabaseType databaseType, final Map<String, DataSource> dataSourceMap) {
-        for (Entry<TransactionType, ShardingTransactionEngine> entry : TRANSACTION_ENGINES.entrySet()) {
+        for (Entry<TransactionType, ShardingTransactionEngine> entry : ENGINES.entrySet()) {
             entry.getValue().registerTransactionalResource(databaseType, dataSourceMap);
         }
     }

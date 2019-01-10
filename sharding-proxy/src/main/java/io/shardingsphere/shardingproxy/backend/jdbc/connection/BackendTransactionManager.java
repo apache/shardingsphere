@@ -74,7 +74,7 @@ public final class BackendTransactionManager implements TransactionManager {
     
     private Optional<ShardingTransactionEngine> getShardingTransactionEngine(final BackendConnection connection) {
         TransactionType transactionType = connection.getTransactionType();
-        ShardingTransactionEngine result = ShardingTransactionEngineRegistry.getShardingTransactionEngine(transactionType);
+        ShardingTransactionEngine result = ShardingTransactionEngineRegistry.getEngine(transactionType);
         if (null != transactionType && transactionType != TransactionType.LOCAL) {
             Preconditions.checkNotNull(result, String.format("Cannot find transaction manager of [%s]", transactionType));
         }

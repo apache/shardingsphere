@@ -8,7 +8,7 @@
     <logger name="io.shardingsphere" level="info" additivity="false">
         <appender-ref ref="console"/>
     </logger>
-    <logger name="io.shardingsphere.core.executor.sql.execute.threadlocal.ExecutorExceptionHandler" level="off" />
+    <logger name="io.shardingsphere.transaction.core.ShardingTransactionEngineRegistry" level="off" />
     
     <root>
         <level value="error" />

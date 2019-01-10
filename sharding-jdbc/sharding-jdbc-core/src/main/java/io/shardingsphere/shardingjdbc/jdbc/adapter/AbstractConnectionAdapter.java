@@ -80,7 +80,7 @@ public abstract class AbstractConnectionAdapter extends AbstractUnsupportedOpera
     protected AbstractConnectionAdapter(final TransactionType transactionType) {
         rootInvokeHook.start();
         this.transactionType = transactionType;
-        shardingTransactionEngine = ShardingTransactionEngineRegistry.getShardingTransactionEngine(transactionType);
+        shardingTransactionEngine = ShardingTransactionEngineRegistry.getEngine(transactionType);
         if (TransactionType.LOCAL != transactionType) {
             Preconditions.checkNotNull(shardingTransactionEngine, "Cannot find transaction manager of [%s]", transactionType);
         }
