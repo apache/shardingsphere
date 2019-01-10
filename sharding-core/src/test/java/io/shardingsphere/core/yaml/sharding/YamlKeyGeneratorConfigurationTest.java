@@ -18,7 +18,6 @@
 package io.shardingsphere.core.yaml.sharding;
 
 import io.shardingsphere.core.keygen.SnowflakeKeyGenerator;
-import org.junit.Before;
 import org.junit.Test;
 
 import static org.hamcrest.Matchers.is;
@@ -26,14 +25,23 @@ import static org.junit.Assert.assertThat;
 
 public class YamlKeyGeneratorConfigurationTest {
     
-    @Before
-    public void setUp() {
-    }
-    
     @Test
     public void assertGetKeyGeneratorWithClassName() {
         YamlKeyGeneratorConfiguration keyGeneratorConfiguration = new YamlKeyGeneratorConfiguration();
         keyGeneratorConfiguration.setClassName("io.shardingsphere.core.keygen.SnowflakeKeyGenerator");
+        assertThat(keyGeneratorConfiguration.getKeyGenerator().getClass().getName(), is(SnowflakeKeyGenerator.class.getName()));
+    }
+    
+    @Test
+    public void assertGetKeyGeneratorWithSnowflakeType() {
+        YamlKeyGeneratorConfiguration keyGeneratorConfiguration = new YamlKeyGeneratorConfiguration();
+        keyGeneratorConfiguration.setType("SNOWFLAKE");
+        assertThat(keyGeneratorConfiguration.getKeyGenerator().getClass().getName(), is(SnowflakeKeyGenerator.class.getName()));
+    }
+    
+    @Test
+    public void assertGetKeyGeneratorWithoutTypeAndClassName() {
+        YamlKeyGeneratorConfiguration keyGeneratorConfiguration = new YamlKeyGeneratorConfiguration();
         assertThat(keyGeneratorConfiguration.getKeyGenerator().getClass().getName(), is(SnowflakeKeyGenerator.class.getName()));
     }
 }
