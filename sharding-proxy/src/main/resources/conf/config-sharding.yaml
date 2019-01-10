@@ -55,4 +55,4 @@
 #  defaultTableStrategy:
 #    none:
 #  defaultKeyGenerator:
-#    className: io.shardingsphere.core.keygen.DefaultKeyGenerator
+#    className: io.shardingsphere.core.keygen.SnowflakeKeyGenerator
