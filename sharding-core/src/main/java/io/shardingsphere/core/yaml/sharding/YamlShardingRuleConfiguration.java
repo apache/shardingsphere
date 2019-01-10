@@ -57,7 +57,7 @@ public class YamlShardingRuleConfiguration {
     
     private YamlShardingStrategyConfiguration defaultTableStrategy;
     
-    private YamlKeyGeneratorConfiguration defaultKeyGenerator = new YamlKeyGeneratorConfiguration();
+    private YamlKeyGeneratorConfiguration defaultKeyGenerator;
     
     private Map<String, YamlMasterSlaveRuleConfiguration> masterSlaveRules = new LinkedHashMap<>();
     
@@ -110,7 +110,9 @@ public class YamlShardingRuleConfiguration {
         if (null != defaultTableStrategy) {
             result.setDefaultTableShardingStrategyConfig(defaultTableStrategy.build());
         }
-        result.setDefaultKeyGenerator(defaultKeyGenerator.getKeyGenerator());
+        if (null != defaultKeyGenerator) {
+            result.setDefaultKeyGenerator(defaultKeyGenerator.getKeyGenerator());
+        }
         Collection<MasterSlaveRuleConfiguration> masterSlaveRuleConfigs = new LinkedList<>();
         for (Entry<String, YamlMasterSlaveRuleConfiguration> entry : masterSlaveRules.entrySet()) {
             YamlMasterSlaveRuleConfiguration each = entry.getValue();
