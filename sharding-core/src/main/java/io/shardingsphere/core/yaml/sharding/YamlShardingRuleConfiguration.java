@@ -20,7 +20,7 @@ package io.shardingsphere.core.yaml.sharding;
 import io.shardingsphere.api.config.rule.MasterSlaveRuleConfiguration;
 import io.shardingsphere.api.config.rule.ShardingRuleConfiguration;
 import io.shardingsphere.api.config.rule.TableRuleConfiguration;
-import io.shardingsphere.core.keygen.BuiltinKeyGeneratorType;
+import io.shardingsphere.core.keygen.KeyGeneratorType;
 import io.shardingsphere.core.yaml.masterslave.YamlMasterSlaveRuleConfiguration;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
@@ -79,7 +79,7 @@ public class YamlShardingRuleConfiguration {
     private YamlKeyGeneratorConfiguration getYamlKeyGeneratorConfiguration(final ShardingRuleConfiguration shardingRuleConfiguration) {
         YamlKeyGeneratorConfiguration result = new YamlKeyGeneratorConfiguration();
         String keyGeneratorClassName = shardingRuleConfiguration.getDefaultKeyGenerator().getClass().getName();
-        BuiltinKeyGeneratorType keyGeneratorType = BuiltinKeyGeneratorType.getBuiltinKeyGeneratorType(keyGeneratorClassName);
+        KeyGeneratorType keyGeneratorType = KeyGeneratorType.getBuiltinKeyGeneratorType(keyGeneratorClassName);
         if (null == keyGeneratorType) {
             result.setClassName(keyGeneratorClassName);
         } else {

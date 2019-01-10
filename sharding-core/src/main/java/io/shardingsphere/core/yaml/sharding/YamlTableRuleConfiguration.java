@@ -19,7 +19,7 @@ package io.shardingsphere.core.yaml.sharding;
 
 import com.google.common.base.Preconditions;
 import io.shardingsphere.api.config.rule.TableRuleConfiguration;
-import io.shardingsphere.core.keygen.BuiltinKeyGeneratorType;
+import io.shardingsphere.core.keygen.KeyGeneratorType;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
 import lombok.Setter;
@@ -58,7 +58,7 @@ public class YamlTableRuleConfiguration {
     private YamlKeyGeneratorConfiguration getYamlKeyGeneratorConfiguration(final TableRuleConfiguration tableRuleConfiguration) {
         YamlKeyGeneratorConfiguration result = new YamlKeyGeneratorConfiguration();
         String keyGeneratorClassName = tableRuleConfiguration.getKeyGenerator().getClass().getName();
-        BuiltinKeyGeneratorType keyGeneratorType = BuiltinKeyGeneratorType.getBuiltinKeyGeneratorType(keyGeneratorClassName);
+        KeyGeneratorType keyGeneratorType = KeyGeneratorType.getBuiltinKeyGeneratorType(keyGeneratorClassName);
         if (null == keyGeneratorType) {
             result.setClassName(keyGeneratorClassName);
         } else {

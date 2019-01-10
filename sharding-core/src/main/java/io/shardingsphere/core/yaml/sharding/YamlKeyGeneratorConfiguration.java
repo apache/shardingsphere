@@ -19,7 +19,7 @@ package io.shardingsphere.core.yaml.sharding;
 
 import com.google.common.base.Strings;
 import io.shardingsphere.core.exception.ShardingConfigurationException;
-import io.shardingsphere.core.keygen.BuiltinKeyGeneratorType;
+import io.shardingsphere.core.keygen.KeyGeneratorType;
 import io.shardingsphere.core.keygen.KeyGenerator;
 import io.shardingsphere.core.keygen.KeyGeneratorFactory;
 import lombok.Getter;
@@ -58,21 +58,21 @@ public class YamlKeyGeneratorConfiguration {
         } else if (!Strings.isNullOrEmpty(type)) {
             result = KeyGeneratorFactory.newInstance(getBuiltinKeyGeneratorClassName());
         } else {
-            result = KeyGeneratorFactory.newInstance(BuiltinKeyGeneratorType.SNOWFLAKE.getKeyGeneratorClassName());
+            result = KeyGeneratorFactory.newInstance(KeyGeneratorType.SNOWFLAKE.getKeyGeneratorClassName());
         }
         result.setKeyGeneratorProperties(props);
         return result;
     }
     
     private String getBuiltinKeyGeneratorClassName() {
-        if (type.equalsIgnoreCase(BuiltinKeyGeneratorType.SNOWFLAKE.name())) {
-            return BuiltinKeyGeneratorType.SNOWFLAKE.getKeyGeneratorClassName();
+        if (type.equalsIgnoreCase(KeyGeneratorType.SNOWFLAKE.name())) {
+            return KeyGeneratorType.SNOWFLAKE.getKeyGeneratorClassName();
         }
-        if (type.equalsIgnoreCase(BuiltinKeyGeneratorType.UUID.name())) {
-            return BuiltinKeyGeneratorType.UUID.getKeyGeneratorClassName();
+        if (type.equalsIgnoreCase(KeyGeneratorType.UUID.name())) {
+            return KeyGeneratorType.UUID.getKeyGeneratorClassName();
         }
-        if (type.equalsIgnoreCase(BuiltinKeyGeneratorType.LEAF.name())) {
-            return BuiltinKeyGeneratorType.LEAF.getKeyGeneratorClassName();
+        if (type.equalsIgnoreCase(KeyGeneratorType.LEAF.name())) {
+            return KeyGeneratorType.LEAF.getKeyGeneratorClassName();
         }
         throw new ShardingConfigurationException("Invalid built-in key generator type.");
     }
