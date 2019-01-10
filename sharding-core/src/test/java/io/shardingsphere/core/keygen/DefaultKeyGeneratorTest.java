@@ -167,7 +167,7 @@ public final class DefaultKeyGeneratorTest {
         keyGenerator.setProperties(properties);
         Field props = keyGenerator.getClass().getDeclaredField("properties");
         props.setAccessible(true);
-        assertThat(((Properties) props.get(keyGenerator)).get("work.id"), is((Object) 1L));
+        assertThat(((Properties) props.get(keyGenerator)).get("work.id"), is((Object) "1"));
     }
     
     @Test
@@ -179,6 +179,6 @@ public final class DefaultKeyGeneratorTest {
         keyGenerator.setProperties(properties);
         Field props = keyGenerator.getClass().getDeclaredField("properties");
         props.setAccessible(true);
-        assertThat(((Properties) props.get(keyGenerator)).get("max.tolerate.time.difference.milliseconds"), is((Object) 1));
+        assertThat(((Properties) props.get(keyGenerator)).get("max.tolerate.time.difference.milliseconds"), is((Object) "1"));
     }
 }

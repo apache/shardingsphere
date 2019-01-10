@@ -53,7 +53,7 @@ public final class KeyGeneratorFactoryTest {
     
         @Getter
         @Setter
-        private Properties keyGeneratorProperties = new Properties();
+        private Properties properties = new Properties();
         
         @Override
         public Comparable<?> generateKey() {
@@ -66,7 +66,7 @@ public final class KeyGeneratorFactoryTest {
     
         @Getter
         @Setter
-        private Properties keyGeneratorProperties = new Properties();
+        private Properties properties = new Properties();
         
         @Override
         public Comparable<?> generateKey() {
