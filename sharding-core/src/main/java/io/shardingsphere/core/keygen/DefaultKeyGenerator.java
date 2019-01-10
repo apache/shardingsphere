@@ -66,7 +66,7 @@ public final class DefaultKeyGenerator implements KeyGenerator {
     
     private static final long WORKER_ID_MAX_VALUE = 1L << WORKER_ID_BITS;
     
-    private static final long WORK_ID = 0;
+    private static final long WORKER_ID = 0;
     
     private static final int MAX_TOLERATE_TIME_DIFFERENCE_MILLISECONDS = 10;
     
@@ -94,7 +94,7 @@ public final class DefaultKeyGenerator implements KeyGenerator {
     private long lastMilliseconds;
     
     private long getWorkerId() {
-        long result = Long.valueOf(properties.getProperty("work.id", String.valueOf(WORK_ID)));
+        long result = Long.valueOf(properties.getProperty("work.id", String.valueOf(WORKER_ID)));
         Preconditions.checkArgument(result >= 0L && result < WORKER_ID_MAX_VALUE);
         return result;
     }
