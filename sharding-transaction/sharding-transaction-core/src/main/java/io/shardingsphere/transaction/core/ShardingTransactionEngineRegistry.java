@@ -15,7 +15,7 @@
  * </p>
  */
 
-package io.shardingsphere.transaction.core.loader;
+package io.shardingsphere.transaction.core;
 
 import io.shardingsphere.core.constant.DatabaseType;
 import io.shardingsphere.transaction.api.TransactionType;

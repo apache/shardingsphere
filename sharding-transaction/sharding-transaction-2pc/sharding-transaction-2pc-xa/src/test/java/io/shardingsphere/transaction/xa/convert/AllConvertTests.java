@@ -25,7 +25,6 @@ import org.junit.runners.Suite;
 
 @RunWith(Suite.class)
 @Suite.SuiteClasses({
-        XADataSourceMapConverterTest.class, 
         XADataSourceFactoryTest.class, 
         XAPropertiesFactoryTest.class, 
         DataSourceSwapperRegistryTest.class

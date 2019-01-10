@@ -22,7 +22,7 @@ import io.shardingsphere.core.bootstrap.ShardingBootstrap;
 import io.shardingsphere.core.constant.DatabaseType;
 import io.shardingsphere.core.util.ReflectiveUtil;
 import io.shardingsphere.shardingjdbc.jdbc.unsupported.AbstractUnsupportedOperationDataSource;
-import io.shardingsphere.transaction.core.loader.ShardingTransactionEngineRegistry;
+import io.shardingsphere.transaction.core.ShardingTransactionEngineRegistry;
 import lombok.Getter;
 import lombok.Setter;
 

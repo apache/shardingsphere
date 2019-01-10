@@ -37,7 +37,7 @@ import java.sql.Connection;
 import static org.hamcrest.CoreMatchers.instanceOf;
 import static org.hamcrest.CoreMatchers.is;
 import static org.junit.Assert.assertThat;
-import static org.mockito.ArgumentMatchers.anyObject;
+import static org.mockito.ArgumentMatchers.any;
 import static org.mockito.Mockito.mock;
 import static org.mockito.Mockito.when;
 
@@ -56,7 +56,7 @@ public class MySQLShardingXAConnectionWrapperTest {
         Connection mysqlConnection = (Connection) mock(Class.forName("com.mysql.jdbc.Connection"));
         DataSource dataSource = DataSourceUtils.build(PoolType.HIKARI, DatabaseType.MySQL, "ds1");
         xaDataSource = XADataSourceFactory.build(DatabaseType.MySQL, dataSource);
-        when(connection.unwrap((Class<Object>) anyObject())).thenReturn(mysqlConnection);
+        when(connection.unwrap((Class<Object>) any())).thenReturn(mysqlConnection);
     }
     
     @Test

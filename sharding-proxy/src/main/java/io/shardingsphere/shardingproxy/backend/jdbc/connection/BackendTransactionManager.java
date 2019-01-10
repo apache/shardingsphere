@@ -20,7 +20,7 @@ package io.shardingsphere.shardingproxy.backend.jdbc.connection;
 import com.google.common.base.Optional;
 import com.google.common.base.Preconditions;
 import io.shardingsphere.transaction.api.TransactionType;
-import io.shardingsphere.transaction.core.loader.ShardingTransactionEngineRegistry;
+import io.shardingsphere.transaction.core.ShardingTransactionEngineRegistry;
 import io.shardingsphere.transaction.spi.ShardingTransactionEngine;
 import lombok.RequiredArgsConstructor;
 

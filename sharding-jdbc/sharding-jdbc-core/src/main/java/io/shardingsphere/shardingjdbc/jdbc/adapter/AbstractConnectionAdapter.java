@@ -30,7 +30,7 @@ import io.shardingsphere.spi.root.RootInvokeHook;
 import io.shardingsphere.spi.root.SPIRootInvokeHook;
 import io.shardingsphere.transaction.api.TransactionType;
 import io.shardingsphere.transaction.api.TransactionTypeHolder;
-import io.shardingsphere.transaction.core.loader.ShardingTransactionEngineRegistry;
+import io.shardingsphere.transaction.core.ShardingTransactionEngineRegistry;
 import io.shardingsphere.transaction.spi.ShardingTransactionEngine;
 import lombok.Getter;
 
