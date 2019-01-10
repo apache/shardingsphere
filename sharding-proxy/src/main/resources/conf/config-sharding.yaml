@@ -7,7 +7,7 @@
 # if you want to use master-slave, please refer to the config-master_slave.yaml.
 # 
 ######################################################################################################
-
+#
 #schemaName: sharding_db
 #
 #dataSources:
@@ -36,7 +36,8 @@
 #        inline:
 #          shardingColumn: order_id
 #          algorithmExpression: t_order_${order_id % 2}
-#      column: order_id
+#      keyGenerator:
+#        column: order_id
 #    t_order_item:
 #      actualDataNodes: ds_${0..1}.t_order_item_${0..1}
 #      tableStrategy:
@@ -44,7 +45,7 @@
 #          shardingColumn: order_id
 #          algorithmExpression: t_order_item_${order_id % 2}
 #      keyGenerator:
-#       column: order_item_id
+#        column: order_item_id
 #  bindingTables:
 #    - t_order,t_order_item
 #  defaultDatabaseStrategy:
@@ -53,4 +54,5 @@
 #      algorithmExpression: ds_${user_id % 2}
 #  defaultTableStrategy:
 #    none:
-#  defaultKeyGeneratorClassName: io.shardingsphere.core.keygen.DefaultKeyGenerator
+#  defaultKeyGenerator:
+#    className: io.shardingsphere.core.keygen.DefaultKeyGenerator
