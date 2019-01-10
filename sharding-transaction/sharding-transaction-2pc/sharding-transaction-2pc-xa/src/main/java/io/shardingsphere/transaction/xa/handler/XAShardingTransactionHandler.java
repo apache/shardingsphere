@@ -76,7 +76,7 @@ public final class XAShardingTransactionHandler extends ShardingTransactionHandl
     }
     
     @Override
-    public void clearTransactionalResource() {
+    public void clearTransactionalResource(final Map<String, DataSource> dataSourceMap) {
         if (!cachedShardingXADataSourceMap.isEmpty()) {
             for (ShardingXADataSource each : cachedShardingXADataSourceMap.values()) {
                 xaTransactionManager.removeRecoveryResource(each.getResourceName(), each.getXaDataSource());

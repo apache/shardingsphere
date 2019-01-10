@@ -143,7 +143,7 @@ public class XAShardingTransactionHandlerTest {
     @Test
     public void assertClearTransactionalDataSource() {
         setCachedShardingXADataSourceMap("ds1");
-        xaShardingTransactionHandler.clearTransactionalResource();
+        xaShardingTransactionHandler.clearTransactionalResource(createDataSourceMap(PoolType.HIKARI, DatabaseType.MySQL));
         Map<String, ShardingXADataSource> cachedShardingXADataSourceMap = getCachedShardingXADataSourceMap();
         verify(xaTransactionManager).removeRecoveryResource(anyString(), any(XADataSource.class));
         assertThat(cachedShardingXADataSourceMap.size(), is(0));
