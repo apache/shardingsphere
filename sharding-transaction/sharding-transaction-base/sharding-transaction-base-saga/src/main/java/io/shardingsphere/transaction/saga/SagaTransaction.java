@@ -30,14 +30,13 @@ import lombok.Getter;
 import lombok.RequiredArgsConstructor;
 
 import java.sql.SQLException;
-import java.util.Collections;
-import java.util.HashSet;
 import java.util.LinkedList;
 import java.util.List;
 import java.util.Map;
-import java.util.Set;
+import java.util.Queue;
 import java.util.UUID;
 import java.util.concurrent.ConcurrentHashMap;
+import java.util.concurrent.ConcurrentLinkedQueue;
 
 import javax.sql.DataSource;
 
@@ -58,9 +57,11 @@ public final class SagaTransaction {
     
     private final Map<SagaSubTransaction, ExecutionResult> executionResultMap = new ConcurrentHashMap<>();
     
-    private final List<Set<SagaSubTransaction>> logicSQLs = new LinkedList<>();
+    private final Map<SagaSubTransaction, RevertResult> revertResultMap = new ConcurrentHashMap<>();
     
-    private Set<SagaSubTransaction> currentLogicSQL;
+    private final List<Queue<SagaSubTransaction>> logicSQLs = new LinkedList<>();
+    
+    private Queue<SagaSubTransaction> currentLogicSQL;
     
     private volatile boolean containException;
     
@@ -71,18 +72,24 @@ public final class SagaTransaction {
      * @param executionResult execution result
      */
     public void recordResult(final SagaSubTransaction sagaSubTransaction, final ExecutionResult executionResult) {
-        if (ExecutionResult.FAILURE == executionResult) {
-            containException = true;
+        switch (executionResult) {
+            case EXECUTING:
+                currentLogicSQL.add(sagaSubTransaction);
+                sqlRevert(sagaSubTransaction);
+                break;
+            case FAILURE:
+                containException = true;
+                break;
+            default:
         }
         executionResultMap.put(sagaSubTransaction, executionResult);
-        currentLogicSQL.add(sagaSubTransaction);
     }
     
     /**
      * Transaction start next logic SQL.
      */
     public void nextLogicSQL() {
-        currentLogicSQL = Collections.synchronizedSet(new HashSet<SagaSubTransaction>());
+        currentLogicSQL = new ConcurrentLinkedQueue<>();
         logicSQLs.add(currentLogicSQL);
     }
     
@@ -93,23 +100,27 @@ public final class SagaTransaction {
      */
     public SagaDefinitionBuilder getSagaDefinitionBuilder() {
         SagaDefinitionBuilder result = createDefinitionBuilder();
-        for (Set<SagaSubTransaction> each : logicSQLs) {
+        for (Queue<SagaSubTransaction> each : logicSQLs) {
             result.switchParents();
             initSagaDefinitionForLogicSQL(result, each);
         }
         return result;
     }
     
-    private void initSagaDefinitionForLogicSQL(final SagaDefinitionBuilder sagaDefinitionBuilder, final Set<SagaSubTransaction> sagaSubTransactions) {
+    private void sqlRevert(final SagaSubTransaction sagaSubTransaction) {
         RevertEngine revertEngine = SagaRecoveryPolicy.FORWARD == sagaConfiguration.getRecoveryPolicy() ? new EmptyRevertEngine() : new RevertEngineImpl(dataSourceMap);
+        try {
+            revertResultMap.put(sagaSubTransaction, revertEngine.revert(sagaSubTransaction.getDataSourceName(), sagaSubTransaction.getSql(), sagaSubTransaction.getParameterSets()));
+        } catch (SQLException ex) {
+            throw new ShardingException(String.format("Revert SQL %s failed: ", sagaSubTransaction.toString()), ex);
+        }
+    }
+    
+    private void initSagaDefinitionForLogicSQL(final SagaDefinitionBuilder sagaDefinitionBuilder, final Queue<SagaSubTransaction> sagaSubTransactions) {
         for (SagaSubTransaction each : sagaSubTransactions) {
-            try {
-                RevertResult revertResult = revertEngine.revert(each.getDataSourceName(), each.getSql(), each.getParameterSets());
-                sagaDefinitionBuilder.addChildRequest(String.valueOf(each.hashCode()), each.getDataSourceName(), each.getSql(),
-                                                      each.getParameterSets(), revertResult.getRevertSQL(), revertResult.getRevertSQLParams());
-            } catch (SQLException ex) {
-                throw new ShardingException(String.format("Revert SQL %s failed: ", each.toString()), ex);
-            }
+            RevertResult revertResult = revertResultMap.get(each);
+            sagaDefinitionBuilder.addChildRequest(String.valueOf(each.hashCode()), each.getDataSourceName(), each.getSql(), each.getParameterSets(),
+                                                  revertResult.getRevertSQL(), revertResult.getRevertSQLParams());
         }
     }
     
