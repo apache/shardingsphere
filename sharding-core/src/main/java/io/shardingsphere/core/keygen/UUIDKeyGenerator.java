@@ -17,6 +17,10 @@
 
 package io.shardingsphere.core.keygen;
 
+import lombok.Getter;
+import lombok.Setter;
+
+import java.util.Properties;
 import java.util.UUID;
 
 /**
@@ -25,6 +29,10 @@ import java.util.UUID;
  * @author panjuan
  */
 public final class UUIDKeyGenerator implements KeyGenerator {
+    
+    @Getter
+    @Setter
+    private Properties properties = new Properties();
     
     @Override
     public synchronized Comparable<?> generateKey() {
