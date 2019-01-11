@@ -29,6 +29,7 @@ import io.shardingsphere.transaction.saga.servicecomb.definition.SagaDefinitionB
 import lombok.Getter;
 import lombok.RequiredArgsConstructor;
 
+import java.sql.Connection;
 import java.sql.SQLException;
 import java.util.LinkedList;
 import java.util.List;
@@ -37,8 +38,6 @@ import java.util.Queue;
 import java.util.UUID;
 import java.util.concurrent.ConcurrentHashMap;
 import java.util.concurrent.ConcurrentLinkedQueue;
-
-import javax.sql.DataSource;
 
 /**
  * Saga transaction object.
@@ -53,7 +52,7 @@ public final class SagaTransaction {
     
     private final SagaConfiguration sagaConfiguration;
     
-    private final Map<String, DataSource> dataSourceMap;
+    private final Map<String, Connection> connectionMap = new ConcurrentHashMap<>();
     
     private final Map<SagaSubTransaction, ExecutionResult> executionResultMap = new ConcurrentHashMap<>();
     
@@ -108,7 +107,7 @@ public final class SagaTransaction {
     }
     
     private void sqlRevert(final SagaSubTransaction sagaSubTransaction) {
-        RevertEngine revertEngine = SagaRecoveryPolicy.FORWARD == sagaConfiguration.getRecoveryPolicy() ? new EmptyRevertEngine() : new RevertEngineImpl(dataSourceMap);
+        RevertEngine revertEngine = SagaRecoveryPolicy.FORWARD == sagaConfiguration.getRecoveryPolicy() ? new EmptyRevertEngine() : new RevertEngineImpl(connectionMap);
         try {
             revertResultMap.put(sagaSubTransaction, revertEngine.revert(sagaSubTransaction.getDataSourceName(), sagaSubTransaction.getSql(), sagaSubTransaction.getParameterSets()));
         } catch (SQLException ex) {

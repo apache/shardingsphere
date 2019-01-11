@@ -72,7 +72,6 @@ public final class SagaTransactionManagerTest {
     public void assertBegin() {
         transactionManager.begin();
         verify(resourceManager).getSagaConfiguration();
-        verify(resourceManager).getDataSourceMap();
         assertNotNull(transactionManager.getTransaction());
         assertTrue(ShardingExecuteDataMap.getDataMap().containsKey(transactionKey));
         assertThat(ShardingExecuteDataMap.getDataMap().get(transactionKey), instanceOf(SagaTransaction.class));

@@ -46,7 +46,7 @@ public class SagaTransactionTest {
     
     @Before
     public void setUp() {
-        sagaTransaction = new SagaTransaction(new SagaConfiguration(), new HashMap<String, DataSource>());
+        sagaTransaction = new SagaTransaction(new SagaConfiguration());
     }
     
     @Test

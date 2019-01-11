@@ -61,8 +61,8 @@ public final class ShardingSQLTransport implements SQLTransport {
     }
     
     private SagaResponse executeFromDataSource(final SagaSubTransaction subTransaction) {
-        try (Connection connection = getConnectionFromDataSourceMap(subTransaction.getDataSourceName());
-            PreparedStatement statement = connection.prepareStatement(subTransaction.getSql())) {
+        Connection connection = getConnectionFromConnectionMap(subTransaction.getDataSourceName());
+        try (PreparedStatement statement = connection.prepareStatement(subTransaction.getSql())) {
             if (subTransaction.getParameterSets().isEmpty()) {
                 statement.executeUpdate();
             } else {
@@ -80,9 +80,9 @@ public final class ShardingSQLTransport implements SQLTransport {
         return new JsonSuccessfulSagaResponse("{}");
     }
     
-    private Connection getConnectionFromDataSourceMap(final String datasource) {
+    private Connection getConnectionFromConnectionMap(final String datasource) {
         try {
-            Connection result = sagaTransaction.getDataSourceMap().get(datasource).getConnection();
+            Connection result = sagaTransaction.getConnectionMap().get(datasource);
             if (!result.getAutoCommit()) {
                 result.setAutoCommit(true);
             }

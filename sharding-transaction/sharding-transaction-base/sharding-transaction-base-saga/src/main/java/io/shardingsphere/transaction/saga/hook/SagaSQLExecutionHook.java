@@ -24,6 +24,7 @@ import io.shardingsphere.spi.executor.SQLExecutionHook;
 import io.shardingsphere.transaction.saga.constant.ExecutionResult;
 import io.shardingsphere.transaction.saga.SagaSubTransaction;
 import io.shardingsphere.transaction.saga.SagaTransaction;
+import io.shardingsphere.transaction.saga.constant.SagaRecoveryPolicy;
 
 import java.util.Map;
 
@@ -58,8 +59,8 @@ public final class SagaSQLExecutionHook implements SQLExecutionHook {
     
     @Override
     public void finishFailure(final Exception cause) {
-        ExecutorExceptionHandler.setExceptionThrown(false);
         if (null != sagaTransaction && null != sagaSubTransaction) {
+            ExecutorExceptionHandler.setExceptionThrown(SagaRecoveryPolicy.BACKWARD == sagaTransaction.getSagaConfiguration().getRecoveryPolicy());
             sagaTransaction.recordResult(sagaSubTransaction, ExecutionResult.FAILURE);
         }
     }

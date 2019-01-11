@@ -29,7 +29,6 @@ import org.junit.runner.RunWith;
 import org.mockito.Mock;
 import org.mockito.junit.MockitoJUnitRunner;
 
-import javax.sql.DataSource;
 import java.sql.Connection;
 import java.sql.PreparedStatement;
 import java.sql.SQLException;
@@ -62,7 +61,7 @@ public class ShardingSQLTransportTest {
     
     @Before
     public void setUp() throws SQLException {
-        getDatasourceMap();
+        getConnectionMap();
     }
     
     @Test
@@ -71,7 +70,7 @@ public class ShardingSQLTransportTest {
         List<List<String>> params = getParams();
         recordMockResult(params, ExecutionResult.SUCCESS);
         shardingSQLTransport.with(dataSourceName, sql, params);
-        verify(sagaTransaction, never()).getDataSourceMap();
+        verify(sagaTransaction, never()).getConnectionMap();
     }
     
     @Test
@@ -80,7 +79,7 @@ public class ShardingSQLTransportTest {
         List<List<String>> params = getParams();
         recordMockResult(params, ExecutionResult.FAILURE);
         shardingSQLTransport.with(dataSourceName, sql, params);
-        verify(sagaTransaction).getDataSourceMap();
+        verify(sagaTransaction).getConnectionMap();
         verify(statement, times(2)).addBatch();
         verify(statement).executeBatch();
     }
@@ -113,24 +112,22 @@ public class ShardingSQLTransportTest {
     
     @Test(expected = TransportFailedException.class)
     public void assertGetConnectionFailure() throws SQLException {
-        Map<String, DataSource> dataSourceMap = new HashMap<>();
-        DataSource dataSource = mock(DataSource.class);
-        dataSourceMap.put(dataSourceName, dataSource);
-        when(sagaTransaction.getDataSourceMap()).thenReturn(dataSourceMap);
-        when(dataSource.getConnection()).thenThrow(new SQLException("test get connection fail"));
+        Map<String, Connection> connectionMap = new HashMap<>();
+        Connection connection = mock(Connection.class);
+        connectionMap.put(dataSourceName, connection);
+        when(sagaTransaction.getConnectionMap()).thenReturn(connectionMap);
+        when(connection.getAutoCommit()).thenThrow(new SQLException("test get autocommit fail"));
         ShardingSQLTransport shardingSQLTransport = new ShardingSQLTransport(sagaTransaction);
         List<List<String>> params = Lists.newArrayList();
         shardingSQLTransport.with(dataSourceName, sql, params);
     }
     
-    private void getDatasourceMap() throws SQLException {
-        Map<String, DataSource> dataSourceMap = new HashMap<>();
-        DataSource dataSource = mock(DataSource.class);
+    private void getConnectionMap() throws SQLException {
+        Map<String, Connection> connectionMap = new HashMap<>();
         Connection connection = mock(Connection.class);
-        when(dataSource.getConnection()).thenReturn(connection);
         when(connection.prepareStatement(anyString())).thenReturn(statement);
-        dataSourceMap.put(dataSourceName, dataSource);
-        when(sagaTransaction.getDataSourceMap()).thenReturn(dataSourceMap);
+        connectionMap.put(dataSourceName, connection);
+        when(sagaTransaction.getConnectionMap()).thenReturn(connectionMap);
     }
     
     private void recordMockResult(final List<List<String>> params, final ExecutionResult executionResult) {

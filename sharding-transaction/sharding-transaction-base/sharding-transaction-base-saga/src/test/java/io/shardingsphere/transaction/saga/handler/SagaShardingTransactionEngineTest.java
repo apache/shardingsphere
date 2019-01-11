@@ -19,6 +19,7 @@ package io.shardingsphere.transaction.saga.handler;
 
 import io.shardingsphere.core.constant.DatabaseType;
 import io.shardingsphere.transaction.api.TransactionType;
+import io.shardingsphere.transaction.saga.SagaTransaction;
 import io.shardingsphere.transaction.saga.manager.SagaResourceManager;
 import io.shardingsphere.transaction.saga.manager.SagaTransactionManager;
 import org.junit.Before;
@@ -29,12 +30,15 @@ import org.mockito.junit.MockitoJUnitRunner;
 
 import javax.sql.DataSource;
 import java.lang.reflect.Field;
+import java.sql.Connection;
 import java.sql.SQLException;
 import java.util.HashMap;
 import java.util.Map;
 
 import static org.hamcrest.CoreMatchers.equalTo;
+import static org.junit.Assert.assertEquals;
 import static org.junit.Assert.assertThat;
+import static org.mockito.Mockito.mock;
 import static org.mockito.Mockito.verify;
 import static org.mockito.Mockito.when;
 
@@ -76,8 +80,17 @@ public class SagaShardingTransactionEngineTest {
     }
     
     @Test
-    public void assertGetConnection() {
-    
+    public void assertGetConnection() throws SQLException {
+        Map<String, Connection> connectionMap = new HashMap<>();
+        SagaTransaction sagaTransaction = mock(SagaTransaction.class);
+        when(sagaTransaction.getConnectionMap()).thenReturn(connectionMap);
+        DataSource dataSource = mock(DataSource.class);
+        Connection connection = mock(Connection.class);
+        when(dataSource.getConnection()).thenReturn(connection);
+        when(sagaTransactionManager.getTransaction()).thenReturn(sagaTransaction);
+        assertEquals(handler.createConnection("ds", dataSource), connection);
+        assertEquals(sagaTransaction.getConnectionMap().size(), 1);
+        assertEquals(sagaTransaction.getConnectionMap().get("ds"), connection);
     }
     
     @Test

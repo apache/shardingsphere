@@ -19,7 +19,7 @@ package io.shardingsphere.transaction.saga.revert;
 
 import lombok.RequiredArgsConstructor;
 
-import javax.sql.DataSource;
+import java.sql.Connection;
 import java.sql.SQLException;
 import java.util.ArrayList;
 import java.util.List;
@@ -33,7 +33,7 @@ import java.util.Map;
 @RequiredArgsConstructor
 public final class RevertEngineImpl implements RevertEngine {
     
-    private final Map<String, DataSource> dataSourceMap;
+    private final Map<String, Connection> connectionMap;
     
     @Override
     public RevertResult revert(final String datasource, final String sql, final List<List<Object>> params) throws SQLException {

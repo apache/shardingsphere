@@ -19,7 +19,7 @@ package io.shardingsphere.transaction.saga.revert;
 
 import org.junit.Test;
 
-import javax.sql.DataSource;
+import java.sql.Connection;
 import java.sql.SQLException;
 import java.util.Collections;
 import java.util.HashMap;
@@ -28,13 +28,9 @@ import java.util.List;
 import static org.hamcrest.CoreMatchers.is;
 import static org.junit.Assert.assertThat;
 
-import io.shardingsphere.transaction.saga.revert.RevertEngine;
-import io.shardingsphere.transaction.saga.revert.RevertEngineImpl;
-import io.shardingsphere.transaction.saga.revert.RevertResult;
-
 public class RevertEngineImplTest {
     
-    private final RevertEngine revertEngine = new RevertEngineImpl(new HashMap<String, DataSource>());
+    private final RevertEngine revertEngine = new RevertEngineImpl(new HashMap<String, Connection>());
     
     @Test
     public void assertRevert() throws SQLException {
