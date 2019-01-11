@@ -18,7 +18,7 @@
 package io.shardingsphere.core.yaml.sharding;
 
 import io.shardingsphere.core.exception.ShardingConfigurationException;
-import io.shardingsphere.core.keygen.SnowflakeKeyGenerator;
+import io.shardingsphere.core.keygen.generator.SnowflakeKeyGenerator;
 import io.shardingsphere.core.keygen.UUIDKeyGenerator;
 import org.junit.Test;
 
@@ -30,7 +30,7 @@ public class YamlKeyGeneratorConfigurationTest {
     @Test
     public void assertGetKeyGeneratorWithClassName() {
         YamlKeyGeneratorConfiguration keyGeneratorConfiguration = new YamlKeyGeneratorConfiguration();
-        keyGeneratorConfiguration.setClassName("io.shardingsphere.core.keygen.SnowflakeKeyGenerator");
+        keyGeneratorConfiguration.setClassName("io.shardingsphere.core.keygen.generator.SnowflakeKeyGenerator");
         assertThat(keyGeneratorConfiguration.getKeyGenerator().getClass().getName(), is(SnowflakeKeyGenerator.class.getName()));
     }
     
@@ -72,10 +72,10 @@ public class YamlKeyGeneratorConfigurationTest {
     public void assertGetKeyGeneratorVariables() {
         YamlKeyGeneratorConfiguration keyGeneratorConfiguration = new YamlKeyGeneratorConfiguration();
         keyGeneratorConfiguration.setType("SNOWFLAKE");
-        keyGeneratorConfiguration.setClassName("io.shardingsphere.core.keygen.SnowflakeKeyGenerator");
+        keyGeneratorConfiguration.setClassName("io.shardingsphere.core.keygen.generator.SnowflakeKeyGenerator");
         keyGeneratorConfiguration.setColumn("order_id");
         assertThat(keyGeneratorConfiguration.getType(), is("SNOWFLAKE"));
-        assertThat(keyGeneratorConfiguration.getClassName(), is("io.shardingsphere.core.keygen.SnowflakeKeyGenerator"));
+        assertThat(keyGeneratorConfiguration.getClassName(), is("io.shardingsphere.core.keygen.generator.SnowflakeKeyGenerator"));
         assertThat(keyGeneratorConfiguration.getColumn(), is("order_id"));
     }
 }

@@ -18,7 +18,7 @@
 package io.shardingsphere.core.yaml.sharding;
 
 import io.shardingsphere.api.algorithm.masterslave.MasterSlaveLoadBalanceAlgorithmType;
-import io.shardingsphere.core.keygen.SnowflakeKeyGenerator;
+import io.shardingsphere.core.keygen.generator.SnowflakeKeyGenerator;
 import org.hamcrest.CoreMatchers;
 import org.junit.Test;
 

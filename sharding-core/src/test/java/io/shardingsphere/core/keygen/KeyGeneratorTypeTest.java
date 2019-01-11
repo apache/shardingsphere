@@ -27,7 +27,7 @@ public class KeyGeneratorTypeTest {
     
     @Test
     public void assertGetKeyGeneratorType() {
-        assertThat(KeyGeneratorType.getKeyGeneratorType("io.shardingsphere.core.keygen.SnowflakeKeyGenerator"), 
+        assertThat(KeyGeneratorType.getKeyGeneratorType("io.shardingsphere.core.keygen.generator.SnowflakeKeyGenerator"), 
                 is(Optional.of(KeyGeneratorType.SNOWFLAKE)));
         assertThat(KeyGeneratorType.getKeyGeneratorType("io.shardingsphere.core.keygen.UUIDKeyGenerator"),
                 is(Optional.of(KeyGeneratorType.UUID)));
