@@ -17,68 +17,18 @@
 
 package io.shardingsphere.transaction.xa.manager;
 
-import io.shardingsphere.core.exception.ShardingException;
-import io.shardingsphere.transaction.xa.fixture.ReflectiveUtil;
-import io.shardingsphere.transaction.xa.spi.XATransactionManager;
-import org.junit.Before;
 import org.junit.Test;
 import org.junit.runner.RunWith;
-import org.mockito.Mock;
 import org.mockito.junit.MockitoJUnitRunner;
 
-import java.util.Collection;
-import java.util.Iterator;
-
 import static org.hamcrest.CoreMatchers.instanceOf;
-import static org.hamcrest.CoreMatchers.is;
 import static org.junit.Assert.assertThat;
-import static org.mockito.Mockito.doThrow;
-import static org.mockito.Mockito.mock;
-import static org.mockito.Mockito.when;
 
 @RunWith(MockitoJUnitRunner.class)
 public final class XATransactionManagerSPILoaderTest {
     
-    @Mock
-    private Collection<XATransactionManager> xaTransactionManagers;
-    
-    private XATransactionManagerSPILoader spiLoader = XATransactionManagerSPILoader.getInstance();
-    
-    @Before
-    public void setUp() {
-        ReflectiveUtil.setProperty(spiLoader, "xaTransactionManagers", xaTransactionManagers);
-    }
-    
     @Test
-    public void assertGerInstanceWithSPI() {
-        assertThat(spiLoader.getTransactionManager(), instanceOf(AtomikosTransactionManager.class));
-    }
-    
-    @Test(expected = ShardingException.class)
-    @SuppressWarnings("unchecked")
-    public void assertServiceLoaderFailed() {
-        doThrow(ShardingException.class).when(xaTransactionManagers).size();
-        ReflectiveUtil.methodInvoke(spiLoader, "load");
-    }
-    
-    @Test
-    @SuppressWarnings("unchecked")
-    public void assertXaTransactionManagerGreaterThanOne() {
-        when(xaTransactionManagers.size()).thenReturn(2);
-        Iterator iterator = mock(Iterator.class);
-        when(xaTransactionManagers.iterator()).thenReturn(iterator);
-        XATransactionManager atomikosTransactionManager = new AtomikosTransactionManager();
-        when(iterator.next()).thenReturn(atomikosTransactionManager);
-        XATransactionManager actual = (XATransactionManager) ReflectiveUtil.methodInvoke(spiLoader, "load");
-        assertThat(actual, is(atomikosTransactionManager));
-        atomikosTransactionManager.destroy();
-    }
-    
-    @Test
-    @SuppressWarnings("unchecked")
-    public void assertXaTransactionManagerIsEmpty() {
-        when(xaTransactionManagers.isEmpty()).thenReturn(true);
-        XATransactionManager actual = (XATransactionManager) ReflectiveUtil.methodInvoke(spiLoader, "load");
-        assertThat(actual, instanceOf(AtomikosTransactionManager.class));
+    public void assertGetTransactionManager() {
+        assertThat(XATransactionManagerSPILoader.getInstance().getTransactionManager(), instanceOf(AtomikosTransactionManager.class));
     }
 }

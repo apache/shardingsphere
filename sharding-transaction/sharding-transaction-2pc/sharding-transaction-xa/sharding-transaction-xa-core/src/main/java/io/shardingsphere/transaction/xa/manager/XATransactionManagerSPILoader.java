@@ -17,13 +17,12 @@
 
 package io.shardingsphere.transaction.xa.manager;
 
-import io.shardingsphere.core.exception.ShardingException;
-import io.shardingsphere.spi.NewInstanceServiceLoader;
 import io.shardingsphere.transaction.xa.spi.XATransactionManager;
 import lombok.Getter;
 import lombok.extern.slf4j.Slf4j;
 
-import java.util.Collection;
+import java.util.Iterator;
+import java.util.ServiceLoader;
 
 /**
  * XA transaction manager SPI loader.
@@ -37,34 +36,29 @@ public final class XATransactionManagerSPILoader {
     
     private static final XATransactionManagerSPILoader INSTANCE = new XATransactionManagerSPILoader();
     
-    private final Collection<XATransactionManager> xaTransactionManagers = NewInstanceServiceLoader.load(XATransactionManager.class);
-    
     private final XATransactionManager transactionManager;
     
     private XATransactionManagerSPILoader() {
         transactionManager = load();
         Runtime.getRuntime().addShutdownHook(new Thread(new Runnable() {
+            
             @Override
             public void run() {
-                if (null != transactionManager) {
-                    transactionManager.destroy();
-                }
+                transactionManager.destroy();
             }
         }));
     }
     
     private XATransactionManager load() {
-        try {
-            if (xaTransactionManagers.size() > 1) {
-                log.warn("There are more than one transaction mangers existing, chosen first one by default.");
-            }
-            if (xaTransactionManagers.isEmpty()) {
-                return new AtomikosTransactionManager();
-            }
-            return xaTransactionManagers.iterator().next();
-        } catch (final Exception ex) {
-            throw new ShardingException("Can not initialize the xaTransaction manager failed with " + ex);
+        Iterator<XATransactionManager> xaTransactionManagers = ServiceLoader.load(XATransactionManager.class).iterator();
+        if (!xaTransactionManagers.hasNext()) {
+            return new AtomikosTransactionManager();
         }
+        XATransactionManager result = xaTransactionManagers.next();
+        if (xaTransactionManagers.hasNext()) {
+            log.warn("There are more than one transaction mangers existing, chosen first one by default.");
+        }
+        return result;
     }
     
     /**
