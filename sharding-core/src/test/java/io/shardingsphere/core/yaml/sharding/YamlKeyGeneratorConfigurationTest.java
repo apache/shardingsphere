@@ -22,7 +22,7 @@ import io.shardingsphere.core.keygen.SnowflakeKeyGenerator;
 import io.shardingsphere.core.keygen.UUIDKeyGenerator;
 import org.junit.Test;
 
-import static org.hamcrest.Matchers.is;
+import static org.hamcrest.CoreMatchers.is;
 import static org.junit.Assert.assertThat;
 
 public class YamlKeyGeneratorConfigurationTest {
