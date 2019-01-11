@@ -38,6 +38,7 @@ import io.shardingsphere.core.parsing.parser.token.ItemsToken;
 import io.shardingsphere.core.parsing.parser.token.TableToken;
 import io.shardingsphere.core.rule.ShardingRule;
 
+import java.util.Iterator;
 import java.util.List;
 
 /**
@@ -54,7 +55,7 @@ public class InsertFiller implements SQLStatementFiller<InsertSegment> {
         createValue(sqlSegment, insertStatement, sql, shardingRule, shardingTableMetaData);
         insertStatement.setColumnsListLastPosition(sqlSegment.getColumnsListLastPosition());
         insertStatement.setInsertValuesListLastPosition(sqlSegment.getInsertValuesListLastPosition());
-        insertStatement.getSQLTokens().add(new InsertValuesToken(sqlSegment.getInsertValueStartPosition() + 1, insertStatement.getTables().getSingleTableName()));
+        insertStatement.getSQLTokens().add(new InsertValuesToken(sqlSegment.getInsertValueStartPosition(), insertStatement.getTables().getSingleTableName()));
         processGeneratedKey(shardingRule, insertStatement);
     }
     
@@ -103,7 +104,8 @@ public class InsertFiller implements SQLStatementFiller<InsertSegment> {
         insertStatement.setColumnsListLastPosition(beginPosition);
     }
     
-    private void createValue(final InsertSegment insertSegment, final InsertStatement insertStatement, final String sql, final ShardingRule shardingRule, final ShardingTableMetaData shardingTableMetaData) {
+    private void createValue(final InsertSegment insertSegment, final InsertStatement insertStatement, final String sql, final ShardingRule shardingRule,
+                             final ShardingTableMetaData shardingTableMetaData) {
         if (insertSegment.getValuesList().isEmpty()) {
             return;
         }
@@ -113,18 +115,21 @@ public class InsertFiller implements SQLStatementFiller<InsertSegment> {
         OrConditionFiller orConditionFiller = new OrConditionFiller();
         int parameterIndex = 0;
         for (InsertValuesSegment each : insertSegment.getValuesList()) {
+            if (each.getValues().size() != insertStatement.getColumns().size()) {
+                throw new SQLParsingException("INSERT INTO column size mismatch value size.");
+            }
             insertStatement.getInsertValues().getInsertValues().add(new InsertValue(each.getType(), sql.substring(each.getStartIndex(), each.getEndIndex() + 1), each.getParametersCount()));
             parameterIndex += each.getParametersCount();
             int index = 0;
             AndCondition andCondition = new AndCondition();
+            Iterator<Column> iterator = insertStatement.getColumns().iterator();
             for (CommonExpressionSegment commonExpressionSegment : each.getValues()) {
-                Column column = (Column) ((List) insertStatement.getColumns()).get(index);
+                Column column = iterator.next();
                 boolean shardingColumn = shardingRule.isShardingColumn(column);
                 if (shardingColumn) {
                     if (!(-1 < commonExpressionSegment.getIndex() || null != commonExpressionSegment.getValue() || commonExpressionSegment.isText())) {
                         throw new SQLParsingException("INSERT INTO can not support complex expression value on sharding column '%s'.", column.getName());
                     }
-                    String expression = sql.substring(commonExpressionSegment.getStartPosition(), commonExpressionSegment.getEndPosition() + 1);
                     andCondition.getConditions().add(orConditionFiller.buildEqualsCondition(column, commonExpressionSegment, sql, shardingRule, shardingTableMetaData).get());
                 }
                 if (index == insertStatement.getGenerateKeyColumnIndex()) {
