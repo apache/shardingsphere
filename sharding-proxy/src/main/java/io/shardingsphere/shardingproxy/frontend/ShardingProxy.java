@@ -99,9 +99,9 @@ public final class ShardingProxy {
     }
     
     private EventLoopGroup createEventLoopGroup() {
-        try {
+        if (Epoll.isAvailable()) {
             return new EpollEventLoopGroup(1);
-        } catch (final UnsatisfiedLinkError ex) {
+        } else {
             return new NioEventLoopGroup(1);
         }
     }
