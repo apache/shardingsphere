@@ -112,6 +112,7 @@ public final class ShardingProxy {
                 .option(ChannelOption.WRITE_BUFFER_WATER_MARK, new WriteBufferWaterMark(8 * 1024 * 1024, 16 * 1024 * 1024))
                 .option(EpollChannelOption.ALLOCATOR, PooledByteBufAllocator.DEFAULT)
                 .childOption(EpollChannelOption.ALLOCATOR, PooledByteBufAllocator.DEFAULT)
+                .childOption(EpollChannelOption.TCP_CORK, true)
                 .handler(new LoggingHandler(LogLevel.INFO))
                 .childHandler(new ServerHandlerInitializer());
     }
@@ -124,6 +125,7 @@ public final class ShardingProxy {
                 .option(ChannelOption.WRITE_BUFFER_WATER_MARK, new WriteBufferWaterMark(8 * 1024 * 1024, 16 * 1024 * 1024))
                 .option(ChannelOption.ALLOCATOR, PooledByteBufAllocator.DEFAULT)
                 .childOption(ChannelOption.ALLOCATOR, PooledByteBufAllocator.DEFAULT)
+                .childOption(ChannelOption.TCP_NODELAY, true)
                 .handler(new LoggingHandler(LogLevel.INFO))
                 .childHandler(new ServerHandlerInitializer());
     }
