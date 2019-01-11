@@ -151,8 +151,7 @@ nav {
   display: inline-block;
   padding-top: 40px;
   padding-bottom: 50px;
-  width: 33%;
-  min-width: 320px;
+  width: 32%;
   text-align: center;
 }
 
@@ -197,7 +196,7 @@ nav {
   padding: 55px 0;
 }
 .l-m-tit {
-  font-size: px;
+  font-size: 32px;
   color: #ee9a32;
   margin-bottom: 32px;
 }
