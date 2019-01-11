@@ -17,10 +17,17 @@
 
 package io.shardingsphere.core.keygen;
 
+import java.util.UUID;
+
 /**
  * UUID key generator.
  *
  * @author panjuan
  */
-public final class UUIDKeyGenerator {
+public final class UUIDKeyGenerator implements KeyGenerator {
+    
+    @Override
+    public synchronized Comparable<?> generateKey() {
+        return UUID.randomUUID().toString().replaceAll("-", "");
+    }
 }
