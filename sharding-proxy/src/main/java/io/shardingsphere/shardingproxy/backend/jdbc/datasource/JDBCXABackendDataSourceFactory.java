@@ -19,9 +19,9 @@ package io.shardingsphere.shardingproxy.backend.jdbc.datasource;
 
 import io.shardingsphere.core.constant.DatabaseType;
 import io.shardingsphere.core.rule.DataSourceParameter;
-import io.shardingsphere.transaction.spi.xa.XATransactionManager;
 import io.shardingsphere.transaction.xa.jta.datasource.XADataSourceFactory;
 import io.shardingsphere.transaction.xa.manager.XATransactionManagerSPILoader;
+import io.shardingsphere.transaction.xa.spi.XATransactionManager;
 import lombok.AccessLevel;
 import lombok.NoArgsConstructor;
 
