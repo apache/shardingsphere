@@ -15,7 +15,7 @@
  * </p>
  */
 
-package io.shardingsphere.transaction.core.manager;
+package io.shardingsphere.transaction.core;
 
 import io.shardingsphere.core.exception.ShardingException;
 

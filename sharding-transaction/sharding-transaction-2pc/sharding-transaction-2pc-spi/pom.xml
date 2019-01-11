@@ -17,6 +17,7 @@
             <artifactId>sharding-transaction-core</artifactId>
             <version>${project.parent.version}</version>
         </dependency>
+        
         <dependency>
             <groupId>javax.transaction</groupId>
             <artifactId>jta</artifactId>

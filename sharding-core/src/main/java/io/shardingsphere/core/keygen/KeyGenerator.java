@@ -17,6 +17,8 @@
 
 package io.shardingsphere.core.keygen;
 
+import java.util.Properties;
+
 /**
  * Key generator interface.
  *
@@ -31,4 +33,18 @@ public interface KeyGenerator {
      * @return generated key
      */
     Comparable<?> generateKey();
+    
+    /**
+     * Get properties.
+     * 
+     * @return The properties of key generator
+     */
+    Properties getProperties();
+    
+    /**
+     * Set Properties.
+     * 
+     * @param properties properties
+     */
+    void setProperties(Properties properties);
 }

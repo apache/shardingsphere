@@ -17,8 +17,6 @@
 
 package io.shardingsphere.shardingproxy.backend.jdbc.connection;
 
-import io.shardingsphere.transaction.core.TransactionOperationType;
-
 import java.sql.SQLException;
 
 /**
@@ -29,10 +27,23 @@ import java.sql.SQLException;
 public interface TransactionManager {
     
     /**
-     * Handle proxy transaction.
+     * Begin transaction.
      *
-     * @param operationType transaction operation type
      * @throws SQLException SQL Exception
      */
-    void doInTransaction(TransactionOperationType operationType) throws SQLException;
+    void begin() throws SQLException;
+    
+    /**
+     * Commit transaction.
+     *
+     * @throws SQLException SQL Exception
+     */
+    void commit() throws SQLException;
+    
+    /**
+     * Rollback transaction.
+     *
+     * @throws SQLException SQL Exception
+     */
+    void rollback() throws SQLException;
 }

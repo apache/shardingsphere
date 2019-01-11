@@ -17,7 +17,6 @@
 
 package io.shardingsphere.shardingproxy.backend.jdbc.connection;
 
-import io.shardingsphere.transaction.core.TransactionOperationType;
 import lombok.RequiredArgsConstructor;
 import lombok.SneakyThrows;
 
@@ -37,26 +36,12 @@ public final class LocalTransactionManager implements TransactionManager {
     private final BackendConnection connection;
     
     @Override
-    public void doInTransaction(final TransactionOperationType operationType) throws SQLException {
-        switch (operationType) {
-            case BEGIN:
-                setAutoCommit();
-                break;
-            case COMMIT:
-                commit();
-                break;
-            case ROLLBACK:
-                rollback();
-                break;
-            default:
-        }
-    }
-    
-    private void setAutoCommit() {
+    public void begin() {
         recordMethodInvocation(Connection.class, "setAutoCommit", new Class[]{boolean.class}, new Object[]{false});
     }
     
-    private void commit() throws SQLException {
+    @Override
+    public void commit() throws SQLException {
         if (connection.getStateHandler().isInTransaction()) {
             Collection<SQLException> exceptions = new LinkedList<>();
             exceptions.addAll(commitConnections());
@@ -65,7 +50,8 @@ public final class LocalTransactionManager implements TransactionManager {
         }
     }
     
-    private void rollback() throws SQLException {
+    @Override
+    public void rollback() throws SQLException {
         if (connection.getStateHandler().isInTransaction()) {
             Collection<SQLException> exceptions = new LinkedList<>();
             exceptions.addAll(rollbackConnections());

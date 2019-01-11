@@ -66,16 +66,17 @@ public final class DQLMergeEngine implements MergeEngine {
     }
     
     private List<QueryResult> getRealQueryResults(final List<QueryResult> queryResults) {
-        if (1 == queryResults.size()) {
-            return queryResults;
+        List<QueryResult> result = queryResults;
+        if (1 == result.size()) {
+            return result;
         }
         if (!selectStatement.getAggregationDistinctSelectItems().isEmpty()) {
-            return getDividedQueryResults(new AggregationDistinctQueryResult(queryResults, selectStatement.getAggregationDistinctSelectItems()));
+            result = getDividedQueryResults(new AggregationDistinctQueryResult(queryResults, selectStatement.getAggregationDistinctSelectItems()));
         }
         if (selectStatement.getDistinctSelectItem().isPresent()) {
-            return getDividedQueryResults(new DistinctQueryResult(queryResults, new ArrayList<>(selectStatement.getDistinctSelectItem().get().getDistinctColumnLabels())));
+            result = getDividedQueryResults(new DistinctQueryResult(queryResults, new ArrayList<>(selectStatement.getDistinctSelectItem().get().getDistinctColumnLabels())));
         }
-        return queryResults;
+        return result.isEmpty() ? queryResults : result;
     }
     
     private List<QueryResult> getDividedQueryResults(final DistinctQueryResult distinctQueryResult) {

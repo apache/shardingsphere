@@ -17,10 +17,8 @@
 
 package io.shardingsphere.core.parsing.parser.context.condition;
 
-import com.google.common.base.Optional;
 import io.shardingsphere.core.rule.ShardingRule;
 import lombok.Getter;
-import lombok.NoArgsConstructor;
 import lombok.ToString;
 
 /**
@@ -29,16 +27,11 @@ import lombok.ToString;
  * @author zhangliang
  * @author maxiaoguang
  */
-@NoArgsConstructor
 @Getter
 @ToString
 public final class Conditions {
     
     private final OrCondition orCondition = new OrCondition();
-    
-    public Conditions(final Conditions conditions) {
-        orCondition.getAndConditions().addAll(conditions.orCondition.getAndConditions());
-    }
     
     /**
      * Add condition.
@@ -51,30 +44,5 @@ public final class Conditions {
         if (shardingRule.isShardingColumn(condition.getColumn())) {
             orCondition.add(condition);
         }
-    }
-    
-    /**
-     * Find condition via column in first and condition.
-     *
-     * @param column column
-     * @return found condition
-     * @deprecated only test call
-     */
-    @Deprecated
-    public Optional<Condition> find(final Column column) {
-        return find(column, 0);
-    }
-    
-    /**
-     * Find condition via column.
-     *
-     * @param column column
-     * @param index index of and conditions
-     * @return found condition
-     * @deprecated only test call
-     */
-    @Deprecated
-    public Optional<Condition> find(final Column column, final int index) {
-        return orCondition.find(column, index);
     }
 }

@@ -17,11 +17,8 @@
 
 package io.shardingsphere.core.parsing.parser.context.condition;
 
-import com.google.common.base.Objects;
-import com.google.common.base.Optional;
 import io.shardingsphere.core.parsing.parser.clause.condition.NullCondition;
 import lombok.Getter;
-import lombok.NoArgsConstructor;
 import lombok.ToString;
 
 import java.util.LinkedHashMap;
@@ -34,7 +31,6 @@ import java.util.Map;
  *
  * @author maxiaoguang
  */
-@NoArgsConstructor
 @Getter
 @ToString
 public final class AndCondition {
@@ -73,23 +69,5 @@ public final class AndCondition {
             result.getConditions().add(new NullCondition());
         }
         return result;
-    }
-    
-    /**
-     * Find condition via column.
-     *
-     * @param column column
-     * @return found condition
-     * @deprecated only test call
-     */
-    @Deprecated
-    public Optional<Condition> find(final Column column) {
-        Condition result = null;
-        for (Condition each : conditions) {
-            if (Objects.equal(each.getColumn(), column)) {
-                result = each;
-            }
-        }
-        return Optional.fromNullable(result);
     }
 }

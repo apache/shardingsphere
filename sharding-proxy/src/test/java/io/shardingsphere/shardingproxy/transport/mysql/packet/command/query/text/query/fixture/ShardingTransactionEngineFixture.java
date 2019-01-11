@@ -15,66 +15,61 @@
  * </p>
  */
 
-package io.shardingsphere.transaction.core.handler;
+package io.shardingsphere.shardingproxy.transport.mysql.packet.command.query.text.query.fixture;
 
 import io.shardingsphere.core.constant.DatabaseType;
+import io.shardingsphere.transaction.api.TransactionType;
 import io.shardingsphere.transaction.core.TransactionOperationType;
-import io.shardingsphere.transaction.spi.ShardingTransactionHandler;
+import io.shardingsphere.transaction.spi.ShardingTransactionEngine;
+import lombok.Getter;
 
 import javax.sql.DataSource;
 import java.sql.Connection;
 import java.sql.SQLException;
+import java.util.Collection;
+import java.util.LinkedList;
 import java.util.Map;
 
 /**
- * Abstract class for sharding transaction handler.
+ * Sharding transaction engine fixture.
  *
  * @author zhaojun
- *
  */
-public abstract class ShardingTransactionHandlerAdapter implements ShardingTransactionHandler {
+public final class ShardingTransactionEngineFixture implements ShardingTransactionEngine {
     
-    /**
-     * Default implement for do in transaction.
-     */
+    @Getter
+    private static Collection<TransactionOperationType> invocations = new LinkedList<>();
+    
     @Override
-    @SuppressWarnings("unchecked")
-    public void doInTransaction(final TransactionOperationType transactionOperationType) {
-        switch (transactionOperationType) {
-            case BEGIN:
-                getShardingTransactionManager().begin();
-                break;
-            case COMMIT:
-                getShardingTransactionManager().commit();
-                break;
-            case ROLLBACK:
-                getShardingTransactionManager().rollback();
-                break;
-            default:
-        }
+    public TransactionType getTransactionType() {
+        return TransactionType.XA;
     }
     
-    /**
-     * Default implement for register transaction resource.
-     */
     @Override
     public void registerTransactionalResource(final DatabaseType databaseType, final Map<String, DataSource> dataSourceMap) {
-        // adapter
     }
     
-    /**
-     * Default implement for clear transactional resource.
-     */
     @Override
-    public void clearTransactionalResource() {
-        // adapter
+    public void clearTransactionalResources() {
     }
     
-    /**
-     * Default implement for create connection.
-     */
     @Override
     public Connection createConnection(final String dataSourceName, final DataSource dataSource) throws SQLException {
         return dataSource.getConnection();
+    }
+    
+    @Override
+    public void begin() {
+        invocations.add(TransactionOperationType.BEGIN);
+    }
+    
+    @Override
+    public void commit() {
+        invocations.add(TransactionOperationType.COMMIT);
+    }
+    
+    @Override
+    public void rollback() {
+        invocations.add(TransactionOperationType.ROLLBACK);
     }
 }

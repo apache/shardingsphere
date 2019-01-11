@@ -18,7 +18,6 @@
 package io.shardingsphere.shardingproxy.backend.jdbc.connection;
 
 import io.shardingsphere.transaction.api.TransactionType;
-import io.shardingsphere.transaction.core.TransactionOperationType;
 import org.junit.Test;
 
 import java.sql.Connection;
@@ -40,13 +39,13 @@ public class BackendTransactionManagerTest {
     @Test
     public void assertLocalTransactionCommit() throws SQLException {
         MockConnectionUtil.setCachedConnections(backendConnection, "ds1", 2);
-        backendTransactionManager.doInTransaction(TransactionOperationType.BEGIN);
+        backendTransactionManager.begin();
         assertThat(backendConnection.getStateHandler().getStatus(), is(ConnectionStatus.TRANSACTION));
         assertThat(backendConnection.getMethodInvocations().size(), is(1));
         assertThat(backendConnection.getMethodInvocations().iterator().next().getArguments(), is(new Object[]{false}));
         assertTrue(backendConnection.getCachedConnections().isEmpty());
         MockConnectionUtil.setCachedConnections(backendConnection, "ds1", 2);
-        backendTransactionManager.doInTransaction(TransactionOperationType.COMMIT);
+        backendTransactionManager.commit();
         Iterator<Connection> iterator = backendConnection.getCachedConnections().values().iterator();
         verify(iterator.next()).commit();
         verify(iterator.next()).commit();
@@ -55,11 +54,11 @@ public class BackendTransactionManagerTest {
     
     @Test
     public void assertLocalTransactionCommitWithException() throws SQLException {
-        backendTransactionManager.doInTransaction(TransactionOperationType.BEGIN);
+        backendTransactionManager.begin();
         MockConnectionUtil.setCachedConnections(backendConnection, "ds1", 2);
         MockConnectionUtil.mockThrowException(backendConnection.getCachedConnections().values());
         try {
-            backendTransactionManager.doInTransaction(TransactionOperationType.COMMIT);
+            backendTransactionManager.commit();
         } catch (final SQLException ex) {
             assertThat(ex.getNextException().getNextException(), instanceOf(SQLException.class));
         }
@@ -68,9 +67,9 @@ public class BackendTransactionManagerTest {
     
     @Test
     public void assertLocalTransactionRollback() throws SQLException {
-        backendTransactionManager.doInTransaction(TransactionOperationType.BEGIN);
+        backendTransactionManager.begin();
         MockConnectionUtil.setCachedConnections(backendConnection, "ds1", 2);
-        backendTransactionManager.doInTransaction(TransactionOperationType.ROLLBACK);
+        backendTransactionManager.rollback();
         Iterator<Connection> iterator = backendConnection.getCachedConnections().values().iterator();
         verify(iterator.next()).rollback();
         verify(iterator.next()).rollback();
@@ -79,11 +78,11 @@ public class BackendTransactionManagerTest {
     
     @Test
     public void assertLocalTransactionRollbackWithException() throws SQLException {
-        backendTransactionManager.doInTransaction(TransactionOperationType.BEGIN);
+        backendTransactionManager.begin();
         MockConnectionUtil.setCachedConnections(backendConnection, "ds1", 2);
         MockConnectionUtil.mockThrowException(backendConnection.getCachedConnections().values());
         try {
-            backendTransactionManager.doInTransaction(TransactionOperationType.ROLLBACK);
+            backendTransactionManager.rollback();
         } catch (final SQLException ex) {
             assertThat(ex.getNextException().getNextException(), instanceOf(SQLException.class));
         }
@@ -94,22 +93,22 @@ public class BackendTransactionManagerTest {
     public void assertXATransactionCommit() throws SQLException {
         backendConnection.setCurrentSchema("schema");
         backendConnection.setTransactionType(TransactionType.XA);
-        backendTransactionManager.doInTransaction(TransactionOperationType.BEGIN);
+        backendTransactionManager.begin();
         assertTrue(backendConnection.getMethodInvocations().isEmpty());
         assertThat(backendConnection.getStateHandler().getStatus(), is(ConnectionStatus.TRANSACTION));
-        backendTransactionManager.doInTransaction(TransactionOperationType.COMMIT);
+        backendTransactionManager.commit();
         assertThat(backendConnection.getStateHandler().getStatus(), is(ConnectionStatus.TERMINATED));
-        backendTransactionManager.doInTransaction(TransactionOperationType.BEGIN);
+        backendTransactionManager.begin();
     }
     
     @Test
     public void assertXATransactionRollback() throws SQLException {
         backendConnection.setCurrentSchema("schema");
         backendConnection.setTransactionType(TransactionType.XA);
-        backendTransactionManager.doInTransaction(TransactionOperationType.BEGIN);
+        backendTransactionManager.begin();
         assertTrue(backendConnection.getMethodInvocations().isEmpty());
         assertThat(backendConnection.getStateHandler().getStatus(), is(ConnectionStatus.TRANSACTION));
-        backendTransactionManager.doInTransaction(TransactionOperationType.ROLLBACK);
+        backendTransactionManager.rollback();
         assertThat(backendConnection.getStateHandler().getStatus(), is(ConnectionStatus.TERMINATED));
     }
 }

@@ -19,8 +19,6 @@ package io.shardingsphere.transaction.spi;
 
 import io.shardingsphere.core.constant.DatabaseType;
 import io.shardingsphere.transaction.api.TransactionType;
-import io.shardingsphere.transaction.core.TransactionOperationType;
-import io.shardingsphere.transaction.core.manager.ShardingTransactionManager;
 
 import javax.sql.DataSource;
 import java.sql.Connection;
@@ -28,26 +26,12 @@ import java.sql.SQLException;
 import java.util.Map;
 
 /**
- * Sharding transaction handler SPI.
+ * Sharding transaction engine.
  *
  * @author zhaojun
  * 
  */
-public interface ShardingTransactionHandler {
-    
-    /**
-     * Do transaction operation using specific transaction manager.
-     *
-     * @param transactionOperationType transaction operation type
-     */
-    void doInTransaction(TransactionOperationType transactionOperationType);
-    
-    /**
-     * Get sharding transaction manager.
-     *
-     * @return sharding transaction manager
-     */
-    ShardingTransactionManager getShardingTransactionManager();
+public interface ShardingTransactionEngine {
     
     /**
      * Get transaction type.
@@ -65,9 +49,9 @@ public interface ShardingTransactionHandler {
     void registerTransactionalResource(DatabaseType databaseType, Map<String, DataSource> dataSourceMap);
     
     /**
-     * Clear transactional resource.
+     * Clear transactional resources.
      */
-    void clearTransactionalResource();
+    void clearTransactionalResources();
     
     /**
      * Create transactional connection.
@@ -78,4 +62,19 @@ public interface ShardingTransactionHandler {
      * @throws SQLException SQL exception
      */
     Connection createConnection(String dataSourceName, DataSource dataSource) throws SQLException;
+    
+    /**
+     * Begin transaction.
+     */
+    void begin();
+    
+    /**
+     * Commit transaction.
+     */
+    void commit();
+    
+    /**
+     * Rollback transaction.
+     */
+    void rollback();
 }

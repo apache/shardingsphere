@@ -26,6 +26,7 @@ import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.HashSet;
 import java.util.List;
+import java.util.Properties;
 import java.util.Set;
 import java.util.concurrent.Callable;
 import java.util.concurrent.ExecutorService;
@@ -35,11 +36,11 @@ import static org.hamcrest.CoreMatchers.is;
 import static org.junit.Assert.assertNotEquals;
 import static org.junit.Assert.assertThat;
 
-public final class DefaultKeyGeneratorTest {
+public final class SnowflakeKeyGeneratorTest {
     
-    static final long DEFAULT_SEQUENCE_BITS = 12L;
+    private static final long DEFAULT_SEQUENCE_BITS = 12L;
     
-    static final int DEFAULT_KEY_AMOUNT = 10;
+    private static final int DEFAULT_KEY_AMOUNT = 10;
     
     @Test
     @SneakyThrows
@@ -47,7 +48,8 @@ public final class DefaultKeyGeneratorTest {
         int threadNumber = Runtime.getRuntime().availableProcessors() << 1;
         ExecutorService executor = Executors.newFixedThreadPool(threadNumber);
         int taskNumber = threadNumber << 2;
-        final DefaultKeyGenerator keyGenerator = new DefaultKeyGenerator();
+        final SnowflakeKeyGenerator keyGenerator = new SnowflakeKeyGenerator();
+        keyGenerator.setProperties(new Properties());
         Set<Comparable<?>> actual = new HashSet<>();
         for (int i = 0; i < taskNumber; i++) {
             actual.add(executor.submit(new Callable<Comparable<?>>() {
@@ -63,9 +65,10 @@ public final class DefaultKeyGeneratorTest {
     
     @Test
     public void assertGenerateKeyWithSingleThread() {
+        SnowflakeKeyGenerator keyGenerator = new SnowflakeKeyGenerator();
+        keyGenerator.setProperties(new Properties());
+        SnowflakeKeyGenerator.setTimeService(new FixedTimeService(1));
         List<Comparable<?>> expected = Arrays.<Comparable<?>>asList(1L, 4194304L, 4194305L, 8388609L, 8388610L, 12582912L, 12582913L, 16777217L, 16777218L, 20971520L);
-        DefaultKeyGenerator keyGenerator = new DefaultKeyGenerator();
-        DefaultKeyGenerator.setTimeService(new FixedTimeService(1));
         List<Comparable<?>> actual = new ArrayList<>();
         for (int i = 0; i < DEFAULT_KEY_AMOUNT; i++) {
             actual.add(keyGenerator.generateKey());
@@ -76,9 +79,10 @@ public final class DefaultKeyGeneratorTest {
     @Test
     @SneakyThrows
     public void assertGenerateKeyWithClockCallBack() {
-        DefaultKeyGenerator keyGenerator = new DefaultKeyGenerator();
+        SnowflakeKeyGenerator keyGenerator = new SnowflakeKeyGenerator();
         TimeService timeService = new FixedTimeService(1);
-        DefaultKeyGenerator.setTimeService(timeService);
+        SnowflakeKeyGenerator.setTimeService(timeService);
+        keyGenerator.setProperties(new Properties());
         setLastMilliseconds(keyGenerator, timeService.getCurrentMillis() + 2);
         List<Comparable<?>> expected = Arrays.<Comparable<?>>asList(4194305L, 8388608L, 8388609L, 12582913L, 12582914L, 16777216L, 16777217L, 20971521L, 20971522L, 25165824L);
         List<Comparable<?>> actual = new ArrayList<>();
@@ -91,10 +95,13 @@ public final class DefaultKeyGeneratorTest {
     @Test(expected = IllegalStateException.class)
     @SneakyThrows
     public void assertGenerateKeyWithClockCallBackBeyondTolerateTime() {
-        DefaultKeyGenerator keyGenerator = new DefaultKeyGenerator();
+        SnowflakeKeyGenerator keyGenerator = new SnowflakeKeyGenerator();
         TimeService timeService = new FixedTimeService(1);
-        DefaultKeyGenerator.setTimeService(timeService);
-        DefaultKeyGenerator.setMaxTolerateTimeDifferenceMilliseconds(0);
+        SnowflakeKeyGenerator.setTimeService(timeService);
+        keyGenerator.setProperties(new Properties());
+        Properties properties = new Properties();
+        properties.setProperty("max.tolerate.time.difference.milliseconds", String.valueOf(0));
+        keyGenerator.setProperties(properties);
         setLastMilliseconds(keyGenerator, timeService.getCurrentMillis() + 2);
         List<Comparable<?>> actual = new ArrayList<>();
         for (int i = 0; i < DEFAULT_KEY_AMOUNT; i++) {
@@ -105,9 +112,10 @@ public final class DefaultKeyGeneratorTest {
     
     @Test
     public void assertGenerateKeyBeyondMaxSequencePerMilliSecond() {
-        final DefaultKeyGenerator keyGenerator = new DefaultKeyGenerator();
+        final SnowflakeKeyGenerator keyGenerator = new SnowflakeKeyGenerator();
         TimeService timeService = new FixedTimeService(2);
-        DefaultKeyGenerator.setTimeService(timeService);
+        SnowflakeKeyGenerator.setTimeService(timeService);
+        keyGenerator.setProperties(new Properties());
         setLastMilliseconds(keyGenerator, timeService.getCurrentMillis());
         setSequence(keyGenerator, (1 << DEFAULT_SEQUENCE_BITS) - 1);
         List<Comparable<?>> expected = Arrays.<Comparable<?>>asList(4194304L, 4194305L, 4194306L, 8388609L, 8388610L, 8388611L, 12582912L, 12582913L, 12582914L, 16777217L);
@@ -119,46 +127,58 @@ public final class DefaultKeyGeneratorTest {
     }
     
     @SneakyThrows
-    private void setSequence(final DefaultKeyGenerator keyGenerator, final Number value) {
-        Field sequence = DefaultKeyGenerator.class.getDeclaredField("sequence");
+    private void setSequence(final SnowflakeKeyGenerator keyGenerator, final Number value) {
+        Field sequence = SnowflakeKeyGenerator.class.getDeclaredField("sequence");
         sequence.setAccessible(true);
         sequence.set(keyGenerator, value);
     }
     
     @SneakyThrows
-    private void setLastMilliseconds(final DefaultKeyGenerator keyGenerator, final Number value) {
-        Field lastMilliseconds = DefaultKeyGenerator.class.getDeclaredField("lastMilliseconds");
+    private void setLastMilliseconds(final SnowflakeKeyGenerator keyGenerator, final Number value) {
+        Field lastMilliseconds = SnowflakeKeyGenerator.class.getDeclaredField("lastMilliseconds");
         lastMilliseconds.setAccessible(true);
         lastMilliseconds.set(keyGenerator, value);
     }
     
     @Test(expected = IllegalArgumentException.class)
     public void assertSetWorkerIdFailureWhenNegative() {
-        DefaultKeyGenerator.setWorkerId(-1L);
+        SnowflakeKeyGenerator keyGenerator = new SnowflakeKeyGenerator();
+        Properties properties = new Properties();
+        properties.setProperty("worker.id", String.valueOf(-1L));
+        keyGenerator.setProperties(properties);
+        keyGenerator.generateKey();
     }
     
     @Test(expected = IllegalArgumentException.class)
     public void assertSetWorkerIdFailureWhenTooMuch() {
-        DefaultKeyGenerator.setWorkerId(-Long.MAX_VALUE);
+        SnowflakeKeyGenerator keyGenerator = new SnowflakeKeyGenerator();
+        Properties properties = new Properties();
+        properties.setProperty("worker.id", String.valueOf(-Long.MAX_VALUE));
+        keyGenerator.setProperties(properties);
+        keyGenerator.generateKey();
     }
     
     @Test
     @SneakyThrows
     public void assertSetWorkerIdSuccess() {
-        DefaultKeyGenerator.setWorkerId(1L);
-        Field workerIdField = DefaultKeyGenerator.class.getDeclaredField("workerId");
-        workerIdField.setAccessible(true);
-        assertThat(workerIdField.getLong(DefaultKeyGenerator.class), is(1L));
-        DefaultKeyGenerator.setWorkerId(0L);
+        SnowflakeKeyGenerator keyGenerator = new SnowflakeKeyGenerator();
+        Properties properties = new Properties();
+        properties.setProperty("worker.id", String.valueOf(1L));
+        keyGenerator.setProperties(properties);
+        Field props = keyGenerator.getClass().getDeclaredField("properties");
+        props.setAccessible(true);
+        assertThat(((Properties) props.get(keyGenerator)).get("worker.id"), is((Object) "1"));
     }
     
     @Test
     @SneakyThrows
     public void assertSetMaxTolerateTimeDifferenceMilliseconds() {
-        DefaultKeyGenerator.setMaxTolerateTimeDifferenceMilliseconds(1);
-        Field maxTolerateTimeDifferenceMillisecondsField = DefaultKeyGenerator.class.getDeclaredField("maxTolerateTimeDifferenceMilliseconds");
-        maxTolerateTimeDifferenceMillisecondsField.setAccessible(true);
-        assertThat(maxTolerateTimeDifferenceMillisecondsField.getInt(DefaultKeyGenerator.class), is(1));
-        DefaultKeyGenerator.setMaxTolerateTimeDifferenceMilliseconds(10);
+        SnowflakeKeyGenerator keyGenerator = new SnowflakeKeyGenerator();
+        Properties properties = new Properties();
+        properties.setProperty("max.tolerate.time.difference.milliseconds", String.valueOf(1));
+        keyGenerator.setProperties(properties);
+        Field props = keyGenerator.getClass().getDeclaredField("properties");
+        props.setAccessible(true);
+        assertThat(((Properties) props.get(keyGenerator)).get("max.tolerate.time.difference.milliseconds"), is((Object) "1"));
     }
 }

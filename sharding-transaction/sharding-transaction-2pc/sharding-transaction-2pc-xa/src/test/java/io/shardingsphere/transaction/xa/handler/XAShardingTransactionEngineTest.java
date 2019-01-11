@@ -21,7 +21,6 @@ import com.atomikos.jdbc.AtomikosDataSourceBean;
 import io.shardingsphere.core.constant.DatabaseType;
 import io.shardingsphere.core.constant.PoolType;
 import io.shardingsphere.transaction.api.TransactionType;
-import io.shardingsphere.transaction.core.manager.ShardingTransactionManager;
 import io.shardingsphere.transaction.spi.xa.XATransactionManager;
 import io.shardingsphere.transaction.xa.fixture.DataSourceUtils;
 import io.shardingsphere.transaction.xa.jta.connection.ShardingXAConnection;
@@ -43,6 +42,7 @@ import java.lang.reflect.Field;
 import java.sql.Connection;
 import java.util.HashMap;
 import java.util.Map;
+import java.util.Map.Entry;
 
 import static org.hamcrest.CoreMatchers.instanceOf;
 import static org.hamcrest.CoreMatchers.is;
@@ -55,9 +55,9 @@ import static org.mockito.Mockito.verify;
 import static org.mockito.Mockito.when;
 
 @RunWith(MockitoJUnitRunner.class)
-public class XAShardingTransactionHandlerTest {
+public class XAShardingTransactionEngineTest {
     
-    private XAShardingTransactionHandler xaShardingTransactionHandler = new XAShardingTransactionHandler();
+    private XAShardingTransactionEngine xaShardingTransactionEngine = new XAShardingTransactionEngine();
     
     @Mock
     private XATransactionManager xaTransactionManager;
@@ -71,34 +71,28 @@ public class XAShardingTransactionHandlerTest {
     @Before
     @SneakyThrows
     public void setUp() {
-        setMockXATransactionManager(xaShardingTransactionHandler, xaTransactionManager);
+        setMockXATransactionManager(xaShardingTransactionEngine, xaTransactionManager);
         when(xaTransactionManager.getUnderlyingTransactionManager()).thenReturn(transactionManager);
         when(transactionManager.getTransaction()).thenReturn(transaction);
     }
     
     @SneakyThrows
-    private void setMockXATransactionManager(final XAShardingTransactionHandler xaShardingTransactionHandler, final XATransactionManager xaTransactionManager) {
-        Field field = xaShardingTransactionHandler.getClass().getDeclaredField("xaTransactionManager");
+    private void setMockXATransactionManager(final XAShardingTransactionEngine xaShardingTransactionEngine, final XATransactionManager xaTransactionManager) {
+        Field field = xaShardingTransactionEngine.getClass().getDeclaredField("xaTransactionManager");
         field.setAccessible(true);
-        field.set(xaShardingTransactionHandler, xaTransactionManager);
-    }
-    
-    @Test
-    public void assertGetTransactionManager() {
-        ShardingTransactionManager shardingTransactionManager = xaShardingTransactionHandler.getShardingTransactionManager();
-        assertThat(shardingTransactionManager, instanceOf(XATransactionManager.class));
+        field.set(xaShardingTransactionEngine, xaTransactionManager);
     }
     
     @Test
     public void assertGetTransactionType() {
-        assertThat(xaShardingTransactionHandler.getTransactionType(), is(TransactionType.XA));
+        assertThat(xaShardingTransactionEngine.getTransactionType(), is(TransactionType.XA));
     }
     
     @Test
     public void assertRegisterXATransactionalDataSource() {
         Map<String, DataSource> dataSourceMap = createDataSourceMap(PoolType.DRUID_XA, DatabaseType.MySQL);
-        xaShardingTransactionHandler.registerTransactionalResource(DatabaseType.MySQL, dataSourceMap);
-        for (Map.Entry<String, DataSource> entry : dataSourceMap.entrySet()) {
+        xaShardingTransactionEngine.registerTransactionalResource(DatabaseType.MySQL, dataSourceMap);
+        for (Entry<String, DataSource> entry : dataSourceMap.entrySet()) {
             verify(xaTransactionManager).registerRecoveryResource(entry.getKey(), (XADataSource) entry.getValue());
         }
     }
@@ -106,14 +100,14 @@ public class XAShardingTransactionHandlerTest {
     @Test
     public void assertRegisterAtomikosDataSourceBean() {
         Map<String, DataSource> dataSourceMap = createAtomikosDataSourceBeanMap();
-        xaShardingTransactionHandler.registerTransactionalResource(DatabaseType.MySQL, dataSourceMap);
+        xaShardingTransactionEngine.registerTransactionalResource(DatabaseType.MySQL, dataSourceMap);
         verify(xaTransactionManager, times(0)).registerRecoveryResource(anyString(), any(XADataSource.class));
     }
     
     @Test
     public void assertRegisterNoneXATransactionalDAtaSource() {
         Map<String, DataSource> dataSourceMap = createDataSourceMap(PoolType.HIKARI, DatabaseType.MySQL);
-        xaShardingTransactionHandler.registerTransactionalResource(DatabaseType.MySQL, dataSourceMap);
+        xaShardingTransactionEngine.registerTransactionalResource(DatabaseType.MySQL, dataSourceMap);
         Map<String, ShardingXADataSource> cachedXADatasourceMap = getCachedShardingXADataSourceMap();
         assertThat(cachedXADatasourceMap.size(), is(2));
     }
@@ -125,7 +119,7 @@ public class XAShardingTransactionHandlerTest {
         DataSource dataSource = mock(DataSource.class);
         setCachedShardingXADataSourceMap("ds1");
         ShardingXADataSource shardingXADataSource = getCachedShardingXADataSourceMap().get("ds1");
-        xaShardingTransactionHandler.createConnection("ds1", dataSource);
+        xaShardingTransactionEngine.createConnection("ds1", dataSource);
         verify(shardingXADataSource).getConnectionFromOriginalDataSource();
     }
     
@@ -135,7 +129,7 @@ public class XAShardingTransactionHandlerTest {
         when(transaction.getStatus()).thenReturn(Status.STATUS_ACTIVE);
         DataSource dataSource = mock(DataSource.class);
         setCachedShardingXADataSourceMap("ds1");
-        Connection actual = xaShardingTransactionHandler.createConnection("ds1", dataSource);
+        Connection actual = xaShardingTransactionEngine.createConnection("ds1", dataSource);
         assertThat(actual, instanceOf(Connection.class));
         verify(transaction).enlistResource(any(XAResource.class));
     }
@@ -143,7 +137,7 @@ public class XAShardingTransactionHandlerTest {
     @Test
     public void assertClearTransactionalDataSource() {
         setCachedShardingXADataSourceMap("ds1");
-        xaShardingTransactionHandler.clearTransactionalResource();
+        xaShardingTransactionEngine.clearTransactionalResources();
         Map<String, ShardingXADataSource> cachedShardingXADataSourceMap = getCachedShardingXADataSourceMap();
         verify(xaTransactionManager).removeRecoveryResource(anyString(), any(XADataSource.class));
         assertThat(cachedShardingXADataSourceMap.size(), is(0));
@@ -152,16 +146,16 @@ public class XAShardingTransactionHandlerTest {
     @SneakyThrows
     @SuppressWarnings("unchecked")
     private Map<String, ShardingXADataSource> getCachedShardingXADataSourceMap() {
-        Field field = xaShardingTransactionHandler.getClass().getDeclaredField("cachedShardingXADataSourceMap");
+        Field field = xaShardingTransactionEngine.getClass().getDeclaredField("cachedShardingXADataSourceMap");
         field.setAccessible(true);
-        return (Map<String, ShardingXADataSource>) field.get(xaShardingTransactionHandler);
+        return (Map<String, ShardingXADataSource>) field.get(xaShardingTransactionEngine);
     }
     
     @SneakyThrows
     private void setCachedShardingXADataSourceMap(final String datasourceName) {
-        Field field = xaShardingTransactionHandler.getClass().getDeclaredField("cachedShardingXADataSourceMap");
+        Field field = xaShardingTransactionEngine.getClass().getDeclaredField("cachedShardingXADataSourceMap");
         field.setAccessible(true);
-        field.set(xaShardingTransactionHandler, createMockShardingXADataSourceMap(datasourceName));
+        field.set(xaShardingTransactionEngine, createMockShardingXADataSourceMap(datasourceName));
     }
     
     @SneakyThrows

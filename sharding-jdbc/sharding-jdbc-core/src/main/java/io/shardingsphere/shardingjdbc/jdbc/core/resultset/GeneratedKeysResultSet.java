@@ -160,12 +160,14 @@ public final class GeneratedKeysResultSet extends AbstractUnsupportedGeneratedKe
         return getDouble(1);
     }
     
+    @SuppressWarnings("deprecation")
     @Override
     public BigDecimal getBigDecimal(final int columnIndex, final int scale) {
         checkStateForGetData();
         return new BigDecimal(getString(columnIndex)).setScale(scale, BigDecimal.ROUND_HALF_UP);
     }
     
+    @SuppressWarnings("deprecation")
     @Override
     public BigDecimal getBigDecimal(final String columnLabel, final int scale) {
         return getBigDecimal(1, scale);

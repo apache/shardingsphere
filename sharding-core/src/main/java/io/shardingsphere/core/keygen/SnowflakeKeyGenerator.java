@@ -18,36 +18,39 @@
 package io.shardingsphere.core.keygen;
 
 import com.google.common.base.Preconditions;
+import lombok.Getter;
 import lombok.Setter;
 import lombok.SneakyThrows;
 
 import java.util.Calendar;
+import java.util.Properties;
 
 /**
- * Default distributed primary key generator.
+ * Snowflake distributed primary key generator.
  * 
  * <p>
  * Use snowflake algorithm. Length is 64 bit.
  * </p>
  * 
  * <pre>
- * 1bit   sign bit.
+ * 1bit sign bit.
  * 41bits timestamp offset from 2016.11.01(ShardingSphere distributed primary key published data) to now.
  * 10bits worker process id.
  * 12bits auto increment offset in one mills
  * </pre>
  * 
  * <p>
- * Call @{@code DefaultKeyGenerator.setWorkerId} to set worker id, default value is 0.
+ * Call @{@code SnowflakeKeyGenerator.setWorkerId} to set worker id, default value is 0.
  * </p>
  * 
  * <p>
- * Call @{@code DefaultKeyGenerator.setMaxTolerateTimeDifferenceMilliseconds} to set max tolerate time difference milliseconds, default value is 0.
+ * Call @{@code SnowflakeKeyGenerator.setMaxTolerateTimeDifferenceMilliseconds} to set max tolerate time difference milliseconds, default value is 0.
  * </p>
  * 
  * @author gaohongtao
+ * @author panjuan
  */
-public final class DefaultKeyGenerator implements KeyGenerator {
+public final class SnowflakeKeyGenerator implements KeyGenerator {
     
     public static final long EPOCH;
     
@@ -63,12 +66,16 @@ public final class DefaultKeyGenerator implements KeyGenerator {
     
     private static final long WORKER_ID_MAX_VALUE = 1L << WORKER_ID_BITS;
     
+    private static final long WORKER_ID = 0;
+    
+    private static final int MAX_TOLERATE_TIME_DIFFERENCE_MILLISECONDS = 10;
+    
     @Setter
     private static TimeService timeService = new TimeService();
     
-    private static long workerId;
-    
-    private static int maxTolerateTimeDifferenceMilliseconds = 10;
+    @Getter
+    @Setter
+    private Properties properties = new Properties();
     
     static {
         Calendar calendar = Calendar.getInstance();
@@ -86,23 +93,14 @@ public final class DefaultKeyGenerator implements KeyGenerator {
     
     private long lastMilliseconds;
     
-    /**
-     * Set work process id.
-     * 
-     * @param workerId work process id
-     */
-    public static void setWorkerId(final long workerId) {
-        Preconditions.checkArgument(workerId >= 0L && workerId < WORKER_ID_MAX_VALUE);
-        DefaultKeyGenerator.workerId = workerId;
+    private long getWorkerId() {
+        long result = Long.valueOf(properties.getProperty("worker.id", String.valueOf(WORKER_ID)));
+        Preconditions.checkArgument(result >= 0L && result < WORKER_ID_MAX_VALUE);
+        return result;
     }
     
-    /**
-     * Set max tolerate time difference milliseconds.
-     *
-     * @param maxTolerateTimeDifferenceMilliseconds max tolerate time difference milliseconds
-     */
-    public static void setMaxTolerateTimeDifferenceMilliseconds(final int maxTolerateTimeDifferenceMilliseconds) {
-        DefaultKeyGenerator.maxTolerateTimeDifferenceMilliseconds = maxTolerateTimeDifferenceMilliseconds;
+    private int getMaxTolerateTimeDifferenceMilliseconds() {
+        return Integer.valueOf(properties.getProperty("max.tolerate.time.difference.milliseconds", String.valueOf(MAX_TOLERATE_TIME_DIFFERENCE_MILLISECONDS)));
     }
     
     /**
@@ -125,7 +123,7 @@ public final class DefaultKeyGenerator implements KeyGenerator {
             sequence = sequenceOffset;
         }
         lastMilliseconds = currentMilliseconds;
-        return ((currentMilliseconds - EPOCH) << TIMESTAMP_LEFT_SHIFT_BITS) | (workerId << WORKER_ID_LEFT_SHIFT_BITS) | sequence;
+        return ((currentMilliseconds - EPOCH) << TIMESTAMP_LEFT_SHIFT_BITS) | (getWorkerId() << WORKER_ID_LEFT_SHIFT_BITS) | sequence;
     }
     
     @SneakyThrows
@@ -134,7 +132,7 @@ public final class DefaultKeyGenerator implements KeyGenerator {
             return false;
         }
         long timeDifferenceMilliseconds = lastMilliseconds - currentMilliseconds;
-        Preconditions.checkState(timeDifferenceMilliseconds < maxTolerateTimeDifferenceMilliseconds, 
+        Preconditions.checkState(timeDifferenceMilliseconds < getMaxTolerateTimeDifferenceMilliseconds(), 
                 "Clock is moving backwards, last time is %d milliseconds, current time is %d milliseconds", lastMilliseconds, currentMilliseconds);
         Thread.sleep(timeDifferenceMilliseconds);
         return true;

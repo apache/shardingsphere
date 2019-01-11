@@ -17,7 +17,6 @@
 
 package io.shardingsphere.core.parsing.parser.context.condition;
 
-import com.google.common.base.Optional;
 import io.shardingsphere.core.parsing.parser.clause.condition.NullCondition;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
@@ -68,19 +67,5 @@ public final class OrCondition {
             }
         }
         return this;
-    }
-    
-    /**
-     * Find condition via column.
-     *
-     * @param column column
-     * @param index index of and conditions
-     * @return found condition
-     * @deprecated only test call
-     */
-    @Deprecated
-    public Optional<Condition> find(final Column column, final int index) {
-        AndCondition andCondition = andConditions.get(index);
-        return null != andCondition ? andCondition.find(column) : Optional.<Condition>absent();
     }
 }
