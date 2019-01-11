@@ -29,7 +29,7 @@ import org.springframework.boot.autoconfigure.SpringBootApplication;
 public class Bootstrap {
     
     /**
-     * Sharding ui main entrance.
+     * Sharding UI main entrance.
      *
      * @param args startup arguments
      */

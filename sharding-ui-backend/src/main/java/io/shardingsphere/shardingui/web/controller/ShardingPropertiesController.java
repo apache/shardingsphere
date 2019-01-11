@@ -29,7 +29,7 @@ import org.springframework.web.bind.annotation.RestController;
 import java.util.Map;
 
 /**
- * RESTful API of sSharding properties.
+ * RESTful API of sharding properties.
  * 
  * @author chenqingyang
  */

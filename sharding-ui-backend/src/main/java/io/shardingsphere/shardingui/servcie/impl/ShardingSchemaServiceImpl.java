@@ -89,5 +89,4 @@ public final class ShardingSchemaServiceImpl implements ShardingSchemaService {
             throw new IllegalArgumentException("data source configuration is invalid.");
         }
     }
-    
 }
