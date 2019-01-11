@@ -133,7 +133,7 @@ partitionDefinitions
     
 partitionDefinition
     : PARTITION partitionName
-    (VALUES (lessThanPartition | IN valueListWithParen))?
+    (VALUES (lessThanPartition | IN assignmentValueList))?
     partitionDefinitionOption*
     (LP_ subpartitionDefinition (COMMA subpartitionDefinition)* RP_)?
     ;
@@ -149,7 +149,7 @@ partitionDefinitionOption
     ;
     
 lessThanPartition
-    : LESS THAN (LP_ (expr | valueList) RP_ | MAXVALUE)
+    : LESS THAN (LP_ (expr | assignmentValues) RP_ | MAXVALUE)
     ;
     
 subpartitionDefinition

@@ -133,7 +133,22 @@ public enum RuleName {
     
     DELETE("Delete"),
     
-    DELETE_CLAUSE("DeleteClause");
+    DELETE_CLAUSE("DeleteClause"),
+    
+    COLUMN_CLAUSE("ColumnClause"),
+    
+    SET_CLAUSE("SetClause"),
+    
+    VALUE_CLAUSE("ValueClause"),
+    
+    ASSIGNMENT_VALUE_LIST("AssignmentValueList"),
+    
+    ASSIGNMENT_VALUE("AssignmentValue"),
+    
+    ASSIGNMENT_LIST("AssignmentList"),
+    
+    ASSIGNMENT("Assignment")
+    ;
     
     private final String name;
     

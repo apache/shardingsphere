@@ -51,19 +51,19 @@ indexAndKey
     ;
     
 indexOption
-    : KEY_BLOCK_SIZE EQ_? value | indexType | WITH PARSER parserName | COMMENT STRING
+    : KEY_BLOCK_SIZE EQ_? assignmentValue | indexType | WITH PARSER parserName | COMMENT STRING
     ;
     
-valueListWithParen
-    : LP_ valueList RP_
+assignmentValueList
+    : LP_ assignmentValues RP_
     ;
     
-valueList
-    : value (COMMA value)*
+assignmentValues
+    : assignmentValue (COMMA assignmentValue)*
     ;
     
-value
-    : DEFAULT | MAXVALUE | expr | exprsWithParen
+assignmentValue
+    : DEFAULT | MAXVALUE | expr
     ;
     
 functionCall
@@ -79,9 +79,9 @@ groupConcat
 windowFunction
     : ID exprsWithParen overClause
     ;
+    
 overClause
-    : OVER LP_ windowSpec RP_ 
-    | OVER ID
+    : OVER LP_ windowSpec RP_ | OVER ID
     ;
     
 windowSpec
@@ -129,5 +129,5 @@ assignmentList
     ;
 
 assignment
-    : columnName EQ_ value
+    : columnName EQ_ assignmentValue
     ;

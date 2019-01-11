@@ -31,7 +31,7 @@ limitClause
     ;
     
 partitionClause 
-    : PARTITION idList
+    : PARTITION columnList
     ;
     
 selectExprs

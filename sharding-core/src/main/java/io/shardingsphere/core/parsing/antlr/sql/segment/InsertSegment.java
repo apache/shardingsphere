@@ -15,29 +15,45 @@
  * </p>
  */
 
-package io.shardingsphere.core.parsing.antlr.sql.segment.expr;
+package io.shardingsphere.core.parsing.antlr.sql.segment;
 
+import io.shardingsphere.core.parsing.antlr.sql.segment.column.ColumnSegment;
 import lombok.Getter;
 import lombok.RequiredArgsConstructor;
 import lombok.Setter;
 
+import java.util.LinkedList;
+import java.util.List;
+
 /**
- * Common expression segment.
- * 
+ * Insert segment.
+ *
  * @author duhongjun
  */
 @RequiredArgsConstructor
 @Getter
-@Setter
-public final class CommonExpressionSegment extends ExpressionWithAliasSegment {
+public class InsertSegment implements SQLSegment {
     
-    private final int startPosition;
+    private List<ColumnSegment> columns = new LinkedList<>();
     
-    private final int endPosition;
+    private List<InsertValuesSegment> valuesList = new LinkedList<>();
     
-    private int index = -1;
+    @Setter
+    private boolean values;
     
-    private Number value = -1;
+    @Setter
+    private int insertValueStartPosition = -1;
     
-    private boolean text = false;
+    @Setter
+    private int columnClauseStartPosition;
+    
+    @Setter
+    private int columnsListLastPosition;
+    
+    @Setter
+    private int generateKeyColumnIndex = -1;
+    
+    @Setter
+    private int insertValuesListLastPosition;
+    
 }

@@ -50,7 +50,7 @@ public final class FromWhereExtractor extends AbstractFromWhereExtractor {
             return Optional.absent();
         }
         for (ParserRuleContext each : tableReferenceNodes) {
-            extractTableRefrence(fromWhereSegment, each, questionNodeIndexMap);
+            extractTableReference(fromWhereSegment, each, questionNodeIndexMap);
         }
         return ExtractorUtils.findFirstChildNodeNoneRecursive(fromNode.get().getParent(), RuleName.WHERE_CLAUSE);
     }

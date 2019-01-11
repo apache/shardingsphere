@@ -7,4 +7,5 @@
     <extractor-rule id="setAutoCommit" extractor-class="io.shardingsphere.core.parsing.antlr.extractor.impl.SetAutoCommitExtractor" />
     <extractor-rule id="deleteFromWhere" extractor-class="io.shardingsphere.core.parsing.antlr.extractor.impl.DeleteFromWhereExtractor" />
     <extractor-rule id="updateWhere" extractor-class="io.shardingsphere.core.parsing.antlr.extractor.impl.UpdateWhereExtractor" />
+    <extractor-rule id="insert" extractor-class="io.shardingsphere.core.parsing.antlr.extractor.impl.InsertExtractor" />
 </extractor-rule-definition>
