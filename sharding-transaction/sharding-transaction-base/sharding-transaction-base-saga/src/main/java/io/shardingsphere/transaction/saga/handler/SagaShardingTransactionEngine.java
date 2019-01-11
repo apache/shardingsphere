@@ -19,13 +19,14 @@ package io.shardingsphere.transaction.saga.handler;
 
 import io.shardingsphere.core.constant.DatabaseType;
 import io.shardingsphere.transaction.api.TransactionType;
-import io.shardingsphere.transaction.core.TransactionOperationType;
-import io.shardingsphere.transaction.core.handler.ShardingTransactionHandlerAdapter;
-import io.shardingsphere.transaction.core.manager.ShardingTransactionManager;
 import io.shardingsphere.transaction.saga.manager.SagaTransactionManager;
+import io.shardingsphere.transaction.spi.ShardingTransactionEngine;
 import lombok.extern.slf4j.Slf4j;
 
 import javax.sql.DataSource;
+
+import java.sql.Connection;
+import java.sql.SQLException;
 import java.util.Map;
 
 /**
@@ -34,25 +35,9 @@ import java.util.Map;
  * @author yangyi
  */
 @Slf4j
-public final class SagaShardingTransactionHandler extends ShardingTransactionHandlerAdapter {
+public final class SagaShardingTransactionEngine implements ShardingTransactionEngine {
     
     private final SagaTransactionManager transactionManager = SagaTransactionManager.getInstance();
-    
-    @Override
-    public void doInTransaction(final TransactionOperationType transactionOperationType) {
-        switch (transactionOperationType) {
-            case CLOSE:
-                transactionManager.cleanTransaction();
-                break;
-            default:
-                super.doInTransaction(transactionOperationType);
-        }
-    }
-    
-    @Override
-    public ShardingTransactionManager getShardingTransactionManager() {
-        return transactionManager;
-    }
     
     @Override
     public TransactionType getTransactionType() {
@@ -65,7 +50,27 @@ public final class SagaShardingTransactionHandler extends ShardingTransactionHan
     }
     
     @Override
-    public void clearTransactionalResource(final Map<String, DataSource> dataSourceMap) {
-        transactionManager.getResourceManager().releaseDataSourceMap(dataSourceMap);
+    public void clearTransactionalResources() {
+        transactionManager.getResourceManager().releaseDataSourceMap();
+    }
+    
+    @Override
+    public Connection createConnection(final String dataSourceName, final DataSource dataSource) throws SQLException {
+        return dataSource.getConnection();
+    }
+    
+    @Override
+    public void begin() {
+        transactionManager.begin();
+    }
+    
+    @Override
+    public void commit() {
+        transactionManager.commit();
+    }
+    
+    @Override
+    public void rollback() {
+        transactionManager.rollback();
     }
 }

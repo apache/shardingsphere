@@ -66,14 +66,7 @@ public class SagaResourceManagerTest {
         dataSourceMap.put("ds3", mock(DataSource.class));
         resourceManager.registerDataSourceMap(dataSourceMap);
         assertEquals(resourceManager.getDataSourceMap().size(), 3);
-        dataSourceMap = new HashMap<>();
-        dataSourceMap.put("ds1", mock(DataSource.class));
-        dataSourceMap.put("ds2", mock(DataSource.class));
-        resourceManager.releaseDataSourceMap(dataSourceMap);
-        assertEquals(resourceManager.getDataSourceMap().size(), 1);
-        dataSourceMap = new HashMap<>();
-        dataSourceMap.put("ds3", mock(DataSource.class));
-        resourceManager.releaseDataSourceMap(dataSourceMap);
+        resourceManager.releaseDataSourceMap();
         assertEquals(resourceManager.getDataSourceMap().size(), 0);
     }
 }

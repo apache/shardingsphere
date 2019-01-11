@@ -240,6 +240,9 @@ public abstract class AbstractConnectionAdapter extends AbstractUnsupportedOpera
         HintManagerHolder.clear();
         MasterVisitedManager.clear();
         TransactionTypeHolder.clear();
+        if (null != shardingTransactionEngine) {
+            shardingTransactionEngine.rollback();
+        }
         int connectionSize = cachedConnections.size();
         try {
             forceExecuteTemplateForClose.execute(cachedConnections.entries(), new ForceExecuteCallback<Entry<String, Connection>>() {
@@ -252,9 +255,6 @@ public abstract class AbstractConnectionAdapter extends AbstractUnsupportedOpera
         } finally {
             cachedConnections.clear();
             rootInvokeHook.finish(connectionSize);
-        }
-        if (null != shardingTransactionHandler) {
-            shardingTransactionHandler.doInTransaction(TransactionOperationType.CLOSE);
         }
     }
     

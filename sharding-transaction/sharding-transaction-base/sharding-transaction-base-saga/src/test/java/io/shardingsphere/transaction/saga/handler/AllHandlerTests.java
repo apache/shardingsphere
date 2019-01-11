@@ -23,7 +23,7 @@ import org.junit.runners.Suite.SuiteClasses;
 
 @RunWith(Suite.class)
 @SuiteClasses({
-        SagaShardingTransactionHandlerTest.class
+        SagaShardingTransactionEngineTest.class
 })
 public class AllHandlerTests {
 }

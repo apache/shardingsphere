@@ -93,7 +93,6 @@ public abstract class AbstractDataSourceAdapter extends AbstractUnsupportedOpera
     
     @Override
     public void close() {
-        ShardingTransactionHandlerRegistry.clearTransactionResource(dataSourceMap);
         for (DataSource each : dataSourceMap.values()) {
             try {
                 ReflectiveUtil.findMethod(each, "close").invoke(each);

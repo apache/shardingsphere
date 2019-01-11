@@ -26,6 +26,7 @@ import io.shardingsphere.core.constant.DatabaseType;
 import io.shardingsphere.core.rule.ShardingRule;
 import io.shardingsphere.shardingjdbc.api.MasterSlaveDataSourceFactory;
 import io.shardingsphere.shardingjdbc.jdbc.core.connection.ShardingConnection;
+import io.shardingsphere.shardingjdbc.jdbc.core.fixture.BASEShardingTransactionEngineFixture;
 import io.shardingsphere.shardingjdbc.jdbc.core.fixture.XAShardingTransactionEngineFixture;
 import io.shardingsphere.transaction.api.TransactionType;
 import io.shardingsphere.transaction.api.TransactionTypeHolder;
@@ -48,7 +49,6 @@ import java.util.Properties;
 
 import static org.hamcrest.CoreMatchers.instanceOf;
 import static org.hamcrest.CoreMatchers.is;
-import static org.junit.Assert.assertNotNull;
 import static org.junit.Assert.assertNull;
 import static org.junit.Assert.assertThat;
 import static org.mockito.Mockito.atLeast;
@@ -199,7 +199,7 @@ public final class ShardingDataSourceTest {
         ShardingConnection shardingConnection = shardingDataSource.getConnection();
         assertThat(shardingConnection.getDataSourceMap().size(), is(1));
         assertThat(shardingConnection.getTransactionType(), is(TransactionType.BASE));
-        assertThat(shardingConnection.getShardingTransactionHandler(), instanceOf(FixedBaseShardingTransactionHandler.class));
+        assertThat(shardingConnection.getShardingTransactionEngine(), instanceOf(BASEShardingTransactionEngineFixture.class));
     }
     
     @Test
@@ -212,14 +212,13 @@ public final class ShardingDataSourceTest {
         ShardingConnection shardingConnection = shardingDataSource.getConnection();
         assertThat(shardingConnection.getDataSourceMap().size(), is(1));
         assertThat(shardingConnection.getTransactionType(), is(TransactionType.BASE));
-        assertThat(shardingConnection.getShardingTransactionHandler(), instanceOf(FixedBaseShardingTransactionHandler.class));
-        
+        assertThat(shardingConnection.getShardingTransactionEngine(), instanceOf(BASEShardingTransactionEngineFixture.class));
         TransactionTypeHolder.set(TransactionType.LOCAL);
         shardingConnection = shardingDataSource.getConnection();
         assertThat(shardingConnection.getConnection("ds"), is(dataSource.getConnection()));
         assertThat(shardingConnection.getDataSourceMap(), is(dataSourceMap));
         assertThat(shardingConnection.getTransactionType(), is(TransactionType.LOCAL));
-        assertNull(shardingConnection.getShardingTransactionHandler());
+        assertNull(shardingConnection.getShardingTransactionEngine());
     }
     
     private ShardingDataSource createShardingDataSource(final Map<String, DataSource> dataSourceMap) throws SQLException {

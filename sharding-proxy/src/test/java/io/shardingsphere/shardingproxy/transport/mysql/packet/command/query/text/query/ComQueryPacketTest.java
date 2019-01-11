@@ -23,7 +23,6 @@ import io.shardingsphere.shardingproxy.backend.BackendHandler;
 import io.shardingsphere.shardingproxy.backend.ResultPacket;
 import io.shardingsphere.shardingproxy.backend.jdbc.connection.BackendConnection;
 import io.shardingsphere.shardingproxy.backend.jdbc.connection.ConnectionStatus;
-import io.shardingsphere.shardingproxy.backend.jdbc.datasource.JDBCBackendDataSource;
 import io.shardingsphere.shardingproxy.runtime.GlobalRegistry;
 import io.shardingsphere.shardingproxy.runtime.schema.ShardingSchema;
 import io.shardingsphere.shardingproxy.transport.common.packet.DatabasePacket;
@@ -159,28 +158,6 @@ public final class ComQueryPacketTest {
         assertTrue(actual.isPresent());
         assertOKPacket(actual.get());
         assertTrue(ShardingTransactionEngineFixture.getInvocations().contains(TransactionOperationType.COMMIT));
-    }
-    
-    @Test
-    public void assertExecuteTCLWithBaseTransaction() {
-        backendConnection.setTransactionType(TransactionType.BASE);
-        when(payload.readStringEOF()).thenReturn("BEGIN");
-        ComQueryPacket packet = new ComQueryPacket(1, payload, backendConnection);
-        Optional<CommandResponsePackets> actual = packet.execute();
-        assertTrue(actual.isPresent());
-        assertOKPacket(actual.get());
-        assertThat(FixedBaseShardingTransactionHandler.getInvokes().get("begin"), is(TransactionOperationType.BEGIN));
-    }
-    
-    @Test
-    public void assertExecuteCommitWithBaseTransaction() {
-        backendConnection.setTransactionType(TransactionType.BASE);
-        when(payload.readStringEOF()).thenReturn("COMMIT");
-        ComQueryPacket packet = new ComQueryPacket(1, payload, backendConnection);
-        Optional<CommandResponsePackets> actual = packet.execute();
-        assertTrue(actual.isPresent());
-        assertOKPacket(actual.get());
-        assertThat(FixedBaseShardingTransactionHandler.getInvokes().get("commit"), is(TransactionOperationType.COMMIT));
     }
     
     private void assertOKPacket(final CommandResponsePackets actual) {

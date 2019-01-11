@@ -19,11 +19,8 @@ package io.shardingsphere.transaction.saga.handler;
 
 import io.shardingsphere.core.constant.DatabaseType;
 import io.shardingsphere.transaction.api.TransactionType;
-import io.shardingsphere.transaction.core.TransactionOperationType;
-import io.shardingsphere.transaction.core.manager.ShardingTransactionManager;
 import io.shardingsphere.transaction.saga.manager.SagaResourceManager;
 import io.shardingsphere.transaction.saga.manager.SagaTransactionManager;
-import org.hamcrest.CoreMatchers;
 import org.junit.Before;
 import org.junit.Test;
 import org.junit.runner.RunWith;
@@ -42,9 +39,9 @@ import static org.mockito.Mockito.verify;
 import static org.mockito.Mockito.when;
 
 @RunWith(MockitoJUnitRunner.class)
-public class SagaShardingTransactionHandlerTest {
+public class SagaShardingTransactionEngineTest {
     
-    private final SagaShardingTransactionHandler handler = new SagaShardingTransactionHandler();
+    private final SagaShardingTransactionEngine handler = new SagaShardingTransactionEngine();
     
     @Mock
     private SagaTransactionManager sagaTransactionManager;
@@ -54,32 +51,15 @@ public class SagaShardingTransactionHandlerTest {
     
     @Before
     public void setUp() throws NoSuchFieldException, IllegalAccessException, SQLException {
-        Field transactionManagerField = SagaShardingTransactionHandler.class.getDeclaredField("transactionManager");
+        Field transactionManagerField = SagaShardingTransactionEngine.class.getDeclaredField("transactionManager");
         transactionManagerField.setAccessible(true);
         transactionManagerField.set(handler, sagaTransactionManager);
         when(sagaTransactionManager.getResourceManager()).thenReturn(sagaResourceManager);
     }
     
     @Test
-    public void assertDoInTransaction() {
-        handler.doInTransaction(TransactionOperationType.BEGIN);
-        verify(sagaTransactionManager).begin();
-        handler.doInTransaction(TransactionOperationType.ROLLBACK);
-        verify(sagaTransactionManager).rollback();
-        handler.doInTransaction(TransactionOperationType.COMMIT);
-        verify(sagaTransactionManager).commit();
-        handler.doInTransaction(TransactionOperationType.CLOSE);
-        verify(sagaTransactionManager).cleanTransaction();
-    }
-    
-    @Test
     public void assertGetTransactionType() {
         assertThat(handler.getTransactionType(), equalTo(TransactionType.BASE));
-    }
-    
-    @Test
-    public void assertGetTransactionManager() {
-        assertThat(handler.getShardingTransactionManager(), CoreMatchers.<ShardingTransactionManager>equalTo(sagaTransactionManager));
     }
     
     @Test
@@ -90,9 +70,31 @@ public class SagaShardingTransactionHandlerTest {
     }
     
     @Test
-    public void assertClearTransactionalResource() {
-        Map<String, DataSource> dataSourceMap = new HashMap<>();
-        handler.clearTransactionalResource(dataSourceMap);
-        verify(sagaResourceManager).releaseDataSourceMap(dataSourceMap);
+    public void assertClearTransactionalResources() {
+        handler.clearTransactionalResources();
+        verify(sagaResourceManager).releaseDataSourceMap();
+    }
+    
+    @Test
+    public void assertGetConnection() {
+    
+    }
+    
+    @Test
+    public void assertBegin() {
+        handler.begin();
+        verify(sagaTransactionManager).begin();
+    }
+    
+    @Test
+    public void assertCommit() {
+        handler.commit();
+        verify(sagaTransactionManager).commit();
+    }
+    
+    @Test
+    public void assertRollback() {
+        handler.rollback();
+        verify(sagaTransactionManager).rollback();
     }
 }

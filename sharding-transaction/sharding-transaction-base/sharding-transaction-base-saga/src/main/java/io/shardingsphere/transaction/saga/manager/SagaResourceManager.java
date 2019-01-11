@@ -60,13 +60,9 @@ public class SagaResourceManager {
     
     /**
      * Release data source map.
-     *
-     * @param removedDataSourceMap need to release data source map
      */
-    public void releaseDataSourceMap(final Map<String, DataSource> removedDataSourceMap) {
-        for (String each : removedDataSourceMap.keySet()) {
-            dataSourceMap.remove(each);
-        }
+    public void releaseDataSourceMap() {
+        dataSourceMap.clear();
     }
     
     private boolean containDataSourceName(final Map<String, DataSource> newDataSourceMap) {

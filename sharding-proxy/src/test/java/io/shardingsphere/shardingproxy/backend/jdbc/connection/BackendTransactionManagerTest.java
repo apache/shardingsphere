@@ -17,9 +17,6 @@
 
 package io.shardingsphere.shardingproxy.backend.jdbc.connection;
 
-import io.shardingsphere.shardingproxy.backend.jdbc.datasource.JDBCBackendDataSource;
-import io.shardingsphere.shardingproxy.runtime.GlobalRegistry;
-import io.shardingsphere.shardingproxy.runtime.schema.LogicSchema;
 import io.shardingsphere.transaction.api.TransactionType;
 import org.junit.Test;
 
@@ -31,9 +28,7 @@ import static org.hamcrest.CoreMatchers.instanceOf;
 import static org.hamcrest.CoreMatchers.is;
 import static org.junit.Assert.assertThat;
 import static org.junit.Assert.assertTrue;
-import static org.mockito.Mockito.mock;
 import static org.mockito.Mockito.verify;
-import static org.mockito.Mockito.when;
 
 public class BackendTransactionManagerTest {
     
@@ -114,34 +109,6 @@ public class BackendTransactionManagerTest {
         assertTrue(backendConnection.getMethodInvocations().isEmpty());
         assertThat(backendConnection.getStateHandler().getStatus(), is(ConnectionStatus.TRANSACTION));
         backendTransactionManager.rollback();
-        assertThat(backendConnection.getStateHandler().getStatus(), is(ConnectionStatus.TERMINATED));
-    }
-    
-    @Test
-    public void assertBASETransactionCommit() throws SQLException {
-        LogicSchema logicSchema = mock(LogicSchema.class);
-        when(logicSchema.getBackendDataSource()).thenReturn(mock(JDBCBackendDataSource.class));
-        GlobalRegistry.getInstance().getLogicSchemas().put("schema", logicSchema);
-        backendConnection.setCurrentSchema("schema");
-        backendConnection.setTransactionType(TransactionType.BASE);
-        backendTransactionManager.doInTransaction(TransactionOperationType.BEGIN);
-        assertTrue(backendConnection.getMethodInvocations().isEmpty());
-        assertThat(backendConnection.getStateHandler().getStatus(), is(ConnectionStatus.TRANSACTION));
-        backendTransactionManager.doInTransaction(TransactionOperationType.COMMIT);
-        assertThat(backendConnection.getStateHandler().getStatus(), is(ConnectionStatus.TERMINATED));
-    }
-    
-    @Test
-    public void assertBASETransactionRollback() throws SQLException {
-        LogicSchema logicSchema = mock(LogicSchema.class);
-        when(logicSchema.getBackendDataSource()).thenReturn(mock(JDBCBackendDataSource.class));
-        GlobalRegistry.getInstance().getLogicSchemas().put("schema", logicSchema);
-        backendConnection.setCurrentSchema("schema");
-        backendConnection.setTransactionType(TransactionType.BASE);
-        backendTransactionManager.doInTransaction(TransactionOperationType.BEGIN);
-        assertTrue(backendConnection.getMethodInvocations().isEmpty());
-        assertThat(backendConnection.getStateHandler().getStatus(), is(ConnectionStatus.TRANSACTION));
-        backendTransactionManager.doInTransaction(TransactionOperationType.ROLLBACK);
         assertThat(backendConnection.getStateHandler().getStatus(), is(ConnectionStatus.TERMINATED));
     }
 }
