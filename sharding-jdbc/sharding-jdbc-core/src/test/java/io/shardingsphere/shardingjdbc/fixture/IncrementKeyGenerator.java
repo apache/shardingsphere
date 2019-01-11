@@ -17,7 +17,7 @@
 
 package io.shardingsphere.shardingjdbc.fixture;
 
-import io.shardingsphere.core.keygen.KeyGenerator;
+import io.shardingsphere.core.keygen.generator.KeyGenerator;
 import lombok.Getter;
 import lombok.Setter;
 
