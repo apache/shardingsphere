@@ -18,12 +18,14 @@
 package io.shardingsphere.transaction.xa.convert;
 
 import io.shardingsphere.transaction.xa.convert.swap.DataSourceSwapperRegistryTest;
+import io.shardingsphere.transaction.xa.jta.datasource.XADataSourceFactoryTest;
 import io.shardingsphere.transaction.xa.jta.datasource.XAPropertiesFactoryTest;
 import org.junit.runner.RunWith;
 import org.junit.runners.Suite;
 
 @RunWith(Suite.class)
 @Suite.SuiteClasses({
+        XADataSourceFactoryTest.class, 
         XAPropertiesFactoryTest.class, 
         DataSourceSwapperRegistryTest.class
 })

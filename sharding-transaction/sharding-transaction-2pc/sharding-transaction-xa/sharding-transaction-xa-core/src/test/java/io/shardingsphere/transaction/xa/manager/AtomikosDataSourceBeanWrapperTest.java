@@ -21,7 +21,7 @@ import com.atomikos.beans.PropertyException;
 import com.atomikos.jdbc.AtomikosDataSourceBean;
 import io.shardingsphere.core.constant.DatabaseType;
 import io.shardingsphere.core.rule.DataSourceParameter;
-import org.h2.jdbcx.JdbcDataSource;
+import io.shardingsphere.transaction.xa.jta.datasource.XADataSourceFactory;
 import org.hamcrest.Matchers;
 import org.hamcrest.core.Is;
 import org.junit.Before;
@@ -34,7 +34,7 @@ import static org.junit.Assert.assertThat;
 
 public class AtomikosDataSourceBeanWrapperTest {
     
-    private final XADataSource xaDataSource = new JdbcDataSource();
+    private final XADataSource xaDataSource = XADataSourceFactory.build(DatabaseType.H2);
     
     private final DataSourceParameter parameter = new DataSourceParameter();
     
