@@ -17,6 +17,7 @@
 
 package io.shardingsphere.core.keygen;
 
+import io.shardingsphere.core.keygen.generator.KeyGenerator;
 import lombok.AccessLevel;
 import lombok.NoArgsConstructor;
 

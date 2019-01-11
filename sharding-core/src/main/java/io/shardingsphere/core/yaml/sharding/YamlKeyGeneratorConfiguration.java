@@ -19,7 +19,7 @@ package io.shardingsphere.core.yaml.sharding;
 
 import com.google.common.base.Strings;
 import io.shardingsphere.core.exception.ShardingConfigurationException;
-import io.shardingsphere.core.keygen.KeyGenerator;
+import io.shardingsphere.core.keygen.generator.KeyGenerator;
 import io.shardingsphere.core.keygen.KeyGeneratorFactory;
 import io.shardingsphere.core.keygen.KeyGeneratorType;
 import lombok.Getter;

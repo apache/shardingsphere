@@ -18,6 +18,7 @@
 package io.shardingsphere.core.keygen;
 
 import com.google.common.base.Preconditions;
+import io.shardingsphere.core.keygen.generator.KeyGenerator;
 import lombok.Getter;
 import lombok.Setter;
 import lombok.SneakyThrows;

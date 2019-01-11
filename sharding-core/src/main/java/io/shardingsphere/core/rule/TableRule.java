@@ -20,7 +20,7 @@ package io.shardingsphere.core.rule;
 import com.google.common.base.Preconditions;
 import io.shardingsphere.api.config.rule.TableRuleConfiguration;
 import io.shardingsphere.core.exception.ShardingException;
-import io.shardingsphere.core.keygen.KeyGenerator;
+import io.shardingsphere.core.keygen.generator.KeyGenerator;
 import io.shardingsphere.core.routing.strategy.ShardingStrategy;
 import io.shardingsphere.core.routing.strategy.ShardingStrategyFactory;
 import io.shardingsphere.core.util.InlineExpressionParser;
