@@ -147,7 +147,9 @@ public enum RuleName {
     
     ASSIGNMENT_LIST("AssignmentList"),
     
-    ASSIGNMENT("Assignment")
+    ASSIGNMENT("Assignment"),
+    
+    ON_DUPLICATE_CLAUSE("OnDuplicateClause")
     ;
     
     private final String name;

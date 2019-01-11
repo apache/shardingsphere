@@ -17,16 +17,8 @@
 
 package io.shardingsphere.core.parsing.antlr.extractor.impl;
 
-import java.util.Collection;
-import java.util.HashMap;
-import java.util.Map;
-
-import org.antlr.v4.runtime.ParserRuleContext;
-import org.antlr.v4.runtime.tree.TerminalNode;
-
 import com.google.common.base.Optional;
 import com.google.common.base.Preconditions;
-
 import io.shardingsphere.core.parsing.antlr.extractor.OptionalSQLSegmentExtractor;
 import io.shardingsphere.core.parsing.antlr.extractor.util.ExtractorUtils;
 import io.shardingsphere.core.parsing.antlr.extractor.util.RuleName;
@@ -34,6 +26,12 @@ import io.shardingsphere.core.parsing.antlr.sql.segment.FromWhereSegment;
 import io.shardingsphere.core.parsing.antlr.sql.segment.condition.OrConditionSegment;
 import io.shardingsphere.core.parsing.antlr.sql.segment.table.TableJoinSegment;
 import io.shardingsphere.core.parsing.antlr.sql.segment.table.TableSegment;
+import org.antlr.v4.runtime.ParserRuleContext;
+import org.antlr.v4.runtime.tree.TerminalNode;
+
+import java.util.Collection;
+import java.util.HashMap;
+import java.util.Map;
 
 /**
  * Abstract from where extractor.
@@ -62,11 +60,10 @@ public abstract class AbstractFromWhereExtractor implements OptionalSQLSegmentEx
         FromWhereSegment result = new FromWhereSegment();
         Map<ParserRuleContext, Integer> questionNodeIndexMap = getPlaceholderAndNodeIndexMap(result, rootNode);
         Optional<ParserRuleContext> whereNode = extractTable(result, ancestorNode, questionNodeIndexMap);
-        if (!whereNode.isPresent()) {
-            return Optional.absent();
+        if (whereNode.isPresent()) {
+            predicateSegmentExtractor = new PredicateExtractor(result.getTableAliases());
+            extractAndFillWhere(result, questionNodeIndexMap, whereNode.get());
         }
-        predicateSegmentExtractor = new PredicateExtractor(result.getTableAliases());
-        extractAndFillWhere(result, questionNodeIndexMap, whereNode.get());
         return Optional.of(result);
     }
     

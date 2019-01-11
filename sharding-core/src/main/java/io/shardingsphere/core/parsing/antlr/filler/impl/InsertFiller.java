@@ -25,6 +25,7 @@ import io.shardingsphere.core.parsing.antlr.sql.segment.InsertValuesSegment;
 import io.shardingsphere.core.parsing.antlr.sql.segment.column.ColumnSegment;
 import io.shardingsphere.core.parsing.antlr.sql.segment.expr.CommonExpressionSegment;
 import io.shardingsphere.core.parsing.lexer.token.DefaultKeyword;
+import io.shardingsphere.core.parsing.lexer.token.Literals;
 import io.shardingsphere.core.parsing.parser.context.condition.AndCondition;
 import io.shardingsphere.core.parsing.parser.context.condition.Column;
 import io.shardingsphere.core.parsing.parser.context.condition.GeneratedKeyCondition;
@@ -37,6 +38,7 @@ import io.shardingsphere.core.parsing.parser.token.InsertValuesToken;
 import io.shardingsphere.core.parsing.parser.token.ItemsToken;
 import io.shardingsphere.core.parsing.parser.token.TableToken;
 import io.shardingsphere.core.rule.ShardingRule;
+import io.shardingsphere.core.util.SQLUtil;
 
 import java.util.Iterator;
 import java.util.List;
@@ -57,6 +59,7 @@ public class InsertFiller implements SQLStatementFiller<InsertSegment> {
         insertStatement.setInsertValuesListLastPosition(sqlSegment.getInsertValuesListLastPosition());
         insertStatement.getSQLTokens().add(new InsertValuesToken(sqlSegment.getInsertValueStartPosition(), insertStatement.getTables().getSingleTableName()));
         processGeneratedKey(shardingRule, insertStatement);
+        processDuplicateKey(shardingRule, sqlSegment, sqlStatement.getTables().getSingleTableName());
     }
     
     private void createColumn(final InsertSegment sqlSegment, final InsertStatement insertStatement, final ShardingRule shardingRule, final ShardingTableMetaData shardingTableMetaData) {
@@ -177,6 +180,15 @@ public class InsertFiller implements SQLStatementFiller<InsertSegment> {
                 ItemsToken columnsToken = new ItemsToken(insertStatement.getColumnsListLastPosition());
                 columnsToken.getItems().add(generateKeyColumn.get().getName());
                 insertStatement.addSQLToken(columnsToken);
+            }
+        }
+    }
+    
+    private void processDuplicateKey(final ShardingRule shardingRule, final InsertSegment insertSegment, final String tableName) {
+        for (String each : insertSegment.getDuplicateKeyColumns()) {
+            if (shardingRule.isShardingColumn(new Column(SQLUtil.getExactlyValue(each), tableName))) {
+                throw new SQLParsingException("INSERT INTO .... ON DUPLICATE KEY UPDATE can not support on sharding column, token is '%s', literals is '%s'.",
+                        Literals.IDENTIFIER, each);
             }
         }
     }

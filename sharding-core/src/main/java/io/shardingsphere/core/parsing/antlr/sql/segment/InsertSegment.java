@@ -56,4 +56,6 @@ public class InsertSegment implements SQLSegment {
     @Setter
     private int insertValuesListLastPosition;
     
+    private List<String> duplicateKeyColumns = new LinkedList<>();
+    
 }

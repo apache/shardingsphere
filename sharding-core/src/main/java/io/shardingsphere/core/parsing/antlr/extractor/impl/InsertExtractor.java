@@ -51,6 +51,7 @@ public class InsertExtractor implements OptionalSQLSegmentExtractor {
         if (result.getValuesList().isEmpty()) {
             extractSetColumn(ancestorNode, result);
         }
+        extractDuplicateKeys(ancestorNode, result);
         return Optional.of(result);
     }
     
@@ -114,6 +115,16 @@ public class InsertExtractor implements OptionalSQLSegmentExtractor {
             ParserRuleContext columnNode = (ParserRuleContext) each.getChild(0);
             insertSegment.getColumns().add(columnSegmentExtractor.extract(columnNode).get());
             insertValuesSegment.getValues().add(expressionExtractor.extractCommonExpressionSegment((ParserRuleContext) each.getChild(2)));
+        }
+    }
+    
+    private void extractDuplicateKeys(final ParserRuleContext ancestorNode, final InsertSegment insertSegment) {
+        Optional<ParserRuleContext> onDuplicateClauseNode = ExtractorUtils.findFirstChildNode(ancestorNode, RuleName.ON_DUPLICATE_CLAUSE);
+        if (!onDuplicateClauseNode.isPresent()) {
+            return;
+        }
+        for (ParserRuleContext each : ExtractorUtils.getAllDescendantNodes(onDuplicateClauseNode.get(), RuleName.COLUMN_NAME)) {
+            insertSegment.getDuplicateKeyColumns().add(each.getText());
         }
     }
 }
