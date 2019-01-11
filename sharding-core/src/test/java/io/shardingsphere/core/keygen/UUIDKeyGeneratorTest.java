@@ -19,6 +19,8 @@ package io.shardingsphere.core.keygen;
 
 import org.junit.Test;
 
+import java.util.Properties;
+
 import static org.hamcrest.CoreMatchers.is;
 import static org.junit.Assert.assertThat;
 
@@ -33,9 +35,14 @@ public class UUIDKeyGeneratorTest {
     
     @Test
     public void assertGetProperties() {
+        assertThat(uuidKeyGenerator.getProperties().entrySet().size(), is(0));
     }
     
     @Test
     public void assertSetProperties() {
+        Properties properties = new Properties();
+        properties.setProperty("key1", "value1");
+        uuidKeyGenerator.setProperties(properties);
+        assertThat(uuidKeyGenerator.getProperties().get("key1"), is((Object)  "value1"));
     }
 }
