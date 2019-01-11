@@ -15,36 +15,27 @@
  * </p>
  */
 
-package io.shardingsphere.core.keygen;
+package io.shardingsphere.core.keygen.generator;
+
+import lombok.Getter;
+import lombok.Setter;
 
 import java.util.Properties;
+import java.util.UUID;
 
 /**
- * Key generator interface.
+ * UUID key generator.
  *
- * @author zhangliang
  * @author panjuan
  */
-public interface KeyGenerator {
+public final class UUIDKeyGenerator implements KeyGenerator {
     
-    /**
-     * Generate key.
-     * 
-     * @return generated key
-     */
-    Comparable<?> generateKey();
+    @Getter
+    @Setter
+    private Properties properties = new Properties();
     
-    /**
-     * Get properties.
-     * 
-     * @return The properties of key generator
-     */
-    Properties getProperties();
-    
-    /**
-     * Set Properties.
-     * 
-     * @param properties properties
-     */
-    void setProperties(Properties properties);
+    @Override
+    public synchronized Comparable<?> generateKey() {
+        return UUID.randomUUID().toString().replaceAll("-", "");
+    }
 }

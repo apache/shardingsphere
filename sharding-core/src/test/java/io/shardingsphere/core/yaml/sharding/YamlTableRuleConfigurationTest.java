@@ -19,7 +19,7 @@ package io.shardingsphere.core.yaml.sharding;
 
 import io.shardingsphere.api.config.rule.TableRuleConfiguration;
 import io.shardingsphere.api.config.strategy.NoneShardingStrategyConfiguration;
-import io.shardingsphere.core.keygen.SnowflakeKeyGenerator;
+import io.shardingsphere.core.keygen.generator.SnowflakeKeyGenerator;
 import io.shardingsphere.core.yaml.sharding.strategy.YamlNoneShardingStrategyConfiguration;
 import org.junit.Test;
 

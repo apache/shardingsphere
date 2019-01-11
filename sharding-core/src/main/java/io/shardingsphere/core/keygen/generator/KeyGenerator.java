@@ -15,25 +15,36 @@
  * </p>
  */
 
-package io.shardingsphere.shardingjdbc.orchestration.api.yaml.fixture;
-
-import io.shardingsphere.core.keygen.generator.KeyGenerator;
-import lombok.Getter;
-import lombok.Setter;
+package io.shardingsphere.core.keygen.generator;
 
 import java.util.Properties;
-import java.util.concurrent.atomic.AtomicInteger;
 
-public final class DecrementKeyGenerator implements KeyGenerator {
+/**
+ * Key generator interface.
+ *
+ * @author zhangliang
+ * @author panjuan
+ */
+public interface KeyGenerator {
     
-    private final AtomicInteger sequence = new AtomicInteger(100);
+    /**
+     * Generate key.
+     * 
+     * @return generated key
+     */
+    Comparable<?> generateKey();
     
-    @Getter
-    @Setter
-    private Properties properties = new Properties();
+    /**
+     * Get properties.
+     * 
+     * @return The properties of key generator
+     */
+    Properties getProperties();
     
-    @Override
-    public Comparable<?> generateKey() {
-        return sequence.decrementAndGet();
-    }
+    /**
+     * Set Properties.
+     * 
+     * @param properties properties
+     */
+    void setProperties(Properties properties);
 }

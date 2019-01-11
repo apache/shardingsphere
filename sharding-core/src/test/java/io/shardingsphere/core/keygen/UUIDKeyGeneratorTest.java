@@ -17,23 +17,33 @@
 
 package io.shardingsphere.core.keygen;
 
-import com.google.common.base.Optional;
+import io.shardingsphere.core.keygen.generator.UUIDKeyGenerator;
 import org.junit.Test;
+
+import java.util.Properties;
 
 import static org.hamcrest.CoreMatchers.is;
 import static org.junit.Assert.assertThat;
 
-public class KeyGeneratorTypeTest {
+public class UUIDKeyGeneratorTest {
+    
+    private UUIDKeyGenerator uuidKeyGenerator = new UUIDKeyGenerator();
     
     @Test
-    public void assertGetKeyGeneratorType() {
-        assertThat(KeyGeneratorType.getKeyGeneratorType("io.shardingsphere.core.keygen.generator.SnowflakeKeyGenerator"), 
-                is(Optional.of(KeyGeneratorType.SNOWFLAKE)));
-        assertThat(KeyGeneratorType.getKeyGeneratorType("io.shardingsphere.core.keygen.generator.UUIDKeyGenerator"),
-                is(Optional.of(KeyGeneratorType.UUID)));
-        assertThat(KeyGeneratorType.getKeyGeneratorType(""),
-                is(Optional.of(KeyGeneratorType.LEAF)));
-        assertThat(KeyGeneratorType.getKeyGeneratorType("test"),
-                is(Optional.<KeyGeneratorType>absent()));
+    public void assertGenerateKey() {
+        assertThat(((String) uuidKeyGenerator.generateKey()).length(), is(32));
+    }
+    
+    @Test
+    public void assertGetProperties() {
+        assertThat(uuidKeyGenerator.getProperties().entrySet().size(), is(0));
+    }
+    
+    @Test
+    public void assertSetProperties() {
+        Properties properties = new Properties();
+        properties.setProperty("key1", "value1");
+        uuidKeyGenerator.setProperties(properties);
+        assertThat(uuidKeyGenerator.getProperties().get("key1"), is((Object) "value1"));
     }
 }

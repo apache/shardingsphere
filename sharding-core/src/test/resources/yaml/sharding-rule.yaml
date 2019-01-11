@@ -63,7 +63,7 @@ shardingRule:
           algorithmExpression: t_order_${order_id % 2}
       keyGenerator:
         column: order_id
-        className: io.shardingsphere.core.keygen.SnowflakeKeyGenerator
+        className: io.shardingsphere.core.keygen.generator.SnowflakeKeyGenerator
       logicIndex: order_index
     t_order_item:
       actualDataNodes: ds_${0..1}.t_order_item_${0..1}

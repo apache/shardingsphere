@@ -15,9 +15,10 @@
  * </p>
  */
 
-package io.shardingsphere.core.keygen;
+package io.shardingsphere.core.keygen.generator;
 
 import com.google.common.base.Preconditions;
+import io.shardingsphere.core.keygen.TimeService;
 import lombok.Getter;
 import lombok.Setter;
 import lombok.SneakyThrows;
