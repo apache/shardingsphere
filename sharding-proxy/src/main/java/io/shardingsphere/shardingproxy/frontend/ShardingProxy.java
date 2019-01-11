@@ -23,6 +23,7 @@ import io.netty.channel.ChannelFuture;
 import io.netty.channel.ChannelOption;
 import io.netty.channel.EventLoopGroup;
 import io.netty.channel.WriteBufferWaterMark;
+import io.netty.channel.epoll.Epoll;
 import io.netty.channel.epoll.EpollChannelOption;
 import io.netty.channel.epoll.EpollEventLoopGroup;
 import io.netty.channel.epoll.EpollServerSocketChannel;
@@ -99,11 +100,7 @@ public final class ShardingProxy {
     }
     
     private EventLoopGroup createEventLoopGroup() {
-        try {
-            return new EpollEventLoopGroup(1);
-        } catch (final UnsatisfiedLinkError ex) {
-            return new NioEventLoopGroup(1);
-        }
+        return Epoll.isAvailable() ? new EpollEventLoopGroup(1) : new NioEventLoopGroup(1);
     }
     
     private void groupsEpoll(final ServerBootstrap bootstrap) {
