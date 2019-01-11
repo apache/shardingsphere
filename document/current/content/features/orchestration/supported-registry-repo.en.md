@@ -7,7 +7,7 @@ weight = 3
 
 ## SPI
 
-[Service Provider Interface (SPI)](https://docs.oracle.com/javase/tutorial/sound/SPI-intro.html)  is a kind of API that aims to be realized or extended by the third party. 
+[Service Provider Interface (SPI)](https://docs.oracle.com/javase/tutorial/sound/SPI-intro.html) is a kind of API that aims to be realized or extended by the third party. 
 It can be used to realize framework extension or component replacement.
 
 ShardingSphere uses SPI to load data to the registry center and disable instances and databases. 

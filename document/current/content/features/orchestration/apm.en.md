@@ -14,7 +14,7 @@ ShardingSphere is not responsible for gathering, storing and demonstrating APM r
 In other words, ShardingSphere is only responsible for generating valuable data and submitting it to relevant systems through standard protocol. 
 It can connect to APM systems in two ways.
 
-The first way is to send  performance tracing data by OpenTracing API. 
+The first way is to send performance tracing data by OpenTracing API. 
 APM products facing OpenTracing protocol can all automatically connect to ShardingSphere, like SkyWalking, Zipkin and Jaeger. 
 In this way, users only need to configure the realizer of OpenTracing protocol at start. 
 Its advantage is being able to take all the products compatible of OpenTracing protocol as the APM presentation system. 
