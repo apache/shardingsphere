@@ -4,10 +4,13 @@ export default {
       title: '数据治理',
       child: [{
         title: '注册配置中心',
-        href: '/'
+        href: '/config-regist'
       }, {
         title: '配置管理',
         href: '/config-manage'
+      }, {
+        title: 'Orchestration',
+        href: '/orchestration'
       }]
     }],
     connect: '已连接',
@@ -21,7 +24,8 @@ export default {
       delFailMessage: '删除失败',
       updateCompletedMessage: '更新成功',
       updateFaildMessage: '更新失败'
-    }
+    },
+    loginOut: '退出登陆'
   },
   login: {
     btnTxt: '登陆',
@@ -46,6 +50,7 @@ export default {
       address: '注册中心地址',
       orchestrationName: '数据治理实例',
       namespaces: '命名空间',
+      digest: '登录凭证',
       btnConfirmTxt: '确定',
       btnCancelTxt: '取消'
     },
@@ -57,7 +62,21 @@ export default {
       centerType: '请选择注册中心类型',
       namespaces: '请输入命名空间',
       address: '请选输入注册中心地址',
-      orchestrationName: '请输入数据治理实例名称'
+      orchestrationName: '请输入数据治理实例名称',
+      digest: '请输入登录凭证'
+    }
+  },
+  orchestration: {
+    serviceNode: '服务节点',
+    slaveDataSourceName: '从库信息',
+    dataSource: {
+      schema: '逻辑库名',
+      masterDataSourceName: '主库名',
+      slaveDataSourceName: '从库名'
+    },
+    instance: {
+      instanceId: '节点标识',
+      serverIp: '服务ip'
     }
   }
 }

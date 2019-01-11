@@ -3,11 +3,14 @@ export default {
     menuData: [{
       title: 'Data governance',
       child: [{
-        title: 'Registration configuration',
-        href: '/'
+        title: 'Config regist',
+        href: '/config-regist'
       }, {
-        title: 'Configuration management',
+        title: 'Config manage',
         href: '/config-manage'
+      }, {
+        title: 'Orchestration',
+        href: '/orchestration'
       }]
     }],
     connected: 'Connected',
@@ -21,7 +24,8 @@ export default {
       delFailMessage: 'Delete failed',
       updateCompletedMessage: 'Update completed',
       updateFaildMessage: 'Update faild'
-    }
+    },
+    loginOut: 'Sign out'
   },
   login: {
     btnTxt: 'Login',
@@ -46,6 +50,7 @@ export default {
       address: 'address',
       orchestrationName: 'orchestrationName',
       namespaces: 'Namespaces',
+      digest: 'Digest',
       btnConfirmTxt: 'Confirm',
       btnCancelTxt: 'Cancel'
     },
@@ -57,7 +62,21 @@ export default {
       address: 'Please enter the registration center address',
       namespaces: 'Please enter a namespace',
       centerType: 'Please select a centerType',
-      orchestrationName: 'Please enter a orchestrationName'
+      orchestrationName: 'Please enter a orchestrationName',
+      digest: 'Please enter a digest'
+    }
+  },
+  orchestration: {
+    serviceNode: 'Service node',
+    slaveDataSourceName: 'Slave DataSource Info',
+    dataSource: {
+      schema: 'Schema',
+      masterDataSourceName: 'Master DataSource Name',
+      slaveDataSourceName: 'Slave DataSource Name'
+    },
+    instance: {
+      instanceId: 'Instance Id',
+      serverIp: 'Server Ip'
     }
   }
 }
