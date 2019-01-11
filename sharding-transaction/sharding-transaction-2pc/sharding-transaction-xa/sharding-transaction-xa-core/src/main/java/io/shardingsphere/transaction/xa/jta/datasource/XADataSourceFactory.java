@@ -53,16 +53,6 @@ public final class XADataSourceFactory {
     }
     
     /**
-     * Create XA DataSource instance.
-     *
-     * @param databaseType database type
-     * @return XA DataSource instance
-     */
-    public static XADataSource build(final DatabaseType databaseType) {
-        return newXADataSourceInstance(databaseType);
-    }
-    
-    /**
      * Create XA data source through general data source.
      *
      * @param databaseType database type
@@ -77,7 +67,7 @@ public final class XADataSourceFactory {
             PropertyUtils.setProperties(xaDataSource, xaProperties);
             return xaDataSource;
         } catch (final PropertyException ex) {
-            log.error("Failed to create ShardingXADataSource");
+            log.error("Failed to create ShardingXADataSource.");
             throw new ShardingException(ex);
         }
     }

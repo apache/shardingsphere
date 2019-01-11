@@ -21,7 +21,6 @@ import io.shardingsphere.core.constant.DatabaseType;
 import io.shardingsphere.transaction.xa.jta.connection.ShardingXAConnection;
 import io.shardingsphere.transaction.xa.jta.connection.ShardingXAConnectionFactory;
 import lombok.Getter;
-import lombok.extern.slf4j.Slf4j;
 
 import javax.sql.DataSource;
 import javax.sql.XADataSource;
@@ -34,7 +33,6 @@ import java.sql.SQLException;
  * @author zhaojun
  */
 @Getter
-@Slf4j
 public final class ShardingXADataSource extends AbstractUnsupportedShardingXADataSource {
     
     private final DatabaseType databaseType;
@@ -45,7 +43,7 @@ public final class ShardingXADataSource extends AbstractUnsupportedShardingXADat
     
     private final XADataSource xaDataSource;
     
-    private boolean isOriginalXADataSource;
+    private final boolean isOriginalXADataSource;
     
     public ShardingXADataSource(final DatabaseType databaseType, final String resourceName, final DataSource dataSource) {
         this.databaseType = databaseType;
@@ -56,6 +54,7 @@ public final class ShardingXADataSource extends AbstractUnsupportedShardingXADat
             this.isOriginalXADataSource = true;
         } else {
             this.xaDataSource = XADataSourceFactory.build(databaseType, dataSource);
+            this.isOriginalXADataSource = false;
         }
     }
     

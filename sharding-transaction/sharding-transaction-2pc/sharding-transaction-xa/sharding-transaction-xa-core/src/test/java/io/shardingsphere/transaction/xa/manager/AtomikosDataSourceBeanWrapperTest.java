@@ -21,7 +21,7 @@ import com.atomikos.beans.PropertyException;
 import com.atomikos.jdbc.AtomikosDataSourceBean;
 import io.shardingsphere.core.constant.DatabaseType;
 import io.shardingsphere.core.rule.DataSourceParameter;
-import io.shardingsphere.transaction.xa.jta.datasource.XADataSourceFactory;
+import org.h2.jdbcx.JdbcDataSource;
 import org.hamcrest.Matchers;
 import org.hamcrest.core.Is;
 import org.junit.Before;
@@ -34,7 +34,7 @@ import static org.junit.Assert.assertThat;
 
 public class AtomikosDataSourceBeanWrapperTest {
     
-    private final XADataSource xaDataSource = XADataSourceFactory.build(DatabaseType.MySQL);
+    private final XADataSource xaDataSource = new JdbcDataSource();
     
     private final DataSourceParameter parameter = new DataSourceParameter();
     
@@ -49,7 +49,7 @@ public class AtomikosDataSourceBeanWrapperTest {
     @Test
     public void assertWrapToAtomikosDataSourceBean() throws PropertyException {
         AtomikosDataSourceBeanWrapper atomikosDataSourceBeanWrapper = new AtomikosDataSourceBeanWrapper();
-        AtomikosDataSourceBean targetDataSource = (AtomikosDataSourceBean) atomikosDataSourceBeanWrapper.wrap(DatabaseType.MySQL, xaDataSource, "ds1", parameter);
+        AtomikosDataSourceBean targetDataSource = (AtomikosDataSourceBean) atomikosDataSourceBeanWrapper.wrap(DatabaseType.H2, xaDataSource, "ds1", parameter);
         assertThat(targetDataSource, Matchers.instanceOf(AtomikosDataSourceBean.class));
         assertThat(targetDataSource.getXaDataSource(), is(xaDataSource));
         assertThat(targetDataSource.getUniqueResourceName(), is("ds1"));
