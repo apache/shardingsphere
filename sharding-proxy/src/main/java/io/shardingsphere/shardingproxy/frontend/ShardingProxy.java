@@ -46,6 +46,7 @@ import lombok.NoArgsConstructor;
  * @author xiaoyu
  * @author wangkai
  * @author panjuan
+ * @author maxiaoguang
  */
 @NoArgsConstructor(access = AccessLevel.PRIVATE)
 public final class ShardingProxy {
@@ -108,9 +109,10 @@ public final class ShardingProxy {
         bootstrap.group(bossGroup, workerGroup)
                 .channel(EpollServerSocketChannel.class)
                 .option(EpollChannelOption.SO_BACKLOG, 128)
-                .option(ChannelOption.WRITE_BUFFER_WATER_MARK, new WriteBufferWaterMark(8 * 1024 * 1024, 16 * 1024 * 1024))
+                .option(EpollChannelOption.WRITE_BUFFER_WATER_MARK, new WriteBufferWaterMark(8 * 1024 * 1024, 16 * 1024 * 1024))
                 .option(EpollChannelOption.ALLOCATOR, PooledByteBufAllocator.DEFAULT)
                 .childOption(EpollChannelOption.ALLOCATOR, PooledByteBufAllocator.DEFAULT)
+                .childOption(EpollChannelOption.TCP_CORK, true)
                 .handler(new LoggingHandler(LogLevel.INFO))
                 .childHandler(new ServerHandlerInitializer());
     }
@@ -120,10 +122,10 @@ public final class ShardingProxy {
         bootstrap.group(bossGroup, workerGroup)
                 .channel(NioServerSocketChannel.class)
                 .option(ChannelOption.SO_BACKLOG, 128)
-                .option(ChannelOption.CONNECT_TIMEOUT_MILLIS, 100)
                 .option(ChannelOption.WRITE_BUFFER_WATER_MARK, new WriteBufferWaterMark(8 * 1024 * 1024, 16 * 1024 * 1024))
                 .option(ChannelOption.ALLOCATOR, PooledByteBufAllocator.DEFAULT)
                 .childOption(ChannelOption.ALLOCATOR, PooledByteBufAllocator.DEFAULT)
+                .childOption(ChannelOption.TCP_NODELAY, true)
                 .handler(new LoggingHandler(LogLevel.INFO))
                 .childHandler(new ServerHandlerInitializer());
     }
