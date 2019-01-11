@@ -1,6 +1,6 @@
 grammar MySQLInsertStatement;
 
-import MySQLKeyword, Keyword, BaseRule, MySQLDQL, DQLBase, MySQLBase, DataType, Symbol;
+import MySQLKeyword, Keyword, BaseRule, MySQLSelectStatement, MySQLBase, DataType, Symbol;
 
 insert
     : INSERT (LOW_PRIORITY | DELAYED | HIGH_PRIORITY IGNORE)? INTO? tableName partitionClause? (setClause | columnClause) onDuplicateClause?

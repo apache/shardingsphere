@@ -131,3 +131,36 @@ assignmentList
 assignment
     : columnName EQ_ assignmentValue
     ;
+    
+fromClause
+    : FROM tableReferences
+    ;
+    
+tableReferences
+    : matchNone
+    ;
+    
+whereClause
+    : WHERE expr
+    ;
+    
+groupByClause 
+    : GROUP BY orderByItem (COMMA orderByItem)* (WITH ROLLUP)?
+    ;
+    
+havingClause
+    : HAVING expr
+    ;
+    
+limitClause
+    : LIMIT rangeClause
+    ;
+    
+partitionClause 
+    : PARTITION columnList
+    ;
+    
+    
+asterisk
+    : ASTERISK
+    ;

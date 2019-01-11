@@ -18,7 +18,7 @@ commit
         (COMMENT STRING)?
         | (WRITE (WAIT | NOWAIT)? (IMMEDIATE | BATCH)?)?
         | FORCE STRING (COMMA NUMBER)?
-    )? 
+    )
     ;
     
 rollback

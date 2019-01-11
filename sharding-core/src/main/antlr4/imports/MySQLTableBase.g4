@@ -3,7 +3,7 @@ grammar MySQLTableBase;
 import MySQLKeyword, Keyword, MySQLBase, BaseRule, DataType, Symbol;
 
 columnDefinition
-    : columnName dataType (dataTypeOption* | dataTypeGenerated)?
+    : columnName dataType (dataTypeOption* | dataTypeGenerated?)
     ;
     
 dataType

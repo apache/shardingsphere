@@ -137,12 +137,11 @@ containerDataClause
     ;
     
 proxyClause
-    : (GRANT | REVOKE) CONNECT THROUGH ( ENTERPRISE USERS | userName dbUserProxyClauses?)
+    : (GRANT | REVOKE) CONNECT THROUGH ( ENTERPRISE USERS | userName dbUserProxyClauses)
     ;
     
 dbUserProxyClauses
-    : (WITH (ROLE (ALL EXCEPT)? roleNames | NO ROLES))?
-    (AUTHENTICATION REQUIRED )?
+    : (WITH (ROLE (ALL EXCEPT)? roleNames | NO ROLES))? (AUTHENTICATION REQUIRED )?
     ;
     
 dropUser

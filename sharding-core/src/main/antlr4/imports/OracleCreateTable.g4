@@ -1,6 +1,6 @@
 grammar OracleCreateTable;
 
-import OracleKeyword, Keyword, DataType, OracleCreateIndex, OracleTableBase, DQLBase, OracleBase, BaseRule, Symbol;
+import OracleKeyword, Keyword, DataType, OracleCreateIndex, OracleTableBase, OracleBase, BaseRule, Symbol;
 
 createTable
     : CREATE (GLOBAL TEMPORARY)? TABLE tableName relationalTable
@@ -20,4 +20,8 @@ relationalProperty
     
 tableProperties
     : columnProperties? (AS unionSelect)?
+    ;
+    
+unionSelect
+    : matchNone
     ;

@@ -1,7 +1,7 @@
 grammar MySQLStatement;
 
-import MySQLKeyword, Keyword, MySQLDQL, MySQLBase, Symbol, MySQLDeleteStatement, MySQLUpdateStatement, MySQLInsertStatement,
-    DQLBase, MySQLCreateIndex, MySQLDropIndex, MySQLCreateTable, MySQLAlterTable, MySQLDropTable, MySQLTruncateTable,
+import MySQLKeyword, Keyword, MySQLSelectStatement, MySQLBase, Symbol, MySQLDeleteStatement, MySQLUpdateStatement, MySQLInsertStatement,
+    MySQLCreateIndex, MySQLDropIndex, MySQLCreateTable, MySQLAlterTable, MySQLDropTable, MySQLTruncateTable,
     MySQLTCLStatement, MySQLDCLStatement
     ;
 

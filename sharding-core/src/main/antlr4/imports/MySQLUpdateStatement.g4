@@ -1,6 +1,6 @@
 grammar MySQLUpdateStatement;
 
-import MySQLKeyword, Keyword, BaseRule, MySQLDQL, DQLBase, MySQLBase, DataType, Symbol;
+import MySQLKeyword, Keyword, BaseRule, MySQLSelectStatement, MySQLBase, DataType, Symbol;
 
 update
     : updateClause setClause whereClause? orderByClause? limitClause?

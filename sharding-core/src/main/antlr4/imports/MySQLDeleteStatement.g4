@@ -1,6 +1,6 @@
 grammar MySQLDeleteStatement;
 
-import MySQLKeyword, Keyword, BaseRule, MySQLDQL, DQLBase, MySQLBase, DataType, Symbol;
+import MySQLKeyword, Keyword, BaseRule, MySQLSelectStatement, MySQLBase, DataType, Symbol;
 
 delete
     : deleteClause whereClause? orderByClause? limitClause?
@@ -20,6 +20,10 @@ fromMulti
     ;
     
 fromMultiTables
+    : fromMultiTable (COMMA fromMultiTable)*
+    ;
+    
+fromMultiTable
     : tableName DOT_ASTERISK?
     ;
     
