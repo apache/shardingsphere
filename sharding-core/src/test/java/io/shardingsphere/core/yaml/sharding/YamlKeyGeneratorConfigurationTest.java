@@ -19,6 +19,7 @@ package io.shardingsphere.core.yaml.sharding;
 
 import io.shardingsphere.core.exception.ShardingConfigurationException;
 import io.shardingsphere.core.keygen.SnowflakeKeyGenerator;
+import io.shardingsphere.core.keygen.UUIDKeyGenerator;
 import org.junit.Test;
 
 import static org.hamcrest.Matchers.is;
@@ -53,11 +54,11 @@ public class YamlKeyGeneratorConfigurationTest {
         keyGeneratorConfiguration.getKeyGenerator();
     }
     
-    @Test(expected = IllegalArgumentException.class)
+    @Test
     public void assertGetKeyGeneratorClassNameWithUUID() {
         YamlKeyGeneratorConfiguration keyGeneratorConfiguration = new YamlKeyGeneratorConfiguration();
         keyGeneratorConfiguration.setType("UUID");
-        keyGeneratorConfiguration.getKeyGenerator();
+        assertThat(keyGeneratorConfiguration.getKeyGenerator().getClass().getName(), is(UUIDKeyGenerator.class.getName()));
     }
     
     @Test(expected = ShardingConfigurationException.class)
