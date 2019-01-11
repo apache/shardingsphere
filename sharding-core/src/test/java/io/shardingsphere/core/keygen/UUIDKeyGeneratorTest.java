@@ -19,10 +19,16 @@ package io.shardingsphere.core.keygen;
 
 import org.junit.Test;
 
+import static org.hamcrest.CoreMatchers.is;
+import static org.junit.Assert.assertThat;
+
 public class UUIDKeyGeneratorTest {
+    
+    private UUIDKeyGenerator uuidKeyGenerator = new UUIDKeyGenerator();
     
     @Test
     public void assertGenerateKey() {
+        assertThat(((String) uuidKeyGenerator.generateKey()).length(), is(32));
     }
     
     @Test
