@@ -9,10 +9,13 @@ chapter = true
 
 Database transactions should satisfy the features of `ACID ` (atomicity, consistency, isolation and durability).
 
-- Atomicity refers to taking transactions as a whole to execute: all or not at all.
-- Consistency refers to ensuring transactions to transfer from a consistent situation to another consistent one.
-- Isolation refers to executing multiple transactions concurrently with one not influencing another.
-- Durability refers to persist the transaction data modification that is already submitted.
+- Atomicity guarantees that each transaction is treated as a single unit, which either succeeds completely, or fails completely.
+
+- Consistency ensures that a transaction can only bring the database from one valid state to another, maintaining database invariants.
+
+- Isolation ensures that concurrent execution of transactions leaves the database in the same state that would have been obtained if the transactions were executed sequentially.
+
+- Durability guarantees that once a transaction has been committed, it will remain committed even in the case of a system failure (e.g., power outage or crash).
 
 In single data node, transactions are only restricted to the access and control of single database resources, called local transactions. 
 Almost all the mature relational databases have provided native support for local transactions. 
