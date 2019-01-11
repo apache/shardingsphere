@@ -18,7 +18,6 @@
 package io.shardingsphere.core.rule;
 
 import lombok.Getter;
-import lombok.NoArgsConstructor;
 import lombok.Setter;
 
 /**
@@ -26,7 +25,6 @@ import lombok.Setter;
  *
  * @author panjuan
  */
-@NoArgsConstructor
 @Getter
 @Setter
 public final class Authentication {

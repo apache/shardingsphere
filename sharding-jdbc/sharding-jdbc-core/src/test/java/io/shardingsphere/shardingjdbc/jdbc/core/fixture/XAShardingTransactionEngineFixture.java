@@ -15,36 +15,19 @@
  * </p>
  */
 
-package io.shardingsphere.transaction.spi;
+package io.shardingsphere.shardingjdbc.jdbc.core.fixture;
 
-import io.shardingsphere.core.constant.DatabaseType;
 import io.shardingsphere.transaction.api.TransactionType;
 
-import javax.sql.DataSource;
-import java.util.Map;
-
 /**
- * Transactional data source converter.
+ * XA sharding transaction engine fixture.
  *
  * @author zhaojun
- * @author zhangliang
  */
-public interface TransactionalDataSourceConverter {
+public final class XAShardingTransactionEngineFixture extends AbstractShardingTransactionEngineFixture {
     
-    /**
-     * Get transaction type.
-     * 
-     * @return transaction type
-     */
-    TransactionType getType();
-    
-    /**
-     * Convert data sources.
-     *
-     * @param databaseType database type
-     * @param dataSourceMap data source map to be converted
-     * @return transactional data source map
-     */
-    Map<String, DataSource> convert(DatabaseType databaseType, Map<String, DataSource> dataSourceMap);
+    @Override
+    public TransactionType getTransactionType() {
+        return TransactionType.XA;
+    }
 }
-

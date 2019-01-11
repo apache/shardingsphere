@@ -17,16 +17,13 @@
 
 package io.shardingsphere.core.parsing.parser.context.condition;
 
-import io.shardingsphere.api.algorithm.sharding.ListShardingValue;
-import io.shardingsphere.api.algorithm.sharding.RangeShardingValue;
-import io.shardingsphere.api.algorithm.sharding.ShardingValue;
 import io.shardingsphere.core.parsing.parser.expression.SQLExpression;
 import io.shardingsphere.core.parsing.parser.expression.SQLNumberExpression;
 import org.junit.Test;
 
 import java.util.Arrays;
 import java.util.Collections;
-import java.util.Iterator;
+import java.util.List;
 
 import static org.hamcrest.CoreMatchers.is;
 import static org.junit.Assert.assertThat;
@@ -34,18 +31,26 @@ import static org.junit.Assert.assertThat;
 public final class ConditionTest {
     
     @Test
-    public void assertGetShardingValue() {
-        Condition condition = new Condition(new Column("test", "test"), new SQLNumberExpression(1));
-        ShardingValue shardingValue = condition.getShardingValue(Collections.emptyList());
-        assertThat((Integer) ((ListShardingValue) shardingValue).getValues().iterator().next(), is(1));
-        condition = new Condition(new Column("test", "test"), Arrays.<SQLExpression>asList(new SQLNumberExpression(1), new SQLNumberExpression(2)));
-        shardingValue = condition.getShardingValue(Collections.emptyList());
-        Iterator<?> iterator = ((ListShardingValue) shardingValue).getValues().iterator();
-        assertThat((Integer) iterator.next(), is(1));
-        assertThat((Integer) iterator.next(), is(2));
-        condition = new Condition(new Column("test", "test"), new SQLNumberExpression(1), new SQLNumberExpression(2));
-        shardingValue = condition.getShardingValue(Collections.emptyList());
-        assertThat((Integer) ((RangeShardingValue) shardingValue).getValueRange().lowerEndpoint(), is(1));
-        assertThat((Integer) ((RangeShardingValue) shardingValue).getValueRange().upperEndpoint(), is(2));
+    public void assertGetConditionValuesForEqual() {
+        List<Comparable<?>> actual = new Condition(new Column("test", "test"), new SQLNumberExpression(1)).getConditionValues(Collections.emptyList());
+        assertThat(actual.size(), is(1));
+        assertThat((Integer) actual.get(0), is(1));
+    }
+    
+    @Test
+    public void assertGetConditionValuesForIn() {
+        List<Comparable<?>> actual = new Condition(new Column("test", "test"), Arrays.<SQLExpression>asList(new SQLNumberExpression(1), new SQLNumberExpression(2)))
+                .getConditionValues(Collections.emptyList());
+        assertThat(actual.size(), is(2));
+        assertThat((Integer) actual.get(0), is(1));
+        assertThat((Integer) actual.get(1), is(2));
+    }
+    
+    @Test
+    public void assertGetConditionValuesForBetween() {
+        List<Comparable<?>> actual = new Condition(new Column("test", "test"), new SQLNumberExpression(1), new SQLNumberExpression(2)).getConditionValues(Collections.emptyList());
+        assertThat(actual.size(), is(2));
+        assertThat((Integer) actual.get(0), is(1));
+        assertThat((Integer) actual.get(1), is(2));
     }
 }

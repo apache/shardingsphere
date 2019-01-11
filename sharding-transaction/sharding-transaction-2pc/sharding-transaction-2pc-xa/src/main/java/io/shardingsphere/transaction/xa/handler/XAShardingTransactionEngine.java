@@ -21,8 +21,7 @@ import com.atomikos.jdbc.AtomikosDataSourceBean;
 import io.shardingsphere.core.constant.DatabaseType;
 import io.shardingsphere.core.exception.ShardingException;
 import io.shardingsphere.transaction.api.TransactionType;
-import io.shardingsphere.transaction.core.handler.ShardingTransactionHandlerAdapter;
-import io.shardingsphere.transaction.core.manager.ShardingTransactionManager;
+import io.shardingsphere.transaction.spi.ShardingTransactionEngine;
 import io.shardingsphere.transaction.spi.xa.XATransactionManager;
 import io.shardingsphere.transaction.xa.jta.connection.ShardingXAConnection;
 import io.shardingsphere.transaction.xa.jta.datasource.ShardingXADataSource;
@@ -38,23 +37,19 @@ import java.sql.Connection;
 import java.sql.SQLException;
 import java.util.HashMap;
 import java.util.Map;
+import java.util.Map.Entry;
 
 /**
- * XA sharding transaction handler.
+ * Sharding transaction engine for XA.
  *
  * @author zhaojun
  */
 @Slf4j
-public final class XAShardingTransactionHandler extends ShardingTransactionHandlerAdapter {
+public final class XAShardingTransactionEngine implements ShardingTransactionEngine {
     
     private final Map<String, ShardingXADataSource> cachedShardingXADataSourceMap = new HashMap<>();
     
     private final XATransactionManager xaTransactionManager = XATransactionManagerSPILoader.getInstance().getTransactionManager();
-    
-    @Override
-    public ShardingTransactionManager getShardingTransactionManager() {
-        return xaTransactionManager;
-    }
     
     @Override
     public TransactionType getTransactionType() {
@@ -63,7 +58,7 @@ public final class XAShardingTransactionHandler extends ShardingTransactionHandl
     
     @Override
     public void registerTransactionalResource(final DatabaseType databaseType, final Map<String, DataSource> dataSourceMap) {
-        for (Map.Entry<String, DataSource> entry : dataSourceMap.entrySet()) {
+        for (Entry<String, DataSource> entry : dataSourceMap.entrySet()) {
             DataSource dataSource = entry.getValue();
             if (dataSource instanceof AtomikosDataSourceBean) {
                 continue;
@@ -76,7 +71,7 @@ public final class XAShardingTransactionHandler extends ShardingTransactionHandl
     }
     
     @Override
-    public void clearTransactionalResource(final Map<String, DataSource> dataSourceMap) {
+    public void clearTransactionalResources() {
         if (!cachedShardingXADataSourceMap.isEmpty()) {
             for (ShardingXADataSource each : cachedShardingXADataSourceMap.values()) {
                 xaTransactionManager.removeRecoveryResource(each.getResourceName(), each.getXaDataSource());
@@ -104,5 +99,19 @@ public final class XAShardingTransactionHandler extends ShardingTransactionHandl
         }
         return result;
     }
-}
     
+    @Override
+    public void begin() {
+        xaTransactionManager.begin();
+    }
+    
+    @Override
+    public void commit() {
+        xaTransactionManager.commit();
+    }
+    
+    @Override
+    public void rollback() {
+        xaTransactionManager.rollback();
+    }
+}

@@ -15,22 +15,19 @@
  * </p>
  */
 
-package io.shardingsphere.transaction.core.context;
+package io.shardingsphere.shardingjdbc.jdbc.core.fixture;
 
-import io.shardingsphere.transaction.core.TransactionOperationType;
+import io.shardingsphere.transaction.api.TransactionType;
 
 /**
- * Sharding transaction context.
+ * BASE sharding transaction engine fixture.
  *
  * @author zhaojun
- * @author zhangliang
  */
-public interface ShardingTransactionContext {
+public final class BASEShardingTransactionEngineFixture extends AbstractShardingTransactionEngineFixture {
     
-    /**
-     * Get transaction operation type.
-     * 
-     * @return transaction operation type
-     */
-    TransactionOperationType getOperationType();
+    @Override
+    public TransactionType getTransactionType() {
+        return TransactionType.BASE;
+    }
 }

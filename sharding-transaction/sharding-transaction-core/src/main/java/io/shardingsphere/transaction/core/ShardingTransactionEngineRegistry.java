@@ -15,11 +15,11 @@
  * </p>
  */
 
-package io.shardingsphere.transaction.core.loader;
+package io.shardingsphere.transaction.core;
 
 import io.shardingsphere.core.constant.DatabaseType;
 import io.shardingsphere.transaction.api.TransactionType;
-import io.shardingsphere.transaction.spi.ShardingTransactionHandler;
+import io.shardingsphere.transaction.spi.ShardingTransactionEngine;
 import lombok.AccessLevel;
 import lombok.NoArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
@@ -27,6 +27,7 @@ import lombok.extern.slf4j.Slf4j;
 import javax.sql.DataSource;
 import java.util.HashMap;
 import java.util.Map;
+import java.util.Map.Entry;
 import java.util.ServiceLoader;
 
 /**
@@ -36,46 +37,46 @@ import java.util.ServiceLoader;
  */
 @NoArgsConstructor(access = AccessLevel.PRIVATE)
 @Slf4j
-public final class ShardingTransactionHandlerRegistry {
+public final class ShardingTransactionEngineRegistry {
     
-    private static final Map<TransactionType, ShardingTransactionHandler> TRANSACTION_HANDLER_MAP = new HashMap<>();
+    private static final Map<TransactionType, ShardingTransactionEngine> ENGINES = new HashMap<>();
     
     static {
         load();
     }
     
     /**
-     * Load sharding transaction handler.
+     * Load sharding transaction engines.
      */
-    @SuppressWarnings("unchecked")
     private static void load() {
-        for (ShardingTransactionHandler each : ServiceLoader.load(ShardingTransactionHandler.class)) {
-            if (TRANSACTION_HANDLER_MAP.containsKey(each.getTransactionType())) {
-                log.warn("Find more than one {} transaction handler implementation class, use `{}` now",
-                    each.getTransactionType(), TRANSACTION_HANDLER_MAP.get(each.getTransactionType()).getClass().getName());
+        for (ShardingTransactionEngine each : ServiceLoader.load(ShardingTransactionEngine.class)) {
+            if (ENGINES.containsKey(each.getTransactionType())) {
+                log.warn("Find more than one {} transaction engine implementation class, use `{}` now",
+                    each.getTransactionType(), ENGINES.get(each.getTransactionType()).getClass().getName());
                 continue;
             }
-            TRANSACTION_HANDLER_MAP.put(each.getTransactionType(), each);
+            ENGINES.put(each.getTransactionType(), each);
         }
     }
     
     /**
-     * Get transaction handler by type.
+     * Get sharding transaction engine.
      *
      * @param transactionType transaction type
-     * @return sharding transaction handler implement
+     * @return sharding transaction engine
      */
-    public static ShardingTransactionHandler getHandler(final TransactionType transactionType) {
-        return TRANSACTION_HANDLER_MAP.get(transactionType);
+    public static ShardingTransactionEngine getEngine(final TransactionType transactionType) {
+        return ENGINES.get(transactionType);
     }
     
     /**
      * Register transaction resource.
+     * 
      * @param databaseType database type
      * @param dataSourceMap data source map
      */
     public static void registerTransactionResource(final DatabaseType databaseType, final Map<String, DataSource> dataSourceMap) {
-        for (Map.Entry<TransactionType, ShardingTransactionHandler> entry : TRANSACTION_HANDLER_MAP.entrySet()) {
+        for (Entry<TransactionType, ShardingTransactionEngine> entry : ENGINES.entrySet()) {
             entry.getValue().registerTransactionalResource(databaseType, dataSourceMap);
         }
     }

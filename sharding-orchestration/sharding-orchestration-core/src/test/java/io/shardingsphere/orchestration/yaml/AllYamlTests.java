@@ -23,6 +23,7 @@ import org.junit.runners.Suite.SuiteClasses;
 
 @RunWith(Suite.class)
 @SuiteClasses({
+        ConfigurationYamlConverterTest.class,
         DefaultYamlRepresenterTest.class, 
         YamlOrchestrationConfigurationTest.class,
         YamlDataSourceConfigurationTest.class

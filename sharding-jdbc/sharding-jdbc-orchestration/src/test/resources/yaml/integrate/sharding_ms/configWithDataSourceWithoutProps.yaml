@@ -39,8 +39,9 @@ shardingRule:
         inline:
           shardingColumn: order_id
           algorithmExpression: t_order_${order_id % 2}
-      keyGeneratorColumnName: order_id
-      keyGeneratorClassName: io.shardingsphere.shardingjdbc.orchestration.api.yaml.fixture.IncrementKeyGenerator
+      keyGenerator:
+        column: order_id
+        className: io.shardingsphere.shardingjdbc.orchestration.api.yaml.fixture.IncrementKeyGenerator
     
     t_order_item:
       actualDataNodes: db_ms_${0..1}.t_order_item_${0..1}

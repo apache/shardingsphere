@@ -21,6 +21,7 @@ import io.shardingsphere.core.config.AllConfigTests;
 import io.shardingsphere.core.constant.AllConstantsTests;
 import io.shardingsphere.core.executor.AllExecutorTests;
 import io.shardingsphere.core.hint.AllHintTests;
+import io.shardingsphere.core.keygen.AllKeygenTests;
 import io.shardingsphere.core.merger.AllMergerTests;
 import io.shardingsphere.core.metadata.AllMetaDataTests;
 import io.shardingsphere.core.optimizer.AllOptimizerTests;
@@ -46,7 +47,8 @@ import org.junit.runners.Suite.SuiteClasses;
         AllExecutorTests.class, 
         AllMergerTests.class, 
         AllHintTests.class, 
-        AllYamlTests.class
+        AllYamlTests.class,
+        AllKeygenTests.class
     })
 public final class AllCoreTests {
 }

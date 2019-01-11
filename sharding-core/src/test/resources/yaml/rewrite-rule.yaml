@@ -14,7 +14,9 @@ shardingRule:
   tables:
     table_x:
       actualDataNodes: db${0..1}.table_x
-      keyGeneratorColumnName: id
+      keyGenerator:
+        column: id
+        type: SNOWFLAKE
       logicIndex: logic_index
     table_y:
           actualDataNodes: db${0..1}.table_y

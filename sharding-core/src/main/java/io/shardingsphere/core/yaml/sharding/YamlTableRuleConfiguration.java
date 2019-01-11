@@ -17,10 +17,10 @@
 
 package io.shardingsphere.core.yaml.sharding;
 
+import com.google.common.base.Optional;
 import com.google.common.base.Preconditions;
-import com.google.common.base.Strings;
 import io.shardingsphere.api.config.rule.TableRuleConfiguration;
-import io.shardingsphere.core.keygen.KeyGeneratorFactory;
+import io.shardingsphere.core.keygen.KeyGeneratorType;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
 import lombok.Setter;
@@ -44,9 +44,7 @@ public class YamlTableRuleConfiguration {
     
     private YamlShardingStrategyConfiguration tableStrategy;
     
-    private String keyGeneratorColumnName;
-    
-    private String keyGeneratorClassName;
+    private YamlKeyGeneratorConfiguration keyGenerator;
     
     private String logicIndex;
     
@@ -55,9 +53,21 @@ public class YamlTableRuleConfiguration {
         actualDataNodes = tableRuleConfiguration.getActualDataNodes();
         databaseStrategy = new YamlShardingStrategyConfiguration(tableRuleConfiguration.getDatabaseShardingStrategyConfig());
         tableStrategy = new YamlShardingStrategyConfiguration(tableRuleConfiguration.getTableShardingStrategyConfig());
-        keyGeneratorColumnName = tableRuleConfiguration.getKeyGeneratorColumnName();
-        keyGeneratorClassName = null == tableRuleConfiguration.getKeyGenerator()
-                ? null : tableRuleConfiguration.getKeyGenerator().getClass().getName();
+        keyGenerator = null == tableRuleConfiguration.getKeyGenerator() ? null : getYamlKeyGeneratorConfiguration(tableRuleConfiguration);
+    }
+    
+    private YamlKeyGeneratorConfiguration getYamlKeyGeneratorConfiguration(final TableRuleConfiguration tableRuleConfiguration) {
+        YamlKeyGeneratorConfiguration result = new YamlKeyGeneratorConfiguration();
+        String keyGeneratorClassName = tableRuleConfiguration.getKeyGenerator().getClass().getName();
+        Optional<KeyGeneratorType> keyGeneratorType = KeyGeneratorType.getKeyGeneratorType(keyGeneratorClassName);
+        if (!keyGeneratorType.isPresent()) {
+            result.setClassName(keyGeneratorClassName);
+        } else {
+            result.setType(keyGeneratorType.get().name());
+        }
+        result.setColumn(tableRuleConfiguration.getKeyGeneratorColumnName());
+        result.setProps(tableRuleConfiguration.getKeyGenerator().getProperties());
+        return result;
     }
     
     /**
@@ -76,10 +86,10 @@ public class YamlTableRuleConfiguration {
         if (null != tableStrategy) {
             result.setTableShardingStrategyConfig(tableStrategy.build());
         }
-        if (!Strings.isNullOrEmpty(keyGeneratorClassName)) {
-            result.setKeyGenerator(KeyGeneratorFactory.newInstance(keyGeneratorClassName));
+        if (null != keyGenerator) {
+            result.setKeyGenerator(keyGenerator.getKeyGenerator());
+            result.setKeyGeneratorColumnName(keyGenerator.getColumn());
         }
-        result.setKeyGeneratorColumnName(keyGeneratorColumnName);
         result.setLogicIndex(logicIndex);
         return result;
     }

@@ -33,6 +33,7 @@ import io.shardingsphere.shardingproxy.transport.mysql.packet.command.CommandPac
 import io.shardingsphere.shardingproxy.transport.mysql.packet.command.CommandResponsePackets;
 import io.shardingsphere.shardingproxy.transport.mysql.packet.command.query.FieldCountPacket;
 import io.shardingsphere.shardingproxy.transport.mysql.packet.command.query.text.TextResultSetRowPacket;
+import io.shardingsphere.shardingproxy.transport.mysql.packet.command.query.text.query.fixture.ShardingTransactionEngineFixture;
 import io.shardingsphere.shardingproxy.transport.mysql.packet.generic.OKPacket;
 import io.shardingsphere.transaction.api.TransactionType;
 import io.shardingsphere.transaction.core.TransactionOperationType;
@@ -75,7 +76,7 @@ public final class ComQueryPacketTest {
     
     @After
     public void tearDown() {
-        FixedXAShardingTransactionHandler.getInvokes().clear();
+        ShardingTransactionEngineFixture.getInvocations().clear();
     }
     
     @SneakyThrows
@@ -145,7 +146,7 @@ public final class ComQueryPacketTest {
         Optional<CommandResponsePackets> actual = packet.execute();
         assertTrue(actual.isPresent());
         assertOKPacket(actual.get());
-        assertThat(FixedXAShardingTransactionHandler.getInvokes().get("rollback"), is(TransactionOperationType.ROLLBACK));
+        assertTrue(ShardingTransactionEngineFixture.getInvocations().contains(TransactionOperationType.ROLLBACK));
     }
     
     @Test
@@ -157,7 +158,7 @@ public final class ComQueryPacketTest {
         Optional<CommandResponsePackets> actual = packet.execute();
         assertTrue(actual.isPresent());
         assertOKPacket(actual.get());
-        assertThat(FixedXAShardingTransactionHandler.getInvokes().get("commit"), is(TransactionOperationType.COMMIT));
+        assertTrue(ShardingTransactionEngineFixture.getInvocations().contains(TransactionOperationType.COMMIT));
     }
     
     @Test
