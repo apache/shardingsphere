@@ -6,13 +6,15 @@ import 'element-ui/lib/theme-chalk/index.css'
 import locale from 'element-ui/lib/locale/lang/en'
 import VueI18n from 'vue-i18n'
 import Language from './lang/index'
+import store from './store'
+import Vuex from 'vuex'
 import 'normalize.css/normalize.css'
-import '@/styles/index.scss'
-import '@/icons'
+import '@/assets/styles/index.scss'
 
 Vue.config.productionTip = false
 Vue.use(ElementUI, { locale })
 Vue.use(VueI18n)
+Vue.use(Vuex)
 
 // language setting init
 const navLang = navigator.language
@@ -37,6 +39,7 @@ const i18n = new VueI18n({
 new Vue({
   el: '#app',
   router,
+  store,
   i18n,
   components: { App },
   template: '<App/>'

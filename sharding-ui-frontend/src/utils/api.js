@@ -1,16 +1,15 @@
 import axios from 'axios'
 import jsonp from 'jsonp'
 // import qs from 'qs'
-// import {
-//   Message
-// } from 'element-ui'
+import {
+  Message
+} from 'element-ui'
 import C from './conf'
 
 axios.defaults.headers.post['Content-Type'] = 'application/jsoncharset=UTF-8'
 axios.defaults.withCredentials = true
 
 const configData = (type, params) => {
-  // POST传参序列化
   if (type === 'post') {
     // params = qs.stringify(params)
     return params
@@ -37,34 +36,58 @@ function ajax(url, type, options) {
       url: C.HOST + url,
       timeout: 10000,
       // responseType:'stream',
-      // params: options
+      headers: {
+        'Access-Token': window.localStorage.getItem('Access-Token') || ''
+      },
       params: type === 'get' ? options : null,
       data: configData(type, options)
     }).then((result) => {
       const data = result.data
       const success = data.success
-      switch (success) {
-        case true: {
-          resolve(data)
-          break
-        }
-        default: {
-          // Message({
-          //   message: result.errorMsg,
-          //   type: 'error',
-          //   duration: 2 * 1000
-          // })
-          resolve({
-            error: true,
-            ...data
-          })
-        }
+      if (success) {
+        resolve(data)
+        return
       }
+
+      if (!success) {
+        if (data.errorCode === 403) {
+          location.href = '#/login'
+          return
+        }
+        Message({
+          message: data.errorMsg,
+          type: 'error',
+          duration: 2 * 1000
+        })
+        return
+      }
+      // switch (success) {
+      //   case true: {
+      //     resolve(data)
+      //     break
+      //   }
+      //   default: {
+      //     Message({
+      //       message: data.errorMsg,
+      //       type: 'error',
+      //       duration: 2 * 1000
+      //     })
+      //     // resolve({
+      //     //   error: true,
+      //     //   ...data
+      //     // })
+      //   }
+      // }
     }).catch((error) => {
-      resolve({
-        code: 500,
-        error
+      Message({
+        message: error,
+        type: 'error',
+        duration: 2 * 1000
       })
+      // resolve({
+      //   code: 500,
+      //   error
+      // })
     })
   })
 }

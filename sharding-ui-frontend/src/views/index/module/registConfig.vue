@@ -13,8 +13,8 @@
           :width="item.width"/>
         <el-table-column :label="$t('index.table.operate')" fixed="right" width="140">
           <template slot-scope="scope">
-            <el-button type="text" size="small" @click="handleConnect(scope.row)">{{ scope.row.activated ? $t("common.connected") : $t("common.connection") }}</el-button>
-            <el-button type="text" size="small" @click="handlerDel(scope.row)">{{ $t("common.del") }}</el-button>
+            <el-button :disabled="scope.row.activated" type="primary" icon="icon-link iconfont" size="small" @click="handleConnect(scope.row)"/>
+            <el-button size="small" type="danger" icon="el-icon-delete" @click="handlerDel(scope.row)"/>
           </template>
         </el-table-column>
       </el-table>
@@ -47,6 +47,9 @@
         <el-form-item :label="$t('index.registDialog.namespaces')" prop="namespaces">
           <el-input v-model="form.namespaces" autocomplete="off"/>
         </el-form-item>
+        <el-form-item :label="$t('index.registDialog.digest')">
+          <el-input v-model="form.digest" autocomplete="off"/>
+        </el-form-item>
       </el-form>
       <div slot="footer" class="dialog-footer">
         <el-button @click="regustDialogVisible = false">{{ $t("index.registDialog.btnCancelTxt") }}</el-button>
@@ -56,8 +59,9 @@
   </el-card>
 </template>
 <script>
-import API from '../api'
+import { mapActions } from 'vuex'
 import _ from 'lodash'
+import API from '../api'
 export default {
   name: 'RegistConfig',
   data() {
@@ -90,7 +94,8 @@ export default {
         address: '',
         namespaces: '',
         centerType: 'Zookeeper',
-        orchestrationName: ''
+        orchestrationName: '',
+        digest: ''
       },
       rules: {
         name: [
@@ -120,6 +125,9 @@ export default {
     this.getRegCenter()
   },
   methods: {
+    ...mapActions([
+      'setRegCenterActivated'
+    ]),
     handleCurrentChange(val) {
       const data = _.clone(this.cloneTableData)
       this.tableData = data.splice(val - 1, this.pageSize)
@@ -130,6 +138,12 @@ export default {
         this.total = data.length
         this.cloneTableData = _.clone(res.model)
         this.tableData = data.splice(0, this.pageSize)
+      })
+      this.getRegCenterActivated()
+    },
+    getRegCenterActivated() {
+      API.getRegCenterActivated().then((res) => {
+        this.setRegCenterActivated(res.model.name)
       })
     },
     handleConnect(row) {
@@ -182,7 +196,7 @@ export default {
       this.$refs[formName].validate((valid) => {
         if (valid) {
           const params = {
-            // digest: 'string',
+            digest: this.form.digest,
             name: this.form.name,
             namespace: this.form.namespaces,
             orchestrationName: this.form.orchestrationName,

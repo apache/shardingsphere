@@ -4,23 +4,26 @@
       <i :class="classes" @click="togger"/>
       <div class="s-pro-components-header-right">
         <div class="avatar">
-          <el-dropdown>
-            <span class="el-dropdown-link">wqzwh</span>
+          <el-dropdown @command="handlerClick">
+            <span class="el-dropdown-link">{{ username || '未登陆' }}</span>
             <el-dropdown-menu slot="dropdown">
-              <el-dropdown-item>退出登陆</el-dropdown-item>
+              <el-dropdown-item>{{ $t("common.loginOut") }}</el-dropdown-item>
             </el-dropdown-menu>
           </el-dropdown>
         </div>
         <div class="lang-more">
           <el-dropdown>
-            <div class="lang-icon"/>
+            <i class="icon-duoyuyan iconfont"/>
             <el-dropdown-menu slot="dropdown">
-              <el-dropdown-item>英文</el-dropdown-item>
-              <el-dropdown-item disabled>中文</el-dropdown-item>
+              <el-dropdown-item>English</el-dropdown-item>
+              <el-dropdown-item disabled>Chinese</el-dropdown-item>
             </el-dropdown-menu>
           </el-dropdown>
         </div>
       </div>
+      <el-breadcrumb separator="/" class="bread-nav">
+        <el-breadcrumb-item><a style="font-weight: bold;">{{ $store.state.global.regCenterActivated || '' }}</a></el-breadcrumb-item>
+      </el-breadcrumb>
     </div>
   </div>
 </template>
@@ -29,7 +32,9 @@ export default {
   name: 'Head',
   data() {
     return {
-      isCollapse: false
+      isCollapse: false,
+      username: '',
+      breadcrumbTxt: ''
     }
   },
   computed: {
@@ -43,10 +48,33 @@ export default {
       ]
     }
   },
+  created() {
+    const store = window.localStorage
+    this.username = store.getItem('username')
+    // this.showBreadcrumbTxt()
+  },
   methods: {
+    // showBreadcrumbTxt() {
+    //   const menuData = this.$t('common').menuData
+    //   const hash = location.hash.split('#')[1]
+    //   for (const v of menuData) {
+    //     for (const vv of v.child) {
+    //       if (vv.href.includes(hash)) {
+    //         this.breadcrumbTxt = vv.title
+    //         break
+    //       }
+    //     }
+    //   }
+    // },
     togger() {
       this.isCollapse = !this.isCollapse
       this.$emit('on-togger', this.isCollapse)
+    },
+    handlerClick() {
+      const store = window.localStorage
+      store.removeItem('username')
+      store.removeItem('Access-Token')
+      location.href = '#/login'
     }
   }
 }
@@ -58,6 +86,12 @@ export default {
   height: 64px;
   line-height: 64px;
   width: 100%;
+  .bread-nav {
+    float: right;
+    height: 64px;
+    line-height: 64px;
+    padding-right: 20px;
+  }
   .s-pro-components-header {
     height: 64px;
     padding: 0;
@@ -70,6 +104,7 @@ export default {
       cursor: pointer;
       transition: all .3s,padding 0s;
       padding: 22px 24px;
+      float: left;
     }
     .s-pro-components-header-right {
       float: right;
@@ -87,15 +122,15 @@ export default {
   }
   .lang-more {
     cursor: pointer;
-    padding: 0 12px;
+    padding: 0 20px;
     display: inline-block;
     transition: all .3s;
     height: 100%;
-    .lang-icon {
-      background: url('../../assets/img/lang.png') no-repeat center center;
-      width: 32px;
-      height: 60px;
-    }
+    // .lang-icon {
+    //   background: url('../../assets/img/lang.png') no-repeat center center;
+    //   width: 32px;
+    //   height: 60px;
+    // }
   }
 }
 </style>
