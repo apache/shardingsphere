@@ -17,6 +17,7 @@
 
 package io.shardingsphere.core.keygen;
 
+import io.shardingsphere.core.keygen.generator.UUIDKeyGenerator;
 import org.junit.Test;
 
 import java.util.Properties;

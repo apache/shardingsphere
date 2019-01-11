@@ -15,9 +15,8 @@
  * </p>
  */
 
-package io.shardingsphere.core.keygen;
+package io.shardingsphere.core.keygen.generator;
 
-import io.shardingsphere.core.keygen.generator.KeyGenerator;
 import lombok.Getter;
 import lombok.Setter;
 

@@ -19,7 +19,7 @@ package io.shardingsphere.core.yaml.sharding;
 
 import io.shardingsphere.core.exception.ShardingConfigurationException;
 import io.shardingsphere.core.keygen.generator.SnowflakeKeyGenerator;
-import io.shardingsphere.core.keygen.UUIDKeyGenerator;
+import io.shardingsphere.core.keygen.generator.UUIDKeyGenerator;
 import org.junit.Test;
 
 import static org.hamcrest.CoreMatchers.is;
