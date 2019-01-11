@@ -67,4 +67,15 @@ public class YamlKeyGeneratorConfigurationTest {
         keyGeneratorConfiguration.setType("DEFAULT");
         keyGeneratorConfiguration.getKeyGenerator();
     }
+    
+    @Test
+    public void assertGetKeyGeneratorVariables() {
+        YamlKeyGeneratorConfiguration keyGeneratorConfiguration = new YamlKeyGeneratorConfiguration();
+        keyGeneratorConfiguration.setType("SNOWFLAKE");
+        keyGeneratorConfiguration.setClassName("io.shardingsphere.core.keygen.SnowflakeKeyGenerator");
+        keyGeneratorConfiguration.setColumn("order_id");
+        assertThat(keyGeneratorConfiguration.getType(), is("SNOWFLAKE"));
+        assertThat(keyGeneratorConfiguration.getClassName(), is("io.shardingsphere.core.keygen.SnowflakeKeyGenerator"));
+        assertThat(keyGeneratorConfiguration.getColumn(), is("order_id"));
+    }
 }
