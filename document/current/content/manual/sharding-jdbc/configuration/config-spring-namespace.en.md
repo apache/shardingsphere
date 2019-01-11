@@ -144,7 +144,7 @@ Inline expression identifier can use `${...}` or `$->{...}`, but `${...}` is con
         <property name="password" value="" />
     </bean>
     
-    <bean id="randomStrategy" class="io.shardingsphere.core.api.algorithm.masterslave.RandomMasterSlaveLoadBalanceAlgorithm" />
+    <bean id="randomStrategy" class="io.shardingsphere.api.algorithm.masterslave.RandomMasterSlaveLoadBalanceAlgorithm" />
     <master-slave:data-source id="masterSlaveDataSource" master-data-source-name="ds_master" slave-data-source-names="ds_slave0, ds_slave1" strategy-ref="randomStrategy">
             <master-slave:props>
                 <prop key="sql.show">${sql_show}</prop>
@@ -165,7 +165,6 @@ Inline expression identifier can use `${...}` or `$->{...}`, but `${...}` is con
        xmlns:context="http://www.springframework.org/schema/context"
        xmlns:tx="http://www.springframework.org/schema/tx"
        xmlns:sharding="http://shardingsphere.io/schema/shardingsphere/sharding"
-       xmlns:master-slave="http://shardingsphere.io/schema/shardingsphere/masterslave"
        xsi:schemaLocation="http://www.springframework.org/schema/beans 
                         http://www.springframework.org/schema/beans/spring-beans.xsd
                         http://www.springframework.org/schema/context
@@ -173,9 +172,7 @@ Inline expression identifier can use `${...}` or `$->{...}`, but `${...}` is con
                         http://www.springframework.org/schema/tx
                         http://www.springframework.org/schema/tx/spring-tx.xsd
                         http://shardingsphere.io/schema/shardingsphere/sharding 
-                        http://shardingsphere.io/schema/shardingsphere/sharding/sharding.xsd
-                        http://shardingsphere.io/schema/shardingsphere/masterslave
-                        http://shardingsphere.io/schema/shardingsphere/masterslave/master-slave.xsd">
+                        http://shardingsphere.io/schema/shardingsphere/sharding/sharding.xsd">
     <context:annotation-config />
     <context:component-scan base-package="io.shardingsphere.example.spring.namespace.jpa" />
     
@@ -202,53 +199,54 @@ Inline expression identifier can use `${...}` or `$->{...}`, but `${...}` is con
         <property name="username" value="root" />
         <property name="password" value="" />
     </bean>
-
+    
     <bean id="ds_master0_slave0" class="org.apache.commons.dbcp.BasicDataSource" destroy-method="close">
         <property name="driverClassName" value="com.mysql.jdbc.Driver" />
         <property name="url" value="jdbc:mysql://localhost:3306/ds_master0_slave0" />
         <property name="username" value="root" />
         <property name="password" value="" />
     </bean>
-
+    
     <bean id="ds_master0_slave1" class="org.apache.commons.dbcp.BasicDataSource" destroy-method="close">
         <property name="driverClassName" value="com.mysql.jdbc.Driver" />
         <property name="url" value="jdbc:mysql://localhost:3306/ds_master0_slave1" />
         <property name="username" value="root" />
         <property name="password" value="" />
     </bean>
-
+    
     <bean id="ds_master1" class="org.apache.commons.dbcp.BasicDataSource" destroy-method="close">
         <property name="driverClassName" value="com.mysql.jdbc.Driver" />
         <property name="url" value="jdbc:mysql://localhost:3306/ds_master1" />
         <property name="username" value="root" />
         <property name="password" value="" />
     </bean>
-
+    
     <bean id="ds_master1_slave0" class="org.apache.commons.dbcp.BasicDataSource" destroy-method="close">
         <property name="driverClassName" value="com.mysql.jdbc.Driver" />
         <property name="url" value="jdbc:mysql://localhost:3306/ds_master1_slave0" />
         <property name="username" value="root" />
         <property name="password" value="" />
     </bean>
-
+    
     <bean id="ds_master1_slave1" class="org.apache.commons.dbcp.BasicDataSource" destroy-method="close">
         <property name="driverClassName" value="com.mysql.jdbc.Driver" />
         <property name="url" value="jdbc:mysql://localhost:3306/ds_master1_slave1" />
         <property name="username" value="root" />
         <property name="password" value="" />
     </bean>
-
-    <bean id="randomStrategy" class="io.shardingsphere.core.api.algorithm.masterslave.RandomMasterSlaveLoadBalanceAlgorithm" />
-
-    <master-slave:data-source id="ds_ms0" master-data-source-name="ds_master0" slave-data-source-names="ds_master0_slave0, ds_master0_slave1" strategy-ref="randomStrategy" />
-    <master-slave:data-source id="ds_ms1" master-data-source-name="ds_master1" slave-data-source-names="ds_master1_slave0, ds_master1_slave1" strategy-ref="randomStrategy" />
-
+    
+    <bean id="randomStrategy" class="io.shardingsphere.api.algorithm.masterslave.RandomMasterSlaveLoadBalanceAlgorithm" />
+    
     <sharding:inline-strategy id="databaseStrategy" sharding-column="user_id" algorithm-expression="ds_ms$->{user_id % 2}" />
     <sharding:inline-strategy id="orderTableStrategy" sharding-column="order_id" algorithm-expression="t_order$->{order_id % 2}" />
     <sharding:inline-strategy id="orderItemTableStrategy" sharding-column="order_id" algorithm-expression="t_order_item$->{order_id % 2}" />
-
+    
     <sharding:data-source id="shardingDataSource">
-        <sharding:sharding-rule data-source-names="ds_ms0,ds_ms1">
+        <sharding:sharding-rule data-source-names="ds_master0,ds_master0_slave0,ds_master0_slave1,ds_master1,ds_master1_slave0,ds_master1_slave1">
+            <sharding:master-slave-rules>
+                <sharding:master-slave-rule id="ds_ms0" master-data-source-name="ds_master0" slave-data-source-names="ds_master0_slave0, ds_master0_slave1" strategy-ref="randomStrategy" />
+                <sharding:master-slave-rule id="ds_ms1" master-data-source-name="ds_master1" slave-data-source-names="ds_master1_slave0, ds_master1_slave1" strategy-ref="randomStrategy" />
+            </sharding:master-slave-rules>
             <sharding:table-rules>
                 <sharding:table-rule logic-table="t_order" actual-data-nodes="ds_ms$->{0..1}.t_order$->{0..1}" database-strategy-ref="databaseStrategy" table-strategy-ref="orderTableStrategy" generate-key-column-name="order_id" />
                 <sharding:table-rule logic-table="t_order_item" actual-data-nodes="ds_ms$->{0..1}.t_order_item$->{0..1}" database-strategy-ref="databaseStrategy" table-strategy-ref="orderItemTableStrategy" generate-key-column-name="order_item_id" />
@@ -398,10 +396,12 @@ Namespace: http://shardingsphere.io/schema/shardingsphere/sharding/sharding.xsd
 
 #### \<sharding:props />
 
-| *Name*            | *Type*    | *Description*                                           |
-| ----------------- | --------- | ------------------------------------------------------- |
-| sql.show (?)      | Attribute | To show SQLS or not, default value: false               |
-| executor.size (?) | Attribute | The number of working threads, default value: CPU count |
+| *Name*                              | *Type*    | *Description*                                                                  |
+| ------------------------------------| --------- | ------------------------------------------------------------------------------ |
+| sql.show (?)                        | Attribute | To show SQLS or not, default value: false                                      |
+| executor.size (?)                   | Attribute | The number of working threads, default value: CPU count                        |
+| max.connections.size.per.query (?)  | int       | Max connection size for every query to every actual database. default value: 1 |
+| check.table.metadata.enabled (?)    | boolean   | Check the metadata consistency of all the tables, default value : false         |
 
 #### \<sharding:config-map />
 
@@ -425,10 +425,12 @@ Namespace: http://shardingsphere.io/schema/shardingsphere/masterslave/master-sla
 
 #### \<master-slave:props />
 
-| *Name*            | *Type*    | *Description*                                           |
-| ----------------- | --------- | ------------------------------------------------------- |
-| sql.show (?)      | Attribute | To show SQLS or not, default value: false               |
-| executor.size (?) | Attribute | The number of working threads, default value: CPU count |
+| *Name*                              | *Type*    | *Description*                                                                  |
+| ----------------------------------- | --------- | ------------------------------------------------------------------------------ |
+| sql.show (?)                        | Attribute | To show SQLS or not, default value: false                                      |
+| executor.size (?)                   | Attribute | The number of working threads, default value: CPU count                        |
+| max.connections.size.per.query (?)  | int       | Max connection size for every query to every actual database. default value: 1 |
+| check.table.metadata.enabled (?)    | boolean   | Check the metadata consistency of all the tables, default value : false         |
 
 ### Sharding + orchestration
 

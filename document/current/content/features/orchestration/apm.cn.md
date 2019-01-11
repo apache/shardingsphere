@@ -23,16 +23,24 @@ ShardingSphere并不负责如何采集、存储以及展示应用性能监控的
 
 ### 使用OpenTracing协议
 
-* 通过读取系统参数注入APM系统提供的Tracer实现类
+* 方法1：通过读取系统参数注入APM系统提供的Tracer实现类
+
+启动时添加参数
+
 ```
-    启动时添加参数：-Dio.shardingsphere.opentracing.tracer.class=org.apache.skywalking.apm.toolkit.opentracing.SkywalkingTracer
-    调用初始化方法：ShardingTracer.init()
+    -Dio.shardingsphere.opentracing.tracer.class=org.apache.skywalking.apm.toolkit.opentracing.SkywalkingTracer
 ```
 
-* 通过参数注入APM系统提供的Tracer实现类 
+调用初始化方法
 
 ```java
-    shardingTracer.init(new SkywalkingTracer())
+    ShardingTracer.init();
+```
+
+* 方法2：通过参数注入APM系统提供的Tracer实现类
+
+```java
+    ShardingTracer.init(new SkywalkingTracer());
 ```
 
 *注意:使用SkyWalking的OpenTracing探针时，应将原ShardingSphere探针插件禁用，以防止两种插件互相冲突*

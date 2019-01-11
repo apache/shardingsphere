@@ -144,7 +144,7 @@ weight = 4
         <property name="password" value="" />
     </bean>
     
-    <bean id="randomStrategy" class="io.shardingsphere.core.api.algorithm.masterslave.RandomMasterSlaveLoadBalanceAlgorithm" />
+    <bean id="randomStrategy" class="io.shardingsphere.api.algorithm.masterslave.RandomMasterSlaveLoadBalanceAlgorithm" />
     <master-slave:data-source id="masterSlaveDataSource" master-data-source-name="ds_master" slave-data-source-names="ds_slave0, ds_slave1" strategy-ref="randomStrategy">
             <master-slave:props>
                 <prop key="sql.show">${sql_show}</prop>
@@ -165,7 +165,6 @@ weight = 4
        xmlns:context="http://www.springframework.org/schema/context"
        xmlns:tx="http://www.springframework.org/schema/tx"
        xmlns:sharding="http://shardingsphere.io/schema/shardingsphere/sharding"
-       xmlns:master-slave="http://shardingsphere.io/schema/shardingsphere/masterslave"
        xsi:schemaLocation="http://www.springframework.org/schema/beans 
                         http://www.springframework.org/schema/beans/spring-beans.xsd
                         http://www.springframework.org/schema/context
@@ -173,9 +172,7 @@ weight = 4
                         http://www.springframework.org/schema/tx
                         http://www.springframework.org/schema/tx/spring-tx.xsd
                         http://shardingsphere.io/schema/shardingsphere/sharding 
-                        http://shardingsphere.io/schema/shardingsphere/sharding/sharding.xsd
-                        http://shardingsphere.io/schema/shardingsphere/masterslave
-                        http://shardingsphere.io/schema/shardingsphere/masterslave/master-slave.xsd">
+                        http://shardingsphere.io/schema/shardingsphere/sharding/sharding.xsd">
     <context:annotation-config />
     <context:component-scan base-package="io.shardingsphere.example.spring.namespace.jpa" />
     
@@ -223,32 +220,33 @@ weight = 4
         <property name="username" value="root" />
         <property name="password" value="" />
     </bean>
-
+    
     <bean id="ds_master1_slave0" class="org.apache.commons.dbcp.BasicDataSource" destroy-method="close">
         <property name="driverClassName" value="com.mysql.jdbc.Driver" />
         <property name="url" value="jdbc:mysql://localhost:3306/ds_master1_slave0" />
         <property name="username" value="root" />
         <property name="password" value="" />
     </bean>
-
+    
     <bean id="ds_master1_slave1" class="org.apache.commons.dbcp.BasicDataSource" destroy-method="close">
         <property name="driverClassName" value="com.mysql.jdbc.Driver" />
         <property name="url" value="jdbc:mysql://localhost:3306/ds_master1_slave1" />
         <property name="username" value="root" />
         <property name="password" value="" />
     </bean>
-
-    <bean id="randomStrategy" class="io.shardingsphere.core.api.algorithm.masterslave.RandomMasterSlaveLoadBalanceAlgorithm" />
-
-    <master-slave:data-source id="ds_ms0" master-data-source-name="ds_master0" slave-data-source-names="ds_master0_slave0, ds_master0_slave1" strategy-ref="randomStrategy" />
-    <master-slave:data-source id="ds_ms1" master-data-source-name="ds_master1" slave-data-source-names="ds_master1_slave0, ds_master1_slave1" strategy-ref="randomStrategy" />
-
+    
+    <bean id="randomStrategy" class="io.shardingsphere.api.algorithm.masterslave.RandomMasterSlaveLoadBalanceAlgorithm" />
+    
     <sharding:inline-strategy id="databaseStrategy" sharding-column="user_id" algorithm-expression="ds_ms$->{user_id % 2}" />
     <sharding:inline-strategy id="orderTableStrategy" sharding-column="order_id" algorithm-expression="t_order$->{order_id % 2}" />
     <sharding:inline-strategy id="orderItemTableStrategy" sharding-column="order_id" algorithm-expression="t_order_item$->{order_id % 2}" />
-
+    
     <sharding:data-source id="shardingDataSource">
-        <sharding:sharding-rule data-source-names="ds_ms0,ds_ms1">
+        <sharding:sharding-rule data-source-names="ds_master0,ds_master0_slave0,ds_master0_slave1,ds_master1,ds_master1_slave0,ds_master1_slave1">
+            <sharding:master-slave-rules>
+                <sharding:master-slave-rule id="ds_ms0" master-data-source-name="ds_master0" slave-data-source-names="ds_master0_slave0, ds_master0_slave1" strategy-ref="randomStrategy" />
+                <sharding:master-slave-rule id="ds_ms1" master-data-source-name="ds_master1" slave-data-source-names="ds_master1_slave0, ds_master1_slave1" strategy-ref="randomStrategy" />
+            </sharding:master-slave-rules>
             <sharding:table-rules>
                 <sharding:table-rule logic-table="t_order" actual-data-nodes="ds_ms$->{0..1}.t_order$->{0..1}" database-strategy-ref="databaseStrategy" table-strategy-ref="orderTableStrategy" generate-key-column-name="order_id" />
                 <sharding:table-rule logic-table="t_order_item" actual-data-nodes="ds_ms$->{0..1}.t_order_item$->{0..1}" database-strategy-ref="databaseStrategy" table-strategy-ref="orderItemTableStrategy" generate-key-column-name="order_item_id" />
@@ -389,10 +387,12 @@ weight = 4
 
 #### \<sharding:props />
 
-| *名称*            | *类型* | *说明*                      |
-| ----------------- | ----- | --------------------------- |
-| sql.show (?)      | 属性  | 是否开启SQL显示，默认值: false |
-| executor.size (?) | 属性  | 工作线程数量，默认值: CPU核数  |
+| *名称*                             |  *类型* | *说明*                                        |
+| -----------------------------------| ----- | ---------------------------------------------- |
+| sql.show (?)                       | 属性  | 是否开启SQL显示，默认值: false                    |
+| executor.size (?)                  | 属性  | 工作线程数量，默认值: CPU核数                      |
+| max.connections.size.per.query (?) | 属性  | 每个物理数据库为每次查询分配的最大连接数量。默认值: 1 |
+| check.table.metadata.enabled (?)   | 属性  | 是否在启动时检查分表元数据一致性，默认值: false       |
 
 #### \<sharding:config-map />
 
@@ -416,10 +416,12 @@ weight = 4
 
 #### \<master-slave:props />
 
-| *名称*            | *类型* | *说明*                      |
-| ----------------- | ----- | --------------------------- |
-| sql.show (?)      | 属性  | 是否开启SQL显示，默认值: false |
-| executor.size (?) | 属性  | 工作线程数量，默认值: CPU核数  |
+| *名称*                             |  *类型* | *说明*                                         |
+| -----------------------------------| ----- | ---------------------------------------------- |
+| sql.show (?)                       | 属性   | 是否开启SQL显示，默认值: false                    |
+| executor.size (?)                  | 属性   | 工作线程数量，默认值: CPU核数                      |
+| max.connections.size.per.query (?) | 属性   | 每个物理数据库为每次查询分配的最大连接数量。默认值: 1 |
+| check.table.metadata.enabled (?)   | 属性   | 是否在启动时检查分表元数据一致性，默认值: false       |
 
 ### 数据分片 + 数据治理
 

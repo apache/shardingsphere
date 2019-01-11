@@ -268,6 +268,7 @@ sharding.jdbc.config.config.map.keyx= #用户自定义配置
 
 sharding.jdbc.config.props.sql.show= #是否开启SQL显示，默认值: false
 sharding.jdbc.config.props.executor.size= #工作线程数量，默认值: CPU核数
+sharding.jdbc.config.props.check.table.metadata.enabled= #是否在启动时检查分表元数据一致性，默认值: false
 ```
 
 ### 数据治理

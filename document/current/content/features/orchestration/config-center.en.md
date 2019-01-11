@@ -7,18 +7,23 @@ weight = 1
 
 ## Motivation
 
-- Centralize: More and more runtime instances make configuration management complicated. Configuration inconstant is a fatal problem on distribute system. Centralize configuration on config center make management effective.
+- Configuration centralization: 
+increasing runtime instances make it hard to manage separate configurations and asynchronized configurations can cause serious problems. 
+Concentrating configurations in configuration center makes it more effective to manage.
 
-- Dynamic: Distribute configuration after update is anther important abilities. It supports data source, tables and sharding strategies switch dynamically.
+- Dynamic configuration: 
+distribution after configuration modification is another important capability that configuration center can provide. 
+It can support dynamic switch between data sources, tables, shards and the read-write split strategy.
 
-## Data structure
+## Data Structure in Configuration Center
 
-Config center is defined in the namespace under `config` node. It mainly includes the data-management related configuration information such as data source, Sharding, Read-write splitting, ConfigMap and configuration of the Properties, stored in a YAML format. You can modify this node to get dynamic configuration management.
+Under configuration of defined name space, configuration center stores data source, sharding databases, sharding tables, read-write split, ConfigMap and Properties configurations in YAML form. 
+Modifying nodes can dynamically manage configuration.
 
 ```
 config
-    ├──authentication                            # Authentation configuration of Sharding-Proxy
-    ├──configMap                                 # Config map stored in the form of K/V.
+    ├──authentication                            # Sharding-Proxy authentication configuration
+    ├──configMap                                 # ConfigMap configuration stored in K/V form, e.g.{"key1":"value1"}
     ├──props                                     # Properties configuration
     ├──schema                                    # Schema configuration
     ├      ├──sharding_db                        # SchemaName configuration
@@ -38,7 +43,7 @@ username: root
 
 ### config/configmap
 
-Config map stored in the form of K/V.
+Read-write split ConfigMap configuration stored in K/V form.
 
 ```yaml
 key2: value2
@@ -46,7 +51,7 @@ key2: value2
 
 ### config/sharding/props
 
-They are the Sharding Properties in sharding-sphere configuration.
+Correspond to Sharding Properties in ShardingSphere configuration.
 
 ```yaml
 executor.size: 20
@@ -55,7 +60,7 @@ sql.show: true
 
 ### config/schema/schemeName/datasource
 
-It is a collection of multiple database connection pools, and the properties of different connection pools should be configured by users, e.g. DBCP，C3P0，Druid, HikariCP.
+A collection of multiple database connection pools, whose properties (e.g. DBCP，C3P0，Druid, HikariCP) are configured by users themselves.
 
 ```yaml
 ds_0: !!io.shardingsphere.orchestration.yaml.YamlDataSourceConfiguration
@@ -86,7 +91,7 @@ ds_1: !!io.shardingsphere.orchestration.yaml.YamlDataSourceConfiguration
 
 ### config/schema/sharding_db/rule
 
-The configuration of Sharding, including the configs of  Sharding and Read-write splitting.
+Database and table sharding configuration, including sharding + read-write split configuration.
 
 ```yaml
 tables:
@@ -122,7 +127,7 @@ masterSlaveRules: {}
 
 ### config/schema/masterslave/rule
 
-The configuration for using Read-write splitting standalone.
+This configuration is used when read-write split is used alone.
 
 ```yaml
 name: ds_ms
@@ -133,6 +138,6 @@ slaveDataSourceNames:
 loadBalanceAlgorithmType: ROUND_ROBIN
 ```
 
-## Dynamically push to online
+## Dynamic Effectiveness
 
-All of changes made in registry will be dynamically pushed to online and take effect immediately.
+Modification, deletion and addition of relevant configurations in registry center will be pushed to the production environment and take effect immediately.

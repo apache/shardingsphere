@@ -82,7 +82,7 @@ masterSlaveRule:
   
   props:
       sql.show: true
-    configMap:
+  configMap:
       key1: value1
 ```
 

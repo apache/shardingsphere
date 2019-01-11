@@ -7,67 +7,98 @@ weight = 4
 
 ## Background
 
-`APM` is the abbreviation of Application Performance Monitoring. Currently its core function is the performance diagnosis of distributed system, including call chain demonstration, application topology analysis, etc.
+`APM` is the abbreviation for application performance monitoring. 
+Currently, `APM` mainly focuses its functions on the performance diagnosis of distributed systems, including call chain demonstration, application topology analysis and so on.
 
-[ShardingSphere](http://shardingsphere.io) Team work with [SkyWalking](http://skywalking.io) Team to introduce an automatic monitor agent of `ShardingSphere` to send tracing data of `ShardingSphere` to `SkyWalking`.
+ShardingSphere is not responsible for gathering, storing and demonstrating APM related data, but sends the relevant core information of two data shards, SQL parsing and enforcement to APM to process. 
+In other words, ShardingSphere is only responsible for generating valuable data and submitting it to relevant systems through standard protocol. 
+It can connect to APM systems in two ways.
+
+The first way is to send performance tracing data by OpenTracing API. 
+APM products facing OpenTracing protocol can all automatically connect to ShardingSphere, like SkyWalking, Zipkin and Jaeger. 
+In this way, users only need to configure the realizer of OpenTracing protocol at start. 
+Its advantage is being able to take all the products compatible of OpenTracing protocol as the APM presentation system. 
+If companies intend to implement their own APM systems, they only need to implement the OpenTracing protocol to demonstrate chain tracing information of ShardingSphere automatically. 
+Its disadvantage is that OpenTracing protocol is not stable in its development, does not have relatively new versions, and is too neutral to be a strong support as native ones do to customized products.
+
+The second way is to use SkyWalking's automatic monitor agent. 
+ShardingSphere team cooperates with [SkyWalking](http://skywalking.io/) team and has realized the automatic monitor agent of `ShardingSphere` to automatically send relevant application performance data to `SkyWalking`.
 
 ## Usage
 
 ### Using OpenTracing
 
-* Inject the Tracer implementation class through System.properties
+* Method 1: Inject the Tracer implementation class provided by APM system through reading system parameters.
+
+
+
+Add startup arguments.
+
 ```
-    System.Properties：-Dio.shardingsphere.opentracing.tracer.class=org.apache.skywalking.apm.toolkit.opentracing.SkywalkingTracer
-    mehtod：ShardingTracer.init()                          
+    -Dio.shardingsphere.opentracing.tracer.class=org.apache.skywalking.apm.toolkit.opentracing.SkywalkingTracer
 ```
 
-* Inject the Tracer implementation class through method parameter
-```
-    shardingTracer.init(new SkywalkingTracer())   
+Call initialization method.
+
+```java
+    ShardingTracer.init();
 ```
 
-*Notices: When using SkyWalking's OpenTracing monitor agent, disabling the original ShardingSphere monitor agent plugin is necessary to avoid conflicting with each other.*
+```
+    ShardingTracer.init();
+```
 
-### Using SkyWalking
+* Method 2: Inject the Tracer implementation class through method parameter.
+
+```java
+    ShardingTracer.init(new SkywalkingTracer());
+```
+
+*Notice: when using SkyWalking’s OpenTracing agent, you should disable the former ShardingSphere agent to avoid the conflict between them.*
+
+### Use SkyWalking's Automatic Agent
 
 Please refer to [SkyWalking Manual](https://github.com/apache/incubator-skywalking/blob/5.x/docs/en/Quick-start.md).
 
-## UI
+## Result Demonstration
 
-### Application schema
+No matter in which way, it is convenient to demonstrate APM information in the system connected. Take SkyWalking for example:
 
-Using ` Sharding-Proxy ` to access two databases of `192.168.0.1:3306` and `192.168.0.2:3306`, each owns two tables in database.
+### Application Architecture
 
-### Topology diagram
+Use `Sharding-Proxy` to visit two databases, `192.168.0.1:3306` and `192.168.0.2:3306`, and there are two tables in each one of them.
+
+### Topology Demonstration
 
 ![The topology diagram](http://shardingsphere.jd.com/document/current/img/apm/5x_topology.png)
 
-User accesses the Sharding-Proxy 18 times, each database is accessed twice each time. This is because one access involves two splitting tables in each database, four tables in total.
+It can be seen from the picture that the user has accessed Sharding-Proxy 18 times, with each database twice each time. 
+It is because two tables in each database are accessed each time, so there are totally four tables accessed each time.
 
-### Tracking diagram
+### Tracking Demonstration
 
 ![The tracking diagram](http://shardingsphere.jd.com/document/current/img/apm/5x_trace.png)
 
-You can see SQL parsing and execution in this figure.
+SQL parsing and implementation situation can be seen from the tracing diagram.
 
-`/Sharding-Sphere/parseSQL/`: Represents the parsing performance of this SQL.
+`/Sharding-Sphere/parseSQL/` indicates SQL parsing performance this time.
 
 ![The parsing node](http://shardingsphere.jd.com/document/current/img/apm/5x_parse.png)
 
-`/Sharding-Sphere/executeSQL/`: Represents the performance of the actual SQL.
+`/Sharding-Sphere/executeSQL/` indicates SQL parsing performance in actual execution.
 
 ![The actual access node](http://shardingsphere.jd.com/document/current/img/apm/5x_executeSQL.png)
 
-### Exception diagram
+### Exception Demonstration
 
 ![Exception tracking diagram](http://shardingsphere.jd.com/document/current/img/apm/5x_trace_err.png)
 
-You can see Exceptions in this figure.
+Exception nodes can be seen from the tracing diagram.
 
-`/Sharding-Sphere/executeSQL/` : Represents the Exceptions of the actual SQL.
+`/Sharding-Sphere/executeSQL/` indicates exception results of SQL execution.
 
 ![Exception node](http://shardingsphere.jd.com/document/current/img/apm/5x_executeSQL_Tags_err.png)
 
-`/Sharding-Sphere/executeSQL/` : Represents the Exception logs of the actual SQL.
+`/Sharding-Sphere/executeSQL/` indicates the exception log of SQL execution.
 
 ![Exception log](http://shardingsphere.jd.com/document/current/img/apm/5x_executeSQL_Logs_err.png)
