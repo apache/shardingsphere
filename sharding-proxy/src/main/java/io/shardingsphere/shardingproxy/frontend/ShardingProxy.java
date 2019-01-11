@@ -99,11 +99,7 @@ public final class ShardingProxy {
     }
     
     private EventLoopGroup createEventLoopGroup() {
-        if (Epoll.isAvailable()) {
-            return new EpollEventLoopGroup(1);
-        } else {
-            return new NioEventLoopGroup(1);
-        }
+        return Epoll.isAvailable() ? new EpollEventLoopGroup(1) : new NioEventLoopGroup(1);
     }
     
     private void groupsEpoll(final ServerBootstrap bootstrap) {
