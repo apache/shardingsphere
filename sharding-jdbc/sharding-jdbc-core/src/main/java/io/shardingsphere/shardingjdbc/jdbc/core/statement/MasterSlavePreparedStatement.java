@@ -145,6 +145,12 @@ public final class MasterSlavePreparedStatement extends AbstractMasterSlavePrepa
     }
     
     @Override
+    public int getUpdateCount() throws SQLException {
+        Preconditions.checkState(1 == routedStatements.size());
+        return routedStatements.iterator().next().getUpdateCount();
+    }
+    
+    @Override
     public ResultSet getGeneratedKeys() throws SQLException {
         Preconditions.checkArgument(1 == routedStatements.size(), "Cannot support getGeneratedKeys for DDL");
         return routedStatements.iterator().next().getGeneratedKeys();

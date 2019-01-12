@@ -211,13 +211,13 @@ public final class ShardingStatement extends AbstractStatementAdapter {
         if (null != currentResultSet) {
             return currentResultSet;
         }
-        if (1 == statementExecutor.getStatements().size() && routeResult.getSqlStatement() instanceof DQLStatement) {
-            currentResultSet = statementExecutor.getStatements().iterator().next().getResultSet();
+        if (1 == getRoutedStatements().size() && routeResult.getSqlStatement() instanceof DQLStatement) {
+            currentResultSet = getRoutedStatements().iterator().next().getResultSet();
             return currentResultSet;
         }
-        List<ResultSet> resultSets = new ArrayList<>(statementExecutor.getStatements().size());
-        List<QueryResult> queryResults = new ArrayList<>(statementExecutor.getStatements().size());
-        for (Statement each : statementExecutor.getStatements()) {
+        List<ResultSet> resultSets = new ArrayList<>(getRoutedStatements().size());
+        List<QueryResult> queryResults = new ArrayList<>(getRoutedStatements().size());
+        for (Statement each : getRoutedStatements()) {
             ResultSet resultSet = each.getResultSet();
             resultSets.add(resultSet);
             queryResults.add(new StreamQueryResult(resultSet));
@@ -230,13 +230,33 @@ public final class ShardingStatement extends AbstractStatementAdapter {
         return currentResultSet;
     }
     
+    @Override
+    public int getUpdateCount() throws SQLException {
+        if (1 == getRoutedStatements().size() || connection.getShardingContext().getShardingRule().isAllBroadcastTables(routeResult.getSqlStatement().getTables().getTableNames())) {
+            return getRoutedStatements().iterator().next().getUpdateCount();
+        }
+        long result = 0;
+        boolean hasResult = false;
+        for (Statement each : getRoutedStatements()) {
+            int updateCount = each.getUpdateCount();
+            if (updateCount > -1) {
+                hasResult = true;
+            }
+            result += updateCount;
+        }
+        if (result > Integer.MAX_VALUE) {
+            result = Integer.MAX_VALUE;
+        }
+        return hasResult ? Long.valueOf(result).intValue() : -1;
+    }
+    
     private void initStatementExecutor() throws SQLException {
         statementExecutor.init(routeResult);
         replayMethodForStatements();
     }
     
     private void replayMethodForStatements() {
-        for (Statement each : statementExecutor.getStatements()) {
+        for (Statement each : getRoutedStatements()) {
             replayMethodsInvocation(each);
         }
     }

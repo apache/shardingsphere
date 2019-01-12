@@ -141,23 +141,6 @@ public abstract class AbstractStatementAdapter extends AbstractUnsupportedOperat
     }
     
     @Override
-    public final int getUpdateCount() throws SQLException {
-        long result = 0;
-        boolean hasResult = false;
-        for (Statement each : getRoutedStatements()) {
-            int updateCount = each.getUpdateCount();
-            if (updateCount > -1) {
-                hasResult = true;
-            }
-            result += updateCount;
-        }
-        if (result > Integer.MAX_VALUE) {
-            result = Integer.MAX_VALUE;
-        }
-        return hasResult ? Long.valueOf(result).intValue() : -1;
-    }
-    
-    @Override
     public final SQLWarning getWarnings() {
         return null;
     }
