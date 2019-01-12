@@ -61,9 +61,10 @@ public final class XAShardingTransactionEngine implements ShardingTransactionEng
             if (dataSource instanceof AtomikosDataSourceBean) {
                 continue;
             }
-            ShardingXADataSource shardingXADataSource = new ShardingXADataSource(databaseType, entry.getKey(), entry.getValue());
-            cachedShardingXADataSourceMap.put(entry.getKey(), shardingXADataSource);
-            xaTransactionManager.registerRecoveryResource(entry.getKey(), shardingXADataSource.getXaDataSource());
+            String resourceName = entry.getKey();
+            ShardingXADataSource shardingXADataSource = new ShardingXADataSource(databaseType, resourceName, entry.getValue());
+            cachedShardingXADataSourceMap.put(resourceName, shardingXADataSource);
+            xaTransactionManager.registerRecoveryResource(resourceName, shardingXADataSource.getXaDataSource());
         }
         xaTransactionManager.startup();
     }

@@ -36,9 +36,7 @@ import java.sql.SQLFeatureNotSupportedException;
 
 import static org.hamcrest.CoreMatchers.instanceOf;
 import static org.hamcrest.CoreMatchers.is;
-import static org.junit.Assert.assertFalse;
 import static org.junit.Assert.assertThat;
-import static org.junit.Assert.assertTrue;
 
 public final class ShardingXADataSourceTest {
     
@@ -46,10 +44,7 @@ public final class ShardingXADataSourceTest {
     public void assertBuildShardingXADataSourceOfXA() {
         DataSource dataSource = DataSourceUtils.build(DruidXADataSource.class, DatabaseType.MySQL, "ds1");
         ShardingXADataSource actual = new ShardingXADataSource(DatabaseType.MySQL, "ds1", dataSource);
-        assertThat(actual.getDatabaseType(), is(DatabaseType.MySQL));
         assertThat(actual.getResourceName(), is("ds1"));
-        assertThat(actual.getOriginalDataSource(), is(dataSource));
-        assertTrue(actual.isOriginalXADataSource());
         assertThat(actual.getXaDataSource(), is((XADataSource) dataSource));
     }
     
@@ -57,10 +52,7 @@ public final class ShardingXADataSourceTest {
     public void assertBuildShardingXADataSourceOfNoneXA() {
         DataSource dataSource = DataSourceUtils.build(HikariDataSource.class, DatabaseType.H2, "ds1");
         ShardingXADataSource actual = new ShardingXADataSource(DatabaseType.H2, "ds1", dataSource);
-        assertThat(actual.getDatabaseType(), is(DatabaseType.H2));
         assertThat(actual.getResourceName(), is("ds1"));
-        assertFalse(actual.isOriginalXADataSource());
-        assertThat(actual.getOriginalDataSource(), is(dataSource));
         assertThat(actual.getXaDataSource(), instanceOf(JdbcDataSource.class));
         JdbcDataSource jdbcDataSource = (JdbcDataSource) actual.getXaDataSource();
         assertThat(jdbcDataSource.getUser(), is("root"));

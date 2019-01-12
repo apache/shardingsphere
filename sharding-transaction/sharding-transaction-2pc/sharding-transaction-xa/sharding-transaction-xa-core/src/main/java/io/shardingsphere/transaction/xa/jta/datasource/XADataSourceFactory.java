@@ -19,7 +19,6 @@ package io.shardingsphere.transaction.xa.jta.datasource;
 
 import com.atomikos.beans.PropertyException;
 import com.atomikos.beans.PropertyUtils;
-import io.shardingsphere.core.config.DatabaseAccessConfiguration;
 import io.shardingsphere.core.constant.DatabaseType;
 import io.shardingsphere.core.exception.ShardingException;
 import io.shardingsphere.transaction.xa.swapper.DataSourceSwapperEngine;
@@ -69,9 +68,8 @@ public final class XADataSourceFactory {
      */
     public static XADataSource build(final DatabaseType databaseType, final DataSource dataSource) {
         try {
-            DatabaseAccessConfiguration databaseAccessConfiguration = DataSourceSwapperEngine.swap(dataSource);
             XADataSource result = createXADataSource(databaseType);
-            Properties xaProperties = XAPropertiesFactory.createXAProperties(databaseType).build(databaseAccessConfiguration);
+            Properties xaProperties = XAPropertiesFactory.createXAProperties(databaseType).build(DataSourceSwapperEngine.swap(dataSource));
             PropertyUtils.setProperties(result, xaProperties);
             return result;
         } catch (final PropertyException ex) {

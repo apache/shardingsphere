@@ -32,22 +32,23 @@ import java.sql.SQLException;
  *
  * @author zhaojun
  */
-@Getter
 public final class ShardingXADataSource extends AbstractUnsupportedShardingXADataSource {
+    
+    @Getter
+    private final String resourceName;
+    
+    @Getter
+    private final XADataSource xaDataSource;
     
     private final DatabaseType databaseType;
     
-    private final String resourceName;
-    
     private final DataSource originalDataSource;
-    
-    private final XADataSource xaDataSource;
     
     private final boolean isOriginalXADataSource;
     
     public ShardingXADataSource(final DatabaseType databaseType, final String resourceName, final DataSource dataSource) {
-        this.databaseType = databaseType;
         this.resourceName = resourceName;
+        this.databaseType = databaseType;
         originalDataSource = dataSource;
         if (dataSource instanceof XADataSource) {
             xaDataSource = (XADataSource) dataSource;

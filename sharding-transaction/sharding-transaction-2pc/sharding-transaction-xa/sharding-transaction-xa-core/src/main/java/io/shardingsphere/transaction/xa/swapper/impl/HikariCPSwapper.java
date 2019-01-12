@@ -22,7 +22,7 @@ import io.shardingsphere.core.config.DatabaseAccessConfiguration;
 import io.shardingsphere.transaction.xa.swapper.DataSourceSwapper;
 
 /**
- * Hikari CP swapper.
+ * HikariCP swapper.
  *
  * @author zhaojun
  */
