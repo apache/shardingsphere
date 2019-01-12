@@ -41,12 +41,12 @@ public interface ShardingTransactionEngine {
     TransactionType getTransactionType();
     
     /**
-     * Register transaction data source.
+     * Register transaction data sources.
      *
      * @param databaseType database type
      * @param dataSourceMap data source map
      */
-    void registerTransactionalResource(DatabaseType databaseType, Map<String, DataSource> dataSourceMap);
+    void registerTransactionalResources(DatabaseType databaseType, Map<String, DataSource> dataSourceMap);
     
     /**
      * Clear transactional resources.

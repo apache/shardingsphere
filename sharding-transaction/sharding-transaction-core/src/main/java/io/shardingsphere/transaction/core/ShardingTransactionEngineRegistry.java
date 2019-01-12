@@ -77,7 +77,7 @@ public final class ShardingTransactionEngineRegistry {
      */
     public static void registerTransactionResource(final DatabaseType databaseType, final Map<String, DataSource> dataSourceMap) {
         for (Entry<TransactionType, ShardingTransactionEngine> entry : ENGINES.entrySet()) {
-            entry.getValue().registerTransactionalResource(databaseType, dataSourceMap);
+            entry.getValue().registerTransactionalResources(databaseType, dataSourceMap);
         }
     }
 }

@@ -40,7 +40,7 @@ public abstract class AbstractShardingTransactionEngineFixture implements Shardi
     private static Collection<TransactionOperationType> invocations = new LinkedList<>();
     
     @Override
-    public final void registerTransactionalResource(final DatabaseType databaseType, final Map<String, DataSource> dataSourceMap) {
+    public final void registerTransactionalResources(final DatabaseType databaseType, final Map<String, DataSource> dataSourceMap) {
     }
     
     @Override

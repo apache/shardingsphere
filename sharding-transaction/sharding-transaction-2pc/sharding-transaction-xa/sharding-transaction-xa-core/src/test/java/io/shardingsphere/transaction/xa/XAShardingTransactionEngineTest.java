@@ -90,25 +90,25 @@ public class XAShardingTransactionEngineTest {
     }
     
     @Test
-    public void assertRegisterXATransactionalDataSource() {
+    public void assertRegisterXATransactionalDataSources() {
         Map<String, DataSource> dataSourceMap = createDataSourceMap(DruidXADataSource.class, DatabaseType.MySQL);
-        xaShardingTransactionEngine.registerTransactionalResource(DatabaseType.MySQL, dataSourceMap);
+        xaShardingTransactionEngine.registerTransactionalResources(DatabaseType.MySQL, dataSourceMap);
         for (Entry<String, DataSource> entry : dataSourceMap.entrySet()) {
             verify(xaTransactionManager).registerRecoveryResource(entry.getKey(), (XADataSource) entry.getValue());
         }
     }
     
     @Test
-    public void assertRegisterAtomikosDataSourceBean() {
+    public void assertRegisterAtomikosDataSourceBeans() {
         Map<String, DataSource> dataSourceMap = createAtomikosDataSourceBeanMap();
-        xaShardingTransactionEngine.registerTransactionalResource(DatabaseType.MySQL, dataSourceMap);
+        xaShardingTransactionEngine.registerTransactionalResources(DatabaseType.MySQL, dataSourceMap);
         verify(xaTransactionManager, times(0)).registerRecoveryResource(anyString(), any(XADataSource.class));
     }
     
     @Test
-    public void assertRegisterNoneXATransactionalDAtaSource() {
+    public void assertRegisterNoneXATransactionalDAtaSources() {
         Map<String, DataSource> dataSourceMap = createDataSourceMap(HikariDataSource.class, DatabaseType.MySQL);
-        xaShardingTransactionEngine.registerTransactionalResource(DatabaseType.MySQL, dataSourceMap);
+        xaShardingTransactionEngine.registerTransactionalResources(DatabaseType.MySQL, dataSourceMap);
         Map<String, ShardingXADataSource> cachedXADatasourceMap = getCachedShardingXADataSourceMap();
         assertThat(cachedXADatasourceMap.size(), is(2));
     }
@@ -136,7 +136,7 @@ public class XAShardingTransactionEngineTest {
     }
     
     @Test
-    public void assertClearTransactionalDataSource() {
+    public void assertClearTransactionalDataSources() {
         setCachedShardingXADataSourceMap("ds1");
         xaShardingTransactionEngine.clearTransactionalResources();
         Map<String, ShardingXADataSource> cachedShardingXADataSourceMap = getCachedShardingXADataSourceMap();

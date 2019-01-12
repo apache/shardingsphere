@@ -37,7 +37,7 @@ public final class ShardingTransactionEngineFixture implements ShardingTransacti
     }
     
     @Override
-    public void registerTransactionalResource(final DatabaseType databaseType, final Map<String, DataSource> dataSourceMap) {
+    public void registerTransactionalResources(final DatabaseType databaseType, final Map<String, DataSource> dataSourceMap) {
         caller.run();
     }
     
