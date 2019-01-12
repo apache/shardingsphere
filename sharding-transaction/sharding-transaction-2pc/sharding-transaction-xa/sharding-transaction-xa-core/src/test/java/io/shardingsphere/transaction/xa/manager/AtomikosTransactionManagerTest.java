@@ -19,31 +19,23 @@ package io.shardingsphere.transaction.xa.manager;
 
 import com.atomikos.icatch.config.UserTransactionService;
 import com.atomikos.icatch.jta.UserTransactionManager;
-import com.atomikos.jdbc.AtomikosDataSourceBean;
-import com.mysql.jdbc.jdbc2.optional.MysqlXADataSource;
-import io.shardingsphere.core.constant.DatabaseType;
 import io.shardingsphere.core.exception.ShardingException;
-import io.shardingsphere.core.rule.DataSourceParameter;
 import io.shardingsphere.transaction.xa.fixture.ReflectiveUtil;
 import lombok.SneakyThrows;
-import org.h2.jdbcx.JdbcDataSource;
 import org.junit.Before;
 import org.junit.Test;
 import org.junit.runner.RunWith;
 import org.mockito.Mock;
 import org.mockito.junit.MockitoJUnitRunner;
 
-import javax.sql.DataSource;
 import javax.sql.XADataSource;
 import javax.transaction.Status;
 import javax.transaction.SystemException;
 
-import static org.hamcrest.CoreMatchers.instanceOf;
 import static org.hamcrest.CoreMatchers.is;
 import static org.junit.Assert.assertThat;
 import static org.mockito.ArgumentMatchers.any;
 import static org.mockito.Mockito.doThrow;
-import static org.mockito.Mockito.mock;
 import static org.mockito.Mockito.verify;
 import static org.mockito.Mockito.when;
 
@@ -126,36 +118,6 @@ public final class AtomikosTransactionManagerTest {
     public void assertGetStatusWithException() throws Exception {
         when(userTransactionManager.getStatus()).thenThrow(SystemException.class);
         atomikosTransactionManager.getStatus();
-    }
-    
-    @Test(expected = ShardingException.class)
-    public void assertWrapDataSourceForOtherDataSource() {
-        XADataSource xaDataSource = mock(XADataSource.class);
-        DataSourceParameter dataSourceParameter = new DataSourceParameter();
-        dataSourceParameter.setMaxPoolSize(10);
-        atomikosTransactionManager.wrapDataSource(DatabaseType.MySQL, xaDataSource, "ds_name", dataSourceParameter);
-    }
-    
-    @Test
-    public void assertWrapDataSourceForH2() {
-        XADataSource xaDataSource = new JdbcDataSource();
-        DataSourceParameter dataSourceParameter = new DataSourceParameter();
-        dataSourceParameter.setUsername("root");
-        dataSourceParameter.setPassword("root");
-        dataSourceParameter.setUrl("db:url");
-        dataSourceParameter.setMaxPoolSize(10);
-        DataSource actual = atomikosTransactionManager.wrapDataSource(DatabaseType.H2, xaDataSource, "ds_name", dataSourceParameter);
-        assertThat(actual, instanceOf(AtomikosDataSourceBean.class));
-    }
-    
-    @Test(expected = ShardingException.class)
-    public void assertWrapDataSourceFailed() {
-        DataSourceParameter dataSourceParameter = new DataSourceParameter();
-        dataSourceParameter.setPassword("root");
-        dataSourceParameter.setUrl("db:url");
-        dataSourceParameter.setMaxPoolSize(0);
-        XADataSource xaDataSource = new MysqlXADataSource();
-        atomikosTransactionManager.wrapDataSource(DatabaseType.MySQL, xaDataSource, "ds_name", dataSourceParameter);
     }
     
     @Test

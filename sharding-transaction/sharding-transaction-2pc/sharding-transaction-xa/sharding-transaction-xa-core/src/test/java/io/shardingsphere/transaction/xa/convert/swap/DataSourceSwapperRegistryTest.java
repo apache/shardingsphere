@@ -17,9 +17,9 @@
 
 package io.shardingsphere.transaction.xa.convert.swap;
 
+import io.shardingsphere.core.config.DataSourceParameter;
 import io.shardingsphere.core.constant.DatabaseType;
 import io.shardingsphere.core.constant.PoolType;
-import io.shardingsphere.core.rule.DataSourceParameter;
 import io.shardingsphere.transaction.xa.fixture.DataSourceUtils;
 import org.junit.Test;
 

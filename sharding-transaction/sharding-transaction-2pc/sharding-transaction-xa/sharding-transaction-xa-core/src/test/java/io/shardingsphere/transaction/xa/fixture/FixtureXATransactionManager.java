@@ -17,11 +17,8 @@
 
 package io.shardingsphere.transaction.xa.fixture;
 
-import io.shardingsphere.core.constant.DatabaseType;
-import io.shardingsphere.core.rule.DataSourceParameter;
 import io.shardingsphere.transaction.xa.spi.XATransactionManager;
 
-import javax.sql.DataSource;
 import javax.sql.XADataSource;
 import javax.transaction.Status;
 import javax.transaction.TransactionManager;
@@ -50,11 +47,6 @@ public final class FixtureXATransactionManager implements XATransactionManager {
     @Override
     public int getStatus() {
         return Status.STATUS_NO_TRANSACTION;
-    }
-    
-    @Override
-    public DataSource wrapDataSource(final DatabaseType databaseType, final XADataSource xaDataSource, final String dataSourceName, final DataSourceParameter dataSourceParameter) {
-        return null;
     }
     
     @Override

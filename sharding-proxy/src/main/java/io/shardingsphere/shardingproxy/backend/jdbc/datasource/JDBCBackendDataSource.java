@@ -17,9 +17,9 @@
 
 package io.shardingsphere.shardingproxy.backend.jdbc.datasource;
 
+import io.shardingsphere.core.config.DataSourceParameter;
 import io.shardingsphere.core.constant.ConnectionMode;
 import io.shardingsphere.core.exception.ShardingException;
-import io.shardingsphere.core.rule.DataSourceParameter;
 import io.shardingsphere.core.util.ReflectiveUtil;
 import io.shardingsphere.shardingproxy.backend.BackendDataSource;
 import io.shardingsphere.transaction.api.TransactionType;

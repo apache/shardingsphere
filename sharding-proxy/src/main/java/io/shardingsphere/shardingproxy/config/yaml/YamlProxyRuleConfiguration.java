@@ -17,7 +17,7 @@
 
 package io.shardingsphere.shardingproxy.config.yaml;
 
-import io.shardingsphere.core.rule.DataSourceParameter;
+import io.shardingsphere.core.config.DataSourceParameter;
 import io.shardingsphere.core.yaml.masterslave.YamlMasterSlaveRuleConfiguration;
 import io.shardingsphere.core.yaml.sharding.YamlShardingRuleConfiguration;
 import lombok.Getter;

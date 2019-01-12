@@ -19,10 +19,10 @@ package io.shardingsphere.shardingproxy.backend.jdbc.datasource;
 
 import com.zaxxer.hikari.HikariConfig;
 import com.zaxxer.hikari.HikariDataSource;
+import io.shardingsphere.core.config.DataSourceParameter;
 import io.shardingsphere.core.exception.ShardingException;
 import io.shardingsphere.core.metadata.datasource.dialect.MySQLDataSourceMetaData;
 import io.shardingsphere.core.metadata.datasource.dialect.PostgreSQLDataSourceMetaData;
-import io.shardingsphere.core.rule.DataSourceParameter;
 import lombok.AccessLevel;
 import lombok.NoArgsConstructor;
 
@@ -76,6 +76,7 @@ public final class JDBCRawBackendDataSourceFactory implements JDBCBackendDataSou
         return new HikariDataSource(config);
     }
     
+    // TODO judge database type
     private String getDriverClassName(final String url) {
         try {
             new MySQLDataSourceMetaData(url);

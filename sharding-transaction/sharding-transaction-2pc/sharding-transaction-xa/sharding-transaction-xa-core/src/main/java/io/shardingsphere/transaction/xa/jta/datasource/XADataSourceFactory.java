@@ -19,9 +19,9 @@ package io.shardingsphere.transaction.xa.jta.datasource;
 
 import com.atomikos.beans.PropertyException;
 import com.atomikos.beans.PropertyUtils;
+import io.shardingsphere.core.config.DataSourceParameter;
 import io.shardingsphere.core.constant.DatabaseType;
 import io.shardingsphere.core.exception.ShardingException;
-import io.shardingsphere.core.rule.DataSourceParameter;
 import io.shardingsphere.transaction.xa.convert.swap.DataSourceSwapperRegistry;
 import lombok.AccessLevel;
 import lombok.NoArgsConstructor;

@@ -17,7 +17,7 @@
 
 package io.shardingsphere.transaction.xa.jta.datasource.dialect;
 
-import io.shardingsphere.core.rule.DataSourceParameter;
+import io.shardingsphere.core.config.DataSourceParameter;
 import lombok.Getter;
 import org.junit.Before;
 

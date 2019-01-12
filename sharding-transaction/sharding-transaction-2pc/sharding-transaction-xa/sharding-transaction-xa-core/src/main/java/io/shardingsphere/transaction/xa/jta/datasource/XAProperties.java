@@ -17,7 +17,7 @@
 
 package io.shardingsphere.transaction.xa.jta.datasource;
 
-import io.shardingsphere.core.rule.DataSourceParameter;
+import io.shardingsphere.core.config.DataSourceParameter;
 
 import java.util.Properties;
 

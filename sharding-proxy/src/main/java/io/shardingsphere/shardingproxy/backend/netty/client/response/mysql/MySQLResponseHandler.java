@@ -19,8 +19,8 @@ package io.shardingsphere.shardingproxy.backend.netty.client.response.mysql;
 
 import io.netty.buffer.ByteBuf;
 import io.netty.channel.ChannelHandlerContext;
+import io.shardingsphere.core.config.DataSourceParameter;
 import io.shardingsphere.core.metadata.datasource.DataSourceMetaData;
-import io.shardingsphere.core.rule.DataSourceParameter;
 import io.shardingsphere.shardingproxy.backend.netty.client.response.ResponseHandler;
 import io.shardingsphere.shardingproxy.backend.netty.future.FutureRegistry;
 import io.shardingsphere.shardingproxy.runtime.ChannelRegistry;

@@ -18,7 +18,7 @@
 package io.shardingsphere.shardingproxy.util;
 
 import io.shardingsphere.core.config.DataSourceConfiguration;
-import io.shardingsphere.core.rule.DataSourceParameter;
+import io.shardingsphere.core.config.DataSourceParameter;
 import lombok.AccessLevel;
 import lombok.NoArgsConstructor;
 

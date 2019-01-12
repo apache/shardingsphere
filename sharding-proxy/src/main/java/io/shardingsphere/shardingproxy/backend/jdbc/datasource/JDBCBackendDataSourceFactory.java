@@ -17,7 +17,7 @@
 
 package io.shardingsphere.shardingproxy.backend.jdbc.datasource;
 
-import io.shardingsphere.core.rule.DataSourceParameter;
+import io.shardingsphere.core.config.DataSourceParameter;
 
 import javax.sql.DataSource;
 

@@ -18,8 +18,8 @@
 package io.shardingsphere.transaction.xa.jta.datasource.dialect;
 
 import com.google.common.base.Optional;
+import io.shardingsphere.core.config.DataSourceParameter;
 import io.shardingsphere.core.metadata.datasource.dialect.PostgreSQLDataSourceMetaData;
-import io.shardingsphere.core.rule.DataSourceParameter;
 import io.shardingsphere.transaction.xa.jta.datasource.XAProperties;
 
 import java.util.Properties;

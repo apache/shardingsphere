@@ -20,12 +20,9 @@ package io.shardingsphere.transaction.xa.manager;
 import com.atomikos.icatch.config.UserTransactionService;
 import com.atomikos.icatch.config.UserTransactionServiceImp;
 import com.atomikos.icatch.jta.UserTransactionManager;
-import io.shardingsphere.core.constant.DatabaseType;
 import io.shardingsphere.core.exception.ShardingException;
-import io.shardingsphere.core.rule.DataSourceParameter;
 import io.shardingsphere.transaction.xa.spi.XATransactionManager;
 
-import javax.sql.DataSource;
 import javax.sql.XADataSource;
 import javax.transaction.HeuristicMixedException;
 import javax.transaction.HeuristicRollbackException;
@@ -91,15 +88,6 @@ public final class AtomikosTransactionManager implements XATransactionManager {
             return underlyingTransactionManager.getStatus();
         } catch (final SystemException ex) {
             throw new ShardingException(ex);
-        }
-    }
-    
-    @Override
-    public DataSource wrapDataSource(final DatabaseType databaseType, final XADataSource xaDataSource, final String dataSourceName, final DataSourceParameter dataSourceParameter) {
-        try {
-            return new AtomikosDataSourceBeanWrapper().wrap(databaseType, xaDataSource, dataSourceName, dataSourceParameter);
-        } catch (final Exception ex) {
-            throw new ShardingException("Failed to wrap XADataSource to transactional datasource pool", ex);
         }
     }
     

@@ -15,7 +15,7 @@
  * </p>
  */
 
-package io.shardingsphere.core.rule;
+package io.shardingsphere.core.config;
 
 import lombok.Getter;
 import lombok.Setter;

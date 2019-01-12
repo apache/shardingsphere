@@ -18,7 +18,7 @@
 package io.shardingsphere.transaction.xa.convert.swap;
 
 import io.shardingsphere.core.config.DataSourceConfiguration;
-import io.shardingsphere.core.rule.DataSourceParameter;
+import io.shardingsphere.core.config.DataSourceParameter;
 import lombok.Getter;
 
 import javax.sql.DataSource;

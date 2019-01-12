@@ -23,7 +23,6 @@ import com.google.common.base.Optional;
 import com.google.common.collect.Sets;
 import io.shardingsphere.core.constant.PoolType;
 import io.shardingsphere.core.exception.ShardingConfigurationException;
-import io.shardingsphere.core.rule.DataSourceParameter;
 import lombok.Getter;
 import lombok.RequiredArgsConstructor;
 
