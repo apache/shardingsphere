@@ -24,7 +24,7 @@ import org.junit.Test;
 import static org.hamcrest.CoreMatchers.instanceOf;
 import static org.junit.Assert.assertThat;
 
-public class SkipBackendHandlerTest {
+public final class SkipBackendHandlerTest {
     
     @Test
     public void assertExecuteSkipBackendHandler() {

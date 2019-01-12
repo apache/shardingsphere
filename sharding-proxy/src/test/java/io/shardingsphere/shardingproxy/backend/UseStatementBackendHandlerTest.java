@@ -37,7 +37,7 @@ import static org.mockito.Mockito.verify;
 import static org.mockito.Mockito.when;
 
 @RunWith(MockitoJUnitRunner.class)
-public class UseStatementBackendHandlerTest {
+public final class UseStatementBackendHandlerTest {
     
     @Mock
     private BackendConnection backendConnection;
