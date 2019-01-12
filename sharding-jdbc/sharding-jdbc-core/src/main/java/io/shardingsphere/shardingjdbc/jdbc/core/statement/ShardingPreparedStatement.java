@@ -264,6 +264,11 @@ public final class ShardingPreparedStatement extends AbstractShardingPreparedSta
     }
     
     @Override
+    public boolean isAccumulate() {
+        return !connection.getShardingContext().getShardingRule().isAllBroadcastTables(routeResult.getSqlStatement().getTables().getTableNames());
+    }
+    
+    @Override
     public Collection<PreparedStatement> getRoutedStatements() {
         return Collections2.transform(preparedStatementExecutor.getStatements(), new Function<Statement, PreparedStatement>() {
             @Override

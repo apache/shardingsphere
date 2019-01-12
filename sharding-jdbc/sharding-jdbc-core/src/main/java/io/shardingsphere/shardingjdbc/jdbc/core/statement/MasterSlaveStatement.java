@@ -195,4 +195,9 @@ public final class MasterSlaveStatement extends AbstractStatementAdapter {
         }
         routedStatements.clear();
     }
+    
+    @Override
+    public boolean isAccumulate() {
+        return false;
+    }
 }
