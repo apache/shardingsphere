@@ -71,10 +71,8 @@ public final class XAShardingTransactionEngine implements ShardingTransactionEng
     
     @Override
     public void clearTransactionalResources() {
-        if (!cachedShardingXADataSourceMap.isEmpty()) {
-            for (ShardingXADataSource each : cachedShardingXADataSourceMap.values()) {
-                xaTransactionManager.removeRecoveryResource(each.getResourceName(), each.getXaDataSource());
-            }
+        for (ShardingXADataSource each : cachedShardingXADataSourceMap.values()) {
+            xaTransactionManager.removeRecoveryResource(each.getResourceName(), each.getXaDataSource());
         }
         cachedShardingXADataSourceMap.clear();
     }

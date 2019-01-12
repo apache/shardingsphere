@@ -49,7 +49,17 @@ public final class AtomikosTransactionManager implements XATransactionManager {
     }
     
     @Override
-    public void begin() throws ShardingException {
+    public void registerRecoveryResource(final String dataSourceName, final XADataSource xaDataSource) {
+        userTransactionService.registerResource(new AtomikosXARecoverableResource(dataSourceName, xaDataSource));
+    }
+    
+    @Override
+    public void removeRecoveryResource(final String dataSourceName, final XADataSource xaDataSource) {
+        userTransactionService.removeResource(new AtomikosXARecoverableResource(dataSourceName, xaDataSource));
+    }
+    
+    @Override
+    public void begin() {
         try {
             underlyingTransactionManager.begin();
         } catch (final SystemException | NotSupportedException ex) {
@@ -58,7 +68,7 @@ public final class AtomikosTransactionManager implements XATransactionManager {
     }
     
     @Override
-    public void commit() throws ShardingException {
+    public void commit() {
         try {
             underlyingTransactionManager.commit();
         } catch (final RollbackException | HeuristicMixedException | HeuristicRollbackException | SystemException ex) {
@@ -67,7 +77,7 @@ public final class AtomikosTransactionManager implements XATransactionManager {
     }
     
     @Override
-    public void rollback() throws ShardingException {
+    public void rollback() {
         try {
             if (Status.STATUS_NO_TRANSACTION != getStatus()) {
                 underlyingTransactionManager.rollback();
@@ -78,7 +88,7 @@ public final class AtomikosTransactionManager implements XATransactionManager {
     }
     
     @Override
-    public int getStatus() throws ShardingException {
+    public int getStatus() {
         try {
             return underlyingTransactionManager.getStatus();
         } catch (final SystemException ex) {
@@ -92,18 +102,7 @@ public final class AtomikosTransactionManager implements XATransactionManager {
     }
     
     @Override
-    public void registerRecoveryResource(final String dataSourceName, final XADataSource xaDataSource) {
-        userTransactionService.registerResource(new AtomikosXARecoverableResource(dataSourceName, xaDataSource));
-    }
-    
-    @Override
-    public void removeRecoveryResource(final String dataSourceName, final XADataSource xaDataSource) {
-        userTransactionService.removeResource(new AtomikosXARecoverableResource(dataSourceName, xaDataSource));
-    }
-    
-    @Override
     public void destroy() {
         userTransactionService.shutdown(true);
     }
 }
-
