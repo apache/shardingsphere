@@ -24,12 +24,9 @@ import javax.transaction.Status;
 import javax.transaction.TransactionManager;
 
 public final class FixtureXATransactionManager implements XATransactionManager {
-    @Override
-    public void startup() {
-    }
     
     @Override
-    public void destroy() {
+    public void startup() {
     }
     
     @Override
@@ -56,11 +53,13 @@ public final class FixtureXATransactionManager implements XATransactionManager {
     
     @Override
     public void registerRecoveryResource(final String dataSourceName, final XADataSource xaDataSource) {
-    
     }
     
     @Override
     public void removeRecoveryResource(final String dataSourceName, final XADataSource xaDataSource) {
+    }
     
+    @Override
+    public void destroy() {
     }
 }
