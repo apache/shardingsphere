@@ -121,22 +121,11 @@ public final class ShardingPreparedStatement extends AbstractShardingPreparedSta
             clearPrevious();
             sqlRoute();
             initPreparedStatementExecutor();
-            return accumulate(preparedStatementExecutor.executeUpdate());
+            return preparedStatementExecutor.executeUpdate();
         } finally {
             refreshTableMetaData(connection.getShardingContext(), routeResult.getSqlStatement());
             clearBatch();
         }
-    }
-    
-    private int accumulate(final List<Integer> results) {
-        int result = 0;
-        if (1 == results.size() || connection.getShardingContext().getShardingRule().isAllBroadcastTables(routeResult.getSqlStatement().getTables().getTableNames())) {
-            return null == results.get(0) ? 0 : results.get(0);
-        }
-        for (Integer each : results) {
-            result += null == each ? 0 : each;
-        }
-        return result;
     }
     
     @Override
@@ -158,8 +147,8 @@ public final class ShardingPreparedStatement extends AbstractShardingPreparedSta
         if (preparedStatementExecutor.isReturnGeneratedKeys() && generatedKey.isPresent()) {
             return new GeneratedKeysResultSet(routeResult.getGeneratedKey().getGeneratedKeys().iterator(), generatedKey.get().getColumn().getName(), this);
         }
-        if (1 == getRoutedStatements().size()) {
-            return getRoutedStatements().iterator().next().getGeneratedKeys();
+        if (1 == preparedStatementExecutor.getStatements().size()) {
+            return preparedStatementExecutor.getStatements().iterator().next().getGeneratedKeys();
         }
         return new GeneratedKeysResultSet();
     }
@@ -176,13 +165,13 @@ public final class ShardingPreparedStatement extends AbstractShardingPreparedSta
         if (null != currentResultSet) {
             return currentResultSet;
         }
-        if (1 == getRoutedStatements().size() && routeResult.getSqlStatement() instanceof DQLStatement) {
-            currentResultSet = getRoutedStatements().iterator().next().getResultSet();
+        if (1 == preparedStatementExecutor.getStatements().size() && routeResult.getSqlStatement() instanceof DQLStatement) {
+            currentResultSet = preparedStatementExecutor.getStatements().iterator().next().getResultSet();
             return currentResultSet;
         }
-        List<ResultSet> resultSets = new ArrayList<>(getRoutedStatements().size());
-        List<QueryResult> queryResults = new ArrayList<>(getRoutedStatements().size());
-        for (Statement each : getRoutedStatements()) {
+        List<ResultSet> resultSets = new ArrayList<>(preparedStatementExecutor.getStatements().size());
+        List<QueryResult> queryResults = new ArrayList<>(preparedStatementExecutor.getStatements().size());
+        for (Statement each : preparedStatementExecutor.getStatements()) {
             ResultSet resultSet = each.getResultSet();
             resultSets.add(resultSet);
             queryResults.add(new StreamQueryResult(resultSet));
@@ -195,35 +184,14 @@ public final class ShardingPreparedStatement extends AbstractShardingPreparedSta
         return currentResultSet;
     }
     
-    @Override
-    public int getUpdateCount() throws SQLException {
-        if (1 == getRoutedStatements().size() || connection.getShardingContext().getShardingRule().isAllBroadcastTables(routeResult.getSqlStatement().getTables().getTableNames())) {
-            return getRoutedStatements().iterator().next().getUpdateCount();
-        }
-        long result = 0;
-        boolean hasResult = false;
-        for (Statement each : getRoutedStatements()) {
-            int updateCount = each.getUpdateCount();
-            if (updateCount > -1) {
-                hasResult = true;
-            }
-            result += updateCount;
-        }
-        if (result > Integer.MAX_VALUE) {
-            result = Integer.MAX_VALUE;
-        }
-        return hasResult ? Long.valueOf(result).intValue() : -1;
-    }
-    
     private void initPreparedStatementExecutor() throws SQLException {
         preparedStatementExecutor.init(routeResult);
         setParametersForStatements();
     }
     
     private void setParametersForStatements() {
-        int count = 0;
-        for (PreparedStatement each : getRoutedStatements()) {
-            replaySetParameter(each, preparedStatementExecutor.getParameterSets().get(count++));
+        for (int i = 0; i < preparedStatementExecutor.getStatements().size(); i++) {
+            replaySetParameter((PreparedStatement) preparedStatementExecutor.getStatements().get(i), preparedStatementExecutor.getParameterSets().get(i));
         }
     }
     

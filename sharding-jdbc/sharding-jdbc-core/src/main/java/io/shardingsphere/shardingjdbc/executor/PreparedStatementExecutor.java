@@ -121,10 +121,19 @@ public final class PreparedStatementExecutor extends AbstractStatementExecutor {
      * @return effected records count
      * @throws SQLException SQL exception
      */
-    public List<Integer> executeUpdate() throws SQLException {
+    public int executeUpdate() throws SQLException {
         final boolean isExceptionThrown = ExecutorExceptionHandler.isExceptionThrown();
         SQLExecuteCallback<Integer> executeCallback = SQLExecuteCallbackFactory.getPreparedUpdateSQLExecuteCallback(getDatabaseType(), isExceptionThrown);
-        return executeCallback(executeCallback);
+        List<Integer> results = executeCallback(executeCallback);
+        return accumulate(results);
+    }
+    
+    private int accumulate(final List<Integer> results) {
+        int result = 0;
+        for (Integer each : results) {
+            result += null == each ? 0 : each;
+        }
+        return result;
     }
     
     /**

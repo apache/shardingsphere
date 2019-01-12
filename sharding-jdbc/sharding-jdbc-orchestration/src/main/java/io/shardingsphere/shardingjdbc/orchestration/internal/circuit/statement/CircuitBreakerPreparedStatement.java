@@ -287,11 +287,6 @@ public final class CircuitBreakerPreparedStatement extends AbstractUnsupportedOp
     }
     
     @Override
-    public int getUpdateCount() {
-        return -1;
-    }
-    
-    @Override
     public int getResultSetConcurrency() {
         return ResultSet.CONCUR_READ_ONLY;
     }

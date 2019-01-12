@@ -189,12 +189,6 @@ public final class MasterSlaveStatement extends AbstractStatementAdapter {
         return routedStatements.iterator().next().getResultSet();
     }
     
-    @Override
-    public int getUpdateCount() throws SQLException {
-        Preconditions.checkState(1 == routedStatements.size());
-        return routedStatements.iterator().next().getUpdateCount();
-    }
-    
     private void clearPrevious() throws SQLException {
         for (Statement each : routedStatements) {
             each.close();

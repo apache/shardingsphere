@@ -59,7 +59,6 @@ import java.util.List;
  * @author zhaojun
  * @author zhangliang
  * @author panjuan
- * @author maxiaoguang
  */
 @RequiredArgsConstructor
 public final class JDBCBackendHandler extends AbstractBackendHandler {
@@ -106,9 +105,6 @@ public final class JDBCBackendHandler extends AbstractBackendHandler {
     
     private CommandResponsePackets merge(final SQLStatement sqlStatement) throws SQLException {
         if (executeResponse instanceof ExecuteUpdateResponse) {
-            if (logicSchema instanceof ShardingSchema && ((ShardingSchema) logicSchema).getShardingRule().isAllBroadcastTables(sqlStatement.getTables().getTableNames())) {
-                return new CommandResponsePackets(((ExecuteUpdateResponse) executeResponse).getPackets().get(0));
-            }
             return ((ExecuteUpdateResponse) executeResponse).merge();
         }
         mergedResult = MergeEngineFactory.newInstance(
