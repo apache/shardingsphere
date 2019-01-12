@@ -121,11 +121,22 @@ public final class ShardingPreparedStatement extends AbstractShardingPreparedSta
             clearPrevious();
             sqlRoute();
             initPreparedStatementExecutor();
-            return preparedStatementExecutor.executeUpdate();
+            return accumulate(preparedStatementExecutor.executeUpdate());
         } finally {
             refreshTableMetaData(connection.getShardingContext(), routeResult.getSqlStatement());
             clearBatch();
         }
+    }
+    
+    private int accumulate(final List<Integer> results) {
+        int result = 0;
+        if (1 == results.size() || connection.getShardingContext().getShardingRule().isAllBroadcastTables(routeResult.getSqlStatement().getTables().getTableNames())) {
+            return null == results.get(0) ? 0 : results.get(0);
+        }
+        for (Integer each : results) {
+            result += null == each ? 0 : each;
+        }
+        return result;
     }
     
     @Override
