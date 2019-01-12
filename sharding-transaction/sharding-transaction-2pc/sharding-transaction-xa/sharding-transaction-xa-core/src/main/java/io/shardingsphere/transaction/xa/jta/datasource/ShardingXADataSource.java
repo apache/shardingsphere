@@ -48,13 +48,13 @@ public final class ShardingXADataSource extends AbstractUnsupportedShardingXADat
     public ShardingXADataSource(final DatabaseType databaseType, final String resourceName, final DataSource dataSource) {
         this.databaseType = databaseType;
         this.resourceName = resourceName;
-        this.originalDataSource = dataSource;
+        originalDataSource = dataSource;
         if (dataSource instanceof XADataSource) {
-            this.xaDataSource = (XADataSource) dataSource;
-            this.isOriginalXADataSource = true;
+            xaDataSource = (XADataSource) dataSource;
+            isOriginalXADataSource = true;
         } else {
-            this.xaDataSource = XADataSourceFactory.build(databaseType, dataSource);
-            this.isOriginalXADataSource = false;
+            xaDataSource = XADataSourceFactory.build(databaseType, dataSource);
+            isOriginalXADataSource = false;
         }
     }
     

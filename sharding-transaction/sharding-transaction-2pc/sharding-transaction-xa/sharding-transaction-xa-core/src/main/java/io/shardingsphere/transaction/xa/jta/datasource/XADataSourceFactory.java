@@ -25,7 +25,6 @@ import io.shardingsphere.core.rule.DataSourceParameter;
 import io.shardingsphere.transaction.xa.convert.swap.DataSourceSwapperRegistry;
 import lombok.AccessLevel;
 import lombok.NoArgsConstructor;
-import lombok.extern.slf4j.Slf4j;
 
 import javax.sql.DataSource;
 import javax.sql.XADataSource;
@@ -39,7 +38,6 @@ import java.util.Properties;
  * @author zhaojun
  */
 @NoArgsConstructor(access = AccessLevel.PRIVATE)
-@Slf4j
 public final class XADataSourceFactory {
     
     private static final Map<DatabaseType, String> XA_DRIVER_CLASS_NAMES = new HashMap<>(DatabaseType.values().length, 1);
@@ -59,7 +57,7 @@ public final class XADataSourceFactory {
      * @return XA DataSource instance
      */
     public static XADataSource build(final DatabaseType databaseType) {
-        return newXADataSourceInstance(databaseType);
+        return createXADataSource(databaseType);
     }
     
     /**
@@ -72,17 +70,16 @@ public final class XADataSourceFactory {
     public static XADataSource build(final DatabaseType databaseType, final DataSource dataSource) {
         try {
             DataSourceParameter dataSourceParameter = DataSourceSwapperRegistry.getSwapper(dataSource.getClass()).swap(dataSource);
-            XADataSource xaDataSource = newXADataSourceInstance(databaseType);
+            XADataSource result = createXADataSource(databaseType);
             Properties xaProperties = XAPropertiesFactory.createXAProperties(databaseType).build(dataSourceParameter);
-            PropertyUtils.setProperties(xaDataSource, xaProperties);
-            return xaDataSource;
+            PropertyUtils.setProperties(result, xaProperties);
+            return result;
         } catch (final PropertyException ex) {
-            log.error("Failed to create ShardingXADataSource.");
             throw new ShardingException(ex);
         }
     }
     
-    private static XADataSource newXADataSourceInstance(final DatabaseType databaseType) {
+    private static XADataSource createXADataSource(final DatabaseType databaseType) {
         String xaDataSourceClassName = XA_DRIVER_CLASS_NAMES.get(databaseType);
         Class xaDataSourceClass;
         try {
