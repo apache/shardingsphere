@@ -19,7 +19,6 @@ package io.shardingsphere.transaction.xa.convert.swap;
 
 import io.shardingsphere.core.config.DataSourceParameter;
 import io.shardingsphere.core.constant.DatabaseType;
-import io.shardingsphere.core.constant.PoolType;
 import io.shardingsphere.transaction.xa.fixture.DataSourceUtils;
 import org.junit.Test;
 
@@ -37,7 +36,7 @@ public final class DataSourceSwapperRegistryTest {
     
     @Test
     public void assertSwapFromHikari() {
-        DataSource dataSource = DataSourceUtils.build(PoolType.HIKARI, DatabaseType.MySQL, dataSourceName);
+        DataSource dataSource = DataSourceUtils.build("com.zaxxer.hikari.HikariDataSource", DatabaseType.MySQL, dataSourceName);
         DataSourceParameter parameter = DataSourceSwapperRegistry.getSwapper(dataSource.getClass()).swap(dataSource);
         assertDataSourceParameter(parameter);
         assertThat(parameter.getMinPoolSize(), is(2));
@@ -47,7 +46,7 @@ public final class DataSourceSwapperRegistryTest {
     
     @Test
     public void assertSwapFromDruid() {
-        DataSource dataSource = DataSourceUtils.build(PoolType.DRUID, DatabaseType.MySQL, dataSourceName);
+        DataSource dataSource = DataSourceUtils.build("com.alibaba.druid.pool.DruidDataSource", DatabaseType.MySQL, dataSourceName);
         DataSourceParameter parameter = DataSourceSwapperRegistry.getSwapper(dataSource.getClass()).swap(dataSource);
         assertDataSourceParameter(parameter);
         assertThat(parameter.getMinPoolSize(), is(2));
@@ -57,7 +56,7 @@ public final class DataSourceSwapperRegistryTest {
     
     @Test
     public void assertSwapFromDBCP2() {
-        DataSource dataSource = DataSourceUtils.build(PoolType.DBCP2, DatabaseType.MySQL, dataSourceName);
+        DataSource dataSource = DataSourceUtils.build("org.apache.commons.dbcp2.BasicDataSource", DatabaseType.MySQL, dataSourceName);
         DataSourceParameter parameter = DataSourceSwapperRegistry.getSwapper(dataSource.getClass()).swap(dataSource);
         assertDataSourceParameter(parameter);
         assertThat(parameter.getMinPoolSize(), is(2));

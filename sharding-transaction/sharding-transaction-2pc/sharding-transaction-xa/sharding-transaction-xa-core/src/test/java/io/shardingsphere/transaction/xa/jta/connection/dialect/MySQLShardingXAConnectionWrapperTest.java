@@ -18,7 +18,6 @@
 package io.shardingsphere.transaction.xa.jta.connection.dialect;
 
 import io.shardingsphere.core.constant.DatabaseType;
-import io.shardingsphere.core.constant.PoolType;
 import io.shardingsphere.transaction.xa.fixture.DataSourceUtils;
 import io.shardingsphere.transaction.xa.jta.connection.ShardingXAConnection;
 import io.shardingsphere.transaction.xa.jta.datasource.XADataSourceFactory;
@@ -54,7 +53,7 @@ public class MySQLShardingXAConnectionWrapperTest {
     @SuppressWarnings("unchecked")
     public void setUp() {
         Connection mysqlConnection = (Connection) mock(Class.forName("com.mysql.jdbc.Connection"));
-        DataSource dataSource = DataSourceUtils.build(PoolType.HIKARI, DatabaseType.MySQL, "ds1");
+        DataSource dataSource = DataSourceUtils.build("com.zaxxer.hikari.HikariDataSource", DatabaseType.MySQL, "ds1");
         xaDataSource = XADataSourceFactory.build(DatabaseType.MySQL, dataSource);
         when(connection.unwrap((Class<Object>) any())).thenReturn(mysqlConnection);
     }

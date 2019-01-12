@@ -21,7 +21,6 @@ import com.alibaba.druid.pool.DruidDataSource;
 import com.alibaba.druid.pool.xa.DruidXADataSource;
 import com.zaxxer.hikari.HikariDataSource;
 import io.shardingsphere.core.constant.DatabaseType;
-import io.shardingsphere.core.constant.PoolType;
 import lombok.NoArgsConstructor;
 import org.mockito.Mockito;
 
@@ -38,20 +37,20 @@ public final class DataSourceUtils {
     /**
      * Build data source.
      *
-     * @param poolType pool type
+     * @param dataSourcePoolClassName data source pool class name
      * @param databaseType database type
      * @param databaseName database name
      * @return data source
      */
-    public static DataSource build(final PoolType poolType, final DatabaseType databaseType, final String databaseName) {
-        switch (poolType) {
-            case DBCP2:
+    public static DataSource build(final String dataSourcePoolClassName, final DatabaseType databaseType, final String databaseName) {
+        switch (dataSourcePoolClassName) {
+            case "org.apache.commons.dbcp2.BasicDataSource":
                 return newBasicDataSource(databaseType, databaseName);
-            case HIKARI:
+            case "com.zaxxer.hikari.HikariDataSource":
                 return newHikariDataSource(databaseType, databaseName);
-            case DRUID:
+            case "com.alibaba.druid.pool.DruidDataSource":
                 return newDruidDataSource(databaseType, databaseName);
-            case DRUID_XA:
+            case "com.alibaba.druid.pool.xa.DruidXADataSource":
                 return newDruidXADataSource(databaseType, databaseName);
             default:
                 return Mockito.mock(DataSource.class);

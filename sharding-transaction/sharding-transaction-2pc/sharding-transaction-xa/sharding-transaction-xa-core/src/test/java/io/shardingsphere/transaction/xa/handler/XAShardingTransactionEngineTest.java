@@ -19,7 +19,6 @@ package io.shardingsphere.transaction.xa.handler;
 
 import com.atomikos.jdbc.AtomikosDataSourceBean;
 import io.shardingsphere.core.constant.DatabaseType;
-import io.shardingsphere.core.constant.PoolType;
 import io.shardingsphere.transaction.api.TransactionType;
 import io.shardingsphere.transaction.xa.XAShardingTransactionEngine;
 import io.shardingsphere.transaction.xa.fixture.DataSourceUtils;
@@ -91,7 +90,7 @@ public class XAShardingTransactionEngineTest {
     
     @Test
     public void assertRegisterXATransactionalDataSource() {
-        Map<String, DataSource> dataSourceMap = createDataSourceMap(PoolType.DRUID_XA, DatabaseType.MySQL);
+        Map<String, DataSource> dataSourceMap = createDataSourceMap("com.alibaba.druid.pool.xa.DruidXADataSource", DatabaseType.MySQL);
         xaShardingTransactionEngine.registerTransactionalResource(DatabaseType.MySQL, dataSourceMap);
         for (Entry<String, DataSource> entry : dataSourceMap.entrySet()) {
             verify(xaTransactionManager).registerRecoveryResource(entry.getKey(), (XADataSource) entry.getValue());
@@ -107,7 +106,7 @@ public class XAShardingTransactionEngineTest {
     
     @Test
     public void assertRegisterNoneXATransactionalDAtaSource() {
-        Map<String, DataSource> dataSourceMap = createDataSourceMap(PoolType.HIKARI, DatabaseType.MySQL);
+        Map<String, DataSource> dataSourceMap = createDataSourceMap("com.zaxxer.hikari.HikariDataSource", DatabaseType.MySQL);
         xaShardingTransactionEngine.registerTransactionalResource(DatabaseType.MySQL, dataSourceMap);
         Map<String, ShardingXADataSource> cachedXADatasourceMap = getCachedShardingXADataSourceMap();
         assertThat(cachedXADatasourceMap.size(), is(2));
@@ -176,10 +175,10 @@ public class XAShardingTransactionEngineTest {
         return result;
     }
     
-    private Map<String, DataSource> createDataSourceMap(final PoolType poolType, final DatabaseType databaseType) {
+    private Map<String, DataSource> createDataSourceMap(final String dataSourcePoolClassName, final DatabaseType databaseType) {
         Map<String, DataSource> result = new HashMap<>();
-        result.put("ds1", DataSourceUtils.build(poolType, databaseType, "demo_ds_1"));
-        result.put("ds2", DataSourceUtils.build(poolType, databaseType, "demo_ds_2"));
+        result.put("ds1", DataSourceUtils.build(dataSourcePoolClassName, databaseType, "demo_ds_1"));
+        result.put("ds2", DataSourceUtils.build(dataSourcePoolClassName, databaseType, "demo_ds_2"));
         return result;
     }
     

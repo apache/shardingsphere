@@ -23,7 +23,6 @@ import io.shardingsphere.api.config.rule.ShardingRuleConfiguration;
 import io.shardingsphere.api.config.rule.TableRuleConfiguration;
 import io.shardingsphere.api.config.strategy.InlineShardingStrategyConfiguration;
 import io.shardingsphere.core.config.DataSourceConfiguration;
-import io.shardingsphere.core.constant.PoolType;
 import io.shardingsphere.core.rule.Authentication;
 import org.junit.Test;
 
@@ -113,7 +112,7 @@ public class ConfigurationYamlConverterTest {
         properties.put("jdbcUrl", "jdbc:h2:mem:test;DB_CLOSE_DELAY=-1;DATABASE_TO_UPPER=false;MODE=MySQL");
         properties.put("username", "root");
         properties.put("password", "root");
-        DataSourceConfiguration result = new DataSourceConfiguration(PoolType.DRUID.getClassName());
+        DataSourceConfiguration result = new DataSourceConfiguration("com.alibaba.druid.pool.DruidDataSource");
         result.getProperties().putAll(properties);
         return Collections.singletonMap("test", result);
     }
