@@ -21,7 +21,6 @@ import com.google.common.base.CaseFormat;
 import com.google.common.base.Joiner;
 import com.google.common.base.Optional;
 import com.google.common.collect.Sets;
-import io.shardingsphere.core.constant.PoolType;
 import io.shardingsphere.core.exception.ShardingConfigurationException;
 import lombok.Getter;
 import lombok.RequiredArgsConstructor;
@@ -71,18 +70,6 @@ public final class DataSourceConfiguration {
     public static DataSourceConfiguration getDataSourceConfiguration(final DataSource dataSource) {
         DataSourceConfiguration result = new DataSourceConfiguration(dataSource.getClass().getName());
         result.getProperties().putAll(findAllGetterProperties(dataSource));
-        return result;
-    }
-    
-    /**
-     * Get data source configuration.
-     *
-     * @param dataSourceParameter data source parameter
-     * @return data source configuration
-     */
-    public static DataSourceConfiguration getDataSourceConfiguration(final DataSourceParameter dataSourceParameter) {
-        DataSourceConfiguration result = new DataSourceConfiguration(PoolType.HIKARI.getClassName());
-        result.getProperties().putAll(findAllGetterProperties(dataSourceParameter));
         return result;
     }
     

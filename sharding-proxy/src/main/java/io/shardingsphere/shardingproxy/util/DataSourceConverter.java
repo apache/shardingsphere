@@ -17,6 +17,7 @@
 
 package io.shardingsphere.shardingproxy.util;
 
+import com.zaxxer.hikari.HikariDataSource;
 import io.shardingsphere.core.config.DataSourceConfiguration;
 import io.shardingsphere.core.config.DataSourceParameter;
 import lombok.AccessLevel;
@@ -57,8 +58,22 @@ public final class DataSourceConverter {
     public static Map<String, DataSourceConfiguration> getDataSourceConfigurationMap(final Map<String, DataSourceParameter> dataSourceParameterMap) {
         Map<String, DataSourceConfiguration> result = new LinkedHashMap<>(dataSourceParameterMap.size());
         for (Entry<String, DataSourceParameter> entry : dataSourceParameterMap.entrySet()) {
-            result.put(entry.getKey(), DataSourceConfiguration.getDataSourceConfiguration(entry.getValue()));
+            result.put(entry.getKey(), createDataSourceConfiguration(entry.getValue()));
         }
+        return result;
+    }
+    
+    private static DataSourceConfiguration createDataSourceConfiguration(final DataSourceParameter dataSourceParameter) {
+        DataSourceConfiguration result = new DataSourceConfiguration(HikariDataSource.class.getName());
+        result.getProperties().put("url", dataSourceParameter.getUrl());
+        result.getProperties().put("username", dataSourceParameter.getUsername());
+        result.getProperties().put("password", dataSourceParameter.getPassword());
+        result.getProperties().put("connectionTimeoutMilliseconds", dataSourceParameter.getConnectionTimeoutMilliseconds());
+        result.getProperties().put("idleTimeoutMilliseconds", dataSourceParameter.getIdleTimeoutMilliseconds());
+        result.getProperties().put("maxLifetimeMilliseconds", dataSourceParameter.getMaxLifetimeMilliseconds());
+        result.getProperties().put("maxPoolSize", dataSourceParameter.getMaxPoolSize());
+        result.getProperties().put("minPoolSize", dataSourceParameter.getMinPoolSize());
+        result.getProperties().put("maintenanceIntervalMilliseconds", dataSourceParameter.getMaintenanceIntervalMilliseconds());
         return result;
     }
 }
