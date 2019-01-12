@@ -40,7 +40,7 @@ import static org.junit.Assert.assertFalse;
 import static org.junit.Assert.assertThat;
 import static org.junit.Assert.assertTrue;
 
-public class ShardingXADataSourceTest {
+public final class ShardingXADataSourceTest {
     
     @Test
     public void assertBuildShardingXADataSourceOfXA() {

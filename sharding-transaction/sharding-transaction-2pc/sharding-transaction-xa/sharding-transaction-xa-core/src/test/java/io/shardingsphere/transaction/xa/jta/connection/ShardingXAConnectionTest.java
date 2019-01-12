@@ -37,7 +37,7 @@ import static org.mockito.Mockito.mock;
 import static org.mockito.Mockito.verify;
 
 @RunWith(MockitoJUnitRunner.class)
-public class ShardingXAConnectionTest {
+public final class ShardingXAConnectionTest {
     
     @Mock
     private XAConnection xaConnection;

@@ -42,7 +42,7 @@ import static org.mockito.Mockito.mock;
 import static org.mockito.Mockito.when;
 
 @RunWith(MockitoJUnitRunner.class)
-public class MySQLShardingXAConnectionWrapperTest {
+public final class MySQLShardingXAConnectionWrapperTest {
     
     private XADataSource xaDataSource;
     
