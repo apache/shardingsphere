@@ -17,6 +17,8 @@
 
 package io.shardingsphere.transaction.xa.swapper;
 
+import com.alibaba.druid.pool.DruidDataSource;
+import com.zaxxer.hikari.HikariDataSource;
 import io.shardingsphere.core.config.DatabaseAccessConfiguration;
 import io.shardingsphere.core.constant.DatabaseType;
 import io.shardingsphere.transaction.xa.fixture.DataSourceUtils;
@@ -33,25 +35,25 @@ public final class DataSourceSwapperEngineTest {
     
     @Test
     public void assertSwapForHikariCP() {
-        DataSource dataSource = DataSourceUtils.build("com.zaxxer.hikari.HikariDataSource", DatabaseType.MySQL, dataSourceName);
+        DataSource dataSource = DataSourceUtils.build(HikariDataSource.class, DatabaseType.MySQL, dataSourceName);
         assertDatabaseAccessConfiguration(DataSourceSwapperEngine.swap(dataSource));
     }
     
     @Test
     public void assertSwapFromDBCP2() {
-        DataSource dataSource = DataSourceUtils.build("org.apache.commons.dbcp2.BasicDataSource", DatabaseType.MySQL, dataSourceName);
+        DataSource dataSource = DataSourceUtils.build(org.apache.commons.dbcp2.BasicDataSource.class, DatabaseType.MySQL, dataSourceName);
         assertDatabaseAccessConfiguration(DataSourceSwapperEngine.swap(dataSource));
     }
     
     @Test
     public void assertSwapFromTomcatDBCP() {
-        DataSource dataSource = DataSourceUtils.build("org.apache.tomcat.dbcp.dbcp2.BasicDataSource", DatabaseType.MySQL, dataSourceName);
+        DataSource dataSource = DataSourceUtils.build(org.apache.tomcat.dbcp.dbcp2.BasicDataSource.class, DatabaseType.MySQL, dataSourceName);
         assertDatabaseAccessConfiguration(DataSourceSwapperEngine.swap(dataSource));
     }
     
     @Test
     public void assertSwapFromDruid() {
-        DataSource dataSource = DataSourceUtils.build("com.alibaba.druid.pool.DruidDataSource", DatabaseType.MySQL, dataSourceName);
+        DataSource dataSource = DataSourceUtils.build(DruidDataSource.class, DatabaseType.MySQL, dataSourceName);
         DatabaseAccessConfiguration databaseAccessConfiguration = DataSourceSwapperEngine.swap(dataSource);
         assertDatabaseAccessConfiguration(databaseAccessConfiguration);
     }

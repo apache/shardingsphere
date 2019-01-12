@@ -17,9 +17,8 @@
 
 package io.shardingsphere.transaction.xa;
 
-import io.shardingsphere.transaction.xa.convert.AllConvertTests;
-import io.shardingsphere.transaction.xa.handler.XAShardingTransactionEngineTest;
 import io.shardingsphere.transaction.xa.manager.AllManagerTests;
+import io.shardingsphere.transaction.xa.swapper.AllSwapperTests;
 import org.junit.runner.RunWith;
 import org.junit.runners.Suite;
 import org.junit.runners.Suite.SuiteClasses;
@@ -28,7 +27,7 @@ import org.junit.runners.Suite.SuiteClasses;
 @SuiteClasses({
         AllManagerTests.class,
         XAShardingTransactionEngineTest.class,
-        AllConvertTests.class
+        AllSwapperTests.class
 })
 public final class AllTests {
 }

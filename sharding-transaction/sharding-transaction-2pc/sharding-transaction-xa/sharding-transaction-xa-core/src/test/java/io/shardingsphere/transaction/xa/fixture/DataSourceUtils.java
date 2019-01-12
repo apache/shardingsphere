@@ -36,31 +36,33 @@ public final class DataSourceUtils {
     /**
      * Build data source.
      *
-     * @param dataSourcePoolClassName data source pool class name
+     * @param dataSourceClass data source
      * @param databaseType database type
      * @param databaseName database name
      * @return data source
      */
-    public static DataSource build(final String dataSourcePoolClassName, final DatabaseType databaseType, final String databaseName) {
-        switch (dataSourcePoolClassName) {
-            case "com.zaxxer.hikari.HikariDataSource":
-                return createHikariDataSource(databaseType, databaseName);
-            case "org.apache.commons.dbcp2.BasicDataSource":
-                return createBasicDataSource(databaseType, databaseName);
-            case "org.apache.tomcat.dbcp.dbcp2.BasicDataSource":
-                return createTomcatDataSource(databaseType, databaseName);
-            case "com.alibaba.druid.pool.DruidDataSource":
-                return createDruidDataSource(databaseType, databaseName);
-            case "com.alibaba.druid.pool.xa.DruidXADataSource":
-                return createDruidXADataSource(databaseType, databaseName);
-            default:
-                throw new UnsupportedOperationException(dataSourcePoolClassName);
+    public static DataSource build(final Class<? extends DataSource> dataSourceClass, final DatabaseType databaseType, final String databaseName) {
+        if (HikariDataSource.class == dataSourceClass) {
+            return createHikariDataSource(databaseType, databaseName);
         }
+        if (org.apache.commons.dbcp2.BasicDataSource.class == dataSourceClass) {
+            return createBasicDataSource(databaseType, databaseName);
+        }
+        if (org.apache.tomcat.dbcp.dbcp2.BasicDataSource.class == dataSourceClass) {
+            return createTomcatDataSource(databaseType, databaseName);
+        }
+        if (DruidXADataSource.class == dataSourceClass) {
+            return createDruidXADataSource(databaseType, databaseName);
+        }
+        if (DruidDataSource.class == dataSourceClass) {
+            return createDruidDataSource(databaseType, databaseName);
+        }
+        throw new UnsupportedOperationException(dataSourceClass.getClass().getName());
     }
     
     private static HikariDataSource createHikariDataSource(final DatabaseType databaseType, final String databaseName) {
         HikariDataSource result = new HikariDataSource();
-        result.setJdbcUrl(getUrl(databaseType, databaseName));
+        result.setJdbcUrl(getURL(databaseType, databaseName));
         result.setUsername("root");
         result.setPassword("root");
         result.setMaximumPoolSize(10);
@@ -72,7 +74,7 @@ public final class DataSourceUtils {
     
     private static org.apache.commons.dbcp2.BasicDataSource createBasicDataSource(final DatabaseType databaseType, final String databaseName) {
         org.apache.commons.dbcp2.BasicDataSource result = new org.apache.commons.dbcp2.BasicDataSource();
-        result.setUrl(getUrl(databaseType, databaseName));
+        result.setUrl(getURL(databaseType, databaseName));
         result.setUsername("root");
         result.setPassword("root");
         result.setMaxTotal(10);
@@ -86,7 +88,7 @@ public final class DataSourceUtils {
     
     private static org.apache.tomcat.dbcp.dbcp2.BasicDataSource createTomcatDataSource(final DatabaseType databaseType, final String databaseName) {
         org.apache.tomcat.dbcp.dbcp2.BasicDataSource result = new org.apache.tomcat.dbcp.dbcp2.BasicDataSource();
-        result.setUrl(getUrl(databaseType, databaseName));
+        result.setUrl(getURL(databaseType, databaseName));
         result.setUsername("root");
         result.setPassword("root");
         result.setMaxTotal(10);
@@ -98,20 +100,20 @@ public final class DataSourceUtils {
         return result;
     }
     
-    private static DruidDataSource createDruidDataSource(final DatabaseType databaseType, final String databaseName) {
-        DruidDataSource result = new DruidDataSource();
-        configDruidDataSource(result, databaseType, databaseName);
-        return result;
-    }
-    
     private static DruidXADataSource createDruidXADataSource(final DatabaseType databaseType, final String databaseName) {
         DruidXADataSource result = new DruidXADataSource();
         configDruidDataSource(result, databaseType, databaseName);
         return result;
     }
     
+    private static DruidDataSource createDruidDataSource(final DatabaseType databaseType, final String databaseName) {
+        DruidDataSource result = new DruidDataSource();
+        configDruidDataSource(result, databaseType, databaseName);
+        return result;
+    }
+    
     private static void configDruidDataSource(final DruidDataSource druidDataSource, final DatabaseType databaseType, final String databaseName) {
-        druidDataSource.setUrl(getUrl(databaseType, databaseName));
+        druidDataSource.setUrl(getURL(databaseType, databaseName));
         druidDataSource.setUsername("root");
         druidDataSource.setPassword("root");
         druidDataSource.setMaxActive(10);
@@ -121,20 +123,20 @@ public final class DataSourceUtils {
         druidDataSource.setTimeBetweenEvictionRunsMillis(20 * 1000);
     }
     
-    private static String getUrl(final DatabaseType databaseType, final String databaseName) {
+    private static String getURL(final DatabaseType databaseType, final String databaseName) {
         switch (databaseType) {
-            case PostgreSQL:
-                return String.format("jdbc:postgresql://localhost:3306/%s", databaseName);
-            case MySQL:
-                return String.format("jdbc:mysql://localhost:3306/%s", databaseName);
-            case SQLServer:
-                return String.format("jdbc:sqlserver://localhost:1433;DatabaseName=%s", databaseName);
             case H2:
                 return String.format("jdbc:h2:mem:%s;DB_CLOSE_DELAY=-1;DATABASE_TO_UPPER=false;MODE=MYSQL", databaseName);
+            case MySQL:
+                return String.format("jdbc:mysql://localhost:3306/%s", databaseName);
+            case PostgreSQL:
+                return String.format("jdbc:postgresql://localhost:3306/%s", databaseName);
             case Oracle:
                 return String.format("jdbc:oracle:thin:@//localhost:3306/%s", databaseName);
+            case SQLServer:
+                return String.format("jdbc:sqlserver://localhost:1433;DatabaseName=%s", databaseName);
             default:
-                return String.format("jdbc:mysql://localhost:3306/%s", databaseName);
+                throw new UnsupportedOperationException(databaseType.name());
         }
     }
 }
