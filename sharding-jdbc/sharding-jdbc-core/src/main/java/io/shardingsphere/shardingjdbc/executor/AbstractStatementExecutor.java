@@ -121,6 +121,10 @@ public class AbstractStatementExecutor {
         return sqlExecuteTemplate.executeGroup((Collection) executeGroups, executeCallback);
     }
     
+    protected boolean isAccumulate() {
+        return !connection.getShardingContext().getShardingRule().isAllBroadcastTables(sqlStatement.getTables().getTableNames());
+    }
+    
     /**
      * Clear data.
      *

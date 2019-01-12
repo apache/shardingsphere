@@ -181,10 +181,15 @@ public final class StatementExecutor extends AbstractStatementExecutor {
             }
         };
         List<Integer> results = executeCallback(executeCallback);
-        return accumulate(results);
+        if (isAccumulate()) {
+            return accumulate(results);
+        } else {
+            return results.get(0);
+        }
     }
     
     private int accumulate(final List<Integer> results) {
+       
         int result = 0;
         for (Integer each : results) {
             result += null == each ? 0 : each;
