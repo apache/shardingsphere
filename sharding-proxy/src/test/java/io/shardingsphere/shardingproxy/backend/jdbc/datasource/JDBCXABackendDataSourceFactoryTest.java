@@ -19,7 +19,7 @@ package io.shardingsphere.shardingproxy.backend.jdbc.datasource;
 
 import com.atomikos.jdbc.AtomikosDataSourceBean;
 import com.mysql.jdbc.jdbc2.optional.MysqlXADataSource;
-import io.shardingsphere.core.config.DataSourceParameter;
+import io.shardingsphere.shardingproxy.util.DataSourceParameter;
 import org.hamcrest.Matchers;
 import org.hamcrest.core.Is;
 import org.junit.Test;

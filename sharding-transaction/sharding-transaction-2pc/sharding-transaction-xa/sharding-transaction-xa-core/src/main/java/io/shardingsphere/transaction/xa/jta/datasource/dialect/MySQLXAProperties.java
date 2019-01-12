@@ -18,7 +18,7 @@
 package io.shardingsphere.transaction.xa.jta.datasource.dialect;
 
 import com.google.common.base.Optional;
-import io.shardingsphere.core.config.DataSourceParameter;
+import io.shardingsphere.core.config.DatabaseAccessConfiguration;
 import io.shardingsphere.transaction.xa.jta.datasource.XAProperties;
 
 import java.util.Properties;
@@ -31,11 +31,11 @@ import java.util.Properties;
 public final class MySQLXAProperties implements XAProperties {
     
     @Override
-    public Properties build(final DataSourceParameter dataSourceParameter) {
+    public Properties build(final DatabaseAccessConfiguration databaseAccessConfiguration) {
         Properties result = new Properties();
-        result.setProperty("user", dataSourceParameter.getUsername());
-        result.setProperty("password", Optional.fromNullable(dataSourceParameter.getPassword()).or(""));
-        result.setProperty("URL", dataSourceParameter.getUrl());
+        result.setProperty("user", databaseAccessConfiguration.getUsername());
+        result.setProperty("password", Optional.fromNullable(databaseAccessConfiguration.getPassword()).or(""));
+        result.setProperty("URL", databaseAccessConfiguration.getUrl());
         result.setProperty("pinGlobalTxToPhysicalConnection", Boolean.TRUE.toString());
         result.setProperty("autoReconnect", Boolean.TRUE.toString());
         result.setProperty("useServerPrepStmts", Boolean.TRUE.toString());

@@ -15,7 +15,7 @@
  * </p>
  */
 
-package io.shardingsphere.core.config;
+package io.shardingsphere.shardingproxy.util;
 
 import lombok.Getter;
 import lombok.Setter;

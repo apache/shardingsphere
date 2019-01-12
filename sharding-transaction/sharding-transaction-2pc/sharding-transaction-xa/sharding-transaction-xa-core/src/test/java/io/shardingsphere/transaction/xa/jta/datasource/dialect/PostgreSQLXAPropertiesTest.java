@@ -17,6 +17,7 @@
 
 package io.shardingsphere.transaction.xa.jta.datasource.dialect;
 
+import io.shardingsphere.core.config.DatabaseAccessConfiguration;
 import org.junit.Test;
 
 import java.util.Properties;
@@ -24,12 +25,11 @@ import java.util.Properties;
 import static org.hamcrest.CoreMatchers.is;
 import static org.junit.Assert.assertThat;
 
-public final class PostgreSQLXAPropertiesTest extends BaseXAPropertiesTest {
+public final class PostgreSQLXAPropertiesTest {
     
     @Test
     public void assertBuild() {
-        getDataSourceParameter().setUrl("jdbc:postgresql://db.psql:5432/test_db");
-        Properties actual = new PostgreSQLXAProperties().build(getDataSourceParameter());
+        Properties actual = new PostgreSQLXAProperties().build(new DatabaseAccessConfiguration("jdbc:postgresql://db.psql:5432/test_db", "root", "root"));
         assertThat(actual.getProperty("user"), is("root"));
         assertThat(actual.getProperty("password"), is("root"));
         assertThat(actual.getProperty("serverName"), is("db.psql"));

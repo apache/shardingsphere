@@ -19,7 +19,6 @@ package io.shardingsphere.shardingproxy.runtime.schema;
 
 import com.google.common.eventbus.Subscribe;
 import io.shardingsphere.api.config.rule.ShardingRuleConfiguration;
-import io.shardingsphere.core.config.DataSourceParameter;
 import io.shardingsphere.core.constant.DatabaseType;
 import io.shardingsphere.core.constant.properties.ShardingPropertiesConstant;
 import io.shardingsphere.core.metadata.ShardingMetaData;
@@ -33,6 +32,7 @@ import io.shardingsphere.orchestration.internal.rule.OrchestrationShardingRule;
 import io.shardingsphere.shardingproxy.backend.BackendExecutorContext;
 import io.shardingsphere.shardingproxy.runtime.GlobalRegistry;
 import io.shardingsphere.shardingproxy.runtime.metadata.ProxyTableMetaDataConnectionManager;
+import io.shardingsphere.shardingproxy.util.DataSourceParameter;
 import lombok.Getter;
 
 import java.util.Collection;
@@ -54,7 +54,7 @@ public final class ShardingSchema extends LogicSchema {
     
     private final ShardingMetaData metaData;
     
-    public ShardingSchema(final String name, 
+    public ShardingSchema(final String name,
                           final Map<String, DataSourceParameter> dataSources, final ShardingRuleConfiguration shardingRuleConfig, final boolean isCheckingMetaData, final boolean isUsingRegistry) {
         super(name, dataSources);
         shardingRule = createShardingRule(shardingRuleConfig, dataSources.keySet(), isUsingRegistry);

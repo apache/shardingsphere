@@ -18,7 +18,7 @@
 package io.shardingsphere.transaction.xa.jta.datasource.dialect;
 
 import com.google.common.base.Optional;
-import io.shardingsphere.core.config.DataSourceParameter;
+import io.shardingsphere.core.config.DatabaseAccessConfiguration;
 import io.shardingsphere.core.metadata.datasource.dialect.PostgreSQLDataSourceMetaData;
 import io.shardingsphere.transaction.xa.jta.datasource.XAProperties;
 
@@ -32,14 +32,14 @@ import java.util.Properties;
 public final class PostgreSQLXAProperties implements XAProperties {
     
     @Override
-    public Properties build(final DataSourceParameter dataSourceParameter) {
+    public Properties build(final DatabaseAccessConfiguration databaseAccessConfiguration) {
         Properties result = new Properties();
-        PostgreSQLDataSourceMetaData pgMetaData = new PostgreSQLDataSourceMetaData(dataSourceParameter.getUrl());
-        result.setProperty("user", dataSourceParameter.getUsername());
-        result.setProperty("password", Optional.fromNullable(dataSourceParameter.getPassword()).or(""));
-        result.setProperty("serverName", pgMetaData.getHostName());
-        result.setProperty("portNumber", String.valueOf(pgMetaData.getPort()));
-        result.setProperty("databaseName", pgMetaData.getSchemeName());
+        PostgreSQLDataSourceMetaData dataSourceMetaData = new PostgreSQLDataSourceMetaData(databaseAccessConfiguration.getUrl());
+        result.setProperty("user", databaseAccessConfiguration.getUsername());
+        result.setProperty("password", Optional.fromNullable(databaseAccessConfiguration.getPassword()).or(""));
+        result.setProperty("serverName", dataSourceMetaData.getHostName());
+        result.setProperty("portNumber", String.valueOf(dataSourceMetaData.getPort()));
+        result.setProperty("databaseName", dataSourceMetaData.getSchemeName());
         return result;
     }
 }

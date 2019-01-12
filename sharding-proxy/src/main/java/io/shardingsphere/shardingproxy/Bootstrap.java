@@ -19,7 +19,6 @@ package io.shardingsphere.shardingproxy;
 
 import io.shardingsphere.api.config.rule.RuleConfiguration;
 import io.shardingsphere.core.config.DataSourceConfiguration;
-import io.shardingsphere.core.config.DataSourceParameter;
 import io.shardingsphere.core.constant.properties.ShardingPropertiesConstant;
 import io.shardingsphere.core.rule.Authentication;
 import io.shardingsphere.opentracing.ShardingTracer;
@@ -32,6 +31,7 @@ import io.shardingsphere.shardingproxy.frontend.ShardingProxy;
 import io.shardingsphere.shardingproxy.listener.ProxyListenerRegister;
 import io.shardingsphere.shardingproxy.runtime.GlobalRegistry;
 import io.shardingsphere.shardingproxy.util.DataSourceConverter;
+import io.shardingsphere.shardingproxy.util.DataSourceParameter;
 import lombok.AccessLevel;
 import lombok.NoArgsConstructor;
 

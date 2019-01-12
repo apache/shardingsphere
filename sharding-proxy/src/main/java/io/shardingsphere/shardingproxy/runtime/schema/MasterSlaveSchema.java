@@ -20,7 +20,6 @@ package io.shardingsphere.shardingproxy.runtime.schema;
 import com.google.common.eventbus.Subscribe;
 import io.shardingsphere.api.config.rule.MasterSlaveRuleConfiguration;
 import io.shardingsphere.api.config.rule.ShardingRuleConfiguration;
-import io.shardingsphere.core.config.DataSourceParameter;
 import io.shardingsphere.core.constant.DatabaseType;
 import io.shardingsphere.core.constant.properties.ShardingPropertiesConstant;
 import io.shardingsphere.core.metadata.ShardingMetaData;
@@ -33,6 +32,7 @@ import io.shardingsphere.orchestration.internal.rule.OrchestrationMasterSlaveRul
 import io.shardingsphere.shardingproxy.backend.BackendExecutorContext;
 import io.shardingsphere.shardingproxy.runtime.GlobalRegistry;
 import io.shardingsphere.shardingproxy.runtime.metadata.ProxyTableMetaDataConnectionManager;
+import io.shardingsphere.shardingproxy.util.DataSourceParameter;
 import lombok.Getter;
 
 import java.util.Map;

@@ -17,6 +17,7 @@
 
 package io.shardingsphere.transaction.xa.jta.datasource.dialect;
 
+import io.shardingsphere.core.config.DatabaseAccessConfiguration;
 import org.junit.Test;
 
 import java.util.Properties;
@@ -24,12 +25,11 @@ import java.util.Properties;
 import static org.hamcrest.CoreMatchers.is;
 import static org.junit.Assert.assertThat;
 
-public final class H2XAPropertiesTest extends BaseXAPropertiesTest {
+public final class H2XAPropertiesTest {
     
     @Test
     public void assertBuild() {
-        getDataSourceParameter().setUrl("jdbc:h2:mem:db0;DB_CLOSE_DELAY=-1;DATABASE_TO_UPPER=false;MODE=MYSQL");
-        Properties actual = new H2XAProperties().build(getDataSourceParameter());
+        Properties actual = new H2XAProperties().build(new DatabaseAccessConfiguration("jdbc:h2:mem:db0;DB_CLOSE_DELAY=-1;DATABASE_TO_UPPER=false;MODE=MYSQL", "root", "root"));
         assertThat(actual.getProperty("user"), is("root"));
         assertThat(actual.getProperty("password"), is("root"));
         assertThat(actual.getProperty("URL"), is("jdbc:h2:mem:db0;DB_CLOSE_DELAY=-1;DATABASE_TO_UPPER=false;MODE=MYSQL"));

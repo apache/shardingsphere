@@ -17,9 +17,9 @@
 
 package io.shardingsphere.transaction.xa.convert;
 
-import io.shardingsphere.transaction.xa.convert.swap.DataSourceSwapperRegistryTest;
 import io.shardingsphere.transaction.xa.jta.datasource.XADataSourceFactoryTest;
 import io.shardingsphere.transaction.xa.jta.datasource.XAPropertiesFactoryTest;
+import io.shardingsphere.transaction.xa.swapper.DataSourceSwapperEngineTest;
 import org.junit.runner.RunWith;
 import org.junit.runners.Suite;
 
@@ -27,7 +27,7 @@ import org.junit.runners.Suite;
 @Suite.SuiteClasses({
         XADataSourceFactoryTest.class, 
         XAPropertiesFactoryTest.class, 
-        DataSourceSwapperRegistryTest.class
+        DataSourceSwapperEngineTest.class
 })
 public final class AllConvertTests {
 }

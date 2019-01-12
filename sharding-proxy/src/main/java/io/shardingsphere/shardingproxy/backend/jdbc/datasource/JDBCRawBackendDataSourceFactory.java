@@ -19,10 +19,10 @@ package io.shardingsphere.shardingproxy.backend.jdbc.datasource;
 
 import com.zaxxer.hikari.HikariConfig;
 import com.zaxxer.hikari.HikariDataSource;
-import io.shardingsphere.core.config.DataSourceParameter;
 import io.shardingsphere.core.exception.ShardingException;
 import io.shardingsphere.core.metadata.datasource.dialect.MySQLDataSourceMetaData;
 import io.shardingsphere.core.metadata.datasource.dialect.PostgreSQLDataSourceMetaData;
+import io.shardingsphere.shardingproxy.util.DataSourceParameter;
 import lombok.AccessLevel;
 import lombok.NoArgsConstructor;
 

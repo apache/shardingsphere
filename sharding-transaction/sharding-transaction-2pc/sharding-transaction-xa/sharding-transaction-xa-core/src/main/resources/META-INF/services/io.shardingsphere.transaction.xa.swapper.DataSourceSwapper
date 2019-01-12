@@ -1,0 +1,4 @@
+io.shardingsphere.transaction.xa.swapper.impl.HikariCPSwapper
+io.shardingsphere.transaction.xa.swapper.impl.DBCP2Swapper
+io.shardingsphere.transaction.xa.swapper.impl.TomcatDBCPSwapper
+io.shardingsphere.transaction.xa.swapper.impl.DruidSwapper

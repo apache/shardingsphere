@@ -15,24 +15,32 @@
  * </p>
  */
 
-package io.shardingsphere.transaction.xa.convert.swap;
+package io.shardingsphere.transaction.xa.swapper;
 
-import java.util.Collection;
-import java.util.Collections;
+import io.shardingsphere.core.config.DatabaseAccessConfiguration;
+
+import javax.sql.DataSource;
 
 /**
- * Default data source parameter swapper.
+ * Pick up properties from datasource then swap to database access configuration.
  *
  * @author zhaojun
+ * @param <T> type of data source
  */
-public final class DefaultDataSourceSwapper extends DataSourceSwapperAdapter {
+public interface DataSourceSwapper<T extends DataSource> {
     
-    @Override
-    protected void convertProperties(final AdvancedMapUpdater<String, Object> updater) {
-    }
+    /**
+     * Get data source class.
+     *
+     * @return data source class
+     */
+    Class<T> getDataSourceClass();
     
-    @Override
-    public Collection<String> getDataSourceClassNames() {
-        return Collections.emptyList();
-    }
+    /**
+     * Swap to database access configuration.
+     *
+     * @param dataSource data source
+     * @return database access configuration
+     */
+    DatabaseAccessConfiguration swap(T dataSource);
 }

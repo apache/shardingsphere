@@ -15,20 +15,23 @@
  * </p>
  */
 
-package io.shardingsphere.transaction.xa;
+package io.shardingsphere.core.config;
 
-import io.shardingsphere.transaction.xa.convert.AllConvertTests;
-import io.shardingsphere.transaction.xa.handler.XAShardingTransactionEngineTest;
-import io.shardingsphere.transaction.xa.manager.AllManagerTests;
-import org.junit.runner.RunWith;
-import org.junit.runners.Suite;
-import org.junit.runners.Suite.SuiteClasses;
+import lombok.Getter;
+import lombok.RequiredArgsConstructor;
 
-@RunWith(Suite.class)
-@SuiteClasses({
-        AllManagerTests.class,
-        XAShardingTransactionEngineTest.class,
-        AllConvertTests.class
-})
-public final class AllTests {
+/**
+ * Database access configuration.
+ *
+ * @author zhangliang
+ */
+@RequiredArgsConstructor
+@Getter
+public final class DatabaseAccessConfiguration {
+    
+    private final String url;
+    
+    private final String username;
+    
+    private final String password;
 }

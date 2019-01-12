@@ -20,8 +20,9 @@ package io.shardingsphere.shardingproxy.backend.jdbc.datasource;
 import com.atomikos.beans.PropertyException;
 import com.atomikos.beans.PropertyUtils;
 import com.atomikos.jdbc.AtomikosDataSourceBean;
-import io.shardingsphere.core.config.DataSourceParameter;
+import io.shardingsphere.core.config.DatabaseAccessConfiguration;
 import io.shardingsphere.core.constant.DatabaseType;
+import io.shardingsphere.shardingproxy.util.DataSourceParameter;
 import io.shardingsphere.transaction.xa.jta.datasource.XADataSourceFactory;
 import io.shardingsphere.transaction.xa.jta.datasource.XAPropertiesFactory;
 import lombok.AccessLevel;
@@ -69,11 +70,12 @@ public final class JDBCXABackendDataSourceFactory implements JDBCBackendDataSour
         dataSourceBean.setMaxIdleTime((int) parameter.getIdleTimeoutMilliseconds() / 1000);
     }
     
-    private void setXAProperties(final AtomikosDataSourceBean dataSourceBean,
-                                 final DatabaseType databaseType, final String dataSourceName, final XADataSource xaDataSource, final DataSourceParameter parameter) throws PropertyException {
+    private void setXAProperties(final AtomikosDataSourceBean dataSourceBean, final DatabaseType databaseType, 
+                                 final String dataSourceName, final XADataSource xaDataSource, final DataSourceParameter dataSourceParameter) throws PropertyException {
         dataSourceBean.setXaDataSourceClassName(xaDataSource.getClass().getName());
         dataSourceBean.setUniqueResourceName(dataSourceName);
-        Properties xaProperties = XAPropertiesFactory.createXAProperties(databaseType).build(parameter);
+        Properties xaProperties = XAPropertiesFactory.createXAProperties(databaseType).build(
+                new DatabaseAccessConfiguration(dataSourceParameter.getUrl(), dataSourceParameter.getUsername(), dataSourceParameter.getPassword()));
         PropertyUtils.setProperties(xaDataSource, xaProperties);
         dataSourceBean.setXaProperties(xaProperties);
         dataSourceBean.setXaDataSource(xaDataSource);

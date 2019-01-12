@@ -15,32 +15,26 @@
  * </p>
  */
 
-package io.shardingsphere.transaction.xa.convert.swap;
+package io.shardingsphere.transaction.xa.swapper.impl;
 
-import lombok.Getter;
-import lombok.RequiredArgsConstructor;
-
-import java.util.Map;
+import com.alibaba.druid.pool.DruidDataSource;
+import io.shardingsphere.core.config.DatabaseAccessConfiguration;
+import io.shardingsphere.transaction.xa.swapper.DataSourceSwapper;
 
 /**
- * Advanced map updater.
+ * Druid swapper.
  *
  * @author zhaojun
  */
-@RequiredArgsConstructor
-public final class AdvancedMapUpdater<K, V> {
+public final class DruidSwapper implements DataSourceSwapper<DruidDataSource> {
     
-    @Getter
-    private final Map<K, V> delegateMap;
+    @Override
+    public Class<DruidDataSource> getDataSourceClass() {
+        return DruidDataSource.class;
+    }
     
-    /**
-     * Update delegate map if value is present.
-     * @param from old key
-     * @param to new key
-     */
-    public void transfer(final K from, final K to) {
-        if (delegateMap.containsKey(from)) {
-            delegateMap.put(to, delegateMap.get(from));
-        }
+    @Override
+    public DatabaseAccessConfiguration swap(final DruidDataSource dataSource) {
+        return new DatabaseAccessConfiguration(dataSource.getUrl(), dataSource.getUsername(), dataSource.getPassword());
     }
 }

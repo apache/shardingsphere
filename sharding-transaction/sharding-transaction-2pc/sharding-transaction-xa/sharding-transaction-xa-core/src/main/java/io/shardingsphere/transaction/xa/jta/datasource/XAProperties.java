@@ -17,7 +17,7 @@
 
 package io.shardingsphere.transaction.xa.jta.datasource;
 
-import io.shardingsphere.core.config.DataSourceParameter;
+import io.shardingsphere.core.config.DatabaseAccessConfiguration;
 
 import java.util.Properties;
 
@@ -31,8 +31,8 @@ public interface XAProperties {
     /**
      * Build XA properties.
      *
-     * @param dataSourceParameter data source parameter
+     * @param databaseAccessConfiguration database access configuration
      * @return properties for XA
      */
-    Properties build(DataSourceParameter dataSourceParameter);
+    Properties build(DatabaseAccessConfiguration databaseAccessConfiguration);
 }

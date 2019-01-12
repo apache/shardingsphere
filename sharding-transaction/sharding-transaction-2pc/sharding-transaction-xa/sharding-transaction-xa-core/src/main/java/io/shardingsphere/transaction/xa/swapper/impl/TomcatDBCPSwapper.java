@@ -15,27 +15,26 @@
  * </p>
  */
 
-package io.shardingsphere.transaction.xa.jta.datasource.dialect;
+package io.shardingsphere.transaction.xa.swapper.impl;
 
-import com.google.common.base.Optional;
 import io.shardingsphere.core.config.DatabaseAccessConfiguration;
-import io.shardingsphere.transaction.xa.jta.datasource.XAProperties;
-
-import java.util.Properties;
+import io.shardingsphere.transaction.xa.swapper.DataSourceSwapper;
+import org.apache.tomcat.dbcp.dbcp2.BasicDataSource;
 
 /**
- * XA properties for H2.
+ * Tomcat DBCP swapper.
  *
  * @author zhaojun
  */
-public final class H2XAProperties implements XAProperties {
+public final class TomcatDBCPSwapper implements DataSourceSwapper<BasicDataSource> {
     
     @Override
-    public Properties build(final DatabaseAccessConfiguration databaseAccessConfiguration) {
-        Properties result = new Properties();
-        result.setProperty("user", databaseAccessConfiguration.getUsername());
-        result.setProperty("password", Optional.fromNullable(databaseAccessConfiguration.getPassword()).or(""));
-        result.setProperty("URL", databaseAccessConfiguration.getUrl());
-        return result;
+    public Class<BasicDataSource> getDataSourceClass() {
+        return BasicDataSource.class;
+    }
+    
+    @Override
+    public DatabaseAccessConfiguration swap(final BasicDataSource dataSource) {
+        return new DatabaseAccessConfiguration(dataSource.getUrl(), dataSource.getUsername(), dataSource.getPassword());
     }
 }

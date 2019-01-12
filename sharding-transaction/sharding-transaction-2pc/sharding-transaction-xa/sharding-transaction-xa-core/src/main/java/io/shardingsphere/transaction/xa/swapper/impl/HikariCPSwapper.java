@@ -15,27 +15,26 @@
  * </p>
  */
 
-package io.shardingsphere.transaction.xa.jta.datasource.dialect;
+package io.shardingsphere.transaction.xa.swapper.impl;
 
-import com.google.common.base.Optional;
+import com.zaxxer.hikari.HikariDataSource;
 import io.shardingsphere.core.config.DatabaseAccessConfiguration;
-import io.shardingsphere.transaction.xa.jta.datasource.XAProperties;
-
-import java.util.Properties;
+import io.shardingsphere.transaction.xa.swapper.DataSourceSwapper;
 
 /**
- * XA properties for H2.
+ * Hikari CP swapper.
  *
  * @author zhaojun
  */
-public final class H2XAProperties implements XAProperties {
+public final class HikariCPSwapper implements DataSourceSwapper<HikariDataSource> {
     
     @Override
-    public Properties build(final DatabaseAccessConfiguration databaseAccessConfiguration) {
-        Properties result = new Properties();
-        result.setProperty("user", databaseAccessConfiguration.getUsername());
-        result.setProperty("password", Optional.fromNullable(databaseAccessConfiguration.getPassword()).or(""));
-        result.setProperty("URL", databaseAccessConfiguration.getUrl());
-        return result;
+    public Class<HikariDataSource> getDataSourceClass() {
+        return HikariDataSource.class;
+    }
+    
+    @Override
+    public DatabaseAccessConfiguration swap(final HikariDataSource dataSource) {
+        return new DatabaseAccessConfiguration(dataSource.getJdbcUrl(), dataSource.getUsername(), dataSource.getPassword());
     }
 }

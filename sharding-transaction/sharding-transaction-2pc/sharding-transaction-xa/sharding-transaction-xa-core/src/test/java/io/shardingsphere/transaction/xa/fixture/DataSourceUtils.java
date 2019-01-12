@@ -22,7 +22,6 @@ import com.alibaba.druid.pool.xa.DruidXADataSource;
 import com.zaxxer.hikari.HikariDataSource;
 import io.shardingsphere.core.constant.DatabaseType;
 import lombok.NoArgsConstructor;
-import org.mockito.Mockito;
 
 import javax.sql.DataSource;
 
@@ -44,20 +43,34 @@ public final class DataSourceUtils {
      */
     public static DataSource build(final String dataSourcePoolClassName, final DatabaseType databaseType, final String databaseName) {
         switch (dataSourcePoolClassName) {
-            case "org.apache.commons.dbcp2.BasicDataSource":
-                return newBasicDataSource(databaseType, databaseName);
             case "com.zaxxer.hikari.HikariDataSource":
-                return newHikariDataSource(databaseType, databaseName);
+                return createHikariDataSource(databaseType, databaseName);
+            case "org.apache.commons.dbcp2.BasicDataSource":
+                return createBasicDataSource(databaseType, databaseName);
+            case "org.apache.tomcat.dbcp.dbcp2.BasicDataSource":
+                return createTomcatDataSource(databaseType, databaseName);
             case "com.alibaba.druid.pool.DruidDataSource":
-                return newDruidDataSource(databaseType, databaseName);
+                return createDruidDataSource(databaseType, databaseName);
             case "com.alibaba.druid.pool.xa.DruidXADataSource":
-                return newDruidXADataSource(databaseType, databaseName);
+                return createDruidXADataSource(databaseType, databaseName);
             default:
-                return Mockito.mock(DataSource.class);
+                throw new UnsupportedOperationException(dataSourcePoolClassName);
         }
     }
     
-    private static org.apache.commons.dbcp2.BasicDataSource newBasicDataSource(final DatabaseType databaseType, final String databaseName) {
+    private static HikariDataSource createHikariDataSource(final DatabaseType databaseType, final String databaseName) {
+        HikariDataSource result = new HikariDataSource();
+        result.setJdbcUrl(getUrl(databaseType, databaseName));
+        result.setUsername("root");
+        result.setPassword("root");
+        result.setMaximumPoolSize(10);
+        result.setMinimumIdle(2);
+        result.setConnectionTimeout(15 * 1000);
+        result.setIdleTimeout(40 * 1000);
+        return result;
+    }
+    
+    private static org.apache.commons.dbcp2.BasicDataSource createBasicDataSource(final DatabaseType databaseType, final String databaseName) {
         org.apache.commons.dbcp2.BasicDataSource result = new org.apache.commons.dbcp2.BasicDataSource();
         result.setUrl(getUrl(databaseType, databaseName));
         result.setUsername("root");
@@ -71,13 +84,27 @@ public final class DataSourceUtils {
         return result;
     }
     
-    private static DruidDataSource newDruidDataSource(final DatabaseType databaseType, final String databaseName) {
+    private static org.apache.tomcat.dbcp.dbcp2.BasicDataSource createTomcatDataSource(final DatabaseType databaseType, final String databaseName) {
+        org.apache.tomcat.dbcp.dbcp2.BasicDataSource result = new org.apache.tomcat.dbcp.dbcp2.BasicDataSource();
+        result.setUrl(getUrl(databaseType, databaseName));
+        result.setUsername("root");
+        result.setPassword("root");
+        result.setMaxTotal(10);
+        result.setMinIdle(2);
+        result.setMaxWaitMillis(15 * 1000);
+        result.setMinEvictableIdleTimeMillis(40 * 1000);
+        result.setTimeBetweenEvictionRunsMillis(20 * 1000);
+        result.setMaxConnLifetimeMillis(500 * 1000);
+        return result;
+    }
+    
+    private static DruidDataSource createDruidDataSource(final DatabaseType databaseType, final String databaseName) {
         DruidDataSource result = new DruidDataSource();
         configDruidDataSource(result, databaseType, databaseName);
         return result;
     }
     
-    private static DruidXADataSource newDruidXADataSource(final DatabaseType databaseType, final String databaseName) {
+    private static DruidXADataSource createDruidXADataSource(final DatabaseType databaseType, final String databaseName) {
         DruidXADataSource result = new DruidXADataSource();
         configDruidDataSource(result, databaseType, databaseName);
         return result;
@@ -92,18 +119,6 @@ public final class DataSourceUtils {
         druidDataSource.setMaxWait(15 * 1000);
         druidDataSource.setMinEvictableIdleTimeMillis(40 * 1000);
         druidDataSource.setTimeBetweenEvictionRunsMillis(20 * 1000);
-    }
-    
-    private static HikariDataSource newHikariDataSource(final DatabaseType databaseType, final String databaseName) {
-        HikariDataSource result = new HikariDataSource();
-        result.setJdbcUrl(getUrl(databaseType, databaseName));
-        result.setUsername("root");
-        result.setPassword("root");
-        result.setMaximumPoolSize(10);
-        result.setMinimumIdle(2);
-        result.setConnectionTimeout(15 * 1000);
-        result.setIdleTimeout(40 * 1000);
-        return result;
     }
     
     private static String getUrl(final DatabaseType databaseType, final String databaseName) {

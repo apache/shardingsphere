@@ -19,7 +19,6 @@ package io.shardingsphere.shardingproxy.backend.netty.client.response.mysql;
 
 import io.netty.buffer.ByteBuf;
 import io.netty.channel.ChannelHandlerContext;
-import io.shardingsphere.core.config.DataSourceParameter;
 import io.shardingsphere.core.metadata.datasource.DataSourceMetaData;
 import io.shardingsphere.shardingproxy.backend.netty.client.response.ResponseHandler;
 import io.shardingsphere.shardingproxy.backend.netty.future.FutureRegistry;
@@ -35,6 +34,7 @@ import io.shardingsphere.shardingproxy.transport.mysql.packet.generic.ErrPacket;
 import io.shardingsphere.shardingproxy.transport.mysql.packet.generic.OKPacket;
 import io.shardingsphere.shardingproxy.transport.mysql.packet.handshake.HandshakePacket;
 import io.shardingsphere.shardingproxy.transport.mysql.packet.handshake.HandshakeResponse41Packet;
+import io.shardingsphere.shardingproxy.util.DataSourceParameter;
 import lombok.RequiredArgsConstructor;
 import lombok.SneakyThrows;
 import lombok.extern.slf4j.Slf4j;

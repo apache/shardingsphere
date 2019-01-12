@@ -26,7 +26,6 @@ import lombok.Getter;
 import lombok.RequiredArgsConstructor;
 
 import javax.sql.DataSource;
-import java.lang.reflect.Field;
 import java.lang.reflect.Method;
 import java.util.Collection;
 import java.util.HashSet;
@@ -130,24 +129,5 @@ public final class DataSourceConfiguration {
             }
         }
         return Optional.absent();
-    }
-    
-    /**
-     * Create data source parameter.
-     *
-     * @return data source parameter
-     */
-    public DataSourceParameter createDataSourceParameter() {
-        DataSourceParameter result = new DataSourceParameter();
-        for (Field each : result.getClass().getDeclaredFields()) {
-            try {
-                each.setAccessible(true);
-                if (properties.containsKey(each.getName())) {
-                    each.set(result, properties.get(each.getName()));
-                }
-            } catch (final ReflectiveOperationException ignored) {
-            }
-        }
-        return result;
     }
 }

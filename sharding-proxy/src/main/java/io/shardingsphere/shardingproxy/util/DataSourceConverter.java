@@ -19,10 +19,10 @@ package io.shardingsphere.shardingproxy.util;
 
 import com.zaxxer.hikari.HikariDataSource;
 import io.shardingsphere.core.config.DataSourceConfiguration;
-import io.shardingsphere.core.config.DataSourceParameter;
 import lombok.AccessLevel;
 import lombok.NoArgsConstructor;
 
+import java.lang.reflect.Field;
 import java.util.LinkedHashMap;
 import java.util.Map;
 import java.util.Map.Entry;
@@ -44,12 +44,26 @@ public final class DataSourceConverter {
     public static Map<String, DataSourceParameter> getDataSourceParameterMap(final Map<String, DataSourceConfiguration> dataSourceConfigurationMap) {
         Map<String, DataSourceParameter> result = new LinkedHashMap<>(dataSourceConfigurationMap.size(), 1);
         for (Entry<String, DataSourceConfiguration> entry : dataSourceConfigurationMap.entrySet()) {
-            result.put(entry.getKey(), entry.getValue().createDataSourceParameter());
+            result.put(entry.getKey(), createDataSourceParameter(entry.getValue()));
         }
         return result;
     }
     
-    /**F
+    private static DataSourceParameter createDataSourceParameter(final DataSourceConfiguration dataSourceConfiguration) {
+        DataSourceParameter result = new DataSourceParameter();
+        for (Field each : result.getClass().getDeclaredFields()) {
+            try {
+                each.setAccessible(true);
+                if (dataSourceConfiguration.getProperties().containsKey(each.getName())) {
+                    each.set(result, dataSourceConfiguration.getProperties().get(each.getName()));
+                }
+            } catch (final ReflectiveOperationException ignored) {
+            }
+        }
+        return result;
+    }
+    
+    /**
      * Get data source configuration map.
      *
      * @param dataSourceParameterMap data source map
