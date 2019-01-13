@@ -17,7 +17,7 @@
 
 package io.shardingsphere.transaction.xa.jta.connection;
 
-import io.shardingsphere.transaction.xa.jta.ShardingXAResource;
+import io.shardingsphere.transaction.xa.jta.resource.ShardingXAResource;
 import lombok.SneakyThrows;
 import org.junit.Before;
 import org.junit.Test;

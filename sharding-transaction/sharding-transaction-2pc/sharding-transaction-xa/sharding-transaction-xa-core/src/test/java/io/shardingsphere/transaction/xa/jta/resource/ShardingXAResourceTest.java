@@ -15,7 +15,7 @@
  * </p>
  */
 
-package io.shardingsphere.transaction.xa.jta;
+package io.shardingsphere.transaction.xa.jta.resource;
 
 import org.junit.Before;
 import org.junit.Test;

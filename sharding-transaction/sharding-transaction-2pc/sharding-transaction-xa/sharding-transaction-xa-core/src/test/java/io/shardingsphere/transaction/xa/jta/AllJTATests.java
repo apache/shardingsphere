@@ -30,6 +30,7 @@ import io.shardingsphere.transaction.xa.jta.datasource.properties.dialect.Postgr
 import io.shardingsphere.transaction.xa.jta.datasource.properties.dialect.SQLServerXAPropertiesTest;
 import io.shardingsphere.transaction.xa.jta.datasource.swapper.DataSourceSwapperEngineTest;
 import io.shardingsphere.transaction.xa.jta.datasource.swapper.impl.DefaultSwapperTest;
+import io.shardingsphere.transaction.xa.jta.resource.ShardingXAResourceTest;
 import org.junit.runner.RunWith;
 import org.junit.runners.Suite;
 import org.junit.runners.Suite.SuiteClasses;

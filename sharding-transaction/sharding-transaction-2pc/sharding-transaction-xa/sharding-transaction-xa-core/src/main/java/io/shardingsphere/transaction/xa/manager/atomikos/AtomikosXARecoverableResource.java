@@ -18,7 +18,7 @@
 package io.shardingsphere.transaction.xa.manager.atomikos;
 
 import com.atomikos.datasource.xa.jdbc.JdbcTransactionalResource;
-import io.shardingsphere.transaction.xa.jta.ShardingXAResource;
+import io.shardingsphere.transaction.xa.jta.resource.ShardingXAResource;
 
 import javax.sql.XADataSource;
 import javax.transaction.xa.XAResource;
