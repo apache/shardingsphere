@@ -46,7 +46,12 @@ public final class ShardingTransactionEngineFixture implements ShardingTransacti
     }
     
     @Override
-    public Connection createConnection(final String dataSourceName, final DataSource dataSource) {
+    public boolean isInTransaction() {
+        return true;
+    }
+    
+    @Override
+    public Connection getConnection(final String dataSourceName) {
         return null;
     }
     

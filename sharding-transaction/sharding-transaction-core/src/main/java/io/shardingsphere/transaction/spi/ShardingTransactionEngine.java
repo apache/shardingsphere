@@ -54,14 +54,20 @@ public interface ShardingTransactionEngine {
     void clearTransactionalResources();
     
     /**
-     * Create transactional connection.
+     * Judge is in transaction or not.
+     * 
+     * @return in transaction or not
+     */
+    boolean isInTransaction();
+    
+    /**
+     * Get transactional connection.
      *
      * @param dataSourceName data source name
-     * @param dataSource data source
      * @return connection
      * @throws SQLException SQL exception
      */
-    Connection createConnection(String dataSourceName, DataSource dataSource) throws SQLException;
+    Connection getConnection(String dataSourceName) throws SQLException;
     
     /**
      * Begin transaction.

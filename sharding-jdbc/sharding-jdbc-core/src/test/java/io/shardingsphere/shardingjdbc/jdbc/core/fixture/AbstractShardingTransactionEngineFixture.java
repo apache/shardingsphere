@@ -24,7 +24,6 @@ import lombok.Getter;
 
 import javax.sql.DataSource;
 import java.sql.Connection;
-import java.sql.SQLException;
 import java.util.Collection;
 import java.util.LinkedList;
 import java.util.Map;
@@ -48,8 +47,13 @@ public abstract class AbstractShardingTransactionEngineFixture implements Shardi
     }
     
     @Override
-    public final Connection createConnection(final String dataSourceName, final DataSource dataSource) throws SQLException {
-        return dataSource.getConnection();
+    public final boolean isInTransaction() {
+        return true;
+    }
+    
+    @Override
+    public final Connection getConnection(final String dataSourceName) {
+        return null;
     }
     
     @Override

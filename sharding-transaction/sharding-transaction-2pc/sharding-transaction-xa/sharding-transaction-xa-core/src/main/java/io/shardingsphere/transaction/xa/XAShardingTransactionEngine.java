@@ -78,22 +78,25 @@ public final class XAShardingTransactionEngine implements ShardingTransactionEng
     }
     
     @Override
-    public Connection createConnection(final String dataSourceName, final DataSource dataSource) {
-        Connection result;
+    public boolean isInTransaction() {
+        try {
+            return Status.STATUS_NO_TRANSACTION != xaTransactionManager.getUnderlyingTransactionManager().getTransaction().getStatus();
+        } catch (final SystemException ex) {
+            throw new ShardingException(ex);
+        }
+    }
+    
+    @Override
+    public Connection getConnection(final String dataSourceName) {
         ShardingXADataSource shardingXADataSource = cachedShardingXADataSourceMap.get(dataSourceName);
         try {
             Transaction transaction = xaTransactionManager.getUnderlyingTransactionManager().getTransaction();
-            if (Status.STATUS_NO_TRANSACTION != transaction.getStatus()) {
-                ShardingXAConnection shardingXAConnection = shardingXADataSource.getXAConnection();
-                transaction.enlistResource(shardingXAConnection.getXAResource());
-                result = shardingXAConnection.getConnection();
-            } else {
-                result = shardingXADataSource.getConnectionFromOriginalDataSource();
-            }
+            ShardingXAConnection shardingXAConnection = shardingXADataSource.getXAConnection();
+            transaction.enlistResource(shardingXAConnection.getXAResource());
+            return shardingXAConnection.getConnection();
         } catch (final SQLException | RollbackException | SystemException ex) {
             throw new ShardingException(ex);
         }
-        return result;
     }
     
     @Override

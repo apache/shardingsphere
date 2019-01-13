@@ -35,7 +35,9 @@ import org.mockito.junit.MockitoJUnitRunner;
 
 import javax.sql.DataSource;
 import javax.sql.XADataSource;
+import javax.transaction.RollbackException;
 import javax.transaction.Status;
+import javax.transaction.SystemException;
 import javax.transaction.Transaction;
 import javax.transaction.TransactionManager;
 import javax.transaction.xa.XAResource;
@@ -47,7 +49,9 @@ import java.util.Map.Entry;
 
 import static org.hamcrest.CoreMatchers.instanceOf;
 import static org.hamcrest.CoreMatchers.is;
+import static org.junit.Assert.assertFalse;
 import static org.junit.Assert.assertThat;
+import static org.junit.Assert.assertTrue;
 import static org.mockito.ArgumentMatchers.any;
 import static org.mockito.ArgumentMatchers.anyString;
 import static org.mockito.Mockito.mock;
@@ -70,8 +74,7 @@ public class XAShardingTransactionEngineTest {
     private Transaction transaction;
     
     @Before
-    @SneakyThrows
-    public void setUp() {
+    public void setUp() throws SystemException {
         setMockXATransactionManager(xaShardingTransactionEngine, xaTransactionManager);
         when(xaTransactionManager.getUnderlyingTransactionManager()).thenReturn(transactionManager);
         when(transactionManager.getTransaction()).thenReturn(transaction);
@@ -114,23 +117,21 @@ public class XAShardingTransactionEngineTest {
     }
     
     @Test
-    @SneakyThrows
-    public void assertCreateNoneTransactionalConnection() {
-        when(transaction.getStatus()).thenReturn(Status.STATUS_NO_TRANSACTION);
-        DataSource dataSource = mock(DataSource.class);
-        setCachedShardingXADataSourceMap("ds1");
-        ShardingXADataSource shardingXADataSource = getCachedShardingXADataSourceMap().get("ds1");
-        xaShardingTransactionEngine.createConnection("ds1", dataSource);
-        verify(shardingXADataSource).getConnectionFromOriginalDataSource();
+    public void assertIsInTransaction() throws SystemException {
+        when(transaction.getStatus()).thenReturn(Status.STATUS_ACTIVE);
+        assertTrue(xaShardingTransactionEngine.isInTransaction());
     }
     
     @Test
-    @SneakyThrows
-    public void assertCreateTransactionalConnection() {
-        when(transaction.getStatus()).thenReturn(Status.STATUS_ACTIVE);
-        DataSource dataSource = mock(DataSource.class);
+    public void assertIsNotInTransaction() throws SystemException {
+        when(transaction.getStatus()).thenReturn(Status.STATUS_NO_TRANSACTION);
+        assertFalse(xaShardingTransactionEngine.isInTransaction());
+    }
+    
+    @Test
+    public void assertGetConnection() throws RollbackException, SystemException {
         setCachedShardingXADataSourceMap("ds1");
-        Connection actual = xaShardingTransactionEngine.createConnection("ds1", dataSource);
+        Connection actual = xaShardingTransactionEngine.getConnection("ds1");
         assertThat(actual, instanceOf(Connection.class));
         verify(transaction).enlistResource(any(XAResource.class));
     }
