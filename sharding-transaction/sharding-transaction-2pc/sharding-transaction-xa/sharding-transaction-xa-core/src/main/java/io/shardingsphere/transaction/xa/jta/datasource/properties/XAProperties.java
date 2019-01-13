@@ -15,19 +15,24 @@
  * </p>
  */
 
-package io.shardingsphere.transaction.xa;
+package io.shardingsphere.transaction.xa.jta.datasource.properties;
 
-import io.shardingsphere.transaction.xa.jta.AllJTATests;
-import io.shardingsphere.transaction.xa.manager.AllManagerTests;
-import org.junit.runner.RunWith;
-import org.junit.runners.Suite;
-import org.junit.runners.Suite.SuiteClasses;
+import io.shardingsphere.core.config.DatabaseAccessConfiguration;
 
-@RunWith(Suite.class)
-@SuiteClasses({
-        AllJTATests.class, 
-        AllManagerTests.class,
-        XAShardingTransactionEngineTest.class
-})
-public final class AllTests {
+import java.util.Properties;
+
+/**
+ * XA properties.
+ *
+ * @author zhangliang
+ */
+public interface XAProperties {
+    
+    /**
+     * Build XA properties.
+     *
+     * @param databaseAccessConfiguration database access configuration
+     * @return properties for XA
+     */
+    Properties build(DatabaseAccessConfiguration databaseAccessConfiguration);
 }

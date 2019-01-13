@@ -24,7 +24,7 @@ import io.shardingsphere.core.config.DatabaseAccessConfiguration;
 import io.shardingsphere.core.constant.DatabaseType;
 import io.shardingsphere.shardingproxy.util.DataSourceParameter;
 import io.shardingsphere.transaction.xa.jta.datasource.XADataSourceFactory;
-import io.shardingsphere.transaction.xa.jta.datasource.XAPropertiesFactory;
+import io.shardingsphere.transaction.xa.jta.datasource.properties.XAPropertiesFactory;
 import lombok.AccessLevel;
 import lombok.NoArgsConstructor;
 

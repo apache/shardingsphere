@@ -15,19 +15,21 @@
  * </p>
  */
 
-package io.shardingsphere.transaction.xa;
+package io.shardingsphere.transaction.xa.manager;
 
-import io.shardingsphere.transaction.xa.jta.AllJTATests;
-import io.shardingsphere.transaction.xa.manager.AllManagerTests;
+import io.shardingsphere.transaction.xa.manager.atomikos.AtomikosTransactionManager;
+import org.junit.Test;
 import org.junit.runner.RunWith;
-import org.junit.runners.Suite;
-import org.junit.runners.Suite.SuiteClasses;
+import org.mockito.junit.MockitoJUnitRunner;
 
-@RunWith(Suite.class)
-@SuiteClasses({
-        AllJTATests.class, 
-        AllManagerTests.class,
-        XAShardingTransactionEngineTest.class
-})
-public final class AllTests {
+import static org.hamcrest.CoreMatchers.instanceOf;
+import static org.junit.Assert.assertThat;
+
+@RunWith(MockitoJUnitRunner.class)
+public final class XATransactionManagerLoaderTest {
+    
+    @Test
+    public void assertGetTransactionManager() {
+        assertThat(XATransactionManagerLoader.getInstance().getTransactionManager(), instanceOf(AtomikosTransactionManager.class));
+    }
 }

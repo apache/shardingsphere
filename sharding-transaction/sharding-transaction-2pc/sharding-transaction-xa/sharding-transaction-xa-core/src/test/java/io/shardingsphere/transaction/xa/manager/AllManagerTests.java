@@ -17,6 +17,7 @@
 
 package io.shardingsphere.transaction.xa.manager;
 
+import io.shardingsphere.transaction.xa.manager.atomikos.AtomikosTransactionManagerTest;
 import org.junit.runner.RunWith;
 import org.junit.runners.Suite;
 import org.junit.runners.Suite.SuiteClasses;
@@ -24,7 +25,7 @@ import org.junit.runners.Suite.SuiteClasses;
 @RunWith(Suite.class)
 @SuiteClasses({
         AtomikosTransactionManagerTest.class,
-        XATransactionManagerSPILoaderTest.class
+        XATransactionManagerLoaderTest.class
 })
 public final class AllManagerTests {
 }

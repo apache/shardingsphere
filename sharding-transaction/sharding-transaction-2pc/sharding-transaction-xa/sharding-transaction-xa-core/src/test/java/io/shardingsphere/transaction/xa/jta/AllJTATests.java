@@ -22,12 +22,14 @@ import io.shardingsphere.transaction.xa.jta.connection.ShardingXAConnectionTest;
 import io.shardingsphere.transaction.xa.jta.connection.dialect.MySQLShardingXAConnectionWrapperTest;
 import io.shardingsphere.transaction.xa.jta.datasource.ShardingXADataSourceTest;
 import io.shardingsphere.transaction.xa.jta.datasource.XADataSourceFactoryTest;
-import io.shardingsphere.transaction.xa.jta.datasource.XAPropertiesFactoryTest;
-import io.shardingsphere.transaction.xa.jta.datasource.dialect.H2XAPropertiesTest;
-import io.shardingsphere.transaction.xa.jta.datasource.dialect.MySQLXAPropertiesTest;
-import io.shardingsphere.transaction.xa.jta.datasource.dialect.OracleXAPropertiesTest;
-import io.shardingsphere.transaction.xa.jta.datasource.dialect.PostgreSQLXAPropertiesTest;
-import io.shardingsphere.transaction.xa.jta.datasource.dialect.SQLServerXAPropertiesTest;
+import io.shardingsphere.transaction.xa.jta.datasource.properties.XAPropertiesFactoryTest;
+import io.shardingsphere.transaction.xa.jta.datasource.properties.dialect.H2XAPropertiesTest;
+import io.shardingsphere.transaction.xa.jta.datasource.properties.dialect.MySQLXAPropertiesTest;
+import io.shardingsphere.transaction.xa.jta.datasource.properties.dialect.OracleXAPropertiesTest;
+import io.shardingsphere.transaction.xa.jta.datasource.properties.dialect.PostgreSQLXAPropertiesTest;
+import io.shardingsphere.transaction.xa.jta.datasource.properties.dialect.SQLServerXAPropertiesTest;
+import io.shardingsphere.transaction.xa.jta.datasource.swapper.DataSourceSwapperEngineTest;
+import io.shardingsphere.transaction.xa.jta.datasource.swapper.impl.DefaultSwapperTest;
 import org.junit.runner.RunWith;
 import org.junit.runners.Suite;
 import org.junit.runners.Suite.SuiteClasses;
@@ -38,6 +40,8 @@ import org.junit.runners.Suite.SuiteClasses;
         XAPropertiesFactoryTest.class, 
         ShardingXADataSourceTest.class, 
         XADataSourceFactoryTest.class, 
+        DataSourceSwapperEngineTest.class, 
+        DefaultSwapperTest.class, 
         H2XAPropertiesTest.class, 
         MySQLXAPropertiesTest.class, 
         PostgreSQLXAPropertiesTest.class, 
