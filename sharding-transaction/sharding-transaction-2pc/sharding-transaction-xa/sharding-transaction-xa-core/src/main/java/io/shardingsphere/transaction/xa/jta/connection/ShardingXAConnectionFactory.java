@@ -27,12 +27,12 @@ import javax.sql.XADataSource;
 import java.sql.Connection;
 
 /**
- * Sharding XA connection wrapper.
+ * Sharding XA connection factory.
  *
  * @author zhaojun
  */
 @NoArgsConstructor(access = AccessLevel.PRIVATE)
-public class ShardingXAConnectionFactory {
+public final class ShardingXAConnectionFactory {
     
     /**
      * Create a sharding XA connection from normal connection.
