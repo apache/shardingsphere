@@ -20,16 +20,11 @@ package io.shardingsphere.transaction.xa.manager;
 import com.atomikos.icatch.config.UserTransactionService;
 import com.atomikos.icatch.config.UserTransactionServiceImp;
 import com.atomikos.icatch.jta.UserTransactionManager;
-import io.shardingsphere.core.exception.ShardingException;
 import io.shardingsphere.transaction.xa.spi.XATransactionManager;
+import lombok.SneakyThrows;
 
 import javax.sql.XADataSource;
-import javax.transaction.HeuristicMixedException;
-import javax.transaction.HeuristicRollbackException;
-import javax.transaction.NotSupportedException;
-import javax.transaction.RollbackException;
 import javax.transaction.Status;
-import javax.transaction.SystemException;
 import javax.transaction.TransactionManager;
 
 /**
@@ -59,32 +54,23 @@ public final class AtomikosTransactionManager implements XATransactionManager {
     }
     
     @Override
+    @SneakyThrows
     public void begin() {
-        try {
-            underlyingTransactionManager.begin();
-        } catch (final SystemException | NotSupportedException ex) {
-            throw new ShardingException(ex);
-        }
+        underlyingTransactionManager.begin();
     }
     
     @Override
+    @SneakyThrows
     public void commit() {
-        try {
-            underlyingTransactionManager.commit();
-        } catch (final RollbackException | HeuristicMixedException | HeuristicRollbackException | SystemException ex) {
-            throw new ShardingException(ex);
-        }
+        underlyingTransactionManager.commit();
     }
     
     @Override
+    @SneakyThrows
     public void rollback() {
-        try {
-            // TODO mybatis may call rollback twice, need investigate reason here 
-            if (Status.STATUS_NO_TRANSACTION != underlyingTransactionManager.getStatus()) {
-                underlyingTransactionManager.rollback();
-            }
-        } catch (final SystemException ex) {
-            throw new ShardingException(ex);
+        // TODO mybatis may call rollback twice, need investigate reason here 
+        if (Status.STATUS_NO_TRANSACTION != underlyingTransactionManager.getStatus()) {
+            underlyingTransactionManager.rollback();
         }
     }
     

@@ -24,7 +24,6 @@ import lombok.Getter;
 
 import javax.sql.DataSource;
 import javax.sql.XADataSource;
-import java.sql.Connection;
 import java.sql.SQLException;
 
 /**
@@ -63,15 +62,5 @@ public final class ShardingXADataSource extends AbstractUnsupportedShardingXADat
     public ShardingXAConnection getXAConnection() throws SQLException {
         return isOriginalXADataSource ? new ShardingXAConnection(resourceName, xaDataSource.getXAConnection())
             : ShardingXAConnectionFactory.createShardingXAConnection(databaseType, resourceName, xaDataSource, originalDataSource.getConnection());
-    }
-    
-    /**
-     * Get connection from original data source.
-     *
-     * @return connection
-     * @throws SQLException SQL exception
-     */
-    public Connection getConnectionFromOriginalDataSource() throws SQLException {
-        return originalDataSource.getConnection();
     }
 }

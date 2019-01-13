@@ -75,15 +75,6 @@ public final class ShardingXADataSourceTest {
         assertThat(actual.getConnection(), instanceOf(Connection.class));
     }
     
-    @Test
-    @SneakyThrows
-    public void assertGetConnectionFromOriginalDataSource() {
-        DataSource dataSource = DataSourceUtils.build(HikariDataSource.class, DatabaseType.H2, "ds1");
-        ShardingXADataSource shardingXADataSource = new ShardingXADataSource(DatabaseType.H2, "ds1", dataSource);
-        Connection actual = shardingXADataSource.getConnectionFromOriginalDataSource();
-        assertThat(actual, instanceOf(Connection.class));
-    }
-    
     @Test(expected = SQLFeatureNotSupportedException.class)
     public void assertGetLoginTimeout() throws SQLException {
         DataSource dataSource = DataSourceUtils.build(DruidXADataSource.class, DatabaseType.H2, "ds1");

@@ -19,21 +19,18 @@ package io.shardingsphere.transaction.xa;
 
 import com.atomikos.jdbc.AtomikosDataSourceBean;
 import io.shardingsphere.core.constant.DatabaseType;
-import io.shardingsphere.core.exception.ShardingException;
 import io.shardingsphere.transaction.api.TransactionType;
 import io.shardingsphere.transaction.spi.ShardingTransactionEngine;
 import io.shardingsphere.transaction.xa.jta.connection.ShardingXAConnection;
 import io.shardingsphere.transaction.xa.jta.datasource.ShardingXADataSource;
 import io.shardingsphere.transaction.xa.manager.XATransactionManagerSPILoader;
 import io.shardingsphere.transaction.xa.spi.XATransactionManager;
+import lombok.SneakyThrows;
 
 import javax.sql.DataSource;
-import javax.transaction.RollbackException;
 import javax.transaction.Status;
-import javax.transaction.SystemException;
 import javax.transaction.Transaction;
 import java.sql.Connection;
-import java.sql.SQLException;
 import java.util.HashMap;
 import java.util.Map;
 import java.util.Map.Entry;
@@ -77,26 +74,20 @@ public final class XAShardingTransactionEngine implements ShardingTransactionEng
         cachedShardingXADataSourceMap.clear();
     }
     
+    @SneakyThrows
     @Override
     public boolean isInTransaction() {
-        try {
-            return Status.STATUS_NO_TRANSACTION != xaTransactionManager.getUnderlyingTransactionManager().getTransaction().getStatus();
-        } catch (final SystemException ex) {
-            throw new ShardingException(ex);
-        }
+        return Status.STATUS_NO_TRANSACTION != xaTransactionManager.getUnderlyingTransactionManager().getTransaction().getStatus();
     }
     
+    @SneakyThrows
     @Override
     public Connection getConnection(final String dataSourceName) {
         ShardingXADataSource shardingXADataSource = cachedShardingXADataSourceMap.get(dataSourceName);
-        try {
-            Transaction transaction = xaTransactionManager.getUnderlyingTransactionManager().getTransaction();
-            ShardingXAConnection shardingXAConnection = shardingXADataSource.getXAConnection();
-            transaction.enlistResource(shardingXAConnection.getXAResource());
-            return shardingXAConnection.getConnection();
-        } catch (final SQLException | RollbackException | SystemException ex) {
-            throw new ShardingException(ex);
-        }
+        Transaction transaction = xaTransactionManager.getUnderlyingTransactionManager().getTransaction();
+        ShardingXAConnection shardingXAConnection = shardingXADataSource.getXAConnection();
+        transaction.enlistResource(shardingXAConnection.getXAResource());
+        return shardingXAConnection.getConnection();
     }
     
     @Override

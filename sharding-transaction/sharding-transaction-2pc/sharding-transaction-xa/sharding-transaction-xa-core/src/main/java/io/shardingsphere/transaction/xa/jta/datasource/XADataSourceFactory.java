@@ -17,13 +17,13 @@
 
 package io.shardingsphere.transaction.xa.jta.datasource;
 
-import com.atomikos.beans.PropertyException;
 import com.atomikos.beans.PropertyUtils;
 import io.shardingsphere.core.constant.DatabaseType;
 import io.shardingsphere.core.exception.ShardingException;
 import io.shardingsphere.transaction.xa.swapper.DataSourceSwapperEngine;
 import lombok.AccessLevel;
 import lombok.NoArgsConstructor;
+import lombok.SneakyThrows;
 
 import javax.sql.DataSource;
 import javax.sql.XADataSource;
@@ -66,15 +66,12 @@ public final class XADataSourceFactory {
      * @param dataSource data source
      * @return XA data source
      */
+    @SneakyThrows
     public static XADataSource build(final DatabaseType databaseType, final DataSource dataSource) {
-        try {
-            XADataSource result = createXADataSource(databaseType);
-            Properties xaProperties = XAPropertiesFactory.createXAProperties(databaseType).build(DataSourceSwapperEngine.swap(dataSource));
-            PropertyUtils.setProperties(result, xaProperties);
-            return result;
-        } catch (final PropertyException ex) {
-            throw new ShardingException(ex);
-        }
+        XADataSource result = createXADataSource(databaseType);
+        Properties xaProperties = XAPropertiesFactory.createXAProperties(databaseType).build(DataSourceSwapperEngine.swap(dataSource));
+        PropertyUtils.setProperties(result, xaProperties);
+        return result;
     }
     
     private static XADataSource createXADataSource(final DatabaseType databaseType) {
