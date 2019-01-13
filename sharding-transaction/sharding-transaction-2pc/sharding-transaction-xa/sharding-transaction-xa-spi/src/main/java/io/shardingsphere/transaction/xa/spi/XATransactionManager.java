@@ -59,8 +59,7 @@ public interface XATransactionManager extends ShardingTransactionManager {
     void removeRecoveryResource(String dataSourceName, XADataSource xaDataSource);
     
     /**
-     * destroy the transaction manager and could be helpful with shutdown gracefully.
+     * Destroy the transaction manager and could be helpful with shutdown gracefully.
      */
     void destroy();
 }
-

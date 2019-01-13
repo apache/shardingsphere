@@ -20,7 +20,6 @@ package io.shardingsphere.transaction.xa.fixture;
 import io.shardingsphere.transaction.xa.spi.XATransactionManager;
 
 import javax.sql.XADataSource;
-import javax.transaction.Status;
 import javax.transaction.TransactionManager;
 
 public final class FixtureXATransactionManager implements XATransactionManager {
@@ -39,11 +38,6 @@ public final class FixtureXATransactionManager implements XATransactionManager {
     
     @Override
     public void rollback() {
-    }
-    
-    @Override
-    public int getStatus() {
-        return Status.STATUS_NO_TRANSACTION;
     }
     
     @Override

@@ -29,15 +29,11 @@ import org.mockito.Mock;
 import org.mockito.junit.MockitoJUnitRunner;
 
 import javax.sql.XADataSource;
-import javax.transaction.Status;
 import javax.transaction.SystemException;
 
-import static org.hamcrest.CoreMatchers.is;
-import static org.junit.Assert.assertThat;
 import static org.mockito.ArgumentMatchers.any;
 import static org.mockito.Mockito.doThrow;
 import static org.mockito.Mockito.verify;
-import static org.mockito.Mockito.when;
 
 @RunWith(MockitoJUnitRunner.class)
 public final class AtomikosTransactionManagerTest {
@@ -106,18 +102,6 @@ public final class AtomikosTransactionManagerTest {
     public void assertRollbackWithException() throws Exception {
         doThrow(SystemException.class).when(userTransactionManager).rollback();
         atomikosTransactionManager.rollback();
-    }
-    
-    @Test
-    public void assertGetStatusWithoutException() throws Exception {
-        when(userTransactionManager.getStatus()).thenReturn(Status.STATUS_ACTIVE);
-        assertThat(atomikosTransactionManager.getStatus(), is(Status.STATUS_ACTIVE));
-    }
-    
-    @Test(expected = ShardingException.class)
-    public void assertGetStatusWithException() throws Exception {
-        when(userTransactionManager.getStatus()).thenThrow(SystemException.class);
-        atomikosTransactionManager.getStatus();
     }
     
     @Test

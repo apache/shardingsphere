@@ -40,11 +40,4 @@ public interface ShardingTransactionManager {
      * Rollback transaction.
      */
     void rollback();
-    
-    /**
-     * Obtain the status of the transaction associated with the current thread.
-     *
-     * @return Transaction status. Returns {@code Status.NoTransaction} if no transaction is associated with current thread.
-     */
-    int getStatus();
 }

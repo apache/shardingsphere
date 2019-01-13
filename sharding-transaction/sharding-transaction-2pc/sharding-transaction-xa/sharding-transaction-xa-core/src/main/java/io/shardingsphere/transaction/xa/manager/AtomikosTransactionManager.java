@@ -79,18 +79,9 @@ public final class AtomikosTransactionManager implements XATransactionManager {
     @Override
     public void rollback() {
         try {
-            if (Status.STATUS_NO_TRANSACTION != getStatus()) {
+            if (Status.STATUS_NO_TRANSACTION != underlyingTransactionManager.getStatus()) {
                 underlyingTransactionManager.rollback();
             }
-        } catch (final SystemException ex) {
-            throw new ShardingException(ex);
-        }
-    }
-    
-    @Override
-    public int getStatus() {
-        try {
-            return underlyingTransactionManager.getStatus();
         } catch (final SystemException ex) {
             throw new ShardingException(ex);
         }
