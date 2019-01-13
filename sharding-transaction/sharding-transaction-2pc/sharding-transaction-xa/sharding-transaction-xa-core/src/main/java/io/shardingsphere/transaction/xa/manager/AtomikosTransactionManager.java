@@ -79,6 +79,7 @@ public final class AtomikosTransactionManager implements XATransactionManager {
     @Override
     public void rollback() {
         try {
+            // TODO mybatis may call rollback twice, need investigate reason here 
             if (Status.STATUS_NO_TRANSACTION != underlyingTransactionManager.getStatus()) {
                 underlyingTransactionManager.rollback();
             }

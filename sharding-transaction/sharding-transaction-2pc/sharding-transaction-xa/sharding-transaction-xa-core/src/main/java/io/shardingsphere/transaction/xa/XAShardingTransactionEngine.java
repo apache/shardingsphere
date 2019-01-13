@@ -83,7 +83,7 @@ public final class XAShardingTransactionEngine implements ShardingTransactionEng
         ShardingXADataSource shardingXADataSource = cachedShardingXADataSourceMap.get(dataSourceName);
         try {
             Transaction transaction = xaTransactionManager.getUnderlyingTransactionManager().getTransaction();
-            if (null != transaction && Status.STATUS_NO_TRANSACTION != transaction.getStatus()) {
+            if (Status.STATUS_NO_TRANSACTION != transaction.getStatus()) {
                 ShardingXAConnection shardingXAConnection = shardingXADataSource.getXAConnection();
                 transaction.enlistResource(shardingXAConnection.getXAResource());
                 result = shardingXAConnection.getConnection();
