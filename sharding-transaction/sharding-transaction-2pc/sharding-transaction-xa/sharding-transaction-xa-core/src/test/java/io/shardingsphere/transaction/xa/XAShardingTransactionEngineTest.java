@@ -35,7 +35,6 @@ import org.mockito.junit.MockitoJUnitRunner;
 
 import javax.sql.DataSource;
 import javax.sql.XADataSource;
-import javax.transaction.RollbackException;
 import javax.transaction.Status;
 import javax.transaction.SystemException;
 import javax.transaction.Transaction;
@@ -129,11 +128,11 @@ public class XAShardingTransactionEngineTest {
     }
     
     @Test
-    public void assertGetConnection() throws RollbackException, SystemException {
+    public void assertGetConnection() {
         setCachedShardingXADataSourceMap("ds1");
         Connection actual = xaShardingTransactionEngine.getConnection("ds1");
         assertThat(actual, instanceOf(Connection.class));
-        verify(transaction).enlistResource(any(XAResource.class));
+        verify(xaTransactionManager).enlistResource(any(XAResource.class));
     }
     
     @Test

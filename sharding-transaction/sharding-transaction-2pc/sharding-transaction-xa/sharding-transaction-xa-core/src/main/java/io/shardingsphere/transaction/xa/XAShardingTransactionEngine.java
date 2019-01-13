@@ -29,7 +29,6 @@ import lombok.SneakyThrows;
 
 import javax.sql.DataSource;
 import javax.transaction.Status;
-import javax.transaction.Transaction;
 import java.sql.Connection;
 import java.util.HashMap;
 import java.util.Map;
@@ -83,10 +82,8 @@ public final class XAShardingTransactionEngine implements ShardingTransactionEng
     @SneakyThrows
     @Override
     public Connection getConnection(final String dataSourceName) {
-        ShardingXADataSource shardingXADataSource = cachedShardingXADataSourceMap.get(dataSourceName);
-        Transaction transaction = xaTransactionManager.getUnderlyingTransactionManager().getTransaction();
-        ShardingXAConnection shardingXAConnection = shardingXADataSource.getXAConnection();
-        transaction.enlistResource(shardingXAConnection.getXAResource());
+        ShardingXAConnection shardingXAConnection = cachedShardingXADataSourceMap.get(dataSourceName).getXAConnection();
+        xaTransactionManager.enlistResource(shardingXAConnection.getXAResource());
         return shardingXAConnection.getConnection();
     }
     

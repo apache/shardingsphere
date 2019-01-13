@@ -27,9 +27,13 @@ import org.mockito.Mock;
 import org.mockito.junit.MockitoJUnitRunner;
 
 import javax.sql.XADataSource;
+import javax.transaction.Transaction;
+import javax.transaction.xa.XAResource;
 
 import static org.mockito.ArgumentMatchers.any;
+import static org.mockito.Mockito.mock;
 import static org.mockito.Mockito.verify;
+import static org.mockito.Mockito.when;
 
 @RunWith(MockitoJUnitRunner.class)
 public final class AtomikosTransactionManagerTest {
@@ -58,30 +62,6 @@ public final class AtomikosTransactionManagerTest {
     }
     
     @Test
-    public void assertShutdown() {
-        atomikosTransactionManager.destroy();
-        verify(userTransactionService).shutdown(true);
-    }
-    
-    @Test
-    public void assertBeginWithoutException() throws Exception {
-        atomikosTransactionManager.begin();
-        verify(userTransactionManager).begin();
-    }
-    
-    @Test
-    public void assertCommitWithoutException() throws Exception {
-        atomikosTransactionManager.commit();
-        verify(userTransactionManager).commit();
-    }
-    
-    @Test
-    public void assertRollbackWithoutException() throws Exception {
-        atomikosTransactionManager.rollback();
-        verify(userTransactionManager).rollback();
-    }
-    
-    @Test
     public void assertRegisterRecoveryResource() {
         atomikosTransactionManager.registerRecoveryResource("ds1", xaDataSource);
         verify(userTransactionService).registerResource(any(AtomikosXARecoverableResource.class));
@@ -91,5 +71,38 @@ public final class AtomikosTransactionManagerTest {
     public void assertRemoveRecoveryResource() {
         atomikosTransactionManager.removeRecoveryResource("ds1", xaDataSource);
         verify(userTransactionService).removeResource(any(AtomikosXARecoverableResource.class));
+    }
+    
+    @Test
+    public void assertEnListResource() throws Exception {
+        XAResource xaResource = mock(XAResource.class);
+        Transaction transaction = mock(Transaction.class);
+        when(userTransactionManager.getTransaction()).thenReturn(transaction);
+        atomikosTransactionManager.enlistResource(xaResource);
+        verify(transaction).enlistResource(xaResource);
+    }
+    
+    @Test
+    public void assertBegin() throws Exception {
+        atomikosTransactionManager.begin();
+        verify(userTransactionManager).begin();
+    }
+    
+    @Test
+    public void assertCommit() throws Exception {
+        atomikosTransactionManager.commit();
+        verify(userTransactionManager).commit();
+    }
+    
+    @Test
+    public void assertRollback() throws Exception {
+        atomikosTransactionManager.rollback();
+        verify(userTransactionManager).rollback();
+    }
+    
+    @Test
+    public void assertShutdown() {
+        atomikosTransactionManager.destroy();
+        verify(userTransactionService).shutdown(true);
     }
 }

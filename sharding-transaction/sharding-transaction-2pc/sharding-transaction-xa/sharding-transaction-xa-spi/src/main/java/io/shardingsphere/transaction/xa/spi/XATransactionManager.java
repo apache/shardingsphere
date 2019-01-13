@@ -21,6 +21,7 @@ import io.shardingsphere.transaction.core.ShardingTransactionManager;
 
 import javax.sql.XADataSource;
 import javax.transaction.TransactionManager;
+import javax.transaction.xa.XAResource;
 
 /**
  * XA transaction manager.
@@ -57,6 +58,13 @@ public interface XATransactionManager extends ShardingTransactionManager {
      * @param xaDataSource   XA data source
      */
     void removeRecoveryResource(String dataSourceName, XADataSource xaDataSource);
+    
+    /**
+     * Enlist resource.
+     * 
+     * @param xaResource XA resource
+     */
+    void enlistResource(XAResource xaResource);
     
     /**
      * Destroy the transaction manager and could be helpful with shutdown gracefully.

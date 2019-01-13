@@ -21,23 +21,12 @@ import io.shardingsphere.transaction.xa.spi.XATransactionManager;
 
 import javax.sql.XADataSource;
 import javax.transaction.TransactionManager;
+import javax.transaction.xa.XAResource;
 
 public final class FixtureXATransactionManager implements XATransactionManager {
     
     @Override
     public void startup() {
-    }
-    
-    @Override
-    public void begin() {
-    }
-    
-    @Override
-    public void commit() {
-    }
-    
-    @Override
-    public void rollback() {
     }
     
     @Override
@@ -51,6 +40,22 @@ public final class FixtureXATransactionManager implements XATransactionManager {
     
     @Override
     public void removeRecoveryResource(final String dataSourceName, final XADataSource xaDataSource) {
+    }
+    
+    @Override
+    public void enlistResource(final XAResource xaResource) {
+    }
+    
+    @Override
+    public void begin() {
+    }
+    
+    @Override
+    public void commit() {
+    }
+    
+    @Override
+    public void rollback() {
     }
     
     @Override
