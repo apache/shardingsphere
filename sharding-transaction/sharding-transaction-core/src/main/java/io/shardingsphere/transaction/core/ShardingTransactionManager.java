@@ -40,4 +40,11 @@ public interface ShardingTransactionManager {
      * Rollback transaction.
      */
     void rollback();
+    
+    /**
+     * Get transaction status.
+     * 
+     * @return transaction status
+     */
+    int getStatus();
 }

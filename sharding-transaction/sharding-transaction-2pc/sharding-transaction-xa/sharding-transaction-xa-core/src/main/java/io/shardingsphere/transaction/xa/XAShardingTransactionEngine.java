@@ -76,7 +76,7 @@ public final class XAShardingTransactionEngine implements ShardingTransactionEng
     @SneakyThrows
     @Override
     public boolean isInTransaction() {
-        return Status.STATUS_NO_TRANSACTION != xaTransactionManager.getUnderlyingTransactionManager().getTransaction().getStatus();
+        return Status.STATUS_NO_TRANSACTION != xaTransactionManager.getStatus();
     }
     
     @SneakyThrows

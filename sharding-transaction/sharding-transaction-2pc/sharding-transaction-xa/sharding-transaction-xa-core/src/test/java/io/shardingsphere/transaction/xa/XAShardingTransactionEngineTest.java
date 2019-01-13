@@ -36,9 +36,6 @@ import org.mockito.junit.MockitoJUnitRunner;
 import javax.sql.DataSource;
 import javax.sql.XADataSource;
 import javax.transaction.Status;
-import javax.transaction.SystemException;
-import javax.transaction.Transaction;
-import javax.transaction.TransactionManager;
 import javax.transaction.xa.XAResource;
 import java.lang.reflect.Field;
 import java.sql.Connection;
@@ -66,22 +63,13 @@ public class XAShardingTransactionEngineTest {
     @Mock
     private XATransactionManager xaTransactionManager;
     
-    @Mock
-    private TransactionManager transactionManager;
-    
-    @Mock
-    private Transaction transaction;
-    
     @Before
-    public void setUp() throws SystemException {
-        setMockXATransactionManager(xaShardingTransactionEngine, xaTransactionManager);
-        when(xaTransactionManager.getUnderlyingTransactionManager()).thenReturn(transactionManager);
-        when(transactionManager.getTransaction()).thenReturn(transaction);
+    public void setUp() throws ReflectiveOperationException {
+        setXATransactionManager();
     }
     
-    @SneakyThrows
-    private void setMockXATransactionManager(final XAShardingTransactionEngine xaShardingTransactionEngine, final XATransactionManager xaTransactionManager) {
-        Field field = xaShardingTransactionEngine.getClass().getDeclaredField("xaTransactionManager");
+    private void setXATransactionManager() throws ReflectiveOperationException {
+        Field field = XAShardingTransactionEngine.class.getDeclaredField("xaTransactionManager");
         field.setAccessible(true);
         field.set(xaShardingTransactionEngine, xaTransactionManager);
     }
@@ -116,14 +104,14 @@ public class XAShardingTransactionEngineTest {
     }
     
     @Test
-    public void assertIsInTransaction() throws SystemException {
-        when(transaction.getStatus()).thenReturn(Status.STATUS_ACTIVE);
+    public void assertIsInTransaction() {
+        when(xaTransactionManager.getStatus()).thenReturn(Status.STATUS_ACTIVE);
         assertTrue(xaShardingTransactionEngine.isInTransaction());
     }
     
     @Test
-    public void assertIsNotInTransaction() throws SystemException {
-        when(transaction.getStatus()).thenReturn(Status.STATUS_NO_TRANSACTION);
+    public void assertIsNotInTransaction() {
+        when(xaTransactionManager.getStatus()).thenReturn(Status.STATUS_NO_TRANSACTION);
         assertFalse(xaShardingTransactionEngine.isInTransaction());
     }
     

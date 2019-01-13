@@ -20,7 +20,6 @@ package io.shardingsphere.transaction.xa.spi;
 import io.shardingsphere.transaction.core.ShardingTransactionManager;
 
 import javax.sql.XADataSource;
-import javax.transaction.TransactionManager;
 import javax.transaction.xa.XAResource;
 
 /**
@@ -35,13 +34,6 @@ public interface XATransactionManager extends ShardingTransactionManager {
      * Startup XA transaction manager.
      */
     void startup();
-    
-    /**
-     * Get transaction manager for vendor provided.
-     *
-     * @return transaction manager
-     */
-    TransactionManager getUnderlyingTransactionManager();
     
     /**
      * Register recovery resource.

@@ -21,7 +21,6 @@ import com.atomikos.icatch.config.UserTransactionService;
 import com.atomikos.icatch.config.UserTransactionServiceImp;
 import com.atomikos.icatch.jta.UserTransactionManager;
 import io.shardingsphere.transaction.xa.spi.XATransactionManager;
-import lombok.Getter;
 import lombok.SneakyThrows;
 
 import javax.sql.XADataSource;
@@ -35,7 +34,6 @@ import javax.transaction.xa.XAResource;
  */
 public final class AtomikosTransactionManager implements XATransactionManager {
     
-    @Getter
     private final UserTransactionManager underlyingTransactionManager = new UserTransactionManager();
     
     private final UserTransactionService userTransactionService = new UserTransactionServiceImp();
@@ -80,6 +78,12 @@ public final class AtomikosTransactionManager implements XATransactionManager {
         if (Status.STATUS_NO_TRANSACTION != underlyingTransactionManager.getStatus()) {
             underlyingTransactionManager.rollback();
         }
+    }
+    
+    @Override
+    @SneakyThrows
+    public int getStatus() {
+        return underlyingTransactionManager.getStatus();
     }
     
     @Override
