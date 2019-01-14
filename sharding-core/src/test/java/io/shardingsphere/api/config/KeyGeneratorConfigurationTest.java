@@ -32,23 +32,15 @@ public class KeyGeneratorConfigurationTest {
     
     @Test
     public void assertGetKeyGeneratorWithAllProperties() {
-        KeyGeneratorConfiguration keyGeneratorConfiguration = new KeyGeneratorConfiguration("order_id", "SNOWFLAKE", SnowflakeKeyGenerator.class.getName(), new Properties());
+        KeyGeneratorConfiguration keyGeneratorConfiguration = new KeyGeneratorConfiguration("order_id", "SNOWFLAKE", new Properties());
         assertThat(keyGeneratorConfiguration.getColumn(), is("order_id"));
         assertThat(keyGeneratorConfiguration.getType(), is("SNOWFLAKE"));
-        assertThat(keyGeneratorConfiguration.getClassName(), is(SnowflakeKeyGenerator.class.getName()));
         assertThat(keyGeneratorConfiguration.getProps().entrySet().size(), is(0));
     }
     
     @Test
-    public void assertGetKeyGeneratorWithClassName() {
-        KeyGeneratorConfiguration keyGeneratorConfiguration = new KeyGeneratorConfiguration();
-        keyGeneratorConfiguration.setClassName("io.shardingsphere.core.keygen.generator.SnowflakeKeyGenerator");
-        assertThat(keyGeneratorConfiguration.getKeyGenerator().getClass().getName(), is(SnowflakeKeyGenerator.class.getName()));
-    }
-    
-    @Test
     public void assertGetKeyGeneratorWithSnowflakeType() {
-        KeyGeneratorConfiguration keyGeneratorConfiguration = new KeyGeneratorConfiguration("order_id", "SNOWFLAKE", null, new Properties());
+        KeyGeneratorConfiguration keyGeneratorConfiguration = new KeyGeneratorConfiguration("order_id", "SNOWFLAKE", new Properties());
         assertThat(keyGeneratorConfiguration.getKeyGenerator().getClass().getName(), is(SnowflakeKeyGenerator.class.getName()));
     }
     
@@ -83,10 +75,8 @@ public class KeyGeneratorConfigurationTest {
     public void assertGetKeyGeneratorVariables() {
         YamlKeyGeneratorConfiguration keyGeneratorConfiguration = new YamlKeyGeneratorConfiguration();
         keyGeneratorConfiguration.setType("SNOWFLAKE");
-        keyGeneratorConfiguration.setClassName("io.shardingsphere.core.keygen.generator.SnowflakeKeyGenerator");
         keyGeneratorConfiguration.setColumn("order_id");
         assertThat(keyGeneratorConfiguration.getType(), is("SNOWFLAKE"));
-        assertThat(keyGeneratorConfiguration.getClassName(), is("io.shardingsphere.core.keygen.generator.SnowflakeKeyGenerator"));
         assertThat(keyGeneratorConfiguration.getColumn(), is("order_id"));
     }
 }
