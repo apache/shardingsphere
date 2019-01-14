@@ -24,7 +24,7 @@ import javax.sql.XADataSource;
 import javax.transaction.xa.XAResource;
 
 /**
- * Sharding Atomikos XA recoverable resource.
+ * Atomikos XA recoverable resource.
  *
  * @author zhaojun
  */

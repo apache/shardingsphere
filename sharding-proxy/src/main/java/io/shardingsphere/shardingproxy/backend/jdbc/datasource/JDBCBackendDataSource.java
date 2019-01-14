@@ -23,6 +23,8 @@ import io.shardingsphere.core.util.ReflectiveUtil;
 import io.shardingsphere.shardingproxy.backend.BackendDataSource;
 import io.shardingsphere.shardingproxy.util.DataSourceParameter;
 import io.shardingsphere.transaction.api.TransactionType;
+import io.shardingsphere.transaction.core.ShardingTransactionEngineRegistry;
+import io.shardingsphere.transaction.spi.ShardingTransactionEngine;
 import lombok.NoArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 
@@ -113,23 +115,23 @@ public final class JDBCBackendDataSource implements BackendDataSource, AutoClose
      */
     @SuppressWarnings("SynchronizationOnLocalVariableOrMethodParameter")
     public List<Connection> getConnections(final ConnectionMode connectionMode, final String dataSourceName, final int connectionSize, final TransactionType transactionType) throws SQLException {
-        DataSource dataSource = TransactionType.XA == transactionType ? xaDataSources.get(dataSourceName) : dataSources.get(dataSourceName);
+        DataSource dataSource = dataSources.get(dataSourceName);
         if (1 == connectionSize) {
             return Collections.singletonList(dataSource.getConnection());
         }
         if (ConnectionMode.CONNECTION_STRICTLY == connectionMode) {
-            return createConnections(dataSource, connectionSize);
+            return createConnections(transactionType, dataSourceName, dataSource, connectionSize);
         }
         synchronized (dataSource) {
-            return createConnections(dataSource, connectionSize);
+            return createConnections(transactionType, dataSourceName, dataSource, connectionSize);
         }
     }
     
-    private List<Connection> createConnections(final DataSource dataSource, final int connectionSize) throws SQLException {
+    private List<Connection> createConnections(final TransactionType transactionType, final String dataSourceName, final DataSource dataSource, final int connectionSize) throws SQLException {
         List<Connection> result = new ArrayList<>(connectionSize);
         for (int i = 0; i < connectionSize; i++) {
             try {
-                result.add(dataSource.getConnection());
+                result.add(createConnection(transactionType, dataSourceName, dataSource));
             } catch (final SQLException ex) {
                 for (Connection each : result) {
                     each.close();
@@ -138,6 +140,15 @@ public final class JDBCBackendDataSource implements BackendDataSource, AutoClose
             }
         }
         return result;
+    }
+    
+    private Connection createConnection(final TransactionType transactionType, final String dataSourceName, final DataSource dataSource) throws SQLException {
+        ShardingTransactionEngine shardingTransactionEngine = ShardingTransactionEngineRegistry.getEngine(transactionType);
+        return isInShardingTransaction(shardingTransactionEngine) ? shardingTransactionEngine.getConnection(dataSourceName) : dataSource.getConnection();
+    }
+    
+    private boolean isInShardingTransaction(final ShardingTransactionEngine shardingTransactionEngine) {
+        return null != shardingTransactionEngine && shardingTransactionEngine.isInTransaction();
     }
     
     @Override
