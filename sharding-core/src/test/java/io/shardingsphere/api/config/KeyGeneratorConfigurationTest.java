@@ -23,10 +23,21 @@ import io.shardingsphere.core.keygen.generator.UUIDKeyGenerator;
 import io.shardingsphere.core.yaml.sharding.YamlKeyGeneratorConfiguration;
 import org.junit.Test;
 
+import java.util.Properties;
+
 import static org.hamcrest.CoreMatchers.is;
 import static org.junit.Assert.assertThat;
 
 public class KeyGeneratorConfigurationTest {
+    
+    @Test
+    public void assertGetKeyGeneratorWithAllProperties() {
+        KeyGeneratorConfiguration keyGeneratorConfiguration = new KeyGeneratorConfiguration("order_id", "SNOWFLAKE", SnowflakeKeyGenerator.class.getName(), new Properties());
+        assertThat(keyGeneratorConfiguration.getColumn(), is("order_id");
+        assertThat(keyGeneratorConfiguration.getType(), is("SNOWFLAKE");
+        assertThat(keyGeneratorConfiguration.getClassName(), is(SnowflakeKeyGenerator.class.getName()));
+        assertThat(keyGeneratorConfiguration.getProps().entrySet().size(), is(0));
+    }
     
     @Test
     public void assertGetKeyGeneratorWithClassName() {
@@ -37,8 +48,7 @@ public class KeyGeneratorConfigurationTest {
     
     @Test
     public void assertGetKeyGeneratorWithSnowflakeType() {
-        KeyGeneratorConfiguration keyGeneratorConfiguration = new KeyGeneratorConfiguration();
-        keyGeneratorConfiguration.setType("SNOWFLAKE");
+        KeyGeneratorConfiguration keyGeneratorConfiguration = new KeyGeneratorConfiguration("order_id", "SNOWFLAKE", null, new Properties());
         assertThat(keyGeneratorConfiguration.getKeyGenerator().getClass().getName(), is(SnowflakeKeyGenerator.class.getName()));
     }
     
