@@ -13,7 +13,7 @@
     <packaging>pom</packaging>
 
     <modules>
-        <module>sharding-transaction-base-saga</module>
+        <module>sharding-transaction-saga</module>
     </modules>
 
     <dependencies>

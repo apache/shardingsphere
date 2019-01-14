@@ -8,7 +8,7 @@
         <artifactId>sharding-transaction-base</artifactId>
         <version>4.0.0.M1-SNAPSHOT</version>
     </parent>
-    <artifactId>sharding-transaction-base-saga</artifactId>
+    <artifactId>sharding-transaction-saga</artifactId>
     <name>${project.artifactId}</name>
 
     <dependencies>
