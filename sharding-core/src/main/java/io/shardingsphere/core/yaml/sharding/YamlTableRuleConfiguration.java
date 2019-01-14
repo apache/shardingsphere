@@ -17,10 +17,8 @@
 
 package io.shardingsphere.core.yaml.sharding;
 
-import com.google.common.base.Optional;
 import com.google.common.base.Preconditions;
 import io.shardingsphere.api.config.rule.TableRuleConfiguration;
-import io.shardingsphere.core.keygen.KeyGeneratorType;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
 import lombok.Setter;
@@ -53,21 +51,7 @@ public class YamlTableRuleConfiguration {
         actualDataNodes = tableRuleConfiguration.getActualDataNodes();
         databaseStrategy = new YamlShardingStrategyConfiguration(tableRuleConfiguration.getDatabaseShardingStrategyConfig());
         tableStrategy = new YamlShardingStrategyConfiguration(tableRuleConfiguration.getTableShardingStrategyConfig());
-        keyGenerator = null == tableRuleConfiguration.getKeyGenerator() ? null : getYamlKeyGeneratorConfiguration(tableRuleConfiguration);
-    }
-    
-    private YamlKeyGeneratorConfiguration getYamlKeyGeneratorConfiguration(final TableRuleConfiguration tableRuleConfiguration) {
-        YamlKeyGeneratorConfiguration result = new YamlKeyGeneratorConfiguration();
-        String keyGeneratorClassName = tableRuleConfiguration.getKeyGenerator().getClass().getName();
-        Optional<KeyGeneratorType> keyGeneratorType = KeyGeneratorType.getKeyGeneratorType(keyGeneratorClassName);
-        if (!keyGeneratorType.isPresent()) {
-            result.setClassName(keyGeneratorClassName);
-        } else {
-            result.setType(keyGeneratorType.get().name());
-        }
-        result.setColumn(tableRuleConfiguration.getKeyGeneratorColumnName());
-        result.setProps(tableRuleConfiguration.getKeyGenerator().getProperties());
-        return result;
+        keyGenerator = null == tableRuleConfiguration.getKeyGeneratorConfig() ? null : new YamlKeyGeneratorConfiguration(tableRuleConfiguration.getKeyGeneratorConfig());
     }
     
     /**
@@ -87,7 +71,7 @@ public class YamlTableRuleConfiguration {
             result.setTableShardingStrategyConfig(tableStrategy.build());
         }
         if (null != keyGenerator) {
-            result.setKeyGenerator(keyGenerator.getKeyGenerator());
+            result.setKeyGeneratorConfig(keyGenerator.getKeyGeneratorConfiguration());
             result.setKeyGeneratorColumnName(keyGenerator.getColumn());
         }
         result.setLogicIndex(logicIndex);

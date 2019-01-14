@@ -17,24 +17,32 @@
 
 package io.shardingsphere.transaction.xa.jta.datasource.swapper.impl;
 
-import com.alibaba.druid.pool.DruidDataSource;
-import io.shardingsphere.core.config.DatabaseAccessConfiguration;
-import io.shardingsphere.transaction.xa.jta.datasource.swapper.DataSourceSwapper;
+import io.shardingsphere.transaction.xa.jta.datasource.swapper.DataSourcePropertyProvider;
 
 /**
- * Druid swapper.
+ * HikariCP property provider.
  *
- * @author zhaojun
+ * @author zhangliang
  */
-public final class DruidSwapper implements DataSourceSwapper<DruidDataSource> {
+public final class HikariCPPropertyProvider implements DataSourcePropertyProvider {
     
     @Override
-    public Class<DruidDataSource> getDataSourceClass() {
-        return DruidDataSource.class;
+    public String getDataSourceClassName() {
+        return "com.zaxxer.hikari.HikariDataSource";
     }
     
     @Override
-    public DatabaseAccessConfiguration swap(final DruidDataSource dataSource) {
-        return new DatabaseAccessConfiguration(dataSource.getUrl(), dataSource.getUsername(), dataSource.getPassword());
+    public String getURLPropertyName() {
+        return "jdbcUrl";
+    }
+    
+    @Override
+    public String getUsernamePropertyName() {
+        return "username";
+    }
+    
+    @Override
+    public String getPasswordPropertyName() {
+        return "password";
     }
 }

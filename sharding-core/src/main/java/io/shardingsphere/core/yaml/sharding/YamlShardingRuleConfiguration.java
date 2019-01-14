@@ -17,11 +17,9 @@
 
 package io.shardingsphere.core.yaml.sharding;
 
-import com.google.common.base.Optional;
 import io.shardingsphere.api.config.rule.MasterSlaveRuleConfiguration;
 import io.shardingsphere.api.config.rule.ShardingRuleConfiguration;
 import io.shardingsphere.api.config.rule.TableRuleConfiguration;
-import io.shardingsphere.core.keygen.KeyGeneratorType;
 import io.shardingsphere.core.yaml.masterslave.YamlMasterSlaveRuleConfiguration;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
@@ -71,23 +69,10 @@ public class YamlShardingRuleConfiguration {
         bindingTables.addAll(shardingRuleConfiguration.getBroadcastTables());
         defaultDatabaseStrategy = new YamlShardingStrategyConfiguration(shardingRuleConfiguration.getDefaultDatabaseShardingStrategyConfig());
         defaultTableStrategy = new YamlShardingStrategyConfiguration(shardingRuleConfiguration.getDefaultTableShardingStrategyConfig());
-        defaultKeyGenerator = null == shardingRuleConfiguration.getDefaultKeyGenerator() ? null : getYamlKeyGeneratorConfiguration(shardingRuleConfiguration);
+        defaultKeyGenerator = null == shardingRuleConfiguration.getDefaultKeyGeneratorConfig() ? null : new YamlKeyGeneratorConfiguration(shardingRuleConfiguration.getDefaultKeyGeneratorConfig());
         for (MasterSlaveRuleConfiguration each : shardingRuleConfiguration.getMasterSlaveRuleConfigs()) {
             masterSlaveRules.put(each.getName(), new YamlMasterSlaveRuleConfiguration(each));
         }
-    }
-    
-    private YamlKeyGeneratorConfiguration getYamlKeyGeneratorConfiguration(final ShardingRuleConfiguration shardingRuleConfiguration) {
-        YamlKeyGeneratorConfiguration result = new YamlKeyGeneratorConfiguration();
-        String keyGeneratorClassName = shardingRuleConfiguration.getDefaultKeyGenerator().getClass().getName();
-        Optional<KeyGeneratorType> keyGeneratorType = KeyGeneratorType.getKeyGeneratorType(keyGeneratorClassName);
-        if (!keyGeneratorType.isPresent()) {
-            result.setClassName(keyGeneratorClassName);
-        } else {
-            result.setType(keyGeneratorType.get().name());
-        }
-        result.setProps(shardingRuleConfiguration.getDefaultKeyGenerator().getProperties());
-        return result;
     }
     
     /**
@@ -112,7 +97,7 @@ public class YamlShardingRuleConfiguration {
             result.setDefaultTableShardingStrategyConfig(defaultTableStrategy.build());
         }
         if (null != defaultKeyGenerator) {
-            result.setDefaultKeyGenerator(defaultKeyGenerator.getKeyGenerator());
+            result.setDefaultKeyGeneratorConfig(defaultKeyGenerator.getKeyGeneratorConfiguration());
         }
         Collection<MasterSlaveRuleConfiguration> masterSlaveRuleConfigs = new LinkedList<>();
         for (Entry<String, YamlMasterSlaveRuleConfiguration> entry : masterSlaveRules.entrySet()) {

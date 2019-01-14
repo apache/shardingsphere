@@ -17,8 +17,8 @@
 
 package io.shardingsphere.api.config.rule;
 
+import io.shardingsphere.api.config.KeyGeneratorConfiguration;
 import io.shardingsphere.api.config.strategy.ShardingStrategyConfiguration;
-import io.shardingsphere.core.keygen.generator.KeyGenerator;
 import lombok.Getter;
 import lombok.Setter;
 
@@ -30,6 +30,7 @@ import java.util.LinkedList;
  * 
  * @author zhangliang
  * @author maxiaoguang
+ * @author panjuan
  */
 @Getter
 @Setter
@@ -47,7 +48,7 @@ public final class ShardingRuleConfiguration implements RuleConfiguration {
     
     private ShardingStrategyConfiguration defaultTableShardingStrategyConfig;
     
-    private KeyGenerator defaultKeyGenerator;
+    private KeyGeneratorConfiguration defaultKeyGeneratorConfig;
     
     private Collection<MasterSlaveRuleConfiguration> masterSlaveRuleConfigs = new LinkedList<>();
 }

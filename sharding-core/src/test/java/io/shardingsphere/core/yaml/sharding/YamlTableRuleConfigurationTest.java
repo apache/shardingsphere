@@ -17,6 +17,7 @@
 
 package io.shardingsphere.core.yaml.sharding;
 
+import io.shardingsphere.api.config.KeyGeneratorConfiguration;
 import io.shardingsphere.api.config.rule.TableRuleConfiguration;
 import io.shardingsphere.api.config.strategy.NoneShardingStrategyConfiguration;
 import io.shardingsphere.core.keygen.generator.SnowflakeKeyGenerator;
@@ -73,7 +74,7 @@ public final class YamlTableRuleConfigurationTest {
         assertThat(actual.getLogicTable(), is("t_order"));
         assertThat(actual.getActualDataNodes(), is("ds_${0..1}.t_order_${0..1}"));
         assertThat(actual.getKeyGeneratorColumnName(), is("order_id"));
-        assertThat(actual.getKeyGenerator(), instanceOf(SnowflakeKeyGenerator.class));
+        assertThat(actual.getKeyGeneratorConfig(), instanceOf(KeyGeneratorConfiguration.class));
         assertThat(actual.getLogicIndex(), is("order_index"));
     }
     

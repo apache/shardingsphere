@@ -17,24 +17,32 @@
 
 package io.shardingsphere.transaction.xa.jta.datasource.swapper.impl;
 
-import io.shardingsphere.core.config.DatabaseAccessConfiguration;
-import io.shardingsphere.transaction.xa.jta.datasource.swapper.DataSourceSwapper;
-import org.apache.commons.dbcp2.BasicDataSource;
+import io.shardingsphere.transaction.xa.jta.datasource.swapper.DataSourcePropertyProvider;
 
 /**
- * DBCP2 swapper.
+ * Default data source property provider.
  *
- * @author zhaojun
+ * @author zhangliang
  */
-public final class DBCP2Swapper implements DataSourceSwapper<BasicDataSource> {
+public final class DefaultDataSourcePropertyProvider implements DataSourcePropertyProvider {
     
     @Override
-    public Class<BasicDataSource> getDataSourceClass() {
-        return BasicDataSource.class;
+    public String getDataSourceClassName() {
+        return "";
     }
     
     @Override
-    public DatabaseAccessConfiguration swap(final BasicDataSource dataSource) {
-        return new DatabaseAccessConfiguration(dataSource.getUrl(), dataSource.getUsername(), dataSource.getPassword());
+    public String getURLPropertyName() {
+        return "url";
+    }
+    
+    @Override
+    public String getUsernamePropertyName() {
+        return "username";
+    }
+    
+    @Override
+    public String getPasswordPropertyName() {
+        return "password";
     }
 }

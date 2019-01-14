@@ -28,8 +28,9 @@ import io.shardingsphere.transaction.xa.jta.datasource.properties.dialect.MySQLX
 import io.shardingsphere.transaction.xa.jta.datasource.properties.dialect.OracleXAPropertiesTest;
 import io.shardingsphere.transaction.xa.jta.datasource.properties.dialect.PostgreSQLXAPropertiesTest;
 import io.shardingsphere.transaction.xa.jta.datasource.properties.dialect.SQLServerXAPropertiesTest;
-import io.shardingsphere.transaction.xa.jta.datasource.swapper.DataSourceSwapperEngineTest;
-import io.shardingsphere.transaction.xa.jta.datasource.swapper.impl.DefaultSwapperTest;
+import io.shardingsphere.transaction.xa.jta.datasource.swapper.DataSourcePropertyProviderLoaderTest;
+import io.shardingsphere.transaction.xa.jta.datasource.swapper.DataSourceSwapperTest;
+import io.shardingsphere.transaction.xa.jta.datasource.swapper.impl.DefaultDataSourcePropertyProviderTest;
 import io.shardingsphere.transaction.xa.jta.resource.ShardingXAResourceTest;
 import org.junit.runner.RunWith;
 import org.junit.runners.Suite;
@@ -41,8 +42,9 @@ import org.junit.runners.Suite.SuiteClasses;
         XAPropertiesFactoryTest.class, 
         ShardingXADataSourceTest.class, 
         XADataSourceFactoryTest.class, 
-        DataSourceSwapperEngineTest.class, 
-        DefaultSwapperTest.class, 
+        DataSourcePropertyProviderLoaderTest.class, 
+        DataSourceSwapperTest.class,
+        DefaultDataSourcePropertyProviderTest.class, 
         H2XAPropertiesTest.class, 
         MySQLXAPropertiesTest.class, 
         PostgreSQLXAPropertiesTest.class, 

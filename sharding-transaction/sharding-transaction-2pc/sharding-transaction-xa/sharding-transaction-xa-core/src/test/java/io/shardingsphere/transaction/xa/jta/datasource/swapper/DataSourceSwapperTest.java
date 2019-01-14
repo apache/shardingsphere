@@ -15,33 +15,43 @@
  * </p>
  */
 
-package io.shardingsphere.transaction.xa.jta.datasource.swapper.impl;
+package io.shardingsphere.transaction.xa.jta.datasource.swapper;
 
+import com.zaxxer.hikari.HikariDataSource;
 import io.shardingsphere.core.config.DatabaseAccessConfiguration;
 import org.apache.commons.dbcp2.BasicDataSource;
 import org.junit.Test;
 
+import javax.sql.DataSource;
+
 import static org.hamcrest.CoreMatchers.is;
-import static org.junit.Assert.assertNull;
 import static org.junit.Assert.assertThat;
 
-public final class DefaultSwapperTest {
+public final class DataSourceSwapperTest {
     
-    private final DefaultDataSourceSwapper swapper = new DefaultDataSourceSwapper();
-    
-    @Test
-    public void assertGetDataSourceClass() {
-        assertNull(swapper.getDataSourceClass());
-    }
+    private final DataSourceSwapper swapper = new DataSourceSwapper();
     
     @Test
-    public void assertSwap() {
-        assertDatabaseAccessConfiguration(swapper.swap(createDataSource()));
+    public void assertSwapByDefaultProvider() {
+        assertDatabaseAccessConfiguration(swapper.swap(createDBCPDataSource()));
     }
     
-    private BasicDataSource createDataSource() {
+    private DataSource createDBCPDataSource() {
         BasicDataSource dataSource = new BasicDataSource();
         dataSource.setUrl("jdbc:mysql://localhost:3306/demo_ds");
+        dataSource.setUsername("root");
+        dataSource.setPassword("root");
+        return dataSource;
+    }
+    
+    @Test
+    public void assertSwapBySPIProvider() {
+        assertDatabaseAccessConfiguration(swapper.swap(createHikariCPDataSource()));
+    }
+    
+    private DataSource createHikariCPDataSource() {
+        HikariDataSource dataSource = new HikariDataSource();
+        dataSource.setJdbcUrl("jdbc:mysql://localhost:3306/demo_ds");
         dataSource.setUsername("root");
         dataSource.setPassword("root");
         return dataSource;

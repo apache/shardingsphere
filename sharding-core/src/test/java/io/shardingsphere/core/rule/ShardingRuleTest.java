@@ -19,6 +19,7 @@ package io.shardingsphere.core.rule;
 
 import io.shardingsphere.api.algorithm.fixture.TestPreciseShardingAlgorithm;
 import io.shardingsphere.api.algorithm.masterslave.MasterSlaveLoadBalanceAlgorithmType;
+import io.shardingsphere.api.config.KeyGeneratorConfiguration;
 import io.shardingsphere.api.config.rule.MasterSlaveRuleConfiguration;
 import io.shardingsphere.api.config.rule.ShardingRuleConfiguration;
 import io.shardingsphere.api.config.rule.TableRuleConfiguration;
@@ -26,6 +27,7 @@ import io.shardingsphere.api.config.strategy.InlineShardingStrategyConfiguration
 import io.shardingsphere.api.config.strategy.NoneShardingStrategyConfiguration;
 import io.shardingsphere.api.config.strategy.StandardShardingStrategyConfiguration;
 import io.shardingsphere.core.exception.ShardingConfigurationException;
+import io.shardingsphere.core.keygen.generator.KeyGenerator;
 import io.shardingsphere.core.keygen.generator.SnowflakeKeyGenerator;
 import io.shardingsphere.core.keygen.fixture.IncrementKeyGenerator;
 import io.shardingsphere.core.parsing.parser.context.condition.Column;
@@ -378,8 +380,15 @@ public final class ShardingRuleTest {
         shardingRuleConfiguration.getBroadcastTables().add("BROADCAST_TABLE");
         shardingRuleConfiguration.setDefaultDatabaseShardingStrategyConfig(new InlineShardingStrategyConfiguration("id", "ds_%{id % 2}"));
         shardingRuleConfiguration.setDefaultTableShardingStrategyConfig(new InlineShardingStrategyConfiguration("id", "table_%{id % 2}"));
-        shardingRuleConfiguration.setDefaultKeyGenerator(new IncrementKeyGenerator());
+        shardingRuleConfiguration.setDefaultKeyGeneratorConfig(getKeyGeneratorConfiguration());
         return new ShardingRule(shardingRuleConfiguration, createDataSourceNames());
+    }
+    
+    private KeyGeneratorConfiguration getKeyGeneratorConfiguration() {
+        KeyGenerator keyGenerator = new IncrementKeyGenerator();
+        KeyGeneratorConfiguration keyGeneratorConfiguration = new KeyGeneratorConfiguration();
+        keyGeneratorConfiguration.setClassName(keyGenerator.getClass().getName());
+        return keyGeneratorConfiguration;
     }
     
     private ShardingRule createMinimumShardingRule() {

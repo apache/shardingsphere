@@ -17,30 +17,44 @@
 
 package io.shardingsphere.transaction.xa.jta.datasource.swapper;
 
+import com.google.common.base.CaseFormat;
+import com.google.common.base.Joiner;
 import io.shardingsphere.core.config.DatabaseAccessConfiguration;
+import io.shardingsphere.core.exception.ShardingException;
 
 import javax.sql.DataSource;
+import java.lang.reflect.Method;
 
 /**
- * Pick up properties from datasource then swap to database access configuration.
+ * Data source swapper.
  *
- * @author zhaojun
- * @param <T> type of data source
+ * @author zhangliang
  */
-public interface DataSourceSwapper<T extends DataSource> {
+public final class DataSourceSwapper {
     
     /**
-     * Get data source class.
-     *
-     * @return data source class
-     */
-    Class<T> getDataSourceClass();
-    
-    /**
-     * Swap to database access configuration.
-     *
+     * Swap data source to database access configuration.
+     * 
      * @param dataSource data source
      * @return database access configuration
      */
-    DatabaseAccessConfiguration swap(T dataSource);
+    public DatabaseAccessConfiguration swap(final DataSource dataSource) {
+        DataSourcePropertyProvider provider = DataSourcePropertyProviderLoader.getProvider(dataSource);
+        try {
+            String url = (String) findGetterMethod(dataSource, provider.getURLPropertyName()).invoke(dataSource);
+            String username = (String) findGetterMethod(dataSource, provider.getUsernamePropertyName()).invoke(dataSource);
+            String password = (String) findGetterMethod(dataSource, provider.getPasswordPropertyName()).invoke(dataSource);
+            return new DatabaseAccessConfiguration(url, username, password);
+        } catch (final ReflectiveOperationException ex) {
+            throw new ShardingException("Cannot swap data source type: `%s`, please provide an implementation from SPI `%s`", 
+                    dataSource.getClass().getName(), DataSourcePropertyProvider.class.getName());
+        }
+    }
+    
+    private Method findGetterMethod(final DataSource dataSource, final String propertyName) throws NoSuchMethodException {
+        String getterMethodName = Joiner.on("").join("get", CaseFormat.LOWER_CAMEL.to(CaseFormat.UPPER_CAMEL, propertyName));
+        Method method = dataSource.getClass().getMethod(getterMethodName);
+        method.setAccessible(true);
+        return method;
+    }
 }
