@@ -53,12 +53,12 @@ public class YamlTableRuleConfiguration {
         actualDataNodes = tableRuleConfiguration.getActualDataNodes();
         databaseStrategy = new YamlShardingStrategyConfiguration(tableRuleConfiguration.getDatabaseShardingStrategyConfig());
         tableStrategy = new YamlShardingStrategyConfiguration(tableRuleConfiguration.getTableShardingStrategyConfig());
-        keyGenerator = null == tableRuleConfiguration.getKeyGenerator() ? null : getYamlKeyGeneratorConfiguration(tableRuleConfiguration);
+        keyGenerator = null == tableRuleConfiguration.getKeyGeneratorConfig() ? null : getYamlKeyGeneratorConfiguration(tableRuleConfiguration);
     }
     
     private YamlKeyGeneratorConfiguration getYamlKeyGeneratorConfiguration(final TableRuleConfiguration tableRuleConfiguration) {
         YamlKeyGeneratorConfiguration result = new YamlKeyGeneratorConfiguration();
-        String keyGeneratorClassName = tableRuleConfiguration.getKeyGenerator().getClass().getName();
+        String keyGeneratorClassName = tableRuleConfiguration.getKeyGeneratorConfig().getClass().getName();
         Optional<KeyGeneratorType> keyGeneratorType = KeyGeneratorType.getKeyGeneratorType(keyGeneratorClassName);
         if (!keyGeneratorType.isPresent()) {
             result.setClassName(keyGeneratorClassName);
@@ -66,7 +66,7 @@ public class YamlTableRuleConfiguration {
             result.setType(keyGeneratorType.get().name());
         }
         result.setColumn(tableRuleConfiguration.getKeyGeneratorColumnName());
-        result.setProps(tableRuleConfiguration.getKeyGenerator().getProperties());
+        result.setProps(tableRuleConfiguration.getKeyGeneratorConfig().getProps());
         return result;
     }
     
@@ -87,7 +87,7 @@ public class YamlTableRuleConfiguration {
             result.setTableShardingStrategyConfig(tableStrategy.build());
         }
         if (null != keyGenerator) {
-            result.setKeyGenerator(keyGenerator.getKeyGenerator());
+            result.setKeyGeneratorConfig(keyGenerator.getKeyGeneratorConfiguration());
             result.setKeyGeneratorColumnName(keyGenerator.getColumn());
         }
         result.setLogicIndex(logicIndex);
