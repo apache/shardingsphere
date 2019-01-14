@@ -49,9 +49,9 @@ public class YamlKeyGeneratorConfigurationTest {
     @Test
     public void getKeyGeneratorConfiguration() {
         YamlKeyGeneratorConfiguration yamlKeyGeneratorConfiguration = new YamlKeyGeneratorConfiguration();
-        yamlKeyGeneratorConfiguration.setColumn("user_id");
+        yamlKeyGeneratorConfiguration.setColumn("order_id");
         yamlKeyGeneratorConfiguration.setClassName(SnowflakeKeyGenerator.class.getName());
-        yamlKeyGeneratorConfiguration.setType("SNOWFLAKE");
+        yamlKeyGeneratorConfiguration.setType("UUID");
         yamlKeyGeneratorConfiguration.setProps(props);
         KeyGeneratorConfiguration keyGeneratorConfiguration = yamlKeyGeneratorConfiguration.getKeyGeneratorConfiguration();
         assertThat(keyGeneratorConfiguration.getColumn(), is(this.keyGeneratorConfiguration.getColumn()));
