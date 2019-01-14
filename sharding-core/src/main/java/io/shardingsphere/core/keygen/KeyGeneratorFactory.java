@@ -17,9 +17,14 @@
 
 package io.shardingsphere.core.keygen;
 
+import com.google.common.base.Predicate;
+import com.google.common.collect.Collections2;
 import io.shardingsphere.core.keygen.generator.KeyGenerator;
+import io.shardingsphere.spi.NewInstanceServiceLoader;
 import lombok.AccessLevel;
 import lombok.NoArgsConstructor;
+
+import java.util.Collections;
 
 /**
  * Key generator factory.
@@ -32,14 +37,24 @@ public final class KeyGeneratorFactory {
     /**
      * Create key generator.
      * 
-     * @param keyGeneratorClassName key generator class name
+     * @param keyGeneratorType key generator type
      * @return key generator instance
      */
-    public static KeyGenerator newInstance(final String keyGeneratorClassName) {
+    public static KeyGenerator newInstance(final String keyGeneratorType) {
         try {
             return (KeyGenerator) Class.forName(keyGeneratorClassName).newInstance();
         } catch (final ReflectiveOperationException ex) {
             throw new IllegalArgumentException(String.format("Class %s should have public privilege and no argument constructor", keyGeneratorClassName));
         }
+    }
+    
+    private static boolean isValid(final String keyGeneratorType) {
+        return !Collections2.filter(NewInstanceServiceLoader.load(KeyGenerator.class), new Predicate<KeyGenerator>() {
+            
+            @Override
+            public boolean apply(final KeyGenerator input) {
+                return keyGeneratorType.equals(input.getType());
+            }
+        }).isEmpty();
     }
 }
