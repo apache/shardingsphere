@@ -19,9 +19,14 @@ package io.shardingsphere.core.executor.sql.execute.result;
 
 import com.google.common.collect.HashMultimap;
 import com.google.common.collect.Multimap;
+import io.shardingsphere.core.executor.sql.execute.row.QueryRow;
 import io.shardingsphere.core.merger.QueryResult;
+import lombok.SneakyThrows;
 
+import java.io.ByteArrayInputStream;
+import java.io.ByteArrayOutputStream;
 import java.io.InputStream;
+import java.io.ObjectOutputStream;
 import java.sql.ResultSet;
 import java.sql.ResultSetMetaData;
 import java.sql.SQLException;
@@ -43,9 +48,9 @@ public final class MemoryQueryResult implements QueryResult {
     
     private final Multimap<String, Integer> columnLabelAndIndexMap;
     
-    private final Iterator<List<Object>> resultData;
+    private final Iterator<QueryRow> resultData;
     
-    private List<Object> currentRow;
+    private QueryRow currentRow;
     
     public MemoryQueryResult(final ResultSet resultSet) throws SQLException {
         columnLabelAndIndexMap = getMetaData(resultSet.getMetaData());
@@ -60,14 +65,14 @@ public final class MemoryQueryResult implements QueryResult {
         return result;
     }
     
-    private Iterator<List<Object>> getResultData(final ResultSet resultSet) throws SQLException {
-        Collection<List<Object>> result = new LinkedList<>();
+    private Iterator<QueryRow> getResultData(final ResultSet resultSet) throws SQLException {
+        Collection<QueryRow> result = new LinkedList<>();
         while (resultSet.next()) {
-            List<Object> row = new ArrayList<>(columnLabelAndIndexMap.size());
+            List<Object> rowData = new ArrayList<>(columnLabelAndIndexMap.size());
             for (int columnIndex = 1; columnIndex <= resultSet.getMetaData().getColumnCount(); columnIndex++) {
-                row.add(resultSet.getObject(columnIndex));
+                rowData.add(resultSet.getObject(columnIndex));
             }
-            result.add(row);
+            result.add(new QueryRow(rowData));
         }
         return result.iterator();
     }
@@ -84,32 +89,42 @@ public final class MemoryQueryResult implements QueryResult {
     
     @Override
     public Object getValue(final int columnIndex, final Class<?> type) {
-        return currentRow.get(columnIndex - 1);
+        return currentRow.getColumnValue(columnIndex);
     }
     
     @Override
     public Object getValue(final String columnLabel, final Class<?> type) {
-        return currentRow.get(getIndexByColumnLabel(columnLabel));
+        return currentRow.getColumnValue(getColumnIndex(columnLabel));
     }
     
     @Override
     public Object getCalendarValue(final int columnIndex, final Class<?> type, final Calendar calendar) {
-        return currentRow.get(columnIndex - 1);
+        return currentRow.getColumnValue(columnIndex);
     }
     
     @Override
     public Object getCalendarValue(final String columnLabel, final Class<?> type, final Calendar calendar) {
-        return currentRow.get(getIndexByColumnLabel(columnLabel));
+        return currentRow.getColumnValue(getColumnIndex(columnLabel));
     }
     
     @Override
     public InputStream getInputStream(final int columnIndex, final String type) {
-        return (InputStream) currentRow.get(columnIndex - 1);
+        return getInputStream(currentRow.getColumnValue(columnIndex));
     }
     
     @Override
     public InputStream getInputStream(final String columnLabel, final String type) {
-        return (InputStream) currentRow.get(getIndexByColumnLabel(columnLabel));
+        return getInputStream(currentRow.getColumnValue(getColumnIndex(columnLabel)));
+    }
+    
+    @SneakyThrows
+    private InputStream getInputStream(final Object value) {
+        ByteArrayOutputStream byteArrayOutputStream = new ByteArrayOutputStream();
+        ObjectOutputStream objectOutputStream = new ObjectOutputStream(byteArrayOutputStream);
+        objectOutputStream.writeObject(value);
+        objectOutputStream.flush();
+        objectOutputStream.close();
+        return new ByteArrayInputStream(byteArrayOutputStream.toByteArray());
     }
     
     @Override
@@ -132,7 +147,7 @@ public final class MemoryQueryResult implements QueryResult {
         throw new SQLException("Column index out of range", "9999");
     }
     
-    private Integer getIndexByColumnLabel(final String columnLabel) {
-        return new ArrayList<>(columnLabelAndIndexMap.get(columnLabel)).get(0) - 1;
+    private Integer getColumnIndex(final String columnLabel) {
+        return new ArrayList<>(columnLabelAndIndexMap.get(columnLabel)).get(0);
     }
 }

@@ -17,16 +17,18 @@
 
 package io.shardingsphere.orchestration.internal;
 
-import io.shardingsphere.orchestration.internal.config.AllConfigTests;
-import io.shardingsphere.orchestration.internal.yaml.AllYamlTests;
+import io.shardingsphere.orchestration.internal.eventbus.AllEventBusTests;
+import io.shardingsphere.orchestration.internal.registry.AllRegistryTests;
+import io.shardingsphere.orchestration.internal.rule.AllRuleTests;
 import org.junit.runner.RunWith;
 import org.junit.runners.Suite;
 import org.junit.runners.Suite.SuiteClasses;
 
 @RunWith(Suite.class)
 @SuiteClasses({
-        AllYamlTests.class,
-        AllConfigTests.class
+        AllRegistryTests.class, 
+        AllRuleTests.class, 
+        AllEventBusTests.class
 })
 public final class AllInternalTests {
 }

@@ -19,6 +19,7 @@ package io.shardingsphere.core.parsing.parser.sql.dal;
 
 import io.shardingsphere.core.constant.SQLType;
 import io.shardingsphere.core.parsing.lexer.dialect.mysql.MySQLKeyword;
+import io.shardingsphere.core.parsing.lexer.dialect.postgresql.PostgreSQLKeyword;
 import io.shardingsphere.core.parsing.lexer.token.DefaultKeyword;
 import io.shardingsphere.core.parsing.lexer.token.Keyword;
 import io.shardingsphere.core.parsing.lexer.token.TokenType;
@@ -36,7 +37,8 @@ import java.util.Collection;
 @ToString(callSuper = true)
 public class DALStatement extends AbstractSQLStatement {
     
-    private static final Collection<Keyword> STATEMENT_PREFIX = Arrays.<Keyword>asList(DefaultKeyword.USE, DefaultKeyword.DESC, MySQLKeyword.DESCRIBE, MySQLKeyword.SHOW); 
+    private static final Collection<Keyword> SINGLE_TOKEN_STATEMENT_PREFIX = Arrays.<Keyword>asList(DefaultKeyword.USE, DefaultKeyword.DESC, MySQLKeyword.DESCRIBE, MySQLKeyword.SHOW, 
+            PostgreSQLKeyword.SHOW, PostgreSQLKeyword.RESET);
     
     public DALStatement() {
         super(SQLType.DAL);
@@ -49,6 +51,6 @@ public class DALStatement extends AbstractSQLStatement {
      * @return is DAL or not
      */
     public static boolean isDAL(final TokenType tokenType) {
-        return STATEMENT_PREFIX.contains(tokenType);
+        return SINGLE_TOKEN_STATEMENT_PREFIX.contains(tokenType);
     }
 }

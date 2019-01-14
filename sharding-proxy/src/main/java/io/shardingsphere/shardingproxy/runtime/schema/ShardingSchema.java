@@ -18,25 +18,24 @@
 package io.shardingsphere.shardingproxy.runtime.schema;
 
 import com.google.common.eventbus.Subscribe;
-import io.shardingsphere.api.config.ShardingRuleConfiguration;
+import io.shardingsphere.api.config.rule.ShardingRuleConfiguration;
 import io.shardingsphere.core.constant.DatabaseType;
-import io.shardingsphere.core.constant.ShardingConstant;
 import io.shardingsphere.core.constant.properties.ShardingPropertiesConstant;
 import io.shardingsphere.core.metadata.ShardingMetaData;
-import io.shardingsphere.core.rule.DataSourceParameter;
 import io.shardingsphere.core.rule.MasterSlaveRule;
 import io.shardingsphere.core.rule.ShardingRule;
-import io.shardingsphere.orchestration.internal.config.event.ShardingRuleChangedEvent;
+import io.shardingsphere.orchestration.internal.registry.config.event.ShardingRuleChangedEvent;
+import io.shardingsphere.orchestration.internal.registry.state.event.DisabledStateChangedEvent;
+import io.shardingsphere.orchestration.internal.registry.state.schema.OrchestrationShardingSchema;
 import io.shardingsphere.orchestration.internal.rule.OrchestrationMasterSlaveRule;
 import io.shardingsphere.orchestration.internal.rule.OrchestrationShardingRule;
-import io.shardingsphere.orchestration.internal.state.event.DisabledStateEventBusEvent;
 import io.shardingsphere.shardingproxy.backend.BackendExecutorContext;
 import io.shardingsphere.shardingproxy.runtime.GlobalRegistry;
 import io.shardingsphere.shardingproxy.runtime.metadata.ProxyTableMetaDataConnectionManager;
+import io.shardingsphere.shardingproxy.util.DataSourceParameter;
 import lombok.Getter;
 
 import java.util.Collection;
-import java.util.Collections;
 import java.util.Map;
 
 /**
@@ -55,53 +54,47 @@ public final class ShardingSchema extends LogicSchema {
     
     private final ShardingMetaData metaData;
     
-    public ShardingSchema(final String name, final Map<String, DataSourceParameter> dataSources, final ShardingRuleConfiguration shardingRuleConfig, final boolean isUsingRegistry) {
+    public ShardingSchema(final String name,
+                          final Map<String, DataSourceParameter> dataSources, final ShardingRuleConfiguration shardingRuleConfig, final boolean isCheckingMetaData, final boolean isUsingRegistry) {
         super(name, dataSources);
-        shardingRule = getShardingRule(shardingRuleConfig, dataSources.keySet(), isUsingRegistry);
-        metaData = getShardingMetaData();
+        shardingRule = createShardingRule(shardingRuleConfig, dataSources.keySet(), isUsingRegistry);
+        metaData = createShardingMetaData(isCheckingMetaData);
     }
     
-    private ShardingRule getShardingRule(final ShardingRuleConfiguration shardingRule, final Collection<String> dataSourceNames, final boolean isUsingRegistry) {
-        return isUsingRegistry ? new OrchestrationShardingRule(shardingRule, dataSourceNames) : new ShardingRule(shardingRule, dataSourceNames);
+    private ShardingRule createShardingRule(final ShardingRuleConfiguration shardingRuleConfig, final Collection<String> dataSourceNames, final boolean isUsingRegistry) {
+        return isUsingRegistry ? new OrchestrationShardingRule(shardingRuleConfig, dataSourceNames) : new ShardingRule(shardingRuleConfig, dataSourceNames);
     }
     
-    private ShardingMetaData getShardingMetaData() {
+    private ShardingMetaData createShardingMetaData(final boolean isCheckingMetaData) {
         return new ShardingMetaData(getDataSourceURLs(getDataSources()), shardingRule, DatabaseType.MySQL, 
                 BackendExecutorContext.getInstance().getExecuteEngine(), new ProxyTableMetaDataConnectionManager(getBackendDataSource()), 
-                GlobalRegistry.getInstance().getShardingProperties().<Integer>getValue(ShardingPropertiesConstant.MAX_CONNECTIONS_SIZE_PER_QUERY));
+                GlobalRegistry.getInstance().getShardingProperties().<Integer>getValue(ShardingPropertiesConstant.MAX_CONNECTIONS_SIZE_PER_QUERY), isCheckingMetaData);
     }
     
     /**
      * Renew sharding rule.
      *
-     * @param shardingEvent sharding event.
+     * @param shardingRuleChangedEvent sharding rule changed event.
      */
     @Subscribe
-    public void renew(final ShardingRuleChangedEvent shardingEvent) {
-        if (!getName().equals(shardingEvent.getShardingSchemaName())) {
-            return;
+    public synchronized void renew(final ShardingRuleChangedEvent shardingRuleChangedEvent) {
+        if (getName().equals(shardingRuleChangedEvent.getShardingSchemaName())) {
+            shardingRule = new OrchestrationShardingRule(shardingRuleChangedEvent.getShardingRuleConfiguration(), getDataSources().keySet());
         }
-        shardingRule = new OrchestrationShardingRule(shardingEvent.getShardingRuleConfiguration(), getDataSources().keySet());
     }
     
     /**
      * Renew disabled data source names.
      *
-     * @param disabledStateEventBusEvent jdbc disabled event bus event
+     * @param disabledStateChangedEvent disabled state changed event
      */
     @Subscribe
-    public void renew(final DisabledStateEventBusEvent disabledStateEventBusEvent) {
-        Map<String, Collection<String>> disabledSchemaDataSourceMap = disabledStateEventBusEvent.getDisabledSchemaDataSourceMap();
-        if (!disabledSchemaDataSourceMap.keySet().contains(getName())) {
-            return;
-        }
-        renew(disabledSchemaDataSourceMap.get(getName()));
-    }
-    
-    private void renew(final Collection<String> disabledDataSourceNames) {
-        for (MasterSlaveRule each : shardingRule.getMasterSlaveRules()) {
-            DisabledStateEventBusEvent eventBusEvent = new DisabledStateEventBusEvent(Collections.singletonMap(ShardingConstant.LOGIC_SCHEMA_NAME, disabledDataSourceNames));
-            ((OrchestrationMasterSlaveRule) each).renew(eventBusEvent);
+    public synchronized void renew(final DisabledStateChangedEvent disabledStateChangedEvent) {
+        OrchestrationShardingSchema shardingSchema = disabledStateChangedEvent.getShardingSchema();
+        if (getName().equals(shardingSchema.getSchemaName())) {
+            for (MasterSlaveRule each : shardingRule.getMasterSlaveRules()) {
+                ((OrchestrationMasterSlaveRule) each).updateDisabledDataSourceNames(shardingSchema.getDataSourceName(), disabledStateChangedEvent.isDisabled());
+            }
         }
     }
 }

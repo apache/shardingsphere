@@ -3,23 +3,23 @@
          xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
          xsi:schemaLocation="http://maven.apache.org/POM/4.0.0 http://maven.apache.org/xsd/maven-4.0.0.xsd">
     <modelVersion>4.0.0</modelVersion>
-    <packaging>pom</packaging>
     <parent>
         <groupId>io.shardingsphere</groupId>
         <artifactId>sharding-transaction</artifactId>
-        <version>3.0.1-SNAPSHOT</version>
+        <version>4.0.0.M1-SNAPSHOT</version>
     </parent>
     <artifactId>sharding-transaction-base</artifactId>
     <name>${project.artifactId}</name>
+    <packaging>pom</packaging>
 
     <modules>
-        <module>sharding-transaction-base-saga</module>
+        <module>sharding-transaction-saga</module>
     </modules>
 
     <dependencies>
         <dependency>
             <groupId>io.shardingsphere</groupId>
-            <artifactId>sharding-transaction-api</artifactId>
+            <artifactId>sharding-transaction-core</artifactId>
             <version>${project.parent.version}</version>
         </dependency>
     </dependencies>

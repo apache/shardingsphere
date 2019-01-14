@@ -150,11 +150,13 @@ public final class ShardingResultSet extends AbstractResultSetAdapter {
         return (BigDecimal) ResultSetUtil.convertValue(mergeResultSet.getValue(columnLabel, BigDecimal.class), BigDecimal.class);
     }
     
+    @SuppressWarnings("deprecation")
     @Override
     public BigDecimal getBigDecimal(final int columnIndex, final int scale) throws SQLException {
         return (BigDecimal) ResultSetUtil.convertValue(mergeResultSet.getValue(columnIndex, BigDecimal.class), BigDecimal.class);
     }
     
+    @SuppressWarnings("deprecation")
     @Override
     public BigDecimal getBigDecimal(final String columnLabel, final int scale) throws SQLException {
         return (BigDecimal) ResultSetUtil.convertValue(mergeResultSet.getValue(columnLabel, BigDecimal.class), BigDecimal.class);
@@ -240,11 +242,13 @@ public final class ShardingResultSet extends AbstractResultSetAdapter {
         return mergeResultSet.getInputStream(columnLabel, "Ascii");
     }
     
+    @SuppressWarnings("deprecation")
     @Override
     public InputStream getUnicodeStream(final int columnIndex) throws SQLException {
         return mergeResultSet.getInputStream(columnIndex, "Unicode");
     }
     
+    @SuppressWarnings("deprecation")
     @Override
     public InputStream getUnicodeStream(final String columnLabel) throws SQLException {
         return mergeResultSet.getInputStream(columnLabel, "Unicode");

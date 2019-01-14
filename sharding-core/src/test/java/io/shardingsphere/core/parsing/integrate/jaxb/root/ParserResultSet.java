@@ -18,6 +18,7 @@
 package io.shardingsphere.core.parsing.integrate.jaxb.root;
 
 import lombok.Getter;
+
 import javax.xml.bind.annotation.XmlAttribute;
 import javax.xml.bind.annotation.XmlElement;
 import javax.xml.bind.annotation.XmlRootElement;
@@ -27,6 +28,7 @@ import java.util.List;
 @XmlRootElement(name = "parser-result-sets")
 @Getter
 public final class ParserResultSet {
+    
     @XmlAttribute
     private String namespace;
     

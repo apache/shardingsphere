@@ -28,11 +28,11 @@ public final class FrontendHandlerFactoryTest {
     
     @Test
     public void assertCreateFrontendHandlerInstanceWithMySQL() {
-        assertThat(FrontendHandlerFactory.createFrontendHandlerInstance(DatabaseType.MySQL, null), instanceOf(MySQLFrontendHandler.class));
+        assertThat(FrontendHandlerFactory.createFrontendHandlerInstance(DatabaseType.MySQL), instanceOf(MySQLFrontendHandler.class));
     }
     
     @Test(expected = UnsupportedOperationException.class)
     public void assertCreateFrontendHandlerInstanceWhenUnsupported() {
-        FrontendHandlerFactory.createFrontendHandlerInstance(DatabaseType.Oracle, null);
+        FrontendHandlerFactory.createFrontendHandlerInstance(DatabaseType.Oracle);
     }
 }

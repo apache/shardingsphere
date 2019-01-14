@@ -5,17 +5,17 @@ import MySQLKeyword, Keyword, MySQLTableBase, MySQLBase, BaseRule, DataType, Sym
 alterTable
     : ALTER TABLE tableName alterSpecifications?
     ;
-
+    
 alterSpecifications
     : alterSpecification (COMMA alterSpecification)*
     ;
-
+    
 alterSpecification
     : tableOptions
     | addColumn
     | addIndex
     | addConstraint
-    | ALGORITHM EQ_? (DEFAULT | INPLACE|COPY)
+    | ALGORITHM EQ_? (DEFAULT | INPLACE | COPY)
     | ALTER COLUMN? columnName (SET DEFAULT | DROP DEFAULT)
     | changeColumn
     | DEFAULT? characterSet collateClause?
@@ -40,7 +40,7 @@ alterSpecification
     | TRUNCATE PARTITION (partitionNames | ALL)
     | COALESCE PARTITION NUMBER
     | REORGANIZE PARTITION partitionNames INTO partitionDefinitions
-    | EXCHANGE PARTITION partitionName WITH TABLE tableName ((WITH|WITHOUT) VALIDATION)?
+    | EXCHANGE PARTITION partitionName WITH TABLE tableName ((WITH | WITHOUT) VALIDATION)?
     | ANALYZE PARTITION (partitionNames | ALL)
     | CHECK PARTITION (partitionNames | ALL)
     | OPTIMIZE PARTITION (partitionNames | ALL)
@@ -49,39 +49,39 @@ alterSpecification
     | REMOVE PARTITIONING
     | UPGRADE PARTITIONING
     ;
-
+    
 singleColumn
     : columnDefinition firstOrAfterColumn?
     ;
-
+    
 firstOrAfterColumn
     : FIRST | AFTER columnName
     ;
-
+    
 multiColumn
     : LP_ columnDefinition (COMMA columnDefinition)* RP_
     ;
-
+    
 addConstraint
     : ADD constraintDefinition
     ;
-
+    
 addIndex
     : ADD indexDefinition
     ;
-
+    
 addColumn
     : ADD COLUMN? (singleColumn | multiColumn)
     ;
-
+    
 changeColumn
     : changeColumnOp columnName columnDefinition firstOrAfterColumn?
     ;
-
+    
 changeColumnOp
     : CHANGE COLUMN?
     ;
-
+    
 dropColumn:
     DROP COLUMN? columnName
     ;
@@ -89,27 +89,27 @@ dropColumn:
 dropIndexDef
     : DROP indexAndKey indexName
     ;
-
+    
 dropPrimaryKey
     : DROP primaryKey
     ;
-
+    
 fkSymbol
     : ID
     ;
-
+    
 modifyColumn
     : MODIFY COLUMN? columnDefinition firstOrAfterColumn?
     ;
-
+    
 renameIndex
     : RENAME indexAndKey indexName TO indexName
     ;
-
+    
 renameTable
-    : RENAME (TO|AS)? tableName
+    : RENAME (TO | AS)? tableName
     ;
-
+    
 partitionNames
     : partitionName (COMMA partitionName)*
     ;

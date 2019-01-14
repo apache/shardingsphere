@@ -21,7 +21,6 @@ import io.shardingsphere.core.constant.DatabaseType;
 import io.shardingsphere.core.parsing.parser.exception.SQLParsingException;
 import io.shardingsphere.core.util.NumberUtil;
 import lombok.Getter;
-import lombok.RequiredArgsConstructor;
 import lombok.Setter;
 import lombok.ToString;
 
@@ -33,13 +32,10 @@ import java.util.List;
  * @author zhangliang
  * @author caohao
  */
-@RequiredArgsConstructor
 @Getter
 @Setter
 @ToString
 public final class Limit {
-    
-    private final DatabaseType databaseType;
     
     private LimitValue offset;
     
@@ -68,10 +64,12 @@ public final class Limit {
      *
      * @param parameters parameters
      * @param isFetchAll is fetch all data or not
+     * @param databaseType database type
+     * @param isSingleRouting is single routing or not
      */
-    public void processParameters(final List<Object> parameters, final boolean isFetchAll) {
+    public void processParameters(final List<Object> parameters, final boolean isFetchAll, final DatabaseType databaseType, final boolean isSingleRouting) {
         fill(parameters);
-        rewrite(parameters, isFetchAll);
+        rewrite(parameters, isFetchAll, databaseType, isSingleRouting);
     }
     
     private void fill(final List<Object> parameters) {
@@ -90,17 +88,17 @@ public final class Limit {
         }
     }
     
-    private void rewrite(final List<Object> parameters, final boolean isFetchAll) {
+    private void rewrite(final List<Object> parameters, final boolean isFetchAll, final DatabaseType databaseType, final boolean isSingleRouting) {
         int rewriteOffset = 0;
         int rewriteRowCount;
         if (isFetchAll) {
             rewriteRowCount = Integer.MAX_VALUE;
-        } else if (isNeedRewriteRowCount()) {
+        } else if (isNeedRewriteRowCount(databaseType) && !isSingleRouting) {
             rewriteRowCount = null == rowCount ? -1 : getOffsetValue() + rowCount.getValue();
         } else {
             rewriteRowCount = rowCount.getValue();
         }
-        if (null != offset && offset.getIndex() > -1) {
+        if (null != offset && offset.getIndex() > -1 && !isSingleRouting) {
             parameters.set(offset.getIndex(), rewriteOffset);
         }
         if (null != rowCount && rowCount.getIndex() > -1) {
@@ -109,11 +107,12 @@ public final class Limit {
     }
     
     /**
-     * Is need rewrite row count.
+     * Judge is need rewrite row count or not.
      * 
+     * @param databaseType database type
      * @return is need rewrite row count or not
      */
-    public boolean isNeedRewriteRowCount() {
+    public boolean isNeedRewriteRowCount(final DatabaseType databaseType) {
         return DatabaseType.MySQL == databaseType || DatabaseType.PostgreSQL == databaseType || DatabaseType.H2 == databaseType;
     }
 }

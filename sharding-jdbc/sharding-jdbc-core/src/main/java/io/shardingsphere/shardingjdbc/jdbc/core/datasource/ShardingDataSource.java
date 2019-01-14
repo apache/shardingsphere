@@ -19,13 +19,11 @@ package io.shardingsphere.shardingjdbc.jdbc.core.datasource;
 
 import com.google.common.base.Preconditions;
 import io.shardingsphere.api.ConfigMapContext;
-import io.shardingsphere.api.config.SagaConfiguration;
-import io.shardingsphere.core.constant.transaction.TransactionType;
 import io.shardingsphere.core.rule.ShardingRule;
 import io.shardingsphere.shardingjdbc.jdbc.adapter.AbstractDataSourceAdapter;
 import io.shardingsphere.shardingjdbc.jdbc.core.ShardingContext;
 import io.shardingsphere.shardingjdbc.jdbc.core.connection.ShardingConnection;
-import io.shardingsphere.shardingjdbc.transaction.TransactionTypeHolder;
+import io.shardingsphere.transaction.api.TransactionTypeHolder;
 import lombok.Getter;
 import lombok.extern.slf4j.Slf4j;
 
@@ -36,12 +34,11 @@ import java.util.Properties;
 import java.util.concurrent.ConcurrentHashMap;
 
 /**
- * Database that support sharding.
+ * Sharding data source.
  *
  * @author zhangliang
  * @author zhaojun
  * @author panjuan
- * @author yangyi
  */
 @Getter
 @Slf4j
@@ -50,12 +47,11 @@ public class ShardingDataSource extends AbstractDataSourceAdapter {
     private final ShardingContext shardingContext;
     
     public ShardingDataSource(final Map<String, DataSource> dataSourceMap, final ShardingRule shardingRule) throws SQLException {
-        this(dataSourceMap, shardingRule, new ConcurrentHashMap<String, Object>(), new Properties(), new SagaConfiguration());
+        this(dataSourceMap, shardingRule, new ConcurrentHashMap<String, Object>(), new Properties());
     }
     
-    public ShardingDataSource(final Map<String, DataSource> dataSourceMap, final ShardingRule shardingRule,
-                              final Map<String, Object> configMap, final Properties props, final SagaConfiguration sagaConfiguration) throws SQLException {
-        super(dataSourceMap, sagaConfiguration);
+    public ShardingDataSource(final Map<String, DataSource> dataSourceMap, final ShardingRule shardingRule, final Map<String, Object> configMap, final Properties props) throws SQLException {
+        super(dataSourceMap);
         checkDataSourceType(dataSourceMap);
         if (!configMap.isEmpty()) {
             ConfigMapContext.getInstance().getConfigMap().putAll(configMap);
@@ -71,17 +67,7 @@ public class ShardingDataSource extends AbstractDataSourceAdapter {
     
     @Override
     public final ShardingConnection getConnection() {
-        if (TransactionType.XA == TransactionTypeHolder.get()) {
-            if (null == getXaDataSourceMap() || getXaDataSourceMap().isEmpty()) {
-                log.warn("XA transaction resource have not load, using Local transaction instead!");
-            } else {
-                return new ShardingConnection(getXaDataSourceMap(), shardingContext, TransactionType.XA);
-            }
-        }
-        if (TransactionType.BASE == TransactionTypeHolder.get()) {
-            return new ShardingConnection(getDataSourceMap(), shardingContext, TransactionType.BASE, getSagaConfiguration());
-        }
-        return new ShardingConnection(getDataSourceMap(), shardingContext);
+        return new ShardingConnection(getDataSourceMap(), shardingContext, TransactionTypeHolder.get());
     }
     
     @Override

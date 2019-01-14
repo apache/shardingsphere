@@ -50,7 +50,7 @@ public final class ComFieldListPacket implements CommandPacket {
     @Getter
     private final int sequenceId;
     
-    private final String currentSchema;
+    private final String schemaName;
     
     private final String table;
     
@@ -58,12 +58,12 @@ public final class ComFieldListPacket implements CommandPacket {
     
     private final BackendHandler backendHandler;
     
-    public ComFieldListPacket(final int sequenceId, final int connectionId, final String currentSchema, final MySQLPacketPayload payload, final BackendConnection backendConnection) {
+    public ComFieldListPacket(final int sequenceId, final MySQLPacketPayload payload, final BackendConnection backendConnection) {
         this.sequenceId = sequenceId;
-        this.currentSchema = currentSchema;
+        this.schemaName = backendConnection.getSchemaName();
         table = payload.readStringNul();
         fieldWildcard = payload.readStringEOF();
-        backendHandler = BackendHandlerFactory.newTextProtocolInstance(connectionId, sequenceId, String.format(SQL, table, currentSchema), backendConnection, DatabaseType.MySQL, currentSchema);
+        backendHandler = BackendHandlerFactory.getInstance().newTextProtocolInstance(sequenceId, String.format(SQL, table, schemaName), backendConnection, DatabaseType.MySQL);
     }
     
     @Override
@@ -86,7 +86,7 @@ public final class ComFieldListPacket implements CommandPacket {
         int currentSequenceId = 0;
         while (backendHandler.next()) {
             String columnName = backendHandler.getResultValue().getData().get(0).toString();
-            result.getPackets().add(new ColumnDefinition41Packet(++currentSequenceId, currentSchema, table, table, columnName, columnName, 100, ColumnType.MYSQL_TYPE_VARCHAR, 0));
+            result.getPackets().add(new ColumnDefinition41Packet(++currentSequenceId, schemaName, table, table, columnName, columnName, 100, ColumnType.MYSQL_TYPE_VARCHAR, 0));
         }
         result.getPackets().add(new EofPacket(++currentSequenceId));
         return result;

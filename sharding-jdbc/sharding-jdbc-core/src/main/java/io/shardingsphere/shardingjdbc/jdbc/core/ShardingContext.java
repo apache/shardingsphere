@@ -23,11 +23,13 @@ import io.shardingsphere.core.constant.properties.ShardingPropertiesConstant;
 import io.shardingsphere.core.executor.ShardingExecuteEngine;
 import io.shardingsphere.core.metadata.ShardingMetaData;
 import io.shardingsphere.core.rule.ShardingRule;
+import io.shardingsphere.shardingjdbc.jdbc.core.datasource.metadata.CachedDatabaseMetaData;
 import io.shardingsphere.shardingjdbc.jdbc.metadata.JDBCTableMetaDataConnectionManager;
 import lombok.Getter;
 
 import javax.sql.DataSource;
 import java.sql.Connection;
+import java.sql.DatabaseMetaData;
 import java.sql.SQLException;
 import java.util.LinkedHashMap;
 import java.util.Map;
@@ -43,6 +45,8 @@ import java.util.Properties;
 @Getter
 public final class ShardingContext implements AutoCloseable {
     
+    private final DatabaseMetaData cachedDatabaseMetaData;
+    
     private final ShardingRule shardingRule;
     
     private final DatabaseType databaseType;
@@ -53,15 +57,23 @@ public final class ShardingContext implements AutoCloseable {
     
     private final ShardingMetaData metaData;
     
-    public ShardingContext(final Map<String, DataSource> dataSourceMap, final ShardingRule shardingRule,
-                           final DatabaseType databaseType, final Properties props) throws SQLException {
+    public ShardingContext(final Map<String, DataSource> dataSourceMap, final ShardingRule shardingRule, final DatabaseType databaseType, final Properties props) throws SQLException {
+        this.cachedDatabaseMetaData = createCachedDatabaseMetaData(dataSourceMap);
         this.shardingRule = shardingRule;
         this.databaseType = databaseType;
+        
         shardingProperties = new ShardingProperties(null == props ? new Properties() : props);
         int executorSize = shardingProperties.getValue(ShardingPropertiesConstant.EXECUTOR_SIZE);
         executeEngine = new ShardingExecuteEngine(executorSize);
-        metaData = new ShardingMetaData(
-                getDataSourceURLs(dataSourceMap), shardingRule, databaseType, executeEngine, new JDBCTableMetaDataConnectionManager(dataSourceMap), shardingProperties.<Integer>getValue(ShardingPropertiesConstant.MAX_CONNECTIONS_SIZE_PER_QUERY));
+        metaData = new ShardingMetaData(getDataSourceURLs(dataSourceMap), shardingRule, databaseType, executeEngine, new JDBCTableMetaDataConnectionManager(dataSourceMap), 
+                shardingProperties.<Integer>getValue(ShardingPropertiesConstant.MAX_CONNECTIONS_SIZE_PER_QUERY), 
+                shardingProperties.<Boolean>getValue(ShardingPropertiesConstant.CHECK_TABLE_METADATA_ENABLED));
+    }
+    
+    private DatabaseMetaData createCachedDatabaseMetaData(final Map<String, DataSource> dataSourceMap) throws SQLException {
+        try (Connection connection = dataSourceMap.values().iterator().next().getConnection()) {
+            return new CachedDatabaseMetaData(connection.getMetaData());
+        }
     }
     
     private Map<String, String> getDataSourceURLs(final Map<String, DataSource> dataSourceMap) throws SQLException {

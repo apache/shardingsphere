@@ -18,36 +18,33 @@
 package io.shardingsphere.shardingjdbc.jdbc.core.connection;
 
 import io.shardingsphere.api.algorithm.masterslave.MasterSlaveLoadBalanceAlgorithmType;
-import io.shardingsphere.api.config.MasterSlaveRuleConfiguration;
-import io.shardingsphere.api.config.SagaConfiguration;
-import io.shardingsphere.api.config.ShardingRuleConfiguration;
-import io.shardingsphere.api.config.TableRuleConfiguration;
+import io.shardingsphere.api.config.rule.MasterSlaveRuleConfiguration;
+import io.shardingsphere.api.config.rule.ShardingRuleConfiguration;
+import io.shardingsphere.api.config.rule.TableRuleConfiguration;
 import io.shardingsphere.core.constant.DatabaseType;
-import io.shardingsphere.core.constant.transaction.TransactionType;
-import io.shardingsphere.core.event.transaction.ShardingTransactionEvent;
 import io.shardingsphere.shardingjdbc.fixture.TestDataSource;
 import io.shardingsphere.shardingjdbc.jdbc.core.ShardingContext;
-import io.shardingsphere.shardingjdbc.jdbc.core.datasource.FixedBaseShardingTransactionHandler;
-import io.shardingsphere.shardingjdbc.jdbc.core.datasource.FixedXAShardingTransactionHandler;
 import io.shardingsphere.shardingjdbc.jdbc.core.datasource.MasterSlaveDataSource;
-import io.shardingsphere.shardingjdbc.transaction.TransactionTypeHolder;
+import io.shardingsphere.shardingjdbc.jdbc.core.fixture.BASEShardingTransactionEngineFixture;
+import io.shardingsphere.shardingjdbc.jdbc.core.fixture.XAShardingTransactionEngineFixture;
+import io.shardingsphere.transaction.api.TransactionType;
+import io.shardingsphere.transaction.api.TransactionTypeHolder;
+import io.shardingsphere.transaction.core.TransactionOperationType;
 import org.junit.After;
 import org.junit.Before;
 import org.junit.BeforeClass;
 import org.junit.Test;
 
 import javax.sql.DataSource;
-import java.sql.Connection;
 import java.sql.SQLException;
 import java.util.Collections;
 import java.util.HashMap;
 import java.util.Map;
 import java.util.Properties;
 
-import static org.hamcrest.CoreMatchers.instanceOf;
 import static org.hamcrest.CoreMatchers.is;
-import static org.junit.Assert.assertNotSame;
 import static org.junit.Assert.assertThat;
+import static org.junit.Assert.assertTrue;
 import static org.mockito.Mockito.mock;
 import static org.mockito.Mockito.when;
 
@@ -86,7 +83,7 @@ public final class ShardingConnectionTest {
         shardingRuleConfig.getTableRuleConfigs().add(tableRuleConfig);
         dataSourceMap = new HashMap<>(1, 1);
         dataSourceMap.put(DS_NAME, masterSlaveDataSource);
-        connection = new ShardingConnection(dataSourceMap, shardingContext);
+        connection = new ShardingConnection(dataSourceMap, shardingContext, TransactionType.LOCAL);
     }
     
     @After
@@ -94,8 +91,8 @@ public final class ShardingConnectionTest {
         try {
             connection.close();
             TransactionTypeHolder.clear();
-            FixedXAShardingTransactionHandler.getInvokes().clear();
-            FixedBaseShardingTransactionHandler.getInvokes().clear();
+            XAShardingTransactionEngineFixture.getInvocations().clear();
+            BASEShardingTransactionEngineFixture.getInvocations().clear();
         } catch (final SQLException ignored) {
         }
     }
@@ -111,31 +108,24 @@ public final class ShardingConnectionTest {
     }
     
     @Test
-    public void assertRelease() throws SQLException {
-        Connection conn = connection.getConnection(DS_NAME);
-        connection.release(conn);
-        assertNotSame(conn, connection.getConnection(DS_NAME));
-    }
-    
-    @Test
     public void assertXATransactionOperation() throws SQLException {
         connection = new ShardingConnection(dataSourceMap, shardingContext, TransactionType.XA);
         connection.setAutoCommit(false);
-        assertThat(FixedXAShardingTransactionHandler.getInvokes().get("begin"), instanceOf(ShardingTransactionEvent.class));
+        assertTrue(XAShardingTransactionEngineFixture.getInvocations().contains(TransactionOperationType.BEGIN));
         connection.commit();
-        assertThat(FixedXAShardingTransactionHandler.getInvokes().get("commit"), instanceOf(ShardingTransactionEvent.class));
+        assertTrue(XAShardingTransactionEngineFixture.getInvocations().contains(TransactionOperationType.COMMIT));
         connection.rollback();
-        assertThat(FixedXAShardingTransactionHandler.getInvokes().get("rollback"), instanceOf(ShardingTransactionEvent.class));
+        assertTrue(XAShardingTransactionEngineFixture.getInvocations().contains(TransactionOperationType.ROLLBACK));
     }
     
     @Test
-    public void assertBaseTransactionOperation() throws SQLException {
-        connection = new ShardingConnection(dataSourceMap, shardingContext, TransactionType.BASE, new SagaConfiguration());
+    public void assertBASETransactionOperation() throws SQLException {
+        connection = new ShardingConnection(dataSourceMap, shardingContext, TransactionType.BASE);
         connection.setAutoCommit(false);
-        assertThat(FixedBaseShardingTransactionHandler.getInvokes().get("begin"), instanceOf(ShardingTransactionEvent.class));
+        assertTrue(BASEShardingTransactionEngineFixture.getInvocations().contains(TransactionOperationType.BEGIN));
         connection.commit();
-        assertThat(FixedBaseShardingTransactionHandler.getInvokes().get("commit"), instanceOf(ShardingTransactionEvent.class));
+        assertTrue(BASEShardingTransactionEngineFixture.getInvocations().contains(TransactionOperationType.COMMIT));
         connection.rollback();
-        assertThat(FixedBaseShardingTransactionHandler.getInvokes().get("rollback"), instanceOf(ShardingTransactionEvent.class));
+        assertTrue(BASEShardingTransactionEngineFixture.getInvocations().contains(TransactionOperationType.ROLLBACK));
     }
 }

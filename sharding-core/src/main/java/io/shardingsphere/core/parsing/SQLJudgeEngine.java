@@ -18,6 +18,9 @@
 package io.shardingsphere.core.parsing;
 
 import io.shardingsphere.core.constant.DatabaseType;
+import io.shardingsphere.core.parsing.antlr.sql.statement.dcl.DCLStatement;
+import io.shardingsphere.core.parsing.antlr.sql.statement.ddl.DDLStatement;
+import io.shardingsphere.core.parsing.antlr.sql.statement.tcl.TCLStatement;
 import io.shardingsphere.core.parsing.lexer.LexerEngine;
 import io.shardingsphere.core.parsing.lexer.LexerEngineFactory;
 import io.shardingsphere.core.parsing.lexer.dialect.mysql.MySQLKeyword;
@@ -27,7 +30,6 @@ import io.shardingsphere.core.parsing.lexer.token.Keyword;
 import io.shardingsphere.core.parsing.lexer.token.Symbol;
 import io.shardingsphere.core.parsing.lexer.token.TokenType;
 import io.shardingsphere.core.parsing.parser.dialect.mysql.statement.DescribeStatement;
-import io.shardingsphere.core.parsing.parser.dialect.mysql.statement.SetStatement;
 import io.shardingsphere.core.parsing.parser.dialect.mysql.statement.ShowColumnsStatement;
 import io.shardingsphere.core.parsing.parser.dialect.mysql.statement.ShowCreateTableStatement;
 import io.shardingsphere.core.parsing.parser.dialect.mysql.statement.ShowDatabasesStatement;
@@ -39,13 +41,11 @@ import io.shardingsphere.core.parsing.parser.dialect.mysql.statement.UseStatemen
 import io.shardingsphere.core.parsing.parser.exception.SQLParsingException;
 import io.shardingsphere.core.parsing.parser.sql.SQLStatement;
 import io.shardingsphere.core.parsing.parser.sql.dal.DALStatement;
-import io.shardingsphere.core.parsing.parser.sql.dcl.DCLStatement;
-import io.shardingsphere.core.parsing.parser.sql.ddl.DDLStatement;
+import io.shardingsphere.core.parsing.parser.sql.dal.set.SetStatement;
 import io.shardingsphere.core.parsing.parser.sql.dml.DMLStatement;
 import io.shardingsphere.core.parsing.parser.sql.dml.insert.InsertStatement;
 import io.shardingsphere.core.parsing.parser.sql.dql.DQLStatement;
 import io.shardingsphere.core.parsing.parser.sql.dql.select.SelectStatement;
-import io.shardingsphere.core.parsing.parser.sql.tcl.TCLStatement;
 import io.shardingsphere.core.parsing.parser.token.SchemaToken;
 import lombok.RequiredArgsConstructor;
 
@@ -78,7 +78,7 @@ public final class SQLJudgeEngine {
                     return getDMLStatement(tokenType);
                 }
                 if (TCLStatement.isTCL(tokenType)) {
-                    return getTCLStatement(tokenType);
+                    return getTCLStatement();
                 }
                 if (DALStatement.isDAL(tokenType)) {
                     return getDALStatement(tokenType, lexerEngine);
@@ -90,6 +90,12 @@ public final class SQLJudgeEngine {
                 }
                 if (DCLStatement.isDCL(tokenType, secondaryTokenType)) {
                     return getDCLStatement();
+                }
+                if (TCLStatement.isTCLUnsafe(DatabaseType.MySQL, tokenType, lexerEngine)) {
+                    return getTCLStatement();
+                }
+                if (DefaultKeyword.SET.equals(tokenType)) {
+                    return new SetStatement();
                 }
             } else {
                 lexerEngine.nextToken();
@@ -119,10 +125,7 @@ public final class SQLJudgeEngine {
         return new DCLStatement();
     }
     
-    private SQLStatement getTCLStatement(final TokenType tokenType) {
-        if (DefaultKeyword.SET == tokenType) {
-            return new SetStatement();
-        }
+    private SQLStatement getTCLStatement() {
         return new TCLStatement();
     }
     

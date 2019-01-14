@@ -46,6 +46,7 @@ import java.util.Map.Entry;
  * Table meta data loader.
  *
  * @author zhangliang
+ * @author panjuan
  */
 @RequiredArgsConstructor
 public final class TableMetaDataLoader {
@@ -58,6 +59,8 @@ public final class TableMetaDataLoader {
     
     private final int maxConnectionsSizePerQuery;
     
+    private final boolean isCheckingMetaData;
+    
     /**
      * Load table meta data.
      *
@@ -67,7 +70,7 @@ public final class TableMetaDataLoader {
      * @throws SQLException SQL exception
      */
     public TableMetaData load(final String logicTableName, final ShardingRule shardingRule) throws SQLException {
-        List<TableMetaData> actualTableMetaDataList = load(shardingRule.getTableRuleByLogicTableName(logicTableName).getDataNodeGroups(), shardingRule.getShardingDataSourceNames());
+        List<TableMetaData> actualTableMetaDataList = load(getDataNodeGroups(logicTableName, shardingRule), shardingRule.getShardingDataSourceNames());
         checkUniformed(logicTableName, actualTableMetaDataList);
         return actualTableMetaDataList.iterator().next();
     }
@@ -96,6 +99,15 @@ public final class TableMetaDataLoader {
         return result;
     }
     
+    private Map<String, List<DataNode>> getDataNodeGroups(final String logicTableName, final ShardingRule shardingRule) {
+        Map<String, List<DataNode>> result = shardingRule.getTableRule(logicTableName).getDataNodeGroups();
+        if (isCheckingMetaData) {
+            return result;
+        }
+        String firstKey = result.keySet().iterator().next();
+        return Collections.singletonMap(firstKey, Collections.singletonList(result.get(firstKey).get(0)));
+    }
+    
     private Collection<ShardingExecuteGroup<DataNode>> getDataNodeGroups(final Map<String, List<DataNode>> dataNodeGroups) {
         Collection<ShardingExecuteGroup<DataNode>> result = new LinkedList<>();
         for (Entry<String, List<DataNode>> entry : dataNodeGroups.entrySet()) {
@@ -121,7 +133,7 @@ public final class TableMetaDataLoader {
     private List<ColumnMetaData> getColumnMetaDataList(final Connection connection, final String catalog, final String actualTableName) throws SQLException {
         List<ColumnMetaData> result = new LinkedList<>();
         Collection<String> primaryKeys = getPrimaryKeys(connection, catalog, actualTableName);
-        try (ResultSet resultSet = connection.getMetaData().getColumns(catalog, null, actualTableName, null)) {
+        try (ResultSet resultSet = connection.getMetaData().getColumns(catalog, null, actualTableName, "%")) {
             while (resultSet.next()) {
                 String columnName = resultSet.getString("COLUMN_NAME");
                 String columnType = resultSet.getString("TYPE_NAME");
@@ -142,6 +154,9 @@ public final class TableMetaDataLoader {
     }
     
     private void checkUniformed(final String logicTableName, final List<TableMetaData> actualTableMetaDataList) {
+        if (!isCheckingMetaData) {
+            return;
+        }
         final TableMetaData sample = actualTableMetaDataList.iterator().next();
         for (TableMetaData each : actualTableMetaDataList) {
             if (!sample.equals(each)) {

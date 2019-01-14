@@ -46,6 +46,18 @@ public final class SQLUtil {
     }
     
     /**
+     * Get exactly SQL expression.
+     *
+     * <p>remove space for SQL expression</p>
+     *
+     * @param value SQL expression
+     * @return exactly SQL expression
+     */
+    public static String getExactlyExpression(final String value) {
+        return null == value ? null : CharMatcher.anyOf(" ").removeFrom(value);
+    }
+    
+    /**
      * Get original value for SQL expression.
      * 
      * @param value SQL expression

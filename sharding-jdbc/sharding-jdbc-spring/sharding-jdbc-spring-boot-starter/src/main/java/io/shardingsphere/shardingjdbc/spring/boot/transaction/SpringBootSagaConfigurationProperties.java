@@ -32,5 +32,5 @@ import org.springframework.boot.context.properties.ConfigurationProperties;
 @Setter
 public class SpringBootSagaConfigurationProperties {
     
-    private SagaConfiguration saga;
+    private SagaConfiguration saga = new SagaConfiguration();
 }

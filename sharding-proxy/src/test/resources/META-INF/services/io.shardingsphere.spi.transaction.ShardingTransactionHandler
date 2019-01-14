@@ -1,7 +1,0 @@
-io.shardingsphere.shardingproxy.transport.mysql.packet.command.query.text.query.FixedBaseShardingTransactionHandler
-io.shardingsphere.shardingproxy.transport.mysql.packet.command.query.text.query.FixedXAShardingTransactionHandler
-
-
-
-
-

@@ -66,6 +66,12 @@ public final class HintManagerHolderTest {
         hintManager.close();
         assertFalse(HintManagerHolder.isMasterRouteOnly());
     }
+
+    @Test
+    public void assertIsDatabaseShardingOnly() {
+        hintManager.setDatabaseShardingValue("1");
+        assertTrue(HintManagerHolder.isDatabaseShardingOnly());
+    }
     
     @Test
     public void assertIsDatabaseShardingOnlyWithoutSet() {
@@ -77,6 +83,8 @@ public final class HintManagerHolderTest {
     public void assertIsMasterRouteOnly() {
         hintManager.setMasterRouteOnly();
         assertTrue(HintManagerHolder.isMasterRouteOnly());
+        hintManager.close();
+        assertFalse(HintManagerHolder.isMasterRouteOnly());
     }
     
     @Test

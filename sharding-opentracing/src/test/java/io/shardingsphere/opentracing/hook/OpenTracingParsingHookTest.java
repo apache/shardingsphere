@@ -20,10 +20,12 @@ package io.shardingsphere.opentracing.hook;
 import io.opentracing.mock.MockSpan;
 import io.opentracing.tag.Tags;
 import io.shardingsphere.core.exception.ShardingException;
+import io.shardingsphere.spi.NewInstanceServiceLoader;
 import io.shardingsphere.spi.parsing.ParsingHook;
 import io.shardingsphere.spi.parsing.SPIParsingHook;
 import io.shardingsphere.opentracing.constant.ShardingTags;
 import org.hamcrest.CoreMatchers;
+import org.junit.BeforeClass;
 import org.junit.Test;
 
 import java.util.Map;
@@ -34,6 +36,11 @@ import static org.junit.Assert.assertThat;
 public final class OpenTracingParsingHookTest extends BaseOpenTracingHookTest {
     
     private final ParsingHook parsingHook = new SPIParsingHook();
+    
+    @BeforeClass
+    public static void registerSPI() {
+        NewInstanceServiceLoader.register(ParsingHook.class);
+    }
     
     @Test
     public void assertExecuteSuccess() {

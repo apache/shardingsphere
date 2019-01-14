@@ -18,13 +18,11 @@
 package io.shardingsphere.shardingjdbc.jdbc.adapter;
 
 import com.google.common.base.Preconditions;
-import io.shardingsphere.api.config.SagaConfiguration;
 import io.shardingsphere.core.bootstrap.ShardingBootstrap;
 import io.shardingsphere.core.constant.DatabaseType;
+import io.shardingsphere.core.util.ReflectiveUtil;
 import io.shardingsphere.shardingjdbc.jdbc.unsupported.AbstractUnsupportedOperationDataSource;
-import io.shardingsphere.spi.transaction.xa.DataSourceMapConverter;
-import io.shardingsphere.spi.transaction.xa.SPIDataSourceMapConverter;
-import io.shardingsphere.transaction.base.manager.SagaTransactionManager;
+import io.shardingsphere.transaction.core.ShardingTransactionEngineRegistry;
 import lombok.Getter;
 import lombok.Setter;
 
@@ -52,27 +50,16 @@ public abstract class AbstractDataSourceAdapter extends AbstractUnsupportedOpera
         ShardingBootstrap.init();
     }
     
-    private final Map<String, DataSource> dataSourceMap;
-    
     private final DatabaseType databaseType;
     
-    private final Map<String, DataSource> xaDataSourceMap;
-    
-    private final DataSourceMapConverter dataSourceMapConverter = new SPIDataSourceMapConverter();
-    
-    private final SagaConfiguration sagaConfiguration;
+    private final Map<String, DataSource> dataSourceMap;
     
     private PrintWriter logWriter = new PrintWriter(System.out);
     
     public AbstractDataSourceAdapter(final Map<String, DataSource> dataSourceMap) throws SQLException {
-        this(dataSourceMap, new SagaConfiguration());
-    }
-    
-    public AbstractDataSourceAdapter(final Map<String, DataSource> dataSourceMap, final SagaConfiguration sagaConfiguration) throws SQLException {
-        this.dataSourceMap = dataSourceMap;
         databaseType = getDatabaseType(dataSourceMap.values());
-        xaDataSourceMap = dataSourceMapConverter.convert(dataSourceMap, databaseType);
-        this.sagaConfiguration = sagaConfiguration;
+        ShardingTransactionEngineRegistry.registerTransactionResource(databaseType, dataSourceMap);
+        this.dataSourceMap = dataSourceMap;
     }
     
     protected final DatabaseType getDatabaseType(final Collection<DataSource> dataSources) throws SQLException {
@@ -94,13 +81,6 @@ public abstract class AbstractDataSourceAdapter extends AbstractUnsupportedOpera
         }
     }
     
-    /**
-     * Close original datasource.
-     */
-    public void close() {
-        closeOriginalDataSources();
-    }
-    
     @Override
     public final Logger getParentLogger() {
         return Logger.getLogger(Logger.GLOBAL_LOGGER_NAME);
@@ -111,20 +91,11 @@ public abstract class AbstractDataSourceAdapter extends AbstractUnsupportedOpera
         return getConnection();
     }
     
-    private void closeOriginalDataSources() {
-        if (null != dataSourceMap) {
-            closeDataSource(dataSourceMap);
-        }
-        if (null != xaDataSourceMap) {
-            closeDataSource(xaDataSourceMap);
-        }
-        SagaTransactionManager.getInstance().removeSagaExecutionComponent(sagaConfiguration);
-    }
-    
-    private void closeDataSource(final Map<String, DataSource> dataSourceMap) {
+    @Override
+    public void close() {
         for (DataSource each : dataSourceMap.values()) {
             try {
-                each.getClass().getDeclaredMethod("close").invoke(each);
+                ReflectiveUtil.findMethod(each, "close").invoke(each);
             } catch (final ReflectiveOperationException ignored) {
             }
         }

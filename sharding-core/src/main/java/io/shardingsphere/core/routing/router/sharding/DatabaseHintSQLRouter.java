@@ -40,6 +40,7 @@ import java.util.List;
  * @author zhangliang
  * @author maxiaoguang
  */
+// TODO removed after all ANTLR parser finished
 @RequiredArgsConstructor
 public final class DatabaseHintSQLRouter implements ShardingRouter {
     

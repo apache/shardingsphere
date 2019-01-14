@@ -101,7 +101,8 @@ public class TableReferencesClauseParser implements SQLClauseParser {
         if (Strings.isNullOrEmpty(tableName)) {
             return;
         }
-        if (isSingleTableOnly || shardingRule.tryFindTableRuleByLogicTable(tableName).isPresent() || shardingRule.findBindingTableRule(tableName).isPresent()
+        if (isSingleTableOnly || shardingRule.findTableRule(tableName).isPresent()
+                || shardingRule.isBroadcastTable(tableName) || shardingRule.findBindingTableRule(tableName).isPresent()
                 || shardingRule.getShardingDataSourceNames().getDataSourceNames().contains(shardingRule.getShardingDataSourceNames().getDefaultDataSourceName())) {
             sqlStatement.addSQLToken(new TableToken(beginPosition, skippedSchemaNameLength, literals));
             sqlStatement.getTables().add(new Table(tableName, aliasExpressionParser.parseTableAlias(sqlStatement, true, tableName)));
@@ -136,7 +137,7 @@ public class TableReferencesClauseParser implements SQLClauseParser {
     private void parseJoinTable(final SQLStatement sqlStatement) {
         while (parseJoinType()) {
             if (lexerEngine.equalAny(Symbol.LEFT_PAREN)) {
-                throw new SQLParsingUnsupportedException("Cannot support sub query for join table.");
+                throw new SQLParsingUnsupportedException("Cannot support subquery for join table.");
             }
             parseTableFactor(sqlStatement, false);
             parseJoinCondition(sqlStatement);

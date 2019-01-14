@@ -17,7 +17,7 @@
 
 package io.shardingsphere.shardingjdbc.api;
 
-import io.shardingsphere.api.config.MasterSlaveRuleConfiguration;
+import io.shardingsphere.api.config.rule.MasterSlaveRuleConfiguration;
 import io.shardingsphere.shardingjdbc.jdbc.core.datasource.MasterSlaveDataSource;
 import lombok.AccessLevel;
 import lombok.NoArgsConstructor;

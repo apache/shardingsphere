@@ -1,75 +1,51 @@
 grammar DQLBase;
 
-import BaseRule, Keyword, Symbol, DataType;
-
-select 
-    : withClause | unionSelect
-    ;
-
-withClause
-    : WITH RECURSIVE? cteClause (COMMA cteClause)* unionSelect
-    ;
-
-cteClause
-    : cteName idList? AS subquery
-    ;
+import BaseRule, Keyword, MySQLKeyword, Symbol, DataType;
 
 unionSelect
     : selectExpression (UNION ALL? selectExpression)*
     ;
-
+    
 selectExpression
-    : selectClause fromClause? whereClause? groupByClause? orderByClause? limitClause?
+    :
     ;
-
-selectClause
-    : SELECT selectSpec selectExprs
-    ;
-
-selectSpec
-    : 
-    ;
-
+    
 fromClause
     : FROM tableReferences
     ;
-
+    
 whereClause
     : WHERE expr
     ;
-
+    
 groupByClause 
-    : GROUP BY groupByItem (COMMA groupByItem)* (WITH ROLLUP)? havingClause?
+    : GROUP BY orderByItem (COMMA orderByItem)* (WITH ROLLUP)?
     ;
-
+    
 havingClause
-    : HAVING  expr
+    : HAVING expr
     ;
-
-limitClause:
-    LIMIT rangeClause
+    
+limitClause
+    : LIMIT rangeClause
     ;
-
+    
 partitionClause 
     : PARTITION idList
     ;
-
+    
 selectExprs
-    : ASTERISK (COMMA selectExpr)* | selectExpr (COMMA ASTERISK)? (COMMA selectExpr)*
+    : (asterisk | selectExpr) (COMMA selectExpr)*
+    ; 
+    
+asterisk
+    : ASTERISK
     ;
-
-subquery
-    : LP_ unionSelect RP_
-    ;
-
-alias
-    : ID 
-    ;
-
+    
 selectExpr
     :
     ;
-
+    
 tableReferences
     : 
     ;

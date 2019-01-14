@@ -17,7 +17,6 @@
 
 package io.shardingsphere.core.parsing.integrate.jaxb.table;
 
-import io.shardingsphere.core.parsing.integrate.jaxb.meta.ExpectedTableMetaData;
 import io.shardingsphere.core.parsing.integrate.jaxb.token.ExpectedColumnDefinition;
 import io.shardingsphere.core.parsing.integrate.jaxb.token.ExpectedColumnPosition;
 import io.shardingsphere.core.parsing.integrate.jaxb.token.ExpectedUpdateColumnDefinition;
@@ -35,7 +34,7 @@ import java.util.List;
 @XmlAccessorType(XmlAccessType.FIELD)
 @Getter
 @Setter
-public class ExpectedAlterTable {
+public final class ExpectedAlterTable {
     
     @XmlAttribute(name = "drop-columns")
     private String dropColumns = "";
@@ -57,8 +56,4 @@ public class ExpectedAlterTable {
     @XmlElementWrapper(name = "position-changed-columns")
     @XmlElement(name = "position-changed-column")
     private List<ExpectedColumnPosition> positionChangedColumns = new ArrayList<>();
-    
-    @XmlElement(name = "new-meta")
-    private ExpectedTableMetaData newMeta;
-    
 }

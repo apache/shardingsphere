@@ -186,6 +186,7 @@ public abstract class AbstractShardingPreparedStatementAdapter extends AbstractU
         setParameter(parameterIndex, x);
     }
     
+    @SuppressWarnings("deprecation")
     @Override
     public final void setUnicodeStream(final int parameterIndex, final InputStream x, final int length) {
         setParameter(parameterIndex, x);

@@ -77,7 +77,7 @@ public final class ComStmtExecutePacket implements QueryCommandPacket {
     private final BackendHandler backendHandler;
     
     public ComStmtExecutePacket(
-            final int sequenceId, final int connectionId, final String currentSchema, final MySQLPacketPayload payload, final BackendConnection backendConnection) throws SQLException {
+            final int sequenceId, final MySQLPacketPayload payload, final BackendConnection backendConnection) throws SQLException {
         this.sequenceId = sequenceId;
         statementId = payload.readInt4();
         binaryStatement = BinaryStatementRegistry.getInstance().getBinaryStatement(statementId);
@@ -93,7 +93,7 @@ public final class ComStmtExecutePacket implements QueryCommandPacket {
             binaryStatement.setParameterTypes(getParameterTypes(payload, parametersCount));
         }
         parameters = getParameters(payload, parametersCount);
-        backendHandler = BackendHandlerFactory.newBinaryProtocolInstance(connectionId, sequenceId, binaryStatement.getSql(), parameters, backendConnection, DatabaseType.MySQL, currentSchema);
+        backendHandler = BackendHandlerFactory.getInstance().newBinaryProtocolInstance(sequenceId, binaryStatement.getSql(), parameters, backendConnection, DatabaseType.MySQL);
     }
     
     private List<BinaryStatementParameterType> getParameterTypes(final MySQLPacketPayload payload, final int parametersCount) {

@@ -18,7 +18,6 @@
 package io.shardingsphere.shardingproxy.transport.mysql.packet.command;
 
 import io.shardingsphere.shardingproxy.backend.jdbc.connection.BackendConnection;
-import io.shardingsphere.shardingproxy.frontend.common.FrontendHandler;
 import io.shardingsphere.shardingproxy.transport.mysql.packet.MySQLPacketPayload;
 import io.shardingsphere.shardingproxy.transport.mysql.packet.command.admin.UnsupportedCommandPacket;
 import io.shardingsphere.shardingproxy.transport.mysql.packet.command.admin.initdb.ComInitDbPacket;
@@ -39,6 +38,7 @@ import java.sql.SQLException;
  *
  * @author zhangliang
  * @author wangkai
+ * @author zhaojun
  */
 @NoArgsConstructor(access = AccessLevel.PRIVATE)
 public final class CommandPacketFactory {
@@ -47,30 +47,27 @@ public final class CommandPacketFactory {
      * Create new instance of command packet.
      *
      * @param sequenceId        sequence id
-     * @param connectionId      MySQL connection id
      * @param payload           MySQL packet payload
      * @param backendConnection backend connection
-     * @param frontendHandler   frontend handler
      * @return command packet
      * @throws SQLException SQL exception
      */
-    public static CommandPacket newInstance(final int sequenceId, final int connectionId, final MySQLPacketPayload payload, 
-                                            final BackendConnection backendConnection, final FrontendHandler frontendHandler) throws SQLException {
+    public static CommandPacket newInstance(final int sequenceId, final MySQLPacketPayload payload, final BackendConnection backendConnection) throws SQLException {
         int commandPacketTypeValue = payload.readInt1();
         CommandPacketType type = CommandPacketType.valueOf(commandPacketTypeValue);
         switch (type) {
             case COM_QUIT:
                 return new ComQuitPacket(sequenceId);
             case COM_INIT_DB:
-                return new ComInitDbPacket(sequenceId, payload, frontendHandler);
+                return new ComInitDbPacket(sequenceId, payload, backendConnection);
             case COM_FIELD_LIST:
-                return new ComFieldListPacket(sequenceId, connectionId, frontendHandler.getCurrentSchema(), payload, backendConnection);
+                return new ComFieldListPacket(sequenceId, payload, backendConnection);
             case COM_QUERY:
-                return new ComQueryPacket(sequenceId, connectionId, payload, backendConnection, frontendHandler);
+                return new ComQueryPacket(sequenceId, payload, backendConnection);
             case COM_STMT_PREPARE:
-                return new ComStmtPreparePacket(sequenceId, frontendHandler.getCurrentSchema(), payload);
+                return new ComStmtPreparePacket(sequenceId, backendConnection, payload);
             case COM_STMT_EXECUTE:
-                return new ComStmtExecutePacket(sequenceId, connectionId, frontendHandler.getCurrentSchema(), payload, backendConnection);
+                return new ComStmtExecutePacket(sequenceId, payload, backendConnection);
             case COM_STMT_CLOSE:
                 return new ComStmtClosePacket(sequenceId, payload);
             case COM_PING:

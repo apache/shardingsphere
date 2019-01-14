@@ -27,14 +27,11 @@ import javax.xml.bind.annotation.XmlAttribute;
 @XmlAccessorType(XmlAccessType.FIELD)
 @Getter
 @Setter
-public class ExpectedColumnPosition {
+public final class ExpectedColumnPosition {
     
     @XmlAttribute(name = "start-index")
     private int startIndex;
-
-    @XmlAttribute(name = "first-column")
-    private String firstColumn;
-
+    
     @XmlAttribute(name = "column-name")
     private String columnName;
     

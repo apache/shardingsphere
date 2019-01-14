@@ -17,13 +17,11 @@
 
 package io.shardingsphere.shardingproxy.config;
 
-import io.shardingsphere.api.config.SagaConfiguration;
-import io.shardingsphere.core.constant.SagaRecoveryPolicy;
-import io.shardingsphere.core.rule.DataSourceParameter;
 import io.shardingsphere.core.yaml.masterslave.YamlMasterSlaveRuleConfiguration;
 import io.shardingsphere.core.yaml.sharding.YamlShardingRuleConfiguration;
-import io.shardingsphere.orchestration.internal.yaml.YamlOrchestrationConfiguration;
+import io.shardingsphere.orchestration.yaml.YamlOrchestrationConfiguration;
 import io.shardingsphere.shardingproxy.config.yaml.YamlProxyRuleConfiguration;
+import io.shardingsphere.shardingproxy.util.DataSourceParameter;
 import org.junit.Test;
 
 import java.io.IOException;
@@ -41,7 +39,6 @@ public final class ShardingConfigurationLoaderTest {
         assertThat(actual.getRuleConfigurationMap().size(), is(2));
         assertShardingRuleConfiguration(actual.getRuleConfigurationMap().get("sharding_db"));
         assertMasterSlaveRuleConfiguration(actual.getRuleConfigurationMap().get("master_slave_db"));
-        assertSagaConfiguration(actual.getServerConfiguration().getSaga());
     }
     
     private void assertOrchestrationConfiguration(final YamlOrchestrationConfiguration actual) {
@@ -92,21 +89,9 @@ public final class ShardingConfigurationLoaderTest {
         assertThat(actual.getUrl(), is(expectedURL));
         assertThat(actual.getUsername(), is("root"));
         assertNull(actual.getPassword());
-        assertTrue(actual.isAutoCommit());
-        assertThat(actual.getConnectionTimeout(), is(30000L));
-        assertThat(actual.getIdleTimeout(), is(60000L));
-        assertThat(actual.getMaxLifetime(), is(1800000L));
-        assertThat(actual.getMaximumPoolSize(), is(50));
-    }
-    
-    private void assertSagaConfiguration(final SagaConfiguration actual) {
-        assertNotNull(actual.getAlias());
-        assertThat(actual.getAlias().length() ,is(36));
-        assertThat(actual.getExecutorSize(), is(10));
-        assertThat(actual.getTransactionMaxRetries(), is(10));
-        assertThat(actual.getTransactionRetryDelay(), is(1000));
-        assertThat(actual.getCompensationMaxRetries(), is(5));
-        assertThat(actual.getCompensationRetryDelay(), is(2000));
-        assertThat(actual.getRecoveryPolicy(), is(SagaRecoveryPolicy.BACKWARD));
+        assertThat(actual.getConnectionTimeoutMilliseconds(), is(30000L));
+        assertThat(actual.getIdleTimeoutMilliseconds(), is(60000L));
+        assertThat(actual.getMaxLifetimeMilliseconds(), is(1800000L));
+        assertThat(actual.getMaxPoolSize(), is(50));
     }
 }

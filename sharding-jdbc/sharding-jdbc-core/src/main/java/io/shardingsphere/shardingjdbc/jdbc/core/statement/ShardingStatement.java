@@ -18,16 +18,12 @@
 package io.shardingsphere.shardingjdbc.jdbc.core.statement;
 
 import com.google.common.base.Optional;
-import io.shardingsphere.core.constant.SQLType;
 import io.shardingsphere.core.constant.properties.ShardingPropertiesConstant;
 import io.shardingsphere.core.executor.sql.execute.result.StreamQueryResult;
 import io.shardingsphere.core.merger.MergeEngine;
 import io.shardingsphere.core.merger.MergeEngineFactory;
 import io.shardingsphere.core.merger.QueryResult;
-import io.shardingsphere.core.metadata.table.executor.TableMetaDataLoader;
-import io.shardingsphere.core.parsing.antlr.sql.ddl.AlterTableStatement;
 import io.shardingsphere.core.parsing.parser.sql.dal.DALStatement;
-import io.shardingsphere.core.parsing.parser.sql.ddl.create.table.CreateTableStatement;
 import io.shardingsphere.core.parsing.parser.sql.dml.insert.InsertStatement;
 import io.shardingsphere.core.parsing.parser.sql.dql.DQLStatement;
 import io.shardingsphere.core.parsing.parser.sql.dql.select.SelectStatement;
@@ -40,7 +36,6 @@ import io.shardingsphere.shardingjdbc.jdbc.core.ShardingContext;
 import io.shardingsphere.shardingjdbc.jdbc.core.connection.ShardingConnection;
 import io.shardingsphere.shardingjdbc.jdbc.core.resultset.GeneratedKeysResultSet;
 import io.shardingsphere.shardingjdbc.jdbc.core.resultset.ShardingResultSet;
-import io.shardingsphere.shardingjdbc.jdbc.metadata.JDBCTableMetaDataConnectionManager;
 import lombok.Getter;
 
 import java.sql.ResultSet;
@@ -93,9 +88,8 @@ public final class ShardingStatement extends AbstractStatementAdapter {
             clearPrevious();
             sqlRoute(sql);
             initStatementExecutor();
-            MergeEngine mergeEngine = MergeEngineFactory.newInstance(
-                    connection.getShardingContext().getShardingRule(), statementExecutor.executeQuery(),
-                    routeResult.getSqlStatement(), connection.getShardingContext().getMetaData().getTable());
+            MergeEngine mergeEngine = MergeEngineFactory.newInstance(connection.getShardingContext().getDatabaseType(), connection.getShardingContext().getShardingRule(), 
+                    routeResult.getSqlStatement(), connection.getShardingContext().getMetaData().getTable(), statementExecutor.executeQuery());
             result = new ShardingResultSet(statementExecutor.getResultSets(), mergeEngine.merge(), this);
         } finally {
             currentResultSet = null;
@@ -112,7 +106,7 @@ public final class ShardingStatement extends AbstractStatementAdapter {
             initStatementExecutor();
             return statementExecutor.executeUpdate();
         } finally {
-            refreshTableMetaData();
+            refreshTableMetaData(connection.getShardingContext(), routeResult.getSqlStatement());
             currentResultSet = null;
         }
     }
@@ -166,7 +160,7 @@ public final class ShardingStatement extends AbstractStatementAdapter {
             initStatementExecutor();
             return statementExecutor.execute();
         } finally {
-            refreshTableMetaData();
+            refreshTableMetaData(connection.getShardingContext(), routeResult.getSqlStatement());
             currentResultSet = null;
         }
     }
@@ -229,9 +223,8 @@ public final class ShardingStatement extends AbstractStatementAdapter {
             queryResults.add(new StreamQueryResult(resultSet));
         }
         if (routeResult.getSqlStatement() instanceof SelectStatement || routeResult.getSqlStatement() instanceof DALStatement) {
-            MergeEngine mergeEngine = MergeEngineFactory.newInstance(
-                    connection.getShardingContext().getShardingRule(), queryResults, routeResult.getSqlStatement(), 
-                    connection.getShardingContext().getMetaData().getTable());
+            MergeEngine mergeEngine = MergeEngineFactory.newInstance(connection.getShardingContext().getDatabaseType(), 
+                    connection.getShardingContext().getShardingRule(), routeResult.getSqlStatement(), connection.getShardingContext().getMetaData().getTable(), queryResults);
             currentResultSet = new ShardingResultSet(resultSets, mergeEngine.merge(), this);
         }
         return currentResultSet;
@@ -250,29 +243,8 @@ public final class ShardingStatement extends AbstractStatementAdapter {
     
     private void sqlRoute(final String sql) {
         ShardingContext shardingContext = connection.getShardingContext();
-        routeResult = new StatementRoutingEngine(shardingContext.getShardingRule(),
-            shardingContext.getMetaData().getTable(), shardingContext.getDatabaseType(), shardingContext.getShardingProperties().<Boolean>getValue(ShardingPropertiesConstant.SQL_SHOW), shardingContext.getMetaData().getDataSource()).route(sql);
-    }
-    
-    // TODO refresh table meta data by SQL parse result
-    private void refreshTableMetaData() throws SQLException {
-        if (null != routeResult && null != connection && SQLType.DDL == routeResult.getSqlStatement().getType() && !routeResult.getSqlStatement().getTables().isEmpty()) {
-            String logicTableName = routeResult.getSqlStatement().getTables().getSingleTableName();
-            
-            if (routeResult.getSqlStatement() instanceof CreateTableStatement) {
-                CreateTableStatement createStatement = (CreateTableStatement) routeResult.getSqlStatement();
-                connection.getShardingContext().getMetaData().getTable().put(logicTableName, createStatement.getTableMetaData());
-            } else if (routeResult.getSqlStatement() instanceof AlterTableStatement) {
-                AlterTableStatement alterStatement = (AlterTableStatement) routeResult.getSqlStatement();
-                connection.getShardingContext().getMetaData().getTable().put(logicTableName, alterStatement.getTableMetaData());
-            } else {
-                TableMetaDataLoader tableMetaDataLoader = new TableMetaDataLoader(connection.getShardingContext().getMetaData().getDataSource(),
-                        connection.getShardingContext().getExecuteEngine(), new JDBCTableMetaDataConnectionManager(connection.getDataSourceMap()),
-                        connection.getShardingContext().getShardingProperties().<Integer>getValue(ShardingPropertiesConstant.MAX_CONNECTIONS_SIZE_PER_QUERY));
-                connection.getShardingContext().getMetaData().getTable().put(
-                        logicTableName, tableMetaDataLoader.load(logicTableName, connection.getShardingContext().getShardingRule()));            
-            }
-        }
+        routeResult = new StatementRoutingEngine(shardingContext.getShardingRule(), 
+                shardingContext.getMetaData(), shardingContext.getDatabaseType(), shardingContext.getShardingProperties().<Boolean>getValue(ShardingPropertiesConstant.SQL_SHOW)).route(sql);
     }
     
     private void clearPrevious() throws SQLException {

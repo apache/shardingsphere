@@ -18,10 +18,12 @@
 package io.shardingsphere.core.parsing.integrate.asserts.meta;
 
 import com.google.common.base.Joiner;
+import io.shardingsphere.core.parsing.antlr.sql.segment.definition.column.ColumnDefinitionSegment;
 import io.shardingsphere.core.parsing.integrate.asserts.SQLStatementAssertMessage;
 import io.shardingsphere.core.parsing.integrate.jaxb.meta.ExpectedTableMetaData;
 import lombok.RequiredArgsConstructor;
 
+import java.util.LinkedList;
 import java.util.List;
 
 import static org.hamcrest.CoreMatchers.is;
@@ -41,15 +43,22 @@ public final class TableMetaDataAssert {
     /**
      * Assert table meta data.
      * 
-     * @param actualColumnNames actual column names
-     * @param actualColumnTypes actual column types
-     * @param actualPrimaryKeyColumns actual primary key columns
+     * @param actual actual column definitions
      * @param expected expected meta data
      */
-    public void assertMeta(final List<String> actualColumnNames, final List<String> actualColumnTypes, final List<String> actualPrimaryKeyColumns, final ExpectedTableMetaData expected) {
-        assertFalse(assertMessage.getFullAssertMessage("Column names should exist: "), actualColumnNames.isEmpty());
+    public void assertMeta(final List<ColumnDefinitionSegment> actual, final ExpectedTableMetaData expected) {
+        assertFalse(assertMessage.getFullAssertMessage("Column definitions should exist: "), actual.isEmpty());
+        List<String> actualColumnNames = new LinkedList<>();
+        List<String> actualColumnTypes = new LinkedList<>();
+        List<String> actualPrimaryKeyColumns = new LinkedList<>();
+        for (ColumnDefinitionSegment each : actual) {
+            actualColumnNames.add(each.getColumnName());
+            actualColumnTypes.add(each.getDataType());
+            if (each.isPrimaryKey()) {
+                actualPrimaryKeyColumns.add(each.getColumnName());
+            }
+        }
         assertThat(assertMessage.getFullAssertMessage("Column names assertion error: "), Joiner.on(",").join(actualColumnNames), is(expected.getColumnNames()));
-        assertFalse(assertMessage.getFullAssertMessage("Column types should exist: "), actualColumnTypes.isEmpty());
         assertThat(assertMessage.getFullAssertMessage("Column types assertion error: "), Joiner.on(",").join(actualColumnTypes), is(expected.getColumnTypes()));
         assertThat(assertMessage.getFullAssertMessage("Column primary key columns assertion error: "), Joiner.on(",").join(actualPrimaryKeyColumns), is(expected.getPrimaryKeyColumns()));
     }

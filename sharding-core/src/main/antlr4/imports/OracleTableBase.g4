@@ -8,11 +8,11 @@ columnDefinition
     (ENCRYPT encryptionSpec)?
     (inlineConstraint+ | inlineRefConstraint)?
     ;
-
+    
 identityClause
     : GENERATED (ALWAYS | BY DEFAULT (ON NULL)?) AS IDENTITY LP_? (identityOptions+)? RP_?
     ;
-
+    
 identityOptions
     : START WITH (NUMBER | LIMIT VALUE)
     | INCREMENT BY NUMBER
@@ -27,21 +27,21 @@ identityOptions
     | ORDER
     | NOORDER
     ;
-
+    
 virtualColumnDefinition
     : columnName dataType? (GENERATED ALWAYS)? AS LP_ expr RP_ VIRTUAL? inlineConstraint*
     ;
-
+    
 inlineConstraint
     : (CONSTRAINT constraintName)?
     (NOT? NULL | UNIQUE | primaryKey | referencesClause | CHECK LP_ expr RP_)
     constraintState*
     ;
-
+    
 referencesClause
     : REFERENCES tableName columnList? (ON DELETE (CASCADE | SET NULL))?
     ;
-
+    
 constraintState
     : notDeferrable 
     | initiallyClause 
@@ -54,36 +54,36 @@ constraintState
     | NOVALIDATE 
     | exceptionsClause
     ;
-
-notDeferrable:
-    NOT? DEFERRABLE
+    
+notDeferrable
+    : NOT? DEFERRABLE
     ;
-
+    
 initiallyClause:
     INITIALLY ( IMMEDIATE | DEFERRED )
     ;
-
-exceptionsClause:
-    EXCEPTIONS INTO  
+    
+exceptionsClause
+    : EXCEPTIONS INTO
     ;
-
+    
 usingIndexClause
     : USING INDEX
-    (  indexName
+    (indexName
     | (LP_ createIndex RP_) 
     )?
     ;
-
+    
 createIndex
     : matchNone
     ;
-
+    
 inlineRefConstraint
     : SCOPE IS tableName
     | WITH ROWID
     | (CONSTRAINT constraintName)? referencesClause constraintState*
     ;
-
+    
 outOfLineConstraint
     : (CONSTRAINT constraintName)?
     (
@@ -94,41 +94,41 @@ outOfLineConstraint
     ) 
     constraintState*
     ;
-
+    
 outOfLineRefConstraint
-    : SCOPE FOR LP_ lobItem RP_ IS  tableName
+    : SCOPE FOR LP_ lobItem RP_ IS tableName
     | REF LP_ lobItem RP_ WITH ROWID
     | (CONSTRAINT constraintName)? FOREIGN KEY lobItemList referencesClause constraintState*
     ;
-
- encryptionSpec
+    
+encryptionSpec
     : (USING STRING)?
     (IDENTIFIED BY STRING)?
     STRING? (NO? SALT)?
     ;
-
+    
 objectProperties
     : objectProperty (COMMA objectProperty)*
     ;
-
+    
 objectProperty
     : (columnName | attributeName ) (DEFAULT expr)? (inlineConstraint* | inlineRefConstraint?)
     | outOfLineConstraint 
     | outOfLineRefConstraint
     ;
-
+    
 columnProperties
     : columnProperty+
     ;
-
+    
 columnProperty
     : objectTypeColProperties
     ;
-
+    
 objectTypeColProperties
     : COLUMN columnName substitutableColumnClause
     ;
-
+    
 substitutableColumnClause
     : ELEMENT? IS OF TYPE? LP_ ONLY? typeName RP_
     | NOT? SUBSTITUTABLE AT ALL LEVELS

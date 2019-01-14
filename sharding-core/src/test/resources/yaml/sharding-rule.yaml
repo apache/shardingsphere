@@ -61,8 +61,9 @@ shardingRule:
         inline:
           shardingColumn: order_id
           algorithmExpression: t_order_${order_id % 2}
-      keyGeneratorColumnName: order_id
-      keyGeneratorClassName: io.shardingsphere.core.keygen.DefaultKeyGenerator
+      keyGenerator:
+        column: order_id
+        className: io.shardingsphere.core.keygen.generator.SnowflakeKeyGenerator
       logicIndex: order_index
     t_order_item:
       actualDataNodes: ds_${0..1}.t_order_item_${0..1}
@@ -73,6 +74,8 @@ shardingRule:
           rangeAlgorithmClassName: TestRangeAlgorithmClassName
   bindingTables:
     - t_order, t_order_item
+  broadcastTables:
+    - t_config
   defaultDataSourceName: default_ds
   defaultDatabaseStrategy: 
     inline:
@@ -80,7 +83,8 @@ shardingRule:
       algorithmExpression: ds_${order_id % 2}
   defaultTableStrategy: 
     none:
-  defaultKeyGeneratorClassName: io.shardingsphere.core.keygen.DefaultKeyGenerator
+  defaultKeyGenerator:
+    type: SNOWFLAKE
   
   masterSlaveRules:
     ds_0:
@@ -104,11 +108,3 @@ configMap:
 
 props:
   sql.show: true
-
-saga:
-  executorSize: 10
-  transactionMaxRetries: 10
-  transactionRetryDelay: 1000
-  compensationMaxRetries: 5
-  compensationRetryDelay: 2000
-  recoveryPolicy: BACKWARD

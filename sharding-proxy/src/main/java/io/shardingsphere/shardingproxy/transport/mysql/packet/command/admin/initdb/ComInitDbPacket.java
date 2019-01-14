@@ -18,7 +18,7 @@
 package io.shardingsphere.shardingproxy.transport.mysql.packet.command.admin.initdb;
 
 import com.google.common.base.Optional;
-import io.shardingsphere.shardingproxy.frontend.common.FrontendHandler;
+import io.shardingsphere.shardingproxy.backend.jdbc.connection.BackendConnection;
 import io.shardingsphere.shardingproxy.runtime.GlobalRegistry;
 import io.shardingsphere.shardingproxy.transport.mysql.constant.ServerErrorCode;
 import io.shardingsphere.shardingproxy.transport.mysql.packet.MySQLPacketPayload;
@@ -44,12 +44,12 @@ public final class ComInitDbPacket implements CommandPacket {
     
     private final String schema;
     
-    private FrontendHandler frontendHandler;
+    private final BackendConnection backendConnection;
     
-    public ComInitDbPacket(final int sequenceId, final MySQLPacketPayload payload, final FrontendHandler frontendHandler) {
+    public ComInitDbPacket(final int sequenceId, final MySQLPacketPayload payload, final BackendConnection backendConnection) {
         this.sequenceId = sequenceId;
         schema = payload.readStringEOF();
-        this.frontendHandler = frontendHandler;
+        this.backendConnection = backendConnection;
     }
     
     @Override
@@ -62,7 +62,7 @@ public final class ComInitDbPacket implements CommandPacket {
     public Optional<CommandResponsePackets> execute() {
         log.debug("Schema name received for Sharding-Proxy: {}", schema);
         if (GlobalRegistry.getInstance().schemaExists(schema)) {
-            frontendHandler.setCurrentSchema(schema);
+            backendConnection.setCurrentSchema(schema);
             return Optional.of(new CommandResponsePackets(new OKPacket(getSequenceId() + 1)));
         }
         return Optional.of(new CommandResponsePackets(new ErrPacket(getSequenceId() + 1, ServerErrorCode.ER_BAD_DB_ERROR, schema)));

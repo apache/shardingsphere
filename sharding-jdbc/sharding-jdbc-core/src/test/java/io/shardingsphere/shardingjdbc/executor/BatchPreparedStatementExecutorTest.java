@@ -18,8 +18,6 @@
 package io.shardingsphere.shardingjdbc.executor;
 
 import io.shardingsphere.core.constant.ConnectionMode;
-import io.shardingsphere.core.constant.SQLType;
-import io.shardingsphere.core.event.ShardingEventType;
 import io.shardingsphere.core.executor.ShardingExecuteGroup;
 import io.shardingsphere.core.executor.StatementExecuteUnit;
 import io.shardingsphere.core.routing.BatchRouteUnit;
@@ -42,7 +40,6 @@ import java.util.List;
 import static org.hamcrest.CoreMatchers.is;
 import static org.junit.Assert.assertThat;
 import static org.mockito.Mockito.mock;
-import static org.mockito.Mockito.times;
 import static org.mockito.Mockito.verify;
 import static org.mockito.Mockito.when;
 
@@ -63,7 +60,6 @@ public final class BatchPreparedStatementExecutorTest extends AbstractBaseExecut
     public void assertNoPreparedStatement() throws SQLException {
         PreparedStatement preparedStatement = getPreparedStatement();
         when(preparedStatement.executeBatch()).thenReturn(new int[] {0, 0});
-        setSQLType(SQLType.DQL);
         setExecuteGroups(Collections.singletonList(preparedStatement));
         assertThat(actual.executeBatch(), is(new int[] {0, 0}));
     }
@@ -72,16 +68,9 @@ public final class BatchPreparedStatementExecutorTest extends AbstractBaseExecut
     public void assertExecuteBatchForSinglePreparedStatementSuccess() throws SQLException {
         PreparedStatement preparedStatement = getPreparedStatement();
         when(preparedStatement.executeBatch()).thenReturn(new int[] {10, 20});
-        setSQLType(SQLType.DQL);
         setExecuteGroups(Collections.singletonList(preparedStatement));
         assertThat(actual.executeBatch(), is(new int[] {10, 20}));
         verify(preparedStatement).executeBatch();
-        verify(getEventCaller(), times(2)).verifyDataSource("ds_0");
-        verify(getEventCaller(), times(2)).verifySQL(SQL);
-        verify(getEventCaller(), times(2)).verifyParameters(Collections.singletonList((Object) 1));
-        verify(getEventCaller(), times(1)).verifyEventExecutionType(ShardingEventType.BEFORE_EXECUTE);
-        verify(getEventCaller(), times(1)).verifyEventExecutionType(ShardingEventType.EXECUTE_SUCCESS);
-        verify(getEventCaller(), times(0)).verifyException(null);
     }
     
     private PreparedStatement getPreparedStatement() throws SQLException {
@@ -100,17 +89,10 @@ public final class BatchPreparedStatementExecutorTest extends AbstractBaseExecut
         PreparedStatement preparedStatement2 = getPreparedStatement();
         when(preparedStatement1.executeBatch()).thenReturn(new int[] {10, 20});
         when(preparedStatement2.executeBatch()).thenReturn(new int[] {20, 40});
-        setSQLType(SQLType.DQL);
         setExecuteGroups(Arrays.asList(preparedStatement1, preparedStatement2));
         assertThat(actual.executeBatch(), is(new int[] {30, 60}));
         verify(preparedStatement1).executeBatch();
         verify(preparedStatement2).executeBatch();
-        verify(getEventCaller(), times(4)).verifyDataSource("ds_0");
-        verify(getEventCaller(), times(4)).verifySQL(SQL);
-        verify(getEventCaller(), times(4)).verifyParameters(Collections.singletonList((Object) 1));
-        verify(getEventCaller(), times(2)).verifyEventExecutionType(ShardingEventType.BEFORE_EXECUTE);
-        verify(getEventCaller(), times(2)).verifyEventExecutionType(ShardingEventType.EXECUTE_SUCCESS);
-        verify(getEventCaller(), times(0)).verifyException(null);
     }
     
     @Test
@@ -118,15 +100,9 @@ public final class BatchPreparedStatementExecutorTest extends AbstractBaseExecut
         PreparedStatement preparedStatement = getPreparedStatement();
         SQLException exp = new SQLException();
         when(preparedStatement.executeBatch()).thenThrow(exp);
-        setSQLType(SQLType.DQL);
         setExecuteGroups(Collections.singletonList(preparedStatement));
         assertThat(actual.executeBatch(), is(new int[] {0, 0}));
         verify(preparedStatement).executeBatch();
-        verify(getEventCaller(), times(2)).verifyDataSource("ds_0");
-        verify(getEventCaller(), times(2)).verifySQL(SQL);
-        verify(getEventCaller(), times(2)).verifyParameters(Collections.singletonList((Object) 1));
-        verify(getEventCaller(), times(1)).verifyEventExecutionType(ShardingEventType.BEFORE_EXECUTE);
-        verify(getEventCaller(), times(1)).verifyException(exp);
     }
     
     @Test
@@ -136,23 +112,10 @@ public final class BatchPreparedStatementExecutorTest extends AbstractBaseExecut
         SQLException exp = new SQLException();
         when(preparedStatement1.executeBatch()).thenThrow(exp);
         when(preparedStatement2.executeBatch()).thenThrow(exp);
-        setSQLType(SQLType.DQL);
         setExecuteGroups(Arrays.asList(preparedStatement1, preparedStatement2));
         assertThat(actual.executeBatch(), is(new int[] {0, 0}));
         verify(preparedStatement1).executeBatch();
         verify(preparedStatement2).executeBatch();
-        verify(getEventCaller(), times(4)).verifyDataSource("ds_0");
-        verify(getEventCaller(), times(4)).verifySQL(SQL);
-        verify(getEventCaller(), times(4)).verifyParameters(Collections.singletonList((Object) 1));
-        verify(getEventCaller(), times(2)).verifyEventExecutionType(ShardingEventType.BEFORE_EXECUTE);
-        verify(getEventCaller(), times(2)).verifyException(exp);
-    }
-    
-    @SneakyThrows
-    private void setSQLType(final SQLType sqlType) {
-        Field field = BatchPreparedStatementExecutor.class.getSuperclass().getDeclaredField("sqlType");
-        field.setAccessible(true);
-        field.set(actual, sqlType);
     }
     
     private void setExecuteGroups(final List<PreparedStatement> preparedStatements) throws SQLException {

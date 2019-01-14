@@ -26,11 +26,13 @@ import io.shardingsphere.core.metadata.datasource.DataSourceMetaData;
 import io.shardingsphere.core.routing.RouteUnit;
 import io.shardingsphere.core.routing.SQLUnit;
 import io.shardingsphere.opentracing.constant.ShardingTags;
+import io.shardingsphere.spi.NewInstanceServiceLoader;
 import io.shardingsphere.spi.executor.SPISQLExecutionHook;
 import io.shardingsphere.spi.executor.SQLExecutionHook;
 import org.hamcrest.CoreMatchers;
 import org.junit.After;
 import org.junit.Before;
+import org.junit.BeforeClass;
 import org.junit.Test;
 
 import java.util.Arrays;
@@ -50,6 +52,11 @@ public final class OpenTracingSQLExecutionHookTest extends BaseOpenTracingHookTe
     private final SQLExecutionHook sqlExecutionHook = new SPISQLExecutionHook();
     
     private ActiveSpan activeSpan;
+    
+    @BeforeClass
+    public static void registerSPI() {
+        NewInstanceServiceLoader.register(SQLExecutionHook.class);
+    }
     
     @Before
     public void setUp() {

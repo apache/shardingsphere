@@ -18,11 +18,15 @@
 package io.shardingsphere.orchestration;
 
 import io.shardingsphere.orchestration.internal.AllInternalTests;
+import io.shardingsphere.orchestration.yaml.AllYamlTests;
 import org.junit.runner.RunWith;
 import org.junit.runners.Suite;
 import org.junit.runners.Suite.SuiteClasses;
 
 @RunWith(Suite.class)
-@SuiteClasses(AllInternalTests.class)
+@SuiteClasses({
+        AllYamlTests.class, 
+        AllInternalTests.class
+})
 public final class AllTests {
 }

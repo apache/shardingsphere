@@ -45,7 +45,15 @@ public final class UnicastRoutingEngine implements RoutingEngine {
     @Override
     public RoutingResult route() {
         RoutingResult result = new RoutingResult();
-        if (logicTables.isEmpty()) {
+        if (shardingRule.isAllBroadcastTables(logicTables)) {
+            List<RoutingTable> routingTables = new ArrayList<>(logicTables.size());
+            for (String each : logicTables) {
+                routingTables.add(new RoutingTable(each, each));
+            }
+            TableUnit tableUnit = new TableUnit(shardingRule.getShardingDataSourceNames().getDataSourceNames().iterator().next());
+            tableUnit.getRoutingTables().addAll(routingTables);
+            result.getTableUnits().getTableUnits().add(tableUnit);
+        } else if (logicTables.isEmpty()) {
             result.getTableUnits().getTableUnits().add(new TableUnit(shardingRule.getShardingDataSourceNames().getDataSourceNames().iterator().next()));
         } else if (1 == logicTables.size()) {
             String logicTableName = logicTables.iterator().next();

@@ -5,8 +5,6 @@
         t_order
     FORCE    " />
     <sql-case id="alter_table_with_back_quota" value="ALTER TABLE `t_order` FORCE" />
-    <sql-case id="alter_table_rename" value="ALTER TABLE t_order RENAME TO t_order_bak" />
-    
     <sql-case id="alter_table_add_column" value="ALTER TABLE t_order ADD column4 VARCHAR(10)" />
     <sql-case id="alter_table_add_columns" value="ALTER TABLE t_order ADD column4 VARCHAR(10), ADD column5 VARCHAR(10), ADD column6 VARCHAR(10)" />
     <sql-case id="alter_table_add_column_with_first" value="ALTER TABLE t_order ADD column3 VARCHAR(10) FIRST" />
@@ -40,4 +38,5 @@
     <sql-case id="alter_table_drop_index" value="ALTER TABLE t_order DROP INDEX idx_order_id" />
     <sql-case id="alter_table_drop_indexes" value="ALTER TABLE t_order DROP INDEX idx_column1, DROP INDEX idx_column2, DROP INDEX idx_column3" />
     <sql-case id="alter_table_rename_index" value="ALTER TABLE t_order RENAME INDEX idx_column1_bak TO idx_column1" />
+    <sql-case id="alter_table_composite_operate_columns" value="ALTER TABLE t_order ADD column4 VARCHAR(10), ADD column5 VARCHAR(10), ADD column6 VARCHAR(10),MODIFY user_id bigint, drop column status" />
 </sql-cases>

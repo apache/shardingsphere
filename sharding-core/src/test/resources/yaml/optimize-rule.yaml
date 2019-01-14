@@ -22,6 +22,7 @@ shardingRule:
         inline:
           shardingColumn: order_id
           algorithmExpression: t_order_${order_id % 2}
-      keyGeneratorColumnName: order_id
-      keyGeneratorClassName: io.shardingsphere.core.keygen.DefaultKeyGenerator
+      keyGenerator:
+        column: order_id
+        className: io.shardingsphere.core.keygen.generator.SnowflakeKeyGenerator
       logicIndex: order_index

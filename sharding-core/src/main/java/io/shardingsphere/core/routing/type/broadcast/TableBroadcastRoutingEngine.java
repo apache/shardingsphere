@@ -18,8 +18,8 @@
 package io.shardingsphere.core.routing.type.broadcast;
 
 import com.google.common.base.Preconditions;
+import io.shardingsphere.core.parsing.antlr.sql.statement.ddl.DDLStatement;
 import io.shardingsphere.core.parsing.parser.sql.SQLStatement;
-import io.shardingsphere.core.parsing.parser.sql.ddl.DDLStatement;
 import io.shardingsphere.core.parsing.parser.token.IndexToken;
 import io.shardingsphere.core.parsing.parser.token.SQLToken;
 import io.shardingsphere.core.routing.type.RoutingEngine;
@@ -77,7 +77,7 @@ public final class TableBroadcastRoutingEngine implements RoutingEngine {
     
     private Collection<TableUnit> getAllTableUnits(final String logicTableName) {
         Collection<TableUnit> result = new LinkedList<>();
-        TableRule tableRule = shardingRule.getTableRuleByLogicTableName(logicTableName);
+        TableRule tableRule = shardingRule.getTableRule(logicTableName);
         for (DataNode each : tableRule.getActualDataNodes()) {
             TableUnit tableUnit = new TableUnit(each.getDataSourceName());
             tableUnit.getRoutingTables().add(new RoutingTable(logicTableName, each.getTableName()));

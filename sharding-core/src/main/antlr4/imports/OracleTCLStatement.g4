@@ -8,10 +8,10 @@ setTransaction
         READ (ONLY | WRITE)
         | ISOLATION LEVEL (SERIALIZABLE | READ COMMITTED)
         | USE ROLLBACK SEGMENT ID
-    )(NAME STRING)?
+    )?
     | NAME STRING
     ;
-
+    
 commit
     : COMMIT WORK?
     ( 
@@ -20,7 +20,7 @@ commit
         | FORCE STRING (COMMA NUMBER)?
     )? 
     ;
-
+    
 rollback
     : ROLLBACK WORK?
     ( 
@@ -28,7 +28,7 @@ rollback
         | FORCE STRING
     )? 
     ;
-
+    
 savepoint
     : SAVEPOINT ID 
     ;

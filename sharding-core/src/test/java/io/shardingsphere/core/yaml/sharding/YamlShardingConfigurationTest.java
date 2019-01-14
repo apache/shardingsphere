@@ -18,8 +18,7 @@
 package io.shardingsphere.core.yaml.sharding;
 
 import io.shardingsphere.api.algorithm.masterslave.MasterSlaveLoadBalanceAlgorithmType;
-import io.shardingsphere.core.constant.SagaRecoveryPolicy;
-import io.shardingsphere.core.keygen.DefaultKeyGenerator;
+import io.shardingsphere.core.keygen.generator.SnowflakeKeyGenerator;
 import org.hamcrest.CoreMatchers;
 import org.junit.Test;
 
@@ -69,11 +68,11 @@ public final class YamlShardingConfigurationTest {
         assertTOrder(actual);
         assertTOrderItem(actual);
         assertBindingTable(actual);
+        assertBroadcastTable(actual);
         assertShardingRuleDefault(actual);
         assertMasterSlaveRules(actual);
         assertConfigMap(actual);
         assertProps(actual);
-        assertSaga(actual);
     }
     
     private void assertDataSourceMap(final YamlShardingConfiguration actual) {
@@ -105,8 +104,8 @@ public final class YamlShardingConfigurationTest {
         assertThat(actual.getShardingRule().getTables().get("t_order").getActualDataNodes(), is("ds_${0..1}.t_order_${0..1}"));
         assertThat(actual.getShardingRule().getTables().get("t_order").getTableStrategy().getInline().getShardingColumn(), is("order_id"));
         assertThat(actual.getShardingRule().getTables().get("t_order").getTableStrategy().getInline().getAlgorithmExpression(), is("t_order_${order_id % 2}"));
-        assertThat(actual.getShardingRule().getTables().get("t_order").getKeyGeneratorColumnName(), is("order_id"));
-        assertThat(actual.getShardingRule().getTables().get("t_order").getKeyGeneratorClassName(), is(DefaultKeyGenerator.class.getName()));
+        assertThat(actual.getShardingRule().getTables().get("t_order").getKeyGenerator().getColumn(), is("order_id"));
+        assertThat(actual.getShardingRule().getTables().get("t_order").getKeyGenerator().getClassName(), is(SnowflakeKeyGenerator.class.getName()));
         assertThat(actual.getShardingRule().getTables().get("t_order").getLogicIndex(), is("order_index"));
     }
     
@@ -119,14 +118,19 @@ public final class YamlShardingConfigurationTest {
     
     private void assertBindingTable(final YamlShardingConfiguration actual) {
         assertThat(actual.getShardingRule().getBindingTables().size(), is(1));
-        assertThat(actual.getShardingRule().getBindingTables().get(0), is("t_order, t_order_item"));
+        assertThat(actual.getShardingRule().getBindingTables().iterator().next(), is("t_order, t_order_item"));
+    }
+    
+    private void assertBroadcastTable(final YamlShardingConfiguration actual) {
+        assertThat(actual.getShardingRule().getBroadcastTables().size(), is(1));
+        assertThat(actual.getShardingRule().getBroadcastTables().iterator().next(), is("t_config"));
     }
     
     private void assertShardingRuleDefault(final YamlShardingConfiguration actual) {
         assertThat(actual.getShardingRule().getDefaultDataSourceName(), is("default_ds"));
         assertThat(actual.getShardingRule().getDefaultDatabaseStrategy().getInline().getShardingColumn(), is("order_id"));
         assertThat(actual.getShardingRule().getDefaultDatabaseStrategy().getInline().getAlgorithmExpression(), is("ds_${order_id % 2}"));
-        assertThat(actual.getShardingRule().getDefaultKeyGeneratorClassName(), is(DefaultKeyGenerator.class.getName()));
+        assertThat(actual.getShardingRule().getDefaultKeyGenerator().getKeyGenerator().getClass().getName(), is(SnowflakeKeyGenerator.class.getName()));
     }
     
     private void assertMasterSlaveRules(final YamlShardingConfiguration actual) {
@@ -162,16 +166,5 @@ public final class YamlShardingConfigurationTest {
     private void assertProps(final YamlShardingConfiguration actual) {
         assertThat(actual.getProps().size(), is(1));
         assertThat(actual.getProps().get("sql.show"), is((Object) true));
-    }
-    
-    private void assertSaga(final YamlShardingConfiguration actual) {
-        assertNotNull(actual.getSaga().getAlias());
-        assertThat(actual.getSaga().getAlias().length() ,is(36));
-        assertThat(actual.getSaga().getExecutorSize(), is(10));
-        assertThat(actual.getSaga().getTransactionMaxRetries(), is(10));
-        assertThat(actual.getSaga().getTransactionRetryDelay(), is(1000));
-        assertThat(actual.getSaga().getCompensationMaxRetries(), is(5));
-        assertThat(actual.getSaga().getCompensationRetryDelay(), is(2000));
-        assertThat(actual.getSaga().getRecoveryPolicy(), is(SagaRecoveryPolicy.BACKWARD));
     }
 }

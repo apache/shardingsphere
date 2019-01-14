@@ -116,7 +116,7 @@ public interface QueryResult {
     InputStream getInputStream(String columnLabel, String type) throws SQLException;
     
     /**
-     * Adjust ResultSet is null or not.
+     * Judge ResultSet is null or not.
      *
      * @return ResultSet is null or not
      * @throws SQLException SQL Exception

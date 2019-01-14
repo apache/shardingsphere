@@ -35,7 +35,7 @@ import java.util.Iterator;
 @RequiredArgsConstructor
 public final class GeneratedKeysResultSet extends AbstractUnsupportedGeneratedKeysResultSet {
     
-    private final Iterator<Number> generatedKeys;
+    private final Iterator<Comparable<?>> generatedKeys;
     
     private final String generatedKeyColumn;
     
@@ -43,10 +43,10 @@ public final class GeneratedKeysResultSet extends AbstractUnsupportedGeneratedKe
     
     private boolean closed;
     
-    private Number currentGeneratedKey;
+    private Comparable<?> currentGeneratedKey;
     
     public GeneratedKeysResultSet() {
-        generatedKeys = Collections.<Number>emptyList().iterator();
+        generatedKeys = Collections.<Comparable<?>>emptyList().iterator();
         generatedKeyColumn = null;
         statement = null;
     }
@@ -97,7 +97,7 @@ public final class GeneratedKeysResultSet extends AbstractUnsupportedGeneratedKe
     @Override
     public byte getByte(final int columnIndex) {
         checkStateForGetData();
-        return currentGeneratedKey.byteValue();
+        return Byte.valueOf(getString(columnIndex));
     }
     
     @Override
@@ -108,7 +108,7 @@ public final class GeneratedKeysResultSet extends AbstractUnsupportedGeneratedKe
     @Override
     public short getShort(final int columnIndex) {
         checkStateForGetData();
-        return currentGeneratedKey.shortValue();
+        return Short.valueOf(getString(columnIndex));
     }
     
     @Override
@@ -119,7 +119,7 @@ public final class GeneratedKeysResultSet extends AbstractUnsupportedGeneratedKe
     @Override
     public int getInt(final int columnIndex) {
         checkStateForGetData();
-        return currentGeneratedKey.intValue();
+        return Integer.valueOf(getString(columnIndex));
     }
     
     @Override
@@ -130,7 +130,7 @@ public final class GeneratedKeysResultSet extends AbstractUnsupportedGeneratedKe
     @Override
     public long getLong(final int columnIndex) {
         checkStateForGetData();
-        return currentGeneratedKey.longValue();
+        return Long.valueOf(getString(columnIndex));
     }
     
     @Override
@@ -141,7 +141,7 @@ public final class GeneratedKeysResultSet extends AbstractUnsupportedGeneratedKe
     @Override
     public float getFloat(final int columnIndex) {
         checkStateForGetData();
-        return currentGeneratedKey.floatValue();
+        return Float.valueOf(getString(columnIndex));
     }
     
     @Override
@@ -152,7 +152,7 @@ public final class GeneratedKeysResultSet extends AbstractUnsupportedGeneratedKe
     @Override
     public double getDouble(final int columnIndex) {
         checkStateForGetData();
-        return currentGeneratedKey.doubleValue();
+        return Double.valueOf(getString(columnIndex));
     }
     
     @Override
@@ -160,12 +160,14 @@ public final class GeneratedKeysResultSet extends AbstractUnsupportedGeneratedKe
         return getDouble(1);
     }
     
+    @SuppressWarnings("deprecation")
     @Override
     public BigDecimal getBigDecimal(final int columnIndex, final int scale) {
         checkStateForGetData();
-        return new BigDecimal(currentGeneratedKey.longValue()).setScale(scale, BigDecimal.ROUND_HALF_UP);
+        return new BigDecimal(getString(columnIndex)).setScale(scale, BigDecimal.ROUND_HALF_UP);
     }
     
+    @SuppressWarnings("deprecation")
     @Override
     public BigDecimal getBigDecimal(final String columnLabel, final int scale) {
         return getBigDecimal(1, scale);
@@ -174,7 +176,7 @@ public final class GeneratedKeysResultSet extends AbstractUnsupportedGeneratedKe
     @Override
     public BigDecimal getBigDecimal(final int columnIndex) {
         checkStateForGetData();
-        return new BigDecimal(currentGeneratedKey.longValue());
+        return new BigDecimal(getString(columnIndex));
     }
     
     @Override

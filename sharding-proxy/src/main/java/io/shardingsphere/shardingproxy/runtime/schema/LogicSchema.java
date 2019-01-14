@@ -17,12 +17,14 @@
 
 package io.shardingsphere.shardingproxy.runtime.schema;
 
+import com.google.common.eventbus.EventBus;
 import com.google.common.eventbus.Subscribe;
 import io.shardingsphere.core.metadata.ShardingMetaData;
-import io.shardingsphere.core.rule.DataSourceParameter;
-import io.shardingsphere.orchestration.internal.config.event.DataSourceChangedEvent;
+import io.shardingsphere.orchestration.internal.eventbus.ShardingOrchestrationEventBus;
+import io.shardingsphere.orchestration.internal.registry.config.event.DataSourceChangedEvent;
 import io.shardingsphere.shardingproxy.backend.jdbc.datasource.JDBCBackendDataSource;
 import io.shardingsphere.shardingproxy.util.DataSourceConverter;
+import io.shardingsphere.shardingproxy.util.DataSourceParameter;
 import lombok.Getter;
 
 import java.util.LinkedHashMap;
@@ -41,6 +43,8 @@ public abstract class LogicSchema {
     
     private final Map<String, DataSourceParameter> dataSources;
     
+    private final EventBus eventBus = ShardingOrchestrationEventBus.getInstance();
+    
     private JDBCBackendDataSource backendDataSource;
     
     public LogicSchema(final String name, final Map<String, DataSourceParameter> dataSources) {
@@ -48,6 +52,7 @@ public abstract class LogicSchema {
         // TODO :jiaqi only use JDBC need connect db via JDBC, netty style should use SQL packet to get metadata
         this.dataSources = dataSources;
         backendDataSource = new JDBCBackendDataSource(dataSources);
+        eventBus.register(this);
     }
     
     protected final Map<String, String> getDataSourceURLs(final Map<String, DataSourceParameter> dataSourceParameters) {
@@ -68,16 +73,16 @@ public abstract class LogicSchema {
     /**
      * Renew data source configuration.
      *
-     * @param dataSourceEvent data source event.
+     * @param dataSourceChangedEvent data source changed event.
      */
     @Subscribe
-    public final void renew(final DataSourceChangedEvent dataSourceEvent) {
-        if (!name.equals(dataSourceEvent.getSchemaName())) {
+    public final synchronized void renew(final DataSourceChangedEvent dataSourceChangedEvent) {
+        if (!name.equals(dataSourceChangedEvent.getShardingSchemaName())) {
             return;
         }
         backendDataSource.close();
         dataSources.clear();
-        dataSources.putAll(DataSourceConverter.getDataSourceParameterMap(dataSourceEvent.getDataSourceConfigurations()));
+        dataSources.putAll(DataSourceConverter.getDataSourceParameterMap(dataSourceChangedEvent.getDataSourceConfigurations()));
         backendDataSource = new JDBCBackendDataSource(dataSources);
     }
 }

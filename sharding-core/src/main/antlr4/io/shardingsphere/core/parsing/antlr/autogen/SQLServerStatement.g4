@@ -1,23 +1,24 @@
 grammar SQLServerStatement;
 
-import SQLServerKeyword, Keyword, SQLServerBase, SQLServerCreateIndex, SQLServerAlterIndex
+import SQLServerKeyword, Keyword, SQLServerBase, Symbol, SQLServerCreateIndex, SQLServerAlterIndex
        , SQLServerDropIndex, SQLServerCreateTable, SQLServerAlterTable, SQLServerDropTable, SQLServerTruncateTable
        , SQLServerTCLStatement, SQLServerDCLStatement
        ;
 
 execute
-    : createIndex
+    : (createIndex
     | alterIndex
     | dropIndex
     | createTable
     | alterTable
     | dropTable
     | truncateTable
-    | setTransaction
+    | beginTransaction
+    | setAutoCommit
     | commit
     | rollback
+    | setTransaction
     | savepoint
-    | beginWork
     | grant
     | revoke
     | deny
@@ -30,4 +31,5 @@ execute
     | createRole
     | alterRole
     | dropRole
+    ) SEMI_?
     ;

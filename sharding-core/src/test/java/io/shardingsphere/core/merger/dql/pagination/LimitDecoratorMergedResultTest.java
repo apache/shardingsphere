@@ -66,20 +66,20 @@ public final class LimitDecoratorMergedResultTest {
     
     @Test
     public void assertNextForSkipAll() throws SQLException {
-        Limit limit = new Limit(DatabaseType.MySQL);
+        Limit limit = new Limit();
         limit.setOffset(new LimitValue(Integer.MAX_VALUE, -1, true));
         selectStatement.setLimit(limit);
-        mergeEngine = new DQLMergeEngine(queryResults, selectStatement);
+        mergeEngine = new DQLMergeEngine(DatabaseType.MySQL, selectStatement, queryResults);
         MergedResult actual = mergeEngine.merge();
         assertFalse(actual.next());
     }
     
     @Test
     public void assertNextWithoutRowCount() throws SQLException {
-        Limit limit = new Limit(DatabaseType.MySQL);
+        Limit limit = new Limit();
         limit.setOffset(new LimitValue(2, -1, true));
         selectStatement.setLimit(limit);
-        mergeEngine = new DQLMergeEngine(queryResults, selectStatement);
+        mergeEngine = new DQLMergeEngine(DatabaseType.MySQL, selectStatement, queryResults);
         MergedResult actual = mergeEngine.merge();
         for (int i = 0; i < 6; i++) {
             assertTrue(actual.next());
@@ -89,11 +89,11 @@ public final class LimitDecoratorMergedResultTest {
     
     @Test
     public void assertNextWithRowCount() throws SQLException {
-        Limit limit = new Limit(DatabaseType.MySQL);
+        Limit limit = new Limit();
         limit.setOffset(new LimitValue(2, -1, true));
         limit.setRowCount(new LimitValue(2, -1, false));
         selectStatement.setLimit(limit);
-        mergeEngine = new DQLMergeEngine(queryResults, selectStatement);
+        mergeEngine = new DQLMergeEngine(DatabaseType.MySQL, selectStatement, queryResults);
         MergedResult actual = mergeEngine.merge();
         assertTrue(actual.next());
         assertTrue(actual.next());

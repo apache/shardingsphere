@@ -17,13 +17,11 @@
 
 package io.shardingsphere.orchestration.internal.rule;
 
-import com.google.common.eventbus.Subscribe;
-import io.shardingsphere.api.config.MasterSlaveRuleConfiguration;
-import io.shardingsphere.core.constant.ShardingConstant;
+import io.shardingsphere.api.config.rule.MasterSlaveRuleConfiguration;
 import io.shardingsphere.core.rule.MasterSlaveRule;
-import io.shardingsphere.orchestration.internal.state.event.DisabledStateEventBusEvent;
 
 import java.util.Collection;
+import java.util.HashSet;
 import java.util.LinkedList;
 
 /**
@@ -33,7 +31,7 @@ import java.util.LinkedList;
  */
 public final class OrchestrationMasterSlaveRule extends MasterSlaveRule {
     
-    private final Collection<String> disabledDataSourceNames = new LinkedList<>();
+    private final Collection<String> disabledDataSourceNames = new HashSet<>();
     
     public OrchestrationMasterSlaveRule(final MasterSlaveRuleConfiguration config) {
         super(config);
@@ -42,25 +40,29 @@ public final class OrchestrationMasterSlaveRule extends MasterSlaveRule {
     /**
      * Get slave data source names.
      *
-     * @return available slave data source name
+     * @return available slave data source names
      */
     @Override
     public Collection<String> getSlaveDataSourceNames() {
-        Collection<String> result = new LinkedList<>(super.getSlaveDataSourceNames());
-        for (String each : disabledDataSourceNames) {
-            result.remove(each);
+        if (disabledDataSourceNames.isEmpty()) {
+            return super.getSlaveDataSourceNames();
         }
+        Collection<String> result = new LinkedList<>(super.getSlaveDataSourceNames());
+        result.removeAll(disabledDataSourceNames);
         return result;
     }
     
     /**
-     * Renew disable dataSource names.
-     *
-     * @param disabledStateEventBusEvent jdbc disabled event bus event
+     * Update disabled data source names.
+     * 
+     * @param dataSourceName data source name
+     * @param isDisabled is disabled
      */
-    @Subscribe
-    public void renew(final DisabledStateEventBusEvent disabledStateEventBusEvent) {
-        disabledDataSourceNames.clear();
-        disabledDataSourceNames.addAll(disabledStateEventBusEvent.getDisabledSchemaDataSourceMap().get(ShardingConstant.LOGIC_SCHEMA_NAME));
+    public void updateDisabledDataSourceNames(final String dataSourceName, final boolean isDisabled) {
+        if (isDisabled) {
+            disabledDataSourceNames.add(dataSourceName);
+        } else {
+            disabledDataSourceNames.remove(dataSourceName);
+        }
     }
 }

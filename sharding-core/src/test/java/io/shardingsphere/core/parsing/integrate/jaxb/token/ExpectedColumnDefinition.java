@@ -36,9 +36,6 @@ public class ExpectedColumnDefinition {
     @XmlAttribute
     private String type;
     
-    @XmlAttribute
-    private Integer length;
-    
     @XmlAttribute(name = "primary-key")
     private boolean primaryKey;
 }

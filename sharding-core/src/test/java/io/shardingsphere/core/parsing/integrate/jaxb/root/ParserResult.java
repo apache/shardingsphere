@@ -20,7 +20,7 @@ package io.shardingsphere.core.parsing.integrate.jaxb.root;
 import com.google.common.base.Splitter;
 import io.shardingsphere.core.parsing.integrate.jaxb.condition.ExpectedOrCondition;
 import io.shardingsphere.core.parsing.integrate.jaxb.groupby.ExpectedGroupByColumn;
-import io.shardingsphere.core.parsing.integrate.jaxb.item.ExpectedAggregationSelectItem;
+import io.shardingsphere.core.parsing.integrate.jaxb.item.ExpectedSelectItems;
 import io.shardingsphere.core.parsing.integrate.jaxb.limit.ExpectedLimit;
 import io.shardingsphere.core.parsing.integrate.jaxb.meta.ExpectedTableMetaData;
 import io.shardingsphere.core.parsing.integrate.jaxb.orderby.ExpectedOrderByColumn;
@@ -61,6 +61,9 @@ public final class ParserResult {
     @XmlElement(name = "or-condition")
     private ExpectedOrCondition orCondition = new ExpectedOrCondition();
     
+    @XmlElement(name = "select-items")
+    private ExpectedSelectItems selectItems = new ExpectedSelectItems();
+    
     @XmlElement
     private ExpectedTokens tokens = new ExpectedTokens();
     
@@ -72,10 +75,6 @@ public final class ParserResult {
     @XmlElement(name = "group-by-column") 
     private List<ExpectedGroupByColumn> groupByColumns = new LinkedList<>();
     
-    @XmlElementWrapper(name = "aggregation-select-items")
-    @XmlElement(name = "aggregation-select-item") 
-    private List<ExpectedAggregationSelectItem> aggregationSelectItems = new LinkedList<>();
-    
     @XmlElement 
     private ExpectedLimit limit;
     
@@ -84,6 +83,9 @@ public final class ParserResult {
     
     @XmlElement(name = "alter-table")
     private ExpectedAlterTable alterTable;
+    
+    @XmlAttribute(name = "tcl-actual-statement-class-type")
+    private String tclActualStatementClassType;
     
     /**
      * Get parameters.

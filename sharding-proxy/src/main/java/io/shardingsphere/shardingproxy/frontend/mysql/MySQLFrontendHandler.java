@@ -20,9 +20,8 @@ package io.shardingsphere.shardingproxy.frontend.mysql;
 import com.google.common.base.Strings;
 import io.netty.buffer.ByteBuf;
 import io.netty.channel.ChannelHandlerContext;
-import io.netty.channel.EventLoopGroup;
 import io.shardingsphere.shardingproxy.frontend.common.FrontendHandler;
-import io.shardingsphere.shardingproxy.frontend.common.executor.ExecutorGroup;
+import io.shardingsphere.shardingproxy.frontend.common.executor.CommandExecutorSelector;
 import io.shardingsphere.shardingproxy.runtime.ChannelRegistry;
 import io.shardingsphere.shardingproxy.runtime.GlobalRegistry;
 import io.shardingsphere.shardingproxy.transport.mysql.constant.ServerErrorCode;
@@ -46,14 +45,13 @@ import lombok.RequiredArgsConstructor;
 @RequiredArgsConstructor
 public final class MySQLFrontendHandler extends FrontendHandler {
     
-    private final EventLoopGroup eventLoopGroup;
-    
     private final AuthenticationHandler authenticationHandler = new AuthenticationHandler();
     
     @Override
     protected void handshake(final ChannelHandlerContext context) {
         int connectionId = ConnectionIdGenerator.getInstance().nextId();
         ChannelRegistry.getInstance().putConnectionId(context.channel().id().asShortText(), connectionId);
+        getBackendConnection().setConnectionId(connectionId);
         context.writeAndFlush(new HandshakePacket(connectionId, authenticationHandler.getAuthPluginData()));
     }
     
@@ -66,7 +64,7 @@ public final class MySQLFrontendHandler extends FrontendHandler {
                     context.writeAndFlush(new ErrPacket(response41.getSequenceId() + 1, ServerErrorCode.ER_BAD_DB_ERROR, response41.getDatabase()));
                     return;
                 }
-                setCurrentSchema(response41.getDatabase());
+                getBackendConnection().setCurrentSchema(response41.getDatabase());
                 context.writeAndFlush(new OKPacket(response41.getSequenceId() + 1));
             } else {
                 // TODO localhost should replace to real ip address
@@ -78,7 +76,7 @@ public final class MySQLFrontendHandler extends FrontendHandler {
     
     @Override
     protected void executeCommand(final ChannelHandlerContext context, final ByteBuf message) {
-        new ExecutorGroup(eventLoopGroup, context.channel().id()).getExecutorService().execute(new CommandExecutor(context, message, this));
+        CommandExecutorSelector.getExecutor(getBackendConnection().getTransactionType(), context.channel().id()).execute(new CommandExecutor(context, message, this));
     }
     
     @Override

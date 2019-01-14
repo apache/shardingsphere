@@ -17,6 +17,10 @@
 
 package io.shardingsphere.core.parsing.parser.sql.tcl;
 
+import io.shardingsphere.core.constant.DatabaseType;
+import io.shardingsphere.core.parsing.antlr.sql.statement.tcl.TCLStatement;
+import io.shardingsphere.core.parsing.lexer.LexerEngine;
+import io.shardingsphere.core.parsing.lexer.LexerEngineFactory;
 import io.shardingsphere.core.parsing.lexer.token.DefaultKeyword;
 import org.junit.Test;
 
@@ -26,8 +30,17 @@ import static org.junit.Assert.assertTrue;
 public final class TCLStatementTest {
     
     @Test
-    public void assertIsTCLForSet() {
-        assertTrue(TCLStatement.isTCL(DefaultKeyword.SET));
+    public void assertIsTCLForSetTransaction() {
+        LexerEngine lexerEngine = LexerEngineFactory.newInstance(DatabaseType.MySQL, "SET TRANSACTION ISOLATION LEVEL SERIALIZABLE");
+        lexerEngine.nextToken();
+        assertTrue(TCLStatement.isTCLUnsafe(DatabaseType.MySQL, DefaultKeyword.SET, lexerEngine));
+    }
+    
+    @Test
+    public void assertIsTCLForSetAutoCommit() {
+        LexerEngine lexerEngine = LexerEngineFactory.newInstance(DatabaseType.MySQL, "SET AUTOCOMMIT = 0");
+        lexerEngine.nextToken();
+        assertTrue(TCLStatement.isTCLUnsafe(DatabaseType.MySQL, DefaultKeyword.SET, lexerEngine));
     }
     
     @Test

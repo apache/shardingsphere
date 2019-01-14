@@ -17,14 +17,17 @@
 
 package io.shardingsphere.core.routing.type.defaultdb;
 
-import io.shardingsphere.api.config.ShardingRuleConfiguration;
+import io.shardingsphere.api.config.rule.ShardingRuleConfiguration;
 import io.shardingsphere.core.routing.type.RoutingResult;
+import io.shardingsphere.core.routing.type.TableUnit;
 import io.shardingsphere.core.rule.ShardingRule;
 import org.junit.Before;
 import org.junit.Test;
 
+import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.Collection;
+import java.util.List;
 
 import static org.hamcrest.CoreMatchers.instanceOf;
 import static org.hamcrest.CoreMatchers.is;
@@ -46,13 +49,14 @@ public final class DefaultDatabaseRoutingEngineTest {
     @Test
     public void assertRoute() {
         RoutingResult routingResult = defaultDatabaseRoutingEngine.route();
+        List<TableUnit> tableUnitList = new ArrayList<>(routingResult.getTableUnits().getTableUnits());
         assertThat(routingResult, instanceOf(RoutingResult.class));
         assertThat(routingResult.getTableUnits().getTableUnits().size(), is(1));
-        assertThat(routingResult.getTableUnits().getTableUnits().get(0).getDataSourceName(), is("ds_0"));
-        assertThat(routingResult.getTableUnits().getTableUnits().get(0).getRoutingTables().size(), is(2));
-        assertThat(routingResult.getTableUnits().getTableUnits().get(0).getRoutingTables().get(0).getActualTableName(), is("t_order"));
-        assertThat(routingResult.getTableUnits().getTableUnits().get(0).getRoutingTables().get(0).getLogicTableName(), is("t_order"));
-        assertThat(routingResult.getTableUnits().getTableUnits().get(0).getRoutingTables().get(1).getActualTableName(), is("t_order_item"));
-        assertThat(routingResult.getTableUnits().getTableUnits().get(0).getRoutingTables().get(1).getLogicTableName(), is("t_order_item"));
+        assertThat(tableUnitList.get(0).getDataSourceName(), is("ds_0"));
+        assertThat(tableUnitList.get(0).getRoutingTables().size(), is(2));
+        assertThat(tableUnitList.get(0).getRoutingTables().get(0).getActualTableName(), is("t_order"));
+        assertThat(tableUnitList.get(0).getRoutingTables().get(0).getLogicTableName(), is("t_order"));
+        assertThat(tableUnitList.get(0).getRoutingTables().get(1).getActualTableName(), is("t_order_item"));
+        assertThat(tableUnitList.get(0).getRoutingTables().get(1).getLogicTableName(), is("t_order_item"));
     }
 }

@@ -17,11 +17,11 @@
 
 package io.shardingsphere.shardingjdbc.jdbc.core.connection;
 
-import io.shardingsphere.core.constant.transaction.TransactionType;
 import io.shardingsphere.shardingjdbc.jdbc.adapter.AbstractConnectionAdapter;
 import io.shardingsphere.shardingjdbc.jdbc.core.datasource.MasterSlaveDataSource;
 import io.shardingsphere.shardingjdbc.jdbc.core.statement.MasterSlavePreparedStatement;
 import io.shardingsphere.shardingjdbc.jdbc.core.statement.MasterSlaveStatement;
+import io.shardingsphere.transaction.api.TransactionType;
 import lombok.Getter;
 
 import javax.sql.DataSource;
@@ -56,7 +56,7 @@ public final class MasterSlaveConnection extends AbstractConnectionAdapter {
     
     @Override
     public DatabaseMetaData getMetaData() throws SQLException {
-        return getConnection(masterSlaveDataSource.getMasterSlaveRule().getMasterDataSourceName()).getMetaData();
+        return getCachedConnections().isEmpty() ? masterSlaveDataSource.getCachedDatabaseMetaData() : getCachedConnections().values().iterator().next().getMetaData(); 
     }
     
     @Override

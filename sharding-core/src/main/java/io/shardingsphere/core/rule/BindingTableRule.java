@@ -40,7 +40,7 @@ public final class BindingTableRule {
     private final List<TableRule> tableRules;
     
     /**
-     * Adjust contains this logic table in this rule.
+     * Judge contains this logic table in this rule.
      * 
      * @param logicTableName logic table name
      * @return contains this logic table or not

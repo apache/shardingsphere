@@ -17,14 +17,15 @@
 
 package io.shardingsphere.shardingproxy.util;
 
-import com.google.common.base.Function;
-import com.google.common.collect.Maps;
+import com.zaxxer.hikari.HikariDataSource;
 import io.shardingsphere.core.config.DataSourceConfiguration;
-import io.shardingsphere.core.rule.DataSourceParameter;
 import lombok.AccessLevel;
 import lombok.NoArgsConstructor;
 
+import java.lang.reflect.Field;
+import java.util.LinkedHashMap;
 import java.util.Map;
+import java.util.Map.Entry;
 
 /**
  * Data source parameter converter.
@@ -32,7 +33,7 @@ import java.util.Map;
  * @author panjuan
  */
 @NoArgsConstructor(access = AccessLevel.PRIVATE)
-public class DataSourceConverter {
+public final class DataSourceConverter {
     
     /**
      * Get data source map.
@@ -41,13 +42,25 @@ public class DataSourceConverter {
      * @return data source parameter map
      */
     public static Map<String, DataSourceParameter> getDataSourceParameterMap(final Map<String, DataSourceConfiguration> dataSourceConfigurationMap) {
-        return Maps.transformValues(dataSourceConfigurationMap, new Function<DataSourceConfiguration, DataSourceParameter>() {
-        
-            @Override
-            public DataSourceParameter apply(final DataSourceConfiguration input) {
-                return input.createDataSourceParameter();
+        Map<String, DataSourceParameter> result = new LinkedHashMap<>(dataSourceConfigurationMap.size(), 1);
+        for (Entry<String, DataSourceConfiguration> entry : dataSourceConfigurationMap.entrySet()) {
+            result.put(entry.getKey(), createDataSourceParameter(entry.getValue()));
+        }
+        return result;
+    }
+    
+    private static DataSourceParameter createDataSourceParameter(final DataSourceConfiguration dataSourceConfiguration) {
+        DataSourceParameter result = new DataSourceParameter();
+        for (Field each : result.getClass().getDeclaredFields()) {
+            try {
+                each.setAccessible(true);
+                if (dataSourceConfiguration.getProperties().containsKey(each.getName())) {
+                    each.set(result, dataSourceConfiguration.getProperties().get(each.getName()));
+                }
+            } catch (final ReflectiveOperationException ignored) {
             }
-        });
+        }
+        return result;
     }
     
     /**
@@ -57,12 +70,24 @@ public class DataSourceConverter {
      * @return data source configuration map
      */
     public static Map<String, DataSourceConfiguration> getDataSourceConfigurationMap(final Map<String, DataSourceParameter> dataSourceParameterMap) {
-        return Maps.transformValues(dataSourceParameterMap, new Function<DataSourceParameter, DataSourceConfiguration>() {
-            
-            @Override
-            public DataSourceConfiguration apply(final DataSourceParameter input) {
-                return DataSourceConfiguration.getDataSourceConfiguration(input);
-            }
-        });
+        Map<String, DataSourceConfiguration> result = new LinkedHashMap<>(dataSourceParameterMap.size());
+        for (Entry<String, DataSourceParameter> entry : dataSourceParameterMap.entrySet()) {
+            result.put(entry.getKey(), createDataSourceConfiguration(entry.getValue()));
+        }
+        return result;
+    }
+    
+    private static DataSourceConfiguration createDataSourceConfiguration(final DataSourceParameter dataSourceParameter) {
+        DataSourceConfiguration result = new DataSourceConfiguration(HikariDataSource.class.getName());
+        result.getProperties().put("url", dataSourceParameter.getUrl());
+        result.getProperties().put("username", dataSourceParameter.getUsername());
+        result.getProperties().put("password", dataSourceParameter.getPassword());
+        result.getProperties().put("connectionTimeoutMilliseconds", dataSourceParameter.getConnectionTimeoutMilliseconds());
+        result.getProperties().put("idleTimeoutMilliseconds", dataSourceParameter.getIdleTimeoutMilliseconds());
+        result.getProperties().put("maxLifetimeMilliseconds", dataSourceParameter.getMaxLifetimeMilliseconds());
+        result.getProperties().put("maxPoolSize", dataSourceParameter.getMaxPoolSize());
+        result.getProperties().put("minPoolSize", dataSourceParameter.getMinPoolSize());
+        result.getProperties().put("maintenanceIntervalMilliseconds", dataSourceParameter.getMaintenanceIntervalMilliseconds());
+        return result;
     }
 }

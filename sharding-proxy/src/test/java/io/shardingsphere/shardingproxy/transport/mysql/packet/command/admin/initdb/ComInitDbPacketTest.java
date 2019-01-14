@@ -19,7 +19,7 @@ package io.shardingsphere.shardingproxy.transport.mysql.packet.command.admin.ini
 
 import com.google.common.base.Optional;
 import io.shardingsphere.core.constant.ShardingConstant;
-import io.shardingsphere.shardingproxy.frontend.common.FrontendHandler;
+import io.shardingsphere.shardingproxy.backend.jdbc.connection.BackendConnection;
 import io.shardingsphere.shardingproxy.runtime.GlobalRegistry;
 import io.shardingsphere.shardingproxy.runtime.schema.LogicSchema;
 import io.shardingsphere.shardingproxy.transport.mysql.constant.ServerErrorCode;
@@ -28,6 +28,7 @@ import io.shardingsphere.shardingproxy.transport.mysql.packet.command.CommandPac
 import io.shardingsphere.shardingproxy.transport.mysql.packet.command.CommandResponsePackets;
 import io.shardingsphere.shardingproxy.transport.mysql.packet.generic.ErrPacket;
 import io.shardingsphere.shardingproxy.transport.mysql.packet.generic.OKPacket;
+import io.shardingsphere.transaction.api.TransactionType;
 import lombok.SneakyThrows;
 import org.junit.Before;
 import org.junit.Test;
@@ -52,8 +53,7 @@ public final class ComInitDbPacketTest {
     @Mock
     private MySQLPacketPayload payload;
     
-    @Mock
-    private FrontendHandler frontendHandler;
+    private BackendConnection backendConnection = new BackendConnection(TransactionType.LOCAL);
     
     @Before
     @SneakyThrows
@@ -67,7 +67,7 @@ public final class ComInitDbPacketTest {
     @Test
     public void assertExecuteWithValidSchemaName() {
         when(payload.readStringEOF()).thenReturn(ShardingConstant.LOGIC_SCHEMA_NAME);
-        Optional<CommandResponsePackets> actual = new ComInitDbPacket(1, payload, frontendHandler).execute();
+        Optional<CommandResponsePackets> actual = new ComInitDbPacket(1, payload, backendConnection).execute();
         assertTrue(actual.isPresent());
         assertThat(actual.get().getPackets().size(), is(1));
         assertThat(actual.get().getHeadPacket().getSequenceId(), is(2));
@@ -81,7 +81,7 @@ public final class ComInitDbPacketTest {
     public void assertExecuteWithInvalidSchemaName() {
         String invalidSchema = "invalid_schema";
         when(payload.readStringEOF()).thenReturn(invalidSchema);
-        Optional<CommandResponsePackets> actual = new ComInitDbPacket(1, payload, frontendHandler).execute();
+        Optional<CommandResponsePackets> actual = new ComInitDbPacket(1, payload, backendConnection).execute();
         assertTrue(actual.isPresent());
         assertThat(actual.get().getPackets().size(), is(1));
         assertThat(actual.get().getHeadPacket().getSequenceId(), is(2));
@@ -93,7 +93,7 @@ public final class ComInitDbPacketTest {
     @Test
     public void assertWrite() {
         when(payload.readStringEOF()).thenReturn(ShardingConstant.LOGIC_SCHEMA_NAME);
-        ComInitDbPacket actual = new ComInitDbPacket(1, payload, frontendHandler);
+        ComInitDbPacket actual = new ComInitDbPacket(1, payload, backendConnection);
         assertThat(actual.getSequenceId(), is(1));
         actual.write(payload);
         verify(payload).writeInt1(CommandPacketType.COM_INIT_DB.getValue());

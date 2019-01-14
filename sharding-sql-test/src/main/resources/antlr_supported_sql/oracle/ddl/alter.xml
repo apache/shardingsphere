@@ -6,15 +6,12 @@
     PARALLEL    " />
     <sql-case id="alter_table_with_quota" value="ALTER TABLE &quot;t_order&quot; PARALLEL" />
 
-    <sql-case id="alter_table_rename" value="ALTER TABLE t_order_bak RENAME TO t_order" />
-
     <sql-case id="alter_table_add_column" value="ALTER TABLE t_order ADD column4 VARCHAR2(10)" />
     <sql-case id="alter_table_add_columns" value="ALTER TABLE t_order ADD column4 VARCHAR2(10) ADD column5 VARCHAR2(10) ADD column6 VARCHAR2(10)" />
     <sql-case id="alter_table_modify_column" value="ALTER TABLE t_order MODIFY column4 VARCHAR2(20)" />
     <sql-case id="alter_table_modify_columns" value="ALTER TABLE t_order MODIFY column4 VARCHAR2(20) MODIFY column5 VARCHAR2(20) MODIFY column6 VARCHAR2(20)" />
     <sql-case id="alter_table_drop_column" value="ALTER TABLE t_order DROP COLUMN user_id" />
     <sql-case id="alter_table_drop_columns" value="ALTER TABLE t_order DROP COLUMN user_id DROP COLUMN column5" />
-    <sql-case id="alter_table_rename_column" value="ALTER TABLE t_order RENAME COLUMN user_id to column4" />
 
     <sql-case id="alter_table_add_primary_key" value="ALTER TABLE t_order ADD CONSTRAINT pk_user_id PRIMARY KEY (user_id)" />
     <sql-case id="alter_table_add_composite_primary_key" value="ALTER TABLE t_order ADD CONSTRAINT pk_order_id_user_id_status PRIMARY KEY (order_id, user_id, status)" />

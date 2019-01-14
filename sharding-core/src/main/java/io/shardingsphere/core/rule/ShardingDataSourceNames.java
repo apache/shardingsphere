@@ -17,8 +17,8 @@
 
 package io.shardingsphere.core.rule;
 
-import io.shardingsphere.api.config.MasterSlaveRuleConfiguration;
-import io.shardingsphere.api.config.ShardingRuleConfiguration;
+import io.shardingsphere.api.config.rule.MasterSlaveRuleConfiguration;
+import io.shardingsphere.api.config.rule.ShardingRuleConfiguration;
 import lombok.Getter;
 
 import java.util.Collection;

@@ -34,9 +34,9 @@ public final class CharType {
     public static final byte EOI = 0x1A;
     
     /**
-     * Adjust is whitespace or not.
+     * Judge is whitespace or not.
      * 
-     * @param ch to be adjusted char
+     * @param ch to be judged char
      * @return is whitespace or not
      */
     public static boolean isWhitespace(final char ch) {
@@ -44,9 +44,9 @@ public final class CharType {
     }
     
     /**
-     * Adjust is end of input or not.
+     * Judge is end of input or not.
      *
-     * @param ch to be adjusted char
+     * @param ch to be judged char
      * @return is end of input or not
      */
     public static boolean isEndOfInput(final char ch) {
@@ -54,9 +54,9 @@ public final class CharType {
     }
     
     /**
-     * Adjust is alphabet or not.
+     * Judge is alphabet or not.
      *
-     * @param ch to be adjusted char
+     * @param ch to be judged char
      * @return is alphabet or not
      */
     public static boolean isAlphabet(final char ch) {
@@ -64,9 +64,9 @@ public final class CharType {
     }
     
     /**
-     * Adjust is digital or not.
+     * Judge is digital or not.
      *
-     * @param ch to be adjusted char
+     * @param ch to be judged char
      * @return is alphabet or not
      */
     public static boolean isDigital(final char ch) {
@@ -74,9 +74,9 @@ public final class CharType {
     }
     
     /**
-     * Adjust is symbol or not.
+     * Judge is symbol or not.
      *
-     * @param ch to be adjusted char
+     * @param ch to be judged char
      * @return is symbol or not
      */
     public static boolean isSymbol(final char ch) {

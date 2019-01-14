@@ -17,8 +17,7 @@
 
 package io.shardingsphere.shardingjdbc.orchestration.api;
 
-import io.shardingsphere.api.config.SagaConfiguration;
-import io.shardingsphere.api.config.ShardingRuleConfiguration;
+import io.shardingsphere.api.config.rule.ShardingRuleConfiguration;
 import io.shardingsphere.core.rule.ShardingRule;
 import io.shardingsphere.orchestration.config.OrchestrationConfiguration;
 import io.shardingsphere.shardingjdbc.jdbc.core.datasource.ShardingDataSource;
@@ -48,17 +47,15 @@ public final class OrchestrationShardingDataSourceFactory {
      * @param orchestrationConfig orchestration configuration
      * @param configMap config map
      * @param props properties for data source
-     * @param sagaConfiguration saga configuration
      * @return sharding data source
      * @throws SQLException SQL exception
      */
     public static DataSource createDataSource(final Map<String, DataSource> dataSourceMap, final ShardingRuleConfiguration shardingRuleConfig,
-                                              final Map<String, Object> configMap, final Properties props, final OrchestrationConfiguration orchestrationConfig,
-                                              final SagaConfiguration sagaConfiguration) throws SQLException {
+                                              final Map<String, Object> configMap, final Properties props, final OrchestrationConfiguration orchestrationConfig) throws SQLException {
         if (null == shardingRuleConfig || shardingRuleConfig.getTableRuleConfigs().isEmpty()) {
             return createDataSource(orchestrationConfig);
         }
-        ShardingDataSource shardingDataSource = new ShardingDataSource(dataSourceMap, new ShardingRule(shardingRuleConfig, dataSourceMap.keySet()), configMap, props, sagaConfiguration);
+        ShardingDataSource shardingDataSource = new ShardingDataSource(dataSourceMap, new ShardingRule(shardingRuleConfig, dataSourceMap.keySet()), configMap, props);
         return new OrchestrationShardingDataSource(shardingDataSource, orchestrationConfig);
     }
     

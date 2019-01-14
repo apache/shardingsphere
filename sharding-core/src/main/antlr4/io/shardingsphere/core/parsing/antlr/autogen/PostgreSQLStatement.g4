@@ -1,23 +1,24 @@
 grammar PostgreSQLStatement;
 
-import PostgreSQLKeyword, Keyword, PostgreSQLBase, PostgreSQLCreateIndex, PostgreSQLAlterIndex
+import PostgreSQLKeyword, Keyword, PostgreSQLBase, Symbol, PostgreSQLCreateIndex, PostgreSQLAlterIndex
        , PostgreSQLDropIndex, PostgreSQLCreateTable, PostgreSQLAlterTable, PostgreSQLDropTable, PostgreSQLTruncateTable
-       , PostgreSQLTCLStatement, PostgreSQLDCLStatement
+       , PostgreSQLTCLStatement, PostgreSQLDCLStatement, PostgreSQLDALStatement
        ;
 
 execute
-    : createIndex
+    : (createIndex
     | alterIndex
     | dropIndex
     | createTable
     | alterTable
     | dropTable
     | truncateTable
-    | setTransaction
+    | beginTransaction
+    | startTransaction
     | commit
     | rollback
+    | setTransaction
     | savepoint
-    | beginWork
     | grant
     | grantRole
     | revoke
@@ -33,4 +34,9 @@ execute
     | renameRole
     | alterRoleSetConfig
     | alterRoleResetConfig
+    | dropRole
+    | show
+    | setParam
+    | resetParam
+    ) SEMI_?
     ;

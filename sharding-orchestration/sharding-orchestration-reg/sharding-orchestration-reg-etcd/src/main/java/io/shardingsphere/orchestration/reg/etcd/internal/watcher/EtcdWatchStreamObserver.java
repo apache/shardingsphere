@@ -22,7 +22,8 @@ import etcdserverpb.Rpc.WatchResponse;
 import io.grpc.stub.StreamObserver;
 import io.shardingsphere.orchestration.reg.exception.RegistryCenterException;
 import io.shardingsphere.orchestration.reg.listener.DataChangedEvent;
-import io.shardingsphere.orchestration.reg.listener.EventListener;
+import io.shardingsphere.orchestration.reg.listener.DataChangedEvent.ChangedType;
+import io.shardingsphere.orchestration.reg.listener.DataChangedEventListener;
 import lombok.RequiredArgsConstructor;
 import mvccpb.Kv.Event;
 
@@ -34,7 +35,7 @@ import mvccpb.Kv.Event;
 @RequiredArgsConstructor
 public final class EtcdWatchStreamObserver implements StreamObserver<WatchResponse> {
     
-    private final EventListener eventListener;
+    private final DataChangedEventListener dataChangedEventListener;
     
     @Override
     public void onNext(final Rpc.WatchResponse response) {
@@ -42,18 +43,21 @@ public final class EtcdWatchStreamObserver implements StreamObserver<WatchRespon
             return;
         }
         for (Event event : response.getEventsList()) {
-            eventListener.onChange(new DataChangedEvent(getEventType(event), event.getKv().getKey().toStringUtf8(), event.getKv().getValue().toStringUtf8()));
+            ChangedType changedType = getChangedType(event);
+            if (ChangedType.IGNORED != changedType) {
+                dataChangedEventListener.onChange(new DataChangedEvent(event.getKv().getKey().toStringUtf8(), event.getKv().getValue().toStringUtf8(), changedType));
+            }
         }
     }
     
-    private DataChangedEvent.Type getEventType(final Event event) {
+    private ChangedType getChangedType(final Event event) {
         switch (event.getType()) {
             case PUT:
-                return DataChangedEvent.Type.UPDATED;
+                return DataChangedEvent.ChangedType.UPDATED;
             case DELETE:
-                return DataChangedEvent.Type.DELETED;
+                return DataChangedEvent.ChangedType.DELETED;
             default:
-                return DataChangedEvent.Type.IGNORED;
+                return DataChangedEvent.ChangedType.IGNORED;
         }
     }
     

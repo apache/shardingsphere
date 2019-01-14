@@ -19,9 +19,12 @@ package io.shardingsphere.core.parsing.parser.sql.dql.select;
 
 import com.google.common.base.Optional;
 import com.google.common.base.Preconditions;
-import io.shardingsphere.core.parsing.parser.context.OrderItem;
+import io.shardingsphere.core.parsing.parser.context.condition.OrCondition;
 import io.shardingsphere.core.parsing.parser.context.limit.Limit;
+import io.shardingsphere.core.parsing.parser.context.orderby.OrderItem;
+import io.shardingsphere.core.parsing.parser.context.selectitem.AggregationDistinctSelectItem;
 import io.shardingsphere.core.parsing.parser.context.selectitem.AggregationSelectItem;
+import io.shardingsphere.core.parsing.parser.context.selectitem.DistinctSelectItem;
 import io.shardingsphere.core.parsing.parser.context.selectitem.SelectItem;
 import io.shardingsphere.core.parsing.parser.context.selectitem.StarSelectItem;
 import io.shardingsphere.core.parsing.parser.context.table.Table;
@@ -30,13 +33,12 @@ import io.shardingsphere.core.parsing.parser.token.OffsetToken;
 import io.shardingsphere.core.parsing.parser.token.RowCountToken;
 import io.shardingsphere.core.parsing.parser.token.SQLToken;
 import io.shardingsphere.core.util.SQLUtil;
-import lombok.AccessLevel;
 import lombok.Getter;
 import lombok.Setter;
 import lombok.ToString;
 
 import java.util.Collection;
-import java.util.HashSet;
+import java.util.LinkedHashSet;
 import java.util.LinkedList;
 import java.util.List;
 import java.util.Map;
@@ -46,6 +48,7 @@ import java.util.Set;
  * Select statement.
  *
  * @author zhangliang
+ * @author panjuan
  */
 @Getter
 @Setter
@@ -54,11 +57,13 @@ public final class SelectStatement extends DQLStatement {
     
     private boolean containStar;
     
+    private int firstSelectItemStartPosition;
+    
     private int selectListLastPosition;
     
     private int groupByLastPosition;
     
-    private final Set<SelectItem> items = new HashSet<>();
+    private final Set<SelectItem> items = new LinkedHashSet<>();
     
     private final List<OrderItem> groupByItems = new LinkedList<>();
     
@@ -66,9 +71,11 @@ public final class SelectStatement extends DQLStatement {
     
     private Limit limit;
     
-    @Getter(AccessLevel.NONE)
-    @Setter(AccessLevel.NONE)
-    private SelectStatement subQueryStatement;
+    private SelectStatement subqueryStatement;
+    
+    private Collection<SelectStatement> subqueryStatements = new LinkedList<>();
+    
+    private Collection<OrCondition> subqueryConditions = new LinkedList<>();
     
     /**
      * Get alias.
@@ -82,7 +89,7 @@ public final class SelectStatement extends DQLStatement {
         }
         String rawName = SQLUtil.getExactlyValue(name);
         for (SelectItem each : items) {
-            if (rawName.equalsIgnoreCase(SQLUtil.getExactlyValue(each.getExpression()))) {
+            if (SQLUtil.getExactlyExpression(rawName).equalsIgnoreCase(SQLUtil.getExactlyExpression(SQLUtil.getExactlyValue(each.getExpression())))) {
                 return each.getAlias();
             }
             if (rawName.equalsIgnoreCase(each.getAlias().orNull())) {
@@ -104,6 +111,35 @@ public final class SelectStatement extends DQLStatement {
                 AggregationSelectItem aggregationSelectItem = (AggregationSelectItem) each;
                 result.add(aggregationSelectItem);
                 result.addAll(aggregationSelectItem.getDerivedAggregationSelectItems());
+            }
+        }
+        return result;
+    }
+    
+    /**
+     * Get distinct select item optional.
+     *
+     * @return distinct select items
+     */
+    public Optional<DistinctSelectItem> getDistinctSelectItem() {
+        for (SelectItem each : items) {
+            if (each instanceof DistinctSelectItem) {
+                return Optional.of((DistinctSelectItem) each);
+            }
+        }
+        return Optional.absent();
+    }
+    
+    /**
+     * Get aggregation distinct select items.
+     *
+     * @return aggregation distinct select items
+     */
+    public List<AggregationDistinctSelectItem> getAggregationDistinctSelectItems() {
+        List<AggregationDistinctSelectItem> result = new LinkedList<>();
+        for (SelectItem each : items) {
+            if (each instanceof AggregationDistinctSelectItem) {
+                result.add((AggregationDistinctSelectItem) each);
             }
         }
         return result;
@@ -162,7 +198,7 @@ public final class SelectStatement extends DQLStatement {
     }
     
     /**
-     * Adjust group by and order by sequence is same or not.
+     * Judge group by and order by sequence is same or not.
      *
      * @return group by and order by sequence is same or not
      */
@@ -183,10 +219,10 @@ public final class SelectStatement extends DQLStatement {
     
     private void setIndexForAggregationItem(final Map<String, Integer> columnLabelIndexMap) {
         for (AggregationSelectItem each : getAggregationSelectItems()) {
-            Preconditions.checkState(columnLabelIndexMap.containsKey(each.getColumnLabel()), String.format("Can't find index: %s, please add alias for aggregate selections", each));
+            Preconditions.checkState(columnLabelIndexMap.containsKey(each.getColumnLabel()), "Can't find index: %s, please add alias for aggregate selections", each);
             each.setIndex(columnLabelIndexMap.get(each.getColumnLabel()));
             for (AggregationSelectItem derived : each.getDerivedAggregationSelectItems()) {
-                Preconditions.checkState(columnLabelIndexMap.containsKey(derived.getColumnLabel()), String.format("Can't find index: %s", derived));
+                Preconditions.checkState(columnLabelIndexMap.containsKey(derived.getColumnLabel()), "Can't find index: %s", derived);
                 derived.setIndex(columnLabelIndexMap.get(derived.getColumnLabel()));
             }
         }
@@ -197,7 +233,7 @@ public final class SelectStatement extends DQLStatement {
             if (-1 != each.getIndex()) {
                 continue;
             }
-            Preconditions.checkState(columnLabelIndexMap.containsKey(each.getColumnLabel()), String.format("Can't find index: %s", each));
+            Preconditions.checkState(columnLabelIndexMap.containsKey(each.getColumnLabel()), "Can't find index: %s", each);
             if (columnLabelIndexMap.containsKey(each.getColumnLabel())) {
                 each.setIndex(columnLabelIndexMap.get(each.getColumnLabel()));
             }
@@ -205,43 +241,43 @@ public final class SelectStatement extends DQLStatement {
     }
     
     /**
-     * Set sub query statement.
+     * Set subquery statement.
      * 
-     * @param subQueryStatement sub query statement
+     * @param subqueryStatement subquery statement
      */
-    public void setSubQueryStatement(final SelectStatement subQueryStatement) {
-        this.subQueryStatement = subQueryStatement;
-        setParametersIndex(subQueryStatement.getParametersIndex());
+    public void setSubqueryStatement(final SelectStatement subqueryStatement) {
+        this.subqueryStatement = subqueryStatement;
+        setParametersIndex(subqueryStatement.getParametersIndex());
     }
     
     /**
-     * Adjust contains sub query statement or not.
+     * Judge contains subquery statement or not.
      * 
-     * @return contains sub query statement or not
+     * @return contains subquery statement or not
      */
-    public boolean containsSubQuery() {
-        return null != subQueryStatement;
+    public boolean containsSubquery() {
+        return null != subqueryStatement;
     }
     
     /**
-     * Merge sub query statement if contains.
+     * Merge subquery statement if contains.
      * 
      * @return Select select statement
      */
-    public SelectStatement mergeSubQueryStatement() {
-        SelectStatement result = processLimitForSubQuery();
+    public SelectStatement mergeSubqueryStatement() {
+        SelectStatement result = processLimitForSubquery();
         processItems(result);
         processOrderByItems(result);
         result.setParametersIndex(getParametersIndex());
         return result;
     }
     
-    private SelectStatement processLimitForSubQuery() {
+    private SelectStatement processLimitForSubquery() {
         SelectStatement result = this;
         List<SQLToken> limitSQLTokens = getLimitTokens(result);
         Limit limit = result.getLimit();
-        while (result.containsSubQuery()) {
-            result = result.subQueryStatement;
+        while (result.containsSubquery()) {
+            result = result.subqueryStatement;
             limitSQLTokens.addAll(getLimitTokens(result));
             if (null == result.getLimit()) {
                 continue;
@@ -287,17 +323,17 @@ public final class SelectStatement extends DQLStatement {
         sqlTokens.addAll(limitSQLTokens);
     }
     
-    private void processItems(final SelectStatement subQueryStatement) {
+    private void processItems(final SelectStatement subqueryStatement) {
         if (!containStar) {
-            subQueryStatement.getItems().clear();
-            subQueryStatement.getItems().addAll(getItems());
+            subqueryStatement.getItems().clear();
+            subqueryStatement.getItems().addAll(getItems());
         }
     }
     
-    private void processOrderByItems(final SelectStatement subQueryStatement) {
+    private void processOrderByItems(final SelectStatement subqueryStatement) {
         if (!containStar) {
-            subQueryStatement.getOrderByItems().clear();
-            subQueryStatement.getGroupByItems().clear();
+            subqueryStatement.getOrderByItems().clear();
+            subqueryStatement.getGroupByItems().clear();
         }
     }
 }

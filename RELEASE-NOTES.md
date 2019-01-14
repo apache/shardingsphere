@@ -1,25 +1,27 @@
-## 3.0.1
+## 3.1.0
 
-### API changes
+### API Changes
 
-1. [ISSUE #1375](https://github.com/sharding-sphere/sharding-sphere/issues/1375) Adjust persist structure for orchestration's registry center
+1. Adjust persist structure for orchestration's registry center.
+1. Adjust Sharding-JDBC configuration API.
 
-### Bug Fixes
+### New Features
 
-#### Core
+1. XA Transaction available.
+1. All SQL 100% compatible if route to single data node (MySQL Only).
+1. DISTINCT SQL syntax available.
+1. Broadcast table available.
+1. Solve data lean problem when using DefaultKeyGenerator with low TPS.
 
-1. [ISSUE #1422](https://github.com/sharding-sphere/sharding-sphere/issues/1422) Exception occur when using defaultDataSourceName and defaultDatabaseStrategy at same time
-
-#### Sharding-Proxy
-
-1. [ISSUE #1403](https://github.com/sharding-sphere/sharding-sphere/issues/1403) master-slave mode exception when using PreparedStatement
-1. [ISSUE #1414](https://github.com/sharding-sphere/sharding-sphere/issues/1414) `SHOW CREATE TABLE tb_name` execution exception when configuring multiple logic schema
+###  Change Logs
+1. [MILESTONE #3](https://github.com/sharding-sphere/sharding-sphere/milestone/3)
+1. [MILESTONE #4](https://github.com/sharding-sphere/sharding-sphere/milestone/4)
 
 ## 3.0.0
 
 ### Milestones
 
-1. Sharding-Proxy launch. Support the use of Sharding-Sphere in the form of database to support for MySQL CLI and GUI client
+1. Sharding-Proxy launch. Support the use of ShardingSphere in the form of database to support for MySQL CLI and GUI client
 
 ### New Features
 
@@ -433,7 +435,7 @@ Automatic generation key implementation, including
 
 1. [ISSUE #43](https://github.com/sharding-sphere/sharding-sphere/issues/43) The yaml file contains Chinese, and the operating system mode is not UTF-8 encoding, resulting in yaml can not be parsed
 1. [ISSUE #48](https://github.com/sharding-sphere/sharding-sphere/issues/48) Yaml file is not closed after reading
-1. [ISSUE #57](https://github.com/sharding-sphere/sharding-sphere/issues/57) At the analytic level, we can identify sub queries to ensure that the behavior of supplementary columns can be accurately positioned
+1. [ISSUE #57](https://github.com/sharding-sphere/sharding-sphere/issues/57) At the analytic level, we can identify subqueries to ensure that the behavior of supplementary columns can be accurately positioned
 
 ## 1.1.0
 

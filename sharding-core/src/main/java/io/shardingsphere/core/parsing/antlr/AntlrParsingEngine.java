@@ -19,44 +19,47 @@ package io.shardingsphere.core.parsing.antlr;
 
 import io.shardingsphere.core.constant.DatabaseType;
 import io.shardingsphere.core.metadata.table.ShardingTableMetaData;
-import io.shardingsphere.core.parsing.antlr.ast.SQLASTParserFactory;
-import io.shardingsphere.core.parsing.antlr.extractor.SQLStatementExtractor;
-import io.shardingsphere.core.parsing.antlr.extractor.SQLStatementExtractorFactory;
-import io.shardingsphere.core.parsing.antlr.extractor.SQLStatementType;
-import io.shardingsphere.core.parsing.parser.exception.SQLParsingUnsupportedException;
+import io.shardingsphere.core.parsing.antlr.extractor.SQLSegmentsExtractorEngine;
+import io.shardingsphere.core.parsing.antlr.filler.SQLStatementFillerEngine;
+import io.shardingsphere.core.parsing.antlr.optimizer.SQLStatementOptimizerEngine;
+import io.shardingsphere.core.parsing.antlr.parser.SQLAST;
+import io.shardingsphere.core.parsing.antlr.parser.SQLParserEngine;
+import io.shardingsphere.core.parsing.antlr.sql.segment.SQLSegment;
+import io.shardingsphere.core.parsing.parser.sql.SQLParser;
 import io.shardingsphere.core.parsing.parser.sql.SQLStatement;
 import io.shardingsphere.core.rule.ShardingRule;
-import lombok.AccessLevel;
-import lombok.NoArgsConstructor;
-import org.antlr.v4.runtime.ParserRuleContext;
+
+import java.util.Collection;
 
 /**
- * Parsing engine for Antlr.
+ * SQL parsing engine.
  *
  * @author duhongjun
+ * @author zhangliang
  */
-@NoArgsConstructor(access = AccessLevel.PRIVATE)
-public final class AntlrParsingEngine {
+public final class AntlrParsingEngine implements SQLParser {
     
-    /**
-     * Parse SQL.
-     *
-     * @param dbType database type
-     * @param sql SQL
-     * @param shardingRule sharding rule
-     * @param shardingTableMetaData sharding table meta data
-     * @return SQL statement
-     */
-    public static SQLStatement parse(final DatabaseType dbType, final String sql, final ShardingRule shardingRule, final ShardingTableMetaData shardingTableMetaData) {
-        ParserRuleContext rootContext = SQLASTParserFactory.newInstance(dbType, sql).execute();
-        if (null == rootContext) {
-            throw new SQLParsingUnsupportedException(String.format("Unsupported SQL of `%s`", sql));
-        }
-        ParserRuleContext parserRuleContext = (ParserRuleContext) rootContext.getChild(0);
-        SQLStatementExtractor extractor = SQLStatementExtractorFactory.getInstance(dbType, SQLStatementType.nameOf(parserRuleContext.getClass().getSimpleName()));
-        if (null == extractor) {
-            throw new SQLParsingUnsupportedException(String.format("Unsupported SQL statement of `%s`", parserRuleContext.getClass().getSimpleName()));
-        }
-        return extractor.extract(parserRuleContext, shardingTableMetaData);
+    private final SQLParserEngine parserEngine;
+    
+    private final SQLSegmentsExtractorEngine extractorEngine;
+    
+    private final SQLStatementFillerEngine fillerEngine; 
+    
+    private final SQLStatementOptimizerEngine optimizerEngine;
+    
+    public AntlrParsingEngine(final DatabaseType databaseType, final String sql, final ShardingRule shardingRule, final ShardingTableMetaData shardingTableMetaData) {
+        parserEngine = new SQLParserEngine(databaseType, sql);
+        extractorEngine = new SQLSegmentsExtractorEngine();
+        fillerEngine = new SQLStatementFillerEngine(sql, shardingRule, shardingTableMetaData);
+        optimizerEngine = new SQLStatementOptimizerEngine(shardingTableMetaData);
+    }
+    
+    @Override
+    public SQLStatement parse() {
+        SQLAST ast = parserEngine.parse();
+        Collection<SQLSegment> sqlSegments = extractorEngine.extract(ast);
+        SQLStatement result = fillerEngine.fill(sqlSegments, ast.getRule());
+        optimizerEngine.optimize(ast.getRule(), result);
+        return result;
     }
 }

@@ -18,14 +18,14 @@
 package io.shardingsphere.shardingproxy.transport.mysql.packet.command.query.binary.prepare;
 
 import com.google.common.base.Optional;
-import io.shardingsphere.api.config.ShardingRuleConfiguration;
+import io.shardingsphere.api.config.rule.ShardingRuleConfiguration;
 import io.shardingsphere.core.constant.DatabaseType;
 import io.shardingsphere.core.parsing.SQLParsingEngine;
 import io.shardingsphere.core.parsing.parser.sql.SQLStatement;
 import io.shardingsphere.core.parsing.parser.sql.dml.insert.InsertStatement;
 import io.shardingsphere.core.parsing.parser.sql.dql.select.SelectStatement;
 import io.shardingsphere.core.rule.ShardingRule;
-import io.shardingsphere.shardingproxy.runtime.GlobalRegistry;
+import io.shardingsphere.shardingproxy.backend.jdbc.connection.BackendConnection;
 import io.shardingsphere.shardingproxy.runtime.schema.LogicSchema;
 import io.shardingsphere.shardingproxy.runtime.schema.ShardingSchema;
 import io.shardingsphere.shardingproxy.transport.mysql.constant.ColumnType;
@@ -53,17 +53,17 @@ public final class ComStmtPreparePacket implements CommandPacket {
     @Getter
     private final int sequenceId;
     
-    private final String currentSchema;
+    private final String schemaName;
     
     private final String sql;
     
     private final SQLParsingEngine sqlParsingEngine;
     
-    public ComStmtPreparePacket(final int sequenceId, final String currentSchema, final MySQLPacketPayload payload) {
+    public ComStmtPreparePacket(final int sequenceId, final BackendConnection backendConnection, final MySQLPacketPayload payload) {
         this.sequenceId = sequenceId;
-        this.currentSchema = currentSchema;
         sql = payload.readStringEOF();
-        LogicSchema logicSchema = GlobalRegistry.getInstance().getLogicSchema(currentSchema);
+        schemaName = backendConnection.getSchemaName();
+        LogicSchema logicSchema = backendConnection.getLogicSchema();
         sqlParsingEngine = new SQLParsingEngine(DatabaseType.MySQL, sql, getShardingRule(logicSchema), logicSchema.getMetaData().getTable());
     }
     
@@ -86,7 +86,7 @@ public final class ComStmtPreparePacket implements CommandPacket {
                 new ComStmtPrepareOKPacket(++currentSequenceId, PREPARED_STATEMENT_REGISTRY.register(sql, parametersIndex), getNumColumns(sqlStatement), parametersIndex, 0));
         for (int i = 0; i < parametersIndex; i++) {
             // TODO add column name
-            result.getPackets().add(new ColumnDefinition41Packet(++currentSequenceId, currentSchema,
+            result.getPackets().add(new ColumnDefinition41Packet(++currentSequenceId, schemaName,
                     sqlStatement.getTables().isSingleTable() ? sqlStatement.getTables().getSingleTableName() : "", "", "", "", 100, ColumnType.MYSQL_TYPE_VARCHAR, 0));
         }
         if (parametersIndex > 0) {

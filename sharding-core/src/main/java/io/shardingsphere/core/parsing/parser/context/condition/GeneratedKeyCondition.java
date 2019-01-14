@@ -17,7 +17,7 @@
 
 package io.shardingsphere.core.parsing.parser.context.condition;
 
-import io.shardingsphere.core.parsing.parser.expression.SQLNumberExpression;
+import io.shardingsphere.core.parsing.parser.expression.SQLTextExpression;
 import lombok.Getter;
 import lombok.ToString;
 
@@ -29,6 +29,7 @@ import java.util.List;
  * 
  * @author zhangliang
  * @author maxiaoguang
+ * @author panjuan
  */
 @Getter
 @ToString
@@ -38,10 +39,10 @@ public final class GeneratedKeyCondition extends Condition {
     
     private final int index;
     
-    private final Number value;
+    private final Comparable<?> value;
     
-    public GeneratedKeyCondition(final Column column, final int index, final Number value) {
-        super(column, new SQLNumberExpression(value));
+    public GeneratedKeyCondition(final Column column, final int index, final Comparable<?> value) {
+        super(column, new SQLTextExpression(String.valueOf(value)));
         this.column = column;
         this.index = index;
         this.value = value;
@@ -49,7 +50,7 @@ public final class GeneratedKeyCondition extends Condition {
     
     @Override
     public List<Comparable<?>> getConditionValues(final List<?> parameters) {
-        Comparable<?> result = null == value ? (Comparable<?>) parameters.get(index) : (Comparable<?>) value;
+        Comparable<?> result = null == value ? (Comparable<?>) parameters.get(index) : value;
         return Collections.<Comparable<?>>singletonList(result);
     }
 }
