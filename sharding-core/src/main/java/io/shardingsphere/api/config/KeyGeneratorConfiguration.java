@@ -17,6 +17,7 @@
 
 package io.shardingsphere.api.config;
 
+import com.google.common.base.Strings;
 import io.shardingsphere.core.keygen.KeyGeneratorFactory;
 import io.shardingsphere.core.keygen.generator.KeyGenerator;
 import lombok.AllArgsConstructor;
@@ -49,6 +50,9 @@ public final class KeyGeneratorConfiguration {
      * @return table rule configuration
      */
     public KeyGenerator getKeyGenerator() {
+        if (Strings.isNullOrEmpty(type)) {
+            return null;
+        }
         KeyGenerator result = KeyGeneratorFactory.newInstance(type);
         result.setProperties(props);
         return result;
