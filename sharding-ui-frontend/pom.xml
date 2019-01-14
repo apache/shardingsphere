@@ -6,7 +6,7 @@
     <parent>
         <groupId>io.shardingsphere</groupId>
         <artifactId>sharding-ui</artifactId>
-        <version>3.0.1-SNAPSHOT</version>
+        <version>1.0.0-SNAPSHOT</version>
     </parent>
     <artifactId>sharding-ui-frontend</artifactId>
     <name>${project.artifactId}</name>
@@ -30,20 +30,16 @@
                             <nodeVersion>${node.version}</nodeVersion>
                         </configuration>
                     </execution>
-                    <!-- Install all project dependencies -->
                     <execution>
                         <id>npm install</id>
                         <goals>
                             <goal>npm</goal>
                         </goals>
-                        <!-- optional: default phase is "generate-resources" -->
                         <phase>generate-resources</phase>
-                        <!-- Optional configuration which provides for running any npm command -->
                         <configuration>
                             <arguments>install</arguments>
                         </configuration>
                     </execution>
-                    <!-- Build and minify static files -->
                     <execution>
                         <id>npm run build</id>
                         <goals>
@@ -57,5 +53,4 @@
             </plugin>
         </plugins>
     </build>
-    
 </project>

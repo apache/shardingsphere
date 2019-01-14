@@ -15,25 +15,28 @@
  * </p>
  */
 
-package io.shardingsphere.shardingui;
+package io.shardingsphere.shardingui.servcie;
 
-import org.springframework.boot.SpringApplication;
-import org.springframework.boot.autoconfigure.SpringBootApplication;
+import io.shardingsphere.core.rule.Authentication;
 
 /**
- * Sharding UI Bootstrap.
- *
+ * Sharding proxy Authentication service.
+ * 
  * @author chenqingyang
  */
-@SpringBootApplication
-public class Bootstrap {
+public interface ProxyAuthenticationService {
     
     /**
-     * Sharding UI main entrance.
-     *
-     * @param args startup arguments
+     * Get authentication.
+     * 
+     * @return authentication
      */
-    public static void main(final String[] args) {
-        SpringApplication.run(Bootstrap.class, args);
-    }
+    Authentication getAuthentication();
+    
+    /**
+     * Update authentication.
+     * 
+     * @param authentication authentication
+     */
+    void updateAuthentication(Authentication authentication);
 }

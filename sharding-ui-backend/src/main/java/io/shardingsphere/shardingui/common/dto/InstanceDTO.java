@@ -15,25 +15,34 @@
  * </p>
  */
 
-package io.shardingsphere.shardingui;
+package io.shardingsphere.shardingui.common.dto;
 
-import org.springframework.boot.SpringApplication;
-import org.springframework.boot.autoconfigure.SpringBootApplication;
+import lombok.Getter;
+import lombok.NoArgsConstructor;
+import lombok.Setter;
 
 /**
- * Sharding UI Bootstrap.
+ * Instance DTO.
  *
  * @author chenqingyang
  */
-@SpringBootApplication
-public class Bootstrap {
+@Setter
+@Getter
+@NoArgsConstructor
+public class InstanceDTO {
     
-    /**
-     * Sharding UI main entrance.
-     *
-     * @param args startup arguments
-     */
-    public static void main(final String[] args) {
-        SpringApplication.run(Bootstrap.class, args);
+    private static final String DELIMITER = "@";
+    
+    private String serverIp;
+    
+    private String instanceId;
+    
+    private boolean enabled;
+    
+    public InstanceDTO(final String instanceId, final boolean enabled) {
+        this.instanceId = instanceId;
+        this.enabled = enabled;
+        this.serverIp = instanceId.split(DELIMITER)[0];
     }
+    
 }

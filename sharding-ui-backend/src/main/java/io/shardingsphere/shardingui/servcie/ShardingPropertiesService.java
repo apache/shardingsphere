@@ -15,25 +15,26 @@
  * </p>
  */
 
-package io.shardingsphere.shardingui;
-
-import org.springframework.boot.SpringApplication;
-import org.springframework.boot.autoconfigure.SpringBootApplication;
+package io.shardingsphere.shardingui.servcie;
 
 /**
- * Sharding UI Bootstrap.
+ * Sharding properties service.
  *
  * @author chenqingyang
  */
-@SpringBootApplication
-public class Bootstrap {
+public interface ShardingPropertiesService {
     
     /**
-     * Sharding UI main entrance.
+     * Load sharding properties.
      *
-     * @param args startup arguments
+     * @return sharding properties
      */
-    public static void main(final String[] args) {
-        SpringApplication.run(Bootstrap.class, args);
-    }
+    String loadShardingProperties();
+    
+    /**
+     * Update sharding properties.
+     *
+     * @param configData config data
+     */
+    void updateShardingProperties(String configData);
 }

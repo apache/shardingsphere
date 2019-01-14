@@ -15,25 +15,21 @@
  * </p>
  */
 
-package io.shardingsphere.shardingui;
+package io.shardingsphere.shardingui.security;
 
-import org.springframework.boot.SpringApplication;
-import org.springframework.boot.autoconfigure.SpringBootApplication;
+import lombok.Getter;
+import lombok.Setter;
 
 /**
- * Sharding UI Bootstrap.
+ * User account.
  *
  * @author chenqingyang
  */
-@SpringBootApplication
-public class Bootstrap {
+@Getter
+@Setter
+public class UserAccount {
     
-    /**
-     * Sharding UI main entrance.
-     *
-     * @param args startup arguments
-     */
-    public static void main(final String[] args) {
-        SpringApplication.run(Bootstrap.class, args);
-    }
+    private String username;
+    
+    private String password;
 }

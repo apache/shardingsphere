@@ -15,25 +15,28 @@
  * </p>
  */
 
-package io.shardingsphere.shardingui;
+package io.shardingsphere.shardingui.servcie;
 
-import org.springframework.boot.SpringApplication;
-import org.springframework.boot.autoconfigure.SpringBootApplication;
+import java.util.Map;
 
 /**
- * Sharding UI Bootstrap.
- *
+ * Sharding config map service.
+ * 
  * @author chenqingyang
  */
-@SpringBootApplication
-public class Bootstrap {
+public interface ConfigMapService {
     
     /**
-     * Sharding UI main entrance.
+     * Load config map.
      *
-     * @param args startup arguments
+     * @return config map
      */
-    public static void main(final String[] args) {
-        SpringApplication.run(Bootstrap.class, args);
-    }
+    Map<String, Object> loadConfigMap();
+    
+    /**
+     * Update config map.
+     *
+     * @param configMap config map
+     */
+    void updateConfigMap(Map<String, Object> configMap);
 }

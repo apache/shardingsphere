@@ -15,25 +15,30 @@
  * </p>
  */
 
-package io.shardingsphere.shardingui;
+package io.shardingsphere.shardingui.common.dto;
 
-import org.springframework.boot.SpringApplication;
-import org.springframework.boot.autoconfigure.SpringBootApplication;
+import lombok.AllArgsConstructor;
+import lombok.Getter;
+import lombok.NoArgsConstructor;
+import lombok.Setter;
 
 /**
- * Sharding UI Bootstrap.
+ * Slave data source DTO.
  *
  * @author chenqingyang
  */
-@SpringBootApplication
-public class Bootstrap {
+@Setter
+@Getter
+@NoArgsConstructor
+@AllArgsConstructor
+public class SlaveDataSourceDTO {
     
-    /**
-     * Sharding UI main entrance.
-     *
-     * @param args startup arguments
-     */
-    public static void main(final String[] args) {
-        SpringApplication.run(Bootstrap.class, args);
-    }
+    private String schema;
+    
+    private String masterDataSourceName;
+    
+    private String slaveDataSourceName;
+    
+    private boolean enabled;
+    
 }

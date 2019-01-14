@@ -6,7 +6,7 @@
     <parent>
         <groupId>io.shardingsphere</groupId>
         <artifactId>sharding-ui</artifactId>
-        <version>3.0.1-SNAPSHOT</version>
+        <version>1.0.0-SNAPSHOT</version>
     </parent>
     <artifactId>sharding-ui-backend</artifactId>
     <name>${project.artifactId}</name>
@@ -39,8 +39,11 @@
             <groupId>org.yaml</groupId>
             <artifactId>snakeyaml</artifactId>
         </dependency>
+        <dependency>
+            <groupId>commons-codec</groupId>
+            <artifactId>commons-codec</artifactId>
+        </dependency>
     </dependencies>
-
 
     <build>
         <finalName>sharding-ui</finalName>
@@ -50,7 +53,7 @@
                 <artifactId>maven-resources-plugin</artifactId>
                 <configuration>
                     <encoding>${project.build.sourceEncoding}</encoding>
-                    <outputDirectory>${project.build.directory}</outputDirectory>
+                    <outputDirectory>${project.build.outputDirectory}</outputDirectory>
                     <resources>
                         <resource>
                             <targetPath>${project.build.directory}/classes/public</targetPath>
@@ -100,5 +103,4 @@
             </plugin>
         </plugins>
     </build>
-
 </project>
