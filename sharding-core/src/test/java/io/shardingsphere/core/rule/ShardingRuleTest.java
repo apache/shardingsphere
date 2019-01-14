@@ -27,9 +27,8 @@ import io.shardingsphere.api.config.strategy.InlineShardingStrategyConfiguration
 import io.shardingsphere.api.config.strategy.NoneShardingStrategyConfiguration;
 import io.shardingsphere.api.config.strategy.StandardShardingStrategyConfiguration;
 import io.shardingsphere.core.exception.ShardingConfigurationException;
-import io.shardingsphere.core.keygen.generator.KeyGenerator;
-import io.shardingsphere.core.keygen.generator.SnowflakeKeyGenerator;
 import io.shardingsphere.core.keygen.fixture.IncrementKeyGenerator;
+import io.shardingsphere.core.keygen.generator.SnowflakeKeyGenerator;
 import io.shardingsphere.core.parsing.parser.context.condition.Column;
 import io.shardingsphere.core.routing.strategy.inline.InlineShardingStrategy;
 import io.shardingsphere.core.routing.strategy.none.NoneShardingStrategy;
@@ -385,9 +384,8 @@ public final class ShardingRuleTest {
     }
     
     private KeyGeneratorConfiguration getKeyGeneratorConfiguration() {
-        KeyGenerator keyGenerator = new IncrementKeyGenerator();
         KeyGeneratorConfiguration keyGeneratorConfiguration = new KeyGeneratorConfiguration();
-        keyGeneratorConfiguration.setClassName(keyGenerator.getClass().getName());
+        keyGeneratorConfiguration.setType("increment");
         return keyGeneratorConfiguration;
     }
     
