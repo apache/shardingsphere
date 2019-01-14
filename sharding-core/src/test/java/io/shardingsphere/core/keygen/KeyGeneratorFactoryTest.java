@@ -17,16 +17,9 @@
 
 package io.shardingsphere.core.keygen;
 
-import io.shardingsphere.core.keygen.generator.KeyGenerator;
+import io.shardingsphere.core.exception.ShardingConfigurationException;
 import io.shardingsphere.core.keygen.generator.SnowflakeKeyGenerator;
-import lombok.AccessLevel;
-import lombok.Getter;
-import lombok.NoArgsConstructor;
-import lombok.RequiredArgsConstructor;
-import lombok.Setter;
 import org.junit.Test;
-
-import java.util.Properties;
 
 import static org.hamcrest.CoreMatchers.instanceOf;
 import static org.junit.Assert.assertThat;
@@ -38,47 +31,8 @@ public final class KeyGeneratorFactoryTest {
         assertThat(KeyGeneratorFactory.newInstance("SNOWFLAKE"), instanceOf(SnowflakeKeyGenerator.class));
     }
     
-    @Test(expected = IllegalArgumentException.class)
+    @Test(expected = ShardingConfigurationException.class)
     public void assertCreateKeyGeneratorFailureWithInstantiationError() {
         KeyGeneratorFactory.newInstance("instantiation");
-    }
-    
-    @Test(expected = IllegalArgumentException.class)
-    public void assertCreateKeyGeneratorFailureWithIllegalAccess() {
-        KeyGeneratorFactory.newInstance("illegalAccess");
-    }
-    
-    @RequiredArgsConstructor
-    public static final class InstantiationKeyGenerator implements KeyGenerator {
-        
-        @Getter
-        private final String type = "instantiation";
-        
-        private final int field;
-    
-        @Getter
-        @Setter
-        private Properties properties = new Properties();
-        
-        @Override
-        public Comparable<?> generateKey() {
-            return null;
-        }
-    }
-    
-    @NoArgsConstructor(access = AccessLevel.PRIVATE)
-    public static final class IllegalAccessKeyGenerator implements KeyGenerator {
-    
-        @Getter
-        private final String type = "illegalAccess";
-    
-        @Getter
-        @Setter
-        private Properties properties = new Properties();
-        
-        @Override
-        public Comparable<?> generateKey() {
-            return null;
-        }
     }
 }
