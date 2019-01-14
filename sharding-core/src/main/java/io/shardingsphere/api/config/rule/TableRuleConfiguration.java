@@ -17,8 +17,8 @@
 
 package io.shardingsphere.api.config.rule;
 
+import io.shardingsphere.api.config.KeyGeneratorConfiguration;
 import io.shardingsphere.api.config.strategy.ShardingStrategyConfiguration;
-import io.shardingsphere.core.keygen.generator.KeyGenerator;
 import lombok.Getter;
 import lombok.Setter;
 
@@ -26,6 +26,7 @@ import lombok.Setter;
  * Table rule configuration.
  * 
  * @author zhangliang
+ * @author panjuan
  */
 @Getter
 @Setter
@@ -41,7 +42,7 @@ public final class TableRuleConfiguration implements RuleConfiguration {
     
     private String keyGeneratorColumnName;
     
-    private KeyGenerator keyGenerator;
+    private KeyGeneratorConfiguration keyGeneratorConfig;
     
     private String logicIndex;
 }

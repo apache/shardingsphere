@@ -18,10 +18,12 @@
 package io.shardingsphere.core.rule;
 
 import com.google.common.collect.Sets;
+import io.shardingsphere.api.config.KeyGeneratorConfiguration;
 import io.shardingsphere.api.config.rule.ShardingRuleConfiguration;
 import io.shardingsphere.api.config.rule.TableRuleConfiguration;
 import io.shardingsphere.api.config.strategy.NoneShardingStrategyConfiguration;
 import io.shardingsphere.core.keygen.fixture.IncrementKeyGenerator;
+import io.shardingsphere.core.keygen.generator.KeyGenerator;
 import org.junit.Test;
 
 import java.util.Arrays;
@@ -60,7 +62,7 @@ public final class TableRuleTest {
         tableRuleConfig.setDatabaseShardingStrategyConfig(new NoneShardingStrategyConfiguration());
         tableRuleConfig.setTableShardingStrategyConfig(new NoneShardingStrategyConfiguration());
         tableRuleConfig.setKeyGeneratorColumnName("col_1");
-        tableRuleConfig.setKeyGenerator(new IncrementKeyGenerator());
+        tableRuleConfig.setKeyGeneratorConfig(getKeyGeneratorConfiguration());
         tableRuleConfig.setLogicIndex("LOGIC_INDEX");
         TableRule actual = new TableRule(tableRuleConfig, createShardingDataSourceNames());
         assertThat(actual.getLogicTable(), is("logic_table"));
@@ -76,6 +78,13 @@ public final class TableRuleTest {
         assertThat(actual.getGenerateKeyColumn(), is("col_1"));
         assertThat(actual.getKeyGenerator(), instanceOf(IncrementKeyGenerator.class));
         assertThat(actual.getLogicIndex(), is("logic_index"));
+    }
+    
+    private KeyGeneratorConfiguration getKeyGeneratorConfiguration() {
+        KeyGenerator keyGenerator = new IncrementKeyGenerator();
+        KeyGeneratorConfiguration keyGeneratorConfiguration = new KeyGeneratorConfiguration();
+        keyGeneratorConfiguration.setClassName(keyGenerator.getClass().getName());
+        return keyGeneratorConfiguration;
     }
     
     @Test
