@@ -34,8 +34,6 @@ import java.util.UUID;
 @RequiredArgsConstructor
 public final class SagaConfiguration {
     
-    private final String alias = UUID.randomUUID().toString();
-    
     private int executorSize = 5;
     
     private int transactionMaxRetries = 5;
@@ -47,4 +45,6 @@ public final class SagaConfiguration {
     private int compensationRetryDelay = 3000;
     
     private SagaRecoveryPolicy recoveryPolicy = SagaRecoveryPolicy.FORWARD;
+    
+    private boolean enablePersistence;
 }

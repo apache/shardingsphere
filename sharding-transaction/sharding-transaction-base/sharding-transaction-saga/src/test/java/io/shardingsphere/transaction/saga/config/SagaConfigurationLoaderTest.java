@@ -33,5 +33,6 @@ public class SagaConfigurationLoaderTest {
         assertEquals(sagaConfiguration.getTransactionRetryDelay(), 1000);
         assertEquals(sagaConfiguration.getCompensationRetryDelay(), 2000);
         assertEquals(sagaConfiguration.getRecoveryPolicy(), SagaRecoveryPolicy.BACKWARD);
+        assertEquals(sagaConfiguration.isEnablePersistence(), true);
     }
 }

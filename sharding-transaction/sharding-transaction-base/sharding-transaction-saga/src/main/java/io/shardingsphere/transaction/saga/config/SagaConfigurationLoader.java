@@ -53,6 +53,8 @@ public class SagaConfigurationLoader {
     
     private static final String RECOVERY_POLICY = PREFIX + "recoveryPolicy";
     
+    private static final String ENABLED_PERSISTENCE = "saga.persistence.enabled";
+    
     /**
      * Load saga configuration from properties file.
      *
@@ -106,6 +108,10 @@ public class SagaConfigurationLoader {
         String recoveryPolicy = sagaProperties.getProperty(RECOVERY_POLICY);
         if (!Strings.isNullOrEmpty(recoveryPolicy)) {
             sagaConfiguration.setRecoveryPolicy(SagaRecoveryPolicy.find(recoveryPolicy));
+        }
+        String enabledPersistence = sagaProperties.getProperty(ENABLED_PERSISTENCE);
+        if (!Strings.isNullOrEmpty(enabledPersistence)) {
+            sagaConfiguration.setEnablePersistence(Boolean.parseBoolean(enabledPersistence));
         }
     }
 }
