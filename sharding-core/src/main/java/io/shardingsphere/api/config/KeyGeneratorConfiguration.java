@@ -17,7 +17,6 @@
 
 package io.shardingsphere.api.config;
 
-import com.google.common.base.Strings;
 import io.shardingsphere.core.exception.ShardingConfigurationException;
 import io.shardingsphere.core.keygen.KeyGeneratorFactory;
 import io.shardingsphere.core.keygen.KeyGeneratorType;
@@ -44,8 +43,6 @@ public final class KeyGeneratorConfiguration {
     
     private String type;
     
-    private String className;
-    
     private Properties props = new Properties();
     
     /**
@@ -54,14 +51,7 @@ public final class KeyGeneratorConfiguration {
      * @return table rule configuration
      */
     public KeyGenerator getKeyGenerator() {
-        KeyGenerator result;
-        if (!Strings.isNullOrEmpty(className)) {
-            result = KeyGeneratorFactory.newInstance(className);
-        } else if (!Strings.isNullOrEmpty(type)) {
-            result = KeyGeneratorFactory.newInstance(getKeyGeneratorClassName());
-        } else {
-            result = KeyGeneratorFactory.newInstance(KeyGeneratorType.SNOWFLAKE.getKeyGeneratorClassName());
-        }
+        KeyGenerator result = KeyGeneratorFactory.newInstance(type);
         result.setProperties(props);
         return result;
     }
