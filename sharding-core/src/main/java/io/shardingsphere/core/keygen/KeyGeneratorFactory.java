@@ -19,17 +19,19 @@ package io.shardingsphere.core.keygen;
 
 import com.google.common.base.Predicate;
 import com.google.common.collect.Collections2;
+import io.shardingsphere.core.exception.ShardingConfigurationException;
 import io.shardingsphere.core.keygen.generator.KeyGenerator;
 import io.shardingsphere.spi.NewInstanceServiceLoader;
 import lombok.AccessLevel;
 import lombok.NoArgsConstructor;
 
-import java.util.Collections;
+import java.util.Collection;
 
 /**
  * Key generator factory.
  * 
  * @author zhangliang
+ * @author panjuan
  */
 @NoArgsConstructor(access = AccessLevel.PRIVATE)
 public final class KeyGeneratorFactory {
@@ -41,15 +43,15 @@ public final class KeyGeneratorFactory {
      * @return key generator instance
      */
     public static KeyGenerator newInstance(final String keyGeneratorType) {
-        try {
-            return (KeyGenerator) Class.forName(keyGeneratorClassName).newInstance();
-        } catch (final ReflectiveOperationException ex) {
-            throw new IllegalArgumentException(String.format("Class %s should have public privilege and no argument constructor", keyGeneratorClassName));
+        Collection<KeyGenerator> keyGenerators = NewInstanceServiceLoader.load(KeyGenerator.class);
+        if (!isValid(keyGeneratorType, keyGenerators)) {
+            throw new ShardingConfigurationException("Invalid key generator type.");
         }
+        return keyGenerators.iterator().next();
     }
     
-    private static boolean isValid(final String keyGeneratorType) {
-        return !Collections2.filter(NewInstanceServiceLoader.load(KeyGenerator.class), new Predicate<KeyGenerator>() {
+    private static boolean isValid(final String keyGeneratorType, final Collection<KeyGenerator> keyGenerators) {
+        return !Collections2.filter(keyGenerators, new Predicate<KeyGenerator>() {
             
             @Override
             public boolean apply(final KeyGenerator input) {
