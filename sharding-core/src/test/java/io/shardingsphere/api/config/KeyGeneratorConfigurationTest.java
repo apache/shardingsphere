@@ -44,27 +44,27 @@ public class KeyGeneratorConfigurationTest {
     
     @Test
     public void assertGetKeyGeneratorWithoutTypeAndClassName() {
-        YamlKeyGeneratorConfiguration keyGeneratorConfiguration = new YamlKeyGeneratorConfiguration();
+        KeyGeneratorConfiguration keyGeneratorConfiguration = new KeyGeneratorConfiguration();
         assertThat(keyGeneratorConfiguration.getKeyGenerator().getClass().getName(), is(SnowflakeKeyGenerator.class.getName()));
     }
     
     @Test(expected = IllegalArgumentException.class)
     public void assertGetKeyGeneratorClassNameWithLeaf() {
-        YamlKeyGeneratorConfiguration keyGeneratorConfiguration = new YamlKeyGeneratorConfiguration();
+        KeyGeneratorConfiguration keyGeneratorConfiguration = new KeyGeneratorConfiguration();
         keyGeneratorConfiguration.setType("LEAF");
         keyGeneratorConfiguration.getKeyGenerator();
     }
     
     @Test
     public void assertGetKeyGeneratorClassNameWithUUID() {
-        YamlKeyGeneratorConfiguration keyGeneratorConfiguration = new YamlKeyGeneratorConfiguration();
+        KeyGeneratorConfiguration keyGeneratorConfiguration = new KeyGeneratorConfiguration();
         keyGeneratorConfiguration.setType("UUID");
         assertThat(keyGeneratorConfiguration.getKeyGenerator().getClass().getName(), is(UUIDKeyGenerator.class.getName()));
     }
     
     @Test(expected = ShardingConfigurationException.class)
     public void assertGetKeyGeneratorClassNameWithException() {
-        YamlKeyGeneratorConfiguration keyGeneratorConfiguration = new YamlKeyGeneratorConfiguration();
+        KeyGeneratorConfiguration keyGeneratorConfiguration = new KeyGeneratorConfiguration();
         keyGeneratorConfiguration.setType("DEFAULT");
         keyGeneratorConfiguration.getKeyGenerator();
     }
