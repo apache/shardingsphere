@@ -17,11 +17,6 @@
 
 package io.shardingsphere.core.yaml.sharding;
 
-import com.google.common.base.Strings;
-import io.shardingsphere.core.exception.ShardingConfigurationException;
-import io.shardingsphere.core.keygen.generator.KeyGenerator;
-import io.shardingsphere.core.keygen.KeyGeneratorFactory;
-import io.shardingsphere.core.keygen.KeyGeneratorType;
 import lombok.Getter;
 import lombok.Setter;
 
@@ -43,35 +38,4 @@ public final class YamlKeyGeneratorConfiguration {
     private String className;
     
     private Properties props = new Properties();
-    
-    /**
-     * Build table rule configuration.
-     *
-     * @return table rule configuration
-     */
-    public KeyGenerator getKeyGenerator() {
-        KeyGenerator result;
-        if (!Strings.isNullOrEmpty(className)) {
-            result = KeyGeneratorFactory.newInstance(className);
-        } else if (!Strings.isNullOrEmpty(type)) {
-            result = KeyGeneratorFactory.newInstance(getKeyGeneratorClassName());
-        } else {
-            result = KeyGeneratorFactory.newInstance(KeyGeneratorType.SNOWFLAKE.getKeyGeneratorClassName());
-        }
-        result.setProperties(props);
-        return result;
-    }
-    
-    private String getKeyGeneratorClassName() {
-        if (type.equalsIgnoreCase(KeyGeneratorType.SNOWFLAKE.name())) {
-            return KeyGeneratorType.SNOWFLAKE.getKeyGeneratorClassName();
-        }
-        if (type.equalsIgnoreCase(KeyGeneratorType.UUID.name())) {
-            return KeyGeneratorType.UUID.getKeyGeneratorClassName();
-        }
-        if (type.equalsIgnoreCase(KeyGeneratorType.LEAF.name())) {
-            return KeyGeneratorType.LEAF.getKeyGeneratorClassName();
-        }
-        throw new ShardingConfigurationException("Invalid key generator type.");
-    }
 }
