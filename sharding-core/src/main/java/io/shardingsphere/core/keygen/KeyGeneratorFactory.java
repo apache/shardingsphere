@@ -43,20 +43,20 @@ public final class KeyGeneratorFactory {
      * @return key generator instance
      */
     public static KeyGenerator newInstance(final String keyGeneratorType) {
-        Collection<KeyGenerator> keyGenerators = NewInstanceServiceLoader.load(KeyGenerator.class);
-        if (!isValid(keyGeneratorType, keyGenerators)) {
+        Collection<KeyGenerator> keyGenerators = loadKeyGenerators(keyGeneratorType);
+        if (keyGenerators.isEmpty()) {
             throw new ShardingConfigurationException("Invalid key generator type.");
         }
         return keyGenerators.iterator().next();
     }
     
-    private static boolean isValid(final String keyGeneratorType, final Collection<KeyGenerator> keyGenerators) {
-        return !Collections2.filter(keyGenerators, new Predicate<KeyGenerator>() {
+    private static Collection<KeyGenerator> loadKeyGenerators(final String keyGeneratorType) {
+        return Collections2.filter(NewInstanceServiceLoader.load(KeyGenerator.class), new Predicate<KeyGenerator>() {
             
             @Override
             public boolean apply(final KeyGenerator input) {
                 return keyGeneratorType.equals(input.getType());
             }
-        }).isEmpty();
+        });
     }
 }
