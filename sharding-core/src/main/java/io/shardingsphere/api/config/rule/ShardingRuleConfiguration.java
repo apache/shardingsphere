@@ -47,7 +47,7 @@ public final class ShardingRuleConfiguration implements RuleConfiguration {
     
     private ShardingStrategyConfiguration defaultTableShardingStrategyConfig;
     
-    private KeyGeneratorConfiguration defaultKeyGenerator;
+    private KeyGeneratorConfiguration defaultKeyGeneratorConfig;
     
     private Collection<MasterSlaveRuleConfiguration> masterSlaveRuleConfigs = new LinkedList<>();
 }
