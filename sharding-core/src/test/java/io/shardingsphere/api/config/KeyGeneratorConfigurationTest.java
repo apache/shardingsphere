@@ -33,8 +33,8 @@ public class KeyGeneratorConfigurationTest {
     @Test
     public void assertGetKeyGeneratorWithAllProperties() {
         KeyGeneratorConfiguration keyGeneratorConfiguration = new KeyGeneratorConfiguration("order_id", "SNOWFLAKE", SnowflakeKeyGenerator.class.getName(), new Properties());
-        assertThat(keyGeneratorConfiguration.getColumn(), is("order_id");
-        assertThat(keyGeneratorConfiguration.getType(), is("SNOWFLAKE");
+        assertThat(keyGeneratorConfiguration.getColumn(), is("order_id"));
+        assertThat(keyGeneratorConfiguration.getType(), is("SNOWFLAKE"));
         assertThat(keyGeneratorConfiguration.getClassName(), is(SnowflakeKeyGenerator.class.getName()));
         assertThat(keyGeneratorConfiguration.getProps().entrySet().size(), is(0));
     }
