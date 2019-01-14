@@ -62,8 +62,8 @@ public final class H2ShardingXAConnectionWrapper implements ShardingXAConnection
     @SneakyThrows
     @Override
     public ShardingXAConnection wrap(final String resourceName, final XADataSource xaDataSource, final Connection connection) {
-        Connection h2PhysicalConnection = (Connection) connection.unwrap(Class.forName("org.h2.jdbc.JdbcConnection"));
-        JdbcXAConnection jdbcXAConnection = CONSTRUCTOR.newInstance(FACTORY, NEXT_ID.invoke(null, XA_DATA_SOURCE), h2PhysicalConnection);
+        Connection physicalConnection = connection.unwrap(JdbcConnection.class);
+        JdbcXAConnection jdbcXAConnection = CONSTRUCTOR.newInstance(FACTORY, NEXT_ID.invoke(null, XA_DATA_SOURCE), physicalConnection);
         return new ShardingXAConnection(resourceName, jdbcXAConnection);
     }
 }
