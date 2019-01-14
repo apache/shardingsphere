@@ -2,17 +2,21 @@ package io.shardingsphere.shardingproxy.backend.jdbc.datasource;
 
 import io.shardingsphere.core.metadata.datasource.dialect.MySQLDataSourceMetaData;
 import io.shardingsphere.core.metadata.datasource.dialect.PostgreSQLDataSourceMetaData;
+import lombok.AccessLevel;
+import lombok.NoArgsConstructor;
 
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
 
+
+@NoArgsConstructor(access = AccessLevel.PUBLIC)
 public class JDBCClassDetermine {
 
     /*
     for MySQL-connector-java 8.x compatibility
     TODO getXADataSourceClassName
      */
-    static String mysqlclass=null;
+    static private String mysqlclass="";
 
     private Pattern pattern = Pattern.compile("jdbc:(mysql|postgresql):.*", Pattern.CASE_INSENSITIVE);
 
@@ -25,7 +29,7 @@ public class JDBCClassDetermine {
             switch (databaseType) {
                 case "mysql":
                     new MySQLDataSourceMetaData(url);
-                    if (mysqlclass==null){
+                    if (mysqlclass.isEmpty()){
                         try{
                             Class.forName("com.mysql.jdbc.Driver");
                             mysqlclass="com.mysql.jdbc.Driver";
