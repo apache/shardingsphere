@@ -22,7 +22,9 @@ import io.shardingsphere.core.exception.ShardingConfigurationException;
 import io.shardingsphere.core.keygen.KeyGeneratorFactory;
 import io.shardingsphere.core.keygen.KeyGeneratorType;
 import io.shardingsphere.core.keygen.generator.KeyGenerator;
+import lombok.AllArgsConstructor;
 import lombok.Getter;
+import lombok.NoArgsConstructor;
 import lombok.Setter;
 
 import java.util.Properties;
@@ -32,6 +34,8 @@ import java.util.Properties;
  *
  * @author panjuan
  */
+@NoArgsConstructor
+@AllArgsConstructor
 @Getter
 @Setter
 public final class KeyGeneratorConfiguration {
