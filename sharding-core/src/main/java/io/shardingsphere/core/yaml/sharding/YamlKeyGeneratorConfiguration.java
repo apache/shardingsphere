@@ -45,6 +45,7 @@ public final class YamlKeyGeneratorConfiguration {
     private Properties props = new Properties();
     
     public YamlKeyGeneratorConfiguration(final KeyGeneratorConfiguration keyGeneratorConfiguration) {
+        column = keyGeneratorConfiguration.getColumn();
         String keyGeneratorClassName = keyGeneratorConfiguration.getClass().getName();
         Optional<KeyGeneratorType> keyGeneratorType = KeyGeneratorType.getKeyGeneratorType(keyGeneratorClassName);
         if (!keyGeneratorType.isPresent()) {
@@ -53,5 +54,14 @@ public final class YamlKeyGeneratorConfiguration {
             type = keyGeneratorType.get().name();
         }
         props = keyGeneratorConfiguration.getProps();
+    }
+    
+    /**
+     * Get key generator configuration.
+     * 
+     * @return key generator configuration
+     */
+    public KeyGeneratorConfiguration getKeyGeneratorConfiguration() {
+        return new KeyGeneratorConfiguration(column, type, className, props);
     }
 }
