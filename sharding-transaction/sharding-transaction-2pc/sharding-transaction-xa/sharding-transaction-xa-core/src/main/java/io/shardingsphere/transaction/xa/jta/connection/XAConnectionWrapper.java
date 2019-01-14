@@ -17,23 +17,23 @@
 
 package io.shardingsphere.transaction.xa.jta.connection;
 
+import javax.sql.XAConnection;
 import javax.sql.XADataSource;
 import java.sql.Connection;
 
 /**
- * Sharding XA connection wrapper.
+ * XA connection wrapper.
  *
  * @author zhaojun
  */
-public interface ShardingXAConnectionWrapper {
+public interface XAConnectionWrapper {
     
     /**
-     * Wrap a normal connection to sharding XA connection.
+     * Wrap a normal connection to XA connection.
      *
-     * @param resourceName resource name
      * @param xaDataSource XA data source
      * @param connection connection
      * @return sharding XA connection
      */
-    ShardingXAConnection wrap(String resourceName, XADataSource xaDataSource, Connection connection);
+    XAConnection wrap(XADataSource xaDataSource, Connection connection);
 }

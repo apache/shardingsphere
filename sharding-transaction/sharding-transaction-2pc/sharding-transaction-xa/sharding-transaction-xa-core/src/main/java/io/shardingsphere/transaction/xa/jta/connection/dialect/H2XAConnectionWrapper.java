@@ -17,25 +17,25 @@
 
 package io.shardingsphere.transaction.xa.jta.connection.dialect;
 
-import io.shardingsphere.transaction.xa.jta.connection.ShardingXAConnection;
-import io.shardingsphere.transaction.xa.jta.connection.ShardingXAConnectionWrapper;
+import io.shardingsphere.transaction.xa.jta.connection.XAConnectionWrapper;
 import lombok.SneakyThrows;
 import org.h2.jdbc.JdbcConnection;
 import org.h2.jdbcx.JdbcDataSourceFactory;
 import org.h2.jdbcx.JdbcXAConnection;
 import org.h2.message.TraceObject;
 
+import javax.sql.XAConnection;
 import javax.sql.XADataSource;
 import java.lang.reflect.Constructor;
 import java.lang.reflect.Method;
 import java.sql.Connection;
 
 /**
- * H2 sharding XA connection wrapper.
+ * XA connection wrapper for H2.
  *
  * @author zhaojun
  */
-public final class H2ShardingXAConnectionWrapper implements ShardingXAConnectionWrapper {
+public final class H2XAConnectionWrapper implements XAConnectionWrapper {
     
     private static final int XA_DATA_SOURCE = 13;
     
@@ -61,9 +61,8 @@ public final class H2ShardingXAConnectionWrapper implements ShardingXAConnection
     
     @SneakyThrows
     @Override
-    public ShardingXAConnection wrap(final String resourceName, final XADataSource xaDataSource, final Connection connection) {
+    public XAConnection wrap(final XADataSource xaDataSource, final Connection connection) {
         Connection physicalConnection = connection.unwrap(JdbcConnection.class);
-        JdbcXAConnection jdbcXAConnection = CONSTRUCTOR.newInstance(FACTORY, NEXT_ID.invoke(null, XA_DATA_SOURCE), physicalConnection);
-        return new ShardingXAConnection(resourceName, jdbcXAConnection);
+        return CONSTRUCTOR.newInstance(FACTORY, NEXT_ID.invoke(null, XA_DATA_SOURCE), physicalConnection);
     }
 }
