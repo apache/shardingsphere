@@ -29,6 +29,9 @@ public final class IncrementKeyGenerator implements KeyGenerator {
     private static final AtomicInteger SEQUENCE = new AtomicInteger(100);
     
     @Getter
+    private final String type = "increment";
+    
+    @Getter
     @Setter
     private Properties properties = new Properties();
     
