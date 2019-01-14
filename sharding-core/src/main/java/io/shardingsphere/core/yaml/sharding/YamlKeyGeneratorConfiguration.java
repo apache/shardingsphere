@@ -17,9 +17,7 @@
 
 package io.shardingsphere.core.yaml.sharding;
 
-import com.google.common.base.Optional;
 import io.shardingsphere.api.config.KeyGeneratorConfiguration;
-import io.shardingsphere.core.keygen.KeyGeneratorType;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
 import lombok.Setter;
@@ -46,13 +44,8 @@ public final class YamlKeyGeneratorConfiguration {
     
     public YamlKeyGeneratorConfiguration(final KeyGeneratorConfiguration keyGeneratorConfiguration) {
         column = keyGeneratorConfiguration.getColumn();
-        String keyGeneratorClassName = keyGeneratorConfiguration.getClass().getName();
-        Optional<KeyGeneratorType> keyGeneratorType = KeyGeneratorType.getKeyGeneratorType(keyGeneratorClassName);
-        if (!keyGeneratorType.isPresent()) {
-            className = keyGeneratorClassName;
-        } else {
-            type = keyGeneratorType.get().name();
-        }
+        type = keyGeneratorConfiguration.getType();
+        className = keyGeneratorConfiguration.getClassName();
         props = keyGeneratorConfiguration.getProps();
     }
     
