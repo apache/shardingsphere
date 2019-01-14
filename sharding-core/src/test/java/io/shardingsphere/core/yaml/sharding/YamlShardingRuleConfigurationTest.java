@@ -62,7 +62,7 @@ public final class YamlShardingRuleConfigurationTest {
         result.getBindingTables().add("t_order, t_order_item");
         result.getBroadcastTables().add("t_config");
         YamlKeyGeneratorConfiguration keyGeneratorConfiguration = new YamlKeyGeneratorConfiguration();
-        keyGeneratorConfiguration.setClassName(SnowflakeKeyGenerator.class.getName());
+        keyGeneratorConfiguration.setType("SNOWFLAKE");
         result.setDefaultKeyGenerator(keyGeneratorConfiguration);
         result.getMasterSlaveRules().put("master_slave_ds", createYamlMasterSlaveRuleConfig());
         return result;

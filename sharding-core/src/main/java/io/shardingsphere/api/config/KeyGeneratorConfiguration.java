@@ -18,9 +18,7 @@
 package io.shardingsphere.api.config;
 
 import com.google.common.base.Strings;
-import io.shardingsphere.core.exception.ShardingConfigurationException;
 import io.shardingsphere.core.keygen.KeyGeneratorFactory;
-import io.shardingsphere.core.keygen.KeyGeneratorType;
 import io.shardingsphere.core.keygen.generator.KeyGenerator;
 import lombok.AllArgsConstructor;
 import lombok.Getter;
@@ -44,8 +42,6 @@ public final class KeyGeneratorConfiguration {
     
     private String type;
     
-    private String className;
-    
     private Properties props = new Properties();
     
     /**
@@ -54,28 +50,11 @@ public final class KeyGeneratorConfiguration {
      * @return table rule configuration
      */
     public KeyGenerator getKeyGenerator() {
-        KeyGenerator result;
-        if (!Strings.isNullOrEmpty(className)) {
-            result = KeyGeneratorFactory.newInstance(className);
-        } else if (!Strings.isNullOrEmpty(type)) {
-            result = KeyGeneratorFactory.newInstance(getKeyGeneratorClassName());
-        } else {
-            result = KeyGeneratorFactory.newInstance(KeyGeneratorType.SNOWFLAKE.getKeyGeneratorClassName());
+        if (Strings.isNullOrEmpty(type)) {
+            return null;
         }
+        KeyGenerator result = KeyGeneratorFactory.newInstance(type);
         result.setProperties(props);
         return result;
-    }
-    
-    private String getKeyGeneratorClassName() {
-        if (type.equalsIgnoreCase(KeyGeneratorType.SNOWFLAKE.name())) {
-            return KeyGeneratorType.SNOWFLAKE.getKeyGeneratorClassName();
-        }
-        if (type.equalsIgnoreCase(KeyGeneratorType.UUID.name())) {
-            return KeyGeneratorType.UUID.getKeyGeneratorClassName();
-        }
-        if (type.equalsIgnoreCase(KeyGeneratorType.LEAF.name())) {
-            return KeyGeneratorType.LEAF.getKeyGeneratorClassName();
-        }
-        throw new ShardingConfigurationException("Invalid key generator type.");
     }
 }

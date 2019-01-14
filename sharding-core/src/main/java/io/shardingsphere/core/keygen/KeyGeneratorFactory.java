@@ -17,14 +17,21 @@
 
 package io.shardingsphere.core.keygen;
 
+import com.google.common.base.Predicate;
+import com.google.common.collect.Collections2;
+import io.shardingsphere.core.exception.ShardingConfigurationException;
 import io.shardingsphere.core.keygen.generator.KeyGenerator;
+import io.shardingsphere.spi.NewInstanceServiceLoader;
 import lombok.AccessLevel;
 import lombok.NoArgsConstructor;
+
+import java.util.Collection;
 
 /**
  * Key generator factory.
  * 
  * @author zhangliang
+ * @author panjuan
  */
 @NoArgsConstructor(access = AccessLevel.PRIVATE)
 public final class KeyGeneratorFactory {
@@ -32,14 +39,24 @@ public final class KeyGeneratorFactory {
     /**
      * Create key generator.
      * 
-     * @param keyGeneratorClassName key generator class name
+     * @param keyGeneratorType key generator type
      * @return key generator instance
      */
-    public static KeyGenerator newInstance(final String keyGeneratorClassName) {
-        try {
-            return (KeyGenerator) Class.forName(keyGeneratorClassName).newInstance();
-        } catch (final ReflectiveOperationException ex) {
-            throw new IllegalArgumentException(String.format("Class %s should have public privilege and no argument constructor", keyGeneratorClassName));
+    public static KeyGenerator newInstance(final String keyGeneratorType) {
+        Collection<KeyGenerator> keyGenerators = loadKeyGenerators(keyGeneratorType);
+        if (keyGenerators.isEmpty()) {
+            throw new ShardingConfigurationException("Invalid key generator type.");
         }
+        return keyGenerators.iterator().next();
+    }
+    
+    private static Collection<KeyGenerator> loadKeyGenerators(final String keyGeneratorType) {
+        return Collections2.filter(NewInstanceServiceLoader.load(KeyGenerator.class), new Predicate<KeyGenerator>() {
+            
+            @Override
+            public boolean apply(final KeyGenerator input) {
+                return keyGeneratorType.equalsIgnoreCase(input.getType());
+            }
+        });
     }
 }

@@ -27,7 +27,7 @@ shardingRule:
           algorithmClassName: io.shardingsphere.api.algorithm.fixture.TestComplexKeysShardingAlgorithm 
       keyGenerator:
         column: item_id
-        className: io.shardingsphere.core.keygen.generator.SnowflakeKeyGenerator
+        type: SNOWFLAKE
     t_place:
       actualDataNodes: db${0..1}.t_place
       tableStrategy: 

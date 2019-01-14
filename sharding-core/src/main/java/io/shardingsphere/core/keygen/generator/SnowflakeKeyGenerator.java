@@ -75,6 +75,9 @@ public final class SnowflakeKeyGenerator implements KeyGenerator {
     private static TimeService timeService = new TimeService();
     
     @Getter
+    private final String type = "SNOWFLAKE";
+    
+    @Getter
     @Setter
     private Properties properties = new Properties();
     

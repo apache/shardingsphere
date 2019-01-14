@@ -31,6 +31,9 @@ import java.util.UUID;
 public final class UUIDKeyGenerator implements KeyGenerator {
     
     @Getter
+    private final String type = "UUID";
+    
+    @Getter
     @Setter
     private Properties properties = new Properties();
     
