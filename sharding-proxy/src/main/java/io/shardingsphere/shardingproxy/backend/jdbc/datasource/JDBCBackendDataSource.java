@@ -18,6 +18,7 @@
 package io.shardingsphere.shardingproxy.backend.jdbc.datasource;
 
 import io.shardingsphere.core.constant.ConnectionMode;
+import io.shardingsphere.core.constant.DatabaseType;
 import io.shardingsphere.core.exception.ShardingException;
 import io.shardingsphere.core.util.ReflectiveUtil;
 import io.shardingsphere.shardingproxy.backend.BackendDataSource;
@@ -52,11 +53,7 @@ public final class JDBCBackendDataSource implements BackendDataSource, AutoClose
     
     private Map<String, DataSource> dataSources;
     
-    private Map<String, DataSource> xaDataSources;
-    
     private JDBCBackendDataSourceFactory hikariDataSourceFactory = JDBCRawBackendDataSourceFactory.getInstance();
-    
-    private JDBCBackendDataSourceFactory xaDataSourceFactory = JDBCXABackendDataSourceFactory.getInstance();
     
     public JDBCBackendDataSource(final Map<String, DataSourceParameter> dataSourceParameters) {
         createDataSourceMap(dataSourceParameters);
@@ -64,11 +61,9 @@ public final class JDBCBackendDataSource implements BackendDataSource, AutoClose
     
     private void createDataSourceMap(final Map<String, DataSourceParameter> dataSourceParameters) {
         Map<String, DataSource> dataSourceMap = new LinkedHashMap<>(dataSourceParameters.size(), 1);
-        Map<String, DataSource> xaDataSourceMap = new LinkedHashMap<>(dataSourceParameters.size(), 1);
         for (Entry<String, DataSourceParameter> entry : dataSourceParameters.entrySet()) {
             try {
                 dataSourceMap.put(entry.getKey(), hikariDataSourceFactory.build(entry.getKey(), entry.getValue()));
-                xaDataSourceMap.put(entry.getKey(), xaDataSourceFactory.build(entry.getKey(), entry.getValue()));
             // CHECKSTYLE:OFF
             } catch (final Exception ex) {
                 // CHECKSTYLE:ON
@@ -76,7 +71,7 @@ public final class JDBCBackendDataSource implements BackendDataSource, AutoClose
             }
         }
         this.dataSources = dataSourceMap;
-        this.xaDataSources = xaDataSourceMap;
+        ShardingTransactionEngineRegistry.init(DatabaseType.MySQL, dataSourceMap);
     }
     
     /**
@@ -152,13 +147,11 @@ public final class JDBCBackendDataSource implements BackendDataSource, AutoClose
     }
     
     @Override
-    public void close() {
+    public void close() throws Exception {
         if (null != dataSources) {
             closeDataSource(dataSources);
         }
-        if (null != xaDataSources) {
-            closeDataSource(xaDataSources);
-        }
+        ShardingTransactionEngineRegistry.close();
     }
     
     private void closeDataSource(final Map<String, DataSource> dataSourceMap) {

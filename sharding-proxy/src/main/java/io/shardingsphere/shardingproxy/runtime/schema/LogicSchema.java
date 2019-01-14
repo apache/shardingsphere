@@ -74,9 +74,10 @@ public abstract class LogicSchema {
      * Renew data source configuration.
      *
      * @param dataSourceChangedEvent data source changed event.
+     * @throws Exception exception
      */
     @Subscribe
-    public final synchronized void renew(final DataSourceChangedEvent dataSourceChangedEvent) {
+    public final synchronized void renew(final DataSourceChangedEvent dataSourceChangedEvent) throws Exception {
         if (!name.equals(dataSourceChangedEvent.getShardingSchemaName())) {
             return;
         }
