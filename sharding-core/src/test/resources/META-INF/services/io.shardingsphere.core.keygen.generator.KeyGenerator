@@ -1,0 +1,3 @@
+io.shardingsphere.core.keygen.generator.SnowflakeKeyGenerator
+io.shardingsphere.core.keygen.generator.UUIDKeyGenerator
+io.shardingsphere.core.keygen.fixture.IncrementKeyGenerator
