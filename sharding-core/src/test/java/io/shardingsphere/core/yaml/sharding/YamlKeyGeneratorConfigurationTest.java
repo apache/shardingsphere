@@ -46,11 +46,16 @@ public class YamlKeyGeneratorConfigurationTest {
         assertThat(yamlKeyGeneratorConfiguration.getType(), is("UUID"));
     }
     
+    @Test
     public void getKeyGeneratorConfiguration() {
         YamlKeyGeneratorConfiguration yamlKeyGeneratorConfiguration = new YamlKeyGeneratorConfiguration();
         yamlKeyGeneratorConfiguration.setColumn("user_id");
         yamlKeyGeneratorConfiguration.setClassName(SnowflakeKeyGenerator.class.getName());
         yamlKeyGeneratorConfiguration.setType("SNOWFLAKE");
-        yamlKeyGeneratorConfiguration.setProps();
+        yamlKeyGeneratorConfiguration.setProps(props);
+        KeyGeneratorConfiguration keyGeneratorConfiguration = yamlKeyGeneratorConfiguration.getKeyGeneratorConfiguration();
+        assertThat(keyGeneratorConfiguration.getColumn(), is(this.keyGeneratorConfiguration.getColumn()));
+        assertThat(keyGeneratorConfiguration.getType(), is(this.keyGeneratorConfiguration.getType()));
+        assertThat(keyGeneratorConfiguration.getProps().getProperty("key1"), is(this.keyGeneratorConfiguration.getProps().getProperty("key1")));
     }
 }
