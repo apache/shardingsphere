@@ -55,7 +55,7 @@ public final class KeyGeneratorFactory {
             
             @Override
             public boolean apply(final KeyGenerator input) {
-                return keyGeneratorType.equals(input.getType());
+                return keyGeneratorType.equalsIgnoreCase(input.getType());
             }
         });
     }
