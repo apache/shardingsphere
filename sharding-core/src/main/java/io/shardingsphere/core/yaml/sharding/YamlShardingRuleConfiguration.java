@@ -75,8 +75,6 @@ public class YamlShardingRuleConfiguration {
         }
     }
     
-    
-    
     /**
      * Get sharding rule configuration.
      *
