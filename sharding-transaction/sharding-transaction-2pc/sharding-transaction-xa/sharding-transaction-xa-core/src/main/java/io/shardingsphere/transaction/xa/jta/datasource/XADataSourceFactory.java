@@ -21,7 +21,7 @@ import com.atomikos.beans.PropertyUtils;
 import io.shardingsphere.core.constant.DatabaseType;
 import io.shardingsphere.core.exception.ShardingException;
 import io.shardingsphere.transaction.xa.jta.datasource.properties.XAPropertiesFactory;
-import io.shardingsphere.transaction.xa.jta.datasource.swapper.DataSourceSwapperEngine;
+import io.shardingsphere.transaction.xa.jta.datasource.swapper.DataSourceSwapper;
 import lombok.AccessLevel;
 import lombok.NoArgsConstructor;
 import lombok.SneakyThrows;
@@ -41,6 +41,8 @@ import java.util.Properties;
 public final class XADataSourceFactory {
     
     private static final Map<DatabaseType, String> XA_DRIVER_CLASS_NAMES = new HashMap<>(DatabaseType.values().length, 1);
+    
+    private static final DataSourceSwapper SWAPPER = new DataSourceSwapper();
     
     static {
         XA_DRIVER_CLASS_NAMES.put(DatabaseType.H2, "org.h2.jdbcx.JdbcDataSource");
@@ -70,7 +72,7 @@ public final class XADataSourceFactory {
     @SneakyThrows
     public static XADataSource build(final DatabaseType databaseType, final DataSource dataSource) {
         XADataSource result = createXADataSource(databaseType);
-        Properties xaProperties = XAPropertiesFactory.createXAProperties(databaseType).build(DataSourceSwapperEngine.swap(dataSource));
+        Properties xaProperties = XAPropertiesFactory.createXAProperties(databaseType).build(SWAPPER.swap(dataSource));
         PropertyUtils.setProperties(result, xaProperties);
         return result;
     }
