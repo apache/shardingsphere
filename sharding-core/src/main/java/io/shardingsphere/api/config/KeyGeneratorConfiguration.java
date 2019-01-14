@@ -17,9 +17,7 @@
 
 package io.shardingsphere.api.config;
 
-import io.shardingsphere.core.exception.ShardingConfigurationException;
 import io.shardingsphere.core.keygen.KeyGeneratorFactory;
-import io.shardingsphere.core.keygen.KeyGeneratorType;
 import io.shardingsphere.core.keygen.generator.KeyGenerator;
 import lombok.AllArgsConstructor;
 import lombok.Getter;
@@ -54,18 +52,5 @@ public final class KeyGeneratorConfiguration {
         KeyGenerator result = KeyGeneratorFactory.newInstance(type);
         result.setProperties(props);
         return result;
-    }
-    
-    private String getKeyGeneratorClassName() {
-        if (type.equalsIgnoreCase(KeyGeneratorType.SNOWFLAKE.name())) {
-            return KeyGeneratorType.SNOWFLAKE.getKeyGeneratorClassName();
-        }
-        if (type.equalsIgnoreCase(KeyGeneratorType.UUID.name())) {
-            return KeyGeneratorType.UUID.getKeyGeneratorClassName();
-        }
-        if (type.equalsIgnoreCase(KeyGeneratorType.LEAF.name())) {
-            return KeyGeneratorType.LEAF.getKeyGeneratorClassName();
-        }
-        throw new ShardingConfigurationException("Invalid key generator type.");
     }
 }
