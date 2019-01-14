@@ -71,11 +71,10 @@ public final class SnowflakeKeyGenerator implements KeyGenerator {
     
     private static final int MAX_TOLERATE_TIME_DIFFERENCE_MILLISECONDS = 10;
     
+    private static final String TYPE = "SNOWFLAKE";
+    
     @Setter
     private static TimeService timeService = new TimeService();
-    
-    @Getter
-    private final String type = "SNOWFLAKE";
     
     @Getter
     @Setter
@@ -105,6 +104,11 @@ public final class SnowflakeKeyGenerator implements KeyGenerator {
     
     private int getMaxTolerateTimeDifferenceMilliseconds() {
         return Integer.valueOf(properties.getProperty("max.tolerate.time.difference.milliseconds", String.valueOf(MAX_TOLERATE_TIME_DIFFERENCE_MILLISECONDS)));
+    }
+    
+    @Override
+    public String getType() {
+        return TYPE;
     }
     
     /**
