@@ -17,8 +17,8 @@
 
 package io.shardingsphere.core.keygen.fixture;
 
-import io.shardingsphere.core.keygen.generator.SnowflakeKeyGenerator;
 import io.shardingsphere.core.keygen.TimeService;
+import io.shardingsphere.core.keygen.generator.impl.SnowflakeKeyGenerator;
 import lombok.RequiredArgsConstructor;
 
 import java.util.concurrent.atomic.AtomicInteger;

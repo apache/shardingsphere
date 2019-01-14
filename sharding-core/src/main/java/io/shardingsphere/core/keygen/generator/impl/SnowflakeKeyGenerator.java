@@ -15,10 +15,11 @@
  * </p>
  */
 
-package io.shardingsphere.core.keygen.generator;
+package io.shardingsphere.core.keygen.generator.impl;
 
 import com.google.common.base.Preconditions;
 import io.shardingsphere.core.keygen.TimeService;
+import io.shardingsphere.core.keygen.generator.KeyGenerator;
 import lombok.Getter;
 import lombok.Setter;
 import lombok.SneakyThrows;
@@ -75,11 +76,14 @@ public final class SnowflakeKeyGenerator implements KeyGenerator {
     private static TimeService timeService = new TimeService();
     
     @Getter
-    private final String type = "SNOWFLAKE";
-    
-    @Getter
     @Setter
     private Properties properties = new Properties();
+    
+    private byte sequenceOffset;
+    
+    private long sequence;
+    
+    private long lastMilliseconds;
     
     static {
         Calendar calendar = Calendar.getInstance();
@@ -91,27 +95,11 @@ public final class SnowflakeKeyGenerator implements KeyGenerator {
         EPOCH = calendar.getTimeInMillis();
     }
     
-    private byte sequenceOffset;
-    
-    private long sequence;
-    
-    private long lastMilliseconds;
-    
-    private long getWorkerId() {
-        long result = Long.valueOf(properties.getProperty("worker.id", String.valueOf(WORKER_ID)));
-        Preconditions.checkArgument(result >= 0L && result < WORKER_ID_MAX_VALUE);
-        return result;
+    @Override
+    public String getType() {
+        return "SNOWFLAKE";
     }
     
-    private int getMaxTolerateTimeDifferenceMilliseconds() {
-        return Integer.valueOf(properties.getProperty("max.tolerate.time.difference.milliseconds", String.valueOf(MAX_TOLERATE_TIME_DIFFERENCE_MILLISECONDS)));
-    }
-    
-    /**
-     * Generate key.
-     * 
-     * @return key type is @{@link Long}.
-     */
     @Override
     public synchronized Comparable<?> generateKey() {
         long currentMilliseconds = timeService.getCurrentMillis();
@@ -140,6 +128,16 @@ public final class SnowflakeKeyGenerator implements KeyGenerator {
                 "Clock is moving backwards, last time is %d milliseconds, current time is %d milliseconds", lastMilliseconds, currentMilliseconds);
         Thread.sleep(timeDifferenceMilliseconds);
         return true;
+    }
+    
+    private long getWorkerId() {
+        long result = Long.valueOf(properties.getProperty("worker.id", String.valueOf(WORKER_ID)));
+        Preconditions.checkArgument(result >= 0L && result < WORKER_ID_MAX_VALUE);
+        return result;
+    }
+    
+    private int getMaxTolerateTimeDifferenceMilliseconds() {
+        return Integer.valueOf(properties.getProperty("max.tolerate.time.difference.milliseconds", String.valueOf(MAX_TOLERATE_TIME_DIFFERENCE_MILLISECONDS)));
     }
     
     private long waitUntilNextTime(final long lastTime) {

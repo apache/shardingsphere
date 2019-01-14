@@ -18,8 +18,8 @@
 package io.shardingsphere.api.config;
 
 import io.shardingsphere.core.exception.ShardingConfigurationException;
-import io.shardingsphere.core.keygen.generator.SnowflakeKeyGenerator;
-import io.shardingsphere.core.keygen.generator.UUIDKeyGenerator;
+import io.shardingsphere.core.keygen.generator.impl.SnowflakeKeyGenerator;
+import io.shardingsphere.core.keygen.generator.impl.UUIDKeyGenerator;
 import org.junit.Test;
 
 import java.util.Properties;

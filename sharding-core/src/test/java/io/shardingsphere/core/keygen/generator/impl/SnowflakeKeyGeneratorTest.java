@@ -15,10 +15,10 @@
  * </p>
  */
 
-package io.shardingsphere.core.keygen;
+package io.shardingsphere.core.keygen.generator.impl;
 
+import io.shardingsphere.core.keygen.TimeService;
 import io.shardingsphere.core.keygen.fixture.FixedTimeService;
-import io.shardingsphere.core.keygen.generator.SnowflakeKeyGenerator;
 import lombok.SneakyThrows;
 import org.junit.Test;
 

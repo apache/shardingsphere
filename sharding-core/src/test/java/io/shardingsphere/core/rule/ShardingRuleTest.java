@@ -28,7 +28,7 @@ import io.shardingsphere.api.config.strategy.NoneShardingStrategyConfiguration;
 import io.shardingsphere.api.config.strategy.StandardShardingStrategyConfiguration;
 import io.shardingsphere.core.exception.ShardingConfigurationException;
 import io.shardingsphere.core.keygen.fixture.IncrementKeyGenerator;
-import io.shardingsphere.core.keygen.generator.SnowflakeKeyGenerator;
+import io.shardingsphere.core.keygen.generator.impl.SnowflakeKeyGenerator;
 import io.shardingsphere.core.parsing.parser.context.condition.Column;
 import io.shardingsphere.core.routing.strategy.inline.InlineShardingStrategy;
 import io.shardingsphere.core.routing.strategy.none.NoneShardingStrategy;

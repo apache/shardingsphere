@@ -18,7 +18,7 @@
 package io.shardingsphere.core.keygen;
 
 import io.shardingsphere.core.exception.ShardingConfigurationException;
-import io.shardingsphere.core.keygen.generator.SnowflakeKeyGenerator;
+import io.shardingsphere.core.keygen.generator.impl.SnowflakeKeyGenerator;
 import org.junit.Test;
 
 import static org.hamcrest.CoreMatchers.instanceOf;
