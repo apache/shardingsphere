@@ -71,7 +71,7 @@ public class ShardingDataSource extends AbstractDataSourceAdapter {
     }
     
     @Override
-    public final void close() {
+    public final void close() throws Exception {
         super.close();
         shardingContext.close();
     }

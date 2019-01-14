@@ -41,13 +41,6 @@ public final class XATransactionManagerLoader {
     
     private XATransactionManagerLoader() {
         transactionManager = load();
-        Runtime.getRuntime().addShutdownHook(new Thread(new Runnable() {
-            
-            @Override
-            public void run() {
-                transactionManager.destroy();
-            }
-        }));
     }
     
     private XATransactionManager load() {

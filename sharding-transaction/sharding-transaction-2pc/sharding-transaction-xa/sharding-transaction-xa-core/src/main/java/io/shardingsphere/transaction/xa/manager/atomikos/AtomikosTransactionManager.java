@@ -39,7 +39,7 @@ public final class AtomikosTransactionManager implements XATransactionManager {
     private final UserTransactionService userTransactionService = new UserTransactionServiceImp();
     
     @Override
-    public void startup() {
+    public void init() {
         userTransactionService.init();
     }
     
@@ -87,7 +87,7 @@ public final class AtomikosTransactionManager implements XATransactionManager {
     }
     
     @Override
-    public void destroy() {
+    public void close() {
         userTransactionService.shutdown(true);
     }
 }
