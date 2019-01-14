@@ -22,7 +22,7 @@ import io.shardingsphere.core.constant.DatabaseType;
 import io.shardingsphere.transaction.api.TransactionType;
 import io.shardingsphere.transaction.spi.ShardingTransactionEngine;
 import io.shardingsphere.transaction.xa.jta.connection.ShardingXAConnection;
-import io.shardingsphere.transaction.xa.jta.datasource.ShardingXADataSource;
+import io.shardingsphere.transaction.xa.jta.datasource.SingleXADataSource;
 import io.shardingsphere.transaction.xa.manager.XATransactionManagerLoader;
 import io.shardingsphere.transaction.xa.spi.XATransactionManager;
 import lombok.SneakyThrows;
@@ -41,7 +41,7 @@ import java.util.Map.Entry;
  */
 public final class XAShardingTransactionEngine implements ShardingTransactionEngine {
     
-    private final Map<String, ShardingXADataSource> cachedShardingXADataSourceMap = new HashMap<>();
+    private final Map<String, SingleXADataSource> cachedSingleXADataSourceMap = new HashMap<>();
     
     private final XATransactionManager xaTransactionManager = XATransactionManagerLoader.getInstance().getTransactionManager();
     
@@ -53,9 +53,9 @@ public final class XAShardingTransactionEngine implements ShardingTransactionEng
                 continue;
             }
             String resourceName = entry.getKey();
-            ShardingXADataSource shardingXADataSource = new ShardingXADataSource(databaseType, resourceName, entry.getValue());
-            cachedShardingXADataSourceMap.put(resourceName, shardingXADataSource);
-            xaTransactionManager.registerRecoveryResource(resourceName, shardingXADataSource.getXaDataSource());
+            SingleXADataSource singleXADataSource = new SingleXADataSource(databaseType, resourceName, entry.getValue());
+            cachedSingleXADataSourceMap.put(resourceName, singleXADataSource);
+            xaTransactionManager.registerRecoveryResource(resourceName, singleXADataSource.getXaDataSource());
         }
         xaTransactionManager.init();
     }
@@ -74,7 +74,7 @@ public final class XAShardingTransactionEngine implements ShardingTransactionEng
     @SneakyThrows
     @Override
     public Connection getConnection(final String dataSourceName) {
-        ShardingXAConnection shardingXAConnection = cachedShardingXADataSourceMap.get(dataSourceName).getXAConnection();
+        ShardingXAConnection shardingXAConnection = cachedSingleXADataSourceMap.get(dataSourceName).getXAConnection();
         xaTransactionManager.enlistResource(shardingXAConnection.getXAResource());
         return shardingXAConnection.getConnection();
     }
@@ -96,10 +96,10 @@ public final class XAShardingTransactionEngine implements ShardingTransactionEng
     
     @Override
     public void close() throws Exception {
-        for (ShardingXADataSource each : cachedShardingXADataSourceMap.values()) {
+        for (SingleXADataSource each : cachedSingleXADataSourceMap.values()) {
             xaTransactionManager.removeRecoveryResource(each.getResourceName(), each.getXaDataSource());
         }
-        cachedShardingXADataSourceMap.clear();
+        cachedSingleXADataSourceMap.clear();
         xaTransactionManager.close();
     }
 }

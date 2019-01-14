@@ -20,7 +20,7 @@ package io.shardingsphere.transaction.xa.jta;
 import io.shardingsphere.transaction.xa.jta.connection.ShardingXAConnectionTest;
 import io.shardingsphere.transaction.xa.jta.connection.XAConnectionFactoryTest;
 import io.shardingsphere.transaction.xa.jta.connection.dialect.MySQLXAConnectionWrapperTest;
-import io.shardingsphere.transaction.xa.jta.datasource.ShardingXADataSourceTest;
+import io.shardingsphere.transaction.xa.jta.datasource.SingleXADataSourceTest;
 import io.shardingsphere.transaction.xa.jta.datasource.XADataSourceFactoryTest;
 import io.shardingsphere.transaction.xa.jta.datasource.properties.XAPropertiesFactoryTest;
 import io.shardingsphere.transaction.xa.jta.datasource.properties.dialect.H2XAPropertiesTest;
@@ -40,7 +40,7 @@ import org.junit.runners.Suite.SuiteClasses;
 @SuiteClasses({
         ShardingXAResourceTest.class, 
         XAPropertiesFactoryTest.class, 
-        ShardingXADataSourceTest.class, 
+        SingleXADataSourceTest.class,
         XADataSourceFactoryTest.class, 
         DataSourcePropertyProviderLoaderTest.class, 
         DataSourceSwapperTest.class,
