@@ -22,6 +22,7 @@ import io.shardingsphere.api.algorithm.masterslave.RandomMasterSlaveLoadBalanceA
 import io.shardingsphere.api.algorithm.masterslave.RoundRobinMasterSlaveLoadBalanceAlgorithmTest;
 import io.shardingsphere.api.algorithm.sharding.DatabaseShardingStrategyTest;
 import io.shardingsphere.api.algorithm.table.TableShardingStrategyTest;
+import io.shardingsphere.api.config.KeyGeneratorConfigurationTest;
 import org.junit.runner.RunWith;
 import org.junit.runners.Suite;
 import org.junit.runners.Suite.SuiteClasses;
@@ -33,7 +34,8 @@ import org.junit.runners.Suite.SuiteClasses;
         TableShardingStrategyTest.class, 
         RoundRobinMasterSlaveLoadBalanceAlgorithmTest.class, 
         RandomMasterSlaveLoadBalanceAlgorithmTest.class, 
-        HintManagerTest.class
+        HintManagerTest.class, 
+        KeyGeneratorConfigurationTest.class
     })
 public final class AllApiTests {
 }
