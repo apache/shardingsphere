@@ -41,7 +41,7 @@ public final class TableRuleConfiguration implements RuleConfiguration {
     
     private String keyGeneratorColumnName;
     
-    private KeyGeneratorConfiguration keyGenerator;
+    private KeyGeneratorConfiguration keyGeneratorConfig;
     
     private String logicIndex;
 }
