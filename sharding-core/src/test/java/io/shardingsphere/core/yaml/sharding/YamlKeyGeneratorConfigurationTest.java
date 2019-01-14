@@ -18,6 +18,7 @@
 package io.shardingsphere.core.yaml.sharding;
 
 import io.shardingsphere.api.config.KeyGeneratorConfiguration;
+import io.shardingsphere.core.keygen.generator.SnowflakeKeyGenerator;
 import org.junit.Before;
 import org.junit.Test;
 
@@ -28,11 +29,12 @@ import static org.junit.Assert.assertThat;
 
 public class YamlKeyGeneratorConfigurationTest {
     
+    private Properties props = new Properties();
+    
     private KeyGeneratorConfiguration keyGeneratorConfiguration;
     
     @Before
     public void setUp() {
-        Properties props = new Properties();
         props.setProperty("key1", "value1");
         keyGeneratorConfiguration = new KeyGeneratorConfiguration("order_id", "UUID", null, props);
     }
@@ -42,5 +44,13 @@ public class YamlKeyGeneratorConfigurationTest {
         YamlKeyGeneratorConfiguration yamlKeyGeneratorConfiguration = new YamlKeyGeneratorConfiguration(keyGeneratorConfiguration);
         assertThat(yamlKeyGeneratorConfiguration.getColumn(), is("order_id"));
         assertThat(yamlKeyGeneratorConfiguration.getType(), is("UUID"));
+    }
+    
+    public void getKeyGeneratorConfiguration() {
+        YamlKeyGeneratorConfiguration yamlKeyGeneratorConfiguration = new YamlKeyGeneratorConfiguration();
+        yamlKeyGeneratorConfiguration.setColumn("user_id");
+        yamlKeyGeneratorConfiguration.setClassName(SnowflakeKeyGenerator.class.getName());
+        yamlKeyGeneratorConfiguration.setType("SNOWFLAKE");
+        yamlKeyGeneratorConfiguration.setProps();
     }
 }
