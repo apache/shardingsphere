@@ -28,6 +28,13 @@ import java.util.Properties;
 public interface KeyGenerator {
     
     /**
+     * Get type of key generator.
+     * 
+     * @return type
+     */
+    String getType();
+    
+    /**
      * Generate key.
      * 
      * @return generated key
