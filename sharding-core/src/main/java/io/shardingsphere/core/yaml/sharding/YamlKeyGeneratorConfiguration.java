@@ -17,7 +17,11 @@
 
 package io.shardingsphere.core.yaml.sharding;
 
+import com.google.common.base.Optional;
+import io.shardingsphere.api.config.KeyGeneratorConfiguration;
+import io.shardingsphere.core.keygen.KeyGeneratorType;
 import lombok.Getter;
+import lombok.NoArgsConstructor;
 import lombok.Setter;
 
 import java.util.Properties;
@@ -27,6 +31,7 @@ import java.util.Properties;
  *
  * @author panjuan
  */
+@NoArgsConstructor
 @Getter
 @Setter
 public final class YamlKeyGeneratorConfiguration {
@@ -38,4 +43,15 @@ public final class YamlKeyGeneratorConfiguration {
     private String className;
     
     private Properties props = new Properties();
+    
+    public YamlKeyGeneratorConfiguration(final KeyGeneratorConfiguration keyGeneratorConfiguration) {
+        String keyGeneratorClassName = keyGeneratorConfiguration.getClass().getName();
+        Optional<KeyGeneratorType> keyGeneratorType = KeyGeneratorType.getKeyGeneratorType(keyGeneratorClassName);
+        if (!keyGeneratorType.isPresent()) {
+            className = keyGeneratorClassName;
+        } else {
+            type = keyGeneratorType.get().name();
+        }
+        props = keyGeneratorConfiguration.getProps();
+    }
 }
