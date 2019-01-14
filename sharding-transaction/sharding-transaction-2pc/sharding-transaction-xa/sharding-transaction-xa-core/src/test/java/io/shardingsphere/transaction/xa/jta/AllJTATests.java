@@ -31,14 +31,14 @@ import io.shardingsphere.transaction.xa.jta.datasource.properties.dialect.SQLSer
 import io.shardingsphere.transaction.xa.jta.datasource.swapper.DataSourcePropertyProviderLoaderTest;
 import io.shardingsphere.transaction.xa.jta.datasource.swapper.DataSourceSwapperTest;
 import io.shardingsphere.transaction.xa.jta.datasource.swapper.impl.DefaultDataSourcePropertyProviderTest;
-import io.shardingsphere.transaction.xa.jta.resource.ShardingXAResourceTest;
+import io.shardingsphere.transaction.xa.jta.resource.SingleXAResourceTest;
 import org.junit.runner.RunWith;
 import org.junit.runners.Suite;
 import org.junit.runners.Suite.SuiteClasses;
 
 @RunWith(Suite.class)
 @SuiteClasses({
-        ShardingXAResourceTest.class, 
+        SingleXAResourceTest.class,
         XAPropertiesFactoryTest.class, 
         SingleXADataSourceTest.class,
         XADataSourceFactoryTest.class, 

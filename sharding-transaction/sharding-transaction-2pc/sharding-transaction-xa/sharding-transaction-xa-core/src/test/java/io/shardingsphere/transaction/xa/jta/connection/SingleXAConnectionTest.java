@@ -17,7 +17,7 @@
 
 package io.shardingsphere.transaction.xa.jta.connection;
 
-import io.shardingsphere.transaction.xa.jta.resource.ShardingXAResource;
+import io.shardingsphere.transaction.xa.jta.resource.SingleXAResource;
 import lombok.SneakyThrows;
 import org.junit.Before;
 import org.junit.Test;
@@ -60,7 +60,7 @@ public final class SingleXAConnectionTest {
     @SneakyThrows
     public void assertGetXAResource() {
         XAResource actual = singleXAConnection.getXAResource();
-        assertThat(actual, instanceOf(ShardingXAResource.class));
+        assertThat(actual, instanceOf(SingleXAResource.class));
     }
     
     @Test
