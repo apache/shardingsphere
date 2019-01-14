@@ -45,7 +45,7 @@ public final class KeyGeneratorConfiguration {
     private Properties props = new Properties();
     
     /**
-     * Build table rule configuration.
+     * Build key generator configuration.
      *
      * @return table rule configuration
      */
