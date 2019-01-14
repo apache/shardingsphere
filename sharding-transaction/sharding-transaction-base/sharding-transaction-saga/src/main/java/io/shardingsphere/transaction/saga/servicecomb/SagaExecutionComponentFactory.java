@@ -20,6 +20,7 @@ package io.shardingsphere.transaction.saga.servicecomb;
 import com.google.common.util.concurrent.MoreExecutors;
 import io.shardingsphere.core.executor.ShardingThreadFactoryBuilder;
 import io.shardingsphere.transaction.saga.config.SagaConfiguration;
+import io.shardingsphere.transaction.saga.persistence.SagaPersistence;
 import io.shardingsphere.transaction.saga.servicecomb.transport.ShardingTransportFactory;
 import org.apache.servicecomb.saga.core.EventEnvelope;
 import org.apache.servicecomb.saga.core.PersistentStore;
@@ -49,13 +50,13 @@ public class SagaExecutionComponentFactory {
      * Create saga execution Component.
      *
      * @param config saga configuration
+     * @param sagaPersistence saga persistence
      * @return saga execution component.
      */
-    public static SagaExecutionComponent createSagaExecutionComponent(final SagaConfiguration config) {
-        EmptyPersistentStore persistentStore = new EmptyPersistentStore();
+    public static SagaExecutionComponent createSagaExecutionComponent(final SagaConfiguration config, final SagaPersistence sagaPersistence) {
         FromJsonFormat<SagaDefinition> fromJsonFormat = new JacksonFromJsonFormat(ShardingTransportFactory.getInstance());
-        GraphBasedSagaFactory sagaFactory = new GraphBasedSagaFactory(config.getCompensationRetryDelay(), persistentStore, new ChildrenExtractor(), createExecutors(config));
-        return new SagaExecutionComponent(persistentStore, fromJsonFormat, null, sagaFactory);
+        GraphBasedSagaFactory sagaFactory = new GraphBasedSagaFactory(config.getCompensationRetryDelay(), sagaPersistence, new ChildrenExtractor(), createExecutors(config));
+        return new SagaExecutionComponent(sagaPersistence, fromJsonFormat, null, sagaFactory);
     }
     
     private static ExecutorService createExecutors(final SagaConfiguration config) {
@@ -65,18 +66,4 @@ public class SagaExecutionComponentFactory {
         MoreExecutors.addDelayedShutdownHook(result, 60, TimeUnit.SECONDS);
         return result;
     }
-    
-    private static final class EmptyPersistentStore implements PersistentStore {
-        
-        @Override
-        public Map<String, List<EventEnvelope>> findPendingSagaEvents() {
-            return new HashMap<>(1);
-        }
-        
-        @Override
-        public void offer(final SagaEvent sagaEvent) {
-        
-        }
-    }
-    
 }

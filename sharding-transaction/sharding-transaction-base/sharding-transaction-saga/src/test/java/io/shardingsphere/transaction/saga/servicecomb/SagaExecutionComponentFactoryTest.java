@@ -18,6 +18,7 @@
 package io.shardingsphere.transaction.saga.servicecomb;
 
 import io.shardingsphere.transaction.saga.config.SagaConfiguration;
+import io.shardingsphere.transaction.saga.persistence.EmptySagaPersistence;
 import org.apache.servicecomb.saga.core.application.SagaExecutionComponent;
 import org.apache.servicecomb.saga.core.dag.GraphBasedSagaFactory;
 import org.junit.Test;
@@ -39,7 +40,7 @@ public class SagaExecutionComponentFactoryTest {
     
     private void assertCreateWithFixedExecutors() throws NoSuchFieldException, IllegalAccessException {
         SagaConfiguration sagaConfiguration = new SagaConfiguration();
-        SagaExecutionComponent sagaExecutionComponent = SagaExecutionComponentFactory.createSagaExecutionComponent(sagaConfiguration);
+        SagaExecutionComponent sagaExecutionComponent = SagaExecutionComponentFactory.createSagaExecutionComponent(sagaConfiguration, new EmptySagaPersistence());
         assertThat(sagaExecutionComponent, instanceOf(SagaExecutionComponent.class));
         ThreadPoolExecutor threadPoolExecutor = getExecutorFromComponent(sagaExecutionComponent);
         assertEquals(threadPoolExecutor.getCorePoolSize(), sagaConfiguration.getExecutorSize());
@@ -49,7 +50,7 @@ public class SagaExecutionComponentFactoryTest {
     private void assertCreateWithCachedExecutors() throws NoSuchFieldException, IllegalAccessException {
         SagaConfiguration sagaConfiguration = new SagaConfiguration();
         sagaConfiguration.setExecutorSize(0);
-        SagaExecutionComponent sagaExecutionComponent = SagaExecutionComponentFactory.createSagaExecutionComponent(sagaConfiguration);
+        SagaExecutionComponent sagaExecutionComponent = SagaExecutionComponentFactory.createSagaExecutionComponent(sagaConfiguration, new EmptySagaPersistence());
         assertThat(sagaExecutionComponent, instanceOf(SagaExecutionComponent.class));
         ThreadPoolExecutor threadPoolExecutor = getExecutorFromComponent(sagaExecutionComponent);
         assertEquals(threadPoolExecutor.getCorePoolSize(), 0);
