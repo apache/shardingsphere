@@ -79,7 +79,8 @@ public final class SagaTransaction {
             case EXECUTING:
                 currentLogicSQL.add(sagaSubTransaction);
                 sqlRevert(sagaSubTransaction);
-                persistence.persistSnapshot(new SagaSnapshot(id, sagaSubTransaction.hashCode(), sagaSubTransaction.toString(), revertResultMap.get(sagaSubTransaction).toString(), executionResult.name()));
+                persistence.persistSnapshot(new SagaSnapshot(id, sagaSubTransaction.hashCode(), sagaSubTransaction.toString(),
+                    revertResultMap.get(sagaSubTransaction).toString(), executionResult.name()));
                 break;
             default:
                 containException = ExecutionResult.FAILURE == executionResult;

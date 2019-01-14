@@ -29,7 +29,7 @@ import java.util.Map;
  *
  * @author yangyi
  */
-public class EmptySagaPersistence implements SagaPersistence {
+public final class EmptySagaPersistence implements SagaPersistence {
     
     @Override
     public void persistSnapshot(final SagaSnapshot snapshot) {
