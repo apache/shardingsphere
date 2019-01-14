@@ -56,7 +56,7 @@ caseCond
     ;
     
 whenResult
-    : WHEN booleanPrimary THEN caseResult
+    : WHEN expr THEN caseResult
     ;
     
 elseResult
