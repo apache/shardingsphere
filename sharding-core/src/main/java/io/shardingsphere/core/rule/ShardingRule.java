@@ -78,7 +78,7 @@ public class ShardingRule {
         broadcastTables = shardingRuleConfig.getBroadcastTables();
         defaultDatabaseShardingStrategy = createDefaultShardingStrategy(shardingRuleConfig.getDefaultDatabaseShardingStrategyConfig());
         defaultTableShardingStrategy = createDefaultShardingStrategy(shardingRuleConfig.getDefaultTableShardingStrategyConfig());
-        defaultKeyGenerator = createDefaultKeyGenerator(shardingRuleConfig.getDefaultKeyGenerator());
+        defaultKeyGenerator = createDefaultKeyGenerator(shardingRuleConfig.getDefaultKeyGeneratorConfig().getKeyGenerator());
         masterSlaveRules = createMasterSlaveRules(shardingRuleConfig.getMasterSlaveRuleConfigs());
     }
     
