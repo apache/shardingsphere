@@ -30,7 +30,8 @@ import java.util.UUID;
  */
 public final class UUIDKeyGenerator implements KeyGenerator {
     
-    private static final String TYPE = "UUID";
+    @Getter
+    private final String type = "UUID";
     
     @Getter
     @Setter
@@ -39,10 +40,5 @@ public final class UUIDKeyGenerator implements KeyGenerator {
     @Override
     public synchronized Comparable<?> generateKey() {
         return UUID.randomUUID().toString().replaceAll("-", "");
-    }
-    
-    @Override
-    public String getType() {
-        return TYPE;
     }
 }
