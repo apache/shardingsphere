@@ -23,9 +23,7 @@ import io.shardingsphere.api.config.rule.ShardingRuleConfiguration;
 import io.shardingsphere.api.config.rule.TableRuleConfiguration;
 import io.shardingsphere.api.config.strategy.StandardShardingStrategyConfiguration;
 import io.shardingsphere.core.constant.DatabaseType;
-import io.shardingsphere.core.keygen.generator.KeyGenerator;
 import io.shardingsphere.core.rule.ShardingRule;
-import io.shardingsphere.shardingjdbc.fixture.IncrementKeyGenerator;
 import io.shardingsphere.shardingjdbc.fixture.PreciseOrderShardingAlgorithm;
 import io.shardingsphere.shardingjdbc.fixture.RangeOrderShardingAlgorithm;
 import io.shardingsphere.shardingjdbc.jdbc.core.datasource.ShardingDataSource;
@@ -85,9 +83,8 @@ public abstract class AbstractShardingJDBCDatabaseAndTableTest extends AbstractS
     }
     
     private KeyGeneratorConfiguration getKeyGeneratorConfiguration() {
-        KeyGenerator keyGenerator = new IncrementKeyGenerator();
         KeyGeneratorConfiguration keyGeneratorConfiguration = new KeyGeneratorConfiguration();
-        keyGeneratorConfiguration.setClassName(keyGenerator.getClass().getName());
+        keyGeneratorConfiguration.setType("increment");
         return keyGeneratorConfiguration;
     }
     
