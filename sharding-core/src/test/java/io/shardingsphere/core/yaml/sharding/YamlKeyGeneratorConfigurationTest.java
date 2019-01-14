@@ -19,8 +19,12 @@ package io.shardingsphere.core.yaml.sharding;
 
 import io.shardingsphere.api.config.KeyGeneratorConfiguration;
 import org.junit.Before;
+import org.junit.Test;
 
 import java.util.Properties;
+
+import static org.hamcrest.CoreMatchers.is;
+import static org.junit.Assert.assertThat;
 
 public class YamlKeyGeneratorConfigurationTest {
     
@@ -32,5 +36,11 @@ public class YamlKeyGeneratorConfigurationTest {
         props.setProperty("key1", "value1");
         keyGeneratorConfiguration = new KeyGeneratorConfiguration("order_id", "UUID", null, props);
     }
-
+    
+    @Test
+    public void createYamlKeyGeneratorConfiguration() {
+        YamlKeyGeneratorConfiguration yamlKeyGeneratorConfiguration = new YamlKeyGeneratorConfiguration(keyGeneratorConfiguration);
+        assertThat(yamlKeyGeneratorConfiguration.getColumn(), is("order_id"));
+        assertThat(yamlKeyGeneratorConfiguration.getType(), is("UUID"));
+    }
 }
