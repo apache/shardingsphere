@@ -29,6 +29,7 @@ import org.mockito.Mock;
 import org.mockito.junit.MockitoJUnitRunner;
 
 import javax.sql.DataSource;
+import javax.transaction.Status;
 import java.lang.reflect.Field;
 import java.sql.Connection;
 import java.sql.SQLException;
@@ -37,7 +38,9 @@ import java.util.Map;
 
 import static org.hamcrest.CoreMatchers.equalTo;
 import static org.junit.Assert.assertEquals;
+import static org.junit.Assert.assertFalse;
 import static org.junit.Assert.assertThat;
+import static org.junit.Assert.assertTrue;
 import static org.mockito.Mockito.mock;
 import static org.mockito.Mockito.verify;
 import static org.mockito.Mockito.when;
@@ -69,7 +72,7 @@ public class SagaShardingTransactionEngineTest {
     @Test
     public void assertRegisterTransactionalResource() {
         Map<String, DataSource> dataSourceMap = new HashMap<>();
-        handler.registerTransactionalResource(DatabaseType.MySQL, dataSourceMap);
+        handler.registerTransactionalResources(DatabaseType.MySQL, dataSourceMap);
         verify(sagaResourceManager).registerDataSourceMap(dataSourceMap);
     }
     
@@ -81,14 +84,17 @@ public class SagaShardingTransactionEngineTest {
     
     @Test
     public void assertGetConnection() throws SQLException {
-        Map<String, Connection> connectionMap = new HashMap<>();
         SagaTransaction sagaTransaction = mock(SagaTransaction.class);
+        Map<String, Connection> connectionMap = new HashMap<>();
         when(sagaTransaction.getConnectionMap()).thenReturn(connectionMap);
+        Map<String, DataSource> dataSourceMap = new HashMap<>();
+        when(sagaResourceManager.getDataSourceMap()).thenReturn(dataSourceMap);
         DataSource dataSource = mock(DataSource.class);
         Connection connection = mock(Connection.class);
+        dataSourceMap.put("ds", dataSource);
         when(dataSource.getConnection()).thenReturn(connection);
         when(sagaTransactionManager.getTransaction()).thenReturn(sagaTransaction);
-        assertEquals(handler.createConnection("ds", dataSource), connection);
+        assertEquals(handler.getConnection("ds"), connection);
         assertEquals(sagaTransaction.getConnectionMap().size(), 1);
         assertEquals(sagaTransaction.getConnectionMap().get("ds"), connection);
     }
@@ -109,5 +115,12 @@ public class SagaShardingTransactionEngineTest {
     public void assertRollback() {
         handler.rollback();
         verify(sagaTransactionManager).rollback();
+    }
+    
+    public void assertIsInTransaction() {
+        when(sagaTransactionManager.getStatus()).thenReturn(Status.STATUS_ACTIVE);
+        assertTrue(handler.isInTransaction());
+        when(sagaTransactionManager.getStatus()).thenReturn(Status.STATUS_NO_TRANSACTION);
+        assertFalse(handler.isInTransaction());
     }
 }

@@ -24,7 +24,7 @@ import io.shardingsphere.transaction.spi.ShardingTransactionEngine;
 import lombok.extern.slf4j.Slf4j;
 
 import javax.sql.DataSource;
-
+import javax.transaction.Status;
 import java.sql.Connection;
 import java.sql.SQLException;
 import java.util.Map;
@@ -45,7 +45,7 @@ public final class SagaShardingTransactionEngine implements ShardingTransactionE
     }
     
     @Override
-    public void registerTransactionalResource(final DatabaseType databaseType, final Map<String, DataSource> dataSourceMap) {
+    public void registerTransactionalResources(final DatabaseType databaseType, final Map<String, DataSource> dataSourceMap) {
         transactionManager.getResourceManager().registerDataSourceMap(dataSourceMap);
     }
     
@@ -55,8 +55,13 @@ public final class SagaShardingTransactionEngine implements ShardingTransactionE
     }
     
     @Override
-    public Connection createConnection(final String dataSourceName, final DataSource dataSource) throws SQLException {
-        Connection result = dataSource.getConnection();
+    public boolean isInTransaction() {
+        return Status.STATUS_ACTIVE == transactionManager.getStatus();
+    }
+    
+    @Override
+    public Connection getConnection(final String dataSourceName) throws SQLException {
+        Connection result = transactionManager.getResourceManager().getDataSourceMap().get(dataSourceName).getConnection();
         if (null != transactionManager.getTransaction() && !transactionManager.getTransaction().getConnectionMap().containsKey(dataSourceName)) {
             transactionManager.getTransaction().getConnectionMap().put(dataSourceName, result);
         }
