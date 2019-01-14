@@ -26,6 +26,9 @@ import java.util.Properties;
 public final class ConstantKeyGenerator implements KeyGenerator {
     
     @Getter
+    private final String type = "constant";
+    
+    @Getter
     @Setter
     private Properties properties = new Properties();
     
