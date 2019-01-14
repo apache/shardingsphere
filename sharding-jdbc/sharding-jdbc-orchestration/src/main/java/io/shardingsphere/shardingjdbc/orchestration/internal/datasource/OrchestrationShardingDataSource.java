@@ -87,7 +87,7 @@ public class OrchestrationShardingDataSource extends AbstractOrchestrationDataSo
     }
     
     @Override
-    public final void close() {
+    public final void close() throws Exception {
         dataSource.close();
         getShardingOrchestrationFacade().close();
     }

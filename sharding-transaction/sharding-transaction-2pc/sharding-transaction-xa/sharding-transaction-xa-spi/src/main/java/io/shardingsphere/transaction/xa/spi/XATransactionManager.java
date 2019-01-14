@@ -28,18 +28,18 @@ import javax.transaction.xa.XAResource;
  * @author zhangliang
  * @author zhaojun
  */
-public interface XATransactionManager extends ShardingTransactionManager {
+public interface XATransactionManager extends ShardingTransactionManager, AutoCloseable {
     
     /**
-     * Startup XA transaction manager.
+     * Initialize XA transaction manager.
      */
-    void startup();
+    void init();
     
     /**
      * Register recovery resource.
      *
      * @param dataSourceName data source name
-     * @param xaDataSource   XA data source
+     * @param xaDataSource XA data source
      */
     void registerRecoveryResource(String dataSourceName, XADataSource xaDataSource);
     
@@ -57,9 +57,4 @@ public interface XATransactionManager extends ShardingTransactionManager {
      * @param xaResource XA resource
      */
     void enlistResource(XAResource xaResource);
-    
-    /**
-     * Destroy the transaction manager and could be helpful with shutdown gracefully.
-     */
-    void destroy();
 }

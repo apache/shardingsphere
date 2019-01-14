@@ -88,7 +88,7 @@ public class OrchestrationMasterSlaveDataSource extends AbstractOrchestrationDat
     }
     
     @Override
-    public final void close() {
+    public final void close() throws Exception {
         dataSource.close();
         getShardingOrchestrationFacade().close();
     }
