@@ -46,7 +46,7 @@ public final class SagaTransactionManager implements ShardingTransactionManager 
     @Override
     public void begin() {
         if (null == TRANSACTIONS.get()) {
-            SagaTransaction transaction = new SagaTransaction(resourceManager.getSagaConfiguration());
+            SagaTransaction transaction = new SagaTransaction(resourceManager.getSagaConfiguration(), resourceManager.getSagaPersistence());
             ShardingExecuteDataMap.getDataMap().put(TRANSACTION_KEY, transaction);
             TRANSACTIONS.set(transaction);
             ShardingTransportFactory.getInstance().cacheTransport(transaction);
@@ -63,6 +63,9 @@ public final class SagaTransactionManager implements ShardingTransactionManager 
     
     @Override
     public void rollback() {
+        if (null != TRANSACTIONS.get()) {
+            submitToActuator();
+        }
         cleanTransaction();
     }
     
@@ -93,6 +96,9 @@ public final class SagaTransactionManager implements ShardingTransactionManager 
      * Clean context of current transaction.
      */
     public void cleanTransaction() {
+        if (null != TRANSACTIONS.get()) {
+            TRANSACTIONS.get().cleanSnapshot();
+        }
         ShardingTransportFactory.getInstance().remove();
         ShardingExecuteDataMap.getDataMap().remove(TRANSACTION_KEY);
         TRANSACTIONS.remove();

@@ -21,6 +21,8 @@ import io.shardingsphere.core.exception.ShardingException;
 import io.shardingsphere.transaction.saga.constant.ExecutionResult;
 import io.shardingsphere.transaction.saga.config.SagaConfiguration;
 import io.shardingsphere.transaction.saga.constant.SagaRecoveryPolicy;
+import io.shardingsphere.transaction.saga.persistence.SagaPersistence;
+import io.shardingsphere.transaction.saga.persistence.SagaSnapshot;
 import io.shardingsphere.transaction.saga.revert.EmptyRevertEngine;
 import io.shardingsphere.transaction.saga.revert.RevertEngine;
 import io.shardingsphere.transaction.saga.revert.RevertEngineImpl;
@@ -28,6 +30,7 @@ import io.shardingsphere.transaction.saga.revert.RevertResult;
 import io.shardingsphere.transaction.saga.servicecomb.definition.SagaDefinitionBuilder;
 import lombok.Getter;
 import lombok.RequiredArgsConstructor;
+import lombok.extern.slf4j.Slf4j;
 
 import java.sql.Connection;
 import java.sql.SQLException;
@@ -44,6 +47,7 @@ import java.util.concurrent.ConcurrentLinkedQueue;
  *
  * @author yangyi
  */
+@Slf4j
 @Getter
 @RequiredArgsConstructor
 public final class SagaTransaction {
@@ -51,6 +55,8 @@ public final class SagaTransaction {
     private final String id = UUID.randomUUID().toString();
     
     private final SagaConfiguration sagaConfiguration;
+    
+    private final SagaPersistence persistence;
     
     private final Map<String, Connection> connectionMap = new ConcurrentHashMap<>();
     
@@ -75,11 +81,15 @@ public final class SagaTransaction {
             case EXECUTING:
                 currentLogicSQL.add(sagaSubTransaction);
                 sqlRevert(sagaSubTransaction);
-                break;
-            case FAILURE:
-                containException = true;
+                long start = System.currentTimeMillis();
+                persistence.persistSnapshot(new SagaSnapshot(id, sagaSubTransaction.hashCode(), sagaSubTransaction.toString(), revertResultMap.get(sagaSubTransaction).toString(), executionResult.name()));
+                log.info("persistSnapshot cost time {}, for sql {}", (System.currentTimeMillis() - start), sagaSubTransaction.toString());
                 break;
             default:
+                containException = ExecutionResult.FAILURE == executionResult;
+                start = System.currentTimeMillis();
+                persistence.updateSnapshotStatus(id, sagaSubTransaction.hashCode(), executionResult.name());
+                log.info("updateSnapshotStatus cost time {}, for sql {}", (System.currentTimeMillis() - start), sagaSubTransaction.toString());
         }
         executionResultMap.put(sagaSubTransaction, executionResult);
     }
@@ -104,6 +114,13 @@ public final class SagaTransaction {
             initSagaDefinitionForLogicSQL(result, each);
         }
         return result;
+    }
+    
+    /**
+     * Clean snapshot in persistence.
+     */
+    public void cleanSnapshot() {
+        persistence.cleanSnapshot(id);
     }
     
     private void sqlRevert(final SagaSubTransaction sagaSubTransaction) {

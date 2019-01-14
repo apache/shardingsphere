@@ -20,6 +20,8 @@ package io.shardingsphere.transaction.saga.manager;
 import io.shardingsphere.core.exception.ShardingException;
 import io.shardingsphere.transaction.saga.config.SagaConfiguration;
 import io.shardingsphere.transaction.saga.config.SagaConfigurationLoader;
+import io.shardingsphere.transaction.saga.persistence.SagaPersistence;
+import io.shardingsphere.transaction.saga.persistence.SagaPersistenceSPILoader;
 import io.shardingsphere.transaction.saga.servicecomb.SagaExecutionComponentFactory;
 import lombok.Getter;
 import org.apache.servicecomb.saga.core.application.SagaExecutionComponent;
@@ -38,13 +40,16 @@ public class SagaResourceManager {
 
     private final SagaConfiguration sagaConfiguration;
     
+    private final SagaPersistence sagaPersistence;
+    
     private final SagaExecutionComponent sagaExecutionComponent;
     
     private final Map<String, DataSource> dataSourceMap = new ConcurrentHashMap<>();
     
     public SagaResourceManager() {
         sagaConfiguration = SagaConfigurationLoader.load();
-        sagaExecutionComponent = SagaExecutionComponentFactory.createSagaExecutionComponent(sagaConfiguration);
+        sagaPersistence = SagaPersistenceSPILoader.load(sagaConfiguration);
+        sagaExecutionComponent = SagaExecutionComponentFactory.createSagaExecutionComponent(sagaConfiguration, sagaPersistence);
     }
     
     /**

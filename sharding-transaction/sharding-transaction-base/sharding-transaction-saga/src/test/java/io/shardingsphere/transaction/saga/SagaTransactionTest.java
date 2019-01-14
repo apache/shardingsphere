@@ -21,14 +21,12 @@ import com.fasterxml.jackson.databind.ObjectMapper;
 import io.shardingsphere.transaction.saga.constant.ExecutionResult;
 import io.shardingsphere.transaction.saga.config.SagaConfiguration;
 import io.shardingsphere.transaction.saga.constant.SagaRecoveryPolicy;
+import io.shardingsphere.transaction.saga.persistence.EmptySagaPersistence;
 import io.shardingsphere.transaction.saga.servicecomb.definition.SagaDefinitionBuilder;
-
 import org.junit.Before;
 import org.junit.Test;
 
-import javax.sql.DataSource;
 import java.io.IOException;
-import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 
@@ -46,7 +44,7 @@ public class SagaTransactionTest {
     
     @Before
     public void setUp() {
-        sagaTransaction = new SagaTransaction(new SagaConfiguration());
+        sagaTransaction = new SagaTransaction(new SagaConfiguration(), new EmptySagaPersistence());
     }
     
     @Test

@@ -20,6 +20,7 @@ package io.shardingsphere.transaction.saga.manager;
 import io.shardingsphere.core.executor.ShardingExecuteDataMap;
 import io.shardingsphere.transaction.saga.config.SagaConfiguration;
 import io.shardingsphere.transaction.saga.SagaTransaction;
+import io.shardingsphere.transaction.saga.persistence.SagaPersistence;
 import io.shardingsphere.transaction.saga.servicecomb.transport.ShardingSQLTransport;
 import io.shardingsphere.transaction.saga.servicecomb.transport.ShardingTransportFactory;
 import org.apache.servicecomb.saga.core.application.SagaExecutionComponent;
@@ -51,6 +52,9 @@ public final class SagaTransactionManagerTest {
     private SagaResourceManager resourceManager;
     
     @Mock
+    private SagaPersistence sagaPersistence;
+    
+    @Mock
     private SagaExecutionComponent sagaExecutionComponent;
     
     private final String transactionKey = "transaction";
@@ -63,6 +67,7 @@ public final class SagaTransactionManagerTest {
     public void setUp() throws NoSuchFieldException, IllegalAccessException, NoSuchMethodException {
         when(resourceManager.getSagaConfiguration()).thenReturn(config);
         when(resourceManager.getSagaExecutionComponent()).thenReturn(sagaExecutionComponent);
+        when(resourceManager.getSagaPersistence()).thenReturn(sagaPersistence);
         Field resourceManagerField = SagaTransactionManager.class.getDeclaredField("resourceManager");
         resourceManagerField.setAccessible(true);
         resourceManagerField.set(transactionManager, resourceManager);
