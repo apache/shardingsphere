@@ -26,6 +26,9 @@ import java.util.concurrent.atomic.AtomicInteger;
 
 public final class IncrementKeyGenerator implements KeyGenerator {
     
+    @Getter
+    private final String type = "increment";
+    
     private final AtomicInteger count = new AtomicInteger();
     
     @Getter
