@@ -8,7 +8,7 @@ import io.shardingsphere.shardingproxy.backend.jdbc.datasource.JDBCClassDetermin
 
 public class JDBCClassDetermineTest {
 
-    JDBCClassDetermine jdbcClassDetermine=new JDBCClassDetermine();
+    privateJDBCClassDetermine jdbcClassDetermine=new JDBCClassDetermine();
 
     @Test
     public void testMySQLUrl() {
