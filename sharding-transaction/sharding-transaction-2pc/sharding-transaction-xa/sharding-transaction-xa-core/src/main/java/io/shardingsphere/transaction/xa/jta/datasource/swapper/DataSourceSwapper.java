@@ -26,7 +26,7 @@ import javax.sql.DataSource;
 import java.lang.reflect.Method;
 
 /**
- * Default data source swapper.
+ * Data source swapper.
  *
  * @author zhangliang
  */
