@@ -32,6 +32,7 @@ import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 import java.util.concurrent.Callable;
+import java.util.concurrent.ExecutionException;
 import java.util.concurrent.ExecutorService;
 import java.util.concurrent.Executors;
 import java.util.concurrent.Future;
@@ -42,7 +43,7 @@ import static org.junit.Assert.assertEquals;
 import static org.junit.Assert.assertThat;
 import static org.junit.Assert.assertTrue;
 
-public class JDBCBackendDataSourceTest {
+public final class JDBCBackendDataSourceTest {
     
     private JDBCBackendDataSource jdbcBackendDataSource = new JDBCBackendDataSource();
     
@@ -94,7 +95,7 @@ public class JDBCBackendDataSourceTest {
         for (Future<List<Connection>> each : futures) {
             try {
                 actual.addAll(each.get());
-            } catch (final Exception ex) {
+            } catch (final InterruptedException | ExecutionException ex) {
                 assertThat(ex.getMessage(), containsString("Could't get 6 connections one time, partition succeed connection(5) have released!"));
             }
         }

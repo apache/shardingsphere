@@ -30,7 +30,7 @@ import static org.hamcrest.CoreMatchers.instanceOf;
 import static org.junit.Assert.assertThat;
 
 @RunWith(MockitoJUnitRunner.class)
-public class ComQueryBackendHandlerFactoryTest {
+public final class ComQueryBackendHandlerFactoryTest {
     
     @Mock
     private BackendConnection backendConnection;

@@ -30,7 +30,7 @@ import static org.hamcrest.CoreMatchers.instanceOf;
 import static org.junit.Assert.assertThat;
 
 @RunWith(MockitoJUnitRunner.class)
-public class TransactionBackendHandlerTest {
+public final class TransactionBackendHandlerTest {
     
     private BackendConnection backendConnection = new BackendConnection(TransactionType.LOCAL);
     

@@ -34,7 +34,7 @@ import static org.hamcrest.CoreMatchers.instanceOf;
 import static org.hamcrest.CoreMatchers.is;
 import static org.junit.Assert.assertThat;
 
-public class ShardingCTLShowBackendHandlerTest {
+public final class ShardingCTLShowBackendHandlerTest {
     
     private BackendConnection backendConnection = new BackendConnection(TransactionType.LOCAL);
     

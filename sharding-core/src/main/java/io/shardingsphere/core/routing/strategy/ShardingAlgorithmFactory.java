@@ -20,6 +20,7 @@ package io.shardingsphere.core.routing.strategy;
 import io.shardingsphere.core.exception.ShardingException;
 import lombok.AccessLevel;
 import lombok.NoArgsConstructor;
+import lombok.SneakyThrows;
 
 /**
  * Sharding algorithm factory.
@@ -37,16 +38,13 @@ public final class ShardingAlgorithmFactory {
      * @param <T> class generic type
      * @return sharding algorithm instance
      */
+    @SneakyThrows
     @SuppressWarnings("unchecked")
     public static <T extends ShardingAlgorithm> T newInstance(final String shardingAlgorithmClassName, final Class<T> superShardingAlgorithmClass) {
-        try {
-            Class<?> result = Class.forName(shardingAlgorithmClassName);
-            if (!superShardingAlgorithmClass.isAssignableFrom(result)) {
-                throw new ShardingException("Class %s should be implement %s", shardingAlgorithmClassName, superShardingAlgorithmClass.getName());
-            }
-            return (T) result.newInstance();
-        } catch (final ReflectiveOperationException ex) {
-            throw new ShardingException(ex);
+        Class<?> result = Class.forName(shardingAlgorithmClassName);
+        if (!superShardingAlgorithmClass.isAssignableFrom(result)) {
+            throw new ShardingException("Class %s should be implement %s", shardingAlgorithmClassName, superShardingAlgorithmClass.getName());
         }
+        return (T) result.newInstance();
     }
 }

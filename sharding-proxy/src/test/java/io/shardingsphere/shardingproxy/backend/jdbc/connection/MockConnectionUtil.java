@@ -36,7 +36,7 @@ import static org.mockito.Mockito.mock;
  *
  * @author zhaojun
  */
-class MockConnectionUtil {
+final class MockConnectionUtil {
     
     /**
      * Mock set cached connections.

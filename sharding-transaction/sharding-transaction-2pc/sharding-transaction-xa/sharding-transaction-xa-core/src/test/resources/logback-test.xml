@@ -8,7 +8,7 @@
     <logger name="io.shardingsphere" level="info" additivity="false">
         <appender-ref ref="console"/>
     </logger>
-    <logger name="io.shardingsphere.transaction.xa.manager.XATransactionManagerSPILoader" level="off" />
+    <logger name="io.shardingsphere.transaction.xa.manager.XATransactionManagerLoader" level="off" />
     
     <root>
         <level value="error" />

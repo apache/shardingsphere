@@ -17,10 +17,9 @@
 
 package io.shardingsphere.transaction.xa.jta.connection.dialect;
 
-import io.shardingsphere.core.exception.ShardingException;
 import io.shardingsphere.transaction.xa.jta.connection.ShardingXAConnection;
 import io.shardingsphere.transaction.xa.jta.connection.ShardingXAConnectionWrapper;
-import lombok.extern.slf4j.Slf4j;
+import lombok.SneakyThrows;
 import org.h2.jdbc.JdbcConnection;
 import org.h2.jdbcx.JdbcDataSourceFactory;
 import org.h2.jdbcx.JdbcXAConnection;
@@ -28,17 +27,14 @@ import org.h2.message.TraceObject;
 
 import javax.sql.XADataSource;
 import java.lang.reflect.Constructor;
-import java.lang.reflect.InvocationTargetException;
 import java.lang.reflect.Method;
 import java.sql.Connection;
-import java.sql.SQLException;
 
 /**
  * H2 sharding XA connection wrapper.
  *
  * @author zhaojun
  */
-@Slf4j
 public final class H2ShardingXAConnectionWrapper implements ShardingXAConnectionWrapper {
     
     private static final int XA_DATA_SOURCE = 13;
@@ -49,35 +45,25 @@ public final class H2ShardingXAConnectionWrapper implements ShardingXAConnection
     
     private static final JdbcDataSourceFactory FACTORY = new JdbcDataSourceFactory();
     
+    @SneakyThrows
     private static Constructor<JdbcXAConnection> getH2JdbcXAConstructor() {
-        try {
-            Constructor<JdbcXAConnection> h2XAConnectionConstructor = JdbcXAConnection.class.getDeclaredConstructor(JdbcDataSourceFactory.class, Integer.TYPE, JdbcConnection.class);
-            h2XAConnectionConstructor.setAccessible(true);
-            return h2XAConnectionConstructor;
-        } catch (final NoSuchMethodException ex) {
-            throw new ShardingException("Could not find constructor of H2 XA connection.");
-        }
+        Constructor<JdbcXAConnection> result = JdbcXAConnection.class.getDeclaredConstructor(JdbcDataSourceFactory.class, Integer.TYPE, JdbcConnection.class);
+        result.setAccessible(true);
+        return result;
     }
     
+    @SneakyThrows
     private static Method getNextIdMethod() {
-        try {
-            Method method = TraceObject.class.getDeclaredMethod("getNextId", Integer.TYPE);
-            method.setAccessible(true);
-            return method;
-        } catch (final NoSuchMethodException ex) {
-            throw new ShardingException("Could not find getNextId of H2 XA DataSource.");
-        }
+        Method result = TraceObject.class.getDeclaredMethod("getNextId", Integer.TYPE);
+        result.setAccessible(true);
+        return result;
     }
     
+    @SneakyThrows
     @Override
     public ShardingXAConnection wrap(final String resourceName, final XADataSource xaDataSource, final Connection connection) {
-        try {
-            Connection h2PhysicalConnection = (Connection) connection.unwrap(Class.forName("org.h2.jdbc.JdbcConnection"));
-            JdbcXAConnection jdbcXAConnection = CONSTRUCTOR.newInstance(FACTORY, NEXT_ID.invoke(null, XA_DATA_SOURCE), h2PhysicalConnection);
-            return new ShardingXAConnection(resourceName, jdbcXAConnection);
-        } catch (final ClassNotFoundException | SQLException | IllegalAccessException | InvocationTargetException | InstantiationException ex) {
-            log.error("Failed to wrap a connection to ShardingXAConnection.");
-            throw new ShardingException(ex);
-        }
+        Connection h2PhysicalConnection = (Connection) connection.unwrap(Class.forName("org.h2.jdbc.JdbcConnection"));
+        JdbcXAConnection jdbcXAConnection = CONSTRUCTOR.newInstance(FACTORY, NEXT_ID.invoke(null, XA_DATA_SOURCE), h2PhysicalConnection);
+        return new ShardingXAConnection(resourceName, jdbcXAConnection);
     }
 }

@@ -17,12 +17,11 @@
 
 package io.shardingsphere.transaction.xa.jta.connection.dialect;
 
+import com.zaxxer.hikari.HikariDataSource;
 import io.shardingsphere.core.constant.DatabaseType;
-import io.shardingsphere.core.constant.PoolType;
 import io.shardingsphere.transaction.xa.fixture.DataSourceUtils;
 import io.shardingsphere.transaction.xa.jta.connection.ShardingXAConnection;
 import io.shardingsphere.transaction.xa.jta.datasource.XADataSourceFactory;
-import lombok.SneakyThrows;
 import org.junit.Before;
 import org.junit.Test;
 import org.junit.runner.RunWith;
@@ -33,16 +32,16 @@ import javax.sql.DataSource;
 import javax.sql.XADataSource;
 import javax.transaction.xa.XAResource;
 import java.sql.Connection;
+import java.sql.SQLException;
 
 import static org.hamcrest.CoreMatchers.instanceOf;
-import static org.hamcrest.CoreMatchers.is;
 import static org.junit.Assert.assertThat;
 import static org.mockito.ArgumentMatchers.any;
 import static org.mockito.Mockito.mock;
 import static org.mockito.Mockito.when;
 
 @RunWith(MockitoJUnitRunner.class)
-public class MySQLShardingXAConnectionWrapperTest {
+public final class MySQLShardingXAConnectionWrapperTest {
     
     private XADataSource xaDataSource;
     
@@ -50,21 +49,18 @@ public class MySQLShardingXAConnectionWrapperTest {
     private Connection connection;
     
     @Before
-    @SneakyThrows
     @SuppressWarnings("unchecked")
-    public void setUp() {
+    public void setUp() throws SQLException, ClassNotFoundException {
         Connection mysqlConnection = (Connection) mock(Class.forName("com.mysql.jdbc.Connection"));
-        DataSource dataSource = DataSourceUtils.build(PoolType.HIKARI, DatabaseType.MySQL, "ds1");
+        DataSource dataSource = DataSourceUtils.build(HikariDataSource.class, DatabaseType.MySQL, "ds1");
         xaDataSource = XADataSourceFactory.build(DatabaseType.MySQL, dataSource);
         when(connection.unwrap((Class<Object>) any())).thenReturn(mysqlConnection);
     }
     
     @Test
-    @SneakyThrows
-    public void assertCreateMySQLConnection() {
+    public void assertCreateMySQLConnection() throws SQLException {
         ShardingXAConnection actual = new MySQLShardingXAConnectionWrapper().wrap("ds1", xaDataSource, connection);
         assertThat(actual.getXAResource(), instanceOf(XAResource.class));
         assertThat(actual.getConnection(), instanceOf(Connection.class));
-        assertThat(actual.getResourceName(), is("ds1"));
     }
 }

@@ -17,13 +17,10 @@
 
 package io.shardingsphere.transaction.xa.spi;
 
-import io.shardingsphere.core.constant.DatabaseType;
-import io.shardingsphere.core.rule.DataSourceParameter;
 import io.shardingsphere.transaction.core.ShardingTransactionManager;
 
-import javax.sql.DataSource;
 import javax.sql.XADataSource;
-import javax.transaction.TransactionManager;
+import javax.transaction.xa.XAResource;
 
 /**
  * XA transaction manager.
@@ -37,29 +34,6 @@ public interface XATransactionManager extends ShardingTransactionManager {
      * Startup XA transaction manager.
      */
     void startup();
-    
-    /**
-     * destroy the transaction manager and could be helpful with shutdown gracefully.
-     */
-    void destroy();
-    
-    /**
-     * Get specific {@link XADataSource} and enroll it with a JTA.
-     *
-     * @param databaseType database type
-     * @param xaDataSource XA data source
-     * @param dataSourceName data source name
-     * @param dataSourceParameter data source parameter
-     * @return XA data source
-     */
-    DataSource wrapDataSource(DatabaseType databaseType, XADataSource xaDataSource, String dataSourceName, DataSourceParameter dataSourceParameter);
-    
-    /**
-     * Get transaction manager for vendor provided.
-     *
-     * @return transaction manager
-     */
-    TransactionManager getUnderlyingTransactionManager();
     
     /**
      * Register recovery resource.
@@ -76,5 +50,16 @@ public interface XATransactionManager extends ShardingTransactionManager {
      * @param xaDataSource   XA data source
      */
     void removeRecoveryResource(String dataSourceName, XADataSource xaDataSource);
+    
+    /**
+     * Enlist resource.
+     * 
+     * @param xaResource XA resource
+     */
+    void enlistResource(XAResource xaResource);
+    
+    /**
+     * Destroy the transaction manager and could be helpful with shutdown gracefully.
+     */
+    void destroy();
 }
-
