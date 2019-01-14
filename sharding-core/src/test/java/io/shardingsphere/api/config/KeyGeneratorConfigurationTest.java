@@ -20,13 +20,13 @@ package io.shardingsphere.api.config;
 import io.shardingsphere.core.exception.ShardingConfigurationException;
 import io.shardingsphere.core.keygen.generator.SnowflakeKeyGenerator;
 import io.shardingsphere.core.keygen.generator.UUIDKeyGenerator;
-import io.shardingsphere.core.yaml.sharding.YamlKeyGeneratorConfiguration;
 import org.junit.Test;
 
 import java.util.Properties;
 
 import static org.hamcrest.CoreMatchers.is;
 import static org.junit.Assert.assertThat;
+import static org.junit.Assert.assertTrue;
 
 public class KeyGeneratorConfigurationTest {
     
@@ -60,10 +60,7 @@ public class KeyGeneratorConfigurationTest {
     
     @Test
     public void assertGetKeyGeneratorVariables() {
-        YamlKeyGeneratorConfiguration keyGeneratorConfiguration = new YamlKeyGeneratorConfiguration();
-        keyGeneratorConfiguration.setType("SNOWFLAKE");
-        keyGeneratorConfiguration.setColumn("order_id");
-        assertThat(keyGeneratorConfiguration.getType(), is("SNOWFLAKE"));
-        assertThat(keyGeneratorConfiguration.getColumn(), is("order_id"));
+        KeyGeneratorConfiguration keyGeneratorConfiguration = new KeyGeneratorConfiguration();
+        assertTrue(null == keyGeneratorConfiguration.getKeyGenerator());
     }
 }
