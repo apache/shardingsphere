@@ -1,0 +1,4 @@
+io.shardingsphere.core.keygen.generator.SnowflakeKeyGenerator
+io.shardingsphere.core.keygen.generator.UUIDKeyGenerator
+io.shardingsphere.shardingjdbc.fixture.IncrementKeyGenerator
+io.shardingsphere.dbtest.fixture.ConstantKeyGenerator
