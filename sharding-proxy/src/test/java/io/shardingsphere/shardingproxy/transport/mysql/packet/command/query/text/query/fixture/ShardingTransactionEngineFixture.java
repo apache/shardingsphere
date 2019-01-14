@@ -25,7 +25,6 @@ import lombok.Getter;
 
 import javax.sql.DataSource;
 import java.sql.Connection;
-import java.sql.SQLException;
 import java.util.Collection;
 import java.util.LinkedList;
 import java.util.Map;
@@ -46,7 +45,7 @@ public final class ShardingTransactionEngineFixture implements ShardingTransacti
     }
     
     @Override
-    public void registerTransactionalResource(final DatabaseType databaseType, final Map<String, DataSource> dataSourceMap) {
+    public void registerTransactionalResources(final DatabaseType databaseType, final Map<String, DataSource> dataSourceMap) {
     }
     
     @Override
@@ -54,8 +53,13 @@ public final class ShardingTransactionEngineFixture implements ShardingTransacti
     }
     
     @Override
-    public Connection createConnection(final String dataSourceName, final DataSource dataSource) throws SQLException {
-        return dataSource.getConnection();
+    public boolean isInTransaction() {
+        return true;
+    }
+    
+    @Override
+    public Connection getConnection(final String dataSourceName) {
+        return null;
     }
     
     @Override

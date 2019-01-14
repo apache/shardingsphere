@@ -43,7 +43,7 @@ public final class BackendTransactionManager implements TransactionManager {
             connection.getStateHandler().getAndSetStatus(ConnectionStatus.TRANSACTION);
             connection.releaseConnections(false);
         }
-        if (!shardingTransactionEngine.isPresent()) {
+        if (!shardingTransactionEngine.isPresent() || !shardingTransactionEngine.get().isInTransaction()) {
             new LocalTransactionManager(connection).begin();
         } else if (TransactionType.XA == shardingTransactionEngine.get().getTransactionType()) {
             shardingTransactionEngine.get().begin();
@@ -53,7 +53,7 @@ public final class BackendTransactionManager implements TransactionManager {
     @Override
     public void commit() throws SQLException {
         Optional<ShardingTransactionEngine> shardingTransactionEngine = getShardingTransactionEngine(connection);
-        if (!shardingTransactionEngine.isPresent()) {
+        if (!shardingTransactionEngine.isPresent() || !shardingTransactionEngine.get().isInTransaction()) {
             new LocalTransactionManager(connection).commit();
         } else if (TransactionType.XA == shardingTransactionEngine.get().getTransactionType()) {
             shardingTransactionEngine.get().commit();
@@ -64,7 +64,7 @@ public final class BackendTransactionManager implements TransactionManager {
     @Override
     public void rollback() throws SQLException {
         Optional<ShardingTransactionEngine> shardingTransactionEngine = getShardingTransactionEngine(connection);
-        if (!shardingTransactionEngine.isPresent()) {
+        if (!shardingTransactionEngine.isPresent() || !shardingTransactionEngine.get().isInTransaction()) {
             new LocalTransactionManager(connection).rollback();
         } else if (TransactionType.XA == shardingTransactionEngine.get().getTransactionType()) {
             shardingTransactionEngine.get().rollback();

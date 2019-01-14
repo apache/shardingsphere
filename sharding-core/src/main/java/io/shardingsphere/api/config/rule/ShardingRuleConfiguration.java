@@ -18,7 +18,7 @@
 package io.shardingsphere.api.config.rule;
 
 import io.shardingsphere.api.config.strategy.ShardingStrategyConfiguration;
-import io.shardingsphere.core.keygen.KeyGenerator;
+import io.shardingsphere.core.keygen.generator.KeyGenerator;
 import lombok.Getter;
 import lombok.Setter;
 

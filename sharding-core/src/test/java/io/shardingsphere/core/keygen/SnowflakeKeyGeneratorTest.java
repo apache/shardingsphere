@@ -18,6 +18,7 @@
 package io.shardingsphere.core.keygen;
 
 import io.shardingsphere.core.keygen.fixture.FixedTimeService;
+import io.shardingsphere.core.keygen.generator.SnowflakeKeyGenerator;
 import lombok.SneakyThrows;
 import org.junit.Test;
 

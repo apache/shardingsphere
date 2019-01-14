@@ -33,7 +33,7 @@ public final class OtherShardingTransactionEngineFixture implements ShardingTran
     }
     
     @Override
-    public void registerTransactionalResource(final DatabaseType databaseType, final Map<String, DataSource> dataSourceMap) {
+    public void registerTransactionalResources(final DatabaseType databaseType, final Map<String, DataSource> dataSourceMap) {
     }
     
     @Override
@@ -41,7 +41,12 @@ public final class OtherShardingTransactionEngineFixture implements ShardingTran
     }
     
     @Override
-    public Connection createConnection(final String dataSourceName, final DataSource dataSource) {
+    public boolean isInTransaction() {
+        return true;
+    }
+    
+    @Override
+    public Connection getConnection(final String dataSourceName) {
         return null;
     }
     

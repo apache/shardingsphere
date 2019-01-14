@@ -22,6 +22,7 @@ import com.google.common.util.concurrent.ListenableFuture;
 import com.google.common.util.concurrent.ListeningExecutorService;
 import io.shardingsphere.core.exception.ShardingException;
 import io.shardingsphere.core.util.ShardingExecutorService;
+
 import java.sql.SQLException;
 import java.util.ArrayList;
 import java.util.Collection;
@@ -188,11 +189,11 @@ public final class ShardingExecuteEngine implements AutoCloseable {
         return result;
     }
     
-    private <O> List<O> throwException(final Exception ex) throws SQLException {
-        if (ex.getCause() instanceof SQLException) {
-            throw (SQLException) ex.getCause();
+    private <O> List<O> throwException(final Exception exception) throws SQLException {
+        if (exception.getCause() instanceof SQLException) {
+            throw (SQLException) exception.getCause();
         }
-        throw new ShardingException(ex);
+        throw new ShardingException(exception);
     }
     
     @Override
