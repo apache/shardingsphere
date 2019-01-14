@@ -17,7 +17,7 @@
 
 package io.shardingsphere.transaction.xa.jta;
 
-import io.shardingsphere.transaction.xa.jta.connection.ShardingXAConnectionTest;
+import io.shardingsphere.transaction.xa.jta.connection.SingleXAConnectionTest;
 import io.shardingsphere.transaction.xa.jta.connection.XAConnectionFactoryTest;
 import io.shardingsphere.transaction.xa.jta.connection.dialect.MySQLXAConnectionWrapperTest;
 import io.shardingsphere.transaction.xa.jta.datasource.SingleXADataSourceTest;
@@ -51,7 +51,7 @@ import org.junit.runners.Suite.SuiteClasses;
         OracleXAPropertiesTest.class, 
         SQLServerXAPropertiesTest.class, 
         XAConnectionFactoryTest.class, 
-        ShardingXAConnectionTest.class, 
+        SingleXAConnectionTest.class,
         MySQLXAConnectionWrapperTest.class
 })
 public final class AllJTATests {

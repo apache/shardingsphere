@@ -21,7 +21,7 @@ import com.atomikos.jdbc.AtomikosDataSourceBean;
 import io.shardingsphere.core.constant.DatabaseType;
 import io.shardingsphere.transaction.api.TransactionType;
 import io.shardingsphere.transaction.spi.ShardingTransactionEngine;
-import io.shardingsphere.transaction.xa.jta.connection.ShardingXAConnection;
+import io.shardingsphere.transaction.xa.jta.connection.SingleXAConnection;
 import io.shardingsphere.transaction.xa.jta.datasource.SingleXADataSource;
 import io.shardingsphere.transaction.xa.manager.XATransactionManagerLoader;
 import io.shardingsphere.transaction.xa.spi.XATransactionManager;
@@ -74,9 +74,9 @@ public final class XAShardingTransactionEngine implements ShardingTransactionEng
     @SneakyThrows
     @Override
     public Connection getConnection(final String dataSourceName) {
-        ShardingXAConnection shardingXAConnection = cachedSingleXADataSourceMap.get(dataSourceName).getXAConnection();
-        xaTransactionManager.enlistResource(shardingXAConnection.getXAResource());
-        return shardingXAConnection.getConnection();
+        SingleXAConnection singleXAConnection = cachedSingleXADataSourceMap.get(dataSourceName).getXAConnection();
+        xaTransactionManager.enlistResource(singleXAConnection.getXAResource());
+        return singleXAConnection.getConnection();
     }
     
     @Override

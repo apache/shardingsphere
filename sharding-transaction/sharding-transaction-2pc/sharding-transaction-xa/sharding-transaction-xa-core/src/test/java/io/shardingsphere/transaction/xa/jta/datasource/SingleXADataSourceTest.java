@@ -21,7 +21,7 @@ import com.alibaba.druid.pool.xa.DruidXADataSource;
 import com.zaxxer.hikari.HikariDataSource;
 import io.shardingsphere.core.constant.DatabaseType;
 import io.shardingsphere.transaction.xa.fixture.DataSourceUtils;
-import io.shardingsphere.transaction.xa.jta.connection.ShardingXAConnection;
+import io.shardingsphere.transaction.xa.jta.connection.SingleXAConnection;
 import lombok.SneakyThrows;
 import org.h2.jdbcx.JdbcDataSource;
 import org.junit.Test;
@@ -62,7 +62,7 @@ public final class SingleXADataSourceTest {
     public void assertGetXAConnectionOfXA() {
         DataSource dataSource = DataSourceUtils.build(DruidXADataSource.class, DatabaseType.H2, "ds1");
         SingleXADataSource shardingXADataSource = new SingleXADataSource(DatabaseType.H2, "ds1", dataSource);
-        ShardingXAConnection actual = shardingXADataSource.getXAConnection();
+        SingleXAConnection actual = shardingXADataSource.getXAConnection();
         assertThat(actual.getConnection(), instanceOf(Connection.class));
     }
     
@@ -71,7 +71,7 @@ public final class SingleXADataSourceTest {
     public void assertGetXAConnectionOfNoneXA() {
         DataSource dataSource = DataSourceUtils.build(HikariDataSource.class, DatabaseType.H2, "ds1");
         SingleXADataSource shardingXADataSource = new SingleXADataSource(DatabaseType.H2, "ds1", dataSource);
-        ShardingXAConnection actual = shardingXADataSource.getXAConnection();
+        SingleXAConnection actual = shardingXADataSource.getXAConnection();
         assertThat(actual.getConnection(), instanceOf(Connection.class));
     }
     

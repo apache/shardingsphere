@@ -18,7 +18,7 @@
 package io.shardingsphere.transaction.xa.jta.datasource;
 
 import io.shardingsphere.core.constant.DatabaseType;
-import io.shardingsphere.transaction.xa.jta.connection.ShardingXAConnection;
+import io.shardingsphere.transaction.xa.jta.connection.SingleXAConnection;
 import io.shardingsphere.transaction.xa.jta.connection.XAConnectionFactory;
 import lombok.Getter;
 
@@ -60,9 +60,9 @@ public final class SingleXADataSource extends AbstractUnsupportedSingleXADataSou
     }
     
     @Override
-    public ShardingXAConnection getXAConnection() throws SQLException {
+    public SingleXAConnection getXAConnection() throws SQLException {
         XAConnection xaConnection = isOriginalXADataSource ? xaDataSource.getXAConnection()
-                : XAConnectionFactory.createShardingXAConnection(databaseType, xaDataSource, originalDataSource.getConnection());
-        return new ShardingXAConnection(resourceName, xaConnection);
+                : XAConnectionFactory.createXAConnection(databaseType, xaDataSource, originalDataSource.getConnection());
+        return new SingleXAConnection(resourceName, xaConnection);
     }
 }

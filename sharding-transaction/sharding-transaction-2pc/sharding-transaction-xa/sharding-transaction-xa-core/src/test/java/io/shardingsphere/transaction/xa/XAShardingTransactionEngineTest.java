@@ -23,7 +23,7 @@ import com.zaxxer.hikari.HikariDataSource;
 import io.shardingsphere.core.constant.DatabaseType;
 import io.shardingsphere.transaction.api.TransactionType;
 import io.shardingsphere.transaction.xa.fixture.DataSourceUtils;
-import io.shardingsphere.transaction.xa.jta.connection.ShardingXAConnection;
+import io.shardingsphere.transaction.xa.jta.connection.SingleXAConnection;
 import io.shardingsphere.transaction.xa.jta.datasource.SingleXADataSource;
 import io.shardingsphere.transaction.xa.spi.XATransactionManager;
 import lombok.SneakyThrows;
@@ -150,13 +150,13 @@ public class XAShardingTransactionEngineTest {
     @SneakyThrows
     private Map<String, SingleXADataSource> createMockSingleXADataSourceMap(final String datasourceName) {
         SingleXADataSource singleXADataSource = mock(SingleXADataSource.class);
-        ShardingXAConnection shardingXAConnection = mock(ShardingXAConnection.class);
+        SingleXAConnection singleXAConnection = mock(SingleXAConnection.class);
         XADataSource xaDataSource = mock(XADataSource.class);
         XAResource xaResource = mock(XAResource.class);
         Connection connection = mock(Connection.class);
-        when(shardingXAConnection.getConnection()).thenReturn(connection);
-        when(shardingXAConnection.getXAResource()).thenReturn(xaResource);
-        when(singleXADataSource.getXAConnection()).thenReturn(shardingXAConnection);
+        when(singleXAConnection.getConnection()).thenReturn(connection);
+        when(singleXAConnection.getXAResource()).thenReturn(xaResource);
+        when(singleXADataSource.getXAConnection()).thenReturn(singleXAConnection);
         when(singleXADataSource.getResourceName()).thenReturn(datasourceName);
         when(singleXADataSource.getXaDataSource()).thenReturn(xaDataSource);
         Map<String, SingleXADataSource> result = new HashMap<>();

@@ -28,12 +28,12 @@ import java.sql.Connection;
 import java.sql.SQLException;
 
 /**
- * Sharding XA Connection.
+ * Single XA Connection.
  *
  * @author zhaojun
  */
 @RequiredArgsConstructor
-public final class ShardingXAConnection implements XAConnection {
+public final class SingleXAConnection implements XAConnection {
     
     private final String resourceName;
     

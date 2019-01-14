@@ -37,60 +37,60 @@ import static org.mockito.Mockito.mock;
 import static org.mockito.Mockito.verify;
 
 @RunWith(MockitoJUnitRunner.class)
-public final class ShardingXAConnectionTest {
+public final class SingleXAConnectionTest {
     
     @Mock
     private XAConnection xaConnection;
     
-    private ShardingXAConnection shardingXAConnection;
+    private SingleXAConnection singleXAConnection;
     
     @Before
     public void setUp() {
-        shardingXAConnection = new ShardingXAConnection("ds1", xaConnection);
+        singleXAConnection = new SingleXAConnection("ds1", xaConnection);
     }
     
     @Test
     @SneakyThrows
     public void assertGetConnection() {
-        shardingXAConnection.getConnection();
+        singleXAConnection.getConnection();
         verify(xaConnection).getConnection();
     }
     
     @Test
     @SneakyThrows
     public void assertGetXAResource() {
-        XAResource actual = shardingXAConnection.getXAResource();
+        XAResource actual = singleXAConnection.getXAResource();
         assertThat(actual, instanceOf(ShardingXAResource.class));
     }
     
     @Test
     @SneakyThrows
     public void close() {
-        shardingXAConnection.close();
+        singleXAConnection.close();
         verify(xaConnection).close();
     }
     
     @Test
     public void assertAddConnectionEventListener() {
-        shardingXAConnection.addConnectionEventListener(mock(ConnectionEventListener.class));
+        singleXAConnection.addConnectionEventListener(mock(ConnectionEventListener.class));
         verify(xaConnection).addConnectionEventListener(any(ConnectionEventListener.class));
     }
     
     @Test
     public void assertRemoveConnectionEventListener() {
-        shardingXAConnection.removeConnectionEventListener(mock(ConnectionEventListener.class));
+        singleXAConnection.removeConnectionEventListener(mock(ConnectionEventListener.class));
         verify(xaConnection).removeConnectionEventListener(any(ConnectionEventListener.class));
     }
     
     @Test
     public void assertAddStatementEventListener() {
-        shardingXAConnection.addStatementEventListener(mock(StatementEventListener.class));
+        singleXAConnection.addStatementEventListener(mock(StatementEventListener.class));
         verify(xaConnection).addStatementEventListener(any(StatementEventListener.class));
     }
     
     @Test
     public void removeStatementEventListener() {
-        shardingXAConnection.removeStatementEventListener(mock(StatementEventListener.class));
+        singleXAConnection.removeStatementEventListener(mock(StatementEventListener.class));
         verify(xaConnection).removeStatementEventListener(any(StatementEventListener.class));
     }
 }

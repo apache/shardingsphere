@@ -41,12 +41,12 @@ public final class XAConnectionFactoryTest {
     
     @Test(expected = Exception.class)
     // TODO assert fail
-    public void assertCreateMySQLShardingXAConnection() {
-        XAConnectionFactory.createShardingXAConnection(DatabaseType.MySQL, xaDataSource, connection);
+    public void assertCreateMySQLXAConnection() {
+        XAConnectionFactory.createXAConnection(DatabaseType.MySQL, xaDataSource, connection);
     }
     
     @Test
-    public void assertCreateH2ShardingXAConnection() {
-        assertThat(XAConnectionFactory.createShardingXAConnection(DatabaseType.H2, xaDataSource, connection), instanceOf(JdbcXAConnection.class));
+    public void assertCreateH2XAConnection() {
+        assertThat(XAConnectionFactory.createXAConnection(DatabaseType.H2, xaDataSource, connection), instanceOf(JdbcXAConnection.class));
     }
 }
