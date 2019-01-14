@@ -26,6 +26,7 @@ import lombok.Setter;
  * Table rule configuration.
  * 
  * @author zhangliang
+ * @author panjuan
  */
 @Getter
 @Setter
