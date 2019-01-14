@@ -35,17 +35,17 @@ public final class KeyGeneratorFactoryTest {
     
     @Test
     public void assertCreateKeyGeneratorSuccess() {
-        assertThat(KeyGeneratorFactory.newInstance(SnowflakeKeyGenerator.class.getName()), instanceOf(SnowflakeKeyGenerator.class));
+        assertThat(KeyGeneratorFactory.newInstance("SNOWFLAKE"), instanceOf(SnowflakeKeyGenerator.class));
     }
     
     @Test(expected = IllegalArgumentException.class)
     public void assertCreateKeyGeneratorFailureWithInstantiationError() {
-        KeyGeneratorFactory.newInstance(InstantiationKeyGenerator.class.getName());
+        KeyGeneratorFactory.newInstance("instantiation");
     }
     
     @Test(expected = IllegalArgumentException.class)
     public void assertCreateKeyGeneratorFailureWithIllegalAccess() {
-        KeyGeneratorFactory.newInstance(IllegalAccessKeyGenerator.class.getName());
+        KeyGeneratorFactory.newInstance("illegalAccess");
     }
     
     @RequiredArgsConstructor
@@ -68,6 +68,9 @@ public final class KeyGeneratorFactoryTest {
     
     @NoArgsConstructor(access = AccessLevel.PRIVATE)
     public static final class IllegalAccessKeyGenerator implements KeyGenerator {
+    
+        @Getter
+        private final String type = "illegalAccess";
     
         @Getter
         @Setter
