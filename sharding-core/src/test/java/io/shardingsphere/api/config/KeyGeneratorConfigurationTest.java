@@ -43,20 +43,7 @@ public class KeyGeneratorConfigurationTest {
         KeyGeneratorConfiguration keyGeneratorConfiguration = new KeyGeneratorConfiguration("order_id", "SNOWFLAKE", new Properties());
         assertThat(keyGeneratorConfiguration.getKeyGenerator().getClass().getName(), is(SnowflakeKeyGenerator.class.getName()));
     }
-    
-    @Test
-    public void assertGetKeyGeneratorWithoutTypeAndClassName() {
-        KeyGeneratorConfiguration keyGeneratorConfiguration = new KeyGeneratorConfiguration();
-        assertThat(keyGeneratorConfiguration.getKeyGenerator().getClass().getName(), is(SnowflakeKeyGenerator.class.getName()));
-    }
-    
-    @Test(expected = IllegalArgumentException.class)
-    public void assertGetKeyGeneratorClassNameWithLeaf() {
-        KeyGeneratorConfiguration keyGeneratorConfiguration = new KeyGeneratorConfiguration();
-        keyGeneratorConfiguration.setType("LEAF");
-        keyGeneratorConfiguration.getKeyGenerator();
-    }
-    
+        
     @Test
     public void assertGetKeyGeneratorClassNameWithUUID() {
         KeyGeneratorConfiguration keyGeneratorConfiguration = new KeyGeneratorConfiguration();
