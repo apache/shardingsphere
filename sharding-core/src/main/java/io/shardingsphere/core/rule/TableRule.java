@@ -95,8 +95,12 @@ public final class TableRule {
         databaseShardingStrategy = null == tableRuleConfig.getDatabaseShardingStrategyConfig() ? null : ShardingStrategyFactory.newInstance(tableRuleConfig.getDatabaseShardingStrategyConfig());
         tableShardingStrategy = null == tableRuleConfig.getTableShardingStrategyConfig() ? null : ShardingStrategyFactory.newInstance(tableRuleConfig.getTableShardingStrategyConfig());
         generateKeyColumn = tableRuleConfig.getKeyGeneratorColumnName();
-        keyGenerator = tableRuleConfig.getKeyGeneratorConfig().getKeyGenerator();
+        keyGenerator = createKeyGenerator(tableRuleConfig);
         logicIndex = null == tableRuleConfig.getLogicIndex() ? null : tableRuleConfig.getLogicIndex().toLowerCase();
+    }
+    
+    private KeyGenerator createKeyGenerator(final TableRuleConfiguration tableRuleConfig) {
+        return null == tableRuleConfig.getKeyGeneratorConfig() ? null : tableRuleConfig.getKeyGeneratorConfig().getKeyGenerator();
     }
     
     private boolean isEmptyDataNodes(final List<String> dataNodes) {
