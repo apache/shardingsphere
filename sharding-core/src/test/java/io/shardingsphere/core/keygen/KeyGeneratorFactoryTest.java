@@ -51,6 +51,9 @@ public final class KeyGeneratorFactoryTest {
     @RequiredArgsConstructor
     public static final class InstantiationKeyGenerator implements KeyGenerator {
         
+        @Getter
+        private final String type = "instantiation";
+        
         private final int field;
     
         @Getter
