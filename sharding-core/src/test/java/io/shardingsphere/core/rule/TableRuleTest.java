@@ -83,7 +83,7 @@ public final class TableRuleTest {
     private KeyGeneratorConfiguration getKeyGeneratorConfiguration() {
         KeyGenerator keyGenerator = new IncrementKeyGenerator();
         KeyGeneratorConfiguration keyGeneratorConfiguration = new KeyGeneratorConfiguration();
-        keyGeneratorConfiguration.setType("increment");
+        keyGeneratorConfiguration.setType("INCREMENT");
         return keyGeneratorConfiguration;
     }
     

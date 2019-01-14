@@ -385,7 +385,7 @@ public final class ShardingRuleTest {
     
     private KeyGeneratorConfiguration getKeyGeneratorConfiguration() {
         KeyGeneratorConfiguration keyGeneratorConfiguration = new KeyGeneratorConfiguration();
-        keyGeneratorConfiguration.setType("increment");
+        keyGeneratorConfiguration.setType("INCREMENT");
         return keyGeneratorConfiguration;
     }
     
