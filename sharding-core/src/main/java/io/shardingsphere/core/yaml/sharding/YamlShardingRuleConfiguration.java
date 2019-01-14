@@ -69,7 +69,7 @@ public class YamlShardingRuleConfiguration {
         bindingTables.addAll(shardingRuleConfiguration.getBroadcastTables());
         defaultDatabaseStrategy = new YamlShardingStrategyConfiguration(shardingRuleConfiguration.getDefaultDatabaseShardingStrategyConfig());
         defaultTableStrategy = new YamlShardingStrategyConfiguration(shardingRuleConfiguration.getDefaultTableShardingStrategyConfig());
-        defaultKeyGenerator = null == shardingRuleConfiguration.getDefaultKeyGenerator() ? null : new YamlKeyGeneratorConfiguration(shardingRuleConfiguration.getDefaultKeyGenerator());
+        defaultKeyGenerator = null == shardingRuleConfiguration.getDefaultKeyGeneratorConfig() ? null : new YamlKeyGeneratorConfiguration(shardingRuleConfiguration.getDefaultKeyGeneratorConfig());
         for (MasterSlaveRuleConfiguration each : shardingRuleConfiguration.getMasterSlaveRuleConfigs()) {
             masterSlaveRules.put(each.getName(), new YamlMasterSlaveRuleConfiguration(each));
         }
@@ -97,7 +97,7 @@ public class YamlShardingRuleConfiguration {
             result.setDefaultTableShardingStrategyConfig(defaultTableStrategy.build());
         }
         if (null != defaultKeyGenerator) {
-            result.setDefaultKeyGenerator(defaultKeyGenerator.getKeyGeneratorConfiguration());
+            result.setDefaultKeyGeneratorConfig(defaultKeyGenerator.getKeyGeneratorConfiguration());
         }
         Collection<MasterSlaveRuleConfiguration> masterSlaveRuleConfigs = new LinkedList<>();
         for (Entry<String, YamlMasterSlaveRuleConfiguration> entry : masterSlaveRules.entrySet()) {
