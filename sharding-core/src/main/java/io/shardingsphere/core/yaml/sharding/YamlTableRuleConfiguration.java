@@ -72,7 +72,6 @@ public class YamlTableRuleConfiguration {
         }
         if (null != keyGenerator) {
             result.setKeyGeneratorConfig(keyGenerator.getKeyGeneratorConfiguration());
-            result.setKeyGeneratorColumnName(keyGenerator.getColumn());
         }
         result.setLogicIndex(logicIndex);
         return result;
