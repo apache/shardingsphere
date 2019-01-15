@@ -18,13 +18,13 @@
 package io.shardingsphere.transaction.xa.manager.atomikos;
 
 import com.atomikos.datasource.xa.jdbc.JdbcTransactionalResource;
-import io.shardingsphere.transaction.xa.jta.resource.ShardingXAResource;
+import io.shardingsphere.transaction.xa.jta.resource.SingleXAResource;
 
 import javax.sql.XADataSource;
 import javax.transaction.xa.XAResource;
 
 /**
- * Sharding Atomikos XA recoverable resource.
+ * Atomikos XA recoverable resource.
  *
  * @author zhaojun
  */
@@ -32,13 +32,13 @@ public final class AtomikosXARecoverableResource extends JdbcTransactionalResour
     
     private final String resourceName;
     
-    public AtomikosXARecoverableResource(final String serverName, final XADataSource xaDataSource) {
+    AtomikosXARecoverableResource(final String serverName, final XADataSource xaDataSource) {
         super(serverName, xaDataSource);
         resourceName = serverName;
     }
     
     @Override
     public boolean usesXAResource(final XAResource xaResource) {
-        return resourceName.equals(((ShardingXAResource) xaResource).getResourceName());
+        return resourceName.equals(((SingleXAResource) xaResource).getResourceName());
     }
 }

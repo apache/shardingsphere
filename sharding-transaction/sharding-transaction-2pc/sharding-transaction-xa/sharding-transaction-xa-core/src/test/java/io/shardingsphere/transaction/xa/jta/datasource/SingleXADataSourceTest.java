@@ -21,7 +21,7 @@ import com.alibaba.druid.pool.xa.DruidXADataSource;
 import com.zaxxer.hikari.HikariDataSource;
 import io.shardingsphere.core.constant.DatabaseType;
 import io.shardingsphere.transaction.xa.fixture.DataSourceUtils;
-import io.shardingsphere.transaction.xa.jta.connection.ShardingXAConnection;
+import io.shardingsphere.transaction.xa.jta.connection.SingleXAConnection;
 import lombok.SneakyThrows;
 import org.h2.jdbcx.JdbcDataSource;
 import org.junit.Test;
@@ -36,20 +36,20 @@ import static org.hamcrest.CoreMatchers.instanceOf;
 import static org.hamcrest.CoreMatchers.is;
 import static org.junit.Assert.assertThat;
 
-public final class ShardingXADataSourceTest {
+public final class SingleXADataSourceTest {
     
     @Test
-    public void assertBuildShardingXADataSourceOfXA() {
+    public void assertBuildSingleXADataSourceOfXA() {
         DataSource dataSource = DataSourceUtils.build(DruidXADataSource.class, DatabaseType.MySQL, "ds1");
-        ShardingXADataSource actual = new ShardingXADataSource(DatabaseType.MySQL, "ds1", dataSource);
+        SingleXADataSource actual = new SingleXADataSource(DatabaseType.MySQL, "ds1", dataSource);
         assertThat(actual.getResourceName(), is("ds1"));
         assertThat(actual.getXaDataSource(), is((XADataSource) dataSource));
     }
     
     @Test
-    public void assertBuildShardingXADataSourceOfNoneXA() {
+    public void assertBuildSingleXADataSourceOfNoneXA() {
         DataSource dataSource = DataSourceUtils.build(HikariDataSource.class, DatabaseType.H2, "ds1");
-        ShardingXADataSource actual = new ShardingXADataSource(DatabaseType.H2, "ds1", dataSource);
+        SingleXADataSource actual = new SingleXADataSource(DatabaseType.H2, "ds1", dataSource);
         assertThat(actual.getResourceName(), is("ds1"));
         assertThat(actual.getXaDataSource(), instanceOf(JdbcDataSource.class));
         JdbcDataSource jdbcDataSource = (JdbcDataSource) actual.getXaDataSource();
@@ -61,8 +61,8 @@ public final class ShardingXADataSourceTest {
     @SneakyThrows
     public void assertGetXAConnectionOfXA() {
         DataSource dataSource = DataSourceUtils.build(DruidXADataSource.class, DatabaseType.H2, "ds1");
-        ShardingXADataSource shardingXADataSource = new ShardingXADataSource(DatabaseType.H2, "ds1", dataSource);
-        ShardingXAConnection actual = shardingXADataSource.getXAConnection();
+        SingleXADataSource shardingXADataSource = new SingleXADataSource(DatabaseType.H2, "ds1", dataSource);
+        SingleXAConnection actual = shardingXADataSource.getXAConnection();
         assertThat(actual.getConnection(), instanceOf(Connection.class));
     }
     
@@ -70,50 +70,50 @@ public final class ShardingXADataSourceTest {
     @SneakyThrows
     public void assertGetXAConnectionOfNoneXA() {
         DataSource dataSource = DataSourceUtils.build(HikariDataSource.class, DatabaseType.H2, "ds1");
-        ShardingXADataSource shardingXADataSource = new ShardingXADataSource(DatabaseType.H2, "ds1", dataSource);
-        ShardingXAConnection actual = shardingXADataSource.getXAConnection();
+        SingleXADataSource shardingXADataSource = new SingleXADataSource(DatabaseType.H2, "ds1", dataSource);
+        SingleXAConnection actual = shardingXADataSource.getXAConnection();
         assertThat(actual.getConnection(), instanceOf(Connection.class));
     }
     
     @Test(expected = SQLFeatureNotSupportedException.class)
     public void assertGetLoginTimeout() throws SQLException {
         DataSource dataSource = DataSourceUtils.build(DruidXADataSource.class, DatabaseType.H2, "ds1");
-        ShardingXADataSource shardingXADataSource = new ShardingXADataSource(DatabaseType.H2, "ds1", dataSource);
+        SingleXADataSource shardingXADataSource = new SingleXADataSource(DatabaseType.H2, "ds1", dataSource);
         shardingXADataSource.getLoginTimeout();
     }
     
     @Test(expected = SQLFeatureNotSupportedException.class)
     public void assertSetLogWriter() throws SQLException {
         DataSource dataSource = DataSourceUtils.build(DruidXADataSource.class, DatabaseType.H2, "ds1");
-        ShardingXADataSource shardingXADataSource = new ShardingXADataSource(DatabaseType.H2, "ds1", dataSource);
+        SingleXADataSource shardingXADataSource = new SingleXADataSource(DatabaseType.H2, "ds1", dataSource);
         shardingXADataSource.setLogWriter(null);
     }
     
     @Test(expected = SQLFeatureNotSupportedException.class)
     public void assertSetLoginTimeout() throws SQLException {
         DataSource dataSource = DataSourceUtils.build(DruidXADataSource.class, DatabaseType.H2, "ds1");
-        ShardingXADataSource shardingXADataSource = new ShardingXADataSource(DatabaseType.H2, "ds1", dataSource);
+        SingleXADataSource shardingXADataSource = new SingleXADataSource(DatabaseType.H2, "ds1", dataSource);
         shardingXADataSource.setLoginTimeout(10);
     }
     
     @Test(expected = SQLFeatureNotSupportedException.class)
     public void assertGetParentLogger() throws SQLException {
         DataSource dataSource = DataSourceUtils.build(DruidXADataSource.class, DatabaseType.H2, "ds1");
-        ShardingXADataSource shardingXADataSource = new ShardingXADataSource(DatabaseType.H2, "ds1", dataSource);
+        SingleXADataSource shardingXADataSource = new SingleXADataSource(DatabaseType.H2, "ds1", dataSource);
         shardingXADataSource.getParentLogger();
     }
     
     @Test(expected = SQLFeatureNotSupportedException.class)
     public void assertGetLogWriter() throws SQLException {
         DataSource dataSource = DataSourceUtils.build(DruidXADataSource.class, DatabaseType.H2, "ds1");
-        ShardingXADataSource shardingXADataSource = new ShardingXADataSource(DatabaseType.H2, "ds1", dataSource);
+        SingleXADataSource shardingXADataSource = new SingleXADataSource(DatabaseType.H2, "ds1", dataSource);
         shardingXADataSource.getLogWriter();
     }
     
     @Test(expected = SQLFeatureNotSupportedException.class)
     public void assertGetXAConnectionByUserAndPassword() throws SQLException {
         DataSource dataSource = DataSourceUtils.build(DruidXADataSource.class, DatabaseType.H2, "ds1");
-        ShardingXADataSource shardingXADataSource = new ShardingXADataSource(DatabaseType.H2, "ds1", dataSource);
+        SingleXADataSource shardingXADataSource = new SingleXADataSource(DatabaseType.H2, "ds1", dataSource);
         shardingXADataSource.getXAConnection("root", "root");
     }
 }
