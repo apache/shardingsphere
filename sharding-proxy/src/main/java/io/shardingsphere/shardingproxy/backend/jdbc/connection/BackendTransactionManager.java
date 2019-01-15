@@ -18,8 +18,6 @@
 package io.shardingsphere.shardingproxy.backend.jdbc.connection;
 
 import com.google.common.base.Optional;
-import com.google.common.base.Preconditions;
-import io.shardingsphere.transaction.api.TransactionType;
 import io.shardingsphere.transaction.core.ShardingTransactionEngineRegistry;
 import io.shardingsphere.transaction.spi.ShardingTransactionEngine;
 import lombok.RequiredArgsConstructor;
@@ -43,9 +41,9 @@ public final class BackendTransactionManager implements TransactionManager {
             connection.getStateHandler().getAndSetStatus(ConnectionStatus.TRANSACTION);
             connection.releaseConnections(false);
         }
-        if (!shardingTransactionEngine.isPresent() || !shardingTransactionEngine.get().isInTransaction()) {
+        if (!shardingTransactionEngine.isPresent()) {
             new LocalTransactionManager(connection).begin();
-        } else if (TransactionType.XA == shardingTransactionEngine.get().getTransactionType()) {
+        } else {
             shardingTransactionEngine.get().begin();
         }
     }
@@ -53,9 +51,9 @@ public final class BackendTransactionManager implements TransactionManager {
     @Override
     public void commit() throws SQLException {
         Optional<ShardingTransactionEngine> shardingTransactionEngine = getShardingTransactionEngine(connection);
-        if (!shardingTransactionEngine.isPresent() || !shardingTransactionEngine.get().isInTransaction()) {
+        if (!shardingTransactionEngine.isPresent()) {
             new LocalTransactionManager(connection).commit();
-        } else if (TransactionType.XA == shardingTransactionEngine.get().getTransactionType()) {
+        } else {
             shardingTransactionEngine.get().commit();
             connection.getStateHandler().getAndSetStatus(ConnectionStatus.TERMINATED);
         }
@@ -64,20 +62,15 @@ public final class BackendTransactionManager implements TransactionManager {
     @Override
     public void rollback() throws SQLException {
         Optional<ShardingTransactionEngine> shardingTransactionEngine = getShardingTransactionEngine(connection);
-        if (!shardingTransactionEngine.isPresent() || !shardingTransactionEngine.get().isInTransaction()) {
+        if (!shardingTransactionEngine.isPresent()) {
             new LocalTransactionManager(connection).rollback();
-        } else if (TransactionType.XA == shardingTransactionEngine.get().getTransactionType()) {
+        } else {
             shardingTransactionEngine.get().rollback();
             connection.getStateHandler().getAndSetStatus(ConnectionStatus.TERMINATED);
         }
     }
     
     private Optional<ShardingTransactionEngine> getShardingTransactionEngine(final BackendConnection connection) {
-        TransactionType transactionType = connection.getTransactionType();
-        ShardingTransactionEngine result = ShardingTransactionEngineRegistry.getEngine(transactionType);
-        if (null != transactionType && transactionType != TransactionType.LOCAL) {
-            Preconditions.checkNotNull(result, String.format("Cannot find transaction manager of [%s]", transactionType));
-        }
-        return Optional.fromNullable(result);
+        return Optional.fromNullable(ShardingTransactionEngineRegistry.getEngine(connection.getTransactionType()));
     }
 }

@@ -18,7 +18,7 @@
 package io.shardingsphere.transaction.xa.jta.datasource;
 
 import io.shardingsphere.core.constant.DatabaseType;
-import io.shardingsphere.transaction.xa.jta.connection.ShardingXAConnection;
+import io.shardingsphere.transaction.xa.jta.connection.SingleXAConnection;
 import io.shardingsphere.transaction.xa.jta.connection.XAConnectionFactory;
 import lombok.Getter;
 
@@ -28,11 +28,11 @@ import javax.sql.XADataSource;
 import java.sql.SQLException;
 
 /**
- * Sharding XA data source.
+ * Single XA data source.
  *
  * @author zhaojun
  */
-public final class ShardingXADataSource extends AbstractUnsupportedShardingXADataSource {
+public final class SingleXADataSource extends AbstractUnsupportedSingleXADataSource {
     
     @Getter
     private final String resourceName;
@@ -46,9 +46,9 @@ public final class ShardingXADataSource extends AbstractUnsupportedShardingXADat
     
     private final boolean isOriginalXADataSource;
     
-    public ShardingXADataSource(final DatabaseType databaseType, final String resourceName, final DataSource dataSource) {
-        this.resourceName = resourceName;
+    public SingleXADataSource(final DatabaseType databaseType, final String resourceName, final DataSource dataSource) {
         this.databaseType = databaseType;
+        this.resourceName = resourceName;
         originalDataSource = dataSource;
         if (dataSource instanceof XADataSource) {
             xaDataSource = (XADataSource) dataSource;
@@ -60,9 +60,9 @@ public final class ShardingXADataSource extends AbstractUnsupportedShardingXADat
     }
     
     @Override
-    public ShardingXAConnection getXAConnection() throws SQLException {
+    public SingleXAConnection getXAConnection() throws SQLException {
         XAConnection xaConnection = isOriginalXADataSource ? xaDataSource.getXAConnection()
-                : XAConnectionFactory.createShardingXAConnection(databaseType, xaDataSource, originalDataSource.getConnection());
-        return new ShardingXAConnection(resourceName, xaConnection);
+                : XAConnectionFactory.createXAConnection(databaseType, xaDataSource, originalDataSource.getConnection());
+        return new SingleXAConnection(resourceName, xaConnection);
     }
 }
