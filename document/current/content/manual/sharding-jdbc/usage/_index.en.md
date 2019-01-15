@@ -1,11 +1,12 @@
 +++
 pre = "<b>4.1.1. </b>"
 toc = true
-title = "User Manual"
+title = "Manual"
 weight = 1
 chapter = true
 +++
 
 ## Navigation
 
-This section introduce the usage of Sharding-JDBC. More details please reference [example](https://github.com/sharding-sphere/sharding-sphere-example).
+This chapter will introduce the use of Sharding-JDBC. 
+Please refer to [Example](https://github.com/sharding-sphere/sharding-sphere-example) for more details.

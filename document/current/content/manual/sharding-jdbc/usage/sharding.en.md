@@ -4,9 +4,9 @@ title = "Sharding"
 weight = 1
 +++
 
-## Without spring
+## Not Use Spring
 
-### Add maven dependency
+### Introduce Maven Dependency
 
 ```xml
 <dependency>
@@ -16,10 +16,10 @@ weight = 1
 </dependency>
 ```
 
-### Configure sharding rule with java
+### Rule Configuration Based on Java
 
-You can implement Sharding by configuring rules for Sharding-JDBC. The following example firstly takes the module of user_id to split databases and then takes the module of order_id to split tables. At last, two tables are in each of two databases.
-To configure by JAVA codes:
+Database sharding and table sharding of Sharding-JDBC configure descriptions according to rules. 
+The following example is two databases plus two tables configurations, whose databases take module and split according to order_id, tables take module and split according to order_id.
 
 ```java
     // Configure actual data sources
@@ -61,9 +61,9 @@ To configure by JAVA codes:
     DataSource dataSource = ShardingDataSourceFactory.createDataSource(dataSourceMap, shardingRuleConfig, new ConcurrentHashMap(), new Properties());
 ```
 
-### Configure sharding rule with yaml
+### Rule Configuration Based on Yaml
 
-To configure by yaml, similar with the configuration method of java codes:
+Or use Yaml to configure, similar to above configurations:
 
 ```yaml
 dataSources:
@@ -105,10 +105,11 @@ tables:
     DataSource dataSource = ShardingDataSourceFactory.createDataSource(yamlFile);
 ```
 
-### Use raw JDBC
+### Use Native JDBC
 
-By using ShardingDataSourceFactory factory class and rule configuration object, we can obtain ShardingDataSource which implements the standard interface of DataSource in JDBC. Thus you can choose to use native JDBC DataSource for development, or using JPA, MyBatis ORM tools, etc.
-Take DataSource in JDBC as an example:
+Configure objects with `ShardingDataSourceFactory` or `YamlShardingDataSourceFactory` to get `ShardingDataSource`, which is realized by standard JDBC DataSource interface. 
+Or choose native JDBC to develop through DataSource; or use JPA, MyBatis and other ORM tools. 
+Take native JDBC for example:
 
 ```java
 DataSource dataSource = ShardingDataSourceFactory.createDataSource(yamlFile);
@@ -127,9 +128,9 @@ try (
 }
 ```
 
-## Using spring
+## Using Spring
 
-### Add maven dependency
+### Introduce Maven Dependency
 
 ```xml
 <!-- for spring boot -->
@@ -147,7 +148,7 @@ try (
 </dependency>
 ```
 
-### Configure sharding rule with spring boot
+### Rule Configuration Based on Spring Boot
 
 ```properties
 sharding.jdbc.datasource.names=ds0,ds1
@@ -176,7 +177,7 @@ sharding.jdbc.config.sharding.tables.t_order_item.table-strategy.inline.sharding
 sharding.jdbc.config.sharding.tables.t_order_item.table-strategy.inline.algorithm-expression=t_order_item$->{order_id % 2}
 ```
 
-### Configure sharding rule with spring namespace
+### Rule Configuration Based on Spring Name Space
 
 ```xml
 <?xml version="1.0" encoding="UTF-8"?>
@@ -216,14 +217,15 @@ sharding.jdbc.config.sharding.tables.t_order_item.table-strategy.inline.algorith
 </beans>
 ```
 
-### Use DataSource on spring
+### Use DataSource in Spring
 
-Just inject or configure data source to JPA, Hibernate orMyBatis.
+Inject DataSource to use; or configure DataSource in JPA, Hibernate or MyBatis to use.
 
 ```java
 @Resource
 private DataSource dataSource;
 ```
 
-The rule configuration consists of data source configuration, table rule configuration, database Sharding strategy and table Sharding strategy, etc. Here is a simple configuration example, more flexible configurations can be used in product environment, e.g. multi-Sharding columns, table rules configuration directly bound with Sharding strategy.
-More details please reference [configuration manual](/en/manual/sharding-jdbc/configuration/).
+Rule configurations include data source configuration, table rule configuration, database sharding strategy and table sharding strategy. 
+All these are the simplest configuration methods, and the practical use can be more flexible, like multiple sharding keys, table rule configuration bound directly with sharding strategies, etc. 
+For more detailed configurations, please refer to [Configuration Manual](http://shardingsphere.io/document/current/en/manual/sharding-jdbc/configuration/).
