@@ -61,7 +61,6 @@ public final class UnicastRoutingEngineTest {
         List<TableUnit> tableUnitList = new ArrayList<>(routingResult.getTableUnits().getTableUnits());
         assertThat(routingResult, instanceOf(RoutingResult.class));
         assertThat(routingResult.getTableUnits().getTableUnits().size(), is(1));
-        assertThat(tableUnitList.get(0).getDataSourceName(), is("ds0"));
     }
 
     @Test
@@ -71,7 +70,6 @@ public final class UnicastRoutingEngineTest {
         List<TableUnit> tableUnitList = new ArrayList<>(routingResult.getTableUnits().getTableUnits());
         assertThat(routingResult, instanceOf(RoutingResult.class));
         assertThat(routingResult.getTableUnits().getTableUnits().size(), is(1));
-        assertThat(tableUnitList.get(0).getDataSourceName(), is("ds0"));
     }
 
     @Test
@@ -81,7 +79,6 @@ public final class UnicastRoutingEngineTest {
         List<TableUnit> tableUnitList = new ArrayList<>(routingResult.getTableUnits().getTableUnits());
         assertThat(routingResult, instanceOf(RoutingResult.class));
         assertThat(routingResult.getTableUnits().getTableUnits().size(), is(1));
-        assertThat(tableUnitList.get(0).getDataSourceName(), is("ds0"));
     }
     
     @Test
