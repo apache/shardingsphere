@@ -25,11 +25,11 @@ import java.sql.SQLFeatureNotSupportedException;
 import java.util.logging.Logger;
 
 /**
- * Abstract unsupported sharding XA data source.
+ * Abstract unsupported single XA data source.
  *
  * @author zhaojun
  */
-public abstract class AbstractUnsupportedShardingXADataSource implements XADataSource {
+public abstract class AbstractUnsupportedSingleXADataSource implements XADataSource {
     
     @Override
     public final XAConnection getXAConnection(final String user, final String password) throws SQLException {

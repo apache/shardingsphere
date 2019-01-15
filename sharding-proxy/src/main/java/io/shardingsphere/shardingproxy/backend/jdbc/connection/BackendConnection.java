@@ -183,9 +183,7 @@ public final class BackendConnection implements AutoCloseable {
     }
     
     private List<Connection> getConnectionFromUnderlying(final ConnectionMode connectionMode, final String dataSourceName, final int connectionSize) throws SQLException {
-        return TransactionType.XA == transactionType
-            ? logicSchema.getBackendDataSource().getConnections(connectionMode, dataSourceName, connectionSize, TransactionType.XA)
-            : logicSchema.getBackendDataSource().getConnections(connectionMode, dataSourceName, connectionSize);
+        return logicSchema.getBackendDataSource().getConnections(connectionMode, dataSourceName, connectionSize, transactionType);
     }
     
     /**

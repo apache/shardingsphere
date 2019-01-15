@@ -17,7 +17,7 @@
 
 package io.shardingsphere.transaction.xa.manager.atomikos;
 
-import io.shardingsphere.transaction.xa.jta.resource.ShardingXAResource;
+import io.shardingsphere.transaction.xa.jta.resource.SingleXAResource;
 import org.junit.Before;
 import org.junit.Test;
 import org.junit.runner.RunWith;
@@ -33,19 +33,19 @@ import static org.mockito.Mockito.when;
 public class AtomikosXARecoverableResourceTest {
     
     @Mock
-    private ShardingXAResource shardingXAResource;
+    private SingleXAResource singleXAResource;
     
     @Mock
     private XADataSource xaDataSource;
     
     @Before
     public void setUp() {
-        when(shardingXAResource.getResourceName()).thenReturn("ds1");
+        when(singleXAResource.getResourceName()).thenReturn("ds1");
     }
     
     @Test
     public void assertUseXAResource() {
         AtomikosXARecoverableResource atomikosXARecoverableResource = new AtomikosXARecoverableResource("ds1", xaDataSource);
-        assertTrue(atomikosXARecoverableResource.usesXAResource(shardingXAResource));
+        assertTrue(atomikosXARecoverableResource.usesXAResource(singleXAResource));
     }
 }

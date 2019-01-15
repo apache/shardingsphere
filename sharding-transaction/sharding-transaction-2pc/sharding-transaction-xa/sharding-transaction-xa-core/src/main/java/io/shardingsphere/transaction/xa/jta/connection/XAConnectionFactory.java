@@ -36,14 +36,14 @@ import java.sql.Connection;
 public final class XAConnectionFactory {
     
     /**
-     * Create a XA connection from normal connection.
+     * Create XA connection from normal connection.
      *
      * @param databaseType database type
      * @param connection normal connection
      * @param xaDataSource XA data source
      * @return XA connection
      */
-    public static XAConnection createShardingXAConnection(final DatabaseType databaseType, final XADataSource xaDataSource, final Connection connection) {
+    public static XAConnection createXAConnection(final DatabaseType databaseType, final XADataSource xaDataSource, final Connection connection) {
         switch (databaseType) {
             case MySQL:
                 return new MySQLXAConnectionWrapper().wrap(xaDataSource, connection);

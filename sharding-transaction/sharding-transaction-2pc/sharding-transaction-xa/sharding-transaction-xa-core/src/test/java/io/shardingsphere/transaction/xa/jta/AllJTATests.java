@@ -17,10 +17,10 @@
 
 package io.shardingsphere.transaction.xa.jta;
 
-import io.shardingsphere.transaction.xa.jta.connection.ShardingXAConnectionTest;
+import io.shardingsphere.transaction.xa.jta.connection.SingleXAConnectionTest;
 import io.shardingsphere.transaction.xa.jta.connection.XAConnectionFactoryTest;
 import io.shardingsphere.transaction.xa.jta.connection.dialect.MySQLXAConnectionWrapperTest;
-import io.shardingsphere.transaction.xa.jta.datasource.ShardingXADataSourceTest;
+import io.shardingsphere.transaction.xa.jta.datasource.SingleXADataSourceTest;
 import io.shardingsphere.transaction.xa.jta.datasource.XADataSourceFactoryTest;
 import io.shardingsphere.transaction.xa.jta.datasource.properties.XAPropertiesFactoryTest;
 import io.shardingsphere.transaction.xa.jta.datasource.properties.dialect.H2XAPropertiesTest;
@@ -31,16 +31,16 @@ import io.shardingsphere.transaction.xa.jta.datasource.properties.dialect.SQLSer
 import io.shardingsphere.transaction.xa.jta.datasource.swapper.DataSourcePropertyProviderLoaderTest;
 import io.shardingsphere.transaction.xa.jta.datasource.swapper.DataSourceSwapperTest;
 import io.shardingsphere.transaction.xa.jta.datasource.swapper.impl.DefaultDataSourcePropertyProviderTest;
-import io.shardingsphere.transaction.xa.jta.resource.ShardingXAResourceTest;
+import io.shardingsphere.transaction.xa.jta.resource.SingleXAResourceTest;
 import org.junit.runner.RunWith;
 import org.junit.runners.Suite;
 import org.junit.runners.Suite.SuiteClasses;
 
 @RunWith(Suite.class)
 @SuiteClasses({
-        ShardingXAResourceTest.class, 
+        SingleXAResourceTest.class,
         XAPropertiesFactoryTest.class, 
-        ShardingXADataSourceTest.class, 
+        SingleXADataSourceTest.class,
         XADataSourceFactoryTest.class, 
         DataSourcePropertyProviderLoaderTest.class, 
         DataSourceSwapperTest.class,
@@ -51,7 +51,7 @@ import org.junit.runners.Suite.SuiteClasses;
         OracleXAPropertiesTest.class, 
         SQLServerXAPropertiesTest.class, 
         XAConnectionFactoryTest.class, 
-        ShardingXAConnectionTest.class, 
+        SingleXAConnectionTest.class,
         MySQLXAConnectionWrapperTest.class
 })
 public final class AllJTATests {
