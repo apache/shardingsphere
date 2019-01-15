@@ -95,8 +95,8 @@ public final class ShardingDataSourceNames {
      * @return random data source name.
      */
     public String getRandomDataSourceName(final Collection<String> dataSourceNames) {
-        Random random = new Random(dataSourceNames.size());
-        int index = random.nextInt(100) % dataSourceNames.size();
+        Random random = new Random();
+        int index = random.nextInt(dataSourceNames.size());
         Iterator<String> iterator = dataSourceNames.iterator();
         for (int i = 0; i < index; i++) {
             iterator.next();
