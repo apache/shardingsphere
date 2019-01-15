@@ -59,6 +59,7 @@ import java.util.List;
  * @author zhangliang
  * @author maxiaoguang
  * @author panjuan
+ * @author zhangyonglun
  */
 @RequiredArgsConstructor
 public final class ParsingSQLRouter implements ShardingRouter {
