@@ -40,8 +40,6 @@ public final class TableRuleConfiguration implements RuleConfiguration {
     
     private ShardingStrategyConfiguration tableShardingStrategyConfig;
     
-    private String keyGeneratorColumnName;
-    
     private KeyGeneratorConfiguration keyGeneratorConfig;
     
     private String logicIndex;
