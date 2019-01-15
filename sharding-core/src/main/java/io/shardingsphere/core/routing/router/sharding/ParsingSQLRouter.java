@@ -136,7 +136,7 @@ public final class ParsingSQLRouter implements ShardingRouter {
         if (!tableRule.isPresent()) {
             return Optional.absent();
         }
-        Optional<Column> generateKeyColumn = shardingRule.getGenerateKeyColumn(logicTableName);
+        Optional<Column> generateKeyColumn = shardingRule.findGenerateKeyColumn(logicTableName);
         if (generateKeyColumn.isPresent()) {
             result = new GeneratedKey(generateKeyColumn.get());
             for (int i = 0; i < insertStatement.getInsertValues().getInsertValues().size(); i++) {

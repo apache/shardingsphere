@@ -15,25 +15,33 @@
  * </p>
  */
 
-package io.shardingsphere.transaction.xa.jta.connection;
+package io.shardingsphere.core.keygen.generator.impl;
 
-import javax.sql.XADataSource;
-import java.sql.Connection;
+import io.shardingsphere.core.keygen.generator.KeyGenerator;
+import lombok.Getter;
+import lombok.Setter;
+
+import java.util.Properties;
+import java.util.UUID;
 
 /**
- * Sharding XA connection wrapper.
+ * UUID key generator.
  *
- * @author zhaojun
+ * @author panjuan
  */
-public interface ShardingXAConnectionWrapper {
+@Getter
+@Setter
+public final class UUIDKeyGenerator implements KeyGenerator {
     
-    /**
-     * Wrap a normal connection to sharding XA connection.
-     *
-     * @param resourceName resource name
-     * @param xaDataSource XA data source
-     * @param connection connection
-     * @return sharding XA connection
-     */
-    ShardingXAConnection wrap(String resourceName, XADataSource xaDataSource, Connection connection);
+    private Properties properties = new Properties();
+    
+    @Override
+    public String getType() {
+        return "UUID";
+    }
+    
+    @Override
+    public synchronized Comparable<?> generateKey() {
+        return UUID.randomUUID().toString().replaceAll("-", "");
+    }
 }

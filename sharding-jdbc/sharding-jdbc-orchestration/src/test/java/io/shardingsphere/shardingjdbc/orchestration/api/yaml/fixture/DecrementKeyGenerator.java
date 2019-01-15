@@ -26,6 +26,9 @@ import java.util.concurrent.atomic.AtomicInteger;
 
 public final class DecrementKeyGenerator implements KeyGenerator {
     
+    @Getter
+    private final String type = "DECREMENT";
+    
     private final AtomicInteger sequence = new AtomicInteger(100);
     
     @Getter

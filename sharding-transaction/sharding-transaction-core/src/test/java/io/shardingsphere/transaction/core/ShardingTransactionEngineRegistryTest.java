@@ -42,7 +42,7 @@ public final class ShardingTransactionEngineRegistryTest {
         Runnable caller = mock(Runnable.class);
         ShardingTransactionEngineFixture shardingTransactionEngine = (ShardingTransactionEngineFixture) ShardingTransactionEngineRegistry.getEngine(TransactionType.XA);
         shardingTransactionEngine.setCaller(caller);
-        ShardingTransactionEngineRegistry.registerTransactionResource(DatabaseType.H2, mock(Map.class));
+        ShardingTransactionEngineRegistry.init(DatabaseType.H2, mock(Map.class));
         verify(caller).run();
     }
 }

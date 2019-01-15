@@ -46,12 +46,7 @@ public final class XAShardingTransactionEngine implements ShardingTransactionEng
     private final XATransactionManager xaTransactionManager = XATransactionManagerLoader.getInstance().getTransactionManager();
     
     @Override
-    public TransactionType getTransactionType() {
-        return TransactionType.XA;
-    }
-    
-    @Override
-    public void registerTransactionalResources(final DatabaseType databaseType, final Map<String, DataSource> dataSourceMap) {
+    public void init(final DatabaseType databaseType, final Map<String, DataSource> dataSourceMap) {
         for (Entry<String, DataSource> entry : dataSourceMap.entrySet()) {
             DataSource dataSource = entry.getValue();
             if (dataSource instanceof AtomikosDataSourceBean) {
@@ -62,15 +57,12 @@ public final class XAShardingTransactionEngine implements ShardingTransactionEng
             cachedShardingXADataSourceMap.put(resourceName, shardingXADataSource);
             xaTransactionManager.registerRecoveryResource(resourceName, shardingXADataSource.getXaDataSource());
         }
-        xaTransactionManager.startup();
+        xaTransactionManager.init();
     }
     
     @Override
-    public void clearTransactionalResources() {
-        for (ShardingXADataSource each : cachedShardingXADataSourceMap.values()) {
-            xaTransactionManager.removeRecoveryResource(each.getResourceName(), each.getXaDataSource());
-        }
-        cachedShardingXADataSourceMap.clear();
+    public TransactionType getTransactionType() {
+        return TransactionType.XA;
     }
     
     @SneakyThrows
@@ -100,5 +92,14 @@ public final class XAShardingTransactionEngine implements ShardingTransactionEng
     @Override
     public void rollback() {
         xaTransactionManager.rollback();
+    }
+    
+    @Override
+    public void close() throws Exception {
+        for (ShardingXADataSource each : cachedShardingXADataSourceMap.values()) {
+            xaTransactionManager.removeRecoveryResource(each.getResourceName(), each.getXaDataSource());
+        }
+        cachedShardingXADataSourceMap.clear();
+        xaTransactionManager.close();
     }
 }

@@ -20,7 +20,6 @@ package io.shardingsphere.transaction.xa.jta.connection.dialect;
 import com.zaxxer.hikari.HikariDataSource;
 import io.shardingsphere.core.constant.DatabaseType;
 import io.shardingsphere.transaction.xa.fixture.DataSourceUtils;
-import io.shardingsphere.transaction.xa.jta.connection.ShardingXAConnection;
 import io.shardingsphere.transaction.xa.jta.datasource.XADataSourceFactory;
 import org.junit.Before;
 import org.junit.Test;
@@ -29,6 +28,7 @@ import org.mockito.Mock;
 import org.mockito.junit.MockitoJUnitRunner;
 
 import javax.sql.DataSource;
+import javax.sql.XAConnection;
 import javax.sql.XADataSource;
 import javax.transaction.xa.XAResource;
 import java.sql.Connection;
@@ -41,7 +41,7 @@ import static org.mockito.Mockito.mock;
 import static org.mockito.Mockito.when;
 
 @RunWith(MockitoJUnitRunner.class)
-public final class MySQLShardingXAConnectionWrapperTest {
+public final class MySQLXAConnectionWrapperTest {
     
     private XADataSource xaDataSource;
     
@@ -51,15 +51,15 @@ public final class MySQLShardingXAConnectionWrapperTest {
     @Before
     @SuppressWarnings("unchecked")
     public void setUp() throws SQLException, ClassNotFoundException {
-        Connection mysqlConnection = (Connection) mock(Class.forName("com.mysql.jdbc.Connection"));
+        Connection connection = (Connection) mock(Class.forName("com.mysql.jdbc.Connection"));
         DataSource dataSource = DataSourceUtils.build(HikariDataSource.class, DatabaseType.MySQL, "ds1");
         xaDataSource = XADataSourceFactory.build(DatabaseType.MySQL, dataSource);
-        when(connection.unwrap((Class<Object>) any())).thenReturn(mysqlConnection);
+        when(this.connection.unwrap((Class<Object>) any())).thenReturn(connection);
     }
     
     @Test
     public void assertCreateMySQLConnection() throws SQLException {
-        ShardingXAConnection actual = new MySQLShardingXAConnectionWrapper().wrap("ds1", xaDataSource, connection);
+        XAConnection actual = new MySQLXAConnectionWrapper().wrap(xaDataSource, connection);
         assertThat(actual.getXAResource(), instanceOf(XAResource.class));
         assertThat(actual.getConnection(), instanceOf(Connection.class));
     }

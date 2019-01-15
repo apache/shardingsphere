@@ -124,7 +124,7 @@ public class TableReferencesClauseParser implements SQLClauseParser {
                 lexerEngine.skipIfEqual(Symbol.COMMA);
                 String literals = lexerEngine.getCurrentToken().getLiterals();
                 Preconditions.checkState(!Symbol.RIGHT_PAREN.getLiterals().equals(literals), "There is an error in the vicinity of the force index syntax.");
-                if (shardingRule.isLogicIndex(literals, tableName)) {
+                if (literals.equals(shardingRule.getTableRule(tableName).getLogicIndex())) {
                     int beginPosition = lexerEngine.getCurrentToken().getEndPosition() - literals.length();
                     sqlStatement.addSQLToken(new IndexToken(beginPosition, literals, tableName));
                 }

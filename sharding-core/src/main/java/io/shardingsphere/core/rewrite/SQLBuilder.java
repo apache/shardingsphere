@@ -151,7 +151,7 @@ public final class SQLBuilder {
     
     private void appendSchemaPlaceholder(final ShardingRule shardingRule, final ShardingDataSourceMetaData shardingDataSourceMetaData,
                                          final String actualTableName, final StringBuilder stringBuilder) {
-        stringBuilder.append(shardingDataSourceMetaData.getActualDataSourceMetaData(shardingRule.getActualDataSourceNameByActualTableName(actualTableName)).getSchemeName());
+        stringBuilder.append(shardingDataSourceMetaData.getActualDataSourceMetaData(shardingRule.getActualDataSourceName(actualTableName)).getSchemeName());
     }
     
     private void appendIndexPlaceholder(final IndexPlaceholder indexPlaceholder, final String actualTableName, final StringBuilder stringBuilder) {

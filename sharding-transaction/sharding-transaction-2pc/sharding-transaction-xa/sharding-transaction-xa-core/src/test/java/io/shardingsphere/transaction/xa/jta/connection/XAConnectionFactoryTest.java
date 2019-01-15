@@ -18,7 +18,7 @@
 package io.shardingsphere.transaction.xa.jta.connection;
 
 import io.shardingsphere.core.constant.DatabaseType;
-import io.shardingsphere.core.exception.ShardingException;
+import org.h2.jdbcx.JdbcXAConnection;
 import org.junit.Test;
 import org.junit.runner.RunWith;
 import org.mockito.Mock;
@@ -27,8 +27,11 @@ import org.mockito.junit.MockitoJUnitRunner;
 import javax.sql.XADataSource;
 import java.sql.Connection;
 
+import static org.hamcrest.CoreMatchers.instanceOf;
+import static org.junit.Assert.assertThat;
+
 @RunWith(MockitoJUnitRunner.class)
-public final class ShardingXAConnectionFactoryTest {
+public final class XAConnectionFactoryTest {
     
     @Mock
     private XADataSource xaDataSource;
@@ -36,14 +39,14 @@ public final class ShardingXAConnectionFactoryTest {
     @Mock
     private Connection connection;
     
-    @Test(expected = ShardingException.class)
+    @Test(expected = Exception.class)
+    // TODO assert fail
     public void assertCreateMySQLShardingXAConnection() {
-        ShardingXAConnectionFactory.createShardingXAConnection(DatabaseType.MySQL, "ds1", xaDataSource, connection);
+        XAConnectionFactory.createShardingXAConnection(DatabaseType.MySQL, xaDataSource, connection);
     }
     
     @Test
-    // TODO add assert
     public void assertCreateH2ShardingXAConnection() {
-        ShardingXAConnectionFactory.createShardingXAConnection(DatabaseType.H2, "ds1", xaDataSource, connection);
+        assertThat(XAConnectionFactory.createShardingXAConnection(DatabaseType.H2, xaDataSource, connection), instanceOf(JdbcXAConnection.class));
     }
 }

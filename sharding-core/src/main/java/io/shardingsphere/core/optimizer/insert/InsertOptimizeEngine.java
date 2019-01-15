@@ -31,6 +31,7 @@ import io.shardingsphere.core.parsing.parser.sql.dml.insert.InsertStatement;
 import io.shardingsphere.core.routing.router.sharding.GeneratedKey;
 import io.shardingsphere.core.rule.ShardingRule;
 import lombok.RequiredArgsConstructor;
+
 import java.util.ArrayList;
 import java.util.Collection;
 import java.util.Iterator;
@@ -82,7 +83,7 @@ public final class InsertOptimizeEngine implements OptimizeEngine {
     }
     
     private boolean isNeededToAppendGeneratedKey() {
-        return -1 == insertStatement.getGenerateKeyColumnIndex() && shardingRule.getGenerateKeyColumn(insertStatement.getTables().getSingleTableName()).isPresent();
+        return -1 == insertStatement.getGenerateKeyColumnIndex() && shardingRule.findGenerateKeyColumn(insertStatement.getTables().getSingleTableName()).isPresent();
     }
     
     private List<Object> getCurrentParameters(final int beginCount, final int increment) {
@@ -92,7 +93,7 @@ public final class InsertOptimizeEngine implements OptimizeEngine {
     }
     
     private InsertShardingCondition getInsertShardingCondition(final Comparable<?> currentGeneratedKey, final InsertValue insertValue, final List<Object> currentParameters) {
-        Column generateKeyColumn = shardingRule.getGenerateKeyColumn(insertStatement.getTables().getSingleTableName()).get();
+        Column generateKeyColumn = shardingRule.findGenerateKeyColumn(insertStatement.getTables().getSingleTableName()).get();
         String expression = getExpression(insertValue, currentGeneratedKey, generateKeyColumn, currentParameters);
         InsertShardingCondition result = new InsertShardingCondition(expression, currentParameters);
         result.getShardingValues().add(getShardingCondition(generateKeyColumn, currentGeneratedKey));

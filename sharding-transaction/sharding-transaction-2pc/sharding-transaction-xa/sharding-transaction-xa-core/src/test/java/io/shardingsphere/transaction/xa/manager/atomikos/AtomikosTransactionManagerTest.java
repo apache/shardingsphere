@@ -56,8 +56,8 @@ public final class AtomikosTransactionManagerTest {
     }
     
     @Test
-    public void assertStartup() {
-        atomikosTransactionManager.startup();
+    public void assertInit() {
+        atomikosTransactionManager.init();
         verify(userTransactionService).init();
     }
     
@@ -101,8 +101,8 @@ public final class AtomikosTransactionManagerTest {
     }
     
     @Test
-    public void assertShutdown() {
-        atomikosTransactionManager.destroy();
+    public void assertClose() {
+        atomikosTransactionManager.close();
         verify(userTransactionService).shutdown(true);
     }
 }

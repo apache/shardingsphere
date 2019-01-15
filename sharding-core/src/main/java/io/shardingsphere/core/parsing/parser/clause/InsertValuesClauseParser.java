@@ -128,7 +128,7 @@ public abstract class InsertValuesClauseParser implements SQLClauseParser {
     }
     
     private void removeGenerateKeyColumn(final InsertStatement insertStatement, final int valueCount) {
-        Optional<Column> generateKeyColumn = shardingRule.getGenerateKeyColumn(insertStatement.getTables().getSingleTableName());
+        Optional<Column> generateKeyColumn = shardingRule.findGenerateKeyColumn(insertStatement.getTables().getSingleTableName());
         if (generateKeyColumn.isPresent() && valueCount < insertStatement.getColumns().size()) {
             List<ItemsToken> itemsTokens = insertStatement.getItemsTokens();
             insertStatement.getColumns().remove(new Column(generateKeyColumn.get().getName(), insertStatement.getTables().getSingleTableName()));

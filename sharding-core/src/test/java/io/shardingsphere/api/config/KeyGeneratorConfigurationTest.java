@@ -18,53 +18,32 @@
 package io.shardingsphere.api.config;
 
 import io.shardingsphere.core.exception.ShardingConfigurationException;
-import io.shardingsphere.core.keygen.generator.SnowflakeKeyGenerator;
-import io.shardingsphere.core.keygen.generator.UUIDKeyGenerator;
-import io.shardingsphere.core.yaml.sharding.YamlKeyGeneratorConfiguration;
+import io.shardingsphere.core.keygen.generator.impl.SnowflakeKeyGenerator;
+import io.shardingsphere.core.keygen.generator.impl.UUIDKeyGenerator;
 import org.junit.Test;
 
 import java.util.Properties;
 
 import static org.hamcrest.CoreMatchers.is;
 import static org.junit.Assert.assertThat;
+import static org.junit.Assert.assertTrue;
 
 public class KeyGeneratorConfigurationTest {
     
     @Test
     public void assertGetKeyGeneratorWithAllProperties() {
-        KeyGeneratorConfiguration keyGeneratorConfiguration = new KeyGeneratorConfiguration("order_id", "SNOWFLAKE", SnowflakeKeyGenerator.class.getName(), new Properties());
+        KeyGeneratorConfiguration keyGeneratorConfiguration = new KeyGeneratorConfiguration("order_id", "SNOWFLAKE", new Properties());
         assertThat(keyGeneratorConfiguration.getColumn(), is("order_id"));
         assertThat(keyGeneratorConfiguration.getType(), is("SNOWFLAKE"));
-        assertThat(keyGeneratorConfiguration.getClassName(), is(SnowflakeKeyGenerator.class.getName()));
         assertThat(keyGeneratorConfiguration.getProps().entrySet().size(), is(0));
     }
     
     @Test
-    public void assertGetKeyGeneratorWithClassName() {
-        KeyGeneratorConfiguration keyGeneratorConfiguration = new KeyGeneratorConfiguration();
-        keyGeneratorConfiguration.setClassName("io.shardingsphere.core.keygen.generator.SnowflakeKeyGenerator");
-        assertThat(keyGeneratorConfiguration.getKeyGenerator().getClass().getName(), is(SnowflakeKeyGenerator.class.getName()));
-    }
-    
-    @Test
     public void assertGetKeyGeneratorWithSnowflakeType() {
-        KeyGeneratorConfiguration keyGeneratorConfiguration = new KeyGeneratorConfiguration("order_id", "SNOWFLAKE", null, new Properties());
+        KeyGeneratorConfiguration keyGeneratorConfiguration = new KeyGeneratorConfiguration("order_id", "SNOWFLAKE", new Properties());
         assertThat(keyGeneratorConfiguration.getKeyGenerator().getClass().getName(), is(SnowflakeKeyGenerator.class.getName()));
     }
-    
-    @Test
-    public void assertGetKeyGeneratorWithoutTypeAndClassName() {
-        KeyGeneratorConfiguration keyGeneratorConfiguration = new KeyGeneratorConfiguration();
-        assertThat(keyGeneratorConfiguration.getKeyGenerator().getClass().getName(), is(SnowflakeKeyGenerator.class.getName()));
-    }
-    
-    @Test(expected = IllegalArgumentException.class)
-    public void assertGetKeyGeneratorClassNameWithLeaf() {
-        KeyGeneratorConfiguration keyGeneratorConfiguration = new KeyGeneratorConfiguration();
-        keyGeneratorConfiguration.setType("LEAF");
-        keyGeneratorConfiguration.getKeyGenerator();
-    }
-    
+        
     @Test
     public void assertGetKeyGeneratorClassNameWithUUID() {
         KeyGeneratorConfiguration keyGeneratorConfiguration = new KeyGeneratorConfiguration();
@@ -81,12 +60,7 @@ public class KeyGeneratorConfigurationTest {
     
     @Test
     public void assertGetKeyGeneratorVariables() {
-        YamlKeyGeneratorConfiguration keyGeneratorConfiguration = new YamlKeyGeneratorConfiguration();
-        keyGeneratorConfiguration.setType("SNOWFLAKE");
-        keyGeneratorConfiguration.setClassName("io.shardingsphere.core.keygen.generator.SnowflakeKeyGenerator");
-        keyGeneratorConfiguration.setColumn("order_id");
-        assertThat(keyGeneratorConfiguration.getType(), is("SNOWFLAKE"));
-        assertThat(keyGeneratorConfiguration.getClassName(), is("io.shardingsphere.core.keygen.generator.SnowflakeKeyGenerator"));
-        assertThat(keyGeneratorConfiguration.getColumn(), is("order_id"));
+        KeyGeneratorConfiguration keyGeneratorConfiguration = new KeyGeneratorConfiguration();
+        assertTrue(null == keyGeneratorConfiguration.getKeyGenerator());
     }
 }
