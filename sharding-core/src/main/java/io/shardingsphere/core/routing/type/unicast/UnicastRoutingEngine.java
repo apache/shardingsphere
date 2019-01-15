@@ -17,6 +17,7 @@
 
 package io.shardingsphere.core.routing.type.unicast;
 
+import io.shardingsphere.core.exception.ShardingConfigurationException;
 import io.shardingsphere.core.routing.type.RoutingEngine;
 import io.shardingsphere.core.routing.type.RoutingResult;
 import io.shardingsphere.core.routing.type.RoutingTable;
@@ -27,6 +28,7 @@ import lombok.RequiredArgsConstructor;
 
 import java.util.ArrayList;
 import java.util.Collection;
+import java.util.LinkedList;
 import java.util.List;
 
 /**
@@ -50,11 +52,11 @@ public final class UnicastRoutingEngine implements RoutingEngine {
             for (String each : logicTables) {
                 routingTables.add(new RoutingTable(each, each));
             }
-            TableUnit tableUnit = new TableUnit(shardingRule.getShardingDataSourceNames().getDataSourceNames().iterator().next());
+            TableUnit tableUnit = new TableUnit(shardingRule.getShardingDataSourceNames().getRandomDataSourceName());
             tableUnit.getRoutingTables().addAll(routingTables);
             result.getTableUnits().getTableUnits().add(tableUnit);
         } else if (logicTables.isEmpty()) {
-            result.getTableUnits().getTableUnits().add(new TableUnit(shardingRule.getShardingDataSourceNames().getDataSourceNames().iterator().next()));
+            result.getTableUnits().getTableUnits().add(new TableUnit(shardingRule.getShardingDataSourceNames().getRandomDataSourceName()));
         } else if (1 == logicTables.size()) {
             String logicTableName = logicTables.iterator().next();
             DataNode dataNode = shardingRule.findDataNode(logicTableName);
@@ -62,16 +64,19 @@ public final class UnicastRoutingEngine implements RoutingEngine {
             tableUnit.getRoutingTables().add(new RoutingTable(logicTableName, dataNode.getTableName()));
             result.getTableUnits().getTableUnits().add(tableUnit);
         } else {
-            String dataSourceName = null;
             List<RoutingTable> routingTables = new ArrayList<>(logicTables.size());
+            Collection<String> availableDatasourceNames = new LinkedList<>();
             for (String each : logicTables) {
-                DataNode dataNode = shardingRule.findDataNode(dataSourceName, each);
+                DataNode dataNode = shardingRule.findDataNode(each);
                 routingTables.add(new RoutingTable(each, dataNode.getTableName()));
-                if (null == dataSourceName) {
-                    dataSourceName = dataNode.getDataSourceName();
+                if (null != dataNode.getDataSourceName()) {
+                    availableDatasourceNames.add(dataNode.getDataSourceName());
                 }
             }
-            TableUnit tableUnit = new TableUnit(dataSourceName);
+            if (availableDatasourceNames.isEmpty()) {
+                throw new ShardingConfigurationException("Cannot find actual datasource for logic tables: %s", logicTables);
+            }
+            TableUnit tableUnit = new TableUnit(shardingRule.getShardingDataSourceNames().getRandomDataSourceName(availableDatasourceNames));
             tableUnit.getRoutingTables().addAll(routingTables);
             result.getTableUnits().getTableUnits().add(tableUnit);
         }

@@ -28,6 +28,14 @@ import static org.junit.Assert.assertEquals;
 public class SQLRouteTest extends AbstractSQLRouteTest {
     
     @Test
+    public void assertNoTableUnicastRandomDataSource() {
+        String sql = "SELECT id,name ";
+        List<Object> parameters = new LinkedList<>();
+        parameters.add(1);
+        route(sql, parameters);
+    }
+    
+    @Test
     public void assertDefaultDataSourceRoute() {
         String sql = "SELECT id,name from user where id = ?";
         List<Object> parameters = new LinkedList<>();
