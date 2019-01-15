@@ -9,7 +9,7 @@ weight = 3
 
 * 完全支持跨库事务。
 
-* 使用Service-Comb-Saga。
+* 使用Servicecomb-Saga。
 
 * 支持反向SQL以及更新快照自动生成以及自动补偿。
 

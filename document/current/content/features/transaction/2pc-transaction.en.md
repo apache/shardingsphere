@@ -7,12 +7,12 @@ weight = 2
 
 ## Concept
 
-* Support the cross-database transactions.
+* Fully support cross-database transactions.
 
-* Use Atomikos as transaction manager by default, can use SPI to provide other XA transaction manager.
+* Use Atomikos by default; support to use SPI to upload other XA transaction managers.
 
-## Supported
+## Supported Situation
 
-* Sharding-JDBC support by end user to configure xa data sources
+* Sharding-JDBC can support users' own configurations of XA data source.
 
-* Sharding-Proxy support
+* Sharding-Proxy support.

@@ -7,11 +7,11 @@ weight = 3
 
 ## Concept
 
-* Support the cross-database transactions.
+* Fully support cross-database transactions.
 
-* Use Service-Comb-Saga
+* Use Servicecomb-Saga.
 
-* Support SQL revert, update snapshot and auto compensation.
+* Support reverted SQL, auto-generation of update snapshot and auto-compensation.
 
 ## Supported
 

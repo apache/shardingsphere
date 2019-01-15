@@ -7,14 +7,16 @@ weight = 1
 
 ## Concept
 
-* Support the none-cross-database transactions, e.g. table sharding without database sharding, or database sharding with the queries routed in the same database.
+* Fully support none-cross-database transactions, for example, table sharding only or database sharding with route result in the single database.
 
-* Support the exception handling for the cross-database transactions due to logical exceptions. For example, in the same transaction, you want to update two databases, ShardingSphere will rollback all transactions for all two database when a null pointer is thrown after updating.
+* Fully support cross-database transactions caused by logic exceptions, for example, the update of two databases in one transaction. 
+After the update, the null cursor is thrown and the content in both databases can be rolled back.
 
-* Do not support the exception handling for the cross-database transactions due to network or hardware exceptions. For example, in the same transaction, you want to update two databases, ShardingSphere will only commit the transaction for second database when the first database is dead after updating.
+* Do not support the cross-database transactions caused by network or hardware exceptions. 
+For example, after the update of two databases in one transaction, one database is down before it is submitted, then only the data of the second database can be submitted.
 
-## Supported
+## Supported Situation
 
-* Sharding-JDBC support by end user to configure without XA data sources
+* Sharding-JDBC can support users' own configurations without the use of XA data source.
 
-* Sharding-Proxy do not need support, just use XA or BASE transaction
+* Sharding-Proxy do not need support; just use XA or BASE transactions.
