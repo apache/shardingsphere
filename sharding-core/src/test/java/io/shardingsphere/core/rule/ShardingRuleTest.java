@@ -399,7 +399,9 @@ public final class ShardingRuleTest {
         TableRuleConfiguration result = new TableRuleConfiguration();
         result.setLogicTable(logicTableName);
         result.setActualDataNodes(actualDataNodes);
-        result.setKeyGeneratorColumnName(keyGeneratorColumnName);
+        KeyGeneratorConfiguration keyGeneratorConfiguration = new KeyGeneratorConfiguration();
+        keyGeneratorConfiguration.setColumn(keyGeneratorColumnName);
+        result.setKeyGeneratorConfig(keyGeneratorConfiguration);
         return result;
     }
     
