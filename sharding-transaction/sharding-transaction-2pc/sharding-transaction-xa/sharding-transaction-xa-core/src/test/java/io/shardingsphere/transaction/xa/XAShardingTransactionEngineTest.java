@@ -82,7 +82,7 @@ public class XAShardingTransactionEngineTest {
     @Test
     public void assertRegisterXATransactionalDataSources() {
         Map<String, DataSource> dataSourceMap = createDataSourceMap(DruidXADataSource.class, DatabaseType.MySQL);
-        xaShardingTransactionEngine.registerTransactionalResources(DatabaseType.MySQL, dataSourceMap);
+        xaShardingTransactionEngine.init(DatabaseType.MySQL, dataSourceMap);
         for (Entry<String, DataSource> entry : dataSourceMap.entrySet()) {
             verify(xaTransactionManager).registerRecoveryResource(entry.getKey(), (XADataSource) entry.getValue());
         }
@@ -91,14 +91,14 @@ public class XAShardingTransactionEngineTest {
     @Test
     public void assertRegisterAtomikosDataSourceBeans() {
         Map<String, DataSource> dataSourceMap = createAtomikosDataSourceBeanMap();
-        xaShardingTransactionEngine.registerTransactionalResources(DatabaseType.MySQL, dataSourceMap);
+        xaShardingTransactionEngine.init(DatabaseType.MySQL, dataSourceMap);
         verify(xaTransactionManager, times(0)).registerRecoveryResource(anyString(), any(XADataSource.class));
     }
     
     @Test
     public void assertRegisterNoneXATransactionalDAtaSources() {
         Map<String, DataSource> dataSourceMap = createDataSourceMap(HikariDataSource.class, DatabaseType.MySQL);
-        xaShardingTransactionEngine.registerTransactionalResources(DatabaseType.MySQL, dataSourceMap);
+        xaShardingTransactionEngine.init(DatabaseType.MySQL, dataSourceMap);
         Map<String, ShardingXADataSource> cachedXADatasourceMap = getCachedShardingXADataSourceMap();
         assertThat(cachedXADatasourceMap.size(), is(2));
     }
@@ -124,9 +124,9 @@ public class XAShardingTransactionEngineTest {
     }
     
     @Test
-    public void assertClearTransactionalDataSources() {
+    public void assertClose() throws Exception {
         setCachedShardingXADataSourceMap("ds1");
-        xaShardingTransactionEngine.clearTransactionalResources();
+        xaShardingTransactionEngine.close();
         Map<String, ShardingXADataSource> cachedShardingXADataSourceMap = getCachedShardingXADataSourceMap();
         verify(xaTransactionManager).removeRecoveryResource(anyString(), any(XADataSource.class));
         assertThat(cachedShardingXADataSourceMap.size(), is(0));

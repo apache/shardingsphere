@@ -79,7 +79,7 @@ public abstract class InsertSetClauseParser implements SQLClauseParser {
         int beginPosition = lexerEngine.getCurrentToken().getEndPosition() - lexerEngine.getCurrentToken().getLiterals().length();
         insertStatement.addSQLToken(new InsertValuesToken(beginPosition, insertStatement.getTables().getSingleTableName()));
         String tableName = insertStatement.getTables().getSingleTableName();
-        Optional<Column> generateKeyColumn = shardingRule.getGenerateKeyColumn(tableName);
+        Optional<Column> generateKeyColumn = shardingRule.findGenerateKeyColumn(tableName);
         int count = 0;
         do {
             SQLExpression left = basicExpressionParser.parse(insertStatement);

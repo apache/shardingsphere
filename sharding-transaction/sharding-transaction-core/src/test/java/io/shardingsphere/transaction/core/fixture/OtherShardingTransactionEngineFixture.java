@@ -28,16 +28,12 @@ import java.util.Map;
 public final class OtherShardingTransactionEngineFixture implements ShardingTransactionEngine {
     
     @Override
+    public void init(final DatabaseType databaseType, final Map<String, DataSource> dataSourceMap) {
+    }
+    
+    @Override
     public TransactionType getTransactionType() {
         return TransactionType.XA;
-    }
-    
-    @Override
-    public void registerTransactionalResources(final DatabaseType databaseType, final Map<String, DataSource> dataSourceMap) {
-    }
-    
-    @Override
-    public void clearTransactionalResources() {
     }
     
     @Override
@@ -60,5 +56,9 @@ public final class OtherShardingTransactionEngineFixture implements ShardingTran
     
     @Override
     public void rollback() {
+    }
+    
+    @Override
+    public void close() {
     }
 }

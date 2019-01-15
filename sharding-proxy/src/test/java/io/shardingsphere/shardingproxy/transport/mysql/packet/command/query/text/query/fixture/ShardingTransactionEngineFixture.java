@@ -40,16 +40,12 @@ public final class ShardingTransactionEngineFixture implements ShardingTransacti
     private static Collection<TransactionOperationType> invocations = new LinkedList<>();
     
     @Override
+    public void init(final DatabaseType databaseType, final Map<String, DataSource> dataSourceMap) {
+    }
+    
+    @Override
     public TransactionType getTransactionType() {
         return TransactionType.XA;
-    }
-    
-    @Override
-    public void registerTransactionalResources(final DatabaseType databaseType, final Map<String, DataSource> dataSourceMap) {
-    }
-    
-    @Override
-    public void clearTransactionalResources() {
     }
     
     @Override
@@ -75,5 +71,9 @@ public final class ShardingTransactionEngineFixture implements ShardingTransacti
     @Override
     public void rollback() {
         invocations.add(TransactionOperationType.ROLLBACK);
+    }
+    
+    @Override
+    public void close() {
     }
 }

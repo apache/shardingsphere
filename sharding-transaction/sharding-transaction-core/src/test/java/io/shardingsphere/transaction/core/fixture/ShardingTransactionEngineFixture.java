@@ -32,17 +32,13 @@ public final class ShardingTransactionEngineFixture implements ShardingTransacti
     private Runnable caller;
     
     @Override
-    public TransactionType getTransactionType() {
-        return TransactionType.XA;
-    }
-    
-    @Override
-    public void registerTransactionalResources(final DatabaseType databaseType, final Map<String, DataSource> dataSourceMap) {
+    public void init(final DatabaseType databaseType, final Map<String, DataSource> dataSourceMap) {
         caller.run();
     }
     
     @Override
-    public void clearTransactionalResources() {
+    public TransactionType getTransactionType() {
+        return TransactionType.XA;
     }
     
     @Override
@@ -65,5 +61,9 @@ public final class ShardingTransactionEngineFixture implements ShardingTransacti
     
     @Override
     public void rollback() {
+    }
+    
+    @Override
+    public void close() {
     }
 }

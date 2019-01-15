@@ -30,10 +30,7 @@ import org.junit.runners.Parameterized;
 
 import javax.sql.DataSource;
 import java.io.File;
-import java.io.IOException;
-import java.net.URISyntaxException;
 import java.sql.Connection;
-import java.sql.SQLException;
 import java.sql.Statement;
 import java.util.Arrays;
 import java.util.Collection;
@@ -60,7 +57,7 @@ public class YamlOrchestrationShardingWithMasterSlaveIntegrateTest extends Abstr
     }
     
     @Test
-    public void assertWithDataSource() throws SQLException, URISyntaxException, IOException {
+    public void assertWithDataSource() throws Exception {
         File yamlFile = new File(YamlOrchestrationShardingWithMasterSlaveIntegrateTest.class.getResource(filePath).toURI());
         DataSource dataSource;
         if (hasDataSource) {

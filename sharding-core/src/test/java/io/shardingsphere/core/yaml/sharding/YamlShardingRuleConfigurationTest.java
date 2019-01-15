@@ -23,7 +23,7 @@ import io.shardingsphere.api.config.rule.MasterSlaveRuleConfiguration;
 import io.shardingsphere.api.config.rule.ShardingRuleConfiguration;
 import io.shardingsphere.api.config.rule.TableRuleConfiguration;
 import io.shardingsphere.api.config.strategy.NoneShardingStrategyConfiguration;
-import io.shardingsphere.core.keygen.generator.SnowflakeKeyGenerator;
+import io.shardingsphere.core.keygen.generator.impl.SnowflakeKeyGenerator;
 import io.shardingsphere.core.yaml.masterslave.YamlMasterSlaveRuleConfiguration;
 import io.shardingsphere.core.yaml.sharding.strategy.YamlNoneShardingStrategyConfiguration;
 import org.hamcrest.CoreMatchers;
@@ -62,7 +62,7 @@ public final class YamlShardingRuleConfigurationTest {
         result.getBindingTables().add("t_order, t_order_item");
         result.getBroadcastTables().add("t_config");
         YamlKeyGeneratorConfiguration keyGeneratorConfiguration = new YamlKeyGeneratorConfiguration();
-        keyGeneratorConfiguration.setClassName(SnowflakeKeyGenerator.class.getName());
+        keyGeneratorConfiguration.setType("SNOWFLAKE");
         result.setDefaultKeyGenerator(keyGeneratorConfiguration);
         result.getMasterSlaveRules().put("master_slave_ds", createYamlMasterSlaveRuleConfig());
         return result;

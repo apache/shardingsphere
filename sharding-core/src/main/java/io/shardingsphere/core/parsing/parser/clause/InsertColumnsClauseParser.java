@@ -68,7 +68,7 @@ public final class InsertColumnsClauseParser implements SQLClauseParser {
      */
     public void parse(final InsertStatement insertStatement, final ShardingTableMetaData shardingTableMetaData) {
         String tableName = insertStatement.getTables().getSingleTableName();
-        Optional<Column> generateKeyColumn = shardingRule.getGenerateKeyColumn(tableName);
+        Optional<Column> generateKeyColumn = shardingRule.findGenerateKeyColumn(tableName);
         insertStatement.getColumns().addAll(lexerEngine.equalAny(Symbol.LEFT_PAREN)
                 ? parseWithColumn(insertStatement, tableName, generateKeyColumn) : parseWithoutColumn(insertStatement, shardingTableMetaData, tableName, generateKeyColumn));
     }

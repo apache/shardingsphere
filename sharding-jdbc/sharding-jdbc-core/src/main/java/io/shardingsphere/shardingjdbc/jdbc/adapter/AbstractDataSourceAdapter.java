@@ -57,7 +57,7 @@ public abstract class AbstractDataSourceAdapter extends AbstractUnsupportedOpera
     
     public AbstractDataSourceAdapter(final Map<String, DataSource> dataSourceMap) throws SQLException {
         databaseType = getDatabaseType(dataSourceMap.values());
-        ShardingTransactionEngineRegistry.registerTransactionResource(databaseType, dataSourceMap);
+        ShardingTransactionEngineRegistry.init(databaseType, dataSourceMap);
         this.dataSourceMap = dataSourceMap;
     }
     
@@ -91,12 +91,13 @@ public abstract class AbstractDataSourceAdapter extends AbstractUnsupportedOpera
     }
     
     @Override
-    public void close() {
+    public void close() throws Exception {
         for (DataSource each : dataSourceMap.values()) {
             try {
                 ReflectiveUtil.findMethod(each, "close").invoke(each);
             } catch (final ReflectiveOperationException ignored) {
             }
         }
+        ShardingTransactionEngineRegistry.close();
     }
 }

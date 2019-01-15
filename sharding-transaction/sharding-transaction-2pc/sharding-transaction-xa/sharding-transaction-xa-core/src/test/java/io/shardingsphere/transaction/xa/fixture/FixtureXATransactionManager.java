@@ -26,7 +26,7 @@ import javax.transaction.xa.XAResource;
 public final class FixtureXATransactionManager implements XATransactionManager {
     
     @Override
-    public void startup() {
+    public void init() {
     }
     
     @Override
@@ -59,6 +59,6 @@ public final class FixtureXATransactionManager implements XATransactionManager {
     }
     
     @Override
-    public void destroy() {
+    public void close() {
     }
 }

@@ -70,14 +70,25 @@ public final class ShardingTransactionEngineRegistry {
     }
     
     /**
-     * Register transaction resource.
+     * Initialize sharding transaction engines.
      * 
      * @param databaseType database type
      * @param dataSourceMap data source map
      */
-    public static void registerTransactionResource(final DatabaseType databaseType, final Map<String, DataSource> dataSourceMap) {
+    public static void init(final DatabaseType databaseType, final Map<String, DataSource> dataSourceMap) {
         for (Entry<TransactionType, ShardingTransactionEngine> entry : ENGINES.entrySet()) {
-            entry.getValue().registerTransactionalResources(databaseType, dataSourceMap);
+            entry.getValue().init(databaseType, dataSourceMap);
+        }
+    }
+    
+    /**
+     * Close sharding transaction engines.
+     * 
+     * @throws Exception exception
+     */
+    public static void close() throws Exception {
+        for (Entry<TransactionType, ShardingTransactionEngine> entry : ENGINES.entrySet()) {
+            entry.getValue().close();
         }
     }
 }
