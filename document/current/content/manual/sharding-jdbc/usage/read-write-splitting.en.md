@@ -4,9 +4,9 @@ title = "Read-write Splitting"
 weight = 2
 +++
 
-## Without spring
+## Not Use Spring
 
-### Add maven dependency
+### Introduce Maven Dependency
 
 ```xml
 <dependency>
@@ -16,7 +16,7 @@ weight = 2
 </dependency>
 ```
 
-### Configure read-write splitting rule with java
+### Rule Configuration Based on Java
 
 ```java
     // Configure actual data sources
@@ -53,7 +53,7 @@ weight = 2
     DataSource dataSource = MasterSlaveDataSourceFactory.createDataSource(createDataSourceMap(), masterSlaveRuleConfig, new HashMap<String, Object>());
 ```
 
-### Configure read-write splitting rule with yaml
+### Rule Configuration Based on Yaml
 
 To configure by yaml, similar with the configuration method of java codes:
 
@@ -90,10 +90,11 @@ masterSlaveRule:
     DataSource dataSource = MasterSlaveDataSourceFactory.createDataSource(yamlFile);
 ```
 
-### Use raw JDBC
+### Use Native JDBC
 
-By using MasterSlaveDataSourceFactory factory class and rule configuration object, we can obtain MasterSlaveDataSource which implements the standard interface of DataSource in JDBC. Thus you can choose to use native JDBC DataSource for development, or using JPA, MyBatis ORM tools, etc.
-Take DataSource in JDBC as an example:
+Configure objects with `MasterSlaveDataSourceFactory` to get `MasterSlaveDataSource`, which is realized by standard JDBC DataSource interface. 
+Or choose native JDBC to develop through DataSource; or use JPA, MyBatis and other ORM tools. 
+Take native JDBC for example:
 
 ```java
 DataSource dataSource = MasterSlaveDataSourceFactory.createDataSource(yamlFile);
@@ -112,9 +113,9 @@ try (
 }
 ```
 
-## Using spring
+## Use Spring
 
-### Add maven dependency
+### Introduce Maven Dependency
 
 ```xml
 <!-- for spring boot -->
@@ -132,7 +133,7 @@ try (
 </dependency>
 ```
 
-### Configure read-write splitting rule with spring boot
+### Rule Configuration Based on Spring Boot
 
 ```properties
 sharding.jdbc.datasource.names=master,slave0,slave1
@@ -162,7 +163,7 @@ sharding.jdbc.config.masterslave.slave-data-source-names=slave0,slave1
 sharding.jdbc.config.props.sql.show=true
 ```
 
-### Configure read-write splitting rule with spring namespace
+### Rule Configuration Based on Spring Name Space
 
 ```xml
 <?xml version="1.0" encoding="UTF-8"?>
@@ -203,13 +204,13 @@ sharding.jdbc.config.props.sql.show=true
 </beans>
 ```
 
-### Use DataSource on spring
+### Use DataSource in Spring
 
-Just inject or configure data source to JPA, Hibernate orMyBatis.
+Inject DataSource to use; or configure DataSource in JPA, Hibernate or MyBatis to use.
 
 ```java
 @Resource
 private DataSource dataSource;
 ```
 
-More details please reference [configuration manual](/en/manual/sharding-jdbc/configuration/).
+For more detailed configurations, please refer to [Configuration Manual](/en/manual/sharding-jdbc/configuration/).
