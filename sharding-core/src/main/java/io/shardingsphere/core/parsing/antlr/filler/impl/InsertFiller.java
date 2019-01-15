@@ -69,7 +69,7 @@ public class InsertFiller implements SQLStatementFiller<InsertSegment> {
         }
         String tableName = insertStatement.getTables().getSingleTableName();
         int index = 0;
-        Optional<Column> shardingColumn = shardingRule.getGenerateKeyColumn(tableName);
+        Optional<Column> shardingColumn = shardingRule.findGenerateKeyColumn(tableName);
         for (ColumnSegment each : sqlSegment.getColumns()) {
             Column column = new Column(each.getName(), tableName);
             insertStatement.getColumns().add(column);
@@ -91,7 +91,7 @@ public class InsertFiller implements SQLStatementFiller<InsertSegment> {
         ItemsToken columnsToken = new ItemsToken(beginPosition);
         columnsToken.setFirstOfItemsSpecial(true);
         if (shardingTableMetaData.containsTable(tableName)) {
-            Optional<Column> generateKeyColumn = shardingRule.getGenerateKeyColumn(insertStatement.getTables().getSingleTableName());
+            Optional<Column> generateKeyColumn = shardingRule.findGenerateKeyColumn(insertStatement.getTables().getSingleTableName());
             for (String each : shardingTableMetaData.getAllColumnNames(tableName)) {
                 if (generateKeyColumn.isPresent() && generateKeyColumn.get().getName().equalsIgnoreCase(each)) {
                     insertStatement.setGenerateKeyColumnIndex(count);
@@ -146,7 +146,7 @@ public class InsertFiller implements SQLStatementFiller<InsertSegment> {
     }
     
     private void removeGenerateKeyColumn(final InsertStatement insertStatement, final ShardingRule shardingRule, final int valueCount) {
-        Optional<Column> generateKeyColumn = shardingRule.getGenerateKeyColumn(insertStatement.getTables().getSingleTableName());
+        Optional<Column> generateKeyColumn = shardingRule.findGenerateKeyColumn(insertStatement.getTables().getSingleTableName());
         if (generateKeyColumn.isPresent() && valueCount < insertStatement.getColumns().size()) {
             List<ItemsToken> itemsTokens = insertStatement.getItemsTokens();
             insertStatement.getColumns().remove(new Column(generateKeyColumn.get().getName(), insertStatement.getTables().getSingleTableName()));
@@ -169,7 +169,7 @@ public class InsertFiller implements SQLStatementFiller<InsertSegment> {
     
     private void processGeneratedKey(final ShardingRule shardingRule, final InsertStatement insertStatement) {
         String tableName = insertStatement.getTables().getSingleTableName();
-        Optional<Column> generateKeyColumn = shardingRule.getGenerateKeyColumn(tableName);
+        Optional<Column> generateKeyColumn = shardingRule.findGenerateKeyColumn(tableName);
         if (-1 != insertStatement.getGenerateKeyColumnIndex() || !generateKeyColumn.isPresent()) {
             return;
         }
