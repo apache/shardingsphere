@@ -17,7 +17,7 @@
 
 package io.shardingsphere.transaction.xa.jta.connection;
 
-import io.shardingsphere.transaction.xa.jta.resource.ShardingXAResource;
+import io.shardingsphere.transaction.xa.jta.resource.SingleXAResource;
 import lombok.RequiredArgsConstructor;
 
 import javax.sql.ConnectionEventListener;
@@ -28,12 +28,12 @@ import java.sql.Connection;
 import java.sql.SQLException;
 
 /**
- * Sharding XA Connection.
+ * Single XA Connection.
  *
  * @author zhaojun
  */
 @RequiredArgsConstructor
-public final class ShardingXAConnection implements XAConnection {
+public final class SingleXAConnection implements XAConnection {
     
     private final String resourceName;
     
@@ -41,7 +41,7 @@ public final class ShardingXAConnection implements XAConnection {
     
     @Override
     public XAResource getXAResource() throws SQLException {
-        return new ShardingXAResource(resourceName, delegate.getXAResource());
+        return new SingleXAResource(resourceName, delegate.getXAResource());
     }
     
     @Override

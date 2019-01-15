@@ -25,13 +25,13 @@ import javax.transaction.xa.XAResource;
 import javax.transaction.xa.Xid;
 
 /**
- * Sharding XA resource.
+ * Single XA resource.
  *
  * @author zhaojun
  */
 @RequiredArgsConstructor
 @Getter
-public final class ShardingXAResource implements XAResource {
+public final class SingleXAResource implements XAResource {
     
     private final String resourceName;
     
@@ -59,8 +59,8 @@ public final class ShardingXAResource implements XAResource {
     
     @Override
     public boolean isSameRM(final XAResource xaResource) {
-        ShardingXAResource shardingXAResource = (ShardingXAResource) xaResource;
-        return resourceName.equals(shardingXAResource.getResourceName());
+        SingleXAResource singleXAResource = (SingleXAResource) xaResource;
+        return resourceName.equals(singleXAResource.getResourceName());
     }
     
     @Override

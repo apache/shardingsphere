@@ -17,6 +17,7 @@
 
 package io.shardingsphere.transaction.core;
 
+import com.google.common.base.Preconditions;
 import io.shardingsphere.core.constant.DatabaseType;
 import io.shardingsphere.transaction.api.TransactionType;
 import io.shardingsphere.transaction.spi.ShardingTransactionEngine;
@@ -66,7 +67,11 @@ public final class ShardingTransactionEngineRegistry {
      * @return sharding transaction engine
      */
     public static ShardingTransactionEngine getEngine(final TransactionType transactionType) {
-        return ENGINES.get(transactionType);
+        ShardingTransactionEngine result = ENGINES.get(transactionType);
+        if (TransactionType.LOCAL != transactionType) {
+            Preconditions.checkNotNull(result, "Cannot find transaction manager of [%s]", transactionType);
+        }
+        return result;
     }
     
     /**

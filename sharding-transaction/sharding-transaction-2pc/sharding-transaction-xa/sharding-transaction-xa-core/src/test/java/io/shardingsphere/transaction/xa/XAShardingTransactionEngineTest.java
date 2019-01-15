@@ -23,8 +23,8 @@ import com.zaxxer.hikari.HikariDataSource;
 import io.shardingsphere.core.constant.DatabaseType;
 import io.shardingsphere.transaction.api.TransactionType;
 import io.shardingsphere.transaction.xa.fixture.DataSourceUtils;
-import io.shardingsphere.transaction.xa.jta.connection.ShardingXAConnection;
-import io.shardingsphere.transaction.xa.jta.datasource.ShardingXADataSource;
+import io.shardingsphere.transaction.xa.jta.connection.SingleXAConnection;
+import io.shardingsphere.transaction.xa.jta.datasource.SingleXADataSource;
 import io.shardingsphere.transaction.xa.spi.XATransactionManager;
 import lombok.SneakyThrows;
 import org.junit.Before;
@@ -99,7 +99,7 @@ public class XAShardingTransactionEngineTest {
     public void assertRegisterNoneXATransactionalDAtaSources() {
         Map<String, DataSource> dataSourceMap = createDataSourceMap(HikariDataSource.class, DatabaseType.MySQL);
         xaShardingTransactionEngine.init(DatabaseType.MySQL, dataSourceMap);
-        Map<String, ShardingXADataSource> cachedXADatasourceMap = getCachedShardingXADataSourceMap();
+        Map<String, SingleXADataSource> cachedXADatasourceMap = getCachedSingleXADataSourceMap();
         assertThat(cachedXADatasourceMap.size(), is(2));
     }
     
@@ -117,7 +117,7 @@ public class XAShardingTransactionEngineTest {
     
     @Test
     public void assertGetConnection() {
-        setCachedShardingXADataSourceMap("ds1");
+        setCachedSingleXADataSourceMap("ds1");
         Connection actual = xaShardingTransactionEngine.getConnection("ds1");
         assertThat(actual, instanceOf(Connection.class));
         verify(xaTransactionManager).enlistResource(any(XAResource.class));
@@ -125,42 +125,42 @@ public class XAShardingTransactionEngineTest {
     
     @Test
     public void assertClose() throws Exception {
-        setCachedShardingXADataSourceMap("ds1");
+        setCachedSingleXADataSourceMap("ds1");
         xaShardingTransactionEngine.close();
-        Map<String, ShardingXADataSource> cachedShardingXADataSourceMap = getCachedShardingXADataSourceMap();
+        Map<String, SingleXADataSource> cachedSingleXADataSourceMap = getCachedSingleXADataSourceMap();
         verify(xaTransactionManager).removeRecoveryResource(anyString(), any(XADataSource.class));
-        assertThat(cachedShardingXADataSourceMap.size(), is(0));
+        assertThat(cachedSingleXADataSourceMap.size(), is(0));
     }
     
     @SneakyThrows
     @SuppressWarnings("unchecked")
-    private Map<String, ShardingXADataSource> getCachedShardingXADataSourceMap() {
-        Field field = xaShardingTransactionEngine.getClass().getDeclaredField("cachedShardingXADataSourceMap");
+    private Map<String, SingleXADataSource> getCachedSingleXADataSourceMap() {
+        Field field = xaShardingTransactionEngine.getClass().getDeclaredField("cachedSingleXADataSourceMap");
         field.setAccessible(true);
-        return (Map<String, ShardingXADataSource>) field.get(xaShardingTransactionEngine);
+        return (Map<String, SingleXADataSource>) field.get(xaShardingTransactionEngine);
     }
     
     @SneakyThrows
-    private void setCachedShardingXADataSourceMap(final String datasourceName) {
-        Field field = xaShardingTransactionEngine.getClass().getDeclaredField("cachedShardingXADataSourceMap");
+    private void setCachedSingleXADataSourceMap(final String datasourceName) {
+        Field field = xaShardingTransactionEngine.getClass().getDeclaredField("cachedSingleXADataSourceMap");
         field.setAccessible(true);
-        field.set(xaShardingTransactionEngine, createMockShardingXADataSourceMap(datasourceName));
+        field.set(xaShardingTransactionEngine, createMockSingleXADataSourceMap(datasourceName));
     }
     
     @SneakyThrows
-    private Map<String, ShardingXADataSource> createMockShardingXADataSourceMap(final String datasourceName) {
-        ShardingXADataSource shardingXADataSource = mock(ShardingXADataSource.class);
-        ShardingXAConnection shardingXAConnection = mock(ShardingXAConnection.class);
+    private Map<String, SingleXADataSource> createMockSingleXADataSourceMap(final String datasourceName) {
+        SingleXADataSource singleXADataSource = mock(SingleXADataSource.class);
+        SingleXAConnection singleXAConnection = mock(SingleXAConnection.class);
         XADataSource xaDataSource = mock(XADataSource.class);
         XAResource xaResource = mock(XAResource.class);
         Connection connection = mock(Connection.class);
-        when(shardingXAConnection.getConnection()).thenReturn(connection);
-        when(shardingXAConnection.getXAResource()).thenReturn(xaResource);
-        when(shardingXADataSource.getXAConnection()).thenReturn(shardingXAConnection);
-        when(shardingXADataSource.getResourceName()).thenReturn(datasourceName);
-        when(shardingXADataSource.getXaDataSource()).thenReturn(xaDataSource);
-        Map<String, ShardingXADataSource> result = new HashMap<>();
-        result.put(datasourceName, shardingXADataSource);
+        when(singleXAConnection.getConnection()).thenReturn(connection);
+        when(singleXAConnection.getXAResource()).thenReturn(xaResource);
+        when(singleXADataSource.getXAConnection()).thenReturn(singleXAConnection);
+        when(singleXADataSource.getResourceName()).thenReturn(datasourceName);
+        when(singleXADataSource.getXaDataSource()).thenReturn(xaDataSource);
+        Map<String, SingleXADataSource> result = new HashMap<>();
+        result.put(datasourceName, singleXADataSource);
         return result;
     }
     

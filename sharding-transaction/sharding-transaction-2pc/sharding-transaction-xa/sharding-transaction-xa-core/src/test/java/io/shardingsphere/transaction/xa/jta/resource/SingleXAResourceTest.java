@@ -31,7 +31,7 @@ import static org.junit.Assert.assertTrue;
 import static org.mockito.Mockito.verify;
 
 @RunWith(MockitoJUnitRunner.class)
-public final class ShardingXAResourceTest {
+public final class SingleXAResourceTest {
     
     @Mock
     private XAResource xaResource;
@@ -39,69 +39,69 @@ public final class ShardingXAResourceTest {
     @Mock
     private Xid xid;
     
-    private ShardingXAResource shardingXAResource;
+    private SingleXAResource singleXAResource;
     
     @Before
     public void setUp() {
-        shardingXAResource = new ShardingXAResource("ds1", xaResource);
+        singleXAResource = new SingleXAResource("ds1", xaResource);
     }
     
     @Test
     public void assertCommit() throws XAException {
-        shardingXAResource.commit(xid, true);
+        singleXAResource.commit(xid, true);
         verify(xaResource).commit(xid, true);
     }
     
     @Test
     public void assertEnd() throws XAException {
-        shardingXAResource.end(xid, 1);
+        singleXAResource.end(xid, 1);
         verify(xaResource).end(xid, 1);
     }
     
     @Test
     public void assertForget() throws XAException {
-        shardingXAResource.forget(xid);
+        singleXAResource.forget(xid);
         verify(xaResource).forget(xid);
     }
     
     @Test
     public void assertGetTransactionTimeout() throws XAException {
-        shardingXAResource.getTransactionTimeout();
+        singleXAResource.getTransactionTimeout();
         verify(xaResource).getTransactionTimeout();
     }
     
     @Test
     public void assertIsSameRM() {
-        assertTrue(shardingXAResource.isSameRM(new ShardingXAResource("ds1", xaResource)));
+        assertTrue(singleXAResource.isSameRM(new SingleXAResource("ds1", xaResource)));
     }
     
     @Test
     public void assertPrepare() throws XAException {
-        shardingXAResource.prepare(xid);
+        singleXAResource.prepare(xid);
         verify(xaResource).prepare(xid);
     }
     
     @Test
     public void assertRecover() throws XAException {
-        shardingXAResource.recover(1);
+        singleXAResource.recover(1);
         verify(xaResource).recover(1);
     }
     
     @Test
     public void assertRollback() throws XAException {
-        shardingXAResource.rollback(xid);
+        singleXAResource.rollback(xid);
         verify(xaResource).rollback(xid);
     }
     
     @Test
     public void assertSetTransactionTimeout() throws XAException {
-        shardingXAResource.setTransactionTimeout(1);
+        singleXAResource.setTransactionTimeout(1);
         verify(xaResource).setTransactionTimeout(1);
     }
     
     @Test
     public void assertStart() throws XAException {
-        shardingXAResource.start(xid, 1);
+        singleXAResource.start(xid, 1);
         verify(xaResource).start(xid, 1);
     }
 }
