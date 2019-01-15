@@ -72,8 +72,9 @@ public final class YamlTableRuleConfigurationTest {
     private void assertTableRuleConfig(final TableRuleConfiguration actual) {
         assertThat(actual.getLogicTable(), is("t_order"));
         assertThat(actual.getActualDataNodes(), is("ds_${0..1}.t_order_${0..1}"));
-        assertThat(actual.getKeyGeneratorColumnName(), is("order_id"));
-        assertThat(actual.getKeyGeneratorConfig(), instanceOf(KeyGeneratorConfiguration.class));
+        KeyGeneratorConfiguration keyGeneratorConfiguration = new KeyGeneratorConfiguration();
+        keyGeneratorConfiguration.setColumn("order_id");
+        assertThat(actual.getKeyGeneratorConfig().getColumn(), is("order_id"));
         assertThat(actual.getLogicIndex(), is("order_index"));
     }
     
