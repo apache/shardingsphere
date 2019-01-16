@@ -23,7 +23,6 @@ import io.shardingsphere.core.exception.ShardingException;
 import io.shardingsphere.shardingproxy.util.DataSourceParameter;
 import lombok.AccessLevel;
 import lombok.NoArgsConstructor;
-
 import javax.sql.DataSource;
 
 /**
