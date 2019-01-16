@@ -54,7 +54,7 @@ public final class AtomikosTransactionManagerTest {
     
     @Before
     public void setUp() {
-        ReflectiveUtil.setProperty(atomikosTransactionManager, "underlyingTransactionManager", userTransactionManager);
+        ReflectiveUtil.setProperty(atomikosTransactionManager, "transactionManager", userTransactionManager);
         ReflectiveUtil.setProperty(atomikosTransactionManager, "userTransactionService", userTransactionService);
     }
     
