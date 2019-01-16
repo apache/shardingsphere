@@ -15,27 +15,15 @@
  * </p>
  */
 
-package io.shardingsphere.core.parsing.antlr.sql.segment.expr;
+package io.shardingsphere.transaction.xa.spi;
 
-import lombok.Getter;
-import lombok.RequiredArgsConstructor;
-import lombok.Setter;
+import org.junit.runner.RunWith;
+import org.junit.runners.Suite;
+import org.junit.runners.Suite.SuiteClasses;
 
-/**
- * Common expression segment.
- * 
- * @author duhongjun
- */
-@RequiredArgsConstructor
-@Getter
-@Setter
-public final class CommonExpressionSegment extends ExpressionWithAliasSegment {
-    
-    private final int startPosition;
-    
-    private final int endPosition;
-    
-    private int index = -1;
-    
-    private Number value;
+@RunWith(Suite.class)
+@SuiteClasses(
+    SingleXAResourceTest.class
+)
+public final class AllTests {
 }

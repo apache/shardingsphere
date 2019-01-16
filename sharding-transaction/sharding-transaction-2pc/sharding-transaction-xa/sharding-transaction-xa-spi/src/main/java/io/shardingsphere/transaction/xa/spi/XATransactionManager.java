@@ -20,7 +20,6 @@ package io.shardingsphere.transaction.xa.spi;
 import io.shardingsphere.transaction.core.ShardingTransactionManager;
 
 import javax.sql.XADataSource;
-import javax.transaction.xa.XAResource;
 
 /**
  * XA transaction manager.
@@ -52,9 +51,9 @@ public interface XATransactionManager extends ShardingTransactionManager, AutoCl
     void removeRecoveryResource(String dataSourceName, XADataSource xaDataSource);
     
     /**
-     * Enlist resource.
+     * Enlist single XA resource.
      * 
-     * @param xaResource XA resource
+     * @param singleXAResource single XA resource
      */
-    void enlistResource(XAResource xaResource);
+    void enlistResource(SingleXAResource singleXAResource);
 }
