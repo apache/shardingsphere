@@ -23,9 +23,9 @@ import org.junit.Test;
 import static org.junit.Assert.assertEquals;
 
 public class JDBCClassDetermineTest {
-
+    
     private JDBCClassDetermine jdbcClassDetermine = new JDBCClassDetermine();
-
+    
     @Test
     public void assertMySQLUrl() {
         assertEquals("com.mysql.jdbc.Driver", jdbcClassDetermine.getDriverClassName("jdbc:mysql://localhost:3306/demo_ds_master"));
@@ -41,7 +41,7 @@ public class JDBCClassDetermineTest {
     public void assertFailedUrl() {
         assertEquals("com.mysql.jdbc.Driver", jdbcClassDetermine.getDriverClassName("jdbc:oracle://db.psql:5432/postgres"));
     }
-
+    
     @Test(expected = UnsupportedOperationException.class)
     @SneakyThrows
     public void assertFailedUrl2() {
