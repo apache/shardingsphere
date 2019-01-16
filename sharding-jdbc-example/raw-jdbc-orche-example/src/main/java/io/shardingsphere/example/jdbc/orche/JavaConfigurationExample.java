@@ -53,11 +53,11 @@ import java.sql.SQLException;
  */
 public class JavaConfigurationExample {
     
-//    private static ShardingType shardingType = ShardingType.SHARDING_DATABASES;
+    private static ShardingType shardingType = ShardingType.SHARDING_DATABASES;
 //    private static ShardingType shardingType = ShardingType.SHARDING_TABLES;
 //    private static ShardingType shardingType = ShardingType.SHARDING_DATABASES_AND_TABLES;
 //    private static ShardingType shardingType = ShardingType.MASTER_SLAVE;
-    private static ShardingType shardingType = ShardingType.SHARDING_MASTER_SLAVE;
+//    private static ShardingType shardingType = ShardingType.SHARDING_MASTER_SLAVE;
     
 //    private static boolean isRangeSharding = true;
     private static boolean isRangeSharding = false;
@@ -65,8 +65,8 @@ public class JavaConfigurationExample {
     private static RegistryCenterType registryCenterType = RegistryCenterType.ZOOKEEPER;
 //    private static RegistryCenterType registryCenterType = RegistryCenterType.ETCD;
     
-//    private static boolean loadConfigFromRegCenter = false;
-    private static boolean loadConfigFromRegCenter = true;
+    private static boolean loadConfigFromRegCenter = false;
+//    private static boolean loadConfigFromRegCenter = true;
     
     public static void main(final String[] args) throws Exception {
         process(isRangeSharding ? getDataSourceRange() : getDataSourcePrecise());
