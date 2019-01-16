@@ -164,4 +164,9 @@ public final class MasterSlavePreparedStatement extends AbstractMasterSlavePrepa
     public int getResultSetType() throws SQLException {
         return routedStatements.iterator().next().getResultSetType();
     }
+    
+    @Override
+    public boolean isAccumulate() {
+        return false;
+    }
 }

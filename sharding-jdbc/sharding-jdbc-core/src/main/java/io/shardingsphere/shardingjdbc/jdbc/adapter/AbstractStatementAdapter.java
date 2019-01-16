@@ -142,6 +142,18 @@ public abstract class AbstractStatementAdapter extends AbstractUnsupportedOperat
     
     @Override
     public final int getUpdateCount() throws SQLException {
+        if (isAccumulate()) {
+            return accumulate();
+        } else {
+            Collection<? extends Statement> statements = getRoutedStatements();
+            if (0 == statements.size()) {
+                return -1;
+            }
+            return getRoutedStatements().iterator().next().getUpdateCount();
+        }
+    }
+    
+    private int accumulate() throws SQLException {
         long result = 0;
         boolean hasResult = false;
         for (Statement each : getRoutedStatements()) {
@@ -234,6 +246,8 @@ public abstract class AbstractStatementAdapter extends AbstractUnsupportedOperat
             }
         });
     }
+    
+    protected abstract boolean isAccumulate();
     
     protected abstract Collection<? extends Statement> getRoutedStatements();
     
