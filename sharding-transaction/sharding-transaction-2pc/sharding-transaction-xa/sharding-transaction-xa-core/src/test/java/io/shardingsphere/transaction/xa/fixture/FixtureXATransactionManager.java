@@ -17,11 +17,11 @@
 
 package io.shardingsphere.transaction.xa.fixture;
 
+import io.shardingsphere.transaction.xa.spi.SingleXAResource;
 import io.shardingsphere.transaction.xa.spi.XATransactionManager;
 
 import javax.sql.XADataSource;
 import javax.transaction.Status;
-import javax.transaction.xa.XAResource;
 
 public final class FixtureXATransactionManager implements XATransactionManager {
     
@@ -38,7 +38,7 @@ public final class FixtureXATransactionManager implements XATransactionManager {
     }
     
     @Override
-    public void enlistResource(final XAResource xaResource) {
+    public void enlistResource(final SingleXAResource singleXAResource) {
     }
     
     @Override
