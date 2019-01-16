@@ -68,7 +68,7 @@ public final class XAShardingTransactionEngine implements ShardingTransactionEng
     @SneakyThrows
     @Override
     public boolean isInTransaction() {
-        return Status.STATUS_NO_TRANSACTION != xaTransactionManager.getStatus();
+        return Status.STATUS_NO_TRANSACTION != xaTransactionManager.getTransactionManager().getStatus();
     }
     
     @SneakyThrows
@@ -79,19 +79,25 @@ public final class XAShardingTransactionEngine implements ShardingTransactionEng
         return singleXAConnection.getConnection();
     }
     
+    @SneakyThrows
     @Override
     public void begin() {
-        xaTransactionManager.begin();
+        xaTransactionManager.getTransactionManager().begin();
     }
     
+    @SneakyThrows
     @Override
     public void commit() {
-        xaTransactionManager.commit();
+        xaTransactionManager.getTransactionManager().commit();
     }
     
+    @SneakyThrows
     @Override
     public void rollback() {
-        xaTransactionManager.rollback();
+        // TODO mybatis may call rollback twice, need investigate reason here 
+        if (Status.STATUS_NO_TRANSACTION != xaTransactionManager.getTransactionManager().getStatus()) {
+            xaTransactionManager.getTransactionManager().rollback();
+        }
     }
     
     @Override

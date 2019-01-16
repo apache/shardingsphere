@@ -37,6 +37,8 @@ import org.mockito.junit.MockitoJUnitRunner;
 import javax.sql.DataSource;
 import javax.sql.XADataSource;
 import javax.transaction.Status;
+import javax.transaction.SystemException;
+import javax.transaction.TransactionManager;
 import java.lang.reflect.Field;
 import java.sql.Connection;
 import java.util.HashMap;
@@ -63,8 +65,12 @@ public class XAShardingTransactionEngineTest {
     @Mock
     private XATransactionManager xaTransactionManager;
     
+    @Mock
+    private TransactionManager transactionManager;
+    
     @Before
     public void setUp() throws ReflectiveOperationException {
+        when(xaTransactionManager.getTransactionManager()).thenReturn(transactionManager);
         setXATransactionManager();
     }
     
@@ -104,14 +110,14 @@ public class XAShardingTransactionEngineTest {
     }
     
     @Test
-    public void assertIsInTransaction() {
-        when(xaTransactionManager.getStatus()).thenReturn(Status.STATUS_ACTIVE);
+    public void assertIsInTransaction() throws SystemException {
+        when(transactionManager.getStatus()).thenReturn(Status.STATUS_ACTIVE);
         assertTrue(xaShardingTransactionEngine.isInTransaction());
     }
     
     @Test
-    public void assertIsNotInTransaction() {
-        when(xaTransactionManager.getStatus()).thenReturn(Status.STATUS_NO_TRANSACTION);
+    public void assertIsNotInTransaction() throws SystemException {
+        when(transactionManager.getStatus()).thenReturn(Status.STATUS_NO_TRANSACTION);
         assertFalse(xaShardingTransactionEngine.isInTransaction());
     }
     

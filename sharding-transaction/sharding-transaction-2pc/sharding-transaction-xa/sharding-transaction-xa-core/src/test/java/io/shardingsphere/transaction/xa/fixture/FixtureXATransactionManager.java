@@ -21,7 +21,7 @@ import io.shardingsphere.transaction.xa.spi.SingleXAResource;
 import io.shardingsphere.transaction.xa.spi.XATransactionManager;
 
 import javax.sql.XADataSource;
-import javax.transaction.Status;
+import javax.transaction.TransactionManager;
 
 public final class FixtureXATransactionManager implements XATransactionManager {
     
@@ -42,20 +42,8 @@ public final class FixtureXATransactionManager implements XATransactionManager {
     }
     
     @Override
-    public void begin() {
-    }
-    
-    @Override
-    public void commit() {
-    }
-    
-    @Override
-    public void rollback() {
-    }
-    
-    @Override
-    public int getStatus() {
-        return Status.STATUS_NO_TRANSACTION;
+    public TransactionManager getTransactionManager() {
+        return null;
     }
     
     @Override
