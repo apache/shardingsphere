@@ -137,7 +137,7 @@ public final class OrConditionFiller implements SQLStatementFiller<OrConditionSe
                 }
             }
             if (needSharding) {
-                fillResult(result, sqlStatement, shardingCondition, sql, shardingRule, shardingTableMetaData);
+                fillResult(result, sqlStatement, shardingCondition, sql);
             } else {
                 result.getAndConditions().clear();
                 break;
@@ -146,8 +146,7 @@ public final class OrConditionFiller implements SQLStatementFiller<OrConditionSe
         return result;
     }
     
-    private void fillResult(final OrCondition result, final SQLStatement sqlStatement, final List<ConditionSegment> shardingCondition, final String sql, final ShardingRule shardingRule,
-                            final ShardingTableMetaData shardingTableMetaData) {
+    private void fillResult(final OrCondition result, final SQLStatement sqlStatement, final List<ConditionSegment> shardingCondition, final String sql) {
         if (shardingCondition.isEmpty()) {
             return;
         }
@@ -157,7 +156,7 @@ public final class OrConditionFiller implements SQLStatementFiller<OrConditionSe
             Column column = new Column(eachCondition.getColumn().getName(), eachCondition.getColumn().getTableName());
             if (ShardingOperator.EQUAL == eachCondition.getOperator()) {
                 EqualsValueExpressionSegment expressionSegment = (EqualsValueExpressionSegment) eachCondition.getExpression();
-                Optional<Condition> condition = buildEqualsCondition(column, expressionSegment.getExpression(), sql, shardingRule, shardingTableMetaData);
+                Optional<Condition> condition = buildEqualsCondition(column, expressionSegment.getExpression(), sql);
                 if (condition.isPresent()) {
                     andConditionResult.getConditions().add(condition.get());
                 }
@@ -167,7 +166,7 @@ public final class OrConditionFiller implements SQLStatementFiller<OrConditionSe
                 InValueExpressionSegment expressionSegment = (InValueExpressionSegment) eachCondition.getExpression();
                 List<SQLExpression> expressions = new LinkedList<>();
                 for (ExpressionSegment each : expressionSegment.getSqlExpressions()) {
-                    Optional<SQLExpression> expression = buildExpression(each, sql, shardingRule, shardingTableMetaData);
+                    Optional<SQLExpression> expression = buildExpression(each, sql);
                     if (expression.isPresent()) {
                         expressions.add(expression.get());
                     } else {
@@ -182,11 +181,11 @@ public final class OrConditionFiller implements SQLStatementFiller<OrConditionSe
             }
             if (ShardingOperator.BETWEEN == eachCondition.getOperator()) {
                 BetweenValueExpressionSegment expressionSegment = (BetweenValueExpressionSegment) eachCondition.getExpression();
-                Optional<SQLExpression> beginExpress = buildExpression(expressionSegment.getBeginExpress(), sql, shardingRule, shardingTableMetaData);
+                Optional<SQLExpression> beginExpress = buildExpression(expressionSegment.getBeginExpress(), sql);
                 if (!beginExpress.isPresent()) {
                     continue;
                 }
-                Optional<SQLExpression> endExpress = buildExpression(expressionSegment.getEndExpress(), sql, shardingRule, shardingTableMetaData);
+                Optional<SQLExpression> endExpress = buildExpression(expressionSegment.getEndExpress(), sql);
                 if (!endExpress.isPresent()) {
                     continue;
                 }
@@ -201,19 +200,17 @@ public final class OrConditionFiller implements SQLStatementFiller<OrConditionSe
      * @param column column
      * @param expressionSegment SQL segment
      * @param sql SQL
-     * @param shardingRule databases and tables sharding rule
-     * @param shardingTableMetaData sharding table meta data
      * @return Condition
      */
-    public Optional<Condition> buildEqualsCondition(final Column column, final ExpressionSegment expressionSegment, final String sql, final ShardingRule shardingRule, final ShardingTableMetaData shardingTableMetaData) {
-        Optional<SQLExpression> expression = buildExpression(expressionSegment, sql, shardingRule, shardingTableMetaData);
+    public Optional<Condition> buildEqualsCondition(final Column column, final ExpressionSegment expressionSegment, final String sql) {
+        Optional<SQLExpression> expression = buildExpression(expressionSegment, sql);
         if (expression.isPresent()) {
             return Optional.of(new Condition(column, expression.get()));
         }
         return Optional.absent();
     }
     
-    private Optional<SQLExpression> buildExpression(final ExpressionSegment expressionSegment, final String sql, final ShardingRule shardingRule, final ShardingTableMetaData shardingTableMetaData) {
+    private Optional<SQLExpression> buildExpression(final ExpressionSegment expressionSegment, final String sql) {
         if (!(expressionSegment instanceof CommonExpressionSegment)) {
             return Optional.absent();
         }

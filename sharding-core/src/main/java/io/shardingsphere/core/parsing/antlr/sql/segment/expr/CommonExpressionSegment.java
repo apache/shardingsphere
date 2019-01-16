@@ -39,5 +39,5 @@ public final class CommonExpressionSegment extends ExpressionWithAliasSegment {
     
     private Number value;
     
-    private boolean text = false;
+    private boolean text;
 }

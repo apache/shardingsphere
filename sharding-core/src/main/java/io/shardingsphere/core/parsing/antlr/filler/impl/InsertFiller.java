@@ -133,7 +133,7 @@ public class InsertFiller implements SQLStatementFiller<InsertSegment> {
                     if (!(-1 < commonExpressionSegment.getIndex() || null != commonExpressionSegment.getValue() || commonExpressionSegment.isText())) {
                         throw new SQLParsingException("INSERT INTO can not support complex expression value on sharding column '%s'.", column.getName());
                     }
-                    andCondition.getConditions().add(orConditionFiller.buildEqualsCondition(column, commonExpressionSegment, sql, shardingRule, shardingTableMetaData).get());
+                    andCondition.getConditions().add(orConditionFiller.buildEqualsCondition(column, commonExpressionSegment, sql).get());
                 }
                 if (index == insertStatement.getGenerateKeyColumnIndex()) {
                     insertStatement.getGeneratedKeyConditions().add(createGeneratedKeyCondition(column, commonExpressionSegment, sql));
