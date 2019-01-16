@@ -20,7 +20,8 @@ package io.shardingsphere.shardingproxy.backend.jdbc.datasource;
 import lombok.SneakyThrows;
 import org.junit.Test;
 
-import static org.junit.Assert.assertEquals;
+import static org.hamcrest.CoreMatchers.is;
+import static org.junit.Assert.assertThat;
 
 public class JDBCClassDetermineTest {
     
@@ -28,23 +29,23 @@ public class JDBCClassDetermineTest {
     
     @Test
     public void assertMySQLUrl() {
-        assertEquals("com.mysql.jdbc.Driver", jdbcClassDetermine.getDriverClassName("jdbc:mysql://localhost:3306/demo_ds_master"));
+        assertThat(jdbcClassDetermine.getDriverClassName("jdbc:mysql://localhost:3306/demo_ds_master"), is("com.mysql.jdbc.Driver"));
     }
     
     @Test
     public void assertPostgreSQLUrl() {
-        assertEquals("org.postgresql.Driver", jdbcClassDetermine.getDriverClassName("jdbc:postgresql://db.psql:5432/postgres"));
+        assertThat(jdbcClassDetermine.getDriverClassName("jdbc:postgresql://db.psql:5432/postgres"), is("org.postgresql.Driver"));
     }
     
     @Test(expected = UnsupportedOperationException.class)
     @SneakyThrows
     public void assertFailedUrl() {
-        assertEquals("com.mysql.jdbc.Driver", jdbcClassDetermine.getDriverClassName("jdbc:oracle://db.psql:5432/postgres"));
+        assertThat(jdbcClassDetermine.getDriverClassName("jdbc:oracle://db.psql:5432/postgres"), is("com.mysql.jdbc.Driver"));
     }
     
     @Test(expected = UnsupportedOperationException.class)
     @SneakyThrows
     public void assertFailedUrl2() {
-        assertEquals("com.mysql.jdbc.Driver", jdbcClassDetermine.getDriverClassName("xxxx"));
+        assertThat(jdbcClassDetermine.getDriverClassName("xxxx"), is("com.mysql.jdbc.Driver"));
     }
 }
