@@ -21,48 +21,42 @@ import io.shardingsphere.core.metadata.datasource.dialect.MySQLDataSourceMetaDat
 import io.shardingsphere.core.metadata.datasource.dialect.PostgreSQLDataSourceMetaData;
 import lombok.AccessLevel;
 import lombok.NoArgsConstructor;
-
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
 
 @NoArgsConstructor(access = AccessLevel.PUBLIC)
 public class JDBCClassDetermine {
-
-    /*
-    for MySQL-connector-java 8.x compatibility
-    TODO getXADataSourceClassName
-     */
-    private static String mysqlclass = "";
-
-    private Pattern pattern = Pattern.compile("jdbc:(mysql|postgresql):.*", Pattern.CASE_INSENSITIVE);
     
     /**
      * Get driver class name.
+     *
      * @param url url
      * @return driver class name
      */
     public String getDriverClassName(final String url) {
-
+        // TODO getXADataSourceClassName
+        String result = "";
+        Pattern pattern = Pattern.compile("jdbc:(mysql|postgresql):.*", Pattern.CASE_INSENSITIVE);
         Matcher matcher = pattern.matcher(url);
         if (matcher.find()) {
             String databaseType = matcher.group(1).toLowerCase();
             switch (databaseType) {
                 case "mysql":
                     new MySQLDataSourceMetaData(url);
-                    if (mysqlclass.isEmpty()) {
+                    if (result.isEmpty()) {
                         try {
                             Class.forName("com.mysql.jdbc.Driver");
-                            mysqlclass = "com.mysql.jdbc.Driver";
+                            result = "com.mysql.jdbc.Driver";
                         } catch (ClassNotFoundException e) {
                             try {
                                 Class.forName("com.mysql.cj.jdbc.Driver");
-                                mysqlclass = "com.mysql.cj.jdbc.Driver";
+                                result = "com.mysql.cj.jdbc.Driver";
                             } catch (ClassNotFoundException ex) {
                                 throw new UnsupportedOperationException(String.format("Cannot support url `%s`,no vailed mysql driver found", url));
                             }
                         }
                     }
-                    return mysqlclass;
+                    return result;
                 case "postgresql":
                     new PostgreSQLDataSourceMetaData(url);
                     return "org.postgresql.Driver";
