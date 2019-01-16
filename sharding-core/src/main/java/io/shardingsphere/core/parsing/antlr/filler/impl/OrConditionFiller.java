@@ -76,7 +76,7 @@ public final class OrConditionFiller implements SQLStatementFiller<OrConditionSe
         Map<String, String> columnNameToTable = new HashMap<>();
         Map<String, Integer> columnNameCount = new HashMap<>();
         fillColumnTableMap(sqlStatement, shardingTableMetaData, columnNameToTable, columnNameCount);
-        return filterShardingCondition(sqlStatement, sqlSegment, sql, shardingRule, columnNameToTable, columnNameCount, shardingTableMetaData);
+        return filterShardingCondition(sqlStatement, sqlSegment, sql, shardingRule, columnNameToTable, columnNameCount);
     }
     
     private void fillColumnTableMap(final SQLStatement sqlStatement, final ShardingTableMetaData shardingTableMetaData,
@@ -100,7 +100,7 @@ public final class OrConditionFiller implements SQLStatementFiller<OrConditionSe
     }
     
     private OrCondition filterShardingCondition(final SQLStatement sqlStatement, final OrConditionSegment orCondition, final String sql, final ShardingRule shardingRule,
-                                                final Map<String, String> columnNameToTable, final Map<String, Integer> columnNameCount, final ShardingTableMetaData shardingTableMetaData) {
+                                                final Map<String, String> columnNameToTable, final Map<String, Integer> columnNameCount) {
         OrCondition result = new OrCondition();
         for (AndConditionSegment each : orCondition.getAndConditions()) {
             List<ConditionSegment> shardingCondition = new LinkedList<>();
