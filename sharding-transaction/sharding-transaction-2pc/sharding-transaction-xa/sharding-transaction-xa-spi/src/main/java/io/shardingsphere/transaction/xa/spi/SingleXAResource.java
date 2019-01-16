@@ -15,7 +15,7 @@
  * </p>
  */
 
-package io.shardingsphere.transaction.xa.jta.resource;
+package io.shardingsphere.transaction.xa.spi;
 
 import lombok.Getter;
 import lombok.RequiredArgsConstructor;

@@ -17,7 +17,7 @@
 
 package io.shardingsphere.transaction.xa.manager.atomikos;
 
-import io.shardingsphere.transaction.xa.jta.resource.SingleXAResource;
+import io.shardingsphere.transaction.xa.spi.SingleXAResource;
 import org.junit.Before;
 import org.junit.Test;
 import org.junit.runner.RunWith;

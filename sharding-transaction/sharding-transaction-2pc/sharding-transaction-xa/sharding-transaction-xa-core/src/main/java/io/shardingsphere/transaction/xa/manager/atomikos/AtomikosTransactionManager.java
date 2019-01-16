@@ -20,12 +20,12 @@ package io.shardingsphere.transaction.xa.manager.atomikos;
 import com.atomikos.icatch.config.UserTransactionService;
 import com.atomikos.icatch.config.UserTransactionServiceImp;
 import com.atomikos.icatch.jta.UserTransactionManager;
+import io.shardingsphere.transaction.xa.spi.SingleXAResource;
 import io.shardingsphere.transaction.xa.spi.XATransactionManager;
 import lombok.SneakyThrows;
 
 import javax.sql.XADataSource;
 import javax.transaction.Status;
-import javax.transaction.xa.XAResource;
 
 /**
  * Atomikos XA transaction manager.
@@ -55,7 +55,7 @@ public final class AtomikosTransactionManager implements XATransactionManager {
     
     @Override
     @SneakyThrows
-    public void enlistResource(final XAResource xaResource) {
+    public void enlistResource(final SingleXAResource xaResource) {
         underlyingTransactionManager.getTransaction().enlistResource(xaResource);
     }
     

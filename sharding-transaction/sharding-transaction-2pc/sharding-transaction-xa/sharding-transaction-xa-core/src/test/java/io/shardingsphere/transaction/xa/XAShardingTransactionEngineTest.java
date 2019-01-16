@@ -25,6 +25,7 @@ import io.shardingsphere.transaction.api.TransactionType;
 import io.shardingsphere.transaction.xa.fixture.DataSourceUtils;
 import io.shardingsphere.transaction.xa.jta.connection.SingleXAConnection;
 import io.shardingsphere.transaction.xa.jta.datasource.SingleXADataSource;
+import io.shardingsphere.transaction.xa.spi.SingleXAResource;
 import io.shardingsphere.transaction.xa.spi.XATransactionManager;
 import lombok.SneakyThrows;
 import org.junit.Before;
@@ -36,7 +37,6 @@ import org.mockito.junit.MockitoJUnitRunner;
 import javax.sql.DataSource;
 import javax.sql.XADataSource;
 import javax.transaction.Status;
-import javax.transaction.xa.XAResource;
 import java.lang.reflect.Field;
 import java.sql.Connection;
 import java.util.HashMap;
@@ -120,7 +120,7 @@ public class XAShardingTransactionEngineTest {
         setCachedSingleXADataSourceMap("ds1");
         Connection actual = xaShardingTransactionEngine.getConnection("ds1");
         assertThat(actual, instanceOf(Connection.class));
-        verify(xaTransactionManager).enlistResource(any(XAResource.class));
+        verify(xaTransactionManager).enlistResource(any(SingleXAResource.class));
     }
     
     @Test
@@ -152,10 +152,10 @@ public class XAShardingTransactionEngineTest {
         SingleXADataSource singleXADataSource = mock(SingleXADataSource.class);
         SingleXAConnection singleXAConnection = mock(SingleXAConnection.class);
         XADataSource xaDataSource = mock(XADataSource.class);
-        XAResource xaResource = mock(XAResource.class);
+        SingleXAResource singleXAResource = mock(SingleXAResource.class);
         Connection connection = mock(Connection.class);
         when(singleXAConnection.getConnection()).thenReturn(connection);
-        when(singleXAConnection.getXAResource()).thenReturn(xaResource);
+        when(singleXAConnection.getXAResource()).thenReturn(singleXAResource);
         when(singleXADataSource.getXAConnection()).thenReturn(singleXAConnection);
         when(singleXADataSource.getResourceName()).thenReturn(datasourceName);
         when(singleXADataSource.getXaDataSource()).thenReturn(xaDataSource);

@@ -20,6 +20,7 @@ package io.shardingsphere.transaction.xa.manager.atomikos;
 import com.atomikos.icatch.config.UserTransactionService;
 import com.atomikos.icatch.jta.UserTransactionManager;
 import io.shardingsphere.transaction.xa.fixture.ReflectiveUtil;
+import io.shardingsphere.transaction.xa.spi.SingleXAResource;
 import org.junit.Before;
 import org.junit.Test;
 import org.junit.runner.RunWith;
@@ -28,7 +29,6 @@ import org.mockito.junit.MockitoJUnitRunner;
 
 import javax.sql.XADataSource;
 import javax.transaction.Transaction;
-import javax.transaction.xa.XAResource;
 
 import static org.mockito.ArgumentMatchers.any;
 import static org.mockito.Mockito.mock;
@@ -75,11 +75,11 @@ public final class AtomikosTransactionManagerTest {
     
     @Test
     public void assertEnListResource() throws Exception {
-        XAResource xaResource = mock(XAResource.class);
+        SingleXAResource singleXAResource = mock(SingleXAResource.class);
         Transaction transaction = mock(Transaction.class);
         when(userTransactionManager.getTransaction()).thenReturn(transaction);
-        atomikosTransactionManager.enlistResource(xaResource);
-        verify(transaction).enlistResource(xaResource);
+        atomikosTransactionManager.enlistResource(singleXAResource);
+        verify(transaction).enlistResource(singleXAResource);
     }
     
     @Test
