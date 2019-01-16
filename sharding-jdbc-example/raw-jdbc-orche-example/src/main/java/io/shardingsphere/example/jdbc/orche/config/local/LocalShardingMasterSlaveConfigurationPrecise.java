@@ -18,6 +18,7 @@
 package io.shardingsphere.example.jdbc.orche.config.local;
 
 import com.google.common.collect.Lists;
+import io.shardingsphere.api.config.KeyGeneratorConfiguration;
 import io.shardingsphere.api.config.rule.MasterSlaveRuleConfiguration;
 import io.shardingsphere.api.config.rule.ShardingRuleConfiguration;
 import io.shardingsphere.api.config.rule.TableRuleConfiguration;
@@ -63,7 +64,7 @@ public final class LocalShardingMasterSlaveConfigurationPrecise implements Examp
         TableRuleConfiguration result = new TableRuleConfiguration();
         result.setLogicTable("t_order");
         result.setActualDataNodes("ds_${0..1}.t_order_${[0, 1]}");
-        result.setKeyGeneratorColumnName("order_id");
+        result.setKeyGeneratorConfig(getKeyGeneratorConfiguration());
         return result;
     }
     
@@ -94,6 +95,12 @@ public final class LocalShardingMasterSlaveConfigurationPrecise implements Examp
         result.put("demo_ds_master_1", DataSourceUtil.createDataSource("demo_ds_master_1"));
         result.put("demo_ds_master_1_slave_0", DataSourceUtil.createDataSource("demo_ds_master_1_slave_0"));
         result.put("demo_ds_master_1_slave_1", DataSourceUtil.createDataSource("demo_ds_master_1_slave_1"));
+        return result;
+    }
+    
+    private static KeyGeneratorConfiguration getKeyGeneratorConfiguration() {
+        KeyGeneratorConfiguration result = new KeyGeneratorConfiguration();
+        result.setColumn("order_id");
         return result;
     }
 }
