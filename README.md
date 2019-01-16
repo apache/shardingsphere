@@ -1,6 +1,6 @@
-# shardingsphere-example
+# ShardingSphere-example
 
-shardingsphere example.
+ShardingSphere example.
 
 Example for 1.x please see tags in `https://github.com/apache/incubator-shardingsphere/tree/${tag}/sharding-jdbc-example`
 
