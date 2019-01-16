@@ -179,11 +179,7 @@ public final class BatchPreparedStatementExecutor extends AbstractStatementExecu
         for (BatchRouteUnit each : routeUnits) {
             for (Entry<Integer, Integer> entry : each.getJdbcAndActualAddBatchCallTimesMap().entrySet()) {
                 int value = null == results.get(count) ? 0 : results.get(count)[entry.getValue()];
-                if (!isAccumulate()) {
-                    result[entry.getKey()] = value;
-                } else {
-                    result[entry.getKey()] += value;
-                }
+                result[entry.getKey()] += value;
             }
             count++;
         }
