@@ -55,4 +55,4 @@ shardingRule:
   defaultTableStrategy:
     none:
   defaultKeyGenerator:
-    type: io.shardingsphere.core.keygen.DefaultKeyGenerator
+    type: SNOWFLAKE
