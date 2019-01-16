@@ -68,7 +68,7 @@ public class JavaConfigurationExample {
     private static boolean loadConfigFromRegCenter = false;
 //    private static boolean loadConfigFromRegCenter = true;
     
-    public static void main(final String[] args) throws SQLException {
+    public static void main(final String[] args) throws Exception {
         process(isRangeSharding ? getDataSourceRange() : getDataSourcePrecise());
     }
     
@@ -128,7 +128,7 @@ public class JavaConfigurationExample {
         return RegistryCenterType.ZOOKEEPER == registryCenterType ? RegistryCenterConfigurationUtil.getZooKeeperConfiguration() : RegistryCenterConfigurationUtil.getEtcdConfiguration();
     }
     
-    private static void process(final DataSource dataSource) {
+    private static void process(final DataSource dataSource) throws Exception {
         CommonService commonService = getCommonService(dataSource);
         commonService.initEnvironment();
         commonService.processSuccess(isRangeSharding);
@@ -140,7 +140,7 @@ public class JavaConfigurationExample {
         return new RawPojoService(new JDBCOrderRepositoryImpl(dataSource), new JDBCOrderItemRepositoryImpl(dataSource));
     }
     
-    private static void closeDataSource(final DataSource dataSource) {
+    private static void closeDataSource(final DataSource dataSource) throws Exception {
         if (dataSource instanceof OrchestrationMasterSlaveDataSource) {
             ((OrchestrationMasterSlaveDataSource) dataSource).close();
         } else {

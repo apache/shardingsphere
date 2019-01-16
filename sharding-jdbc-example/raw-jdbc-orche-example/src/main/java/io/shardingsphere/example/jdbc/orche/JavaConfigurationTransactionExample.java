@@ -69,7 +69,7 @@ public class JavaConfigurationTransactionExample {
     private static boolean loadConfigFromRegCenter = false;
 //    private static boolean loadConfigFromRegCenter = true;
     
-    public static void main(final String[] args) throws SQLException {
+    public static void main(final String[] args) throws Exception {
         process(isRangeSharding ? getDataSourceRange() : getDataSourcePrecise());
     }
     
@@ -99,7 +99,7 @@ public class JavaConfigurationTransactionExample {
         return exampleConfig.getDataSource();
     }
     
-    private static DataSource getDataSourceRange() throws SQLException {
+    private static DataSource getDataSourceRange() throws Exception {
         ExampleConfiguration exampleConfig;
         RegistryCenterConfiguration registryCenterConfig = getRegistryCenterConfiguration();
         switch (shardingType) {
@@ -129,7 +129,7 @@ public class JavaConfigurationTransactionExample {
         return RegistryCenterType.ZOOKEEPER == registryCenterType ? RegistryCenterConfigurationUtil.getZooKeeperConfiguration() : RegistryCenterConfigurationUtil.getEtcdConfiguration();
     }
     
-    private static void process(final DataSource dataSource) throws SQLException {
+    private static void process(final DataSource dataSource) throws Exception {
         TransactionService transactionService = getTransactionService(dataSource);
         transactionService.initEnvironment();
         transactionService.processSuccess(isRangeSharding);
@@ -165,7 +165,7 @@ public class JavaConfigurationTransactionExample {
         return new RawPojoTransactionService(new JDBCOrderTransactionRepositoryImpl(dataSource), new JDBCOrderItemTransactionRepositotyImpl(dataSource), dataSource);
     }
     
-    private static void closeDataSource(final DataSource dataSource) {
+    private static void closeDataSource(final DataSource dataSource) throws Exception {
         if (dataSource instanceof OrchestrationMasterSlaveDataSource) {
             ((OrchestrationMasterSlaveDataSource) dataSource).close();
         } else {
