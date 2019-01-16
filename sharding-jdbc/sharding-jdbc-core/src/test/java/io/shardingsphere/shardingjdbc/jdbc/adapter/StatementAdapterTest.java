@@ -181,7 +181,7 @@ public final class StatementAdapterTest extends AbstractShardingJDBCDatabaseAndT
     }
     
     @Test
-    public void assertUnaccumulateUpdateRow() throws SQLException {
+    public void assertNotAccumulateUpdateRow() throws SQLException {
         final Statement statement1 = Mockito.mock(Statement.class);
         when(statement1.getUpdateCount()).thenReturn(10);
         final Statement statement2 = Mockito.mock(Statement.class);
