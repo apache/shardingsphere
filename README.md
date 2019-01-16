@@ -1,4 +1,4 @@
-# Sharding-Sphere Documents
+# ShardingSphere Documents
 
 For generate ShardingSphere document and website only.
 
