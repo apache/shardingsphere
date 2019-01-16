@@ -13,7 +13,8 @@ shardingRule:
         inline:
           shardingColumn: order_id
           algorithmExpression: t_order_${order_id % 2}
-      keyGeneratorColumnName: order_id
+      keyGenerator:
+        column: order_id
     t_order_item:
       actualDataNodes: ds.t_order_item_${0..1}
       tableStrategy:
@@ -22,7 +23,8 @@ shardingRule:
           algorithmExpression: t_order_item_${order_id % 2}
   bindingTables:
     - t_order,t_order_item
-  defaultKeyGeneratorClassName: io.shardingsphere.core.keygen.DefaultKeyGenerator
+  defaultKeyGenerator:
+    type: SNOWFLAKE
 
 props:
   sql.show: true

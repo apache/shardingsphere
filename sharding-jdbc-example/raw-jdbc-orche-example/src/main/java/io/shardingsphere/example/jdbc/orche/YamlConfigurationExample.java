@@ -52,7 +52,7 @@ public class YamlConfigurationExample {
     private static boolean loadConfigFromRegCenter = false;
 //    private static boolean loadConfigFromRegCenter = true;
     
-    public static void main(final String[] args) throws SQLException, IOException {
+    public static void main(final String[] args) throws Exception {
         process(getDataSource());
     }
     
@@ -85,7 +85,7 @@ public class YamlConfigurationExample {
         return new File(YamlConfigurationExample.class.getResource(result).getFile());
     }
     
-    private static void process(final DataSource dataSource) {
+    private static void process(final DataSource dataSource) throws Exception {
         CommonService commonService = getCommonService(dataSource);
         commonService.initEnvironment();
         commonService.processSuccess(false);
@@ -97,7 +97,7 @@ public class YamlConfigurationExample {
         return new RawPojoService(new JDBCOrderRepositoryImpl(dataSource), new JDBCOrderItemRepositoryImpl(dataSource));
     }
     
-    private static void closeDataSource(final DataSource dataSource) {
+    private static void closeDataSource(final DataSource dataSource) throws Exception {
         if (dataSource instanceof OrchestrationMasterSlaveDataSource) {
             ((OrchestrationMasterSlaveDataSource) dataSource).close();
         } else {

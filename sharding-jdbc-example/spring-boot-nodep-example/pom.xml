@@ -23,7 +23,7 @@
         </dependency>
         <dependency>
             <groupId>io.shardingsphere</groupId>
-            <artifactId>sharding-transaction-2pc-xa</artifactId>
+            <artifactId>sharding-transaction-xa-core</artifactId>
         </dependency>
         <dependency>
             <groupId>io.shardingsphere</groupId>
