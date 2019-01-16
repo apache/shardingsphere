@@ -20,11 +20,17 @@ weight = 1
          return ShardingDataSourceFactory.createDataSource(createDataSourceMap(), shardingRuleConfig);
      }
      
+     private static KeyGeneratorConfiguration getKeyGeneratorConfiguration() {
+                  KeyGeneratorConfiguration result = new KeyGeneratorConfiguration();
+                  result.setColumn("order_id");
+                  return result;
+     }
+     
      TableRuleConfiguration getOrderTableRuleConfiguration() {
          TableRuleConfiguration result = new TableRuleConfiguration();
          result.setLogicTable("t_order");
          result.setActualDataNodes("ds${0..1}.t_order${0..1}");
-         result.setKeyGeneratorColumnName("order_id");
+         result.setKeyGeneratorConfig(getKeyGeneratorConfiguration());
          return result;
      }
      
@@ -78,11 +84,17 @@ weight = 1
         return ShardingDataSourceFactory.createDataSource(createDataSourceMap(), shardingRuleConfig, new HashMap<String, Object>(), new Properties());
     }
     
+    private static KeyGeneratorConfiguration getKeyGeneratorConfiguration() {
+                 KeyGeneratorConfiguration result = new KeyGeneratorConfiguration();
+                 result.setColumn("order_id");
+                 return result;
+    }
+    
     TableRuleConfiguration getOrderTableRuleConfiguration() {
         TableRuleConfiguration result = new TableRuleConfiguration();
         result.setLogicTable("t_order");
         result.setActualDataNodes("ds_${0..1}.t_order_${[0, 1]}");
-        result.setKeyGeneratorColumnName("order_id");
+        result.setKeyGeneratorConfig(getKeyGeneratorConfiguration());
         return result;
     }
     
