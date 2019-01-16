@@ -17,21 +17,27 @@
 
 package io.shardingsphere.core.routing.type.unicast;
 
+import java.util.ArrayList;
+import java.util.Collection;
+import java.util.HashSet;
+import java.util.List;
+import java.util.Set;
+
+import com.google.common.collect.Sets;
+
+import io.shardingsphere.core.exception.ShardingConfigurationException;
 import io.shardingsphere.core.routing.type.RoutingEngine;
 import io.shardingsphere.core.routing.type.RoutingResult;
 import io.shardingsphere.core.routing.type.RoutingTable;
 import io.shardingsphere.core.routing.type.TableUnit;
 import io.shardingsphere.core.rule.DataNode;
 import io.shardingsphere.core.rule.ShardingRule;
+import io.shardingsphere.core.rule.TableRule;
 import lombok.RequiredArgsConstructor;
-
-import java.util.ArrayList;
-import java.util.Collection;
-import java.util.List;
 
 /**
  * Unicast routing engine.
- * 
+ *
  * @author zhangliang
  * @author maxiaoguang
  */
@@ -50,11 +56,11 @@ public final class UnicastRoutingEngine implements RoutingEngine {
             for (String each : logicTables) {
                 routingTables.add(new RoutingTable(each, each));
             }
-            TableUnit tableUnit = new TableUnit(shardingRule.getShardingDataSourceNames().getDataSourceNames().iterator().next());
+            TableUnit tableUnit = new TableUnit(shardingRule.getShardingDataSourceNames().getRandomDataSourceName());
             tableUnit.getRoutingTables().addAll(routingTables);
             result.getTableUnits().getTableUnits().add(tableUnit);
         } else if (logicTables.isEmpty()) {
-            result.getTableUnits().getTableUnits().add(new TableUnit(shardingRule.getShardingDataSourceNames().getDataSourceNames().iterator().next()));
+            result.getTableUnits().getTableUnits().add(new TableUnit(shardingRule.getShardingDataSourceNames().getRandomDataSourceName()));
         } else if (1 == logicTables.size()) {
             String logicTableName = logicTables.iterator().next();
             DataNode dataNode = shardingRule.getDataNode(logicTableName);
@@ -62,16 +68,28 @@ public final class UnicastRoutingEngine implements RoutingEngine {
             tableUnit.getRoutingTables().add(new RoutingTable(logicTableName, dataNode.getTableName()));
             result.getTableUnits().getTableUnits().add(tableUnit);
         } else {
-            String dataSourceName = null;
             List<RoutingTable> routingTables = new ArrayList<>(logicTables.size());
+            Set<String> availableDatasourceNames = null;
+            boolean first = true;
             for (String each : logicTables) {
-                DataNode dataNode = shardingRule.getDataNode(dataSourceName, each);
+                TableRule tableRule = shardingRule.getTableRule(each);
+                DataNode dataNode = tableRule.getActualDataNodes().get(0);
                 routingTables.add(new RoutingTable(each, dataNode.getTableName()));
-                if (null == dataSourceName) {
-                    dataSourceName = dataNode.getDataSourceName();
+                Set<String> currentDataSourceNames = new HashSet<>(tableRule.getActualDatasourceNames().size());
+                for (DataNode eachDataNode : tableRule.getActualDataNodes()) {
+                    currentDataSourceNames.add(eachDataNode.getDataSourceName());
+                }
+                if (first) {
+                    availableDatasourceNames = currentDataSourceNames;
+                    first = false;
+                } else {
+                    availableDatasourceNames = Sets.intersection(availableDatasourceNames, currentDataSourceNames);
                 }
             }
-            TableUnit tableUnit = new TableUnit(dataSourceName);
+            if (availableDatasourceNames == null || availableDatasourceNames.isEmpty()) {
+                throw new ShardingConfigurationException("Cannot find actual datasource intersection for logic tables: %s", logicTables);
+            }
+            TableUnit tableUnit = new TableUnit(shardingRule.getShardingDataSourceNames().getRandomDataSourceName(availableDatasourceNames));
             tableUnit.getRoutingTables().addAll(routingTables);
             result.getTableUnits().getTableUnits().add(tableUnit);
         }
