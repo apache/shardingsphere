@@ -41,9 +41,9 @@ import java.sql.SQLException;
  */
 public class JavaConfigurationExample {
     
-    private static ShardingType type = ShardingType.SHARDING_DATABASES;
+//    private static ShardingType type = ShardingType.SHARDING_DATABASES;
 //    private static ShardingType type = ShardingType.SHARDING_TABLES;
-//    private static ShardingType type = ShardingType.SHARDING_DATABASES_AND_TABLES;
+    private static ShardingType type = ShardingType.SHARDING_DATABASES_AND_TABLES;
 //    private static ShardingType type = ShardingType.MASTER_SLAVE;
 //    private static ShardingType type = ShardingType.SHARDING_MASTER_SLAVE;
     
