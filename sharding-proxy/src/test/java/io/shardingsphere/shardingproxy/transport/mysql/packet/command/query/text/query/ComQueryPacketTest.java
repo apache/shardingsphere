@@ -32,7 +32,7 @@ import io.shardingsphere.shardingproxy.transport.mysql.packet.command.CommandPac
 import io.shardingsphere.shardingproxy.transport.mysql.packet.command.CommandResponsePackets;
 import io.shardingsphere.shardingproxy.transport.mysql.packet.command.query.FieldCountPacket;
 import io.shardingsphere.shardingproxy.transport.mysql.packet.command.query.text.TextResultSetRowPacket;
-import io.shardingsphere.shardingproxy.transport.mysql.packet.command.query.text.query.fixture.ShardingTransactionEngineFixture;
+import io.shardingsphere.shardingproxy.transport.mysql.packet.command.query.text.query.fixture.ShardingTransactionManagerFixture;
 import io.shardingsphere.shardingproxy.transport.mysql.packet.generic.OKPacket;
 import io.shardingsphere.transaction.api.TransactionType;
 import io.shardingsphere.transaction.core.TransactionOperationType;
@@ -75,7 +75,7 @@ public final class ComQueryPacketTest {
     
     @After
     public void tearDown() {
-        ShardingTransactionEngineFixture.getInvocations().clear();
+        ShardingTransactionManagerFixture.getInvocations().clear();
     }
     
     @SneakyThrows
@@ -145,7 +145,7 @@ public final class ComQueryPacketTest {
         Optional<CommandResponsePackets> actual = packet.execute();
         assertTrue(actual.isPresent());
         assertOKPacket(actual.get());
-        assertTrue(ShardingTransactionEngineFixture.getInvocations().contains(TransactionOperationType.ROLLBACK));
+        assertTrue(ShardingTransactionManagerFixture.getInvocations().contains(TransactionOperationType.ROLLBACK));
     }
     
     @Test
@@ -157,7 +157,7 @@ public final class ComQueryPacketTest {
         Optional<CommandResponsePackets> actual = packet.execute();
         assertTrue(actual.isPresent());
         assertOKPacket(actual.get());
-        assertTrue(ShardingTransactionEngineFixture.getInvocations().contains(TransactionOperationType.COMMIT));
+        assertTrue(ShardingTransactionManagerFixture.getInvocations().contains(TransactionOperationType.COMMIT));
     }
     
     private void assertOKPacket(final CommandResponsePackets actual) {

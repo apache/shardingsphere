@@ -1,2 +1,0 @@
-io.shardingsphere.transaction.core.fixture.ShardingTransactionEngineFixture
-io.shardingsphere.transaction.core.fixture.OtherShardingTransactionEngineFixture

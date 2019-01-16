@@ -19,15 +19,10 @@ package io.shardingsphere.shardingjdbc.jdbc.core.fixture;
 
 import io.shardingsphere.transaction.api.TransactionType;
 
-/**
- * BASE sharding transaction engine fixture.
- *
- * @author zhaojun
- */
-public final class BASEShardingTransactionEngineFixture extends AbstractShardingTransactionEngineFixture {
+public final class XAShardingTransactionManagerFixture extends AbstractShardingTransactionManagerFixture {
     
     @Override
     public TransactionType getTransactionType() {
-        return TransactionType.BASE;
+        return TransactionType.XA;
     }
 }

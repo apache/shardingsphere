@@ -20,7 +20,7 @@ package io.shardingsphere.transaction.xa;
 import com.atomikos.jdbc.AtomikosDataSourceBean;
 import io.shardingsphere.core.constant.DatabaseType;
 import io.shardingsphere.transaction.api.TransactionType;
-import io.shardingsphere.transaction.spi.ShardingTransactionEngine;
+import io.shardingsphere.transaction.spi.ShardingTransactionManager;
 import io.shardingsphere.transaction.xa.jta.connection.SingleXAConnection;
 import io.shardingsphere.transaction.xa.jta.datasource.SingleXADataSource;
 import io.shardingsphere.transaction.xa.manager.XATransactionManagerLoader;
@@ -35,11 +35,11 @@ import java.util.Map;
 import java.util.Map.Entry;
 
 /**
- * Sharding transaction engine for XA.
+ * Sharding transaction manager for XA.
  *
  * @author zhaojun
  */
-public final class XAShardingTransactionEngine implements ShardingTransactionEngine {
+public final class XAShardingTransactionManager implements ShardingTransactionManager {
     
     private final Map<String, SingleXADataSource> cachedSingleXADataSourceMap = new HashMap<>();
     

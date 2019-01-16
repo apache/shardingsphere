@@ -19,7 +19,7 @@ package io.shardingsphere.transaction.core;
 
 import io.shardingsphere.core.constant.DatabaseType;
 import io.shardingsphere.transaction.api.TransactionType;
-import io.shardingsphere.transaction.core.fixture.ShardingTransactionEngineFixture;
+import io.shardingsphere.transaction.core.fixture.ShardingTransactionManagerFixture;
 import org.junit.Test;
 
 import java.util.Map;
@@ -33,15 +33,15 @@ public final class ShardingTransactionEngineRegistryTest {
     
     @Test
     public void assertGetEngine() {
-        assertThat(ShardingTransactionEngineRegistry.getEngine(TransactionType.XA), instanceOf(ShardingTransactionEngineFixture.class));
+        assertThat(ShardingTransactionEngineRegistry.getEngine(TransactionType.XA), instanceOf(ShardingTransactionManagerFixture.class));
     }
     
     @SuppressWarnings("unchecked")
     @Test
     public void assertRegisterTransactionResource() {
         Runnable caller = mock(Runnable.class);
-        ShardingTransactionEngineFixture shardingTransactionEngine = (ShardingTransactionEngineFixture) ShardingTransactionEngineRegistry.getEngine(TransactionType.XA);
-        shardingTransactionEngine.setCaller(caller);
+        ShardingTransactionManagerFixture shardingTransactionManager = (ShardingTransactionManagerFixture) ShardingTransactionEngineRegistry.getEngine(TransactionType.XA);
+        shardingTransactionManager.setCaller(caller);
         ShardingTransactionEngineRegistry.init(DatabaseType.H2, mock(Map.class));
         verify(caller).run();
     }

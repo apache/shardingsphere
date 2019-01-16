@@ -31,7 +31,7 @@ import io.shardingsphere.spi.root.SPIRootInvokeHook;
 import io.shardingsphere.transaction.api.TransactionType;
 import io.shardingsphere.transaction.api.TransactionTypeHolder;
 import io.shardingsphere.transaction.core.ShardingTransactionEngineRegistry;
-import io.shardingsphere.transaction.spi.ShardingTransactionEngine;
+import io.shardingsphere.transaction.spi.ShardingTransactionManager;
 import lombok.Getter;
 
 import javax.sql.DataSource;
@@ -75,12 +75,12 @@ public abstract class AbstractConnectionAdapter extends AbstractUnsupportedOpera
     
     private final TransactionType transactionType;
     
-    private final ShardingTransactionEngine shardingTransactionEngine;
+    private final ShardingTransactionManager shardingTransactionManager;
     
     protected AbstractConnectionAdapter(final TransactionType transactionType) {
         rootInvokeHook.start();
         this.transactionType = transactionType;
-        shardingTransactionEngine = ShardingTransactionEngineRegistry.getEngine(transactionType);
+        shardingTransactionManager = ShardingTransactionEngineRegistry.getEngine(transactionType);
     }
     
     /**
@@ -159,13 +159,13 @@ public abstract class AbstractConnectionAdapter extends AbstractUnsupportedOpera
     }
     
     private Connection createConnection(final String dataSourceName, final DataSource dataSource) throws SQLException {
-        Connection result = isInShardingTransaction() ? shardingTransactionEngine.getConnection(dataSourceName) : dataSource.getConnection();
+        Connection result = isInShardingTransaction() ? shardingTransactionManager.getConnection(dataSourceName) : dataSource.getConnection();
         replayMethodsInvocation(result);
         return result;
     }
     
     private boolean isInShardingTransaction() {
-        return null != shardingTransactionEngine && shardingTransactionEngine.isInTransaction();
+        return null != shardingTransactionManager && shardingTransactionManager.isInTransaction();
     }
     
     protected abstract Map<String, DataSource> getDataSourceMap();
@@ -181,7 +181,7 @@ public abstract class AbstractConnectionAdapter extends AbstractUnsupportedOpera
         if (TransactionType.LOCAL == transactionType) {
             setAutoCommitForLocalTransaction(autoCommit);
         } else if (!autoCommit) {
-            shardingTransactionEngine.begin();
+            shardingTransactionManager.begin();
         }
     }
     
@@ -201,7 +201,7 @@ public abstract class AbstractConnectionAdapter extends AbstractUnsupportedOpera
         if (TransactionType.LOCAL == transactionType) {
             commitForLocalTransaction();
         } else {
-            shardingTransactionEngine.commit();
+            shardingTransactionManager.commit();
         }
     }
     
@@ -220,7 +220,7 @@ public abstract class AbstractConnectionAdapter extends AbstractUnsupportedOpera
         if (TransactionType.LOCAL == transactionType) {
             rollbackForLocalTransaction();
         } else {
-            shardingTransactionEngine.rollback();
+            shardingTransactionManager.rollback();
         }
     }
     

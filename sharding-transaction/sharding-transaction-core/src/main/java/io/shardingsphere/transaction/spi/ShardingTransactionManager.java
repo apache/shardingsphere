@@ -26,12 +26,12 @@ import java.sql.SQLException;
 import java.util.Map;
 
 /**
- * Sharding transaction engine.
+ * Sharding transaction manager.
  *
  * @author zhaojun
  * 
  */
-public interface ShardingTransactionEngine extends AutoCloseable {
+public interface ShardingTransactionManager extends AutoCloseable {
     
     /**
      * Initialize sharding transaction engine.

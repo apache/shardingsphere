@@ -19,14 +19,14 @@ package io.shardingsphere.transaction.core.fixture;
 
 import io.shardingsphere.core.constant.DatabaseType;
 import io.shardingsphere.transaction.api.TransactionType;
-import io.shardingsphere.transaction.spi.ShardingTransactionEngine;
+import io.shardingsphere.transaction.spi.ShardingTransactionManager;
 import lombok.Setter;
 
 import javax.sql.DataSource;
 import java.sql.Connection;
 import java.util.Map;
 
-public final class ShardingTransactionEngineFixture implements ShardingTransactionEngine {
+public final class ShardingTransactionManagerFixture implements ShardingTransactionManager {
     
     @Setter
     private Runnable caller;

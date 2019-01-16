@@ -19,13 +19,13 @@ package io.shardingsphere.transaction.core.fixture;
 
 import io.shardingsphere.core.constant.DatabaseType;
 import io.shardingsphere.transaction.api.TransactionType;
-import io.shardingsphere.transaction.spi.ShardingTransactionEngine;
+import io.shardingsphere.transaction.spi.ShardingTransactionManager;
 
 import javax.sql.DataSource;
 import java.sql.Connection;
 import java.util.Map;
 
-public final class OtherShardingTransactionEngineFixture implements ShardingTransactionEngine {
+public final class OtherShardingTransactionManagerFixture implements ShardingTransactionManager {
     
     @Override
     public void init(final DatabaseType databaseType, final Map<String, DataSource> dataSourceMap) {

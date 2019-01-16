@@ -15,11 +15,12 @@
  * </p>
  */
 
-package io.shardingsphere.shardingjdbc.jdbc.core.fixture;
+package io.shardingsphere.shardingproxy.transport.mysql.packet.command.query.text.query.fixture;
 
 import io.shardingsphere.core.constant.DatabaseType;
+import io.shardingsphere.transaction.api.TransactionType;
 import io.shardingsphere.transaction.core.TransactionOperationType;
-import io.shardingsphere.transaction.spi.ShardingTransactionEngine;
+import io.shardingsphere.transaction.spi.ShardingTransactionManager;
 import lombok.Getter;
 
 import javax.sql.DataSource;
@@ -28,46 +29,46 @@ import java.util.Collection;
 import java.util.LinkedList;
 import java.util.Map;
 
-/**
- * Abstract sharding transaction engine fixture.
- *
- * @author zhangliang
- */
-public abstract class AbstractShardingTransactionEngineFixture implements ShardingTransactionEngine {
+public final class ShardingTransactionManagerFixture implements ShardingTransactionManager {
     
     @Getter
     private static Collection<TransactionOperationType> invocations = new LinkedList<>();
     
     @Override
-    public final void init(final DatabaseType databaseType, final Map<String, DataSource> dataSourceMap) {
+    public void init(final DatabaseType databaseType, final Map<String, DataSource> dataSourceMap) {
     }
     
     @Override
-    public final boolean isInTransaction() {
+    public TransactionType getTransactionType() {
+        return TransactionType.XA;
+    }
+    
+    @Override
+    public boolean isInTransaction() {
         return true;
     }
     
     @Override
-    public final Connection getConnection(final String dataSourceName) {
+    public Connection getConnection(final String dataSourceName) {
         return null;
     }
     
     @Override
-    public final void begin() {
+    public void begin() {
         invocations.add(TransactionOperationType.BEGIN);
     }
     
     @Override
-    public final void commit() {
+    public void commit() {
         invocations.add(TransactionOperationType.COMMIT);
     }
     
     @Override
-    public final void rollback() {
+    public void rollback() {
         invocations.add(TransactionOperationType.ROLLBACK);
     }
     
     @Override
-    public final void close() {
+    public void close() {
     }
 }

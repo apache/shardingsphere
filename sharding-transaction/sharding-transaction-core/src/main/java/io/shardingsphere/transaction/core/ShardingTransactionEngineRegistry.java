@@ -20,7 +20,7 @@ package io.shardingsphere.transaction.core;
 import com.google.common.base.Preconditions;
 import io.shardingsphere.core.constant.DatabaseType;
 import io.shardingsphere.transaction.api.TransactionType;
-import io.shardingsphere.transaction.spi.ShardingTransactionEngine;
+import io.shardingsphere.transaction.spi.ShardingTransactionManager;
 import lombok.AccessLevel;
 import lombok.NoArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
@@ -40,7 +40,7 @@ import java.util.ServiceLoader;
 @Slf4j
 public final class ShardingTransactionEngineRegistry {
     
-    private static final Map<TransactionType, ShardingTransactionEngine> ENGINES = new HashMap<>();
+    private static final Map<TransactionType, ShardingTransactionManager> ENGINES = new HashMap<>();
     
     static {
         load();
@@ -50,7 +50,7 @@ public final class ShardingTransactionEngineRegistry {
      * Load sharding transaction engines.
      */
     private static void load() {
-        for (ShardingTransactionEngine each : ServiceLoader.load(ShardingTransactionEngine.class)) {
+        for (ShardingTransactionManager each : ServiceLoader.load(ShardingTransactionManager.class)) {
             if (ENGINES.containsKey(each.getTransactionType())) {
                 log.warn("Find more than one {} transaction engine implementation class, use `{}` now",
                     each.getTransactionType(), ENGINES.get(each.getTransactionType()).getClass().getName());
@@ -66,8 +66,8 @@ public final class ShardingTransactionEngineRegistry {
      * @param transactionType transaction type
      * @return sharding transaction engine
      */
-    public static ShardingTransactionEngine getEngine(final TransactionType transactionType) {
-        ShardingTransactionEngine result = ENGINES.get(transactionType);
+    public static ShardingTransactionManager getEngine(final TransactionType transactionType) {
+        ShardingTransactionManager result = ENGINES.get(transactionType);
         if (TransactionType.LOCAL != transactionType) {
             Preconditions.checkNotNull(result, "Cannot find transaction manager of [%s]", transactionType);
         }
@@ -81,7 +81,7 @@ public final class ShardingTransactionEngineRegistry {
      * @param dataSourceMap data source map
      */
     public static void init(final DatabaseType databaseType, final Map<String, DataSource> dataSourceMap) {
-        for (Entry<TransactionType, ShardingTransactionEngine> entry : ENGINES.entrySet()) {
+        for (Entry<TransactionType, ShardingTransactionManager> entry : ENGINES.entrySet()) {
             entry.getValue().init(databaseType, dataSourceMap);
         }
     }
@@ -92,7 +92,7 @@ public final class ShardingTransactionEngineRegistry {
      * @throws Exception exception
      */
     public static void close() throws Exception {
-        for (Entry<TransactionType, ShardingTransactionEngine> entry : ENGINES.entrySet()) {
+        for (Entry<TransactionType, ShardingTransactionManager> entry : ENGINES.entrySet()) {
             entry.getValue().close();
         }
     }

@@ -25,7 +25,7 @@ import io.shardingsphere.shardingproxy.backend.BackendDataSource;
 import io.shardingsphere.shardingproxy.util.DataSourceParameter;
 import io.shardingsphere.transaction.api.TransactionType;
 import io.shardingsphere.transaction.core.ShardingTransactionEngineRegistry;
-import io.shardingsphere.transaction.spi.ShardingTransactionEngine;
+import io.shardingsphere.transaction.spi.ShardingTransactionManager;
 import lombok.NoArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 
@@ -138,12 +138,12 @@ public final class JDBCBackendDataSource implements BackendDataSource, AutoClose
     }
     
     private Connection createConnection(final TransactionType transactionType, final String dataSourceName, final DataSource dataSource) throws SQLException {
-        ShardingTransactionEngine shardingTransactionEngine = ShardingTransactionEngineRegistry.getEngine(transactionType);
-        return isInShardingTransaction(shardingTransactionEngine) ? shardingTransactionEngine.getConnection(dataSourceName) : dataSource.getConnection();
+        ShardingTransactionManager shardingTransactionManager = ShardingTransactionEngineRegistry.getEngine(transactionType);
+        return isInShardingTransaction(shardingTransactionManager) ? shardingTransactionManager.getConnection(dataSourceName) : dataSource.getConnection();
     }
     
-    private boolean isInShardingTransaction(final ShardingTransactionEngine shardingTransactionEngine) {
-        return null != shardingTransactionEngine && shardingTransactionEngine.isInTransaction();
+    private boolean isInShardingTransaction(final ShardingTransactionManager shardingTransactionManager) {
+        return null != shardingTransactionManager && shardingTransactionManager.isInTransaction();
     }
     
     @Override

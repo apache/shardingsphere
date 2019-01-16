@@ -19,7 +19,7 @@ package io.shardingsphere.shardingproxy.backend.jdbc.connection;
 
 import com.google.common.base.Optional;
 import io.shardingsphere.transaction.core.ShardingTransactionEngineRegistry;
-import io.shardingsphere.transaction.spi.ShardingTransactionEngine;
+import io.shardingsphere.transaction.spi.ShardingTransactionManager;
 import lombok.RequiredArgsConstructor;
 
 import java.sql.SQLException;
@@ -36,41 +36,41 @@ public final class BackendTransactionManager implements TransactionManager {
     
     @Override
     public void begin() {
-        Optional<ShardingTransactionEngine> shardingTransactionEngine = getShardingTransactionEngine(connection);
+        Optional<ShardingTransactionManager> shardingTransactionManager = getShardingTransactionEngine(connection);
         if (!connection.getStateHandler().isInTransaction()) {
             connection.getStateHandler().getAndSetStatus(ConnectionStatus.TRANSACTION);
             connection.releaseConnections(false);
         }
-        if (!shardingTransactionEngine.isPresent()) {
+        if (!shardingTransactionManager.isPresent()) {
             new LocalTransactionManager(connection).begin();
         } else {
-            shardingTransactionEngine.get().begin();
+            shardingTransactionManager.get().begin();
         }
     }
     
     @Override
     public void commit() throws SQLException {
-        Optional<ShardingTransactionEngine> shardingTransactionEngine = getShardingTransactionEngine(connection);
-        if (!shardingTransactionEngine.isPresent()) {
+        Optional<ShardingTransactionManager> shardingTransactionManager = getShardingTransactionEngine(connection);
+        if (!shardingTransactionManager.isPresent()) {
             new LocalTransactionManager(connection).commit();
         } else {
-            shardingTransactionEngine.get().commit();
+            shardingTransactionManager.get().commit();
             connection.getStateHandler().getAndSetStatus(ConnectionStatus.TERMINATED);
         }
     }
     
     @Override
     public void rollback() throws SQLException {
-        Optional<ShardingTransactionEngine> shardingTransactionEngine = getShardingTransactionEngine(connection);
-        if (!shardingTransactionEngine.isPresent()) {
+        Optional<ShardingTransactionManager> shardingTransactionManager = getShardingTransactionEngine(connection);
+        if (!shardingTransactionManager.isPresent()) {
             new LocalTransactionManager(connection).rollback();
         } else {
-            shardingTransactionEngine.get().rollback();
+            shardingTransactionManager.get().rollback();
             connection.getStateHandler().getAndSetStatus(ConnectionStatus.TERMINATED);
         }
     }
     
-    private Optional<ShardingTransactionEngine> getShardingTransactionEngine(final BackendConnection connection) {
+    private Optional<ShardingTransactionManager> getShardingTransactionEngine(final BackendConnection connection) {
         return Optional.fromNullable(ShardingTransactionEngineRegistry.getEngine(connection.getTransactionType()));
     }
 }
