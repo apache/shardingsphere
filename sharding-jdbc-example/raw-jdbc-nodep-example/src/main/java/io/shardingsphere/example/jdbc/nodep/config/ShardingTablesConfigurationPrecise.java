@@ -17,6 +17,7 @@
 
 package io.shardingsphere.example.jdbc.nodep.config;
 
+import io.shardingsphere.api.config.KeyGeneratorConfiguration;
 import io.shardingsphere.api.config.rule.ShardingRuleConfiguration;
 import io.shardingsphere.api.config.rule.TableRuleConfiguration;
 import io.shardingsphere.api.config.strategy.StandardShardingStrategyConfiguration;
@@ -47,7 +48,7 @@ public final class ShardingTablesConfigurationPrecise implements ExampleConfigur
         TableRuleConfiguration result = new TableRuleConfiguration();
         result.setLogicTable("t_order");
         result.setActualDataNodes("demo_ds.t_order_${[0, 1]}");
-        result.setKeyGeneratorColumnName("order_id");
+        result.setKeyGeneratorConfig(getKeyGeneratorConfiguration());
         return result;
     }
     
@@ -61,6 +62,12 @@ public final class ShardingTablesConfigurationPrecise implements ExampleConfigur
     private static Map<String, DataSource> createDataSourceMap() {
         Map<String, DataSource> result = new HashMap<>();
         result.put("demo_ds", DataSourceUtil.createDataSource("demo_ds"));
+        return result;
+    }
+    
+    private static KeyGeneratorConfiguration getKeyGeneratorConfiguration() {
+        KeyGeneratorConfiguration result = new KeyGeneratorConfiguration();
+        result.setColumn("order_id");
         return result;
     }
 }
