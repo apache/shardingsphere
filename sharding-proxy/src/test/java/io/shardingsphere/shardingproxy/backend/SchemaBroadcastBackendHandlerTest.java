@@ -40,7 +40,7 @@ import static org.mockito.Mockito.verify;
 import static org.mockito.Mockito.when;
 
 @RunWith(MockitoJUnitRunner.class)
-public class SchemaBroadcastBackendHandlerTest {
+public final class SchemaBroadcastBackendHandlerTest {
     
     @Mock
     private BackendConnection backendConnection;
@@ -56,7 +56,7 @@ public class SchemaBroadcastBackendHandlerTest {
         SchemaBroadcastBackendHandler schemaBroadcastBackendHandler = new SchemaBroadcastBackendHandler(1, sql, backendConnection, DatabaseType.MySQL, backendHandlerFactory);
         CommandResponsePackets actual = schemaBroadcastBackendHandler.execute();
         assertThat(actual.getHeadPacket(), instanceOf(OKPacket.class));
-        verify(backendConnection).getSchemaName();
+        verify(backendConnection).setCurrentSchema(null);
         verify(backendConnection, times(10)).setCurrentSchema(anyString());
     }
     
@@ -68,7 +68,7 @@ public class SchemaBroadcastBackendHandlerTest {
         SchemaBroadcastBackendHandler schemaBroadcastBackendHandler = new SchemaBroadcastBackendHandler(1, sql, backendConnection, DatabaseType.MySQL, backendHandlerFactory);
         CommandResponsePackets actual = schemaBroadcastBackendHandler.execute();
         assertThat(actual.getHeadPacket(), instanceOf(ErrPacket.class));
-        verify(backendConnection).getSchemaName();
+        verify(backendConnection).setCurrentSchema(null);
         verify(backendConnection, times(5)).setCurrentSchema(anyString());
     }
     

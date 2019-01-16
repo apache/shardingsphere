@@ -20,12 +20,9 @@ package io.shardingsphere.shardingproxy.backend.jdbc.datasource;
 import com.zaxxer.hikari.HikariConfig;
 import com.zaxxer.hikari.HikariDataSource;
 import io.shardingsphere.core.exception.ShardingException;
-import io.shardingsphere.core.metadata.datasource.dialect.MySQLDataSourceMetaData;
-import io.shardingsphere.core.metadata.datasource.dialect.PostgreSQLDataSourceMetaData;
-import io.shardingsphere.core.rule.DataSourceParameter;
+import io.shardingsphere.shardingproxy.util.DataSourceParameter;
 import lombok.AccessLevel;
 import lombok.NoArgsConstructor;
-
 import javax.sql.DataSource;
 
 /**
@@ -76,18 +73,10 @@ public final class JDBCRawBackendDataSourceFactory implements JDBCBackendDataSou
         return new HikariDataSource(config);
     }
     
+    // TODO judge database type
     private String getDriverClassName(final String url) {
-        try {
-            new MySQLDataSourceMetaData(url);
-            return "com.mysql.jdbc.Driver";
-        } catch (final ShardingException ignore) {
-        }
-        try {
-            new PostgreSQLDataSourceMetaData(url);
-            return "org.postgresql.Driver";
-        } catch (final ShardingException ignore) {
-        }
-        throw new UnsupportedOperationException(String.format("Cannot support url `%s`", url));
+        JDBCClassDetermine jdbcClassDetermine = new JDBCClassDetermine();
+        return jdbcClassDetermine.getDriverClassName(url);
     }
     
     private void validateDriverClassName(final String driverClassName) {

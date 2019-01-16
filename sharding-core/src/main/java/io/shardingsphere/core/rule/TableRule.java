@@ -18,6 +18,7 @@
 package io.shardingsphere.core.rule;
 
 import com.google.common.base.Preconditions;
+import io.shardingsphere.api.config.KeyGeneratorConfiguration;
 import io.shardingsphere.api.config.rule.TableRuleConfiguration;
 import io.shardingsphere.core.exception.ShardingException;
 import io.shardingsphere.core.keygen.generator.KeyGenerator;
@@ -94,9 +95,13 @@ public final class TableRule {
             ? generateDataNodes(tableRuleConfig.getLogicTable(), shardingDataSourceNames.getDataSourceNames()) : generateDataNodes(dataNodes, shardingDataSourceNames.getDataSourceNames());
         databaseShardingStrategy = null == tableRuleConfig.getDatabaseShardingStrategyConfig() ? null : ShardingStrategyFactory.newInstance(tableRuleConfig.getDatabaseShardingStrategyConfig());
         tableShardingStrategy = null == tableRuleConfig.getTableShardingStrategyConfig() ? null : ShardingStrategyFactory.newInstance(tableRuleConfig.getTableShardingStrategyConfig());
-        generateKeyColumn = tableRuleConfig.getKeyGeneratorColumnName();
-        keyGenerator = tableRuleConfig.getKeyGenerator();
+        generateKeyColumn = null == tableRuleConfig.getKeyGeneratorConfig() ? null : tableRuleConfig.getKeyGeneratorConfig().getColumn();
+        keyGenerator = createKeyGenerator(tableRuleConfig.getKeyGeneratorConfig());
         logicIndex = null == tableRuleConfig.getLogicIndex() ? null : tableRuleConfig.getLogicIndex().toLowerCase();
+    }
+    
+    private KeyGenerator createKeyGenerator(final KeyGeneratorConfiguration keyGeneratorConfig) {
+        return null == keyGeneratorConfig ? null : keyGeneratorConfig.getKeyGenerator();
     }
     
     private boolean isEmptyDataNodes(final List<String> dataNodes) {

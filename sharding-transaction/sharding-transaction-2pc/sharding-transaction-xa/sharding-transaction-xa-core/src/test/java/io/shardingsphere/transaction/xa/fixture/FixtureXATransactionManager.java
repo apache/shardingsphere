@@ -17,22 +17,28 @@
 
 package io.shardingsphere.transaction.xa.fixture;
 
-import io.shardingsphere.core.constant.DatabaseType;
-import io.shardingsphere.core.rule.DataSourceParameter;
+import io.shardingsphere.transaction.xa.spi.SingleXAResource;
 import io.shardingsphere.transaction.xa.spi.XATransactionManager;
 
-import javax.sql.DataSource;
 import javax.sql.XADataSource;
 import javax.transaction.Status;
-import javax.transaction.TransactionManager;
 
 public final class FixtureXATransactionManager implements XATransactionManager {
+    
     @Override
-    public void startup() {
+    public void init() {
     }
     
     @Override
-    public void destroy() {
+    public void registerRecoveryResource(final String dataSourceName, final XADataSource xaDataSource) {
+    }
+    
+    @Override
+    public void removeRecoveryResource(final String dataSourceName, final XADataSource xaDataSource) {
+    }
+    
+    @Override
+    public void enlistResource(final SingleXAResource singleXAResource) {
     }
     
     @Override
@@ -53,22 +59,6 @@ public final class FixtureXATransactionManager implements XATransactionManager {
     }
     
     @Override
-    public DataSource wrapDataSource(final DatabaseType databaseType, final XADataSource xaDataSource, final String dataSourceName, final DataSourceParameter dataSourceParameter) {
-        return null;
-    }
-    
-    @Override
-    public TransactionManager getUnderlyingTransactionManager() {
-        return null;
-    }
-    
-    @Override
-    public void registerRecoveryResource(final String dataSourceName, final XADataSource xaDataSource) {
-    
-    }
-    
-    @Override
-    public void removeRecoveryResource(final String dataSourceName, final XADataSource xaDataSource) {
-    
+    public void close() {
     }
 }

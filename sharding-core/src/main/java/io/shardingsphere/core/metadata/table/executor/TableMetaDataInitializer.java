@@ -18,13 +18,13 @@
 package io.shardingsphere.core.metadata.table.executor;
 
 import com.google.common.base.Optional;
-import io.shardingsphere.core.exception.ShardingException;
 import io.shardingsphere.core.executor.ShardingExecuteEngine;
 import io.shardingsphere.core.metadata.datasource.DataSourceMetaData;
 import io.shardingsphere.core.metadata.datasource.ShardingDataSourceMetaData;
 import io.shardingsphere.core.metadata.table.TableMetaData;
 import io.shardingsphere.core.rule.ShardingRule;
 import io.shardingsphere.core.rule.TableRule;
+import lombok.SneakyThrows;
 
 import java.sql.Connection;
 import java.sql.ResultSet;
@@ -60,14 +60,11 @@ public final class TableMetaDataInitializer {
      * @param shardingRule sharding rule
      * @return all table meta data
      */
+    @SneakyThrows
     public Map<String, TableMetaData> load(final ShardingRule shardingRule) {
         Map<String, TableMetaData> result = new HashMap<>();
-        try {
-            result.putAll(loadShardingTables(shardingRule));
-            result.putAll(loadDefaultTables(shardingRule));
-        } catch (final SQLException ex) {
-            throw new ShardingException(ex);
-        }
+        result.putAll(loadShardingTables(shardingRule));
+        result.putAll(loadDefaultTables(shardingRule));
         return result;
     }
     

@@ -59,7 +59,7 @@ public abstract class AbstractSQLTest {
             ex.printStackTrace();
         }
     }
-
+    
     private static void createJdbcSchema(final DatabaseType dbType) {
         try {
             Connection conn;
@@ -113,7 +113,7 @@ public abstract class AbstractSQLTest {
     }
     
     @AfterClass
-    public static void clear() {
+    public static void clear() throws Exception {
         if (shardingDataSource == null) {
             return;
         }

@@ -17,13 +17,9 @@
 
 package io.shardingsphere.transaction.xa.spi;
 
-import io.shardingsphere.core.constant.DatabaseType;
-import io.shardingsphere.core.rule.DataSourceParameter;
 import io.shardingsphere.transaction.core.ShardingTransactionManager;
 
-import javax.sql.DataSource;
 import javax.sql.XADataSource;
-import javax.transaction.TransactionManager;
 
 /**
  * XA transaction manager.
@@ -31,41 +27,18 @@ import javax.transaction.TransactionManager;
  * @author zhangliang
  * @author zhaojun
  */
-public interface XATransactionManager extends ShardingTransactionManager {
+public interface XATransactionManager extends ShardingTransactionManager, AutoCloseable {
     
     /**
-     * Startup XA transaction manager.
+     * Initialize XA transaction manager.
      */
-    void startup();
-    
-    /**
-     * destroy the transaction manager and could be helpful with shutdown gracefully.
-     */
-    void destroy();
-    
-    /**
-     * Get specific {@link XADataSource} and enroll it with a JTA.
-     *
-     * @param databaseType database type
-     * @param xaDataSource XA data source
-     * @param dataSourceName data source name
-     * @param dataSourceParameter data source parameter
-     * @return XA data source
-     */
-    DataSource wrapDataSource(DatabaseType databaseType, XADataSource xaDataSource, String dataSourceName, DataSourceParameter dataSourceParameter);
-    
-    /**
-     * Get transaction manager for vendor provided.
-     *
-     * @return transaction manager
-     */
-    TransactionManager getUnderlyingTransactionManager();
+    void init();
     
     /**
      * Register recovery resource.
      *
      * @param dataSourceName data source name
-     * @param xaDataSource   XA data source
+     * @param xaDataSource XA data source
      */
     void registerRecoveryResource(String dataSourceName, XADataSource xaDataSource);
     
@@ -76,5 +49,11 @@ public interface XATransactionManager extends ShardingTransactionManager {
      * @param xaDataSource   XA data source
      */
     void removeRecoveryResource(String dataSourceName, XADataSource xaDataSource);
+    
+    /**
+     * Enlist single XA resource.
+     * 
+     * @param singleXAResource single XA resource
+     */
+    void enlistResource(SingleXAResource singleXAResource);
 }
-

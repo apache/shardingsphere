@@ -21,14 +21,15 @@ import com.google.common.base.Optional;
 import com.google.common.base.Preconditions;
 import com.google.common.base.Splitter;
 import com.google.common.base.Strings;
+import io.shardingsphere.api.config.KeyGeneratorConfiguration;
 import io.shardingsphere.api.config.rule.MasterSlaveRuleConfiguration;
 import io.shardingsphere.api.config.rule.ShardingRuleConfiguration;
 import io.shardingsphere.api.config.rule.TableRuleConfiguration;
 import io.shardingsphere.api.config.strategy.ShardingStrategyConfiguration;
 import io.shardingsphere.core.exception.ShardingConfigurationException;
 import io.shardingsphere.core.exception.ShardingException;
-import io.shardingsphere.core.keygen.generator.SnowflakeKeyGenerator;
 import io.shardingsphere.core.keygen.generator.KeyGenerator;
+import io.shardingsphere.core.keygen.generator.impl.SnowflakeKeyGenerator;
 import io.shardingsphere.core.parsing.parser.context.condition.Column;
 import io.shardingsphere.core.routing.strategy.ShardingStrategy;
 import io.shardingsphere.core.routing.strategy.ShardingStrategyFactory;
@@ -78,7 +79,7 @@ public class ShardingRule {
         broadcastTables = shardingRuleConfig.getBroadcastTables();
         defaultDatabaseShardingStrategy = createDefaultShardingStrategy(shardingRuleConfig.getDefaultDatabaseShardingStrategyConfig());
         defaultTableShardingStrategy = createDefaultShardingStrategy(shardingRuleConfig.getDefaultTableShardingStrategyConfig());
-        defaultKeyGenerator = createDefaultKeyGenerator(shardingRuleConfig.getDefaultKeyGenerator());
+        defaultKeyGenerator = createDefaultKeyGenerator(shardingRuleConfig.getDefaultKeyGeneratorConfig());
         masterSlaveRules = createMasterSlaveRules(shardingRuleConfig.getMasterSlaveRuleConfigs());
     }
     
@@ -110,8 +111,8 @@ public class ShardingRule {
         return null == shardingStrategyConfiguration ? new NoneShardingStrategy() : ShardingStrategyFactory.newInstance(shardingStrategyConfiguration);
     }
     
-    private KeyGenerator createDefaultKeyGenerator(final KeyGenerator defaultKeyGenerator) {
-        return null == defaultKeyGenerator ? new SnowflakeKeyGenerator() : defaultKeyGenerator;
+    private KeyGenerator createDefaultKeyGenerator(final KeyGeneratorConfiguration keyGeneratorConfiguration) {
+        return null == keyGeneratorConfiguration ? new SnowflakeKeyGenerator() : keyGeneratorConfiguration.getKeyGenerator();
     }
     
     private Collection<MasterSlaveRule> createMasterSlaveRules(final Collection<MasterSlaveRuleConfiguration> masterSlaveRuleConfigurations) {
@@ -153,7 +154,7 @@ public class ShardingRule {
     }
     
     /**
-     * Get table rule though logic table name.
+     * Get table rule.
      *
      * @param logicTableName logic table name
      * @return table rule
@@ -312,12 +313,12 @@ public class ShardingRule {
     }
     
     /**
-     * Get column of generated key.
+     * Find column of generated key.
      *
      * @param logicTableName logic table name
      * @return generated key's column
      */
-    public Optional<Column> getGenerateKeyColumn(final String logicTableName) {
+    public Optional<Column> findGenerateKeyColumn(final String logicTableName) {
         for (TableRule each : tableRules) {
             if (each.getLogicTable().equalsIgnoreCase(logicTableName) && null != each.getGenerateKeyColumn()) {
                 return Optional.of(new Column(each.getGenerateKeyColumn(), logicTableName));
@@ -362,8 +363,9 @@ public class ShardingRule {
      * @param logicTableName logic table name
      * @return data node
      */
-    public DataNode findDataNode(final String logicTableName) {
-        return findDataNode(null, logicTableName);
+    public DataNode getDataNode(final String logicTableName) {
+        TableRule tableRule = getTableRule(logicTableName);
+        return tableRule.getActualDataNodes().get(0);
     }
     
     /**
@@ -373,29 +375,14 @@ public class ShardingRule {
      * @param logicTableName logic table name
      * @return data node
      */
-    public DataNode findDataNode(final String dataSourceName, final String logicTableName) {
+    public DataNode getDataNode(final String dataSourceName, final String logicTableName) {
         TableRule tableRule = getTableRule(logicTableName);
         for (DataNode each : tableRule.getActualDataNodes()) {
-            if (shardingDataSourceNames.getDataSourceNames().contains(each.getDataSourceName()) && (null == dataSourceName || each.getDataSourceName().equals(dataSourceName))) {
+            if (shardingDataSourceNames.getDataSourceNames().contains(each.getDataSourceName()) && each.getDataSourceName().equals(dataSourceName)) {
                 return each;
             }
         }
-        if (null == dataSourceName) {
-            throw new ShardingConfigurationException("Cannot find actual data node for logic table name: '%s'", logicTableName);
-        } else {
-            throw new ShardingConfigurationException("Cannot find actual data node for data source name: '%s' and logic table name: '%s'", dataSourceName, logicTableName);
-        }
-    }
-    
-    /**
-     * Judge is logic index or not.
-     *
-     * @param logicIndexName logic index name
-     * @param logicTableName logic table name
-     * @return is logic index or not
-     */
-    public boolean isLogicIndex(final String logicIndexName, final String logicTableName) {
-        return logicIndexName.equals(getTableRule(logicTableName).getLogicIndex());
+        throw new ShardingConfigurationException("Cannot find actual data node for data source name: '%s' and logic table name: '%s'", dataSourceName, logicTableName);
     }
     
     /**
@@ -406,20 +393,21 @@ public class ShardingRule {
      * @return actual default data source name
      */
     public Optional<String> findActualDefaultDataSourceName() {
-        String result = shardingDataSourceNames.getDefaultDataSourceName();
-        if (Strings.isNullOrEmpty(result)) {
+        String defaultDataSourceName = shardingDataSourceNames.getDefaultDataSourceName();
+        if (Strings.isNullOrEmpty(defaultDataSourceName)) {
             return Optional.absent();
         }
-        return Optional.of(getMasterDataSourceName(result));
+        Optional<String> masterDefaultDataSourceName = findMasterDataSourceName(defaultDataSourceName);
+        return masterDefaultDataSourceName.isPresent() ? masterDefaultDataSourceName : Optional.of(defaultDataSourceName);
     }
     
-    private String getMasterDataSourceName(final String masterSlaveRuleName) {
+    private Optional<String> findMasterDataSourceName(final String masterSlaveRuleName) {
         for (MasterSlaveRule each : masterSlaveRules) {
             if (each.getName().equals(masterSlaveRuleName)) {
-                return each.getMasterDataSourceName();
+                return Optional.of(each.getMasterDataSourceName());
             }
         }
-        return masterSlaveRuleName;
+        return Optional.absent();
     }
     
     /**
@@ -438,12 +426,12 @@ public class ShardingRule {
     }
     
     /**
-     * Get actual data source name by actual table name.
+     * Get actual data source name.
      *
      * @param actualTableName actual table name
      * @return actual data source name
      */
-    public String getActualDataSourceNameByActualTableName(final String actualTableName) {
+    public String getActualDataSourceName(final String actualTableName) {
         Optional<TableRule> tableRule = findTableRuleByActualTable(actualTableName);
         if (tableRule.isPresent()) {
             return tableRule.get().getActualDatasourceNames().iterator().next();

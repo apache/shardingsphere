@@ -17,11 +17,11 @@
 
 package io.shardingsphere.shardingproxy.config;
 
-import io.shardingsphere.core.rule.DataSourceParameter;
 import io.shardingsphere.core.yaml.masterslave.YamlMasterSlaveRuleConfiguration;
 import io.shardingsphere.core.yaml.sharding.YamlShardingRuleConfiguration;
 import io.shardingsphere.orchestration.yaml.YamlOrchestrationConfiguration;
 import io.shardingsphere.shardingproxy.config.yaml.YamlProxyRuleConfiguration;
+import io.shardingsphere.shardingproxy.util.DataSourceParameter;
 import org.junit.Test;
 
 import java.io.IOException;

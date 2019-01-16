@@ -31,7 +31,15 @@ import java.util.Map;
  * @author zhaojun
  * 
  */
-public interface ShardingTransactionEngine {
+public interface ShardingTransactionEngine extends AutoCloseable {
+    
+    /**
+     * Initialize sharding transaction engine.
+     *
+     * @param databaseType database type
+     * @param dataSourceMap data source map
+     */
+    void init(DatabaseType databaseType, Map<String, DataSource> dataSourceMap);
     
     /**
      * Get transaction type.
@@ -41,27 +49,20 @@ public interface ShardingTransactionEngine {
     TransactionType getTransactionType();
     
     /**
-     * Register transaction data source.
-     *
-     * @param databaseType database type
-     * @param dataSourceMap data source map
+     * Judge is in transaction or not.
+     * 
+     * @return in transaction or not
      */
-    void registerTransactionalResource(DatabaseType databaseType, Map<String, DataSource> dataSourceMap);
+    boolean isInTransaction();
     
     /**
-     * Clear transactional resources.
-     */
-    void clearTransactionalResources();
-    
-    /**
-     * Create transactional connection.
+     * Get transactional connection.
      *
      * @param dataSourceName data source name
-     * @param dataSource data source
      * @return connection
      * @throws SQLException SQL exception
      */
-    Connection createConnection(String dataSourceName, DataSource dataSource) throws SQLException;
+    Connection getConnection(String dataSourceName) throws SQLException;
     
     /**
      * Begin transaction.

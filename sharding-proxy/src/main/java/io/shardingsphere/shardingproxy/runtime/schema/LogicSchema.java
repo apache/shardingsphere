@@ -20,11 +20,11 @@ package io.shardingsphere.shardingproxy.runtime.schema;
 import com.google.common.eventbus.EventBus;
 import com.google.common.eventbus.Subscribe;
 import io.shardingsphere.core.metadata.ShardingMetaData;
-import io.shardingsphere.core.rule.DataSourceParameter;
 import io.shardingsphere.orchestration.internal.eventbus.ShardingOrchestrationEventBus;
 import io.shardingsphere.orchestration.internal.registry.config.event.DataSourceChangedEvent;
 import io.shardingsphere.shardingproxy.backend.jdbc.datasource.JDBCBackendDataSource;
 import io.shardingsphere.shardingproxy.util.DataSourceConverter;
+import io.shardingsphere.shardingproxy.util.DataSourceParameter;
 import lombok.Getter;
 
 import java.util.LinkedHashMap;
@@ -74,9 +74,10 @@ public abstract class LogicSchema {
      * Renew data source configuration.
      *
      * @param dataSourceChangedEvent data source changed event.
+     * @throws Exception exception
      */
     @Subscribe
-    public final synchronized void renew(final DataSourceChangedEvent dataSourceChangedEvent) {
+    public final synchronized void renew(final DataSourceChangedEvent dataSourceChangedEvent) throws Exception {
         if (!name.equals(dataSourceChangedEvent.getShardingSchemaName())) {
             return;
         }

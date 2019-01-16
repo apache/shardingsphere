@@ -18,7 +18,6 @@
 package io.shardingsphere.core.config;
 
 import com.zaxxer.hikari.HikariDataSource;
-import io.shardingsphere.core.constant.PoolType;
 import org.junit.Test;
 
 import java.sql.SQLException;
@@ -55,7 +54,7 @@ public final class DataSourceConfigurationTest {
         properties.put("jdbcUrl", "jdbc:h2:mem:test;DB_CLOSE_DELAY=-1;DATABASE_TO_UPPER=false;MODE=MySQL");
         properties.put("username", "root");
         properties.put("password", "root");
-        DataSourceConfiguration dataSourceConfig = new DataSourceConfiguration(PoolType.HIKARI.getClassName());
+        DataSourceConfiguration dataSourceConfig = new DataSourceConfiguration(HikariDataSource.class.getName());
         dataSourceConfig.getProperties().putAll(properties);
         HikariDataSource actual = (HikariDataSource) dataSourceConfig.createDataSource();
         assertThat(actual.getDriverClassName(), is("org.h2.Driver"));

@@ -17,8 +17,6 @@
 
 package io.shardingsphere.transaction.core;
 
-import io.shardingsphere.core.exception.ShardingException;
-
 /**
  * Sharding transaction manager.
  *
@@ -30,30 +28,23 @@ public interface ShardingTransactionManager {
     
     /**
      * Begin transaction.
-     *
-     * @throws ShardingException sharding exception
      */
-    void begin() throws ShardingException;
+    void begin();
     
     /**
      * Commit transaction.
-     *
-     * @throws ShardingException sharding exception
      */
-    void commit() throws ShardingException;
+    void commit();
     
     /**
      * Rollback transaction.
-     *
-     * @throws ShardingException sharding exception
      */
-    void rollback() throws ShardingException;
+    void rollback();
     
     /**
-     * Obtain the status of the transaction associated with the current thread.
-     *
-     * @return Transaction status. Returns {@code Status.NoTransaction} if no transaction is associated with current thread.
-     * @throws ShardingException sharding exception
+     * Get transaction status.
+     * 
+     * @return transaction status
      */
-    int getStatus() throws ShardingException;
+    int getStatus();
 }

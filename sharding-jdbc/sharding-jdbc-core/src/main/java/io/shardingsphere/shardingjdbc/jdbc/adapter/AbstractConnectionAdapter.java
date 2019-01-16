@@ -81,9 +81,6 @@ public abstract class AbstractConnectionAdapter extends AbstractUnsupportedOpera
         rootInvokeHook.start();
         this.transactionType = transactionType;
         shardingTransactionEngine = ShardingTransactionEngineRegistry.getEngine(transactionType);
-        if (TransactionType.LOCAL != transactionType) {
-            Preconditions.checkNotNull(shardingTransactionEngine, "Cannot find transaction manager of [%s]", transactionType);
-        }
     }
     
     /**
@@ -162,9 +159,13 @@ public abstract class AbstractConnectionAdapter extends AbstractUnsupportedOpera
     }
     
     private Connection createConnection(final String dataSourceName, final DataSource dataSource) throws SQLException {
-        Connection result = null == shardingTransactionEngine ? dataSource.getConnection() : shardingTransactionEngine.createConnection(dataSourceName, dataSource);
+        Connection result = isInShardingTransaction() ? shardingTransactionEngine.getConnection(dataSourceName) : dataSource.getConnection();
         replayMethodsInvocation(result);
         return result;
+    }
+    
+    private boolean isInShardingTransaction() {
+        return null != shardingTransactionEngine && shardingTransactionEngine.isInTransaction();
     }
     
     protected abstract Map<String, DataSource> getDataSourceMap();

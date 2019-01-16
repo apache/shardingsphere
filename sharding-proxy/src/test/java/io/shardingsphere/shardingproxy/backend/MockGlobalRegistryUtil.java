@@ -32,7 +32,7 @@ import static org.mockito.Mockito.mock;
  *
  * @author zhaojun
  */
-public class MockGlobalRegistryUtil {
+public final class MockGlobalRegistryUtil {
     
     /**
      * set logic schemas for global registry.

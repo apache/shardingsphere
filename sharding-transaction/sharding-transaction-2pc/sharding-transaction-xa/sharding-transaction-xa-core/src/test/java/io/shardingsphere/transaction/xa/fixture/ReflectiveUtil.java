@@ -23,8 +23,6 @@ import lombok.NoArgsConstructor;
 import lombok.SneakyThrows;
 
 import java.lang.reflect.Field;
-import java.lang.reflect.InvocationTargetException;
-import java.lang.reflect.Method;
 
 /**
  * Reflective utility.
@@ -33,21 +31,6 @@ import java.lang.reflect.Method;
  */
 @NoArgsConstructor(access = AccessLevel.PRIVATE)
 public final class ReflectiveUtil {
-    
-    /**
-     * Get property.
-     * 
-     * @param target target
-     * @param fieldName field name
-     * @return property
-     * @throws IllegalAccessException illegal access exception
-     */
-    public static Object getProperty(final Object target, final String fieldName) throws IllegalAccessException {
-        Field field = getField(target, fieldName);
-        Preconditions.checkNotNull(field);
-        field.setAccessible(true);
-        return field.get(target);
-    }
     
     /**
      * Get field.
@@ -60,7 +43,7 @@ public final class ReflectiveUtil {
         while (clazz != null) {
             try {
                 return clazz.getDeclaredField(fieldName);
-            } catch (final Exception ignored) {
+            } catch (final NoSuchFieldException ignored) {
             }
             clazz = clazz.getSuperclass();
         }
@@ -79,39 +62,5 @@ public final class ReflectiveUtil {
         Preconditions.checkNotNull(field);
         field.setAccessible(true);
         field.set(target, value);
-    }
-    
-    /**
-     * Invoke target method when argument is nul.
-     *
-     * @param target target object
-     * @param methodName method name
-     * @param parameterTypes parameter types
-     * @return Object result
-     */
-    @SneakyThrows
-    public static Object methodInvoke(final Object target, final String methodName, final Class<?>... parameterTypes) {
-        Method method = getMethod(target, methodName, parameterTypes);
-        Preconditions.checkNotNull(method);
-        method.setAccessible(true);
-        try {
-            return method.invoke(target);
-        } catch (InvocationTargetException ex) {
-            throw ex.getTargetException();
-        }
-    }
-    
-    @SneakyThrows
-    @SuppressWarnings("unchecked")
-    private static Method getMethod(final Object target, final String methodName, final Class<?>... parameterTypes) {
-        Class clazz = target.getClass();
-        while (null != clazz) {
-            try {
-                return clazz.getDeclaredMethod(methodName, parameterTypes);
-            } catch (final ReflectiveOperationException ignored) {
-            }
-            clazz = clazz.getSuperclass();
-        }
-        return null;
     }
 }

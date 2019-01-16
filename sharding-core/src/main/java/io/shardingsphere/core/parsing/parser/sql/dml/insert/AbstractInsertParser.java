@@ -77,7 +77,7 @@ public abstract class AbstractInsertParser implements SQLParser {
     
     private void processGeneratedKey(final InsertStatement insertStatement) {
         String tableName = insertStatement.getTables().getSingleTableName();
-        Optional<Column> generateKeyColumn = shardingRule.getGenerateKeyColumn(tableName);
+        Optional<Column> generateKeyColumn = shardingRule.findGenerateKeyColumn(tableName);
         if (-1 != insertStatement.getGenerateKeyColumnIndex() || !generateKeyColumn.isPresent()) {
             return;
         }

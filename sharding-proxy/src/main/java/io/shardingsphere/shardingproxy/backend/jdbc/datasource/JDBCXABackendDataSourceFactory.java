@@ -17,15 +17,20 @@
 
 package io.shardingsphere.shardingproxy.backend.jdbc.datasource;
 
+import com.atomikos.beans.PropertyException;
+import com.atomikos.beans.PropertyUtils;
+import com.atomikos.jdbc.AtomikosDataSourceBean;
+import io.shardingsphere.core.config.DatabaseAccessConfiguration;
 import io.shardingsphere.core.constant.DatabaseType;
-import io.shardingsphere.core.rule.DataSourceParameter;
+import io.shardingsphere.shardingproxy.util.DataSourceParameter;
 import io.shardingsphere.transaction.xa.jta.datasource.XADataSourceFactory;
-import io.shardingsphere.transaction.xa.manager.XATransactionManagerSPILoader;
-import io.shardingsphere.transaction.xa.spi.XATransactionManager;
+import io.shardingsphere.transaction.xa.jta.datasource.properties.XAPropertiesFactory;
 import lombok.AccessLevel;
 import lombok.NoArgsConstructor;
 
 import javax.sql.DataSource;
+import javax.sql.XADataSource;
+import java.util.Properties;
 
 /**
  * Backend data source factory using {@code AtomikosDataSourceBean} for JDBC and XA protocol.
@@ -48,8 +53,31 @@ public final class JDBCXABackendDataSourceFactory implements JDBCBackendDataSour
     }
     
     @Override
-    public DataSource build(final String dataSourceName, final DataSourceParameter dataSourceParameter) {
-        XATransactionManager xaTransactionManager = XATransactionManagerSPILoader.getInstance().getTransactionManager();
-        return xaTransactionManager.wrapDataSource(DatabaseType.MySQL, XADataSourceFactory.build(DatabaseType.MySQL), dataSourceName, dataSourceParameter);
+    public DataSource build(final String dataSourceName, final DataSourceParameter dataSourceParameter) throws Exception {
+        AtomikosDataSourceBean result = new AtomikosDataSourceBean();
+        setPoolProperties(result, dataSourceParameter);
+        // TODO judge database type
+        setXAProperties(result, DatabaseType.MySQL, dataSourceName, XADataSourceFactory.build(DatabaseType.MySQL), dataSourceParameter);
+        return result;
+    }
+    
+    private void setPoolProperties(final AtomikosDataSourceBean dataSourceBean, final DataSourceParameter parameter) {
+        dataSourceBean.setMaintenanceInterval((int) (parameter.getMaintenanceIntervalMilliseconds() / 1000));
+        dataSourceBean.setMinPoolSize(parameter.getMinPoolSize() < 0 ? 0 : parameter.getMinPoolSize());
+        dataSourceBean.setMaxPoolSize(parameter.getMaxPoolSize());
+        dataSourceBean.setBorrowConnectionTimeout((int) parameter.getConnectionTimeoutMilliseconds() / 1000);
+        dataSourceBean.setReapTimeout((int) parameter.getMaxLifetimeMilliseconds() / 1000);
+        dataSourceBean.setMaxIdleTime((int) parameter.getIdleTimeoutMilliseconds() / 1000);
+    }
+    
+    private void setXAProperties(final AtomikosDataSourceBean dataSourceBean, final DatabaseType databaseType, 
+                                 final String dataSourceName, final XADataSource xaDataSource, final DataSourceParameter dataSourceParameter) throws PropertyException {
+        dataSourceBean.setXaDataSourceClassName(xaDataSource.getClass().getName());
+        dataSourceBean.setUniqueResourceName(dataSourceName);
+        Properties xaProperties = XAPropertiesFactory.createXAProperties(databaseType).build(
+                new DatabaseAccessConfiguration(dataSourceParameter.getUrl(), dataSourceParameter.getUsername(), dataSourceParameter.getPassword()));
+        PropertyUtils.setProperties(xaDataSource, xaProperties);
+        dataSourceBean.setXaProperties(xaProperties);
+        dataSourceBean.setXaDataSource(xaDataSource);
     }
 }

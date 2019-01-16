@@ -17,65 +17,43 @@
 
 package io.shardingsphere.core.yaml.sharding;
 
-import io.shardingsphere.core.exception.ShardingConfigurationException;
-import io.shardingsphere.core.keygen.generator.SnowflakeKeyGenerator;
-import io.shardingsphere.core.keygen.generator.UUIDKeyGenerator;
+import io.shardingsphere.api.config.KeyGeneratorConfiguration;
+import org.junit.Before;
 import org.junit.Test;
+
+import java.util.Properties;
 
 import static org.hamcrest.CoreMatchers.is;
 import static org.junit.Assert.assertThat;
 
 public class YamlKeyGeneratorConfigurationTest {
     
-    @Test
-    public void assertGetKeyGeneratorWithClassName() {
-        YamlKeyGeneratorConfiguration keyGeneratorConfiguration = new YamlKeyGeneratorConfiguration();
-        keyGeneratorConfiguration.setClassName("io.shardingsphere.core.keygen.generator.SnowflakeKeyGenerator");
-        assertThat(keyGeneratorConfiguration.getKeyGenerator().getClass().getName(), is(SnowflakeKeyGenerator.class.getName()));
+    private Properties props = new Properties();
+    
+    private KeyGeneratorConfiguration keyGeneratorConfiguration;
+    
+    @Before
+    public void setUp() {
+        props.setProperty("key1", "value1");
+        keyGeneratorConfiguration = new KeyGeneratorConfiguration("order_id", "UUID", props);
     }
     
     @Test
-    public void assertGetKeyGeneratorWithSnowflakeType() {
-        YamlKeyGeneratorConfiguration keyGeneratorConfiguration = new YamlKeyGeneratorConfiguration();
-        keyGeneratorConfiguration.setType("SNOWFLAKE");
-        assertThat(keyGeneratorConfiguration.getKeyGenerator().getClass().getName(), is(SnowflakeKeyGenerator.class.getName()));
+    public void createYamlKeyGeneratorConfiguration() {
+        YamlKeyGeneratorConfiguration yamlKeyGeneratorConfiguration = new YamlKeyGeneratorConfiguration(keyGeneratorConfiguration);
+        assertThat(yamlKeyGeneratorConfiguration.getColumn(), is("order_id"));
+        assertThat(yamlKeyGeneratorConfiguration.getType(), is("UUID"));
     }
     
     @Test
-    public void assertGetKeyGeneratorWithoutTypeAndClassName() {
-        YamlKeyGeneratorConfiguration keyGeneratorConfiguration = new YamlKeyGeneratorConfiguration();
-        assertThat(keyGeneratorConfiguration.getKeyGenerator().getClass().getName(), is(SnowflakeKeyGenerator.class.getName()));
-    }
-    
-    @Test(expected = IllegalArgumentException.class)
-    public void assertGetKeyGeneratorClassNameWithLeaf() {
-        YamlKeyGeneratorConfiguration keyGeneratorConfiguration = new YamlKeyGeneratorConfiguration();
-        keyGeneratorConfiguration.setType("LEAF");
-        keyGeneratorConfiguration.getKeyGenerator();
-    }
-    
-    @Test
-    public void assertGetKeyGeneratorClassNameWithUUID() {
-        YamlKeyGeneratorConfiguration keyGeneratorConfiguration = new YamlKeyGeneratorConfiguration();
-        keyGeneratorConfiguration.setType("UUID");
-        assertThat(keyGeneratorConfiguration.getKeyGenerator().getClass().getName(), is(UUIDKeyGenerator.class.getName()));
-    }
-    
-    @Test(expected = ShardingConfigurationException.class)
-    public void assertGetKeyGeneratorClassNameWithException() {
-        YamlKeyGeneratorConfiguration keyGeneratorConfiguration = new YamlKeyGeneratorConfiguration();
-        keyGeneratorConfiguration.setType("DEFAULT");
-        keyGeneratorConfiguration.getKeyGenerator();
-    }
-    
-    @Test
-    public void assertGetKeyGeneratorVariables() {
-        YamlKeyGeneratorConfiguration keyGeneratorConfiguration = new YamlKeyGeneratorConfiguration();
-        keyGeneratorConfiguration.setType("SNOWFLAKE");
-        keyGeneratorConfiguration.setClassName("io.shardingsphere.core.keygen.generator.SnowflakeKeyGenerator");
-        keyGeneratorConfiguration.setColumn("order_id");
-        assertThat(keyGeneratorConfiguration.getType(), is("SNOWFLAKE"));
-        assertThat(keyGeneratorConfiguration.getClassName(), is("io.shardingsphere.core.keygen.generator.SnowflakeKeyGenerator"));
-        assertThat(keyGeneratorConfiguration.getColumn(), is("order_id"));
+    public void getKeyGeneratorConfiguration() {
+        YamlKeyGeneratorConfiguration yamlKeyGeneratorConfiguration = new YamlKeyGeneratorConfiguration();
+        yamlKeyGeneratorConfiguration.setColumn("order_id");
+        yamlKeyGeneratorConfiguration.setType("UUID");
+        yamlKeyGeneratorConfiguration.setProps(props);
+        KeyGeneratorConfiguration keyGeneratorConfiguration = yamlKeyGeneratorConfiguration.getKeyGeneratorConfiguration();
+        assertThat(keyGeneratorConfiguration.getColumn(), is(this.keyGeneratorConfiguration.getColumn()));
+        assertThat(keyGeneratorConfiguration.getType(), is(this.keyGeneratorConfiguration.getType()));
+        assertThat(keyGeneratorConfiguration.getProps().getProperty("key1"), is(this.keyGeneratorConfiguration.getProps().getProperty("key1")));
     }
 }

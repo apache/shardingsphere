@@ -17,7 +17,7 @@ shardingRule:
           rangeAlgorithmClassName: io.shardingsphere.dbtest.fixture.RangeModuloAlgorithm
       keyGenerator:
         column: item_id
-        className: io.shardingsphere.dbtest.fixture.ConstantKeyGenerator
+        type: CONSTANT
   bindingTables:
     - t_order,t_order_item
   defaultDataSourceName: db_0
