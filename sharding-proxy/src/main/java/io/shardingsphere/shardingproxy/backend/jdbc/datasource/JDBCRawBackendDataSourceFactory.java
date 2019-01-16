@@ -76,7 +76,7 @@ public final class JDBCRawBackendDataSourceFactory implements JDBCBackendDataSou
     
     // TODO judge database type
     private String getDriverClassName(final String url) {
-        JDBCClassDetermine jdbcClassDetermine= new JDBCClassDetermine();
+        JDBCClassDetermine jdbcClassDetermine = new JDBCClassDetermine();
         return jdbcClassDetermine.getDriverClassName(url);
     }
     
