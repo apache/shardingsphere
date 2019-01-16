@@ -37,5 +37,5 @@ public final class CommonExpressionSegment extends ExpressionWithAliasSegment {
     
     private int index = -1;
     
-    private Number value = -1;
+    private Number value;
 }
