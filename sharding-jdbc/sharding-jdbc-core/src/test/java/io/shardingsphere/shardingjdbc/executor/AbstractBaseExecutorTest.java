@@ -24,7 +24,7 @@ import io.shardingsphere.core.executor.ShardingExecuteEngine;
 import io.shardingsphere.core.executor.sql.execute.threadlocal.ExecutorExceptionHandler;
 import io.shardingsphere.shardingjdbc.jdbc.core.ShardingContext;
 import io.shardingsphere.shardingjdbc.jdbc.core.connection.ShardingConnection;
-import io.shardingsphere.transaction.api.TransactionType;
+import io.shardingsphere.transaction.core.TransactionType;
 import lombok.AccessLevel;
 import lombok.Getter;
 import org.junit.After;

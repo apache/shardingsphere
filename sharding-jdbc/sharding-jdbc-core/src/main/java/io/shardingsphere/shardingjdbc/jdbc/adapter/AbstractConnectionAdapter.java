@@ -28,9 +28,9 @@ import io.shardingsphere.shardingjdbc.jdbc.adapter.executor.ForceExecuteTemplate
 import io.shardingsphere.shardingjdbc.jdbc.unsupported.AbstractUnsupportedOperationConnection;
 import io.shardingsphere.spi.root.RootInvokeHook;
 import io.shardingsphere.spi.root.SPIRootInvokeHook;
-import io.shardingsphere.transaction.api.TransactionType;
-import io.shardingsphere.transaction.api.TransactionTypeHolder;
-import io.shardingsphere.transaction.core.ShardingTransactionEngineRegistry;
+import io.shardingsphere.transaction.ShardingTransactionManagerEngine;
+import io.shardingsphere.transaction.core.TransactionType;
+import io.shardingsphere.transaction.core.TransactionTypeHolder;
 import io.shardingsphere.transaction.spi.ShardingTransactionManager;
 import lombok.Getter;
 
@@ -80,7 +80,7 @@ public abstract class AbstractConnectionAdapter extends AbstractUnsupportedOpera
     protected AbstractConnectionAdapter(final TransactionType transactionType) {
         rootInvokeHook.start();
         this.transactionType = transactionType;
-        shardingTransactionManager = ShardingTransactionEngineRegistry.getEngine(transactionType);
+        shardingTransactionManager = ShardingTransactionManagerEngine.getTransactionManager(transactionType);
     }
     
     /**

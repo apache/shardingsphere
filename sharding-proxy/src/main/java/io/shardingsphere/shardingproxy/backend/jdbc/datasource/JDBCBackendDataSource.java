@@ -23,8 +23,8 @@ import io.shardingsphere.core.exception.ShardingException;
 import io.shardingsphere.core.util.ReflectiveUtil;
 import io.shardingsphere.shardingproxy.backend.BackendDataSource;
 import io.shardingsphere.shardingproxy.util.DataSourceParameter;
-import io.shardingsphere.transaction.api.TransactionType;
-import io.shardingsphere.transaction.core.ShardingTransactionEngineRegistry;
+import io.shardingsphere.transaction.ShardingTransactionManagerEngine;
+import io.shardingsphere.transaction.core.TransactionType;
 import io.shardingsphere.transaction.spi.ShardingTransactionManager;
 import lombok.NoArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
@@ -71,7 +71,7 @@ public final class JDBCBackendDataSource implements BackendDataSource, AutoClose
             }
         }
         this.dataSources = dataSourceMap;
-        ShardingTransactionEngineRegistry.init(DatabaseType.MySQL, dataSourceMap);
+        ShardingTransactionManagerEngine.init(DatabaseType.MySQL, dataSourceMap);
     }
     
     /**
@@ -138,7 +138,7 @@ public final class JDBCBackendDataSource implements BackendDataSource, AutoClose
     }
     
     private Connection createConnection(final TransactionType transactionType, final String dataSourceName, final DataSource dataSource) throws SQLException {
-        ShardingTransactionManager shardingTransactionManager = ShardingTransactionEngineRegistry.getEngine(transactionType);
+        ShardingTransactionManager shardingTransactionManager = ShardingTransactionManagerEngine.getTransactionManager(transactionType);
         return isInShardingTransaction(shardingTransactionManager) ? shardingTransactionManager.getConnection(dataSourceName) : dataSource.getConnection();
     }
     
@@ -151,7 +151,7 @@ public final class JDBCBackendDataSource implements BackendDataSource, AutoClose
         if (null != dataSources) {
             closeDataSource(dataSources);
         }
-        ShardingTransactionEngineRegistry.close();
+        ShardingTransactionManagerEngine.close();
     }
     
     private void closeDataSource(final Map<String, DataSource> dataSourceMap) {

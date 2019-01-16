@@ -21,7 +21,7 @@ import com.alibaba.druid.pool.xa.DruidXADataSource;
 import com.atomikos.jdbc.AtomikosDataSourceBean;
 import com.zaxxer.hikari.HikariDataSource;
 import io.shardingsphere.core.constant.DatabaseType;
-import io.shardingsphere.transaction.api.TransactionType;
+import io.shardingsphere.transaction.core.TransactionType;
 import io.shardingsphere.transaction.xa.fixture.DataSourceUtils;
 import io.shardingsphere.transaction.xa.jta.connection.SingleXAConnection;
 import io.shardingsphere.transaction.xa.jta.datasource.SingleXADataSource;

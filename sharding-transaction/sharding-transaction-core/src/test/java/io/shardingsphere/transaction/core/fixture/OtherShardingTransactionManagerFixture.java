@@ -18,7 +18,7 @@
 package io.shardingsphere.transaction.core.fixture;
 
 import io.shardingsphere.core.constant.DatabaseType;
-import io.shardingsphere.transaction.api.TransactionType;
+import io.shardingsphere.transaction.core.TransactionType;
 import io.shardingsphere.transaction.spi.ShardingTransactionManager;
 
 import javax.sql.DataSource;

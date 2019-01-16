@@ -18,7 +18,7 @@
 package io.shardingsphere.shardingproxy.backend.jdbc.connection;
 
 import com.google.common.base.Optional;
-import io.shardingsphere.transaction.core.ShardingTransactionEngineRegistry;
+import io.shardingsphere.transaction.ShardingTransactionManagerEngine;
 import io.shardingsphere.transaction.spi.ShardingTransactionManager;
 import lombok.RequiredArgsConstructor;
 
@@ -36,7 +36,7 @@ public final class BackendTransactionManager implements TransactionManager {
     
     @Override
     public void begin() {
-        Optional<ShardingTransactionManager> shardingTransactionManager = getShardingTransactionEngine(connection);
+        Optional<ShardingTransactionManager> shardingTransactionManager = getShardingTransactionManager(connection);
         if (!connection.getStateHandler().isInTransaction()) {
             connection.getStateHandler().getAndSetStatus(ConnectionStatus.TRANSACTION);
             connection.releaseConnections(false);
@@ -50,7 +50,7 @@ public final class BackendTransactionManager implements TransactionManager {
     
     @Override
     public void commit() throws SQLException {
-        Optional<ShardingTransactionManager> shardingTransactionManager = getShardingTransactionEngine(connection);
+        Optional<ShardingTransactionManager> shardingTransactionManager = getShardingTransactionManager(connection);
         if (!shardingTransactionManager.isPresent()) {
             new LocalTransactionManager(connection).commit();
         } else {
@@ -61,7 +61,7 @@ public final class BackendTransactionManager implements TransactionManager {
     
     @Override
     public void rollback() throws SQLException {
-        Optional<ShardingTransactionManager> shardingTransactionManager = getShardingTransactionEngine(connection);
+        Optional<ShardingTransactionManager> shardingTransactionManager = getShardingTransactionManager(connection);
         if (!shardingTransactionManager.isPresent()) {
             new LocalTransactionManager(connection).rollback();
         } else {
@@ -70,7 +70,7 @@ public final class BackendTransactionManager implements TransactionManager {
         }
     }
     
-    private Optional<ShardingTransactionManager> getShardingTransactionEngine(final BackendConnection connection) {
-        return Optional.fromNullable(ShardingTransactionEngineRegistry.getEngine(connection.getTransactionType()));
+    private Optional<ShardingTransactionManager> getShardingTransactionManager(final BackendConnection connection) {
+        return Optional.fromNullable(ShardingTransactionManagerEngine.getTransactionManager(connection.getTransactionType()));
     }
 }

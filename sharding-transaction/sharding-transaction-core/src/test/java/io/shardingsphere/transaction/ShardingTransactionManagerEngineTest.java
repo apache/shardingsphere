@@ -15,10 +15,10 @@
  * </p>
  */
 
-package io.shardingsphere.transaction.core;
+package io.shardingsphere.transaction;
 
 import io.shardingsphere.core.constant.DatabaseType;
-import io.shardingsphere.transaction.api.TransactionType;
+import io.shardingsphere.transaction.core.TransactionType;
 import io.shardingsphere.transaction.core.fixture.ShardingTransactionManagerFixture;
 import org.junit.Test;
 
@@ -29,20 +29,20 @@ import static org.junit.Assert.assertThat;
 import static org.mockito.Mockito.mock;
 import static org.mockito.Mockito.verify;
 
-public final class ShardingTransactionEngineRegistryTest {
+public final class ShardingTransactionManagerEngineTest {
     
     @Test
     public void assertGetEngine() {
-        assertThat(ShardingTransactionEngineRegistry.getEngine(TransactionType.XA), instanceOf(ShardingTransactionManagerFixture.class));
+        assertThat(ShardingTransactionManagerEngine.getTransactionManager(TransactionType.XA), instanceOf(ShardingTransactionManagerFixture.class));
     }
     
     @SuppressWarnings("unchecked")
     @Test
     public void assertRegisterTransactionResource() {
         Runnable caller = mock(Runnable.class);
-        ShardingTransactionManagerFixture shardingTransactionManager = (ShardingTransactionManagerFixture) ShardingTransactionEngineRegistry.getEngine(TransactionType.XA);
+        ShardingTransactionManagerFixture shardingTransactionManager = (ShardingTransactionManagerFixture) ShardingTransactionManagerEngine.getTransactionManager(TransactionType.XA);
         shardingTransactionManager.setCaller(caller);
-        ShardingTransactionEngineRegistry.init(DatabaseType.H2, mock(Map.class));
+        ShardingTransactionManagerEngine.init(DatabaseType.H2, mock(Map.class));
         verify(caller).run();
     }
 }

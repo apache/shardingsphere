@@ -34,8 +34,8 @@ import io.shardingsphere.shardingproxy.transport.mysql.packet.command.query.Fiel
 import io.shardingsphere.shardingproxy.transport.mysql.packet.command.query.text.TextResultSetRowPacket;
 import io.shardingsphere.shardingproxy.transport.mysql.packet.command.query.text.query.fixture.ShardingTransactionManagerFixture;
 import io.shardingsphere.shardingproxy.transport.mysql.packet.generic.OKPacket;
-import io.shardingsphere.transaction.api.TransactionType;
 import io.shardingsphere.transaction.core.TransactionOperationType;
+import io.shardingsphere.transaction.core.TransactionType;
 import lombok.SneakyThrows;
 import org.hamcrest.CoreMatchers;
 import org.junit.After;

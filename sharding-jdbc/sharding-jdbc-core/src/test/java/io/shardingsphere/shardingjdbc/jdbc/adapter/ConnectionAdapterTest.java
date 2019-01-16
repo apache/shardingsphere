@@ -22,9 +22,9 @@ import io.shardingsphere.shardingjdbc.common.base.AbstractShardingJDBCDatabaseAn
 import io.shardingsphere.shardingjdbc.jdbc.core.connection.ShardingConnection;
 import io.shardingsphere.shardingjdbc.jdbc.core.fixture.BASEShardingTransactionManagerFixture;
 import io.shardingsphere.shardingjdbc.jdbc.core.fixture.XAShardingTransactionManagerFixture;
-import io.shardingsphere.transaction.api.TransactionType;
-import io.shardingsphere.transaction.api.TransactionTypeHolder;
 import io.shardingsphere.transaction.core.TransactionOperationType;
+import io.shardingsphere.transaction.core.TransactionType;
+import io.shardingsphere.transaction.core.TransactionTypeHolder;
 import lombok.SneakyThrows;
 import org.junit.After;
 import org.junit.Test;

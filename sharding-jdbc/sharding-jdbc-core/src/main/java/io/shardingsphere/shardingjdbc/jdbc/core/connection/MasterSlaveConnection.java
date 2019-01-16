@@ -21,7 +21,7 @@ import io.shardingsphere.shardingjdbc.jdbc.adapter.AbstractConnectionAdapter;
 import io.shardingsphere.shardingjdbc.jdbc.core.datasource.MasterSlaveDataSource;
 import io.shardingsphere.shardingjdbc.jdbc.core.statement.MasterSlavePreparedStatement;
 import io.shardingsphere.shardingjdbc.jdbc.core.statement.MasterSlaveStatement;
-import io.shardingsphere.transaction.api.TransactionType;
+import io.shardingsphere.transaction.core.TransactionType;
 import lombok.Getter;
 
 import javax.sql.DataSource;

@@ -18,8 +18,8 @@
 package io.shardingsphere.shardingproxy.transport.mysql.packet.command.query.text.query.fixture;
 
 import io.shardingsphere.core.constant.DatabaseType;
-import io.shardingsphere.transaction.api.TransactionType;
 import io.shardingsphere.transaction.core.TransactionOperationType;
+import io.shardingsphere.transaction.core.TransactionType;
 import io.shardingsphere.transaction.spi.ShardingTransactionManager;
 import lombok.Getter;
 

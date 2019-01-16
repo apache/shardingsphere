@@ -17,7 +17,7 @@
 
 package io.shardingsphere.shardingproxy.backend.jdbc.connection;
 
-import io.shardingsphere.transaction.api.TransactionType;
+import io.shardingsphere.transaction.core.TransactionType;
 import org.junit.Test;
 
 import java.sql.Connection;

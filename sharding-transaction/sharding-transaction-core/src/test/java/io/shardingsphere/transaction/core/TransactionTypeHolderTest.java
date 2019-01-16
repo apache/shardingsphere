@@ -15,7 +15,7 @@
  * </p>
  */
 
-package io.shardingsphere.transaction.api;
+package io.shardingsphere.transaction.core;
 
 import org.junit.Before;
 import org.junit.Test;

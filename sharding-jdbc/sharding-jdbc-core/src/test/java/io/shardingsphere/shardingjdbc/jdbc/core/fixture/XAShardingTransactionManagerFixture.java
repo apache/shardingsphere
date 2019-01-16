@@ -17,7 +17,7 @@
 
 package io.shardingsphere.shardingjdbc.jdbc.core.fixture;
 
-import io.shardingsphere.transaction.api.TransactionType;
+import io.shardingsphere.transaction.core.TransactionType;
 
 public final class XAShardingTransactionManagerFixture extends AbstractShardingTransactionManagerFixture {
     

@@ -23,7 +23,7 @@ import io.shardingsphere.shardingproxy.transport.mysql.packet.command.CommandRes
 import io.shardingsphere.shardingproxy.transport.mysql.packet.command.query.FieldCountPacket;
 import io.shardingsphere.shardingproxy.transport.mysql.packet.command.query.QueryResponsePackets;
 import io.shardingsphere.shardingproxy.transport.mysql.packet.generic.ErrPacket;
-import io.shardingsphere.transaction.api.TransactionType;
+import io.shardingsphere.transaction.core.TransactionType;
 import org.hamcrest.CoreMatchers;
 import org.junit.Test;
 
