@@ -1,18 +1,19 @@
 /*
- * Copyright 2016-2018 shardingsphere.io.
- * <p>
- * Licensed under the Apache License, Version 2.0 (the "License");
- * you may not use this file except in compliance with the License.
- * You may obtain a copy of the License at
+ * Licensed to the Apache Software Foundation (ASF) under one or more
+ *  contributor license agreements.  See the NOTICE file distributed with
+ *  this work for additional information regarding copyright ownership.
+ *  The ASF licenses this file to You under the Apache License, Version 2.0
+ *  (the "License"); you may not use this file except in compliance with
+ *  the License.  You may obtain a copy of the License at
+ *  
+ *      http://www.apache.org/licenses/LICENSE-2.0
+ *  
+ *  Unless required by applicable law or agreed to in writing, software
+ *  distributed under the License is distributed on an "AS IS" BASIS,
+ *  WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
+ *  See the License for the specific language governing permissions and
+ *  limitations under the License.
  *
- *     http://www.apache.org/licenses/LICENSE-2.0
- *
- * Unless required by applicable law or agreed to in writing, software
- * distributed under the License is distributed on an "AS IS" BASIS,
- * WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
- * See the License for the specific language governing permissions and
- * limitations under the License.
- * </p>
  */
 
 package io.shardingsphere.shardingproxy.backend.jdbc.datasource;
@@ -21,6 +22,7 @@ import io.shardingsphere.core.metadata.datasource.dialect.MySQLDataSourceMetaDat
 import io.shardingsphere.core.metadata.datasource.dialect.PostgreSQLDataSourceMetaData;
 import lombok.AccessLevel;
 import lombok.NoArgsConstructor;
+
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
 
@@ -47,12 +49,12 @@ public class JDBCClassDetermine {
                         try {
                             Class.forName("com.mysql.jdbc.Driver");
                             result = "com.mysql.jdbc.Driver";
-                        } catch (ClassNotFoundException e) {
+                        } catch (final ClassNotFoundException e) {
                             try {
                                 Class.forName("com.mysql.cj.jdbc.Driver");
                                 result = "com.mysql.cj.jdbc.Driver";
-                            } catch (ClassNotFoundException ex) {
-                                throw new UnsupportedOperationException(String.format("Cannot support url `%s`,no vailed mysql driver found", url));
+                            } catch (final ClassNotFoundException ex) {
+                                throw new UnsupportedOperationException(String.format("Cannot support url `%s`,no valid MySQL driver found.", url));
                             }
                         }
                     }
