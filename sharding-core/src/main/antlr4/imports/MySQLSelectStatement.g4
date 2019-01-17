@@ -1,9 +1,13 @@
-grammar MySQLDQL;
+grammar MySQLSelectStatement;
 
-import MySQLBase, DQLBase, MySQLKeyword, Keyword, Symbol, DataType, BaseRule;
+import MySQLBase, MySQLKeyword, Keyword, Symbol, DataType, BaseRule;
 
 select 
     : withClause | unionSelect
+    ;
+    
+unionSelect
+    : selectExpression (UNION ALL? selectExpression)*
     ;
     
 withClause
@@ -103,9 +107,12 @@ indexHint
     : (USE | IGNORE | FORCE) (INDEX | KEY) (FOR (JOIN | ORDER BY | GROUP BY))* indexList
     ;
     
+selectExprs
+    : (asterisk | selectExpr) (COMMA selectExpr)*
+    ; 
+    
 selectExpr
-    : (columnName | expr) AS? alias?
-    | columnName DOT_ASTERISK
+    : (columnName | expr) AS? alias? | columnName DOT_ASTERISK
     ;
     
 intervalExpr

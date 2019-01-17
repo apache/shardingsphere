@@ -15,29 +15,32 @@
  * </p>
  */
 
-package io.shardingsphere.core.parsing.antlr.sql.segment.expr;
+package io.shardingsphere.core.parsing.antlr.sql.segment;
 
+import io.shardingsphere.core.parsing.antlr.sql.segment.expr.CommonExpressionSegment;
+import io.shardingsphere.core.parsing.lexer.token.DefaultKeyword;
 import lombok.Getter;
 import lombok.RequiredArgsConstructor;
-import lombok.Setter;
+
+import java.util.LinkedList;
+import java.util.List;
 
 /**
- * Common expression segment.
- * 
+ * Insert values segment.
+ *
  * @author duhongjun
  */
 @RequiredArgsConstructor
 @Getter
-@Setter
-public final class CommonExpressionSegment extends ExpressionWithAliasSegment {
+public final class InsertValuesSegment implements SQLSegment {
     
-    private final int startPosition;
+    private final DefaultKeyword type;
     
-    private final int endPosition;
+    private final int startIndex;
     
-    private int index = -1;
+    private final int endIndex;
     
-    private Number value;
+    private final int parametersCount;
     
-    private boolean text;
+    private final List<CommonExpressionSegment> values = new LinkedList<>();
 }

@@ -129,7 +129,27 @@ public enum RuleName {
     
     SHOW_PARAM("ShowParam"),
     
-    AUTO_COMMIT_VALUE("AutoCommitValue");
+    AUTO_COMMIT_VALUE("AutoCommitValue"),
+    
+    DELETE("Delete"),
+    
+    DELETE_CLAUSE("DeleteClause"),
+    
+    COLUMN_CLAUSE("ColumnClause"),
+    
+    SET_CLAUSE("SetClause"),
+    
+    VALUE_CLAUSE("ValueClause"),
+    
+    ASSIGNMENT_VALUE_LIST("AssignmentValueList"),
+    
+    ASSIGNMENT_VALUE("AssignmentValue"),
+    
+    ASSIGNMENT_LIST("AssignmentList"),
+    
+    ASSIGNMENT("Assignment"),
+    
+    ON_DUPLICATE_CLAUSE("OnDuplicateClause");
     
     private final String name;
     

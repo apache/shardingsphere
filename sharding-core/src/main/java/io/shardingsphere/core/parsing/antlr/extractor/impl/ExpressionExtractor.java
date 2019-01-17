@@ -31,33 +31,39 @@ import io.shardingsphere.core.parsing.antlr.sql.segment.expr.FunctionExpressionS
 import io.shardingsphere.core.parsing.antlr.sql.segment.expr.PropertyExpressionSegment;
 import io.shardingsphere.core.parsing.antlr.sql.segment.expr.StarExpressionSegment;
 import io.shardingsphere.core.parsing.lexer.token.Symbol;
+import io.shardingsphere.core.util.NumberUtil;
 import io.shardingsphere.core.util.SQLUtil;
+import lombok.RequiredArgsConstructor;
 import org.antlr.v4.runtime.ParserRuleContext;
 import org.antlr.v4.runtime.tree.ParseTree;
 import org.antlr.v4.runtime.tree.TerminalNode;
 
 import java.util.HashMap;
+import java.util.Map;
 
 /**
  * Expression extractor.
  *
  * @author duhongjun
  */
+@RequiredArgsConstructor
 public final class ExpressionExtractor implements OptionalSQLSegmentExtractor {
     
     private final SubqueryExtractor subqueryExtractor = new SubqueryExtractor();
+    
+    private final Map<ParserRuleContext, Integer> questionNodeIndexMap;
     
     @Override
     public Optional<? extends ExpressionSegment> extract(final ParserRuleContext expressionNode) {
         String firstChildText = expressionNode.getText();
         if (firstChildText.endsWith(Symbol.STAR.getLiterals())) {
-            return Optional.of(getStarExpressionSegment(expressionNode, firstChildText));
+            return Optional.of(extractStarExpressionSegment(expressionNode, firstChildText));
         }
         Optional<ParserRuleContext> subqueryNode = ExtractorUtils.findFirstChildNode(expressionNode, RuleName.SUBQUERY);
-        return subqueryNode.isPresent() ? subqueryExtractor.extract(subqueryNode.get()) : Optional.of(getExpressionWithAliasSegment(expressionNode));
+        return subqueryNode.isPresent() ? subqueryExtractor.extract(subqueryNode.get()) : Optional.of(extractExpressionWithAliasSegment(expressionNode));
     }
     
-    private ExpressionSegment getStarExpressionSegment(final ParserRuleContext expressionNode, final String text) {
+    private ExpressionSegment extractStarExpressionSegment(final ParserRuleContext expressionNode, final String text) {
         StarExpressionSegment result = new StarExpressionSegment(expressionNode.getStart().getStartIndex());
         if (text.contains(Symbol.DOT.getLiterals())) {
             result.setOwner(SQLUtil.getExactlyValue(text.substring(0, text.indexOf(Symbol.DOT.getLiterals()))));
@@ -65,15 +71,15 @@ public final class ExpressionExtractor implements OptionalSQLSegmentExtractor {
         return result;
     }
     
-    private ExpressionWithAliasSegment getExpressionWithAliasSegment(final ParserRuleContext expressionNode) {
+    private ExpressionWithAliasSegment extractExpressionWithAliasSegment(final ParserRuleContext expressionNode) {
         ExpressionWithAliasSegment result;
         Optional<ParserRuleContext> functionNode = ExtractorUtils.findFirstChildNode(expressionNode, RuleName.FUNCTION_CALL);
         if (functionNode.isPresent()) {
-            result = getFunctionExpressionSegment(expressionNode, functionNode.get());
+            result = extractFunctionExpressionSegment(expressionNode, functionNode.get());
         } else if (RuleName.COLUMN_NAME.getName().equals(expressionNode.getChild(0).getClass().getSimpleName())) {
-            result = getPropertyExpressionSegment(expressionNode);
+            result = extractPropertyExpressionSegment(expressionNode);
         } else {
-            result = new CommonExpressionSegment(expressionNode.getStart().getStartIndex(), expressionNode.getStop().getStopIndex());
+            result = extractCommonExpressionSegment(expressionNode);
         }
         Optional<String> alias = getAlias(expressionNode);
         if (alias.isPresent()) {
@@ -82,7 +88,7 @@ public final class ExpressionExtractor implements OptionalSQLSegmentExtractor {
         return result;
     }
     
-    private ExpressionWithAliasSegment getFunctionExpressionSegment(final ParserRuleContext expressionNode, final ParserRuleContext functionNode) {
+    private ExpressionWithAliasSegment extractFunctionExpressionSegment(final ParserRuleContext expressionNode, final ParserRuleContext functionNode) {
         String functionName = functionNode.getChild(0).getText();
         int startIndex = ((TerminalNode) functionNode.getChild(1)).getSymbol().getStartIndex();
         int distinctColumnNameStartPosition = ExtractorUtils.findFirstChildNode(expressionNode, RuleName.DISTINCT).isPresent() ? calculateDistinctColumnNamePosition(functionNode) : -1;
@@ -100,11 +106,37 @@ public final class ExpressionExtractor implements OptionalSQLSegmentExtractor {
         return -1;
     }
     
-    private ExpressionWithAliasSegment getPropertyExpressionSegment(final ParserRuleContext expressionNode) {
+    private ExpressionWithAliasSegment extractPropertyExpressionSegment(final ParserRuleContext expressionNode) {
         ParserRuleContext columnNode = (ParserRuleContext) expressionNode.getChild(0);
         Optional<ColumnSegment> columnSegment = new ColumnSegmentExtractor(new HashMap<String, String>()).extract(columnNode);
         Preconditions.checkState(columnSegment.isPresent());
         return new PropertyExpressionSegment(columnSegment.get().getOwner(), columnSegment.get().getName(), columnNode.getStart().getStartIndex(), columnNode.getStop().getStopIndex());
+    }
+    
+    /**
+     * Extract expression segment from SQL AST.
+     *
+     * @param expressionNode expression node of AST
+     * @return CommonExpressionSegment
+     */
+    public CommonExpressionSegment extractCommonExpressionSegment(final ParserRuleContext expressionNode) {
+        CommonExpressionSegment result = new CommonExpressionSegment(expressionNode.getStart().getStartIndex(), expressionNode.getStop().getStopIndex());
+        Optional<ParserRuleContext> questionNode = ExtractorUtils.findFirstChildNode(expressionNode, RuleName.QUESTION);
+        if (questionNode.isPresent()) {
+            Integer index = questionNodeIndexMap.get(questionNode.get());
+            result.setIndex(index);
+        } else {
+            Optional<ParserRuleContext> bitExprNode = ExtractorUtils.findFirstChildNode(expressionNode, RuleName.BIT_EXPR);
+            Optional<ParserRuleContext> numberNode = ExtractorUtils.findFirstChildNode(expressionNode, RuleName.NUMBER);
+            if (numberNode.isPresent() && (!bitExprNode.isPresent() || 1 == bitExprNode.get().getChildCount())) {
+                result.setValue(NumberUtil.getExactlyNumber(numberNode.get().getText(), 10));
+            }
+            Optional<ParserRuleContext> stringNode = ExtractorUtils.findFirstChildNode(expressionNode, RuleName.STRING);
+            if (stringNode.isPresent() && (!bitExprNode.isPresent() || 1 == bitExprNode.get().getChildCount())) {
+                result.setText(true);
+            }
+        }
+        return result;
     }
     
     private Optional<String> getAlias(final ParserRuleContext expressionNode) {

@@ -29,6 +29,8 @@ import org.antlr.v4.runtime.ParserRuleContext;
 import org.antlr.v4.runtime.tree.ParseTree;
 import org.antlr.v4.runtime.tree.TerminalNodeImpl;
 
+import java.util.HashMap;
+
 /**
  * Select clause extractor.
  *
@@ -37,7 +39,7 @@ import org.antlr.v4.runtime.tree.TerminalNodeImpl;
  */
 public final class SelectClauseExtractor implements OptionalSQLSegmentExtractor {
     
-    private final ExpressionExtractor expressionExtractor = new ExpressionExtractor();
+    private final ExpressionExtractor expressionExtractor = new ExpressionExtractor(new HashMap<ParserRuleContext, Integer>());
     
     @Override
     public Optional<SelectClauseSegment> extract(final ParserRuleContext ancestorNode) {
