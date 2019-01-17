@@ -29,7 +29,8 @@ shardingRule:
         inline:
           shardingColumn: order_id
           algorithmExpression: t_order${order_id % 2}
-      keyGeneratorColumnName: order_id
+      keyGenerator:
+        column: order_id
     t_order_item:
       actualDataNodes: ds${0..1}.t_order_item${0..1}
       tableStrategy:
@@ -48,7 +49,8 @@ shardingRule:
       algorithmExpression: ds${user_id % 2}
   defaultTableStrategy:
     none:
-  defaultKeyGeneratorClassName: io.shardingsphere.core.keygen.DefaultKeyGenerator
+  defaultKeyGenerator:
+    type: SNOWFLAKE
   
 props:
   sql.show: true
@@ -128,7 +130,8 @@ shardingRule:
         inline:
           shardingColumn: order_id
           algorithmExpression: t_order${order_id % 2}
-      keyGeneratorColumnName: order_id
+      keyGenerator:
+        column: order_id
     t_order_item:
       actualDataNodes: ms_ds${0..1}.t_order_item${0..1}
       tableStrategy:
@@ -147,7 +150,8 @@ shardingRule:
       algorithmExpression: ms_ds${user_id % 2}
   defaultTableStrategy:
     none:
-  defaultKeyGeneratorClassName: io.shardingsphere.core.keygen.DefaultKeyGenerator
+  defaultKeyGenerator:
+    type: SNOWFLAKE
   
   masterSlaveRules:
       ms_ds0:
@@ -217,9 +221,10 @@ shardingRule:
             algorithmClassName: #Hint sharding algorithm class name. This class need to implements HintShardingAlgorithm, and require a no argument constructor
            none: #Do not sharding
       tableStrategy: #Tables sharding strategy, Same as databases sharding strategy
-        
-      keyGeneratorColumnName: #Column name of key generator, do not use Key generator if absent
-      keyGeneratorClassName: #Key generator, use default key generator if absent. This class need to implements KeyGenerator, and require a no argument constructor
+      keyGenerator:   
+        column: #Column name of key generator
+        type: #Type of key generator, use default key generator if absent
+        props: #Properties of key generator        
         
       logicIndex: #Name if logic index. If use `DROP INDEX XXX` SQL in Oracle/PostgreSQL, This property needs to be set for finding the actual tables
   bindingTables: #Binding table rule configurations
@@ -234,7 +239,9 @@ shardingRule:
   defaultDataSourceName: #If table not configure at table rule, will route to defaultDataSourceName  
   defaultDatabaseStrategy: #Default strategy for sharding databases, same as databases sharding strategy
   defaultTableStrategy: #Default strategy for sharding tables, same as tables sharding strategy
-  defaultKeyGeneratorClassName: #Default key generator class name, default value is `io.shardingsphere.core.keygen.DefaultKeyGenerator`. This class need to implements KeyGenerator, and require a no argument constructor
+  defaultKeyGenerator:
+    type: #Type of default key generator, use user-defined ones or built-in ones, e.g. SNOWFLAKE, UUID. Default key generator is `io.shardingsphere.core.keygen.generator.impl.SnowflakeKeyGenerator`
+    props: #Properties of default key generator  
   
   masterSlaveRules: #Read-write splitting rule configuration, more details can reference Read-write splitting part
     <data_source_name>: #Data sources configuration, need consist with data source map, multiple `data_source_name` available
