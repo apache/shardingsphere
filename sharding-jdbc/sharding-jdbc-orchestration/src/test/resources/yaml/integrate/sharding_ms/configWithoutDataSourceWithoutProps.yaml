@@ -8,7 +8,7 @@ shardingRule:
       databaseStrategy: 
         standard:
           shardingColumn: user_id
-          preciseAlgorithmClassName: io.shardingsphere.shardingjdbc.orchestration.api.yaml.fixture.SingleAlgorithm
+          preciseAlgorithmClassName: org.apache.shardingsphere.shardingjdbc.orchestration.api.yaml.fixture.SingleAlgorithm
       tableStrategy: 
         inline:
           shardingColumn: order_id
@@ -22,7 +22,7 @@ shardingRule:
       databaseStrategy:
         standard:
           shardingColumn: user_id
-          preciseAlgorithmClassName: io.shardingsphere.shardingjdbc.orchestration.api.yaml.fixture.SingleAlgorithm
+          preciseAlgorithmClassName: org.apache.shardingsphere.shardingjdbc.orchestration.api.yaml.fixture.SingleAlgorithm
       tableStrategy:
         inline:
           shardingColumn: order_id
@@ -35,14 +35,14 @@ shardingRule:
   defaultTableStrategy:
     complex:
       shardingColumns: id, order_id
-      algorithmClassName: io.shardingsphere.shardingjdbc.orchestration.api.yaml.fixture.MultiAlgorithm
+      algorithmClassName: org.apache.shardingsphere.shardingjdbc.orchestration.api.yaml.fixture.MultiAlgorithm
 
   masterSlaveRules:
     db_ms_0:
       masterDataSourceName: db0_master
       slaveDataSourceNames:
         - db0_slave
-      loadBalanceAlgorithmClassName: io.shardingsphere.api.algorithm.masterslave.RoundRobinMasterSlaveLoadBalanceAlgorithm
+      loadBalanceAlgorithmClassName: org.apache.shardingsphere.api.algorithm.masterslave.RoundRobinMasterSlaveLoadBalanceAlgorithm
     db_ms_1:
       masterDataSourceName: db1_master
       slaveDataSourceNames:

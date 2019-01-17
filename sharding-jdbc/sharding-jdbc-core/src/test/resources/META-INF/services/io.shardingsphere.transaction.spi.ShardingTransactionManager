@@ -1,2 +1,0 @@
-io.shardingsphere.shardingjdbc.jdbc.core.fixture.XAShardingTransactionManagerFixture
-io.shardingsphere.shardingjdbc.jdbc.core.fixture.BASEShardingTransactionManagerFixture

@@ -22,7 +22,7 @@ shardingRule:
       databaseStrategy: 
         standard:
           shardingColumn: user_id
-          preciseAlgorithmClassName: io.shardingsphere.shardingjdbc.orchestration.api.yaml.fixture.SingleAlgorithm
+          preciseAlgorithmClassName: org.apache.shardingsphere.shardingjdbc.orchestration.api.yaml.fixture.SingleAlgorithm
       tableStrategy: 
         inline:
           shardingColumn: order_id
@@ -36,7 +36,7 @@ shardingRule:
       databaseStrategy: 
         standard:
           shardingColumn: user_id
-          preciseAlgorithmClassName: io.shardingsphere.shardingjdbc.orchestration.api.yaml.fixture.SingleAlgorithm
+          preciseAlgorithmClassName: org.apache.shardingsphere.shardingjdbc.orchestration.api.yaml.fixture.SingleAlgorithm
       tableStrategy: 
         inline:
           shardingColumn: order_id
@@ -49,7 +49,7 @@ shardingRule:
   defaultTableStrategy:
     complex:
       shardingColumns: id, order_id
-      algorithmClassName: io.shardingsphere.shardingjdbc.orchestration.api.yaml.fixture.MultiAlgorithm
+      algorithmClassName: org.apache.shardingsphere.shardingjdbc.orchestration.api.yaml.fixture.MultiAlgorithm
 
 orchestration:
   name: demo_ds_ms

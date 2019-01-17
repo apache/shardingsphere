@@ -1,0 +1,4 @@
+org.apache.shardingsphere.transaction.xa.jta.datasource.swapper.impl.HikariCPSwapper
+org.apache.shardingsphere.transaction.xa.jta.datasource.swapper.impl.DBCP2Swapper
+org.apache.shardingsphere.transaction.xa.jta.datasource.swapper.impl.TomcatDBCPSwapper
+org.apache.shardingsphere.transaction.xa.jta.datasource.swapper.impl.DruidSwapper

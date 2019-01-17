@@ -17,14 +17,14 @@ shardingRule:
       tableStrategy: 
         complex:
           shardingColumns: user_id, order_id
-          algorithmClassName: io.shardingsphere.api.algorithm.fixture.TestComplexKeysShardingAlgorithm
+          algorithmClassName: org.apache.shardingsphere.api.algorithm.fixture.TestComplexKeysShardingAlgorithm
       logicIndex: order_index
     t_order_item:
       actualDataNodes: db${0..1}.t_order_item
       tableStrategy: 
         complex:
           shardingColumns: user_id, order_id, item_id
-          algorithmClassName: io.shardingsphere.api.algorithm.fixture.TestComplexKeysShardingAlgorithm 
+          algorithmClassName: org.apache.shardingsphere.api.algorithm.fixture.TestComplexKeysShardingAlgorithm 
       keyGenerator:
         column: item_id
         type: SNOWFLAKE
@@ -33,7 +33,7 @@ shardingRule:
       tableStrategy: 
         complex:
           shardingColumns: user_new_id, guid
-          algorithmClassName: io.shardingsphere.api.algorithm.fixture.TestComplexKeysShardingAlgorithm
+          algorithmClassName: org.apache.shardingsphere.api.algorithm.fixture.TestComplexKeysShardingAlgorithm
   bindingTables:
     - t_order, t_order_item
   defaultKeyGenerator:

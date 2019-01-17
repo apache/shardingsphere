@@ -5,10 +5,10 @@
             <pattern>[%-5level] %d{HH:mm:ss.SSS} [%thread] %logger{36} - %msg%n</pattern>
         </encoder>
     </appender>
-    <logger name="io.shardingsphere" level="info" additivity="false">
+    <logger name="org.apache.shardingsphere" level="info" additivity="false">
         <appender-ref ref="console"/>
     </logger>
-    <logger name="io.shardingsphere.transaction.ShardingTransactionManagerEngine" level="off" />
+    <logger name="org.apache.shardingsphere.transaction.ShardingTransactionManagerEngine" level="off" />
     
     <root>
         <level value="error" />

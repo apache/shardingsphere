@@ -1,0 +1,4 @@
+org.apache.shardingsphere.core.keygen.generator.impl.SnowflakeKeyGenerator
+org.apache.shardingsphere.core.keygen.generator.impl.UUIDKeyGenerator
+org.apache.shardingsphere.shardingjdbc.orchestration.api.yaml.fixture.DecrementKeyGenerator
+org.apache.shardingsphere.shardingjdbc.orchestration.api.yaml.fixture.IncrementKeyGenerator

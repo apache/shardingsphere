@@ -4,7 +4,7 @@
          xsi:schemaLocation="http://maven.apache.org/POM/4.0.0 http://maven.apache.org/xsd/maven-4.0.0.xsd">
     <modelVersion>4.0.0</modelVersion>
     <parent>
-        <groupId>io.shardingsphere</groupId>
+        <groupId>org.apache.shardingsphere</groupId>
         <artifactId>sharding-sphere</artifactId>
         <version>4.0.0.M1-SNAPSHOT</version>
     </parent>
@@ -13,7 +13,7 @@
     
     <dependencies>
         <dependency>
-            <groupId>io.shardingsphere</groupId>
+            <groupId>org.apache.shardingsphere</groupId>
             <artifactId>sharding-core</artifactId>
             <version>${project.version}</version>
         </dependency>
