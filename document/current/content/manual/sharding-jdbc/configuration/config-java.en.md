@@ -218,11 +218,11 @@ Subclass of ShardingStrategyConfiguration.
 Subclass of ShardingStrategyConfiguration.
 
 #### KeyGeneratorConfiguration
-| *Name*            | *DataType*                   | *Description*                                                                              |
-| ----------------- | ---------------------------- | ------------------------------------------------------------------------------------------ |
-| column            | String                       | Column name of key generator                                                               |
-| type              | String                       | Type of key generator，use user-defined ones or built-in ones, e.g. SNOWFLAKE, UUID        |
-| props             | Properties                   | Properties                                                                                 |
+| *Name*            | *DataType*                   | *Description*                                                                               |
+| ----------------- | ---------------------------- | ------------------------------------------------------------------------------------------- |
+| column            | String                       | Column name of key generator                                                                |
+| type              | String                       | Type of key generator，use user-defined ones or built-in ones, e.g. SNOWFLAKE, UUID         |
+| props             | Properties                   | Properties, e.g. `worker.id` and `max.tolerate.time.difference.milliseconds` for `SNOWFLAKE`|
 
 #### ShardingPropertiesConstant
 
