@@ -68,11 +68,14 @@ Inline expression identifier can use `${...}` or `$->{...}`, but `${...}` is con
     <sharding:standard-strategy id="databaseShardingStrategy" sharding-column="user_id" precise-algorithm-ref="preciseModuloDatabaseShardingAlgorithm" />
     <sharding:standard-strategy id="tableShardingStrategy" sharding-column="order_id" precise-algorithm-ref="preciseModuloTableShardingAlgorithm" />
     
+    <sharding:key-generator id="orderKeyGenerator" type="SNOWFLAKE" column="order_id" />
+    <sharding:key-generator id="itemKeyGenerator" type="SNOWFLAKE" column="order_item_id" />
+    
     <sharding:data-source id="shardingDataSource">
         <sharding:sharding-rule data-source-names="ds0,ds1">
             <sharding:table-rules>
-                <sharding:table-rule logic-table="t_order" actual-data-nodes="ds$->{0..1}.t_order$->{0..1}" database-strategy-ref="databaseShardingStrategy" table-strategy-ref="tableShardingStrategy" generate-key-column-name="order_id" />
-                <sharding:table-rule logic-table="t_order_item" actual-data-nodes="ds$->{0..1}.t_order_item$->{0..1}" database-strategy-ref="databaseShardingStrategy" table-strategy-ref="tableShardingStrategy" generate-key-column-name="order_item_id" />
+                <sharding:table-rule logic-table="t_order" actual-data-nodes="ds$->{0..1}.t_order$->{0..1}" database-strategy-ref="databaseShardingStrategy" table-strategy-ref="tableShardingStrategy" key-generator-ref="orderKeyGenerator" />
+                <sharding:table-rule logic-table="t_order_item" actual-data-nodes="ds$->{0..1}.t_order_item$->{0..1}" database-strategy-ref="databaseShardingStrategy" table-strategy-ref="tableShardingStrategy" key-generator-ref="itemKeyGenerator" />
             </sharding:table-rules>
             <sharding:binding-table-rules>
                 <sharding:binding-table-rule logic-tables="t_order, t_order_item" />
@@ -241,6 +244,9 @@ Inline expression identifier can use `${...}` or `$->{...}`, but `${...}` is con
     <sharding:inline-strategy id="orderTableStrategy" sharding-column="order_id" algorithm-expression="t_order$->{order_id % 2}" />
     <sharding:inline-strategy id="orderItemTableStrategy" sharding-column="order_id" algorithm-expression="t_order_item$->{order_id % 2}" />
     
+    <sharding:key-generator id="orderKeyGenerator" type="SNOWFLAKE" column="order_id" />
+    <sharding:key-generator id="itemKeyGenerator" type="SNOWFLAKE" column="order_item_id" />
+    
     <sharding:data-source id="shardingDataSource">
         <sharding:sharding-rule data-source-names="ds_master0,ds_master0_slave0,ds_master0_slave1,ds_master1,ds_master1_slave0,ds_master1_slave1">
             <sharding:master-slave-rules>
@@ -248,8 +254,8 @@ Inline expression identifier can use `${...}` or `$->{...}`, but `${...}` is con
                 <sharding:master-slave-rule id="ds_ms1" master-data-source-name="ds_master1" slave-data-source-names="ds_master1_slave0, ds_master1_slave1" strategy-ref="randomStrategy" />
             </sharding:master-slave-rules>
             <sharding:table-rules>
-                <sharding:table-rule logic-table="t_order" actual-data-nodes="ds_ms$->{0..1}.t_order$->{0..1}" database-strategy-ref="databaseStrategy" table-strategy-ref="orderTableStrategy" generate-key-column-name="order_id" />
-                <sharding:table-rule logic-table="t_order_item" actual-data-nodes="ds_ms$->{0..1}.t_order_item$->{0..1}" database-strategy-ref="databaseStrategy" table-strategy-ref="orderItemTableStrategy" generate-key-column-name="order_item_id" />
+                <sharding:table-rule logic-table="t_order" actual-data-nodes="ds_ms$->{0..1}.t_order$->{0..1}" database-strategy-ref="databaseStrategy" table-strategy-ref="orderTableStrategy" key-generator-ref="orderKeyGenerator" />
+                <sharding:table-rule logic-table="t_order_item" actual-data-nodes="ds_ms$->{0..1}.t_order_item$->{0..1}" database-strategy-ref="databaseStrategy" table-strategy-ref="orderItemTableStrategy" key-generator-ref="itemKeyGenerator" />
             </sharding:table-rules>
             <sharding:binding-table-rules>
                 <sharding:binding-table-rule logic-tables="t_order, t_order_item" />
@@ -308,11 +314,11 @@ Namespace: http://shardingsphere.io/schema/shardingsphere/sharding/sharding.xsd
 | data-source-names                 | Attribute | Data source bean list. Multiple data sources names separated with comma                                                               | 
 | table-rules                       | Tag       | Table rule configurations                                                                                                             |
 | binding-table-rules (?)           | Tag       | Binding table rule configurations                                                                                                     |
-| broadcast-table-rules (?)         | Tag       | Broadcast table rule configurations                                                                                                     |
+| broadcast-table-rules (?)         | Tag       | Broadcast table rule configurations                                                                                                   |
 | default-data-source-name (?)      | Attribute | If table not configure at table rule, will route to defaultDataSourceName                                                             |
 | default-database-strategy-ref (?) | Attribute | Default database sharding strategy, reference id of \<sharding:xxx-strategy>, Default for not sharding                                |
 | default-table-strategy-ref (?)    | Attribute | Default table sharding strategy, reference id of \<sharding:xxx-strategy>, Default for not sharding                                   |
-| default-key-generator (?)         | Attribute | Default key generator, default value is `io.shardingsphere.core.keygen.DefaultKeyGenerator`. This class need to implements KeyGenerator |
+| default-key-generator (?)         | Attribute | Default key generator configuration, use user-defined ones or built-in ones, e.g. SNOWFLAKE, UUID. Default key generator is `io.shardingsphere.core.keygen.generator.impl.SnowflakeKeyGenerator` |
 
 #### \<sharding:table-rules />
 
@@ -328,8 +334,7 @@ Namespace: http://shardingsphere.io/schema/shardingsphere/sharding/sharding.xsd
 | actual-data-nodes (?)        | Attribute | Describe data source names and actual tables, delimiter as point, multiple data nodes separated with comma, support inline expression. Absent means sharding databases only. Example: ds${0..7}.tbl${0..7} |
 | database-strategy-ref (?)    | Attribute | Databases sharding strategy, use default databases sharding strategy if absent                                                                                                                              |
 | table-strategy-ref (?)       | Attribute | Tables sharding strategy, use default tables sharding strategy if absent                                                                                                                                    |
-| generate-key-column-name (?) | Attribute | Column name of key generator, do not use Key generator if absent                                                                                                                                            |
-| key-generator (?)            | Attribute | Key generator, use default key generator if absent. This class need to implements KeyGenerator                                                                                                              |
+| key-generator (?)            | Attribute | Key generator, use default key generator if absent.                                                                                                                                                         |
 | logic-index (?)              | Attribute | Name if logic index. If use `DROP INDEX XXX` SQL in Oracle/PostgreSQL, This property needs to be set for finding the actual tables                                                                          |
 
 #### \<sharding:binding-table-rules />
@@ -394,6 +399,13 @@ Namespace: http://shardingsphere.io/schema/shardingsphere/sharding/sharding.xsd
 | ------ | --------- | -------------- |
 | id     | Attribute | Spring Bean Id |
 
+#### \<sharding:key-generator />
+| *Name*             | *Type*                       | *Description*                                                                               |
+| ----------------- | ---------------------------- | -------------------------------------------------------------------------------------------- |
+| column            | Attribute                    | Column name of key generator                                                                 |
+| type              | Attribute                    | Type of key generator, use user-defined ones or built-in ones, e.g. SNOWFLAKE, UUID          |
+| props-ref         | Attribute                    | Properties, e.g. `worker.id` and `max.tolerate.time.difference.milliseconds` for `SNOWFLAKE` | 
+ 
 #### \<sharding:props />
 
 | *Name*                              | *Type*    | *Description*                                                                  |

@@ -13,11 +13,16 @@ Auto-increment keys in different physical tables within the same logic table can
 Though it is possible to avoid clashes by restricting the initiative value and increase step of auto-increment key, but introducing extra operation rules can make the solution lack integrity and scalability.
 
 Currently, there are many third-party solutions that can solve this problem perfectly, such as (UUID and others) relying on some particular algorithms to generate unrepeated keys, or leading in primary key generation services. 
-But it is for this diversity that ShardingSphere may restrict its own development if relying on any solution.
 
-For above reasons, ShardingSphere uses interfaces to access generated primary keys and separates the detailed underlying primary key generation.
+We provide several built-in key generators to generate globally unique ID. Besides, an interface of key generator is open to user to implement user-defined key generator.
 
-## Default Distributed Primary Key Generator
+## Built-in key generator
+
+### UUID
+
+To generate globally unique ID by UUID.randomUUID().
+
+### SNOWFLAKE
 
 ShardingSphere provides flexible distributed primary key generation strategies. 
 Users can configure the primary key generation strategy of each table in sharding rule configuration module, with default snowflake algorithm generating 64bit long integral data.
@@ -54,7 +59,7 @@ The default value is 0 and can be set by calling for statistic method `DefaultKe
 The sequence number is used to generate different IDs in a millisecond. 
 If the number generated in that millisecond exceeds 4,096 (2 to the power of 12), the generator will wait till the next millisecond to continue.
 
-## Clock-Back
+#### Clock-Back
 
 Server clock-back can lead to the generation of repeated sequence, so the default distributed primary key generator has provided a maximumly tolerant clock-back millisecond number. 
 If the clock-back time has exceeded it, the program will report an error. 
@@ -64,3 +69,7 @@ The default value of maximumly tolerant clock-back millisecond is 0 and can be s
 Please refer to the following picture for the detailed structure of snowflake algorithm primary key.
 
 ![snowflake](http://shardingsphere.jd.com/document/current/img/sharding/snowflake_en_v3.png)
+
+### LEAF
+
+To generate globally unique ID by using registry, e.g, Zookeeper. More detail, please refer to [Leaf](https://tech.meituan.com/2017/04/21/mt-leaf.html).

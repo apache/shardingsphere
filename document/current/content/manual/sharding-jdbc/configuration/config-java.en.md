@@ -20,11 +20,17 @@ weight = 1
          return ShardingDataSourceFactory.createDataSource(createDataSourceMap(), shardingRuleConfig);
      }
      
+     private static KeyGeneratorConfiguration getKeyGeneratorConfiguration() {
+                  KeyGeneratorConfiguration result = new KeyGeneratorConfiguration();
+                  result.setColumn("order_id");
+                  return result;
+     }
+     
      TableRuleConfiguration getOrderTableRuleConfiguration() {
          TableRuleConfiguration result = new TableRuleConfiguration();
          result.setLogicTable("t_order");
          result.setActualDataNodes("ds${0..1}.t_order${0..1}");
-         result.setKeyGeneratorColumnName("order_id");
+         result.setKeyGeneratorConfig(getKeyGeneratorConfiguration());
          return result;
      }
      
@@ -78,11 +84,17 @@ weight = 1
         return ShardingDataSourceFactory.createDataSource(createDataSourceMap(), shardingRuleConfig, new HashMap<String, Object>(), new Properties());
     }
     
+    private static KeyGeneratorConfiguration getKeyGeneratorConfiguration() {
+                 KeyGeneratorConfiguration result = new KeyGeneratorConfiguration();
+                 result.setColumn("order_id");
+                 return result;
+    }
+    
     TableRuleConfiguration getOrderTableRuleConfiguration() {
         TableRuleConfiguration result = new TableRuleConfiguration();
         result.setLogicTable("t_order");
         result.setActualDataNodes("ds_${0..1}.t_order_${[0, 1]}");
-        result.setKeyGeneratorColumnName("order_id");
+        result.setKeyGeneratorConfig(getKeyGeneratorConfiguration());
         return result;
     }
     
@@ -143,16 +155,16 @@ weight = 1
 
 #### ShardingRuleConfiguration
 
-| *Name*                                    | *DataType*           | *Description*                                                                                                     |
-| ----------------------------------------- | ------------------------------------------ | ------------------------------------------------------------------------------------------- |
-| tableRuleConfigs                          | Collection\<TableRuleConfiguration\>       | Table rule configuration                                                                    |
-| bindingTableGroups (?)                    | Collection\<String\>                       | Binding table groups                                                                        |
-| broadcastTables (?)                       | Collection\<String\>                       | Broadcast table                                                                             |
-| defaultDataSourceName (?)                 | String                                     | If table not configure at table rule, will route to defaultDataSourceName                   |
-| defaultDatabaseShardingStrategyConfig (?) | ShardingStrategyConfiguration              | Default strategy for sharding databases                                                     |
-| defaultTableShardingStrategyConfig (?)    | ShardingStrategyConfiguration              | Default strategy for sharding tables                                                        |
-| defaultKeyGenerator (?)                   | KeyGenerator                               | Default key generator, default value is `io.shardingsphere.core.keygen.DefaultKeyGenerator` |
-| masterSlaveRuleConfigs (?)                | Collection\<MasterSlaveRuleConfiguration\> | Read-write splitting rule configuration                                                     |
+| *Name*                                    | *DataType*                                 | *Description*                                                                                                                      |
+| ----------------------------------------- | ------------------------------------------ | ---------------------------------------------------------------------------------------------------------------------------------- |
+| tableRuleConfigs                          | Collection\<TableRuleConfiguration\>       | Table rule configuration                                                                                                           |
+| bindingTableGroups (?)                    | Collection\<String\>                       | Binding table groups                                                                                                               |
+| broadcastTables (?)                       | Collection\<String\>                       | Broadcast table                                                                                                                    |
+| defaultDataSourceName (?)                 | String                                     | If table not configure at table rule, will route to defaultDataSourceName                                                          |
+| defaultDatabaseShardingStrategyConfig (?) | ShardingStrategyConfiguration              | Default strategy for sharding databases                                                                                            |
+| defaultTableShardingStrategyConfig (?)    | ShardingStrategyConfiguration              | Default strategy for sharding tables                                                                                               |
+| defaultKeyGeneratorConfig (?)             | KeyGeneratorConfiguration                  | Default key generator configuration, use user-defined ones or built-in ones, e.g. SNOWFLAKE, UUID. Default key generator is `io.shardingsphere.core.keygen.generator.impl.SnowflakeKeyGenerator` |
+| masterSlaveRuleConfigs (?)                | Collection\<MasterSlaveRuleConfiguration\> | Read-write splitting rule configuration                                                                                            |
 
 #### TableRuleConfiguration
 
@@ -163,8 +175,7 @@ weight = 1
 | databaseShardingStrategyConfig (?) | ShardingStrategyConfiguration | Databases sharding strategy, use default databases sharding strategy if absent                                                                                                                        |
 | tableShardingStrategyConfig (?)    | ShardingStrategyConfiguration | Tables sharding strategy, use default databases sharding strategy if absent                                                                                                                           |
 | logicIndex (?)                     | String                        | Name if logic index. If use *DROP INDEX XXX* SQL in Oracle/PostgreSQL, This property needs to be set for finding the actual tables                                                                    |
-| keyGeneratorColumnName (?)         | String                        | Key generator column name, do not use Key generator if absent                                                                                                                                         |
-| keyGenerator (?)                   | KeyGenerator                  | Key generator, use default key generator if absent                                                                                                                                                    |
+| keyGeneratorConfig (?)             | KeyGeneratorConfiguration     | Key generator configuration, use default key generator if absent                                                                                                                                                    |
 
 #### StandardShardingStrategyConfiguration
 
@@ -205,6 +216,13 @@ Subclass of ShardingStrategyConfiguration.
 #### NoneShardingStrategyConfiguration
 
 Subclass of ShardingStrategyConfiguration.
+
+#### KeyGeneratorConfiguration
+| *Name*            | *DataType*                   | *Description*                                                                               |
+| ----------------- | ---------------------------- | ------------------------------------------------------------------------------------------- |
+| column            | String                       | Column name of key generator                                                                |
+| type              | String                       | Type of key generator，use user-defined ones or built-in ones, e.g. SNOWFLAKE, UUID         |
+| props             | Properties                   | Properties, e.g. `worker.id` and `max.tolerate.time.difference.milliseconds` for `SNOWFLAKE`|
 
 #### ShardingPropertiesConstant
 

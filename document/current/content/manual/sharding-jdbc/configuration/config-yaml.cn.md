@@ -29,7 +29,8 @@ shardingRule:
         inline:
           shardingColumn: order_id
           algorithmExpression: t_order${order_id % 2}
-      keyGeneratorColumnName: order_id
+      keyGenerator:
+        column: order_id
     t_order_item:
       actualDataNodes: ds${0..1}.t_order_item${0..1}
       tableStrategy:
@@ -48,7 +49,8 @@ shardingRule:
       algorithmExpression: ds${user_id % 2}
   defaultTableStrategy:
     none:
-  defaultKeyGeneratorClassName: io.shardingsphere.core.keygen.DefaultKeyGenerator
+  defaultKeyGenerator:
+    type: SNOWFLAKE
   
 props:
   sql.show: true
@@ -128,7 +130,8 @@ shardingRule:
         inline:
           shardingColumn: order_id
           algorithmExpression: t_order${order_id % 2}
-      keyGeneratorColumnName: order_id
+      keyGenerator:
+        Column: order_id
     t_order_item:
       actualDataNodes: ms_ds${0..1}.t_order_item${0..1}
       tableStrategy:
@@ -147,7 +150,8 @@ shardingRule:
       algorithmExpression: ms_ds${user_id % 2}
   defaultTableStrategy:
     none:
-  defaultKeyGeneratorClassName: io.shardingsphere.core.keygen.DefaultKeyGenerator
+  defaultKeyGenerator:
+    type: SNOWFLAKE
   
   masterSlaveRules:
       ms_ds0:
@@ -271,7 +275,6 @@ shardingRule: # sharding的配置
   defaultKeyGenerator: #默认的主键生成算法 如果没有设置,默认为SNOWFLAKE算法
     column: # 自增键对应的列名称
     type: #自增键的类型,主要用于调用内置的主键生成算法有三个可用值:SNOWFLAKE(时间戳+worker id+自增id),UUID(java.util.UUID类生成的随机UUID),LEAF,其中Snowflake算法与UUID算法已经实现,LEAF目前(2018-01-14)尚未实现
-    className: # 非内置的其他实现了KeyGenerator接口的类,需要注意,如果设置这个,就不能设置type,否则type的设置会覆盖class的设置
     props:
       # 定制算法需要设置的参数,比如SNOWFLAKE算法的worker.id与max.tolerate.time.difference.milliseconds
   tables: #配置表sharding的主要位置

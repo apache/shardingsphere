@@ -20,11 +20,17 @@ weight = 1
          return ShardingDataSourceFactory.createDataSource(createDataSourceMap(), shardingRuleConfig);
      }
      
+     private static KeyGeneratorConfiguration getKeyGeneratorConfiguration() {
+             KeyGeneratorConfiguration result = new KeyGeneratorConfiguration();
+             result.setColumn("order_id");
+             return result;
+     }
+     
      TableRuleConfiguration getOrderTableRuleConfiguration() {
          TableRuleConfiguration result = new TableRuleConfiguration();
          result.setLogicTable("t_order");
          result.setActualDataNodes("ds${0..1}.t_order${0..1}");
-         result.setKeyGeneratorColumnName("order_id");
+         result.setKeyGeneratorConfig(getKeyGeneratorConfiguration());
          return result;
      }
      
@@ -78,11 +84,17 @@ weight = 1
         return ShardingDataSourceFactory.createDataSource(createDataSourceMap(), shardingRuleConfig, new HashMap<String, Object>(), new Properties());
     }
     
+    private static KeyGeneratorConfiguration getKeyGeneratorConfiguration() {
+                 KeyGeneratorConfiguration result = new KeyGeneratorConfiguration();
+                 result.setColumn("order_id");
+                 return result;
+    }
+    
     TableRuleConfiguration getOrderTableRuleConfiguration() {
         TableRuleConfiguration result = new TableRuleConfiguration();
         result.setLogicTable("t_order");
         result.setActualDataNodes("ds_${0..1}.t_order_${[0, 1]}");
-        result.setKeyGeneratorColumnName("order_id");
+        result.setKeyGeneratorConfig(getKeyGeneratorConfiguration());
         return result;
     }
     
@@ -147,16 +159,16 @@ weight = 1
 
 分片规则配置对象。
 
-| *名称*                                     | *数据类型*                                  | *说明*                                                                  |
-| ----------------------------------------- | ------------------------------------------ | ----------------------------------------------------------------------- |
-| tableRuleConfigs                          | Collection\<TableRuleConfiguration\>       | 分片规则列表                                                              |
-| bindingTableGroups (?)                    | Collection\<String\>                       | 绑定表规则列表                                                            |
-| broadcastTables (?)                       | Collection\<String\>                       | 广播表规则列表                                                            |
-| defaultDataSourceName (?)                 | String                                     | 未配置分片规则的表将通过默认数据源定位                                       |
-| defaultDatabaseShardingStrategyConfig (?) | ShardingStrategyConfiguration              | 默认分库策略                                                              |
-| defaultTableShardingStrategyConfig (?)    | ShardingStrategyConfiguration              | 默认分表策略                                                              |
-| defaultKeyGenerator (?)                   | KeyGenerator                               | 默认自增列值生成器，缺省使用io.shardingsphere.core.keygen.DefaultKeyGenerator |
-| masterSlaveRuleConfigs (?)                | Collection\<MasterSlaveRuleConfiguration\> | 读写分离规则，缺省表示不使用读写分离                                         |
+| *名称*                                     | *数据类型*                                  | *说明*                                                                                         
+| ----------------------------------------- | ------------------------------------------ | ----------------------------------------------------------------------------------------------- |
+| tableRuleConfigs                          | Collection\<TableRuleConfiguration\>       | 分片规则列表                                                                                      |
+| bindingTableGroups (?)                    | Collection\<String\>                       | 绑定表规则列表                                                                                    |
+| broadcastTables (?)                       | Collection\<String\>                       | 广播表规则列表                                                                                    |
+| defaultDataSourceName (?)                 | String                                     | 未配置分片规则的表将通过默认数据源定位                                                                |
+| defaultDatabaseShardingStrategyConfig (?) | ShardingStrategyConfiguration              | 默认分库策略                                                                                      |
+| defaultTableShardingStrategyConfig (?)    | ShardingStrategyConfiguration              | 默认分表策略                                                                                      |
+| defaultKeyGeneratorConfig (?)             | KeyGeneratorConfiguration                  | 默认自增列值生成器配置，缺省将使用io.shardingsphere.core.keygen.generator.impl.SnowflakeKeyGenerator |
+| masterSlaveRuleConfigs (?)                | Collection\<MasterSlaveRuleConfiguration\> | 读写分离规则，缺省表示不使用读写分离                                                                  |
 
 #### TableRuleConfiguration
 
@@ -165,12 +177,11 @@ weight = 1
 | *名称*                              | *数据类型*                     | *说明*                                                                                                                                                                                                      |
 | ---------------------------------- | ----------------------------- | ----------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------- |
 | logicTable                         | String                        | 逻辑表名称                                                                                                                                                                                                   |
-| actualDataNodes (?)                | String                        | 由数据源名 + 表名组成，以小数点分隔。多个表以逗号分隔，支持inline表达式。缺省表示使用已知数据源与逻辑表名称生成数据节点。用于广播表（即每个库中都需要一个同样的表用于关联查询，多为字典表）或只分库不分表且所有库的表结构完全一致的情况 |
+| actualDataNodes (?)                | String                        | 由数据源名 + 表名组成，以小数点分隔。多个表以逗号分隔，支持inline表达式。缺省表示使用已知数据源与逻辑表名称生成数据节点。用于广播表（即每个库中都需要一个同样的表用于关联查询，多为字典表）或只分库不分表且所有库的表结构完全一致的情况    |
 | databaseShardingStrategyConfig (?) | ShardingStrategyConfiguration | 分库策略，缺省表示使用默认分库策略                                                                                                                                                                              |
 | tableShardingStrategyConfig (?)    | ShardingStrategyConfiguration | 分表策略，缺省表示使用默认分表策略                                                                                                                                                                              |
-| logicIndex (?)                     | String                        | 逻辑索引名称，对于分表的Oracle/PostgreSQL数据库中DROP INDEX XXX语句，需要通过配置逻辑索引名称定位所执行SQL的真实分表                                                                                                  |
-| keyGeneratorColumnName (?)         | String                        | 自增列名称，缺省表示不使用自增主键生成器                                                                                                                                                                         |
-| keyGenerator (?)                   | KeyGenerator                  | 自增列值生成器，缺省表示使用默认自增主键生成器                                                                                                                                                                    |
+| logicIndex (?)                     | String                        | 逻辑索引名称，对于分表的Oracle/PostgreSQL数据库中DROP INDEX XXX语句，需要通过配置逻辑索引名称定位所执行SQL的真实分表                                                                                                   |
+| keyGeneratorConfig (?)             | KeyGeneratorConfiguration     | 自增列值生成器配置，缺省表示使用默认自增主键生成器                                                                                                                                                                |
 
 #### StandardShardingStrategyConfiguration
 
@@ -211,6 +222,13 @@ ShardingStrategyConfiguration的实现类，用于配置Hint方式分片策略�
 #### NoneShardingStrategyConfiguration
 
 ShardingStrategyConfiguration的实现类，用于配置不分片的策略。
+
+#### KeyGeneratorConfiguration
+| *名称*             | *数据类型*                    | *说明*                                                                         |
+| ----------------- | ---------------------------- | ------------------------------------------------------------------------------ |
+| column            | String                       | 自增列名称                                                                      |
+| type              | String                       | 自增列值生成器类型，可自定义或选择内置类型：SNOWFLAKE/UUID                           |
+| props             | Properties                   | 属性配置, 比如SNOWFLAKE算法的worker.id与max.tolerate.time.difference.milliseconds |  
 
 #### PropertiesConstant
 
