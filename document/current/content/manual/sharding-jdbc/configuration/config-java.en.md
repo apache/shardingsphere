@@ -163,7 +163,7 @@ weight = 1
 | defaultDataSourceName (?)                 | String                                     | If table not configure at table rule, will route to defaultDataSourceName                                                          |
 | defaultDatabaseShardingStrategyConfig (?) | ShardingStrategyConfiguration              | Default strategy for sharding databases                                                                                            |
 | defaultTableShardingStrategyConfig (?)    | ShardingStrategyConfiguration              | Default strategy for sharding tables                                                                                               |
-| defaultKeyGeneratorConfig (?)             | KeyGeneratorConfiguration                  | Default key generator configuration, default key generator is `io.shardingsphere.core.keygen.generator.impl.SnowflakeKeyGenerator` |
+| defaultKeyGeneratorConfig (?)             | KeyGeneratorConfiguration                  | Default key generator configuration, use user-defined ones or built-in ones, e.g. SNOWFLAKE, UUID. Default key generator is `io.shardingsphere.core.keygen.generator.impl.SnowflakeKeyGenerator` |
 | masterSlaveRuleConfigs (?)                | Collection\<MasterSlaveRuleConfiguration\> | Read-write splitting rule configuration                                                                                            |
 
 #### TableRuleConfiguration
@@ -221,7 +221,7 @@ Subclass of ShardingStrategyConfiguration.
 | *Name*            | *DataType*                   | *Description*                                                                              |
 | ----------------- | ---------------------------- | ------------------------------------------------------------------------------------------ |
 | column            | String                       | Column name of key generator                                                               |
-| type              | String                       | Type of key generator，use user-defined ones or built-in ones, e.g. SNOWFLAKE, UUID |
+| type              | String                       | Type of key generator，use user-defined ones or built-in ones, e.g. SNOWFLAKE, UUID        |
 | props             | Properties                   | Properties                                                                                 |
 
 #### ShardingPropertiesConstant
