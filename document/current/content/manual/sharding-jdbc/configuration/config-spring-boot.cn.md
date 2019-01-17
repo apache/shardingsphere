@@ -216,7 +216,7 @@ sharding.jdbc.config.sharding.tables.<logic-table-name>.table-strategy.xxx= #省
 
 sharding.jdbc.config.sharding.tables.<logic-table-name>.key-generator.column= #自增列名称，缺省表示不使用自增主键生成器
 sharding.jdbc.config.sharding.tables.<logic-table-name>.key-generator.type= #自增列值生成器类型，缺省表示使用默认自增列值生成器。可使用用户自定义的列值生成器或选择内置类型：SNOWFLAKE/UUID
-sharding.jdbc.config.sharding.tables.<logic-table-name>.key-generator.props.<property-name>= #自增列值生成器属性配置
+sharding.jdbc.config.sharding.tables.<logic-table-name>.key-generator.props.<property-name>= #自增列值生成器属性配置, 比如SNOWFLAKE算法的worker.id与max.tolerate.time.difference.milliseconds
 
 sharding.jdbc.config.sharding.tables.<logic-table-name>.logic-index= #逻辑索引名称，对于分表的Oracle/PostgreSQL数据库中DROP INDEX XXX语句，需要通过配置逻辑索引名称定位所执行SQL的真实分表
 
@@ -232,7 +232,7 @@ sharding.jdbc.config.sharding.default-data-source-name= #未配置分片规则�
 sharding.jdbc.config.sharding.default-database-strategy.xxx= #默认数据库分片策略，同分库策略
 sharding.jdbc.config.sharding.default-table-strategy.xxx= #默认表分片策略，同分表策略
 sharding.jdbc.config.sharding.default-key-generator.type= #默认自增列值生成器类型，缺省将使用io.shardingsphere.core.keygen.generator.impl.SnowflakeKeyGenerator。可使用用户自定义的列值生成器或选择内置类型：SNOWFLAKE/UUID
-sharding.jdbc.config.sharding.default-key-generator.props.<property-name>= #自增列值生成器属性配置
+sharding.jdbc.config.sharding.default-key-generator.props.<property-name>= #自增列值生成器属性配置, 比如SNOWFLAKE算法的worker.id与max.tolerate.time.difference.milliseconds
 
 sharding.jdbc.config.sharding.master-slave-rules.<master-slave-data-source-name>.master-data-source-name= #详见读写分离部分
 sharding.jdbc.config.sharding.master-slave-rules.<master-slave-data-source-name>.slave-data-source-names[0]= #详见读写分离部分
