@@ -48,7 +48,7 @@ import java.util.List;
  *
  * @author duhongjun
  */
-public class InsertFiller implements SQLStatementFiller<InsertSegment> {
+public final class InsertFiller implements SQLStatementFiller<InsertSegment> {
     
     @Override
     public void fill(final InsertSegment sqlSegment, final SQLStatement sqlStatement, final String sql, final ShardingRule shardingRule, final ShardingTableMetaData shardingTableMetaData) {

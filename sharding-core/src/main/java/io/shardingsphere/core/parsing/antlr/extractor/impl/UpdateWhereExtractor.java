@@ -30,7 +30,7 @@ import java.util.Map;
  *
  * @author duhongjun
  */
-public class UpdateWhereExtractor extends AbstractFromWhereExtractor {
+public final class UpdateWhereExtractor extends AbstractFromWhereExtractor {
     
     @Override
     protected Optional<ParserRuleContext> extractTable(final FromWhereSegment fromWhereSegment, final ParserRuleContext ancestorNode, final Map<ParserRuleContext, Integer> questionNodeIndexMap) {

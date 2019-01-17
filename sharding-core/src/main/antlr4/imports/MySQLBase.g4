@@ -73,7 +73,7 @@ functionCall
     ;
     
 groupConcat
-    : GROUP_CONCAT LP_ distinct? (exprs | ASTERISK)? (orderByClause SEPARATOR expr) RP_
+    : GROUP_CONCAT LP_ distinct? (exprs | ASTERISK)? (orderByClause (SEPARATOR expr)?)? RP_
     ;
     
 windowFunction

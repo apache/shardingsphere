@@ -32,7 +32,7 @@ import java.util.List;
  */
 @RequiredArgsConstructor
 @Getter
-public class InsertSegment implements SQLSegment {
+public final class InsertSegment implements SQLSegment {
     
     private List<ColumnSegment> columns = new LinkedList<>();
     

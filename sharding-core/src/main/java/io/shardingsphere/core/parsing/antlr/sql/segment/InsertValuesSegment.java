@@ -32,7 +32,7 @@ import java.util.List;
  */
 @RequiredArgsConstructor
 @Getter
-public class InsertValuesSegment implements SQLSegment {
+public final class InsertValuesSegment implements SQLSegment {
     
     private final DefaultKeyword type;
     

@@ -36,7 +36,7 @@ import java.util.Map;
  *
  * @author duhongjun
  */
-public class InsertExtractor implements OptionalSQLSegmentExtractor {
+public final class InsertExtractor implements OptionalSQLSegmentExtractor {
     
     private ExpressionExtractor expressionExtractor;
     
