@@ -15,19 +15,14 @@
  * </p>
  */
 
-package io.shardingsphere.shardingjdbc.jdbc.core.fixture;
-
-import io.shardingsphere.transaction.api.TransactionType;
+package io.shardingsphere.transaction.core;
 
 /**
- * XA sharding transaction engine fixture.
+ * Transaction type.
  *
  * @author zhaojun
  */
-public final class XAShardingTransactionEngineFixture extends AbstractShardingTransactionEngineFixture {
+public enum TransactionType {
     
-    @Override
-    public TransactionType getTransactionType() {
-        return TransactionType.XA;
-    }
+    LOCAL, XA, BASE
 }

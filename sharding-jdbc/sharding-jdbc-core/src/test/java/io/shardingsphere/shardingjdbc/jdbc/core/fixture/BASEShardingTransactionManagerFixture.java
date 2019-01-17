@@ -15,14 +15,14 @@
  * </p>
  */
 
-package io.shardingsphere.transaction.api;
+package io.shardingsphere.shardingjdbc.jdbc.core.fixture;
 
-/**
- * Transaction type.
- *
- * @author zhaojun
- */
-public enum TransactionType {
+import io.shardingsphere.transaction.core.TransactionType;
+
+public final class BASEShardingTransactionManagerFixture extends AbstractShardingTransactionManagerFixture {
     
-    LOCAL, XA, BASE
+    @Override
+    public TransactionType getTransactionType() {
+        return TransactionType.BASE;
+    }
 }

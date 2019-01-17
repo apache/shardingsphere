@@ -23,7 +23,6 @@ import com.google.common.base.Predicate;
 import com.google.common.collect.Iterators;
 import com.google.common.collect.Lists;
 import io.shardingsphere.core.constant.ConnectionMode;
-import io.shardingsphere.core.constant.DatabaseType;
 import io.shardingsphere.core.executor.ShardingExecuteGroup;
 import io.shardingsphere.core.executor.StatementExecuteUnit;
 import io.shardingsphere.core.executor.sql.execute.SQLExecuteCallback;
@@ -70,9 +69,11 @@ public final class BatchPreparedStatementExecutor extends AbstractStatementExecu
     /**
      * Initialize executor.
      *
+     * @param routeResult route result
      * @throws SQLException SQL exception
      */
-    public void init() throws SQLException {
+    public void init(final SQLRouteResult routeResult) throws SQLException {
+        setSqlStatement(routeResult.getSqlStatement());
         getExecuteGroups().addAll(obtainExecuteGroups(routeUnits));
     }
     
@@ -164,7 +165,12 @@ public final class BatchPreparedStatementExecutor extends AbstractStatementExecu
                 return statementExecuteUnit.getStatement().executeBatch();
             }
         };
-        return accumulate(executeCallback(callback));
+        List<int[]> results = executeCallback(callback);
+        if (isAccumulate()) {
+            return accumulate(results);
+        } else {
+            return results.get(0);
+        }
     }
     
     private int[] accumulate(final List<int[]> results) {
@@ -173,11 +179,7 @@ public final class BatchPreparedStatementExecutor extends AbstractStatementExecu
         for (BatchRouteUnit each : routeUnits) {
             for (Entry<Integer, Integer> entry : each.getJdbcAndActualAddBatchCallTimesMap().entrySet()) {
                 int value = null == results.get(count) ? 0 : results.get(count)[entry.getValue()];
-                if (DatabaseType.Oracle == getDatabaseType()) {
-                    result[entry.getKey()] = value;
-                } else {
-                    result[entry.getKey()] += value;
-                }
+                result[entry.getKey()] += value;
             }
             count++;
         }

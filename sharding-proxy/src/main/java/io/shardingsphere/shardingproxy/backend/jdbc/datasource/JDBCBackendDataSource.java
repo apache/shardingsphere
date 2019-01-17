@@ -23,9 +23,9 @@ import io.shardingsphere.core.exception.ShardingException;
 import io.shardingsphere.core.util.ReflectiveUtil;
 import io.shardingsphere.shardingproxy.backend.BackendDataSource;
 import io.shardingsphere.shardingproxy.util.DataSourceParameter;
-import io.shardingsphere.transaction.api.TransactionType;
-import io.shardingsphere.transaction.core.ShardingTransactionEngineRegistry;
-import io.shardingsphere.transaction.spi.ShardingTransactionEngine;
+import io.shardingsphere.transaction.ShardingTransactionManagerEngine;
+import io.shardingsphere.transaction.core.TransactionType;
+import io.shardingsphere.transaction.spi.ShardingTransactionManager;
 import lombok.NoArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 
@@ -71,7 +71,7 @@ public final class JDBCBackendDataSource implements BackendDataSource, AutoClose
             }
         }
         this.dataSources = dataSourceMap;
-        ShardingTransactionEngineRegistry.init(DatabaseType.MySQL, dataSourceMap);
+        ShardingTransactionManagerEngine.init(DatabaseType.MySQL, dataSourceMap);
     }
     
     /**
@@ -138,12 +138,12 @@ public final class JDBCBackendDataSource implements BackendDataSource, AutoClose
     }
     
     private Connection createConnection(final TransactionType transactionType, final String dataSourceName, final DataSource dataSource) throws SQLException {
-        ShardingTransactionEngine shardingTransactionEngine = ShardingTransactionEngineRegistry.getEngine(transactionType);
-        return isInShardingTransaction(shardingTransactionEngine) ? shardingTransactionEngine.getConnection(dataSourceName) : dataSource.getConnection();
+        ShardingTransactionManager shardingTransactionManager = ShardingTransactionManagerEngine.getTransactionManager(transactionType);
+        return isInShardingTransaction(shardingTransactionManager) ? shardingTransactionManager.getConnection(dataSourceName) : dataSource.getConnection();
     }
     
-    private boolean isInShardingTransaction(final ShardingTransactionEngine shardingTransactionEngine) {
-        return null != shardingTransactionEngine && shardingTransactionEngine.isInTransaction();
+    private boolean isInShardingTransaction(final ShardingTransactionManager shardingTransactionManager) {
+        return null != shardingTransactionManager && shardingTransactionManager.isInTransaction();
     }
     
     @Override
@@ -151,7 +151,7 @@ public final class JDBCBackendDataSource implements BackendDataSource, AutoClose
         if (null != dataSources) {
             closeDataSource(dataSources);
         }
-        ShardingTransactionEngineRegistry.close();
+        ShardingTransactionManagerEngine.close();
     }
     
     private void closeDataSource(final Map<String, DataSource> dataSourceMap) {

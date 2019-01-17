@@ -15,36 +15,14 @@
  * </p>
  */
 
-package io.shardingsphere.transaction.core;
+package io.shardingsphere.shardingjdbc.jdbc.core.fixture;
 
-/**
- * Sharding transaction manager.
- *
- * @author zhaojun
- * @author zhangliang
- * 
- */
-public interface ShardingTransactionManager {
+import io.shardingsphere.transaction.core.TransactionType;
+
+public final class XAShardingTransactionManagerFixture extends AbstractShardingTransactionManagerFixture {
     
-    /**
-     * Begin transaction.
-     */
-    void begin();
-    
-    /**
-     * Commit transaction.
-     */
-    void commit();
-    
-    /**
-     * Rollback transaction.
-     */
-    void rollback();
-    
-    /**
-     * Get transaction status.
-     * 
-     * @return transaction status
-     */
-    int getStatus();
+    @Override
+    public TransactionType getTransactionType() {
+        return TransactionType.XA;
+    }
 }

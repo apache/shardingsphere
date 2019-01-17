@@ -15,32 +15,25 @@
  * </p>
  */
 
-package io.shardingsphere.shardingproxy.transport.mysql.packet.command.query.text.query.fixture;
+package io.shardingsphere.transaction.core.fixture;
 
 import io.shardingsphere.core.constant.DatabaseType;
-import io.shardingsphere.transaction.api.TransactionType;
-import io.shardingsphere.transaction.core.TransactionOperationType;
-import io.shardingsphere.transaction.spi.ShardingTransactionEngine;
-import lombok.Getter;
+import io.shardingsphere.transaction.core.TransactionType;
+import io.shardingsphere.transaction.spi.ShardingTransactionManager;
+import lombok.Setter;
 
 import javax.sql.DataSource;
 import java.sql.Connection;
-import java.util.Collection;
-import java.util.LinkedList;
 import java.util.Map;
 
-/**
- * Sharding transaction engine fixture.
- *
- * @author zhaojun
- */
-public final class ShardingTransactionEngineFixture implements ShardingTransactionEngine {
+public final class ShardingTransactionManagerFixture implements ShardingTransactionManager {
     
-    @Getter
-    private static Collection<TransactionOperationType> invocations = new LinkedList<>();
+    @Setter
+    private Runnable caller;
     
     @Override
     public void init(final DatabaseType databaseType, final Map<String, DataSource> dataSourceMap) {
+        caller.run();
     }
     
     @Override
@@ -60,17 +53,14 @@ public final class ShardingTransactionEngineFixture implements ShardingTransacti
     
     @Override
     public void begin() {
-        invocations.add(TransactionOperationType.BEGIN);
     }
     
     @Override
     public void commit() {
-        invocations.add(TransactionOperationType.COMMIT);
     }
     
     @Override
     public void rollback() {
-        invocations.add(TransactionOperationType.ROLLBACK);
     }
     
     @Override

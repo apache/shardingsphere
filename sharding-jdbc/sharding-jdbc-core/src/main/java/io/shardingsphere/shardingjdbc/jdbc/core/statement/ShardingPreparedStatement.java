@@ -225,7 +225,7 @@ public final class ShardingPreparedStatement extends AbstractShardingPreparedSta
     }
     
     private void initBatchPreparedStatementExecutor() throws SQLException {
-        batchPreparedStatementExecutor.init();
+        batchPreparedStatementExecutor.init(routeResult);
         setBatchParametersForStatements();
     }
     
@@ -261,6 +261,11 @@ public final class ShardingPreparedStatement extends AbstractShardingPreparedSta
     @Override
     public int getResultSetHoldability() {
         return preparedStatementExecutor.getResultSetHoldability();
+    }
+    
+    @Override
+    public boolean isAccumulate() {
+        return !connection.getShardingContext().getShardingRule().isAllBroadcastTables(routeResult.getSqlStatement().getTables().getTableNames());
     }
     
     @Override

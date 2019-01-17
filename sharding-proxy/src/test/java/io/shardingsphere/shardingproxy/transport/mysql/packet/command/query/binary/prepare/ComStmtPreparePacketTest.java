@@ -38,7 +38,7 @@ import io.shardingsphere.shardingproxy.transport.mysql.packet.command.CommandRes
 import io.shardingsphere.shardingproxy.transport.mysql.packet.command.query.ColumnDefinition41Packet;
 import io.shardingsphere.shardingproxy.transport.mysql.packet.command.query.binary.fixture.BinaryStatementRegistryUtil;
 import io.shardingsphere.shardingproxy.transport.mysql.packet.generic.EofPacket;
-import io.shardingsphere.transaction.api.TransactionType;
+import io.shardingsphere.transaction.core.TransactionType;
 import lombok.SneakyThrows;
 import org.hamcrest.CoreMatchers;
 import org.junit.After;

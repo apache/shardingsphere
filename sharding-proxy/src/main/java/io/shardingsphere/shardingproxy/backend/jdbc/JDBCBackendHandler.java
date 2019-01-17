@@ -45,7 +45,7 @@ import io.shardingsphere.shardingproxy.transport.mysql.packet.command.query.Quer
 import io.shardingsphere.shardingproxy.transport.mysql.packet.generic.EofPacket;
 import io.shardingsphere.shardingproxy.transport.mysql.packet.generic.ErrPacket;
 import io.shardingsphere.shardingproxy.transport.mysql.packet.generic.OKPacket;
-import io.shardingsphere.transaction.api.TransactionType;
+import io.shardingsphere.transaction.core.TransactionType;
 import lombok.RequiredArgsConstructor;
 
 import java.sql.SQLException;
@@ -59,6 +59,7 @@ import java.util.List;
  * @author zhaojun
  * @author zhangliang
  * @author panjuan
+ * @author maxiaoguang
  */
 @RequiredArgsConstructor
 public final class JDBCBackendHandler extends AbstractBackendHandler {
@@ -105,6 +106,9 @@ public final class JDBCBackendHandler extends AbstractBackendHandler {
     
     private CommandResponsePackets merge(final SQLStatement sqlStatement) throws SQLException {
         if (executeResponse instanceof ExecuteUpdateResponse) {
+            if (logicSchema instanceof ShardingSchema && ((ShardingSchema) logicSchema).getShardingRule().isAllBroadcastTables(sqlStatement.getTables().getTableNames())) {
+                return new CommandResponsePackets(((ExecuteUpdateResponse) executeResponse).getPackets().get(0));
+            }
             return ((ExecuteUpdateResponse) executeResponse).merge();
         }
         mergedResult = MergeEngineFactory.newInstance(

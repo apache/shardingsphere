@@ -65,6 +65,7 @@ public final class PreparedStatementExecutor extends AbstractStatementExecutor {
      * @throws SQLException SQL exception
      */
     public void init(final SQLRouteResult routeResult) throws SQLException {
+        setSqlStatement(routeResult.getSqlStatement());
         getExecuteGroups().addAll(obtainExecuteGroups(routeResult.getRouteUnits()));
         cacheStatements();
     }
@@ -125,7 +126,11 @@ public final class PreparedStatementExecutor extends AbstractStatementExecutor {
         final boolean isExceptionThrown = ExecutorExceptionHandler.isExceptionThrown();
         SQLExecuteCallback<Integer> executeCallback = SQLExecuteCallbackFactory.getPreparedUpdateSQLExecuteCallback(getDatabaseType(), isExceptionThrown);
         List<Integer> results = executeCallback(executeCallback);
-        return accumulate(results);
+        if (isAccumulate()) {
+            return accumulate(results);
+        } else {
+            return results.get(0);
+        }
     }
     
     private int accumulate(final List<Integer> results) {

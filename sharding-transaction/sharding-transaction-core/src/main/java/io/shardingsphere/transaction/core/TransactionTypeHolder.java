@@ -15,7 +15,7 @@
  * </p>
  */
 
-package io.shardingsphere.transaction.api;
+package io.shardingsphere.transaction.core;
 
 /**
  * Hold transaction type for current thread.

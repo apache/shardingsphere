@@ -36,7 +36,7 @@ import io.shardingsphere.shardingproxy.transport.mysql.packet.command.query.bina
 import io.shardingsphere.shardingproxy.transport.mysql.packet.command.query.binary.prepare.ComStmtPreparePacket;
 import io.shardingsphere.shardingproxy.transport.mysql.packet.command.query.text.fieldlist.ComFieldListPacket;
 import io.shardingsphere.shardingproxy.transport.mysql.packet.command.query.text.query.ComQueryPacket;
-import io.shardingsphere.transaction.api.TransactionType;
+import io.shardingsphere.transaction.core.TransactionType;
 import lombok.SneakyThrows;
 import org.junit.Before;
 import org.junit.Test;

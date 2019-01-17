@@ -297,6 +297,11 @@ public final class CircuitBreakerPreparedStatement extends AbstractUnsupportedOp
     }
     
     @Override
+    protected boolean isAccumulate() {
+        return false;
+    }
+    
+    @Override
     protected Collection<? extends Statement> getRoutedStatements() {
         return Collections.emptyList();
     }

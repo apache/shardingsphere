@@ -21,6 +21,7 @@ import com.atomikos.icatch.config.UserTransactionService;
 import com.atomikos.icatch.jta.UserTransactionManager;
 import io.shardingsphere.transaction.xa.fixture.ReflectiveUtil;
 import io.shardingsphere.transaction.xa.spi.SingleXAResource;
+import org.hamcrest.CoreMatchers;
 import org.junit.Before;
 import org.junit.Test;
 import org.junit.runner.RunWith;
@@ -29,7 +30,9 @@ import org.mockito.junit.MockitoJUnitRunner;
 
 import javax.sql.XADataSource;
 import javax.transaction.Transaction;
+import javax.transaction.TransactionManager;
 
+import static org.junit.Assert.assertThat;
 import static org.mockito.ArgumentMatchers.any;
 import static org.mockito.Mockito.mock;
 import static org.mockito.Mockito.verify;
@@ -51,7 +54,7 @@ public final class AtomikosTransactionManagerTest {
     
     @Before
     public void setUp() {
-        ReflectiveUtil.setProperty(atomikosTransactionManager, "underlyingTransactionManager", userTransactionManager);
+        ReflectiveUtil.setProperty(atomikosTransactionManager, "transactionManager", userTransactionManager);
         ReflectiveUtil.setProperty(atomikosTransactionManager, "userTransactionService", userTransactionService);
     }
     
@@ -83,21 +86,8 @@ public final class AtomikosTransactionManagerTest {
     }
     
     @Test
-    public void assertBegin() throws Exception {
-        atomikosTransactionManager.begin();
-        verify(userTransactionManager).begin();
-    }
-    
-    @Test
-    public void assertCommit() throws Exception {
-        atomikosTransactionManager.commit();
-        verify(userTransactionManager).commit();
-    }
-    
-    @Test
-    public void assertRollback() throws Exception {
-        atomikosTransactionManager.rollback();
-        verify(userTransactionManager).rollback();
+    public void assertTransactionManager() {
+        assertThat(atomikosTransactionManager.getTransactionManager(), CoreMatchers.<TransactionManager>is(userTransactionManager));
     }
     
     @Test

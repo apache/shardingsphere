@@ -25,7 +25,7 @@ import io.shardingsphere.transaction.xa.spi.XATransactionManager;
 import lombok.SneakyThrows;
 
 import javax.sql.XADataSource;
-import javax.transaction.Status;
+import javax.transaction.TransactionManager;
 
 /**
  * Atomikos XA transaction manager.
@@ -34,7 +34,7 @@ import javax.transaction.Status;
  */
 public final class AtomikosTransactionManager implements XATransactionManager {
     
-    private final UserTransactionManager underlyingTransactionManager = new UserTransactionManager();
+    private final UserTransactionManager transactionManager = new UserTransactionManager();
     
     private final UserTransactionService userTransactionService = new UserTransactionServiceImp();
     
@@ -56,34 +56,12 @@ public final class AtomikosTransactionManager implements XATransactionManager {
     @Override
     @SneakyThrows
     public void enlistResource(final SingleXAResource xaResource) {
-        underlyingTransactionManager.getTransaction().enlistResource(xaResource);
+        transactionManager.getTransaction().enlistResource(xaResource);
     }
     
     @Override
-    @SneakyThrows
-    public void begin() {
-        underlyingTransactionManager.begin();
-    }
-    
-    @Override
-    @SneakyThrows
-    public void commit() {
-        underlyingTransactionManager.commit();
-    }
-    
-    @Override
-    @SneakyThrows
-    public void rollback() {
-        // TODO mybatis may call rollback twice, need investigate reason here 
-        if (Status.STATUS_NO_TRANSACTION != underlyingTransactionManager.getStatus()) {
-            underlyingTransactionManager.rollback();
-        }
-    }
-    
-    @Override
-    @SneakyThrows
-    public int getStatus() {
-        return underlyingTransactionManager.getStatus();
+    public TransactionManager getTransactionManager() {
+        return transactionManager;
     }
     
     @Override

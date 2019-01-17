@@ -17,9 +17,8 @@
 
 package io.shardingsphere.transaction.xa.spi;
 
-import io.shardingsphere.transaction.core.ShardingTransactionManager;
-
 import javax.sql.XADataSource;
+import javax.transaction.TransactionManager;
 
 /**
  * XA transaction manager.
@@ -27,7 +26,7 @@ import javax.sql.XADataSource;
  * @author zhangliang
  * @author zhaojun
  */
-public interface XATransactionManager extends ShardingTransactionManager, AutoCloseable {
+public interface XATransactionManager extends AutoCloseable {
     
     /**
      * Initialize XA transaction manager.
@@ -56,4 +55,11 @@ public interface XATransactionManager extends ShardingTransactionManager, AutoCl
      * @param singleXAResource single XA resource
      */
     void enlistResource(SingleXAResource singleXAResource);
+    
+    /**
+     * Get transaction manager.
+     * 
+     * @return transaction manager
+     */
+    TransactionManager getTransactionManager();
 }

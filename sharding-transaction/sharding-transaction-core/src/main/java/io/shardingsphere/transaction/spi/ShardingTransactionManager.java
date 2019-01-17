@@ -18,7 +18,7 @@
 package io.shardingsphere.transaction.spi;
 
 import io.shardingsphere.core.constant.DatabaseType;
-import io.shardingsphere.transaction.api.TransactionType;
+import io.shardingsphere.transaction.core.TransactionType;
 
 import javax.sql.DataSource;
 import java.sql.Connection;
@@ -26,15 +26,15 @@ import java.sql.SQLException;
 import java.util.Map;
 
 /**
- * Sharding transaction engine.
+ * Sharding transaction manager.
  *
  * @author zhaojun
  * 
  */
-public interface ShardingTransactionEngine extends AutoCloseable {
+public interface ShardingTransactionManager extends AutoCloseable {
     
     /**
-     * Initialize sharding transaction engine.
+     * Initialize sharding transaction manager.
      *
      * @param databaseType database type
      * @param dataSourceMap data source map

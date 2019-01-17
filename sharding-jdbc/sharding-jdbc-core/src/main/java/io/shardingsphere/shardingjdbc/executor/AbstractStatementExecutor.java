@@ -27,9 +27,11 @@ import io.shardingsphere.core.executor.StatementExecuteUnit;
 import io.shardingsphere.core.executor.sql.execute.SQLExecuteCallback;
 import io.shardingsphere.core.executor.sql.execute.SQLExecuteTemplate;
 import io.shardingsphere.core.executor.sql.prepare.SQLExecutePrepareTemplate;
+import io.shardingsphere.core.parsing.parser.sql.SQLStatement;
 import io.shardingsphere.shardingjdbc.jdbc.core.connection.ShardingConnection;
 import lombok.AccessLevel;
 import lombok.Getter;
+import lombok.Setter;
 
 import java.sql.Connection;
 import java.sql.ResultSet;
@@ -44,6 +46,7 @@ import java.util.concurrent.CopyOnWriteArrayList;
  * Abstract statement executor.
  *
  * @author panjuan
+ * @author maxiaoguang
  */
 @Getter(AccessLevel.PROTECTED)
 public class AbstractStatementExecutor {
@@ -66,6 +69,10 @@ public class AbstractStatementExecutor {
     private final SQLExecuteTemplate sqlExecuteTemplate;
     
     private final Collection<Connection> connections = new LinkedList<>();
+    
+    @Getter
+    @Setter
+    private SQLStatement sqlStatement;
     
     @Getter
     private final List<List<Object>> parameterSets = new LinkedList<>();
@@ -112,6 +119,10 @@ public class AbstractStatementExecutor {
     @SuppressWarnings("unchecked")
     protected final <T> List<T> executeCallback(final SQLExecuteCallback<T> executeCallback) throws SQLException {
         return sqlExecuteTemplate.executeGroup((Collection) executeGroups, executeCallback);
+    }
+    
+    protected boolean isAccumulate() {
+        return !connection.getShardingContext().getShardingRule().isAllBroadcastTables(sqlStatement.getTables().getTableNames());
     }
     
     /**

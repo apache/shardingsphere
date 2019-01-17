@@ -39,7 +39,9 @@ import java.util.List;
 
 import static org.hamcrest.CoreMatchers.is;
 import static org.junit.Assert.assertThat;
+import static org.mockito.Mockito.doReturn;
 import static org.mockito.Mockito.mock;
+import static org.mockito.Mockito.spy;
 import static org.mockito.Mockito.verify;
 import static org.mockito.Mockito.when;
 
@@ -52,7 +54,8 @@ public final class BatchPreparedStatementExecutorTest extends AbstractBaseExecut
     @Override
     public void setUp() throws SQLException {
         super.setUp();
-        actual = new BatchPreparedStatementExecutor(1, 1, 1, false, getConnection());
+        actual = spy(new BatchPreparedStatementExecutor(1, 1, 1, false, getConnection()));
+        doReturn(true).when(actual).isAccumulate();
     }
     
     @SuppressWarnings("unchecked")

@@ -25,11 +25,11 @@ import io.shardingsphere.core.constant.DatabaseType;
 import io.shardingsphere.shardingjdbc.fixture.TestDataSource;
 import io.shardingsphere.shardingjdbc.jdbc.core.ShardingContext;
 import io.shardingsphere.shardingjdbc.jdbc.core.datasource.MasterSlaveDataSource;
-import io.shardingsphere.shardingjdbc.jdbc.core.fixture.BASEShardingTransactionEngineFixture;
-import io.shardingsphere.shardingjdbc.jdbc.core.fixture.XAShardingTransactionEngineFixture;
-import io.shardingsphere.transaction.api.TransactionType;
-import io.shardingsphere.transaction.api.TransactionTypeHolder;
+import io.shardingsphere.shardingjdbc.jdbc.core.fixture.BASEShardingTransactionManagerFixture;
+import io.shardingsphere.shardingjdbc.jdbc.core.fixture.XAShardingTransactionManagerFixture;
 import io.shardingsphere.transaction.core.TransactionOperationType;
+import io.shardingsphere.transaction.core.TransactionType;
+import io.shardingsphere.transaction.core.TransactionTypeHolder;
 import org.junit.After;
 import org.junit.Before;
 import org.junit.BeforeClass;
@@ -91,8 +91,8 @@ public final class ShardingConnectionTest {
         try {
             connection.close();
             TransactionTypeHolder.clear();
-            XAShardingTransactionEngineFixture.getInvocations().clear();
-            BASEShardingTransactionEngineFixture.getInvocations().clear();
+            XAShardingTransactionManagerFixture.getInvocations().clear();
+            BASEShardingTransactionManagerFixture.getInvocations().clear();
         } catch (final SQLException ignored) {
         }
     }
@@ -111,21 +111,21 @@ public final class ShardingConnectionTest {
     public void assertXATransactionOperation() throws SQLException {
         connection = new ShardingConnection(dataSourceMap, shardingContext, TransactionType.XA);
         connection.setAutoCommit(false);
-        assertTrue(XAShardingTransactionEngineFixture.getInvocations().contains(TransactionOperationType.BEGIN));
+        assertTrue(XAShardingTransactionManagerFixture.getInvocations().contains(TransactionOperationType.BEGIN));
         connection.commit();
-        assertTrue(XAShardingTransactionEngineFixture.getInvocations().contains(TransactionOperationType.COMMIT));
+        assertTrue(XAShardingTransactionManagerFixture.getInvocations().contains(TransactionOperationType.COMMIT));
         connection.rollback();
-        assertTrue(XAShardingTransactionEngineFixture.getInvocations().contains(TransactionOperationType.ROLLBACK));
+        assertTrue(XAShardingTransactionManagerFixture.getInvocations().contains(TransactionOperationType.ROLLBACK));
     }
     
     @Test
     public void assertBASETransactionOperation() throws SQLException {
         connection = new ShardingConnection(dataSourceMap, shardingContext, TransactionType.BASE);
         connection.setAutoCommit(false);
-        assertTrue(BASEShardingTransactionEngineFixture.getInvocations().contains(TransactionOperationType.BEGIN));
+        assertTrue(BASEShardingTransactionManagerFixture.getInvocations().contains(TransactionOperationType.BEGIN));
         connection.commit();
-        assertTrue(BASEShardingTransactionEngineFixture.getInvocations().contains(TransactionOperationType.COMMIT));
+        assertTrue(BASEShardingTransactionManagerFixture.getInvocations().contains(TransactionOperationType.COMMIT));
         connection.rollback();
-        assertTrue(BASEShardingTransactionEngineFixture.getInvocations().contains(TransactionOperationType.ROLLBACK));
+        assertTrue(BASEShardingTransactionManagerFixture.getInvocations().contains(TransactionOperationType.ROLLBACK));
     }
 }

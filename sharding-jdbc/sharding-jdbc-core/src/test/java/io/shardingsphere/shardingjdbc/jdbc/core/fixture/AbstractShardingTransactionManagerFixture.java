@@ -19,7 +19,7 @@ package io.shardingsphere.shardingjdbc.jdbc.core.fixture;
 
 import io.shardingsphere.core.constant.DatabaseType;
 import io.shardingsphere.transaction.core.TransactionOperationType;
-import io.shardingsphere.transaction.spi.ShardingTransactionEngine;
+import io.shardingsphere.transaction.spi.ShardingTransactionManager;
 import lombok.Getter;
 
 import javax.sql.DataSource;
@@ -28,12 +28,7 @@ import java.util.Collection;
 import java.util.LinkedList;
 import java.util.Map;
 
-/**
- * Abstract sharding transaction engine fixture.
- *
- * @author zhangliang
- */
-public abstract class AbstractShardingTransactionEngineFixture implements ShardingTransactionEngine {
+public abstract class AbstractShardingTransactionManagerFixture implements ShardingTransactionManager {
     
     @Getter
     private static Collection<TransactionOperationType> invocations = new LinkedList<>();

@@ -20,11 +20,11 @@ package io.shardingsphere.shardingjdbc.jdbc.adapter;
 import com.google.common.collect.Multimap;
 import io.shardingsphere.shardingjdbc.common.base.AbstractShardingJDBCDatabaseAndTableTest;
 import io.shardingsphere.shardingjdbc.jdbc.core.connection.ShardingConnection;
-import io.shardingsphere.shardingjdbc.jdbc.core.fixture.BASEShardingTransactionEngineFixture;
-import io.shardingsphere.shardingjdbc.jdbc.core.fixture.XAShardingTransactionEngineFixture;
-import io.shardingsphere.transaction.api.TransactionType;
-import io.shardingsphere.transaction.api.TransactionTypeHolder;
+import io.shardingsphere.shardingjdbc.jdbc.core.fixture.BASEShardingTransactionManagerFixture;
+import io.shardingsphere.shardingjdbc.jdbc.core.fixture.XAShardingTransactionManagerFixture;
 import io.shardingsphere.transaction.core.TransactionOperationType;
+import io.shardingsphere.transaction.core.TransactionType;
+import io.shardingsphere.transaction.core.TransactionTypeHolder;
 import lombok.SneakyThrows;
 import org.junit.After;
 import org.junit.Test;
@@ -47,8 +47,8 @@ public final class ConnectionAdapterTest extends AbstractShardingJDBCDatabaseAnd
     @After
     public void tearDown() {
         TransactionTypeHolder.clear();
-        XAShardingTransactionEngineFixture.getInvocations().clear();
-        BASEShardingTransactionEngineFixture.getInvocations().clear();
+        XAShardingTransactionManagerFixture.getInvocations().clear();
+        BASEShardingTransactionManagerFixture.getInvocations().clear();
     }
     
     @Test
@@ -71,7 +71,7 @@ public final class ConnectionAdapterTest extends AbstractShardingJDBCDatabaseAnd
         TransactionTypeHolder.set(TransactionType.XA);
         try (ShardingConnection actual = getShardingDataSource().getConnection()) {
             actual.setAutoCommit(true);
-            assertFalse(XAShardingTransactionEngineFixture.getInvocations().contains(TransactionOperationType.BEGIN));
+            assertFalse(XAShardingTransactionManagerFixture.getInvocations().contains(TransactionOperationType.BEGIN));
         }
     }
     
@@ -80,7 +80,7 @@ public final class ConnectionAdapterTest extends AbstractShardingJDBCDatabaseAnd
         TransactionTypeHolder.set(TransactionType.BASE);
         try (ShardingConnection actual = getShardingDataSource().getConnection()) {
             actual.setAutoCommit(true);
-            assertFalse(BASEShardingTransactionEngineFixture.getInvocations().contains(TransactionOperationType.BEGIN));
+            assertFalse(BASEShardingTransactionManagerFixture.getInvocations().contains(TransactionOperationType.BEGIN));
         }
     }
     
@@ -98,7 +98,7 @@ public final class ConnectionAdapterTest extends AbstractShardingJDBCDatabaseAnd
         TransactionTypeHolder.set(TransactionType.XA);
         try (ShardingConnection actual = getShardingDataSource().getConnection()) {
             actual.commit();
-            assertTrue(XAShardingTransactionEngineFixture.getInvocations().contains(TransactionOperationType.COMMIT));
+            assertTrue(XAShardingTransactionManagerFixture.getInvocations().contains(TransactionOperationType.COMMIT));
         }
     }
     
@@ -116,7 +116,7 @@ public final class ConnectionAdapterTest extends AbstractShardingJDBCDatabaseAnd
         TransactionTypeHolder.set(TransactionType.XA);
         try (ShardingConnection actual = getShardingDataSource().getConnection()) {
             actual.rollback();
-            assertTrue(XAShardingTransactionEngineFixture.getInvocations().contains(TransactionOperationType.ROLLBACK));
+            assertTrue(XAShardingTransactionManagerFixture.getInvocations().contains(TransactionOperationType.ROLLBACK));
         }
     }
     

@@ -27,7 +27,7 @@ import org.junit.runners.Suite.SuiteClasses;
 @SuiteClasses({
         AllJTATests.class, 
         AllManagerTests.class,
-        XAShardingTransactionEngineTest.class
+        XAShardingTransactionManagerTest.class
 })
 public final class AllTests {
 }
