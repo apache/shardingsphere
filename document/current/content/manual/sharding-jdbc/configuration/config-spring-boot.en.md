@@ -216,7 +216,7 @@ sharding.jdbc.config.sharding.tables.<logic-table-name>.table-strategy.xxx= #Ign
 
 sharding.jdbc.config.sharding.tables.<logic-table-name>.key-generator.column= #Column name of key generator, do not use Key generator if absent
 sharding.jdbc.config.sharding.tables.<logic-table-name>.key-generator.type= #Type of key generator, use user-defined ones or built-in ones, e.g. SNOWFLAKE, UUID. Default key generator will be used if absent
-sharding.jdbc.config.sharding.tables.<logic-table-name>.key-generator.props.<property-name>= #Properties of key generator
+sharding.jdbc.config.sharding.tables.<logic-table-name>.key-generator.props.<property-name>= #Properties of key generator, e.g. `worker.id` and `max.tolerate.time.difference.milliseconds` for `SNOWFLAKE`
 
 sharding.jdbc.config.sharding.tables.<logic-table-name>.logic-index= #Name if logic index. If use `DROP INDEX XXX` SQL in Oracle/PostgreSQL, This property needs to be set for finding the actual tables
 
@@ -232,7 +232,7 @@ sharding.jdbc.config.sharding.default-data-source-name= #If table not configure 
 sharding.jdbc.config.sharding.default-database-strategy.xxx= #Default strategy for sharding databases, same as databases sharding strategy
 sharding.jdbc.config.sharding.default-table-strategy.xxx= #Default strategy for sharding tables, same as tables sharding strategy
 sharding.jdbc.config.sharding.default-key-generator.type= #Type of default key generator, use user-defined ones or built-in ones, e.g. SNOWFLAKE, UUID. Default key generator is `io.shardingsphere.core.keygen.generator.impl.SnowflakeKeyGenerator`
-sharding.jdbc.config.sharding.default-key-generator.props.<property-name>= #Properties of default key generator
+sharding.jdbc.config.sharding.default-key-generator.props.<property-name>= #Properties of default key generator, e.g. `worker.id` and `max.tolerate.time.difference.milliseconds` for `SNOWFLAKE`
 
 sharding.jdbc.config.sharding.master-slave-rules.<master-slave-data-source-name>.master-data-source-name= #more details can reference Read-write splitting part
 sharding.jdbc.config.sharding.master-slave-rules.<master-slave-data-source-name>.slave-data-source-names[0]= #more details can reference Read-write splitting part
