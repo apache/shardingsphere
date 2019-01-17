@@ -400,11 +400,11 @@ Namespace: http://shardingsphere.io/schema/shardingsphere/sharding/sharding.xsd
 | id     | Attribute | Spring Bean Id |
 
 #### \<sharding:key-generator />
-| *Name*             | *Type*                       | *Description*                                                                      |
-| ----------------- | ---------------------------- | ----------------------------------------------------------------------------------- |
-| column            | Attribute                    | Column name of key generator                                                        |
-| type              | Attribute                    | Type of key generator, use user-defined ones or built-in ones, e.g. SNOWFLAKE, UUID |
-| props-ref         | Attribute                    | Properties                                                                          | 
+| *Name*             | *Type*                       | *Description*                                                                               |
+| ----------------- | ---------------------------- | -------------------------------------------------------------------------------------------- |
+| column            | Attribute                    | Column name of key generator                                                                 |
+| type              | Attribute                    | Type of key generator, use user-defined ones or built-in ones, e.g. SNOWFLAKE, UUID          |
+| props-ref         | Attribute                    | Properties, e.g. `worker.id` and `max.tolerate.time.difference.milliseconds` for `SNOWFLAKE` | 
  
 #### \<sharding:props />
 
