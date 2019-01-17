@@ -30,11 +30,11 @@ sharding.jdbc.datasource.ds1.password=
 sharding.jdbc.config.sharding.tables.t_order.actual-data-nodes=ds$->{0..1}.t_order$->{0..1}
 sharding.jdbc.config.sharding.tables.t_order.table-strategy.inline.sharding-column=order_id
 sharding.jdbc.config.sharding.tables.t_order.table-strategy.inline.algorithm-expression=t_order$->{order_id % 2}
-sharding.jdbc.config.sharding.tables.t_order.key-generator-column-name=order_id
+sharding.jdbc.config.sharding.tables.t_order.key-generator.column=order_id
 sharding.jdbc.config.sharding.tables.t_order_item.actual-data-nodes=ds$->{0..1}.t_order_item$->{0..1}
 sharding.jdbc.config.sharding.tables.t_order_item.table-strategy.inline.sharding-column=order_id
 sharding.jdbc.config.sharding.tables.t_order_item.table-strategy.inline.algorithm-expression=t_order_item$->{order_id % 2}
-sharding.jdbc.config.sharding.tables.t_order_item.key-generator-column-name=order_item_id
+sharding.jdbc.config.sharding.tables.t_order_item.key-generator.column=order_item_id
 sharding.jdbc.config.sharding.binding-tables=t_order,t_order_item
 sharding.jdbc.config.sharding.broadcast-tables=t_config
 
@@ -115,11 +115,11 @@ sharding.jdbc.datasource.master1slave1.password=
 sharding.jdbc.config.sharding.tables.t_order.actual-data-nodes=ds$->{0..1}.t_order$->{0..1}
 sharding.jdbc.config.sharding.tables.t_order.table-strategy.inline.sharding-column=order_id
 sharding.jdbc.config.sharding.tables.t_order.table-strategy.inline.algorithm-expression=t_order$->{order_id % 2}
-sharding.jdbc.config.sharding.tables.t_order.key-generator-column-name=order_id
+sharding.jdbc.config.sharding.tables.t_order.key-generator.column=order_id
 sharding.jdbc.config.sharding.tables.t_order_item.actual-data-nodes=ds$->{0..1}.t_order_item$->{0..1}
 sharding.jdbc.config.sharding.tables.t_order_item.table-strategy.inline.sharding-column=order_id
 sharding.jdbc.config.sharding.tables.t_order_item.table-strategy.inline.algorithm-expression=t_order_item$->{order_id % 2}
-sharding.jdbc.config.sharding.tables.t_order_item.key-generator-column-name=order_item_id
+sharding.jdbc.config.sharding.tables.t_order_item.key-generator.column=order_item_id
 sharding.jdbc.config.sharding.binding-tables=t_order,t_order_item
 sharding.jdbc.config.sharding.broadcast-tables=t_config
 
@@ -160,11 +160,11 @@ sharding.jdbc.config.sharding.default-database-strategy.inline.algorithm-express
 sharding.jdbc.config.sharding.tables.t_order.actual-data-nodes=ds$->{0..1}.t_order$->{0..1}
 sharding.jdbc.config.sharding.tables.t_order.table-strategy.inline.sharding-column=order_id
 sharding.jdbc.config.sharding.tables.t_order.table-strategy.inline.algorithm-expression=t_order$->{order_id % 2}
-sharding.jdbc.config.sharding.tables.t_order.key-generator-column-name=order_id
+sharding.jdbc.config.sharding.tables.t_order.key-generator.column=order_id
 sharding.jdbc.config.sharding.tables.t_order_item.actual-data-nodes=ds$->{0..1}.t_order_item$->{0..1}
 sharding.jdbc.config.sharding.tables.t_order_item.table-strategy.inline.sharding-column=order_id
 sharding.jdbc.config.sharding.tables.t_order_item.table-strategy.inline.algorithm-expression=t_order_item$->{order_id % 2}
-sharding.jdbc.config.sharding.tables.t_order_item.key-generator-column-name=order_item_id
+sharding.jdbc.config.sharding.tables.t_order_item.key-generator.column=order_item_id
 sharding.jdbc.config.sharding.binding-tables=t_order,t_order_item
 sharding.jdbc.config.sharding.broadcast-tables=t_config
 
@@ -214,8 +214,9 @@ sharding.jdbc.config.sharding.tables.<logic-table-name>.database-strategy.hint.a
 #Tables sharding strategy, Same as database- shar-ing strategy
 sharding.jdbc.config.sharding.tables.<logic-table-name>.table-strategy.xxx= #Ignore
 
-sharding.jdbc.config.sharding.tables.<logic-table-name>.key-generator-column-name= #Column name of key generator, do not use Key generator if absent
-sharding.jdbc.config.sharding.tables.<logic-table-name>.key-generator-class-name= #Key generator, use default key generator if absent. This class need to implements KeyGenerator, and require a no argument constructor
+sharding.jdbc.config.sharding.tables.<logic-table-name>.key-generator.column= #Column name of key generator, do not use Key generator if absent
+sharding.jdbc.config.sharding.tables.<logic-table-name>.key-generator.type= #Type of key generator, use user-defined ones or built-in ones, e.g. SNOWFLAKE, UUID. Default key generator will be used if absent
+sharding.jdbc.config.sharding.tables.<logic-table-name>.key-generator.props.<property-name>= #Properties of key generator
 
 sharding.jdbc.config.sharding.tables.<logic-table-name>.logic-index= #Name if logic index. If use `DROP INDEX XXX` SQL in Oracle/PostgreSQL, This property needs to be set for finding the actual tables
 
@@ -230,7 +231,8 @@ sharding.jdbc.config.sharding.broadcast-tables[x]= #Broadcast table rule configu
 sharding.jdbc.config.sharding.default-data-source-name= #If table not configure at table rule, will route to defaultDataSourceName
 sharding.jdbc.config.sharding.default-database-strategy.xxx= #Default strategy for sharding databases, same as databases sharding strategy
 sharding.jdbc.config.sharding.default-table-strategy.xxx= #Default strategy for sharding tables, same as tables sharding strategy
-sharding.jdbc.config.sharding.default-key-generator-class-name= #Default key generator class name, default value is `io.shardingsphere.core.keygen.DefaultKeyGenerator`. This class need to implements KeyGenerator, and require a no argument constructor
+sharding.jdbc.config.sharding.default-key-generator.type= #Type of default key generator, use user-defined ones or built-in ones, e.g. SNOWFLAKE, UUID. Default key generator is `io.shardingsphere.core.keygen.generator.impl.SnowflakeKeyGenerator`
+sharding.jdbc.config.sharding.default-key-generator.props.<property-name>= #Properties of default key generator
 
 sharding.jdbc.config.sharding.master-slave-rules.<master-slave-data-source-name>.master-data-source-name= #more details can reference Read-write splitting part
 sharding.jdbc.config.sharding.master-slave-rules.<master-slave-data-source-name>.slave-data-source-names[0]= #more details can reference Read-write splitting part
