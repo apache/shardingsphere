@@ -1,0 +1,232 @@
+body,
+html,
+p,
+div,
+a {
+  margin: 0;
+  padding: 0;
+}
+body {
+  -moz-osx-font-smoothing: grayscale;
+  -webkit-font-smoothing: antialiased;
+  text-rendering: optimizeLegibility;
+  font-family: "Helvetica Neue", Helvetica, "PingFang SC", "Hiragino Sans GB",
+    "Microsoft YaHei", Arial, sans-serif;
+}
+html {
+  font-size: 50px;
+}
+.display-flex {
+  display: flex;
+  align-self: center;
+}
+.space-between {
+  justify-content: space-between;
+}
+a {
+  text-decoration: none;
+  color: #cdcdcd;
+}
+header {
+  background: url(http://shardingsphere.jd.com/images/bg.png) center top
+    no-repeat;
+  background-color: #060708;
+  width: 100%;
+}
+nav {
+  margin: 0 auto;
+  padding: 0.8rem 0.4rem 0.78rem;
+}
+.nav-img {
+  width: 4.6rem;
+}
+.nav-btn {
+  position: relative;
+  width: 0.48rem;
+  height: 0.08rem;
+  background-color: #ffffff;
+  border-left: 0.28rem solid rgba(0, 0, 0, 0.9);
+  border-right: 0.28rem solid rgba(0, 0, 0, 0.9);
+  border-top: 0.42rem solid rgba(0, 0, 0, 0.9);
+  border-bottom: 0.42rem solid rgba(0, 0, 0, 0.9);
+}
+.nav-btn::before {
+  content: "";
+  position: absolute;
+  top: -0.14rem;
+  width: 0.48rem;
+  height: 0.08rem;
+  background-color: #ffffff;
+}
+.nav-btn::after {
+  content: "";
+  position: absolute;
+  bottom: -0.14rem;
+  width: 0.48rem;
+  height: 0.08rem;
+  background-color: #ffffff;
+}
+.nav-menu {
+  text-align: center;
+  color: #cdcdcd;
+  margin-bottom: 1rem;
+  height: 0;
+  overflow: hidden;
+  transition: height 1s;
+}
+.nav-item {
+  margin-bottom: 0.52rem;
+  font-size: 0;
+}
+.nav-item.space {
+  margin-bottom: 1.5rem;
+}
+.nav-item a,
+.nav-item .i-drop-btn {
+  line-height: 0.44rem;
+  font-size: 0.44rem;
+}
+.i-drop-pop {
+  padding-bottom: 0.26rem;
+}
+.i-drop-list {
+  display: block;
+  font-size: 0.3rem;
+  color: #979696;
+  margin-bottom: 0.52rem;
+}
+.nav-item:hover,
+.nav-item a:hover,
+.i-drop-list:hover {
+  color: #ee9a32;
+}
+.sub-title {
+  margin: 0 0.5rem;
+  text-align: center;
+  font-size: 0.6rem;
+  line-height: 0.77rem;
+  color: #f09b1f;
+  font-weight: bold;
+}
+.sub-hr {
+  display: block;
+  margin: 0.65rem auto 0.9rem;
+  width: 1.83rem;
+  height: 0.05rem;
+  border: none;
+  background-color: #f09b1f;
+}
+.sub-content {
+  padding-bottom: 0.5rem;
+  margin: 0 0.4rem;
+}
+.sub-text {
+  font-size: 0.36rem;
+  color: #cdcdcd;
+  line-height: 0.54rem;
+  margin: 0 auto 0.8rem;
+}
+.sub-button {
+  display: block;
+  width: 6.24rem;
+  height: 0.92rem;
+  margin: 0 auto 1.78rem;
+  color: #060708;
+  line-height: 0.92rem;
+  border-radius: 0.1rem;
+  font-size: 0.36rem;
+  text-align: center;
+  background-color: #f09b1f;
+}
+.sub-button:hover {
+  color: #ac650d;
+  border: 1px solid #ac650d;
+}
+.sub-point {
+  padding-bottom: 1.78rem;
+  text-align: center;
+}
+.sub-point-list {
+  padding-top: 1.6rem;
+  text-align: center;
+  font-size: 0;
+}
+.sub-point-list img {
+  width: 2.9rem;
+  padding-bottom: 0.6rem
+}
+.sub-point-list p {
+  font-size: 0.48rem;
+  color: #ffffff;
+}
+.sub-btn-hr,
+.con-footer-hr {
+  display: block;
+  width: 100%;
+  margin: 0 auto;
+  height: 1px;
+  background-color: rgba(83, 83, 84, 0.5);
+  border: none;
+}
+.con-shard,
+.con-orch,
+.con-footer {
+  background-color: #222222;
+}
+.con-tran {
+  background-color: #060708;
+}
+.con-item {
+  text-align: center;
+}
+.l-msg {
+  text-align: center;
+  padding: 1.8rem 0 1.76rem;
+  font-size: 0;
+}
+.l-m-tit {
+  font-size: 0.6rem;
+  color: #f09b1f;
+}
+.l-m-tit-hr {
+  border: none;
+  width: 1.83rem;
+  height: 0.05rem;
+  background-color: #f09b1f;
+  margin: 0.8rem auto 0.90rem;
+}
+.l-m-info {
+  font-size: 0.36rem;
+  color: #cdcdcd;
+  margin-bottom: 1.6rem;
+}
+.l-m-info p {
+  line-height: 0.66rem;
+}
+.point-img {
+  width: 4.86rem;
+}
+.footer-logo {
+  width: 4.42rem;
+  margin: 1.2rem auto 0.54rem;
+}
+.footer-icon {
+  margin: 0 auto;
+  font-size: 0;
+  padding-bottom: 1.16rem;
+}
+.footer-icon a {
+  display: inline-block;
+  padding: 0 0.3rem;
+}
+.footer-icon > a > img {
+  width: 0.6rem;
+}
+footer {
+  height: 1.76rem;
+  text-align: center;
+  font-size: 0.28rem;
+  color: #cdcdcd;
+  line-height: 1.76rem;
+  background-color: #060708;
+}
