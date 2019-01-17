@@ -224,7 +224,7 @@ shardingRule:
       keyGenerator:   
         column: #Column name of key generator
         type: #Type of key generator, use default key generator if absent
-        props: #Properties of key generator        
+        props: #Properties of key generator, e.g. `worker.id` and `max.tolerate.time.difference.milliseconds` for `SNOWFLAKE`         
         
       logicIndex: #Name if logic index. If use `DROP INDEX XXX` SQL in Oracle/PostgreSQL, This property needs to be set for finding the actual tables
   bindingTables: #Binding table rule configurations
@@ -241,7 +241,7 @@ shardingRule:
   defaultTableStrategy: #Default strategy for sharding tables, same as tables sharding strategy
   defaultKeyGenerator:
     type: #Type of default key generator, use user-defined ones or built-in ones, e.g. SNOWFLAKE, UUID. Default key generator is `io.shardingsphere.core.keygen.generator.impl.SnowflakeKeyGenerator`
-    props: #Properties of default key generator  
+    props: #Properties of default key generator, e.g. `worker.id` and `max.tolerate.time.difference.milliseconds` for `SNOWFLAKE` 
   
   masterSlaveRules: #Read-write splitting rule configuration, more details can reference Read-write splitting part
     <data_source_name>: #Data sources configuration, need consist with data source map, multiple `data_source_name` available
