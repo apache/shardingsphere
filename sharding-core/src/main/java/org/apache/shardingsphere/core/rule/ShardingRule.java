@@ -74,7 +74,7 @@ public class ShardingRule {
         Preconditions.checkArgument(!dataSourceNames.isEmpty(), "Data sources cannot be empty.");
         this.shardingRuleConfig = shardingRuleConfig;
         shardingDataSourceNames = new ShardingDataSourceNames(shardingRuleConfig, dataSourceNames);
-        tableRules = createTableRules(shardingRuleConfig.getTableRuleConfigs());
+        tableRules = createTableRules(shardingRuleConfig);
         bindingTableRules = createBindingTableRules(shardingRuleConfig.getBindingTableGroups());
         broadcastTables = shardingRuleConfig.getBroadcastTables();
         defaultDatabaseShardingStrategy = createDefaultShardingStrategy(shardingRuleConfig.getDefaultDatabaseShardingStrategyConfig());
@@ -83,12 +83,17 @@ public class ShardingRule {
         masterSlaveRules = createMasterSlaveRules(shardingRuleConfig.getMasterSlaveRuleConfigs());
     }
     
-    private Collection<TableRule> createTableRules(final Collection<TableRuleConfiguration> tableRuleConfigurations) {
+    private Collection<TableRule> createTableRules(final ShardingRuleConfiguration shardingRuleConfig) {
+        Collection<TableRuleConfiguration> tableRuleConfigurations = shardingRuleConfig.getTableRuleConfigs();
         Collection<TableRule> result = new ArrayList<>(tableRuleConfigurations.size());
         for (TableRuleConfiguration each : tableRuleConfigurations) {
-            result.add(new TableRule(each, shardingDataSourceNames));
+            result.add(new TableRule(each, shardingDataSourceNames, getDefaultGenerateKeyColumn(shardingRuleConfig)));
         }
         return result;
+    }
+    
+    private String getDefaultGenerateKeyColumn(final ShardingRuleConfiguration shardingRuleConfig) {
+        return null == shardingRuleConfig.getDefaultKeyGeneratorConfig() ? null : shardingRuleConfig.getDefaultKeyGeneratorConfig().getColumn();
     }
     
     private Collection<BindingTableRule> createBindingTableRules(final Collection<String> bindingTableGroups) {
