@@ -22,7 +22,7 @@ import org.apache.shardingsphere.api.config.KeyGeneratorConfiguration;
 import org.apache.shardingsphere.api.config.rule.ShardingRuleConfiguration;
 import org.apache.shardingsphere.api.config.rule.TableRuleConfiguration;
 import org.apache.shardingsphere.api.config.strategy.NoneShardingStrategyConfiguration;
-import org.apache.shardingsphere.core.keygen.fixture.IncrementKeyGenerator;
+import org.apache.shardingsphere.core.keygen.fixture.IncrementShardingKeyGenerator;
 import org.junit.Test;
 
 import java.util.Arrays;
@@ -74,7 +74,7 @@ public final class TableRuleTest {
         assertNotNull(actual.getDatabaseShardingStrategy());
         assertNotNull(actual.getTableShardingStrategy());
         assertThat(actual.getGenerateKeyColumn(), is("col_1"));
-        assertThat(actual.getKeyGenerator(), instanceOf(IncrementKeyGenerator.class));
+        assertThat(actual.getShardingKeyGenerator(), instanceOf(IncrementShardingKeyGenerator.class));
         assertThat(actual.getLogicIndex(), is("logic_index"));
     }
     
