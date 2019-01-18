@@ -107,11 +107,11 @@ public final class ExpressionFiller implements SQLStatementFiller {
                 break;
             }
         }
-        String innerExpression = sql.substring(functionSegment.getInnerExpressionStartIndex(), functionSegment.getInnerExpressionEndIndex() + 1);
-        String functionExpression = sql.substring(functionSegment.getFunctionStartIndex(), functionSegment.getInnerExpressionEndIndex() + 1);
+        String innerExpression = sql.substring(functionSegment.getInnerExpressionStartIndex(), functionSegment.getInnerExpressionStopIndex() + 1);
+        String functionExpression = sql.substring(functionSegment.getFunctionStartIndex(), functionSegment.getInnerExpressionStopIndex() + 1);
         if (null != aggregationType) {
             if (functionSegment.hasDistinct()) {
-                String columnName = sql.substring(functionSegment.getDistinctColumnNameStartPosition(), functionSegment.getInnerExpressionEndIndex());
+                String columnName = sql.substring(functionSegment.getDistinctExpressionStartIndex(), functionSegment.getInnerExpressionStopIndex());
                 selectStatement.getItems().add(new AggregationDistinctSelectItem(aggregationType, innerExpression, functionSegment.getAlias(), columnName));
                 Optional<String> autoAlias = Optional.absent();
                 if (DerivedAlias.isDerivedAlias(functionSegment.getAlias().get())) {

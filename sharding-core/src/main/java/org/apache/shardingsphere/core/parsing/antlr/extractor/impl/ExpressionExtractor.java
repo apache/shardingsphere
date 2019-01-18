@@ -92,13 +92,12 @@ public final class ExpressionExtractor implements OptionalSQLSegmentExtractor {
     }
     
     private ExpressionWithAliasSegment extractFunctionExpressionSegment(final ParserRuleContext expressionNode, final ParserRuleContext functionNode) {
-        String functionName = functionNode.getChild(0).getText();
-        int startIndex = ((TerminalNode) functionNode.getChild(1)).getSymbol().getStartIndex();
-        int distinctColumnNameStartPosition = ExtractorUtils.findFirstChildNode(expressionNode, RuleName.DISTINCT).isPresent() ? calculateDistinctColumnNamePosition(functionNode) : -1;
-        return new FunctionExpressionSegment(functionName, functionNode.getStart().getStartIndex(), startIndex, functionNode.getStop().getStopIndex(), distinctColumnNameStartPosition);
+        return new FunctionExpressionSegment(functionNode.getChild(0).getText(), functionNode.getStart().getStartIndex(),
+                ((TerminalNode) functionNode.getChild(1)).getSymbol().getStartIndex(), functionNode.getStop().getStopIndex(), 
+                ExtractorUtils.findFirstChildNode(expressionNode, RuleName.DISTINCT).isPresent() ? getDistinctExpressionStartIndex(functionNode) : -1);
     }
     
-    private int calculateDistinctColumnNamePosition(final ParserRuleContext functionNode) {
+    private int getDistinctExpressionStartIndex(final ParserRuleContext functionNode) {
         ParseTree distinctItemNode = functionNode.getChild(3);
         if (distinctItemNode instanceof TerminalNode) {
             return ((TerminalNode) distinctItemNode).getSymbol().getStartIndex();

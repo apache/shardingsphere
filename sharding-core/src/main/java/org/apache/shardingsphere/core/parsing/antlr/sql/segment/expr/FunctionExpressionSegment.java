@@ -35,9 +35,9 @@ public final class FunctionExpressionSegment extends ExpressionWithAliasSegment 
     
     private final int innerExpressionStartIndex;
     
-    private final int innerExpressionEndIndex; 
+    private final int innerExpressionStopIndex; 
     
-    private final int distinctColumnNameStartPosition;
+    private final int distinctExpressionStartIndex;
     
     /**
      * Judge has distinct or not.
@@ -45,6 +45,6 @@ public final class FunctionExpressionSegment extends ExpressionWithAliasSegment 
      * @return has distinct or not
      */
     public boolean hasDistinct() {
-        return -1 != distinctColumnNameStartPosition;
+        return -1 != distinctExpressionStartIndex;
     }
 }
