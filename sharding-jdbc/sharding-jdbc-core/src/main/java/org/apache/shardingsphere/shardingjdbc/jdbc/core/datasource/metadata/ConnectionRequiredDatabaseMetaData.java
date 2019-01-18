@@ -17,154 +17,172 @@
 
 package org.apache.shardingsphere.shardingjdbc.jdbc.core.datasource.metadata;
 
+import lombok.RequiredArgsConstructor;
+import org.apache.shardingsphere.core.rule.ShardingRule;
 import org.apache.shardingsphere.shardingjdbc.jdbc.adapter.WrapperAdapter;
 
+import javax.sql.DataSource;
 import java.sql.Connection;
 import java.sql.DatabaseMetaData;
 import java.sql.ResultSet;
 import java.sql.SQLException;
-import java.sql.SQLFeatureNotSupportedException;
+import java.util.Map;
 
 /**
- * Unsupported operation cached database meta data.
+ * Connection required database meta data.
  *
  * @author zhangliang
  */
-public abstract class UnsupportedOperationCachedMetaData extends WrapperAdapter implements DatabaseMetaData {
+@RequiredArgsConstructor
+public abstract class ConnectionRequiredDatabaseMetaData extends WrapperAdapter implements DatabaseMetaData {
+    
+    private final Map<String, DataSource> dataSourceMap;
+    
+    private final ShardingRule shardingRule;
+    
+    private Connection currentConnection;
     
     @Override
     public final Connection getConnection() throws SQLException {
-        throw new SQLFeatureNotSupportedException();
+        return getCurrentConnection();
     }
     
     @Override
     public final ResultSet getSuperTypes(final String catalog, final String schemaPattern, final String typeNamePattern) throws SQLException {
-        throw new SQLFeatureNotSupportedException();
+        return getCurrentConnection().getMetaData().getSuperTypes(catalog, schemaPattern, typeNamePattern);
     }
     
     @Override
     public final ResultSet getSuperTables(final String catalog, final String schemaPattern, final String tableNamePattern) throws SQLException {
-        throw new SQLFeatureNotSupportedException();
+        return getCurrentConnection().getMetaData().getSuperTables(catalog, schemaPattern, tableNamePattern);
     }
     
     @Override
     public final ResultSet getAttributes(final String catalog, final String schemaPattern, final String typeNamePattern, final String attributeNamePattern) throws SQLException {
-        throw new SQLFeatureNotSupportedException();
+        return getCurrentConnection().getMetaData().getAttributes(catalog, schemaPattern, typeNamePattern, attributeNamePattern);
     }
     
     @Override
     public final ResultSet getProcedures(final String catalog, final String schemaPattern, final String procedureNamePattern) throws SQLException {
-        throw new SQLFeatureNotSupportedException();
+        return getCurrentConnection().getMetaData().getProcedures(catalog, schemaPattern, procedureNamePattern);
     }
     
     @Override
     public final ResultSet getProcedureColumns(final String catalog, final String schemaPattern, final String procedureNamePattern, final String columnNamePattern) throws SQLException {
-        throw new SQLFeatureNotSupportedException();
+        return getCurrentConnection().getMetaData().getProcedureColumns(catalog, schemaPattern, procedureNamePattern, columnNamePattern);
     }
     
     @Override
     public final ResultSet getTables(final String catalog, final String schemaPattern, final String tableNamePattern, final String[] types) throws SQLException {
-        throw new SQLFeatureNotSupportedException();
+        return getCurrentConnection().getMetaData().getTables(catalog, schemaPattern, tableNamePattern, types);
     }
     
     @Override
     public final ResultSet getSchemas() throws SQLException {
-        throw new SQLFeatureNotSupportedException();
+        return getCurrentConnection().getMetaData().getSchemas();
     }
     
     @Override
     public final ResultSet getSchemas(final String catalog, final String schemaPattern) throws SQLException {
-        throw new SQLFeatureNotSupportedException();
+        return getCurrentConnection().getMetaData().getSchemas(catalog, schemaPattern);
     }
     
     @Override
     public final ResultSet getCatalogs() throws SQLException {
-        throw new SQLFeatureNotSupportedException();
+        return getCurrentConnection().getMetaData().getCatalogs();
     }
     
     @Override
     public final ResultSet getTableTypes() throws SQLException {
-        throw new SQLFeatureNotSupportedException();
+        return getCurrentConnection().getMetaData().getTableTypes();
     }
     
     @Override
     public final ResultSet getColumns(final String catalog, final String schemaPattern, final String tableNamePattern, final String columnNamePattern) throws SQLException {
-        throw new SQLFeatureNotSupportedException();
+        return getCurrentConnection().getMetaData().getColumns(catalog, schemaPattern, tableNamePattern, columnNamePattern);
     }
     
     @Override
     public final ResultSet getColumnPrivileges(final String catalog, final String schema, final String table, final String columnNamePattern) throws SQLException {
-        throw new SQLFeatureNotSupportedException();
+        return getCurrentConnection().getMetaData().getColumnPrivileges(catalog, schema, table, columnNamePattern);
     }
     
     @Override
     public final ResultSet getTablePrivileges(final String catalog, final String schemaPattern, final String tableNamePattern) throws SQLException {
-        throw new SQLFeatureNotSupportedException();
+        return getCurrentConnection().getMetaData().getTablePrivileges(catalog, schemaPattern, tableNamePattern);
     }
     
     @Override
     public final ResultSet getBestRowIdentifier(final String catalog, final String schema, final String table, final int scope, final boolean nullable) throws SQLException {
-        throw new SQLFeatureNotSupportedException();
+        return getCurrentConnection().getMetaData().getBestRowIdentifier(catalog, schema, table, scope, nullable);
     }
     
     @Override
     public final ResultSet getVersionColumns(final String catalog, final String schema, final String table) throws SQLException {
-        throw new SQLFeatureNotSupportedException();
+        return getCurrentConnection().getMetaData().getVersionColumns(catalog, schema, table);
     }
     
     @Override
     public final ResultSet getPrimaryKeys(final String catalog, final String schema, final String table) throws SQLException {
-        throw new SQLFeatureNotSupportedException();
+        return getCurrentConnection().getMetaData().getPrimaryKeys(catalog, schema, table);
     }
     
     @Override
     public final ResultSet getImportedKeys(final String catalog, final String schema, final String table) throws SQLException {
-        throw new SQLFeatureNotSupportedException();
+        return getCurrentConnection().getMetaData().getImportedKeys(catalog, schema, table);
     }
     
     @Override
     public final ResultSet getExportedKeys(final String catalog, final String schema, final String table) throws SQLException {
-        throw new SQLFeatureNotSupportedException();
+        return getCurrentConnection().getMetaData().getExportedKeys(catalog, schema, table);
     }
     
     @Override
     public final ResultSet getCrossReference(final String parentCatalog,
                                        final String parentSchema, final String parentTable, final String foreignCatalog, final String foreignSchema, final String foreignTable) throws SQLException {
-        throw new SQLFeatureNotSupportedException();
+        return getCurrentConnection().getMetaData().getCrossReference(parentCatalog, parentSchema, parentTable, foreignCatalog, foreignSchema, foreignTable);
     }
     
     @Override
     public final ResultSet getTypeInfo() throws SQLException {
-        throw new SQLFeatureNotSupportedException();
+        return getCurrentConnection().getMetaData().getTypeInfo();
     }
     
     @Override
     public final ResultSet getIndexInfo(final String catalog, final String schema, final String table, final boolean unique, final boolean approximate) throws SQLException {
-        throw new SQLFeatureNotSupportedException();
+        return getCurrentConnection().getMetaData().getIndexInfo(catalog, schema, table, unique, approximate);
     }
     
     @Override
     public final ResultSet getUDTs(final String catalog, final String schemaPattern, final String typeNamePattern, final int[] types) throws SQLException {
-        throw new SQLFeatureNotSupportedException();
+        return getCurrentConnection().getMetaData().getUDTs(catalog, schemaPattern, typeNamePattern, types);
     }
     
     @Override
     public final ResultSet getClientInfoProperties() throws SQLException {
-        throw new SQLFeatureNotSupportedException();
+        return getCurrentConnection().getMetaData().getClientInfoProperties();
     }
     
     @Override
     public final ResultSet getFunctions(final String catalog, final String schemaPattern, final String functionNamePattern) throws SQLException {
-        throw new SQLFeatureNotSupportedException();
+        return getCurrentConnection().getMetaData().getFunctions(catalog, schemaPattern, functionNamePattern);
     }
     
     @Override
     public final ResultSet getFunctionColumns(final String catalog, final String schemaPattern, final String functionNamePattern, final String columnNamePattern) throws SQLException {
-        throw new SQLFeatureNotSupportedException();
+        return getCurrentConnection().getMetaData().getFunctionColumns(catalog, schemaPattern, functionNamePattern, columnNamePattern);
     }
     
     @Override
     public final ResultSet getPseudoColumns(final String catalog, final String schemaPattern, final String tableNamePattern, final String columnNamePattern) throws SQLException {
-        throw new SQLFeatureNotSupportedException();
+        return getCurrentConnection().getMetaData().getPseudoColumns(catalog, schemaPattern, tableNamePattern, columnNamePattern);
+    }
+    
+    private Connection getCurrentConnection() throws SQLException {
+        if (null == currentConnection || currentConnection.isClosed()) {
+            DataSource dataSource = null == shardingRule ? dataSourceMap.values().iterator().next() : dataSourceMap.get(shardingRule.getShardingDataSourceNames().getRandomDataSourceName());
+            currentConnection = dataSource.getConnection();
+        }
+        return currentConnection;
     }
 }

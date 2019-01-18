@@ -82,7 +82,7 @@ public final class ShardingDataSourceNames {
     /**
      * Get random data source name.
      *
-     * @return random data source name.
+     * @return random data source name
      */
     public String getRandomDataSourceName() {
         return getRandomDataSourceName(dataSourceNames);
@@ -92,7 +92,7 @@ public final class ShardingDataSourceNames {
      * Get random data source name.
      *
      * @param dataSourceNames available data source names
-     * @return random data source name.
+     * @return random data source name
      */
     public String getRandomDataSourceName(final Collection<String> dataSourceNames) {
         Random random = new Random();

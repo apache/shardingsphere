@@ -23,28 +23,45 @@ import org.junit.runner.RunWith;
 import org.mockito.Mock;
 import org.mockito.junit.MockitoJUnitRunner;
 
+import javax.sql.DataSource;
 import java.sql.Connection;
 import java.sql.DatabaseMetaData;
 import java.sql.ResultSet;
 import java.sql.SQLException;
-import java.sql.SQLFeatureNotSupportedException;
 import java.sql.Types;
+import java.util.HashMap;
+import java.util.Map;
 
 import static org.hamcrest.CoreMatchers.is;
 import static org.junit.Assert.assertThat;
 import static org.junit.Assert.assertTrue;
+import static org.mockito.Mockito.when;
 
 @RunWith(MockitoJUnitRunner.class)
 public final class CachedDatabaseMetaDataTest {
     
     @Mock
+    private DataSource dataSource;
+    
+    @Mock
+    private Connection connection;
+    
+    @Mock
     private DatabaseMetaData databaseMetaData;
+    
+    @Mock
+    private ResultSet resultSet;
+    
+    private Map<String, DataSource> dataSourceMap = new HashMap<>(1, 1);
     
     private CachedDatabaseMetaData cachedDatabaseMetaData;
     
     @Before
     public void setUp() throws SQLException {
-        cachedDatabaseMetaData = new CachedDatabaseMetaData(databaseMetaData);
+        dataSourceMap.put("ds", dataSource);
+        when(dataSource.getConnection()).thenReturn(connection);
+        when(connection.getMetaData()).thenReturn(databaseMetaData);
+        cachedDatabaseMetaData = new CachedDatabaseMetaData(databaseMetaData, dataSourceMap, null);
     }
     
     @Test
@@ -778,138 +795,164 @@ public final class CachedDatabaseMetaDataTest {
         assertTrue(cachedDatabaseMetaData.supportsTransactionIsolationLevel(Connection.TRANSACTION_NONE));
     }
     
-    @Test(expected = SQLFeatureNotSupportedException.class)
+    @Test
     public void assertGetConnection() throws SQLException {
-        cachedDatabaseMetaData.getConnection();
+        assertThat(cachedDatabaseMetaData.getConnection(), is(dataSource.getConnection()));
     }
     
-    @Test(expected = SQLFeatureNotSupportedException.class)
+    @Test
     public void assertGetSuperTypes() throws SQLException {
-        cachedDatabaseMetaData.getSuperTypes("test", null, null);
+        when(databaseMetaData.getSuperTypes("test", null, null)).thenReturn(resultSet);
+        assertThat(cachedDatabaseMetaData.getSuperTypes("test", null, null), is(resultSet));
     }
     
-    @Test(expected = SQLFeatureNotSupportedException.class)
+    @Test
     public void assertGetSuperTables() throws SQLException {
-        cachedDatabaseMetaData.getSuperTables("test", null, null);
+        when(databaseMetaData.getSuperTables("test", null, null)).thenReturn(resultSet);
+        assertThat(cachedDatabaseMetaData.getSuperTables("test", null, null), is(resultSet));
     }
     
-    @Test(expected = SQLFeatureNotSupportedException.class)
+    @Test
     public void assertGetAttributes() throws SQLException {
-        cachedDatabaseMetaData.getAttributes("test", null, null, null);
+        when(databaseMetaData.getAttributes("test", null, null, null)).thenReturn(resultSet);
+        assertThat(cachedDatabaseMetaData.getAttributes("test", null, null, null), is(resultSet));
     }
     
-    @Test(expected = SQLFeatureNotSupportedException.class)
+    @Test
     public void assertGetProcedures() throws SQLException {
-        cachedDatabaseMetaData.getProcedures("test", null, null);
+        when(databaseMetaData.getProcedures("test", null, null)).thenReturn(resultSet);
+        assertThat(cachedDatabaseMetaData.getProcedures("test", null, null), is(resultSet));
     }
     
-    @Test(expected = SQLFeatureNotSupportedException.class)
+    @Test
     public void assertGetProcedureColumns() throws SQLException {
-        cachedDatabaseMetaData.getProcedureColumns("test", null, null, null);
+        when(databaseMetaData.getProcedureColumns("test", null, null, null)).thenReturn(resultSet);
+        assertThat(cachedDatabaseMetaData.getProcedureColumns("test", null, null, null), is(resultSet));
     }
     
-    @Test(expected = SQLFeatureNotSupportedException.class)
+    @Test
     public void assertGetTables() throws SQLException {
-        cachedDatabaseMetaData.getTables("test", null, null, null);
+        when(databaseMetaData.getTables("test", null, null, null)).thenReturn(resultSet);
+        assertThat(cachedDatabaseMetaData.getTables("test", null, null, null), is(resultSet));
     }
     
-    @Test(expected = SQLFeatureNotSupportedException.class)
+    @Test
     public void assertGetSchemas() throws SQLException {
-        cachedDatabaseMetaData.getSchemas();
+        when(databaseMetaData.getSchemas()).thenReturn(resultSet);
+        assertThat(cachedDatabaseMetaData.getSchemas(), is(resultSet));
     }
     
-    @Test(expected = SQLFeatureNotSupportedException.class)
+    @Test
     public void assertGetSchemasForCatalogAndSchemaPattern() throws SQLException {
-        cachedDatabaseMetaData.getSchemas("test", null);
+        when(databaseMetaData.getSchemas("test", null)).thenReturn(resultSet);
+        assertThat(cachedDatabaseMetaData.getSchemas("test", null), is(resultSet));
     }
     
-    @Test(expected = SQLFeatureNotSupportedException.class)
+    @Test
     public void assertGetCatalogs() throws SQLException {
-        cachedDatabaseMetaData.getCatalogs();
+        when(databaseMetaData.getCatalogs()).thenReturn(resultSet);
+        assertThat(cachedDatabaseMetaData.getCatalogs(), is(resultSet));
     }
     
-    @Test(expected = SQLFeatureNotSupportedException.class)
+    @Test
     public void assertGetTableTypes() throws SQLException {
-        cachedDatabaseMetaData.getTableTypes();
+        when(databaseMetaData.getTableTypes()).thenReturn(resultSet);
+        assertThat(cachedDatabaseMetaData.getTableTypes(), is(resultSet));
     }
     
-    @Test(expected = SQLFeatureNotSupportedException.class)
+    @Test
     public void assertGetColumns() throws SQLException {
-        cachedDatabaseMetaData.getColumns("test", null, null, null);
+        when(databaseMetaData.getColumns("test", null, null, null)).thenReturn(resultSet);
+        assertThat(cachedDatabaseMetaData.getColumns("test", null, null, null), is(resultSet));
     }
     
-    @Test(expected = SQLFeatureNotSupportedException.class)
+    @Test
     public void assertGetColumnPrivileges() throws SQLException {
-        cachedDatabaseMetaData.getColumnPrivileges("test", null, null, null);
+        when(databaseMetaData.getColumnPrivileges("test", null, null, null)).thenReturn(resultSet);
+        assertThat(cachedDatabaseMetaData.getColumnPrivileges("test", null, null, null), is(resultSet));
     }
     
-    @Test(expected = SQLFeatureNotSupportedException.class)
+    @Test
     public void assertGetTablePrivileges() throws SQLException {
-        cachedDatabaseMetaData.getTablePrivileges("test", null, null);
+        when(databaseMetaData.getTablePrivileges("test", null, null)).thenReturn(resultSet);
+        assertThat(cachedDatabaseMetaData.getTablePrivileges("test", null, null), is(resultSet));
     }
     
-    @Test(expected = SQLFeatureNotSupportedException.class)
+    @Test
     public void assertGetBestRowIdentifier() throws SQLException {
-        cachedDatabaseMetaData.getBestRowIdentifier("test", null, null, 1, true);
+        when(databaseMetaData.getBestRowIdentifier("test", null, null, 1, true)).thenReturn(resultSet);
+        assertThat(cachedDatabaseMetaData.getBestRowIdentifier("test", null, null, 1, true), is(resultSet));
     }
     
-    @Test(expected = SQLFeatureNotSupportedException.class)
+    @Test
     public void assertGetVersionColumns() throws SQLException {
-        cachedDatabaseMetaData.getVersionColumns("test", null, null);
+        when(databaseMetaData.getVersionColumns("test", null, null)).thenReturn(resultSet);
+        assertThat(cachedDatabaseMetaData.getVersionColumns("test", null, null), is(resultSet));
     }
     
-    @Test(expected = SQLFeatureNotSupportedException.class)
+    @Test
     public void assertGetPrimaryKeys() throws SQLException {
-        cachedDatabaseMetaData.getPrimaryKeys("test", null, null);
+        when(databaseMetaData.getPrimaryKeys("test", null, null)).thenReturn(resultSet);
+        assertThat(cachedDatabaseMetaData.getPrimaryKeys("test", null, null), is(resultSet));
     }
     
-    @Test(expected = SQLFeatureNotSupportedException.class)
+    @Test
     public void assertGetImportedKeys() throws SQLException {
-        cachedDatabaseMetaData.getImportedKeys("test", null, null);
+        when(databaseMetaData.getImportedKeys("test", null, null)).thenReturn(resultSet);
+        assertThat(cachedDatabaseMetaData.getImportedKeys("test", null, null), is(resultSet));
     }
     
-    @Test(expected = SQLFeatureNotSupportedException.class)
+    @Test
     public void assertGetExportedKeys() throws SQLException {
-        cachedDatabaseMetaData.getExportedKeys("test", null, null);
+        when(databaseMetaData.getExportedKeys("test", null, null)).thenReturn(resultSet);
+        assertThat(cachedDatabaseMetaData.getExportedKeys("test", null, null), is(resultSet));
     }
     
-    @Test(expected = SQLFeatureNotSupportedException.class)
+    @Test
     public void assertGetCrossReference() throws SQLException {
-        cachedDatabaseMetaData.getCrossReference("test", null, null, null, null, null);
+        when(databaseMetaData.getCrossReference("test", null, null, null, null, null)).thenReturn(resultSet);
+        assertThat(cachedDatabaseMetaData.getCrossReference("test", null, null, null, null, null), is(resultSet));
     }
     
-    @Test(expected = SQLFeatureNotSupportedException.class)
+    @Test
     public void assertGetTypeInfo() throws SQLException {
-        cachedDatabaseMetaData.getTypeInfo();
+        when(databaseMetaData.getTypeInfo()).thenReturn(resultSet);
+        assertThat(cachedDatabaseMetaData.getTypeInfo(), is(resultSet));
     }
     
-    @Test(expected = SQLFeatureNotSupportedException.class)
+    @Test
     public void assertGetIndexInfo() throws SQLException {
-        cachedDatabaseMetaData.getIndexInfo("test", null, null, true, true);
+        when(databaseMetaData.getIndexInfo("test", null, null, true, true)).thenReturn(resultSet);
+        assertThat(cachedDatabaseMetaData.getIndexInfo("test", null, null, true, true), is(resultSet));
     }
     
-    @Test(expected = SQLFeatureNotSupportedException.class)
+    @Test
     public void assertGetUDTs() throws SQLException {
-        cachedDatabaseMetaData.getUDTs("test", null, null, null);
+        when(databaseMetaData.getUDTs("test", null, null, null)).thenReturn(resultSet);
+        assertThat(cachedDatabaseMetaData.getUDTs("test", null, null, null), is(resultSet));
     }
     
-    @Test(expected = SQLFeatureNotSupportedException.class)
+    @Test
     public void assertGetClientInfoProperties() throws SQLException {
-        cachedDatabaseMetaData.getClientInfoProperties();
+        when(databaseMetaData.getClientInfoProperties()).thenReturn(resultSet);
+        assertThat(cachedDatabaseMetaData.getClientInfoProperties(), is(resultSet));
     }
     
-    @Test(expected = SQLFeatureNotSupportedException.class)
+    @Test
     public void assertGetFunctions() throws SQLException {
-        cachedDatabaseMetaData.getFunctions("test", null, null);
+        when(databaseMetaData.getFunctions("test", null, null)).thenReturn(resultSet);
+        assertThat(cachedDatabaseMetaData.getFunctions("test", null, null), is(resultSet));
     }
     
-    @Test(expected = SQLFeatureNotSupportedException.class)
+    @Test
     public void assertGetFunctionColumns() throws SQLException {
-        cachedDatabaseMetaData.getFunctionColumns("test", null, null, null);
+        when(databaseMetaData.getFunctionColumns("test", null, null, null)).thenReturn(resultSet);
+        assertThat(cachedDatabaseMetaData.getFunctionColumns("test", null, null, null), is(resultSet));
     }
     
-    @Test(expected = SQLFeatureNotSupportedException.class)
+    @Test
     public void assertGetPseudoColumns() throws SQLException {
-        cachedDatabaseMetaData.getPseudoColumns("test", null, null, null);
+        when(databaseMetaData.getPseudoColumns("test", null, null, null)).thenReturn(resultSet);
+        assertThat(cachedDatabaseMetaData.getPseudoColumns("test", null, null, null), is(resultSet));
     }
 }
