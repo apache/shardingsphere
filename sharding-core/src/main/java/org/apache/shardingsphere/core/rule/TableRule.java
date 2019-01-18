@@ -18,9 +18,11 @@
 package org.apache.shardingsphere.core.rule;
 
 import com.google.common.base.Preconditions;
+import com.google.common.base.Strings;
 import lombok.AccessLevel;
 import lombok.Getter;
 import lombok.ToString;
+import org.apache.shardingsphere.api.config.KeyGeneratorConfiguration;
 import org.apache.shardingsphere.api.config.rule.TableRuleConfiguration;
 import org.apache.shardingsphere.core.exception.ShardingException;
 import org.apache.shardingsphere.core.keygen.generator.KeyGenerator;
@@ -94,9 +96,16 @@ public final class TableRule {
             ? generateDataNodes(tableRuleConfig.getLogicTable(), shardingDataSourceNames.getDataSourceNames()) : generateDataNodes(dataNodes, shardingDataSourceNames.getDataSourceNames());
         databaseShardingStrategy = null == tableRuleConfig.getDatabaseShardingStrategyConfig() ? null : ShardingStrategyFactory.newInstance(tableRuleConfig.getDatabaseShardingStrategyConfig());
         tableShardingStrategy = null == tableRuleConfig.getTableShardingStrategyConfig() ? null : ShardingStrategyFactory.newInstance(tableRuleConfig.getTableShardingStrategyConfig());
-        generateKeyColumn = null == tableRuleConfig.getKeyGeneratorConfig() ? null : tableRuleConfig.getKeyGeneratorConfig().getColumn();
+        generateKeyColumn = getGenerateKeyColumn(tableRuleConfig.getKeyGeneratorConfig(), defaultGenerateKeyColumn);
         keyGenerator = null == tableRuleConfig.getKeyGeneratorConfig() ? null : tableRuleConfig.getKeyGeneratorConfig().getKeyGenerator();
         logicIndex = null == tableRuleConfig.getLogicIndex() ? null : tableRuleConfig.getLogicIndex().toLowerCase();
+    }
+    
+    private String getGenerateKeyColumn(final KeyGeneratorConfiguration keyGeneratorConfiguration, final String defaultGenerateKeyColumn) {
+        if (null != keyGeneratorConfiguration && !Strings.isNullOrEmpty(keyGeneratorConfiguration.getColumn())) {
+            return keyGeneratorConfiguration.getColumn();
+        }
+        return defaultGenerateKeyColumn;
     }
     
     private boolean isEmptyDataNodes(final List<String> dataNodes) {
