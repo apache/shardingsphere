@@ -21,7 +21,6 @@ import com.google.common.base.Preconditions;
 import lombok.AccessLevel;
 import lombok.Getter;
 import lombok.ToString;
-import org.apache.shardingsphere.api.config.KeyGeneratorConfiguration;
 import org.apache.shardingsphere.api.config.rule.TableRuleConfiguration;
 import org.apache.shardingsphere.core.exception.ShardingException;
 import org.apache.shardingsphere.core.keygen.generator.KeyGenerator;
@@ -86,7 +85,7 @@ public final class TableRule {
         logicIndex = null;
     }
     
-    public TableRule(final TableRuleConfiguration tableRuleConfig, final ShardingDataSourceNames shardingDataSourceNames) {
+    public TableRule(final TableRuleConfiguration tableRuleConfig, final ShardingDataSourceNames shardingDataSourceNames, final String defaultGenerateKeyColumn) {
         Preconditions.checkNotNull(tableRuleConfig.getLogicTable(), "Logic table cannot be null.");
         logicTable = tableRuleConfig.getLogicTable().toLowerCase();
         List<String> dataNodes = new InlineExpressionParser(tableRuleConfig.getActualDataNodes()).splitAndEvaluate();
@@ -96,12 +95,8 @@ public final class TableRule {
         databaseShardingStrategy = null == tableRuleConfig.getDatabaseShardingStrategyConfig() ? null : ShardingStrategyFactory.newInstance(tableRuleConfig.getDatabaseShardingStrategyConfig());
         tableShardingStrategy = null == tableRuleConfig.getTableShardingStrategyConfig() ? null : ShardingStrategyFactory.newInstance(tableRuleConfig.getTableShardingStrategyConfig());
         generateKeyColumn = null == tableRuleConfig.getKeyGeneratorConfig() ? null : tableRuleConfig.getKeyGeneratorConfig().getColumn();
-        keyGenerator = createKeyGenerator(tableRuleConfig.getKeyGeneratorConfig());
+        keyGenerator = null == tableRuleConfig.getKeyGeneratorConfig() ? null : tableRuleConfig.getKeyGeneratorConfig().getKeyGenerator();
         logicIndex = null == tableRuleConfig.getLogicIndex() ? null : tableRuleConfig.getLogicIndex().toLowerCase();
-    }
-    
-    private KeyGenerator createKeyGenerator(final KeyGeneratorConfiguration keyGeneratorConfig) {
-        return null == keyGeneratorConfig ? null : keyGeneratorConfig.getKeyGenerator();
     }
     
     private boolean isEmptyDataNodes(final List<String> dataNodes) {
