@@ -1,0 +1,2 @@
+org.apache.shardingsphere.core.keygen.generator.impl.SnowflakeShardingKeyGenerator
+org.apache.shardingsphere.core.keygen.generator.impl.UUIDShardingKeyGenerator

@@ -17,31 +17,32 @@
 
 package org.apache.shardingsphere.core.keygen.generator.impl;
 
-import lombok.Getter;
-import lombok.Setter;
-import org.apache.shardingsphere.core.keygen.generator.KeyGenerator;
+import org.junit.Test;
 
 import java.util.Properties;
-import java.util.UUID;
 
-/**
- * UUID key generator.
- *
- * @author panjuan
- */
-@Getter
-@Setter
-public final class UUIDKeyGenerator implements KeyGenerator {
+import static org.hamcrest.CoreMatchers.is;
+import static org.junit.Assert.assertThat;
+
+public class UUIDShardingKeyGeneratorTest {
     
-    private Properties properties = new Properties();
+    private UUIDShardingKeyGenerator uuidKeyGenerator = new UUIDShardingKeyGenerator();
     
-    @Override
-    public String getType() {
-        return "UUID";
+    @Test
+    public void assertGenerateKey() {
+        assertThat(((String) uuidKeyGenerator.generateKey()).length(), is(32));
     }
     
-    @Override
-    public synchronized Comparable<?> generateKey() {
-        return UUID.randomUUID().toString().replaceAll("-", "");
+    @Test
+    public void assertGetProperties() {
+        assertThat(uuidKeyGenerator.getProperties().entrySet().size(), is(0));
+    }
+    
+    @Test
+    public void assertSetProperties() {
+        Properties properties = new Properties();
+        properties.setProperty("key1", "value1");
+        uuidKeyGenerator.setProperties(properties);
+        assertThat(uuidKeyGenerator.getProperties().get("key1"), is((Object) "value1"));
     }
 }

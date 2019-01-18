@@ -22,7 +22,7 @@ import com.google.common.collect.Collections2;
 import lombok.AccessLevel;
 import lombok.NoArgsConstructor;
 import org.apache.shardingsphere.core.exception.ShardingConfigurationException;
-import org.apache.shardingsphere.core.keygen.generator.KeyGenerator;
+import org.apache.shardingsphere.core.keygen.generator.ShardingKeyGenerator;
 import org.apache.shardingsphere.spi.NewInstanceServiceLoader;
 
 import java.util.Collection;
@@ -34,7 +34,7 @@ import java.util.Collection;
  * @author panjuan
  */
 @NoArgsConstructor(access = AccessLevel.PRIVATE)
-public final class KeyGeneratorFactory {
+public final class ShardingKeyGeneratorFactory {
     
     /**
      * Create key generator.
@@ -42,19 +42,19 @@ public final class KeyGeneratorFactory {
      * @param keyGeneratorType key generator type
      * @return key generator instance
      */
-    public static KeyGenerator newInstance(final String keyGeneratorType) {
-        Collection<KeyGenerator> keyGenerators = loadKeyGenerators(keyGeneratorType);
-        if (keyGenerators.isEmpty()) {
+    public static ShardingKeyGenerator newInstance(final String keyGeneratorType) {
+        Collection<ShardingKeyGenerator> shardingKeyGenerators = loadKeyGenerators(keyGeneratorType);
+        if (shardingKeyGenerators.isEmpty()) {
             throw new ShardingConfigurationException("Invalid key generator type.");
         }
-        return keyGenerators.iterator().next();
+        return shardingKeyGenerators.iterator().next();
     }
     
-    private static Collection<KeyGenerator> loadKeyGenerators(final String keyGeneratorType) {
-        return Collections2.filter(NewInstanceServiceLoader.load(KeyGenerator.class), new Predicate<KeyGenerator>() {
+    private static Collection<ShardingKeyGenerator> loadKeyGenerators(final String keyGeneratorType) {
+        return Collections2.filter(NewInstanceServiceLoader.load(ShardingKeyGenerator.class), new Predicate<ShardingKeyGenerator>() {
             
             @Override
-            public boolean apply(final KeyGenerator input) {
+            public boolean apply(final ShardingKeyGenerator input) {
                 return keyGeneratorType.equalsIgnoreCase(input.getType());
             }
         });

@@ -15,24 +15,28 @@
  * limitations under the License.
  */
 
-package org.apache.shardingsphere.core.keygen;
+package org.apache.shardingsphere.shardingjdbc.orchestration.api.yaml.fixture;
 
-import org.apache.shardingsphere.core.exception.ShardingConfigurationException;
-import org.apache.shardingsphere.core.keygen.generator.impl.SnowflakeKeyGenerator;
-import org.junit.Test;
+import lombok.Getter;
+import lombok.Setter;
+import org.apache.shardingsphere.core.keygen.generator.ShardingKeyGenerator;
 
-import static org.hamcrest.CoreMatchers.instanceOf;
-import static org.junit.Assert.assertThat;
+import java.util.Properties;
+import java.util.concurrent.atomic.AtomicInteger;
 
-public final class KeyGeneratorFactoryTest {
+public final class IncrementShardingKeyGenerator implements ShardingKeyGenerator {
     
-    @Test
-    public void assertCreateKeyGeneratorSuccess() {
-        assertThat(KeyGeneratorFactory.newInstance("SNOWFLAKE"), instanceOf(SnowflakeKeyGenerator.class));
-    }
+    private static final AtomicInteger SEQUENCE = new AtomicInteger(100);
     
-    @Test(expected = ShardingConfigurationException.class)
-    public void assertCreateKeyGeneratorFailureWithInstantiationError() {
-        KeyGeneratorFactory.newInstance("instantiation");
+    @Getter
+    private final String type = "INCREMENT";
+    
+    @Getter
+    @Setter
+    private Properties properties = new Properties();
+    
+    @Override
+    public Comparable<?> generateKey() {
+        return SEQUENCE.incrementAndGet();
     }
 }

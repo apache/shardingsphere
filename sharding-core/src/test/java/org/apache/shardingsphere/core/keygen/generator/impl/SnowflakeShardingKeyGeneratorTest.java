@@ -37,7 +37,7 @@ import static org.hamcrest.CoreMatchers.is;
 import static org.junit.Assert.assertNotEquals;
 import static org.junit.Assert.assertThat;
 
-public final class SnowflakeKeyGeneratorTest {
+public final class SnowflakeShardingKeyGeneratorTest {
     
     private static final long DEFAULT_SEQUENCE_BITS = 12L;
     
@@ -49,7 +49,7 @@ public final class SnowflakeKeyGeneratorTest {
         int threadNumber = Runtime.getRuntime().availableProcessors() << 1;
         ExecutorService executor = Executors.newFixedThreadPool(threadNumber);
         int taskNumber = threadNumber << 2;
-        final SnowflakeKeyGenerator keyGenerator = new SnowflakeKeyGenerator();
+        final SnowflakeShardingKeyGenerator keyGenerator = new SnowflakeShardingKeyGenerator();
         keyGenerator.setProperties(new Properties());
         Set<Comparable<?>> actual = new HashSet<>();
         for (int i = 0; i < taskNumber; i++) {
@@ -66,9 +66,9 @@ public final class SnowflakeKeyGeneratorTest {
     
     @Test
     public void assertGenerateKeyWithSingleThread() {
-        SnowflakeKeyGenerator keyGenerator = new SnowflakeKeyGenerator();
+        SnowflakeShardingKeyGenerator keyGenerator = new SnowflakeShardingKeyGenerator();
         keyGenerator.setProperties(new Properties());
-        SnowflakeKeyGenerator.setTimeService(new FixedTimeService(1));
+        SnowflakeShardingKeyGenerator.setTimeService(new FixedTimeService(1));
         List<Comparable<?>> expected = Arrays.<Comparable<?>>asList(1L, 4194304L, 4194305L, 8388609L, 8388610L, 12582912L, 12582913L, 16777217L, 16777218L, 20971520L);
         List<Comparable<?>> actual = new ArrayList<>();
         for (int i = 0; i < DEFAULT_KEY_AMOUNT; i++) {
@@ -80,9 +80,9 @@ public final class SnowflakeKeyGeneratorTest {
     @Test
     @SneakyThrows
     public void assertGenerateKeyWithClockCallBack() {
-        SnowflakeKeyGenerator keyGenerator = new SnowflakeKeyGenerator();
+        SnowflakeShardingKeyGenerator keyGenerator = new SnowflakeShardingKeyGenerator();
         TimeService timeService = new FixedTimeService(1);
-        SnowflakeKeyGenerator.setTimeService(timeService);
+        SnowflakeShardingKeyGenerator.setTimeService(timeService);
         keyGenerator.setProperties(new Properties());
         setLastMilliseconds(keyGenerator, timeService.getCurrentMillis() + 2);
         List<Comparable<?>> expected = Arrays.<Comparable<?>>asList(4194305L, 8388608L, 8388609L, 12582913L, 12582914L, 16777216L, 16777217L, 20971521L, 20971522L, 25165824L);
@@ -96,9 +96,9 @@ public final class SnowflakeKeyGeneratorTest {
     @Test(expected = IllegalStateException.class)
     @SneakyThrows
     public void assertGenerateKeyWithClockCallBackBeyondTolerateTime() {
-        SnowflakeKeyGenerator keyGenerator = new SnowflakeKeyGenerator();
+        SnowflakeShardingKeyGenerator keyGenerator = new SnowflakeShardingKeyGenerator();
         TimeService timeService = new FixedTimeService(1);
-        SnowflakeKeyGenerator.setTimeService(timeService);
+        SnowflakeShardingKeyGenerator.setTimeService(timeService);
         keyGenerator.setProperties(new Properties());
         Properties properties = new Properties();
         properties.setProperty("max.tolerate.time.difference.milliseconds", String.valueOf(0));
@@ -113,9 +113,9 @@ public final class SnowflakeKeyGeneratorTest {
     
     @Test
     public void assertGenerateKeyBeyondMaxSequencePerMilliSecond() {
-        final SnowflakeKeyGenerator keyGenerator = new SnowflakeKeyGenerator();
+        final SnowflakeShardingKeyGenerator keyGenerator = new SnowflakeShardingKeyGenerator();
         TimeService timeService = new FixedTimeService(2);
-        SnowflakeKeyGenerator.setTimeService(timeService);
+        SnowflakeShardingKeyGenerator.setTimeService(timeService);
         keyGenerator.setProperties(new Properties());
         setLastMilliseconds(keyGenerator, timeService.getCurrentMillis());
         setSequence(keyGenerator, (1 << DEFAULT_SEQUENCE_BITS) - 1);
@@ -128,22 +128,22 @@ public final class SnowflakeKeyGeneratorTest {
     }
     
     @SneakyThrows
-    private void setSequence(final SnowflakeKeyGenerator keyGenerator, final Number value) {
-        Field sequence = SnowflakeKeyGenerator.class.getDeclaredField("sequence");
+    private void setSequence(final SnowflakeShardingKeyGenerator keyGenerator, final Number value) {
+        Field sequence = SnowflakeShardingKeyGenerator.class.getDeclaredField("sequence");
         sequence.setAccessible(true);
         sequence.set(keyGenerator, value);
     }
     
     @SneakyThrows
-    private void setLastMilliseconds(final SnowflakeKeyGenerator keyGenerator, final Number value) {
-        Field lastMilliseconds = SnowflakeKeyGenerator.class.getDeclaredField("lastMilliseconds");
+    private void setLastMilliseconds(final SnowflakeShardingKeyGenerator keyGenerator, final Number value) {
+        Field lastMilliseconds = SnowflakeShardingKeyGenerator.class.getDeclaredField("lastMilliseconds");
         lastMilliseconds.setAccessible(true);
         lastMilliseconds.set(keyGenerator, value);
     }
     
     @Test(expected = IllegalArgumentException.class)
     public void assertSetWorkerIdFailureWhenNegative() {
-        SnowflakeKeyGenerator keyGenerator = new SnowflakeKeyGenerator();
+        SnowflakeShardingKeyGenerator keyGenerator = new SnowflakeShardingKeyGenerator();
         Properties properties = new Properties();
         properties.setProperty("worker.id", String.valueOf(-1L));
         keyGenerator.setProperties(properties);
@@ -152,7 +152,7 @@ public final class SnowflakeKeyGeneratorTest {
     
     @Test(expected = IllegalArgumentException.class)
     public void assertSetWorkerIdFailureWhenTooMuch() {
-        SnowflakeKeyGenerator keyGenerator = new SnowflakeKeyGenerator();
+        SnowflakeShardingKeyGenerator keyGenerator = new SnowflakeShardingKeyGenerator();
         Properties properties = new Properties();
         properties.setProperty("worker.id", String.valueOf(-Long.MAX_VALUE));
         keyGenerator.setProperties(properties);
@@ -162,7 +162,7 @@ public final class SnowflakeKeyGeneratorTest {
     @Test
     @SneakyThrows
     public void assertSetWorkerIdSuccess() {
-        SnowflakeKeyGenerator keyGenerator = new SnowflakeKeyGenerator();
+        SnowflakeShardingKeyGenerator keyGenerator = new SnowflakeShardingKeyGenerator();
         Properties properties = new Properties();
         properties.setProperty("worker.id", String.valueOf(1L));
         keyGenerator.setProperties(properties);
@@ -174,7 +174,7 @@ public final class SnowflakeKeyGeneratorTest {
     @Test
     @SneakyThrows
     public void assertSetMaxTolerateTimeDifferenceMilliseconds() {
-        SnowflakeKeyGenerator keyGenerator = new SnowflakeKeyGenerator();
+        SnowflakeShardingKeyGenerator keyGenerator = new SnowflakeShardingKeyGenerator();
         Properties properties = new Properties();
         properties.setProperty("max.tolerate.time.difference.milliseconds", String.valueOf(1));
         keyGenerator.setProperties(properties);

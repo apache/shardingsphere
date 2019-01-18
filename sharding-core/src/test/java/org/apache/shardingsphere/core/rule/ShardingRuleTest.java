@@ -27,8 +27,8 @@ import org.apache.shardingsphere.api.config.strategy.InlineShardingStrategyConfi
 import org.apache.shardingsphere.api.config.strategy.NoneShardingStrategyConfiguration;
 import org.apache.shardingsphere.api.config.strategy.StandardShardingStrategyConfiguration;
 import org.apache.shardingsphere.core.exception.ShardingConfigurationException;
-import org.apache.shardingsphere.core.keygen.fixture.IncrementKeyGenerator;
-import org.apache.shardingsphere.core.keygen.generator.impl.SnowflakeKeyGenerator;
+import org.apache.shardingsphere.core.keygen.fixture.IncrementShardingKeyGenerator;
+import org.apache.shardingsphere.core.keygen.generator.impl.SnowflakeShardingKeyGenerator;
 import org.apache.shardingsphere.core.parsing.parser.context.condition.Column;
 import org.apache.shardingsphere.core.routing.strategy.inline.InlineShardingStrategy;
 import org.apache.shardingsphere.core.routing.strategy.none.NoneShardingStrategy;
@@ -63,7 +63,7 @@ public final class ShardingRuleTest {
         assertThat(actual.getBroadcastTables(), CoreMatchers.<Collection<String>>is(Collections.singletonList("BROADCAST_TABLE")));
         assertThat(actual.getDefaultDatabaseShardingStrategy(), instanceOf(InlineShardingStrategy.class));
         assertThat(actual.getDefaultTableShardingStrategy(), instanceOf(InlineShardingStrategy.class));
-        assertThat(actual.getDefaultKeyGenerator(), instanceOf(IncrementKeyGenerator.class));
+        assertThat(actual.getDefaultShardingKeyGenerator(), instanceOf(IncrementShardingKeyGenerator.class));
     }
     
     @Test
@@ -74,7 +74,7 @@ public final class ShardingRuleTest {
         assertTrue(actual.getBroadcastTables().isEmpty());
         assertThat(actual.getDefaultDatabaseShardingStrategy(), instanceOf(NoneShardingStrategy.class));
         assertThat(actual.getDefaultTableShardingStrategy(), instanceOf(NoneShardingStrategy.class));
-        assertThat(actual.getDefaultKeyGenerator(), instanceOf(SnowflakeKeyGenerator.class));
+        assertThat(actual.getDefaultShardingKeyGenerator(), instanceOf(SnowflakeShardingKeyGenerator.class));
     }
     
     @Test

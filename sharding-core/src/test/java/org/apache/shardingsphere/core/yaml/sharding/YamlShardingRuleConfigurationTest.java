@@ -23,7 +23,7 @@ import org.apache.shardingsphere.api.config.rule.MasterSlaveRuleConfiguration;
 import org.apache.shardingsphere.api.config.rule.ShardingRuleConfiguration;
 import org.apache.shardingsphere.api.config.rule.TableRuleConfiguration;
 import org.apache.shardingsphere.api.config.strategy.NoneShardingStrategyConfiguration;
-import org.apache.shardingsphere.core.keygen.generator.impl.SnowflakeKeyGenerator;
+import org.apache.shardingsphere.core.keygen.generator.impl.SnowflakeShardingKeyGenerator;
 import org.apache.shardingsphere.core.yaml.masterslave.YamlMasterSlaveRuleConfiguration;
 import org.apache.shardingsphere.core.yaml.sharding.strategy.YamlNoneShardingStrategyConfiguration;
 import org.hamcrest.CoreMatchers;
@@ -97,7 +97,7 @@ public final class YamlShardingRuleConfigurationTest {
         assertThat(actual.getBindingTableGroups().iterator().next(), is("t_order, t_order_item"));
         assertThat(actual.getBroadcastTables().size(), is(1));
         assertThat(actual.getBroadcastTables().iterator().next(), is("t_config"));
-        assertThat(actual.getDefaultKeyGeneratorConfig().getKeyGenerator(), instanceOf(SnowflakeKeyGenerator.class));
+        assertThat(actual.getDefaultKeyGeneratorConfig().getKeyGenerator(), instanceOf(SnowflakeShardingKeyGenerator.class));
         assertMasterSlaveRuleConfig(actual.getMasterSlaveRuleConfigs().iterator().next());
     }
     

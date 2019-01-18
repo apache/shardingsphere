@@ -15,28 +15,33 @@
  * limitations under the License.
  */
 
-package org.apache.shardingsphere.core.keygen.fixture;
+package org.apache.shardingsphere.core.keygen.generator.impl;
 
 import lombok.Getter;
 import lombok.Setter;
-import org.apache.shardingsphere.core.keygen.generator.KeyGenerator;
+import org.apache.shardingsphere.core.keygen.generator.ShardingKeyGenerator;
 
 import java.util.Properties;
-import java.util.concurrent.atomic.AtomicInteger;
+import java.util.UUID;
 
-public final class IncrementKeyGenerator implements KeyGenerator {
+/**
+ * UUID key generator.
+ *
+ * @author panjuan
+ */
+@Getter
+@Setter
+public final class UUIDShardingKeyGenerator implements ShardingKeyGenerator {
     
-    @Getter
-    private final String type = "INCREMENT";
-    
-    private final AtomicInteger count = new AtomicInteger();
-    
-    @Getter
-    @Setter
     private Properties properties = new Properties();
     
     @Override
-    public Comparable<?> generateKey() {
-        return count.incrementAndGet();
+    public String getType() {
+        return "UUID";
+    }
+    
+    @Override
+    public synchronized Comparable<?> generateKey() {
+        return UUID.randomUUID().toString().replaceAll("-", "");
     }
 }

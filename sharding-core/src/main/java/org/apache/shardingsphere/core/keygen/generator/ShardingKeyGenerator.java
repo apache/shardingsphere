@@ -25,7 +25,7 @@ import java.util.Properties;
  * @author zhangliang
  * @author panjuan
  */
-public interface KeyGenerator {
+public interface ShardingKeyGenerator {
     
     /**
      * Get type of key generator.

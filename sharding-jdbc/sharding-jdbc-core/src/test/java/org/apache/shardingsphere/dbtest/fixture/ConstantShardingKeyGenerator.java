@@ -15,34 +15,25 @@
  * limitations under the License.
  */
 
-package org.apache.shardingsphere.core.keygen.generator.impl;
+package org.apache.shardingsphere.dbtest.fixture;
 
-import org.junit.Test;
+import lombok.Getter;
+import lombok.Setter;
+import org.apache.shardingsphere.core.keygen.generator.ShardingKeyGenerator;
 
 import java.util.Properties;
 
-import static org.hamcrest.CoreMatchers.is;
-import static org.junit.Assert.assertThat;
-
-public class UUIDKeyGeneratorTest {
+public final class ConstantShardingKeyGenerator implements ShardingKeyGenerator {
     
-    private UUIDKeyGenerator uuidKeyGenerator = new UUIDKeyGenerator();
+    @Getter
+    private final String type = "CONSTANT";
     
-    @Test
-    public void assertGenerateKey() {
-        assertThat(((String) uuidKeyGenerator.generateKey()).length(), is(32));
-    }
+    @Getter
+    @Setter
+    private Properties properties = new Properties();
     
-    @Test
-    public void assertGetProperties() {
-        assertThat(uuidKeyGenerator.getProperties().entrySet().size(), is(0));
-    }
-    
-    @Test
-    public void assertSetProperties() {
-        Properties properties = new Properties();
-        properties.setProperty("key1", "value1");
-        uuidKeyGenerator.setProperties(properties);
-        assertThat(uuidKeyGenerator.getProperties().get("key1"), is((Object) "value1"));
+    @Override
+    public Comparable<?> generateKey() {
+        return 1;
     }
 }
