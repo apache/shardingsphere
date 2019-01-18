@@ -73,9 +73,9 @@ public enum RuleName {
     
     SELECT_CLAUSE("SelectClause"),
     
-    SELECT_EXPR("SelectExpr"),
-    
     SELECT_EXPRS("SelectExprs"),
+    
+    SELECT_EXPR("SelectExpr"),
     
     FUNCTION_CALL("FunctionCall"),
     

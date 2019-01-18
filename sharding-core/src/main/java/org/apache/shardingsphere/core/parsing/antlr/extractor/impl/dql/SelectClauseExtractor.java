@@ -43,18 +43,12 @@ public final class SelectClauseExtractor implements OptionalSQLSegmentExtractor 
     
     @Override
     public Optional<SelectClauseSegment> extract(final ParserRuleContext ancestorNode) {
-        Optional<ParserRuleContext> selectClauseNode = ExtractorUtils.findFirstChildNode(ancestorNode, RuleName.SELECT_CLAUSE);
-        if (!selectClauseNode.isPresent()) {
-            return Optional.absent();
-        }
-        Optional<ParserRuleContext> selectExpressionsNode = ExtractorUtils.findFirstChildNode(selectClauseNode.get(), RuleName.SELECT_EXPRS);
-        if (!selectExpressionsNode.isPresent()) {
-            return Optional.absent();
-        }
-        SelectClauseSegment result = new SelectClauseSegment(
-                selectExpressionsNode.get().getStart().getStartIndex(), selectExpressionsNode.get().getStop().getStopIndex() + 2, hasDistinct(selectClauseNode.get()));
-        for (int i = 0; i < selectExpressionsNode.get().getChildCount(); i++) {
-            ParseTree childNode = selectExpressionsNode.get().getChild(i);
+        ParserRuleContext selectClauseNode = ExtractorUtils.getFirstChildNode(ancestorNode, RuleName.SELECT_CLAUSE);
+        ParserRuleContext selectExpressionsNode = ExtractorUtils.getFirstChildNode(selectClauseNode, RuleName.SELECT_EXPRS);
+        // TODO +2 means use last position (index + 1) and one space, will refactor here
+        SelectClauseSegment result = new SelectClauseSegment(selectExpressionsNode.getStart().getStartIndex(), selectExpressionsNode.getStop().getStopIndex() + 2, hasDistinct(selectClauseNode));
+        for (int i = 0; i < selectExpressionsNode.getChildCount(); i++) {
+            ParseTree childNode = selectExpressionsNode.getChild(i);
             if (childNode instanceof TerminalNodeImpl) {
                 continue;
             }
