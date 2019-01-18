@@ -45,8 +45,7 @@ public final class SelectClauseExtractor implements OptionalSQLSegmentExtractor 
     public Optional<SelectClauseSegment> extract(final ParserRuleContext ancestorNode) {
         ParserRuleContext selectClauseNode = ExtractorUtils.getFirstChildNode(ancestorNode, RuleName.SELECT_CLAUSE);
         ParserRuleContext selectExpressionsNode = ExtractorUtils.getFirstChildNode(selectClauseNode, RuleName.SELECT_EXPRS);
-        // TODO +2 means use last position (index + 1) and one space, will refactor here
-        SelectClauseSegment result = new SelectClauseSegment(selectExpressionsNode.getStart().getStartIndex(), selectExpressionsNode.getStop().getStopIndex() + 2, hasDistinct(selectClauseNode));
+        SelectClauseSegment result = new SelectClauseSegment(selectExpressionsNode.getStart().getStartIndex(), selectExpressionsNode.getStop().getStopIndex(), hasDistinct(selectClauseNode));
         for (int i = 0; i < selectExpressionsNode.getChildCount(); i++) {
             ParseTree childNode = selectExpressionsNode.getChild(i);
             if (childNode instanceof TerminalNodeImpl) {

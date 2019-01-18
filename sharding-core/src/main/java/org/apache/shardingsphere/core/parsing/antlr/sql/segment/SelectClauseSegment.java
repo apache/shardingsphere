@@ -34,9 +34,9 @@ import java.util.LinkedList;
 @Getter
 public final class SelectClauseSegment implements SQLSegment {
     
-    private final int firstSelectItemStartPosition;
+    private final int firstSelectItemStartIndex;
     
-    private final int selectListLastPosition;
+    private final int selectListStopIndex;
     
     private final boolean hasDistinct;
     
