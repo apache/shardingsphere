@@ -38,3 +38,6 @@ You can report a bug, submit a new function enhancement recommendation, or submi
  - Send a pull request to the dev branch rather than the master branch of shardingsphere after it is finished.
  - The mentor will do code review before discussing some details (including the design, the implementation and the performance) with you. The request will be merged into the branch of current development version after the edit is well enough.
  - At last, congratulate to be an official contributor of ShardingSphere!
+ - Please note that in order to show your id in the contributor list, don't forget the configurations below:
+      - git config --global user.name "username"
+      - git config --global user.email "username@mail.com"

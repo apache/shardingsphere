@@ -38,3 +38,6 @@ chapter = true
  - 完成后，发送一个pull request到ShardingSphere的dev分支，请不要提交pull request至master分支中。
  - 接着导师做CodeReview，然后他会与您讨论一些细节（包括设计，实现，性能等）。当导师对本次修改满意后，会将提交合并到当前开发版本的分支中。
  - 最后，恭喜您已经成为了ShardingSphere的官方贡献者！
+ - 注意，为了让你的id显示在contributor列表中，别忘了以下设置：
+      - git config --global user.name "username"
+      - git config --global user.email "username@mail.com"
