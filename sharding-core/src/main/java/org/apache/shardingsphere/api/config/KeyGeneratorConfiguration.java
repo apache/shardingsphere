@@ -22,7 +22,7 @@ import lombok.AllArgsConstructor;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
 import lombok.Setter;
-import org.apache.shardingsphere.core.keygen.KeyGeneratorFactory;
+import org.apache.shardingsphere.core.keygen.ShardingKeyGeneratorFactory;
 import org.apache.shardingsphere.core.keygen.generator.ShardingKeyGenerator;
 
 import java.util.Properties;
@@ -53,7 +53,7 @@ public final class KeyGeneratorConfiguration {
         if (Strings.isNullOrEmpty(type)) {
             return null;
         }
-        ShardingKeyGenerator result = KeyGeneratorFactory.newInstance(type);
+        ShardingKeyGenerator result = ShardingKeyGeneratorFactory.newInstance(type);
         result.setProperties(props);
         return result;
     }
