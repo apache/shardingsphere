@@ -79,14 +79,14 @@ public final class BindingTableRuleTest {
         TableRuleConfiguration tableRuleConfig = new TableRuleConfiguration();
         tableRuleConfig.setLogicTable("LOGIC_TABLE");
         tableRuleConfig.setActualDataNodes("ds${0..1}.table_${0..1}");
-        return new TableRule(tableRuleConfig, createShardingDataSourceNames());
+        return new TableRule(tableRuleConfig, createShardingDataSourceNames(), null);
     }
     
     private TableRule createSubTableRule() {
         TableRuleConfiguration tableRuleConfig = new TableRuleConfiguration();
         tableRuleConfig.setLogicTable("SUB_LOGIC_TABLE");
         tableRuleConfig.setActualDataNodes("ds${0..1}.sub_table_${0..1}");
-        return new TableRule(tableRuleConfig, createShardingDataSourceNames());
+        return new TableRule(tableRuleConfig, createShardingDataSourceNames(), null);
     }
     
     private ShardingDataSourceNames createShardingDataSourceNames() {
