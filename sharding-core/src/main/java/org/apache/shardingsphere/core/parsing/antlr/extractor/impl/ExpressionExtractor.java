@@ -72,20 +72,23 @@ public final class ExpressionExtractor implements OptionalSQLSegmentExtractor {
     }
     
     private ExpressionWithAliasSegment extractExpressionWithAliasSegment(final ParserRuleContext expressionNode) {
-        ExpressionWithAliasSegment result;
-        Optional<ParserRuleContext> functionNode = ExtractorUtils.findFirstChildNode(expressionNode, RuleName.FUNCTION_CALL);
-        if (functionNode.isPresent()) {
-            result = extractFunctionExpressionSegment(expressionNode, functionNode.get());
-        } else if (RuleName.COLUMN_NAME.getName().equals(expressionNode.getChild(0).getClass().getSimpleName())) {
-            result = extractPropertyExpressionSegment(expressionNode);
-        } else {
-            result = extractCommonExpressionSegment(expressionNode);
-        }
+        ExpressionWithAliasSegment result = extractExpressionWithoutAlias(expressionNode);
         Optional<String> alias = getAlias(expressionNode);
         if (alias.isPresent()) {
             result.setAlias(alias.get());
         }
         return result;
+    }
+    
+    private ExpressionWithAliasSegment extractExpressionWithoutAlias(final ParserRuleContext expressionNode) {
+        Optional<ParserRuleContext> functionNode = ExtractorUtils.findFirstChildNode(expressionNode, RuleName.FUNCTION_CALL);
+        if (functionNode.isPresent()) {
+            return extractFunctionExpressionSegment(expressionNode, functionNode.get());
+        }
+        if (RuleName.COLUMN_NAME.getName().equals(expressionNode.getChild(0).getClass().getSimpleName())) {
+            return extractPropertyExpressionSegment(expressionNode);
+        }
+        return extractCommonExpressionSegment(expressionNode);
     }
     
     private ExpressionWithAliasSegment extractFunctionExpressionSegment(final ParserRuleContext expressionNode, final ParserRuleContext functionNode) {

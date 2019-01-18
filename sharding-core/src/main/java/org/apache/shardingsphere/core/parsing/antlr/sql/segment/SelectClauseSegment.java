@@ -36,7 +36,7 @@ public final class SelectClauseSegment implements SQLSegment {
     
     private final int firstSelectItemStartIndex;
     
-    private final int selectListStopIndex;
+    private final int selectItemsStopIndex;
     
     private final boolean hasDistinct;
     

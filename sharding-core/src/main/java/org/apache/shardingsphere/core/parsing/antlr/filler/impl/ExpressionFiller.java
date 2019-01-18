@@ -86,7 +86,7 @@ public final class ExpressionFiller implements SQLStatementFiller {
         }
         Optional<Table> table = selectStatement.getTables().find(owner.get());
         if (table.isPresent() && !table.get().getAlias().isPresent()) {
-            selectStatement.addSQLToken(new TableToken(starSegment.getStartPosition(), 0, owner.get()));
+            selectStatement.addSQLToken(new TableToken(starSegment.getStartIndex(), 0, owner.get()));
         }
     }
     

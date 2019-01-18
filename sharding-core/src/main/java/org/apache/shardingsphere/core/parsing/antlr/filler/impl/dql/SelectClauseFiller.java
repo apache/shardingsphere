@@ -48,7 +48,7 @@ public final class SelectClauseFiller implements SQLStatementFiller<SelectClause
     public void fill(final SelectClauseSegment sqlSegment, final SQLStatement sqlStatement, final String sql, final ShardingRule shardingRule, final ShardingTableMetaData shardingTableMetaData) {
         SelectStatement selectStatement = (SelectStatement) sqlStatement;
         selectStatement.setFirstSelectItemStartIndex(sqlSegment.getFirstSelectItemStartIndex());
-        selectStatement.setSelectListStopIndex(sqlSegment.getSelectListStopIndex());
+        selectStatement.setSelectListStopIndex(sqlSegment.getSelectItemsStopIndex());
         if (sqlSegment.getExpressions().isEmpty()) {
             return;
         }

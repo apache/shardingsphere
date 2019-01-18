@@ -47,11 +47,11 @@ public final class SelectClauseExtractor implements OptionalSQLSegmentExtractor 
         ParserRuleContext selectExpressionsNode = ExtractorUtils.getFirstChildNode(selectClauseNode, RuleName.SELECT_EXPRS);
         SelectClauseSegment result = new SelectClauseSegment(selectExpressionsNode.getStart().getStartIndex(), selectExpressionsNode.getStop().getStopIndex(), hasDistinct(selectClauseNode));
         for (int i = 0; i < selectExpressionsNode.getChildCount(); i++) {
-            ParseTree childNode = selectExpressionsNode.getChild(i);
-            if (childNode instanceof TerminalNodeImpl) {
+            ParseTree selectExpressionNode = selectExpressionsNode.getChild(i);
+            if (selectExpressionNode instanceof TerminalNodeImpl) {
                 continue;
             }
-            Optional<? extends ExpressionSegment> expressionSegment = expressionExtractor.extract((ParserRuleContext) childNode);
+            Optional<? extends ExpressionSegment> expressionSegment = expressionExtractor.extract((ParserRuleContext) selectExpressionNode);
             if (expressionSegment.isPresent()) {
                 result.getExpressions().add(expressionSegment.get());
             }

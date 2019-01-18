@@ -32,7 +32,7 @@ import lombok.Setter;
 @Setter
 public final class StarExpressionSegment implements ExpressionSegment {
     
-    private final int startPosition;
+    private final int startIndex;
     
     private String owner;
     
