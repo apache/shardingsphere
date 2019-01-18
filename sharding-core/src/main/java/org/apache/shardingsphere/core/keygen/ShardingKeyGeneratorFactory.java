@@ -34,7 +34,7 @@ import java.util.Collection;
  * @author panjuan
  */
 @NoArgsConstructor(access = AccessLevel.PRIVATE)
-public final class KeyGeneratorFactory {
+public final class ShardingKeyGeneratorFactory {
     
     /**
      * Create key generator.
