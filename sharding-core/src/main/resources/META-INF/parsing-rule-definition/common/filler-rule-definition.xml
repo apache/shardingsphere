@@ -12,11 +12,13 @@
     <filler-rule sql-segment-class="org.apache.shardingsphere.core.parsing.antlr.sql.segment.definition.constraint.DropPrimaryKeySegment" filler-class="org.apache.shardingsphere.core.parsing.antlr.filler.impl.ddl.alter.DropPrimaryKeyFiller" />
     <filler-rule sql-segment-class="org.apache.shardingsphere.core.parsing.antlr.sql.segment.SelectClauseSegment" filler-class="org.apache.shardingsphere.core.parsing.antlr.filler.impl.dql.SelectClauseFiller" />
     <filler-rule sql-segment-class="org.apache.shardingsphere.core.parsing.antlr.sql.segment.FromWhereSegment" filler-class="org.apache.shardingsphere.core.parsing.antlr.filler.impl.FromWhereFiller" />
+    <filler-rule sql-segment-class="org.apache.shardingsphere.core.parsing.antlr.sql.segment.dml.DeleteFromWhereSegment" filler-class="org.apache.shardingsphere.core.parsing.antlr.filler.impl.dml.DeleteFromWhereFiller" />
+    <filler-rule sql-segment-class="org.apache.shardingsphere.core.parsing.antlr.sql.segment.dml.UpdateSetWhereSegment" filler-class="org.apache.shardingsphere.core.parsing.antlr.filler.impl.dml.UpdateSetWhereFiller" />
     <filler-rule sql-segment-class="org.apache.shardingsphere.core.parsing.antlr.sql.segment.condition.SubqueryConditionSegment" filler-class="org.apache.shardingsphere.core.parsing.antlr.filler.impl.dql.SubqueryConditionFiller" />
     <filler-rule sql-segment-class="org.apache.shardingsphere.core.parsing.antlr.sql.segment.order.GroupBySegment" filler-class="org.apache.shardingsphere.core.parsing.antlr.filler.impl.dql.GroupByFiller" />
     <filler-rule sql-segment-class="org.apache.shardingsphere.core.parsing.antlr.sql.segment.order.OrderBySegment" filler-class="org.apache.shardingsphere.core.parsing.antlr.filler.impl.dql.OrderByFiller" />
     <filler-rule sql-segment-class="org.apache.shardingsphere.core.parsing.antlr.sql.segment.limit.LimitSegment" filler-class="org.apache.shardingsphere.core.parsing.antlr.filler.impl.dql.LimitFiller" />
     <filler-rule sql-segment-class="org.apache.shardingsphere.core.parsing.antlr.sql.segment.ShowParamSegment" filler-class="org.apache.shardingsphere.core.parsing.antlr.filler.impl.ShowParamFiller" />
     <filler-rule sql-segment-class="org.apache.shardingsphere.core.parsing.antlr.sql.segment.tcl.SetAutoCommitSegment" filler-class="org.apache.shardingsphere.core.parsing.antlr.filler.impl.tcl.SetAutoCommitFiller" />
-    <filler-rule sql-segment-class="org.apache.shardingsphere.core.parsing.antlr.sql.segment.InsertSegment" filler-class="org.apache.shardingsphere.core.parsing.antlr.filler.impl.InsertFiller" />
+    <filler-rule sql-segment-class="org.apache.shardingsphere.core.parsing.antlr.sql.segment.InsertSegment" filler-class="org.apache.shardingsphere.core.parsing.antlr.filler.impl.dml.InsertFiller" />
 </filler-rule-definition>

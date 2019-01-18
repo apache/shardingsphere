@@ -15,30 +15,43 @@
  * limitations under the License.
  */
 
-package org.apache.shardingsphere.core.parsing.antlr.extractor.impl;
+package org.apache.shardingsphere.core.parsing.antlr.extractor.impl.dml;
 
 import com.google.common.base.Optional;
 import org.antlr.v4.runtime.ParserRuleContext;
+import org.apache.shardingsphere.core.parsing.antlr.extractor.impl.AbstractFromWhereExtractor;
+import org.apache.shardingsphere.core.parsing.antlr.extractor.impl.TableNamesExtractor;
 import org.apache.shardingsphere.core.parsing.antlr.extractor.util.ExtractorUtils;
 import org.apache.shardingsphere.core.parsing.antlr.extractor.util.RuleName;
 import org.apache.shardingsphere.core.parsing.antlr.sql.segment.FromWhereSegment;
+import org.apache.shardingsphere.core.parsing.antlr.sql.segment.dml.DeleteFromWhereSegment;
+import org.apache.shardingsphere.core.parsing.antlr.sql.segment.table.TableSegment;
+import org.apache.shardingsphere.core.parsing.parser.exception.SQLParsingUnsupportedException;
 
 import java.util.Map;
 
 /**
- * Update where extractor.
+ * Delete from extractor.
  *
  * @author duhongjun
  */
-public final class UpdateWhereExtractor extends AbstractFromWhereExtractor {
+public final class DeleteFromWhereExtractor extends AbstractFromWhereExtractor {
+    
+    protected FromWhereSegment createSegment(){
+        return new DeleteFromWhereSegment();
+    }
     
     @Override
     protected Optional<ParserRuleContext> extractTable(final FromWhereSegment fromWhereSegment, final ParserRuleContext ancestorNode, final Map<ParserRuleContext, Integer> questionNodeIndexMap) {
-        Optional<ParserRuleContext> tableReferenceNode = ExtractorUtils.findFirstChildNode(ancestorNode, RuleName.TABLE_REFERENCE);
-        if (!tableReferenceNode.isPresent()) {
+        for (TableSegment each : new TableNamesExtractor().extract(ancestorNode)) {
+            fillTableResult(fromWhereSegment, each);
+        }
+        if (fromWhereSegment.getTableAliases().isEmpty()) {
             return Optional.absent();
         }
-        this.extractTableReference(fromWhereSegment, tableReferenceNode.get(), questionNodeIndexMap);
+        if (1 < fromWhereSegment.getTableAliases().size()) {
+            throw new SQLParsingUnsupportedException("Cannot support Multiple-Table.");
+        }
         return ExtractorUtils.findFirstChildNodeNoneRecursive(ancestorNode, RuleName.WHERE_CLAUSE);
     }
 }

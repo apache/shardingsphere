@@ -57,11 +57,21 @@ public abstract class AbstractFromWhereExtractor implements OptionalSQLSegmentEx
      * @return SQL segment
      */
     public Optional<FromWhereSegment> extract(final ParserRuleContext ancestorNode, final ParserRuleContext rootNode) {
-        FromWhereSegment result = new FromWhereSegment();
+        FromWhereSegment result = createSegment();
         Map<ParserRuleContext, Integer> questionNodeIndexMap = getPlaceholderAndNodeIndexMap(result, rootNode);
         Optional<ParserRuleContext> whereNode = extractTable(result, ancestorNode, questionNodeIndexMap);
         if (whereNode.isPresent()) {
             predicateSegmentExtractor = new PredicateExtractor(result.getTableAliases());
+            result.setWhereStartPosition(whereNode.get().getStart().getStartIndex());
+            result.setWhereStopPosition(whereNode.get().getStop().getStopIndex());
+            if (!questionNodeIndexMap.isEmpty()) {
+                Collection<ParserRuleContext> questionNodes = ExtractorUtils.getAllDescendantNodes(whereNode.get(), RuleName.QUESTION);
+                if (!questionNodes.isEmpty()) {
+                    int index = questionNodeIndexMap.get(questionNodes.iterator().next());
+                    result.setWhereParameterStartIndex(index);
+                    result.setWhereParameterEndIndex(index + questionNodes.size() - 1);
+                }
+            }
             extractAndFillWhere(result, questionNodeIndexMap, whereNode.get());
         }
         return Optional.of(result);
@@ -76,6 +86,10 @@ public abstract class AbstractFromWhereExtractor implements OptionalSQLSegmentEx
         }
         fromWhereSegment.setParameterCount(questionNodes.size());
         return result;
+    }
+    
+    protected FromWhereSegment createSegment() {
+        return new FromWhereSegment();
     }
     
     protected abstract Optional<ParserRuleContext> extractTable(FromWhereSegment fromWhereSegment, ParserRuleContext ancestorNode, Map<ParserRuleContext, Integer> questionNodeIndexMap);
