@@ -39,7 +39,7 @@ public final class SubQueryConditionFiller implements SQLStatementFiller<SubQuer
         SelectStatement selectStatement = (SelectStatement) sqlStatement;
         OrConditionFiller orConditionFiller = new OrConditionFiller();
         for (OrConditionSegment each : sqlSegment.getOrConditions()) {
-            selectStatement.getSubQueryConditions().add(orConditionFiller.buildCondition(each, sqlStatement, sql, shardingRule, shardingTableMetaData));
+            selectStatement.getSubqueryConditions().add(orConditionFiller.buildCondition(each, sqlStatement, sql, shardingRule, shardingTableMetaData));
         }
     }
 }

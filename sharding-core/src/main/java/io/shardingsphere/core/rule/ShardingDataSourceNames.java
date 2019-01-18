@@ -17,12 +17,14 @@
 
 package io.shardingsphere.core.rule;
 
+import java.util.Collection;
+import java.util.Iterator;
+import java.util.LinkedHashSet;
+import java.util.Random;
+
 import io.shardingsphere.api.config.rule.MasterSlaveRuleConfiguration;
 import io.shardingsphere.api.config.rule.ShardingRuleConfiguration;
 import lombok.Getter;
-
-import java.util.Collection;
-import java.util.LinkedHashSet;
 
 /**
  * Sharding data source names.
@@ -75,5 +77,31 @@ public final class ShardingDataSourceNames {
             }
         }
         return dataSourceName;
+    }
+    
+
+    /**
+     * Get random data source name.
+     *
+     * @return random data source name.
+     */
+    public String getRandomDataSourceName() {
+        return getRandomDataSourceName(dataSourceNames);
+    }
+    
+    /**
+     * Get random data source name.
+     *
+     * @param dataSourceNames available data source names
+     * @return random data source name.
+     */
+    public String getRandomDataSourceName(final Collection<String> dataSourceNames) {
+        Random random = new Random();
+        int index = random.nextInt(dataSourceNames.size());
+        Iterator<String> iterator = dataSourceNames.iterator();
+        for (int i = 0; i < index; i++) {
+            iterator.next();
+        }
+        return iterator.next();
     }
 }
