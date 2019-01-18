@@ -60,7 +60,7 @@ public final class MySQLSelectOptimizer implements SQLStatementOptimizer {
     }
     
     private void appendDerivedColumns(final SelectStatement selectStatement, final ShardingTableMetaData shardingTableMetaData) {
-        ItemsToken itemsToken = new ItemsToken(selectStatement.getSelectListLastPosition() + 1 + " ".length());
+        ItemsToken itemsToken = new ItemsToken(selectStatement.getSelectListStopIndex() + 1 + " ".length());
         appendAvgDerivedColumns(itemsToken, selectStatement);
         if (!selectStatement.getOrderByItems().isEmpty()) {
             appendDerivedOrderColumns(itemsToken, selectStatement.getOrderByItems(), selectStatement, shardingTableMetaData);

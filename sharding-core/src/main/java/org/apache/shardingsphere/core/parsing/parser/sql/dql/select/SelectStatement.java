@@ -57,9 +57,9 @@ public final class SelectStatement extends DQLStatement {
     
     private boolean containStar;
     
-    private int firstSelectItemStartPosition;
+    private int firstSelectItemStartIndex;
     
-    private int selectListLastPosition;
+    private int selectListStopIndex;
     
     private int groupByLastPosition;
     
