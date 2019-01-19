@@ -228,4 +228,4 @@ private DataSource dataSource;
 
 Rule configurations include data source configuration, table rule configuration, database sharding strategy and table sharding strategy. 
 All these are the simplest configuration methods, and the practical use can be more flexible, like multiple sharding keys, table rule configuration bound directly with sharding strategies, etc. 
-For more detailed configurations, please refer to [Configuration Manual](http://shardingsphere.io/document/current/en/manual/sharding-jdbc/configuration/).
+For more detailed configurations, please refer to [Configuration Manual](http://shardingsphere.apache.org/document/current/en/manual/sharding-jdbc/configuration/).
