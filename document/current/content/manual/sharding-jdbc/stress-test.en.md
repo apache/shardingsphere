@@ -118,11 +118,11 @@ Server environment:
 
 TPS:
 
-![TPS](http://shardingsphere.jd.com/document/current/img/stress-test/b-SdbSt-query-tps.png)
+![TPS](http://shardingsphere.apache.org/document/current/img/stress-test/b-SdbSt-query-tps.png)
 
 Response Time:
 
-![RT](http://shardingsphere.jd.com/document/current/img/stress-test/b-SdbSt-query-rt.png)
+![RT](http://shardingsphere.apache.org/document/current/img/stress-test/b-SdbSt-query-rt.png)
 
 ### UPDATE in one table in one DB
 
@@ -133,11 +133,11 @@ Response Time:
 
 TPS:
 
-![TPS](http://shardingsphere.jd.com/document/current/img/stress-test/b-SdbSt-update-tps.png)
+![TPS](http://shardingsphere.apache.org/document/current/img/stress-test/b-SdbSt-update-tps.png)
 
 Response Time:
 
-![RT](http://shardingsphere.jd.com/document/current/img/stress-test/b-SdbSt-update-rt.png)
+![RT](http://shardingsphere.apache.org/document/current/img/stress-test/b-SdbSt-update-rt.png)
 
 ### INSERT in one table in one DB
 
@@ -148,11 +148,11 @@ Response Time:
 
 TPS:
 
-![TPS](http://shardingsphere.jd.com/document/current/img/stress-test/b-SdbSt-insert-tps.png)
+![TPS](http://shardingsphere.apache.org/document/current/img/stress-test/b-SdbSt-insert-tps.png)
 
 Response Time:
 
-![RT](http://shardingsphere.jd.com/document/current/img/stress-test/b-SdbSt-insert-rt.png)
+![RT](http://shardingsphere.apache.org/document/current/img/stress-test/b-SdbSt-insert-rt.png)
 
 ## Limit test
 
@@ -166,11 +166,11 @@ Response Time:
 
 TPS:
 
-![TPS](http://shardingsphere.jd.com/document/current/img/stress-test/l-SdbSt-MdbSt-query-tps.png)
+![TPS](http://shardingsphere.apache.org/document/current/img/stress-test/l-SdbSt-MdbSt-query-tps.png)
 
 Response Time:
 
-![RT](http://shardingsphere.jd.com/document/current/img/stress-test/l-SdbSt-MdbSt-query-rt.png)
+![RT](http://shardingsphere.apache.org/document/current/img/stress-test/l-SdbSt-MdbSt-query-rt.png)
 
 ### SELECT in two tables in one DB and The SELECT in two tables in each of two DBs 
 
@@ -182,11 +182,11 @@ Response Time:
 
 TPS:
 
-![TPS](http://shardingsphere.jd.com/document/current/img/stress-test/l-SdbMt-MdbMt-query-tps.png)
+![TPS](http://shardingsphere.apache.org/document/current/img/stress-test/l-SdbMt-MdbMt-query-tps.png)
 
 Response Time:
 
-![RT](http://shardingsphere.jd.com/document/current/img/stress-test/l-SdbMt-MdbMt-query-rt.png)
+![RT](http://shardingsphere.apache.org/document/current/img/stress-test/l-SdbMt-MdbMt-query-rt.png)
 
 ### UPDATE in one table in one DB and The UPDATE in one table in each of two DBs
 
@@ -198,11 +198,11 @@ Response Time:
 
 TPS:
 
-![TPS](http://shardingsphere.jd.com/document/current/img/stress-test/l-SdbSt-MdbSt-update-tps.png)
+![TPS](http://shardingsphere.apache.org/document/current/img/stress-test/l-SdbSt-MdbSt-update-tps.png)
 
 Response Time:
 
-![RT](http://shardingsphere.jd.com/document/current/img/stress-test/l-SdbSt-MdbSt-update-rt.png)
+![RT](http://shardingsphere.apache.org/document/current/img/stress-test/l-SdbSt-MdbSt-update-rt.png)
 
 ### UPDATE in two tables in one DB and The UPDATE in two tables in each of two DBs
 
@@ -214,11 +214,11 @@ Response Time:
 
 TPS:
 
-![TPS](http://shardingsphere.jd.com/document/current/img/stress-test/l-SdbMt-MdbMt-update-tps.png)
+![TPS](http://shardingsphere.apache.org/document/current/img/stress-test/l-SdbMt-MdbMt-update-tps.png)
 
 Response Time:
 
-![RT](http://shardingsphere.jd.com/document/current/img/stress-test/l-SdbMt-MdbMt-update-rt.png)
+![RT](http://shardingsphere.apache.org/document/current/img/stress-test/l-SdbMt-MdbMt-update-rt.png)
 
 ### INSERT in one table in one DB and The INSERT in one table in each of two DBs
 
@@ -230,11 +230,11 @@ Response Time:
 
 TPS:
 
-![TPS](http://shardingsphere.jd.com/document/current/img/stress-test/l-SdbSt-MdbSt-insert-tps.png)
+![TPS](http://shardingsphere.apache.org/document/current/img/stress-test/l-SdbSt-MdbSt-insert-tps.png)
 
 Response Time:
 
-![RT](http://shardingsphere.jd.com/document/current/img/stress-test/l-SdbSt-MdbSt-insert-rt.png)
+![RT](http://shardingsphere.apache.org/document/current/img/stress-test/l-SdbSt-MdbSt-insert-rt.png)
 
 ### INSERT in two tables in one DB and The INSERT in two tables in each of two DBs
 
@@ -246,11 +246,11 @@ Response Time:
 
 TPS:
 
-![TPS](http://shardingsphere.jd.com/document/current/img/stress-test/l-SdbMt-MdbMt-insert-tps.png)
+![TPS](http://shardingsphere.apache.org/document/current/img/stress-test/l-SdbMt-MdbMt-insert-tps.png)
 
 Response Time:
 
-![RT](http://shardingsphere.jd.com/document/current/img/stress-test/l-SdbMt-MdbMt-insert-rt.png)
+![RT](http://shardingsphere.apache.org/document/current/img/stress-test/l-SdbMt-MdbMt-insert-rt.png)
 
 ### Operations in one table in each of two DBs for Sharding-JDBC 1.4.2 and 1.5.2
 
@@ -262,11 +262,11 @@ Response Time:
 
 TPS:
 
-![TPS](http://shardingsphere.jd.com/document/current/img/stress-test/152vs142tps.png)
+![TPS](http://shardingsphere.apache.org/document/current/img/stress-test/152vs142tps.png)
 
 Response Time:
 
-![RT](http://shardingsphere.jd.com/document/current/img/stress-test/152vs142rt.png)
+![RT](http://shardingsphere.apache.org/document/current/img/stress-test/152vs142rt.png)
 
 ## Appendix
 
