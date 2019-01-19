@@ -19,7 +19,6 @@ package org.apache.shardingsphere.core.parsing.antlr.extractor.impl.expression;
 
 import com.google.common.base.Optional;
 import com.google.common.base.Preconditions;
-import lombok.RequiredArgsConstructor;
 import org.antlr.v4.runtime.ParserRuleContext;
 import org.antlr.v4.runtime.tree.ParseTree;
 import org.antlr.v4.runtime.tree.TerminalNode;
@@ -43,12 +42,11 @@ import org.apache.shardingsphere.core.util.SQLUtil;
  *
  * @author zhangliang
  */
-@RequiredArgsConstructor
 public final class SelectExpressionExtractor implements OptionalSQLSegmentExtractor {
     
-    private final SubqueryExtractor subqueryExtractor = new SubqueryExtractor();
-    
     private final StarExpressionExtractor starExpressionExtractor = new StarExpressionExtractor();
+    
+    private final SubqueryExtractor subqueryExtractor = new SubqueryExtractor();
     
     @Override
     public Optional<? extends ExpressionSegment> extract(final ParserRuleContext expressionNode) {
