@@ -85,7 +85,7 @@ Detailed steps are as follow:
 
 2. Through the equation in the following picture, acquire the SQL route result group to be executed by each database case within the range that maxConnectionSizePerQuery permits; calculate the most optimized connection mode of this request.
 
-![Connection mode calculate formula](http://shardingsphere.jd.com/document/current/img/sharding/connection_mode_en.png)
+![Connection mode calculate formula](http://shardingsphere.apache.org/document/current/img/sharding/connection_mode_en.png)
 
 Within the range that maxConnectionSizePerQuery permits, when the request number that one connection needs to execute is more than 1, meaning current database connection cannot hold the corresponding data result set, it must uses memory merger. 
 On the contrary, when it equals to 1, meaning current database connection can hold the according data result set, it can use stream merger.
@@ -103,7 +103,7 @@ It is possible that Query A has already acquired a database connection of that d
 If the maximum connection number that database connection pool permits is 2, those two query requests will wait forever. 
 The following picture has illustrated the deadlock situation:
 
-![Dead lock](http://shardingsphere.jd.com/document/current/img/sharding/dead_lock_en.png)
+![Dead lock](http://shardingsphere.apache.org/document/current/img/sharding/dead_lock_en.png)
 
 To avoid deadlock, ShardingSphere will go through synchronous processing as acquiring database connection. 
 As creating execution units, it acquires all the database connections that this SQL requires for once with atomic method, and reduces the possibility of only acquiring part of the resources. 
@@ -130,4 +130,4 @@ Through the connection mode acquired in preparation phrase, ShardingSphere will 
 
 The overall structure division of execution engine is shown as the following picture:
 
-![Execute engine architecture](http://shardingsphere.jd.com/document/current/img/sharding/execute_architecture_en.png)
+![Execute engine architecture](http://shardingsphere.apache.org/document/current/img/sharding/execute_architecture_en.png)

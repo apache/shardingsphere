@@ -30,17 +30,18 @@ shardingRule:
         actualDataNodes: demo_ds_${0..1}.t_order_${0..1}
         databaseStrategy:
           hint:
-            algorithmClassName: io.shardingsphere.userAlgo.HintAlgorithm
+            algorithmClassName: org.apache.shardingsphere.userAlgo.HintAlgorithm
         tableStrategy:
           hint:
-            algorithmClassName: io.shardingsphere.userAlgo.HintAlgorithm
+            algorithmClassName: org.apache.shardingsphere.userAlgo.HintAlgorithm
   defaultDatabaseStrategy:
     inline:
       shardingColumn: user_id
       algorithmExpression: demo_ds_${user_id % 2}
   defaultTableStrategy:
     none:
-  defaultKeyGeneratorClassName: io.shardingsphere.core.keygen.DefaultKeyGenerator
+  defaultKeyGenerator:
+    type: SNOWFLAKE
   props:
       sql.show: true
 ```

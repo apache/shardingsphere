@@ -75,11 +75,11 @@ SELECT name, SUM(score) FROM t_score GROUP BY name ORDER BY name;
 When order-by item and group-by item are totally consistent, the data obtained are continuous. 
 For the data needed to group are all stored in the data value currently pointed by cursors of each data result set, stream group-by merger can be used, as illustrated by the diagram:
 
-![Group by merger examole 1](http://shardingsphere.jd.com/document/current/img/sharding/group_by_merge_1_v3.png)
+![Group by merger examole 1](http://shardingsphere.apache.org/document/current/img/sharding/group_by_merge_1_v3.png)
 
 The merging logic will be similar as that of order-by merger. The following picture shows how stream group-by merger works when using next invocation.
 
-![Group by merger examole 2](http://shardingsphere.jd.com/document/current/img/sharding/group_by_merge_2_v2.png)
+![Group by merger examole 2](http://shardingsphere.apache.org/document/current/img/sharding/group_by_merge_2_v2.png)
 
 We can see from the picture, in the first next invocation, t_score_java in the first position, along with the data having the grouping value of “Jetty” in other result sets, will be popped out of the queue. 
 After acquiring all the students’ scores with the name of “Jetty”, the accumulation operation will be proceeded. 
@@ -147,4 +147,4 @@ SELECT * FROM t_order WHERE id > 10000000 LIMIT 10;
 
 The overall structure division of merger engine is shown in the following diagram:
 
-![Merge Architecture](http://shardingsphere.jd.com/document/current/img/sharding/merge_architecture_en.png)
+![Merge Architecture](http://shardingsphere.apache.org/document/current/img/sharding/merge_architecture_en.png)
