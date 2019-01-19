@@ -12,20 +12,20 @@ weight = 4
 
 ```xml
 <dependency>
-    <groupId>io.shardingsphere</groupId>
+    <groupId>org.apache.shardingsphere</groupId>
     <artifactId>sharding-jdbc-orchestration</artifactId>
     <version>${sharding-sphere.version}</version>
 </dependency>
 
 <!--若使用zookeeper, 请加入下面Maven坐标-->
 <dependency>
-    <groupId>io.shardingsphere</groupId>
+    <groupId>org.apache.shardingsphere</groupId>
     <artifactId>sharding-orchestration-reg-zookeeper-curator</artifactId>
 </dependency>
 
 <!--若使用etcd, 请下面Maven坐标-->
 <dependency>
-    <groupId>io.shardingsphere</groupId>
+    <groupId>org.apache.shardingsphere</groupId>
     <artifactId>sharding-orchestration-reg-etcd</artifactId>
 </dependency>
 ```
@@ -79,14 +79,14 @@ orchestration:
 
 <!--若使用zookeeper, 请加入下面Maven坐标-->
 <dependency>
-    <groupId>io.shardingsphere</groupId>
+    <groupId>org.apache.shardingsphere</groupId>
     <artifactId>sharding-orchestration-reg-zookeeper-curator</artifactId>
     <version>${sharding-sphere.version}</version>
 </dependency>
 
 <!--若使用etcd, 请加入下面Maven坐标-->
 <dependency>
-    <groupId>io.shardingsphere</groupId>
+    <groupId>org.apache.shardingsphere</groupId>
     <artifactId>sharding-orchestration-reg-etcd</artifactId>
     <version>${sharding-sphere.version}</version>
 </dependency>
@@ -102,14 +102,14 @@ orchestration:
 
 <!--若使用zookeeper, 请加入下面Maven坐标-->
 <dependency>
-    <groupId>io.shardingsphere</groupId>
+    <groupId>org.apache.shardingsphere</groupId>
     <artifactId>sharding-orchestration-reg-zookeeper-curator</artifactId>
     <version>${sharding-sphere.version}</version>
 </dependency>
 
 <!--若使用etcd, 请加入下面Maven坐标-->
 <dependency>
-    <groupId>io.shardingsphere</groupId>
+    <groupId>org.apache.shardingsphere</groupId>
     <artifactId>sharding-orchestration-reg-etcd</artifactId>
     <version>${sharding-sphere.version}</version>
 </dependency>

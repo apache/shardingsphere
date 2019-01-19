@@ -12,19 +12,19 @@ Use orchestration feature need indicate a registry center. Configuration will sa
 
 ```xml
 <dependency>
-    <groupId>io.shardingsphere</groupId>
+    <groupId>org.apache.shardingsphere</groupId>
     <artifactId>sharding-jdbc-orchestration</artifactId>
     <version>${sharding-sphere.version}</version>
 </dependency>
 <!--If you want to use zookeeper, please use the artifactId below.-->
 <dependency>
-    <groupId>io.shardingsphere</groupId>
+    <groupId>org.apache.shardingsphere</groupId>
     <artifactId>sharding-orchestration-reg-zookeeper-curator</artifactId>
 </dependency>
 
 <!--If you want to use etcd, please use the artifactId below.-->
 <dependency>
-    <groupId>io.shardingsphere</groupId>
+    <groupId>org.apache.shardingsphere</groupId>
     <artifactId>sharding-orchestration-reg-etcd</artifactId>
 </dependency>
 ```
@@ -78,14 +78,14 @@ orchestration:
 
 <!--If you want to use zookeeper, please use the artifactId below.-->
 <dependency>
-    <groupId>io.shardingsphere</groupId>
+    <groupId>org.apache.shardingsphere</groupId>
     <artifactId>sharding-orchestration-reg-zookeeper-curator</artifactId>
     <version>${sharding-sphere.version}</version>
 </dependency>
 
 <!--If you want to use etcd, please use the artifactId below.-->
 <dependency>
-    <groupId>io.shardingsphere</groupId>
+    <groupId>org.apache.shardingsphere</groupId>
     <artifactId>sharding-orchestration-reg-etcd</artifactId>
     <version>${sharding-sphere.version}</version>
 </dependency>
@@ -101,14 +101,14 @@ orchestration:
 
 <!--If you want to use zookeeper, please use the artifactId below.-->
 <dependency>
-    <groupId>io.shardingsphere</groupId>
+    <groupId>org.apache.shardingsphere</groupId>
     <artifactId>sharding-orchestration-reg-zookeeper-curator</artifactId>
     <version>${sharding-sphere.version}</version>
 </dependency>
 
 <!--If you want to use etcd, please use the artifactId below.-->
 <dependency>
-    <groupId>io.shardingsphere</groupId>
+    <groupId>org.apache.shardingsphere</groupId>
     <artifactId>sharding-orchestration-reg-etcd</artifactId>
     <version>${sharding-sphere.version}</version>
 </dependency>
