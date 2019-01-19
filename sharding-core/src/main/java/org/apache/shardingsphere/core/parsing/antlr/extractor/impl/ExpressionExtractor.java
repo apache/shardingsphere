@@ -59,7 +59,7 @@ public final class ExpressionExtractor implements OptionalSQLSegmentExtractor {
             return Optional.of(extractStarExpressionSegment(expressionNode, firstChildText));
         }
         Optional<ParserRuleContext> subqueryNode = ExtractorUtils.findFirstChildNode(expressionNode, RuleName.SUBQUERY);
-        return subqueryNode.isPresent() ? subqueryExtractor.extract(subqueryNode.get()) : Optional.of(extractExpressionWithAliasSegment(expressionNode));
+        return subqueryNode.isPresent() ? subqueryExtractor.extract(subqueryNode.get()) : Optional.of(extractExpressionWithAlias(expressionNode));
     }
     
     private ExpressionSegment extractStarExpressionSegment(final ParserRuleContext expressionNode, final String text) {
@@ -70,16 +70,16 @@ public final class ExpressionExtractor implements OptionalSQLSegmentExtractor {
         return result;
     }
     
-    private ExpressionWithAliasSegment extractExpressionWithAliasSegment(final ParserRuleContext expressionNode) {
-        ExpressionWithAliasSegment result = extractExpressionWithoutAlias(expressionNode);
-        Optional<String> alias = getAlias(expressionNode);
+    private ExpressionWithAliasSegment extractExpressionWithAlias(final ParserRuleContext expressionNode) {
+        ExpressionWithAliasSegment result = extractExpression(expressionNode);
+        Optional<String> alias = extractAlias(expressionNode);
         if (alias.isPresent()) {
             result.setAlias(alias.get());
         }
         return result;
     }
     
-    private ExpressionWithAliasSegment extractExpressionWithoutAlias(final ParserRuleContext expressionNode) {
+    private ExpressionWithAliasSegment extractExpression(final ParserRuleContext expressionNode) {
         Optional<ParserRuleContext> functionNode = ExtractorUtils.findFirstChildNode(expressionNode, RuleName.FUNCTION_CALL);
         if (functionNode.isPresent()) {
             return extractFunctionExpressionSegment(expressionNode, functionNode.get());
@@ -111,14 +111,19 @@ public final class ExpressionExtractor implements OptionalSQLSegmentExtractor {
         ParserRuleContext columnNode = (ParserRuleContext) expressionNode.getChild(0);
         Optional<ColumnSegment> columnSegment = new ColumnSegmentExtractor().extract(columnNode);
         Preconditions.checkState(columnSegment.isPresent());
-        return new PropertyExpressionSegment(columnSegment.get().getOwner(), columnSegment.get().getName(), columnNode.getStart().getStartIndex(), columnNode.getStop().getStopIndex());
+        return new PropertyExpressionSegment(columnSegment.get().getName(), columnSegment.get().getOwner().orNull(), columnNode.getStart().getStartIndex(), columnNode.getStop().getStopIndex());
+    }
+    
+    private Optional<String> extractAlias(final ParserRuleContext expressionNode) {
+        Optional<ParserRuleContext> aliasNode = ExtractorUtils.findFirstChildNode(expressionNode, RuleName.ALIAS);
+        return aliasNode.isPresent() ? Optional.of(SQLUtil.getExactlyValue(aliasNode.get().getText())) : Optional.<String>absent();
     }
     
     /**
-     * Extract expression segment from SQL AST.
+     * Extract common expression segment.
      *
-     * @param expressionNode expression node of AST
-     * @return CommonExpressionSegment
+     * @param expressionNode expression node
+     * @return common expression segment
      */
     public CommonExpressionSegment extractCommonExpressionSegment(final ParserRuleContext expressionNode) {
         CommonExpressionSegment result = new CommonExpressionSegment(expressionNode.getStart().getStartIndex(), expressionNode.getStop().getStopIndex());
@@ -138,10 +143,5 @@ public final class ExpressionExtractor implements OptionalSQLSegmentExtractor {
             }
         }
         return result;
-    }
-    
-    private Optional<String> getAlias(final ParserRuleContext expressionNode) {
-        Optional<ParserRuleContext> aliasNode = ExtractorUtils.findFirstChildNode(expressionNode, RuleName.ALIAS);
-        return aliasNode.isPresent() ? Optional.of(SQLUtil.getExactlyValue(aliasNode.get().getText())) : Optional.<String>absent();
     }
 }

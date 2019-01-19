@@ -164,7 +164,7 @@ public final class InsertFiller implements SQLStatementFiller<InsertSegment> {
         if (null != sqlExpression.getValue()) {
             return new GeneratedKeyCondition(column, -1, (Comparable<?>) sqlExpression.getValue());
         }
-        return new GeneratedKeyCondition(column, -1, sql.substring(sqlExpression.getStartPosition(), sqlExpression.getEndPosition() + 1));
+        return new GeneratedKeyCondition(column, -1, sql.substring(sqlExpression.getStartIndex(), sqlExpression.getStopIndex() + 1));
     }
     
     private void processGeneratedKey(final ShardingRule shardingRule, final InsertStatement insertStatement) {

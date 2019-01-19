@@ -59,7 +59,7 @@ public final class ExpressionFiller implements SQLStatementFiller {
         }
         if (sqlSegment instanceof CommonExpressionSegment) {
             CommonExpressionSegment commonSegment = (CommonExpressionSegment) sqlSegment;
-            String expression = sql.substring(commonSegment.getStartPosition(), commonSegment.getEndPosition() + 1);
+            String expression = sql.substring(commonSegment.getStartIndex(), commonSegment.getStopIndex() + 1);
             selectStatement.getItems().add(new CommonSelectItem(expression, commonSegment.getAlias()));
             return;
         }
@@ -93,9 +93,9 @@ public final class ExpressionFiller implements SQLStatementFiller {
     private void fillPropertyExpression(final PropertyExpressionSegment propertySegment, final SelectStatement selectStatement, final String sql) {
         Optional<String> owner = propertySegment.getOwner();
         if (owner.isPresent() && selectStatement.getTables().getTableNames().contains(owner.get())) {
-            selectStatement.addSQLToken(new TableToken(propertySegment.getStartPosition(), 0, owner.get()));
+            selectStatement.addSQLToken(new TableToken(propertySegment.getStartIndex(), 0, owner.get()));
         }
-        String expression = sql.substring(propertySegment.getStartPosition(), propertySegment.getEndPosition() + 1);
+        String expression = sql.substring(propertySegment.getStartIndex(), propertySegment.getStopIndex() + 1);
         selectStatement.getItems().add(new CommonSelectItem(expression, propertySegment.getAlias()));
     }
     

@@ -31,9 +31,9 @@ import lombok.Setter;
 @Setter
 public final class CommonExpressionSegment extends ExpressionWithAliasSegment {
     
-    private final int startPosition;
+    private final int startIndex;
     
-    private final int endPosition;
+    private final int stopIndex;
     
     private int index = -1;
     

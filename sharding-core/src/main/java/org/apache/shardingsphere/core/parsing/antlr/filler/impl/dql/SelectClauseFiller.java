@@ -114,7 +114,7 @@ public final class SelectClauseFiller implements SQLStatementFiller<SelectClause
     private DistinctSelectItem createDistinctCommonItem(final SelectStatement selectStatement, final String sql, final Set<String> distinctColumnNames,
                                                         final CommonExpressionSegment expressionSegment) {
         DistinctSelectItem distinctSelectItem = new DistinctSelectItem(distinctColumnNames, expressionSegment.getAlias());
-        String commonExpression = sql.substring(expressionSegment.getStartPosition(), expressionSegment.getEndPosition() + 1);
+        String commonExpression = sql.substring(expressionSegment.getStartIndex(), expressionSegment.getStopIndex() + 1);
         int leftParenPosition = commonExpression.indexOf("(");
         if (0 <= leftParenPosition) {
             int rightParenPosition = commonExpression.lastIndexOf(")");
