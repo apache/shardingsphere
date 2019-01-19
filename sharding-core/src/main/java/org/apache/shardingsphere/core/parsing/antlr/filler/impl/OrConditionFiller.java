@@ -136,7 +136,7 @@ public final class OrConditionFiller implements SQLStatementFiller<OrConditionSe
                 }
             }
             if (needSharding) {
-                fillResult(result, sqlStatement, shardingCondition, sql);
+                fillResult(result, shardingCondition, sql);
             } else {
                 result.getAndConditions().clear();
                 break;
@@ -145,7 +145,7 @@ public final class OrConditionFiller implements SQLStatementFiller<OrConditionSe
         return result;
     }
     
-    private void fillResult(final OrCondition result, final SQLStatement sqlStatement, final List<ConditionSegment> shardingCondition, final String sql) {
+    private void fillResult(final OrCondition result, final List<ConditionSegment> shardingCondition, final String sql) {
         if (shardingCondition.isEmpty()) {
             return;
         }

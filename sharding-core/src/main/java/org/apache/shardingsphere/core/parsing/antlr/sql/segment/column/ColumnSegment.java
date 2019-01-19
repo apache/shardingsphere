@@ -30,21 +30,23 @@ import org.apache.shardingsphere.core.parsing.antlr.sql.segment.expr.SQLRightVal
  */
 @RequiredArgsConstructor
 @Getter
+@Setter
 public final class ColumnSegment implements SQLRightValueExpressionSegment {
-    
-    private final Optional<String> owner;
     
     private final String name;
     
-    @Setter
-    private String tableName;
-    
     private final int startPosition;
     
-    public ColumnSegment(final Optional<String> owner, final String name, final String tableName, final int startPosition) {
-        this.owner = owner;
-        this.name = name;
-        this.tableName = tableName;
-        this.startPosition = startPosition;
+    private String owner;
+    
+    private String tableName = "";
+    
+    /**
+     * Get owner.
+     * 
+     * @return owner
+     */
+    public Optional<String> getOwner() {
+        return Optional.fromNullable(owner);
     }
 }

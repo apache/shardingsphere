@@ -46,21 +46,26 @@ public final class ColumnSegmentExtractor implements OptionalSQLSegmentExtractor
             return Optional.absent();
         }
         String columnText = columnNode.get().getText();
-        int dotPosition = columnText.contains(Symbol.DOT.getLiterals()) ? columnText.lastIndexOf(Symbol.DOT.getLiterals()) : 0;
-        String columnName = columnText;
+        int dotStartIndex = columnText.lastIndexOf(Symbol.DOT.getLiterals());
+        String columnName;
         Optional<String> ownerName;
-        String tableName = "";
-        if (0 < dotPosition) {
-            columnName = columnText.substring(dotPosition + 1);
-            ownerName = Optional.of(SQLUtil.getExactlyValue(columnText.substring(0, dotPosition)));
+        String tableName;
+        if (-1 != dotStartIndex) {
+            columnName = columnText.substring(dotStartIndex + 1);
+            ownerName = Optional.of(SQLUtil.getExactlyValue(columnText.substring(0, dotStartIndex)));
             tableName = tableAlias.get(ownerName.get());
         } else {
+            columnName = columnText;
             ownerName = Optional.absent();
+            tableName = "";
         }
         if ("".equals(tableName) && 1 == tableAlias.size()) {
             tableName = tableAlias.values().iterator().next();
         }
         columnName = SQLUtil.getExactlyValue(columnName);
-        return Optional.of(new ColumnSegment(ownerName, columnName, tableName, columnNode.get().getStart().getStartIndex()));
+        ColumnSegment result = new ColumnSegment(columnName, columnNode.get().getStart().getStartIndex());
+        result.setOwner(ownerName.orNull());
+        result.setTableName(tableName);
+        return Optional.of(result);
     }
 }
