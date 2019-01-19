@@ -2,20 +2,20 @@
 <rss version="2.0" xmlns:atom="http://www.w3.org/2005/Atom">
   <channel>
     <title>使用规范 on ShardingSphere</title>
-    <link>http://shardingsphere.io/document/current/cn/features/sharding/use-norms/</link>
+    <link>http://shardingsphere.apache.org/document/current/cn/features/sharding/use-norms/</link>
     <description>Recent content in 使用规范 on ShardingSphere</description>
     <generator>Hugo -- gohugo.io</generator>
     <language>en-us</language>
     
-	<atom:link href="http://shardingsphere.io/document/current/cn/features/sharding/use-norms/index.xml" rel="self" type="application/rss+xml" />
+	<atom:link href="http://shardingsphere.apache.org/document/current/cn/features/sharding/use-norms/index.xml" rel="self" type="application/rss+xml" />
     
     
     <item>
       <title>SQL</title>
-      <link>http://shardingsphere.io/document/current/cn/features/sharding/use-norms/sql/</link>
+      <link>http://shardingsphere.apache.org/document/current/cn/features/sharding/use-norms/sql/</link>
       <pubDate>Mon, 01 Jan 0001 00:00:00 +0000</pubDate>
       
-      <guid>http://shardingsphere.io/document/current/cn/features/sharding/use-norms/sql/</guid>
+      <guid>http://shardingsphere.apache.org/document/current/cn/features/sharding/use-norms/sql/</guid>
       <description>由于SQL语法灵活复杂，分布式数据库和单机数据库的查询场景又不完全相同，难免有和单机数据库不兼容的SQL出现。
 本文详细罗列出已明确可支持的SQL种类以及已明确不支持的SQL种类，尽量让使用者避免踩坑。
 其中必然有未涉及到的SQL欢迎补充，未支持的SQL也尽量会在未来的版本中支持。
@@ -25,10 +25,10 @@
     
     <item>
       <title>分页</title>
-      <link>http://shardingsphere.io/document/current/cn/features/sharding/use-norms/pagination/</link>
+      <link>http://shardingsphere.apache.org/document/current/cn/features/sharding/use-norms/pagination/</link>
       <pubDate>Mon, 01 Jan 0001 00:00:00 +0000</pubDate>
       
-      <guid>http://shardingsphere.io/document/current/cn/features/sharding/use-norms/pagination/</guid>
+      <guid>http://shardingsphere.apache.org/document/current/cn/features/sharding/use-norms/pagination/</guid>
       <description>完全支持MySQL、PostgreSQL和Oracle的分页查询，SQLServer由于分页查询较为复杂，仅部分支持。
 分页性能 性能瓶颈 查询偏移量过大的分页会导致数据库获取数据性能低下，以MySQL为例：
 SELECT * FROM t_order ORDER BY id LIMIT 1000000, 10  这句SQL会使得MySQL在无法利用索引的情况下跳过1000000条记录后，再获取10条记录，其性能可想而知。 而在分库分表的情况下（假设分为2个库），为了保证数据的正确性，SQL会改写为：

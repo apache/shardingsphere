@@ -3,173 +3,173 @@
   xmlns:xhtml="http://www.w3.org/1999/xhtml">
   
   <url>
-    <loc>http://shardingsphere.io/community/en/contribute/</loc>
+    <loc>http://shardingsphere.apache.org/community/en/contribute/</loc>
     <xhtml:link
                 rel="alternate"
                 hreflang="cn"
-                href="http://shardingsphere.io/community/cn/contribute/"
+                href="http://shardingsphere.apache.org/community/cn/contribute/"
                 />
     <xhtml:link
                 rel="alternate"
                 hreflang="en"
-                href="http://shardingsphere.io/community/en/contribute/"
+                href="http://shardingsphere.apache.org/community/en/contribute/"
                 />
   </url>
   
   <url>
-    <loc>http://shardingsphere.io/community/en/contribute/subscribe/</loc>
+    <loc>http://shardingsphere.apache.org/community/en/contribute/subscribe/</loc>
     <xhtml:link
                 rel="alternate"
                 hreflang="cn"
-                href="http://shardingsphere.io/community/cn/contribute/subscribe/"
+                href="http://shardingsphere.apache.org/community/cn/contribute/subscribe/"
                 />
     <xhtml:link
                 rel="alternate"
                 hreflang="en"
-                href="http://shardingsphere.io/community/en/contribute/subscribe/"
+                href="http://shardingsphere.apache.org/community/en/contribute/subscribe/"
                 />
   </url>
   
   <url>
-    <loc>http://shardingsphere.io/community/en/contribute/contributor/</loc>
+    <loc>http://shardingsphere.apache.org/community/en/contribute/contributor/</loc>
     <xhtml:link
                 rel="alternate"
                 hreflang="cn"
-                href="http://shardingsphere.io/community/cn/contribute/contributor/"
+                href="http://shardingsphere.apache.org/community/cn/contribute/contributor/"
                 />
     <xhtml:link
                 rel="alternate"
                 hreflang="en"
-                href="http://shardingsphere.io/community/en/contribute/contributor/"
+                href="http://shardingsphere.apache.org/community/en/contribute/contributor/"
                 />
   </url>
   
   <url>
-    <loc>http://shardingsphere.io/community/en/company/</loc>
+    <loc>http://shardingsphere.apache.org/community/en/company/</loc>
     <xhtml:link
                 rel="alternate"
                 hreflang="cn"
-                href="http://shardingsphere.io/community/cn/company/"
+                href="http://shardingsphere.apache.org/community/cn/company/"
                 />
     <xhtml:link
                 rel="alternate"
                 hreflang="en"
-                href="http://shardingsphere.io/community/en/company/"
+                href="http://shardingsphere.apache.org/community/en/company/"
                 />
   </url>
   
   <url>
-    <loc>http://shardingsphere.io/community/en/contribute/committer/</loc>
+    <loc>http://shardingsphere.apache.org/community/en/contribute/committer/</loc>
     <xhtml:link
                 rel="alternate"
                 hreflang="cn"
-                href="http://shardingsphere.io/community/cn/contribute/committer/"
+                href="http://shardingsphere.apache.org/community/cn/contribute/committer/"
                 />
     <xhtml:link
                 rel="alternate"
                 hreflang="en"
-                href="http://shardingsphere.io/community/en/contribute/committer/"
+                href="http://shardingsphere.apache.org/community/en/contribute/committer/"
                 />
   </url>
   
   <url>
-    <loc>http://shardingsphere.io/community/en/contribute/2fa/</loc>
+    <loc>http://shardingsphere.apache.org/community/en/contribute/2fa/</loc>
     <xhtml:link
                 rel="alternate"
                 hreflang="cn"
-                href="http://shardingsphere.io/community/cn/contribute/2fa/"
+                href="http://shardingsphere.apache.org/community/cn/contribute/2fa/"
                 />
     <xhtml:link
                 rel="alternate"
                 hreflang="en"
-                href="http://shardingsphere.io/community/en/contribute/2fa/"
+                href="http://shardingsphere.apache.org/community/en/contribute/2fa/"
                 />
   </url>
   
   <url>
-    <loc>http://shardingsphere.io/community/en/contribute/code-conduct/</loc>
+    <loc>http://shardingsphere.apache.org/community/en/contribute/code-conduct/</loc>
     <xhtml:link
                 rel="alternate"
                 hreflang="cn"
-                href="http://shardingsphere.io/community/cn/contribute/code-conduct/"
+                href="http://shardingsphere.apache.org/community/cn/contribute/code-conduct/"
                 />
     <xhtml:link
                 rel="alternate"
                 hreflang="en"
-                href="http://shardingsphere.io/community/en/contribute/code-conduct/"
+                href="http://shardingsphere.apache.org/community/en/contribute/code-conduct/"
                 />
   </url>
   
   <url>
-    <loc>http://shardingsphere.io/community/en/contribute/external-dependency/</loc>
+    <loc>http://shardingsphere.apache.org/community/en/contribute/external-dependency/</loc>
     <xhtml:link
                 rel="alternate"
                 hreflang="cn"
-                href="http://shardingsphere.io/community/cn/contribute/external-dependency/"
+                href="http://shardingsphere.apache.org/community/cn/contribute/external-dependency/"
                 />
     <xhtml:link
                 rel="alternate"
                 hreflang="en"
-                href="http://shardingsphere.io/community/en/contribute/external-dependency/"
+                href="http://shardingsphere.apache.org/community/en/contribute/external-dependency/"
                 />
   </url>
   
   <url>
-    <loc>http://shardingsphere.io/community/en/contribute/test-engine/</loc>
+    <loc>http://shardingsphere.apache.org/community/en/contribute/test-engine/</loc>
     <xhtml:link
                 rel="alternate"
                 hreflang="cn"
-                href="http://shardingsphere.io/community/cn/contribute/test-engine/"
+                href="http://shardingsphere.apache.org/community/cn/contribute/test-engine/"
                 />
     <xhtml:link
                 rel="alternate"
                 hreflang="en"
-                href="http://shardingsphere.io/community/en/contribute/test-engine/"
+                href="http://shardingsphere.apache.org/community/en/contribute/test-engine/"
                 />
   </url>
   
   <url>
-    <loc>http://shardingsphere.io/community/en/categories/</loc>
+    <loc>http://shardingsphere.apache.org/community/en/categories/</loc>
     <priority>0</priority>
     <xhtml:link
                 rel="alternate"
                 hreflang="cn"
-                href="http://shardingsphere.io/community/cn/categories/"
+                href="http://shardingsphere.apache.org/community/cn/categories/"
                 />
     <xhtml:link
                 rel="alternate"
                 hreflang="en"
-                href="http://shardingsphere.io/community/en/categories/"
+                href="http://shardingsphere.apache.org/community/en/categories/"
                 />
   </url>
   
   <url>
-    <loc>http://shardingsphere.io/community/en/</loc>
+    <loc>http://shardingsphere.apache.org/community/en/</loc>
     <priority>0</priority>
     <xhtml:link
                 rel="alternate"
                 hreflang="cn"
-                href="http://shardingsphere.io/community/cn/"
+                href="http://shardingsphere.apache.org/community/cn/"
                 />
     <xhtml:link
                 rel="alternate"
                 hreflang="en"
-                href="http://shardingsphere.io/community/en/"
+                href="http://shardingsphere.apache.org/community/en/"
                 />
   </url>
   
   <url>
-    <loc>http://shardingsphere.io/community/en/tags/</loc>
+    <loc>http://shardingsphere.apache.org/community/en/tags/</loc>
     <priority>0</priority>
     <xhtml:link
                 rel="alternate"
                 hreflang="cn"
-                href="http://shardingsphere.io/community/cn/tags/"
+                href="http://shardingsphere.apache.org/community/cn/tags/"
                 />
     <xhtml:link
                 rel="alternate"
                 hreflang="en"
-                href="http://shardingsphere.io/community/en/tags/"
+                href="http://shardingsphere.apache.org/community/en/tags/"
                 />
   </url>
   
