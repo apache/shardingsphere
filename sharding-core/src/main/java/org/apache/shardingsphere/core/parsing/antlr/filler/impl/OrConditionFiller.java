@@ -34,11 +34,14 @@ import org.apache.shardingsphere.core.parsing.parser.context.condition.AndCondit
 import org.apache.shardingsphere.core.parsing.parser.context.condition.Column;
 import org.apache.shardingsphere.core.parsing.parser.context.condition.Condition;
 import org.apache.shardingsphere.core.parsing.parser.context.condition.OrCondition;
+import org.apache.shardingsphere.core.parsing.parser.context.table.Table;
+import org.apache.shardingsphere.core.parsing.parser.context.table.Tables;
 import org.apache.shardingsphere.core.parsing.parser.expression.SQLExpression;
 import org.apache.shardingsphere.core.parsing.parser.expression.SQLNumberExpression;
 import org.apache.shardingsphere.core.parsing.parser.expression.SQLPlaceholderExpression;
 import org.apache.shardingsphere.core.parsing.parser.expression.SQLTextExpression;
 import org.apache.shardingsphere.core.parsing.parser.sql.SQLStatement;
+import org.apache.shardingsphere.core.parsing.parser.sql.dql.select.SelectStatement;
 import org.apache.shardingsphere.core.parsing.parser.token.TableToken;
 import org.apache.shardingsphere.core.rule.ShardingRule;
 
@@ -119,7 +122,8 @@ public final class OrConditionFiller implements SQLStatementFiller<OrConditionSe
                     needSharding = true;
                     continue;
                 }
-                if ("".equals(condition.getColumn().getTableName())) {
+                String columnTableName = getTableName(shardingRule, sqlStatement, condition);
+                if ("".equals(columnTableName)) {
                     if (sqlStatement.getTables().isSingleTable()) {
                         condition.getColumn().setTableName(sqlStatement.getTables().getSingleTableName());
                     } else {
@@ -130,13 +134,13 @@ public final class OrConditionFiller implements SQLStatementFiller<OrConditionSe
                         }
                     }
                 }
-                if (shardingRule.isShardingColumn(new Column(condition.getColumn().getName(), condition.getColumn().getTableName()))) {
+                if (shardingRule.isShardingColumn(new Column(condition.getColumn().getName(), columnTableName))) {
                     shardingCondition.add(condition);
                     needSharding = true;
                 }
             }
             if (needSharding) {
-                fillResult(result, shardingCondition, sql);
+                fillResult(sqlStatement, shardingRule, result, shardingCondition, sql);
             } else {
                 result.getAndConditions().clear();
                 break;
@@ -145,14 +149,14 @@ public final class OrConditionFiller implements SQLStatementFiller<OrConditionSe
         return result;
     }
     
-    private void fillResult(final OrCondition result, final List<ConditionSegment> shardingCondition, final String sql) {
+    private void fillResult(final SQLStatement sqlStatement, final ShardingRule shardingRule, final OrCondition orCondition, final List<ConditionSegment> shardingCondition, final String sql) {
         if (shardingCondition.isEmpty()) {
             return;
         }
         AndCondition andConditionResult = new AndCondition();
-        result.getAndConditions().add(andConditionResult);
+        orCondition.getAndConditions().add(andConditionResult);
         for (ConditionSegment eachCondition : shardingCondition) {
-            Column column = new Column(eachCondition.getColumn().getName(), eachCondition.getColumn().getTableName());
+            Column column = new Column(eachCondition.getColumn().getName(), getTableName(shardingRule, sqlStatement, eachCondition));
             if (ShardingOperator.EQUAL == eachCondition.getOperator()) {
                 EqualsValueExpressionSegment expressionSegment = (EqualsValueExpressionSegment) eachCondition.getExpression();
                 Optional<Condition> condition = buildEqualsCondition(column, expressionSegment.getExpression(), sql);
@@ -191,6 +195,31 @@ public final class OrConditionFiller implements SQLStatementFiller<OrConditionSe
                 andConditionResult.getConditions().add(new Condition(column, beginExpress.get(), endExpress.get()));
             }
         }
+    }
+    
+    // TODO hongjun: find table from parent select statement, should find table in subquery level only
+    private String getTableName(final ShardingRule shardingRule, final SQLStatement sqlStatement, final ConditionSegment conditionSegment) {
+        if (!(sqlStatement instanceof SelectStatement)) {
+            return getTableName(shardingRule, sqlStatement.getTables(), conditionSegment);
+        }
+        SelectStatement currentSelectStatement = (SelectStatement) sqlStatement;
+        while (null != currentSelectStatement.getParentStatement()) {
+            currentSelectStatement = currentSelectStatement.getParentStatement();
+            String tableName = getTableName(shardingRule, currentSelectStatement.getTables(), conditionSegment);
+            if (!"".equals(tableName)) {
+                return tableName;
+            }
+        }
+        return getTableName(shardingRule, currentSelectStatement.getTables(), conditionSegment);
+    }
+    
+    private String getTableName(final ShardingRule shardingRule, final Tables tables, final ConditionSegment conditionSegment) {
+        Collection<String> shardingLogicTableNames = shardingRule.getShardingLogicTableNames(tables.getTableNames());
+        if (tables.isSingleTable() || tables.isSameTable() || 1 == shardingLogicTableNames.size() || shardingRule.isAllBindingTables(shardingLogicTableNames)) {
+            return tables.getSingleTableName();
+        }
+        Optional<Table> table = tables.find(conditionSegment.getColumn().getOwner().orNull());
+        return table.isPresent() ? table.get().getName() : "";
     }
     
     /**

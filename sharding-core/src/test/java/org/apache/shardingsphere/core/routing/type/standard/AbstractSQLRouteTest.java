@@ -42,7 +42,7 @@ import static org.junit.Assert.assertThat;
 
 public class AbstractSQLRouteTest {
     
-    protected SQLRouteResult route(final String sql, final List<Object> parameters) {
+    protected SQLRouteResult assertRoute(final String sql, final List<Object> parameters) {
         ShardingRule shardingRule = createShardingRule();
         PreparedStatementRoutingEngine engine = new PreparedStatementRoutingEngine(
                 sql, shardingRule, new ShardingMetaData(buildShardingDataSourceMetaData(), buildShardingTableMetaData()), DatabaseType.MySQL, true);
