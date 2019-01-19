@@ -97,7 +97,8 @@ Database and table sharding configuration, including sharding + read-write split
 tables:
   t_order:
     actualDataNodes: ds_$->{0..1}.t_order_$->{0..1}
-    keyGeneratorColumnName: order_id
+    keyGenerator:
+      column: order_id
     logicTable: t_order
     tableStrategy:
       inline:
@@ -105,7 +106,8 @@ tables:
         shardingColumn: order_id
   t_order_item:
     actualDataNodes: ds_$->{0..1}.t_order_item_$->{0..1}
-    keyGeneratorColumnName: order_item_id
+    keyGenerator:
+      column: order_item_id
     logicTable: t_order_item
     tableStrategy:
       inline:
