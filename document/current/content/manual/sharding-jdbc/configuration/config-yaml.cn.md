@@ -233,7 +233,7 @@ masterSlaveRule: # 这里配置这个规则的话,相当于是全局读写分离
   masterDataSourceName: master_ds_0 # 主库的DataSource名称
   slaveDataSourceNames: # 从库的DataSource列表,至少需要有一个
     - slave_ds_0
-  loadBalanceAlgorithmClassName: io.shardingsphere.api.algorithm.masterslave # MasterSlaveLoadBalanceAlgorithm接口的实现类,允许自定义实现 默认提供两个,配置路径为io.shardingsphere.api.algorithm.masterslave下的RandomMasterSlaveLoadBalanceAlgorithm(随机Random)与RoundRobinMasterSlaveLoadBalanceAlgorithm(轮询:次数%从库数量)
+  loadBalanceAlgorithmClassName: org.apache.shardingsphere.api.algorithm.masterslave # MasterSlaveLoadBalanceAlgorithm接口的实现类,允许自定义实现 默认提供两个,配置路径为org.apache.shardingsphere.api.algorithm.masterslave下的RandomMasterSlaveLoadBalanceAlgorithm(随机Random)与RoundRobinMasterSlaveLoadBalanceAlgorithm(轮询:次数%从库数量)
   loadBalanceAlgorithmType: #从库负载均衡算法类型，可选值：ROUND_ROBIN，RANDOM。若loadBalanceAlgorithmClassName存在则忽略该配置,默认为ROUND_ROBIN
 
 shardingRule: # sharding的配置
