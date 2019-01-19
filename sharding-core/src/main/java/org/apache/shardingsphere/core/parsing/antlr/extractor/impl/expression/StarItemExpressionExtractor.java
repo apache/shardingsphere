@@ -20,25 +20,25 @@ package org.apache.shardingsphere.core.parsing.antlr.extractor.impl.expression;
 import com.google.common.base.Optional;
 import org.antlr.v4.runtime.ParserRuleContext;
 import org.apache.shardingsphere.core.parsing.antlr.extractor.OptionalSQLSegmentExtractor;
-import org.apache.shardingsphere.core.parsing.antlr.sql.segment.expr.StarExpressionSegment;
+import org.apache.shardingsphere.core.parsing.antlr.sql.segment.expr.StarItemExpressionSegment;
 import org.apache.shardingsphere.core.parsing.lexer.token.Symbol;
 
 /**
- * Star expression extractor.
+ * Star item expression extractor.
  *
  * @author zhangliang
  */
-public final class StarExpressionExtractor implements OptionalSQLSegmentExtractor {
+public final class StarItemExpressionExtractor implements OptionalSQLSegmentExtractor {
     
     @Override
-    public Optional<StarExpressionSegment> extract(final ParserRuleContext expressionNode) {
+    public Optional<StarItemExpressionSegment> extract(final ParserRuleContext expressionNode) {
         String text = expressionNode.getText();
         if (!text.endsWith(Symbol.STAR.getLiterals())) {
             return Optional.absent();
         }
-        StarExpressionSegment result = text.contains(Symbol.DOT.getLiterals())
-                ? new StarExpressionSegment(text.substring(0, text.indexOf(Symbol.DOT.getLiterals())), expressionNode.getStart().getStartIndex())
-                : new StarExpressionSegment(expressionNode.getStart().getStartIndex());
+        StarItemExpressionSegment result = text.contains(Symbol.DOT.getLiterals())
+                ? new StarItemExpressionSegment(text.substring(0, text.indexOf(Symbol.DOT.getLiterals())), expressionNode.getStart().getStartIndex())
+                : new StarItemExpressionSegment(expressionNode.getStart().getStartIndex());
         return Optional.of(result);
     }
 }

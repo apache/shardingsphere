@@ -26,7 +26,7 @@ import org.apache.shardingsphere.core.parsing.antlr.sql.segment.expr.CommonExpre
 import org.apache.shardingsphere.core.parsing.antlr.sql.segment.expr.ExpressionSegment;
 import org.apache.shardingsphere.core.parsing.antlr.sql.segment.expr.FunctionExpressionSegment;
 import org.apache.shardingsphere.core.parsing.antlr.sql.segment.expr.PropertyExpressionSegment;
-import org.apache.shardingsphere.core.parsing.antlr.sql.segment.expr.StarExpressionSegment;
+import org.apache.shardingsphere.core.parsing.antlr.sql.segment.expr.StarItemExpressionSegment;
 import org.apache.shardingsphere.core.parsing.parser.constant.DerivedAlias;
 import org.apache.shardingsphere.core.parsing.parser.context.selectitem.DistinctSelectItem;
 import org.apache.shardingsphere.core.parsing.parser.sql.SQLStatement;
@@ -72,7 +72,7 @@ public final class SelectClauseFiller implements SQLStatementFiller<SelectClause
         Set<String> distinctColumnNames = new LinkedHashSet<>();
         DistinctSelectItem distinctSelectItem = null;
         int offset = 0;
-        if (firstExpression instanceof StarExpressionSegment) {
+        if (firstExpression instanceof StarItemExpressionSegment) {
             expressionFiller.fill(firstExpression, selectStatement, sql, shardingRule, shardingTableMetaData);
             selectStatement.getItems().add(new DistinctSelectItem(distinctColumnNames, Optional.<String>absent()));
         } else if (firstExpression instanceof PropertyExpressionSegment) {

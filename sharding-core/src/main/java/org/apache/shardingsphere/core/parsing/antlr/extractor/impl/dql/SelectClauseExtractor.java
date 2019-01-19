@@ -22,7 +22,7 @@ import org.antlr.v4.runtime.ParserRuleContext;
 import org.antlr.v4.runtime.tree.ParseTree;
 import org.antlr.v4.runtime.tree.TerminalNodeImpl;
 import org.apache.shardingsphere.core.parsing.antlr.extractor.OptionalSQLSegmentExtractor;
-import org.apache.shardingsphere.core.parsing.antlr.extractor.impl.expression.SelectExpressionExtractor;
+import org.apache.shardingsphere.core.parsing.antlr.extractor.impl.expression.SelectItemExpressionExtractor;
 import org.apache.shardingsphere.core.parsing.antlr.extractor.util.ExtractorUtils;
 import org.apache.shardingsphere.core.parsing.antlr.extractor.util.RuleName;
 import org.apache.shardingsphere.core.parsing.antlr.sql.segment.SelectClauseSegment;
@@ -37,7 +37,7 @@ import org.apache.shardingsphere.core.parsing.lexer.token.DefaultKeyword;
  */
 public final class SelectClauseExtractor implements OptionalSQLSegmentExtractor {
     
-    private final SelectExpressionExtractor selectExpressionExtractor = new SelectExpressionExtractor();
+    private final SelectItemExpressionExtractor selectItemExpressionExtractor = new SelectItemExpressionExtractor();
     
     @Override
     public Optional<SelectClauseSegment> extract(final ParserRuleContext ancestorNode) {
@@ -49,7 +49,7 @@ public final class SelectClauseExtractor implements OptionalSQLSegmentExtractor 
             if (selectExpressionNode instanceof TerminalNodeImpl) {
                 continue;
             }
-            Optional<? extends ExpressionSegment> expressionSegment = selectExpressionExtractor.extract((ParserRuleContext) selectExpressionNode);
+            Optional<? extends ExpressionSegment> expressionSegment = selectItemExpressionExtractor.extract((ParserRuleContext) selectExpressionNode);
             if (expressionSegment.isPresent()) {
                 result.getExpressions().add(expressionSegment.get());
             }

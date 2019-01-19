@@ -33,24 +33,24 @@ import org.apache.shardingsphere.core.parsing.antlr.sql.segment.expr.ExpressionS
 import org.apache.shardingsphere.core.parsing.antlr.sql.segment.expr.ExpressionWithAliasSegment;
 import org.apache.shardingsphere.core.parsing.antlr.sql.segment.expr.FunctionExpressionSegment;
 import org.apache.shardingsphere.core.parsing.antlr.sql.segment.expr.PropertyExpressionSegment;
-import org.apache.shardingsphere.core.parsing.antlr.sql.segment.expr.StarExpressionSegment;
+import org.apache.shardingsphere.core.parsing.antlr.sql.segment.expr.StarItemExpressionSegment;
 import org.apache.shardingsphere.core.util.NumberUtil;
 import org.apache.shardingsphere.core.util.SQLUtil;
 
 /**
- * Select expression extractor.
+ * Select item expression extractor.
  *
  * @author zhangliang
  */
-public final class SelectExpressionExtractor implements OptionalSQLSegmentExtractor {
+public final class SelectItemExpressionExtractor implements OptionalSQLSegmentExtractor {
     
-    private final StarExpressionExtractor starExpressionExtractor = new StarExpressionExtractor();
+    private final StarItemExpressionExtractor starItemExpressionExtractor = new StarItemExpressionExtractor();
     
     private final SubqueryExtractor subqueryExtractor = new SubqueryExtractor();
     
     @Override
     public Optional<? extends ExpressionSegment> extract(final ParserRuleContext expressionNode) {
-        Optional<StarExpressionSegment> starExpressionSegment = starExpressionExtractor.extract(expressionNode);
+        Optional<StarItemExpressionSegment> starExpressionSegment = starItemExpressionExtractor.extract(expressionNode);
         if (starExpressionSegment.isPresent()) {
             return starExpressionSegment;
         }

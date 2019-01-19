@@ -24,20 +24,20 @@ import lombok.Setter;
 import org.apache.shardingsphere.core.util.SQLUtil;
 
 /**
- * Star expression segment.
+ * Star item expression segment.
  * 
  * @author duhongjun
  */
 @RequiredArgsConstructor
 @Getter
 @Setter
-public final class StarExpressionSegment implements ExpressionSegment {
+public final class StarItemExpressionSegment implements ExpressionSegment {
     
     private String owner;
     
     private final int startIndex;
     
-    public StarExpressionSegment(final String owner, final int startIndex) {
+    public StarItemExpressionSegment(final String owner, final int startIndex) {
         this.owner = SQLUtil.getExactlyValue(owner);
         this.startIndex = startIndex;
     }

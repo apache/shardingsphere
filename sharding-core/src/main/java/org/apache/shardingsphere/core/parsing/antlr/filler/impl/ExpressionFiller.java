@@ -26,7 +26,7 @@ import org.apache.shardingsphere.core.parsing.antlr.sql.segment.SQLSegment;
 import org.apache.shardingsphere.core.parsing.antlr.sql.segment.expr.CommonExpressionSegment;
 import org.apache.shardingsphere.core.parsing.antlr.sql.segment.expr.FunctionExpressionSegment;
 import org.apache.shardingsphere.core.parsing.antlr.sql.segment.expr.PropertyExpressionSegment;
-import org.apache.shardingsphere.core.parsing.antlr.sql.segment.expr.StarExpressionSegment;
+import org.apache.shardingsphere.core.parsing.antlr.sql.segment.expr.StarItemExpressionSegment;
 import org.apache.shardingsphere.core.parsing.antlr.sql.segment.expr.SubquerySegment;
 import org.apache.shardingsphere.core.parsing.parser.constant.DerivedAlias;
 import org.apache.shardingsphere.core.parsing.parser.context.selectitem.AggregationDistinctSelectItem;
@@ -63,8 +63,8 @@ public final class ExpressionFiller implements SQLStatementFiller {
             selectStatement.getItems().add(new CommonSelectItem(expression, commonSegment.getAlias()));
             return;
         }
-        if (sqlSegment instanceof StarExpressionSegment) {
-            fillStarExpression((StarExpressionSegment) sqlSegment, selectStatement);
+        if (sqlSegment instanceof StarItemExpressionSegment) {
+            fillStarExpression((StarItemExpressionSegment) sqlSegment, selectStatement);
             return;
         }
         if (sqlSegment instanceof FunctionExpressionSegment) {
@@ -77,7 +77,7 @@ public final class ExpressionFiller implements SQLStatementFiller {
         }
     }
     
-    private void fillStarExpression(final StarExpressionSegment starSegment, final SelectStatement selectStatement) {
+    private void fillStarExpression(final StarItemExpressionSegment starSegment, final SelectStatement selectStatement) {
         selectStatement.setContainStar(true);
         Optional<String> owner = starSegment.getOwner();
         selectStatement.getItems().add(new StarSelectItem(owner.orNull()));
