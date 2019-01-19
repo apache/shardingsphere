@@ -29,7 +29,7 @@ import java.util.Set;
 import java.util.TreeSet;
 
 /**
- * Tables collection.
+ * Tables.
  * 
  * @author zhangliang
  */
@@ -39,18 +39,18 @@ public final class Tables {
     private final List<Table> tables = new ArrayList<>();
     
     /**
-     * 添加表解析对象.
+     * Add table.
      * 
-     * @param table 表对象
+     * @param table table
      */
     public void add(final Table table) {
         tables.add(table);
     }
     
     /**
-     * 判断是否为空.
+     * Judge table is empty or not.
      *
-     * @return 是否为空
+     * @return table is empty or not
      */
     public boolean isEmpty() {
         return tables.isEmpty();
@@ -70,18 +70,18 @@ public final class Tables {
     }
     
     /**
-     * 判断是否为单表.
+     * Judge is single table or not.
      * 
-     * @return 是否为单表
+     * @return is single table or not
      */
     public boolean isSingleTable() {
         return 1 == tables.size();
     }
     
     /**
-     * 获取表名称.
+     * Get single table name.
      *
-     * @return 表名称
+     * @return single table name
      */
     public String getSingleTableName() {
         Preconditions.checkArgument(!isEmpty());
@@ -89,9 +89,9 @@ public final class Tables {
     }
     
     /**
-     * 获取表名称集合.
+     * Get table names.
      * 
-     * @return 表名称集合
+     * @return table names
      */
     public Collection<String> getTableNames() {
         Collection<String> result = new LinkedHashSet<>(tables.size(), 1);
@@ -102,10 +102,10 @@ public final class Tables {
     }
     
     /**
-     * 根据表名称或别名查找表解析对象.
+     * Find table via table name or alias.
      * 
-     * @param tableNameOrAlias 表名称或别名
-     * @return 表解析对象
+     * @param tableNameOrAlias table name or alias
+     * @return table
      */
     public Optional<Table> find(final String tableNameOrAlias) {
         Optional<Table> tableFromName = findTableFromName(tableNameOrAlias);
