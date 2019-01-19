@@ -9,13 +9,13 @@ defaultContentLanguageInSubdir= true
 
 [Languages]
 [Languages.en]
-#baseURL = "http://shardingsphere.io/document/current/"
+#baseURL = "http://shardingsphere.apache.org/document/current/"
 title = "ShardingSphere"
 weight = 1
 languageName = "English"
 
 [Languages.cn]
-#baseURL = "http://shardingsphere.io/document/current/"
+#baseURL = "http://shardingsphere.apache.org/document/current/"
 title = "ShardingSphere"
 weight = 2
 languageName = "Chinese"
