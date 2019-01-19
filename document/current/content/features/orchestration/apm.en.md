@@ -35,7 +35,7 @@ ShardingSphere team cooperates with [SkyWalking](http://skywalking.io/) team and
 Add startup arguments.
 
 ```
-    -Dio.shardingsphere.opentracing.tracer.class=org.apache.skywalking.apm.toolkit.opentracing.SkywalkingTracer
+    -Dorg.apache.shardingsphere.opentracing.tracer.class=org.apache.skywalking.apm.toolkit.opentracing.SkywalkingTracer
 ```
 
 Call initialization method.
