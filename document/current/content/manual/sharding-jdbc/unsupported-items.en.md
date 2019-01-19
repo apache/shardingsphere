@@ -34,4 +34,4 @@ weight = 3
 
 - Do not support new interface for JDBC 4.1
 
-More details about unsupported items, please refer package `io.shardingsphere.core.jdbc.unsupported`.
+More details about unsupported items, please refer package `org.apache.shardingsphere.shardingjdbc.jdbc.unsupported`.
