@@ -75,7 +75,7 @@ ShardingSphere最初将使用何种模式的决定权交由用户配置，让开
 
 2. 通过下图的公式，可以获得每个数据库实例在`maxConnectionSizePerQuery`的允许范围内，每个连接需要执行的SQL路由结果组，并计算出本次请求的最优连接模式。
 
-![连接模式计算公式](http://shardingsphere.jd.com/document/current/img/sharding/connection_mode_cn.png)
+![连接模式计算公式](http://shardingsphere.apache.org/document/current/img/sharding/connection_mode_cn.png)
 
 在maxConnectionSizePerQuery允许的范围内，当一个连接需要执行的请求数量大于1时，意味着当前的数据库连接无法持有相应的数据结果集，则必须采用内存归并；
 反之，当一个连接需要执行的请求数量等于1时，意味着当前的数据库连接可以持有相应的数据结果集，则可以采用流式归并。
@@ -90,7 +90,7 @@ ShardingSphere最初将使用何种模式的决定权交由用户配置，让开
 则有可能出现查询A已获取到该数据源的1个数据库连接，并等待获取另一个数据库连接；而查询B也已经在该数据源上获取到的一个数据库连接，并同样等待另一个数据库连接的获取。
 如果数据库连接池的允许最大连接数是2，那么这2个查询请求将永久的等待下去。下图描绘了死锁的情况。
 
-![获取资源死锁](http://shardingsphere.jd.com/document/current/img/sharding/dead_lock_cn.png)
+![获取资源死锁](http://shardingsphere.apache.org/document/current/img/sharding/dead_lock_cn.png)
 
 ShardingSphere为了避免死锁的出现，在获取数据库连接时进行了同步处理。
 它在创建执行单元时，以原子性的方式一次性获取本次SQL请求所需的全部数据库连接，杜绝了每次查询请求获取到部分资源的可能。
@@ -114,4 +114,4 @@ ShardingSphere通过在执行准备阶段的获取的连接模式，生成内存
 
 执行引擎的整体结构划分如下图所示。
 
-![执行引擎流程图](http://shardingsphere.jd.com/document/current/img/sharding/execute_architecture_cn.png)
+![执行引擎流程图](http://shardingsphere.apache.org/document/current/img/sharding/execute_architecture_cn.png)

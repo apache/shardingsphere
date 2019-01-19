@@ -38,7 +38,7 @@ Data result sets returned by 3 diagrams are shown in the example, and each one o
 When ordering the data value currently pointed by cursors in these 3 result sets and putting them into the priority queue, the data value of t_score_0 is the biggest, followed by that of t_score_2 and t_score_1 in sequence. 
 Thus, the priority queue is ordered by the sequence of t_score_0, t_score_2 and t_score_1.
 
-![Order by merger examole 1](http://shardingsphere.jd.com/document/current/img/sharding/order_by_merge_1.png)
+![Order by merger examole 1](http://shardingsphere.apache.org/document/current/img/sharding/order_by_merge_1.png)
 
 This diagram illustrates how the order-by merger works when using next invocation. 
 We can see from the diagram that when using next invocation, t_score_0 at the first of the queue will be popped out. After returning the data value currently pointed by the cursor, i.e., 100, to the client end, the cursor will be moved down and t_score_0 will be put back to the queue. 
@@ -49,7 +49,7 @@ In the second use of next, t_score_2 in the first position is popped out of the 
 Its value pointed by the cursor of the data result set is returned to the client end, with its cursor moved down to rejoin the queue, and the following will be in the same way. 
 If there is no data in the result set, it will not rejoin the queue.
 
-![Order by merger examole 2](http://shardingsphere.jd.com/document/current/img/sharding/order_by_merge_2.png)
+![Order by merger examole 2](http://shardingsphere.apache.org/document/current/img/sharding/order_by_merge_2.png)
 
 It can be seen that, under the circumstance that single data result set is ordered while multiple data result set is disordered, ShardingSphere does not need to upload all the data to the memory to order. 
 By the order-by merger method, each next only acquires one right piece of data each time, so the memory consumption can be saved to a large extent.
@@ -75,11 +75,11 @@ SELECT name, SUM(score) FROM t_score GROUP BY name ORDER BY name;
 When order-by item and group-by item are totally consistent, the data obtained are continuous. 
 For the data needed to group are all stored in the data value currently pointed by cursors of each data result set, stream group-by merger can be used, as illustrated by the diagram:
 
-![Group by merger examole 1](http://shardingsphere.jd.com/document/current/img/sharding/group_by_merge_1_v3.png)
+![Group by merger examole 1](http://shardingsphere.apache.org/document/current/img/sharding/group_by_merge_1_v3.png)
 
 The merging logic will be similar as that of order-by merger. The following picture shows how stream group-by merger works when using next invocation.
 
-![Group by merger examole 2](http://shardingsphere.jd.com/document/current/img/sharding/group_by_merge_2_v2.png)
+![Group by merger examole 2](http://shardingsphere.apache.org/document/current/img/sharding/group_by_merge_2_v2.png)
 
 We can see from the picture, in the first next invocation, t_score_java in the first position, along with the data having the grouping value of “Jetty” in other result sets, will be popped out of the queue. 
 After acquiring all the students’ scores with the name of “Jetty”, the accumulation operation will be proceeded. 
@@ -147,4 +147,4 @@ SELECT * FROM t_order WHERE id > 10000000 LIMIT 10;
 
 The overall structure division of merger engine is shown in the following diagram:
 
-![Merge Architecture](http://shardingsphere.jd.com/document/current/img/sharding/merge_architecture_en.png)
+![Merge Architecture](http://shardingsphere.apache.org/document/current/img/sharding/merge_architecture_en.png)

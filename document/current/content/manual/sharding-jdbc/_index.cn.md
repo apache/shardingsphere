@@ -14,7 +14,7 @@ Sharding-JDBC是ShardingSphere的第一个产品，也是ShardingSphere的前身
 * 基于任何第三方的数据库连接池，如：DBCP, C3P0, BoneCP, Druid, HikariCP等。
 * 支持任意实现JDBC规范的数据库。目前支持MySQL，Oracle，SQLServer和PostgreSQL。
 
-![Sharding-JDBC Architecture](http://shardingsphere.jd.com/document/current/img/sharding-jdbc-brief.png)
+![Sharding-JDBC Architecture](http://shardingsphere.apache.org/document/current/img/sharding-jdbc-brief.png)
 
 ## 对比
 

@@ -63,7 +63,7 @@ sql.show: true
 A collection of multiple database connection pools, whose properties (e.g. DBCP，C3P0，Druid, HikariCP) are configured by users themselves.
 
 ```yaml
-ds_0: !!io.shardingsphere.orchestration.yaml.YamlDataSourceConfiguration
+ds_0: !!org.apache.shardingsphere.orchestration.yaml.YamlDataSourceConfiguration
   dataSourceClassName: com.zaxxer.hikari.HikariDataSource
   properties:
     url: jdbc:mysql://127.0.0.1:3306/demo_ds_0?serverTimezone=UTC&useSSL=false
@@ -75,7 +75,7 @@ ds_0: !!io.shardingsphere.orchestration.yaml.YamlDataSourceConfiguration
     minPoolSize: 1
     username: root
     maxLifetimeMilliseconds: 1800000
-ds_1: !!io.shardingsphere.orchestration.yaml.YamlDataSourceConfiguration
+ds_1: !!org.apache.shardingsphere.orchestration.yaml.YamlDataSourceConfiguration
   dataSourceClassName: com.zaxxer.hikari.HikariDataSource
   properties:
     url: jdbc:mysql://127.0.0.1:3306/demo_ds_1?serverTimezone=UTC&useSSL=false
@@ -97,7 +97,8 @@ Database and table sharding configuration, including sharding + read-write split
 tables:
   t_order:
     actualDataNodes: ds_$->{0..1}.t_order_$->{0..1}
-    keyGeneratorColumnName: order_id
+    keyGenerator:
+      column: order_id
     logicTable: t_order
     tableStrategy:
       inline:
@@ -105,7 +106,8 @@ tables:
         shardingColumn: order_id
   t_order_item:
     actualDataNodes: ds_$->{0..1}.t_order_item_$->{0..1}
-    keyGeneratorColumnName: order_item_id
+    keyGenerator:
+      column: order_item_id
     logicTable: t_order_item
     tableStrategy:
       inline:

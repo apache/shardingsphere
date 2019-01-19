@@ -14,7 +14,7 @@ chapter = true
 
 Sharding-JDBC提供了4种配置方式，用于不同的使用场景。通过配置，应用开发者可以灵活的使用分库分表、读写分离以及分库分表 + 读写分离共用。
 
-![配置领域模型类图](http://shardingsphere.jd.com/document/current/img/config_domain.png)
+![配置领域模型类图](http://shardingsphere.apache.org/document/current/img/config_domain.png)
 
 ## 工厂方法API
 
@@ -42,5 +42,5 @@ ShardingRuleConfiguration是分库分表配置的核心和入口，它可以包�
 
 ## 使用约定
 
-在`io.shardingsphere.api`和`io.shardingsphere.shardingjdbc.api` 包中的类是面向用户的API，每次修改都会在release notes中明确声明。
+在`org.apache.shardingsphere.api`和`org.apache.shardingsphere.shardingjdbc.api` 包中的类是面向用户的API，每次修改都会在release notes中明确声明。
 其他包中的类属于内部实现，可能随时进行调整，`请勿直接使用`。

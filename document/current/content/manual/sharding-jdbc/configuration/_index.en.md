@@ -14,7 +14,7 @@ This section is a configuration manual, users can use it as a dictionary, may lo
 
 Sharding-JDBC provides 4 types of configurations. User can use sharding, read-write splitting or sharding + read-write splitting together.
 
-![The class diagrams for Domain Model](http://shardingsphere.jd.com/document/current/img/config_domain.png)
+![The class diagrams for Domain Model](http://shardingsphere.apache.org/document/current/img/config_domain.png)
 
 ## The Factory Method Pattern
 
@@ -39,7 +39,7 @@ The red part of the figure represents internal objects, which are used by Shardi
 
 This section explains configuration domain models in Sharding-JDBC. The following class diagram is about those domain models in Sharding-JDBC.
 
-![The class diagrams for Domain Model](http://shardingsphere.jd.com/document/current/img/config_domain.png)
+![The class diagrams for Domain Model](http://shardingsphere.apache.org/document/current/img/config_domain.png)
 
 ## The Factory Method Pattern
 
@@ -64,5 +64,5 @@ The red part of the figure represents internal objects, which are used by Shardi
 
 ## Convention
 
-Classes in package `io.shardingsphere.api` and `io.shardingsphere.shardingjdbc.api` is API for end users, every update will declare at release notes.
+Classes in package `org.apache.shardingsphere.api` and `org.apache.shardingsphere.shardingjdbc.api` is API for end users, every update will declare at release notes.
 Classes in other packages is internal implementation, maybe refactor in anytime, please `DO NOT USE` them.

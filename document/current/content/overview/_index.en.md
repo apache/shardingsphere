@@ -29,13 +29,13 @@ Therefore, at current stage, we prefer to focus on its increment instead of a to
 [![OpenTracing-1.0 Badge](https://img.shields.io/badge/OpenTracing--1.0-enabled-blue.svg)](http://opentracing.io)
 [![Skywalking Tracing](https://img.shields.io/badge/Skywalking%20Tracing-enable-brightgreen.svg)](https://github.com/OpenSkywalking/skywalking)
 
-![ShardingSphere Scope](http://shardingsphere.jd.com/document/current/img/shardingsphere-scope_en.png)
+![ShardingSphere Scope](http://shardingsphere.apache.org/document/current/img/shardingsphere-scope_en.png)
 
 ## Introduction
 
 ### Sharding-JDBC
 
-[![Maven Status](https://maven-badges.herokuapp.com/maven-central/io.shardingsphere/sharding-jdbc/badge.svg)](https://mvnrepository.com/artifact/io.shardingsphere/sharding-jdbc)
+[![Maven Status](https://maven-badges.herokuapp.com/maven-central/org.apache.shardingsphere/sharding-jdbc/badge.svg)](https://mvnrepository.com/artifact/org.apache.shardingsphere/sharding-jdbc)
 
 Sharding-JDBC defines itself as a lightweight Java framework that provides extra service at Java JDBC layer. 
 With client end connecting directly to the database, it provides service in the form of jar and requires no extra deployment and dependence. 
@@ -45,7 +45,7 @@ It can be considered as an enhanced JDBC driver, which is fully compatible with 
 * Based on any third-party database connection pool, such as DBCP, C3P0, BoneCP, Druid, HikariCP.
 * Support any kind of database that conforms to JDBC standard: MySQL，Oracle，SQLServer and PostgreSQL for now.
 
-![Sharding-JDBC Architecture](http://shardingsphere.jd.com/document/current/img//sharding-jdbc-brief.png)
+![Sharding-JDBC Architecture](http://shardingsphere.apache.org/document/current/img//sharding-jdbc-brief.png)
 
 ### Sharding-Proxy
 
@@ -58,7 +58,7 @@ Friendlier to DBA, the MySQL version provided now can use any kind of client acc
 * Totally transparent to applications, it can be used directly as MySQL.
 * Applicable to any kind of compatible of client end that is compatible of MySQL protocol.
 
-![Sharding-Proxy Architecture](http://shardingsphere.jd.com/document/current/img//sharding-proxy-brief_v2.png)
+![Sharding-Proxy Architecture](http://shardingsphere.apache.org/document/current/img//sharding-proxy-brief_v2.png)
 
 ### Sharding-Sidecar(TBD)
 
@@ -70,7 +70,7 @@ Focusing on interaction, it effectively organizes the interaction between messy 
 The application and database that use Database Mesh to visit database will form a large grid system, where they just need to be put into the right position accordingly. 
 They are all governed by mesh layer.
 
-![Sharding-Sidecar Architecture](http://shardingsphere.jd.com/document/current/img/sharding-sidecar-brief_v2.png)
+![Sharding-Sidecar Architecture](http://shardingsphere.apache.org/document/current/img/sharding-sidecar-brief_v2.png)
 
 |                         | *Sharding-JDBC* | *Sharding-Proxy*     | *Sharding-Sidecar* |
 | ----------------------- | --------------- | -------------------- | ------------------ |
@@ -90,7 +90,7 @@ ShardingSphere is an ecosphere consists of multiple endpoints together.
 Through mixed use of Sharding-JDBC and Sharding-Proxy and unified sharding strategy by one registry center, ShardingSphere can build application system applicable to all kinds of situations. 
 Architects can adjust the system architecture to the most applicable one to current business more freely.
 
-![ShardingSphere Hybrid Architecture](http://shardingsphere.jd.com/document/current/img/shardingsphere-hybrid.png)
+![ShardingSphere Hybrid Architecture](http://shardingsphere.apache.org/document/current/img/shardingsphere-hybrid.png)
 
 ## Features
 
@@ -114,4 +114,4 @@ Architects can adjust the system architecture to the most applicable one to curr
 
 ## Roadmap
 
-![Roadmap](http://shardingsphere.jd.com/document/current/img/shardingsphere-roadmap_en.png)
+![Roadmap](http://shardingsphere.apache.org/document/current/img/shardingsphere-roadmap_en.png)

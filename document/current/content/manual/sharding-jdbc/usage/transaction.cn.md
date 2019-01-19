@@ -19,7 +19,7 @@ XA事务管理器将以SPI的方式被Sharding-JDBC所加载。
 ## 连接池配置
 
 ShardingSphere支持将普通的数据库连接池，转换为支持XA事务的连接池，对HikariCP, Druid和DBCP2连接池内置支持，无需额外配置。
-其它连接池需要用户实现`DataSourceMapConverter`的SPI接口进行扩展，可以参考`io.shardingsphere.transaction.xa.convert.swap.HikariParameterSwapper`的实现。
+其它连接池需要用户实现`DataSourceMapConverter`的SPI接口进行扩展，可以参考`org.apache.shardingsphere.transaction.xa.convert.swap.HikariParameterSwapper`的实现。
 若ShardingSphere无法找到合适的实现，则会按默认的配置创建XA事务连接池。默认属性如下：
 
 | *属性名称*                          | *默认值*   |

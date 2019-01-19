@@ -17,7 +17,7 @@ It can be considered as an enhanced JDBC driver, which is fully compatible with 
 
 - Support any kind of database that conforms to JDBC standard: MySQL，Oracle，SQLServer and PostgreSQL for now.
 
-![Sharding-JDBC Architecture](http://shardingsphere.jd.com/document/current/img/sharding-jdbc-brief.png)
+![Sharding-JDBC Architecture](http://shardingsphere.apache.org/document/current/img/sharding-jdbc-brief.png)
 
 ## Comparison
 

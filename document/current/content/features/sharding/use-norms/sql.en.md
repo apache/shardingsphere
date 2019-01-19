@@ -55,7 +55,7 @@ table_reference ([INNER] | {LEFT|RIGHT} [OUTER]) JOIN table_factor [JOIN ON cond
 
 Unavailable for redundant parentheses, CASE WHEN, HAVING and UNION (ALL) and partly available for sub-query.
 
-Available for not only sub-query of pagination (see [pagination](http://shardingsphere.io/document/current/cn/features/sharding/usage-standard/pagination) for detail), but also sub-query with equivalent pattern. 
+Available for not only sub-query of pagination (see [pagination](http://shardingsphere.apache.org/document/current/cn/features/sharding/usage-standard/pagination) for detail), but also sub-query with equivalent pattern. 
 No matter how many layers are nested, ShardingSphere can parse to the first sub-query that contains data table. 
 Once it finds another sub-query of this kind in the sub-level nested, it will directly throw a parsing exception.
 

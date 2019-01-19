@@ -33,13 +33,13 @@ ShardingSphere目前已经进入[Apache孵化器](http://incubator.apache.org/pr
 [![OpenTracing-1.0 Badge](https://img.shields.io/badge/OpenTracing--1.0-enabled-blue.svg)](http://opentracing.io)
 [![Skywalking Tracing](https://img.shields.io/badge/Skywalking%20Tracing-enable-brightgreen.svg)](https://github.com/OpenSkywalking/skywalking)
 
-![ShardingSphere Scope](http://shardingsphere.jd.com/document/current/img/shardingsphere-scope_cn.png)
+![ShardingSphere Scope](http://shardingsphere.apache.org/document/current/img/shardingsphere-scope_cn.png)
 
 ## 简介
 
 ### Sharding-JDBC
 
-[![Maven Status](https://maven-badges.herokuapp.com/maven-central/io.shardingsphere/sharding-jdbc/badge.svg)](https://mvnrepository.com/artifact/io.shardingsphere/sharding-jdbc)
+[![Maven Status](https://maven-badges.herokuapp.com/maven-central/org.apache.shardingsphere/sharding-jdbc/badge.svg)](https://mvnrepository.com/artifact/org.apache.shardingsphere/sharding-jdbc)
 
 定位为轻量级Java框架，在Java的JDBC层提供的额外服务。
 它使用客户端直连数据库，以jar包形式提供服务，无需额外部署和依赖，可理解为增强版的JDBC驱动，完全兼容JDBC和各种ORM框架。
@@ -48,7 +48,7 @@ ShardingSphere目前已经进入[Apache孵化器](http://incubator.apache.org/pr
 * 基于任何第三方的数据库连接池，如：DBCP, C3P0, BoneCP, Druid, HikariCP等。
 * 支持任意实现JDBC规范的数据库。目前支持MySQL，Oracle，SQLServer和PostgreSQL。
 
-![Sharding-JDBC Architecture](http://shardingsphere.jd.com/document/current/img/sharding-jdbc-brief.png)
+![Sharding-JDBC Architecture](http://shardingsphere.apache.org/document/current/img/sharding-jdbc-brief.png)
 
 ### Sharding-Proxy
 
@@ -61,7 +61,7 @@ ShardingSphere目前已经进入[Apache孵化器](http://incubator.apache.org/pr
 * 向应用程序完全透明，可直接当做MySQL使用。
 * 适用于任何兼容MySQL协议的客户端。
 
-![Sharding-Proxy Architecture](http://shardingsphere.jd.com/document/current/img/sharding-proxy-brief_v2.png)
+![Sharding-Proxy Architecture](http://shardingsphere.apache.org/document/current/img/sharding-proxy-brief_v2.png)
 
 ### Sharding-Sidecar（TBD）
 
@@ -70,7 +70,7 @@ ShardingSphere目前已经进入[Apache孵化器](http://incubator.apache.org/pr
 
 Database Mesh的关注重点在于如何将分布式的数据访问应用与数据库有机串联起来，它更加关注的是交互，是将杂乱无章的应用与数据库之间的交互有效的梳理。使用Database Mesh，访问数据库的应用和数据库终将形成一个巨大的网格体系，应用和数据库只需在网格体系中对号入座即可，它们都是被啮合层所治理的对象。
 
-![Sharding-Sidecar Architecture](http://shardingsphere.jd.com/document/current/img/sharding-sidecar-brief_v2.png)
+![Sharding-Sidecar Architecture](http://shardingsphere.apache.org/document/current/img/sharding-sidecar-brief_v2.png)
 
 |           | *Sharding-JDBC* | *Sharding-Proxy* | *Sharding-Sidecar* |
 | --------- | --------------- | ---------------- | ------------------ |
@@ -88,7 +88,7 @@ Sharding-JDBC采用无中心化架构，适用于Java开发的高性能的轻量
 ShardingSphere是多接入端共同组成的生态圈。
 通过混合使用Sharding-JDBC和Sharding-Proxy，并采用同一注册中心统一配置分片策略，能够灵活的搭建适用于各种场景的应用系统，使得架构师更加自由的调整适合与当前业务的最佳系统架构。
 
-![ShardingSphere Hybird Architecture](http://shardingsphere.jd.com/document/current/img/shardingsphere-hybrid.png)
+![ShardingSphere Hybird Architecture](http://shardingsphere.apache.org/document/current/img/shardingsphere-hybrid.png)
 
 ## 功能列表
 
@@ -112,4 +112,4 @@ ShardingSphere是多接入端共同组成的生态圈。
 
 ## 规划线路图
 
-![Roadmap](http://shardingsphere.jd.com/document/current/img/shardingsphere-roadmap_cn.png)
+![Roadmap](http://shardingsphere.apache.org/document/current/img/shardingsphere-roadmap_cn.png)

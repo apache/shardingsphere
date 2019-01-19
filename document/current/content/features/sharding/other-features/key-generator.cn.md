@@ -61,7 +61,7 @@ Math.pow(2, 41) / (365 * 24 * 60 * 60 * 1000L);
 
 雪花算法主键的详细结构见下图。
 
-![雪花算法](http://shardingsphere.jd.com/document/current/img/sharding/snowflake_cn_v2.png)
+![雪花算法](http://shardingsphere.apache.org/document/current/img/sharding/snowflake_cn_v2.png)
 
 ### LEAF
 
