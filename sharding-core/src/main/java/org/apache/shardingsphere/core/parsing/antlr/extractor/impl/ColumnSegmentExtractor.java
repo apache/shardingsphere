@@ -24,13 +24,12 @@ import org.apache.shardingsphere.core.parsing.antlr.extractor.OptionalSQLSegment
 import org.apache.shardingsphere.core.parsing.antlr.extractor.util.ExtractorUtils;
 import org.apache.shardingsphere.core.parsing.antlr.extractor.util.RuleName;
 import org.apache.shardingsphere.core.parsing.antlr.sql.segment.column.ColumnSegment;
-import org.apache.shardingsphere.core.parsing.lexer.token.Symbol;
-import org.apache.shardingsphere.core.util.SQLUtil;
 
 /**
  * Column extract extractor.
  *
  * @author duhongjun
+ * @author zhangliang
  */
 @RequiredArgsConstructor
 public final class ColumnSegmentExtractor implements OptionalSQLSegmentExtractor {
@@ -38,23 +37,6 @@ public final class ColumnSegmentExtractor implements OptionalSQLSegmentExtractor
     @Override
     public Optional<ColumnSegment> extract(final ParserRuleContext ancestorNode) {
         Optional<ParserRuleContext> columnNode = ExtractorUtils.findFirstChildNode(ancestorNode, RuleName.COLUMN_NAME);
-        if (!columnNode.isPresent()) {
-            return Optional.absent();
-        }
-        String columnText = columnNode.get().getText();
-        int dotStartIndex = columnText.lastIndexOf(Symbol.DOT.getLiterals());
-        String columnName;
-        Optional<String> ownerName;
-        if (-1 != dotStartIndex) {
-            columnName = columnText.substring(dotStartIndex + 1);
-            ownerName = Optional.of(SQLUtil.getExactlyValue(columnText.substring(0, dotStartIndex)));
-        } else {
-            columnName = columnText;
-            ownerName = Optional.absent();
-        }
-        columnName = SQLUtil.getExactlyValue(columnName);
-        ColumnSegment result = new ColumnSegment(columnName, columnNode.get().getStart().getStartIndex());
-        result.setOwner(ownerName.orNull());
-        return Optional.of(result);
+        return columnNode.isPresent() ? Optional.of(new ColumnSegment(columnNode.get().getText(), columnNode.get().getStart().getStartIndex())) : Optional.<ColumnSegment>absent();
     }
 }
