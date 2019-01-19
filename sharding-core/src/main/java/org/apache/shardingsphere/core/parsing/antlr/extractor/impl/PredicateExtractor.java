@@ -61,12 +61,12 @@ public final class PredicateExtractor implements OptionalSQLSegmentExtractor {
     /**
      * Extract SQL segment from SQL AST.
      *
-     * @param questionNodeIndexMap question node map
+     * @param placeholderIndexes question node map
      * @param exprNode expression node of AST
      * @return or condition
      */
-    public Optional<OrConditionSegment> extractCondition(final Map<ParserRuleContext, Integer> questionNodeIndexMap, final ParserRuleContext exprNode) {
-        expressionExtractor = new ExpressionExtractor(questionNodeIndexMap);
+    public Optional<OrConditionSegment> extractCondition(final Map<ParserRuleContext, Integer> placeholderIndexes, final ParserRuleContext exprNode) {
+        expressionExtractor = new ExpressionExtractor(placeholderIndexes);
         return extractConditionInternal(exprNode);
     }
     

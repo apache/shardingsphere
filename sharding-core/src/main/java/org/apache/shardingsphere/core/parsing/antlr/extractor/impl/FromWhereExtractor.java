@@ -34,7 +34,7 @@ import java.util.Map;
 public final class FromWhereExtractor extends AbstractFromWhereExtractor {
     
     @Override
-    protected Optional<ParserRuleContext> extractTable(final FromWhereSegment fromWhereSegment, final ParserRuleContext ancestorNode, final Map<ParserRuleContext, Integer> questionNodeIndexMap) {
+    protected Optional<ParserRuleContext> extractTable(final FromWhereSegment fromWhereSegment, final ParserRuleContext ancestorNode, final Map<ParserRuleContext, Integer> placeholderIndexes) {
         Optional<ParserRuleContext> selectClauseNode = ExtractorUtils.findFirstChildNode(ancestorNode, RuleName.SELECT_CLAUSE);
         if (!selectClauseNode.isPresent()) {
             return Optional.absent();
@@ -48,7 +48,7 @@ public final class FromWhereExtractor extends AbstractFromWhereExtractor {
             return Optional.absent();
         }
         for (ParserRuleContext each : tableReferenceNodes) {
-            extractTableReference(fromWhereSegment, each, questionNodeIndexMap);
+            extractTableReference(fromWhereSegment, each, placeholderIndexes);
         }
         return ExtractorUtils.findFirstChildNodeNoneRecursive(fromNode.get().getParent(), RuleName.WHERE_CLAUSE);
     }

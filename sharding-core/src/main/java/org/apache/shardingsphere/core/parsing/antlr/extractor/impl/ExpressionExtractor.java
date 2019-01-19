@@ -50,7 +50,7 @@ public final class ExpressionExtractor implements OptionalSQLSegmentExtractor {
     
     private final SubqueryExtractor subqueryExtractor = new SubqueryExtractor();
     
-    private final Map<ParserRuleContext, Integer> questionNodeIndexMap;
+    private final Map<ParserRuleContext, Integer> placeholderIndexes;
     
     @Override
     public Optional<? extends ExpressionSegment> extract(final ParserRuleContext expressionNode) {
@@ -129,7 +129,7 @@ public final class ExpressionExtractor implements OptionalSQLSegmentExtractor {
         CommonExpressionSegment result = new CommonExpressionSegment(expressionNode.getStart().getStartIndex(), expressionNode.getStop().getStopIndex());
         Optional<ParserRuleContext> questionNode = ExtractorUtils.findFirstChildNode(expressionNode, RuleName.QUESTION);
         if (questionNode.isPresent()) {
-            Integer index = questionNodeIndexMap.get(questionNode.get());
+            Integer index = placeholderIndexes.get(questionNode.get());
             result.setIndex(index);
         } else {
             Optional<ParserRuleContext> bitExprNode = ExtractorUtils.findFirstChildNode(expressionNode, RuleName.BIT_EXPR);

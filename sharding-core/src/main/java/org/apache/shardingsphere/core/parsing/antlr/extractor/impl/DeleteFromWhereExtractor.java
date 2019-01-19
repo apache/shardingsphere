@@ -35,7 +35,7 @@ import java.util.Map;
 public final class DeleteFromWhereExtractor extends AbstractFromWhereExtractor {
     
     @Override
-    protected Optional<ParserRuleContext> extractTable(final FromWhereSegment fromWhereSegment, final ParserRuleContext ancestorNode, final Map<ParserRuleContext, Integer> questionNodeIndexMap) {
+    protected Optional<ParserRuleContext> extractTable(final FromWhereSegment fromWhereSegment, final ParserRuleContext ancestorNode, final Map<ParserRuleContext, Integer> placeholderIndexes) {
         for (TableSegment each : new TableNamesExtractor().extract(ancestorNode)) {
             fillTableResult(fromWhereSegment, each);
         }

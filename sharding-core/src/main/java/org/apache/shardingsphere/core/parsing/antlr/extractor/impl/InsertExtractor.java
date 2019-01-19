@@ -45,7 +45,7 @@ public final class InsertExtractor implements OptionalSQLSegmentExtractor {
     @Override
     public Optional<InsertSegment> extract(final ParserRuleContext ancestorNode) {
         InsertSegment result = new InsertSegment();
-        expressionExtractor = new ExpressionExtractor(getPlaceholderAndNodeIndexMap(ancestorNode));
+        expressionExtractor = new ExpressionExtractor(getPlaceholderIndexes(ancestorNode));
         columnSegmentExtractor = new ColumnSegmentExtractor();
         extractValuesColumn(ancestorNode, result);
         if (result.getValuesList().isEmpty()) {
@@ -55,7 +55,7 @@ public final class InsertExtractor implements OptionalSQLSegmentExtractor {
         return Optional.of(result);
     }
     
-    private Map<ParserRuleContext, Integer> getPlaceholderAndNodeIndexMap(final ParserRuleContext rootNode) {
+    private Map<ParserRuleContext, Integer> getPlaceholderIndexes(final ParserRuleContext rootNode) {
         Collection<ParserRuleContext> questionNodes = ExtractorUtils.getAllDescendantNodes(rootNode, RuleName.QUESTION);
         Map<ParserRuleContext, Integer> result = new HashMap<>(questionNodes.size(), 1);
         int index = 0;
