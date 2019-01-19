@@ -13,7 +13,7 @@ It is a centre-less solution, and can support any languages, we call it as `Data
 
 Database Mesh is focused on how to connect the distributed data-access-layer and databases together. It pays more attention on interaction, which means the messy interaction among the applications and databases will be effectively orchestrate. By using Database Mesh, applications and databases will form a large grid system, and they just need to be put into the right position on grid system accordingly.
 
-![Sharding-Sidecar Architecture](http://shardingsphere.jd.com/document/current/img/sharding-sidecar-brief_v2.png)
+![Sharding-Sidecar Architecture](http://shardingsphere.apache.org/document/current/img/sharding-sidecar-brief_v2.png)
 
 ## Comparison
 

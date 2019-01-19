@@ -39,7 +39,7 @@ Before sharding, a database is consisting of many data tables corresponding to d
 But after sharding, tables are categorized according to business into different databases, and the pressure is also separated into different databases. 
 The diagram below has presented the case in which the user table and the order table are assigned to different databases by vertical sharding according to business need.
 
-![Vertical Sharding](http://shardingsphere.jd.com/document/current/img/sharding/vertical_sharding.png)
+![Vertical Sharding](http://shardingsphere.apache.org/document/current/img/sharding/vertical_sharding.png)
 
 Vertical sharding requires to adjust the architecture and design from time to time, but generally, it is not readily enough to deal with the fast changing Internet business needs and not able to really solve the single-node problem. 
 Sharding of this kind can ease but not completely solve problems brought by the high data amount and concurrency amount. 
@@ -52,7 +52,7 @@ Compared with the categorization method according to business logic of vertical 
 horizontal sharding categorizes data to multiple databases or tables according to some certain rules through certain fields, with each sharding containing only part of the data.  
 For example, according to primary key sharding, even primary keys are put into the 0 database (or table) and odd primary keys are put into the 1 database (or table), illustrated as the following diagram.
 
-![Horizontal Sharding](http://shardingsphere.jd.com/document/current/img/sharding/horizontal_sharding.png)
+![Horizontal Sharding](http://shardingsphere.apache.org/document/current/img/sharding/horizontal_sharding.png)
 
 Theoretically, horizontal sharding has overcame the limitation of data processing volume in one single machine and can be extended relatively freely, so it can be taken as a standard solution of database sharding and table sharding.
 
