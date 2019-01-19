@@ -1,4 +1,4 @@
-baseURL = "http://shardingsphere.io/community/"
+baseURL = "http://shardingsphere.apache.org/community/"
 canonifyurls = true
 languageCode = "en-us"
 title = "ShardingSphere"
