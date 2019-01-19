@@ -38,7 +38,6 @@ import org.apache.shardingsphere.core.parsing.lexer.token.Symbol;
 import org.apache.shardingsphere.core.util.NumberUtil;
 import org.apache.shardingsphere.core.util.SQLUtil;
 
-import java.util.HashMap;
 import java.util.Map;
 
 /**
@@ -110,7 +109,7 @@ public final class ExpressionExtractor implements OptionalSQLSegmentExtractor {
     
     private ExpressionWithAliasSegment extractPropertyExpressionSegment(final ParserRuleContext expressionNode) {
         ParserRuleContext columnNode = (ParserRuleContext) expressionNode.getChild(0);
-        Optional<ColumnSegment> columnSegment = new ColumnSegmentExtractor(new HashMap<String, String>()).extract(columnNode);
+        Optional<ColumnSegment> columnSegment = new ColumnSegmentExtractor().extract(columnNode);
         Preconditions.checkState(columnSegment.isPresent());
         return new PropertyExpressionSegment(columnSegment.get().getOwner(), columnSegment.get().getName(), columnNode.getStart().getStartIndex(), columnNode.getStop().getStopIndex());
     }

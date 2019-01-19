@@ -27,8 +27,6 @@ import org.apache.shardingsphere.core.parsing.antlr.sql.segment.column.ColumnSeg
 import org.apache.shardingsphere.core.parsing.lexer.token.Symbol;
 import org.apache.shardingsphere.core.util.SQLUtil;
 
-import java.util.Map;
-
 /**
  * Column extract extractor.
  *
@@ -36,8 +34,6 @@ import java.util.Map;
  */
 @RequiredArgsConstructor
 public final class ColumnSegmentExtractor implements OptionalSQLSegmentExtractor {
-    
-    private final Map<String, String> tableAlias;
     
     @Override
     public Optional<ColumnSegment> extract(final ParserRuleContext ancestorNode) {
@@ -49,23 +45,16 @@ public final class ColumnSegmentExtractor implements OptionalSQLSegmentExtractor
         int dotStartIndex = columnText.lastIndexOf(Symbol.DOT.getLiterals());
         String columnName;
         Optional<String> ownerName;
-        String tableName;
         if (-1 != dotStartIndex) {
             columnName = columnText.substring(dotStartIndex + 1);
             ownerName = Optional.of(SQLUtil.getExactlyValue(columnText.substring(0, dotStartIndex)));
-            tableName = tableAlias.get(ownerName.get());
         } else {
             columnName = columnText;
             ownerName = Optional.absent();
-            tableName = "";
-        }
-        if ("".equals(tableName) && 1 == tableAlias.size()) {
-            tableName = tableAlias.values().iterator().next();
         }
         columnName = SQLUtil.getExactlyValue(columnName);
         ColumnSegment result = new ColumnSegment(columnName, columnNode.get().getStart().getStartIndex());
         result.setOwner(ownerName.orNull());
-        result.setTableName(tableName);
         return Optional.of(result);
     }
 }

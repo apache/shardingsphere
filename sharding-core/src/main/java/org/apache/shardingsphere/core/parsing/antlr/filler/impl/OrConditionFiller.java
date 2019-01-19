@@ -122,19 +122,7 @@ public final class OrConditionFiller implements SQLStatementFiller<OrConditionSe
                     needSharding = true;
                     continue;
                 }
-                String columnTableName = getTableName(shardingRule, sqlStatement, condition);
-                if ("".equals(columnTableName)) {
-                    if (sqlStatement.getTables().isSingleTable()) {
-                        condition.getColumn().setTableName(sqlStatement.getTables().getSingleTableName());
-                    } else {
-                        String tableName = columnNameToTable.get(condition.getColumn().getName());
-                        Integer count = columnNameCount.get(condition.getColumn().getName());
-                        if (null != tableName && 1 == count) {
-                            condition.getColumn().setTableName(tableName);
-                        }
-                    }
-                }
-                if (shardingRule.isShardingColumn(new Column(condition.getColumn().getName(), columnTableName))) {
+                if (shardingRule.isShardingColumn(new Column(condition.getColumn().getName(), getTableName(shardingRule, sqlStatement, condition)))) {
                     shardingCondition.add(condition);
                     needSharding = true;
                 }

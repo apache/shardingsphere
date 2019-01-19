@@ -39,8 +39,6 @@ public final class ColumnSegment implements SQLRightValueExpressionSegment {
     
     private String owner;
     
-    private String tableName = "";
-    
     /**
      * Get owner.
      * 

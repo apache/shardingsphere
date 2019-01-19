@@ -61,7 +61,7 @@ public abstract class AbstractFromWhereExtractor implements OptionalSQLSegmentEx
         Map<ParserRuleContext, Integer> questionNodeIndexMap = getPlaceholderAndNodeIndexMap(result, rootNode);
         Optional<ParserRuleContext> whereNode = extractTable(result, ancestorNode, questionNodeIndexMap);
         if (whereNode.isPresent()) {
-            predicateSegmentExtractor = new PredicateExtractor(result.getTableAliases());
+            predicateSegmentExtractor = new PredicateExtractor();
             extractAndFillWhere(result, questionNodeIndexMap, whereNode.get());
         }
         return Optional.of(result);

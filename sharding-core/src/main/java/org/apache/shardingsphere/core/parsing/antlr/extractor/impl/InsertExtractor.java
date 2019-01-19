@@ -46,7 +46,7 @@ public final class InsertExtractor implements OptionalSQLSegmentExtractor {
     public Optional<InsertSegment> extract(final ParserRuleContext ancestorNode) {
         InsertSegment result = new InsertSegment();
         expressionExtractor = new ExpressionExtractor(getPlaceholderAndNodeIndexMap(ancestorNode));
-        columnSegmentExtractor = new ColumnSegmentExtractor(new HashMap<String, String>());
+        columnSegmentExtractor = new ColumnSegmentExtractor();
         extractValuesColumn(ancestorNode, result);
         if (result.getValuesList().isEmpty()) {
             extractSetColumn(ancestorNode, result);

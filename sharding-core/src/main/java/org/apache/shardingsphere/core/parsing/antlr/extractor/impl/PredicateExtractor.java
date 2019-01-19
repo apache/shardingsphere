@@ -51,8 +51,6 @@ import java.util.Map;
 @RequiredArgsConstructor
 public final class PredicateExtractor implements OptionalSQLSegmentExtractor {
     
-    private final Map<String, String> tableAlias;
-    
     private ExpressionExtractor expressionExtractor;
     
     @Override
@@ -231,6 +229,6 @@ public final class PredicateExtractor implements OptionalSQLSegmentExtractor {
     }
     
     private Optional<ColumnSegment> buildColumn(final ParserRuleContext parentNode) {
-        return new ColumnSegmentExtractor(tableAlias).extract(parentNode);
+        return new ColumnSegmentExtractor().extract(parentNode);
     }
 }
