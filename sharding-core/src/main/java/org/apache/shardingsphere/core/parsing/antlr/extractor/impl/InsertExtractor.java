@@ -53,6 +53,7 @@ public final class InsertExtractor implements OptionalSQLSegmentExtractor {
             extractSetColumn(ancestorNode, result);
         }
         extractDuplicateKeys(ancestorNode, result);
+        result.setInsertValuesListLastPosition(ancestorNode.getStop().getStopIndex() + 1);
         return Optional.of(result);
     }
     
