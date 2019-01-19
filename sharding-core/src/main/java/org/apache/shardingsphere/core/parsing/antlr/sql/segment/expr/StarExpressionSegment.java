@@ -21,6 +21,7 @@ import com.google.common.base.Optional;
 import lombok.Getter;
 import lombok.RequiredArgsConstructor;
 import lombok.Setter;
+import org.apache.shardingsphere.core.util.SQLUtil;
 
 /**
  * Star expression segment.
@@ -32,9 +33,14 @@ import lombok.Setter;
 @Setter
 public final class StarExpressionSegment implements ExpressionSegment {
     
+    private String owner;
+    
     private final int startIndex;
     
-    private String owner;
+    public StarExpressionSegment(final String owner, final int startIndex) {
+        this.owner = SQLUtil.getExactlyValue(owner);
+        this.startIndex = startIndex;
+    }
     
     /**
      * Get owner.
