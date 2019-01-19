@@ -70,35 +70,35 @@ Use `Sharding-Proxy` to visit two databases, `192.168.0.1:3306` and `192.168.0.2
 
 ### Topology Demonstration
 
-![The topology diagram](http://shardingsphere.jd.com/document/current/img/apm/5x_topology.png)
+![The topology diagram](http://shardingsphere.apache.org/document/current/img/apm/5x_topology.png)
 
 It can be seen from the picture that the user has accessed Sharding-Proxy 18 times, with each database twice each time. 
 It is because two tables in each database are accessed each time, so there are totally four tables accessed each time.
 
 ### Tracking Demonstration
 
-![The tracking diagram](http://shardingsphere.jd.com/document/current/img/apm/5x_trace.png)
+![The tracking diagram](http://shardingsphere.apache.org/document/current/img/apm/5x_trace.png)
 
 SQL parsing and implementation situation can be seen from the tracing diagram.
 
 `/Sharding-Sphere/parseSQL/` indicates SQL parsing performance this time.
 
-![The parsing node](http://shardingsphere.jd.com/document/current/img/apm/5x_parse.png)
+![The parsing node](http://shardingsphere.apache.org/document/current/img/apm/5x_parse.png)
 
 `/Sharding-Sphere/executeSQL/` indicates SQL parsing performance in actual execution.
 
-![The actual access node](http://shardingsphere.jd.com/document/current/img/apm/5x_executeSQL.png)
+![The actual access node](http://shardingsphere.apache.org/document/current/img/apm/5x_executeSQL.png)
 
 ### Exception Demonstration
 
-![Exception tracking diagram](http://shardingsphere.jd.com/document/current/img/apm/5x_trace_err.png)
+![Exception tracking diagram](http://shardingsphere.apache.org/document/current/img/apm/5x_trace_err.png)
 
 Exception nodes can be seen from the tracing diagram.
 
 `/Sharding-Sphere/executeSQL/` indicates exception results of SQL execution.
 
-![Exception node](http://shardingsphere.jd.com/document/current/img/apm/5x_executeSQL_Tags_err.png)
+![Exception node](http://shardingsphere.apache.org/document/current/img/apm/5x_executeSQL_Tags_err.png)
 
 `/Sharding-Sphere/executeSQL/` indicates the exception log of SQL execution.
 
-![Exception log](http://shardingsphere.jd.com/document/current/img/apm/5x_executeSQL_Logs_err.png)
+![Exception log](http://shardingsphere.apache.org/document/current/img/apm/5x_executeSQL_Logs_err.png)
