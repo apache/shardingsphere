@@ -10,7 +10,7 @@ weight = 2
 
 ```xml
 <dependency>
-    <groupId>io.shardingsphere</groupId>
+    <groupId>org.apache.shardingsphere</groupId>
     <artifactId>sharding-jdbc-core</artifactId>
     <version>${sharding-sphere.version}</version>
 </dependency>

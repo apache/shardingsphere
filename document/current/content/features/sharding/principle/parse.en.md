@@ -22,7 +22,7 @@ SELECT id, name FROM t_user WHERE status = 'ACTIVE' AND age > 18
 
 Its AST(Abstract Syntax Tree) after parsing is as:
 
-![SQL AST](http://shardingsphere.jd.com/document/current/img/sharding/sql_ast.png)
+![SQL AST](http://shardingsphere.apache.org/document/current/img/sharding/sql_ast.png)
 
 To better understand, the Token of abstract syntax tree keywords is shown in green; that of variables is shown in red; what’s to be further divided is shown in grey.
 
@@ -54,4 +54,4 @@ Therefore, `PreparedStatement` is recommended to be used as the pre-compile meth
 
 The overall structure division of the third generation of SQL parsing engine is shown in the following picture.
 
-![Parsing Engine](http://shardingsphere.jd.com/document/current/img/sharding/parsing_architecture_en.png)
+![Parsing Engine](http://shardingsphere.apache.org/document/current/img/sharding/parsing_architecture_en.png)

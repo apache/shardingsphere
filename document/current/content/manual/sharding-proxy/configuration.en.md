@@ -43,7 +43,8 @@ shardingRule:
         inline:
           shardingColumn: order_id
           algorithmExpression: t_order${order_id % 2}
-      keyGeneratorColumnName: order_id
+      keyGenerator:
+        column: order_id
     t_order_item:
       actualDataNodes: ds${0..1}.t_order_item${0..1}
       tableStrategy:
@@ -62,7 +63,8 @@ shardingRule:
       algorithmExpression: ds${user_id % 2}
   defaultTableStrategy:
     none:
-  defaultKeyGeneratorClassName: io.shardingsphere.core.keygen.DefaultKeyGenerator
+  defaultKeyGenerator:
+    type: SNOWFLAKE
 ```
 
 ### Read-write splitting
@@ -176,7 +178,8 @@ shardingRule:
         inline:
           shardingColumn: order_id
           algorithmExpression: t_order${order_id % 2}
-      keyGeneratorColumnName: order_id
+      keyGenerator:
+        column: order_id
     t_order_item:
       actualDataNodes: ms_ds${0..1}.t_order_item${0..1}
       tableStrategy:
@@ -191,7 +194,8 @@ shardingRule:
       algorithmExpression: ms_ds${user_id % 2}
   defaultTableStrategy:
     none:
-  defaultKeyGeneratorClassName: io.shardingsphere.core.keygen.DefaultKeyGenerator
+  defaultKeyGenerator:
+    type: SNOWFLAKE
   masterSlaveRules:
       ms_ds0:
         masterDataSourceName: ds0
