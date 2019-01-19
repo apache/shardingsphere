@@ -34,7 +34,7 @@ ShardingSphere在对排序的查询进行归并时，将每个结果集的当前
 图中展示了3张表返回的数据结果集，每个数据结果集已经根据分数排序完毕，但是3个数据结果集之间是无序的。
 将3个数据结果集的当前游标指向的数据值进行排序，并放入优先级队列，t_score_0的第一个数据值最大，t_score_2的第一个数据值次之，t_score_1的第一个数据值最小，因此优先级队列根据t_score_0，t_score_2和t_score_1的方式排序队列。
 
-![排序归并示例1](http://shardingsphere.jd.com/document/current/img/sharding/order_by_merge_1.png)
+![排序归并示例1](http://shardingsphere.apache.org/document/current/img/sharding/order_by_merge_1.png)
 
 下图则展现了进行next调用的时候，排序归并是如何进行的。
 通过图中我们可以看到，当进行第一次next调用时，排在队列首位的t_score_0将会被弹出队列，并且将当前游标指向的数据值（也就是100）返回至查询客户端，并且将游标下移一位之后，重新放入优先级队列。
@@ -44,7 +44,7 @@ ShardingSphere在对排序的查询进行归并时，将每个结果集的当前
 在进行第二次next时，只需要将目前排列在队列首位的t_score_2弹出队列，并且将其数据结果集游标指向的值返回至客户端，并下移游标，继续加入队列排队，以此类推。
 当一个结果集中已经没有数据了，则无需再次加入队列。
 
-![排序归并示例2](http://shardingsphere.jd.com/document/current/img/sharding/order_by_merge_2.png)
+![排序归并示例2](http://shardingsphere.apache.org/document/current/img/sharding/order_by_merge_2.png)
 
 可以看到，对于每个数据结果集中的数据有序，而多数据结果集整体无序的情况下，ShardingSphere无需将所有的数据都加在至内存即可排序。
 它使用的是流式归并的方式，每次next仅获取唯一正确的一条数据，极大的节省了内存的消耗。
@@ -67,12 +67,12 @@ SELECT name, SUM(score) FROM t_score GROUP BY name ORDER BY name;
 
 在分组项与排序项完全一致的情况下，取得的数据是连续的，分组所需的数据全数存在于各个数据结果集的当前游标所指向的数据值，因此可以采用流式归并。如下图所示。
 
-![分组归并示例1](http://shardingsphere.jd.com/document/current/img/sharding/group_by_merge_1_v3.png)
+![分组归并示例1](http://shardingsphere.apache.org/document/current/img/sharding/group_by_merge_1_v3.png)
 
 进行归并时，逻辑与排序归并类似。
 下图展现了进行next调用的时候，流式分组归并是如何进行的。
 
-![分组归并示例2](http://shardingsphere.jd.com/document/current/img/sharding/group_by_merge_2_v2.png)
+![分组归并示例2](http://shardingsphere.apache.org/document/current/img/sharding/group_by_merge_2_v2.png)
 
 通过图中我们可以看到，当进行第一次next调用时，排在队列首位的t_score_java将会被弹出队列，并且将分组值同为“Jetty”的其他结果集中的数据一同弹出队列。
 在获取了所有的姓名为“Jetty”的同学的分数之后，进行累加操作，那么，在第一次next调用结束后，取出的结果集是“Jetty”的分数总和。
@@ -137,4 +137,4 @@ SELECT * FROM t_order WHERE id > 10000000 LIMIT 10;
 
 归并引擎的整体结构划分如下图。
 
-![归并引擎结构](http://shardingsphere.jd.com/document/current/img/sharding/merge_architecture_cn.png)
+![归并引擎结构](http://shardingsphere.apache.org/document/current/img/sharding/merge_architecture_cn.png)
