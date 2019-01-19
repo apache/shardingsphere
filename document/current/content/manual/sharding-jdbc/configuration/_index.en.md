@@ -64,5 +64,5 @@ The red part of the figure represents internal objects, which are used by Shardi
 
 ## Convention
 
-Classes in package `io.shardingsphere.api` and `io.shardingsphere.shardingjdbc.api` is API for end users, every update will declare at release notes.
+Classes in package `org.apache.shardingsphere.api` and `org.apache.shardingsphere.shardingjdbc.api` is API for end users, every update will declare at release notes.
 Classes in other packages is internal implementation, maybe refactor in anytime, please `DO NOT USE` them.

@@ -42,5 +42,5 @@ ShardingRuleConfiguration是分库分表配置的核心和入口，它可以包�
 
 ## 使用约定
 
-在`io.shardingsphere.api`和`io.shardingsphere.shardingjdbc.api` 包中的类是面向用户的API，每次修改都会在release notes中明确声明。
+在`org.apache.shardingsphere.api`和`org.apache.shardingsphere.shardingjdbc.api` 包中的类是面向用户的API，每次修改都会在release notes中明确声明。
 其他包中的类属于内部实现，可能随时进行调整，`请勿直接使用`。
