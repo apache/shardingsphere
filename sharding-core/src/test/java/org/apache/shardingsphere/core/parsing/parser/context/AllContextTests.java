@@ -15,25 +15,21 @@
  * limitations under the License.
  */
 
-package org.apache.shardingsphere.core.parsing;
+package org.apache.shardingsphere.core.parsing.parser.context;
 
-import org.apache.shardingsphere.core.parsing.integrate.AllParsingIntegrateTests;
-import org.apache.shardingsphere.core.parsing.lexer.AllLexerTests;
-import org.apache.shardingsphere.core.parsing.parser.constant.AllConstantTests;
-import org.apache.shardingsphere.core.parsing.parser.context.AllContextTests;
-import org.apache.shardingsphere.core.parsing.parser.sql.AllSQLTests;
+import org.apache.shardingsphere.core.parsing.parser.context.condition.ConditionTest;
+import org.apache.shardingsphere.core.parsing.parser.context.selectitem.AggregationDistinctSelectItemTest;
+import org.apache.shardingsphere.core.parsing.parser.context.table.TablesTest;
 import org.junit.runner.RunWith;
 import org.junit.runners.Suite;
 import org.junit.runners.Suite.SuiteClasses;
 
 @RunWith(Suite.class)
 @SuiteClasses({
-        AllLexerTests.class, 
-        AllSQLTests.class, 
-        SQLJudgeEngineTest.class,
-        AllContextTests.class,
-        AllConstantTests.class, 
-        AllParsingIntegrateTests.class
-    })
-public final class AllParsingTests {
+        TablesTest.class, 
+        AggregationDistinctSelectItemTest.class, 
+        ConditionTest.class, 
+        OrderItemTest.class
+})
+public final class AllContextTests {
 }
