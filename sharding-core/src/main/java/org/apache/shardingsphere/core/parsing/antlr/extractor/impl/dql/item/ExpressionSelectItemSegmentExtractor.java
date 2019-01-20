@@ -20,6 +20,8 @@ package org.apache.shardingsphere.core.parsing.antlr.extractor.impl.dql.item;
 import com.google.common.base.Optional;
 import org.antlr.v4.runtime.ParserRuleContext;
 import org.apache.shardingsphere.core.parsing.antlr.extractor.OptionalSQLSegmentExtractor;
+import org.apache.shardingsphere.core.parsing.antlr.extractor.util.ExtractorUtils;
+import org.apache.shardingsphere.core.parsing.antlr.extractor.util.RuleName;
 import org.apache.shardingsphere.core.parsing.antlr.sql.segment.select.ExpressionSelectItemSegment;
 
 /**
@@ -31,6 +33,11 @@ public final class ExpressionSelectItemSegmentExtractor implements OptionalSQLSe
     
     @Override
     public Optional<ExpressionSelectItemSegment> extract(final ParserRuleContext expressionNode) {
-        return Optional.of(new ExpressionSelectItemSegment(expressionNode.getText(), expressionNode.getStart().getStartIndex(), expressionNode.getStop().getStopIndex()));
+        ExpressionSelectItemSegment result = new ExpressionSelectItemSegment(expressionNode.getText(), expressionNode.getStart().getStartIndex(), expressionNode.getStop().getStopIndex());
+        Optional<ParserRuleContext> aliasNode = ExtractorUtils.findFirstChildNode(expressionNode, RuleName.ALIAS);
+        if (aliasNode.isPresent()) {
+            result.setAlias(aliasNode.get().getText());
+        }
+        return Optional.of(result);
     }
 }

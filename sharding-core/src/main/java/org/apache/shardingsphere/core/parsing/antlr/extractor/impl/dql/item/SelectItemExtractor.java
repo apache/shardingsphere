@@ -23,13 +23,8 @@ import org.apache.shardingsphere.core.parsing.antlr.extractor.OptionalSQLSegment
 import org.apache.shardingsphere.core.parsing.antlr.extractor.impl.dql.SubqueryExtractor;
 import org.apache.shardingsphere.core.parsing.antlr.extractor.util.ExtractorUtils;
 import org.apache.shardingsphere.core.parsing.antlr.extractor.util.RuleName;
-import org.apache.shardingsphere.core.parsing.antlr.sql.AliasAvailable;
 import org.apache.shardingsphere.core.parsing.antlr.sql.segment.expr.SubquerySegment;
-import org.apache.shardingsphere.core.parsing.antlr.sql.segment.select.ColumnSelectItemSegment;
-import org.apache.shardingsphere.core.parsing.antlr.sql.segment.select.ExpressionSelectItemSegment;
-import org.apache.shardingsphere.core.parsing.antlr.sql.segment.select.FunctionSelectItemSegment;
 import org.apache.shardingsphere.core.parsing.antlr.sql.segment.select.SelectItemSegment;
-import org.apache.shardingsphere.core.util.SQLUtil;
 
 /**
  * Select item extractor.
@@ -59,58 +54,22 @@ public final class SelectItemExtractor implements OptionalSQLSegmentExtractor {
         if (result.isPresent()) {
             return result;
         }
-        result = extractColumnSelectItemSegment(expressionNode);
+        result = columnSelectItemSegmentExtractor.extract(expressionNode);
         if (result.isPresent()) {
             return result;
         }
-        result = extractFunctionSelectItemSegment(expressionNode);
+        result = functionSelectItemSegmentExtractor.extract(expressionNode);
         if (result.isPresent()) {
             return result;
         }
-        return extractExpressionSelectItemSegment(expressionNode);
+        return expressionSelectItemSegmentExtractor.extract(expressionNode);
     }
     
     private Optional<SubquerySegment> extractSubquerySegment(final ParserRuleContext expressionNode) {
         Optional<ParserRuleContext> subqueryNode = ExtractorUtils.findFirstChildNode(expressionNode, RuleName.SUBQUERY);
         if (subqueryNode.isPresent()) {
-            Optional<SubquerySegment> result = subqueryExtractor.extract(subqueryNode.get());
-            if (result.isPresent()) {
-                setAlias(expressionNode, result.get());
-            }
-            return result;
+            return subqueryExtractor.extract(subqueryNode.get());
         }
         return Optional.absent();
-    }
-    
-    private Optional<ColumnSelectItemSegment> extractColumnSelectItemSegment(final ParserRuleContext expressionNode) {
-        Optional<ColumnSelectItemSegment> result = columnSelectItemSegmentExtractor.extract(expressionNode);
-        if (result.isPresent()) {
-            setAlias(expressionNode, result.get());
-            return result;
-        }
-        return Optional.absent();
-    }
-    
-    private Optional<FunctionSelectItemSegment> extractFunctionSelectItemSegment(final ParserRuleContext expressionNode) {
-        Optional<FunctionSelectItemSegment> result = functionSelectItemSegmentExtractor.extract(expressionNode);
-        if (result.isPresent()) {
-            setAlias(expressionNode, result.get());
-        }
-        return result;
-    }
-    
-    private Optional<ExpressionSelectItemSegment> extractExpressionSelectItemSegment(final ParserRuleContext expressionNode) {
-        Optional<ExpressionSelectItemSegment> result = expressionSelectItemSegmentExtractor.extract(expressionNode);
-        if (result.isPresent()) {
-            setAlias(expressionNode, result.get());
-        }
-        return result;
-    }
-    
-    private void setAlias(final ParserRuleContext expressionNode, final AliasAvailable aliasAvailableSegment) {
-        Optional<ParserRuleContext> aliasNode = ExtractorUtils.findFirstChildNode(expressionNode, RuleName.ALIAS);
-        if (aliasNode.isPresent()) {
-            aliasAvailableSegment.setAlias(SQLUtil.getExactlyValue(aliasNode.get().getText()));
-        }
     }
 }

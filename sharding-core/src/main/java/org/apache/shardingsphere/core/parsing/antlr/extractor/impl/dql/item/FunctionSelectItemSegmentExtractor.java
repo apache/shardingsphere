@@ -43,9 +43,14 @@ public final class FunctionSelectItemSegmentExtractor implements OptionalSQLSegm
     }
     
     private FunctionSelectItemSegment extractFunctionSelectItemSegment(final ParserRuleContext expressionNode, final ParserRuleContext functionNode) {
-        return new FunctionSelectItemSegment(functionNode.getChild(0).getText(), functionNode.getStart().getStartIndex(),
+        FunctionSelectItemSegment result = new FunctionSelectItemSegment(functionNode.getChild(0).getText(), functionNode.getStart().getStartIndex(),
                 ((TerminalNode) functionNode.getChild(1)).getSymbol().getStartIndex(), functionNode.getStop().getStopIndex(),
                 ExtractorUtils.findFirstChildNode(expressionNode, RuleName.DISTINCT).isPresent() ? getDistinctExpressionStartIndex(functionNode) : -1);
+        Optional<ParserRuleContext> aliasNode = ExtractorUtils.findFirstChildNode(expressionNode, RuleName.ALIAS);
+        if (aliasNode.isPresent()) {
+            result.setAlias(aliasNode.get().getText());
+        }
+        return result;
     }
     
     private int getDistinctExpressionStartIndex(final ParserRuleContext functionNode) {

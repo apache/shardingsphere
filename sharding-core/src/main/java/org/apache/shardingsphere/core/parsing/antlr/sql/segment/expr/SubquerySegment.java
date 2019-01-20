@@ -27,6 +27,7 @@ import org.apache.shardingsphere.core.parsing.antlr.sql.segment.SelectClauseSegm
 import org.apache.shardingsphere.core.parsing.antlr.sql.segment.order.GroupBySegment;
 import org.apache.shardingsphere.core.parsing.antlr.sql.segment.order.OrderBySegment;
 import org.apache.shardingsphere.core.parsing.antlr.sql.segment.select.SelectItemSegment;
+import org.apache.shardingsphere.core.util.SQLUtil;
 
 /**
  * Subquery expression segment.
@@ -89,5 +90,10 @@ public final class SubquerySegment implements SelectItemSegment, ExpressionSegme
     @Override
     public Optional<String> getAlias() {
         return Optional.fromNullable(alias);
+    }
+    
+    @Override
+    public void setAlias(final String alias) {
+        this.alias = SQLUtil.getExactlyValue(alias);
     }
 }

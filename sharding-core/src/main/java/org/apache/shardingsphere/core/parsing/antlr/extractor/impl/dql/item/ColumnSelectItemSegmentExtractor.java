@@ -22,6 +22,7 @@ import com.google.common.base.Preconditions;
 import org.antlr.v4.runtime.ParserRuleContext;
 import org.apache.shardingsphere.core.parsing.antlr.extractor.OptionalSQLSegmentExtractor;
 import org.apache.shardingsphere.core.parsing.antlr.extractor.impl.ColumnSegmentExtractor;
+import org.apache.shardingsphere.core.parsing.antlr.extractor.util.ExtractorUtils;
 import org.apache.shardingsphere.core.parsing.antlr.extractor.util.RuleName;
 import org.apache.shardingsphere.core.parsing.antlr.sql.segment.column.ColumnSegment;
 import org.apache.shardingsphere.core.parsing.antlr.sql.segment.select.ColumnSelectItemSegment;
@@ -41,10 +42,14 @@ public final class ColumnSelectItemSegmentExtractor implements OptionalSQLSegmen
             ParserRuleContext columnNode = (ParserRuleContext) expressionNode.getChild(0);
             Optional<ColumnSegment> columnSegment = columnSegmentExtractor.extract(columnNode);
             Preconditions.checkState(columnSegment.isPresent());
-            return Optional.of(
-                    new ColumnSelectItemSegment(columnSegment.get().getName(), columnSegment.get().getOwner().orNull(), columnNode.getStart().getStartIndex(), columnNode.getStop().getStopIndex()));
+            ColumnSelectItemSegment result = new ColumnSelectItemSegment(
+                    columnSegment.get().getName(), columnSegment.get().getOwner().orNull(), columnNode.getStart().getStartIndex(), columnNode.getStop().getStopIndex());
+            Optional<ParserRuleContext> aliasNode = ExtractorUtils.findFirstChildNode(expressionNode, RuleName.ALIAS);
+            if (aliasNode.isPresent()) {
+                result.setAlias(aliasNode.get().getText());
+            }
+            return Optional.of(result);
         }
         return Optional.absent();
     }
-    
 }

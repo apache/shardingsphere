@@ -20,8 +20,8 @@ package org.apache.shardingsphere.core.parsing.antlr.sql.segment.select;
 import com.google.common.base.Optional;
 import lombok.Getter;
 import lombok.RequiredArgsConstructor;
-import lombok.Setter;
 import org.apache.shardingsphere.core.parsing.antlr.sql.AliasAvailable;
+import org.apache.shardingsphere.core.util.SQLUtil;
 
 /**
  * Expression select item segment.
@@ -30,7 +30,6 @@ import org.apache.shardingsphere.core.parsing.antlr.sql.AliasAvailable;
  */
 @RequiredArgsConstructor
 @Getter
-@Setter
 public final class ExpressionSelectItemSegment implements SelectItemSegment, AliasAvailable {
     
     private final String expression;
@@ -44,5 +43,10 @@ public final class ExpressionSelectItemSegment implements SelectItemSegment, Ali
     @Override
     public Optional<String> getAlias() {
         return Optional.fromNullable(alias);
+    }
+    
+    @Override
+    public void setAlias(final String alias) {
+        this.alias = SQLUtil.getExactlyValue(alias);
     }
 }
