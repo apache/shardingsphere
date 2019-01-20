@@ -21,6 +21,7 @@ import com.google.common.base.Optional;
 import org.apache.shardingsphere.core.metadata.table.ShardingTableMetaData;
 import org.apache.shardingsphere.core.parsing.antlr.filler.SQLStatementFiller;
 import org.apache.shardingsphere.core.parsing.antlr.sql.segment.SelectClauseSegment;
+import org.apache.shardingsphere.core.parsing.antlr.sql.segment.select.AggregationDistinctSelectItemSegment;
 import org.apache.shardingsphere.core.parsing.antlr.sql.segment.select.AggregationSelectItemSegment;
 import org.apache.shardingsphere.core.parsing.antlr.sql.segment.select.ColumnSelectItemSegment;
 import org.apache.shardingsphere.core.parsing.antlr.sql.segment.select.ExpressionSelectItemSegment;
@@ -102,7 +103,7 @@ public final class SelectClauseFiller implements SQLStatementFiller<SelectClause
         if (selectItemSegment instanceof AggregationSelectItemSegment) {
             AggregationSelectItemSegment aggregationSelectItemSegment = (AggregationSelectItemSegment) selectItemSegment;
             Optional<String> alias = aggregationSelectItemSegment.getAlias();
-            if (aggregationSelectItemSegment.isContainsDistinct() && !alias.isPresent()) {
+            if (aggregationSelectItemSegment instanceof AggregationDistinctSelectItemSegment && !alias.isPresent()) {
                 ((AggregationSelectItemSegment) selectItemSegment).setAlias(DerivedAlias.AGGREGATION_DISTINCT_DERIVED.getDerivedAlias(offset));
                 return offset + 1;
             }

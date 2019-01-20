@@ -22,6 +22,7 @@ import org.apache.shardingsphere.core.metadata.table.ShardingTableMetaData;
 import org.apache.shardingsphere.core.parsing.antlr.filler.SQLStatementFiller;
 import org.apache.shardingsphere.core.parsing.antlr.sql.segment.SQLSegment;
 import org.apache.shardingsphere.core.parsing.antlr.sql.segment.expr.SubquerySegment;
+import org.apache.shardingsphere.core.parsing.antlr.sql.segment.select.AggregationDistinctSelectItemSegment;
 import org.apache.shardingsphere.core.parsing.antlr.sql.segment.select.AggregationSelectItemSegment;
 import org.apache.shardingsphere.core.parsing.antlr.sql.segment.select.ColumnSelectItemSegment;
 import org.apache.shardingsphere.core.parsing.antlr.sql.segment.select.ExpressionSelectItemSegment;
@@ -99,17 +100,21 @@ public final class SelectItemFiller implements SQLStatementFiller {
     
     private void fillAggregationSelectItemSegment(final AggregationSelectItemSegment selectItemSegment, final SelectStatement selectStatement, final String sql) {
         String functionExpression = sql.substring(selectItemSegment.getStartIndex(), selectItemSegment.getStopIndex() + 1);
-        if (selectItemSegment.isContainsDistinct()) {
-            selectStatement.getItems().add(
-                    new AggregationDistinctSelectItem(selectItemSegment.getType(), selectItemSegment.getInnerExpression(), selectItemSegment.getAlias(), selectItemSegment.getDistinctExpression()));
-            Optional<String> derivedAlias = Optional.absent();
-            if (DerivedAlias.isDerivedAlias(selectItemSegment.getAlias().get())) {
-                derivedAlias = Optional.of(selectItemSegment.getAlias().get());
-            }
-            selectStatement.getSQLTokens().add(new AggregationDistinctToken(selectItemSegment.getStartIndex(), functionExpression, selectItemSegment.getDistinctExpression(), derivedAlias));
+        if (selectItemSegment instanceof AggregationDistinctSelectItemSegment) {
+            fillAggregationDistinctSelectItemSegment((AggregationDistinctSelectItemSegment) selectItemSegment, selectStatement, functionExpression);
         } else {
             selectStatement.getItems().add(new AggregationSelectItem(selectItemSegment.getType(), selectItemSegment.getInnerExpression(), selectItemSegment.getAlias()));
         }
+    }
+    
+    private void fillAggregationDistinctSelectItemSegment(final AggregationDistinctSelectItemSegment selectItemSegment, final SelectStatement selectStatement, final String functionExpression) {
+        selectStatement.getItems().add(
+                new AggregationDistinctSelectItem(selectItemSegment.getType(), selectItemSegment.getInnerExpression(), selectItemSegment.getAlias(), selectItemSegment.getDistinctExpression()));
+        Optional<String> derivedAlias = Optional.absent();
+        if (DerivedAlias.isDerivedAlias(selectItemSegment.getAlias().get())) {
+            derivedAlias = Optional.of(selectItemSegment.getAlias().get());
+        }
+        selectStatement.getSQLTokens().add(new AggregationDistinctToken(selectItemSegment.getStartIndex(), functionExpression, selectItemSegment.getDistinctExpression(), derivedAlias));
     }
     
     private void fillSubquerySegment(

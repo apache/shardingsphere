@@ -24,6 +24,7 @@ import org.apache.shardingsphere.core.parsing.antlr.extractor.OptionalSQLSegment
 import org.apache.shardingsphere.core.parsing.antlr.extractor.util.ExtractorUtils;
 import org.apache.shardingsphere.core.parsing.antlr.extractor.util.RuleName;
 import org.apache.shardingsphere.core.parsing.antlr.sql.AliasAvailable;
+import org.apache.shardingsphere.core.parsing.antlr.sql.segment.select.AggregationDistinctSelectItemSegment;
 import org.apache.shardingsphere.core.parsing.antlr.sql.segment.select.AggregationSelectItemSegment;
 import org.apache.shardingsphere.core.parsing.antlr.sql.segment.select.ExpressionSelectItemSegment;
 import org.apache.shardingsphere.core.parsing.antlr.sql.segment.select.SelectItemSegment;
@@ -65,13 +66,10 @@ public final class FunctionSelectItemSegmentExtractor implements OptionalSQLSegm
     }
     
     private AggregationSelectItemSegment extractAggregationSelectItemSegment(final AggregationType type, final ParserRuleContext functionNode) {
-        boolean containsDistinct = ExtractorUtils.findFirstChildNode(functionNode, RuleName.DISTINCT).isPresent();
-        if (containsDistinct) {
-            return new AggregationSelectItemSegment(type, getInnerExpression(functionNode), ExtractorUtils.findFirstChildNode(functionNode, RuleName.DISTINCT).isPresent(),
-                    getDistinctExpression(functionNode), functionNode.getStart().getStartIndex(), functionNode.getStop().getStopIndex());
-        }
-        return new AggregationSelectItemSegment(type, getInnerExpression(functionNode), ExtractorUtils.findFirstChildNode(functionNode, RuleName.DISTINCT).isPresent(),
-                "", functionNode.getStart().getStartIndex(), functionNode.getStop().getStopIndex()); 
+        return ExtractorUtils.findFirstChildNode(functionNode, RuleName.DISTINCT).isPresent()
+                ? new AggregationDistinctSelectItemSegment(
+                        type, getInnerExpression(functionNode), functionNode.getStart().getStartIndex(), functionNode.getStop().getStopIndex(), getDistinctExpression(functionNode)) 
+                : new AggregationSelectItemSegment(type, getInnerExpression(functionNode), functionNode.getStart().getStartIndex(), functionNode.getStop().getStopIndex()); 
     }
     
     private String getInnerExpression(final ParserRuleContext functionNode) {
