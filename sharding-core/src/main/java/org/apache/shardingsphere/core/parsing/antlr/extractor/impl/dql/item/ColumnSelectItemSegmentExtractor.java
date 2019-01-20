@@ -15,7 +15,7 @@
  * limitations under the License.
  */
 
-package org.apache.shardingsphere.core.parsing.antlr.extractor.impl.expression;
+package org.apache.shardingsphere.core.parsing.antlr.extractor.impl.dql.item;
 
 import com.google.common.base.Optional;
 import com.google.common.base.Preconditions;
