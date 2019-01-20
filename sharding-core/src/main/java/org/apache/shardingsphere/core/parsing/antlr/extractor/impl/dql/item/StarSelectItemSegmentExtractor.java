@@ -36,10 +36,7 @@ public final class StarSelectItemSegmentExtractor implements OptionalSQLSegmentE
         if (!text.endsWith(Symbol.STAR.getLiterals())) {
             return Optional.absent();
         }
-        StarSelectItemSegment result = new StarSelectItemSegment(expressionNode.getStart().getStartIndex());
-        if (text.contains(Symbol.DOT.getLiterals())) {
-            result.setOwner(text.substring(0, text.indexOf(Symbol.DOT.getLiterals())));
-        }
-        return Optional.of(result);
+        String owner = text.contains(Symbol.DOT.getLiterals()) ? text.substring(0, text.indexOf(Symbol.DOT.getLiterals())) : null;
+        return Optional.of(new StarSelectItemSegment(owner, expressionNode.getStart().getStartIndex()));
     }
 }

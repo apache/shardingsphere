@@ -36,11 +36,11 @@ public final class ColumnSelectItemSegment implements SelectItemSegment, OwnerAv
     
     private final String name;
     
+    private final String owner;
+    
     private final int startIndex;
     
     private final int stopIndex;
-    
-    private String owner;
     
     private String alias;
     

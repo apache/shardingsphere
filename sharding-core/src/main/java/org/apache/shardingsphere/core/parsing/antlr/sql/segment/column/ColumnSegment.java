@@ -20,6 +20,7 @@ package org.apache.shardingsphere.core.parsing.antlr.sql.segment.column;
 import com.google.common.base.Optional;
 import com.google.common.base.Splitter;
 import lombok.Getter;
+import org.apache.shardingsphere.core.parsing.antlr.sql.OwnerAvailable;
 import org.apache.shardingsphere.core.parsing.antlr.sql.segment.expr.SQLRightValueExpressionSegment;
 import org.apache.shardingsphere.core.parsing.lexer.token.Symbol;
 import org.apache.shardingsphere.core.util.SQLUtil;
@@ -33,7 +34,7 @@ import java.util.List;
  * @author zhangliang
  */
 @Getter
-public final class ColumnSegment implements SQLRightValueExpressionSegment {
+public final class ColumnSegment implements SQLRightValueExpressionSegment, OwnerAvailable {
     
     private final String name;
     
@@ -53,11 +54,7 @@ public final class ColumnSegment implements SQLRightValueExpressionSegment {
         this.startIndex = startIndex;
     }
     
-    /**
-     * Get owner.
-     * 
-     * @return owner
-     */
+    @Override
     public Optional<String> getOwner() {
         return Optional.fromNullable(owner);
     }

@@ -41,11 +41,8 @@ public final class ColumnSelectItemSegmentExtractor implements OptionalSQLSegmen
             ParserRuleContext columnNode = (ParserRuleContext) expressionNode.getChild(0);
             Optional<ColumnSegment> columnSegment = columnSegmentExtractor.extract(columnNode);
             Preconditions.checkState(columnSegment.isPresent());
-            ColumnSelectItemSegment result = new ColumnSelectItemSegment(columnSegment.get().getName(), columnNode.getStart().getStartIndex(), columnNode.getStop().getStopIndex());
-            if (columnSegment.get().getOwner().isPresent()) {
-                result.setOwner(columnSegment.get().getOwner().get());
-            }
-            return Optional.of(result);
+            return Optional.of(
+                    new ColumnSelectItemSegment(columnSegment.get().getName(), columnSegment.get().getOwner().orNull(), columnNode.getStart().getStartIndex(), columnNode.getStop().getStopIndex()));
         }
         return Optional.absent();
     }
