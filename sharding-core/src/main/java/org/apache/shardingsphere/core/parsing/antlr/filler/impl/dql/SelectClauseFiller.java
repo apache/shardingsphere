@@ -21,9 +21,9 @@ import com.google.common.base.Optional;
 import org.apache.shardingsphere.core.metadata.table.ShardingTableMetaData;
 import org.apache.shardingsphere.core.parsing.antlr.filler.SQLStatementFiller;
 import org.apache.shardingsphere.core.parsing.antlr.sql.segment.SelectClauseSegment;
+import org.apache.shardingsphere.core.parsing.antlr.sql.segment.select.AggregationSelectItemSegment;
 import org.apache.shardingsphere.core.parsing.antlr.sql.segment.select.ColumnSelectItemSegment;
 import org.apache.shardingsphere.core.parsing.antlr.sql.segment.select.ExpressionSelectItemSegment;
-import org.apache.shardingsphere.core.parsing.antlr.sql.segment.select.FunctionSelectItemSegment;
 import org.apache.shardingsphere.core.parsing.antlr.sql.segment.select.SelectItemSegment;
 import org.apache.shardingsphere.core.parsing.antlr.sql.segment.select.StarSelectItemSegment;
 import org.apache.shardingsphere.core.parsing.parser.constant.DerivedAlias;
@@ -99,11 +99,11 @@ public final class SelectClauseFiller implements SQLStatementFiller<SelectClause
     }
     
     private int setDistinctFunctionAlias(final SelectItemSegment selectItemSegment, final int offset) {
-        if (selectItemSegment instanceof FunctionSelectItemSegment) {
-            FunctionSelectItemSegment functionSelectItemSegment = (FunctionSelectItemSegment) selectItemSegment;
-            Optional<String> alias = functionSelectItemSegment.getAlias();
-            if (functionSelectItemSegment.hasDistinct() && !alias.isPresent()) {
-                ((FunctionSelectItemSegment) selectItemSegment).setAlias(DerivedAlias.AGGREGATION_DISTINCT_DERIVED.getDerivedAlias(offset));
+        if (selectItemSegment instanceof AggregationSelectItemSegment) {
+            AggregationSelectItemSegment aggregationSelectItemSegment = (AggregationSelectItemSegment) selectItemSegment;
+            Optional<String> alias = aggregationSelectItemSegment.getAlias();
+            if (aggregationSelectItemSegment.isContainsDistinct() && !alias.isPresent()) {
+                ((AggregationSelectItemSegment) selectItemSegment).setAlias(DerivedAlias.AGGREGATION_DISTINCT_DERIVED.getDerivedAlias(offset));
                 return offset + 1;
             }
         }

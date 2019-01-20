@@ -20,38 +20,32 @@ package org.apache.shardingsphere.core.parsing.antlr.sql.segment.select;
 import com.google.common.base.Optional;
 import lombok.Getter;
 import lombok.RequiredArgsConstructor;
+import org.apache.shardingsphere.core.constant.AggregationType;
 import org.apache.shardingsphere.core.parsing.antlr.sql.AliasAvailable;
 import org.apache.shardingsphere.core.util.SQLUtil;
 
 /**
- * Function select item segment.
+ * Aggregation select item segment.
  * 
  * @author zhangliang
  */
 @RequiredArgsConstructor
 @Getter
-public final class FunctionSelectItemSegment implements SelectItemSegment, AliasAvailable {
+public final class AggregationSelectItemSegment implements SelectItemSegment, AliasAvailable {
     
-    private final String functionName;
+    private final AggregationType type;
     
-    private final int functionStartIndex;
+    private final String innerExpression;
     
-    private final int innerExpressionStartIndex;
+    private final boolean containsDistinct;
     
-    private final int innerExpressionStopIndex; 
+    private final String distinctExpression;
     
-    private final int distinctExpressionStartIndex;
+    private final int startIndex;
+    
+    private final int stopIndex;
     
     private String alias;
-    
-    /**
-     * Judge has distinct or not.
-     * 
-     * @return has distinct or not
-     */
-    public boolean hasDistinct() {
-        return -1 != distinctExpressionStartIndex;
-    }
     
     @Override
     public Optional<String> getAlias() {

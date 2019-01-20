@@ -19,12 +19,14 @@ package org.apache.shardingsphere.core.parsing.antlr.extractor.impl.dql.item;
 
 import com.google.common.base.Optional;
 import org.antlr.v4.runtime.ParserRuleContext;
-import org.antlr.v4.runtime.tree.ParseTree;
-import org.antlr.v4.runtime.tree.TerminalNode;
+import org.apache.shardingsphere.core.constant.AggregationType;
 import org.apache.shardingsphere.core.parsing.antlr.extractor.OptionalSQLSegmentExtractor;
 import org.apache.shardingsphere.core.parsing.antlr.extractor.util.ExtractorUtils;
 import org.apache.shardingsphere.core.parsing.antlr.extractor.util.RuleName;
-import org.apache.shardingsphere.core.parsing.antlr.sql.segment.select.FunctionSelectItemSegment;
+import org.apache.shardingsphere.core.parsing.antlr.sql.AliasAvailable;
+import org.apache.shardingsphere.core.parsing.antlr.sql.segment.select.AggregationSelectItemSegment;
+import org.apache.shardingsphere.core.parsing.antlr.sql.segment.select.ExpressionSelectItemSegment;
+import org.apache.shardingsphere.core.parsing.antlr.sql.segment.select.SelectItemSegment;
 
 /**
  * Function select item segment extractor.
@@ -34,7 +36,7 @@ import org.apache.shardingsphere.core.parsing.antlr.sql.segment.select.FunctionS
 public final class FunctionSelectItemSegmentExtractor implements OptionalSQLSegmentExtractor {
     
     @Override
-    public Optional<FunctionSelectItemSegment> extract(final ParserRuleContext expressionNode) {
+    public Optional<SelectItemSegment> extract(final ParserRuleContext expressionNode) {
         Optional<ParserRuleContext> functionNode = ExtractorUtils.findFirstChildNode(expressionNode, RuleName.FUNCTION_CALL);
         if (!functionNode.isPresent()) {
             return Optional.absent();
@@ -42,25 +44,53 @@ public final class FunctionSelectItemSegmentExtractor implements OptionalSQLSegm
         return Optional.of(extractFunctionSelectItemSegment(expressionNode, functionNode.get()));
     }
     
-    private FunctionSelectItemSegment extractFunctionSelectItemSegment(final ParserRuleContext expressionNode, final ParserRuleContext functionNode) {
-        FunctionSelectItemSegment result = new FunctionSelectItemSegment(functionNode.getChild(0).getText(), functionNode.getStart().getStartIndex(),
-                ((TerminalNode) functionNode.getChild(1)).getSymbol().getStartIndex(), functionNode.getStop().getStopIndex(),
-                ExtractorUtils.findFirstChildNode(expressionNode, RuleName.DISTINCT).isPresent() ? getDistinctExpressionStartIndex(functionNode) : -1);
+    private SelectItemSegment extractFunctionSelectItemSegment(final ParserRuleContext expressionNode, final ParserRuleContext functionNode) {
+        String functionName = functionNode.getChild(0).getText();
+        Optional<AggregationType> aggregationType = findAggregationType(functionName);
+        AliasAvailable result = aggregationType.isPresent() ? extractAggregationSelectItemSegment(aggregationType.get(), functionNode)
+                : new ExpressionSelectItemSegment(functionNode.getText(), functionNode.getStart().getStartIndex(), functionNode.getStop().getStopIndex());
         Optional<ParserRuleContext> aliasNode = ExtractorUtils.findFirstChildNode(expressionNode, RuleName.ALIAS);
         if (aliasNode.isPresent()) {
             result.setAlias(aliasNode.get().getText());
         }
-        return result;
+        return (SelectItemSegment) result;
     }
     
-    private int getDistinctExpressionStartIndex(final ParserRuleContext functionNode) {
-        ParseTree distinctItemNode = functionNode.getChild(3);
-        if (distinctItemNode instanceof TerminalNode) {
-            return ((TerminalNode) distinctItemNode).getSymbol().getStartIndex();
+    private Optional<AggregationType> findAggregationType(final String functionName) {
+        try {
+            return Optional.of(AggregationType.valueOf(functionName.toUpperCase()));
+        } catch (final IllegalArgumentException ignore) {
+            return Optional.absent();
         }
-        if (distinctItemNode instanceof ParserRuleContext) {
-            return ((ParserRuleContext) distinctItemNode).getStart().getStartIndex();
+    }
+    
+    private AggregationSelectItemSegment extractAggregationSelectItemSegment(final AggregationType type, final ParserRuleContext functionNode) {
+        boolean containsDistinct = ExtractorUtils.findFirstChildNode(functionNode, RuleName.DISTINCT).isPresent();
+        if (containsDistinct) {
+            return new AggregationSelectItemSegment(type, getInnerExpression(functionNode), ExtractorUtils.findFirstChildNode(functionNode, RuleName.DISTINCT).isPresent(),
+                    getDistinctExpression(functionNode), functionNode.getStart().getStartIndex(), functionNode.getStop().getStopIndex());
         }
-        return -1;
+        return new AggregationSelectItemSegment(type, getInnerExpression(functionNode), ExtractorUtils.findFirstChildNode(functionNode, RuleName.DISTINCT).isPresent(),
+                "", functionNode.getStart().getStartIndex(), functionNode.getStop().getStopIndex()); 
+    }
+    
+    private String getInnerExpression(final ParserRuleContext functionNode) {
+        StringBuilder result = new StringBuilder();
+        for (int i = 1; i < functionNode.getChildCount(); i++) {
+            String text = functionNode.getChild(i).getText();
+            result.append(text);
+            if ("DISTINCT".equals(text)) {
+                result.append(" ");
+            }
+        }
+        return result.toString();
+    }
+    
+    private String getDistinctExpression(final ParserRuleContext functionNode) {
+        StringBuilder result = new StringBuilder();
+        for (int i = 3; i < functionNode.getChildCount() - 1; i++) {
+            result.append(functionNode.getChild(i).getText());
+        }
+        return result.toString();
     }
 }
