@@ -21,9 +21,6 @@ import com.google.common.base.Optional;
 import org.antlr.v4.runtime.ParserRuleContext;
 import org.apache.shardingsphere.core.parsing.antlr.extractor.OptionalSQLSegmentExtractor;
 import org.apache.shardingsphere.core.parsing.antlr.extractor.impl.dql.SubqueryExtractor;
-import org.apache.shardingsphere.core.parsing.antlr.extractor.util.ExtractorUtils;
-import org.apache.shardingsphere.core.parsing.antlr.extractor.util.RuleName;
-import org.apache.shardingsphere.core.parsing.antlr.sql.segment.expr.SubquerySegment;
 import org.apache.shardingsphere.core.parsing.antlr.sql.segment.select.SelectItemSegment;
 
 /**
@@ -50,10 +47,6 @@ public final class SelectItemExtractor implements OptionalSQLSegmentExtractor {
         if (result.isPresent()) {
             return result;
         }
-        result = extractSubquerySegment(expressionNode);
-        if (result.isPresent()) {
-            return result;
-        }
         result = columnSelectItemSegmentExtractor.extract(expressionNode);
         if (result.isPresent()) {
             return result;
@@ -62,14 +55,10 @@ public final class SelectItemExtractor implements OptionalSQLSegmentExtractor {
         if (result.isPresent()) {
             return result;
         }
-        return expressionSelectItemSegmentExtractor.extract(expressionNode);
-    }
-    
-    private Optional<SubquerySegment> extractSubquerySegment(final ParserRuleContext expressionNode) {
-        Optional<ParserRuleContext> subqueryNode = ExtractorUtils.findFirstChildNode(expressionNode, RuleName.SUBQUERY);
-        if (subqueryNode.isPresent()) {
-            return subqueryExtractor.extract(subqueryNode.get());
+        result = expressionSelectItemSegmentExtractor.extract(expressionNode);
+        if (result.isPresent()) {
+            return result;
         }
-        return Optional.absent();
+        return subqueryExtractor.extract(expressionNode);
     }
 }
