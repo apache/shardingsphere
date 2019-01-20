@@ -15,10 +15,11 @@
  * limitations under the License.
  */
 
-package org.apache.shardingsphere.core.parsing.antlr.extractor.impl;
+package org.apache.shardingsphere.core.parsing.antlr.extractor.impl.dml;
 
 import com.google.common.base.Optional;
 import org.antlr.v4.runtime.ParserRuleContext;
+import org.apache.shardingsphere.core.parsing.antlr.extractor.impl.dql.AbstractFromWhereExtractor;
 import org.apache.shardingsphere.core.parsing.antlr.extractor.util.ExtractorUtils;
 import org.apache.shardingsphere.core.parsing.antlr.extractor.util.RuleName;
 import org.apache.shardingsphere.core.parsing.antlr.sql.segment.FromWhereSegment;

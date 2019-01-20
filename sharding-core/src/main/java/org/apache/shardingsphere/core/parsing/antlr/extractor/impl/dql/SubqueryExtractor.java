@@ -20,7 +20,6 @@ package org.apache.shardingsphere.core.parsing.antlr.extractor.impl.dql;
 import com.google.common.base.Optional;
 import org.antlr.v4.runtime.ParserRuleContext;
 import org.apache.shardingsphere.core.parsing.antlr.extractor.OptionalSQLSegmentExtractor;
-import org.apache.shardingsphere.core.parsing.antlr.extractor.impl.FromWhereExtractor;
 import org.apache.shardingsphere.core.parsing.antlr.extractor.util.ExtractorUtils;
 import org.apache.shardingsphere.core.parsing.antlr.extractor.util.RuleName;
 import org.apache.shardingsphere.core.parsing.antlr.sql.segment.FromWhereSegment;
