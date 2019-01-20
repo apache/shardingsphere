@@ -25,6 +25,7 @@ import org.apache.shardingsphere.core.parsing.antlr.sql.segment.FromWhereSegment
 import org.apache.shardingsphere.core.parsing.antlr.sql.segment.SelectClauseSegment;
 import org.apache.shardingsphere.core.parsing.antlr.sql.segment.order.GroupBySegment;
 import org.apache.shardingsphere.core.parsing.antlr.sql.segment.order.OrderBySegment;
+import org.apache.shardingsphere.core.parsing.antlr.sql.segment.select.SelectItemSegment;
 
 /**
  * Subquery expression segment.
@@ -34,7 +35,7 @@ import org.apache.shardingsphere.core.parsing.antlr.sql.segment.order.OrderBySeg
 @RequiredArgsConstructor
 @Getter
 @Setter
-public final class SubquerySegment extends ExpressionWithAliasSegment {
+public final class SubquerySegment extends ExpressionWithAliasSegment implements SelectItemSegment {
     
     private final boolean subqueryInFrom;
     

@@ -15,50 +15,43 @@
  * limitations under the License.
  */
 
-package org.apache.shardingsphere.core.parsing.antlr.sql.segment.column;
+package org.apache.shardingsphere.core.parsing.antlr.sql.segment.select;
 
 import com.google.common.base.Optional;
-import com.google.common.base.Splitter;
 import lombok.Getter;
-import org.apache.shardingsphere.core.parsing.antlr.sql.segment.expr.SQLRightValueExpressionSegment;
-import org.apache.shardingsphere.core.parsing.lexer.token.Symbol;
-import org.apache.shardingsphere.core.util.SQLUtil;
-
-import java.util.List;
+import lombok.RequiredArgsConstructor;
 
 /**
- * Column segment.
+ * Star select item segment.
  *
- * @author duhongjun
  * @author zhangliang
  */
+@RequiredArgsConstructor
 @Getter
-public final class ColumnSegment implements SQLRightValueExpressionSegment {
-    
-    private final String name;
+public final class StarSelectItemSegment implements SelectItemSegment {
     
     private final String owner;
     
     private final int startIndex;
     
-    public ColumnSegment(final String columnText, final int startIndex) {
-        List<String> texts = Splitter.on(Symbol.DOT.getLiterals()).splitToList(columnText);
-        if (1 == texts.size()) {
-            name = SQLUtil.getExactlyValue(columnText);
-            owner = null;
-        } else {
-            name = SQLUtil.getExactlyValue(texts.get(texts.size() - 1));
-            owner = SQLUtil.getExactlyValue(texts.get(0));
-        }
-        this.startIndex = startIndex;
-    }
+    private String alias;
     
     /**
      * Get owner.
      * 
-     * @return owner
+     * @return owner.
      */
     public Optional<String> getOwner() {
         return Optional.fromNullable(owner);
+    }
+    
+    @Override
+    public Optional<String> getAlias() {
+        return Optional.fromNullable(alias);
+    }
+    
+    @Override
+    public void setAlias(final String alias) {
+        this.alias = alias;
     }
 }

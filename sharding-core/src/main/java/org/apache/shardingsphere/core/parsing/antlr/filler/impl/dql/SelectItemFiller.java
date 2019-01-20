@@ -15,19 +15,18 @@
  * limitations under the License.
  */
 
-package org.apache.shardingsphere.core.parsing.antlr.filler.impl;
+package org.apache.shardingsphere.core.parsing.antlr.filler.impl.dql;
 
 import com.google.common.base.Optional;
 import org.apache.shardingsphere.core.constant.AggregationType;
 import org.apache.shardingsphere.core.metadata.table.ShardingTableMetaData;
 import org.apache.shardingsphere.core.parsing.antlr.filler.SQLStatementFiller;
-import org.apache.shardingsphere.core.parsing.antlr.filler.impl.dql.SubqueryFiller;
 import org.apache.shardingsphere.core.parsing.antlr.sql.segment.SQLSegment;
-import org.apache.shardingsphere.core.parsing.antlr.sql.segment.expr.CommonExpressionSegment;
-import org.apache.shardingsphere.core.parsing.antlr.sql.segment.expr.FunctionExpressionSegment;
-import org.apache.shardingsphere.core.parsing.antlr.sql.segment.expr.PropertyExpressionSegment;
-import org.apache.shardingsphere.core.parsing.antlr.sql.segment.expr.StarItemExpressionSegment;
 import org.apache.shardingsphere.core.parsing.antlr.sql.segment.expr.SubquerySegment;
+import org.apache.shardingsphere.core.parsing.antlr.sql.segment.select.ColumnSelectItemSegment;
+import org.apache.shardingsphere.core.parsing.antlr.sql.segment.select.ExpressionSelectItemSegment;
+import org.apache.shardingsphere.core.parsing.antlr.sql.segment.select.FunctionSelectItemSegment;
+import org.apache.shardingsphere.core.parsing.antlr.sql.segment.select.StarSelectItemSegment;
 import org.apache.shardingsphere.core.parsing.parser.constant.DerivedAlias;
 import org.apache.shardingsphere.core.parsing.parser.context.selectitem.AggregationDistinctSelectItem;
 import org.apache.shardingsphere.core.parsing.parser.context.selectitem.AggregationSelectItem;
@@ -41,11 +40,11 @@ import org.apache.shardingsphere.core.parsing.parser.token.TableToken;
 import org.apache.shardingsphere.core.rule.ShardingRule;
 
 /**
- * Expression filler.
+ * Select item filler.
  *
- * @author duhongjun
+ * @author zhangliang
  */
-public final class ExpressionFiller implements SQLStatementFiller {
+public final class SelectItemFiller implements SQLStatementFiller {
     
     @Override
     public void fill(final SQLSegment sqlSegment, final SQLStatement sqlStatement, final String sql, final ShardingRule shardingRule, final ShardingTableMetaData shardingTableMetaData) {
@@ -53,22 +52,22 @@ public final class ExpressionFiller implements SQLStatementFiller {
             return;
         }
         SelectStatement selectStatement = (SelectStatement) sqlStatement;
-        if (sqlSegment instanceof PropertyExpressionSegment) {
-            fillPropertyExpression((PropertyExpressionSegment) sqlSegment, selectStatement, sql);
+        if (sqlSegment instanceof ColumnSelectItemSegment) {
+            fillColumn((ColumnSelectItemSegment) sqlSegment, selectStatement, sql);
             return;
         }
-        if (sqlSegment instanceof CommonExpressionSegment) {
-            CommonExpressionSegment commonSegment = (CommonExpressionSegment) sqlSegment;
-            String expression = sql.substring(commonSegment.getStartIndex(), commonSegment.getStopIndex() + 1);
-            selectStatement.getItems().add(new CommonSelectItem(expression, commonSegment.getAlias()));
+        if (sqlSegment instanceof ExpressionSelectItemSegment) {
+            ExpressionSelectItemSegment expressionSelectItemSegment = (ExpressionSelectItemSegment) sqlSegment;
+            String expression = sql.substring(expressionSelectItemSegment.getStartIndex(), expressionSelectItemSegment.getStopIndex() + 1);
+            selectStatement.getItems().add(new CommonSelectItem(expression, expressionSelectItemSegment.getAlias()));
             return;
         }
-        if (sqlSegment instanceof StarItemExpressionSegment) {
-            fillStarExpression((StarItemExpressionSegment) sqlSegment, selectStatement);
+        if (sqlSegment instanceof StarSelectItemSegment) {
+            fillStarSelectItemSegment((StarSelectItemSegment) sqlSegment, selectStatement);
             return;
         }
-        if (sqlSegment instanceof FunctionExpressionSegment) {
-            fillFunctionExpression((FunctionExpressionSegment) sqlSegment, selectStatement, sql);
+        if (sqlSegment instanceof FunctionSelectItemSegment) {
+            fillFunctionSelectItemSegment((FunctionSelectItemSegment) sqlSegment, selectStatement, sql);
             return;
         }
         if (sqlSegment instanceof SubquerySegment) {
@@ -77,29 +76,29 @@ public final class ExpressionFiller implements SQLStatementFiller {
         }
     }
     
-    private void fillStarExpression(final StarItemExpressionSegment starSegment, final SelectStatement selectStatement) {
+    private void fillStarSelectItemSegment(final StarSelectItemSegment starSelectItemSegment, final SelectStatement selectStatement) {
         selectStatement.setContainStar(true);
-        Optional<String> owner = starSegment.getOwner();
+        Optional<String> owner = starSelectItemSegment.getOwner();
         selectStatement.getItems().add(new StarSelectItem(owner.orNull()));
         if (!owner.isPresent()) {
             return;
         }
         Optional<Table> table = selectStatement.getTables().find(owner.get());
         if (table.isPresent() && !table.get().getAlias().isPresent()) {
-            selectStatement.addSQLToken(new TableToken(starSegment.getStartIndex(), 0, owner.get()));
+            selectStatement.addSQLToken(new TableToken(starSelectItemSegment.getStartIndex(), 0, owner.get()));
         }
     }
     
-    private void fillPropertyExpression(final PropertyExpressionSegment propertySegment, final SelectStatement selectStatement, final String sql) {
-        Optional<String> owner = propertySegment.getOwner();
+    private void fillColumn(final ColumnSelectItemSegment columnSelectItemSegment, final SelectStatement selectStatement, final String sql) {
+        Optional<String> owner = columnSelectItemSegment.getOwner();
         if (owner.isPresent() && selectStatement.getTables().getTableNames().contains(owner.get())) {
-            selectStatement.addSQLToken(new TableToken(propertySegment.getStartIndex(), 0, owner.get()));
+            selectStatement.addSQLToken(new TableToken(columnSelectItemSegment.getStartIndex(), 0, owner.get()));
         }
-        String expression = sql.substring(propertySegment.getStartIndex(), propertySegment.getStopIndex() + 1);
-        selectStatement.getItems().add(new CommonSelectItem(expression, propertySegment.getAlias()));
+        String expression = sql.substring(columnSelectItemSegment.getStartIndex(), columnSelectItemSegment.getStopIndex() + 1);
+        selectStatement.getItems().add(new CommonSelectItem(expression, columnSelectItemSegment.getAlias()));
     }
     
-    private void fillFunctionExpression(final FunctionExpressionSegment functionSegment, final SelectStatement selectStatement, final String sql) {
+    private void fillFunctionSelectItemSegment(final FunctionSelectItemSegment functionSegment, final SelectStatement selectStatement, final String sql) {
         AggregationType aggregationType = null;
         for (AggregationType eachType : AggregationType.values()) {
             if (eachType.name().equalsIgnoreCase(functionSegment.getFunctionName())) {

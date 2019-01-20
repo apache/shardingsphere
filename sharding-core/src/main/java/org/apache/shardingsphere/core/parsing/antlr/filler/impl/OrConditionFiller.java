@@ -112,12 +112,12 @@ public final class OrConditionFiller implements SQLStatementFiller<OrConditionSe
                     continue;
                 }
                 if (condition.getColumn().getOwner().isPresent() && sqlStatement.getTables().getTableNames().contains(condition.getColumn().getOwner().get())) {
-                    sqlStatement.addSQLToken(new TableToken(condition.getColumn().getStartPosition(), 0, condition.getColumn().getOwner().get()));
+                    sqlStatement.addSQLToken(new TableToken(condition.getColumn().getStartIndex(), 0, condition.getColumn().getOwner().get()));
                 }
                 if (condition.getExpression() instanceof ColumnSegment) {
                     ColumnSegment rightColumn = (ColumnSegment) condition.getExpression();
                     if (rightColumn.getOwner().isPresent() && sqlStatement.getTables().getTableNames().contains(rightColumn.getOwner().get())) {
-                        sqlStatement.addSQLToken(new TableToken(rightColumn.getStartPosition(), 0, rightColumn.getOwner().get()));
+                        sqlStatement.addSQLToken(new TableToken(rightColumn.getStartIndex(), 0, rightColumn.getOwner().get()));
                     }
                     needSharding = true;
                     continue;

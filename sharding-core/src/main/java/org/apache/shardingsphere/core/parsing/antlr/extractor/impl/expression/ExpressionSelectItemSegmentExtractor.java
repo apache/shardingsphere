@@ -15,39 +15,22 @@
  * limitations under the License.
  */
 
-package org.apache.shardingsphere.core.parsing.antlr.sql.segment.expr;
+package org.apache.shardingsphere.core.parsing.antlr.extractor.impl.expression;
 
 import com.google.common.base.Optional;
-import lombok.Getter;
-import lombok.RequiredArgsConstructor;
-import lombok.Setter;
-import org.apache.shardingsphere.core.util.SQLUtil;
+import org.antlr.v4.runtime.ParserRuleContext;
+import org.apache.shardingsphere.core.parsing.antlr.extractor.OptionalSQLSegmentExtractor;
+import org.apache.shardingsphere.core.parsing.antlr.sql.segment.select.ExpressionSelectItemSegment;
 
 /**
- * Star item expression segment.
- * 
- * @author duhongjun
+ * Expression select item segment extractor.
+ *
+ * @author zhangliang
  */
-@RequiredArgsConstructor
-@Getter
-@Setter
-public final class StarItemExpressionSegment implements ExpressionSegment {
+public final class ExpressionSelectItemSegmentExtractor implements OptionalSQLSegmentExtractor {
     
-    private String owner;
-    
-    private final int startIndex;
-    
-    public StarItemExpressionSegment(final String owner, final int startIndex) {
-        this.owner = SQLUtil.getExactlyValue(owner);
-        this.startIndex = startIndex;
-    }
-    
-    /**
-     * Get owner.
-     * 
-     * @return owner
-     */
-    public Optional<String> getOwner() {
-        return Optional.fromNullable(owner);
+    @Override
+    public Optional<ExpressionSelectItemSegment> extract(final ParserRuleContext expressionNode) {
+        return Optional.of(new ExpressionSelectItemSegment(expressionNode.getText(), expressionNode.getStart().getStartIndex(), expressionNode.getStop().getStopIndex()));
     }
 }

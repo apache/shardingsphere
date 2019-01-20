@@ -20,25 +20,23 @@ package org.apache.shardingsphere.core.parsing.antlr.extractor.impl.expression;
 import com.google.common.base.Optional;
 import org.antlr.v4.runtime.ParserRuleContext;
 import org.apache.shardingsphere.core.parsing.antlr.extractor.OptionalSQLSegmentExtractor;
-import org.apache.shardingsphere.core.parsing.antlr.sql.segment.expr.StarItemExpressionSegment;
+import org.apache.shardingsphere.core.parsing.antlr.sql.segment.select.StarSelectItemSegment;
 import org.apache.shardingsphere.core.parsing.lexer.token.Symbol;
 
 /**
- * Star item expression extractor.
+ * Star select item segment extractor.
  *
  * @author zhangliang
  */
-public final class StarItemExpressionExtractor implements OptionalSQLSegmentExtractor {
+public final class StarSelectItemSegmentExtractor implements OptionalSQLSegmentExtractor {
     
     @Override
-    public Optional<StarItemExpressionSegment> extract(final ParserRuleContext expressionNode) {
+    public Optional<StarSelectItemSegment> extract(final ParserRuleContext expressionNode) {
         String text = expressionNode.getText();
         if (!text.endsWith(Symbol.STAR.getLiterals())) {
             return Optional.absent();
         }
-        StarItemExpressionSegment result = text.contains(Symbol.DOT.getLiterals())
-                ? new StarItemExpressionSegment(text.substring(0, text.indexOf(Symbol.DOT.getLiterals())), expressionNode.getStart().getStartIndex())
-                : new StarItemExpressionSegment(expressionNode.getStart().getStartIndex());
-        return Optional.of(result);
+        String owner = text.contains(Symbol.DOT.getLiterals()) ? text.substring(0, text.indexOf(Symbol.DOT.getLiterals())) : null;
+        return Optional.of(new StarSelectItemSegment(owner, expressionNode.getStart().getStartIndex()));
     }
 }

@@ -22,11 +22,11 @@ import org.antlr.v4.runtime.ParserRuleContext;
 import org.antlr.v4.runtime.tree.ParseTree;
 import org.antlr.v4.runtime.tree.TerminalNodeImpl;
 import org.apache.shardingsphere.core.parsing.antlr.extractor.OptionalSQLSegmentExtractor;
-import org.apache.shardingsphere.core.parsing.antlr.extractor.impl.expression.SelectItemExpressionExtractor;
+import org.apache.shardingsphere.core.parsing.antlr.extractor.impl.expression.SelectItemExtractor;
 import org.apache.shardingsphere.core.parsing.antlr.extractor.util.ExtractorUtils;
 import org.apache.shardingsphere.core.parsing.antlr.extractor.util.RuleName;
 import org.apache.shardingsphere.core.parsing.antlr.sql.segment.SelectClauseSegment;
-import org.apache.shardingsphere.core.parsing.antlr.sql.segment.expr.ExpressionSegment;
+import org.apache.shardingsphere.core.parsing.antlr.sql.segment.select.SelectItemSegment;
 import org.apache.shardingsphere.core.parsing.lexer.token.DefaultKeyword;
 
 /**
@@ -37,7 +37,7 @@ import org.apache.shardingsphere.core.parsing.lexer.token.DefaultKeyword;
  */
 public final class SelectClauseExtractor implements OptionalSQLSegmentExtractor {
     
-    private final SelectItemExpressionExtractor selectItemExpressionExtractor = new SelectItemExpressionExtractor();
+    private final SelectItemExtractor selectItemExtractor = new SelectItemExtractor();
     
     @Override
     public Optional<SelectClauseSegment> extract(final ParserRuleContext ancestorNode) {
@@ -49,9 +49,9 @@ public final class SelectClauseExtractor implements OptionalSQLSegmentExtractor 
             if (selectExpressionNode instanceof TerminalNodeImpl) {
                 continue;
             }
-            Optional<? extends ExpressionSegment> expressionSegment = selectItemExpressionExtractor.extract((ParserRuleContext) selectExpressionNode);
-            if (expressionSegment.isPresent()) {
-                result.getExpressions().add(expressionSegment.get());
+            Optional<? extends SelectItemSegment> selectItemSegment = selectItemExtractor.extract((ParserRuleContext) selectExpressionNode);
+            if (selectItemSegment.isPresent()) {
+                result.getSelectItems().add(selectItemSegment.get());
             }
         }
         return Optional.of(result);

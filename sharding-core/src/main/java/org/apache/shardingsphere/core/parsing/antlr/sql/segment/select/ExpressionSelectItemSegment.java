@@ -15,30 +15,36 @@
  * limitations under the License.
  */
 
-package org.apache.shardingsphere.core.parsing.antlr.sql.segment;
+package org.apache.shardingsphere.core.parsing.antlr.sql.segment.select;
 
+import com.google.common.base.Optional;
 import lombok.Getter;
 import lombok.RequiredArgsConstructor;
-import org.apache.shardingsphere.core.parsing.antlr.sql.segment.select.SelectItemSegment;
-
-import java.util.Collection;
-import java.util.LinkedList;
 
 /**
- * Select clause segment.
+ * Expression select item segment.
  * 
- * @author duhongjun
- * @author panjuan
+ * @author zhangliang
  */
 @RequiredArgsConstructor
 @Getter
-public final class SelectClauseSegment implements SQLSegment {
+public final class ExpressionSelectItemSegment implements SelectItemSegment {
     
-    private final int firstSelectItemStartIndex;
+    private final String expression;
     
-    private final int selectItemsStopIndex;
+    private final int startIndex;
     
-    private final boolean hasDistinct;
+    private final int stopIndex;
     
-    private final Collection<SelectItemSegment> selectItems = new LinkedList<>();
+    private String alias;
+    
+    @Override
+    public Optional<String> getAlias() {
+        return Optional.fromNullable(alias);
+    }
+    
+    @Override
+    public void setAlias(final String alias) {
+        this.alias = alias;
+    }
 }
