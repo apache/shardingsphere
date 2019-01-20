@@ -52,18 +52,16 @@ public final class SelectItemFiller implements SQLStatementFiller {
             return;
         }
         SelectStatement selectStatement = (SelectStatement) sqlStatement;
+        if (sqlSegment instanceof StarSelectItemSegment) {
+            fillStarSelectItemSegment((StarSelectItemSegment) sqlSegment, selectStatement);
+            return;
+        }
         if (sqlSegment instanceof ColumnSelectItemSegment) {
-            fillColumn((ColumnSelectItemSegment) sqlSegment, selectStatement);
+            fillColumnSelectItemSegment((ColumnSelectItemSegment) sqlSegment, selectStatement);
             return;
         }
         if (sqlSegment instanceof ExpressionSelectItemSegment) {
-            ExpressionSelectItemSegment expressionSelectItemSegment = (ExpressionSelectItemSegment) sqlSegment;
-            String expression = sql.substring(expressionSelectItemSegment.getStartIndex(), expressionSelectItemSegment.getStopIndex() + 1);
-            selectStatement.getItems().add(new CommonSelectItem(expression, expressionSelectItemSegment.getAlias()));
-            return;
-        }
-        if (sqlSegment instanceof StarSelectItemSegment) {
-            fillStarSelectItemSegment((StarSelectItemSegment) sqlSegment, selectStatement);
+            fillExpressionSelectItemSegment((ExpressionSelectItemSegment) sqlSegment, selectStatement);
             return;
         }
         if (sqlSegment instanceof FunctionSelectItemSegment) {
@@ -71,56 +69,67 @@ public final class SelectItemFiller implements SQLStatementFiller {
             return;
         }
         if (sqlSegment instanceof SubquerySegment) {
-            SubquerySegment subquerySegment = (SubquerySegment) sqlSegment;
-            new SubqueryFiller().fill(subquerySegment, sqlStatement, sql, shardingRule, shardingTableMetaData);
+            fillSubquerySegment((SubquerySegment) sqlSegment, sqlStatement, sql, shardingRule, shardingTableMetaData);
         }
     }
     
-    private void fillStarSelectItemSegment(final StarSelectItemSegment starSelectItemSegment, final SelectStatement selectStatement) {
+    private void fillStarSelectItemSegment(final StarSelectItemSegment selectItemSegment, final SelectStatement selectStatement) {
         selectStatement.setContainStar(true);
-        Optional<String> owner = starSelectItemSegment.getOwner();
+        Optional<String> owner = selectItemSegment.getOwner();
         selectStatement.getItems().add(new StarSelectItem(owner.orNull()));
         if (!owner.isPresent()) {
             return;
         }
         Optional<Table> table = selectStatement.getTables().find(owner.get());
         if (table.isPresent() && !table.get().getAlias().isPresent()) {
-            selectStatement.addSQLToken(new TableToken(starSelectItemSegment.getStartIndex(), 0, owner.get()));
+            selectStatement.addSQLToken(new TableToken(selectItemSegment.getStartIndex(), 0, owner.get()));
         }
     }
     
-    private void fillColumn(final ColumnSelectItemSegment columnSelectItemSegment, final SelectStatement selectStatement) {
-        Optional<String> owner = columnSelectItemSegment.getOwner();
+    private void fillColumnSelectItemSegment(final ColumnSelectItemSegment selectItemSegment, final SelectStatement selectStatement) {
+        Optional<String> owner = selectItemSegment.getOwner();
         if (owner.isPresent() && selectStatement.getTables().getTableNames().contains(owner.get())) {
-            selectStatement.addSQLToken(new TableToken(columnSelectItemSegment.getStartIndex(), 0, owner.get()));
+            selectStatement.addSQLToken(new TableToken(selectItemSegment.getStartIndex(), 0, owner.get()));
         }
-        selectStatement.getItems().add(new CommonSelectItem(columnSelectItemSegment.getQualifiedName(), columnSelectItemSegment.getAlias()));
+        selectStatement.getItems().add(new CommonSelectItem(selectItemSegment.getQualifiedName(), selectItemSegment.getAlias()));
     }
     
-    private void fillFunctionSelectItemSegment(final FunctionSelectItemSegment functionSegment, final SelectStatement selectStatement, final String sql) {
-        AggregationType aggregationType = null;
-        for (AggregationType eachType : AggregationType.values()) {
-            if (eachType.name().equalsIgnoreCase(functionSegment.getFunctionName())) {
-                aggregationType = eachType;
-                break;
-            }
-        }
-        String innerExpression = sql.substring(functionSegment.getInnerExpressionStartIndex(), functionSegment.getInnerExpressionStopIndex() + 1);
-        String functionExpression = sql.substring(functionSegment.getFunctionStartIndex(), functionSegment.getInnerExpressionStopIndex() + 1);
-        if (null != aggregationType) {
-            if (functionSegment.hasDistinct()) {
-                String columnName = sql.substring(functionSegment.getDistinctExpressionStartIndex(), functionSegment.getInnerExpressionStopIndex());
-                selectStatement.getItems().add(new AggregationDistinctSelectItem(aggregationType, innerExpression, functionSegment.getAlias(), columnName));
+    private void fillExpressionSelectItemSegment(final ExpressionSelectItemSegment selectItemSegment, final SelectStatement selectStatement) {
+        selectStatement.getItems().add(new CommonSelectItem(selectItemSegment.getExpression(), selectItemSegment.getAlias()));
+    }
+    
+    private void fillFunctionSelectItemSegment(final FunctionSelectItemSegment selectItemSegment, final SelectStatement selectStatement, final String sql) {
+        Optional<AggregationType> aggregationType = findAggregationType(selectItemSegment);
+        String innerExpression = sql.substring(selectItemSegment.getInnerExpressionStartIndex(), selectItemSegment.getInnerExpressionStopIndex() + 1);
+        String functionExpression = sql.substring(selectItemSegment.getFunctionStartIndex(), selectItemSegment.getInnerExpressionStopIndex() + 1);
+        if (aggregationType.isPresent()) {
+            if (selectItemSegment.hasDistinct()) {
+                String columnName = sql.substring(selectItemSegment.getDistinctExpressionStartIndex(), selectItemSegment.getInnerExpressionStopIndex());
+                selectStatement.getItems().add(new AggregationDistinctSelectItem(aggregationType.get(), innerExpression, selectItemSegment.getAlias(), columnName));
                 Optional<String> autoAlias = Optional.absent();
-                if (DerivedAlias.isDerivedAlias(functionSegment.getAlias().get())) {
-                    autoAlias = Optional.of(functionSegment.getAlias().get());
+                if (DerivedAlias.isDerivedAlias(selectItemSegment.getAlias().get())) {
+                    autoAlias = Optional.of(selectItemSegment.getAlias().get());
                 }
-                selectStatement.getSQLTokens().add(new AggregationDistinctToken(functionSegment.getFunctionStartIndex(), functionExpression, columnName, autoAlias));
+                selectStatement.getSQLTokens().add(new AggregationDistinctToken(selectItemSegment.getFunctionStartIndex(), functionExpression, columnName, autoAlias));
             } else {
-                selectStatement.getItems().add(new AggregationSelectItem(aggregationType, innerExpression, functionSegment.getAlias()));
+                selectStatement.getItems().add(new AggregationSelectItem(aggregationType.get(), innerExpression, selectItemSegment.getAlias()));
             }
         } else {
-            selectStatement.getItems().add(new CommonSelectItem(functionExpression, functionSegment.getAlias()));
+            selectStatement.getItems().add(new CommonSelectItem(functionExpression, selectItemSegment.getAlias()));
         }
+    }
+    
+    private Optional<AggregationType> findAggregationType(final FunctionSelectItemSegment selectItemSegment) {
+        for (AggregationType each : AggregationType.values()) {
+            if (each.name().equalsIgnoreCase(selectItemSegment.getFunctionName())) {
+                return Optional.of(each);
+            }
+        }
+        return Optional.absent();
+    }
+    
+    private void fillSubquerySegment(
+            final SubquerySegment subquerySegment, final SQLStatement sqlStatement, final String sql, final ShardingRule shardingRule, final ShardingTableMetaData shardingTableMetaData) {
+        new SubqueryFiller().fill(subquerySegment, sqlStatement, sql, shardingRule, shardingTableMetaData);
     }
 }

@@ -33,6 +33,7 @@ public final class ExpressionSelectItemSegmentExtractor implements OptionalSQLSe
     
     @Override
     public Optional<ExpressionSelectItemSegment> extract(final ParserRuleContext expressionNode) {
+        // TODO parse table inside expression
         ExpressionSelectItemSegment result = new ExpressionSelectItemSegment(expressionNode.getText(), expressionNode.getStart().getStartIndex(), expressionNode.getStop().getStopIndex());
         Optional<ParserRuleContext> aliasNode = ExtractorUtils.findFirstChildNode(expressionNode, RuleName.ALIAS);
         if (aliasNode.isPresent()) {
