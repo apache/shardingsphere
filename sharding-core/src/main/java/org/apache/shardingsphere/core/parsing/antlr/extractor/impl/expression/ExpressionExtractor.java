@@ -30,7 +30,6 @@ import org.apache.shardingsphere.core.parsing.antlr.extractor.util.RuleName;
 import org.apache.shardingsphere.core.parsing.antlr.sql.segment.column.ColumnSegment;
 import org.apache.shardingsphere.core.parsing.antlr.sql.segment.expr.CommonExpressionSegment;
 import org.apache.shardingsphere.core.parsing.antlr.sql.segment.expr.ExpressionSegment;
-import org.apache.shardingsphere.core.parsing.antlr.sql.segment.expr.ExpressionWithAliasSegment;
 import org.apache.shardingsphere.core.parsing.antlr.sql.segment.expr.FunctionExpressionSegment;
 import org.apache.shardingsphere.core.parsing.antlr.sql.segment.expr.PropertyExpressionSegment;
 import org.apache.shardingsphere.core.util.NumberUtil;
@@ -55,7 +54,7 @@ public final class ExpressionExtractor implements OptionalSQLSegmentExtractor {
         return subqueryNode.isPresent() ? subqueryExtractor.extract(subqueryNode.get()) : Optional.of(extractExpression(expressionNode));
     }
     
-    private ExpressionWithAliasSegment extractExpression(final ParserRuleContext expressionNode) {
+    private ExpressionSegment extractExpression(final ParserRuleContext expressionNode) {
         Optional<ParserRuleContext> functionNode = ExtractorUtils.findFirstChildNode(expressionNode, RuleName.FUNCTION_CALL);
         if (functionNode.isPresent()) {
             return extractFunctionExpressionSegment(functionNode.get());
@@ -67,12 +66,12 @@ public final class ExpressionExtractor implements OptionalSQLSegmentExtractor {
     }
     
     // TODO extract column name and value from function
-    private ExpressionWithAliasSegment extractFunctionExpressionSegment(final ParserRuleContext functionNode) {
+    private ExpressionSegment extractFunctionExpressionSegment(final ParserRuleContext functionNode) {
         return new FunctionExpressionSegment(functionNode.getChild(0).getText(), 
                 functionNode.getStart().getStartIndex(), ((TerminalNode) functionNode.getChild(1)).getSymbol().getStartIndex(), functionNode.getStop().getStopIndex(), -1);
     }
     
-    private ExpressionWithAliasSegment extractPropertyExpressionSegment(final ParserRuleContext expressionNode) {
+    private ExpressionSegment extractPropertyExpressionSegment(final ParserRuleContext expressionNode) {
         ParserRuleContext columnNode = (ParserRuleContext) expressionNode.getChild(0);
         Optional<ColumnSegment> columnSegment = new ColumnSegmentExtractor().extract(columnNode);
         Preconditions.checkState(columnSegment.isPresent());

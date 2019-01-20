@@ -28,7 +28,7 @@ import lombok.RequiredArgsConstructor;
  */
 @RequiredArgsConstructor
 @Getter
-public final class PropertyExpressionSegment extends ExpressionWithAliasSegment {
+public final class PropertyExpressionSegment implements ExpressionSegment {
     
     private final String name;
     

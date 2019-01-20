@@ -35,7 +35,7 @@ import org.apache.shardingsphere.core.parsing.antlr.sql.segment.select.SelectIte
 @RequiredArgsConstructor
 @Getter
 @Setter
-public final class SubquerySegment extends ExpressionWithAliasSegment implements SelectItemSegment {
+public final class SubquerySegment implements SelectItemSegment, ExpressionSegment {
     
     private final boolean subqueryInFrom;
     
@@ -46,6 +46,8 @@ public final class SubquerySegment extends ExpressionWithAliasSegment implements
     private GroupBySegment groupBySegment;
     
     private OrderBySegment orderBySegment;
+    
+    private String alias;
     
     /**
      * Get select clause segment.
@@ -81,5 +83,10 @@ public final class SubquerySegment extends ExpressionWithAliasSegment implements
      */
     public Optional<OrderBySegment> getOrderBySegment() {
         return Optional.fromNullable(orderBySegment);
+    }
+    
+    @Override
+    public Optional<String> getAlias() {
+        return Optional.fromNullable(alias);
     }
 }
