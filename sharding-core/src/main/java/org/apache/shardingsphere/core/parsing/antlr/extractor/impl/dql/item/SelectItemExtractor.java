@@ -23,6 +23,7 @@ import org.apache.shardingsphere.core.parsing.antlr.extractor.OptionalSQLSegment
 import org.apache.shardingsphere.core.parsing.antlr.extractor.impl.dql.SubqueryExtractor;
 import org.apache.shardingsphere.core.parsing.antlr.extractor.util.ExtractorUtils;
 import org.apache.shardingsphere.core.parsing.antlr.extractor.util.RuleName;
+import org.apache.shardingsphere.core.parsing.antlr.sql.AliasAvailable;
 import org.apache.shardingsphere.core.parsing.antlr.sql.segment.expr.SubquerySegment;
 import org.apache.shardingsphere.core.parsing.antlr.sql.segment.select.ColumnSelectItemSegment;
 import org.apache.shardingsphere.core.parsing.antlr.sql.segment.select.ExpressionSelectItemSegment;
@@ -106,10 +107,10 @@ public final class SelectItemExtractor implements OptionalSQLSegmentExtractor {
         return result;
     }
     
-    private void setAlias(final ParserRuleContext expressionNode, final SelectItemSegment selectItemSegment) {
+    private void setAlias(final ParserRuleContext expressionNode, final AliasAvailable aliasAvailableSegment) {
         Optional<ParserRuleContext> aliasNode = ExtractorUtils.findFirstChildNode(expressionNode, RuleName.ALIAS);
         if (aliasNode.isPresent()) {
-            selectItemSegment.setAlias(SQLUtil.getExactlyValue(aliasNode.get().getText()));
+            aliasAvailableSegment.setAlias(SQLUtil.getExactlyValue(aliasNode.get().getText()));
         }
     }
 }

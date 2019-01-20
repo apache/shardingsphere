@@ -21,6 +21,7 @@ import com.google.common.base.Optional;
 import lombok.Getter;
 import lombok.RequiredArgsConstructor;
 import lombok.Setter;
+import org.apache.shardingsphere.core.parsing.antlr.sql.AliasAvailable;
 import org.apache.shardingsphere.core.parsing.antlr.sql.segment.FromWhereSegment;
 import org.apache.shardingsphere.core.parsing.antlr.sql.segment.SelectClauseSegment;
 import org.apache.shardingsphere.core.parsing.antlr.sql.segment.order.GroupBySegment;
@@ -35,7 +36,7 @@ import org.apache.shardingsphere.core.parsing.antlr.sql.segment.select.SelectIte
 @RequiredArgsConstructor
 @Getter
 @Setter
-public final class SubquerySegment implements SelectItemSegment, ExpressionSegment {
+public final class SubquerySegment implements SelectItemSegment, ExpressionSegment, AliasAvailable {
     
     private final boolean subqueryInFrom;
     

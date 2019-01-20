@@ -20,6 +20,8 @@ package org.apache.shardingsphere.core.parsing.antlr.sql.segment.select;
 import com.google.common.base.Optional;
 import lombok.Getter;
 import lombok.RequiredArgsConstructor;
+import lombok.Setter;
+import org.apache.shardingsphere.core.parsing.antlr.sql.AliasAvailable;
 
 /**
  * Function select item segment.
@@ -28,7 +30,8 @@ import lombok.RequiredArgsConstructor;
  */
 @RequiredArgsConstructor
 @Getter
-public final class FunctionSelectItemSegment implements SelectItemSegment {
+@Setter
+public final class FunctionSelectItemSegment implements SelectItemSegment, AliasAvailable {
     
     private final String functionName;
     
@@ -54,10 +57,5 @@ public final class FunctionSelectItemSegment implements SelectItemSegment {
     @Override
     public Optional<String> getAlias() {
         return Optional.fromNullable(alias);
-    }
-    
-    @Override
-    public void setAlias(final String alias) {
-        this.alias = alias;
     }
 }

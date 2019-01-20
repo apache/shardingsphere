@@ -20,6 +20,9 @@ package org.apache.shardingsphere.core.parsing.antlr.sql.segment.select;
 import com.google.common.base.Optional;
 import lombok.Getter;
 import lombok.RequiredArgsConstructor;
+import lombok.Setter;
+import org.apache.shardingsphere.core.parsing.antlr.sql.AliasAvailable;
+import org.apache.shardingsphere.core.parsing.antlr.sql.OwnerAvailable;
 
 /**
  * Column select item segment.
@@ -28,23 +31,20 @@ import lombok.RequiredArgsConstructor;
  */
 @RequiredArgsConstructor
 @Getter
-public final class ColumnSelectItemSegment implements SelectItemSegment {
+@Setter
+public final class ColumnSelectItemSegment implements SelectItemSegment, OwnerAvailable, AliasAvailable {
     
     private final String name;
-    
-    private final String owner;
     
     private final int startIndex;
     
     private final int stopIndex;
     
+    private String owner;
+    
     private String alias;
     
-    /**
-     * Get owner.
-     * 
-     * @return owner
-     */
+    @Override
     public Optional<String> getOwner() {
         return Optional.fromNullable(owner);
     }
@@ -52,10 +52,5 @@ public final class ColumnSelectItemSegment implements SelectItemSegment {
     @Override
     public Optional<String> getAlias() {
         return Optional.fromNullable(alias);
-    }
-    
-    @Override
-    public void setAlias(final String alias) {
-        this.alias = alias;
     }
 }

@@ -103,7 +103,7 @@ public final class SelectClauseFiller implements SQLStatementFiller<SelectClause
             FunctionSelectItemSegment functionSelectItemSegment = (FunctionSelectItemSegment) selectItemSegment;
             Optional<String> alias = functionSelectItemSegment.getAlias();
             if (functionSelectItemSegment.hasDistinct() && !alias.isPresent()) {
-                selectItemSegment.setAlias(DerivedAlias.AGGREGATION_DISTINCT_DERIVED.getDerivedAlias(offset));
+                ((FunctionSelectItemSegment) selectItemSegment).setAlias(DerivedAlias.AGGREGATION_DISTINCT_DERIVED.getDerivedAlias(offset));
                 return offset + 1;
             }
         }

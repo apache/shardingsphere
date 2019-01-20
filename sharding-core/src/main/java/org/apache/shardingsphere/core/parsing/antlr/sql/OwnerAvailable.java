@@ -15,34 +15,28 @@
  * limitations under the License.
  */
 
-package org.apache.shardingsphere.core.parsing.antlr.sql.segment.select;
+package org.apache.shardingsphere.core.parsing.antlr.sql;
 
 import com.google.common.base.Optional;
-import lombok.Getter;
-import lombok.RequiredArgsConstructor;
-import lombok.Setter;
-import org.apache.shardingsphere.core.parsing.antlr.sql.AliasAvailable;
 
 /**
- * Expression select item segment.
- * 
+ * Owner available.
+ *
  * @author zhangliang
  */
-@RequiredArgsConstructor
-@Getter
-@Setter
-public final class ExpressionSelectItemSegment implements SelectItemSegment, AliasAvailable {
+public interface OwnerAvailable {
     
-    private final String expression;
+    /**
+     * Get owner.
+     *
+     * @return owner
+     */
+    Optional<String> getOwner();
     
-    private final int startIndex;
-    
-    private final int stopIndex;
-    
-    private String alias;
-    
-    @Override
-    public Optional<String> getAlias() {
-        return Optional.fromNullable(alias);
-    }
+    /**
+     * Set owner.
+     *
+     * @param owner owner
+     */
+    void setOwner(String owner);
 }

@@ -17,7 +17,6 @@
 
 package org.apache.shardingsphere.core.parsing.antlr.sql.segment.select;
 
-import com.google.common.base.Optional;
 import org.apache.shardingsphere.core.parsing.antlr.sql.segment.SQLSegment;
 
 /**
@@ -26,18 +25,4 @@ import org.apache.shardingsphere.core.parsing.antlr.sql.segment.SQLSegment;
  * @author zhangliang
  */
 public interface SelectItemSegment extends SQLSegment {
-    
-    /**
-     * Get alias.
-     * 
-     * @return alias
-     */
-    Optional<String> getAlias();
-    
-    /**
-     * Set alias.
-     * 
-     * @param alias alias
-     */
-    void setAlias(String alias);
 }

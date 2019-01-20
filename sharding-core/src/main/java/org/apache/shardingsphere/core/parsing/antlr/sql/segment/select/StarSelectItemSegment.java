@@ -20,6 +20,8 @@ package org.apache.shardingsphere.core.parsing.antlr.sql.segment.select;
 import com.google.common.base.Optional;
 import lombok.Getter;
 import lombok.RequiredArgsConstructor;
+import lombok.Setter;
+import org.apache.shardingsphere.core.parsing.antlr.sql.OwnerAvailable;
 
 /**
  * Star select item segment.
@@ -28,30 +30,15 @@ import lombok.RequiredArgsConstructor;
  */
 @RequiredArgsConstructor
 @Getter
-public final class StarSelectItemSegment implements SelectItemSegment {
-    
-    private final String owner;
+@Setter
+public final class StarSelectItemSegment implements SelectItemSegment, OwnerAvailable {
     
     private final int startIndex;
     
-    private String alias;
+    private String owner;
     
-    /**
-     * Get owner.
-     * 
-     * @return owner.
-     */
+    @Override
     public Optional<String> getOwner() {
         return Optional.fromNullable(owner);
-    }
-    
-    @Override
-    public Optional<String> getAlias() {
-        return Optional.fromNullable(alias);
-    }
-    
-    @Override
-    public void setAlias(final String alias) {
-        this.alias = alias;
     }
 }
