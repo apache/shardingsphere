@@ -53,7 +53,7 @@ public final class SelectItemFiller implements SQLStatementFiller {
         }
         SelectStatement selectStatement = (SelectStatement) sqlStatement;
         if (sqlSegment instanceof ColumnSelectItemSegment) {
-            fillColumn((ColumnSelectItemSegment) sqlSegment, selectStatement, sql);
+            fillColumn((ColumnSelectItemSegment) sqlSegment, selectStatement);
             return;
         }
         if (sqlSegment instanceof ExpressionSelectItemSegment) {
@@ -89,13 +89,12 @@ public final class SelectItemFiller implements SQLStatementFiller {
         }
     }
     
-    private void fillColumn(final ColumnSelectItemSegment columnSelectItemSegment, final SelectStatement selectStatement, final String sql) {
+    private void fillColumn(final ColumnSelectItemSegment columnSelectItemSegment, final SelectStatement selectStatement) {
         Optional<String> owner = columnSelectItemSegment.getOwner();
         if (owner.isPresent() && selectStatement.getTables().getTableNames().contains(owner.get())) {
             selectStatement.addSQLToken(new TableToken(columnSelectItemSegment.getStartIndex(), 0, owner.get()));
         }
-        String expression = sql.substring(columnSelectItemSegment.getStartIndex(), columnSelectItemSegment.getStopIndex() + 1);
-        selectStatement.getItems().add(new CommonSelectItem(expression, columnSelectItemSegment.getAlias()));
+        selectStatement.getItems().add(new CommonSelectItem(columnSelectItemSegment.getQualifiedName(), columnSelectItemSegment.getAlias()));
     }
     
     private void fillFunctionSelectItemSegment(final FunctionSelectItemSegment functionSegment, final SelectStatement selectStatement, final String sql) {

@@ -18,13 +18,10 @@
 package org.apache.shardingsphere.core.parsing.antlr.extractor.impl.dql.item;
 
 import com.google.common.base.Optional;
-import com.google.common.base.Preconditions;
 import org.antlr.v4.runtime.ParserRuleContext;
 import org.apache.shardingsphere.core.parsing.antlr.extractor.OptionalSQLSegmentExtractor;
-import org.apache.shardingsphere.core.parsing.antlr.extractor.impl.ColumnSegmentExtractor;
 import org.apache.shardingsphere.core.parsing.antlr.extractor.util.ExtractorUtils;
 import org.apache.shardingsphere.core.parsing.antlr.extractor.util.RuleName;
-import org.apache.shardingsphere.core.parsing.antlr.sql.segment.column.ColumnSegment;
 import org.apache.shardingsphere.core.parsing.antlr.sql.segment.select.ColumnSelectItemSegment;
 
 /**
@@ -34,22 +31,17 @@ import org.apache.shardingsphere.core.parsing.antlr.sql.segment.select.ColumnSel
  */
 public final class ColumnSelectItemSegmentExtractor implements OptionalSQLSegmentExtractor {
     
-    private ColumnSegmentExtractor columnSegmentExtractor = new ColumnSegmentExtractor();
-    
     @Override
     public Optional<ColumnSelectItemSegment> extract(final ParserRuleContext expressionNode) {
-        if (RuleName.COLUMN_NAME.getName().equals(expressionNode.getChild(0).getClass().getSimpleName())) {
-            ParserRuleContext columnNode = (ParserRuleContext) expressionNode.getChild(0);
-            Optional<ColumnSegment> columnSegment = columnSegmentExtractor.extract(columnNode);
-            Preconditions.checkState(columnSegment.isPresent());
-            ColumnSelectItemSegment result = new ColumnSelectItemSegment(
-                    columnSegment.get().getName(), columnSegment.get().getOwner().orNull(), columnNode.getStart().getStartIndex(), columnNode.getStop().getStopIndex());
-            Optional<ParserRuleContext> aliasNode = ExtractorUtils.findFirstChildNode(expressionNode, RuleName.ALIAS);
-            if (aliasNode.isPresent()) {
-                result.setAlias(aliasNode.get().getText());
-            }
-            return Optional.of(result);
+        if (!RuleName.COLUMN_NAME.getName().equals(expressionNode.getChild(0).getClass().getSimpleName())) {
+            return Optional.absent();
         }
-        return Optional.absent();
+        ParserRuleContext columnNode = (ParserRuleContext) expressionNode.getChild(0);
+        ColumnSelectItemSegment result = new ColumnSelectItemSegment(columnNode.getText(), columnNode.getStart().getStartIndex());
+        Optional<ParserRuleContext> aliasNode = ExtractorUtils.findFirstChildNode(expressionNode, RuleName.ALIAS);
+        if (aliasNode.isPresent()) {
+            result.setAlias(aliasNode.get().getText());
+        }
+        return Optional.of(result);
     }
 }

@@ -34,7 +34,7 @@ import java.util.List;
  * @author zhangliang
  */
 @Getter
-public final class ColumnSegment implements SQLRightValueExpressionSegment, OwnerAvailable {
+public class ColumnSegment implements SQLRightValueExpressionSegment, OwnerAvailable {
     
     private final String name;
     
@@ -54,8 +54,17 @@ public final class ColumnSegment implements SQLRightValueExpressionSegment, Owne
         this.startIndex = startIndex;
     }
     
+    /**
+     * Get qualified name.
+     *
+     * @return qualified name
+     */
+    public final String getQualifiedName() {
+        return null == owner ? name : owner + Symbol.DOT.getLiterals() + name;
+    }
+    
     @Override
-    public Optional<String> getOwner() {
+    public final Optional<String> getOwner() {
         return Optional.fromNullable(owner);
     }
 }

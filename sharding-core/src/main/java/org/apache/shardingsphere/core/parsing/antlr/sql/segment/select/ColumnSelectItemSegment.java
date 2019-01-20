@@ -18,10 +18,8 @@
 package org.apache.shardingsphere.core.parsing.antlr.sql.segment.select;
 
 import com.google.common.base.Optional;
-import lombok.Getter;
-import lombok.RequiredArgsConstructor;
 import org.apache.shardingsphere.core.parsing.antlr.sql.AliasAvailable;
-import org.apache.shardingsphere.core.parsing.antlr.sql.OwnerAvailable;
+import org.apache.shardingsphere.core.parsing.antlr.sql.segment.column.ColumnSegment;
 import org.apache.shardingsphere.core.util.SQLUtil;
 
 /**
@@ -29,23 +27,12 @@ import org.apache.shardingsphere.core.util.SQLUtil;
  * 
  * @author zhangliang
  */
-@RequiredArgsConstructor
-@Getter
-public final class ColumnSelectItemSegment implements SelectItemSegment, OwnerAvailable, AliasAvailable {
-    
-    private final String name;
-    
-    private final String owner;
-    
-    private final int startIndex;
-    
-    private final int stopIndex;
+public final class ColumnSelectItemSegment extends ColumnSegment implements SelectItemSegment, AliasAvailable {
     
     private String alias;
     
-    @Override
-    public Optional<String> getOwner() {
-        return Optional.fromNullable(owner);
+    public ColumnSelectItemSegment(final String columnText, final int startIndex) {
+        super(columnText, startIndex);
     }
     
     @Override
