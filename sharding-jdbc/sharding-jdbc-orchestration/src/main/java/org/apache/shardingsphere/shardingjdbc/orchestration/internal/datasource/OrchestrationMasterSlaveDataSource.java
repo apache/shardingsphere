@@ -87,10 +87,10 @@ public class OrchestrationMasterSlaveDataSource extends AbstractOrchestrationDat
      * Renew master-slave rule.
      *
      * @param masterSlaveRuleChangedEvent master-slave configuration changed event
-     * @throws SQLException SQL exception
      */
     @Subscribe
-    public final synchronized void renew(final MasterSlaveRuleChangedEvent masterSlaveRuleChangedEvent) throws SQLException {
+    @SneakyThrows
+    public final synchronized void renew(final MasterSlaveRuleChangedEvent masterSlaveRuleChangedEvent) {
         dataSource = new MasterSlaveDataSource(dataSource.getDataSourceMap(),
                 masterSlaveRuleChangedEvent.getMasterSlaveRuleConfiguration(), ConfigMapContext.getInstance().getConfigMap(), dataSource.getShardingProperties().getProps());
     }
