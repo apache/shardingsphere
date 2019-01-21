@@ -130,7 +130,7 @@ public final class SQLBuilder {
         StringBuilder result = new StringBuilder();
         for (Object each : segments) {
             if (each instanceof SchemaPlaceholder) {
-                result.append(shardingDataSourceMetaData.getActualDataSourceMetaData(masterSlaveRule.getMasterDataSourceName()).getSchemeName());
+                result.append(shardingDataSourceMetaData.getActualDataSourceMetaData(masterSlaveRule.getMasterDataSourceName()).getSchemaName());
             } else {
                 result.append(each);
             }
@@ -151,7 +151,7 @@ public final class SQLBuilder {
     
     private void appendSchemaPlaceholder(final ShardingRule shardingRule, final ShardingDataSourceMetaData shardingDataSourceMetaData,
                                          final String actualTableName, final StringBuilder stringBuilder) {
-        stringBuilder.append(shardingDataSourceMetaData.getActualDataSourceMetaData(shardingRule.getActualDataSourceName(actualTableName)).getSchemeName());
+        stringBuilder.append(shardingDataSourceMetaData.getActualDataSourceMetaData(shardingRule.getActualDataSourceName(actualTableName)).getSchemaName());
     }
     
     private void appendIndexPlaceholder(final IndexPlaceholder indexPlaceholder, final String actualTableName, final StringBuilder stringBuilder) {
