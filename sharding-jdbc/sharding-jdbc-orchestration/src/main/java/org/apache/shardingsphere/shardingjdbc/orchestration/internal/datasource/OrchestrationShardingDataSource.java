@@ -68,7 +68,7 @@ public class OrchestrationShardingDataSource extends AbstractOrchestrationDataSo
     }
     
     public OrchestrationShardingDataSource(final ShardingDataSource shardingDataSource, final OrchestrationConfiguration orchestrationConfig) throws SQLException {
-        super(new ShardingOrchestrationFacade(orchestrationConfig, Collections.singletonList(ShardingConstant.LOGIC_SCHEMA_NAME)), shardingDataSource.getDataSourceMap());
+        super(new ShardingOrchestrationFacade(orchestrationConfig, Collections.singletonList(ShardingConstant.LOGIC_SCHEMA_NAME)));
         dataSource = new ShardingDataSource(shardingDataSource.getDataSourceMap(), new OrchestrationShardingRule(shardingDataSource.getShardingContext().getShardingRule().getShardingRuleConfig(),
                 shardingDataSource.getDataSourceMap().keySet()), ConfigMapContext.getInstance().getConfigMap(), shardingDataSource.getShardingContext().getShardingProperties().getProps());
         getShardingOrchestrationFacade().init(Collections.singletonMap(ShardingConstant.LOGIC_SCHEMA_NAME, DataSourceConverter.getDataSourceConfigurationMap(dataSource.getDataSourceMap())),
@@ -79,17 +79,6 @@ public class OrchestrationShardingDataSource extends AbstractOrchestrationDataSo
         Map<String, RuleConfiguration> result = new LinkedHashMap<>(1, 1);
         result.put(ShardingConstant.LOGIC_SCHEMA_NAME, dataSource.getShardingContext().getShardingRule().getShardingRuleConfig());
         return result;
-    }
-    
-    @Override
-    public final Connection getConnection() {
-        return isCircuitBreak() ? new CircuitBreakerDataSource().getConnection() : dataSource.getConnection();
-    }
-    
-    @Override
-    public final void close() throws Exception {
-        dataSource.close();
-        getShardingOrchestrationFacade().close();
     }
     
     /**
