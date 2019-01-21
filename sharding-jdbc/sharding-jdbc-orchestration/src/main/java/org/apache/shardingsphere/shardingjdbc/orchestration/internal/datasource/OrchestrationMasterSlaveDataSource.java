@@ -37,10 +37,8 @@ import org.apache.shardingsphere.orchestration.internal.registry.state.event.Dis
 import org.apache.shardingsphere.orchestration.internal.registry.state.schema.OrchestrationShardingSchema;
 import org.apache.shardingsphere.orchestration.internal.rule.OrchestrationMasterSlaveRule;
 import org.apache.shardingsphere.shardingjdbc.jdbc.core.datasource.MasterSlaveDataSource;
-import org.apache.shardingsphere.shardingjdbc.orchestration.internal.circuit.datasource.CircuitBreakerDataSource;
 import org.apache.shardingsphere.shardingjdbc.orchestration.internal.util.DataSourceConverter;
 
-import java.sql.Connection;
 import java.sql.SQLException;
 import java.util.Collections;
 import java.util.HashMap;
