@@ -40,14 +40,14 @@ import java.sql.SQLException;
  */
 public abstract class AbstractOrchestrationDataSource extends AbstractUnsupportedOperationDataSource implements AutoCloseable {
     
+    @Getter
+    @Setter
+    private PrintWriter logWriter = new PrintWriter(System.out);
+    
     @Getter(AccessLevel.PROTECTED)
     private final ShardingOrchestrationFacade shardingOrchestrationFacade;
     
     private boolean isCircuitBreak;
-    
-    @Getter
-    @Setter
-    private PrintWriter logWriter = new PrintWriter(System.out);
     
     public AbstractOrchestrationDataSource(final ShardingOrchestrationFacade shardingOrchestrationFacade) {
         this.shardingOrchestrationFacade = shardingOrchestrationFacade;
