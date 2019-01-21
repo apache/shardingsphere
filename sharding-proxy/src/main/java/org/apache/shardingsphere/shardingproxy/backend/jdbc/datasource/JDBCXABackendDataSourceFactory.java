@@ -24,7 +24,7 @@ import lombok.AccessLevel;
 import lombok.NoArgsConstructor;
 import org.apache.shardingsphere.core.config.DatabaseAccessConfiguration;
 import org.apache.shardingsphere.core.constant.DatabaseType;
-import org.apache.shardingsphere.shardingproxy.util.DataSourceParameter;
+import org.apache.shardingsphere.shardingproxy.config.yaml.YamlDataSourceParameter;
 import org.apache.shardingsphere.transaction.xa.jta.datasource.XADataSourceFactory;
 import org.apache.shardingsphere.transaction.xa.jta.datasource.properties.XAPropertiesFactory;
 
@@ -53,7 +53,7 @@ public final class JDBCXABackendDataSourceFactory implements JDBCBackendDataSour
     }
     
     @Override
-    public DataSource build(final String dataSourceName, final DataSourceParameter dataSourceParameter) throws Exception {
+    public DataSource build(final String dataSourceName, final YamlDataSourceParameter dataSourceParameter) throws Exception {
         AtomikosDataSourceBean result = new AtomikosDataSourceBean();
         setPoolProperties(result, dataSourceParameter);
         // TODO judge database type
@@ -61,7 +61,7 @@ public final class JDBCXABackendDataSourceFactory implements JDBCBackendDataSour
         return result;
     }
     
-    private void setPoolProperties(final AtomikosDataSourceBean dataSourceBean, final DataSourceParameter parameter) {
+    private void setPoolProperties(final AtomikosDataSourceBean dataSourceBean, final YamlDataSourceParameter parameter) {
         dataSourceBean.setMaintenanceInterval((int) (parameter.getMaintenanceIntervalMilliseconds() / 1000));
         dataSourceBean.setMinPoolSize(parameter.getMinPoolSize() < 0 ? 0 : parameter.getMinPoolSize());
         dataSourceBean.setMaxPoolSize(parameter.getMaxPoolSize());
@@ -71,7 +71,7 @@ public final class JDBCXABackendDataSourceFactory implements JDBCBackendDataSour
     }
     
     private void setXAProperties(final AtomikosDataSourceBean dataSourceBean, final DatabaseType databaseType, 
-                                 final String dataSourceName, final XADataSource xaDataSource, final DataSourceParameter dataSourceParameter) throws PropertyException {
+                                 final String dataSourceName, final XADataSource xaDataSource, final YamlDataSourceParameter dataSourceParameter) throws PropertyException {
         dataSourceBean.setXaDataSourceClassName(xaDataSource.getClass().getName());
         dataSourceBean.setUniqueResourceName(dataSourceName);
         Properties xaProperties = XAPropertiesFactory.createXAProperties(databaseType).build(

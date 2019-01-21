@@ -24,7 +24,7 @@ import org.apache.shardingsphere.core.constant.DatabaseType;
 import org.apache.shardingsphere.core.exception.ShardingException;
 import org.apache.shardingsphere.core.util.ReflectiveUtil;
 import org.apache.shardingsphere.shardingproxy.backend.BackendDataSource;
-import org.apache.shardingsphere.shardingproxy.util.DataSourceParameter;
+import org.apache.shardingsphere.shardingproxy.config.yaml.YamlDataSourceParameter;
 import org.apache.shardingsphere.transaction.ShardingTransactionManagerEngine;
 import org.apache.shardingsphere.transaction.core.TransactionType;
 import org.apache.shardingsphere.transaction.spi.ShardingTransactionManager;
@@ -55,13 +55,13 @@ public final class JDBCBackendDataSource implements BackendDataSource, AutoClose
     
     private JDBCBackendDataSourceFactory hikariDataSourceFactory = JDBCRawBackendDataSourceFactory.getInstance();
     
-    public JDBCBackendDataSource(final Map<String, DataSourceParameter> dataSourceParameters) {
+    public JDBCBackendDataSource(final Map<String, YamlDataSourceParameter> dataSourceParameters) {
         createDataSourceMap(dataSourceParameters);
     }
     
-    private void createDataSourceMap(final Map<String, DataSourceParameter> dataSourceParameters) {
+    private void createDataSourceMap(final Map<String, YamlDataSourceParameter> dataSourceParameters) {
         Map<String, DataSource> dataSourceMap = new LinkedHashMap<>(dataSourceParameters.size(), 1);
-        for (Entry<String, DataSourceParameter> entry : dataSourceParameters.entrySet()) {
+        for (Entry<String, YamlDataSourceParameter> entry : dataSourceParameters.entrySet()) {
             try {
                 dataSourceMap.put(entry.getKey(), hikariDataSourceFactory.build(entry.getKey(), entry.getValue()));
             // CHECKSTYLE:OFF

@@ -25,6 +25,7 @@ import lombok.extern.slf4j.Slf4j;
 import org.apache.shardingsphere.core.metadata.datasource.DataSourceMetaData;
 import org.apache.shardingsphere.shardingproxy.backend.netty.client.response.ResponseHandler;
 import org.apache.shardingsphere.shardingproxy.backend.netty.future.FutureRegistry;
+import org.apache.shardingsphere.shardingproxy.config.yaml.YamlDataSourceParameter;
 import org.apache.shardingsphere.shardingproxy.runtime.ChannelRegistry;
 import org.apache.shardingsphere.shardingproxy.runtime.GlobalRegistry;
 import org.apache.shardingsphere.shardingproxy.transport.mysql.constant.CapabilityFlag;
@@ -37,7 +38,6 @@ import org.apache.shardingsphere.shardingproxy.transport.mysql.packet.generic.Er
 import org.apache.shardingsphere.shardingproxy.transport.mysql.packet.generic.OKPacket;
 import org.apache.shardingsphere.shardingproxy.transport.mysql.packet.handshake.HandshakePacket;
 import org.apache.shardingsphere.shardingproxy.transport.mysql.packet.handshake.HandshakeResponse41Packet;
-import org.apache.shardingsphere.shardingproxy.util.DataSourceParameter;
 
 import java.security.MessageDigest;
 import java.util.HashMap;
@@ -55,7 +55,7 @@ public final class MySQLResponseHandler extends ResponseHandler {
     
     private static final GlobalRegistry GLOBAL_REGISTRY = GlobalRegistry.getInstance();
     
-    private final DataSourceParameter dataSourceParameter;
+    private final YamlDataSourceParameter dataSourceParameter;
     
     private final DataSourceMetaData dataSourceMetaData;
     

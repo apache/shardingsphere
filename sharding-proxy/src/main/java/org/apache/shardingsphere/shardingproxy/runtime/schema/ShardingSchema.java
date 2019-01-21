@@ -31,9 +31,9 @@ import org.apache.shardingsphere.orchestration.internal.registry.state.schema.Or
 import org.apache.shardingsphere.orchestration.internal.rule.OrchestrationMasterSlaveRule;
 import org.apache.shardingsphere.orchestration.internal.rule.OrchestrationShardingRule;
 import org.apache.shardingsphere.shardingproxy.backend.BackendExecutorContext;
+import org.apache.shardingsphere.shardingproxy.config.yaml.YamlDataSourceParameter;
 import org.apache.shardingsphere.shardingproxy.runtime.GlobalRegistry;
 import org.apache.shardingsphere.shardingproxy.runtime.metadata.ProxyTableMetaDataConnectionManager;
-import org.apache.shardingsphere.shardingproxy.util.DataSourceParameter;
 
 import java.util.Collection;
 import java.util.Map;
@@ -55,7 +55,7 @@ public final class ShardingSchema extends LogicSchema {
     private final ShardingMetaData metaData;
     
     public ShardingSchema(final String name,
-                          final Map<String, DataSourceParameter> dataSources, final ShardingRuleConfiguration shardingRuleConfig, final boolean isCheckingMetaData, final boolean isUsingRegistry) {
+                          final Map<String, YamlDataSourceParameter> dataSources, final ShardingRuleConfiguration shardingRuleConfig, final boolean isCheckingMetaData, final boolean isUsingRegistry) {
         super(name, dataSources);
         shardingRule = createShardingRule(shardingRuleConfig, dataSources.keySet(), isUsingRegistry);
         metaData = createShardingMetaData(isCheckingMetaData);
