@@ -21,6 +21,7 @@ import com.google.common.eventbus.Subscribe;
 import lombok.AccessLevel;
 import lombok.Getter;
 import lombok.Setter;
+import lombok.SneakyThrows;
 import org.apache.shardingsphere.orchestration.internal.eventbus.ShardingOrchestrationEventBus;
 import org.apache.shardingsphere.orchestration.internal.registry.ShardingOrchestrationFacade;
 import org.apache.shardingsphere.orchestration.internal.registry.state.event.CircuitStateChangedEvent;
@@ -63,7 +64,8 @@ public abstract class AbstractOrchestrationDataSource extends AbstractUnsupporte
     }
     
     @Override
-    public final Connection getConnection(final String username, final String password) throws SQLException {
+    @SneakyThrows
+    public final Connection getConnection(final String username, final String password) {
         return getConnection();
     }
     
