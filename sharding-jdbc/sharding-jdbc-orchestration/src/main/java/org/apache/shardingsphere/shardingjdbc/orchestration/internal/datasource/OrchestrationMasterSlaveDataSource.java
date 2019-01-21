@@ -20,6 +20,8 @@ package org.apache.shardingsphere.shardingjdbc.orchestration.internal.datasource
 import com.google.common.base.Preconditions;
 import com.google.common.base.Strings;
 import com.google.common.eventbus.Subscribe;
+import lombok.AccessLevel;
+import lombok.Getter;
 import lombok.SneakyThrows;
 import org.apache.shardingsphere.api.ConfigMapContext;
 import org.apache.shardingsphere.api.config.rule.MasterSlaveRuleConfiguration;
@@ -49,6 +51,7 @@ import java.util.Map;
  *
  * @author panjuan
  */
+@Getter(AccessLevel.PROTECTED)
 public class OrchestrationMasterSlaveDataSource extends AbstractOrchestrationDataSource {
     
     private MasterSlaveDataSource dataSource;
