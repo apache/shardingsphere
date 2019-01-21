@@ -17,7 +17,6 @@
 
 package org.apache.shardingsphere.shardingjdbc.orchestration.internal.datasource;
 
-import com.google.common.eventbus.EventBus;
 import com.google.common.eventbus.Subscribe;
 import lombok.AccessLevel;
 import lombok.Getter;
@@ -39,11 +38,9 @@ import java.sql.SQLException;
  *
  * @author panjuan
  */
-@Getter(AccessLevel.PROTECTED)
 public abstract class AbstractOrchestrationDataSource extends AbstractUnsupportedOperationDataSource implements AutoCloseable {
     
-    private final EventBus eventBus = ShardingOrchestrationEventBus.getInstance();
-    
+    @Getter(AccessLevel.PROTECTED)
     private final ShardingOrchestrationFacade shardingOrchestrationFacade;
     
     private boolean isCircuitBreak;
@@ -54,7 +51,7 @@ public abstract class AbstractOrchestrationDataSource extends AbstractUnsupporte
     
     public AbstractOrchestrationDataSource(final ShardingOrchestrationFacade shardingOrchestrationFacade) {
         this.shardingOrchestrationFacade = shardingOrchestrationFacade;
-        eventBus.register(this);
+        ShardingOrchestrationEventBus.getInstance().register(this);
     }
     
     protected abstract DataSource getDataSource();
