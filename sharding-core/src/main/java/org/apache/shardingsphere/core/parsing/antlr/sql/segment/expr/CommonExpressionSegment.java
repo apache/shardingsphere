@@ -29,11 +29,11 @@ import lombok.Setter;
 @RequiredArgsConstructor
 @Getter
 @Setter
-public final class CommonExpressionSegment extends ExpressionWithAliasSegment {
+public final class CommonExpressionSegment implements ExpressionSegment {
     
-    private final int startPosition;
+    private final int startIndex;
     
-    private final int endPosition;
+    private final int stopIndex;
     
     private int index = -1;
     

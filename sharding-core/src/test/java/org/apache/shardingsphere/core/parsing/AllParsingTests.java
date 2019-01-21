@@ -19,8 +19,8 @@ package org.apache.shardingsphere.core.parsing;
 
 import org.apache.shardingsphere.core.parsing.integrate.AllParsingIntegrateTests;
 import org.apache.shardingsphere.core.parsing.lexer.AllLexerTests;
-import org.apache.shardingsphere.core.parsing.parser.constant.DerivedColumnTest;
-import org.apache.shardingsphere.core.parsing.parser.context.OrderItemTest;
+import org.apache.shardingsphere.core.parsing.parser.constant.AllConstantTests;
+import org.apache.shardingsphere.core.parsing.parser.context.AllContextTests;
 import org.apache.shardingsphere.core.parsing.parser.sql.AllSQLTests;
 import org.junit.runner.RunWith;
 import org.junit.runners.Suite;
@@ -30,9 +30,9 @@ import org.junit.runners.Suite.SuiteClasses;
 @SuiteClasses({
         AllLexerTests.class, 
         AllSQLTests.class, 
-        SQLJudgeEngineTest.class, 
-        OrderItemTest.class,
-        DerivedColumnTest.class, 
+        SQLJudgeEngineTest.class,
+        AllContextTests.class,
+        AllConstantTests.class, 
         AllParsingIntegrateTests.class
     })
 public final class AllParsingTests {

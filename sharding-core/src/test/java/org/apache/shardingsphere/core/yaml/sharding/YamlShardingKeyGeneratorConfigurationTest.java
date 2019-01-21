@@ -26,7 +26,7 @@ import java.util.Properties;
 import static org.hamcrest.CoreMatchers.is;
 import static org.junit.Assert.assertThat;
 
-public class YamlKeyGeneratorConfigurationTest {
+public class YamlShardingKeyGeneratorConfigurationTest {
     
     private Properties props = new Properties();
     

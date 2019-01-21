@@ -18,7 +18,6 @@
 package org.apache.shardingsphere.core.parsing.antlr.sql.segment;
 
 import lombok.Getter;
-import lombok.RequiredArgsConstructor;
 import lombok.Setter;
 import org.apache.shardingsphere.core.parsing.antlr.sql.segment.column.ColumnSegment;
 
@@ -30,32 +29,25 @@ import java.util.List;
  *
  * @author duhongjun
  */
-@RequiredArgsConstructor
 @Getter
+@Setter
 public final class InsertSegment implements SQLSegment {
     
-    private List<ColumnSegment> columns = new LinkedList<>();
+    private final List<ColumnSegment> columns = new LinkedList<>();
     
-    private List<InsertValuesSegment> valuesList = new LinkedList<>();
+    private final List<InsertValuesSegment> valuesList = new LinkedList<>();
     
-    @Setter
+    private final List<String> duplicateKeyColumns = new LinkedList<>();
+    
     private boolean values;
     
-    @Setter
     private int insertValueStartPosition = -1;
     
-    @Setter
     private int columnClauseStartPosition;
     
-    @Setter
     private int columnsListLastPosition;
     
-    @Setter
     private int generateKeyColumnIndex = -1;
     
-    @Setter
     private int insertValuesListLastPosition;
-    
-    private List<String> duplicateKeyColumns = new LinkedList<>();
-    
 }

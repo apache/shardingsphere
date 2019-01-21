@@ -23,6 +23,7 @@ import lombok.RequiredArgsConstructor;
 import org.antlr.v4.runtime.ParserRuleContext;
 import org.apache.shardingsphere.core.constant.ShardingOperator;
 import org.apache.shardingsphere.core.parsing.antlr.extractor.OptionalSQLSegmentExtractor;
+import org.apache.shardingsphere.core.parsing.antlr.extractor.impl.expression.ExpressionExtractor;
 import org.apache.shardingsphere.core.parsing.antlr.extractor.util.ExtractorUtils;
 import org.apache.shardingsphere.core.parsing.antlr.extractor.util.LogicalOperator;
 import org.apache.shardingsphere.core.parsing.antlr.extractor.util.Paren;
@@ -51,8 +52,6 @@ import java.util.Map;
 @RequiredArgsConstructor
 public final class PredicateExtractor implements OptionalSQLSegmentExtractor {
     
-    private final Map<String, String> tableAlias;
-    
     private ExpressionExtractor expressionExtractor;
     
     @Override
@@ -63,12 +62,12 @@ public final class PredicateExtractor implements OptionalSQLSegmentExtractor {
     /**
      * Extract SQL segment from SQL AST.
      *
-     * @param questionNodeIndexMap question node map
+     * @param placeholderIndexes question node map
      * @param exprNode expression node of AST
      * @return or condition
      */
-    public Optional<OrConditionSegment> extractCondition(final Map<ParserRuleContext, Integer> questionNodeIndexMap, final ParserRuleContext exprNode) {
-        expressionExtractor = new ExpressionExtractor(questionNodeIndexMap);
+    public Optional<OrConditionSegment> extractCondition(final Map<ParserRuleContext, Integer> placeholderIndexes, final ParserRuleContext exprNode) {
+        expressionExtractor = new ExpressionExtractor(placeholderIndexes);
         return extractConditionInternal(exprNode);
     }
     
@@ -231,6 +230,6 @@ public final class PredicateExtractor implements OptionalSQLSegmentExtractor {
     }
     
     private Optional<ColumnSegment> buildColumn(final ParserRuleContext parentNode) {
-        return new ColumnSegmentExtractor(tableAlias).extract(parentNode);
+        return new ColumnSegmentExtractor().extract(parentNode);
     }
 }

@@ -18,8 +18,8 @@
 package org.apache.shardingsphere.api.config;
 
 import org.apache.shardingsphere.core.exception.ShardingConfigurationException;
-import org.apache.shardingsphere.core.keygen.generator.impl.SnowflakeKeyGenerator;
-import org.apache.shardingsphere.core.keygen.generator.impl.UUIDKeyGenerator;
+import org.apache.shardingsphere.core.keygen.generator.impl.SnowflakeShardingKeyGenerator;
+import org.apache.shardingsphere.core.keygen.generator.impl.UUIDShardingKeyGenerator;
 import org.junit.Test;
 
 import java.util.Properties;
@@ -28,7 +28,7 @@ import static org.hamcrest.CoreMatchers.is;
 import static org.junit.Assert.assertThat;
 import static org.junit.Assert.assertTrue;
 
-public class KeyGeneratorConfigurationTest {
+public class ShardingKeyGeneratorConfigurationTest {
     
     @Test
     public void assertGetKeyGeneratorWithAllProperties() {
@@ -41,14 +41,14 @@ public class KeyGeneratorConfigurationTest {
     @Test
     public void assertGetKeyGeneratorWithSnowflakeType() {
         KeyGeneratorConfiguration keyGeneratorConfiguration = new KeyGeneratorConfiguration("order_id", "SNOWFLAKE", new Properties());
-        assertThat(keyGeneratorConfiguration.getKeyGenerator().getClass().getName(), is(SnowflakeKeyGenerator.class.getName()));
+        assertThat(keyGeneratorConfiguration.getKeyGenerator().getClass().getName(), is(SnowflakeShardingKeyGenerator.class.getName()));
     }
         
     @Test
     public void assertGetKeyGeneratorClassNameWithUUID() {
         KeyGeneratorConfiguration keyGeneratorConfiguration = new KeyGeneratorConfiguration();
         keyGeneratorConfiguration.setType("UUID");
-        assertThat(keyGeneratorConfiguration.getKeyGenerator().getClass().getName(), is(UUIDKeyGenerator.class.getName()));
+        assertThat(keyGeneratorConfiguration.getKeyGenerator().getClass().getName(), is(UUIDShardingKeyGenerator.class.getName()));
     }
     
     @Test(expected = ShardingConfigurationException.class)

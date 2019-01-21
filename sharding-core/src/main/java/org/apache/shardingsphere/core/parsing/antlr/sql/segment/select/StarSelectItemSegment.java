@@ -15,24 +15,28 @@
  * limitations under the License.
  */
 
-package org.apache.shardingsphere.core.keygen;
+package org.apache.shardingsphere.core.parsing.antlr.sql.segment.select;
 
-import org.apache.shardingsphere.core.exception.ShardingConfigurationException;
-import org.apache.shardingsphere.core.keygen.generator.impl.SnowflakeKeyGenerator;
-import org.junit.Test;
+import com.google.common.base.Optional;
+import lombok.Getter;
+import lombok.RequiredArgsConstructor;
+import org.apache.shardingsphere.core.parsing.antlr.sql.OwnerAvailable;
 
-import static org.hamcrest.CoreMatchers.instanceOf;
-import static org.junit.Assert.assertThat;
-
-public final class KeyGeneratorFactoryTest {
+/**
+ * Star select item segment.
+ *
+ * @author zhangliang
+ */
+@RequiredArgsConstructor
+@Getter
+public final class StarSelectItemSegment implements SelectItemSegment, OwnerAvailable {
     
-    @Test
-    public void assertCreateKeyGeneratorSuccess() {
-        assertThat(KeyGeneratorFactory.newInstance("SNOWFLAKE"), instanceOf(SnowflakeKeyGenerator.class));
-    }
+    private final String owner;
     
-    @Test(expected = ShardingConfigurationException.class)
-    public void assertCreateKeyGeneratorFailureWithInstantiationError() {
-        KeyGeneratorFactory.newInstance("instantiation");
+    private final int startIndex;
+    
+    @Override
+    public Optional<String> getOwner() {
+        return Optional.fromNullable(owner);
     }
 }

@@ -79,7 +79,7 @@ public abstract class SelectListClauseParser implements SQLClauseParser {
         do {
             selectStatement.getItems().addAll(parseSelectItems(selectStatement));
         } while (lexerEngine.skipIfEqual(Symbol.COMMA));
-        selectStatement.setSelectListLastPosition(lexerEngine.getCurrentToken().getEndPosition() - lexerEngine.getCurrentToken().getLiterals().length());
+        selectStatement.setSelectListStopIndex(lexerEngine.getCurrentToken().getEndPosition() - lexerEngine.getCurrentToken().getLiterals().length());
         items.addAll(selectStatement.getItems());
     }
     

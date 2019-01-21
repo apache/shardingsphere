@@ -22,7 +22,7 @@ import org.antlr.v4.runtime.ParserRuleContext;
 import org.antlr.v4.runtime.tree.TerminalNode;
 import org.apache.shardingsphere.core.parsing.antlr.extractor.OptionalSQLSegmentExtractor;
 import org.apache.shardingsphere.core.parsing.antlr.extractor.impl.ColumnSegmentExtractor;
-import org.apache.shardingsphere.core.parsing.antlr.extractor.impl.ExpressionExtractor;
+import org.apache.shardingsphere.core.parsing.antlr.extractor.impl.expression.ExpressionExtractor;
 import org.apache.shardingsphere.core.parsing.antlr.extractor.util.ExtractorUtils;
 import org.apache.shardingsphere.core.parsing.antlr.extractor.util.RuleName;
 import org.apache.shardingsphere.core.parsing.antlr.sql.segment.InsertSegment;
@@ -47,17 +47,18 @@ public final class InsertExtractor implements OptionalSQLSegmentExtractor {
     @Override
     public Optional<InsertSegment> extract(final ParserRuleContext ancestorNode) {
         InsertSegment result = new InsertSegment();
-        expressionExtractor = new ExpressionExtractor(getPlaceholderAndNodeIndexMap(ancestorNode));
-        columnSegmentExtractor = new ColumnSegmentExtractor(new HashMap<String, String>());
+        expressionExtractor = new ExpressionExtractor(getPlaceholderIndexes(ancestorNode));
+        columnSegmentExtractor = new ColumnSegmentExtractor();
         extractValuesColumn(ancestorNode, result);
         if (result.getValuesList().isEmpty()) {
             extractSetColumn(ancestorNode, result);
         }
         extractDuplicateKeys(ancestorNode, result);
+        result.setInsertValuesListLastPosition(ancestorNode.getStop().getStopIndex() + 1);
         return Optional.of(result);
     }
     
-    private Map<ParserRuleContext, Integer> getPlaceholderAndNodeIndexMap(final ParserRuleContext rootNode) {
+    private Map<ParserRuleContext, Integer> getPlaceholderIndexes(final ParserRuleContext rootNode) {
         Collection<ParserRuleContext> questionNodes = ExtractorUtils.getAllDescendantNodes(rootNode, RuleName.QUESTION);
         Map<ParserRuleContext, Integer> result = new HashMap<>(questionNodes.size(), 1);
         int index = 0;

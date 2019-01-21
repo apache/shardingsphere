@@ -15,28 +15,28 @@
  * limitations under the License.
  */
 
-package org.apache.shardingsphere.core.keygen.fixture;
+package org.apache.shardingsphere.core.parsing.antlr.sql;
 
-import lombok.Getter;
-import lombok.Setter;
-import org.apache.shardingsphere.core.keygen.generator.KeyGenerator;
+import com.google.common.base.Optional;
 
-import java.util.Properties;
-import java.util.concurrent.atomic.AtomicInteger;
-
-public final class IncrementKeyGenerator implements KeyGenerator {
+/**
+ * Alias available.
+ *
+ * @author zhangliang
+ */
+public interface AliasAvailable {
     
-    @Getter
-    private final String type = "INCREMENT";
+    /**
+     * Get alias.
+     *
+     * @return alias
+     */
+    Optional<String> getAlias();
     
-    private final AtomicInteger count = new AtomicInteger();
-    
-    @Getter
-    @Setter
-    private Properties properties = new Properties();
-    
-    @Override
-    public Comparable<?> generateKey() {
-        return count.incrementAndGet();
-    }
+    /**
+     * Set alias.
+     *
+     * @param alias alias
+     */
+    void setAlias(String alias);
 }

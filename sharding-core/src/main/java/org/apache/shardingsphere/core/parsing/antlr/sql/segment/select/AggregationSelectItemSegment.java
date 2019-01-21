@@ -15,27 +15,41 @@
  * limitations under the License.
  */
 
-package org.apache.shardingsphere.core.parsing.antlr.sql.segment.expr;
+package org.apache.shardingsphere.core.parsing.antlr.sql.segment.select;
 
 import com.google.common.base.Optional;
-import lombok.Setter;
+import lombok.Getter;
+import lombok.RequiredArgsConstructor;
+import org.apache.shardingsphere.core.constant.AggregationType;
+import org.apache.shardingsphere.core.parsing.antlr.sql.AliasAvailable;
+import org.apache.shardingsphere.core.util.SQLUtil;
 
 /**
- * Expression with Alias segment.
+ * Aggregation select item segment.
  * 
  * @author zhangliang
  */
-@Setter
-public abstract class ExpressionWithAliasSegment implements ExpressionSegment {
+@RequiredArgsConstructor
+@Getter
+public class AggregationSelectItemSegment implements SelectItemSegment, AliasAvailable {
+    
+    private final AggregationType type;
+    
+    private final String innerExpression;
+    
+    private final int startIndex;
+    
+    private final int stopIndex;
     
     private String alias;
     
-    /**
-     * Get alias.
-     * 
-     * @return alias
-     */
+    @Override
     public final Optional<String> getAlias() {
         return Optional.fromNullable(alias);
+    }
+    
+    @Override
+    public final void setAlias(final String alias) {
+        this.alias = SQLUtil.getExactlyValue(alias);
     }
 }

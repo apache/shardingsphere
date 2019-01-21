@@ -15,28 +15,23 @@
  * limitations under the License.
  */
 
-package org.apache.shardingsphere.shardingjdbc.orchestration.api.yaml.fixture;
+package org.apache.shardingsphere.core.parsing.antlr.sql.segment.select;
 
 import lombok.Getter;
-import lombok.Setter;
-import org.apache.shardingsphere.core.keygen.generator.KeyGenerator;
+import org.apache.shardingsphere.core.constant.AggregationType;
 
-import java.util.Properties;
-import java.util.concurrent.atomic.AtomicInteger;
-
-public final class DecrementKeyGenerator implements KeyGenerator {
+/**
+ * Aggregation distinct select item segment.
+ * 
+ * @author zhangliang
+ */
+@Getter
+public final class AggregationDistinctSelectItemSegment extends AggregationSelectItemSegment {
     
-    @Getter
-    private final String type = "DECREMENT";
+    private final String distinctExpression;
     
-    private final AtomicInteger sequence = new AtomicInteger(100);
-    
-    @Getter
-    @Setter
-    private Properties properties = new Properties();
-    
-    @Override
-    public Comparable<?> generateKey() {
-        return sequence.decrementAndGet();
+    public AggregationDistinctSelectItemSegment(final AggregationType type, final String innerExpression, final int startIndex, final int stopIndex, final String distinctExpression) {
+        super(type, innerExpression, startIndex, stopIndex);
+        this.distinctExpression = distinctExpression;
     }
 }

@@ -144,10 +144,10 @@ public final class SQLRewriteEngine {
     }
     
     private void appendAggregationDistinctLiteral(final SQLBuilder sqlBuilder) {
-        int firstSelectItemStartPosition = ((SelectStatement) sqlStatement).getFirstSelectItemStartPosition();
-        sqlBuilder.appendLiterals(originalSQL.substring(0, firstSelectItemStartPosition));
+        int firstSelectItemStartIndex = ((SelectStatement) sqlStatement).getFirstSelectItemStartIndex();
+        sqlBuilder.appendLiterals(originalSQL.substring(0, firstSelectItemStartIndex));
         sqlBuilder.appendLiterals("DISTINCT ");
-        sqlBuilder.appendLiterals(originalSQL.substring(firstSelectItemStartPosition, sqlTokens.get(0).getBeginPosition()));
+        sqlBuilder.appendLiterals(originalSQL.substring(firstSelectItemStartIndex, sqlTokens.get(0).getBeginPosition()));
     }
     
     private void appendTokensAndPlaceholders(final boolean isRewrite, final SQLBuilder sqlBuilder) {

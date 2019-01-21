@@ -15,33 +15,21 @@
  * limitations under the License.
  */
 
-package org.apache.shardingsphere.core.parsing.antlr.sql.segment.expr;
+package org.apache.shardingsphere.core.parsing.parser.context;
 
-import com.google.common.base.Optional;
-import lombok.Getter;
-import lombok.RequiredArgsConstructor;
-import lombok.Setter;
+import org.apache.shardingsphere.core.parsing.parser.context.condition.ConditionTest;
+import org.apache.shardingsphere.core.parsing.parser.context.selectitem.AggregationDistinctSelectItemTest;
+import org.apache.shardingsphere.core.parsing.parser.context.table.TablesTest;
+import org.junit.runner.RunWith;
+import org.junit.runners.Suite;
+import org.junit.runners.Suite.SuiteClasses;
 
-/**
- * Star expression segment.
- * 
- * @author duhongjun
- */
-@RequiredArgsConstructor
-@Getter
-@Setter
-public final class StarExpressionSegment implements ExpressionSegment {
-    
-    private final int startPosition;
-    
-    private String owner;
-    
-    /**
-     * Get owner.
-     * 
-     * @return owner
-     */
-    public Optional<String> getOwner() {
-        return Optional.fromNullable(owner);
-    }
+@RunWith(Suite.class)
+@SuiteClasses({
+        TablesTest.class, 
+        AggregationDistinctSelectItemTest.class, 
+        ConditionTest.class, 
+        OrderItemTest.class
+})
+public final class AllContextTests {
 }

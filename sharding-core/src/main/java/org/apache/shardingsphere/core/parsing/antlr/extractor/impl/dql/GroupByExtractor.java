@@ -32,7 +32,7 @@ import org.apache.shardingsphere.core.parsing.antlr.sql.segment.order.GroupBySeg
 public final class GroupByExtractor implements OptionalSQLSegmentExtractor {
     
     private final OrderByItemExtractor orderByItemExtractor = new OrderByItemExtractor();
-        
+    
     @Override
     public Optional<GroupBySegment> extract(final ParserRuleContext ancestorNode) {
         Optional<ParserRuleContext> groupByNode = ExtractorUtils.findFirstChildNode(ancestorNode, RuleName.GROUP_BY_CLAUSE);

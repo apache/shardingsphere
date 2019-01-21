@@ -593,14 +593,14 @@
                             <ignoreMethodAnnotation>lombok.Generated</ignoreMethodAnnotation>
                         </ignoreMethodAnnotations>
                         <excludes>
-                            <exclude>io/shardingsphere/core/parsing/antlr/autogen/*.class</exclude>
+                            <exclude>org/apache/shardingsphere/core/parsing/antlr/autogen/*.class</exclude>
                             <exclude>authpb/*.class</exclude>
                             <exclude>mvccpb/*.class</exclude>
                             <exclude>etcdserverpb/*.class</exclude>
-                            <exclude>io/shardingsphere/orchestration/reg/zookeeper/*.class</exclude>
-                            <exclude>io/shardingsphere/orchestration/reg/etcd/*.class</exclude>
-                            <exclude>io/shardingsphere/**/*Test.class</exclude>
-                            <exclude>io/shardingsphere/**/Test*.class</exclude>
+                            <exclude>org/apache/shardingsphere/orchestration/reg/zookeeper/*.class</exclude>
+                            <exclude>org/apache/shardingsphere/orchestration/reg/etcd/*.class</exclude>
+                            <exclude>org/apache/shardingsphere/**/*Test.class</exclude>
+                            <exclude>org/apache/shardingsphere/**/Test*.class</exclude>
                         </excludes>
                     </instrumentation>
                 </configuration>

@@ -69,13 +69,13 @@ public final class SQLParserFactory {
         lexerEngine.nextToken();
         TokenType tokenType = lexerEngine.getCurrentToken().getType();
         if (DQLStatement.isDQL(tokenType)) {
-            if (DatabaseType.MySQL == dbType) {
+            if (DatabaseType.MySQL == dbType || DatabaseType.H2 == dbType) {
                 return new AntlrParsingEngine(dbType, sql, shardingRule, shardingTableMetaData);
             }
             return getDQLParser(dbType, shardingRule, lexerEngine, shardingTableMetaData);
         }
         if (DMLStatement.isDML(tokenType)) {
-            if (DatabaseType.MySQL == dbType) {
+            if (DatabaseType.MySQL == dbType || DatabaseType.H2 == dbType) {
                 return new AntlrParsingEngine(dbType, sql, shardingRule, shardingTableMetaData);
             }
             return getDMLParser(dbType, tokenType, shardingRule, lexerEngine, shardingTableMetaData);

@@ -27,7 +27,7 @@ import lombok.RequiredArgsConstructor;
  */
 @RequiredArgsConstructor
 @Getter
-public final class FunctionExpressionSegment extends ExpressionWithAliasSegment {
+public final class FunctionExpressionSegment implements ExpressionSegment {
     
     private final String functionName;
     
@@ -35,16 +35,7 @@ public final class FunctionExpressionSegment extends ExpressionWithAliasSegment 
     
     private final int innerExpressionStartIndex;
     
-    private final int innerExpressionEndIndex; 
+    private final int innerExpressionStopIndex; 
     
-    private final int distinctColumnNameStartPosition;
-    
-    /**
-     * Judge has distinct or not.
-     * 
-     * @return has distinct or not
-     */
-    public boolean hasDistinct() {
-        return -1 != distinctColumnNameStartPosition;
-    }
+    private final int distinctExpressionStartIndex;
 }

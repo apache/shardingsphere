@@ -18,33 +18,53 @@
 package org.apache.shardingsphere.core.parsing.antlr.sql.segment.column;
 
 import com.google.common.base.Optional;
+import com.google.common.base.Splitter;
 import lombok.Getter;
-import lombok.RequiredArgsConstructor;
-import lombok.Setter;
+import org.apache.shardingsphere.core.parsing.antlr.sql.OwnerAvailable;
 import org.apache.shardingsphere.core.parsing.antlr.sql.segment.expr.SQLRightValueExpressionSegment;
+import org.apache.shardingsphere.core.parsing.lexer.token.Symbol;
+import org.apache.shardingsphere.core.util.SQLUtil;
+
+import java.util.List;
 
 /**
  * Column segment.
  *
  * @author duhongjun
+ * @author zhangliang
  */
-@RequiredArgsConstructor
 @Getter
-public final class ColumnSegment implements SQLRightValueExpressionSegment {
-    
-    private final Optional<String> owner;
+public class ColumnSegment implements SQLRightValueExpressionSegment, OwnerAvailable {
     
     private final String name;
     
-    @Setter
-    private String tableName;
+    private final String owner;
     
-    private final int startPosition;
+    private final int startIndex;
     
-    public ColumnSegment(final Optional<String> owner, final String name, final String tableName, final int startPosition) {
-        this.owner = owner;
-        this.name = name;
-        this.tableName = tableName;
-        this.startPosition = startPosition;
+    public ColumnSegment(final String columnText, final int startIndex) {
+        List<String> texts = Splitter.on(Symbol.DOT.getLiterals()).splitToList(columnText);
+        if (1 == texts.size()) {
+            name = SQLUtil.getExactlyValue(columnText);
+            owner = null;
+        } else {
+            name = SQLUtil.getExactlyValue(texts.get(texts.size() - 1));
+            owner = SQLUtil.getExactlyValue(texts.get(0));
+        }
+        this.startIndex = startIndex;
+    }
+    
+    /**
+     * Get qualified name.
+     *
+     * @return qualified name
+     */
+    public final String getQualifiedName() {
+        return null == owner ? name : owner + Symbol.DOT.getLiterals() + name;
+    }
+    
+    @Override
+    public final Optional<String> getOwner() {
+        return Optional.fromNullable(owner);
     }
 }

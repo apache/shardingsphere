@@ -126,7 +126,8 @@ public abstract class AbstractSelectParser implements SQLParser {
     }
     
     private void appendDerivedColumns(final SelectStatement selectStatement) {
-        ItemsToken itemsToken = new ItemsToken(selectStatement.getSelectListLastPosition());
+        // TODO last position (index + 1) and one space, it is different with new parser engine
+        ItemsToken itemsToken = new ItemsToken(selectStatement.getSelectListStopIndex());
         appendAvgDerivedColumns(itemsToken, selectStatement);
         appendDerivedOrderColumns(itemsToken, selectStatement.getOrderByItems(), selectStatement);
         appendDerivedGroupColumns(itemsToken, selectStatement.getGroupByItems(), selectStatement);

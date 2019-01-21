@@ -19,7 +19,7 @@ package org.apache.shardingsphere.core.parsing.antlr.sql.segment;
 
 import lombok.Getter;
 import lombok.RequiredArgsConstructor;
-import org.apache.shardingsphere.core.parsing.antlr.sql.segment.expr.ExpressionSegment;
+import org.apache.shardingsphere.core.parsing.antlr.sql.segment.select.SelectItemSegment;
 
 import java.util.Collection;
 import java.util.LinkedList;
@@ -34,11 +34,11 @@ import java.util.LinkedList;
 @Getter
 public final class SelectClauseSegment implements SQLSegment {
     
-    private final int firstSelectItemStartPosition;
+    private final int firstSelectItemStartIndex;
     
-    private final int selectListLastPosition;
+    private final int selectItemsStopIndex;
     
     private final boolean hasDistinct;
     
-    private final Collection<ExpressionSegment> expressions = new LinkedList<>();
+    private final Collection<SelectItemSegment> selectItems = new LinkedList<>();
 }

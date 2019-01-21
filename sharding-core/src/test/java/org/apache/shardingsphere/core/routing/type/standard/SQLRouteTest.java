@@ -32,7 +32,7 @@ public class SQLRouteTest extends AbstractSQLRouteTest {
         String sql = "SELECT id,name ";
         List<Object> parameters = new LinkedList<>();
         parameters.add(1);
-        route(sql, parameters);
+        assertRoute(sql, parameters);
     }
     
     @Test
@@ -40,7 +40,7 @@ public class SQLRouteTest extends AbstractSQLRouteTest {
         String sql = "SELECT id,name from user where id = ?";
         List<Object> parameters = new LinkedList<>();
         parameters.add(1);
-        SQLRouteResult result = route(sql, parameters);
+        SQLRouteResult result = assertRoute(sql, parameters);
         assertEquals("assert default datasource name", "main", result.getRouteUnits().iterator().next().getDataSourceName());
     }
     
@@ -49,7 +49,7 @@ public class SQLRouteTest extends AbstractSQLRouteTest {
         String sql = "SELECT id,name from t_order_item a join product b on a.product_id = b.product_id where user_id = ?";
         List<Object> parameters = new LinkedList<>();
         parameters.add(1);
-        route(sql, parameters);
+        assertRoute(sql, parameters);
     }
     
     @Test
@@ -57,7 +57,7 @@ public class SQLRouteTest extends AbstractSQLRouteTest {
         String sql = "SELECT id,name from t_order a join t_order_item b on a.order_id = b.order_id join t_product c on b.product_id = c.product_id where a.user_id = ?";
         List<Object> parameters = new LinkedList<>();
         parameters.add(1);
-        route(sql, parameters);
+        assertRoute(sql, parameters);
     }
     
     @Test
@@ -66,6 +66,6 @@ public class SQLRouteTest extends AbstractSQLRouteTest {
         List<Object> parameters = new LinkedList<>();
         parameters.add(1);
         parameters.add(1);
-        route(sql, parameters);
+        assertRoute(sql, parameters);
     }
 }

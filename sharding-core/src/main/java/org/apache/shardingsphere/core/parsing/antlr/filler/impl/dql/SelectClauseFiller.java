@@ -20,13 +20,13 @@ package org.apache.shardingsphere.core.parsing.antlr.filler.impl.dql;
 import com.google.common.base.Optional;
 import org.apache.shardingsphere.core.metadata.table.ShardingTableMetaData;
 import org.apache.shardingsphere.core.parsing.antlr.filler.SQLStatementFiller;
-import org.apache.shardingsphere.core.parsing.antlr.filler.impl.ExpressionFiller;
 import org.apache.shardingsphere.core.parsing.antlr.sql.segment.SelectClauseSegment;
-import org.apache.shardingsphere.core.parsing.antlr.sql.segment.expr.CommonExpressionSegment;
-import org.apache.shardingsphere.core.parsing.antlr.sql.segment.expr.ExpressionSegment;
-import org.apache.shardingsphere.core.parsing.antlr.sql.segment.expr.FunctionExpressionSegment;
-import org.apache.shardingsphere.core.parsing.antlr.sql.segment.expr.PropertyExpressionSegment;
-import org.apache.shardingsphere.core.parsing.antlr.sql.segment.expr.StarExpressionSegment;
+import org.apache.shardingsphere.core.parsing.antlr.sql.segment.select.AggregationDistinctSelectItemSegment;
+import org.apache.shardingsphere.core.parsing.antlr.sql.segment.select.AggregationSelectItemSegment;
+import org.apache.shardingsphere.core.parsing.antlr.sql.segment.select.ColumnSelectItemSegment;
+import org.apache.shardingsphere.core.parsing.antlr.sql.segment.select.ExpressionSelectItemSegment;
+import org.apache.shardingsphere.core.parsing.antlr.sql.segment.select.SelectItemSegment;
+import org.apache.shardingsphere.core.parsing.antlr.sql.segment.select.StarSelectItemSegment;
 import org.apache.shardingsphere.core.parsing.parser.constant.DerivedAlias;
 import org.apache.shardingsphere.core.parsing.parser.context.selectitem.DistinctSelectItem;
 import org.apache.shardingsphere.core.parsing.parser.sql.SQLStatement;
@@ -44,54 +44,54 @@ import java.util.Set;
  */
 public final class SelectClauseFiller implements SQLStatementFiller<SelectClauseSegment> {
     
+    private SelectItemFiller selectItemFiller = new SelectItemFiller();
+    
     @Override
     public void fill(final SelectClauseSegment sqlSegment, final SQLStatement sqlStatement, final String sql, final ShardingRule shardingRule, final ShardingTableMetaData shardingTableMetaData) {
         SelectStatement selectStatement = (SelectStatement) sqlStatement;
-        selectStatement.setFirstSelectItemStartPosition(sqlSegment.getFirstSelectItemStartPosition());
-        selectStatement.setSelectListLastPosition(sqlSegment.getSelectListLastPosition());
-        if (sqlSegment.getExpressions().isEmpty()) {
+        selectStatement.setFirstSelectItemStartIndex(sqlSegment.getFirstSelectItemStartIndex());
+        selectStatement.setSelectListStopIndex(sqlSegment.getSelectItemsStopIndex());
+        if (sqlSegment.getSelectItems().isEmpty()) {
             return;
         }
         if (sqlSegment.isHasDistinct()) {
             fillDistinct(sqlSegment, selectStatement, sql, shardingRule, shardingTableMetaData);
         } else {
-            ExpressionFiller expressionFiller = new ExpressionFiller();
             int offset = 0;
-            for (ExpressionSegment each : sqlSegment.getExpressions()) {
+            for (SelectItemSegment each : sqlSegment.getSelectItems()) {
                 offset = setDistinctFunctionAlias(each, offset);
-                expressionFiller.fill(each, sqlStatement, sql, shardingRule, shardingTableMetaData);
+                selectItemFiller.fill(each, sqlStatement, sql, shardingRule, shardingTableMetaData);
             }
         }
     }
     
     private void fillDistinct(final SelectClauseSegment selectClauseSegment, final SelectStatement selectStatement, final String sql, final ShardingRule shardingRule,
                               final ShardingTableMetaData shardingTableMetaData) {
-        Iterator<ExpressionSegment> expressionIterator = selectClauseSegment.getExpressions().iterator();
-        ExpressionSegment firstExpression = expressionIterator.next();
-        ExpressionFiller expressionFiller = new ExpressionFiller();
+        Iterator<SelectItemSegment> selectItemSegmentIterator = selectClauseSegment.getSelectItems().iterator();
+        SelectItemSegment firstSelectItemSegment = selectItemSegmentIterator.next();
         Set<String> distinctColumnNames = new LinkedHashSet<>();
         DistinctSelectItem distinctSelectItem = null;
         int offset = 0;
-        if (firstExpression instanceof StarExpressionSegment) {
-            expressionFiller.fill(firstExpression, selectStatement, sql, shardingRule, shardingTableMetaData);
+        if (firstSelectItemSegment instanceof StarSelectItemSegment) {
+            selectItemFiller.fill(firstSelectItemSegment, selectStatement, sql, shardingRule, shardingTableMetaData);
             selectStatement.getItems().add(new DistinctSelectItem(distinctColumnNames, Optional.<String>absent()));
-        } else if (firstExpression instanceof PropertyExpressionSegment) {
-            PropertyExpressionSegment propertyExpressionSegment = (PropertyExpressionSegment) firstExpression;
-            distinctSelectItem = new DistinctSelectItem(distinctColumnNames, propertyExpressionSegment.getAlias());
+        } else if (firstSelectItemSegment instanceof ColumnSelectItemSegment) {
+            ColumnSelectItemSegment columnSelectItemSegment = (ColumnSelectItemSegment) firstSelectItemSegment;
+            distinctSelectItem = new DistinctSelectItem(distinctColumnNames, columnSelectItemSegment.getAlias());
             selectStatement.getItems().add(distinctSelectItem);
-            distinctColumnNames.add(propertyExpressionSegment.getName());
-        } else if (firstExpression instanceof CommonExpressionSegment) {
-            distinctSelectItem = createDistinctCommonItem(selectStatement, sql, distinctColumnNames, (CommonExpressionSegment) firstExpression);
+            distinctColumnNames.add(columnSelectItemSegment.getName());
+        } else if (firstSelectItemSegment instanceof ExpressionSelectItemSegment) {
+            distinctSelectItem = createDistinctExpressionItem(selectStatement, sql, distinctColumnNames, (ExpressionSelectItemSegment) firstSelectItemSegment);
         } else {
-            offset = setDistinctFunctionAlias(firstExpression, offset);
-            expressionFiller.fill(firstExpression, selectStatement, sql, shardingRule, shardingTableMetaData);
+            offset = setDistinctFunctionAlias(firstSelectItemSegment, offset);
+            selectItemFiller.fill(firstSelectItemSegment, selectStatement, sql, shardingRule, shardingTableMetaData);
         }
-        while (expressionIterator.hasNext()) {
-            ExpressionSegment nextExpression = expressionIterator.next();
-            expressionFiller.fill(nextExpression, selectStatement, sql, shardingRule, shardingTableMetaData);
-            if (nextExpression instanceof PropertyExpressionSegment) {
-                offset = setDistinctFunctionAlias(nextExpression, offset);
-                distinctColumnNames.add(((PropertyExpressionSegment) nextExpression).getName());
+        while (selectItemSegmentIterator.hasNext()) {
+            SelectItemSegment nextSelectItemSegment = selectItemSegmentIterator.next();
+            selectItemFiller.fill(nextSelectItemSegment, selectStatement, sql, shardingRule, shardingTableMetaData);
+            if (nextSelectItemSegment instanceof ColumnSelectItemSegment) {
+                offset = setDistinctFunctionAlias(nextSelectItemSegment, offset);
+                distinctColumnNames.add(((ColumnSelectItemSegment) nextSelectItemSegment).getName());
             }
         }
         if (null != distinctSelectItem) {
@@ -99,22 +99,22 @@ public final class SelectClauseFiller implements SQLStatementFiller<SelectClause
         }
     }
     
-    private int setDistinctFunctionAlias(final ExpressionSegment expressionSegment, final int offset) {
-        if (expressionSegment instanceof FunctionExpressionSegment) {
-            FunctionExpressionSegment functionExpressionSegment = (FunctionExpressionSegment) expressionSegment;
-            Optional<String> alias = functionExpressionSegment.getAlias();
-            if (functionExpressionSegment.hasDistinct() && !alias.isPresent()) {
-                ((FunctionExpressionSegment) expressionSegment).setAlias(DerivedAlias.AGGREGATION_DISTINCT_DERIVED.getDerivedAlias(offset));
+    private int setDistinctFunctionAlias(final SelectItemSegment selectItemSegment, final int offset) {
+        if (selectItemSegment instanceof AggregationSelectItemSegment) {
+            AggregationSelectItemSegment aggregationSelectItemSegment = (AggregationSelectItemSegment) selectItemSegment;
+            Optional<String> alias = aggregationSelectItemSegment.getAlias();
+            if (aggregationSelectItemSegment instanceof AggregationDistinctSelectItemSegment && !alias.isPresent()) {
+                ((AggregationSelectItemSegment) selectItemSegment).setAlias(DerivedAlias.AGGREGATION_DISTINCT_DERIVED.getDerivedAlias(offset));
                 return offset + 1;
             }
         }
         return offset;
     }
     
-    private DistinctSelectItem createDistinctCommonItem(final SelectStatement selectStatement, final String sql, final Set<String> distinctColumnNames,
-                                                        final CommonExpressionSegment expressionSegment) {
-        DistinctSelectItem distinctSelectItem = new DistinctSelectItem(distinctColumnNames, expressionSegment.getAlias());
-        String commonExpression = sql.substring(expressionSegment.getStartPosition(), expressionSegment.getEndPosition() + 1);
+    private DistinctSelectItem createDistinctExpressionItem(final SelectStatement selectStatement, final String sql, final Set<String> distinctColumnNames,
+                                                            final ExpressionSelectItemSegment expressionSelectItemSegment) {
+        DistinctSelectItem distinctSelectItem = new DistinctSelectItem(distinctColumnNames, expressionSelectItemSegment.getAlias());
+        String commonExpression = sql.substring(expressionSelectItemSegment.getStartIndex(), expressionSelectItemSegment.getStopIndex() + 1);
         int leftParenPosition = commonExpression.indexOf("(");
         if (0 <= leftParenPosition) {
             int rightParenPosition = commonExpression.lastIndexOf(")");

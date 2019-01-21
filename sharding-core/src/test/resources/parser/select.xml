@@ -669,12 +669,12 @@
         </tables>
         <select-items>
             <aggregation-select-items>
-                <aggregation-select-item type="COUNT" inner-expression="(DISTINCT user_id + order_id)" distinct-column="user_id + order_id" alias="c" />
+                <aggregation-select-item type="COUNT" inner-expression="(DISTINCT user_id+order_id)" distinct-column="user_id+order_id" alias="c" />
             </aggregation-select-items>
         </select-items>
         <tokens>
             <table-token begin-position="49" original-literals="t_order" />
-            <aggregation-distinct-token begin-position="7" original-literals="COUNT(DISTINCT user_id + order_id)" column-name="user_id + order_id" alias="c" />
+            <aggregation-distinct-token begin-position="7" original-literals="COUNT(DISTINCT user_id + order_id)" column-name="user_id+order_id" alias="c" />
         </tokens>
     </parser-result>
     

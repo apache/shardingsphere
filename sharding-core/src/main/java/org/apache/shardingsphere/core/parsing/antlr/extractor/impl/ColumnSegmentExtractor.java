@@ -24,43 +24,19 @@ import org.apache.shardingsphere.core.parsing.antlr.extractor.OptionalSQLSegment
 import org.apache.shardingsphere.core.parsing.antlr.extractor.util.ExtractorUtils;
 import org.apache.shardingsphere.core.parsing.antlr.extractor.util.RuleName;
 import org.apache.shardingsphere.core.parsing.antlr.sql.segment.column.ColumnSegment;
-import org.apache.shardingsphere.core.parsing.lexer.token.Symbol;
-import org.apache.shardingsphere.core.util.SQLUtil;
-
-import java.util.Map;
 
 /**
  * Column extract extractor.
  *
  * @author duhongjun
+ * @author zhangliang
  */
 @RequiredArgsConstructor
 public final class ColumnSegmentExtractor implements OptionalSQLSegmentExtractor {
     
-    private final Map<String, String> tableAlias;
-    
     @Override
     public Optional<ColumnSegment> extract(final ParserRuleContext ancestorNode) {
         Optional<ParserRuleContext> columnNode = ExtractorUtils.findFirstChildNode(ancestorNode, RuleName.COLUMN_NAME);
-        if (!columnNode.isPresent()) {
-            return Optional.absent();
-        }
-        String columnText = columnNode.get().getText();
-        int dotPosition = columnText.contains(Symbol.DOT.getLiterals()) ? columnText.lastIndexOf(Symbol.DOT.getLiterals()) : 0;
-        String columnName = columnText;
-        Optional<String> ownerName;
-        String tableName = "";
-        if (0 < dotPosition) {
-            columnName = columnText.substring(dotPosition + 1);
-            ownerName = Optional.of(SQLUtil.getExactlyValue(columnText.substring(0, dotPosition)));
-            tableName = tableAlias.get(ownerName.get());
-        } else {
-            ownerName = Optional.absent();
-        }
-        if ("".equals(tableName) && 1 == tableAlias.size()) {
-            tableName = tableAlias.values().iterator().next();
-        }
-        columnName = SQLUtil.getExactlyValue(columnName);
-        return Optional.of(new ColumnSegment(ownerName, columnName, tableName, columnNode.get().getStart().getStartIndex()));
+        return columnNode.isPresent() ? Optional.of(new ColumnSegment(columnNode.get().getText(), columnNode.get().getStart().getStartIndex())) : Optional.<ColumnSegment>absent();
     }
 }

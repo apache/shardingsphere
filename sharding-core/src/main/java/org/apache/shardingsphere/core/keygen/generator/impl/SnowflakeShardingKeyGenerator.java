@@ -22,7 +22,7 @@ import lombok.Getter;
 import lombok.Setter;
 import lombok.SneakyThrows;
 import org.apache.shardingsphere.core.keygen.TimeService;
-import org.apache.shardingsphere.core.keygen.generator.KeyGenerator;
+import org.apache.shardingsphere.core.keygen.generator.ShardingKeyGenerator;
 
 import java.util.Calendar;
 import java.util.Properties;
@@ -42,17 +42,17 @@ import java.util.Properties;
  * </pre>
  * 
  * <p>
- * Call @{@code SnowflakeKeyGenerator.setWorkerId} to set worker id, default value is 0.
+ * Call @{@code SnowflakeShardingKeyGenerator.setWorkerId} to set worker id, default value is 0.
  * </p>
  * 
  * <p>
- * Call @{@code SnowflakeKeyGenerator.setMaxTolerateTimeDifferenceMilliseconds} to set max tolerate time difference milliseconds, default value is 0.
+ * Call @{@code SnowflakeShardingKeyGenerator.setMaxTolerateTimeDifferenceMilliseconds} to set max tolerate time difference milliseconds, default value is 0.
  * </p>
  * 
  * @author gaohongtao
  * @author panjuan
  */
-public final class SnowflakeKeyGenerator implements KeyGenerator {
+public final class SnowflakeShardingKeyGenerator implements ShardingKeyGenerator {
     
     public static final long EPOCH;
     

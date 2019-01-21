@@ -15,28 +15,38 @@
  * limitations under the License.
  */
 
-package org.apache.shardingsphere.shardingjdbc.orchestration.api.yaml.fixture;
+package org.apache.shardingsphere.core.parsing.antlr.sql.segment.select;
 
+import com.google.common.base.Optional;
 import lombok.Getter;
-import lombok.Setter;
-import org.apache.shardingsphere.core.keygen.generator.KeyGenerator;
+import lombok.RequiredArgsConstructor;
+import org.apache.shardingsphere.core.parsing.antlr.sql.AliasAvailable;
+import org.apache.shardingsphere.core.util.SQLUtil;
 
-import java.util.Properties;
-import java.util.concurrent.atomic.AtomicInteger;
-
-public final class IncrementKeyGenerator implements KeyGenerator {
+/**
+ * Expression select item segment.
+ * 
+ * @author zhangliang
+ */
+@RequiredArgsConstructor
+@Getter
+public final class ExpressionSelectItemSegment implements SelectItemSegment, AliasAvailable {
     
-    private static final AtomicInteger SEQUENCE = new AtomicInteger(100);
+    private final String expression;
     
-    @Getter
-    private final String type = "INCREMENT";
+    private final int startIndex;
     
-    @Getter
-    @Setter
-    private Properties properties = new Properties();
+    private final int stopIndex;
+    
+    private String alias;
     
     @Override
-    public Comparable<?> generateKey() {
-        return SEQUENCE.incrementAndGet();
+    public Optional<String> getAlias() {
+        return Optional.fromNullable(alias);
+    }
+    
+    @Override
+    public void setAlias(final String alias) {
+        this.alias = SQLUtil.getExactlyValue(alias);
     }
 }

@@ -28,13 +28,22 @@ import lombok.RequiredArgsConstructor;
  */
 @RequiredArgsConstructor
 @Getter
-public final class PropertyExpressionSegment extends ExpressionWithAliasSegment {
-    
-    private final Optional<String> owner;
+public final class PropertyExpressionSegment implements ExpressionSegment {
     
     private final String name;
     
-    private final int startPosition;
+    private final String owner;
     
-    private final int endPosition;
+    private final int startIndex;
+    
+    private final int stopIndex;
+    
+    /**
+     * Get owner.
+     * 
+     * @return owner
+     */
+    public Optional<String> getOwner() {
+        return Optional.fromNullable(owner);
+    }
 }

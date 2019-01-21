@@ -52,14 +52,14 @@ import java.util.Set;
  */
 @Getter
 @Setter
-@ToString(callSuper = true)
+@ToString(callSuper = true, exclude = "parentStatement")
 public final class SelectStatement extends DQLStatement {
     
     private boolean containStar;
     
-    private int firstSelectItemStartPosition;
+    private int firstSelectItemStartIndex;
     
-    private int selectListLastPosition;
+    private int selectListStopIndex;
     
     private int groupByLastPosition;
     
@@ -70,6 +70,8 @@ public final class SelectStatement extends DQLStatement {
     private final List<OrderItem> orderByItems = new LinkedList<>();
     
     private Limit limit;
+    
+    private SelectStatement parentStatement;
     
     private SelectStatement subqueryStatement;
     

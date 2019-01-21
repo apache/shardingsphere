@@ -30,7 +30,7 @@ public final class SubqueryRouteTest extends AbstractSQLRouteTest {
         List<Object> parameters = new LinkedList<>();
         parameters.add(3);
         parameters.add(2);
-        route(sql, parameters);
+        assertRoute(sql, parameters);
     }
     
     @Test
@@ -39,7 +39,7 @@ public final class SubqueryRouteTest extends AbstractSQLRouteTest {
         List<Object> parameters = new LinkedList<>();
         parameters.add(1);
         parameters.add(1);
-        route(sql, parameters);
+        assertRoute(sql, parameters);
     }
     
     @Test
@@ -48,7 +48,7 @@ public final class SubqueryRouteTest extends AbstractSQLRouteTest {
         List<Object> parameters = new LinkedList<>();
         parameters.add(1);
         parameters.add(1);
-        route(sql, parameters);
+        assertRoute(sql, parameters);
     }
     
     @Test
@@ -57,7 +57,7 @@ public final class SubqueryRouteTest extends AbstractSQLRouteTest {
         List<Object> parameters = new LinkedList<>();
         parameters.add(1);
         parameters.add(1);
-        route(sql, parameters);
+        assertRoute(sql, parameters);
     }
     
     @Test(expected = IllegalStateException.class)
@@ -66,7 +66,7 @@ public final class SubqueryRouteTest extends AbstractSQLRouteTest {
         List<Object> parameters = new LinkedList<>();
         parameters.add(1);
         parameters.add(3);
-        route(sql, parameters);
+        assertRoute(sql, parameters);
     }
     
     @Test(expected = IllegalStateException.class)
@@ -76,7 +76,7 @@ public final class SubqueryRouteTest extends AbstractSQLRouteTest {
         parameters.add(3);
         parameters.add(1);
         String sql = "select (select max(id) from t_order_item b where b.user_id in(?,?)) from t_order a where user_id = ? ";
-        route(sql, parameters);
+        assertRoute(sql, parameters);
     }
     
     @Test(expected = IllegalStateException.class)
@@ -87,7 +87,7 @@ public final class SubqueryRouteTest extends AbstractSQLRouteTest {
         parameters.add(1);
         parameters.add(3);
         String sql = "select (select max(id) from t_order_item b where b.user_id in(?,?)) from t_order a where user_id in(?,?) ";
-        route(sql, parameters);
+        assertRoute(sql, parameters);
     }
     
     @Test(expected = IllegalStateException.class)
@@ -99,7 +99,7 @@ public final class SubqueryRouteTest extends AbstractSQLRouteTest {
         parameters.add(1);
         String sql = "select (select status from t_order b where b.user_id =? and status = (select status from t_order b where b.user_id =?)) as c from t_order a "
                 + "where status = (select status from t_order b where b.user_id =? and status = (select status from t_order b where b.user_id =?))";
-        route(sql, parameters);
+        assertRoute(sql, parameters);
     }
     
     @Test
@@ -111,7 +111,7 @@ public final class SubqueryRouteTest extends AbstractSQLRouteTest {
         parameters.add(1);
         String sql = "select (select status from t_order b where b.user_id =? and status = (select status from t_order b where b.user_id =?)) as c from t_order a "
                 + "where status = (select status from t_order b where b.user_id =? and status = (select status from t_order b where b.user_id =?))";
-        route(sql, parameters);
+        assertRoute(sql, parameters);
     }
     
     @Test(expected = IllegalStateException.class)
@@ -120,7 +120,7 @@ public final class SubqueryRouteTest extends AbstractSQLRouteTest {
         List<Object> parameters = new LinkedList<>();
         parameters.add(11);
         parameters.add(1);
-        route(sql, parameters);
+        assertRoute(sql, parameters);
     }
     
     @Test
@@ -129,7 +129,7 @@ public final class SubqueryRouteTest extends AbstractSQLRouteTest {
         List<Object> parameters = new LinkedList<>();
         parameters.add(1);
         parameters.add(1);
-        route(sql, parameters);
+        assertRoute(sql, parameters);
     }
     
     @Test
@@ -137,7 +137,7 @@ public final class SubqueryRouteTest extends AbstractSQLRouteTest {
         String sql = "select count(*) from t_order where c.user_id = (select user_id from t_order where user_id =?) ";
         List<Object> parameters = new LinkedList<>();
         parameters.add(1);
-        route(sql, parameters);
+        assertRoute(sql, parameters);
     }
     
     @Test
@@ -145,6 +145,6 @@ public final class SubqueryRouteTest extends AbstractSQLRouteTest {
         String sql = "select count(*) from t_order where user_id = (select user_id from t_order_item where user_id =?) ";
         List<Object> parameters = new LinkedList<>();
         parameters.add(1);
-        route(sql, parameters);
+        assertRoute(sql, parameters);
     }
 }

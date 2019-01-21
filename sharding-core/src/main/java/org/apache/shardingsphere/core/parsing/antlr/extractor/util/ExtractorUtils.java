@@ -18,6 +18,7 @@
 package org.apache.shardingsphere.core.parsing.antlr.extractor.util;
 
 import com.google.common.base.Optional;
+import com.google.common.base.Preconditions;
 import lombok.AccessLevel;
 import lombok.NoArgsConstructor;
 import org.antlr.v4.runtime.ParserRuleContext;
@@ -33,6 +34,19 @@ import java.util.LinkedList;
  */
 @NoArgsConstructor(access = AccessLevel.PRIVATE)
 public final class ExtractorUtils {
+    
+    /**
+     * Get first child node.
+     *
+     * @param node start node
+     * @param ruleName rule name
+     * @return matched node
+     */
+    public static ParserRuleContext getFirstChildNode(final ParserRuleContext node, final RuleName ruleName) {
+        Optional<ParserRuleContext> result = findFirstChildNode(node, ruleName);
+        Preconditions.checkState(result.isPresent());
+        return result.get();
+    }
     
     /**
      * Find first child node.

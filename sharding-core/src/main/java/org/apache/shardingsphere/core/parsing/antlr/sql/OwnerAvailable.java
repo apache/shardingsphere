@@ -15,28 +15,21 @@
  * limitations under the License.
  */
 
-package org.apache.shardingsphere.shardingjdbc.fixture;
+package org.apache.shardingsphere.core.parsing.antlr.sql;
 
-import lombok.Getter;
-import lombok.Setter;
-import org.apache.shardingsphere.core.keygen.generator.KeyGenerator;
+import com.google.common.base.Optional;
 
-import java.util.Properties;
-import java.util.concurrent.atomic.AtomicInteger;
-
-public final class IncrementKeyGenerator implements KeyGenerator {
+/**
+ * Owner available.
+ *
+ * @author zhangliang
+ */
+public interface OwnerAvailable {
     
-    @Getter
-    private final String type = "INCREMENT";
-    
-    private final AtomicInteger count = new AtomicInteger();
-    
-    @Getter
-    @Setter
-    private Properties properties = new Properties();
-    
-    @Override
-    public Comparable<?> generateKey() {
-        return count.incrementAndGet();
-    }
+    /**
+     * Get owner.
+     *
+     * @return owner
+     */
+    Optional<String> getOwner();
 }

@@ -29,8 +29,8 @@ import org.apache.shardingsphere.api.config.rule.TableRuleConfiguration;
 import org.apache.shardingsphere.api.config.strategy.ShardingStrategyConfiguration;
 import org.apache.shardingsphere.core.exception.ShardingConfigurationException;
 import org.apache.shardingsphere.core.exception.ShardingException;
-import org.apache.shardingsphere.core.keygen.generator.KeyGenerator;
-import org.apache.shardingsphere.core.keygen.generator.impl.SnowflakeKeyGenerator;
+import org.apache.shardingsphere.core.keygen.generator.ShardingKeyGenerator;
+import org.apache.shardingsphere.core.keygen.generator.impl.SnowflakeShardingKeyGenerator;
 import org.apache.shardingsphere.core.parsing.parser.context.condition.Column;
 import org.apache.shardingsphere.core.routing.strategy.ShardingStrategy;
 import org.apache.shardingsphere.core.routing.strategy.ShardingStrategyFactory;
@@ -66,7 +66,7 @@ public class ShardingRule {
     
     private final ShardingStrategy defaultTableShardingStrategy;
     
-    private final KeyGenerator defaultKeyGenerator;
+    private final ShardingKeyGenerator defaultShardingKeyGenerator;
     
     private final Collection<MasterSlaveRule> masterSlaveRules;
     
@@ -74,21 +74,26 @@ public class ShardingRule {
         Preconditions.checkArgument(!dataSourceNames.isEmpty(), "Data sources cannot be empty.");
         this.shardingRuleConfig = shardingRuleConfig;
         shardingDataSourceNames = new ShardingDataSourceNames(shardingRuleConfig, dataSourceNames);
-        tableRules = createTableRules(shardingRuleConfig.getTableRuleConfigs());
+        tableRules = createTableRules(shardingRuleConfig);
         bindingTableRules = createBindingTableRules(shardingRuleConfig.getBindingTableGroups());
         broadcastTables = shardingRuleConfig.getBroadcastTables();
         defaultDatabaseShardingStrategy = createDefaultShardingStrategy(shardingRuleConfig.getDefaultDatabaseShardingStrategyConfig());
         defaultTableShardingStrategy = createDefaultShardingStrategy(shardingRuleConfig.getDefaultTableShardingStrategyConfig());
-        defaultKeyGenerator = createDefaultKeyGenerator(shardingRuleConfig.getDefaultKeyGeneratorConfig());
+        defaultShardingKeyGenerator = createDefaultKeyGenerator(shardingRuleConfig.getDefaultKeyGeneratorConfig());
         masterSlaveRules = createMasterSlaveRules(shardingRuleConfig.getMasterSlaveRuleConfigs());
     }
     
-    private Collection<TableRule> createTableRules(final Collection<TableRuleConfiguration> tableRuleConfigurations) {
+    private Collection<TableRule> createTableRules(final ShardingRuleConfiguration shardingRuleConfig) {
+        Collection<TableRuleConfiguration> tableRuleConfigurations = shardingRuleConfig.getTableRuleConfigs();
         Collection<TableRule> result = new ArrayList<>(tableRuleConfigurations.size());
         for (TableRuleConfiguration each : tableRuleConfigurations) {
-            result.add(new TableRule(each, shardingDataSourceNames));
+            result.add(new TableRule(each, shardingDataSourceNames, getDefaultGenerateKeyColumn(shardingRuleConfig)));
         }
         return result;
+    }
+    
+    private String getDefaultGenerateKeyColumn(final ShardingRuleConfiguration shardingRuleConfig) {
+        return null == shardingRuleConfig.getDefaultKeyGeneratorConfig() ? null : shardingRuleConfig.getDefaultKeyGeneratorConfig().getColumn();
     }
     
     private Collection<BindingTableRule> createBindingTableRules(final Collection<String> bindingTableGroups) {
@@ -111,8 +116,8 @@ public class ShardingRule {
         return null == shardingStrategyConfiguration ? new NoneShardingStrategy() : ShardingStrategyFactory.newInstance(shardingStrategyConfiguration);
     }
     
-    private KeyGenerator createDefaultKeyGenerator(final KeyGeneratorConfiguration keyGeneratorConfiguration) {
-        return null == keyGeneratorConfiguration ? new SnowflakeKeyGenerator() : keyGeneratorConfiguration.getKeyGenerator();
+    private ShardingKeyGenerator createDefaultKeyGenerator(final KeyGeneratorConfiguration keyGeneratorConfiguration) {
+        return null == keyGeneratorConfiguration ? new SnowflakeShardingKeyGenerator() : keyGeneratorConfiguration.getKeyGenerator();
     }
     
     private Collection<MasterSlaveRule> createMasterSlaveRules(final Collection<MasterSlaveRuleConfiguration> masterSlaveRuleConfigurations) {
@@ -338,8 +343,8 @@ public class ShardingRule {
         if (!tableRule.isPresent()) {
             throw new ShardingConfigurationException("Cannot find strategy for generate keys.");
         }
-        KeyGenerator keyGenerator = null == tableRule.get().getKeyGenerator() ? defaultKeyGenerator : tableRule.get().getKeyGenerator();
-        return keyGenerator.generateKey();
+        ShardingKeyGenerator shardingKeyGenerator = null == tableRule.get().getShardingKeyGenerator() ? defaultShardingKeyGenerator : tableRule.get().getShardingKeyGenerator();
+        return shardingKeyGenerator.generateKey();
     }
     
     /**

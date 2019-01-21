@@ -15,43 +15,28 @@
  * limitations under the License.
  */
 
-package org.apache.shardingsphere.core.keygen.generator;
+package org.apache.shardingsphere.core.keygen.fixture;
+
+import lombok.Getter;
+import lombok.Setter;
+import org.apache.shardingsphere.core.keygen.generator.ShardingKeyGenerator;
 
 import java.util.Properties;
+import java.util.concurrent.atomic.AtomicInteger;
 
-/**
- * Key generator interface.
- *
- * @author zhangliang
- * @author panjuan
- */
-public interface KeyGenerator {
+public final class IncrementShardingKeyGenerator implements ShardingKeyGenerator {
     
-    /**
-     * Get type of key generator.
-     * 
-     * @return type
-     */
-    String getType();
+    @Getter
+    private final String type = "INCREMENT";
     
-    /**
-     * Generate key.
-     * 
-     * @return generated key
-     */
-    Comparable<?> generateKey();
+    private final AtomicInteger count = new AtomicInteger();
     
-    /**
-     * Get properties.
-     * 
-     * @return The properties of key generator
-     */
-    Properties getProperties();
+    @Getter
+    @Setter
+    private Properties properties = new Properties();
     
-    /**
-     * Set Properties.
-     * 
-     * @param properties properties
-     */
-    void setProperties(Properties properties);
+    @Override
+    public Comparable<?> generateKey() {
+        return count.incrementAndGet();
+    }
 }

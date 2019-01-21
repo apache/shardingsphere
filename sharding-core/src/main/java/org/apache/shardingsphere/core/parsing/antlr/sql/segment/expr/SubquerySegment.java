@@ -21,10 +21,13 @@ import com.google.common.base.Optional;
 import lombok.Getter;
 import lombok.RequiredArgsConstructor;
 import lombok.Setter;
+import org.apache.shardingsphere.core.parsing.antlr.sql.AliasAvailable;
 import org.apache.shardingsphere.core.parsing.antlr.sql.segment.FromWhereSegment;
 import org.apache.shardingsphere.core.parsing.antlr.sql.segment.SelectClauseSegment;
 import org.apache.shardingsphere.core.parsing.antlr.sql.segment.order.GroupBySegment;
 import org.apache.shardingsphere.core.parsing.antlr.sql.segment.order.OrderBySegment;
+import org.apache.shardingsphere.core.parsing.antlr.sql.segment.select.SelectItemSegment;
+import org.apache.shardingsphere.core.util.SQLUtil;
 
 /**
  * Subquery expression segment.
@@ -34,7 +37,7 @@ import org.apache.shardingsphere.core.parsing.antlr.sql.segment.order.OrderBySeg
 @RequiredArgsConstructor
 @Getter
 @Setter
-public final class SubquerySegment extends ExpressionWithAliasSegment {
+public final class SubquerySegment implements SelectItemSegment, ExpressionSegment, AliasAvailable {
     
     private final boolean subqueryInFrom;
     
@@ -45,6 +48,8 @@ public final class SubquerySegment extends ExpressionWithAliasSegment {
     private GroupBySegment groupBySegment;
     
     private OrderBySegment orderBySegment;
+    
+    private String alias;
     
     /**
      * Get select clause segment.
@@ -80,5 +85,15 @@ public final class SubquerySegment extends ExpressionWithAliasSegment {
      */
     public Optional<OrderBySegment> getOrderBySegment() {
         return Optional.fromNullable(orderBySegment);
+    }
+    
+    @Override
+    public Optional<String> getAlias() {
+        return Optional.fromNullable(alias);
+    }
+    
+    @Override
+    public void setAlias(final String alias) {
+        this.alias = SQLUtil.getExactlyValue(alias);
     }
 }

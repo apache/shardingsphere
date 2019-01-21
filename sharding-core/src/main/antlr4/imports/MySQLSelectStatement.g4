@@ -6,12 +6,12 @@ select
     : withClause | unionSelect
     ;
     
-unionSelect
-    : selectExpression (UNION ALL? selectExpression)*
-    ;
-    
 withClause
     : WITH RECURSIVE? cteClause (COMMA cteClause)* unionSelect
+    ;
+    
+unionSelect
+    : selectExpression (UNION ALL? selectExpression)*
     ;
     
 cteClause
@@ -38,7 +38,7 @@ windowClause
 windowItem
     : ID AS LP_ windowSpec RP_
     ;
-      
+    
 subquery
     : LP_ unionSelect RP_
     ;
