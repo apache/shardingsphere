@@ -68,12 +68,7 @@ value
     
 functionCall
     : (ID | DATE) LP_ distinct? (exprs | ASTERISK)? RP_
-    | groupConcat
     | windowFunction
-    ;
-    
-groupConcat
-    : GROUP_CONCAT LP_ distinct? (exprs | ASTERISK)? (orderByClause (SEPARATOR expr)?)? RP_
     ;
     
 windowFunction
