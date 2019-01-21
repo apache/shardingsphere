@@ -19,26 +19,31 @@ package org.apache.shardingsphere.shardingproxy.config.yaml;
 
 import lombok.Getter;
 import lombok.Setter;
-import org.apache.shardingsphere.core.yaml.masterslave.YamlMasterSlaveRuleConfiguration;
-import org.apache.shardingsphere.core.yaml.sharding.YamlShardingRuleConfiguration;
-
-import java.util.HashMap;
-import java.util.Map;
 
 /**
- * Rule configuration for yaml.
+ * Data source parameters for yaml.
  *
- * @author panjuan
+ * @author zhangyonglun
  */
 @Getter
 @Setter
-public final class YamlProxyRuleConfiguration {
+public final class YamlDataSourceParameter {
     
-    private String schemaName;
+    private String url;
     
-    private Map<String, YamlDataSourceParameter> dataSources = new HashMap<>();
+    private String username;
     
-    private YamlShardingRuleConfiguration shardingRule;
+    private String password;
     
-    private YamlMasterSlaveRuleConfiguration masterSlaveRule;
+    private long connectionTimeoutMilliseconds = 30 * 1000;
+    
+    private long idleTimeoutMilliseconds = 60 * 1000;
+    
+    private long maxLifetimeMilliseconds;
+    
+    private int maxPoolSize = 50;
+    
+    private int minPoolSize = 1;
+    
+    private long maintenanceIntervalMilliseconds = 30 * 1000;
 }

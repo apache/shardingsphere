@@ -27,13 +27,13 @@ import org.apache.shardingsphere.opentracing.ShardingTracer;
 import org.apache.shardingsphere.orchestration.internal.registry.ShardingOrchestrationFacade;
 import org.apache.shardingsphere.shardingproxy.config.ShardingConfiguration;
 import org.apache.shardingsphere.shardingproxy.config.ShardingConfigurationLoader;
+import org.apache.shardingsphere.shardingproxy.config.yaml.YamlDataSourceParameter;
 import org.apache.shardingsphere.shardingproxy.config.yaml.YamlProxyRuleConfiguration;
 import org.apache.shardingsphere.shardingproxy.config.yaml.YamlProxyServerConfiguration;
 import org.apache.shardingsphere.shardingproxy.frontend.ShardingProxy;
 import org.apache.shardingsphere.shardingproxy.listener.ProxyListenerRegister;
 import org.apache.shardingsphere.shardingproxy.runtime.GlobalRegistry;
 import org.apache.shardingsphere.shardingproxy.util.DataSourceConverter;
-import org.apache.shardingsphere.shardingproxy.util.DataSourceParameter;
 
 import java.io.IOException;
 import java.util.Collection;
@@ -104,8 +104,8 @@ public final class Bootstrap {
         }
     }
     
-    private static Map<String, Map<String, DataSourceParameter>> getSchemaDataSourceParameterMap(final ShardingOrchestrationFacade shardingOrchestrationFacade) {
-        Map<String, Map<String, DataSourceParameter>> result = new LinkedHashMap<>();
+    private static Map<String, Map<String, YamlDataSourceParameter>> getSchemaDataSourceParameterMap(final ShardingOrchestrationFacade shardingOrchestrationFacade) {
+        Map<String, Map<String, YamlDataSourceParameter>> result = new LinkedHashMap<>();
         for (String each : shardingOrchestrationFacade.getConfigService().getAllShardingSchemaNames()) {
             result.put(each, DataSourceConverter.getDataSourceParameterMap(shardingOrchestrationFacade.getConfigService().loadDataSourceConfigurations(each)));
         }
@@ -148,8 +148,8 @@ public final class Bootstrap {
         return result;
     }
 
-    private static Map<String, Map<String, DataSourceParameter>> getDataSourceParameterMap(final Map<String, YamlProxyRuleConfiguration> localRuleConfigs) {
-        Map<String, Map<String, DataSourceParameter>> result = new HashMap<>(localRuleConfigs.size(), 1);
+    private static Map<String, Map<String, YamlDataSourceParameter>> getDataSourceParameterMap(final Map<String, YamlProxyRuleConfiguration> localRuleConfigs) {
+        Map<String, Map<String, YamlDataSourceParameter>> result = new HashMap<>(localRuleConfigs.size(), 1);
         for (Entry<String, YamlProxyRuleConfiguration> entry : localRuleConfigs.entrySet()) {
             result.put(entry.getKey(), entry.getValue().getDataSources());
         }

@@ -22,7 +22,7 @@ import com.zaxxer.hikari.HikariDataSource;
 import lombok.AccessLevel;
 import lombok.NoArgsConstructor;
 import org.apache.shardingsphere.core.exception.ShardingException;
-import org.apache.shardingsphere.shardingproxy.util.DataSourceParameter;
+import org.apache.shardingsphere.shardingproxy.config.yaml.YamlDataSourceParameter;
 
 import javax.sql.DataSource;
 
@@ -47,7 +47,7 @@ public final class JDBCRawBackendDataSourceFactory implements JDBCBackendDataSou
     }
     
     @Override
-    public DataSource build(final String dataSourceName, final DataSourceParameter dataSourceParameter) {
+    public DataSource build(final String dataSourceName, final YamlDataSourceParameter dataSourceParameter) {
         HikariConfig config = new HikariConfig();
         String driverClassName = getDriverClassName(dataSourceParameter.getUrl());
         validateDriverClassName(driverClassName);

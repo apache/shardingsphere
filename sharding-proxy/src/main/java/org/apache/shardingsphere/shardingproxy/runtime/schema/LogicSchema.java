@@ -24,8 +24,8 @@ import org.apache.shardingsphere.core.metadata.ShardingMetaData;
 import org.apache.shardingsphere.orchestration.internal.eventbus.ShardingOrchestrationEventBus;
 import org.apache.shardingsphere.orchestration.internal.registry.config.event.DataSourceChangedEvent;
 import org.apache.shardingsphere.shardingproxy.backend.jdbc.datasource.JDBCBackendDataSource;
+import org.apache.shardingsphere.shardingproxy.config.yaml.YamlDataSourceParameter;
 import org.apache.shardingsphere.shardingproxy.util.DataSourceConverter;
-import org.apache.shardingsphere.shardingproxy.util.DataSourceParameter;
 
 import java.util.LinkedHashMap;
 import java.util.Map;
@@ -41,13 +41,13 @@ public abstract class LogicSchema {
     
     private final String name;
     
-    private final Map<String, DataSourceParameter> dataSources;
+    private final Map<String, YamlDataSourceParameter> dataSources;
     
     private final EventBus eventBus = ShardingOrchestrationEventBus.getInstance();
     
     private JDBCBackendDataSource backendDataSource;
     
-    public LogicSchema(final String name, final Map<String, DataSourceParameter> dataSources) {
+    public LogicSchema(final String name, final Map<String, YamlDataSourceParameter> dataSources) {
         this.name = name;
         // TODO :jiaqi only use JDBC need connect db via JDBC, netty style should use SQL packet to get metadata
         this.dataSources = dataSources;
@@ -55,9 +55,9 @@ public abstract class LogicSchema {
         eventBus.register(this);
     }
     
-    protected final Map<String, String> getDataSourceURLs(final Map<String, DataSourceParameter> dataSourceParameters) {
+    protected final Map<String, String> getDataSourceURLs(final Map<String, YamlDataSourceParameter> dataSourceParameters) {
         Map<String, String> result = new LinkedHashMap<>(dataSourceParameters.size(), 1);
-        for (Entry<String, DataSourceParameter> entry : dataSourceParameters.entrySet()) {
+        for (Entry<String, YamlDataSourceParameter> entry : dataSourceParameters.entrySet()) {
             result.put(entry.getKey(), entry.getValue().getUrl());
         }
         return result;
