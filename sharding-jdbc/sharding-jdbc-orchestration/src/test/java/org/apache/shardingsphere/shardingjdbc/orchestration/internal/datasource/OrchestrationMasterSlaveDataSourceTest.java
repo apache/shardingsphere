@@ -27,23 +27,27 @@ public class OrchestrationMasterSlaveDataSourceTest {
     }
     
     @Test
-    public void testRenew() {
+    public void assertRenewRule() {
     }
     
     @Test
-    public void testRenew1() {
+    public void assertRenewDataSource() {
     }
     
     @Test
-    public void testRenew2() {
+    public void assertRenewProperties() {
     }
     
     @Test
-    public void testRenew3() {
+    public void assertRenewConfigMap() {
     }
     
     @Test
-    public void testRenew4() {
+    public void testRenewDisabledState() {
+    }
+    
+    @Test
+    public void testRenewCircuitState() {
     }
     
     @Test
