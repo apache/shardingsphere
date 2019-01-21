@@ -22,6 +22,9 @@ import org.junit.runners.Suite;
 import org.junit.runners.Suite.SuiteClasses;
 
 @RunWith(Suite.class)
-@SuiteClasses(DataSourceConverterTest.class)
+@SuiteClasses({
+        DataSourceConverterTest.class, 
+        DatabaseTypeUtilTest.class
+})
 public final class AllUtilTests {
 }

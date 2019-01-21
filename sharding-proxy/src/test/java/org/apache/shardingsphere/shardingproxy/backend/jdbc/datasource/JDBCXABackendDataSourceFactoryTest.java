@@ -47,7 +47,7 @@ public final class JDBCXABackendDataSourceFactoryTest {
         YamlDataSourceParameter result = new YamlDataSourceParameter();
         result.setUsername("root");
         result.setPassword("root");
-        result.setUrl("db:url");
+        result.setUrl("jdbc:mysql://db.mysql:3306/test");
         result.setMaxPoolSize(10);
         return result;
     }

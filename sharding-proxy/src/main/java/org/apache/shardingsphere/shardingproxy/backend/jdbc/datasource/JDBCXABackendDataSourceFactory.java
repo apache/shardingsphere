@@ -25,6 +25,7 @@ import lombok.NoArgsConstructor;
 import org.apache.shardingsphere.core.config.DatabaseAccessConfiguration;
 import org.apache.shardingsphere.core.constant.DatabaseType;
 import org.apache.shardingsphere.shardingproxy.config.yaml.YamlDataSourceParameter;
+import org.apache.shardingsphere.shardingproxy.util.DatabaseTypeUtil;
 import org.apache.shardingsphere.transaction.xa.jta.datasource.XADataSourceFactory;
 import org.apache.shardingsphere.transaction.xa.jta.datasource.properties.XAPropertiesFactory;
 
@@ -56,8 +57,7 @@ public final class JDBCXABackendDataSourceFactory implements JDBCBackendDataSour
     public DataSource build(final String dataSourceName, final YamlDataSourceParameter dataSourceParameter) throws Exception {
         AtomikosDataSourceBean result = new AtomikosDataSourceBean();
         setPoolProperties(result, dataSourceParameter);
-        // TODO judge database type
-        setXAProperties(result, DatabaseType.MySQL, dataSourceName, XADataSourceFactory.build(DatabaseType.MySQL), dataSourceParameter);
+        setXAProperties(result, dataSourceName, XADataSourceFactory.build(DatabaseType.MySQL), dataSourceParameter);
         return result;
     }
     
@@ -70,11 +70,11 @@ public final class JDBCXABackendDataSourceFactory implements JDBCBackendDataSour
         dataSourceBean.setMaxIdleTime((int) parameter.getIdleTimeoutMilliseconds() / 1000);
     }
     
-    private void setXAProperties(final AtomikosDataSourceBean dataSourceBean, final DatabaseType databaseType, 
+    private void setXAProperties(final AtomikosDataSourceBean dataSourceBean,  
                                  final String dataSourceName, final XADataSource xaDataSource, final YamlDataSourceParameter dataSourceParameter) throws PropertyException {
         dataSourceBean.setXaDataSourceClassName(xaDataSource.getClass().getName());
         dataSourceBean.setUniqueResourceName(dataSourceName);
-        Properties xaProperties = XAPropertiesFactory.createXAProperties(databaseType).build(
+        Properties xaProperties = XAPropertiesFactory.createXAProperties(DatabaseTypeUtil.getDatabaseType(dataSourceParameter.getUrl())).build(
                 new DatabaseAccessConfiguration(dataSourceParameter.getUrl(), dataSourceParameter.getUsername(), dataSourceParameter.getPassword()));
         PropertyUtils.setProperties(xaDataSource, xaProperties);
         dataSourceBean.setXaProperties(xaProperties);
