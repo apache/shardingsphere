@@ -92,7 +92,7 @@ public final class JDBCBackendHandler extends AbstractBackendHandler {
         }
         executeResponse = executeEngine.execute(routeResult);
         if (logicSchema instanceof ShardingSchema) {
-            refreshTableMetaData(logicSchema, routeResult.getSqlStatement());
+            logicSchema.refreshTableMetaData(routeResult.getSqlStatement());
         }
         return merge(sqlStatement);
     }

@@ -17,10 +17,17 @@
 
 package org.apache.shardingsphere.shardingproxy.runtime.schema;
 
+import com.google.common.base.Optional;
 import com.google.common.eventbus.EventBus;
 import com.google.common.eventbus.Subscribe;
 import lombok.Getter;
 import org.apache.shardingsphere.core.metadata.ShardingMetaData;
+import org.apache.shardingsphere.core.metadata.table.TableMetaData;
+import org.apache.shardingsphere.core.metadata.table.TableMetaDataFactory;
+import org.apache.shardingsphere.core.parsing.antlr.sql.statement.ddl.AlterTableStatement;
+import org.apache.shardingsphere.core.parsing.antlr.sql.statement.ddl.CreateTableStatement;
+import org.apache.shardingsphere.core.parsing.antlr.sql.statement.ddl.DropTableStatement;
+import org.apache.shardingsphere.core.parsing.parser.sql.SQLStatement;
 import org.apache.shardingsphere.orchestration.internal.eventbus.ShardingOrchestrationEventBus;
 import org.apache.shardingsphere.orchestration.internal.registry.config.event.DataSourceChangedEvent;
 import org.apache.shardingsphere.shardingproxy.backend.jdbc.datasource.JDBCBackendDataSource;
@@ -85,5 +92,42 @@ public abstract class LogicSchema {
         dataSources.clear();
         dataSources.putAll(DataSourceConverter.getDataSourceParameterMap(dataSourceChangedEvent.getDataSourceConfigurations()));
         backendDataSource = new JDBCBackendDataSource(dataSources);
+    }
+    
+    /**
+     * Refresh table meta data.
+     * 
+     * @param sqlStatement SQL statement
+     */
+    public final void refreshTableMetaData(final SQLStatement sqlStatement) {
+        if (sqlStatement instanceof CreateTableStatement) {
+            refreshTableMetaData((CreateTableStatement) sqlStatement);
+        } else if (sqlStatement instanceof AlterTableStatement) {
+            refreshTableMetaData((AlterTableStatement) sqlStatement);
+        } else if (sqlStatement instanceof DropTableStatement) {
+            refreshTableMetaData((DropTableStatement) sqlStatement);
+        }
+    }
+    
+    private void refreshTableMetaData(final CreateTableStatement createTableStatement) {
+        getMetaData().getTable().put(createTableStatement.getTables().getSingleTableName(), TableMetaDataFactory.newInstance(createTableStatement));
+    }
+    
+    private void refreshTableMetaData(final AlterTableStatement alterTableStatement) {
+        String logicTableName = alterTableStatement.getTables().getSingleTableName();
+        TableMetaData newTableMetaData = TableMetaDataFactory.newInstance(alterTableStatement, getMetaData().getTable().get(logicTableName));
+        Optional<String> newTableName = alterTableStatement.getNewTableName();
+        if (newTableName.isPresent()) {
+            getMetaData().getTable().put(newTableName.get(), newTableMetaData);
+            getMetaData().getTable().remove(logicTableName);
+        } else {
+            getMetaData().getTable().put(logicTableName, newTableMetaData);
+        }
+    }
+    
+    private void refreshTableMetaData(final DropTableStatement dropTableStatement) {
+        for (String each : dropTableStatement.getTables().getTableNames()) {
+            getMetaData().getTable().remove(each);
+        }
     }
 }
