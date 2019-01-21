@@ -95,8 +95,7 @@ public final class TableMetaDataInitializer {
              ResultSet resultSet = connection.getMetaData().getTables(catalog, null, null, new String[]{"TABLE"})) {
             while (resultSet.next()) {
                 String tableName = resultSet.getString("TABLE_NAME");
-                //issue #1755
-                if (!tableName.contains("$") && !tableName.contains("/")) {
+                if (!tableName.contains("$")) {
                     result.add(tableName);
                 }
             }
