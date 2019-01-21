@@ -19,20 +19,14 @@ package io.shardingsphere.core.routing.type.unicast;
 
 import java.util.ArrayList;
 import java.util.Collection;
-import java.util.HashSet;
 import java.util.List;
-import java.util.Set;
 
-import com.google.common.collect.Sets;
-
-import io.shardingsphere.core.exception.ShardingConfigurationException;
 import io.shardingsphere.core.routing.type.RoutingEngine;
 import io.shardingsphere.core.routing.type.RoutingResult;
 import io.shardingsphere.core.routing.type.RoutingTable;
 import io.shardingsphere.core.routing.type.TableUnit;
 import io.shardingsphere.core.rule.DataNode;
 import io.shardingsphere.core.rule.ShardingRule;
-import io.shardingsphere.core.rule.TableRule;
 import lombok.RequiredArgsConstructor;
 
 /**
@@ -68,28 +62,16 @@ public final class UnicastRoutingEngine implements RoutingEngine {
             tableUnit.getRoutingTables().add(new RoutingTable(logicTableName, dataNode.getTableName()));
             result.getTableUnits().getTableUnits().add(tableUnit);
         } else {
+            String dataSourceName = null;
             List<RoutingTable> routingTables = new ArrayList<>(logicTables.size());
-            Set<String> availableDatasourceNames = null;
-            boolean first = true;
             for (String each : logicTables) {
-                TableRule tableRule = shardingRule.getTableRuleByLogicTableName(each);
-                DataNode dataNode = tableRule.getActualDataNodes().get(0);
+                DataNode dataNode = shardingRule.findDataNode(dataSourceName, each);
                 routingTables.add(new RoutingTable(each, dataNode.getTableName()));
-                Set<String> currentDataSourceNames = new HashSet<>(tableRule.getActualDatasourceNames().size());
-                for (DataNode eachDataNode : tableRule.getActualDataNodes()) {
-                    currentDataSourceNames.add(eachDataNode.getDataSourceName());
-                }
-                if (first) {
-                    availableDatasourceNames = currentDataSourceNames;
-                    first = false;
-                } else {
-                    availableDatasourceNames = Sets.intersection(availableDatasourceNames, currentDataSourceNames);
+                if (null == dataSourceName) {
+                    dataSourceName = dataNode.getDataSourceName();
                 }
             }
-            if (availableDatasourceNames == null || availableDatasourceNames.isEmpty()) {
-                throw new ShardingConfigurationException("Cannot find actual datasource intersection for logic tables: %s", logicTables);
-            }
-            TableUnit tableUnit = new TableUnit(shardingRule.getShardingDataSourceNames().getRandomDataSourceName(availableDatasourceNames));
+            TableUnit tableUnit = new TableUnit(dataSourceName);
             tableUnit.getRoutingTables().addAll(routingTables);
             result.getTableUnits().getTableUnits().add(tableUnit);
         }
