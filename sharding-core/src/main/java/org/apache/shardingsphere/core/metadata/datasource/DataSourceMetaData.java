@@ -44,7 +44,7 @@ public interface DataSourceMetaData {
      * 
      * @return scheme name
      */
-    String getSchemeName();
+    String getSchemaName();
     
     /**
      * Judge whether two of data sources are in the same database instance.
