@@ -17,7 +17,7 @@
 
 package org.apache.shardingsphere.core.parsing.antlr;
 
-import org.apache.shardingsphere.core.parsing.antlr.ddl.IntegrateDDLParsingCompatTest;
+import org.apache.shardingsphere.core.parsing.antlr.ddl.IntegrateDDLParsingCompatibleTest;
 import org.apache.shardingsphere.core.parsing.antlr.rule.AllRuleTests;
 import org.junit.runner.RunWith;
 import org.junit.runners.Suite;
@@ -27,7 +27,7 @@ import org.junit.runners.Suite.SuiteClasses;
 @SuiteClasses({
         AllRuleTests.class,
         AntlrIntegrateParsingTest.class,
-        IntegrateDDLParsingCompatTest.class
+        IntegrateDDLParsingCompatibleTest.class
 })
 public final class AllAntlrParsingTests {
 }
