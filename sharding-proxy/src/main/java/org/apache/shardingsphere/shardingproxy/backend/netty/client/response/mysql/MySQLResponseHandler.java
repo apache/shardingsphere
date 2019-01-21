@@ -85,7 +85,7 @@ public final class MySQLResponseHandler extends ResponseHandler {
                     (null == dataSourceParameter.getPassword() ? "" : dataSourceParameter.getPassword()).getBytes(), handshakePacket.getAuthPluginData().getAuthPluginData());
             HandshakeResponse41Packet handshakeResponse41Packet = new HandshakeResponse41Packet(
                     handshakePacket.getSequenceId() + 1, CapabilityFlag.calculateHandshakeCapabilityFlagsLower(), 16777215, ServerInfo.CHARSET,
-                    dataSourceParameter.getUsername(), authResponse, dataSourceMetaData.getSchemeName());
+                    dataSourceParameter.getUsername(), authResponse, dataSourceMetaData.getSchemaName());
             ChannelRegistry.getInstance().putConnectionId(context.channel().id().asShortText(), handshakePacket.getConnectionId());
             context.writeAndFlush(handshakeResponse41Packet);
         }

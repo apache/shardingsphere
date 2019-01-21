@@ -29,7 +29,7 @@ public class PostgreSQLDataSourceMetaDataTest {
         PostgreSQLDataSourceMetaData actual = new PostgreSQLDataSourceMetaData("jdbc:postgresql://127.0.0.1:9999/ds_0");
         assertThat(actual.getHostName(), is("127.0.0.1"));
         assertThat(actual.getPort(), is(9999));
-        assertThat(actual.getSchemeName(), is("ds_0"));
+        assertThat(actual.getSchemaName(), is("ds_0"));
     }
     
     @Test
@@ -37,7 +37,7 @@ public class PostgreSQLDataSourceMetaDataTest {
         PostgreSQLDataSourceMetaData actual = new PostgreSQLDataSourceMetaData("jdbc:postgresql://127.0.0.1/ds_0");
         assertThat(actual.getHostName(), is("127.0.0.1"));
         assertThat(actual.getPort(), is(5432));
-        assertThat(actual.getSchemeName(), is("ds_0"));
+        assertThat(actual.getSchemaName(), is("ds_0"));
     }
     
     @Test
@@ -45,7 +45,7 @@ public class PostgreSQLDataSourceMetaDataTest {
         PostgreSQLDataSourceMetaData actual = new PostgreSQLDataSourceMetaData("jdbc:postgresql://host-0/ds-0");
         assertThat(actual.getHostName(), is("host-0"));
         assertThat(actual.getPort(), is(5432));
-        assertThat(actual.getSchemeName(), is("ds-0"));
+        assertThat(actual.getSchemaName(), is("ds-0"));
     }
     
     @Test(expected = ShardingException.class)

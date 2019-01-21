@@ -20,6 +20,8 @@ package org.apache.shardingsphere.shardingjdbc.orchestration.internal.datasource
 import com.google.common.base.Preconditions;
 import com.google.common.base.Strings;
 import com.google.common.eventbus.Subscribe;
+import lombok.AccessLevel;
+import lombok.Getter;
 import lombok.SneakyThrows;
 import org.apache.shardingsphere.api.ConfigMapContext;
 import org.apache.shardingsphere.api.config.rule.MasterSlaveRuleConfiguration;
@@ -37,10 +39,8 @@ import org.apache.shardingsphere.orchestration.internal.registry.state.event.Dis
 import org.apache.shardingsphere.orchestration.internal.registry.state.schema.OrchestrationShardingSchema;
 import org.apache.shardingsphere.orchestration.internal.rule.OrchestrationMasterSlaveRule;
 import org.apache.shardingsphere.shardingjdbc.jdbc.core.datasource.MasterSlaveDataSource;
-import org.apache.shardingsphere.shardingjdbc.orchestration.internal.circuit.datasource.CircuitBreakerDataSource;
 import org.apache.shardingsphere.shardingjdbc.orchestration.internal.util.DataSourceConverter;
 
-import java.sql.Connection;
 import java.sql.SQLException;
 import java.util.Collections;
 import java.util.HashMap;
@@ -51,6 +51,7 @@ import java.util.Map;
  *
  * @author panjuan
  */
+@Getter(AccessLevel.PROTECTED)
 public class OrchestrationMasterSlaveDataSource extends AbstractOrchestrationDataSource {
     
     private MasterSlaveDataSource dataSource;
@@ -66,7 +67,7 @@ public class OrchestrationMasterSlaveDataSource extends AbstractOrchestrationDat
     }
     
     public OrchestrationMasterSlaveDataSource(final MasterSlaveDataSource masterSlaveDataSource, final OrchestrationConfiguration orchestrationConfig) throws SQLException {
-        super(new ShardingOrchestrationFacade(orchestrationConfig, Collections.singletonList(ShardingConstant.LOGIC_SCHEMA_NAME)), masterSlaveDataSource.getDataSourceMap());
+        super(new ShardingOrchestrationFacade(orchestrationConfig, Collections.singletonList(ShardingConstant.LOGIC_SCHEMA_NAME)));
         dataSource = new MasterSlaveDataSource(masterSlaveDataSource.getDataSourceMap(),
                 new OrchestrationMasterSlaveRule(masterSlaveDataSource.getMasterSlaveRule().getMasterSlaveRuleConfiguration()),
                 ConfigMapContext.getInstance().getConfigMap(), masterSlaveDataSource.getShardingProperties().getProps());
@@ -82,25 +83,14 @@ public class OrchestrationMasterSlaveDataSource extends AbstractOrchestrationDat
         return result;
     }
     
-    @Override
-    public final Connection getConnection() {
-        return isCircuitBreak() ? new CircuitBreakerDataSource().getConnection() : dataSource.getConnection();
-    }
-    
-    @Override
-    public final void close() throws Exception {
-        dataSource.close();
-        getShardingOrchestrationFacade().close();
-    }
-    
     /**
      * Renew master-slave rule.
      *
      * @param masterSlaveRuleChangedEvent master-slave configuration changed event
-     * @throws SQLException SQL exception
      */
     @Subscribe
-    public final synchronized void renew(final MasterSlaveRuleChangedEvent masterSlaveRuleChangedEvent) throws SQLException {
+    @SneakyThrows
+    public final synchronized void renew(final MasterSlaveRuleChangedEvent masterSlaveRuleChangedEvent) {
         dataSource = new MasterSlaveDataSource(dataSource.getDataSourceMap(),
                 masterSlaveRuleChangedEvent.getMasterSlaveRuleConfiguration(), ConfigMapContext.getInstance().getConfigMap(), dataSource.getShardingProperties().getProps());
     }

@@ -40,11 +40,11 @@ public interface DataSourceMetaData {
     int getPort();
     
     /**
-     * Get scheme name.
+     * Get schema name.
      * 
-     * @return scheme name
+     * @return schema name
      */
-    String getSchemeName();
+    String getSchemaName();
     
     /**
      * Judge whether two of data sources are in the same database instance.

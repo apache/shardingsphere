@@ -30,7 +30,7 @@ public class H2DataSourceMetaDataTest {
         H2DataSourceMetaData actual = new H2DataSourceMetaData("jdbc:h2:mem:ds_0;DB_CLOSE_DELAY=-1;DATABASE_TO_UPPER=false;MODE=MySQL");
         assertThat(actual.getHostName(), is("mem"));
         assertThat(actual.getPort(), is(-1));
-        assertThat(actual.getSchemeName(), is("ds_0"));
+        assertThat(actual.getSchemaName(), is("ds_0"));
     }
     
     @Test
@@ -38,7 +38,7 @@ public class H2DataSourceMetaDataTest {
         H2DataSourceMetaData actual = new H2DataSourceMetaData("jdbc:h2:~:ds-0;DB_CLOSE_DELAY=-1;DATABASE_TO_UPPER=false;MODE=MySQL");
         assertThat(actual.getHostName(), is("~"));
         assertThat(actual.getPort(), is(-1));
-        assertThat(actual.getSchemeName(), is("ds-0"));
+        assertThat(actual.getSchemaName(), is("ds-0"));
     }
     
     @Test(expected = ShardingException.class)

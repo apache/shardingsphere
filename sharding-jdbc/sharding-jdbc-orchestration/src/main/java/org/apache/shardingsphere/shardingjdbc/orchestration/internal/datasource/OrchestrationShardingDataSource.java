@@ -19,6 +19,8 @@ package org.apache.shardingsphere.shardingjdbc.orchestration.internal.datasource
 
 import com.google.common.base.Preconditions;
 import com.google.common.eventbus.Subscribe;
+import lombok.AccessLevel;
+import lombok.Getter;
 import lombok.SneakyThrows;
 import org.apache.shardingsphere.api.ConfigMapContext;
 import org.apache.shardingsphere.api.config.rule.RuleConfiguration;
@@ -38,10 +40,8 @@ import org.apache.shardingsphere.orchestration.internal.registry.state.schema.Or
 import org.apache.shardingsphere.orchestration.internal.rule.OrchestrationMasterSlaveRule;
 import org.apache.shardingsphere.orchestration.internal.rule.OrchestrationShardingRule;
 import org.apache.shardingsphere.shardingjdbc.jdbc.core.datasource.ShardingDataSource;
-import org.apache.shardingsphere.shardingjdbc.orchestration.internal.circuit.datasource.CircuitBreakerDataSource;
 import org.apache.shardingsphere.shardingjdbc.orchestration.internal.util.DataSourceConverter;
 
-import java.sql.Connection;
 import java.sql.SQLException;
 import java.util.Collections;
 import java.util.LinkedHashMap;
@@ -52,6 +52,7 @@ import java.util.Map;
  *
  * @author panjuan
  */
+@Getter(AccessLevel.PROTECTED)
 public class OrchestrationShardingDataSource extends AbstractOrchestrationDataSource {
     
     private ShardingDataSource dataSource;
@@ -68,7 +69,7 @@ public class OrchestrationShardingDataSource extends AbstractOrchestrationDataSo
     }
     
     public OrchestrationShardingDataSource(final ShardingDataSource shardingDataSource, final OrchestrationConfiguration orchestrationConfig) throws SQLException {
-        super(new ShardingOrchestrationFacade(orchestrationConfig, Collections.singletonList(ShardingConstant.LOGIC_SCHEMA_NAME)), shardingDataSource.getDataSourceMap());
+        super(new ShardingOrchestrationFacade(orchestrationConfig, Collections.singletonList(ShardingConstant.LOGIC_SCHEMA_NAME)));
         dataSource = new ShardingDataSource(shardingDataSource.getDataSourceMap(), new OrchestrationShardingRule(shardingDataSource.getShardingContext().getShardingRule().getShardingRuleConfig(),
                 shardingDataSource.getDataSourceMap().keySet()), ConfigMapContext.getInstance().getConfigMap(), shardingDataSource.getShardingContext().getShardingProperties().getProps());
         getShardingOrchestrationFacade().init(Collections.singletonMap(ShardingConstant.LOGIC_SCHEMA_NAME, DataSourceConverter.getDataSourceConfigurationMap(dataSource.getDataSourceMap())),
@@ -79,17 +80,6 @@ public class OrchestrationShardingDataSource extends AbstractOrchestrationDataSo
         Map<String, RuleConfiguration> result = new LinkedHashMap<>(1, 1);
         result.put(ShardingConstant.LOGIC_SCHEMA_NAME, dataSource.getShardingContext().getShardingRule().getShardingRuleConfig());
         return result;
-    }
-    
-    @Override
-    public final Connection getConnection() {
-        return isCircuitBreak() ? new CircuitBreakerDataSource().getConnection() : dataSource.getConnection();
-    }
-    
-    @Override
-    public final void close() throws Exception {
-        dataSource.close();
-        getShardingOrchestrationFacade().close();
     }
     
     /**

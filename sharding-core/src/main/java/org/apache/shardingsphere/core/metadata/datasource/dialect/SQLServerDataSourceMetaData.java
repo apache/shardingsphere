@@ -39,7 +39,7 @@ public final class SQLServerDataSourceMetaData implements DataSourceMetaData {
     
     private final int port;
     
-    private final String schemeName;
+    private final String schemaName;
     
     private final Pattern pattern = Pattern.compile("jdbc:(microsoft:)?sqlserver://([\\w\\-\\.]+):?([0-9]*);\\S*(DatabaseName|database)=([\\w\\-]+);?", Pattern.CASE_INSENSITIVE);
     
@@ -48,7 +48,7 @@ public final class SQLServerDataSourceMetaData implements DataSourceMetaData {
         if (matcher.find()) {
             hostName = matcher.group(2);
             port = Strings.isNullOrEmpty(matcher.group(3)) ? DEFAULT_PORT : Integer.valueOf(matcher.group(3));
-            schemeName = matcher.group(5);
+            schemaName = matcher.group(5);
         } else {
             throw new ShardingException("The URL of JDBC is not supported. Please refer to this pattern: %s.", pattern.pattern());
         }
