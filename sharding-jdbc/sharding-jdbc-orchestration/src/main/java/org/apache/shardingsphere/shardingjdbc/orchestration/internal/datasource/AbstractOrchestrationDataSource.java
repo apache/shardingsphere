@@ -32,6 +32,7 @@ import javax.sql.DataSource;
 import java.io.PrintWriter;
 import java.sql.Connection;
 import java.sql.SQLException;
+import java.util.logging.Logger;
 
 /**
  * Abstract orchestration data source.
@@ -60,7 +61,17 @@ public abstract class AbstractOrchestrationDataSource extends AbstractUnsupporte
     public final Connection getConnection() throws SQLException {
         return isCircuitBreak ? new CircuitBreakerDataSource().getConnection() : getDataSource().getConnection();
     }
-
+    
+    @Override
+    public final Connection getConnection(final String username, final String password) throws SQLException {
+        return getConnection();
+    }
+    
+    @Override
+    public final Logger getParentLogger() {
+        return Logger.getLogger(Logger.GLOBAL_LOGGER_NAME);
+    }
+    
     @Override
     public final void close() throws Exception {
         ((AbstractDataSourceAdapter) getDataSource()).close();
