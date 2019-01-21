@@ -2,7 +2,7 @@ import Vue from 'vue'
 import App from './App'
 import router from './router'
 import ElementUI from 'element-ui'
-import 'element-ui/lib/theme-chalk/index.css'
+import './assets/styles/theme/element-E17425/index.css'
 import locale from 'element-ui/lib/locale/lang/en'
 import VueI18n from 'vue-i18n'
 import Language from './lang/index'
@@ -18,7 +18,7 @@ Vue.use(Vuex)
 
 // language setting init
 const navLang = navigator.language
-const localLang = (navLang === 'zh-CN' || navLang === 'en-US') ? navLang : false
+const localLang = navLang === 'zh-CN' || navLang === 'en-US' ? navLang : false
 const lang = window.localStorage.getItem('language') || localLang || 'zh-CN'
 Vue.config.lang = lang
 

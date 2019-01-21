@@ -1,18 +1,15 @@
 <template>
-  <s-container>
-    <el-card class="box-card">
-      <el-radio-group v-model="radioValue" @change="onChange">
-        <el-radio-button label="schema"/>
-        <el-radio-button label="authentication"/>
-        <el-radio-button label="configMap"/>
-        <el-radio-button label="props"/>
-      </el-radio-group>
-      <component :is="currentView"/>
-    </el-card>
-  </s-container>
+  <el-row class="box-card">
+    <el-radio-group v-model="radioValue" @change="onChange">
+      <el-radio-button label="schema"/>
+      <el-radio-button label="authentication"/>
+      <el-radio-button label="configMap"/>
+      <el-radio-button label="props"/>
+    </el-radio-group>
+    <component :is="currentView"/>
+  </el-row>
 </template>
 <script>
-import SContainer from '@/components/Container/index.vue'
 import MSchema from './module/schema'
 import MAuthentication from './module/authentication'
 import MProps from './module/props'
@@ -21,7 +18,6 @@ import MConfigMap from './module/configMap'
 export default {
   name: 'ConfigManage',
   components: {
-    SContainer,
     MSchema,
     MAuthentication,
     MProps,
@@ -49,7 +45,7 @@ export default {
 }
 </script>
 <style lang='scss' scoped>
-  .tree-wrap {
-    margin-top: 20px;
-  }
+.tree-wrap {
+  margin-top: 20px;
+}
 </style>

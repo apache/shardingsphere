@@ -1,8 +1,7 @@
 <template>
   <div class="s-pro-components-sider-menu-index-logo">
     <a href="/">
-      <img src="../../assets/logo.png" alt="logo">
-      <h1>Sharding-UI</h1>
+      <img src="../../assets/img/sidebar-logo.png" alt="logo">
     </a>
   </div>
 </template>
@@ -13,14 +12,14 @@
   height: 64px;
   position: relative;
   line-height: 64px;
-  padding-left: 24px;
-  transition: all .3s;
-  background: #002140;
+  transition: all 0.3s;
+  background: #2d2b2a;
   overflow: hidden;
+  text-align: center;
   img {
     display: inline-block;
     vertical-align: middle;
-    height: 32px;
+    height: 35px;
   }
   h1 {
     color: #fff;
@@ -28,7 +27,7 @@
     vertical-align: middle;
     font-size: 20px;
     margin: 0 0 0 12px;
-    font-family: Avenir,Helvetica Neue,Arial,Helvetica,sans-serif;
+    font-family: Avenir, Helvetica Neue, Arial, Helvetica, sans-serif;
     font-weight: 600;
   }
 }

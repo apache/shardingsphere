@@ -1,15 +1,22 @@
 <template>
   <div class="login-container">
-    <el-form ref="loginForm" :model="loginForm" class="login-form" auto-complete="off" label-position="left">
-      <h3 class="title"><img style="margin-right:10px;" src="@/assets/logo.png">ShardingSphere</h3>
+    <el-form
+      ref="loginForm"
+      :model="loginForm"
+      class="login-form"
+      auto-complete="off"
+      label-position="left"
+    >
+      <h3 class="title"/>
       <el-form-item prop="username">
         <el-input
           v-model="loginForm.username"
           name="username"
           type="text"
           auto-complete="off"
-          placeholder="username">
-          <i slot="prefix" class="icon-yonghu iconfont"/>
+          placeholder="username"
+        >
+          <i slot="prefix" class="icon-user icon-iem"/>
         </el-input>
       </el-form-item>
       <el-form-item prop="password">
@@ -19,14 +26,18 @@
           name="password"
           auto-complete="on"
           placeholder="password"
-          @keyup.enter.native="handleLogin">
-          <i slot="prefix" class="icon-mima iconfont"/>
+          @keyup.enter.native="handleLogin"
+        >
+          <i slot="prefix" class="icon-password icon-iem"/>
         </el-input>
       </el-form-item>
-      <el-form-item>
-        <el-button :loading="loading" type="primary" style="width:100%;" @click.native.prevent="handleLogin">
-          {{ $t("login.btnTxt") }}
-        </el-button>
+      <el-form-item class="btn-login">
+        <el-button
+          :loading="loading"
+          type="primary"
+          style="width:100%;"
+          @click.native.prevent="handleLogin"
+        >{{ $t("login.btnTxt") }}</el-button>
       </el-form-item>
     </el-form>
     <s-footer style="position: fixed;bottom: 0;"/>
@@ -71,7 +82,7 @@ export default {
         username: this.loginForm.username,
         password: this.loginForm.password
       }
-      API.getLogin(params).then((res) => {
+      API.getLogin(params).then(res => {
         const data = res.model
         const store = window.localStorage
         store.setItem('Access-Token', data.accessToken)
@@ -84,8 +95,8 @@ export default {
 </script>
 
 <style rel="stylesheet/scss"  lang="scss">
-$bg:#2d3a4b;
-$light_gray:#eee;
+$bg: #2d3a4b;
+$light_gray: #f2f2f2;
 
 /* reset element-ui css */
 .login-container {
@@ -98,7 +109,7 @@ $light_gray:#eee;
       border: 0px;
       -webkit-appearance: none;
       border-radius: 0px;
-      padding: 12px 5px 12px 30px;
+      padding: 12px 5px 12px 60px;
       color: $light_gray;
       // height: 47px;
       &:-webkit-autofill {
@@ -113,19 +124,38 @@ $light_gray:#eee;
     border-radius: 5px;
     color: #454545;
   }
+  .el-form-item__content {
+    background: #070601;
+    border-radius: 6px;
+  }
+  .icon-iem {
+    margin: 8px 7px;
+    width: 24px;
+    height: 24px;
+    display: inline-block;
+  }
+  .icon-user {
+    background: url("../../assets/img/user.png") no-repeat left center;
+  }
+  .icon-password {
+    background: url("../../assets/img/password.png") no-repeat left center;
+  }
+  .btn-login {
+    margin-top: 50px;
+  }
 }
-
 </style>
 
 <style rel="stylesheet/scss" lang="scss" scoped>
-$bg:#2d3a4b;
-$dark_gray:#889aa4;
-$light_gray:#eee;
+$bg: #2d3a4b;
+$dark_gray: #889aa4;
+$light_gray: #eee;
 .login-container {
   position: fixed;
   height: 100%;
   width: 100%;
-  background-color: $bg;
+  // background-color: $bg;
+  background: url("../../assets/img/bg.png") no-repeat center center;
   .login-form {
     position: absolute;
     left: 0;
@@ -143,19 +173,16 @@ $light_gray:#eee;
     display: inline-block;
   }
   .title {
-    font-size: 26px;
-    font-weight: 400;
-    color: $light_gray;
     margin: 0px auto 40px auto;
-    text-align: center;
-    font-weight: bold;
+    height: 86px;
+    background: url("../../assets/img/login-logo.png") no-repeat center center;
   }
 }
 .footer-copy-right {
-  width:100%;
-  line-height:30px;
-  position:absolute;
-  bottom:0;
-  text-align:center;
+  width: 100%;
+  line-height: 30px;
+  position: absolute;
+  bottom: 0;
+  text-align: center;
 }
 </style>

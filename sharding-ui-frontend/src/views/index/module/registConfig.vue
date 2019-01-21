@@ -1,20 +1,32 @@
 <template>
-  <el-card class="box-card">
+  <el-row class="box-card">
     <div class="btn-group">
       <el-button type="primary" icon="el-icon-plus" @click="add">{{ $t("index.btnTxt") }}</el-button>
     </div>
     <div class="table-wrap">
-      <el-table :data="tableData" border="" style="width: 100%">
+      <el-table :data="tableData" border style="width: 100%">
         <el-table-column
           v-for="(item, index) in column"
           :key="index"
           :prop="item.prop"
           :label="item.label"
-          :width="item.width"/>
+          :width="item.width"
+        />
         <el-table-column :label="$t('index.table.operate')" fixed="right" width="140">
           <template slot-scope="scope">
-            <el-button :disabled="scope.row.activated" type="primary" icon="icon-link iconfont" size="small" @click="handleConnect(scope.row)"/>
-            <el-button size="small" type="danger" icon="el-icon-delete" @click="handlerDel(scope.row)"/>
+            <el-button
+              :disabled="scope.row.activated"
+              type="primary"
+              icon="icon-link iconfont"
+              size="small"
+              @click="handleConnect(scope.row)"
+            />
+            <el-button
+              size="small"
+              type="danger"
+              icon="el-icon-delete"
+              @click="handlerDel(scope.row)"
+            />
           </template>
         </el-table-column>
       </el-table>
@@ -24,10 +36,15 @@
           :current-page="currentPage"
           background
           layout="prev, pager, next"
-          @current-change="handleCurrentChange"/>
+          @current-change="handleCurrentChange"
+        />
       </div>
     </div>
-    <el-dialog :title="$t('index.registDialog.title')" :visible.sync="regustDialogVisible">
+    <el-dialog
+      :title="$t('index.registDialog.title')"
+      :visible.sync="regustDialogVisible"
+      width="1010px"
+    >
       <el-form ref="form" :model="form" :rules="rules" label-width="150px">
         <el-form-item :label="$t('index.registDialog.name')" prop="name">
           <el-input v-model="form.name" autocomplete="off"/>
@@ -53,10 +70,13 @@
       </el-form>
       <div slot="footer" class="dialog-footer">
         <el-button @click="regustDialogVisible = false">{{ $t("index.registDialog.btnCancelTxt") }}</el-button>
-        <el-button type="primary" @click="onConfirm('form')">{{ $t("index.registDialog.btnConfirmTxt") }}</el-button>
+        <el-button
+          type="primary"
+          @click="onConfirm('form')"
+        >{{ $t("index.registDialog.btnConfirmTxt") }}</el-button>
       </div>
     </el-dialog>
-  </el-card>
+  </el-row>
 </template>
 <script>
 import { mapActions } from 'vuex'
@@ -99,19 +119,39 @@ export default {
       },
       rules: {
         name: [
-          { required: true, message: this.$t('index').rules.name, trigger: 'change' }
+          {
+            required: true,
+            message: this.$t('index').rules.name,
+            trigger: 'change'
+          }
         ],
         address: [
-          { required: true, message: this.$t('index').rules.address, trigger: 'change' }
+          {
+            required: true,
+            message: this.$t('index').rules.address,
+            trigger: 'change'
+          }
         ],
         namespaces: [
-          { required: true, message: this.$t('index').rules.namespaces, trigger: 'change' }
+          {
+            required: true,
+            message: this.$t('index').rules.namespaces,
+            trigger: 'change'
+          }
         ],
         centerType: [
-          { required: true, message: this.$t('index').rules.centerType, trigger: 'change' }
+          {
+            required: true,
+            message: this.$t('index').rules.centerType,
+            trigger: 'change'
+          }
         ],
         orchestrationName: [
-          { required: true, message: this.$t('index').rules.orchestrationName, trigger: 'change' }
+          {
+            required: true,
+            message: this.$t('index').rules.orchestrationName,
+            trigger: 'change'
+          }
         ]
       },
       tableData: [],
@@ -125,15 +165,13 @@ export default {
     this.getRegCenter()
   },
   methods: {
-    ...mapActions([
-      'setRegCenterActivated'
-    ]),
+    ...mapActions(['setRegCenterActivated']),
     handleCurrentChange(val) {
       const data = _.clone(this.cloneTableData)
       this.tableData = data.splice(val - 1, this.pageSize)
     },
     getRegCenter() {
-      API.getRegCenter().then((res) => {
+      API.getRegCenter().then(res => {
         const data = res.model
         this.total = data.length
         this.cloneTableData = _.clone(res.model)
@@ -142,7 +180,7 @@ export default {
       this.getRegCenterActivated()
     },
     getRegCenterActivated() {
-      API.getRegCenterActivated().then((res) => {
+      API.getRegCenterActivated().then(res => {
         this.setRegCenterActivated(res.model.name)
       })
     },
@@ -163,7 +201,7 @@ export default {
           // registryCenterType: row.registryCenterType,
           // serverLists: row.serverLists
         }
-        API.postRegCenterConnect(params).then((res) => {
+        API.postRegCenterConnect(params).then(res => {
           this.$notify({
             title: this.$t('common').notify.title,
             message: this.$t('common').notify.conSucMessage,
@@ -183,7 +221,7 @@ export default {
         // registryCenterType: row.registryCenterType,
         // serverLists: row.serverLists
       }
-      API.deleteRegCenter(params).then((res) => {
+      API.deleteRegCenter(params).then(res => {
         this.$notify({
           title: this.$t('common').notify.title,
           message: this.$t('common').notify.delSucMessage,
@@ -193,7 +231,7 @@ export default {
       })
     },
     onConfirm(formName) {
-      this.$refs[formName].validate((valid) => {
+      this.$refs[formName].validate(valid => {
         if (valid) {
           const params = {
             digest: this.form.digest,
@@ -203,7 +241,7 @@ export default {
             registryCenterType: this.form.centerType,
             serverLists: this.form.address
           }
-          API.postRegCenter(params).then((res) => {
+          API.postRegCenter(params).then(res => {
             this.regustDialogVisible = false
             this.$notify({
               title: this.$t('common').notify.title,
@@ -225,11 +263,11 @@ export default {
 }
 </script>
 <style lang='scss' scoped>
-  .btn-group {
-    margin-bottom: 20px;
-  }
-  .pagination {
-    float: right;
-    margin: 10px -10px 10px 0;
-  }
+.btn-group {
+  margin-bottom: 20px;
+}
+.pagination {
+  float: right;
+  margin: 10px -10px 10px 0;
+}
 </style>
