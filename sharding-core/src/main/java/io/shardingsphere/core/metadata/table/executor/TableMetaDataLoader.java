@@ -137,7 +137,12 @@ public final class TableMetaDataLoader {
             while (resultSet.next()) {
                 String columnName = resultSet.getString("COLUMN_NAME");
                 String columnType = resultSet.getString("TYPE_NAME");
-                result.add(new ColumnMetaData(columnName, columnType, primaryKeys.contains(columnName)));
+                //issue #1770
+	            ColumnMetaData columnMetaData = new ColumnMetaData(columnName, columnType, primaryKeys.contains(columnName));
+	            if(result.contains(columnMetaData)) {
+	            	continue;
+	            }
+	            result.add(columnMetaData);
             }
         }
         return result;
