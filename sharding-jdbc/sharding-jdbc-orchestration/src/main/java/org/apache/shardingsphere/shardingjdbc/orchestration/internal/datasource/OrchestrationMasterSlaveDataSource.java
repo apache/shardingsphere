@@ -66,7 +66,7 @@ public class OrchestrationMasterSlaveDataSource extends AbstractOrchestrationDat
     }
     
     public OrchestrationMasterSlaveDataSource(final MasterSlaveDataSource masterSlaveDataSource, final OrchestrationConfiguration orchestrationConfig) throws SQLException {
-        super(new ShardingOrchestrationFacade(orchestrationConfig, Collections.singletonList(ShardingConstant.LOGIC_SCHEMA_NAME)), masterSlaveDataSource.getDataSourceMap());
+        super(new ShardingOrchestrationFacade(orchestrationConfig, Collections.singletonList(ShardingConstant.LOGIC_SCHEMA_NAME)));
         dataSource = new MasterSlaveDataSource(masterSlaveDataSource.getDataSourceMap(),
                 new OrchestrationMasterSlaveRule(masterSlaveDataSource.getMasterSlaveRule().getMasterSlaveRuleConfiguration()),
                 ConfigMapContext.getInstance().getConfigMap(), masterSlaveDataSource.getShardingProperties().getProps());
@@ -80,17 +80,6 @@ public class OrchestrationMasterSlaveDataSource extends AbstractOrchestrationDat
         result.put(ShardingConstant.LOGIC_SCHEMA_NAME, new MasterSlaveRuleConfiguration(
                 masterSlaveRule.getName(), masterSlaveRule.getMasterDataSourceName(), masterSlaveRule.getSlaveDataSourceNames(), masterSlaveRule.getLoadBalanceAlgorithm()));
         return result;
-    }
-    
-    @Override
-    public final Connection getConnection() {
-        return isCircuitBreak() ? new CircuitBreakerDataSource().getConnection() : dataSource.getConnection();
-    }
-    
-    @Override
-    public final void close() throws Exception {
-        dataSource.close();
-        getShardingOrchestrationFacade().close();
     }
     
     /**
