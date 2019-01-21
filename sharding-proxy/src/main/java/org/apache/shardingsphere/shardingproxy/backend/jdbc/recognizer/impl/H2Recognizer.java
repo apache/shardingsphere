@@ -15,13 +15,27 @@
  * limitations under the License.
  */
 
-package org.apache.shardingsphere.shardingproxy.util;
+package org.apache.shardingsphere.shardingproxy.backend.jdbc.recognizer.impl;
 
-import org.junit.runner.RunWith;
-import org.junit.runners.Suite;
-import org.junit.runners.Suite.SuiteClasses;
+import org.apache.shardingsphere.shardingproxy.backend.jdbc.recognizer.spi.JDBCURLRecognizer;
 
-@RunWith(Suite.class)
-@SuiteClasses(DataSourceConverterTest.class)
-public final class AllUtilTests {
+import java.util.Collection;
+import java.util.Collections;
+
+/**
+ * JDBC URL recognizer for H2.
+ *
+ * @author zhangliang
+ */
+public final class H2Recognizer implements JDBCURLRecognizer {
+    
+    @Override
+    public Collection<String> getURLPrefixes() {
+        return Collections.singletonList("jdbc:h2:");
+    }
+    
+    @Override
+    public String getDriverClassName() {
+        return "org.h2.Driver";
+    }
 }

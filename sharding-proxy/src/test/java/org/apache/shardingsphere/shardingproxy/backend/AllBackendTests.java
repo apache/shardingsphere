@@ -22,6 +22,7 @@ import org.apache.shardingsphere.shardingproxy.backend.jdbc.connection.BackendTr
 import org.apache.shardingsphere.shardingproxy.backend.jdbc.connection.ConnectionStateHandlerTest;
 import org.apache.shardingsphere.shardingproxy.backend.jdbc.datasource.JDBCBackendDataSourceTest;
 import org.apache.shardingsphere.shardingproxy.backend.jdbc.datasource.JDBCXABackendDataSourceFactoryTest;
+import org.apache.shardingsphere.shardingproxy.backend.jdbc.recognizer.AllRecognizerTests;
 import org.apache.shardingsphere.shardingproxy.backend.sctl.ShardingCTLSetBackendHandlerTest;
 import org.apache.shardingsphere.shardingproxy.backend.sctl.ShardingCTLShowBackendHandlerTest;
 import org.junit.runner.RunWith;
@@ -43,7 +44,8 @@ import org.junit.runners.Suite.SuiteClasses;
         JDBCBackendDataSourceTest.class,
         BackendConnectionTest.class,
         BackendTransactionManagerTest.class,
-        ConnectionStateHandlerTest.class
+        ConnectionStateHandlerTest.class,
+        AllRecognizerTests.class
 })
 public final class AllBackendTests {
 }

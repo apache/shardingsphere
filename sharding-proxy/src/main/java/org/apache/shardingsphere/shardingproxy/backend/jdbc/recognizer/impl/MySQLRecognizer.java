@@ -15,13 +15,32 @@
  * limitations under the License.
  */
 
-package org.apache.shardingsphere.shardingproxy.util;
+package org.apache.shardingsphere.shardingproxy.backend.jdbc.recognizer.impl;
 
-import org.junit.runner.RunWith;
-import org.junit.runners.Suite;
-import org.junit.runners.Suite.SuiteClasses;
+import org.apache.shardingsphere.shardingproxy.backend.jdbc.recognizer.spi.JDBCURLRecognizer;
 
-@RunWith(Suite.class)
-@SuiteClasses(DataSourceConverterTest.class)
-public final class AllUtilTests {
+import java.util.Collection;
+import java.util.Collections;
+
+/**
+ * JDBC URL recognizer for MySQL.
+ *
+ * @author zhangliang
+ */
+public final class MySQLRecognizer implements JDBCURLRecognizer {
+    
+    @Override
+    public Collection<String> getURLPrefixes() {
+        return Collections.singletonList("jdbc:mysql:");
+    }
+    
+    @Override
+    public String getDriverClassName() {
+        try {
+            Class.forName("com.mysql.cj.jdbc.Driver");
+            return "com.mysql.cj.jdbc.Driver";
+        } catch (final ClassNotFoundException ignore) {
+            return "com.mysql.jdbc.Driver";
+        }
+    }
 }

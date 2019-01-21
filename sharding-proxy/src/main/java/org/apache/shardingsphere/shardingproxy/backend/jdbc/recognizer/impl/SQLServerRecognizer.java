@@ -15,13 +15,27 @@
  * limitations under the License.
  */
 
-package org.apache.shardingsphere.shardingproxy.util;
+package org.apache.shardingsphere.shardingproxy.backend.jdbc.recognizer.impl;
 
-import org.junit.runner.RunWith;
-import org.junit.runners.Suite;
-import org.junit.runners.Suite.SuiteClasses;
+import org.apache.shardingsphere.shardingproxy.backend.jdbc.recognizer.spi.JDBCURLRecognizer;
 
-@RunWith(Suite.class)
-@SuiteClasses(DataSourceConverterTest.class)
-public final class AllUtilTests {
+import java.util.Arrays;
+import java.util.Collection;
+
+/**
+ * JDBC URL recognizer for SQLServer.
+ *
+ * @author zhangliang
+ */
+public final class SQLServerRecognizer implements JDBCURLRecognizer {
+    
+    @Override
+    public Collection<String> getURLPrefixes() {
+        return Arrays.asList("jdbc:sqlserver:", "jdbc:microsoft:sqlserver:");
+    }
+    
+    @Override
+    public String getDriverClassName() {
+        return "com.microsoft.sqlserver.jdbc.SQLServerDriver";
+    }
 }

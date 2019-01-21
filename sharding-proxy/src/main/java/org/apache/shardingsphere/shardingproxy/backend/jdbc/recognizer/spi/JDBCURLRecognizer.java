@@ -15,13 +15,28 @@
  * limitations under the License.
  */
 
-package org.apache.shardingsphere.shardingproxy.util;
+package org.apache.shardingsphere.shardingproxy.backend.jdbc.recognizer.spi;
 
-import org.junit.runner.RunWith;
-import org.junit.runners.Suite;
-import org.junit.runners.Suite.SuiteClasses;
+import java.util.Collection;
 
-@RunWith(Suite.class)
-@SuiteClasses(DataSourceConverterTest.class)
-public final class AllUtilTests {
+/**
+ * JDBC URL recognizer.
+ *
+ * @author zhangliang
+ */
+public interface JDBCURLRecognizer {
+    
+    /**
+     * Get JDBC URL prefixes.
+     * 
+     * @return URL prefixes
+     */
+    Collection<String> getURLPrefixes();
+    
+    /**
+     * Get JDBC driver class name.
+     * 
+     * @return driver class name
+     */
+    String getDriverClassName();
 }

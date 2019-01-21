@@ -15,13 +15,25 @@
  * limitations under the License.
  */
 
-package org.apache.shardingsphere.shardingproxy.util;
+package org.apache.shardingsphere.shardingproxy.backend.jdbc.recognizer;
 
+import org.apache.shardingsphere.shardingproxy.backend.jdbc.recognizer.impl.H2RecognizerTest;
+import org.apache.shardingsphere.shardingproxy.backend.jdbc.recognizer.impl.MySQLRecognizerTest;
+import org.apache.shardingsphere.shardingproxy.backend.jdbc.recognizer.impl.OracleRecognizerTest;
+import org.apache.shardingsphere.shardingproxy.backend.jdbc.recognizer.impl.PostgreSQLRecognizerTest;
+import org.apache.shardingsphere.shardingproxy.backend.jdbc.recognizer.impl.SQLServerRecognizerTest;
 import org.junit.runner.RunWith;
 import org.junit.runners.Suite;
 import org.junit.runners.Suite.SuiteClasses;
 
 @RunWith(Suite.class)
-@SuiteClasses(DataSourceConverterTest.class)
-public final class AllUtilTests {
+@SuiteClasses({
+        JDBCURLRecognizerEngineTest.class,
+        MySQLRecognizerTest.class,
+        PostgreSQLRecognizerTest.class,
+        OracleRecognizerTest.class,
+        SQLServerRecognizerTest.class,
+        H2RecognizerTest.class
+})
+public final class AllRecognizerTests {
 }
