@@ -87,7 +87,6 @@ public final class DatabaseTest {
             }
         }));
         assertThat(actualDataSources.size(), is(1));
-        assertThat(actualDataSources, hasItems("ds_0"));
         Collection<String> actualSQLs = Collections2.transform(actual.getRouteUnits(), new Function<RouteUnit, String>() {
         
             @Override

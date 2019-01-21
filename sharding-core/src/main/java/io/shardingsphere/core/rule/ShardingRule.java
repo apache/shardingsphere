@@ -436,4 +436,21 @@ public class ShardingRule {
     public boolean contains(final String tableName) {
         return findTableRuleByLogicTable(tableName).isPresent() || findBindingTableRule(tableName).isPresent() || isBroadcastTable(tableName);
     }
+    
+    /**
+     * Get sharding logic table names.
+     * 
+     * @param logicTableNames logic table names
+     * @return sharding logic table names
+     */
+    public Collection<String> getShardingLogicTableNames(final Collection<String> logicTableNames) {
+        Collection<String> result = new LinkedList<>();
+        for (String each : logicTableNames) {
+            Optional<TableRule> tableRule = findTableRuleByLogicTable(each);
+            if (tableRule.isPresent()) {
+                result.add(each);
+            }
+        }
+        return result;
+    }
 }
