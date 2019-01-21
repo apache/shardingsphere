@@ -40,7 +40,7 @@ import java.sql.SQLException;
  * @author panjuan
  */
 @Getter(AccessLevel.PROTECTED)
-public abstract class AbstractOrchestrationDataSource extends AbstractUnsupportedOperationDataSource {
+public abstract class AbstractOrchestrationDataSource extends AbstractUnsupportedOperationDataSource implements AutoCloseable {
     
     private final EventBus eventBus = ShardingOrchestrationEventBus.getInstance();
     
