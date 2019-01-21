@@ -17,9 +17,10 @@
 
 package org.apache.shardingsphere.core.parsing.antlr.filler.impl.dml;
 
+import java.util.Map;
+
 import org.apache.shardingsphere.core.metadata.table.ShardingTableMetaData;
 import org.apache.shardingsphere.core.parsing.antlr.filler.impl.FromWhereFiller;
-import org.apache.shardingsphere.core.parsing.antlr.filler.impl.OrConditionFiller;
 import org.apache.shardingsphere.core.parsing.antlr.sql.segment.FromWhereSegment;
 import org.apache.shardingsphere.core.parsing.antlr.sql.segment.dml.DeleteFromWhereSegment;
 import org.apache.shardingsphere.core.parsing.parser.sql.SQLStatement;
@@ -40,7 +41,11 @@ public class DeleteFromWhereFiller extends FromWhereFiller {
         DMLStatement dmlStatement = (DMLStatement) sqlStatement;
         dmlStatement.setDeleteStatement(true);
         dmlStatement.getUpdateColumns().addAll(deleteFromWhereSegment.getUpdateTables());
-        dmlStatement.getUpdateTables().putAll(sqlSegment.getTableAliases());
+        for(Map.Entry<String, String> each : sqlSegment.getTableAliases().entrySet()) {
+            if(!each.getValue().equals(each.getKey())) {
+                dmlStatement.getUpdateTables().put(each.getKey(), each.getValue());
+            }
+        }
         dmlStatement.setWhereStartPosition(deleteFromWhereSegment.getWhereStartPosition());
         dmlStatement.setWhereStopPosition(deleteFromWhereSegment.getWhereStopPosition());
         dmlStatement.setWhereParameterStartIndex(deleteFromWhereSegment.getWhereParameterStartIndex());

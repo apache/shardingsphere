@@ -17,17 +17,19 @@
 
 package org.apache.shardingsphere.core.parsing.antlr.extractor.impl.dml;
 
-import com.google.common.base.Optional;
+import java.util.Map;
+
 import org.antlr.v4.runtime.ParserRuleContext;
 import org.apache.shardingsphere.core.parsing.antlr.extractor.impl.TableNamesExtractor;
 import org.apache.shardingsphere.core.parsing.antlr.extractor.impl.dql.AbstractFromWhereExtractor;
 import org.apache.shardingsphere.core.parsing.antlr.extractor.util.ExtractorUtils;
 import org.apache.shardingsphere.core.parsing.antlr.extractor.util.RuleName;
 import org.apache.shardingsphere.core.parsing.antlr.sql.segment.FromWhereSegment;
+import org.apache.shardingsphere.core.parsing.antlr.sql.segment.dml.DeleteFromWhereSegment;
 import org.apache.shardingsphere.core.parsing.antlr.sql.segment.table.TableSegment;
 import org.apache.shardingsphere.core.parsing.parser.exception.SQLParsingUnsupportedException;
 
-import java.util.Map;
+import com.google.common.base.Optional;
 
 /**
  * Delete from extractor.
@@ -35,6 +37,10 @@ import java.util.Map;
  * @author duhongjun
  */
 public final class DeleteFromWhereExtractor extends AbstractFromWhereExtractor {
+    
+    protected FromWhereSegment createSegment() {
+        return new DeleteFromWhereSegment();
+    }
     
     @Override
     protected Optional<ParserRuleContext> extractTable(final FromWhereSegment fromWhereSegment, final ParserRuleContext ancestorNode, final Map<ParserRuleContext, Integer> placeholderIndexes) {

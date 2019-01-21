@@ -17,17 +17,18 @@
 
 package org.apache.shardingsphere.core.parsing.antlr.extractor.impl.dml;
 
-import com.google.common.base.Optional;
+import java.util.Map;
+
 import org.antlr.v4.runtime.ParserRuleContext;
-import org.apache.shardingsphere.core.parsing.antlr.extractor.impl.AbstractFromWhereExtractor;
 import org.apache.shardingsphere.core.parsing.antlr.extractor.impl.ColumnSegmentExtractor;
+import org.apache.shardingsphere.core.parsing.antlr.extractor.impl.dql.AbstractFromWhereExtractor;
 import org.apache.shardingsphere.core.parsing.antlr.extractor.util.ExtractorUtils;
 import org.apache.shardingsphere.core.parsing.antlr.extractor.util.RuleName;
 import org.apache.shardingsphere.core.parsing.antlr.sql.segment.FromWhereSegment;
 import org.apache.shardingsphere.core.parsing.antlr.sql.segment.column.ColumnSegment;
 import org.apache.shardingsphere.core.parsing.antlr.sql.segment.dml.UpdateSetWhereSegment;
 
-import java.util.Map;
+import com.google.common.base.Optional;
 
 /**
  * Update where extractor.
@@ -56,7 +57,7 @@ public final class UpdateSetWhereExtractor extends AbstractFromWhereExtractor {
         if (!setClauseNode.isPresent()) {
             return;
         }
-        ColumnSegmentExtractor columnSegmentExtractor = new ColumnSegmentExtractor(updateSetWhereSegment.getTableAliases());
+        ColumnSegmentExtractor columnSegmentExtractor = new ColumnSegmentExtractor();
         for (ParserRuleContext each : ExtractorUtils.getAllDescendantNodes(setClauseNode.get(), RuleName.COLUMN_NAME)) {
             Optional<ColumnSegment> columnSegment = columnSegmentExtractor.extract(each);
             updateSetWhereSegment.getUpdateColumns().add(columnSegment.get().getName());

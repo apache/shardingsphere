@@ -15,13 +15,17 @@
  * limitations under the License.
  */
 
-package org.apache.shardingsphere.core.parsing.antlr.extractor.impl;
+package org.apache.shardingsphere.core.parsing.antlr.extractor.impl.dql;
 
-import com.google.common.base.Optional;
-import com.google.common.base.Preconditions;
+import java.util.Collection;
+import java.util.HashMap;
+import java.util.Map;
+
 import org.antlr.v4.runtime.ParserRuleContext;
 import org.antlr.v4.runtime.tree.TerminalNode;
 import org.apache.shardingsphere.core.parsing.antlr.extractor.OptionalSQLSegmentExtractor;
+import org.apache.shardingsphere.core.parsing.antlr.extractor.impl.PredicateExtractor;
+import org.apache.shardingsphere.core.parsing.antlr.extractor.impl.TableNameExtractor;
 import org.apache.shardingsphere.core.parsing.antlr.extractor.util.ExtractorUtils;
 import org.apache.shardingsphere.core.parsing.antlr.extractor.util.RuleName;
 import org.apache.shardingsphere.core.parsing.antlr.sql.segment.FromWhereSegment;
@@ -29,9 +33,8 @@ import org.apache.shardingsphere.core.parsing.antlr.sql.segment.condition.OrCond
 import org.apache.shardingsphere.core.parsing.antlr.sql.segment.table.TableJoinSegment;
 import org.apache.shardingsphere.core.parsing.antlr.sql.segment.table.TableSegment;
 
-import java.util.Collection;
-import java.util.HashMap;
-import java.util.Map;
+import com.google.common.base.Optional;
+import com.google.common.base.Preconditions;
 
 /**
  * Abstract from where extractor.
@@ -61,7 +64,7 @@ public abstract class AbstractFromWhereExtractor implements OptionalSQLSegmentEx
         Map<ParserRuleContext, Integer> questionNodeIndexMap = getPlaceholderAndNodeIndexMap(result, rootNode);
         Optional<ParserRuleContext> whereNode = extractTable(result, ancestorNode, questionNodeIndexMap);
         if (whereNode.isPresent()) {
-            predicateSegmentExtractor = new PredicateExtractor(result.getTableAliases());
+            predicateSegmentExtractor = new PredicateExtractor();
             result.setWhereStartPosition(whereNode.get().getStart().getStartIndex());
             result.setWhereStopPosition(whereNode.get().getStop().getStopIndex());
             if (!questionNodeIndexMap.isEmpty()) {
