@@ -40,9 +40,9 @@ public interface DataSourceMetaData {
     int getPort();
     
     /**
-     * Get scheme name.
+     * Get schema name.
      * 
-     * @return scheme name
+     * @return schema name
      */
     String getSchemaName();
     
