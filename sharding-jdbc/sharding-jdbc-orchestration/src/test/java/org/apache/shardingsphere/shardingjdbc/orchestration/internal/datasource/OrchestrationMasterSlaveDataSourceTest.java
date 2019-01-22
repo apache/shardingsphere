@@ -24,6 +24,7 @@ import org.apache.shardingsphere.api.algorithm.masterslave.MasterSlaveLoadBalanc
 import org.apache.shardingsphere.api.config.rule.MasterSlaveRuleConfiguration;
 import org.apache.shardingsphere.core.config.DataSourceConfiguration;
 import org.apache.shardingsphere.core.constant.ShardingConstant;
+import org.apache.shardingsphere.core.exception.ShardingException;
 import org.apache.shardingsphere.orchestration.config.OrchestrationConfiguration;
 import org.apache.shardingsphere.orchestration.internal.registry.config.event.ConfigMapChangedEvent;
 import org.apache.shardingsphere.orchestration.internal.registry.config.event.DataSourceChangedEvent;
@@ -42,6 +43,7 @@ import org.junit.Test;
 
 import java.io.File;
 import java.sql.Connection;
+import java.sql.SQLException;
 import java.util.Collections;
 import java.util.LinkedHashMap;
 import java.util.Map;
@@ -155,5 +157,14 @@ public class OrchestrationMasterSlaveDataSourceTest {
         assertThat(masterSlaveDataSource.getConnection("root", "root"), instanceOf(Connection.class));
     }
     
-    
+    @Test(expected = ShardingException.class)
+    @SneakyThrows 
+    public void assertClose() {
+        masterSlaveDataSource.close();
+        try {
+            masterSlaveDataSource.getDataSource().getDataSourceMap().values().iterator().next().getConnection();
+        } catch (final SQLException ex) {
+            throw new ShardingException(ex.getMessage());
+        }
+    }
 }
