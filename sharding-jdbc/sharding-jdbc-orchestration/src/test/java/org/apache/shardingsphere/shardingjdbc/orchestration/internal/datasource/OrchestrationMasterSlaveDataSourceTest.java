@@ -18,8 +18,10 @@
 package org.apache.shardingsphere.shardingjdbc.orchestration.internal.datasource;
 
 import lombok.SneakyThrows;
+import org.apache.commons.dbcp2.BasicDataSource;
 import org.apache.shardingsphere.api.algorithm.masterslave.MasterSlaveLoadBalanceAlgorithmType;
 import org.apache.shardingsphere.api.config.rule.MasterSlaveRuleConfiguration;
+import org.apache.shardingsphere.core.config.DataSourceConfiguration;
 import org.apache.shardingsphere.core.constant.ShardingConstant;
 import org.apache.shardingsphere.orchestration.config.OrchestrationConfiguration;
 import org.apache.shardingsphere.orchestration.internal.registry.config.event.DataSourceChangedEvent;
@@ -33,6 +35,7 @@ import org.junit.Test;
 
 import java.io.File;
 import java.util.Collections;
+import java.util.Map;
 
 import static org.hamcrest.CoreMatchers.is;
 import static org.junit.Assert.assertThat;
@@ -74,11 +77,18 @@ public class OrchestrationMasterSlaveDataSourceTest {
     
     @Test
     public void assertRenewDataSource() {
+        masterSlaveDataSource.renew(new DataSourceChangedEvent(ShardingConstant.LOGIC_SCHEMA_NAME, getDataSourceConfigurations()));
+        assertThat(masterSlaveDataSource.getDataSource().getDataSourceMap().size(), is(1));
         
     }
     
-    private DataSourceChangedEvent getDataSourceChangedEvent() {
-        
+    private Map<String, DataSourceConfiguration> getDataSourceConfigurations() {
+        BasicDataSource dataSource = new BasicDataSource();
+        dataSource.setDriverClassName("org.h2.Driver");
+        dataSource.setUrl("jdbc:h2:mem:test;DB_CLOSE_DELAY=-1;DATABASE_TO_UPPER=false;MODE=MySQL");
+        dataSource.setUsername("sa");
+        dataSource.setPassword("");
+        return Collections.singletonMap("ds_test", DataSourceConfiguration.getDataSourceConfiguration(dataSource));
     }
     
     @Test
