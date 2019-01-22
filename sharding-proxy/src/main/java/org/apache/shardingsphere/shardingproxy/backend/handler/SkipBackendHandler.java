@@ -17,6 +17,7 @@
 
 package org.apache.shardingsphere.shardingproxy.backend.handler;
 
+import org.apache.shardingsphere.shardingproxy.backend.ResultPacket;
 import org.apache.shardingsphere.shardingproxy.transport.mysql.packet.command.CommandResponsePackets;
 import org.apache.shardingsphere.shardingproxy.transport.mysql.packet.generic.OKPacket;
 
@@ -25,10 +26,20 @@ import org.apache.shardingsphere.shardingproxy.transport.mysql.packet.generic.OK
  *
  * @author zhaojun
  */
-public final class SkipBackendHandler extends AbstractBackendHandler {
+public final class SkipBackendHandler implements BackendHandler {
     
     @Override
-    protected CommandResponsePackets execute0() {
+    public CommandResponsePackets execute() {
         return new CommandResponsePackets(new OKPacket(1));
+    }
+    
+    @Override
+    public boolean next() {
+        return false;
+    }
+    
+    @Override
+    public ResultPacket getResultValue() {
+        return null;
     }
 }

@@ -32,7 +32,7 @@ import java.sql.SQLException;
  * @author zhaojun
  */
 @RequiredArgsConstructor
-public final class UnicastSchemaBackendHandler extends AbstractBackendHandler {
+public final class UnicastSchemaBackendHandler implements BackendHandler {
     
     private final int sequenceId;
     
@@ -45,7 +45,17 @@ public final class UnicastSchemaBackendHandler extends AbstractBackendHandler {
     private BackendHandler delegate;
     
     @Override
-    protected CommandResponsePackets execute0() {
+    public CommandResponsePackets execute() {
+        try {
+            return execute0();
+            // CHECKSTYLE:OFF
+        } catch (final Exception ex) {
+            // CHECKSTYLE:ON
+            return new CommandResponsePackets(ex);
+        }
+    }
+    
+    private CommandResponsePackets execute0() {
         if (null == backendConnection.getSchemaName()) {
             backendConnection.setCurrentSchema(GlobalRegistry.getInstance().getSchemaNames().iterator().next());
         }

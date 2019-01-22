@@ -29,7 +29,7 @@ import org.apache.shardingsphere.core.parsing.parser.sql.SQLStatement;
 import org.apache.shardingsphere.core.routing.SQLRouteResult;
 import org.apache.shardingsphere.core.rule.ShardingRule;
 import org.apache.shardingsphere.shardingproxy.backend.ResultPacket;
-import org.apache.shardingsphere.shardingproxy.backend.handler.AbstractBackendHandler;
+import org.apache.shardingsphere.shardingproxy.backend.handler.BackendHandler;
 import org.apache.shardingsphere.shardingproxy.backend.jdbc.connection.BackendConnection;
 import org.apache.shardingsphere.shardingproxy.backend.jdbc.connection.ConnectionStatus;
 import org.apache.shardingsphere.shardingproxy.backend.jdbc.execute.JDBCExecuteEngine;
@@ -62,7 +62,7 @@ import java.util.List;
  * @author maxiaoguang
  */
 @RequiredArgsConstructor
-public final class JDBCBackendHandler extends AbstractBackendHandler {
+public final class JDBCBackendHandler implements BackendHandler {
     
     private final LogicSchema logicSchema;
     
@@ -77,8 +77,14 @@ public final class JDBCBackendHandler extends AbstractBackendHandler {
     private int currentSequenceId;
     
     @Override
-    protected CommandResponsePackets execute0() throws SQLException {
-        return logicSchema == null ? new CommandResponsePackets(new ErrPacket(1, ServerErrorCode.ER_NO_DB_ERROR)) : execute(executeEngine.getJdbcExecutorWrapper().route(sql, DatabaseType.MySQL));
+    public CommandResponsePackets execute() {
+        try {
+            return logicSchema == null ? new CommandResponsePackets(new ErrPacket(1, ServerErrorCode.ER_NO_DB_ERROR)) : execute(executeEngine.getJdbcExecutorWrapper().route(sql, DatabaseType.MySQL));
+            // CHECKSTYLE:OFF
+        } catch (final Exception ex) {
+            // CHECKSTYLE:ON
+            return new CommandResponsePackets(ex);
+        }
     }
     
     private CommandResponsePackets execute(final SQLRouteResult routeResult) throws SQLException {

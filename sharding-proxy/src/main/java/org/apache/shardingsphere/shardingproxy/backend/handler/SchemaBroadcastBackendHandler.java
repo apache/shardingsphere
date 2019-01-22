@@ -19,6 +19,7 @@ package org.apache.shardingsphere.shardingproxy.backend.handler;
 
 import lombok.RequiredArgsConstructor;
 import org.apache.shardingsphere.core.constant.DatabaseType;
+import org.apache.shardingsphere.shardingproxy.backend.ResultPacket;
 import org.apache.shardingsphere.shardingproxy.backend.jdbc.connection.BackendConnection;
 import org.apache.shardingsphere.shardingproxy.runtime.GlobalRegistry;
 import org.apache.shardingsphere.shardingproxy.transport.common.packet.DatabasePacket;
@@ -26,7 +27,6 @@ import org.apache.shardingsphere.shardingproxy.transport.mysql.packet.command.Co
 import org.apache.shardingsphere.shardingproxy.transport.mysql.packet.generic.ErrPacket;
 import org.apache.shardingsphere.shardingproxy.transport.mysql.packet.generic.OKPacket;
 
-import java.util.Collection;
 import java.util.LinkedList;
 import java.util.List;
 
@@ -37,7 +37,7 @@ import java.util.List;
  * @author zhaojun
  */
 @RequiredArgsConstructor
-public final class SchemaBroadcastBackendHandler extends AbstractBackendHandler {
+public final class SchemaBroadcastBackendHandler implements BackendHandler {
     
     private final BackendHandlerFactory backendHandlerFactory = BackendHandlerFactory.getInstance();
     
@@ -50,7 +50,17 @@ public final class SchemaBroadcastBackendHandler extends AbstractBackendHandler 
     private final DatabaseType databaseType;
     
     @Override
-    protected CommandResponsePackets execute0() {
+    public CommandResponsePackets execute() {
+        try {
+            return execute0();
+            // CHECKSTYLE:OFF
+        } catch (final Exception ex) {
+            // CHECKSTYLE:ON
+            return new CommandResponsePackets(ex);
+        }
+    }
+    
+    private CommandResponsePackets execute0() {
         List<DatabasePacket> packets = new LinkedList<>();
         String originSchemaName = backendConnection.getSchemaName();
         for (String each : GlobalRegistry.getInstance().getSchemaNames()) {
@@ -59,23 +69,21 @@ public final class SchemaBroadcastBackendHandler extends AbstractBackendHandler 
             packets.addAll(responsePackets.getPackets());
         }
         backendConnection.setCurrentSchema(originSchemaName);
-        return merge(packets);
-    }
-    
-    private CommandResponsePackets merge(final Collection<DatabasePacket> packets) {
-        int affectedRows = 0;
-        long lastInsertId = 0;
         for (DatabasePacket each : packets) {
             if (each instanceof ErrPacket) {
                 return new CommandResponsePackets(each);
             }
-            if (each instanceof OKPacket) {
-                affectedRows += ((OKPacket) each).getAffectedRows();
-                if (((OKPacket) each).getLastInsertId() > lastInsertId) {
-                    lastInsertId = ((OKPacket) each).getLastInsertId();
-                }
-            }
         }
-        return new CommandResponsePackets(new OKPacket(1, affectedRows, lastInsertId));
+        return new CommandResponsePackets(new OKPacket(1, 0, 0));
+    }
+    
+    @Override
+    public boolean next() {
+        return false;
+    }
+    
+    @Override
+    public ResultPacket getResultValue() {
+        return null;
     }
 }

@@ -40,7 +40,7 @@ import java.util.List;
  * @author chenqingyang
  * @author zhaojun
  */
-public final class ShowDatabasesBackendHandler extends AbstractBackendHandler {
+public final class ShowDatabasesBackendHandler implements BackendHandler {
     
     private MergedResult mergedResult;
     
@@ -51,8 +51,14 @@ public final class ShowDatabasesBackendHandler extends AbstractBackendHandler {
     private final List<ColumnType> columnTypes = new LinkedList<>();
     
     @Override
-    protected CommandResponsePackets execute0() {
-        return handleShowDatabasesStatement();
+    public CommandResponsePackets execute() {
+        try {
+            return handleShowDatabasesStatement();
+            // CHECKSTYLE:OFF
+        } catch (final Exception ex) {
+            // CHECKSTYLE:ON
+            return new CommandResponsePackets(ex);
+        }
     }
     
     private CommandResponsePackets handleShowDatabasesStatement() {

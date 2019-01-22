@@ -18,7 +18,8 @@
 package org.apache.shardingsphere.shardingproxy.backend.sctl;
 
 import com.google.common.base.Optional;
-import org.apache.shardingsphere.shardingproxy.backend.handler.AbstractBackendHandler;
+import org.apache.shardingsphere.shardingproxy.backend.ResultPacket;
+import org.apache.shardingsphere.shardingproxy.backend.handler.BackendHandler;
 import org.apache.shardingsphere.shardingproxy.backend.jdbc.connection.BackendConnection;
 import org.apache.shardingsphere.shardingproxy.transport.mysql.packet.command.CommandResponsePackets;
 import org.apache.shardingsphere.shardingproxy.transport.mysql.packet.generic.ErrPacket;
@@ -30,7 +31,7 @@ import org.apache.shardingsphere.transaction.core.TransactionType;
  *
  * @author zhaojun
  */
-public final class ShardingCTLSetBackendHandler extends AbstractBackendHandler {
+public final class ShardingCTLSetBackendHandler implements BackendHandler {
     
     private final String sql;
     
@@ -42,18 +43,32 @@ public final class ShardingCTLSetBackendHandler extends AbstractBackendHandler {
     }
     
     @Override
-    protected CommandResponsePackets execute0() {
+    public CommandResponsePackets execute() {
         Optional<ShardingCTLSetStatement> shardingTCLStatement = new ShardingCTLSetParser(sql).doParse();
         if (!shardingTCLStatement.isPresent()) {
             return new CommandResponsePackets(new ErrPacket(" please review your sctl format, should be sctl:set xxx=yyy."));
         }
         switch (shardingTCLStatement.get().getKey()) {
             case "TRANSACTION_TYPE":
-                backendConnection.setTransactionType(TransactionType.valueOf(shardingTCLStatement.get().getValue()));
+                try {
+                    backendConnection.setTransactionType(TransactionType.valueOf(shardingTCLStatement.get().getValue()));
+                } catch (final IllegalArgumentException ex) {
+                    return new CommandResponsePackets(new ErrPacket(String.format(" could not support this sctl grammar [%s].", sql)));
+                }
                 break;
             default:
                 return new CommandResponsePackets(new ErrPacket(String.format(" could not support this sctl grammar [%s].", sql)));
         }
         return new CommandResponsePackets(new OKPacket(1));
+    }
+    
+    @Override
+    public boolean next() {
+        return false;
+    }
+    
+    @Override
+    public ResultPacket getResultValue() {
+        return null;
     }
 }
