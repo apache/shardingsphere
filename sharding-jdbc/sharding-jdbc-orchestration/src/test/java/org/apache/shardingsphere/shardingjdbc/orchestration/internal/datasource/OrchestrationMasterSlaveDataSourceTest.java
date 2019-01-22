@@ -18,7 +18,11 @@
 package org.apache.shardingsphere.shardingjdbc.orchestration.internal.datasource;
 
 import lombok.SneakyThrows;
+import org.apache.shardingsphere.api.algorithm.masterslave.MasterSlaveLoadBalanceAlgorithmType;
+import org.apache.shardingsphere.api.config.rule.MasterSlaveRuleConfiguration;
+import org.apache.shardingsphere.core.constant.ShardingConstant;
 import org.apache.shardingsphere.orchestration.config.OrchestrationConfiguration;
+import org.apache.shardingsphere.orchestration.internal.registry.config.event.MasterSlaveRuleChangedEvent;
 import org.apache.shardingsphere.orchestration.reg.api.RegistryCenterConfiguration;
 import org.apache.shardingsphere.shardingjdbc.api.yaml.YamlMasterSlaveDataSourceFactory;
 import org.apache.shardingsphere.shardingjdbc.jdbc.core.datasource.MasterSlaveDataSource;
@@ -27,6 +31,7 @@ import org.junit.Before;
 import org.junit.Test;
 
 import java.io.File;
+import java.util.Collections;
 
 public class OrchestrationMasterSlaveDataSourceTest {
     
@@ -51,6 +56,11 @@ public class OrchestrationMasterSlaveDataSourceTest {
     
     @Test
     public void assertRenewRule() {
+    }
+    
+    private MasterSlaveRuleChangedEvent getMasterSlaveRuleChangedEvent() {
+        MasterSlaveRuleConfiguration masterSlaveRuleConfiguration = new MasterSlaveRuleConfiguration("ms", "ds_m", Collections.singletonList("ds_s"), MasterSlaveLoadBalanceAlgorithmType.ROUND_ROBIN.getAlgorithm());
+        return new MasterSlaveRuleChangedEvent(ShardingConstant.LOGIC_SCHEMA_NAME, masterSlaveRuleConfiguration);
     }
     
     @Test
