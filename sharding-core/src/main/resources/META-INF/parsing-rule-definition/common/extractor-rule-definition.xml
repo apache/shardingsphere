@@ -11,7 +11,7 @@
     <extractor-rule id="dropColumnDefinition" extractor-class="org.apache.shardingsphere.core.parsing.antlr.extractor.impl.ddl.column.DropColumnDefinitionExtractor" />
     
     <extractor-rule id="selectClause" extractor-class="org.apache.shardingsphere.core.parsing.antlr.extractor.impl.dql.SelectClauseExtractor" />
-    <extractor-rule id="fromWhere" extractor-class="org.apache.shardingsphere.core.parsing.antlr.extractor.impl.FromWhereExtractor" />
+    <extractor-rule id="fromWhere" extractor-class="org.apache.shardingsphere.core.parsing.antlr.extractor.impl.dql.FromWhereExtractor" />
     <extractor-rule id="updateSetWhere" extractor-class="org.apache.shardingsphere.core.parsing.antlr.extractor.impl.dml.UpdateSetWhereExtractor" />
     <extractor-rule id="deleteFromWhere" extractor-class="org.apache.shardingsphere.core.parsing.antlr.extractor.impl.dml.DeleteFromWhereExtractor" />
     <extractor-rule id="groupBy" extractor-class="org.apache.shardingsphere.core.parsing.antlr.extractor.impl.dql.GroupByExtractor" />
