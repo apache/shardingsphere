@@ -19,8 +19,8 @@ package org.apache.shardingsphere.shardingproxy.backend.sctl;
 
 import com.google.common.base.Optional;
 import org.apache.shardingsphere.shardingproxy.backend.ResultPacket;
+import org.apache.shardingsphere.shardingproxy.backend.engine.jdbc.connection.BackendConnection;
 import org.apache.shardingsphere.shardingproxy.backend.handler.BackendHandler;
-import org.apache.shardingsphere.shardingproxy.backend.jdbc.connection.BackendConnection;
 import org.apache.shardingsphere.shardingproxy.transport.mysql.packet.command.CommandResponsePackets;
 import org.apache.shardingsphere.shardingproxy.transport.mysql.packet.generic.ErrPacket;
 import org.apache.shardingsphere.shardingproxy.transport.mysql.packet.generic.OKPacket;

@@ -17,18 +17,18 @@
 
 package org.apache.shardingsphere.shardingproxy.backend;
 
+import org.apache.shardingsphere.shardingproxy.backend.engine.jdbc.connection.BackendConnectionTest;
+import org.apache.shardingsphere.shardingproxy.backend.engine.jdbc.connection.BackendTransactionManagerTest;
+import org.apache.shardingsphere.shardingproxy.backend.engine.jdbc.connection.ConnectionStateHandlerTest;
+import org.apache.shardingsphere.shardingproxy.backend.engine.jdbc.datasource.JDBCBackendDataSourceTest;
+import org.apache.shardingsphere.shardingproxy.backend.engine.jdbc.datasource.JDBCXABackendDataSourceFactoryTest;
+import org.apache.shardingsphere.shardingproxy.backend.engine.jdbc.recognizer.AllRecognizerTests;
 import org.apache.shardingsphere.shardingproxy.backend.handler.BroadcastBackendHandlerTest;
 import org.apache.shardingsphere.shardingproxy.backend.handler.ShowDatabasesBackendHandlerTest;
 import org.apache.shardingsphere.shardingproxy.backend.handler.SkipBackendHandlerTest;
 import org.apache.shardingsphere.shardingproxy.backend.handler.TransactionBackendHandlerTest;
 import org.apache.shardingsphere.shardingproxy.backend.handler.UnicastBackendHandlerTest;
 import org.apache.shardingsphere.shardingproxy.backend.handler.UseStatementBackendHandlerTest;
-import org.apache.shardingsphere.shardingproxy.backend.jdbc.connection.BackendConnectionTest;
-import org.apache.shardingsphere.shardingproxy.backend.jdbc.connection.BackendTransactionManagerTest;
-import org.apache.shardingsphere.shardingproxy.backend.jdbc.connection.ConnectionStateHandlerTest;
-import org.apache.shardingsphere.shardingproxy.backend.jdbc.datasource.JDBCBackendDataSourceTest;
-import org.apache.shardingsphere.shardingproxy.backend.jdbc.datasource.JDBCXABackendDataSourceFactoryTest;
-import org.apache.shardingsphere.shardingproxy.backend.jdbc.recognizer.AllRecognizerTests;
 import org.apache.shardingsphere.shardingproxy.backend.sctl.ShardingCTLSetBackendHandlerTest;
 import org.apache.shardingsphere.shardingproxy.backend.sctl.ShardingCTLShowBackendHandlerTest;
 import org.junit.runner.RunWith;

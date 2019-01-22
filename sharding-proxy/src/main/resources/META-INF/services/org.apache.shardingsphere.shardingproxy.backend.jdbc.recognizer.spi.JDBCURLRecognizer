@@ -1,5 +1,0 @@
-org.apache.shardingsphere.shardingproxy.backend.jdbc.recognizer.impl.MySQLRecognizer
-org.apache.shardingsphere.shardingproxy.backend.jdbc.recognizer.impl.PostgreSQLRecognizer
-org.apache.shardingsphere.shardingproxy.backend.jdbc.recognizer.impl.OracleRecognizer
-org.apache.shardingsphere.shardingproxy.backend.jdbc.recognizer.impl.SQLServerRecognizer
-org.apache.shardingsphere.shardingproxy.backend.jdbc.recognizer.impl.H2Recognizer

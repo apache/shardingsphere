@@ -18,6 +18,7 @@
 package org.apache.shardingsphere.shardingproxy.backend;
 
 import org.apache.shardingsphere.core.constant.DatabaseType;
+import org.apache.shardingsphere.shardingproxy.backend.engine.jdbc.connection.BackendConnection;
 import org.apache.shardingsphere.shardingproxy.backend.handler.BackendHandler;
 import org.apache.shardingsphere.shardingproxy.backend.handler.BroadcastBackendHandler;
 import org.apache.shardingsphere.shardingproxy.backend.handler.CurrentSchemaBackendHandler;
@@ -25,7 +26,6 @@ import org.apache.shardingsphere.shardingproxy.backend.handler.ShowDatabasesBack
 import org.apache.shardingsphere.shardingproxy.backend.handler.SkipBackendHandler;
 import org.apache.shardingsphere.shardingproxy.backend.handler.TransactionBackendHandler;
 import org.apache.shardingsphere.shardingproxy.backend.handler.UseSchemaBackendHandler;
-import org.apache.shardingsphere.shardingproxy.backend.jdbc.connection.BackendConnection;
 import org.apache.shardingsphere.shardingproxy.backend.sctl.ShardingCTLSetBackendHandler;
 import org.junit.Test;
 import org.junit.runner.RunWith;

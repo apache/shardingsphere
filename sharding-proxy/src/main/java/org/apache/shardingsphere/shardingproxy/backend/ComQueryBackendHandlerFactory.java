@@ -25,6 +25,7 @@ import org.apache.shardingsphere.core.parsing.parser.dialect.mysql.statement.Sho
 import org.apache.shardingsphere.core.parsing.parser.dialect.mysql.statement.UseStatement;
 import org.apache.shardingsphere.core.parsing.parser.sql.SQLStatement;
 import org.apache.shardingsphere.core.parsing.parser.sql.dal.set.SetStatement;
+import org.apache.shardingsphere.shardingproxy.backend.engine.jdbc.connection.BackendConnection;
 import org.apache.shardingsphere.shardingproxy.backend.handler.BackendHandler;
 import org.apache.shardingsphere.shardingproxy.backend.handler.BroadcastBackendHandler;
 import org.apache.shardingsphere.shardingproxy.backend.handler.CurrentSchemaBackendHandler;
@@ -33,7 +34,6 @@ import org.apache.shardingsphere.shardingproxy.backend.handler.SkipBackendHandle
 import org.apache.shardingsphere.shardingproxy.backend.handler.TransactionBackendHandler;
 import org.apache.shardingsphere.shardingproxy.backend.handler.UnicastBackendHandler;
 import org.apache.shardingsphere.shardingproxy.backend.handler.UseSchemaBackendHandler;
-import org.apache.shardingsphere.shardingproxy.backend.jdbc.connection.BackendConnection;
 import org.apache.shardingsphere.shardingproxy.backend.sctl.ShardingCTLSetBackendHandler;
 import org.apache.shardingsphere.shardingproxy.backend.sctl.ShardingCTLShowBackendHandler;
 import org.apache.shardingsphere.transaction.core.TransactionOperationType;

@@ -21,12 +21,12 @@ import lombok.AccessLevel;
 import lombok.NoArgsConstructor;
 import org.apache.shardingsphere.core.constant.DatabaseType;
 import org.apache.shardingsphere.core.constant.properties.ShardingPropertiesConstant;
-import org.apache.shardingsphere.shardingproxy.backend.jdbc.JDBCDatabaseAccessEngine;
-import org.apache.shardingsphere.shardingproxy.backend.jdbc.connection.BackendConnection;
-import org.apache.shardingsphere.shardingproxy.backend.jdbc.execute.JDBCExecuteEngine;
-import org.apache.shardingsphere.shardingproxy.backend.jdbc.wrapper.PreparedStatementExecutorWrapper;
-import org.apache.shardingsphere.shardingproxy.backend.jdbc.wrapper.StatementExecutorWrapper;
-import org.apache.shardingsphere.shardingproxy.backend.netty.NettyDatabaseAccessEngine;
+import org.apache.shardingsphere.shardingproxy.backend.engine.jdbc.JDBCDatabaseAccessEngine;
+import org.apache.shardingsphere.shardingproxy.backend.engine.jdbc.connection.BackendConnection;
+import org.apache.shardingsphere.shardingproxy.backend.engine.jdbc.execute.JDBCExecuteEngine;
+import org.apache.shardingsphere.shardingproxy.backend.engine.jdbc.wrapper.PreparedStatementExecutorWrapper;
+import org.apache.shardingsphere.shardingproxy.backend.engine.jdbc.wrapper.StatementExecutorWrapper;
+import org.apache.shardingsphere.shardingproxy.backend.engine.netty.NettyDatabaseAccessEngine;
 import org.apache.shardingsphere.shardingproxy.runtime.GlobalRegistry;
 import org.apache.shardingsphere.shardingproxy.runtime.schema.LogicSchema;
 
