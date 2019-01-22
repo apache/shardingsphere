@@ -4,11 +4,12 @@ title = "Orchestration"
 weight = 4
 +++
 
-Use orchestration feature need indicate a registry center. Configuration will save into registry center. Configuration can overwrite by local when every application startup, or load from registry center only.
+The use of data orchestration function requires to designate a registry center, in which all the configurations are saved. 
+Users can either use local configurations to cover registry center configurations or read configurations from registry center only.
 
-## Without spring
+## Not Use Spring
 
-### Add maven dependency
+### Introduce Maven Dependency
 
 ```xml
 <dependency>
@@ -29,7 +30,7 @@ Use orchestration feature need indicate a registry center. Configuration will sa
 </dependency>
 ```
 
-### Configure orchestration with java
+### Rule Configuration Based on Java
 
 ```java
     // Configure dataSourceMap and shardingRuleConfig
@@ -47,9 +48,9 @@ Use orchestration feature need indicate a registry center. Configuration will sa
     DataSource dataSource = OrchestrationShardingDataSourceFactory.createDataSource(dataSourceMap, shardingRuleConfig, new ConcurrentHashMap(), new Properties(), orchConfig);
 ```
 
-### Configure orchestration with yaml
+### Rule Configuration Based on Yaml
 
-To configure by yaml, similar with the configuration method of java codes:
+Or use Yaml to configure, similar as  above configurations:
 
 ```yaml
 orchestration:
@@ -66,7 +67,7 @@ orchestration:
 
 ## Using spring
 
-### Add maven dependency
+### Introduce Maven Dependency
 
 ```xml
 <!-- for spring boot -->
@@ -114,7 +115,7 @@ orchestration:
 </dependency>
 ```
 
-### Configure orchestration with spring boot
+### Rule Configuration Based on Spring Boot
 
 ```properties
 sharding.jdbc.config.orchestration.name=orchestration-sharding-data-source
@@ -123,7 +124,7 @@ sharding.jdbc.config.orchestration.registry.server-lists=localhost:2181
 sharding.jdbc.config.orchestration.registry.namespace=sharding-jdbc-orchestration
 ```
 
-### Configure orchestration with spring namespace
+### Rule Configuration Based on Spring Name Space
 
 ```xml
 <?xml version="1.0" encoding="UTF-8"?>
@@ -140,4 +141,4 @@ sharding.jdbc.config.orchestration.registry.namespace=sharding-jdbc-orchestratio
 </beans>
 ```
 
-More details please reference [configuration manual](/en/manual/sharding-jdbc/configuration/).
+For more detailed configurations, please refer to [Configuration Manual](http://shardingsphere.io/document/current/cn/manual/sharding-jdbc/configuration/).
