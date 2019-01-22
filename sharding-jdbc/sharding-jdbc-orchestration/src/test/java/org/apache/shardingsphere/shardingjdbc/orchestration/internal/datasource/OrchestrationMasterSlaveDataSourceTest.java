@@ -26,6 +26,7 @@ import org.apache.shardingsphere.core.constant.ShardingConstant;
 import org.apache.shardingsphere.orchestration.config.OrchestrationConfiguration;
 import org.apache.shardingsphere.orchestration.internal.registry.config.event.DataSourceChangedEvent;
 import org.apache.shardingsphere.orchestration.internal.registry.config.event.MasterSlaveRuleChangedEvent;
+import org.apache.shardingsphere.orchestration.internal.registry.config.event.PropertiesChangedEvent;
 import org.apache.shardingsphere.orchestration.reg.api.RegistryCenterConfiguration;
 import org.apache.shardingsphere.shardingjdbc.api.yaml.YamlMasterSlaveDataSourceFactory;
 import org.apache.shardingsphere.shardingjdbc.jdbc.core.datasource.MasterSlaveDataSource;
@@ -36,6 +37,7 @@ import org.junit.Test;
 import java.io.File;
 import java.util.Collections;
 import java.util.Map;
+import java.util.Properties;
 
 import static org.hamcrest.CoreMatchers.is;
 import static org.junit.Assert.assertThat;
@@ -93,6 +95,14 @@ public class OrchestrationMasterSlaveDataSourceTest {
     
     @Test
     public void assertRenewProperties() {
+        masterSlaveDataSource.renew(getPropertiesChangedEvent());
+        assertThat(masterSlaveDataSource.getDataSource().getShardingProperties().getProps().getProperty("sql.show"), is("true"));
+    }
+    
+    private PropertiesChangedEvent getPropertiesChangedEvent() {
+        Properties properties = new Properties();
+        properties.setProperty("sql.show", "true");
+        return new PropertiesChangedEvent(properties);
     }
     
     @Test
