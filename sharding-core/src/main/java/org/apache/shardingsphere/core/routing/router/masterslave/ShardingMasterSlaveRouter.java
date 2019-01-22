@@ -61,10 +61,14 @@ public final class ShardingMasterSlaveRouter {
             toBeRemoved.add(each);
             if (isMasterRoute(sqlRouteResult.getSqlStatement().getType())) {
                 MasterVisitedManager.setMasterVisited();
-                toBeAdded.add(new RouteUnit(masterSlaveRule.getMasterDataSourceName(), each.getSqlUnit()));
+                RouteUnit newRouteUnit = new RouteUnit(masterSlaveRule.getMasterDataSourceName(), each.getSqlUnit());
+                newRouteUnit.setTableUnit(each.getTableUnit());
+                toBeAdded.add(newRouteUnit);
             } else {
-                toBeAdded.add(new RouteUnit(masterSlaveRule.getLoadBalanceAlgorithm().getDataSource(
-                        masterSlaveRule.getName(), masterSlaveRule.getMasterDataSourceName(), new ArrayList<>(masterSlaveRule.getSlaveDataSourceNames())), each.getSqlUnit()));
+                RouteUnit newRouteUnit = new RouteUnit(masterSlaveRule.getLoadBalanceAlgorithm().getDataSource(
+                    masterSlaveRule.getName(), masterSlaveRule.getMasterDataSourceName(), new ArrayList<>(masterSlaveRule.getSlaveDataSourceNames())), each.getSqlUnit());
+                newRouteUnit.setTableUnit(each.getTableUnit());
+                toBeAdded.add(newRouteUnit);
             }
         }
         sqlRouteResult.getRouteUnits().removeAll(toBeRemoved);

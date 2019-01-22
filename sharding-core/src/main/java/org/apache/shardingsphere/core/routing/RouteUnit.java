@@ -17,9 +17,12 @@
 
 package org.apache.shardingsphere.core.routing;
 
+import org.apache.shardingsphere.core.routing.type.TableUnit;
+
 import lombok.EqualsAndHashCode;
 import lombok.Getter;
 import lombok.RequiredArgsConstructor;
+import lombok.Setter;
 import lombok.ToString;
 
 /**
@@ -30,11 +33,14 @@ import lombok.ToString;
  */
 @RequiredArgsConstructor
 @Getter
-@EqualsAndHashCode
+@Setter
+@EqualsAndHashCode(exclude = "tableUnit")
 @ToString
 public final class RouteUnit {
     
     private final String dataSourceName;
     
     private final SQLUnit sqlUnit;
+    
+    private TableUnit tableUnit;
 }
