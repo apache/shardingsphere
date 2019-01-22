@@ -45,7 +45,7 @@ public abstract class AbstractFromWhereExtractor implements OptionalSQLSegmentEx
     
     private final TableNameExtractor tableNameExtractor = new TableNameExtractor();
     
-    private PredicateExtractor predicateSegmentExtractor;
+    private PredicateExtractor predicateSegmentExtractor = new PredicateExtractor();;
     
     @Override
     public Optional<FromWhereSegment> extract(final ParserRuleContext ancestorNode) {
@@ -64,7 +64,6 @@ public abstract class AbstractFromWhereExtractor implements OptionalSQLSegmentEx
         Map<ParserRuleContext, Integer> questionNodeIndexMap = getPlaceholderAndNodeIndexMap(result, rootNode);
         Optional<ParserRuleContext> whereNode = extractTable(result, ancestorNode, questionNodeIndexMap);
         if (whereNode.isPresent()) {
-            predicateSegmentExtractor = new PredicateExtractor();
             result.setWhereStartPosition(whereNode.get().getStart().getStartIndex());
             result.setWhereStopPosition(whereNode.get().getStop().getStopIndex());
             if (!questionNodeIndexMap.isEmpty()) {
