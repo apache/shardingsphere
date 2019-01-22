@@ -41,6 +41,7 @@ import org.junit.Before;
 import org.junit.Test;
 
 import java.io.File;
+import java.sql.Connection;
 import java.util.Collections;
 import java.util.LinkedHashMap;
 import java.util.Map;
@@ -148,4 +149,11 @@ public class OrchestrationMasterSlaveDataSourceTest {
     public void assertGetDataSource() {
         assertThat(masterSlaveDataSource.getDataSource(), instanceOf(MasterSlaveDataSource.class));
     }
+    
+    @Test
+    public void assertGetConnection() {
+        assertThat(masterSlaveDataSource.getConnection("root", "root"), instanceOf(Connection.class));
+    }
+    
+    
 }
