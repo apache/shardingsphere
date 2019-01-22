@@ -34,13 +34,13 @@ import java.sql.SQLException;
 @RequiredArgsConstructor
 public final class UnicastSchemaBackendHandler implements BackendHandler {
     
+    private final BackendHandlerFactory backendHandlerFactory = BackendHandlerFactory.getInstance();
+    
     private final int sequenceId;
     
     private final String sql;
     
     private final BackendConnection backendConnection;
-    
-    private final BackendHandlerFactory backendHandlerFactory;
     
     private BackendHandler delegate;
     

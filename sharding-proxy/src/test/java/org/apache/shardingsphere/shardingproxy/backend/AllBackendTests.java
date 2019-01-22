@@ -21,7 +21,7 @@ import org.apache.shardingsphere.shardingproxy.backend.handler.SchemaBroadcastBa
 import org.apache.shardingsphere.shardingproxy.backend.handler.ShowDatabasesBackendHandlerTest;
 import org.apache.shardingsphere.shardingproxy.backend.handler.SkipBackendHandlerTest;
 import org.apache.shardingsphere.shardingproxy.backend.handler.TransactionBackendHandlerTest;
-import org.apache.shardingsphere.shardingproxy.backend.handler.UnicastBackendHandlerTest;
+import org.apache.shardingsphere.shardingproxy.backend.handler.UnicastSchemaBackendHandlerTest;
 import org.apache.shardingsphere.shardingproxy.backend.handler.UseStatementBackendHandlerTest;
 import org.apache.shardingsphere.shardingproxy.backend.jdbc.connection.BackendConnectionTest;
 import org.apache.shardingsphere.shardingproxy.backend.jdbc.connection.BackendTransactionManagerTest;
@@ -42,7 +42,7 @@ import org.junit.runners.Suite.SuiteClasses;
         ShowDatabasesBackendHandlerTest.class, 
         SkipBackendHandlerTest.class, 
         TransactionBackendHandlerTest.class, 
-        UnicastBackendHandlerTest.class, 
+        UnicastSchemaBackendHandlerTest.class, 
         UseStatementBackendHandlerTest.class, 
         ShardingCTLSetBackendHandlerTest.class,
         ShardingCTLShowBackendHandlerTest.class,
