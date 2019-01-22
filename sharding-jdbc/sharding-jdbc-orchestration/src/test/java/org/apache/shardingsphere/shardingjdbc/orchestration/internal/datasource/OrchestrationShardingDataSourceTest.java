@@ -29,6 +29,8 @@ import org.apache.shardingsphere.orchestration.internal.registry.config.event.Co
 import org.apache.shardingsphere.orchestration.internal.registry.config.event.DataSourceChangedEvent;
 import org.apache.shardingsphere.orchestration.internal.registry.config.event.PropertiesChangedEvent;
 import org.apache.shardingsphere.orchestration.internal.registry.config.event.ShardingRuleChangedEvent;
+import org.apache.shardingsphere.orchestration.internal.registry.state.event.DisabledStateChangedEvent;
+import org.apache.shardingsphere.orchestration.internal.registry.state.schema.OrchestrationShardingSchema;
 import org.apache.shardingsphere.orchestration.reg.api.RegistryCenterConfiguration;
 import org.apache.shardingsphere.shardingjdbc.api.yaml.YamlShardingDataSourceFactory;
 import org.apache.shardingsphere.shardingjdbc.jdbc.core.datasource.ShardingDataSource;
@@ -77,7 +79,7 @@ public class OrchestrationShardingDataSourceTest {
         ShardingRuleConfiguration result = new ShardingRuleConfiguration();
         TableRuleConfiguration tableRuleConfig = new TableRuleConfiguration();
         tableRuleConfig.setLogicTable("logic_table");
-        tableRuleConfig.setActualDataNodes("ds_0.table_${0..1}");
+        tableRuleConfig.setActualDataNodes("ds_m.table_${0..1}");
         result.getTableRuleConfigs().add(tableRuleConfig);
         return result;
     }
@@ -96,9 +98,9 @@ public class OrchestrationShardingDataSourceTest {
         dataSource.setUrl("jdbc:h2:mem:test;DB_CLOSE_DELAY=-1;DATABASE_TO_UPPER=false;MODE=MySQL");
         dataSource.setUsername("sa");
         dataSource.setPassword("");
+        result.put("ds_m", DataSourceConfiguration.getDataSourceConfiguration(dataSource));
+        result.put("ds_s", DataSourceConfiguration.getDataSourceConfiguration(dataSource));
         result.put("ds_0", DataSourceConfiguration.getDataSourceConfiguration(dataSource));
-        result.put("ds_1", DataSourceConfiguration.getDataSourceConfiguration(dataSource));
-        result.put("ds_2", DataSourceConfiguration.getDataSourceConfiguration(dataSource));
         return result;
     }
     
@@ -127,7 +129,14 @@ public class OrchestrationShardingDataSourceTest {
     }
     
     @Test
-    public void testRenew4() {
+    public void assertRenewDisabledState() {
+        shardingDataSource.renew(getDisabledStateChangedEvent());
+        assertThat(shardingDataSource.getDataSource().getShardingContext().getShardingRule().getMasterSlaveRules().iterator().next().getSlaveDataSourceNames().size(), is(0));
+    }
+    
+    private DisabledStateChangedEvent getDisabledStateChangedEvent() {
+        OrchestrationShardingSchema shardingSchema = new OrchestrationShardingSchema("logic_db.ds_s");
+        return new DisabledStateChangedEvent(shardingSchema, true);
     }
     
     @Test
