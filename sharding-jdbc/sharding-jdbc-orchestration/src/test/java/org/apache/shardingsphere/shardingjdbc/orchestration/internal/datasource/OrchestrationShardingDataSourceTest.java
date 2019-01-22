@@ -138,8 +138,4 @@ public class OrchestrationShardingDataSourceTest {
         OrchestrationShardingSchema shardingSchema = new OrchestrationShardingSchema("logic_db.ds_s");
         return new DisabledStateChangedEvent(shardingSchema, true);
     }
-    
-    @Test
-    public void testGetDataSource() {
-    }
 }
