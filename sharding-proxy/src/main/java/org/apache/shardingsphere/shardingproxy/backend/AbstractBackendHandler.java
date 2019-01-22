@@ -17,11 +17,7 @@
 
 package org.apache.shardingsphere.shardingproxy.backend;
 
-import com.google.common.base.Optional;
-import org.apache.shardingsphere.shardingproxy.transport.mysql.constant.ServerErrorCode;
 import org.apache.shardingsphere.shardingproxy.transport.mysql.packet.command.CommandResponsePackets;
-import org.apache.shardingsphere.shardingproxy.transport.mysql.packet.generic.ErrPacket;
-import org.apache.shardingsphere.shardingproxy.util.ExceptionUtil;
 
 import java.sql.SQLException;
 
@@ -44,9 +40,7 @@ public abstract class AbstractBackendHandler implements BackendHandler {
             // CHECKSTYLE:OFF
         } catch (final Exception ex) {
             // CHECKSTYLE:ON
-            Optional<SQLException> sqlException = ExceptionUtil.findSQLException(ex);
-            return sqlException.isPresent()
-                    ? new CommandResponsePackets(new ErrPacket(1, sqlException.get())) : new CommandResponsePackets(new ErrPacket(1, ServerErrorCode.ER_STD_UNKNOWN_EXCEPTION, ex.getMessage()));
+            return new CommandResponsePackets(ex);
         }
     }
     

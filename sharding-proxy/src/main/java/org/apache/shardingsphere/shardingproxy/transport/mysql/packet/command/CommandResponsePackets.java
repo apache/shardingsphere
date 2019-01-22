@@ -17,10 +17,14 @@
 
 package org.apache.shardingsphere.shardingproxy.transport.mysql.packet.command;
 
+import com.google.common.base.Optional;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
 import org.apache.shardingsphere.shardingproxy.transport.common.packet.DatabasePacket;
+import org.apache.shardingsphere.shardingproxy.transport.mysql.constant.ServerErrorCode;
+import org.apache.shardingsphere.shardingproxy.transport.mysql.packet.generic.ErrPacket;
 
+import java.sql.SQLException;
 import java.util.Collection;
 import java.util.LinkedList;
 
@@ -37,6 +41,30 @@ public class CommandResponsePackets {
     
     public CommandResponsePackets(final DatabasePacket databasePacket) {
         packets.add(databasePacket);
+    }
+    
+    public CommandResponsePackets(final Exception exception) {
+        Optional<SQLException> sqlException = findSQLException(exception);
+        packets.add(sqlException.isPresent() ? new ErrPacket(1, sqlException.get()) : new ErrPacket(1, ServerErrorCode.ER_STD_UNKNOWN_EXCEPTION, exception.getMessage()));
+    }
+    
+    private Optional<SQLException> findSQLException(final Exception exception) {
+        if (exception instanceof SQLException) {
+            return Optional.of((SQLException) exception);
+        }
+        if (null == exception.getCause()) {
+            return Optional.absent();
+        }
+        if (exception.getCause() instanceof SQLException) {
+            return Optional.of((SQLException) exception.getCause());
+        }
+        if (null == exception.getCause().getCause()) {
+            return Optional.absent();
+        }
+        if (exception.getCause().getCause() instanceof SQLException) {
+            return Optional.of((SQLException) exception.getCause().getCause());
+        }
+        return Optional.absent();
     }
     
     /**

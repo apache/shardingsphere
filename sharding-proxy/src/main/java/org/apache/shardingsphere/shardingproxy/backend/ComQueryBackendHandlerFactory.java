@@ -65,8 +65,8 @@ public class ComQueryBackendHandlerFactory {
             return new SkipBackendHandler();
         }
         SQLStatement sqlStatement = new SQLJudgeEngine(sql).judge();
-        if (SQLType.DCL == sqlStatement.getType() || sqlStatement instanceof SetStatement) {
-            return new SchemaBroadcastBackendHandler(sequenceId, sql, backendConnection, databaseType, BackendHandlerFactory.getInstance());
+        if (sqlStatement instanceof SetStatement) {
+            return new SchemaBroadcastBackendHandler(sequenceId, sql, backendConnection, databaseType);
         } else if (sqlStatement instanceof UseStatement) {
             return new UseSchemaBackendHandler((UseStatement) sqlStatement, backendConnection);
         } else if (sqlStatement instanceof ShowDatabasesStatement) {
@@ -74,7 +74,7 @@ public class ComQueryBackendHandlerFactory {
         } else if (SQLType.DAL == sqlStatement.getType()) {
             return new UnicastSchemaBackendHandler(sequenceId, sql, backendConnection, BackendHandlerFactory.getInstance());
         } else {
-            return BackendHandlerFactory.getInstance().newTextProtocolInstance(sequenceId, sql, backendConnection, DatabaseType.MySQL);
+            return BackendHandlerFactory.getInstance().newTextProtocolInstance(sequenceId, sql, backendConnection, databaseType);
         }
     }
 }

@@ -39,6 +39,8 @@ import java.util.List;
 @RequiredArgsConstructor
 public final class SchemaBroadcastBackendHandler extends AbstractBackendHandler {
     
+    private final BackendHandlerFactory backendHandlerFactory = BackendHandlerFactory.getInstance();
+    
     private final int sequenceId;
     
     private final String sql;
@@ -46,8 +48,6 @@ public final class SchemaBroadcastBackendHandler extends AbstractBackendHandler 
     private final BackendConnection backendConnection;
     
     private final DatabaseType databaseType;
-    
-    private final BackendHandlerFactory backendHandlerFactory;
     
     @Override
     protected CommandResponsePackets execute0() {
