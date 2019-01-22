@@ -17,6 +17,12 @@
 
 package org.apache.shardingsphere.shardingproxy.backend;
 
+import org.apache.shardingsphere.shardingproxy.backend.handler.SchemaBroadcastBackendHandlerTest;
+import org.apache.shardingsphere.shardingproxy.backend.handler.ShowDatabasesBackendHandlerTest;
+import org.apache.shardingsphere.shardingproxy.backend.handler.SkipBackendHandlerTest;
+import org.apache.shardingsphere.shardingproxy.backend.handler.TransactionBackendHandlerTest;
+import org.apache.shardingsphere.shardingproxy.backend.handler.UnicastBackendHandlerTest;
+import org.apache.shardingsphere.shardingproxy.backend.handler.UseStatementBackendHandlerTest;
 import org.apache.shardingsphere.shardingproxy.backend.jdbc.connection.BackendConnectionTest;
 import org.apache.shardingsphere.shardingproxy.backend.jdbc.connection.BackendTransactionManagerTest;
 import org.apache.shardingsphere.shardingproxy.backend.jdbc.connection.ConnectionStateHandlerTest;

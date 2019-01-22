@@ -20,8 +20,8 @@ package org.apache.shardingsphere.shardingproxy.transport.mysql.packet.command.q
 import com.google.common.base.Optional;
 import lombok.SneakyThrows;
 import org.apache.shardingsphere.core.constant.ShardingConstant;
-import org.apache.shardingsphere.shardingproxy.backend.BackendHandler;
 import org.apache.shardingsphere.shardingproxy.backend.ResultPacket;
+import org.apache.shardingsphere.shardingproxy.backend.handler.BackendHandler;
 import org.apache.shardingsphere.shardingproxy.backend.jdbc.connection.BackendConnection;
 import org.apache.shardingsphere.shardingproxy.backend.jdbc.connection.ConnectionStatus;
 import org.apache.shardingsphere.shardingproxy.runtime.GlobalRegistry;

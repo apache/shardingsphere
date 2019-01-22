@@ -15,21 +15,19 @@
  * limitations under the License.
  */
 
-package org.apache.shardingsphere.shardingproxy.backend;
+package org.apache.shardingsphere.shardingproxy.backend.handler;
 
-import lombok.SneakyThrows;
 import org.apache.shardingsphere.core.constant.DatabaseType;
+import org.apache.shardingsphere.shardingproxy.backend.MockGlobalRegistryUtil;
 import org.apache.shardingsphere.shardingproxy.backend.jdbc.connection.BackendConnection;
 import org.apache.shardingsphere.shardingproxy.transport.mysql.packet.command.CommandResponsePackets;
-import org.apache.shardingsphere.shardingproxy.transport.mysql.packet.generic.ErrPacket;
 import org.apache.shardingsphere.shardingproxy.transport.mysql.packet.generic.OKPacket;
+import org.apache.shardingsphere.transaction.core.TransactionType;
+import org.junit.Before;
 import org.junit.Test;
 import org.junit.runner.RunWith;
 import org.mockito.Mock;
 import org.mockito.junit.MockitoJUnitRunner;
-
-import java.lang.reflect.Field;
-import java.sql.SQLException;
 
 import static org.hamcrest.CoreMatchers.instanceOf;
 import static org.junit.Assert.assertThat;
@@ -37,43 +35,37 @@ import static org.mockito.ArgumentMatchers.any;
 import static org.mockito.ArgumentMatchers.anyInt;
 import static org.mockito.ArgumentMatchers.anyString;
 import static org.mockito.Mockito.mock;
-import static org.mockito.Mockito.times;
-import static org.mockito.Mockito.verify;
 import static org.mockito.Mockito.when;
 
 @RunWith(MockitoJUnitRunner.class)
-public final class SchemaBroadcastBackendHandlerTest {
+public final class UnicastBackendHandlerTest {
     
-    @Mock
-    private BackendConnection backendConnection;
+    private BackendConnection backendConnection = new BackendConnection(TransactionType.LOCAL);
     
     @Mock
     private BackendHandlerFactory backendHandlerFactory;
     
-    @Test
-    public void assertExecuteSchemaBroadcast() {
+    @Before
+    public void setUp() {
         MockGlobalRegistryUtil.setLogicSchemas("schema", 10);
         setUnderlyingHandler(new CommandResponsePackets(new OKPacket(1)));
-        String sql = "grant select on test_db.* to root@'%'";
-        SchemaBroadcastBackendHandler schemaBroadcastBackendHandler = new SchemaBroadcastBackendHandler(1, sql, backendConnection, DatabaseType.MySQL);
-        setBackendHandlerFactory(schemaBroadcastBackendHandler);
-        CommandResponsePackets actual = schemaBroadcastBackendHandler.execute();
-        assertThat(actual.getHeadPacket(), instanceOf(OKPacket.class));
-        verify(backendConnection).setCurrentSchema(null);
-        verify(backendConnection, times(10)).setCurrentSchema(anyString());
     }
     
     @Test
-    public void assertExecuteSchemaBroadcastFailed() {
-        MockGlobalRegistryUtil.setLogicSchemas("schema", 5);
-        setUnderlyingHandler(new CommandResponsePackets(new ErrPacket(1, new SQLException("no reason", "X999", -1))));
-        String sql = "grant select on test_db.* to root@'%'";
-        SchemaBroadcastBackendHandler schemaBroadcastBackendHandler = new SchemaBroadcastBackendHandler(1, sql, backendConnection, DatabaseType.MySQL);
-        setBackendHandlerFactory(schemaBroadcastBackendHandler);
-        CommandResponsePackets actual = schemaBroadcastBackendHandler.execute();
-        assertThat(actual.getHeadPacket(), instanceOf(ErrPacket.class));
-        verify(backendConnection).setCurrentSchema(null);
-        verify(backendConnection, times(5)).setCurrentSchema(anyString());
+    public void assertExecuteWhileSchemaIsNull() {
+        UnicastSchemaBackendHandler backendHandler = new UnicastSchemaBackendHandler(1, "show variable like %s", backendConnection, backendHandlerFactory);
+        CommandResponsePackets actual = backendHandler.execute();
+        assertThat(actual.getHeadPacket(), instanceOf(OKPacket.class));
+        backendHandler.execute();
+    }
+    
+    @Test
+    public void assertExecuteWhileSchemaNotNull() {
+        backendConnection.setCurrentSchema("schema_0");
+        UnicastSchemaBackendHandler backendHandler = new UnicastSchemaBackendHandler(1, "show variable like %s", backendConnection, backendHandlerFactory);
+        CommandResponsePackets actual = backendHandler.execute();
+        assertThat(actual.getHeadPacket(), instanceOf(OKPacket.class));
+        backendHandler.execute();
     }
     
     private void setUnderlyingHandler(final CommandResponsePackets commandResponsePackets) {
@@ -81,13 +73,4 @@ public final class SchemaBroadcastBackendHandlerTest {
         when(backendHandler.execute()).thenReturn(commandResponsePackets);
         when(backendHandlerFactory.newTextProtocolInstance(anyInt(), anyString(), (BackendConnection) any(), (DatabaseType) any())).thenReturn(backendHandler);
     }
-    
-    @SneakyThrows
-    private void setBackendHandlerFactory(final SchemaBroadcastBackendHandler schemaBroadcastBackendHandler) {
-        Field field = schemaBroadcastBackendHandler.getClass().getDeclaredField("backendHandlerFactory");
-        field.setAccessible(true);
-        field.set(schemaBroadcastBackendHandler, backendHandlerFactory);
-    }
 }
-
-
