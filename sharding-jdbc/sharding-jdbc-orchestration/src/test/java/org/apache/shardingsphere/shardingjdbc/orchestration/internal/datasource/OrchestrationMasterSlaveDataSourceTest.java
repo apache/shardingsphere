@@ -22,6 +22,7 @@ import org.apache.shardingsphere.api.algorithm.masterslave.MasterSlaveLoadBalanc
 import org.apache.shardingsphere.api.config.rule.MasterSlaveRuleConfiguration;
 import org.apache.shardingsphere.core.constant.ShardingConstant;
 import org.apache.shardingsphere.orchestration.config.OrchestrationConfiguration;
+import org.apache.shardingsphere.orchestration.internal.registry.config.event.DataSourceChangedEvent;
 import org.apache.shardingsphere.orchestration.internal.registry.config.event.MasterSlaveRuleChangedEvent;
 import org.apache.shardingsphere.orchestration.reg.api.RegistryCenterConfiguration;
 import org.apache.shardingsphere.shardingjdbc.api.yaml.YamlMasterSlaveDataSourceFactory;
@@ -32,6 +33,9 @@ import org.junit.Test;
 
 import java.io.File;
 import java.util.Collections;
+
+import static org.hamcrest.CoreMatchers.is;
+import static org.junit.Assert.assertThat;
 
 public class OrchestrationMasterSlaveDataSourceTest {
     
@@ -51,20 +55,30 @@ public class OrchestrationMasterSlaveDataSourceTest {
     }
     
     private OrchestrationConfiguration getOrchestrationConfiguration() {
-        return new OrchestrationConfiguration("test", new RegistryCenterConfiguration(), true);
+        RegistryCenterConfiguration registryCenterConfiguration = new RegistryCenterConfiguration();
+        registryCenterConfiguration.setNamespace("test_ms");
+        registryCenterConfiguration.setServerLists("localhost:2181");
+        return new OrchestrationConfiguration("test", registryCenterConfiguration, true);
     }
     
     @Test
     public void assertRenewRule() {
+        masterSlaveDataSource.renew(getMasterSlaveRuleChangedEvent());
+        assertThat(masterSlaveDataSource.getDataSource().getMasterSlaveRule().getName(), is("new_ms"));
     }
     
     private MasterSlaveRuleChangedEvent getMasterSlaveRuleChangedEvent() {
-        MasterSlaveRuleConfiguration masterSlaveRuleConfiguration = new MasterSlaveRuleConfiguration("ms", "ds_m", Collections.singletonList("ds_s"), MasterSlaveLoadBalanceAlgorithmType.ROUND_ROBIN.getAlgorithm());
+        MasterSlaveRuleConfiguration masterSlaveRuleConfiguration = new MasterSlaveRuleConfiguration("new_ms", "ds_m", Collections.singletonList("ds_s"), MasterSlaveLoadBalanceAlgorithmType.ROUND_ROBIN.getAlgorithm());
         return new MasterSlaveRuleChangedEvent(ShardingConstant.LOGIC_SCHEMA_NAME, masterSlaveRuleConfiguration);
     }
     
     @Test
     public void assertRenewDataSource() {
+        
+    }
+    
+    private DataSourceChangedEvent getDataSourceChangedEvent() {
+        
     }
     
     @Test
