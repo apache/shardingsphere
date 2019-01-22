@@ -29,6 +29,8 @@ import org.apache.shardingsphere.orchestration.internal.registry.config.event.Co
 import org.apache.shardingsphere.orchestration.internal.registry.config.event.DataSourceChangedEvent;
 import org.apache.shardingsphere.orchestration.internal.registry.config.event.MasterSlaveRuleChangedEvent;
 import org.apache.shardingsphere.orchestration.internal.registry.config.event.PropertiesChangedEvent;
+import org.apache.shardingsphere.orchestration.internal.registry.state.event.DisabledStateChangedEvent;
+import org.apache.shardingsphere.orchestration.internal.registry.state.schema.OrchestrationShardingSchema;
 import org.apache.shardingsphere.orchestration.reg.api.RegistryCenterConfiguration;
 import org.apache.shardingsphere.shardingjdbc.api.yaml.YamlMasterSlaveDataSourceFactory;
 import org.apache.shardingsphere.shardingjdbc.jdbc.core.datasource.MasterSlaveDataSource;
@@ -122,6 +124,13 @@ public class OrchestrationMasterSlaveDataSourceTest {
     
     @Test
     public void assertRenewDisabledState() {
+        masterSlaveDataSource.renew(getDisabledStateChangedEvent());
+        assertThat(masterSlaveDataSource.getDataSource().getMasterSlaveRule().getSlaveDataSourceNames().size(), is(0));
+    }
+    
+    private DisabledStateChangedEvent getDisabledStateChangedEvent() {
+        OrchestrationShardingSchema shardingSchema = new OrchestrationShardingSchema("logic_db.ds_s");
+        return new DisabledStateChangedEvent(shardingSchema, true);
     }
     
     @Test
