@@ -19,11 +19,13 @@ package org.apache.shardingsphere.shardingjdbc.orchestration.internal.datasource
 
 import lombok.SneakyThrows;
 import org.apache.commons.dbcp2.BasicDataSource;
+import org.apache.shardingsphere.api.ConfigMapContext;
 import org.apache.shardingsphere.api.algorithm.masterslave.MasterSlaveLoadBalanceAlgorithmType;
 import org.apache.shardingsphere.api.config.rule.MasterSlaveRuleConfiguration;
 import org.apache.shardingsphere.core.config.DataSourceConfiguration;
 import org.apache.shardingsphere.core.constant.ShardingConstant;
 import org.apache.shardingsphere.orchestration.config.OrchestrationConfiguration;
+import org.apache.shardingsphere.orchestration.internal.registry.config.event.ConfigMapChangedEvent;
 import org.apache.shardingsphere.orchestration.internal.registry.config.event.DataSourceChangedEvent;
 import org.apache.shardingsphere.orchestration.internal.registry.config.event.MasterSlaveRuleChangedEvent;
 import org.apache.shardingsphere.orchestration.internal.registry.config.event.PropertiesChangedEvent;
@@ -36,6 +38,7 @@ import org.junit.Test;
 
 import java.io.File;
 import java.util.Collections;
+import java.util.LinkedHashMap;
 import java.util.Map;
 import java.util.Properties;
 
@@ -107,6 +110,14 @@ public class OrchestrationMasterSlaveDataSourceTest {
     
     @Test
     public void assertRenewConfigMap() {
+        masterSlaveDataSource.renew(getConfigMapChangedEvent());
+        assertThat(ConfigMapContext.getInstance().getConfigMap().get("key1"), is((Object) "value1"));
+    }
+    
+    private ConfigMapChangedEvent getConfigMapChangedEvent() {
+        Map<String, Object> configMap = new LinkedHashMap<>();
+        configMap.put("key1", "value1");
+        return new ConfigMapChangedEvent(configMap);
     }
     
     @Test
