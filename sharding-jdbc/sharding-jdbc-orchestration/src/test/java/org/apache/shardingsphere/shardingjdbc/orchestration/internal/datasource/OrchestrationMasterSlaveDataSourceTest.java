@@ -17,16 +17,36 @@
 
 package org.apache.shardingsphere.shardingjdbc.orchestration.internal.datasource;
 
+import lombok.SneakyThrows;
+import org.apache.shardingsphere.orchestration.config.OrchestrationConfiguration;
+import org.apache.shardingsphere.orchestration.reg.api.RegistryCenterConfiguration;
+import org.apache.shardingsphere.shardingjdbc.api.yaml.YamlMasterSlaveDataSourceFactory;
+import org.apache.shardingsphere.shardingjdbc.jdbc.core.datasource.MasterSlaveDataSource;
+import org.apache.shardingsphere.shardingjdbc.orchestration.user.YamlUserTest;
 import org.junit.Before;
 import org.junit.Test;
+
+import java.io.File;
 
 public class OrchestrationMasterSlaveDataSourceTest {
     
     private OrchestrationMasterSlaveDataSource masterSlaveDataSource;
     
     @Before
+    @SneakyThrows
     public void setUp() {
+        masterSlaveDataSource = new OrchestrationMasterSlaveDataSource(getMasterSlaveDataSource(), getOrchestrationConfiguration());
         
+    }
+    
+    @SneakyThrows
+    private MasterSlaveDataSource getMasterSlaveDataSource() {
+        File yamlFile = new File(YamlUserTest.class.getResource("/yaml/unit/masterSlave.yaml").toURI());
+        return (MasterSlaveDataSource) YamlMasterSlaveDataSourceFactory.createDataSource(yamlFile);
+    }
+    
+    private OrchestrationConfiguration getOrchestrationConfiguration() {
+        return new OrchestrationConfiguration("test", new RegistryCenterConfiguration(), true);
     }
     
     @Test
