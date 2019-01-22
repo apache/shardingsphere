@@ -15,19 +15,25 @@
  * limitations under the License.
  */
 
-package org.apache.shardingsphere.core.parsing.antlr;
+package org.apache.shardingsphere.shardingproxy.backend.jdbc.recognizer;
 
-import org.apache.shardingsphere.core.parsing.antlr.ddl.IntegrateDDLParsingCompatibleTest;
-import org.apache.shardingsphere.core.parsing.antlr.rule.AllRuleTests;
+import org.apache.shardingsphere.shardingproxy.backend.jdbc.recognizer.impl.H2RecognizerTest;
+import org.apache.shardingsphere.shardingproxy.backend.jdbc.recognizer.impl.MySQLRecognizerTest;
+import org.apache.shardingsphere.shardingproxy.backend.jdbc.recognizer.impl.OracleRecognizerTest;
+import org.apache.shardingsphere.shardingproxy.backend.jdbc.recognizer.impl.PostgreSQLRecognizerTest;
+import org.apache.shardingsphere.shardingproxy.backend.jdbc.recognizer.impl.SQLServerRecognizerTest;
 import org.junit.runner.RunWith;
 import org.junit.runners.Suite;
 import org.junit.runners.Suite.SuiteClasses;
 
 @RunWith(Suite.class)
 @SuiteClasses({
-        AllRuleTests.class,
-        AntlrIntegrateParsingTest.class,
-        IntegrateDDLParsingCompatibleTest.class
+        JDBCURLRecognizerEngineTest.class,
+        MySQLRecognizerTest.class,
+        PostgreSQLRecognizerTest.class,
+        OracleRecognizerTest.class,
+        SQLServerRecognizerTest.class,
+        H2RecognizerTest.class
 })
-public final class AllAntlrParsingTests {
+public final class AllRecognizerTests {
 }

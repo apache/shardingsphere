@@ -15,10 +15,11 @@
  * limitations under the License.
  */
 
-package org.apache.shardingsphere.shardingproxy.backend;
+package org.apache.shardingsphere.shardingproxy.backend.handler;
 
 import lombok.RequiredArgsConstructor;
 import org.apache.shardingsphere.core.constant.DatabaseType;
+import org.apache.shardingsphere.shardingproxy.backend.ResultPacket;
 import org.apache.shardingsphere.shardingproxy.backend.jdbc.connection.BackendConnection;
 import org.apache.shardingsphere.shardingproxy.runtime.GlobalRegistry;
 import org.apache.shardingsphere.shardingproxy.transport.mysql.packet.command.CommandResponsePackets;
@@ -31,7 +32,9 @@ import java.sql.SQLException;
  * @author zhaojun
  */
 @RequiredArgsConstructor
-public final class UnicastSchemaBackendHandler extends AbstractBackendHandler {
+public final class UnicastSchemaBackendHandler implements BackendHandler {
+    
+    private final BackendHandlerFactory backendHandlerFactory = BackendHandlerFactory.getInstance();
     
     private final int sequenceId;
     
@@ -39,12 +42,20 @@ public final class UnicastSchemaBackendHandler extends AbstractBackendHandler {
     
     private final BackendConnection backendConnection;
     
-    private final BackendHandlerFactory backendHandlerFactory;
-    
     private BackendHandler delegate;
     
     @Override
-    protected CommandResponsePackets execute0() {
+    public CommandResponsePackets execute() {
+        try {
+            return execute0();
+            // CHECKSTYLE:OFF
+        } catch (final Exception ex) {
+            // CHECKSTYLE:ON
+            return new CommandResponsePackets(ex);
+        }
+    }
+    
+    private CommandResponsePackets execute0() {
         if (null == backendConnection.getSchemaName()) {
             backendConnection.setCurrentSchema(GlobalRegistry.getInstance().getSchemaNames().iterator().next());
         }

@@ -15,19 +15,27 @@
  * limitations under the License.
  */
 
-package org.apache.shardingsphere.core.parsing.antlr;
+package org.apache.shardingsphere.shardingproxy.backend.jdbc.recognizer.impl;
 
-import org.apache.shardingsphere.core.parsing.antlr.ddl.IntegrateDDLParsingCompatibleTest;
-import org.apache.shardingsphere.core.parsing.antlr.rule.AllRuleTests;
-import org.junit.runner.RunWith;
-import org.junit.runners.Suite;
-import org.junit.runners.Suite.SuiteClasses;
+import org.apache.shardingsphere.shardingproxy.backend.jdbc.recognizer.spi.JDBCURLRecognizer;
 
-@RunWith(Suite.class)
-@SuiteClasses({
-        AllRuleTests.class,
-        AntlrIntegrateParsingTest.class,
-        IntegrateDDLParsingCompatibleTest.class
-})
-public final class AllAntlrParsingTests {
+import java.util.Collection;
+import java.util.Collections;
+
+/**
+ * JDBC URL recognizer for PostgreSQL.
+ *
+ * @author zhangliang
+ */
+public final class PostgreSQLRecognizer implements JDBCURLRecognizer {
+    
+    @Override
+    public Collection<String> getURLPrefixes() {
+        return Collections.singletonList("jdbc:postgresql:");
+    }
+    
+    @Override
+    public String getDriverClassName() {
+        return "org.postgresql.Driver";
+    }
 }

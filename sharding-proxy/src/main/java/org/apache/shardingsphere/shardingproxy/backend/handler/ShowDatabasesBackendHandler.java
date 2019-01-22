@@ -15,10 +15,11 @@
  * limitations under the License.
  */
 
-package org.apache.shardingsphere.shardingproxy.backend;
+package org.apache.shardingsphere.shardingproxy.backend.handler;
 
 import org.apache.shardingsphere.core.merger.MergedResult;
 import org.apache.shardingsphere.core.merger.dal.show.ShowDatabasesMergedResult;
+import org.apache.shardingsphere.shardingproxy.backend.ResultPacket;
 import org.apache.shardingsphere.shardingproxy.runtime.GlobalRegistry;
 import org.apache.shardingsphere.shardingproxy.transport.mysql.constant.ColumnType;
 import org.apache.shardingsphere.shardingproxy.transport.mysql.packet.command.CommandResponsePackets;
@@ -39,7 +40,7 @@ import java.util.List;
  * @author chenqingyang
  * @author zhaojun
  */
-public final class ShowDatabasesBackendHandler extends AbstractBackendHandler {
+public final class ShowDatabasesBackendHandler implements BackendHandler {
     
     private MergedResult mergedResult;
     
@@ -50,8 +51,14 @@ public final class ShowDatabasesBackendHandler extends AbstractBackendHandler {
     private final List<ColumnType> columnTypes = new LinkedList<>();
     
     @Override
-    protected CommandResponsePackets execute0() {
-        return handleShowDatabasesStatement();
+    public CommandResponsePackets execute() {
+        try {
+            return handleShowDatabasesStatement();
+            // CHECKSTYLE:OFF
+        } catch (final Exception ex) {
+            // CHECKSTYLE:ON
+            return new CommandResponsePackets(ex);
+        }
     }
     
     private CommandResponsePackets handleShowDatabasesStatement() {

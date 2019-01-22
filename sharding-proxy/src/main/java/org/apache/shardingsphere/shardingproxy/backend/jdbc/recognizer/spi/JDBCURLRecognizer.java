@@ -15,19 +15,28 @@
  * limitations under the License.
  */
 
-package org.apache.shardingsphere.core.parsing.antlr;
+package org.apache.shardingsphere.shardingproxy.backend.jdbc.recognizer.spi;
 
-import org.apache.shardingsphere.core.parsing.antlr.ddl.IntegrateDDLParsingCompatibleTest;
-import org.apache.shardingsphere.core.parsing.antlr.rule.AllRuleTests;
-import org.junit.runner.RunWith;
-import org.junit.runners.Suite;
-import org.junit.runners.Suite.SuiteClasses;
+import java.util.Collection;
 
-@RunWith(Suite.class)
-@SuiteClasses({
-        AllRuleTests.class,
-        AntlrIntegrateParsingTest.class,
-        IntegrateDDLParsingCompatibleTest.class
-})
-public final class AllAntlrParsingTests {
+/**
+ * JDBC URL recognizer.
+ *
+ * @author zhangliang
+ */
+public interface JDBCURLRecognizer {
+    
+    /**
+     * Get JDBC URL prefixes.
+     * 
+     * @return URL prefixes
+     */
+    Collection<String> getURLPrefixes();
+    
+    /**
+     * Get JDBC driver class name.
+     * 
+     * @return driver class name
+     */
+    String getDriverClassName();
 }

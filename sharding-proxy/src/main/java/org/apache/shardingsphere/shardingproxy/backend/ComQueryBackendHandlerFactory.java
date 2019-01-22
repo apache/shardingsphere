@@ -25,6 +25,14 @@ import org.apache.shardingsphere.core.parsing.parser.dialect.mysql.statement.Sho
 import org.apache.shardingsphere.core.parsing.parser.dialect.mysql.statement.UseStatement;
 import org.apache.shardingsphere.core.parsing.parser.sql.SQLStatement;
 import org.apache.shardingsphere.core.parsing.parser.sql.dal.set.SetStatement;
+import org.apache.shardingsphere.shardingproxy.backend.handler.BackendHandler;
+import org.apache.shardingsphere.shardingproxy.backend.handler.BackendHandlerFactory;
+import org.apache.shardingsphere.shardingproxy.backend.handler.SchemaBroadcastBackendHandler;
+import org.apache.shardingsphere.shardingproxy.backend.handler.ShowDatabasesBackendHandler;
+import org.apache.shardingsphere.shardingproxy.backend.handler.SkipBackendHandler;
+import org.apache.shardingsphere.shardingproxy.backend.handler.TransactionBackendHandler;
+import org.apache.shardingsphere.shardingproxy.backend.handler.UnicastSchemaBackendHandler;
+import org.apache.shardingsphere.shardingproxy.backend.handler.UseSchemaBackendHandler;
 import org.apache.shardingsphere.shardingproxy.backend.jdbc.connection.BackendConnection;
 import org.apache.shardingsphere.shardingproxy.backend.sctl.ShardingCTLSetBackendHandler;
 import org.apache.shardingsphere.shardingproxy.backend.sctl.ShardingCTLShowBackendHandler;
@@ -65,16 +73,16 @@ public class ComQueryBackendHandlerFactory {
             return new SkipBackendHandler();
         }
         SQLStatement sqlStatement = new SQLJudgeEngine(sql).judge();
-        if (SQLType.DCL == sqlStatement.getType() || sqlStatement instanceof SetStatement) {
-            return new SchemaBroadcastBackendHandler(sequenceId, sql, backendConnection, databaseType, BackendHandlerFactory.getInstance());
+        if (sqlStatement instanceof SetStatement) {
+            return new SchemaBroadcastBackendHandler(sequenceId, sql, backendConnection, databaseType);
         } else if (sqlStatement instanceof UseStatement) {
             return new UseSchemaBackendHandler((UseStatement) sqlStatement, backendConnection);
         } else if (sqlStatement instanceof ShowDatabasesStatement) {
             return new ShowDatabasesBackendHandler();
         } else if (SQLType.DAL == sqlStatement.getType()) {
-            return new UnicastSchemaBackendHandler(sequenceId, sql, backendConnection, BackendHandlerFactory.getInstance());
+            return new UnicastSchemaBackendHandler(sequenceId, sql, backendConnection);
         } else {
-            return BackendHandlerFactory.getInstance().newTextProtocolInstance(sequenceId, sql, backendConnection, DatabaseType.MySQL);
+            return BackendHandlerFactory.getInstance().newTextProtocolInstance(sequenceId, sql, backendConnection, databaseType);
         }
     }
 }

@@ -15,19 +15,31 @@
  * limitations under the License.
  */
 
-package org.apache.shardingsphere.core.parsing.antlr;
+package org.apache.shardingsphere.shardingproxy.backend.handler;
 
-import org.apache.shardingsphere.core.parsing.antlr.ddl.IntegrateDDLParsingCompatibleTest;
-import org.apache.shardingsphere.core.parsing.antlr.rule.AllRuleTests;
-import org.junit.runner.RunWith;
-import org.junit.runners.Suite;
-import org.junit.runners.Suite.SuiteClasses;
+import org.apache.shardingsphere.shardingproxy.backend.ResultPacket;
+import org.apache.shardingsphere.shardingproxy.transport.mysql.packet.command.CommandResponsePackets;
+import org.apache.shardingsphere.shardingproxy.transport.mysql.packet.generic.OKPacket;
 
-@RunWith(Suite.class)
-@SuiteClasses({
-        AllRuleTests.class,
-        AntlrIntegrateParsingTest.class,
-        IntegrateDDLParsingCompatibleTest.class
-})
-public final class AllAntlrParsingTests {
+/**
+ * Skip backend handler.
+ *
+ * @author zhaojun
+ */
+public final class SkipBackendHandler implements BackendHandler {
+    
+    @Override
+    public CommandResponsePackets execute() {
+        return new CommandResponsePackets(new OKPacket(1));
+    }
+    
+    @Override
+    public boolean next() {
+        return false;
+    }
+    
+    @Override
+    public ResultPacket getResultValue() {
+        return null;
+    }
 }

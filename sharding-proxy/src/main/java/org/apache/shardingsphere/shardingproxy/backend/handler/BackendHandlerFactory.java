@@ -15,7 +15,7 @@
  * limitations under the License.
  */
 
-package org.apache.shardingsphere.shardingproxy.backend;
+package org.apache.shardingsphere.shardingproxy.backend.handler;
 
 import lombok.AccessLevel;
 import lombok.NoArgsConstructor;
@@ -81,8 +81,8 @@ public final class BackendHandlerFactory {
      * @param databaseType database type
      * @return instance of text protocol backend handler
      */
-    public BackendHandler newBinaryProtocolInstance(final int sequenceId, final String sql, final List<Object> parameters,
-                                                           final BackendConnection backendConnection, final DatabaseType databaseType) {
+    public BackendHandler newBinaryProtocolInstance(final int sequenceId, final String sql, final List<Object> parameters, 
+                                                    final BackendConnection backendConnection, final DatabaseType databaseType) {
         LogicSchema logicSchema = backendConnection.getLogicSchema();
         return GLOBAL_REGISTRY.getShardingProperties().<Boolean>getValue(ShardingPropertiesConstant.PROXY_BACKEND_USE_NIO)
                 ? new NettyBackendHandler(logicSchema, backendConnection.getConnectionId(), sequenceId, sql, databaseType)

@@ -15,9 +15,11 @@
  * limitations under the License.
  */
 
-package org.apache.shardingsphere.shardingproxy.backend;
+package org.apache.shardingsphere.shardingproxy.backend.handler;
 
+import lombok.SneakyThrows;
 import org.apache.shardingsphere.core.constant.DatabaseType;
+import org.apache.shardingsphere.shardingproxy.backend.MockGlobalRegistryUtil;
 import org.apache.shardingsphere.shardingproxy.backend.jdbc.connection.BackendConnection;
 import org.apache.shardingsphere.shardingproxy.transport.mysql.packet.command.CommandResponsePackets;
 import org.apache.shardingsphere.shardingproxy.transport.mysql.packet.generic.OKPacket;
@@ -28,6 +30,8 @@ import org.junit.runner.RunWith;
 import org.mockito.Mock;
 import org.mockito.junit.MockitoJUnitRunner;
 
+import java.lang.reflect.Field;
+
 import static org.hamcrest.CoreMatchers.instanceOf;
 import static org.junit.Assert.assertThat;
 import static org.mockito.ArgumentMatchers.any;
@@ -37,7 +41,7 @@ import static org.mockito.Mockito.mock;
 import static org.mockito.Mockito.when;
 
 @RunWith(MockitoJUnitRunner.class)
-public final class UnicastBackendHandlerTest {
+public final class UnicastSchemaBackendHandlerTest {
     
     private BackendConnection backendConnection = new BackendConnection(TransactionType.LOCAL);
     
@@ -52,7 +56,8 @@ public final class UnicastBackendHandlerTest {
     
     @Test
     public void assertExecuteWhileSchemaIsNull() {
-        UnicastSchemaBackendHandler backendHandler = new UnicastSchemaBackendHandler(1, "show variable like %s", backendConnection, backendHandlerFactory);
+        UnicastSchemaBackendHandler backendHandler = new UnicastSchemaBackendHandler(1, "show variable like %s", backendConnection);
+        setBackendHandlerFactory(backendHandler);
         CommandResponsePackets actual = backendHandler.execute();
         assertThat(actual.getHeadPacket(), instanceOf(OKPacket.class));
         backendHandler.execute();
@@ -61,7 +66,8 @@ public final class UnicastBackendHandlerTest {
     @Test
     public void assertExecuteWhileSchemaNotNull() {
         backendConnection.setCurrentSchema("schema_0");
-        UnicastSchemaBackendHandler backendHandler = new UnicastSchemaBackendHandler(1, "show variable like %s", backendConnection, backendHandlerFactory);
+        UnicastSchemaBackendHandler backendHandler = new UnicastSchemaBackendHandler(1, "show variable like %s", backendConnection);
+        setBackendHandlerFactory(backendHandler);
         CommandResponsePackets actual = backendHandler.execute();
         assertThat(actual.getHeadPacket(), instanceOf(OKPacket.class));
         backendHandler.execute();
@@ -71,5 +77,12 @@ public final class UnicastBackendHandlerTest {
         BackendHandler backendHandler = mock(BackendHandler.class);
         when(backendHandler.execute()).thenReturn(commandResponsePackets);
         when(backendHandlerFactory.newTextProtocolInstance(anyInt(), anyString(), (BackendConnection) any(), (DatabaseType) any())).thenReturn(backendHandler);
+    }
+    
+    @SneakyThrows
+    private void setBackendHandlerFactory(final UnicastSchemaBackendHandler unicastSchemaBackendHandler) {
+        Field field = unicastSchemaBackendHandler.getClass().getDeclaredField("backendHandlerFactory");
+        field.setAccessible(true);
+        field.set(unicastSchemaBackendHandler, backendHandlerFactory);
     }
 }

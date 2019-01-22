@@ -15,8 +15,9 @@
  * limitations under the License.
  */
 
-package org.apache.shardingsphere.shardingproxy.backend;
+package org.apache.shardingsphere.shardingproxy.backend.handler;
 
+import org.apache.shardingsphere.shardingproxy.backend.ResultPacket;
 import org.apache.shardingsphere.shardingproxy.backend.jdbc.connection.BackendConnection;
 import org.apache.shardingsphere.shardingproxy.backend.jdbc.connection.BackendTransactionManager;
 import org.apache.shardingsphere.shardingproxy.transport.mysql.packet.command.CommandResponsePackets;
@@ -28,19 +29,29 @@ import org.apache.shardingsphere.transaction.core.TransactionOperationType;
  *
  * @author zhaojun
  */
-public final class TransactionBackendHandler extends AbstractBackendHandler {
+public final class TransactionBackendHandler implements BackendHandler {
     
     private final TransactionOperationType operationType;
     
     private final BackendTransactionManager backendTransactionManager;
     
-    TransactionBackendHandler(final TransactionOperationType operationType, final BackendConnection backendConnection) {
+    public TransactionBackendHandler(final TransactionOperationType operationType, final BackendConnection backendConnection) {
         this.operationType = operationType;
         backendTransactionManager = new BackendTransactionManager(backendConnection);
     }
     
     @Override
-    protected CommandResponsePackets execute0() throws Exception {
+    public CommandResponsePackets execute() {
+        try {
+            return doTransaction();
+            // CHECKSTYLE:OFF
+        } catch (final Exception ex) {
+            // CHECKSTYLE:ON
+            return new CommandResponsePackets(ex);
+        }
+    }
+    
+    private CommandResponsePackets doTransaction() throws Exception {
         switch (operationType) {
             case BEGIN:
                 backendTransactionManager.begin();
@@ -55,5 +66,15 @@ public final class TransactionBackendHandler extends AbstractBackendHandler {
                 throw new UnsupportedOperationException(operationType.name());
         }
         return new CommandResponsePackets(new OKPacket(1));
+    }
+    
+    @Override
+    public boolean next() {
+        return false;
+    }
+    
+    @Override
+    public ResultPacket getResultValue() {
+        return null;
     }
 }

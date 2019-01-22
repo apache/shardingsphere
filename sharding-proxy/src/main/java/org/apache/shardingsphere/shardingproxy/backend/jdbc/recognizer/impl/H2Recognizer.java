@@ -15,21 +15,27 @@
  * limitations under the License.
  */
 
-package org.apache.shardingsphere.shardingproxy.backend;
+package org.apache.shardingsphere.shardingproxy.backend.jdbc.recognizer.impl;
 
-import org.apache.shardingsphere.shardingproxy.transport.mysql.packet.command.CommandResponsePackets;
-import org.apache.shardingsphere.shardingproxy.transport.mysql.packet.generic.OKPacket;
-import org.junit.Test;
+import org.apache.shardingsphere.shardingproxy.backend.jdbc.recognizer.spi.JDBCURLRecognizer;
 
-import static org.hamcrest.CoreMatchers.instanceOf;
-import static org.junit.Assert.assertThat;
+import java.util.Collection;
+import java.util.Collections;
 
-public final class SkipBackendHandlerTest {
+/**
+ * JDBC URL recognizer for H2.
+ *
+ * @author zhangliang
+ */
+public final class H2Recognizer implements JDBCURLRecognizer {
     
-    @Test
-    public void assertExecuteSkipBackendHandler() {
-        SkipBackendHandler skipBackendHandler = new SkipBackendHandler();
-        CommandResponsePackets actual = skipBackendHandler.execute();
-        assertThat(actual.getHeadPacket(), instanceOf(OKPacket.class));
+    @Override
+    public Collection<String> getURLPrefixes() {
+        return Collections.singletonList("jdbc:h2:");
+    }
+    
+    @Override
+    public String getDriverClassName() {
+        return "org.h2.Driver";
     }
 }

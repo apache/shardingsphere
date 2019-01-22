@@ -33,8 +33,8 @@ import org.apache.shardingsphere.core.routing.RouteUnit;
 import org.apache.shardingsphere.core.routing.SQLRouteResult;
 import org.apache.shardingsphere.core.routing.StatementRoutingEngine;
 import org.apache.shardingsphere.core.routing.router.masterslave.MasterSlaveRouter;
-import org.apache.shardingsphere.shardingproxy.backend.AbstractBackendHandler;
 import org.apache.shardingsphere.shardingproxy.backend.ResultPacket;
+import org.apache.shardingsphere.shardingproxy.backend.handler.BackendHandler;
 import org.apache.shardingsphere.shardingproxy.backend.netty.client.BackendNettyClientManager;
 import org.apache.shardingsphere.shardingproxy.backend.netty.client.response.mysql.MySQLQueryResult;
 import org.apache.shardingsphere.shardingproxy.backend.netty.future.FutureRegistry;
@@ -72,7 +72,7 @@ import java.util.concurrent.TimeoutException;
  */
 @RequiredArgsConstructor
 @Getter
-public final class NettyBackendHandler extends AbstractBackendHandler {
+public final class NettyBackendHandler implements BackendHandler {
     
     private static final GlobalRegistry GLOBAL_REGISTRY = GlobalRegistry.getInstance();
     
@@ -99,8 +99,14 @@ public final class NettyBackendHandler extends AbstractBackendHandler {
     private MergedResult mergedResult;
     
     @Override
-    protected CommandResponsePackets execute0() throws InterruptedException, ExecutionException, TimeoutException {
-        return logicSchema instanceof MasterSlaveSchema ? executeForMasterSlave() : executeForSharding();
+    public CommandResponsePackets execute() {
+        try {
+            return logicSchema instanceof MasterSlaveSchema ? executeForMasterSlave() : executeForSharding();
+            // CHECKSTYLE:OFF
+        } catch (final Exception ex) {
+            // CHECKSTYLE:ON
+            return new CommandResponsePackets(ex);
+        }
     }
     
     private CommandResponsePackets executeForMasterSlave() throws InterruptedException, ExecutionException, TimeoutException {
@@ -147,7 +153,7 @@ public final class NettyBackendHandler extends AbstractBackendHandler {
         }
         SQLStatement sqlStatement = routeResult.getSqlStatement();
         CommandResponsePackets result = merge(sqlStatement, packets, queryResults);
-        refreshTableMetaData(logicSchema, sqlStatement);
+        logicSchema.refreshTableMetaData(sqlStatement);
         return result;
     }
     

@@ -15,19 +15,32 @@
  * limitations under the License.
  */
 
-package org.apache.shardingsphere.core.parsing.antlr;
+package org.apache.shardingsphere.shardingproxy.backend.jdbc.recognizer.impl;
 
-import org.apache.shardingsphere.core.parsing.antlr.ddl.IntegrateDDLParsingCompatibleTest;
-import org.apache.shardingsphere.core.parsing.antlr.rule.AllRuleTests;
-import org.junit.runner.RunWith;
-import org.junit.runners.Suite;
-import org.junit.runners.Suite.SuiteClasses;
+import org.apache.shardingsphere.shardingproxy.backend.jdbc.recognizer.spi.JDBCURLRecognizer;
 
-@RunWith(Suite.class)
-@SuiteClasses({
-        AllRuleTests.class,
-        AntlrIntegrateParsingTest.class,
-        IntegrateDDLParsingCompatibleTest.class
-})
-public final class AllAntlrParsingTests {
+import java.util.Collection;
+import java.util.Collections;
+
+/**
+ * JDBC URL recognizer for MySQL.
+ *
+ * @author zhangliang
+ */
+public final class MySQLRecognizer implements JDBCURLRecognizer {
+    
+    @Override
+    public Collection<String> getURLPrefixes() {
+        return Collections.singletonList("jdbc:mysql:");
+    }
+    
+    @Override
+    public String getDriverClassName() {
+        try {
+            Class.forName("com.mysql.cj.jdbc.Driver");
+            return "com.mysql.cj.jdbc.Driver";
+        } catch (final ClassNotFoundException ignore) {
+            return "com.mysql.jdbc.Driver";
+        }
+    }
 }
