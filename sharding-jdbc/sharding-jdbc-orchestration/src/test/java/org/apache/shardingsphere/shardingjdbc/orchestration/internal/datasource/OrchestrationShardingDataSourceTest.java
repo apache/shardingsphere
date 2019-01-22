@@ -18,10 +18,13 @@
 package org.apache.shardingsphere.shardingjdbc.orchestration.internal.datasource;
 
 import lombok.SneakyThrows;
+import org.apache.commons.dbcp2.BasicDataSource;
 import org.apache.shardingsphere.api.config.rule.ShardingRuleConfiguration;
 import org.apache.shardingsphere.api.config.rule.TableRuleConfiguration;
+import org.apache.shardingsphere.core.config.DataSourceConfiguration;
 import org.apache.shardingsphere.core.constant.ShardingConstant;
 import org.apache.shardingsphere.orchestration.config.OrchestrationConfiguration;
+import org.apache.shardingsphere.orchestration.internal.registry.config.event.DataSourceChangedEvent;
 import org.apache.shardingsphere.orchestration.internal.registry.config.event.ShardingRuleChangedEvent;
 import org.apache.shardingsphere.orchestration.reg.api.RegistryCenterConfiguration;
 import org.apache.shardingsphere.shardingjdbc.api.yaml.YamlShardingDataSourceFactory;
@@ -31,6 +34,8 @@ import org.junit.Before;
 import org.junit.Test;
 
 import java.io.File;
+import java.util.LinkedHashMap;
+import java.util.Map;
 
 import static org.hamcrest.CoreMatchers.is;
 import static org.junit.Assert.assertThat;
@@ -74,7 +79,23 @@ public class OrchestrationShardingDataSourceTest {
     }
     
     @Test
-    public void testRenew1() {
+    public void assertRenewDataSource() {
+        shardingDataSource.renew(new DataSourceChangedEvent(ShardingConstant.LOGIC_SCHEMA_NAME, getDataSourceConfigurations()));
+        assertThat(shardingDataSource.getDataSource().getDataSourceMap().size(), is(3));
+        
+    }
+    
+    private Map<String, DataSourceConfiguration> getDataSourceConfigurations() {
+        Map<String, DataSourceConfiguration> result = new LinkedHashMap<>();
+        BasicDataSource dataSource = new BasicDataSource();
+        dataSource.setDriverClassName("org.h2.Driver");
+        dataSource.setUrl("jdbc:h2:mem:test;DB_CLOSE_DELAY=-1;DATABASE_TO_UPPER=false;MODE=MySQL");
+        dataSource.setUsername("sa");
+        dataSource.setPassword("");
+        result.put("ds_0", DataSourceConfiguration.getDataSourceConfiguration(dataSource));
+        result.put("ds_1", DataSourceConfiguration.getDataSourceConfiguration(dataSource));
+        result.put("ds_2", DataSourceConfiguration.getDataSourceConfiguration(dataSource));
+        return result;
     }
     
     @Test
