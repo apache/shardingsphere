@@ -19,14 +19,15 @@ package org.apache.shardingsphere.shardingproxy.backend;
 
 import org.apache.shardingsphere.core.constant.DatabaseType;
 import org.apache.shardingsphere.shardingproxy.backend.engine.jdbc.connection.BackendConnection;
-import org.apache.shardingsphere.shardingproxy.backend.handler.BackendHandler;
-import org.apache.shardingsphere.shardingproxy.backend.handler.BroadcastBackendHandler;
-import org.apache.shardingsphere.shardingproxy.backend.handler.CurrentSchemaBackendHandler;
-import org.apache.shardingsphere.shardingproxy.backend.handler.ShowDatabasesBackendHandler;
-import org.apache.shardingsphere.shardingproxy.backend.handler.SkipBackendHandler;
-import org.apache.shardingsphere.shardingproxy.backend.handler.TransactionBackendHandler;
-import org.apache.shardingsphere.shardingproxy.backend.handler.UseSchemaBackendHandler;
 import org.apache.shardingsphere.shardingproxy.backend.sctl.ShardingCTLSetBackendHandler;
+import org.apache.shardingsphere.shardingproxy.backend.text.ComQueryBackendHandlerFactory;
+import org.apache.shardingsphere.shardingproxy.backend.text.TextProtocolBackendHandler;
+import org.apache.shardingsphere.shardingproxy.backend.text.admin.BroadcastBackendHandler;
+import org.apache.shardingsphere.shardingproxy.backend.text.admin.ShowDatabasesBackendHandler;
+import org.apache.shardingsphere.shardingproxy.backend.text.admin.UseDatabaseBackendHandler;
+import org.apache.shardingsphere.shardingproxy.backend.text.query.QueryBackendHandler;
+import org.apache.shardingsphere.shardingproxy.backend.text.transaction.SkipBackendHandler;
+import org.apache.shardingsphere.shardingproxy.backend.text.transaction.TransactionBackendHandler;
 import org.junit.Test;
 import org.junit.runner.RunWith;
 import org.mockito.Mock;
@@ -44,49 +45,49 @@ public final class ComQueryBackendHandlerFactoryTest {
     @Test
     public void assertCreateTransactionBackendHandler() {
         String sql = "BEGIN";
-        BackendHandler actual = ComQueryBackendHandlerFactory.createBackendHandler(1, sql, backendConnection, DatabaseType.MySQL);
+        TextProtocolBackendHandler actual = ComQueryBackendHandlerFactory.createTextProtocolBackendHandler(1, sql, backendConnection, DatabaseType.MySQL);
         assertThat(actual, instanceOf(TransactionBackendHandler.class));
     }
     
     @Test
     public void assertCreateShardingCTLBackendHandler() {
         String sql = "sctl:set transaction_type=XA";
-        BackendHandler actual = ComQueryBackendHandlerFactory.createBackendHandler(1, sql, backendConnection, DatabaseType.MySQL);
+        TextProtocolBackendHandler actual = ComQueryBackendHandlerFactory.createTextProtocolBackendHandler(1, sql, backendConnection, DatabaseType.MySQL);
         assertThat(actual, instanceOf(ShardingCTLSetBackendHandler.class));
     }
     
     @Test
     public void assertCreateSkipBackendHandler() {
         String sql = "SET AUTOCOMMIT=1";
-        BackendHandler actual = ComQueryBackendHandlerFactory.createBackendHandler(1, sql, backendConnection, DatabaseType.MySQL);
+        TextProtocolBackendHandler actual = ComQueryBackendHandlerFactory.createTextProtocolBackendHandler(1, sql, backendConnection, DatabaseType.MySQL);
         assertThat(actual, instanceOf(SkipBackendHandler.class));
     }
     
     @Test
     public void assertCreateSchemaBroadcastBackendHandler() {
         String sql = "set @num=1";
-        BackendHandler actual = ComQueryBackendHandlerFactory.createBackendHandler(1, sql, backendConnection, DatabaseType.MySQL);
+        TextProtocolBackendHandler actual = ComQueryBackendHandlerFactory.createTextProtocolBackendHandler(1, sql, backendConnection, DatabaseType.MySQL);
         assertThat(actual, instanceOf(BroadcastBackendHandler.class));
     }
     
     @Test
     public void assertCreateUseSchemaBackendHandler() {
         String sql = "use sharding_db";
-        BackendHandler actual = ComQueryBackendHandlerFactory.createBackendHandler(1, sql, backendConnection, DatabaseType.MySQL);
-        assertThat(actual, instanceOf(UseSchemaBackendHandler.class));
+        TextProtocolBackendHandler actual = ComQueryBackendHandlerFactory.createTextProtocolBackendHandler(1, sql, backendConnection, DatabaseType.MySQL);
+        assertThat(actual, instanceOf(UseDatabaseBackendHandler.class));
     }
     
     @Test
     public void assertCreateShowDatabasesBackendHandler() {
         String sql = "show databases;";
-        BackendHandler actual = ComQueryBackendHandlerFactory.createBackendHandler(1, sql, backendConnection, DatabaseType.MySQL);
+        TextProtocolBackendHandler actual = ComQueryBackendHandlerFactory.createTextProtocolBackendHandler(1, sql, backendConnection, DatabaseType.MySQL);
         assertThat(actual, instanceOf(ShowDatabasesBackendHandler.class));
     }
     
     @Test
     public void assertCrateDefaultBackendHandler() {
         String sql = "select * from t_order limit 1";
-        BackendHandler actual = ComQueryBackendHandlerFactory.createBackendHandler(1, sql, backendConnection, DatabaseType.MySQL);
-        assertThat(actual, instanceOf(CurrentSchemaBackendHandler.class));
+        TextProtocolBackendHandler actual = ComQueryBackendHandlerFactory.createTextProtocolBackendHandler(1, sql, backendConnection, DatabaseType.MySQL);
+        assertThat(actual, instanceOf(QueryBackendHandler.class));
     }
 }

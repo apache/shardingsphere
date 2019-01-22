@@ -15,7 +15,7 @@
  * limitations under the License.
  */
 
-package org.apache.shardingsphere.shardingproxy.backend.handler;
+package org.apache.shardingsphere.shardingproxy.backend.text.admin;
 
 import org.apache.shardingsphere.core.parsing.parser.dialect.mysql.statement.UseStatement;
 import org.apache.shardingsphere.shardingproxy.backend.MockGlobalRegistryUtil;
@@ -38,7 +38,7 @@ import static org.mockito.Mockito.verify;
 import static org.mockito.Mockito.when;
 
 @RunWith(MockitoJUnitRunner.class)
-public final class UseStatementBackendHandlerTest {
+public final class UseDatabaseBackendHandlerTest {
     
     @Mock
     private BackendConnection backendConnection;
@@ -52,7 +52,7 @@ public final class UseStatementBackendHandlerTest {
     public void assertExecuteUseStatementBackendHandler() {
         UseStatement useStatement = mock(UseStatement.class);
         when(useStatement.getSchema()).thenReturn("schema_0");
-        UseSchemaBackendHandler useSchemaBackendHandler = new UseSchemaBackendHandler(useStatement, backendConnection);
+        UseDatabaseBackendHandler useSchemaBackendHandler = new UseDatabaseBackendHandler(useStatement, backendConnection);
         CommandResponsePackets actual = useSchemaBackendHandler.execute();
         verify(backendConnection).setCurrentSchema(anyString());
         assertThat(actual.getHeadPacket(), instanceOf(OKPacket.class));
@@ -62,7 +62,7 @@ public final class UseStatementBackendHandlerTest {
     public void assertExecuteUseStatementNotExist() {
         UseStatement useStatement = mock(UseStatement.class);
         when(useStatement.getSchema()).thenReturn("not_exist");
-        UseSchemaBackendHandler useSchemaBackendHandler = new UseSchemaBackendHandler(useStatement, backendConnection);
+        UseDatabaseBackendHandler useSchemaBackendHandler = new UseDatabaseBackendHandler(useStatement, backendConnection);
         CommandResponsePackets actual = useSchemaBackendHandler.execute();
         assertThat(actual.getHeadPacket(), instanceOf(ErrPacket.class));
         verify(backendConnection, times(0)).setCurrentSchema(anyString());

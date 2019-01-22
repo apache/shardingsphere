@@ -15,7 +15,7 @@
  * limitations under the License.
  */
 
-package org.apache.shardingsphere.shardingproxy.backend.handler;
+package org.apache.shardingsphere.shardingproxy.backend.text.admin;
 
 import lombok.RequiredArgsConstructor;
 import org.apache.shardingsphere.core.constant.DatabaseType;
@@ -23,19 +23,19 @@ import org.apache.shardingsphere.shardingproxy.backend.ResultPacket;
 import org.apache.shardingsphere.shardingproxy.backend.engine.DatabaseAccessEngine;
 import org.apache.shardingsphere.shardingproxy.backend.engine.DatabaseAccessEngineFactory;
 import org.apache.shardingsphere.shardingproxy.backend.engine.jdbc.connection.BackendConnection;
-import org.apache.shardingsphere.shardingproxy.transport.mysql.constant.ServerErrorCode;
+import org.apache.shardingsphere.shardingproxy.backend.text.TextProtocolBackendHandler;
+import org.apache.shardingsphere.shardingproxy.runtime.GlobalRegistry;
 import org.apache.shardingsphere.shardingproxy.transport.mysql.packet.command.CommandResponsePackets;
-import org.apache.shardingsphere.shardingproxy.transport.mysql.packet.generic.ErrPacket;
 
 import java.sql.SQLException;
 
 /**
- * Backend handler with current schema.
+ * Backend handler for unicast.
  *
- * @author zhangliang
+ * @author zhaojun
  */
 @RequiredArgsConstructor
-public final class CurrentSchemaBackendHandler implements BackendHandler {
+public final class UnicastBackendHandler implements TextProtocolBackendHandler {
     
     private final DatabaseAccessEngineFactory databaseAccessEngineFactory = DatabaseAccessEngineFactory.getInstance();
     
@@ -51,10 +51,8 @@ public final class CurrentSchemaBackendHandler implements BackendHandler {
     
     @Override
     public CommandResponsePackets execute() {
-        if (null == backendConnection.getLogicSchema()) {
-            return new CommandResponsePackets(new ErrPacket(1, ServerErrorCode.ER_NO_DB_ERROR));
-        }
-        databaseAccessEngine = databaseAccessEngineFactory.newTextProtocolInstance(backendConnection.getLogicSchema(), sequenceId, sql, backendConnection, databaseType);
+        databaseAccessEngine = databaseAccessEngineFactory.newTextProtocolInstance(
+                GlobalRegistry.getInstance().getLogicSchemas().values().iterator().next(), sequenceId, sql, backendConnection, databaseType);
         return databaseAccessEngine.execute();
     }
     

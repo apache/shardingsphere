@@ -15,9 +15,11 @@
  * limitations under the License.
  */
 
-package org.apache.shardingsphere.shardingproxy.backend;
+package org.apache.shardingsphere.shardingproxy.backend.text;
 
 import com.google.common.base.Optional;
+import lombok.AccessLevel;
+import lombok.NoArgsConstructor;
 import org.apache.shardingsphere.core.constant.DatabaseType;
 import org.apache.shardingsphere.core.constant.SQLType;
 import org.apache.shardingsphere.core.parsing.SQLJudgeEngine;
@@ -26,16 +28,15 @@ import org.apache.shardingsphere.core.parsing.parser.dialect.mysql.statement.Use
 import org.apache.shardingsphere.core.parsing.parser.sql.SQLStatement;
 import org.apache.shardingsphere.core.parsing.parser.sql.dal.set.SetStatement;
 import org.apache.shardingsphere.shardingproxy.backend.engine.jdbc.connection.BackendConnection;
-import org.apache.shardingsphere.shardingproxy.backend.handler.BackendHandler;
-import org.apache.shardingsphere.shardingproxy.backend.handler.BroadcastBackendHandler;
-import org.apache.shardingsphere.shardingproxy.backend.handler.CurrentSchemaBackendHandler;
-import org.apache.shardingsphere.shardingproxy.backend.handler.ShowDatabasesBackendHandler;
-import org.apache.shardingsphere.shardingproxy.backend.handler.SkipBackendHandler;
-import org.apache.shardingsphere.shardingproxy.backend.handler.TransactionBackendHandler;
-import org.apache.shardingsphere.shardingproxy.backend.handler.UnicastBackendHandler;
-import org.apache.shardingsphere.shardingproxy.backend.handler.UseSchemaBackendHandler;
 import org.apache.shardingsphere.shardingproxy.backend.sctl.ShardingCTLSetBackendHandler;
 import org.apache.shardingsphere.shardingproxy.backend.sctl.ShardingCTLShowBackendHandler;
+import org.apache.shardingsphere.shardingproxy.backend.text.admin.BroadcastBackendHandler;
+import org.apache.shardingsphere.shardingproxy.backend.text.admin.ShowDatabasesBackendHandler;
+import org.apache.shardingsphere.shardingproxy.backend.text.admin.UnicastBackendHandler;
+import org.apache.shardingsphere.shardingproxy.backend.text.admin.UseDatabaseBackendHandler;
+import org.apache.shardingsphere.shardingproxy.backend.text.query.QueryBackendHandler;
+import org.apache.shardingsphere.shardingproxy.backend.text.transaction.SkipBackendHandler;
+import org.apache.shardingsphere.shardingproxy.backend.text.transaction.TransactionBackendHandler;
 import org.apache.shardingsphere.transaction.core.TransactionOperationType;
 
 /**
@@ -43,7 +44,8 @@ import org.apache.shardingsphere.transaction.core.TransactionOperationType;
  *
  * @author zhaojun
  */
-public class ComQueryBackendHandlerFactory {
+@NoArgsConstructor(access = AccessLevel.PRIVATE)
+public final class ComQueryBackendHandlerFactory {
     
     private static final String SCTL_SET = "SCTL:SET";
     
@@ -52,15 +54,15 @@ public class ComQueryBackendHandlerFactory {
     private static final String SKIP_SQL = "SET AUTOCOMMIT=1";
     
     /**
-     * Create new com query backend handler instance.
+     * Create new text protocol backend handler instance.
      *
      * @param sequenceId sequence ID of SQL packet
      * @param sql SQL to be executed
      * @param backendConnection backend connection
      * @param databaseType database type
-     * @return instance of backend handler
+     * @return instance of text protocol backend handler
      */
-    public static BackendHandler createBackendHandler(final int sequenceId, final String sql, final BackendConnection backendConnection, final DatabaseType databaseType) {
+    public static TextProtocolBackendHandler createTextProtocolBackendHandler(final int sequenceId, final String sql, final BackendConnection backendConnection, final DatabaseType databaseType) {
         Optional<TransactionOperationType> transactionOperationType = TransactionOperationType.getOperationType(sql.toUpperCase());
         if (transactionOperationType.isPresent()) {
             return new TransactionBackendHandler(transactionOperationType.get(), backendConnection);
@@ -73,16 +75,21 @@ public class ComQueryBackendHandlerFactory {
             return new SkipBackendHandler();
         }
         SQLStatement sqlStatement = new SQLJudgeEngine(sql).judge();
+        return SQLType.DAL == sqlStatement.getType()
+                ? createDALBackendHandler(sqlStatement, sequenceId, sql, backendConnection, databaseType) : new QueryBackendHandler(sequenceId, sql, backendConnection, databaseType);
+    }
+    
+    private static TextProtocolBackendHandler createDALBackendHandler(
+            final SQLStatement sqlStatement, final int sequenceId, final String sql, final BackendConnection backendConnection, final DatabaseType databaseType) {
         if (sqlStatement instanceof SetStatement) {
             return new BroadcastBackendHandler(sequenceId, sql, backendConnection, databaseType);
-        } else if (sqlStatement instanceof UseStatement) {
-            return new UseSchemaBackendHandler((UseStatement) sqlStatement, backendConnection);
-        } else if (sqlStatement instanceof ShowDatabasesStatement) {
-            return new ShowDatabasesBackendHandler();
-        } else if (SQLType.DAL == sqlStatement.getType()) {
-            return new UnicastBackendHandler(sequenceId, sql, backendConnection, databaseType);
-        } else {
-            return new CurrentSchemaBackendHandler(sequenceId, sql, backendConnection, databaseType);
         }
+        if (sqlStatement instanceof UseStatement) {
+            return new UseDatabaseBackendHandler((UseStatement) sqlStatement, backendConnection);
+        }
+        if (sqlStatement instanceof ShowDatabasesStatement) {
+            return new ShowDatabasesBackendHandler();
+        }
+        return new UnicastBackendHandler(sequenceId, sql, backendConnection, databaseType);
     }
 }

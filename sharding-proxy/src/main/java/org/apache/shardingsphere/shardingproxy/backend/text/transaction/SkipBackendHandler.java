@@ -15,21 +15,32 @@
  * limitations under the License.
  */
 
-package org.apache.shardingsphere.shardingproxy.backend.handler;
+package org.apache.shardingsphere.shardingproxy.backend.text.transaction;
 
+import org.apache.shardingsphere.shardingproxy.backend.ResultPacket;
+import org.apache.shardingsphere.shardingproxy.backend.text.TextProtocolBackendHandler;
 import org.apache.shardingsphere.shardingproxy.transport.mysql.packet.command.CommandResponsePackets;
 import org.apache.shardingsphere.shardingproxy.transport.mysql.packet.generic.OKPacket;
-import org.junit.Test;
 
-import static org.hamcrest.CoreMatchers.instanceOf;
-import static org.junit.Assert.assertThat;
-
-public final class SkipBackendHandlerTest {
+/**
+ * Skip backend handler.
+ *
+ * @author zhaojun
+ */
+public final class SkipBackendHandler implements TextProtocolBackendHandler {
     
-    @Test
-    public void assertExecuteSkipBackendHandler() {
-        SkipBackendHandler skipBackendHandler = new SkipBackendHandler();
-        CommandResponsePackets actual = skipBackendHandler.execute();
-        assertThat(actual.getHeadPacket(), instanceOf(OKPacket.class));
+    @Override
+    public CommandResponsePackets execute() {
+        return new CommandResponsePackets(new OKPacket(1));
+    }
+    
+    @Override
+    public boolean next() {
+        return false;
+    }
+    
+    @Override
+    public ResultPacket getResultValue() {
+        return null;
     }
 }

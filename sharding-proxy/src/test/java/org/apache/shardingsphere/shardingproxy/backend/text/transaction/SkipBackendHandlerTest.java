@@ -15,29 +15,21 @@
  * limitations under the License.
  */
 
-package org.apache.shardingsphere.shardingproxy.backend.handler;
+package org.apache.shardingsphere.shardingproxy.backend.text.transaction;
 
-import org.apache.shardingsphere.shardingproxy.backend.engine.jdbc.connection.BackendConnection;
 import org.apache.shardingsphere.shardingproxy.transport.mysql.packet.command.CommandResponsePackets;
 import org.apache.shardingsphere.shardingproxy.transport.mysql.packet.generic.OKPacket;
-import org.apache.shardingsphere.transaction.core.TransactionOperationType;
-import org.apache.shardingsphere.transaction.core.TransactionType;
 import org.junit.Test;
-import org.junit.runner.RunWith;
-import org.mockito.junit.MockitoJUnitRunner;
 
 import static org.hamcrest.CoreMatchers.instanceOf;
 import static org.junit.Assert.assertThat;
 
-@RunWith(MockitoJUnitRunner.class)
-public final class TransactionBackendHandlerTest {
-    
-    private BackendConnection backendConnection = new BackendConnection(TransactionType.LOCAL);
+public final class SkipBackendHandlerTest {
     
     @Test
-    public void assertExecute() {
-        TransactionBackendHandler transactionBackendHandler = new TransactionBackendHandler(TransactionOperationType.BEGIN, backendConnection);
-        CommandResponsePackets actual = transactionBackendHandler.execute();
+    public void assertExecuteSkipBackendHandler() {
+        SkipBackendHandler skipBackendHandler = new SkipBackendHandler();
+        CommandResponsePackets actual = skipBackendHandler.execute();
         assertThat(actual.getHeadPacket(), instanceOf(OKPacket.class));
     }
 }

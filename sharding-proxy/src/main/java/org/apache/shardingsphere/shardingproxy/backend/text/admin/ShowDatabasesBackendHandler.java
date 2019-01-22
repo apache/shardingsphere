@@ -15,11 +15,12 @@
  * limitations under the License.
  */
 
-package org.apache.shardingsphere.shardingproxy.backend.handler;
+package org.apache.shardingsphere.shardingproxy.backend.text.admin;
 
 import org.apache.shardingsphere.core.merger.MergedResult;
 import org.apache.shardingsphere.core.merger.dal.show.ShowDatabasesMergedResult;
 import org.apache.shardingsphere.shardingproxy.backend.ResultPacket;
+import org.apache.shardingsphere.shardingproxy.backend.text.TextProtocolBackendHandler;
 import org.apache.shardingsphere.shardingproxy.runtime.GlobalRegistry;
 import org.apache.shardingsphere.shardingproxy.transport.mysql.constant.ColumnType;
 import org.apache.shardingsphere.shardingproxy.transport.mysql.packet.command.CommandResponsePackets;
@@ -40,7 +41,7 @@ import java.util.List;
  * @author chenqingyang
  * @author zhaojun
  */
-public final class ShowDatabasesBackendHandler implements BackendHandler {
+public final class ShowDatabasesBackendHandler implements TextProtocolBackendHandler {
     
     private MergedResult mergedResult;
     
@@ -52,26 +53,16 @@ public final class ShowDatabasesBackendHandler implements BackendHandler {
     
     @Override
     public CommandResponsePackets execute() {
-        try {
-            return handleShowDatabasesStatement();
-            // CHECKSTYLE:OFF
-        } catch (final Exception ex) {
-            // CHECKSTYLE:ON
-            return new CommandResponsePackets(ex);
-        }
-    }
-    
-    private CommandResponsePackets handleShowDatabasesStatement() {
         mergedResult = new ShowDatabasesMergedResult(GlobalRegistry.getInstance().getSchemaNames());
         int sequenceId = 0;
         FieldCountPacket fieldCountPacket = new FieldCountPacket(++sequenceId, 1);
         Collection<ColumnDefinition41Packet> columnDefinition41Packets = new ArrayList<>(1);
         columnDefinition41Packets.add(new ColumnDefinition41Packet(++sequenceId, "", "", "", "Database", "", 100, ColumnType.MYSQL_TYPE_VARCHAR, 0));
-        QueryResponsePackets queryResponsePackets = new QueryResponsePackets(fieldCountPacket, columnDefinition41Packets, new EofPacket(++sequenceId));
-        currentSequenceId = queryResponsePackets.getPackets().size();
-        columnCount = queryResponsePackets.getColumnCount();
-        columnTypes.addAll(queryResponsePackets.getColumnTypes());
-        return queryResponsePackets;
+        QueryResponsePackets result = new QueryResponsePackets(fieldCountPacket, columnDefinition41Packets, new EofPacket(++sequenceId));
+        currentSequenceId = result.getPackets().size();
+        columnCount = result.getColumnCount();
+        columnTypes.addAll(result.getColumnTypes());
+        return result;
     }
     
     @Override

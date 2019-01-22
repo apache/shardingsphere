@@ -23,14 +23,14 @@ import org.apache.shardingsphere.shardingproxy.backend.engine.jdbc.connection.Co
 import org.apache.shardingsphere.shardingproxy.backend.engine.jdbc.datasource.JDBCBackendDataSourceTest;
 import org.apache.shardingsphere.shardingproxy.backend.engine.jdbc.datasource.JDBCXABackendDataSourceFactoryTest;
 import org.apache.shardingsphere.shardingproxy.backend.engine.jdbc.recognizer.AllRecognizerTests;
-import org.apache.shardingsphere.shardingproxy.backend.handler.BroadcastBackendHandlerTest;
-import org.apache.shardingsphere.shardingproxy.backend.handler.ShowDatabasesBackendHandlerTest;
-import org.apache.shardingsphere.shardingproxy.backend.handler.SkipBackendHandlerTest;
-import org.apache.shardingsphere.shardingproxy.backend.handler.TransactionBackendHandlerTest;
-import org.apache.shardingsphere.shardingproxy.backend.handler.UnicastBackendHandlerTest;
-import org.apache.shardingsphere.shardingproxy.backend.handler.UseStatementBackendHandlerTest;
 import org.apache.shardingsphere.shardingproxy.backend.sctl.ShardingCTLSetBackendHandlerTest;
 import org.apache.shardingsphere.shardingproxy.backend.sctl.ShardingCTLShowBackendHandlerTest;
+import org.apache.shardingsphere.shardingproxy.backend.text.admin.BroadcastBackendHandlerTest;
+import org.apache.shardingsphere.shardingproxy.backend.text.admin.ShowDatabasesBackendHandlerTest;
+import org.apache.shardingsphere.shardingproxy.backend.text.admin.UnicastBackendHandlerTest;
+import org.apache.shardingsphere.shardingproxy.backend.text.admin.UseDatabaseBackendHandlerTest;
+import org.apache.shardingsphere.shardingproxy.backend.text.transaction.SkipBackendHandlerTest;
+import org.apache.shardingsphere.shardingproxy.backend.text.transaction.TransactionBackendHandlerTest;
 import org.junit.runner.RunWith;
 import org.junit.runners.Suite;
 import org.junit.runners.Suite.SuiteClasses;
@@ -43,7 +43,7 @@ import org.junit.runners.Suite.SuiteClasses;
         SkipBackendHandlerTest.class, 
         TransactionBackendHandlerTest.class, 
         UnicastBackendHandlerTest.class, 
-        UseStatementBackendHandlerTest.class, 
+        UseDatabaseBackendHandlerTest.class, 
         ShardingCTLSetBackendHandlerTest.class,
         ShardingCTLShowBackendHandlerTest.class,
         JDBCXABackendDataSourceFactoryTest.class,

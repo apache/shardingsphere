@@ -23,7 +23,7 @@ import org.apache.shardingsphere.core.constant.ShardingConstant;
 import org.apache.shardingsphere.shardingproxy.backend.ResultPacket;
 import org.apache.shardingsphere.shardingproxy.backend.engine.jdbc.connection.BackendConnection;
 import org.apache.shardingsphere.shardingproxy.backend.engine.jdbc.connection.ConnectionStatus;
-import org.apache.shardingsphere.shardingproxy.backend.handler.BackendHandler;
+import org.apache.shardingsphere.shardingproxy.backend.text.TextProtocolBackendHandler;
 import org.apache.shardingsphere.shardingproxy.runtime.GlobalRegistry;
 import org.apache.shardingsphere.shardingproxy.runtime.schema.ShardingSchema;
 import org.apache.shardingsphere.shardingproxy.transport.common.packet.DatabasePacket;
@@ -115,15 +115,15 @@ public final class ComQueryPacketTest {
     
     @SneakyThrows
     private void setBackendHandler(final ComQueryPacket packet, final FieldCountPacket expectedFieldCountPacket) {
-        BackendHandler backendHandler = mock(BackendHandler.class);
-        when(backendHandler.next()).thenReturn(true, false);
-        when(backendHandler.getResultValue()).thenReturn(new ResultPacket(1, Collections.<Object>singletonList("id"), 1, Collections.singletonList(ColumnType.MYSQL_TYPE_VARCHAR)));
-        when(backendHandler.execute()).thenReturn(new CommandResponsePackets(expectedFieldCountPacket));
-        when(backendHandler.next()).thenReturn(true, false);
-        when(backendHandler.getResultValue()).thenReturn(new ResultPacket(2, Collections.<Object>singletonList(99999L), 1, Collections.singletonList(ColumnType.MYSQL_TYPE_LONG)));
-        Field field = ComQueryPacket.class.getDeclaredField("backendHandler");
+        TextProtocolBackendHandler textProtocolBackendHandler = mock(TextProtocolBackendHandler.class);
+        when(textProtocolBackendHandler.next()).thenReturn(true, false);
+        when(textProtocolBackendHandler.getResultValue()).thenReturn(new ResultPacket(1, Collections.<Object>singletonList("id"), 1, Collections.singletonList(ColumnType.MYSQL_TYPE_VARCHAR)));
+        when(textProtocolBackendHandler.execute()).thenReturn(new CommandResponsePackets(expectedFieldCountPacket));
+        when(textProtocolBackendHandler.next()).thenReturn(true, false);
+        when(textProtocolBackendHandler.getResultValue()).thenReturn(new ResultPacket(2, Collections.<Object>singletonList(99999L), 1, Collections.singletonList(ColumnType.MYSQL_TYPE_LONG)));
+        Field field = ComQueryPacket.class.getDeclaredField("textProtocolBackendHandler");
         field.setAccessible(true);
-        field.set(packet, backendHandler);
+        field.set(packet, textProtocolBackendHandler);
     }
     
     @Test

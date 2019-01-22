@@ -27,7 +27,7 @@ import lombok.RequiredArgsConstructor;
  */
 @RequiredArgsConstructor
 @Getter
-public class ShardingCTLSetStatement {
+public final class ShardingCTLSetStatement {
     
     private final String key;
     

@@ -15,11 +15,12 @@
  * limitations under the License.
  */
 
-package org.apache.shardingsphere.shardingproxy.backend.handler;
+package org.apache.shardingsphere.shardingproxy.backend.text.transaction;
 
 import org.apache.shardingsphere.shardingproxy.backend.ResultPacket;
 import org.apache.shardingsphere.shardingproxy.backend.engine.jdbc.connection.BackendConnection;
 import org.apache.shardingsphere.shardingproxy.backend.engine.jdbc.connection.BackendTransactionManager;
+import org.apache.shardingsphere.shardingproxy.backend.text.TextProtocolBackendHandler;
 import org.apache.shardingsphere.shardingproxy.transport.mysql.packet.command.CommandResponsePackets;
 import org.apache.shardingsphere.shardingproxy.transport.mysql.packet.generic.OKPacket;
 import org.apache.shardingsphere.transaction.core.TransactionOperationType;
@@ -29,7 +30,7 @@ import org.apache.shardingsphere.transaction.core.TransactionOperationType;
  *
  * @author zhaojun
  */
-public final class TransactionBackendHandler implements BackendHandler {
+public final class TransactionBackendHandler implements TextProtocolBackendHandler {
     
     private final TransactionOperationType operationType;
     

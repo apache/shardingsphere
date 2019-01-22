@@ -21,10 +21,10 @@ import com.google.common.base.Optional;
 import lombok.Getter;
 import lombok.extern.slf4j.Slf4j;
 import org.apache.shardingsphere.core.constant.DatabaseType;
-import org.apache.shardingsphere.shardingproxy.backend.ComQueryBackendHandlerFactory;
 import org.apache.shardingsphere.shardingproxy.backend.ResultPacket;
 import org.apache.shardingsphere.shardingproxy.backend.engine.jdbc.connection.BackendConnection;
-import org.apache.shardingsphere.shardingproxy.backend.handler.BackendHandler;
+import org.apache.shardingsphere.shardingproxy.backend.text.ComQueryBackendHandlerFactory;
+import org.apache.shardingsphere.shardingproxy.backend.text.TextProtocolBackendHandler;
 import org.apache.shardingsphere.shardingproxy.runtime.GlobalRegistry;
 import org.apache.shardingsphere.shardingproxy.transport.common.packet.DatabasePacket;
 import org.apache.shardingsphere.shardingproxy.transport.mysql.constant.ServerErrorCode;
@@ -53,18 +53,18 @@ public final class ComQueryPacket implements QueryCommandPacket {
     
     private final String sql;
     
-    private final BackendHandler backendHandler;
+    private final TextProtocolBackendHandler textProtocolBackendHandler;
     
     public ComQueryPacket(final int sequenceId, final MySQLPacketPayload payload, final BackendConnection backendConnection) {
         this.sequenceId = sequenceId;
         sql = payload.readStringEOF();
-        backendHandler = ComQueryBackendHandlerFactory.createBackendHandler(sequenceId, sql, backendConnection, DatabaseType.MySQL);
+        textProtocolBackendHandler = ComQueryBackendHandlerFactory.createTextProtocolBackendHandler(sequenceId, sql, backendConnection, DatabaseType.MySQL);
     }
     
     public ComQueryPacket(final int sequenceId, final String sql) {
         this.sequenceId = sequenceId;
         this.sql = sql;
-        backendHandler = null;
+        textProtocolBackendHandler = null;
     }
     
     @Override
@@ -76,20 +76,18 @@ public final class ComQueryPacket implements QueryCommandPacket {
     @Override
     public Optional<CommandResponsePackets> execute() {
         log.debug("COM_QUERY received for Sharding-Proxy: {}", sql);
-        if (GlobalRegistry.getInstance().isCircuitBreak()) {
-            return Optional.of(new CommandResponsePackets(new ErrPacket(1, ServerErrorCode.ER_CIRCUIT_BREAK_MODE)));
-        }
-        return Optional.of(backendHandler.execute());
+        return GlobalRegistry.getInstance().isCircuitBreak()
+                ? Optional.of(new CommandResponsePackets(new ErrPacket(1, ServerErrorCode.ER_CIRCUIT_BREAK_MODE))) : Optional.of(textProtocolBackendHandler.execute());
     }
     
     @Override
     public boolean next() throws SQLException {
-        return backendHandler.next();
+        return textProtocolBackendHandler.next();
     }
     
     @Override
     public DatabasePacket getResultValue() throws SQLException {
-        ResultPacket resultPacket = backendHandler.getResultValue();
+        ResultPacket resultPacket = textProtocolBackendHandler.getResultValue();
         return new TextResultSetRowPacket(resultPacket.getSequenceId(), resultPacket.getData());
     }
 }

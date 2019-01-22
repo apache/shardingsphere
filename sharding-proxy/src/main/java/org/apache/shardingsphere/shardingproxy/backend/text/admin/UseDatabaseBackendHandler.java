@@ -15,53 +15,50 @@
  * limitations under the License.
  */
 
-package org.apache.shardingsphere.shardingproxy.backend.handler;
+package org.apache.shardingsphere.shardingproxy.backend.text.admin;
 
 import lombok.RequiredArgsConstructor;
-import org.apache.shardingsphere.core.constant.DatabaseType;
+import org.apache.shardingsphere.core.parsing.parser.dialect.mysql.statement.UseStatement;
+import org.apache.shardingsphere.core.util.SQLUtil;
 import org.apache.shardingsphere.shardingproxy.backend.ResultPacket;
-import org.apache.shardingsphere.shardingproxy.backend.engine.DatabaseAccessEngine;
-import org.apache.shardingsphere.shardingproxy.backend.engine.DatabaseAccessEngineFactory;
 import org.apache.shardingsphere.shardingproxy.backend.engine.jdbc.connection.BackendConnection;
+import org.apache.shardingsphere.shardingproxy.backend.text.TextProtocolBackendHandler;
 import org.apache.shardingsphere.shardingproxy.runtime.GlobalRegistry;
+import org.apache.shardingsphere.shardingproxy.transport.mysql.constant.ServerErrorCode;
 import org.apache.shardingsphere.shardingproxy.transport.mysql.packet.command.CommandResponsePackets;
-
-import java.sql.SQLException;
+import org.apache.shardingsphere.shardingproxy.transport.mysql.packet.generic.ErrPacket;
+import org.apache.shardingsphere.shardingproxy.transport.mysql.packet.generic.OKPacket;
 
 /**
- * Backend handler for unicast.
+ * Use database backend handler.
  *
+ * @author chenqingyang
  * @author zhaojun
  */
 @RequiredArgsConstructor
-public final class UnicastBackendHandler implements BackendHandler {
+public final class UseDatabaseBackendHandler implements TextProtocolBackendHandler {
     
-    private final DatabaseAccessEngineFactory databaseAccessEngineFactory = DatabaseAccessEngineFactory.getInstance();
-    
-    private final int sequenceId;
-    
-    private final String sql;
+    private final UseStatement useStatement;
     
     private final BackendConnection backendConnection;
     
-    private final DatabaseType databaseType;
-    
-    private DatabaseAccessEngine databaseAccessEngine;
-    
     @Override
     public CommandResponsePackets execute() {
-        databaseAccessEngine = databaseAccessEngineFactory.newTextProtocolInstance(
-                GlobalRegistry.getInstance().getLogicSchemas().values().iterator().next(), sequenceId, sql, backendConnection, databaseType);
-        return databaseAccessEngine.execute();
+        String schema = SQLUtil.getExactlyValue(useStatement.getSchema());
+        if (!GlobalRegistry.getInstance().schemaExists(schema)) {
+            return new CommandResponsePackets(new ErrPacket(1, ServerErrorCode.ER_BAD_DB_ERROR, schema));
+        }
+        backendConnection.setCurrentSchema(schema);
+        return new CommandResponsePackets(new OKPacket(1));
     }
     
     @Override
-    public boolean next() throws SQLException {
-        return databaseAccessEngine.next();
+    public boolean next() {
+        return false;
     }
     
     @Override
-    public ResultPacket getResultValue() throws SQLException {
-        return databaseAccessEngine.getResultValue();
+    public ResultPacket getResultValue() {
+        return null;
     }
 }
