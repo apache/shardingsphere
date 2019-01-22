@@ -18,7 +18,11 @@
 package org.apache.shardingsphere.shardingjdbc.orchestration.internal.datasource;
 
 import lombok.SneakyThrows;
+import org.apache.shardingsphere.api.config.rule.ShardingRuleConfiguration;
+import org.apache.shardingsphere.api.config.rule.TableRuleConfiguration;
+import org.apache.shardingsphere.core.constant.ShardingConstant;
 import org.apache.shardingsphere.orchestration.config.OrchestrationConfiguration;
+import org.apache.shardingsphere.orchestration.internal.registry.config.event.ShardingRuleChangedEvent;
 import org.apache.shardingsphere.orchestration.reg.api.RegistryCenterConfiguration;
 import org.apache.shardingsphere.shardingjdbc.api.yaml.YamlShardingDataSourceFactory;
 import org.apache.shardingsphere.shardingjdbc.jdbc.core.datasource.ShardingDataSource;
@@ -27,6 +31,9 @@ import org.junit.Before;
 import org.junit.Test;
 
 import java.io.File;
+
+import static org.hamcrest.CoreMatchers.is;
+import static org.junit.Assert.assertThat;
 
 public class OrchestrationShardingDataSourceTest {
     
@@ -52,7 +59,18 @@ public class OrchestrationShardingDataSourceTest {
     }
     
     @Test
-    public void testRenew() {
+    public void assertRenewRule() {
+        shardingDataSource.renew(new ShardingRuleChangedEvent(ShardingConstant.LOGIC_SCHEMA_NAME, getShardingRuleConfig()));
+        assertThat(shardingDataSource.getDataSource().getShardingContext().getShardingRule().getTableRules().size(), is(1));
+    }
+    
+    private ShardingRuleConfiguration getShardingRuleConfig() {
+        ShardingRuleConfiguration result = new ShardingRuleConfiguration();
+        TableRuleConfiguration tableRuleConfig = new TableRuleConfiguration();
+        tableRuleConfig.setLogicTable("logic_table");
+        tableRuleConfig.setActualDataNodes("ds_0.table_${0..1}");
+        result.getTableRuleConfigs().add(tableRuleConfig);
+        return result;
     }
     
     @Test
