@@ -20,8 +20,8 @@ package org.apache.shardingsphere.shardingproxy.transport.mysql.packet.command.q
 import com.google.common.base.Optional;
 import lombok.SneakyThrows;
 import org.apache.shardingsphere.shardingproxy.backend.ResultPacket;
-import org.apache.shardingsphere.shardingproxy.backend.engine.DatabaseAccessEngine;
-import org.apache.shardingsphere.shardingproxy.backend.engine.jdbc.connection.BackendConnection;
+import org.apache.shardingsphere.shardingproxy.backend.communication.DatabaseCommunicationEngine;
+import org.apache.shardingsphere.shardingproxy.backend.communication.jdbc.connection.BackendConnection;
 import org.apache.shardingsphere.shardingproxy.transport.common.packet.DatabasePacket;
 import org.apache.shardingsphere.shardingproxy.transport.mysql.constant.ColumnType;
 import org.apache.shardingsphere.shardingproxy.transport.mysql.packet.MySQLPacketPayload;
@@ -80,15 +80,15 @@ public final class ComStmtExecutePacketTest {
     @Test
     public void assertExecute() throws SQLException {
         BinaryStatementRegistry.getInstance().register("SELECT id FROM tbl WHERE id=?", 1);
-        DatabaseAccessEngine databaseAccessEngine = mock(DatabaseAccessEngine.class);
+        DatabaseCommunicationEngine databaseCommunicationEngine = mock(DatabaseCommunicationEngine.class);
         when(payload.readInt4()).thenReturn(1);
         when(payload.readInt1()).thenReturn(0, 1);
         CommandResponsePackets expectedCommandResponsePackets = new CommandResponsePackets();
-        when(databaseAccessEngine.execute()).thenReturn(expectedCommandResponsePackets);
-        when(databaseAccessEngine.next()).thenReturn(true, false);
-        when(databaseAccessEngine.getResultValue()).thenReturn(new ResultPacket(2, Collections.<Object>singletonList(99999L), 1, Collections.singletonList(ColumnType.MYSQL_TYPE_LONG)));
+        when(databaseCommunicationEngine.execute()).thenReturn(expectedCommandResponsePackets);
+        when(databaseCommunicationEngine.next()).thenReturn(true, false);
+        when(databaseCommunicationEngine.getResultValue()).thenReturn(new ResultPacket(2, Collections.<Object>singletonList(99999L), 1, Collections.singletonList(ColumnType.MYSQL_TYPE_LONG)));
         ComStmtExecutePacket packet = new ComStmtExecutePacket(1, payload, backendConnection);
-        setBackendHandler(packet, databaseAccessEngine);
+        setBackendHandler(packet, databaseCommunicationEngine);
         Optional<CommandResponsePackets> actualCommandResponsePackets = packet.execute();
         assertTrue(actualCommandResponsePackets.isPresent());
         assertThat(actualCommandResponsePackets.get(), is(expectedCommandResponsePackets));
@@ -100,9 +100,9 @@ public final class ComStmtExecutePacketTest {
     }
     
     @SneakyThrows
-    private void setBackendHandler(final ComStmtExecutePacket packet, final DatabaseAccessEngine databaseAccessEngine) {
-        Field field = ComStmtExecutePacket.class.getDeclaredField("databaseAccessEngine");
+    private void setBackendHandler(final ComStmtExecutePacket packet, final DatabaseCommunicationEngine databaseCommunicationEngine) {
+        Field field = ComStmtExecutePacket.class.getDeclaredField("databaseCommunicationEngine");
         field.setAccessible(true);
-        field.set(packet, databaseAccessEngine);
+        field.set(packet, databaseCommunicationEngine);
     }
 }

@@ -18,8 +18,8 @@
 package org.apache.shardingsphere.shardingproxy.backend.text.transaction;
 
 import org.apache.shardingsphere.shardingproxy.backend.ResultPacket;
-import org.apache.shardingsphere.shardingproxy.backend.engine.jdbc.connection.BackendConnection;
-import org.apache.shardingsphere.shardingproxy.backend.engine.jdbc.connection.BackendTransactionManager;
+import org.apache.shardingsphere.shardingproxy.backend.communication.jdbc.connection.BackendConnection;
+import org.apache.shardingsphere.shardingproxy.backend.communication.jdbc.connection.BackendTransactionManager;
 import org.apache.shardingsphere.shardingproxy.backend.text.TextProtocolBackendHandler;
 import org.apache.shardingsphere.shardingproxy.transport.mysql.packet.command.CommandResponsePackets;
 import org.apache.shardingsphere.shardingproxy.transport.mysql.packet.generic.OKPacket;

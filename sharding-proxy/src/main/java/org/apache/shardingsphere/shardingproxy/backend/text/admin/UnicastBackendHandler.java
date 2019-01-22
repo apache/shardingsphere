@@ -20,9 +20,9 @@ package org.apache.shardingsphere.shardingproxy.backend.text.admin;
 import lombok.RequiredArgsConstructor;
 import org.apache.shardingsphere.core.constant.DatabaseType;
 import org.apache.shardingsphere.shardingproxy.backend.ResultPacket;
-import org.apache.shardingsphere.shardingproxy.backend.engine.DatabaseAccessEngine;
-import org.apache.shardingsphere.shardingproxy.backend.engine.DatabaseAccessEngineFactory;
-import org.apache.shardingsphere.shardingproxy.backend.engine.jdbc.connection.BackendConnection;
+import org.apache.shardingsphere.shardingproxy.backend.communication.DatabaseCommunicationEngine;
+import org.apache.shardingsphere.shardingproxy.backend.communication.DatabaseCommunicationEngineFactory;
+import org.apache.shardingsphere.shardingproxy.backend.communication.jdbc.connection.BackendConnection;
 import org.apache.shardingsphere.shardingproxy.backend.text.TextProtocolBackendHandler;
 import org.apache.shardingsphere.shardingproxy.runtime.GlobalRegistry;
 import org.apache.shardingsphere.shardingproxy.transport.mysql.packet.command.CommandResponsePackets;
@@ -37,7 +37,7 @@ import java.sql.SQLException;
 @RequiredArgsConstructor
 public final class UnicastBackendHandler implements TextProtocolBackendHandler {
     
-    private final DatabaseAccessEngineFactory databaseAccessEngineFactory = DatabaseAccessEngineFactory.getInstance();
+    private final DatabaseCommunicationEngineFactory databaseCommunicationEngineFactory = DatabaseCommunicationEngineFactory.getInstance();
     
     private final int sequenceId;
     
@@ -47,22 +47,22 @@ public final class UnicastBackendHandler implements TextProtocolBackendHandler {
     
     private final DatabaseType databaseType;
     
-    private DatabaseAccessEngine databaseAccessEngine;
+    private DatabaseCommunicationEngine databaseCommunicationEngine;
     
     @Override
     public CommandResponsePackets execute() {
-        databaseAccessEngine = databaseAccessEngineFactory.newTextProtocolInstance(
+        databaseCommunicationEngine = databaseCommunicationEngineFactory.newTextProtocolInstance(
                 GlobalRegistry.getInstance().getLogicSchemas().values().iterator().next(), sequenceId, sql, backendConnection, databaseType);
-        return databaseAccessEngine.execute();
+        return databaseCommunicationEngine.execute();
     }
     
     @Override
     public boolean next() throws SQLException {
-        return databaseAccessEngine.next();
+        return databaseCommunicationEngine.next();
     }
     
     @Override
     public ResultPacket getResultValue() throws SQLException {
-        return databaseAccessEngine.getResultValue();
+        return databaseCommunicationEngine.getResultValue();
     }
 }

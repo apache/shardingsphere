@@ -23,9 +23,9 @@ import lombok.Getter;
 import lombok.extern.slf4j.Slf4j;
 import org.apache.shardingsphere.core.constant.DatabaseType;
 import org.apache.shardingsphere.shardingproxy.backend.ResultPacket;
-import org.apache.shardingsphere.shardingproxy.backend.engine.DatabaseAccessEngine;
-import org.apache.shardingsphere.shardingproxy.backend.engine.DatabaseAccessEngineFactory;
-import org.apache.shardingsphere.shardingproxy.backend.engine.jdbc.connection.BackendConnection;
+import org.apache.shardingsphere.shardingproxy.backend.communication.DatabaseCommunicationEngine;
+import org.apache.shardingsphere.shardingproxy.backend.communication.DatabaseCommunicationEngineFactory;
+import org.apache.shardingsphere.shardingproxy.backend.communication.jdbc.connection.BackendConnection;
 import org.apache.shardingsphere.shardingproxy.runtime.GlobalRegistry;
 import org.apache.shardingsphere.shardingproxy.transport.common.packet.DatabasePacket;
 import org.apache.shardingsphere.shardingproxy.transport.mysql.constant.ColumnType;
@@ -74,7 +74,7 @@ public final class ComStmtExecutePacket implements QueryCommandPacket {
     
     private final List<Object> parameters;
     
-    private final DatabaseAccessEngine databaseAccessEngine;
+    private final DatabaseCommunicationEngine databaseCommunicationEngine;
     
     public ComStmtExecutePacket(final int sequenceId, final MySQLPacketPayload payload, final BackendConnection backendConnection) throws SQLException {
         this.sequenceId = sequenceId;
@@ -92,7 +92,7 @@ public final class ComStmtExecutePacket implements QueryCommandPacket {
             binaryStatement.setParameterTypes(getParameterTypes(payload, parametersCount));
         }
         parameters = getParameters(payload, parametersCount);
-        databaseAccessEngine = DatabaseAccessEngineFactory.getInstance().newBinaryProtocolInstance(
+        databaseCommunicationEngine = DatabaseCommunicationEngineFactory.getInstance().newBinaryProtocolInstance(
                 backendConnection.getLogicSchema(), sequenceId, binaryStatement.getSql(), parameters, backendConnection, DatabaseType.MySQL);
     }
     
@@ -140,17 +140,17 @@ public final class ComStmtExecutePacket implements QueryCommandPacket {
         if (GlobalRegistry.getInstance().isCircuitBreak()) {
             return Optional.of(new CommandResponsePackets(new ErrPacket(1, ServerErrorCode.ER_CIRCUIT_BREAK_MODE)));
         }
-        return Optional.of(databaseAccessEngine.execute());
+        return Optional.of(databaseCommunicationEngine.execute());
     }
     
     @Override
     public boolean next() throws SQLException {
-        return databaseAccessEngine.next();
+        return databaseCommunicationEngine.next();
     }
     
     @Override
     public DatabasePacket getResultValue() throws SQLException {
-        ResultPacket resultPacket = databaseAccessEngine.getResultValue();
+        ResultPacket resultPacket = databaseCommunicationEngine.getResultValue();
         return new BinaryResultSetRowPacket(resultPacket.getSequenceId(), resultPacket.getColumnCount(), resultPacket.getData(), resultPacket.getColumnTypes());
     }
 }

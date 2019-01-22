@@ -20,9 +20,9 @@ package org.apache.shardingsphere.shardingproxy.backend.text.admin;
 import lombok.SneakyThrows;
 import org.apache.shardingsphere.core.constant.DatabaseType;
 import org.apache.shardingsphere.shardingproxy.backend.MockGlobalRegistryUtil;
-import org.apache.shardingsphere.shardingproxy.backend.engine.DatabaseAccessEngine;
-import org.apache.shardingsphere.shardingproxy.backend.engine.DatabaseAccessEngineFactory;
-import org.apache.shardingsphere.shardingproxy.backend.engine.jdbc.connection.BackendConnection;
+import org.apache.shardingsphere.shardingproxy.backend.communication.DatabaseCommunicationEngine;
+import org.apache.shardingsphere.shardingproxy.backend.communication.DatabaseCommunicationEngineFactory;
+import org.apache.shardingsphere.shardingproxy.backend.communication.jdbc.connection.BackendConnection;
 import org.apache.shardingsphere.shardingproxy.runtime.schema.LogicSchema;
 import org.apache.shardingsphere.shardingproxy.transport.mysql.packet.command.CommandResponsePackets;
 import org.apache.shardingsphere.shardingproxy.transport.mysql.packet.generic.OKPacket;
@@ -49,7 +49,7 @@ public final class UnicastBackendHandlerTest {
     private BackendConnection backendConnection = new BackendConnection(TransactionType.LOCAL);
     
     @Mock
-    private DatabaseAccessEngineFactory databaseAccessEngineFactory;
+    private DatabaseCommunicationEngineFactory databaseCommunicationEngineFactory;
     
     @Before
     public void setUp() {
@@ -60,7 +60,7 @@ public final class UnicastBackendHandlerTest {
     @Test
     public void assertExecuteWhileSchemaIsNull() {
         UnicastBackendHandler backendHandler = new UnicastBackendHandler(1, "show variable like %s", backendConnection, DatabaseType.MySQL);
-        setDatabaseAccessEngine(backendHandler);
+        setDatabaseCommunicationEngine(backendHandler);
         CommandResponsePackets actual = backendHandler.execute();
         assertThat(actual.getHeadPacket(), instanceOf(OKPacket.class));
         backendHandler.execute();
@@ -70,22 +70,23 @@ public final class UnicastBackendHandlerTest {
     public void assertExecuteWhileSchemaNotNull() {
         backendConnection.setCurrentSchema("schema_0");
         UnicastBackendHandler backendHandler = new UnicastBackendHandler(1, "show variable like %s", backendConnection, DatabaseType.MySQL);
-        setDatabaseAccessEngine(backendHandler);
+        setDatabaseCommunicationEngine(backendHandler);
         CommandResponsePackets actual = backendHandler.execute();
         assertThat(actual.getHeadPacket(), instanceOf(OKPacket.class));
         backendHandler.execute();
     }
     
     private void setUnderlyingHandler(final CommandResponsePackets commandResponsePackets) {
-        DatabaseAccessEngine databaseAccessEngine = mock(DatabaseAccessEngine.class);
-        when(databaseAccessEngine.execute()).thenReturn(commandResponsePackets);
-        when(databaseAccessEngineFactory.newTextProtocolInstance((LogicSchema) any(), anyInt(), anyString(), (BackendConnection) any(), (DatabaseType) any())).thenReturn(databaseAccessEngine);
+        DatabaseCommunicationEngine databaseCommunicationEngine = mock(DatabaseCommunicationEngine.class);
+        when(databaseCommunicationEngine.execute()).thenReturn(commandResponsePackets);
+        when(databaseCommunicationEngineFactory.newTextProtocolInstance(
+                (LogicSchema) any(), anyInt(), anyString(), (BackendConnection) any(), (DatabaseType) any())).thenReturn(databaseCommunicationEngine);
     }
     
     @SneakyThrows
-    private void setDatabaseAccessEngine(final UnicastBackendHandler unicastSchemaBackendHandler) {
-        Field field = unicastSchemaBackendHandler.getClass().getDeclaredField("databaseAccessEngineFactory");
+    private void setDatabaseCommunicationEngine(final UnicastBackendHandler unicastSchemaBackendHandler) {
+        Field field = unicastSchemaBackendHandler.getClass().getDeclaredField("databaseCommunicationEngineFactory");
         field.setAccessible(true);
-        field.set(unicastSchemaBackendHandler, databaseAccessEngineFactory);
+        field.set(unicastSchemaBackendHandler, databaseCommunicationEngineFactory);
     }
 }

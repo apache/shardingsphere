@@ -35,7 +35,7 @@ import lombok.AccessLevel;
 import lombok.NoArgsConstructor;
 import org.apache.shardingsphere.core.constant.properties.ShardingPropertiesConstant;
 import org.apache.shardingsphere.shardingproxy.backend.BackendExecutorContext;
-import org.apache.shardingsphere.shardingproxy.backend.engine.netty.client.BackendNettyClientManager;
+import org.apache.shardingsphere.shardingproxy.backend.communication.netty.client.BackendNettyClientManager;
 import org.apache.shardingsphere.shardingproxy.frontend.common.netty.ServerHandlerInitializer;
 import org.apache.shardingsphere.shardingproxy.runtime.GlobalRegistry;
 

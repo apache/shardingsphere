@@ -20,8 +20,8 @@ package org.apache.shardingsphere.shardingproxy.backend.text.admin;
 import lombok.RequiredArgsConstructor;
 import org.apache.shardingsphere.core.constant.DatabaseType;
 import org.apache.shardingsphere.shardingproxy.backend.ResultPacket;
-import org.apache.shardingsphere.shardingproxy.backend.engine.DatabaseAccessEngineFactory;
-import org.apache.shardingsphere.shardingproxy.backend.engine.jdbc.connection.BackendConnection;
+import org.apache.shardingsphere.shardingproxy.backend.communication.DatabaseCommunicationEngineFactory;
+import org.apache.shardingsphere.shardingproxy.backend.communication.jdbc.connection.BackendConnection;
 import org.apache.shardingsphere.shardingproxy.backend.text.TextProtocolBackendHandler;
 import org.apache.shardingsphere.shardingproxy.runtime.GlobalRegistry;
 import org.apache.shardingsphere.shardingproxy.transport.common.packet.DatabasePacket;
@@ -41,7 +41,7 @@ import java.util.List;
 @RequiredArgsConstructor
 public final class BroadcastBackendHandler implements TextProtocolBackendHandler {
     
-    private final DatabaseAccessEngineFactory databaseAccessEngineFactory = DatabaseAccessEngineFactory.getInstance();
+    private final DatabaseCommunicationEngineFactory databaseCommunicationEngineFactory = DatabaseCommunicationEngineFactory.getInstance();
     
     private final int sequenceId;
     
@@ -55,8 +55,8 @@ public final class BroadcastBackendHandler implements TextProtocolBackendHandler
     public CommandResponsePackets execute() {
         List<DatabasePacket> packets = new LinkedList<>();
         for (String each : GlobalRegistry.getInstance().getSchemaNames()) {
-            packets.addAll(
-                    databaseAccessEngineFactory.newTextProtocolInstance(GlobalRegistry.getInstance().getLogicSchema(each), sequenceId, sql, backendConnection, databaseType).execute().getPackets());
+            packets.addAll(databaseCommunicationEngineFactory.newTextProtocolInstance(
+                    GlobalRegistry.getInstance().getLogicSchema(each), sequenceId, sql, backendConnection, databaseType).execute().getPackets());
         }
         for (DatabasePacket each : packets) {
             if (each instanceof ErrPacket) {

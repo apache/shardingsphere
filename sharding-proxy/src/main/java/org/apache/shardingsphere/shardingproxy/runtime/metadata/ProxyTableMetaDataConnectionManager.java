@@ -19,7 +19,7 @@ package org.apache.shardingsphere.shardingproxy.runtime.metadata;
 
 import lombok.RequiredArgsConstructor;
 import org.apache.shardingsphere.core.metadata.table.executor.TableMetaDataConnectionManager;
-import org.apache.shardingsphere.shardingproxy.backend.engine.jdbc.datasource.JDBCBackendDataSource;
+import org.apache.shardingsphere.shardingproxy.backend.communication.jdbc.datasource.JDBCBackendDataSource;
 
 import java.sql.Connection;
 import java.sql.SQLException;

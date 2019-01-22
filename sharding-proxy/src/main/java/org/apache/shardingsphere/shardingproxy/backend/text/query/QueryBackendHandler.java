@@ -20,9 +20,9 @@ package org.apache.shardingsphere.shardingproxy.backend.text.query;
 import lombok.RequiredArgsConstructor;
 import org.apache.shardingsphere.core.constant.DatabaseType;
 import org.apache.shardingsphere.shardingproxy.backend.ResultPacket;
-import org.apache.shardingsphere.shardingproxy.backend.engine.DatabaseAccessEngine;
-import org.apache.shardingsphere.shardingproxy.backend.engine.DatabaseAccessEngineFactory;
-import org.apache.shardingsphere.shardingproxy.backend.engine.jdbc.connection.BackendConnection;
+import org.apache.shardingsphere.shardingproxy.backend.communication.DatabaseCommunicationEngine;
+import org.apache.shardingsphere.shardingproxy.backend.communication.DatabaseCommunicationEngineFactory;
+import org.apache.shardingsphere.shardingproxy.backend.communication.jdbc.connection.BackendConnection;
 import org.apache.shardingsphere.shardingproxy.backend.text.TextProtocolBackendHandler;
 import org.apache.shardingsphere.shardingproxy.transport.mysql.constant.ServerErrorCode;
 import org.apache.shardingsphere.shardingproxy.transport.mysql.packet.command.CommandResponsePackets;
@@ -38,7 +38,7 @@ import java.sql.SQLException;
 @RequiredArgsConstructor
 public final class QueryBackendHandler implements TextProtocolBackendHandler {
     
-    private final DatabaseAccessEngineFactory databaseAccessEngineFactory = DatabaseAccessEngineFactory.getInstance();
+    private final DatabaseCommunicationEngineFactory databaseCommunicationEngineFactory = DatabaseCommunicationEngineFactory.getInstance();
     
     private final int sequenceId;
     
@@ -48,24 +48,24 @@ public final class QueryBackendHandler implements TextProtocolBackendHandler {
     
     private final DatabaseType databaseType;
     
-    private DatabaseAccessEngine databaseAccessEngine;
+    private DatabaseCommunicationEngine databaseCommunicationEngine;
     
     @Override
     public CommandResponsePackets execute() {
         if (null == backendConnection.getLogicSchema()) {
             return new CommandResponsePackets(new ErrPacket(1, ServerErrorCode.ER_NO_DB_ERROR));
         }
-        databaseAccessEngine = databaseAccessEngineFactory.newTextProtocolInstance(backendConnection.getLogicSchema(), sequenceId, sql, backendConnection, databaseType);
-        return databaseAccessEngine.execute();
+        databaseCommunicationEngine = databaseCommunicationEngineFactory.newTextProtocolInstance(backendConnection.getLogicSchema(), sequenceId, sql, backendConnection, databaseType);
+        return databaseCommunicationEngine.execute();
     }
     
     @Override
     public boolean next() throws SQLException {
-        return databaseAccessEngine.next();
+        return databaseCommunicationEngine.next();
     }
     
     @Override
     public ResultPacket getResultValue() throws SQLException {
-        return databaseAccessEngine.getResultValue();
+        return databaseCommunicationEngine.getResultValue();
     }
 }

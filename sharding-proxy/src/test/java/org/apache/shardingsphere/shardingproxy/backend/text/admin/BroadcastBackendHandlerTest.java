@@ -20,9 +20,9 @@ package org.apache.shardingsphere.shardingproxy.backend.text.admin;
 import lombok.SneakyThrows;
 import org.apache.shardingsphere.core.constant.DatabaseType;
 import org.apache.shardingsphere.shardingproxy.backend.MockGlobalRegistryUtil;
-import org.apache.shardingsphere.shardingproxy.backend.engine.DatabaseAccessEngine;
-import org.apache.shardingsphere.shardingproxy.backend.engine.DatabaseAccessEngineFactory;
-import org.apache.shardingsphere.shardingproxy.backend.engine.jdbc.connection.BackendConnection;
+import org.apache.shardingsphere.shardingproxy.backend.communication.DatabaseCommunicationEngine;
+import org.apache.shardingsphere.shardingproxy.backend.communication.DatabaseCommunicationEngineFactory;
+import org.apache.shardingsphere.shardingproxy.backend.communication.jdbc.connection.BackendConnection;
 import org.apache.shardingsphere.shardingproxy.runtime.schema.LogicSchema;
 import org.apache.shardingsphere.shardingproxy.transport.mysql.packet.command.CommandResponsePackets;
 import org.apache.shardingsphere.shardingproxy.transport.mysql.packet.generic.ErrPacket;
@@ -51,45 +51,46 @@ public final class BroadcastBackendHandlerTest {
     private BackendConnection backendConnection;
     
     @Mock
-    private DatabaseAccessEngineFactory databaseAccessEngineFactory;
+    private DatabaseCommunicationEngineFactory databaseCommunicationEngineFactory;
     
     @Mock
-    private DatabaseAccessEngine databaseAccessEngine;
+    private DatabaseCommunicationEngine databaseCommunicationEngine;
     
     @Test
     public void assertExecuteSuccess() {
         MockGlobalRegistryUtil.setLogicSchemas("schema", 10);
-        mockDatabaseAccessEngine(new CommandResponsePackets(new OKPacket(1)));
+        mockDatabaseCommunicationEngine(new CommandResponsePackets(new OKPacket(1)));
         BroadcastBackendHandler broadcastBackendHandler = new BroadcastBackendHandler(1, "SET timeout = 1000", backendConnection, DatabaseType.MySQL);
         setBackendHandlerFactory(broadcastBackendHandler);
         OKPacket actual = (OKPacket) broadcastBackendHandler.execute().getHeadPacket();
         assertThat(actual.getSequenceId(), is(1));
         assertThat(actual.getAffectedRows(), is(0L));
         assertThat(actual.getLastInsertId(), is(0L));
-        verify(databaseAccessEngine, times(10)).execute();
+        verify(databaseCommunicationEngine, times(10)).execute();
     }
     
     @Test
     public void assertExecuteFailure() {
         MockGlobalRegistryUtil.setLogicSchemas("schema", 10);
         ErrPacket errPacket = new ErrPacket(1, new SQLException("no reason", "X999", -1));
-        mockDatabaseAccessEngine(new CommandResponsePackets(errPacket));
+        mockDatabaseCommunicationEngine(new CommandResponsePackets(errPacket));
         BroadcastBackendHandler broadcastBackendHandler = new BroadcastBackendHandler(1, "SET timeout = 1000", backendConnection, DatabaseType.MySQL);
         setBackendHandlerFactory(broadcastBackendHandler);
         ErrPacket actual = (ErrPacket) broadcastBackendHandler.execute().getHeadPacket();
         assertThat(actual, is(errPacket));
-        verify(databaseAccessEngine, times(10)).execute();
+        verify(databaseCommunicationEngine, times(10)).execute();
     }
     
-    private void mockDatabaseAccessEngine(final CommandResponsePackets commandResponsePackets) {
-        when(databaseAccessEngine.execute()).thenReturn(commandResponsePackets);
-        when(databaseAccessEngineFactory.newTextProtocolInstance((LogicSchema) any(), anyInt(), anyString(), (BackendConnection) any(), (DatabaseType) any())).thenReturn(databaseAccessEngine);
+    private void mockDatabaseCommunicationEngine(final CommandResponsePackets commandResponsePackets) {
+        when(databaseCommunicationEngine.execute()).thenReturn(commandResponsePackets);
+        when(databaseCommunicationEngineFactory.newTextProtocolInstance(
+                (LogicSchema) any(), anyInt(), anyString(), (BackendConnection) any(), (DatabaseType) any())).thenReturn(databaseCommunicationEngine);
     }
     
     @SneakyThrows
     private void setBackendHandlerFactory(final BroadcastBackendHandler schemaBroadcastBackendHandler) {
-        Field field = schemaBroadcastBackendHandler.getClass().getDeclaredField("databaseAccessEngineFactory");
+        Field field = schemaBroadcastBackendHandler.getClass().getDeclaredField("databaseCommunicationEngineFactory");
         field.setAccessible(true);
-        field.set(schemaBroadcastBackendHandler, databaseAccessEngineFactory);
+        field.set(schemaBroadcastBackendHandler, databaseCommunicationEngineFactory);
     }
 }
