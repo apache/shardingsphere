@@ -15,50 +15,38 @@
  * limitations under the License.
  */
 
-package org.apache.shardingsphere.shardingproxy.backend;
+package org.apache.shardingsphere.shardingproxy.backend.handler;
 
 import lombok.RequiredArgsConstructor;
-import org.apache.shardingsphere.core.constant.DatabaseType;
+import org.apache.shardingsphere.core.parsing.parser.dialect.mysql.statement.UseStatement;
+import org.apache.shardingsphere.core.util.SQLUtil;
 import org.apache.shardingsphere.shardingproxy.backend.jdbc.connection.BackendConnection;
 import org.apache.shardingsphere.shardingproxy.runtime.GlobalRegistry;
+import org.apache.shardingsphere.shardingproxy.transport.mysql.constant.ServerErrorCode;
 import org.apache.shardingsphere.shardingproxy.transport.mysql.packet.command.CommandResponsePackets;
-
-import java.sql.SQLException;
+import org.apache.shardingsphere.shardingproxy.transport.mysql.packet.generic.ErrPacket;
+import org.apache.shardingsphere.shardingproxy.transport.mysql.packet.generic.OKPacket;
 
 /**
- * Unicast schema backend handler.
+ * Use schema backend handler.
  *
+ * @author chenqingyang
  * @author zhaojun
  */
 @RequiredArgsConstructor
-public final class UnicastSchemaBackendHandler extends AbstractBackendHandler {
+public final class UseSchemaBackendHandler extends AbstractBackendHandler {
     
-    private final int sequenceId;
-    
-    private final String sql;
+    private final UseStatement useStatement;
     
     private final BackendConnection backendConnection;
     
-    private final BackendHandlerFactory backendHandlerFactory;
-    
-    private BackendHandler delegate;
-    
     @Override
     protected CommandResponsePackets execute0() {
-        if (null == backendConnection.getSchemaName()) {
-            backendConnection.setCurrentSchema(GlobalRegistry.getInstance().getSchemaNames().iterator().next());
+        String schema = SQLUtil.getExactlyValue(useStatement.getSchema());
+        if (!GlobalRegistry.getInstance().schemaExists(schema)) {
+            return new CommandResponsePackets(new ErrPacket(1, ServerErrorCode.ER_BAD_DB_ERROR, schema));
         }
-        delegate = backendHandlerFactory.newTextProtocolInstance(sequenceId, sql, backendConnection, DatabaseType.MySQL);
-        return delegate.execute();
-    }
-    
-    @Override
-    public boolean next() throws SQLException {
-        return delegate.next();
-    }
-    
-    @Override
-    public ResultPacket getResultValue() throws SQLException {
-        return delegate.getResultValue();
+        backendConnection.setCurrentSchema(schema);
+        return new CommandResponsePackets(new OKPacket(1));
     }
 }

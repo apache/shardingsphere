@@ -18,6 +18,12 @@
 package org.apache.shardingsphere.shardingproxy.backend;
 
 import org.apache.shardingsphere.core.constant.DatabaseType;
+import org.apache.shardingsphere.shardingproxy.backend.handler.BackendHandler;
+import org.apache.shardingsphere.shardingproxy.backend.handler.SchemaBroadcastBackendHandler;
+import org.apache.shardingsphere.shardingproxy.backend.handler.ShowDatabasesBackendHandler;
+import org.apache.shardingsphere.shardingproxy.backend.handler.SkipBackendHandler;
+import org.apache.shardingsphere.shardingproxy.backend.handler.TransactionBackendHandler;
+import org.apache.shardingsphere.shardingproxy.backend.handler.UseSchemaBackendHandler;
 import org.apache.shardingsphere.shardingproxy.backend.jdbc.JDBCBackendHandler;
 import org.apache.shardingsphere.shardingproxy.backend.jdbc.connection.BackendConnection;
 import org.apache.shardingsphere.shardingproxy.backend.sctl.ShardingCTLSetBackendHandler;
@@ -58,11 +64,8 @@ public final class ComQueryBackendHandlerFactoryTest {
     
     @Test
     public void assertCreateSchemaBroadcastBackendHandler() {
-        String sql = "grant select on test_db.* to root@'%'";
+        String sql = "set @num=1";
         BackendHandler actual = ComQueryBackendHandlerFactory.createBackendHandler(1, sql, backendConnection, DatabaseType.MySQL);
-        assertThat(actual, instanceOf(SchemaBroadcastBackendHandler.class));
-        sql = "set @num=1";
-        actual = ComQueryBackendHandlerFactory.createBackendHandler(1, sql, backendConnection, DatabaseType.MySQL);
         assertThat(actual, instanceOf(SchemaBroadcastBackendHandler.class));
     }
     

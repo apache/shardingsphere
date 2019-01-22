@@ -15,38 +15,20 @@
  * limitations under the License.
  */
 
-package org.apache.shardingsphere.shardingproxy.backend;
+package org.apache.shardingsphere.shardingproxy.backend.handler;
 
-import lombok.RequiredArgsConstructor;
-import org.apache.shardingsphere.core.parsing.parser.dialect.mysql.statement.UseStatement;
-import org.apache.shardingsphere.core.util.SQLUtil;
-import org.apache.shardingsphere.shardingproxy.backend.jdbc.connection.BackendConnection;
-import org.apache.shardingsphere.shardingproxy.runtime.GlobalRegistry;
-import org.apache.shardingsphere.shardingproxy.transport.mysql.constant.ServerErrorCode;
 import org.apache.shardingsphere.shardingproxy.transport.mysql.packet.command.CommandResponsePackets;
-import org.apache.shardingsphere.shardingproxy.transport.mysql.packet.generic.ErrPacket;
 import org.apache.shardingsphere.shardingproxy.transport.mysql.packet.generic.OKPacket;
 
 /**
- * Use schema backend handler.
+ * Skip backend handler.
  *
- * @author chenqingyang
  * @author zhaojun
  */
-@RequiredArgsConstructor
-public final class UseSchemaBackendHandler extends AbstractBackendHandler {
-    
-    private final UseStatement useStatement;
-    
-    private final BackendConnection backendConnection;
+public final class SkipBackendHandler extends AbstractBackendHandler {
     
     @Override
     protected CommandResponsePackets execute0() {
-        String schema = SQLUtil.getExactlyValue(useStatement.getSchema());
-        if (!GlobalRegistry.getInstance().schemaExists(schema)) {
-            return new CommandResponsePackets(new ErrPacket(1, ServerErrorCode.ER_BAD_DB_ERROR, schema));
-        }
-        backendConnection.setCurrentSchema(schema);
         return new CommandResponsePackets(new OKPacket(1));
     }
 }

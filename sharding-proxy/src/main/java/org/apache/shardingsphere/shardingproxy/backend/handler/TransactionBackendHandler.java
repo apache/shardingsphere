@@ -15,7 +15,7 @@
  * limitations under the License.
  */
 
-package org.apache.shardingsphere.shardingproxy.backend;
+package org.apache.shardingsphere.shardingproxy.backend.handler;
 
 import org.apache.shardingsphere.shardingproxy.backend.jdbc.connection.BackendConnection;
 import org.apache.shardingsphere.shardingproxy.backend.jdbc.connection.BackendTransactionManager;
@@ -34,7 +34,7 @@ public final class TransactionBackendHandler extends AbstractBackendHandler {
     
     private final BackendTransactionManager backendTransactionManager;
     
-    TransactionBackendHandler(final TransactionOperationType operationType, final BackendConnection backendConnection) {
+    public TransactionBackendHandler(final TransactionOperationType operationType, final BackendConnection backendConnection) {
         this.operationType = operationType;
         backendTransactionManager = new BackendTransactionManager(backendConnection);
     }
