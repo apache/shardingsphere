@@ -145,5 +145,6 @@ public class OrchestrationMasterSlaveDataSourceTest {
     
     @Test
     public void assertGetDataSource() {
+        assertThat(masterSlaveDataSource.getDataSource(), instanceOf(MasterSlaveDataSource.class));
     }
 }
