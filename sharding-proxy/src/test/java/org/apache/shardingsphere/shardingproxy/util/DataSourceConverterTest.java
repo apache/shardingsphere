@@ -18,6 +18,7 @@
 package org.apache.shardingsphere.shardingproxy.util;
 
 import org.apache.shardingsphere.core.config.DataSourceConfiguration;
+import org.apache.shardingsphere.shardingproxy.config.yaml.YamlDataSourceParameter;
 import org.hamcrest.CoreMatchers;
 import org.junit.Test;
 
@@ -39,7 +40,7 @@ public final class DataSourceConverterTest {
         dataSourceConfigurationMap.put("ds_0", dataSourceConfiguration0);
         DataSourceConfiguration dataSourceConfiguration1 = mock(DataSourceConfiguration.class);
         dataSourceConfigurationMap.put("ds_1", dataSourceConfiguration1);
-        Map<String, DataSourceParameter> actual = DataSourceConverter.getDataSourceParameterMap(dataSourceConfigurationMap);
+        Map<String, YamlDataSourceParameter> actual = DataSourceConverter.getDataSourceParameterMap(dataSourceConfigurationMap);
         assertThat(actual.size(), is(2));
         assertTrue(actual.containsKey("ds_0"));
         assertTrue(actual.containsKey("ds_1"));
@@ -47,7 +48,7 @@ public final class DataSourceConverterTest {
     
     @Test
     public void assertGetDataSourceConfigurationMap() {
-        Map<String, DataSourceParameter> dataSourceParameterMap = new HashMap<>(2, 1);
+        Map<String, YamlDataSourceParameter> dataSourceParameterMap = new HashMap<>(2, 1);
         dataSourceParameterMap.put("ds_0", crateDataSourceParameter());
         dataSourceParameterMap.put("ds_1", crateDataSourceParameter());
         Map<String, DataSourceConfiguration> actual = DataSourceConverter.getDataSourceConfigurationMap(dataSourceParameterMap);
@@ -58,8 +59,8 @@ public final class DataSourceConverterTest {
         assertThatParameter(actual.get("ds_1"));
     }
     
-    private DataSourceParameter crateDataSourceParameter() {
-        DataSourceParameter result = new DataSourceParameter();
+    private YamlDataSourceParameter crateDataSourceParameter() {
+        YamlDataSourceParameter result = new YamlDataSourceParameter();
         result.setUsername("root");
         result.setUrl("jdbc:mysql://localhost:3306/demo_ds");
         result.setPassword("root");

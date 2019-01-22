@@ -15,42 +15,32 @@
  * limitations under the License.
  */
 
-package org.apache.shardingsphere.core.metadata.datasource;
+package org.apache.shardingsphere.shardingproxy.backend.jdbc.recognizer.impl;
+
+import org.apache.shardingsphere.shardingproxy.backend.jdbc.recognizer.spi.JDBCURLRecognizer;
+
+import java.util.Collection;
+import java.util.Collections;
 
 /**
- * Data source meta data.
+ * JDBC URL recognizer for MySQL.
  *
- * @author panjuan
  * @author zhangliang
  */
-public interface DataSourceMetaData {
+public final class MySQLRecognizer implements JDBCURLRecognizer {
     
-    /**
-     * Get host name.
-     * 
-     * @return host name
-     */
-    String getHostName();
+    @Override
+    public Collection<String> getURLPrefixes() {
+        return Collections.singletonList("jdbc:mysql:");
+    }
     
-    /**
-     * Get port.
-     * 
-     * @return port
-     */
-    int getPort();
-    
-    /**
-     * Get schema name.
-     * 
-     * @return schema name
-     */
-    String getSchemaName();
-    
-    /**
-     * Judge whether two of data sources are in the same database instance.
-     *
-     * @param dataSourceMetaData data source meta data
-     * @return data sources are in the same database instance or not
-     */
-    boolean isInSameDatabaseInstance(DataSourceMetaData dataSourceMetaData);
+    @Override
+    public String getDriverClassName() {
+        try {
+            Class.forName("com.mysql.cj.jdbc.Driver");
+            return "com.mysql.cj.jdbc.Driver";
+        } catch (final ClassNotFoundException ignore) {
+            return "com.mysql.jdbc.Driver";
+        }
+    }
 }

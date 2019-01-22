@@ -15,31 +15,19 @@
  * limitations under the License.
  */
 
-package org.apache.shardingsphere.shardingproxy.util;
+package org.apache.shardingsphere.shardingproxy.config.yaml;
 
 import lombok.Getter;
 import lombok.Setter;
 
 /**
- * Data source parameters.
+ * Data source parameters for yaml.
  *
  * @author zhangyonglun
  */
 @Getter
 @Setter
-public final class DataSourceParameter {
-    
-    private static final long DEFAULT_CONNECTION_TIMEOUT_MILLISECONDS = 30 * 1000;
-    
-    private static final long DEFAULT_IDLE_TIMEOUT_MILLISECONDS = 60 * 1000;
-    
-    private static final long DEFAULT_MAINTENANCE_INTERVAL_MILLISECONDS = 30 * 1000;
-    
-    private static final long DEFAULT_MAX_LIFE_TIME_MILLISECONDS = 0;
-    
-    private static final int DEFAULT_MAX_POOL_SIZE = 50;
-    
-    private static final int DEFAULT_MIN_POOL_SIZE = 1;
+public final class YamlDataSourceParameter {
     
     private String url;
     
@@ -47,15 +35,15 @@ public final class DataSourceParameter {
     
     private String password;
     
-    private long connectionTimeoutMilliseconds = DEFAULT_CONNECTION_TIMEOUT_MILLISECONDS;
+    private long connectionTimeoutMilliseconds = 30 * 1000;
     
-    private long idleTimeoutMilliseconds = DEFAULT_IDLE_TIMEOUT_MILLISECONDS;
+    private long idleTimeoutMilliseconds = 60 * 1000;
     
-    private long maxLifetimeMilliseconds = DEFAULT_MAX_LIFE_TIME_MILLISECONDS;
+    private long maxLifetimeMilliseconds;
     
-    private int maxPoolSize = DEFAULT_MAX_POOL_SIZE;
+    private int maxPoolSize = 50;
     
-    private int minPoolSize = DEFAULT_MIN_POOL_SIZE;
+    private int minPoolSize = 1;
     
-    private long maintenanceIntervalMilliseconds = DEFAULT_MAINTENANCE_INTERVAL_MILLISECONDS;
+    private long maintenanceIntervalMilliseconds = 30 * 1000;
 }

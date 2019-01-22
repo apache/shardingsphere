@@ -38,7 +38,7 @@ public final class H2DataSourceMetaData implements DataSourceMetaData {
     
     private final int port;
     
-    private final String schemeName;
+    private final String schemaName;
     
     private final Pattern pattern = Pattern.compile("jdbc:h2:(mem|~)[:/]([\\w\\-]+);?\\S*", Pattern.CASE_INSENSITIVE);
     
@@ -47,7 +47,7 @@ public final class H2DataSourceMetaData implements DataSourceMetaData {
         if (matcher.find()) {
             hostName = matcher.group(1);
             port = DEFAULT_PORT;
-            schemeName = matcher.group(2);
+            schemaName = matcher.group(2);
         } else {
             throw new ShardingException("The URL of JDBC is not supported. Please refer to this pattern: %s.", pattern.pattern());
         }
@@ -55,6 +55,6 @@ public final class H2DataSourceMetaData implements DataSourceMetaData {
     
     @Override
     public boolean isInSameDatabaseInstance(final DataSourceMetaData dataSourceMetaData) {
-        return hostName.equals(dataSourceMetaData.getHostName()) && port == dataSourceMetaData.getPort() && schemeName.equals(dataSourceMetaData.getSchemeName());
+        return hostName.equals(dataSourceMetaData.getHostName()) && port == dataSourceMetaData.getPort() && schemaName.equals(dataSourceMetaData.getSchemaName());
     }
 }

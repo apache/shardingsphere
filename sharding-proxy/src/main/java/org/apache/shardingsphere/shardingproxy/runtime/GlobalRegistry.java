@@ -37,11 +37,11 @@ import org.apache.shardingsphere.orchestration.internal.registry.config.event.Pr
 import org.apache.shardingsphere.orchestration.internal.registry.config.event.SchemaAddedEvent;
 import org.apache.shardingsphere.orchestration.internal.registry.config.event.SchemaDeletedEvent;
 import org.apache.shardingsphere.orchestration.internal.registry.state.event.CircuitStateChangedEvent;
+import org.apache.shardingsphere.shardingproxy.config.yaml.YamlDataSourceParameter;
 import org.apache.shardingsphere.shardingproxy.runtime.schema.LogicSchema;
 import org.apache.shardingsphere.shardingproxy.runtime.schema.MasterSlaveSchema;
 import org.apache.shardingsphere.shardingproxy.runtime.schema.ShardingSchema;
 import org.apache.shardingsphere.shardingproxy.util.DataSourceConverter;
-import org.apache.shardingsphere.shardingproxy.util.DataSourceParameter;
 import org.apache.shardingsphere.transaction.core.TransactionType;
 
 import java.util.Collections;
@@ -99,7 +99,7 @@ public final class GlobalRegistry {
      * @param configMap config map
      * @param props properties
      */
-    public void init(final Map<String, Map<String, DataSourceParameter>> schemaDataSources,
+    public void init(final Map<String, Map<String, YamlDataSourceParameter>> schemaDataSources,
                      final Map<String, RuleConfiguration> schemaRules, final Authentication authentication, final Map<String, Object> configMap, final Properties props) {
         init(schemaDataSources, schemaRules, authentication, configMap, props, false);
     }
@@ -114,7 +114,7 @@ public final class GlobalRegistry {
      * @param props properties
      * @param isUsingRegistry is using registry or not
      */
-    public void init(final Map<String, Map<String, DataSourceParameter>> schemaDataSources, final Map<String, RuleConfiguration> schemaRules, 
+    public void init(final Map<String, Map<String, YamlDataSourceParameter>> schemaDataSources, final Map<String, RuleConfiguration> schemaRules,
                      final Authentication authentication, final Map<String, Object> configMap, final Properties props, final boolean isUsingRegistry) {
         if (!configMap.isEmpty()) {
             ConfigMapContext.getInstance().getConfigMap().putAll(configMap);
@@ -126,7 +126,7 @@ public final class GlobalRegistry {
         initSchema(schemaDataSources, schemaRules, isUsingRegistry);
     }
     
-    private void initSchema(final Map<String, Map<String, DataSourceParameter>> schemaDataSources, final Map<String, RuleConfiguration> schemaRules, final boolean isUsingRegistry) {
+    private void initSchema(final Map<String, Map<String, YamlDataSourceParameter>> schemaDataSources, final Map<String, RuleConfiguration> schemaRules, final boolean isUsingRegistry) {
         for (Entry<String, RuleConfiguration> entry : schemaRules.entrySet()) {
             String schemaName = entry.getKey();
             logicSchemas.put(schemaName, createLogicSchema(schemaName, schemaDataSources, entry.getValue(), isUsingRegistry));
@@ -134,7 +134,7 @@ public final class GlobalRegistry {
     }
     
     private LogicSchema createLogicSchema(final String schemaName,
-                                          final Map<String, Map<String, DataSourceParameter>> schemaDataSources, final RuleConfiguration ruleConfiguration, final boolean isUsingRegistry) {
+                                          final Map<String, Map<String, YamlDataSourceParameter>> schemaDataSources, final RuleConfiguration ruleConfiguration, final boolean isUsingRegistry) {
         return ruleConfiguration instanceof ShardingRuleConfiguration
                 ? new ShardingSchema(schemaName, schemaDataSources.get(schemaName), (ShardingRuleConfiguration) ruleConfiguration, 
                 shardingProperties.<Boolean>getValue(ShardingPropertiesConstant.CHECK_TABLE_METADATA_ENABLED), isUsingRegistry) 

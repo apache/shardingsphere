@@ -85,7 +85,7 @@ public final class UnicastRoutingEngine implements RoutingEngine {
                     availableDatasourceNames = Sets.intersection(availableDatasourceNames, currentDataSourceNames);
                 }
             }
-            if (availableDatasourceNames == null || availableDatasourceNames.isEmpty()) {
+            if (availableDatasourceNames.isEmpty()) {
                 throw new ShardingConfigurationException("Cannot find actual datasource intersection for logic tables: %s", logicTables);
             }
             TableUnit tableUnit = new TableUnit(shardingRule.getShardingDataSourceNames().getRandomDataSourceName(availableDatasourceNames));

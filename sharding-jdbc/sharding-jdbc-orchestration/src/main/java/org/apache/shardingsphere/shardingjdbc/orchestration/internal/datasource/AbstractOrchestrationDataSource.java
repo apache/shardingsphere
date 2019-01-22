@@ -17,45 +17,67 @@
 
 package org.apache.shardingsphere.shardingjdbc.orchestration.internal.datasource;
 
-import com.google.common.eventbus.EventBus;
 import com.google.common.eventbus.Subscribe;
 import lombok.AccessLevel;
 import lombok.Getter;
-import org.apache.shardingsphere.core.constant.ShardingConstant;
+import lombok.Setter;
+import lombok.SneakyThrows;
 import org.apache.shardingsphere.orchestration.internal.eventbus.ShardingOrchestrationEventBus;
 import org.apache.shardingsphere.orchestration.internal.registry.ShardingOrchestrationFacade;
 import org.apache.shardingsphere.orchestration.internal.registry.state.event.CircuitStateChangedEvent;
 import org.apache.shardingsphere.shardingjdbc.jdbc.adapter.AbstractDataSourceAdapter;
-import org.apache.shardingsphere.shardingjdbc.orchestration.internal.util.DataSourceConverter;
+import org.apache.shardingsphere.shardingjdbc.jdbc.unsupported.AbstractUnsupportedOperationDataSource;
+import org.apache.shardingsphere.shardingjdbc.orchestration.internal.circuit.datasource.CircuitBreakerDataSource;
 
 import javax.sql.DataSource;
+import java.io.PrintWriter;
+import java.sql.Connection;
 import java.sql.SQLException;
-import java.util.Map;
+import java.util.logging.Logger;
 
 /**
  * Abstract orchestration data source.
  *
  * @author panjuan
  */
-@Getter(AccessLevel.PROTECTED)
-public abstract class AbstractOrchestrationDataSource extends AbstractDataSourceAdapter {
+public abstract class AbstractOrchestrationDataSource extends AbstractUnsupportedOperationDataSource implements AutoCloseable {
     
-    private final EventBus eventBus = ShardingOrchestrationEventBus.getInstance();
+    @Getter
+    @Setter
+    private PrintWriter logWriter = new PrintWriter(System.out);
     
+    @Getter(AccessLevel.PROTECTED)
     private final ShardingOrchestrationFacade shardingOrchestrationFacade;
     
     private boolean isCircuitBreak;
     
-    public AbstractOrchestrationDataSource(final ShardingOrchestrationFacade shardingOrchestrationFacade, final Map<String, DataSource> dataSourceMap) throws SQLException {
-        super(dataSourceMap);
+    public AbstractOrchestrationDataSource(final ShardingOrchestrationFacade shardingOrchestrationFacade) {
         this.shardingOrchestrationFacade = shardingOrchestrationFacade;
-        eventBus.register(this);
+        ShardingOrchestrationEventBus.getInstance().register(this);
     }
     
-    public AbstractOrchestrationDataSource(final ShardingOrchestrationFacade shardingOrchestrationFacade) throws SQLException {
-        super(DataSourceConverter.getDataSourceMap(shardingOrchestrationFacade.getConfigService().loadDataSourceConfigurations(ShardingConstant.LOGIC_SCHEMA_NAME)));
-        this.shardingOrchestrationFacade = shardingOrchestrationFacade;
-        eventBus.register(this);
+    protected abstract DataSource getDataSource();
+    
+    @Override
+    public final Connection getConnection() throws SQLException {
+        return isCircuitBreak ? new CircuitBreakerDataSource().getConnection() : getDataSource().getConnection();
+    }
+    
+    @Override
+    @SneakyThrows
+    public final Connection getConnection(final String username, final String password) {
+        return getConnection();
+    }
+    
+    @Override
+    public final Logger getParentLogger() {
+        return Logger.getLogger(Logger.GLOBAL_LOGGER_NAME);
+    }
+    
+    @Override
+    public final void close() throws Exception {
+        ((AbstractDataSourceAdapter) getDataSource()).close();
+        shardingOrchestrationFacade.close();
     }
     
     /**

@@ -15,42 +15,27 @@
  * limitations under the License.
  */
 
-package org.apache.shardingsphere.core.metadata.datasource;
+package org.apache.shardingsphere.shardingproxy.backend.jdbc.recognizer.impl;
+
+import org.apache.shardingsphere.shardingproxy.backend.jdbc.recognizer.spi.JDBCURLRecognizer;
+
+import java.util.Collection;
+import java.util.Collections;
 
 /**
- * Data source meta data.
+ * JDBC URL recognizer for H2.
  *
- * @author panjuan
  * @author zhangliang
  */
-public interface DataSourceMetaData {
+public final class H2Recognizer implements JDBCURLRecognizer {
     
-    /**
-     * Get host name.
-     * 
-     * @return host name
-     */
-    String getHostName();
+    @Override
+    public Collection<String> getURLPrefixes() {
+        return Collections.singletonList("jdbc:h2:");
+    }
     
-    /**
-     * Get port.
-     * 
-     * @return port
-     */
-    int getPort();
-    
-    /**
-     * Get schema name.
-     * 
-     * @return schema name
-     */
-    String getSchemaName();
-    
-    /**
-     * Judge whether two of data sources are in the same database instance.
-     *
-     * @param dataSourceMetaData data source meta data
-     * @return data sources are in the same database instance or not
-     */
-    boolean isInSameDatabaseInstance(DataSourceMetaData dataSourceMetaData);
+    @Override
+    public String getDriverClassName() {
+        return "org.h2.Driver";
+    }
 }

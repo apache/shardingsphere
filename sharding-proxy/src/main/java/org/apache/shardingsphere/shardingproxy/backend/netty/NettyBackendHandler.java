@@ -147,7 +147,7 @@ public final class NettyBackendHandler extends AbstractBackendHandler {
         }
         SQLStatement sqlStatement = routeResult.getSqlStatement();
         CommandResponsePackets result = merge(sqlStatement, packets, queryResults);
-        refreshTableMetaData(logicSchema, sqlStatement);
+        logicSchema.refreshTableMetaData(sqlStatement);
         return result;
     }
     

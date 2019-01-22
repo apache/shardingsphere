@@ -15,42 +15,27 @@
  * limitations under the License.
  */
 
-package org.apache.shardingsphere.core.metadata.datasource;
+package org.apache.shardingsphere.shardingproxy.backend.jdbc.recognizer.impl;
+
+import org.apache.shardingsphere.shardingproxy.backend.jdbc.recognizer.spi.JDBCURLRecognizer;
+
+import java.util.Arrays;
+import java.util.Collection;
 
 /**
- * Data source meta data.
+ * JDBC URL recognizer for SQLServer.
  *
- * @author panjuan
  * @author zhangliang
  */
-public interface DataSourceMetaData {
+public final class SQLServerRecognizer implements JDBCURLRecognizer {
     
-    /**
-     * Get host name.
-     * 
-     * @return host name
-     */
-    String getHostName();
+    @Override
+    public Collection<String> getURLPrefixes() {
+        return Arrays.asList("jdbc:sqlserver:", "jdbc:microsoft:sqlserver:");
+    }
     
-    /**
-     * Get port.
-     * 
-     * @return port
-     */
-    int getPort();
-    
-    /**
-     * Get schema name.
-     * 
-     * @return schema name
-     */
-    String getSchemaName();
-    
-    /**
-     * Judge whether two of data sources are in the same database instance.
-     *
-     * @param dataSourceMetaData data source meta data
-     * @return data sources are in the same database instance or not
-     */
-    boolean isInSameDatabaseInstance(DataSourceMetaData dataSourceMetaData);
+    @Override
+    public String getDriverClassName() {
+        return "com.microsoft.sqlserver.jdbc.SQLServerDriver";
+    }
 }

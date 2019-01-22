@@ -19,7 +19,7 @@ package org.apache.shardingsphere.shardingproxy.backend.jdbc.datasource;
 
 import com.atomikos.jdbc.AtomikosDataSourceBean;
 import com.mysql.jdbc.jdbc2.optional.MysqlXADataSource;
-import org.apache.shardingsphere.shardingproxy.util.DataSourceParameter;
+import org.apache.shardingsphere.shardingproxy.config.yaml.YamlDataSourceParameter;
 import org.hamcrest.Matchers;
 import org.hamcrest.core.Is;
 import org.junit.Test;
@@ -32,7 +32,7 @@ public final class JDBCXABackendDataSourceFactoryTest {
     
     @Test
     public void assertBuild() throws Exception {
-        DataSourceParameter parameter = createDataSourceParameter();
+        YamlDataSourceParameter parameter = createDataSourceParameter();
         AtomikosDataSourceBean actual = (AtomikosDataSourceBean) JDBCXABackendDataSourceFactory.getInstance().build("ds1", parameter);
         assertThat(actual, Matchers.instanceOf(AtomikosDataSourceBean.class));
         assertThat(actual.getXaDataSource(), instanceOf(MysqlXADataSource.class));
@@ -43,11 +43,11 @@ public final class JDBCXABackendDataSourceFactoryTest {
         assertThat(actual.getXaProperties().get("URL"), Is.<Object>is(parameter.getUrl()));
     }
     
-    private DataSourceParameter createDataSourceParameter() {
-        DataSourceParameter result = new DataSourceParameter();
+    private YamlDataSourceParameter createDataSourceParameter() {
+        YamlDataSourceParameter result = new YamlDataSourceParameter();
         result.setUsername("root");
         result.setPassword("root");
-        result.setUrl("db:url");
+        result.setUrl("jdbc:mysql://db.mysql:3306/test");
         result.setMaxPoolSize(10);
         return result;
     }

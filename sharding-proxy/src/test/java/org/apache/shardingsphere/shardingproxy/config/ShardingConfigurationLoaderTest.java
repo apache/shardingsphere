@@ -20,8 +20,8 @@ package org.apache.shardingsphere.shardingproxy.config;
 import org.apache.shardingsphere.core.yaml.masterslave.YamlMasterSlaveRuleConfiguration;
 import org.apache.shardingsphere.core.yaml.sharding.YamlShardingRuleConfiguration;
 import org.apache.shardingsphere.orchestration.yaml.YamlOrchestrationConfiguration;
+import org.apache.shardingsphere.shardingproxy.config.yaml.YamlDataSourceParameter;
 import org.apache.shardingsphere.shardingproxy.config.yaml.YamlProxyRuleConfiguration;
-import org.apache.shardingsphere.shardingproxy.util.DataSourceParameter;
 import org.junit.Test;
 
 import java.io.IOException;
@@ -87,7 +87,7 @@ public final class ShardingConfigurationLoaderTest {
         assertThat(slaveDataSourceNames.next(), is("slave_ds_1"));
     }
     
-    private void assertDataSourceParameter(final DataSourceParameter actual, final String expectedURL) {
+    private void assertDataSourceParameter(final YamlDataSourceParameter actual, final String expectedURL) {
         assertThat(actual.getUrl(), is(expectedURL));
         assertThat(actual.getUsername(), is("root"));
         assertNull(actual.getPassword());

@@ -78,9 +78,7 @@ public final class JDBCBackendHandler extends AbstractBackendHandler {
     
     @Override
     protected CommandResponsePackets execute0() throws SQLException {
-        return logicSchema == null
-                ? new CommandResponsePackets(new ErrPacket(1, ServerErrorCode.ER_NO_DB_ERROR))
-                : execute(executeEngine.getJdbcExecutorWrapper().route(sql, DatabaseType.MySQL));
+        return logicSchema == null ? new CommandResponsePackets(new ErrPacket(1, ServerErrorCode.ER_NO_DB_ERROR)) : execute(executeEngine.getJdbcExecutorWrapper().route(sql, DatabaseType.MySQL));
     }
     
     private CommandResponsePackets execute(final SQLRouteResult routeResult) throws SQLException {
@@ -94,7 +92,7 @@ public final class JDBCBackendHandler extends AbstractBackendHandler {
         }
         executeResponse = executeEngine.execute(routeResult);
         if (logicSchema instanceof ShardingSchema) {
-            refreshTableMetaData(logicSchema, routeResult.getSqlStatement());
+            logicSchema.refreshTableMetaData(routeResult.getSqlStatement());
         }
         return merge(sqlStatement);
     }

@@ -15,42 +15,28 @@
  * limitations under the License.
  */
 
-package org.apache.shardingsphere.core.metadata.datasource;
+package org.apache.shardingsphere.shardingproxy.backend.jdbc.recognizer.spi;
+
+import java.util.Collection;
 
 /**
- * Data source meta data.
+ * JDBC URL recognizer.
  *
- * @author panjuan
  * @author zhangliang
  */
-public interface DataSourceMetaData {
+public interface JDBCURLRecognizer {
     
     /**
-     * Get host name.
+     * Get JDBC URL prefixes.
      * 
-     * @return host name
+     * @return URL prefixes
      */
-    String getHostName();
+    Collection<String> getURLPrefixes();
     
     /**
-     * Get port.
+     * Get JDBC driver class name.
      * 
-     * @return port
+     * @return driver class name
      */
-    int getPort();
-    
-    /**
-     * Get schema name.
-     * 
-     * @return schema name
-     */
-    String getSchemaName();
-    
-    /**
-     * Judge whether two of data sources are in the same database instance.
-     *
-     * @param dataSourceMetaData data source meta data
-     * @return data sources are in the same database instance or not
-     */
-    boolean isInSameDatabaseInstance(DataSourceMetaData dataSourceMetaData);
+    String getDriverClassName();
 }

@@ -90,12 +90,12 @@ public final class TableMetaDataInitializer {
     private Collection<String> getAllTableNames(final String dataSourceName) throws SQLException {
         Collection<String> result = new LinkedHashSet<>();
         DataSourceMetaData dataSourceMetaData = shardingDataSourceMetaData.getActualDataSourceMetaData(dataSourceName);
-        String catalog = null == dataSourceMetaData ? null : dataSourceMetaData.getSchemeName();
+        String catalog = null == dataSourceMetaData ? null : dataSourceMetaData.getSchemaName();
         try (Connection connection = connectionManager.getConnection(dataSourceName);
              ResultSet resultSet = connection.getMetaData().getTables(catalog, null, null, new String[]{"TABLE"})) {
             while (resultSet.next()) {
                 String tableName = resultSet.getString("TABLE_NAME");
-                if (!tableName.contains("$")) {
+                if (!tableName.contains("$") && !tableName.contains("/")) {
                     result.add(tableName);
                 }
             }

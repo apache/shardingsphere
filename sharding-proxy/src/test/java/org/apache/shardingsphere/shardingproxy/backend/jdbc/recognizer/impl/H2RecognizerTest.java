@@ -15,26 +15,29 @@
  * limitations under the License.
  */
 
-package org.apache.shardingsphere.shardingproxy.backend.jdbc.datasource;
+package org.apache.shardingsphere.shardingproxy.backend.jdbc.recognizer.impl;
 
-import org.apache.shardingsphere.shardingproxy.config.yaml.YamlDataSourceParameter;
+import org.apache.shardingsphere.shardingproxy.backend.jdbc.recognizer.spi.JDBCURLRecognizer;
+import org.hamcrest.CoreMatchers;
+import org.junit.Test;
 
-import javax.sql.DataSource;
+import java.util.Collection;
+import java.util.Collections;
 
-/**
- * Backend data source factory for JDBC.
- *
- * @author zhangliang
- */
-public interface JDBCBackendDataSourceFactory {
+import static org.hamcrest.CoreMatchers.is;
+import static org.junit.Assert.assertThat;
+
+public final class H2RecognizerTest {
     
-    /**
-     * Build data source for connect backend databases.
-     *
-     * @param dataSourceName data source name
-     * @param dataSourceParameter data source connection parameter
-     * @return data source for connect backend databases
-     * @throws Exception when the data source can not be build
-     */
-    DataSource build(String dataSourceName, YamlDataSourceParameter dataSourceParameter) throws Exception;
+    private final JDBCURLRecognizer recognizer = new H2Recognizer();
+    
+    @Test
+    public void assertGetURLPrefixes() {
+        assertThat(recognizer.getURLPrefixes(), CoreMatchers.<Collection<String>>is(Collections.singletonList("jdbc:h2:")));
+    }
+    
+    @Test
+    public void assertGetDriverClassName() {
+        assertThat(recognizer.getDriverClassName(), is("org.h2.Driver"));
+    }
 }

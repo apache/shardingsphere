@@ -21,7 +21,6 @@ import lombok.Getter;
 import lombok.Setter;
 import org.apache.shardingsphere.core.yaml.masterslave.YamlMasterSlaveRuleConfiguration;
 import org.apache.shardingsphere.core.yaml.sharding.YamlShardingRuleConfiguration;
-import org.apache.shardingsphere.shardingproxy.util.DataSourceParameter;
 
 import java.util.HashMap;
 import java.util.Map;
@@ -37,7 +36,7 @@ public final class YamlProxyRuleConfiguration {
     
     private String schemaName;
     
-    private Map<String, DataSourceParameter> dataSources = new HashMap<>();
+    private Map<String, YamlDataSourceParameter> dataSources = new HashMap<>();
     
     private YamlShardingRuleConfiguration shardingRule;
     

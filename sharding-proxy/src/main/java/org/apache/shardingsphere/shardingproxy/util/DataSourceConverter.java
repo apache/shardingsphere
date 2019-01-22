@@ -21,6 +21,7 @@ import com.zaxxer.hikari.HikariDataSource;
 import lombok.AccessLevel;
 import lombok.NoArgsConstructor;
 import org.apache.shardingsphere.core.config.DataSourceConfiguration;
+import org.apache.shardingsphere.shardingproxy.config.yaml.YamlDataSourceParameter;
 
 import java.lang.reflect.Field;
 import java.util.LinkedHashMap;
@@ -41,16 +42,16 @@ public final class DataSourceConverter {
      * @param dataSourceConfigurationMap data source configuration map
      * @return data source parameter map
      */
-    public static Map<String, DataSourceParameter> getDataSourceParameterMap(final Map<String, DataSourceConfiguration> dataSourceConfigurationMap) {
-        Map<String, DataSourceParameter> result = new LinkedHashMap<>(dataSourceConfigurationMap.size(), 1);
+    public static Map<String, YamlDataSourceParameter> getDataSourceParameterMap(final Map<String, DataSourceConfiguration> dataSourceConfigurationMap) {
+        Map<String, YamlDataSourceParameter> result = new LinkedHashMap<>(dataSourceConfigurationMap.size(), 1);
         for (Entry<String, DataSourceConfiguration> entry : dataSourceConfigurationMap.entrySet()) {
             result.put(entry.getKey(), createDataSourceParameter(entry.getValue()));
         }
         return result;
     }
     
-    private static DataSourceParameter createDataSourceParameter(final DataSourceConfiguration dataSourceConfiguration) {
-        DataSourceParameter result = new DataSourceParameter();
+    private static YamlDataSourceParameter createDataSourceParameter(final DataSourceConfiguration dataSourceConfiguration) {
+        YamlDataSourceParameter result = new YamlDataSourceParameter();
         for (Field each : result.getClass().getDeclaredFields()) {
             try {
                 each.setAccessible(true);
@@ -69,15 +70,15 @@ public final class DataSourceConverter {
      * @param dataSourceParameterMap data source map
      * @return data source configuration map
      */
-    public static Map<String, DataSourceConfiguration> getDataSourceConfigurationMap(final Map<String, DataSourceParameter> dataSourceParameterMap) {
+    public static Map<String, DataSourceConfiguration> getDataSourceConfigurationMap(final Map<String, YamlDataSourceParameter> dataSourceParameterMap) {
         Map<String, DataSourceConfiguration> result = new LinkedHashMap<>(dataSourceParameterMap.size());
-        for (Entry<String, DataSourceParameter> entry : dataSourceParameterMap.entrySet()) {
+        for (Entry<String, YamlDataSourceParameter> entry : dataSourceParameterMap.entrySet()) {
             result.put(entry.getKey(), createDataSourceConfiguration(entry.getValue()));
         }
         return result;
     }
     
-    private static DataSourceConfiguration createDataSourceConfiguration(final DataSourceParameter dataSourceParameter) {
+    private static DataSourceConfiguration createDataSourceConfiguration(final YamlDataSourceParameter dataSourceParameter) {
         DataSourceConfiguration result = new DataSourceConfiguration(HikariDataSource.class.getName());
         result.getProperties().put("url", dataSourceParameter.getUrl());
         result.getProperties().put("username", dataSourceParameter.getUsername());

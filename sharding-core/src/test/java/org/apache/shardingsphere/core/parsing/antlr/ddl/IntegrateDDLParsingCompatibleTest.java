@@ -55,7 +55,7 @@ import java.util.Collections;
 
 @RunWith(Parameterized.class)
 @RequiredArgsConstructor
-public final class IntegrateDDLParsingCompatTest extends AbstractBaseIntegrateSQLParsingTest {
+public final class IntegrateDDLParsingCompatibleTest extends AbstractBaseIntegrateSQLParsingTest {
     
     private static SQLCasesLoader sqlCasesLoader = SQLCasesLoader.getInstance();
     

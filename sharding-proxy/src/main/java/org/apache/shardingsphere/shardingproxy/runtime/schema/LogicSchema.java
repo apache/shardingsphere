@@ -17,15 +17,22 @@
 
 package org.apache.shardingsphere.shardingproxy.runtime.schema;
 
+import com.google.common.base.Optional;
 import com.google.common.eventbus.EventBus;
 import com.google.common.eventbus.Subscribe;
 import lombok.Getter;
 import org.apache.shardingsphere.core.metadata.ShardingMetaData;
+import org.apache.shardingsphere.core.metadata.table.TableMetaData;
+import org.apache.shardingsphere.core.metadata.table.TableMetaDataFactory;
+import org.apache.shardingsphere.core.parsing.antlr.sql.statement.ddl.AlterTableStatement;
+import org.apache.shardingsphere.core.parsing.antlr.sql.statement.ddl.CreateTableStatement;
+import org.apache.shardingsphere.core.parsing.antlr.sql.statement.ddl.DropTableStatement;
+import org.apache.shardingsphere.core.parsing.parser.sql.SQLStatement;
 import org.apache.shardingsphere.orchestration.internal.eventbus.ShardingOrchestrationEventBus;
 import org.apache.shardingsphere.orchestration.internal.registry.config.event.DataSourceChangedEvent;
 import org.apache.shardingsphere.shardingproxy.backend.jdbc.datasource.JDBCBackendDataSource;
+import org.apache.shardingsphere.shardingproxy.config.yaml.YamlDataSourceParameter;
 import org.apache.shardingsphere.shardingproxy.util.DataSourceConverter;
-import org.apache.shardingsphere.shardingproxy.util.DataSourceParameter;
 
 import java.util.LinkedHashMap;
 import java.util.Map;
@@ -41,13 +48,13 @@ public abstract class LogicSchema {
     
     private final String name;
     
-    private final Map<String, DataSourceParameter> dataSources;
+    private final Map<String, YamlDataSourceParameter> dataSources;
     
     private final EventBus eventBus = ShardingOrchestrationEventBus.getInstance();
     
     private JDBCBackendDataSource backendDataSource;
     
-    public LogicSchema(final String name, final Map<String, DataSourceParameter> dataSources) {
+    public LogicSchema(final String name, final Map<String, YamlDataSourceParameter> dataSources) {
         this.name = name;
         // TODO :jiaqi only use JDBC need connect db via JDBC, netty style should use SQL packet to get metadata
         this.dataSources = dataSources;
@@ -55,9 +62,9 @@ public abstract class LogicSchema {
         eventBus.register(this);
     }
     
-    protected final Map<String, String> getDataSourceURLs(final Map<String, DataSourceParameter> dataSourceParameters) {
+    protected final Map<String, String> getDataSourceURLs(final Map<String, YamlDataSourceParameter> dataSourceParameters) {
         Map<String, String> result = new LinkedHashMap<>(dataSourceParameters.size(), 1);
-        for (Entry<String, DataSourceParameter> entry : dataSourceParameters.entrySet()) {
+        for (Entry<String, YamlDataSourceParameter> entry : dataSourceParameters.entrySet()) {
             result.put(entry.getKey(), entry.getValue().getUrl());
         }
         return result;
@@ -85,5 +92,42 @@ public abstract class LogicSchema {
         dataSources.clear();
         dataSources.putAll(DataSourceConverter.getDataSourceParameterMap(dataSourceChangedEvent.getDataSourceConfigurations()));
         backendDataSource = new JDBCBackendDataSource(dataSources);
+    }
+    
+    /**
+     * Refresh table meta data.
+     * 
+     * @param sqlStatement SQL statement
+     */
+    public final void refreshTableMetaData(final SQLStatement sqlStatement) {
+        if (sqlStatement instanceof CreateTableStatement) {
+            refreshTableMetaData((CreateTableStatement) sqlStatement);
+        } else if (sqlStatement instanceof AlterTableStatement) {
+            refreshTableMetaData((AlterTableStatement) sqlStatement);
+        } else if (sqlStatement instanceof DropTableStatement) {
+            refreshTableMetaData((DropTableStatement) sqlStatement);
+        }
+    }
+    
+    private void refreshTableMetaData(final CreateTableStatement createTableStatement) {
+        getMetaData().getTable().put(createTableStatement.getTables().getSingleTableName(), TableMetaDataFactory.newInstance(createTableStatement));
+    }
+    
+    private void refreshTableMetaData(final AlterTableStatement alterTableStatement) {
+        String logicTableName = alterTableStatement.getTables().getSingleTableName();
+        TableMetaData newTableMetaData = TableMetaDataFactory.newInstance(alterTableStatement, getMetaData().getTable().get(logicTableName));
+        Optional<String> newTableName = alterTableStatement.getNewTableName();
+        if (newTableName.isPresent()) {
+            getMetaData().getTable().put(newTableName.get(), newTableMetaData);
+            getMetaData().getTable().remove(logicTableName);
+        } else {
+            getMetaData().getTable().put(logicTableName, newTableMetaData);
+        }
+    }
+    
+    private void refreshTableMetaData(final DropTableStatement dropTableStatement) {
+        for (String each : dropTableStatement.getTables().getTableNames()) {
+            getMetaData().getTable().remove(each);
+        }
     }
 }
