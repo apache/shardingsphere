@@ -22,8 +22,11 @@ import org.junit.Test;
 
 public class OrchestrationMasterSlaveDataSourceTest {
     
+    private OrchestrationMasterSlaveDataSource masterSlaveDataSource;
+    
     @Before
     public void setUp() {
+        
     }
     
     @Test
@@ -43,14 +46,14 @@ public class OrchestrationMasterSlaveDataSourceTest {
     }
     
     @Test
-    public void testRenewDisabledState() {
+    public void assertRenewDisabledState() {
     }
     
     @Test
-    public void testRenewCircuitState() {
+    public void assertRenewCircuitState() {
     }
     
     @Test
-    public void testGetDataSource() {
+    public void assertGetDataSource() {
     }
 }
