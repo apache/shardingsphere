@@ -29,11 +29,13 @@ import org.apache.shardingsphere.orchestration.internal.registry.config.event.Co
 import org.apache.shardingsphere.orchestration.internal.registry.config.event.DataSourceChangedEvent;
 import org.apache.shardingsphere.orchestration.internal.registry.config.event.MasterSlaveRuleChangedEvent;
 import org.apache.shardingsphere.orchestration.internal.registry.config.event.PropertiesChangedEvent;
+import org.apache.shardingsphere.orchestration.internal.registry.state.event.CircuitStateChangedEvent;
 import org.apache.shardingsphere.orchestration.internal.registry.state.event.DisabledStateChangedEvent;
 import org.apache.shardingsphere.orchestration.internal.registry.state.schema.OrchestrationShardingSchema;
 import org.apache.shardingsphere.orchestration.reg.api.RegistryCenterConfiguration;
 import org.apache.shardingsphere.shardingjdbc.api.yaml.YamlMasterSlaveDataSourceFactory;
 import org.apache.shardingsphere.shardingjdbc.jdbc.core.datasource.MasterSlaveDataSource;
+import org.apache.shardingsphere.shardingjdbc.orchestration.internal.circuit.connection.CircuitBreakerConnection;
 import org.apache.shardingsphere.shardingjdbc.orchestration.user.YamlUserTest;
 import org.junit.Before;
 import org.junit.Test;
@@ -44,6 +46,7 @@ import java.util.LinkedHashMap;
 import java.util.Map;
 import java.util.Properties;
 
+import static org.hamcrest.CoreMatchers.instanceOf;
 import static org.hamcrest.CoreMatchers.is;
 import static org.junit.Assert.assertThat;
 
@@ -134,7 +137,10 @@ public class OrchestrationMasterSlaveDataSourceTest {
     }
     
     @Test
+    @SneakyThrows
     public void assertRenewCircuitState() {
+        masterSlaveDataSource.renew(new CircuitStateChangedEvent(true));
+        assertThat(masterSlaveDataSource.getConnection(), instanceOf(CircuitBreakerConnection.class));
     }
     
     @Test
