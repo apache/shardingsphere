@@ -6,22 +6,25 @@ weight = 3
 
 ## Introduction
 
-ShardingSphere uses ThreadLocal to manage sharding-columns and sharding-values. Developers can use HintManager to add sharding conditions by coding, sharding conditions effective only on current thread.
+ShardingSphere uses `ThreadLocal` to manage sharding key value or hint route. 
+Users can program to add sharding conditions to `HintManager`, and the condition only take effect within the current thread. 
+Main application situations of Hint:
 
-Main usages of Hint:
+1. Sharding field does not exist in SQL or database table structure, but in external business logic. 
+So users can operate data according to external sharding results designated by hint.
 
-1. Sharding column does not exist in SQL or tables in databases, but exist in external business logic. Therefore, it is possible to get the sharding result by Hint.
+2. Force to do some data operations in the master database.
 
-2. Mandatory Master routing strategy based in Hint.
-
-## Sharding with hint
+## Data Sharding Based on Hint
 
 ### configuration
 
-Hint is used for mandatory data sharding, which requires HintManager to be used together with database or table ShardingStrategy. If configuring DatabaseShardingStrategy with hint strategy, HintManager can be used to inject the database sharding value. 
-Similarly, if configuring TableShardingStrategy with hint strategy, you can inject table sharding values using HintManager. Therefore, before Hint is used, Hint sharding strategy needs to be configured.
+It needs to use `HintManager` along with sharding strategy configurations when using hint to enforce data sharding. 
+If `DatabaseShardingStrategy` is configured with hint sharding algorithms, users can use `HintManager` to inject sharding database results. 
+In a similar way, if `TableShardingStrategy` is configured with hint sharding algorithms, users can also use `HintManager` to inject sharding table results. 
+So it is necessary to configure hint sharding algorithms before using hint.
 
-The code is as follows:
+Here are codes to refer to:
 
 ```yaml
 shardingRule:
@@ -52,19 +55,19 @@ shardingRule:
 HintManager hintManager = HintManager.getInstance();
 ```
 
-### Add sharding columns and sharding values
+### Add Sharding Key Value
 
-- To add Sharding columns and corresponding data of data source by hintManager.addDatabaseShardingValue.
-- To add Sharding columns and corresponding data of table by hintManager.addTableShardingValue.
+- Use `hintManager.addDatabaseShardingValue` to add sharding key value of data source.
+- Use `hintManager.addTableShardingValue` to add sharding key value of table.
 
-> In the case of sharding databases without sharding tables, you can use `hintManager.setDatabaseShardingValue` method to add sharding value to force routing to only one database. 
-In this way, the SQL parsing and rewriting phases are skipped to improve overall execution efficiency.
+> Users can use `hintManager.setDatabaseShardingValue` to add shards in hint route to some certain sharding database without sharding tables. 
+In this way, SQL parsing and rewriting phase will be skipped and the overall enforcement efficiency can be enhanced.
 
 ### Clean sharding columns and sharding values
 
-The added Sharding columns and corresponding data are saved in ThreadLocal, so you need to clean the content of the ThreadLocal by calling hintManager.close() after the end of the operations.
+Sharding keys are saved in `ThreadLocal`, so it is necessary to use `hintManager.close()` to clear the content in `ThreadLocal`.
 
-__hintManager implement AutoCloseable interface, and it is recommended to use the *Try with resource* to clean automatically.__
+__`HintManager` is implemented with `AutoCloseable` interface. Recommend to use `try with resource` to automatically close it.__
 
 ### Code example:
 
@@ -85,21 +88,19 @@ try (
 }
 ```
 
-## Master force route with hint
+## Forcible Master Database Route Based on Hint
 
 ### Instantiation
 
-Same with sharding with hint.
+Be the same as data sharding based on hint.
 
-### Add sharding columns and sharding values
+### Configure Master Database Route
 
-- Use hintManager.setMasterRouteOnly to set force route.
+- Use `hintManager.setMasterRouteOnly` to configure master database route.
 
-There are two overload methods of the registration for each kind of sharding, and the shorter method can simplify the sharding injection of the = condition.
+### Clear Sharding Key Value
 
-### Clean sharding columns and sharding values
-
-Same with sharding with hint.
+Be the same as data sharding based on hint.
 
 ### Code example:
 
