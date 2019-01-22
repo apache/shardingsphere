@@ -19,12 +19,12 @@ package org.apache.shardingsphere.shardingproxy.backend;
 
 import org.apache.shardingsphere.core.constant.DatabaseType;
 import org.apache.shardingsphere.shardingproxy.backend.handler.BackendHandler;
-import org.apache.shardingsphere.shardingproxy.backend.handler.SchemaBroadcastBackendHandler;
+import org.apache.shardingsphere.shardingproxy.backend.handler.BroadcastBackendHandler;
+import org.apache.shardingsphere.shardingproxy.backend.handler.CurrentSchemaBackendHandler;
 import org.apache.shardingsphere.shardingproxy.backend.handler.ShowDatabasesBackendHandler;
 import org.apache.shardingsphere.shardingproxy.backend.handler.SkipBackendHandler;
 import org.apache.shardingsphere.shardingproxy.backend.handler.TransactionBackendHandler;
 import org.apache.shardingsphere.shardingproxy.backend.handler.UseSchemaBackendHandler;
-import org.apache.shardingsphere.shardingproxy.backend.jdbc.JDBCBackendHandler;
 import org.apache.shardingsphere.shardingproxy.backend.jdbc.connection.BackendConnection;
 import org.apache.shardingsphere.shardingproxy.backend.sctl.ShardingCTLSetBackendHandler;
 import org.junit.Test;
@@ -66,7 +66,7 @@ public final class ComQueryBackendHandlerFactoryTest {
     public void assertCreateSchemaBroadcastBackendHandler() {
         String sql = "set @num=1";
         BackendHandler actual = ComQueryBackendHandlerFactory.createBackendHandler(1, sql, backendConnection, DatabaseType.MySQL);
-        assertThat(actual, instanceOf(SchemaBroadcastBackendHandler.class));
+        assertThat(actual, instanceOf(BroadcastBackendHandler.class));
     }
     
     @Test
@@ -87,6 +87,6 @@ public final class ComQueryBackendHandlerFactoryTest {
     public void assertCrateDefaultBackendHandler() {
         String sql = "select * from t_order limit 1";
         BackendHandler actual = ComQueryBackendHandlerFactory.createBackendHandler(1, sql, backendConnection, DatabaseType.MySQL);
-        assertThat(actual, instanceOf(JDBCBackendHandler.class));
+        assertThat(actual, instanceOf(CurrentSchemaBackendHandler.class));
     }
 }

@@ -34,7 +34,7 @@ import org.apache.shardingsphere.core.routing.SQLRouteResult;
 import org.apache.shardingsphere.core.routing.StatementRoutingEngine;
 import org.apache.shardingsphere.core.routing.router.masterslave.MasterSlaveRouter;
 import org.apache.shardingsphere.shardingproxy.backend.ResultPacket;
-import org.apache.shardingsphere.shardingproxy.backend.handler.BackendHandler;
+import org.apache.shardingsphere.shardingproxy.backend.engine.DatabaseAccessEngine;
 import org.apache.shardingsphere.shardingproxy.backend.netty.client.BackendNettyClientManager;
 import org.apache.shardingsphere.shardingproxy.backend.netty.client.response.mysql.MySQLQueryResult;
 import org.apache.shardingsphere.shardingproxy.backend.netty.future.FutureRegistry;
@@ -64,7 +64,7 @@ import java.util.concurrent.TimeUnit;
 import java.util.concurrent.TimeoutException;
 
 /**
- * Netty backend handler.
+ * Database access engine for Netty.
  *
  * @author wangkai
  * @author linjiaqi
@@ -72,7 +72,7 @@ import java.util.concurrent.TimeoutException;
  */
 @RequiredArgsConstructor
 @Getter
-public final class NettyBackendHandler implements BackendHandler {
+public final class NettyDatabaseAccessEngine implements DatabaseAccessEngine {
     
     private static final GlobalRegistry GLOBAL_REGISTRY = GlobalRegistry.getInstance();
     

@@ -22,7 +22,7 @@ import lombok.SneakyThrows;
 import org.apache.shardingsphere.core.constant.properties.ShardingProperties;
 import org.apache.shardingsphere.core.constant.properties.ShardingPropertiesConstant;
 import org.apache.shardingsphere.shardingproxy.backend.ResultPacket;
-import org.apache.shardingsphere.shardingproxy.backend.handler.BackendHandler;
+import org.apache.shardingsphere.shardingproxy.backend.engine.DatabaseAccessEngine;
 import org.apache.shardingsphere.shardingproxy.backend.jdbc.connection.BackendConnection;
 import org.apache.shardingsphere.shardingproxy.runtime.GlobalRegistry;
 import org.apache.shardingsphere.shardingproxy.transport.common.packet.DatabasePacket;
@@ -63,7 +63,7 @@ public final class ComFieldListPacketTest {
     private BackendConnection backendConnection;
     
     @Mock
-    private BackendHandler backendHandler;
+    private DatabaseAccessEngine databaseAccessEngine;
     
     @Before
     public void setUp() throws ReflectiveOperationException {
@@ -94,9 +94,9 @@ public final class ComFieldListPacketTest {
     public void assertExecuteWhenSuccess() throws SQLException {
         when(payload.readStringNul()).thenReturn("tbl");
         when(payload.readStringEOF()).thenReturn("-");
-        when(backendHandler.next()).thenReturn(true, false);
-        when(backendHandler.getResultValue()).thenReturn(new ResultPacket(1, Collections.<Object>singletonList("id"), 1, Collections.singletonList(ColumnType.MYSQL_TYPE_VARCHAR)));
-        when(backendHandler.execute()).thenReturn(new CommandResponsePackets(new FieldCountPacket(1, 1)));
+        when(databaseAccessEngine.next()).thenReturn(true, false);
+        when(databaseAccessEngine.getResultValue()).thenReturn(new ResultPacket(1, Collections.<Object>singletonList("id"), 1, Collections.singletonList(ColumnType.MYSQL_TYPE_VARCHAR)));
+        when(databaseAccessEngine.execute()).thenReturn(new CommandResponsePackets(new FieldCountPacket(1, 1)));
         ComFieldListPacket packet = new ComFieldListPacket(1, payload, backendConnection);
         setBackendHandler(packet);
         Optional<CommandResponsePackets> actual = packet.execute();
@@ -122,7 +122,7 @@ public final class ComFieldListPacketTest {
         when(payload.readStringNul()).thenReturn("tbl");
         when(payload.readStringEOF()).thenReturn("-");
         CommandResponsePackets expected = new CommandResponsePackets(new ErrPacket(1, ServerErrorCode.ER_STD_UNKNOWN_EXCEPTION, "unknown"));
-        when(backendHandler.execute()).thenReturn(expected);
+        when(databaseAccessEngine.execute()).thenReturn(expected);
         ComFieldListPacket packet = new ComFieldListPacket(1, payload, backendConnection);
         setBackendHandler(packet);
         Optional<CommandResponsePackets> actual = packet.execute();
@@ -132,8 +132,8 @@ public final class ComFieldListPacketTest {
     
     @SneakyThrows
     private void setBackendHandler(final ComFieldListPacket packet) {
-        Field field = ComFieldListPacket.class.getDeclaredField("backendHandler");
+        Field field = ComFieldListPacket.class.getDeclaredField("databaseAccessEngine");
         field.setAccessible(true);
-        field.set(packet, backendHandler);
+        field.set(packet, databaseAccessEngine);
     }
 }

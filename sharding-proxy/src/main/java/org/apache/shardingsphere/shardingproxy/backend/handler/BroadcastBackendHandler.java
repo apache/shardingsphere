@@ -20,21 +20,27 @@ package org.apache.shardingsphere.shardingproxy.backend.handler;
 import lombok.RequiredArgsConstructor;
 import org.apache.shardingsphere.core.constant.DatabaseType;
 import org.apache.shardingsphere.shardingproxy.backend.ResultPacket;
+import org.apache.shardingsphere.shardingproxy.backend.engine.DatabaseAccessEngineFactory;
 import org.apache.shardingsphere.shardingproxy.backend.jdbc.connection.BackendConnection;
 import org.apache.shardingsphere.shardingproxy.runtime.GlobalRegistry;
+import org.apache.shardingsphere.shardingproxy.transport.common.packet.DatabasePacket;
 import org.apache.shardingsphere.shardingproxy.transport.mysql.packet.command.CommandResponsePackets;
+import org.apache.shardingsphere.shardingproxy.transport.mysql.packet.generic.ErrPacket;
+import org.apache.shardingsphere.shardingproxy.transport.mysql.packet.generic.OKPacket;
 
-import java.sql.SQLException;
+import java.util.LinkedList;
+import java.util.List;
 
 /**
- * Unicast schema backend handler.
+ * Backend handler for broadcast.
  *
+ * @author chenqingyang
  * @author zhaojun
  */
 @RequiredArgsConstructor
-public final class UnicastSchemaBackendHandler implements BackendHandler {
+public final class BroadcastBackendHandler implements BackendHandler {
     
-    private final BackendHandlerFactory backendHandlerFactory = BackendHandlerFactory.getInstance();
+    private final DatabaseAccessEngineFactory databaseAccessEngineFactory = DatabaseAccessEngineFactory.getInstance();
     
     private final int sequenceId;
     
@@ -42,34 +48,30 @@ public final class UnicastSchemaBackendHandler implements BackendHandler {
     
     private final BackendConnection backendConnection;
     
-    private BackendHandler delegate;
+    private final DatabaseType databaseType;
     
     @Override
     public CommandResponsePackets execute() {
-        try {
-            return execute0();
-            // CHECKSTYLE:OFF
-        } catch (final Exception ex) {
-            // CHECKSTYLE:ON
-            return new CommandResponsePackets(ex);
+        List<DatabasePacket> packets = new LinkedList<>();
+        for (String each : GlobalRegistry.getInstance().getSchemaNames()) {
+            packets.addAll(
+                    databaseAccessEngineFactory.newTextProtocolInstance(GlobalRegistry.getInstance().getLogicSchema(each), sequenceId, sql, backendConnection, databaseType).execute().getPackets());
         }
-    }
-    
-    private CommandResponsePackets execute0() {
-        if (null == backendConnection.getSchemaName()) {
-            backendConnection.setCurrentSchema(GlobalRegistry.getInstance().getSchemaNames().iterator().next());
+        for (DatabasePacket each : packets) {
+            if (each instanceof ErrPacket) {
+                return new CommandResponsePackets(each);
+            }
         }
-        delegate = backendHandlerFactory.newTextProtocolInstance(sequenceId, sql, backendConnection, DatabaseType.MySQL);
-        return delegate.execute();
+        return new CommandResponsePackets(new OKPacket(1, 0, 0));
     }
     
     @Override
-    public boolean next() throws SQLException {
-        return delegate.next();
+    public boolean next() {
+        return false;
     }
     
     @Override
-    public ResultPacket getResultValue() throws SQLException {
-        return delegate.getResultValue();
+    public ResultPacket getResultValue() {
+        return null;
     }
 }

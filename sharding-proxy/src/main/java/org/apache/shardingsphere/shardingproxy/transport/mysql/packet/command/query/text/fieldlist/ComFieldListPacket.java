@@ -21,8 +21,8 @@ import com.google.common.base.Optional;
 import lombok.Getter;
 import lombok.extern.slf4j.Slf4j;
 import org.apache.shardingsphere.core.constant.DatabaseType;
-import org.apache.shardingsphere.shardingproxy.backend.handler.BackendHandler;
-import org.apache.shardingsphere.shardingproxy.backend.handler.BackendHandlerFactory;
+import org.apache.shardingsphere.shardingproxy.backend.engine.DatabaseAccessEngine;
+import org.apache.shardingsphere.shardingproxy.backend.engine.DatabaseAccessEngineFactory;
 import org.apache.shardingsphere.shardingproxy.backend.jdbc.connection.BackendConnection;
 import org.apache.shardingsphere.shardingproxy.transport.mysql.constant.ColumnType;
 import org.apache.shardingsphere.shardingproxy.transport.mysql.packet.MySQLPacketPayload;
@@ -56,14 +56,15 @@ public final class ComFieldListPacket implements CommandPacket {
     
     private final String fieldWildcard;
     
-    private final BackendHandler backendHandler;
+    private final DatabaseAccessEngine databaseAccessEngine;
     
     public ComFieldListPacket(final int sequenceId, final MySQLPacketPayload payload, final BackendConnection backendConnection) {
         this.sequenceId = sequenceId;
         this.schemaName = backendConnection.getSchemaName();
         table = payload.readStringNul();
         fieldWildcard = payload.readStringEOF();
-        backendHandler = BackendHandlerFactory.getInstance().newTextProtocolInstance(sequenceId, String.format(SQL, table, schemaName), backendConnection, DatabaseType.MySQL);
+        databaseAccessEngine = DatabaseAccessEngineFactory.getInstance().newTextProtocolInstance(
+                backendConnection.getLogicSchema(), sequenceId, String.format(SQL, table, schemaName), backendConnection, DatabaseType.MySQL);
     }
     
     @Override
@@ -77,15 +78,15 @@ public final class ComFieldListPacket implements CommandPacket {
     public Optional<CommandResponsePackets> execute() throws SQLException {
         log.debug("Table name received for Sharding-Proxy: {}", table);
         log.debug("Field wildcard received for Sharding-Proxy: {}", fieldWildcard);
-        CommandResponsePackets responsePackets = backendHandler.execute();
+        CommandResponsePackets responsePackets = databaseAccessEngine.execute();
         return Optional.of(responsePackets.getHeadPacket() instanceof ErrPacket ? responsePackets : getColumnDefinition41Packets());
     }
     
     private CommandResponsePackets getColumnDefinition41Packets() throws SQLException {
         CommandResponsePackets result = new CommandResponsePackets();
         int currentSequenceId = 0;
-        while (backendHandler.next()) {
-            String columnName = backendHandler.getResultValue().getData().get(0).toString();
+        while (databaseAccessEngine.next()) {
+            String columnName = databaseAccessEngine.getResultValue().getData().get(0).toString();
             result.getPackets().add(new ColumnDefinition41Packet(++currentSequenceId, schemaName, table, table, columnName, columnName, 100, ColumnType.MYSQL_TYPE_VARCHAR, 0));
         }
         result.getPackets().add(new EofPacket(++currentSequenceId));

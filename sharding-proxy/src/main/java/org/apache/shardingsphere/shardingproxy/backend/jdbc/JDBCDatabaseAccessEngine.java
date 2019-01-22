@@ -29,7 +29,7 @@ import org.apache.shardingsphere.core.parsing.parser.sql.SQLStatement;
 import org.apache.shardingsphere.core.routing.SQLRouteResult;
 import org.apache.shardingsphere.core.rule.ShardingRule;
 import org.apache.shardingsphere.shardingproxy.backend.ResultPacket;
-import org.apache.shardingsphere.shardingproxy.backend.handler.BackendHandler;
+import org.apache.shardingsphere.shardingproxy.backend.engine.DatabaseAccessEngine;
 import org.apache.shardingsphere.shardingproxy.backend.jdbc.connection.BackendConnection;
 import org.apache.shardingsphere.shardingproxy.backend.jdbc.connection.ConnectionStatus;
 import org.apache.shardingsphere.shardingproxy.backend.jdbc.execute.JDBCExecuteEngine;
@@ -54,7 +54,7 @@ import java.util.Collection;
 import java.util.List;
 
 /**
- * Backend handler via JDBC to connect databases.
+ * Database access engine for JDBC.
  *
  * @author zhaojun
  * @author zhangliang
@@ -62,7 +62,7 @@ import java.util.List;
  * @author maxiaoguang
  */
 @RequiredArgsConstructor
-public final class JDBCBackendHandler implements BackendHandler {
+public final class JDBCDatabaseAccessEngine implements DatabaseAccessEngine {
     
     private final LogicSchema logicSchema;
     
@@ -79,7 +79,7 @@ public final class JDBCBackendHandler implements BackendHandler {
     @Override
     public CommandResponsePackets execute() {
         try {
-            return logicSchema == null ? new CommandResponsePackets(new ErrPacket(1, ServerErrorCode.ER_NO_DB_ERROR)) : execute(executeEngine.getJdbcExecutorWrapper().route(sql, DatabaseType.MySQL));
+            return execute(executeEngine.getJdbcExecutorWrapper().route(sql, DatabaseType.MySQL));
             // CHECKSTYLE:OFF
         } catch (final Exception ex) {
             // CHECKSTYLE:ON

@@ -15,34 +15,34 @@
  * limitations under the License.
  */
 
-package org.apache.shardingsphere.shardingproxy.backend.handler;
+package org.apache.shardingsphere.shardingproxy.backend.engine;
 
 import lombok.AccessLevel;
 import lombok.NoArgsConstructor;
 import org.apache.shardingsphere.core.constant.DatabaseType;
 import org.apache.shardingsphere.core.constant.properties.ShardingPropertiesConstant;
-import org.apache.shardingsphere.shardingproxy.backend.jdbc.JDBCBackendHandler;
+import org.apache.shardingsphere.shardingproxy.backend.jdbc.JDBCDatabaseAccessEngine;
 import org.apache.shardingsphere.shardingproxy.backend.jdbc.connection.BackendConnection;
 import org.apache.shardingsphere.shardingproxy.backend.jdbc.execute.JDBCExecuteEngine;
 import org.apache.shardingsphere.shardingproxy.backend.jdbc.wrapper.PreparedStatementExecutorWrapper;
 import org.apache.shardingsphere.shardingproxy.backend.jdbc.wrapper.StatementExecutorWrapper;
-import org.apache.shardingsphere.shardingproxy.backend.netty.NettyBackendHandler;
+import org.apache.shardingsphere.shardingproxy.backend.netty.NettyDatabaseAccessEngine;
 import org.apache.shardingsphere.shardingproxy.runtime.GlobalRegistry;
 import org.apache.shardingsphere.shardingproxy.runtime.schema.LogicSchema;
 
 import java.util.List;
 
 /**
- * Backend handler factory.
+ * Database access engine factory.
  *
  * @author zhangliang
  * @author panjuan
  * @author zhaojun
  */
 @NoArgsConstructor(access = AccessLevel.PRIVATE)
-public final class BackendHandlerFactory {
+public final class DatabaseAccessEngineFactory {
     
-    private static final BackendHandlerFactory INSTANCE = new BackendHandlerFactory();
+    private static final DatabaseAccessEngineFactory INSTANCE = new DatabaseAccessEngineFactory();
     
     private static final GlobalRegistry GLOBAL_REGISTRY = GlobalRegistry.getInstance();
     
@@ -51,29 +51,31 @@ public final class BackendHandlerFactory {
      *
      * @return backend handler factory
      */
-    public static BackendHandlerFactory getInstance() {
+    public static DatabaseAccessEngineFactory getInstance() {
         return INSTANCE;
     }
     
     /**
      * Create new instance of text protocol backend handler.
      *
+     * @param logicSchema logic schema
      * @param sequenceId sequence ID of SQL packet
      * @param sql SQL to be executed
      * @param backendConnection backend connection
      * @param databaseType database type
      * @return instance of text protocol backend handler
      */
-    public BackendHandler newTextProtocolInstance(final int sequenceId, final String sql, final BackendConnection backendConnection, final DatabaseType databaseType) {
-        LogicSchema logicSchema = backendConnection.getLogicSchema();
+    public DatabaseAccessEngine newTextProtocolInstance(
+            final LogicSchema logicSchema, final int sequenceId, final String sql, final BackendConnection backendConnection, final DatabaseType databaseType) {
         return GLOBAL_REGISTRY.getShardingProperties().<Boolean>getValue(ShardingPropertiesConstant.PROXY_BACKEND_USE_NIO)
-                ? new NettyBackendHandler(logicSchema, backendConnection.getConnectionId(), sequenceId, sql, databaseType)
-                : new JDBCBackendHandler(logicSchema, sql, new JDBCExecuteEngine(backendConnection, new StatementExecutorWrapper(logicSchema)));
+                ? new NettyDatabaseAccessEngine(logicSchema, backendConnection.getConnectionId(), sequenceId, sql, databaseType)
+                : new JDBCDatabaseAccessEngine(logicSchema, sql, new JDBCExecuteEngine(backendConnection, new StatementExecutorWrapper(logicSchema)));
     }
     
     /**
      * Create new instance of text protocol backend handler.
      *
+     * @param logicSchema logic schema
      * @param sequenceId sequence ID of SQL packet
      * @param sql SQL to be executed
      * @param parameters SQL parameters
@@ -81,11 +83,10 @@ public final class BackendHandlerFactory {
      * @param databaseType database type
      * @return instance of text protocol backend handler
      */
-    public BackendHandler newBinaryProtocolInstance(final int sequenceId, final String sql, final List<Object> parameters, 
-                                                    final BackendConnection backendConnection, final DatabaseType databaseType) {
-        LogicSchema logicSchema = backendConnection.getLogicSchema();
+    public DatabaseAccessEngine newBinaryProtocolInstance(
+            final LogicSchema logicSchema, final int sequenceId, final String sql, final List<Object> parameters, final BackendConnection backendConnection, final DatabaseType databaseType) {
         return GLOBAL_REGISTRY.getShardingProperties().<Boolean>getValue(ShardingPropertiesConstant.PROXY_BACKEND_USE_NIO)
-                ? new NettyBackendHandler(logicSchema, backendConnection.getConnectionId(), sequenceId, sql, databaseType)
-                : new JDBCBackendHandler(logicSchema, sql, new JDBCExecuteEngine(backendConnection, new PreparedStatementExecutorWrapper(logicSchema, parameters)));
+                ? new NettyDatabaseAccessEngine(logicSchema, backendConnection.getConnectionId(), sequenceId, sql, databaseType)
+                : new JDBCDatabaseAccessEngine(logicSchema, sql, new JDBCExecuteEngine(backendConnection, new PreparedStatementExecutorWrapper(logicSchema, parameters)));
     }
 }

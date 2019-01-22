@@ -17,11 +17,11 @@
 
 package org.apache.shardingsphere.shardingproxy.backend;
 
-import org.apache.shardingsphere.shardingproxy.backend.handler.SchemaBroadcastBackendHandlerTest;
+import org.apache.shardingsphere.shardingproxy.backend.handler.BroadcastBackendHandlerTest;
 import org.apache.shardingsphere.shardingproxy.backend.handler.ShowDatabasesBackendHandlerTest;
 import org.apache.shardingsphere.shardingproxy.backend.handler.SkipBackendHandlerTest;
 import org.apache.shardingsphere.shardingproxy.backend.handler.TransactionBackendHandlerTest;
-import org.apache.shardingsphere.shardingproxy.backend.handler.UnicastSchemaBackendHandlerTest;
+import org.apache.shardingsphere.shardingproxy.backend.handler.UnicastBackendHandlerTest;
 import org.apache.shardingsphere.shardingproxy.backend.handler.UseStatementBackendHandlerTest;
 import org.apache.shardingsphere.shardingproxy.backend.jdbc.connection.BackendConnectionTest;
 import org.apache.shardingsphere.shardingproxy.backend.jdbc.connection.BackendTransactionManagerTest;
@@ -38,11 +38,11 @@ import org.junit.runners.Suite.SuiteClasses;
 @RunWith(Suite.class)
 @SuiteClasses({
         ComQueryBackendHandlerFactoryTest.class, 
-        SchemaBroadcastBackendHandlerTest.class, 
+        BroadcastBackendHandlerTest.class, 
         ShowDatabasesBackendHandlerTest.class, 
         SkipBackendHandlerTest.class, 
         TransactionBackendHandlerTest.class, 
-        UnicastSchemaBackendHandlerTest.class, 
+        UnicastBackendHandlerTest.class, 
         UseStatementBackendHandlerTest.class, 
         ShardingCTLSetBackendHandlerTest.class,
         ShardingCTLShowBackendHandlerTest.class,
