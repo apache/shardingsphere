@@ -61,7 +61,7 @@ public abstract class AbstractFromWhereExtractor implements OptionalSQLSegmentEx
      */
     public Optional<FromWhereSegment> extract(final ParserRuleContext ancestorNode, final ParserRuleContext rootNode) {
         FromWhereSegment result = createSegment();
-        Map<ParserRuleContext, Integer> placeholderIndexes = getPlaceholderAndNodeIndexMap(result, rootNode);
+        Map<ParserRuleContext, Integer> placeholderIndexes = getPlaceholderIndexes(result, rootNode);
         Optional<ParserRuleContext> whereNode = extractTable(result, ancestorNode, placeholderIndexes);
         if (whereNode.isPresent()) {
             result.setWhereStartIndex(whereNode.get().getStart().getStartIndex());
@@ -79,14 +79,14 @@ public abstract class AbstractFromWhereExtractor implements OptionalSQLSegmentEx
         return Optional.of(result);
     }
     
-    private Map<ParserRuleContext, Integer> getPlaceholderAndNodeIndexMap(final FromWhereSegment fromWhereSegment, final ParserRuleContext rootNode) {
-        Collection<ParserRuleContext> questionNodes = ExtractorUtils.getAllDescendantNodes(rootNode, RuleName.QUESTION);
-        Map<ParserRuleContext, Integer> result = new HashMap<>(questionNodes.size(), 1);
+    private Map<ParserRuleContext, Integer> getPlaceholderIndexes(final FromWhereSegment fromWhereSegment, final ParserRuleContext rootNode) {
+        Collection<ParserRuleContext> placeholderNodes = ExtractorUtils.getAllDescendantNodes(rootNode, RuleName.QUESTION);
+        Map<ParserRuleContext, Integer> result = new HashMap<>(placeholderNodes.size(), 1);
         int index = 0;
-        for (ParserRuleContext each : questionNodes) {
+        for (ParserRuleContext each : placeholderNodes) {
             result.put(each, index++);
         }
-        fromWhereSegment.setParameterCount(questionNodes.size());
+        fromWhereSegment.setParameterCount(placeholderNodes.size());
         return result;
     }
     

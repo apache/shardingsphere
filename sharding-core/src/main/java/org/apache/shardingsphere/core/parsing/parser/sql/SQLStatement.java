@@ -79,7 +79,7 @@ public interface SQLStatement {
     void increaseParametersIndex();
     
     /**
-     * Get logic sql.
+     * Get logic SQL.
      */
     String getLogicSQL();
 }

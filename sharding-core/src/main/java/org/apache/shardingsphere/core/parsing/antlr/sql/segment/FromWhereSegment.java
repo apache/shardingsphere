@@ -33,6 +33,7 @@ import java.util.Map;
  * @author duhongjun
  */
 @Getter
+@Setter
 public class FromWhereSegment implements SQLSegment {
     
     private final Map<String, String> tableAliases = new HashMap<>();
@@ -41,18 +42,13 @@ public class FromWhereSegment implements SQLSegment {
     
     private final Collection<SubquerySegment> subqueries = new LinkedList<>();
     
-    @Setter
     private int parameterCount;
     
-    @Setter
     private int whereStartIndex;
     
-    @Setter
     private int whereStopIndex;
     
-    @Setter
     private int whereParameterStartIndex;
     
-    @Setter
     private int whereParameterEndIndex;
 }

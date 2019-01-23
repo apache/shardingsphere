@@ -31,7 +31,7 @@ import org.apache.shardingsphere.core.parsing.antlr.sql.segment.dml.UpdateSetWhe
 import com.google.common.base.Optional;
 
 /**
- * Update where extractor.
+ * Update set where extractor.
  *
  * @author duhongjun
  */

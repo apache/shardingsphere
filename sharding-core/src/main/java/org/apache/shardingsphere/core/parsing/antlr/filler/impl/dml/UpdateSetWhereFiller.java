@@ -29,7 +29,7 @@ import org.apache.shardingsphere.core.rule.ShardingRule;
  *
  * @author duhongjun
  */
-public class UpdateSetWhereFiller extends DeleteFromWhereFiller {
+public final class UpdateSetWhereFiller extends DeleteFromWhereFiller {
     
     @Override
     public void fill(final FromWhereSegment sqlSegment, final SQLStatement sqlStatement, final String sql, final ShardingRule shardingRule, final ShardingTableMetaData shardingTableMetaData) {

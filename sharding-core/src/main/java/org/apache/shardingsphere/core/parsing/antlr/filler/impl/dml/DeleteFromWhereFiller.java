@@ -17,7 +17,7 @@
 
 package org.apache.shardingsphere.core.parsing.antlr.filler.impl.dml;
 
-import java.util.Map;
+import java.util.Map.Entry;
 
 import org.apache.shardingsphere.core.metadata.table.ShardingTableMetaData;
 import org.apache.shardingsphere.core.parsing.antlr.filler.impl.FromWhereFiller;
@@ -41,7 +41,7 @@ public class DeleteFromWhereFiller extends FromWhereFiller {
         DMLStatement dmlStatement = (DMLStatement) sqlStatement;
         dmlStatement.setDeleteStatement(true);
         dmlStatement.getUpdateColumns().addAll(deleteFromWhereSegment.getUpdateTables());
-        for (Map.Entry<String, String> each : sqlSegment.getTableAliases().entrySet()) {
+        for (Entry<String, String> each : sqlSegment.getTableAliases().entrySet()) {
             if (!each.getValue().equals(each.getKey())) {
                 dmlStatement.getUpdateTables().put(each.getKey(), each.getValue());
             }
