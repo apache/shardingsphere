@@ -91,8 +91,8 @@ public class OrchestrationMasterSlaveDataSource extends AbstractOrchestrationDat
     @Subscribe
     @SneakyThrows
     public final synchronized void renew(final MasterSlaveRuleChangedEvent masterSlaveRuleChangedEvent) {
-        dataSource = new MasterSlaveDataSource(dataSource.getDataSourceMap(),
-                masterSlaveRuleChangedEvent.getMasterSlaveRuleConfiguration(), ConfigMapContext.getInstance().getConfigMap(), dataSource.getShardingProperties().getProps());
+        dataSource = new MasterSlaveDataSource(dataSource.getDataSourceMap(), new OrchestrationMasterSlaveRule(masterSlaveRuleChangedEvent.getMasterSlaveRuleConfiguration()), 
+                ConfigMapContext.getInstance().getConfigMap(), dataSource.getShardingProperties().getProps());
     }
     
     /**
