@@ -66,10 +66,10 @@ public final class OrConditionFiller implements SQLStatementFiller<OrConditionSe
     /**
      * build condition.
      *
-     * @param sqlSegment SQL segment
-     * @param sqlStatement SQL statement
-     * @param sql SQL
-     * @param shardingRule databases and tables sharding rule
+     * @param sqlSegment            SQL segment
+     * @param sqlStatement          SQL statement
+     * @param sql                   SQL
+     * @param shardingRule          databases and tables sharding rule
      * @param shardingTableMetaData sharding table meta data
      * @return Or Condition
      */
@@ -213,9 +213,9 @@ public final class OrConditionFiller implements SQLStatementFiller<OrConditionSe
     /**
      * build equals condition.
      *
-     * @param column column
+     * @param column            column
      * @param expressionSegment SQL segment
-     * @param sql SQL
+     * @param sql               SQL
      * @return Condition
      */
     public Optional<Condition> buildEqualsCondition(final Column column, final ExpressionSegment expressionSegment, final String sql) {
@@ -237,7 +237,7 @@ public final class OrConditionFiller implements SQLStatementFiller<OrConditionSe
         if (null != commonExpressionSegment.getValue()) {
             return Optional.<SQLExpression>of(new SQLNumberExpression(commonExpressionSegment.getValue()));
         }
-        if(commonExpressionSegment.isText()) {
+        if (commonExpressionSegment.isText()) {
             return Optional.<SQLExpression>of(new SQLTextExpression(sql.substring(commonExpressionSegment.getStartIndex() + 1, commonExpressionSegment.getStopIndex())));
         }
         return Optional.<SQLExpression>of(new SQLTextExpression(sql.substring(commonExpressionSegment.getStartIndex(), commonExpressionSegment.getStopIndex() + 1)));

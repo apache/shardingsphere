@@ -21,16 +21,13 @@ import org.apache.shardingsphere.api.config.rule.ShardingRuleConfiguration;
 import org.apache.shardingsphere.api.config.rule.TableRuleConfiguration;
 import org.apache.shardingsphere.core.exception.ShardingConfigurationException;
 import org.apache.shardingsphere.core.routing.type.RoutingResult;
-import org.apache.shardingsphere.core.routing.type.TableUnit;
 import org.apache.shardingsphere.core.rule.ShardingRule;
 import org.junit.Before;
 import org.junit.Test;
 
-import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.Collections;
 import java.util.HashSet;
-import java.util.List;
 import java.util.Set;
 
 import static org.hamcrest.CoreMatchers.instanceOf;

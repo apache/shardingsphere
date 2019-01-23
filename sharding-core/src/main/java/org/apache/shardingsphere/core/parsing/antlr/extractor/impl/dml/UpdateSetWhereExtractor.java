@@ -48,9 +48,9 @@ public final class UpdateSetWhereExtractor extends AbstractFromWhereExtractor {
             return Optional.absent();
         }
         this.extractTableReference(fromWhereSegment, tableReferenceNode.get(), questionNodeIndexMap);
-        extractSetColumns(ancestorNode, (UpdateSetWhereSegment)fromWhereSegment);
+        extractSetColumns(ancestorNode, (UpdateSetWhereSegment) fromWhereSegment);
         return ExtractorUtils.findFirstChildNodeNoneRecursive(ancestorNode, RuleName.WHERE_CLAUSE);
-    }
+    } 
     
     private void extractSetColumns(final ParserRuleContext ancestorNode, final UpdateSetWhereSegment updateSetWhereSegment) {
         Optional<ParserRuleContext> setClauseNode = ExtractorUtils.findFirstChildNode(ancestorNode, RuleName.SET_CLAUSE);

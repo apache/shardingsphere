@@ -48,13 +48,13 @@ public class DMLStatement extends AbstractSQLStatement {
     
     private boolean deleteStatement;
     
-    private Map<String,String> updateTables = new HashMap<>();
+    private Map<String, String> updateTables = new HashMap<>();
     
     private List<String> updateColumns = new LinkedList<>();
     
-    private int whereStartPosition;
+    private int whereStartIndex;
     
-    private int whereStopPosition;
+    private int whereStopIndex;
     
     private int whereParameterStartIndex;
     

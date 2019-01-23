@@ -45,10 +45,10 @@ public class FromWhereSegment implements SQLSegment {
     private int parameterCount;
     
     @Setter
-    private int whereStartPosition;
+    private int whereStartIndex;
     
     @Setter
-    private int whereStopPosition;
+    private int whereStopIndex;
     
     @Setter
     private int whereParameterStartIndex;

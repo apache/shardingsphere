@@ -47,7 +47,7 @@ public final class SQLParsingEngine {
     
     /**
      * Parse SQL.
-     * 
+     *
      * @param useCache use cache or not
      * @return parsed SQL statement
      */
@@ -58,8 +58,8 @@ public final class SQLParsingEngine {
         }
         LexerEngine lexerEngine = LexerEngineFactory.newInstance(dbType, sql);
         SQLStatement result = SQLParserFactory.newInstance(dbType, shardingRule, lexerEngine, shardingTableMetaData, sql).parse();
-        if(result instanceof AbstractSQLStatement) {
-            ((AbstractSQLStatement)result).setLogicSQL(sql);
+        if (result instanceof AbstractSQLStatement) {
+            ((AbstractSQLStatement) result).setLogicSQL(sql);
         }
         if (useCache) {
             ParsingResultCache.getInstance().put(sql, result);
