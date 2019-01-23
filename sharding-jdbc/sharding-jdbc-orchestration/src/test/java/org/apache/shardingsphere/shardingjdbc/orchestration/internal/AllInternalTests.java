@@ -18,11 +18,16 @@
 package org.apache.shardingsphere.shardingjdbc.orchestration.internal;
 
 import org.apache.shardingsphere.shardingjdbc.orchestration.internal.circuit.AllCircuitTests;
+import org.apache.shardingsphere.shardingjdbc.orchestration.internal.datasource.AllDataSourceTests;
+import org.apache.shardingsphere.shardingjdbc.orchestration.internal.util.DataSourceConverterTest;
 import org.junit.runner.RunWith;
 import org.junit.runners.Suite;
 import org.junit.runners.Suite.SuiteClasses;
 
 @RunWith(Suite.class)
-@SuiteClasses(AllCircuitTests.class)
+@SuiteClasses({
+        AllCircuitTests.class,
+        DataSourceConverterTest.class,
+        AllDataSourceTests.class})
 public final class AllInternalTests {
 }
