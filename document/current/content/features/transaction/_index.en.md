@@ -10,11 +10,8 @@ chapter = true
 Database transactions should satisfy the features of `ACID ` (atomicity, consistency, isolation and durability).
 
 - Atomicity guarantees that each transaction is treated as a single unit, which either succeeds completely, or fails completely.
-
 - Consistency ensures that a transaction can only bring the database from one valid state to another, maintaining database invariants.
-
 - Isolation ensures that concurrent execution of transactions leaves the database in the same state that would have been obtained if the transactions were executed sequentially.
-
 - Durability guarantees that once a transaction has been committed, it will remain committed even in the case of a system failure (e.g., power outage or crash).
 
 In single data node, transactions are only restricted to the access and control of single database resources, called local transactions. 
@@ -31,7 +28,7 @@ It means let each data node to manage their own transactions on the premise that
 They do not have any coordination and communication ability, or know other data nodes have succeeded or not. 
 Though without any consumption in performance, local transactions are not capable enough in high consistency and eventual consistency.
 
-### XA Transaction
+### 2PC Transaction
 
 The earliest distributed transaction model of XA standard is `X/Open Distributed Transaction Processing (DTP)` model brought up by `X/Open`, XA for short.
 
@@ -75,7 +72,7 @@ For different application situations, developers need to reasonably weight the p
 Highly consistent transactions do not have totally the same API and functions as soft transactions, and they cannot switch between each other freely and invisibly. 
 The choice between highly consistent transactions and soft transactions as early as development decision-making phase has sharply increased the design and development cost.
 
-Highly consistent transactions based on XA is relatively easy to use, but is not good at dealing with short transaction and high concurrency situation of the Internet. 
+Highly consistent transactions based on XA is relatively easy to use, but is not good at dealing with long transaction and high concurrency situation of the Internet. 
 With a high access cost, soft transactions require developers to transform the application and realize resources lock and backward compensation.
 
 ## Goal
