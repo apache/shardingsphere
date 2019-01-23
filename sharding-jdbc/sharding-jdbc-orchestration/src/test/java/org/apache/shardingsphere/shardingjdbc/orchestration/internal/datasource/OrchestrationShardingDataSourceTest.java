@@ -41,11 +41,13 @@ import org.junit.BeforeClass;
 import org.junit.Test;
 
 import java.io.File;
+import java.sql.Connection;
 import java.util.Collections;
 import java.util.LinkedHashMap;
 import java.util.Map;
 import java.util.Properties;
 
+import static org.hamcrest.CoreMatchers.instanceOf;
 import static org.hamcrest.CoreMatchers.is;
 import static org.junit.Assert.assertThat;
 
@@ -71,6 +73,13 @@ public class OrchestrationShardingDataSourceTest {
         registryCenterConfiguration.setNamespace("test_sharding");
         registryCenterConfiguration.setServerLists("localhost:3181");
         return new OrchestrationConfiguration("test", registryCenterConfiguration, true);
+    }
+    
+    @Test
+    @SneakyThrows
+    public void assertInitializeOrchestrationShardingDataSource() {
+        OrchestrationShardingDataSource shardingDataSource = new OrchestrationShardingDataSource(getOrchestrationConfiguration());
+        assertThat(shardingDataSource.getConnection(), instanceOf(Connection.class));
     }
     
     @Test
