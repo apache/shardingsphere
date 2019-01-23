@@ -1,0 +1,51 @@
+dataSources:
+  ds_m: !!org.apache.commons.dbcp2.BasicDataSource
+    driverClassName: org.h2.Driver
+    url: jdbc:h2:mem:ds_m;DB_CLOSE_DELAY=-1;DATABASE_TO_UPPER=false;MODE=MYSQL
+    username: sa
+    password:
+  ds_s: !!org.apache.commons.dbcp2.BasicDataSource
+    driverClassName: org.h2.Driver
+    url: jdbc:h2:mem:ds_s;DB_CLOSE_DELAY=-1;DATABASE_TO_UPPER=false;MODE=MYSQL
+    username: sa
+    password:
+    
+shardingRule:
+  tables:
+    t_order:
+      actualDataNodes: ds_ms.t_order_${0..1}
+      databaseStrategy:
+        inline:
+          shardingColumn: user_id
+          algorithmExpression: t_order_${user_id % 2}
+      tableStrategy:
+        inline:
+          shardingColumn: order_id
+          algorithmExpression: t_order_${order_id % 2}
+      keyGenerator:
+        column: order_id
+    t_order_item:
+      actualDataNodes: ds_ms.t_order_item_${0..1}
+      tableStrategy:
+        inline:
+          shardingColumn: order_id
+          algorithmExpression: t_order_item_${order_id % 2}
+      keyGenerator:
+        column: order_item_id
+  bindingTables:
+    - t_order,t_order_item
+  masterSlaveRules:
+    ds_ms:
+      masterDataSourceName: ds_m
+      slaveDataSourceNames:
+        - ds_s
+  defaultDatabaseStrategy:
+    inline:
+      shardingColumn: user_id
+      algorithmExpression: ds_ms_${user_id % 2}
+  defaultTableStrategy:
+    none:
+  defaultKeyGenerator:
+    type: SNOWFLAKE
+props:
+  sql.show: false

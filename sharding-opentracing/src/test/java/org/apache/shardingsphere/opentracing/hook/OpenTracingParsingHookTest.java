@@ -20,6 +20,8 @@ package org.apache.shardingsphere.opentracing.hook;
 import io.opentracing.mock.MockSpan;
 import io.opentracing.tag.Tags;
 import org.apache.shardingsphere.core.exception.ShardingException;
+import org.apache.shardingsphere.core.metadata.table.ShardingTableMetaData;
+import org.apache.shardingsphere.core.parsing.parser.sql.SQLStatement;
 import org.apache.shardingsphere.opentracing.constant.ShardingTags;
 import org.apache.shardingsphere.spi.NewInstanceServiceLoader;
 import org.apache.shardingsphere.spi.parsing.ParsingHook;
@@ -32,6 +34,7 @@ import java.util.Map;
 
 import static org.hamcrest.CoreMatchers.is;
 import static org.junit.Assert.assertThat;
+import static org.mockito.Mockito.mock;
 
 public final class OpenTracingParsingHookTest extends BaseOpenTracingHookTest {
     
@@ -45,7 +48,7 @@ public final class OpenTracingParsingHookTest extends BaseOpenTracingHookTest {
     @Test
     public void assertExecuteSuccess() {
         parsingHook.start("SELECT * FROM XXX;");
-        parsingHook.finishSuccess();
+        parsingHook.finishSuccess(mock(SQLStatement.class), mock(ShardingTableMetaData.class));
         MockSpan actual = getActualSpan();
         assertThat(actual.operationName(), is("/Sharding-Sphere/parseSQL/"));
         Map<String, Object> actualTags = actual.tags();

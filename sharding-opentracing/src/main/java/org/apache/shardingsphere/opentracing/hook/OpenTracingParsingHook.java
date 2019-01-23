@@ -19,6 +19,9 @@ package org.apache.shardingsphere.opentracing.hook;
 
 import io.opentracing.Span;
 import io.opentracing.tag.Tags;
+
+import org.apache.shardingsphere.core.metadata.table.ShardingTableMetaData;
+import org.apache.shardingsphere.core.parsing.parser.sql.SQLStatement;
 import org.apache.shardingsphere.opentracing.ShardingTracer;
 import org.apache.shardingsphere.opentracing.constant.ShardingTags;
 import org.apache.shardingsphere.spi.parsing.ParsingHook;
@@ -43,7 +46,7 @@ public final class OpenTracingParsingHook implements ParsingHook {
     }
     
     @Override
-    public void finishSuccess() {
+    public void finishSuccess(final SQLStatement sqlStatement, final ShardingTableMetaData shardingTableMetaData) {
         span.finish();
     }
     
