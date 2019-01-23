@@ -28,7 +28,7 @@ import java.util.Map;
 
 public final class TestRegistryCenter implements RegistryCenter {
     
-    private final Map<String, String> registryData = new LinkedHashMap<>();
+    private static final Map<String, String> REGISTRY_DATA = new LinkedHashMap<>();
     
     @Override
     public void init(final RegistryCenterConfiguration config) {
@@ -36,17 +36,17 @@ public final class TestRegistryCenter implements RegistryCenter {
     
     @Override
     public String get(final String key) {
-        return registryData.get(key);
+        return REGISTRY_DATA.get(key);
     }
     
     @Override
     public String getDirectly(final String key) {
-        return registryData.get(key);
+        return REGISTRY_DATA.get(key);
     }
     
     @Override
     public boolean isExisted(final String key) {
-        return registryData.containsKey(key);
+        return REGISTRY_DATA.containsKey(key);
     }
     
     @Override
@@ -56,17 +56,17 @@ public final class TestRegistryCenter implements RegistryCenter {
     
     @Override
     public void persist(final String key, final String value) {
-        registryData.put(key, value);
+        REGISTRY_DATA.put(key, value);
     }
     
     @Override
     public void update(final String key, final String value) {
-        registryData.put(key, value);
+        REGISTRY_DATA.put(key, value);
     }
     
     @Override
     public void persistEphemeral(final String key, final String value) {
-        registryData.put(key, value);
+        REGISTRY_DATA.put(key, value);
     }
     
     @Override
@@ -75,6 +75,6 @@ public final class TestRegistryCenter implements RegistryCenter {
     
     @Override
     public void close() {
-        registryData.clear();
+        REGISTRY_DATA.clear();
     }
 }
