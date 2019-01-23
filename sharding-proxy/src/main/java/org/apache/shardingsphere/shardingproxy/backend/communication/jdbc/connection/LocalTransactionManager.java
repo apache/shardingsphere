@@ -45,7 +45,6 @@ public final class LocalTransactionManager implements TransactionManager {
         if (connection.getStateHandler().isInTransaction()) {
             Collection<SQLException> exceptions = new LinkedList<>();
             exceptions.addAll(commitConnections());
-            connection.getStateHandler().getAndSetStatus(ConnectionStatus.TERMINATED);
             throwSQLExceptionIfNecessary(exceptions);
         }
     }
@@ -55,7 +54,6 @@ public final class LocalTransactionManager implements TransactionManager {
         if (connection.getStateHandler().isInTransaction()) {
             Collection<SQLException> exceptions = new LinkedList<>();
             exceptions.addAll(rollbackConnections());
-            connection.getStateHandler().getAndSetStatus(ConnectionStatus.TERMINATED);
             throwSQLExceptionIfNecessary(exceptions);
         }
     }
