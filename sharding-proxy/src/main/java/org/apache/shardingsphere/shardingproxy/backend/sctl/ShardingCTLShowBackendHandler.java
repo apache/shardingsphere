@@ -21,8 +21,8 @@ import com.google.common.base.Optional;
 import org.apache.shardingsphere.core.merger.MergedResult;
 import org.apache.shardingsphere.core.merger.dal.show.ShowShardingCTLMergedResult;
 import org.apache.shardingsphere.shardingproxy.backend.ResultPacket;
-import org.apache.shardingsphere.shardingproxy.backend.handler.AbstractBackendHandler;
-import org.apache.shardingsphere.shardingproxy.backend.jdbc.connection.BackendConnection;
+import org.apache.shardingsphere.shardingproxy.backend.communication.jdbc.connection.BackendConnection;
+import org.apache.shardingsphere.shardingproxy.backend.text.TextProtocolBackendHandler;
 import org.apache.shardingsphere.shardingproxy.transport.mysql.constant.ColumnType;
 import org.apache.shardingsphere.shardingproxy.transport.mysql.packet.command.CommandResponsePackets;
 import org.apache.shardingsphere.shardingproxy.transport.mysql.packet.command.query.ColumnDefinition41Packet;
@@ -43,7 +43,7 @@ import java.util.List;
  *
  * @author zhaojun
  */
-public final class ShardingCTLShowBackendHandler extends AbstractBackendHandler {
+public final class ShardingCTLShowBackendHandler implements TextProtocolBackendHandler {
     
     private final String sql;
     
@@ -63,7 +63,7 @@ public final class ShardingCTLShowBackendHandler extends AbstractBackendHandler 
     }
     
     @Override
-    protected CommandResponsePackets execute0() {
+    public CommandResponsePackets execute() {
         Optional<ShardingCTLShowStatement> showStatement = new ShardingCTLShowParser(sql).doParse();
         if (!showStatement.isPresent()) {
             return new CommandResponsePackets(new ErrPacket(" please review your sctl format, should be sctl:show xxxx."));

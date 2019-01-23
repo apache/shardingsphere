@@ -27,7 +27,7 @@ import lombok.RequiredArgsConstructor;
  */
 @RequiredArgsConstructor
 @Getter
-public class ShardingCTLShowStatement {
+public final class ShardingCTLShowStatement {
     
     private final String value;
 }
