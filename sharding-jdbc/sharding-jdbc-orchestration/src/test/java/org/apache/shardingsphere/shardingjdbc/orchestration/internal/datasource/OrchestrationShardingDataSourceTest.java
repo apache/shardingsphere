@@ -58,7 +58,7 @@ public class OrchestrationShardingDataSourceTest {
     
     @SneakyThrows
     private ShardingDataSource getShardingDataSource() {
-        File yamlFile = new File(YamlUserTest.class.getResource("/yaml/unit/sharding.yaml").toURI());
+        File yamlFile = new File(OrchestrationShardingDataSourceTest.class.getResource("/yaml/unit/sharding.yaml").toURI());
         return (ShardingDataSource) YamlShardingDataSourceFactory.createDataSource(yamlFile);
     }
     
