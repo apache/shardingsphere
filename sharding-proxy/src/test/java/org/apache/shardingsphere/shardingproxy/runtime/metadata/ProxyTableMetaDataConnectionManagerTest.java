@@ -17,7 +17,7 @@
 
 package org.apache.shardingsphere.shardingproxy.runtime.metadata;
 
-import org.apache.shardingsphere.shardingproxy.backend.jdbc.datasource.JDBCBackendDataSource;
+import org.apache.shardingsphere.shardingproxy.backend.communication.jdbc.datasource.JDBCBackendDataSource;
 import org.junit.Test;
 import org.junit.runner.RunWith;
 import org.mockito.Mock;
