@@ -30,5 +30,5 @@ import java.util.LinkedList;
 @Getter
 public final class UpdateSetWhereSegment extends DeleteFromWhereSegment {
 
-    private Collection<String> updateColumns = new LinkedList<>();
+    private final Collection<String> updateColumns = new LinkedList<>();
 }

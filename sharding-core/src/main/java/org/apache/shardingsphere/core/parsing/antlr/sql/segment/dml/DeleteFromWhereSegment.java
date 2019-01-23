@@ -31,5 +31,5 @@ import java.util.Set;
 public class DeleteFromWhereSegment extends FromWhereSegment {
     
     @Getter
-    private Set<String> updateTables = new LinkedHashSet<>();
+    private final Set<String> updateTables = new LinkedHashSet<>();
 }
