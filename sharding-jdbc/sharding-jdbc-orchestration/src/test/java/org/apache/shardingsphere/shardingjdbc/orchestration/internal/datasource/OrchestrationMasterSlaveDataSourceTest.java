@@ -38,7 +38,7 @@ import org.apache.shardingsphere.shardingjdbc.api.yaml.YamlMasterSlaveDataSource
 import org.apache.shardingsphere.shardingjdbc.jdbc.core.datasource.MasterSlaveDataSource;
 import org.apache.shardingsphere.shardingjdbc.orchestration.api.yaml.util.EmbedTestingServer;
 import org.apache.shardingsphere.shardingjdbc.orchestration.internal.circuit.connection.CircuitBreakerConnection;
-import org.junit.Before;
+import org.junit.BeforeClass;
 import org.junit.Test;
 
 import java.io.File;
@@ -55,26 +55,33 @@ import static org.junit.Assert.assertThat;
 
 public class OrchestrationMasterSlaveDataSourceTest {
     
-    private OrchestrationMasterSlaveDataSource masterSlaveDataSource;
+    private static OrchestrationMasterSlaveDataSource masterSlaveDataSource;
     
-    @Before
+    @BeforeClass
     @SneakyThrows
-    public void setUp() {
+    public static void setUp() {
         EmbedTestingServer.start();
         masterSlaveDataSource = new OrchestrationMasterSlaveDataSource(getMasterSlaveDataSource(), getOrchestrationConfiguration());
     }
     
     @SneakyThrows
-    private MasterSlaveDataSource getMasterSlaveDataSource() {
+    private static MasterSlaveDataSource getMasterSlaveDataSource() {
         File yamlFile = new File(OrchestrationMasterSlaveDataSource.class.getResource("/yaml/unit/masterSlave.yaml").toURI());
         return (MasterSlaveDataSource) YamlMasterSlaveDataSourceFactory.createDataSource(yamlFile);
     }
     
-    private OrchestrationConfiguration getOrchestrationConfiguration() {
+    private static OrchestrationConfiguration getOrchestrationConfiguration() {
         RegistryCenterConfiguration registryCenterConfiguration = new RegistryCenterConfiguration();
         registryCenterConfiguration.setNamespace("test_ms");
         registryCenterConfiguration.setServerLists("localhost:3181");
         return new OrchestrationConfiguration("test", registryCenterConfiguration, true);
+    }
+    
+    @Test
+    @SneakyThrows
+    public void assertInitializeOrchestrationMasterSlaveDataSource() {
+        OrchestrationMasterSlaveDataSource masterSlaveDataSource = new OrchestrationMasterSlaveDataSource(getOrchestrationConfiguration());
+        assertThat(masterSlaveDataSource.getConnection(), instanceOf(Connection.class));
     }
     
     @Test
