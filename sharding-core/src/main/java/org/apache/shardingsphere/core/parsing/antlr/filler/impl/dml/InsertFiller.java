@@ -15,11 +15,12 @@
  * limitations under the License.
  */
 
-package org.apache.shardingsphere.core.parsing.antlr.filler.impl;
+package org.apache.shardingsphere.core.parsing.antlr.filler.impl.dml;
 
 import com.google.common.base.Optional;
 import org.apache.shardingsphere.core.metadata.table.ShardingTableMetaData;
 import org.apache.shardingsphere.core.parsing.antlr.filler.SQLStatementFiller;
+import org.apache.shardingsphere.core.parsing.antlr.filler.impl.OrConditionFiller;
 import org.apache.shardingsphere.core.parsing.antlr.sql.segment.InsertSegment;
 import org.apache.shardingsphere.core.parsing.antlr.sql.segment.InsertValuesSegment;
 import org.apache.shardingsphere.core.parsing.antlr.sql.segment.column.ColumnSegment;
@@ -53,6 +54,7 @@ public final class InsertFiller implements SQLStatementFiller<InsertSegment> {
     @Override
     public void fill(final InsertSegment sqlSegment, final SQLStatement sqlStatement, final String sql, final ShardingRule shardingRule, final ShardingTableMetaData shardingTableMetaData) {
         InsertStatement insertStatement = (InsertStatement) sqlStatement;
+        insertStatement.getUpdateTables().put(insertStatement.getTables().getSingleTableName(), insertStatement.getTables().getSingleTableName());
         createColumn(sqlSegment, insertStatement, shardingRule, shardingTableMetaData);
         createValue(sqlSegment, insertStatement, sql, shardingRule, shardingTableMetaData);
         insertStatement.setColumnsListLastPosition(sqlSegment.getColumnsListLastPosition());

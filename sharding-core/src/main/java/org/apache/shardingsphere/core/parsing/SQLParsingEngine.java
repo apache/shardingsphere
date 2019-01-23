@@ -24,6 +24,7 @@ import org.apache.shardingsphere.core.metadata.table.ShardingTableMetaData;
 import org.apache.shardingsphere.core.parsing.cache.ParsingResultCache;
 import org.apache.shardingsphere.core.parsing.lexer.LexerEngine;
 import org.apache.shardingsphere.core.parsing.lexer.LexerEngineFactory;
+import org.apache.shardingsphere.core.parsing.parser.sql.AbstractSQLStatement;
 import org.apache.shardingsphere.core.parsing.parser.sql.SQLParserFactory;
 import org.apache.shardingsphere.core.parsing.parser.sql.SQLStatement;
 import org.apache.shardingsphere.core.rule.ShardingRule;
@@ -46,7 +47,7 @@ public final class SQLParsingEngine {
     
     /**
      * Parse SQL.
-     * 
+     *
      * @param useCache use cache or not
      * @return parsed SQL statement
      */
@@ -57,6 +58,9 @@ public final class SQLParsingEngine {
         }
         LexerEngine lexerEngine = LexerEngineFactory.newInstance(dbType, sql);
         SQLStatement result = SQLParserFactory.newInstance(dbType, shardingRule, lexerEngine, shardingTableMetaData, sql).parse();
+        if (result instanceof AbstractSQLStatement) {
+            ((AbstractSQLStatement) result).setLogicSQL(sql);
+        }
         if (useCache) {
             ParsingResultCache.getInstance().put(sql, result);
         }

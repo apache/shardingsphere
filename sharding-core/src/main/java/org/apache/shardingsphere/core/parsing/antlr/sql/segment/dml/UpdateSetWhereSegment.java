@@ -15,40 +15,20 @@
  * limitations under the License.
  */
 
-package org.apache.shardingsphere.core.parsing.antlr.sql.segment;
+package org.apache.shardingsphere.core.parsing.antlr.sql.segment.dml;
 
 import lombok.Getter;
-import lombok.Setter;
-import org.apache.shardingsphere.core.parsing.antlr.sql.segment.condition.OrConditionSegment;
-import org.apache.shardingsphere.core.parsing.antlr.sql.segment.expr.SubquerySegment;
 
 import java.util.Collection;
-import java.util.HashMap;
 import java.util.LinkedList;
-import java.util.Map;
 
 /**
- * From where segment.
- * 
+ * Update set segment.
+ *
  * @author duhongjun
  */
 @Getter
-@Setter
-public class FromWhereSegment implements SQLSegment {
-    
-    private final Map<String, String> tableAliases = new HashMap<>();
-    
-    private final OrConditionSegment conditions = new OrConditionSegment();
-    
-    private final Collection<SubquerySegment> subqueries = new LinkedList<>();
-    
-    private int parameterCount;
-    
-    private int whereStartIndex;
-    
-    private int whereStopIndex;
-    
-    private int whereParameterStartIndex;
-    
-    private int whereParameterEndIndex;
+public final class UpdateSetWhereSegment extends DeleteFromWhereSegment {
+
+    private final Collection<String> updateColumns = new LinkedList<>();
 }

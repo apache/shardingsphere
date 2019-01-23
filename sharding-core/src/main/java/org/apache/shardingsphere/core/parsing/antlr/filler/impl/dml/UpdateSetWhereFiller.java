@@ -15,28 +15,29 @@
  * limitations under the License.
  */
 
-package org.apache.shardingsphere.core.parsing.antlr.filler.impl;
+package org.apache.shardingsphere.core.parsing.antlr.filler.impl.dml;
 
 import org.apache.shardingsphere.core.metadata.table.ShardingTableMetaData;
-import org.apache.shardingsphere.core.parsing.antlr.filler.SQLStatementFiller;
 import org.apache.shardingsphere.core.parsing.antlr.sql.segment.FromWhereSegment;
+import org.apache.shardingsphere.core.parsing.antlr.sql.segment.dml.UpdateSetWhereSegment;
 import org.apache.shardingsphere.core.parsing.parser.sql.SQLStatement;
+import org.apache.shardingsphere.core.parsing.parser.sql.dml.DMLStatement;
 import org.apache.shardingsphere.core.rule.ShardingRule;
 
 /**
- * From where filler.
+ * Update set where filler.
  *
  * @author duhongjun
  */
-public class FromWhereFiller implements SQLStatementFiller<FromWhereSegment> {
+public final class UpdateSetWhereFiller extends DeleteFromWhereFiller {
     
     @Override
     public void fill(final FromWhereSegment sqlSegment, final SQLStatement sqlStatement, final String sql, final ShardingRule shardingRule, final ShardingTableMetaData shardingTableMetaData) {
-        new OrConditionFiller().fill(sqlSegment.getConditions(), sqlStatement, sql, shardingRule, shardingTableMetaData);
-        int count = 0;
-        while (count < sqlSegment.getParameterCount()) {
-            sqlStatement.increaseParametersIndex();
-            count++;
-        }
+        super.fill(sqlSegment, sqlStatement, sql, shardingRule, shardingTableMetaData);
+        UpdateSetWhereSegment updateSetWhereSegment = (UpdateSetWhereSegment) sqlSegment;
+        DMLStatement dmlStatement = (DMLStatement) sqlStatement;
+        dmlStatement.getUpdateColumns().addAll(updateSetWhereSegment.getUpdateColumns());
+        dmlStatement.setDeleteStatement(false);
     }
 }
+

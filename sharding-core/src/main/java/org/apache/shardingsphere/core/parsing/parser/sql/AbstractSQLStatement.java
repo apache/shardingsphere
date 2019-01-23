@@ -53,6 +53,8 @@ public abstract class AbstractSQLStatement implements SQLStatement {
     
     private int parametersIndex;
     
+    private String logicSQL;
+    
     @Override
     public final void addSQLToken(final SQLToken sqlToken) {
         sqlTokens.add(sqlToken);

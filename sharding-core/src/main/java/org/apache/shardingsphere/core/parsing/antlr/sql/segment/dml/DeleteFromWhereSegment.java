@@ -15,37 +15,21 @@
  * limitations under the License.
  */
 
-package org.apache.shardingsphere.spi.parsing;
+package org.apache.shardingsphere.core.parsing.antlr.sql.segment.dml;
 
-import org.apache.shardingsphere.core.metadata.table.ShardingTableMetaData;
-import org.apache.shardingsphere.core.parsing.parser.sql.SQLStatement;
+import lombok.Getter;
+import org.apache.shardingsphere.core.parsing.antlr.sql.segment.FromWhereSegment;
+
+import java.util.LinkedHashSet;
+import java.util.Set;
 
 /**
- * Parsing hook.
+ * Delete from Segment.
  *
- * @author zhangliang
+ * @author duhongjun
  */
-public interface ParsingHook {
+public class DeleteFromWhereSegment extends FromWhereSegment {
     
-    /**
-     * Handle when parse started.
-     *
-     * @param sql SQL to be parsed
-     */
-    void start(String sql);
-    
-    /**
-     * Handle when parse finished success.
-     *
-     * @param sqlStatement sql statement
-     * @param shardingTableMetaData sharding table meta data
-     */
-    void finishSuccess(SQLStatement sqlStatement, ShardingTableMetaData shardingTableMetaData);
-    
-    /**
-     * Handle when parse finished failure.
-     * 
-     * @param cause failure cause
-     */
-    void finishFailure(Exception cause);
+    @Getter
+    private final Set<String> updateTables = new LinkedHashSet<>();
 }
