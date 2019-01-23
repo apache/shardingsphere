@@ -34,6 +34,7 @@ import org.apache.shardingsphere.orchestration.internal.registry.state.schema.Or
 import org.apache.shardingsphere.orchestration.reg.api.RegistryCenterConfiguration;
 import org.apache.shardingsphere.shardingjdbc.api.yaml.YamlShardingDataSourceFactory;
 import org.apache.shardingsphere.shardingjdbc.jdbc.core.datasource.ShardingDataSource;
+import org.apache.shardingsphere.shardingjdbc.orchestration.api.yaml.util.EmbedTestingServer;
 import org.junit.Before;
 import org.junit.Test;
 
@@ -52,6 +53,7 @@ public class OrchestrationShardingDataSourceTest {
     @Before
     @SneakyThrows
     public void setUp() {
+        EmbedTestingServer.start();
         shardingDataSource = new OrchestrationShardingDataSource(getShardingDataSource(), getOrchestrationConfiguration());
     }
     
@@ -64,7 +66,7 @@ public class OrchestrationShardingDataSourceTest {
     private OrchestrationConfiguration getOrchestrationConfiguration() {
         RegistryCenterConfiguration registryCenterConfiguration = new RegistryCenterConfiguration();
         registryCenterConfiguration.setNamespace("test_sharding");
-        registryCenterConfiguration.setServerLists("localhost:2181");
+        registryCenterConfiguration.setServerLists("localhost:3181");
         return new OrchestrationConfiguration("test", registryCenterConfiguration, true);
     }
     

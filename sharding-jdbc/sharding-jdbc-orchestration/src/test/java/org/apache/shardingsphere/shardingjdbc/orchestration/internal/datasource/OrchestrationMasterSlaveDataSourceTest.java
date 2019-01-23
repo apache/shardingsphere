@@ -36,6 +36,7 @@ import org.apache.shardingsphere.orchestration.internal.registry.state.schema.Or
 import org.apache.shardingsphere.orchestration.reg.api.RegistryCenterConfiguration;
 import org.apache.shardingsphere.shardingjdbc.api.yaml.YamlMasterSlaveDataSourceFactory;
 import org.apache.shardingsphere.shardingjdbc.jdbc.core.datasource.MasterSlaveDataSource;
+import org.apache.shardingsphere.shardingjdbc.orchestration.api.yaml.util.EmbedTestingServer;
 import org.apache.shardingsphere.shardingjdbc.orchestration.internal.circuit.connection.CircuitBreakerConnection;
 import org.junit.Before;
 import org.junit.Test;
@@ -59,6 +60,7 @@ public class OrchestrationMasterSlaveDataSourceTest {
     @Before
     @SneakyThrows
     public void setUp() {
+        EmbedTestingServer.start();
         masterSlaveDataSource = new OrchestrationMasterSlaveDataSource(getMasterSlaveDataSource(), getOrchestrationConfiguration());
     }
     
@@ -71,7 +73,7 @@ public class OrchestrationMasterSlaveDataSourceTest {
     private OrchestrationConfiguration getOrchestrationConfiguration() {
         RegistryCenterConfiguration registryCenterConfiguration = new RegistryCenterConfiguration();
         registryCenterConfiguration.setNamespace("test_ms");
-        registryCenterConfiguration.setServerLists("localhost:2181");
+        registryCenterConfiguration.setServerLists("localhost:3181");
         return new OrchestrationConfiguration("test", registryCenterConfiguration, true);
     }
     
@@ -170,7 +172,7 @@ public class OrchestrationMasterSlaveDataSourceTest {
     private OrchestrationConfiguration getOrchestrationConfigurationForClose() {
         RegistryCenterConfiguration registryCenterConfiguration = new RegistryCenterConfiguration();
         registryCenterConfiguration.setNamespace("test_close");
-        registryCenterConfiguration.setServerLists("localhost:2181");
+        registryCenterConfiguration.setServerLists("localhost:3181");
         return new OrchestrationConfiguration("test_close", registryCenterConfiguration, true);
     }
 }
