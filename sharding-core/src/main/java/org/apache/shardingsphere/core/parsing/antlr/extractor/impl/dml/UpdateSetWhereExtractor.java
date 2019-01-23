@@ -42,12 +42,12 @@ public final class UpdateSetWhereExtractor extends AbstractFromWhereExtractor {
     }
     
     @Override
-    protected Optional<ParserRuleContext> extractTable(final FromWhereSegment fromWhereSegment, final ParserRuleContext ancestorNode, final Map<ParserRuleContext, Integer> questionNodeIndexMap) {
+    protected Optional<ParserRuleContext> extractTable(final FromWhereSegment fromWhereSegment, final ParserRuleContext ancestorNode, final Map<ParserRuleContext, Integer> placeholderIndexes) {
         Optional<ParserRuleContext> tableReferenceNode = ExtractorUtils.findFirstChildNode(ancestorNode, RuleName.TABLE_REFERENCE);
         if (!tableReferenceNode.isPresent()) {
             return Optional.absent();
         }
-        this.extractTableReference(fromWhereSegment, tableReferenceNode.get(), questionNodeIndexMap);
+        this.extractTableReference(fromWhereSegment, tableReferenceNode.get(), placeholderIndexes);
         extractSetColumns(ancestorNode, (UpdateSetWhereSegment) fromWhereSegment);
         return ExtractorUtils.findFirstChildNodeNoneRecursive(ancestorNode, RuleName.WHERE_CLAUSE);
     } 
