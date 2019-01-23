@@ -36,7 +36,6 @@ import org.apache.shardingsphere.orchestration.internal.registry.state.schema.Or
 import org.apache.shardingsphere.orchestration.reg.api.RegistryCenterConfiguration;
 import org.apache.shardingsphere.shardingjdbc.api.yaml.YamlShardingDataSourceFactory;
 import org.apache.shardingsphere.shardingjdbc.jdbc.core.datasource.ShardingDataSource;
-import org.apache.shardingsphere.shardingjdbc.orchestration.api.yaml.util.EmbedTestingServer;
 import org.junit.BeforeClass;
 import org.junit.Test;
 
@@ -58,7 +57,6 @@ public class OrchestrationShardingDataSourceTest {
     @BeforeClass
     @SneakyThrows
     public static void setUp() {
-        EmbedTestingServer.start();
         shardingDataSource = new OrchestrationShardingDataSource(getShardingDataSource(), getOrchestrationConfiguration());
     }
     
