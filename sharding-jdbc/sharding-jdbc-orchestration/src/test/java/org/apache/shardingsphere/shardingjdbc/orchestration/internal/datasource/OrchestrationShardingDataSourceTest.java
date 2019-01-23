@@ -93,12 +93,12 @@ public class OrchestrationShardingDataSourceTest {
     }
     
     private Map<String, DataSourceConfiguration> getDataSourceConfigurations() {
-        Map<String, DataSourceConfiguration> result = new LinkedHashMap<>();
         BasicDataSource dataSource = new BasicDataSource();
         dataSource.setDriverClassName("org.h2.Driver");
         dataSource.setUrl("jdbc:h2:mem:test;DB_CLOSE_DELAY=-1;DATABASE_TO_UPPER=false;MODE=MySQL");
         dataSource.setUsername("sa");
         dataSource.setPassword("");
+        Map<String, DataSourceConfiguration> result = new LinkedHashMap<>();
         result.put("ds_m", DataSourceConfiguration.getDataSourceConfiguration(dataSource));
         result.put("ds_s", DataSourceConfiguration.getDataSourceConfiguration(dataSource));
         result.put("ds_0", DataSourceConfiguration.getDataSourceConfiguration(dataSource));
