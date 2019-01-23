@@ -20,6 +20,8 @@ package org.apache.shardingsphere.shardingjdbc.orchestration.internal.datasource
 import lombok.SneakyThrows;
 import org.apache.commons.dbcp2.BasicDataSource;
 import org.apache.shardingsphere.api.ConfigMapContext;
+import org.apache.shardingsphere.api.algorithm.masterslave.MasterSlaveLoadBalanceAlgorithmType;
+import org.apache.shardingsphere.api.config.rule.MasterSlaveRuleConfiguration;
 import org.apache.shardingsphere.api.config.rule.ShardingRuleConfiguration;
 import org.apache.shardingsphere.api.config.rule.TableRuleConfiguration;
 import org.apache.shardingsphere.core.config.DataSourceConfiguration;
@@ -35,10 +37,11 @@ import org.apache.shardingsphere.orchestration.reg.api.RegistryCenterConfigurati
 import org.apache.shardingsphere.shardingjdbc.api.yaml.YamlShardingDataSourceFactory;
 import org.apache.shardingsphere.shardingjdbc.jdbc.core.datasource.ShardingDataSource;
 import org.apache.shardingsphere.shardingjdbc.orchestration.api.yaml.util.EmbedTestingServer;
-import org.junit.Before;
+import org.junit.BeforeClass;
 import org.junit.Test;
 
 import java.io.File;
+import java.util.Collections;
 import java.util.LinkedHashMap;
 import java.util.Map;
 import java.util.Properties;
@@ -48,22 +51,22 @@ import static org.junit.Assert.assertThat;
 
 public class OrchestrationShardingDataSourceTest {
     
-    private OrchestrationShardingDataSource shardingDataSource;
+    private static OrchestrationShardingDataSource shardingDataSource;
     
-    @Before
+    @BeforeClass
     @SneakyThrows
-    public void setUp() {
+    public static void setUp() {
         EmbedTestingServer.start();
         shardingDataSource = new OrchestrationShardingDataSource(getShardingDataSource(), getOrchestrationConfiguration());
     }
     
     @SneakyThrows
-    private ShardingDataSource getShardingDataSource() {
+    private static ShardingDataSource getShardingDataSource() {
         File yamlFile = new File(OrchestrationShardingDataSourceTest.class.getResource("/yaml/unit/sharding.yaml").toURI());
         return (ShardingDataSource) YamlShardingDataSourceFactory.createDataSource(yamlFile);
     }
     
-    private OrchestrationConfiguration getOrchestrationConfiguration() {
+    private static OrchestrationConfiguration getOrchestrationConfiguration() {
         RegistryCenterConfiguration registryCenterConfiguration = new RegistryCenterConfiguration();
         registryCenterConfiguration.setNamespace("test_sharding");
         registryCenterConfiguration.setServerLists("localhost:3181");
@@ -80,9 +83,14 @@ public class OrchestrationShardingDataSourceTest {
         ShardingRuleConfiguration result = new ShardingRuleConfiguration();
         TableRuleConfiguration tableRuleConfig = new TableRuleConfiguration();
         tableRuleConfig.setLogicTable("logic_table");
-        tableRuleConfig.setActualDataNodes("ds_m.table_${0..1}");
+        tableRuleConfig.setActualDataNodes("ds_ms.table_${0..1}");
         result.getTableRuleConfigs().add(tableRuleConfig);
+        result.getMasterSlaveRuleConfigs().add(getMasterSlaveRuleConfiguration());
         return result;
+    }
+    
+    private MasterSlaveRuleConfiguration getMasterSlaveRuleConfiguration() {
+        return new MasterSlaveRuleConfiguration("ds_ms", "ds_m", Collections.singletonList("ds_s"), MasterSlaveLoadBalanceAlgorithmType.ROUND_ROBIN.getAlgorithm());
     }
     
     @Test
