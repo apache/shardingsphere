@@ -60,7 +60,6 @@ public class OrchestrationMasterSlaveDataSourceTest {
     @SneakyThrows
     public void setUp() {
         masterSlaveDataSource = new OrchestrationMasterSlaveDataSource(getMasterSlaveDataSource(), getOrchestrationConfiguration());
-        
     }
     
     @SneakyThrows
@@ -159,11 +158,19 @@ public class OrchestrationMasterSlaveDataSourceTest {
     @Test(expected = ShardingException.class)
     @SneakyThrows 
     public void assertClose() {
+        OrchestrationMasterSlaveDataSource masterSlaveDataSource = new OrchestrationMasterSlaveDataSource(getMasterSlaveDataSource(), getOrchestrationConfigurationForClose());
         masterSlaveDataSource.close();
         try {
             masterSlaveDataSource.getDataSource().getDataSourceMap().values().iterator().next().getConnection();
         } catch (final SQLException ex) {
             throw new ShardingException(ex.getMessage());
         }
+    }
+    
+    private OrchestrationConfiguration getOrchestrationConfigurationForClose() {
+        RegistryCenterConfiguration registryCenterConfiguration = new RegistryCenterConfiguration();
+        registryCenterConfiguration.setNamespace("test_close");
+        registryCenterConfiguration.setServerLists("localhost:2181");
+        return new OrchestrationConfiguration("test_close", registryCenterConfiguration, true);
     }
 }
