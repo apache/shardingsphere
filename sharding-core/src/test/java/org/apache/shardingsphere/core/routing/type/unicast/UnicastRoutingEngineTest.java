@@ -21,16 +21,13 @@ import org.apache.shardingsphere.api.config.rule.ShardingRuleConfiguration;
 import org.apache.shardingsphere.api.config.rule.TableRuleConfiguration;
 import org.apache.shardingsphere.core.exception.ShardingConfigurationException;
 import org.apache.shardingsphere.core.routing.type.RoutingResult;
-import org.apache.shardingsphere.core.routing.type.TableUnit;
 import org.apache.shardingsphere.core.rule.ShardingRule;
 import org.junit.Before;
 import org.junit.Test;
 
-import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.Collections;
 import java.util.HashSet;
-import java.util.List;
 import java.util.Set;
 
 import static org.hamcrest.CoreMatchers.instanceOf;
@@ -57,7 +54,6 @@ public final class UnicastRoutingEngineTest {
     public void assertRoutingForShardingTable() {
         UnicastRoutingEngine unicastRoutingEngine = new UnicastRoutingEngine(shardingRule, Collections.singleton("t_order"));
         RoutingResult routingResult = unicastRoutingEngine.route();
-        List<TableUnit> tableUnitList = new ArrayList<>(routingResult.getTableUnits().getTableUnits());
         assertThat(routingResult, instanceOf(RoutingResult.class));
         assertThat(routingResult.getTableUnits().getTableUnits().size(), is(1));
     }
@@ -66,7 +62,6 @@ public final class UnicastRoutingEngineTest {
     public void assertRoutingForBroadcastTable() {
         UnicastRoutingEngine unicastRoutingEngine = new UnicastRoutingEngine(shardingRule, Collections.singleton("t_config"));
         RoutingResult routingResult = unicastRoutingEngine.route();
-        List<TableUnit> tableUnitList = new ArrayList<>(routingResult.getTableUnits().getTableUnits());
         assertThat(routingResult, instanceOf(RoutingResult.class));
         assertThat(routingResult.getTableUnits().getTableUnits().size(), is(1));
     }
@@ -75,7 +70,6 @@ public final class UnicastRoutingEngineTest {
     public void assertRoutingForNoTable() {
         UnicastRoutingEngine unicastRoutingEngine = new UnicastRoutingEngine(shardingRule, Collections.<String>emptyList());
         RoutingResult routingResult = unicastRoutingEngine.route();
-        List<TableUnit> tableUnitList = new ArrayList<>(routingResult.getTableUnits().getTableUnits());
         assertThat(routingResult, instanceOf(RoutingResult.class));
         assertThat(routingResult.getTableUnits().getTableUnits().size(), is(1));
     }

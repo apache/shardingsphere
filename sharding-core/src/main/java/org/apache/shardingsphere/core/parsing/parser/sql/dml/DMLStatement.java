@@ -17,15 +17,22 @@
 
 package org.apache.shardingsphere.core.parsing.parser.sql.dml;
 
-import lombok.ToString;
+import java.util.Arrays;
+import java.util.Collection;
+import java.util.HashMap;
+import java.util.LinkedList;
+import java.util.List;
+import java.util.Map;
+
 import org.apache.shardingsphere.core.constant.SQLType;
 import org.apache.shardingsphere.core.parsing.lexer.token.DefaultKeyword;
 import org.apache.shardingsphere.core.parsing.lexer.token.Keyword;
 import org.apache.shardingsphere.core.parsing.lexer.token.TokenType;
 import org.apache.shardingsphere.core.parsing.parser.sql.AbstractSQLStatement;
 
-import java.util.Arrays;
-import java.util.Collection;
+import lombok.Getter;
+import lombok.Setter;
+import lombok.ToString;
 
 /**
  * DML statement.
@@ -33,9 +40,25 @@ import java.util.Collection;
  * @author zhangliang
  */
 @ToString(callSuper = true)
+@Getter
+@Setter
 public class DMLStatement extends AbstractSQLStatement {
     
     private static final Collection<Keyword> STATEMENT_PREFIX = Arrays.<Keyword>asList(DefaultKeyword.INSERT, DefaultKeyword.UPDATE, DefaultKeyword.DELETE);
+    
+    private boolean deleteStatement;
+    
+    private final Map<String, String> updateTables = new HashMap<>();
+    
+    private final List<String> updateColumns = new LinkedList<>();
+    
+    private int whereStartIndex;
+    
+    private int whereStopIndex;
+    
+    private int whereParameterStartIndex;
+    
+    private int whereParameterEndIndex;
     
     public DMLStatement() {
         super(SQLType.DML);

@@ -17,8 +17,10 @@
 
 package org.apache.shardingsphere.core.parsing.antlr.extractor.impl.dql;
 
-import com.google.common.base.Optional;
-import com.google.common.base.Preconditions;
+import java.util.Collection;
+import java.util.HashMap;
+import java.util.Map;
+
 import org.antlr.v4.runtime.ParserRuleContext;
 import org.antlr.v4.runtime.tree.TerminalNode;
 import org.apache.shardingsphere.core.parsing.antlr.extractor.OptionalSQLSegmentExtractor;
@@ -31,9 +33,8 @@ import org.apache.shardingsphere.core.parsing.antlr.sql.segment.condition.OrCond
 import org.apache.shardingsphere.core.parsing.antlr.sql.segment.table.TableJoinSegment;
 import org.apache.shardingsphere.core.parsing.antlr.sql.segment.table.TableSegment;
 
-import java.util.Collection;
-import java.util.HashMap;
-import java.util.Map;
+import com.google.common.base.Optional;
+import com.google.common.base.Preconditions;
 
 /**
  * Abstract from where extractor.
@@ -44,7 +45,7 @@ public abstract class AbstractFromWhereExtractor implements OptionalSQLSegmentEx
     
     private final TableNameExtractor tableNameExtractor = new TableNameExtractor();
     
-    private PredicateExtractor predicateSegmentExtractor;
+    private PredicateExtractor predicateSegmentExtractor = new PredicateExtractor();
     
     @Override
     public Optional<FromWhereSegment> extract(final ParserRuleContext ancestorNode) {
@@ -59,11 +60,20 @@ public abstract class AbstractFromWhereExtractor implements OptionalSQLSegmentEx
      * @return SQL segment
      */
     public Optional<FromWhereSegment> extract(final ParserRuleContext ancestorNode, final ParserRuleContext rootNode) {
-        FromWhereSegment result = new FromWhereSegment();
+        FromWhereSegment result = createSegment();
         Map<ParserRuleContext, Integer> placeholderIndexes = getPlaceholderIndexes(result, rootNode);
         Optional<ParserRuleContext> whereNode = extractTable(result, ancestorNode, placeholderIndexes);
         if (whereNode.isPresent()) {
-            predicateSegmentExtractor = new PredicateExtractor();
+            result.setWhereStartIndex(whereNode.get().getStart().getStartIndex());
+            result.setWhereStopIndex(whereNode.get().getStop().getStopIndex());
+            if (!placeholderIndexes.isEmpty()) {
+                Collection<ParserRuleContext> questionNodes = ExtractorUtils.getAllDescendantNodes(whereNode.get(), RuleName.QUESTION);
+                if (!questionNodes.isEmpty()) {
+                    int index = placeholderIndexes.get(questionNodes.iterator().next());
+                    result.setWhereParameterStartIndex(index);
+                    result.setWhereParameterEndIndex(index + questionNodes.size() - 1);
+                }
+            }
             extractAndFillWhere(result, placeholderIndexes, whereNode.get());
         }
         return Optional.of(result);
@@ -78,6 +88,10 @@ public abstract class AbstractFromWhereExtractor implements OptionalSQLSegmentEx
         }
         fromWhereSegment.setParameterCount(placeholderNodes.size());
         return result;
+    }
+    
+    protected FromWhereSegment createSegment() {
+        return new FromWhereSegment();
     }
     
     protected abstract Optional<ParserRuleContext> extractTable(FromWhereSegment fromWhereSegment, ParserRuleContext ancestorNode, Map<ParserRuleContext, Integer> placeholderIndexes);

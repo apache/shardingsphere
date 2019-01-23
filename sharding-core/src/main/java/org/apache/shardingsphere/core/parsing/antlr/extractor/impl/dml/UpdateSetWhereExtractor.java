@@ -17,21 +17,29 @@
 
 package org.apache.shardingsphere.core.parsing.antlr.extractor.impl.dml;
 
-import com.google.common.base.Optional;
+import java.util.Map;
+
 import org.antlr.v4.runtime.ParserRuleContext;
+import org.apache.shardingsphere.core.parsing.antlr.extractor.impl.ColumnSegmentExtractor;
 import org.apache.shardingsphere.core.parsing.antlr.extractor.impl.dql.AbstractFromWhereExtractor;
 import org.apache.shardingsphere.core.parsing.antlr.extractor.util.ExtractorUtils;
 import org.apache.shardingsphere.core.parsing.antlr.extractor.util.RuleName;
 import org.apache.shardingsphere.core.parsing.antlr.sql.segment.FromWhereSegment;
+import org.apache.shardingsphere.core.parsing.antlr.sql.segment.column.ColumnSegment;
+import org.apache.shardingsphere.core.parsing.antlr.sql.segment.dml.UpdateSetWhereSegment;
 
-import java.util.Map;
+import com.google.common.base.Optional;
 
 /**
- * Update where extractor.
+ * Update set where extractor.
  *
  * @author duhongjun
  */
-public final class UpdateWhereExtractor extends AbstractFromWhereExtractor {
+public final class UpdateSetWhereExtractor extends AbstractFromWhereExtractor {
+    
+    protected FromWhereSegment createSegment() {
+        return new UpdateSetWhereSegment();
+    }
     
     @Override
     protected Optional<ParserRuleContext> extractTable(final FromWhereSegment fromWhereSegment, final ParserRuleContext ancestorNode, final Map<ParserRuleContext, Integer> placeholderIndexes) {
@@ -40,6 +48,19 @@ public final class UpdateWhereExtractor extends AbstractFromWhereExtractor {
             return Optional.absent();
         }
         this.extractTableReference(fromWhereSegment, tableReferenceNode.get(), placeholderIndexes);
+        extractSetColumns(ancestorNode, (UpdateSetWhereSegment) fromWhereSegment);
         return ExtractorUtils.findFirstChildNodeNoneRecursive(ancestorNode, RuleName.WHERE_CLAUSE);
+    } 
+    
+    private void extractSetColumns(final ParserRuleContext ancestorNode, final UpdateSetWhereSegment updateSetWhereSegment) {
+        Optional<ParserRuleContext> setClauseNode = ExtractorUtils.findFirstChildNode(ancestorNode, RuleName.SET_CLAUSE);
+        if (!setClauseNode.isPresent()) {
+            return;
+        }
+        ColumnSegmentExtractor columnSegmentExtractor = new ColumnSegmentExtractor();
+        for (ParserRuleContext each : ExtractorUtils.getAllDescendantNodes(setClauseNode.get(), RuleName.COLUMN_NAME)) {
+            Optional<ColumnSegment> columnSegment = columnSegmentExtractor.extract(each);
+            updateSetWhereSegment.getUpdateColumns().add(columnSegment.get().getName());
+        }
     }
 }
