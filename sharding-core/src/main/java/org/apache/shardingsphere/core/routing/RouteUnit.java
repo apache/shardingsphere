@@ -17,13 +17,12 @@
 
 package org.apache.shardingsphere.core.routing;
 
-import org.apache.shardingsphere.core.routing.type.TableUnit;
-
 import lombok.EqualsAndHashCode;
 import lombok.Getter;
 import lombok.RequiredArgsConstructor;
 import lombok.Setter;
 import lombok.ToString;
+import org.apache.shardingsphere.core.routing.type.TableUnit;
 
 /**
  * Route unit.
