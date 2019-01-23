@@ -76,10 +76,7 @@ public class ConnectionStateHandler {
      * Notify connection to finish wait if necessary.
      */
     void doNotifyIfNecessary() {
-        if (status.compareAndSet(ConnectionStatus.RUNNING, ConnectionStatus.RELEASE)) {
-            resourceSynchronizer.doNotify();
-        }
-        if (status.compareAndSet(ConnectionStatus.TERMINATED, ConnectionStatus.RELEASE)) {
+        if (compareAndSet(ConnectionStatus.RUNNING, ConnectionStatus.RELEASE) || compareAndSet(ConnectionStatus.TERMINATED, ConnectionStatus.RELEASE)) {
             resourceSynchronizer.doNotify();
         }
     }
@@ -91,9 +88,19 @@ public class ConnectionStateHandler {
      */
     public void waitUntilConnectionReleasedIfNecessary() throws InterruptedException {
         if (ConnectionStatus.RUNNING == status.get() || ConnectionStatus.TERMINATED == status.get()) {
-            while (!status.compareAndSet(ConnectionStatus.RELEASE, ConnectionStatus.RUNNING)) {
+            while (!compareAndSet(ConnectionStatus.RELEASE, ConnectionStatus.RUNNING)) {
                 resourceSynchronizer.doAwait();
             }
         }
+    }
+    
+    /**
+     * Do compare and set operation.
+     * @param expectStatus expect status
+     * @param updateStatus update status
+     * @return succeed or failed
+     */
+    public boolean compareAndSet(final ConnectionStatus expectStatus, final ConnectionStatus updateStatus) {
+        return status.compareAndSet(expectStatus, updateStatus);
     }
 }

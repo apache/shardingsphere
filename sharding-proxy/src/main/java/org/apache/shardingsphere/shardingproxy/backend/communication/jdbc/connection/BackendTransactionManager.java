@@ -37,8 +37,7 @@ public final class BackendTransactionManager implements TransactionManager {
     @Override
     public void begin() {
         Optional<ShardingTransactionManager> shardingTransactionManager = getShardingTransactionManager(connection);
-        if (!connection.getStateHandler().isInTransaction()) {
-            connection.getStateHandler().getAndSetStatus(ConnectionStatus.TRANSACTION);
+        if (connection.getStateHandler().compareAndSet(ConnectionStatus.RUNNING, ConnectionStatus.TRANSACTION)) {
             connection.releaseConnections(false);
         }
         if (!shardingTransactionManager.isPresent()) {
