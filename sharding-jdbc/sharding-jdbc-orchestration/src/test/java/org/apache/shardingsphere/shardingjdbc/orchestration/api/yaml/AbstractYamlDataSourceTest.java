@@ -18,7 +18,6 @@
 package org.apache.shardingsphere.shardingjdbc.orchestration.api.yaml;
 
 import org.apache.commons.dbcp2.BasicDataSource;
-import org.apache.shardingsphere.shardingjdbc.orchestration.api.yaml.util.EmbedTestingServer;
 import org.h2.tools.RunScript;
 import org.junit.BeforeClass;
 
@@ -36,7 +35,6 @@ public abstract class AbstractYamlDataSourceTest {
         for (String each : getSchemaFiles()) {
             RunScript.execute(createDataSource(getFileName(each)).getConnection(), new InputStreamReader(AbstractYamlDataSourceTest.class.getClassLoader().getResourceAsStream(each)));
         }
-        EmbedTestingServer.start();
     }
     
     protected static DataSource createDataSource(final String dsName) {

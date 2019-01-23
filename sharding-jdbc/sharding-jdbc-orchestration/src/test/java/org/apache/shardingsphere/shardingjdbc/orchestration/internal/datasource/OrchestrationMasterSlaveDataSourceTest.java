@@ -36,7 +36,6 @@ import org.apache.shardingsphere.orchestration.internal.registry.state.schema.Or
 import org.apache.shardingsphere.orchestration.reg.api.RegistryCenterConfiguration;
 import org.apache.shardingsphere.shardingjdbc.api.yaml.YamlMasterSlaveDataSourceFactory;
 import org.apache.shardingsphere.shardingjdbc.jdbc.core.datasource.MasterSlaveDataSource;
-import org.apache.shardingsphere.shardingjdbc.orchestration.api.yaml.util.EmbedTestingServer;
 import org.apache.shardingsphere.shardingjdbc.orchestration.internal.circuit.connection.CircuitBreakerConnection;
 import org.junit.BeforeClass;
 import org.junit.Test;
@@ -60,7 +59,6 @@ public class OrchestrationMasterSlaveDataSourceTest {
     @BeforeClass
     @SneakyThrows
     public static void setUp() {
-        EmbedTestingServer.start();
         masterSlaveDataSource = new OrchestrationMasterSlaveDataSource(getMasterSlaveDataSource(), getOrchestrationConfiguration());
     }
     
@@ -167,19 +165,11 @@ public class OrchestrationMasterSlaveDataSourceTest {
     @Test(expected = ShardingException.class)
     @SneakyThrows 
     public void assertClose() {
-        OrchestrationMasterSlaveDataSource masterSlaveDataSource = new OrchestrationMasterSlaveDataSource(getMasterSlaveDataSource(), getOrchestrationConfigurationForClose());
         masterSlaveDataSource.close();
         try {
             masterSlaveDataSource.getDataSource().getDataSourceMap().values().iterator().next().getConnection();
         } catch (final SQLException ex) {
             throw new ShardingException(ex.getMessage());
         }
-    }
-    
-    private OrchestrationConfiguration getOrchestrationConfigurationForClose() {
-        RegistryCenterConfiguration registryCenterConfiguration = new RegistryCenterConfiguration();
-        registryCenterConfiguration.setNamespace("test_close");
-        registryCenterConfiguration.setServerLists("localhost:3181");
-        return new OrchestrationConfiguration("test_close", registryCenterConfiguration, true);
     }
 }
