@@ -1,6 +1,6 @@
 body,
 html {
-  min-width: 375px;
+  min-width: 1200px;
   margin: 0;
   padding: 0;
 }
@@ -8,14 +8,14 @@ body {
   -moz-osx-font-smoothing: grayscale;
   -webkit-font-smoothing: antialiased;
   text-rendering: optimizeLegibility;
-  font-family: "Helvetica Neue", Helvetica, "PingFang SC", "Hiragino Sans GB",
-    "Microsoft YaHei", Arial, sans-serif;
+  font-family: 'Helvetica Neue', Helvetica, 'PingFang SC', 'Hiragino Sans GB',
+    'Microsoft YaHei', Arial, sans-serif;
 }
 .clearfix:after {
   visibility: hidden;
   display: block;
   font-size: 0;
-  content: " ";
+  content: ' ';
   clear: both;
   height: 0;
 }
@@ -25,18 +25,27 @@ body {
 .float-right {
   float: right;
 }
+.flex {
+  display: flex;
+  justify-content: space-between;
+  align-self: center;
+}
 a {
   text-decoration: none;
   color: #cdcdcd;
 }
-header {
+.header {
   background: url(http://shardingsphere.jd.com/images/bg.png) center top
     no-repeat;
   background-color: #060708;
   width: 100%;
 }
-nav {
-  max-width: 1200px;
+.sub-header {
+  width: 1200px;
+  margin: 0 auto;
+  background: url(/images/background_center.png) 480px 480px no-repeat;
+}
+.nav {
   margin: 0 auto;
   padding: 26px 15px 0;
   color: #cdcdcd;
@@ -65,6 +74,7 @@ nav {
   color: #ee9a32;
 }
 .i-drop-btn .i-drop-pop {
+  z-index: 1;
   position: absolute;
   width: 120px;
   background-color: #fff;
@@ -78,7 +88,7 @@ nav {
   display: block;
 }
 .i-drop-pop::before {
-  content: "";
+  content: '';
   position: absolute;
   display: block;
   top: -16px;
@@ -98,17 +108,48 @@ nav {
   background-color: #cdcdcd;
 }
 .content {
-  width: 100%;
-  max-width: 1200px;
   margin: 0 auto;
+  background: url(/images/background_corner.png) 990px 580px no-repeat;
 }
 .sub-title {
+  position: relative;
   padding-top: 140px;
   padding-bottom: 40px;
   text-align: center;
-  font-size: 56px;
+  font-size: 0;
   color: #ee9a32;
   font-weight: bold;
+  background-image: url(/images/background_title.png);
+  background-repeat: no-repeat;
+}
+.sub-title-svg {
+  fill: url(#SVGID_1_);
+  font-size: 42px;
+  font-weight: bolder;
+}
+.sub-corner {
+  position: absolute;
+  top: 100px;
+  width: 114px;
+  height: 35px;
+  font-size: 18px;
+  font-weight: lighter;
+  text-align: center;
+  line-height: 33px;
+  color: #cdcdcd;
+  background-color: #2f3338;
+  border-radius: 4px;
+}
+.sub-corner::before {
+  content: '';
+  position: absolute;
+  width: 0;
+  height: 0;
+  left: 16px;
+  bottom: -9px;
+  border-left: solid 7px transparent;
+  border-top: solid 9px #2f3338;
+  border-right: solid 7px transparent;
 }
 .sub-hr {
   display: block;
@@ -172,7 +213,7 @@ nav {
 }
 .con-shard,
 .con-orch,
-.con-footer {
+.con-bottom {
   background-color: #222222;
 }
 .con-tran {
@@ -219,8 +260,8 @@ nav {
   min-height: 160px;
 }
 .footer-logo {
-  margin-top: 56px;
-  padding-left: 15px;
+  padding: 56px 100px 50px 15px;
+  background: url(/images/background_bottom.png) right center no-repeat;
 }
 .footer-icon {
   margin: 68px 20px 60px 0;
@@ -234,7 +275,7 @@ nav {
 .footer-icon > a > img {
   width: 100%;
 }
-footer {
+.footer {
   height: 126px;
   text-align: center;
   font-size: 18px;
