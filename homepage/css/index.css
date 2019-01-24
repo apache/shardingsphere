@@ -43,7 +43,7 @@ a {
 .sub-header {
   width: 1200px;
   margin: 0 auto;
-  background: url(/images/background_center.png) 480px 480px no-repeat;
+  background: url(http://shardingsphere.jd.com/images/background_center.png) 480px 480px no-repeat;
 }
 .nav {
   margin: 0 auto;
@@ -109,7 +109,7 @@ a {
 }
 .content {
   margin: 0 auto;
-  background: url(/images/background_corner.png) 990px 580px no-repeat;
+  background: url(http://shardingsphere.jd.com/images/background_corner.png) 990px 580px no-repeat;
 }
 .sub-title {
   position: relative;
@@ -119,7 +119,7 @@ a {
   font-size: 0;
   color: #ee9a32;
   font-weight: bold;
-  background-image: url(/images/background_title.png);
+  background-image: url(http://shardingsphere.jd.com/images/background_title.png);
   background-repeat: no-repeat;
 }
 .sub-title-svg {
@@ -261,7 +261,7 @@ a {
 }
 .footer-logo {
   padding: 56px 100px 50px 15px;
-  background: url(/images/background_bottom.png) right center no-repeat;
+  background: url(http://shardingsphere.jd.com/images/background_bottom.png) right center no-repeat;
 }
 .footer-icon {
   margin: 68px 20px 60px 0;
