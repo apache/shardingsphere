@@ -145,7 +145,7 @@ It is inevitably to have some SQLs that have not been listed yet, welcome to sup
       
       <guid>http://shardingsphere.apache.org/document/current/en/manual/sharding-proxy/configuration/</guid>
       <description>Data sources and sharding rule configuration example Sharding-Proxy support multiple logic schema, for every configuration file which prefix as config-, and suffix as .yaml. Below is configuration example of config-xxx.yaml.
-Sharding schemaName: sharding_db dataSources: ds0: url: jdbc:mysql://localhost:3306/ds0 username: root password: autoCommit: true connectionTimeout: 30000 idleTimeout: 60000 maxLifetime: 1800000 maximumPoolSize: 65 ds1: url: jdbc:mysql://localhost:3306/ds1 username: root password: autoCommit: true connectionTimeout: 30000 idleTimeout: 60000 maxLifetime: 1800000 maximumPoolSize: 65 shardingRule: tables: t_order: actualDataNodes: ds${0.</description>
+Sharding schemaName: sharding_db dataSources: ds0: url: jdbc:mysql://localhost:3306/ds0 username: root password: connectionTimeoutMilliseconds: 30000 idleTimeoutMilliseconds: 60000 maxLifetimeMilliseconds: 1800000 maxPoolSize: 65 minPoolSize: 1 maintenanceIntervalMilliseconds: 30000 ds1: url: jdbc:mysql://localhost:3306/ds1 username: root password: connectionTimeoutMilliseconds: 30000 idleTimeoutMilliseconds: 60000 maxLifetimeMilliseconds: 1800000 maxPoolSize: 65 minPoolSize: 1 maintenanceIntervalMilliseconds: 30000 shardingRule: tables: t_order: actualDataNodes: ds${0.</description>
     </item>
     
     <item>
@@ -287,11 +287,9 @@ Run docker docker run -d -v /${your_work_dir}/conf:/opt/sharding-proxy/conf --en
       <pubDate>Mon, 01 Jan 0001 00:00:00 +0000</pubDate>
       
       <guid>http://shardingsphere.apache.org/document/current/en/manual/sharding-jdbc/usage/hint/</guid>
-      <description>Introduction ShardingSphere uses ThreadLocal to manage sharding-columns and sharding-values. Developers can use HintManager to add sharding conditions by coding, sharding conditions effective only on current thread.
-Main usages of Hint:
- Sharding column does not exist in SQL or tables in databases, but exist in external business logic. Therefore, it is possible to get the sharding result by Hint.
- Mandatory Master routing strategy based in Hint.
-  Sharding with hint configuration Hint is used for mandatory data sharding, which requires HintManager to be used together with database or table ShardingStrategy.</description>
+      <description>Introduction ShardingSphere uses ThreadLocal to manage sharding key value or hint route. Users can program to add sharding conditions to HintManager, and the condition only take effect within the current thread. Main application situations of Hint:
+ Sharding field does not exist in SQL or database table structure, but in external business logic. So users can operate data according to external sharding results designated by hint.
+ Force to do some data operations in the master database.</description>
     </item>
     
     <item>
@@ -367,8 +365,8 @@ ShardingSphere is not responsible for gathering, storing and demonstrating APM r
       <pubDate>Mon, 01 Jan 0001 00:00:00 +0000</pubDate>
       
       <guid>http://shardingsphere.apache.org/document/current/en/manual/sharding-jdbc/usage/orchestration/</guid>
-      <description>Use orchestration feature need indicate a registry center. Configuration will save into registry center. Configuration can overwrite by local when every application startup, or load from registry center only.
-Without spring Add maven dependency &amp;lt;dependency&amp;gt; &amp;lt;groupId&amp;gt;org.apache.shardingsphere&amp;lt;/groupId&amp;gt; &amp;lt;artifactId&amp;gt;sharding-jdbc-orchestration&amp;lt;/artifactId&amp;gt; &amp;lt;version&amp;gt;${sharding-sphere.version}&amp;lt;/version&amp;gt; &amp;lt;/dependency&amp;gt; &amp;lt;!--If you want to use zookeeper, please use the artifactId below.--&amp;gt; &amp;lt;dependency&amp;gt; &amp;lt;groupId&amp;gt;org.apache.shardingsphere&amp;lt;/groupId&amp;gt; &amp;lt;artifactId&amp;gt;sharding-orchestration-reg-zookeeper-curator&amp;lt;/artifactId&amp;gt; &amp;lt;/dependency&amp;gt; &amp;lt;!--If you want to use etcd, please use the artifactId below.--&amp;gt; &amp;lt;dependency&amp;gt; &amp;lt;groupId&amp;gt;org.apache.shardingsphere&amp;lt;/groupId&amp;gt; &amp;lt;artifactId&amp;gt;sharding-orchestration-reg-etcd&amp;lt;/artifactId&amp;gt; &amp;lt;/dependency&amp;gt;  Configure orchestration with java // Configure dataSourceMap and shardingRuleConfig // .</description>
+      <description>The use of data orchestration function requires to designate a registry center, in which all the configurations are saved. Users can either use local configurations to cover registry center configurations or read configurations from registry center only.
+Not Use Spring Introduce Maven Dependency &amp;lt;dependency&amp;gt; &amp;lt;groupId&amp;gt;org.apache.shardingsphere&amp;lt;/groupId&amp;gt; &amp;lt;artifactId&amp;gt;sharding-jdbc-orchestration&amp;lt;/artifactId&amp;gt; &amp;lt;version&amp;gt;${sharding-sphere.version}&amp;lt;/version&amp;gt; &amp;lt;/dependency&amp;gt; &amp;lt;!--If you want to use zookeeper, please use the artifactId below.--&amp;gt; &amp;lt;dependency&amp;gt; &amp;lt;groupId&amp;gt;org.apache.shardingsphere&amp;lt;/groupId&amp;gt; &amp;lt;artifactId&amp;gt;sharding-orchestration-reg-zookeeper-curator&amp;lt;/artifactId&amp;gt; &amp;lt;/dependency&amp;gt; &amp;lt;!--If you want to use etcd, please use the artifactId below.</description>
     </item>
     
     <item>
@@ -396,7 +394,8 @@ Example Sharding &amp;lt;?xml version=&amp;quot;1.0&amp;quot; encoding=&amp;quot
       <pubDate>Mon, 01 Jan 0001 00:00:00 +0000</pubDate>
       
       <guid>http://shardingsphere.apache.org/document/current/en/manual/sharding-jdbc/usage/transaction/</guid>
-      <description>to be translate</description>
+      <description>Introduce Maven Dependency &amp;lt;dependency&amp;gt; &amp;lt;groupId&amp;gt;io.shardingsphere&amp;lt;/groupId&amp;gt; &amp;lt;artifactId&amp;gt;sharding-transaction-2pc-xa&amp;lt;/artifactId&amp;gt; &amp;lt;version&amp;gt;${shardingsphere.version}&amp;lt;/version&amp;gt; &amp;lt;/dependency&amp;gt;  XA transaction manager will be uploaded by Sharding-JDBC in SPI form.
+Connection Pool Configuration ShardingSphere supports to transform normal database connection pools to connection pools that support XA transactions; they also provide internal support for HikariCP, Druid and DBCP2, requiring no extra configurations. Other connection pools require users to use SPI interface that implements DataSourceMapConverter to expand, please refer to the implementation of io.</description>
     </item>
     
     <item>

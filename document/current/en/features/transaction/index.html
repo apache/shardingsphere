@@ -12,19 +12,19 @@
     <title>Distributed Transaction :: ShardingSphere</title>
     
     
-    <link href="http://shardingsphere.apache.org/document/current/css/nucleus.css?1548039820" rel="stylesheet">
-    <link href="http://shardingsphere.apache.org/document/current/css/font-awesome.min.css?1548039820" rel="stylesheet">
-    <link href="http://shardingsphere.apache.org/document/current/css/hybrid.css?1548039820" rel="stylesheet">
-    <link href="http://shardingsphere.apache.org/document/current/css/featherlight.min.css?1548039820" rel="stylesheet">
-    <link href="http://shardingsphere.apache.org/document/current/css/perfect-scrollbar.min.css?1548039820" rel="stylesheet">
-    <link href="http://shardingsphere.apache.org/document/current/css/auto-complete.css?1548039820" rel="stylesheet">
-    <link href="http://shardingsphere.apache.org/document/current/css/theme.css?1548039820" rel="stylesheet">
-    <link href="http://shardingsphere.apache.org/document/current/css/hugo-theme.css?1548039820" rel="stylesheet">
+    <link href="http://shardingsphere.apache.org/document/current/css/nucleus.css?1548324362" rel="stylesheet">
+    <link href="http://shardingsphere.apache.org/document/current/css/font-awesome.min.css?1548324362" rel="stylesheet">
+    <link href="http://shardingsphere.apache.org/document/current/css/hybrid.css?1548324362" rel="stylesheet">
+    <link href="http://shardingsphere.apache.org/document/current/css/featherlight.min.css?1548324362" rel="stylesheet">
+    <link href="http://shardingsphere.apache.org/document/current/css/perfect-scrollbar.min.css?1548324362" rel="stylesheet">
+    <link href="http://shardingsphere.apache.org/document/current/css/auto-complete.css?1548324362" rel="stylesheet">
+    <link href="http://shardingsphere.apache.org/document/current/css/theme.css?1548324362" rel="stylesheet">
+    <link href="http://shardingsphere.apache.org/document/current/css/hugo-theme.css?1548324362" rel="stylesheet">
     
-      <link href="http://shardingsphere.apache.org/document/current/css/theme-black.css?1548039820" rel="stylesheet">
+      <link href="http://shardingsphere.apache.org/document/current/css/theme-black.css?1548324362" rel="stylesheet">
     
 
-    <script src="http://shardingsphere.apache.org/document/current/js/jquery-2.x.min.js?1548039820"></script>
+    <script src="http://shardingsphere.apache.org/document/current/js/jquery-2.x.min.js?1548324362"></script>
     
     <style type="text/css">
       :root #header + #content > #left > #rlblock_left{ 
@@ -1503,13 +1503,10 @@
 <p>Database transactions should satisfy the features of <code>ACID</code> (atomicity, consistency, isolation and durability).</p>
 
 <ul>
-<li><p>Atomicity guarantees that each transaction is treated as a single unit, which either succeeds completely, or fails completely.</p></li>
-
-<li><p>Consistency ensures that a transaction can only bring the database from one valid state to another, maintaining database invariants.</p></li>
-
-<li><p>Isolation ensures that concurrent execution of transactions leaves the database in the same state that would have been obtained if the transactions were executed sequentially.</p></li>
-
-<li><p>Durability guarantees that once a transaction has been committed, it will remain committed even in the case of a system failure (e.g., power outage or crash).</p></li>
+<li>Atomicity guarantees that each transaction is treated as a single unit, which either succeeds completely, or fails completely.</li>
+<li>Consistency ensures that a transaction can only bring the database from one valid state to another, maintaining database invariants.</li>
+<li>Isolation ensures that concurrent execution of transactions leaves the database in the same state that would have been obtained if the transactions were executed sequentially.</li>
+<li>Durability guarantees that once a transaction has been committed, it will remain committed even in the case of a system failure (e.g., power outage or crash).</li>
 </ul>
 
 <p>In single data node, transactions are only restricted to the access and control of single database resources, called local transactions.
@@ -1526,7 +1523,7 @@ How to make databases satisfy <code>ACID</code> features under distributed situa
 They do not have any coordination and communication ability, or know other data nodes have succeeded or not.
 Though without any consumption in performance, local transactions are not capable enough in high consistency and eventual consistency.</p>
 
-<h3 id="xa-transaction">XA Transaction</h3>
+<h3 id="2pc-transaction">2PC Transaction</h3>
 
 <p>The earliest distributed transaction model of XA standard is <code>X/Open Distributed Transaction Processing (DTP)</code> model brought up by <code>X/Open</code>, XA for short.</p>
 
@@ -1612,7 +1609,7 @@ The detailed distinctions between them are illustrated in the following table to
 <p>Highly consistent transactions do not have totally the same API and functions as soft transactions, and they cannot switch between each other freely and invisibly.
 The choice between highly consistent transactions and soft transactions as early as development decision-making phase has sharply increased the design and development cost.</p>
 
-<p>Highly consistent transactions based on XA is relatively easy to use, but is not good at dealing with short transaction and high concurrency situation of the Internet.
+<p>Highly consistent transactions based on XA is relatively easy to use, but is not good at dealing with long transaction and high concurrency situation of the Internet.
 With a high access cost, soft transactions require developers to transform the application and realize resources lock and backward compensation.</p>
 
 <h2 id="goal">Goal</h2>
@@ -2603,20 +2600,20 @@ With a high access cost, soft transactions require developers to transform the a
     <div style="left: -1000px; overflow: scroll; position: absolute; top: -1000px; border: none; box-sizing: content-box; height: 200px; margin: 0px; padding: 0px; width: 200px;">
       <div style="border: none; box-sizing: content-box; height: 200px; margin: 0px; padding: 0px; width: 200px;"></div>
     </div>
-    <script src="http://shardingsphere.apache.org/document/current/js/clipboard.min.js?1548039820"></script>
-    <script src="http://shardingsphere.apache.org/document/current/js/perfect-scrollbar.min.js?1548039820"></script>
-    <script src="http://shardingsphere.apache.org/document/current/js/perfect-scrollbar.jquery.min.js?1548039820"></script>
-    <script src="http://shardingsphere.apache.org/document/current/js/jquery.sticky.js?1548039820"></script>
-    <script src="http://shardingsphere.apache.org/document/current/js/featherlight.min.js?1548039820"></script>
-    <script src="http://shardingsphere.apache.org/document/current/js/html5shiv-printshiv.min.js?1548039820"></script>
-    <script src="http://shardingsphere.apache.org/document/current/js/highlight.pack.js?1548039820"></script>
+    <script src="http://shardingsphere.apache.org/document/current/js/clipboard.min.js?1548324362"></script>
+    <script src="http://shardingsphere.apache.org/document/current/js/perfect-scrollbar.min.js?1548324362"></script>
+    <script src="http://shardingsphere.apache.org/document/current/js/perfect-scrollbar.jquery.min.js?1548324362"></script>
+    <script src="http://shardingsphere.apache.org/document/current/js/jquery.sticky.js?1548324362"></script>
+    <script src="http://shardingsphere.apache.org/document/current/js/featherlight.min.js?1548324362"></script>
+    <script src="http://shardingsphere.apache.org/document/current/js/html5shiv-printshiv.min.js?1548324362"></script>
+    <script src="http://shardingsphere.apache.org/document/current/js/highlight.pack.js?1548324362"></script>
     <script>hljs.initHighlightingOnLoad();</script>
-    <script src="http://shardingsphere.apache.org/document/current/js/modernizr.custom.71422.js?1548039820"></script>
-    <script src="http://shardingsphere.apache.org/document/current/js/learn.js?1548039820"></script>
-    <script src="http://shardingsphere.apache.org/document/current/js/hugo-learn.js?1548039820"></script>
+    <script src="http://shardingsphere.apache.org/document/current/js/modernizr.custom.71422.js?1548324362"></script>
+    <script src="http://shardingsphere.apache.org/document/current/js/learn.js?1548324362"></script>
+    <script src="http://shardingsphere.apache.org/document/current/js/hugo-learn.js?1548324362"></script>
 
-    <link href="http://shardingsphere.apache.org/document/current/mermaid/mermaid.css?1548039820" type="text/css" rel="stylesheet" />
-    <script src="http://shardingsphere.apache.org/document/current/mermaid/mermaid.js?1548039820"></script>
+    <link href="http://shardingsphere.apache.org/document/current/mermaid/mermaid.css?1548324362" type="text/css" rel="stylesheet" />
+    <script src="http://shardingsphere.apache.org/document/current/mermaid/mermaid.js?1548324362"></script>
     <script>
         mermaid.initialize({ startOnLoad: true });
     </script>

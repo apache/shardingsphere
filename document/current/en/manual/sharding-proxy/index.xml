@@ -26,7 +26,7 @@
       
       <guid>http://shardingsphere.apache.org/document/current/en/manual/sharding-proxy/configuration/</guid>
       <description>Data sources and sharding rule configuration example Sharding-Proxy support multiple logic schema, for every configuration file which prefix as config-, and suffix as .yaml. Below is configuration example of config-xxx.yaml.
-Sharding schemaName: sharding_db dataSources: ds0: url: jdbc:mysql://localhost:3306/ds0 username: root password: autoCommit: true connectionTimeout: 30000 idleTimeout: 60000 maxLifetime: 1800000 maximumPoolSize: 65 ds1: url: jdbc:mysql://localhost:3306/ds1 username: root password: autoCommit: true connectionTimeout: 30000 idleTimeout: 60000 maxLifetime: 1800000 maximumPoolSize: 65 shardingRule: tables: t_order: actualDataNodes: ds${0.</description>
+Sharding schemaName: sharding_db dataSources: ds0: url: jdbc:mysql://localhost:3306/ds0 username: root password: connectionTimeoutMilliseconds: 30000 idleTimeoutMilliseconds: 60000 maxLifetimeMilliseconds: 1800000 maxPoolSize: 65 minPoolSize: 1 maintenanceIntervalMilliseconds: 30000 ds1: url: jdbc:mysql://localhost:3306/ds1 username: root password: connectionTimeoutMilliseconds: 30000 idleTimeoutMilliseconds: 60000 maxLifetimeMilliseconds: 1800000 maxPoolSize: 65 minPoolSize: 1 maintenanceIntervalMilliseconds: 30000 shardingRule: tables: t_order: actualDataNodes: ds${0.</description>
     </item>
     
     <item>
