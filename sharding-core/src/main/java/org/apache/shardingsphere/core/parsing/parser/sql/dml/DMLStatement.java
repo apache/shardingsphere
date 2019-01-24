@@ -20,14 +20,14 @@ package org.apache.shardingsphere.core.parsing.parser.sql.dml;
 import java.util.Arrays;
 import java.util.Collection;
 import java.util.HashMap;
-import java.util.LinkedList;
-import java.util.List;
+import java.util.LinkedHashMap;
 import java.util.Map;
 
 import org.apache.shardingsphere.core.constant.SQLType;
 import org.apache.shardingsphere.core.parsing.lexer.token.DefaultKeyword;
 import org.apache.shardingsphere.core.parsing.lexer.token.Keyword;
 import org.apache.shardingsphere.core.parsing.lexer.token.TokenType;
+import org.apache.shardingsphere.core.parsing.parser.expression.SQLExpression;
 import org.apache.shardingsphere.core.parsing.parser.sql.AbstractSQLStatement;
 
 import lombok.Getter;
@@ -50,7 +50,7 @@ public class DMLStatement extends AbstractSQLStatement {
     
     private final Map<String, String> updateTables = new HashMap<>();
     
-    private final List<String> updateColumns = new LinkedList<>();
+    private final Map<String, SQLExpression> updateColumns = new LinkedHashMap<>();
     
     private int whereStartIndex;
     

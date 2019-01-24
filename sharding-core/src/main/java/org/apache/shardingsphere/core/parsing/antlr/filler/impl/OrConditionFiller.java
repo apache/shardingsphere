@@ -64,14 +64,14 @@ public final class OrConditionFiller implements SQLStatementFiller<OrConditionSe
     }
     
     /**
-     * build condition.
+     * Build condition.
      *
      * @param sqlSegment SQL segment
      * @param sqlStatement SQL statement
      * @param sql SQL
      * @param shardingRule databases and tables sharding rule
      * @param shardingTableMetaData sharding table meta data
-     * @return Or Condition
+     * @return or condition
      */
     public OrCondition buildCondition(final OrConditionSegment sqlSegment, final SQLStatement sqlStatement, final String sql, final ShardingRule shardingRule,
                                       final ShardingTableMetaData shardingTableMetaData) {
@@ -210,15 +210,7 @@ public final class OrConditionFiller implements SQLStatementFiller<OrConditionSe
         return table.isPresent() ? table.get().getName() : "";
     }
     
-    /**
-     * build equals condition.
-     *
-     * @param column column
-     * @param expressionSegment SQL segment
-     * @param sql SQL
-     * @return Condition
-     */
-    public Optional<Condition> buildEqualsCondition(final Column column, final ExpressionSegment expressionSegment, final String sql) {
+    private Optional<Condition> buildEqualsCondition(final Column column, final ExpressionSegment expressionSegment, final String sql) {
         Optional<SQLExpression> expression = buildExpression(expressionSegment, sql);
         if (expression.isPresent()) {
             return Optional.of(new Condition(column, expression.get()));
@@ -226,7 +218,14 @@ public final class OrConditionFiller implements SQLStatementFiller<OrConditionSe
         return Optional.absent();
     }
     
-    private Optional<SQLExpression> buildExpression(final ExpressionSegment expressionSegment, final String sql) {
+    /**
+     * Build expression.
+     *
+     * @param expressionSegment expression segment
+     * @param sql SQL
+     * @return condition
+     */
+    public Optional<SQLExpression> buildExpression(final ExpressionSegment expressionSegment, final String sql) {
         if (!(expressionSegment instanceof CommonExpressionSegment)) {
             return Optional.absent();
         }

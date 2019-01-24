@@ -17,7 +17,9 @@
 
 package org.apache.shardingsphere.core.parsing.antlr.filler.impl.dml;
 
-import com.google.common.base.Optional;
+import java.util.Iterator;
+import java.util.List;
+
 import org.apache.shardingsphere.core.metadata.table.ShardingTableMetaData;
 import org.apache.shardingsphere.core.parsing.antlr.filler.SQLStatementFiller;
 import org.apache.shardingsphere.core.parsing.antlr.filler.impl.OrConditionFiller;
@@ -29,9 +31,11 @@ import org.apache.shardingsphere.core.parsing.lexer.token.DefaultKeyword;
 import org.apache.shardingsphere.core.parsing.lexer.token.Literals;
 import org.apache.shardingsphere.core.parsing.parser.context.condition.AndCondition;
 import org.apache.shardingsphere.core.parsing.parser.context.condition.Column;
+import org.apache.shardingsphere.core.parsing.parser.context.condition.Condition;
 import org.apache.shardingsphere.core.parsing.parser.context.condition.GeneratedKeyCondition;
 import org.apache.shardingsphere.core.parsing.parser.context.insertvalue.InsertValue;
 import org.apache.shardingsphere.core.parsing.parser.exception.SQLParsingException;
+import org.apache.shardingsphere.core.parsing.parser.expression.SQLExpression;
 import org.apache.shardingsphere.core.parsing.parser.sql.SQLStatement;
 import org.apache.shardingsphere.core.parsing.parser.sql.dml.insert.InsertStatement;
 import org.apache.shardingsphere.core.parsing.parser.token.InsertColumnToken;
@@ -41,8 +45,7 @@ import org.apache.shardingsphere.core.parsing.parser.token.TableToken;
 import org.apache.shardingsphere.core.rule.ShardingRule;
 import org.apache.shardingsphere.core.util.SQLUtil;
 
-import java.util.Iterator;
-import java.util.List;
+import com.google.common.base.Optional;
 
 /**
  * Insert filler.
@@ -123,7 +126,8 @@ public final class InsertFiller implements SQLStatementFiller<InsertSegment> {
             if (each.getValues().size() != insertStatement.getColumns().size()) {
                 throw new SQLParsingException("INSERT INTO column size mismatch value size.");
             }
-            insertStatement.getInsertValues().getInsertValues().add(new InsertValue(each.getType(), sql.substring(each.getStartIndex(), each.getEndIndex() + 1), each.getParametersCount()));
+            InsertValue insertValue = new InsertValue(each.getType(), sql.substring(each.getStartIndex(), each.getEndIndex() + 1), each.getParametersCount());
+            insertStatement.getInsertValues().getInsertValues().add(insertValue);
             parameterIndex += each.getParametersCount();
             int index = 0;
             AndCondition andCondition = new AndCondition();
@@ -131,11 +135,13 @@ public final class InsertFiller implements SQLStatementFiller<InsertSegment> {
             for (CommonExpressionSegment commonExpressionSegment : each.getValues()) {
                 Column column = iterator.next();
                 boolean shardingColumn = shardingRule.isShardingColumn(column);
+                SQLExpression sqlExpression = orConditionFiller.buildExpression(commonExpressionSegment, sql).get();
+                insertValue.getColumnValues().add(sqlExpression);
                 if (shardingColumn) {
                     if (!(-1 < commonExpressionSegment.getIndex() || null != commonExpressionSegment.getValue() || commonExpressionSegment.isText())) {
                         throw new SQLParsingException("INSERT INTO can not support complex expression value on sharding column '%s'.", column.getName());
                     }
-                    andCondition.getConditions().add(orConditionFiller.buildEqualsCondition(column, commonExpressionSegment, sql).get());
+                    andCondition.getConditions().add(new Condition(column, sqlExpression));
                 }
                 if (index == insertStatement.getGenerateKeyColumnIndex()) {
                     insertStatement.getGeneratedKeyConditions().add(createGeneratedKeyCondition(column, commonExpressionSegment, sql));

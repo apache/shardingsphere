@@ -22,6 +22,7 @@ import java.util.Map;
 import org.antlr.v4.runtime.ParserRuleContext;
 import org.apache.shardingsphere.core.parsing.antlr.extractor.impl.ColumnSegmentExtractor;
 import org.apache.shardingsphere.core.parsing.antlr.extractor.impl.dql.AbstractFromWhereExtractor;
+import org.apache.shardingsphere.core.parsing.antlr.extractor.impl.expression.ExpressionExtractor;
 import org.apache.shardingsphere.core.parsing.antlr.extractor.util.ExtractorUtils;
 import org.apache.shardingsphere.core.parsing.antlr.extractor.util.RuleName;
 import org.apache.shardingsphere.core.parsing.antlr.sql.segment.FromWhereSegment;
@@ -48,19 +49,20 @@ public final class UpdateSetWhereExtractor extends AbstractFromWhereExtractor {
             return Optional.absent();
         }
         this.extractTableReference(fromWhereSegment, tableReferenceNode.get(), placeholderIndexes);
-        extractSetColumns(ancestorNode, (UpdateSetWhereSegment) fromWhereSegment);
+        extractSetColumns(ancestorNode, (UpdateSetWhereSegment) fromWhereSegment, placeholderIndexes);
         return ExtractorUtils.findFirstChildNodeNoneRecursive(ancestorNode, RuleName.WHERE_CLAUSE);
-    } 
+    }
     
-    private void extractSetColumns(final ParserRuleContext ancestorNode, final UpdateSetWhereSegment updateSetWhereSegment) {
+    private void extractSetColumns(final ParserRuleContext ancestorNode, final UpdateSetWhereSegment updateSetWhereSegment, final Map<ParserRuleContext, Integer> placeholderIndexes) {
         Optional<ParserRuleContext> setClauseNode = ExtractorUtils.findFirstChildNode(ancestorNode, RuleName.SET_CLAUSE);
         if (!setClauseNode.isPresent()) {
             return;
         }
         ColumnSegmentExtractor columnSegmentExtractor = new ColumnSegmentExtractor();
-        for (ParserRuleContext each : ExtractorUtils.getAllDescendantNodes(setClauseNode.get(), RuleName.COLUMN_NAME)) {
-            Optional<ColumnSegment> columnSegment = columnSegmentExtractor.extract(each);
-            updateSetWhereSegment.getUpdateColumns().add(columnSegment.get().getName());
+        ExpressionExtractor expressionExtractor = new ExpressionExtractor(placeholderIndexes);
+        for (ParserRuleContext each : ExtractorUtils.getAllDescendantNodes(setClauseNode.get(), RuleName.ASSIGNMENT)) {
+            Optional<ColumnSegment> columnSegment = columnSegmentExtractor.extract((ParserRuleContext) each.getChild(0));
+            updateSetWhereSegment.getUpdateColumns().put(columnSegment.get().getName(), expressionExtractor.extract((ParserRuleContext) each.getChild(2)).get());
         }
     }
 }

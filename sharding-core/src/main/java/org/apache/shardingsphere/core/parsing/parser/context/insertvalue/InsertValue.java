@@ -17,11 +17,16 @@
 
 package org.apache.shardingsphere.core.parsing.parser.context.insertvalue;
 
+import java.util.LinkedList;
+import java.util.List;
+
+import org.apache.shardingsphere.core.parsing.lexer.token.DefaultKeyword;
+import org.apache.shardingsphere.core.parsing.parser.expression.SQLExpression;
+
 import lombok.Getter;
 import lombok.RequiredArgsConstructor;
 import lombok.Setter;
 import lombok.ToString;
-import org.apache.shardingsphere.core.parsing.lexer.token.DefaultKeyword;
 
 /**
  * Insert value.
@@ -39,4 +44,6 @@ public final class InsertValue {
     private final String expression;
     
     private final int parametersCount;
+    
+    private final List<SQLExpression> columnValues = new LinkedList<>();
 }
