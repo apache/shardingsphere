@@ -29,6 +29,8 @@ import org.apache.shardingsphere.shardingproxy.backend.text.admin.UseDatabaseBac
 import org.apache.shardingsphere.shardingproxy.backend.text.query.QueryBackendHandler;
 import org.apache.shardingsphere.shardingproxy.backend.text.transaction.SkipBackendHandler;
 import org.apache.shardingsphere.shardingproxy.backend.text.transaction.TransactionBackendHandler;
+import org.apache.shardingsphere.transaction.core.TransactionType;
+import org.junit.Before;
 import org.junit.Test;
 import org.junit.runner.RunWith;
 import org.mockito.Mock;
@@ -44,6 +46,11 @@ public final class ComQueryBackendHandlerFactoryTest {
     
     @Mock
     private BackendConnection backendConnection;
+    
+    @Before
+    public void setUp() {
+        when(backendConnection.getTransactionType()).thenReturn(TransactionType.LOCAL);
+    }
     
     @Test
     public void assertCreateTransactionBackendHandler() {
