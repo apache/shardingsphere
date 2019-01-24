@@ -40,7 +40,6 @@ public class DeleteFromWhereFiller extends FromWhereFiller {
         DeleteFromWhereSegment deleteFromWhereSegment = (DeleteFromWhereSegment) sqlSegment;
         DMLStatement dmlStatement = (DMLStatement) sqlStatement;
         dmlStatement.setDeleteStatement(true);
-        dmlStatement.getUpdateColumns().addAll(deleteFromWhereSegment.getUpdateTables());
         for (Entry<String, String> each : sqlSegment.getTableAliases().entrySet()) {
             if (!each.getValue().equals(each.getKey())) {
                 dmlStatement.getUpdateTables().put(each.getKey(), each.getValue());
