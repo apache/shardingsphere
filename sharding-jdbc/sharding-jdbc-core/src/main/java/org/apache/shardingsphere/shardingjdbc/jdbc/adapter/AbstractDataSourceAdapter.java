@@ -53,11 +53,13 @@ public abstract class AbstractDataSourceAdapter extends AbstractUnsupportedOpera
     
     private final Map<String, DataSource> dataSourceMap;
     
+    private ShardingTransactionManagerEngine shardingTransactionManagerEngine = new ShardingTransactionManagerEngine();
+    
     private PrintWriter logWriter = new PrintWriter(System.out);
     
     public AbstractDataSourceAdapter(final Map<String, DataSource> dataSourceMap) throws SQLException {
         databaseType = getDatabaseType(dataSourceMap.values());
-        ShardingTransactionManagerEngine.init(databaseType, dataSourceMap);
+        shardingTransactionManagerEngine.init(databaseType, dataSourceMap);
         this.dataSourceMap = dataSourceMap;
     }
     
@@ -98,6 +100,6 @@ public abstract class AbstractDataSourceAdapter extends AbstractUnsupportedOpera
             } catch (final ReflectiveOperationException ignored) {
             }
         }
-        ShardingTransactionManagerEngine.close();
+        shardingTransactionManagerEngine.close();
     }
 }

@@ -17,7 +17,7 @@
 
 package org.apache.shardingsphere.shardingproxy.backend.communication.jdbc.connection;
 
-import org.apache.shardingsphere.transaction.ShardingTransactionManagerEngine;
+import org.apache.shardingsphere.shardingproxy.runtime.GlobalRegistry;
 import org.apache.shardingsphere.transaction.core.TransactionType;
 import org.apache.shardingsphere.transaction.spi.ShardingTransactionManager;
 
@@ -42,7 +42,7 @@ public final class BackendTransactionManager implements TransactionManager {
         connection = backendConnection;
         transactionType = connection.getTransactionType();
         localTransactionManager = new LocalTransactionManager(backendConnection);
-        shardingTransactionManager = ShardingTransactionManagerEngine.getTransactionManager(transactionType);
+        shardingTransactionManager = GlobalRegistry.getInstance().getShardingTransactionManagerEngine().getTransactionManager(transactionType);
     }
     
     @Override

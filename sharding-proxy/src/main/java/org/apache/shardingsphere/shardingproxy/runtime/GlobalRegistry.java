@@ -42,6 +42,7 @@ import org.apache.shardingsphere.shardingproxy.runtime.schema.LogicSchema;
 import org.apache.shardingsphere.shardingproxy.runtime.schema.MasterSlaveSchema;
 import org.apache.shardingsphere.shardingproxy.runtime.schema.ShardingSchema;
 import org.apache.shardingsphere.shardingproxy.util.DataSourceConverter;
+import org.apache.shardingsphere.transaction.ShardingTransactionManagerEngine;
 import org.apache.shardingsphere.transaction.core.TransactionType;
 
 import java.util.Collections;
@@ -69,6 +70,8 @@ public final class GlobalRegistry {
     private final Map<String, LogicSchema> logicSchemas = new ConcurrentHashMap<>();
     
     private ShardingProperties shardingProperties = new ShardingProperties(new Properties());
+    
+    private ShardingTransactionManagerEngine shardingTransactionManagerEngine = new ShardingTransactionManagerEngine();
     
     private Authentication authentication;
     

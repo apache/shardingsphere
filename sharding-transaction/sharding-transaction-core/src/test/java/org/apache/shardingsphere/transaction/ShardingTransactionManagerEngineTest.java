@@ -31,18 +31,20 @@ import static org.mockito.Mockito.verify;
 
 public final class ShardingTransactionManagerEngineTest {
     
+    private ShardingTransactionManagerEngine shardingTransactionManagerEngine = new ShardingTransactionManagerEngine();
+    
     @Test
     public void assertGetEngine() {
-        assertThat(ShardingTransactionManagerEngine.getTransactionManager(TransactionType.XA), instanceOf(ShardingTransactionManagerFixture.class));
+        assertThat(shardingTransactionManagerEngine.getTransactionManager(TransactionType.XA), instanceOf(ShardingTransactionManagerFixture.class));
     }
     
     @SuppressWarnings("unchecked")
     @Test
     public void assertRegisterTransactionResource() {
         Runnable caller = mock(Runnable.class);
-        ShardingTransactionManagerFixture shardingTransactionManager = (ShardingTransactionManagerFixture) ShardingTransactionManagerEngine.getTransactionManager(TransactionType.XA);
+        ShardingTransactionManagerFixture shardingTransactionManager = (ShardingTransactionManagerFixture) shardingTransactionManagerEngine.getTransactionManager(TransactionType.XA);
         shardingTransactionManager.setCaller(caller);
-        ShardingTransactionManagerEngine.init(DatabaseType.H2, mock(Map.class));
+        shardingTransactionManagerEngine.init(DatabaseType.H2, mock(Map.class));
         verify(caller).run();
     }
 }
