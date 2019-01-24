@@ -83,7 +83,9 @@ public final class ParsingSQLRouter implements ShardingRouter {
             SQLStatement result = new SQLParsingEngine(databaseType, logicSQL, shardingRule, shardingMetaData.getTable()).parse(useCache);
             parsingHook.finishSuccess(result, shardingMetaData.getTable());
             return result;
+            // CHECKSTYLE:OFF
         } catch (final Exception ex) {
+            // CHECKSTYLE:ON
             parsingHook.finishFailure(ex);
             throw ex;
         }
@@ -120,14 +122,14 @@ public final class ParsingSQLRouter implements ShardingRouter {
     private Optional<GeneratedKey> getGenerateKey(final List<Object> parameters, final InsertStatement insertStatement) {
         GeneratedKey result = null;
         if (-1 != insertStatement.getGenerateKeyColumnIndex()) {
-            for (GeneratedKeyCondition generatedKeyCondition : insertStatement.getGeneratedKeyConditions()) {
+            for (GeneratedKeyCondition each : insertStatement.getGeneratedKeyConditions()) {
                 if (null == result) {
-                    result = new GeneratedKey(generatedKeyCondition.getColumn());
+                    result = new GeneratedKey(each.getColumn());
                 }
-                if (-1 == generatedKeyCondition.getIndex()) {
-                    result.getGeneratedKeys().add(generatedKeyCondition.getValue());
+                if (-1 == each.getIndex()) {
+                    result.getGeneratedKeys().add(each.getValue());
                 } else {
-                    result.getGeneratedKeys().add((Comparable<?>) parameters.get(generatedKeyCondition.getIndex()));
+                    result.getGeneratedKeys().add((Comparable<?>) parameters.get(each.getIndex()));
                 }
             }
             return Optional.fromNullable(result);

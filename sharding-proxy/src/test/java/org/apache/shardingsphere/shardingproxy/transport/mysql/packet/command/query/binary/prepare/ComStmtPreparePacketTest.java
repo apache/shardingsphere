@@ -29,7 +29,6 @@ import org.apache.shardingsphere.core.parsing.parser.sql.SQLStatement;
 import org.apache.shardingsphere.core.parsing.parser.sql.dml.insert.InsertStatement;
 import org.apache.shardingsphere.core.parsing.parser.sql.dql.select.SelectStatement;
 import org.apache.shardingsphere.shardingproxy.backend.communication.jdbc.connection.BackendConnection;
-import org.apache.shardingsphere.shardingproxy.frontend.common.FrontendHandler;
 import org.apache.shardingsphere.shardingproxy.runtime.GlobalRegistry;
 import org.apache.shardingsphere.shardingproxy.runtime.schema.ShardingSchema;
 import org.apache.shardingsphere.shardingproxy.transport.common.packet.DatabasePacket;
@@ -66,9 +65,6 @@ public final class ComStmtPreparePacketTest {
     
     @Mock
     private MySQLPacketPayload payload;
-    
-    @Mock
-    private FrontendHandler frontendHandler;
     
     private BackendConnection backendConnection = new BackendConnection(TransactionType.LOCAL);
     
