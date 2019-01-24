@@ -20,6 +20,7 @@ package org.apache.shardingsphere.transaction.xa;
 import com.atomikos.jdbc.AtomikosDataSourceBean;
 import lombok.SneakyThrows;
 import org.apache.shardingsphere.core.constant.DatabaseType;
+import org.apache.shardingsphere.transaction.core.ShardingTransactionManagerAdapter;
 import org.apache.shardingsphere.transaction.core.TransactionType;
 import org.apache.shardingsphere.transaction.spi.ShardingTransactionManager;
 import org.apache.shardingsphere.transaction.xa.jta.connection.SingleXAConnection;
@@ -39,14 +40,14 @@ import java.util.Map.Entry;
  *
  * @author zhaojun
  */
-public final class XAShardingTransactionManager implements ShardingTransactionManager {
+public final class XAShardingTransactionManager extends ShardingTransactionManagerAdapter implements ShardingTransactionManager {
     
     private final Map<String, SingleXADataSource> cachedSingleXADataSourceMap = new HashMap<>();
     
     private final XATransactionManager xaTransactionManager = XATransactionManagerLoader.getInstance().getTransactionManager();
     
     @Override
-    public void init(final DatabaseType databaseType, final Map<String, DataSource> dataSourceMap) {
+    public void doInit(final DatabaseType databaseType, final Map<String, DataSource> dataSourceMap) {
         for (Entry<String, DataSource> entry : dataSourceMap.entrySet()) {
             DataSource dataSource = entry.getValue();
             if (dataSource instanceof AtomikosDataSourceBean) {
@@ -73,7 +74,7 @@ public final class XAShardingTransactionManager implements ShardingTransactionMa
     
     @SneakyThrows
     @Override
-    public Connection getConnection(final String dataSourceName) {
+    public Connection doGetConnection(final String dataSourceName) {
         SingleXAConnection singleXAConnection = cachedSingleXADataSourceMap.get(dataSourceName).getXAConnection();
         xaTransactionManager.enlistResource(singleXAConnection.getXAResource());
         return singleXAConnection.getConnection();

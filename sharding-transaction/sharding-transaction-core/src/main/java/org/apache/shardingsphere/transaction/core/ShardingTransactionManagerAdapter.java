@@ -33,7 +33,7 @@ import java.util.UUID;
  */
 public abstract class ShardingTransactionManagerAdapter implements ShardingTransactionManager {
     
-    private final String uniqueKey = UUID.randomUUID().toString() + "_";
+    private final String uniqueKey = UUID.randomUUID().toString() + "-";
     
     @Override
     public final void init(final DatabaseType databaseType, final Map<String, DataSource> dataSourceMap) {
