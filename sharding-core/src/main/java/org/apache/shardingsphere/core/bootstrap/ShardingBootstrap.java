@@ -22,6 +22,7 @@ import lombok.NoArgsConstructor;
 import org.apache.shardingsphere.spi.NewInstanceServiceLoader;
 import org.apache.shardingsphere.spi.executor.SQLExecutionHook;
 import org.apache.shardingsphere.spi.parsing.ParsingHook;
+import org.apache.shardingsphere.spi.rewrite.RewriteHook;
 import org.apache.shardingsphere.spi.root.RootInvokeHook;
 
 /**
@@ -37,7 +38,7 @@ public final class ShardingBootstrap {
      * Initialize sharding bootstrap.
      */
     public static void init() {
-        registerHookClasses(SQLExecutionHook.class, ParsingHook.class, RootInvokeHook.class);
+        registerHookClasses(SQLExecutionHook.class, ParsingHook.class, RootInvokeHook.class, RewriteHook.class);
     }
     
     private static void registerHookClasses(final Class<?>... services) {

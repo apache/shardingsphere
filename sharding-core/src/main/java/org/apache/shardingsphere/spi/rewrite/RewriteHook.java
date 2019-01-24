@@ -15,28 +15,36 @@
  * limitations under the License.
  */
 
-package org.apache.shardingsphere.core.routing;
+package org.apache.shardingsphere.spi.rewrite;
 
-import lombok.EqualsAndHashCode;
-import lombok.Getter;
-import lombok.RequiredArgsConstructor;
-import lombok.Setter;
-import lombok.ToString;
+import org.apache.shardingsphere.core.routing.SQLUnit;
+import org.apache.shardingsphere.core.routing.type.TableUnit;
 
 /**
- * Route unit.
- * 
- * @author gaohongtao
- * @author maxiaoguang
+ * Rewrite Hook.
+ *
+ * @author yangyi
  */
-@RequiredArgsConstructor
-@Getter
-@Setter
-@EqualsAndHashCode
-@ToString
-public final class RouteUnit {
+public interface RewriteHook {
     
-    private final String dataSourceName;
+    /**
+     * Handle when rewrite started.
+     *
+     * @param tableUnit table unit
+     */
+    void start(TableUnit tableUnit);
     
-    private final SQLUnit sqlUnit;
+    /**
+     * Handle when rewrite finished success.
+     *
+     * @param sqlUnit sql unit
+     */
+    void finishSuccess(SQLUnit sqlUnit);
+    
+    /**
+     * Handle when rewrite finished failure.
+     *
+     * @param cause failure cause
+     */
+    void finishFailure(Exception cause);
 }
