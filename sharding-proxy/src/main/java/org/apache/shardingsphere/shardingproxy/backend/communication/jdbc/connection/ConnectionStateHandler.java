@@ -88,7 +88,7 @@ public class ConnectionStateHandler {
      */
     public void waitUntilConnectionReleasedIfNecessary() throws InterruptedException {
         if (ConnectionStatus.RUNNING == status.get() || ConnectionStatus.TERMINATED == status.get()) {
-            while (status.compareAndSet(ConnectionStatus.RELEASE, ConnectionStatus.RUNNING)) {
+            while (!status.compareAndSet(ConnectionStatus.RELEASE, ConnectionStatus.RUNNING)) {
                 resourceSynchronizer.doAwait();
             }
         }

@@ -51,23 +51,29 @@ public final class BackendTransactionManager implements TransactionManager {
     @Override
     public void commit() throws SQLException {
         Optional<ShardingTransactionManager> shardingTransactionManager = getShardingTransactionManager(connection);
-        if (!shardingTransactionManager.isPresent()) {
-            new LocalTransactionManager(connection).commit();
-        } else {
-            shardingTransactionManager.get().commit();
+        try {
+            if (!shardingTransactionManager.isPresent()) {
+                new LocalTransactionManager(connection).commit();
+            } else {
+                shardingTransactionManager.get().commit();
+            }
+        } finally {
+            connection.getStateHandler().getAndSetStatus(ConnectionStatus.TERMINATED);
         }
-        connection.getStateHandler().getAndSetStatus(ConnectionStatus.TERMINATED);
     }
     
     @Override
     public void rollback() throws SQLException {
         Optional<ShardingTransactionManager> shardingTransactionManager = getShardingTransactionManager(connection);
-        if (!shardingTransactionManager.isPresent()) {
-            new LocalTransactionManager(connection).rollback();
-        } else {
-            shardingTransactionManager.get().rollback();
+        try {
+            if (!shardingTransactionManager.isPresent()) {
+                new LocalTransactionManager(connection).rollback();
+            } else {
+                shardingTransactionManager.get().rollback();
+            }
+        } finally {
+            connection.getStateHandler().getAndSetStatus(ConnectionStatus.TERMINATED);
         }
-        connection.getStateHandler().getAndSetStatus(ConnectionStatus.TERMINATED);
     }
     
     private Optional<ShardingTransactionManager> getShardingTransactionManager(final BackendConnection connection) {

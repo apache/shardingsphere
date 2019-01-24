@@ -19,6 +19,7 @@ package org.apache.shardingsphere.shardingproxy.backend;
 
 import org.apache.shardingsphere.core.constant.DatabaseType;
 import org.apache.shardingsphere.shardingproxy.backend.communication.jdbc.connection.BackendConnection;
+import org.apache.shardingsphere.shardingproxy.backend.communication.jdbc.connection.ConnectionStateHandler;
 import org.apache.shardingsphere.shardingproxy.backend.sctl.ShardingCTLSetBackendHandler;
 import org.apache.shardingsphere.shardingproxy.backend.text.ComQueryBackendHandlerFactory;
 import org.apache.shardingsphere.shardingproxy.backend.text.TextProtocolBackendHandler;
@@ -35,6 +36,8 @@ import org.mockito.junit.MockitoJUnitRunner;
 
 import static org.hamcrest.CoreMatchers.instanceOf;
 import static org.junit.Assert.assertThat;
+import static org.mockito.Mockito.mock;
+import static org.mockito.Mockito.when;
 
 @RunWith(MockitoJUnitRunner.class)
 public final class ComQueryBackendHandlerFactoryTest {
@@ -50,17 +53,30 @@ public final class ComQueryBackendHandlerFactoryTest {
     }
     
     @Test
+    public void assertCreateTransactionBackendHandlerOfCommitOperate() {
+        String sql = "SET AUTOCOMMIT=1";
+        ConnectionStateHandler stateHandler = mock(ConnectionStateHandler.class);
+        when(backendConnection.getStateHandler()).thenReturn(stateHandler);
+        when(stateHandler.isInTransaction()).thenReturn(true);
+        TextProtocolBackendHandler actual = ComQueryBackendHandlerFactory.createTextProtocolBackendHandler(1, sql, backendConnection, DatabaseType.MySQL);
+        assertThat(actual, instanceOf(TransactionBackendHandler.class));
+    }
+    
+    @Test
+    public void assertCreateIgnoreBackendHandler() {
+        String sql = "SET AUTOCOMMIT=1";
+        ConnectionStateHandler stateHandler = mock(ConnectionStateHandler.class);
+        when(backendConnection.getStateHandler()).thenReturn(stateHandler);
+        when(stateHandler.isInTransaction()).thenReturn(false);
+        TextProtocolBackendHandler actual = ComQueryBackendHandlerFactory.createTextProtocolBackendHandler(1, sql, backendConnection, DatabaseType.MySQL);
+        assertThat(actual, instanceOf(SkipBackendHandler.class));
+    }
+    
+    @Test
     public void assertCreateShardingCTLBackendHandler() {
         String sql = "sctl:set transaction_type=XA";
         TextProtocolBackendHandler actual = ComQueryBackendHandlerFactory.createTextProtocolBackendHandler(1, sql, backendConnection, DatabaseType.MySQL);
         assertThat(actual, instanceOf(ShardingCTLSetBackendHandler.class));
-    }
-    
-    @Test
-    public void assertCreateSkipBackendHandler() {
-        String sql = "SET AUTOCOMMIT=1";
-        TextProtocolBackendHandler actual = ComQueryBackendHandlerFactory.createTextProtocolBackendHandler(1, sql, backendConnection, DatabaseType.MySQL);
-        assertThat(actual, instanceOf(SkipBackendHandler.class));
     }
     
     @Test

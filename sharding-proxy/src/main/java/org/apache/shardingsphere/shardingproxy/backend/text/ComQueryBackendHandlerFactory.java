@@ -35,6 +35,7 @@ import org.apache.shardingsphere.shardingproxy.backend.text.admin.ShowDatabasesB
 import org.apache.shardingsphere.shardingproxy.backend.text.admin.UnicastBackendHandler;
 import org.apache.shardingsphere.shardingproxy.backend.text.admin.UseDatabaseBackendHandler;
 import org.apache.shardingsphere.shardingproxy.backend.text.query.QueryBackendHandler;
+import org.apache.shardingsphere.shardingproxy.backend.text.transaction.SkipBackendHandler;
 import org.apache.shardingsphere.shardingproxy.backend.text.transaction.TransactionBackendHandler;
 import org.apache.shardingsphere.transaction.core.TransactionOperationType;
 
@@ -66,8 +67,8 @@ public final class ComQueryBackendHandlerFactory {
         if (transactionOperationType.isPresent()) {
             return new TransactionBackendHandler(transactionOperationType.get(), backendConnection);
         }
-        if (sql.toUpperCase().contains(SET_AUTOCOMMIT_1) && backendConnection.getStateHandler().isInTransaction()) {
-            return new TransactionBackendHandler(TransactionOperationType.COMMIT, backendConnection);
+        if (sql.toUpperCase().contains(SET_AUTOCOMMIT_1)) {
+            return backendConnection.getStateHandler().isInTransaction() ? new TransactionBackendHandler(TransactionOperationType.COMMIT, backendConnection) : new SkipBackendHandler();
         }
         if (sql.toUpperCase().startsWith(SCTL_SET)) {
             return new ShardingCTLSetBackendHandler(sql, backendConnection);
