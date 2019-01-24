@@ -21,20 +21,22 @@ dataSources:
     url: jdbc:mysql://localhost:3306/ds0
     username: root
     password: 
-    autoCommit: true
-    connectionTimeout: 30000
-    idleTimeout: 60000
-    maxLifetime: 1800000
-    maximumPoolSize: 65
+    connectionTimeoutMilliseconds: 30000
+    idleTimeoutMilliseconds: 60000
+    maxLifetimeMilliseconds: 1800000
+    maxPoolSize: 65
+    minPoolSize: 1
+    maintenanceIntervalMilliseconds: 30000
   ds1:
     url: jdbc:mysql://localhost:3306/ds1
     username: root
     password: 
-    autoCommit: true
-    connectionTimeout: 30000
-    idleTimeout: 60000
-    maxLifetime: 1800000
-    maximumPoolSize: 65
+    connectionTimeoutMilliseconds: 30000
+    idleTimeoutMilliseconds: 60000
+    maxLifetimeMilliseconds: 1800000
+    maxPoolSize: 65
+    minPoolSize: 1
+    maintenanceIntervalMilliseconds: 30000
 
 shardingRule:  
   tables:
@@ -74,29 +76,32 @@ dataSources:
     url: jdbc:mysql://localhost:3306/ds_master
     username: root
     password: 
-    autoCommit: true
-    connectionTimeout: 30000
-    idleTimeout: 60000
-    maxLifetime: 1800000
-    maximumPoolSize: 65
+    connectionTimeoutMilliseconds: 30000
+    idleTimeoutMilliseconds: 60000
+    maxLifetimeMilliseconds: 1800000
+    maxPoolSize: 65
+    minPoolSize: 1
+    maintenanceIntervalMilliseconds: 30000
   ds_slave0:
     url: jdbc:mysql://localhost:3306/ds_slave0
     username: root
-    password:
-    autoCommit: true
-    connectionTimeout: 30000
-    idleTimeout: 60000
-    maxLifetime: 1800000
-    maximumPoolSize: 65 
+    password: 
+    connectionTimeoutMilliseconds: 30000
+    idleTimeoutMilliseconds: 60000
+    maxLifetimeMilliseconds: 1800000
+    maxPoolSize: 65
+    minPoolSize: 1
+    maintenanceIntervalMilliseconds: 30000
   ds_slave1:
     url: jdbc:mysql://localhost:3306/ds_slave1
     username: root
-    password:
-    autoCommit: true
-    connectionTimeout: 30000
-    idleTimeout: 60000
-    maxLifetime: 1800000
-    maximumPoolSize: 65 
+    password: 
+    connectionTimeoutMilliseconds: 30000
+    idleTimeoutMilliseconds: 60000
+    maxLifetimeMilliseconds: 1800000
+    maxPoolSize: 65
+    minPoolSize: 1
+    maintenanceIntervalMilliseconds: 30000
 
 masterSlaveRule:
   name: ds_ms
@@ -115,57 +120,63 @@ dataSources:
   ds0:
     url: jdbc:mysql://localhost:3306/ds0
     username: root
-    password:
-    autoCommit: true
-    connectionTimeout: 30000
-    idleTimeout: 60000
-    maxLifetime: 1800000
-    maximumPoolSize: 65 
+    password: 
+    connectionTimeoutMilliseconds: 30000
+    idleTimeoutMilliseconds: 60000
+    maxLifetimeMilliseconds: 1800000
+    maxPoolSize: 65
+    minPoolSize: 1
+    maintenanceIntervalMilliseconds: 30000
   ds0_slave0:
     url: jdbc:mysql://localhost:3306/ds0_slave0
     username: root
     password: 
-    autoCommit: true
-    connectionTimeout: 30000
-    idleTimeout: 60000
-    maxLifetime: 1800000
-    maximumPoolSize: 65
+    connectionTimeoutMilliseconds: 30000
+    idleTimeoutMilliseconds: 60000
+    maxLifetimeMilliseconds: 1800000
+    maxPoolSize: 65
+    minPoolSize: 1
+    maintenanceIntervalMilliseconds: 30000
   ds0_slave1:
     url: jdbc:mysql://localhost:3306/ds0_slave1
     username: root
-    password:
-    autoCommit: true
-    connectionTimeout: 30000
-    idleTimeout: 60000
-    maxLifetime: 1800000
-    maximumPoolSize: 65
+    password: 
+    connectionTimeoutMilliseconds: 30000
+    idleTimeoutMilliseconds: 60000
+    maxLifetimeMilliseconds: 1800000
+    maxPoolSize: 65
+    minPoolSize: 1
+    maintenanceIntervalMilliseconds: 30000
   ds1:
     url: jdbc:mysql://localhost:3306/ds1
     username: root
     password: 
-    autoCommit: true
-    connectionTimeout: 30000
-    idleTimeout: 60000
-    maxLifetime: 1800000
-    maximumPoolSize: 65
+    connectionTimeoutMilliseconds: 30000
+    idleTimeoutMilliseconds: 60000
+    maxLifetimeMilliseconds: 1800000
+    maxPoolSize: 65
+    minPoolSize: 1
+    maintenanceIntervalMilliseconds: 30000
   ds1_slave0:
     url: jdbc:mysql://localhost:3306/ds1_slave0
     username: root
     password: 
-    autoCommit: true
-    connectionTimeout: 30000
-    idleTimeout: 60000
-    maxLifetime: 1800000
-    maximumPoolSize: 65
+    connectionTimeoutMilliseconds: 30000
+    idleTimeoutMilliseconds: 60000
+    maxLifetimeMilliseconds: 1800000
+    maxPoolSize: 65
+    minPoolSize: 1
+    maintenanceIntervalMilliseconds: 30000
   ds1_slave1:
     url: jdbc:mysql://localhost:3306/ds1_slave1
     username: root
-    password:
-    autoCommit: true
-    connectionTimeout: 30000
-    idleTimeout: 60000
-    maxLifetime: 1800000
-    maximumPoolSize: 65 
+    password: 
+    connectionTimeoutMilliseconds: 30000
+    idleTimeoutMilliseconds: 60000
+    maxLifetimeMilliseconds: 1800000
+    maxPoolSize: 65
+    minPoolSize: 1
+    maintenanceIntervalMilliseconds: 30000
 
 shardingRule:  
   tables:
@@ -262,11 +273,12 @@ dataSources: #数据源配置，可配置多个data_source_name
     url: #数据库url连接
     username: #数据库用户名
     password: #数据库密码
-    autoCommit: true #hikari连接池默认配置
-    connectionTimeout: 30000 #hikari连接池默认配置
-    idleTimeout: 60000 #hikari连接池默认配置
-    maxLifetime: 1800000 #hikari连接池默认配置
-    maximumPoolSize: 65 #hikari连接池默认配置
+    connectionTimeoutMilliseconds: 30000 #连接超时毫秒数
+    idleTimeoutMilliseconds: 60000 #空闲连接回收超时毫秒数
+    maxLifetimeMilliseconds: 1800000 #连接最大存活时间毫秒数
+    maxPoolSize: 65 #最大连接数
+    minPoolSize: 1 #最小连接数
+    maintenanceIntervalMilliseconds: 30000 #监控检测间隔毫秒数 
 
 shardingRule: #省略数据分片配置，与Sharding-JDBC配置一致
 ```
