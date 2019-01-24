@@ -12,19 +12,19 @@
     <title>Configuration Manual :: ShardingSphere</title>
     
     
-    <link href="http://shardingsphere.apache.org/document/current/css/nucleus.css?1548039820" rel="stylesheet">
-    <link href="http://shardingsphere.apache.org/document/current/css/font-awesome.min.css?1548039820" rel="stylesheet">
-    <link href="http://shardingsphere.apache.org/document/current/css/hybrid.css?1548039820" rel="stylesheet">
-    <link href="http://shardingsphere.apache.org/document/current/css/featherlight.min.css?1548039820" rel="stylesheet">
-    <link href="http://shardingsphere.apache.org/document/current/css/perfect-scrollbar.min.css?1548039820" rel="stylesheet">
-    <link href="http://shardingsphere.apache.org/document/current/css/auto-complete.css?1548039820" rel="stylesheet">
-    <link href="http://shardingsphere.apache.org/document/current/css/theme.css?1548039820" rel="stylesheet">
-    <link href="http://shardingsphere.apache.org/document/current/css/hugo-theme.css?1548039820" rel="stylesheet">
+    <link href="http://shardingsphere.apache.org/document/current/css/nucleus.css?1548324362" rel="stylesheet">
+    <link href="http://shardingsphere.apache.org/document/current/css/font-awesome.min.css?1548324362" rel="stylesheet">
+    <link href="http://shardingsphere.apache.org/document/current/css/hybrid.css?1548324362" rel="stylesheet">
+    <link href="http://shardingsphere.apache.org/document/current/css/featherlight.min.css?1548324362" rel="stylesheet">
+    <link href="http://shardingsphere.apache.org/document/current/css/perfect-scrollbar.min.css?1548324362" rel="stylesheet">
+    <link href="http://shardingsphere.apache.org/document/current/css/auto-complete.css?1548324362" rel="stylesheet">
+    <link href="http://shardingsphere.apache.org/document/current/css/theme.css?1548324362" rel="stylesheet">
+    <link href="http://shardingsphere.apache.org/document/current/css/hugo-theme.css?1548324362" rel="stylesheet">
     
-      <link href="http://shardingsphere.apache.org/document/current/css/theme-black.css?1548039820" rel="stylesheet">
+      <link href="http://shardingsphere.apache.org/document/current/css/theme-black.css?1548324362" rel="stylesheet">
     
 
-    <script src="http://shardingsphere.apache.org/document/current/js/jquery-2.x.min.js?1548039820"></script>
+    <script src="http://shardingsphere.apache.org/document/current/js/jquery-2.x.min.js?1548324362"></script>
     
     <style type="text/css">
       :root #header + #content > #left > #rlblock_left{ 
@@ -1557,20 +1557,22 @@ dataSources:
     url: jdbc:mysql://localhost:3306/ds0
     username: root
     password: 
-    autoCommit: true
-    connectionTimeout: 30000
-    idleTimeout: 60000
-    maxLifetime: 1800000
-    maximumPoolSize: 65
+    connectionTimeoutMilliseconds: 30000
+    idleTimeoutMilliseconds: 60000
+    maxLifetimeMilliseconds: 1800000
+    maxPoolSize: 65
+    minPoolSize: 1
+    maintenanceIntervalMilliseconds: 30000
   ds1:
     url: jdbc:mysql://localhost:3306/ds1
     username: root
     password: 
-    autoCommit: true
-    connectionTimeout: 30000
-    idleTimeout: 60000
-    maxLifetime: 1800000
-    maximumPoolSize: 65
+    connectionTimeoutMilliseconds: 30000
+    idleTimeoutMilliseconds: 60000
+    maxLifetimeMilliseconds: 1800000
+    maxPoolSize: 65
+    minPoolSize: 1
+    maintenanceIntervalMilliseconds: 30000
 
 shardingRule:  
   tables:
@@ -1613,29 +1615,32 @@ dataSources:
     url: jdbc:mysql://localhost:3306/ds_master
     username: root
     password: 
-    autoCommit: true
-    connectionTimeout: 30000
-    idleTimeout: 60000
-    maxLifetime: 1800000
-    maximumPoolSize: 65
+    connectionTimeoutMilliseconds: 30000
+    idleTimeoutMilliseconds: 60000
+    maxLifetimeMilliseconds: 1800000
+    maxPoolSize: 65
+    minPoolSize: 1
+    maintenanceIntervalMilliseconds: 30000
   ds_slave0:
     url: jdbc:mysql://localhost:3306/ds_slave0
     username: root
     password:
-    autoCommit: true
-    connectionTimeout: 30000
-    idleTimeout: 60000
-    maxLifetime: 1800000
-    maximumPoolSize: 65 
+    connectionTimeoutMilliseconds: 30000
+    idleTimeoutMilliseconds: 60000
+    maxLifetimeMilliseconds: 1800000
+    maxPoolSize: 65
+    minPoolSize: 1
+    maintenanceIntervalMilliseconds: 30000
   ds_slave1:
     url: jdbc:mysql://localhost:3306/ds_slave1
     username: root
     password:
-    autoCommit: true
-    connectionTimeout: 30000
-    idleTimeout: 60000
-    maxLifetime: 1800000
-    maximumPoolSize: 65 
+    connectionTimeoutMilliseconds: 30000
+    idleTimeoutMilliseconds: 60000
+    maxLifetimeMilliseconds: 1800000
+    maxPoolSize: 65
+    minPoolSize: 1
+    maintenanceIntervalMilliseconds: 30000
 
 masterSlaveRule:
   name: ds_ms
@@ -1654,56 +1659,62 @@ dataSources:
     url: jdbc:mysql://localhost:3306/ds0
     username: root
     password:
-    autoCommit: true
-    connectionTimeout: 30000
-    idleTimeout: 60000
-    maxLifetime: 1800000
-    maximumPoolSize: 65 
+    connectionTimeoutMilliseconds: 30000
+    idleTimeoutMilliseconds: 60000
+    maxLifetimeMilliseconds: 1800000
+    maxPoolSize: 65
+    minPoolSize: 1
+    maintenanceIntervalMilliseconds: 30000
   ds0_slave0:
     url: jdbc:mysql://localhost:3306/ds0_slave0
     username: root
     password: 
-    autoCommit: true
-    connectionTimeout: 30000
-    idleTimeout: 60000
-    maxLifetime: 1800000
-    maximumPoolSize: 65
+    connectionTimeoutMilliseconds: 30000
+    idleTimeoutMilliseconds: 60000
+    maxLifetimeMilliseconds: 1800000
+    maxPoolSize: 65
+    minPoolSize: 1
+    maintenanceIntervalMilliseconds: 30000
   ds0_slave1:
     url: jdbc:mysql://localhost:3306/ds0_slave1
     username: root
     password:
-    autoCommit: true
-    connectionTimeout: 30000
-    idleTimeout: 60000
-    maxLifetime: 1800000
-    maximumPoolSize: 65
+    connectionTimeoutMilliseconds: 30000
+    idleTimeoutMilliseconds: 60000
+    maxLifetimeMilliseconds: 1800000
+    maxPoolSize: 65
+    minPoolSize: 1
+    maintenanceIntervalMilliseconds: 30000
   ds1:
     url: jdbc:mysql://localhost:3306/ds1
     username: root
     password: 
-    autoCommit: true
-    connectionTimeout: 30000
-    idleTimeout: 60000
-    maxLifetime: 1800000
-    maximumPoolSize: 65
+    connectionTimeoutMilliseconds: 30000
+    idleTimeoutMilliseconds: 60000
+    maxLifetimeMilliseconds: 1800000
+    maxPoolSize: 65
+    minPoolSize: 1
+    maintenanceIntervalMilliseconds: 30000
   ds1_slave0:
     url: jdbc:mysql://localhost:3306/ds1_slave0
     username: root
     password: 
-    autoCommit: true
-    connectionTimeout: 30000
-    idleTimeout: 60000
-    maxLifetime: 1800000
-    maximumPoolSize: 65
+    connectionTimeoutMilliseconds: 30000
+    idleTimeoutMilliseconds: 60000
+    maxLifetimeMilliseconds: 1800000
+    maxPoolSize: 65
+    minPoolSize: 1
+    maintenanceIntervalMilliseconds: 30000
   ds1_slave1:
     url: jdbc:mysql://localhost:3306/ds1_slave1
     username: root
     password:
-    autoCommit: true
-    connectionTimeout: 30000
-    idleTimeout: 60000
-    maxLifetime: 1800000
-    maximumPoolSize: 65 
+    connectionTimeoutMilliseconds: 30000
+    idleTimeoutMilliseconds: 60000
+    maxLifetimeMilliseconds: 1800000
+    maxPoolSize: 65
+    minPoolSize: 1
+    maintenanceIntervalMilliseconds: 30000
 
 shardingRule:  
   tables:
@@ -1789,11 +1800,12 @@ dataSources: #Data sources configuration, multiple `data_source_name` available
     url: #Database URL
     username: #Database username
     password: #Database password
-    autoCommit: true #The default config of hikari connection pool
-    connectionTimeout: 30000 #The default config of hikari connection pool
-    idleTimeout: 60000 #The default config of hikari connection pool
-    maxLifetime: 1800000 #The default config of hikari connection pool
-    maximumPoolSize: 65 #The default config of hikari connection pool
+    connectionTimeoutMilliseconds: 30000
+    idleTimeoutMilliseconds: 60000
+    maxLifetimeMilliseconds: 1800000
+    maxPoolSize: 65
+    minPoolSize: 1
+    maintenanceIntervalMilliseconds: 30000
 
 shardingRule: #Ignore sharding rule configuration, same as Sharding-JDBC
 </code></pre>
@@ -2826,20 +2838,20 @@ props:
     <div style="left: -1000px; overflow: scroll; position: absolute; top: -1000px; border: none; box-sizing: content-box; height: 200px; margin: 0px; padding: 0px; width: 200px;">
       <div style="border: none; box-sizing: content-box; height: 200px; margin: 0px; padding: 0px; width: 200px;"></div>
     </div>
-    <script src="http://shardingsphere.apache.org/document/current/js/clipboard.min.js?1548039820"></script>
-    <script src="http://shardingsphere.apache.org/document/current/js/perfect-scrollbar.min.js?1548039820"></script>
-    <script src="http://shardingsphere.apache.org/document/current/js/perfect-scrollbar.jquery.min.js?1548039820"></script>
-    <script src="http://shardingsphere.apache.org/document/current/js/jquery.sticky.js?1548039820"></script>
-    <script src="http://shardingsphere.apache.org/document/current/js/featherlight.min.js?1548039820"></script>
-    <script src="http://shardingsphere.apache.org/document/current/js/html5shiv-printshiv.min.js?1548039820"></script>
-    <script src="http://shardingsphere.apache.org/document/current/js/highlight.pack.js?1548039820"></script>
+    <script src="http://shardingsphere.apache.org/document/current/js/clipboard.min.js?1548324362"></script>
+    <script src="http://shardingsphere.apache.org/document/current/js/perfect-scrollbar.min.js?1548324362"></script>
+    <script src="http://shardingsphere.apache.org/document/current/js/perfect-scrollbar.jquery.min.js?1548324362"></script>
+    <script src="http://shardingsphere.apache.org/document/current/js/jquery.sticky.js?1548324362"></script>
+    <script src="http://shardingsphere.apache.org/document/current/js/featherlight.min.js?1548324362"></script>
+    <script src="http://shardingsphere.apache.org/document/current/js/html5shiv-printshiv.min.js?1548324362"></script>
+    <script src="http://shardingsphere.apache.org/document/current/js/highlight.pack.js?1548324362"></script>
     <script>hljs.initHighlightingOnLoad();</script>
-    <script src="http://shardingsphere.apache.org/document/current/js/modernizr.custom.71422.js?1548039820"></script>
-    <script src="http://shardingsphere.apache.org/document/current/js/learn.js?1548039820"></script>
-    <script src="http://shardingsphere.apache.org/document/current/js/hugo-learn.js?1548039820"></script>
+    <script src="http://shardingsphere.apache.org/document/current/js/modernizr.custom.71422.js?1548324362"></script>
+    <script src="http://shardingsphere.apache.org/document/current/js/learn.js?1548324362"></script>
+    <script src="http://shardingsphere.apache.org/document/current/js/hugo-learn.js?1548324362"></script>
 
-    <link href="http://shardingsphere.apache.org/document/current/mermaid/mermaid.css?1548039820" type="text/css" rel="stylesheet" />
-    <script src="http://shardingsphere.apache.org/document/current/mermaid/mermaid.js?1548039820"></script>
+    <link href="http://shardingsphere.apache.org/document/current/mermaid/mermaid.css?1548324362" type="text/css" rel="stylesheet" />
+    <script src="http://shardingsphere.apache.org/document/current/mermaid/mermaid.js?1548324362"></script>
     <script>
         mermaid.initialize({ startOnLoad: true });
     </script>

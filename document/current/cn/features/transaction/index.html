@@ -12,19 +12,19 @@
     <title>分布式事务 :: ShardingSphere</title>
     
     
-    <link href="http://shardingsphere.apache.org/document/current/css/nucleus.css?1548039820" rel="stylesheet">
-    <link href="http://shardingsphere.apache.org/document/current/css/font-awesome.min.css?1548039820" rel="stylesheet">
-    <link href="http://shardingsphere.apache.org/document/current/css/hybrid.css?1548039820" rel="stylesheet">
-    <link href="http://shardingsphere.apache.org/document/current/css/featherlight.min.css?1548039820" rel="stylesheet">
-    <link href="http://shardingsphere.apache.org/document/current/css/perfect-scrollbar.min.css?1548039820" rel="stylesheet">
-    <link href="http://shardingsphere.apache.org/document/current/css/auto-complete.css?1548039820" rel="stylesheet">
-    <link href="http://shardingsphere.apache.org/document/current/css/theme.css?1548039820" rel="stylesheet">
-    <link href="http://shardingsphere.apache.org/document/current/css/hugo-theme.css?1548039820" rel="stylesheet">
+    <link href="http://shardingsphere.apache.org/document/current/css/nucleus.css?1548324362" rel="stylesheet">
+    <link href="http://shardingsphere.apache.org/document/current/css/font-awesome.min.css?1548324362" rel="stylesheet">
+    <link href="http://shardingsphere.apache.org/document/current/css/hybrid.css?1548324362" rel="stylesheet">
+    <link href="http://shardingsphere.apache.org/document/current/css/featherlight.min.css?1548324362" rel="stylesheet">
+    <link href="http://shardingsphere.apache.org/document/current/css/perfect-scrollbar.min.css?1548324362" rel="stylesheet">
+    <link href="http://shardingsphere.apache.org/document/current/css/auto-complete.css?1548324362" rel="stylesheet">
+    <link href="http://shardingsphere.apache.org/document/current/css/theme.css?1548324362" rel="stylesheet">
+    <link href="http://shardingsphere.apache.org/document/current/css/hugo-theme.css?1548324362" rel="stylesheet">
     
-      <link href="http://shardingsphere.apache.org/document/current/css/theme-black.css?1548039820" rel="stylesheet">
+      <link href="http://shardingsphere.apache.org/document/current/css/theme-black.css?1548324362" rel="stylesheet">
     
 
-    <script src="http://shardingsphere.apache.org/document/current/js/jquery-2.x.min.js?1548039820"></script>
+    <script src="http://shardingsphere.apache.org/document/current/js/jquery-2.x.min.js?1548324362"></script>
     
     <style type="text/css">
       :root #header + #content > #left > #rlblock_left{ 
@@ -1521,7 +1521,7 @@
 它们之间没有协调以及通信的能力，也并不互相知晓其他数据节点事务的成功与否。
 本地事务在性能方面无任何损耗，但在强一致性以及最终一致性方面则力不从心。</p>
 
-<h3 id="xa强一致事务">XA强一致事务</h3>
+<h3 id="两阶段提交">两阶段提交</h3>
 
 <p>XA协议最早的分布式事务模型是由<code>X/Open</code>国际联盟提出的<code>X/Open Distributed Transaction Processing（DTP）</code>模型，简称XA协议。</p>
 
@@ -1542,13 +1542,14 @@ XA协议能够严格保障事务<code>ACID</code>特性。</p>
 <ul>
 <li>基本可用（Basically Available）保证分布式事务参与方不一定同时在线。</li>
 <li>柔性状态（Soft state）则允许系统状态更新有一定的延时，这个延时对客户来说不一定能够察觉。</li>
-<li>而最终一致性（Eventually consistent）通常是通过消息可达的方式保证系统的最终一致性。</li>
+<li>而最终一致性（Eventually consistent）通常是通过消息传递的方式保证系统的最终一致性。</li>
 </ul>
 
 <p>在<code>ACID</code>事务中对隔离性的要求很高，在事务执行过程中，必须将所有的资源锁定。
 柔性事务的理念则是通过业务逻辑将互斥锁操作从资源层面上移至业务层面。通过放宽对强一致性要求，来换取系统吞吐量的提升。</p>
 
-<p>基于<code>ACID</code>的强一致性事务和基于<code>BASE</code>的最终一致性事务都不是银弹，只有在最适合的场景中才能发挥它们的最大长处。可通过下表详细对比它们之间的区别，以帮助开发者进行技术选型。</p>
+<p>基于<code>ACID</code>的强一致性事务和基于<code>BASE</code>的最终一致性事务都不是银弹，只有在最适合的场景中才能发挥它们的最大长处。
+可通过下表详细对比它们之间的区别，以帮助开发者进行技术选型。</p>
 
 <table>
 <thead>
@@ -1604,7 +1605,7 @@ XA协议能够严格保障事务<code>ACID</code>特性。</p>
 
 <p>强一致的事务与柔性事务的API和功能并不完全相同，在它们之间并不能做到自由的透明切换。在开发决策阶段，就不得不在强一致的事务和柔性事务之间抉择，使得设计和开发成本被大幅增加。</p>
 
-<p>基于XA的强一致事务使用相对简单，但是无法很好的应对互联网的短事务和高并发场景；柔性事务则需要开发者对应用进行改造，接入成本非常高，并且需要开发者自行实现资源锁定和反向补偿。</p>
+<p>基于XA的强一致事务使用相对简单，但是无法很好的应对互联网的高并发或复杂系统的长事务场景；柔性事务则需要开发者对应用进行改造，接入成本非常高，并且需要开发者自行实现资源锁定和反向补偿。</p>
 
 <h2 id="目标">目标</h2>
 
@@ -2593,20 +2594,20 @@ XA协议能够严格保障事务<code>ACID</code>特性。</p>
     <div style="left: -1000px; overflow: scroll; position: absolute; top: -1000px; border: none; box-sizing: content-box; height: 200px; margin: 0px; padding: 0px; width: 200px;">
       <div style="border: none; box-sizing: content-box; height: 200px; margin: 0px; padding: 0px; width: 200px;"></div>
     </div>
-    <script src="http://shardingsphere.apache.org/document/current/js/clipboard.min.js?1548039820"></script>
-    <script src="http://shardingsphere.apache.org/document/current/js/perfect-scrollbar.min.js?1548039820"></script>
-    <script src="http://shardingsphere.apache.org/document/current/js/perfect-scrollbar.jquery.min.js?1548039820"></script>
-    <script src="http://shardingsphere.apache.org/document/current/js/jquery.sticky.js?1548039820"></script>
-    <script src="http://shardingsphere.apache.org/document/current/js/featherlight.min.js?1548039820"></script>
-    <script src="http://shardingsphere.apache.org/document/current/js/html5shiv-printshiv.min.js?1548039820"></script>
-    <script src="http://shardingsphere.apache.org/document/current/js/highlight.pack.js?1548039820"></script>
+    <script src="http://shardingsphere.apache.org/document/current/js/clipboard.min.js?1548324362"></script>
+    <script src="http://shardingsphere.apache.org/document/current/js/perfect-scrollbar.min.js?1548324362"></script>
+    <script src="http://shardingsphere.apache.org/document/current/js/perfect-scrollbar.jquery.min.js?1548324362"></script>
+    <script src="http://shardingsphere.apache.org/document/current/js/jquery.sticky.js?1548324362"></script>
+    <script src="http://shardingsphere.apache.org/document/current/js/featherlight.min.js?1548324362"></script>
+    <script src="http://shardingsphere.apache.org/document/current/js/html5shiv-printshiv.min.js?1548324362"></script>
+    <script src="http://shardingsphere.apache.org/document/current/js/highlight.pack.js?1548324362"></script>
     <script>hljs.initHighlightingOnLoad();</script>
-    <script src="http://shardingsphere.apache.org/document/current/js/modernizr.custom.71422.js?1548039820"></script>
-    <script src="http://shardingsphere.apache.org/document/current/js/learn.js?1548039820"></script>
-    <script src="http://shardingsphere.apache.org/document/current/js/hugo-learn.js?1548039820"></script>
+    <script src="http://shardingsphere.apache.org/document/current/js/modernizr.custom.71422.js?1548324362"></script>
+    <script src="http://shardingsphere.apache.org/document/current/js/learn.js?1548324362"></script>
+    <script src="http://shardingsphere.apache.org/document/current/js/hugo-learn.js?1548324362"></script>
 
-    <link href="http://shardingsphere.apache.org/document/current/mermaid/mermaid.css?1548039820" type="text/css" rel="stylesheet" />
-    <script src="http://shardingsphere.apache.org/document/current/mermaid/mermaid.js?1548039820"></script>
+    <link href="http://shardingsphere.apache.org/document/current/mermaid/mermaid.css?1548324362" type="text/css" rel="stylesheet" />
+    <script src="http://shardingsphere.apache.org/document/current/mermaid/mermaid.js?1548324362"></script>
     <script>
         mermaid.initialize({ startOnLoad: true });
     </script>

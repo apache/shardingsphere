@@ -12,19 +12,19 @@
     <title>Distribute Transaction :: ShardingSphere</title>
     
     
-    <link href="http://shardingsphere.apache.org/document/current/css/nucleus.css?1548039820" rel="stylesheet">
-    <link href="http://shardingsphere.apache.org/document/current/css/font-awesome.min.css?1548039820" rel="stylesheet">
-    <link href="http://shardingsphere.apache.org/document/current/css/hybrid.css?1548039820" rel="stylesheet">
-    <link href="http://shardingsphere.apache.org/document/current/css/featherlight.min.css?1548039820" rel="stylesheet">
-    <link href="http://shardingsphere.apache.org/document/current/css/perfect-scrollbar.min.css?1548039820" rel="stylesheet">
-    <link href="http://shardingsphere.apache.org/document/current/css/auto-complete.css?1548039820" rel="stylesheet">
-    <link href="http://shardingsphere.apache.org/document/current/css/theme.css?1548039820" rel="stylesheet">
-    <link href="http://shardingsphere.apache.org/document/current/css/hugo-theme.css?1548039820" rel="stylesheet">
+    <link href="http://shardingsphere.apache.org/document/current/css/nucleus.css?1548324362" rel="stylesheet">
+    <link href="http://shardingsphere.apache.org/document/current/css/font-awesome.min.css?1548324362" rel="stylesheet">
+    <link href="http://shardingsphere.apache.org/document/current/css/hybrid.css?1548324362" rel="stylesheet">
+    <link href="http://shardingsphere.apache.org/document/current/css/featherlight.min.css?1548324362" rel="stylesheet">
+    <link href="http://shardingsphere.apache.org/document/current/css/perfect-scrollbar.min.css?1548324362" rel="stylesheet">
+    <link href="http://shardingsphere.apache.org/document/current/css/auto-complete.css?1548324362" rel="stylesheet">
+    <link href="http://shardingsphere.apache.org/document/current/css/theme.css?1548324362" rel="stylesheet">
+    <link href="http://shardingsphere.apache.org/document/current/css/hugo-theme.css?1548324362" rel="stylesheet">
     
-      <link href="http://shardingsphere.apache.org/document/current/css/theme-black.css?1548039820" rel="stylesheet">
+      <link href="http://shardingsphere.apache.org/document/current/css/theme-black.css?1548324362" rel="stylesheet">
     
 
-    <script src="http://shardingsphere.apache.org/document/current/js/jquery-2.x.min.js?1548039820"></script>
+    <script src="http://shardingsphere.apache.org/document/current/js/jquery-2.x.min.js?1548324362"></script>
     
     <style type="text/css">
       :root #header + #content > #left > #rlblock_left{ 
@@ -1499,7 +1499,24 @@
                 
                     <div class="progress">
     <div class="wrapper">
-
+<nav id="TableOfContents">
+<ul>
+<li>
+<ul>
+<li><a href="#introduce-maven-dependency">Introduce Maven Dependency</a></li>
+<li><a href="#connection-pool-configuration">Connection Pool Configuration</a></li>
+<li><a href="#transaction-type-switch">Transaction Type Switch</a>
+<ul>
+<li><a href="#api-usage">API Usage</a></li>
+<li><a href="#springbootstarter-usage">SpringBootStarter Usage</a></li>
+<li><a href="#springboot-usage">SpringBoot Usage</a></li>
+<li><a href="#spring-namespace-usage">Spring Namespace Usage</a></li>
+<li><a href="#business-code">Business Code</a></li>
+</ul></li>
+<li><a href="#atomikos-parameter-configuration">Atomikos Parameter Configuration</a></li>
+</ul></li>
+</ul>
+</nav>
     </div>
 </div>
 
@@ -1517,7 +1534,174 @@
         
 
 
-<p>to be translate</p>
+
+
+<h2 id="introduce-maven-dependency">Introduce Maven Dependency</h2>
+
+<pre><code class="language-xml">&lt;dependency&gt;
+    &lt;groupId&gt;io.shardingsphere&lt;/groupId&gt;
+    &lt;artifactId&gt;sharding-transaction-2pc-xa&lt;/artifactId&gt;
+    &lt;version&gt;${shardingsphere.version}&lt;/version&gt;
+&lt;/dependency&gt;
+</code></pre>
+
+<p>XA transaction manager will be uploaded by Sharding-JDBC in SPI form.</p>
+
+<h2 id="connection-pool-configuration">Connection Pool Configuration</h2>
+
+<p>ShardingSphere supports to transform normal database connection pools to connection pools that support XA transactions;
+they also provide  internal support for HikariCP, Druid and DBCP2, requiring no extra configurations.
+Other connection pools require users to use SPI interface that implements <code>DataSourceMapConverter</code> to expand, please refer to the implementation of <code>io.shardingsphere.transaction.xa.convert.swap.HikariParameterSwapper</code>.
+If ShardingSphere cannot find a proper implementation, it will create XA transaction connection pools according to default configurations.
+Default properties are as follow:</p>
+
+<table>
+<thead>
+<tr>
+<th><em>Property</em></th>
+<th><em>Default Value</em></th>
+</tr>
+</thead>
+
+<tbody>
+<tr>
+<td>connectionTimeoutMilliseconds</td>
+<td>30 * 1000</td>
+</tr>
+
+<tr>
+<td>idleTimeoutMilliseconds</td>
+<td>60 * 1000</td>
+</tr>
+
+<tr>
+<td>maintenanceIntervalMilliseconds</td>
+<td>30 * 1000</td>
+</tr>
+
+<tr>
+<td>maxLifetimeMilliseconds</td>
+<td>0 (no limitation)</td>
+</tr>
+
+<tr>
+<td>maxPoolSize</td>
+<td>50</td>
+</tr>
+
+<tr>
+<td>minPoolSize</td>
+<td>1</td>
+</tr>
+</tbody>
+</table>
+
+<h2 id="transaction-type-switch">Transaction Type Switch</h2>
+
+<p>ShardingSphere stores transaction types in local thread variable <code>TransactionTypeHolder</code>.
+Modifying its value before the database creates connections can have the effect of switching transaction types freely.</p>
+
+<p>Notice: after the database connection is created, transactions are not able to be modified.</p>
+
+<h3 id="api-usage">API Usage</h3>
+
+<pre><code class="language-java">TransactionTypeHolder.set(TransactionType.LOCAL);
+</code></pre>
+
+<p>Or</p>
+
+<pre><code class="language-java">TransactionTypeHolder.set(TransactionType.XA);
+</code></pre>
+
+<h3 id="springbootstarter-usage">SpringBootStarter Usage</h3>
+
+<p>Introduce Maven Dependency:</p>
+
+<pre><code class="language-xml">&lt;dependency&gt;
+    &lt;groupId&gt;io.shardingsphere&lt;/groupId&gt;
+    &lt;artifactId&gt;sharding-transaction-spring-boot-starter&lt;/artifactId&gt;
+    &lt;version&gt;${sharding-sphere.version}&lt;/version&gt;
+&lt;/dependency&gt;
+</code></pre>
+
+<h3 id="springboot-usage">SpringBoot Usage</h3>
+
+<p>Introduce Maven Dependency:</p>
+
+<pre><code class="language-xml">&lt;dependency&gt;
+    &lt;groupId&gt;io.shardingsphere&lt;/groupId&gt;
+    &lt;artifactId&gt;sharding-transaction-spring&lt;/artifactId&gt;
+    &lt;version&gt;${sharding-sphere.version}&lt;/version&gt;
+&lt;/dependency&gt;
+
+&lt;dependency&gt;
+    &lt;groupId&gt;org.springframework.boot&lt;/groupId&gt;
+    &lt;artifactId&gt;spring-boot-starter-aop&lt;/artifactId&gt;
+    &lt;version&gt;${spring-boot.version}&lt;/version&gt;
+&lt;/dependency&gt;
+
+&lt;spring-boot.version&gt;[1.5.0.RELEASE,2.0.0.M1)&lt;/spring-boot.version&gt;
+</code></pre>
+
+<p>AutoConfiguration:</p>
+
+<pre><code class="language-java">@SpringBootApplication(exclude = JtaAutoConfiguration.class)
+@ComponentScan(&quot;io.shardingsphere.transaction.aspect&quot;)
+public class StartMain {
+}
+</code></pre>
+
+<h3 id="spring-namespace-usage">Spring Namespace Usage</h3>
+
+<p>Introduce Maven Dependency:</p>
+
+<pre><code class="language-xml">&lt;dependency&gt;
+    &lt;groupId&gt;io.shardingsphere&lt;/groupId&gt;
+    &lt;artifactId&gt;sharding-transaction-spring&lt;/artifactId&gt;
+    &lt;version&gt;${sharding-sphere.version}&lt;/version&gt;
+&lt;/dependency&gt;
+
+&lt;dependency&gt;
+    &lt;groupId&gt;org.aspectj&lt;/groupId&gt;
+    &lt;artifactId&gt;aspectjweaver&lt;/artifactId&gt;
+    &lt;version&gt;${aspectjweaver.version}&lt;/version&gt;
+&lt;/dependency&gt;
+&lt;dependency&gt;
+    &lt;groupId&gt;org.springframework&lt;/groupId&gt;
+    &lt;artifactId&gt;spring-context-support&lt;/artifactId&gt;
+    &lt;version&gt;${springframework.version}&lt;/version&gt;
+&lt;/dependency&gt;
+
+&lt;aspectjweaver.version&gt;1.8.9&lt;/aspectjweaver.version&gt;
+&lt;springframework.version&gt;[4.3.6.RELEASE,5.0.0.M1)&lt;/springframework.version&gt;
+</code></pre>
+
+<p>Load section configuration information:</p>
+
+<pre><code class="language-xml">&lt;import resource=&quot;classpath:META-INF/shardingTransaction.xml&quot;/&gt;
+</code></pre>
+
+<h3 id="business-code">Business Code</h3>
+
+<p>Add relevant notes in methods or types that need transactions. For example:</p>
+
+<pre><code class="language-java">@ShardingTransactionType(TransactionType.LOCAL)
+@Transactional
+</code></pre>
+
+<p>Or</p>
+
+<pre><code class="language-java">@ShardingTransactionType(TransactionType.XA)
+@Transactional
+</code></pre>
+
+<p>Notice: <code>@ShardingTransactionType</code>needs to be used along with Spring <code>@Transactional</code> to make transactions take effect.</p>
+
+<h2 id="atomikos-parameter-configuration">Atomikos Parameter Configuration</h2>
+
+<p>Default XA transaction manager of ShardingSphere is Atomikos.
+Add <code>jta.properties</code> in <code>classpath</code> of the program to customize Atomikos configuration items.
+For detailed configuration rules, please refer to <a href="https://www.atomikos.com/Documentation/JtaProperties">official documentation</a> of Atomikos.</p>
 
 
 <footer class=" footline" >
@@ -2503,20 +2687,20 @@
     <div style="left: -1000px; overflow: scroll; position: absolute; top: -1000px; border: none; box-sizing: content-box; height: 200px; margin: 0px; padding: 0px; width: 200px;">
       <div style="border: none; box-sizing: content-box; height: 200px; margin: 0px; padding: 0px; width: 200px;"></div>
     </div>
-    <script src="http://shardingsphere.apache.org/document/current/js/clipboard.min.js?1548039820"></script>
-    <script src="http://shardingsphere.apache.org/document/current/js/perfect-scrollbar.min.js?1548039820"></script>
-    <script src="http://shardingsphere.apache.org/document/current/js/perfect-scrollbar.jquery.min.js?1548039820"></script>
-    <script src="http://shardingsphere.apache.org/document/current/js/jquery.sticky.js?1548039820"></script>
-    <script src="http://shardingsphere.apache.org/document/current/js/featherlight.min.js?1548039820"></script>
-    <script src="http://shardingsphere.apache.org/document/current/js/html5shiv-printshiv.min.js?1548039820"></script>
-    <script src="http://shardingsphere.apache.org/document/current/js/highlight.pack.js?1548039820"></script>
+    <script src="http://shardingsphere.apache.org/document/current/js/clipboard.min.js?1548324362"></script>
+    <script src="http://shardingsphere.apache.org/document/current/js/perfect-scrollbar.min.js?1548324362"></script>
+    <script src="http://shardingsphere.apache.org/document/current/js/perfect-scrollbar.jquery.min.js?1548324362"></script>
+    <script src="http://shardingsphere.apache.org/document/current/js/jquery.sticky.js?1548324362"></script>
+    <script src="http://shardingsphere.apache.org/document/current/js/featherlight.min.js?1548324362"></script>
+    <script src="http://shardingsphere.apache.org/document/current/js/html5shiv-printshiv.min.js?1548324362"></script>
+    <script src="http://shardingsphere.apache.org/document/current/js/highlight.pack.js?1548324362"></script>
     <script>hljs.initHighlightingOnLoad();</script>
-    <script src="http://shardingsphere.apache.org/document/current/js/modernizr.custom.71422.js?1548039820"></script>
-    <script src="http://shardingsphere.apache.org/document/current/js/learn.js?1548039820"></script>
-    <script src="http://shardingsphere.apache.org/document/current/js/hugo-learn.js?1548039820"></script>
+    <script src="http://shardingsphere.apache.org/document/current/js/modernizr.custom.71422.js?1548324362"></script>
+    <script src="http://shardingsphere.apache.org/document/current/js/learn.js?1548324362"></script>
+    <script src="http://shardingsphere.apache.org/document/current/js/hugo-learn.js?1548324362"></script>
 
-    <link href="http://shardingsphere.apache.org/document/current/mermaid/mermaid.css?1548039820" type="text/css" rel="stylesheet" />
-    <script src="http://shardingsphere.apache.org/document/current/mermaid/mermaid.js?1548039820"></script>
+    <link href="http://shardingsphere.apache.org/document/current/mermaid/mermaid.css?1548324362" type="text/css" rel="stylesheet" />
+    <script src="http://shardingsphere.apache.org/document/current/mermaid/mermaid.js?1548324362"></script>
     <script>
         mermaid.initialize({ startOnLoad: true });
     </script>

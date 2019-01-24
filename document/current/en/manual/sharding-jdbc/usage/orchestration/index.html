@@ -12,19 +12,19 @@
     <title>Orchestration :: ShardingSphere</title>
     
     
-    <link href="http://shardingsphere.apache.org/document/current/css/nucleus.css?1548039820" rel="stylesheet">
-    <link href="http://shardingsphere.apache.org/document/current/css/font-awesome.min.css?1548039820" rel="stylesheet">
-    <link href="http://shardingsphere.apache.org/document/current/css/hybrid.css?1548039820" rel="stylesheet">
-    <link href="http://shardingsphere.apache.org/document/current/css/featherlight.min.css?1548039820" rel="stylesheet">
-    <link href="http://shardingsphere.apache.org/document/current/css/perfect-scrollbar.min.css?1548039820" rel="stylesheet">
-    <link href="http://shardingsphere.apache.org/document/current/css/auto-complete.css?1548039820" rel="stylesheet">
-    <link href="http://shardingsphere.apache.org/document/current/css/theme.css?1548039820" rel="stylesheet">
-    <link href="http://shardingsphere.apache.org/document/current/css/hugo-theme.css?1548039820" rel="stylesheet">
+    <link href="http://shardingsphere.apache.org/document/current/css/nucleus.css?1548324362" rel="stylesheet">
+    <link href="http://shardingsphere.apache.org/document/current/css/font-awesome.min.css?1548324362" rel="stylesheet">
+    <link href="http://shardingsphere.apache.org/document/current/css/hybrid.css?1548324362" rel="stylesheet">
+    <link href="http://shardingsphere.apache.org/document/current/css/featherlight.min.css?1548324362" rel="stylesheet">
+    <link href="http://shardingsphere.apache.org/document/current/css/perfect-scrollbar.min.css?1548324362" rel="stylesheet">
+    <link href="http://shardingsphere.apache.org/document/current/css/auto-complete.css?1548324362" rel="stylesheet">
+    <link href="http://shardingsphere.apache.org/document/current/css/theme.css?1548324362" rel="stylesheet">
+    <link href="http://shardingsphere.apache.org/document/current/css/hugo-theme.css?1548324362" rel="stylesheet">
     
-      <link href="http://shardingsphere.apache.org/document/current/css/theme-black.css?1548039820" rel="stylesheet">
+      <link href="http://shardingsphere.apache.org/document/current/css/theme-black.css?1548324362" rel="stylesheet">
     
 
-    <script src="http://shardingsphere.apache.org/document/current/js/jquery-2.x.min.js?1548039820"></script>
+    <script src="http://shardingsphere.apache.org/document/current/js/jquery-2.x.min.js?1548324362"></script>
     
     <style type="text/css">
       :root #header + #content > #left > #rlblock_left{ 
@@ -1503,17 +1503,17 @@
 <ul>
 <li>
 <ul>
-<li><a href="#without-spring">Without spring</a>
+<li><a href="#not-use-spring">Not Use Spring</a>
 <ul>
-<li><a href="#add-maven-dependency">Add maven dependency</a></li>
-<li><a href="#configure-orchestration-with-java">Configure orchestration with java</a></li>
-<li><a href="#configure-orchestration-with-yaml">Configure orchestration with yaml</a></li>
+<li><a href="#introduce-maven-dependency">Introduce Maven Dependency</a></li>
+<li><a href="#rule-configuration-based-on-java">Rule Configuration Based on Java</a></li>
+<li><a href="#rule-configuration-based-on-yaml">Rule Configuration Based on Yaml</a></li>
 </ul></li>
 <li><a href="#using-spring">Using spring</a>
 <ul>
-<li><a href="#add-maven-dependency-1">Add maven dependency</a></li>
-<li><a href="#configure-orchestration-with-spring-boot">Configure orchestration with spring boot</a></li>
-<li><a href="#configure-orchestration-with-spring-namespace">Configure orchestration with spring namespace</a></li>
+<li><a href="#introduce-maven-dependency-1">Introduce Maven Dependency</a></li>
+<li><a href="#rule-configuration-based-on-spring-boot">Rule Configuration Based on Spring Boot</a></li>
+<li><a href="#rule-configuration-based-on-spring-name-space">Rule Configuration Based on Spring Name Space</a></li>
 </ul></li>
 </ul></li>
 </ul>
@@ -1537,11 +1537,12 @@
 
 
 
-<p>Use orchestration feature need indicate a registry center. Configuration will save into registry center. Configuration can overwrite by local when every application startup, or load from registry center only.</p>
+<p>The use of data orchestration function requires to designate a registry center, in which all the configurations are saved.
+Users can either use local configurations to cover registry center configurations or read configurations from registry center only.</p>
 
-<h2 id="without-spring">Without spring</h2>
+<h2 id="not-use-spring">Not Use Spring</h2>
 
-<h3 id="add-maven-dependency">Add maven dependency</h3>
+<h3 id="introduce-maven-dependency">Introduce Maven Dependency</h3>
 
 <pre><code class="language-xml">&lt;dependency&gt;
     &lt;groupId&gt;org.apache.shardingsphere&lt;/groupId&gt;
@@ -1561,7 +1562,7 @@
 &lt;/dependency&gt;
 </code></pre>
 
-<h3 id="configure-orchestration-with-java">Configure orchestration with java</h3>
+<h3 id="rule-configuration-based-on-java">Rule Configuration Based on Java</h3>
 
 <pre><code class="language-java">    // Configure dataSourceMap and shardingRuleConfig
     // ...
@@ -1578,9 +1579,9 @@
     DataSource dataSource = OrchestrationShardingDataSourceFactory.createDataSource(dataSourceMap, shardingRuleConfig, new ConcurrentHashMap(), new Properties(), orchConfig);
 </code></pre>
 
-<h3 id="configure-orchestration-with-yaml">Configure orchestration with yaml</h3>
+<h3 id="rule-configuration-based-on-yaml">Rule Configuration Based on Yaml</h3>
 
-<p>To configure by yaml, similar with the configuration method of java codes:</p>
+<p>Or use Yaml to configure, similar as  above configurations:</p>
 
 <pre><code class="language-yaml">orchestration:
   name: orchestration-sharding-data-source
@@ -1595,7 +1596,7 @@
 
 <h2 id="using-spring">Using spring</h2>
 
-<h3 id="add-maven-dependency-1">Add maven dependency</h3>
+<h3 id="introduce-maven-dependency-1">Introduce Maven Dependency</h3>
 
 <pre><code class="language-xml">&lt;!-- for spring boot --&gt;
 &lt;dependency&gt;
@@ -1641,7 +1642,7 @@
 &lt;/dependency&gt;
 </code></pre>
 
-<h3 id="configure-orchestration-with-spring-boot">Configure orchestration with spring boot</h3>
+<h3 id="rule-configuration-based-on-spring-boot">Rule Configuration Based on Spring Boot</h3>
 
 <pre><code class="language-properties">sharding.jdbc.config.orchestration.name=orchestration-sharding-data-source
 sharding.jdbc.config.orchestration.overwrite=false
@@ -1649,7 +1650,7 @@ sharding.jdbc.config.orchestration.registry.server-lists=localhost:2181
 sharding.jdbc.config.orchestration.registry.namespace=sharding-jdbc-orchestration
 </code></pre>
 
-<h3 id="configure-orchestration-with-spring-namespace">Configure orchestration with spring namespace</h3>
+<h3 id="rule-configuration-based-on-spring-name-space">Rule Configuration Based on Spring Name Space</h3>
 
 <pre><code class="language-xml">&lt;?xml version=&quot;1.0&quot; encoding=&quot;UTF-8&quot;?&gt;
 &lt;beans xmlns:xsi=&quot;http://www.w3.org/2001/XMLSchema-instance&quot;
@@ -1665,7 +1666,7 @@ sharding.jdbc.config.orchestration.registry.namespace=sharding-jdbc-orchestratio
 &lt;/beans&gt;
 </code></pre>
 
-<p>More details please reference <a href="http://shardingsphere.apache.org/document/current/en/manual/sharding-jdbc/configuration/">configuration manual</a>.</p>
+<p>For more detailed configurations, please refer to <a href="http://shardingsphere.io/document/current/cn/manual/sharding-jdbc/configuration/">Configuration Manual</a>.</p>
 
 
 <footer class=" footline" >
@@ -2651,20 +2652,20 @@ sharding.jdbc.config.orchestration.registry.namespace=sharding-jdbc-orchestratio
     <div style="left: -1000px; overflow: scroll; position: absolute; top: -1000px; border: none; box-sizing: content-box; height: 200px; margin: 0px; padding: 0px; width: 200px;">
       <div style="border: none; box-sizing: content-box; height: 200px; margin: 0px; padding: 0px; width: 200px;"></div>
     </div>
-    <script src="http://shardingsphere.apache.org/document/current/js/clipboard.min.js?1548039820"></script>
-    <script src="http://shardingsphere.apache.org/document/current/js/perfect-scrollbar.min.js?1548039820"></script>
-    <script src="http://shardingsphere.apache.org/document/current/js/perfect-scrollbar.jquery.min.js?1548039820"></script>
-    <script src="http://shardingsphere.apache.org/document/current/js/jquery.sticky.js?1548039820"></script>
-    <script src="http://shardingsphere.apache.org/document/current/js/featherlight.min.js?1548039820"></script>
-    <script src="http://shardingsphere.apache.org/document/current/js/html5shiv-printshiv.min.js?1548039820"></script>
-    <script src="http://shardingsphere.apache.org/document/current/js/highlight.pack.js?1548039820"></script>
+    <script src="http://shardingsphere.apache.org/document/current/js/clipboard.min.js?1548324362"></script>
+    <script src="http://shardingsphere.apache.org/document/current/js/perfect-scrollbar.min.js?1548324362"></script>
+    <script src="http://shardingsphere.apache.org/document/current/js/perfect-scrollbar.jquery.min.js?1548324362"></script>
+    <script src="http://shardingsphere.apache.org/document/current/js/jquery.sticky.js?1548324362"></script>
+    <script src="http://shardingsphere.apache.org/document/current/js/featherlight.min.js?1548324362"></script>
+    <script src="http://shardingsphere.apache.org/document/current/js/html5shiv-printshiv.min.js?1548324362"></script>
+    <script src="http://shardingsphere.apache.org/document/current/js/highlight.pack.js?1548324362"></script>
     <script>hljs.initHighlightingOnLoad();</script>
-    <script src="http://shardingsphere.apache.org/document/current/js/modernizr.custom.71422.js?1548039820"></script>
-    <script src="http://shardingsphere.apache.org/document/current/js/learn.js?1548039820"></script>
-    <script src="http://shardingsphere.apache.org/document/current/js/hugo-learn.js?1548039820"></script>
+    <script src="http://shardingsphere.apache.org/document/current/js/modernizr.custom.71422.js?1548324362"></script>
+    <script src="http://shardingsphere.apache.org/document/current/js/learn.js?1548324362"></script>
+    <script src="http://shardingsphere.apache.org/document/current/js/hugo-learn.js?1548324362"></script>
 
-    <link href="http://shardingsphere.apache.org/document/current/mermaid/mermaid.css?1548039820" type="text/css" rel="stylesheet" />
-    <script src="http://shardingsphere.apache.org/document/current/mermaid/mermaid.js?1548039820"></script>
+    <link href="http://shardingsphere.apache.org/document/current/mermaid/mermaid.css?1548324362" type="text/css" rel="stylesheet" />
+    <script src="http://shardingsphere.apache.org/document/current/mermaid/mermaid.js?1548324362"></script>
     <script>
         mermaid.initialize({ startOnLoad: true });
     </script>

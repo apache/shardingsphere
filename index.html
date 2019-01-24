@@ -15,7 +15,7 @@
           navigator.userAgent
         )
       ) {
-        window.location = "index_m.html";
+        window.location = 'index_m.html'
       }
     </script>
     <link
@@ -23,137 +23,175 @@
       href="http://shardingsphere.apache.org/images/favicon.png"
       type="image/x-icon"
     />
-    <link
-      rel="stylesheet"
-      type="text/css"
-      href="http://shardingsphere.apache.org/css/index.css"
-    />
+    <link rel="stylesheet" type="text/css" href="http://shardingsphere.jd.com/css/index.css" />
+    <!--[if IE 8]>
+      <style>
+        .sub-tile-ie {
+          text-align: center;
+          font-size: 46px;
+          color: #ee9a32;
+        }
+      </style>
+    <![endif]-->
   </head>
   <body>
-    <header>
-      <nav class="clearfix">
-        <div class="float-left">
-          <img
-            class="nav-img"
-            src="http://shardingsphere.apache.org/images/logo_top.png"
-            alt=""
-          />
-        </div>
-        <div class="float-right clearfix">
-          <div class="nav-item">
-            <div id="btn-document" class="i-drop-btn">
-              Document<em class="i-d-caret"></em>
-              <div class="i-drop-pop">
-                <a
-                  class="i-drop-list"
-                  href="http://shardingsphere.apache.org/document/current/en/"
-                  target="_blank"
-                  >3.x(Current)</a
-                >
-                <em class="i-drop-line"></em>
-                <a
-                  class="i-drop-list"
-                  href="http://shardingsphere.apache.org/document/legacy/2.x/en/"
-                  target="_blank"
-                  >2.x(Legacy)</a
-                >
+    <div class="header">
+      <div class="sub-header">
+        <div class="nav clearfix">
+          <div class="float-left">
+            <img
+              class="nav-img"
+              src="http://shardingsphere.apache.org/images/logo_top.png"
+              alt=""
+            />
+          </div>
+          <div class="float-right clearfix">
+            <div class="nav-item">
+              <div id="btn-document" class="i-drop-btn">
+                Document<em class="i-d-caret"></em>
+                <div class="i-drop-pop">
+                  <a
+                    class="i-drop-list"
+                    href="http://shardingsphere.apache.org/document/current/en/"
+                    target="_blank"
+                    >3.x(Current)</a
+                  >
+                  <em class="i-drop-line"></em>
+                  <a
+                    class="i-drop-list"
+                    href="http://shardingsphere.apache.org/document/legacy/2.x/en/"
+                    target="_blank"
+                    >2.x(Legacy)</a
+                  >
+                </div>
               </div>
             </div>
-          </div>
-          <div class="nav-item">
-            <div id="btn-source" class="i-drop-btn">
-              SCM<em class="i-drop-caret"></em>
-              <div class="i-drop-pop">
-                <a
-                  class="i-drop-list"
-                  href="https://github.com/apache/incubator-shardingsphere"
-                  target="_blank"
-                  >Github</a
-                >
-                <em class="i-drop-line"></em>
-                <a
-                  class="i-drop-list"
-                  href="https://gitee.com/sharding-sphere/sharding-sphere"
-                  target="_blank"
-                  >Gitee</a
-                >
+            <div class="nav-item">
+              <div id="btn-source" class="i-drop-btn">
+                SCM<em class="i-drop-caret"></em>
+                <div class="i-drop-pop">
+                  <a
+                    class="i-drop-list"
+                    href="https://github.com/apache/incubator-shardingsphere"
+                    target="_blank"
+                    >Github</a
+                  >
+                  <em class="i-drop-line"></em>
+                  <a
+                    class="i-drop-list"
+                    href="https://gitee.com/sharding-sphere/sharding-sphere"
+                    target="_blank"
+                    >Gitee</a
+                  >
+                </div>
               </div>
             </div>
-          </div>
-          <div class="nav-item">
-            <a href="http://shardingsphere.apache.org/community/en/" target="_blank"
-              >Community</a
-            >
-          </div>
-          <div class="nav-item space">
-            <a href="index_zh.html" target="_blank">中文</a>
-          </div>
-          <div class="nav-item" style="margin-right:0">
-            <a href="index.html" target="_blank">EN</a>
+            <div class="nav-item">
+              <a
+                href="http://shardingsphere.apache.org/community/en/"
+                target="_blank"
+                >Community</a
+              >
+            </div>
+            <div class="nav-item space">
+              <a href="index_zh.html" target="_blank">中文</a>
+            </div>
+            <div class="nav-item" style="margin-right:0">
+              <a href="index.html" target="_blank">EN</a>
+            </div>
           </div>
         </div>
-      </nav>
-      <div id="content" class="content">
-        <div class="sub-title">HTAP & Cloud Native & Compatible</div>
-        <hr class="sub-hr" />
-        <p class="sub-text">
-          ShardingSphere is an open-source ecosystem consisted of a set of
-          distributed database middleware solutions, including 3 independent
-          products, Sharding-JDBC, Sharding-Proxy & Sharding-Sidecar (Planing).
-          They all provide functions of data sharding, distributed transaction
-          and database orchestration, applicable in a variety of situations such
-          as Java isomorphism, heterogeneous language and cloud native.
-        </p>
-        <p class="sub-text">
-          Aiming at reasonably making full use of the computation and storage
-          capacity of database in distributed system, ShardingSphere defines
-          itself as a middleware, rather than a totally new type of database. As
-          the cornerstone of many enterprises, relational database still takes a
-          huge market share. Therefore, at current stage, we prefer to focus on
-          its increment instead of a total overturn.
-        </p>
-        <a
-          class="sub-button"
-          href="http://shardingsphere.apache.org/document/current/en/"
-          target="_blank"
-          >Learn More</a
-        >
-        <hr class="sub-btn-hr" />
-        <div class="sub-point">
-          <div class="sub-point-list">
-            <div>
-              <img
-                src="http://shardingsphere.apache.org/images/sharding_jdbc.png"
-                class="nl-img"
-                alt=""
-              />
-            </div>
-            <p>Sharding-JDBC</p>
+        <div id="content" class="content">
+          <div class="sub-title" style="background-position: 130px 120px">
+            <div class="sub-tile-ie">HTAP & Cloud Native & Compatible</div>
+            <svg width="800" height="50" viewBoxs="0 0 700 50">
+              <defs>
+                <linearGradient
+                  id="SVGID_1_"
+                  gradientUnits="userSpaceOnUse"
+                  x1="0"
+                  y1="10"
+                  x2="800"
+                  y2="10"
+                >
+                  <stop offset="0" style="stop-color:#7e297c" />
+                  <stop offset="0.5" style="stop-color:#f79a22" />
+                  <stop offset="1" style="stop-color:#d03135" />
+                </linearGradient>
+              </defs>
+              <text
+                font-family="'PingFang SC','Microsoft Yahei'"
+                text-anchor="middle"
+                class="sub-title-svg"
+                x="400"
+                y="40"
+              >
+                HTAP & Cloud Native & Compatible
+              </text>
+            </svg>
+            <div class="sub-corner" style="right:140px;">Incubating</div>
           </div>
-          <div class="sub-point-list">
-            <div>
-              <img
-                src="http://shardingsphere.apache.org/images/sharding_proxy.png"
-                class="nl-img"
-                alt=""
-              />
+          <hr class="sub-hr" />
+          <p class="sub-text">
+            ShardingSphere is an open-source ecosystem consisted of a set of
+            distributed database middleware solutions, including 3 independent
+            products, Sharding-JDBC, Sharding-Proxy & Sharding-Sidecar
+            (Planing). They all provide functions of data sharding, distributed
+            transaction and database orchestration, applicable in a variety of
+            situations such as Java isomorphism, heterogeneous language and
+            cloud native.
+          </p>
+          <p class="sub-text">
+            Aiming at reasonably making full use of the computation and storage
+            capacity of database in distributed system, ShardingSphere defines
+            itself as a middleware, rather than a totally new type of database.
+            As the cornerstone of many enterprises, relational database still
+            takes a huge market share. Therefore, at current stage, we prefer to
+            focus on its increment instead of a total overturn.
+          </p>
+          <a
+            class="sub-button"
+            href="http://shardingsphere.apache.org/document/current/en/"
+            target="_blank"
+            >Learn More</a
+          >
+          <hr class="sub-btn-hr" />
+          <div class="sub-point">
+            <div class="sub-point-list">
+              <div>
+                <img
+                  src="http://shardingsphere.apache.org/images/sharding_jdbc.png"
+                  class="nl-img"
+                  alt=""
+                />
+              </div>
+              <p>Sharding-JDBC</p>
             </div>
-            <p>Sharding-Proxy</p>
-          </div>
-          <div class="sub-point-list">
-            <div>
-              <img
-                src="http://shardingsphere.apache.org/images/sharding_sidecar.png"
-                class="nl-img"
-                alt=""
-              />
+            <div class="sub-point-list">
+              <div>
+                <img
+                  src="http://shardingsphere.apache.org/images/sharding_proxy.png"
+                  class="nl-img"
+                  alt=""
+                />
+              </div>
+              <p>Sharding-Proxy</p>
             </div>
-            <p>Sharding-Sidecar</p>
+            <div class="sub-point-list">
+              <div>
+                <img
+                  src="http://shardingsphere.apache.org/images/sharding_sidecar.png"
+                  class="nl-img"
+                  alt=""
+                />
+              </div>
+              <p>Sharding-Sidecar</p>
+            </div>
           </div>
         </div>
       </div>
-    </header>
-    <section>
+    </div>
+    <div>
       <div class="con-shard">
         <div class="con-item">
           <div class="l-msg">
@@ -209,24 +247,26 @@
           />
         </div>
       </div>
-      <div class="con-footer">
+      <div class="con-bottom">
         <hr class="con-footer-hr" />
-        <div class="con-item clearfix">
-          <div class="float-left">
+        <div class="con-item con-footer clearfix">
+          <div class="footer-logo float-left">
             <img
               src="http://shardingsphere.apache.org/images/logo_bottom.png"
-              class="footer-logo"
               alt="logo"
             />
           </div>
-          <div class="float-right footer-icon">
+          <div class="footer-icon float-right">
             <a href="https://twitter.com/ShardingSphere" class="social-icon">
               <img
                 src="http://shardingsphere.apache.org/images/icon_twitter.png"
                 alt="twitter"
               />
             </a>
-            <a href="https://github.com/apache/incubator-shardingsphere" class="social-icon">
+            <a
+              href="https://github.com/apache/incubator-shardingsphere"
+              class="social-icon"
+            >
               <img
                 src="http://shardingsphere.apache.org/images/icon_github.png"
                 alt="github"
@@ -235,17 +275,17 @@
           </div>
         </div>
       </div>
-    </section>
-    <footer>@ShardingSphere</footer>
+    </div>
+    <div class="footer">@ShardingSphere</div>
     <script>
       !(function() {
-        var $btnDoc = document.getElementById("btn-document");
-        var $btnSour = document.getElementById("btn-source");
-        var $content = document.getElementById("content");
-        $btnDoc.addEventListener("touchstart", function() {}, false);
-        $btnSour.addEventListener("touchstart", function() {}, false);
-        $content.addEventListener("touchstart", function() {}, false);
-      })();
+        var $btnDoc = document.getElementById('btn-document')
+        var $btnSour = document.getElementById('btn-source')
+        var $content = document.getElementById('content')
+        $btnDoc.addEventListener('touchstart', function() {}, false)
+        $btnSour.addEventListener('touchstart', function() {}, false)
+        $content.addEventListener('touchstart', function() {}, false)
+      })()
     </script>
   </body>
 </html>
