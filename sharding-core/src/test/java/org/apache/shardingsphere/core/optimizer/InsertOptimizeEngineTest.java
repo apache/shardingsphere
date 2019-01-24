@@ -52,6 +52,7 @@ import java.util.List;
 import static org.hamcrest.CoreMatchers.is;
 import static org.junit.Assert.assertFalse;
 import static org.junit.Assert.assertThat;
+import static org.junit.Assert.assertTrue;
 
 public final class InsertOptimizeEngineTest {
     
@@ -190,6 +191,7 @@ public final class InsertOptimizeEngineTest {
         assertShardingValue((ListShardingValue) actual.getShardingConditions().get(0).getShardingValues().get(1), 10);
         assertShardingValue((ListShardingValue) actual.getShardingConditions().get(1).getShardingValues().get(0), 2);
         assertShardingValue((ListShardingValue) actual.getShardingConditions().get(1).getShardingValues().get(1), 11);
+        assertTrue(insertStatementWithValuesWithPlaceHolder.isContainGenerateKey());
     }
     
     @Test
@@ -222,6 +224,7 @@ public final class InsertOptimizeEngineTest {
         assertThat(((InsertShardingCondition) actual.getShardingConditions().get(0)).getInsertValueExpression(), is("(12,'a', 1)"));
         assertShardingValue((ListShardingValue) actual.getShardingConditions().get(0).getShardingValues().get(0), 1);
         assertShardingValue((ListShardingValue) actual.getShardingConditions().get(0).getShardingValues().get(1), 12);
+        assertTrue(insertStatementWithValuesWithoutPlaceHolder.isContainGenerateKey());
     }
     
     @Test
@@ -248,6 +251,7 @@ public final class InsertOptimizeEngineTest {
         assertThat(((InsertShardingCondition) actual.getShardingConditions().get(0)).getInsertValueExpression(), is("order_id = 1, user_id = 12, status = 'a'"));
         assertShardingValue((ListShardingValue) actual.getShardingConditions().get(0).getShardingValues().get(0), 1);
         assertShardingValue((ListShardingValue) actual.getShardingConditions().get(0).getShardingValues().get(1), 12);
+        assertTrue(insertStatementWithoutValuesWithoutPlaceHolder.isContainGenerateKey());
     }
     
     private void assertShardingValue(final ListShardingValue actual, final int expected) {

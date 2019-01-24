@@ -97,6 +97,7 @@ public final class InsertOptimizeEngine implements OptimizeEngine {
         String expression = getExpression(insertValue, currentGeneratedKey, generateKeyColumn, currentParameters);
         InsertShardingCondition result = new InsertShardingCondition(expression, currentParameters);
         result.getShardingValues().add(getShardingCondition(generateKeyColumn, currentGeneratedKey));
+        insertStatement.setContainGenerateKey(true);
         return result;
     }
     
