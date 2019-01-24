@@ -60,27 +60,31 @@ public final class BackendTransactionManager implements TransactionManager {
     
     @Override
     public void commit() throws SQLException {
-        try {
-            if (TransactionType.LOCAL == transactionType) {
-                localTransactionManager.commit();
-            } else {
-                shardingTransactionManager.commit();
+        if (connection.getStateHandler().isInTransaction()) {
+            try {
+                if (TransactionType.LOCAL == transactionType) {
+                    localTransactionManager.commit();
+                } else {
+                    shardingTransactionManager.commit();
+                }
+            } finally {
+                connection.getStateHandler().getAndSetStatus(ConnectionStatus.TERMINATED);
             }
-        } finally {
-            connection.getStateHandler().getAndSetStatus(ConnectionStatus.TERMINATED);
         }
     }
     
     @Override
     public void rollback() throws SQLException {
-        try {
-            if (TransactionType.LOCAL == transactionType) {
-                localTransactionManager.rollback();
-            } else {
-                shardingTransactionManager.rollback();
+        if (connection.getStateHandler().isInTransaction()) {
+            try {
+                if (TransactionType.LOCAL == transactionType) {
+                    localTransactionManager.rollback();
+                } else {
+                    shardingTransactionManager.rollback();
+                }
+            } finally {
+                connection.getStateHandler().getAndSetStatus(ConnectionStatus.TERMINATED);
             }
-        } finally {
-            connection.getStateHandler().getAndSetStatus(ConnectionStatus.TERMINATED);
         }
     }
 }
