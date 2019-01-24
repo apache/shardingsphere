@@ -64,14 +64,14 @@ public final class OrConditionFiller implements SQLStatementFiller<OrConditionSe
     }
     
     /**
-     * build condition.
+     * Build condition.
      *
      * @param sqlSegment SQL segment
      * @param sqlStatement SQL statement
      * @param sql SQL
      * @param shardingRule databases and tables sharding rule
      * @param shardingTableMetaData sharding table meta data
-     * @return Or Condition
+     * @return or condition
      */
     public OrCondition buildCondition(final OrConditionSegment sqlSegment, final SQLStatement sqlStatement, final String sql, final ShardingRule shardingRule,
                                       final ShardingTableMetaData shardingTableMetaData) {
@@ -219,11 +219,11 @@ public final class OrConditionFiller implements SQLStatementFiller<OrConditionSe
     }
     
     /**
-     * build expression.
+     * Build expression.
      *
-     * @param expressionSegment SQL segment
+     * @param expressionSegment expression segment
      * @param sql SQL
-     * @return Condition
+     * @return condition
      */
     public Optional<SQLExpression> buildExpression(final ExpressionSegment expressionSegment, final String sql) {
         if (!(expressionSegment instanceof CommonExpressionSegment)) {
