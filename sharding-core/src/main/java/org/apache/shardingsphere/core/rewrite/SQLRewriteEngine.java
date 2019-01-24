@@ -53,6 +53,8 @@ import org.apache.shardingsphere.core.routing.type.TableUnit;
 import org.apache.shardingsphere.core.rule.BindingTableRule;
 import org.apache.shardingsphere.core.rule.ShardingRule;
 import org.apache.shardingsphere.core.util.SQLUtil;
+import org.apache.shardingsphere.spi.rewrite.RewriteHook;
+import org.apache.shardingsphere.spi.rewrite.SPIRewriteHook;
 
 import java.util.HashMap;
 import java.util.List;
@@ -82,6 +84,8 @@ public final class SQLRewriteEngine {
     private final ShardingConditions shardingConditions;
     
     private final List<Object> parameters;
+    
+    private final RewriteHook rewriteHook = new SPIRewriteHook();
     
     /**
      * Constructs SQL rewrite engine.
@@ -292,7 +296,17 @@ public final class SQLRewriteEngine {
      * @return SQL unit
      */
     public SQLUnit generateSQL(final TableUnit tableUnit, final SQLBuilder sqlBuilder, final ShardingDataSourceMetaData shardingDataSourceMetaData) {
-        return sqlBuilder.toSQL(tableUnit, getTableTokens(tableUnit), shardingRule, shardingDataSourceMetaData);
+        rewriteHook.start(tableUnit);
+        try {
+            SQLUnit result = sqlBuilder.toSQL(tableUnit, getTableTokens(tableUnit), shardingRule, shardingDataSourceMetaData);
+            rewriteHook.finishSuccess(result);
+            return result;
+            // CHECKSTYLE:OFF
+        } catch (final Exception ex) {
+            // CHECKSTYLE:ON
+            rewriteHook.finishFailure(ex);
+            throw ex;
+        }
     }
    
     private Map<String, String> getTableTokens(final TableUnit tableUnit) {
