@@ -24,6 +24,7 @@ import lombok.SneakyThrows;
 import org.apache.shardingsphere.core.constant.DatabaseType;
 import org.apache.shardingsphere.transaction.core.TransactionType;
 import org.apache.shardingsphere.transaction.xa.fixture.DataSourceUtils;
+import org.apache.shardingsphere.transaction.xa.fixture.ReflectiveUtil;
 import org.apache.shardingsphere.transaction.xa.jta.connection.SingleXAConnection;
 import org.apache.shardingsphere.transaction.xa.jta.datasource.SingleXADataSource;
 import org.apache.shardingsphere.transaction.xa.spi.SingleXAResource;
@@ -69,15 +70,10 @@ public final class XAShardingTransactionManagerTest {
     private TransactionManager transactionManager;
     
     @Before
-    public void setUp() throws ReflectiveOperationException {
+    public void setUp() {
         when(xaTransactionManager.getTransactionManager()).thenReturn(transactionManager);
-        setXATransactionManager();
-    }
-    
-    private void setXATransactionManager() throws ReflectiveOperationException {
-        Field field = XAShardingTransactionManager.class.getDeclaredField("xaTransactionManager");
-        field.setAccessible(true);
-        field.set(xaShardingTransactionManager, xaTransactionManager);
+        ReflectiveUtil.setProperty(xaShardingTransactionManager, "xaTransactionManager", xaTransactionManager);
+        ReflectiveUtil.setProperty(xaShardingTransactionManager, "uniqueKey", "");
     }
     
     @Test
