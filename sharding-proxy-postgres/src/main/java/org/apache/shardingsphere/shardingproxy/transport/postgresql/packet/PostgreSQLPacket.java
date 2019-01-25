@@ -15,9 +15,10 @@
  * limitations under the License.
  */
 
-package org.apache.shardingsphere.shardingproxy.transport.postgresql;
+package org.apache.shardingsphere.shardingproxy.transport.postgresql.packet;
 
 import org.apache.shardingsphere.shardingproxy.transport.common.packet.DatabasePacket;
+import org.apache.shardingsphere.shardingproxy.transport.postgresql.PostgreSQLPacketPayload;
 
 /**
  * PostgreSQL packet.
