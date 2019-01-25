@@ -230,8 +230,8 @@ public final class OrConditionFiller implements SQLStatementFiller<OrConditionSe
             return Optional.absent();
         }
         CommonExpressionSegment commonExpressionSegment = (CommonExpressionSegment) expressionSegment;
-        if (-1 < commonExpressionSegment.getIndex()) {
-            return Optional.<SQLExpression>of(new SQLPlaceholderExpression(commonExpressionSegment.getIndex()));
+        if (-1 < commonExpressionSegment.getPlaceholderIndex()) {
+            return Optional.<SQLExpression>of(new SQLPlaceholderExpression(commonExpressionSegment.getPlaceholderIndex()));
         }
         if (null != commonExpressionSegment.getValue()) {
             return Optional.<SQLExpression>of(new SQLNumberExpression(commonExpressionSegment.getValue()));

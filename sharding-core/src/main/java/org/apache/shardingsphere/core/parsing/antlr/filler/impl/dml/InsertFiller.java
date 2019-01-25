@@ -137,7 +137,7 @@ public final class InsertFiller implements SQLStatementFiller<InsertSegment> {
                 SQLExpression sqlExpression = orConditionFiller.buildExpression(commonExpressionSegment, sql).get();
                 insertValue.getColumnValues().add(sqlExpression);
                 if (shardingColumn) {
-                    if (!(-1 < commonExpressionSegment.getIndex() || null != commonExpressionSegment.getValue() || commonExpressionSegment.isText())) {
+                    if (!(-1 < commonExpressionSegment.getPlaceholderIndex() || null != commonExpressionSegment.getValue() || commonExpressionSegment.isText())) {
                         throw new SQLParsingException("INSERT INTO can not support complex expression value on sharding column '%s'.", column.getName());
                     }
                     andCondition.getConditions().add(new Condition(column, sqlExpression));
@@ -165,8 +165,8 @@ public final class InsertFiller implements SQLStatementFiller<InsertSegment> {
     }
     
     private GeneratedKeyCondition createGeneratedKeyCondition(final Column column, final CommonExpressionSegment sqlExpression, final String sql) {
-        if (-1 < sqlExpression.getIndex()) {
-            return new GeneratedKeyCondition(column, sqlExpression.getIndex(), null);
+        if (-1 < sqlExpression.getPlaceholderIndex()) {
+            return new GeneratedKeyCondition(column, sqlExpression.getPlaceholderIndex(), null);
         }
         if (null != sqlExpression.getValue()) {
             return new GeneratedKeyCondition(column, -1, (Comparable<?>) sqlExpression.getValue());
