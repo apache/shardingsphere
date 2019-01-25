@@ -17,13 +17,14 @@
 
 package org.apache.shardingsphere.core.routing.router.sharding;
 
-import com.google.common.base.Optional;
-import com.google.common.base.Preconditions;
-import lombok.RequiredArgsConstructor;
+import java.util.LinkedList;
+import java.util.List;
+
 import org.apache.shardingsphere.api.algorithm.sharding.ListShardingValue;
 import org.apache.shardingsphere.api.algorithm.sharding.ShardingValue;
 import org.apache.shardingsphere.core.constant.DatabaseType;
 import org.apache.shardingsphere.core.constant.ShardingOperator;
+import org.apache.shardingsphere.core.hint.HintManagerHolder;
 import org.apache.shardingsphere.core.metadata.ShardingMetaData;
 import org.apache.shardingsphere.core.optimizer.OptimizeEngineFactory;
 import org.apache.shardingsphere.core.optimizer.condition.ShardingCondition;
@@ -50,8 +51,10 @@ import org.apache.shardingsphere.core.util.SQLLogger;
 import org.apache.shardingsphere.spi.parsing.ParsingHook;
 import org.apache.shardingsphere.spi.parsing.SPIParsingHook;
 
-import java.util.LinkedList;
-import java.util.List;
+import com.google.common.base.Optional;
+import com.google.common.base.Preconditions;
+
+import lombok.RequiredArgsConstructor;
 
 /**
  * Sharding router with parse.
@@ -98,7 +101,7 @@ public final class ParsingSQLRouter implements ShardingRouter {
             setGeneratedKeys(result, generatedKey.get());
         }
         if (sqlStatement instanceof SelectStatement && isNeedMergeShardingValues((SelectStatement) sqlStatement)) {
-            checkSubqueryShardingValues(sqlStatement.getConditions(), shardingConditions);
+            checkSubqueryShardingValues(sqlStatement, sqlStatement.getConditions(), shardingConditions);
             mergeShardingValues(shardingConditions);
         }
         RoutingResult routingResult = RoutingEngineFactory.newInstance(shardingRule, shardingMetaData.getDataSource(), sqlStatement, shardingConditions).route();
@@ -157,7 +160,14 @@ public final class ParsingSQLRouter implements ShardingRouter {
         return !selectStatement.getSubqueryConditions().isEmpty() && !shardingRule.getShardingLogicTableNames(selectStatement.getTables().getTableNames()).isEmpty();
     }
     
-    private void checkSubqueryShardingValues(final Conditions conditions, final ShardingConditions shardingConditions) {
+    private void checkSubqueryShardingValues(final SQLStatement sqlStatement, final Conditions conditions, final ShardingConditions shardingConditions) {
+        for (String each : sqlStatement.getTables().getTableNames()) {
+            Optional<TableRule> tableRule = shardingRule.findTableRule(each);
+            if (tableRule.isPresent() && shardingRule.isRoutingByHint(tableRule.get()) && HintManagerHolder.getDatabaseShardingValue(each).isPresent()
+                    && HintManagerHolder.getTableShardingValue(each).isPresent()) {
+                return;
+            }
+        }
         Preconditions.checkState(!shardingConditions.getShardingConditions().isEmpty(), "Must have sharding column with subquery.");
         Preconditions.checkState(isShardingOperatorAllEqual(conditions), "Only support sharding by '=' with subquery.");
         Preconditions.checkState(isListShardingValue(shardingConditions), "Only support sharding by '=' with subquery.");

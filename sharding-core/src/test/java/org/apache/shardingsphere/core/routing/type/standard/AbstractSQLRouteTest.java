@@ -17,18 +17,8 @@
 
 package org.apache.shardingsphere.core.routing.type.standard;
 
-import org.apache.shardingsphere.api.config.rule.ShardingRuleConfiguration;
-import org.apache.shardingsphere.api.config.rule.TableRuleConfiguration;
-import org.apache.shardingsphere.api.config.strategy.InlineShardingStrategyConfiguration;
-import org.apache.shardingsphere.core.constant.DatabaseType;
-import org.apache.shardingsphere.core.metadata.ShardingMetaData;
-import org.apache.shardingsphere.core.metadata.datasource.ShardingDataSourceMetaData;
-import org.apache.shardingsphere.core.metadata.table.ColumnMetaData;
-import org.apache.shardingsphere.core.metadata.table.ShardingTableMetaData;
-import org.apache.shardingsphere.core.metadata.table.TableMetaData;
-import org.apache.shardingsphere.core.routing.PreparedStatementRoutingEngine;
-import org.apache.shardingsphere.core.routing.SQLRouteResult;
-import org.apache.shardingsphere.core.rule.ShardingRule;
+import static org.hamcrest.CoreMatchers.is;
+import static org.junit.Assert.assertThat;
 
 import java.util.Arrays;
 import java.util.Collection;
@@ -37,8 +27,20 @@ import java.util.LinkedHashMap;
 import java.util.List;
 import java.util.Map;
 
-import static org.hamcrest.CoreMatchers.is;
-import static org.junit.Assert.assertThat;
+import org.apache.shardingsphere.api.config.rule.ShardingRuleConfiguration;
+import org.apache.shardingsphere.api.config.rule.TableRuleConfiguration;
+import org.apache.shardingsphere.api.config.strategy.HintShardingStrategyConfiguration;
+import org.apache.shardingsphere.api.config.strategy.InlineShardingStrategyConfiguration;
+import org.apache.shardingsphere.core.constant.DatabaseType;
+import org.apache.shardingsphere.core.fixture.OrderDatabaseHintShardingAlgorithm;
+import org.apache.shardingsphere.core.metadata.ShardingMetaData;
+import org.apache.shardingsphere.core.metadata.datasource.ShardingDataSourceMetaData;
+import org.apache.shardingsphere.core.metadata.table.ColumnMetaData;
+import org.apache.shardingsphere.core.metadata.table.ShardingTableMetaData;
+import org.apache.shardingsphere.core.metadata.table.TableMetaData;
+import org.apache.shardingsphere.core.routing.PreparedStatementRoutingEngine;
+import org.apache.shardingsphere.core.routing.SQLRouteResult;
+import org.apache.shardingsphere.core.rule.ShardingRule;
 
 public class AbstractSQLRouteTest {
     
@@ -63,6 +65,7 @@ public class AbstractSQLRouteTest {
         addTableRule(shardingRuleConfig, "t_order", "ds_${0..1}.t_order_${0..1}", "user_id", "t_order_${user_id % 2}", "ds_${user_id % 2}");
         addTableRule(shardingRuleConfig, "t_order_item", "ds_${0..1}.t_order_item_${0..1}", "user_id", "t_order_item_${user_id % 2}", "ds_${user_id % 2}");
         addTableRule(shardingRuleConfig, "t_user", "ds_${0..1}.t_user_${0..1}", "user_id", "t_user_${user_id % 2}", "ds_${user_id % 2}");
+        addTableRuleWithHint(shardingRuleConfig, "t_hint_test", "ds_${0..1}.t_t_hint_test_${0..1}");
         shardingRuleConfig.getBindingTableGroups().add("t_order,t_order_item");
         shardingRuleConfig.setDefaultDataSourceName("main");
         return new ShardingRule(shardingRuleConfig, createDataSourceNames());
@@ -91,6 +94,20 @@ public class AbstractSQLRouteTest {
         result.setLogicTable(tableName);
         result.setTableShardingStrategyConfig(new InlineShardingStrategyConfiguration(shardingColumn, algorithmExpression));
         result.setDatabaseShardingStrategyConfig(new InlineShardingStrategyConfiguration(shardingColumn, dsAlgorithmExpression));
+        result.setActualDataNodes(actualDataNodes);
+        return result;
+    }
+    
+    private void addTableRuleWithHint(final ShardingRuleConfiguration shardingRuleConfig, final String tableName, final String actualDataNodes) {
+        TableRuleConfiguration orderTableRuleConfig = createTableRuleWithHintConfig(tableName, actualDataNodes);
+        shardingRuleConfig.getTableRuleConfigs().add(orderTableRuleConfig);
+    }
+    
+    private TableRuleConfiguration createTableRuleWithHintConfig(final String tableName, final String actualDataNodes) {
+        TableRuleConfiguration result = new TableRuleConfiguration();
+        result.setLogicTable(tableName);
+        result.setTableShardingStrategyConfig(new HintShardingStrategyConfiguration(new OrderDatabaseHintShardingAlgorithm()));
+        result.setDatabaseShardingStrategyConfig(new HintShardingStrategyConfiguration(new OrderDatabaseHintShardingAlgorithm()));
         result.setActualDataNodes(actualDataNodes);
         return result;
     }
