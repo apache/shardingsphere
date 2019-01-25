@@ -27,6 +27,7 @@ import javax.sql.DataSource;
 import java.sql.Connection;
 import java.sql.PreparedStatement;
 import java.sql.ResultSet;
+import java.sql.ResultSetMetaData;
 import java.sql.SQLException;
 
 @RunWith(MockitoJUnitRunner.class)
@@ -36,9 +37,9 @@ public final class PostgreSQLTest {
     public void assertPgSQL1() throws SQLException {
         HikariConfig config = new HikariConfig();
         config.setDriverClassName("org.postgresql.Driver");
-        config.setJdbcUrl("jdbc:postgresql://127.0.0.1:5432/db_0");
-        config.setUsername("postgres");
-        config.setPassword("postgres");
+        config.setJdbcUrl("jdbc:postgresql://127.0.0.1:5433/sharding_db");
+        config.setUsername("root");
+        config.setPassword("root");
         DataSource dataSource = new HikariDataSource(config);
         Connection connection = dataSource.getConnection();
         for (int i = 0; i < 10; i++) {
@@ -58,9 +59,9 @@ public final class PostgreSQLTest {
     public void assertPgSQL2() throws SQLException {
         HikariConfig config = new HikariConfig();
         config.setDriverClassName("org.postgresql.Driver");
-        config.setJdbcUrl("jdbc:postgresql://127.0.0.1:5432/db_0?prepareThreshold=1");
-        config.setUsername("postgres");
-        config.setPassword("postgres");
+        config.setJdbcUrl("jdbc:postgresql://127.0.0.1:5433/sharding_db?prepareThreshold=1");
+        config.setUsername("root");
+        config.setPassword("root");
         config.setMaximumPoolSize(100);
         DataSource dataSource = new HikariDataSource(config);
         Connection connection1 = dataSource.getConnection();
@@ -96,20 +97,20 @@ public final class PostgreSQLTest {
     public void assertPgSQL3() throws SQLException {
         HikariConfig config = new HikariConfig();
         config.setDriverClassName("org.postgresql.Driver");
-        config.setJdbcUrl("jdbc:postgresql://127.0.0.1:5432/db_0");
-        config.setUsername("postgres");
-        config.setPassword("postgres");
+        config.setJdbcUrl("jdbc:postgresql://127.0.0.1:5433/sharding_db");
+        config.setUsername("root");
+        config.setPassword("root");
         DataSource dataSource = new HikariDataSource(config);
         Connection connection = dataSource.getConnection();
-            PreparedStatement preparedStatement = connection.prepareStatement("select * from t_order where order_id = ?");
-            preparedStatement.setInt(1, 4);
-            preparedStatement.execute();
-            ResultSet resultSet = preparedStatement.getResultSet();
-//            ResultSetMetaData resultSetMetaData = resultSet.getMetaData();
-            while (resultSet.next()) {
-                System.out.println(resultSet.getInt(1) + ", " + resultSet.getInt(2) + ", " + resultSet.getString(3));
-            }
-            resultSet.close();
-            preparedStatement.close();
+        PreparedStatement preparedStatement = connection.prepareStatement("select * from t_order where order_id = ?");
+        preparedStatement.setInt(1, 4);
+        preparedStatement.execute();
+        ResultSet resultSet = preparedStatement.getResultSet();
+        ResultSetMetaData resultSetMetaData = resultSet.getMetaData();
+        while (resultSet.next()) {
+            System.out.println(resultSet.getInt(1) + ", " + resultSet.getInt(2) + ", " + resultSet.getString(3));
+        }
+        resultSet.close();
+        preparedStatement.close();
     }
 }
