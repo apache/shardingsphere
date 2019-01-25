@@ -92,7 +92,9 @@ public final class AdvancedErrorStrategy extends DefaultErrorStrategy {
                 throw cause;
             }
             tryToExecuteByID(recognizer, ex);
+            // CHECKSTYLE:OFF
         } catch (final Exception ex) {
+            // CHECKSTYLE:ON
             commonToken.setType(previousType);
             throw cause;
         }
