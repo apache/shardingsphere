@@ -17,9 +17,7 @@
 
 package org.apache.shardingsphere.core.parsing.antlr.filler.impl.dml;
 
-import java.util.Iterator;
-import java.util.List;
-
+import com.google.common.base.Optional;
 import org.apache.shardingsphere.core.metadata.table.ShardingTableMetaData;
 import org.apache.shardingsphere.core.parsing.antlr.filler.SQLStatementFiller;
 import org.apache.shardingsphere.core.parsing.antlr.filler.impl.OrConditionFiller;
@@ -45,7 +43,8 @@ import org.apache.shardingsphere.core.parsing.parser.token.TableToken;
 import org.apache.shardingsphere.core.rule.ShardingRule;
 import org.apache.shardingsphere.core.util.SQLUtil;
 
-import com.google.common.base.Optional;
+import java.util.Iterator;
+import java.util.List;
 
 /**
  * Insert filler.
@@ -126,7 +125,7 @@ public final class InsertFiller implements SQLStatementFiller<InsertSegment> {
             if (each.getValues().size() != insertStatement.getColumns().size()) {
                 throw new SQLParsingException("INSERT INTO column size mismatch value size.");
             }
-            InsertValue insertValue = new InsertValue(each.getType(), sql.substring(each.getStartIndex(), each.getEndIndex() + 1), each.getParametersCount());
+            InsertValue insertValue = new InsertValue(each.getType(), sql.substring(each.getStartIndex(), each.getStopIndex() + 1), each.getParametersCount());
             insertStatement.getInsertValues().getInsertValues().add(insertValue);
             parameterIndex += each.getParametersCount();
             int index = 0;
