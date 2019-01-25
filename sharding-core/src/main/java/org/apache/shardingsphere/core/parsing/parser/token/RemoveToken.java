@@ -29,10 +29,10 @@ import lombok.ToString;
 @ToString
 public final class RemoveToken extends SQLToken {
     
-    private final int endPosition;
+    private final int stopIndex;
     
-    public RemoveToken(final int beginPosition, final int endPosition) {
+    public RemoveToken(final int beginPosition, final int stopIndex) {
         super(beginPosition);
-        this.endPosition = endPosition;
+        this.stopIndex = stopIndex;
     }
 }

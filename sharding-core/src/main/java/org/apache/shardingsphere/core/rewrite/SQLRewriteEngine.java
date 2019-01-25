@@ -178,7 +178,7 @@ public final class SQLRewriteEngine {
             } else if (each instanceof AggregationDistinctToken) {
                 appendAggregationDistinctPlaceholder(sqlBuilder, (AggregationDistinctToken) each, count, isRewrite);
             } else if (each instanceof RemoveToken) {
-                appendRest(sqlBuilder, count, ((RemoveToken) each).getEndPosition());
+                appendRest(sqlBuilder, count, ((RemoveToken) each).getStopIndex());
             }
             count++;
         }
