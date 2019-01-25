@@ -14,6 +14,7 @@
         
         <module>sharding-jdbc</module>
         <module>sharding-proxy</module>
+        <module>sharding-proxy-postgres</module>
         
         <module>sharding-transaction</module>
         <module>sharding-orchestration</module>
