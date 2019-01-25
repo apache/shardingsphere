@@ -96,7 +96,7 @@ public final class InsertColumnsClauseParser implements SQLClauseParser {
             }
             count++;
         } while (!lexerEngine.equalAny(Symbol.RIGHT_PAREN) && !lexerEngine.equalAny(Assist.END));
-        insertStatement.setColumnsListLastPosition(lexerEngine.getCurrentToken().getEndPosition() - lexerEngine.getCurrentToken().getLiterals().length());
+        insertStatement.setColumnsListLastIndex(lexerEngine.getCurrentToken().getEndPosition() - lexerEngine.getCurrentToken().getLiterals().length());
         lexerEngine.nextToken();
         return result;
     }
@@ -121,7 +121,7 @@ public final class InsertColumnsClauseParser implements SQLClauseParser {
         }
         insertStatement.addSQLToken(columnsToken);
         insertStatement.addSQLToken(new InsertColumnToken(beginPosition, ")"));
-        insertStatement.setColumnsListLastPosition(beginPosition);
+        insertStatement.setColumnsListLastIndex(beginPosition);
         return result;
     }
 }

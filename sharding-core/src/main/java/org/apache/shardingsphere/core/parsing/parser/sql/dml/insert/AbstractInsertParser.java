@@ -85,7 +85,7 @@ public abstract class AbstractInsertParser implements SQLParser {
             if (!insertStatement.getItemsTokens().isEmpty()) {
                 insertStatement.getItemsTokens().get(0).getItems().add(generateKeyColumn.get().getName());
             } else {
-                ItemsToken columnsToken = new ItemsToken(insertStatement.getColumnsListLastPosition());
+                ItemsToken columnsToken = new ItemsToken(insertStatement.getColumnsListLastIndex());
                 columnsToken.getItems().add(generateKeyColumn.get().getName());
                 insertStatement.addSQLToken(columnsToken);
             }

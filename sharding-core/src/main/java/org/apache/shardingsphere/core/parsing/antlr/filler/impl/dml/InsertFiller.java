@@ -59,7 +59,7 @@ public final class InsertFiller implements SQLStatementFiller<InsertSegment> {
         insertStatement.getUpdateTables().put(insertStatement.getTables().getSingleTableName(), insertStatement.getTables().getSingleTableName());
         createColumn(sqlSegment, insertStatement, shardingRule, shardingTableMetaData);
         createValue(sqlSegment, insertStatement, sql, shardingRule, shardingTableMetaData);
-        insertStatement.setColumnsListLastPosition(sqlSegment.getColumnsListLastPosition());
+        insertStatement.setColumnsListLastIndex(sqlSegment.getColumnsListLastPosition());
         insertStatement.setInsertValuesListLastPosition(sqlSegment.getInsertValuesListLastPosition());
         insertStatement.getSQLTokens().add(new InsertValuesToken(sqlSegment.getInsertValueStartPosition(), insertStatement.getTables().getSingleTableName()));
         processGeneratedKey(shardingRule, insertStatement);
@@ -108,7 +108,7 @@ public final class InsertFiller implements SQLStatementFiller<InsertSegment> {
         }
         insertStatement.addSQLToken(columnsToken);
         insertStatement.addSQLToken(new InsertColumnToken(beginPosition, ")"));
-        insertStatement.setColumnsListLastPosition(beginPosition);
+        insertStatement.setColumnsListLastIndex(beginPosition);
     }
     
     private void createValue(final InsertSegment insertSegment, final InsertStatement insertStatement, final String sql, final ShardingRule shardingRule,
@@ -184,7 +184,7 @@ public final class InsertFiller implements SQLStatementFiller<InsertSegment> {
             if (!insertStatement.getItemsTokens().isEmpty()) {
                 insertStatement.getItemsTokens().get(0).getItems().add(generateKeyColumn.get().getName());
             } else {
-                ItemsToken columnsToken = new ItemsToken(insertStatement.getColumnsListLastPosition());
+                ItemsToken columnsToken = new ItemsToken(insertStatement.getColumnsListLastIndex());
                 columnsToken.getItems().add(generateKeyColumn.get().getName());
                 insertStatement.addSQLToken(columnsToken);
             }
