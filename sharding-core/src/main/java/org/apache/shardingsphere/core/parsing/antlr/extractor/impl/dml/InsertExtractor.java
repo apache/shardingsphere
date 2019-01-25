@@ -54,7 +54,7 @@ public final class InsertExtractor implements OptionalSQLSegmentExtractor {
             extractSetColumn(ancestorNode, result);
         }
         extractDuplicateKeys(ancestorNode, result);
-        result.setInsertValuesListLastPosition(ancestorNode.getStop().getStopIndex() + 1);
+        result.setInsertValuesListLastIndex(ancestorNode.getStop().getStopIndex());
         return Optional.of(result);
     }
     
@@ -76,9 +76,9 @@ public final class InsertExtractor implements OptionalSQLSegmentExtractor {
         insertSegment.setColumnClauseStartPosition(columnClauseNode.get().getStart().getStartIndex() - 1);
         Optional<ParserRuleContext> columnListNode = ExtractorUtils.findFirstChildNode(ancestorNode, RuleName.COLUMN_LIST);
         if (columnListNode.isPresent()) {
-            insertSegment.setColumnsListLastPosition(columnListNode.get().getStop().getStopIndex());
+            insertSegment.setColumnsListLastIndex(columnListNode.get().getStop().getStopIndex());
         } else {
-            insertSegment.setColumnsListLastPosition(insertSegment.getColumnClauseStartPosition());
+            insertSegment.setColumnsListLastIndex(insertSegment.getColumnClauseStartPosition());
         }
         for (ParserRuleContext each : ExtractorUtils.getAllDescendantNodes(columnClauseNode.get(), RuleName.COLUMN_NAME)) {
             insertSegment.getColumns().add(columnSegmentExtractor.extract(each).get());
@@ -114,7 +114,7 @@ public final class InsertExtractor implements OptionalSQLSegmentExtractor {
                 assignmentListNode.get().getStop().getStopIndex(), questionNodes.size());
         insertSegment.getValuesList().add(insertValuesSegment);
         Collection<ParserRuleContext> assignments = ExtractorUtils.getAllDescendantNodes(assignmentListNode.get(), RuleName.ASSIGNMENT);
-        insertSegment.setInsertValuesListLastPosition(assignmentListNode.get().getStop().getStopIndex());
+        insertSegment.setInsertValuesListLastIndex(assignmentListNode.get().getStop().getStopIndex());
         for (ParserRuleContext each : assignments) {
             ParserRuleContext columnNode = (ParserRuleContext) each.getChild(0);
             insertSegment.getColumns().add(columnSegmentExtractor.extract(columnNode).get());
