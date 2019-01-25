@@ -25,6 +25,7 @@ import lombok.Setter;
  * Common expression segment.
  * 
  * @author duhongjun
+ * @author panjuan
  */
 @RequiredArgsConstructor
 @Getter
