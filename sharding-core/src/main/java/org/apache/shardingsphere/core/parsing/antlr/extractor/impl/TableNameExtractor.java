@@ -61,7 +61,7 @@ public final class TableNameExtractor implements OptionalSQLSegmentExtractor {
         Optional<ParserRuleContext> aliasNode = ExtractorUtils.findFirstChildNode(tableNameNode.get().getParent(), RuleName.ALIAS);
         if (aliasNode.isPresent()) {
             result.setAlias(aliasNode.get().getText());
-            result.setAliasStartPosition(aliasNode.get().getStart().getStartIndex());
+            result.setAliasStartIndex(aliasNode.get().getStart().getStartIndex());
         }
         return Optional.of(result);
     }
