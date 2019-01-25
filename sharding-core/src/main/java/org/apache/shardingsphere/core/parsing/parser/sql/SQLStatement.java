@@ -80,6 +80,8 @@ public interface SQLStatement {
     
     /**
      * Get logic SQL.
+     * 
+     * @return logic SQL
      */
     String getLogicSQL();
 }
