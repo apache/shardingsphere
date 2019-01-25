@@ -73,12 +73,12 @@ public final class InsertExtractor implements OptionalSQLSegmentExtractor {
         if (!columnClauseNode.isPresent()) {
             return;
         }
-        insertSegment.setColumnClauseStartPosition(columnClauseNode.get().getStart().getStartIndex() - 1);
+        insertSegment.setColumnClauseStartIndex(columnClauseNode.get().getStart().getStartIndex() - 1);
         Optional<ParserRuleContext> columnListNode = ExtractorUtils.findFirstChildNode(ancestorNode, RuleName.COLUMN_LIST);
         if (columnListNode.isPresent()) {
             insertSegment.setColumnsListLastIndex(columnListNode.get().getStop().getStopIndex());
         } else {
-            insertSegment.setColumnsListLastIndex(insertSegment.getColumnClauseStartPosition());
+            insertSegment.setColumnsListLastIndex(insertSegment.getColumnClauseStartIndex());
         }
         for (ParserRuleContext each : ExtractorUtils.getAllDescendantNodes(columnClauseNode.get(), RuleName.COLUMN_NAME)) {
             insertSegment.getColumns().add(columnSegmentExtractor.extract(each).get());
@@ -88,7 +88,7 @@ public final class InsertExtractor implements OptionalSQLSegmentExtractor {
             return;
         }
         Collection<ParserRuleContext> assignmentValueListNodes = ExtractorUtils.getAllDescendantNodes(valueClauseNode.get(), RuleName.ASSIGNMENT_VALUE_LIST);
-        insertSegment.setInsertValueStartPosition(((TerminalNode) assignmentValueListNodes.iterator().next().getChild(0)).getSymbol().getStartIndex());
+        insertSegment.setInsertValueStartIndex(((TerminalNode) assignmentValueListNodes.iterator().next().getChild(0)).getSymbol().getStartIndex());
         for (ParserRuleContext each : assignmentValueListNodes) {
             Collection<ParserRuleContext> questionNodes = ExtractorUtils.getAllDescendantNodes(each, RuleName.QUESTION);
             InsertValuesSegment insertValuesSegment = new InsertValuesSegment(DefaultKeyword.VALUES, each.getStart().getStartIndex(), each.getStop().getStopIndex(), questionNodes.size());
@@ -108,7 +108,7 @@ public final class InsertExtractor implements OptionalSQLSegmentExtractor {
         if (!assignmentListNode.isPresent()) {
             return;
         }
-        insertSegment.setInsertValueStartPosition(assignmentListNode.get().getStart().getStartIndex());
+        insertSegment.setInsertValueStartIndex(assignmentListNode.get().getStart().getStartIndex());
         Collection<ParserRuleContext> questionNodes = ExtractorUtils.getAllDescendantNodes(assignmentListNode.get(), RuleName.QUESTION);
         InsertValuesSegment insertValuesSegment = new InsertValuesSegment(DefaultKeyword.SET, assignmentListNode.get().getStart().getStartIndex(),
                 assignmentListNode.get().getStop().getStopIndex(), questionNodes.size());

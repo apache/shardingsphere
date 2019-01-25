@@ -28,6 +28,7 @@ import java.util.List;
  * Insert segment.
  *
  * @author duhongjun
+ * @author panjuan
  */
 @Getter
 @Setter
@@ -41,9 +42,9 @@ public final class InsertSegment implements SQLSegment {
     
     private boolean values;
     
-    private int insertValueStartPosition = -1;
-    
-    private int columnClauseStartPosition;
+    private int insertValueStartIndex = -1;
+   
+    private int columnClauseStartIndex;
     
     private int columnsListLastIndex;
     

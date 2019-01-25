@@ -61,7 +61,7 @@ public final class InsertFiller implements SQLStatementFiller<InsertSegment> {
         createValue(sqlSegment, insertStatement, sql, shardingRule, shardingTableMetaData);
         insertStatement.setColumnsListLastIndex(sqlSegment.getColumnsListLastIndex());
         insertStatement.setInsertValuesListLastPosition(sqlSegment.getInsertValuesListLastIndex() + 1);
-        insertStatement.getSQLTokens().add(new InsertValuesToken(sqlSegment.getInsertValueStartPosition(), insertStatement.getTables().getSingleTableName()));
+        insertStatement.getSQLTokens().add(new InsertValuesToken(sqlSegment.getInsertValueStartIndex(), insertStatement.getTables().getSingleTableName()));
         processGeneratedKey(shardingRule, insertStatement);
         processDuplicateKey(shardingRule, sqlSegment, sqlStatement.getTables().getSingleTableName());
     }
@@ -90,9 +90,9 @@ public final class InsertFiller implements SQLStatementFiller<InsertSegment> {
     private void createFromMeta(final InsertStatement insertStatement, final InsertSegment sqlSegment, final ShardingRule shardingRule, final ShardingTableMetaData shardingTableMetaData) {
         int count = 0;
         String tableName = insertStatement.getTables().getSingleTableName();
-        int beginPosition = sqlSegment.getColumnClauseStartPosition();
-        insertStatement.addSQLToken(new InsertColumnToken(beginPosition, "("));
-        ItemsToken columnsToken = new ItemsToken(beginPosition);
+        int startIndex = sqlSegment.getColumnClauseStartIndex();
+        insertStatement.addSQLToken(new InsertColumnToken(startIndex, "("));
+        ItemsToken columnsToken = new ItemsToken(startIndex);
         columnsToken.setFirstOfItemsSpecial(true);
         if (shardingTableMetaData.containsTable(tableName)) {
             Optional<Column> generateKeyColumn = shardingRule.findGenerateKeyColumn(insertStatement.getTables().getSingleTableName());
@@ -107,8 +107,8 @@ public final class InsertFiller implements SQLStatementFiller<InsertSegment> {
             }
         }
         insertStatement.addSQLToken(columnsToken);
-        insertStatement.addSQLToken(new InsertColumnToken(beginPosition, ")"));
-        insertStatement.setColumnsListLastIndex(beginPosition);
+        insertStatement.addSQLToken(new InsertColumnToken(startIndex, ")"));
+        insertStatement.setColumnsListLastIndex(startIndex);
     }
     
     private void createValue(final InsertSegment insertSegment, final InsertStatement insertStatement, final String sql, final ShardingRule shardingRule,
