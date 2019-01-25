@@ -34,8 +34,8 @@ public final class AggregationDistinctToken extends SQLToken {
     
     private Optional<String> alias;
     
-    public AggregationDistinctToken(final int beginPosition, final String originalLiterals, final String columnName, final Optional<String> alias) {
-        super(beginPosition);
+    public AggregationDistinctToken(final int startIndex, final String originalLiterals, final String columnName, final Optional<String> alias) {
+        super(startIndex);
         this.originalLiterals = originalLiterals;
         this.columnName = columnName;
         this.alias = alias;

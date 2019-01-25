@@ -24,7 +24,7 @@ package org.apache.shardingsphere.core.parsing.parser.token;
  */
 public final class GeneratedKeyToken extends SQLToken {
     
-    public GeneratedKeyToken(final int beginPosition) {
-        super(beginPosition);
+    public GeneratedKeyToken(final int startIndex) {
+        super(startIndex);
     }
 }

@@ -36,8 +36,8 @@ public final class IndexToken extends SQLToken {
     
     private String tableName;
     
-    public IndexToken(final int beginPosition, final String originalLiterals) {
-        super(beginPosition);
+    public IndexToken(final int startIndex, final String originalLiterals) {
+        super(startIndex);
         this.originalLiterals = originalLiterals;
     }
     
