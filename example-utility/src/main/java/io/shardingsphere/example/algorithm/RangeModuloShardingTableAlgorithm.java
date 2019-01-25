@@ -18,8 +18,8 @@
 package io.shardingsphere.example.algorithm;
 
 import com.google.common.collect.Range;
-import io.shardingsphere.api.algorithm.sharding.RangeShardingValue;
-import io.shardingsphere.api.algorithm.sharding.standard.RangeShardingAlgorithm;
+import org.apache.shardingsphere.api.algorithm.sharding.RangeShardingValue;
+import org.apache.shardingsphere.api.algorithm.sharding.standard.RangeShardingAlgorithm;
 
 import java.util.Collection;
 import java.util.LinkedHashSet;

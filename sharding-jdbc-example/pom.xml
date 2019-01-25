@@ -19,4 +19,11 @@
         <module>spring-namespace-nodep-example</module>
         <module>spring-namespace-orche-example</module>
     </modules>
+
+    <dependencies>
+        <dependency>
+            <groupId>org.apache.shardingsphere</groupId>
+            <artifactId>sharding-transaction-xa-core</artifactId>
+        </dependency>
+    </dependencies>
 </project>

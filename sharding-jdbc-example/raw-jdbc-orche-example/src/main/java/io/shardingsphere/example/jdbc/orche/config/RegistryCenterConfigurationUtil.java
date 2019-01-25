@@ -17,7 +17,7 @@
 
 package io.shardingsphere.example.jdbc.orche.config;
 
-import io.shardingsphere.orchestration.reg.api.RegistryCenterConfiguration;
+import org.apache.shardingsphere.orchestration.reg.api.RegistryCenterConfiguration;
 
 public class RegistryCenterConfigurationUtil {
     

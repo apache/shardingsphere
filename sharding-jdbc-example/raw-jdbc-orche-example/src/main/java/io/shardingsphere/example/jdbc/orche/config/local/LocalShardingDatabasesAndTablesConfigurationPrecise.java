@@ -17,17 +17,17 @@
 
 package io.shardingsphere.example.jdbc.orche.config.local;
 
-import io.shardingsphere.api.config.KeyGeneratorConfiguration;
-import io.shardingsphere.api.config.rule.ShardingRuleConfiguration;
-import io.shardingsphere.api.config.rule.TableRuleConfiguration;
-import io.shardingsphere.api.config.strategy.InlineShardingStrategyConfiguration;
-import io.shardingsphere.api.config.strategy.StandardShardingStrategyConfiguration;
 import io.shardingsphere.example.algorithm.PreciseModuloShardingTableAlgorithm;
 import io.shardingsphere.example.config.DataSourceUtil;
 import io.shardingsphere.example.config.ExampleConfiguration;
-import io.shardingsphere.orchestration.config.OrchestrationConfiguration;
-import io.shardingsphere.orchestration.reg.api.RegistryCenterConfiguration;
-import io.shardingsphere.shardingjdbc.orchestration.api.OrchestrationShardingDataSourceFactory;
+import org.apache.shardingsphere.api.config.KeyGeneratorConfiguration;
+import org.apache.shardingsphere.api.config.rule.ShardingRuleConfiguration;
+import org.apache.shardingsphere.api.config.rule.TableRuleConfiguration;
+import org.apache.shardingsphere.api.config.strategy.InlineShardingStrategyConfiguration;
+import org.apache.shardingsphere.api.config.strategy.StandardShardingStrategyConfiguration;
+import org.apache.shardingsphere.orchestration.config.OrchestrationConfiguration;
+import org.apache.shardingsphere.orchestration.reg.api.RegistryCenterConfiguration;
+import org.apache.shardingsphere.shardingjdbc.orchestration.api.OrchestrationShardingDataSourceFactory;
 
 import javax.sql.DataSource;
 import java.sql.SQLException;

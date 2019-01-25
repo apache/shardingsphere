@@ -19,7 +19,7 @@ package io.shardingsphere.example.repository.api.service;
 
 import io.shardingsphere.example.repository.api.repository.TransactionTypeRepository;
 import io.shardingsphere.transaction.annotation.ShardingTransactionType;
-import io.shardingsphere.transaction.api.TransactionType;
+import org.apache.shardingsphere.transaction.core.TransactionType;
 import org.springframework.transaction.annotation.Transactional;
 
 public abstract class ShardingProxyTransactionService extends CommonServiceImpl implements TransactionService {

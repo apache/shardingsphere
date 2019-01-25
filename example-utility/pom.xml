@@ -12,7 +12,7 @@
     
     <dependencies>
         <dependency>
-            <groupId>io.shardingsphere</groupId>
+            <groupId>org.apache.shardingsphere</groupId>
             <artifactId>sharding-core</artifactId>
         </dependency>
     </dependencies>
