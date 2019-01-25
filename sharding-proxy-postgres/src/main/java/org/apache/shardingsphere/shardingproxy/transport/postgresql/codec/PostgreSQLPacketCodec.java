@@ -20,7 +20,7 @@ package org.apache.shardingsphere.shardingproxy.transport.postgresql.codec;
 import io.netty.buffer.ByteBuf;
 import io.netty.channel.ChannelHandlerContext;
 import org.apache.shardingsphere.shardingproxy.transport.common.codec.PacketCodec;
-import org.apache.shardingsphere.shardingproxy.transport.postgresql.PostgreSQLPacket;
+import org.apache.shardingsphere.shardingproxy.transport.postgresql.packet.PostgreSQLPacket;
 import org.apache.shardingsphere.shardingproxy.transport.postgresql.PostgreSQLPacketPayload;
 
 import java.util.List;
