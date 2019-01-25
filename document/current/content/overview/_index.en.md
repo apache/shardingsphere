@@ -110,7 +110,7 @@ Architects can adjust the system architecture to the most applicable one to curr
 * Dynamic configuration
 * Fusing & Disabling
 * Tracing
-* Elastic scaling out (Planing)
+* Elastic scaling out (Planning)
 
 ## Roadmap
 
