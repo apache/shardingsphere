@@ -51,7 +51,7 @@ public final class ComQueryBackendHandlerFactory {
     
     private static final String SCTL_SHOW = "SCTL:SHOW";
     
-    private static final String SKIP_SQL = "SET AUTOCOMMIT=1";
+    private static final String SET_AUTOCOMMIT_1 = "SET AUTOCOMMIT=1";
     
     /**
      * Create new text protocol backend handler instance.
@@ -67,12 +67,13 @@ public final class ComQueryBackendHandlerFactory {
         if (transactionOperationType.isPresent()) {
             return new TransactionBackendHandler(transactionOperationType.get(), backendConnection);
         }
+        if (sql.toUpperCase().contains(SET_AUTOCOMMIT_1)) {
+            return backendConnection.getStateHandler().isInTransaction() ? new TransactionBackendHandler(TransactionOperationType.COMMIT, backendConnection) : new SkipBackendHandler();
+        }
         if (sql.toUpperCase().startsWith(SCTL_SET)) {
             return new ShardingCTLSetBackendHandler(sql, backendConnection);
         } else if (sql.toUpperCase().startsWith(SCTL_SHOW)) {
             return new ShardingCTLShowBackendHandler(sql, backendConnection);
-        } else if (sql.toUpperCase().contains(SKIP_SQL)) {
-            return new SkipBackendHandler();
         }
         SQLStatement sqlStatement = new SQLJudgeEngine(sql).judge();
         return SQLType.DAL == sqlStatement.getType()

@@ -93,6 +93,7 @@ public final class BackendTransactionManagerTest {
     public void assertXATransactionCommit() throws SQLException {
         backendConnection.setCurrentSchema("schema");
         backendConnection.setTransactionType(TransactionType.XA);
+        backendTransactionManager = new BackendTransactionManager(backendConnection);
         backendTransactionManager.begin();
         assertTrue(backendConnection.getMethodInvocations().isEmpty());
         assertThat(backendConnection.getStateHandler().getStatus(), is(ConnectionStatus.TRANSACTION));
@@ -105,6 +106,7 @@ public final class BackendTransactionManagerTest {
     public void assertXATransactionRollback() throws SQLException {
         backendConnection.setCurrentSchema("schema");
         backendConnection.setTransactionType(TransactionType.XA);
+        backendTransactionManager = new BackendTransactionManager(backendConnection);
         backendTransactionManager.begin();
         assertTrue(backendConnection.getMethodInvocations().isEmpty());
         assertThat(backendConnection.getStateHandler().getStatus(), is(ConnectionStatus.TRANSACTION));

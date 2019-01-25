@@ -68,7 +68,7 @@ public class ConnectionStateHandler {
      *
      * @return true or false
      */
-    boolean isInTransaction() {
+    public boolean isInTransaction() {
         return ConnectionStatus.TRANSACTION == status.get();
     }
     
@@ -76,10 +76,7 @@ public class ConnectionStateHandler {
      * Notify connection to finish wait if necessary.
      */
     void doNotifyIfNecessary() {
-        if (status.compareAndSet(ConnectionStatus.RUNNING, ConnectionStatus.RELEASE)) {
-            resourceSynchronizer.doNotify();
-        }
-        if (status.compareAndSet(ConnectionStatus.TERMINATED, ConnectionStatus.RELEASE)) {
+        if (status.compareAndSet(ConnectionStatus.RUNNING, ConnectionStatus.RELEASE) || status.compareAndSet(ConnectionStatus.TERMINATED, ConnectionStatus.RELEASE)) {
             resourceSynchronizer.doNotify();
         }
     }

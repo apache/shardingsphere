@@ -17,9 +17,8 @@
 
 package org.apache.shardingsphere.shardingproxy.backend.communication.jdbc.connection;
 
-import com.google.common.base.Optional;
-import lombok.RequiredArgsConstructor;
 import org.apache.shardingsphere.transaction.ShardingTransactionManagerEngine;
+import org.apache.shardingsphere.transaction.core.TransactionType;
 import org.apache.shardingsphere.transaction.spi.ShardingTransactionManager;
 
 import java.sql.SQLException;
@@ -29,48 +28,63 @@ import java.sql.SQLException;
  *
  * @author zhaojun
  */
-@RequiredArgsConstructor
 public final class BackendTransactionManager implements TransactionManager {
     
     private final BackendConnection connection;
     
+    private TransactionType transactionType;
+    
+    private LocalTransactionManager localTransactionManager;
+    
+    private ShardingTransactionManager shardingTransactionManager;
+    
+    public BackendTransactionManager(final BackendConnection backendConnection) {
+        connection = backendConnection;
+        transactionType = connection.getTransactionType();
+        localTransactionManager = new LocalTransactionManager(backendConnection);
+        shardingTransactionManager = ShardingTransactionManagerEngine.getTransactionManager(transactionType);
+    }
+    
     @Override
     public void begin() {
-        Optional<ShardingTransactionManager> shardingTransactionManager = getShardingTransactionManager(connection);
         if (!connection.getStateHandler().isInTransaction()) {
             connection.getStateHandler().getAndSetStatus(ConnectionStatus.TRANSACTION);
             connection.releaseConnections(false);
         }
-        if (!shardingTransactionManager.isPresent()) {
-            new LocalTransactionManager(connection).begin();
+        if (TransactionType.LOCAL == transactionType) {
+            localTransactionManager.begin();
         } else {
-            shardingTransactionManager.get().begin();
+            shardingTransactionManager.begin();
         }
     }
     
     @Override
     public void commit() throws SQLException {
-        Optional<ShardingTransactionManager> shardingTransactionManager = getShardingTransactionManager(connection);
-        if (!shardingTransactionManager.isPresent()) {
-            new LocalTransactionManager(connection).commit();
-        } else {
-            shardingTransactionManager.get().commit();
-            connection.getStateHandler().getAndSetStatus(ConnectionStatus.TERMINATED);
+        if (connection.getStateHandler().isInTransaction()) {
+            try {
+                if (TransactionType.LOCAL == transactionType) {
+                    localTransactionManager.commit();
+                } else {
+                    shardingTransactionManager.commit();
+                }
+            } finally {
+                connection.getStateHandler().getAndSetStatus(ConnectionStatus.TERMINATED);
+            }
         }
     }
     
     @Override
     public void rollback() throws SQLException {
-        Optional<ShardingTransactionManager> shardingTransactionManager = getShardingTransactionManager(connection);
-        if (!shardingTransactionManager.isPresent()) {
-            new LocalTransactionManager(connection).rollback();
-        } else {
-            shardingTransactionManager.get().rollback();
-            connection.getStateHandler().getAndSetStatus(ConnectionStatus.TERMINATED);
+        if (connection.getStateHandler().isInTransaction()) {
+            try {
+                if (TransactionType.LOCAL == transactionType) {
+                    localTransactionManager.rollback();
+                } else {
+                    shardingTransactionManager.rollback();
+                }
+            } finally {
+                connection.getStateHandler().getAndSetStatus(ConnectionStatus.TERMINATED);
+            }
         }
-    }
-    
-    private Optional<ShardingTransactionManager> getShardingTransactionManager(final BackendConnection connection) {
-        return Optional.fromNullable(ShardingTransactionManagerEngine.getTransactionManager(connection.getTransactionType()));
     }
 }
