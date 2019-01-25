@@ -66,7 +66,7 @@ public final class ShardingSchema extends LogicSchema {
     }
     
     private ShardingMetaData createShardingMetaData(final boolean isCheckingMetaData) {
-        return new ShardingMetaData(getDataSourceURLs(getDataSources()), shardingRule, DatabaseType.MySQL, 
+        return new ShardingMetaData(getDataSourceURLs(getDataSources()), shardingRule, DatabaseType.PostgreSQL,
                 BackendExecutorContext.getInstance().getExecuteEngine(), new ProxyTableMetaDataConnectionManager(getBackendDataSource()), 
                 GlobalRegistry.getInstance().getShardingProperties().<Integer>getValue(ShardingPropertiesConstant.MAX_CONNECTIONS_SIZE_PER_QUERY), isCheckingMetaData);
     }
