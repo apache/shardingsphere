@@ -39,10 +39,10 @@ import io.shardingsphere.example.repository.jdbc.repository.JDBCOrderTransaction
 import io.shardingsphere.example.repository.jdbc.service.RawPojoTransactionService;
 import io.shardingsphere.example.type.RegistryCenterType;
 import io.shardingsphere.example.type.ShardingType;
-import io.shardingsphere.orchestration.reg.api.RegistryCenterConfiguration;
-import io.shardingsphere.shardingjdbc.orchestration.internal.datasource.OrchestrationMasterSlaveDataSource;
-import io.shardingsphere.shardingjdbc.orchestration.internal.datasource.OrchestrationShardingDataSource;
-import io.shardingsphere.transaction.api.TransactionType;
+import org.apache.shardingsphere.orchestration.reg.api.RegistryCenterConfiguration;
+import org.apache.shardingsphere.shardingjdbc.orchestration.internal.datasource.OrchestrationMasterSlaveDataSource;
+import org.apache.shardingsphere.shardingjdbc.orchestration.internal.datasource.OrchestrationShardingDataSource;
+import org.apache.shardingsphere.transaction.core.TransactionType;
 
 import javax.sql.DataSource;
 import java.sql.SQLException;

@@ -17,12 +17,12 @@
 
 package io.shardingsphere.example.jdbc.orche.config.local;
 
-import io.shardingsphere.api.config.rule.MasterSlaveRuleConfiguration;
 import io.shardingsphere.example.config.DataSourceUtil;
 import io.shardingsphere.example.config.ExampleConfiguration;
-import io.shardingsphere.orchestration.config.OrchestrationConfiguration;
-import io.shardingsphere.orchestration.reg.api.RegistryCenterConfiguration;
-import io.shardingsphere.shardingjdbc.orchestration.api.OrchestrationMasterSlaveDataSourceFactory;
+import org.apache.shardingsphere.api.config.rule.MasterSlaveRuleConfiguration;
+import org.apache.shardingsphere.orchestration.config.OrchestrationConfiguration;
+import org.apache.shardingsphere.orchestration.reg.api.RegistryCenterConfiguration;
+import org.apache.shardingsphere.shardingjdbc.orchestration.api.OrchestrationMasterSlaveDataSourceFactory;
 
 import javax.sql.DataSource;
 import java.sql.SQLException;

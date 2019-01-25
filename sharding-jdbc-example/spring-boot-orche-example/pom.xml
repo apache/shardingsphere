@@ -22,20 +22,16 @@
             <artifactId>sharding-jdbc-orchestration-spring-boot-starter</artifactId>
         </dependency>
         <dependency>
-            <groupId>io.shardingsphere</groupId>
+            <groupId>org.apache.shardingsphere</groupId>
             <artifactId>sharding-orchestration-reg-zookeeper-curator</artifactId>
         </dependency>
         <!--<dependency>-->
-            <!--<groupId>io.shardingsphere</groupId>-->
+            <!--<groupId>org.apache.shardingsphere</groupId>-->
             <!--<artifactId>sharding-orchestration-reg-etcd</artifactId>-->
         <!--</dependency>-->
-        <dependency>
-            <groupId>io.shardingsphere</groupId>
-            <artifactId>sharding-transaction-xa-core</artifactId>
-        </dependency>
-        <dependency>
-            <groupId>io.shardingsphere</groupId>
-            <artifactId>sharding-transaction-spring-boot-starter</artifactId>
-        </dependency>
+        <!--<dependency>-->
+            <!--<groupId>io.shardingsphere</groupId>-->
+            <!--<artifactId>sharding-transaction-spring-boot-starter</artifactId>-->
+        <!--</dependency>-->
     </dependencies>
 </project>

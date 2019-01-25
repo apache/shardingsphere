@@ -20,7 +20,7 @@ package io.shardingsphere.example.spring.namespace.mybatis.nodep;
 import io.shardingsphere.example.repository.api.service.TransactionService;
 import io.shardingsphere.example.repository.mybatis.service.SpringPojoTransactionService;
 import io.shardingsphere.example.type.ShardingType;
-import io.shardingsphere.transaction.api.TransactionType;
+import org.apache.shardingsphere.transaction.core.TransactionType;
 import org.springframework.context.ConfigurableApplicationContext;
 import org.springframework.context.support.ClassPathXmlApplicationContext;
 

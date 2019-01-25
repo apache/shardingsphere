@@ -25,8 +25,8 @@ import io.shardingsphere.example.repository.api.service.CommonServiceImpl;
 import io.shardingsphere.example.repository.api.service.TransactionService;
 import io.shardingsphere.example.repository.jdbc.repository.JDBCOrderItemTransactionRepositotyImpl;
 import io.shardingsphere.example.repository.jdbc.repository.JDBCOrderTransactionRepositoryImpl;
-import io.shardingsphere.transaction.api.TransactionType;
-import io.shardingsphere.transaction.api.TransactionTypeHolder;
+import org.apache.shardingsphere.transaction.core.TransactionType;
+import org.apache.shardingsphere.transaction.core.TransactionTypeHolder;
 
 import javax.sql.DataSource;
 import java.sql.Connection;

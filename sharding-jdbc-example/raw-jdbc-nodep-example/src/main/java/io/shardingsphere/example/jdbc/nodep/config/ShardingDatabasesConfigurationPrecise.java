@@ -17,13 +17,13 @@
 
 package io.shardingsphere.example.jdbc.nodep.config;
 
-import io.shardingsphere.api.config.KeyGeneratorConfiguration;
-import io.shardingsphere.api.config.rule.ShardingRuleConfiguration;
-import io.shardingsphere.api.config.rule.TableRuleConfiguration;
-import io.shardingsphere.api.config.strategy.InlineShardingStrategyConfiguration;
 import io.shardingsphere.example.config.DataSourceUtil;
 import io.shardingsphere.example.config.ExampleConfiguration;
-import io.shardingsphere.shardingjdbc.api.ShardingDataSourceFactory;
+import org.apache.shardingsphere.api.config.KeyGeneratorConfiguration;
+import org.apache.shardingsphere.api.config.rule.ShardingRuleConfiguration;
+import org.apache.shardingsphere.api.config.rule.TableRuleConfiguration;
+import org.apache.shardingsphere.api.config.strategy.InlineShardingStrategyConfiguration;
+import org.apache.shardingsphere.shardingjdbc.api.ShardingDataSourceFactory;
 
 import javax.sql.DataSource;
 import java.sql.SQLException;

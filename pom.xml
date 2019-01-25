@@ -48,19 +48,29 @@
     <dependencyManagement>
         <dependencies>
             <dependency>
-                <groupId>io.shardingsphere</groupId>
+                <groupId>org.apache.shardingsphere</groupId>
                 <artifactId>sharding-core</artifactId>
                 <version>${sharding-sphere.version}</version>
             </dependency>
             <dependency>
-                <groupId>io.shardingsphere</groupId>
+                <groupId>org.apache.shardingsphere</groupId>
                 <artifactId>sharding-jdbc-core</artifactId>
                 <version>${sharding-sphere.version}</version>
             </dependency>
             <dependency>
-                <groupId>io.shardingsphere</groupId>
+                <groupId>org.apache.shardingsphere</groupId>
                 <artifactId>sharding-jdbc-orchestration</artifactId>
                 <version>${sharding-sphere.version}</version>
+            </dependency>
+            <dependency>
+                <groupId>org.apache.shardingsphere</groupId>
+                <artifactId>sharding-transaction-core</artifactId>
+                <version>${sharding-sphere.version}</version>
+            </dependency>
+            <dependency>
+                <groupId>org.apache.shardingsphere</groupId>
+                <artifactId>sharding-transaction-xa-core</artifactId>
+                <version>${project.parent.version}</version>
             </dependency>
             <dependency>
                 <groupId>io.shardingsphere</groupId>
@@ -84,16 +94,6 @@
             </dependency>
             <dependency>
                 <groupId>io.shardingsphere</groupId>
-                <artifactId>sharding-transaction-core</artifactId>
-                <version>${sharding-sphere.version}</version>
-            </dependency>
-            <dependency>
-                <groupId>io.shardingsphere</groupId>
-                <artifactId>sharding-transaction-xa-core</artifactId>
-                <version>${project.parent.version}</version>
-            </dependency>
-            <dependency>
-                <groupId>io.shardingsphere</groupId>
                 <artifactId>sharding-transaction-spring</artifactId>
                 <version>${project.parent.version}</version>
             </dependency>
@@ -103,12 +103,12 @@
                 <version>${project.parent.version}</version>
             </dependency>
             <dependency>
-                <groupId>io.shardingsphere</groupId>
+                <groupId>org.apache.shardingsphere</groupId>
                 <artifactId>sharding-orchestration-reg-zookeeper-curator</artifactId>
                 <version>${sharding-sphere.version}</version>
             </dependency>
             <dependency>
-                <groupId>io.shardingsphere</groupId>
+                <groupId>org.apache.shardingsphere</groupId>
                 <artifactId>sharding-orchestration-reg-etcd</artifactId>
                 <version>${sharding-sphere.version}</version>
             </dependency>

@@ -17,10 +17,10 @@
 
 package io.shardingsphere.example.jdbc.nodep.config;
 
-import io.shardingsphere.api.config.rule.MasterSlaveRuleConfiguration;
 import io.shardingsphere.example.config.DataSourceUtil;
 import io.shardingsphere.example.config.ExampleConfiguration;
-import io.shardingsphere.shardingjdbc.api.MasterSlaveDataSourceFactory;
+import org.apache.shardingsphere.api.config.rule.MasterSlaveRuleConfiguration;
+import org.apache.shardingsphere.shardingjdbc.api.MasterSlaveDataSourceFactory;
 
 import javax.sql.DataSource;
 import java.sql.SQLException;

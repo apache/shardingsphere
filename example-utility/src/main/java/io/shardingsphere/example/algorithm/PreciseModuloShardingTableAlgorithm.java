@@ -17,8 +17,9 @@
 
 package io.shardingsphere.example.algorithm;
 
-import io.shardingsphere.api.algorithm.sharding.PreciseShardingValue;
-import io.shardingsphere.api.algorithm.sharding.standard.PreciseShardingAlgorithm;
+
+import org.apache.shardingsphere.api.algorithm.sharding.PreciseShardingValue;
+import org.apache.shardingsphere.api.algorithm.sharding.standard.PreciseShardingAlgorithm;
 
 import java.util.Collection;
 

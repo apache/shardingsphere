@@ -22,8 +22,8 @@ import io.shardingsphere.example.repository.jdbc.repository.JDBCOrderItemReposit
 import io.shardingsphere.example.repository.jdbc.repository.JDBCOrderRepositoryImpl;
 import io.shardingsphere.example.repository.jdbc.service.RawPojoService;
 import io.shardingsphere.example.type.ShardingType;
-import io.shardingsphere.shardingjdbc.api.yaml.YamlMasterSlaveDataSourceFactory;
-import io.shardingsphere.shardingjdbc.api.yaml.YamlShardingDataSourceFactory;
+import org.apache.shardingsphere.shardingjdbc.api.yaml.YamlMasterSlaveDataSourceFactory;
+import org.apache.shardingsphere.shardingjdbc.api.yaml.YamlShardingDataSourceFactory;
 
 import javax.sql.DataSource;
 import java.io.File;

@@ -22,9 +22,9 @@ import io.shardingsphere.example.repository.jdbc.repository.JDBCOrderItemTransac
 import io.shardingsphere.example.repository.jdbc.repository.JDBCOrderTransactionRepositoryImpl;
 import io.shardingsphere.example.repository.jdbc.service.RawPojoTransactionService;
 import io.shardingsphere.example.type.ShardingType;
-import io.shardingsphere.shardingjdbc.api.yaml.YamlMasterSlaveDataSourceFactory;
-import io.shardingsphere.shardingjdbc.api.yaml.YamlShardingDataSourceFactory;
-import io.shardingsphere.transaction.api.TransactionType;
+import org.apache.shardingsphere.shardingjdbc.api.yaml.YamlMasterSlaveDataSourceFactory;
+import org.apache.shardingsphere.shardingjdbc.api.yaml.YamlShardingDataSourceFactory;
+import org.apache.shardingsphere.transaction.core.TransactionType;
 
 import javax.sql.DataSource;
 import java.io.File;
