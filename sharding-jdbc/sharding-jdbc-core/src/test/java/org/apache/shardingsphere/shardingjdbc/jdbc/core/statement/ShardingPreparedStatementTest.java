@@ -19,7 +19,6 @@ package org.apache.shardingsphere.shardingjdbc.jdbc.core.statement;
 
 import org.apache.shardingsphere.shardingjdbc.common.base.AbstractShardingJDBCDatabaseAndTableTest;
 import org.apache.shardingsphere.shardingjdbc.jdbc.JDBCTestSQL;
-import org.apache.shardingsphere.shardingjdbc.util.SQLPlaceholderUtil;
 import org.junit.Test;
 
 import java.sql.Connection;
@@ -69,7 +68,7 @@ public final class ShardingPreparedStatementTest extends AbstractShardingJDBCDat
     
     @Test
     public void assertAddBatchWithoutGenerateKeyColumn() throws SQLException {
-        String sql = SQLPlaceholderUtil.replacePreparedStatement(JDBCTestSQL.INSERT_WITH_AUTO_INCREMENT_COLUMN_SQL);
+        String sql = "INSERT INTO t_order_item (order_id, user_id, status) VALUES (?, ?, ?)";
         try (
             Connection connection = getShardingDataSource().getConnection();
             PreparedStatement preparedStatement = connection.prepareStatement(sql, Statement.RETURN_GENERATED_KEYS);
@@ -184,7 +183,7 @@ public final class ShardingPreparedStatementTest extends AbstractShardingJDBCDat
     
     @Test
     public void assertUpdateBatch() throws SQLException {
-        String sql = SQLPlaceholderUtil.replacePreparedStatement(JDBCTestSQL.UPDATE_WITHOUT_SHARDING_VALUE_SQL);
+        String sql = "UPDATE t_order SET status=? WHERE status=?";
         try (
             Connection connection = getShardingDataSource().getConnection();
             PreparedStatement preparedStatement = connection.prepareStatement(sql)) {
