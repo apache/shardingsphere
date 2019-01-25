@@ -35,7 +35,7 @@ public final class CommonExpressionSegment implements ExpressionSegment {
     
     private final int stopIndex;
     
-    private int index = -1;
+    private int placeholderIndex = -1;
     
     private Number value;
     
