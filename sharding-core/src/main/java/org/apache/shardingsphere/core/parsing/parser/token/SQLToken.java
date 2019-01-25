@@ -24,6 +24,7 @@ import lombok.RequiredArgsConstructor;
  * SQL Token.
  *
  * @author zhangliang
+ * @author panjuan
  */
 @RequiredArgsConstructor
 @Getter

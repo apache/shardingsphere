@@ -53,7 +53,7 @@ final class IndexTokenAssert {
     }
     
     private void assertIndexToken(final IndexToken actual, final ExpectedIndexToken expected) {
-        assertThat(assertMessage.getFullAssertMessage("Index token begin position assertion error: "), actual.getBeginPosition(), is(expected.getBeginPosition()));
+        assertThat(assertMessage.getFullAssertMessage("Index token begin position assertion error: "), actual.getStartIndex(), is(expected.getBeginPosition()));
         assertThat(assertMessage.getFullAssertMessage("Index token original literals assertion error: "), actual.getOriginalLiterals(), is(expected.getOriginalLiterals()));
         assertThat(assertMessage.getFullAssertMessage("Index token table name assertion error: "), actual.getTableName(), is(expected.getTableName()));
     }
