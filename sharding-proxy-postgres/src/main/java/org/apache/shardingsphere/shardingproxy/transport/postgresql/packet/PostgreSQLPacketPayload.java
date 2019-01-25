@@ -15,7 +15,7 @@
  * limitations under the License.
  */
 
-package org.apache.shardingsphere.shardingproxy.transport.postgresql;
+package org.apache.shardingsphere.shardingproxy.transport.postgresql.packet;
 
 import com.google.common.base.Strings;
 import io.netty.buffer.ByteBuf;
