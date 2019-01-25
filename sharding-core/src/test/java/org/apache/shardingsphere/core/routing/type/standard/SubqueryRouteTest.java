@@ -17,10 +17,11 @@
 
 package org.apache.shardingsphere.core.routing.type.standard;
 
-import org.junit.Test;
-
 import java.util.LinkedList;
 import java.util.List;
+
+import org.apache.shardingsphere.api.HintManager;
+import org.junit.Test;
 
 public final class SubqueryRouteTest extends AbstractSQLRouteTest {
     
@@ -146,5 +147,29 @@ public final class SubqueryRouteTest extends AbstractSQLRouteTest {
         List<Object> parameters = new LinkedList<>();
         parameters.add(1);
         assertRoute(sql, parameters);
+    }
+    
+    @Test(expected = IllegalStateException.class)
+    public void assertSubqueryWithoutHint() {
+        List<Object> parameters = new LinkedList<>();
+        parameters.add(1);
+        parameters.add(3);
+        parameters.add(5);
+        String sql = "select count(*) from t_hint_test where user_id = (select t_hint_test from t_hint_test where user_id in (?,?,?)) ";
+        assertRoute(sql, parameters);
+    }
+    
+    @Test
+    public void assertSubqueryWithHint() {
+        HintManager hintManager = HintManager.getInstance();
+        hintManager.addDatabaseShardingValue("t_hint_test", 1);
+        hintManager.addTableShardingValue("t_hint_test", 1);
+        List<Object> parameters = new LinkedList<>();
+        parameters.add(1);
+        parameters.add(3);
+        parameters.add(5);
+        String sql = "select count(*) from t_hint_test where user_id = (select t_hint_test from t_hint_test where user_id in (?,?,?)) ";
+        assertRoute(sql, parameters);
+        hintManager.close();
     }
 }

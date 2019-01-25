@@ -34,6 +34,7 @@ import org.apache.shardingsphere.core.keygen.generator.impl.SnowflakeShardingKey
 import org.apache.shardingsphere.core.parsing.parser.context.condition.Column;
 import org.apache.shardingsphere.core.routing.strategy.ShardingStrategy;
 import org.apache.shardingsphere.core.routing.strategy.ShardingStrategyFactory;
+import org.apache.shardingsphere.core.routing.strategy.hint.HintShardingStrategy;
 import org.apache.shardingsphere.core.routing.strategy.none.NoneShardingStrategy;
 
 import java.util.ArrayList;
@@ -472,5 +473,15 @@ public class ShardingRule {
             }
         }
         return result;
+    }
+    
+    /**
+     * Is routing by hint.
+     * 
+     * @param tableRule table rule
+     * @return route by hint is true
+     */
+    public boolean isRoutingByHint(final TableRule tableRule) {
+        return this.getDatabaseShardingStrategy(tableRule) instanceof HintShardingStrategy && this.getTableShardingStrategy(tableRule) instanceof HintShardingStrategy;
     }
 }
