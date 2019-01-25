@@ -39,7 +39,7 @@ public final class GroupByExtractor implements OptionalSQLSegmentExtractor {
         if (!groupByNode.isPresent()) {
             return Optional.absent();
         }
-        GroupBySegment result = new GroupBySegment(groupByNode.get().getStop().getStopIndex() + 1);
+        GroupBySegment result = new GroupBySegment(groupByNode.get().getStop().getStopIndex());
         result.getGroupByItems().addAll(orderByItemExtractor.extract(groupByNode.get()));
         return Optional.of(result);
     }
