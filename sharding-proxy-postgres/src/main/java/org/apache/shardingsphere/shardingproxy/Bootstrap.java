@@ -53,7 +53,7 @@ import java.util.Properties;
 @NoArgsConstructor(access = AccessLevel.PRIVATE)
 public final class Bootstrap {
     
-    private static final int DEFAULT_PORT = 3307;
+    private static final int DEFAULT_PORT = 5433;
     
     /**
      * Main entrance.
