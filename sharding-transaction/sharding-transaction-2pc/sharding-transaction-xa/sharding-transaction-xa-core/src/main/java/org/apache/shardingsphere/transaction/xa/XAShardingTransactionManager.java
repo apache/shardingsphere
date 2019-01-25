@@ -22,7 +22,6 @@ import lombok.SneakyThrows;
 import org.apache.shardingsphere.core.constant.DatabaseType;
 import org.apache.shardingsphere.transaction.core.ShardingTransactionManagerAdapter;
 import org.apache.shardingsphere.transaction.core.TransactionType;
-import org.apache.shardingsphere.transaction.spi.ShardingTransactionManager;
 import org.apache.shardingsphere.transaction.xa.jta.connection.SingleXAConnection;
 import org.apache.shardingsphere.transaction.xa.jta.datasource.SingleXADataSource;
 import org.apache.shardingsphere.transaction.xa.manager.XATransactionManagerLoader;
@@ -40,7 +39,7 @@ import java.util.Map.Entry;
  *
  * @author zhaojun
  */
-public final class XAShardingTransactionManager extends ShardingTransactionManagerAdapter implements ShardingTransactionManager {
+public final class XAShardingTransactionManager extends ShardingTransactionManagerAdapter {
     
     private final Map<String, SingleXADataSource> cachedSingleXADataSourceMap = new HashMap<>();
     
