@@ -31,8 +31,8 @@ public final class RemoveToken extends SQLToken {
     
     private final int stopIndex;
     
-    public RemoveToken(final int beginPosition, final int stopIndex) {
-        super(beginPosition);
+    public RemoveToken(final int startIndex, final int stopIndex) {
+        super(startIndex);
         this.stopIndex = stopIndex;
     }
 }

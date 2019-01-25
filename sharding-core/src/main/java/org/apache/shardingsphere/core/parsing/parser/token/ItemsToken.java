@@ -39,7 +39,7 @@ public final class ItemsToken extends SQLToken {
     
     private final List<String> items = new LinkedList<>();
     
-    public ItemsToken(final int beginPosition) {
-        super(beginPosition);
+    public ItemsToken(final int startIndex) {
+        super(startIndex);
     }
 }

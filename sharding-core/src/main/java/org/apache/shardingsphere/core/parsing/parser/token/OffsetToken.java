@@ -29,8 +29,8 @@ public final class OffsetToken extends SQLToken {
     
     private final int offset;
     
-    public OffsetToken(final int beginPosition, final int offset) {
-        super(beginPosition);
+    public OffsetToken(final int startIndex, final int offset) {
+        super(startIndex);
         this.offset = offset;
     }
 }

@@ -34,8 +34,8 @@ public final class SchemaToken extends SQLToken {
     
     private final String tableName;
     
-    public SchemaToken(final int beginPosition, final String originalLiterals, final String tableName) {
-        super(beginPosition);
+    public SchemaToken(final int startIndex, final String originalLiterals, final String tableName) {
+        super(startIndex);
         this.originalLiterals = originalLiterals;
         this.tableName = tableName;
     }

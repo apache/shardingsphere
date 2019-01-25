@@ -24,7 +24,7 @@ package org.apache.shardingsphere.core.parsing.parser.token;
  */
 public final class OrderByToken extends SQLToken {
     
-    public OrderByToken(final int beginPosition) {
-        super(beginPosition);
+    public OrderByToken(final int startIndex) {
+        super(startIndex);
     }
 }

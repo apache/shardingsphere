@@ -34,8 +34,8 @@ public final class TableToken extends SQLToken {
     
     private final String originalLiterals;
     
-    public TableToken(final int beginPosition, final int skippedSchemaNameLength, final String originalLiterals) {
-        super(beginPosition);
+    public TableToken(final int startIndex, final int skippedSchemaNameLength, final String originalLiterals) {
+        super(startIndex);
         this.skippedSchemaNameLength = skippedSchemaNameLength;
         this.originalLiterals = originalLiterals;
     }
