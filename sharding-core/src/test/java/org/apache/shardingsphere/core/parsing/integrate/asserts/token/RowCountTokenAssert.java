@@ -59,7 +59,7 @@ final class RowCountTokenAssert {
     }
     
     private void assertRowCountToken(final RowCountToken actual, final ExpectedRowCountToken expected) {
-        assertThat(assertMessage.getFullAssertMessage("Row count token begin position assertion error: "), actual.getBeginPosition(), is(expected.getBeginPosition()));
+        assertThat(assertMessage.getFullAssertMessage("Row count token begin position assertion error: "), actual.getStartIndex(), is(expected.getBeginPosition()));
         assertThat(assertMessage.getFullAssertMessage("Row count token row count assertion error: "), actual.getRowCount(), is(expected.getRowCount()));
     }
     

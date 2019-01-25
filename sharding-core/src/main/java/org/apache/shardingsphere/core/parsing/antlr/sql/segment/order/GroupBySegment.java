@@ -29,12 +29,13 @@ import java.util.LinkedList;
  * Group by segment.
  * 
  * @author duhongjun
+ * @author panjuan
  */
 @RequiredArgsConstructor
 @Getter
 public final class GroupBySegment implements SQLSegment {
 
-    private final int groupByLastPosition;
+    private final int groupByStopIndex;
     
     private final Collection<OrderByItemSegment> groupByItems = new LinkedList<>();
     

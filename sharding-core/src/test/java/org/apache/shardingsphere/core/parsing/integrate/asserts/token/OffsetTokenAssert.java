@@ -59,7 +59,7 @@ final class OffsetTokenAssert {
     }
     
     private void assertOffsetToken(final OffsetToken actual, final ExpectedOffsetToken expected) {
-        assertThat(assertMessage.getFullAssertMessage("Offset token begin position assertion error: "), actual.getBeginPosition(), is(expected.getBeginPosition()));
+        assertThat(assertMessage.getFullAssertMessage("Offset token begin position assertion error: "), actual.getStartIndex(), is(expected.getBeginPosition()));
         assertThat(assertMessage.getFullAssertMessage("Offset token offset assertion error: "), actual.getOffset(), is(expected.getOffset()));
     }
     

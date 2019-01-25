@@ -51,7 +51,7 @@ final class ItemsTokenAssert {
     }
     
     private void assertItemsToken(final ItemsToken actual, final ExpectedItemsToken expected) {
-        assertThat(assertMessage.getFullAssertMessage("Items token begin position assertion error: "), actual.getBeginPosition(), is(expected.getBeginPosition()));
+        assertThat(assertMessage.getFullAssertMessage("Items token begin position assertion error: "), actual.getStartIndex(), is(expected.getBeginPosition()));
         assertThat(assertMessage.getFullAssertMessage("Items token items assertion error: "), actual.getItems(), is(expected.getItems()));
     }
     

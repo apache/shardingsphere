@@ -89,7 +89,7 @@ public final class ExpressionExtractor implements OptionalSQLSegmentExtractor {
         Optional<ParserRuleContext> questionNode = ExtractorUtils.findFirstChildNode(expressionNode, RuleName.QUESTION);
         if (questionNode.isPresent()) {
             Integer index = placeholderIndexes.get(questionNode.get());
-            result.setIndex(index);
+            result.setPlaceholderIndex(index);
         } else {
             Optional<ParserRuleContext> bitExprNode = ExtractorUtils.findFirstChildNode(expressionNode, RuleName.BIT_EXPR);
             Optional<ParserRuleContext> numberNode = ExtractorUtils.findFirstChildNode(expressionNode, RuleName.NUMBER);

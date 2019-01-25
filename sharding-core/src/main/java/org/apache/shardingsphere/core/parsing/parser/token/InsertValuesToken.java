@@ -29,8 +29,8 @@ public final class InsertValuesToken extends SQLToken {
     
     private final String tableName;
     
-    public InsertValuesToken(final int beginPosition, final String tableName) {
-        super(beginPosition);
+    public InsertValuesToken(final int startIndex, final String tableName) {
+        super(startIndex);
         this.tableName = tableName;
     }
 }

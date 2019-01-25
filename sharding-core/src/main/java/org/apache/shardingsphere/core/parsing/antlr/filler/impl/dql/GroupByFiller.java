@@ -35,7 +35,7 @@ public final class GroupByFiller implements SQLStatementFiller<GroupBySegment> {
     @Override
     public void fill(final GroupBySegment sqlSegment, final SQLStatement sqlStatement, final String sql, final ShardingRule shardingRule, final ShardingTableMetaData shardingTableMetaData) {
         SelectStatement selectStatement = (SelectStatement) sqlStatement;
-        selectStatement.setGroupByLastPosition(sqlSegment.getGroupByLastPosition());
+        selectStatement.setGroupByLastPosition(sqlSegment.getGroupByStopIndex() + 1);
         for (OrderByItemSegment each : sqlSegment.getGroupByItems()) {
             selectStatement.getGroupByItems().add(new OrderItemBuilder(selectStatement, each).createOrderItem());
         }

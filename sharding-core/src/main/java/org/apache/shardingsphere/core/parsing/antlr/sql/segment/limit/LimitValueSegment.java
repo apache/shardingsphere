@@ -30,5 +30,5 @@ import org.apache.shardingsphere.core.parsing.antlr.sql.segment.SQLSegment;
 @Getter
 public abstract class LimitValueSegment implements SQLSegment {
     
-    private final int beginPosition;
+    private final int startIndex;
 }
