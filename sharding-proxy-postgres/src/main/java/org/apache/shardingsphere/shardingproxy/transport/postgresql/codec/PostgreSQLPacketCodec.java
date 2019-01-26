@@ -39,14 +39,20 @@ public final class PostgreSQLPacketCodec extends PacketCodec<PostgreSQLPacket> {
     
     @Override
     protected void doDecode(final ChannelHandlerContext context, final ByteBuf in, final List<Object> out, final int readableBytes) {
-        in.readRetainedSlice(PostgreSQLPacket.MESSAGE_TYPE_LENGTH);
-        int payloadLength = in.markReaderIndex().readInt();
-        int realPacketLength = payloadLength + PostgreSQLPacket.MESSAGE_TYPE_LENGTH;
+        int messageTyepLength = 0;
+        if ('\0' == in.markReaderIndex().readChar()) {
+            in.resetReaderIndex();
+        } else {
+            messageTyepLength = PostgreSQLPacket.MESSAGE_TYPE_LENGTH;
+        }
+        int payloadLength = in.readInt();
+        int realPacketLength = payloadLength + messageTyepLength;
         if (readableBytes < realPacketLength) {
             in.resetReaderIndex();
             return;
         }
-        out.add(in.readRetainedSlice(payloadLength - PostgreSQLPacket.PAYLOAD_LENGTH));
+        in.resetReaderIndex();
+        out.add(in.readRetainedSlice(payloadLength + messageTyepLength));
     }
     
     @Override
