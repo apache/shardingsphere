@@ -73,7 +73,7 @@
     
     <parser-result sql-case-id="drop_index_if_exists">
         <tokens>
-            <index-token start-index="21" stop-index="33" table-name=""/>
+            <index-token start-index="21" stop-index="32" table-name=""/>
         </tokens>
     </parser-result>
 </parser-result-sets>

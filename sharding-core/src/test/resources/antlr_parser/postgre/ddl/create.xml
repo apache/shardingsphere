@@ -287,7 +287,7 @@
             <table name="t_order" />
         </tables>
         <tokens>
-            <index-token start-index="25" stop-index="35d" table-name="t_order"/>
+            <index-token start-index="25" stop-index="36" table-name="t_order"/>
             <table-token begin-position="53" original-literals="t_order" />
         </tokens>
     </parser-result>
@@ -297,7 +297,7 @@
             <table name="t_order" />
         </tables>
         <tokens>
-            <index-token start-index="13" stop-index="25`" table-name="t_order"/>
+            <index-token start-index="13" stop-index="26" table-name="t_order"/>
             <table-token begin-position="31" original-literals="`t_order`" />
         </tokens>
     </parser-result>
