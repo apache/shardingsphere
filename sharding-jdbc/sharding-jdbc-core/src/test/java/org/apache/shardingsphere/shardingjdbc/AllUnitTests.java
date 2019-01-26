@@ -20,7 +20,6 @@ package org.apache.shardingsphere.shardingjdbc;
 import org.apache.shardingsphere.shardingjdbc.api.AllApiTests;
 import org.apache.shardingsphere.shardingjdbc.executor.AllExecutorTests;
 import org.apache.shardingsphere.shardingjdbc.jdbc.AllJDBCTests;
-import org.apache.shardingsphere.shardingjdbc.util.AllUtilTests;
 import org.junit.runner.RunWith;
 import org.junit.runners.Suite;
 import org.junit.runners.Suite.SuiteClasses;
@@ -29,8 +28,7 @@ import org.junit.runners.Suite.SuiteClasses;
 @SuiteClasses({
         AllApiTests.class, 
         AllExecutorTests.class, 
-        AllJDBCTests.class,
-        AllUtilTests.class
+        AllJDBCTests.class
     })
 public final class AllUnitTests {
 }

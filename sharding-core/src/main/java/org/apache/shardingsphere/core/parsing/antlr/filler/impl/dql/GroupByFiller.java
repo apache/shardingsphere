@@ -29,6 +29,7 @@ import org.apache.shardingsphere.core.rule.ShardingRule;
  * Group by filler.
  *
  * @author duhongjun
+ * @author panjuan
  */
 public final class GroupByFiller implements SQLStatementFiller<GroupBySegment> {
     
