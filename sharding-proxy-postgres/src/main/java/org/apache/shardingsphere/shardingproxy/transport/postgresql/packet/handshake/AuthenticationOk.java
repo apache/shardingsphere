@@ -32,8 +32,6 @@ public final class AuthenticationOk implements PostgreSQLPacket {
     @Getter
     private final char messageType = PostgreSQLCommandPacketType.AUTHENTICATION_OK.getValue();
     
-    private final int messageLength = 8;
-    
     private final int success;
     
     public AuthenticationOk(final boolean isSuccess) {
@@ -42,8 +40,6 @@ public final class AuthenticationOk implements PostgreSQLPacket {
     
     @Override
     public void write(final PostgreSQLPacketPayload payload) {
-        payload.writeInt1(messageType);
-        payload.writeInt4(messageLength);
         payload.writeInt4(success);
     }
     
