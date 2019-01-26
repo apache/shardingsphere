@@ -191,9 +191,9 @@ public final class SQLRewriteEngine {
     }
     
     private void appendSchemaPlaceholder(final SQLBuilder sqlBuilder, final SchemaToken schemaToken, final int count) {
-        sqlBuilder.appendPlaceholder(new SchemaPlaceholder(schemaToken.getSchemaName().toLowerCase(), schemaToken.getTableName().toLowerCase()));
-        int beginPosition = schemaToken.getStartIndex() + schemaToken.getOriginalLiterals().length();
-        appendRest(sqlBuilder, count, beginPosition);
+        String schemaName = originalSQL.substring(schemaToken.getStartIndex(), schemaToken.getStopIndex() + 1);
+        sqlBuilder.appendPlaceholder(new SchemaPlaceholder(schemaName.toLowerCase(), schemaToken.getTableName().toLowerCase()));
+        appendRest(sqlBuilder, count, schemaToken.getStopIndex() + 1);
     }
     
     private void appendIndexPlaceholder(final SQLBuilder sqlBuilder, final IndexToken indexToken, final int count) {

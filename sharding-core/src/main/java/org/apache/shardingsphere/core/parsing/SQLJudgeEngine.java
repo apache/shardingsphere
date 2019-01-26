@@ -169,7 +169,7 @@ public final class SQLJudgeEngine {
         lexerEngine.nextToken();
         if (lexerEngine.skipIfEqual(DefaultKeyword.FROM, DefaultKeyword.IN)) {
             int beginPosition = lexerEngine.getCurrentToken().getEndPosition() - lexerEngine.getCurrentToken().getLiterals().length();
-            result.addSQLToken(new SchemaToken(beginPosition, lexerEngine.getCurrentToken().getLiterals(), null));
+            result.addSQLToken(new SchemaToken(beginPosition, lexerEngine.getCurrentToken().getEndPosition() - 1, null));
         }
         return result;
     }
@@ -178,7 +178,7 @@ public final class SQLJudgeEngine {
         DALStatement result = new ShowTablesStatement();
         if (lexerEngine.skipIfEqual(DefaultKeyword.FROM, DefaultKeyword.IN)) {
             int beginPosition = lexerEngine.getCurrentToken().getEndPosition() - lexerEngine.getCurrentToken().getLiterals().length();
-            result.addSQLToken(new SchemaToken(beginPosition, lexerEngine.getCurrentToken().getLiterals(), null));
+            result.addSQLToken(new SchemaToken(beginPosition, lexerEngine.getCurrentToken().getEndPosition() - 1, null));
         }
         return result;
     }
@@ -189,7 +189,7 @@ public final class SQLJudgeEngine {
         parseSingleTableWithSchema(lexerEngine, result);
         if (lexerEngine.skipIfEqual(DefaultKeyword.FROM, DefaultKeyword.IN)) {
             int beginPosition = lexerEngine.getCurrentToken().getEndPosition() - lexerEngine.getCurrentToken().getLiterals().length();
-            result.addSQLToken(new SchemaToken(beginPosition, lexerEngine.getCurrentToken().getLiterals(), null));
+            result.addSQLToken(new SchemaToken(beginPosition, lexerEngine.getCurrentToken().getEndPosition() - 1, null));
         }
         return result;
     }
@@ -206,17 +206,16 @@ public final class SQLJudgeEngine {
         parseSingleTableWithSchema(lexerEngine, result);
         if (lexerEngine.skipIfEqual(DefaultKeyword.FROM, DefaultKeyword.IN)) {
             int beginPosition = lexerEngine.getCurrentToken().getEndPosition() - lexerEngine.getCurrentToken().getLiterals().length();
-            result.addSQLToken(new SchemaToken(beginPosition, lexerEngine.getCurrentToken().getLiterals(), null));
+            result.addSQLToken(new SchemaToken(beginPosition, lexerEngine.getCurrentToken().getEndPosition() - 1, null));
         }
         return result;
     }
     
     private void parseSingleTableWithSchema(final LexerEngine lexerEngine, final SQLStatement sqlStatement) {
         int beginPosition = lexerEngine.getCurrentToken().getEndPosition() - lexerEngine.getCurrentToken().getLiterals().length();
-        String literals = lexerEngine.getCurrentToken().getLiterals();
         lexerEngine.nextToken();
         if (lexerEngine.skipIfEqual(Symbol.DOT)) {
-            sqlStatement.addSQLToken(new SchemaToken(beginPosition, literals, null));
+            sqlStatement.addSQLToken(new SchemaToken(beginPosition, lexerEngine.getCurrentToken().getEndPosition() - 1, null));
             lexerEngine.nextToken();
         }
     }
