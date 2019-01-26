@@ -402,7 +402,7 @@
         <tokens>
             <table-token begin-position="16" original-literals="t_order" />
             <table-token begin-position="56" original-literals="t_order_item" />
-            <index-token begin-position="38" original-literals="order_index" table-name="t_order" />
+            <index-token start-index="38" stop-index="48" table-name="t_order" />
         </tokens>
         <or-condition>
             <and-condition>
