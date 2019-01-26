@@ -43,6 +43,7 @@ import org.apache.shardingsphere.core.util.SQLUtil;
  * Show parser for MySQL.
  *
  * @author zhangliang
+ * @author panjuan
  */
 @RequiredArgsConstructor
 public final class MySQLShowParser extends AbstractShowParser {
