@@ -50,7 +50,6 @@ public final class PostgreSQLFrontendHandler extends FrontendHandler {
         int connectionId = ConnectionIdGenerator.getInstance().nextId();
         ChannelRegistry.getInstance().putConnectionId(context.channel().id().asShortText(), connectionId);
         getBackendConnection().setConnectionId(connectionId);
-        context.writeAndFlush(new HandshakePacket(connectionId, authenticationHandler.getAuthPluginData()));
     }
     
     @Override
