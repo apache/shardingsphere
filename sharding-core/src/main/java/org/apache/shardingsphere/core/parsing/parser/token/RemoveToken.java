@@ -24,6 +24,7 @@ import lombok.ToString;
  * Remove token.
  *
  * @author zhangliang
+ * @author panjuan
  */
 @Getter
 @ToString

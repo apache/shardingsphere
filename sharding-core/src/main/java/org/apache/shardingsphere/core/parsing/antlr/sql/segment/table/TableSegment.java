@@ -27,6 +27,7 @@ import org.apache.shardingsphere.core.parsing.parser.token.TableToken;
  * Table segment.
  * 
  * @author duhongjun
+ * @author panjuan
  */
 @Getter
 @Setter

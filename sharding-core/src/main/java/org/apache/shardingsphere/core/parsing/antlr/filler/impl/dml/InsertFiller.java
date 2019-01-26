@@ -50,6 +50,7 @@ import java.util.List;
  * Insert filler.
  *
  * @author duhongjun
+ * @author panjuan
  */
 public final class InsertFiller implements SQLStatementFiller<InsertSegment> {
     

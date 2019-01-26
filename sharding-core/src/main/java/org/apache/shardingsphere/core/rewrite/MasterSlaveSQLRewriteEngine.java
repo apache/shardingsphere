@@ -33,6 +33,7 @@ import java.util.List;
  * <p>should rewrite schema name.</p>
  * 
  * @author chenqingyang
+ * @author panjuan
  */
 public final class MasterSlaveSQLRewriteEngine {
     

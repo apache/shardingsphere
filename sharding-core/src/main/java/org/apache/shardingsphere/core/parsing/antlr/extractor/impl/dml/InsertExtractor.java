@@ -37,6 +37,7 @@ import java.util.Map;
  * Insert extractor.
  *
  * @author duhongjun
+ * @author panjuan
  */
 public final class InsertExtractor implements OptionalSQLSegmentExtractor {
     
