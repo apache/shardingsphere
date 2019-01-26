@@ -18,17 +18,17 @@
 package org.apache.shardingsphere.transaction.core.fixture;
 
 import org.apache.shardingsphere.core.constant.DatabaseType;
+import org.apache.shardingsphere.transaction.core.ShardingTransactionManagerAdapter;
 import org.apache.shardingsphere.transaction.core.TransactionType;
-import org.apache.shardingsphere.transaction.spi.ShardingTransactionManager;
 
 import javax.sql.DataSource;
 import java.sql.Connection;
 import java.util.Map;
 
-public final class OtherShardingTransactionManagerFixture implements ShardingTransactionManager {
+public final class OtherShardingTransactionManagerFixture extends ShardingTransactionManagerAdapter {
     
     @Override
-    public void init(final DatabaseType databaseType, final Map<String, DataSource> dataSourceMap) {
+    public void doInit(final DatabaseType databaseType, final Map<String, DataSource> dataSourceMap) {
     }
     
     @Override
@@ -42,7 +42,7 @@ public final class OtherShardingTransactionManagerFixture implements ShardingTra
     }
     
     @Override
-    public Connection getConnection(final String dataSourceName) {
+    public Connection doGetConnection(final String dataSourceName) {
         return null;
     }
     
