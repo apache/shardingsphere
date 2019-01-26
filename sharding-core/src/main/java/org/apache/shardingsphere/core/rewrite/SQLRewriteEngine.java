@@ -264,7 +264,7 @@ public final class SQLRewriteEngine {
             orderByLiterals.append(" ");
             sqlBuilder.appendLiterals(orderByLiterals.toString());
         }
-        int beginPosition = selectStatement.getGroupByLastPosition();
+        int beginPosition = selectStatement.getGroupByLastIndex() + 1;
         appendRest(sqlBuilder, count, beginPosition);
     }
     

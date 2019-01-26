@@ -237,7 +237,7 @@ public abstract class AbstractSelectParser implements SQLParser {
     private void appendDerivedOrderBy(final SelectStatement selectStatement) {
         if (!selectStatement.getGroupByItems().isEmpty() && selectStatement.getOrderByItems().isEmpty()) {
             selectStatement.getOrderByItems().addAll(selectStatement.getGroupByItems());
-            selectStatement.addSQLToken(new OrderByToken(selectStatement.getGroupByLastPosition()));
+            selectStatement.addSQLToken(new OrderByToken(selectStatement.getGroupByLastIndex() + 1));
         }
     }
 }
