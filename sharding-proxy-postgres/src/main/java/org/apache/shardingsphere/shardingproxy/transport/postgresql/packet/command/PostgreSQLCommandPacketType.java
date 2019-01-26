@@ -51,77 +51,77 @@ public enum PostgreSQLCommandPacketType {
     
     Authentication_SASL_Final('R'),
     
-    BackendKeyData('K'),
+    Backend_Key_Data('K'),
     
     Bind('B'),
     
-    BindComplete('2'),
+    Bind_Complete('2'),
     
     Close('C'),
     
-    CloseComplete('3'),
+    Close_Complete('3'),
     
-    CommandComplete('C'),
+    Command_Complete('C'),
     
-    CopyData('d'),
+    Copy_Data('d'),
     
-    CopyDone('c'),
+    Copy_Done('c'),
     
-    CopyFail('f'),
+    Copy_Fail('f'),
     
-    CopyInResponse('G'),
+    Copy_In_Response('G'),
     
-    CopyOutResponse('H'),
+    Copy_Out_Response('H'),
     
-    CopyBothResponse('W'),
+    Copy_Both_Response('W'),
     
-    DataRow('D'),
+    Data_Row('D'),
     
     Describe('D'),
     
-    EmptyQueryResponse('I'),
+    Empty_Query_Response('I'),
     
-    ErrorResponse('E'),
+    Error_Response('E'),
     
     Execute('E'),
     
     Flush('H'),
     
-    FunctionCall('F'),
+    Function_Call('F'),
     
-    FunctionCallResponse('V'),
+    Function_Call_Response('V'),
     
-    GSSResponse('p'),
+    GSS_Response('p'),
     
-    NegotiateProtocolVersion('v'),
+    Negotiate_Protocol_Version('v'),
     
-    NoData('n'),
+    No_Data('n'),
     
-    NoticeResponse('N'),
+    Notice_Response('N'),
     
-    NotificationResponse('A'),
+    Notification_Response('A'),
     
-    ParameterDescription('t'),
+    Parameter_Description('t'),
     
-    ParameterStatus('S'),
+    Parameter_Status('S'),
     
     Parse('P'),
     
-    ParseComplete('1'),
+    Parse_Complete('1'),
     
-    PasswordMessage('p'),
+    Password_Message('p'),
     
-    PortalSuspended('s'),
+    Portal_Suspended('s'),
     
     Query('Q'),
     
-    ReadyForQuery('Z'),
+    Ready_For_Query('Z'),
     
-    RowDescription('T'),
+    Row_Description('T'),
     
-    SASLInitialResponse('p'),
+    SASL_Initial_Response('p'),
     
-    SASLResponse('p'),
+    SASL_Response('p'),
     
     Sync('S'),
     
