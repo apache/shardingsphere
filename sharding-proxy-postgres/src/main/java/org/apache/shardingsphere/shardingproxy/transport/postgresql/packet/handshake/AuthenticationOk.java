@@ -17,6 +17,7 @@
 
 package org.apache.shardingsphere.shardingproxy.transport.postgresql.packet.handshake;
 
+import lombok.Getter;
 import org.apache.shardingsphere.shardingproxy.transport.postgresql.packet.PostgreSQLPacket;
 import org.apache.shardingsphere.shardingproxy.transport.postgresql.packet.PostgreSQLPacketPayload;
 import org.apache.shardingsphere.shardingproxy.transport.postgresql.packet.command.PostgreSQLCommandPacketType;
@@ -28,9 +29,10 @@ import org.apache.shardingsphere.shardingproxy.transport.postgresql.packet.comma
  */
 public final class AuthenticationOk implements PostgreSQLPacket {
     
+    @Getter
     private final char messageType = PostgreSQLCommandPacketType.AUTHENTICATION_OK.getValue();
     
-    private int messageLength = 8;
+    private final int messageLength = 8;
     
     private final int success;
     
