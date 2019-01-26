@@ -197,14 +197,13 @@ public final class SQLRewriteEngine {
     }
     
     private void appendIndexPlaceholder(final SQLBuilder sqlBuilder, final IndexToken indexToken, final int count) {
-        String indexName = indexToken.getIndexName().toLowerCase();
+        String indexName = originalSQL.substring(indexToken.getStartIndex(), indexToken.getStopIndex() + 1);
         String logicTableName = indexToken.getTableName().toLowerCase();
         if (Strings.isNullOrEmpty(logicTableName)) {
             logicTableName = shardingRule.getLogicTableName(indexName);
         }
         sqlBuilder.appendPlaceholder(new IndexPlaceholder(indexName, logicTableName));
-        int beginPosition = indexToken.getStartIndex() + indexToken.getOriginalLiterals().length();
-        appendRest(sqlBuilder, count, beginPosition);
+        appendRest(sqlBuilder, count, indexToken.getStopIndex() + 1);
     }
     
     private void appendItemsToken(final SQLBuilder sqlBuilder, final ItemsToken itemsToken, final int count, final boolean isRewrite) {
