@@ -127,7 +127,7 @@ public enum PostgreSQLCommandPacketType {
     
     TERMINATE('X');
     
-    private final int value;
+    private final char value;
     
     /**
      * Value of integer.
