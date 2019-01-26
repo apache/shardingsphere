@@ -18,7 +18,7 @@
         </schemas>
         <tokens>
             <table-token begin-position="18" original-literals="t_order" />
-            <schema-token begin-position="31" original-literals="sharding_db" table-name="t_order" />
+            <schema-token start-index="31" stop-index="41" table-name="t_order" />
         </tokens>
     </parser-result>
     
@@ -40,7 +40,7 @@
         </schemas>
         <tokens>
             <table-token begin-position="18" original-literals="`t_order`" />
-            <schema-token begin-position="33" original-literals="sharding_db" table-name="t_order" />
+            <schema-token start-index="33" stop-index="43" table-name="t_order" />
         </tokens>
     </parser-result>
     
@@ -53,7 +53,7 @@
         </schemas>
         <tokens>
             <table-token begin-position="18" original-literals="t_order" />
-            <schema-token begin-position="31" original-literals="`sharding_db`" table-name="t_order" />
+            <schema-token start-index="31" stop-index="43" table-name="t_order" />
         </tokens>
     </parser-result>
     
