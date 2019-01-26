@@ -34,7 +34,7 @@ public final class PostgreSQLPacketCodec extends PacketCodec<PostgreSQLPacket> {
     
     @Override
     protected boolean isValidHeader(final int readableBytes) {
-        return readableBytes > PostgreSQLPacket.MESSAGE_TYPE_LENGTH;
+        return readableBytes > PostgreSQLPacket.MESSAGE_TYPE_LENGTH + PostgreSQLPacket.PAYLOAD_LENGTH;
     }
     
     @Override
