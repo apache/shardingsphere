@@ -234,7 +234,7 @@
         </tables>
         <tokens>
             <table-token begin-position="13" original-literals="t_order" />
-            <index-token begin-position="138" original-literals="idx_order_id" table-name="t_order"/>
+            <index-token start-index="138" stop-index="149" table-name="t_order"/>
         </tokens>
         <meta column-names="order_id,user_id,status,column1,column2,column3" column-types="INT,INT,VARCHAR,VARCHAR,VARCHAR,VARCHAR" />
     </parser-result>
@@ -245,7 +245,7 @@
         </tables>
         <tokens>
             <table-token begin-position="13" original-literals="t_order" />
-            <index-token begin-position="147" original-literals="idx_column1" table-name="t_order"/>
+            <index-token start-index="147" stop-index="157" table-name="t_order"/>
         </tokens>
         <meta column-names="order_id,user_id,status,column1,column2,column3" column-types="INT,INT,VARCHAR,VARCHAR,VARCHAR,VARCHAR" />
     </parser-result>
@@ -256,7 +256,7 @@
         </tables>
         <tokens>
             <table-token begin-position="13" original-literals="t_order" />
-            <index-token begin-position="138" original-literals="idx_order_id_user_id_status" table-name="t_order"/>
+            <index-token start-index="138" stop-index="164" table-name="t_order"/>
         </tokens>
         <meta column-names="order_id,user_id,status,column1,column2,column3" column-types="INT,INT,VARCHAR,VARCHAR,VARCHAR,VARCHAR" />
     </parser-result>
@@ -267,7 +267,7 @@
         </tables>
         <tokens>
             <table-token begin-position="13" original-literals="t_order" />
-            <index-token begin-position="138" original-literals="idx_order_id" table-name="t_order"/>
+            <index-token start-index="138" stop-index="149" table-name="t_order"/>
         </tokens>
         <meta column-names="order_id,user_id,status,column1,column2,column3" column-types="INT,INT,VARCHAR,VARCHAR,VARCHAR,VARCHAR" />
     </parser-result>
@@ -321,7 +321,7 @@
             <table name="t_order" />
         </tables>
         <tokens>
-            <index-token begin-position="13" original-literals="idx_order_id" table-name="t_order"/>
+            <index-token start-index="13" stop-index="24" table-name="t_order"/>
             <table-token begin-position="29" original-literals="t_order" />
         </tokens>
     </parser-result>
@@ -331,7 +331,7 @@
             <table name="t_order" />
         </tables>
         <tokens>
-            <index-token begin-position="25" original-literals="idx_order_id" table-name="t_order"/>
+            <index-token start-index="25" stop-index="36" table-name="t_order"/>
             <table-token begin-position="53" original-literals="t_order" />
         </tokens>
     </parser-result>
@@ -341,7 +341,7 @@
             <table name="t_order" />
         </tables>
         <tokens>
-            <index-token begin-position="13" original-literals="`idx_order_id`" table-name="t_order"/>
+            <index-token start-index="13" stop-index="26" table-name="t_order"/>
             <table-token begin-position="31" original-literals="`t_order`" />
         </tokens>
     </parser-result>
@@ -351,7 +351,7 @@
             <table name="t_order" />
         </tables>
         <tokens>
-            <index-token begin-position="13" original-literals="idx_order_id_user_id_status" table-name="t_order"/>
+            <index-token start-index="13" stop-index="39" table-name="t_order"/>
             <table-token begin-position="44" original-literals="t_order" />
         </tokens>
     </parser-result>
@@ -361,7 +361,7 @@
             <table name="t_order" />
         </tables>
         <tokens>
-            <index-token begin-position="20" original-literals="uk_order_id" table-name="t_order"/>
+            <index-token start-index="20" stop-index="30" table-name="t_order"/>
             <table-token begin-position="35" original-literals="t_order" />
         </tokens>
     </parser-result>
@@ -371,7 +371,7 @@
             <table name="t_order" />
         </tables>
         <tokens>
-            <index-token begin-position="13" original-literals="idx_order_id" table-name="t_order"/>
+            <index-token start-index="13" stop-index="24" table-name="t_order"/>
             <table-token begin-position="41" original-literals="t_order" />
         </tokens>
     </parser-result>
