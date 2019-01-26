@@ -402,7 +402,7 @@ public final class SQLRewriteEngineTest {
     
     @Test
     public void assertRewriteForDerivedOrderBy() {
-        selectStatement.setGroupByLastPosition(61);
+        selectStatement.setGroupByLastIndex(60);
         selectStatement.getOrderByItems().add(new OrderItem("x", "id", OrderDirection.ASC, OrderDirection.ASC));
         selectStatement.getOrderByItems().add(new OrderItem("x", "name", OrderDirection.DESC, OrderDirection.ASC));
         selectStatement.addSQLToken(new TableToken(25, 0, "table_x"));
