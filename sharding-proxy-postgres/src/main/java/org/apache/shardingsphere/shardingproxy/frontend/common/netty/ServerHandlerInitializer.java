@@ -37,7 +37,7 @@ public final class ServerHandlerInitializer extends ChannelInitializer<SocketCha
     protected void initChannel(final SocketChannel socketChannel) {
         ChannelPipeline pipeline = socketChannel.pipeline();
         // TODO load database type from yaml or startup arguments
-        pipeline.addLast(PacketCodecFactory.newInstance(DatabaseType.MySQL));
-        pipeline.addLast(FrontendHandlerFactory.createFrontendHandlerInstance(DatabaseType.MySQL));
+        pipeline.addLast(PacketCodecFactory.newInstance(DatabaseType.PostgreSQL));
+        pipeline.addLast(FrontendHandlerFactory.createFrontendHandlerInstance(DatabaseType.PostgreSQL));
     }
 }
