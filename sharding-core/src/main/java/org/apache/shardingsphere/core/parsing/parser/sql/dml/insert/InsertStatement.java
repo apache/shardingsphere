@@ -36,6 +36,7 @@ import java.util.List;
  *
  * @author zhangliang
  * @author maxiaoguang
+ * @author panjuan
  */
 @Getter
 @Setter
@@ -52,7 +53,7 @@ public final class InsertStatement extends DMLStatement {
     
     private int generateKeyColumnIndex = -1;
     
-    private int insertValuesListLastPosition;
+    private int insertValuesListLastIndex;
     
     private boolean containGenerateKey;
     

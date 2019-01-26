@@ -61,7 +61,7 @@ public final class SelectStatement extends DQLStatement {
     
     private int selectListStopIndex;
     
-    private int groupByLastPosition;
+    private int groupByLastIndex;
     
     private final Set<SelectItem> items = new LinkedHashSet<>();
     

@@ -50,6 +50,7 @@ import java.util.List;
  * Insert filler.
  *
  * @author duhongjun
+ * @author panjuan
  */
 public final class InsertFiller implements SQLStatementFiller<InsertSegment> {
     
@@ -60,7 +61,7 @@ public final class InsertFiller implements SQLStatementFiller<InsertSegment> {
         createColumn(sqlSegment, insertStatement, shardingRule, shardingTableMetaData);
         createValue(sqlSegment, insertStatement, sql, shardingRule, shardingTableMetaData);
         insertStatement.setColumnsListLastIndex(sqlSegment.getColumnsListLastIndex());
-        insertStatement.setInsertValuesListLastPosition(sqlSegment.getInsertValuesListLastIndex() + 1);
+        insertStatement.setInsertValuesListLastIndex(sqlSegment.getInsertValuesListLastIndex());
         insertStatement.getSQLTokens().add(new InsertValuesToken(sqlSegment.getInsertValueStartIndex(), insertStatement.getTables().getSingleTableName()));
         processGeneratedKey(shardingRule, insertStatement);
         processDuplicateKey(shardingRule, sqlSegment, sqlStatement.getTables().getSingleTableName());

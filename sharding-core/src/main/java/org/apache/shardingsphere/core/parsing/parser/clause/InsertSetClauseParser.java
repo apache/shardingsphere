@@ -107,7 +107,7 @@ public abstract class InsertSetClauseParser implements SQLClauseParser {
         int endPosition = lexerEngine.getCurrentToken().getEndPosition() - lexerEngine.getCurrentToken().getLiterals().length();
         InsertValue insertValue = new InsertValue(DefaultKeyword.SET, lexerEngine.getInput().substring(beginPosition, endPosition), insertStatement.getParametersIndex());
         insertStatement.getInsertValues().getInsertValues().add(insertValue);
-        insertStatement.setInsertValuesListLastPosition(endPosition);
+        insertStatement.setInsertValuesListLastIndex(endPosition - 1);
     }
     
     private void removeUnnecessaryToken(final InsertStatement insertStatement) {

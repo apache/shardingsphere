@@ -68,7 +68,7 @@ public abstract class GroupByClauseParser implements SQLClauseParser {
             lexerEngine.nextToken();
         }
         lexerEngine.skipAll(getSkippedKeywordAfterGroupBy());
-        selectStatement.setGroupByLastPosition(lexerEngine.getCurrentToken().getEndPosition() - lexerEngine.getCurrentToken().getLiterals().length());
+        selectStatement.setGroupByLastIndex(lexerEngine.getCurrentToken().getEndPosition() - lexerEngine.getCurrentToken().getLiterals().length() - 1);
     }
     
     private void addGroupByItem(final SQLExpression sqlExpression, final SelectStatement selectStatement) {

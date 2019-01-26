@@ -33,6 +33,7 @@ import java.util.List;
  *  Table name extractor.
  *
  * @author duhongjun
+ * @author panjuan
  */
 public final class TableNameExtractor implements OptionalSQLSegmentExtractor {
     

@@ -28,6 +28,7 @@ import org.apache.shardingsphere.core.parsing.antlr.sql.segment.order.GroupBySeg
  * Group by extractor.
  *
  * @author duhongjun
+ * @author panjuan
  */
 public final class GroupByExtractor implements OptionalSQLSegmentExtractor {
     
