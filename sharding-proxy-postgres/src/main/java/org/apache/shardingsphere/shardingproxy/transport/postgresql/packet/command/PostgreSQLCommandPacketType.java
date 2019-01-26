@@ -33,99 +33,99 @@ public enum PostgreSQLCommandPacketType {
     
     AUTHENTICATION_KERBEROS_V5('R'),
     
-    AUTHENTICATION_Cleartext_Password('R'),
+    AUTHENTICATION_CLEARTEXT_PASSWORD('R'),
     
-    Authentication_MD5_Password('R'),
+    AUTHENTICATION_MD5_PASSWORD('R'),
     
-    Authentication_SCM_Credential('R'),
+    AUTHENTICATION_SCM_CREDENTIAL('R'),
     
-    Authentication_GSS('R'),
+    AUTHENTICATION_GSS('R'),
     
-    Authentication_SSPI('R'),
+    AUTHENTICATION_SSPI('R'),
     
-    Authentication_GSS_Continue('R'),
+    AUTHENTICATION_GSS_CONTINUE('R'),
     
-    Authentication_SASL('R'),
+    AUTHENTICATION_SASL('R'),
     
-    Authentication_SASL_Continue('R'),
+    AUTHENTICATION_SASL_CONTINUE('R'),
     
-    Authentication_SASL_Final('R'),
+    AUTHENTICATION_SASL_FINAL('R'),
     
-    Backend_Key_Data('K'),
+    BACKEND_KEY_DATA('K'),
     
-    Bind('B'),
+    BIND('B'),
     
-    Bind_Complete('2'),
+    BIND_COMPLETE('2'),
     
-    Close('C'),
+    CLOSE('C'),
     
-    Close_Complete('3'),
+    CLOSE_COMPLETE('3'),
     
-    Command_Complete('C'),
+    COMMAND_COMPLETE('C'),
     
-    Copy_Data('d'),
+    COPY_DATA('d'),
     
-    Copy_Done('c'),
+    COPY_DONE('c'),
     
-    Copy_Fail('f'),
+    COPY_FAIL('f'),
     
-    Copy_In_Response('G'),
+    COPY_IN_RESPONSE('G'),
     
-    Copy_Out_Response('H'),
+    COPY_OUT_RESPONSE('H'),
     
-    Copy_Both_Response('W'),
+    COPY_BOTH_RESPONSE('W'),
     
-    Data_Row('D'),
+    DATA_ROW('D'),
     
-    Describe('D'),
+    DESCRIBE('D'),
     
-    Empty_Query_Response('I'),
+    EMPTY_QUERY_RESPONSE('I'),
     
-    Error_Response('E'),
+    ERROR_RESPONSE('E'),
     
-    Execute('E'),
+    EXECUTE('E'),
     
-    Flush('H'),
+    FLUSH('H'),
     
-    Function_Call('F'),
+    FUNCTION_CALL('F'),
     
-    Function_Call_Response('V'),
+    FUNCTION_CALL_RESPONSE('V'),
     
-    GSS_Response('p'),
+    GSS_RESPONSE('p'),
     
-    Negotiate_Protocol_Version('v'),
+    NEGOTIATE_PROTOCOL_VERSION('v'),
     
-    No_Data('n'),
+    NO_DATA('n'),
     
-    Notice_Response('N'),
+    NOTICE_RESPONSE('N'),
     
-    Notification_Response('A'),
+    NOTIFICATION_RESPONSE('A'),
     
-    Parameter_Description('t'),
+    PARAMETER_DESCRIPTION('t'),
     
-    Parameter_Status('S'),
+    PARAMETER_STATUS('S'),
     
-    Parse('P'),
+    PARSE('P'),
     
-    Parse_Complete('1'),
+    PARSE_COMPLETE('1'),
     
-    Password_Message('p'),
+    PASSWORD_MESSAGE('p'),
     
-    Portal_Suspended('s'),
+    PORTAL_SUSPENDED('s'),
     
-    Query('Q'),
+    QUERY('Q'),
     
-    Ready_For_Query('Z'),
+    READY_FOR_QUERY('Z'),
     
-    Row_Description('T'),
+    ROW_DESCRIPTION('T'),
     
-    SASL_Initial_Response('p'),
+    SASL_INITIAL_RESPONSE('p'),
     
-    SASL_Response('p'),
+    SASL_RESPONSE('p'),
     
-    Sync('S'),
+    SYNC('S'),
     
-    Terminate('X');
+    TERMINATE('X');
     
     private final int value;
     
