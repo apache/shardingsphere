@@ -268,6 +268,15 @@ public final class PostgreSQLPacketPayload implements AutoCloseable {
     }
     
     /**
+     * Bytes before zero.
+     *
+     * @return the number of bytes before zero
+     */
+    public int bytesBeforeZero() {
+        return byteBuf.bytesBefore((byte) 0);
+    }
+    
+    /**
      * Read null terminated string from byte buffers.
      * 
      * @return null terminated string
