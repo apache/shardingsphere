@@ -436,7 +436,7 @@ public final class SQLRewriteEngineTest {
         tableTokens = new HashMap<>(1, 1);
         tableTokens.put("table_x", "table_y");
         selectStatement.addSQLToken(new TableToken(18, 0, "table_x"));
-        selectStatement.addSQLToken(new SchemaToken(29, "table_x", "table_x"));
+        selectStatement.addSQLToken(new SchemaToken(29, 35, "table_x"));
         SQLRewriteEngine rewriteEngine = new SQLRewriteEngine(shardingRule, "SHOW CREATE TABLE table_x ON table_x", DatabaseType.MySQL, selectStatement, null, Collections.emptyList());
         assertThat(rewriteEngine.rewrite(false).toSQL(null, tableTokens, shardingRule, shardingDataSourceMetaData).getSql(), is("SHOW CREATE TABLE table_y ON db0"));
     }
@@ -467,7 +467,7 @@ public final class SQLRewriteEngineTest {
     @Test
     public void assertTableTokenWithoutBackQuoteFromSchemaForShow() {
         showTablesStatement.addSQLToken(new TableToken(18, 0, "table_x"));
-        showTablesStatement.addSQLToken(new SchemaToken(31, "'sharding_db'", "table_x"));
+        showTablesStatement.addSQLToken(new SchemaToken(31, 43, "table_x"));
         SQLRewriteEngine rewriteEngine = new SQLRewriteEngine(shardingRule, "SHOW COLUMNS FROM table_x FROM 'sharding_db'", DatabaseType.MySQL, showTablesStatement, null, Collections.emptyList());
         Map<String, String> logicAndActualTableMap = new LinkedHashMap<>();
         logicAndActualTableMap.put("table_x", "table_x");
