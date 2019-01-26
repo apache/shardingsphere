@@ -52,7 +52,7 @@
             <table name="t_order" />
         </tables>
         <tokens>
-            <index-token begin-position="11" original-literals="idx_order_id" table-name="t_order" />
+            <index-token start-index="11" stop-index="22" table-name="t_order" />
             <table-token begin-position="27" original-literals="t_order" />
         </tokens>
     </parser-result>
@@ -62,7 +62,7 @@
             <table name="t_order" />
         </tables>
         <tokens>
-            <index-token begin-position="23" original-literals="idx_order_id" table-name="t_order" />
+            <index-token start-index="23" stop-index="34" table-name="t_order" />
             <table-token begin-position="51" original-literals="t_order" />
         </tokens>
     </parser-result>
@@ -72,7 +72,7 @@
             <table name="t_order" />
         </tables>
         <tokens>
-            <index-token begin-position="11" original-literals="[idx_order_id]" table-name="t_order"/>
+            <index-token start-index="11" stop-index="24" table-name="t_order"/>
             <table-token begin-position="29" original-literals="[t_order]" />
         </tokens>
     </parser-result>
@@ -82,7 +82,7 @@
             <table name="t_order" />
         </tables>
         <tokens>
-            <index-token begin-position="21" original-literals="idx_order_id" table-name="t_order" />
+            <index-token start-index="21" stop-index="32" table-name="t_order" />
             <table-token begin-position="37" original-literals="t_order" />
         </tokens>
     </parser-result>
