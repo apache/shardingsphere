@@ -53,8 +53,8 @@ public final class PostgreSQLPacketCodec extends PacketCodec<PostgreSQLPacket> {
     protected void doEncode(final ChannelHandlerContext context, final PostgreSQLPacket message, final ByteBuf out) {
         try (PostgreSQLPacketPayload payload = new PostgreSQLPacketPayload(context.alloc().buffer())) {
             message.write(payload);
-            out.writeMediumLE(payload.getByteBuf().readableBytes());
-            out.writeByte(message.getSequenceId());
+            out.writeByte(message.getMessageType());
+            out.writeInt(payload.getByteBuf().readableBytes() + message.PAYLOAD_LENGTH);
             out.writeBytes(payload.getByteBuf());
         }
     }
