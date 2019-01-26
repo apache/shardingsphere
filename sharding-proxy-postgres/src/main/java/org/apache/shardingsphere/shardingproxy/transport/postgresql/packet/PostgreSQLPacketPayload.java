@@ -59,7 +59,7 @@ public final class PostgreSQLPacketPayload implements AutoCloseable {
      * @return 2 byte fixed length integer
      */
     public int readInt2() {
-        return byteBuf.readShortLE() & 0xffff;
+        return byteBuf.readShort() & 0xffff;
     }
     
     /**
@@ -68,7 +68,7 @@ public final class PostgreSQLPacketPayload implements AutoCloseable {
      * @param value 2 byte fixed length integer
      */
     public void writeInt2(final int value) {
-        byteBuf.writeShortLE(value);
+        byteBuf.writeShort(value);
     }
     
     /**
@@ -77,7 +77,7 @@ public final class PostgreSQLPacketPayload implements AutoCloseable {
      * @return 3 byte fixed length integer
      */
     public int readInt3() {
-        return byteBuf.readMediumLE() & 0xffffff;
+        return byteBuf.readMedium() & 0xffffff;
     }
     
     /**
@@ -86,7 +86,7 @@ public final class PostgreSQLPacketPayload implements AutoCloseable {
      * @param value 3 byte fixed length integer
      */
     public void writeInt3(final int value) {
-        byteBuf.writeMediumLE(value);
+        byteBuf.writeMedium(value);
     }
     
     /**
@@ -95,7 +95,7 @@ public final class PostgreSQLPacketPayload implements AutoCloseable {
      * @return 4 byte fixed length integer
      */
     public int readInt4() {
-        return byteBuf.readIntLE();
+        return byteBuf.readInt();
     }
     
     /**
@@ -104,7 +104,7 @@ public final class PostgreSQLPacketPayload implements AutoCloseable {
      * @param value 4 byte fixed length integer
      */
     public void writeInt4(final int value) {
-        byteBuf.writeIntLE(value);
+        byteBuf.writeInt(value);
     }
     
     /**
@@ -113,7 +113,7 @@ public final class PostgreSQLPacketPayload implements AutoCloseable {
      * @return 8 byte fixed length integer
      */
     public long readInt8() {
-        return byteBuf.readLongLE();
+        return byteBuf.readLong();
     }
     
     /**
@@ -122,7 +122,7 @@ public final class PostgreSQLPacketPayload implements AutoCloseable {
      * @param value 8 byte fixed length integer
      */
     public void writeInt8(final long value) {
-        byteBuf.writeLongLE(value);
+        byteBuf.writeLong(value);
     }
     
     /**
