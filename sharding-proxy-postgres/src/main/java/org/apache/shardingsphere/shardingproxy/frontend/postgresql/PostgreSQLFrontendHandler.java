@@ -26,14 +26,9 @@ import org.apache.shardingsphere.shardingproxy.frontend.common.executor.CommandE
 import org.apache.shardingsphere.shardingproxy.frontend.mysql.CommandExecutor;
 import org.apache.shardingsphere.shardingproxy.runtime.ChannelRegistry;
 import org.apache.shardingsphere.shardingproxy.runtime.GlobalRegistry;
-import org.apache.shardingsphere.shardingproxy.transport.mysql.constant.ServerErrorCode;
-import org.apache.shardingsphere.shardingproxy.transport.mysql.packet.MySQLPacketPayload;
-import org.apache.shardingsphere.shardingproxy.transport.mysql.packet.generic.ErrPacket;
-import org.apache.shardingsphere.shardingproxy.transport.mysql.packet.generic.OKPacket;
-import org.apache.shardingsphere.shardingproxy.transport.mysql.packet.handshake.AuthenticationHandler;
-import org.apache.shardingsphere.shardingproxy.transport.mysql.packet.handshake.ConnectionIdGenerator;
-import org.apache.shardingsphere.shardingproxy.transport.mysql.packet.handshake.HandshakePacket;
-import org.apache.shardingsphere.shardingproxy.transport.mysql.packet.handshake.HandshakeResponse41Packet;
+import org.apache.shardingsphere.shardingproxy.transport.postgresql.packet.PostgreSQLPacketPayload;
+import org.apache.shardingsphere.shardingproxy.transport.postgresql.packet.handshake.PostgreSQLConnectionIdGenerator;
+import org.apache.shardingsphere.shardingproxy.transport.postgresql.packet.handshake.StartupMessage;
 
 /**
  * PostgreSQL frontend handler.
@@ -43,31 +38,24 @@ import org.apache.shardingsphere.shardingproxy.transport.mysql.packet.handshake.
 @RequiredArgsConstructor
 public final class PostgreSQLFrontendHandler extends FrontendHandler {
     
-    private final AuthenticationHandler authenticationHandler = new AuthenticationHandler();
-    
     @Override
     protected void handshake(final ChannelHandlerContext context) {
-        int connectionId = ConnectionIdGenerator.getInstance().nextId();
+        int connectionId = PostgreSQLConnectionIdGenerator.getInstance().nextId();
         ChannelRegistry.getInstance().putConnectionId(context.channel().id().asShortText(), connectionId);
         getBackendConnection().setConnectionId(connectionId);
     }
     
     @Override
     protected void auth(final ChannelHandlerContext context, final ByteBuf message) {
-        try (MySQLPacketPayload payload = new MySQLPacketPayload(message)) {
-            HandshakeResponse41Packet response41 = new HandshakeResponse41Packet(payload);
-            if (authenticationHandler.login(response41.getUsername(), response41.getAuthResponse())) {
-                if (!Strings.isNullOrEmpty(response41.getDatabase()) && !GlobalRegistry.getInstance().schemaExists(response41.getDatabase())) {
-                    context.writeAndFlush(new ErrPacket(response41.getSequenceId() + 1, ServerErrorCode.ER_BAD_DB_ERROR, response41.getDatabase()));
-                    return;
-                }
-                getBackendConnection().setCurrentSchema(response41.getDatabase());
-                context.writeAndFlush(new OKPacket(response41.getSequenceId() + 1));
-            } else {
-                // TODO localhost should replace to real ip address
-                context.writeAndFlush(new ErrPacket(response41.getSequenceId() + 1,
-                    ServerErrorCode.ER_ACCESS_DENIED_ERROR, response41.getUsername(), "localhost", 0 == response41.getAuthResponse().length ? "NO" : "YES"));
+        try (PostgreSQLPacketPayload payload = new PostgreSQLPacketPayload(message)) {
+            StartupMessage startupMessage = new StartupMessage(payload);
+            String databaseName = startupMessage.getParametersMap().get("database");
+            if (!Strings.isNullOrEmpty(databaseName) && !GlobalRegistry.getInstance().schemaExists(databaseName)) {
+                // TODO send an error message
+                return;
             }
+            getBackendConnection().setCurrentSchema(databaseName);
+            // TODO send a md5 authentication request message
         }
     }
     
