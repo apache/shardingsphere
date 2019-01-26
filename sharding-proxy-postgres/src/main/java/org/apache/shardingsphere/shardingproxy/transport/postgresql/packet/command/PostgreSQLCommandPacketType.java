@@ -49,7 +49,83 @@ public enum PostgreSQLCommandPacketType {
     
     Authentication_SASL_Continue('R'),
     
-    Authentication_SASL_Final('R');
+    Authentication_SASL_Final('R'),
+    
+    BackendKeyData('K'),
+    
+    Bind('B'),
+    
+    BindComplete('2'),
+    
+    Close('C'),
+    
+    CloseComplete('3'),
+    
+    CommandComplete('C'),
+    
+    CopyData('d'),
+    
+    CopyDone('c'),
+    
+    CopyFail('f'),
+    
+    CopyInResponse('G'),
+    
+    CopyOutResponse('H'),
+    
+    CopyBothResponse('W'),
+    
+    DataRow('D'),
+    
+    Describe('D'),
+    
+    EmptyQueryResponse('I'),
+    
+    ErrorResponse('E'),
+    
+    Execute('E'),
+    
+    Flush('H'),
+    
+    FunctionCall('F'),
+    
+    FunctionCallResponse('V'),
+    
+    GSSResponse('p'),
+    
+    NegotiateProtocolVersion('v'),
+    
+    NoData('n'),
+    
+    NoticeResponse('N'),
+    
+    NotificationResponse('A'),
+    
+    ParameterDescription('t'),
+    
+    ParameterStatus('S'),
+    
+    Parse('P'),
+    
+    ParseComplete('1'),
+    
+    PasswordMessage('p'),
+    
+    PortalSuspended('s'),
+    
+    Query('Q'),
+    
+    ReadyForQuery('Z'),
+    
+    RowDescription('T'),
+    
+    SASLInitialResponse('p'),
+    
+    SASLResponse('p'),
+    
+    Sync('S'),
+    
+    Terminate('X');
     
     private final int value;
     
