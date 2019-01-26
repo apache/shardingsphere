@@ -27,14 +27,14 @@ import org.apache.shardingsphere.shardingproxy.transport.postgresql.packet.comma
  *
  * @author zhangyonglun
  */
-public final class AuthenticationOk implements PostgreSQLPacket {
+public final class AuthenticationOK implements PostgreSQLPacket {
     
     @Getter
     private final char messageType = PostgreSQLCommandPacketType.AUTHENTICATION_OK.getValue();
     
     private final int success;
     
-    public AuthenticationOk(final boolean isSuccess) {
+    public AuthenticationOK(final boolean isSuccess) {
         success = isSuccess ? 0 : 1;
     }
     
