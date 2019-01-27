@@ -29,11 +29,11 @@ import javax.xml.bind.annotation.XmlAttribute;
 @XmlAccessorType(XmlAccessType.FIELD)
 public final class ExpectedAggregationDistinctToken {
     
-    @XmlAttribute(name = "begin-position")
-    private int beginPosition;
+    @XmlAttribute(name = "start-index")
+    private int startIndex;
     
-    @XmlAttribute(name = "original-literals")
-    private String originalLiterals;
+    @XmlAttribute(name = "stop-index")
+    private int stopIndex;
     
     @XmlAttribute(name = "column-name")
     private String columnName;
