@@ -27,7 +27,7 @@ import org.apache.shardingsphere.shardingproxy.transport.mysql.constant.ColumnTy
 import org.apache.shardingsphere.shardingproxy.transport.mysql.packet.command.CommandResponsePackets;
 import org.apache.shardingsphere.shardingproxy.transport.mysql.packet.command.query.ColumnDefinition41Packet;
 import org.apache.shardingsphere.shardingproxy.transport.mysql.packet.command.query.FieldCountPacket;
-import org.apache.shardingsphere.shardingproxy.transport.mysql.packet.command.query.QueryResponsePackets;
+import org.apache.shardingsphere.shardingproxy.transport.mysql.packet.command.query.PostgreSQLQueryResponsePackets;
 import org.apache.shardingsphere.shardingproxy.transport.mysql.packet.generic.EofPacket;
 import org.apache.shardingsphere.shardingproxy.transport.mysql.packet.generic.ErrPacket;
 
@@ -84,11 +84,11 @@ public final class ShardingCTLShowBackendHandler implements TextProtocolBackendH
         FieldCountPacket fieldCountPacket = new FieldCountPacket(++sequenceId, 1);
         Collection<ColumnDefinition41Packet> columnDefinition41Packets = new ArrayList<>(1);
         columnDefinition41Packets.add(new ColumnDefinition41Packet(++sequenceId, "", "", "", columnName, "", 100, ColumnType.MYSQL_TYPE_VARCHAR, 0));
-        QueryResponsePackets queryResponsePackets = new QueryResponsePackets(fieldCountPacket, columnDefinition41Packets, new EofPacket(++sequenceId));
-        currentSequenceId = queryResponsePackets.getPackets().size();
-        columnCount = queryResponsePackets.getColumnCount();
-        columnTypes.addAll(queryResponsePackets.getColumnTypes());
-        return queryResponsePackets;
+        PostgreSQLQueryResponsePackets postgreSQLQueryResponsePackets = new PostgreSQLQueryResponsePackets(fieldCountPacket, columnDefinition41Packets, new EofPacket(++sequenceId));
+        currentSequenceId = postgreSQLQueryResponsePackets.getPackets().size();
+        columnCount = postgreSQLQueryResponsePackets.getColumnCount();
+        columnTypes.addAll(postgreSQLQueryResponsePackets.getColumnTypes());
+        return postgreSQLQueryResponsePackets;
     }
     
     @Override
