@@ -22,6 +22,7 @@ import lombok.NoArgsConstructor;
 import org.apache.shardingsphere.shardingproxy.backend.communication.jdbc.connection.BackendConnection;
 import org.apache.shardingsphere.shardingproxy.transport.postgresql.packet.PostgreSQLPacketPayload;
 import org.apache.shardingsphere.shardingproxy.transport.postgresql.packet.command.admin.PostgreSQLUnsupportedCommandPacket;
+import org.apache.shardingsphere.shardingproxy.transport.postgresql.packet.command.query.Query;
 
 import java.sql.SQLException;
 
@@ -39,13 +40,13 @@ public final class PostgreSQLCommandPacketFactory {
      * @param payload PostgreSQL packet payload
      * @param backendConnection backend connection
      * @return command packet
-     * @throws SQLException SQL exception
      */
-    public static PostgreSQLCommandPacket newInstance(final PostgreSQLPacketPayload payload, final BackendConnection backendConnection) throws SQLException {
+    public static PostgreSQLCommandPacket newInstance(final PostgreSQLPacketPayload payload, final BackendConnection backendConnection) {
         int commandPacketTypeValue = payload.readInt1();
         PostgreSQLCommandPacketType type = PostgreSQLCommandPacketType.valueOf(commandPacketTypeValue);
         switch (type) {
             case QUERY:
+                return new Query(payload, backendConnection);
             default:
                 return new PostgreSQLUnsupportedCommandPacket(type.getValue());
         }
