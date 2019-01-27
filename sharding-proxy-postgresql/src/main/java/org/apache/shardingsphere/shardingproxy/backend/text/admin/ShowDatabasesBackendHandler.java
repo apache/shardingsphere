@@ -26,7 +26,7 @@ import org.apache.shardingsphere.shardingproxy.transport.mysql.constant.ColumnTy
 import org.apache.shardingsphere.shardingproxy.transport.mysql.packet.command.CommandResponsePackets;
 import org.apache.shardingsphere.shardingproxy.transport.mysql.packet.command.query.ColumnDefinition41Packet;
 import org.apache.shardingsphere.shardingproxy.transport.mysql.packet.command.query.FieldCountPacket;
-import org.apache.shardingsphere.shardingproxy.transport.mysql.packet.command.query.QueryResponsePackets;
+import org.apache.shardingsphere.shardingproxy.transport.mysql.packet.command.query.PostgreSQLQueryResponsePackets;
 import org.apache.shardingsphere.shardingproxy.transport.mysql.packet.generic.EofPacket;
 
 import java.sql.SQLException;
@@ -58,7 +58,7 @@ public final class ShowDatabasesBackendHandler implements TextProtocolBackendHan
         FieldCountPacket fieldCountPacket = new FieldCountPacket(++sequenceId, 1);
         Collection<ColumnDefinition41Packet> columnDefinition41Packets = new ArrayList<>(1);
         columnDefinition41Packets.add(new ColumnDefinition41Packet(++sequenceId, "", "", "", "Database", "", 100, ColumnType.MYSQL_TYPE_VARCHAR, 0));
-        QueryResponsePackets result = new QueryResponsePackets(fieldCountPacket, columnDefinition41Packets, new EofPacket(++sequenceId));
+        PostgreSQLQueryResponsePackets result = new PostgreSQLQueryResponsePackets(fieldCountPacket, columnDefinition41Packets, new EofPacket(++sequenceId));
         currentSequenceId = result.getPackets().size();
         columnCount = result.getColumnCount();
         columnTypes.addAll(result.getColumnTypes());
