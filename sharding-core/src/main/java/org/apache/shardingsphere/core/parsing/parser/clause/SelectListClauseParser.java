@@ -202,16 +202,10 @@ public abstract class SelectListClauseParser implements SQLClauseParser {
     }
     
     private SelectItem getAggregationDistinctSelectItem(final SelectStatement selectStatement, final AggregationType aggregationType, final int beginPosition, final String innerExpression) {
-        Optional<String> alias = aliasExpressionParser.parseSelectItemAlias();
-        Optional<String> autoAlias = Optional.absent();
-        if (!alias.isPresent()) {
-            autoAlias = Optional.of(DerivedAlias.AGGREGATION_DISTINCT_DERIVED.getDerivedAlias(selectStatement.getAggregationDistinctSelectItems().size()));
-            alias = autoAlias;
-        }
+        Optional<String> alias = aliasExpressionParser.parseSelectItemAlias().isPresent() ? aliasExpressionParser.parseSelectItemAlias() : Optional.of(DerivedAlias.AGGREGATION_DISTINCT_DERIVED.getDerivedAlias(selectStatement.getAggregationDistinctSelectItems().size()));
         AggregationDistinctSelectItem result = new AggregationDistinctSelectItem(
                 aggregationType, innerExpression, alias, getDistinctColumnName(innerExpression));
-        
-        selectStatement.getSQLTokens().add(new AggregationDistinctToken(beginPosition, SQLUtil.getExactlyValue(aggregationType.name() + innerExpression), result.getDistinctColumnName(), autoAlias));
+        selectStatement.getSQLTokens().add(new AggregationDistinctToken(beginPosition, SQLUtil.getExactlyValue(aggregationType.name() + innerExpression), result.getDistinctColumnName(), alias));
         return result;
     }
     
