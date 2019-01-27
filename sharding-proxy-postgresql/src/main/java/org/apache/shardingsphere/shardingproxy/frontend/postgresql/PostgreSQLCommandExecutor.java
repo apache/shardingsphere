@@ -52,8 +52,6 @@ public final class PostgreSQLCommandExecutor implements Runnable {
     
     private final FrontendHandler frontendHandler;
     
-    private int currentSequenceId;
-    
     private final RootInvokeHook rootInvokeHook = new SPIRootInvokeHook();
     
     @Override
@@ -71,8 +69,9 @@ public final class PostgreSQLCommandExecutor implements Runnable {
             for (DatabasePacket each : responsePackets.get().getPackets()) {
                 context.write(each);
             }
-            if (commandPacket instanceof PostgreSQLQueryCommandPacket && !(responsePackets.get().getHeadPacket() instanceof ReadyForQuery) && !(responsePackets.get().getHeadPacket() instanceof ErrorResponse)) {
-                writeMoreResults((PostgreSQLQueryCommandPacket) commandPacket, responsePackets.get().getPackets().size());
+            if (commandPacket instanceof PostgreSQLQueryCommandPacket && !(responsePackets.get().getHeadPacket() instanceof ReadyForQuery)
+                && !(responsePackets.get().getHeadPacket() instanceof ErrorResponse)) {
+                writeMoreResults((PostgreSQLQueryCommandPacket) commandPacket);
             }
             connectionSize = backendConnection.getConnectionSize();
         } catch (final SQLException ex) {
@@ -91,11 +90,10 @@ public final class PostgreSQLCommandExecutor implements Runnable {
         return PostgreSQLCommandPacketFactory.newInstance(payload, backendConnection);
     }
     
-    private void writeMoreResults(final PostgreSQLQueryCommandPacket queryCommandPacket, final int headPacketsCount) throws SQLException {
+    private void writeMoreResults(final PostgreSQLQueryCommandPacket queryCommandPacket) throws SQLException {
         if (!context.channel().isActive()) {
             return;
         }
-        currentSequenceId = headPacketsCount;
         int count = 0;
         int proxyFrontendFlushThreshold = GlobalRegistry.getInstance().getShardingProperties().<Integer>getValue(ShardingPropertiesConstant.PROXY_FRONTEND_FLUSH_THRESHOLD);
         while (queryCommandPacket.next()) {
@@ -110,7 +108,6 @@ public final class PostgreSQLCommandExecutor implements Runnable {
                 }
             }
             DatabasePacket resultValue = queryCommandPacket.getResultValue();
-            currentSequenceId = resultValue.getSequenceId();
             context.write(resultValue);
             if (proxyFrontendFlushThreshold == count) {
                 context.flush();
