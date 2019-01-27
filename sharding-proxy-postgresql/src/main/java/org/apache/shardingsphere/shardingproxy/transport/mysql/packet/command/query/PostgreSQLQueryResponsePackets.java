@@ -31,14 +31,14 @@ import java.util.List;
  *
  * @author zhangliang
  */
-public final class QueryResponsePackets extends CommandResponsePackets {
+public final class PostgreSQLQueryResponsePackets extends CommandResponsePackets {
     
     private final FieldCountPacket fieldCountPacket;
     
     @Getter
     private final Collection<ColumnDefinition41Packet> columnDefinition41Packets;
     
-    public QueryResponsePackets(final FieldCountPacket fieldCountPacket, final Collection<ColumnDefinition41Packet> columnDefinition41Packets, final EofPacket eofPacket) {
+    public PostgreSQLQueryResponsePackets(final FieldCountPacket fieldCountPacket, final Collection<ColumnDefinition41Packet> columnDefinition41Packets, final EofPacket eofPacket) {
         getPackets().add(fieldCountPacket);
         getPackets().addAll(columnDefinition41Packets);
         getPackets().add(eofPacket);
