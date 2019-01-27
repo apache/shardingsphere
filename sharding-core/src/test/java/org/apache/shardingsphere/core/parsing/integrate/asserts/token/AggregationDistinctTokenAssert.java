@@ -52,8 +52,8 @@ final class AggregationDistinctTokenAssert {
     }
     
     private void assertAggregationDistinctToken(final AggregationDistinctToken actual, final ExpectedAggregationDistinctToken expected) {
-        assertThat(assertMessage.getFullAssertMessage("Aggregation distinct tokens begin position assertion error: "), actual.getStartIndex(), is(expected.getBeginPosition()));
-        assertThat(assertMessage.getFullAssertMessage("Aggregation distinct tokens original literals assertion error: "), actual.getOriginalLiterals(), is(expected.getOriginalLiterals()));
+        assertThat(assertMessage.getFullAssertMessage("Aggregation distinct tokens start index assertion error: "), actual.getStartIndex(), is(expected.getStartIndex()));
+        assertThat(assertMessage.getFullAssertMessage("Aggregation distinct tokens stop index assertion error: "), actual.getStopIndex(), is(expected.getStopIndex()));
         assertThat(assertMessage.getFullAssertMessage("Aggregation distinct tokens column name assertion error: "), actual.getColumnName(), is(expected.getColumnName()));
     }
     
