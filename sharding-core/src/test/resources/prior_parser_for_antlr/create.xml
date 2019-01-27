@@ -65,7 +65,7 @@
             <table name="t_log" />
         </tables>
         <tokens>
-            <index-token begin-position="13" original-literals="t_log_index" table-name="t_log" />
+            <index-token start-index="13" stop-index="23" table-name="t_log" />
             <table-token begin-position="28" original-literals="t_log" />
         </tokens>
     </parser-result>
@@ -75,7 +75,7 @@
             <table name="t_log" />
         </tables>
         <tokens>
-            <index-token begin-position="20" original-literals="t_log_index" table-name="t_log" />
+            <index-token start-index="20" stop-index="30" table-name="t_log" />
             <table-token begin-position="35" original-literals="t_log" />
         </tokens>
     </parser-result>

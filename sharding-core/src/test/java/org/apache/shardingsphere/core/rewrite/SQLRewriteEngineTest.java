@@ -436,14 +436,14 @@ public final class SQLRewriteEngineTest {
         tableTokens = new HashMap<>(1, 1);
         tableTokens.put("table_x", "table_y");
         selectStatement.addSQLToken(new TableToken(18, 0, "table_x"));
-        selectStatement.addSQLToken(new SchemaToken(29, "table_x", "table_x"));
+        selectStatement.addSQLToken(new SchemaToken(29, 35, "table_x"));
         SQLRewriteEngine rewriteEngine = new SQLRewriteEngine(shardingRule, "SHOW CREATE TABLE table_x ON table_x", DatabaseType.MySQL, selectStatement, null, Collections.emptyList());
         assertThat(rewriteEngine.rewrite(false).toSQL(null, tableTokens, shardingRule, shardingDataSourceMetaData).getSql(), is("SHOW CREATE TABLE table_y ON db0"));
     }
     
     @Test
     public void assertIndexTokenForIndexNameTableName() {
-        selectStatement.addSQLToken(new IndexToken(13, "index_name", "table_x"));
+        selectStatement.addSQLToken(new IndexToken(13, 22, "table_x"));
         selectStatement.addSQLToken(new TableToken(27, 0, "table_x"));
         SQLRewriteEngine rewriteEngine = new SQLRewriteEngine(shardingRule, "CREATE INDEX index_name ON table_x ('column')", DatabaseType.MySQL, selectStatement, null, Collections.emptyList());
         assertThat(rewriteEngine.rewrite(false).toSQL(null, tableTokens, shardingRule, shardingDataSourceMetaData).getSql(), is("CREATE INDEX index_name_table_1 ON table_1 ('column')"));
@@ -451,9 +451,9 @@ public final class SQLRewriteEngineTest {
     
     @Test
     public void assertIndexTokenForIndexNameTableNameWithoutLogicTableName() {
-        selectStatement.addSQLToken(new IndexToken(13, "logic_index", ""));
+        selectStatement.addSQLToken(new IndexToken(13, 23, ""));
         selectStatement.addSQLToken(new TableToken(28, 0, "table_x"));
-        SQLRewriteEngine rewriteEngine = new SQLRewriteEngine(shardingRule, "CREATE INDEX index_names ON table_x ('column')", DatabaseType.MySQL, selectStatement, null, Collections.emptyList());
+        SQLRewriteEngine rewriteEngine = new SQLRewriteEngine(shardingRule, "CREATE INDEX logic_index ON table_x ('column')", DatabaseType.MySQL, selectStatement, null, Collections.emptyList());
         assertThat(rewriteEngine.rewrite(false).toSQL(null, tableTokens, shardingRule, shardingDataSourceMetaData).getSql(), is("CREATE INDEX logic_index_table_1 ON table_1 ('column')"));
     }
     
@@ -467,7 +467,7 @@ public final class SQLRewriteEngineTest {
     @Test
     public void assertTableTokenWithoutBackQuoteFromSchemaForShow() {
         showTablesStatement.addSQLToken(new TableToken(18, 0, "table_x"));
-        showTablesStatement.addSQLToken(new SchemaToken(31, "'sharding_db'", "table_x"));
+        showTablesStatement.addSQLToken(new SchemaToken(31, 43, "table_x"));
         SQLRewriteEngine rewriteEngine = new SQLRewriteEngine(shardingRule, "SHOW COLUMNS FROM table_x FROM 'sharding_db'", DatabaseType.MySQL, showTablesStatement, null, Collections.emptyList());
         Map<String, String> logicAndActualTableMap = new LinkedHashMap<>();
         logicAndActualTableMap.put("table_x", "table_x");

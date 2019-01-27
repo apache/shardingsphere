@@ -402,7 +402,7 @@
         <tokens>
             <table-token begin-position="16" original-literals="t_order" />
             <table-token begin-position="56" original-literals="t_order_item" />
-            <index-token begin-position="38" original-literals="order_index" table-name="t_order" />
+            <index-token start-index="38" stop-index="48" table-name="t_order" />
         </tokens>
         <or-condition>
             <and-condition>
@@ -548,7 +548,7 @@
         </select-items>
         <tokens>
             <table-token begin-position="37" original-literals="t_order" />
-            <aggregation-distinct-token begin-position="7" original-literals="SUM(DISTINCT order_id)" column-name="order_id" alias="s" />
+            <aggregation-distinct-token start-index="7" stop-index="28" column-name="order_id" alias="s" />
         </tokens>
     </parser-result>
 
@@ -563,7 +563,7 @@
         </select-items>
         <tokens>
             <table-token begin-position="39" original-literals="t_order" />
-            <aggregation-distinct-token begin-position="7" original-literals="COUNT(DISTINCT order_id)" column-name="order_id" alias="c" />
+            <aggregation-distinct-token start-index="7" stop-index="30" column-name="order_id" alias="c" />
         </tokens>
     </parser-result>
         
@@ -581,7 +581,7 @@
         </select-items>
         <tokens>
             <table-token begin-position="35" original-literals="t_order" />
-            <aggregation-distinct-token begin-position="7" original-literals="AVG(DISTINCT order_id)" column-name="order_id" alias="AGGREGATION_DISTINCT_DERIVED_0" />
+            <aggregation-distinct-token start-index="7" stop-index="28" column-name="order_id" alias="AGGREGATION_DISTINCT_DERIVED_0" />
         </tokens>
     </parser-result>
     
@@ -597,8 +597,8 @@
         </select-items>
         <tokens>
             <table-token begin-position="61" original-literals="t_order" />
-            <aggregation-distinct-token begin-position="7" original-literals="COUNT(DISTINCT order_id)" column-name="order_id" alias="AGGREGATION_DISTINCT_DERIVED_0" />
-            <aggregation-distinct-token begin-position="33" original-literals="SUM(DISTINCT order_id)" column-name="order_id" alias="AGGREGATION_DISTINCT_DERIVED_1" />
+            <aggregation-distinct-token start-index="7" stop-index="30" column-name="order_id" alias="AGGREGATION_DISTINCT_DERIVED_0" />
+            <aggregation-distinct-token start-index="33" stop-index="54" column-name="order_id" alias="AGGREGATION_DISTINCT_DERIVED_1" />
         </tokens>
     </parser-result>
     
@@ -619,7 +619,7 @@
         </order-by-columns>
         <tokens>
             <table-token begin-position="49" original-literals="t_order" />
-            <aggregation-distinct-token begin-position="17" original-literals="COUNT(DISTINCT order_id)" column-name="order_id" alias="c" />
+            <aggregation-distinct-token start-index="17" stop-index="40" column-name="order_id" alias="c" />
         </tokens>
     </parser-result>
     
@@ -640,7 +640,7 @@
         </order-by-columns>
         <tokens>
             <table-token begin-position="49" original-literals="t_order" />
-            <aggregation-distinct-token begin-position="7" original-literals="COUNT(DISTINCT order_id)" column-name="order_id" alias="c" />
+            <aggregation-distinct-token start-index="7" stop-index="30" column-name="order_id" alias="c" />
         </tokens>
     </parser-result>
     
@@ -674,7 +674,7 @@
         </select-items>
         <tokens>
             <table-token begin-position="49" original-literals="t_order" />
-            <aggregation-distinct-token begin-position="7" original-literals="COUNT(DISTINCT user_id + order_id)" column-name="user_id+order_id" alias="c" />
+            <aggregation-distinct-token start-index="7" stop-index="40" column-name="user_id+order_id" alias="c" />
         </tokens>
     </parser-result>
     
@@ -691,8 +691,8 @@
         </select-items>
         <tokens>
             <table-token begin-position="77" original-literals="t_order" />
-            <aggregation-distinct-token begin-position="7" original-literals="SUM(DISTINCT order_id)" column-name="order_id" alias="AGGREGATION_DISTINCT_DERIVED_0" />
-            <aggregation-distinct-token begin-position="30" original-literals="count(DISTINCT order_id)" column-name="order_id" alias="AGGREGATION_DISTINCT_DERIVED_1" />
+            <aggregation-distinct-token start-index="7" stop-index="28" column-name="order_id" alias="AGGREGATION_DISTINCT_DERIVED_0" />
+            <aggregation-distinct-token start-index="30" stop-index="53" column-name="order_id" alias="AGGREGATION_DISTINCT_DERIVED_1" />
         </tokens>
     </parser-result>
     

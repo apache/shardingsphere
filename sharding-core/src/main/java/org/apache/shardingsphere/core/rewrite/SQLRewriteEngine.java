@@ -191,20 +191,19 @@ public final class SQLRewriteEngine {
     }
     
     private void appendSchemaPlaceholder(final SQLBuilder sqlBuilder, final SchemaToken schemaToken, final int count) {
-        sqlBuilder.appendPlaceholder(new SchemaPlaceholder(schemaToken.getSchemaName().toLowerCase(), schemaToken.getTableName().toLowerCase()));
-        int beginPosition = schemaToken.getStartIndex() + schemaToken.getOriginalLiterals().length();
-        appendRest(sqlBuilder, count, beginPosition);
+        String schemaName = originalSQL.substring(schemaToken.getStartIndex(), schemaToken.getStopIndex() + 1);
+        sqlBuilder.appendPlaceholder(new SchemaPlaceholder(schemaName.toLowerCase(), schemaToken.getTableName().toLowerCase()));
+        appendRest(sqlBuilder, count, schemaToken.getStopIndex() + 1);
     }
     
     private void appendIndexPlaceholder(final SQLBuilder sqlBuilder, final IndexToken indexToken, final int count) {
-        String indexName = indexToken.getIndexName().toLowerCase();
+        String indexName = originalSQL.substring(indexToken.getStartIndex(), indexToken.getStopIndex() + 1);
         String logicTableName = indexToken.getTableName().toLowerCase();
         if (Strings.isNullOrEmpty(logicTableName)) {
             logicTableName = shardingRule.getLogicTableName(indexName);
         }
         sqlBuilder.appendPlaceholder(new IndexPlaceholder(indexName, logicTableName));
-        int beginPosition = indexToken.getStartIndex() + indexToken.getOriginalLiterals().length();
-        appendRest(sqlBuilder, count, beginPosition);
+        appendRest(sqlBuilder, count, indexToken.getStopIndex() + 1);
     }
     
     private void appendItemsToken(final SQLBuilder sqlBuilder, final ItemsToken itemsToken, final int count, final boolean isRewrite) {
@@ -275,11 +274,11 @@ public final class SQLRewriteEngine {
     
     private void appendAggregationDistinctPlaceholder(final SQLBuilder sqlBuilder, final AggregationDistinctToken distinctToken, final int count, final boolean isRewrite) {
         if (!isRewrite) {
-            sqlBuilder.appendLiterals(distinctToken.getOriginalLiterals()); 
+            sqlBuilder.appendLiterals(originalSQL.substring(distinctToken.getStartIndex(), distinctToken.getStopIndex() + 1)); 
         } else {
             sqlBuilder.appendPlaceholder(new AggregationDistinctPlaceholder(distinctToken.getColumnName().toLowerCase(), null, distinctToken.getAlias()));
         }
-        appendRest(sqlBuilder, count, distinctToken.getStartIndex() + distinctToken.getOriginalLiterals().length());
+        appendRest(sqlBuilder, count, distinctToken.getStopIndex() + 1);
     }
     
     private void appendRest(final SQLBuilder sqlBuilder, final int count, final int beginPosition) {

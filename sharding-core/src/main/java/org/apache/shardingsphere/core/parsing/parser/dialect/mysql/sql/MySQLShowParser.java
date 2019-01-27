@@ -43,6 +43,7 @@ import org.apache.shardingsphere.core.util.SQLUtil;
  * Show parser for MySQL.
  *
  * @author zhangliang
+ * @author panjuan
  */
 @RequiredArgsConstructor
 public final class MySQLShowParser extends AbstractShowParser {
@@ -123,7 +124,7 @@ public final class MySQLShowParser extends AbstractShowParser {
         tableReferencesClauseParser.parseSingleTableWithoutAlias(result);
         if (lexerEngine.skipIfEqual(DefaultKeyword.FROM, DefaultKeyword.IN)) {
             int beginPosition = lexerEngine.getCurrentToken().getEndPosition() - lexerEngine.getCurrentToken().getLiterals().length();
-            result.addSQLToken(new SchemaToken(beginPosition, lexerEngine.getCurrentToken().getLiterals(), result.getTables().getSingleTableName()));
+            result.addSQLToken(new SchemaToken(beginPosition, lexerEngine.getCurrentToken().getEndPosition() - 1, result.getTables().getSingleTableName()));
         }
         return result;
     }
@@ -140,7 +141,7 @@ public final class MySQLShowParser extends AbstractShowParser {
         tableReferencesClauseParser.parseSingleTableWithoutAlias(result);
         if (lexerEngine.skipIfEqual(DefaultKeyword.FROM, DefaultKeyword.IN)) {
             int beginPosition = lexerEngine.getCurrentToken().getEndPosition() - lexerEngine.getCurrentToken().getLiterals().length();
-            result.addSQLToken(new SchemaToken(beginPosition, lexerEngine.getCurrentToken().getLiterals(), result.getTables().getSingleTableName()));
+            result.addSQLToken(new SchemaToken(beginPosition, lexerEngine.getCurrentToken().getEndPosition() - 1, result.getTables().getSingleTableName()));
         }
         return result;
     }
