@@ -27,7 +27,7 @@ import org.apache.shardingsphere.shardingproxy.transport.mysql.constant.ColumnTy
 import org.apache.shardingsphere.shardingproxy.transport.mysql.packet.command.CommandResponsePackets;
 import org.apache.shardingsphere.shardingproxy.transport.mysql.packet.command.query.ColumnDefinition41Packet;
 import org.apache.shardingsphere.shardingproxy.transport.mysql.packet.command.query.FieldCountPacket;
-import org.apache.shardingsphere.shardingproxy.transport.mysql.packet.command.query.PostgreSQLQueryResponsePackets;
+import org.apache.shardingsphere.shardingproxy.transport.postgresql.packet.command.query.PostgreSQLQueryResponsePackets;
 import org.apache.shardingsphere.shardingproxy.transport.mysql.packet.generic.EofPacket;
 import org.apache.shardingsphere.shardingproxy.transport.mysql.packet.generic.ErrPacket;
 
