@@ -43,6 +43,7 @@ import org.apache.shardingsphere.core.rule.ShardingRule;
  * Select item filler.
  *
  * @author zhangliang
+ * @author panjuan
  */
 public final class SelectItemFiller implements SQLStatementFiller {
     
@@ -65,7 +66,7 @@ public final class SelectItemFiller implements SQLStatementFiller {
             return;
         }
         if (sqlSegment instanceof AggregationSelectItemSegment) {
-            fillAggregationSelectItemSegment((AggregationSelectItemSegment) sqlSegment, selectStatement, sql);
+            fillAggregationSelectItemSegment((AggregationSelectItemSegment) sqlSegment, selectStatement);
             return;
         }
         if (sqlSegment instanceof SubquerySegment) {
@@ -98,23 +99,22 @@ public final class SelectItemFiller implements SQLStatementFiller {
         selectStatement.getItems().add(new CommonSelectItem(selectItemSegment.getExpression(), selectItemSegment.getAlias()));
     }
     
-    private void fillAggregationSelectItemSegment(final AggregationSelectItemSegment selectItemSegment, final SelectStatement selectStatement, final String sql) {
-        String functionExpression = sql.substring(selectItemSegment.getStartIndex(), selectItemSegment.getStopIndex() + 1);
+    private void fillAggregationSelectItemSegment(final AggregationSelectItemSegment selectItemSegment, final SelectStatement selectStatement) {
         if (selectItemSegment instanceof AggregationDistinctSelectItemSegment) {
-            fillAggregationDistinctSelectItemSegment((AggregationDistinctSelectItemSegment) selectItemSegment, selectStatement, functionExpression);
+            fillAggregationDistinctSelectItemSegment((AggregationDistinctSelectItemSegment) selectItemSegment, selectStatement);
         } else {
             selectStatement.getItems().add(new AggregationSelectItem(selectItemSegment.getType(), selectItemSegment.getInnerExpression(), selectItemSegment.getAlias()));
         }
     }
     
-    private void fillAggregationDistinctSelectItemSegment(final AggregationDistinctSelectItemSegment selectItemSegment, final SelectStatement selectStatement, final String functionExpression) {
+    private void fillAggregationDistinctSelectItemSegment(final AggregationDistinctSelectItemSegment selectItemSegment, final SelectStatement selectStatement) {
         selectStatement.getItems().add(
                 new AggregationDistinctSelectItem(selectItemSegment.getType(), selectItemSegment.getInnerExpression(), selectItemSegment.getAlias(), selectItemSegment.getDistinctExpression()));
         Optional<String> derivedAlias = Optional.absent();
         if (DerivedAlias.isDerivedAlias(selectItemSegment.getAlias().get())) {
             derivedAlias = Optional.of(selectItemSegment.getAlias().get());
         }
-        selectStatement.getSQLTokens().add(new AggregationDistinctToken(selectItemSegment.getStartIndex(), functionExpression, selectItemSegment.getDistinctExpression(), derivedAlias));
+        selectStatement.getSQLTokens().add(new AggregationDistinctToken(selectItemSegment.getStartIndex(), selectItemSegment.getStopIndex(), selectItemSegment.getDistinctExpression(), derivedAlias));
     }
     
     private void fillSubquerySegment(
