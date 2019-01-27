@@ -49,8 +49,8 @@ public final class PostgreSQLFrontendHandler extends FrontendHandler {
     @Override
     protected void auth(final ChannelHandlerContext context, final ByteBuf message) {
         if (8 == message.markReaderIndex().readInt() && 80877103 == message.readInt()) {
-            context.writeAndFlush(new SSLNegative());
             setAuthorized(false);
+            context.writeAndFlush(new SSLNegative());
             return;
         }
         message.resetReaderIndex();
