@@ -28,6 +28,7 @@ import org.apache.shardingsphere.shardingproxy.runtime.ChannelRegistry;
 import org.apache.shardingsphere.shardingproxy.runtime.GlobalRegistry;
 import org.apache.shardingsphere.shardingproxy.transport.postgresql.packet.PostgreSQLPacketPayload;
 import org.apache.shardingsphere.shardingproxy.transport.postgresql.packet.handshake.PostgreSQLConnectionIdGenerator;
+import org.apache.shardingsphere.shardingproxy.transport.postgresql.packet.handshake.SSLNegative;
 import org.apache.shardingsphere.shardingproxy.transport.postgresql.packet.handshake.StartupMessage;
 
 /**
@@ -47,6 +48,12 @@ public final class PostgreSQLFrontendHandler extends FrontendHandler {
     
     @Override
     protected void auth(final ChannelHandlerContext context, final ByteBuf message) {
+        if (8 == message.markReaderIndex().readInt() && 80877103 == message.readInt()) {
+            context.writeAndFlush(new SSLNegative());
+            setAuthorized(false);
+            return;
+        }
+        message.resetReaderIndex();
         try (PostgreSQLPacketPayload payload = new PostgreSQLPacketPayload(message)) {
             StartupMessage startupMessage = new StartupMessage(payload);
             String databaseName = startupMessage.getParametersMap().get("database");
