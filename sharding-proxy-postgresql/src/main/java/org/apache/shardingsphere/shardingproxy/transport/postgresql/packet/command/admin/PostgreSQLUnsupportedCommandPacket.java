@@ -34,7 +34,7 @@ import org.apache.shardingsphere.shardingproxy.transport.postgresql.packet.gener
 public final class PostgreSQLUnsupportedCommandPacket implements PostgreSQLCommandPacket {
     
     @Getter
-    private final int messageType;
+    private final char messageType;
     
     @Override
     public Optional<PostgreSQLCommandResponsePackets> execute() {
