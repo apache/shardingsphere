@@ -51,8 +51,8 @@ public abstract class FrontendHandler extends ChannelInboundHandlerAdapter {
     @Override
     public final void channelRead(final ChannelHandlerContext context, final Object message) {
         if (!authorized) {
-            auth(context, (ByteBuf) message);
             authorized = true;
+            auth(context, (ByteBuf) message);
         } else {
             executeCommand(context, (ByteBuf) message);
         }
