@@ -20,7 +20,7 @@ package org.apache.shardingsphere.shardingproxy.backend.communication.jdbc.execu
 import lombok.Getter;
 import lombok.RequiredArgsConstructor;
 import org.apache.shardingsphere.core.merger.QueryResult;
-import org.apache.shardingsphere.shardingproxy.transport.mysql.packet.command.query.QueryResponsePackets;
+import org.apache.shardingsphere.shardingproxy.transport.mysql.packet.command.query.PostgreSQLQueryResponsePackets;
 
 import java.util.LinkedList;
 import java.util.List;
@@ -34,7 +34,7 @@ import java.util.List;
 @Getter
 public final class ExecuteQueryResponse implements ExecuteResponse {
     
-    private final QueryResponsePackets queryResponsePackets;
+    private final PostgreSQLQueryResponsePackets postgreSQLQueryResponsePackets;
     
     private final List<QueryResult> queryResults = new LinkedList<>();
 }
