@@ -19,21 +19,21 @@ package org.apache.shardingsphere.shardingproxy.transport.postgresql.packet.comm
 
 import lombok.Getter;
 import org.apache.shardingsphere.shardingproxy.transport.mysql.constant.ColumnType;
-import org.apache.shardingsphere.shardingproxy.transport.mysql.packet.command.CommandResponsePackets;
 import org.apache.shardingsphere.shardingproxy.transport.mysql.packet.command.query.ColumnDefinition41Packet;
 import org.apache.shardingsphere.shardingproxy.transport.mysql.packet.command.query.FieldCountPacket;
 import org.apache.shardingsphere.shardingproxy.transport.mysql.packet.generic.EofPacket;
+import org.apache.shardingsphere.shardingproxy.transport.postgresql.packet.command.PostgreSQLCommandResponsePackets;
 
 import java.util.Collection;
 import java.util.LinkedList;
 import java.util.List;
 
 /**
- * Query response packets.
+ * PostgreSQL query response packets.
  *
- * @author zhangliang
+ * @author zhangyonglun
  */
-public final class PostgreSQLQueryResponsePackets extends CommandResponsePackets {
+public final class PostgreSQLQueryResponsePackets extends PostgreSQLCommandResponsePackets {
     
     private final FieldCountPacket fieldCountPacket;
     
