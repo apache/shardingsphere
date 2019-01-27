@@ -17,6 +17,7 @@
 
 package org.apache.shardingsphere.shardingproxy.transport.postgresql.packet.command.query;
 
+import lombok.Getter;
 import lombok.RequiredArgsConstructor;
 
 /**
@@ -25,6 +26,7 @@ import lombok.RequiredArgsConstructor;
  * @author zhangyonglun
  */
 @RequiredArgsConstructor
+@Getter
 public final class ColumnDescription {
     
     private final String columnName;
@@ -37,7 +39,7 @@ public final class ColumnDescription {
     
     private final int columnLength;
     
-    private final int typeModifier;
+    private final int typeModifier = -1;
     
-    private final int dataFormat;
+    private final int dataFormat = 0;
 }
