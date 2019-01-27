@@ -65,7 +65,7 @@ public final class PostgreSQLFrontendHandler extends FrontendHandler {
             }
             getBackendConnection().setCurrentSchema(databaseName);
             // TODO send a md5 authentication request message
-            context.writeAndFlush(new AuthenticationOK(true));
+            context.write(new AuthenticationOK(true));
             context.writeAndFlush(new ReadyForQuery());
         }
     }
