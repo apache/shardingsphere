@@ -20,7 +20,7 @@ package org.apache.shardingsphere.shardingproxy.backend.communication.jdbc.execu
 import lombok.Getter;
 import lombok.RequiredArgsConstructor;
 import org.apache.shardingsphere.core.merger.QueryResult;
-import org.apache.shardingsphere.shardingproxy.transport.mysql.packet.command.query.QueryResponsePackets;
+import org.apache.shardingsphere.shardingproxy.transport.mysql.packet.command.query.PostgreSQLQueryResponsePackets;
 
 /**
  * Execute query response unit.
@@ -31,7 +31,7 @@ import org.apache.shardingsphere.shardingproxy.transport.mysql.packet.command.qu
 @Getter
 public final class ExecuteQueryResponseUnit implements ExecuteResponseUnit {
     
-    private final QueryResponsePackets queryResponsePackets;
+    private final PostgreSQLQueryResponsePackets postgreSQLQueryResponsePackets;
     
     private final QueryResult queryResult;
 }
