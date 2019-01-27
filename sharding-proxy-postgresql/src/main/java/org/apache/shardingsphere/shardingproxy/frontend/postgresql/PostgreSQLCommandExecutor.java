@@ -26,15 +26,13 @@ import org.apache.shardingsphere.shardingproxy.backend.communication.jdbc.connec
 import org.apache.shardingsphere.shardingproxy.frontend.common.FrontendHandler;
 import org.apache.shardingsphere.shardingproxy.runtime.GlobalRegistry;
 import org.apache.shardingsphere.shardingproxy.transport.common.packet.DatabasePacket;
-import org.apache.shardingsphere.shardingproxy.transport.mysql.constant.ServerErrorCode;
-import org.apache.shardingsphere.shardingproxy.transport.mysql.packet.command.query.QueryCommandPacket;
-import org.apache.shardingsphere.shardingproxy.transport.mysql.packet.generic.EofPacket;
-import org.apache.shardingsphere.shardingproxy.transport.mysql.packet.generic.ErrPacket;
-import org.apache.shardingsphere.shardingproxy.transport.mysql.packet.generic.OKPacket;
 import org.apache.shardingsphere.shardingproxy.transport.postgresql.packet.PostgreSQLPacketPayload;
 import org.apache.shardingsphere.shardingproxy.transport.postgresql.packet.command.PostgreSQLCommandPacket;
 import org.apache.shardingsphere.shardingproxy.transport.postgresql.packet.command.PostgreSQLCommandPacketFactory;
 import org.apache.shardingsphere.shardingproxy.transport.postgresql.packet.command.PostgreSQLCommandResponsePackets;
+import org.apache.shardingsphere.shardingproxy.transport.postgresql.packet.command.query.PostgreSQLQueryCommandPacket;
+import org.apache.shardingsphere.shardingproxy.transport.postgresql.packet.generic.ErrorResponse;
+import org.apache.shardingsphere.shardingproxy.transport.postgresql.packet.generic.ReadyForQuery;
 import org.apache.shardingsphere.spi.root.RootInvokeHook;
 import org.apache.shardingsphere.spi.root.SPIRootInvokeHook;
 
@@ -73,16 +71,16 @@ public final class PostgreSQLCommandExecutor implements Runnable {
             for (DatabasePacket each : responsePackets.get().getPackets()) {
                 context.write(each);
             }
-            if (commandPacket instanceof QueryCommandPacket && !(responsePackets.get().getHeadPacket() instanceof OKPacket) && !(responsePackets.get().getHeadPacket() instanceof ErrPacket)) {
-                writeMoreResults((QueryCommandPacket) commandPacket, responsePackets.get().getPackets().size());
+            if (commandPacket instanceof PostgreSQLQueryCommandPacket && !(responsePackets.get().getHeadPacket() instanceof ReadyForQuery) && !(responsePackets.get().getHeadPacket() instanceof ErrorResponse)) {
+                writeMoreResults((PostgreSQLQueryCommandPacket) commandPacket, responsePackets.get().getPackets().size());
             }
             connectionSize = backendConnection.getConnectionSize();
         } catch (final SQLException ex) {
-            context.write(new ErrPacket(++currentSequenceId, ex));
+            context.write(new ErrorResponse());
             // CHECKSTYLE:OFF
         } catch (final Exception ex) {
             // CHECKSTYLE:ON
-            context.write(new ErrPacket(1, ServerErrorCode.ER_STD_UNKNOWN_EXCEPTION, ex.getMessage()));
+            context.write(new ErrorResponse());
         } finally {
             context.flush();
             rootInvokeHook.finish(connectionSize);
@@ -93,7 +91,7 @@ public final class PostgreSQLCommandExecutor implements Runnable {
         return PostgreSQLCommandPacketFactory.newInstance(payload, backendConnection);
     }
     
-    private void writeMoreResults(final QueryCommandPacket queryCommandPacket, final int headPacketsCount) throws SQLException {
+    private void writeMoreResults(final PostgreSQLQueryCommandPacket queryCommandPacket, final int headPacketsCount) throws SQLException {
         if (!context.channel().isActive()) {
             return;
         }
@@ -119,6 +117,6 @@ public final class PostgreSQLCommandExecutor implements Runnable {
                 count = 0;
             }
         }
-        context.write(new EofPacket(++currentSequenceId));
+        context.write(new ErrorResponse());
     }
 }
