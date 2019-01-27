@@ -76,8 +76,7 @@ public final class ComQueryPacket implements QueryCommandPacket {
     @Override
     public Optional<CommandResponsePackets> execute() {
         log.debug("COM_QUERY received for Sharding-Proxy: {}", sql);
-        return GlobalRegistry.getInstance().isCircuitBreak()
-                ? Optional.of(new CommandResponsePackets(new ErrPacket(1, ServerErrorCode.ER_CIRCUIT_BREAK_MODE))) : Optional.of(textProtocolBackendHandler.execute());
+        return Optional.of(null);
     }
     
     @Override
