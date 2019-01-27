@@ -21,6 +21,7 @@ import io.netty.buffer.ByteBuf;
 import io.netty.channel.ChannelHandlerContext;
 import io.netty.channel.ChannelInboundHandlerAdapter;
 import lombok.Getter;
+import lombok.Setter;
 import lombok.SneakyThrows;
 import org.apache.shardingsphere.shardingproxy.backend.communication.jdbc.connection.BackendConnection;
 import org.apache.shardingsphere.shardingproxy.frontend.common.executor.ChannelThreadExecutorGroup;
@@ -33,6 +34,7 @@ import org.apache.shardingsphere.shardingproxy.runtime.GlobalRegistry;
  */
 public abstract class FrontendHandler extends ChannelInboundHandlerAdapter {
     
+    @Setter
     private volatile boolean authorized;
     
     @Getter
