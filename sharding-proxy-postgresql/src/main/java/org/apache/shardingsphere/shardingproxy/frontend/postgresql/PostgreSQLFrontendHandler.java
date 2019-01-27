@@ -78,7 +78,7 @@ public final class PostgreSQLFrontendHandler extends FrontendHandler {
     
     @Override
     protected void executeCommand(final ChannelHandlerContext context, final ByteBuf message) {
-        CommandExecutorSelector.getExecutor(getBackendConnection().getTransactionType(), context.channel().id()).execute(new CommandExecutor(context, message, this));
+        CommandExecutorSelector.getExecutor(getBackendConnection().getTransactionType(), context.channel().id()).execute(new PostgreSQLCommandExecutor(context, message, this));
     }
     
     @Override
