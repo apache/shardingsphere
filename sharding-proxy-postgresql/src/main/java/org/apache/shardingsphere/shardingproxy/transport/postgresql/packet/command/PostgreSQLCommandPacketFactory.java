@@ -22,9 +22,7 @@ import lombok.NoArgsConstructor;
 import org.apache.shardingsphere.shardingproxy.backend.communication.jdbc.connection.BackendConnection;
 import org.apache.shardingsphere.shardingproxy.transport.postgresql.packet.PostgreSQLPacketPayload;
 import org.apache.shardingsphere.shardingproxy.transport.postgresql.packet.command.admin.PostgreSQLUnsupportedCommandPacket;
-import org.apache.shardingsphere.shardingproxy.transport.postgresql.packet.command.query.Query;
-
-import java.sql.SQLException;
+import org.apache.shardingsphere.shardingproxy.transport.postgresql.packet.command.query.text.Query;
 
 /**
  * PostgreSQL command packet factory.
