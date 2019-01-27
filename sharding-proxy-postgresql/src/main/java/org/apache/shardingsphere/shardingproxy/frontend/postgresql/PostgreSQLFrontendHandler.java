@@ -27,6 +27,8 @@ import org.apache.shardingsphere.shardingproxy.frontend.mysql.CommandExecutor;
 import org.apache.shardingsphere.shardingproxy.runtime.ChannelRegistry;
 import org.apache.shardingsphere.shardingproxy.runtime.GlobalRegistry;
 import org.apache.shardingsphere.shardingproxy.transport.postgresql.packet.PostgreSQLPacketPayload;
+import org.apache.shardingsphere.shardingproxy.transport.postgresql.packet.generic.ReadyForQuery;
+import org.apache.shardingsphere.shardingproxy.transport.postgresql.packet.handshake.AuthenticationOK;
 import org.apache.shardingsphere.shardingproxy.transport.postgresql.packet.handshake.PostgreSQLConnectionIdGenerator;
 import org.apache.shardingsphere.shardingproxy.transport.postgresql.packet.handshake.SSLNegative;
 import org.apache.shardingsphere.shardingproxy.transport.postgresql.packet.handshake.StartupMessage;
@@ -63,6 +65,8 @@ public final class PostgreSQLFrontendHandler extends FrontendHandler {
             }
             getBackendConnection().setCurrentSchema(databaseName);
             // TODO send a md5 authentication request message
+            context.writeAndFlush(new AuthenticationOK(true));
+            context.writeAndFlush(new ReadyForQuery());
         }
     }
     
