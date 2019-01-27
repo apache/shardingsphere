@@ -41,6 +41,12 @@ import org.apache.shardingsphere.shardingproxy.transport.postgresql.packet.hands
 @RequiredArgsConstructor
 public final class PostgreSQLFrontendHandler extends FrontendHandler {
     
+    private static final int SSL_REQUEST_PAYLOAD_LENGTH = 8;
+    
+    private static final int SSL_REQUEST_CODE = 80877103;
+    
+    private static final String DATABASE_NAME_KEYWORD = "database";
+    
     @Override
     protected void handshake(final ChannelHandlerContext context) {
         int connectionId = PostgreSQLConnectionIdGenerator.getInstance().nextId();
@@ -50,7 +56,7 @@ public final class PostgreSQLFrontendHandler extends FrontendHandler {
     
     @Override
     protected void auth(final ChannelHandlerContext context, final ByteBuf message) {
-        if (8 == message.markReaderIndex().readInt() && 80877103 == message.readInt()) {
+        if (SSL_REQUEST_PAYLOAD_LENGTH == message.markReaderIndex().readInt() && SSL_REQUEST_CODE == message.readInt()) {
             setAuthorized(false);
             context.writeAndFlush(new SSLNegative());
             return;
@@ -58,7 +64,7 @@ public final class PostgreSQLFrontendHandler extends FrontendHandler {
         message.resetReaderIndex();
         try (PostgreSQLPacketPayload payload = new PostgreSQLPacketPayload(message)) {
             StartupMessage startupMessage = new StartupMessage(payload);
-            String databaseName = startupMessage.getParametersMap().get("database");
+            String databaseName = startupMessage.getParametersMap().get(DATABASE_NAME_KEYWORD);
             if (!Strings.isNullOrEmpty(databaseName) && !GlobalRegistry.getInstance().schemaExists(databaseName)) {
                 // TODO send an error message
                 return;
