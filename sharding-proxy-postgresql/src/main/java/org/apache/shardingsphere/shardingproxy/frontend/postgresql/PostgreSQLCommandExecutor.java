@@ -27,14 +27,14 @@ import org.apache.shardingsphere.shardingproxy.frontend.common.FrontendHandler;
 import org.apache.shardingsphere.shardingproxy.runtime.GlobalRegistry;
 import org.apache.shardingsphere.shardingproxy.transport.common.packet.DatabasePacket;
 import org.apache.shardingsphere.shardingproxy.transport.mysql.constant.ServerErrorCode;
-import org.apache.shardingsphere.shardingproxy.transport.mysql.packet.MySQLPacketPayload;
-import org.apache.shardingsphere.shardingproxy.transport.mysql.packet.command.CommandPacket;
-import org.apache.shardingsphere.shardingproxy.transport.mysql.packet.command.CommandPacketFactory;
-import org.apache.shardingsphere.shardingproxy.transport.mysql.packet.command.CommandResponsePackets;
 import org.apache.shardingsphere.shardingproxy.transport.mysql.packet.command.query.QueryCommandPacket;
 import org.apache.shardingsphere.shardingproxy.transport.mysql.packet.generic.EofPacket;
 import org.apache.shardingsphere.shardingproxy.transport.mysql.packet.generic.ErrPacket;
 import org.apache.shardingsphere.shardingproxy.transport.mysql.packet.generic.OKPacket;
+import org.apache.shardingsphere.shardingproxy.transport.postgresql.packet.PostgreSQLPacketPayload;
+import org.apache.shardingsphere.shardingproxy.transport.postgresql.packet.command.PostgreSQLCommandPacket;
+import org.apache.shardingsphere.shardingproxy.transport.postgresql.packet.command.PostgreSQLCommandPacketFactory;
+import org.apache.shardingsphere.shardingproxy.transport.postgresql.packet.command.PostgreSQLCommandResponsePackets;
 import org.apache.shardingsphere.spi.root.RootInvokeHook;
 import org.apache.shardingsphere.spi.root.SPIRootInvokeHook;
 
@@ -62,11 +62,11 @@ public final class PostgreSQLCommandExecutor implements Runnable {
     public void run() {
         rootInvokeHook.start();
         int connectionSize = 0;
-        try (MySQLPacketPayload payload = new MySQLPacketPayload(message);
+        try (PostgreSQLPacketPayload payload = new PostgreSQLPacketPayload(message);
              BackendConnection backendConnection = frontendHandler.getBackendConnection()) {
             backendConnection.getStateHandler().waitUntilConnectionReleasedIfNecessary();
-            CommandPacket commandPacket = getCommandPacket(payload, backendConnection, frontendHandler);
-            Optional<CommandResponsePackets> responsePackets = commandPacket.execute();
+            PostgreSQLCommandPacket commandPacket = getCommandPacket(payload, backendConnection);
+            Optional<PostgreSQLCommandResponsePackets> responsePackets = commandPacket.execute();
             if (!responsePackets.isPresent()) {
                 return;
             }
@@ -89,9 +89,8 @@ public final class PostgreSQLCommandExecutor implements Runnable {
         }
     }
     
-    private CommandPacket getCommandPacket(final MySQLPacketPayload payload, final BackendConnection backendConnection, final FrontendHandler frontendHandler) throws SQLException {
-        int sequenceId = payload.readInt1();
-        return CommandPacketFactory.newInstance(sequenceId, payload, backendConnection);
+    private PostgreSQLCommandPacket getCommandPacket(final PostgreSQLPacketPayload payload, final BackendConnection backendConnection) throws SQLException {
+        return PostgreSQLCommandPacketFactory.newInstance(payload, backendConnection);
     }
     
     private void writeMoreResults(final QueryCommandPacket queryCommandPacket, final int headPacketsCount) throws SQLException {
