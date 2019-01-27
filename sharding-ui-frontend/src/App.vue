@@ -1,6 +1,6 @@
 <template>
   <div id="app">
-    <s-container>
+    <s-container v-if="localStorage.getItem('Access-Token')">
       <el-breadcrumb separator="/" class="bread-wrap">
         <el-breadcrumb-item :to="{ path: '/' }">Home</el-breadcrumb-item>
         <el-breadcrumb-item>Data governance</el-breadcrumb-item>
@@ -8,6 +8,9 @@
       </el-breadcrumb>
       <router-view/>
     </s-container>
+    <template v-else>
+      <router-view/>
+    </template>
   </div>
 </template>
 
@@ -20,7 +23,8 @@ export default {
   },
   data() {
     return {
-      name: ''
+      name: '',
+      localStorage: window.localStorage
     }
   },
   watch: {

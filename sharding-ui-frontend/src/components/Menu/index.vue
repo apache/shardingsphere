@@ -103,6 +103,15 @@ export default {
     width: 16px;
     height: 16px;
   }
+  .el-menu--collapse {
+    img {
+      display: none;
+    }
+    .collapse-logo {
+      display: block;
+      margin-top: 13px;
+    }
+  }
 }
 .el-menu--vertical {
   .is-active {

@@ -1,13 +1,14 @@
 <template>
   <div class="s-pro-components-sider-menu-index-logo">
     <a href="/">
-      <img src="../../assets/img/sidebar-logo.png" alt="logo">
+      <img class src="../../assets/img/sidebar-logo.png" alt="logo">
+      <img class="collapse-logo" src="../../assets/img/logo.png" alt="logo">
     </a>
   </div>
 </template>
 <script>
 </script>
-<style lang="scss" scoped>
+<style lang="scss">
 .s-pro-components-sider-menu-index-logo {
   height: 64px;
   position: relative;
@@ -29,6 +30,9 @@
     margin: 0 0 0 12px;
     font-family: Avenir, Helvetica Neue, Arial, Helvetica, sans-serif;
     font-weight: 600;
+  }
+  .collapse-logo {
+    display: none;
   }
 }
 </style>

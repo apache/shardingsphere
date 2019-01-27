@@ -1,29 +1,32 @@
 <template>
   <div class="schema">
     <el-row :gutter="10">
-      <el-col v-for="(item, index) in schemaData" :key="index" :span="Math.ceil(24 / schemaData.length)">
+      <el-col
+        v-for="(item, index) in schemaData"
+        :key="index"
+        :span="Math.ceil(24 / schemaData.length)"
+      >
         <el-card class="box-card">
           <div slot="header" class="clearfix">
             <span>{{ item.title }}</span>
           </div>
-          <div v-for="(itm, idex) in item.children" :key="idex" class="coll-item" >
+          <div v-for="(itm, idex) in item.children" :key="idex" class="coll-item">
             <div :class="'itm icon-' + idex"/>
             <div class="txt">{{ itm }}</div>
-            <el-button
+            <!-- <el-button
               type="primary"
               icon="el-icon-edit"
               size="mini"
               circle
               class="edit-btn"
-              @click="handlerClick(item.title, itm)"/>
+              @click="handlerClick(item.title, itm)"
+            />-->
+            <i class="icon-edit" @click="handlerClick(item.title, itm)"/>
           </div>
         </el-card>
       </el-col>
     </el-row>
-    <el-dialog
-      :visible.sync="centerDialogVisible"
-      :title="type"
-      width="80%">
+    <el-dialog :visible.sync="centerDialogVisible" :title="type" width="80%">
       <el-row :gutter="20">
         <el-col :span="12">
           <span style="font-size: 18px; font-weight: bold;">Edit source here:</span>
@@ -32,7 +35,8 @@
             v-model="textarea"
             type="textarea"
             placeholder="请输入内容"
-            class="edit-text"/>
+            class="edit-text"
+          />
         </el-col>
         <el-col :span="12">
           <span style="font-size: 18px; font-weight: bold;">Result (JS object dump):</span>
@@ -42,7 +46,8 @@
             type="textarea"
             readonly
             placeholder="请输入内容"
-            class="show-text"/>
+            class="show-text"
+          />
         </el-col>
       </el-row>
       <span slot="footer" class="dialog-footer">
@@ -71,14 +76,21 @@ export default {
   },
   computed: {
     textarea2() {
-      const dsYamlType = new yaml.Type('tag:yaml.org,2002:io.shardingsphere.orchestration.yaml.YamlDataSourceConfiguration', {
-        kind: 'mapping',
-        construct(data) {
-          return data !== null ? data : {}
+      const dsYamlType = new yaml.Type(
+        'tag:yaml.org,2002:io.shardingsphere.orchestration.yaml.YamlDataSourceConfiguration',
+        {
+          kind: 'mapping',
+          construct(data) {
+            return data !== null ? data : {}
+          }
         }
-      })
+      )
       const DS_SCHEMA = yaml.Schema.create(dsYamlType)
-      return JSON.stringify(yaml.load(this.textarea, { schema: DS_SCHEMA }), null, '\t')
+      return JSON.stringify(
+        yaml.load(this.textarea, { schema: DS_SCHEMA }),
+        null,
+        '\t'
+      )
     }
   },
   created() {
@@ -87,11 +99,11 @@ export default {
   methods: {
     handlerClick(parent, child) {
       if (child === 'rule') {
-        API.getSchemaRule(parent).then((res) => {
+        API.getSchemaRule(parent).then(res => {
           this.renderYaml(parent, child, res)
         })
       } else {
-        API.getSchemaDataSource(parent).then((res) => {
+        API.getSchemaDataSource(parent).then(res => {
           this.renderYaml(parent, child, res)
         })
       }
@@ -110,7 +122,7 @@ export default {
       this.centerDialogVisible = true
     },
     getSchema() {
-      API.getSchema().then((res) => {
+      API.getSchema().then(res => {
         const data = res.model
         const base = ['rule', 'datasource']
         const newData = []
@@ -125,11 +137,15 @@ export default {
     },
     onConfirm() {
       if (this.scname === 'rule') {
-        API.putSchemaRule(this.sname, { ruleConfig: this.textarea }).then((res) => {
-          this._onConfirm(res)
-        })
+        API.putSchemaRule(this.sname, { ruleConfig: this.textarea }).then(
+          res => {
+            this._onConfirm(res)
+          }
+        )
       } else {
-        API.putSchemaDataSource(this.sname, { dataSourceConfig: this.textarea }).then((res) => {
+        API.putSchemaDataSource(this.sname, {
+          dataSourceConfig: this.textarea
+        }).then(res => {
           this._onConfirm(res)
         })
       }
@@ -154,50 +170,59 @@ export default {
 }
 </script>
 <style lang='scss'>
-  .schema {
-    margin-top: 20px;
-    .coll-item {
-      height: 32px;
-      line-height: 32px;
-      width: 100%;
+.schema {
+  margin-top: 20px;
+  .coll-item {
+    height: 16px;
+    line-height: 16px;
+    width: 100%;
+    float: left;
+    margin-bottom: 22px;
+    .txt {
+      color: rgb(51, 51, 51);
+      font-size: 14px;
+      padding-left: 10px;
       float: left;
-      margin-bottom: 10px;
-      .txt {
-        color: rgb(51, 51, 51);
-        font-size: 14px;
-        padding-left: 10px;
-        float: left;
-        margin-right: 10px;
-      }
-      .itm {
-        float: left;
-        width: 32px;
-        height: 32px;
-      }
-      .icon-0 {
-        background: url('../../../assets/img/rules.png') no-repeat left center;
-      }
-      .icon-1 {
-        background: url('../../../assets/img/data-source.png') no-repeat left center;
-      }
-      .edit-btn {
-        float: right;
-      }
+      margin-right: 10px;
     }
-    .el-collapse-item__header {
-      font-size: 16px
+    .itm {
+      float: left;
+      width: 16px;
+      height: 16px;
     }
-    .edit-text {
-      margin-top: 5px;
-      textarea {
-        background: #fffffb;
-      }
+    .icon-0 {
+      background: url("../../../assets/img/rules.png") no-repeat left center;
     }
-    .show-text {
-      margin-top: 5px;
-      textarea {
-        background: rgb(246, 246, 246);
-      }
+    .icon-1 {
+      background: url("../../../assets/img/data-source.png") no-repeat left
+        center;
+    }
+    .edit-btn {
+      float: right;
     }
   }
+  .el-collapse-item__header {
+    font-size: 16px;
+  }
+  .edit-text {
+    margin-top: 5px;
+    textarea {
+      background: #fffffb;
+    }
+  }
+  .show-text {
+    margin-top: 5px;
+    textarea {
+      background: rgb(246, 246, 246);
+    }
+  }
+  .icon-edit {
+    background: url("../../../assets/img/edit.png") no-repeat left center;
+    width: 16px;
+    height: 16px;
+    display: inline-block;
+    float: right;
+    cursor: pointer;
+  }
+}
 </style>
