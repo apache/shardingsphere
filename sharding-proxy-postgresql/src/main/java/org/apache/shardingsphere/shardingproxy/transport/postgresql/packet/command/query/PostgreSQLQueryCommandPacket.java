@@ -18,7 +18,8 @@
 package org.apache.shardingsphere.shardingproxy.transport.postgresql.packet.command.query;
 
 import org.apache.shardingsphere.shardingproxy.transport.common.packet.DatabasePacket;
-import org.apache.shardingsphere.shardingproxy.transport.mysql.packet.command.CommandPacket;
+import org.apache.shardingsphere.shardingproxy.transport.postgresql.packet.command.PostgreSQLCommandPacket;
+
 import java.sql.SQLException;
 
 /**
@@ -26,7 +27,7 @@ import java.sql.SQLException;
  *
  * @author zhangyonglun
  */
-public interface PostgreSQLQueryCommandPacket extends CommandPacket {
+public interface PostgreSQLQueryCommandPacket extends PostgreSQLCommandPacket {
     
     /**
      * Goto next result value.
