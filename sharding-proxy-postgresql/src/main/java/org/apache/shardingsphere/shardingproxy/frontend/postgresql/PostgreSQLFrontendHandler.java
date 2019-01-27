@@ -23,7 +23,6 @@ import io.netty.channel.ChannelHandlerContext;
 import lombok.RequiredArgsConstructor;
 import org.apache.shardingsphere.shardingproxy.frontend.common.FrontendHandler;
 import org.apache.shardingsphere.shardingproxy.frontend.common.executor.CommandExecutorSelector;
-import org.apache.shardingsphere.shardingproxy.frontend.mysql.CommandExecutor;
 import org.apache.shardingsphere.shardingproxy.runtime.ChannelRegistry;
 import org.apache.shardingsphere.shardingproxy.runtime.GlobalRegistry;
 import org.apache.shardingsphere.shardingproxy.transport.postgresql.packet.PostgreSQLPacketPayload;
