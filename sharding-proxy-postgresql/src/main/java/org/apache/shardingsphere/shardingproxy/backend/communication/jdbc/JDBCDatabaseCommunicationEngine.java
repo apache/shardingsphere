@@ -42,7 +42,7 @@ import org.apache.shardingsphere.shardingproxy.transport.mysql.constant.ServerEr
 import org.apache.shardingsphere.shardingproxy.transport.mysql.packet.command.CommandResponsePackets;
 import org.apache.shardingsphere.shardingproxy.transport.mysql.packet.command.query.ColumnDefinition41Packet;
 import org.apache.shardingsphere.shardingproxy.transport.mysql.packet.command.query.FieldCountPacket;
-import org.apache.shardingsphere.shardingproxy.transport.mysql.packet.command.query.QueryResponsePackets;
+import org.apache.shardingsphere.shardingproxy.transport.mysql.packet.command.query.PostgreSQLQueryResponsePackets;
 import org.apache.shardingsphere.shardingproxy.transport.mysql.packet.generic.EofPacket;
 import org.apache.shardingsphere.shardingproxy.transport.mysql.packet.generic.ErrPacket;
 import org.apache.shardingsphere.shardingproxy.transport.mysql.packet.generic.OKPacket;
@@ -119,9 +119,9 @@ public final class JDBCDatabaseCommunicationEngine implements DatabaseCommunicat
                 DatabaseType.MySQL, getShardingRule(), sqlStatement, logicSchema.getMetaData().getTable(), ((ExecuteQueryResponse) executeResponse).getQueryResults()).merge();
         if (mergedResult instanceof ShowTablesMergedResult) {
             ((ShowTablesMergedResult) mergedResult).resetColumnLabel(logicSchema.getName());
-            setResponseColumnLabelForShowTablesMergedResult(((ExecuteQueryResponse) executeResponse).getQueryResponsePackets());
+            setResponseColumnLabelForShowTablesMergedResult(((ExecuteQueryResponse) executeResponse).getPostgreSQLQueryResponsePackets());
         }
-        QueryResponsePackets result = getQueryResponsePacketsWithoutDerivedColumns(((ExecuteQueryResponse) executeResponse).getQueryResponsePackets());
+        PostgreSQLQueryResponsePackets result = getQueryResponsePacketsWithoutDerivedColumns(((ExecuteQueryResponse) executeResponse).getPostgreSQLQueryResponsePackets());
         currentSequenceId = result.getPackets().size();
         return result;
     }
@@ -130,21 +130,21 @@ public final class JDBCDatabaseCommunicationEngine implements DatabaseCommunicat
         return logicSchema instanceof ShardingSchema ? ((ShardingSchema) logicSchema).getShardingRule() : new ShardingRule(new ShardingRuleConfiguration(), logicSchema.getDataSources().keySet());
     }
     
-    private QueryResponsePackets getQueryResponsePacketsWithoutDerivedColumns(final QueryResponsePackets queryResponsePackets) {
-        Collection<ColumnDefinition41Packet> columnDefinition41Packets = new ArrayList<>(queryResponsePackets.getColumnCount());
+    private PostgreSQLQueryResponsePackets getQueryResponsePacketsWithoutDerivedColumns(final PostgreSQLQueryResponsePackets postgreSQLQueryResponsePackets) {
+        Collection<ColumnDefinition41Packet> columnDefinition41Packets = new ArrayList<>(postgreSQLQueryResponsePackets.getColumnCount());
         int columnCount = 0;
-        for (ColumnDefinition41Packet each : queryResponsePackets.getColumnDefinition41Packets()) {
+        for (ColumnDefinition41Packet each : postgreSQLQueryResponsePackets.getColumnDefinition41Packets()) {
             if (!DerivedColumn.isDerivedColumn(each.getName())) {
                 columnDefinition41Packets.add(each);
                 columnCount++;
             }
         }
         FieldCountPacket fieldCountPacket = new FieldCountPacket(1, columnCount);
-        return new QueryResponsePackets(fieldCountPacket, columnDefinition41Packets, new EofPacket(columnCount + 2));
+        return new PostgreSQLQueryResponsePackets(fieldCountPacket, columnDefinition41Packets, new EofPacket(columnCount + 2));
     }
     
-    private void setResponseColumnLabelForShowTablesMergedResult(final QueryResponsePackets queryResponsePackets) {
-        for (ColumnDefinition41Packet each : queryResponsePackets.getColumnDefinition41Packets()) {
+    private void setResponseColumnLabelForShowTablesMergedResult(final PostgreSQLQueryResponsePackets postgreSQLQueryResponsePackets) {
+        for (ColumnDefinition41Packet each : postgreSQLQueryResponsePackets.getColumnDefinition41Packets()) {
             if (each.getName().startsWith("Tables_in_")) {
                 each.setName("Tables_in_" + logicSchema.getName());
                 break;
@@ -159,12 +159,12 @@ public final class JDBCDatabaseCommunicationEngine implements DatabaseCommunicat
     
     @Override
     public ResultPacket getResultValue() throws SQLException {
-        QueryResponsePackets queryResponsePackets = ((ExecuteQueryResponse) executeResponse).getQueryResponsePackets();
-        int columnCount = queryResponsePackets.getColumnCount();
+        PostgreSQLQueryResponsePackets postgreSQLQueryResponsePackets = ((ExecuteQueryResponse) executeResponse).getPostgreSQLQueryResponsePackets();
+        int columnCount = postgreSQLQueryResponsePackets.getColumnCount();
         List<Object> data = new ArrayList<>(columnCount);
         for (int columnIndex = 1; columnIndex <= columnCount; columnIndex++) {
             data.add(mergedResult.getValue(columnIndex, Object.class));
         }
-        return new ResultPacket(++currentSequenceId, data, columnCount, queryResponsePackets.getColumnTypes());
+        return new ResultPacket(++currentSequenceId, data, columnCount, postgreSQLQueryResponsePackets.getColumnTypes());
     }
 }
