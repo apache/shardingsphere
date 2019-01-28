@@ -22,6 +22,7 @@ import com.atomikos.jdbc.AtomikosDataSourceBean;
 import com.zaxxer.hikari.HikariDataSource;
 import lombok.SneakyThrows;
 import org.apache.shardingsphere.core.constant.DatabaseType;
+import org.apache.shardingsphere.transaction.core.ResourceDataSource;
 import org.apache.shardingsphere.transaction.core.TransactionType;
 import org.apache.shardingsphere.transaction.xa.fixture.DataSourceUtils;
 import org.apache.shardingsphere.transaction.xa.fixture.ReflectiveUtil;
@@ -42,9 +43,11 @@ import javax.transaction.SystemException;
 import javax.transaction.TransactionManager;
 import java.lang.reflect.Field;
 import java.sql.Connection;
+import java.util.Collection;
 import java.util.HashMap;
+import java.util.LinkedList;
+import java.util.List;
 import java.util.Map;
-import java.util.Map.Entry;
 
 import static org.hamcrest.CoreMatchers.instanceOf;
 import static org.hamcrest.CoreMatchers.is;
@@ -73,7 +76,6 @@ public final class XAShardingTransactionManagerTest {
     public void setUp() {
         when(xaTransactionManager.getTransactionManager()).thenReturn(transactionManager);
         ReflectiveUtil.setProperty(xaShardingTransactionManager, "xaTransactionManager", xaTransactionManager);
-        ReflectiveUtil.setProperty(xaShardingTransactionManager, "uniqueKey", "");
     }
     
     @Test
@@ -83,24 +85,23 @@ public final class XAShardingTransactionManagerTest {
     
     @Test
     public void assertRegisterXATransactionalDataSources() {
-        Map<String, DataSource> dataSourceMap = createDataSourceMap(DruidXADataSource.class, DatabaseType.MySQL);
-        xaShardingTransactionManager.init(DatabaseType.MySQL, dataSourceMap);
-        for (Entry<String, DataSource> entry : dataSourceMap.entrySet()) {
-            verify(xaTransactionManager).registerRecoveryResource(entry.getKey(), (XADataSource) entry.getValue());
+        Collection<ResourceDataSource> resourceDataSources = createResourceDataSources(DruidXADataSource.class, DatabaseType.MySQL);
+        xaShardingTransactionManager.init(DatabaseType.MySQL, resourceDataSources);
+        for (ResourceDataSource each : resourceDataSources) {
+            verify(xaTransactionManager).registerRecoveryResource(each.getUniqueResourceName(), (XADataSource) each.getDataSource());
         }
     }
     
     @Test
     public void assertRegisterAtomikosDataSourceBeans() {
-        Map<String, DataSource> dataSourceMap = createAtomikosDataSourceBeanMap();
-        xaShardingTransactionManager.init(DatabaseType.MySQL, dataSourceMap);
+        xaShardingTransactionManager.init(DatabaseType.MySQL, createAtomikosDataSourceBeanResource());
         verify(xaTransactionManager, times(0)).registerRecoveryResource(anyString(), any(XADataSource.class));
     }
     
     @Test
     public void assertRegisterNoneXATransactionalDAtaSources() {
-        Map<String, DataSource> dataSourceMap = createDataSourceMap(HikariDataSource.class, DatabaseType.MySQL);
-        xaShardingTransactionManager.init(DatabaseType.MySQL, dataSourceMap);
+        Collection<ResourceDataSource> resourceDataSources = createResourceDataSources(HikariDataSource.class, DatabaseType.MySQL);
+        xaShardingTransactionManager.init(DatabaseType.MySQL, resourceDataSources);
         Map<String, SingleXADataSource> cachedXADatasourceMap = getCachedSingleXADataSourceMap();
         assertThat(cachedXADatasourceMap.size(), is(2));
     }
@@ -137,14 +138,14 @@ public final class XAShardingTransactionManagerTest {
     @SneakyThrows
     @SuppressWarnings("unchecked")
     private Map<String, SingleXADataSource> getCachedSingleXADataSourceMap() {
-        Field field = xaShardingTransactionManager.getClass().getDeclaredField("cachedSingleXADataSourceMap");
+        Field field = xaShardingTransactionManager.getClass().getDeclaredField("singleXADataSourceMap");
         field.setAccessible(true);
         return (Map<String, SingleXADataSource>) field.get(xaShardingTransactionManager);
     }
     
     @SneakyThrows
     private void setCachedSingleXADataSourceMap(final String datasourceName) {
-        Field field = xaShardingTransactionManager.getClass().getDeclaredField("cachedSingleXADataSourceMap");
+        Field field = xaShardingTransactionManager.getClass().getDeclaredField("singleXADataSourceMap");
         field.setAccessible(true);
         field.set(xaShardingTransactionManager, createMockSingleXADataSourceMap(datasourceName));
     }
@@ -166,17 +167,17 @@ public final class XAShardingTransactionManagerTest {
         return result;
     }
     
-    private Map<String, DataSource> createDataSourceMap(final Class<? extends DataSource> dataSourceClass, final DatabaseType databaseType) {
-        Map<String, DataSource> result = new HashMap<>();
-        result.put("ds1", DataSourceUtils.build(dataSourceClass, databaseType, "demo_ds_1"));
-        result.put("ds2", DataSourceUtils.build(dataSourceClass, databaseType, "demo_ds_2"));
+    private Collection<ResourceDataSource> createResourceDataSources(final Class<? extends DataSource> dataSourceClass, final DatabaseType databaseType) {
+        List<ResourceDataSource> result = new LinkedList<>();
+        result.add(new ResourceDataSource("ds1", DataSourceUtils.build(dataSourceClass, databaseType, "demo_ds_1")));
+        result.add(new ResourceDataSource("ds2", DataSourceUtils.build(dataSourceClass, databaseType, "demo_ds_2")));
         return result;
     }
     
-    private Map<String, DataSource> createAtomikosDataSourceBeanMap() {
-        Map<String, DataSource> result = new HashMap<>();
-        result.put("ds1", new AtomikosDataSourceBean());
-        result.put("ds2", new AtomikosDataSourceBean());
+    private Collection<ResourceDataSource> createAtomikosDataSourceBeanResource() {
+        List<ResourceDataSource> result = new LinkedList<>();
+        result.add(new ResourceDataSource("ds1", new AtomikosDataSourceBean()));
+        result.add(new ResourceDataSource("ds2", new AtomikosDataSourceBean()));
         return result;
     }
 }
