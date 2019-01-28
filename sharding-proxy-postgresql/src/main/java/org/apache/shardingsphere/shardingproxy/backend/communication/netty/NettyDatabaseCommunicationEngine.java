@@ -50,6 +50,7 @@ import org.apache.shardingsphere.shardingproxy.transport.mysql.packet.command.Co
 import org.apache.shardingsphere.shardingproxy.transport.mysql.packet.command.query.text.query.ComQueryPacket;
 import org.apache.shardingsphere.shardingproxy.transport.mysql.packet.generic.ErrPacket;
 import org.apache.shardingsphere.shardingproxy.transport.mysql.packet.generic.OKPacket;
+import org.apache.shardingsphere.shardingproxy.transport.postgresql.packet.command.PostgreSQLCommandResponsePackets;
 
 import java.sql.SQLException;
 import java.util.ArrayList;
@@ -99,17 +100,17 @@ public final class NettyDatabaseCommunicationEngine implements DatabaseCommunica
     private MergedResult mergedResult;
     
     @Override
-    public CommandResponsePackets execute() {
+    public PostgreSQLCommandResponsePackets execute() {
         try {
             return logicSchema instanceof MasterSlaveSchema ? executeForMasterSlave() : executeForSharding();
             // CHECKSTYLE:OFF
         } catch (final Exception ex) {
             // CHECKSTYLE:ON
-            return new CommandResponsePackets(ex);
+            return new PostgreSQLCommandResponsePackets(ex);
         }
     }
     
-    private CommandResponsePackets executeForMasterSlave() throws InterruptedException, ExecutionException, TimeoutException {
+    private PostgreSQLCommandResponsePackets executeForMasterSlave() throws InterruptedException, ExecutionException, TimeoutException {
         String dataSourceName = new MasterSlaveRouter(((MasterSlaveSchema) logicSchema).getMasterSlaveRule(),
                 GLOBAL_REGISTRY.getShardingProperties().<Boolean>getValue(ShardingPropertiesConstant.SQL_SHOW)).route(sql).iterator().next();
         synchronizedFuture = new SynchronizedFuture(1);
@@ -118,19 +119,19 @@ public final class NettyDatabaseCommunicationEngine implements DatabaseCommunica
         List<QueryResult> queryResults = synchronizedFuture.get(
                 GLOBAL_REGISTRY.getShardingProperties().<Long>getValue(ShardingPropertiesConstant.PROXY_BACKEND_CONNECTION_TIMEOUT_SECONDS), TimeUnit.SECONDS);
         FutureRegistry.getInstance().delete(connectionId);
-        List<CommandResponsePackets> packets = new LinkedList<>();
+        List<PostgreSQLCommandResponsePackets> packets = new LinkedList<>();
         for (QueryResult each : queryResults) {
             packets.add(((MySQLQueryResult) each).getCommandResponsePackets());
         }
         return merge(new SQLJudgeEngine(sql).judge(), packets, queryResults);
     }
     
-    private CommandResponsePackets executeForSharding() throws InterruptedException, ExecutionException, TimeoutException {
+    private PostgreSQLCommandResponsePackets executeForSharding() throws InterruptedException, ExecutionException, TimeoutException {
         StatementRoutingEngine routingEngine = new StatementRoutingEngine(((ShardingSchema) logicSchema).getShardingRule(), 
                 logicSchema.getMetaData(), databaseType, GLOBAL_REGISTRY.getShardingProperties().<Boolean>getValue(ShardingPropertiesConstant.SQL_SHOW));
         SQLRouteResult routeResult = routingEngine.route(sql);
         if (routeResult.getRouteUnits().isEmpty()) {
-            return new CommandResponsePackets(new OKPacket(1));
+            return new PostgreSQLCommandResponsePackets(new OKPacket(1));
         }
         synchronizedFuture = new SynchronizedFuture(routeResult.getRouteUnits().size());
         FutureRegistry.getInstance().put(connectionId, synchronizedFuture);
@@ -140,7 +141,7 @@ public final class NettyDatabaseCommunicationEngine implements DatabaseCommunica
         List<QueryResult> queryResults = synchronizedFuture.get(
                 GLOBAL_REGISTRY.getShardingProperties().<Long>getValue(ShardingPropertiesConstant.PROXY_BACKEND_CONNECTION_TIMEOUT_SECONDS), TimeUnit.SECONDS);
         FutureRegistry.getInstance().delete(connectionId);
-        List<CommandResponsePackets> packets = new ArrayList<>(queryResults.size());
+        List<PostgreSQLCommandResponsePackets> packets = new ArrayList<>(queryResults.size());
         for (QueryResult each : queryResults) {
             MySQLQueryResult queryResult = (MySQLQueryResult) each;
             if (0 == currentSequenceId) {
@@ -152,7 +153,7 @@ public final class NettyDatabaseCommunicationEngine implements DatabaseCommunica
             packets.add(queryResult.getCommandResponsePackets());
         }
         SQLStatement sqlStatement = routeResult.getSqlStatement();
-        CommandResponsePackets result = merge(sqlStatement, packets, queryResults);
+        PostgreSQLCommandResponsePackets result = merge(sqlStatement, packets, queryResults);
         logicSchema.refreshTableMetaData(sqlStatement);
         return result;
     }
@@ -168,14 +169,14 @@ public final class NettyDatabaseCommunicationEngine implements DatabaseCommunica
         channel.writeAndFlush(new ComQueryPacket(sequenceId, sql));
     }
     
-    private CommandResponsePackets merge(final SQLStatement sqlStatement, final List<CommandResponsePackets> packets, final List<QueryResult> queryResults) {
+    private PostgreSQLCommandResponsePackets merge(final SQLStatement sqlStatement, final List<PostgreSQLCommandResponsePackets> packets, final List<QueryResult> queryResults) {
         CommandResponsePackets headPackets = new CommandResponsePackets();
-        for (CommandResponsePackets each : packets) {
+        for (PostgreSQLCommandResponsePackets each : packets) {
             headPackets.getPackets().add(each.getHeadPacket());
         }
         for (DatabasePacket each : headPackets.getPackets()) {
             if (each instanceof ErrPacket) {
-                return new CommandResponsePackets(each);
+                return new PostgreSQLCommandResponsePackets(each);
             }
         }
         if (SQLType.TCL == sqlStatement.getType()) {
@@ -190,7 +191,7 @@ public final class NettyDatabaseCommunicationEngine implements DatabaseCommunica
         return packets.get(0);
     }
     
-    private CommandResponsePackets mergeDML(final CommandResponsePackets firstPackets) {
+    private PostgreSQLCommandResponsePackets mergeDML(final CommandResponsePackets firstPackets) {
         int affectedRows = 0;
         long lastInsertId = 0;
         for (DatabasePacket each : firstPackets.getPackets()) {
@@ -200,15 +201,15 @@ public final class NettyDatabaseCommunicationEngine implements DatabaseCommunica
                 lastInsertId = okPacket.getLastInsertId();
             }
         }
-        return new CommandResponsePackets(new OKPacket(1, affectedRows, lastInsertId));
+        return new PostgreSQLCommandResponsePackets(new OKPacket(1, affectedRows, lastInsertId));
     }
     
-    private CommandResponsePackets mergeDQLorDAL(final SQLStatement sqlStatement, final List<CommandResponsePackets> packets, final List<QueryResult> queryResults) {
+    private PostgreSQLCommandResponsePackets mergeDQLorDAL(final SQLStatement sqlStatement, final List<PostgreSQLCommandResponsePackets> packets, final List<QueryResult> queryResults) {
         try {
             mergedResult = MergeEngineFactory.newInstance(
                     DatabaseType.MySQL, ((ShardingSchema) logicSchema).getShardingRule(), sqlStatement, logicSchema.getMetaData().getTable(), queryResults).merge();
         } catch (final SQLException ex) {
-            return new CommandResponsePackets(new ErrPacket(1, ex));
+            return new PostgreSQLCommandResponsePackets(new ErrPacket(1, ex));
         }
         return packets.get(0);
     }
