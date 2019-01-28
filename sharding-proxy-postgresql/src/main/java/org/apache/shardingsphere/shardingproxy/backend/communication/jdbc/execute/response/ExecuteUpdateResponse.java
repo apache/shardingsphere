@@ -22,6 +22,7 @@ import org.apache.shardingsphere.shardingproxy.backend.communication.jdbc.execut
 import org.apache.shardingsphere.shardingproxy.backend.communication.jdbc.execute.response.unit.ExecuteUpdateResponseUnit;
 import org.apache.shardingsphere.shardingproxy.transport.mysql.packet.command.CommandResponsePackets;
 import org.apache.shardingsphere.shardingproxy.transport.mysql.packet.generic.OKPacket;
+import org.apache.shardingsphere.shardingproxy.transport.postgresql.packet.command.PostgreSQLCommandResponsePackets;
 
 import java.util.Collection;
 import java.util.LinkedList;
@@ -48,7 +49,7 @@ public final class ExecuteUpdateResponse implements ExecuteResponse {
      * 
      * @return merged packet.
      */
-    public CommandResponsePackets merge() {
+    public PostgreSQLCommandResponsePackets merge() {
         int affectedRows = 0;
         long lastInsertId = 0;
         for (OKPacket each : packets) {
@@ -57,6 +58,6 @@ public final class ExecuteUpdateResponse implements ExecuteResponse {
                 lastInsertId = each.getLastInsertId();
             }
         }
-        return new CommandResponsePackets(new OKPacket(1, affectedRows, lastInsertId));
+        return new PostgreSQLCommandResponsePackets(new OKPacket(1, affectedRows, lastInsertId));
     }
 }
