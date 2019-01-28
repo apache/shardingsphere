@@ -39,14 +39,13 @@ import org.apache.shardingsphere.shardingproxypg.backend.communication.jdbc.exec
 import org.apache.shardingsphere.shardingproxypg.runtime.schema.LogicSchema;
 import org.apache.shardingsphere.shardingproxypg.runtime.schema.ShardingSchema;
 import org.apache.shardingsphere.shardingproxypg.transport.mysql.constant.ServerErrorCode;
-import org.apache.shardingsphere.shardingproxypg.transport.mysql.packet.command.CommandResponsePackets;
 import org.apache.shardingsphere.shardingproxypg.transport.mysql.packet.command.query.ColumnDefinition41Packet;
 import org.apache.shardingsphere.shardingproxypg.transport.mysql.packet.command.query.FieldCountPacket;
-import org.apache.shardingsphere.shardingproxypg.transport.postgresql.packet.command.PostgreSQLCommandResponsePackets;
-import org.apache.shardingsphere.shardingproxypg.transport.postgresql.packet.command.query.PostgreSQLQueryResponsePackets;
 import org.apache.shardingsphere.shardingproxypg.transport.mysql.packet.generic.EofPacket;
 import org.apache.shardingsphere.shardingproxypg.transport.mysql.packet.generic.ErrPacket;
 import org.apache.shardingsphere.shardingproxypg.transport.mysql.packet.generic.OKPacket;
+import org.apache.shardingsphere.shardingproxypg.transport.postgresql.packet.command.PostgreSQLCommandResponsePackets;
+import org.apache.shardingsphere.shardingproxypg.transport.postgresql.packet.command.query.PostgreSQLQueryResponsePackets;
 import org.apache.shardingsphere.transaction.core.TransactionType;
 
 import java.sql.SQLException;
@@ -117,7 +116,7 @@ public final class JDBCDatabaseCommunicationEngine implements DatabaseCommunicat
             return ((ExecuteUpdateResponse) executeResponse).merge();
         }
         mergedResult = MergeEngineFactory.newInstance(
-                DatabaseType.MySQL, getShardingRule(), sqlStatement, logicSchema.getMetaData().getTable(), ((ExecuteQueryResponse) executeResponse).getQueryResults()).merge();
+                DatabaseType.PostgreSQL, getShardingRule(), sqlStatement, logicSchema.getMetaData().getTable(), ((ExecuteQueryResponse) executeResponse).getQueryResults()).merge();
         if (mergedResult instanceof ShowTablesMergedResult) {
             ((ShowTablesMergedResult) mergedResult).resetColumnLabel(logicSchema.getName());
             setResponseColumnLabelForShowTablesMergedResult(((ExecuteQueryResponse) executeResponse).getPostgreSQLQueryResponsePackets());
