@@ -5,7 +5,7 @@
             <table name="t_order" />
         </tables>
         <tokens>
-            <table-token begin-position="40" original-literals="t_order" />
+            <table-token start-index="40" original-literals="t_order" />
         </tokens>
     </parser-result>
     <parser-result sql-case-id="grant_user_with_grant">
@@ -13,7 +13,7 @@
             <table name="t_order" />
         </tables>
         <tokens>
-            <table-token begin-position="40" original-literals="t_order" />
+            <table-token start-index="40" original-literals="t_order" />
         </tokens>
     </parser-result>
     <parser-result sql-case-id="grant_role" />
@@ -23,7 +23,7 @@
             <table name="*" />
         </tables>
         <tokens>
-            <table-token begin-position="13" original-literals="*" />
+            <table-token start-index="13" original-literals="*" />
         </tokens>
     </parser-result>
     <parser-result sql-case-id="grant_user_with_hostname">
@@ -31,7 +31,7 @@
             <table name="t_order" />
         </tables>
         <tokens>
-            <table-token begin-position="24" original-literals="t_order" />
+            <table-token start-index="24" original-literals="t_order" />
         </tokens>
     </parser-result>
 </parser-result-sets>
