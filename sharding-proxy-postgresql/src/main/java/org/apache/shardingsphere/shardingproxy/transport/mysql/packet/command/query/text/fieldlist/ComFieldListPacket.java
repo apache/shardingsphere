@@ -32,6 +32,7 @@ import org.apache.shardingsphere.shardingproxy.transport.mysql.packet.command.Co
 import org.apache.shardingsphere.shardingproxy.transport.mysql.packet.command.query.ColumnDefinition41Packet;
 import org.apache.shardingsphere.shardingproxy.transport.mysql.packet.generic.EofPacket;
 import org.apache.shardingsphere.shardingproxy.transport.mysql.packet.generic.ErrPacket;
+import org.apache.shardingsphere.shardingproxy.transport.postgresql.packet.command.PostgreSQLCommandResponsePackets;
 
 import java.sql.SQLException;
 
@@ -78,8 +79,8 @@ public final class ComFieldListPacket implements CommandPacket {
     public Optional<CommandResponsePackets> execute() throws SQLException {
         log.debug("Table name received for Sharding-Proxy: {}", table);
         log.debug("Field wildcard received for Sharding-Proxy: {}", fieldWildcard);
-        CommandResponsePackets responsePackets = databaseCommunicationEngine.execute();
-        return Optional.of(responsePackets.getHeadPacket() instanceof ErrPacket ? responsePackets : getColumnDefinition41Packets());
+        PostgreSQLCommandResponsePackets responsePackets = databaseCommunicationEngine.execute();
+        return Optional.of(null);
     }
     
     private CommandResponsePackets getColumnDefinition41Packets() throws SQLException {
