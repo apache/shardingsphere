@@ -28,6 +28,7 @@ import org.apache.shardingsphere.shardingproxy.transport.common.packet.DatabaseP
 import org.apache.shardingsphere.shardingproxy.transport.mysql.packet.command.CommandResponsePackets;
 import org.apache.shardingsphere.shardingproxy.transport.mysql.packet.generic.ErrPacket;
 import org.apache.shardingsphere.shardingproxy.transport.mysql.packet.generic.OKPacket;
+import org.apache.shardingsphere.shardingproxy.transport.postgresql.packet.command.PostgreSQLCommandResponsePackets;
 
 import java.util.LinkedList;
 import java.util.List;
@@ -52,7 +53,7 @@ public final class BroadcastBackendHandler implements TextProtocolBackendHandler
     private final DatabaseType databaseType;
     
     @Override
-    public CommandResponsePackets execute() {
+    public PostgreSQLCommandResponsePackets execute() {
         List<DatabasePacket> packets = new LinkedList<>();
         for (String each : GlobalRegistry.getInstance().getSchemaNames()) {
             packets.addAll(databaseCommunicationEngineFactory.newTextProtocolInstance(
@@ -60,10 +61,10 @@ public final class BroadcastBackendHandler implements TextProtocolBackendHandler
         }
         for (DatabasePacket each : packets) {
             if (each instanceof ErrPacket) {
-                return new CommandResponsePackets(each);
+                return new PostgreSQLCommandResponsePackets(each);
             }
         }
-        return new CommandResponsePackets(new OKPacket(1, 0, 0));
+        return new PostgreSQLCommandResponsePackets(new OKPacket(1, 0, 0));
     }
     
     @Override
