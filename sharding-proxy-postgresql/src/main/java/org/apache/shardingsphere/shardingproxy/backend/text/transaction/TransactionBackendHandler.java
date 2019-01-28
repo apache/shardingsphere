@@ -23,6 +23,7 @@ import org.apache.shardingsphere.shardingproxy.backend.communication.jdbc.connec
 import org.apache.shardingsphere.shardingproxy.backend.text.TextProtocolBackendHandler;
 import org.apache.shardingsphere.shardingproxy.transport.mysql.packet.command.CommandResponsePackets;
 import org.apache.shardingsphere.shardingproxy.transport.mysql.packet.generic.OKPacket;
+import org.apache.shardingsphere.shardingproxy.transport.postgresql.packet.command.PostgreSQLCommandResponsePackets;
 import org.apache.shardingsphere.transaction.core.TransactionOperationType;
 
 /**
@@ -42,17 +43,17 @@ public final class TransactionBackendHandler implements TextProtocolBackendHandl
     }
     
     @Override
-    public CommandResponsePackets execute() {
+    public PostgreSQLCommandResponsePackets execute() {
         try {
             return doTransaction();
             // CHECKSTYLE:OFF
         } catch (final Exception ex) {
             // CHECKSTYLE:ON
-            return new CommandResponsePackets(ex);
+            return new PostgreSQLCommandResponsePackets(ex);
         }
     }
     
-    private CommandResponsePackets doTransaction() throws Exception {
+    private PostgreSQLCommandResponsePackets doTransaction() throws Exception {
         switch (operationType) {
             case BEGIN:
                 backendTransactionManager.begin();
@@ -66,7 +67,7 @@ public final class TransactionBackendHandler implements TextProtocolBackendHandl
             default:
                 throw new UnsupportedOperationException(operationType.name());
         }
-        return new CommandResponsePackets(new OKPacket(1));
+        return new PostgreSQLCommandResponsePackets(new OKPacket(1));
     }
     
     @Override
