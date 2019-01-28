@@ -17,7 +17,6 @@
 
 package org.apache.shardingsphere.core.parsing.parser.token;
 
-import com.google.common.base.Strings;
 import lombok.Getter;
 import lombok.ToString;
 
@@ -48,11 +47,11 @@ public final class TableToken extends SQLToken {
     }
     
     /**
-     * Judge has delimiter or not.
+     * Get table token length.
      * 
-     * @return has delimiter or not
+     * @return table token length
      */
-    public boolean hasDelimiter() {
-        return !(Strings.isNullOrEmpty(leftDelimiter) || Strings.isNullOrEmpty(rightDelimiter));
+    public int getLength() {
+        return skippedSchemaNameLength + tableName.length() + leftDelimiter.length() + rightDelimiter.length();
     }
 }
