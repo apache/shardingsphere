@@ -19,22 +19,14 @@ package org.apache.shardingsphere.shardingproxypg.backend.sctl;
 
 import com.google.common.base.Optional;
 import org.apache.shardingsphere.core.merger.MergedResult;
-import org.apache.shardingsphere.core.merger.dal.show.ShowShardingCTLMergedResult;
 import org.apache.shardingsphere.shardingproxypg.backend.ResultPacket;
 import org.apache.shardingsphere.shardingproxypg.backend.communication.jdbc.connection.BackendConnection;
 import org.apache.shardingsphere.shardingproxypg.backend.text.TextProtocolBackendHandler;
-import org.apache.shardingsphere.shardingproxypg.transport.mysql.constant.ColumnType;
-import org.apache.shardingsphere.shardingproxypg.transport.mysql.packet.command.query.ColumnDefinition41Packet;
-import org.apache.shardingsphere.shardingproxypg.transport.mysql.packet.command.query.FieldCountPacket;
-import org.apache.shardingsphere.shardingproxypg.transport.mysql.packet.generic.EofPacket;
 import org.apache.shardingsphere.shardingproxypg.transport.postgresql.packet.command.PostgreSQLCommandResponsePackets;
-import org.apache.shardingsphere.shardingproxypg.transport.postgresql.packet.command.query.PostgreSQLQueryResponsePackets;
 import org.apache.shardingsphere.shardingproxypg.transport.postgresql.packet.generic.ErrorResponse;
 
 import java.sql.SQLException;
 import java.util.ArrayList;
-import java.util.Arrays;
-import java.util.Collection;
 import java.util.LinkedList;
 import java.util.List;
 
@@ -55,7 +47,7 @@ public final class ShardingCTLShowBackendHandler implements TextProtocolBackendH
     
     private int columnCount;
     
-    private final List<ColumnType> columnTypes = new LinkedList<>();
+    private final List<Integer> columnTypes = new LinkedList<>();
     
     public ShardingCTLShowBackendHandler(final String sql, final BackendConnection backendConnection) {
         this.sql = sql.toUpperCase().trim();
@@ -79,16 +71,17 @@ public final class ShardingCTLShowBackendHandler implements TextProtocolBackendH
     }
     
     private PostgreSQLCommandResponsePackets createResponsePackets(final String columnName, final Object... values) {
-        mergedResult = new ShowShardingCTLMergedResult(Arrays.asList(values));
-        int sequenceId = 0;
-        FieldCountPacket fieldCountPacket = new FieldCountPacket(++sequenceId, 1);
-        Collection<ColumnDefinition41Packet> columnDefinition41Packets = new ArrayList<>(1);
-        columnDefinition41Packets.add(new ColumnDefinition41Packet(++sequenceId, "", "", "", columnName, "", 100, ColumnType.MYSQL_TYPE_VARCHAR, 0));
-        PostgreSQLQueryResponsePackets postgreSQLQueryResponsePackets = new PostgreSQLQueryResponsePackets(fieldCountPacket, columnDefinition41Packets, new EofPacket(++sequenceId));
-        currentSequenceId = postgreSQLQueryResponsePackets.getPackets().size();
-        columnCount = postgreSQLQueryResponsePackets.getColumnCount();
-        columnTypes.addAll(postgreSQLQueryResponsePackets.getColumnTypes());
-        return postgreSQLQueryResponsePackets;
+//        mergedResult = new ShowShardingCTLMergedResult(Arrays.asList(values));
+////        int sequenceId = 0;
+////        FieldCountPacket fieldCountPacket = new FieldCountPacket(++sequenceId, 1);
+////        Collection<ColumnDefinition41Packet> columnDefinition41Packets = new ArrayList<>(1);
+////        columnDefinition41Packets.add(new ColumnDefinition41Packet(++sequenceId, "", "", "", columnName, "", 100, ColumnType.MYSQL_TYPE_VARCHAR, 0));
+////        PostgreSQLQueryResponsePackets postgreSQLQueryResponsePackets = new PostgreSQLQueryResponsePackets(fieldCountPacket, columnDefinition41Packets, new EofPacket(++sequenceId));
+////        currentSequenceId = postgreSQLQueryResponsePackets.getPackets().size();
+////        columnCount = postgreSQLQueryResponsePackets.getColumnCount();
+////        columnTypes.addAll(postgreSQLQueryResponsePackets.getColumnTypes());
+////        return postgreSQLQueryResponsePackets;
+        return null;
     }
     
     @Override
