@@ -27,6 +27,7 @@ import org.apache.shardingsphere.shardingproxy.backend.text.TextProtocolBackendH
 import org.apache.shardingsphere.shardingproxy.transport.mysql.constant.ServerErrorCode;
 import org.apache.shardingsphere.shardingproxy.transport.mysql.packet.command.CommandResponsePackets;
 import org.apache.shardingsphere.shardingproxy.transport.mysql.packet.generic.ErrPacket;
+import org.apache.shardingsphere.shardingproxy.transport.postgresql.packet.command.PostgreSQLCommandResponsePackets;
 
 import java.sql.SQLException;
 
@@ -51,9 +52,9 @@ public final class QueryBackendHandler implements TextProtocolBackendHandler {
     private DatabaseCommunicationEngine databaseCommunicationEngine;
     
     @Override
-    public CommandResponsePackets execute() {
+    public PostgreSQLCommandResponsePackets execute() {
         if (null == backendConnection.getLogicSchema()) {
-            return new CommandResponsePackets(new ErrPacket(1, ServerErrorCode.ER_NO_DB_ERROR));
+            return new PostgreSQLCommandResponsePackets(new ErrPacket(1, ServerErrorCode.ER_NO_DB_ERROR));
         }
         databaseCommunicationEngine = databaseCommunicationEngineFactory.newTextProtocolInstance(backendConnection.getLogicSchema(), sequenceId, sql, backendConnection, databaseType);
         return databaseCommunicationEngine.execute();
