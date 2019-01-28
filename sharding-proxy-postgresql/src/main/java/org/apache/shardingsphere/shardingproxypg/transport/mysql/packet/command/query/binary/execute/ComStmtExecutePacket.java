@@ -151,6 +151,7 @@ public final class ComStmtExecutePacket implements QueryCommandPacket {
     @Override
     public DatabasePacket getResultValue() throws SQLException {
         ResultPacket resultPacket = databaseCommunicationEngine.getResultValue();
-        return new BinaryResultSetRowPacket(resultPacket.getSequenceId(), resultPacket.getColumnCount(), resultPacket.getData(), resultPacket.getColumnTypes());
+//        return new BinaryResultSetRowPacket(resultPacket.getSequenceId(), resultPacket.getColumnCount(), resultPacket.getData(), resultPacket.getColumnTypes());
+        return null;
     }
 }
