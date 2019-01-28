@@ -140,7 +140,7 @@ public final class ComStmtExecutePacket implements QueryCommandPacket {
         if (GlobalRegistry.getInstance().isCircuitBreak()) {
             return Optional.of(new CommandResponsePackets(new ErrPacket(1, ServerErrorCode.ER_CIRCUIT_BREAK_MODE)));
         }
-        return Optional.of(databaseCommunicationEngine.execute());
+        return Optional.of(null);
     }
     
     @Override
