@@ -25,7 +25,7 @@
             <table name="t_order" />
         </tables>
         <tokens>
-            <table-token start-index="13" table-name="[t_order]" />
+            <table-token start-index="13" table-name="t_order" left-delimiter="[" right-delimiter="]" />
         </tokens>
         <meta column-names="order_id,user_id,status,column1,column2,column3" column-types="INT,INT,VARCHAR,VARCHAR,VARCHAR,VARCHAR" />
     </parser-result>
@@ -277,7 +277,7 @@
         </tables>
         <tokens>
             <index-token start-index="13" stop-index="26" table-name="t_order" />
-            <table-token start-index="31" table-name="[t_order]" />
+            <table-token start-index="31" table-name="t_order" left-delimiter="[" right-delimiter="]" />
         </tokens>
     </parser-result>
     
