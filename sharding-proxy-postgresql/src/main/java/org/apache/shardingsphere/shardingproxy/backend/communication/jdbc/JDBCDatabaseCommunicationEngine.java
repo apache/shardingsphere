@@ -42,6 +42,7 @@ import org.apache.shardingsphere.shardingproxy.transport.mysql.constant.ServerEr
 import org.apache.shardingsphere.shardingproxy.transport.mysql.packet.command.CommandResponsePackets;
 import org.apache.shardingsphere.shardingproxy.transport.mysql.packet.command.query.ColumnDefinition41Packet;
 import org.apache.shardingsphere.shardingproxy.transport.mysql.packet.command.query.FieldCountPacket;
+import org.apache.shardingsphere.shardingproxy.transport.postgresql.packet.command.PostgreSQLCommandResponsePackets;
 import org.apache.shardingsphere.shardingproxy.transport.postgresql.packet.command.query.PostgreSQLQueryResponsePackets;
 import org.apache.shardingsphere.shardingproxy.transport.mysql.packet.generic.EofPacket;
 import org.apache.shardingsphere.shardingproxy.transport.mysql.packet.generic.ErrPacket;
@@ -77,23 +78,23 @@ public final class JDBCDatabaseCommunicationEngine implements DatabaseCommunicat
     private int currentSequenceId;
     
     @Override
-    public CommandResponsePackets execute() {
+    public PostgreSQLCommandResponsePackets execute() {
         try {
-            return execute(executeEngine.getJdbcExecutorWrapper().route(sql, DatabaseType.MySQL));
+            return execute(executeEngine.getJdbcExecutorWrapper().route(sql, DatabaseType.PostgreSQL));
             // CHECKSTYLE:OFF
         } catch (final Exception ex) {
             // CHECKSTYLE:ON
-            return new CommandResponsePackets(ex);
+            return new PostgreSQLCommandResponsePackets(ex);
         }
     }
     
-    private CommandResponsePackets execute(final SQLRouteResult routeResult) throws SQLException {
+    private PostgreSQLCommandResponsePackets execute(final SQLRouteResult routeResult) throws SQLException {
         if (routeResult.getRouteUnits().isEmpty()) {
-            return new CommandResponsePackets(new OKPacket(1));
+            return new PostgreSQLCommandResponsePackets(new OKPacket(1));
         }
         SQLStatement sqlStatement = routeResult.getSqlStatement();
         if (isUnsupportedXA(sqlStatement.getType())) {
-            return new CommandResponsePackets(new ErrPacket(1,
+            return new PostgreSQLCommandResponsePackets(new ErrPacket(1,
                     ServerErrorCode.ER_ERROR_ON_MODIFYING_GTID_EXECUTED_TABLE, sqlStatement.getTables().isSingleTable() ? sqlStatement.getTables().getSingleTableName() : "unknown_table"));
         }
         executeResponse = executeEngine.execute(routeResult);
@@ -108,10 +109,10 @@ public final class JDBCDatabaseCommunicationEngine implements DatabaseCommunicat
         return TransactionType.XA == connection.getTransactionType() && SQLType.DDL == sqlType && ConnectionStatus.TRANSACTION == connection.getStateHandler().getStatus();
     }
     
-    private CommandResponsePackets merge(final SQLStatement sqlStatement) throws SQLException {
+    private PostgreSQLCommandResponsePackets merge(final SQLStatement sqlStatement) throws SQLException {
         if (executeResponse instanceof ExecuteUpdateResponse) {
             if (logicSchema instanceof ShardingSchema && ((ShardingSchema) logicSchema).getShardingRule().isAllBroadcastTables(sqlStatement.getTables().getTableNames())) {
-                return new CommandResponsePackets(((ExecuteUpdateResponse) executeResponse).getPackets().get(0));
+                return new PostgreSQLCommandResponsePackets(((ExecuteUpdateResponse) executeResponse).getPackets().get(0));
             }
             return ((ExecuteUpdateResponse) executeResponse).merge();
         }
