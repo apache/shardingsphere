@@ -27,6 +27,7 @@ import org.apache.shardingsphere.shardingproxy.transport.mysql.constant.ColumnTy
 import org.apache.shardingsphere.shardingproxy.transport.mysql.packet.command.CommandResponsePackets;
 import org.apache.shardingsphere.shardingproxy.transport.mysql.packet.command.query.ColumnDefinition41Packet;
 import org.apache.shardingsphere.shardingproxy.transport.mysql.packet.command.query.FieldCountPacket;
+import org.apache.shardingsphere.shardingproxy.transport.postgresql.packet.command.PostgreSQLCommandResponsePackets;
 import org.apache.shardingsphere.shardingproxy.transport.postgresql.packet.command.query.PostgreSQLQueryResponsePackets;
 import org.apache.shardingsphere.shardingproxy.transport.mysql.packet.generic.EofPacket;
 import org.apache.shardingsphere.shardingproxy.transport.mysql.packet.generic.ErrPacket;
@@ -63,10 +64,10 @@ public final class ShardingCTLShowBackendHandler implements TextProtocolBackendH
     }
     
     @Override
-    public CommandResponsePackets execute() {
+    public PostgreSQLCommandResponsePackets execute() {
         Optional<ShardingCTLShowStatement> showStatement = new ShardingCTLShowParser(sql).doParse();
         if (!showStatement.isPresent()) {
-            return new CommandResponsePackets(new ErrPacket(" please review your sctl format, should be sctl:show xxxx."));
+            return new PostgreSQLCommandResponsePackets(new ErrPacket(" please review your sctl format, should be sctl:show xxxx."));
         }
         switch (showStatement.get().getValue()) {
             case "TRANSACTION_TYPE":
@@ -74,11 +75,11 @@ public final class ShardingCTLShowBackendHandler implements TextProtocolBackendH
             case "CACHED_CONNECTIONS":
                 return createResponsePackets("CACHED_CONNECTIONS", backendConnection.getConnectionSize());
             default:
-                return new CommandResponsePackets(new ErrPacket(String.format(" could not support this sctl grammar [%s].", sql)));
+                return new PostgreSQLCommandResponsePackets(new ErrPacket(String.format(" could not support this sctl grammar [%s].", sql)));
         }
     }
     
-    private CommandResponsePackets createResponsePackets(final String columnName, final Object... values) {
+    private PostgreSQLCommandResponsePackets createResponsePackets(final String columnName, final Object... values) {
         mergedResult = new ShowShardingCTLMergedResult(Arrays.asList(values));
         int sequenceId = 0;
         FieldCountPacket fieldCountPacket = new FieldCountPacket(++sequenceId, 1);
