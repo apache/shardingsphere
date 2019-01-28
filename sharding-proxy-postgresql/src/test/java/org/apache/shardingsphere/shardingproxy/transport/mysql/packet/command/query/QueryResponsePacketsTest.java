@@ -20,6 +20,7 @@ package org.apache.shardingsphere.shardingproxy.transport.mysql.packet.command.q
 import org.apache.shardingsphere.core.constant.ShardingConstant;
 import org.apache.shardingsphere.shardingproxy.transport.mysql.constant.ColumnType;
 import org.apache.shardingsphere.shardingproxy.transport.mysql.packet.generic.EofPacket;
+import org.apache.shardingsphere.shardingproxy.transport.postgresql.packet.command.query.PostgreSQLQueryResponsePackets;
 import org.junit.Test;
 
 import java.util.Arrays;
@@ -32,7 +33,7 @@ public final class QueryResponsePacketsTest {
     
     @Test
     public void assertGetColumnDefinition41Packets() {
-        QueryResponsePackets actual = createQueryResponsePackets();
+        PostgreSQLQueryResponsePackets actual = createQueryResponsePackets();
         assertThat(actual.getColumnDefinition41Packets().size(), is(2));
         Iterator<ColumnDefinition41Packet> actualColumnDefinition41Packets = actual.getColumnDefinition41Packets().iterator();
         assertThat(actualColumnDefinition41Packets.next().getSequenceId(), is(2));
@@ -49,11 +50,11 @@ public final class QueryResponsePacketsTest {
         assertThat(createQueryResponsePackets().getColumnTypes(), is(Arrays.asList(ColumnType.MYSQL_TYPE_LONG, ColumnType.MYSQL_TYPE_VARCHAR)));
     }
     
-    private QueryResponsePackets createQueryResponsePackets() {
+    private PostgreSQLQueryResponsePackets createQueryResponsePackets() {
         FieldCountPacket fieldCountPacket = new FieldCountPacket(1, 2);
         ColumnDefinition41Packet columnDefinition41Packet1 = new ColumnDefinition41Packet(2, ShardingConstant.LOGIC_SCHEMA_NAME, "tbl", "tbl", "id", "id", 10, ColumnType.MYSQL_TYPE_LONG, 0);
         ColumnDefinition41Packet columnDefinition41Packet2 = new ColumnDefinition41Packet(3, ShardingConstant.LOGIC_SCHEMA_NAME, "tbl", "tbl", "value", "value", 20, ColumnType.MYSQL_TYPE_VARCHAR, 0);
         EofPacket eofPacket = new EofPacket(4);
-        return new QueryResponsePackets(fieldCountPacket, Arrays.asList(columnDefinition41Packet1, columnDefinition41Packet2), eofPacket);
+        return new PostgreSQLQueryResponsePackets(fieldCountPacket, Arrays.asList(columnDefinition41Packet1, columnDefinition41Packet2), eofPacket);
     }
 }
