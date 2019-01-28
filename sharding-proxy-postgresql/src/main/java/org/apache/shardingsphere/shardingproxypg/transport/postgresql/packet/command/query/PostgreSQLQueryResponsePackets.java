@@ -18,13 +18,8 @@
 package org.apache.shardingsphere.shardingproxypg.transport.postgresql.packet.command.query;
 
 import lombok.Getter;
-import org.apache.shardingsphere.shardingproxypg.transport.mysql.constant.ColumnType;
-import org.apache.shardingsphere.shardingproxypg.transport.mysql.packet.command.query.ColumnDefinition41Packet;
-import org.apache.shardingsphere.shardingproxypg.transport.mysql.packet.command.query.FieldCountPacket;
-import org.apache.shardingsphere.shardingproxypg.transport.mysql.packet.generic.EofPacket;
 import org.apache.shardingsphere.shardingproxypg.transport.postgresql.packet.command.PostgreSQLCommandResponsePackets;
 
-import java.util.Collection;
 import java.util.LinkedList;
 import java.util.List;
 
@@ -33,19 +28,15 @@ import java.util.List;
  *
  * @author zhangyonglun
  */
+@Getter
 public final class PostgreSQLQueryResponsePackets extends PostgreSQLCommandResponsePackets {
     
-    private final FieldCountPacket fieldCountPacket;
+    private final RowDescription rowDescription;
     
-    @Getter
-    private final Collection<ColumnDefinition41Packet> columnDefinition41Packets;
+    public PostgreSQLQueryResponsePackets(final RowDescription rowDescription) {
+        getPackets().add(rowDescription);
+        this.rowDescription = rowDescription;
     
-    public PostgreSQLQueryResponsePackets(final FieldCountPacket fieldCountPacket, final Collection<ColumnDefinition41Packet> columnDefinition41Packets, final EofPacket eofPacket) {
-        getPackets().add(fieldCountPacket);
-        getPackets().addAll(columnDefinition41Packets);
-        getPackets().add(eofPacket);
-        this.fieldCountPacket = fieldCountPacket;
-        this.columnDefinition41Packets = columnDefinition41Packets;
     }
     
     /**
@@ -54,7 +45,7 @@ public final class PostgreSQLQueryResponsePackets extends PostgreSQLCommandRespo
      * @return column count
      */
     public int getColumnCount() {
-        return fieldCountPacket.getColumnCount();
+        return rowDescription.getFieldCount();
     }
     
     /**
@@ -62,10 +53,10 @@ public final class PostgreSQLQueryResponsePackets extends PostgreSQLCommandRespo
      *
      * @return column types
      */
-    public List<ColumnType> getColumnTypes() {
-        List<ColumnType> result = new LinkedList<>();
-        for (ColumnDefinition41Packet each : columnDefinition41Packets) {
-            result.add(each.getColumnType());
+    public List<Integer> getColumnTypes() {
+        List<Integer> result = new LinkedList<>();
+        for (ColumnDescription each : rowDescription.getColumnDescriptions()) {
+            result.add(each.getDataFormat());
         }
         return result;
     }
