@@ -42,17 +42,17 @@ public final class PostgreSQLTest {
         config.setPassword("root");
         DataSource dataSource = new HikariDataSource(config);
         Connection connection = dataSource.getConnection();
-        for (int i = 0; i < 10; i++) {
-            PreparedStatement preparedStatement = connection.prepareStatement("select * from t_order where order_id = ?");
-            preparedStatement.setInt(1, 4);
-            preparedStatement.execute();
-            ResultSet resultSet = preparedStatement.getResultSet();
-            while (resultSet.next()) {
-                System.out.println(resultSet.getInt(1) + ", " + resultSet.getInt(2) + ", " + resultSet.getString(3));
-            }
-            resultSet.close();
-            preparedStatement.close();
-        }
+//        for (int i = 0; i < 10; i++) {
+//            PreparedStatement preparedStatement = connection.prepareStatement("select * from t_order where order_id = ?");
+//            preparedStatement.setInt(1, 4);
+//            preparedStatement.execute();
+//            ResultSet resultSet = preparedStatement.getResultSet();
+//            while (resultSet.next()) {
+//                System.out.println(resultSet.getInt(1) + ", " + resultSet.getInt(2) + ", " + resultSet.getString(3));
+//            }
+//            resultSet.close();
+//            preparedStatement.close();
+//        }
     }
     
     @Test
