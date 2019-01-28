@@ -58,8 +58,10 @@ final class TableTokenAssert {
             assertThat(assertMessage.getFullAssertMessage("Table tokens skipped schema name length assertion error: "), actual.getSkippedSchemaNameLength(), is(expected.getSkippedSchemaNameLength()));
         }
         assertThat(assertMessage.getFullAssertMessage("Table tokens table name assertion error: "), actual.getTableName(), is(expected.getTableName()));
-        assertThat(assertMessage.getFullAssertMessage("Table tokens left delimiter assertion error: "), actual.getLeftDelimiter(), is(expected.getLeftDelimiter()));
-        assertThat(assertMessage.getFullAssertMessage("Table tokens right delimiter assertion error: "), actual.getRightDelimiter(), is(expected.getRightDelimiter()));
+        assertThat(assertMessage.getFullAssertMessage("Table tokens left delimiter assertion error: "), 
+                actual.getLeftDelimiter(), is(null == expected.getLeftDelimiter() ? "" : expected.getLeftDelimiter()));
+        assertThat(assertMessage.getFullAssertMessage("Table tokens right delimiter assertion error: "), 
+                actual.getRightDelimiter(), is(null == expected.getRightDelimiter() ? "" : expected.getRightDelimiter()));
     }
     
     private List<TableToken> getTableTokens(final Collection<SQLToken> actual) {
