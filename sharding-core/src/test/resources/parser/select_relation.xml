@@ -6,8 +6,8 @@
             <table name="t_order_item" alias="i" />
         </tables>
         <tokens>
-            <table-token start-index="16" original-literals="t_order" />
-            <table-token start-index="37" original-literals="t_order_item" />
+            <table-token start-index="16" table-name="t_order" />
+            <table-token start-index="37" table-name="t_order_item" />
         </tokens>
         <or-condition>
             <and-condition>
@@ -24,12 +24,12 @@
             <table name="t_order_item" />
         </tables>
         <tokens>
-            <table-token start-index="7" original-literals="t_order_item" />
-            <table-token start-index="27" original-literals="t_order" />
-            <table-token start-index="40" original-literals="t_order_item" />
-            <table-token start-index="56" original-literals="t_order" />
-            <table-token start-index="75" original-literals="t_order_item" />
-            <table-token start-index="103" original-literals="t_order" />
+            <table-token start-index="7" table-name="t_order_item" />
+            <table-token start-index="27" table-name="t_order" />
+            <table-token start-index="40" table-name="t_order_item" />
+            <table-token start-index="56" table-name="t_order" />
+            <table-token start-index="75" table-name="t_order_item" />
+            <table-token start-index="103" table-name="t_order" />
         </tokens>
         <or-condition>
             <and-condition>
@@ -46,8 +46,8 @@
             <table name="t_order_item" alias="i"/>
         </tables>
         <tokens>
-            <table-token start-index="16" original-literals="t_order" />
-            <table-token start-index="31" original-literals="t_order_item" />
+            <table-token start-index="16" table-name="t_order" />
+            <table-token start-index="31" table-name="t_order_item" />
         </tokens>
         <or-condition>
             <and-condition>

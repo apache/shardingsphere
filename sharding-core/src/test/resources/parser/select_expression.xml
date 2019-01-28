@@ -5,7 +5,7 @@
             <table name="t_order" alias="o"/>
         </tables>
         <tokens>
-            <table-token start-index="38" original-literals="t_order" />
+            <table-token start-index="38" table-name="t_order" />
             <items-token begin-position="33">
                 <items>
                     <item>o.order_id AS ORDER_BY_DERIVED_0 </item>
@@ -22,7 +22,7 @@
             <table name="t_order_item" alias="i"/>
         </tables>
         <tokens>
-            <table-token start-index="51" original-literals="`t_order_item`" />
+            <table-token start-index="51" table-name="t_order_item" left-delimiter="`" right-delimiter="`" />
         </tokens>
         <order-by-columns>
             <order-by-column name="DATE(i.creation_date)" order-direction="DESC" alias="creation_date"/>
@@ -34,7 +34,7 @@
             <table name="t_order_item" alias="t"/>
         </tables>
         <tokens>
-            <table-token start-index="14" original-literals="t_order_item" />
+            <table-token start-index="14" table-name="t_order_item" />
         </tokens>
         <or-condition>
             <and-condition>

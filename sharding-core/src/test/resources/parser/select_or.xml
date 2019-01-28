@@ -5,7 +5,7 @@
             <table name="t_order"/>
         </tables>
         <tokens>
-            <table-token start-index="14" original-literals="t_order" />
+            <table-token start-index="14" table-name="t_order" />
         </tokens>
         <or-condition>
             <and-condition>
@@ -26,7 +26,7 @@
             <table name="t_order"/>
         </tables>
         <tokens>
-            <table-token start-index="14" original-literals="t_order" />
+            <table-token start-index="14" table-name="t_order" />
         </tokens>
         <or-condition>
             <and-condition>
@@ -47,7 +47,7 @@
             <table name="t_order"/>
         </tables>
         <tokens>
-            <table-token start-index="14" original-literals="t_order" />
+            <table-token start-index="14" table-name="t_order" />
         </tokens>
     </parser-result>
     
@@ -56,7 +56,7 @@
             <table name="t_order"/>
         </tables>
         <tokens>
-            <table-token start-index="14" original-literals="t_order" />
+            <table-token start-index="14" table-name="t_order" />
         </tokens>
         <or-condition>
             <and-condition>
@@ -80,7 +80,7 @@
             <table name="t_order"/>
         </tables>
         <tokens>
-            <table-token start-index="14" original-literals="t_order" />
+            <table-token start-index="14" table-name="t_order" />
         </tokens>
         <or-condition>
             <and-condition>
@@ -124,8 +124,8 @@
             <table name="t_order_item" alias="i"/>
         </tables>
         <tokens>
-            <table-token start-index="16" original-literals="t_order" />
-            <table-token start-index="31" original-literals="t_order_item" />
+            <table-token start-index="16" table-name="t_order" />
+            <table-token start-index="31" table-name="t_order_item" />
         </tokens>
         <or-condition>
             <and-condition>
@@ -153,8 +153,8 @@
             <table name="t_order_item" alias="i"/>
         </tables>
         <tokens>
-            <table-token start-index="16" original-literals="t_order" />
-            <table-token start-index="31" original-literals="t_order_item" />
+            <table-token start-index="16" table-name="t_order" />
+            <table-token start-index="31" table-name="t_order_item" />
         </tokens>
         <or-condition>
             <and-condition>
