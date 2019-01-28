@@ -71,7 +71,7 @@ public final class JDBCBackendDataSource implements BackendDataSource, AutoClose
             }
         }
         this.dataSources = dataSourceMap;
-        ShardingTransactionManagerEngine.init(DatabaseType.MySQL, dataSourceMap);
+        ShardingTransactionManagerEngine.init(DatabaseType.PostgreSQL, dataSourceMap);
     }
     
     /**
