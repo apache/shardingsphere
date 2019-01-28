@@ -48,11 +48,10 @@ import org.apache.shardingsphere.shardingproxypg.backend.communication.jdbc.exec
 import org.apache.shardingsphere.shardingproxypg.backend.communication.jdbc.wrapper.JDBCExecutorWrapper;
 import org.apache.shardingsphere.shardingproxypg.runtime.GlobalRegistry;
 import org.apache.shardingsphere.shardingproxypg.transport.mysql.constant.ColumnType;
-import org.apache.shardingsphere.shardingproxypg.transport.mysql.packet.command.query.ColumnDefinition41Packet;
-import org.apache.shardingsphere.shardingproxypg.transport.mysql.packet.command.query.FieldCountPacket;
-import org.apache.shardingsphere.shardingproxypg.transport.postgresql.packet.command.query.PostgreSQLQueryResponsePackets;
-import org.apache.shardingsphere.shardingproxypg.transport.mysql.packet.generic.EofPacket;
 import org.apache.shardingsphere.shardingproxypg.transport.mysql.packet.generic.OKPacket;
+import org.apache.shardingsphere.shardingproxypg.transport.postgresql.packet.command.query.ColumnDescription;
+import org.apache.shardingsphere.shardingproxypg.transport.postgresql.packet.command.query.PostgreSQLQueryResponsePackets;
+import org.apache.shardingsphere.shardingproxypg.transport.postgresql.packet.command.query.RowDescription;
 
 import java.sql.Connection;
 import java.sql.ResultSet;
@@ -155,14 +154,13 @@ public final class JDBCExecuteEngine implements SQLExecuteEngine {
     }
     
     private PostgreSQLQueryResponsePackets getHeaderPackets(final ResultSetMetaData resultSetMetaData) throws SQLException {
-        int currentSequenceId = 0;
         int columnCount = resultSetMetaData.getColumnCount();
-        FieldCountPacket fieldCountPacket = new FieldCountPacket(++currentSequenceId, columnCount);
-        Collection<ColumnDefinition41Packet> columnDefinition41Packets = new LinkedList<>();
+        List<ColumnDescription> columnDescriptions = new LinkedList<>();
         for (int columnIndex = 1; columnIndex <= columnCount; columnIndex++) {
-            columnDefinition41Packets.add(new ColumnDefinition41Packet(++currentSequenceId, resultSetMetaData, columnIndex));
+            columnDescriptions.add(new ColumnDescription(resultSetMetaData, columnIndex));
         }
-        return new PostgreSQLQueryResponsePackets(fieldCountPacket, columnDefinition41Packets, new EofPacket(++currentSequenceId));
+        RowDescription rowDescription = new RowDescription(columnCount, columnDescriptions);
+        return new PostgreSQLQueryResponsePackets(rowDescription);
     }
     
     private QueryResult createQueryResult(final ResultSet resultSet, final ConnectionMode connectionMode) throws SQLException {
