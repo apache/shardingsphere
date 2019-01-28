@@ -26,6 +26,7 @@ import org.apache.shardingsphere.shardingproxy.backend.communication.jdbc.connec
 import org.apache.shardingsphere.shardingproxy.backend.text.TextProtocolBackendHandler;
 import org.apache.shardingsphere.shardingproxy.runtime.GlobalRegistry;
 import org.apache.shardingsphere.shardingproxy.transport.mysql.packet.command.CommandResponsePackets;
+import org.apache.shardingsphere.shardingproxy.transport.postgresql.packet.command.PostgreSQLCommandResponsePackets;
 
 import java.sql.SQLException;
 
@@ -50,7 +51,7 @@ public final class UnicastBackendHandler implements TextProtocolBackendHandler {
     private DatabaseCommunicationEngine databaseCommunicationEngine;
     
     @Override
-    public CommandResponsePackets execute() {
+    public PostgreSQLCommandResponsePackets execute() {
         databaseCommunicationEngine = databaseCommunicationEngineFactory.newTextProtocolInstance(
                 GlobalRegistry.getInstance().getLogicSchemas().values().iterator().next(), sequenceId, sql, backendConnection, databaseType);
         return databaseCommunicationEngine.execute();
