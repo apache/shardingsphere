@@ -24,6 +24,7 @@ import org.apache.shardingsphere.shardingproxy.backend.text.TextProtocolBackendH
 import org.apache.shardingsphere.shardingproxy.transport.mysql.packet.command.CommandResponsePackets;
 import org.apache.shardingsphere.shardingproxy.transport.mysql.packet.generic.ErrPacket;
 import org.apache.shardingsphere.shardingproxy.transport.mysql.packet.generic.OKPacket;
+import org.apache.shardingsphere.shardingproxy.transport.postgresql.packet.command.PostgreSQLCommandResponsePackets;
 import org.apache.shardingsphere.transaction.core.TransactionType;
 
 /**
@@ -43,23 +44,23 @@ public final class ShardingCTLSetBackendHandler implements TextProtocolBackendHa
     }
     
     @Override
-    public CommandResponsePackets execute() {
+    public PostgreSQLCommandResponsePackets execute() {
         Optional<ShardingCTLSetStatement> shardingTCLStatement = new ShardingCTLSetParser(sql).doParse();
         if (!shardingTCLStatement.isPresent()) {
-            return new CommandResponsePackets(new ErrPacket(" please review your sctl format, should be sctl:set xxx=yyy."));
+            return new PostgreSQLCommandResponsePackets(new ErrPacket(" please review your sctl format, should be sctl:set xxx=yyy."));
         }
         switch (shardingTCLStatement.get().getKey()) {
             case "TRANSACTION_TYPE":
                 try {
                     backendConnection.setTransactionType(TransactionType.valueOf(shardingTCLStatement.get().getValue()));
                 } catch (final IllegalArgumentException ex) {
-                    return new CommandResponsePackets(new ErrPacket(String.format(" could not support this sctl grammar [%s].", sql)));
+                    return new PostgreSQLCommandResponsePackets(new ErrPacket(String.format(" could not support this sctl grammar [%s].", sql)));
                 }
                 break;
             default:
-                return new CommandResponsePackets(new ErrPacket(String.format(" could not support this sctl grammar [%s].", sql)));
+                return new PostgreSQLCommandResponsePackets(new ErrPacket(String.format(" could not support this sctl grammar [%s].", sql)));
         }
-        return new CommandResponsePackets(new OKPacket(1));
+        return new PostgreSQLCommandResponsePackets(new OKPacket(1));
     }
     
     @Override
