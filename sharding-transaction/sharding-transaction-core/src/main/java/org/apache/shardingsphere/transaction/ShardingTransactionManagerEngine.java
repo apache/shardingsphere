@@ -37,7 +37,7 @@ import java.util.ServiceLoader;
 @Slf4j
 public final class ShardingTransactionManagerEngine {
     
-    private final Map<TransactionType, ShardingTransactionManager> cachedTransactionManager = new HashMap<>();
+    private final Map<TransactionType, ShardingTransactionManager> transactionManagerMap = new HashMap<>();
     
     public ShardingTransactionManagerEngine() {
         loadShardingTransactionManager();
@@ -45,12 +45,12 @@ public final class ShardingTransactionManagerEngine {
     
     private void loadShardingTransactionManager() {
         for (ShardingTransactionManager each : ServiceLoader.load(ShardingTransactionManager.class)) {
-            if (cachedTransactionManager.containsKey(each.getTransactionType())) {
+            if (transactionManagerMap.containsKey(each.getTransactionType())) {
                 log.warn("Find more than one {} transaction manager implementation class, use `{}` now",
-                    each.getTransactionType(), cachedTransactionManager.get(each.getTransactionType()).getClass().getName());
+                    each.getTransactionType(), transactionManagerMap.get(each.getTransactionType()).getClass().getName());
                 continue;
             }
-            cachedTransactionManager.put(each.getTransactionType(), each);
+            transactionManagerMap.put(each.getTransactionType(), each);
         }
     }
     
@@ -61,7 +61,7 @@ public final class ShardingTransactionManagerEngine {
      * @param dataSourceMap data source map
      */
     public void init(final DatabaseType databaseType, final Map<String, DataSource> dataSourceMap) {
-        for (Entry<TransactionType, ShardingTransactionManager> entry : cachedTransactionManager.entrySet()) {
+        for (Entry<TransactionType, ShardingTransactionManager> entry : transactionManagerMap.entrySet()) {
             entry.getValue().init(databaseType, dataSourceMap);
         }
     }
@@ -73,7 +73,7 @@ public final class ShardingTransactionManagerEngine {
      * @return sharding transaction manager
      */
     public ShardingTransactionManager getTransactionManager(final TransactionType transactionType) {
-        ShardingTransactionManager result = cachedTransactionManager.get(transactionType);
+        ShardingTransactionManager result = transactionManagerMap.get(transactionType);
         if (TransactionType.LOCAL != transactionType) {
             Preconditions.checkNotNull(result, "Cannot find transaction manager of [%s]", transactionType);
         }
@@ -86,7 +86,7 @@ public final class ShardingTransactionManagerEngine {
      * @throws Exception exception
      */
     public void close() throws Exception {
-        for (Entry<TransactionType, ShardingTransactionManager> entry : cachedTransactionManager.entrySet()) {
+        for (Entry<TransactionType, ShardingTransactionManager> entry : transactionManagerMap.entrySet()) {
             entry.getValue().close();
         }
     }
