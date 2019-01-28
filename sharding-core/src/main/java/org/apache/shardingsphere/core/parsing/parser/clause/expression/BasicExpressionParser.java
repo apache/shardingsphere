@@ -37,6 +37,7 @@ import org.apache.shardingsphere.core.util.SQLUtil;
  * Basic expression parser.
  *
  * @author zhangliang
+ * @author panjuan
  */
 @RequiredArgsConstructor
 public final class BasicExpressionParser {
@@ -131,7 +132,7 @@ public final class BasicExpressionParser {
     private void setTableToken(final SQLStatement sqlStatement, final int beginPosition, final SQLPropertyExpression propertyExpr) {
         String owner = propertyExpr.getOwner().getName();
         if (sqlStatement.getTables().getTableNames().contains(SQLUtil.getExactlyValue(propertyExpr.getOwner().getName()))) {
-            sqlStatement.addSQLToken(new TableToken(beginPosition - owner.length(), 0, owner));
+            sqlStatement.addSQLToken(new TableToken(beginPosition - owner.length(), 0, SQLUtil.getExactlyValue(owner), SQLUtil.getLeftDelimiter(owner), SQLUtil.getRightDelimiter(owner)));
         }
     }
 }
