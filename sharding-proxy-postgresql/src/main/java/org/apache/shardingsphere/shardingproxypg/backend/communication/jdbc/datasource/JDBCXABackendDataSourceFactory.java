@@ -57,7 +57,7 @@ public final class JDBCXABackendDataSourceFactory implements JDBCBackendDataSour
     public DataSource build(final String dataSourceName, final YamlDataSourceParameter dataSourceParameter) throws Exception {
         AtomikosDataSourceBean result = new AtomikosDataSourceBean();
         setPoolProperties(result, dataSourceParameter);
-        setXAProperties(result, dataSourceName, XADataSourceFactory.build(DatabaseType.MySQL), dataSourceParameter);
+        setXAProperties(result, dataSourceName, XADataSourceFactory.build(DatabaseType.PostgreSQL), dataSourceParameter);
         return result;
     }
     
