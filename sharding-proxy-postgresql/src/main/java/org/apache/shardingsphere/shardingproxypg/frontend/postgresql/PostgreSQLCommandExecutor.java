@@ -116,6 +116,5 @@ public final class PostgreSQLCommandExecutor implements Runnable {
                 count = 0;
             }
         }
-        context.write(new ErrorResponse());
     }
 }
