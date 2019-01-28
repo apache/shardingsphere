@@ -42,7 +42,12 @@ public final class TablePlaceholder implements ShardingPlaceholder {
         return hasDelimiter() ? leftDelimiter + logicTableName + rightDelimiter : logicTableName;
     }
     
-    private boolean hasDelimiter() {
+    /**
+     * Judge has delimiter or not.
+     *
+     * @return has delimiter or not
+     */
+    public boolean hasDelimiter() {
         return !(Strings.isNullOrEmpty(leftDelimiter) || Strings.isNullOrEmpty(rightDelimiter));
     }
 }
