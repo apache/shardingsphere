@@ -5,7 +5,7 @@
             <table name="t_order" />
         </tables>
         <tokens>
-            <table-token begin-position="12" original-literals="t_order" />
+            <table-token start-index="12" original-literals="t_order" />
             <insert-values-token begin-position="55" table-name="t_order"/>
         </tokens>
         <or-condition>
@@ -25,7 +25,7 @@
             <table name="t_order" />
         </tables>
         <tokens>
-            <table-token begin-position="12" original-literals="t_order" />
+            <table-token start-index="12" original-literals="t_order" />
             <insert-values-token begin-position="55" table-name="t_order"/>
         </tokens>
         <or-condition>
@@ -45,7 +45,7 @@
             <table name="t_order" />
         </tables>
         <tokens>
-            <table-token begin-position="12" original-literals="t_order" />
+            <table-token start-index="12" original-literals="t_order" />
             <insert-values-token begin-position="55" table-name="t_order"/>
         </tokens>
         <or-condition>
@@ -73,7 +73,7 @@
             <table name="t_order" />
         </tables>
         <tokens>
-            <table-token begin-position="12" original-literals="`t_order`" />
+            <table-token start-index="12" original-literals="`t_order`" />
             <insert-values-token begin-position="63" table-name="t_order"/>
         </tokens>
         <or-condition>
@@ -93,7 +93,7 @@
             <table name="t_order" />
         </tables>
         <tokens>
-            <table-token begin-position="33" original-literals="t_order" />
+            <table-token start-index="33" original-literals="t_order" />
             <insert-values-token begin-position="76" table-name="t_order"/>
         </tokens>
         <or-condition>
@@ -113,10 +113,10 @@
             <table name="t_order" />
         </tables>
         <tokens>
-            <table-token begin-position="12" original-literals="t_order" />
-            <table-token begin-position="21" original-literals="t_order" />
-            <table-token begin-position="39" original-literals="t_order" />
-            <table-token begin-position="56" original-literals="t_order" />
+            <table-token start-index="12" original-literals="t_order" />
+            <table-token start-index="21" original-literals="t_order" />
+            <table-token start-index="39" original-literals="t_order" />
+            <table-token start-index="56" original-literals="t_order" />
             <insert-values-token begin-position="79" table-name="t_order"/>
         </tokens>
         <or-condition>
@@ -136,7 +136,7 @@
             <table name="t_order" />
         </tables>
         <tokens>
-            <table-token begin-position="12" original-literals="t_order" />
+            <table-token start-index="12" original-literals="t_order" />
             <insert-column-token begin-position="19" column-name="(" />
             <items-token begin-position="19">
                 <items>
@@ -165,7 +165,7 @@
             <table name="t_order" />
         </tables>
         <tokens>
-            <table-token begin-position="12" original-literals="t_order" />
+            <table-token start-index="12" original-literals="t_order" />
             <insert-values-token begin-position="24" table-name="t_order"/>
         </tokens>
         <or-condition>
@@ -185,7 +185,7 @@
             <table name="t_order" />
         </tables>
         <tokens>
-            <table-token begin-position="12" original-literals="t_order" />
+            <table-token start-index="12" original-literals="t_order" />
             <insert-values-token begin-position="55" table-name="t_order"/>
         </tokens>
         <or-condition>
@@ -205,7 +205,7 @@
             <table name="t_order" />
         </tables>
         <tokens>
-            <table-token begin-position="12" original-literals="t_order" />
+            <table-token start-index="12" original-literals="t_order" />
             <insert-values-token begin-position="24" table-name="t_order"/>
         </tokens>
         <or-condition>
@@ -225,7 +225,7 @@
             <table name="t_order_item" />
         </tables>
         <tokens>
-            <table-token begin-position="12" original-literals="t_order_item" />
+            <table-token start-index="12" original-literals="t_order_item" />
             <insert-values-token begin-position="83" table-name="t_order_item"/>
         </tokens>
         <or-condition>
@@ -248,7 +248,7 @@
             <table name="t_order_item" />
         </tables>
         <tokens>
-            <table-token begin-position="12" original-literals="t_order_item" />
+            <table-token start-index="12" original-literals="t_order_item" />
             <items-token begin-position="65">
                 <items>
                     <item>item_id</item>
@@ -273,7 +273,7 @@
             <table name="t_order_item" />
         </tables>
         <tokens>
-            <table-token begin-position="12" original-literals="t_order_item" />
+            <table-token start-index="12" original-literals="t_order_item" />
             <insert-values-token begin-position="29" table-name="t_order_item"/>
         </tokens>
         <or-condition>
@@ -296,7 +296,7 @@
             <table name="t_order_item" />
         </tables>
         <tokens>
-            <table-token begin-position="12" original-literals="t_order_item" />
+            <table-token start-index="12" original-literals="t_order_item" />
             <insert-values-token begin-position="29" table-name="t_order_item"/>
         </tokens>
         <or-condition>
@@ -316,7 +316,7 @@
             <table name="t_order" />
         </tables>
         <tokens>
-            <table-token begin-position="12" original-literals="t_order" />
+            <table-token start-index="12" original-literals="t_order" />
             <insert-values-token begin-position="55" table-name="t_order"/>
         </tokens>
         <or-condition>
@@ -336,11 +336,11 @@
             <table name="t_order" />
         </tables>
         <tokens>
-            <table-token begin-position="12" original-literals="t_order" />
+            <table-token start-index="12" original-literals="t_order" />
             <insert-values-token begin-position="24" table-name="t_order"/>
-            <table-token begin-position="24" original-literals="t_order" />
-            <table-token begin-position="46" original-literals="t_order" />
-            <table-token begin-position="67" original-literals="t_order" />
+            <table-token start-index="24" original-literals="t_order" />
+            <table-token start-index="46" original-literals="t_order" />
+            <table-token start-index="67" original-literals="t_order" />
         </tokens>
         <or-condition>
             <and-condition>
@@ -359,13 +359,13 @@
             <!--<table name="t_order" />-->
         <!--</tables>-->
         <!--<tokens>-->
-            <!--<table-token begin-position="12" original-literals="t_order" />-->
-            <!--<table-token begin-position="21" original-literals="t_order" />-->
-            <!--<table-token begin-position="39" original-literals="t_order" />-->
-            <!--<table-token begin-position="56" original-literals="t_order" />-->
+            <!--<table-token start-index="12" original-literals="t_order" />-->
+            <!--<table-token start-index="21" original-literals="t_order" />-->
+            <!--<table-token start-index="39" original-literals="t_order" />-->
+            <!--<table-token start-index="56" original-literals="t_order" />-->
             <!--<insert-values-token begin-position="79" table-name="t_order"/>-->
-            <!--<table-token begin-position="113" original-literals="t_order" />-->
-            <!--<table-token begin-position="137" original-literals="t_order" />-->
+            <!--<table-token start-index="113" original-literals="t_order" />-->
+            <!--<table-token start-index="137" original-literals="t_order" />-->
         <!--</tokens>-->
         <!--<or-condition>-->
             <!--<and-condition>-->
@@ -384,7 +384,7 @@
             <table name="t_order" />
         </tables>
         <tokens>
-            <table-token begin-position="12" original-literals="t_order" />
+            <table-token start-index="12" original-literals="t_order" />
             <insert-values-token begin-position="55" table-name="t_order"/>
         </tokens>
         <or-condition>
@@ -412,7 +412,7 @@
             <table name="t_order" />
         </tables>
         <tokens>
-            <table-token begin-position="12" original-literals="t_order" />
+            <table-token start-index="12" original-literals="t_order" />
             <insert-values-token begin-position="55" table-name="t_order"/>
         </tokens>
         <or-condition>
@@ -440,7 +440,7 @@
             <table name="t_order" />
         </tables>
         <tokens>
-            <table-token begin-position="12" original-literals="t_order" />
+            <table-token start-index="12" original-literals="t_order" />
             <insert-values-token begin-position="55" table-name="t_order"/>
         </tokens>
         <or-condition>
@@ -468,7 +468,7 @@
             <table name="t_order_item" />
         </tables>
         <tokens>
-            <table-token begin-position="12" original-literals="t_order_item" />
+            <table-token start-index="12" original-literals="t_order_item" />
             <insert-values-token begin-position="83" table-name="t_order_item"/>
         </tokens>
         <or-condition>
@@ -502,7 +502,7 @@
             <table name="t_order_item" />
         </tables>
         <tokens>
-            <table-token begin-position="12" original-literals="t_order_item" />
+            <table-token start-index="12" original-literals="t_order_item" />
             <items-token begin-position="65">
                 <items>
                     <item>item_id</item>
@@ -535,7 +535,7 @@
             <table name="t_place" />
         </tables>
         <tokens>
-            <table-token begin-position="12" original-literals="t_place" />
+            <table-token start-index="12" original-literals="t_place" />
             <insert-values-token begin-position="64" table-name="t_place"/>
         </tokens>
         <or-condition>
@@ -555,7 +555,7 @@
             <table name="t_order_item" />
         </tables>
         <tokens>
-            <table-token begin-position="12" original-literals="t_order_item" />
+            <table-token start-index="12" original-literals="t_order_item" />
             <insert-column-token begin-position="24" column-name="(" />
             <items-token begin-position="24">
                 <items>
@@ -589,7 +589,7 @@
             <table name="t_order_item" />
         </tables>
         <tokens>
-            <table-token begin-position="12" original-literals="t_order_item" />
+            <table-token start-index="12" original-literals="t_order_item" />
             <insert-column-token begin-position="24" column-name="(" />
             <items-token begin-position="24">
                 <items>

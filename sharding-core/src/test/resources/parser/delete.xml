@@ -5,7 +5,7 @@
             <table name="t_order"/>
         </tables>
         <tokens>
-            <table-token begin-position="12" original-literals="t_order" />
+            <table-token start-index="12" original-literals="t_order" />
         </tokens>
         <or-condition>
             <and-condition>
@@ -24,7 +24,7 @@
             <table name="t_order" />
         </tables>
         <tokens>
-            <table-token begin-position="12" original-literals="t_order" />
+            <table-token start-index="12" original-literals="t_order" />
         </tokens>
     </parser-result>
 
@@ -33,7 +33,7 @@
             <table name="t_order" />
         </tables>
         <tokens>
-            <table-token begin-position="12" original-literals="`t_order`" />
+            <table-token start-index="12" original-literals="`t_order`" />
         </tokens>
     </parser-result>
 
@@ -42,7 +42,7 @@
             <table name="t_order" />
         </tables>
         <tokens>
-            <table-token begin-position="33" original-literals="t_order" />
+            <table-token start-index="33" original-literals="t_order" />
         </tokens>
     </parser-result>
 
@@ -51,7 +51,7 @@
             <table name="t_order" />
         </tables>
         <tokens>
-            <table-token begin-position="34" original-literals="t_order" />
+            <table-token start-index="34" original-literals="t_order" />
         </tokens>
     </parser-result>
 </parser-result-sets>
