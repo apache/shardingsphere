@@ -5,7 +5,7 @@
             <table name="t_log" />
         </tables>
         <tokens>
-            <table-token begin-position="15" original-literals="t_log" />
+            <table-token start-index="15" original-literals="t_log" />
         </tokens>
     </parser-result>
     
@@ -14,7 +14,7 @@
             <table name="t_log" />
         </tables>
         <tokens>
-            <table-token begin-position="20" original-literals="t_log" />
+            <table-token start-index="20" original-literals="t_log" />
         </tokens>
     </parser-result>
 </parser-result-sets>
