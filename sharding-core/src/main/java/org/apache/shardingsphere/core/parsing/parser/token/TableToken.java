@@ -25,6 +25,7 @@ import org.apache.shardingsphere.core.util.SQLUtil;
  * Table token.
  *
  * @author zhangliang
+ * @author panjuan
  */
 @Getter
 @ToString
@@ -32,12 +33,18 @@ public final class TableToken extends SQLToken {
     
     private final int skippedSchemaNameLength;
     
-    private final String originalLiterals;
+    private final String tableName;
     
-    public TableToken(final int startIndex, final int skippedSchemaNameLength, final String originalLiterals) {
+    private final String leftDelimiter;
+    
+    private final String rightDelimiter;
+    
+    public TableToken(final int startIndex, final int skippedSchemaNameLength, final String tableName, final String leftDelimiter, final String rightDelimiter) {
         super(startIndex);
         this.skippedSchemaNameLength = skippedSchemaNameLength;
-        this.originalLiterals = originalLiterals;
+        this.tableName = tableName;
+        this.leftDelimiter = leftDelimiter;
+        this.rightDelimiter = rightDelimiter;
     }
     
     /**
@@ -46,6 +53,6 @@ public final class TableToken extends SQLToken {
      * @return table name
      */
     public String getTableName() {
-        return SQLUtil.getExactlyValue(originalLiterals);
+        return SQLUtil.getExactlyValue(tableName);
     }
 }
