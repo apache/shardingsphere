@@ -30,6 +30,7 @@ import org.apache.shardingsphere.core.util.SQLUtil;
  * Update set items clause parser.
  *
  * @author zhangliang
+ * @author panjuan
  */
 public final class UpdateSetItemsClauseParser implements SQLClauseParser {
     
@@ -71,7 +72,8 @@ public final class UpdateSetItemsClauseParser implements SQLClauseParser {
         lexerEngine.nextToken();
         if (lexerEngine.skipIfEqual(Symbol.DOT)) {
             if (updateStatement.getTables().getSingleTableName().equalsIgnoreCase(SQLUtil.getExactlyValue(literals))) {
-                updateStatement.addSQLToken(new TableToken(beginPosition - literals.length(), 0, literals));
+                updateStatement.addSQLToken(new TableToken(beginPosition - literals.length(), 
+                        0, SQLUtil.getExactlyValue(literals), SQLUtil.getLeftDelimiter(literals), SQLUtil.getRightDelimiter(literals)));
             }
             lexerEngine.nextToken();
         }
