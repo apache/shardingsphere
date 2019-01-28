@@ -94,10 +94,7 @@ public final class XAShardingTransactionManager implements ShardingTransactionMa
     @SneakyThrows
     @Override
     public void rollback() {
-        // TODO mybatis may call rollback twice, need investigate reason here 
-        if (Status.STATUS_NO_TRANSACTION != xaTransactionManager.getTransactionManager().getStatus()) {
-            xaTransactionManager.getTransactionManager().rollback();
-        }
+        xaTransactionManager.getTransactionManager().rollback();
     }
     
     @Override
