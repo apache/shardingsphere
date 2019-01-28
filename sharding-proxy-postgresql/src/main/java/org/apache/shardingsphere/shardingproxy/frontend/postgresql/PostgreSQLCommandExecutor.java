@@ -31,6 +31,7 @@ import org.apache.shardingsphere.shardingproxy.transport.postgresql.packet.comma
 import org.apache.shardingsphere.shardingproxy.transport.postgresql.packet.command.PostgreSQLCommandPacketFactory;
 import org.apache.shardingsphere.shardingproxy.transport.postgresql.packet.command.PostgreSQLCommandResponsePackets;
 import org.apache.shardingsphere.shardingproxy.transport.postgresql.packet.command.query.PostgreSQLQueryCommandPacket;
+import org.apache.shardingsphere.shardingproxy.transport.postgresql.packet.generic.CommandComplete;
 import org.apache.shardingsphere.shardingproxy.transport.postgresql.packet.generic.ErrorResponse;
 import org.apache.shardingsphere.shardingproxy.transport.postgresql.packet.generic.ReadyForQuery;
 import org.apache.shardingsphere.spi.root.RootInvokeHook;
@@ -74,6 +75,7 @@ public final class PostgreSQLCommandExecutor implements Runnable {
                 writeMoreResults((PostgreSQLQueryCommandPacket) commandPacket);
             }
             connectionSize = backendConnection.getConnectionSize();
+            context.write(new CommandComplete("SELECT", 1));
         } catch (final SQLException ex) {
             context.write(new ErrorResponse());
             // CHECKSTYLE:OFF
@@ -81,7 +83,7 @@ public final class PostgreSQLCommandExecutor implements Runnable {
             // CHECKSTYLE:ON
             context.write(new ErrorResponse());
         } finally {
-            context.flush();
+            context.writeAndFlush(new ReadyForQuery());
             rootInvokeHook.finish(connectionSize);
         }
     }
