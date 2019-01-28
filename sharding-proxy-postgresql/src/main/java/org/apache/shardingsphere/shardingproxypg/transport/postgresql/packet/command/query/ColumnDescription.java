@@ -18,20 +18,21 @@
 package org.apache.shardingsphere.shardingproxypg.transport.postgresql.packet.command.query;
 
 import lombok.Getter;
-import lombok.RequiredArgsConstructor;
+
+import java.sql.ResultSetMetaData;
+import java.sql.SQLException;
 
 /**
  * Column description.
  *
  * @author zhangyonglun
  */
-@RequiredArgsConstructor
 @Getter
 public final class ColumnDescription {
     
     private final String columnName;
     
-    private final int tableOID;
+    private final int tableOID = 0;
     
     private final int columnIndex;
     
@@ -42,4 +43,11 @@ public final class ColumnDescription {
     private final int typeModifier = -1;
     
     private final int dataFormat = 0;
+    
+    public ColumnDescription(final ResultSetMetaData resultSetMetaData, final int columnIndex) throws SQLException {
+        columnName = resultSetMetaData.getColumnName(columnIndex);
+        this.columnIndex = columnIndex;
+        typeOID = resultSetMetaData.getColumnType(columnIndex);
+        columnLength = resultSetMetaData.getColumnDisplaySize(columnIndex);
+    }
 }
