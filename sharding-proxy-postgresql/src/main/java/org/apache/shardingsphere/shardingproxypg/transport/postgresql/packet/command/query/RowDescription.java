@@ -31,9 +31,9 @@ import java.util.List;
  * @author zhangyonglun
  */
 @RequiredArgsConstructor
+@Getter
 public final class RowDescription implements PostgreSQLPacket {
     
-    @Getter
     private final char messageType = PostgreSQLCommandPacketType.ROW_DESCRIPTION.getValue();
     
     private final int fieldCount;
