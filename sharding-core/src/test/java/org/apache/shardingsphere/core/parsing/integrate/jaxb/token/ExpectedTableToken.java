@@ -30,7 +30,7 @@ import javax.xml.bind.annotation.XmlAttribute;
 public final class ExpectedTableToken {
     
     @XmlAttribute(name = "start-index")
-    private int beginPosition;
+    private int startIndex;
     
     @XmlAttribute(name = "skipped-schema-name-length")
     private int skippedSchemaNameLength;
