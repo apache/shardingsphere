@@ -22,6 +22,7 @@ import lombok.NoArgsConstructor;
 import org.apache.shardingsphere.core.constant.DatabaseType;
 import org.apache.shardingsphere.transaction.xa.jta.connection.dialect.H2XAConnectionWrapper;
 import org.apache.shardingsphere.transaction.xa.jta.connection.dialect.MySQLXAConnectionWrapper;
+import org.apache.shardingsphere.transaction.xa.jta.connection.dialect.PostgreSQLXAConnectionWrapper;
 
 import javax.sql.XAConnection;
 import javax.sql.XADataSource;
@@ -47,6 +48,8 @@ public final class XAConnectionFactory {
         switch (databaseType) {
             case MySQL:
                 return new MySQLXAConnectionWrapper().wrap(xaDataSource, connection);
+            case PostgreSQL:
+                return new PostgreSQLXAConnectionWrapper().wrap(xaDataSource, connection);
             case H2:
                 return new H2XAConnectionWrapper().wrap(xaDataSource, connection);
             default:

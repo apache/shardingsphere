@@ -73,14 +73,17 @@ public abstract class AbstractConnectionAdapter extends AbstractUnsupportedOpera
     
     private final RootInvokeHook rootInvokeHook = new SPIRootInvokeHook();
     
-    private final TransactionType transactionType;
-    
     private final ShardingTransactionManager shardingTransactionManager;
     
-    protected AbstractConnectionAdapter(final TransactionType transactionType) {
+    private ShardingTransactionManagerEngine shardingTransactionManagerEngine;
+    
+    private TransactionType transactionType;
+    
+    protected AbstractConnectionAdapter(final ShardingTransactionManagerEngine shardingTransactionManagerEngine, final TransactionType transactionType) {
         rootInvokeHook.start();
         this.transactionType = transactionType;
-        shardingTransactionManager = ShardingTransactionManagerEngine.getTransactionManager(transactionType);
+        this.shardingTransactionManagerEngine = shardingTransactionManagerEngine;
+        shardingTransactionManager = shardingTransactionManagerEngine.getTransactionManager(transactionType);
     }
     
     /**

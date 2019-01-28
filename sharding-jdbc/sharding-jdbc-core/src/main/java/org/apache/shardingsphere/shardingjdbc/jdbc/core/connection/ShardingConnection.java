@@ -22,6 +22,7 @@ import org.apache.shardingsphere.shardingjdbc.jdbc.adapter.AbstractConnectionAda
 import org.apache.shardingsphere.shardingjdbc.jdbc.core.ShardingContext;
 import org.apache.shardingsphere.shardingjdbc.jdbc.core.statement.ShardingPreparedStatement;
 import org.apache.shardingsphere.shardingjdbc.jdbc.core.statement.ShardingStatement;
+import org.apache.shardingsphere.transaction.ShardingTransactionManagerEngine;
 import org.apache.shardingsphere.transaction.core.TransactionType;
 
 import javax.sql.DataSource;
@@ -46,8 +47,9 @@ public final class ShardingConnection extends AbstractConnectionAdapter {
     
     private final ShardingContext shardingContext;
     
-    public ShardingConnection(final Map<String, DataSource> dataSourceMap, final ShardingContext shardingContext, final TransactionType transactionType) {
-        super(transactionType);
+    public ShardingConnection(final Map<String, DataSource> dataSourceMap, final ShardingContext shardingContext,
+                              final ShardingTransactionManagerEngine shardingTransactionManagerEngine, final TransactionType transactionType) {
+        super(shardingTransactionManagerEngine, transactionType);
         this.dataSourceMap = dataSourceMap;
         this.shardingContext = shardingContext;
     }

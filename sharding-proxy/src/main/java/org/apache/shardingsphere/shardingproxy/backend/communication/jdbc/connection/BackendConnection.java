@@ -87,6 +87,7 @@ public final class BackendConnection implements AutoCloseable {
         if (null == schemaName) {
             throw new ShardingException("Please select database, then switch transaction type.");
         }
+        //TODO switch transaction type will not effect running transaction now, need to remove this logic.
         if (isSwitchFailed()) {
             throw new ShardingException("Failed to switch transaction type, please terminate current transaction.");
         }

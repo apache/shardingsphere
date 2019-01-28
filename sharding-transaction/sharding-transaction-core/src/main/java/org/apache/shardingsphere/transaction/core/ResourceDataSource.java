@@ -15,13 +15,29 @@
  * limitations under the License.
  */
 
-package org.apache.shardingsphere.shardingproxy.backend;
+package org.apache.shardingsphere.transaction.core;
+
+import lombok.Getter;
+
+import javax.sql.DataSource;
 
 /**
- * Backend data source.
+ * Unique resource data source.
  *
- * @author zhangliang
+ * @author zhaojun
  */
-public interface BackendDataSource {
+@Getter
+public class ResourceDataSource {
+    
+    private final String originalName;
+    
+    private String uniqueResourceName;
+    
+    private final DataSource dataSource;
+    
+    public ResourceDataSource(final String originalName, final DataSource dataSource) {
+        this.originalName = originalName;
+        this.dataSource = dataSource;
+        this.uniqueResourceName = ResourceIDGenerator.getInstance().nextId() + originalName;
+    }
 }
-

@@ -15,13 +15,40 @@
  * limitations under the License.
  */
 
-package org.apache.shardingsphere.shardingproxy.backend;
+package org.apache.shardingsphere.transaction.core;
+
+import lombok.AccessLevel;
+import lombok.NoArgsConstructor;
+
+import java.util.concurrent.atomic.AtomicInteger;
 
 /**
- * Backend data source.
+ * Resource ID generator.
  *
- * @author zhangliang
+ * @author zhaojun
  */
-public interface BackendDataSource {
+@NoArgsConstructor(access = AccessLevel.PRIVATE)
+public class ResourceIDGenerator {
+    
+    private static final ResourceIDGenerator INSTANCE = new ResourceIDGenerator();
+    
+    private final AtomicInteger count = new AtomicInteger();
+    
+    /**
+     * Get instance.
+     *
+     * @return instance
+     */
+    public static ResourceIDGenerator getInstance() {
+        return INSTANCE;
+    }
+    
+    /**
+     * Next unique resource id.
+     *
+     * @return next ID
+     */
+    String nextId() {
+        return String.format("resource-%d-", count.incrementAndGet());
+    }
 }
-

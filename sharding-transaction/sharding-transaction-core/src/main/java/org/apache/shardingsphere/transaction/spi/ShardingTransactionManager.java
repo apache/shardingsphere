@@ -18,12 +18,12 @@
 package org.apache.shardingsphere.transaction.spi;
 
 import org.apache.shardingsphere.core.constant.DatabaseType;
+import org.apache.shardingsphere.transaction.core.ResourceDataSource;
 import org.apache.shardingsphere.transaction.core.TransactionType;
 
-import javax.sql.DataSource;
 import java.sql.Connection;
 import java.sql.SQLException;
-import java.util.Map;
+import java.util.Collection;
 
 /**
  * Sharding transaction manager.
@@ -37,9 +37,9 @@ public interface ShardingTransactionManager extends AutoCloseable {
      * Initialize sharding transaction manager.
      *
      * @param databaseType database type
-     * @param dataSourceMap data source map
+     * @param resourceDataSources resource data sources
      */
-    void init(DatabaseType databaseType, Map<String, DataSource> dataSourceMap);
+    void init(DatabaseType databaseType, Collection<ResourceDataSource> resourceDataSources);
     
     /**
      * Get transaction type.
