@@ -38,14 +38,13 @@ import org.apache.shardingsphere.shardingproxypg.backend.communication.jdbc.exec
 import org.apache.shardingsphere.shardingproxypg.backend.communication.jdbc.execute.response.ExecuteUpdateResponse;
 import org.apache.shardingsphere.shardingproxypg.runtime.schema.LogicSchema;
 import org.apache.shardingsphere.shardingproxypg.runtime.schema.ShardingSchema;
-import org.apache.shardingsphere.shardingproxypg.transport.mysql.constant.ServerErrorCode;
 import org.apache.shardingsphere.shardingproxypg.transport.mysql.packet.command.query.ColumnDefinition41Packet;
 import org.apache.shardingsphere.shardingproxypg.transport.mysql.packet.command.query.FieldCountPacket;
 import org.apache.shardingsphere.shardingproxypg.transport.mysql.packet.generic.EofPacket;
-import org.apache.shardingsphere.shardingproxypg.transport.mysql.packet.generic.ErrPacket;
 import org.apache.shardingsphere.shardingproxypg.transport.mysql.packet.generic.OKPacket;
 import org.apache.shardingsphere.shardingproxypg.transport.postgresql.packet.command.PostgreSQLCommandResponsePackets;
 import org.apache.shardingsphere.shardingproxypg.transport.postgresql.packet.command.query.PostgreSQLQueryResponsePackets;
+import org.apache.shardingsphere.shardingproxypg.transport.postgresql.packet.generic.ErrorResponse;
 import org.apache.shardingsphere.transaction.core.TransactionType;
 
 import java.sql.SQLException;
@@ -93,8 +92,7 @@ public final class JDBCDatabaseCommunicationEngine implements DatabaseCommunicat
         }
         SQLStatement sqlStatement = routeResult.getSqlStatement();
         if (isUnsupportedXA(sqlStatement.getType())) {
-            return new PostgreSQLCommandResponsePackets(new ErrPacket(1,
-                    ServerErrorCode.ER_ERROR_ON_MODIFYING_GTID_EXECUTED_TABLE, sqlStatement.getTables().isSingleTable() ? sqlStatement.getTables().getSingleTableName() : "unknown_table"));
+            return new PostgreSQLCommandResponsePackets(new ErrorResponse());
         }
         executeResponse = executeEngine.execute(routeResult);
         if (logicSchema instanceof ShardingSchema) {
