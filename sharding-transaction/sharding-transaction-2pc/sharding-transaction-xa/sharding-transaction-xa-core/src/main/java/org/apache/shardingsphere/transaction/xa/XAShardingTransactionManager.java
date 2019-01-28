@@ -41,7 +41,7 @@ import java.util.Map.Entry;
  */
 public final class XAShardingTransactionManager extends ShardingTransactionManagerAdapter {
     
-    private final Map<String, SingleXADataSource> cachedSingleXADataSourceMap = new HashMap<>();
+    private final Map<String, SingleXADataSource> singleXADataSourceMap = new HashMap<>();
     
     private final XATransactionManager xaTransactionManager = XATransactionManagerLoader.getInstance().getTransactionManager();
     
@@ -53,8 +53,8 @@ public final class XAShardingTransactionManager extends ShardingTransactionManag
                 continue;
             }
             String resourceName = entry.getKey();
-            SingleXADataSource singleXADataSource = new SingleXADataSource(databaseType, resourceName, entry.getValue());
-            cachedSingleXADataSourceMap.put(resourceName, singleXADataSource);
+            SingleXADataSource singleXADataSource = new SingleXADataSource(databaseType, resourceName, dataSource);
+            singleXADataSourceMap.put(resourceName, singleXADataSource);
             xaTransactionManager.registerRecoveryResource(resourceName, singleXADataSource.getXaDataSource());
         }
         xaTransactionManager.init();
@@ -74,7 +74,7 @@ public final class XAShardingTransactionManager extends ShardingTransactionManag
     @SneakyThrows
     @Override
     public Connection doGetConnection(final String dataSourceName) {
-        SingleXAConnection singleXAConnection = cachedSingleXADataSourceMap.get(dataSourceName).getXAConnection();
+        SingleXAConnection singleXAConnection = singleXADataSourceMap.get(dataSourceName).getXAConnection();
         xaTransactionManager.enlistResource(singleXAConnection.getXAResource());
         return singleXAConnection.getConnection();
     }
@@ -102,10 +102,10 @@ public final class XAShardingTransactionManager extends ShardingTransactionManag
     
     @Override
     public void close() throws Exception {
-        for (SingleXADataSource each : cachedSingleXADataSourceMap.values()) {
+        for (SingleXADataSource each : singleXADataSourceMap.values()) {
             xaTransactionManager.removeRecoveryResource(each.getResourceName(), each.getXaDataSource());
         }
-        cachedSingleXADataSourceMap.clear();
+        singleXADataSourceMap.clear();
         xaTransactionManager.close();
     }
 }
