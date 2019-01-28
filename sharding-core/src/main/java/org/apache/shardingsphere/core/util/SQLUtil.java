@@ -53,7 +53,7 @@ public final class SQLUtil {
      * @return left delimiter
      */
     public static String getLeftDelimiter(final String value) {
-        int index = CharMatcher.anyOf("[`'\"").indexIn("[`'\"");
+        int index = CharMatcher.anyOf("[`'\"").indexIn(value);
         if (-1 == index) {
             return "";
         }
@@ -67,7 +67,7 @@ public final class SQLUtil {
      * @return right delimiter
      */
     public static String getRightDelimiter(final String value) {
-        int index = CharMatcher.anyOf("]`'\"").indexIn("]`'\"");
+        int index = CharMatcher.anyOf("]`'\"").indexIn(value);
         if (-1 == index) {
             return "";
         }
