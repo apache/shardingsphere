@@ -28,6 +28,7 @@ import org.apache.shardingsphere.shardingproxy.transport.mysql.constant.ServerEr
 import org.apache.shardingsphere.shardingproxy.transport.mysql.packet.command.CommandResponsePackets;
 import org.apache.shardingsphere.shardingproxy.transport.mysql.packet.generic.ErrPacket;
 import org.apache.shardingsphere.shardingproxy.transport.mysql.packet.generic.OKPacket;
+import org.apache.shardingsphere.shardingproxy.transport.postgresql.packet.command.PostgreSQLCommandResponsePackets;
 
 /**
  * Use database backend handler.
@@ -43,13 +44,13 @@ public final class UseDatabaseBackendHandler implements TextProtocolBackendHandl
     private final BackendConnection backendConnection;
     
     @Override
-    public CommandResponsePackets execute() {
+    public PostgreSQLCommandResponsePackets execute() {
         String schema = SQLUtil.getExactlyValue(useStatement.getSchema());
         if (!GlobalRegistry.getInstance().schemaExists(schema)) {
-            return new CommandResponsePackets(new ErrPacket(1, ServerErrorCode.ER_BAD_DB_ERROR, schema));
+            return new PostgreSQLCommandResponsePackets(new ErrPacket(1, ServerErrorCode.ER_BAD_DB_ERROR, schema));
         }
         backendConnection.setCurrentSchema(schema);
-        return new CommandResponsePackets(new OKPacket(1));
+        return new PostgreSQLCommandResponsePackets(new OKPacket(1));
     }
     
     @Override
