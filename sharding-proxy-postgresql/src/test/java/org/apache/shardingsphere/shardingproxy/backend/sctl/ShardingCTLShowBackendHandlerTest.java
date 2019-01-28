@@ -21,7 +21,7 @@ import org.apache.shardingsphere.shardingproxy.backend.ResultPacket;
 import org.apache.shardingsphere.shardingproxy.backend.communication.jdbc.connection.BackendConnection;
 import org.apache.shardingsphere.shardingproxy.transport.mysql.packet.command.CommandResponsePackets;
 import org.apache.shardingsphere.shardingproxy.transport.mysql.packet.command.query.FieldCountPacket;
-import org.apache.shardingsphere.shardingproxy.transport.mysql.packet.command.query.QueryResponsePackets;
+import org.apache.shardingsphere.shardingproxy.transport.postgresql.packet.command.query.PostgreSQLQueryResponsePackets;
 import org.apache.shardingsphere.shardingproxy.transport.mysql.packet.generic.ErrPacket;
 import org.apache.shardingsphere.transaction.core.TransactionType;
 import org.hamcrest.CoreMatchers;
@@ -43,7 +43,7 @@ public final class ShardingCTLShowBackendHandlerTest {
         backendConnection.setCurrentSchema("schema");
         ShardingCTLShowBackendHandler backendHandler = new ShardingCTLShowBackendHandler("sctl:show transaction_type", backendConnection);
         CommandResponsePackets actual = backendHandler.execute();
-        assertThat(actual, instanceOf(QueryResponsePackets.class));
+        assertThat(actual, instanceOf(PostgreSQLQueryResponsePackets.class));
         assertThat(actual.getHeadPacket(), instanceOf(FieldCountPacket.class));
         assertThat(actual.getPackets().size(), is(3));
         backendHandler.next();
@@ -56,7 +56,7 @@ public final class ShardingCTLShowBackendHandlerTest {
         backendConnection.setCurrentSchema("schema");
         ShardingCTLShowBackendHandler backendHandler = new ShardingCTLShowBackendHandler("sctl:show cached_connections", backendConnection);
         CommandResponsePackets actual = backendHandler.execute();
-        assertThat(actual, instanceOf(QueryResponsePackets.class));
+        assertThat(actual, instanceOf(PostgreSQLQueryResponsePackets.class));
         assertThat(actual.getHeadPacket(), instanceOf(FieldCountPacket.class));
         assertThat(actual.getPackets().size(), is(3));
         backendHandler.next();
