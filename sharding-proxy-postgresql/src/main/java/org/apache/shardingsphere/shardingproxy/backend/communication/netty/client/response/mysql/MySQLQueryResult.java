@@ -28,6 +28,7 @@ import org.apache.shardingsphere.shardingproxy.transport.mysql.packet.command.qu
 import org.apache.shardingsphere.shardingproxy.transport.mysql.packet.command.query.FieldCountPacket;
 import org.apache.shardingsphere.shardingproxy.transport.mysql.packet.command.query.text.TextResultSetRowPacket;
 import org.apache.shardingsphere.shardingproxy.transport.mysql.packet.generic.EofPacket;
+import org.apache.shardingsphere.shardingproxy.transport.postgresql.packet.command.PostgreSQLCommandResponsePackets;
 
 import java.io.InputStream;
 import java.util.Calendar;
@@ -47,7 +48,7 @@ import java.util.concurrent.LinkedBlockingQueue;
 public final class MySQLQueryResult implements QueryResult {
     
     @Getter
-    private final CommandResponsePackets commandResponsePackets;
+    private final PostgreSQLCommandResponsePackets commandResponsePackets;
     
     private final int columnCount;
     
@@ -68,7 +69,7 @@ public final class MySQLQueryResult implements QueryResult {
     private boolean columnFinished;
     
     public MySQLQueryResult() {
-        commandResponsePackets = new CommandResponsePackets();
+        commandResponsePackets = new PostgreSQLCommandResponsePackets();
         columnCount = 0;
         columnIndexAndLabelMap = null;
         columnLabelAndIndexMap = null;
@@ -78,7 +79,7 @@ public final class MySQLQueryResult implements QueryResult {
     
     public MySQLQueryResult(final MySQLPacketPayload payload) {
         FieldCountPacket fieldCountPacket = new FieldCountPacket(payload);
-        commandResponsePackets = new CommandResponsePackets(fieldCountPacket);
+        commandResponsePackets = new PostgreSQLCommandResponsePackets(fieldCountPacket);
         columnCount = fieldCountPacket.getColumnCount();
         columnIndexAndLabelMap = new HashMap<>(fieldCountPacket.getColumnCount(), 1);
         columnLabelAndIndexMap = new HashMap<>(fieldCountPacket.getColumnCount(), 1);
