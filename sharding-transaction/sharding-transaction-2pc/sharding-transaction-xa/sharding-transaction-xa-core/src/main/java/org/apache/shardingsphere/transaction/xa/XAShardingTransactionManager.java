@@ -20,8 +20,9 @@ package org.apache.shardingsphere.transaction.xa;
 import com.atomikos.jdbc.AtomikosDataSourceBean;
 import lombok.SneakyThrows;
 import org.apache.shardingsphere.core.constant.DatabaseType;
-import org.apache.shardingsphere.transaction.core.ShardingTransactionManagerAdapter;
+import org.apache.shardingsphere.transaction.core.ResourceDataSource;
 import org.apache.shardingsphere.transaction.core.TransactionType;
+import org.apache.shardingsphere.transaction.spi.ShardingTransactionManager;
 import org.apache.shardingsphere.transaction.xa.jta.connection.SingleXAConnection;
 import org.apache.shardingsphere.transaction.xa.jta.datasource.SingleXADataSource;
 import org.apache.shardingsphere.transaction.xa.manager.XATransactionManagerLoader;
@@ -30,32 +31,31 @@ import org.apache.shardingsphere.transaction.xa.spi.XATransactionManager;
 import javax.sql.DataSource;
 import javax.transaction.Status;
 import java.sql.Connection;
+import java.util.Collection;
 import java.util.HashMap;
 import java.util.Map;
-import java.util.Map.Entry;
 
 /**
  * Sharding transaction manager for XA.
  *
  * @author zhaojun
  */
-public final class XAShardingTransactionManager extends ShardingTransactionManagerAdapter {
+public final class XAShardingTransactionManager implements ShardingTransactionManager {
     
     private final Map<String, SingleXADataSource> singleXADataSourceMap = new HashMap<>();
     
     private final XATransactionManager xaTransactionManager = XATransactionManagerLoader.getInstance().getTransactionManager();
     
     @Override
-    public void doInit(final DatabaseType databaseType, final Map<String, DataSource> dataSourceMap) {
-        for (Entry<String, DataSource> entry : dataSourceMap.entrySet()) {
-            DataSource dataSource = entry.getValue();
+    public void init(final DatabaseType databaseType, final Collection<ResourceDataSource> resourceDataSources) {
+        for (ResourceDataSource each : resourceDataSources) {
+            DataSource dataSource = each.getDataSource();
             if (dataSource instanceof AtomikosDataSourceBean) {
                 continue;
             }
-            String resourceName = entry.getKey();
-            SingleXADataSource singleXADataSource = new SingleXADataSource(databaseType, resourceName, dataSource);
-            singleXADataSourceMap.put(resourceName, singleXADataSource);
-            xaTransactionManager.registerRecoveryResource(resourceName, singleXADataSource.getXaDataSource());
+            SingleXADataSource singleXADataSource = new SingleXADataSource(databaseType, each.getUniqueResourceName(), dataSource);
+            singleXADataSourceMap.put(each.getOriginalName(), singleXADataSource);
+            xaTransactionManager.registerRecoveryResource(each.getUniqueResourceName(), singleXADataSource.getXaDataSource());
         }
         xaTransactionManager.init();
     }
@@ -73,7 +73,7 @@ public final class XAShardingTransactionManager extends ShardingTransactionManag
     
     @SneakyThrows
     @Override
-    public Connection doGetConnection(final String dataSourceName) {
+    public Connection getConnection(final String dataSourceName) {
         SingleXAConnection singleXAConnection = singleXADataSourceMap.get(dataSourceName).getXAConnection();
         xaTransactionManager.enlistResource(singleXAConnection.getXAResource());
         return singleXAConnection.getConnection();

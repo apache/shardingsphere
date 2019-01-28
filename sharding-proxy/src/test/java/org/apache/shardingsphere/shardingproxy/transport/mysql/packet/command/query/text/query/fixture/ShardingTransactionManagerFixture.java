@@ -19,15 +19,14 @@ package org.apache.shardingsphere.shardingproxy.transport.mysql.packet.command.q
 
 import lombok.Getter;
 import org.apache.shardingsphere.core.constant.DatabaseType;
+import org.apache.shardingsphere.transaction.core.ResourceDataSource;
 import org.apache.shardingsphere.transaction.core.TransactionOperationType;
 import org.apache.shardingsphere.transaction.core.TransactionType;
 import org.apache.shardingsphere.transaction.spi.ShardingTransactionManager;
 
-import javax.sql.DataSource;
 import java.sql.Connection;
 import java.util.Collection;
 import java.util.LinkedList;
-import java.util.Map;
 
 public final class ShardingTransactionManagerFixture implements ShardingTransactionManager {
     
@@ -35,7 +34,7 @@ public final class ShardingTransactionManagerFixture implements ShardingTransact
     private static Collection<TransactionOperationType> invocations = new LinkedList<>();
     
     @Override
-    public void init(final DatabaseType databaseType, final Map<String, DataSource> dataSourceMap) {
+    public void init(final DatabaseType databaseType, final Collection<ResourceDataSource> resourceDataSources) {
     }
     
     @Override
