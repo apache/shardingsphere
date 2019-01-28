@@ -31,7 +31,6 @@ import org.apache.shardingsphere.shardingproxypg.transport.mysql.packet.command.
 import org.apache.shardingsphere.shardingproxypg.transport.mysql.packet.command.CommandResponsePackets;
 import org.apache.shardingsphere.shardingproxypg.transport.mysql.packet.command.query.ColumnDefinition41Packet;
 import org.apache.shardingsphere.shardingproxypg.transport.mysql.packet.generic.EofPacket;
-import org.apache.shardingsphere.shardingproxypg.transport.mysql.packet.generic.ErrPacket;
 import org.apache.shardingsphere.shardingproxypg.transport.postgresql.packet.command.PostgreSQLCommandResponsePackets;
 
 import java.sql.SQLException;
@@ -65,7 +64,7 @@ public final class ComFieldListPacket implements CommandPacket {
         table = payload.readStringNul();
         fieldWildcard = payload.readStringEOF();
         databaseCommunicationEngine = DatabaseCommunicationEngineFactory.getInstance().newTextProtocolInstance(
-                backendConnection.getLogicSchema(), sequenceId, String.format(SQL, table, schemaName), backendConnection, DatabaseType.MySQL);
+                backendConnection.getLogicSchema(), sequenceId, String.format(SQL, table, schemaName), backendConnection, DatabaseType.PostgreSQL);
     }
     
     @Override
