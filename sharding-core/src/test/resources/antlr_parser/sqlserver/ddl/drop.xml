@@ -23,7 +23,7 @@
             <table name="t_order" />
         </tables>
         <tokens>
-            <table-token start-index="11" table-name="[t_order]" />
+            <table-token start-index="11" table-name="t_order" left-delimiter="[" right-delimiter="]" />
         </tokens>
     </parser-result>
     
@@ -73,7 +73,7 @@
         </tables>
         <tokens>
             <index-token start-index="11" stop-index="24" table-name="t_order"/>
-            <table-token start-index="29" table-name="[t_order]" />
+            <table-token start-index="29" table-name="t_order" left-delimiter="[" right-delimiter="]" />
         </tokens>
     </parser-result>
     
