@@ -19,6 +19,7 @@ package org.apache.shardingsphere.shardingproxy.backend.communication;
 
 import org.apache.shardingsphere.shardingproxy.backend.ResultPacket;
 import org.apache.shardingsphere.shardingproxy.transport.mysql.packet.command.CommandResponsePackets;
+import org.apache.shardingsphere.shardingproxy.transport.postgresql.packet.command.PostgreSQLCommandResponsePackets;
 
 import java.sql.SQLException;
 
@@ -34,7 +35,7 @@ public interface DatabaseCommunicationEngine {
      *
      * @return result packets to be sent
      */
-    CommandResponsePackets execute();
+    PostgreSQLCommandResponsePackets execute();
     
     /**
      * Goto next result value.
