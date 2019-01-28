@@ -24,13 +24,12 @@ import org.apache.shardingsphere.shardingproxypg.backend.ResultPacket;
 import org.apache.shardingsphere.shardingproxypg.backend.communication.jdbc.connection.BackendConnection;
 import org.apache.shardingsphere.shardingproxypg.backend.text.TextProtocolBackendHandler;
 import org.apache.shardingsphere.shardingproxypg.transport.mysql.constant.ColumnType;
-import org.apache.shardingsphere.shardingproxypg.transport.mysql.packet.command.CommandResponsePackets;
 import org.apache.shardingsphere.shardingproxypg.transport.mysql.packet.command.query.ColumnDefinition41Packet;
 import org.apache.shardingsphere.shardingproxypg.transport.mysql.packet.command.query.FieldCountPacket;
+import org.apache.shardingsphere.shardingproxypg.transport.mysql.packet.generic.EofPacket;
 import org.apache.shardingsphere.shardingproxypg.transport.postgresql.packet.command.PostgreSQLCommandResponsePackets;
 import org.apache.shardingsphere.shardingproxypg.transport.postgresql.packet.command.query.PostgreSQLQueryResponsePackets;
-import org.apache.shardingsphere.shardingproxypg.transport.mysql.packet.generic.EofPacket;
-import org.apache.shardingsphere.shardingproxypg.transport.mysql.packet.generic.ErrPacket;
+import org.apache.shardingsphere.shardingproxypg.transport.postgresql.packet.generic.ErrorResponse;
 
 import java.sql.SQLException;
 import java.util.ArrayList;
@@ -67,7 +66,7 @@ public final class ShardingCTLShowBackendHandler implements TextProtocolBackendH
     public PostgreSQLCommandResponsePackets execute() {
         Optional<ShardingCTLShowStatement> showStatement = new ShardingCTLShowParser(sql).doParse();
         if (!showStatement.isPresent()) {
-            return new PostgreSQLCommandResponsePackets(new ErrPacket(" please review your sctl format, should be sctl:show xxxx."));
+            return new PostgreSQLCommandResponsePackets(new ErrorResponse());
         }
         switch (showStatement.get().getValue()) {
             case "TRANSACTION_TYPE":
@@ -75,7 +74,7 @@ public final class ShardingCTLShowBackendHandler implements TextProtocolBackendH
             case "CACHED_CONNECTIONS":
                 return createResponsePackets("CACHED_CONNECTIONS", backendConnection.getConnectionSize());
             default:
-                return new PostgreSQLCommandResponsePackets(new ErrPacket(String.format(" could not support this sctl grammar [%s].", sql)));
+                return new PostgreSQLCommandResponsePackets(new ErrorResponse());
         }
     }
     
