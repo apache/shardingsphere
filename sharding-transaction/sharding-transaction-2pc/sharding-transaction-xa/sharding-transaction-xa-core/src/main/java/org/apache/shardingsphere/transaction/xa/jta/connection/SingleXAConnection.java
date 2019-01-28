@@ -36,40 +36,42 @@ public final class SingleXAConnection implements XAConnection {
     
     private final String resourceName;
     
-    private final XAConnection delegate;
+    private final Connection connection;
+    
+    private final XAConnection xaConnection;
     
     @Override
     public SingleXAResource getXAResource() throws SQLException {
-        return new SingleXAResource(resourceName, delegate.getXAResource());
+        return new SingleXAResource(resourceName, xaConnection.getXAResource());
     }
     
     @Override
-    public Connection getConnection() throws SQLException {
-        return delegate.getConnection();
+    public Connection getConnection() {
+        return connection;
     }
     
     @Override
     public void close() throws SQLException {
-        delegate.close();
+        xaConnection.close();
     }
     
     @Override
     public void addConnectionEventListener(final ConnectionEventListener listener) {
-        delegate.addConnectionEventListener(listener);
+        xaConnection.addConnectionEventListener(listener);
     }
     
     @Override
     public void removeConnectionEventListener(final ConnectionEventListener listener) {
-        delegate.removeConnectionEventListener(listener);
+        xaConnection.removeConnectionEventListener(listener);
     }
     
     @Override
     public void addStatementEventListener(final StatementEventListener listener) {
-        delegate.addStatementEventListener(listener);
+        xaConnection.addStatementEventListener(listener);
     }
     
     @Override
     public void removeStatementEventListener(final StatementEventListener listener) {
-        delegate.removeStatementEventListener(listener);
+        xaConnection.removeStatementEventListener(listener);
     }
 }
