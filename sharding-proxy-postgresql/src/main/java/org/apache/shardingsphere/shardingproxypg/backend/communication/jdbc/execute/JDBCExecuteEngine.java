@@ -106,14 +106,15 @@ public final class JDBCExecuteEngine implements SQLExecuteEngine {
         boolean isReturnGeneratedKeys = routeResult.getSqlStatement() instanceof InsertStatement;
         boolean isExceptionThrown = ExecutorExceptionHandler.isExceptionThrown();
         Collection<ShardingExecuteGroup<StatementExecuteUnit>> sqlExecuteGroups =
-                sqlExecutePrepareTemplate.getExecuteUnitGroups(routeResult.getRouteUnits(), new ProxyJDBCExecutePrepareCallback(isReturnGeneratedKeys));
+            sqlExecutePrepareTemplate.getExecuteUnitGroups(routeResult.getRouteUnits(), new ProxyJDBCExecutePrepareCallback(isReturnGeneratedKeys));
         SQLExecuteCallback<ExecuteResponseUnit> firstProxySQLExecuteCallback = new FirstProxyJDBCExecuteCallback(isExceptionThrown, isReturnGeneratedKeys);
         SQLExecuteCallback<ExecuteResponseUnit> proxySQLExecuteCallback = new ProxyJDBCExecuteCallback(isExceptionThrown, isReturnGeneratedKeys);
         Collection<ExecuteResponseUnit> executeResponseUnits = sqlExecuteTemplate.executeGroup((Collection) sqlExecuteGroups,
-                firstProxySQLExecuteCallback, proxySQLExecuteCallback);
+            firstProxySQLExecuteCallback, proxySQLExecuteCallback);
         ExecuteResponseUnit firstExecuteResponseUnit = executeResponseUnits.iterator().next();
         return firstExecuteResponseUnit instanceof ExecuteQueryResponseUnit
-                ? getExecuteQueryResponse(((ExecuteQueryResponseUnit) firstExecuteResponseUnit).getPostgreSQLQueryResponsePackets(), executeResponseUnits) : new ExecuteUpdateResponse(executeResponseUnits);
+            ? getExecuteQueryResponse(((ExecuteQueryResponseUnit) firstExecuteResponseUnit).getPostgreSQLQueryResponsePackets(), executeResponseUnits)
+            : new ExecuteUpdateResponse(executeResponseUnits);
     }
     
     private ExecuteResponse getExecuteQueryResponse(final PostgreSQLQueryResponsePackets postgreSQLQueryResponsePackets, final Collection<ExecuteResponseUnit> executeResponseUnits) {
@@ -195,7 +196,7 @@ public final class JDBCExecuteEngine implements SQLExecuteEngine {
         private boolean hasMetaData;
         
         private FirstProxyJDBCExecuteCallback(final boolean isExceptionThrown, final boolean isReturnGeneratedKeys) {
-            super(DatabaseType.MySQL, isExceptionThrown);
+            super(DatabaseType.PostgreSQL, isExceptionThrown);
             this.isReturnGeneratedKeys = isReturnGeneratedKeys;
         }
         
@@ -217,7 +218,7 @@ public final class JDBCExecuteEngine implements SQLExecuteEngine {
         private final boolean isReturnGeneratedKeys;
         
         private ProxyJDBCExecuteCallback(final boolean isExceptionThrown, final boolean isReturnGeneratedKeys) {
-            super(DatabaseType.MySQL, isExceptionThrown);
+            super(DatabaseType.PostgreSQL, isExceptionThrown);
             this.isReturnGeneratedKeys = isReturnGeneratedKeys;
         }
         
