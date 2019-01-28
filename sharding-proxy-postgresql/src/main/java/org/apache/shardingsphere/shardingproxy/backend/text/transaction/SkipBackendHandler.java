@@ -21,6 +21,7 @@ import org.apache.shardingsphere.shardingproxy.backend.ResultPacket;
 import org.apache.shardingsphere.shardingproxy.backend.text.TextProtocolBackendHandler;
 import org.apache.shardingsphere.shardingproxy.transport.mysql.packet.command.CommandResponsePackets;
 import org.apache.shardingsphere.shardingproxy.transport.mysql.packet.generic.OKPacket;
+import org.apache.shardingsphere.shardingproxy.transport.postgresql.packet.command.PostgreSQLCommandResponsePackets;
 
 /**
  * Skip backend handler.
@@ -30,8 +31,8 @@ import org.apache.shardingsphere.shardingproxy.transport.mysql.packet.generic.OK
 public final class SkipBackendHandler implements TextProtocolBackendHandler {
     
     @Override
-    public CommandResponsePackets execute() {
-        return new CommandResponsePackets(new OKPacket(1));
+    public PostgreSQLCommandResponsePackets execute() {
+        return new PostgreSQLCommandResponsePackets(new OKPacket(1));
     }
     
     @Override
