@@ -25,15 +25,12 @@ import org.apache.shardingsphere.shardingproxypg.backend.ResultPacket;
 import org.apache.shardingsphere.shardingproxypg.backend.communication.jdbc.connection.BackendConnection;
 import org.apache.shardingsphere.shardingproxypg.backend.text.ComQueryBackendHandlerFactory;
 import org.apache.shardingsphere.shardingproxypg.backend.text.TextProtocolBackendHandler;
-import org.apache.shardingsphere.shardingproxypg.runtime.GlobalRegistry;
 import org.apache.shardingsphere.shardingproxypg.transport.common.packet.DatabasePacket;
-import org.apache.shardingsphere.shardingproxypg.transport.mysql.constant.ServerErrorCode;
 import org.apache.shardingsphere.shardingproxypg.transport.mysql.packet.MySQLPacketPayload;
 import org.apache.shardingsphere.shardingproxypg.transport.mysql.packet.command.CommandPacketType;
 import org.apache.shardingsphere.shardingproxypg.transport.mysql.packet.command.CommandResponsePackets;
 import org.apache.shardingsphere.shardingproxypg.transport.mysql.packet.command.query.QueryCommandPacket;
 import org.apache.shardingsphere.shardingproxypg.transport.mysql.packet.command.query.text.TextResultSetRowPacket;
-import org.apache.shardingsphere.shardingproxypg.transport.mysql.packet.generic.ErrPacket;
 
 import java.sql.SQLException;
 
@@ -58,7 +55,7 @@ public final class ComQueryPacket implements QueryCommandPacket {
     public ComQueryPacket(final int sequenceId, final MySQLPacketPayload payload, final BackendConnection backendConnection) {
         this.sequenceId = sequenceId;
         sql = payload.readStringEOF();
-        textProtocolBackendHandler = ComQueryBackendHandlerFactory.createTextProtocolBackendHandler(sequenceId, sql, backendConnection, DatabaseType.MySQL);
+        textProtocolBackendHandler = ComQueryBackendHandlerFactory.createTextProtocolBackendHandler(sequenceId, sql, backendConnection, DatabaseType.PostgreSQL);
     }
     
     public ComQueryPacket(final int sequenceId, final String sql) {
