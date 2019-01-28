@@ -6,8 +6,8 @@
             <table name="t_order_item" alias="i" />
         </tables>
         <tokens>
-            <table-token begin-position="16" original-literals="t_order" />
-            <table-token begin-position="31" original-literals="t_order_item" />
+            <table-token start-index="16" original-literals="t_order" />
+            <table-token start-index="31" original-literals="t_order_item" />
             <offset-token begin-position="188" offset="5" />
         </tokens>
         <or-condition>
