@@ -265,10 +265,11 @@ public abstract class AbstractShardingPreparedStatementAdapter extends AbstractU
             each.invoke(preparedStatement);
         }
     }
-    
+
     private void addParameters(final List<Object> parameters) {
-        for (int i = 0; i < parameters.size(); i++) {
-            setParameter(new Class[]{int.class, Object.class}, i + 1, parameters.get(i));
+        int i = 0;
+        for (Object each : parameters) {
+            setParameter(new Class[]{int.class, Object.class}, i++ + 1, each);
         }
     }
     
