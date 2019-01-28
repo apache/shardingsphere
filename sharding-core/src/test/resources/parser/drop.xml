@@ -5,7 +5,7 @@
             <table name="t_log" />
         </tables>
         <tokens>
-            <table-token start-index="11" original-literals="t_log" />
+            <table-token start-index="11" table-name="t_log" />
         </tokens>
     </parser-result>
     
@@ -14,7 +14,7 @@
             <table name="t_log" />
         </tables>
         <tokens>
-            <table-token start-index="21" original-literals="t_log" />
+            <table-token start-index="21" table-name="t_log" />
         </tokens>
     </parser-result>
     
@@ -23,7 +23,7 @@
             <table name="t_temp_log" />
         </tables>
         <tokens>
-            <table-token start-index="31" original-literals="t_temp_log" />
+            <table-token start-index="31" table-name="t_temp_log" />
         </tokens>
     </parser-result>
     
@@ -32,7 +32,7 @@
             <table name="t_log" />
         </tables>
         <tokens>
-            <table-token start-index="11" original-literals="t_log" />
+            <table-token start-index="11" table-name="t_log" />
         </tokens>
     </parser-result>
     
@@ -41,7 +41,7 @@
             <table name="t_log" />
         </tables>
         <tokens>
-            <table-token start-index="11" original-literals="t_log" />
+            <table-token start-index="11" table-name="t_log" />
         </tokens>
     </parser-result>
     
@@ -50,7 +50,7 @@
             <table name="t_log" />
         </tables>
         <tokens>
-            <table-token start-index="11" original-literals="t_log" />
+            <table-token start-index="11" table-name="t_log" />
         </tokens>
     </parser-result>
     
@@ -60,7 +60,7 @@
         </tables>
         <tokens>
             <index-token start-index="11" stop-index="21" table-name="t_log" />
-            <table-token start-index="26" original-literals="t_log" />
+            <table-token start-index="26" table-name="t_log" />
         </tokens>
     </parser-result>
     
