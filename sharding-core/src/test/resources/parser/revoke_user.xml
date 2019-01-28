@@ -5,7 +5,7 @@
             <table name="t_order" />
         </tables>
         <tokens>
-            <table-token begin-position="25" original-literals="t_order" />
+            <table-token start-index="25" table-name="t_order" />
         </tokens>
     </parser-result>
     <parser-result sql-case-id="revoke_role" />
@@ -15,7 +15,7 @@
             <table name="*" />
         </tables>
         <tokens>
-            <table-token begin-position="25" original-literals="*" />
+            <table-token start-index="25" table-name="*" />
         </tokens>
     </parser-result>
     <parser-result sql-case-id="revoke_user_with_hostname" />

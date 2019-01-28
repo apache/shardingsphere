@@ -139,13 +139,12 @@ public final class SQLBuilder {
     }
     
     private void appendTablePlaceholder(final TablePlaceholder tablePlaceholder, final String actualTableName, final StringBuilder stringBuilder) {
-        final String logicTableName = tablePlaceholder.getLogicTableName();
-        final String originalLiterals = tablePlaceholder.getOriginalLiterals();
-        if (logicTableName.length() == originalLiterals.length()) {
-            stringBuilder.append(null == actualTableName ? logicTableName : actualTableName);
+        if (null == actualTableName) {
+            stringBuilder.append(tablePlaceholder.toString());
+        } else if (tablePlaceholder.hasDelimiter()) {
+            stringBuilder.append(tablePlaceholder.getLeftDelimiter()).append(actualTableName).append(tablePlaceholder.getRightDelimiter());
         } else {
-            final char delimiter = originalLiterals.charAt(0);
-            stringBuilder.append(null == actualTableName ? originalLiterals : delimiter + actualTableName + delimiter);
+            stringBuilder.append(actualTableName);
         }
     }
     

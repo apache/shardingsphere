@@ -17,6 +17,7 @@
 
 package org.apache.shardingsphere.core.rewrite.placeholder;
 
+import com.google.common.base.Strings;
 import lombok.Getter;
 import lombok.RequiredArgsConstructor;
 
@@ -24,6 +25,7 @@ import lombok.RequiredArgsConstructor;
  * Table placeholder for rewrite.
  *
  * @author zhangliang
+ * @author panjuan
  */
 @RequiredArgsConstructor
 @Getter
@@ -31,10 +33,21 @@ public final class TablePlaceholder implements ShardingPlaceholder {
     
     private final String logicTableName;
     
-    private final String originalLiterals;
+    private final String leftDelimiter;
+    
+    private final String rightDelimiter;
     
     @Override
     public String toString() {
-        return logicTableName;
+        return hasDelimiter() ? leftDelimiter + logicTableName + rightDelimiter : logicTableName;
+    }
+    
+    /**
+     * Judge has delimiter or not.
+     *
+     * @return has delimiter or not
+     */
+    public boolean hasDelimiter() {
+        return !(Strings.isNullOrEmpty(leftDelimiter) || Strings.isNullOrEmpty(rightDelimiter));
     }
 }

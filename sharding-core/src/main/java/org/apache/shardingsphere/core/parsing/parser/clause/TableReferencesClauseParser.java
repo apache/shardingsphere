@@ -46,6 +46,7 @@ import java.util.List;
  *
  * @author zhangliang
  * @author maxiaoguang
+ * @author panjuan
  */
 public class TableReferencesClauseParser implements SQLClauseParser {
     
@@ -104,7 +105,7 @@ public class TableReferencesClauseParser implements SQLClauseParser {
         if (isSingleTableOnly || shardingRule.findTableRule(tableName).isPresent()
                 || shardingRule.isBroadcastTable(tableName) || shardingRule.findBindingTableRule(tableName).isPresent()
                 || shardingRule.getShardingDataSourceNames().getDataSourceNames().contains(shardingRule.getShardingDataSourceNames().getDefaultDataSourceName())) {
-            sqlStatement.addSQLToken(new TableToken(beginPosition, skippedSchemaNameLength, literals));
+            sqlStatement.addSQLToken(new TableToken(beginPosition, skippedSchemaNameLength, tableName, SQLUtil.getLeftDelimiter(literals), SQLUtil.getRightDelimiter(literals)));
             sqlStatement.getTables().add(new Table(tableName, aliasExpressionParser.parseTableAlias(sqlStatement, true, tableName)));
         } else {
             aliasExpressionParser.parseTableAlias();
@@ -193,7 +194,7 @@ public class TableReferencesClauseParser implements SQLClauseParser {
             literals = lexerEngine.getCurrentToken().getLiterals();
             lexerEngine.nextToken();
         }
-        sqlStatement.addSQLToken(new TableToken(beginPosition, skippedSchemaNameLength, literals));
+        sqlStatement.addSQLToken(new TableToken(beginPosition, skippedSchemaNameLength, SQLUtil.getExactlyValue(literals), SQLUtil.getLeftDelimiter(literals), SQLUtil.getRightDelimiter(literals)));
         sqlStatement.getTables().add(new Table(SQLUtil.getExactlyValue(literals), Optional.<String>absent()));
     }
 }

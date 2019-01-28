@@ -35,9 +35,6 @@ public final class ExpectedIndexToken {
     @XmlAttribute(name = "stop-index")
     private int stopIndex;
     
-    @XmlAttribute(name = "original-literals")
-    private String originalLiterals;
-    
     @XmlAttribute(name = "table-name")
     private String tableName;
 }

@@ -5,7 +5,7 @@
             <table name="t_log" />
         </tables>
         <tokens>
-            <table-token begin-position="13" original-literals="t_log" />
+            <table-token start-index="13" table-name="t_log" />
         </tokens>
         <meta column-names="id,status" column-types="int,varchar" primary-key-columns="id" />
     </parser-result>
@@ -15,7 +15,7 @@
             <table name="t_log" />
         </tables>
         <tokens>
-            <table-token begin-position="27" original-literals="t_log" />
+            <table-token start-index="27" table-name="t_log" />
         </tokens>
         <meta column-names="id,status" column-types="int,varchar" />
     </parser-result>
@@ -25,7 +25,7 @@
             <table name="t_temp_log" />
         </tables>
         <tokens>
-            <table-token begin-position="37" original-literals="t_temp_log" />
+            <table-token start-index="37" table-name="t_temp_log" />
         </tokens>
         <meta column-names="id,status" column-types="int,varchar" />
     </parser-result>
@@ -35,7 +35,7 @@
             <table name="t_temp_log" />
         </tables>
         <tokens>
-            <table-token begin-position="30" original-literals="t_temp_log" />
+            <table-token start-index="30" table-name="t_temp_log" />
         </tokens>
         <meta column-names="id,status" column-types="int,varchar" />
     </parser-result>
@@ -45,7 +45,7 @@
             <table name="t_temp_log" />
         </tables>
         <tokens>
-            <table-token begin-position="24" original-literals="t_temp_log" />
+            <table-token start-index="24" table-name="t_temp_log" />
         </tokens>
         <meta column-names="id,status" column-types="int,varchar" />
     </parser-result>
@@ -55,7 +55,7 @@
             <table name="t_log" />
         </tables>
         <tokens>
-            <table-token begin-position="22" original-literals="t_log" />
+            <table-token start-index="22" table-name="t_log" />
         </tokens>
         <meta column-names="id,status" column-types="int,varchar" />
     </parser-result>
@@ -66,7 +66,7 @@
         </tables>
         <tokens>
             <index-token start-index="13" stop-index="23" table-name="t_log" />
-            <table-token begin-position="28" original-literals="t_log" />
+            <table-token start-index="28" table-name="t_log" />
         </tokens>
     </parser-result>
     
@@ -76,7 +76,7 @@
         </tables>
         <tokens>
             <index-token start-index="20" stop-index="30" table-name="t_log" />
-            <table-token begin-position="35" original-literals="t_log" />
+            <table-token start-index="35" table-name="t_log" />
         </tokens>
     </parser-result>
 </parser-result-sets>

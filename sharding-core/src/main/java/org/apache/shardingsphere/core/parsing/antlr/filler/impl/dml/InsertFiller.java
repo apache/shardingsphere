@@ -82,7 +82,8 @@ public final class InsertFiller implements SQLStatementFiller<InsertSegment> {
                 insertStatement.setGenerateKeyColumnIndex(index);
             }
             if (each.getOwner().isPresent() && tableName.equals(each.getOwner().get())) {
-                insertStatement.getSQLTokens().add(new TableToken(each.getStartIndex(), 0, tableName));
+                insertStatement.getSQLTokens().add(new TableToken(each.getStartIndex(), 
+                        0, SQLUtil.getExactlyValue(tableName), SQLUtil.getLeftDelimiter(tableName), SQLUtil.getRightDelimiter(tableName)));
             }
             index++;
         }

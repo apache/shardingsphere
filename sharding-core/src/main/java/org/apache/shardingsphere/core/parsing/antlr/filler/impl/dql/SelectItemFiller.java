@@ -38,6 +38,7 @@ import org.apache.shardingsphere.core.parsing.parser.sql.dql.select.SelectStatem
 import org.apache.shardingsphere.core.parsing.parser.token.AggregationDistinctToken;
 import org.apache.shardingsphere.core.parsing.parser.token.TableToken;
 import org.apache.shardingsphere.core.rule.ShardingRule;
+import org.apache.shardingsphere.core.util.SQLUtil;
 
 /**
  * Select item filler.
@@ -83,14 +84,16 @@ public final class SelectItemFiller implements SQLStatementFiller {
         }
         Optional<Table> table = selectStatement.getTables().find(owner.get());
         if (table.isPresent() && !table.get().getAlias().isPresent()) {
-            selectStatement.addSQLToken(new TableToken(selectItemSegment.getStartIndex(), 0, owner.get()));
+            selectStatement.addSQLToken(new TableToken(selectItemSegment.getStartIndex(), 
+                    0, SQLUtil.getExactlyValue(owner.get()), SQLUtil.getLeftDelimiter(owner.get()), SQLUtil.getRightDelimiter(owner.get())));
         }
     }
     
     private void fillColumnSelectItemSegment(final ColumnSelectItemSegment selectItemSegment, final SelectStatement selectStatement) {
         Optional<String> owner = selectItemSegment.getOwner();
         if (owner.isPresent() && selectStatement.getTables().getTableNames().contains(owner.get())) {
-            selectStatement.addSQLToken(new TableToken(selectItemSegment.getStartIndex(), 0, owner.get()));
+            selectStatement.addSQLToken(new TableToken(selectItemSegment.getStartIndex(), 
+                    0, SQLUtil.getExactlyValue(owner.get()), SQLUtil.getLeftDelimiter(owner.get()), SQLUtil.getRightDelimiter(owner.get())));
         }
         selectStatement.getItems().add(new CommonSelectItem(selectItemSegment.getQualifiedName(), selectItemSegment.getAlias()));
     }
