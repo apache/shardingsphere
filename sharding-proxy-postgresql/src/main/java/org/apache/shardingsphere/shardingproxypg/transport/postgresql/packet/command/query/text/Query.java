@@ -27,12 +27,12 @@ import org.apache.shardingsphere.shardingproxypg.backend.text.ComQueryBackendHan
 import org.apache.shardingsphere.shardingproxypg.backend.text.TextProtocolBackendHandler;
 import org.apache.shardingsphere.shardingproxypg.runtime.GlobalRegistry;
 import org.apache.shardingsphere.shardingproxypg.transport.common.packet.DatabasePacket;
-import org.apache.shardingsphere.shardingproxypg.transport.mysql.packet.command.query.text.TextResultSetRowPacket;
 import org.apache.shardingsphere.shardingproxypg.transport.postgresql.packet.PostgreSQLPacketPayload;
 import org.apache.shardingsphere.shardingproxypg.transport.postgresql.packet.command.PostgreSQLCommandPacketType;
 import org.apache.shardingsphere.shardingproxypg.transport.postgresql.packet.command.PostgreSQLCommandResponsePackets;
 import org.apache.shardingsphere.shardingproxypg.transport.postgresql.packet.command.query.PostgreSQLQueryCommandPacket;
 import org.apache.shardingsphere.shardingproxypg.transport.postgresql.packet.generic.ErrorResponse;
+
 import java.sql.SQLException;
 
 /**
@@ -75,7 +75,7 @@ public final class Query implements PostgreSQLQueryCommandPacket {
     @Override
     public DatabasePacket getResultValue() throws SQLException {
         ResultPacket resultPacket = textProtocolBackendHandler.getResultValue();
-        return new TextResultSetRowPacket(resultPacket.getSequenceId(), resultPacket.getData());
+        return new DataRow(resultPacket.getData());
     }
     
     @Override
