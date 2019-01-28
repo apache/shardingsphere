@@ -45,7 +45,6 @@ import org.apache.shardingsphere.shardingproxypg.runtime.schema.LogicSchema;
 import org.apache.shardingsphere.shardingproxypg.runtime.schema.MasterSlaveSchema;
 import org.apache.shardingsphere.shardingproxypg.runtime.schema.ShardingSchema;
 import org.apache.shardingsphere.shardingproxypg.transport.common.packet.DatabasePacket;
-import org.apache.shardingsphere.shardingproxypg.transport.mysql.constant.ColumnType;
 import org.apache.shardingsphere.shardingproxypg.transport.mysql.packet.command.CommandResponsePackets;
 import org.apache.shardingsphere.shardingproxypg.transport.mysql.packet.command.query.text.query.ComQueryPacket;
 import org.apache.shardingsphere.shardingproxypg.transport.mysql.packet.generic.ErrPacket;
@@ -54,7 +53,6 @@ import org.apache.shardingsphere.shardingproxypg.transport.postgresql.packet.com
 
 import java.sql.SQLException;
 import java.util.ArrayList;
-import java.util.Collections;
 import java.util.HashMap;
 import java.util.LinkedList;
 import java.util.List;
@@ -229,7 +227,8 @@ public final class NettyDatabaseCommunicationEngine implements DatabaseCommunica
         for (int columnIndex = 1; columnIndex <= columnCount; columnIndex++) {
             data.add(mergedResult.getValue(columnIndex, Object.class));
         }
-        return new ResultPacket(++currentSequenceId, data, columnCount, Collections.<ColumnType>emptyList());
+//        return new ResultPacket(++currentSequenceId, data, columnCount, Collections.<ColumnType>emptyList());
+        return null;
     }
     
     private void channelRelease() {
