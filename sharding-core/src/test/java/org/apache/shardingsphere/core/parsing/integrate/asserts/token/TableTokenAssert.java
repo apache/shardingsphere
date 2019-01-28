@@ -53,7 +53,7 @@ final class TableTokenAssert {
     }
     
     private void assertTableToken(final TableToken actual, final ExpectedTableToken expected) {
-        assertThat(assertMessage.getFullAssertMessage("Table tokens begin position assertion error: "), actual.getStartIndex(), is(expected.getBeginPosition()));
+        assertThat(assertMessage.getFullAssertMessage("Table tokens start index assertion error: "), actual.getStartIndex(), is(expected.getStartIndex()));
         if (0 != expected.getSkippedSchemaNameLength()) {
             assertThat(assertMessage.getFullAssertMessage("Table tokens skipped schema name length assertion error: "), actual.getSkippedSchemaNameLength(), is(expected.getSkippedSchemaNameLength()));
         }
