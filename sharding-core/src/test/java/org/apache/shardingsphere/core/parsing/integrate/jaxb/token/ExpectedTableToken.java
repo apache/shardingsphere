@@ -29,12 +29,18 @@ import javax.xml.bind.annotation.XmlAttribute;
 @XmlAccessorType(XmlAccessType.FIELD)
 public final class ExpectedTableToken {
     
-    @XmlAttribute(name = "begin-position")
+    @XmlAttribute(name = "start-index")
     private int beginPosition;
     
     @XmlAttribute(name = "skipped-schema-name-length")
     private int skippedSchemaNameLength;
     
-    @XmlAttribute(name = "original-literals")
-    private String originalLiterals;
+    @XmlAttribute(name = "table-name")
+    private String tableName;
+    
+    @XmlAttribute(name = "left-delimiter")
+    private String leftDelimiter;
+    
+    @XmlAttribute(name = "right-delimiter")
+    private String rightDelimiter;
 }
