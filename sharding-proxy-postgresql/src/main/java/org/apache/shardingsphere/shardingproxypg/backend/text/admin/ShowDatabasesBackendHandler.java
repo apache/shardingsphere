@@ -18,21 +18,12 @@
 package org.apache.shardingsphere.shardingproxypg.backend.text.admin;
 
 import org.apache.shardingsphere.core.merger.MergedResult;
-import org.apache.shardingsphere.core.merger.dal.show.ShowDatabasesMergedResult;
 import org.apache.shardingsphere.shardingproxypg.backend.ResultPacket;
 import org.apache.shardingsphere.shardingproxypg.backend.text.TextProtocolBackendHandler;
-import org.apache.shardingsphere.shardingproxypg.runtime.GlobalRegistry;
 import org.apache.shardingsphere.shardingproxypg.transport.mysql.constant.ColumnType;
-import org.apache.shardingsphere.shardingproxypg.transport.mysql.packet.command.CommandResponsePackets;
-import org.apache.shardingsphere.shardingproxypg.transport.mysql.packet.command.query.ColumnDefinition41Packet;
-import org.apache.shardingsphere.shardingproxypg.transport.mysql.packet.command.query.FieldCountPacket;
 import org.apache.shardingsphere.shardingproxypg.transport.postgresql.packet.command.PostgreSQLCommandResponsePackets;
-import org.apache.shardingsphere.shardingproxypg.transport.postgresql.packet.command.query.PostgreSQLQueryResponsePackets;
-import org.apache.shardingsphere.shardingproxypg.transport.mysql.packet.generic.EofPacket;
 
 import java.sql.SQLException;
-import java.util.ArrayList;
-import java.util.Collection;
 import java.util.LinkedList;
 import java.util.List;
 
@@ -54,16 +45,17 @@ public final class ShowDatabasesBackendHandler implements TextProtocolBackendHan
     
     @Override
     public PostgreSQLCommandResponsePackets execute() {
-        mergedResult = new ShowDatabasesMergedResult(GlobalRegistry.getInstance().getSchemaNames());
-        int sequenceId = 0;
-        FieldCountPacket fieldCountPacket = new FieldCountPacket(++sequenceId, 1);
-        Collection<ColumnDefinition41Packet> columnDefinition41Packets = new ArrayList<>(1);
-        columnDefinition41Packets.add(new ColumnDefinition41Packet(++sequenceId, "", "", "", "Database", "", 100, ColumnType.MYSQL_TYPE_VARCHAR, 0));
-        PostgreSQLQueryResponsePackets result = new PostgreSQLQueryResponsePackets(fieldCountPacket, columnDefinition41Packets, new EofPacket(++sequenceId));
-        currentSequenceId = result.getPackets().size();
-        columnCount = result.getColumnCount();
-        columnTypes.addAll(result.getColumnTypes());
-        return result;
+//        mergedResult = new ShowDatabasesMergedResult(GlobalRegistry.getInstance().getSchemaNames());
+//        int sequenceId = 0;
+//        FieldCountPacket fieldCountPacket = new FieldCountPacket(++sequenceId, 1);
+//        Collection<ColumnDefinition41Packet> columnDefinition41Packets = new ArrayList<>(1);
+//        columnDefinition41Packets.add(new ColumnDefinition41Packet(++sequenceId, "", "", "", "Database", "", 100, ColumnType.MYSQL_TYPE_VARCHAR, 0));
+//        PostgreSQLQueryResponsePackets result = new PostgreSQLQueryResponsePackets(fieldCountPacket, columnDefinition41Packets, new EofPacket(++sequenceId));
+//        currentSequenceId = result.getPackets().size();
+//        columnCount = result.getColumnCount();
+//        columnTypes.addAll(result.getColumnTypes());
+//        return result;
+        return null;
     }
     
     @Override
@@ -73,10 +65,11 @@ public final class ShowDatabasesBackendHandler implements TextProtocolBackendHan
     
     @Override
     public ResultPacket getResultValue() throws SQLException {
-        List<Object> data = new ArrayList<>(columnCount);
-        for (int columnIndex = 1; columnIndex <= columnCount; columnIndex++) {
-            data.add(mergedResult.getValue(columnIndex, Object.class));
-        }
-        return new ResultPacket(++currentSequenceId, data, columnCount, columnTypes);
+//        List<Object> data = new ArrayList<>(columnCount);
+//        for (int columnIndex = 1; columnIndex <= columnCount; columnIndex++) {
+//            data.add(mergedResult.getValue(columnIndex, Object.class));
+//        }
+//        return new ResultPacket(++currentSequenceId, data, columnCount, columnTypes);
+        return null;
     }
 }
