@@ -28,19 +28,19 @@ import org.apache.shardingsphere.shardingproxypg.transport.postgresql.packet.com
  *
  * @author zhangyonglun
  */
-@RequiredArgsConstructor
 public final class PostgreSQLCommandCompletePacket implements PostgreSQLPacket {
     
     @Getter
     private final char messageType = PostgreSQLCommandPacketType.COMMAND_COMPLETE.getValue();
     
-    private final String sqlCommand;
+    private final String sqlCommand = "";
     
-    private final int rowCount;
+    private final int rowCount = 0;
     
     @Override
     public void write(final PostgreSQLPacketPayload payload) {
-        payload.writeStringNul(sqlCommand + " " + rowCount);
+//        payload.writeStringNul(sqlCommand + " " + rowCount);
+        payload.writeStringNul("");
     }
     
     @Override
