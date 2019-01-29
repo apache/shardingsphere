@@ -75,7 +75,7 @@ public final class PostgreSQLCommandExecutor implements Runnable {
                 writeMoreResults((PostgreSQLQueryCommandPacket) commandPacket);
             }
             connectionSize = backendConnection.getConnectionSize();
-            context.write(new PostgreSQLCommandCompletePacket("SELECT", 1));
+            context.write(new PostgreSQLCommandCompletePacket());
         } catch (final SQLException ex) {
             context.write(new PostgreSQLErrorResponsePacket());
             // CHECKSTYLE:OFF
