@@ -26,7 +26,7 @@ import org.apache.shardingsphere.shardingproxypg.transport.postgresql.packet.Pos
  *
  * @author zhangyonglun
  */
-public final class PostgreSQLCOMSSLNegativePacket implements PostgreSQLPacket {
+public final class PostgreSQLComSSLNegativePacket implements PostgreSQLPacket {
     
     @Getter
     private final char messageType = '\0';
