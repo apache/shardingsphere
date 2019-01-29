@@ -36,7 +36,6 @@ public final class PostgreSQLQueryResponsePackets extends PostgreSQLCommandRespo
     public PostgreSQLQueryResponsePackets(final RowDescription rowDescription) {
         getPackets().add(rowDescription);
         this.rowDescription = rowDescription;
-    
     }
     
     /**
