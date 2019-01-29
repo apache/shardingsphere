@@ -27,14 +27,14 @@ import org.apache.shardingsphere.shardingproxypg.transport.postgresql.packet.com
  *
  * @author zhangyonglun
  */
-public final class AuthenticationOKPacket implements PostgreSQLPacket {
+public final class PostgreSQLAuthenticationOKPacket implements PostgreSQLPacket {
     
     @Getter
     private final char messageType = PostgreSQLCommandPacketType.AUTHENTICATION_OK.getValue();
     
     private final int success;
     
-    public AuthenticationOKPacket(final boolean isSuccess) {
+    public PostgreSQLAuthenticationOKPacket(final boolean isSuccess) {
         success = isSuccess ? 0 : 1;
     }
     
