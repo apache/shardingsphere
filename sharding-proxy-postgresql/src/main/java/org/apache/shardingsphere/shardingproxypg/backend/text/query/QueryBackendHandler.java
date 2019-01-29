@@ -25,7 +25,7 @@ import org.apache.shardingsphere.shardingproxypg.backend.communication.DatabaseC
 import org.apache.shardingsphere.shardingproxypg.backend.communication.jdbc.connection.BackendConnection;
 import org.apache.shardingsphere.shardingproxypg.backend.text.TextProtocolBackendHandler;
 import org.apache.shardingsphere.shardingproxypg.transport.postgresql.packet.command.PostgreSQLCommandResponsePackets;
-import org.apache.shardingsphere.shardingproxypg.transport.postgresql.packet.generic.ErrorResponsePacket;
+import org.apache.shardingsphere.shardingproxypg.transport.postgresql.packet.generic.PostgreSQLErrorResponsePacket;
 
 import java.sql.SQLException;
 
@@ -52,7 +52,7 @@ public final class QueryBackendHandler implements TextProtocolBackendHandler {
     @Override
     public PostgreSQLCommandResponsePackets execute() {
         if (null == backendConnection.getLogicSchema()) {
-            return new PostgreSQLCommandResponsePackets(new ErrorResponsePacket());
+            return new PostgreSQLCommandResponsePackets(new PostgreSQLErrorResponsePacket());
         }
         databaseCommunicationEngine = databaseCommunicationEngineFactory.newTextProtocolInstance(backendConnection.getLogicSchema(), sequenceId, sql, backendConnection, databaseType);
         return databaseCommunicationEngine.execute();
