@@ -18,8 +18,7 @@
 package org.apache.shardingsphere.shardingjdbc.jdbc.adapter.invocation;
 
 import lombok.Getter;
-
-import java.lang.reflect.Method;
+import net.sf.cglib.reflect.FastMethod;
 
 /**
  * Invocation that reflected call for {@code PreparedStatement.setParameter} method.
@@ -34,7 +33,7 @@ public final class SetParameterMethodInvocation extends JdbcMethodInvocation {
     @Getter
     private final Object value;
     
-    public SetParameterMethodInvocation(final Method method, final Object[] arguments, final Object value) {
+    public SetParameterMethodInvocation(final FastMethod method, final Object[] arguments, final Object value) {
         super(method, arguments);
         this.index = (int) arguments[0];
         this.value = value;

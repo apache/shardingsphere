@@ -30,6 +30,7 @@
         
         <guava.version>18.0</guava.version>
         <slf4j.version>1.7.7</slf4j.version>
+        <cgib.version>3.2.10</cgib.version>
         
         <antlr4.version>4.7.1</antlr4.version>
         
@@ -101,6 +102,11 @@
                 <groupId>com.google.guava</groupId>
                 <artifactId>guava</artifactId>
                 <version>${guava.version}</version>
+            </dependency>
+            <dependency>
+                <groupId>cglib</groupId>
+                <artifactId>cglib</artifactId>
+                <version>${cgib.version}</version>
             </dependency>
             <dependency>
                 <groupId>org.slf4j</groupId>

@@ -19,6 +19,7 @@ package org.apache.shardingsphere.shardingjdbc.jdbc.adapter;
 
 import lombok.Getter;
 import lombok.SneakyThrows;
+import org.apache.shardingsphere.shardingjdbc.jdbc.adapter.invocation.JdbcMethodInvocation;
 import org.apache.shardingsphere.shardingjdbc.jdbc.adapter.invocation.SetParameterMethodInvocation;
 import org.apache.shardingsphere.shardingjdbc.jdbc.unsupported.AbstractUnsupportedOperationPreparedStatement;
 
@@ -26,13 +27,7 @@ import java.io.InputStream;
 import java.io.Reader;
 import java.math.BigDecimal;
 import java.net.URL;
-import java.sql.Blob;
-import java.sql.Clob;
-import java.sql.Date;
-import java.sql.PreparedStatement;
-import java.sql.SQLXML;
-import java.sql.Time;
-import java.sql.Timestamp;
+import java.sql.*;
 import java.util.ArrayList;
 import java.util.Calendar;
 import java.util.LinkedList;
@@ -275,7 +270,7 @@ public abstract class AbstractShardingPreparedStatementAdapter extends AbstractU
     
     @SneakyThrows
     private void setParameter(final Class[] argumentTypes, final Object... arguments) {
-        setParameterMethodInvocations.add(new SetParameterMethodInvocation(PreparedStatement.class.getMethod("setObject", argumentTypes), arguments, arguments[1]));
+        setParameterMethodInvocations.add(new SetParameterMethodInvocation(JdbcMethodInvocation.build(PreparedStatement.class, PreparedStatement.class.getMethod("setObject", argumentTypes)), arguments, arguments[1]));
     }
     
     @Override
