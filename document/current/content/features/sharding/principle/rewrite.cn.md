@@ -190,7 +190,7 @@ SELECT score FROM t_score ORDER BY score DESC LIMIT 1, 2;
 
 下图展示了不进行SQL的改写的分页执行结果。
 
-![不改写SQL的分页执行结果](http://shardingsphere.apache.org/document/current/img/sharding/pagination_without_rewrite.png)
+![不改写SQL的分页执行结果](https://shardingsphere.apache.org/document/current/img/sharding/pagination_without_rewrite.png)
 
 通过图中所示，想要取得两个表中共同的按照分数排序的第2条和第3条数据，应该是`95`和`90`。
 由于执行的SQL只能从每个表中获取第2条和第3条数据，即从t_score_0表中获取的是`90`和`80`；从t_score_0表中获取的是`85`和`75`。
@@ -199,7 +199,7 @@ SELECT score FROM t_score ORDER BY score DESC LIMIT 1, 2;
 正确的做法是将分页条件改写为`LIMIT 0, 3`，取出所有前两页数据，再结合排序条件计算出正确的数据。
 下图展示了进行SQL改写之后的分页执行结果。
 
-![改写SQL的分页执行结果](http://shardingsphere.apache.org/document/current/img/sharding/pagination_with_rewrite.png)
+![改写SQL的分页执行结果](https://shardingsphere.apache.org/document/current/img/sharding/pagination_with_rewrite.png)
 
 越获取偏移量位置靠后数据，使用LIMIT分页方式的效率就越低。
 有很多方法可以避免使用LIMIT进行分页。比如构建行记录数量与行偏移量的二级索引，或使用上次分页数据结尾ID作为下次查询条件的分页方式等。
@@ -263,4 +263,4 @@ SELECT * FROM t_order_1 WHERE order_id IN (1, 2, 3);
 
 改写引擎的整体结构划分如下图所示。
 
-![改写引擎结构](http://shardingsphere.apache.org/document/current/img/sharding/rewrite_architecture_cn.png)
+![改写引擎结构](https://shardingsphere.apache.org/document/current/img/sharding/rewrite_architecture_cn.png)

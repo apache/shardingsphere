@@ -89,4 +89,4 @@ USE order_db;
 
 路由引擎的整体结构划分如下图。
 
-![路由引擎结构](http://shardingsphere.apache.org/document/current/img/sharding/route_architecture.png)
+![路由引擎结构](https://shardingsphere.apache.org/document/current/img/sharding/route_architecture.png)
