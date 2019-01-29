@@ -26,7 +26,7 @@ import org.apache.shardingsphere.shardingproxypg.transport.postgresql.packet.com
 import java.util.List;
 
 /**
- * Data row message.
+ * PostgreSQL data row packet.
  *
  * @author zhangyonglun
  */
