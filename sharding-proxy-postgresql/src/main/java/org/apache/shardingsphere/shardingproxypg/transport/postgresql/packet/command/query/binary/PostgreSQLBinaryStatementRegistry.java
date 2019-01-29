@@ -17,6 +17,7 @@
 
 package org.apache.shardingsphere.shardingproxypg.transport.postgresql.packet.command.query.binary;
 
+import java.util.List;
 import java.util.concurrent.ConcurrentHashMap;
 import java.util.concurrent.ConcurrentMap;
 
@@ -35,9 +36,10 @@ public final class PostgreSQLBinaryStatementRegistry {
      * @param statementId statement id
      * @param sql SQL
      * @param parametersCount parameters count
+     * @param postgreSQLBinaryStatementParameterTypes PostgreSQL binary statement parameter types
      */
-    public void register(final String statementId, final String sql, final int parametersCount) {
-        binaryStatements.putIfAbsent(statementId, new PostgreSQLBinaryStatement(sql, parametersCount));
+    public void register(final String statementId, final String sql, final int parametersCount, final List<PostgreSQLBinaryStatementParameterType> postgreSQLBinaryStatementParameterTypes) {
+        binaryStatements.putIfAbsent(statementId, new PostgreSQLBinaryStatement(sql, parametersCount, postgreSQLBinaryStatementParameterTypes));
     }
     
     /**
