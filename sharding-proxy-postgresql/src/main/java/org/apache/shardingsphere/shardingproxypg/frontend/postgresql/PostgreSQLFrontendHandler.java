@@ -30,7 +30,7 @@ import org.apache.shardingsphere.shardingproxypg.transport.postgresql.packet.gen
 import org.apache.shardingsphere.shardingproxypg.transport.postgresql.packet.handshake.AuthenticationOKPacket;
 import org.apache.shardingsphere.shardingproxypg.transport.postgresql.packet.handshake.PostgreSQLConnectionIdGenerator;
 import org.apache.shardingsphere.shardingproxypg.transport.postgresql.packet.handshake.PostgreSQLComSSLNegativePacket;
-import org.apache.shardingsphere.shardingproxypg.transport.postgresql.packet.handshake.PostgreSQLComStartupMessagePacket;
+import org.apache.shardingsphere.shardingproxypg.transport.postgresql.packet.handshake.PostgreSQLComStartupPacket;
 
 /**
  * PostgreSQL frontend handler.
@@ -62,8 +62,8 @@ public final class PostgreSQLFrontendHandler extends FrontendHandler {
         }
         message.resetReaderIndex();
         try (PostgreSQLPacketPayload payload = new PostgreSQLPacketPayload(message)) {
-            PostgreSQLComStartupMessagePacket postgreSQLComStartupMessagePacket = new PostgreSQLComStartupMessagePacket(payload);
-            String databaseName = postgreSQLComStartupMessagePacket.getParametersMap().get(DATABASE_NAME_KEYWORD);
+            PostgreSQLComStartupPacket postgreSQLComStartupPacket = new PostgreSQLComStartupPacket(payload);
+            String databaseName = postgreSQLComStartupPacket.getParametersMap().get(DATABASE_NAME_KEYWORD);
             if (!Strings.isNullOrEmpty(databaseName) && !GlobalRegistry.getInstance().schemaExists(databaseName)) {
                 // TODO send an error message
                 return;
