@@ -188,6 +188,15 @@ public final class BackendConnection implements AutoCloseable {
     }
     
     /**
+     * Whether execute SQL serial or not.
+     *
+     * @return true or false
+     */
+    public boolean isSerialExecute() {
+        return stateHandler.isInTransaction() && (TransactionType.LOCAL == transactionType || TransactionType.XA == transactionType);
+    }
+    
+    /**
      * Get connection size.
      *
      * @return connection size
