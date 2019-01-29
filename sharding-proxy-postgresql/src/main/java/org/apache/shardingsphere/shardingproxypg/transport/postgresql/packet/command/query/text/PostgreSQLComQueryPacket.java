@@ -31,7 +31,7 @@ import org.apache.shardingsphere.shardingproxypg.transport.postgresql.packet.Pos
 import org.apache.shardingsphere.shardingproxypg.transport.postgresql.packet.command.PostgreSQLCommandPacketType;
 import org.apache.shardingsphere.shardingproxypg.transport.postgresql.packet.command.PostgreSQLCommandResponsePackets;
 import org.apache.shardingsphere.shardingproxypg.transport.postgresql.packet.command.query.PostgreSQLQueryCommandPacket;
-import org.apache.shardingsphere.shardingproxypg.transport.postgresql.packet.generic.ErrorResponsePacket;
+import org.apache.shardingsphere.shardingproxypg.transport.postgresql.packet.generic.PostgreSQLErrorResponsePacket;
 
 import java.sql.SQLException;
 
@@ -64,7 +64,7 @@ public final class PostgreSQLComQueryPacket implements PostgreSQLQueryCommandPac
     public Optional<PostgreSQLCommandResponsePackets> execute() {
         log.debug("QUERY received for Sharding-Proxy: {}", sql);
         return GlobalRegistry.getInstance().isCircuitBreak()
-                ? Optional.of(new PostgreSQLCommandResponsePackets(new ErrorResponsePacket())) : Optional.of(textProtocolBackendHandler.execute());
+                ? Optional.of(new PostgreSQLCommandResponsePackets(new PostgreSQLErrorResponsePacket())) : Optional.of(textProtocolBackendHandler.execute());
     }
     
     @Override
