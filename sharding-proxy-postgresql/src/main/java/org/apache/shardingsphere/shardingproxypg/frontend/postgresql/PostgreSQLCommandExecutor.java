@@ -33,7 +33,7 @@ import org.apache.shardingsphere.shardingproxypg.transport.postgresql.packet.com
 import org.apache.shardingsphere.shardingproxypg.transport.postgresql.packet.command.query.PostgreSQLQueryCommandPacket;
 import org.apache.shardingsphere.shardingproxypg.transport.postgresql.packet.generic.CommandCompletePacket;
 import org.apache.shardingsphere.shardingproxypg.transport.postgresql.packet.generic.ErrorResponsePacket;
-import org.apache.shardingsphere.shardingproxypg.transport.postgresql.packet.generic.ReadyForQuery;
+import org.apache.shardingsphere.shardingproxypg.transport.postgresql.packet.generic.ReadyForQueryPacket;
 import org.apache.shardingsphere.spi.root.RootInvokeHook;
 import org.apache.shardingsphere.spi.root.SPIRootInvokeHook;
 
@@ -70,7 +70,7 @@ public final class PostgreSQLCommandExecutor implements Runnable {
             for (DatabasePacket each : responsePackets.get().getPackets()) {
                 context.write(each);
             }
-            if (commandPacket instanceof PostgreSQLQueryCommandPacket && !(responsePackets.get().getHeadPacket() instanceof ReadyForQuery)
+            if (commandPacket instanceof PostgreSQLQueryCommandPacket && !(responsePackets.get().getHeadPacket() instanceof ReadyForQueryPacket)
                 && !(responsePackets.get().getHeadPacket() instanceof ErrorResponsePacket)) {
                 writeMoreResults((PostgreSQLQueryCommandPacket) commandPacket);
             }
@@ -83,7 +83,7 @@ public final class PostgreSQLCommandExecutor implements Runnable {
             // CHECKSTYLE:ON
             context.write(new ErrorResponsePacket());
         } finally {
-            context.writeAndFlush(new ReadyForQuery());
+            context.writeAndFlush(new ReadyForQueryPacket());
             rootInvokeHook.finish(connectionSize);
         }
     }
