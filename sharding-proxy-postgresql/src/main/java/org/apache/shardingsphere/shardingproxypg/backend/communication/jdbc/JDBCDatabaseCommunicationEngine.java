@@ -42,7 +42,7 @@ import org.apache.shardingsphere.shardingproxypg.transport.mysql.packet.generic.
 import org.apache.shardingsphere.shardingproxypg.transport.postgresql.packet.command.PostgreSQLCommandResponsePackets;
 import org.apache.shardingsphere.shardingproxypg.transport.postgresql.packet.command.query.ColumnDescription;
 import org.apache.shardingsphere.shardingproxypg.transport.postgresql.packet.command.query.PostgreSQLQueryResponsePackets;
-import org.apache.shardingsphere.shardingproxypg.transport.postgresql.packet.command.query.RowDescription;
+import org.apache.shardingsphere.shardingproxypg.transport.postgresql.packet.command.query.RowDescriptionPacket;
 import org.apache.shardingsphere.shardingproxypg.transport.postgresql.packet.generic.ErrorResponse;
 import org.apache.shardingsphere.transaction.core.TransactionType;
 
@@ -129,13 +129,13 @@ public final class JDBCDatabaseCommunicationEngine implements DatabaseCommunicat
     private PostgreSQLQueryResponsePackets getQueryResponsePacketsWithoutDerivedColumns(final PostgreSQLQueryResponsePackets postgreSQLQueryResponsePackets) {
         int columnCount = 0;
         List<ColumnDescription> columnDescriptions = new ArrayList<>(postgreSQLQueryResponsePackets.getColumnCount());
-        for (ColumnDescription each : postgreSQLQueryResponsePackets.getRowDescription().getColumnDescriptions()) {
+        for (ColumnDescription each : postgreSQLQueryResponsePackets.getRowDescriptionPacket().getColumnDescriptions()) {
             if (!DerivedColumn.isDerivedColumn(each.getColumnName())) {
                 columnDescriptions.add(each);
                 columnCount++;
             }
         }
-        return new PostgreSQLQueryResponsePackets(new RowDescription(columnCount, columnDescriptions));
+        return new PostgreSQLQueryResponsePackets(new RowDescriptionPacket(columnCount, columnDescriptions));
     }
     
     private void setResponseColumnLabelForShowTablesMergedResult(final PostgreSQLQueryResponsePackets postgreSQLQueryResponsePackets) {
