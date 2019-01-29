@@ -32,5 +32,5 @@ public final class PostgreSQLBinaryStatementParameterType {
     
     private final PostgreSQLColumnType columnType;
     
-    private final int format;
+    private final int format = 1;
 }
