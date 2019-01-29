@@ -75,7 +75,7 @@ public final class Query implements PostgreSQLQueryCommandPacket {
     @Override
     public DatabasePacket getResultValue() throws SQLException {
         ResultPacket resultPacket = textProtocolBackendHandler.getResultValue();
-        return new DataRowPacket(resultPacket.getData());
+        return new PostgreSQLDataRowPacket(resultPacket.getData());
     }
     
     @Override
