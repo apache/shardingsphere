@@ -28,7 +28,7 @@ import org.apache.shardingsphere.shardingproxypg.transport.postgresql.packet.com
  *
  * @author zhangyonglun
  */
-public final class ReadyForQuery implements PostgreSQLPacket {
+public final class ReadyForQueryPacket implements PostgreSQLPacket {
     
     @Getter
     private final char messageType = PostgreSQLCommandPacketType.READY_FOR_QUERY.getValue();
