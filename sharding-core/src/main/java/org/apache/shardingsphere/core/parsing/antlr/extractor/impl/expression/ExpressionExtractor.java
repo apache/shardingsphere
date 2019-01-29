@@ -44,8 +44,6 @@ import java.util.Map;
 @RequiredArgsConstructor
 public final class ExpressionExtractor implements OptionalSQLSegmentExtractor {
     
-    private final SubqueryExtractor subqueryExtractor = new SubqueryExtractor();
-    
     @Override
     public Optional<? extends ExpressionSegment> extract(final ParserRuleContext ancestorNode) {
         throw new RuntimeException();
@@ -60,7 +58,7 @@ public final class ExpressionExtractor implements OptionalSQLSegmentExtractor {
      */
     public Optional<? extends ExpressionSegment> extract(final Map<ParserRuleContext, Integer> placeholderIndexes, final ParserRuleContext expressionNode) {
         Optional<ParserRuleContext> subqueryNode = ExtractorUtils.findFirstChildNode(expressionNode, RuleName.SUBQUERY);
-        return subqueryNode.isPresent() ? subqueryExtractor.extract(subqueryNode.get()) : Optional.of(extractExpression(placeholderIndexes, expressionNode));
+        return subqueryNode.isPresent() ? new SubqueryExtractor().extract(subqueryNode.get()) : Optional.of(extractExpression(placeholderIndexes, expressionNode));
     }
     
     private ExpressionSegment extractExpression(final Map<ParserRuleContext, Integer> placeholderIndexes, final ParserRuleContext expressionNode) {
