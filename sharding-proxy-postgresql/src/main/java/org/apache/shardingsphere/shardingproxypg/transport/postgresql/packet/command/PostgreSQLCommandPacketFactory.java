@@ -22,7 +22,7 @@ import lombok.NoArgsConstructor;
 import org.apache.shardingsphere.shardingproxypg.backend.communication.jdbc.connection.BackendConnection;
 import org.apache.shardingsphere.shardingproxypg.transport.postgresql.packet.PostgreSQLPacketPayload;
 import org.apache.shardingsphere.shardingproxypg.transport.postgresql.packet.command.admin.PostgreSQLUnsupportedCommandPacket;
-import org.apache.shardingsphere.shardingproxypg.transport.postgresql.packet.command.query.text.PostgreSQLQueryPacket;
+import org.apache.shardingsphere.shardingproxypg.transport.postgresql.packet.command.query.text.PostgreSQLComQueryPacket;
 
 /**
  * PostgreSQL command packet factory.
@@ -44,7 +44,7 @@ public final class PostgreSQLCommandPacketFactory {
         PostgreSQLCommandPacketType type = PostgreSQLCommandPacketType.valueOf(commandPacketTypeValue);
         switch (type) {
             case QUERY:
-                return new PostgreSQLQueryPacket(payload, backendConnection);
+                return new PostgreSQLComQueryPacket(payload, backendConnection);
             default:
                 return new PostgreSQLUnsupportedCommandPacket(type.getValue());
         }
