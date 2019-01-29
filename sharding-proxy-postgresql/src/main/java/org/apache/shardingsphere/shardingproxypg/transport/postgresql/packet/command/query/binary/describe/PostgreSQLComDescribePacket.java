@@ -34,7 +34,7 @@ import org.apache.shardingsphere.shardingproxypg.transport.postgresql.packet.com
 public final class PostgreSQLComDescribePacket implements PostgreSQLCommandPacket {
     
     @Getter
-    private final char messageType = PostgreSQLCommandPacketType.SYNC.getValue();
+    private final char messageType = PostgreSQLCommandPacketType.DESCRIBE.getValue();
     
     public PostgreSQLComDescribePacket(final PostgreSQLPacketPayload payload) {
         payload.readInt4();
