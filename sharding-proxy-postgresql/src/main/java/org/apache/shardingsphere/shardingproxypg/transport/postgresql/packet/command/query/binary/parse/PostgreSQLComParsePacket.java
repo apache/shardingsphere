@@ -47,7 +47,7 @@ public final class PostgreSQLComParsePacket implements PostgreSQLCommandPacket {
     
     private final PostgreSQLBinaryStatementRegistry postgreSQLBinaryStatementRegistry;
     
-    private final String statementId;
+    private String statementId;
     
     private final String sql;
     
@@ -79,9 +79,7 @@ public final class PostgreSQLComParsePacket implements PostgreSQLCommandPacket {
         log.debug("PostgreSQLComParsePacket received for Sharding-Proxy: {}", sql);
         SQLStatement sqlStatement = sqlParsingEngine.parse(true);
         int parametersIndex = sqlStatement.getParametersIndex();
-        if (!statementId.isEmpty()) {
-            postgreSQLBinaryStatementRegistry.register(statementId, sql, parametersIndex);
-        }
+        postgreSQLBinaryStatementRegistry.register(statementId, sql, parametersIndex);
         return Optional.of(new PostgreSQLCommandResponsePackets(new PostgreSQLParseCompletePacket()));
     }
     
