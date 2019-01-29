@@ -29,7 +29,7 @@ import org.apache.shardingsphere.shardingproxypg.transport.postgresql.packet.Pos
 import org.apache.shardingsphere.shardingproxypg.transport.postgresql.packet.generic.PostgreSQLReadyForQueryPacket;
 import org.apache.shardingsphere.shardingproxypg.transport.postgresql.packet.handshake.PostgreSQLAuthenticationOKPacket;
 import org.apache.shardingsphere.shardingproxypg.transport.postgresql.packet.handshake.PostgreSQLConnectionIdGenerator;
-import org.apache.shardingsphere.shardingproxypg.transport.postgresql.packet.handshake.PostgreSQLComSSLNegativePacket;
+import org.apache.shardingsphere.shardingproxypg.transport.postgresql.packet.handshake.PostgreSQLSSLNegativePacket;
 import org.apache.shardingsphere.shardingproxypg.transport.postgresql.packet.handshake.PostgreSQLComStartupPacket;
 
 /**
@@ -57,7 +57,7 @@ public final class PostgreSQLFrontendHandler extends FrontendHandler {
     protected void auth(final ChannelHandlerContext context, final ByteBuf message) {
         if (SSL_REQUEST_PAYLOAD_LENGTH == message.markReaderIndex().readInt() && SSL_REQUEST_CODE == message.readInt()) {
             setAuthorized(false);
-            context.writeAndFlush(new PostgreSQLComSSLNegativePacket());
+            context.writeAndFlush(new PostgreSQLSSLNegativePacket());
             return;
         }
         message.resetReaderIndex();
