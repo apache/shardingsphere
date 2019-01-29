@@ -97,7 +97,7 @@ public final class JDBCExecuteEngine implements SQLExecuteEngine {
         int maxConnectionsSizePerQuery = GlobalRegistry.getInstance().getShardingProperties().<Integer>getValue(ShardingPropertiesConstant.MAX_CONNECTIONS_SIZE_PER_QUERY);
         ShardingExecuteEngine executeEngine = BackendExecutorContext.getInstance().getExecuteEngine();
         sqlExecutePrepareTemplate = new SQLExecutePrepareTemplate(maxConnectionsSizePerQuery);
-        sqlExecuteTemplate = new SQLExecuteTemplate(executeEngine);
+        sqlExecuteTemplate = new SQLExecuteTemplate(executeEngine, backendConnection.isSerialExecute());
     }
     
     @SuppressWarnings("unchecked")
