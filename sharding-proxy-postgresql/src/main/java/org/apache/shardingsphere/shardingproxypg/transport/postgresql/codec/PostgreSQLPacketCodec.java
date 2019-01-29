@@ -22,7 +22,7 @@ import io.netty.channel.ChannelHandlerContext;
 import org.apache.shardingsphere.shardingproxypg.transport.common.codec.PacketCodec;
 import org.apache.shardingsphere.shardingproxypg.transport.postgresql.packet.PostgreSQLPacket;
 import org.apache.shardingsphere.shardingproxypg.transport.postgresql.packet.PostgreSQLPacketPayload;
-import org.apache.shardingsphere.shardingproxypg.transport.postgresql.packet.handshake.PostgreSQLCOMSSLNegativePacket;
+import org.apache.shardingsphere.shardingproxypg.transport.postgresql.packet.handshake.PostgreSQLComSSLNegativePacket;
 
 import java.util.List;
 
@@ -60,7 +60,7 @@ public final class PostgreSQLPacketCodec extends PacketCodec<PostgreSQLPacket> {
     protected void doEncode(final ChannelHandlerContext context, final PostgreSQLPacket message, final ByteBuf out) {
         try (PostgreSQLPacketPayload payload = new PostgreSQLPacketPayload(context.alloc().buffer())) {
             message.write(payload);
-            if (!(message instanceof PostgreSQLCOMSSLNegativePacket)) {
+            if (!(message instanceof PostgreSQLComSSLNegativePacket)) {
                 out.writeByte(message.getMessageType());
                 out.writeInt(payload.getByteBuf().readableBytes() + message.PAYLOAD_LENGTH);
             }
