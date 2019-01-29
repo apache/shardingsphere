@@ -58,7 +58,7 @@ public abstract class WrapperAdapter implements Wrapper {
      */
     @SneakyThrows
     public final void recordMethodInvocation(final Class<?> targetClass, final String methodName, final Class<?>[] argumentTypes, final Object[] arguments) {
-        jdbcMethodInvocations.add(new JdbcMethodInvocation(targetClass.getMethod(methodName, argumentTypes), arguments));
+        jdbcMethodInvocations.add(new JdbcMethodInvocation(JdbcMethodInvocation.build(targetClass, targetClass.getMethod(methodName, argumentTypes)), arguments));
     }
     
     /**

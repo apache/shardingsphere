@@ -25,14 +25,14 @@ public final class JdbcMethodInvocationTest {
     @Test
     @SneakyThrows
     public void assertInvokeSuccess() {
-        JdbcMethodInvocation actual = new JdbcMethodInvocation(String.class.getMethod("length"), new Object[] {});
+        JdbcMethodInvocation actual = new JdbcMethodInvocation(JdbcMethodInvocation.build(String.class, String.class.getMethod("length")), new Object[] {});
         actual.invoke("");
     }
     
     @Test(expected = IllegalAccessException.class)
     @SneakyThrows
     public void assertInvokeFailure() {
-        JdbcMethodInvocation actual = new JdbcMethodInvocation(String.class.getDeclaredMethod("indexOfSupplementary", int.class, int.class), new Object[] {1, 1});
+        JdbcMethodInvocation actual = new JdbcMethodInvocation(JdbcMethodInvocation.build(String.class, String.class.getDeclaredMethod("indexOfSupplementary", int.class, int.class)), new Object[] {1, 1});
         actual.invoke("");
     }
 }

@@ -25,6 +25,7 @@ import net.sf.cglib.reflect.FastClass;
 import net.sf.cglib.reflect.FastMethod;
 
 import java.lang.reflect.Method;
+import java.util.Objects;
 import java.util.concurrent.ConcurrentMap;
 
 /**
@@ -38,7 +39,11 @@ public class JdbcMethodInvocation {
     private static ConcurrentMap<Class<?>, FastClass> fastClassMap = Maps.newConcurrentMap();
 
     public static FastMethod build(final Class<?> clz, Method method) {
-        FastClass fastClz = fastClassMap.putIfAbsent(clz, FastClass.create(clz));
+        FastClass fastClz = fastClassMap.get(clz);
+        if (Objects.isNull(fastClz)) {
+            fastClz = FastClass.create(clz);
+            fastClassMap.putIfAbsent(clz, fastClz);
+        }
         return fastClz.getMethod(method);
     }
 
