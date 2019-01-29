@@ -17,20 +17,11 @@
 
 package org.apache.shardingsphere.spi;
 
-import org.apache.shardingsphere.spi.parsing.ParsingHook;
-import org.junit.Test;
+import org.junit.runner.RunWith;
+import org.junit.runners.Suite;
+import org.junit.runners.Suite.SuiteClasses;
 
-import java.util.Collection;
-
-import static org.hamcrest.CoreMatchers.is;
-import static org.junit.Assert.assertThat;
-
-public final class NewInstanceServiceLoaderTest {
-    
-    @Test
-    public void assertNewServiceInstanceNotExist() {
-        NewInstanceServiceLoader.register(ParsingHook.class);
-        Collection collection = NewInstanceServiceLoader.newServiceInstances(ParsingHook.class);
-        assertThat(collection.size(), is(0));
-    }
+@RunWith(Suite.class)
+@SuiteClasses(NewInstanceServiceLoaderTest.class)
+public final class AllSPITests {
 }

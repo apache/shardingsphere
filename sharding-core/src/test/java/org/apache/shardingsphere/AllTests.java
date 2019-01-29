@@ -17,15 +17,17 @@
 
 package org.apache.shardingsphere;
 
-import org.apache.shardingsphere.api.AllApiTests;
+import org.apache.shardingsphere.api.AllAPITests;
 import org.apache.shardingsphere.core.AllCoreTests;
+import org.apache.shardingsphere.spi.AllSPITests;
 import org.junit.runner.RunWith;
 import org.junit.runners.Suite;
 import org.junit.runners.Suite.SuiteClasses;
 
 @RunWith(Suite.class)
 @SuiteClasses({
-        AllApiTests.class, 
+        AllAPITests.class, 
+        AllSPITests.class, 
         AllCoreTests.class
     })
 public final class AllTests {
