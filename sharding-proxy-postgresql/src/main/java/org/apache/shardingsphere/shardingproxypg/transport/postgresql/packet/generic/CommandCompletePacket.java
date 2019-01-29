@@ -29,7 +29,7 @@ import org.apache.shardingsphere.shardingproxypg.transport.postgresql.packet.com
  * @author zhangyonglun
  */
 @RequiredArgsConstructor
-public final class CommandComplete implements PostgreSQLPacket {
+public final class CommandCompletePacket implements PostgreSQLPacket {
     
     @Getter
     private final char messageType = PostgreSQLCommandPacketType.COMMAND_COMPLETE.getValue();
