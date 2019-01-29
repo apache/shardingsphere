@@ -36,7 +36,7 @@ import org.apache.shardingsphere.shardingproxypg.transport.postgresql.packet.gen
 import java.sql.SQLException;
 
 /**
- * PostgreSQLComQueryPacket message.
+ * PostgreSQL command query packet.
  *
  * @author zhangyonglun
  */
