@@ -28,7 +28,7 @@ import org.apache.shardingsphere.shardingproxypg.transport.postgresql.constant.P
  */
 @RequiredArgsConstructor
 @Getter
-public final class PostgreSQLBindParameterType {
+public final class PostgreSQLBinaryStatementParameterType {
     
     private final PostgreSQLColumnType columnType;
     
