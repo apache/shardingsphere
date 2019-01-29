@@ -37,5 +37,5 @@ public final class PostgreSQLBinaryStatement {
     
     private final int parametersCount;
     
-    private List<PostgreSQLBinaryStatementParameterType> parameterTypes;
+    private final List<PostgreSQLBinaryStatementParameterType> parameterTypes;
 }
