@@ -38,7 +38,7 @@ public final class ShardingBootstrap {
      * Initialize sharding bootstrap.
      */
     public static void init() {
-        registerHookClasses(SQLExecutionHook.class, ParsingHook.class, RootInvokeHook.class, RewriteHook.class);
+        registerHookClasses(RootInvokeHook.class, SQLExecutionHook.class, ParsingHook.class, RewriteHook.class);
     }
     
     private static void registerHookClasses(final Class<?>... services) {
