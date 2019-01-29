@@ -29,7 +29,7 @@ import java.util.Map;
  *
  * @author zhangyonglun
  */
-public final class PostgreSQLComStartupMessagePacket implements PostgreSQLPacket {
+public final class PostgreSQLComStartupPacket implements PostgreSQLPacket {
     
     @Getter
     private final char messageType = '\0';
@@ -37,7 +37,7 @@ public final class PostgreSQLComStartupMessagePacket implements PostgreSQLPacket
     @Getter
     private final Map<String, String> parametersMap = new HashMap<>(16, 1);
     
-    public PostgreSQLComStartupMessagePacket(final PostgreSQLPacketPayload payload) {
+    public PostgreSQLComStartupPacket(final PostgreSQLPacketPayload payload) {
         payload.skipReserved(8);
         while (0 != payload.bytesBeforeZero()) {
             parametersMap.put(payload.readStringNul(), payload.readStringNul());
