@@ -54,7 +54,7 @@ public final class PostgreSQLQueryResponsePackets extends PostgreSQLCommandRespo
      */
     public List<Integer> getColumnTypes() {
         List<Integer> result = new LinkedList<>();
-        for (ColumnDescription each : rowDescriptionPacket.getColumnDescriptions()) {
+        for (PostgreSQLColumnDescription each : rowDescriptionPacket.getPostgreSQLColumnDescriptions()) {
             result.add(each.getDataFormat());
         }
         return result;
