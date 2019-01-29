@@ -32,7 +32,7 @@ import org.apache.shardingsphere.shardingproxypg.transport.postgresql.packet.com
 import org.apache.shardingsphere.shardingproxypg.transport.postgresql.packet.command.PostgreSQLCommandResponsePackets;
 import org.apache.shardingsphere.shardingproxypg.transport.postgresql.packet.command.query.PostgreSQLQueryCommandPacket;
 import org.apache.shardingsphere.shardingproxypg.transport.postgresql.packet.generic.CommandCompletePacket;
-import org.apache.shardingsphere.shardingproxypg.transport.postgresql.packet.generic.ErrorResponse;
+import org.apache.shardingsphere.shardingproxypg.transport.postgresql.packet.generic.ErrorResponsePacket;
 import org.apache.shardingsphere.shardingproxypg.transport.postgresql.packet.generic.ReadyForQuery;
 import org.apache.shardingsphere.spi.root.RootInvokeHook;
 import org.apache.shardingsphere.spi.root.SPIRootInvokeHook;
@@ -71,17 +71,17 @@ public final class PostgreSQLCommandExecutor implements Runnable {
                 context.write(each);
             }
             if (commandPacket instanceof PostgreSQLQueryCommandPacket && !(responsePackets.get().getHeadPacket() instanceof ReadyForQuery)
-                && !(responsePackets.get().getHeadPacket() instanceof ErrorResponse)) {
+                && !(responsePackets.get().getHeadPacket() instanceof ErrorResponsePacket)) {
                 writeMoreResults((PostgreSQLQueryCommandPacket) commandPacket);
             }
             connectionSize = backendConnection.getConnectionSize();
             context.write(new CommandCompletePacket("SELECT", 1));
         } catch (final SQLException ex) {
-            context.write(new ErrorResponse());
+            context.write(new ErrorResponsePacket());
             // CHECKSTYLE:OFF
         } catch (final Exception ex) {
             // CHECKSTYLE:ON
-            context.write(new ErrorResponse());
+            context.write(new ErrorResponsePacket());
         } finally {
             context.writeAndFlush(new ReadyForQuery());
             rootInvokeHook.finish(connectionSize);
