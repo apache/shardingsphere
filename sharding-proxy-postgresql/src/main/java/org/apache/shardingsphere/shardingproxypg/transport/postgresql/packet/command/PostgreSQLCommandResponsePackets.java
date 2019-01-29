@@ -21,7 +21,7 @@ import com.google.common.base.Optional;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
 import org.apache.shardingsphere.shardingproxypg.transport.common.packet.DatabasePacket;
-import org.apache.shardingsphere.shardingproxypg.transport.postgresql.packet.generic.ErrorResponsePacket;
+import org.apache.shardingsphere.shardingproxypg.transport.postgresql.packet.generic.PostgreSQLErrorResponsePacket;
 
 import java.sql.SQLException;
 import java.util.Collection;
@@ -44,7 +44,7 @@ public class PostgreSQLCommandResponsePackets {
     
     public PostgreSQLCommandResponsePackets(final Exception exception) {
         Optional<SQLException> sqlException = findSQLException(exception);
-        packets.add(sqlException.isPresent() ? new ErrorResponsePacket() : new ErrorResponsePacket());
+        packets.add(sqlException.isPresent() ? new PostgreSQLErrorResponsePacket() : new PostgreSQLErrorResponsePacket());
     }
     
     private Optional<SQLException> findSQLException(final Exception exception) {
