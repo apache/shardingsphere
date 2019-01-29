@@ -41,18 +41,17 @@ import java.util.Map;
  */
 public final class InsertExtractor implements OptionalSQLSegmentExtractor {
     
-    private ExpressionExtractor expressionExtractor;
+    private ExpressionExtractor expressionExtractor = new ExpressionExtractor();
     
-    private ColumnSegmentExtractor columnSegmentExtractor;
+    private ColumnSegmentExtractor columnSegmentExtractor = new ColumnSegmentExtractor();
     
     @Override
     public Optional<InsertSegment> extract(final ParserRuleContext ancestorNode) {
         InsertSegment result = new InsertSegment();
-        expressionExtractor = new ExpressionExtractor(getPlaceholderIndexes(ancestorNode));
-        columnSegmentExtractor = new ColumnSegmentExtractor();
-        extractValuesColumn(ancestorNode, result);
+        Map<ParserRuleContext, Integer> placeholderIndexes = getPlaceholderIndexes(ancestorNode);
+        extractValuesColumn(placeholderIndexes, ancestorNode, result);
         if (result.getValuesList().isEmpty()) {
-            extractSetColumn(ancestorNode, result);
+            extractSetColumn(placeholderIndexes, ancestorNode, result);
         }
         extractDuplicateKeys(ancestorNode, result);
         result.setInsertValuesListLastIndex(ancestorNode.getStop().getStopIndex());
@@ -60,16 +59,16 @@ public final class InsertExtractor implements OptionalSQLSegmentExtractor {
     }
     
     private Map<ParserRuleContext, Integer> getPlaceholderIndexes(final ParserRuleContext rootNode) {
-        Collection<ParserRuleContext> questionNodes = ExtractorUtils.getAllDescendantNodes(rootNode, RuleName.QUESTION);
-        Map<ParserRuleContext, Integer> result = new HashMap<>(questionNodes.size(), 1);
+        Collection<ParserRuleContext> placeholderNodes = ExtractorUtils.getAllDescendantNodes(rootNode, RuleName.QUESTION);
+        Map<ParserRuleContext, Integer> result = new HashMap<>(placeholderNodes.size(), 1);
         int index = 0;
-        for (ParserRuleContext each : questionNodes) {
+        for (ParserRuleContext each : placeholderNodes) {
             result.put(each, index++);
         }
         return result;
     }
     
-    private void extractValuesColumn(final ParserRuleContext ancestorNode, final InsertSegment insertSegment) {
+    private void extractValuesColumn(final Map<ParserRuleContext, Integer> placeholderIndexes, final ParserRuleContext ancestorNode, final InsertSegment insertSegment) {
         Optional<ParserRuleContext> columnClauseNode = ExtractorUtils.findFirstChildNode(ancestorNode, RuleName.COLUMN_CLAUSE);
         if (!columnClauseNode.isPresent()) {
             return;
@@ -95,12 +94,12 @@ public final class InsertExtractor implements OptionalSQLSegmentExtractor {
             InsertValuesSegment insertValuesSegment = new InsertValuesSegment(DefaultKeyword.VALUES, each.getStart().getStartIndex(), each.getStop().getStopIndex(), questionNodes.size());
             insertSegment.getValuesList().add(insertValuesSegment);
             for (ParserRuleContext eachValue : ExtractorUtils.getAllDescendantNodes(each, RuleName.ASSIGNMENT_VALUE)) {
-                insertValuesSegment.getValues().add(expressionExtractor.extractCommonExpressionSegment(eachValue));
+                insertValuesSegment.getValues().add(expressionExtractor.extractCommonExpressionSegment(placeholderIndexes, eachValue));
             }
         }
     }
     
-    private void extractSetColumn(final ParserRuleContext ancestorNode, final InsertSegment insertSegment) {
+    private void extractSetColumn(final Map<ParserRuleContext, Integer> placeholderIndexes, final ParserRuleContext ancestorNode, final InsertSegment insertSegment) {
         Optional<ParserRuleContext> setClauseNode = ExtractorUtils.findFirstChildNode(ancestorNode, RuleName.SET_CLAUSE);
         if (!setClauseNode.isPresent()) {
             return;
@@ -119,7 +118,7 @@ public final class InsertExtractor implements OptionalSQLSegmentExtractor {
         for (ParserRuleContext each : assignments) {
             ParserRuleContext columnNode = (ParserRuleContext) each.getChild(0);
             insertSegment.getColumns().add(columnSegmentExtractor.extract(columnNode).get());
-            insertValuesSegment.getValues().add(expressionExtractor.extractCommonExpressionSegment((ParserRuleContext) each.getChild(2)));
+            insertValuesSegment.getValues().add(expressionExtractor.extractCommonExpressionSegment(placeholderIndexes, (ParserRuleContext) each.getChild(2)));
         }
     }
     

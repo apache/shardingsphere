@@ -38,6 +38,8 @@ import com.google.common.base.Optional;
  */
 public final class UpdateSetWhereExtractor extends AbstractFromWhereExtractor {
     
+    private final ExpressionExtractor expressionExtractor = new ExpressionExtractor();
+    
     protected FromWhereSegment createSegment() {
         return new UpdateSetWhereSegment();
     }
@@ -59,10 +61,9 @@ public final class UpdateSetWhereExtractor extends AbstractFromWhereExtractor {
             return;
         }
         ColumnSegmentExtractor columnSegmentExtractor = new ColumnSegmentExtractor();
-        ExpressionExtractor expressionExtractor = new ExpressionExtractor(placeholderIndexes);
         for (ParserRuleContext each : ExtractorUtils.getAllDescendantNodes(setClauseNode.get(), RuleName.ASSIGNMENT)) {
             Optional<ColumnSegment> columnSegment = columnSegmentExtractor.extract((ParserRuleContext) each.getChild(0));
-            updateSetWhereSegment.getUpdateColumns().put(columnSegment.get().getName(), expressionExtractor.extract((ParserRuleContext) each.getChild(2)).get());
+            updateSetWhereSegment.getUpdateColumns().put(columnSegment.get().getName(), expressionExtractor.extract(placeholderIndexes, (ParserRuleContext) each.getChild(2)).get());
         }
     }
 }
