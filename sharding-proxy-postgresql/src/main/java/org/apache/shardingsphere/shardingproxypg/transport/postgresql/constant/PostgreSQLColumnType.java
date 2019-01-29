@@ -178,20 +178,20 @@ public enum PostgreSQLColumnType {
      * Value of JDBC type.
      *
      * @param jdbcType JDBC type
-     * @return column type enum
+     * @return PostgreSQL column type enum
      */
     public static PostgreSQLColumnType valueOfJDBCType(final int jdbcType) {
         if (JDBC_TYPE_AND_COLUMN_TYPE_MAP.containsKey(jdbcType)) {
             return JDBC_TYPE_AND_COLUMN_TYPE_MAP.get(jdbcType);
         }
-        throw new IllegalArgumentException(String.format("Cannot find JDBC type '%s' in column type", jdbcType));
+        throw new IllegalArgumentException(String.format("Cannot find JDBC type '%s' in PostgreSQL column type", jdbcType));
     }
     
     /**
      * Value of.
      * 
      * @param value value
-     * @return column type
+     * @return PostgreSQL column type
      */
     public static PostgreSQLColumnType valueOf(final int value) {
         for (PostgreSQLColumnType each : PostgreSQLColumnType.values()) {
@@ -199,6 +199,6 @@ public enum PostgreSQLColumnType {
                 return each;
             }
         }
-        throw new IllegalArgumentException(String.format("Cannot find value '%s' in column type", value));
+        throw new IllegalArgumentException(String.format("Cannot find value '%s' in PostgreSQL column type", value));
     }
 }
