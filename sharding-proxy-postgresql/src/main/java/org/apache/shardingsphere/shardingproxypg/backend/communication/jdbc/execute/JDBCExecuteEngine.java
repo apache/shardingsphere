@@ -49,7 +49,7 @@ import org.apache.shardingsphere.shardingproxypg.backend.communication.jdbc.wrap
 import org.apache.shardingsphere.shardingproxypg.runtime.GlobalRegistry;
 import org.apache.shardingsphere.shardingproxypg.transport.mysql.constant.ColumnType;
 import org.apache.shardingsphere.shardingproxypg.transport.mysql.packet.generic.OKPacket;
-import org.apache.shardingsphere.shardingproxypg.transport.postgresql.packet.command.query.ColumnDescription;
+import org.apache.shardingsphere.shardingproxypg.transport.postgresql.packet.command.query.PostgreSQLColumnDescription;
 import org.apache.shardingsphere.shardingproxypg.transport.postgresql.packet.command.query.PostgreSQLQueryResponsePackets;
 import org.apache.shardingsphere.shardingproxypg.transport.postgresql.packet.command.query.RowDescriptionPacket;
 
@@ -155,11 +155,11 @@ public final class JDBCExecuteEngine implements SQLExecuteEngine {
     
     private PostgreSQLQueryResponsePackets getHeaderPackets(final ResultSetMetaData resultSetMetaData) throws SQLException {
         int columnCount = resultSetMetaData.getColumnCount();
-        List<ColumnDescription> columnDescriptions = new LinkedList<>();
+        List<PostgreSQLColumnDescription> postgreSQLColumnDescriptions = new LinkedList<>();
         for (int columnIndex = 1; columnIndex <= columnCount; columnIndex++) {
-            columnDescriptions.add(new ColumnDescription(resultSetMetaData, columnIndex));
+            postgreSQLColumnDescriptions.add(new PostgreSQLColumnDescription(resultSetMetaData, columnIndex));
         }
-        RowDescriptionPacket rowDescriptionPacket = new RowDescriptionPacket(columnCount, columnDescriptions);
+        RowDescriptionPacket rowDescriptionPacket = new RowDescriptionPacket(columnCount, postgreSQLColumnDescriptions);
         return new PostgreSQLQueryResponsePackets(rowDescriptionPacket);
     }
     
