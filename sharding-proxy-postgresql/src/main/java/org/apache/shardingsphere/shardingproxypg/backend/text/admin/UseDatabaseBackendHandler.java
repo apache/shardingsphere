@@ -26,7 +26,7 @@ import org.apache.shardingsphere.shardingproxypg.backend.text.TextProtocolBacken
 import org.apache.shardingsphere.shardingproxypg.runtime.GlobalRegistry;
 import org.apache.shardingsphere.shardingproxypg.transport.mysql.packet.generic.OKPacket;
 import org.apache.shardingsphere.shardingproxypg.transport.postgresql.packet.command.PostgreSQLCommandResponsePackets;
-import org.apache.shardingsphere.shardingproxypg.transport.postgresql.packet.generic.ErrorResponsePacket;
+import org.apache.shardingsphere.shardingproxypg.transport.postgresql.packet.generic.PostgreSQLErrorResponsePacket;
 
 /**
  * Use database backend handler.
@@ -45,7 +45,7 @@ public final class UseDatabaseBackendHandler implements TextProtocolBackendHandl
     public PostgreSQLCommandResponsePackets execute() {
         String schema = SQLUtil.getExactlyValue(useStatement.getSchema());
         if (!GlobalRegistry.getInstance().schemaExists(schema)) {
-            return new PostgreSQLCommandResponsePackets(new ErrorResponsePacket());
+            return new PostgreSQLCommandResponsePackets(new PostgreSQLErrorResponsePacket());
         }
         backendConnection.setCurrentSchema(schema);
         return new PostgreSQLCommandResponsePackets(new OKPacket(1));
