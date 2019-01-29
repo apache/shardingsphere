@@ -2,39 +2,39 @@
 <rss version="2.0" xmlns:atom="http://www.w3.org/2005/Atom">
   <channel>
     <title>Manual on ShardingSphere</title>
-    <link>http://shardingsphere.apache.org/document/current/en/manual/sharding-jdbc/usage/</link>
+    <link>https://shardingsphere.apache.org/document/current/en/manual/sharding-jdbc/usage/</link>
     <description>Recent content in Manual on ShardingSphere</description>
     <generator>Hugo -- gohugo.io</generator>
     <language>en-us</language>
     
-	<atom:link href="http://shardingsphere.apache.org/document/current/en/manual/sharding-jdbc/usage/index.xml" rel="self" type="application/rss+xml" />
+	<atom:link href="https://shardingsphere.apache.org/document/current/en/manual/sharding-jdbc/usage/index.xml" rel="self" type="application/rss+xml" />
     
     
     <item>
       <title>Sharding</title>
-      <link>http://shardingsphere.apache.org/document/current/en/manual/sharding-jdbc/usage/sharding/</link>
+      <link>https://shardingsphere.apache.org/document/current/en/manual/sharding-jdbc/usage/sharding/</link>
       <pubDate>Mon, 01 Jan 0001 00:00:00 +0000</pubDate>
       
-      <guid>http://shardingsphere.apache.org/document/current/en/manual/sharding-jdbc/usage/sharding/</guid>
+      <guid>https://shardingsphere.apache.org/document/current/en/manual/sharding-jdbc/usage/sharding/</guid>
       <description>Not Use Spring Introduce Maven Dependency &amp;lt;dependency&amp;gt; &amp;lt;groupId&amp;gt;org.apache.shardingsphere&amp;lt;/groupId&amp;gt; &amp;lt;artifactId&amp;gt;sharding-jdbc-core&amp;lt;/artifactId&amp;gt; &amp;lt;version&amp;gt;${sharding-sphere.version}&amp;lt;/version&amp;gt; &amp;lt;/dependency&amp;gt;  Rule Configuration Based on Java Database sharding and table sharding of Sharding-JDBC configure descriptions according to rules. The following example is two databases plus two tables configurations, whose databases take module and split according to order_id, tables take module and split according to order_id.
 // Configure actual data sources Map&amp;lt;String, DataSource&amp;gt; dataSourceMap = new HashMap&amp;lt;&amp;gt;(); // Configure first data source BasicDataSource dataSource1 = new BasicDataSource(); dataSource1.</description>
     </item>
     
     <item>
       <title>Read-write Splitting</title>
-      <link>http://shardingsphere.apache.org/document/current/en/manual/sharding-jdbc/usage/read-write-splitting/</link>
+      <link>https://shardingsphere.apache.org/document/current/en/manual/sharding-jdbc/usage/read-write-splitting/</link>
       <pubDate>Mon, 01 Jan 0001 00:00:00 +0000</pubDate>
       
-      <guid>http://shardingsphere.apache.org/document/current/en/manual/sharding-jdbc/usage/read-write-splitting/</guid>
+      <guid>https://shardingsphere.apache.org/document/current/en/manual/sharding-jdbc/usage/read-write-splitting/</guid>
       <description>Not Use Spring Introduce Maven Dependency &amp;lt;dependency&amp;gt; &amp;lt;groupId&amp;gt;org.apache.shardingsphere&amp;lt;/groupId&amp;gt; &amp;lt;artifactId&amp;gt;sharding-jdbc-core&amp;lt;/artifactId&amp;gt; &amp;lt;version&amp;gt;${sharding-sphere.version}&amp;lt;/version&amp;gt; &amp;lt;/dependency&amp;gt;  Rule Configuration Based on Java // Configure actual data sources Map&amp;lt;String, DataSource&amp;gt; dataSourceMap = new HashMap&amp;lt;&amp;gt;(); // Configure master data source BasicDataSource masterDataSource = new BasicDataSource(); masterDataSource.setDriverClassName(&amp;quot;com.mysql.jdbc.Driver&amp;quot;); masterDataSource.setUrl(&amp;quot;jdbc:mysql://localhost:3306/ds_master&amp;quot;); masterDataSource.setUsername(&amp;quot;root&amp;quot;); masterDataSource.setPassword(&amp;quot;&amp;quot;); dataSourceMap.put(&amp;quot;ds_master&amp;quot;, masterDataSource); // Configure first slave data source BasicDataSource slaveDataSource1 = new BasicDataSource(); slaveDataSource1.setDriverClassName(&amp;quot;com.mysql.jdbc.Driver&amp;quot;); slaveDataSource1.setUrl(&amp;quot;jdbc:mysql://localhost:3306/ds_slave0&amp;quot;); slaveDataSource1.setUsername(&amp;quot;root&amp;quot;); slaveDataSource1.setPassword(&amp;quot;&amp;quot;); dataSourceMap.put(&amp;quot;ds_slave0&amp;quot;, slaveDataSource1); // Configure second slave data source BasicDataSource slaveDataSource2 = new BasicDataSource(); slaveDataSource2.</description>
     </item>
     
     <item>
       <title>Hint</title>
-      <link>http://shardingsphere.apache.org/document/current/en/manual/sharding-jdbc/usage/hint/</link>
+      <link>https://shardingsphere.apache.org/document/current/en/manual/sharding-jdbc/usage/hint/</link>
       <pubDate>Mon, 01 Jan 0001 00:00:00 +0000</pubDate>
       
-      <guid>http://shardingsphere.apache.org/document/current/en/manual/sharding-jdbc/usage/hint/</guid>
+      <guid>https://shardingsphere.apache.org/document/current/en/manual/sharding-jdbc/usage/hint/</guid>
       <description>Introduction ShardingSphere uses ThreadLocal to manage sharding key value or hint route. Users can program to add sharding conditions to HintManager, and the condition only take effect within the current thread. Main application situations of Hint:
  Sharding field does not exist in SQL or database table structure, but in external business logic. So users can operate data according to external sharding results designated by hint.
  Force to do some data operations in the master database.</description>
@@ -42,20 +42,20 @@
     
     <item>
       <title>Orchestration</title>
-      <link>http://shardingsphere.apache.org/document/current/en/manual/sharding-jdbc/usage/orchestration/</link>
+      <link>https://shardingsphere.apache.org/document/current/en/manual/sharding-jdbc/usage/orchestration/</link>
       <pubDate>Mon, 01 Jan 0001 00:00:00 +0000</pubDate>
       
-      <guid>http://shardingsphere.apache.org/document/current/en/manual/sharding-jdbc/usage/orchestration/</guid>
+      <guid>https://shardingsphere.apache.org/document/current/en/manual/sharding-jdbc/usage/orchestration/</guid>
       <description>The use of data orchestration function requires to designate a registry center, in which all the configurations are saved. Users can either use local configurations to cover registry center configurations or read configurations from registry center only.
 Not Use Spring Introduce Maven Dependency &amp;lt;dependency&amp;gt; &amp;lt;groupId&amp;gt;org.apache.shardingsphere&amp;lt;/groupId&amp;gt; &amp;lt;artifactId&amp;gt;sharding-jdbc-orchestration&amp;lt;/artifactId&amp;gt; &amp;lt;version&amp;gt;${sharding-sphere.version}&amp;lt;/version&amp;gt; &amp;lt;/dependency&amp;gt; &amp;lt;!--If you want to use zookeeper, please use the artifactId below.--&amp;gt; &amp;lt;dependency&amp;gt; &amp;lt;groupId&amp;gt;org.apache.shardingsphere&amp;lt;/groupId&amp;gt; &amp;lt;artifactId&amp;gt;sharding-orchestration-reg-zookeeper-curator&amp;lt;/artifactId&amp;gt; &amp;lt;/dependency&amp;gt; &amp;lt;!--If you want to use etcd, please use the artifactId below.</description>
     </item>
     
     <item>
       <title>Distribute Transaction</title>
-      <link>http://shardingsphere.apache.org/document/current/en/manual/sharding-jdbc/usage/transaction/</link>
+      <link>https://shardingsphere.apache.org/document/current/en/manual/sharding-jdbc/usage/transaction/</link>
       <pubDate>Mon, 01 Jan 0001 00:00:00 +0000</pubDate>
       
-      <guid>http://shardingsphere.apache.org/document/current/en/manual/sharding-jdbc/usage/transaction/</guid>
+      <guid>https://shardingsphere.apache.org/document/current/en/manual/sharding-jdbc/usage/transaction/</guid>
       <description>Introduce Maven Dependency &amp;lt;dependency&amp;gt; &amp;lt;groupId&amp;gt;io.shardingsphere&amp;lt;/groupId&amp;gt; &amp;lt;artifactId&amp;gt;sharding-transaction-2pc-xa&amp;lt;/artifactId&amp;gt; &amp;lt;version&amp;gt;${shardingsphere.version}&amp;lt;/version&amp;gt; &amp;lt;/dependency&amp;gt;  XA transaction manager will be uploaded by Sharding-JDBC in SPI form.
 Connection Pool Configuration ShardingSphere supports to transform normal database connection pools to connection pools that support XA transactions; they also provide internal support for HikariCP, Druid and DBCP2, requiring no extra configurations. Other connection pools require users to use SPI interface that implements DataSourceMapConverter to expand, please refer to the implementation of io.</description>
     </item>

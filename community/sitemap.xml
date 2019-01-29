@@ -2,12 +2,12 @@
 <sitemapindex xmlns="http://www.sitemaps.org/schemas/sitemap/0.9">
 	
 	<sitemap>
-	   	<loc>http://shardingsphere.apache.org/community/en/sitemap.xml</loc>
+	   	<loc>https://shardingsphere.apache.org/community/en/sitemap.xml</loc>
 		
 	</sitemap>
 	
 	<sitemap>
-	   	<loc>http://shardingsphere.apache.org/community/cn/sitemap.xml</loc>
+	   	<loc>https://shardingsphere.apache.org/community/cn/sitemap.xml</loc>
 		
 	</sitemap>
 	

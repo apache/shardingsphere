@@ -3,845 +3,845 @@
   xmlns:xhtml="http://www.w3.org/1999/xhtml">
   
   <url>
-    <loc>http://shardingsphere.apache.org/document/current/en/features/orchestration/config-center/</loc>
+    <loc>https://shardingsphere.apache.org/document/current/en/features/orchestration/config-center/</loc>
     <xhtml:link
                 rel="alternate"
                 hreflang="cn"
-                href="http://shardingsphere.apache.org/document/current/cn/features/orchestration/config-center/"
+                href="https://shardingsphere.apache.org/document/current/cn/features/orchestration/config-center/"
                 />
     <xhtml:link
                 rel="alternate"
                 hreflang="en"
-                href="http://shardingsphere.apache.org/document/current/en/features/orchestration/config-center/"
+                href="https://shardingsphere.apache.org/document/current/en/features/orchestration/config-center/"
                 />
   </url>
   
   <url>
-    <loc>http://shardingsphere.apache.org/document/current/en/features/read-write-split/concept/</loc>
+    <loc>https://shardingsphere.apache.org/document/current/en/features/read-write-split/concept/</loc>
     <xhtml:link
                 rel="alternate"
                 hreflang="cn"
-                href="http://shardingsphere.apache.org/document/current/cn/features/read-write-split/concept/"
+                href="https://shardingsphere.apache.org/document/current/cn/features/read-write-split/concept/"
                 />
     <xhtml:link
                 rel="alternate"
                 hreflang="en"
-                href="http://shardingsphere.apache.org/document/current/en/features/read-write-split/concept/"
+                href="https://shardingsphere.apache.org/document/current/en/features/read-write-split/concept/"
                 />
   </url>
   
   <url>
-    <loc>http://shardingsphere.apache.org/document/current/en/features/sharding/concept/</loc>
+    <loc>https://shardingsphere.apache.org/document/current/en/features/sharding/concept/</loc>
     <xhtml:link
                 rel="alternate"
                 hreflang="cn"
-                href="http://shardingsphere.apache.org/document/current/cn/features/sharding/concept/"
+                href="https://shardingsphere.apache.org/document/current/cn/features/sharding/concept/"
                 />
     <xhtml:link
                 rel="alternate"
                 hreflang="en"
-                href="http://shardingsphere.apache.org/document/current/en/features/sharding/concept/"
+                href="https://shardingsphere.apache.org/document/current/en/features/sharding/concept/"
                 />
   </url>
   
   <url>
-    <loc>http://shardingsphere.apache.org/document/current/en/features/sharding/</loc>
+    <loc>https://shardingsphere.apache.org/document/current/en/features/sharding/</loc>
     <xhtml:link
                 rel="alternate"
                 hreflang="cn"
-                href="http://shardingsphere.apache.org/document/current/cn/features/sharding/"
+                href="https://shardingsphere.apache.org/document/current/cn/features/sharding/"
                 />
     <xhtml:link
                 rel="alternate"
                 hreflang="en"
-                href="http://shardingsphere.apache.org/document/current/en/features/sharding/"
+                href="https://shardingsphere.apache.org/document/current/en/features/sharding/"
                 />
   </url>
   
   <url>
-    <loc>http://shardingsphere.apache.org/document/current/en/features/sharding/other-features/inline-expression/</loc>
+    <loc>https://shardingsphere.apache.org/document/current/en/features/sharding/other-features/inline-expression/</loc>
     <xhtml:link
                 rel="alternate"
                 hreflang="cn"
-                href="http://shardingsphere.apache.org/document/current/cn/features/sharding/other-features/inline-expression/"
+                href="https://shardingsphere.apache.org/document/current/cn/features/sharding/other-features/inline-expression/"
                 />
     <xhtml:link
                 rel="alternate"
                 hreflang="en"
-                href="http://shardingsphere.apache.org/document/current/en/features/sharding/other-features/inline-expression/"
+                href="https://shardingsphere.apache.org/document/current/en/features/sharding/other-features/inline-expression/"
                 />
   </url>
   
   <url>
-    <loc>http://shardingsphere.apache.org/document/current/en/manual/sharding-jdbc/configuration/config-java/</loc>
+    <loc>https://shardingsphere.apache.org/document/current/en/manual/sharding-jdbc/configuration/config-java/</loc>
     <xhtml:link
                 rel="alternate"
                 hreflang="cn"
-                href="http://shardingsphere.apache.org/document/current/cn/manual/sharding-jdbc/configuration/config-java/"
+                href="https://shardingsphere.apache.org/document/current/cn/manual/sharding-jdbc/configuration/config-java/"
                 />
     <xhtml:link
                 rel="alternate"
                 hreflang="en"
-                href="http://shardingsphere.apache.org/document/current/en/manual/sharding-jdbc/configuration/config-java/"
+                href="https://shardingsphere.apache.org/document/current/en/manual/sharding-jdbc/configuration/config-java/"
                 />
   </url>
   
   <url>
-    <loc>http://shardingsphere.apache.org/document/current/en/features/transaction/local-transaction/</loc>
+    <loc>https://shardingsphere.apache.org/document/current/en/features/transaction/local-transaction/</loc>
     <xhtml:link
                 rel="alternate"
                 hreflang="cn"
-                href="http://shardingsphere.apache.org/document/current/cn/features/transaction/local-transaction/"
+                href="https://shardingsphere.apache.org/document/current/cn/features/transaction/local-transaction/"
                 />
     <xhtml:link
                 rel="alternate"
                 hreflang="en"
-                href="http://shardingsphere.apache.org/document/current/en/features/transaction/local-transaction/"
+                href="https://shardingsphere.apache.org/document/current/en/features/transaction/local-transaction/"
                 />
   </url>
   
   <url>
-    <loc>http://shardingsphere.apache.org/document/current/en/manual/sharding-jdbc/usage/</loc>
+    <loc>https://shardingsphere.apache.org/document/current/en/manual/sharding-jdbc/usage/</loc>
     <xhtml:link
                 rel="alternate"
                 hreflang="cn"
-                href="http://shardingsphere.apache.org/document/current/cn/manual/sharding-jdbc/usage/"
+                href="https://shardingsphere.apache.org/document/current/cn/manual/sharding-jdbc/usage/"
                 />
     <xhtml:link
                 rel="alternate"
                 hreflang="en"
-                href="http://shardingsphere.apache.org/document/current/en/manual/sharding-jdbc/usage/"
+                href="https://shardingsphere.apache.org/document/current/en/manual/sharding-jdbc/usage/"
                 />
   </url>
   
   <url>
-    <loc>http://shardingsphere.apache.org/document/current/en/overview/</loc>
+    <loc>https://shardingsphere.apache.org/document/current/en/overview/</loc>
     <xhtml:link
                 rel="alternate"
                 hreflang="cn"
-                href="http://shardingsphere.apache.org/document/current/cn/overview/"
+                href="https://shardingsphere.apache.org/document/current/cn/overview/"
                 />
     <xhtml:link
                 rel="alternate"
                 hreflang="en"
-                href="http://shardingsphere.apache.org/document/current/en/overview/"
+                href="https://shardingsphere.apache.org/document/current/en/overview/"
                 />
   </url>
   
   <url>
-    <loc>http://shardingsphere.apache.org/document/current/en/features/sharding/principle/parse/</loc>
+    <loc>https://shardingsphere.apache.org/document/current/en/features/sharding/principle/parse/</loc>
     <xhtml:link
                 rel="alternate"
                 hreflang="cn"
-                href="http://shardingsphere.apache.org/document/current/cn/features/sharding/principle/parse/"
+                href="https://shardingsphere.apache.org/document/current/cn/features/sharding/principle/parse/"
                 />
     <xhtml:link
                 rel="alternate"
                 hreflang="en"
-                href="http://shardingsphere.apache.org/document/current/en/features/sharding/principle/parse/"
+                href="https://shardingsphere.apache.org/document/current/en/features/sharding/principle/parse/"
                 />
   </url>
   
   <url>
-    <loc>http://shardingsphere.apache.org/document/current/en/features/sharding/concept/sql/</loc>
+    <loc>https://shardingsphere.apache.org/document/current/en/features/sharding/concept/sql/</loc>
     <xhtml:link
                 rel="alternate"
                 hreflang="cn"
-                href="http://shardingsphere.apache.org/document/current/cn/features/sharding/concept/sql/"
+                href="https://shardingsphere.apache.org/document/current/cn/features/sharding/concept/sql/"
                 />
     <xhtml:link
                 rel="alternate"
                 hreflang="en"
-                href="http://shardingsphere.apache.org/document/current/en/features/sharding/concept/sql/"
+                href="https://shardingsphere.apache.org/document/current/en/features/sharding/concept/sql/"
                 />
   </url>
   
   <url>
-    <loc>http://shardingsphere.apache.org/document/current/en/features/sharding/use-norms/sql/</loc>
+    <loc>https://shardingsphere.apache.org/document/current/en/features/sharding/use-norms/sql/</loc>
     <xhtml:link
                 rel="alternate"
                 hreflang="cn"
-                href="http://shardingsphere.apache.org/document/current/cn/features/sharding/use-norms/sql/"
+                href="https://shardingsphere.apache.org/document/current/cn/features/sharding/use-norms/sql/"
                 />
     <xhtml:link
                 rel="alternate"
                 hreflang="en"
-                href="http://shardingsphere.apache.org/document/current/en/features/sharding/use-norms/sql/"
+                href="https://shardingsphere.apache.org/document/current/en/features/sharding/use-norms/sql/"
                 />
   </url>
   
   <url>
-    <loc>http://shardingsphere.apache.org/document/current/en/manual/sharding-jdbc/usage/sharding/</loc>
+    <loc>https://shardingsphere.apache.org/document/current/en/manual/sharding-jdbc/usage/sharding/</loc>
     <xhtml:link
                 rel="alternate"
                 hreflang="cn"
-                href="http://shardingsphere.apache.org/document/current/cn/manual/sharding-jdbc/usage/sharding/"
+                href="https://shardingsphere.apache.org/document/current/cn/manual/sharding-jdbc/usage/sharding/"
                 />
     <xhtml:link
                 rel="alternate"
                 hreflang="en"
-                href="http://shardingsphere.apache.org/document/current/en/manual/sharding-jdbc/usage/sharding/"
+                href="https://shardingsphere.apache.org/document/current/en/manual/sharding-jdbc/usage/sharding/"
                 />
   </url>
   
   <url>
-    <loc>http://shardingsphere.apache.org/document/current/en/manual/sharding-jdbc/</loc>
+    <loc>https://shardingsphere.apache.org/document/current/en/manual/sharding-jdbc/</loc>
     <xhtml:link
                 rel="alternate"
                 hreflang="cn"
-                href="http://shardingsphere.apache.org/document/current/cn/manual/sharding-jdbc/"
+                href="https://shardingsphere.apache.org/document/current/cn/manual/sharding-jdbc/"
                 />
     <xhtml:link
                 rel="alternate"
                 hreflang="en"
-                href="http://shardingsphere.apache.org/document/current/en/manual/sharding-jdbc/"
+                href="https://shardingsphere.apache.org/document/current/en/manual/sharding-jdbc/"
                 />
   </url>
   
   <url>
-    <loc>http://shardingsphere.apache.org/document/current/en/quick-start/sharding-jdbc-quick-start/</loc>
+    <loc>https://shardingsphere.apache.org/document/current/en/quick-start/sharding-jdbc-quick-start/</loc>
     <xhtml:link
                 rel="alternate"
                 hreflang="cn"
-                href="http://shardingsphere.apache.org/document/current/cn/quick-start/sharding-jdbc-quick-start/"
+                href="https://shardingsphere.apache.org/document/current/cn/quick-start/sharding-jdbc-quick-start/"
                 />
     <xhtml:link
                 rel="alternate"
                 hreflang="en"
-                href="http://shardingsphere.apache.org/document/current/en/quick-start/sharding-jdbc-quick-start/"
+                href="https://shardingsphere.apache.org/document/current/en/quick-start/sharding-jdbc-quick-start/"
                 />
   </url>
   
   <url>
-    <loc>http://shardingsphere.apache.org/document/current/en/manual/sharding-proxy/usage/</loc>
+    <loc>https://shardingsphere.apache.org/document/current/en/manual/sharding-proxy/usage/</loc>
     <xhtml:link
                 rel="alternate"
                 hreflang="cn"
-                href="http://shardingsphere.apache.org/document/current/cn/manual/sharding-proxy/usage/"
+                href="https://shardingsphere.apache.org/document/current/cn/manual/sharding-proxy/usage/"
                 />
     <xhtml:link
                 rel="alternate"
                 hreflang="en"
-                href="http://shardingsphere.apache.org/document/current/en/manual/sharding-proxy/usage/"
+                href="https://shardingsphere.apache.org/document/current/en/manual/sharding-proxy/usage/"
                 />
   </url>
   
   <url>
-    <loc>http://shardingsphere.apache.org/document/current/en/features/transaction/2pc-transaction/</loc>
+    <loc>https://shardingsphere.apache.org/document/current/en/features/transaction/2pc-transaction/</loc>
     <xhtml:link
                 rel="alternate"
                 hreflang="cn"
-                href="http://shardingsphere.apache.org/document/current/cn/features/transaction/2pc-transaction/"
+                href="https://shardingsphere.apache.org/document/current/cn/features/transaction/2pc-transaction/"
                 />
     <xhtml:link
                 rel="alternate"
                 hreflang="en"
-                href="http://shardingsphere.apache.org/document/current/en/features/transaction/2pc-transaction/"
+                href="https://shardingsphere.apache.org/document/current/en/features/transaction/2pc-transaction/"
                 />
   </url>
   
   <url>
-    <loc>http://shardingsphere.apache.org/document/current/en/manual/sharding-proxy/configuration/</loc>
+    <loc>https://shardingsphere.apache.org/document/current/en/manual/sharding-proxy/configuration/</loc>
     <xhtml:link
                 rel="alternate"
                 hreflang="cn"
-                href="http://shardingsphere.apache.org/document/current/cn/manual/sharding-proxy/configuration/"
+                href="https://shardingsphere.apache.org/document/current/cn/manual/sharding-proxy/configuration/"
                 />
     <xhtml:link
                 rel="alternate"
                 hreflang="en"
-                href="http://shardingsphere.apache.org/document/current/en/manual/sharding-proxy/configuration/"
+                href="https://shardingsphere.apache.org/document/current/en/manual/sharding-proxy/configuration/"
                 />
   </url>
   
   <url>
-    <loc>http://shardingsphere.apache.org/document/current/en/manual/sharding-jdbc/configuration/</loc>
+    <loc>https://shardingsphere.apache.org/document/current/en/manual/sharding-jdbc/configuration/</loc>
     <xhtml:link
                 rel="alternate"
                 hreflang="cn"
-                href="http://shardingsphere.apache.org/document/current/cn/manual/sharding-jdbc/configuration/"
+                href="https://shardingsphere.apache.org/document/current/cn/manual/sharding-jdbc/configuration/"
                 />
     <xhtml:link
                 rel="alternate"
                 hreflang="en"
-                href="http://shardingsphere.apache.org/document/current/en/manual/sharding-jdbc/configuration/"
+                href="https://shardingsphere.apache.org/document/current/en/manual/sharding-jdbc/configuration/"
                 />
   </url>
   
   <url>
-    <loc>http://shardingsphere.apache.org/document/current/en/features/read-write-split/core-features/</loc>
+    <loc>https://shardingsphere.apache.org/document/current/en/features/read-write-split/core-features/</loc>
     <xhtml:link
                 rel="alternate"
                 hreflang="cn"
-                href="http://shardingsphere.apache.org/document/current/cn/features/read-write-split/core-features/"
+                href="https://shardingsphere.apache.org/document/current/cn/features/read-write-split/core-features/"
                 />
     <xhtml:link
                 rel="alternate"
                 hreflang="en"
-                href="http://shardingsphere.apache.org/document/current/en/features/read-write-split/core-features/"
+                href="https://shardingsphere.apache.org/document/current/en/features/read-write-split/core-features/"
                 />
   </url>
   
   <url>
-    <loc>http://shardingsphere.apache.org/document/current/en/features/sharding/other-features/key-generator/</loc>
+    <loc>https://shardingsphere.apache.org/document/current/en/features/sharding/other-features/key-generator/</loc>
     <xhtml:link
                 rel="alternate"
                 hreflang="cn"
-                href="http://shardingsphere.apache.org/document/current/cn/features/sharding/other-features/key-generator/"
+                href="https://shardingsphere.apache.org/document/current/cn/features/sharding/other-features/key-generator/"
                 />
     <xhtml:link
                 rel="alternate"
                 hreflang="en"
-                href="http://shardingsphere.apache.org/document/current/en/features/sharding/other-features/key-generator/"
+                href="https://shardingsphere.apache.org/document/current/en/features/sharding/other-features/key-generator/"
                 />
   </url>
   
   <url>
-    <loc>http://shardingsphere.apache.org/document/current/en/features/sharding/principle/</loc>
+    <loc>https://shardingsphere.apache.org/document/current/en/features/sharding/principle/</loc>
     <xhtml:link
                 rel="alternate"
                 hreflang="cn"
-                href="http://shardingsphere.apache.org/document/current/cn/features/sharding/principle/"
+                href="https://shardingsphere.apache.org/document/current/cn/features/sharding/principle/"
                 />
     <xhtml:link
                 rel="alternate"
                 hreflang="en"
-                href="http://shardingsphere.apache.org/document/current/en/features/sharding/principle/"
+                href="https://shardingsphere.apache.org/document/current/en/features/sharding/principle/"
                 />
   </url>
   
   <url>
-    <loc>http://shardingsphere.apache.org/document/current/en/features/orchestration/orchestration/</loc>
+    <loc>https://shardingsphere.apache.org/document/current/en/features/orchestration/orchestration/</loc>
     <xhtml:link
                 rel="alternate"
                 hreflang="cn"
-                href="http://shardingsphere.apache.org/document/current/cn/features/orchestration/orchestration/"
+                href="https://shardingsphere.apache.org/document/current/cn/features/orchestration/orchestration/"
                 />
     <xhtml:link
                 rel="alternate"
                 hreflang="en"
-                href="http://shardingsphere.apache.org/document/current/en/features/orchestration/orchestration/"
+                href="https://shardingsphere.apache.org/document/current/en/features/orchestration/orchestration/"
                 />
   </url>
   
   <url>
-    <loc>http://shardingsphere.apache.org/document/current/en/features/sharding/use-norms/pagination/</loc>
+    <loc>https://shardingsphere.apache.org/document/current/en/features/sharding/use-norms/pagination/</loc>
     <xhtml:link
                 rel="alternate"
                 hreflang="cn"
-                href="http://shardingsphere.apache.org/document/current/cn/features/sharding/use-norms/pagination/"
+                href="https://shardingsphere.apache.org/document/current/cn/features/sharding/use-norms/pagination/"
                 />
     <xhtml:link
                 rel="alternate"
                 hreflang="en"
-                href="http://shardingsphere.apache.org/document/current/en/features/sharding/use-norms/pagination/"
+                href="https://shardingsphere.apache.org/document/current/en/features/sharding/use-norms/pagination/"
                 />
   </url>
   
   <url>
-    <loc>http://shardingsphere.apache.org/document/current/en/quick-start/</loc>
+    <loc>https://shardingsphere.apache.org/document/current/en/quick-start/</loc>
     <xhtml:link
                 rel="alternate"
                 hreflang="cn"
-                href="http://shardingsphere.apache.org/document/current/cn/quick-start/"
+                href="https://shardingsphere.apache.org/document/current/cn/quick-start/"
                 />
     <xhtml:link
                 rel="alternate"
                 hreflang="en"
-                href="http://shardingsphere.apache.org/document/current/en/quick-start/"
+                href="https://shardingsphere.apache.org/document/current/en/quick-start/"
                 />
   </url>
   
   <url>
-    <loc>http://shardingsphere.apache.org/document/current/en/manual/sharding-jdbc/usage/read-write-splitting/</loc>
+    <loc>https://shardingsphere.apache.org/document/current/en/manual/sharding-jdbc/usage/read-write-splitting/</loc>
     <xhtml:link
                 rel="alternate"
                 hreflang="cn"
-                href="http://shardingsphere.apache.org/document/current/cn/manual/sharding-jdbc/usage/read-write-splitting/"
+                href="https://shardingsphere.apache.org/document/current/cn/manual/sharding-jdbc/usage/read-write-splitting/"
                 />
     <xhtml:link
                 rel="alternate"
                 hreflang="en"
-                href="http://shardingsphere.apache.org/document/current/en/manual/sharding-jdbc/usage/read-write-splitting/"
+                href="https://shardingsphere.apache.org/document/current/en/manual/sharding-jdbc/usage/read-write-splitting/"
                 />
   </url>
   
   <url>
-    <loc>http://shardingsphere.apache.org/document/current/en/features/read-write-split/</loc>
+    <loc>https://shardingsphere.apache.org/document/current/en/features/read-write-split/</loc>
     <xhtml:link
                 rel="alternate"
                 hreflang="cn"
-                href="http://shardingsphere.apache.org/document/current/cn/features/read-write-split/"
+                href="https://shardingsphere.apache.org/document/current/cn/features/read-write-split/"
                 />
     <xhtml:link
                 rel="alternate"
                 hreflang="en"
-                href="http://shardingsphere.apache.org/document/current/en/features/read-write-split/"
+                href="https://shardingsphere.apache.org/document/current/en/features/read-write-split/"
                 />
   </url>
   
   <url>
-    <loc>http://shardingsphere.apache.org/document/current/en/features/sharding/principle/route/</loc>
+    <loc>https://shardingsphere.apache.org/document/current/en/features/sharding/principle/route/</loc>
     <xhtml:link
                 rel="alternate"
                 hreflang="cn"
-                href="http://shardingsphere.apache.org/document/current/cn/features/sharding/principle/route/"
+                href="https://shardingsphere.apache.org/document/current/cn/features/sharding/principle/route/"
                 />
     <xhtml:link
                 rel="alternate"
                 hreflang="en"
-                href="http://shardingsphere.apache.org/document/current/en/features/sharding/principle/route/"
+                href="https://shardingsphere.apache.org/document/current/en/features/sharding/principle/route/"
                 />
   </url>
   
   <url>
-    <loc>http://shardingsphere.apache.org/document/current/en/features/sharding/concept/sharding/</loc>
+    <loc>https://shardingsphere.apache.org/document/current/en/features/sharding/concept/sharding/</loc>
     <xhtml:link
                 rel="alternate"
                 hreflang="cn"
-                href="http://shardingsphere.apache.org/document/current/cn/features/sharding/concept/sharding/"
+                href="https://shardingsphere.apache.org/document/current/cn/features/sharding/concept/sharding/"
                 />
     <xhtml:link
                 rel="alternate"
                 hreflang="en"
-                href="http://shardingsphere.apache.org/document/current/en/features/sharding/concept/sharding/"
+                href="https://shardingsphere.apache.org/document/current/en/features/sharding/concept/sharding/"
                 />
   </url>
   
   <url>
-    <loc>http://shardingsphere.apache.org/document/current/en/manual/sharding-proxy/</loc>
+    <loc>https://shardingsphere.apache.org/document/current/en/manual/sharding-proxy/</loc>
     <xhtml:link
                 rel="alternate"
                 hreflang="cn"
-                href="http://shardingsphere.apache.org/document/current/cn/manual/sharding-proxy/"
+                href="https://shardingsphere.apache.org/document/current/cn/manual/sharding-proxy/"
                 />
     <xhtml:link
                 rel="alternate"
                 hreflang="en"
-                href="http://shardingsphere.apache.org/document/current/en/manual/sharding-proxy/"
+                href="https://shardingsphere.apache.org/document/current/en/manual/sharding-proxy/"
                 />
   </url>
   
   <url>
-    <loc>http://shardingsphere.apache.org/document/current/en/quick-start/sharding-proxy-quick-start/</loc>
+    <loc>https://shardingsphere.apache.org/document/current/en/quick-start/sharding-proxy-quick-start/</loc>
     <xhtml:link
                 rel="alternate"
                 hreflang="cn"
-                href="http://shardingsphere.apache.org/document/current/cn/quick-start/sharding-proxy-quick-start/"
+                href="https://shardingsphere.apache.org/document/current/cn/quick-start/sharding-proxy-quick-start/"
                 />
     <xhtml:link
                 rel="alternate"
                 hreflang="en"
-                href="http://shardingsphere.apache.org/document/current/en/quick-start/sharding-proxy-quick-start/"
+                href="https://shardingsphere.apache.org/document/current/en/quick-start/sharding-proxy-quick-start/"
                 />
   </url>
   
   <url>
-    <loc>http://shardingsphere.apache.org/document/current/en/manual/sharding-jdbc/configuration/config-yaml/</loc>
+    <loc>https://shardingsphere.apache.org/document/current/en/manual/sharding-jdbc/configuration/config-yaml/</loc>
     <xhtml:link
                 rel="alternate"
                 hreflang="cn"
-                href="http://shardingsphere.apache.org/document/current/cn/manual/sharding-jdbc/configuration/config-yaml/"
+                href="https://shardingsphere.apache.org/document/current/cn/manual/sharding-jdbc/configuration/config-yaml/"
                 />
     <xhtml:link
                 rel="alternate"
                 hreflang="en"
-                href="http://shardingsphere.apache.org/document/current/en/manual/sharding-jdbc/configuration/config-yaml/"
+                href="https://shardingsphere.apache.org/document/current/en/manual/sharding-jdbc/configuration/config-yaml/"
                 />
   </url>
   
   <url>
-    <loc>http://shardingsphere.apache.org/document/current/en/features/orchestration/supported-registry-repo/</loc>
+    <loc>https://shardingsphere.apache.org/document/current/en/features/orchestration/supported-registry-repo/</loc>
     <xhtml:link
                 rel="alternate"
                 hreflang="cn"
-                href="http://shardingsphere.apache.org/document/current/cn/features/orchestration/supported-registry-repo/"
+                href="https://shardingsphere.apache.org/document/current/cn/features/orchestration/supported-registry-repo/"
                 />
     <xhtml:link
                 rel="alternate"
                 hreflang="en"
-                href="http://shardingsphere.apache.org/document/current/en/features/orchestration/supported-registry-repo/"
+                href="https://shardingsphere.apache.org/document/current/en/features/orchestration/supported-registry-repo/"
                 />
   </url>
   
   <url>
-    <loc>http://shardingsphere.apache.org/document/current/en/features/transaction/base-transaction/</loc>
+    <loc>https://shardingsphere.apache.org/document/current/en/features/transaction/base-transaction/</loc>
     <xhtml:link
                 rel="alternate"
                 hreflang="cn"
-                href="http://shardingsphere.apache.org/document/current/cn/features/transaction/base-transaction/"
+                href="https://shardingsphere.apache.org/document/current/cn/features/transaction/base-transaction/"
                 />
     <xhtml:link
                 rel="alternate"
                 hreflang="en"
-                href="http://shardingsphere.apache.org/document/current/en/features/transaction/base-transaction/"
+                href="https://shardingsphere.apache.org/document/current/en/features/transaction/base-transaction/"
                 />
   </url>
   
   <url>
-    <loc>http://shardingsphere.apache.org/document/current/en/features/</loc>
+    <loc>https://shardingsphere.apache.org/document/current/en/features/</loc>
     <xhtml:link
                 rel="alternate"
                 hreflang="cn"
-                href="http://shardingsphere.apache.org/document/current/cn/features/"
+                href="https://shardingsphere.apache.org/document/current/cn/features/"
                 />
     <xhtml:link
                 rel="alternate"
                 hreflang="en"
-                href="http://shardingsphere.apache.org/document/current/en/features/"
+                href="https://shardingsphere.apache.org/document/current/en/features/"
                 />
   </url>
   
   <url>
-    <loc>http://shardingsphere.apache.org/document/current/en/features/sharding/concept/configuration/</loc>
+    <loc>https://shardingsphere.apache.org/document/current/en/features/sharding/concept/configuration/</loc>
     <xhtml:link
                 rel="alternate"
                 hreflang="cn"
-                href="http://shardingsphere.apache.org/document/current/cn/features/sharding/concept/configuration/"
+                href="https://shardingsphere.apache.org/document/current/cn/features/sharding/concept/configuration/"
                 />
     <xhtml:link
                 rel="alternate"
                 hreflang="en"
-                href="http://shardingsphere.apache.org/document/current/en/features/sharding/concept/configuration/"
+                href="https://shardingsphere.apache.org/document/current/en/features/sharding/concept/configuration/"
                 />
   </url>
   
   <url>
-    <loc>http://shardingsphere.apache.org/document/current/en/manual/sharding-proxy/docker/</loc>
+    <loc>https://shardingsphere.apache.org/document/current/en/manual/sharding-proxy/docker/</loc>
     <xhtml:link
                 rel="alternate"
                 hreflang="cn"
-                href="http://shardingsphere.apache.org/document/current/cn/manual/sharding-proxy/docker/"
+                href="https://shardingsphere.apache.org/document/current/cn/manual/sharding-proxy/docker/"
                 />
     <xhtml:link
                 rel="alternate"
                 hreflang="en"
-                href="http://shardingsphere.apache.org/document/current/en/manual/sharding-proxy/docker/"
+                href="https://shardingsphere.apache.org/document/current/en/manual/sharding-proxy/docker/"
                 />
   </url>
   
   <url>
-    <loc>http://shardingsphere.apache.org/document/current/en/manual/sharding-jdbc/usage/hint/</loc>
+    <loc>https://shardingsphere.apache.org/document/current/en/manual/sharding-jdbc/usage/hint/</loc>
     <xhtml:link
                 rel="alternate"
                 hreflang="cn"
-                href="http://shardingsphere.apache.org/document/current/cn/manual/sharding-jdbc/usage/hint/"
+                href="https://shardingsphere.apache.org/document/current/cn/manual/sharding-jdbc/usage/hint/"
                 />
     <xhtml:link
                 rel="alternate"
                 hreflang="en"
-                href="http://shardingsphere.apache.org/document/current/en/manual/sharding-jdbc/usage/hint/"
+                href="https://shardingsphere.apache.org/document/current/en/manual/sharding-jdbc/usage/hint/"
                 />
   </url>
   
   <url>
-    <loc>http://shardingsphere.apache.org/document/current/en/features/orchestration/</loc>
+    <loc>https://shardingsphere.apache.org/document/current/en/features/orchestration/</loc>
     <xhtml:link
                 rel="alternate"
                 hreflang="cn"
-                href="http://shardingsphere.apache.org/document/current/cn/features/orchestration/"
+                href="https://shardingsphere.apache.org/document/current/cn/features/orchestration/"
                 />
     <xhtml:link
                 rel="alternate"
                 hreflang="en"
-                href="http://shardingsphere.apache.org/document/current/en/features/orchestration/"
+                href="https://shardingsphere.apache.org/document/current/en/features/orchestration/"
                 />
   </url>
   
   <url>
-    <loc>http://shardingsphere.apache.org/document/current/en/features/sharding/principle/rewrite/</loc>
+    <loc>https://shardingsphere.apache.org/document/current/en/features/sharding/principle/rewrite/</loc>
     <xhtml:link
                 rel="alternate"
                 hreflang="cn"
-                href="http://shardingsphere.apache.org/document/current/cn/features/sharding/principle/rewrite/"
+                href="https://shardingsphere.apache.org/document/current/cn/features/sharding/principle/rewrite/"
                 />
     <xhtml:link
                 rel="alternate"
                 hreflang="en"
-                href="http://shardingsphere.apache.org/document/current/en/features/sharding/principle/rewrite/"
+                href="https://shardingsphere.apache.org/document/current/en/features/sharding/principle/rewrite/"
                 />
   </url>
   
   <url>
-    <loc>http://shardingsphere.apache.org/document/current/en/features/sharding/other-features/sharding-hint/</loc>
+    <loc>https://shardingsphere.apache.org/document/current/en/features/sharding/other-features/sharding-hint/</loc>
     <xhtml:link
                 rel="alternate"
                 hreflang="cn"
-                href="http://shardingsphere.apache.org/document/current/cn/features/sharding/other-features/sharding-hint/"
+                href="https://shardingsphere.apache.org/document/current/cn/features/sharding/other-features/sharding-hint/"
                 />
     <xhtml:link
                 rel="alternate"
                 hreflang="en"
-                href="http://shardingsphere.apache.org/document/current/en/features/sharding/other-features/sharding-hint/"
+                href="https://shardingsphere.apache.org/document/current/en/features/sharding/other-features/sharding-hint/"
                 />
   </url>
   
   <url>
-    <loc>http://shardingsphere.apache.org/document/current/en/manual/sharding-sidecar/</loc>
+    <loc>https://shardingsphere.apache.org/document/current/en/manual/sharding-sidecar/</loc>
     <xhtml:link
                 rel="alternate"
                 hreflang="cn"
-                href="http://shardingsphere.apache.org/document/current/cn/manual/sharding-sidecar/"
+                href="https://shardingsphere.apache.org/document/current/cn/manual/sharding-sidecar/"
                 />
     <xhtml:link
                 rel="alternate"
                 hreflang="en"
-                href="http://shardingsphere.apache.org/document/current/en/manual/sharding-sidecar/"
+                href="https://shardingsphere.apache.org/document/current/en/manual/sharding-sidecar/"
                 />
   </url>
   
   <url>
-    <loc>http://shardingsphere.apache.org/document/current/en/manual/sharding-jdbc/configuration/config-spring-boot/</loc>
+    <loc>https://shardingsphere.apache.org/document/current/en/manual/sharding-jdbc/configuration/config-spring-boot/</loc>
     <xhtml:link
                 rel="alternate"
                 hreflang="cn"
-                href="http://shardingsphere.apache.org/document/current/cn/manual/sharding-jdbc/configuration/config-spring-boot/"
+                href="https://shardingsphere.apache.org/document/current/cn/manual/sharding-jdbc/configuration/config-spring-boot/"
                 />
     <xhtml:link
                 rel="alternate"
                 hreflang="en"
-                href="http://shardingsphere.apache.org/document/current/en/manual/sharding-jdbc/configuration/config-spring-boot/"
+                href="https://shardingsphere.apache.org/document/current/en/manual/sharding-jdbc/configuration/config-spring-boot/"
                 />
   </url>
   
   <url>
-    <loc>http://shardingsphere.apache.org/document/current/en/features/read-write-split/unsupported-items/</loc>
+    <loc>https://shardingsphere.apache.org/document/current/en/features/read-write-split/unsupported-items/</loc>
     <xhtml:link
                 rel="alternate"
                 hreflang="cn"
-                href="http://shardingsphere.apache.org/document/current/cn/features/read-write-split/unsupported-items/"
+                href="https://shardingsphere.apache.org/document/current/cn/features/read-write-split/unsupported-items/"
                 />
     <xhtml:link
                 rel="alternate"
                 hreflang="en"
-                href="http://shardingsphere.apache.org/document/current/en/features/read-write-split/unsupported-items/"
+                href="https://shardingsphere.apache.org/document/current/en/features/read-write-split/unsupported-items/"
                 />
   </url>
   
   <url>
-    <loc>http://shardingsphere.apache.org/document/current/en/manual/sharding-jdbc/unsupported-items/</loc>
+    <loc>https://shardingsphere.apache.org/document/current/en/manual/sharding-jdbc/unsupported-items/</loc>
     <xhtml:link
                 rel="alternate"
                 hreflang="cn"
-                href="http://shardingsphere.apache.org/document/current/cn/manual/sharding-jdbc/unsupported-items/"
+                href="https://shardingsphere.apache.org/document/current/cn/manual/sharding-jdbc/unsupported-items/"
                 />
     <xhtml:link
                 rel="alternate"
                 hreflang="en"
-                href="http://shardingsphere.apache.org/document/current/en/manual/sharding-jdbc/unsupported-items/"
+                href="https://shardingsphere.apache.org/document/current/en/manual/sharding-jdbc/unsupported-items/"
                 />
   </url>
   
   <url>
-    <loc>http://shardingsphere.apache.org/document/current/en/features/sharding/use-norms/</loc>
+    <loc>https://shardingsphere.apache.org/document/current/en/features/sharding/use-norms/</loc>
     <xhtml:link
                 rel="alternate"
                 hreflang="cn"
-                href="http://shardingsphere.apache.org/document/current/cn/features/sharding/use-norms/"
+                href="https://shardingsphere.apache.org/document/current/cn/features/sharding/use-norms/"
                 />
     <xhtml:link
                 rel="alternate"
                 hreflang="en"
-                href="http://shardingsphere.apache.org/document/current/en/features/sharding/use-norms/"
+                href="https://shardingsphere.apache.org/document/current/en/features/sharding/use-norms/"
                 />
   </url>
   
   <url>
-    <loc>http://shardingsphere.apache.org/document/current/en/features/orchestration/apm/</loc>
+    <loc>https://shardingsphere.apache.org/document/current/en/features/orchestration/apm/</loc>
     <xhtml:link
                 rel="alternate"
                 hreflang="cn"
-                href="http://shardingsphere.apache.org/document/current/cn/features/orchestration/apm/"
+                href="https://shardingsphere.apache.org/document/current/cn/features/orchestration/apm/"
                 />
     <xhtml:link
                 rel="alternate"
                 hreflang="en"
-                href="http://shardingsphere.apache.org/document/current/en/features/orchestration/apm/"
+                href="https://shardingsphere.apache.org/document/current/en/features/orchestration/apm/"
                 />
   </url>
   
   <url>
-    <loc>http://shardingsphere.apache.org/document/current/en/features/transaction/</loc>
+    <loc>https://shardingsphere.apache.org/document/current/en/features/transaction/</loc>
     <xhtml:link
                 rel="alternate"
                 hreflang="cn"
-                href="http://shardingsphere.apache.org/document/current/cn/features/transaction/"
+                href="https://shardingsphere.apache.org/document/current/cn/features/transaction/"
                 />
     <xhtml:link
                 rel="alternate"
                 hreflang="en"
-                href="http://shardingsphere.apache.org/document/current/en/features/transaction/"
+                href="https://shardingsphere.apache.org/document/current/en/features/transaction/"
                 />
   </url>
   
   <url>
-    <loc>http://shardingsphere.apache.org/document/current/en/features/sharding/principle/execute/</loc>
+    <loc>https://shardingsphere.apache.org/document/current/en/features/sharding/principle/execute/</loc>
     <xhtml:link
                 rel="alternate"
                 hreflang="cn"
-                href="http://shardingsphere.apache.org/document/current/cn/features/sharding/principle/execute/"
+                href="https://shardingsphere.apache.org/document/current/cn/features/sharding/principle/execute/"
                 />
     <xhtml:link
                 rel="alternate"
                 hreflang="en"
-                href="http://shardingsphere.apache.org/document/current/en/features/sharding/principle/execute/"
+                href="https://shardingsphere.apache.org/document/current/en/features/sharding/principle/execute/"
                 />
   </url>
   
   <url>
-    <loc>http://shardingsphere.apache.org/document/current/en/manual/sharding-jdbc/usage/orchestration/</loc>
+    <loc>https://shardingsphere.apache.org/document/current/en/manual/sharding-jdbc/usage/orchestration/</loc>
     <xhtml:link
                 rel="alternate"
                 hreflang="cn"
-                href="http://shardingsphere.apache.org/document/current/cn/manual/sharding-jdbc/usage/orchestration/"
+                href="https://shardingsphere.apache.org/document/current/cn/manual/sharding-jdbc/usage/orchestration/"
                 />
     <xhtml:link
                 rel="alternate"
                 hreflang="en"
-                href="http://shardingsphere.apache.org/document/current/en/manual/sharding-jdbc/usage/orchestration/"
+                href="https://shardingsphere.apache.org/document/current/en/manual/sharding-jdbc/usage/orchestration/"
                 />
   </url>
   
   <url>
-    <loc>http://shardingsphere.apache.org/document/current/en/features/sharding/other-features/</loc>
+    <loc>https://shardingsphere.apache.org/document/current/en/features/sharding/other-features/</loc>
     <xhtml:link
                 rel="alternate"
                 hreflang="cn"
-                href="http://shardingsphere.apache.org/document/current/cn/features/sharding/other-features/"
+                href="https://shardingsphere.apache.org/document/current/cn/features/sharding/other-features/"
                 />
     <xhtml:link
                 rel="alternate"
                 hreflang="en"
-                href="http://shardingsphere.apache.org/document/current/en/features/sharding/other-features/"
+                href="https://shardingsphere.apache.org/document/current/en/features/sharding/other-features/"
                 />
   </url>
   
   <url>
-    <loc>http://shardingsphere.apache.org/document/current/en/manual/sharding-jdbc/stress-test/</loc>
+    <loc>https://shardingsphere.apache.org/document/current/en/manual/sharding-jdbc/stress-test/</loc>
     <xhtml:link
                 rel="alternate"
                 hreflang="cn"
-                href="http://shardingsphere.apache.org/document/current/cn/manual/sharding-jdbc/stress-test/"
+                href="https://shardingsphere.apache.org/document/current/cn/manual/sharding-jdbc/stress-test/"
                 />
     <xhtml:link
                 rel="alternate"
                 hreflang="en"
-                href="http://shardingsphere.apache.org/document/current/en/manual/sharding-jdbc/stress-test/"
+                href="https://shardingsphere.apache.org/document/current/en/manual/sharding-jdbc/stress-test/"
                 />
   </url>
   
   <url>
-    <loc>http://shardingsphere.apache.org/document/current/en/manual/sharding-jdbc/configuration/config-spring-namespace/</loc>
+    <loc>https://shardingsphere.apache.org/document/current/en/manual/sharding-jdbc/configuration/config-spring-namespace/</loc>
     <xhtml:link
                 rel="alternate"
                 hreflang="cn"
-                href="http://shardingsphere.apache.org/document/current/cn/manual/sharding-jdbc/configuration/config-spring-namespace/"
+                href="https://shardingsphere.apache.org/document/current/cn/manual/sharding-jdbc/configuration/config-spring-namespace/"
                 />
     <xhtml:link
                 rel="alternate"
                 hreflang="en"
-                href="http://shardingsphere.apache.org/document/current/en/manual/sharding-jdbc/configuration/config-spring-namespace/"
+                href="https://shardingsphere.apache.org/document/current/en/manual/sharding-jdbc/configuration/config-spring-namespace/"
                 />
   </url>
   
   <url>
-    <loc>http://shardingsphere.apache.org/document/current/en/manual/</loc>
+    <loc>https://shardingsphere.apache.org/document/current/en/manual/</loc>
     <xhtml:link
                 rel="alternate"
                 hreflang="cn"
-                href="http://shardingsphere.apache.org/document/current/cn/manual/"
+                href="https://shardingsphere.apache.org/document/current/cn/manual/"
                 />
     <xhtml:link
                 rel="alternate"
                 hreflang="en"
-                href="http://shardingsphere.apache.org/document/current/en/manual/"
+                href="https://shardingsphere.apache.org/document/current/en/manual/"
                 />
   </url>
   
   <url>
-    <loc>http://shardingsphere.apache.org/document/current/en/manual/sharding-jdbc/usage/transaction/</loc>
+    <loc>https://shardingsphere.apache.org/document/current/en/manual/sharding-jdbc/usage/transaction/</loc>
     <xhtml:link
                 rel="alternate"
                 hreflang="cn"
-                href="http://shardingsphere.apache.org/document/current/cn/manual/sharding-jdbc/usage/transaction/"
+                href="https://shardingsphere.apache.org/document/current/cn/manual/sharding-jdbc/usage/transaction/"
                 />
     <xhtml:link
                 rel="alternate"
                 hreflang="en"
-                href="http://shardingsphere.apache.org/document/current/en/manual/sharding-jdbc/usage/transaction/"
+                href="https://shardingsphere.apache.org/document/current/en/manual/sharding-jdbc/usage/transaction/"
                 />
   </url>
   
   <url>
-    <loc>http://shardingsphere.apache.org/document/current/en/faq/</loc>
+    <loc>https://shardingsphere.apache.org/document/current/en/faq/</loc>
     <xhtml:link
                 rel="alternate"
                 hreflang="cn"
-                href="http://shardingsphere.apache.org/document/current/cn/faq/"
+                href="https://shardingsphere.apache.org/document/current/cn/faq/"
                 />
     <xhtml:link
                 rel="alternate"
                 hreflang="en"
-                href="http://shardingsphere.apache.org/document/current/en/faq/"
+                href="https://shardingsphere.apache.org/document/current/en/faq/"
                 />
   </url>
   
   <url>
-    <loc>http://shardingsphere.apache.org/document/current/en/features/sharding/principle/merge/</loc>
+    <loc>https://shardingsphere.apache.org/document/current/en/features/sharding/principle/merge/</loc>
     <xhtml:link
                 rel="alternate"
                 hreflang="cn"
-                href="http://shardingsphere.apache.org/document/current/cn/features/sharding/principle/merge/"
+                href="https://shardingsphere.apache.org/document/current/cn/features/sharding/principle/merge/"
                 />
     <xhtml:link
                 rel="alternate"
                 hreflang="en"
-                href="http://shardingsphere.apache.org/document/current/en/features/sharding/principle/merge/"
+                href="https://shardingsphere.apache.org/document/current/en/features/sharding/principle/merge/"
                 />
   </url>
   
   <url>
-    <loc>http://shardingsphere.apache.org/document/current/en/categories/</loc>
+    <loc>https://shardingsphere.apache.org/document/current/en/categories/</loc>
     <priority>0</priority>
     <xhtml:link
                 rel="alternate"
                 hreflang="cn"
-                href="http://shardingsphere.apache.org/document/current/cn/categories/"
+                href="https://shardingsphere.apache.org/document/current/cn/categories/"
                 />
     <xhtml:link
                 rel="alternate"
                 hreflang="en"
-                href="http://shardingsphere.apache.org/document/current/en/categories/"
+                href="https://shardingsphere.apache.org/document/current/en/categories/"
                 />
   </url>
   
   <url>
-    <loc>http://shardingsphere.apache.org/document/current/en/</loc>
+    <loc>https://shardingsphere.apache.org/document/current/en/</loc>
     <priority>0</priority>
     <xhtml:link
                 rel="alternate"
                 hreflang="cn"
-                href="http://shardingsphere.apache.org/document/current/cn/"
+                href="https://shardingsphere.apache.org/document/current/cn/"
                 />
     <xhtml:link
                 rel="alternate"
                 hreflang="en"
-                href="http://shardingsphere.apache.org/document/current/en/"
+                href="https://shardingsphere.apache.org/document/current/en/"
                 />
   </url>
   
   <url>
-    <loc>http://shardingsphere.apache.org/document/current/en/tags/</loc>
+    <loc>https://shardingsphere.apache.org/document/current/en/tags/</loc>
     <priority>0</priority>
     <xhtml:link
                 rel="alternate"
                 hreflang="cn"
-                href="http://shardingsphere.apache.org/document/current/cn/tags/"
+                href="https://shardingsphere.apache.org/document/current/cn/tags/"
                 />
     <xhtml:link
                 rel="alternate"
                 hreflang="en"
-                href="http://shardingsphere.apache.org/document/current/en/tags/"
+                href="https://shardingsphere.apache.org/document/current/en/tags/"
                 />
   </url>
   

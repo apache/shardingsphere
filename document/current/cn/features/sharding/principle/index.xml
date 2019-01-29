@@ -2,20 +2,20 @@
 <rss version="2.0" xmlns:atom="http://www.w3.org/2005/Atom">
   <channel>
     <title>内核剖析 on ShardingSphere</title>
-    <link>http://shardingsphere.apache.org/document/current/cn/features/sharding/principle/</link>
+    <link>https://shardingsphere.apache.org/document/current/cn/features/sharding/principle/</link>
     <description>Recent content in 内核剖析 on ShardingSphere</description>
     <generator>Hugo -- gohugo.io</generator>
     <language>en-us</language>
     
-	<atom:link href="http://shardingsphere.apache.org/document/current/cn/features/sharding/principle/index.xml" rel="self" type="application/rss+xml" />
+	<atom:link href="https://shardingsphere.apache.org/document/current/cn/features/sharding/principle/index.xml" rel="self" type="application/rss+xml" />
     
     
     <item>
       <title>解析引擎</title>
-      <link>http://shardingsphere.apache.org/document/current/cn/features/sharding/principle/parse/</link>
+      <link>https://shardingsphere.apache.org/document/current/cn/features/sharding/principle/parse/</link>
       <pubDate>Mon, 01 Jan 0001 00:00:00 +0000</pubDate>
       
-      <guid>http://shardingsphere.apache.org/document/current/cn/features/sharding/principle/parse/</guid>
+      <guid>https://shardingsphere.apache.org/document/current/cn/features/sharding/principle/parse/</guid>
       <description>相对于其他编程语言，SQL是比较简单的。 不过，它依然是一门完善的编程语言，因此对SQL的语法进行解析，与解析其他编程语言（如：Java语言、C语言、Go语言等）并无本质区别。
 抽象语法树 解析过程分为词法解析和语法解析。 词法解析器用于将SQL拆解为不可再分的原子符号，称为Token。并根据不同数据库方言所提供的字典，将其归类为关键字，表达式，字面量和操作符。 再使用语法解析器将SQL转换为抽象语法树。
 例如，以下SQL：
@@ -31,10 +31,10 @@ SQL解析引擎 SQL解析作为分库分表类产品的核心，其性能和兼�
     
     <item>
       <title>路由引擎</title>
-      <link>http://shardingsphere.apache.org/document/current/cn/features/sharding/principle/route/</link>
+      <link>https://shardingsphere.apache.org/document/current/cn/features/sharding/principle/route/</link>
       <pubDate>Mon, 01 Jan 0001 00:00:00 +0000</pubDate>
       
-      <guid>http://shardingsphere.apache.org/document/current/cn/features/sharding/principle/route/</guid>
+      <guid>https://shardingsphere.apache.org/document/current/cn/features/sharding/principle/route/</guid>
       <description>根据解析上下文匹配数据库和表的分片策略，并生成路由路径。 对于携带分片键的SQL，根据分片键的不同可以划分为单片路由(分片键的操作符是等号)、多片路由(分片键的操作符是IN)和范围路由(分片键的操作符是BETWEEN)。 不携带分片键的SQL则采用广播路由。
 分片策略通常可以采用由数据库内置或由用户方配置。 数据库内置的方案较为简单，内置的分片策略大致可分为尾数取模、哈希、范围、标签、时间等。 由用户方配置的分片策略则更加灵活，可以根据使用方需求定制复合分片策略。 如果配合数据自动迁移来使用，可以做到无需用户关注分片策略，自动由数据库中间层分片和平衡数据即可，进而做到使分布式数据库具有的弹性伸缩的能力。 在ShardingSphere的线路规划中，弹性伸缩将于4.x开启。
 分片路由 用于根据分片键进行路由的场景，又细分为直接路由、标准路由和笛卡尔积路由这3种类型。
@@ -48,10 +48,10 @@ SELECT * FROM t_order_0 o JOIN t_order_item_0 i ON o.</description>
     
     <item>
       <title>改写引擎</title>
-      <link>http://shardingsphere.apache.org/document/current/cn/features/sharding/principle/rewrite/</link>
+      <link>https://shardingsphere.apache.org/document/current/cn/features/sharding/principle/rewrite/</link>
       <pubDate>Mon, 01 Jan 0001 00:00:00 +0000</pubDate>
       
-      <guid>http://shardingsphere.apache.org/document/current/cn/features/sharding/principle/rewrite/</guid>
+      <guid>https://shardingsphere.apache.org/document/current/cn/features/sharding/principle/rewrite/</guid>
       <description>工程师面向逻辑库与逻辑表书写的SQL，并不能够直接在真实的数据库中执行，SQL改写用于将逻辑SQL改写为在真实数据库中可以正确执行的SQL。 它包括正确性改写和优化改写两部分。
 正确性改写 在包含分表的场景中，需要将分表配置中的逻辑表名称改写为路由之后所获取的真实表名称。仅分库则不需要表名称的改写。除此之外，还包括补列和分页信息修正等内容。
 标识符改写 需要改写的标识符包括表名称、索引名称以及Schema名称。
@@ -67,10 +67,10 @@ SELECT t_order.order_id FROM t_order WHERE t_order.order_id=1 AND remarks=` t_or
     
     <item>
       <title>执行引擎</title>
-      <link>http://shardingsphere.apache.org/document/current/cn/features/sharding/principle/execute/</link>
+      <link>https://shardingsphere.apache.org/document/current/cn/features/sharding/principle/execute/</link>
       <pubDate>Mon, 01 Jan 0001 00:00:00 +0000</pubDate>
       
-      <guid>http://shardingsphere.apache.org/document/current/cn/features/sharding/principle/execute/</guid>
+      <guid>https://shardingsphere.apache.org/document/current/cn/features/sharding/principle/execute/</guid>
       <description>ShardingSphere采用一套自动化的执行引擎，负责将路由和改写完成之后的真实SQL安全且高效发送到底层数据源执行。 它不是简单地将SQL通过JDBC直接发送至数据源执行；也并非直接将执行请求放入线程池去并发执行。它更关注平衡数据源连接创建以及内存占用所产生的消耗，以及最大限度地合理利用并发等问题。 执行引擎的目标是自动化的平衡资源控制与执行效率。
 连接模式 从资源控制的角度看，业务方访问数据库的连接数量应当有所限制。 它能够有效地防止某一业务操作过多的占用资源，从而将数据库连接的资源耗尽，以致于影响其他业务的正常访问。 特别是在一个数据库实例中存在较多分表的情况下，一条不包含分片键的逻辑SQL将产生落在同库不同表的大量真实SQL，如果每条真实SQL都占用一个独立的连接，那么一次查询无疑将会占用过多的资源。
 从执行效率的角度看，为每个分片查询维持一个独立的数据库连接，可以更加有效的利用多线程来提升执行效率。 为每个数据库连接开启独立的线程，可以将I/O所产生的消耗并行处理。为每个分片维持一个独立的数据库连接，还能够避免过早的将查询结果数据加载至内存。 独立的数据库连接，能够持有查询结果集游标位置的引用，在需要获取相应数据时移动游标即可。
@@ -101,10 +101,10 @@ ShardingSphere为了避免死锁的出现，在获取数据库连接时进行了
     
     <item>
       <title>归并引擎</title>
-      <link>http://shardingsphere.apache.org/document/current/cn/features/sharding/principle/merge/</link>
+      <link>https://shardingsphere.apache.org/document/current/cn/features/sharding/principle/merge/</link>
       <pubDate>Mon, 01 Jan 0001 00:00:00 +0000</pubDate>
       
-      <guid>http://shardingsphere.apache.org/document/current/cn/features/sharding/principle/merge/</guid>
+      <guid>https://shardingsphere.apache.org/document/current/cn/features/sharding/principle/merge/</guid>
       <description>将从各个数据节点获取的多数据结果集，组合成为一个结果集并正确的返回至请求客户端，称为结果归并。
 ShardingSphere支持的结果归并从功能上分为遍历、排序、分组、分页和聚合5种类型，它们是组合而非互斥的关系。 从结构划分，可分为流式归并、内存归并和装饰者归并。流式归并和内存归并是互斥的，装饰者归并可以在流式归并和内存归并之上做进一步的处理。
 由于从数据库中返回的结果集是逐条返回的，并不需要将所有的数据一次性加载至内存中，因此，在进行结果归并时，沿用数据库返回结果集的方式进行归并，能够极大减少内存的消耗，是归并方式的优先选择。
