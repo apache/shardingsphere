@@ -68,7 +68,7 @@ The default value of maximumly tolerant clock-back millisecond is 0 and can be s
 
 Please refer to the following picture for the detailed structure of snowflake algorithm primary key.
 
-![snowflake](http://shardingsphere.apache.org/document/current/img/sharding/snowflake_en_v3.png)
+![snowflake](https://shardingsphere.apache.org/document/current/img/sharding/snowflake_en_v3.png)
 
 ### LEAF
 

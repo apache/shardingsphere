@@ -13,7 +13,7 @@ It is a database proxy, is deployed as a stateless server, and supports MySQL pr
 * Use standard MySQL protocol, application do not care about whether proxy or real MySQL.
 * Any MySQL command line and UI workbench supported in theoretically. MySQL Workbench are fully compatible right now.
 
-![Sharding-Proxy Architecture](http://shardingsphere.apache.org/document/current/img/sharding-proxy-brief_v2.png)
+![Sharding-Proxy Architecture](https://shardingsphere.apache.org/document/current/img/sharding-proxy-brief_v2.png)
 
 ## Comparison
 

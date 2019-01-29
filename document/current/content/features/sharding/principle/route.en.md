@@ -98,4 +98,4 @@ Because ShardingSphere uses logic Schema, there is no need to send the database 
 
 The overall structure division is as the following picture:
 
-![Route Engine](http://shardingsphere.apache.org/document/current/img/sharding/route_architecture_en.png)
+![Route Engine](https://shardingsphere.apache.org/document/current/img/sharding/route_architecture_en.png)

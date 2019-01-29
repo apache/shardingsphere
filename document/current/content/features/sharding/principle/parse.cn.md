@@ -21,7 +21,7 @@ SELECT id, name FROM t_user WHERE status = 'ACTIVE' AND age > 18
 
 解析之后的为抽象语法树见下图。
 
-![SQL抽象语法树](http://shardingsphere.apache.org/document/current/img/sharding/sql_ast.png)
+![SQL抽象语法树](https://shardingsphere.apache.org/document/current/img/sharding/sql_ast.png)
 
 为了便于理解，抽象语法树中的关键字的Token用绿色表示，变量的Token用红色表示，灰色表示需要进一步拆分。
 
@@ -47,4 +47,4 @@ ShardingSphere的SQL解析器经历了3代产品的更新迭代。
 
 第三代SQL解析引擎的整体结构划分如下图所示。
 
-![解析引擎结构](http://shardingsphere.apache.org/document/current/img/sharding/parsing_architecture_cn.png)
+![解析引擎结构](https://shardingsphere.apache.org/document/current/img/sharding/parsing_architecture_cn.png)

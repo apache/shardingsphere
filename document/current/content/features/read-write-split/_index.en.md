@@ -18,7 +18,7 @@ As a result, under the circumstance that any database goes down, or even the dis
 
 Different from the horizontal sharding that separates the data to all data nodes according to sharding keys, read-write split routes read operations and write operations separately to the master database and slave database according to SQL meaning analysis.
 
-[![Read-write split](http://shardingsphere.apache.org/document/current/img/read-write-split/read-write-split.png)
+[![Read-write split](https://shardingsphere.apache.org/document/current/img/read-write-split/read-write-split.png)
 
 Data in read-write split nodes is consistent, whereas that in horizontal shards is not. 
 The combined use of horizontal sharding and read-write split will effectively enhance the system performance.
@@ -29,7 +29,7 @@ Though enhancing system throughput and availability, read-write split also bring
 What's more, it also brings the problem similar as data sharding, making application development and operation staff's maintenance work more complex. 
 The following picture has shown the complex topological relations between application and database group when sharding table and database are used together with read-write split.
 
-[![Sharding + Read-write split](http://shardingsphere.apache.org/document/current/img/read-write-split/sharding-read-write-split.png)
+[![Sharding + Read-write split](https://shardingsphere.apache.org/document/current/img/read-write-split/sharding-read-write-split.png)
 
 ## Goal
 

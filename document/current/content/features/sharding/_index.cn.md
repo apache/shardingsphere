@@ -32,7 +32,7 @@ chapter = true
 在拆分之前，一个数据库由多个数据表构成，每个表对应着不同的业务。而拆分之后，则是按照业务将表进行归类，分布到不同的数据库中，从而将压力分散至不同的数据库。
 下图展示了根据业务需要，将用户表和订单表垂直分片到不同的数据库的方案。
 
-![垂直分片](http://shardingsphere.apache.org/document/current/img/sharding/vertical_sharding.png)
+![垂直分片](https://shardingsphere.apache.org/document/current/img/sharding/vertical_sharding.png)
 
 垂直分片往往需要对架构和设计进行调整。通常来讲，是来不及应对互联网业务需求快速变化的；而且，它也并无法真正的解决单点瓶颈。
 垂直拆分可以缓解数据量和访问量带来的问题，但无法根治。如果垂直拆分之后，表中的数据量依然超过单节点所能承载的阈值，则需要水平分片来进一步处理。
@@ -43,7 +43,7 @@ chapter = true
 相对于垂直分片，它不再将数据根据业务逻辑分类，而是通过某个字段（或某几个字段），根据某种规则将数据分散至多个库或表中，每个分片仅包含数据的一部分。
 例如：根据主键分片，偶数主键的记录放入0库（或表），奇数主键的记录放入1库（或表），如下图所示。
 
-![水平分片](http://shardingsphere.apache.org/document/current/img/sharding/horizontal_sharding.png)
+![水平分片](https://shardingsphere.apache.org/document/current/img/sharding/horizontal_sharding.png)
 
 水平分片从理论上突破了单机数据量处理的瓶颈，并且扩展相对自由，是分库分表的标准解决方案。
 
