@@ -23,7 +23,7 @@ import org.apache.shardingsphere.shardingproxypg.backend.communication.jdbc.conn
 import org.apache.shardingsphere.shardingproxypg.backend.text.TextProtocolBackendHandler;
 import org.apache.shardingsphere.shardingproxypg.transport.mysql.packet.generic.OKPacket;
 import org.apache.shardingsphere.shardingproxypg.transport.postgresql.packet.command.PostgreSQLCommandResponsePackets;
-import org.apache.shardingsphere.shardingproxypg.transport.postgresql.packet.generic.ErrorResponsePacket;
+import org.apache.shardingsphere.shardingproxypg.transport.postgresql.packet.generic.PostgreSQLErrorResponsePacket;
 import org.apache.shardingsphere.transaction.core.TransactionType;
 
 /**
@@ -46,18 +46,18 @@ public final class ShardingCTLSetBackendHandler implements TextProtocolBackendHa
     public PostgreSQLCommandResponsePackets execute() {
         Optional<ShardingCTLSetStatement> shardingTCLStatement = new ShardingCTLSetParser(sql).doParse();
         if (!shardingTCLStatement.isPresent()) {
-            return new PostgreSQLCommandResponsePackets(new ErrorResponsePacket());
+            return new PostgreSQLCommandResponsePackets(new PostgreSQLErrorResponsePacket());
         }
         switch (shardingTCLStatement.get().getKey()) {
             case "TRANSACTION_TYPE":
                 try {
                     backendConnection.setTransactionType(TransactionType.valueOf(shardingTCLStatement.get().getValue()));
                 } catch (final IllegalArgumentException ex) {
-                    return new PostgreSQLCommandResponsePackets(new ErrorResponsePacket());
+                    return new PostgreSQLCommandResponsePackets(new PostgreSQLErrorResponsePacket());
                 }
                 break;
             default:
-                return new PostgreSQLCommandResponsePackets(new ErrorResponsePacket());
+                return new PostgreSQLCommandResponsePackets(new PostgreSQLErrorResponsePacket());
         }
         return new PostgreSQLCommandResponsePackets(new OKPacket(1));
     }
