@@ -23,7 +23,7 @@ import org.apache.shardingsphere.shardingproxypg.backend.ResultPacket;
 import org.apache.shardingsphere.shardingproxypg.backend.communication.jdbc.connection.BackendConnection;
 import org.apache.shardingsphere.shardingproxypg.backend.text.TextProtocolBackendHandler;
 import org.apache.shardingsphere.shardingproxypg.transport.postgresql.packet.command.PostgreSQLCommandResponsePackets;
-import org.apache.shardingsphere.shardingproxypg.transport.postgresql.packet.generic.ErrorResponse;
+import org.apache.shardingsphere.shardingproxypg.transport.postgresql.packet.generic.ErrorResponsePacket;
 
 import java.sql.SQLException;
 import java.util.ArrayList;
@@ -58,7 +58,7 @@ public final class ShardingCTLShowBackendHandler implements TextProtocolBackendH
     public PostgreSQLCommandResponsePackets execute() {
         Optional<ShardingCTLShowStatement> showStatement = new ShardingCTLShowParser(sql).doParse();
         if (!showStatement.isPresent()) {
-            return new PostgreSQLCommandResponsePackets(new ErrorResponse());
+            return new PostgreSQLCommandResponsePackets(new ErrorResponsePacket());
         }
         switch (showStatement.get().getValue()) {
             case "TRANSACTION_TYPE":
@@ -66,7 +66,7 @@ public final class ShardingCTLShowBackendHandler implements TextProtocolBackendH
             case "CACHED_CONNECTIONS":
                 return createResponsePackets("CACHED_CONNECTIONS", backendConnection.getConnectionSize());
             default:
-                return new PostgreSQLCommandResponsePackets(new ErrorResponse());
+                return new PostgreSQLCommandResponsePackets(new ErrorResponsePacket());
         }
     }
     
