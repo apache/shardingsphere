@@ -51,7 +51,7 @@ import org.apache.shardingsphere.shardingproxypg.transport.mysql.constant.Column
 import org.apache.shardingsphere.shardingproxypg.transport.mysql.packet.generic.OKPacket;
 import org.apache.shardingsphere.shardingproxypg.transport.postgresql.packet.command.query.ColumnDescription;
 import org.apache.shardingsphere.shardingproxypg.transport.postgresql.packet.command.query.PostgreSQLQueryResponsePackets;
-import org.apache.shardingsphere.shardingproxypg.transport.postgresql.packet.command.query.RowDescription;
+import org.apache.shardingsphere.shardingproxypg.transport.postgresql.packet.command.query.RowDescriptionPacket;
 
 import java.sql.Connection;
 import java.sql.ResultSet;
@@ -159,8 +159,8 @@ public final class JDBCExecuteEngine implements SQLExecuteEngine {
         for (int columnIndex = 1; columnIndex <= columnCount; columnIndex++) {
             columnDescriptions.add(new ColumnDescription(resultSetMetaData, columnIndex));
         }
-        RowDescription rowDescription = new RowDescription(columnCount, columnDescriptions);
-        return new PostgreSQLQueryResponsePackets(rowDescription);
+        RowDescriptionPacket rowDescriptionPacket = new RowDescriptionPacket(columnCount, columnDescriptions);
+        return new PostgreSQLQueryResponsePackets(rowDescriptionPacket);
     }
     
     private QueryResult createQueryResult(final ResultSet resultSet, final ConnectionMode connectionMode) throws SQLException {
