@@ -31,11 +31,11 @@ import java.util.List;
 @Getter
 public final class PostgreSQLQueryResponsePackets extends PostgreSQLCommandResponsePackets {
     
-    private final RowDescriptionPacket rowDescriptionPacket;
+    private final PostgreSQLRowDescriptionPacket postgreSQLRowDescriptionPacket;
     
-    public PostgreSQLQueryResponsePackets(final RowDescriptionPacket rowDescriptionPacket) {
-        getPackets().add(rowDescriptionPacket);
-        this.rowDescriptionPacket = rowDescriptionPacket;
+    public PostgreSQLQueryResponsePackets(final PostgreSQLRowDescriptionPacket postgreSQLRowDescriptionPacket) {
+        getPackets().add(postgreSQLRowDescriptionPacket);
+        this.postgreSQLRowDescriptionPacket = postgreSQLRowDescriptionPacket;
     }
     
     /**
@@ -44,7 +44,7 @@ public final class PostgreSQLQueryResponsePackets extends PostgreSQLCommandRespo
      * @return column count
      */
     public int getColumnCount() {
-        return rowDescriptionPacket.getFieldCount();
+        return postgreSQLRowDescriptionPacket.getFieldCount();
     }
     
     /**
@@ -54,7 +54,7 @@ public final class PostgreSQLQueryResponsePackets extends PostgreSQLCommandRespo
      */
     public List<Integer> getColumnTypes() {
         List<Integer> result = new LinkedList<>();
-        for (PostgreSQLColumnDescription each : rowDescriptionPacket.getPostgreSQLColumnDescriptions()) {
+        for (PostgreSQLColumnDescription each : postgreSQLRowDescriptionPacket.getPostgreSQLColumnDescriptions()) {
             result.add(each.getDataFormat());
         }
         return result;
