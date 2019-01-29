@@ -42,9 +42,17 @@ public final class PostgreSQLDataRowPacket implements PostgreSQLPacket {
     public void write(final PostgreSQLPacketPayload payload) {
         payload.writeInt2(data.size());
         for (Object each : data) {
-            String columnData = each.toString();
-            payload.writeInt4(columnData.length());
-            payload.writeStringEOF(columnData);
+            if (null == each) {
+                payload.writeInt1('\0');
+            } else {
+                if (each instanceof byte[]) {
+                    payload.writeBytesLenenc((byte[]) each);
+                } else {
+                    String columnData = each.toString();
+                    payload.writeInt4(columnData.length());
+                    payload.writeStringEOF(columnData);
+                }
+            }
         }
     }
     
