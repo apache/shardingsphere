@@ -2,20 +2,20 @@
 <rss version="2.0" xmlns:atom="http://www.w3.org/2005/Atom">
   <channel>
     <title>其他功能 on ShardingSphere</title>
-    <link>http://shardingsphere.apache.org/document/current/cn/features/sharding/other-features/</link>
+    <link>https://shardingsphere.apache.org/document/current/cn/features/sharding/other-features/</link>
     <description>Recent content in 其他功能 on ShardingSphere</description>
     <generator>Hugo -- gohugo.io</generator>
     <language>en-us</language>
     
-	<atom:link href="http://shardingsphere.apache.org/document/current/cn/features/sharding/other-features/index.xml" rel="self" type="application/rss+xml" />
+	<atom:link href="https://shardingsphere.apache.org/document/current/cn/features/sharding/other-features/index.xml" rel="self" type="application/rss+xml" />
     
     
     <item>
       <title>行表达式</title>
-      <link>http://shardingsphere.apache.org/document/current/cn/features/sharding/other-features/inline-expression/</link>
+      <link>https://shardingsphere.apache.org/document/current/cn/features/sharding/other-features/inline-expression/</link>
       <pubDate>Mon, 01 Jan 0001 00:00:00 +0000</pubDate>
       
-      <guid>http://shardingsphere.apache.org/document/current/cn/features/sharding/other-features/inline-expression/</guid>
+      <guid>https://shardingsphere.apache.org/document/current/cn/features/sharding/other-features/inline-expression/</guid>
       <description>实现动机 配置的简化与一体化是行表达式所希望解决的两个主要问题。
 在繁琐的数据分片规则配置中，随着数据节点的增多，大量的重复配置使得配置本身不易被维护。通过行表达式可以有效的简化数据节点配置工作量。
 对于常见的分片算法，使用Java代码实现并不有助于配置的统一管理。通过行表达式书写分片算法，可以有效的将规则配置一同存放，更加易于浏览与存储。
@@ -35,10 +35,10 @@ db0.t_order${0..1},db1.t_order${2..4}  或者</description>
     
     <item>
       <title>分布式主键</title>
-      <link>http://shardingsphere.apache.org/document/current/cn/features/sharding/other-features/key-generator/</link>
+      <link>https://shardingsphere.apache.org/document/current/cn/features/sharding/other-features/key-generator/</link>
       <pubDate>Mon, 01 Jan 0001 00:00:00 +0000</pubDate>
       
-      <guid>http://shardingsphere.apache.org/document/current/cn/features/sharding/other-features/key-generator/</guid>
+      <guid>https://shardingsphere.apache.org/document/current/cn/features/sharding/other-features/key-generator/</guid>
       <description>实现动机 传统数据库软件开发中，主键自动生成技术是基本需求。而各个数据库对于该需求也提供了相应的支持，比如MySQL的自增键，Oracle的自增序列等。 数据分片后，不同数据节点生成全局唯一主键是非常棘手的问题。同一个逻辑表内的不同实际表之间的自增键由于无法互相感知而产生重复主键。 虽然可通过约束自增主键初始值和步长的方式避免碰撞，但需引入额外的运维规则，使解决方案缺乏完整性和可扩展性。
 目前有许多第三方解决方案可以完美解决这个问题，如UUID等依靠特定算法自生成不重复键，或者通过引入主键生成服务等。为了方便用户使用、满足不同用户不同使用场景的需求， ShardingSphere不仅提供了内置的分布式主键生成器，例如UUID、SNOWFLAKE、LEAF(进行中)，还抽离出分布式主键生成器的接口，方便用户自行实现自定义的自增主键生成器。
 内置的主键生成器 UUID 采用UUID.randomUUID()的方式产生分布式主键。
@@ -58,10 +58,10 @@ LEAF 借鉴美团点评分布式ID生成系统Leaf, 借助注册中心生成分�
     
     <item>
       <title>强制分片路由</title>
-      <link>http://shardingsphere.apache.org/document/current/cn/features/sharding/other-features/sharding-hint/</link>
+      <link>https://shardingsphere.apache.org/document/current/cn/features/sharding/other-features/sharding-hint/</link>
       <pubDate>Mon, 01 Jan 0001 00:00:00 +0000</pubDate>
       
-      <guid>http://shardingsphere.apache.org/document/current/cn/features/sharding/other-features/sharding-hint/</guid>
+      <guid>https://shardingsphere.apache.org/document/current/cn/features/sharding/other-features/sharding-hint/</guid>
       <description>实现动机 通过解析SQL语句提取分片键列与值并进行分片是ShardingSphere对SQL零侵入的实现方式。若SQL语句中没有分片条件，则无法进行分片，需要全路由。
 在一些应用场景中，分片条件并不存在于SQL，而存在于外部业务逻辑。因此需要提供一种通过外部指定分片结果的方式，在ShardingSphere中叫做Hint。
 实现机制 ShardingSphere使用ThreadLocal管理分片键值。可以通过编程的方式向HintManager中添加分片条件，该分片条件仅在当前线程内生效。
