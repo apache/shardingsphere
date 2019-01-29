@@ -36,12 +36,12 @@ import org.apache.shardingsphere.shardingproxypg.transport.postgresql.packet.gen
 import java.sql.SQLException;
 
 /**
- * PostgreSQLQueryPacket message.
+ * PostgreSQLComQueryPacket message.
  *
  * @author zhangyonglun
  */
 @Slf4j
-public final class PostgreSQLQueryPacket implements PostgreSQLQueryCommandPacket {
+public final class PostgreSQLComQueryPacket implements PostgreSQLQueryCommandPacket {
     
     @Getter
     private final char messageType = PostgreSQLCommandPacketType.QUERY.getValue();
@@ -50,7 +50,7 @@ public final class PostgreSQLQueryPacket implements PostgreSQLQueryCommandPacket
     
     private final TextProtocolBackendHandler textProtocolBackendHandler;
     
-    public PostgreSQLQueryPacket(final PostgreSQLPacketPayload payload, final BackendConnection backendConnection) {
+    public PostgreSQLComQueryPacket(final PostgreSQLPacketPayload payload, final BackendConnection backendConnection) {
         payload.readInt4();
         sql = payload.readStringNul();
         textProtocolBackendHandler = ComQueryBackendHandlerFactory.createTextProtocolBackendHandler(0, sql, backendConnection, DatabaseType.PostgreSQL);
