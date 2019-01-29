@@ -40,7 +40,7 @@ import org.apache.shardingsphere.shardingproxypg.runtime.schema.LogicSchema;
 import org.apache.shardingsphere.shardingproxypg.runtime.schema.ShardingSchema;
 import org.apache.shardingsphere.shardingproxypg.transport.mysql.packet.generic.OKPacket;
 import org.apache.shardingsphere.shardingproxypg.transport.postgresql.packet.command.PostgreSQLCommandResponsePackets;
-import org.apache.shardingsphere.shardingproxypg.transport.postgresql.packet.command.query.ColumnDescription;
+import org.apache.shardingsphere.shardingproxypg.transport.postgresql.packet.command.query.PostgreSQLColumnDescription;
 import org.apache.shardingsphere.shardingproxypg.transport.postgresql.packet.command.query.PostgreSQLQueryResponsePackets;
 import org.apache.shardingsphere.shardingproxypg.transport.postgresql.packet.command.query.RowDescriptionPacket;
 import org.apache.shardingsphere.shardingproxypg.transport.postgresql.packet.generic.ErrorResponsePacket;
@@ -128,14 +128,14 @@ public final class JDBCDatabaseCommunicationEngine implements DatabaseCommunicat
     
     private PostgreSQLQueryResponsePackets getQueryResponsePacketsWithoutDerivedColumns(final PostgreSQLQueryResponsePackets postgreSQLQueryResponsePackets) {
         int columnCount = 0;
-        List<ColumnDescription> columnDescriptions = new ArrayList<>(postgreSQLQueryResponsePackets.getColumnCount());
-        for (ColumnDescription each : postgreSQLQueryResponsePackets.getRowDescriptionPacket().getColumnDescriptions()) {
+        List<PostgreSQLColumnDescription> postgreSQLColumnDescriptions = new ArrayList<>(postgreSQLQueryResponsePackets.getColumnCount());
+        for (PostgreSQLColumnDescription each : postgreSQLQueryResponsePackets.getRowDescriptionPacket().getPostgreSQLColumnDescriptions()) {
             if (!DerivedColumn.isDerivedColumn(each.getColumnName())) {
-                columnDescriptions.add(each);
+                postgreSQLColumnDescriptions.add(each);
                 columnCount++;
             }
         }
-        return new PostgreSQLQueryResponsePackets(new RowDescriptionPacket(columnCount, columnDescriptions));
+        return new PostgreSQLQueryResponsePackets(new RowDescriptionPacket(columnCount, postgreSQLColumnDescriptions));
     }
     
     private void setResponseColumnLabelForShowTablesMergedResult(final PostgreSQLQueryResponsePackets postgreSQLQueryResponsePackets) {
