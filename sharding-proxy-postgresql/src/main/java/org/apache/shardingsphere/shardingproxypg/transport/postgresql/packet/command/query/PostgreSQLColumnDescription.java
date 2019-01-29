@@ -29,7 +29,7 @@ import java.sql.SQLException;
  * @author zhangyonglun
  */
 @Getter
-public final class ColumnDescription {
+public final class PostgreSQLColumnDescription {
     
     private final String columnName;
     
@@ -45,7 +45,7 @@ public final class ColumnDescription {
     
     private final int dataFormat = 0;
     
-    public ColumnDescription(final ResultSetMetaData resultSetMetaData, final int columnIndex) throws SQLException {
+    public PostgreSQLColumnDescription(final ResultSetMetaData resultSetMetaData, final int columnIndex) throws SQLException {
         columnName = resultSetMetaData.getColumnName(columnIndex);
         this.columnIndex = columnIndex;
         typeOID = PostgreSQLColumnType.valueOfJDBCType(resultSetMetaData.getColumnType(columnIndex)).getValue();
