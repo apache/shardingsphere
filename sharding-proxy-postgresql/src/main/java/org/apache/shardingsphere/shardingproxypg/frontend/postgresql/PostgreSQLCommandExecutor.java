@@ -32,7 +32,7 @@ import org.apache.shardingsphere.shardingproxypg.transport.postgresql.packet.com
 import org.apache.shardingsphere.shardingproxypg.transport.postgresql.packet.command.PostgreSQLCommandResponsePackets;
 import org.apache.shardingsphere.shardingproxypg.transport.postgresql.packet.command.query.PostgreSQLQueryCommandPacket;
 import org.apache.shardingsphere.shardingproxypg.transport.postgresql.packet.generic.PostgreSQLCommandCompletePacket;
-import org.apache.shardingsphere.shardingproxypg.transport.postgresql.packet.generic.ErrorResponsePacket;
+import org.apache.shardingsphere.shardingproxypg.transport.postgresql.packet.generic.PostgreSQLErrorResponsePacket;
 import org.apache.shardingsphere.shardingproxypg.transport.postgresql.packet.generic.ReadyForQueryPacket;
 import org.apache.shardingsphere.spi.root.RootInvokeHook;
 import org.apache.shardingsphere.spi.root.SPIRootInvokeHook;
@@ -71,17 +71,17 @@ public final class PostgreSQLCommandExecutor implements Runnable {
                 context.write(each);
             }
             if (commandPacket instanceof PostgreSQLQueryCommandPacket && !(responsePackets.get().getHeadPacket() instanceof ReadyForQueryPacket)
-                && !(responsePackets.get().getHeadPacket() instanceof ErrorResponsePacket)) {
+                && !(responsePackets.get().getHeadPacket() instanceof PostgreSQLErrorResponsePacket)) {
                 writeMoreResults((PostgreSQLQueryCommandPacket) commandPacket);
             }
             connectionSize = backendConnection.getConnectionSize();
             context.write(new PostgreSQLCommandCompletePacket("SELECT", 1));
         } catch (final SQLException ex) {
-            context.write(new ErrorResponsePacket());
+            context.write(new PostgreSQLErrorResponsePacket());
             // CHECKSTYLE:OFF
         } catch (final Exception ex) {
             // CHECKSTYLE:ON
-            context.write(new ErrorResponsePacket());
+            context.write(new PostgreSQLErrorResponsePacket());
         } finally {
             context.writeAndFlush(new ReadyForQueryPacket());
             rootInvokeHook.finish(connectionSize);
