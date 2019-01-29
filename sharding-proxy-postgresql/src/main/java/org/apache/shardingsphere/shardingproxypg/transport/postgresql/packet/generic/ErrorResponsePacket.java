@@ -27,7 +27,7 @@ import org.apache.shardingsphere.shardingproxypg.transport.postgresql.packet.com
  *
  * @author zhangyonglun
  */
-public final class ErrorResponse implements PostgreSQLPacket {
+public final class ErrorResponsePacket implements PostgreSQLPacket {
     
     @Getter
     private final char messageType = PostgreSQLCommandPacketType.ERROR_RESPONSE.getValue();
