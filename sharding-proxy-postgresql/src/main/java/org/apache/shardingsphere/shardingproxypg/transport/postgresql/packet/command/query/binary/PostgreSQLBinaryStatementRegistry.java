@@ -17,55 +17,27 @@
 
 package org.apache.shardingsphere.shardingproxypg.transport.postgresql.packet.command.query.binary;
 
-import lombok.AccessLevel;
-import lombok.NoArgsConstructor;
-import org.apache.shardingsphere.shardingproxypg.transport.mysql.packet.command.query.binary.BinaryStatement;
-
 import java.util.concurrent.ConcurrentHashMap;
 import java.util.concurrent.ConcurrentMap;
-import java.util.concurrent.atomic.AtomicInteger;
 
 /**
  * PostgreSQL binary prepared statement registry.
  *
  * @author zhangyonglun
  */
-@NoArgsConstructor(access = AccessLevel.NONE)
 public final class PostgreSQLBinaryStatementRegistry {
     
-    private static final PostgreSQLBinaryStatementRegistry INSTANCE = new PostgreSQLBinaryStatementRegistry();
-    
-    private final ConcurrentMap<String, Integer> statementIdAssigner = new ConcurrentHashMap<>(65535, 1);
-    
-    private final ConcurrentMap<Integer, BinaryStatement> binaryStatements = new ConcurrentHashMap<>(65535, 1);
-    
-    private final AtomicInteger sequence = new AtomicInteger();
-    
-    /**
-     * Get prepared statement registry instance.
-     * 
-     * @return prepared statement registry instance
-     */
-    public static PostgreSQLBinaryStatementRegistry getInstance() {
-        return INSTANCE;
-    }
+    private final ConcurrentMap<String, PostgreSQLBinaryStatement> binaryStatements = new ConcurrentHashMap<>(65535, 1);
     
     /**
      * Register SQL.
-     * 
+     *
+     * @param statementId statement id
      * @param sql SQL
      * @param parametersCount parameters count
-     * @return statement ID
      */
-    public int register(final String sql, final int parametersCount) {
-        Integer result = statementIdAssigner.get(sql);
-        if (null != result) {
-            return result;
-        }
-        result = sequence.incrementAndGet();
-        statementIdAssigner.putIfAbsent(sql, result);
-        binaryStatements.putIfAbsent(result, new BinaryStatement(sql, parametersCount));
-        return result;
+    public void register(final String statementId, final String sql, final int parametersCount) {
+        binaryStatements.putIfAbsent(statementId, new PostgreSQLBinaryStatement(sql, parametersCount));
     }
     
     /**
@@ -74,7 +46,7 @@ public final class PostgreSQLBinaryStatementRegistry {
      * @param statementId statement ID
      * @return binary prepared statement
      */
-    public BinaryStatement getBinaryStatement(final int statementId) {
+    public PostgreSQLBinaryStatement getBinaryStatement(final String statementId) {
         return binaryStatements.get(statementId);
     }
 }
