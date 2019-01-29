@@ -32,7 +32,7 @@ import java.util.List;
  */
 @RequiredArgsConstructor
 @Getter
-public final class DataRow implements PostgreSQLPacket {
+public final class DataRowPacket implements PostgreSQLPacket {
     
     private final char messageType = PostgreSQLCommandPacketType.DATA_ROW.getValue();
     
