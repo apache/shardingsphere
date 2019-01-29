@@ -18,6 +18,7 @@
 package org.apache.shardingsphere.shardingproxypg.transport.postgresql.packet.command.query;
 
 import lombok.Getter;
+import org.apache.shardingsphere.shardingproxypg.transport.postgresql.constant.PostgreSQLColumnType;
 
 import java.sql.ResultSetMetaData;
 import java.sql.SQLException;
@@ -47,7 +48,7 @@ public final class ColumnDescription {
     public ColumnDescription(final ResultSetMetaData resultSetMetaData, final int columnIndex) throws SQLException {
         columnName = resultSetMetaData.getColumnName(columnIndex);
         this.columnIndex = columnIndex;
-        typeOID = resultSetMetaData.getColumnType(columnIndex);
+        typeOID = PostgreSQLColumnType.valueOfJDBCType(resultSetMetaData.getColumnType(columnIndex)).getValue();
         columnLength = resultSetMetaData.getColumnDisplaySize(columnIndex);
     }
 }
