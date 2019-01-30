@@ -17,41 +17,21 @@
 
 package org.apache.shardingsphere.core.yaml.sharding;
 
-import lombok.Getter;
-import lombok.NoArgsConstructor;
-import lombok.Setter;
 import org.apache.shardingsphere.api.config.KeyGeneratorConfiguration;
+import org.junit.Test;
 
 import java.util.Properties;
 
-/**
- * Key generator configuration for YAML.
- *
- * @author panjuan
- */
-@NoArgsConstructor
-@Getter
-@Setter
-public final class YamlKeyGeneratorConfiguration {
+import static org.hamcrest.CoreMatchers.is;
+import static org.junit.Assert.assertThat;
+
+public final class YamlKeyGeneratorConfigurationTest {
     
-    private String column;
-    
-    private String type;
-    
-    private Properties props = new Properties();
-    
-    public YamlKeyGeneratorConfiguration(final KeyGeneratorConfiguration keyGeneratorConfiguration) {
-        column = keyGeneratorConfiguration.getColumn();
-        type = keyGeneratorConfiguration.getType();
-        props = keyGeneratorConfiguration.getProps();
-    }
-    
-    /**
-     * Get key generator configuration.
-     * 
-     * @return key generator configuration
-     */
-    public KeyGeneratorConfiguration getKeyGeneratorConfiguration() {
-        return new KeyGeneratorConfiguration(column, type, props);
+    @Test
+    public void assertGetKeyGeneratorConfiguration() {
+        YamlKeyGeneratorConfiguration actual = new YamlKeyGeneratorConfiguration(new KeyGeneratorConfiguration("column", "TEST", new Properties()));
+        assertThat(actual.getKeyGeneratorConfiguration().getColumn(), is("column"));
+        assertThat(actual.getKeyGeneratorConfiguration().getType(), is("TEST"));
+        assertThat(actual.getKeyGeneratorConfiguration().getProps(), is(new Properties()));
     }
 }
