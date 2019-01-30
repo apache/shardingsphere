@@ -28,6 +28,7 @@ import org.apache.shardingsphere.shardingproxypg.transport.postgresql.packet.com
 import org.apache.shardingsphere.shardingproxypg.transport.postgresql.packet.command.query.binary.parse.PostgreSQLComParsePacket;
 import org.apache.shardingsphere.shardingproxypg.transport.postgresql.packet.command.query.binary.sync.PostgreSQLComSyncPacket;
 import org.apache.shardingsphere.shardingproxypg.transport.postgresql.packet.command.query.text.PostgreSQLComQueryPacket;
+import org.apache.shardingsphere.shardingproxypg.transport.postgresql.packet.generic.PostgreSQLComTerminationPacket;
 
 import java.sql.SQLException;
 
@@ -62,6 +63,8 @@ public final class PostgreSQLCommandPacketFactory {
                 return new PostgreSQLComExecutePacket(payload);
             case SYNC:
                 return new PostgreSQLComSyncPacket(payload);
+            case TERMINATE:
+                return new PostgreSQLComTerminationPacket(payload);
             default:
                 return new PostgreSQLUnsupportedCommandPacket(type.getValue());
         }
