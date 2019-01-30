@@ -18,10 +18,12 @@
 package org.apache.shardingsphere.core.routing.strategy;
 
 import org.apache.shardingsphere.core.encrypt.encryptor.ShardingEncryptor;
+import org.apache.shardingsphere.core.exception.ShardingConfigurationException;
 import org.junit.Before;
 import org.junit.Test;
 
 import java.util.Arrays;
+import java.util.Collections;
 
 import static org.hamcrest.CoreMatchers.instanceOf;
 import static org.hamcrest.CoreMatchers.is;
@@ -37,6 +39,7 @@ public class ShardingEncryptorStrategyTest {
         ShardingEncryptor shardingEncryptor = mock(ShardingEncryptor.class);
         shardingEncryptorStrategy = new ShardingEncryptorStrategy(Arrays.asList("pwd1", "pwd2"), shardingEncryptor);
     }    
+    
     @Test
     public void assertGetColumns() {
         assertThat(shardingEncryptorStrategy.getColumns().iterator().next(), is("pwd1"));
@@ -50,5 +53,11 @@ public class ShardingEncryptorStrategyTest {
     @Test
     public void assertGetShardingEncryptor() {
         assertThat(shardingEncryptorStrategy.getShardingEncryptor(), instanceOf(ShardingEncryptor.class));
+    }
+    
+    @Test(expected = ShardingConfigurationException.class)
+    public void assertNewShardingEncryptorStrategy() {
+        ShardingEncryptor shardingEncryptor = mock(ShardingEncryptor.class);
+        shardingEncryptorStrategy = new ShardingEncryptorStrategy(Arrays.asList("pwd1", "pwd2"), Collections.singletonList("pwd1_index"), shardingEncryptor);
     }
 }
