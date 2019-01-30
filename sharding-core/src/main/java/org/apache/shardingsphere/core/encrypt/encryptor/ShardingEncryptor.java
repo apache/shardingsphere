@@ -15,35 +15,51 @@
  * limitations under the License.
  */
 
-package org.apache.shardingsphere.api.config.rule;
+package org.apache.shardingsphere.core.encrypt.encryptor;
 
-import lombok.Getter;
-import lombok.Setter;
-import org.apache.shardingsphere.api.config.EncryptorConfiguration;
-import org.apache.shardingsphere.api.config.KeyGeneratorConfiguration;
-import org.apache.shardingsphere.api.config.strategy.ShardingStrategyConfiguration;
+import java.util.Properties;
 
 /**
- * Table rule configuration.
- * 
- * @author zhangliang
+ * Sharding encryptor.
+ *
  * @author panjuan
  */
-@Getter
-@Setter
-public final class TableRuleConfiguration implements RuleConfiguration {
+public interface ShardingEncryptor {
     
-    private String logicTable;
+    /**
+     * Get sharding encryptor type.
+     * 
+     * @return sharding encryptor type
+     */
+    String getType();
     
-    private String actualDataNodes;
+    /**
+     * Get properties.
+     * 
+     * @return properties
+     */
+    Properties getProperties();
     
-    private ShardingStrategyConfiguration databaseShardingStrategyConfig;
+    /**
+     * Set properties.
+     * 
+     * @param properties properties
+     */
+    void setProperties(Properties properties);
     
-    private ShardingStrategyConfiguration tableShardingStrategyConfig;
+    /**
+     * Encode.
+     * 
+     * @param plaintext plaintext
+     * @return ciphertext
+     */
+    String encode(String plaintext);
     
-    private KeyGeneratorConfiguration keyGeneratorConfig;
-    
-    private EncryptorConfiguration encryptorConfig;
-    
-    private String logicIndex;
+    /**
+     * Decode.
+     * 
+     * @param ciphertext ciphertext
+     * @return plaintext
+     */
+    String decode(String ciphertext);
 }

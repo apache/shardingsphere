@@ -15,35 +15,46 @@
  * limitations under the License.
  */
 
-package org.apache.shardingsphere.api.config.rule;
+package org.apache.shardingsphere.core.yaml.sharding;
 
 import lombok.Getter;
+import lombok.NoArgsConstructor;
 import lombok.Setter;
 import org.apache.shardingsphere.api.config.EncryptorConfiguration;
-import org.apache.shardingsphere.api.config.KeyGeneratorConfiguration;
-import org.apache.shardingsphere.api.config.strategy.ShardingStrategyConfiguration;
+
+import java.util.Properties;
 
 /**
- * Table rule configuration.
- * 
- * @author zhangliang
+ * Yaml encryptor configuration.
+ *
  * @author panjuan
  */
+@NoArgsConstructor
 @Getter
 @Setter
-public final class TableRuleConfiguration implements RuleConfiguration {
+public final class YamlEncryptorConfiguration {
     
-    private String logicTable;
+    private String type;
     
-    private String actualDataNodes;
+    private String columns;
     
-    private ShardingStrategyConfiguration databaseShardingStrategyConfig;
+    private String assistedQueryColumns;
     
-    private ShardingStrategyConfiguration tableShardingStrategyConfig;
+    private Properties props = new Properties();
     
-    private KeyGeneratorConfiguration keyGeneratorConfig;
+    public YamlEncryptorConfiguration(final EncryptorConfiguration encryptorConfiguration) {
+        type = encryptorConfiguration.getType();
+        columns = encryptorConfiguration.getColumns();
+        assistedQueryColumns = encryptorConfiguration.getAssistedQueryColumns();
+        props = encryptorConfiguration.getProps();
+    }
     
-    private EncryptorConfiguration encryptorConfig;
-    
-    private String logicIndex;
+    /**
+     * Get encryptor configuration.
+     * 
+     * @return encryptor configuration
+     */
+    public EncryptorConfiguration getEncryptorConfiguration() {
+        return new EncryptorConfiguration(type, columns, assistedQueryColumns, props);
+    }
 }

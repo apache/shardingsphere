@@ -26,6 +26,7 @@ import org.apache.shardingsphere.api.config.KeyGeneratorConfiguration;
 import org.apache.shardingsphere.api.config.rule.TableRuleConfiguration;
 import org.apache.shardingsphere.core.exception.ShardingException;
 import org.apache.shardingsphere.core.keygen.generator.ShardingKeyGenerator;
+import org.apache.shardingsphere.core.routing.strategy.ShardingEncryptorStrategy;
 import org.apache.shardingsphere.core.routing.strategy.ShardingStrategy;
 import org.apache.shardingsphere.core.routing.strategy.ShardingStrategyFactory;
 import org.apache.shardingsphere.core.util.InlineExpressionParser;
@@ -63,6 +64,8 @@ public final class TableRule {
     
     private final ShardingKeyGenerator shardingKeyGenerator;
     
+    private final ShardingEncryptorStrategy shardingEncryptorStrategy;
+    
     private final String logicIndex;
     
     public TableRule(final String defaultDataSourceName, final String logicTableName) {
@@ -73,6 +76,7 @@ public final class TableRule {
         tableShardingStrategy = null;
         generateKeyColumn = null;
         shardingKeyGenerator = null;
+        shardingEncryptorStrategy = null;
         logicIndex = null;
     }
     
@@ -84,6 +88,7 @@ public final class TableRule {
         tableShardingStrategy = null;
         generateKeyColumn = null;
         shardingKeyGenerator = null;
+        shardingEncryptorStrategy = null;
         logicIndex = null;
     }
     
@@ -98,6 +103,8 @@ public final class TableRule {
         tableShardingStrategy = null == tableRuleConfig.getTableShardingStrategyConfig() ? null : ShardingStrategyFactory.newInstance(tableRuleConfig.getTableShardingStrategyConfig());
         generateKeyColumn = getGenerateKeyColumn(tableRuleConfig.getKeyGeneratorConfig(), defaultGenerateKeyColumn);
         shardingKeyGenerator = null == tableRuleConfig.getKeyGeneratorConfig() ? null : tableRuleConfig.getKeyGeneratorConfig().getKeyGenerator().orNull();
+        shardingEncryptorStrategy = null == tableRuleConfig.getEncryptorConfig() ? null : tableRuleConfig.getEncryptorConfig().getShardingEncryptorStrategy();
+
         logicIndex = null == tableRuleConfig.getLogicIndex() ? null : tableRuleConfig.getLogicIndex().toLowerCase();
     }
     
