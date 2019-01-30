@@ -23,7 +23,6 @@ import lombok.AllArgsConstructor;
 import org.apache.shardingsphere.core.constant.DatabaseType;
 import org.apache.shardingsphere.core.parsing.lexer.dialect.mysql.MySQLKeyword;
 import org.apache.shardingsphere.core.parsing.lexer.token.DefaultKeyword;
-import org.apache.shardingsphere.core.parsing.lexer.token.Symbol;
 
 /**
  * SQL utility class.
@@ -112,15 +111,5 @@ public final class SQLUtil {
         } catch (final IllegalArgumentException ex) {
             return value;
         }
-    }
-    
-    /**
-     * Get name without schema.
-     * 
-     * @param value SQL expression
-     * @return name without schema
-     */
-    public static String getNameWithoutSchema(final String value) {
-        return value.contains(Symbol.DOT.getLiterals()) ? value.substring(value.lastIndexOf(Symbol.DOT.getLiterals()) + Symbol.DOT.getLiterals().length()) : value;
     }
 }
