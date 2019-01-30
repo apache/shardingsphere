@@ -30,7 +30,7 @@ import java.util.ArrayList;
 import java.util.Collection;
 
 /**
- * Master-slave rule configuration for yaml.
+ * Master-slave rule configuration for YAML.
  *
  * @author caohao
  * @author panjuan
@@ -58,9 +58,9 @@ public class YamlMasterSlaveRuleConfiguration {
     }
     
     /**
-     * Get master-slave rule configuration from yaml.
+     * Get master-slave rule configuration.
      *
-     * @return master-slave rule configuration from yaml
+     * @return master-slave rule configuration
      */
     public MasterSlaveRuleConfiguration getMasterSlaveRuleConfiguration() {
         MasterSlaveLoadBalanceAlgorithm loadBalanceAlgorithm = null;
