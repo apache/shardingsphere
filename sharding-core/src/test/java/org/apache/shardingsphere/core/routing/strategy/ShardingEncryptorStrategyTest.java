@@ -19,7 +19,7 @@ package org.apache.shardingsphere.core.routing.strategy;
 
 import org.apache.shardingsphere.core.encrypt.encryptor.ShardingEncryptor;
 import org.apache.shardingsphere.core.exception.ShardingConfigurationException;
-import org.junit.BeforeClass;
+import org.junit.Before;
 import org.junit.Test;
 
 import java.util.Arrays;
@@ -34,7 +34,7 @@ public class ShardingEncryptorStrategyTest {
     
     private ShardingEncryptorStrategy shardingEncryptorStrategy;
     
-    @BeforeClass
+    @Before
     public void setUp() {
         ShardingEncryptor shardingEncryptor = mock(ShardingEncryptor.class);
         shardingEncryptorStrategy = new ShardingEncryptorStrategy(Arrays.asList("pwd1", "pwd2"), shardingEncryptor);
