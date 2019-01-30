@@ -20,6 +20,7 @@ package org.apache.shardingsphere.core.routing.strategy;
 import lombok.RequiredArgsConstructor;
 import org.apache.shardingsphere.core.encrypt.encryptor.ShardingEncryptor;
 
+import java.util.LinkedList;
 import java.util.List;
 
 /**
@@ -35,4 +36,8 @@ public final class ShardingEncryptorStrategy {
     private final List<String> assistedQueryColumns;
     
     private final ShardingEncryptor shardingEncryptor;
+    
+    public ShardingEncryptorStrategy(final List<String> columns, final ShardingEncryptor shardingEncryptor) {
+        this(columns, new LinkedList<String>(), shardingEncryptor);
+    }
 }
