@@ -91,7 +91,7 @@ public class YamlEncryptorConfigurationTest {
     
     @Test
     public void assertNewYamlEncryptorConfiguration() {
-        EncryptorConfiguration encryptorConfiguration = new EncryptorConfiguration();
+        EncryptorConfiguration encryptorConfiguration = new EncryptorConfiguration("test", "pwd1", "pwd1_index", new Properties());
         yamlEncryptorConfiguration = new YamlEncryptorConfiguration(encryptorConfiguration);
         assertNull(yamlEncryptorConfiguration.getType());
     }
