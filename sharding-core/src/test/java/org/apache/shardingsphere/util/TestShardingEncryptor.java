@@ -35,7 +35,9 @@ public final class TestShardingEncryptor implements ShardingEncryptor {
     
     @Override
     public Properties getProperties() {
-        return new Properties();
+        Properties result = new Properties();
+        result.setProperty("key1", "value1");
+        return result;
     }
     
     @Override
