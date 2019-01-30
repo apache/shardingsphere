@@ -60,7 +60,7 @@ public final class PostgreSQLComParsePacket implements PostgreSQLCommandPacket {
     
     private final SQLParsingEngine sqlParsingEngine;
     
-    public PostgreSQLComParsePacket(final BackendConnection backendConnection, final PostgreSQLPacketPayload payload) {
+    public PostgreSQLComParsePacket(final PostgreSQLPacketPayload payload, final BackendConnection backendConnection) {
         postgreSQLBinaryStatementRegistry = backendConnection.getPostgreSQLBinaryStatementRegistry();
         payload.readInt4();
         statementId = payload.readStringNul();
