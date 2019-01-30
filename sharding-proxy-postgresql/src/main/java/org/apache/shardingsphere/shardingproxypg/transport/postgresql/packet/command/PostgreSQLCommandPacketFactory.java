@@ -22,7 +22,11 @@ import lombok.NoArgsConstructor;
 import org.apache.shardingsphere.shardingproxypg.backend.communication.jdbc.connection.BackendConnection;
 import org.apache.shardingsphere.shardingproxypg.transport.postgresql.packet.PostgreSQLPacketPayload;
 import org.apache.shardingsphere.shardingproxypg.transport.postgresql.packet.command.admin.PostgreSQLUnsupportedCommandPacket;
+import org.apache.shardingsphere.shardingproxypg.transport.postgresql.packet.command.query.binary.bind.PostgreSQLComBindPacket;
+import org.apache.shardingsphere.shardingproxypg.transport.postgresql.packet.command.query.binary.parse.PostgreSQLComParsePacket;
 import org.apache.shardingsphere.shardingproxypg.transport.postgresql.packet.command.query.text.PostgreSQLComQueryPacket;
+
+import java.sql.SQLException;
 
 /**
  * PostgreSQL command packet factory.
@@ -39,12 +43,16 @@ public final class PostgreSQLCommandPacketFactory {
      * @param backendConnection backend connection
      * @return command packet
      */
-    public static PostgreSQLCommandPacket newInstance(final PostgreSQLPacketPayload payload, final BackendConnection backendConnection) {
+    public static PostgreSQLCommandPacket newInstance(final PostgreSQLPacketPayload payload, final BackendConnection backendConnection) throws SQLException {
         int commandPacketTypeValue = payload.readInt1();
         PostgreSQLCommandPacketType type = PostgreSQLCommandPacketType.valueOf(commandPacketTypeValue);
         switch (type) {
             case QUERY:
                 return new PostgreSQLComQueryPacket(payload, backendConnection);
+            case PARSE:
+                return new PostgreSQLComParsePacket(payload, backendConnection);
+            case BIND:
+                return new PostgreSQLComBindPacket(payload, backendConnection);
             default:
                 return new PostgreSQLUnsupportedCommandPacket(type.getValue());
         }
