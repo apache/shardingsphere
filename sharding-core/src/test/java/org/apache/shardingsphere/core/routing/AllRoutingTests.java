@@ -18,6 +18,7 @@
 package org.apache.shardingsphere.core.routing;
 
 import org.apache.shardingsphere.core.routing.router.DatabaseHintSQLRouterTest;
+import org.apache.shardingsphere.core.routing.strategy.ShardingEncryptorStrategyTest;
 import org.apache.shardingsphere.core.routing.type.broadcast.DatabaseBroadcastRoutingEngineTest;
 import org.apache.shardingsphere.core.routing.type.broadcast.TableBroadcastRoutingEngineTest;
 import org.apache.shardingsphere.core.routing.type.defaultdb.DefaultDatabaseRoutingEngineTest;
@@ -41,7 +42,8 @@ import org.junit.runners.Suite.SuiteClasses;
         IgnoreRoutingEngineTest.class,
         StandardRoutingEngineTest.class,
         SubqueryRouteTest.class,
-        SQLRouteTest.class
+        SQLRouteTest.class,
+        ShardingEncryptorStrategyTest.class
 })
 public final class AllRoutingTests {
 }
