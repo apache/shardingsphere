@@ -29,6 +29,11 @@ import java.sql.Timestamp;
 public final class PostgreSQLTimeBinaryProtocolValue implements PostgreSQLBinaryProtocolValue {
     
     @Override
+    public int getColumnLength(final Object value) {
+        return 8;
+    }
+    
+    @Override
     public Object read(final PostgreSQLPacketPayload payload) {
         return payload.readInt8();
     }
