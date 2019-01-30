@@ -15,13 +15,15 @@
  * limitations under the License.
  */
 
-package org.apache.shardingsphere.core.yaml.sharding.strategy;
+package org.apache.shardingsphere.core.yaml.sharding;
 
 import lombok.Getter;
 import lombok.NoArgsConstructor;
 import lombok.Setter;
 import org.apache.shardingsphere.api.config.EncryptorConfiguration;
 
+import java.util.LinkedList;
+import java.util.List;
 import java.util.Properties;
 
 /**
@@ -34,18 +36,18 @@ import java.util.Properties;
 @Setter
 public final class YamlEncryptorConfiguration {
     
-    private String column;
-    
     private String type;
     
-    private String queryAssistedColumn;
+    private List<String> columns = new LinkedList<>();
+    
+    private List<String> assistedQueryColumns = new LinkedList<>();
     
     private Properties props = new Properties();
     
     public YamlEncryptorConfiguration(final EncryptorConfiguration encryptorConfiguration) {
-        column = encryptorConfiguration.getColumn();
         type = encryptorConfiguration.getType();
-        queryAssistedColumn = encryptorConfiguration.getQueryAssistedColumn();
+        columns = encryptorConfiguration.getColumns();
+        assistedQueryColumns = encryptorConfiguration.getAssistedQueryColumns();
         props = encryptorConfiguration.getProps();
     }
     
@@ -55,6 +57,6 @@ public final class YamlEncryptorConfiguration {
      * @return encryptor configuration
      */
     public EncryptorConfiguration getEncryptorConfiguration() {
-        return new EncryptorConfiguration(column, type, queryAssistedColumn, props);
+        return new EncryptorConfiguration(type, columns, assistedQueryColumns, props);
     }
 }
