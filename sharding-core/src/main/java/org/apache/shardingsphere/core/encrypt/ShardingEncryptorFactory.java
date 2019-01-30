@@ -35,7 +35,6 @@ import java.util.Collection;
 @NoArgsConstructor(access = AccessLevel.PRIVATE)
 public final class ShardingEncryptorFactory {
     
-    
     static {
         NewInstanceServiceLoader.register(ShardingEncryptor.class);
     }
