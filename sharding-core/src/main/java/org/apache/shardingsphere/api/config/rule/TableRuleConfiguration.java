@@ -19,6 +19,7 @@ package org.apache.shardingsphere.api.config.rule;
 
 import lombok.Getter;
 import lombok.Setter;
+import org.apache.shardingsphere.api.config.EncryptorConfiguration;
 import org.apache.shardingsphere.api.config.KeyGeneratorConfiguration;
 import org.apache.shardingsphere.api.config.strategy.ShardingStrategyConfiguration;
 
@@ -41,6 +42,8 @@ public final class TableRuleConfiguration implements RuleConfiguration {
     private ShardingStrategyConfiguration tableShardingStrategyConfig;
     
     private KeyGeneratorConfiguration keyGeneratorConfig;
+    
+    private EncryptorConfiguration encryptorConfiguration;
     
     private String logicIndex;
 }
