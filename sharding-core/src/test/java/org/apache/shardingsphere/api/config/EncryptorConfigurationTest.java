@@ -23,8 +23,8 @@ import org.junit.Test;
 import java.util.Properties;
 
 import static org.hamcrest.CoreMatchers.is;
-import static org.hamcrest.MatcherAssert.assertThat;
 import static org.junit.Assert.assertNull;
+import static org.junit.Assert.assertThat;
 
 public class EncryptorConfigurationTest {
     
@@ -64,22 +64,7 @@ public class EncryptorConfigurationTest {
     }
     
     @Test
-    public void testGetProps() {
-    }
-    
-    @Test
-    public void testSetType() {
-    }
-    
-    @Test
-    public void testSetColumns() {
-    }
-    
-    @Test
-    public void testSetAssistedQueryColumns() {
-    }
-    
-    @Test
-    public void testSetProps() {
+    public void assertGetProps() {
+        assertThat(encryptorConfiguration.getProps().getProperty("key1"), is("value1"));
     }
 }
