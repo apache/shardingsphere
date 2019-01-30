@@ -33,7 +33,8 @@ import org.junit.runners.Suite.SuiteClasses;
         DatabaseShardingStrategyTest.class, 
         TableShardingStrategyTest.class, 
         RoundRobinMasterSlaveLoadBalanceAlgorithmTest.class, 
-        RandomMasterSlaveLoadBalanceAlgorithmTest.class, 
+        RandomMasterSlaveLoadBalanceAlgorithmTest.class,
+        ConfigMapContextTest.class, 
         HintManagerTest.class, 
         ShardingKeyGeneratorConfigurationTest.class
     })
