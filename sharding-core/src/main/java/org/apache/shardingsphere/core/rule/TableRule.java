@@ -103,7 +103,7 @@ public final class TableRule {
         tableShardingStrategy = null == tableRuleConfig.getTableShardingStrategyConfig() ? null : ShardingStrategyFactory.newInstance(tableRuleConfig.getTableShardingStrategyConfig());
         generateKeyColumn = getGenerateKeyColumn(tableRuleConfig.getKeyGeneratorConfig(), defaultGenerateKeyColumn);
         shardingKeyGenerator = null == tableRuleConfig.getKeyGeneratorConfig() ? null : tableRuleConfig.getKeyGeneratorConfig().getKeyGenerator();
-        shardingEncryptorStrategy = null == tableRuleConfig.getEncryptorConfiguration() ? null : tableRuleConfig.getEncryptorConfiguration().getShardingEncryptorStrategy();
+        shardingEncryptorStrategy = null == tableRuleConfig.getEncryptorConfig() ? null : tableRuleConfig.getEncryptorConfig().getShardingEncryptorStrategy();
         logicIndex = null == tableRuleConfig.getLogicIndex() ? null : tableRuleConfig.getLogicIndex().toLowerCase();
     }
     

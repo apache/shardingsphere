@@ -54,7 +54,7 @@ public class YamlTableRuleConfiguration {
         databaseStrategy = new YamlShardingStrategyConfiguration(tableRuleConfiguration.getDatabaseShardingStrategyConfig());
         tableStrategy = new YamlShardingStrategyConfiguration(tableRuleConfiguration.getTableShardingStrategyConfig());
         keyGenerator = null == tableRuleConfiguration.getKeyGeneratorConfig() ? null : new YamlKeyGeneratorConfiguration(tableRuleConfiguration.getKeyGeneratorConfig());
-        encryptor = null == tableRuleConfiguration.getEncryptorConfiguration() ? null : new YamlEncryptorConfiguration(tableRuleConfiguration.getEncryptorConfiguration());
+        encryptor = null == tableRuleConfiguration.getEncryptorConfig() ? null : new YamlEncryptorConfiguration(tableRuleConfiguration.getEncryptorConfig());
     }
     
     /**
@@ -77,7 +77,7 @@ public class YamlTableRuleConfiguration {
             result.setKeyGeneratorConfig(keyGenerator.getKeyGeneratorConfiguration());
         }
         if (null != encryptor) {
-            result.setEncryptorConfiguration(encryptor.getEncryptorConfiguration());
+            result.setEncryptorConfig(encryptor.getEncryptorConfiguration());
         }
         result.setLogicIndex(logicIndex);
         return result;
