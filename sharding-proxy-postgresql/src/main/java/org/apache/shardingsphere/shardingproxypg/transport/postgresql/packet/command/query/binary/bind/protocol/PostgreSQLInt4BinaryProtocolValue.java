@@ -26,7 +26,6 @@ import org.apache.shardingsphere.shardingproxypg.transport.postgresql.packet.Pos
  */
 public final class PostgreSQLInt4BinaryProtocolValue implements PostgreSQLBinaryProtocolValue {
     
-    
     @Override
     public int getColumnLength(final Object value) {
         return 4;
