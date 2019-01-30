@@ -50,14 +50,17 @@ public class EncryptorConfigurationTest {
     
     @Test
     public void assertGetType() {
+        assertThat(encryptorConfiguration.getType(), is("test"));
     }
     
     @Test
-    public void testGetColumns() {
+    public void assertGetColumns() {
+        assertThat(encryptorConfiguration.getColumns(), is("pwd1"));
     }
     
     @Test
-    public void testGetAssistedQueryColumns() {
+    public void assertGetAssistedQueryColumns() {
+        assertThat(encryptorConfiguration.getAssistedQueryColumns(), is("pwd1_index"));
     }
     
     @Test
