@@ -90,7 +90,9 @@ public final class PostgreSQLComBindPacket implements PostgreSQLQueryCommandPack
         if (GlobalRegistry.getInstance().isCircuitBreak()) {
             return Optional.of(new PostgreSQLCommandResponsePackets(new PostgreSQLErrorResponsePacket()));
         }
-        return Optional.of(databaseCommunicationEngine.execute());
+        PostgreSQLCommandResponsePackets result = new PostgreSQLCommandResponsePackets(new PostgreSQLBindCompletePacket());
+        result.getPackets().addAll(databaseCommunicationEngine.execute().getPackets());
+        return Optional.of(result);
     }
     
     @Override
