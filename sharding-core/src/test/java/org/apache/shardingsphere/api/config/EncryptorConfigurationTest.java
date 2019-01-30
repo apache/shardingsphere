@@ -20,10 +20,17 @@ package org.apache.shardingsphere.api.config;
 import org.junit.Before;
 import org.junit.Test;
 
+import java.util.Properties;
+
 public class EncryptorConfigurationTest {
     
+    private EncryptorConfiguration encryptorConfiguration;
+    
     @Before
-    public void setUp() throws Exception {
+    public void setUp() {
+        Properties properties = new Properties();
+        properties.setProperty("key1", "value1");
+        encryptorConfiguration = new EncryptorConfiguration("test", "pwd1", "pwd1_index", properties);
     }
     
     @Test
