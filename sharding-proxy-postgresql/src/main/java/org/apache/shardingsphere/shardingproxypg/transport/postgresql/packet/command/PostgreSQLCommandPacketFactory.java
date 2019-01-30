@@ -46,6 +46,7 @@ public final class PostgreSQLCommandPacketFactory {
      * @param payload PostgreSQL packet payload
      * @param backendConnection backend connection
      * @return command packet
+     * @throws SQLException SQL exception
      */
     public static PostgreSQLCommandPacket newInstance(final PostgreSQLPacketPayload payload, final BackendConnection backendConnection) throws SQLException {
         int commandPacketTypeValue = payload.readInt1();
