@@ -42,14 +42,16 @@ public class YamlEncryptorConfigurationTest {
     
     @Test
     public void assertGetType() {
+        assertThat(yamlEncryptorConfiguration.getType(), is("test"));
     }
     
     @Test
-    public void testGetColumns() {
+    public void assertGetColumns() {
+        assertThat(yamlEncryptorConfiguration.getColumns(), is("pwd1, pwd2"));
     }
     
     @Test
-    public void testGetAssistedQueryColumns() {
+    public void assertGetAssistedQueryColumns() {
     }
     
     @Test
