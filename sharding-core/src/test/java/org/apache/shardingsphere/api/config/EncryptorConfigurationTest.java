@@ -24,6 +24,7 @@ import java.util.Properties;
 
 import static org.hamcrest.CoreMatchers.is;
 import static org.hamcrest.MatcherAssert.assertThat;
+import static org.junit.Assert.assertNull;
 
 public class EncryptorConfigurationTest {
     
@@ -42,7 +43,13 @@ public class EncryptorConfigurationTest {
     }
     
     @Test
-    public void testGetType() {
+    public void assertGetShardingEncryptorStrategyWithNull() {
+        encryptorConfiguration = new EncryptorConfiguration("", "pwd1", "pwd1_index", new Properties());
+        assertNull(encryptorConfiguration.getShardingEncryptorStrategy());
+    }
+    
+    @Test
+    public void assertGetType() {
     }
     
     @Test
