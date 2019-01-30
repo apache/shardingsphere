@@ -42,5 +42,13 @@ public final class TestShardingEncryptor implements ShardingEncryptor {
     public void setProperties(final Properties properties) {
     }
     
+    @Override
+    public String encode(String plaintext) {
+        return "";
+    }
     
+    @Override
+    public String decode(String ciphertext) {
+        return "";
+    }
 }
