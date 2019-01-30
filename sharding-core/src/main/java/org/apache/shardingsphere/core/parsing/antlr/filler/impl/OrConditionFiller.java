@@ -44,6 +44,7 @@ import org.apache.shardingsphere.core.parsing.parser.sql.SQLStatement;
 import org.apache.shardingsphere.core.parsing.parser.sql.dql.select.SelectStatement;
 import org.apache.shardingsphere.core.parsing.parser.token.TableToken;
 import org.apache.shardingsphere.core.rule.ShardingRule;
+import org.apache.shardingsphere.core.util.SQLUtil;
 
 import java.util.Collection;
 import java.util.HashMap;
@@ -112,12 +113,15 @@ public final class OrConditionFiller implements SQLStatementFiller<OrConditionSe
                     continue;
                 }
                 if (condition.getColumn().getOwner().isPresent() && sqlStatement.getTables().getTableNames().contains(condition.getColumn().getOwner().get())) {
-                    sqlStatement.addSQLToken(new TableToken(condition.getColumn().getStartIndex(), 0, condition.getColumn().getOwner().get()));
+                    String owner = condition.getColumn().getOwner().get();
+                    sqlStatement.addSQLToken(new TableToken(condition.getColumn().getStartIndex(), 
+                            0, SQLUtil.getExactlyValue(owner), SQLUtil.getLeftDelimiter(owner), SQLUtil.getRightDelimiter(owner)));
                 }
                 if (condition.getExpression() instanceof ColumnSegment) {
                     ColumnSegment rightColumn = (ColumnSegment) condition.getExpression();
                     if (rightColumn.getOwner().isPresent() && sqlStatement.getTables().getTableNames().contains(rightColumn.getOwner().get())) {
-                        sqlStatement.addSQLToken(new TableToken(rightColumn.getStartIndex(), 0, rightColumn.getOwner().get()));
+                        String owner = rightColumn.getOwner().get();
+                        sqlStatement.addSQLToken(new TableToken(rightColumn.getStartIndex(), 0, SQLUtil.getExactlyValue(owner), SQLUtil.getLeftDelimiter(owner), SQLUtil.getRightDelimiter(owner)));
                     }
                     needSharding = true;
                     continue;
@@ -230,8 +234,8 @@ public final class OrConditionFiller implements SQLStatementFiller<OrConditionSe
             return Optional.absent();
         }
         CommonExpressionSegment commonExpressionSegment = (CommonExpressionSegment) expressionSegment;
-        if (-1 < commonExpressionSegment.getIndex()) {
-            return Optional.<SQLExpression>of(new SQLPlaceholderExpression(commonExpressionSegment.getIndex()));
+        if (-1 < commonExpressionSegment.getPlaceholderIndex()) {
+            return Optional.<SQLExpression>of(new SQLPlaceholderExpression(commonExpressionSegment.getPlaceholderIndex()));
         }
         if (null != commonExpressionSegment.getValue()) {
             return Optional.<SQLExpression>of(new SQLNumberExpression(commonExpressionSegment.getValue()));

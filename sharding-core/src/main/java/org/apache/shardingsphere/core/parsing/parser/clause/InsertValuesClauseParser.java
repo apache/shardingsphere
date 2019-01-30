@@ -124,7 +124,7 @@ public abstract class InsertValuesClauseParser implements SQLClauseParser {
             insertStatement.getInsertValues().getInsertValues().add(insertValue);
             insertStatement.getConditions().getOrCondition().getAndConditions().add(andCondition);
         } while (lexerEngine.skipIfEqual(Symbol.COMMA));
-        insertStatement.setInsertValuesListLastPosition(endPosition);
+        insertStatement.setInsertValuesListLastIndex(endPosition - 1);
     }
     
     private void removeGenerateKeyColumn(final InsertStatement insertStatement, final int valueCount) {

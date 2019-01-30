@@ -24,15 +24,16 @@ import lombok.RequiredArgsConstructor;
  * SQL Token.
  *
  * @author zhangliang
+ * @author panjuan
  */
 @RequiredArgsConstructor
 @Getter
 public abstract class SQLToken implements Comparable<SQLToken> {
     
-    private final int beginPosition;
+    private final int startIndex;
     
     @Override
     public final int compareTo(final SQLToken sqlToken) {
-        return beginPosition - sqlToken.getBeginPosition();
+        return startIndex - sqlToken.getStartIndex();
     }
 }

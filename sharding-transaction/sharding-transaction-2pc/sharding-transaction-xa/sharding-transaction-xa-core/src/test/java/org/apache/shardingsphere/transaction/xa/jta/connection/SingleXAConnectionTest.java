@@ -30,7 +30,10 @@ import javax.sql.StatementEventListener;
 import javax.sql.XAConnection;
 import javax.transaction.xa.XAResource;
 
+import java.sql.Connection;
+
 import static org.hamcrest.CoreMatchers.instanceOf;
+import static org.hamcrest.CoreMatchers.is;
 import static org.junit.Assert.assertThat;
 import static org.mockito.ArgumentMatchers.any;
 import static org.mockito.Mockito.mock;
@@ -42,18 +45,21 @@ public final class SingleXAConnectionTest {
     @Mock
     private XAConnection xaConnection;
     
+    @Mock
+    private Connection connection;
+    
     private SingleXAConnection singleXAConnection;
     
     @Before
     public void setUp() {
-        singleXAConnection = new SingleXAConnection("ds1", xaConnection);
+        singleXAConnection = new SingleXAConnection("ds1", connection, xaConnection);
     }
     
     @Test
     @SneakyThrows
     public void assertGetConnection() {
-        singleXAConnection.getConnection();
-        verify(xaConnection).getConnection();
+        Connection actual = singleXAConnection.getConnection();
+        assertThat(actual, is(connection));
     }
     
     @Test

@@ -19,10 +19,10 @@ package org.apache.shardingsphere.core.routing.router.sharding;
 
 import lombok.AccessLevel;
 import lombok.NoArgsConstructor;
+import org.apache.shardingsphere.core.constant.SQLType;
 import org.apache.shardingsphere.core.metadata.datasource.ShardingDataSourceMetaData;
 import org.apache.shardingsphere.core.optimizer.condition.ShardingConditions;
 import org.apache.shardingsphere.core.parsing.antlr.sql.statement.dcl.DCLStatement;
-import org.apache.shardingsphere.core.parsing.antlr.sql.statement.ddl.DDLStatement;
 import org.apache.shardingsphere.core.parsing.parser.dialect.mysql.statement.ShowDatabasesStatement;
 import org.apache.shardingsphere.core.parsing.parser.dialect.mysql.statement.ShowTableStatusStatement;
 import org.apache.shardingsphere.core.parsing.parser.dialect.mysql.statement.ShowTablesStatement;
@@ -30,9 +30,6 @@ import org.apache.shardingsphere.core.parsing.parser.dialect.mysql.statement.Use
 import org.apache.shardingsphere.core.parsing.parser.dialect.postgresql.statement.ResetParamStatement;
 import org.apache.shardingsphere.core.parsing.parser.dialect.postgresql.statement.SetParamStatement;
 import org.apache.shardingsphere.core.parsing.parser.sql.SQLStatement;
-import org.apache.shardingsphere.core.parsing.parser.sql.dal.DALStatement;
-import org.apache.shardingsphere.core.parsing.parser.sql.dml.DMLStatement;
-import org.apache.shardingsphere.core.parsing.parser.sql.dql.select.SelectStatement;
 import org.apache.shardingsphere.core.routing.type.RoutingEngine;
 import org.apache.shardingsphere.core.routing.type.broadcast.DatabaseBroadcastRoutingEngine;
 import org.apache.shardingsphere.core.routing.type.broadcast.InstanceBroadcastRoutingEngine;
@@ -63,35 +60,29 @@ public final class RoutingEngineFactory {
      * @param shardingConditions sharding conditions
      * @return new instance of routing engine
      */
-    public static RoutingEngine newInstance(final ShardingRule shardingRule, 
+    public static RoutingEngine newInstance(final ShardingRule shardingRule,
                                             final ShardingDataSourceMetaData shardingDataSourceMetaData, final SQLStatement sqlStatement, final ShardingConditions shardingConditions) {
         Collection<String> tableNames = sqlStatement.getTables().getTableNames();
-        if (sqlStatement instanceof UseStatement) {
-            return new IgnoreRoutingEngine();
-        }
-        if (isDatabaseAdministrationCommand(sqlStatement, tableNames) || isDMLBroadcastTable(shardingRule, sqlStatement, tableNames)) {
+        if (SQLType.TCL == sqlStatement.getType()) {
             return new DatabaseBroadcastRoutingEngine(shardingRule);
         }
-        if (sqlStatement instanceof DDLStatement || isDCLForTable(sqlStatement)) {
+        if (SQLType.DDL == sqlStatement.getType()) {
             return new TableBroadcastRoutingEngine(shardingRule, sqlStatement);
         }
-        if (sqlStatement instanceof DCLStatement) {
-            return new InstanceBroadcastRoutingEngine(shardingRule, shardingDataSourceMetaData);
+        if (SQLType.DAL == sqlStatement.getType()) {
+            return getDALRoutingEngine(shardingRule, sqlStatement, tableNames);
+        }
+        if (SQLType.DCL == sqlStatement.getType()) {
+            return getDCLRoutingEngine(shardingRule, sqlStatement, shardingDataSourceMetaData);
         }
         if (shardingRule.isAllInDefaultDataSource(tableNames)) {
             return new DefaultDatabaseRoutingEngine(shardingRule, tableNames);
         }
-        if (shardingConditions.isAlwaysFalse()) {
-            return new UnicastRoutingEngine(shardingRule, tableNames);
+        if (shardingRule.isAllBroadcastTables(tableNames)) {
+            return SQLType.DQL == sqlStatement.getType() ? new UnicastRoutingEngine(shardingRule, tableNames) : new DatabaseBroadcastRoutingEngine(shardingRule);
         }
-        if (sqlStatement instanceof DALStatement) {
+        if (shardingConditions.isAlwaysFalse() || tableNames.isEmpty()) {
             return new UnicastRoutingEngine(shardingRule, tableNames);
-        }
-        if (isUnicastDQL(shardingRule, sqlStatement, tableNames)) {
-            return new UnicastRoutingEngine(shardingRule, tableNames);
-        }
-        if (tableNames.isEmpty()) {
-            return new DatabaseBroadcastRoutingEngine(shardingRule);
         }
         Collection<String> shardingTableNames = shardingRule.getShardingLogicTableNames(tableNames);
         if (1 == shardingTableNames.size() || shardingRule.isAllBindingTables(shardingTableNames)) {
@@ -101,20 +92,19 @@ public final class RoutingEngineFactory {
         return new ComplexRoutingEngine(shardingRule, tableNames, shardingConditions);
     }
     
-    private static boolean isDatabaseAdministrationCommand(final SQLStatement sqlStatement, final Collection<String> tableNames) {
-        return sqlStatement instanceof ShowDatabasesStatement || ((sqlStatement instanceof ShowTablesStatement || sqlStatement instanceof ShowTableStatusStatement) && tableNames.isEmpty())
-                || sqlStatement instanceof SetParamStatement || sqlStatement instanceof ResetParamStatement;
+    private static RoutingEngine getDALRoutingEngine(final ShardingRule shardingRule, final SQLStatement sqlStatement, final Collection<String> tableNames) {
+        if (sqlStatement instanceof UseStatement) {
+            return new IgnoreRoutingEngine();
+        }
+        if (sqlStatement instanceof ShowDatabasesStatement || ((sqlStatement instanceof ShowTablesStatement || sqlStatement instanceof ShowTableStatusStatement) && tableNames.isEmpty())
+                || sqlStatement instanceof SetParamStatement || sqlStatement instanceof ResetParamStatement) {
+            return new DatabaseBroadcastRoutingEngine(shardingRule);
+        }
+        return new UnicastRoutingEngine(shardingRule, tableNames);
     }
-    
-    private static boolean isDMLBroadcastTable(final ShardingRule shardingRule, final SQLStatement sqlStatement, final Collection<String> tableNames) {
-        return sqlStatement instanceof DMLStatement && shardingRule.isAllBroadcastTables(tableNames);
-    }
-    
-    private static boolean isDCLForTable(final SQLStatement sqlStatement) {
-        return sqlStatement instanceof DCLStatement && ((DCLStatement) sqlStatement).isGrantForSingleTable();
-    }
-    
-    private static boolean isUnicastDQL(final ShardingRule shardingRule, final SQLStatement sqlStatement, final Collection<String> tableNames) {
-        return sqlStatement instanceof SelectStatement && (tableNames.isEmpty() || shardingRule.isAllBroadcastTables(tableNames));
+
+    private static RoutingEngine getDCLRoutingEngine(final ShardingRule shardingRule, final SQLStatement sqlStatement, final ShardingDataSourceMetaData shardingDataSourceMetaData) {
+        return ((DCLStatement) sqlStatement).isGrantForSingleTable()
+                ? new TableBroadcastRoutingEngine(shardingRule, sqlStatement) : new InstanceBroadcastRoutingEngine(shardingRule, shardingDataSourceMetaData);
     }
 }

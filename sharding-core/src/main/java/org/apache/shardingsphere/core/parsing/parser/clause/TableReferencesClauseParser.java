@@ -46,6 +46,7 @@ import java.util.List;
  *
  * @author zhangliang
  * @author maxiaoguang
+ * @author panjuan
  */
 public class TableReferencesClauseParser implements SQLClauseParser {
     
@@ -104,7 +105,7 @@ public class TableReferencesClauseParser implements SQLClauseParser {
         if (isSingleTableOnly || shardingRule.findTableRule(tableName).isPresent()
                 || shardingRule.isBroadcastTable(tableName) || shardingRule.findBindingTableRule(tableName).isPresent()
                 || shardingRule.getShardingDataSourceNames().getDataSourceNames().contains(shardingRule.getShardingDataSourceNames().getDefaultDataSourceName())) {
-            sqlStatement.addSQLToken(new TableToken(beginPosition, skippedSchemaNameLength, literals));
+            sqlStatement.addSQLToken(new TableToken(beginPosition, skippedSchemaNameLength, tableName, SQLUtil.getLeftDelimiter(literals), SQLUtil.getRightDelimiter(literals)));
             sqlStatement.getTables().add(new Table(tableName, aliasExpressionParser.parseTableAlias(sqlStatement, true, tableName)));
         } else {
             aliasExpressionParser.parseTableAlias();
@@ -126,7 +127,7 @@ public class TableReferencesClauseParser implements SQLClauseParser {
                 Preconditions.checkState(!Symbol.RIGHT_PAREN.getLiterals().equals(literals), "There is an error in the vicinity of the force index syntax.");
                 if (literals.equals(shardingRule.getTableRule(tableName).getLogicIndex())) {
                     int beginPosition = lexerEngine.getCurrentToken().getEndPosition() - literals.length();
-                    sqlStatement.addSQLToken(new IndexToken(beginPosition, literals, tableName));
+                    sqlStatement.addSQLToken(new IndexToken(beginPosition, lexerEngine.getCurrentToken().getEndPosition() - 1, tableName));
                 }
                 lexerEngine.nextToken();
             } while (lexerEngine.skipIfEqual(Symbol.COMMA));
@@ -193,7 +194,7 @@ public class TableReferencesClauseParser implements SQLClauseParser {
             literals = lexerEngine.getCurrentToken().getLiterals();
             lexerEngine.nextToken();
         }
-        sqlStatement.addSQLToken(new TableToken(beginPosition, skippedSchemaNameLength, literals));
+        sqlStatement.addSQLToken(new TableToken(beginPosition, skippedSchemaNameLength, SQLUtil.getExactlyValue(literals), SQLUtil.getLeftDelimiter(literals), SQLUtil.getRightDelimiter(literals)));
         sqlStatement.getTables().add(new Table(SQLUtil.getExactlyValue(literals), Optional.<String>absent()));
     }
 }

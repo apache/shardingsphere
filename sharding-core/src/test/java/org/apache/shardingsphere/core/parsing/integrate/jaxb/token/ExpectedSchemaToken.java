@@ -29,11 +29,11 @@ import javax.xml.bind.annotation.XmlAttribute;
 @XmlAccessorType(XmlAccessType.FIELD)
 public final class ExpectedSchemaToken {
     
-    @XmlAttribute(name = "begin-position")
-    private int beginPosition;
+    @XmlAttribute(name = "start-index")
+    private int startIndex;
     
-    @XmlAttribute(name = "original-literals")
-    private String originalLiterals;
+    @XmlAttribute(name = "stop-index")
+    private int stopIndex;
     
     @XmlAttribute(name = "table-name")
     private String tableName;

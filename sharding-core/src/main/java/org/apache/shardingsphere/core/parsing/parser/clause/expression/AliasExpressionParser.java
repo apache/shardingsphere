@@ -33,6 +33,7 @@ import org.apache.shardingsphere.core.util.SQLUtil;
  *
  * @author zhangliang
  * @author maxiaoguang
+ * @author panjuan
  */
 @RequiredArgsConstructor
 public abstract class AliasExpressionParser {
@@ -66,7 +67,7 @@ public abstract class AliasExpressionParser {
         String literals = lexerEngine.getCurrentToken().getLiterals();
         String alias = SQLUtil.getExactlyValue(literals);
         if (setTableToken && alias.equals(tableName)) {
-            sqlStatement.addSQLToken(new TableToken(beginPosition, 0, literals));
+            sqlStatement.addSQLToken(new TableToken(beginPosition, 0, SQLUtil.getExactlyValue(literals), SQLUtil.getLeftDelimiter(literals), SQLUtil.getRightDelimiter(literals)));
         }
         lexerEngine.nextToken();
         return Optional.of(SQLUtil.getExactlyValue(literals));

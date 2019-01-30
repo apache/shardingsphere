@@ -19,7 +19,6 @@ package org.apache.shardingsphere.core.executor.sql.execute;
 
 import lombok.RequiredArgsConstructor;
 import org.apache.shardingsphere.core.constant.DatabaseType;
-import org.apache.shardingsphere.core.executor.ShardingExecuteCallback;
 import org.apache.shardingsphere.core.executor.ShardingGroupExecuteCallback;
 import org.apache.shardingsphere.core.executor.StatementExecuteUnit;
 import org.apache.shardingsphere.core.executor.sql.execute.threadlocal.ExecutorExceptionHandler;
@@ -42,16 +41,11 @@ import java.util.Map;
  * @param <T> class type of return value
  */
 @RequiredArgsConstructor
-public abstract class SQLExecuteCallback<T> implements ShardingExecuteCallback<StatementExecuteUnit, T>, ShardingGroupExecuteCallback<StatementExecuteUnit, T> {
+public abstract class SQLExecuteCallback<T> implements ShardingGroupExecuteCallback<StatementExecuteUnit, T> {
     
     private final DatabaseType databaseType;
     
     private final boolean isExceptionThrown;
-    
-    @Override
-    public final T execute(final StatementExecuteUnit statementExecuteUnit, final boolean isTrunkThread, final Map<String, Object> shardingExecuteDataMap) throws SQLException {
-        return execute0(statementExecuteUnit, isTrunkThread, shardingExecuteDataMap);
-    }
     
     @Override
     public final Collection<T> execute(final Collection<StatementExecuteUnit> statementExecuteUnits, final boolean isTrunkThread,

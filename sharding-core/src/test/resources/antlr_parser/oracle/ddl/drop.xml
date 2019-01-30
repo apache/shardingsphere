@@ -5,7 +5,7 @@
             <table name="t_order" />
         </tables>
         <tokens>
-            <table-token begin-position="11" original-literals="t_order" />
+            <table-token start-index="11" table-name="t_order" />
         </tokens>
     </parser-result>
     
@@ -14,7 +14,7 @@
             <table name="t_order" />
         </tables>
         <tokens>
-            <table-token begin-position="23" original-literals="t_order" />
+            <table-token start-index="23" table-name="t_order" />
         </tokens>
     </parser-result>
     
@@ -23,25 +23,25 @@
             <table name="t_order" />
         </tables>
         <tokens>
-            <table-token begin-position="11" original-literals="&quot;t_order&quot;"/>
+            <table-token start-index="11" table-name="t_order" left-delimiter="&quot;" right-delimiter="&quot;" />
         </tokens>
     </parser-result>
     
     <parser-result sql-case-id="drop_index">
         <tokens>
-            <index-token begin-position="11" original-literals="idx_order_id" table-name=""/>
+            <index-token start-index="11" stop-index="22" table-name=""/>
         </tokens>
     </parser-result>
     
     <parser-result sql-case-id="drop_index_with_space">
         <tokens>
-            <index-token begin-position="23" original-literals="idx_order_id" table-name=""/>
+            <index-token start-index="23" stop-index="34" table-name=""/>
         </tokens>
     </parser-result>
     
     <parser-result sql-case-id="drop_index_with_quota">
         <tokens>
-            <index-token begin-position="11" original-literals="&quot;idx_order_id&quot;" table-name=""/>
+            <index-token start-index="11" stop-index="24" table-name=""/>
         </tokens>
     </parser-result>
 </parser-result-sets>

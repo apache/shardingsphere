@@ -24,14 +24,15 @@ import org.apache.shardingsphere.core.constant.OrderDirection;
  * Order by item segment for index.
  * 
  * @author zhangliang
+ * @author panjuan
  */
 @Getter
 public final class IndexOrderByItemSegment extends OrderByItemSegment {
     
-    private final int index;
+    private final int columnIndex;
     
-    public IndexOrderByItemSegment(final int index, final OrderDirection orderDirection, final OrderDirection nullOrderDirection) {
+    public IndexOrderByItemSegment(final int columnIndex, final OrderDirection orderDirection, final OrderDirection nullOrderDirection) {
         super(orderDirection, nullOrderDirection);
-        this.index = index;
+        this.columnIndex = columnIndex;
     }
 }

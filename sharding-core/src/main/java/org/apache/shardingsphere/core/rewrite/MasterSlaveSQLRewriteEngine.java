@@ -33,6 +33,7 @@ import java.util.List;
  * <p>should rewrite schema name.</p>
  * 
  * @author chenqingyang
+ * @author panjuan
  */
 public final class MasterSlaveSQLRewriteEngine {
     
@@ -72,7 +73,7 @@ public final class MasterSlaveSQLRewriteEngine {
         int count = 0;
         for (SQLToken each : sqlTokens) {
             if (0 == count) {
-                result.appendLiterals(originalSQL.substring(0, each.getBeginPosition()));
+                result.appendLiterals(originalSQL.substring(0, each.getStartIndex()));
             }
             if (each instanceof SchemaToken) {
                 appendSchemaPlaceholder(originalSQL, result, (SchemaToken) each, count);
@@ -83,9 +84,9 @@ public final class MasterSlaveSQLRewriteEngine {
     }
     
     private void appendSchemaPlaceholder(final String sql, final SQLBuilder sqlBuilder, final SchemaToken schemaToken, final int count) {
-        sqlBuilder.appendPlaceholder(new SchemaPlaceholder(schemaToken.getSchemaName().toLowerCase(), null));
-        int beginPosition = schemaToken.getBeginPosition() + schemaToken.getOriginalLiterals().length();
-        int endPosition = sqlTokens.size() - 1 == count ? sql.length() : sqlTokens.get(count + 1).getBeginPosition();
-        sqlBuilder.appendLiterals(sql.substring(beginPosition, endPosition));
+        String schemaName = originalSQL.substring(schemaToken.getStartIndex(), schemaToken.getStopIndex() + 1);
+        sqlBuilder.appendPlaceholder(new SchemaPlaceholder(schemaName.toLowerCase(), null));
+        int endPosition = sqlTokens.size() - 1 == count ? sql.length() : sqlTokens.get(count + 1).getStartIndex();
+        sqlBuilder.appendLiterals(sql.substring(schemaToken.getStopIndex() + 1, endPosition));
     }
 }

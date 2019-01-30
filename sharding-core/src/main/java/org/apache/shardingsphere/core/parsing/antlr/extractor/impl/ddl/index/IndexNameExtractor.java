@@ -24,7 +24,6 @@ import org.apache.shardingsphere.core.parsing.antlr.extractor.util.ExtractorUtil
 import org.apache.shardingsphere.core.parsing.antlr.extractor.util.RuleName;
 import org.apache.shardingsphere.core.parsing.antlr.sql.segment.definition.index.IndexSegment;
 import org.apache.shardingsphere.core.parsing.parser.token.IndexToken;
-import org.apache.shardingsphere.core.util.SQLUtil;
 
 /**
  * Index name extractor.
@@ -36,7 +35,7 @@ public final class IndexNameExtractor implements OptionalSQLSegmentExtractor {
     @Override
     public Optional<IndexSegment> extract(final ParserRuleContext ancestorNode) {
         Optional<ParserRuleContext> indexNameNode = ExtractorUtils.findFirstChildNode(ancestorNode, RuleName.INDEX_NAME);
-        return indexNameNode.isPresent() ? Optional.of(new IndexSegment(new IndexToken(indexNameNode.get().getStop().getStartIndex(), SQLUtil.getNameWithoutSchema(indexNameNode.get().getText()))))
+        return indexNameNode.isPresent() ? Optional.of(new IndexSegment(new IndexToken(indexNameNode.get().getStop().getStartIndex(), indexNameNode.get().getStop().getStopIndex())))
                 : Optional.<IndexSegment>absent();
     }
 }

@@ -29,6 +29,7 @@ import java.util.List;
  * Insert values segment.
  *
  * @author duhongjun
+ * @author panjuan
  */
 @RequiredArgsConstructor
 @Getter
@@ -38,7 +39,7 @@ public final class InsertValuesSegment implements SQLSegment {
     
     private final int startIndex;
     
-    private final int endIndex;
+    private final int stopIndex;
     
     private final int parametersCount;
     

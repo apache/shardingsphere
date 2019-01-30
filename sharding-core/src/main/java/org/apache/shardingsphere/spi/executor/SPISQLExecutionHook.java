@@ -33,6 +33,10 @@ public final class SPISQLExecutionHook implements SQLExecutionHook {
     
     private final Collection<SQLExecutionHook> sqlExecutionHooks = NewInstanceServiceLoader.newServiceInstances(SQLExecutionHook.class);
     
+    static {
+        NewInstanceServiceLoader.register(SQLExecutionHook.class);
+    }
+    
     @Override
     public void start(final RouteUnit routeUnit, final DataSourceMetaData dataSourceMetaData, final boolean isTrunkThread, final Map<String, Object> shardingExecuteDataMap) {
         for (SQLExecutionHook each : sqlExecutionHooks) {

@@ -35,6 +35,7 @@ import static org.junit.Assert.assertThat;
  * Table token assert.
  *
  * @author zhangliang
+ * @author panjuan
  */
 @RequiredArgsConstructor
 final class TableTokenAssert {
@@ -52,11 +53,15 @@ final class TableTokenAssert {
     }
     
     private void assertTableToken(final TableToken actual, final ExpectedTableToken expected) {
-        assertThat(assertMessage.getFullAssertMessage("Table tokens begin position assertion error: "), actual.getBeginPosition(), is(expected.getBeginPosition()));
+        assertThat(assertMessage.getFullAssertMessage("Table tokens start index assertion error: "), actual.getStartIndex(), is(expected.getStartIndex()));
         if (0 != expected.getSkippedSchemaNameLength()) {
             assertThat(assertMessage.getFullAssertMessage("Table tokens skipped schema name length assertion error: "), actual.getSkippedSchemaNameLength(), is(expected.getSkippedSchemaNameLength()));
         }
-        assertThat(assertMessage.getFullAssertMessage("Table tokens original literals assertion error: "), actual.getOriginalLiterals(), is(expected.getOriginalLiterals()));
+        assertThat(assertMessage.getFullAssertMessage("Table tokens table name assertion error: "), actual.getTableName(), is(expected.getTableName()));
+        assertThat(assertMessage.getFullAssertMessage("Table tokens left delimiter assertion error: "), 
+                actual.getLeftDelimiter(), is(null == expected.getLeftDelimiter() ? "" : expected.getLeftDelimiter()));
+        assertThat(assertMessage.getFullAssertMessage("Table tokens right delimiter assertion error: "), 
+                actual.getRightDelimiter(), is(null == expected.getRightDelimiter() ? "" : expected.getRightDelimiter()));
     }
     
     private List<TableToken> getTableTokens(final Collection<SQLToken> actual) {

@@ -17,7 +17,6 @@
 
 package org.apache.shardingsphere.shardingproxy.listener;
 
-import org.apache.shardingsphere.core.bootstrap.ShardingBootstrap;
 import org.apache.shardingsphere.shardingproxy.runtime.GlobalRegistry;
 
 /**
@@ -34,7 +33,6 @@ public final class ProxyListenerRegister {
      * Register all listeners.
      */
     public void register() {
-        ShardingBootstrap.init();
         globalRegistry.register();
     }
 }

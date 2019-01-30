@@ -66,10 +66,10 @@ public final class SQLBuilderTest {
     public void assertAppendTableWithoutTableToken() {
         SQLBuilder sqlBuilder = new SQLBuilder();
         sqlBuilder.appendLiterals("SELECT ");
-        sqlBuilder.appendPlaceholder(new TablePlaceholder("table_x", "table_x"));
+        sqlBuilder.appendPlaceholder(new TablePlaceholder("table_x", "", ""));
         sqlBuilder.appendLiterals(".id");
         sqlBuilder.appendLiterals(" FROM ");
-        sqlBuilder.appendPlaceholder(new TablePlaceholder("table_x", "table_x"));
+        sqlBuilder.appendPlaceholder(new TablePlaceholder("table_x", "", ""));
         assertThat(sqlBuilder.toSQL(null, Collections.<String, String>emptyMap(), null, null).getSql(), is("SELECT table_x.id FROM table_x"));
     }
     
@@ -77,10 +77,10 @@ public final class SQLBuilderTest {
     public void assertAppendTableWithTableToken() {
         SQLBuilder sqlBuilder = new SQLBuilder();
         sqlBuilder.appendLiterals("SELECT ");
-        sqlBuilder.appendPlaceholder(new TablePlaceholder("table_x", "table_x"));
+        sqlBuilder.appendPlaceholder(new TablePlaceholder("table_x", "", ""));
         sqlBuilder.appendLiterals(".id");
         sqlBuilder.appendLiterals(" FROM ");
-        sqlBuilder.appendPlaceholder(new TablePlaceholder("table_x", "table_x"));
+        sqlBuilder.appendPlaceholder(new TablePlaceholder("table_x", "", ""));
         Map<String, String> tableTokens = new HashMap<>(1, 1);
         tableTokens.put("table_x", "table_x_1");
         assertThat(sqlBuilder.toSQL(null, tableTokens, null, null).getSql(), is("SELECT table_x_1.id FROM table_x_1"));
@@ -92,7 +92,7 @@ public final class SQLBuilderTest {
         sqlBuilder.appendLiterals("CREATE INDEX ");
         sqlBuilder.appendPlaceholder(new IndexPlaceholder("index_name", "index_name"));
         sqlBuilder.appendLiterals(" ON ");
-        sqlBuilder.appendPlaceholder(new TablePlaceholder("table_x", "table_x"));
+        sqlBuilder.appendPlaceholder(new TablePlaceholder("table_x", "", ""));
         sqlBuilder.appendLiterals(" ('column')");
         assertThat(sqlBuilder.toSQL(null, Collections.<String, String>emptyMap(), null, null).getSql(), is("CREATE INDEX index_name ON table_x ('column')"));
     }
@@ -103,7 +103,7 @@ public final class SQLBuilderTest {
         sqlBuilder.appendLiterals("CREATE INDEX ");
         sqlBuilder.appendPlaceholder(new IndexPlaceholder("index_name", "table_x"));
         sqlBuilder.appendLiterals(" ON ");
-        sqlBuilder.appendPlaceholder(new TablePlaceholder("table_x", "table_x"));
+        sqlBuilder.appendPlaceholder(new TablePlaceholder("table_x", "", ""));
         sqlBuilder.appendLiterals(" ('column')");
         Map<String, String> tableTokens = new HashMap<>(1, 1);
         tableTokens.put("table_x", "table_x_1");
@@ -115,7 +115,7 @@ public final class SQLBuilderTest {
         SQLBuilder sqlBuilder = new SQLBuilder();
         sqlBuilder.appendLiterals("SHOW ");
         sqlBuilder.appendLiterals("CREATE TABLE ");
-        sqlBuilder.appendPlaceholder(new TablePlaceholder("table_x", "table_x"));
+        sqlBuilder.appendPlaceholder(new TablePlaceholder("table_x", "", ""));
         sqlBuilder.appendLiterals("ON ");
         sqlBuilder.appendPlaceholder(new SchemaPlaceholder("dx", "table_x"));
         sqlBuilder.toSQL(null, Collections.<String, String>emptyMap(), createShardingRule(), null);
@@ -126,7 +126,7 @@ public final class SQLBuilderTest {
         SQLBuilder sqlBuilder = new SQLBuilder();
         sqlBuilder.appendLiterals("SHOW ");
         sqlBuilder.appendLiterals("CREATE TABLE ");
-        sqlBuilder.appendPlaceholder(new TablePlaceholder("table_0", "table_0"));
+        sqlBuilder.appendPlaceholder(new TablePlaceholder("table_0", "", ""));
         sqlBuilder.appendLiterals(" ON ");
         sqlBuilder.appendPlaceholder(new SchemaPlaceholder("ds0", "table_0"));
         Map<String, String> tableTokens = new HashMap<>(1, 1);
@@ -140,10 +140,10 @@ public final class SQLBuilderTest {
     public void assertAppendTableWithoutTableTokenWithBackQuotes() {
         SQLBuilder sqlBuilder = new SQLBuilder();
         sqlBuilder.appendLiterals("SELECT ");
-        sqlBuilder.appendPlaceholder(new TablePlaceholder("table_x", "`table_x`"));
+        sqlBuilder.appendPlaceholder(new TablePlaceholder("table_x", "`", "`"));
         sqlBuilder.appendLiterals(".id");
         sqlBuilder.appendLiterals(" FROM ");
-        sqlBuilder.appendPlaceholder(new TablePlaceholder("table_x", "`table_x`"));
+        sqlBuilder.appendPlaceholder(new TablePlaceholder("table_x", "`", "`"));
         assertThat(sqlBuilder.toSQL(null, Collections.<String, String>emptyMap(), null, null).getSql(), is("SELECT `table_x`.id FROM `table_x`"));
     }
     
@@ -151,10 +151,10 @@ public final class SQLBuilderTest {
     public void assertAppendTableWithTableTokenWithBackQuotes() {
         SQLBuilder sqlBuilder = new SQLBuilder();
         sqlBuilder.appendLiterals("SELECT ");
-        sqlBuilder.appendPlaceholder(new TablePlaceholder("table_x", "`table_x`"));
+        sqlBuilder.appendPlaceholder(new TablePlaceholder("table_x", "`", "`"));
         sqlBuilder.appendLiterals(".id");
         sqlBuilder.appendLiterals(" FROM ");
-        sqlBuilder.appendPlaceholder(new TablePlaceholder("table_x", "`table_x`"));
+        sqlBuilder.appendPlaceholder(new TablePlaceholder("table_x", "`", "`"));
         Map<String, String> tableTokens = new HashMap<>(1, 1);
         tableTokens.put("table_x", "table_x_1");
         assertThat(sqlBuilder.toSQL(null, tableTokens, null, null).getSql(), is("SELECT `table_x_1`.id FROM `table_x_1`"));
@@ -166,7 +166,7 @@ public final class SQLBuilderTest {
         sqlBuilder.appendLiterals("CREATE INDEX ");
         sqlBuilder.appendPlaceholder(new IndexPlaceholder("index_name", "index_name"));
         sqlBuilder.appendLiterals(" ON ");
-        sqlBuilder.appendPlaceholder(new TablePlaceholder("table_x", "`table_x`"));
+        sqlBuilder.appendPlaceholder(new TablePlaceholder("table_x", "`", "`"));
         sqlBuilder.appendLiterals(" ('column')");
         assertThat(sqlBuilder.toSQL(null, Collections.<String, String>emptyMap(), null, null).getSql(), is("CREATE INDEX index_name ON `table_x` ('column')"));
     }
@@ -177,7 +177,7 @@ public final class SQLBuilderTest {
         sqlBuilder.appendLiterals("CREATE INDEX ");
         sqlBuilder.appendPlaceholder(new IndexPlaceholder("index_name", "table_x"));
         sqlBuilder.appendLiterals(" ON ");
-        sqlBuilder.appendPlaceholder(new TablePlaceholder("table_x", "`table_x`"));
+        sqlBuilder.appendPlaceholder(new TablePlaceholder("table_x", "`", "`"));
         sqlBuilder.appendLiterals(" ('column')");
         Map<String, String> tableTokens = new HashMap<>(1, 1);
         tableTokens.put("table_x", "table_x_1");
@@ -189,7 +189,7 @@ public final class SQLBuilderTest {
         SQLBuilder sqlBuilder = new SQLBuilder();
         sqlBuilder.appendLiterals("SHOW ");
         sqlBuilder.appendLiterals("CREATE TABLE ");
-        sqlBuilder.appendPlaceholder(new TablePlaceholder("table_0", "`table_0`"));
+        sqlBuilder.appendPlaceholder(new TablePlaceholder("table_0", "`", "`"));
         sqlBuilder.appendLiterals(" ON ");
         sqlBuilder.appendPlaceholder(new SchemaPlaceholder("ds", "table_0"));
         Map<String, String> tableTokens = new HashMap<>(1, 1);
@@ -201,10 +201,10 @@ public final class SQLBuilderTest {
     public void assertAppendTableWithoutTableTokenWithDoubleQuotes() {
         SQLBuilder sqlBuilder = new SQLBuilder();
         sqlBuilder.appendLiterals("SELECT ");
-        sqlBuilder.appendPlaceholder(new TablePlaceholder("table_x", "\"table_x\""));
+        sqlBuilder.appendPlaceholder(new TablePlaceholder("table_x", "\"", "\""));
         sqlBuilder.appendLiterals(".id");
         sqlBuilder.appendLiterals(" FROM ");
-        sqlBuilder.appendPlaceholder(new TablePlaceholder("table_x", "\"table_x\""));
+        sqlBuilder.appendPlaceholder(new TablePlaceholder("table_x", "\"", "\""));
         assertThat(sqlBuilder.toSQL(null, Collections.<String, String>emptyMap(), null, null).getSql(), is("SELECT \"table_x\".id FROM \"table_x\""));
     }
     
@@ -212,10 +212,10 @@ public final class SQLBuilderTest {
     public void assertAppendTableWithTableTokenWithDoubleQuotes() {
         SQLBuilder sqlBuilder = new SQLBuilder();
         sqlBuilder.appendLiterals("SELECT ");
-        sqlBuilder.appendPlaceholder(new TablePlaceholder("table_x", "\"table_x\""));
+        sqlBuilder.appendPlaceholder(new TablePlaceholder("table_x", "\"", "\""));
         sqlBuilder.appendLiterals(".id");
         sqlBuilder.appendLiterals(" FROM ");
-        sqlBuilder.appendPlaceholder(new TablePlaceholder("table_x", "\"table_x\""));
+        sqlBuilder.appendPlaceholder(new TablePlaceholder("table_x", "\"", "\""));
         Map<String, String> tableTokens = new HashMap<>(1, 1);
         tableTokens.put("table_x", "table_x_1");
         assertThat(sqlBuilder.toSQL(null, tableTokens, null, null).getSql(), is("SELECT \"table_x_1\".id FROM \"table_x_1\""));
@@ -227,7 +227,7 @@ public final class SQLBuilderTest {
         sqlBuilder.appendLiterals("CREATE INDEX ");
         sqlBuilder.appendPlaceholder(new IndexPlaceholder("index_name", "index_name"));
         sqlBuilder.appendLiterals(" ON ");
-        sqlBuilder.appendPlaceholder(new TablePlaceholder("table_x", "\"table_x\""));
+        sqlBuilder.appendPlaceholder(new TablePlaceholder("table_x", "\"", "\""));
         sqlBuilder.appendLiterals(" ('column')");
         assertThat(sqlBuilder.toSQL(null, Collections.<String, String>emptyMap(), null, null).getSql(), is("CREATE INDEX index_name ON \"table_x\" ('column')"));
     }
@@ -238,7 +238,7 @@ public final class SQLBuilderTest {
         sqlBuilder.appendLiterals("CREATE INDEX ");
         sqlBuilder.appendPlaceholder(new IndexPlaceholder("index_name", "table_x"));
         sqlBuilder.appendLiterals(" ON ");
-        sqlBuilder.appendPlaceholder(new TablePlaceholder("table_x", "\"table_x\""));
+        sqlBuilder.appendPlaceholder(new TablePlaceholder("table_x", "\"", "\""));
         sqlBuilder.appendLiterals(" ('column')");
         Map<String, String> tableTokens = new HashMap<>(1, 1);
         tableTokens.put("table_x", "table_x_1");
@@ -250,7 +250,7 @@ public final class SQLBuilderTest {
         SQLBuilder sqlBuilder = new SQLBuilder();
         sqlBuilder.appendLiterals("SHOW ");
         sqlBuilder.appendLiterals("CREATE TABLE ");
-        sqlBuilder.appendPlaceholder(new TablePlaceholder("table_0", "\"table_0\""));
+        sqlBuilder.appendPlaceholder(new TablePlaceholder("table_0", "\"", "\""));
         sqlBuilder.appendLiterals(" ON ");
         sqlBuilder.appendPlaceholder(new SchemaPlaceholder("ds", "table_0"));
         Map<String, String> tableTokens = new HashMap<>(1, 1);
@@ -262,7 +262,7 @@ public final class SQLBuilderTest {
     public void assertShardingPlaceholderToString() {
         assertThat(new IndexPlaceholder("index_name", "table_x").toString(), is("index_name"));
         assertThat(new SchemaPlaceholder("schema_name", "table_x").toString(), is("schema_name"));
-        assertThat(new TablePlaceholder("table_name", "`table_name`").toString(), is("table_name"));
+        assertThat(new TablePlaceholder("table_name", "`", "`").toString(), is("`table_name`"));
     }
     
     private ShardingRule createShardingRule() {

@@ -20,7 +20,6 @@ package org.apache.shardingsphere.shardingjdbc.jdbc.adapter;
 import com.google.common.base.Preconditions;
 import lombok.Getter;
 import lombok.Setter;
-import org.apache.shardingsphere.core.bootstrap.ShardingBootstrap;
 import org.apache.shardingsphere.core.constant.DatabaseType;
 import org.apache.shardingsphere.core.util.ReflectiveUtil;
 import org.apache.shardingsphere.shardingjdbc.jdbc.unsupported.AbstractUnsupportedOperationDataSource;
@@ -45,19 +44,17 @@ import java.util.logging.Logger;
 @Setter
 public abstract class AbstractDataSourceAdapter extends AbstractUnsupportedOperationDataSource implements AutoCloseable {
     
-    static {
-        ShardingBootstrap.init();
-    }
-    
     private final DatabaseType databaseType;
     
     private final Map<String, DataSource> dataSourceMap;
+    
+    private ShardingTransactionManagerEngine shardingTransactionManagerEngine = new ShardingTransactionManagerEngine();
     
     private PrintWriter logWriter = new PrintWriter(System.out);
     
     public AbstractDataSourceAdapter(final Map<String, DataSource> dataSourceMap) throws SQLException {
         databaseType = getDatabaseType(dataSourceMap.values());
-        ShardingTransactionManagerEngine.init(databaseType, dataSourceMap);
+        shardingTransactionManagerEngine.init(databaseType, dataSourceMap);
         this.dataSourceMap = dataSourceMap;
     }
     
@@ -98,6 +95,6 @@ public abstract class AbstractDataSourceAdapter extends AbstractUnsupportedOpera
             } catch (final ReflectiveOperationException ignored) {
             }
         }
-        ShardingTransactionManagerEngine.close();
+        shardingTransactionManagerEngine.close();
     }
 }

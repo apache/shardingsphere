@@ -23,6 +23,9 @@ import org.junit.runners.Suite;
 import org.junit.runners.Suite.SuiteClasses;
 
 @RunWith(Suite.class)
-@SuiteClasses(ExecutorExceptionHandlerTest.class)
+@SuiteClasses({
+    ExecutorExceptionHandlerTest.class,
+    ShardingExecuteEngineTest.class
+})
 public final class AllExecutorTests {
 }

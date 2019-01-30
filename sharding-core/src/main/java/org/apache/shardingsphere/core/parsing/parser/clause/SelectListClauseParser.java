@@ -173,7 +173,7 @@ public abstract class SelectListClauseParser implements SQLClauseParser {
         } else if (lexerEngine.equalAny(Symbol.DOT)) {
             String tableName = SQLUtil.getExactlyValue(literals);
             if (shardingRule.findTableRule(tableName).isPresent() || shardingRule.isBroadcastTable(tableName) || shardingRule.findBindingTableRule(tableName).isPresent()) {
-                selectStatement.addSQLToken(new TableToken(position, 0, literals));
+                selectStatement.addSQLToken(new TableToken(position, 0, SQLUtil.getExactlyValue(literals), SQLUtil.getLeftDelimiter(literals), SQLUtil.getRightDelimiter(literals)));
             }
             result.append(lexerEngine.getCurrentToken().getLiterals());
             lexerEngine.nextToken();
@@ -195,23 +195,21 @@ public abstract class SelectListClauseParser implements SQLClauseParser {
     private SelectItem parseAggregationSelectItem(final SelectStatement selectStatement) {
         AggregationType aggregationType = AggregationType.valueOf(lexerEngine.getCurrentToken().getLiterals().toUpperCase());
         int beginPosition = lexerEngine.getCurrentToken().getEndPosition() - lexerEngine.getCurrentToken().getLiterals().length();
+        int endPosition = lexerEngine.getCurrentToken().getEndPosition();
         lexerEngine.nextToken();
         String innerExpression = lexerEngine.skipParentheses(selectStatement);
-        return isAggregationDistinctSelectItem(innerExpression) ? getAggregationDistinctSelectItem(selectStatement, aggregationType, beginPosition, innerExpression)
+        endPosition = endPosition + innerExpression.length();
+        return isAggregationDistinctSelectItem(innerExpression) ? getAggregationDistinctSelectItem(selectStatement, aggregationType, beginPosition, endPosition, innerExpression)
                 : new AggregationSelectItem(aggregationType, innerExpression, aliasExpressionParser.parseSelectItemAlias());
     }
     
-    private SelectItem getAggregationDistinctSelectItem(final SelectStatement selectStatement, final AggregationType aggregationType, final int beginPosition, final String innerExpression) {
-        Optional<String> alias = aliasExpressionParser.parseSelectItemAlias();
-        Optional<String> autoAlias = Optional.absent();
-        if (!alias.isPresent()) {
-            autoAlias = Optional.of(DerivedAlias.AGGREGATION_DISTINCT_DERIVED.getDerivedAlias(selectStatement.getAggregationDistinctSelectItems().size()));
-            alias = autoAlias;
-        }
+    private SelectItem getAggregationDistinctSelectItem(final SelectStatement selectStatement, 
+                                                        final AggregationType aggregationType, final int beginPosition, final int endPosition, final String innerExpression) {
+        Optional<String> alias = aliasExpressionParser.parseSelectItemAlias().isPresent() ? aliasExpressionParser.parseSelectItemAlias() 
+                : Optional.of(DerivedAlias.AGGREGATION_DISTINCT_DERIVED.getDerivedAlias(selectStatement.getAggregationDistinctSelectItems().size()));
         AggregationDistinctSelectItem result = new AggregationDistinctSelectItem(
                 aggregationType, innerExpression, alias, getDistinctColumnName(innerExpression));
-        
-        selectStatement.getSQLTokens().add(new AggregationDistinctToken(beginPosition, SQLUtil.getExactlyValue(aggregationType.name() + innerExpression), result.getDistinctColumnName(), autoAlias));
+        selectStatement.getSQLTokens().add(new AggregationDistinctToken(beginPosition, endPosition - 1, result.getDistinctColumnName(), alias));
         return result;
     }
     

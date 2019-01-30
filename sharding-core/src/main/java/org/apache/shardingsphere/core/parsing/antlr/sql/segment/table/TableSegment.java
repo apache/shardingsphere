@@ -27,6 +27,7 @@ import org.apache.shardingsphere.core.parsing.parser.token.TableToken;
  * Table segment.
  * 
  * @author duhongjun
+ * @author panjuan
  */
 @Getter
 @Setter
@@ -40,7 +41,7 @@ public class TableSegment implements SQLSegment {
     
     private String alias;
     
-    private int aliasStartPosition = -1;
+    private int aliasStartIndex = -1;
     
     public TableSegment(final TableToken token) {
         name = token.getTableName();

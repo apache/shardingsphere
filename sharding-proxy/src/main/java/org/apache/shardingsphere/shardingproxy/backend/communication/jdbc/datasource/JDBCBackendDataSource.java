@@ -25,6 +25,7 @@ import org.apache.shardingsphere.core.exception.ShardingException;
 import org.apache.shardingsphere.core.util.ReflectiveUtil;
 import org.apache.shardingsphere.shardingproxy.backend.BackendDataSource;
 import org.apache.shardingsphere.shardingproxy.config.yaml.YamlDataSourceParameter;
+import org.apache.shardingsphere.shardingproxy.runtime.GlobalRegistry;
 import org.apache.shardingsphere.transaction.ShardingTransactionManagerEngine;
 import org.apache.shardingsphere.transaction.core.TransactionType;
 import org.apache.shardingsphere.transaction.spi.ShardingTransactionManager;
@@ -55,6 +56,8 @@ public final class JDBCBackendDataSource implements BackendDataSource, AutoClose
     
     private JDBCBackendDataSourceFactory hikariDataSourceFactory = JDBCRawBackendDataSourceFactory.getInstance();
     
+    private ShardingTransactionManagerEngine shardingTransactionManagerEngine = GlobalRegistry.getInstance().getShardingTransactionManagerEngine();
+    
     public JDBCBackendDataSource(final Map<String, YamlDataSourceParameter> dataSourceParameters) {
         createDataSourceMap(dataSourceParameters);
     }
@@ -64,14 +67,14 @@ public final class JDBCBackendDataSource implements BackendDataSource, AutoClose
         for (Entry<String, YamlDataSourceParameter> entry : dataSourceParameters.entrySet()) {
             try {
                 dataSourceMap.put(entry.getKey(), hikariDataSourceFactory.build(entry.getKey(), entry.getValue()));
-            // CHECKSTYLE:OFF
+                // CHECKSTYLE:OFF
             } catch (final Exception ex) {
                 // CHECKSTYLE:ON
                 throw new ShardingException(String.format("Can not build data source, name is `%s`.", entry.getKey()), ex);
             }
         }
         this.dataSources = dataSourceMap;
-        ShardingTransactionManagerEngine.init(DatabaseType.MySQL, dataSourceMap);
+        shardingTransactionManagerEngine.init(DatabaseType.MySQL, dataSourceMap);
     }
     
     /**
@@ -101,9 +104,9 @@ public final class JDBCBackendDataSource implements BackendDataSource, AutoClose
     /**
      * Get connections.
      *
-     * @param connectionMode connection mode 
-     * @param dataSourceName data source name
-     * @param connectionSize size of connections to be get
+     * @param connectionMode  connection mode
+     * @param dataSourceName  data source name
+     * @param connectionSize  size of connections to be get
      * @param transactionType transaction type
      * @return connections
      * @throws SQLException SQL exception
@@ -138,7 +141,7 @@ public final class JDBCBackendDataSource implements BackendDataSource, AutoClose
     }
     
     private Connection createConnection(final TransactionType transactionType, final String dataSourceName, final DataSource dataSource) throws SQLException {
-        ShardingTransactionManager shardingTransactionManager = ShardingTransactionManagerEngine.getTransactionManager(transactionType);
+        ShardingTransactionManager shardingTransactionManager = shardingTransactionManagerEngine.getTransactionManager(transactionType);
         return isInShardingTransaction(shardingTransactionManager) ? shardingTransactionManager.getConnection(dataSourceName) : dataSource.getConnection();
     }
     
@@ -151,7 +154,7 @@ public final class JDBCBackendDataSource implements BackendDataSource, AutoClose
         if (null != dataSources) {
             closeDataSource(dataSources);
         }
-        ShardingTransactionManagerEngine.close();
+        shardingTransactionManagerEngine.close();
     }
     
     private void closeDataSource(final Map<String, DataSource> dataSourceMap) {

@@ -52,8 +52,8 @@ final class SchemaTokenAssert {
     }
     
     private void assertSchemaToken(final SchemaToken actual, final ExpectedSchemaToken expected) {
-        assertThat(assertMessage.getFullAssertMessage("Schema tokens begin position assertion error: "), actual.getBeginPosition(), is(expected.getBeginPosition()));
-        assertThat(assertMessage.getFullAssertMessage("Schema tokens original literals assertion error: "), actual.getOriginalLiterals(), is(expected.getOriginalLiterals()));
+        assertThat(assertMessage.getFullAssertMessage("Schema tokens start index assertion error: "), actual.getStartIndex(), is(expected.getStartIndex()));
+        assertThat(assertMessage.getFullAssertMessage("Schema tokens stop index assertion error: "), actual.getStopIndex(), is(expected.getStopIndex()));
         assertThat(assertMessage.getFullAssertMessage("Schema tokens table name assertion error: "), actual.getTableName(), is(expected.getTableName()));
     }
     

@@ -24,13 +24,21 @@ import java.util.Collection;
 
 import static org.hamcrest.CoreMatchers.is;
 import static org.junit.Assert.assertThat;
+import static org.junit.Assert.assertTrue;
 
-public class NewInstanceServiceLoaderTest {
+public final class NewInstanceServiceLoaderTest {
     
     @Test
-    public void assertNewServiceInstanceNotExist() {
+    public void assertNewServiceInstanceWhenIsNotExist() {
+        NewInstanceServiceLoader.register(Collection.class);
+        Collection collection = NewInstanceServiceLoader.newServiceInstances(Collection.class);
+        assertTrue(collection.isEmpty());
+    }
+    
+    @Test
+    public void assertNewServiceInstanceWhenIsExist() {
         NewInstanceServiceLoader.register(ParsingHook.class);
         Collection collection = NewInstanceServiceLoader.newServiceInstances(ParsingHook.class);
-        assertThat(collection.size(), is(0));
+        assertThat(collection.size(), is(1));
     }
 }

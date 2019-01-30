@@ -87,6 +87,7 @@ public final class BackendConnection implements AutoCloseable {
         if (null == schemaName) {
             throw new ShardingException("Please select database, then switch transaction type.");
         }
+        //TODO switch transaction type will not effect running transaction now, need to remove this logic.
         if (isSwitchFailed()) {
             throw new ShardingException("Failed to switch transaction type, please terminate current transaction.");
         }
@@ -184,6 +185,15 @@ public final class BackendConnection implements AutoCloseable {
     
     private List<Connection> getConnectionFromUnderlying(final ConnectionMode connectionMode, final String dataSourceName, final int connectionSize) throws SQLException {
         return logicSchema.getBackendDataSource().getConnections(connectionMode, dataSourceName, connectionSize, transactionType);
+    }
+    
+    /**
+     * Whether execute SQL serial or not.
+     *
+     * @return true or false
+     */
+    public boolean isSerialExecute() {
+        return stateHandler.isInTransaction() && (TransactionType.LOCAL == transactionType || TransactionType.XA == transactionType);
     }
     
     /**

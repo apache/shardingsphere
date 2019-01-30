@@ -24,17 +24,18 @@ import org.apache.shardingsphere.core.constant.OrderDirection;
  * Order by item segment for column name.
  * 
  * @author zhangliang
+ * @author panjuan
  */
 @Getter
 public final class ColumnNameOrderByItemSegment extends OrderByItemSegment {
     
     private final String columnName;
     
-    private final int beginPosition;
+    private final int startIndex;
     
-    public ColumnNameOrderByItemSegment(final String columnName, final int beginPosition, final OrderDirection orderDirection, final OrderDirection nullOrderDirection) {
+    public ColumnNameOrderByItemSegment(final String columnName, final int startIndex, final OrderDirection orderDirection, final OrderDirection nullOrderDirection) {
         super(orderDirection, nullOrderDirection);
         this.columnName = columnName;
-        this.beginPosition = beginPosition;
+        this.startIndex = startIndex;
     }
 }

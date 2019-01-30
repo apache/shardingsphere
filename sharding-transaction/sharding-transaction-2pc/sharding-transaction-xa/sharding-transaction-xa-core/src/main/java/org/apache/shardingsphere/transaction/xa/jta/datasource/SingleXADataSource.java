@@ -25,6 +25,7 @@ import org.apache.shardingsphere.transaction.xa.jta.connection.XAConnectionFacto
 import javax.sql.DataSource;
 import javax.sql.XAConnection;
 import javax.sql.XADataSource;
+import java.sql.Connection;
 import java.sql.SQLException;
 
 /**
@@ -61,8 +62,17 @@ public final class SingleXADataSource extends AbstractUnsupportedSingleXADataSou
     
     @Override
     public SingleXAConnection getXAConnection() throws SQLException {
-        XAConnection xaConnection = isOriginalXADataSource ? xaDataSource.getXAConnection()
-                : XAConnectionFactory.createXAConnection(databaseType, xaDataSource, originalDataSource.getConnection());
-        return new SingleXAConnection(resourceName, xaConnection);
+        return isOriginalXADataSource ? getXAConnectionFromXADataSource() : getXAConnectionFromNoneXADataSource();
+    }
+    
+    private SingleXAConnection getXAConnectionFromXADataSource() throws SQLException {
+        XAConnection xaConnection = xaDataSource.getXAConnection();
+        return new SingleXAConnection(resourceName, xaConnection.getConnection(), xaConnection);
+    }
+    
+    private SingleXAConnection getXAConnectionFromNoneXADataSource() throws SQLException {
+        Connection originalConnection = originalDataSource.getConnection();
+        XAConnection xaConnection = XAConnectionFactory.createXAConnection(databaseType, xaDataSource, originalConnection);
+        return new SingleXAConnection(resourceName, originalConnection, xaConnection);
     }
 }

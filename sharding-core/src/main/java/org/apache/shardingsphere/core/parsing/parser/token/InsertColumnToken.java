@@ -31,8 +31,8 @@ public final class InsertColumnToken extends SQLToken {
     
     private final String columnName;
     
-    public InsertColumnToken(final int beginPosition, final String columnName) {
-        super(beginPosition);
+    public InsertColumnToken(final int startIndex, final String columnName) {
+        super(startIndex);
         this.columnName = columnName;
     }
 }

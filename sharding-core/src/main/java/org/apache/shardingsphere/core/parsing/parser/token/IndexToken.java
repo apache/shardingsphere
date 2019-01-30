@@ -32,27 +32,18 @@ import org.apache.shardingsphere.core.util.SQLUtil;
 @ToString
 public final class IndexToken extends SQLToken {
     
-    private final String originalLiterals;
+    private final int stopIndex;
     
     private String tableName;
     
-    public IndexToken(final int beginPosition, final String originalLiterals) {
-        super(beginPosition);
-        this.originalLiterals = originalLiterals;
+    public IndexToken(final int startIndex, final int stopIndex) {
+        super(startIndex);
+        this.stopIndex = stopIndex;
     }
     
-    public IndexToken(final int beginPosition, final String originalLiterals, final String tableName) {
-        this(beginPosition, originalLiterals);
+    public IndexToken(final int startIndex, final int stopIndex, final String tableName) {
+        this(startIndex, stopIndex);
         this.tableName = tableName;
-    }
-    
-    /**
-     * Get index name.
-     * 
-     * @return index name
-     */
-    public String getIndexName() {
-        return SQLUtil.getExactlyValue(originalLiterals);
     }
     
     /**

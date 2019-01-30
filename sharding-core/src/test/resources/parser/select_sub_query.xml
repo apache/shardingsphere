@@ -6,7 +6,7 @@
             <table name="t_order" alias="o" />
         </tables>
         <tokens>
-            <table-token begin-position="33" original-literals="t_order" />
+            <table-token start-index="33" table-name="t_order" />
         </tokens>
         <or-condition>
             <and-condition>
@@ -25,8 +25,8 @@
             <table name="t_order_item" alias="i" />
         </tables>
         <tokens>
-            <table-token begin-position="33" original-literals="t_order" />
-            <table-token begin-position="44" original-literals="t_order_item" />
+            <table-token start-index="33" table-name="t_order" />
+            <table-token start-index="44" table-name="t_order_item" />
         </tokens>
         <conditions>
             <condition column-name="order_id" table-name="t_order" operator="IN">
@@ -42,7 +42,7 @@
             <table name="t_order"/>
         </tables>
         <tokens>
-            <table-token begin-position="52" original-literals="t_order" />
+            <table-token start-index="52" table-name="t_order" />
         </tokens>
         <aggregation-select-items>
             <aggregation-select-item type="COUNT" inner-expression="(1)" alias="orders_count" />
@@ -54,7 +54,7 @@
             <table name="t_order_item"/>
         </tables>
         <tokens>
-            <table-token begin-position="64" original-literals="t_order_item" />
+            <table-token start-index="64" table-name="t_order_item" />
         </tokens>
         <aggregation-select-items>
             <aggregation-select-item type="COUNT" inner-expression="(1)" alias="order_items_count" />

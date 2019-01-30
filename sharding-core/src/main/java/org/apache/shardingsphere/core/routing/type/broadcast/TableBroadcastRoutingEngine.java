@@ -41,6 +41,7 @@ import java.util.List;
  * 
  * @author zhangliang
  * @author maxiaoguang
+ * @author panjuan
  */
 @RequiredArgsConstructor
 public final class TableBroadcastRoutingEngine implements RoutingEngine {
@@ -60,7 +61,8 @@ public final class TableBroadcastRoutingEngine implements RoutingEngine {
     
     private Collection<String> getLogicTableNames() {
         if (isOperateIndexWithoutTable()) {
-            return Collections.singletonList(shardingRule.getLogicTableName(getIndexToken().getIndexName()));
+            String indexName = sqlStatement.getLogicSQL().substring(getIndexToken().getStartIndex(), getIndexToken().getStopIndex() + 1);
+            return Collections.singletonList(shardingRule.getLogicTableName(indexName));
         }
         return sqlStatement.getTables().getTableNames();
     }

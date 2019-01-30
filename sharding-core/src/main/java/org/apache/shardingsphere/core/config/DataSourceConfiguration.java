@@ -23,7 +23,7 @@ import com.google.common.base.Optional;
 import com.google.common.collect.Sets;
 import lombok.Getter;
 import lombok.RequiredArgsConstructor;
-import org.apache.shardingsphere.core.exception.ShardingConfigurationException;
+import lombok.SneakyThrows;
 
 import javax.sql.DataSource;
 import java.lang.reflect.Method;
@@ -72,17 +72,14 @@ public final class DataSourceConfiguration {
         return result;
     }
     
+    @SneakyThrows
     private static Map<String, Object> findAllGetterProperties(final Object target) {
         Map<String, Object> result = new LinkedHashMap<>();
-        try {
-            for (Method each : findAllGetterMethods(target.getClass())) {
-                String propertyName = CaseFormat.UPPER_CAMEL.to(CaseFormat.LOWER_CAMEL, each.getName().substring(GETTER_PREFIX.length()));
-                if (GENERAL_CLASS_TYPE.contains(each.getReturnType()) && !SKIPPED_PROPERTY_NAMES.contains(propertyName)) {
-                    result.put(propertyName, each.invoke(target));
-                }
+        for (Method each : findAllGetterMethods(target.getClass())) {
+            String propertyName = CaseFormat.UPPER_CAMEL.to(CaseFormat.LOWER_CAMEL, each.getName().substring(GETTER_PREFIX.length()));
+            if (GENERAL_CLASS_TYPE.contains(each.getReturnType()) && !SKIPPED_PROPERTY_NAMES.contains(propertyName)) {
+                result.put(propertyName, each.invoke(target));
             }
-        } catch (final ReflectiveOperationException ex) {
-            throw new ShardingConfigurationException(ex);
         }
         return result;
     }
@@ -102,23 +99,20 @@ public final class DataSourceConfiguration {
      * 
      * @return data source
      */
+    @SneakyThrows
     public DataSource createDataSource() {
-        try {
-            DataSource result = (DataSource) Class.forName(dataSourceClassName).newInstance();
-            Method[] methods = result.getClass().getMethods();
-            for (Entry<String, Object> entry : properties.entrySet()) {
-                if (SKIPPED_PROPERTY_NAMES.contains(entry.getKey())) {
-                    continue;
-                }
-                Optional<Method> setterMethod = findSetterMethod(methods, entry.getKey());
-                if (setterMethod.isPresent()) {
-                    setterMethod.get().invoke(result, entry.getValue());
-                }
+        DataSource result = (DataSource) Class.forName(dataSourceClassName).newInstance();
+        Method[] methods = result.getClass().getMethods();
+        for (Entry<String, Object> entry : properties.entrySet()) {
+            if (SKIPPED_PROPERTY_NAMES.contains(entry.getKey())) {
+                continue;
             }
-            return result;
-        } catch (final ReflectiveOperationException ex) {
-            throw new ShardingConfigurationException(ex);
+            Optional<Method> setterMethod = findSetterMethod(methods, entry.getKey());
+            if (setterMethod.isPresent()) {
+                setterMethod.get().invoke(result, entry.getValue());
+            }
         }
+        return result;
     }
     
     private Optional<Method> findSetterMethod(final Method[] methods, final String property) {

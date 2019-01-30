@@ -55,9 +55,9 @@ final class OrderByTokenAssert {
     
     private void assertOrderByToken(final OrderByToken actual, final ExpectedOrderByToken expected) {
         if (SQLCaseType.Placeholder == sqlCaseType) {
-            assertThat(assertMessage.getFullAssertMessage("Order by token begin position assertion error: "), actual.getBeginPosition(), is(expected.getPlaceholderBeginPosition()));
+            assertThat(assertMessage.getFullAssertMessage("Order by token begin position assertion error: "), actual.getStartIndex(), is(expected.getPlaceholderBeginPosition()));
         } else {
-            assertThat(assertMessage.getFullAssertMessage("Order by token begin position assertion error: "), actual.getBeginPosition(), is(expected.getLiteralBeginPosition()));
+            assertThat(assertMessage.getFullAssertMessage("Order by token begin position assertion error: "), actual.getStartIndex(), is(expected.getLiteralBeginPosition()));
         }
     }
     

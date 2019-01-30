@@ -29,6 +29,7 @@ import org.apache.shardingsphere.core.parsing.lexer.token.Symbol;
  * SQL utility class.
  * 
  * @author gaohongtao
+ * @author panjuan
  */
 @AllArgsConstructor(access = AccessLevel.PRIVATE)
 public final class SQLUtil {
@@ -43,6 +44,34 @@ public final class SQLUtil {
      */
     public static String getExactlyValue(final String value) {
         return null == value ? null : CharMatcher.anyOf("[]`'\"").removeFrom(value);
+    }
+    
+    /**
+     * Get left delimiter.
+     * 
+     * @param value value
+     * @return left delimiter
+     */
+    public static String getLeftDelimiter(final String value) {
+        int index = CharMatcher.anyOf("[`'\"").indexIn(value);
+        if (-1 == index) {
+            return "";
+        }
+        return String.valueOf(value.charAt(index));
+    }
+    
+    /**
+     * Get right delimiter.
+     *
+     * @param value value
+     * @return right delimiter
+     */
+    public static String getRightDelimiter(final String value) {
+        int index = CharMatcher.anyOf("]`'\"").indexIn(value);
+        if (-1 == index) {
+            return "";
+        }
+        return String.valueOf(value.charAt(index));
     }
     
     /**

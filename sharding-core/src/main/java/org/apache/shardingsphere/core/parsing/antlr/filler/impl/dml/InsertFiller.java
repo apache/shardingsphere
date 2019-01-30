@@ -17,9 +17,7 @@
 
 package org.apache.shardingsphere.core.parsing.antlr.filler.impl.dml;
 
-import java.util.Iterator;
-import java.util.List;
-
+import com.google.common.base.Optional;
 import org.apache.shardingsphere.core.metadata.table.ShardingTableMetaData;
 import org.apache.shardingsphere.core.parsing.antlr.filler.SQLStatementFiller;
 import org.apache.shardingsphere.core.parsing.antlr.filler.impl.OrConditionFiller;
@@ -45,12 +43,14 @@ import org.apache.shardingsphere.core.parsing.parser.token.TableToken;
 import org.apache.shardingsphere.core.rule.ShardingRule;
 import org.apache.shardingsphere.core.util.SQLUtil;
 
-import com.google.common.base.Optional;
+import java.util.Iterator;
+import java.util.List;
 
 /**
  * Insert filler.
  *
  * @author duhongjun
+ * @author panjuan
  */
 public final class InsertFiller implements SQLStatementFiller<InsertSegment> {
     
@@ -60,9 +60,9 @@ public final class InsertFiller implements SQLStatementFiller<InsertSegment> {
         insertStatement.getUpdateTables().put(insertStatement.getTables().getSingleTableName(), insertStatement.getTables().getSingleTableName());
         createColumn(sqlSegment, insertStatement, shardingRule, shardingTableMetaData);
         createValue(sqlSegment, insertStatement, sql, shardingRule, shardingTableMetaData);
-        insertStatement.setColumnsListLastPosition(sqlSegment.getColumnsListLastPosition());
-        insertStatement.setInsertValuesListLastPosition(sqlSegment.getInsertValuesListLastPosition());
-        insertStatement.getSQLTokens().add(new InsertValuesToken(sqlSegment.getInsertValueStartPosition(), insertStatement.getTables().getSingleTableName()));
+        insertStatement.setColumnsListLastIndex(sqlSegment.getColumnsListLastIndex());
+        insertStatement.setInsertValuesListLastIndex(sqlSegment.getInsertValuesListLastIndex());
+        insertStatement.getSQLTokens().add(new InsertValuesToken(sqlSegment.getInsertValueStartIndex(), insertStatement.getTables().getSingleTableName()));
         processGeneratedKey(shardingRule, insertStatement);
         processDuplicateKey(shardingRule, sqlSegment, sqlStatement.getTables().getSingleTableName());
     }
@@ -82,7 +82,8 @@ public final class InsertFiller implements SQLStatementFiller<InsertSegment> {
                 insertStatement.setGenerateKeyColumnIndex(index);
             }
             if (each.getOwner().isPresent() && tableName.equals(each.getOwner().get())) {
-                insertStatement.getSQLTokens().add(new TableToken(each.getStartIndex(), 0, tableName));
+                insertStatement.getSQLTokens().add(new TableToken(each.getStartIndex(), 
+                        0, SQLUtil.getExactlyValue(tableName), SQLUtil.getLeftDelimiter(tableName), SQLUtil.getRightDelimiter(tableName)));
             }
             index++;
         }
@@ -91,9 +92,9 @@ public final class InsertFiller implements SQLStatementFiller<InsertSegment> {
     private void createFromMeta(final InsertStatement insertStatement, final InsertSegment sqlSegment, final ShardingRule shardingRule, final ShardingTableMetaData shardingTableMetaData) {
         int count = 0;
         String tableName = insertStatement.getTables().getSingleTableName();
-        int beginPosition = sqlSegment.getColumnClauseStartPosition();
-        insertStatement.addSQLToken(new InsertColumnToken(beginPosition, "("));
-        ItemsToken columnsToken = new ItemsToken(beginPosition);
+        int startIndex = sqlSegment.getColumnClauseStartIndex();
+        insertStatement.addSQLToken(new InsertColumnToken(startIndex, "("));
+        ItemsToken columnsToken = new ItemsToken(startIndex);
         columnsToken.setFirstOfItemsSpecial(true);
         if (shardingTableMetaData.containsTable(tableName)) {
             Optional<Column> generateKeyColumn = shardingRule.findGenerateKeyColumn(insertStatement.getTables().getSingleTableName());
@@ -108,8 +109,8 @@ public final class InsertFiller implements SQLStatementFiller<InsertSegment> {
             }
         }
         insertStatement.addSQLToken(columnsToken);
-        insertStatement.addSQLToken(new InsertColumnToken(beginPosition, ")"));
-        insertStatement.setColumnsListLastPosition(beginPosition);
+        insertStatement.addSQLToken(new InsertColumnToken(startIndex, ")"));
+        insertStatement.setColumnsListLastIndex(startIndex);
     }
     
     private void createValue(final InsertSegment insertSegment, final InsertStatement insertStatement, final String sql, final ShardingRule shardingRule,
@@ -126,7 +127,7 @@ public final class InsertFiller implements SQLStatementFiller<InsertSegment> {
             if (each.getValues().size() != insertStatement.getColumns().size()) {
                 throw new SQLParsingException("INSERT INTO column size mismatch value size.");
             }
-            InsertValue insertValue = new InsertValue(each.getType(), sql.substring(each.getStartIndex(), each.getEndIndex() + 1), each.getParametersCount());
+            InsertValue insertValue = new InsertValue(each.getType(), sql.substring(each.getStartIndex(), each.getStopIndex() + 1), each.getParametersCount());
             insertStatement.getInsertValues().getInsertValues().add(insertValue);
             parameterIndex += each.getParametersCount();
             int index = 0;
@@ -138,7 +139,7 @@ public final class InsertFiller implements SQLStatementFiller<InsertSegment> {
                 SQLExpression sqlExpression = orConditionFiller.buildExpression(commonExpressionSegment, sql).get();
                 insertValue.getColumnValues().add(sqlExpression);
                 if (shardingColumn) {
-                    if (!(-1 < commonExpressionSegment.getIndex() || null != commonExpressionSegment.getValue() || commonExpressionSegment.isText())) {
+                    if (!(-1 < commonExpressionSegment.getPlaceholderIndex() || null != commonExpressionSegment.getValue() || commonExpressionSegment.isText())) {
                         throw new SQLParsingException("INSERT INTO can not support complex expression value on sharding column '%s'.", column.getName());
                     }
                     andCondition.getConditions().add(new Condition(column, sqlExpression));
@@ -166,8 +167,8 @@ public final class InsertFiller implements SQLStatementFiller<InsertSegment> {
     }
     
     private GeneratedKeyCondition createGeneratedKeyCondition(final Column column, final CommonExpressionSegment sqlExpression, final String sql) {
-        if (-1 < sqlExpression.getIndex()) {
-            return new GeneratedKeyCondition(column, sqlExpression.getIndex(), null);
+        if (-1 < sqlExpression.getPlaceholderIndex()) {
+            return new GeneratedKeyCondition(column, sqlExpression.getPlaceholderIndex(), null);
         }
         if (null != sqlExpression.getValue()) {
             return new GeneratedKeyCondition(column, -1, (Comparable<?>) sqlExpression.getValue());
@@ -185,7 +186,7 @@ public final class InsertFiller implements SQLStatementFiller<InsertSegment> {
             if (!insertStatement.getItemsTokens().isEmpty()) {
                 insertStatement.getItemsTokens().get(0).getItems().add(generateKeyColumn.get().getName());
             } else {
-                ItemsToken columnsToken = new ItemsToken(insertStatement.getColumnsListLastPosition());
+                ItemsToken columnsToken = new ItemsToken(insertStatement.getColumnsListLastIndex());
                 columnsToken.getItems().add(generateKeyColumn.get().getName());
                 insertStatement.addSQLToken(columnsToken);
             }

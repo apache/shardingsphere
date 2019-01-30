@@ -24,3 +24,4 @@ package org.apache.shardingsphere.shardingproxy.backend;
  */
 public interface BackendDataSource {
 }
+

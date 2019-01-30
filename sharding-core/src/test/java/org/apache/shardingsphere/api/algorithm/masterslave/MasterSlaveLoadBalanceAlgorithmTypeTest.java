@@ -15,21 +15,17 @@
  * limitations under the License.
  */
 
-package org.apache.shardingsphere.shardingjdbc.util;
+package org.apache.shardingsphere.api.algorithm.masterslave;
 
-import lombok.AccessLevel;
-import lombok.NoArgsConstructor;
-import org.apache.shardingsphere.core.parsing.lexer.token.Symbol;
+import org.junit.Test;
 
-@NoArgsConstructor(access = AccessLevel.PRIVATE)
-public final class SQLPlaceholderUtil {
+import static org.hamcrest.CoreMatchers.is;
+import static org.junit.Assert.assertThat;
 
-    /**
-     * Replace prepared statement.
-     * @param str string
-     * @return replaced string
-     */
-    public static String replacePreparedStatement(final String str) {
-        return str.replace("%s", Symbol.QUESTION.getLiterals()).replace("%%", "%");
+public final class MasterSlaveLoadBalanceAlgorithmTypeTest {
+    
+    @Test
+    public void assertGetDefaultAlgorithmType() {
+        assertThat(MasterSlaveLoadBalanceAlgorithmType.getDefaultAlgorithmType(), is(MasterSlaveLoadBalanceAlgorithmType.ROUND_ROBIN));
     }
 }

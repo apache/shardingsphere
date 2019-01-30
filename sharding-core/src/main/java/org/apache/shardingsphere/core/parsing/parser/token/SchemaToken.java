@@ -30,23 +30,14 @@ import org.apache.shardingsphere.core.util.SQLUtil;
 public final class SchemaToken extends SQLToken {
     
     @Getter
-    private final String originalLiterals;
+    private final int stopIndex;
     
     private final String tableName;
     
-    public SchemaToken(final int beginPosition, final String originalLiterals, final String tableName) {
-        super(beginPosition);
-        this.originalLiterals = originalLiterals;
+    public SchemaToken(final int startIndex, final int stopIndex, final String tableName) {
+        super(startIndex);
+        this.stopIndex = stopIndex;
         this.tableName = tableName;
-    }
-    
-    /**
-     * Get schema name.
-     * 
-     * @return table name
-     */
-    public String getSchemaName() {
-        return SQLUtil.getExactlyValue(originalLiterals);
     }
     
     /**

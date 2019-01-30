@@ -24,6 +24,7 @@ import org.apache.shardingsphere.core.metadata.table.ShardingTableMetaData;
 import org.apache.shardingsphere.core.parsing.antlr.rule.registry.ParsingRuleRegistry;
 import org.apache.shardingsphere.core.parsing.antlr.rule.registry.statement.SQLStatementRule;
 import org.apache.shardingsphere.core.parsing.antlr.sql.segment.SQLSegment;
+import org.apache.shardingsphere.core.parsing.parser.sql.AbstractSQLStatement;
 import org.apache.shardingsphere.core.parsing.parser.sql.SQLStatement;
 import org.apache.shardingsphere.core.rule.ShardingRule;
 
@@ -33,6 +34,7 @@ import java.util.Collection;
  * SQL statement filler engine.
  * 
  * @author zhangliang
+ * @author panjuan
  */
 @RequiredArgsConstructor
 public final class SQLStatementFillerEngine {
@@ -56,6 +58,7 @@ public final class SQLStatementFillerEngine {
     @SneakyThrows
     public SQLStatement fill(final Collection<SQLSegment> sqlSegments, final SQLStatementRule rule) {
         SQLStatement result = rule.getSqlStatementClass().newInstance();
+        ((AbstractSQLStatement) result).setLogicSQL(sql);
         for (SQLSegment each : sqlSegments) {
             Optional<SQLStatementFiller> filler = parsingRuleRegistry.findSQLStatementFiller(each.getClass());
             if (filler.isPresent()) {

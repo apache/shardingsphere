@@ -55,9 +55,9 @@ final class GeneratedKeyTokenAssert {
     
     private void assertGeneratedKeyToken(final GeneratedKeyToken actual, final ExpectedGeneratedKeyToken expected) {
         if (SQLCaseType.Placeholder == sqlCaseType) {
-            assertThat(assertMessage.getFullAssertMessage("Generated key token begin position assertion error: "), actual.getBeginPosition(), is(expected.getPlaceholderBeginPosition()));
+            assertThat(assertMessage.getFullAssertMessage("Generated key token begin position assertion error: "), actual.getStartIndex(), is(expected.getPlaceholderBeginPosition()));
         } else {
-            assertThat(assertMessage.getFullAssertMessage("Generated key token begin position assertion error: "), actual.getBeginPosition(), is(expected.getLiteralBeginPosition()));
+            assertThat(assertMessage.getFullAssertMessage("Generated key token begin position assertion error: "), actual.getStartIndex(), is(expected.getLiteralBeginPosition()));
         }
     }
     

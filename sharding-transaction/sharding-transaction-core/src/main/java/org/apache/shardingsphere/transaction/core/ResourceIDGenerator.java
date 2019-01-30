@@ -15,13 +15,40 @@
  * limitations under the License.
  */
 
-package org.apache.shardingsphere.shardingjdbc.util;
+package org.apache.shardingsphere.transaction.core;
 
-import org.junit.runner.RunWith;
-import org.junit.runners.Suite;
-import org.junit.runners.Suite.SuiteClasses;
+import lombok.AccessLevel;
+import lombok.NoArgsConstructor;
 
-@RunWith(Suite.class)
-@SuiteClasses(DataSourceUtilTest.class)
-public final class AllUtilTests {
+import java.util.concurrent.atomic.AtomicInteger;
+
+/**
+ * Resource ID generator.
+ *
+ * @author zhaojun
+ */
+@NoArgsConstructor(access = AccessLevel.PRIVATE)
+public class ResourceIDGenerator {
+    
+    private static final ResourceIDGenerator INSTANCE = new ResourceIDGenerator();
+    
+    private final AtomicInteger count = new AtomicInteger();
+    
+    /**
+     * Get instance.
+     *
+     * @return instance
+     */
+    public static ResourceIDGenerator getInstance() {
+        return INSTANCE;
+    }
+    
+    /**
+     * Next unique resource id.
+     *
+     * @return next ID
+     */
+    String nextId() {
+        return String.format("resource-%d-", count.incrementAndGet());
+    }
 }

@@ -17,10 +17,9 @@
 
 package org.apache.shardingsphere.core.parsing.parser.sql.dml.insert;
 
-import java.util.ArrayList;
-import java.util.LinkedList;
-import java.util.List;
-
+import lombok.Getter;
+import lombok.Setter;
+import lombok.ToString;
 import org.apache.shardingsphere.core.parsing.parser.context.condition.Column;
 import org.apache.shardingsphere.core.parsing.parser.context.condition.GeneratedKeyCondition;
 import org.apache.shardingsphere.core.parsing.parser.context.insertvalue.InsertValues;
@@ -28,15 +27,16 @@ import org.apache.shardingsphere.core.parsing.parser.sql.dml.DMLStatement;
 import org.apache.shardingsphere.core.parsing.parser.token.ItemsToken;
 import org.apache.shardingsphere.core.parsing.parser.token.SQLToken;
 
-import lombok.Getter;
-import lombok.Setter;
-import lombok.ToString;
+import java.util.ArrayList;
+import java.util.LinkedList;
+import java.util.List;
 
 /**
  * Insert statement.
  *
  * @author zhangliang
  * @author maxiaoguang
+ * @author panjuan
  */
 @Getter
 @Setter
@@ -49,11 +49,11 @@ public final class InsertStatement extends DMLStatement {
     
     private final InsertValues insertValues = new InsertValues();
     
-    private int columnsListLastPosition;
+    private int columnsListLastIndex;
     
     private int generateKeyColumnIndex = -1;
     
-    private int insertValuesListLastPosition;
+    private int insertValuesListLastIndex;
     
     private boolean containGenerateKey;
     
