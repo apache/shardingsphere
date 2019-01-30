@@ -21,6 +21,7 @@ import org.junit.BeforeClass;
 import org.junit.Test;
 
 import static org.hamcrest.CoreMatchers.is;
+import static org.junit.Assert.assertNull;
 import static org.junit.Assert.assertThat;
 
 public class YamlEncryptorConfigurationTest {
@@ -52,10 +53,12 @@ public class YamlEncryptorConfigurationTest {
     
     @Test
     public void assertGetAssistedQueryColumns() {
+        assertThat(yamlEncryptorConfiguration.getAssistedQueryColumns(), is("pwd1_index, pwd2_index"));
     }
     
     @Test
-    public void testGetProps() {
+    public void assertGetProps() {
+        assertNull(yamlEncryptorConfiguration.getProps().getProperty("test"));
     }
     
     @Test
