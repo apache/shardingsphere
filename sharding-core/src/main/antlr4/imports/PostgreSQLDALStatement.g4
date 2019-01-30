@@ -3,7 +3,7 @@ grammar PostgreSQLDALStatement;
 import PostgreSQLKeyword, Keyword, BaseRule, DataType, Symbol;
 
 show
-    : SHOW (ALL | ID)
+    : SHOW (ALL | ID | TRANSACTION ISOLATION LEVEL)
     ;
     
 setParam

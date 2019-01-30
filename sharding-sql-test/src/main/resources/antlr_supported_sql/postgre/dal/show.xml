@@ -2,4 +2,5 @@
 <sql-cases db-types="PostgreSQL" namespace="postgre.dal.show">
     <sql-case id="show_all" value="SHOW ALL" />
     <sql-case id="show_server_version" value="SHOW SERVER_VERSION" />
+    <sql-case id="show_transaction_isolation_level" value="SHOW TRANSACTION ISOLATION LEVEL" />
 </sql-cases>
