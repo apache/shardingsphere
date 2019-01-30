@@ -22,7 +22,6 @@ import lombok.extern.slf4j.Slf4j;
 import org.apache.shardingsphere.core.constant.ConnectionMode;
 import org.apache.shardingsphere.core.constant.DatabaseType;
 import org.apache.shardingsphere.core.exception.ShardingException;
-import org.apache.shardingsphere.core.util.ReflectiveUtil;
 import org.apache.shardingsphere.shardingproxy.backend.BackendDataSource;
 import org.apache.shardingsphere.shardingproxy.config.yaml.YamlDataSourceParameter;
 import org.apache.shardingsphere.shardingproxy.runtime.GlobalRegistry;
@@ -31,6 +30,7 @@ import org.apache.shardingsphere.transaction.core.TransactionType;
 import org.apache.shardingsphere.transaction.spi.ShardingTransactionManager;
 
 import javax.sql.DataSource;
+import java.lang.reflect.Method;
 import java.sql.Connection;
 import java.sql.SQLException;
 import java.util.ArrayList;
@@ -160,7 +160,9 @@ public final class JDBCBackendDataSource implements BackendDataSource, AutoClose
     private void closeDataSource(final Map<String, DataSource> dataSourceMap) {
         for (DataSource each : dataSourceMap.values()) {
             try {
-                ReflectiveUtil.findMethod(each, "close").invoke(each);
+                Method method = each.getClass().getDeclaredMethod("close");
+                method.setAccessible(true);
+                method.invoke(each);
             } catch (final ReflectiveOperationException ignored) {
             }
         }

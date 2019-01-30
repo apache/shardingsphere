@@ -19,7 +19,6 @@ package org.apache.shardingsphere.transaction.xa.jta.connection.dialect;
 
 import lombok.RequiredArgsConstructor;
 import lombok.SneakyThrows;
-import org.apache.shardingsphere.core.util.ReflectiveUtil;
 import org.apache.shardingsphere.transaction.xa.jta.connection.XAConnectionWrapper;
 
 import javax.sql.XAConnection;
@@ -39,7 +38,8 @@ public final class MySQLXAConnectionWrapper implements XAConnectionWrapper {
     @Override
     public XAConnection wrap(final XADataSource xaDataSource, final Connection connection) {
         Connection physicalConnection = (Connection) connection.unwrap(Class.forName("com.mysql.jdbc.Connection"));
-        Method wrapConnectionMethod = ReflectiveUtil.findMethod(xaDataSource, "wrapConnection", Connection.class);
-        return (XAConnection) wrapConnectionMethod.invoke(xaDataSource, physicalConnection);
+        Method method = xaDataSource.getClass().getDeclaredMethod("wrapConnection", Connection.class);
+        method.setAccessible(true);
+        return (XAConnection) method.invoke(xaDataSource, physicalConnection);
     }
 }
