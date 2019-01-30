@@ -15,30 +15,28 @@
  * limitations under the License.
  */
 
-package org.apache.shardingsphere.spi;
+package org.apache.shardingsphere.api;
 
-import org.apache.shardingsphere.spi.parsing.ParsingHook;
+import org.junit.After;
+import org.junit.Before;
 import org.junit.Test;
-
-import java.util.Collection;
 
 import static org.hamcrest.CoreMatchers.is;
 import static org.junit.Assert.assertThat;
-import static org.junit.Assert.assertTrue;
 
-public final class NewInstanceServiceLoaderTest {
+public final class ConfigMapContextTest {
     
-    @Test
-    public void assertNewServiceInstanceWhenIsNotExist() {
-        NewInstanceServiceLoader.register(Collection.class);
-        Collection collection = NewInstanceServiceLoader.newServiceInstances(Collection.class);
-        assertTrue(collection.isEmpty());
+    @Before
+    @After
+    public void reset() {
+        ConfigMapContext.getInstance().getConfigMap().clear();
     }
     
     @Test
-    public void assertNewServiceInstanceWhenIsExist() {
-        NewInstanceServiceLoader.register(ParsingHook.class);
-        Collection collection = NewInstanceServiceLoader.newServiceInstances(ParsingHook.class);
-        assertThat(collection.size(), is(1));
+    public void assertGetConfigMap() {
+        ConfigMapContext.getInstance().getConfigMap().put("key1", "value1");
+        ConfigMapContext.getInstance().getConfigMap().put("key2", "value2");
+        assertThat(ConfigMapContext.getInstance().getConfigMap().get("key1").toString(), is("value1"));
+        assertThat(ConfigMapContext.getInstance().getConfigMap().get("key2").toString(), is("value2"));
     }
 }

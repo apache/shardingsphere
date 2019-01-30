@@ -15,30 +15,17 @@
  * limitations under the License.
  */
 
-package org.apache.shardingsphere.spi;
+package org.apache.shardingsphere.api.algorithm.masterslave;
 
-import org.apache.shardingsphere.spi.parsing.ParsingHook;
 import org.junit.Test;
-
-import java.util.Collection;
 
 import static org.hamcrest.CoreMatchers.is;
 import static org.junit.Assert.assertThat;
-import static org.junit.Assert.assertTrue;
 
-public final class NewInstanceServiceLoaderTest {
+public final class MasterSlaveLoadBalanceAlgorithmTypeTest {
     
     @Test
-    public void assertNewServiceInstanceWhenIsNotExist() {
-        NewInstanceServiceLoader.register(Collection.class);
-        Collection collection = NewInstanceServiceLoader.newServiceInstances(Collection.class);
-        assertTrue(collection.isEmpty());
-    }
-    
-    @Test
-    public void assertNewServiceInstanceWhenIsExist() {
-        NewInstanceServiceLoader.register(ParsingHook.class);
-        Collection collection = NewInstanceServiceLoader.newServiceInstances(ParsingHook.class);
-        assertThat(collection.size(), is(1));
+    public void assertGetDefaultAlgorithmType() {
+        assertThat(MasterSlaveLoadBalanceAlgorithmType.getDefaultAlgorithmType(), is(MasterSlaveLoadBalanceAlgorithmType.ROUND_ROBIN));
     }
 }

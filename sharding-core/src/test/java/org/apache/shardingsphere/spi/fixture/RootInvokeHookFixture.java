@@ -15,35 +15,41 @@
  * limitations under the License.
  */
 
-package org.apache.shardingsphere.core.bootstrap;
+package org.apache.shardingsphere.spi.fixture;
 
-import lombok.AccessLevel;
-import lombok.NoArgsConstructor;
-import org.apache.shardingsphere.spi.NewInstanceServiceLoader;
-import org.apache.shardingsphere.spi.executor.SQLExecutionHook;
-import org.apache.shardingsphere.spi.parsing.ParsingHook;
-import org.apache.shardingsphere.spi.rewrite.RewriteHook;
 import org.apache.shardingsphere.spi.root.RootInvokeHook;
 
-/**
- * Sharding bootstrap.
- *
- * @author zhangliang
- * @author zhaojun
- */
-@NoArgsConstructor(access = AccessLevel.PRIVATE)
-public final class ShardingBootstrap {
+import java.util.Collection;
+import java.util.LinkedList;
+
+public final class RootInvokeHookFixture implements RootInvokeHook {
     
-    /**
-     * Initialize sharding bootstrap.
-     */
-    public static void init() {
-        registerHookClasses(SQLExecutionHook.class, ParsingHook.class, RootInvokeHook.class, RewriteHook.class);
+    private static final Collection<String> ACTIONS = new LinkedList<>();
+    
+    @Override
+    public void start() {
+        ACTIONS.add("start");
     }
     
-    private static void registerHookClasses(final Class<?>... services) {
-        for (Class<?> each : services) {
-            NewInstanceServiceLoader.register(each);
-        }
+    @Override
+    public void finish(final int connectionCount) {
+        ACTIONS.add("finish");
+    }
+    
+    /**
+     * Contains action or not.
+     * 
+     * @param action action
+     * @return contains action or not
+     */
+    public static boolean containsAction(final String action) {
+        return ACTIONS.contains(action);
+    }
+    
+    /**
+     * Clear actions.
+     */
+    public static void clearActions() {
+        ACTIONS.clear();
     }
 }

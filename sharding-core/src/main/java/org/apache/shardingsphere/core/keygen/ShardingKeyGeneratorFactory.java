@@ -36,6 +36,10 @@ import java.util.Collection;
 @NoArgsConstructor(access = AccessLevel.PRIVATE)
 public final class ShardingKeyGeneratorFactory {
     
+    static {
+        NewInstanceServiceLoader.register(ShardingKeyGenerator.class);
+    }
+    
     /**
      * Create key generator.
      * 
@@ -51,7 +55,7 @@ public final class ShardingKeyGeneratorFactory {
     }
     
     private static Collection<ShardingKeyGenerator> loadKeyGenerators(final String keyGeneratorType) {
-        return Collections2.filter(NewInstanceServiceLoader.load(ShardingKeyGenerator.class), new Predicate<ShardingKeyGenerator>() {
+        return Collections2.filter(NewInstanceServiceLoader.newServiceInstances(ShardingKeyGenerator.class), new Predicate<ShardingKeyGenerator>() {
             
             @Override
             public boolean apply(final ShardingKeyGenerator input) {

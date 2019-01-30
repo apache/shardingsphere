@@ -24,7 +24,6 @@ import org.apache.shardingsphere.core.exception.ShardingException;
 import org.apache.shardingsphere.core.util.ShardingExecutorService;
 
 import java.sql.SQLException;
-import java.util.ArrayList;
 import java.util.Collection;
 import java.util.Collections;
 import java.util.Iterator;
@@ -51,73 +50,6 @@ public final class ShardingExecuteEngine implements AutoCloseable {
     }
     
     /**
-     * Execute.
-     *
-     * @param inputs input values
-     * @param callback sharding execute callback
-     * @param <I> type of input value
-     * @param <O> type of return value
-     * @return execute result
-     * @throws SQLException throw if execute failure
-     */
-    public <I, O> List<O> execute(final Collection<I> inputs, final ShardingExecuteCallback<I, O> callback) throws SQLException {
-        return execute(inputs, null, callback);
-    }
-    
-    /**
-     * Execute.
-     *
-     * @param inputs input values
-     * @param firstCallback first sharding execute callback
-     * @param callback sharding execute callback
-     * @param <I> type of input value
-     * @param <O> type of return value
-     * @return execute result
-     * @throws SQLException throw if execute failure
-     */
-    public <I, O> List<O> execute(final Collection<I> inputs, final ShardingExecuteCallback<I, O> firstCallback, final ShardingExecuteCallback<I, O> callback) throws SQLException {
-        if (inputs.isEmpty()) {
-            return Collections.emptyList();
-        }
-        Iterator<I> inputIterator = inputs.iterator();
-        I firstInput = inputIterator.next();
-        Collection<ListenableFuture<O>> restFutures = asyncExecute(Lists.newArrayList(inputIterator), callback);
-        return getResults(syncExecute(firstInput, null == firstCallback ? callback : firstCallback), restFutures);
-    }
-    
-    private <I, O> Collection<ListenableFuture<O>> asyncExecute(final Collection<I> inputs, final ShardingExecuteCallback<I, O> callback) {
-        Collection<ListenableFuture<O>> result = new ArrayList<>(inputs.size());
-        final Map<String, Object> dataMap = ShardingExecuteDataMap.getDataMap();
-        for (final I each : inputs) {
-            result.add(executorService.submit(new Callable<O>() {
-                
-                @Override
-                public O call() throws SQLException {
-                    return callback.execute(each, false, dataMap);
-                }
-            }));
-        }
-        return result;
-    }
-    
-    private <I, O> O syncExecute(final I input, final ShardingExecuteCallback<I, O> callback) throws SQLException {
-        return callback.execute(input, true, ShardingExecuteDataMap.getDataMap());
-    }
-    
-    private <O> List<O> getResults(final O firstResult, final Collection<ListenableFuture<O>> restFutures) throws SQLException {
-        List<O> result = new LinkedList<>();
-        result.add(firstResult);
-        for (ListenableFuture<O> each : restFutures) {
-            try {
-                result.add(each.get());
-            } catch (final InterruptedException | ExecutionException ex) {
-                return throwException(ex);
-            }
-        }
-        return result;
-    }
-    
-    /**
      * Execute for group.
      *
      * @param inputGroups input groups
@@ -128,25 +60,44 @@ public final class ShardingExecuteEngine implements AutoCloseable {
      * @throws SQLException throw if execute failure
      */
     public <I, O> List<O> groupExecute(final Collection<ShardingExecuteGroup<I>> inputGroups, final ShardingGroupExecuteCallback<I, O> callback) throws SQLException {
-        return groupExecute(inputGroups, null, callback);
+        return groupExecute(inputGroups, null, callback, false);
     }
     
     /**
      * Execute for group.
      *
      * @param inputGroups input groups
-     * @param callback sharding execute callback
      * @param firstCallback first sharding execute callback
+     * @param callback sharding execute callback
+     * @param serial whether using multi thread execute or not
      * @param <I> type of input value
      * @param <O> type of return value
      * @return execute result
      * @throws SQLException throw if execute failure
      */
     public <I, O> List<O> groupExecute(
-            final Collection<ShardingExecuteGroup<I>> inputGroups, final ShardingGroupExecuteCallback<I, O> firstCallback, final ShardingGroupExecuteCallback<I, O> callback) throws SQLException {
+            final Collection<ShardingExecuteGroup<I>> inputGroups, final ShardingGroupExecuteCallback<I, O> firstCallback, final ShardingGroupExecuteCallback<I, O> callback, final boolean serial)
+        throws SQLException {
         if (inputGroups.isEmpty()) {
             return Collections.emptyList();
         }
+        return serial ? serialExecute(inputGroups, firstCallback, callback) : parallelExecute(inputGroups, firstCallback, callback);
+    }
+    
+    private <I, O> List<O> serialExecute(final Collection<ShardingExecuteGroup<I>> inputGroups, final ShardingGroupExecuteCallback<I, O> firstCallback,
+                                         final ShardingGroupExecuteCallback<I, O> callback) throws SQLException {
+        List<O> result = new LinkedList<>();
+        Iterator<ShardingExecuteGroup<I>> inputGroupsIterator = inputGroups.iterator();
+        ShardingExecuteGroup<I> firstInputs = inputGroupsIterator.next();
+        result.addAll(syncGroupExecute(firstInputs, null == firstCallback ? callback : firstCallback));
+        for (ShardingExecuteGroup<I> each : Lists.newArrayList(inputGroupsIterator)) {
+            result.addAll(syncGroupExecute(each, callback));
+        }
+        return result;
+    }
+    
+    private <I, O> List<O> parallelExecute(final Collection<ShardingExecuteGroup<I>> inputGroups, final ShardingGroupExecuteCallback<I, O> firstCallback,
+            final ShardingGroupExecuteCallback<I, O> callback) throws SQLException {
         Iterator<ShardingExecuteGroup<I>> inputGroupsIterator = inputGroups.iterator();
         ShardingExecuteGroup<I> firstInputs = inputGroupsIterator.next();
         Collection<ListenableFuture<Collection<O>>> restResultFutures = asyncGroupExecute(Lists.newArrayList(inputGroupsIterator), callback);

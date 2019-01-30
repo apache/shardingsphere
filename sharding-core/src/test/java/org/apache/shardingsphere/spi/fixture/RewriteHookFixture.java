@@ -15,45 +15,48 @@
  * limitations under the License.
  */
 
-package org.apache.shardingsphere.spi.rewrite;
+package org.apache.shardingsphere.spi.fixture;
 
 import org.apache.shardingsphere.core.routing.SQLUnit;
 import org.apache.shardingsphere.core.routing.type.TableUnit;
-import org.apache.shardingsphere.spi.NewInstanceServiceLoader;
+import org.apache.shardingsphere.spi.rewrite.RewriteHook;
 
 import java.util.Collection;
+import java.util.LinkedList;
 
-/**
- * Rewrite hook for SPI.
- *
- * @author yangyi
- */
-public final class SPIRewriteHook implements RewriteHook {
+public final class RewriteHookFixture implements RewriteHook {
     
-    private final Collection<RewriteHook> rewriteHooks = NewInstanceServiceLoader.newServiceInstances(RewriteHook.class);
-    
-    static {
-        NewInstanceServiceLoader.register(RewriteHook.class);
-    }
+    private static final Collection<String> ACTIONS = new LinkedList<>();
     
     @Override
     public void start(final TableUnit tableUnit) {
-        for (RewriteHook each : rewriteHooks) {
-            each.start(tableUnit);
-        }
+        ACTIONS.add("start");
     }
     
     @Override
     public void finishSuccess(final SQLUnit sqlUnit) {
-        for (RewriteHook each : rewriteHooks) {
-            each.finishSuccess(sqlUnit);
-        }
+        ACTIONS.add("finishSuccess");
     }
     
     @Override
     public void finishFailure(final Exception cause) {
-        for (RewriteHook each : rewriteHooks) {
-            each.finishFailure(cause);
-        }
+        ACTIONS.add("finishFailure");
+    }
+    
+    /**
+     * Contains action or not.
+     * 
+     * @param action action
+     * @return contains action or not
+     */
+    public static boolean containsAction(final String action) {
+        return ACTIONS.contains(action);
+    }
+    
+    /**
+     * Clear actions.
+     */
+    public static void clearActions() {
+        ACTIONS.clear();
     }
 }

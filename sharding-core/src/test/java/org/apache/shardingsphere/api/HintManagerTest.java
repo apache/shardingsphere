@@ -28,6 +28,14 @@ import static org.junit.Assert.assertTrue;
 public final class HintManagerTest {
     
     @Test
+    public void assertSetMasterRouteOnly() {
+        try (HintManager hintManager = HintManager.getInstance()) {
+            hintManager.setMasterRouteOnly();
+            assertTrue(HintManagerHolder.isMasterRouteOnly());
+        }
+    }
+    
+    @Test
     public void assertAddDatabaseShardingValueForEquals() {
         try (HintManager hintManager = HintManager.getInstance()) {
             hintManager.addDatabaseShardingValue("logicTable", 1);

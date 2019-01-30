@@ -54,6 +54,8 @@ public final class DataSourceConfigurationTest {
         properties.put("jdbcUrl", "jdbc:h2:mem:test;DB_CLOSE_DELAY=-1;DATABASE_TO_UPPER=false;MODE=MySQL");
         properties.put("username", "root");
         properties.put("password", "root");
+        properties.put("loginTimeout", "5000");
+        properties.put("test", "test");
         DataSourceConfiguration dataSourceConfig = new DataSourceConfiguration(HikariDataSource.class.getName());
         dataSourceConfig.getProperties().putAll(properties);
         HikariDataSource actual = (HikariDataSource) dataSourceConfig.createDataSource();

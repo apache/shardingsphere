@@ -17,11 +17,21 @@
 
 package org.apache.shardingsphere.spi;
 
+import org.apache.shardingsphere.spi.executor.SPIParsingHookTest;
+import org.apache.shardingsphere.spi.executor.SPIRewriteHookTest;
+import org.apache.shardingsphere.spi.executor.SPIRootInvokeHookTest;
+import org.apache.shardingsphere.spi.executor.SPISQLExecutionHookTest;
 import org.junit.runner.RunWith;
 import org.junit.runners.Suite;
 import org.junit.runners.Suite.SuiteClasses;
 
 @RunWith(Suite.class)
-@SuiteClasses(NewInstanceServiceLoaderTest.class)
+@SuiteClasses({
+        NewInstanceServiceLoaderTest.class, 
+        SPIRootInvokeHookTest.class, 
+        SPIParsingHookTest.class, 
+        SPIRewriteHookTest.class, 
+        SPISQLExecutionHookTest.class
+})
 public final class AllSPITests {
 }

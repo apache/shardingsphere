@@ -15,45 +15,48 @@
  * limitations under the License.
  */
 
-package org.apache.shardingsphere.spi.parsing;
+package org.apache.shardingsphere.spi.fixture;
 
 import org.apache.shardingsphere.core.metadata.table.ShardingTableMetaData;
 import org.apache.shardingsphere.core.parsing.parser.sql.SQLStatement;
-import org.apache.shardingsphere.spi.NewInstanceServiceLoader;
+import org.apache.shardingsphere.spi.parsing.ParsingHook;
 
 import java.util.Collection;
+import java.util.LinkedList;
 
-/**
- * Parsing hook for SPI.
- *
- * @author zhangliang
- */
-public final class SPIParsingHook implements ParsingHook {
+public final class ParsingHookFixture implements ParsingHook {
     
-    private final Collection<ParsingHook> parsingHooks = NewInstanceServiceLoader.newServiceInstances(ParsingHook.class);
-    
-    static {
-        NewInstanceServiceLoader.register(ParsingHook.class);
-    }
+    private static final Collection<String> ACTIONS = new LinkedList<>();
     
     @Override
     public void start(final String sql) {
-        for (ParsingHook each : parsingHooks) {
-            each.start(sql);
-        }
+        ACTIONS.add("start");
     }
     
     @Override
     public void finishSuccess(final SQLStatement sqlStatement, final ShardingTableMetaData shardingTableMetaData) {
-        for (ParsingHook each : parsingHooks) {
-            each.finishSuccess(sqlStatement, shardingTableMetaData);
-        }
+        ACTIONS.add("finishSuccess");
     }
     
     @Override
     public void finishFailure(final Exception cause) {
-        for (ParsingHook each : parsingHooks) {
-            each.finishFailure(cause);
-        }
+        ACTIONS.add("finishFailure");
+    }
+    
+    /**
+     * Contains action or not.
+     * 
+     * @param action action
+     * @return contains action or not
+     */
+    public static boolean containsAction(final String action) {
+        return ACTIONS.contains(action);
+    }
+    
+    /**
+     * Clear actions.
+     */
+    public static void clearActions() {
+        ACTIONS.clear();
     }
 }

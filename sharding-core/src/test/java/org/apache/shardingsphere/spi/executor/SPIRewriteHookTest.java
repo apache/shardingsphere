@@ -15,30 +15,40 @@
  * limitations under the License.
  */
 
-package org.apache.shardingsphere.spi;
+package org.apache.shardingsphere.spi.executor;
 
-import org.apache.shardingsphere.spi.parsing.ParsingHook;
+import org.apache.shardingsphere.spi.fixture.RewriteHookFixture;
+import org.apache.shardingsphere.spi.rewrite.SPIRewriteHook;
+import org.junit.Before;
 import org.junit.Test;
 
-import java.util.Collection;
-
-import static org.hamcrest.CoreMatchers.is;
-import static org.junit.Assert.assertThat;
 import static org.junit.Assert.assertTrue;
 
-public final class NewInstanceServiceLoaderTest {
+public final class SPIRewriteHookTest {
     
-    @Test
-    public void assertNewServiceInstanceWhenIsNotExist() {
-        NewInstanceServiceLoader.register(Collection.class);
-        Collection collection = NewInstanceServiceLoader.newServiceInstances(Collection.class);
-        assertTrue(collection.isEmpty());
+    private SPIRewriteHook spiRewriteHook;
+    
+    @Before
+    public void setUp() {
+        RewriteHookFixture.clearActions();
+        spiRewriteHook = new SPIRewriteHook();
     }
     
     @Test
-    public void assertNewServiceInstanceWhenIsExist() {
-        NewInstanceServiceLoader.register(ParsingHook.class);
-        Collection collection = NewInstanceServiceLoader.newServiceInstances(ParsingHook.class);
-        assertThat(collection.size(), is(1));
+    public void assertStart() {
+        spiRewriteHook.start(null);
+        assertTrue(RewriteHookFixture.containsAction("start"));
+    }
+    
+    @Test
+    public void assertFinishSuccess() {
+        spiRewriteHook.finishSuccess(null);
+        assertTrue(RewriteHookFixture.containsAction("finishSuccess"));
+    }
+    
+    @Test
+    public void assertFinishFailure() {
+        spiRewriteHook.finishFailure(null);
+        assertTrue(RewriteHookFixture.containsAction("finishFailure"));
     }
 }
