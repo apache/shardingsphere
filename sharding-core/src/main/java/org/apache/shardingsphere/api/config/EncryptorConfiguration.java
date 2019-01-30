@@ -19,9 +19,8 @@ package org.apache.shardingsphere.api.config;
 
 import com.google.common.base.Splitter;
 import com.google.common.base.Strings;
-import lombok.AllArgsConstructor;
 import lombok.Getter;
-import lombok.Setter;
+import lombok.RequiredArgsConstructor;
 import org.apache.shardingsphere.core.encrypt.ShardingEncryptorFactory;
 import org.apache.shardingsphere.core.encrypt.encryptor.ShardingEncryptor;
 import org.apache.shardingsphere.core.routing.strategy.ShardingEncryptorStrategy;
@@ -33,18 +32,17 @@ import java.util.Properties;
  *
  * @author panjuan
  */
-@AllArgsConstructor
+@RequiredArgsConstructor
 @Getter
-@Setter
 public final class EncryptorConfiguration {
     
-    private String type;
+    private final String type;
     
-    private String columns;
+    private final String columns;
     
-    private String assistedQueryColumns;
+    private final String assistedQueryColumns;
     
-    private Properties props;
+    private final Properties props;
     
     /**
      * Get sharding encryptor strategy.
