@@ -55,7 +55,7 @@ public final class PostgreSQLComBindPacket implements PostgreSQLQueryCommandPack
     
     private final PostgreSQLBinaryStatement binaryStatement;
     
-    private final DatabaseCommunicationEngine databaseCommunicationEngine;
+    private DatabaseCommunicationEngine databaseCommunicationEngine;
     
     public PostgreSQLComBindPacket(final PostgreSQLPacketPayload payload, final BackendConnection backendConnection) throws SQLException {
         payload.readInt4();
@@ -65,8 +65,13 @@ public final class PostgreSQLComBindPacket implements PostgreSQLQueryCommandPack
             payload.readInt2();
         }
         binaryStatement = backendConnection.getPostgreSQLBinaryStatementRegistry().getBinaryStatement(statementId);
-        databaseCommunicationEngine = DatabaseCommunicationEngineFactory.getInstance().newBinaryProtocolInstance(
-            backendConnection.getLogicSchema(), 0, binaryStatement.getSql(), getParameters(payload), backendConnection, DatabaseType.PostgreSQL);
+        if (null != binaryStatement && null != binaryStatement.getSql()) {
+            databaseCommunicationEngine = DatabaseCommunicationEngineFactory.getInstance().newBinaryProtocolInstance(
+                backendConnection.getLogicSchema(), 0, binaryStatement.getSql(), getParameters(payload), backendConnection, DatabaseType.PostgreSQL);
+        }
+        for (int i = 0; i < payload.readInt2(); i++) {
+            payload.readInt2();
+        }
     }
     
     private List<Object> getParameters(final PostgreSQLPacketPayload payload) throws SQLException {
@@ -91,7 +96,9 @@ public final class PostgreSQLComBindPacket implements PostgreSQLQueryCommandPack
             return Optional.of(new PostgreSQLCommandResponsePackets(new PostgreSQLErrorResponsePacket()));
         }
         PostgreSQLCommandResponsePackets result = new PostgreSQLCommandResponsePackets(new PostgreSQLBindCompletePacket());
-        result.getPackets().addAll(databaseCommunicationEngine.execute().getPackets());
+        if (null != databaseCommunicationEngine) {
+            result.getPackets().addAll(databaseCommunicationEngine.execute().getPackets());
+        }
         return Optional.of(result);
     }
     
