@@ -69,12 +69,14 @@ public class YamlEncryptorConfigurationTest {
     }
     
     @Test
-    public void asserttSetColumns() {
+    public void assertSetColumns() {
         yamlEncryptorConfiguration.setColumns("pwd1");
     }
     
     @Test
-    public void testSetAssistedQueryColumns() {
+    public void assertSetAssistedQueryColumns() {
+        yamlEncryptorConfiguration.setAssistedQueryColumns("pwd1_index");
+        assertThat(yamlEncryptorConfiguration.getAssistedQueryColumns(), is("pwd1_index"));
     }
     
     @Test
