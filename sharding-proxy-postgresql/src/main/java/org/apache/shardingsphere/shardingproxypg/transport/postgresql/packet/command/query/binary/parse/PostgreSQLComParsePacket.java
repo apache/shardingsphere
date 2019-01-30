@@ -58,16 +58,18 @@ public final class PostgreSQLComParsePacket implements PostgreSQLCommandPacket {
     
     private final List<PostgreSQLBinaryStatementParameterType> postgreSQLBinaryStatementParameterTypes = new ArrayList<>(64);
     
-    private final SQLParsingEngine sqlParsingEngine;
+    private SQLParsingEngine sqlParsingEngine;
     
     public PostgreSQLComParsePacket(final PostgreSQLPacketPayload payload, final BackendConnection backendConnection) {
         postgreSQLBinaryStatementRegistry = backendConnection.getPostgreSQLBinaryStatementRegistry();
         payload.readInt4();
         statementId = payload.readStringNul();
         sql = alterSQLToJDBCStyle(payload.readStringNul());
-        getParameterTypes(payload);
-        LogicSchema logicSchema = backendConnection.getLogicSchema();
-        sqlParsingEngine = new SQLParsingEngine(DatabaseType.PostgreSQL, sql, getShardingRule(logicSchema), logicSchema.getMetaData().getTable());
+        if (!sql.isEmpty()) {
+            getParameterTypes(payload);
+            LogicSchema logicSchema = backendConnection.getLogicSchema();
+            sqlParsingEngine = new SQLParsingEngine(DatabaseType.PostgreSQL, sql, getShardingRule(logicSchema), logicSchema.getMetaData().getTable());
+        }
     }
     
     private void getParameterTypes(final PostgreSQLPacketPayload payload) {
@@ -92,9 +94,11 @@ public final class PostgreSQLComParsePacket implements PostgreSQLCommandPacket {
     @Override
     public Optional<PostgreSQLCommandResponsePackets> execute() {
         log.debug("PostgreSQLComParsePacket received for Sharding-Proxy: {}", sql);
-        SQLStatement sqlStatement = sqlParsingEngine.parse(true);
-        int parametersIndex = sqlStatement.getParametersIndex();
-        postgreSQLBinaryStatementRegistry.register(statementId, sql, parametersIndex, postgreSQLBinaryStatementParameterTypes);
+        if (!sql.isEmpty()) {
+            SQLStatement sqlStatement = sqlParsingEngine.parse(true);
+            int parametersIndex = sqlStatement.getParametersIndex();
+            postgreSQLBinaryStatementRegistry.register(statementId, sql, parametersIndex, postgreSQLBinaryStatementParameterTypes);
+        }
         return Optional.of(new PostgreSQLCommandResponsePackets(new PostgreSQLParseCompletePacket()));
     }
     
