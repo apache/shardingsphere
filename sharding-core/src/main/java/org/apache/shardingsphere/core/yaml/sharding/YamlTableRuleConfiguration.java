@@ -22,7 +22,6 @@ import lombok.Getter;
 import lombok.NoArgsConstructor;
 import lombok.Setter;
 import org.apache.shardingsphere.api.config.rule.TableRuleConfiguration;
-import org.apache.shardingsphere.core.yaml.sharding.strategy.YamlEncryptorConfiguration;
 
 /**
  * Yaml table rule configuration.
