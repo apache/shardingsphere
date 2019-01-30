@@ -29,6 +29,14 @@ import java.sql.SQLException;
 public interface PostgreSQLBinaryProtocolValue {
     
     /**
+     * Get column length.
+     *
+     * @param value value of column
+     * @return column length
+     */
+    int getColumnLength(Object value);
+    
+    /**
      * Read binary protocol value.
      *
      * @param payload payload operation for PostgreSQL packet
