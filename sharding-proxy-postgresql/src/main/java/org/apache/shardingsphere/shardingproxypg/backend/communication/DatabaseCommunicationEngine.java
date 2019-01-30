@@ -18,7 +18,6 @@
 package org.apache.shardingsphere.shardingproxypg.backend.communication;
 
 import org.apache.shardingsphere.shardingproxypg.backend.ResultPacket;
-import org.apache.shardingsphere.shardingproxypg.transport.mysql.packet.command.CommandResponsePackets;
 import org.apache.shardingsphere.shardingproxypg.transport.postgresql.packet.command.PostgreSQLCommandResponsePackets;
 
 import java.sql.SQLException;
