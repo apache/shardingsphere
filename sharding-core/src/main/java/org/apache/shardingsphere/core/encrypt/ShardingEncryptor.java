@@ -15,7 +15,7 @@
  * limitations under the License.
  */
 
-package org.apache.shardingsphere.core.encode;
+package org.apache.shardingsphere.core.encrypt;
 
 import java.util.Properties;
 
