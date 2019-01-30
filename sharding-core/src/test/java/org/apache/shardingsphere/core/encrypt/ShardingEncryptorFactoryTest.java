@@ -17,6 +17,7 @@
 
 package org.apache.shardingsphere.core.encrypt;
 
+import org.apache.shardingsphere.core.exception.ShardingConfigurationException;
 import org.junit.Test;
 
 import static org.hamcrest.CoreMatchers.is;
@@ -27,5 +28,10 @@ public class ShardingEncryptorFactoryTest {
     @Test
     public void assertNewInstance() {
         assertThat(ShardingEncryptorFactory.newInstance("test").getProperties().getProperty("key1"), is("value1"));
+    }
+    
+    @Test(expected = ShardingConfigurationException.class)
+    public void assertNewInstanceWithException() {
+        assertThat(ShardingEncryptorFactory.newInstance("test1").getProperties().getProperty("key1"), is("value1"));
     }
 }
