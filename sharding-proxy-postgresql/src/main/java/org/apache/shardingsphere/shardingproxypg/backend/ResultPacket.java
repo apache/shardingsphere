@@ -19,6 +19,7 @@ package org.apache.shardingsphere.shardingproxypg.backend;
 
 import lombok.Getter;
 import lombok.RequiredArgsConstructor;
+import org.apache.shardingsphere.shardingproxypg.transport.postgresql.constant.PostgreSQLColumnType;
 
 import java.util.List;
 
@@ -37,5 +38,5 @@ public final class ResultPacket {
     
     private final int columnCount;
     
-    private final List<Integer> columnTypes;
+    private final List<PostgreSQLColumnType> columnTypes;
 }
