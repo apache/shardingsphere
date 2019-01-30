@@ -24,5 +24,11 @@ package org.apache.shardingsphere.core.encode;
  */
 public interface ShardingQueryAssistedEncryptor extends ShardingEncryptor {
     
+    /**
+     * Query assisted encode.
+     * 
+     * @param plaintext plaintext
+     * @return ciphertext
+     */
     String queryAssistedEncode(String plaintext);
 }
