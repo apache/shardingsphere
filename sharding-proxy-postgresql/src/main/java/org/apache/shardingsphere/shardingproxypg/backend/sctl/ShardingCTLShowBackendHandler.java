@@ -22,6 +22,7 @@ import org.apache.shardingsphere.core.merger.MergedResult;
 import org.apache.shardingsphere.shardingproxypg.backend.ResultPacket;
 import org.apache.shardingsphere.shardingproxypg.backend.communication.jdbc.connection.BackendConnection;
 import org.apache.shardingsphere.shardingproxypg.backend.text.TextProtocolBackendHandler;
+import org.apache.shardingsphere.shardingproxypg.transport.postgresql.constant.PostgreSQLColumnType;
 import org.apache.shardingsphere.shardingproxypg.transport.postgresql.packet.command.PostgreSQLCommandResponsePackets;
 import org.apache.shardingsphere.shardingproxypg.transport.postgresql.packet.generic.PostgreSQLErrorResponsePacket;
 
@@ -47,7 +48,7 @@ public final class ShardingCTLShowBackendHandler implements TextProtocolBackendH
     
     private int columnCount;
     
-    private final List<Integer> columnTypes = new LinkedList<>();
+    private final List<PostgreSQLColumnType> columnTypes = new LinkedList<>();
     
     public ShardingCTLShowBackendHandler(final String sql, final BackendConnection backendConnection) {
         this.sql = sql.toUpperCase().trim();
