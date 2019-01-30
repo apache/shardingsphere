@@ -46,21 +46,16 @@ public class ShardingKeyGeneratorConfigurationTest {
         
     @Test
     public void assertGetKeyGeneratorClassNameWithUUID() {
-        KeyGeneratorConfiguration keyGeneratorConfiguration = new KeyGeneratorConfiguration();
-        keyGeneratorConfiguration.setType("UUID");
-        assertThat(keyGeneratorConfiguration.getKeyGenerator().getClass().getName(), is(UUIDShardingKeyGenerator.class.getName()));
+        assertThat(new KeyGeneratorConfiguration(null, "UUID", new Properties()).getKeyGenerator().getClass().getName(), is(UUIDShardingKeyGenerator.class.getName()));
     }
     
     @Test(expected = ShardingConfigurationException.class)
     public void assertGetKeyGeneratorClassNameWithException() {
-        KeyGeneratorConfiguration keyGeneratorConfiguration = new KeyGeneratorConfiguration();
-        keyGeneratorConfiguration.setType("DEFAULT");
-        keyGeneratorConfiguration.getKeyGenerator();
+        new KeyGeneratorConfiguration(null, "DEFAULT", new Properties()).getKeyGenerator();
     }
     
     @Test
     public void assertGetKeyGeneratorVariables() {
-        KeyGeneratorConfiguration keyGeneratorConfiguration = new KeyGeneratorConfiguration();
-        assertTrue(null == keyGeneratorConfiguration.getKeyGenerator());
+        assertTrue(null == new KeyGeneratorConfiguration(null, null, new Properties()).getKeyGenerator());
     }
 }

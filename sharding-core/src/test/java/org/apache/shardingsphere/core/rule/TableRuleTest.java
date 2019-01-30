@@ -28,6 +28,7 @@ import org.junit.Test;
 import java.util.Arrays;
 import java.util.Collection;
 import java.util.Collections;
+import java.util.Properties;
 
 import static org.hamcrest.CoreMatchers.instanceOf;
 import static org.hamcrest.CoreMatchers.is;
@@ -60,7 +61,7 @@ public final class TableRuleTest {
         tableRuleConfig.setActualDataNodes("ds${0..1}.table_${0..2}");
         tableRuleConfig.setDatabaseShardingStrategyConfig(new NoneShardingStrategyConfiguration());
         tableRuleConfig.setTableShardingStrategyConfig(new NoneShardingStrategyConfiguration());
-        tableRuleConfig.setKeyGeneratorConfig(getKeyGeneratorConfiguration());
+        tableRuleConfig.setKeyGeneratorConfig(new KeyGeneratorConfiguration("col_1", "INCREMENT", new Properties()));
         tableRuleConfig.setLogicIndex("LOGIC_INDEX");
         TableRule actual = new TableRule(tableRuleConfig, createShardingDataSourceNames(), null);
         assertThat(actual.getLogicTable(), is("logic_table"));
@@ -76,13 +77,6 @@ public final class TableRuleTest {
         assertThat(actual.getGenerateKeyColumn(), is("col_1"));
         assertThat(actual.getShardingKeyGenerator(), instanceOf(IncrementShardingKeyGenerator.class));
         assertThat(actual.getLogicIndex(), is("logic_index"));
-    }
-    
-    private KeyGeneratorConfiguration getKeyGeneratorConfiguration() {
-        KeyGeneratorConfiguration keyGeneratorConfiguration = new KeyGeneratorConfiguration();
-        keyGeneratorConfiguration.setType("INCREMENT");
-        keyGeneratorConfiguration.setColumn("col_1");
-        return keyGeneratorConfiguration;
     }
     
     @Test
