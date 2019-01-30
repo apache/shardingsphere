@@ -17,21 +17,12 @@
 
 package org.apache.shardingsphere.core.constant;
 
-import lombok.Getter;
-import lombok.RequiredArgsConstructor;
-
 /**
  * Supported sharding operator.
  *
  * @author zhangliang
  */
-@RequiredArgsConstructor
-@Getter
 public enum ShardingOperator {
     
-    EQUAL("="), 
-    BETWEEN("BETWEEN"), 
-    IN("IN");
-    
-    private final String expression;
+    EQUAL, BETWEEN, IN
 }
