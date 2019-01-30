@@ -43,8 +43,9 @@ public interface ShardingEncryptor {
     /**
      * Set properties.
      * 
+     * @param properties properties
      */
-    void setProperties();
+    void setProperties(Properties properties);
     
     /**
      * Encode.
