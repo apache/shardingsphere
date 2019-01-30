@@ -97,7 +97,7 @@ public final class YamlShardingRuleConfigurationTest {
         assertThat(actual.getBindingTableGroups().iterator().next(), is("t_order, t_order_item"));
         assertThat(actual.getBroadcastTables().size(), is(1));
         assertThat(actual.getBroadcastTables().iterator().next(), is("t_config"));
-        assertThat(actual.getDefaultKeyGeneratorConfig().getKeyGenerator(), instanceOf(SnowflakeShardingKeyGenerator.class));
+        assertThat(actual.getDefaultKeyGeneratorConfig().getKeyGenerator().orNull(), instanceOf(SnowflakeShardingKeyGenerator.class));
         assertMasterSlaveRuleConfig(actual.getMasterSlaveRuleConfigs().iterator().next());
     }
     

@@ -118,7 +118,11 @@ public class ShardingRule {
     }
     
     private ShardingKeyGenerator createDefaultKeyGenerator(final KeyGeneratorConfiguration keyGeneratorConfiguration) {
-        return null == keyGeneratorConfiguration ? new SnowflakeShardingKeyGenerator() : keyGeneratorConfiguration.getKeyGenerator();
+        if (null == keyGeneratorConfiguration) {
+            return new SnowflakeShardingKeyGenerator();
+        }
+        Optional<ShardingKeyGenerator> result = keyGeneratorConfiguration.getKeyGenerator();
+        return result.isPresent() ? result.get() : new SnowflakeShardingKeyGenerator();
     }
     
     private Collection<MasterSlaveRule> createMasterSlaveRules(final Collection<MasterSlaveRuleConfiguration> masterSlaveRuleConfigurations) {
