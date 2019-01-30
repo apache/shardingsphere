@@ -15,7 +15,7 @@
  * limitations under the License.
  */
 
-package org.apache.shardingsphere.core.encrypt;
+package org.apache.shardingsphere.core.encrypt.encryptor;
 
 /**
  * Sharding query assisted encryptor.
