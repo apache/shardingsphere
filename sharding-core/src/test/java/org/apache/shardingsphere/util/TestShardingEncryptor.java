@@ -19,6 +19,8 @@ package org.apache.shardingsphere.util;
 
 import org.apache.shardingsphere.core.encrypt.encryptor.ShardingEncryptor;
 
+import java.util.Properties;
+
 /**
  * Test sharding encryptor.
  *
@@ -30,4 +32,15 @@ public final class TestShardingEncryptor implements ShardingEncryptor {
     public String getType() {
         return "test";
     }
+    
+    @Override
+    public Properties getProperties() {
+        return new Properties();
+    }
+    
+    @Override
+    public void setProperties(final Properties properties) {
+    }
+    
+    
 }
