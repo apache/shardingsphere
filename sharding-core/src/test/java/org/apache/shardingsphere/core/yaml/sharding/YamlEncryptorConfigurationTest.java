@@ -17,6 +17,7 @@
 
 package org.apache.shardingsphere.core.yaml.sharding;
 
+import org.apache.shardingsphere.api.config.EncryptorConfiguration;
 import org.junit.Before;
 import org.junit.Test;
 
@@ -86,5 +87,12 @@ public class YamlEncryptorConfigurationTest {
         properties.setProperty("key1", "value1");
         yamlEncryptorConfiguration.setProps(properties);
         assertThat(yamlEncryptorConfiguration.getProps().getProperty("key1"), is("value1"));
+    }
+    
+    @Test
+    public void assertNewYamlEncryptorConfiguration() {
+        EncryptorConfiguration encryptorConfiguration = new EncryptorConfiguration();
+        yamlEncryptorConfiguration = new YamlEncryptorConfiguration(encryptorConfiguration);
+        assertNull(yamlEncryptorConfiguration.getType());
     }
 }
