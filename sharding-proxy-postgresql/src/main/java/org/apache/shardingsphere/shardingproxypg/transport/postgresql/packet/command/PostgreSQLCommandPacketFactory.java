@@ -23,7 +23,10 @@ import org.apache.shardingsphere.shardingproxypg.backend.communication.jdbc.conn
 import org.apache.shardingsphere.shardingproxypg.transport.postgresql.packet.PostgreSQLPacketPayload;
 import org.apache.shardingsphere.shardingproxypg.transport.postgresql.packet.command.admin.PostgreSQLUnsupportedCommandPacket;
 import org.apache.shardingsphere.shardingproxypg.transport.postgresql.packet.command.query.binary.bind.PostgreSQLComBindPacket;
+import org.apache.shardingsphere.shardingproxypg.transport.postgresql.packet.command.query.binary.describe.PostgreSQLComDescribePacket;
+import org.apache.shardingsphere.shardingproxypg.transport.postgresql.packet.command.query.binary.execute.PostgreSQLComExecutePacket;
 import org.apache.shardingsphere.shardingproxypg.transport.postgresql.packet.command.query.binary.parse.PostgreSQLComParsePacket;
+import org.apache.shardingsphere.shardingproxypg.transport.postgresql.packet.command.query.binary.sync.PostgreSQLComSyncPacket;
 import org.apache.shardingsphere.shardingproxypg.transport.postgresql.packet.command.query.text.PostgreSQLComQueryPacket;
 
 import java.sql.SQLException;
@@ -53,6 +56,12 @@ public final class PostgreSQLCommandPacketFactory {
                 return new PostgreSQLComParsePacket(payload, backendConnection);
             case BIND:
                 return new PostgreSQLComBindPacket(payload, backendConnection);
+            case DESCRIBE:
+                return new PostgreSQLComDescribePacket(payload);
+            case EXECUTE:
+                return new PostgreSQLComExecutePacket(payload);
+            case SYNC:
+                return new PostgreSQLComSyncPacket(payload);
             default:
                 return new PostgreSQLUnsupportedCommandPacket(type.getValue());
         }
