@@ -15,49 +15,48 @@
  * limitations under the License.
  */
 
-package org.apache.shardingsphere.core.util;
+package org.apache.shardingsphere.core.executor;
 
 import com.google.common.util.concurrent.ListeningExecutorService;
 import com.google.common.util.concurrent.MoreExecutors;
-import lombok.AccessLevel;
-import lombok.AllArgsConstructor;
 import lombok.Getter;
-import org.apache.shardingsphere.core.executor.ShardingThreadFactoryBuilder;
 
 import java.util.concurrent.ExecutorService;
 import java.util.concurrent.Executors;
+import java.util.concurrent.ThreadFactory;
 import java.util.concurrent.TimeUnit;
 
 /**
- * Util class for creating ListeningExecutorService.
+ * Sharding executor service.
  *
  * @author wuxu
  * @author zhaojun
  */
-@AllArgsConstructor(access = AccessLevel.PRIVATE)
+@Getter
 public final class ShardingExecutorService {
     
     private static final String DEFAULT_NAME_FORMAT = "%d";
     
     private static final ExecutorService SHUTDOWN_EXECUTOR = Executors.newSingleThreadExecutor(ShardingThreadFactoryBuilder.build("Executor-Engine-Closer"));
     
-    @Getter
     private ListeningExecutorService executorService;
-    
-    public ShardingExecutorService(final int executorSize, final String nameFormat) {
-        executorService = MoreExecutors.listeningDecorator(0 == executorSize
-            ? Executors.newCachedThreadPool(ShardingThreadFactoryBuilder.build(nameFormat))
-            : Executors.newFixedThreadPool(executorSize, ShardingThreadFactoryBuilder.build(nameFormat)));
-        MoreExecutors.addDelayedShutdownHook(executorService, 60, TimeUnit.SECONDS);
-    }
     
     public ShardingExecutorService(final int executorSize) {
         this(executorSize, DEFAULT_NAME_FORMAT);
     }
     
+    public ShardingExecutorService(final int executorSize, final String nameFormat) {
+        executorService = MoreExecutors.listeningDecorator(getExecutorService(executorSize, nameFormat));
+        MoreExecutors.addDelayedShutdownHook(executorService, 60, TimeUnit.SECONDS);
+    }
+    
+    private ExecutorService getExecutorService(final int executorSize, final String nameFormat) {
+        ThreadFactory shardingThreadFactory = ShardingThreadFactoryBuilder.build(nameFormat);
+        return 0 == executorSize ? Executors.newCachedThreadPool(shardingThreadFactory) : Executors.newFixedThreadPool(executorSize, shardingThreadFactory);
+    }
+    
     /**
      * Close executor service.
-     *
      */
     public void close() {
         SHUTDOWN_EXECUTOR.execute(new Runnable() {
