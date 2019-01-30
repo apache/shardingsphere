@@ -27,7 +27,6 @@ import org.junit.runner.RunWith;
 import org.mockito.Mock;
 import org.mockito.junit.MockitoJUnitRunner;
 import org.postgresql.core.BaseConnection;
-import org.postgresql.core.Logger;
 
 import javax.sql.DataSource;
 import javax.sql.XAConnection;
@@ -54,8 +53,6 @@ public class PostgreSQLXAConnectionWrapperTest {
     @SuppressWarnings("unchecked")
     public void setUp() throws SQLException, ClassNotFoundException {
         BaseConnection connection = (BaseConnection) mock(Class.forName("org.postgresql.core.BaseConnection"));
-        Logger logger = mock(Logger.class);
-        when(connection.getLogger()).thenReturn(logger);
         DataSource dataSource = DataSourceUtils.build(HikariDataSource.class, DatabaseType.PostgreSQL, "ds1");
         xaDataSource = XADataSourceFactory.build(DatabaseType.MySQL, dataSource);
         when(this.connection.unwrap((Class<Object>) any())).thenReturn(connection);
