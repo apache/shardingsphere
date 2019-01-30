@@ -35,7 +35,7 @@ import java.util.Properties;
 import java.util.concurrent.ConcurrentHashMap;
 
 /**
- * Master-slave configuration for yaml.
+ * Master-slave configuration for YAML.
  *
  * @author caohao
  */
@@ -52,10 +52,10 @@ public class YamlMasterSlaveConfiguration {
     private Properties props = new Properties();
     
     /**
-     * Unmarshal yaml master slave configuration from yaml file.
+     * Unmarshal YAML master-slave configuration.
      *
-     * @param yamlFile yaml file
-     * @return yaml sharding configuration
+     * @param yamlFile YAML file
+     * @return master-slave configuration for YAML
      * @throws IOException IO Exception
      */
     public static YamlMasterSlaveConfiguration unmarshal(final File yamlFile) throws IOException {
@@ -68,10 +68,10 @@ public class YamlMasterSlaveConfiguration {
     }
     
     /**
-     * Unmarshal yaml sharding configuration from yaml bytes.
+     * Unmarshal YAML master-slave configuration.
      *
-     * @param yamlBytes yaml bytes
-     * @return yaml sharding configuration
+     * @param yamlBytes YAML bytes
+     * @return master-slave configuration for YAML
      * @throws IOException IO Exception
      */
     public static YamlMasterSlaveConfiguration unmarshal(final byte[] yamlBytes) throws IOException {

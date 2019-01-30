@@ -52,10 +52,10 @@ public class YamlShardingConfiguration {
     private Properties props = new Properties();
     
     /**
-     * Unmarshal yaml sharding configuration from yaml file.
+     * Unmarshal YAML sharding configuration.
      * 
-     * @param yamlFile yaml file
-     * @return yaml sharding configuration
+     * @param yamlFile YAML file
+     * @return sharding configuration for YAML
      * @throws IOException IO Exception
      */
     public static YamlShardingConfiguration unmarshal(final File yamlFile) throws IOException {
@@ -68,10 +68,10 @@ public class YamlShardingConfiguration {
     }
     
     /**
-     * Unmarshal yaml sharding configuration from yaml bytes.
+     * Unmarshal YAML sharding configuration.
      * 
-     * @param yamlBytes yaml bytes
-     * @return yaml sharding configuration
+     * @param yamlBytes YAML bytes
+     * @return sharding configuration for YAML
      * @throws IOException IO Exception
      */
     public static YamlShardingConfiguration unmarshal(final byte[] yamlBytes) throws IOException {
