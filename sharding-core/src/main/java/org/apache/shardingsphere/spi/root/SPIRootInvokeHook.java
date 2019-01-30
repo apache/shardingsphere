@@ -30,6 +30,10 @@ public final class SPIRootInvokeHook implements RootInvokeHook {
     
     private final Collection<RootInvokeHook> rootInvokeHooks = NewInstanceServiceLoader.newServiceInstances(RootInvokeHook.class);
     
+    static {
+        NewInstanceServiceLoader.register(RootInvokeHook.class);
+    }
+    
     @Override
     public void start() {
         for (RootInvokeHook each : rootInvokeHooks) {

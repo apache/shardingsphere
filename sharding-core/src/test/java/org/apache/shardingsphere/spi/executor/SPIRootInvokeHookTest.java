@@ -17,7 +17,6 @@
 
 package org.apache.shardingsphere.spi.executor;
 
-import org.apache.shardingsphere.core.bootstrap.ShardingBootstrap;
 import org.apache.shardingsphere.spi.fixture.RootInvokeHookFixture;
 import org.apache.shardingsphere.spi.root.SPIRootInvokeHook;
 import org.junit.Before;
@@ -31,7 +30,6 @@ public final class SPIRootInvokeHookTest {
     
     @Before
     public void setUp() {
-        ShardingBootstrap.init();
         RootInvokeHookFixture.clearActions();
         spiRootInvokeHook = new SPIRootInvokeHook();
     }

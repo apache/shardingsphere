@@ -15,35 +15,41 @@
  * limitations under the License.
  */
 
-package org.apache.shardingsphere.core.bootstrap;
+package org.apache.shardingsphere.shardingproxypg.transport.mysql.packet.handshake;
 
 import lombok.AccessLevel;
 import lombok.NoArgsConstructor;
-import org.apache.shardingsphere.spi.NewInstanceServiceLoader;
-import org.apache.shardingsphere.spi.executor.SQLExecutionHook;
-import org.apache.shardingsphere.spi.parsing.ParsingHook;
-import org.apache.shardingsphere.spi.rewrite.RewriteHook;
-import org.apache.shardingsphere.spi.root.RootInvokeHook;
 
 /**
- * Sharding bootstrap.
+ * Connection id generator.
  *
  * @author zhangliang
- * @author zhaojun
  */
-@NoArgsConstructor(access = AccessLevel.PRIVATE)
-public final class ShardingBootstrap {
+@NoArgsConstructor(access = AccessLevel.NONE)
+public final class ConnectionIdGenerator {
+    
+    private static final ConnectionIdGenerator INSTANCE = new ConnectionIdGenerator();
+    
+    private int currentId;
     
     /**
-     * Initialize sharding bootstrap.
+     * Get instance.
+     * 
+     * @return instance
      */
-    public static void init() {
-        registerHookClasses(RootInvokeHook.class, SQLExecutionHook.class, ParsingHook.class, RewriteHook.class);
-    }
+    public static ConnectionIdGenerator getInstance() {
+        return INSTANCE;
+    } 
     
-    private static void registerHookClasses(final Class<?>... services) {
-        for (Class<?> each : services) {
-            NewInstanceServiceLoader.register(each);
+    /**
+     * Get next connection id.
+     * 
+     * @return next connection id
+     */
+    public synchronized int nextId() {
+        if (currentId >= Integer.MAX_VALUE) {
+            currentId = 0;
         }
+        return ++currentId;
     }
 }

@@ -90,8 +90,10 @@ public final class HintManagerHolderTest {
     @Test
     public void assertClear() {
         hintManager.addDatabaseShardingValue("logicTable", 1);
+        hintManager.addTableShardingValue("logicTable", 1);
         hintManager.close();
         assertFalse(HintManagerHolder.getDatabaseShardingValue("logicTable").isPresent());
+        assertFalse(HintManagerHolder.getTableShardingValue("logicTable").isPresent());
     }
     
     @Test
