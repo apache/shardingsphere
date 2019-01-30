@@ -17,7 +17,6 @@
 
 package org.apache.shardingsphere.spi.executor;
 
-import org.apache.shardingsphere.core.bootstrap.ShardingBootstrap;
 import org.apache.shardingsphere.spi.fixture.RewriteHookFixture;
 import org.apache.shardingsphere.spi.rewrite.SPIRewriteHook;
 import org.junit.Before;
@@ -31,7 +30,6 @@ public final class SPIRewriteHookTest {
     
     @Before
     public void setUp() {
-        ShardingBootstrap.init();
         RewriteHookFixture.clearActions();
         spiRewriteHook = new SPIRewriteHook();
     }

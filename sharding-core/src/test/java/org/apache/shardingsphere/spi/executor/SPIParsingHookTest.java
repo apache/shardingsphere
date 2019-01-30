@@ -17,7 +17,6 @@
 
 package org.apache.shardingsphere.spi.executor;
 
-import org.apache.shardingsphere.core.bootstrap.ShardingBootstrap;
 import org.apache.shardingsphere.spi.fixture.ParsingHookFixture;
 import org.apache.shardingsphere.spi.parsing.SPIParsingHook;
 import org.junit.Before;
@@ -31,7 +30,6 @@ public final class SPIParsingHookTest {
     
     @Before
     public void setUp() {
-        ShardingBootstrap.init();
         ParsingHookFixture.clearActions();
         spiParsingHook = new SPIParsingHook();
     }

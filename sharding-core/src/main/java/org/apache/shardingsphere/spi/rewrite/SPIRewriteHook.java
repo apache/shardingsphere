@@ -32,6 +32,10 @@ public final class SPIRewriteHook implements RewriteHook {
     
     private final Collection<RewriteHook> rewriteHooks = NewInstanceServiceLoader.newServiceInstances(RewriteHook.class);
     
+    static {
+        NewInstanceServiceLoader.register(RewriteHook.class);
+    }
+    
     @Override
     public void start(final TableUnit tableUnit) {
         for (RewriteHook each : rewriteHooks) {

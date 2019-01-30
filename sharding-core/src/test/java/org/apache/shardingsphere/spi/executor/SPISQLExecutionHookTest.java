@@ -17,7 +17,6 @@
 
 package org.apache.shardingsphere.spi.executor;
 
-import org.apache.shardingsphere.core.bootstrap.ShardingBootstrap;
 import org.apache.shardingsphere.spi.fixture.SQLExecutionHookFixture;
 import org.junit.Before;
 import org.junit.Test;
@@ -30,7 +29,6 @@ public final class SPISQLExecutionHookTest {
     
     @Before
     public void setUp() {
-        ShardingBootstrap.init();
         SQLExecutionHookFixture.clearActions();
         spiSQLExecutionHook = new SPISQLExecutionHook();
     }

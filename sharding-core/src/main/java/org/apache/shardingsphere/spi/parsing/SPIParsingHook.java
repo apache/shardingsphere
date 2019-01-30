@@ -32,6 +32,10 @@ public final class SPIParsingHook implements ParsingHook {
     
     private final Collection<ParsingHook> parsingHooks = NewInstanceServiceLoader.newServiceInstances(ParsingHook.class);
     
+    static {
+        NewInstanceServiceLoader.register(ParsingHook.class);
+    }
+    
     @Override
     public void start(final String sql) {
         for (ParsingHook each : parsingHooks) {
