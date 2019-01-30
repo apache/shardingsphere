@@ -43,7 +43,7 @@ public final class TableRuleConfiguration implements RuleConfiguration {
     
     private KeyGeneratorConfiguration keyGeneratorConfig;
     
-    private EncryptorConfiguration encryptorConfiguration;
+    private EncryptorConfiguration encryptorConfig;
     
     private String logicIndex;
 }
