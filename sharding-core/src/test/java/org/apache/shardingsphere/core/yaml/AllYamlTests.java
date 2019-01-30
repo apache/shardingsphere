@@ -19,6 +19,7 @@ package org.apache.shardingsphere.core.yaml;
 
 import org.apache.shardingsphere.core.yaml.masterslave.YamlMasterSlaveConfigurationTest;
 import org.apache.shardingsphere.core.yaml.masterslave.YamlMasterSlaveRuleConfigurationTest;
+import org.apache.shardingsphere.core.yaml.sharding.YamlEncryptorConfigurationTest;
 import org.apache.shardingsphere.core.yaml.sharding.YamlShardingConfigurationTest;
 import org.apache.shardingsphere.core.yaml.sharding.YamlShardingRuleConfigurationTest;
 import org.apache.shardingsphere.core.yaml.sharding.YamlShardingStrategyConfigurationTest;
@@ -34,7 +35,8 @@ import org.junit.runners.Suite.SuiteClasses;
         YamlTableRuleConfigurationTest.class, 
         YamlShardingStrategyConfigurationTest.class, 
         YamlMasterSlaveConfigurationTest.class, 
-        YamlMasterSlaveRuleConfigurationTest.class 
+        YamlMasterSlaveRuleConfigurationTest.class,
+        YamlEncryptorConfigurationTest.class
 })
 public final class AllYamlTests {
 }
