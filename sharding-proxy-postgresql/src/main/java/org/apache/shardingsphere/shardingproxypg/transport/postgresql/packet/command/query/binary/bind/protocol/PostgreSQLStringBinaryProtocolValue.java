@@ -27,6 +27,11 @@ import org.apache.shardingsphere.shardingproxypg.transport.postgresql.packet.Pos
 public final class PostgreSQLStringBinaryProtocolValue implements PostgreSQLBinaryProtocolValue {
     
     @Override
+    public int getColumnLength(final Object value) {
+        return value.toString().length();
+    }
+    
+    @Override
     public Object read(final PostgreSQLPacketPayload payload) {
         return payload.readStringNul();
     }
