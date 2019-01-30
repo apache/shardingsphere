@@ -18,6 +18,7 @@
 package org.apache.shardingsphere.shardingproxypg.transport.postgresql.packet.command.query;
 
 import lombok.Getter;
+import org.apache.shardingsphere.shardingproxypg.transport.postgresql.constant.PostgreSQLColumnType;
 import org.apache.shardingsphere.shardingproxypg.transport.postgresql.packet.command.PostgreSQLCommandResponsePackets;
 
 import java.util.LinkedList;
@@ -52,10 +53,10 @@ public final class PostgreSQLQueryResponsePackets extends PostgreSQLCommandRespo
      *
      * @return column types
      */
-    public List<Integer> getColumnTypes() {
-        List<Integer> result = new LinkedList<>();
+    public List<PostgreSQLColumnType> getColumnTypes() {
+        List<PostgreSQLColumnType> result = new LinkedList<>();
         for (PostgreSQLColumnDescription each : postgreSQLRowDescriptionPacket.getPostgreSQLColumnDescriptions()) {
-            result.add(each.getDataFormat());
+            result.add(PostgreSQLColumnType.valueOf(each.getTypeOID()));
         }
         return result;
     }
