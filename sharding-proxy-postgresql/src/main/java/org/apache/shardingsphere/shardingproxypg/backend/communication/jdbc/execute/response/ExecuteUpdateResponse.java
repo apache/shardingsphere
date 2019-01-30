@@ -20,7 +20,6 @@ package org.apache.shardingsphere.shardingproxypg.backend.communication.jdbc.exe
 import lombok.Getter;
 import org.apache.shardingsphere.shardingproxypg.backend.communication.jdbc.execute.response.unit.ExecuteResponseUnit;
 import org.apache.shardingsphere.shardingproxypg.backend.communication.jdbc.execute.response.unit.ExecuteUpdateResponseUnit;
-import org.apache.shardingsphere.shardingproxypg.transport.mysql.packet.command.CommandResponsePackets;
 import org.apache.shardingsphere.shardingproxypg.transport.mysql.packet.generic.OKPacket;
 import org.apache.shardingsphere.shardingproxypg.transport.postgresql.packet.command.PostgreSQLCommandResponsePackets;
 
