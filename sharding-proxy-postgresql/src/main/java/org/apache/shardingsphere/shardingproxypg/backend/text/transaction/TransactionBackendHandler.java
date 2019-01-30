@@ -21,7 +21,6 @@ import org.apache.shardingsphere.shardingproxypg.backend.ResultPacket;
 import org.apache.shardingsphere.shardingproxypg.backend.communication.jdbc.connection.BackendConnection;
 import org.apache.shardingsphere.shardingproxypg.backend.communication.jdbc.connection.BackendTransactionManager;
 import org.apache.shardingsphere.shardingproxypg.backend.text.TextProtocolBackendHandler;
-import org.apache.shardingsphere.shardingproxypg.transport.mysql.packet.command.CommandResponsePackets;
 import org.apache.shardingsphere.shardingproxypg.transport.mysql.packet.generic.OKPacket;
 import org.apache.shardingsphere.shardingproxypg.transport.postgresql.packet.command.PostgreSQLCommandResponsePackets;
 import org.apache.shardingsphere.transaction.core.TransactionOperationType;
