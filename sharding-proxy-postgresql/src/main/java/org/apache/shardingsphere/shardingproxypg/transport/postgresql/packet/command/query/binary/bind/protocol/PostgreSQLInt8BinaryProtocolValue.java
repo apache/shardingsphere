@@ -29,6 +29,11 @@ import java.math.BigDecimal;
 public final class PostgreSQLInt8BinaryProtocolValue implements PostgreSQLBinaryProtocolValue {
     
     @Override
+    public int getColumnLength(final Object value) {
+        return 8;
+    }
+    
+    @Override
     public Object read(final PostgreSQLPacketPayload payload) {
         return payload.readInt8();
     }
