@@ -30,6 +30,11 @@ import java.sql.Timestamp;
 public final class PostgreSQLDateBinaryProtocolValue implements PostgreSQLBinaryProtocolValue {
     
     @Override
+    public int getColumnLength(final Object value) {
+        return 8;
+    }
+    
+    @Override
     public Object read(final PostgreSQLPacketPayload payload) throws SQLException {
         return payload.readInt8();
     }
