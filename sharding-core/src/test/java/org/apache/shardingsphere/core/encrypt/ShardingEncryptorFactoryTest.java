@@ -19,9 +19,13 @@ package org.apache.shardingsphere.core.encrypt;
 
 import org.junit.Test;
 
+import static org.hamcrest.CoreMatchers.is;
+import static org.junit.Assert.assertThat;
+
 public class ShardingEncryptorFactoryTest {
     
     @Test
     public void assertNewInstance() {
+        assertThat(ShardingEncryptorFactory.newInstance("test").getProperties().getProperty("key1"), is("value1"));
     }
 }
