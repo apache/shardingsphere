@@ -17,6 +17,7 @@
 
 package org.apache.shardingsphere.core.routing.strategy;
 
+import lombok.Getter;
 import lombok.RequiredArgsConstructor;
 import org.apache.shardingsphere.core.encrypt.encryptor.ShardingEncryptor;
 
@@ -28,6 +29,7 @@ import java.util.List;
  *
  * @author panjuan
  */
+@Getter
 @RequiredArgsConstructor
 public final class ShardingEncryptorStrategy {
     
