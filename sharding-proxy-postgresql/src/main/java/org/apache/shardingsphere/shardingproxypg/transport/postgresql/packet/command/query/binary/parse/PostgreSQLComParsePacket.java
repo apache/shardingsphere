@@ -94,7 +94,7 @@ public final class PostgreSQLComParsePacket implements PostgreSQLCommandPacket {
     @Override
     public Optional<PostgreSQLCommandResponsePackets> execute() {
         log.debug("PostgreSQLComParsePacket received for Sharding-Proxy: {}", sql);
-        if (!sql.isEmpty()) {
+        if (!sql.isEmpty() && !"SHOW TRANSACTION ISOLATION LEVEL".equals(sql)) {
             SQLStatement sqlStatement = sqlParsingEngine.parse(true);
             int parametersIndex = sqlStatement.getParametersIndex();
             postgreSQLBinaryStatementRegistry.register(statementId, sql, parametersIndex, postgreSQLBinaryStatementParameterTypes);
