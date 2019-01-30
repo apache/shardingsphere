@@ -39,7 +39,7 @@ import org.apache.shardingsphere.core.yaml.sharding.strategy.YamlNoneShardingStr
 import org.apache.shardingsphere.core.yaml.sharding.strategy.YamlStandardShardingStrategyConfiguration;
 
 /**
- * Configuration for yaml sharding strategy.
+ * Sharding strategy configuration for YAML.
  *
  * @author caohao
  * @author panjuan

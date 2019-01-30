@@ -33,7 +33,7 @@ import java.util.Map;
 import java.util.Map.Entry;
 
 /**
- * Sharding rule configuration for yaml.
+ * Sharding rule configuration for YAML.
  *
  * @author caohao
  * @author panjuan

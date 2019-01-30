@@ -15,21 +15,23 @@
  * limitations under the License.
  */
 
-package org.apache.shardingsphere.core.util;
+package org.apache.shardingsphere.core.yaml.sharding;
 
-import lombok.AccessLevel;
-import lombok.NoArgsConstructor;
-import org.apache.shardingsphere.core.parsing.lexer.token.Symbol;
+import org.apache.shardingsphere.api.config.KeyGeneratorConfiguration;
+import org.junit.Test;
 
-@NoArgsConstructor(access = AccessLevel.PRIVATE)
-public final class SQLPlaceholderUtil {
+import java.util.Properties;
+
+import static org.hamcrest.CoreMatchers.is;
+import static org.junit.Assert.assertThat;
+
+public final class YamlKeyGeneratorConfigurationTest {
     
-    /**
-     * Replace prepared statement.
-     * @param str string
-     * @return replaced string
-     */
-    public static String replacePreparedStatement(final String str) {
-        return str.replace("%s", Symbol.QUESTION.getLiterals()).replace("%%", "%");
+    @Test
+    public void assertGetKeyGeneratorConfiguration() {
+        YamlKeyGeneratorConfiguration actual = new YamlKeyGeneratorConfiguration(new KeyGeneratorConfiguration("column", "TEST", new Properties()));
+        assertThat(actual.getKeyGeneratorConfiguration().getColumn(), is("column"));
+        assertThat(actual.getKeyGeneratorConfiguration().getType(), is("TEST"));
+        assertThat(actual.getKeyGeneratorConfiguration().getProps(), is(new Properties()));
     }
 }

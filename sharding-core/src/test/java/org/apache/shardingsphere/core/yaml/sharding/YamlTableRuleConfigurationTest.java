@@ -17,7 +17,6 @@
 
 package org.apache.shardingsphere.core.yaml.sharding;
 
-import org.apache.shardingsphere.api.config.KeyGeneratorConfiguration;
 import org.apache.shardingsphere.api.config.rule.TableRuleConfiguration;
 import org.apache.shardingsphere.api.config.strategy.NoneShardingStrategyConfiguration;
 import org.apache.shardingsphere.core.yaml.sharding.strategy.YamlNoneShardingStrategyConfiguration;
@@ -72,8 +71,6 @@ public final class YamlTableRuleConfigurationTest {
     private void assertTableRuleConfig(final TableRuleConfiguration actual) {
         assertThat(actual.getLogicTable(), is("t_order"));
         assertThat(actual.getActualDataNodes(), is("ds_${0..1}.t_order_${0..1}"));
-        KeyGeneratorConfiguration keyGeneratorConfiguration = new KeyGeneratorConfiguration();
-        keyGeneratorConfiguration.setColumn("order_id");
         assertThat(actual.getKeyGeneratorConfig().getColumn(), is("order_id"));
         assertThat(actual.getLogicIndex(), is("order_index"));
     }

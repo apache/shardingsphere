@@ -21,7 +21,6 @@ import com.google.common.collect.Lists;
 import com.google.common.util.concurrent.ListenableFuture;
 import com.google.common.util.concurrent.ListeningExecutorService;
 import org.apache.shardingsphere.core.exception.ShardingException;
-import org.apache.shardingsphere.core.util.ShardingExecutorService;
 
 import java.sql.SQLException;
 import java.util.Collection;

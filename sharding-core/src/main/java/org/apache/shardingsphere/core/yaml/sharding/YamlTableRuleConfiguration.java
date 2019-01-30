@@ -24,7 +24,7 @@ import lombok.Setter;
 import org.apache.shardingsphere.api.config.rule.TableRuleConfiguration;
 
 /**
- * Yaml table rule configuration.
+ * Table rule configuration for YAML.
  *
  * @author caohao
  * @author panjuan

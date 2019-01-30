@@ -35,7 +35,7 @@ import java.util.Map;
 import java.util.Properties;
 
 /**
- * Sharding configuration for yaml.
+ * Sharding configuration for YAML.
  *
  * @author caohao
  */

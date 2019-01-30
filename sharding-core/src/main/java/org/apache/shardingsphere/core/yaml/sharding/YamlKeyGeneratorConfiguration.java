@@ -25,7 +25,7 @@ import org.apache.shardingsphere.api.config.KeyGeneratorConfiguration;
 import java.util.Properties;
 
 /**
- * Yaml key generator configuration.
+ * Key generator configuration for YAML.
  *
  * @author panjuan
  */

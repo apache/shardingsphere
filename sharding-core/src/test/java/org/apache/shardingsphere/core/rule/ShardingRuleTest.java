@@ -38,6 +38,7 @@ import org.junit.Test;
 import java.util.Arrays;
 import java.util.Collection;
 import java.util.Collections;
+import java.util.Properties;
 
 import static org.hamcrest.CoreMatchers.instanceOf;
 import static org.hamcrest.CoreMatchers.is;
@@ -378,14 +379,8 @@ public final class ShardingRuleTest {
         shardingRuleConfiguration.getBroadcastTables().add("BROADCAST_TABLE");
         shardingRuleConfiguration.setDefaultDatabaseShardingStrategyConfig(new InlineShardingStrategyConfiguration("id", "ds_%{id % 2}"));
         shardingRuleConfiguration.setDefaultTableShardingStrategyConfig(new InlineShardingStrategyConfiguration("id", "table_%{id % 2}"));
-        shardingRuleConfiguration.setDefaultKeyGeneratorConfig(getKeyGeneratorConfiguration());
+        shardingRuleConfiguration.setDefaultKeyGeneratorConfig(new KeyGeneratorConfiguration(null, "INCREMENT", new Properties()));
         return new ShardingRule(shardingRuleConfiguration, createDataSourceNames());
-    }
-    
-    private KeyGeneratorConfiguration getKeyGeneratorConfiguration() {
-        KeyGeneratorConfiguration keyGeneratorConfiguration = new KeyGeneratorConfiguration();
-        keyGeneratorConfiguration.setType("INCREMENT");
-        return keyGeneratorConfiguration;
     }
     
     private ShardingRule createMinimumShardingRule() {
@@ -399,9 +394,7 @@ public final class ShardingRuleTest {
         TableRuleConfiguration result = new TableRuleConfiguration();
         result.setLogicTable(logicTableName);
         result.setActualDataNodes(actualDataNodes);
-        KeyGeneratorConfiguration keyGeneratorConfiguration = new KeyGeneratorConfiguration();
-        keyGeneratorConfiguration.setColumn(keyGeneratorColumnName);
-        result.setKeyGeneratorConfig(keyGeneratorConfiguration);
+        result.setKeyGeneratorConfig(new KeyGeneratorConfiguration(keyGeneratorColumnName, null, new Properties()));
         return result;
     }
     
