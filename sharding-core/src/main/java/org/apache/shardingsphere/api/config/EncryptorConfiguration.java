@@ -22,6 +22,8 @@ import lombok.Getter;
 import lombok.NoArgsConstructor;
 import lombok.Setter;
 
+import java.util.LinkedList;
+import java.util.List;
 import java.util.Properties;
 
 /**
@@ -35,11 +37,11 @@ import java.util.Properties;
 @Setter
 public final class EncryptorConfiguration {
     
-    private String column;
-    
     private String type;
     
-    private String queryAssistedColumn;
+    private List<String> columns = new LinkedList<>();
+    
+    private List<String> assistedQueryColumns = new LinkedList<>();
     
     private Properties props = new Properties();
 }
