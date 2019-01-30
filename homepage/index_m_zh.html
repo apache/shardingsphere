@@ -15,14 +15,14 @@
           navigator.userAgent
         )
       ) {
-        window.location = "index_zh.html";
+        window.location = 'index_zh.html'
       }
     </script>
     <script>
-      var idealViewWidth = window.screen.width;
-      var BASICVALUE = 750;
+      var idealViewWidth = window.screen.width
+      var BASICVALUE = 750
       document.documentElement.style.fontSize =
-        (idealViewWidth / BASICVALUE) * 100 + "px";
+        (idealViewWidth / BASICVALUE) * 100 + 'px'
     </script>
     <link
       rel="icon"
@@ -33,93 +33,122 @@
   </head>
   <body>
     <header>
-      <nav class="display-flex space-between">
-        <div><img class="nav-img" src="https://shardingsphere.apache.org/images/logo_top@2.png" alt="" /></div>
-        <div class="nav-btn" id="nav-btn"></div>
-      </nav>
-      <div class="nav-menu" id="nav-menu">
-        <div class="nav-item">
-          <div id="btn-document" class="i-drop-btn">文档</div>
-        </div>
-        <div class="i-drop-pop">
-          <a
-            class="i-drop-list"
-            href="https://shardingsphere.apache.org/document/current/cn/"
-            target="_blank"
-            >3.x(当前)</a
-          >
-          <a
-            class="i-drop-list"
-            href="https://shardingsphere.apache.org/document/legacy/2.x/cn/"
-            target="_blank"
-            >2.x(遗留)</a
-          >
-          <a
-            class="i-drop-list"
-            href="https://shardingsphere.apache.org/document/legacy/1.x/cn/"
-            target="_blank"
-            >1.x(遗留)</a
-          >
-        </div>
-        <div class="nav-item">
-          <div id="btn-source" class="i-drop-btn">源码</div>
-        </div>
-        <div class="i-drop-pop">
-          <a
-            class="i-drop-list"
-            href="https://github.com/apache/incubator-shardingsphere"
-            target="_blank"
-            >Github</a
-          >
-          <a
-            class="i-drop-list"
-            href="https://gitee.com/sharding-sphere/sharding-sphere"
-            target="_blank"
-            >码云</a
-          >
-        </div>
-        <div class="nav-item space">
-          <a href="https://shardingsphere.apache.org/community/cn/" target="_blank"
-            >社区</a
-          >
-        </div>
-        <div class="nav-item">
-          <a href="index_m_zh.html" target="_blank">中文</a>
-        </div>
-        <div class="nav-item" style="margin-right:0">
-          <a href="index_m.html" target="_blank">EN</a>
-        </div>
-      </div>
-      <div id="content" class="content">
-        <div class="sub-title">HTAP & 云原生 & 零侵入</div>
-        <hr class="sub-hr" />
-        <div class="sub-content">
-          <p class="sub-text">
-            Apache ShardingSphere(Incubator) 是一套开源的分布式数据库中间件解决方案组成的生态圈，它由Sharding-JDBC、Sharding-Proxy和Sharding-Sidecar（规划中）这3款相互独立，却又能够混合部署配合使用的产品组成。它们均提供标准化的数据分片、分布式事务和数据库治理功能，可适用于如Java同构、异构语言、容器、云原生等各种多样化的应用场景。
-          </p>
-          <p class="sub-text">
-            ShardingSphere定位为关系型数据库中间件，旨在充分合理地在分布式的场景下利用关系型数据库的计算和存储能力，而并非实现一个全新的关系型数据库。它通过关注不变，进而抓住事物本质。关系型数据库当今依然占有巨大市场，是各个公司核心业务的基石，未来也难于撼动，我们目前阶段更加关注在原有基础上的增量，而非颠覆。
-          </p>
-        </div>
-        <a
-          class="sub-button"
-          href="https://shardingsphere.apache.org/document/current/cn/"
-          target="_blank"
-          >了解更多</a
-        >
-        <hr class="sub-btn-hr" />
-        <div class="sub-point">
-          <div class="sub-point-list">
-            <img src="https://shardingsphere.apache.org/images/sharding_jdbc@2.png" class="nl-img" alt="" />
-            <p>Sharding-JDBC</p>
+      <div class="bg-left">
+        <div class="bg-right">
+          <nav class="display-flex space-between">
+            <div>
+              <img
+                class="nav-img"
+                src="https://shardingsphere.apache.org/images/logo_top@2.png"
+                alt=""
+              />
+            </div>
+            <div class="nav-btn" id="nav-btn"></div>
+          </nav>
+          <div class="nav-menu" id="nav-menu">
+            <div class="nav-item">
+              <div id="btn-document" class="i-drop-btn">文档</div>
+            </div>
+            <div class="i-drop-pop">
+              <a
+                class="i-drop-list"
+                href="https://shardingsphere.apache.org/document/current/cn/"
+                target="_blank"
+                >3.x(当前)</a
+              >
+              <a
+                class="i-drop-list"
+                href="https://shardingsphere.apache.org/document/legacy/2.x/cn/"
+                target="_blank"
+                >2.x(遗留)</a
+              >
+              <a
+                class="i-drop-list"
+                href="https://shardingsphere.apache.org/document/legacy/1.x/cn/"
+                target="_blank"
+                >1.x(遗留)</a
+              >
+            </div>
+            <div class="nav-item">
+              <div id="btn-source" class="i-drop-btn">源码</div>
+            </div>
+            <div class="i-drop-pop">
+              <a
+                class="i-drop-list"
+                href="https://github.com/apache/incubator-shardingsphere"
+                target="_blank"
+                >Github</a
+              >
+              <a
+                class="i-drop-list"
+                href="https://gitee.com/sharding-sphere/sharding-sphere"
+                target="_blank"
+                >码云</a
+              >
+            </div>
+            <div class="nav-item space">
+              <a
+                href="https://shardingsphere.apache.org/community/cn/"
+                target="_blank"
+                >社区</a
+              >
+            </div>
+            <div class="nav-item">
+              <a href="index_m_zh.html" target="_blank">中文</a>
+            </div>
+            <div class="nav-item" style="margin-right:0">
+              <a href="index_m.html" target="_blank">EN</a>
+            </div>
           </div>
-          <div class="sub-point-list">
-            <img src="https://shardingsphere.apache.org/images/sharding_proxy@2.png" class="nl-img" alt="" />
-            <p>Sharding-Proxy</p>
-          </div>
-          <div class="sub-point-list">
-            <img src="https://shardingsphere.apache.org/images/sharding_sidecar@2.png" class="nl-img" alt="" />
-            <p>Sharding-Sidecar</p>
+          <div id="content" class="content">
+            <div class="sub-title">
+              <img src="https://shardingsphere.apache.org/images/background_title@2.png" class="sub-img" />
+              <span>HTAP & 云原生 & 零侵入</span>
+              <div class="sub-corner">Incubating</div>
+            </div>
+            <hr class="sub-hr" />
+            <div class="sub-content">
+              <p class="sub-text">
+                Apache ShardingSphere(Incubator)
+                是一套开源的分布式数据库中间件解决方案组成的生态圈，它由Sharding-JDBC、Sharding-Proxy和Sharding-Sidecar（规划中）这3款相互独立，却又能够混合部署配合使用的产品组成。它们均提供标准化的数据分片、分布式事务和数据库治理功能，可适用于如Java同构、异构语言、容器、云原生等各种多样化的应用场景。
+              </p>
+              <p class="sub-text">
+                ShardingSphere定位为关系型数据库中间件，旨在充分合理地在分布式的场景下利用关系型数据库的计算和存储能力，而并非实现一个全新的关系型数据库。它通过关注不变，进而抓住事物本质。关系型数据库当今依然占有巨大市场，是各个公司核心业务的基石，未来也难于撼动，我们目前阶段更加关注在原有基础上的增量，而非颠覆。
+              </p>
+            </div>
+            <a
+              class="sub-button"
+              href="https://shardingsphere.apache.org/document/current/cn/"
+              target="_blank"
+              >了解更多</a
+            >
+            <hr class="sub-btn-hr" />
+            <div class="sub-point">
+              <div class="sub-point-list">
+                <img
+                  src="https://shardingsphere.apache.org/images/sharding_jdbc@2.png"
+                  class="nl-img"
+                  alt=""
+                />
+                <p>Sharding-JDBC</p>
+              </div>
+              <div class="sub-point-list">
+                <img
+                  src="https://shardingsphere.apache.org/images/sharding_proxy@2.png"
+                  class="nl-img"
+                  alt=""
+                />
+                <p>Sharding-Proxy</p>
+              </div>
+              <div class="sub-point-list">
+                <img
+                  src="https://shardingsphere.apache.org/images/sharding_sidecar@2.png"
+                  class="nl-img"
+                  alt=""
+                />
+                <p>Sharding-Sidecar</p>
+              </div>
+            </div>
           </div>
         </div>
       </div>
@@ -136,7 +165,11 @@
               <p>分片策略定制化</p>
               <p>无中心化分布式主键</p>
             </div>
-            <img src="https://shardingsphere.apache.org/images/db_sharding@2.png" class="point-img" alt="" />
+            <img
+              src="https://shardingsphere.apache.org/images/db_sharding@2.png"
+              class="point-img"
+              alt=""
+            />
           </div>
         </div>
       </div>
@@ -149,7 +182,11 @@
               <p>两阶段提交事务</p>
               <p>柔性事务</p>
             </div>
-            <img src="https://shardingsphere.apache.org/images/db_transaction@2.png" class="point-img" alt="" />
+            <img
+              src="https://shardingsphere.apache.org/images/db_transaction@2.png"
+              class="point-img"
+              alt=""
+            />
           </div>
         </div>
       </div>
@@ -175,25 +212,38 @@
       <div class="con-footer">
         <hr class="con-footer-hr" />
         <div class="con-item">
-          <div>
+          <div class="footer-img">
             <img
               src="https://shardingsphere.apache.org/images/logo_bottom@2.png"
               class="footer-logo"
               alt="logo"
             />
+            <img src="https://shardingsphere.apache.org/images/background_bottom@2.png" class="footer-apache" />
           </div>
           <div class="footer-icon">
             <a href="" class="social-icon">
-              <img src="https://shardingsphere.apache.org/images/icon_twitter@2.png" alt="twitter" />
+              <img
+                src="https://shardingsphere.apache.org/images/icon_twitter@2.png"
+                alt="twitter"
+              />
             </a>
             <a href="" class="social-icon">
-              <img src="https://shardingsphere.apache.org/images/icon_github@2.png" alt="github" />
+              <img
+                src="https://shardingsphere.apache.org/images/icon_github@2.png"
+                alt="github"
+              />
             </a>
             <a href="" class="social-icon">
-              <img src="https://shardingsphere.apache.org/images/icon_gitee@2.png" alt="gitee" />
+              <img
+                src="https://shardingsphere.apache.org/images/icon_gitee@2.png"
+                alt="gitee"
+              />
             </a>
             <a href="" class="social-icon">
-              <img src="https://shardingsphere.apache.org/images/icon_zhihu@2.png" alt="zhihu" />
+              <img
+                src="https://shardingsphere.apache.org/images/icon_zhihu@2.png"
+                alt="zhihu"
+              />
             </a>
           </div>
         </div>
@@ -202,20 +252,20 @@
     <footer>@Apache ShardingSphere</footer>
     <script>
       !(function() {
-        var $navMenu = document.getElementById("nav-menu");
-        var $navBtn = document.getElementById("nav-btn");
+        var $navMenu = document.getElementById('nav-menu')
+        var $navBtn = document.getElementById('nav-btn')
         $navBtn.addEventListener(
-          "touchstart",
+          'touchstart',
           function() {
             if ($navMenu.clientHeight) {
-              $navMenu.style.height = "0";
+              $navMenu.style.height = '0'
             } else {
-              $navMenu.style.height = "auto";
+              $navMenu.style.height = 'auto'
             }
           },
           false
-        );
-      })();
+        )
+      })()
     </script>
   </body>
 </html>
