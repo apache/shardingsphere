@@ -25,6 +25,7 @@ import org.apache.shardingsphere.core.exception.ShardingException;
 import org.apache.shardingsphere.core.util.ReflectiveUtil;
 import org.apache.shardingsphere.shardingproxypg.backend.BackendDataSource;
 import org.apache.shardingsphere.shardingproxypg.config.yaml.YamlDataSourceParameter;
+import org.apache.shardingsphere.shardingproxypg.runtime.GlobalRegistry;
 import org.apache.shardingsphere.transaction.ShardingTransactionManagerEngine;
 import org.apache.shardingsphere.transaction.core.TransactionType;
 import org.apache.shardingsphere.transaction.spi.ShardingTransactionManager;
@@ -55,6 +56,8 @@ public final class JDBCBackendDataSource implements BackendDataSource, AutoClose
     
     private JDBCBackendDataSourceFactory hikariDataSourceFactory = JDBCRawBackendDataSourceFactory.getInstance();
     
+    private ShardingTransactionManagerEngine shardingTransactionManagerEngine = GlobalRegistry.getInstance().getShardingTransactionManagerEngine();
+    
     public JDBCBackendDataSource(final Map<String, YamlDataSourceParameter> dataSourceParameters) {
         createDataSourceMap(dataSourceParameters);
     }
@@ -71,7 +74,7 @@ public final class JDBCBackendDataSource implements BackendDataSource, AutoClose
             }
         }
         this.dataSources = dataSourceMap;
-        ShardingTransactionManagerEngine.init(DatabaseType.PostgreSQL, dataSourceMap);
+        shardingTransactionManagerEngine.init(DatabaseType.PostgreSQL, dataSourceMap);
     }
     
     /**
@@ -138,7 +141,7 @@ public final class JDBCBackendDataSource implements BackendDataSource, AutoClose
     }
     
     private Connection createConnection(final TransactionType transactionType, final String dataSourceName, final DataSource dataSource) throws SQLException {
-        ShardingTransactionManager shardingTransactionManager = ShardingTransactionManagerEngine.getTransactionManager(transactionType);
+        ShardingTransactionManager shardingTransactionManager = shardingTransactionManagerEngine.getTransactionManager(transactionType);
         return isInShardingTransaction(shardingTransactionManager) ? shardingTransactionManager.getConnection(dataSourceName) : dataSource.getConnection();
     }
     
@@ -151,7 +154,7 @@ public final class JDBCBackendDataSource implements BackendDataSource, AutoClose
         if (null != dataSources) {
             closeDataSource(dataSources);
         }
-        ShardingTransactionManagerEngine.close();
+        shardingTransactionManagerEngine.close();
     }
     
     private void closeDataSource(final Map<String, DataSource> dataSourceMap) {
