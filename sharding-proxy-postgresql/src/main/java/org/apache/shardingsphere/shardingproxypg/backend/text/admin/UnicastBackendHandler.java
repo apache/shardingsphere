@@ -25,7 +25,6 @@ import org.apache.shardingsphere.shardingproxypg.backend.communication.DatabaseC
 import org.apache.shardingsphere.shardingproxypg.backend.communication.jdbc.connection.BackendConnection;
 import org.apache.shardingsphere.shardingproxypg.backend.text.TextProtocolBackendHandler;
 import org.apache.shardingsphere.shardingproxypg.runtime.GlobalRegistry;
-import org.apache.shardingsphere.shardingproxypg.transport.mysql.packet.command.CommandResponsePackets;
 import org.apache.shardingsphere.shardingproxypg.transport.postgresql.packet.command.PostgreSQLCommandResponsePackets;
 
 import java.sql.SQLException;
