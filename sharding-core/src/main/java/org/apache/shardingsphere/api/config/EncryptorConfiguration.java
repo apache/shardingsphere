@@ -31,7 +31,7 @@ import java.util.Properties;
 @NoArgsConstructor
 @Getter
 @Setter
-public final class EncryptorConfigurationn {
+public final class EncryptorConfiguration {
     
     private String column;
     
