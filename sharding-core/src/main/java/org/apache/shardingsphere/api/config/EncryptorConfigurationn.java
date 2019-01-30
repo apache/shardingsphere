@@ -17,11 +17,27 @@
 
 package org.apache.shardingsphere.api.config;
 
+import lombok.Getter;
+import lombok.NoArgsConstructor;
+import lombok.Setter;
+
+import java.util.Properties;
+
 /**
  * Encryptor configuration.
  *
  * @author panjuan
  */
+@NoArgsConstructor
+@Getter
+@Setter
 public final class EncryptorConfigurationn {
     
+    private String column;
+    
+    private String type;
+    
+    private String queryAssistedColumn;
+    
+    private Properties props = new Properties();
 }
