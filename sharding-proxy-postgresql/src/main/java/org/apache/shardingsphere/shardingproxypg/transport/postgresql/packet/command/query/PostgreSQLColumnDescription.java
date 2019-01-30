@@ -18,6 +18,7 @@
 package org.apache.shardingsphere.shardingproxypg.transport.postgresql.packet.command.query;
 
 import lombok.Getter;
+import lombok.RequiredArgsConstructor;
 import org.apache.shardingsphere.shardingproxypg.transport.postgresql.constant.PostgreSQLColumnType;
 
 import java.sql.ResultSetMetaData;
@@ -29,6 +30,7 @@ import java.sql.SQLException;
  * @author zhangyonglun
  */
 @Getter
+@RequiredArgsConstructor
 public final class PostgreSQLColumnDescription {
     
     private final String columnName;
