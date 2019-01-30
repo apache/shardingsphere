@@ -24,7 +24,7 @@ import org.apache.shardingsphere.shardingproxypg.transport.postgresql.packet.Pos
  *
  * @author zhangyonglun
  */
-public final class PostgreSQLStringLenencBinaryProtocolValue implements PostgreSQLBinaryProtocolValue {
+public final class PostgreSQLStringBinaryProtocolValue implements PostgreSQLBinaryProtocolValue {
     
     @Override
     public Object read(final PostgreSQLPacketPayload payload) {
