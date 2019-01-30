@@ -17,10 +17,15 @@
 
 package org.apache.shardingsphere.api.config;
 
+import com.google.common.base.Splitter;
+import com.google.common.base.Strings;
 import lombok.AllArgsConstructor;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
 import lombok.Setter;
+import org.apache.shardingsphere.core.encrypt.ShardingEncryptorFactory;
+import org.apache.shardingsphere.core.encrypt.encryptor.ShardingEncryptor;
+import org.apache.shardingsphere.core.routing.strategy.ShardingEncryptorStrategy;
 
 import java.util.Properties;
 
@@ -42,4 +47,23 @@ public final class EncryptorConfiguration {
     private String assistedQueryColumns;
     
     private Properties props = new Properties();
+    
+    /**
+     * Get sharding encryptor strategy.
+     *
+     * @return sharding encryptor strategy
+     */
+    public ShardingEncryptorStrategy getShardingEncryptorStrategy() {
+        if (Strings.isNullOrEmpty(type) || Strings.isNullOrEmpty(columns)) {
+            return null;
+        }
+        ShardingEncryptor shardingEncryptor = ShardingEncryptorFactory.newInstance(type);
+        shardingEncryptor.setProperties(props);
+        return getShardingEncryptorStrategy(shardingEncryptor);
+    }
+    
+    private ShardingEncryptorStrategy getShardingEncryptorStrategy(final ShardingEncryptor shardingEncryptor) {
+        return Strings.isNullOrEmpty(assistedQueryColumns) ? new ShardingEncryptorStrategy(Splitter.on(",").trimResults().splitToList(columns), shardingEncryptor) 
+                : new ShardingEncryptorStrategy(Splitter.on(",").trimResults().splitToList(columns), Splitter.on(",").trimResults().splitToList(assistedQueryColumns), shardingEncryptor);
+    }
 }
