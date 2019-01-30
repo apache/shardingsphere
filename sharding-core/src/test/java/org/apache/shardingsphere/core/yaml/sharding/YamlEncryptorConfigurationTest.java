@@ -17,8 +17,10 @@
 
 package org.apache.shardingsphere.core.yaml.sharding;
 
-import org.junit.BeforeClass;
+import org.junit.Before;
 import org.junit.Test;
+
+import java.util.Properties;
 
 import static org.hamcrest.CoreMatchers.is;
 import static org.junit.Assert.assertNull;
@@ -28,7 +30,7 @@ public class YamlEncryptorConfigurationTest {
     
     private YamlEncryptorConfiguration yamlEncryptorConfiguration;
     
-    @BeforeClass
+    @Before
     public void setUp() {
         yamlEncryptorConfiguration = new YamlEncryptorConfiguration();
         yamlEncryptorConfiguration.setType("test");
@@ -65,7 +67,6 @@ public class YamlEncryptorConfigurationTest {
     public void assertSetType() {
         yamlEncryptorConfiguration.setType("new_test");
         assertThat(yamlEncryptorConfiguration.getType(), is("new_test"));
-        assertThat(yamlEncryptorConfiguration.getColumns(), is("pwd1"));
     }
     
     @Test
@@ -80,6 +81,10 @@ public class YamlEncryptorConfigurationTest {
     }
     
     @Test
-    public void testSetProps() {
+    public void assertSetProps() {
+        Properties properties = new Properties();
+        properties.setProperty("key1", "value1");
+        yamlEncryptorConfiguration.setProps(properties);
+        assertThat(yamlEncryptorConfiguration.getProps().getProperty("key1"), is("value1"));
     }
 }
