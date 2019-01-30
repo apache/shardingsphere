@@ -30,10 +30,13 @@ import org.apache.shardingsphere.shardingproxypg.transport.common.packet.Databas
 import org.apache.shardingsphere.shardingproxypg.transport.postgresql.packet.PostgreSQLPacketPayload;
 import org.apache.shardingsphere.shardingproxypg.transport.postgresql.packet.command.PostgreSQLCommandPacketType;
 import org.apache.shardingsphere.shardingproxypg.transport.postgresql.packet.command.PostgreSQLCommandResponsePackets;
+import org.apache.shardingsphere.shardingproxypg.transport.postgresql.packet.command.query.PostgreSQLColumnDescription;
 import org.apache.shardingsphere.shardingproxypg.transport.postgresql.packet.command.query.PostgreSQLQueryCommandPacket;
+import org.apache.shardingsphere.shardingproxypg.transport.postgresql.packet.command.query.PostgreSQLRowDescriptionPacket;
 import org.apache.shardingsphere.shardingproxypg.transport.postgresql.packet.command.query.binary.PostgreSQLBinaryStatement;
 import org.apache.shardingsphere.shardingproxypg.transport.postgresql.packet.command.query.binary.bind.protocol.PostgreSQLBinaryProtocolValue;
 import org.apache.shardingsphere.shardingproxypg.transport.postgresql.packet.command.query.binary.bind.protocol.PostgreSQLBinaryProtocolValueFactory;
+import org.apache.shardingsphere.shardingproxypg.transport.postgresql.packet.command.query.text.PostgreSQLDataRowPacket;
 import org.apache.shardingsphere.shardingproxypg.transport.postgresql.packet.generic.PostgreSQLErrorResponsePacket;
 
 import java.sql.SQLException;
@@ -97,7 +100,19 @@ public final class PostgreSQLComBindPacket implements PostgreSQLQueryCommandPack
         }
         PostgreSQLCommandResponsePackets result = new PostgreSQLCommandResponsePackets(new PostgreSQLBindCompletePacket());
         if (null != databaseCommunicationEngine) {
-            result.getPackets().addAll(databaseCommunicationEngine.execute().getPackets());
+            if ("SHOW TRANSACTION ISOLATION LEVEL".equals(binaryStatement.getSql())) {
+                PostgreSQLColumnDescription postgreSQLColumnDescription = new PostgreSQLColumnDescription("transaction_isolation", 0, 0, -1);
+                List<PostgreSQLColumnDescription> postgreSQLColumnDescriptions = new ArrayList<>(16);
+                postgreSQLColumnDescriptions.add(postgreSQLColumnDescription);
+                PostgreSQLRowDescriptionPacket postgreSQLRowDescriptionPacket = new PostgreSQLRowDescriptionPacket(1, postgreSQLColumnDescriptions);
+                List<Object> data = new ArrayList<>(1);
+                data.add("read committed");
+                PostgreSQLDataRowPacket postgreSQLDataRowPacket = new PostgreSQLDataRowPacket(data);
+                result.getPackets().add(postgreSQLRowDescriptionPacket);
+                result.getPackets().add(postgreSQLDataRowPacket);
+            } else {
+                result.getPackets().addAll(databaseCommunicationEngine.execute().getPackets());
+            }
         }
         return Optional.of(result);
     }
