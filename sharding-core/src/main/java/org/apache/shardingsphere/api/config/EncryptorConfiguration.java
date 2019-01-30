@@ -21,7 +21,6 @@ import com.google.common.base.Splitter;
 import com.google.common.base.Strings;
 import lombok.AllArgsConstructor;
 import lombok.Getter;
-import lombok.NoArgsConstructor;
 import lombok.Setter;
 import org.apache.shardingsphere.core.encrypt.ShardingEncryptorFactory;
 import org.apache.shardingsphere.core.encrypt.encryptor.ShardingEncryptor;
@@ -34,7 +33,6 @@ import java.util.Properties;
  *
  * @author panjuan
  */
-@NoArgsConstructor
 @AllArgsConstructor
 @Getter
 @Setter
@@ -46,7 +44,7 @@ public final class EncryptorConfiguration {
     
     private String assistedQueryColumns;
     
-    private Properties props = new Properties();
+    private Properties props;
     
     /**
      * Get sharding encryptor strategy.
