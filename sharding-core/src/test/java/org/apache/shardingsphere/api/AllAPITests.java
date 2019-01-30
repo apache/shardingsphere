@@ -37,5 +37,5 @@ import org.junit.runners.Suite.SuiteClasses;
         HintManagerTest.class, 
         ShardingKeyGeneratorConfigurationTest.class
     })
-public final class AllApiTests {
+public final class AllAPITests {
 }

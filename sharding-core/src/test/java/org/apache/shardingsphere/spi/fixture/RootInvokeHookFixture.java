@@ -15,30 +15,41 @@
  * limitations under the License.
  */
 
-package org.apache.shardingsphere.spi;
+package org.apache.shardingsphere.spi.fixture;
 
-import org.apache.shardingsphere.spi.parsing.ParsingHook;
-import org.junit.Test;
+import org.apache.shardingsphere.spi.root.RootInvokeHook;
 
 import java.util.Collection;
+import java.util.LinkedList;
 
-import static org.hamcrest.CoreMatchers.is;
-import static org.junit.Assert.assertThat;
-import static org.junit.Assert.assertTrue;
-
-public final class NewInstanceServiceLoaderTest {
+public final class RootInvokeHookFixture implements RootInvokeHook {
     
-    @Test
-    public void assertNewServiceInstanceWhenIsNotExist() {
-        NewInstanceServiceLoader.register(Collection.class);
-        Collection collection = NewInstanceServiceLoader.newServiceInstances(Collection.class);
-        assertTrue(collection.isEmpty());
+    private static final Collection<String> ACTIONS = new LinkedList<>();
+    
+    @Override
+    public void start() {
+        ACTIONS.add("start");
     }
     
-    @Test
-    public void assertNewServiceInstanceWhenIsExist() {
-        NewInstanceServiceLoader.register(ParsingHook.class);
-        Collection collection = NewInstanceServiceLoader.newServiceInstances(ParsingHook.class);
-        assertThat(collection.size(), is(1));
+    @Override
+    public void finish(final int connectionCount) {
+        ACTIONS.add("finish");
+    }
+    
+    /**
+     * Contains action or not.
+     * 
+     * @param action action
+     * @return contains action or not
+     */
+    public static boolean containsAction(final String action) {
+        return ACTIONS.contains(action);
+    }
+    
+    /**
+     * Clear actions.
+     */
+    public static void clearActions() {
+        ACTIONS.clear();
     }
 }

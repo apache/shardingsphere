@@ -44,17 +44,24 @@ import java.util.Map;
 @RequiredArgsConstructor
 public final class ExpressionExtractor implements OptionalSQLSegmentExtractor {
     
-    private final SubqueryExtractor subqueryExtractor = new SubqueryExtractor();
-    
-    private final Map<ParserRuleContext, Integer> placeholderIndexes;
-    
     @Override
-    public Optional<? extends ExpressionSegment> extract(final ParserRuleContext expressionNode) {
-        Optional<ParserRuleContext> subqueryNode = ExtractorUtils.findFirstChildNode(expressionNode, RuleName.SUBQUERY);
-        return subqueryNode.isPresent() ? subqueryExtractor.extract(subqueryNode.get()) : Optional.of(extractExpression(expressionNode));
+    public Optional<? extends ExpressionSegment> extract(final ParserRuleContext ancestorNode) {
+        throw new RuntimeException();
     }
     
-    private ExpressionSegment extractExpression(final ParserRuleContext expressionNode) {
+    /**
+     *  Extract expression.
+     *
+     * @param placeholderIndexes  place holder index
+     * @param expressionNode expression node
+     * @return expression segment
+     */
+    public Optional<? extends ExpressionSegment> extract(final Map<ParserRuleContext, Integer> placeholderIndexes, final ParserRuleContext expressionNode) {
+        Optional<ParserRuleContext> subqueryNode = ExtractorUtils.findFirstChildNode(expressionNode, RuleName.SUBQUERY);
+        return subqueryNode.isPresent() ? new SubqueryExtractor().extract(subqueryNode.get()) : Optional.of(extractExpression(placeholderIndexes, expressionNode));
+    }
+    
+    private ExpressionSegment extractExpression(final Map<ParserRuleContext, Integer> placeholderIndexes, final ParserRuleContext expressionNode) {
         Optional<ParserRuleContext> functionNode = ExtractorUtils.findFirstChildNode(expressionNode, RuleName.FUNCTION_CALL);
         if (functionNode.isPresent()) {
             return extractFunctionExpressionSegment(functionNode.get());
@@ -62,7 +69,7 @@ public final class ExpressionExtractor implements OptionalSQLSegmentExtractor {
         if (RuleName.COLUMN_NAME.getName().equals(expressionNode.getChild(0).getClass().getSimpleName())) {
             return extractPropertyExpressionSegment(expressionNode);
         }
-        return extractCommonExpressionSegment(expressionNode);
+        return extractCommonExpressionSegment(placeholderIndexes, expressionNode);
     }
     
     // TODO extract column name and value from function
@@ -81,10 +88,11 @@ public final class ExpressionExtractor implements OptionalSQLSegmentExtractor {
     /**
      * Extract common expression segment.
      *
+     * @param placeholderIndexes place holder index
      * @param expressionNode expression node
      * @return common expression segment
      */
-    public CommonExpressionSegment extractCommonExpressionSegment(final ParserRuleContext expressionNode) {
+    public CommonExpressionSegment extractCommonExpressionSegment(final Map<ParserRuleContext, Integer> placeholderIndexes, final ParserRuleContext expressionNode) {
         CommonExpressionSegment result = new CommonExpressionSegment(expressionNode.getStart().getStartIndex(), expressionNode.getStop().getStopIndex());
         Optional<ParserRuleContext> questionNode = ExtractorUtils.findFirstChildNode(expressionNode, RuleName.QUESTION);
         if (questionNode.isPresent()) {

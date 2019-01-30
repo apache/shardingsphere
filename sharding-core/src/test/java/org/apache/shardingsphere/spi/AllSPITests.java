@@ -15,17 +15,23 @@
  * limitations under the License.
  */
 
-package org.apache.shardingsphere.core.executor;
+package org.apache.shardingsphere.spi;
 
-import org.apache.shardingsphere.core.executor.threadlocal.ExecutorExceptionHandlerTest;
+import org.apache.shardingsphere.spi.executor.SPIParsingHookTest;
+import org.apache.shardingsphere.spi.executor.SPIRewriteHookTest;
+import org.apache.shardingsphere.spi.executor.SPIRootInvokeHookTest;
+import org.apache.shardingsphere.spi.executor.SPISQLExecutionHookTest;
 import org.junit.runner.RunWith;
 import org.junit.runners.Suite;
 import org.junit.runners.Suite.SuiteClasses;
 
 @RunWith(Suite.class)
 @SuiteClasses({
-    ExecutorExceptionHandlerTest.class,
-    ShardingExecuteEngineTest.class
+        NewInstanceServiceLoaderTest.class, 
+        SPIRootInvokeHookTest.class, 
+        SPIParsingHookTest.class, 
+        SPIRewriteHookTest.class, 
+        SPISQLExecutionHookTest.class
 })
-public final class AllExecutorTests {
+public final class AllSPITests {
 }

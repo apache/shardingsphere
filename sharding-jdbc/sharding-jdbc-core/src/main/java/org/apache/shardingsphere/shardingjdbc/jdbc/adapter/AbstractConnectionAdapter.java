@@ -171,6 +171,15 @@ public abstract class AbstractConnectionAdapter extends AbstractUnsupportedOpera
         return null != shardingTransactionManager && shardingTransactionManager.isInTransaction();
     }
     
+    /**
+     * Whether execute SQL serial or not.
+     *
+     * @return true or false
+     */
+    public boolean isSerialExecute() {
+        return (!autoCommit && TransactionType.LOCAL == transactionType) || (isInShardingTransaction() && TransactionType.XA == transactionType);
+    }
+    
     protected abstract Map<String, DataSource> getDataSourceMap();
     
     @Override

@@ -15,30 +15,36 @@
  * limitations under the License.
  */
 
-package org.apache.shardingsphere.spi;
+package org.apache.shardingsphere.spi.executor;
 
-import org.apache.shardingsphere.spi.parsing.ParsingHook;
+import org.apache.shardingsphere.core.bootstrap.ShardingBootstrap;
+import org.apache.shardingsphere.spi.fixture.RootInvokeHookFixture;
+import org.apache.shardingsphere.spi.root.SPIRootInvokeHook;
+import org.junit.Before;
 import org.junit.Test;
 
-import java.util.Collection;
-
-import static org.hamcrest.CoreMatchers.is;
-import static org.junit.Assert.assertThat;
 import static org.junit.Assert.assertTrue;
 
-public final class NewInstanceServiceLoaderTest {
+public final class SPIRootInvokeHookTest {
     
-    @Test
-    public void assertNewServiceInstanceWhenIsNotExist() {
-        NewInstanceServiceLoader.register(Collection.class);
-        Collection collection = NewInstanceServiceLoader.newServiceInstances(Collection.class);
-        assertTrue(collection.isEmpty());
+    private SPIRootInvokeHook spiRootInvokeHook;
+    
+    @Before
+    public void setUp() {
+        ShardingBootstrap.init();
+        RootInvokeHookFixture.clearActions();
+        spiRootInvokeHook = new SPIRootInvokeHook();
     }
     
     @Test
-    public void assertNewServiceInstanceWhenIsExist() {
-        NewInstanceServiceLoader.register(ParsingHook.class);
-        Collection collection = NewInstanceServiceLoader.newServiceInstances(ParsingHook.class);
-        assertThat(collection.size(), is(1));
+    public void assertStart() {
+        spiRootInvokeHook.start();
+        assertTrue(RootInvokeHookFixture.containsAction("start"));
+    }
+    
+    @Test
+    public void assertFinishSuccess() {
+        spiRootInvokeHook.finish(0);
+        assertTrue(RootInvokeHookFixture.containsAction("finish"));
     }
 }
