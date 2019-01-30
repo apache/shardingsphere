@@ -33,11 +33,32 @@ public interface ShardingEncryptor {
      */
     String getType();
     
+    /**
+     * Get properties.
+     * 
+     * @return properties
+     */
     Properties getProperties();
     
+    /**
+     * Set properties.
+     * 
+     */
     void setProperties();
     
+    /**
+     * Encode.
+     * 
+     * @param plaintext plaintext
+     * @return ciphertext
+     */
     String encode(String plaintext);
     
-    String decode(String ciphetext);
+    /**
+     * Decode.
+     * 
+     * @param ciphertext ciphertext
+     * @return plaintext
+     */
+    String decode(String ciphertext);
 }
