@@ -21,7 +21,7 @@ import lombok.Getter;
 import lombok.Setter;
 
 /**
- * Hint sharding strategy configuration for yaml.
+ * Hint sharding strategy configuration for YAML.
  * 
  * @author zhangliang
  */

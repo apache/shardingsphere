@@ -18,7 +18,7 @@
 package org.apache.shardingsphere.core.yaml.sharding.strategy;
 
 /**
- * None sharding strategy configuration for yaml.
+ * None sharding strategy configuration for YAML.
  * 
  * @author zhangliang
  */

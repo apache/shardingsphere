@@ -21,7 +21,7 @@ import lombok.Getter;
 import lombok.Setter;
 
 /**
- * Standard strategy configuration for yaml.
+ * Standard strategy configuration for YAML.
  * 
  * @author zhangliang
  */

@@ -36,7 +36,7 @@ import static org.hamcrest.CoreMatchers.is;
 import static org.junit.Assert.assertThat;
 import static org.junit.Assert.assertTrue;
 
-public class ConfigurationYamlConverterTest {
+public final class ConfigurationYamlConverterTest {
     
     private static final String DATA_SOURCE_YAML = "master_ds: !!org.apache.shardingsphere.orchestration.yaml.YamlDataSourceConfiguration\n"
             + "  dataSourceClassName: com.zaxxer.hikari.HikariDataSource\n" + "  properties:\n"

@@ -21,7 +21,7 @@ import lombok.Getter;
 import lombok.Setter;
 
 /**
- * Inline sharding strategy configuration for yaml.
+ * Inline sharding strategy configuration for YAML.
  * 
  * @author zhangliang
  */

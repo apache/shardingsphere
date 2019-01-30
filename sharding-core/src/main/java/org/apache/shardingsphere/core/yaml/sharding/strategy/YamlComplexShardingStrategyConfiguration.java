@@ -21,7 +21,7 @@ import lombok.Getter;
 import lombok.Setter;
 
 /**
- * Complex sharding strategy configuration for yaml.
+ * Complex sharding strategy configuration for YAML.
  * 
  * @author zhangliang
  */
