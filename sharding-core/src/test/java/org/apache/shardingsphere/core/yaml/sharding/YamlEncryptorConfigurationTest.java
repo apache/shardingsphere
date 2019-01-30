@@ -17,16 +17,31 @@
 
 package org.apache.shardingsphere.core.yaml.sharding;
 
+import org.junit.BeforeClass;
 import org.junit.Test;
+
+import static org.hamcrest.CoreMatchers.is;
+import static org.junit.Assert.assertThat;
 
 public class YamlEncryptorConfigurationTest {
     
-    @Test
-    public void testGetEncryptorConfiguration() {
+    private YamlEncryptorConfiguration yamlEncryptorConfiguration;
+    
+    @BeforeClass
+    public void setUp() {
+        yamlEncryptorConfiguration = new YamlEncryptorConfiguration();
+        yamlEncryptorConfiguration.setType("test");
+        yamlEncryptorConfiguration.setColumns("pwd1, pwd2");
+        yamlEncryptorConfiguration.setAssistedQueryColumns("pwd1_index, pwd2_index");
     }
     
     @Test
-    public void testGetType() {
+    public void assertGetEncryptorConfiguration() {
+        assertThat(yamlEncryptorConfiguration.getEncryptorConfiguration().getType(), is("test"));
+    }
+    
+    @Test
+    public void assertGetType() {
     }
     
     @Test
