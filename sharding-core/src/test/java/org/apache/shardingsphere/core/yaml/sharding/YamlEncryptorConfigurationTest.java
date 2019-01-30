@@ -62,11 +62,15 @@ public class YamlEncryptorConfigurationTest {
     }
     
     @Test
-    public void testSetType() {
+    public void assertSetType() {
+        yamlEncryptorConfiguration.setType("new_test");
+        assertThat(yamlEncryptorConfiguration.getType(), is("new_test"));
+        assertThat(yamlEncryptorConfiguration.getColumns(), is("pwd1"));
     }
     
     @Test
-    public void testSetColumns() {
+    public void asserttSetColumns() {
+        yamlEncryptorConfiguration.setColumns("pwd1");
     }
     
     @Test
