@@ -22,6 +22,7 @@ import lombok.Getter;
 import lombok.NoArgsConstructor;
 import lombok.Setter;
 import org.apache.shardingsphere.api.config.rule.TableRuleConfiguration;
+import org.apache.shardingsphere.core.yaml.sharding.strategy.YamlEncryptorConfiguration;
 
 /**
  * Yaml table rule configuration.
@@ -44,6 +45,8 @@ public class YamlTableRuleConfiguration {
     
     private YamlKeyGeneratorConfiguration keyGenerator;
     
+    private YamlEncryptorConfiguration encryptor;
+    
     private String logicIndex;
     
     public YamlTableRuleConfiguration(final TableRuleConfiguration tableRuleConfiguration) {
@@ -52,6 +55,7 @@ public class YamlTableRuleConfiguration {
         databaseStrategy = new YamlShardingStrategyConfiguration(tableRuleConfiguration.getDatabaseShardingStrategyConfig());
         tableStrategy = new YamlShardingStrategyConfiguration(tableRuleConfiguration.getTableShardingStrategyConfig());
         keyGenerator = null == tableRuleConfiguration.getKeyGeneratorConfig() ? null : new YamlKeyGeneratorConfiguration(tableRuleConfiguration.getKeyGeneratorConfig());
+        encryptor = null == tableRuleConfiguration.getEncryptorConfiguration() ? null : new YamlEncryptorConfiguration(tableRuleConfiguration.getEncryptorConfiguration());
     }
     
     /**
@@ -72,6 +76,9 @@ public class YamlTableRuleConfiguration {
         }
         if (null != keyGenerator) {
             result.setKeyGeneratorConfig(keyGenerator.getKeyGeneratorConfiguration());
+        }
+        if (null != encryptor) {
+            result.setEncryptorConfiguration(encryptor.getEncryptorConfiguration());
         }
         result.setLogicIndex(logicIndex);
         return result;
