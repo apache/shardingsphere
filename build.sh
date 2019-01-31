@@ -13,8 +13,7 @@ mkdir -p target/document/legacy/3.x
 cp -rf document/legacy/1.x/cn target/document/legacy/1.x/cn
 cp -rf document/legacy/2.x/cn target/document/legacy/2.x/cn
 cp -rf document/legacy/2.x/en target/document/legacy/2.x/en
-cp -rf document/legacy/2.x/cn target/document/legacy/3.x/cn
-cp -rf document/legacy/2.x/en target/document/legacy/3.x/en
+cp -rf document/legacy/3.x/* target/document/legacy/3.x/
 
 cd document/current
 hugo
