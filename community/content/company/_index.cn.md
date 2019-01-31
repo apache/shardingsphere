@@ -28,6 +28,7 @@ chapter = true
 * [瓜子二手车](https://www.guazi.com/)
 * [大搜车](https://www.souche.com/zh/)
 * [蜂网](https://www.newbeescm.com/)
+* [小红唇](https://www.xiaohongchun.com/)
 
 ## 互联网金融
 
@@ -81,6 +82,7 @@ chapter = true
 * [CIBN微视听](http://www.91vst.com/)
 * [oppo](http://www.oppo.com/)
 * [科大讯飞](http://www.iflytek.com/)
+* [速珂智能](http://www.supersoco.com/)
 
 ## 企业服务
 
@@ -109,6 +111,8 @@ chapter = true
 * [货车帮](http://www.huochebang.com/)
 * [兔展](http://www.rabbitpre.com/)
 * [航天长峰](http://www.ascf.com.cn/n4194536/)
+* [金康高科](http://www.kingcome.cn/)
+* [中辰软件](http://jszcrj.com/)
 
 ## 物流
 

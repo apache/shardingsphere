@@ -28,6 +28,7 @@ The list here will be shown in the registered order.
 * [GuaZi](https://www.guazi.com/)
 * [souche](https://www.souche.com/zh/)
 * [newbeescm](https://www.newbeescm.com/)
+* [xiaohongchun](https://www.xiaohongchun.com/)
 
 ## FinTech
 
@@ -81,6 +82,7 @@ The list here will be shown in the registered order.
 * [CIBN](http://www.91vst.com/)
 * [Oppo](http://www.oppo.com/)
 * [Iflytek](http://www.iflytek.com/)
+* [Super SOCO](http://www.supersoco.com/)
 
 ## Enterprise Service
 
@@ -109,6 +111,8 @@ The list here will be shown in the registered order.
 * [Huochebang](http://www.huochebang.com/)
 * [Rabbitpre](http://www.rabbitpre.com/)
 * [AreoSpace](http://www.ascf.com.cn/n4194536/)
+* [KING COME](http://www.kingcome.cn/)
+* [ZHONGCHEN](http://jszcrj.com/)
 
 ## Express
 
