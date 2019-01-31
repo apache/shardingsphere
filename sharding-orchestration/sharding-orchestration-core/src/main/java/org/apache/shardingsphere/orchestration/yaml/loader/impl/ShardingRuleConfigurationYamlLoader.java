@@ -18,7 +18,8 @@
 package org.apache.shardingsphere.orchestration.yaml.loader.impl;
 
 import org.apache.shardingsphere.api.config.rule.ShardingRuleConfiguration;
-import org.apache.shardingsphere.core.yaml.sharding.YamlShardingRuleConfiguration;
+import org.apache.shardingsphere.core.yaml.config.sharding.YamlShardingRuleConfiguration;
+import org.apache.shardingsphere.core.yaml.swapper.impl.ShardingRuleConfigurationYamlSwapper;
 import org.apache.shardingsphere.orchestration.yaml.loader.YamlLoader;
 import org.yaml.snakeyaml.Yaml;
 
@@ -32,6 +33,6 @@ public final class ShardingRuleConfigurationYamlLoader implements YamlLoader<Sha
     
     @Override
     public ShardingRuleConfiguration load(final String data) {
-        return new Yaml().loadAs(data, YamlShardingRuleConfiguration.class).getShardingRuleConfiguration();
+        return new ShardingRuleConfigurationYamlSwapper().swap(new Yaml().loadAs(data, YamlShardingRuleConfiguration.class));
     }
 }

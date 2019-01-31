@@ -18,7 +18,7 @@
 package org.apache.shardingsphere.orchestration.yaml.dumper.impl;
 
 import org.apache.shardingsphere.core.rule.Authentication;
-import org.apache.shardingsphere.core.yaml.YamlAuthentication;
+import org.apache.shardingsphere.core.yaml.swapper.impl.AuthenticationYamlSwapper;
 import org.apache.shardingsphere.orchestration.yaml.dumper.DefaultYamlRepresenter;
 import org.apache.shardingsphere.orchestration.yaml.dumper.YamlDumper;
 import org.yaml.snakeyaml.Yaml;
@@ -33,9 +33,6 @@ public final class AuthenticationYamlDumper implements YamlDumper<Authentication
     
     @Override
     public String dump(final Authentication authentication) {
-        YamlAuthentication yamlAuthentication = new YamlAuthentication();
-        yamlAuthentication.setUsername(authentication.getUsername());
-        yamlAuthentication.setPassword(authentication.getPassword());
-        return new Yaml(new DefaultYamlRepresenter()).dumpAsMap(yamlAuthentication);
+        return new Yaml(new DefaultYamlRepresenter()).dumpAsMap(new AuthenticationYamlSwapper().swap(authentication));
     }
 }

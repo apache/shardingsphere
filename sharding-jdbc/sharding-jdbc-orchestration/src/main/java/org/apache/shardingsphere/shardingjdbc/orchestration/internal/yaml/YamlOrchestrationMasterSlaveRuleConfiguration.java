@@ -19,7 +19,7 @@ package org.apache.shardingsphere.shardingjdbc.orchestration.internal.yaml;
 
 import lombok.Getter;
 import lombok.Setter;
-import org.apache.shardingsphere.core.yaml.masterslave.YamlMasterSlaveConfiguration;
+import org.apache.shardingsphere.core.yaml.config.masterslave.YamlMasterSlaveConfiguration;
 import org.apache.shardingsphere.orchestration.yaml.config.YamlOrchestrationConfiguration;
 
 /**

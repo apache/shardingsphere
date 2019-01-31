@@ -18,7 +18,7 @@
 package org.apache.shardingsphere.orchestration.yaml.dumper.impl;
 
 import org.apache.shardingsphere.api.config.rule.MasterSlaveRuleConfiguration;
-import org.apache.shardingsphere.core.yaml.masterslave.YamlMasterSlaveRuleConfiguration;
+import org.apache.shardingsphere.core.yaml.swapper.impl.MasterSlaveRuleConfigurationYamlSwapper;
 import org.apache.shardingsphere.orchestration.yaml.dumper.DefaultYamlRepresenter;
 import org.apache.shardingsphere.orchestration.yaml.dumper.YamlDumper;
 import org.yaml.snakeyaml.Yaml;
@@ -33,6 +33,6 @@ public final class MasterSlaveRuleConfigurationYamlDumper implements YamlDumper<
     
     @Override
     public String dump(final MasterSlaveRuleConfiguration masterSlaveRuleConfiguration) {
-        return new Yaml(new DefaultYamlRepresenter()).dumpAsMap(new YamlMasterSlaveRuleConfiguration(masterSlaveRuleConfiguration));
+        return new Yaml(new DefaultYamlRepresenter()).dumpAsMap(new MasterSlaveRuleConfigurationYamlSwapper().swap(masterSlaveRuleConfiguration));
     }
 }

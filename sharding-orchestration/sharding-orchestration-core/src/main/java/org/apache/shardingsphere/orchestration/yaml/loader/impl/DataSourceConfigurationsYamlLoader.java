@@ -23,6 +23,7 @@ import com.google.common.collect.Maps;
 import org.apache.shardingsphere.core.config.DataSourceConfiguration;
 import org.apache.shardingsphere.orchestration.yaml.config.YamlDataSourceConfiguration;
 import org.apache.shardingsphere.orchestration.yaml.loader.YamlLoader;
+import org.apache.shardingsphere.orchestration.yaml.swapper.DataSourceConfigurationYamlSwapper;
 import org.yaml.snakeyaml.Yaml;
 
 import java.util.Map;
@@ -44,9 +45,7 @@ public final class DataSourceConfigurationsYamlLoader implements YamlLoader<Map<
             
             @Override
             public DataSourceConfiguration apply(final YamlDataSourceConfiguration input) {
-                DataSourceConfiguration result = new DataSourceConfiguration(input.getDataSourceClassName());
-                result.getProperties().putAll(input.getProperties());
-                return result;
+                return new DataSourceConfigurationYamlSwapper().swap(input);
             }
         });
     }

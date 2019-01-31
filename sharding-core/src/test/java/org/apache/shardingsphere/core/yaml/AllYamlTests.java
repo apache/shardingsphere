@@ -17,28 +17,16 @@
 
 package org.apache.shardingsphere.core.yaml;
 
-import org.apache.shardingsphere.core.yaml.masterslave.YamlMasterSlaveConfigurationTest;
-import org.apache.shardingsphere.core.yaml.masterslave.YamlMasterSlaveRuleConfigurationTest;
-import org.apache.shardingsphere.core.yaml.sharding.YamlEncryptorConfigurationTest;
-import org.apache.shardingsphere.core.yaml.sharding.YamlKeyGeneratorConfigurationTest;
-import org.apache.shardingsphere.core.yaml.sharding.YamlShardingConfigurationTest;
-import org.apache.shardingsphere.core.yaml.sharding.YamlShardingRuleConfigurationTest;
-import org.apache.shardingsphere.core.yaml.sharding.YamlShardingStrategyConfigurationTest;
-import org.apache.shardingsphere.core.yaml.sharding.YamlTableRuleConfigurationTest;
+import org.apache.shardingsphere.core.yaml.config.AllConfigTests;
+import org.apache.shardingsphere.core.yaml.swapper.AllSwapperTests;
 import org.junit.runner.RunWith;
 import org.junit.runners.Suite;
 import org.junit.runners.Suite.SuiteClasses;
 
 @RunWith(Suite.class)
 @SuiteClasses({
-        YamlShardingConfigurationTest.class, 
-        YamlShardingRuleConfigurationTest.class, 
-        YamlTableRuleConfigurationTest.class, 
-        YamlShardingStrategyConfigurationTest.class, 
-        YamlKeyGeneratorConfigurationTest.class, 
-        YamlMasterSlaveConfigurationTest.class, 
-        YamlMasterSlaveRuleConfigurationTest.class,
-        YamlEncryptorConfigurationTest.class
+        AllConfigTests.class,
+        AllSwapperTests.class
 })
 public final class AllYamlTests {
 }

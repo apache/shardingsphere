@@ -19,6 +19,7 @@ package org.apache.shardingsphere.orchestration.yaml.config;
 
 import lombok.Getter;
 import lombok.Setter;
+import org.apache.shardingsphere.core.yaml.config.YamlConfiguration;
 
 import java.util.Map;
 
@@ -29,7 +30,7 @@ import java.util.Map;
  */
 @Getter
 @Setter
-public final class YamlDataSourceConfiguration {
+public final class YamlDataSourceConfiguration implements YamlConfiguration {
     
     private String dataSourceClassName;
     

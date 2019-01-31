@@ -20,7 +20,7 @@ package org.apache.shardingsphere.orchestration.yaml.loader.impl;
 import com.google.common.base.Preconditions;
 import com.google.common.base.Strings;
 import org.apache.shardingsphere.core.rule.Authentication;
-import org.apache.shardingsphere.core.yaml.YamlAuthentication;
+import org.apache.shardingsphere.core.yaml.config.common.YamlAuthentication;
 import org.apache.shardingsphere.orchestration.yaml.loader.YamlLoader;
 import org.yaml.snakeyaml.Yaml;
 

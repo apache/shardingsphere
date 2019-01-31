@@ -17,16 +17,8 @@
 
 package org.apache.shardingsphere.orchestration.yaml.dumper.impl;
 
-import org.apache.shardingsphere.api.config.KeyGeneratorConfiguration;
-import org.apache.shardingsphere.api.config.rule.MasterSlaveRuleConfiguration;
 import org.apache.shardingsphere.api.config.rule.ShardingRuleConfiguration;
-import org.apache.shardingsphere.api.config.rule.TableRuleConfiguration;
-import org.apache.shardingsphere.core.yaml.masterslave.YamlMasterSlaveRuleConfiguration;
-import org.apache.shardingsphere.core.yaml.sharding.YamlEncryptorConfiguration;
-import org.apache.shardingsphere.core.yaml.sharding.YamlKeyGeneratorConfiguration;
-import org.apache.shardingsphere.core.yaml.sharding.YamlShardingRuleConfiguration;
-import org.apache.shardingsphere.core.yaml.sharding.YamlShardingStrategyConfiguration;
-import org.apache.shardingsphere.core.yaml.sharding.YamlTableRuleConfiguration;
+import org.apache.shardingsphere.core.yaml.swapper.impl.ShardingRuleConfigurationYamlSwapper;
 import org.apache.shardingsphere.orchestration.yaml.dumper.DefaultYamlRepresenter;
 import org.apache.shardingsphere.orchestration.yaml.dumper.YamlDumper;
 import org.yaml.snakeyaml.Yaml;
@@ -41,48 +33,6 @@ public final class ShardingRuleConfigurationYamlDumper implements YamlDumper<Sha
     
     @Override
     public String dump(final ShardingRuleConfiguration shardingRuleConfiguration) {
-        return new Yaml(new DefaultYamlRepresenter()).dumpAsMap(createYamlShardingRuleConfiguration(shardingRuleConfiguration));
-    }
-    
-    private YamlShardingRuleConfiguration createYamlShardingRuleConfiguration(final ShardingRuleConfiguration shardingRuleConfiguration) {
-        YamlShardingRuleConfiguration result = new YamlShardingRuleConfiguration();
-        for (TableRuleConfiguration each : shardingRuleConfiguration.getTableRuleConfigs()) {
-            result.getTables().put(each.getLogicTable(), createYamlTableRuleConfiguration(each));
-        }
-        result.getBindingTables().addAll(shardingRuleConfiguration.getBindingTableGroups());
-        result.getBroadcastTables().addAll(shardingRuleConfiguration.getBroadcastTables());
-        result.setDefaultDataSourceName(shardingRuleConfiguration.getDefaultDataSourceName());
-        result.setDefaultDatabaseStrategy(new YamlShardingStrategyConfiguration(shardingRuleConfiguration.getDefaultDatabaseShardingStrategyConfig()));
-        result.setDefaultTableStrategy(new YamlShardingStrategyConfiguration(shardingRuleConfiguration.getDefaultTableShardingStrategyConfig()));
-        if (null != shardingRuleConfiguration.getDefaultKeyGeneratorConfig()) {
-            result.setDefaultKeyGenerator(createYamlKeyGeneratorConfiguration(shardingRuleConfiguration.getDefaultKeyGeneratorConfig()));
-        }
-        for (MasterSlaveRuleConfiguration each : shardingRuleConfiguration.getMasterSlaveRuleConfigs()) {
-            result.getMasterSlaveRules().put(each.getName(), new YamlMasterSlaveRuleConfiguration(each));
-        }
-        return result;
-    }
-    
-    private YamlTableRuleConfiguration createYamlTableRuleConfiguration(final TableRuleConfiguration tableRuleConfiguration) {
-        YamlTableRuleConfiguration result = new YamlTableRuleConfiguration();
-        result.setLogicTable(tableRuleConfiguration.getLogicTable());
-        result.setActualDataNodes(tableRuleConfiguration.getActualDataNodes());
-        result.setDatabaseStrategy(new YamlShardingStrategyConfiguration(tableRuleConfiguration.getDatabaseShardingStrategyConfig()));
-        result.setTableStrategy(new YamlShardingStrategyConfiguration(tableRuleConfiguration.getTableShardingStrategyConfig()));
-        if (null != tableRuleConfiguration.getKeyGeneratorConfig()) {
-            result.setKeyGenerator(createYamlKeyGeneratorConfiguration(tableRuleConfiguration.getKeyGeneratorConfig()));
-        }
-        if (null != tableRuleConfiguration.getEncryptorConfig()) {
-            result.setEncryptor(new YamlEncryptorConfiguration(tableRuleConfiguration.getEncryptorConfig()));
-        }
-        return result;
-    }
-    
-    private YamlKeyGeneratorConfiguration createYamlKeyGeneratorConfiguration(final KeyGeneratorConfiguration keyGeneratorConfiguration) {
-        YamlKeyGeneratorConfiguration result = new YamlKeyGeneratorConfiguration();
-        result.setColumn(keyGeneratorConfiguration.getColumn());
-        result.setType(keyGeneratorConfiguration.getType());
-        result.setProps(keyGeneratorConfiguration.getProps());
-        return result;
+        return new Yaml(new DefaultYamlRepresenter()).dumpAsMap(new ShardingRuleConfigurationYamlSwapper().swap(shardingRuleConfiguration));
     }
 }

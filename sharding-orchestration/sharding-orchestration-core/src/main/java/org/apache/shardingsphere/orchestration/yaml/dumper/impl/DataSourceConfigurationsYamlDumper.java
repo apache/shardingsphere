@@ -23,6 +23,7 @@ import org.apache.shardingsphere.core.config.DataSourceConfiguration;
 import org.apache.shardingsphere.orchestration.yaml.config.YamlDataSourceConfiguration;
 import org.apache.shardingsphere.orchestration.yaml.dumper.DefaultYamlRepresenter;
 import org.apache.shardingsphere.orchestration.yaml.dumper.YamlDumper;
+import org.apache.shardingsphere.orchestration.yaml.swapper.DataSourceConfigurationYamlSwapper;
 import org.yaml.snakeyaml.Yaml;
 
 import java.util.Map;
@@ -39,13 +40,10 @@ public final class DataSourceConfigurationsYamlDumper implements YamlDumper<Map<
     public String dump(final Map<String, DataSourceConfiguration> dataSourceConfigurations) {
         return new Yaml(new DefaultYamlRepresenter()).dumpAsMap(
                 Maps.transformValues(dataSourceConfigurations, new Function<DataSourceConfiguration, YamlDataSourceConfiguration>() {
-                
+                    
                     @Override
                     public YamlDataSourceConfiguration apply(final DataSourceConfiguration input) {
-                        YamlDataSourceConfiguration result = new YamlDataSourceConfiguration();
-                        result.setDataSourceClassName(input.getDataSourceClassName());
-                        result.setProperties(input.getProperties());
-                        return result;
+                        return new DataSourceConfigurationYamlSwapper().swap(input);
                     }
                 }));
     }

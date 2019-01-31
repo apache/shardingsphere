@@ -25,8 +25,10 @@ import org.apache.shardingsphere.api.config.rule.ShardingRuleConfiguration;
 import org.apache.shardingsphere.core.config.DataSourceConfiguration;
 import org.apache.shardingsphere.core.constant.properties.ShardingPropertiesConstant;
 import org.apache.shardingsphere.core.rule.Authentication;
-import org.apache.shardingsphere.core.yaml.masterslave.YamlMasterSlaveRuleConfiguration;
-import org.apache.shardingsphere.core.yaml.sharding.YamlShardingRuleConfiguration;
+import org.apache.shardingsphere.core.yaml.config.masterslave.YamlMasterSlaveRuleConfiguration;
+import org.apache.shardingsphere.core.yaml.config.sharding.YamlShardingRuleConfiguration;
+import org.apache.shardingsphere.core.yaml.swapper.impl.MasterSlaveRuleConfigurationYamlSwapper;
+import org.apache.shardingsphere.core.yaml.swapper.impl.ShardingRuleConfigurationYamlSwapper;
 import org.apache.shardingsphere.orchestration.reg.api.RegistryCenter;
 import org.hamcrest.CoreMatchers;
 import org.junit.Test;
@@ -272,11 +274,11 @@ public final class ConfigurationServiceTest {
     }
     
     private ShardingRuleConfiguration createShardingRuleConfiguration() {
-        return new Yaml().loadAs(SHARDING_RULE_YAML, YamlShardingRuleConfiguration.class).getShardingRuleConfiguration();
+        return new ShardingRuleConfigurationYamlSwapper().swap(new Yaml().loadAs(SHARDING_RULE_YAML, YamlShardingRuleConfiguration.class));
     }
     
     private MasterSlaveRuleConfiguration createMasterSlaveRuleConfiguration() {
-        return new Yaml().loadAs(MASTER_SLAVE_RULE_YAML, YamlMasterSlaveRuleConfiguration.class).getMasterSlaveRuleConfiguration();
+        return new MasterSlaveRuleConfigurationYamlSwapper().swap(new Yaml().loadAs(MASTER_SLAVE_RULE_YAML, YamlMasterSlaveRuleConfiguration.class));
     }
     
     private Properties createProperties() {

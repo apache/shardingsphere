@@ -18,7 +18,8 @@
 package org.apache.shardingsphere.orchestration.yaml.loader.impl;
 
 import org.apache.shardingsphere.api.config.rule.MasterSlaveRuleConfiguration;
-import org.apache.shardingsphere.core.yaml.masterslave.YamlMasterSlaveRuleConfiguration;
+import org.apache.shardingsphere.core.yaml.config.masterslave.YamlMasterSlaveRuleConfiguration;
+import org.apache.shardingsphere.core.yaml.swapper.impl.MasterSlaveRuleConfigurationYamlSwapper;
 import org.apache.shardingsphere.orchestration.yaml.loader.YamlLoader;
 import org.yaml.snakeyaml.Yaml;
 
@@ -32,6 +33,6 @@ public final class MasterSlaveRuleConfigurationYamlLoader implements YamlLoader<
     
     @Override
     public MasterSlaveRuleConfiguration load(final String data) {
-        return new Yaml().loadAs(data, YamlMasterSlaveRuleConfiguration.class).getMasterSlaveRuleConfiguration();
+        return new MasterSlaveRuleConfigurationYamlSwapper().swap(new Yaml().loadAs(data, YamlMasterSlaveRuleConfiguration.class));
     }
 }
