@@ -40,16 +40,7 @@ public final class AuthenticationHandlerTest {
     
     @Before
     public void setUp() {
-        initAuthentication();
         initAuthPluginDataForAuthenticationHandler();
-    }
-    
-    @SneakyThrows
-    private void initAuthentication() {
-        Authentication authentication = new Authentication();
-        Field field = GlobalRegistry.class.getDeclaredField("authentication");
-        field.setAccessible(true);
-        field.set(GlobalRegistry.getInstance(), authentication);
     }
     
     @SneakyThrows
@@ -62,17 +53,23 @@ public final class AuthenticationHandlerTest {
     
     @Test
     public void assertLoginWithPassword() {
-        GlobalRegistry.getInstance().getAuthentication().setUsername("root");
-        GlobalRegistry.getInstance().getAuthentication().setPassword("root");
+        setAuthentication(new Authentication("root", "root"));
         byte[] authResponse = {-27, 89, -20, -27, 65, -120, -64, -101, 86, -100, -108, -100, 6, -125, -37, 117, 14, -43, 95, -113};
         assertTrue(authenticationHandler.login("root", authResponse));
     }
     
     @Test
     public void assertLoginWithoutPassword() {
-        GlobalRegistry.getInstance().getAuthentication().setUsername("root");
+        setAuthentication(new Authentication("root", null));
         byte[] authResponse = {-27, 89, -20, -27, 65, -120, -64, -101, 86, -100, -108, -100, 6, -125, -37, 117, 14, -43, 95, -113};
         assertTrue(authenticationHandler.login("root", authResponse));
+    }
+    
+    @SneakyThrows
+    private void setAuthentication(final Authentication authentication) {
+        Field field = GlobalRegistry.class.getDeclaredField("authentication");
+        field.setAccessible(true);
+        field.set(GlobalRegistry.getInstance(), authentication);
     }
     
     @Test

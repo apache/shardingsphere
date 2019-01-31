@@ -27,6 +27,7 @@ import org.apache.shardingsphere.api.config.rule.MasterSlaveRuleConfiguration;
 import org.apache.shardingsphere.api.config.rule.ShardingRuleConfiguration;
 import org.apache.shardingsphere.core.config.DataSourceConfiguration;
 import org.apache.shardingsphere.core.rule.Authentication;
+import org.apache.shardingsphere.core.yaml.YamlAuthentication;
 import org.apache.shardingsphere.core.yaml.masterslave.YamlMasterSlaveRuleConfiguration;
 import org.apache.shardingsphere.core.yaml.sharding.YamlShardingRuleConfiguration;
 import org.yaml.snakeyaml.Yaml;
@@ -91,9 +92,9 @@ public final class ConfigurationYamlConverter {
      * @return authentication
      */
     public static Authentication loadAuthentication(final String data) {
-        Authentication result = new Yaml().loadAs(data, Authentication.class);
+        YamlAuthentication result = new Yaml().loadAs(data, YamlAuthentication.class);
         Preconditions.checkState(!Strings.isNullOrEmpty(result.getUsername()), "Authority configuration is invalid.");
-        return result;
+        return new Authentication(result.getUsername(), result.getPassword());
     }
     
     /**
@@ -165,7 +166,10 @@ public final class ConfigurationYamlConverter {
      * @return YAML string
      */
     public static String dumpAuthentication(final Authentication authentication) {
-        return new Yaml(new DefaultYamlRepresenter()).dumpAsMap(authentication);
+        YamlAuthentication yamlAuthentication = new YamlAuthentication();
+        yamlAuthentication.setUsername(authentication.getUsername());
+        yamlAuthentication.setPassword(authentication.getPassword());
+        return new Yaml(new DefaultYamlRepresenter()).dumpAsMap(yamlAuthentication);
     }
     
     /**

@@ -18,18 +18,18 @@
 package org.apache.shardingsphere.core.rule;
 
 import lombok.Getter;
-import lombok.Setter;
+import lombok.RequiredArgsConstructor;
 
 /**
  * Authentication.
  *
  * @author panjuan
  */
+@RequiredArgsConstructor
 @Getter
-@Setter
 public final class Authentication {
     
-    private String username;
+    private final String username;
     
-    private String password;
+    private final String password;
 }
