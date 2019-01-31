@@ -20,16 +20,8 @@ package org.apache.shardingsphere.core.yaml.config.masterslave;
 import lombok.Getter;
 import lombok.Setter;
 import org.apache.shardingsphere.core.yaml.config.YamlConfiguration;
-import org.yaml.snakeyaml.Yaml;
-import org.yaml.snakeyaml.constructor.Constructor;
 
 import javax.sql.DataSource;
-import java.io.ByteArrayInputStream;
-import java.io.File;
-import java.io.FileInputStream;
-import java.io.IOException;
-import java.io.InputStream;
-import java.io.InputStreamReader;
 import java.util.HashMap;
 import java.util.Map;
 import java.util.Properties;
@@ -51,33 +43,4 @@ public class YamlMasterSlaveConfiguration implements YamlConfiguration {
     private Map<String, Object> configMap = new ConcurrentHashMap<>();
     
     private Properties props = new Properties();
-    
-    /**
-     * Unmarshal YAML master-slave configuration.
-     *
-     * @param yamlFile YAML file
-     * @return master-slave configuration for YAML
-     * @throws IOException IO Exception
-     */
-    public static YamlMasterSlaveConfiguration unmarshal(final File yamlFile) throws IOException {
-        try (
-                FileInputStream fileInputStream = new FileInputStream(yamlFile);
-                InputStreamReader inputStreamReader = new InputStreamReader(fileInputStream, "UTF-8")
-        ) {
-            return new Yaml(new Constructor(YamlMasterSlaveConfiguration.class)).loadAs(inputStreamReader, YamlMasterSlaveConfiguration.class);
-        }
-    }
-    
-    /**
-     * Unmarshal YAML master-slave configuration.
-     *
-     * @param yamlBytes YAML bytes
-     * @return master-slave configuration for YAML
-     * @throws IOException IO Exception
-     */
-    public static YamlMasterSlaveConfiguration unmarshal(final byte[] yamlBytes) throws IOException {
-        try (InputStream inputStream = new ByteArrayInputStream(yamlBytes)) {
-            return new Yaml(new Constructor(YamlMasterSlaveConfiguration.class)).loadAs(inputStream, YamlMasterSlaveConfiguration.class);
-        }
-    }
 }

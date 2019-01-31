@@ -15,12 +15,16 @@
  * limitations under the License.
  */
 
-package org.apache.shardingsphere.core.yaml.sharding.strategy;
+package org.apache.shardingsphere.core.yaml.engine;
 
-/**
- * Sharding strategy configuration for YAML.
- * 
- * @author zhangliang
- */
-public interface YamlShardingStrategyConfiguration {
+import org.junit.runner.RunWith;
+import org.junit.runners.Suite;
+import org.junit.runners.Suite.SuiteClasses;
+
+@RunWith(Suite.class)
+@SuiteClasses({
+        YamlEngineMasterSlaveConfigurationTest.class, 
+        YamlEngineShardingConfigurationTest.class
+})
+public final class AllEngineTests {
 }

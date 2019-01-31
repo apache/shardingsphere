@@ -15,9 +15,10 @@
  * limitations under the License.
  */
 
-package org.apache.shardingsphere.core.yaml.config.masterslave;
+package org.apache.shardingsphere.core.yaml.engine;
 
 import org.apache.shardingsphere.api.algorithm.masterslave.MasterSlaveLoadBalanceAlgorithmType;
+import org.apache.shardingsphere.core.yaml.config.masterslave.YamlMasterSlaveConfiguration;
 import org.hamcrest.CoreMatchers;
 import org.junit.Test;
 
@@ -34,13 +35,13 @@ import static org.junit.Assert.assertNotNull;
 import static org.junit.Assert.assertThat;
 import static org.junit.Assert.assertTrue;
 
-public final class YamlMasterSlaveConfigurationTest {
+public final class YamlEngineMasterSlaveConfigurationTest {
     
     @Test
     public void assertUnmarshalWithYamlFile() throws IOException {
         URL url = getClass().getClassLoader().getResource("yaml/master-slave-rule.yaml");
         assertNotNull(url);
-        assertYamlMasterSlaveConfig(YamlMasterSlaveConfiguration.unmarshal(new File(url.getFile())));
+        assertYamlMasterSlaveConfig(YamlEngine.unmarshal(new File(url.getFile()), YamlMasterSlaveConfiguration.class));
     }
     
     @Test
@@ -56,7 +57,7 @@ public final class YamlMasterSlaveConfigurationTest {
                 yamlContent.append(line).append("\n");
             }
         }
-        assertYamlMasterSlaveConfig(YamlMasterSlaveConfiguration.unmarshal(yamlContent.toString().getBytes()));
+        assertYamlMasterSlaveConfig(YamlEngine.unmarshal(yamlContent.toString().getBytes(), YamlMasterSlaveConfiguration.class));
     }
     
     private void assertYamlMasterSlaveConfig(final YamlMasterSlaveConfiguration actual) {

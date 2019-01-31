@@ -20,16 +20,8 @@ package org.apache.shardingsphere.core.yaml.config.sharding;
 import lombok.Getter;
 import lombok.Setter;
 import org.apache.shardingsphere.core.yaml.config.YamlConfiguration;
-import org.yaml.snakeyaml.Yaml;
-import org.yaml.snakeyaml.constructor.Constructor;
 
 import javax.sql.DataSource;
-import java.io.ByteArrayInputStream;
-import java.io.File;
-import java.io.FileInputStream;
-import java.io.IOException;
-import java.io.InputStream;
-import java.io.InputStreamReader;
 import java.util.HashMap;
 import java.util.LinkedHashMap;
 import java.util.Map;
@@ -51,33 +43,4 @@ public class YamlShardingConfiguration implements YamlConfiguration {
     private Map<String, Object> configMap = new LinkedHashMap<>();
     
     private Properties props = new Properties();
-    
-    /**
-     * Unmarshal YAML sharding configuration.
-     * 
-     * @param yamlFile YAML file
-     * @return sharding configuration for YAML
-     * @throws IOException IO Exception
-     */
-    public static YamlShardingConfiguration unmarshal(final File yamlFile) throws IOException {
-        try (
-                FileInputStream fileInputStream = new FileInputStream(yamlFile);
-                InputStreamReader inputStreamReader = new InputStreamReader(fileInputStream, "UTF-8")
-        ) {
-            return new Yaml(new Constructor(YamlShardingConfiguration.class)).loadAs(inputStreamReader, YamlShardingConfiguration.class);
-        }
-    }
-    
-    /**
-     * Unmarshal YAML sharding configuration.
-     * 
-     * @param yamlBytes YAML bytes
-     * @return sharding configuration for YAML
-     * @throws IOException IO Exception
-     */
-    public static YamlShardingConfiguration unmarshal(final byte[] yamlBytes) throws IOException {
-        try (InputStream inputStream = new ByteArrayInputStream(yamlBytes)) {
-            return new Yaml(new Constructor(YamlShardingConfiguration.class)).loadAs(inputStream, YamlShardingConfiguration.class);
-        }
-    }
 }

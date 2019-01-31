@@ -15,9 +15,10 @@
  * limitations under the License.
  */
 
-package org.apache.shardingsphere.core.yaml.config.sharding;
+package org.apache.shardingsphere.core.yaml.engine;
 
 import org.apache.shardingsphere.api.algorithm.masterslave.MasterSlaveLoadBalanceAlgorithmType;
+import org.apache.shardingsphere.core.yaml.config.sharding.YamlShardingConfiguration;
 import org.hamcrest.CoreMatchers;
 import org.junit.Test;
 
@@ -34,13 +35,13 @@ import static org.junit.Assert.assertNotNull;
 import static org.junit.Assert.assertThat;
 import static org.junit.Assert.assertTrue;
 
-public final class YamlShardingConfigurationTest {
+public final class YamlEngineShardingConfigurationTest {
     
     @Test
     public void assertUnmarshalWithYamlFile() throws IOException {
         URL url = getClass().getClassLoader().getResource("yaml/sharding-rule.yaml");
         assertNotNull(url);
-        assertYamlShardingConfig(YamlShardingConfiguration.unmarshal(new File(url.getFile())));
+        assertYamlShardingConfig(YamlEngine.unmarshal(new File(url.getFile()), YamlShardingConfiguration.class));
     }
     
     @Test
@@ -56,7 +57,7 @@ public final class YamlShardingConfigurationTest {
                 yamlContent.append(line).append("\n");
             }
         }
-        assertYamlShardingConfig(YamlShardingConfiguration.unmarshal(yamlContent.toString().getBytes()));
+        assertYamlShardingConfig(YamlEngine.unmarshal(yamlContent.toString().getBytes(), YamlShardingConfiguration.class));
     }
     
     private void assertYamlShardingConfig(final YamlShardingConfiguration actual) {
@@ -139,7 +140,7 @@ public final class YamlShardingConfigurationTest {
     
     private void assertMasterSlaveRuleForDs0(final YamlShardingConfiguration actual) {
         assertThat(actual.getShardingRule().getMasterSlaveRules().get("ds_0").getMasterDataSourceName(), is("master_ds_0"));
-        assertThat(actual.getShardingRule().getMasterSlaveRules().get("ds_0").getSlaveDataSourceNames(), 
+        assertThat(actual.getShardingRule().getMasterSlaveRules().get("ds_0").getSlaveDataSourceNames(),
                 CoreMatchers.<Collection<String>>is(Arrays.asList("master_ds_0_slave_0", "master_ds_0_slave_1")));
         assertThat(actual.getShardingRule().getMasterSlaveRules().get("ds_0").getLoadBalanceAlgorithmType(), is(MasterSlaveLoadBalanceAlgorithmType.ROUND_ROBIN));
         assertConfigMap(actual);
@@ -147,7 +148,7 @@ public final class YamlShardingConfigurationTest {
     
     private void assertMasterSlaveRuleForDs1(final YamlShardingConfiguration actual) {
         assertThat(actual.getShardingRule().getMasterSlaveRules().get("ds_1").getMasterDataSourceName(), is("master_ds_1"));
-        assertThat(actual.getShardingRule().getMasterSlaveRules().get("ds_1").getSlaveDataSourceNames(), 
+        assertThat(actual.getShardingRule().getMasterSlaveRules().get("ds_1").getSlaveDataSourceNames(),
                 CoreMatchers.<Collection<String>>is(Arrays.asList("master_ds_1_slave_0", "master_ds_1_slave_1")));
         assertThat(actual.getShardingRule().getMasterSlaveRules().get("ds_1").getLoadBalanceAlgorithmClassName(), is("TestAlgorithmClass"));
         assertConfigMap(actual);

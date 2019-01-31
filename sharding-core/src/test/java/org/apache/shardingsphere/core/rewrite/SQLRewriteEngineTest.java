@@ -47,6 +47,7 @@ import org.apache.shardingsphere.core.routing.type.TableUnit;
 import org.apache.shardingsphere.core.rule.DataNode;
 import org.apache.shardingsphere.core.rule.ShardingRule;
 import org.apache.shardingsphere.core.yaml.config.sharding.YamlShardingConfiguration;
+import org.apache.shardingsphere.core.yaml.engine.YamlEngine;
 import org.apache.shardingsphere.core.yaml.swapper.impl.ShardingRuleConfigurationYamlSwapper;
 import org.junit.Before;
 import org.junit.Test;
@@ -89,7 +90,7 @@ public final class SQLRewriteEngineTest {
     public void setUp() throws IOException, SQLException {
         URL url = SQLRewriteEngineTest.class.getClassLoader().getResource("yaml/rewrite-rule.yaml");
         Preconditions.checkNotNull(url, "Cannot found rewrite rule yaml configuration.");
-        YamlShardingConfiguration yamlShardingConfig = YamlShardingConfiguration.unmarshal(new File(url.getFile()));
+        YamlShardingConfiguration yamlShardingConfig = YamlEngine.unmarshal(new File(url.getFile()), YamlShardingConfiguration.class);
         shardingRule = new ShardingRule(new ShardingRuleConfigurationYamlSwapper().swap(yamlShardingConfig.getShardingRule()), yamlShardingConfig.getDataSources().keySet());
         selectStatement = new SelectStatement();
         insertStatement = new InsertStatement();
