@@ -18,7 +18,6 @@
 package org.apache.shardingsphere.core.yaml.sharding;
 
 import org.apache.shardingsphere.api.config.KeyGeneratorConfiguration;
-import org.junit.Before;
 import org.junit.Test;
 
 import java.util.Properties;
@@ -26,23 +25,17 @@ import java.util.Properties;
 import static org.hamcrest.CoreMatchers.is;
 import static org.junit.Assert.assertThat;
 
-public class YamlShardingKeyGeneratorConfigurationTest {
-    
-    private Properties props = new Properties();
-    
-    private KeyGeneratorConfiguration keyGeneratorConfiguration;
-    
-    @Before
-    public void setUp() {
-        props.setProperty("key1", "value1");
-        keyGeneratorConfiguration = new KeyGeneratorConfiguration("order_id", "UUID", props);
-    }
+public final class YamlShardingKeyGeneratorConfigurationTest {
     
     @Test
     public void createYamlKeyGeneratorConfiguration() {
-        YamlKeyGeneratorConfiguration yamlKeyGeneratorConfiguration = new YamlKeyGeneratorConfiguration(keyGeneratorConfiguration);
-        assertThat(yamlKeyGeneratorConfiguration.getColumn(), is("order_id"));
-        assertThat(yamlKeyGeneratorConfiguration.getType(), is("UUID"));
+        YamlKeyGeneratorConfiguration actual = new YamlKeyGeneratorConfiguration();
+        actual.setColumn("order_id");
+        actual.setType("UUID");
+        actual.setProps(new Properties());
+        assertThat(actual.getColumn(), is("order_id"));
+        assertThat(actual.getType(), is("UUID"));
+        assertThat(actual.getProps(), is(new Properties()));
     }
     
     @Test
@@ -50,10 +43,12 @@ public class YamlShardingKeyGeneratorConfigurationTest {
         YamlKeyGeneratorConfiguration yamlKeyGeneratorConfiguration = new YamlKeyGeneratorConfiguration();
         yamlKeyGeneratorConfiguration.setColumn("order_id");
         yamlKeyGeneratorConfiguration.setType("UUID");
+        Properties props = new Properties();
+        props.setProperty("key1", "value1");
         yamlKeyGeneratorConfiguration.setProps(props);
         KeyGeneratorConfiguration keyGeneratorConfiguration = yamlKeyGeneratorConfiguration.getKeyGeneratorConfiguration();
-        assertThat(keyGeneratorConfiguration.getColumn(), is(this.keyGeneratorConfiguration.getColumn()));
-        assertThat(keyGeneratorConfiguration.getType(), is(this.keyGeneratorConfiguration.getType()));
-        assertThat(keyGeneratorConfiguration.getProps().getProperty("key1"), is(this.keyGeneratorConfiguration.getProps().getProperty("key1")));
+        assertThat(keyGeneratorConfiguration.getColumn(), is("order_id"));
+        assertThat(keyGeneratorConfiguration.getType(), is("UUID"));
+        assertThat(keyGeneratorConfiguration.getProps().getProperty("key1"), is("value1"));
     }
 }

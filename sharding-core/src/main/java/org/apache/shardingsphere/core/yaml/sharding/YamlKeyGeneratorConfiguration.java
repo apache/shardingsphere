@@ -40,12 +40,6 @@ public final class YamlKeyGeneratorConfiguration {
     
     private Properties props = new Properties();
     
-    public YamlKeyGeneratorConfiguration(final KeyGeneratorConfiguration keyGeneratorConfiguration) {
-        column = keyGeneratorConfiguration.getColumn();
-        type = keyGeneratorConfiguration.getType();
-        props = keyGeneratorConfiguration.getProps();
-    }
-    
     /**
      * Get key generator configuration.
      * 

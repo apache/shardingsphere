@@ -17,7 +17,6 @@
 
 package org.apache.shardingsphere.core.yaml.sharding;
 
-import org.apache.shardingsphere.api.config.KeyGeneratorConfiguration;
 import org.junit.Test;
 
 import java.util.Properties;
@@ -29,7 +28,10 @@ public final class YamlKeyGeneratorConfigurationTest {
     
     @Test
     public void assertGetKeyGeneratorConfiguration() {
-        YamlKeyGeneratorConfiguration actual = new YamlKeyGeneratorConfiguration(new KeyGeneratorConfiguration("column", "TEST", new Properties()));
+        YamlKeyGeneratorConfiguration actual = new YamlKeyGeneratorConfiguration();
+        actual.setColumn("column");
+        actual.setType("TEST");
+        actual.setProps(new Properties());
         assertThat(actual.getKeyGeneratorConfiguration().getColumn(), is("column"));
         assertThat(actual.getKeyGeneratorConfiguration().getType(), is("TEST"));
         assertThat(actual.getKeyGeneratorConfiguration().getProps(), is(new Properties()));

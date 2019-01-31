@@ -17,6 +17,7 @@
 
 package org.apache.shardingsphere.orchestration.yaml.dumper.impl;
 
+import org.apache.shardingsphere.api.config.KeyGeneratorConfiguration;
 import org.apache.shardingsphere.api.config.rule.MasterSlaveRuleConfiguration;
 import org.apache.shardingsphere.api.config.rule.ShardingRuleConfiguration;
 import org.apache.shardingsphere.api.config.rule.TableRuleConfiguration;
@@ -54,7 +55,7 @@ public final class ShardingRuleConfigurationYamlDumper implements YamlDumper<Sha
         result.setDefaultDatabaseStrategy(new YamlShardingStrategyConfiguration(shardingRuleConfiguration.getDefaultDatabaseShardingStrategyConfig()));
         result.setDefaultTableStrategy(new YamlShardingStrategyConfiguration(shardingRuleConfiguration.getDefaultTableShardingStrategyConfig()));
         if (null != shardingRuleConfiguration.getDefaultKeyGeneratorConfig()) {
-            result.setDefaultKeyGenerator(new YamlKeyGeneratorConfiguration(shardingRuleConfiguration.getDefaultKeyGeneratorConfig()));
+            result.setDefaultKeyGenerator(createYamlKeyGeneratorConfiguration(shardingRuleConfiguration.getDefaultKeyGeneratorConfig()));
         }
         for (MasterSlaveRuleConfiguration each : shardingRuleConfiguration.getMasterSlaveRuleConfigs()) {
             result.getMasterSlaveRules().put(each.getName(), new YamlMasterSlaveRuleConfiguration(each));
@@ -69,11 +70,19 @@ public final class ShardingRuleConfigurationYamlDumper implements YamlDumper<Sha
         result.setDatabaseStrategy(new YamlShardingStrategyConfiguration(tableRuleConfiguration.getDatabaseShardingStrategyConfig()));
         result.setTableStrategy(new YamlShardingStrategyConfiguration(tableRuleConfiguration.getTableShardingStrategyConfig()));
         if (null != tableRuleConfiguration.getKeyGeneratorConfig()) {
-            result.setKeyGenerator(new YamlKeyGeneratorConfiguration(tableRuleConfiguration.getKeyGeneratorConfig()));
+            result.setKeyGenerator(createYamlKeyGeneratorConfiguration(tableRuleConfiguration.getKeyGeneratorConfig()));
         }
         if (null != tableRuleConfiguration.getEncryptorConfig()) {
             result.setEncryptor(new YamlEncryptorConfiguration(tableRuleConfiguration.getEncryptorConfig()));
         }
+        return result;
+    }
+    
+    private YamlKeyGeneratorConfiguration createYamlKeyGeneratorConfiguration(final KeyGeneratorConfiguration keyGeneratorConfiguration) {
+        YamlKeyGeneratorConfiguration result = new YamlKeyGeneratorConfiguration();
+        result.setColumn(keyGeneratorConfiguration.getColumn());
+        result.setType(keyGeneratorConfiguration.getType());
+        result.setProps(keyGeneratorConfiguration.getProps());
         return result;
     }
 }
