@@ -31,6 +31,8 @@ Aiming at reasonably making full use of the computation and storage capacity of 
 As the cornerstone of many enterprises, relational database still takes a huge market share. 
 Therefore, at current stage, we prefer to focus on its increment instead of a total overturn.
 
+__All available releases are not Apache releases, Apache releases will begin from version 4.0.0__
+
 ![ShardingSphere Scope](http://shardingsphere.jd.com/document/current/img/shardingsphere-scope_en.png)
 
 ### Sharding-JDBC
