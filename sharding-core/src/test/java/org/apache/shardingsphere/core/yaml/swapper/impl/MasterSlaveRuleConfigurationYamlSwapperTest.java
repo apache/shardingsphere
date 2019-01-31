@@ -26,6 +26,7 @@ import org.junit.Test;
 
 import java.util.Arrays;
 import java.util.Collection;
+import java.util.Collections;
 
 import static org.hamcrest.CoreMatchers.instanceOf;
 import static org.hamcrest.CoreMatchers.is;
@@ -33,6 +34,25 @@ import static org.junit.Assert.assertNull;
 import static org.junit.Assert.assertThat;
 
 public final class MasterSlaveRuleConfigurationYamlSwapperTest {
+    
+    @Test
+    public void assertSwapToYamlWithLoadBalanceAlgorithm() {
+        YamlMasterSlaveRuleConfiguration actual = new MasterSlaveRuleConfigurationYamlSwapper().swap(
+                new MasterSlaveRuleConfiguration("ds", "master", Collections.singletonList("slave"), MasterSlaveLoadBalanceAlgorithmType.getDefaultAlgorithmType().getAlgorithm()));
+        assertThat(actual.getName(), is("ds"));
+        assertThat(actual.getMasterDataSourceName(), is("master"));
+        assertThat(actual.getSlaveDataSourceNames(), CoreMatchers.<Collection<String>>is(Collections.singletonList("slave")));
+        assertThat(actual.getLoadBalanceAlgorithmClassName(), is(MasterSlaveLoadBalanceAlgorithmType.getDefaultAlgorithmType().getAlgorithm().getClass().getName()));
+    }
+    
+    @Test
+    public void assertSwapToYamlWithoutLoadBalanceAlgorithm() {
+        YamlMasterSlaveRuleConfiguration actual = new MasterSlaveRuleConfigurationYamlSwapper().swap(new MasterSlaveRuleConfiguration("ds", "master", Collections.singletonList("slave"), null));
+        assertThat(actual.getName(), is("ds"));
+        assertThat(actual.getMasterDataSourceName(), is("master"));
+        assertThat(actual.getSlaveDataSourceNames(), CoreMatchers.<Collection<String>>is(Collections.singletonList("slave")));
+        assertNull(actual.getLoadBalanceAlgorithmClassName());
+    }
     
     @Test
     public void assertSwapToObjectWithLoadBalanceAlgorithmType() {
