@@ -10,8 +10,8 @@ body {
   -moz-osx-font-smoothing: grayscale;
   -webkit-font-smoothing: antialiased;
   text-rendering: optimizeLegibility;
-  font-family: "Helvetica Neue", Helvetica, "PingFang SC", "Hiragino Sans GB",
-    "Microsoft YaHei", Arial, sans-serif;
+  font-family: 'Helvetica Neue', Helvetica, 'PingFang SC', 'Hiragino Sans GB',
+    'Microsoft YaHei', Arial, sans-serif;
 }
 html {
   font-size: 50px;
@@ -33,6 +33,14 @@ header {
   background-color: #060708;
   width: 100%;
 }
+.bg-left {
+  background: url(http://shardingsphere.jd.com/images/background_center.png) 1.16rem 2.9rem no-repeat;
+  background-size: 1.22rem 1.22rem;
+}
+.bg-right {
+  background: url(http://shardingsphere.jd.com/images/background_corner.png) 5.96rem 4.8rem no-repeat;
+  background-size: 0.74rem 0.74rem;
+}
 nav {
   margin: 0 auto;
   padding: 0.8rem 0.4rem 0.78rem;
@@ -51,7 +59,7 @@ nav {
   border-bottom: 0.42rem solid rgba(0, 0, 0, 0.9);
 }
 .nav-btn::before {
-  content: "";
+  content: '';
   position: absolute;
   top: -0.14rem;
   width: 0.48rem;
@@ -59,7 +67,7 @@ nav {
   background-color: #ffffff;
 }
 .nav-btn::after {
-  content: "";
+  content: '';
   position: absolute;
   bottom: -0.14rem;
   width: 0.48rem;
@@ -100,13 +108,53 @@ nav {
 .i-drop-list:hover {
   color: #ee9a32;
 }
+.sub-img {
+  display: block;
+  margin: 0 auto 0.4rem;
+  width: 1.42rem;
+}
 .sub-title {
+  position: relative;
   margin: 0 0.5rem;
+  padding-top: 1.36rem;
   text-align: center;
+  color: #f09b1f;
+}
+.sub-title span {
+  display: inline-block;
+  margin: 0 auto;
   font-size: 0.6rem;
   line-height: 0.77rem;
-  color: #f09b1f;
   font-weight: bold;
+  background: linear-gradient(to right, #7e297c, #f79a22, #d03135);
+  -webkit-background-clip: text;
+  background-clip: text;
+  color: transparent;
+}
+.sub-corner {
+  position: absolute;
+  top: 0;
+  left: 50%;
+  margin-left: -1.05rem;
+  width: 2.1rem;
+  height: 0.7rem;
+  font-size: 0.36rem;
+  text-align: center;
+  line-height: 0.7rem;
+  color: #cdcdcd;
+  background-color: #2f3338;
+  border-radius: 4px;
+}
+.sub-corner::before {
+  content: '';
+  position: absolute;
+  width: 0;
+  height: 0;
+  left: 0.89rem;
+  bottom: -0.16rem;
+  border-left: solid 0.14rem transparent;
+  border-top: solid 0.16rem #2f3338;
+  border-right: solid 0.14rem transparent;
 }
 .sub-hr {
   display: block;
@@ -153,7 +201,7 @@ nav {
 }
 .sub-point-list img {
   width: 2.9rem;
-  padding-bottom: 0.6rem
+  padding-bottom: 0.6rem;
 }
 .sub-point-list p {
   font-size: 0.48rem;
@@ -193,7 +241,7 @@ nav {
   width: 1.83rem;
   height: 0.05rem;
   background-color: #f09b1f;
-  margin: 0.8rem auto 0.90rem;
+  margin: 0.8rem auto 0.9rem;
 }
 .l-m-info {
   font-size: 0.36rem;
@@ -206,9 +254,17 @@ nav {
 .point-img {
   width: 4.86rem;
 }
+.footer-img {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  margin: 0.88rem 0 0.34rem;
+}
 .footer-logo {
   width: 4.42rem;
-  margin: 1.2rem auto 0.54rem;
+}
+.footer-apache {
+  width: 1.1rem;
 }
 .footer-icon {
   margin: 0 auto;
