@@ -29,14 +29,21 @@ import static org.junit.Assert.assertThat;
 public final class KeyGeneratorConfigurationYamlSwapperTest {
     
     @Test
+    public void assertSwapToYaml() {
+        YamlKeyGeneratorConfiguration actual = new KeyGeneratorConfigurationYamlSwapper().swap(new KeyGeneratorConfiguration("id", "UUID", new Properties()));
+        assertThat(actual.getColumn(), is("id"));
+        assertThat(actual.getType(), is("UUID"));
+        assertThat(actual.getProps(), is(new Properties()));
+    }
+    
+    @Test
     public void assertSwapToObject() {
         YamlKeyGeneratorConfiguration yamlConfiguration = new YamlKeyGeneratorConfiguration();
-        yamlConfiguration.setColumn("column");
-        yamlConfiguration.setType("TEST");
-        yamlConfiguration.setProps(new Properties());
+        yamlConfiguration.setColumn("id");
+        yamlConfiguration.setType("UUID");
         KeyGeneratorConfiguration actual = new KeyGeneratorConfigurationYamlSwapper().swap(yamlConfiguration);
-        assertThat(actual.getColumn(), is("column"));
-        assertThat(actual.getType(), is("TEST"));
+        assertThat(actual.getColumn(), is("id"));
+        assertThat(actual.getType(), is("UUID"));
         assertThat(actual.getProps(), is(new Properties()));
     }
 }
