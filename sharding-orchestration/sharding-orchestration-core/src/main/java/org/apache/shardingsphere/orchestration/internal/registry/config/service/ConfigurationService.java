@@ -27,7 +27,12 @@ import org.apache.shardingsphere.core.rule.Authentication;
 import org.apache.shardingsphere.orchestration.internal.registry.config.node.ConfigurationNode;
 import org.apache.shardingsphere.orchestration.reg.api.RegistryCenter;
 import org.apache.shardingsphere.orchestration.yaml.dumper.YamlDumper;
-import org.apache.shardingsphere.orchestration.yaml.loader.YamlLoader;
+import org.apache.shardingsphere.orchestration.yaml.loader.impl.AuthenticationYamlLoader;
+import org.apache.shardingsphere.orchestration.yaml.loader.impl.ConfigMapYamlLoader;
+import org.apache.shardingsphere.orchestration.yaml.loader.impl.DataSourceConfigurationsYamlLoader;
+import org.apache.shardingsphere.orchestration.yaml.loader.impl.MasterSlaveRuleConfigurationYamlLoader;
+import org.apache.shardingsphere.orchestration.yaml.loader.impl.PropertiesYamlLoader;
+import org.apache.shardingsphere.orchestration.yaml.loader.impl.ShardingRuleConfigurationYamlLoader;
 
 import java.util.Collection;
 import java.util.Map;
@@ -167,7 +172,7 @@ public final class ConfigurationService {
      * @return data source configurations
      */
     public Map<String, DataSourceConfiguration> loadDataSourceConfigurations(final String shardingSchemaName) {
-        return YamlLoader.loadDataSourceConfigurations(regCenter.getDirectly(configNode.getDataSourcePath(shardingSchemaName)));
+        return new DataSourceConfigurationsYamlLoader().load(regCenter.getDirectly(configNode.getDataSourcePath(shardingSchemaName)));
     }
     
     /**
@@ -177,7 +182,7 @@ public final class ConfigurationService {
      * @return sharding rule configuration
      */
     public ShardingRuleConfiguration loadShardingRuleConfiguration(final String shardingSchemaName) {
-        return YamlLoader.loadShardingRuleConfiguration(regCenter.getDirectly(configNode.getRulePath(shardingSchemaName)));
+        return new ShardingRuleConfigurationYamlLoader().load(regCenter.getDirectly(configNode.getRulePath(shardingSchemaName)));
     }
     
     /**
@@ -187,7 +192,7 @@ public final class ConfigurationService {
      * @return master-slave rule configuration
      */
     public MasterSlaveRuleConfiguration loadMasterSlaveRuleConfiguration(final String shardingSchemaName) {
-        return YamlLoader.loadMasterSlaveRuleConfiguration(regCenter.getDirectly(configNode.getRulePath(shardingSchemaName)));
+        return new MasterSlaveRuleConfigurationYamlLoader().load(regCenter.getDirectly(configNode.getRulePath(shardingSchemaName)));
     }
     
     /**
@@ -196,7 +201,7 @@ public final class ConfigurationService {
      * @return authentication
      */
     public Authentication loadAuthentication() {
-        return YamlLoader.loadAuthentication(regCenter.getDirectly(configNode.getAuthenticationPath()));
+        return new AuthenticationYamlLoader().load(regCenter.getDirectly(configNode.getAuthenticationPath()));
     }
     
     /**
@@ -206,7 +211,7 @@ public final class ConfigurationService {
      */
     @SuppressWarnings("unchecked")
     public Map<String, Object> loadConfigMap() {
-        return YamlLoader.loadConfigMap(regCenter.getDirectly(configNode.getConfigMapPath()));
+        return new ConfigMapYamlLoader().load(regCenter.getDirectly(configNode.getConfigMapPath()));
     }
     
     /**
@@ -215,7 +220,7 @@ public final class ConfigurationService {
      * @return properties
      */
     public Properties loadProperties() {
-        return YamlLoader.loadProperties(regCenter.getDirectly(configNode.getPropsPath()));
+        return new PropertiesYamlLoader().load(regCenter.getDirectly(configNode.getPropsPath()));
     }
     
     /**

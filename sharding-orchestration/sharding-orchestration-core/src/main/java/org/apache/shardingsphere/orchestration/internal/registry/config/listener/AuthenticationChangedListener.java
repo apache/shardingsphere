@@ -22,7 +22,7 @@ import org.apache.shardingsphere.orchestration.internal.registry.config.node.Con
 import org.apache.shardingsphere.orchestration.internal.registry.listener.PostShardingOrchestrationEventListener;
 import org.apache.shardingsphere.orchestration.reg.api.RegistryCenter;
 import org.apache.shardingsphere.orchestration.reg.listener.DataChangedEvent;
-import org.apache.shardingsphere.orchestration.yaml.loader.YamlLoader;
+import org.apache.shardingsphere.orchestration.yaml.loader.impl.AuthenticationYamlLoader;
 
 /**
  * Authentication changed listener.
@@ -37,6 +37,6 @@ public final class AuthenticationChangedListener extends PostShardingOrchestrati
     
     @Override
     protected AuthenticationChangedEvent createShardingOrchestrationEvent(final DataChangedEvent event) {
-        return new AuthenticationChangedEvent(YamlLoader.loadAuthentication(event.getValue()));
+        return new AuthenticationChangedEvent(new AuthenticationYamlLoader().load(event.getValue()));
     }
 }

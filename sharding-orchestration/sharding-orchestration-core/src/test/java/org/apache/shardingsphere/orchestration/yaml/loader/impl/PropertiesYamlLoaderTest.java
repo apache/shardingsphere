@@ -15,23 +15,23 @@
  * limitations under the License.
  */
 
-package org.apache.shardingsphere.orchestration.yaml.loader;
+package org.apache.shardingsphere.orchestration.yaml.loader.impl;
 
-/**
- * YAML loader.
- *
- * @author panjuan
- * @author zhangliang
- * 
- * @param <T> type of loaded object
- */
-public interface YamlLoader<T> {
+import org.junit.Test;
+
+import java.util.Properties;
+
+import static org.hamcrest.CoreMatchers.is;
+import static org.junit.Assert.assertThat;
+
+public final class PropertiesYamlLoaderTest {
     
-    /**
-     * Load from YAML.
-     *
-     * @param data data of YAML format
-     * @return loaded object from YAML
-     */
-    T load(String data);
+    private static final String PROPERTIES_YAML = "executor.size: 16\nsql.show: true";
+    
+    @Test
+    public void assertLoad() {
+        Properties actual = new PropertiesYamlLoader().load(PROPERTIES_YAML);
+        assertThat(actual.get("executor.size"), is((Object) 16));
+        assertThat(actual.get("sql.show"), is((Object) true));
+    }
 }

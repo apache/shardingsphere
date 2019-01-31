@@ -15,23 +15,23 @@
  * limitations under the License.
  */
 
-package org.apache.shardingsphere.orchestration.yaml.loader;
+package org.apache.shardingsphere.orchestration.yaml.loader.impl;
+
+import org.apache.shardingsphere.api.config.rule.MasterSlaveRuleConfiguration;
+import org.apache.shardingsphere.core.yaml.masterslave.YamlMasterSlaveRuleConfiguration;
+import org.apache.shardingsphere.orchestration.yaml.loader.YamlLoader;
+import org.yaml.snakeyaml.Yaml;
 
 /**
- * YAML loader.
+ * Master-slave rule configuration YAML loader.
  *
  * @author panjuan
  * @author zhangliang
- * 
- * @param <T> type of loaded object
  */
-public interface YamlLoader<T> {
+public final class MasterSlaveRuleConfigurationYamlLoader implements YamlLoader<MasterSlaveRuleConfiguration> {
     
-    /**
-     * Load from YAML.
-     *
-     * @param data data of YAML format
-     * @return loaded object from YAML
-     */
-    T load(String data);
+    @Override
+    public MasterSlaveRuleConfiguration load(final String data) {
+        return new Yaml().loadAs(data, YamlMasterSlaveRuleConfiguration.class).getMasterSlaveRuleConfiguration();
+    }
 }

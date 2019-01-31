@@ -15,23 +15,24 @@
  * limitations under the License.
  */
 
-package org.apache.shardingsphere.orchestration.yaml.loader;
+package org.apache.shardingsphere.orchestration.yaml.loader.impl;
+
+import com.google.common.base.Strings;
+import org.apache.shardingsphere.orchestration.yaml.loader.YamlLoader;
+import org.yaml.snakeyaml.Yaml;
+
+import java.util.Properties;
 
 /**
- * YAML loader.
+ * Properties YAML loader.
  *
  * @author panjuan
  * @author zhangliang
- * 
- * @param <T> type of loaded object
  */
-public interface YamlLoader<T> {
+public final class PropertiesYamlLoader implements YamlLoader<Properties> {
     
-    /**
-     * Load from YAML.
-     *
-     * @param data data of YAML format
-     * @return loaded object from YAML
-     */
-    T load(String data);
+    @Override
+    public Properties load(final String data) {
+        return Strings.isNullOrEmpty(data) ? new Properties() : new Yaml().loadAs(data, Properties.class);
+    }
 }

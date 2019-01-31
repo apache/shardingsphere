@@ -15,23 +15,22 @@
  * limitations under the License.
  */
 
-package org.apache.shardingsphere.orchestration.yaml.loader;
+package org.apache.shardingsphere.orchestration.yaml.loader.impl;
 
-/**
- * YAML loader.
- *
- * @author panjuan
- * @author zhangliang
- * 
- * @param <T> type of loaded object
- */
-public interface YamlLoader<T> {
+import org.apache.shardingsphere.core.rule.Authentication;
+import org.junit.Test;
+
+import static org.hamcrest.CoreMatchers.is;
+import static org.junit.Assert.assertThat;
+
+public final class AuthenticationYamlLoaderTest {
     
-    /**
-     * Load from YAML.
-     *
-     * @param data data of YAML format
-     * @return loaded object from YAML
-     */
-    T load(String data);
+    private static final String AUTHENTICATION_YAML = "password: root\nusername: root\n";
+    
+    @Test
+    public void assertLoad() {
+        Authentication actual = new AuthenticationYamlLoader().load(AUTHENTICATION_YAML);
+        assertThat(actual.getUsername(), is("root"));
+        assertThat(actual.getPassword(), is("root"));
+    }
 }

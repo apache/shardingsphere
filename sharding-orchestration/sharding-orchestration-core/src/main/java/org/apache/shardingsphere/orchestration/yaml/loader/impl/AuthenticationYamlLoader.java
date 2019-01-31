@@ -15,23 +15,27 @@
  * limitations under the License.
  */
 
-package org.apache.shardingsphere.orchestration.yaml.loader;
+package org.apache.shardingsphere.orchestration.yaml.loader.impl;
+
+import com.google.common.base.Preconditions;
+import com.google.common.base.Strings;
+import org.apache.shardingsphere.core.rule.Authentication;
+import org.apache.shardingsphere.core.yaml.YamlAuthentication;
+import org.apache.shardingsphere.orchestration.yaml.loader.YamlLoader;
+import org.yaml.snakeyaml.Yaml;
 
 /**
- * YAML loader.
+ * Authentication YAML loader.
  *
  * @author panjuan
  * @author zhangliang
- * 
- * @param <T> type of loaded object
  */
-public interface YamlLoader<T> {
+public final class AuthenticationYamlLoader implements YamlLoader<Authentication> {
     
-    /**
-     * Load from YAML.
-     *
-     * @param data data of YAML format
-     * @return loaded object from YAML
-     */
-    T load(String data);
+    @Override
+    public Authentication load(final String data) {
+        YamlAuthentication result = new Yaml().loadAs(data, YamlAuthentication.class);
+        Preconditions.checkState(!Strings.isNullOrEmpty(result.getUsername()), "Authority configuration is invalid.");
+        return new Authentication(result.getUsername(), result.getPassword());
+    }
 }

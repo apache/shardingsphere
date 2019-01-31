@@ -15,23 +15,22 @@
  * limitations under the License.
  */
 
-package org.apache.shardingsphere.orchestration.yaml.loader;
+package org.apache.shardingsphere.orchestration.yaml.loader.impl;
 
-/**
- * YAML loader.
- *
- * @author panjuan
- * @author zhangliang
- * 
- * @param <T> type of loaded object
- */
-public interface YamlLoader<T> {
+import org.junit.Test;
+
+import java.util.Map;
+
+import static org.junit.Assert.assertTrue;
+
+public final class ConfigMapYamlLoaderTest {
     
-    /**
-     * Load from YAML.
-     *
-     * @param data data of YAML format
-     * @return loaded object from YAML
-     */
-    T load(String data);
+    private static final String CONFIG_MAP_YAML = "sharding-key1: sharding-value1";
+    
+    @Test
+    public void assertLoadConfigMap() {
+        Map<String, Object> actual = new ConfigMapYamlLoader().load(CONFIG_MAP_YAML);
+        assertTrue(actual.containsKey("sharding-key1"));
+        assertTrue(actual.containsValue("sharding-value1"));
+    }
 }

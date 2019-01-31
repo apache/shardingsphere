@@ -15,23 +15,23 @@
  * limitations under the License.
  */
 
-package org.apache.shardingsphere.orchestration.yaml.loader;
+package org.apache.shardingsphere.orchestration.yaml.loader.impl;
+
+import org.apache.shardingsphere.api.config.rule.ShardingRuleConfiguration;
+import org.apache.shardingsphere.core.yaml.sharding.YamlShardingRuleConfiguration;
+import org.apache.shardingsphere.orchestration.yaml.loader.YamlLoader;
+import org.yaml.snakeyaml.Yaml;
 
 /**
- * YAML loader.
+ * Sharding rule configuration YAML loader.
  *
  * @author panjuan
  * @author zhangliang
- * 
- * @param <T> type of loaded object
  */
-public interface YamlLoader<T> {
+public final class ShardingRuleConfigurationYamlLoader implements YamlLoader<ShardingRuleConfiguration> {
     
-    /**
-     * Load from YAML.
-     *
-     * @param data data of YAML format
-     * @return loaded object from YAML
-     */
-    T load(String data);
+    @Override
+    public ShardingRuleConfiguration load(final String data) {
+        return new Yaml().loadAs(data, YamlShardingRuleConfiguration.class).getShardingRuleConfiguration();
+    }
 }

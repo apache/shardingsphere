@@ -22,7 +22,7 @@ import org.apache.shardingsphere.orchestration.internal.registry.config.node.Con
 import org.apache.shardingsphere.orchestration.internal.registry.listener.PostShardingOrchestrationEventListener;
 import org.apache.shardingsphere.orchestration.reg.api.RegistryCenter;
 import org.apache.shardingsphere.orchestration.reg.listener.DataChangedEvent;
-import org.apache.shardingsphere.orchestration.yaml.loader.YamlLoader;
+import org.apache.shardingsphere.orchestration.yaml.loader.impl.PropertiesYamlLoader;
 
 /**
  * Properties changed listener.
@@ -37,6 +37,6 @@ public final class PropertiesChangedListener extends PostShardingOrchestrationEv
     
     @Override
     protected PropertiesChangedEvent createShardingOrchestrationEvent(final DataChangedEvent event) {
-        return new PropertiesChangedEvent(YamlLoader.loadProperties(event.getValue()));
+        return new PropertiesChangedEvent(new PropertiesYamlLoader().load(event.getValue()));
     }
 }

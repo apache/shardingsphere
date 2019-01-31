@@ -15,23 +15,26 @@
  * limitations under the License.
  */
 
-package org.apache.shardingsphere.orchestration.yaml.loader;
+package org.apache.shardingsphere.orchestration.yaml.loader.impl;
+
+import com.google.common.base.Strings;
+import org.apache.shardingsphere.orchestration.yaml.loader.YamlLoader;
+import org.yaml.snakeyaml.Yaml;
+
+import java.util.LinkedHashMap;
+import java.util.Map;
 
 /**
- * YAML loader.
+ * Config map YAML loader.
  *
  * @author panjuan
  * @author zhangliang
- * 
- * @param <T> type of loaded object
  */
-public interface YamlLoader<T> {
+public final class ConfigMapYamlLoader implements YamlLoader<Map<String, Object>> {
     
-    /**
-     * Load from YAML.
-     *
-     * @param data data of YAML format
-     * @return loaded object from YAML
-     */
-    T load(String data);
+    @SuppressWarnings("unchecked")
+    @Override
+    public Map<String, Object> load(final String data) {
+        return Strings.isNullOrEmpty(data) ? new LinkedHashMap<String, Object>() : (Map) new Yaml().load(data);
+    }
 }
