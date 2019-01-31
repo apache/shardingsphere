@@ -15,24 +15,27 @@
  * limitations under the License.
  */
 
-package org.apache.shardingsphere.orchestration.yaml;
+package org.apache.shardingsphere.orchestration.yaml.dumper;
 
-import org.apache.shardingsphere.orchestration.yaml.config.YamlDataSourceConfigurationTest;
-import org.apache.shardingsphere.orchestration.yaml.config.YamlOrchestrationConfigurationTest;
-import org.apache.shardingsphere.orchestration.yaml.dumper.AllYamlDumperTests;
-import org.apache.shardingsphere.orchestration.yaml.dumper.DefaultYamlRepresenterTest;
-import org.apache.shardingsphere.orchestration.yaml.loader.AllYamlLoaderTests;
+import org.apache.shardingsphere.orchestration.yaml.dumper.impl.AuthenticationYamlDumperTest;
+import org.apache.shardingsphere.orchestration.yaml.dumper.impl.ConfigMapYamlDumperTest;
+import org.apache.shardingsphere.orchestration.yaml.dumper.impl.DataSourceConfigurationsYamlDumperTest;
+import org.apache.shardingsphere.orchestration.yaml.dumper.impl.MasterSlaveRuleConfigurationYamlDumperTest;
+import org.apache.shardingsphere.orchestration.yaml.dumper.impl.PropertiesYamlDumperTest;
+import org.apache.shardingsphere.orchestration.yaml.dumper.impl.ShardingRuleConfigurationYamlDumperTest;
 import org.junit.runner.RunWith;
 import org.junit.runners.Suite;
 import org.junit.runners.Suite.SuiteClasses;
 
 @RunWith(Suite.class)
 @SuiteClasses({
-        AllYamlLoaderTests.class, 
-        AllYamlDumperTests.class, 
         DefaultYamlRepresenterTest.class, 
-        YamlOrchestrationConfigurationTest.class, 
-        YamlDataSourceConfigurationTest.class
+        DataSourceConfigurationsYamlDumperTest.class, 
+        ShardingRuleConfigurationYamlDumperTest.class, 
+        MasterSlaveRuleConfigurationYamlDumperTest.class, 
+        AuthenticationYamlDumperTest.class, 
+        ConfigMapYamlDumperTest.class, 
+        PropertiesYamlDumperTest.class
 })
-public final class AllYamlTests {
+public final class AllYamlDumperTests {
 }

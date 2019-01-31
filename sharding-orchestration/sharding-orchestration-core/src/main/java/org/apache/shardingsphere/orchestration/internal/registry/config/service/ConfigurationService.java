@@ -26,7 +26,12 @@ import org.apache.shardingsphere.core.config.DataSourceConfiguration;
 import org.apache.shardingsphere.core.rule.Authentication;
 import org.apache.shardingsphere.orchestration.internal.registry.config.node.ConfigurationNode;
 import org.apache.shardingsphere.orchestration.reg.api.RegistryCenter;
-import org.apache.shardingsphere.orchestration.yaml.dumper.YamlDumper;
+import org.apache.shardingsphere.orchestration.yaml.dumper.impl.AuthenticationYamlDumper;
+import org.apache.shardingsphere.orchestration.yaml.dumper.impl.ConfigMapYamlDumper;
+import org.apache.shardingsphere.orchestration.yaml.dumper.impl.DataSourceConfigurationsYamlDumper;
+import org.apache.shardingsphere.orchestration.yaml.dumper.impl.MasterSlaveRuleConfigurationYamlDumper;
+import org.apache.shardingsphere.orchestration.yaml.dumper.impl.PropertiesYamlDumper;
+import org.apache.shardingsphere.orchestration.yaml.dumper.impl.ShardingRuleConfigurationYamlDumper;
 import org.apache.shardingsphere.orchestration.yaml.loader.impl.AuthenticationYamlLoader;
 import org.apache.shardingsphere.orchestration.yaml.loader.impl.ConfigMapYamlLoader;
 import org.apache.shardingsphere.orchestration.yaml.loader.impl.DataSourceConfigurationsYamlLoader;
@@ -79,7 +84,7 @@ public final class ConfigurationService {
     private void persistDataSourceConfiguration(final String shardingSchemaName, final Map<String, DataSourceConfiguration> dataSourceConfigs, final boolean isOverwrite) {
         if (isOverwrite || !hasDataSourceConfiguration(shardingSchemaName)) {
             Preconditions.checkState(null != dataSourceConfigs && !dataSourceConfigs.isEmpty(), "No available data source in `%s` for orchestration.", shardingSchemaName);
-            regCenter.persist(configNode.getDataSourcePath(shardingSchemaName), YamlDumper.dumpDataSourceConfigurations(dataSourceConfigs));
+            regCenter.persist(configNode.getDataSourcePath(shardingSchemaName), new DataSourceConfigurationsYamlDumper().dump(dataSourceConfigs));
         }
     }
     
@@ -116,18 +121,18 @@ public final class ConfigurationService {
     private void persistShardingRuleConfiguration(final String shardingSchemaName, final ShardingRuleConfiguration shardingRuleConfig) {
         Preconditions.checkState(null != shardingRuleConfig && !shardingRuleConfig.getTableRuleConfigs().isEmpty(),
                 "No available sharding rule configuration in `%s` for orchestration.", shardingSchemaName);
-        regCenter.persist(configNode.getRulePath(shardingSchemaName), YamlDumper.dumpShardingRuleConfiguration(shardingRuleConfig));
+        regCenter.persist(configNode.getRulePath(shardingSchemaName), new ShardingRuleConfigurationYamlDumper().dump(shardingRuleConfig));
     }
     
     private void persistMasterSlaveRuleConfiguration(final String shardingSchemaName, final MasterSlaveRuleConfiguration masterSlaveRuleConfig) {
         Preconditions.checkState(null != masterSlaveRuleConfig && !masterSlaveRuleConfig.getMasterDataSourceName().isEmpty(),
                 "No available master-slave rule configuration in `%s` for orchestration.", shardingSchemaName);
-        regCenter.persist(configNode.getRulePath(shardingSchemaName), YamlDumper.dumpMasterSlaveRuleConfiguration(masterSlaveRuleConfig));
+        regCenter.persist(configNode.getRulePath(shardingSchemaName), new MasterSlaveRuleConfigurationYamlDumper().dump(masterSlaveRuleConfig));
     }
     
     private void persistAuthentication(final Authentication authentication, final boolean isOverwrite) {
         if (null != authentication && (isOverwrite || !hasAuthentication())) {
-            regCenter.persist(configNode.getAuthenticationPath(), YamlDumper.dumpAuthentication(authentication));
+            regCenter.persist(configNode.getAuthenticationPath(), new AuthenticationYamlDumper().dump(authentication));
         }
     }
     
@@ -137,7 +142,7 @@ public final class ConfigurationService {
     
     private void persistConfigMap(final Map<String, Object> configMap, final boolean isOverwrite) {
         if (isOverwrite || !hasConfigMap()) {
-            regCenter.persist(configNode.getConfigMapPath(), YamlDumper.dumpConfigMap(configMap));
+            regCenter.persist(configNode.getConfigMapPath(), new ConfigMapYamlDumper().dump(configMap));
         }
     }
     
@@ -147,7 +152,7 @@ public final class ConfigurationService {
     
     private void persistProperties(final Properties props, final boolean isOverwrite) {
         if (isOverwrite || !hasProperties()) {
-            regCenter.persist(configNode.getPropsPath(), YamlDumper.dumpProperties(props));
+            regCenter.persist(configNode.getPropsPath(), new PropertiesYamlDumper().dump(props));
         }
     }
     

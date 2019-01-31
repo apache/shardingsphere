@@ -15,23 +15,24 @@
  * limitations under the License.
  */
 
-package org.apache.shardingsphere.orchestration.yaml.dumper;
+package org.apache.shardingsphere.orchestration.yaml.dumper.impl;
+
+import org.apache.shardingsphere.api.config.rule.ShardingRuleConfiguration;
+import org.apache.shardingsphere.core.yaml.sharding.YamlShardingRuleConfiguration;
+import org.apache.shardingsphere.orchestration.yaml.dumper.DefaultYamlRepresenter;
+import org.apache.shardingsphere.orchestration.yaml.dumper.YamlDumper;
+import org.yaml.snakeyaml.Yaml;
 
 /**
- * YAML dumper.
+ * Sharding configuration YAML dumper.
  *
  * @author panjuan
  * @author zhangliang
- * 
- * @param <T> type of dumped object
  */
-public interface YamlDumper<T> {
+public final class ShardingRuleConfigurationYamlDumper implements YamlDumper<ShardingRuleConfiguration> {
     
-    /**
-     * Dump data to YAML format.
-     *
-     * @param data data to be dumped
-     * @return YAML string
-     */
-    String dump(T data);
+    @Override
+    public String dump(final ShardingRuleConfiguration shardingRuleConfiguration) {
+        return new Yaml(new DefaultYamlRepresenter()).dumpAsMap(new YamlShardingRuleConfiguration(shardingRuleConfiguration));
+    }
 }

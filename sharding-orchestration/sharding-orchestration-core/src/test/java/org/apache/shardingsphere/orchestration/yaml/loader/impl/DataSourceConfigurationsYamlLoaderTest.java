@@ -33,7 +33,7 @@ public final class DataSourceConfigurationsYamlLoaderTest {
             + "    url: jdbc:mysql://localhost:3306/demo_ds_master\n" + "    username: root\n" + "    password: null\n";
     
     @Test
-    public void assertLoadDataSourceConfigurations() {
+    public void assertLoad() {
         Map<String, DataSourceConfiguration> actual = new DataSourceConfigurationsYamlLoader().load(DATA_SOURCE_YAML);
         assertThat(actual.size(), is(1));
         assertTrue(actual.keySet().contains("master_ds"));

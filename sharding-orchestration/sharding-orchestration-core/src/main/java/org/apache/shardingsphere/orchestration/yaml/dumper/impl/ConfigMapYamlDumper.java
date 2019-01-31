@@ -15,22 +15,24 @@
  * limitations under the License.
  */
 
-package org.apache.shardingsphere.orchestration.yaml.loader.impl;
+package org.apache.shardingsphere.orchestration.yaml.dumper.impl;
 
-import org.junit.Test;
+import org.apache.shardingsphere.orchestration.yaml.dumper.DefaultYamlRepresenter;
+import org.apache.shardingsphere.orchestration.yaml.dumper.YamlDumper;
+import org.yaml.snakeyaml.Yaml;
 
 import java.util.Map;
 
-import static org.junit.Assert.assertTrue;
-
-public final class ConfigMapYamlLoaderTest {
+/**
+ * Config map YAML dumper.
+ *
+ * @author panjuan
+ * @author zhangliang
+ */
+public final class ConfigMapYamlDumper implements YamlDumper<Map<String, Object>> {
     
-    private static final String CONFIG_MAP_YAML = "sharding-key1: sharding-value1";
-    
-    @Test
-    public void assertLoad() {
-        Map<String, Object> actual = new ConfigMapYamlLoader().load(CONFIG_MAP_YAML);
-        assertTrue(actual.containsKey("sharding-key1"));
-        assertTrue(actual.containsValue("sharding-value1"));
+    @Override
+    public String dump(final Map<String, Object> configMap) {
+        return new Yaml(new DefaultYamlRepresenter()).dumpAsMap(configMap);
     }
 }

@@ -15,22 +15,25 @@
  * limitations under the License.
  */
 
-package org.apache.shardingsphere.orchestration.yaml.loader.impl;
+package org.apache.shardingsphere.orchestration.yaml.dumper.impl;
 
 import org.junit.Test;
 
-import java.util.Map;
+import java.util.Properties;
 
 import static org.junit.Assert.assertTrue;
 
-public final class ConfigMapYamlLoaderTest {
-    
-    private static final String CONFIG_MAP_YAML = "sharding-key1: sharding-value1";
+public final class PropertiesYamlDumperTest {
     
     @Test
-    public void assertLoad() {
-        Map<String, Object> actual = new ConfigMapYamlLoader().load(CONFIG_MAP_YAML);
-        assertTrue(actual.containsKey("sharding-key1"));
-        assertTrue(actual.containsValue("sharding-value1"));
+    public void assertDump() {
+        String actual = new PropertiesYamlDumper().dump(createProperties());
+        assertTrue(actual.contains("key1"));
+    }
+    
+    private Properties createProperties() {
+        Properties result = new Properties();
+        result.setProperty("key1", "value1");
+        return result;
     }
 }

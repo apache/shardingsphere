@@ -15,22 +15,25 @@
  * limitations under the License.
  */
 
-package org.apache.shardingsphere.orchestration.yaml.loader.impl;
+package org.apache.shardingsphere.orchestration.yaml.dumper.impl;
 
+import org.apache.shardingsphere.api.algorithm.masterslave.MasterSlaveLoadBalanceAlgorithmType;
+import org.apache.shardingsphere.api.config.rule.MasterSlaveRuleConfiguration;
 import org.junit.Test;
 
-import java.util.Map;
+import java.util.Collections;
 
 import static org.junit.Assert.assertTrue;
 
-public final class ConfigMapYamlLoaderTest {
-    
-    private static final String CONFIG_MAP_YAML = "sharding-key1: sharding-value1";
+public final class MasterSlaveRuleConfigurationYamlDumperTest {
     
     @Test
-    public void assertLoad() {
-        Map<String, Object> actual = new ConfigMapYamlLoader().load(CONFIG_MAP_YAML);
-        assertTrue(actual.containsKey("sharding-key1"));
-        assertTrue(actual.containsValue("sharding-value1"));
+    public void assertDump() {
+        String actual = new MasterSlaveRuleConfigurationYamlDumper().dump(createMasterSlaveRuleConfiguration());
+        assertTrue(actual.contains("ms_ds"));
+    }
+    
+    private MasterSlaveRuleConfiguration createMasterSlaveRuleConfiguration() {
+        return new MasterSlaveRuleConfiguration("ms_ds", "master_ds", Collections.singletonList("slave_ds"), MasterSlaveLoadBalanceAlgorithmType.ROUND_ROBIN.getAlgorithm());
     }
 }

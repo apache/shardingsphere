@@ -33,7 +33,7 @@ public final class ShardingRuleConfigurationYamlLoaderTest {
             + "  defaultDatabaseStrategy:\n" + "    inline:\n" + "      shardingColumn: user_id\n" + "      algorithmExpression: ds_${user_id % 2}";
     
     @Test
-    public void assertLoadShardingRuleConfiguration() {
+    public void assertLoad() {
         ShardingRuleConfiguration actual = new ShardingRuleConfigurationYamlLoader().load(SHARDING_RULE_YAML);
         assertThat(actual.getTableRuleConfigs().size(), is(2));
         assertThat(actual.getBindingTableGroups().size(), is(1));

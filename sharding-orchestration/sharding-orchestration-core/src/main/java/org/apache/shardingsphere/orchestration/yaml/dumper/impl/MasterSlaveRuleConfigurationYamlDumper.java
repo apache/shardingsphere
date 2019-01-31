@@ -15,22 +15,24 @@
  * limitations under the License.
  */
 
-package org.apache.shardingsphere.orchestration.yaml.loader.impl;
+package org.apache.shardingsphere.orchestration.yaml.dumper.impl;
 
 import org.apache.shardingsphere.api.config.rule.MasterSlaveRuleConfiguration;
-import org.junit.Test;
+import org.apache.shardingsphere.core.yaml.masterslave.YamlMasterSlaveRuleConfiguration;
+import org.apache.shardingsphere.orchestration.yaml.dumper.DefaultYamlRepresenter;
+import org.apache.shardingsphere.orchestration.yaml.dumper.YamlDumper;
+import org.yaml.snakeyaml.Yaml;
 
-import static org.hamcrest.CoreMatchers.is;
-import static org.junit.Assert.assertThat;
-
-public final class MasterSlaveRuleConfigurationYamlLoaderTest {
+/**
+ * Master-slave configuration YAML dumper.
+ *
+ * @author panjuan
+ * @author zhangliang
+ */
+public final class MasterSlaveRuleConfigurationYamlDumper implements YamlDumper<MasterSlaveRuleConfiguration> {
     
-    private static final String MASTER_SLAVE_RULE_YAML = "masterDataSourceName: master_ds\n" + "name: ms_ds\n" + "slaveDataSourceNames:\n" + "- slave_ds_0\n" + "- slave_ds_1\n";
-    
-    @Test
-    public void assertLoad() {
-        MasterSlaveRuleConfiguration actual = new MasterSlaveRuleConfigurationYamlLoader().load(MASTER_SLAVE_RULE_YAML);
-        assertThat(actual.getMasterDataSourceName(), is("master_ds"));
-        assertThat(actual.getSlaveDataSourceNames().size(), is(2));
+    @Override
+    public String dump(final MasterSlaveRuleConfiguration masterSlaveRuleConfiguration) {
+        return new Yaml(new DefaultYamlRepresenter()).dumpAsMap(new YamlMasterSlaveRuleConfiguration(masterSlaveRuleConfiguration));
     }
 }
