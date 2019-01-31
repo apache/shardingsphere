@@ -32,7 +32,7 @@ import org.apache.shardingsphere.orchestration.internal.registry.listener.Shardi
 import org.apache.shardingsphere.orchestration.reg.api.RegistryCenter;
 import org.apache.shardingsphere.orchestration.reg.listener.DataChangedEvent;
 import org.apache.shardingsphere.orchestration.reg.listener.DataChangedEvent.ChangedType;
-import org.apache.shardingsphere.orchestration.yaml.ConfigurationYamlConverter;
+import org.apache.shardingsphere.orchestration.yaml.YamlLoader;
 
 import java.util.Collection;
 import java.util.LinkedList;
@@ -86,7 +86,7 @@ public final class SchemaChangedListener extends PostShardingOrchestrationEventL
     }
     
     private DataSourceChangedEvent createDataSourceChangedEvent(final String shardingSchemaName, final DataChangedEvent event) {
-        return new DataSourceChangedEvent(shardingSchemaName, ConfigurationYamlConverter.loadDataSourceConfigurations(event.getValue()));
+        return new DataSourceChangedEvent(shardingSchemaName, YamlLoader.loadDataSourceConfigurations(event.getValue()));
     }
     
     private ShardingOrchestrationEvent createRuleChangedEvent(final String shardingSchemaName, final DataChangedEvent event) {
@@ -98,11 +98,11 @@ public final class SchemaChangedListener extends PostShardingOrchestrationEventL
     }
     
     private ShardingRuleChangedEvent createShardingRuleChangedEvent(final String shardingSchemaName, final String ruleValue) {
-        return new ShardingRuleChangedEvent(shardingSchemaName, ConfigurationYamlConverter.loadShardingRuleConfiguration(ruleValue));
+        return new ShardingRuleChangedEvent(shardingSchemaName, YamlLoader.loadShardingRuleConfiguration(ruleValue));
     }
     
     private MasterSlaveRuleChangedEvent createMasterSlaveRuleChangedEvent(final String shardingSchemaName, final String ruleValue) {
-        return new MasterSlaveRuleChangedEvent(shardingSchemaName, ConfigurationYamlConverter.loadMasterSlaveRuleConfiguration(ruleValue));
+        return new MasterSlaveRuleChangedEvent(shardingSchemaName, YamlLoader.loadMasterSlaveRuleConfiguration(ruleValue));
     }
     
     private ShardingOrchestrationEvent createUpdatedEventForNewSchema(final String shardingSchemaName) {

@@ -22,7 +22,7 @@ import org.apache.shardingsphere.orchestration.internal.registry.config.node.Con
 import org.apache.shardingsphere.orchestration.internal.registry.listener.PostShardingOrchestrationEventListener;
 import org.apache.shardingsphere.orchestration.reg.api.RegistryCenter;
 import org.apache.shardingsphere.orchestration.reg.listener.DataChangedEvent;
-import org.apache.shardingsphere.orchestration.yaml.ConfigurationYamlConverter;
+import org.apache.shardingsphere.orchestration.yaml.YamlLoader;
 
 /**
  * Config map changed listener.
@@ -38,6 +38,6 @@ public final class ConfigMapChangedListener extends PostShardingOrchestrationEve
     
     @Override
     protected ConfigMapChangedEvent createShardingOrchestrationEvent(final DataChangedEvent event) {
-        return new ConfigMapChangedEvent(ConfigurationYamlConverter.loadConfigMap(event.getValue()));
+        return new ConfigMapChangedEvent(YamlLoader.loadConfigMap(event.getValue()));
     }
 }

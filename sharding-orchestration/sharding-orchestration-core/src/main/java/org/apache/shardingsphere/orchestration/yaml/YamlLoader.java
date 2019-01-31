@@ -37,12 +37,13 @@ import java.util.Map;
 import java.util.Properties;
 
 /**
- * YAML converter for configuration.
+ * YAML loader.
  *
  * @author panjuan
+ * @author zhangliang
  */
 @NoArgsConstructor(access = AccessLevel.PRIVATE)
-public final class ConfigurationYamlConverter {
+public final class YamlLoader {
     
     /**
      * Load data source configurations.
@@ -109,86 +110,12 @@ public final class ConfigurationYamlConverter {
     }
     
     /**
-     * Load properties configuration.
+     * Load properties.
      *
      * @param data data
      * @return properties
      */
     public static Properties loadProperties(final String data) {
         return Strings.isNullOrEmpty(data) ? new Properties() : new Yaml().loadAs(data, Properties.class);
-    }
-    
-    /**
-     * Dump data sources configuration.
-     *
-     * @param dataSourceConfigs data sources configurations
-     * @return YAML string
-     */
-    @SuppressWarnings("unchecked")
-    public static String dumpDataSourceConfigurations(final Map<String, DataSourceConfiguration> dataSourceConfigs) {
-        return new Yaml(new DefaultYamlRepresenter()).dumpAsMap(
-                Maps.transformValues(dataSourceConfigs, new Function<DataSourceConfiguration, YamlDataSourceConfiguration>() {
-                    
-                    @Override
-                    public YamlDataSourceConfiguration apply(final DataSourceConfiguration input) {
-                        YamlDataSourceConfiguration result = new YamlDataSourceConfiguration();
-                        result.setDataSourceClassName(input.getDataSourceClassName());
-                        result.setProperties(input.getProperties());
-                        return result;
-                    }
-                }));
-    }
-    
-    /**
-     * Dump sharding rule configuration.
-     *
-     * @param shardingRuleConfig sharding rule configuration
-     * @return YAML string
-     */
-    public static String dumpShardingRuleConfiguration(final ShardingRuleConfiguration shardingRuleConfig) {
-        return new Yaml(new DefaultYamlRepresenter()).dumpAsMap(new YamlShardingRuleConfiguration(shardingRuleConfig));
-    }
-    
-    /**
-     * Dump master-slave rule configuration.
-     *
-     * @param masterSlaveRuleConfig master-slave rule configuration
-     * @return YAML string
-     */
-    public static String dumpMasterSlaveRuleConfiguration(final MasterSlaveRuleConfiguration masterSlaveRuleConfig) {
-        return new Yaml(new DefaultYamlRepresenter()).dumpAsMap(new YamlMasterSlaveRuleConfiguration(masterSlaveRuleConfig));
-    }
-    
-    /**
-     * Dump authentication.
-     *
-     * @param authentication authentication
-     * @return YAML string
-     */
-    public static String dumpAuthentication(final Authentication authentication) {
-        YamlAuthentication yamlAuthentication = new YamlAuthentication();
-        yamlAuthentication.setUsername(authentication.getUsername());
-        yamlAuthentication.setPassword(authentication.getPassword());
-        return new Yaml(new DefaultYamlRepresenter()).dumpAsMap(yamlAuthentication);
-    }
-    
-    /**
-     * Dump config map.
-     *
-     * @param configMap config map
-     * @return YAML string
-     */
-    public static String dumpConfigMap(final Map<String, Object> configMap) {
-        return new Yaml(new DefaultYamlRepresenter()).dumpAsMap(configMap);
-    }
-    
-    /**
-     * Dump properties configuration.
-     *
-     * @param props props
-     * @return YAML string
-     */
-    public static String dumpProperties(final Properties props) {
-        return new Yaml(new DefaultYamlRepresenter()).dumpAsMap(props);
     }
 }
