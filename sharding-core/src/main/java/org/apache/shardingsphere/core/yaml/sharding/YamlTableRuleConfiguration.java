@@ -48,15 +48,6 @@ public class YamlTableRuleConfiguration {
     
     private String logicIndex;
     
-    public YamlTableRuleConfiguration(final TableRuleConfiguration tableRuleConfiguration) {
-        logicTable = tableRuleConfiguration.getLogicTable();
-        actualDataNodes = tableRuleConfiguration.getActualDataNodes();
-        databaseStrategy = new YamlShardingStrategyConfiguration(tableRuleConfiguration.getDatabaseShardingStrategyConfig());
-        tableStrategy = new YamlShardingStrategyConfiguration(tableRuleConfiguration.getTableShardingStrategyConfig());
-        keyGenerator = null == tableRuleConfiguration.getKeyGeneratorConfig() ? null : new YamlKeyGeneratorConfiguration(tableRuleConfiguration.getKeyGeneratorConfig());
-        encryptor = null == tableRuleConfiguration.getEncryptorConfig() ? null : new YamlEncryptorConfiguration(tableRuleConfiguration.getEncryptorConfig());
-    }
-    
     /**
      * Build table rule configuration.
      *

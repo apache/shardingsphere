@@ -19,6 +19,7 @@ package org.apache.shardingsphere.api.config;
 
 import com.google.common.base.Splitter;
 import com.google.common.base.Strings;
+import lombok.AllArgsConstructor;
 import lombok.Getter;
 import lombok.RequiredArgsConstructor;
 import org.apache.shardingsphere.core.encrypt.ShardingEncryptorFactory;
@@ -32,6 +33,7 @@ import java.util.Properties;
  *
  * @author panjuan
  */
+@AllArgsConstructor
 @RequiredArgsConstructor
 @Getter
 public final class EncryptorConfiguration {
@@ -40,7 +42,7 @@ public final class EncryptorConfiguration {
     
     private final String columns;
     
-    private final String assistedQueryColumns;
+    private String assistedQueryColumns;
     
     private final Properties props;
     
