@@ -17,10 +17,9 @@
 
 package org.apache.shardingsphere.orchestration.yaml.loader.impl;
 
-import com.google.common.base.Preconditions;
-import com.google.common.base.Strings;
 import org.apache.shardingsphere.core.rule.Authentication;
 import org.apache.shardingsphere.core.yaml.config.common.YamlAuthentication;
+import org.apache.shardingsphere.core.yaml.swapper.impl.AuthenticationYamlSwapper;
 import org.apache.shardingsphere.orchestration.yaml.loader.YamlLoader;
 import org.yaml.snakeyaml.Yaml;
 
@@ -34,8 +33,6 @@ public final class AuthenticationYamlLoader implements YamlLoader<Authentication
     
     @Override
     public Authentication load(final String data) {
-        YamlAuthentication result = new Yaml().loadAs(data, YamlAuthentication.class);
-        Preconditions.checkState(!Strings.isNullOrEmpty(result.getUsername()), "Authority configuration is invalid.");
-        return new Authentication(result.getUsername(), result.getPassword());
+        return new AuthenticationYamlSwapper().swap(new Yaml().loadAs(data, YamlAuthentication.class));
     }
 }

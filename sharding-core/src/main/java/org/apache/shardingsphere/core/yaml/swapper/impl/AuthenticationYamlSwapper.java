@@ -17,6 +17,8 @@
 
 package org.apache.shardingsphere.core.yaml.swapper.impl;
 
+import com.google.common.base.Preconditions;
+import com.google.common.base.Strings;
 import org.apache.shardingsphere.core.rule.Authentication;
 import org.apache.shardingsphere.core.yaml.config.common.YamlAuthentication;
 import org.apache.shardingsphere.core.yaml.swapper.YamlSwapper;
@@ -38,6 +40,7 @@ public final class AuthenticationYamlSwapper implements YamlSwapper<YamlAuthenti
     
     @Override
     public Authentication swap(final YamlAuthentication yamlConfiguration) {
+        Preconditions.checkArgument(!Strings.isNullOrEmpty(yamlConfiguration.getUsername()), "Username is required.");
         return new Authentication(yamlConfiguration.getUsername(), yamlConfiguration.getPassword());
     }
 }
