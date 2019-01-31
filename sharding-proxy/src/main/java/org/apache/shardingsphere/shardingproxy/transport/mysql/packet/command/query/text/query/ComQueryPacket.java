@@ -20,7 +20,6 @@ package org.apache.shardingsphere.shardingproxy.transport.mysql.packet.command.q
 import com.google.common.base.Optional;
 import lombok.Getter;
 import lombok.extern.slf4j.Slf4j;
-import org.apache.shardingsphere.core.constant.DatabaseType;
 import org.apache.shardingsphere.shardingproxy.backend.ResultPacket;
 import org.apache.shardingsphere.shardingproxy.backend.communication.jdbc.connection.BackendConnection;
 import org.apache.shardingsphere.shardingproxy.backend.text.ComQueryBackendHandlerFactory;
@@ -34,7 +33,6 @@ import org.apache.shardingsphere.shardingproxy.transport.mysql.packet.command.Co
 import org.apache.shardingsphere.shardingproxy.transport.mysql.packet.command.query.QueryCommandPacket;
 import org.apache.shardingsphere.shardingproxy.transport.mysql.packet.command.query.text.TextResultSetRowPacket;
 import org.apache.shardingsphere.shardingproxy.transport.mysql.packet.generic.ErrPacket;
-
 import java.sql.SQLException;
 
 /**
@@ -58,7 +56,7 @@ public final class ComQueryPacket implements QueryCommandPacket {
     public ComQueryPacket(final int sequenceId, final MySQLPacketPayload payload, final BackendConnection backendConnection) {
         this.sequenceId = sequenceId;
         sql = payload.readStringEOF();
-        textProtocolBackendHandler = ComQueryBackendHandlerFactory.createTextProtocolBackendHandler(sequenceId, sql, backendConnection, DatabaseType.MySQL);
+        textProtocolBackendHandler = ComQueryBackendHandlerFactory.createTextProtocolBackendHandler(sequenceId, sql, backendConnection, GlobalRegistry.getInstance().getDatabaseType());
     }
     
     public ComQueryPacket(final int sequenceId, final String sql) {
