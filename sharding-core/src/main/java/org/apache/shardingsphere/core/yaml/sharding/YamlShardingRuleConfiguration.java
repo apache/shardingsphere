@@ -22,7 +22,6 @@ import lombok.NoArgsConstructor;
 import lombok.Setter;
 import org.apache.shardingsphere.api.config.rule.MasterSlaveRuleConfiguration;
 import org.apache.shardingsphere.api.config.rule.ShardingRuleConfiguration;
-import org.apache.shardingsphere.api.config.rule.TableRuleConfiguration;
 import org.apache.shardingsphere.core.yaml.masterslave.YamlMasterSlaveRuleConfiguration;
 
 import java.util.ArrayList;
@@ -59,21 +58,6 @@ public class YamlShardingRuleConfiguration {
     private YamlKeyGeneratorConfiguration defaultKeyGenerator;
     
     private Map<String, YamlMasterSlaveRuleConfiguration> masterSlaveRules = new LinkedHashMap<>();
-    
-    public YamlShardingRuleConfiguration(final ShardingRuleConfiguration shardingRuleConfiguration) {
-        defaultDataSourceName = shardingRuleConfiguration.getDefaultDataSourceName();
-        for (TableRuleConfiguration each : shardingRuleConfiguration.getTableRuleConfigs()) {
-            tables.put(each.getLogicTable(), new YamlTableRuleConfiguration(each));
-        }
-        bindingTables.addAll(shardingRuleConfiguration.getBindingTableGroups());
-        bindingTables.addAll(shardingRuleConfiguration.getBroadcastTables());
-        defaultDatabaseStrategy = new YamlShardingStrategyConfiguration(shardingRuleConfiguration.getDefaultDatabaseShardingStrategyConfig());
-        defaultTableStrategy = new YamlShardingStrategyConfiguration(shardingRuleConfiguration.getDefaultTableShardingStrategyConfig());
-        defaultKeyGenerator = null == shardingRuleConfiguration.getDefaultKeyGeneratorConfig() ? null : new YamlKeyGeneratorConfiguration(shardingRuleConfiguration.getDefaultKeyGeneratorConfig());
-        for (MasterSlaveRuleConfiguration each : shardingRuleConfiguration.getMasterSlaveRuleConfigs()) {
-            masterSlaveRules.put(each.getName(), new YamlMasterSlaveRuleConfiguration(each));
-        }
-    }
     
     /**
      * Get sharding rule configuration.

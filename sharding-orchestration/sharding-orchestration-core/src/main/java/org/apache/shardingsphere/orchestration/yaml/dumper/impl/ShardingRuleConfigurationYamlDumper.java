@@ -17,8 +17,14 @@
 
 package org.apache.shardingsphere.orchestration.yaml.dumper.impl;
 
+import org.apache.shardingsphere.api.config.rule.MasterSlaveRuleConfiguration;
 import org.apache.shardingsphere.api.config.rule.ShardingRuleConfiguration;
+import org.apache.shardingsphere.api.config.rule.TableRuleConfiguration;
+import org.apache.shardingsphere.core.yaml.masterslave.YamlMasterSlaveRuleConfiguration;
+import org.apache.shardingsphere.core.yaml.sharding.YamlKeyGeneratorConfiguration;
 import org.apache.shardingsphere.core.yaml.sharding.YamlShardingRuleConfiguration;
+import org.apache.shardingsphere.core.yaml.sharding.YamlShardingStrategyConfiguration;
+import org.apache.shardingsphere.core.yaml.sharding.YamlTableRuleConfiguration;
 import org.apache.shardingsphere.orchestration.yaml.dumper.DefaultYamlRepresenter;
 import org.apache.shardingsphere.orchestration.yaml.dumper.YamlDumper;
 import org.yaml.snakeyaml.Yaml;
@@ -33,6 +39,25 @@ public final class ShardingRuleConfigurationYamlDumper implements YamlDumper<Sha
     
     @Override
     public String dump(final ShardingRuleConfiguration shardingRuleConfiguration) {
-        return new Yaml(new DefaultYamlRepresenter()).dumpAsMap(new YamlShardingRuleConfiguration(shardingRuleConfiguration));
+        return new Yaml(new DefaultYamlRepresenter()).dumpAsMap(createYamlShardingRuleConfiguration(shardingRuleConfiguration));
+    }
+    
+    private YamlShardingRuleConfiguration createYamlShardingRuleConfiguration(final ShardingRuleConfiguration shardingRuleConfiguration) {
+        YamlShardingRuleConfiguration result = new YamlShardingRuleConfiguration();
+        result.setDefaultDataSourceName(shardingRuleConfiguration.getDefaultDataSourceName());
+        for (TableRuleConfiguration each : shardingRuleConfiguration.getTableRuleConfigs()) {
+            result.getTables().put(each.getLogicTable(), new YamlTableRuleConfiguration(each));
+        }
+        result.getBindingTables().addAll(shardingRuleConfiguration.getBindingTableGroups());
+        result.getBroadcastTables().addAll(shardingRuleConfiguration.getBroadcastTables());
+        result.setDefaultDatabaseStrategy(new YamlShardingStrategyConfiguration(shardingRuleConfiguration.getDefaultDatabaseShardingStrategyConfig()));
+        result.setDefaultTableStrategy(new YamlShardingStrategyConfiguration(shardingRuleConfiguration.getDefaultTableShardingStrategyConfig()));
+        if (null != shardingRuleConfiguration.getDefaultKeyGeneratorConfig()) {
+            result.setDefaultKeyGenerator(new YamlKeyGeneratorConfiguration(shardingRuleConfiguration.getDefaultKeyGeneratorConfig()));
+        }
+        for (MasterSlaveRuleConfiguration each : shardingRuleConfiguration.getMasterSlaveRuleConfigs()) {
+            result.getMasterSlaveRules().put(each.getName(), new YamlMasterSlaveRuleConfiguration(each));
+        }
+        return result;
     }
 }
