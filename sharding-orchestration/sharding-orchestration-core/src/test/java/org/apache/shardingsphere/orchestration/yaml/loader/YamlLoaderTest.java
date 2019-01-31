@@ -15,7 +15,7 @@
  * limitations under the License.
  */
 
-package org.apache.shardingsphere.orchestration.yaml;
+package org.apache.shardingsphere.orchestration.yaml.loader;
 
 import org.apache.shardingsphere.api.config.rule.MasterSlaveRuleConfiguration;
 import org.apache.shardingsphere.api.config.rule.ShardingRuleConfiguration;
@@ -32,7 +32,7 @@ import static org.junit.Assert.assertTrue;
 
 public final class YamlLoaderTest {
     
-    private static final String DATA_SOURCE_YAML = "master_ds: !!org.apache.shardingsphere.orchestration.yaml.YamlDataSourceConfiguration\n"
+    private static final String DATA_SOURCE_YAML = "master_ds: !!org.apache.shardingsphere.orchestration.yaml.config.YamlDataSourceConfiguration\n"
             + "  dataSourceClassName: com.zaxxer.hikari.HikariDataSource\n" + "  properties:\n"
             + "    url: jdbc:mysql://localhost:3306/demo_ds_master\n" + "    username: root\n" + "    password: null\n";
     

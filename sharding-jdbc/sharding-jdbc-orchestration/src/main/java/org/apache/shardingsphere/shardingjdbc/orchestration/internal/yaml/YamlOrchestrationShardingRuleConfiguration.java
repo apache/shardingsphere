@@ -20,10 +20,10 @@ package org.apache.shardingsphere.shardingjdbc.orchestration.internal.yaml;
 import lombok.Getter;
 import lombok.Setter;
 import org.apache.shardingsphere.core.yaml.sharding.YamlShardingConfiguration;
-import org.apache.shardingsphere.orchestration.yaml.YamlOrchestrationConfiguration;
+import org.apache.shardingsphere.orchestration.yaml.config.YamlOrchestrationConfiguration;
 
 /**
- * Orchestration sharding configuration for yaml.
+ * Orchestration sharding configuration for YAML.
  *
  * @author caohao
  */

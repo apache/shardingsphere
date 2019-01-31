@@ -26,8 +26,8 @@ import org.apache.shardingsphere.core.config.DataSourceConfiguration;
 import org.apache.shardingsphere.core.rule.Authentication;
 import org.apache.shardingsphere.orchestration.internal.registry.config.node.ConfigurationNode;
 import org.apache.shardingsphere.orchestration.reg.api.RegistryCenter;
-import org.apache.shardingsphere.orchestration.yaml.YamlDumper;
-import org.apache.shardingsphere.orchestration.yaml.YamlLoader;
+import org.apache.shardingsphere.orchestration.yaml.dumper.YamlDumper;
+import org.apache.shardingsphere.orchestration.yaml.loader.YamlLoader;
 
 import java.util.Collection;
 import java.util.Map;

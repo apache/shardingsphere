@@ -15,21 +15,23 @@
  * limitations under the License.
  */
 
-package org.apache.shardingsphere.orchestration.yaml.fixture;
+package org.apache.shardingsphere.orchestration.yaml.config;
 
 import lombok.Getter;
 import lombok.Setter;
 
-import java.util.Collection;
 import java.util.Map;
 
+/**
+ * Data source configuration for yaml.
+ *
+ * @author zhangliang
+ */
 @Getter
 @Setter
-public final class DefaultYamlRepresenterFixture {
+public final class YamlDataSourceConfiguration {
     
-    private String value;
+    private String dataSourceClassName;
     
-    private Collection<String> collection;
-    
-    private Map<String, String> map;
+    private Map<String, Object> properties;
 }

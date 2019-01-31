@@ -15,37 +15,21 @@
  * limitations under the License.
  */
 
-package org.apache.shardingsphere.orchestration.yaml;
+package org.apache.shardingsphere.orchestration.yaml.dumper.fixture;
 
-import com.google.common.base.Preconditions;
 import lombok.Getter;
 import lombok.Setter;
-import org.apache.shardingsphere.orchestration.config.OrchestrationConfiguration;
-import org.apache.shardingsphere.orchestration.reg.api.RegistryCenterConfiguration;
 
-/**
- * Orchestration configuration for yaml.
- *
- * @author caohao
- * @author panjuan
- */
+import java.util.Collection;
+import java.util.Map;
+
 @Getter
 @Setter
-public class YamlOrchestrationConfiguration {
+public final class DefaultYamlRepresenterFixture {
     
-    private String name;
+    private String value;
     
-    private RegistryCenterConfiguration registry;
+    private Collection<String> collection;
     
-    private boolean overwrite;
-    
-    /**
-     * Get orchestration configuration from yaml.
-     *
-     * @return orchestration configuration from yaml
-     */
-    public OrchestrationConfiguration getOrchestrationConfiguration() {
-        Preconditions.checkNotNull(registry, "Registry center must be required.");
-        return new OrchestrationConfiguration(name, registry, overwrite);
-    }
+    private Map<String, String> map;
 }

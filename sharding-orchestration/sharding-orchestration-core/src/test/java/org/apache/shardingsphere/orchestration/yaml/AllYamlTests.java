@@ -17,6 +17,11 @@
 
 package org.apache.shardingsphere.orchestration.yaml;
 
+import org.apache.shardingsphere.orchestration.yaml.config.YamlDataSourceConfigurationTest;
+import org.apache.shardingsphere.orchestration.yaml.config.YamlOrchestrationConfigurationTest;
+import org.apache.shardingsphere.orchestration.yaml.dumper.DefaultYamlRepresenterTest;
+import org.apache.shardingsphere.orchestration.yaml.dumper.YamlDumperTest;
+import org.apache.shardingsphere.orchestration.yaml.loader.YamlLoaderTest;
 import org.junit.runner.RunWith;
 import org.junit.runners.Suite;
 import org.junit.runners.Suite.SuiteClasses;

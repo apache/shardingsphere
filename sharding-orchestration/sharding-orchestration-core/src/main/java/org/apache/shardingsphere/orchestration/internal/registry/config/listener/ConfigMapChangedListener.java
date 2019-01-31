@@ -22,7 +22,7 @@ import org.apache.shardingsphere.orchestration.internal.registry.config.node.Con
 import org.apache.shardingsphere.orchestration.internal.registry.listener.PostShardingOrchestrationEventListener;
 import org.apache.shardingsphere.orchestration.reg.api.RegistryCenter;
 import org.apache.shardingsphere.orchestration.reg.listener.DataChangedEvent;
-import org.apache.shardingsphere.orchestration.yaml.YamlLoader;
+import org.apache.shardingsphere.orchestration.yaml.loader.YamlLoader;
 
 /**
  * Config map changed listener.

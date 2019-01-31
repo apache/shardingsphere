@@ -15,23 +15,37 @@
  * limitations under the License.
  */
 
-package org.apache.shardingsphere.orchestration.yaml;
+package org.apache.shardingsphere.orchestration.yaml.config;
 
+import com.google.common.base.Preconditions;
 import lombok.Getter;
 import lombok.Setter;
-
-import java.util.Map;
+import org.apache.shardingsphere.orchestration.config.OrchestrationConfiguration;
+import org.apache.shardingsphere.orchestration.reg.api.RegistryCenterConfiguration;
 
 /**
- * Data source configuration for yaml.
+ * Orchestration configuration for yaml.
  *
- * @author zhangliang
+ * @author caohao
+ * @author panjuan
  */
 @Getter
 @Setter
-public final class YamlDataSourceConfiguration {
+public class YamlOrchestrationConfiguration {
     
-    private String dataSourceClassName;
+    private String name;
     
-    private Map<String, Object> properties;
+    private RegistryCenterConfiguration registry;
+    
+    private boolean overwrite;
+    
+    /**
+     * Get orchestration configuration from yaml.
+     *
+     * @return orchestration configuration from yaml
+     */
+    public OrchestrationConfiguration getOrchestrationConfiguration() {
+        Preconditions.checkNotNull(registry, "Registry center must be required.");
+        return new OrchestrationConfiguration(name, registry, overwrite);
+    }
 }

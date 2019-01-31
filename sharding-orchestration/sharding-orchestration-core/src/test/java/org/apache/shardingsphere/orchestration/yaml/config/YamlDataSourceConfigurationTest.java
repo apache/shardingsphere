@@ -15,8 +15,9 @@
  * limitations under the License.
  */
 
-package org.apache.shardingsphere.orchestration.yaml;
+package org.apache.shardingsphere.orchestration.yaml.config;
 
+import org.apache.shardingsphere.orchestration.yaml.dumper.DefaultYamlRepresenter;
 import org.junit.Test;
 import org.yaml.snakeyaml.Yaml;
 
@@ -67,7 +68,7 @@ public final class YamlDataSourceConfigurationTest {
         actual.getProperties().put("username", "root");
         actual.getProperties().put("password", null);
         assertThat(new Yaml(new DefaultYamlRepresenter()).dump(actual), is(
-                "!!org.apache.shardingsphere.orchestration.yaml.YamlDataSourceConfiguration\n"
+                "!!org.apache.shardingsphere.orchestration.yaml.config.YamlDataSourceConfiguration\n"
                         + "dataSourceClassName: com.zaxxer.hikari.HikariDataSource\n"
                         + "properties: {driverClassName: org.h2.Driver, jdbcUrl: 'jdbc:h2:mem:test_ds;', username: root,\n  password: null}\n"));
     }

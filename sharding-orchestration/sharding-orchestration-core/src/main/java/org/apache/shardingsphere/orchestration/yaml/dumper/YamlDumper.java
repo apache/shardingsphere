@@ -15,7 +15,7 @@
  * limitations under the License.
  */
 
-package org.apache.shardingsphere.orchestration.yaml;
+package org.apache.shardingsphere.orchestration.yaml.dumper;
 
 import com.google.common.base.Function;
 import com.google.common.collect.Maps;
@@ -28,6 +28,7 @@ import org.apache.shardingsphere.core.rule.Authentication;
 import org.apache.shardingsphere.core.yaml.YamlAuthentication;
 import org.apache.shardingsphere.core.yaml.masterslave.YamlMasterSlaveRuleConfiguration;
 import org.apache.shardingsphere.core.yaml.sharding.YamlShardingRuleConfiguration;
+import org.apache.shardingsphere.orchestration.yaml.config.YamlDataSourceConfiguration;
 import org.yaml.snakeyaml.Yaml;
 
 import java.util.Map;

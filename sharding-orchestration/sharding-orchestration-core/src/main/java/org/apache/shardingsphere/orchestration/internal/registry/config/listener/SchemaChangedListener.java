@@ -32,7 +32,7 @@ import org.apache.shardingsphere.orchestration.internal.registry.listener.Shardi
 import org.apache.shardingsphere.orchestration.reg.api.RegistryCenter;
 import org.apache.shardingsphere.orchestration.reg.listener.DataChangedEvent;
 import org.apache.shardingsphere.orchestration.reg.listener.DataChangedEvent.ChangedType;
-import org.apache.shardingsphere.orchestration.yaml.YamlLoader;
+import org.apache.shardingsphere.orchestration.yaml.loader.YamlLoader;
 
 import java.util.Collection;
 import java.util.LinkedList;

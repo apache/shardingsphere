@@ -20,7 +20,7 @@ package org.apache.shardingsphere.shardingproxypg.config.yaml;
 import lombok.Getter;
 import lombok.Setter;
 import org.apache.shardingsphere.core.yaml.YamlAuthentication;
-import org.apache.shardingsphere.orchestration.yaml.YamlOrchestrationConfiguration;
+import org.apache.shardingsphere.orchestration.yaml.config.YamlOrchestrationConfiguration;
 
 import java.util.LinkedHashMap;
 import java.util.Map;
