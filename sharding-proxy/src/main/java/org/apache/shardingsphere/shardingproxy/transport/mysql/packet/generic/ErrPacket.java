@@ -19,6 +19,7 @@ package org.apache.shardingsphere.shardingproxy.transport.mysql.packet.generic;
 
 import lombok.Getter;
 import lombok.RequiredArgsConstructor;
+import org.apache.shardingsphere.shardingproxy.transport.common.packet.generic.DatabaseFailurePacket;
 import org.apache.shardingsphere.shardingproxy.transport.mysql.constant.ServerErrorCode;
 import org.apache.shardingsphere.shardingproxy.transport.mysql.packet.MySQLPacket;
 import org.apache.shardingsphere.shardingproxy.transport.mysql.packet.MySQLPacketPayload;
@@ -58,6 +59,10 @@ public final class ErrPacket implements MySQLPacket {
     
     public ErrPacket(final int sequenceId, final SQLException cause) {
         this(sequenceId, cause.getErrorCode(), cause.getSQLState(), cause.getMessage());
+    }
+    
+    public ErrPacket(final DatabaseFailurePacket databaseFailurePacket) {
+        this(databaseFailurePacket.getSequenceId(), databaseFailurePacket.getErrorCode(), databaseFailurePacket.getSqlState(), databaseFailurePacket.getErrorMessage());
     }
     
     @Override

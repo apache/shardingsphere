@@ -19,6 +19,7 @@ package org.apache.shardingsphere.shardingproxy.transport.mysql.packet.generic;
 
 import lombok.Getter;
 import lombok.RequiredArgsConstructor;
+import org.apache.shardingsphere.shardingproxy.transport.common.packet.generic.DatabaseSuccessPacket;
 import org.apache.shardingsphere.shardingproxy.transport.mysql.constant.StatusFlag;
 import org.apache.shardingsphere.shardingproxy.transport.mysql.packet.MySQLPacket;
 import org.apache.shardingsphere.shardingproxy.transport.mysql.packet.MySQLPacketPayload;
@@ -60,6 +61,10 @@ public final class OKPacket implements MySQLPacket {
         this(sequenceId, affectedRows, lastInsertId, 0, "");
     }
 
+    public OKPacket(final DatabaseSuccessPacket databaseSuccessPacket) {
+        this(databaseSuccessPacket.getSequenceId(), databaseSuccessPacket.getAffectedRows(), databaseSuccessPacket.getLastInsertId(), 0, "");
+    }
+    
     @Override
     public void write(final MySQLPacketPayload payload) {
         payload.writeInt1(HEADER);

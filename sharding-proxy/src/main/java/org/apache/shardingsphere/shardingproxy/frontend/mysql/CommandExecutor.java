@@ -26,6 +26,8 @@ import org.apache.shardingsphere.shardingproxy.backend.communication.jdbc.connec
 import org.apache.shardingsphere.shardingproxy.frontend.common.FrontendHandler;
 import org.apache.shardingsphere.shardingproxy.runtime.GlobalRegistry;
 import org.apache.shardingsphere.shardingproxy.transport.common.packet.DatabasePacket;
+import org.apache.shardingsphere.shardingproxy.transport.common.packet.generic.DatabaseFailurePacket;
+import org.apache.shardingsphere.shardingproxy.transport.common.packet.generic.DatabaseSuccessPacket;
 import org.apache.shardingsphere.shardingproxy.transport.mysql.constant.ServerErrorCode;
 import org.apache.shardingsphere.shardingproxy.transport.mysql.packet.MySQLPacketPayload;
 import org.apache.shardingsphere.shardingproxy.transport.mysql.packet.command.CommandPacket;
@@ -72,9 +74,16 @@ public final class CommandExecutor implements Runnable {
                 return;
             }
             for (DatabasePacket each : responsePackets.get().getPackets()) {
-                context.write(each);
+                if (each instanceof DatabaseSuccessPacket) {
+                    context.write(new OKPacket((DatabaseSuccessPacket) each));
+                } else if (each instanceof DatabaseFailurePacket) {
+                    context.write(new ErrPacket((DatabaseFailurePacket) each));
+                } else {
+                    context.write(each);
+                }
             }
-            if (commandPacket instanceof QueryCommandPacket && !(responsePackets.get().getHeadPacket() instanceof OKPacket) && !(responsePackets.get().getHeadPacket() instanceof ErrPacket)) {
+            if (commandPacket instanceof QueryCommandPacket && !(responsePackets.get().getHeadPacket() instanceof DatabaseSuccessPacket)
+                && !(responsePackets.get().getHeadPacket() instanceof DatabaseFailurePacket)) {
                 writeMoreResults((QueryCommandPacket) commandPacket, responsePackets.get().getPackets().size());
             }
             connectionSize = backendConnection.getConnectionSize();
