@@ -21,27 +21,67 @@ import org.apache.shardingsphere.api.config.EncryptorConfiguration;
 import org.apache.shardingsphere.api.config.KeyGeneratorConfiguration;
 import org.apache.shardingsphere.api.config.rule.TableRuleConfiguration;
 import org.apache.shardingsphere.api.config.strategy.InlineShardingStrategyConfiguration;
+import org.apache.shardingsphere.api.config.strategy.ShardingStrategyConfiguration;
 import org.apache.shardingsphere.core.yaml.config.sharding.YamlEncryptorConfiguration;
 import org.apache.shardingsphere.core.yaml.config.sharding.YamlKeyGeneratorConfiguration;
 import org.apache.shardingsphere.core.yaml.config.sharding.YamlShardingStrategyConfiguration;
 import org.apache.shardingsphere.core.yaml.config.sharding.YamlTableRuleConfiguration;
-import org.apache.shardingsphere.core.yaml.config.sharding.strategy.YamlInlineShardingStrategyConfiguration;
+import org.apache.shardingsphere.core.yaml.swapper.YamlSwapper;
+import org.junit.Before;
 import org.junit.Test;
+import org.junit.runner.RunWith;
+import org.mockito.ArgumentMatchers;
+import org.mockito.Mock;
+import org.mockito.junit.MockitoJUnitRunner;
 
-import java.util.Properties;
+import java.lang.reflect.Field;
 
 import static org.hamcrest.CoreMatchers.is;
+import static org.junit.Assert.assertNotNull;
 import static org.junit.Assert.assertNull;
 import static org.junit.Assert.assertThat;
+import static org.mockito.Mockito.mock;
+import static org.mockito.Mockito.when;
 
+@RunWith(MockitoJUnitRunner.class)
 public final class TableRuleConfigurationYamlSwapperTest {
+    
+    @Mock
+    private ShardingStrategyConfigurationYamlSwapper shardingStrategyConfigurationYamlSwapper;
+    
+    @Mock
+    private KeyGeneratorConfigurationYamlSwapper keyGeneratorConfigurationYamlSwapper;
+    
+    @Mock
+    private EncryptorConfigurationYamlSwapper encryptorConfigurationYamlSwapper;
+    
+    private TableRuleConfigurationYamlSwapper tableRuleConfigurationYamlSwapper = new TableRuleConfigurationYamlSwapper();
+    
+    @Before
+    public void setUp() throws ReflectiveOperationException {
+        setSwapper("shardingStrategyConfigurationYamlSwapper", shardingStrategyConfigurationYamlSwapper);
+        when(shardingStrategyConfigurationYamlSwapper.swap(ArgumentMatchers.<ShardingStrategyConfiguration>any())).thenReturn(mock(YamlShardingStrategyConfiguration.class));
+        when(shardingStrategyConfigurationYamlSwapper.swap(ArgumentMatchers.<YamlShardingStrategyConfiguration>any())).thenReturn(mock(ShardingStrategyConfiguration.class));
+        setSwapper("keyGeneratorConfigurationYamlSwapper", keyGeneratorConfigurationYamlSwapper);
+        when(keyGeneratorConfigurationYamlSwapper.swap(ArgumentMatchers.<KeyGeneratorConfiguration>any())).thenReturn(mock(YamlKeyGeneratorConfiguration.class));
+        when(keyGeneratorConfigurationYamlSwapper.swap(ArgumentMatchers.<YamlKeyGeneratorConfiguration>any())).thenReturn(mock(KeyGeneratorConfiguration.class));
+        setSwapper("encryptorConfigurationYamlSwapper", encryptorConfigurationYamlSwapper);
+        when(encryptorConfigurationYamlSwapper.swap(ArgumentMatchers.<EncryptorConfiguration>any())).thenReturn(mock(YamlEncryptorConfiguration.class));
+        when(encryptorConfigurationYamlSwapper.swap(ArgumentMatchers.<YamlEncryptorConfiguration>any())).thenReturn(mock(EncryptorConfiguration.class));
+    }
+    
+    private void setSwapper(final String swapperFieldName, final YamlSwapper swapperFieldValue) throws ReflectiveOperationException {
+        Field field = TableRuleConfigurationYamlSwapper.class.getDeclaredField(swapperFieldName);
+        field.setAccessible(true);
+        field.set(tableRuleConfigurationYamlSwapper, swapperFieldValue);
+    }
     
     @Test
     public void assertSwapToYamlWithMinProperties() {
         TableRuleConfiguration tableRuleConfiguration = new TableRuleConfiguration();
         tableRuleConfiguration.setLogicTable("tbl");
         tableRuleConfiguration.setActualDataNodes("ds_$->{0..1}.tbl_$->{0..1}");
-        YamlTableRuleConfiguration actual = new TableRuleConfigurationYamlSwapper().swap(tableRuleConfiguration);
+        YamlTableRuleConfiguration actual = tableRuleConfigurationYamlSwapper.swap(tableRuleConfiguration);
         assertThat(actual.getLogicTable(), is("tbl"));
         assertThat(actual.getActualDataNodes(), is("ds_$->{0..1}.tbl_$->{0..1}"));
         assertNull(actual.getDatabaseStrategy());
@@ -56,24 +96,18 @@ public final class TableRuleConfigurationYamlSwapperTest {
         TableRuleConfiguration tableRuleConfiguration = new TableRuleConfiguration();
         tableRuleConfiguration.setLogicTable("tbl");
         tableRuleConfiguration.setActualDataNodes("ds_$->{0..1}.tbl_$->{0..1}");
-        tableRuleConfiguration.setDatabaseShardingStrategyConfig(new InlineShardingStrategyConfiguration("id", "ds_$->{id%2}"));
-        tableRuleConfiguration.setTableShardingStrategyConfig(new InlineShardingStrategyConfiguration("id", "tbl_$->{id%2}"));
-        tableRuleConfiguration.setKeyGeneratorConfig(new KeyGeneratorConfiguration("id", "UUID", new Properties()));
-        tableRuleConfiguration.setEncryptorConfig(new EncryptorConfiguration("MD5", "pwd", new Properties()));
+        tableRuleConfiguration.setDatabaseShardingStrategyConfig(mock(InlineShardingStrategyConfiguration.class));
+        tableRuleConfiguration.setTableShardingStrategyConfig(mock(InlineShardingStrategyConfiguration.class));
+        tableRuleConfiguration.setKeyGeneratorConfig(mock(KeyGeneratorConfiguration.class));
+        tableRuleConfiguration.setEncryptorConfig(mock(EncryptorConfiguration.class));
         tableRuleConfiguration.setLogicIndex("idx");
-        YamlTableRuleConfiguration actual = new TableRuleConfigurationYamlSwapper().swap(tableRuleConfiguration);
+        YamlTableRuleConfiguration actual = tableRuleConfigurationYamlSwapper.swap(tableRuleConfiguration);
         assertThat(actual.getLogicTable(), is("tbl"));
         assertThat(actual.getActualDataNodes(), is("ds_$->{0..1}.tbl_$->{0..1}"));
-        assertThat(actual.getDatabaseStrategy().getInline().getShardingColumn(), is("id"));
-        assertThat(actual.getDatabaseStrategy().getInline().getAlgorithmExpression(), is("ds_$->{id%2}"));
-        assertThat(actual.getTableStrategy().getInline().getShardingColumn(), is("id"));
-        assertThat(actual.getTableStrategy().getInline().getAlgorithmExpression(), is("tbl_$->{id%2}"));
-        assertThat(actual.getKeyGenerator().getColumn(), is("id"));
-        assertThat(actual.getKeyGenerator().getType(), is("UUID"));
-        assertThat(actual.getKeyGenerator().getProps(), is(new Properties()));
-        assertThat(actual.getEncryptor().getType(), is("MD5"));
-        assertThat(actual.getEncryptor().getColumns(), is("pwd"));
-        assertThat(actual.getEncryptor().getProps(), is(new Properties()));
+        assertNotNull(actual.getDatabaseStrategy());
+        assertNotNull(actual.getTableStrategy());
+        assertNotNull(actual.getKeyGenerator());
+        assertNotNull(actual.getEncryptor());
         assertThat(actual.getLogicIndex(), is("idx"));
     }
     
@@ -87,7 +121,7 @@ public final class TableRuleConfigurationYamlSwapperTest {
         YamlTableRuleConfiguration yamlConfiguration = new YamlTableRuleConfiguration();
         yamlConfiguration.setLogicTable("tbl");
         yamlConfiguration.setActualDataNodes("ds_$->{0..1}.tbl_$->{0..1}");
-        TableRuleConfiguration actual = new TableRuleConfigurationYamlSwapper().swap(yamlConfiguration);
+        TableRuleConfiguration actual = tableRuleConfigurationYamlSwapper.swap(yamlConfiguration);
         assertThat(actual.getLogicTable(), is("tbl"));
         assertThat(actual.getActualDataNodes(), is("ds_$->{0..1}.tbl_$->{0..1}"));
         assertNull(actual.getDatabaseShardingStrategyConfig());
@@ -102,56 +136,18 @@ public final class TableRuleConfigurationYamlSwapperTest {
         YamlTableRuleConfiguration yamlConfiguration = new YamlTableRuleConfiguration();
         yamlConfiguration.setLogicTable("tbl");
         yamlConfiguration.setActualDataNodes("ds_$->{0..1}.tbl_$->{0..1}");
-        yamlConfiguration.setDatabaseStrategy(createYamlDatabaseStrategyConfiguration());
-        yamlConfiguration.setTableStrategy(createYamlTableStrategyConfiguration());
-        yamlConfiguration.setKeyGenerator(createYamlKeyGeneratorConfiguration());
-        yamlConfiguration.setEncryptor(createYamlEncryptorConfiguration());
+        yamlConfiguration.setDatabaseStrategy(mock(YamlShardingStrategyConfiguration.class));
+        yamlConfiguration.setTableStrategy(mock(YamlShardingStrategyConfiguration.class));
+        yamlConfiguration.setKeyGenerator(mock(YamlKeyGeneratorConfiguration.class));
+        yamlConfiguration.setEncryptor(mock(YamlEncryptorConfiguration.class));
         yamlConfiguration.setLogicIndex("idx");
-        TableRuleConfiguration actual = new TableRuleConfigurationYamlSwapper().swap(yamlConfiguration);
+        TableRuleConfiguration actual = tableRuleConfigurationYamlSwapper.swap(yamlConfiguration);
         assertThat(actual.getLogicTable(), is("tbl"));
         assertThat(actual.getActualDataNodes(), is("ds_$->{0..1}.tbl_$->{0..1}"));
-        assertThat(((InlineShardingStrategyConfiguration) actual.getDatabaseShardingStrategyConfig()).getShardingColumn(), is("id"));
-        assertThat(((InlineShardingStrategyConfiguration) actual.getDatabaseShardingStrategyConfig()).getAlgorithmExpression(), is("ds_$->{id%2}"));
-        assertThat(((InlineShardingStrategyConfiguration) actual.getTableShardingStrategyConfig()).getShardingColumn(), is("id"));
-        assertThat(((InlineShardingStrategyConfiguration) actual.getTableShardingStrategyConfig()).getAlgorithmExpression(), is("tbl_$->{id%2}"));
-        assertThat(actual.getKeyGeneratorConfig().getColumn(), is("id"));
-        assertThat(actual.getKeyGeneratorConfig().getType(), is("UUID"));
-        assertThat(actual.getKeyGeneratorConfig().getProps(), is(new Properties()));
-        assertThat(actual.getEncryptorConfig().getType(), is("MD5"));
-        assertThat(actual.getEncryptorConfig().getColumns(), is("pwd"));
-        assertThat(actual.getEncryptorConfig().getProps(), is(new Properties()));
+        assertNotNull(actual.getDatabaseShardingStrategyConfig());
+        assertNotNull(actual.getTableShardingStrategyConfig());
+        assertNotNull(actual.getKeyGeneratorConfig());
+        assertNotNull(actual.getEncryptorConfig());
         assertThat(actual.getLogicIndex(), is("idx"));
-    }
-    
-    private YamlShardingStrategyConfiguration createYamlDatabaseStrategyConfiguration() {
-        YamlShardingStrategyConfiguration result = new YamlShardingStrategyConfiguration();
-        YamlInlineShardingStrategyConfiguration inlineStrategyConfiguration = new YamlInlineShardingStrategyConfiguration();
-        inlineStrategyConfiguration.setShardingColumn("id");
-        inlineStrategyConfiguration.setAlgorithmExpression("ds_$->{id%2}");
-        result.setInline(inlineStrategyConfiguration);
-        return result;
-    }
-    
-    private YamlShardingStrategyConfiguration createYamlTableStrategyConfiguration() {
-        YamlShardingStrategyConfiguration result = new YamlShardingStrategyConfiguration();
-        YamlInlineShardingStrategyConfiguration inlineStrategyConfiguration = new YamlInlineShardingStrategyConfiguration();
-        inlineStrategyConfiguration.setShardingColumn("id");
-        inlineStrategyConfiguration.setAlgorithmExpression("tbl_$->{id%2}");
-        result.setInline(inlineStrategyConfiguration);
-        return result;
-    }
-    
-    private YamlKeyGeneratorConfiguration createYamlKeyGeneratorConfiguration() {
-        YamlKeyGeneratorConfiguration result = new YamlKeyGeneratorConfiguration();
-        result.setType("UUID");
-        result.setColumn("id");
-        return result;
-    }
-    
-    private YamlEncryptorConfiguration createYamlEncryptorConfiguration() {
-        YamlEncryptorConfiguration result = new YamlEncryptorConfiguration();
-        result.setType("MD5");
-        result.setColumns("pwd");
-        return result;
     }
 }

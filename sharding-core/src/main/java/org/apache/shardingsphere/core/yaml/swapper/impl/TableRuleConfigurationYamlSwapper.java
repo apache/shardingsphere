@@ -29,22 +29,28 @@ import org.apache.shardingsphere.core.yaml.swapper.YamlSwapper;
  */
 public final class TableRuleConfigurationYamlSwapper implements YamlSwapper<YamlTableRuleConfiguration, TableRuleConfiguration> {
     
+    private final ShardingStrategyConfigurationYamlSwapper shardingStrategyConfigurationYamlSwapper = new ShardingStrategyConfigurationYamlSwapper();
+    
+    private final KeyGeneratorConfigurationYamlSwapper keyGeneratorConfigurationYamlSwapper = new KeyGeneratorConfigurationYamlSwapper();
+    
+    private final EncryptorConfigurationYamlSwapper encryptorConfigurationYamlSwapper = new EncryptorConfigurationYamlSwapper();
+    
     @Override
     public YamlTableRuleConfiguration swap(final TableRuleConfiguration data) {
         YamlTableRuleConfiguration result = new YamlTableRuleConfiguration();
         result.setLogicTable(data.getLogicTable());
         result.setActualDataNodes(data.getActualDataNodes());
         if (null != data.getDatabaseShardingStrategyConfig()) {
-            result.setDatabaseStrategy(new ShardingStrategyConfigurationYamlSwapper().swap(data.getDatabaseShardingStrategyConfig()));
+            result.setDatabaseStrategy(shardingStrategyConfigurationYamlSwapper.swap(data.getDatabaseShardingStrategyConfig()));
         }
         if (null != data.getTableShardingStrategyConfig()) {
-            result.setTableStrategy(new ShardingStrategyConfigurationYamlSwapper().swap(data.getTableShardingStrategyConfig()));
+            result.setTableStrategy(shardingStrategyConfigurationYamlSwapper.swap(data.getTableShardingStrategyConfig()));
         }
         if (null != data.getKeyGeneratorConfig()) {
-            result.setKeyGenerator(new KeyGeneratorConfigurationYamlSwapper().swap(data.getKeyGeneratorConfig()));
+            result.setKeyGenerator(keyGeneratorConfigurationYamlSwapper.swap(data.getKeyGeneratorConfig()));
         }
         if (null != data.getEncryptorConfig()) {
-            result.setEncryptor(new EncryptorConfigurationYamlSwapper().swap(data.getEncryptorConfig()));
+            result.setEncryptor(encryptorConfigurationYamlSwapper.swap(data.getEncryptorConfig()));
         }
         result.setLogicIndex(data.getLogicIndex());
         return result;
@@ -57,16 +63,16 @@ public final class TableRuleConfigurationYamlSwapper implements YamlSwapper<Yaml
         result.setLogicTable(yamlConfiguration.getLogicTable());
         result.setActualDataNodes(yamlConfiguration.getActualDataNodes());
         if (null != yamlConfiguration.getDatabaseStrategy()) {
-            result.setDatabaseShardingStrategyConfig(new ShardingStrategyConfigurationYamlSwapper().swap(yamlConfiguration.getDatabaseStrategy()));
+            result.setDatabaseShardingStrategyConfig(shardingStrategyConfigurationYamlSwapper.swap(yamlConfiguration.getDatabaseStrategy()));
         }
         if (null != yamlConfiguration.getTableStrategy()) {
-            result.setTableShardingStrategyConfig(new ShardingStrategyConfigurationYamlSwapper().swap(yamlConfiguration.getTableStrategy()));
+            result.setTableShardingStrategyConfig(shardingStrategyConfigurationYamlSwapper.swap(yamlConfiguration.getTableStrategy()));
         }
         if (null != yamlConfiguration.getKeyGenerator()) {
-            result.setKeyGeneratorConfig(new KeyGeneratorConfigurationYamlSwapper().swap(yamlConfiguration.getKeyGenerator()));
+            result.setKeyGeneratorConfig(keyGeneratorConfigurationYamlSwapper.swap(yamlConfiguration.getKeyGenerator()));
         }
         if (null != yamlConfiguration.getEncryptor()) {
-            result.setEncryptorConfig(new EncryptorConfigurationYamlSwapper().swap(yamlConfiguration.getEncryptor()));
+            result.setEncryptorConfig(encryptorConfigurationYamlSwapper.swap(yamlConfiguration.getEncryptor()));
         }
         result.setLogicIndex(yamlConfiguration.getLogicIndex());
         return result;
