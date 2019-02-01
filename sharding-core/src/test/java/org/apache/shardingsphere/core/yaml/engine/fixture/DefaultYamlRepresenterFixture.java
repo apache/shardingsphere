@@ -15,24 +15,21 @@
  * limitations under the License.
  */
 
-package org.apache.shardingsphere.orchestration.yaml.loader.impl;
+package org.apache.shardingsphere.core.yaml.engine.fixture;
 
-import org.apache.shardingsphere.core.rule.Authentication;
-import org.apache.shardingsphere.core.yaml.config.common.YamlAuthentication;
-import org.apache.shardingsphere.core.yaml.swapper.impl.AuthenticationYamlSwapper;
-import org.apache.shardingsphere.orchestration.yaml.loader.YamlLoader;
-import org.yaml.snakeyaml.Yaml;
+import lombok.Getter;
+import lombok.Setter;
 
-/**
- * Authentication YAML loader.
- *
- * @author panjuan
- * @author zhangliang
- */
-public final class AuthenticationYamlLoader implements YamlLoader<Authentication> {
+import java.util.Collection;
+import java.util.Map;
+
+@Getter
+@Setter
+public final class DefaultYamlRepresenterFixture {
     
-    @Override
-    public Authentication load(final String data) {
-        return new AuthenticationYamlSwapper().swap(new Yaml().loadAs(data, YamlAuthentication.class));
-    }
+    private String value;
+    
+    private Collection<String> collection;
+    
+    private Map<String, String> map;
 }

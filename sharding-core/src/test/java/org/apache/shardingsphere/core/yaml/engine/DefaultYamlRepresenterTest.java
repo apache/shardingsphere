@@ -15,9 +15,9 @@
  * limitations under the License.
  */
 
-package org.apache.shardingsphere.orchestration.yaml.dumper;
+package org.apache.shardingsphere.core.yaml.engine;
 
-import org.apache.shardingsphere.orchestration.yaml.dumper.fixture.DefaultYamlRepresenterFixture;
+import org.apache.shardingsphere.core.yaml.engine.fixture.DefaultYamlRepresenterFixture;
 import org.junit.Test;
 import org.yaml.snakeyaml.Yaml;
 

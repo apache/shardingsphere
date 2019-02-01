@@ -24,7 +24,8 @@ import org.junit.runners.Suite.SuiteClasses;
 @RunWith(Suite.class)
 @SuiteClasses({
         YamlEngineMasterSlaveConfigurationTest.class, 
-        YamlEngineShardingConfigurationTest.class
+        YamlEngineShardingConfigurationTest.class, 
+        DefaultYamlRepresenterTest.class
 })
 public final class AllEngineTests {
 }

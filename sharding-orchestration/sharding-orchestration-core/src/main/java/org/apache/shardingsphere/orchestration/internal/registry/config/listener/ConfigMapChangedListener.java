@@ -17,12 +17,14 @@
 
 package org.apache.shardingsphere.orchestration.internal.registry.config.listener;
 
+import org.apache.shardingsphere.core.yaml.engine.YamlEngine;
 import org.apache.shardingsphere.orchestration.internal.registry.config.event.ConfigMapChangedEvent;
 import org.apache.shardingsphere.orchestration.internal.registry.config.node.ConfigurationNode;
 import org.apache.shardingsphere.orchestration.internal.registry.listener.PostShardingOrchestrationEventListener;
 import org.apache.shardingsphere.orchestration.reg.api.RegistryCenter;
 import org.apache.shardingsphere.orchestration.reg.listener.DataChangedEvent;
-import org.apache.shardingsphere.orchestration.yaml.loader.impl.ConfigMapYamlLoader;
+
+import java.util.Map;
 
 /**
  * Config map changed listener.
@@ -36,8 +38,9 @@ public final class ConfigMapChangedListener extends PostShardingOrchestrationEve
         super(regCenter, new ConfigurationNode(name).getConfigMapPath());
     }
     
+    @SuppressWarnings("unchecked")
     @Override
     protected ConfigMapChangedEvent createShardingOrchestrationEvent(final DataChangedEvent event) {
-        return new ConfigMapChangedEvent(new ConfigMapYamlLoader().load(event.getValue()));
+        return new ConfigMapChangedEvent((Map<String, Object>) YamlEngine.unmarshal(event.getValue()));
     }
 }

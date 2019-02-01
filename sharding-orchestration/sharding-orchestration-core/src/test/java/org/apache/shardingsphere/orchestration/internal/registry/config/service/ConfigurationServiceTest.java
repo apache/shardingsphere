@@ -27,6 +27,7 @@ import org.apache.shardingsphere.core.constant.properties.ShardingPropertiesCons
 import org.apache.shardingsphere.core.rule.Authentication;
 import org.apache.shardingsphere.core.yaml.config.masterslave.YamlMasterSlaveRuleConfiguration;
 import org.apache.shardingsphere.core.yaml.config.sharding.YamlShardingRuleConfiguration;
+import org.apache.shardingsphere.core.yaml.engine.YamlEngine;
 import org.apache.shardingsphere.core.yaml.swapper.impl.MasterSlaveRuleConfigurationYamlSwapper;
 import org.apache.shardingsphere.core.yaml.swapper.impl.ShardingRuleConfigurationYamlSwapper;
 import org.apache.shardingsphere.orchestration.reg.api.RegistryCenter;
@@ -36,7 +37,6 @@ import org.junit.runner.RunWith;
 import org.mockito.ArgumentMatchers;
 import org.mockito.Mock;
 import org.mockito.junit.MockitoJUnitRunner;
-import org.yaml.snakeyaml.Yaml;
 
 import javax.sql.DataSource;
 import java.util.Arrays;
@@ -274,11 +274,11 @@ public final class ConfigurationServiceTest {
     }
     
     private ShardingRuleConfiguration createShardingRuleConfiguration() {
-        return new ShardingRuleConfigurationYamlSwapper().swap(new Yaml().loadAs(SHARDING_RULE_YAML, YamlShardingRuleConfiguration.class));
+        return new ShardingRuleConfigurationYamlSwapper().swap(YamlEngine.unmarshal(SHARDING_RULE_YAML, YamlShardingRuleConfiguration.class));
     }
     
     private MasterSlaveRuleConfiguration createMasterSlaveRuleConfiguration() {
-        return new MasterSlaveRuleConfigurationYamlSwapper().swap(new Yaml().loadAs(MASTER_SLAVE_RULE_YAML, YamlMasterSlaveRuleConfiguration.class));
+        return new MasterSlaveRuleConfigurationYamlSwapper().swap(YamlEngine.unmarshal(MASTER_SLAVE_RULE_YAML, YamlMasterSlaveRuleConfiguration.class));
     }
     
     private Properties createProperties() {

@@ -19,18 +19,12 @@ package org.apache.shardingsphere.orchestration.yaml;
 
 import org.apache.shardingsphere.orchestration.yaml.config.YamlDataSourceConfigurationTest;
 import org.apache.shardingsphere.orchestration.yaml.config.YamlOrchestrationConfigurationTest;
-import org.apache.shardingsphere.orchestration.yaml.dumper.AllYamlDumperTests;
-import org.apache.shardingsphere.orchestration.yaml.dumper.DefaultYamlRepresenterTest;
-import org.apache.shardingsphere.orchestration.yaml.loader.AllYamlLoaderTests;
 import org.junit.runner.RunWith;
 import org.junit.runners.Suite;
 import org.junit.runners.Suite.SuiteClasses;
 
 @RunWith(Suite.class)
 @SuiteClasses({
-        AllYamlLoaderTests.class, 
-        AllYamlDumperTests.class, 
-        DefaultYamlRepresenterTest.class, 
         YamlOrchestrationConfigurationTest.class, 
         YamlDataSourceConfigurationTest.class
 })

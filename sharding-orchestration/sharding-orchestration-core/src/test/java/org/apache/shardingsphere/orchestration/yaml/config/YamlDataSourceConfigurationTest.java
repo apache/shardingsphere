@@ -17,7 +17,7 @@
 
 package org.apache.shardingsphere.orchestration.yaml.config;
 
-import org.apache.shardingsphere.orchestration.yaml.dumper.DefaultYamlRepresenter;
+import org.apache.shardingsphere.core.yaml.engine.DefaultYamlRepresenter;
 import org.junit.Test;
 import org.yaml.snakeyaml.Yaml;
 

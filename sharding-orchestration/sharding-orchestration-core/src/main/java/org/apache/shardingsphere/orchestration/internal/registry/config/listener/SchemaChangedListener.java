@@ -17,8 +17,17 @@
 
 package org.apache.shardingsphere.orchestration.internal.registry.config.listener;
 
+import com.google.common.base.Function;
+import com.google.common.base.Preconditions;
 import com.google.common.base.Strings;
+import com.google.common.collect.Maps;
 import org.apache.shardingsphere.api.config.rule.RuleConfiguration;
+import org.apache.shardingsphere.core.config.DataSourceConfiguration;
+import org.apache.shardingsphere.core.yaml.config.masterslave.YamlMasterSlaveRuleConfiguration;
+import org.apache.shardingsphere.core.yaml.config.sharding.YamlShardingRuleConfiguration;
+import org.apache.shardingsphere.core.yaml.engine.YamlEngine;
+import org.apache.shardingsphere.core.yaml.swapper.impl.MasterSlaveRuleConfigurationYamlSwapper;
+import org.apache.shardingsphere.core.yaml.swapper.impl.ShardingRuleConfigurationYamlSwapper;
 import org.apache.shardingsphere.orchestration.internal.registry.config.event.DataSourceChangedEvent;
 import org.apache.shardingsphere.orchestration.internal.registry.config.event.IgnoredShardingOrchestrationEvent;
 import org.apache.shardingsphere.orchestration.internal.registry.config.event.MasterSlaveRuleChangedEvent;
@@ -32,12 +41,12 @@ import org.apache.shardingsphere.orchestration.internal.registry.listener.Shardi
 import org.apache.shardingsphere.orchestration.reg.api.RegistryCenter;
 import org.apache.shardingsphere.orchestration.reg.listener.DataChangedEvent;
 import org.apache.shardingsphere.orchestration.reg.listener.DataChangedEvent.ChangedType;
-import org.apache.shardingsphere.orchestration.yaml.loader.impl.DataSourceConfigurationsYamlLoader;
-import org.apache.shardingsphere.orchestration.yaml.loader.impl.MasterSlaveRuleConfigurationYamlLoader;
-import org.apache.shardingsphere.orchestration.yaml.loader.impl.ShardingRuleConfigurationYamlLoader;
+import org.apache.shardingsphere.orchestration.yaml.config.YamlDataSourceConfiguration;
+import org.apache.shardingsphere.orchestration.yaml.swapper.DataSourceConfigurationYamlSwapper;
 
 import java.util.Collection;
 import java.util.LinkedList;
+import java.util.Map;
 
 /**
  * Schema changed listener.
@@ -87,8 +96,17 @@ public final class SchemaChangedListener extends PostShardingOrchestrationEventL
                 ? createDataSourceChangedEvent(shardingSchemaName, event) : createRuleChangedEvent(shardingSchemaName, event);
     }
     
+    @SuppressWarnings("unchecked")
     private DataSourceChangedEvent createDataSourceChangedEvent(final String shardingSchemaName, final DataChangedEvent event) {
-        return new DataSourceChangedEvent(shardingSchemaName, new DataSourceConfigurationsYamlLoader().load(event.getValue()));
+        Map<String, YamlDataSourceConfiguration> dataSourceConfigurations = (Map) YamlEngine.unmarshal(event.getValue());
+        Preconditions.checkState(null != dataSourceConfigurations && !dataSourceConfigurations.isEmpty(), "No available data sources to load for orchestration.");
+        return new DataSourceChangedEvent(shardingSchemaName, Maps.transformValues(dataSourceConfigurations, new Function<YamlDataSourceConfiguration, DataSourceConfiguration>() {
+            
+            @Override
+            public DataSourceConfiguration apply(final YamlDataSourceConfiguration input) {
+                return new DataSourceConfigurationYamlSwapper().swap(input);
+            }
+        }));
     }
     
     private ShardingOrchestrationEvent createRuleChangedEvent(final String shardingSchemaName, final DataChangedEvent event) {
@@ -100,11 +118,11 @@ public final class SchemaChangedListener extends PostShardingOrchestrationEventL
     }
     
     private ShardingRuleChangedEvent createShardingRuleChangedEvent(final String shardingSchemaName, final String ruleValue) {
-        return new ShardingRuleChangedEvent(shardingSchemaName, new ShardingRuleConfigurationYamlLoader().load(ruleValue));
+        return new ShardingRuleChangedEvent(shardingSchemaName, new ShardingRuleConfigurationYamlSwapper().swap(YamlEngine.unmarshal(ruleValue, YamlShardingRuleConfiguration.class)));
     }
     
     private MasterSlaveRuleChangedEvent createMasterSlaveRuleChangedEvent(final String shardingSchemaName, final String ruleValue) {
-        return new MasterSlaveRuleChangedEvent(shardingSchemaName, new MasterSlaveRuleConfigurationYamlLoader().load(ruleValue));
+        return new MasterSlaveRuleChangedEvent(shardingSchemaName, new MasterSlaveRuleConfigurationYamlSwapper().swap(YamlEngine.unmarshal(ruleValue, YamlMasterSlaveRuleConfiguration.class)));
     }
     
     private ShardingOrchestrationEvent createUpdatedEventForNewSchema(final String shardingSchemaName) {
