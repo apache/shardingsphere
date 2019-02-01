@@ -19,6 +19,7 @@ package org.apache.shardingsphere.shardingproxypg.config.yaml;
 
 import lombok.Getter;
 import lombok.Setter;
+import org.apache.shardingsphere.core.yaml.config.YamlConfiguration;
 import org.apache.shardingsphere.core.yaml.config.masterslave.YamlMasterSlaveRuleConfiguration;
 import org.apache.shardingsphere.core.yaml.config.sharding.YamlShardingRuleConfiguration;
 
@@ -26,13 +27,13 @@ import java.util.HashMap;
 import java.util.Map;
 
 /**
- * Rule configuration for yaml.
+ * Rule configuration for YAML.
  *
  * @author panjuan
  */
 @Getter
 @Setter
-public final class YamlProxyRuleConfiguration {
+public final class YamlProxyRuleConfiguration implements YamlConfiguration {
     
     private String schemaName;
     
