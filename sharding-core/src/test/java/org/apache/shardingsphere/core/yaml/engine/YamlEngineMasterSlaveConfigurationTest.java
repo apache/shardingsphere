@@ -18,7 +18,7 @@
 package org.apache.shardingsphere.core.yaml.engine;
 
 import org.apache.shardingsphere.api.algorithm.masterslave.MasterSlaveLoadBalanceAlgorithmType;
-import org.apache.shardingsphere.core.yaml.config.masterslave.YamlMasterSlaveConfiguration;
+import org.apache.shardingsphere.core.yaml.config.masterslave.YamlRootMasterSlaveConfiguration;
 import org.hamcrest.CoreMatchers;
 import org.junit.Test;
 
@@ -41,7 +41,7 @@ public final class YamlEngineMasterSlaveConfigurationTest {
     public void assertUnmarshalWithYamlFile() throws IOException {
         URL url = getClass().getClassLoader().getResource("yaml/master-slave-rule.yaml");
         assertNotNull(url);
-        assertYamlMasterSlaveConfig(YamlEngine.unmarshal(new File(url.getFile()), YamlMasterSlaveConfiguration.class));
+        assertYamlMasterSlaveConfig(YamlEngine.unmarshal(new File(url.getFile()), YamlRootMasterSlaveConfiguration.class));
     }
     
     @Test
@@ -57,23 +57,23 @@ public final class YamlEngineMasterSlaveConfigurationTest {
                 yamlContent.append(line).append("\n");
             }
         }
-        assertYamlMasterSlaveConfig(YamlEngine.unmarshal(yamlContent.toString().getBytes(), YamlMasterSlaveConfiguration.class));
+        assertYamlMasterSlaveConfig(YamlEngine.unmarshal(yamlContent.toString().getBytes(), YamlRootMasterSlaveConfiguration.class));
     }
     
-    private void assertYamlMasterSlaveConfig(final YamlMasterSlaveConfiguration actual) {
+    private void assertYamlMasterSlaveConfig(final YamlRootMasterSlaveConfiguration actual) {
         assertDataSourceMap(actual);
         assertMasterSlaveRule(actual);
         assertConfigMap(actual);
     }
     
-    private void assertDataSourceMap(final YamlMasterSlaveConfiguration actual) {
+    private void assertDataSourceMap(final YamlRootMasterSlaveConfiguration actual) {
         assertThat(actual.getDataSources().size(), is(3));
         assertTrue(actual.getDataSources().containsKey("master_ds"));
         assertTrue(actual.getDataSources().containsKey("slave_ds_0"));
         assertTrue(actual.getDataSources().containsKey("slave_ds_1"));
     }
     
-    private void assertMasterSlaveRule(final YamlMasterSlaveConfiguration actual) {
+    private void assertMasterSlaveRule(final YamlRootMasterSlaveConfiguration actual) {
         assertThat(actual.getMasterSlaveRule().getName(), is("master-slave-ds"));
         assertThat(actual.getMasterSlaveRule().getMasterDataSourceName(), is("master_ds"));
         assertThat(actual.getMasterSlaveRule().getSlaveDataSourceNames(), CoreMatchers.<Collection<String>>is(Arrays.asList("slave_ds_0", "slave_ds_1")));
@@ -81,7 +81,7 @@ public final class YamlEngineMasterSlaveConfigurationTest {
         assertThat(actual.getMasterSlaveRule().getLoadBalanceAlgorithmClassName(), is("TestAlgorithmClass"));
     }
     
-    private void assertConfigMap(final YamlMasterSlaveConfiguration actual) {
+    private void assertConfigMap(final YamlRootMasterSlaveConfiguration actual) {
         assertThat(actual.getConfigMap().size(), is(2));
         assertThat(actual.getConfigMap().get("key1"), is((Object) "value1"));
         assertThat(actual.getConfigMap().get("key2"), is((Object) "value2"));

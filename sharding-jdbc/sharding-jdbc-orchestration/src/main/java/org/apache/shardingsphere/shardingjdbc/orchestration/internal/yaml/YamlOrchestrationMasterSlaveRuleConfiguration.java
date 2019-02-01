@@ -19,7 +19,7 @@ package org.apache.shardingsphere.shardingjdbc.orchestration.internal.yaml;
 
 import lombok.Getter;
 import lombok.Setter;
-import org.apache.shardingsphere.core.yaml.config.masterslave.YamlMasterSlaveConfiguration;
+import org.apache.shardingsphere.core.yaml.config.masterslave.YamlRootMasterSlaveConfiguration;
 import org.apache.shardingsphere.orchestration.yaml.config.YamlOrchestrationConfiguration;
 
 /**
@@ -29,7 +29,7 @@ import org.apache.shardingsphere.orchestration.yaml.config.YamlOrchestrationConf
  */
 @Getter
 @Setter
-public final class YamlOrchestrationMasterSlaveRuleConfiguration extends YamlMasterSlaveConfiguration {
+public final class YamlOrchestrationMasterSlaveRuleConfiguration extends YamlRootMasterSlaveConfiguration {
     
     private YamlOrchestrationConfiguration orchestration;
 }

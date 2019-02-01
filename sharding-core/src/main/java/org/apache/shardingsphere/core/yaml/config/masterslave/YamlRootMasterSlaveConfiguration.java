@@ -19,28 +19,16 @@ package org.apache.shardingsphere.core.yaml.config.masterslave;
 
 import lombok.Getter;
 import lombok.Setter;
-import org.apache.shardingsphere.core.yaml.config.YamlConfiguration;
-
-import javax.sql.DataSource;
-import java.util.HashMap;
-import java.util.Map;
-import java.util.Properties;
-import java.util.concurrent.ConcurrentHashMap;
+import org.apache.shardingsphere.core.yaml.config.common.YamlRootRuleConfiguration;
 
 /**
- * Master-slave configuration for YAML.
+ * Root master-slave configuration for YAML.
  *
  * @author caohao
  */
 @Getter
 @Setter
-public class YamlMasterSlaveConfiguration implements YamlConfiguration {
-    
-    private Map<String, DataSource> dataSources = new HashMap<>();
+public class YamlRootMasterSlaveConfiguration extends YamlRootRuleConfiguration {
     
     private YamlMasterSlaveRuleConfiguration masterSlaveRule;
-    
-    private Map<String, Object> configMap = new ConcurrentHashMap<>();
-    
-    private Properties props = new Properties();
 }

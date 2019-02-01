@@ -15,7 +15,7 @@
  * limitations under the License.
  */
 
-package org.apache.shardingsphere.core.yaml.config.sharding;
+package org.apache.shardingsphere.core.yaml.config.common;
 
 import lombok.Getter;
 import lombok.Setter;
@@ -23,24 +23,22 @@ import org.apache.shardingsphere.core.yaml.config.YamlConfiguration;
 
 import javax.sql.DataSource;
 import java.util.HashMap;
-import java.util.LinkedHashMap;
 import java.util.Map;
 import java.util.Properties;
+import java.util.concurrent.ConcurrentHashMap;
 
 /**
- * Sharding configuration for YAML.
+ * Root rule configuration for YAML.
  *
- * @author caohao
+ * @author zhangliang
  */
 @Getter
 @Setter
-public class YamlShardingConfiguration implements YamlConfiguration {
+public abstract class YamlRootRuleConfiguration implements YamlConfiguration {
     
     private Map<String, DataSource> dataSources = new HashMap<>();
     
-    private YamlShardingRuleConfiguration shardingRule;
-    
-    private Map<String, Object> configMap = new LinkedHashMap<>();
+    private Map<String, Object> configMap = new ConcurrentHashMap<>();
     
     private Properties props = new Properties();
 }
