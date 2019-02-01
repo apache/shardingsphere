@@ -17,6 +17,7 @@
 
 package org.apache.shardingsphere.api.config;
 
+import com.google.common.base.Optional;
 import com.google.common.base.Splitter;
 import com.google.common.base.Strings;
 import lombok.AllArgsConstructor;
@@ -51,13 +52,13 @@ public final class EncryptorConfiguration {
      *
      * @return sharding encryptor strategy
      */
-    public ShardingEncryptorStrategy getShardingEncryptorStrategy() {
+    public Optional<ShardingEncryptorStrategy> getShardingEncryptorStrategy() {
         if (Strings.isNullOrEmpty(type) || Strings.isNullOrEmpty(columns)) {
-            return null;
+            return Optional.absent();
         }
         ShardingEncryptor shardingEncryptor = ShardingEncryptorFactory.newInstance(type);
         shardingEncryptor.setProperties(props);
-        return getShardingEncryptorStrategy(shardingEncryptor);
+        return Optional.of(getShardingEncryptorStrategy(shardingEncryptor));
     }
     
     private ShardingEncryptorStrategy getShardingEncryptorStrategy(final ShardingEncryptor shardingEncryptor) {

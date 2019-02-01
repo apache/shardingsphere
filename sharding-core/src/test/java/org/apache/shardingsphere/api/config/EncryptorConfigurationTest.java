@@ -25,6 +25,7 @@ import java.util.Properties;
 import static org.hamcrest.CoreMatchers.is;
 import static org.junit.Assert.assertNull;
 import static org.junit.Assert.assertThat;
+import static org.junit.Assert.assertTrue;
 
 public class EncryptorConfigurationTest {
     
@@ -39,7 +40,8 @@ public class EncryptorConfigurationTest {
     
     @Test
     public void assertGetShardingEncryptorStrategy() {
-        assertThat(encryptorConfiguration.getShardingEncryptorStrategy().getColumns().get(0), is("pwd1"));
+        assertTrue(encryptorConfiguration.getShardingEncryptorStrategy().isPresent());
+        assertThat(encryptorConfiguration.getShardingEncryptorStrategy().get().getColumns().get(0), is("pwd1"));
     }
     
     @Test
