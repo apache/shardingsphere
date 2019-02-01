@@ -40,11 +40,11 @@ public final class QueryResponsePackets extends CommandResponsePackets {
     private final Collection<ColumnDefinition41Packet> columnDefinition41Packets;
     
     public QueryResponsePackets(final List<Integer> columnTypes, final FieldCountPacket fieldCountPacket,
-                                final Collection<ColumnDefinition41Packet> columnDefinition41Packets, final EofPacket eofPacket) {
+                                final Collection<ColumnDefinition41Packet> columnDefinition41Packets, final int sequenceId) {
         this.columnTypes = columnTypes;
         getPackets().add(fieldCountPacket);
         getPackets().addAll(columnDefinition41Packets);
-        getPackets().add(eofPacket);
+        getPackets().add(new EofPacket(sequenceId));
         this.fieldCountPacket = fieldCountPacket;
         this.columnDefinition41Packets = columnDefinition41Packets;
     }

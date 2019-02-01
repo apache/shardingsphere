@@ -27,7 +27,6 @@ import org.apache.shardingsphere.shardingproxy.transport.mysql.packet.command.Co
 import org.apache.shardingsphere.shardingproxy.transport.mysql.packet.command.query.ColumnDefinition41Packet;
 import org.apache.shardingsphere.shardingproxy.transport.mysql.packet.command.query.FieldCountPacket;
 import org.apache.shardingsphere.shardingproxy.transport.mysql.packet.command.query.QueryResponsePackets;
-import org.apache.shardingsphere.shardingproxy.transport.mysql.packet.generic.EofPacket;
 
 import java.sql.SQLException;
 import java.sql.Types;
@@ -60,7 +59,7 @@ public final class ShowDatabasesBackendHandler implements TextProtocolBackendHan
         FieldCountPacket fieldCountPacket = new FieldCountPacket(++sequenceId, 1);
         Collection<ColumnDefinition41Packet> columnDefinition41Packets = new ArrayList<>(1);
         columnDefinition41Packets.add(new ColumnDefinition41Packet(++sequenceId, "", "", "", "Database", "", 100, ColumnType.MYSQL_TYPE_VARCHAR, 0));
-        QueryResponsePackets result = new QueryResponsePackets(Collections.singletonList(Types.VARCHAR), fieldCountPacket, columnDefinition41Packets, new EofPacket(++sequenceId));
+        QueryResponsePackets result = new QueryResponsePackets(Collections.singletonList(Types.VARCHAR), fieldCountPacket, columnDefinition41Packets, ++sequenceId);
         currentSequenceId = result.getPackets().size();
         columnCount = result.getColumnCount();
         columnTypes.addAll(result.getColumnTypes());

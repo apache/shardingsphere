@@ -19,7 +19,6 @@ package org.apache.shardingsphere.shardingproxy.transport.mysql.packet.command.q
 
 import org.apache.shardingsphere.core.constant.ShardingConstant;
 import org.apache.shardingsphere.shardingproxy.transport.mysql.constant.ColumnType;
-import org.apache.shardingsphere.shardingproxy.transport.mysql.packet.generic.EofPacket;
 import org.junit.Test;
 
 import java.sql.Types;
@@ -54,7 +53,6 @@ public final class QueryResponsePacketsTest {
         FieldCountPacket fieldCountPacket = new FieldCountPacket(1, 2);
         ColumnDefinition41Packet columnDefinition41Packet1 = new ColumnDefinition41Packet(2, ShardingConstant.LOGIC_SCHEMA_NAME, "tbl", "tbl", "id", "id", 10, ColumnType.MYSQL_TYPE_LONG, 0);
         ColumnDefinition41Packet columnDefinition41Packet2 = new ColumnDefinition41Packet(3, ShardingConstant.LOGIC_SCHEMA_NAME, "tbl", "tbl", "value", "value", 20, ColumnType.MYSQL_TYPE_VARCHAR, 0);
-        EofPacket eofPacket = new EofPacket(4);
-        return new QueryResponsePackets(Arrays.asList(Types.BIGINT, Types.VARCHAR), fieldCountPacket, Arrays.asList(columnDefinition41Packet1, columnDefinition41Packet2), eofPacket);
+        return new QueryResponsePackets(Arrays.asList(Types.BIGINT, Types.VARCHAR), fieldCountPacket, Arrays.asList(columnDefinition41Packet1, columnDefinition41Packet2), 4);
     }
 }

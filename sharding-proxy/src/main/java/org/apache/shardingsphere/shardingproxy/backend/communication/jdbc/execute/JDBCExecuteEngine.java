@@ -50,8 +50,8 @@ import org.apache.shardingsphere.shardingproxy.transport.mysql.constant.ColumnTy
 import org.apache.shardingsphere.shardingproxy.transport.mysql.packet.command.query.ColumnDefinition41Packet;
 import org.apache.shardingsphere.shardingproxy.transport.mysql.packet.command.query.FieldCountPacket;
 import org.apache.shardingsphere.shardingproxy.transport.mysql.packet.command.query.QueryResponsePackets;
-import org.apache.shardingsphere.shardingproxy.transport.mysql.packet.generic.EofPacket;
 import org.apache.shardingsphere.shardingproxy.transport.mysql.packet.generic.OKPacket;
+
 import java.sql.Connection;
 import java.sql.ResultSet;
 import java.sql.ResultSetMetaData;
@@ -162,8 +162,7 @@ public final class JDBCExecuteEngine implements SQLExecuteEngine {
             columnDefinition41Packets.add(new ColumnDefinition41Packet(++currentSequenceId, resultSetMetaData, columnIndex));
             columnTypes.add(resultSetMetaData.getColumnType(columnIndex));
         }
-        
-        return new QueryResponsePackets(columnTypes, fieldCountPacket, columnDefinition41Packets, new EofPacket(++currentSequenceId));
+        return new QueryResponsePackets(columnTypes, fieldCountPacket, columnDefinition41Packets, ++currentSequenceId);
     }
     
     private QueryResult createQueryResult(final ResultSet resultSet, final ConnectionMode connectionMode) throws SQLException {

@@ -28,7 +28,6 @@ import org.apache.shardingsphere.shardingproxy.transport.mysql.packet.command.Co
 import org.apache.shardingsphere.shardingproxy.transport.mysql.packet.command.query.ColumnDefinition41Packet;
 import org.apache.shardingsphere.shardingproxy.transport.mysql.packet.command.query.FieldCountPacket;
 import org.apache.shardingsphere.shardingproxy.transport.mysql.packet.command.query.QueryResponsePackets;
-import org.apache.shardingsphere.shardingproxy.transport.mysql.packet.generic.EofPacket;
 import org.apache.shardingsphere.shardingproxy.transport.mysql.packet.generic.ErrPacket;
 
 import java.sql.SQLException;
@@ -86,7 +85,7 @@ public final class ShardingCTLShowBackendHandler implements TextProtocolBackendH
         FieldCountPacket fieldCountPacket = new FieldCountPacket(++sequenceId, 1);
         Collection<ColumnDefinition41Packet> columnDefinition41Packets = new ArrayList<>(1);
         columnDefinition41Packets.add(new ColumnDefinition41Packet(++sequenceId, "", "", "", columnName, "", 100, ColumnType.MYSQL_TYPE_VARCHAR, 0));
-        QueryResponsePackets queryResponsePackets = new QueryResponsePackets(Collections.singletonList(Types.VARCHAR), fieldCountPacket, columnDefinition41Packets, new EofPacket(++sequenceId));
+        QueryResponsePackets queryResponsePackets = new QueryResponsePackets(Collections.singletonList(Types.VARCHAR), fieldCountPacket, columnDefinition41Packets, ++sequenceId);
         currentSequenceId = queryResponsePackets.getPackets().size();
         columnCount = queryResponsePackets.getColumnCount();
         columnTypes.addAll(queryResponsePackets.getColumnTypes());

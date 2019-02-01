@@ -43,10 +43,10 @@ import org.apache.shardingsphere.shardingproxy.transport.mysql.packet.command.Co
 import org.apache.shardingsphere.shardingproxy.transport.mysql.packet.command.query.ColumnDefinition41Packet;
 import org.apache.shardingsphere.shardingproxy.transport.mysql.packet.command.query.FieldCountPacket;
 import org.apache.shardingsphere.shardingproxy.transport.mysql.packet.command.query.QueryResponsePackets;
-import org.apache.shardingsphere.shardingproxy.transport.mysql.packet.generic.EofPacket;
 import org.apache.shardingsphere.shardingproxy.transport.mysql.packet.generic.ErrPacket;
 import org.apache.shardingsphere.shardingproxy.transport.mysql.packet.generic.OKPacket;
 import org.apache.shardingsphere.transaction.core.TransactionType;
+
 import java.sql.SQLException;
 import java.util.ArrayList;
 import java.util.Collection;
@@ -140,7 +140,7 @@ public final class JDBCDatabaseCommunicationEngine implements DatabaseCommunicat
             }
         }
         FieldCountPacket fieldCountPacket = new FieldCountPacket(1, columnCount);
-        return new QueryResponsePackets(queryResponsePackets.getColumnTypes(), fieldCountPacket, columnDefinition41Packets, new EofPacket(columnCount + 2));
+        return new QueryResponsePackets(queryResponsePackets.getColumnTypes(), fieldCountPacket, columnDefinition41Packets, columnCount + 2);
     }
     
     private void setResponseColumnLabelForShowTablesMergedResult(final QueryResponsePackets queryResponsePackets) {
