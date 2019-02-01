@@ -41,7 +41,7 @@ public final class YamlShardingDataSourceFactory {
     /**
      * Create sharding data source.
      *
-     * @param yamlFile yaml file for rule configuration of databases and tables sharding with data sources
+     * @param yamlFile YAML file for rule configuration of databases and tables sharding with data sources
      * @return sharding data source
      * @throws SQLException SQL exception
      * @throws IOException IO exception
@@ -55,7 +55,7 @@ public final class YamlShardingDataSourceFactory {
     /**
      * Create sharding data source.
      *
-     * @param yamlBytes yaml bytes for rule configuration of databases and tables sharding with data sources
+     * @param yamlBytes YAML bytes for rule configuration of databases and tables sharding with data sources
      * @return sharding data source
      * @throws SQLException SQL exception
      * @throws IOException IO exception
@@ -70,7 +70,7 @@ public final class YamlShardingDataSourceFactory {
      * Create sharding data source.
      *
      * @param dataSourceMap data source map
-     * @param yamlFile yaml file for rule configuration of databases and tables sharding without data sources
+     * @param yamlFile YAML file for rule configuration of databases and tables sharding without data sources
      * @return sharding data source
      * @throws SQLException SQL exception
      * @throws IOException IO exception
@@ -84,7 +84,7 @@ public final class YamlShardingDataSourceFactory {
      * Create sharding data source.
      *
      * @param dataSourceMap data source map
-     * @param yamlBytes yaml bytes for rule configuration of databases and tables sharding without data sources
+     * @param yamlBytes YAML bytes for rule configuration of databases and tables sharding without data sources
      * @return sharding data source
      * @throws SQLException SQL exception
      * @throws IOException IO exception

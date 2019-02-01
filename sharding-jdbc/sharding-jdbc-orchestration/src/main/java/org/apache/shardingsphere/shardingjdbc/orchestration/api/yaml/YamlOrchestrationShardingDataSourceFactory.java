@@ -21,21 +21,17 @@ import lombok.AccessLevel;
 import lombok.NoArgsConstructor;
 import org.apache.shardingsphere.core.rule.ShardingRule;
 import org.apache.shardingsphere.core.yaml.config.sharding.YamlShardingRuleConfiguration;
+import org.apache.shardingsphere.core.yaml.engine.YamlEngine;
 import org.apache.shardingsphere.core.yaml.swapper.impl.ShardingRuleConfigurationYamlSwapper;
 import org.apache.shardingsphere.orchestration.yaml.config.YamlOrchestrationConfiguration;
 import org.apache.shardingsphere.orchestration.yaml.swapper.OrchestrationConfigurationYamlSwapper;
 import org.apache.shardingsphere.shardingjdbc.jdbc.core.datasource.ShardingDataSource;
 import org.apache.shardingsphere.shardingjdbc.orchestration.internal.datasource.OrchestrationShardingDataSource;
 import org.apache.shardingsphere.shardingjdbc.orchestration.internal.yaml.YamlOrchestrationShardingRuleConfiguration;
-import org.yaml.snakeyaml.Yaml;
-import org.yaml.snakeyaml.constructor.Constructor;
 
 import javax.sql.DataSource;
-import java.io.ByteArrayInputStream;
 import java.io.File;
-import java.io.FileInputStream;
 import java.io.IOException;
-import java.io.InputStreamReader;
 import java.sql.SQLException;
 import java.util.Map;
 import java.util.Properties;
@@ -56,7 +52,7 @@ public final class YamlOrchestrationShardingDataSourceFactory {
     /**
      * Create sharding data source.
      *
-     * @param yamlFile yaml file for rule configuration of databases and tables sharding with data sources
+     * @param yamlFile YAML file for rule configuration of databases and tables sharding with data sources
      * @return sharding data source
      * @throws SQLException SQL exception
      * @throws IOException IO exception
@@ -70,7 +66,7 @@ public final class YamlOrchestrationShardingDataSourceFactory {
      * Create sharding data source.
      *
      * @param dataSourceMap data source map
-     * @param yamlFile yaml file for rule configuration of databases and tables sharding without data sources
+     * @param yamlFile YAML file for rule configuration of databases and tables sharding without data sources
      * @return sharding data source
      * @throws SQLException SQL exception
      * @throws IOException IO exception
@@ -83,12 +79,13 @@ public final class YamlOrchestrationShardingDataSourceFactory {
     /**
      * Create sharding data source.
      *
-     * @param yamlByteArray yaml byte array for rule configuration of databases and tables sharding with data sources
+     * @param yamlBytes YAML bytes for rule configuration of databases and tables sharding with data sources
      * @return sharding data source
      * @throws SQLException SQL exception
+     * @throws IOException IO exception
      */
-    public static DataSource createDataSource(final byte[] yamlByteArray) throws SQLException {
-        YamlOrchestrationShardingRuleConfiguration config = unmarshal(yamlByteArray);
+    public static DataSource createDataSource(final byte[] yamlBytes) throws SQLException, IOException {
+        YamlOrchestrationShardingRuleConfiguration config = unmarshal(yamlBytes);
         return createDataSource(config.getDataSources(), config.getShardingRule(), config.getConfigMap(), config.getProps(), config.getOrchestration());
     }
     
@@ -96,12 +93,13 @@ public final class YamlOrchestrationShardingDataSourceFactory {
      * Create sharding data source.
      *
      * @param dataSourceMap data source map
-     * @param yamlByteArray yaml byte array for rule configuration of databases and tables sharding without data sources
+     * @param yamlBytes YAML bytes for rule configuration of databases and tables sharding without data sources
      * @return sharding data source
      * @throws SQLException SQL exception
+     * @throws IOException IO exception
      */
-    public static DataSource createDataSource(final Map<String, DataSource> dataSourceMap, final byte[] yamlByteArray) throws SQLException {
-        YamlOrchestrationShardingRuleConfiguration config = unmarshal(yamlByteArray);
+    public static DataSource createDataSource(final Map<String, DataSource> dataSourceMap, final byte[] yamlBytes) throws SQLException, IOException {
+        YamlOrchestrationShardingRuleConfiguration config = unmarshal(yamlBytes);
         return createDataSource(dataSourceMap, config.getShardingRule(), config.getConfigMap(), config.getProps(), config.getOrchestration());
     }
     
@@ -117,15 +115,10 @@ public final class YamlOrchestrationShardingDataSourceFactory {
     }
     
     private static YamlOrchestrationShardingRuleConfiguration unmarshal(final File yamlFile) throws IOException {
-        try (
-                FileInputStream fileInputStream = new FileInputStream(yamlFile);
-                InputStreamReader inputStreamReader = new InputStreamReader(fileInputStream, "UTF-8")
-        ) {
-            return new Yaml(new Constructor(YamlOrchestrationShardingRuleConfiguration.class)).loadAs(inputStreamReader, YamlOrchestrationShardingRuleConfiguration.class);
-        }
+        return YamlEngine.unmarshal(yamlFile, YamlOrchestrationShardingRuleConfiguration.class);
     }
     
-    private static YamlOrchestrationShardingRuleConfiguration unmarshal(final byte[] yamlByteArray) {
-        return new Yaml(new Constructor(YamlOrchestrationShardingRuleConfiguration.class)).loadAs(new ByteArrayInputStream(yamlByteArray), YamlOrchestrationShardingRuleConfiguration.class);
+    private static YamlOrchestrationShardingRuleConfiguration unmarshal(final byte[] yamlBytes) throws IOException {
+        return YamlEngine.unmarshal(yamlBytes, YamlOrchestrationShardingRuleConfiguration.class);
     }
 }

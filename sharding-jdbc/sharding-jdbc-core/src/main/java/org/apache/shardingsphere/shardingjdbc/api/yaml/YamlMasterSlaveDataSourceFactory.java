@@ -41,7 +41,7 @@ public final class YamlMasterSlaveDataSourceFactory {
     /**
      * Create master-slave data source.
      *
-     * @param yamlFile yaml file for master-slave rule configuration with data sources
+     * @param yamlFile YAML file for master-slave rule configuration with data sources
      * @return master-slave data source
      * @throws SQLException SQL exception
      * @throws IOException IO exception
@@ -55,7 +55,7 @@ public final class YamlMasterSlaveDataSourceFactory {
     /**
      * Create master-slave data source.
      *
-     * @param yamlBytes yaml bytes for master-slave rule configuration with data sources
+     * @param yamlBytes YAML bytes for master-slave rule configuration with data sources
      * @return master-slave data source
      * @throws SQLException SQL exception
      * @throws IOException IO exception
@@ -70,7 +70,7 @@ public final class YamlMasterSlaveDataSourceFactory {
      * Create master-slave data source.
      *
      * @param dataSourceMap data source map
-     * @param yamlFile yaml file for master-slave rule configuration without data sources
+     * @param yamlFile YAML file for master-slave rule configuration without data sources
      * @return master-slave data source
      * @throws SQLException SQL exception
      * @throws IOException IO exception
@@ -84,7 +84,7 @@ public final class YamlMasterSlaveDataSourceFactory {
      * Create master-slave data source.
      *
      * @param dataSourceMap data source map
-     * @param yamlBytes yaml bytes for master-slave rule configuration without data sources
+     * @param yamlBytes YAML bytes for master-slave rule configuration without data sources
      * @return master-slave data source
      * @throws SQLException SQL exception
      * @throws IOException IO exception

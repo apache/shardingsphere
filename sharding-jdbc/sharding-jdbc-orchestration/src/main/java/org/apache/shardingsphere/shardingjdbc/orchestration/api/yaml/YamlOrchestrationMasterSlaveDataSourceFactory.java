@@ -20,21 +20,17 @@ package org.apache.shardingsphere.shardingjdbc.orchestration.api.yaml;
 import lombok.AccessLevel;
 import lombok.NoArgsConstructor;
 import org.apache.shardingsphere.core.yaml.config.masterslave.YamlMasterSlaveRuleConfiguration;
+import org.apache.shardingsphere.core.yaml.engine.YamlEngine;
 import org.apache.shardingsphere.core.yaml.swapper.impl.MasterSlaveRuleConfigurationYamlSwapper;
 import org.apache.shardingsphere.orchestration.yaml.config.YamlOrchestrationConfiguration;
 import org.apache.shardingsphere.orchestration.yaml.swapper.OrchestrationConfigurationYamlSwapper;
 import org.apache.shardingsphere.shardingjdbc.jdbc.core.datasource.MasterSlaveDataSource;
 import org.apache.shardingsphere.shardingjdbc.orchestration.internal.datasource.OrchestrationMasterSlaveDataSource;
 import org.apache.shardingsphere.shardingjdbc.orchestration.internal.yaml.YamlOrchestrationMasterSlaveRuleConfiguration;
-import org.yaml.snakeyaml.Yaml;
-import org.yaml.snakeyaml.constructor.Constructor;
 
 import javax.sql.DataSource;
-import java.io.ByteArrayInputStream;
 import java.io.File;
-import java.io.FileInputStream;
 import java.io.IOException;
-import java.io.InputStreamReader;
 import java.sql.SQLException;
 import java.util.Map;
 import java.util.Properties;
@@ -56,7 +52,7 @@ public final class YamlOrchestrationMasterSlaveDataSourceFactory {
     /**
      * Create master-slave data source.
      *
-     * @param yamlFile yaml file for master-slave rule configuration with data sources
+     * @param yamlFile YAML file for master-slave rule configuration with data sources
      * @return master-slave data source
      * @throws SQLException SQL exception
      * @throws IOException IO exception
@@ -70,7 +66,7 @@ public final class YamlOrchestrationMasterSlaveDataSourceFactory {
      * Create master-slave data source.
      *
      * @param dataSourceMap data source map
-     * @param yamlFile yaml file for master-slave rule configuration without data sources
+     * @param yamlFile YAML file for master-slave rule configuration without data sources
      * @return master-slave data source
      * @throws SQLException SQL exception
      * @throws IOException IO exception
@@ -83,12 +79,13 @@ public final class YamlOrchestrationMasterSlaveDataSourceFactory {
     /**
      * Create master-slave data source.
      *
-     * @param yamlByteArray yaml byte array for master-slave rule configuration with data sources
+     * @param yamlBytes YAML bytes for master-slave rule configuration with data sources
      * @return master-slave data source
      * @throws SQLException SQL exception
+     * @throws IOException IO exception
      */
-    public static DataSource createDataSource(final byte[] yamlByteArray) throws SQLException {
-        YamlOrchestrationMasterSlaveRuleConfiguration config = unmarshal(yamlByteArray);
+    public static DataSource createDataSource(final byte[] yamlBytes) throws SQLException, IOException {
+        YamlOrchestrationMasterSlaveRuleConfiguration config = unmarshal(yamlBytes);
         return createDataSource(config.getDataSources(), config.getMasterSlaveRule(), config.getConfigMap(), config.getProps(), config.getOrchestration());
     }
     
@@ -96,12 +93,13 @@ public final class YamlOrchestrationMasterSlaveDataSourceFactory {
      * Create master-slave data source.
      *
      * @param dataSourceMap data source map
-     * @param yamlByteArray yaml byte array for master-slave rule configuration without data sources
+     * @param yamlBytes YAML bytes for master-slave rule configuration without data sources
      * @return master-slave data source
      * @throws SQLException SQL exception
+     * @throws IOException IO exception
      */
-    public static DataSource createDataSource(final Map<String, DataSource> dataSourceMap, final byte[] yamlByteArray) throws SQLException {
-        YamlOrchestrationMasterSlaveRuleConfiguration config = unmarshal(yamlByteArray);
+    public static DataSource createDataSource(final Map<String, DataSource> dataSourceMap, final byte[] yamlBytes) throws SQLException, IOException {
+        YamlOrchestrationMasterSlaveRuleConfiguration config = unmarshal(yamlBytes);
         return createDataSource(dataSourceMap, config.getMasterSlaveRule(), config.getConfigMap(), config.getProps(), config.getOrchestration());
     }
     
@@ -116,15 +114,10 @@ public final class YamlOrchestrationMasterSlaveDataSourceFactory {
     }
     
     private static YamlOrchestrationMasterSlaveRuleConfiguration unmarshal(final File yamlFile) throws IOException {
-        try (
-                FileInputStream fileInputStream = new FileInputStream(yamlFile);
-                InputStreamReader inputStreamReader = new InputStreamReader(fileInputStream, "UTF-8")
-        ) {
-            return new Yaml(new Constructor(YamlOrchestrationMasterSlaveRuleConfiguration.class)).loadAs(inputStreamReader, YamlOrchestrationMasterSlaveRuleConfiguration.class);
-        }
+        return YamlEngine.unmarshal(yamlFile, YamlOrchestrationMasterSlaveRuleConfiguration.class);
     }
     
-    private static YamlOrchestrationMasterSlaveRuleConfiguration unmarshal(final byte[] yamlByteArray) {
-        return new Yaml(new Constructor(YamlOrchestrationMasterSlaveRuleConfiguration.class)).loadAs(new ByteArrayInputStream(yamlByteArray), YamlOrchestrationMasterSlaveRuleConfiguration.class);
+    private static YamlOrchestrationMasterSlaveRuleConfiguration unmarshal(final byte[] yamlBytes) throws IOException {
+        return YamlEngine.unmarshal(yamlBytes, YamlOrchestrationMasterSlaveRuleConfiguration.class);
     }
 }
