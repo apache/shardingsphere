@@ -72,7 +72,7 @@ public final class InsertOptimizeEngine implements OptimizeEngine {
             }
             InsertShardingCondition insertShardingCondition = isNeededToAppendGeneratedKey() ? getInsertShardingCondition(generatedKeys.next(), insertValue, currentParameters) 
                     : new InsertShardingCondition(insertValue.getExpression(), currentParameters);
-            insertShardingCondition.getShardingValues().addAll(getShardingCondition(andConditions.get(i)));
+            insertShardingCondition.getShardingValues().addAll(getShardingValues(andConditions.get(i)));
             result.add(insertShardingCondition);
         }
         return new ShardingConditions(result);
@@ -96,7 +96,7 @@ public final class InsertOptimizeEngine implements OptimizeEngine {
         Column generateKeyColumn = shardingRule.findGenerateKeyColumn(insertStatement.getTables().getSingleTableName()).get();
         String expression = getExpression(insertValue, currentGeneratedKey, generateKeyColumn, currentParameters);
         InsertShardingCondition result = new InsertShardingCondition(expression, currentParameters);
-        result.getShardingValues().add(getShardingCondition(generateKeyColumn, currentGeneratedKey));
+        result.getShardingValues().add(getShardingValue(generateKeyColumn, currentGeneratedKey));
         insertStatement.setContainGenerateKey(true);
         return result;
     }
@@ -137,12 +137,12 @@ public final class InsertOptimizeEngine implements OptimizeEngine {
         return insertValue.getExpression().substring(0, insertValue.getExpression().lastIndexOf(")")) + ", ?)";
     }
     
-    private ListShardingValue getShardingCondition(final Column column, final Comparable<?> value) {
+    private ListShardingValue getShardingValue(final Column column, final Comparable<?> value) {
         return new ListShardingValue<>(column.getTableName(), column.getName(),
                 new GeneratedKeyCondition(column, -1, value).getConditionValues(parameters));
     }
     
-    private Collection<ListShardingValue> getShardingCondition(final AndCondition andCondition) {
+    private Collection<ListShardingValue> getShardingValues(final AndCondition andCondition) {
         Collection<ListShardingValue> result = new LinkedList<>();
         for (Condition each : andCondition.getConditions()) {
             result.add(new ListShardingValue<>(each.getColumn().getTableName(), each.getColumn().getName(), each.getConditionValues(parameters)));
