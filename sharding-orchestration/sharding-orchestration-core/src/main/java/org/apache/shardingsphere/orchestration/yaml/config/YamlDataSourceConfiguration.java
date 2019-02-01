@@ -21,6 +21,7 @@ import lombok.Getter;
 import lombok.Setter;
 import org.apache.shardingsphere.core.yaml.config.YamlConfiguration;
 
+import java.util.HashMap;
 import java.util.Map;
 
 /**
@@ -34,5 +35,5 @@ public final class YamlDataSourceConfiguration implements YamlConfiguration {
     
     private String dataSourceClassName;
     
-    private Map<String, Object> properties;
+    private Map<String, Object> properties = new HashMap<>();
 }
