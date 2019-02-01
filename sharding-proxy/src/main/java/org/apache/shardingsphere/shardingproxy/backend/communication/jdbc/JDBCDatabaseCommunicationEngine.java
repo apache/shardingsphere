@@ -38,12 +38,11 @@ import org.apache.shardingsphere.shardingproxy.backend.communication.jdbc.execut
 import org.apache.shardingsphere.shardingproxy.runtime.GlobalRegistry;
 import org.apache.shardingsphere.shardingproxy.runtime.schema.LogicSchema;
 import org.apache.shardingsphere.shardingproxy.runtime.schema.ShardingSchema;
+import org.apache.shardingsphere.shardingproxy.transport.common.packet.command.query.DataHeaderPacket;
 import org.apache.shardingsphere.shardingproxy.transport.common.packet.generic.DatabaseFailurePacket;
 import org.apache.shardingsphere.shardingproxy.transport.common.packet.generic.DatabaseSuccessPacket;
 import org.apache.shardingsphere.shardingproxy.transport.mysql.constant.ServerErrorCode;
 import org.apache.shardingsphere.shardingproxy.transport.mysql.packet.command.CommandResponsePackets;
-import org.apache.shardingsphere.shardingproxy.transport.mysql.packet.command.query.ColumnDefinition41Packet;
-import org.apache.shardingsphere.shardingproxy.transport.mysql.packet.command.query.FieldCountPacket;
 import org.apache.shardingsphere.shardingproxy.transport.mysql.packet.command.query.QueryResponsePackets;
 import org.apache.shardingsphere.transaction.core.TransactionType;
 
@@ -122,7 +121,7 @@ public final class JDBCDatabaseCommunicationEngine implements DatabaseCommunicat
             setResponseColumnLabelForShowTablesMergedResult(((ExecuteQueryResponse) executeResponse).getQueryResponsePackets());
         }
         QueryResponsePackets result = getQueryResponsePacketsWithoutDerivedColumns(((ExecuteQueryResponse) executeResponse).getQueryResponsePackets());
-        currentSequenceId = result.getPackets().size();
+        currentSequenceId = result.getSequenceId();
         return result;
     }
     
@@ -131,20 +130,19 @@ public final class JDBCDatabaseCommunicationEngine implements DatabaseCommunicat
     }
     
     private QueryResponsePackets getQueryResponsePacketsWithoutDerivedColumns(final QueryResponsePackets queryResponsePackets) {
-        Collection<ColumnDefinition41Packet> columnDefinition41Packets = new ArrayList<>(queryResponsePackets.getColumnCount());
+        Collection<DataHeaderPacket> dataHeaderPackets = new ArrayList<>(queryResponsePackets.getFieldCount());
         int columnCount = 0;
-        for (ColumnDefinition41Packet each : queryResponsePackets.getColumnDefinition41Packets()) {
+        for (DataHeaderPacket each : queryResponsePackets.getDataHeaderPackets()) {
             if (!DerivedColumn.isDerivedColumn(each.getName())) {
-                columnDefinition41Packets.add(each);
+                dataHeaderPackets.add(each);
                 columnCount++;
             }
         }
-        FieldCountPacket fieldCountPacket = new FieldCountPacket(1, columnCount);
-        return new QueryResponsePackets(queryResponsePackets.getColumnTypes(), fieldCountPacket, columnDefinition41Packets, columnCount + 2);
+        return new QueryResponsePackets(queryResponsePackets.getColumnTypes(), columnCount, dataHeaderPackets, columnCount + 2);
     }
     
     private void setResponseColumnLabelForShowTablesMergedResult(final QueryResponsePackets queryResponsePackets) {
-        for (ColumnDefinition41Packet each : queryResponsePackets.getColumnDefinition41Packets()) {
+        for (DataHeaderPacket each : queryResponsePackets.getDataHeaderPackets()) {
             if (each.getName().startsWith("Tables_in_")) {
                 each.setName("Tables_in_" + logicSchema.getName());
                 break;
@@ -160,7 +158,7 @@ public final class JDBCDatabaseCommunicationEngine implements DatabaseCommunicat
     @Override
     public ResultPacket getResultValue() throws SQLException {
         QueryResponsePackets queryResponsePackets = ((ExecuteQueryResponse) executeResponse).getQueryResponsePackets();
-        int columnCount = queryResponsePackets.getColumnCount();
+        int columnCount = queryResponsePackets.getFieldCount();
         List<Object> data = new ArrayList<>(columnCount);
         for (int columnIndex = 1; columnIndex <= columnCount; columnIndex++) {
             data.add(mergedResult.getValue(columnIndex, Object.class));

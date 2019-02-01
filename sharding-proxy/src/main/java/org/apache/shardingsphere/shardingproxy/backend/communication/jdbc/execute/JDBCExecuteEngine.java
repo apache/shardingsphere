@@ -46,10 +46,9 @@ import org.apache.shardingsphere.shardingproxy.backend.communication.jdbc.execut
 import org.apache.shardingsphere.shardingproxy.backend.communication.jdbc.execute.response.unit.ExecuteUpdateResponseUnit;
 import org.apache.shardingsphere.shardingproxy.backend.communication.jdbc.wrapper.JDBCExecutorWrapper;
 import org.apache.shardingsphere.shardingproxy.runtime.GlobalRegistry;
+import org.apache.shardingsphere.shardingproxy.transport.common.packet.command.query.DataHeaderPacket;
 import org.apache.shardingsphere.shardingproxy.transport.common.packet.generic.DatabaseSuccessPacket;
 import org.apache.shardingsphere.shardingproxy.transport.mysql.constant.ColumnType;
-import org.apache.shardingsphere.shardingproxy.transport.mysql.packet.command.query.ColumnDefinition41Packet;
-import org.apache.shardingsphere.shardingproxy.transport.mysql.packet.command.query.FieldCountPacket;
 import org.apache.shardingsphere.shardingproxy.transport.mysql.packet.command.query.QueryResponsePackets;
 
 import java.sql.Connection;
@@ -153,16 +152,15 @@ public final class JDBCExecuteEngine implements SQLExecuteEngine {
     }
     
     private QueryResponsePackets getHeaderPackets(final ResultSetMetaData resultSetMetaData) throws SQLException {
-        int currentSequenceId = 0;
+        int currentSequenceId = 1;
         int columnCount = resultSetMetaData.getColumnCount();
-        FieldCountPacket fieldCountPacket = new FieldCountPacket(++currentSequenceId, columnCount);
-        Collection<ColumnDefinition41Packet> columnDefinition41Packets = new LinkedList<>();
+        Collection<DataHeaderPacket> dataHeaderPackets = new LinkedList<>();
         List<Integer> columnTypes = new ArrayList<>(128);
         for (int columnIndex = 1; columnIndex <= columnCount; columnIndex++) {
-            columnDefinition41Packets.add(new ColumnDefinition41Packet(++currentSequenceId, resultSetMetaData, columnIndex));
+            dataHeaderPackets.add(new DataHeaderPacket(++currentSequenceId, resultSetMetaData, columnIndex));
             columnTypes.add(resultSetMetaData.getColumnType(columnIndex));
         }
-        return new QueryResponsePackets(columnTypes, fieldCountPacket, columnDefinition41Packets, ++currentSequenceId);
+        return new QueryResponsePackets(columnTypes, columnCount, dataHeaderPackets, ++currentSequenceId);
     }
     
     private QueryResult createQueryResult(final ResultSet resultSet, final ConnectionMode connectionMode) throws SQLException {

@@ -20,6 +20,7 @@ package org.apache.shardingsphere.shardingproxy.transport.mysql.packet.command.q
 import com.google.common.base.Preconditions;
 import lombok.Getter;
 import lombok.Setter;
+import org.apache.shardingsphere.shardingproxy.transport.common.packet.command.query.DataHeaderPacket;
 import org.apache.shardingsphere.shardingproxy.transport.mysql.constant.ColumnType;
 import org.apache.shardingsphere.shardingproxy.transport.mysql.constant.ServerInfo;
 import org.apache.shardingsphere.shardingproxy.transport.mysql.packet.MySQLPacket;
@@ -34,6 +35,7 @@ import java.sql.SQLException;
  * @see <a href="https://dev.mysql.com/doc/internals/en/com-query-response.html#packet-Protocol::ColumnDefinition41">ColumnDefinition41</a>
  *
  * @author zhangliang
+ * @author zhangyonglun
  */
 public final class ColumnDefinition41Packet implements MySQLPacket {
     
@@ -86,6 +88,20 @@ public final class ColumnDefinition41Packet implements MySQLPacket {
         this.columnLength = columnLength;
         this.columnType = columnType;
         this.decimals = decimals;
+    }
+    
+    public ColumnDefinition41Packet(final DataHeaderPacket dataHeaderPacket) {
+        this.sequenceId = dataHeaderPacket.getSequenceId();
+        this.characterSet = ServerInfo.CHARSET;
+        this.flags = 0;
+        this.schema = dataHeaderPacket.getSchema();
+        this.table = dataHeaderPacket.getTable();
+        this.orgTable = dataHeaderPacket.getOrgTable();
+        this.name = dataHeaderPacket.getName();
+        this.orgName = dataHeaderPacket.getOrgName();
+        this.columnLength = dataHeaderPacket.getColumnLength();
+        this.columnType = ColumnType.valueOfJDBCType(dataHeaderPacket.getColumnType());
+        this.decimals = dataHeaderPacket.getDecimals();
     }
     
     public ColumnDefinition41Packet(final MySQLPacketPayload payload) {

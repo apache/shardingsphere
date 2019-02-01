@@ -48,8 +48,8 @@ public final class ShowDatabasesBackendHandlerTest {
         CommandResponsePackets actual = showDatabasesBackendHandler.execute();
         assertThat(actual, instanceOf(QueryResponsePackets.class));
         QueryResponsePackets responsePackets = (QueryResponsePackets) actual;
-        assertThat(responsePackets.getColumnCount(), is(1));
-        assertThat(responsePackets.getColumnDefinition41Packets().size(), is(1));
+        assertThat(responsePackets.getFieldCount(), is(1));
+        assertThat(responsePackets.getDataHeaderPackets().size(), is(1));
         assertThat(responsePackets.getColumnTypes().size(), is(1));
         assertThat(responsePackets.getColumnTypes().iterator().next(), is(Types.VARCHAR));
         assertThat(responsePackets.getColumnTypes().iterator().next(), is(Types.VARCHAR));

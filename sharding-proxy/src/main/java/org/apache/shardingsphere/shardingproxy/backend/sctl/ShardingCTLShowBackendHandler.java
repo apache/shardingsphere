@@ -23,11 +23,9 @@ import org.apache.shardingsphere.core.merger.dal.show.ShowShardingCTLMergedResul
 import org.apache.shardingsphere.shardingproxy.backend.ResultPacket;
 import org.apache.shardingsphere.shardingproxy.backend.communication.jdbc.connection.BackendConnection;
 import org.apache.shardingsphere.shardingproxy.backend.text.TextProtocolBackendHandler;
+import org.apache.shardingsphere.shardingproxy.transport.common.packet.command.query.DataHeaderPacket;
 import org.apache.shardingsphere.shardingproxy.transport.common.packet.generic.DatabaseFailurePacket;
-import org.apache.shardingsphere.shardingproxy.transport.mysql.constant.ColumnType;
 import org.apache.shardingsphere.shardingproxy.transport.mysql.packet.command.CommandResponsePackets;
-import org.apache.shardingsphere.shardingproxy.transport.mysql.packet.command.query.ColumnDefinition41Packet;
-import org.apache.shardingsphere.shardingproxy.transport.mysql.packet.command.query.FieldCountPacket;
 import org.apache.shardingsphere.shardingproxy.transport.mysql.packet.command.query.QueryResponsePackets;
 
 import java.sql.SQLException;
@@ -81,13 +79,12 @@ public final class ShardingCTLShowBackendHandler implements TextProtocolBackendH
     
     private CommandResponsePackets createResponsePackets(final String columnName, final Object... values) {
         mergedResult = new ShowShardingCTLMergedResult(Arrays.asList(values));
-        int sequenceId = 0;
-        FieldCountPacket fieldCountPacket = new FieldCountPacket(++sequenceId, 1);
-        Collection<ColumnDefinition41Packet> columnDefinition41Packets = new ArrayList<>(1);
-        columnDefinition41Packets.add(new ColumnDefinition41Packet(++sequenceId, "", "", "", columnName, "", 100, ColumnType.MYSQL_TYPE_VARCHAR, 0));
-        QueryResponsePackets queryResponsePackets = new QueryResponsePackets(Collections.singletonList(Types.VARCHAR), fieldCountPacket, columnDefinition41Packets, ++sequenceId);
+        int sequenceId = 1;
+        Collection<DataHeaderPacket> dataHeaderPackets = new ArrayList<>(1);
+        dataHeaderPackets.add(new DataHeaderPacket(++sequenceId, "", "", "", columnName, "", 100, Types.VARCHAR, 0));
+        QueryResponsePackets queryResponsePackets = new QueryResponsePackets(Collections.singletonList(Types.VARCHAR), 1, dataHeaderPackets, ++sequenceId);
         currentSequenceId = queryResponsePackets.getPackets().size();
-        columnCount = queryResponsePackets.getColumnCount();
+        columnCount = queryResponsePackets.getFieldCount();
         columnTypes.addAll(queryResponsePackets.getColumnTypes());
         return queryResponsePackets;
     }

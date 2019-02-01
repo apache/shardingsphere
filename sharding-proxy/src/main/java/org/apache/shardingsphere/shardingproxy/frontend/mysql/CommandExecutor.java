@@ -26,6 +26,7 @@ import org.apache.shardingsphere.shardingproxy.backend.communication.jdbc.connec
 import org.apache.shardingsphere.shardingproxy.frontend.common.FrontendHandler;
 import org.apache.shardingsphere.shardingproxy.runtime.GlobalRegistry;
 import org.apache.shardingsphere.shardingproxy.transport.common.packet.DatabasePacket;
+import org.apache.shardingsphere.shardingproxy.transport.common.packet.command.query.DataHeaderPacket;
 import org.apache.shardingsphere.shardingproxy.transport.common.packet.generic.DatabaseFailurePacket;
 import org.apache.shardingsphere.shardingproxy.transport.common.packet.generic.DatabaseSuccessPacket;
 import org.apache.shardingsphere.shardingproxy.transport.mysql.constant.ServerErrorCode;
@@ -33,7 +34,10 @@ import org.apache.shardingsphere.shardingproxy.transport.mysql.packet.MySQLPacke
 import org.apache.shardingsphere.shardingproxy.transport.mysql.packet.command.CommandPacket;
 import org.apache.shardingsphere.shardingproxy.transport.mysql.packet.command.CommandPacketFactory;
 import org.apache.shardingsphere.shardingproxy.transport.mysql.packet.command.CommandResponsePackets;
+import org.apache.shardingsphere.shardingproxy.transport.mysql.packet.command.query.ColumnDefinition41Packet;
+import org.apache.shardingsphere.shardingproxy.transport.mysql.packet.command.query.FieldCountPacket;
 import org.apache.shardingsphere.shardingproxy.transport.mysql.packet.command.query.QueryCommandPacket;
+import org.apache.shardingsphere.shardingproxy.transport.mysql.packet.command.query.QueryResponsePackets;
 import org.apache.shardingsphere.shardingproxy.transport.mysql.packet.generic.EofPacket;
 import org.apache.shardingsphere.shardingproxy.transport.mysql.packet.generic.ErrPacket;
 import org.apache.shardingsphere.shardingproxy.transport.mysql.packet.generic.OKPacket;
@@ -73,18 +77,26 @@ public final class CommandExecutor implements Runnable {
             if (!responsePackets.isPresent()) {
                 return;
             }
+            if (responsePackets.get() instanceof QueryResponsePackets) {
+                context.write(new FieldCountPacket(1, ((QueryResponsePackets) responsePackets.get()).getFieldCount()));
+            }
             for (DatabasePacket each : responsePackets.get().getPackets()) {
                 if (each instanceof DatabaseSuccessPacket) {
                     context.write(new OKPacket((DatabaseSuccessPacket) each));
                 } else if (each instanceof DatabaseFailurePacket) {
                     context.write(new ErrPacket((DatabaseFailurePacket) each));
+                } else if (each instanceof DataHeaderPacket) {
+                    context.write(new ColumnDefinition41Packet((DataHeaderPacket) each));
                 } else {
                     context.write(each);
                 }
             }
+            if (responsePackets.get() instanceof QueryResponsePackets) {
+                context.write(new EofPacket(((QueryResponsePackets) responsePackets.get()).getSequenceId()));
+            }
             if (commandPacket instanceof QueryCommandPacket && !(responsePackets.get().getHeadPacket() instanceof DatabaseSuccessPacket)
                 && !(responsePackets.get().getHeadPacket() instanceof DatabaseFailurePacket)) {
-                writeMoreResults((QueryCommandPacket) commandPacket, responsePackets.get().getPackets().size());
+                writeMoreResults((QueryCommandPacket) commandPacket, ((QueryResponsePackets) responsePackets.get()).getSequenceId());
             }
             connectionSize = backendConnection.getConnectionSize();
         } catch (final SQLException ex) {

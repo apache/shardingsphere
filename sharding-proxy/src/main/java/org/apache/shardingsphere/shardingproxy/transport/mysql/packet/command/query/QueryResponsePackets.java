@@ -18,8 +18,8 @@
 package org.apache.shardingsphere.shardingproxy.transport.mysql.packet.command.query;
 
 import lombok.Getter;
+import org.apache.shardingsphere.shardingproxy.transport.common.packet.command.query.DataHeaderPacket;
 import org.apache.shardingsphere.shardingproxy.transport.mysql.packet.command.CommandResponsePackets;
-import org.apache.shardingsphere.shardingproxy.transport.mysql.packet.generic.EofPacket;
 
 import java.util.Collection;
 import java.util.List;
@@ -28,33 +28,24 @@ import java.util.List;
  * Query response packets.
  *
  * @author zhangliang
+ * @author zhangyonglun
  */
+@Getter
 public final class QueryResponsePackets extends CommandResponsePackets {
     
-    @Getter
     private final List<Integer> columnTypes;
     
-    private final FieldCountPacket fieldCountPacket;
+    private final int fieldCount;
     
-    @Getter
-    private final Collection<ColumnDefinition41Packet> columnDefinition41Packets;
+    private final Collection<DataHeaderPacket> dataHeaderPackets;
     
-    public QueryResponsePackets(final List<Integer> columnTypes, final FieldCountPacket fieldCountPacket,
-                                final Collection<ColumnDefinition41Packet> columnDefinition41Packets, final int sequenceId) {
+    private int sequenceId;
+    
+    public QueryResponsePackets(final List<Integer> columnTypes, final int fieldCount, final Collection<DataHeaderPacket> dataHeaderPackets, final int sequenceId) {
         this.columnTypes = columnTypes;
-        getPackets().add(fieldCountPacket);
-        getPackets().addAll(columnDefinition41Packets);
-        getPackets().add(new EofPacket(sequenceId));
-        this.fieldCountPacket = fieldCountPacket;
-        this.columnDefinition41Packets = columnDefinition41Packets;
-    }
-    
-    /**
-     * Get column count.
-     *
-     * @return column count
-     */
-    public int getColumnCount() {
-        return fieldCountPacket.getColumnCount();
+        this.fieldCount = fieldCount;
+        getPackets().addAll(dataHeaderPackets);
+        this.dataHeaderPackets = dataHeaderPackets;
+        this.sequenceId = sequenceId;
     }
 }
