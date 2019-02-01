@@ -15,7 +15,7 @@
  * limitations under the License.
  */
 
-package org.apache.shardingsphere.util;
+package org.apache.shardingsphere.core.encrypt.fixture;
 
 import org.apache.shardingsphere.core.encrypt.encryptor.ShardingEncryptor;
 

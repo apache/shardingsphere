@@ -1,1 +1,1 @@
-org.apache.shardingsphere.util.TestShardingEncryptor
+org.apache.shardingsphere.core.encrypt.fixture.TestShardingEncryptor
