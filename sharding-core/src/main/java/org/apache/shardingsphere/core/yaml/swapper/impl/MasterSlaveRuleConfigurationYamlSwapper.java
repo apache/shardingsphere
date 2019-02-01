@@ -45,13 +45,18 @@ public final class MasterSlaveRuleConfigurationYamlSwapper implements YamlSwappe
     
     @Override
     public MasterSlaveRuleConfiguration swap(final YamlMasterSlaveRuleConfiguration yamlConfiguration) {
-        MasterSlaveLoadBalanceAlgorithm loadBalanceAlgorithm = null;
+        return new MasterSlaveRuleConfiguration(
+                yamlConfiguration.getName(), yamlConfiguration.getMasterDataSourceName(), yamlConfiguration.getSlaveDataSourceNames(), getMasterSlaveLoadBalanceAlgorithm(yamlConfiguration));
+    }
+    
+    private MasterSlaveLoadBalanceAlgorithm getMasterSlaveLoadBalanceAlgorithm(final YamlMasterSlaveRuleConfiguration yamlConfiguration) {
         if (!Strings.isNullOrEmpty(yamlConfiguration.getLoadBalanceAlgorithmClassName())) {
-            loadBalanceAlgorithm = newInstance(yamlConfiguration.getLoadBalanceAlgorithmClassName());
-        } else if (null != yamlConfiguration.getLoadBalanceAlgorithmType()) {
-            loadBalanceAlgorithm = yamlConfiguration.getLoadBalanceAlgorithmType().getAlgorithm();
+            return newInstance(yamlConfiguration.getLoadBalanceAlgorithmClassName());
         }
-        return new MasterSlaveRuleConfiguration(yamlConfiguration.getName(), yamlConfiguration.getMasterDataSourceName(), yamlConfiguration.getSlaveDataSourceNames(), loadBalanceAlgorithm);
+        if (null != yamlConfiguration.getLoadBalanceAlgorithmType()) {
+            return yamlConfiguration.getLoadBalanceAlgorithmType().getAlgorithm();
+        }
+        return null;
     }
     
     private MasterSlaveLoadBalanceAlgorithm newInstance(final String masterSlaveLoadBalanceAlgorithmClassName) {

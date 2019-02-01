@@ -17,9 +17,8 @@
 
 package org.apache.shardingsphere.api.config.rule;
 
-import lombok.AllArgsConstructor;
 import lombok.Getter;
-import lombok.NoArgsConstructor;
+import lombok.RequiredArgsConstructor;
 import lombok.Setter;
 import org.apache.shardingsphere.api.algorithm.masterslave.MasterSlaveLoadBalanceAlgorithm;
 
@@ -31,17 +30,16 @@ import java.util.Collection;
  * @author zhangliang
  * @author panjuan
  */
-@NoArgsConstructor
-@AllArgsConstructor
+@RequiredArgsConstructor
 @Getter
 @Setter
 public final class MasterSlaveRuleConfiguration implements RuleConfiguration {
     
-    private String name;
+    private final String name;
     
-    private String masterDataSourceName;
+    private final String masterDataSourceName;
     
-    private Collection<String> slaveDataSourceNames;
+    private final Collection<String> slaveDataSourceNames;
     
-    private MasterSlaveLoadBalanceAlgorithm loadBalanceAlgorithm;
+    private final MasterSlaveLoadBalanceAlgorithm loadBalanceAlgorithm;
 }
