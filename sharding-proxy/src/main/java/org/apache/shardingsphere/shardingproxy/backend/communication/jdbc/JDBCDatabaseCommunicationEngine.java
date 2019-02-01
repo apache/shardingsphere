@@ -38,13 +38,13 @@ import org.apache.shardingsphere.shardingproxy.backend.communication.jdbc.execut
 import org.apache.shardingsphere.shardingproxy.runtime.GlobalRegistry;
 import org.apache.shardingsphere.shardingproxy.runtime.schema.LogicSchema;
 import org.apache.shardingsphere.shardingproxy.runtime.schema.ShardingSchema;
+import org.apache.shardingsphere.shardingproxy.transport.common.packet.generic.DatabaseFailurePacket;
 import org.apache.shardingsphere.shardingproxy.transport.common.packet.generic.DatabaseSuccessPacket;
 import org.apache.shardingsphere.shardingproxy.transport.mysql.constant.ServerErrorCode;
 import org.apache.shardingsphere.shardingproxy.transport.mysql.packet.command.CommandResponsePackets;
 import org.apache.shardingsphere.shardingproxy.transport.mysql.packet.command.query.ColumnDefinition41Packet;
 import org.apache.shardingsphere.shardingproxy.transport.mysql.packet.command.query.FieldCountPacket;
 import org.apache.shardingsphere.shardingproxy.transport.mysql.packet.command.query.QueryResponsePackets;
-import org.apache.shardingsphere.shardingproxy.transport.mysql.packet.generic.ErrPacket;
 import org.apache.shardingsphere.transaction.core.TransactionType;
 
 import java.sql.SQLException;
@@ -93,7 +93,7 @@ public final class JDBCDatabaseCommunicationEngine implements DatabaseCommunicat
         SQLStatement sqlStatement = routeResult.getSqlStatement();
         if (isUnsupportedXA(sqlStatement.getType())) {
             ServerErrorCode serverErrorCode = ServerErrorCode.ER_ERROR_ON_MODIFYING_GTID_EXECUTED_TABLE;
-            return new CommandResponsePackets(new ErrPacket(1, serverErrorCode.getErrorCode(), serverErrorCode.getSqlState(), sqlStatement.getTables().isSingleTable()
+            return new CommandResponsePackets(new DatabaseFailurePacket(1, serverErrorCode.getErrorCode(), serverErrorCode.getSqlState(), sqlStatement.getTables().isSingleTable()
                 ? String.format(serverErrorCode.getErrorMessage(), sqlStatement.getTables().getSingleTableName()) : String.format(serverErrorCode.getErrorMessage(), "unknown_table")));
         }
         executeResponse = executeEngine.execute(routeResult);

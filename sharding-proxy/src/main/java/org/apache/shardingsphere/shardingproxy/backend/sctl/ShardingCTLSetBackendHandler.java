@@ -21,9 +21,9 @@ import com.google.common.base.Optional;
 import org.apache.shardingsphere.shardingproxy.backend.ResultPacket;
 import org.apache.shardingsphere.shardingproxy.backend.communication.jdbc.connection.BackendConnection;
 import org.apache.shardingsphere.shardingproxy.backend.text.TextProtocolBackendHandler;
+import org.apache.shardingsphere.shardingproxy.transport.common.packet.generic.DatabaseFailurePacket;
 import org.apache.shardingsphere.shardingproxy.transport.common.packet.generic.DatabaseSuccessPacket;
 import org.apache.shardingsphere.shardingproxy.transport.mysql.packet.command.CommandResponsePackets;
-import org.apache.shardingsphere.shardingproxy.transport.mysql.packet.generic.ErrPacket;
 import org.apache.shardingsphere.transaction.core.TransactionType;
 
 /**
@@ -46,18 +46,18 @@ public final class ShardingCTLSetBackendHandler implements TextProtocolBackendHa
     public CommandResponsePackets execute() {
         Optional<ShardingCTLSetStatement> shardingTCLStatement = new ShardingCTLSetParser(sql).doParse();
         if (!shardingTCLStatement.isPresent()) {
-            return new CommandResponsePackets(new ErrPacket(1, 0, "", " please review your sctl format, should be sctl:set xxx=yyy."));
+            return new CommandResponsePackets(new DatabaseFailurePacket(1, 0, "", " please review your sctl format, should be sctl:set xxx=yyy."));
         }
         switch (shardingTCLStatement.get().getKey()) {
             case "TRANSACTION_TYPE":
                 try {
                     backendConnection.setTransactionType(TransactionType.valueOf(shardingTCLStatement.get().getValue()));
                 } catch (final IllegalArgumentException ex) {
-                    return new CommandResponsePackets(new ErrPacket(1, 0, "", String.format(" could not support this sctl grammar [%s].", sql)));
+                    return new CommandResponsePackets(new DatabaseFailurePacket(1, 0, "", String.format(" could not support this sctl grammar [%s].", sql)));
                 }
                 break;
             default:
-                return new CommandResponsePackets(new ErrPacket(1, 0, "", String.format(" could not support this sctl grammar [%s].", sql)));
+                return new CommandResponsePackets(new DatabaseFailurePacket(1, 0, "", String.format(" could not support this sctl grammar [%s].", sql)));
         }
         return new CommandResponsePackets(new DatabaseSuccessPacket(1, 0L, 0L));
     }
