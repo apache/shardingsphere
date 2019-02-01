@@ -22,6 +22,7 @@ import org.apache.shardingsphere.shardingproxy.transport.mysql.constant.ColumnTy
 import org.apache.shardingsphere.shardingproxy.transport.mysql.packet.generic.EofPacket;
 import org.junit.Test;
 
+import java.sql.Types;
 import java.util.Arrays;
 import java.util.Iterator;
 
@@ -46,7 +47,7 @@ public final class QueryResponsePacketsTest {
     
     @Test
     public void assertGetColumnTypes() {
-        assertThat(createQueryResponsePackets().getColumnTypes(), is(Arrays.asList(ColumnType.MYSQL_TYPE_LONG, ColumnType.MYSQL_TYPE_VARCHAR)));
+        assertThat(createQueryResponsePackets().getColumnTypes(), is(Arrays.asList(Types.BIGINT, Types.VARCHAR)));
     }
     
     private QueryResponsePackets createQueryResponsePackets() {
@@ -54,6 +55,6 @@ public final class QueryResponsePacketsTest {
         ColumnDefinition41Packet columnDefinition41Packet1 = new ColumnDefinition41Packet(2, ShardingConstant.LOGIC_SCHEMA_NAME, "tbl", "tbl", "id", "id", 10, ColumnType.MYSQL_TYPE_LONG, 0);
         ColumnDefinition41Packet columnDefinition41Packet2 = new ColumnDefinition41Packet(3, ShardingConstant.LOGIC_SCHEMA_NAME, "tbl", "tbl", "value", "value", 20, ColumnType.MYSQL_TYPE_VARCHAR, 0);
         EofPacket eofPacket = new EofPacket(4);
-        return new QueryResponsePackets(fieldCountPacket, Arrays.asList(columnDefinition41Packet1, columnDefinition41Packet2), eofPacket);
+        return new QueryResponsePackets(Arrays.asList(Types.BIGINT, Types.VARCHAR), fieldCountPacket, Arrays.asList(columnDefinition41Packet1, columnDefinition41Packet2), eofPacket);
     }
 }

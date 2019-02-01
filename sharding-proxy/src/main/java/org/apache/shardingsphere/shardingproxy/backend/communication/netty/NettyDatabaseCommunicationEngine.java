@@ -45,7 +45,6 @@ import org.apache.shardingsphere.shardingproxy.runtime.schema.LogicSchema;
 import org.apache.shardingsphere.shardingproxy.runtime.schema.MasterSlaveSchema;
 import org.apache.shardingsphere.shardingproxy.runtime.schema.ShardingSchema;
 import org.apache.shardingsphere.shardingproxy.transport.common.packet.DatabasePacket;
-import org.apache.shardingsphere.shardingproxy.transport.mysql.constant.ColumnType;
 import org.apache.shardingsphere.shardingproxy.transport.mysql.packet.command.CommandResponsePackets;
 import org.apache.shardingsphere.shardingproxy.transport.mysql.packet.command.query.text.query.ComQueryPacket;
 import org.apache.shardingsphere.shardingproxy.transport.mysql.packet.generic.ErrPacket;
@@ -228,7 +227,7 @@ public final class NettyDatabaseCommunicationEngine implements DatabaseCommunica
         for (int columnIndex = 1; columnIndex <= columnCount; columnIndex++) {
             data.add(mergedResult.getValue(columnIndex, Object.class));
         }
-        return new ResultPacket(++currentSequenceId, data, columnCount, Collections.<ColumnType>emptyList());
+        return new ResultPacket(++currentSequenceId, data, columnCount, Collections.<Integer>emptyList());
     }
     
     private void channelRelease() {

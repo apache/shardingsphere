@@ -149,6 +149,12 @@ public final class ComStmtExecutePacket implements QueryCommandPacket {
     @Override
     public DatabasePacket getResultValue() throws SQLException {
         ResultPacket resultPacket = databaseCommunicationEngine.getResultValue();
-        return new BinaryResultSetRowPacket(resultPacket.getSequenceId(), resultPacket.getColumnCount(), resultPacket.getData(), resultPacket.getColumnTypes());
+        int columnCount = resultPacket.getColumnCount();
+        List<Integer> jdbcColumnTypes = resultPacket.getColumnTypes();
+        List<ColumnType> columnTypes = new ArrayList<>(128);
+        for (int i = 0; i < columnCount; i++) {
+            columnTypes.add(ColumnType.valueOfJDBCType(jdbcColumnTypes.get(i)));
+        }
+        return new BinaryResultSetRowPacket(resultPacket.getSequenceId(), columnCount, resultPacket.getData(), columnTypes);
     }
 }

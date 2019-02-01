@@ -23,7 +23,6 @@ import org.apache.shardingsphere.shardingproxy.backend.ResultPacket;
 import org.apache.shardingsphere.shardingproxy.backend.communication.DatabaseCommunicationEngine;
 import org.apache.shardingsphere.shardingproxy.backend.communication.jdbc.connection.BackendConnection;
 import org.apache.shardingsphere.shardingproxy.transport.common.packet.DatabasePacket;
-import org.apache.shardingsphere.shardingproxy.transport.mysql.constant.ColumnType;
 import org.apache.shardingsphere.shardingproxy.transport.mysql.packet.MySQLPacketPayload;
 import org.apache.shardingsphere.shardingproxy.transport.mysql.packet.command.CommandResponsePackets;
 import org.apache.shardingsphere.shardingproxy.transport.mysql.packet.command.query.binary.BinaryStatementRegistry;
@@ -37,6 +36,7 @@ import org.mockito.junit.MockitoJUnitRunner;
 
 import java.lang.reflect.Field;
 import java.sql.SQLException;
+import java.sql.Types;
 import java.util.Collections;
 
 import static org.hamcrest.CoreMatchers.is;
@@ -86,7 +86,7 @@ public final class ComStmtExecutePacketTest {
         CommandResponsePackets expectedCommandResponsePackets = new CommandResponsePackets();
         when(databaseCommunicationEngine.execute()).thenReturn(expectedCommandResponsePackets);
         when(databaseCommunicationEngine.next()).thenReturn(true, false);
-        when(databaseCommunicationEngine.getResultValue()).thenReturn(new ResultPacket(2, Collections.<Object>singletonList(99999L), 1, Collections.singletonList(ColumnType.MYSQL_TYPE_LONG)));
+        when(databaseCommunicationEngine.getResultValue()).thenReturn(new ResultPacket(2, Collections.<Object>singletonList(99999L), 1, Collections.singletonList(Types.BIGINT)));
         ComStmtExecutePacket packet = new ComStmtExecutePacket(1, payload, backendConnection);
         setBackendHandler(packet, databaseCommunicationEngine);
         Optional<CommandResponsePackets> actualCommandResponsePackets = packet.execute();

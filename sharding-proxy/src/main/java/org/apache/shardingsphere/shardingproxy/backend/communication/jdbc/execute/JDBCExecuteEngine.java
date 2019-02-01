@@ -57,6 +57,7 @@ import java.sql.ResultSet;
 import java.sql.ResultSetMetaData;
 import java.sql.SQLException;
 import java.sql.Statement;
+import java.util.ArrayList;
 import java.util.Collection;
 import java.util.LinkedList;
 import java.util.List;
@@ -156,10 +157,13 @@ public final class JDBCExecuteEngine implements SQLExecuteEngine {
         int columnCount = resultSetMetaData.getColumnCount();
         FieldCountPacket fieldCountPacket = new FieldCountPacket(++currentSequenceId, columnCount);
         Collection<ColumnDefinition41Packet> columnDefinition41Packets = new LinkedList<>();
+        List<Integer> columnTypes = new ArrayList<>(128);
         for (int columnIndex = 1; columnIndex <= columnCount; columnIndex++) {
             columnDefinition41Packets.add(new ColumnDefinition41Packet(++currentSequenceId, resultSetMetaData, columnIndex));
+            columnTypes.add(resultSetMetaData.getColumnType(columnIndex));
         }
-        return new QueryResponsePackets(fieldCountPacket, columnDefinition41Packets, new EofPacket(++currentSequenceId));
+        
+        return new QueryResponsePackets(columnTypes, fieldCountPacket, columnDefinition41Packets, new EofPacket(++currentSequenceId));
     }
     
     private QueryResult createQueryResult(final ResultSet resultSet, final ConnectionMode connectionMode) throws SQLException {

@@ -18,12 +18,10 @@
 package org.apache.shardingsphere.shardingproxy.transport.mysql.packet.command.query;
 
 import lombok.Getter;
-import org.apache.shardingsphere.shardingproxy.transport.mysql.constant.ColumnType;
 import org.apache.shardingsphere.shardingproxy.transport.mysql.packet.command.CommandResponsePackets;
 import org.apache.shardingsphere.shardingproxy.transport.mysql.packet.generic.EofPacket;
 
 import java.util.Collection;
-import java.util.LinkedList;
 import java.util.List;
 
 /**
@@ -33,12 +31,17 @@ import java.util.List;
  */
 public final class QueryResponsePackets extends CommandResponsePackets {
     
+    @Getter
+    private final List<Integer> columnTypes;
+    
     private final FieldCountPacket fieldCountPacket;
     
     @Getter
     private final Collection<ColumnDefinition41Packet> columnDefinition41Packets;
     
-    public QueryResponsePackets(final FieldCountPacket fieldCountPacket, final Collection<ColumnDefinition41Packet> columnDefinition41Packets, final EofPacket eofPacket) {
+    public QueryResponsePackets(final List<Integer> columnTypes, final FieldCountPacket fieldCountPacket,
+                                final Collection<ColumnDefinition41Packet> columnDefinition41Packets, final EofPacket eofPacket) {
+        this.columnTypes = columnTypes;
         getPackets().add(fieldCountPacket);
         getPackets().addAll(columnDefinition41Packets);
         getPackets().add(eofPacket);
@@ -53,18 +56,5 @@ public final class QueryResponsePackets extends CommandResponsePackets {
      */
     public int getColumnCount() {
         return fieldCountPacket.getColumnCount();
-    }
-    
-    /**
-     * Get column types.
-     *
-     * @return column types
-     */
-    public List<ColumnType> getColumnTypes() {
-        List<ColumnType> result = new LinkedList<>();
-        for (ColumnDefinition41Packet each : columnDefinition41Packets) {
-            result.add(each.getColumnType());
-        }
-        return result;
     }
 }

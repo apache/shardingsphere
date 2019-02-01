@@ -43,6 +43,7 @@ import org.mockito.junit.MockitoJUnitRunner;
 
 import java.lang.reflect.Field;
 import java.sql.SQLException;
+import java.sql.Types;
 import java.util.Collections;
 import java.util.Iterator;
 import java.util.Properties;
@@ -95,7 +96,7 @@ public final class ComFieldListPacketTest {
         when(payload.readStringNul()).thenReturn("tbl");
         when(payload.readStringEOF()).thenReturn("-");
         when(databaseCommunicationEngine.next()).thenReturn(true, false);
-        when(databaseCommunicationEngine.getResultValue()).thenReturn(new ResultPacket(1, Collections.<Object>singletonList("id"), 1, Collections.singletonList(ColumnType.MYSQL_TYPE_VARCHAR)));
+        when(databaseCommunicationEngine.getResultValue()).thenReturn(new ResultPacket(1, Collections.<Object>singletonList("id"), 1, Collections.singletonList(Types.VARCHAR)));
         when(databaseCommunicationEngine.execute()).thenReturn(new CommandResponsePackets(new FieldCountPacket(1, 1)));
         ComFieldListPacket packet = new ComFieldListPacket(1, payload, backendConnection);
         setBackendHandler(packet);

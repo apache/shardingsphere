@@ -139,7 +139,7 @@ public final class JDBCDatabaseCommunicationEngine implements DatabaseCommunicat
             }
         }
         FieldCountPacket fieldCountPacket = new FieldCountPacket(1, columnCount);
-        return new QueryResponsePackets(fieldCountPacket, columnDefinition41Packets, new EofPacket(columnCount + 2));
+        return new QueryResponsePackets(queryResponsePackets.getColumnTypes(), fieldCountPacket, columnDefinition41Packets, new EofPacket(columnCount + 2));
     }
     
     private void setResponseColumnLabelForShowTablesMergedResult(final QueryResponsePackets queryResponsePackets) {
