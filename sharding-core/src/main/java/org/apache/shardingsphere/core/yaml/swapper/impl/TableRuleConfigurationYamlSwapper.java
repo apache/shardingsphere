@@ -34,14 +34,19 @@ public final class TableRuleConfigurationYamlSwapper implements YamlSwapper<Yaml
         YamlTableRuleConfiguration result = new YamlTableRuleConfiguration();
         result.setLogicTable(data.getLogicTable());
         result.setActualDataNodes(data.getActualDataNodes());
-        result.setDatabaseStrategy(new ShardingStrategyConfigurationYamlSwapper().swap(data.getDatabaseShardingStrategyConfig()));
-        result.setTableStrategy(new ShardingStrategyConfigurationYamlSwapper().swap(data.getTableShardingStrategyConfig()));
+        if (null != data.getDatabaseShardingStrategyConfig()) {
+            result.setDatabaseStrategy(new ShardingStrategyConfigurationYamlSwapper().swap(data.getDatabaseShardingStrategyConfig()));
+        }
+        if (null != data.getTableShardingStrategyConfig()) {
+            result.setTableStrategy(new ShardingStrategyConfigurationYamlSwapper().swap(data.getTableShardingStrategyConfig()));
+        }
         if (null != data.getKeyGeneratorConfig()) {
             result.setKeyGenerator(new KeyGeneratorConfigurationYamlSwapper().swap(data.getKeyGeneratorConfig()));
         }
         if (null != data.getEncryptorConfig()) {
             result.setEncryptor(new EncryptorConfigurationYamlSwapper().swap(data.getEncryptorConfig()));
         }
+        result.setLogicIndex(data.getLogicIndex());
         return result;
     }
     
