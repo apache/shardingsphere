@@ -17,35 +17,24 @@
 
 package org.apache.shardingsphere.orchestration.yaml.config;
 
-import com.google.common.base.Preconditions;
 import lombok.Getter;
 import lombok.Setter;
-import org.apache.shardingsphere.orchestration.config.OrchestrationConfiguration;
+import org.apache.shardingsphere.core.yaml.config.YamlConfiguration;
 import org.apache.shardingsphere.orchestration.reg.api.RegistryCenterConfiguration;
 
 /**
- * Orchestration configuration for yaml.
+ * Orchestration configuration for YAML.
  *
  * @author caohao
  * @author panjuan
  */
 @Getter
 @Setter
-public class YamlOrchestrationConfiguration {
+public class YamlOrchestrationConfiguration implements YamlConfiguration {
     
     private String name;
     
     private RegistryCenterConfiguration registry;
     
     private boolean overwrite;
-    
-    /**
-     * Get orchestration configuration from yaml.
-     *
-     * @return orchestration configuration from yaml
-     */
-    public OrchestrationConfiguration getOrchestrationConfiguration() {
-        Preconditions.checkNotNull(registry, "Registry center must be required.");
-        return new OrchestrationConfiguration(name, registry, overwrite);
-    }
 }

@@ -21,7 +21,8 @@ import lombok.AccessLevel;
 import lombok.NoArgsConstructor;
 import org.apache.shardingsphere.core.yaml.config.masterslave.YamlMasterSlaveRuleConfiguration;
 import org.apache.shardingsphere.core.yaml.swapper.impl.MasterSlaveRuleConfigurationYamlSwapper;
-import org.apache.shardingsphere.orchestration.config.OrchestrationConfiguration;
+import org.apache.shardingsphere.orchestration.yaml.config.YamlOrchestrationConfiguration;
+import org.apache.shardingsphere.orchestration.yaml.swapper.OrchestrationConfigurationYamlSwapper;
 import org.apache.shardingsphere.shardingjdbc.jdbc.core.datasource.MasterSlaveDataSource;
 import org.apache.shardingsphere.shardingjdbc.orchestration.internal.datasource.OrchestrationMasterSlaveDataSource;
 import org.apache.shardingsphere.shardingjdbc.orchestration.internal.yaml.YamlOrchestrationMasterSlaveRuleConfiguration;
@@ -48,6 +49,10 @@ import java.util.Properties;
 @NoArgsConstructor(access = AccessLevel.PRIVATE)
 public final class YamlOrchestrationMasterSlaveDataSourceFactory {
     
+    private static final MasterSlaveRuleConfigurationYamlSwapper MASTER_SLAVE_RULE_SWAPPER = new MasterSlaveRuleConfigurationYamlSwapper();
+    
+    private static final OrchestrationConfigurationYamlSwapper ORCHESTRATION_SWAPPER = new OrchestrationConfigurationYamlSwapper();
+    
     /**
      * Create master-slave data source.
      *
@@ -58,7 +63,7 @@ public final class YamlOrchestrationMasterSlaveDataSourceFactory {
      */
     public static DataSource createDataSource(final File yamlFile) throws SQLException, IOException {
         YamlOrchestrationMasterSlaveRuleConfiguration config = unmarshal(yamlFile);
-        return createDataSource(config.getDataSources(), config.getMasterSlaveRule(), config.getConfigMap(), config.getProps(), config.getOrchestration().getOrchestrationConfiguration());
+        return createDataSource(config.getDataSources(), config.getMasterSlaveRule(), config.getConfigMap(), config.getProps(), config.getOrchestration());
     }
     
     /**
@@ -72,7 +77,7 @@ public final class YamlOrchestrationMasterSlaveDataSourceFactory {
      */
     public static DataSource createDataSource(final Map<String, DataSource> dataSourceMap, final File yamlFile) throws SQLException, IOException {
         YamlOrchestrationMasterSlaveRuleConfiguration config = unmarshal(yamlFile);
-        return createDataSource(dataSourceMap, config.getMasterSlaveRule(), config.getConfigMap(), config.getProps(), config.getOrchestration().getOrchestrationConfiguration());
+        return createDataSource(dataSourceMap, config.getMasterSlaveRule(), config.getConfigMap(), config.getProps(), config.getOrchestration());
     }
     
     /**
@@ -84,7 +89,7 @@ public final class YamlOrchestrationMasterSlaveDataSourceFactory {
      */
     public static DataSource createDataSource(final byte[] yamlByteArray) throws SQLException {
         YamlOrchestrationMasterSlaveRuleConfiguration config = unmarshal(yamlByteArray);
-        return createDataSource(config.getDataSources(), config.getMasterSlaveRule(), config.getConfigMap(), config.getProps(), config.getOrchestration().getOrchestrationConfiguration());
+        return createDataSource(config.getDataSources(), config.getMasterSlaveRule(), config.getConfigMap(), config.getProps(), config.getOrchestration());
     }
     
     /**
@@ -97,16 +102,16 @@ public final class YamlOrchestrationMasterSlaveDataSourceFactory {
      */
     public static DataSource createDataSource(final Map<String, DataSource> dataSourceMap, final byte[] yamlByteArray) throws SQLException {
         YamlOrchestrationMasterSlaveRuleConfiguration config = unmarshal(yamlByteArray);
-        return createDataSource(dataSourceMap, config.getMasterSlaveRule(), config.getConfigMap(), config.getProps(), config.getOrchestration().getOrchestrationConfiguration());
+        return createDataSource(dataSourceMap, config.getMasterSlaveRule(), config.getConfigMap(), config.getProps(), config.getOrchestration());
     }
     
-    private static DataSource createDataSource(final Map<String, DataSource> dataSourceMap, final YamlMasterSlaveRuleConfiguration yamlConfig, 
-                                               final Map<String, Object> configMap, final Properties props, final OrchestrationConfiguration orchestrationConfig) throws SQLException {
-        if (null == yamlConfig) {
-            return new OrchestrationMasterSlaveDataSource(orchestrationConfig);
+    private static DataSource createDataSource(final Map<String, DataSource> dataSourceMap, final YamlMasterSlaveRuleConfiguration yamlMasterSlaveRuleConfiguration, 
+                                               final Map<String, Object> configMap, final Properties props, final YamlOrchestrationConfiguration yamlOrchestrationConfiguration) throws SQLException {
+        if (null == yamlMasterSlaveRuleConfiguration) {
+            return new OrchestrationMasterSlaveDataSource(ORCHESTRATION_SWAPPER.swap(yamlOrchestrationConfiguration));
         } else {
-            MasterSlaveDataSource masterSlaveDataSource = new MasterSlaveDataSource(dataSourceMap, new MasterSlaveRuleConfigurationYamlSwapper().swap(yamlConfig), configMap, props);
-            return new OrchestrationMasterSlaveDataSource(masterSlaveDataSource, orchestrationConfig);
+            MasterSlaveDataSource masterSlaveDataSource = new MasterSlaveDataSource(dataSourceMap, MASTER_SLAVE_RULE_SWAPPER.swap(yamlMasterSlaveRuleConfiguration), configMap, props);
+            return new OrchestrationMasterSlaveDataSource(masterSlaveDataSource, ORCHESTRATION_SWAPPER.swap(yamlOrchestrationConfiguration));
         }
     }
     

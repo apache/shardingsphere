@@ -27,6 +27,7 @@ import org.apache.shardingsphere.core.yaml.swapper.impl.MasterSlaveRuleConfigura
 import org.apache.shardingsphere.core.yaml.swapper.impl.ShardingRuleConfigurationYamlSwapper;
 import org.apache.shardingsphere.opentracing.ShardingTracer;
 import org.apache.shardingsphere.orchestration.internal.registry.ShardingOrchestrationFacade;
+import org.apache.shardingsphere.orchestration.yaml.swapper.OrchestrationConfigurationYamlSwapper;
 import org.apache.shardingsphere.shardingproxypg.config.ShardingConfiguration;
 import org.apache.shardingsphere.shardingproxypg.config.ShardingConfigurationLoader;
 import org.apache.shardingsphere.shardingproxypg.config.yaml.YamlDataSourceParameter;
@@ -97,7 +98,8 @@ public final class Bootstrap {
     
     private static void startWithRegistryCenter(final YamlProxyServerConfiguration serverConfig,
                                                 final Collection<String> shardingSchemaNames, final Map<String, YamlProxyRuleConfiguration> ruleConfigs, final int port) throws InterruptedException {
-        try (ShardingOrchestrationFacade shardingOrchestrationFacade = new ShardingOrchestrationFacade(serverConfig.getOrchestration().getOrchestrationConfiguration(), shardingSchemaNames)) {
+        try (ShardingOrchestrationFacade shardingOrchestrationFacade = new ShardingOrchestrationFacade(
+                new OrchestrationConfigurationYamlSwapper().swap(serverConfig.getOrchestration()), shardingSchemaNames)) {
             initShardingOrchestrationFacade(serverConfig, ruleConfigs, shardingOrchestrationFacade);
             GlobalRegistry.getInstance().init(getSchemaDataSourceParameterMap(shardingOrchestrationFacade), getSchemaRules(shardingOrchestrationFacade),
                     shardingOrchestrationFacade.getConfigService().loadAuthentication(), shardingOrchestrationFacade.getConfigService().loadConfigMap(),
