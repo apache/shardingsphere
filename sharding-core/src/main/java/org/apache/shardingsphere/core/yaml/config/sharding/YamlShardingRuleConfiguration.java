@@ -38,13 +38,13 @@ import java.util.Map;
 @Setter
 public class YamlShardingRuleConfiguration implements YamlConfiguration {
     
-    private String defaultDataSourceName;
-    
     private Map<String, YamlTableRuleConfiguration> tables = new LinkedHashMap<>();
     
     private Collection<String> bindingTables = new ArrayList<>();
     
     private Collection<String> broadcastTables = new ArrayList<>();
+    
+    private String defaultDataSourceName;
     
     private YamlShardingStrategyConfiguration defaultDatabaseStrategy;
     

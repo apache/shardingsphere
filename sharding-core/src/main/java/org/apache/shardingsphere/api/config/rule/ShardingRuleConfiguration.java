@@ -36,13 +36,13 @@ import java.util.LinkedList;
 @Setter
 public final class ShardingRuleConfiguration implements RuleConfiguration {
     
-    private String defaultDataSourceName;
-    
     private Collection<TableRuleConfiguration> tableRuleConfigs = new LinkedList<>();
     
     private Collection<String> bindingTableGroups = new LinkedList<>();
     
     private Collection<String> broadcastTables = new LinkedList<>();
+    
+    private String defaultDataSourceName;
     
     private ShardingStrategyConfiguration defaultDatabaseShardingStrategyConfig;
     
