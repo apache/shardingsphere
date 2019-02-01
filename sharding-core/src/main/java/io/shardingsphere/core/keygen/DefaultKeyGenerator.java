@@ -19,11 +19,9 @@ package io.shardingsphere.core.keygen;
 
 import com.google.common.base.Preconditions;
 import lombok.Setter;
-import lombok.extern.slf4j.Slf4j;
+import lombok.SneakyThrows;
 
-import java.text.SimpleDateFormat;
 import java.util.Calendar;
-import java.util.Date;
 
 /**
  * Default distributed primary key generator.
@@ -34,18 +32,21 @@ import java.util.Date;
  * 
  * <pre>
  * 1bit   sign bit.
- * 41bits timestamp offset from 2016.11.01(Sharding-Sphere distributed primary key published data) to now.
+ * 41bits timestamp offset from 2016.11.01(ShardingSphere distributed primary key published data) to now.
  * 10bits worker process id.
  * 12bits auto increment offset in one mills
  * </pre>
  * 
  * <p>
- * Call @{@code DefaultKeyGenerator.setWorkerId} to set.
+ * Call @{@code DefaultKeyGenerator.setWorkerId} to set worker id, default value is 0.
+ * </p>
+ * 
+ * <p>
+ * Call @{@code DefaultKeyGenerator.setMaxTolerateTimeDifferenceMilliseconds} to set max tolerate time difference milliseconds, default value is 0.
  * </p>
  * 
  * @author gaohongtao
  */
-@Slf4j
 public final class DefaultKeyGenerator implements KeyGenerator {
     
     public static final long EPOCH;
@@ -67,6 +68,8 @@ public final class DefaultKeyGenerator implements KeyGenerator {
     
     private static long workerId;
     
+    private static int maxTolerateTimeDifferenceMilliseconds = 10;
+    
     static {
         Calendar calendar = Calendar.getInstance();
         calendar.set(2016, Calendar.NOVEMBER, 1);
@@ -77,9 +80,11 @@ public final class DefaultKeyGenerator implements KeyGenerator {
         EPOCH = calendar.getTimeInMillis();
     }
     
+    private byte sequenceOffset;
+    
     private long sequence;
     
-    private long lastTime;
+    private long lastMilliseconds;
     
     /**
      * Set work process id.
@@ -92,33 +97,58 @@ public final class DefaultKeyGenerator implements KeyGenerator {
     }
     
     /**
+     * Set max tolerate time difference milliseconds.
+     *
+     * @param maxTolerateTimeDifferenceMilliseconds max tolerate time difference milliseconds
+     */
+    public static void setMaxTolerateTimeDifferenceMilliseconds(final int maxTolerateTimeDifferenceMilliseconds) {
+        DefaultKeyGenerator.maxTolerateTimeDifferenceMilliseconds = maxTolerateTimeDifferenceMilliseconds;
+    }
+    
+    /**
      * Generate key.
      * 
      * @return key type is @{@link Long}.
      */
     @Override
     public synchronized Number generateKey() {
-        long currentMillis = timeService.getCurrentMillis();
-        Preconditions.checkState(lastTime <= currentMillis, "Clock is moving backwards, last time is %d milliseconds, current time is %d milliseconds", lastTime, currentMillis);
-        if (lastTime == currentMillis) {
+        long currentMilliseconds = timeService.getCurrentMillis();
+        if (waitTolerateTimeDifferenceIfNeed(currentMilliseconds)) {
+            currentMilliseconds = timeService.getCurrentMillis();
+        }
+        if (lastMilliseconds == currentMilliseconds) {
             if (0L == (sequence = (sequence + 1) & SEQUENCE_MASK)) {
-                currentMillis = waitUntilNextTime(currentMillis);
+                currentMilliseconds = waitUntilNextTime(currentMilliseconds);
             }
         } else {
-            sequence = 0;
+            vibrateSequenceOffset();
+            sequence = sequenceOffset;
         }
-        lastTime = currentMillis;
-        if (log.isDebugEnabled()) {
-            log.debug("{}-{}-{}", new SimpleDateFormat("yyyy-MM-dd HH:mm:ss.SSS").format(new Date(lastTime)), workerId, sequence);
+        lastMilliseconds = currentMilliseconds;
+        return ((currentMilliseconds - EPOCH) << TIMESTAMP_LEFT_SHIFT_BITS) | (workerId << WORKER_ID_LEFT_SHIFT_BITS) | sequence;
+    }
+    
+    @SneakyThrows
+    private boolean waitTolerateTimeDifferenceIfNeed(final long currentMilliseconds) {
+        if (lastMilliseconds <= currentMilliseconds) {
+            return false;
         }
-        return ((currentMillis - EPOCH) << TIMESTAMP_LEFT_SHIFT_BITS) | (workerId << WORKER_ID_LEFT_SHIFT_BITS) | sequence;
+        long timeDifferenceMilliseconds = lastMilliseconds - currentMilliseconds;
+        Preconditions.checkState(timeDifferenceMilliseconds < maxTolerateTimeDifferenceMilliseconds, 
+                "Clock is moving backwards, last time is %d milliseconds, current time is %d milliseconds", lastMilliseconds, currentMilliseconds);
+        Thread.sleep(timeDifferenceMilliseconds);
+        return true;
     }
     
     private long waitUntilNextTime(final long lastTime) {
-        long time = timeService.getCurrentMillis();
-        while (time <= lastTime) {
-            time = timeService.getCurrentMillis();
+        long result = timeService.getCurrentMillis();
+        while (result <= lastTime) {
+            result = timeService.getCurrentMillis();
         }
-        return time;
+        return result;
+    }
+    
+    private void vibrateSequenceOffset() {
+        sequenceOffset = (byte) (~sequenceOffset & 1);
     }
 }

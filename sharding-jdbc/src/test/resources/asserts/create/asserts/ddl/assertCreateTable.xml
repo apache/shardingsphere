@@ -1,8 +1,0 @@
-<datasets>
-    <metadata>
-        <table name="t_log">
-            <cloumn name="id" />
-            <cloumn name="status" type="varchar"/>
-        </table>
-    </metadata>
-</datasets>

@@ -44,7 +44,7 @@ public abstract class AbstractUpdateParser implements SQLParser {
     private final AbstractUpdateClauseParserFacade updateClauseParserFacade;
     
     @Override
-    public DMLStatement parse() {
+    public final DMLStatement parse() {
         lexerEngine.nextToken();
         lexerEngine.skipAll(getSkippedKeywordsBetweenUpdateAndTable());
         lexerEngine.unsupportedIfEqual(getUnsupportedKeywordsBetweenUpdateAndTable());
@@ -56,11 +56,7 @@ public abstract class AbstractUpdateParser implements SQLParser {
         return result;
     }
     
-    protected Keyword[] getSkippedKeywordsBetweenUpdateAndTable() {
-        return new Keyword[0];
-    }
+    protected abstract Keyword[] getSkippedKeywordsBetweenUpdateAndTable();
     
-    protected Keyword[] getUnsupportedKeywordsBetweenUpdateAndTable() {
-        return new Keyword[0];
-    }
+    protected abstract Keyword[] getUnsupportedKeywordsBetweenUpdateAndTable();
 }

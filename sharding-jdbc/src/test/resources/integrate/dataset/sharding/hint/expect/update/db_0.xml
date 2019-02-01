@@ -1,6 +1,0 @@
-<dataset>
-    <t_order order_id="1000" user_id="10" status="updated" />
-    <t_order order_id="1001" user_id="10" status="updated" />
-    <t_order order_id="2000" user_id="20" status="updated" />
-    <t_order order_id="2001" user_id="20" status="updated" />
-</dataset>

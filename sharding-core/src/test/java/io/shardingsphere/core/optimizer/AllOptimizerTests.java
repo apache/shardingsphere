@@ -19,11 +19,12 @@ package io.shardingsphere.core.optimizer;
 
 import org.junit.runner.RunWith;
 import org.junit.runners.Suite;
+import org.junit.runners.Suite.SuiteClasses;
 
 @RunWith(Suite.class)
-@Suite.SuiteClasses({
+@SuiteClasses({
         InsertOptimizeEngineTest.class, 
         QueryOptimizeEngineTest.class
     })
-public class AllOptimizerTests {
+public final class AllOptimizerTests {
 }

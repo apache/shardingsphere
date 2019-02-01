@@ -26,7 +26,7 @@ import io.shardingsphere.core.parsing.parser.token.SQLToken;
 import io.shardingsphere.test.sql.SQLCaseType;
 import lombok.RequiredArgsConstructor;
 
-import java.util.List;
+import java.util.Collection;
 
 import static org.hamcrest.CoreMatchers.is;
 import static org.junit.Assert.assertNull;
@@ -44,7 +44,7 @@ final class GeneratedKeyTokenAssert {
     
     private final SQLStatementAssertMessage assertMessage;
     
-    void assertGeneratedKeyToken(final List<SQLToken> actual, final ExpectedTokens expected) {
+    void assertGeneratedKeyToken(final Collection<SQLToken> actual, final ExpectedTokens expected) {
         Optional<GeneratedKeyToken> generatedKeyToken = getGeneratedKeyToken(actual);
         if (generatedKeyToken.isPresent()) {
             assertGeneratedKeyToken(generatedKeyToken.get(), expected.getGeneratedKeyToken());
@@ -61,7 +61,7 @@ final class GeneratedKeyTokenAssert {
         }
     }
     
-    private Optional<GeneratedKeyToken> getGeneratedKeyToken(final List<SQLToken> actual) {
+    private Optional<GeneratedKeyToken> getGeneratedKeyToken(final Collection<SQLToken> actual) {
         for (SQLToken each : actual) {
             if (each instanceof GeneratedKeyToken) {
                 return Optional.of((GeneratedKeyToken) each);

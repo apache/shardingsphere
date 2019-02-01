@@ -19,13 +19,14 @@ package io.shardingsphere.core.util;
 
 import org.junit.runner.RunWith;
 import org.junit.runners.Suite;
+import org.junit.runners.Suite.SuiteClasses;
 
 @RunWith(Suite.class)
-@Suite.SuiteClasses({
+@SuiteClasses({
         NumberUtilTest.class,
         StringUtilTest.class,
         InlineExpressionParserTest.class,
         SQLUtilTest.class
     })
-public class AllUtilTests {
+public final class AllUtilTests {
 }

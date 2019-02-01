@@ -17,7 +17,7 @@
 
 package io.shardingsphere.core.optimizer.query;
 
-import io.shardingsphere.core.api.algorithm.sharding.ShardingValue;
+import io.shardingsphere.api.algorithm.sharding.ShardingValue;
 
 /**
  * Always false sharding value.

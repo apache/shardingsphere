@@ -27,14 +27,14 @@ import lombok.NoArgsConstructor;
 /**
  * Sharding router factory.
  * 
- * @author zhangiang
+ * @author zhangliang
  * @author panjuan
  */
 @NoArgsConstructor(access = AccessLevel.PRIVATE)
 public final class ShardingRouterFactory {
     
     /**
-     * Create sharding router.
+     * Create new instance of sharding router.
      * 
      * @param shardingRule sharding rule
      * @param shardingMetaData sharding meta data
@@ -42,7 +42,7 @@ public final class ShardingRouterFactory {
      * @param showSQL show SQL or not
      * @return sharding router instance
      */
-    public static ShardingRouter createSQLRouter(final ShardingRule shardingRule, final ShardingMetaData shardingMetaData, final DatabaseType databaseType, final boolean showSQL) {
+    public static ShardingRouter newInstance(final ShardingRule shardingRule, final ShardingMetaData shardingMetaData, final DatabaseType databaseType, final boolean showSQL) {
         return HintManagerHolder.isDatabaseShardingOnly() ? new DatabaseHintSQLRouter(shardingRule, showSQL) : new ParsingSQLRouter(shardingRule, shardingMetaData, databaseType, showSQL);
     }
 }

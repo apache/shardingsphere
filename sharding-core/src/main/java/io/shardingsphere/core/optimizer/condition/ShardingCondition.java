@@ -17,7 +17,7 @@
 
 package io.shardingsphere.core.optimizer.condition;
 
-import io.shardingsphere.core.api.algorithm.sharding.ShardingValue;
+import io.shardingsphere.api.algorithm.sharding.ShardingValue;
 import lombok.Getter;
 import lombok.ToString;
 

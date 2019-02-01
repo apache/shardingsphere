@@ -28,7 +28,7 @@ import io.shardingsphere.core.rule.ShardingRule;
  *
  * @author zhangliang
  */
-public class MySQLInsertValuesClauseParser extends InsertValuesClauseParser {
+public final class MySQLInsertValuesClauseParser extends InsertValuesClauseParser {
     
     public MySQLInsertValuesClauseParser(final ShardingRule shardingRule, final LexerEngine lexerEngine) {
         super(shardingRule, lexerEngine);

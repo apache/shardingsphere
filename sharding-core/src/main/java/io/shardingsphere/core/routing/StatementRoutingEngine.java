@@ -30,7 +30,7 @@ import java.util.Collections;
 /**
  * Statement routing engine.
  * 
- * @author zhangiang
+ * @author zhangliang
  * @author panjuan
  */
 public final class StatementRoutingEngine {
@@ -40,7 +40,7 @@ public final class StatementRoutingEngine {
     private final ShardingMasterSlaveRouter masterSlaveRouter;
     
     public StatementRoutingEngine(final ShardingRule shardingRule, final ShardingMetaData shardingMetaData, final DatabaseType databaseType, final boolean showSQL) {
-        shardingRouter = ShardingRouterFactory.createSQLRouter(shardingRule, shardingMetaData, databaseType, showSQL);
+        shardingRouter = ShardingRouterFactory.newInstance(shardingRule, shardingMetaData, databaseType, showSQL);
         masterSlaveRouter = new ShardingMasterSlaveRouter(shardingRule.getMasterSlaveRules());
     }
     

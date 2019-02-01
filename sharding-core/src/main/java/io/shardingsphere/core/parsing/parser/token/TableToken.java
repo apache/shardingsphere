@@ -19,7 +19,6 @@ package io.shardingsphere.core.parsing.parser.token;
 
 import io.shardingsphere.core.util.SQLUtil;
 import lombok.Getter;
-import lombok.RequiredArgsConstructor;
 import lombok.ToString;
 
 /**
@@ -27,16 +26,19 @@ import lombok.ToString;
  *
  * @author zhangliang
  */
-@RequiredArgsConstructor
 @Getter
 @ToString
-public final class TableToken implements SQLToken {
-    
-    private final int beginPosition;
+public final class TableToken extends SQLToken {
     
     private final int skippedSchemaNameLength;
     
     private final String originalLiterals;
+    
+    public TableToken(final int beginPosition, final int skippedSchemaNameLength, final String originalLiterals) {
+        super(beginPosition);
+        this.skippedSchemaNameLength = skippedSchemaNameLength;
+        this.originalLiterals = originalLiterals;
+    }
     
     /**
      * Get table name.

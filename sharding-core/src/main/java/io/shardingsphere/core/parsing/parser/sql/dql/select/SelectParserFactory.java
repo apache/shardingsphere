@@ -18,7 +18,7 @@
 package io.shardingsphere.core.parsing.parser.sql.dql.select;
 
 import io.shardingsphere.core.constant.DatabaseType;
-import io.shardingsphere.core.metadata.ShardingMetaData;
+import io.shardingsphere.core.metadata.table.ShardingTableMetaData;
 import io.shardingsphere.core.parsing.lexer.LexerEngine;
 import io.shardingsphere.core.parsing.parser.dialect.mysql.sql.MySQLSelectParser;
 import io.shardingsphere.core.parsing.parser.dialect.oracle.sql.OracleSelectParser;
@@ -42,20 +42,20 @@ public final class SelectParserFactory {
      * @param dbType database type
      * @param shardingRule databases and tables sharding rule
      * @param lexerEngine lexical analysis engine.
-     * @param shardingMetaData sharding metadata.
+     * @param shardingTableMetaData sharding metadata.
      * @return select parser instance
      */
-    public static AbstractSelectParser newInstance(final DatabaseType dbType, final ShardingRule shardingRule, final LexerEngine lexerEngine, final ShardingMetaData shardingMetaData) {
+    public static AbstractSelectParser newInstance(final DatabaseType dbType, final ShardingRule shardingRule, final LexerEngine lexerEngine, final ShardingTableMetaData shardingTableMetaData) {
         switch (dbType) {
             case H2:
             case MySQL:
-                return new MySQLSelectParser(shardingRule, lexerEngine, shardingMetaData);
+                return new MySQLSelectParser(shardingRule, lexerEngine, shardingTableMetaData);
             case Oracle:
-                return new OracleSelectParser(shardingRule, lexerEngine, shardingMetaData);
+                return new OracleSelectParser(shardingRule, lexerEngine, shardingTableMetaData);
             case SQLServer:
-                return new SQLServerSelectParser(shardingRule, lexerEngine, shardingMetaData);
+                return new SQLServerSelectParser(shardingRule, lexerEngine, shardingTableMetaData);
             case PostgreSQL:
-                return new PostgreSQLSelectParser(shardingRule, lexerEngine, shardingMetaData);
+                return new PostgreSQLSelectParser(shardingRule, lexerEngine, shardingTableMetaData);
             default:
                 throw new UnsupportedOperationException(String.format("Cannot support database [%s].", dbType));
         }

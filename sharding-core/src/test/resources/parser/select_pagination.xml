@@ -1,6 +1,6 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <parser-result-sets>
-    <parser-result sql-case-id="assertSelectPaginationWithOffset" parameters="1 2 9 10 5">
+    <parser-result sql-case-id="select_pagination_with_offset" parameters="1, 2, 9, 10, 5">
         <tables>
             <table name="t_order" alias="o" />
             <table name="t_order_item" alias="i" />
@@ -28,7 +28,7 @@
         <limit offset="5" offset-index="4" />
     </parser-result>
     
-    <parser-result sql-case-id="assertSelectPaginationWithRowCount" parameters="1 2 9 10 5">
+    <parser-result sql-case-id="select_pagination_with_row_count" parameters="1, 2, 9, 10, 5">
         <tables>
             <table name="t_order" alias="o" />
             <table name="t_order_item" alias="i" />
@@ -56,7 +56,7 @@
         <limit row-count="5" row-count-index="4" />
     </parser-result>
     
-    <parser-result sql-case-id="assertSelectPaginationWithLimit" parameters="1 2 9 10 5 3">
+    <parser-result sql-case-id="select_pagination_with_limit_with_back_quotes" parameters="1, 2, 9, 10, 5, 3">
         <tables>
             <table name="t_order" alias="o" />
             <table name="t_order_item" alias="i" />
@@ -85,22 +85,36 @@
         <limit offset="5" offset-index="4" row-count="3" row-count-index="5" />
     </parser-result>
     
-    <parser-result sql-case-id="assertSelectSingleTablePaginationWithLimit" parameters="5 3">
+    <parser-result sql-case-id="select_pagination_with_limit_with_double_quotes" parameters="1, 2, 9, 10, 5, 3">
         <tables>
             <table name="t_order" alias="o" />
+            <table name="t_order_item" alias="i" />
         </tables>
         <tokens>
-            <table-token begin-position="16" original-literals="`t_order`" />
-            <offset-token begin-position="59" offset="5" />
-            <row-count-token begin-position="62" row-count="3" />
+            <table-token begin-position="16" original-literals="&quot;t_order&quot;" />
+            <table-token begin-position="33" original-literals="&quot;t_order_item&quot;" />
+            <offset-token begin-position="195" offset="5" />
+            <row-count-token begin-position="198" row-count="3" />
         </tokens>
+        <or-condition>
+            <and-condition>
+                <condition column-name="user_id" table-name="t_order" operator="IN">
+                    <value index="0" literal="1" type="int" />
+                    <value index="1" literal="2" type="int" />
+                </condition>
+                <condition column-name="order_id" table-name="t_order" operator="BETWEEN">
+                    <value index="2" literal="9" type="int" />
+                    <value index="3" literal="10" type="int" />
+                </condition>
+            </and-condition>
+        </or-condition>
         <order-by-columns>
-            <order-by-column name="order_id" owner="o" order-direction="DESC" />
+            <order-by-column name="item_id" owner="i" order-direction="DESC" />
         </order-by-columns>
-        <limit offset="5" offset-index="0" row-count="3" row-count-index="1" />
+        <limit offset="5" offset-index="4" row-count="3" row-count-index="5" />
     </parser-result>
     
-    <parser-result sql-case-id="assertSelectPaginationWithTop" parameters="3 1 2 9 10">
+    <parser-result sql-case-id="select_pagination_with_top" parameters="3, 1, 2, 9, 10">
         <tables>
             <table name="t_order" alias="o" />
             <table name="t_order_item" alias="i" />
@@ -128,7 +142,7 @@
         <limit row-count="3" row-count-index="0" />
     </parser-result>
     
-    <parser-result sql-case-id="assertSelectPaginationWithOffsetAndLimit" parameters="1 2 9 10 5 3">
+    <parser-result sql-case-id="select_pagination_with_offset_and_limit" parameters="1, 2, 9, 10, 5, 3">
         <tables>
             <table name="t_order" alias="o" />
             <table name="t_order_item" alias="i" />
@@ -157,7 +171,7 @@
         <limit offset="5" offset-index="4" row-count="3" row-count-index="5" />
     </parser-result>
     
-    <parser-result sql-case-id="assertSelectPaginationWithTopAndRange" parameters="3 1 2 9 10 6">
+    <parser-result sql-case-id="select_pagination_with_top_for_greater_than" parameters="3, 1, 2, 9, 10, 6">
         <tables>
             <table name="t_order" alias="o" />
             <table name="t_order_item" alias="i" />
@@ -186,7 +200,7 @@
         <limit offset="6" offset-index="5" row-count-index="0" row-count="3" />
     </parser-result>
     
-    <parser-result sql-case-id="assertSelectPaginationWithTopAndRangeWithEqual" parameters="3 1 2 9 10 6">
+    <parser-result sql-case-id="select_pagination_with_top_for_greater_than_and_equal" parameters="3, 1, 2, 9, 10, 6">
         <tables>
             <table name="t_order" alias="o" />
             <table name="t_order_item" alias="i" />
@@ -215,27 +229,7 @@
         <limit offset="6" offset-index="5" row-count-index="0" row-count="3" />
     </parser-result>
     
-    <parser-result sql-case-id="assertSelectSingleTablePaginationWithTopAndRange" parameters="3 1">
-        <tables>
-            <table name="t_order" alias="o" />
-        </tables>
-        <tokens>
-            <table-token begin-position="157" original-literals="t_order" />
-            <items-token begin-position="152">
-                <items>
-                    <item>o.order_id AS ORDER_BY_DERIVED_0 </item>
-                </items>
-            </items-token>
-            <offset-token begin-position="197" offset="1" />
-            <row-count-token begin-position="27" row-count="3" />
-        </tokens>
-        <order-by-columns>
-            <order-by-column name="order_id" owner="o" alias="ORDER_BY_DERIVED_0" order-direction="DESC" />
-        </order-by-columns>
-        <limit offset="1" offset-index="1" row-count-index="0" row-count="3" />
-    </parser-result>
-    
-    <parser-result sql-case-id="assertSelectPaginationWithRowNumber" parameters="1 2 9 10 3">
+    <parser-result sql-case-id="select_pagination_with_row_number" parameters="1, 2, 9, 10, 3">
         <tables>
             <table name="t_order" alias="order0_" />
             <table name="t_order_item" alias="i" />
@@ -268,7 +262,7 @@
         <limit row-count="3" row-count-index="4" />
     </parser-result>
     
-    <parser-result sql-case-id="assertSelectPaginationWithRowNumberAndRange" parameters="1 2 9 10 5 3">
+    <parser-result sql-case-id="select_pagination_with_row_number_for_greater_than" parameters="1, 2, 9, 10, 5, 3">
         <tables>
             <table name="t_order" alias="order0_" />
             <table name="t_order_item" alias="i" />
@@ -302,7 +296,7 @@
         <limit offset="3" offset-index="5" row-count-index="4" row-count="5" />
     </parser-result>
     
-    <parser-result sql-case-id="assertSelectPaginationWithRowNumberAndRangeWithEqual" parameters="1 2 9 10 5 3">
+    <parser-result sql-case-id="select_pagination_with_row_number_for_greater_than_and_equal" parameters="1, 2, 9, 10, 5, 3">
         <tables>
             <table name="t_order" alias="order0_" />
             <table name="t_order_item" alias="i" />
@@ -336,95 +330,18 @@
         <limit offset="3" offset-index="5" row-count-index="4" row-count="5" />
     </parser-result>
     
-    <parser-result sql-case-id="assertSelectSingleTablePaginationWithRowNumberAndRange" parameters="4 1">
+    <parser-result sql-case-id="select_pagination_with_row_number_not_at_end" parameters="20">
         <tables>
             <table name="t_order"/>
         </tables>
         <tokens>
-            <table-token begin-position="62" original-literals="t_order" />
-            <offset-token begin-position="140" offset="1" />
-            <row-count-token begin-position="111" row-count="4" />
+            <table-token begin-position="14" original-literals="t_order"/>
+            <row-count-token begin-position="38" row-count="20"/>
         </tokens>
         <order-by-columns>
-            <order-by-column name="order_id" order-direction="DESC" />
+            <order-by-column name="order_id" order-direction="ASC" />
         </order-by-columns>
-        <limit offset="1" offset-index="1" row-count-index="0" row-count="4" />
+        <limit row-count="20" row-count-index="0"/>
     </parser-result>
     
-    <parser-result sql-case-id="assertSelectSingleTablePaginationWithRowNumberAndRangeWithEqual" parameters="1000 4 1">
-        <tables>
-            <table name="t_order" />
-        </tables>
-        <tokens>
-            <table-token begin-position="62" original-literals="t_order" />
-            <offset-token begin-position="165" offset="1" />
-            <row-count-token begin-position="135" row-count="4" />
-        </tokens>
-        <order-by-columns>
-            <order-by-column name="order_id" order-direction="DESC" />
-        </order-by-columns>
-        <limit offset="1" offset-index="2" row-count-index="1" row-count="4" />
-    </parser-result>
-    
-    <parser-result sql-case-id="assertSelectSingleTablePaginationWithRowNumberAndRangeWithEqualDiffOrder" parameters="4 1000 1">
-        <tables>
-            <table name="t_order" />
-        </tables>
-        <tokens>
-            <table-token begin-position="62" original-literals="t_order" />
-            <offset-token begin-position="165" offset="1" />
-            <row-count-token begin-position="113" row-count="4" />
-        </tokens>
-        <order-by-columns>
-            <order-by-column name="order_id" order-direction="DESC" />
-        </order-by-columns>
-        <limit offset="1" offset-index="2" row-count-index="0" row-count="4" />
-    </parser-result>
-    
-    <parser-result sql-case-id="assertSelectSingleTablePaginationWithTopAndRangeWithEqual" parameters="4 1">
-        <tables>
-            <table name="t_order" alias="o" />
-        </tables>
-        <tokens>
-            <table-token begin-position="157" original-literals="t_order" />
-            <items-token begin-position="152">
-                <items>
-                    <item>o.order_id AS ORDER_BY_DERIVED_0 </item>
-                </items>
-            </items-token>
-            <offset-token begin-position="198" offset="1" />
-            <row-count-token begin-position="27" row-count="4" />
-        </tokens>
-        <order-by-columns>
-            <order-by-column name="order_id" owner="o" alias="ORDER_BY_DERIVED_0" order-direction="DESC" />
-        </order-by-columns>
-        <limit offset="1" offset-index="1" row-count-index="0" row-count="4" />
-    </parser-result>
-    
-    <parser-result sql-case-id="assertSelectLeftJoinAndLimit" parameters="10 1000 0 20">
-        <tables>
-            <table name="t_order" alias="o" />
-            <table name="t_order_item" alias="i" />
-        </tables>
-        <tokens>
-            <table-token begin-position="16" original-literals="t_order" />
-            <table-token begin-position="36" original-literals="t_order_item" />
-            <offset-token begin-position="154" offset="0" />
-            <row-count-token begin-position="157" row-count="20" />
-        </tokens>
-        <or-condition>
-            <and-condition>
-                <condition column-name="user_id" table-name="t_order" operator="EQUAL">
-                    <value index="0" literal="10" type="int" />
-                </condition>
-                <condition column-name="order_id" table-name="t_order" operator="EQUAL">
-                    <value index="1" literal="1000" type="int" />
-                </condition>
-            </and-condition>
-        </or-condition>
-        <order-by-columns>
-            <order-by-column name="item_id" owner="i" order-direction="ASC" />
-        </order-by-columns>
-        <limit offset="0" offset-index="2" row-count="20" row-count-index="3" />
-    </parser-result>
 </parser-result-sets>

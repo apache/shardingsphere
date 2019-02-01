@@ -19,7 +19,7 @@ package io.shardingsphere.core.routing.router.sharding;
 
 import io.shardingsphere.core.parsing.SQLJudgeEngine;
 import io.shardingsphere.core.parsing.parser.sql.SQLStatement;
-import io.shardingsphere.core.routing.SQLExecutionUnit;
+import io.shardingsphere.core.routing.RouteUnit;
 import io.shardingsphere.core.routing.SQLRouteResult;
 import io.shardingsphere.core.routing.SQLUnit;
 import io.shardingsphere.core.routing.strategy.hint.HintShardingStrategy;
@@ -37,7 +37,7 @@ import java.util.List;
 /**
  * Sharding router for hint database only.
  * 
- * @author zhangiang
+ * @author zhangliang
  * @author maxiaoguang
  */
 @RequiredArgsConstructor
@@ -55,14 +55,14 @@ public final class DatabaseHintSQLRouter implements ShardingRouter {
     @Override
     // TODO insert SQL need parse gen key
     public SQLRouteResult route(final String logicSQL, final List<Object> parameters, final SQLStatement sqlStatement) {
-        SQLRouteResult result = new SQLRouteResult(sqlStatement, null);
+        SQLRouteResult result = new SQLRouteResult(sqlStatement);
         RoutingResult routingResult = new DatabaseHintRoutingEngine(
                 shardingRule.getShardingDataSourceNames().getDataSourceNames(), (HintShardingStrategy) shardingRule.getDefaultDatabaseShardingStrategy()).route();
         for (TableUnit each : routingResult.getTableUnits().getTableUnits()) {
-            result.getExecutionUnits().add(new SQLExecutionUnit(each.getDataSourceName(), new SQLUnit(logicSQL, new ArrayList<>(Collections.singleton(parameters)))));
+            result.getRouteUnits().add(new RouteUnit(each.getDataSourceName(), new SQLUnit(logicSQL, new ArrayList<>(Collections.singleton(parameters)))));
         }
         if (showSQL) {
-            SQLLogger.logSQL(logicSQL, sqlStatement, result.getExecutionUnits());
+            SQLLogger.logSQL(logicSQL, sqlStatement, result.getRouteUnits());
         }
         return result;
     }

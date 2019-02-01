@@ -17,7 +17,7 @@
 
 package io.shardingsphere.core.parsing.parser.dialect.oracle.sql;
 
-import io.shardingsphere.core.metadata.ShardingMetaData;
+import io.shardingsphere.core.metadata.table.ShardingTableMetaData;
 import io.shardingsphere.core.parsing.lexer.LexerEngine;
 import io.shardingsphere.core.parsing.parser.dialect.oracle.clause.OracleForClauseParser;
 import io.shardingsphere.core.parsing.parser.dialect.oracle.clause.OracleHierarchicalQueryClauseParser;
@@ -40,8 +40,8 @@ public final class OracleSelectParser extends AbstractSelectParser {
     
     private final OracleForClauseParser forClauseParser;
     
-    public OracleSelectParser(final ShardingRule shardingRule, final LexerEngine lexerEngine, final ShardingMetaData shardingMetaData) {
-        super(shardingRule, lexerEngine, new OracleSelectClauseParserFacade(shardingRule, lexerEngine), shardingMetaData);
+    public OracleSelectParser(final ShardingRule shardingRule, final LexerEngine lexerEngine, final ShardingTableMetaData shardingTableMetaData) {
+        super(shardingRule, lexerEngine, new OracleSelectClauseParserFacade(shardingRule, lexerEngine), shardingTableMetaData);
         hierarchicalQueryClauseParser = new OracleHierarchicalQueryClauseParser(lexerEngine);
         modelClauseParser = new OracleModelClauseParser(lexerEngine);
         forClauseParser = new OracleForClauseParser(lexerEngine);
@@ -49,7 +49,6 @@ public final class OracleSelectParser extends AbstractSelectParser {
     
     @Override
     protected void parseInternal(final SelectStatement selectStatement) {
-        parseDistinct();
         parseSelectList(selectStatement, getItems());
         parseFrom(selectStatement);
         parseWhere(getShardingRule(), selectStatement, getItems());

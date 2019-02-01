@@ -22,6 +22,9 @@ import io.shardingsphere.core.parsing.lexer.LexerEngine;
 import io.shardingsphere.core.parsing.lexer.dialect.mysql.MySQLKeyword;
 import io.shardingsphere.core.parsing.lexer.token.Keyword;
 import io.shardingsphere.core.parsing.parser.clause.WhereClauseParser;
+import io.shardingsphere.core.parsing.parser.context.selectitem.SelectItem;
+
+import java.util.List;
 
 /**
  * Where clause parser for MySQL.
@@ -32,6 +35,11 @@ public final class MySQLWhereClauseParser extends WhereClauseParser {
     
     public MySQLWhereClauseParser(final LexerEngine lexerEngine) {
         super(DatabaseType.MySQL, lexerEngine);
+    }
+    
+    @Override
+    protected boolean isRowNumberCondition(final List<SelectItem> items, final String columnLabel) {
+        return false;
     }
     
     @Override

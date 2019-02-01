@@ -153,6 +153,14 @@ public final class Tokenizer {
             int length = getLengthUntilTerminatedChar('`');
             return new Token(Literals.IDENTIFIER, input.substring(offset, offset + length), offset + length);
         }
+        if ('"' == charAt(offset)) {
+            int length = getLengthUntilTerminatedChar('"');
+            return new Token(Literals.IDENTIFIER, input.substring(offset, offset + length), offset + length);
+        }
+        if ('[' == charAt(offset)) {
+            int length = getLengthUntilTerminatedChar(']');
+            return new Token(Literals.IDENTIFIER, input.substring(offset, offset + length), offset + length);
+        }
         int length = 0;
         while (isIdentifierChar(charAt(offset + length))) {
             length++;

@@ -19,10 +19,13 @@ package io.shardingsphere.core.hint;
 
 import com.google.common.base.Optional;
 import com.google.common.base.Preconditions;
-import io.shardingsphere.core.api.HintManager;
-import io.shardingsphere.core.api.algorithm.sharding.ShardingValue;
+import io.shardingsphere.api.HintManager;
+import io.shardingsphere.api.algorithm.sharding.ListShardingValue;
+import io.shardingsphere.api.algorithm.sharding.ShardingValue;
 import lombok.AccessLevel;
 import lombok.NoArgsConstructor;
+
+import java.util.Collection;
 
 /**
  * Hint manager holder.
@@ -30,6 +33,7 @@ import lombok.NoArgsConstructor;
  * <p>Use thread-local to manage hint.</p>
  *
  * @author zhangliang
+ * @author panjuan
  */
 @NoArgsConstructor(access = AccessLevel.PRIVATE)
 public final class HintManagerHolder {
@@ -51,36 +55,17 @@ public final class HintManagerHolder {
     }
     
     /**
-     * Adjust use sharding hint in current thread.
-     * @return use sharding hint in current thread or not
-     */
-    public static boolean isUseShardingHint() {
-        return null != HINT_MANAGER_HOLDER.get() && HINT_MANAGER_HOLDER.get().isShardingHint();
-    }
-    
-    /**
-     * Get database sharding value.
-     * 
-     * @param shardingKey sharding key
-     * @return database sharding value
-     */
-    public static Optional<ShardingValue> getDatabaseShardingValue(final ShardingKey shardingKey) {
-        return isUseShardingHint() ? Optional.fromNullable(HINT_MANAGER_HOLDER.get().getDatabaseShardingValue(shardingKey)) : Optional.<ShardingValue>absent();
-    }
-    
-    /**
-     * Get table sharding value.
+     * Judge whether only database is sharding.
      *
-     * @param shardingKey sharding key
-     * @return table sharding value
+     * @return database sharding or not
      */
-    public static Optional<ShardingValue> getTableShardingValue(final ShardingKey shardingKey) {
-        return isUseShardingHint() ? Optional.fromNullable(HINT_MANAGER_HOLDER.get().getTableShardingValue(shardingKey)) : Optional.<ShardingValue>absent();
+    public static boolean isDatabaseShardingOnly() {
+        return null != HINT_MANAGER_HOLDER.get() && HINT_MANAGER_HOLDER.get().isDatabaseShardingOnly();
     }
     
     /**
-     * Adjust is force route to master database only or not.
-     * 
+     * Judge whether it is routed to master database or not.
+     *
      * @return is force route to master database only or not
      */
     public static boolean isMasterRouteOnly() {
@@ -88,12 +73,44 @@ public final class HintManagerHolder {
     }
     
     /**
-     * Adjust database sharding only.
+     * Get database sharding value.
      * 
-     * @return database sharding only or not
+     * @param logicTable logic table
+     * @return database sharding value
      */
-    public static boolean isDatabaseShardingOnly() {
-        return null != HINT_MANAGER_HOLDER.get() && HINT_MANAGER_HOLDER.get().isDatabaseShardingOnly();
+    public static Optional<ShardingValue> getDatabaseShardingValue(final String logicTable) {
+        if (null == HINT_MANAGER_HOLDER.get() || !HINT_MANAGER_HOLDER.get().getDatabaseShardingValues().containsKey(logicTable)) {
+            return Optional.absent();
+        }
+        return Optional.of(getShardingValue(logicTable, HINT_MANAGER_HOLDER.get().getDatabaseShardingValues().get(logicTable)));
+    }
+    
+    /**
+     * Get table sharding value.
+     *
+     * @param logicTable logic table name
+     * @return table sharding value
+     */
+    public static Optional<ShardingValue> getTableShardingValue(final String logicTable) {
+        if (null == HINT_MANAGER_HOLDER.get() || !HINT_MANAGER_HOLDER.get().getTableShardingValues().containsKey(logicTable)) {
+            return Optional.absent();
+        }
+        return Optional.of(getShardingValue(logicTable, HINT_MANAGER_HOLDER.get().getTableShardingValues().get(logicTable)));
+    }
+    
+    @SuppressWarnings("unchecked")
+    private static ShardingValue getShardingValue(final String logicTable, final Collection<Comparable<?>> values) {
+        Preconditions.checkArgument(null != values && !values.isEmpty());
+        return new ListShardingValue(logicTable, DB_COLUMN_NAME, values);
+    }
+    
+    /**
+     * Get hint manager in current thread.
+     *
+     * @return hint manager in current thread
+     */
+    public static HintManager get() {
+        return HINT_MANAGER_HOLDER.get();
     }
     
     /**
@@ -101,14 +118,5 @@ public final class HintManagerHolder {
      */
     public static void clear() {
         HINT_MANAGER_HOLDER.remove();
-    }
-
-    /**
-     * Get hint manager in current thread.
-     * 
-     * @return hint manager in current thread
-     */
-    public static HintManager get() {
-        return HINT_MANAGER_HOLDER.get();
     }
 }

@@ -46,12 +46,14 @@ public final class ShowDatabasesMergedResultTest {
     }
     
     @Test
-    public void assertGetValueWithColumnIndex() {
+    public void assertGetValueWithColumnIndex() throws SQLException {
+        assertTrue(showDatabasesMergedResult.next());
         assertThat(showDatabasesMergedResult.getValue(1, Object.class).toString(), is(ShardingConstant.LOGIC_SCHEMA_NAME));
     }
     
     @Test
-    public void assertGetValueWithColumnLabel() {
+    public void assertGetValueWithColumnLabel() throws SQLException {
+        assertTrue(showDatabasesMergedResult.next());
         assertThat(showDatabasesMergedResult.getValue("label", Object.class).toString(), is(ShardingConstant.LOGIC_SCHEMA_NAME));
     
     }

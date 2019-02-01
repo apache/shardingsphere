@@ -17,7 +17,7 @@
 
 package io.shardingsphere.core.parsing.parser.dialect.postgresql.sql;
 
-import io.shardingsphere.core.metadata.ShardingMetaData;
+import io.shardingsphere.core.metadata.table.ShardingTableMetaData;
 import io.shardingsphere.core.parsing.lexer.LexerEngine;
 import io.shardingsphere.core.parsing.parser.dialect.postgresql.clause.PostgreSQLForClauseParser;
 import io.shardingsphere.core.parsing.parser.dialect.postgresql.clause.PostgreSQLLimitClauseParser;
@@ -37,15 +37,14 @@ public final class PostgreSQLSelectParser extends AbstractSelectParser {
     
     private final PostgreSQLForClauseParser forClauseParser;
     
-    public PostgreSQLSelectParser(final ShardingRule shardingRule, final LexerEngine lexerEngine, final ShardingMetaData shardingMetaData) {
-        super(shardingRule, lexerEngine, new PostgreSQLSelectClauseParserFacade(shardingRule, lexerEngine), shardingMetaData);
+    public PostgreSQLSelectParser(final ShardingRule shardingRule, final LexerEngine lexerEngine, final ShardingTableMetaData shardingTableMetaData) {
+        super(shardingRule, lexerEngine, new PostgreSQLSelectClauseParserFacade(shardingRule, lexerEngine), shardingTableMetaData);
         limitClauseParser = new PostgreSQLLimitClauseParser(lexerEngine);
         forClauseParser = new PostgreSQLForClauseParser(lexerEngine);
     }
     
     @Override
     protected void parseInternal(final SelectStatement selectStatement) {
-        parseDistinct();
         parseSelectList(selectStatement, getItems());
         parseFrom(selectStatement);
         parseWhere(getShardingRule(), selectStatement, getItems());

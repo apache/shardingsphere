@@ -43,7 +43,7 @@ public final class KeyGeneratorFactoryTest {
     }
     
     @RequiredArgsConstructor
-    public static class InstantiationKeyGenerator implements KeyGenerator {
+    public static final class InstantiationKeyGenerator implements KeyGenerator {
         
         private final int field;
         
@@ -54,7 +54,7 @@ public final class KeyGeneratorFactoryTest {
     }
     
     @NoArgsConstructor(access = AccessLevel.PRIVATE)
-    public static class IllegalAccessKeyGenerator implements KeyGenerator {
+    public static final class IllegalAccessKeyGenerator implements KeyGenerator {
         
         @Override
         public Number generateKey() {

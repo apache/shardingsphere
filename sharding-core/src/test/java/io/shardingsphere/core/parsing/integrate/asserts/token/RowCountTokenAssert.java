@@ -26,7 +26,7 @@ import io.shardingsphere.core.parsing.parser.token.SQLToken;
 import io.shardingsphere.test.sql.SQLCaseType;
 import lombok.RequiredArgsConstructor;
 
-import java.util.List;
+import java.util.Collection;
 
 import static org.hamcrest.CoreMatchers.is;
 import static org.junit.Assert.assertFalse;
@@ -39,13 +39,13 @@ import static org.junit.Assert.assertThat;
  * @author zhangliang
  */
 @RequiredArgsConstructor
-class RowCountTokenAssert {
+final class RowCountTokenAssert {
     
     private final SQLCaseType sqlCaseType;
     
     private final SQLStatementAssertMessage assertMessage;
     
-    void assertRowCountToken(final List<SQLToken> actual, final ExpectedTokens expected) {
+    void assertRowCountToken(final Collection<SQLToken> actual, final ExpectedTokens expected) {
         Optional<RowCountToken> rowCountToken = getRowCountToken(actual);
         if (SQLCaseType.Placeholder == sqlCaseType) {
             assertFalse(assertMessage.getFullAssertMessage("Row count token should not exist: "), rowCountToken.isPresent());
@@ -63,7 +63,7 @@ class RowCountTokenAssert {
         assertThat(assertMessage.getFullAssertMessage("Row count token row count assertion error: "), actual.getRowCount(), is(expected.getRowCount()));
     }
     
-    private Optional<RowCountToken> getRowCountToken(final List<SQLToken> actual) {
+    private Optional<RowCountToken> getRowCountToken(final Collection<SQLToken> actual) {
         for (SQLToken each : actual) {
             if (each instanceof RowCountToken) {
                 return Optional.of((RowCountToken) each);

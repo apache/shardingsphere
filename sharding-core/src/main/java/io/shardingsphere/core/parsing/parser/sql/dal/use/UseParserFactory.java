@@ -44,7 +44,7 @@ public final class UseParserFactory {
         switch (dbType) {
             case H2:
             case MySQL:
-                return new MySQLUseParser();
+                return new MySQLUseParser(lexerEngine);
             default:
                 throw new UnsupportedOperationException(String.format("Cannot support database [%s].", dbType));
         }

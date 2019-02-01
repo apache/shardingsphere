@@ -1,12 +1,12 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <parser-result-sets>
-    <parser-result sql-case-id="assertSelectExpressionWithSingleTable">
+    <parser-result sql-case-id="select_with_expression">
         <tables>
             <table name="t_order" alias="o"/>
         </tables>
         <tokens>
-            <table-token begin-position="31" original-literals="t_order" />
-            <items-token begin-position="26">
+            <table-token begin-position="38" original-literals="t_order" />
+            <items-token begin-position="33">
                 <items>
                     <item>o.order_id AS ORDER_BY_DERIVED_0 </item>
                 </items>
@@ -17,31 +17,19 @@
         </order-by-columns>
     </parser-result>
     
-    <parser-result sql-case-id="assertSelectDateFuncWithSingleTable">
+    <parser-result sql-case-id="select_with_date_function">
         <tables>
             <table name="t_order_item" alias="i"/>
         </tables>
         <tokens>
-            <table-token begin-position="37" original-literals="`t_order_item`" />
+            <table-token begin-position="51" original-literals="`t_order_item`" />
         </tokens>
         <order-by-columns>
-            <order-by-column name="DATE(i.c_date)" order-direction="DESC" alias="c_date"/>
+            <order-by-column name="DATE(i.creation_date)" order-direction="DESC" alias="creation_date"/>
         </order-by-columns>
     </parser-result>
     
-    <parser-result sql-case-id="assertSelectCountWithExpression">
-        <tables>
-            <table name="t_order" alias="o" />
-        </tables>
-        <tokens>
-            <table-token begin-position="36" original-literals="t_order" />
-        </tokens>
-        <aggregation-select-items>
-            <aggregation-select-item type="COUNT" inner-expression="(o.order_id)" />
-        </aggregation-select-items>
-    </parser-result>
-    
-    <parser-result sql-case-id="assertSelectRegexpWithSingleTable" parameters="'init' 1 2">
+    <parser-result sql-case-id="select_with_regexp" parameters="'init', 1, 2">
         <tables>
             <table name="t_order_item" alias="t"/>
         </tables>

@@ -29,11 +29,9 @@ import io.shardingsphere.core.rule.BindingTableRule;
 import io.shardingsphere.core.rule.ShardingRule;
 import io.shardingsphere.core.rule.TableRule;
 import lombok.RequiredArgsConstructor;
-import lombok.extern.slf4j.Slf4j;
 
 import java.util.ArrayList;
 import java.util.Collection;
-import java.util.List;
 import java.util.TreeSet;
 
 /**
@@ -43,12 +41,9 @@ import java.util.TreeSet;
  * @author zhangliang
  */
 @RequiredArgsConstructor
-@Slf4j
 public final class ComplexRoutingEngine implements RoutingEngine {
     
     private final ShardingRule shardingRule;
-    
-    private final List<Object> parameters;
     
     private final Collection<String> logicTables;
     
@@ -59,7 +54,7 @@ public final class ComplexRoutingEngine implements RoutingEngine {
         Collection<RoutingResult> result = new ArrayList<>(logicTables.size());
         Collection<String> bindingTableNames = new TreeSet<>(String.CASE_INSENSITIVE_ORDER);
         for (String each : logicTables) {
-            Optional<TableRule> tableRule = shardingRule.tryFindTableRuleByLogicTable(each);
+            Optional<TableRule> tableRule = shardingRule.findTableRuleByLogicTable(each);
             if (tableRule.isPresent()) {
                 if (!bindingTableNames.contains(each)) {
                     result.add(new StandardRoutingEngine(shardingRule, tableRule.get().getLogicTable(), shardingConditions).route());
@@ -76,7 +71,6 @@ public final class ComplexRoutingEngine implements RoutingEngine {
                 }
             }
         }
-        log.trace("mixed tables sharding result: {}", result);
         if (result.isEmpty()) {
             throw new ShardingException("Cannot find table rule and default data source with logic tables: '%s'", logicTables);
         }

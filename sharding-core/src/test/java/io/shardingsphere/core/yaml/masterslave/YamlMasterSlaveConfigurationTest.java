@@ -17,7 +17,7 @@
 
 package io.shardingsphere.core.yaml.masterslave;
 
-import io.shardingsphere.core.api.algorithm.masterslave.MasterSlaveLoadBalanceAlgorithmType;
+import io.shardingsphere.api.algorithm.masterslave.MasterSlaveLoadBalanceAlgorithmType;
 import org.hamcrest.CoreMatchers;
 import org.junit.Test;
 
@@ -81,8 +81,8 @@ public final class YamlMasterSlaveConfigurationTest {
     }
     
     private void assertConfigMap(final YamlMasterSlaveConfiguration actual) {
-        assertThat(actual.getMasterSlaveRule().getConfigMap().size(), is(2));
-        assertThat(actual.getMasterSlaveRule().getConfigMap().get("key1"), is((Object) "value1"));
-        assertThat(actual.getMasterSlaveRule().getConfigMap().get("key2"), is((Object) "value2"));
+        assertThat(actual.getConfigMap().size(), is(2));
+        assertThat(actual.getConfigMap().get("key1"), is((Object) "value1"));
+        assertThat(actual.getConfigMap().get("key2"), is((Object) "value2"));
     }
 }

@@ -30,7 +30,7 @@ import lombok.RequiredArgsConstructor;
  * @author zhangliang
  */
 @RequiredArgsConstructor
-public class InsertIntoClauseParser implements SQLClauseParser {
+public abstract class InsertIntoClauseParser implements SQLClauseParser {
     
     private final LexerEngine lexerEngine;
     
@@ -49,9 +49,7 @@ public class InsertIntoClauseParser implements SQLClauseParser {
         skipBetweenTableAndValues(insertStatement);
     }
     
-    protected Keyword[] getUnsupportedKeywordsBeforeInto() {
-        return new Keyword[0];
-    }
+    protected abstract Keyword[] getUnsupportedKeywordsBeforeInto();
     
     private void skipBetweenTableAndValues(final InsertStatement insertStatement) {
         while (lexerEngine.skipIfEqual(getSkippedKeywordsBetweenTableAndValues())) {
@@ -62,7 +60,5 @@ public class InsertIntoClauseParser implements SQLClauseParser {
         }
     }
     
-    protected Keyword[] getSkippedKeywordsBetweenTableAndValues() {
-        return new Keyword[0];
-    }
+    protected abstract Keyword[] getSkippedKeywordsBetweenTableAndValues();
 }

@@ -17,7 +17,7 @@
 
 package io.shardingsphere.core.parsing.parser.dialect.sqlserver.sql;
 
-import io.shardingsphere.core.metadata.ShardingMetaData;
+import io.shardingsphere.core.metadata.table.ShardingTableMetaData;
 import io.shardingsphere.core.parsing.lexer.LexerEngine;
 import io.shardingsphere.core.parsing.parser.dialect.sqlserver.clause.SQLServerOffsetClauseParser;
 import io.shardingsphere.core.parsing.parser.dialect.sqlserver.clause.SQLServerTopClauseParser;
@@ -37,15 +37,14 @@ public final class SQLServerSelectParser extends AbstractSelectParser {
     
     private final SQLServerOffsetClauseParser offsetClauseParser;
     
-    public SQLServerSelectParser(final ShardingRule shardingRule, final LexerEngine lexerEngine, final ShardingMetaData shardingMetaData) {
-        super(shardingRule, lexerEngine, new SQLServerSelectClauseParserFacade(shardingRule, lexerEngine), shardingMetaData);
+    public SQLServerSelectParser(final ShardingRule shardingRule, final LexerEngine lexerEngine, final ShardingTableMetaData shardingTableMetaData) {
+        super(shardingRule, lexerEngine, new SQLServerSelectClauseParserFacade(shardingRule, lexerEngine), shardingTableMetaData);
         topClauseParser = new SQLServerTopClauseParser(lexerEngine);
         offsetClauseParser = new SQLServerOffsetClauseParser(lexerEngine);
     }
     
     @Override
     protected void parseInternal(final SelectStatement selectStatement) {
-        parseDistinct();
         parseTop(selectStatement);
         parseSelectList(selectStatement, getItems());
         parseFrom(selectStatement);

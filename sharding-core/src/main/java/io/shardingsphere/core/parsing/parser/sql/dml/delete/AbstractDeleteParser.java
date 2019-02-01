@@ -44,7 +44,7 @@ public abstract class AbstractDeleteParser implements SQLParser {
     private final AbstractDeleteClauseParserFacade deleteClauseParserFacade;
     
     @Override
-    public DMLStatement parse() {
+    public final DMLStatement parse() {
         lexerEngine.nextToken();
         lexerEngine.skipAll(getSkippedKeywordsBetweenDeleteAndTable());
         lexerEngine.unsupportedIfEqual(getUnsupportedKeywordsBetweenDeleteAndTable());
@@ -57,7 +57,5 @@ public abstract class AbstractDeleteParser implements SQLParser {
     
     protected abstract Keyword[] getSkippedKeywordsBetweenDeleteAndTable();
     
-    protected Keyword[] getUnsupportedKeywordsBetweenDeleteAndTable() {
-        return new Keyword[0];
-    }
+    protected abstract Keyword[] getUnsupportedKeywordsBetweenDeleteAndTable();
 }

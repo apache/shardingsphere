@@ -21,6 +21,8 @@ import io.shardingsphere.core.parsing.lexer.LexerEngine;
 import io.shardingsphere.core.parsing.lexer.dialect.oracle.OracleKeyword;
 import io.shardingsphere.core.parsing.lexer.token.Keyword;
 import io.shardingsphere.core.parsing.parser.clause.SelectListClauseParser;
+import io.shardingsphere.core.parsing.parser.context.selectitem.SelectItem;
+import io.shardingsphere.core.parsing.parser.sql.dql.select.SelectStatement;
 import io.shardingsphere.core.rule.ShardingRule;
 
 /**
@@ -37,5 +39,15 @@ public final class OracleSelectListClauseParser extends SelectListClauseParser {
     @Override
     protected Keyword[] getSkippedKeywordsBeforeSelectItem() {
         return new Keyword[] {OracleKeyword.CONNECT_BY_ROOT};
+    }
+    
+    @Override
+    protected boolean isRowNumberSelectItem() {
+        return false;
+    }
+    
+    @Override
+    protected SelectItem parseRowNumberSelectItem(final SelectStatement selectStatement) {
+        throw new UnsupportedOperationException("Cannot support special select item.");
     }
 }

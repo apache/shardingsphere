@@ -19,9 +19,10 @@ package io.shardingsphere.core.rule;
 
 import org.junit.runner.RunWith;
 import org.junit.runners.Suite;
+import org.junit.runners.Suite.SuiteClasses;
 
 @RunWith(Suite.class)
-@Suite.SuiteClasses({
+@SuiteClasses({
         ShardingDataSourceNamesTest.class, 
         ShardingRuleTest.class, 
         TableRuleTest.class, 
@@ -29,5 +30,5 @@ import org.junit.runners.Suite;
         BindingTableRuleTest.class,
         MasterSlaveRuleTest.class
     })
-public class AllRuleTests {
+public final class AllRuleTests {
 }

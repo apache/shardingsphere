@@ -17,15 +17,15 @@
 
 package io.shardingsphere.opentracing;
 
-import io.shardingsphere.opentracing.config.ConfigurationLoaderTest;
+import io.shardingsphere.opentracing.hook.AllHookTests;
 import org.junit.runner.RunWith;
 import org.junit.runners.Suite;
+import org.junit.runners.Suite.SuiteClasses;
 
 @RunWith(Suite.class)
-@Suite.SuiteClasses({
-        ConfigurationLoaderTest.class,
-        ExecuteEventListenerTest.class,
-        ShardingJDBCTracerTest.class
+@SuiteClasses({
+        ShardingTracerTest.class,
+        AllHookTests.class
 })
-public class AllTests {
+public final class AllTests {
 }

@@ -17,10 +17,8 @@
 
 package io.shardingsphere.core.rewrite;
 
-import com.google.common.base.Optional;
-import com.google.common.base.Preconditions;
 import com.google.common.base.Strings;
-import io.shardingsphere.core.exception.ShardingException;
+import io.shardingsphere.core.metadata.datasource.ShardingDataSourceMetaData;
 import io.shardingsphere.core.optimizer.condition.ShardingCondition;
 import io.shardingsphere.core.optimizer.insert.InsertShardingCondition;
 import io.shardingsphere.core.rewrite.placeholder.IndexPlaceholder;
@@ -31,8 +29,8 @@ import io.shardingsphere.core.rewrite.placeholder.TablePlaceholder;
 import io.shardingsphere.core.routing.SQLUnit;
 import io.shardingsphere.core.routing.type.TableUnit;
 import io.shardingsphere.core.rule.DataNode;
+import io.shardingsphere.core.rule.MasterSlaveRule;
 import io.shardingsphere.core.rule.ShardingRule;
-import io.shardingsphere.core.rule.TableRule;
 
 import java.util.ArrayList;
 import java.util.Collections;
@@ -42,7 +40,7 @@ import java.util.Map;
 
 /**
  * SQL builder.
- * 
+ *
  * @author gaohongtao
  * @author zhangliang
  * @author maxiaoguang
@@ -92,11 +90,12 @@ public final class SQLBuilder {
      * @param tableUnit table unit
      * @param logicAndActualTableMap logic and actual map
      * @param shardingRule sharding rule
+     * @param shardingDataSourceMetaData sharding data source meta data
      * @return SQL unit
      */
-    public SQLUnit toSQL(final TableUnit tableUnit, final Map<String, String> logicAndActualTableMap, final ShardingRule shardingRule) {
-        List<Object> insertParameters = new LinkedList<>();
+    public SQLUnit toSQL(final TableUnit tableUnit, final Map<String, String> logicAndActualTableMap, final ShardingRule shardingRule, final ShardingDataSourceMetaData shardingDataSourceMetaData) {
         StringBuilder result = new StringBuilder();
+        List<Object> insertParameters = new LinkedList<>();
         for (Object each : segments) {
             if (!(each instanceof ShardingPlaceholder)) {
                 result.append(each);
@@ -105,56 +104,90 @@ public final class SQLBuilder {
             String logicTableName = ((ShardingPlaceholder) each).getLogicTableName();
             String actualTableName = logicAndActualTableMap.get(logicTableName);
             if (each instanceof TablePlaceholder) {
-                result.append(null == actualTableName ? logicTableName : actualTableName);
+                appendTablePlaceholder((TablePlaceholder) each, actualTableName, result);
             } else if (each instanceof SchemaPlaceholder) {
-                SchemaPlaceholder schemaPlaceholder = (SchemaPlaceholder) each;
-                Optional<TableRule> tableRule = shardingRule.tryFindTableRuleByActualTable(actualTableName);
-                if (!tableRule.isPresent() && Strings.isNullOrEmpty(shardingRule.getShardingDataSourceNames().getDefaultDataSourceName())) {
-                    throw new ShardingException("Cannot found schema name '%s' in sharding rule.", schemaPlaceholder.getLogicSchemaName());
-                }
-                // TODO 目前只能找到真实数据源名称. 未来需要在初始化sharding rule时创建connection,并验证连接是否正确,并获取出真实的schema的名字, 然后在这里替换actualDataSourceName为actualSchemaName
-                // TODO 目前actualDataSourceName必须actualSchemaName一样,才能保证替换schema的场景不出错, 如: show columns xxx
-                Preconditions.checkState(tableRule.isPresent());
-                result.append(tableRule.get().getActualDatasourceNames().iterator().next());
+                appendSchemaPlaceholder(shardingRule, shardingDataSourceMetaData, actualTableName, result);
             } else if (each instanceof IndexPlaceholder) {
-                IndexPlaceholder indexPlaceholder = (IndexPlaceholder) each;
-                result.append(indexPlaceholder.getLogicIndexName());
-                if (!Strings.isNullOrEmpty(actualTableName)) {
-                    result.append("_");
-                    result.append(actualTableName);
-                }
+                appendIndexPlaceholder((IndexPlaceholder) each, actualTableName, result);
             } else if (each instanceof InsertValuesPlaceholder) {
-                InsertValuesPlaceholder insertValuesPlaceholder = (InsertValuesPlaceholder) each;
-                List<String> expressions = new LinkedList<>();
-                for (ShardingCondition shardingCondition : insertValuesPlaceholder.getShardingConditions().getShardingConditions()) {
-                    processInsertShardingCondition(tableUnit, (InsertShardingCondition) shardingCondition, expressions, insertParameters);
-                }
-                int count = 0;
-                for (String s : expressions) {
-                    if (0 != count) {
-                        result.append(", ");
-                    }
-                    result.append(s);
-                    count++;
-                }
+                appendInsertValuesPlaceholder(tableUnit, insertParameters, (InsertValuesPlaceholder) each, result);
             } else {
                 result.append(each);
             }
         }
-        if (insertParameters.isEmpty()) {
-            return new SQLUnit(result.toString(), new ArrayList<>(Collections.singleton(parameters)));
+        List<List<Object>> parameterSets = insertParameters.isEmpty() ? new ArrayList<>(Collections.singleton(parameters)) : new ArrayList<>(Collections.singleton(insertParameters));
+        return new SQLUnit(result.toString(), parameterSets);
+    }
+    
+    /**
+     * Convert to SQL unit.
+     * 
+     * @param masterSlaveRule master slave rule
+     * @param shardingDataSourceMetaData sharding data source meta data
+     * @return SQL
+     */
+    public String toSQL(final MasterSlaveRule masterSlaveRule, final ShardingDataSourceMetaData shardingDataSourceMetaData) {
+        StringBuilder result = new StringBuilder();
+        for (Object each : segments) {
+            if (each instanceof SchemaPlaceholder) {
+                result.append(shardingDataSourceMetaData.getActualDataSourceMetaData(masterSlaveRule.getMasterDataSourceName()).getSchemeName());
+            } else {
+                result.append(each);
+            }
+        }
+        return result.toString();
+    }
+    
+    private void appendTablePlaceholder(final TablePlaceholder tablePlaceholder, final String actualTableName, final StringBuilder stringBuilder) {
+        final String logicTableName = tablePlaceholder.getLogicTableName();
+        final String originalLiterals = tablePlaceholder.getOriginalLiterals();
+        if (logicTableName.length() == originalLiterals.length()) {
+            stringBuilder.append(null == actualTableName ? logicTableName : actualTableName);
         } else {
-            return new SQLUnit(result.toString(), new ArrayList<>(Collections.singleton(insertParameters)));
+            final char delimiter = originalLiterals.charAt(0);
+            stringBuilder.append(null == actualTableName ? originalLiterals : delimiter + actualTableName + delimiter);
+        }
+    }
+    
+    private void appendSchemaPlaceholder(final ShardingRule shardingRule, final ShardingDataSourceMetaData shardingDataSourceMetaData,
+                                         final String actualTableName, final StringBuilder stringBuilder) {
+        stringBuilder.append(shardingDataSourceMetaData.getActualDataSourceMetaData(shardingRule.getActualDataSourceNameByActualTableName(actualTableName)).getSchemeName());
+    }
+    
+    private void appendIndexPlaceholder(final IndexPlaceholder indexPlaceholder, final String actualTableName, final StringBuilder stringBuilder) {
+        stringBuilder.append(indexPlaceholder.getLogicIndexName());
+        if (!Strings.isNullOrEmpty(actualTableName)) {
+            stringBuilder.append("_");
+            stringBuilder.append(actualTableName);
+        }
+    }
+    
+    private void appendInsertValuesPlaceholder(final TableUnit tableUnit, final List<Object> parameters, final InsertValuesPlaceholder insertValuesPlaceholder, final StringBuilder stringBuilder) {
+        List<String> expressions = new LinkedList<>();
+        for (ShardingCondition each : insertValuesPlaceholder.getShardingConditions().getShardingConditions()) {
+            processInsertShardingCondition(tableUnit, (InsertShardingCondition) each, expressions, parameters);
+        }
+        int count = 0;
+        for (String each : expressions) {
+            if (0 != count) {
+                stringBuilder.append(", ");
+            }
+            stringBuilder.append(each);
+            count++;
         }
     }
     
     private void processInsertShardingCondition(final TableUnit tableUnit, final InsertShardingCondition shardingCondition, final List<String> expressions, final List<Object> parameters) {
-        for (DataNode dataNode : shardingCondition.getDataNodes()) {
-            if (dataNode.getDataSourceName().equals(tableUnit.getDataSourceName()) && dataNode.getTableName().equals(tableUnit.getRoutingTables().iterator().next().getActualTableName())) {
+        for (DataNode each : shardingCondition.getDataNodes()) {
+            if (each.getDataSourceName().equals(tableUnit.getDataSourceName()) && each.getTableName().equals(tableUnit.getRoutingTables().iterator().next().getActualTableName())) {
                 expressions.add(shardingCondition.getInsertValueExpression());
                 parameters.addAll(shardingCondition.getParameters());
-                break;
+                return;
             }
+        }
+        if (shardingCondition.getDataNodes().isEmpty()) {
+            expressions.add(shardingCondition.getInsertValueExpression());
+            parameters.addAll(shardingCondition.getParameters());
         }
     }
 }

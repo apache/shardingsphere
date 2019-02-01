@@ -47,8 +47,13 @@ public abstract class MemoryMergedResult implements MergedResult {
     
     private boolean wasNull;
     
+    protected final void resetLabelAndIndexMap(final Map<String, Integer> labelAndIndexMap) {
+        this.labelAndIndexMap.clear();
+        this.labelAndIndexMap.putAll(labelAndIndexMap);
+    }
+    
     @Override
-    public Object getValue(final int columnIndex, final Class<?> type) throws SQLException {
+    public final Object getValue(final int columnIndex, final Class<?> type) throws SQLException {
         if (Blob.class == type || Clob.class == type || Reader.class == type || InputStream.class == type || SQLXML.class == type) {
             throw new SQLFeatureNotSupportedException();
         }
@@ -58,7 +63,7 @@ public abstract class MemoryMergedResult implements MergedResult {
     }
     
     @Override
-    public Object getValue(final String columnLabel, final Class<?> type) throws SQLException {
+    public final Object getValue(final String columnLabel, final Class<?> type) throws SQLException {
         if (Blob.class == type || Clob.class == type || Reader.class == type || InputStream.class == type || SQLXML.class == type) {
             throw new SQLFeatureNotSupportedException();
         }
@@ -68,7 +73,7 @@ public abstract class MemoryMergedResult implements MergedResult {
     }
     
     @Override
-    public Object getCalendarValue(final int columnIndex, final Class<?> type, final Calendar calendar) {
+    public final Object getCalendarValue(final int columnIndex, final Class<?> type, final Calendar calendar) {
         // TODO implement with calendar
         Object result = currentResultSetRow.getCell(columnIndex);
         wasNull = null == result;
@@ -76,7 +81,7 @@ public abstract class MemoryMergedResult implements MergedResult {
     }
     
     @Override
-    public Object getCalendarValue(final String columnLabel, final Class<?> type, final Calendar calendar) {
+    public final Object getCalendarValue(final String columnLabel, final Class<?> type, final Calendar calendar) {
         // TODO implement with calendar
         Object result = currentResultSetRow.getCell(labelAndIndexMap.get(columnLabel));
         wasNull = null == result;
@@ -84,17 +89,17 @@ public abstract class MemoryMergedResult implements MergedResult {
     }
     
     @Override
-    public InputStream getInputStream(final int columnIndex, final String type) throws SQLException {
+    public final InputStream getInputStream(final int columnIndex, final String type) throws SQLException {
         throw new SQLFeatureNotSupportedException();
     }
     
     @Override
-    public InputStream getInputStream(final String columnLabel, final String type) throws SQLException {
+    public final InputStream getInputStream(final String columnLabel, final String type) throws SQLException {
         throw new SQLFeatureNotSupportedException();
     }
     
     @Override
-    public boolean wasNull() {
+    public final boolean wasNull() {
         return wasNull;
     }
 }

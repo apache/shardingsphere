@@ -18,16 +18,16 @@
 package io.shardingsphere.core.yaml.sharding;
 
 import com.google.common.base.Preconditions;
-import io.shardingsphere.core.api.algorithm.sharding.complex.ComplexKeysShardingAlgorithm;
-import io.shardingsphere.core.api.algorithm.sharding.hint.HintShardingAlgorithm;
-import io.shardingsphere.core.api.algorithm.sharding.standard.PreciseShardingAlgorithm;
-import io.shardingsphere.core.api.algorithm.sharding.standard.RangeShardingAlgorithm;
-import io.shardingsphere.core.api.config.strategy.ComplexShardingStrategyConfiguration;
-import io.shardingsphere.core.api.config.strategy.HintShardingStrategyConfiguration;
-import io.shardingsphere.core.api.config.strategy.InlineShardingStrategyConfiguration;
-import io.shardingsphere.core.api.config.strategy.NoneShardingStrategyConfiguration;
-import io.shardingsphere.core.api.config.strategy.ShardingStrategyConfiguration;
-import io.shardingsphere.core.api.config.strategy.StandardShardingStrategyConfiguration;
+import io.shardingsphere.api.algorithm.sharding.complex.ComplexKeysShardingAlgorithm;
+import io.shardingsphere.api.algorithm.sharding.hint.HintShardingAlgorithm;
+import io.shardingsphere.api.algorithm.sharding.standard.PreciseShardingAlgorithm;
+import io.shardingsphere.api.algorithm.sharding.standard.RangeShardingAlgorithm;
+import io.shardingsphere.api.config.strategy.ComplexShardingStrategyConfiguration;
+import io.shardingsphere.api.config.strategy.HintShardingStrategyConfiguration;
+import io.shardingsphere.api.config.strategy.InlineShardingStrategyConfiguration;
+import io.shardingsphere.api.config.strategy.NoneShardingStrategyConfiguration;
+import io.shardingsphere.api.config.strategy.ShardingStrategyConfiguration;
+import io.shardingsphere.api.config.strategy.StandardShardingStrategyConfiguration;
 import io.shardingsphere.core.routing.strategy.ShardingAlgorithmFactory;
 import io.shardingsphere.core.yaml.sharding.strategy.YamlComplexShardingStrategyConfiguration;
 import io.shardingsphere.core.yaml.sharding.strategy.YamlHintShardingStrategyConfiguration;
@@ -35,13 +35,16 @@ import io.shardingsphere.core.yaml.sharding.strategy.YamlInlineShardingStrategyC
 import io.shardingsphere.core.yaml.sharding.strategy.YamlNoneShardingStrategyConfiguration;
 import io.shardingsphere.core.yaml.sharding.strategy.YamlStandardShardingStrategyConfiguration;
 import lombok.Getter;
+import lombok.NoArgsConstructor;
 import lombok.Setter;
 
 /**
  * Configuration for yaml sharding strategy.
  *
  * @author caohao
+ * @author panjuan
  */
+@NoArgsConstructor
 @Getter
 @Setter
 public class YamlShardingStrategyConfiguration {
@@ -55,6 +58,33 @@ public class YamlShardingStrategyConfiguration {
     private YamlInlineShardingStrategyConfiguration inline;
     
     private YamlNoneShardingStrategyConfiguration none;
+    
+    public YamlShardingStrategyConfiguration(final ShardingStrategyConfiguration shardingStrategyConfiguration) {
+        if (shardingStrategyConfiguration instanceof StandardShardingStrategyConfiguration) {
+            standard = new YamlStandardShardingStrategyConfiguration();
+            StandardShardingStrategyConfiguration config = (StandardShardingStrategyConfiguration) shardingStrategyConfiguration;
+            standard.setShardingColumn(config.getShardingColumn());
+            standard.setPreciseAlgorithmClassName(config.getPreciseShardingAlgorithm().getClass().getName());
+            standard.setRangeAlgorithmClassName(null == config.getRangeShardingAlgorithm()
+                    ? null : config.getRangeShardingAlgorithm().getClass().getName());
+        }
+        if (shardingStrategyConfiguration instanceof ComplexShardingStrategyConfiguration) {
+            complex = new YamlComplexShardingStrategyConfiguration();
+            ComplexShardingStrategyConfiguration config = (ComplexShardingStrategyConfiguration) shardingStrategyConfiguration;
+            complex.setShardingColumns(config.getShardingColumns());
+            complex.setAlgorithmClassName(config.getShardingAlgorithm().getClass().getName());
+        }
+        if (shardingStrategyConfiguration instanceof HintShardingStrategyConfiguration) {
+            hint = new YamlHintShardingStrategyConfiguration();
+            hint.setAlgorithmClassName(((HintShardingStrategyConfiguration) shardingStrategyConfiguration).getShardingAlgorithm().getClass().getName());
+        }
+        if (shardingStrategyConfiguration instanceof InlineShardingStrategyConfiguration) {
+            inline = new YamlInlineShardingStrategyConfiguration();
+            InlineShardingStrategyConfiguration config = (InlineShardingStrategyConfiguration) shardingStrategyConfiguration;
+            inline.setShardingColumn(config.getShardingColumn());
+            inline.setAlgorithmExpression(config.getAlgorithmExpression());
+        }
+    }
     
     /**
      * Build sharding strategy configuration.

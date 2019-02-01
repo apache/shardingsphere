@@ -19,61 +19,44 @@ package io.shardingsphere.core.merger.dal.show;
 
 import io.shardingsphere.core.constant.ShardingConstant;
 import io.shardingsphere.core.merger.MergedResult;
+import lombok.RequiredArgsConstructor;
 
 import java.io.InputStream;
+import java.io.Reader;
+import java.sql.Blob;
+import java.sql.Clob;
+import java.sql.SQLException;
 import java.sql.SQLFeatureNotSupportedException;
-import java.util.Calendar;
+import java.sql.SQLXML;
+import java.util.Collections;
+import java.util.List;
 
 /**
  * Merged result for show databases.
  *
- * @author zhangliang
+ * @author chenqingyang
  */
-public final class ShowDatabasesMergedResult implements MergedResult {
+@RequiredArgsConstructor
+public final class ShowDatabasesMergedResult extends LocalMergedResultAdapter implements MergedResult {
     
-    private boolean firstNext = true;
+    private final List<String> schemas;
+    
+    private int currentIndex;
+    
+    public ShowDatabasesMergedResult() {
+        this(Collections.singletonList(ShardingConstant.LOGIC_SCHEMA_NAME));
+    }
     
     @Override
     public boolean next() {
-        if (firstNext) {
-            firstNext = false;
-            return true;
+        return currentIndex++ < schemas.size();
+    }
+    
+    @Override
+    public Object getValue(final int columnIndex, final Class<?> type) throws SQLException {
+        if (Blob.class == type || Clob.class == type || Reader.class == type || InputStream.class == type || SQLXML.class == type) {
+            throw new SQLFeatureNotSupportedException();
         }
-        return false;
-    }
-    
-    @Override
-    public Object getValue(final int columnIndex, final Class<?> type) {
-        return ShardingConstant.LOGIC_SCHEMA_NAME;
-    }
-    
-    @Override
-    public Object getValue(final String columnLabel, final Class<?> type) {
-        return ShardingConstant.LOGIC_SCHEMA_NAME;
-    }
-    
-    @Override
-    public Object getCalendarValue(final int columnIndex, final Class<?> type, final Calendar calendar) throws SQLFeatureNotSupportedException {
-        throw new SQLFeatureNotSupportedException();
-    }
-    
-    @Override
-    public Object getCalendarValue(final String columnLabel, final Class<?> type, final Calendar calendar) throws SQLFeatureNotSupportedException {
-        throw new SQLFeatureNotSupportedException();
-    }
-    
-    @Override
-    public InputStream getInputStream(final int columnIndex, final String type) throws SQLFeatureNotSupportedException {
-        throw new SQLFeatureNotSupportedException();
-    }
-    
-    @Override
-    public InputStream getInputStream(final String columnLabel, final String type) throws SQLFeatureNotSupportedException {
-        throw new SQLFeatureNotSupportedException();
-    }
-    
-    @Override
-    public boolean wasNull() {
-        return false;
+        return schemas.get(currentIndex - 1);
     }
 }

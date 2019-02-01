@@ -26,7 +26,7 @@ import io.shardingsphere.core.parsing.parser.token.SQLToken;
 import io.shardingsphere.test.sql.SQLCaseType;
 import lombok.RequiredArgsConstructor;
 
-import java.util.List;
+import java.util.Collection;
 
 import static org.hamcrest.CoreMatchers.is;
 import static org.junit.Assert.assertFalse;
@@ -39,13 +39,13 @@ import static org.junit.Assert.assertThat;
  * @author zhangliang
  */
 @RequiredArgsConstructor
-class OffsetTokenAssert {
+final class OffsetTokenAssert {
     
     private final SQLCaseType sqlCaseType;
     
     private final SQLStatementAssertMessage assertMessage;
     
-    void assertOffsetToken(final List<SQLToken> actual, final ExpectedTokens expected) {
+    void assertOffsetToken(final Collection<SQLToken> actual, final ExpectedTokens expected) {
         Optional<OffsetToken> offsetToken = getOffsetToken(actual);
         if (SQLCaseType.Placeholder == sqlCaseType) {
             assertFalse(assertMessage.getFullAssertMessage("Offset token should not exist: "), offsetToken.isPresent());
@@ -63,7 +63,7 @@ class OffsetTokenAssert {
         assertThat(assertMessage.getFullAssertMessage("Offset token offset assertion error: "), actual.getOffset(), is(expected.getOffset()));
     }
     
-    private Optional<OffsetToken> getOffsetToken(final List<SQLToken> actual) {
+    private Optional<OffsetToken> getOffsetToken(final Collection<SQLToken> actual) {
         for (SQLToken each : actual) {
             if (each instanceof OffsetToken) {
                 return Optional.of((OffsetToken) each);

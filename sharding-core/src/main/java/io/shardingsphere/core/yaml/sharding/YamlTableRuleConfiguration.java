@@ -19,16 +19,19 @@ package io.shardingsphere.core.yaml.sharding;
 
 import com.google.common.base.Preconditions;
 import com.google.common.base.Strings;
-import io.shardingsphere.core.api.config.TableRuleConfiguration;
+import io.shardingsphere.api.config.rule.TableRuleConfiguration;
 import io.shardingsphere.core.keygen.KeyGeneratorFactory;
 import lombok.Getter;
+import lombok.NoArgsConstructor;
 import lombok.Setter;
 
 /**
  * Yaml table rule configuration.
  *
  * @author caohao
+ * @author panjuan
  */
+@NoArgsConstructor
 @Getter
 @Setter
 public class YamlTableRuleConfiguration {
@@ -46,6 +49,16 @@ public class YamlTableRuleConfiguration {
     private String keyGeneratorClassName;
     
     private String logicIndex;
+    
+    public YamlTableRuleConfiguration(final TableRuleConfiguration tableRuleConfiguration) {
+        logicTable = tableRuleConfiguration.getLogicTable();
+        actualDataNodes = tableRuleConfiguration.getActualDataNodes();
+        databaseStrategy = new YamlShardingStrategyConfiguration(tableRuleConfiguration.getDatabaseShardingStrategyConfig());
+        tableStrategy = new YamlShardingStrategyConfiguration(tableRuleConfiguration.getTableShardingStrategyConfig());
+        keyGeneratorColumnName = tableRuleConfiguration.getKeyGeneratorColumnName();
+        keyGeneratorClassName = null == tableRuleConfiguration.getKeyGenerator()
+                ? null : tableRuleConfiguration.getKeyGenerator().getClass().getName();
+    }
     
     /**
      * Build table rule configuration.

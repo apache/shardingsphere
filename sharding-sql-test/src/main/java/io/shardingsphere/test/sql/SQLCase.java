@@ -42,4 +42,6 @@ public final class SQLCase {
     
     @XmlAttribute(name = "db-types")
     private String databaseTypes;
+    
+    private String sqlType;
 }

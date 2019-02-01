@@ -17,14 +17,17 @@
 
 package io.shardingsphere.core.routing.type.broadcast;
 
-import io.shardingsphere.core.api.config.ShardingRuleConfiguration;
-import io.shardingsphere.core.api.config.TableRuleConfiguration;
+import io.shardingsphere.api.config.rule.ShardingRuleConfiguration;
+import io.shardingsphere.api.config.rule.TableRuleConfiguration;
 import io.shardingsphere.core.routing.type.RoutingResult;
+import io.shardingsphere.core.routing.type.TableUnit;
 import io.shardingsphere.core.rule.ShardingRule;
 import org.junit.Before;
 import org.junit.Test;
 
+import java.util.ArrayList;
 import java.util.Arrays;
+import java.util.List;
 
 import static org.hamcrest.CoreMatchers.instanceOf;
 import static org.hamcrest.CoreMatchers.is;
@@ -48,9 +51,10 @@ public final class DatabaseBroadcastRoutingEngineTest {
     @Test
     public void assertRoute() {
         RoutingResult routingResult = databaseBroadcastRoutingEngine.route();
+        List<TableUnit> tableUnitList = new ArrayList<>(routingResult.getTableUnits().getTableUnits());
         assertThat(routingResult, instanceOf(RoutingResult.class));
         assertThat(routingResult.getTableUnits().getTableUnits().size(), is(2));
-        assertThat(routingResult.getTableUnits().getTableUnits().get(0).getDataSourceName(), is("ds0"));
-        assertThat(routingResult.getTableUnits().getTableUnits().get(1).getDataSourceName(), is("ds1"));
+        assertThat(tableUnitList.get(0).getDataSourceName(), is("ds0"));
+        assertThat(tableUnitList.get(1).getDataSourceName(), is("ds1"));
     }
 }

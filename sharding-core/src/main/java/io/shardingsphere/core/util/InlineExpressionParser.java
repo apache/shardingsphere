@@ -18,16 +18,21 @@
 package io.shardingsphere.core.util;
 
 import com.google.common.base.Function;
+import com.google.common.base.Joiner;
 import com.google.common.collect.Collections2;
 import com.google.common.collect.Sets;
+import groovy.lang.Closure;
 import groovy.lang.GString;
 import groovy.lang.GroovyShell;
+import groovy.lang.Script;
 import lombok.RequiredArgsConstructor;
 
 import java.util.ArrayList;
 import java.util.Collection;
 import java.util.Collections;
+import java.util.HashMap;
 import java.util.List;
+import java.util.Map;
 import java.util.Set;
 
 /**
@@ -41,12 +46,17 @@ public final class InlineExpressionParser {
     
     private static final char SPLITTER = ',';
     
+    private static final Map<String, Script> SCRIPTS = new HashMap<>();
+    
+    private static final GroovyShell SHELL = new GroovyShell();
+    
     private final String inlineExpression;
     
     /**
-     * Replace all the inlineExpression placeholders.
-     * @param inlineExpression inlineExpression
-     * @return result inlineExpression
+     * Replace all inline expression placeholders.
+     * 
+     * @param inlineExpression inline expression with {@code $->}
+     * @return result inline expression with {@code $}
      */
     public static String handlePlaceHolder(final String inlineExpression) {
         return inlineExpression.contains("$->{") ? inlineExpression.replaceAll("\\$->\\{", "\\$\\{") : inlineExpression;
@@ -57,16 +67,24 @@ public final class InlineExpressionParser {
      *
      * @return result list
      */
-    public List<String> evaluate() {
+    public List<String> splitAndEvaluate() {
         if (null == inlineExpression) {
             return Collections.emptyList();
         }
         return flatten(evaluate(split()));
     }
     
+    /**
+     * Evaluate closure.
+     *
+     * @return closure
+     */
+    public Closure<?> evaluateClosure() {
+        return (Closure) evaluate(Joiner.on("").join("{it -> \"", inlineExpression, "\"}"));
+    }
+    
     private List<Object> evaluate(final List<String> inlineExpressions) {
         List<Object> result = new ArrayList<>(inlineExpressions.size());
-        GroovyShell shell = new GroovyShell();
         for (String each : inlineExpressions) {
             StringBuilder expression = new StringBuilder(handlePlaceHolder(each));
             if (!each.startsWith("\"")) {
@@ -75,9 +93,20 @@ public final class InlineExpressionParser {
             if (!each.endsWith("\"")) {
                 expression.append("\"");
             }
-            result.add(shell.evaluate(expression.toString()));
+            result.add(evaluate(expression.toString()));
         }
         return result;
+    }
+    
+    private Object evaluate(final String expression) {
+        Script script;
+        if (SCRIPTS.containsKey(expression)) {
+            script = SCRIPTS.get(expression);
+        } else {
+            script = SHELL.parse(expression);
+            SCRIPTS.put(expression, script);
+        }
+        return script.run();
     }
     
     private List<String> split() {

@@ -19,10 +19,11 @@ package io.shardingsphere.core.parsing.parser.dialect.oracle.clause.facade;
 
 import io.shardingsphere.core.parsing.lexer.LexerEngine;
 import io.shardingsphere.core.parsing.parser.clause.InsertColumnsClauseParser;
-import io.shardingsphere.core.parsing.parser.clause.InsertSetClauseParser;
-import io.shardingsphere.core.parsing.parser.clause.InsertValuesClauseParser;
 import io.shardingsphere.core.parsing.parser.clause.facade.AbstractInsertClauseParserFacade;
+import io.shardingsphere.core.parsing.parser.dialect.oracle.clause.OracleInsertDuplicateKeyUpdateClauseParser;
 import io.shardingsphere.core.parsing.parser.dialect.oracle.clause.OracleInsertIntoClauseParser;
+import io.shardingsphere.core.parsing.parser.dialect.oracle.clause.OracleInsertSetClauseParser;
+import io.shardingsphere.core.parsing.parser.dialect.oracle.clause.OracleInsertValuesClauseParser;
 import io.shardingsphere.core.rule.ShardingRule;
 
 /**
@@ -33,7 +34,7 @@ import io.shardingsphere.core.rule.ShardingRule;
 public final class OracleInsertClauseParserFacade extends AbstractInsertClauseParserFacade {
     
     public OracleInsertClauseParserFacade(final ShardingRule shardingRule, final LexerEngine lexerEngine) {
-        super(new OracleInsertIntoClauseParser(shardingRule, lexerEngine), new InsertColumnsClauseParser(shardingRule, lexerEngine), 
-                new InsertValuesClauseParser(shardingRule, lexerEngine), new InsertSetClauseParser(shardingRule, lexerEngine));
+        super(new OracleInsertIntoClauseParser(shardingRule, lexerEngine), new InsertColumnsClauseParser(shardingRule, lexerEngine), new OracleInsertValuesClauseParser(shardingRule, lexerEngine), 
+                new OracleInsertSetClauseParser(shardingRule, lexerEngine), new OracleInsertDuplicateKeyUpdateClauseParser(shardingRule, lexerEngine));
     }
 }

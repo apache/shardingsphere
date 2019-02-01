@@ -18,7 +18,6 @@
 package io.shardingsphere.core.parsing.parser.token;
 
 import lombok.Getter;
-import lombok.RequiredArgsConstructor;
 import lombok.ToString;
 
 /**
@@ -26,12 +25,14 @@ import lombok.ToString;
  *
  * @author panjuan
  */
-@RequiredArgsConstructor
 @Getter
 @ToString
-public final class InsertColumnToken implements SQLToken {
-    
-    private final int beginPosition;
+public final class InsertColumnToken extends SQLToken {
     
     private final String columnName;
+    
+    public InsertColumnToken(final int beginPosition, final String columnName) {
+        super(beginPosition);
+        this.columnName = columnName;
+    }
 }

@@ -17,107 +17,35 @@
 
 package io.shardingsphere.core.metadata;
 
-import io.shardingsphere.core.exception.ShardingException;
-import io.shardingsphere.core.rule.DataNode;
-import io.shardingsphere.core.rule.ShardingDataSourceNames;
+import io.shardingsphere.core.constant.DatabaseType;
+import io.shardingsphere.core.executor.ShardingExecuteEngine;
+import io.shardingsphere.core.metadata.datasource.ShardingDataSourceMetaData;
+import io.shardingsphere.core.metadata.table.ShardingTableMetaData;
+import io.shardingsphere.core.metadata.table.executor.TableMetaDataConnectionManager;
+import io.shardingsphere.core.metadata.table.executor.TableMetaDataInitializer;
 import io.shardingsphere.core.rule.ShardingRule;
-import io.shardingsphere.core.rule.TableRule;
 import lombok.Getter;
-import lombok.Setter;
+import lombok.RequiredArgsConstructor;
 
-import java.sql.Connection;
-import java.sql.SQLException;
-import java.util.Collection;
-import java.util.Collections;
-import java.util.HashMap;
-import java.util.List;
 import java.util.Map;
 
 /**
- * Abstract Sharding metadata.
+ * Sharding meta data.
  *
- * @author panjuan
- * @author zhaojun
+ * @author zhangliang
  */
+// TODO RequiredArgsConstructor for test only, should remove later
+@RequiredArgsConstructor
 @Getter
-@Setter
-public abstract class ShardingMetaData {
-
-    private Map<String, TableMetaData> tableMetaDataMap;
-
-    /**
-     * Initialize sharding metadata.
-     *
-     * @param shardingRule sharding rule
-     * @throws SQLException SQL exception
-     */
-    public void init(final ShardingRule shardingRule) throws SQLException {
-        tableMetaDataMap = new HashMap<>(shardingRule.getTableRules().size(), 1);
-        for (TableRule each : shardingRule.getTableRules()) {
-            refresh(each, shardingRule);
-        }
-    }
-
-    /**
-     * refresh each tableMetaData by TableRule.
-     *
-     * @param each table rule
-     * @param shardingRule sharding rule
-     * @throws SQLException SQL Exception
-     */
-    public void refresh(final TableRule each, final ShardingRule shardingRule) throws SQLException {
-        refresh(each, shardingRule, Collections.<String, Connection>emptyMap());
-    }
-
-    /**
-     * refresh each tableMetaData by TableRule.
-     *
-     * @param each table rule
-     * @param shardingRule sharding rule
-     * @param connectionMap connection map passing from sharding connection
-     * @throws SQLException SQL exception
-     */
-    public void refresh(final TableRule each, final ShardingRule shardingRule, final Map<String, Connection> connectionMap) throws SQLException {
-        tableMetaDataMap.put(each.getLogicTable(), getTableMetaData(each.getLogicTable(), each.getActualDataNodes(), shardingRule.getShardingDataSourceNames(), connectionMap));
-    }
-
-    private TableMetaData getTableMetaData(final String logicTableName, final List<DataNode> actualDataNodes,
-                                           final ShardingDataSourceNames shardingDataSourceNames, final Map<String, Connection> connectionMap) throws SQLException {
-        Collection<ColumnMetaData> result = null;
-        for (DataNode each : actualDataNodes) {
-            Collection<ColumnMetaData> columnMetaDataList = getColumnMetaDataList(each, shardingDataSourceNames, connectionMap);
-            if (null == result) {
-                result = columnMetaDataList;
-            }
-            if (!result.equals(columnMetaDataList)) {
-                throw new ShardingException(getErrorMsgOfTableMetaData(logicTableName, result, columnMetaDataList));
-            }
-        }
-        return new TableMetaData(result);
-    }
-
-    /**
-     * Get column metadata implementing by concrete handler.
-     *
-     * @param dataNode DataNode
-     * @param shardingDataSourceNames ShardingDataSourceNames
-     * @param connectionMap connection map from sharding connection
-     * @return ColumnMetaData
-     * @throws SQLException SQL exception
-     */
-    public abstract Collection<ColumnMetaData> getColumnMetaDataList(DataNode dataNode, ShardingDataSourceNames shardingDataSourceNames, Map<String, Connection> connectionMap) throws SQLException;
-
-    private String getErrorMsgOfTableMetaData(final String logicTableName, final Collection<ColumnMetaData> oldColumnMetaDataList, final Collection<ColumnMetaData> newColumnMetaDataList) {
-        StringBuilder stringBuilder = new StringBuilder();
-        stringBuilder.append(" Cannot get uniformed table structure for ").append(logicTableName).append(".");
-        stringBuilder.append(" The different column metadata of actual tables is as follows: ");
-        for (ColumnMetaData each : oldColumnMetaDataList) {
-            stringBuilder.append(each.toString()).append(" ");
-        }
-        stringBuilder.append("\n");
-        for (ColumnMetaData each : newColumnMetaDataList) {
-            stringBuilder.append(each.toString()).append(" ");
-        }
-        return stringBuilder.toString();
+public final class ShardingMetaData {
+    
+    private final ShardingDataSourceMetaData dataSource;
+    
+    private final ShardingTableMetaData table;
+    
+    public ShardingMetaData(final Map<String, String> dataSourceURLs, final ShardingRule shardingRule, final DatabaseType databaseType, final ShardingExecuteEngine executeEngine, 
+                            final TableMetaDataConnectionManager connectionManager, final int maxConnectionsSizePerQuery, final boolean isCheckingMetaData) {
+        dataSource = new ShardingDataSourceMetaData(dataSourceURLs, shardingRule, databaseType);
+        table = new ShardingTableMetaData(new TableMetaDataInitializer(dataSource, executeEngine, connectionManager, maxConnectionsSizePerQuery, isCheckingMetaData).load(shardingRule));
     }
 }

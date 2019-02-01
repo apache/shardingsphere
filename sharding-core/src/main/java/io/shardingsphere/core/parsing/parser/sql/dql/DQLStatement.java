@@ -18,6 +18,8 @@
 package io.shardingsphere.core.parsing.parser.sql.dql;
 
 import io.shardingsphere.core.constant.SQLType;
+import io.shardingsphere.core.parsing.lexer.token.DefaultKeyword;
+import io.shardingsphere.core.parsing.lexer.token.TokenType;
 import io.shardingsphere.core.parsing.parser.sql.AbstractSQLStatement;
 import lombok.ToString;
 
@@ -31,5 +33,15 @@ public class DQLStatement extends AbstractSQLStatement {
     
     public DQLStatement() {
         super(SQLType.DQL);
+    }
+    
+    /**
+     * Is DQL statement.
+     *
+     * @param tokenType token type
+     * @return is DQL or not
+     */
+    public static boolean isDQL(final TokenType tokenType) {
+        return DefaultKeyword.SELECT == tokenType;
     }
 }

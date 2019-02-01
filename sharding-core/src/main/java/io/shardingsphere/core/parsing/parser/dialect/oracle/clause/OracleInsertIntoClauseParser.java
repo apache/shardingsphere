@@ -39,4 +39,9 @@ public final class OracleInsertIntoClauseParser extends InsertIntoClauseParser {
     protected Keyword[] getUnsupportedKeywordsBeforeInto() {
         return new Keyword[] {DefaultKeyword.ALL, OracleKeyword.FIRST};
     }
+    
+    @Override
+    protected Keyword[] getSkippedKeywordsBetweenTableAndValues() {
+        return new Keyword[0];
+    }
 }

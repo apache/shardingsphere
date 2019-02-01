@@ -1,0 +1,8 @@
+io.shardingsphere.shardingjdbc.jdbc.core.fixed.FixedBaseShardingTransactionHandler
+io.shardingsphere.shardingjdbc.jdbc.core.fixed.FixedXAShardingTransactionHandler
+
+
+
+
+
+

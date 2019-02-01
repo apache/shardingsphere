@@ -18,6 +18,7 @@
 package io.shardingsphere.core.parsing.parser.dialect.sqlserver.clause;
 
 import io.shardingsphere.core.parsing.lexer.LexerEngine;
+import io.shardingsphere.core.parsing.lexer.token.Keyword;
 import io.shardingsphere.core.parsing.parser.clause.InsertIntoClauseParser;
 import io.shardingsphere.core.rule.ShardingRule;
 
@@ -30,5 +31,15 @@ public final class SQLServerInsertIntoClauseParser extends InsertIntoClauseParse
     
     public SQLServerInsertIntoClauseParser(final ShardingRule shardingRule, final LexerEngine lexerEngine) {
         super(lexerEngine, new SQLServerTableReferencesClauseParser(shardingRule, lexerEngine));
+    }
+    
+    @Override
+    protected Keyword[] getUnsupportedKeywordsBeforeInto() {
+        return new Keyword[0];
+    }
+    
+    @Override
+    protected Keyword[] getSkippedKeywordsBetweenTableAndValues() {
+        return new Keyword[0];
     }
 }

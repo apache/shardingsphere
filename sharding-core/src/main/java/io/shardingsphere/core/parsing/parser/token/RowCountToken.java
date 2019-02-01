@@ -18,18 +18,19 @@
 package io.shardingsphere.core.parsing.parser.token;
 
 import lombok.Getter;
-import lombok.RequiredArgsConstructor;
 
 /**
  * Row count token for limit.
  *
  * @author zhangliang
  */
-@RequiredArgsConstructor
 @Getter
-public final class RowCountToken implements SQLToken {
-    
-    private final int beginPosition;
+public final class RowCountToken extends SQLToken {
     
     private final int rowCount;
+    
+    public RowCountToken(final int beginPosition, final int rowCount) {
+        super(beginPosition);
+        this.rowCount = rowCount;
+    }
 }

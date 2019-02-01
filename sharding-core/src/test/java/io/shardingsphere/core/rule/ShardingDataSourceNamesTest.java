@@ -18,8 +18,9 @@
 package io.shardingsphere.core.rule;
 
 import com.google.common.collect.Sets;
-import io.shardingsphere.core.api.config.MasterSlaveRuleConfiguration;
-import io.shardingsphere.core.api.config.ShardingRuleConfiguration;
+import io.shardingsphere.api.algorithm.masterslave.MasterSlaveLoadBalanceAlgorithmType;
+import io.shardingsphere.api.config.rule.MasterSlaveRuleConfiguration;
+import io.shardingsphere.api.config.rule.ShardingRuleConfiguration;
 import org.hamcrest.CoreMatchers;
 import org.junit.Test;
 
@@ -37,7 +38,8 @@ public final class ShardingDataSourceNamesTest {
     public void assertGetAllDataSourceNames() {
         ShardingRuleConfiguration shardingRuleConfig = new ShardingRuleConfiguration();
         shardingRuleConfig.setDefaultDataSourceName("default_ds");
-        shardingRuleConfig.getMasterSlaveRuleConfigs().add(new MasterSlaveRuleConfiguration("ms_ds", "master_ds", Collections.singletonList("slave_ds")));
+        shardingRuleConfig.getMasterSlaveRuleConfigs().add(
+                new MasterSlaveRuleConfiguration("ms_ds", "master_ds", Collections.singletonList("slave_ds"), MasterSlaveLoadBalanceAlgorithmType.ROUND_ROBIN.getAlgorithm()));
         Collection<String> actual = new ShardingDataSourceNames(shardingRuleConfig, Arrays.asList("default_ds", "master_ds", "slave_ds")).getDataSourceNames();
         assertThat(actual, CoreMatchers.<Collection<String>>is(Sets.newLinkedHashSet(Arrays.asList("default_ds", "ms_ds"))));
     }
@@ -46,7 +48,8 @@ public final class ShardingDataSourceNamesTest {
     public void assertGetDefaultDataSourceNameWithDefaultDataSourceName() {
         ShardingRuleConfiguration shardingRuleConfig = new ShardingRuleConfiguration();
         shardingRuleConfig.setDefaultDataSourceName("default_ds");
-        shardingRuleConfig.getMasterSlaveRuleConfigs().add(new MasterSlaveRuleConfiguration("ms_ds", "master_ds", Collections.singletonList("slave_ds")));
+        shardingRuleConfig.getMasterSlaveRuleConfigs().add(
+                new MasterSlaveRuleConfiguration("ms_ds", "master_ds", Collections.singletonList("slave_ds"), MasterSlaveLoadBalanceAlgorithmType.ROUND_ROBIN.getAlgorithm()));
         String actual = new ShardingDataSourceNames(shardingRuleConfig, Arrays.asList("default_ds", "master_ds", "slave_ds")).getDefaultDataSourceName();
         assertThat(actual, is("default_ds"));
     }
@@ -54,7 +57,8 @@ public final class ShardingDataSourceNamesTest {
     @Test
     public void assertGetDefaultDataSourceNameWithoutDefaultDataSourceName() {
         ShardingRuleConfiguration shardingRuleConfig = new ShardingRuleConfiguration();
-        shardingRuleConfig.getMasterSlaveRuleConfigs().add(new MasterSlaveRuleConfiguration("ms_ds", "master_ds", Collections.singletonList("slave_ds")));
+        shardingRuleConfig.getMasterSlaveRuleConfigs().add(
+                new MasterSlaveRuleConfiguration("ms_ds", "master_ds", Collections.singletonList("slave_ds"), MasterSlaveLoadBalanceAlgorithmType.ROUND_ROBIN.getAlgorithm()));
         String actual = new ShardingDataSourceNames(shardingRuleConfig, Arrays.asList("default_ds", "master_ds", "slave_ds")).getDefaultDataSourceName();
         assertNull(actual);
     }
@@ -62,7 +66,8 @@ public final class ShardingDataSourceNamesTest {
     @Test
     public void assertGetDefaultDataSourceNameWithOnlyOneDataSourceName() {
         ShardingRuleConfiguration shardingRuleConfig = new ShardingRuleConfiguration();
-        shardingRuleConfig.getMasterSlaveRuleConfigs().add(new MasterSlaveRuleConfiguration("ms_ds", "master_ds", Collections.singletonList("slave_ds")));
+        shardingRuleConfig.getMasterSlaveRuleConfigs().add(
+                new MasterSlaveRuleConfiguration("ms_ds", "master_ds", Collections.singletonList("slave_ds"), MasterSlaveLoadBalanceAlgorithmType.ROUND_ROBIN.getAlgorithm()));
         String actual = new ShardingDataSourceNames(shardingRuleConfig, Arrays.asList("master_ds", "slave_ds")).getDefaultDataSourceName();
         assertThat(actual, is("ms_ds"));
     }
@@ -70,7 +75,8 @@ public final class ShardingDataSourceNamesTest {
     @Test
     public void assertGetDefaultDataSourceNameWithMasterSlaveDataSourceName() {
         ShardingRuleConfiguration shardingRuleConfig = new ShardingRuleConfiguration();
-        shardingRuleConfig.getMasterSlaveRuleConfigs().add(new MasterSlaveRuleConfiguration("ms_ds", "master_ds", Collections.singletonList("slave_ds")));
+        shardingRuleConfig.getMasterSlaveRuleConfigs().add(
+                new MasterSlaveRuleConfiguration("ms_ds", "master_ds", Collections.singletonList("slave_ds"), MasterSlaveLoadBalanceAlgorithmType.ROUND_ROBIN.getAlgorithm()));
         String actual = new ShardingDataSourceNames(shardingRuleConfig, Arrays.asList("master_ds", "slave_ds")).getRawMasterDataSourceName("ms_ds");
         assertThat(actual, is("master_ds"));
     }
@@ -79,7 +85,8 @@ public final class ShardingDataSourceNamesTest {
     public void assertGetDefaultDataSourceNameWithoutMasterSlaveDataSourceName() {
         ShardingRuleConfiguration shardingRuleConfig = new ShardingRuleConfiguration();
         shardingRuleConfig.setDefaultDataSourceName("default_ds");
-        shardingRuleConfig.getMasterSlaveRuleConfigs().add(new MasterSlaveRuleConfiguration("ms_ds", "master_ds", Collections.singletonList("slave_ds")));
+        shardingRuleConfig.getMasterSlaveRuleConfigs().add(
+                new MasterSlaveRuleConfiguration("ms_ds", "master_ds", Collections.singletonList("slave_ds"), MasterSlaveLoadBalanceAlgorithmType.ROUND_ROBIN.getAlgorithm()));
         String actual = new ShardingDataSourceNames(shardingRuleConfig, Arrays.asList("master_ds", "slave_ds")).getRawMasterDataSourceName("default_ds");
         assertThat(actual, is("default_ds"));
     }

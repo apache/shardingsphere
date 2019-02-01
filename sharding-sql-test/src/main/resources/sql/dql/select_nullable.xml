@@ -1,4 +1,0 @@
-<?xml version="1.0" encoding="UTF-8"?>
-<sql-cases>
-    <sql-case id="assertSelectInWithNullParameter" value="SELECT * FROM t_order WHERE sku_num IN (%s, %s) ORDER BY order_id ASC" db-types="MySQL,PostgreSQL,SQLServer,Oracle" />
-</sql-cases>

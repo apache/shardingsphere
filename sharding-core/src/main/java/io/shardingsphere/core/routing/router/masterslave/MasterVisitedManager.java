@@ -22,7 +22,7 @@ package io.shardingsphere.core.routing.router.masterslave;
  * 
  * <p>Trace master data source visited or not in current thread.</p>
  * 
- * @author zhangiang
+ * @author zhangliang
  */
 public final class MasterVisitedManager {
     

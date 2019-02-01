@@ -18,6 +18,7 @@
 package io.shardingsphere.core.parsing.lexer;
 
 import io.shardingsphere.core.constant.DatabaseType;
+import io.shardingsphere.core.parsing.lexer.dialect.h2.H2Lexer;
 import io.shardingsphere.core.parsing.lexer.dialect.mysql.MySQLLexer;
 import io.shardingsphere.core.parsing.lexer.dialect.oracle.OracleLexer;
 import io.shardingsphere.core.parsing.lexer.dialect.postgresql.PostgreSQLLexer;
@@ -43,6 +44,7 @@ public final class LexerEngineFactory {
     public static LexerEngine newInstance(final DatabaseType dbType, final String sql) {
         switch (dbType) {
             case H2:
+                return new LexerEngine(new H2Lexer(sql));
             case MySQL:
                 return new LexerEngine(new MySQLLexer(sql));
             case Oracle:

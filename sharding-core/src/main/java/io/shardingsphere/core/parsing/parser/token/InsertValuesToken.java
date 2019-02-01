@@ -18,18 +18,19 @@
 package io.shardingsphere.core.parsing.parser.token;
 
 import lombok.Getter;
-import lombok.RequiredArgsConstructor;
 
 /**
  * Insert values token.
  *
  * @author maxiaoguang
  */
-@RequiredArgsConstructor
 @Getter
-public final class InsertValuesToken implements SQLToken {
-    
-    private final int beginPosition;
+public final class InsertValuesToken extends SQLToken {
     
     private final String tableName;
+    
+    public InsertValuesToken(final int beginPosition, final String tableName) {
+        super(beginPosition);
+        this.tableName = tableName;
+    }
 }

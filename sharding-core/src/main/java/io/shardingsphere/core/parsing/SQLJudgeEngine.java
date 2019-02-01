@@ -18,32 +18,42 @@
 package io.shardingsphere.core.parsing;
 
 import io.shardingsphere.core.constant.DatabaseType;
+import io.shardingsphere.core.parsing.antlr.sql.statement.dcl.DCLStatement;
+import io.shardingsphere.core.parsing.antlr.sql.statement.ddl.DDLStatement;
+import io.shardingsphere.core.parsing.antlr.sql.statement.tcl.TCLStatement;
 import io.shardingsphere.core.parsing.lexer.LexerEngine;
 import io.shardingsphere.core.parsing.lexer.LexerEngineFactory;
 import io.shardingsphere.core.parsing.lexer.dialect.mysql.MySQLKeyword;
 import io.shardingsphere.core.parsing.lexer.token.Assist;
 import io.shardingsphere.core.parsing.lexer.token.DefaultKeyword;
 import io.shardingsphere.core.parsing.lexer.token.Keyword;
+import io.shardingsphere.core.parsing.lexer.token.Symbol;
 import io.shardingsphere.core.parsing.lexer.token.TokenType;
 import io.shardingsphere.core.parsing.parser.dialect.mysql.statement.DescribeStatement;
 import io.shardingsphere.core.parsing.parser.dialect.mysql.statement.ShowColumnsStatement;
+import io.shardingsphere.core.parsing.parser.dialect.mysql.statement.ShowCreateTableStatement;
 import io.shardingsphere.core.parsing.parser.dialect.mysql.statement.ShowDatabasesStatement;
+import io.shardingsphere.core.parsing.parser.dialect.mysql.statement.ShowIndexStatement;
 import io.shardingsphere.core.parsing.parser.dialect.mysql.statement.ShowOtherStatement;
+import io.shardingsphere.core.parsing.parser.dialect.mysql.statement.ShowTableStatusStatement;
 import io.shardingsphere.core.parsing.parser.dialect.mysql.statement.ShowTablesStatement;
 import io.shardingsphere.core.parsing.parser.dialect.mysql.statement.UseStatement;
 import io.shardingsphere.core.parsing.parser.exception.SQLParsingException;
 import io.shardingsphere.core.parsing.parser.sql.SQLStatement;
-import io.shardingsphere.core.parsing.parser.sql.ddl.DDLStatement;
+import io.shardingsphere.core.parsing.parser.sql.dal.DALStatement;
+import io.shardingsphere.core.parsing.parser.sql.dal.set.SetStatement;
 import io.shardingsphere.core.parsing.parser.sql.dml.DMLStatement;
 import io.shardingsphere.core.parsing.parser.sql.dml.insert.InsertStatement;
+import io.shardingsphere.core.parsing.parser.sql.dql.DQLStatement;
 import io.shardingsphere.core.parsing.parser.sql.dql.select.SelectStatement;
-import io.shardingsphere.core.parsing.parser.sql.tcl.TCLStatement;
+import io.shardingsphere.core.parsing.parser.token.SchemaToken;
 import lombok.RequiredArgsConstructor;
 
 /**
  * SQL judge engine.
  *
  * @author zhangliang
+ * @author panjuan
  */
 @RequiredArgsConstructor
 public final class SQLJudgeEngine {
@@ -51,7 +61,7 @@ public final class SQLJudgeEngine {
     private final String sql;
     
     /**
-     * judge SQL Type only.
+     * Judge SQL type only.
      *
      * @return SQL statement
      */
@@ -61,48 +71,39 @@ public final class SQLJudgeEngine {
         while (true) {
             TokenType tokenType = lexerEngine.getCurrentToken().getType();
             if (tokenType instanceof Keyword) {
-                if (isDQL(tokenType)) {
+                if (DQLStatement.isDQL(tokenType)) {
                     return getDQLStatement();
                 }
-                if (isDML(tokenType)) {
+                if (DMLStatement.isDML(tokenType)) {
                     return getDMLStatement(tokenType);
                 }
-                if (isDDL(tokenType)) {
-                    return getDDLStatement();
-                }
-                if (isTCL(tokenType)) {
+                if (TCLStatement.isTCL(tokenType)) {
                     return getTCLStatement();
                 }
-                if (isDAL(tokenType)) {
+                if (DALStatement.isDAL(tokenType)) {
                     return getDALStatement(tokenType, lexerEngine);
                 }
+                lexerEngine.nextToken();
+                TokenType secondaryTokenType = lexerEngine.getCurrentToken().getType();
+                if (DDLStatement.isDDL(tokenType, secondaryTokenType)) {
+                    return getDDLStatement();
+                }
+                if (DCLStatement.isDCL(tokenType, secondaryTokenType)) {
+                    return getDCLStatement();
+                }
+                if (TCLStatement.isTCLUnsafe(DatabaseType.MySQL, tokenType, lexerEngine)) {
+                    return getTCLStatement();
+                }
+                if (DefaultKeyword.SET.equals(tokenType)) {
+                    return new SetStatement();
+                }
+            } else {
+                lexerEngine.nextToken();
             }
             if (tokenType instanceof Assist && Assist.END == tokenType) {
                 throw new SQLParsingException("Unsupported SQL statement: [%s]", sql);
             }
-            lexerEngine.nextToken();
         }
-    }
-    
-    private boolean isDQL(final TokenType tokenType) {
-        return DefaultKeyword.SELECT == tokenType;
-    }
-    
-    private boolean isDML(final TokenType tokenType) {
-        return DefaultKeyword.INSERT == tokenType || DefaultKeyword.UPDATE == tokenType || DefaultKeyword.DELETE == tokenType;
-    }
-    
-    private boolean isDDL(final TokenType tokenType) {
-        return DefaultKeyword.CREATE == tokenType || DefaultKeyword.ALTER == tokenType || DefaultKeyword.DROP == tokenType || DefaultKeyword.TRUNCATE == tokenType;
-    }
-    
-    private boolean isTCL(final TokenType tokenType) {
-        return DefaultKeyword.SET == tokenType || DefaultKeyword.COMMIT == tokenType || DefaultKeyword.ROLLBACK == tokenType
-                || DefaultKeyword.SAVEPOINT == tokenType || DefaultKeyword.BEGIN == tokenType;
-    }
-    
-    private boolean isDAL(final TokenType tokenType) {
-        return DefaultKeyword.USE == tokenType || DefaultKeyword.DESC == tokenType || MySQLKeyword.DESCRIBE == tokenType || MySQLKeyword.SHOW == tokenType;
     }
     
     private SQLStatement getDQLStatement() {
@@ -120,13 +121,18 @@ public final class SQLJudgeEngine {
         return new DDLStatement();
     }
     
+    private SQLStatement getDCLStatement() {
+        return new DCLStatement();
+    }
+    
     private SQLStatement getTCLStatement() {
         return new TCLStatement();
     }
     
     private SQLStatement getDALStatement(final TokenType tokenType, final LexerEngine lexerEngine) {
         if (DefaultKeyword.USE == tokenType) {
-            return new UseStatement();
+            lexerEngine.nextToken();
+            return new UseStatement(lexerEngine.getCurrentToken().getLiterals());
         }
         if (DefaultKeyword.DESC == tokenType || MySQLKeyword.DESCRIBE == tokenType) {
             return new DescribeStatement();
@@ -136,15 +142,82 @@ public final class SQLJudgeEngine {
     
     private SQLStatement getShowStatement(final LexerEngine lexerEngine) {
         lexerEngine.nextToken();
-        if (MySQLKeyword.DATABASES == lexerEngine.getCurrentToken().getType()) {
+        lexerEngine.skipIfEqual(DefaultKeyword.FULL);
+        if (lexerEngine.equalAny(MySQLKeyword.DATABASES)) {
             return new ShowDatabasesStatement();
         }
-        if (MySQLKeyword.TABLES == lexerEngine.getCurrentToken().getType()) {
-            return new ShowTablesStatement();
+        if (lexerEngine.skipIfEqual(DefaultKeyword.TABLE, MySQLKeyword.STATUS)) {
+            return parseShowTableStatus(lexerEngine);
         }
-        if (MySQLKeyword.COLUMNS == lexerEngine.getCurrentToken().getType()) {
-            return new ShowColumnsStatement();
+        if (lexerEngine.skipIfEqual(MySQLKeyword.TABLES)) {
+            return parseShowTables(lexerEngine);
+        }
+        if (lexerEngine.skipIfEqual(MySQLKeyword.COLUMNS, MySQLKeyword.FIELDS)) {
+            return parseShowColumnsFields(lexerEngine);
+        }
+        if (lexerEngine.skipIfEqual(DefaultKeyword.CREATE) && lexerEngine.skipIfEqual(DefaultKeyword.TABLE)) {
+            return parseShowCreateTable(lexerEngine);
+        }
+        if (lexerEngine.skipIfEqual(DefaultKeyword.INDEX, MySQLKeyword.INDEXES, MySQLKeyword.KEYS)) {
+            return parseShowIndex(lexerEngine);
         }
         return new ShowOtherStatement();
+    }
+    
+    private DALStatement parseShowTableStatus(final LexerEngine lexerEngine) {
+        DALStatement result = new ShowTableStatusStatement();
+        lexerEngine.nextToken();
+        if (lexerEngine.skipIfEqual(DefaultKeyword.FROM, DefaultKeyword.IN)) {
+            int beginPosition = lexerEngine.getCurrentToken().getEndPosition() - lexerEngine.getCurrentToken().getLiterals().length();
+            result.addSQLToken(new SchemaToken(beginPosition, lexerEngine.getCurrentToken().getLiterals(), null));
+        }
+        return result;
+    }
+    
+    private DALStatement parseShowTables(final LexerEngine lexerEngine) {
+        DALStatement result = new ShowTablesStatement();
+        if (lexerEngine.skipIfEqual(DefaultKeyword.FROM, DefaultKeyword.IN)) {
+            int beginPosition = lexerEngine.getCurrentToken().getEndPosition() - lexerEngine.getCurrentToken().getLiterals().length();
+            result.addSQLToken(new SchemaToken(beginPosition, lexerEngine.getCurrentToken().getLiterals(), null));
+        }
+        return result;
+    }
+    
+    private DALStatement parseShowColumnsFields(final LexerEngine lexerEngine) {
+        DALStatement result = new ShowColumnsStatement();
+        lexerEngine.skipIfEqual(DefaultKeyword.FROM, DefaultKeyword.IN);
+        parseSingleTableWithSchema(lexerEngine, result);
+        if (lexerEngine.skipIfEqual(DefaultKeyword.FROM, DefaultKeyword.IN)) {
+            int beginPosition = lexerEngine.getCurrentToken().getEndPosition() - lexerEngine.getCurrentToken().getLiterals().length();
+            result.addSQLToken(new SchemaToken(beginPosition, lexerEngine.getCurrentToken().getLiterals(), null));
+        }
+        return result;
+    }
+    
+    private DALStatement parseShowCreateTable(final LexerEngine lexerEngine) {
+        DALStatement result = new ShowCreateTableStatement();
+        parseSingleTableWithSchema(lexerEngine, result);
+        return result;
+    }
+    
+    private DALStatement parseShowIndex(final LexerEngine lexerEngine) {
+        DALStatement result = new ShowIndexStatement();
+        lexerEngine.skipIfEqual(DefaultKeyword.FROM, DefaultKeyword.IN);
+        parseSingleTableWithSchema(lexerEngine, result);
+        if (lexerEngine.skipIfEqual(DefaultKeyword.FROM, DefaultKeyword.IN)) {
+            int beginPosition = lexerEngine.getCurrentToken().getEndPosition() - lexerEngine.getCurrentToken().getLiterals().length();
+            result.addSQLToken(new SchemaToken(beginPosition, lexerEngine.getCurrentToken().getLiterals(), null));
+        }
+        return result;
+    }
+    
+    private void parseSingleTableWithSchema(final LexerEngine lexerEngine, final SQLStatement sqlStatement) {
+        int beginPosition = lexerEngine.getCurrentToken().getEndPosition() - lexerEngine.getCurrentToken().getLiterals().length();
+        String literals = lexerEngine.getCurrentToken().getLiterals();
+        lexerEngine.nextToken();
+        if (lexerEngine.skipIfEqual(Symbol.DOT)) {
+            sqlStatement.addSQLToken(new SchemaToken(beginPosition, literals, null));
+            lexerEngine.nextToken();
+        }
     }
 }

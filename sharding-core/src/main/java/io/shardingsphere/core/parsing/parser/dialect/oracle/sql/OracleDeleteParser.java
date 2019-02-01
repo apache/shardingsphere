@@ -29,7 +29,7 @@ import io.shardingsphere.core.rule.ShardingRule;
  * 
  * @author zhangliang 
  */
-public class OracleDeleteParser extends AbstractDeleteParser {
+public final class OracleDeleteParser extends AbstractDeleteParser {
     
     public OracleDeleteParser(final ShardingRule shardingRule, final LexerEngine lexerEngine) {
         super(shardingRule, lexerEngine, new OracleDeleteClauseParserFacade(shardingRule, lexerEngine));
@@ -38,5 +38,10 @@ public class OracleDeleteParser extends AbstractDeleteParser {
     @Override
     protected Keyword[] getSkippedKeywordsBetweenDeleteAndTable() {
         return new Keyword[] {DefaultKeyword.FROM};
+    }
+    
+    @Override
+    protected Keyword[] getUnsupportedKeywordsBetweenDeleteAndTable() {
+        return new Keyword[0];
     }
 }

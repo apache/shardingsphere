@@ -17,9 +17,9 @@
 
 package io.shardingsphere.core.routing.type.broadcast;
 
-import io.shardingsphere.core.api.config.ShardingRuleConfiguration;
-import io.shardingsphere.core.api.config.TableRuleConfiguration;
-import io.shardingsphere.core.parsing.parser.sql.ddl.DDLStatement;
+import io.shardingsphere.api.config.rule.ShardingRuleConfiguration;
+import io.shardingsphere.api.config.rule.TableRuleConfiguration;
+import io.shardingsphere.core.parsing.antlr.sql.statement.ddl.DDLStatement;
 import io.shardingsphere.core.parsing.parser.sql.dql.DQLStatement;
 import io.shardingsphere.core.parsing.parser.token.IndexToken;
 import io.shardingsphere.core.routing.type.RoutingResult;
@@ -88,7 +88,7 @@ public final class TableBroadcastRoutingEngineTest {
     
     private RoutingResult createDDLStatementRoutingResult() {
         DDLStatement ddlStatement = new DDLStatement();
-        ddlStatement.getSqlTokens().add(new IndexToken(13, "t_order_index", "t_order"));
+        ddlStatement.addSQLToken(new IndexToken(13, "t_order_index", "t_order"));
         TableBroadcastRoutingEngine tableBroadcastRoutingEngine = new TableBroadcastRoutingEngine(shardingRule, ddlStatement);
         return tableBroadcastRoutingEngine.route();
     }

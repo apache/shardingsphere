@@ -18,7 +18,6 @@
 package io.shardingsphere.core.parsing.parser.token;
 
 import lombok.Getter;
-import lombok.RequiredArgsConstructor;
 import lombok.ToString;
 
 /**
@@ -26,12 +25,14 @@ import lombok.ToString;
  *
  * @author zhangliang
  */
-@RequiredArgsConstructor
 @Getter
 @ToString
-public final class RemoveToken implements SQLToken {
-    
-    private final int beginPosition;
+public final class RemoveToken extends SQLToken {
     
     private final int endPosition;
+    
+    public RemoveToken(final int beginPosition, final int endPosition) {
+        super(beginPosition);
+        this.endPosition = endPosition;
+    }
 }

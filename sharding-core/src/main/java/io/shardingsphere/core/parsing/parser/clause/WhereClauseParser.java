@@ -59,7 +59,7 @@ import java.util.List;
  * @author zhangliang
  * @author maxiaoguang
  */
-public class WhereClauseParser implements SQLClauseParser {
+public abstract class WhereClauseParser implements SQLClauseParser {
     
     private final DatabaseType databaseType;
     
@@ -209,8 +209,10 @@ public class WhereClauseParser implements SQLClauseParser {
     private Condition parseEqualCondition(final ShardingRule shardingRule, final SQLStatement sqlStatement, final SQLExpression left) {
         SQLExpression right = basicExpressionParser.parse(sqlStatement);
         // TODO if have more tables, and cannot find column belong to, should not add to condition, should parse binding table rule.
-        if ((sqlStatement.getTables().isSingleTable() || left instanceof SQLPropertyExpression)
-                && (right instanceof SQLNumberExpression || right instanceof SQLTextExpression || right instanceof SQLPlaceholderExpression)) {
+        if (!sqlStatement.getTables().isSingleTable() && !(left instanceof SQLPropertyExpression)) {
+            return new NullCondition();
+        }
+        if (right instanceof SQLNumberExpression || right instanceof SQLTextExpression || right instanceof SQLPlaceholderExpression) {
             Optional<Column> column = find(sqlStatement.getTables(), left);
             if (column.isPresent() && shardingRule.isShardingColumn(column.get())) {
                 return new Condition(column.get(), right);
@@ -221,28 +223,52 @@ public class WhereClauseParser implements SQLClauseParser {
     
     private Condition parseInCondition(final ShardingRule shardingRule, final SQLStatement sqlStatement, final SQLExpression left) {
         lexerEngine.accept(Symbol.LEFT_PAREN);
+        boolean hasComplexExpression = false;
         List<SQLExpression> rights = new LinkedList<>();
         do {
-            rights.add(basicExpressionParser.parse(sqlStatement));
+            SQLExpression right = basicExpressionParser.parse(sqlStatement);
+            rights.add(right);
+            if (!(right instanceof SQLNumberExpression || right instanceof SQLTextExpression || right instanceof SQLPlaceholderExpression)) {
+                hasComplexExpression = true;
+            }
             skipsDoubleColon();
         } while (lexerEngine.skipIfEqual(Symbol.COMMA));
         lexerEngine.accept(Symbol.RIGHT_PAREN);
-        Optional<Column> column = find(sqlStatement.getTables(), left);
-        if (column.isPresent() && shardingRule.isShardingColumn(column.get())) {
-            return new Condition(column.get(), rights);
+        if (!sqlStatement.getTables().isSingleTable() && !(left instanceof SQLPropertyExpression)) {
+            return new NullCondition();
+        }
+        if (!hasComplexExpression) {
+            Optional<Column> column = find(sqlStatement.getTables(), left);
+            if (column.isPresent() && shardingRule.isShardingColumn(column.get())) {
+                return new Condition(column.get(), rights);
+            }
         }
         return new NullCondition();
     }
     
     private Condition parseBetweenCondition(final ShardingRule shardingRule, final SQLStatement sqlStatement, final SQLExpression left) {
+        boolean hasComplexExpression = false;
         List<SQLExpression> rights = new LinkedList<>();
-        rights.add(basicExpressionParser.parse(sqlStatement));
+        SQLExpression right1 = basicExpressionParser.parse(sqlStatement);
+        rights.add(right1);
+        if (!(right1 instanceof SQLNumberExpression || right1 instanceof SQLTextExpression || right1 instanceof SQLPlaceholderExpression)) {
+            hasComplexExpression = true;
+        }
         skipsDoubleColon();
         lexerEngine.accept(DefaultKeyword.AND);
-        rights.add(basicExpressionParser.parse(sqlStatement));
-        Optional<Column> column = find(sqlStatement.getTables(), left);
-        if (column.isPresent() && shardingRule.isShardingColumn(column.get())) {
-            return new Condition(column.get(), rights.get(0), rights.get(1));
+        SQLExpression right2 = basicExpressionParser.parse(sqlStatement);
+        rights.add(right2);
+        if (!(right2 instanceof SQLNumberExpression || right2 instanceof SQLTextExpression || right2 instanceof SQLPlaceholderExpression)) {
+            hasComplexExpression = true;
+        }
+        if (!sqlStatement.getTables().isSingleTable() && !(left instanceof SQLPropertyExpression)) {
+            return new NullCondition();
+        }
+        if (!hasComplexExpression) {
+            Optional<Column> column = find(sqlStatement.getTables(), left);
+            if (column.isPresent() && shardingRule.isShardingColumn(column.get())) {
+                return new Condition(column.get(), rights.get(0), rights.get(1));
+            }
         }
         return new NullCondition();
     }
@@ -257,20 +283,18 @@ public class WhereClauseParser implements SQLClauseParser {
         return null != columnLabel && isRowNumberCondition(items, columnLabel);
     }
     
-    protected boolean isRowNumberCondition(final List<SelectItem> items, final String columnLabel) {
-        return false;
-    }
+    protected abstract boolean isRowNumberCondition(List<SelectItem> items, String columnLabel);
     
     private void parseRowCountCondition(final SelectStatement selectStatement, final boolean includeRowCount) {
+        int endPosition = lexerEngine.getCurrentToken().getEndPosition();
         SQLExpression sqlExpression = basicExpressionParser.parse(selectStatement);
         if (null == selectStatement.getLimit()) {
-            selectStatement.setLimit(new Limit(databaseType));
+            selectStatement.setLimit(new Limit());
         }
         if (sqlExpression instanceof SQLNumberExpression) {
             int rowCount = ((SQLNumberExpression) sqlExpression).getNumber().intValue();
             selectStatement.getLimit().setRowCount(new LimitValue(rowCount, -1, includeRowCount));
-            selectStatement.getSqlTokens().add(new RowCountToken(
-                    lexerEngine.getCurrentToken().getEndPosition() - String.valueOf(rowCount).length() - lexerEngine.getCurrentToken().getLiterals().length(), rowCount));
+            selectStatement.addSQLToken(new RowCountToken(endPosition - String.valueOf(rowCount).length(), rowCount));
         } else if (sqlExpression instanceof SQLPlaceholderExpression) {
             selectStatement.getLimit().setRowCount(new LimitValue(-1, ((SQLPlaceholderExpression) sqlExpression).getIndex(), includeRowCount));
         }
@@ -279,21 +303,19 @@ public class WhereClauseParser implements SQLClauseParser {
     private void parseOffsetCondition(final SelectStatement selectStatement, final boolean includeOffset) {
         SQLExpression sqlExpression = basicExpressionParser.parse(selectStatement);
         if (null == selectStatement.getLimit()) {
-            selectStatement.setLimit(new Limit(databaseType));
+            selectStatement.setLimit(new Limit());
         }
         if (sqlExpression instanceof SQLNumberExpression) {
             int offset = ((SQLNumberExpression) sqlExpression).getNumber().intValue();
             selectStatement.getLimit().setOffset(new LimitValue(offset, -1, includeOffset));
-            selectStatement.getSqlTokens().add(new OffsetToken(
+            selectStatement.addSQLToken(new OffsetToken(
                     lexerEngine.getCurrentToken().getEndPosition() - String.valueOf(offset).length() - lexerEngine.getCurrentToken().getLiterals().length(), offset));
         } else if (sqlExpression instanceof SQLPlaceholderExpression) {
             selectStatement.getLimit().setOffset(new LimitValue(-1, ((SQLPlaceholderExpression) sqlExpression).getIndex(), includeOffset));
         }
     }
     
-    protected Keyword[] getCustomizedOtherConditionOperators() {
-        return new Keyword[0];
-    }
+    protected abstract Keyword[] getCustomizedOtherConditionOperators();
     
     private void parseOtherCondition(final SQLStatement sqlStatement) {
         basicExpressionParser.parse(sqlStatement);
