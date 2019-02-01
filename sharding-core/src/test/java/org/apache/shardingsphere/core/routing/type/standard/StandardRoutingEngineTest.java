@@ -46,10 +46,7 @@ public final class StandardRoutingEngineTest {
     @Before
     public void setEngineContext() {
         ShardingRuleConfiguration shardingRuleConfig = new ShardingRuleConfiguration();
-        TableRuleConfiguration tableRuleConfig = new TableRuleConfiguration();
-        tableRuleConfig.setLogicTable("t_order");
-        tableRuleConfig.setActualDataNodes("ds_${0..1}.t_order_${0..1}");
-        shardingRuleConfig.getTableRuleConfigs().add(tableRuleConfig);
+        shardingRuleConfig.getTableRuleConfigs().add(new TableRuleConfiguration("t_order", "ds_${0..1}.t_order_${0..1}"));
         shardingRuleConfig.setDefaultDatabaseShardingStrategyConfig(new InlineShardingStrategyConfiguration("user_id", "ds_${user_id % 2}"));
         shardingRuleConfig.setDefaultTableShardingStrategyConfig(new InlineShardingStrategyConfiguration("order_id", "t_order_${order_id % 2}"));
         List<ShardingCondition> shardingConditions = new ArrayList<>();

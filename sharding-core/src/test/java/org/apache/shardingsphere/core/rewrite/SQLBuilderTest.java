@@ -267,19 +267,12 @@ public final class SQLBuilderTest {
     
     private ShardingRule createShardingRule() {
         ShardingRuleConfiguration shardingRuleConfig = new ShardingRuleConfiguration();
-        TableRuleConfiguration tableRuleConfig = createTableRuleConfig();
+        TableRuleConfiguration tableRuleConfig = new TableRuleConfiguration("LOGIC_TABLE", "ds${0..1}.table_${0..2}");
         shardingRuleConfig.getTableRuleConfigs().add(tableRuleConfig);
         return new ShardingRule(shardingRuleConfig, createDataSourceNames());
     }
     
     private Collection<String> createDataSourceNames() {
         return Arrays.asList("ds0", "ds1");
-    }
-    
-    private TableRuleConfiguration createTableRuleConfig() {
-        TableRuleConfiguration result = new TableRuleConfiguration();
-        result.setLogicTable("LOGIC_TABLE");
-        result.setActualDataNodes("ds${0..1}.table_${0..2}");
-        return result;
     }
 }

@@ -40,10 +40,7 @@ public final class DatabaseBroadcastRoutingEngineTest {
     @Before
     public void setEngineContext() {
         ShardingRuleConfiguration shardingRuleConfig = new ShardingRuleConfiguration();
-        TableRuleConfiguration tableRuleConfig = new TableRuleConfiguration();
-        tableRuleConfig.setLogicTable("t_order");
-        tableRuleConfig.setActualDataNodes("ds${0..1}.t_order_${0..2}");
-        shardingRuleConfig.getTableRuleConfigs().add(tableRuleConfig);
+        shardingRuleConfig.getTableRuleConfigs().add(new TableRuleConfiguration("t_order", "ds${0..1}.t_order_${0..2}"));
         ShardingRule shardingRule = new ShardingRule(shardingRuleConfig, Arrays.asList("ds0", "ds1"));
         databaseBroadcastRoutingEngine = new DatabaseBroadcastRoutingEngine(shardingRule);
     }

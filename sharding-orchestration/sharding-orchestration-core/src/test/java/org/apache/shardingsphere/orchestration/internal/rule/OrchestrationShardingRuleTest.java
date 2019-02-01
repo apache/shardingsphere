@@ -43,10 +43,7 @@ public final class OrchestrationShardingRuleTest {
     
     private ShardingRuleConfiguration createShardingRuleConfiguration() {
         ShardingRuleConfiguration result = new ShardingRuleConfiguration();
-        TableRuleConfiguration tableRuleConfig = new TableRuleConfiguration();
-        tableRuleConfig.setLogicTable("t_order");
-        tableRuleConfig.setActualDataNodes("ds_ms.t_order_${0..1}");
-        result.getTableRuleConfigs().add(tableRuleConfig);
+        result.getTableRuleConfigs().add(new TableRuleConfiguration("t_order", "ds_ms.t_order_${0..1}"));
         result.getMasterSlaveRuleConfigs().add(new MasterSlaveRuleConfiguration("ds_ms", "master_db", Arrays.asList("slave_db_0", "slave_db_1"), new RandomMasterSlaveLoadBalanceAlgorithm()));
         result.setDefaultDatabaseShardingStrategyConfig(new NoneShardingStrategyConfiguration());
         result.setDefaultTableShardingStrategyConfig(new InlineShardingStrategyConfiguration("order_id", "t_order_${order_id % 2}"));

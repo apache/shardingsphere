@@ -19,7 +19,6 @@ package org.apache.shardingsphere.api.config.rule;
 
 import lombok.Getter;
 import lombok.RequiredArgsConstructor;
-import lombok.Setter;
 import org.apache.shardingsphere.api.algorithm.masterslave.MasterSlaveLoadBalanceAlgorithm;
 
 import java.util.Collection;
@@ -32,7 +31,6 @@ import java.util.Collection;
  */
 @RequiredArgsConstructor
 @Getter
-@Setter
 public final class MasterSlaveRuleConfiguration implements RuleConfiguration {
     
     private final String name;

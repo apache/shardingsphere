@@ -23,11 +23,11 @@ import org.junit.Test;
 import java.util.Properties;
 
 import static org.hamcrest.CoreMatchers.is;
-import static org.junit.Assert.assertNull;
+import static org.junit.Assert.assertFalse;
 import static org.junit.Assert.assertThat;
 import static org.junit.Assert.assertTrue;
 
-public class EncryptorConfigurationTest {
+public final class EncryptorConfigurationTest {
     
     private EncryptorConfiguration encryptorConfiguration;
     
@@ -47,7 +47,7 @@ public class EncryptorConfigurationTest {
     @Test
     public void assertGetShardingEncryptorStrategyWithNull() {
         encryptorConfiguration = new EncryptorConfiguration("", "pwd1", "pwd1_index", new Properties());
-        assertNull(encryptorConfiguration.getShardingEncryptorStrategy());
+        assertFalse(encryptorConfiguration.getShardingEncryptorStrategy().isPresent());
     }
     
     @Test

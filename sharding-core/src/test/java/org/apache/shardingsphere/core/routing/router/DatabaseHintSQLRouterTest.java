@@ -52,10 +52,7 @@ public final class DatabaseHintSQLRouterTest {
     @Before
     public void setRouterContext() {
         ShardingRuleConfiguration shardingRuleConfig = new ShardingRuleConfiguration();
-        TableRuleConfiguration tableRuleConfig = new TableRuleConfiguration();
-        tableRuleConfig.setLogicTable("LOGIC_TABLE");
-        tableRuleConfig.setActualDataNodes("ds${0..1}.table_${0..2}");
-        shardingRuleConfig.getTableRuleConfigs().add(tableRuleConfig);
+        shardingRuleConfig.getTableRuleConfigs().add(new TableRuleConfiguration("LOGIC_TABLE", "ds${0..1}.table_${0..2}"));
         shardingRuleConfig.setDefaultDatabaseShardingStrategyConfig(new HintShardingStrategyConfiguration(new OrderDatabaseHintShardingAlgorithm()));
         ShardingRule shardingRule = new ShardingRule(shardingRuleConfig, Arrays.asList("ds0", "ds1"));
         databaseHintSQLRouter = new DatabaseHintSQLRouter(shardingRule, true);

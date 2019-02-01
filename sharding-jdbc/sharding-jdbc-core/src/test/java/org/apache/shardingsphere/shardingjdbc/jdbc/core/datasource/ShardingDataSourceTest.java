@@ -192,14 +192,12 @@ public final class ShardingDataSourceTest {
     }
     
     private ShardingRuleConfiguration createShardingRuleConfig(final Map<String, DataSource> dataSourceMap) {
-        final ShardingRuleConfiguration result = new ShardingRuleConfiguration();
-        TableRuleConfiguration tableRuleConfig = new TableRuleConfiguration();
-        tableRuleConfig.setLogicTable("logicTable");
+        ShardingRuleConfiguration result = new ShardingRuleConfiguration();
         List<String> orderActualDataNodes = new LinkedList<>();
         for (String each : dataSourceMap.keySet()) {
             orderActualDataNodes.add(each + ".table_${0..2}");
         }
-        tableRuleConfig.setActualDataNodes(Joiner.on(",").join(orderActualDataNodes));
+        TableRuleConfiguration tableRuleConfig = new TableRuleConfiguration("logicTable", Joiner.on(",").join(orderActualDataNodes));
         result.getTableRuleConfigs().add(tableRuleConfig);
         return result;
     }

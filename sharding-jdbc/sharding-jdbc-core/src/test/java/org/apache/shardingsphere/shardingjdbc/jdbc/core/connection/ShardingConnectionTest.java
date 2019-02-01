@@ -79,12 +79,9 @@ public final class ShardingConnectionTest {
     @Before
     public void setUp() {
         shardingContext = mock(ShardingContext.class);
-        
         when(shardingContext.getDatabaseType()).thenReturn(DatabaseType.H2);
         ShardingRuleConfiguration shardingRuleConfig = new ShardingRuleConfiguration();
-        TableRuleConfiguration tableRuleConfig = new TableRuleConfiguration();
-        tableRuleConfig.setLogicTable("test");
-        shardingRuleConfig.getTableRuleConfigs().add(tableRuleConfig);
+        shardingRuleConfig.getTableRuleConfigs().add(new TableRuleConfiguration("test"));
         dataSourceMap = new HashMap<>(1, 1);
         dataSourceMap.put(DS_NAME, masterSlaveDataSource);
         connection = new ShardingConnection(dataSourceMap, shardingContext, shardingTransactionManagerEngine, TransactionType.LOCAL);

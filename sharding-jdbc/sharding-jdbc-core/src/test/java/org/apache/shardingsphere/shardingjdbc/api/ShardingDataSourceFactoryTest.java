@@ -90,10 +90,7 @@ public final class ShardingDataSourceFactoryTest {
     
     private ShardingRuleConfiguration createShardingRuleConfig() {
         ShardingRuleConfiguration result = new ShardingRuleConfiguration();
-        TableRuleConfiguration tableRuleConfig = new TableRuleConfiguration();
-        tableRuleConfig.setLogicTable("logicTable");
-        tableRuleConfig.setActualDataNodes("ds.table_${0..2}");
-        result.getTableRuleConfigs().add(tableRuleConfig);
+        result.getTableRuleConfigs().add(new TableRuleConfiguration("logicTable", "ds.table_${0..2}"));
         return result;
     }
     

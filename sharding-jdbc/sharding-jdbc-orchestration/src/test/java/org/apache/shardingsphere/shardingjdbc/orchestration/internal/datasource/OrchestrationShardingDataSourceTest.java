@@ -41,6 +41,7 @@ import org.junit.Test;
 
 import java.io.File;
 import java.sql.Connection;
+import java.sql.SQLException;
 import java.util.Collections;
 import java.util.LinkedHashMap;
 import java.util.Map;
@@ -50,13 +51,12 @@ import static org.hamcrest.CoreMatchers.instanceOf;
 import static org.hamcrest.CoreMatchers.is;
 import static org.junit.Assert.assertThat;
 
-public class OrchestrationShardingDataSourceTest {
+public final class OrchestrationShardingDataSourceTest {
     
     private static OrchestrationShardingDataSource shardingDataSource;
     
     @BeforeClass
-    @SneakyThrows
-    public static void setUp() {
+    public static void setUp() throws SQLException {
         shardingDataSource = new OrchestrationShardingDataSource(getShardingDataSource(), getOrchestrationConfiguration());
     }
     
@@ -88,10 +88,7 @@ public class OrchestrationShardingDataSourceTest {
     
     private ShardingRuleConfiguration getShardingRuleConfig() {
         ShardingRuleConfiguration result = new ShardingRuleConfiguration();
-        TableRuleConfiguration tableRuleConfig = new TableRuleConfiguration();
-        tableRuleConfig.setLogicTable("logic_table");
-        tableRuleConfig.setActualDataNodes("ds_ms.table_${0..1}");
-        result.getTableRuleConfigs().add(tableRuleConfig);
+        result.getTableRuleConfigs().add(new TableRuleConfiguration("logic_table", "ds_ms.table_${0..1}"));
         result.getMasterSlaveRuleConfigs().add(getMasterSlaveRuleConfiguration());
         return result;
     }

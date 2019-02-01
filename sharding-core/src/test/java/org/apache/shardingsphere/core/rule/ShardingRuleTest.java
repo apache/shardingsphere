@@ -391,9 +391,7 @@ public final class ShardingRuleTest {
     }
     
     private TableRuleConfiguration createTableRuleConfiguration(final String logicTableName, final String actualDataNodes, final String keyGeneratorColumnName) {
-        TableRuleConfiguration result = new TableRuleConfiguration();
-        result.setLogicTable(logicTableName);
-        result.setActualDataNodes(actualDataNodes);
+        TableRuleConfiguration result = new TableRuleConfiguration(logicTableName, actualDataNodes);
         result.setKeyGeneratorConfig(new KeyGeneratorConfiguration(keyGeneratorColumnName, null, new Properties()));
         return result;
     }
@@ -420,26 +418,20 @@ public final class ShardingRuleTest {
     }
     
     private TableRuleConfiguration createTableRuleConfigWithLogicIndex() {
-        TableRuleConfiguration result = new TableRuleConfiguration();
-        result.setLogicTable("LOGIC_TABLE");
+        TableRuleConfiguration result = new TableRuleConfiguration("LOGIC_TABLE", "ds_${0..1}.table_${0..2}");
         result.setLogicIndex("INDEX_TABLE");
-        result.setActualDataNodes("ds_${0..1}.table_${0..2}");
         return result;
     }
     
     private TableRuleConfiguration createTableRuleConfigWithAllStrategies() {
-        TableRuleConfiguration result = new TableRuleConfiguration();
-        result.setLogicTable("LOGIC_TABLE");
-        result.setActualDataNodes("ds_${0..1}.table_${0..2}");
+        TableRuleConfiguration result = new TableRuleConfiguration("LOGIC_TABLE", "ds_${0..1}.table_${0..2}");
         result.setDatabaseShardingStrategyConfig(new StandardShardingStrategyConfiguration("column", new TestPreciseShardingAlgorithm()));
         result.setTableShardingStrategyConfig(new NoneShardingStrategyConfiguration());
         return result;
     }
     
     private TableRuleConfiguration createTableRuleConfigWithTableStrategies() {
-        TableRuleConfiguration result = new TableRuleConfiguration();
-        result.setLogicTable("LOGIC_TABLE");
-        result.setActualDataNodes("ds_${0..1}.table_${0..2}");
+        TableRuleConfiguration result = new TableRuleConfiguration("LOGIC_TABLE", "ds_${0..1}.table_${0..2}");
         result.setTableShardingStrategyConfig(new StandardShardingStrategyConfiguration("column", new TestPreciseShardingAlgorithm()));
         return result;
     }

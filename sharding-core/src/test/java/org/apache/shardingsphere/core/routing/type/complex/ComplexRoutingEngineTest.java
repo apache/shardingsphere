@@ -45,15 +45,11 @@ public final class ComplexRoutingEngineTest {
     
     @Before
     public void setEngineContext() {
-        TableRuleConfiguration tableRuleConfig1 = new TableRuleConfiguration();
-        tableRuleConfig1.setLogicTable("t_order");
-        tableRuleConfig1.setActualDataNodes("ds${0..1}.t_order_${0..2}");
+        TableRuleConfiguration tableRuleConfig1 = new TableRuleConfiguration("t_order", "ds${0..1}.t_order_${0..2}");
         tableRuleConfig1.setTableShardingStrategyConfig(new InlineShardingStrategyConfiguration("order_id", "t_order_${order_id % 2}"));
         ShardingRuleConfiguration shardingRuleConfig = new ShardingRuleConfiguration();
         shardingRuleConfig.getTableRuleConfigs().add(tableRuleConfig1);
-        TableRuleConfiguration tableRuleConfig2 = new TableRuleConfiguration();
-        tableRuleConfig2.setLogicTable("t_order_item");
-        tableRuleConfig2.setActualDataNodes("ds${0..1}.t_order_item_${0..2}");
+        TableRuleConfiguration tableRuleConfig2 = new TableRuleConfiguration("t_order_item", "ds${0..1}.t_order_item_${0..2}");
         tableRuleConfig2.setTableShardingStrategyConfig(new InlineShardingStrategyConfiguration("order_id", "t_order_item_${order_id % 2}"));
         shardingRuleConfig.getTableRuleConfigs().add(tableRuleConfig2);
         shardingRuleConfig.getBindingTableGroups().add("t_order, t_order_item");

@@ -118,9 +118,7 @@ public final class DatabaseTest {
         Map<String, DataSource> dataSourceMap = new HashMap<>();
         dataSourceMap.put(shardingPrefix + "1", null);
         dataSourceMap.put(shardingPrefix + "2", null);
-        TableRuleConfiguration tableRuleConfig = new TableRuleConfiguration();
-        tableRuleConfig.setLogicTable(shardingTable);
-        tableRuleConfig.setActualDataNodes(shardingPrefix + "${1..2}." + shardingTable);
+        TableRuleConfiguration tableRuleConfig = new TableRuleConfiguration(shardingTable, shardingPrefix + "${1..2}." + shardingTable);
         tableRuleConfig.setDatabaseShardingStrategyConfig(new InlineShardingStrategyConfiguration("city_id", shardingPrefix + "${city_id % 2 + 1}"));
         ShardingRuleConfiguration shardingRuleConfig = new ShardingRuleConfiguration();
         shardingRuleConfig.getTableRuleConfigs().add(tableRuleConfig);
