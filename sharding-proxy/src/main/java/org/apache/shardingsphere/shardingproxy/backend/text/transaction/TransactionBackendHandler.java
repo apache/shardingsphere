@@ -21,8 +21,8 @@ import org.apache.shardingsphere.shardingproxy.backend.ResultPacket;
 import org.apache.shardingsphere.shardingproxy.backend.communication.jdbc.connection.BackendConnection;
 import org.apache.shardingsphere.shardingproxy.backend.communication.jdbc.connection.BackendTransactionManager;
 import org.apache.shardingsphere.shardingproxy.backend.text.TextProtocolBackendHandler;
+import org.apache.shardingsphere.shardingproxy.transport.common.packet.generic.DatabaseSuccessPacket;
 import org.apache.shardingsphere.shardingproxy.transport.mysql.packet.command.CommandResponsePackets;
-import org.apache.shardingsphere.shardingproxy.transport.mysql.packet.generic.OKPacket;
 import org.apache.shardingsphere.transaction.core.TransactionOperationType;
 
 /**
@@ -66,7 +66,7 @@ public final class TransactionBackendHandler implements TextProtocolBackendHandl
             default:
                 throw new UnsupportedOperationException(operationType.name());
         }
-        return new CommandResponsePackets(new OKPacket(1, 0L, 0L));
+        return new CommandResponsePackets(new DatabaseSuccessPacket(1, 0L, 0L));
     }
     
     @Override

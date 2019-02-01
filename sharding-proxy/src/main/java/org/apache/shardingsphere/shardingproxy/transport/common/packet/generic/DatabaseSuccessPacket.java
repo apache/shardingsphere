@@ -15,20 +15,32 @@
  * limitations under the License.
  */
 
-package org.apache.shardingsphere.shardingproxy.backend.communication.jdbc.execute.response.unit;
+package org.apache.shardingsphere.shardingproxy.transport.common.packet.generic;
 
 import lombok.Getter;
 import lombok.RequiredArgsConstructor;
-import org.apache.shardingsphere.shardingproxy.transport.common.packet.generic.DatabaseSuccessPacket;
+import org.apache.shardingsphere.shardingproxy.transport.common.packet.DatabasePacket;
 
 /**
- * Execute update response unit.
- * 
- * @author zhangliang
+ * Database success packet.
+ *
+ * @author zhangyonglun
  */
 @RequiredArgsConstructor
 @Getter
-public final class ExecuteUpdateResponseUnit implements ExecuteResponseUnit {
+public final class DatabaseSuccessPacket implements DatabasePacket {
     
-    private final DatabaseSuccessPacket databaseSuccessPacket;
+    private final int sequenceId;
+    
+    private final long affectedRows;
+    
+    private final long lastInsertId;
+    
+    private final int warnings;
+    
+    private final String info;
+    
+    public DatabaseSuccessPacket(final int sequenceId, final long affectedRows, final long lastInsertId) {
+        this(sequenceId, affectedRows, lastInsertId, 0, "");
+    }
 }

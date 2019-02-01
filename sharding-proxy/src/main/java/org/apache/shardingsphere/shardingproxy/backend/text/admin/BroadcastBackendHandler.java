@@ -25,9 +25,9 @@ import org.apache.shardingsphere.shardingproxy.backend.communication.jdbc.connec
 import org.apache.shardingsphere.shardingproxy.backend.text.TextProtocolBackendHandler;
 import org.apache.shardingsphere.shardingproxy.runtime.GlobalRegistry;
 import org.apache.shardingsphere.shardingproxy.transport.common.packet.DatabasePacket;
+import org.apache.shardingsphere.shardingproxy.transport.common.packet.generic.DatabaseSuccessPacket;
 import org.apache.shardingsphere.shardingproxy.transport.mysql.packet.command.CommandResponsePackets;
 import org.apache.shardingsphere.shardingproxy.transport.mysql.packet.generic.ErrPacket;
-import org.apache.shardingsphere.shardingproxy.transport.mysql.packet.generic.OKPacket;
 
 import java.util.LinkedList;
 import java.util.List;
@@ -63,7 +63,7 @@ public final class BroadcastBackendHandler implements TextProtocolBackendHandler
                 return new CommandResponsePackets(each);
             }
         }
-        return new CommandResponsePackets(new OKPacket(1, 0L, 0L));
+        return new CommandResponsePackets(new DatabaseSuccessPacket(1, 0L, 0L));
     }
     
     @Override
