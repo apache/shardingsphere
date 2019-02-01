@@ -63,7 +63,7 @@ public final class BroadcastBackendHandler implements TextProtocolBackendHandler
                 return new CommandResponsePackets(each);
             }
         }
-        return new CommandResponsePackets(new OKPacket(1, 0, 0));
+        return new CommandResponsePackets(new OKPacket(1, 0L, 0L));
     }
     
     @Override

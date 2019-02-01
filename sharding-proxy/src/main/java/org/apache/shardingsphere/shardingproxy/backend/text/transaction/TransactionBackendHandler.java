@@ -66,7 +66,7 @@ public final class TransactionBackendHandler implements TextProtocolBackendHandl
             default:
                 throw new UnsupportedOperationException(operationType.name());
         }
-        return new CommandResponsePackets(new OKPacket(1));
+        return new CommandResponsePackets(new OKPacket(1, 0L, 0L));
     }
     
     @Override

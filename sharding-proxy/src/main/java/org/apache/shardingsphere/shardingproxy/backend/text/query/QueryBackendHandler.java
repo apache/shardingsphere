@@ -53,7 +53,8 @@ public final class QueryBackendHandler implements TextProtocolBackendHandler {
     @Override
     public CommandResponsePackets execute() {
         if (null == backendConnection.getLogicSchema()) {
-            return new CommandResponsePackets(new ErrPacket(1, ServerErrorCode.ER_NO_DB_ERROR));
+            ServerErrorCode serverErrorCode = ServerErrorCode.ER_NO_DB_ERROR;
+            return new CommandResponsePackets(new ErrPacket(1, serverErrorCode.getErrorCode(), serverErrorCode.getSqlState(), String.format(serverErrorCode.getErrorMessage(), "")));
         }
         databaseCommunicationEngine = databaseCommunicationEngineFactory.newTextProtocolInstance(backendConnection.getLogicSchema(), sequenceId, sql, backendConnection, databaseType);
         return databaseCommunicationEngine.execute();

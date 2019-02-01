@@ -126,13 +126,13 @@ public final class JDBCExecuteEngine implements SQLExecuteEngine {
     private ExecuteResponseUnit executeWithMetadata(final Statement statement, final String sql, final ConnectionMode connectionMode, final boolean isReturnGeneratedKeys) throws SQLException {
         backendConnection.add(statement);
         if (!jdbcExecutorWrapper.executeSQL(statement, sql, isReturnGeneratedKeys)) {
-            return new ExecuteUpdateResponseUnit(new OKPacket(1, statement.getUpdateCount(), isReturnGeneratedKeys ? getGeneratedKey(statement) : 0));
+            return new ExecuteUpdateResponseUnit(new OKPacket(1, statement.getUpdateCount(), isReturnGeneratedKeys ? getGeneratedKey(statement) : 0L));
         }
         ResultSet resultSet = statement.getResultSet();
         backendConnection.add(resultSet);
         ResultSetMetaData resultSetMetaData = resultSet.getMetaData();
         if (0 == resultSetMetaData.getColumnCount()) {
-            return new ExecuteUpdateResponseUnit(new OKPacket(1));
+            return new ExecuteUpdateResponseUnit(new OKPacket(1, 0L, 0L));
         }
         return new ExecuteQueryResponseUnit(getHeaderPackets(resultSetMetaData), createQueryResult(resultSet, connectionMode));
     }

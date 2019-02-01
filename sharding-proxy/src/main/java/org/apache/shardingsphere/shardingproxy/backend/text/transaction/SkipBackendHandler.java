@@ -31,7 +31,7 @@ public final class SkipBackendHandler implements TextProtocolBackendHandler {
     
     @Override
     public CommandResponsePackets execute() {
-        return new CommandResponsePackets(new OKPacket(1));
+        return new CommandResponsePackets(new OKPacket(1, 0L, 0L));
     }
     
     @Override

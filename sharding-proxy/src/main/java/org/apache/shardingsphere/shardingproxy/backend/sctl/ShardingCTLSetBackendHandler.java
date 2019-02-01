@@ -46,20 +46,20 @@ public final class ShardingCTLSetBackendHandler implements TextProtocolBackendHa
     public CommandResponsePackets execute() {
         Optional<ShardingCTLSetStatement> shardingTCLStatement = new ShardingCTLSetParser(sql).doParse();
         if (!shardingTCLStatement.isPresent()) {
-            return new CommandResponsePackets(new ErrPacket(" please review your sctl format, should be sctl:set xxx=yyy."));
+            return new CommandResponsePackets(new ErrPacket(1, 0, "", " please review your sctl format, should be sctl:set xxx=yyy."));
         }
         switch (shardingTCLStatement.get().getKey()) {
             case "TRANSACTION_TYPE":
                 try {
                     backendConnection.setTransactionType(TransactionType.valueOf(shardingTCLStatement.get().getValue()));
                 } catch (final IllegalArgumentException ex) {
-                    return new CommandResponsePackets(new ErrPacket(String.format(" could not support this sctl grammar [%s].", sql)));
+                    return new CommandResponsePackets(new ErrPacket(1, 0, "", String.format(" could not support this sctl grammar [%s].", sql)));
                 }
                 break;
             default:
-                return new CommandResponsePackets(new ErrPacket(String.format(" could not support this sctl grammar [%s].", sql)));
+                return new CommandResponsePackets(new ErrPacket(1, 0, "", String.format(" could not support this sctl grammar [%s].", sql)));
         }
-        return new CommandResponsePackets(new OKPacket(1));
+        return new CommandResponsePackets(new OKPacket(1, 0L, 0L));
     }
     
     @Override

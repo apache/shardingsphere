@@ -88,12 +88,13 @@ public final class JDBCDatabaseCommunicationEngine implements DatabaseCommunicat
     
     private CommandResponsePackets execute(final SQLRouteResult routeResult) throws SQLException {
         if (routeResult.getRouteUnits().isEmpty()) {
-            return new CommandResponsePackets(new OKPacket(1));
+            return new CommandResponsePackets(new OKPacket(1, 0L, 0L));
         }
         SQLStatement sqlStatement = routeResult.getSqlStatement();
         if (isUnsupportedXA(sqlStatement.getType())) {
-            return new CommandResponsePackets(new ErrPacket(1,
-                    ServerErrorCode.ER_ERROR_ON_MODIFYING_GTID_EXECUTED_TABLE, sqlStatement.getTables().isSingleTable() ? sqlStatement.getTables().getSingleTableName() : "unknown_table"));
+            ServerErrorCode serverErrorCode = ServerErrorCode.ER_ERROR_ON_MODIFYING_GTID_EXECUTED_TABLE;
+            return new CommandResponsePackets(new ErrPacket(1, serverErrorCode.getErrorCode(), serverErrorCode.getSqlState(), sqlStatement.getTables().isSingleTable()
+                ? String.format(serverErrorCode.getErrorMessage(), sqlStatement.getTables().getSingleTableName()) : String.format(serverErrorCode.getErrorMessage(), "unknown_table")));
         }
         executeResponse = executeEngine.execute(routeResult);
         if (logicSchema instanceof ShardingSchema) {

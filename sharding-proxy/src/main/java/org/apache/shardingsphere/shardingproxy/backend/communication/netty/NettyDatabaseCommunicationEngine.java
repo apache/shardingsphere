@@ -207,7 +207,7 @@ public final class NettyDatabaseCommunicationEngine implements DatabaseCommunica
             mergedResult = MergeEngineFactory.newInstance(
                 GlobalRegistry.getInstance().getDatabaseType(), ((ShardingSchema) logicSchema).getShardingRule(), sqlStatement, logicSchema.getMetaData().getTable(), queryResults).merge();
         } catch (final SQLException ex) {
-            return new CommandResponsePackets(new ErrPacket(1, ex));
+            return new CommandResponsePackets(new ErrPacket(1, ex.getErrorCode(), ex.getSQLState(), ex.getMessage()));
         }
         return packets.get(0);
     }

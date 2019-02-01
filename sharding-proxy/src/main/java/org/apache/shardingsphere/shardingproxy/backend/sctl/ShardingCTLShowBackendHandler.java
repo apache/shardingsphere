@@ -68,7 +68,7 @@ public final class ShardingCTLShowBackendHandler implements TextProtocolBackendH
     public CommandResponsePackets execute() {
         Optional<ShardingCTLShowStatement> showStatement = new ShardingCTLShowParser(sql).doParse();
         if (!showStatement.isPresent()) {
-            return new CommandResponsePackets(new ErrPacket(" please review your sctl format, should be sctl:show xxxx."));
+            return new CommandResponsePackets(new ErrPacket(1, 0, "", " please review your sctl format, should be sctl:show xxxx."));
         }
         switch (showStatement.get().getValue()) {
             case "TRANSACTION_TYPE":
@@ -76,7 +76,7 @@ public final class ShardingCTLShowBackendHandler implements TextProtocolBackendH
             case "CACHED_CONNECTIONS":
                 return createResponsePackets("CACHED_CONNECTIONS", backendConnection.getConnectionSize());
             default:
-                return new CommandResponsePackets(new ErrPacket(String.format(" could not support this sctl grammar [%s].", sql)));
+                return new CommandResponsePackets(new ErrPacket(1, 0, "", String.format(" could not support this sctl grammar [%s].", sql)));
         }
     }
     

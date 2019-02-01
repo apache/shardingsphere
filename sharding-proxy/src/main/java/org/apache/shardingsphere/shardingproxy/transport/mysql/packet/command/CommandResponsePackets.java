@@ -45,7 +45,8 @@ public class CommandResponsePackets {
     
     public CommandResponsePackets(final Exception exception) {
         Optional<SQLException> sqlException = findSQLException(exception);
-        packets.add(sqlException.isPresent() ? new ErrPacket(1, sqlException.get()) : new ErrPacket(1, ServerErrorCode.ER_STD_UNKNOWN_EXCEPTION, exception.getMessage()));
+        packets.add(sqlException.isPresent() ? new ErrPacket(1, sqlException.get().getErrorCode(), sqlException.get().getSQLState(), sqlException.get().getMessage())
+            : new ErrPacket(1, ServerErrorCode.ER_STD_UNKNOWN_EXCEPTION, exception.getMessage()));
     }
     
     private Optional<SQLException> findSQLException(final Exception exception) {

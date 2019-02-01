@@ -46,10 +46,11 @@ public final class UseDatabaseBackendHandler implements TextProtocolBackendHandl
     public CommandResponsePackets execute() {
         String schema = SQLUtil.getExactlyValue(useStatement.getSchema());
         if (!GlobalRegistry.getInstance().schemaExists(schema)) {
-            return new CommandResponsePackets(new ErrPacket(1, ServerErrorCode.ER_BAD_DB_ERROR, schema));
+            ServerErrorCode serverErrorCode = ServerErrorCode.ER_BAD_DB_ERROR;
+            return new CommandResponsePackets(new ErrPacket(1, serverErrorCode.getErrorCode(), serverErrorCode.getSqlState(), String.format(serverErrorCode.getErrorMessage(), schema)));
         }
         backendConnection.setCurrentSchema(schema);
-        return new CommandResponsePackets(new OKPacket(1));
+        return new CommandResponsePackets(new OKPacket(1, 0L, 0L));
     }
     
     @Override

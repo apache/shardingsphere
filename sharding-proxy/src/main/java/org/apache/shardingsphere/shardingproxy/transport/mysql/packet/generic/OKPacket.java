@@ -17,7 +17,6 @@
 
 package org.apache.shardingsphere.shardingproxy.transport.mysql.packet.generic;
 
-import com.google.common.base.Preconditions;
 import lombok.Getter;
 import lombok.RequiredArgsConstructor;
 import org.apache.shardingsphere.shardingproxy.transport.mysql.constant.StatusFlag;
@@ -57,24 +56,10 @@ public final class OKPacket implements MySQLPacket {
         this(sequenceId, 0L, 0L, 0, "");
     }
     
-    public OKPacket(final String info) {
-        this(1, 0L, 0L, 0, info);
-    }
-    
     public OKPacket(final int sequenceId, final long affectedRows, final long lastInsertId) {
         this(sequenceId, affectedRows, lastInsertId, 0, "");
     }
-    
-    public OKPacket(final MySQLPacketPayload payload) {
-        this.sequenceId = payload.readInt1();
-        Preconditions.checkArgument(HEADER == payload.readInt1());
-        affectedRows = payload.readIntLenenc();
-        lastInsertId = payload.readIntLenenc();
-        payload.readInt2();
-        warnings = payload.readInt2();
-        info = payload.readStringEOF();
-    }
-    
+
     @Override
     public void write(final MySQLPacketPayload payload) {
         payload.writeInt1(HEADER);
