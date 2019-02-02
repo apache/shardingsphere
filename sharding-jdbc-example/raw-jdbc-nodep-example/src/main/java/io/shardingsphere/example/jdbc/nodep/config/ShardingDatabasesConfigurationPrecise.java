@@ -19,10 +19,10 @@ package io.shardingsphere.example.jdbc.nodep.config;
 
 import io.shardingsphere.example.config.DataSourceUtil;
 import io.shardingsphere.example.config.ExampleConfiguration;
-import org.apache.shardingsphere.api.config.KeyGeneratorConfiguration;
-import org.apache.shardingsphere.api.config.rule.ShardingRuleConfiguration;
-import org.apache.shardingsphere.api.config.rule.TableRuleConfiguration;
-import org.apache.shardingsphere.api.config.strategy.InlineShardingStrategyConfiguration;
+import org.apache.shardingsphere.api.config.sharding.KeyGeneratorConfiguration;
+import org.apache.shardingsphere.api.config.sharding.ShardingRuleConfiguration;
+import org.apache.shardingsphere.api.config.sharding.TableRuleConfiguration;
+import org.apache.shardingsphere.api.config.sharding.strategy.InlineShardingStrategyConfiguration;
 import org.apache.shardingsphere.shardingjdbc.api.ShardingDataSourceFactory;
 
 import javax.sql.DataSource;
@@ -43,16 +43,13 @@ public final class ShardingDatabasesConfigurationPrecise implements ExampleConfi
     }
     
     private static TableRuleConfiguration getOrderTableRuleConfiguration() {
-        TableRuleConfiguration result = new TableRuleConfiguration();
-        result.setLogicTable("t_order");
+        TableRuleConfiguration result = new TableRuleConfiguration("t_order");
         result.setKeyGeneratorConfig(getKeyGeneratorConfiguration());
         return result;
     }
     
     private static TableRuleConfiguration getOrderItemTableRuleConfiguration() {
-        TableRuleConfiguration result = new TableRuleConfiguration();
-        result.setLogicTable("t_order_item");
-        return result;
+        return new TableRuleConfiguration("t_order_item");
     }
     
     private static Map<String, DataSource> createDataSourceMap() {
@@ -63,8 +60,6 @@ public final class ShardingDatabasesConfigurationPrecise implements ExampleConfi
     }
     
     private static KeyGeneratorConfiguration getKeyGeneratorConfiguration() {
-        KeyGeneratorConfiguration result = new KeyGeneratorConfiguration();
-        result.setColumn("order_id");
-        return result;
+        return new KeyGeneratorConfiguration("order_id", null, new Properties());
     }
 }
