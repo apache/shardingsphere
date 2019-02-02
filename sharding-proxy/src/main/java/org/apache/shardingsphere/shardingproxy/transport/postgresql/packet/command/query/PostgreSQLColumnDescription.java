@@ -19,13 +19,11 @@ package org.apache.shardingsphere.shardingproxy.transport.postgresql.packet.comm
 
 import lombok.Getter;
 import lombok.RequiredArgsConstructor;
+import org.apache.shardingsphere.shardingproxy.transport.common.packet.command.query.DataHeaderPacket;
 import org.apache.shardingsphere.shardingproxy.transport.postgresql.constant.PostgreSQLColumnType;
 
-import java.sql.ResultSetMetaData;
-import java.sql.SQLException;
-
 /**
- * Column description.
+ * PostgreSQL column description.
  *
  * @author zhangyonglun
  */
@@ -47,10 +45,10 @@ public final class PostgreSQLColumnDescription {
     
     private final int dataFormat = 0;
     
-    public PostgreSQLColumnDescription(final ResultSetMetaData resultSetMetaData, final int columnIndex) throws SQLException {
-        columnName = resultSetMetaData.getColumnName(columnIndex);
+    public PostgreSQLColumnDescription(final DataHeaderPacket dataHeaderPacket, final int columnIndex) {
+        this.columnName = dataHeaderPacket.getName();
         this.columnIndex = columnIndex;
-        typeOID = PostgreSQLColumnType.valueOfJDBCType(resultSetMetaData.getColumnType(columnIndex)).getValue();
-        columnLength = resultSetMetaData.getColumnDisplaySize(columnIndex);
+        this.typeOID = PostgreSQLColumnType.valueOfJDBCType(dataHeaderPacket.getColumnType()).getValue();
+        this.columnLength = dataHeaderPacket.getColumnLength();
     }
 }

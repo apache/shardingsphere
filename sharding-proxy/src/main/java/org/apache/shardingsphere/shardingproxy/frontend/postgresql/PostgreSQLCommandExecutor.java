@@ -27,10 +27,15 @@ import org.apache.shardingsphere.shardingproxy.frontend.common.FrontendHandler;
 import org.apache.shardingsphere.shardingproxy.runtime.GlobalRegistry;
 import org.apache.shardingsphere.shardingproxy.transport.common.packet.DatabasePacket;
 import org.apache.shardingsphere.shardingproxy.transport.common.packet.command.CommandResponsePackets;
+import org.apache.shardingsphere.shardingproxy.transport.common.packet.command.query.DataHeaderPacket;
+import org.apache.shardingsphere.shardingproxy.transport.common.packet.generic.DatabaseFailurePacket;
+import org.apache.shardingsphere.shardingproxy.transport.common.packet.generic.DatabaseSuccessPacket;
 import org.apache.shardingsphere.shardingproxy.transport.postgresql.packet.PostgreSQLPacketPayload;
 import org.apache.shardingsphere.shardingproxy.transport.postgresql.packet.command.PostgreSQLCommandPacket;
 import org.apache.shardingsphere.shardingproxy.transport.postgresql.packet.command.PostgreSQLCommandPacketFactory;
+import org.apache.shardingsphere.shardingproxy.transport.postgresql.packet.command.query.PostgreSQLColumnDescription;
 import org.apache.shardingsphere.shardingproxy.transport.postgresql.packet.command.query.PostgreSQLQueryCommandPacket;
+import org.apache.shardingsphere.shardingproxy.transport.postgresql.packet.command.query.PostgreSQLRowDescriptionPacket;
 import org.apache.shardingsphere.shardingproxy.transport.postgresql.packet.generic.PostgreSQLCommandCompletePacket;
 import org.apache.shardingsphere.shardingproxy.transport.postgresql.packet.generic.PostgreSQLErrorResponsePacket;
 import org.apache.shardingsphere.shardingproxy.transport.postgresql.packet.generic.PostgreSQLReadyForQueryPacket;
@@ -38,6 +43,8 @@ import org.apache.shardingsphere.spi.root.RootInvokeHook;
 import org.apache.shardingsphere.spi.root.SPIRootInvokeHook;
 
 import java.sql.SQLException;
+import java.util.ArrayList;
+import java.util.List;
 
 /**
  * PostgreSQL command executor.
@@ -67,11 +74,22 @@ public final class PostgreSQLCommandExecutor implements Runnable {
             if (!responsePackets.isPresent()) {
                 return;
             }
+            List<PostgreSQLColumnDescription> postgreSQLColumnDescriptions = new ArrayList<>(128);
+            int columnIndex = 1;
             for (DatabasePacket each : responsePackets.get().getPackets()) {
-                context.write(each);
+                if (each instanceof DatabaseSuccessPacket) {
+                    context.write(new PostgreSQLCommandCompletePacket());
+                } else if (each instanceof DatabaseFailurePacket) {
+                    context.write(new PostgreSQLErrorResponsePacket());
+                } else if (each instanceof DataHeaderPacket) {
+                    postgreSQLColumnDescriptions.add(new PostgreSQLColumnDescription((DataHeaderPacket) each, columnIndex++));
+                } else {
+                    context.write(each);
+                }
             }
-            if (commandPacket instanceof PostgreSQLQueryCommandPacket && !(responsePackets.get().getHeadPacket() instanceof PostgreSQLReadyForQueryPacket)
-                && !(responsePackets.get().getHeadPacket() instanceof PostgreSQLErrorResponsePacket)) {
+            if (commandPacket instanceof PostgreSQLQueryCommandPacket && !(responsePackets.get().getHeadPacket() instanceof DatabaseSuccessPacket)
+                && !(responsePackets.get().getHeadPacket() instanceof DatabaseFailurePacket)) {
+                context.write(new PostgreSQLRowDescriptionPacket(postgreSQLColumnDescriptions.size(), postgreSQLColumnDescriptions));
                 writeMoreResults((PostgreSQLQueryCommandPacket) commandPacket);
             }
             connectionSize = backendConnection.getConnectionSize();
