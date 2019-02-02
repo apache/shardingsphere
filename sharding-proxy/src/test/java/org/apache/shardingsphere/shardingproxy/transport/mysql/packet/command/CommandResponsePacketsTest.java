@@ -18,6 +18,7 @@
 package org.apache.shardingsphere.shardingproxy.transport.mysql.packet.command;
 
 import org.apache.shardingsphere.shardingproxy.transport.common.packet.DatabasePacket;
+import org.apache.shardingsphere.shardingproxy.transport.common.packet.command.CommandResponsePackets;
 import org.apache.shardingsphere.shardingproxy.transport.mysql.packet.generic.OKPacket;
 import org.junit.Test;
 

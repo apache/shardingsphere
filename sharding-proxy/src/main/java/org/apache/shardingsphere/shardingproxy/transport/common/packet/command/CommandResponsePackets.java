@@ -15,7 +15,7 @@
  * limitations under the License.
  */
 
-package org.apache.shardingsphere.shardingproxy.transport.mysql.packet.command;
+package org.apache.shardingsphere.shardingproxy.transport.common.packet.command;
 
 import com.google.common.base.Optional;
 import lombok.Getter;
