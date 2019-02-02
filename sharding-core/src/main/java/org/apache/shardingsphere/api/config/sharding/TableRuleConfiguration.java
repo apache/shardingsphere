@@ -17,8 +17,9 @@
 
 package org.apache.shardingsphere.api.config.sharding;
 
+import com.google.common.base.Preconditions;
+import com.google.common.base.Strings;
 import lombok.Getter;
-import lombok.RequiredArgsConstructor;
 import lombok.Setter;
 import org.apache.shardingsphere.api.config.encryptor.EncryptorConfiguration;
 import org.apache.shardingsphere.api.config.sharding.strategy.ShardingStrategyConfiguration;
@@ -29,7 +30,6 @@ import org.apache.shardingsphere.api.config.sharding.strategy.ShardingStrategyCo
  * @author zhangliang
  * @author panjuan
  */
-@RequiredArgsConstructor
 @Getter
 @Setter
 public final class TableRuleConfiguration {
@@ -50,5 +50,11 @@ public final class TableRuleConfiguration {
     
     public TableRuleConfiguration(final String logicTable) {
         this(logicTable, null);
+    }
+    
+    public TableRuleConfiguration(final String logicTable, final String actualDataNodes) {
+        Preconditions.checkArgument(!Strings.isNullOrEmpty(logicTable), "LogicTable is required.");
+        this.logicTable = logicTable;
+        this.actualDataNodes = actualDataNodes;
     }
 }

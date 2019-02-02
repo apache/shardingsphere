@@ -15,20 +15,24 @@
  * limitations under the License.
  */
 
-package org.apache.shardingsphere.api.config;
+package org.apache.shardingsphere.api.config.sharding;
 
-import org.apache.shardingsphere.api.config.encryptor.EncryptorConfigurationTest;
-import org.apache.shardingsphere.api.config.masterslave.MasterSlaveRuleConfigurationTest;
-import org.apache.shardingsphere.api.config.sharding.TableRuleConfigurationTest;
-import org.junit.runner.RunWith;
-import org.junit.runners.Suite;
-import org.junit.runners.Suite.SuiteClasses;
+import org.junit.Test;
 
-@RunWith(Suite.class)
-@SuiteClasses({
-        TableRuleConfigurationTest.class, 
-        MasterSlaveRuleConfigurationTest.class, 
-        EncryptorConfigurationTest.class
-    })
-public final class AllConfigTests {
+import static org.hamcrest.CoreMatchers.is;
+import static org.junit.Assert.assertThat;
+
+public final class TableRuleConfigurationTest {
+    
+    @Test(expected = IllegalArgumentException.class)
+    public void assertConstructorWithoutLogicTable() {
+        new TableRuleConfiguration("");
+    }
+    
+    @Test
+    public void assertConstructorWithFullArguments() {
+        TableRuleConfiguration actual = new TableRuleConfiguration("tbl", "ds_$->{0..15}.tbl_$->{0..15}");
+        assertThat(actual.getLogicTable(), is("tbl"));
+        assertThat(actual.getActualDataNodes(), is("ds_$->{0..15}.tbl_$->{0..15}"));
+    }
 }
