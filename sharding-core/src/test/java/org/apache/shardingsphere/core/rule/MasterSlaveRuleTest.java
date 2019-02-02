@@ -26,19 +26,19 @@ public final class MasterSlaveRuleTest {
     
     @Test(expected = NullPointerException.class)
     public void assertNewMasterSlaveRuleFailure() {
-        MasterSlaveRuleConfiguration masterSlaveRuleConfig = new MasterSlaveRuleConfiguration("", "", null, null);
+        MasterSlaveRuleConfiguration masterSlaveRuleConfig = new MasterSlaveRuleConfiguration("", "", null);
         new MasterSlaveRule(masterSlaveRuleConfig);
     }
     
     @Test(expected = IllegalStateException.class)
     public void assertNewMasterSlaveRuleWithEmptySlaveDataSourceNames() {
-        MasterSlaveRuleConfiguration masterSlaveRuleConfig = new MasterSlaveRuleConfiguration("", "", Collections.<String>emptyList(), null);
+        MasterSlaveRuleConfiguration masterSlaveRuleConfig = new MasterSlaveRuleConfiguration("", "", Collections.<String>emptyList());
         new MasterSlaveRule(masterSlaveRuleConfig);
     }
     
     @Test
     public void assertNewMasterSlaveRuleSuccess() {
-        MasterSlaveRuleConfiguration masterSlaveRuleConfig = new MasterSlaveRuleConfiguration("master_slave", "master0", Collections.singletonList("slave0"), null);
+        MasterSlaveRuleConfiguration masterSlaveRuleConfig = new MasterSlaveRuleConfiguration("master_slave", "master0", Collections.singletonList("slave0"));
         new MasterSlaveRule(masterSlaveRuleConfig);
     }
 }
