@@ -17,9 +17,9 @@
 
 package org.apache.shardingsphere.api.config.masterslave;
 
-import lombok.AllArgsConstructor;
+import com.google.common.base.Preconditions;
+import com.google.common.base.Strings;
 import lombok.Getter;
-import lombok.RequiredArgsConstructor;
 import org.apache.shardingsphere.api.algorithm.masterslave.MasterSlaveLoadBalanceAlgorithm;
 import org.apache.shardingsphere.api.config.RuleConfiguration;
 
@@ -31,8 +31,6 @@ import java.util.Collection;
  * @author zhangliang
  * @author panjuan
  */
-@AllArgsConstructor
-@RequiredArgsConstructor
 @Getter
 public final class MasterSlaveRuleConfiguration implements RuleConfiguration {
     
@@ -42,5 +40,20 @@ public final class MasterSlaveRuleConfiguration implements RuleConfiguration {
     
     private final Collection<String> slaveDataSourceNames;
     
-    private MasterSlaveLoadBalanceAlgorithm loadBalanceAlgorithm;
+    private final MasterSlaveLoadBalanceAlgorithm loadBalanceAlgorithm;
+    
+    public MasterSlaveRuleConfiguration(final String name, final String masterDataSourceName, final Collection<String> slaveDataSourceNames) {
+        this(name, masterDataSourceName, slaveDataSourceNames, null);
+    }
+    
+    public MasterSlaveRuleConfiguration(final String name, 
+                                        final String masterDataSourceName, final Collection<String> slaveDataSourceNames, final MasterSlaveLoadBalanceAlgorithm loadBalanceAlgorithm) {
+        Preconditions.checkArgument(!Strings.isNullOrEmpty(name), "Name is required.");
+        Preconditions.checkArgument(!Strings.isNullOrEmpty(masterDataSourceName), "MasterDataSourceName is required.");
+        Preconditions.checkArgument(null != slaveDataSourceNames && !slaveDataSourceNames.isEmpty(), "SlaveDataSourceNames is required.");
+        this.name = name;
+        this.masterDataSourceName = masterDataSourceName;
+        this.slaveDataSourceNames = slaveDataSourceNames;
+        this.loadBalanceAlgorithm = loadBalanceAlgorithm;
+    }
 }

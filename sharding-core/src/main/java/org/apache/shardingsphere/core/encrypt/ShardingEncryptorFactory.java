@@ -26,6 +26,7 @@ import org.apache.shardingsphere.core.exception.ShardingConfigurationException;
 import org.apache.shardingsphere.spi.NewInstanceServiceLoader;
 
 import java.util.Collection;
+import java.util.Properties;
 
 /**
  * Sharding encryptor factory.
@@ -42,15 +43,18 @@ public final class ShardingEncryptorFactory {
     /**
      * Create sharding encryptor.
      * 
-     * @param encryptorType encryptor type
+     * @param type encryptor type
+     * @param props encryptor properties
      * @return encryptor instance
      */
-    public static ShardingEncryptor newInstance(final String encryptorType) {
-        Collection<ShardingEncryptor> shardingEncryptors = loadEncryptors(encryptorType);
+    public static ShardingEncryptor newInstance(final String type, final Properties props) {
+        Collection<ShardingEncryptor> shardingEncryptors = loadEncryptors(type);
         if (shardingEncryptors.isEmpty()) {
             throw new ShardingConfigurationException("Invalid encryptor type.");
         }
-        return shardingEncryptors.iterator().next();
+        ShardingEncryptor result = shardingEncryptors.iterator().next();
+        result.setProperties(props);
+        return result;
     }
     
     private static Collection<ShardingEncryptor> loadEncryptors(final String encryptorType) {

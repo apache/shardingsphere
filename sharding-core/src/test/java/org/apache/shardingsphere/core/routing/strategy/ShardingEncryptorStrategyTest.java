@@ -19,7 +19,6 @@ package org.apache.shardingsphere.core.routing.strategy;
 
 import org.apache.shardingsphere.core.encrypt.encryptor.ShardingEncryptor;
 import org.apache.shardingsphere.core.exception.ShardingConfigurationException;
-import org.junit.Before;
 import org.junit.Test;
 
 import java.util.Arrays;
@@ -28,36 +27,21 @@ import java.util.Collections;
 import static org.hamcrest.CoreMatchers.instanceOf;
 import static org.hamcrest.CoreMatchers.is;
 import static org.junit.Assert.assertThat;
+import static org.junit.Assert.assertTrue;
 import static org.mockito.Mockito.mock;
 
-public class ShardingEncryptorStrategyTest {
-    
-    private ShardingEncryptorStrategy shardingEncryptorStrategy;
-    
-    @Before
-    public void setUp() {
-        ShardingEncryptor shardingEncryptor = mock(ShardingEncryptor.class);
-        shardingEncryptorStrategy = new ShardingEncryptorStrategy(Arrays.asList("pwd1", "pwd2"), shardingEncryptor);
-    }    
+public final class ShardingEncryptorStrategyTest {
     
     @Test
-    public void assertGetColumns() {
-        assertThat(shardingEncryptorStrategy.getColumns().iterator().next(), is("pwd1"));
-    }
-    
-    @Test
-    public void assertGetAssistedQueryColumns() {
-        assertThat(shardingEncryptorStrategy.getAssistedQueryColumns().size(), is(0));
-    }
-    
-    @Test
-    public void assertGetShardingEncryptor() {
-        assertThat(shardingEncryptorStrategy.getShardingEncryptor(), instanceOf(ShardingEncryptor.class));
+    public void assertValidConstructor() {
+        ShardingEncryptorStrategy actual = new ShardingEncryptorStrategy(Arrays.asList("pwd1", "pwd2"), Collections.<String>emptyList(), mock(ShardingEncryptor.class));
+        assertThat(actual.getColumns().iterator().next(), is("pwd1"));
+        assertTrue(actual.getAssistedQueryColumns().isEmpty());
+        assertThat(actual.getShardingEncryptor(), instanceOf(ShardingEncryptor.class));
     }
     
     @Test(expected = ShardingConfigurationException.class)
-    public void assertNewShardingEncryptorStrategy() {
-        ShardingEncryptor shardingEncryptor = mock(ShardingEncryptor.class);
-        shardingEncryptorStrategy = new ShardingEncryptorStrategy(Arrays.asList("pwd1", "pwd2"), Collections.singletonList("pwd1_index"), shardingEncryptor);
+    public void assertInvalidConstructor() {
+        new ShardingEncryptorStrategy(Arrays.asList("pwd1", "pwd2"), Collections.singletonList("pwd1_index"), mock(ShardingEncryptor.class));
     }
 }

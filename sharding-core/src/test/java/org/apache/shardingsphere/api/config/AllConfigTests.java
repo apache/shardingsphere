@@ -15,37 +15,20 @@
  * limitations under the License.
  */
 
-package org.apache.shardingsphere.core.encrypt.fixture;
+package org.apache.shardingsphere.api.config;
 
-import lombok.Getter;
-import lombok.Setter;
-import org.apache.shardingsphere.core.encrypt.encryptor.ShardingEncryptor;
+import org.apache.shardingsphere.api.config.encryptor.EncryptorConfigurationTest;
+import org.apache.shardingsphere.api.config.masterslave.MasterSlaveRuleConfigurationTest;
+import org.apache.shardingsphere.api.config.sharding.TableRuleConfigurationTest;
+import org.junit.runner.RunWith;
+import org.junit.runners.Suite;
+import org.junit.runners.Suite.SuiteClasses;
 
-import java.util.Properties;
-
-/**
- * Test sharding encryptor.
- *
- * @author panjuan
- */
-@Getter
-@Setter
-public final class TestShardingEncryptor implements ShardingEncryptor {
-    
-    private Properties properties = new Properties();
-    
-    @Override
-    public String getType() {
-        return "test";
-    }
-    
-    @Override
-    public String encode(final String plaintext) {
-        return "";
-    }
-    
-    @Override
-    public String decode(final String ciphertext) {
-        return "";
-    }
+@RunWith(Suite.class)
+@SuiteClasses({
+        TableRuleConfigurationTest.class, 
+        MasterSlaveRuleConfigurationTest.class, 
+        EncryptorConfigurationTest.class
+    })
+public final class AllConfigTests {
 }

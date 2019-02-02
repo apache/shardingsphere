@@ -15,37 +15,24 @@
  * limitations under the License.
  */
 
-package org.apache.shardingsphere.core.encrypt.fixture;
+package org.apache.shardingsphere.api.config.sharding;
 
-import lombok.Getter;
-import lombok.Setter;
-import org.apache.shardingsphere.core.encrypt.encryptor.ShardingEncryptor;
+import org.junit.Test;
 
-import java.util.Properties;
+import static org.hamcrest.CoreMatchers.is;
+import static org.junit.Assert.assertThat;
 
-/**
- * Test sharding encryptor.
- *
- * @author panjuan
- */
-@Getter
-@Setter
-public final class TestShardingEncryptor implements ShardingEncryptor {
+public final class TableRuleConfigurationTest {
     
-    private Properties properties = new Properties();
-    
-    @Override
-    public String getType() {
-        return "test";
+    @Test(expected = IllegalArgumentException.class)
+    public void assertConstructorWithoutLogicTable() {
+        new TableRuleConfiguration("");
     }
     
-    @Override
-    public String encode(final String plaintext) {
-        return "";
-    }
-    
-    @Override
-    public String decode(final String ciphertext) {
-        return "";
+    @Test
+    public void assertConstructorWithFullArguments() {
+        TableRuleConfiguration actual = new TableRuleConfiguration("tbl", "ds_$->{0..15}.tbl_$->{0..15}");
+        assertThat(actual.getLogicTable(), is("tbl"));
+        assertThat(actual.getActualDataNodes(), is("ds_$->{0..15}.tbl_$->{0..15}"));
     }
 }

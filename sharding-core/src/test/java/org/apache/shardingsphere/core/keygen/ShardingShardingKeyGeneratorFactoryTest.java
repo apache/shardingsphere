@@ -21,6 +21,8 @@ import org.apache.shardingsphere.core.exception.ShardingConfigurationException;
 import org.apache.shardingsphere.core.keygen.generator.impl.SnowflakeShardingKeyGenerator;
 import org.junit.Test;
 
+import java.util.Properties;
+
 import static org.hamcrest.CoreMatchers.instanceOf;
 import static org.junit.Assert.assertThat;
 
@@ -28,11 +30,11 @@ public final class ShardingShardingKeyGeneratorFactoryTest {
     
     @Test
     public void assertCreateKeyGeneratorSuccess() {
-        assertThat(ShardingKeyGeneratorFactory.newInstance("SNOWFLAKE"), instanceOf(SnowflakeShardingKeyGenerator.class));
+        assertThat(ShardingKeyGeneratorFactory.newInstance("SNOWFLAKE", new Properties()), instanceOf(SnowflakeShardingKeyGenerator.class));
     }
     
     @Test(expected = ShardingConfigurationException.class)
     public void assertCreateKeyGeneratorFailureWithInstantiationError() {
-        ShardingKeyGeneratorFactory.newInstance("instantiation");
+        ShardingKeyGeneratorFactory.newInstance("instantiation", new Properties());
     }
 }

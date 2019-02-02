@@ -17,15 +17,9 @@
 
 package org.apache.shardingsphere.api.config.encryptor;
 
-import com.google.common.base.Optional;
-import com.google.common.base.Splitter;
+import com.google.common.base.Preconditions;
 import com.google.common.base.Strings;
-import lombok.AllArgsConstructor;
 import lombok.Getter;
-import lombok.RequiredArgsConstructor;
-import org.apache.shardingsphere.core.encrypt.ShardingEncryptorFactory;
-import org.apache.shardingsphere.core.encrypt.encryptor.ShardingEncryptor;
-import org.apache.shardingsphere.core.routing.strategy.ShardingEncryptorStrategy;
 
 import java.util.Properties;
 
@@ -34,8 +28,6 @@ import java.util.Properties;
  *
  * @author panjuan
  */
-@AllArgsConstructor
-@RequiredArgsConstructor
 @Getter
 public final class EncryptorConfiguration {
     
@@ -47,22 +39,16 @@ public final class EncryptorConfiguration {
     
     private final Properties props;
     
-    /**
-     * Get sharding encryptor strategy.
-     *
-     * @return sharding encryptor strategy
-     */
-    public Optional<ShardingEncryptorStrategy> getShardingEncryptorStrategy() {
-        if (Strings.isNullOrEmpty(type) || Strings.isNullOrEmpty(columns)) {
-            return Optional.absent();
-        }
-        ShardingEncryptor shardingEncryptor = ShardingEncryptorFactory.newInstance(type);
-        shardingEncryptor.setProperties(props);
-        return Optional.of(getShardingEncryptorStrategy(shardingEncryptor));
+    public EncryptorConfiguration(final String type, final String columns, final Properties props) {
+        this(type, columns, "", props);
     }
     
-    private ShardingEncryptorStrategy getShardingEncryptorStrategy(final ShardingEncryptor shardingEncryptor) {
-        return Strings.isNullOrEmpty(assistedQueryColumns) ? new ShardingEncryptorStrategy(Splitter.on(",").trimResults().splitToList(columns), shardingEncryptor) 
-                : new ShardingEncryptorStrategy(Splitter.on(",").trimResults().splitToList(columns), Splitter.on(",").trimResults().splitToList(assistedQueryColumns), shardingEncryptor);
+    public EncryptorConfiguration(final String type, final String columns, final String assistedQueryColumns, final Properties props) {
+        Preconditions.checkArgument(!Strings.isNullOrEmpty(type), "Type is required.");
+        Preconditions.checkArgument(!Strings.isNullOrEmpty(columns), "Columns is required.");
+        this.type = type;
+        this.columns = columns;
+        this.assistedQueryColumns = null == assistedQueryColumns ? "" : assistedQueryColumns;
+        this.props = null == props ? new Properties() : props;
     }
 }

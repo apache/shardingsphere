@@ -26,6 +26,7 @@ import org.apache.shardingsphere.core.keygen.generator.ShardingKeyGenerator;
 import org.apache.shardingsphere.spi.NewInstanceServiceLoader;
 
 import java.util.Collection;
+import java.util.Properties;
 
 /**
  * Key generator factory.
@@ -43,15 +44,18 @@ public final class ShardingKeyGeneratorFactory {
     /**
      * Create key generator.
      * 
-     * @param keyGeneratorType key generator type
+     * @param type key generator type
+     * @param props key generator properties
      * @return key generator instance
      */
-    public static ShardingKeyGenerator newInstance(final String keyGeneratorType) {
-        Collection<ShardingKeyGenerator> shardingKeyGenerators = loadKeyGenerators(keyGeneratorType);
+    public static ShardingKeyGenerator newInstance(final String type, final Properties props) {
+        Collection<ShardingKeyGenerator> shardingKeyGenerators = loadKeyGenerators(type);
         if (shardingKeyGenerators.isEmpty()) {
             throw new ShardingConfigurationException("Invalid key generator type.");
         }
-        return shardingKeyGenerators.iterator().next();
+        ShardingKeyGenerator result = shardingKeyGenerators.iterator().next();
+        result.setProperties(props);
+        return result;
     }
     
     private static Collection<ShardingKeyGenerator> loadKeyGenerators(final String keyGeneratorType) {
