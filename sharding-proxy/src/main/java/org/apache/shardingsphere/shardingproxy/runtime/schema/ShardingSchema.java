@@ -19,7 +19,8 @@ package org.apache.shardingsphere.shardingproxy.runtime.schema;
 
 import com.google.common.eventbus.Subscribe;
 import lombok.Getter;
-import org.apache.shardingsphere.api.config.rule.ShardingRuleConfiguration;
+import org.apache.shardingsphere.api.config.sharding.ShardingRuleConfiguration;
+import org.apache.shardingsphere.core.constant.DatabaseType;
 import org.apache.shardingsphere.core.constant.properties.ShardingPropertiesConstant;
 import org.apache.shardingsphere.core.metadata.ShardingMetaData;
 import org.apache.shardingsphere.core.rule.MasterSlaveRule;
@@ -33,6 +34,7 @@ import org.apache.shardingsphere.shardingproxy.backend.BackendExecutorContext;
 import org.apache.shardingsphere.shardingproxy.config.yaml.YamlDataSourceParameter;
 import org.apache.shardingsphere.shardingproxy.runtime.GlobalRegistry;
 import org.apache.shardingsphere.shardingproxy.runtime.metadata.ProxyTableMetaDataConnectionManager;
+
 import java.util.Collection;
 import java.util.Map;
 

@@ -23,7 +23,7 @@ import groovy.util.Expando;
 import org.apache.shardingsphere.api.algorithm.sharding.ListShardingValue;
 import org.apache.shardingsphere.api.algorithm.sharding.PreciseShardingValue;
 import org.apache.shardingsphere.api.algorithm.sharding.ShardingValue;
-import org.apache.shardingsphere.api.config.strategy.InlineShardingStrategyConfiguration;
+import org.apache.shardingsphere.api.config.sharding.strategy.InlineShardingStrategyConfiguration;
 import org.apache.shardingsphere.core.routing.strategy.ShardingStrategy;
 import org.apache.shardingsphere.core.util.InlineExpressionParser;
 

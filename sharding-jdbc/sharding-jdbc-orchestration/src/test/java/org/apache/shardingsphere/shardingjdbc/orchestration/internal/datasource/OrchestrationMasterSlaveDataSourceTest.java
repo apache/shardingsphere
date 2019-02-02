@@ -17,11 +17,10 @@
 
 package org.apache.shardingsphere.shardingjdbc.orchestration.internal.datasource;
 
-import lombok.SneakyThrows;
 import org.apache.commons.dbcp2.BasicDataSource;
 import org.apache.shardingsphere.api.ConfigMapContext;
 import org.apache.shardingsphere.api.algorithm.masterslave.MasterSlaveLoadBalanceAlgorithmType;
-import org.apache.shardingsphere.api.config.rule.MasterSlaveRuleConfiguration;
+import org.apache.shardingsphere.api.config.masterslave.MasterSlaveRuleConfiguration;
 import org.apache.shardingsphere.core.config.DataSourceConfiguration;
 import org.apache.shardingsphere.core.constant.ShardingConstant;
 import org.apache.shardingsphere.core.exception.ShardingException;
@@ -41,6 +40,8 @@ import org.junit.BeforeClass;
 import org.junit.Test;
 
 import java.io.File;
+import java.io.IOException;
+import java.net.URISyntaxException;
 import java.sql.Connection;
 import java.sql.SQLException;
 import java.util.Collections;
@@ -52,18 +53,16 @@ import static org.hamcrest.CoreMatchers.instanceOf;
 import static org.hamcrest.CoreMatchers.is;
 import static org.junit.Assert.assertThat;
 
-public class OrchestrationMasterSlaveDataSourceTest {
+public final class OrchestrationMasterSlaveDataSourceTest {
     
     private static OrchestrationMasterSlaveDataSource masterSlaveDataSource;
     
     @BeforeClass
-    @SneakyThrows
-    public static void setUp() {
+    public static void setUp() throws SQLException, IOException, URISyntaxException {
         masterSlaveDataSource = new OrchestrationMasterSlaveDataSource(getMasterSlaveDataSource(), getOrchestrationConfiguration());
     }
     
-    @SneakyThrows
-    private static MasterSlaveDataSource getMasterSlaveDataSource() {
+    private static MasterSlaveDataSource getMasterSlaveDataSource() throws IOException, SQLException, URISyntaxException {
         File yamlFile = new File(OrchestrationMasterSlaveDataSource.class.getResource("/yaml/unit/masterSlave.yaml").toURI());
         return (MasterSlaveDataSource) YamlMasterSlaveDataSourceFactory.createDataSource(yamlFile);
     }
@@ -76,8 +75,7 @@ public class OrchestrationMasterSlaveDataSourceTest {
     }
     
     @Test
-    @SneakyThrows
-    public void assertInitializeOrchestrationMasterSlaveDataSource() {
+    public void assertInitializeOrchestrationMasterSlaveDataSource() throws SQLException {
         OrchestrationMasterSlaveDataSource masterSlaveDataSource = new OrchestrationMasterSlaveDataSource(getOrchestrationConfiguration());
         assertThat(masterSlaveDataSource.getConnection(), instanceOf(Connection.class));
     }
@@ -89,8 +87,8 @@ public class OrchestrationMasterSlaveDataSourceTest {
     }
     
     private MasterSlaveRuleChangedEvent getMasterSlaveRuleChangedEvent() {
-        MasterSlaveRuleConfiguration masterSlaveRuleConfiguration = new MasterSlaveRuleConfiguration("new_ms", "ds_m", 
-                Collections.singletonList("ds_s"), MasterSlaveLoadBalanceAlgorithmType.ROUND_ROBIN.getAlgorithm());
+        MasterSlaveRuleConfiguration masterSlaveRuleConfiguration = new MasterSlaveRuleConfiguration(
+                "new_ms", "ds_m", Collections.singletonList("ds_s"), MasterSlaveLoadBalanceAlgorithmType.ROUND_ROBIN.getAlgorithm());
         return new MasterSlaveRuleChangedEvent(ShardingConstant.LOGIC_SCHEMA_NAME, masterSlaveRuleConfiguration);
     }
     
@@ -146,8 +144,7 @@ public class OrchestrationMasterSlaveDataSourceTest {
     }
     
     @Test
-    @SneakyThrows
-    public void assertRenewCircuitState() {
+    public void assertRenewCircuitState() throws SQLException {
         masterSlaveDataSource.renew(new CircuitStateChangedEvent(true));
         assertThat(masterSlaveDataSource.getConnection(), instanceOf(CircuitBreakerConnection.class));
     }
@@ -163,8 +160,7 @@ public class OrchestrationMasterSlaveDataSourceTest {
     }
     
     @Test(expected = ShardingException.class)
-    @SneakyThrows 
-    public void assertClose() {
+    public void assertClose() throws Exception {
         masterSlaveDataSource.close();
         try {
             masterSlaveDataSource.getDataSource().getDataSourceMap().values().iterator().next().getConnection();

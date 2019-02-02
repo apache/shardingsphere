@@ -22,8 +22,8 @@ import com.google.common.base.Strings;
 import lombok.AccessLevel;
 import lombok.Getter;
 import lombok.ToString;
-import org.apache.shardingsphere.api.config.KeyGeneratorConfiguration;
-import org.apache.shardingsphere.api.config.rule.TableRuleConfiguration;
+import org.apache.shardingsphere.api.config.sharding.KeyGeneratorConfiguration;
+import org.apache.shardingsphere.api.config.sharding.TableRuleConfiguration;
 import org.apache.shardingsphere.core.exception.ShardingException;
 import org.apache.shardingsphere.core.keygen.generator.ShardingKeyGenerator;
 import org.apache.shardingsphere.core.routing.strategy.ShardingEncryptorStrategy;
@@ -103,8 +103,7 @@ public final class TableRule {
         tableShardingStrategy = null == tableRuleConfig.getTableShardingStrategyConfig() ? null : ShardingStrategyFactory.newInstance(tableRuleConfig.getTableShardingStrategyConfig());
         generateKeyColumn = getGenerateKeyColumn(tableRuleConfig.getKeyGeneratorConfig(), defaultGenerateKeyColumn);
         shardingKeyGenerator = null == tableRuleConfig.getKeyGeneratorConfig() ? null : tableRuleConfig.getKeyGeneratorConfig().getKeyGenerator().orNull();
-        shardingEncryptorStrategy = null == tableRuleConfig.getEncryptorConfig() ? null : tableRuleConfig.getEncryptorConfig().getShardingEncryptorStrategy();
-
+        shardingEncryptorStrategy = null == tableRuleConfig.getEncryptorConfig() ? null : tableRuleConfig.getEncryptorConfig().getShardingEncryptorStrategy().orNull();
         logicIndex = null == tableRuleConfig.getLogicIndex() ? null : tableRuleConfig.getLogicIndex().toLowerCase();
     }
     

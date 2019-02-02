@@ -19,9 +19,9 @@ package org.apache.shardingsphere.core.merger.dal.show;
 
 import com.google.common.collect.Lists;
 import org.apache.shardingsphere.api.algorithm.fixture.TestComplexKeysShardingAlgorithm;
-import org.apache.shardingsphere.api.config.rule.ShardingRuleConfiguration;
-import org.apache.shardingsphere.api.config.rule.TableRuleConfiguration;
-import org.apache.shardingsphere.api.config.strategy.ComplexShardingStrategyConfiguration;
+import org.apache.shardingsphere.api.config.sharding.ShardingRuleConfiguration;
+import org.apache.shardingsphere.api.config.sharding.TableRuleConfiguration;
+import org.apache.shardingsphere.api.config.sharding.strategy.ComplexShardingStrategyConfiguration;
 import org.apache.shardingsphere.core.merger.QueryResult;
 import org.apache.shardingsphere.core.merger.fixture.TestQueryResult;
 import org.apache.shardingsphere.core.metadata.table.ColumnMetaData;
@@ -57,9 +57,7 @@ public final class ShowCreateTableMergedResultTest {
     
     @Before
     public void setUp() throws SQLException {
-        TableRuleConfiguration tableRuleConfig = new TableRuleConfiguration();
-        tableRuleConfig.setLogicTable("table");
-        tableRuleConfig.setActualDataNodes("ds.table_${0..2}");
+        TableRuleConfiguration tableRuleConfig = new TableRuleConfiguration("table", "ds.table_${0..2}");
         tableRuleConfig.setTableShardingStrategyConfig(new ComplexShardingStrategyConfiguration("field1, field2, field3", new TestComplexKeysShardingAlgorithm()));
         ShardingRuleConfiguration shardingRuleConfig = new ShardingRuleConfiguration();
         shardingRuleConfig.getTableRuleConfigs().add(tableRuleConfig);

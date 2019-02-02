@@ -17,20 +17,10 @@
 
 package org.apache.shardingsphere.core.routing.type.standard;
 
-import static org.hamcrest.CoreMatchers.is;
-import static org.junit.Assert.assertThat;
-
-import java.util.Arrays;
-import java.util.Collection;
-import java.util.HashMap;
-import java.util.LinkedHashMap;
-import java.util.List;
-import java.util.Map;
-
-import org.apache.shardingsphere.api.config.rule.ShardingRuleConfiguration;
-import org.apache.shardingsphere.api.config.rule.TableRuleConfiguration;
-import org.apache.shardingsphere.api.config.strategy.HintShardingStrategyConfiguration;
-import org.apache.shardingsphere.api.config.strategy.InlineShardingStrategyConfiguration;
+import org.apache.shardingsphere.api.config.sharding.ShardingRuleConfiguration;
+import org.apache.shardingsphere.api.config.sharding.TableRuleConfiguration;
+import org.apache.shardingsphere.api.config.sharding.strategy.HintShardingStrategyConfiguration;
+import org.apache.shardingsphere.api.config.sharding.strategy.InlineShardingStrategyConfiguration;
 import org.apache.shardingsphere.core.constant.DatabaseType;
 import org.apache.shardingsphere.core.fixture.OrderDatabaseHintShardingAlgorithm;
 import org.apache.shardingsphere.core.metadata.ShardingMetaData;
@@ -41,6 +31,16 @@ import org.apache.shardingsphere.core.metadata.table.TableMetaData;
 import org.apache.shardingsphere.core.routing.PreparedStatementRoutingEngine;
 import org.apache.shardingsphere.core.routing.SQLRouteResult;
 import org.apache.shardingsphere.core.rule.ShardingRule;
+
+import java.util.Arrays;
+import java.util.Collection;
+import java.util.HashMap;
+import java.util.LinkedHashMap;
+import java.util.List;
+import java.util.Map;
+
+import static org.hamcrest.CoreMatchers.is;
+import static org.junit.Assert.assertThat;
 
 public class AbstractSQLRouteTest {
     
@@ -90,11 +90,9 @@ public class AbstractSQLRouteTest {
     
     private TableRuleConfiguration createTableRuleConfig(final String tableName, final String actualDataNodes,
                                                            final String shardingColumn, final String algorithmExpression, final String dsAlgorithmExpression) {
-        TableRuleConfiguration result = new TableRuleConfiguration();
-        result.setLogicTable(tableName);
+        TableRuleConfiguration result = new TableRuleConfiguration(tableName, actualDataNodes);
         result.setTableShardingStrategyConfig(new InlineShardingStrategyConfiguration(shardingColumn, algorithmExpression));
         result.setDatabaseShardingStrategyConfig(new InlineShardingStrategyConfiguration(shardingColumn, dsAlgorithmExpression));
-        result.setActualDataNodes(actualDataNodes);
         return result;
     }
     
@@ -104,11 +102,9 @@ public class AbstractSQLRouteTest {
     }
     
     private TableRuleConfiguration createTableRuleWithHintConfig(final String tableName, final String actualDataNodes) {
-        TableRuleConfiguration result = new TableRuleConfiguration();
-        result.setLogicTable(tableName);
+        TableRuleConfiguration result = new TableRuleConfiguration(tableName, actualDataNodes);
         result.setTableShardingStrategyConfig(new HintShardingStrategyConfiguration(new OrderDatabaseHintShardingAlgorithm()));
         result.setDatabaseShardingStrategyConfig(new HintShardingStrategyConfiguration(new OrderDatabaseHintShardingAlgorithm()));
-        result.setActualDataNodes(actualDataNodes);
         return result;
     }
     

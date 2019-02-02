@@ -32,20 +32,17 @@ import org.apache.shardingsphere.core.hint.HintManagerHolder;
  * @author panjun
  */
 @NoArgsConstructor(access = AccessLevel.PRIVATE)
+@Getter
 public final class HintManager implements AutoCloseable {
     
-    @Getter
     private final Multimap<String, Comparable<?>> databaseShardingValues = HashMultimap.create();
-
-    @Getter
+    
     private final Multimap<String, Comparable<?>> tableShardingValues = HashMultimap.create();
     
-    @Getter
     private boolean databaseShardingOnly;
-
-    @Getter
+    
     private boolean masterRouteOnly;
-
+    
     /**
      * Get a new instance for {@code HintManager}.
      *

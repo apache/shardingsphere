@@ -24,7 +24,9 @@ import org.apache.shardingsphere.core.metadata.table.ColumnMetaData;
 import org.apache.shardingsphere.core.metadata.table.ShardingTableMetaData;
 import org.apache.shardingsphere.core.metadata.table.TableMetaData;
 import org.apache.shardingsphere.core.rule.ShardingRule;
-import org.apache.shardingsphere.core.yaml.sharding.YamlShardingConfiguration;
+import org.apache.shardingsphere.core.yaml.config.sharding.YamlRootShardingConfiguration;
+import org.apache.shardingsphere.core.yaml.engine.YamlEngine;
+import org.apache.shardingsphere.core.yaml.swapper.impl.ShardingRuleConfigurationYamlSwapper;
 import org.junit.BeforeClass;
 import org.junit.runner.RunWith;
 import org.junit.runners.Parameterized;
@@ -54,8 +56,8 @@ public abstract class AbstractBaseIntegrateSQLParsingTest {
     private static ShardingRule buildShardingRule() throws IOException {
         URL url = AbstractBaseIntegrateSQLParsingTest.class.getClassLoader().getResource("yaml/parser-rule.yaml");
         Preconditions.checkNotNull(url, "Cannot found parser rule yaml configuration.");
-        YamlShardingConfiguration yamlShardingConfig = YamlShardingConfiguration.unmarshal(new File(url.getFile()));
-        return new ShardingRule(yamlShardingConfig.getShardingRule().getShardingRuleConfiguration(), yamlShardingConfig.getDataSources().keySet());
+        YamlRootShardingConfiguration yamlShardingConfig = YamlEngine.unmarshal(new File(url.getFile()), YamlRootShardingConfiguration.class);
+        return new ShardingRule(new ShardingRuleConfigurationYamlSwapper().swap(yamlShardingConfig.getShardingRule()), yamlShardingConfig.getDataSources().keySet());
     }
     
     private static ShardingTableMetaData buildShardingTableMetaData() {

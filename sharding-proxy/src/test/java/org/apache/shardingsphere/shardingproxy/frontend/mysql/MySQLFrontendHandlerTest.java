@@ -73,9 +73,7 @@ public final class MySQLFrontendHandlerTest {
     
     @Test
     public void assertAuthWhenLoginSuccess() throws ReflectiveOperationException {
-        Authentication authentication = new Authentication();
-        authentication.setUsername("");
-        authentication.setPassword("");
+        Authentication authentication = new Authentication("", "");
         setAuthentication(authentication);
         mysqlFrontendHandler.auth(context, mock(ByteBuf.class));
         verify(context).writeAndFlush(isA(OKPacket.class));
@@ -83,9 +81,7 @@ public final class MySQLFrontendHandlerTest {
     
     @Test
     public void assertAuthWhenLoginFailure() throws ReflectiveOperationException {
-        Authentication authentication = new Authentication();
-        authentication.setUsername("root");
-        authentication.setPassword("root");
+        Authentication authentication = new Authentication("root", "root");
         setAuthentication(authentication);
         mysqlFrontendHandler.auth(context, mock(ByteBuf.class));
         verify(context).writeAndFlush(isA(ErrPacket.class));

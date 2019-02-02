@@ -19,12 +19,15 @@ package org.apache.shardingsphere.shardingproxypg;
 
 import lombok.AccessLevel;
 import lombok.NoArgsConstructor;
-import org.apache.shardingsphere.api.config.rule.RuleConfiguration;
+import org.apache.shardingsphere.api.config.RuleConfiguration;
 import org.apache.shardingsphere.core.config.DataSourceConfiguration;
 import org.apache.shardingsphere.core.constant.properties.ShardingPropertiesConstant;
 import org.apache.shardingsphere.core.rule.Authentication;
+import org.apache.shardingsphere.core.yaml.swapper.impl.MasterSlaveRuleConfigurationYamlSwapper;
+import org.apache.shardingsphere.core.yaml.swapper.impl.ShardingRuleConfigurationYamlSwapper;
 import org.apache.shardingsphere.opentracing.ShardingTracer;
 import org.apache.shardingsphere.orchestration.internal.registry.ShardingOrchestrationFacade;
+import org.apache.shardingsphere.orchestration.yaml.swapper.OrchestrationConfigurationYamlSwapper;
 import org.apache.shardingsphere.shardingproxypg.config.ShardingConfiguration;
 import org.apache.shardingsphere.shardingproxypg.config.ShardingConfigurationLoader;
 import org.apache.shardingsphere.shardingproxypg.config.yaml.YamlDataSourceParameter;
@@ -67,7 +70,8 @@ public final class Bootstrap {
         int port = getPort(args);
         new ProxyListenerRegister().register();
         if (null == shardingConfig.getServerConfiguration().getOrchestration()) {
-            startWithoutRegistryCenter(shardingConfig.getRuleConfigurationMap(), shardingConfig.getServerConfiguration().getAuthentication(),
+            startWithoutRegistryCenter(shardingConfig.getRuleConfigurationMap(), 
+                    new Authentication(shardingConfig.getServerConfiguration().getAuthentication().getUsername(), shardingConfig.getServerConfiguration().getAuthentication().getPassword()),
                     shardingConfig.getServerConfiguration().getConfigMap(), shardingConfig.getServerConfiguration().getProps(), port);
         } else {
             startWithRegistryCenter(shardingConfig.getServerConfiguration(), shardingConfig.getRuleConfigurationMap().keySet(), shardingConfig.getRuleConfigurationMap(), port);
@@ -94,7 +98,8 @@ public final class Bootstrap {
     
     private static void startWithRegistryCenter(final YamlProxyServerConfiguration serverConfig,
                                                 final Collection<String> shardingSchemaNames, final Map<String, YamlProxyRuleConfiguration> ruleConfigs, final int port) throws InterruptedException {
-        try (ShardingOrchestrationFacade shardingOrchestrationFacade = new ShardingOrchestrationFacade(serverConfig.getOrchestration().getOrchestrationConfiguration(), shardingSchemaNames)) {
+        try (ShardingOrchestrationFacade shardingOrchestrationFacade = new ShardingOrchestrationFacade(
+                new OrchestrationConfigurationYamlSwapper().swap(serverConfig.getOrchestration()), shardingSchemaNames)) {
             initShardingOrchestrationFacade(serverConfig, ruleConfigs, shardingOrchestrationFacade);
             GlobalRegistry.getInstance().init(getSchemaDataSourceParameterMap(shardingOrchestrationFacade), getSchemaRules(shardingOrchestrationFacade),
                     shardingOrchestrationFacade.getConfigService().loadAuthentication(), shardingOrchestrationFacade.getConfigService().loadConfigMap(),
@@ -129,8 +134,8 @@ public final class Bootstrap {
         if (ruleConfigs.isEmpty()) {
             shardingOrchestrationFacade.init();
         } else {
-            shardingOrchestrationFacade.init(getDataSourceConfigurationMap(ruleConfigs),
-                    getRuleConfiguration(ruleConfigs), serverConfig.getAuthentication(), serverConfig.getConfigMap(), serverConfig.getProps());
+            shardingOrchestrationFacade.init(getDataSourceConfigurationMap(ruleConfigs), getRuleConfiguration(ruleConfigs), 
+                    new Authentication(serverConfig.getAuthentication().getUsername(), serverConfig.getAuthentication().getPassword()), serverConfig.getConfigMap(), serverConfig.getProps());
         }
     }
     
@@ -159,8 +164,8 @@ public final class Bootstrap {
     private static Map<String, RuleConfiguration> getRuleConfiguration(final Map<String, YamlProxyRuleConfiguration> localRuleConfigs) {
         Map<String, RuleConfiguration> result = new HashMap<>();
         for (Entry<String, YamlProxyRuleConfiguration> entry : localRuleConfigs.entrySet()) {
-            result.put(entry.getKey(), null != entry.getValue().getShardingRule() ? entry.getValue().getShardingRule().getShardingRuleConfiguration()
-                    : entry.getValue().getMasterSlaveRule().getMasterSlaveRuleConfiguration());
+            result.put(entry.getKey(), null != entry.getValue().getShardingRule() ? new ShardingRuleConfigurationYamlSwapper().swap(entry.getValue().getShardingRule())
+                    : new MasterSlaveRuleConfigurationYamlSwapper().swap(entry.getValue().getMasterSlaveRule()));
         }
         return result;
     }

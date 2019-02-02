@@ -37,7 +37,9 @@ import org.apache.shardingsphere.core.parsing.parser.token.ItemsToken;
 import org.apache.shardingsphere.core.parsing.parser.token.TableToken;
 import org.apache.shardingsphere.core.routing.router.sharding.GeneratedKey;
 import org.apache.shardingsphere.core.rule.ShardingRule;
-import org.apache.shardingsphere.core.yaml.sharding.YamlShardingConfiguration;
+import org.apache.shardingsphere.core.yaml.config.sharding.YamlRootShardingConfiguration;
+import org.apache.shardingsphere.core.yaml.engine.YamlEngine;
+import org.apache.shardingsphere.core.yaml.swapper.impl.ShardingRuleConfigurationYamlSwapper;
 import org.hamcrest.CoreMatchers;
 import org.junit.Before;
 import org.junit.Test;
@@ -74,8 +76,8 @@ public final class InsertOptimizeEngineTest {
     public void setUp() throws IOException {
         URL url = InsertOptimizeEngineTest.class.getClassLoader().getResource("yaml/optimize-rule.yaml");
         Preconditions.checkNotNull(url, "Cannot found rewrite rule yaml configuration.");
-        YamlShardingConfiguration yamlShardingConfig = YamlShardingConfiguration.unmarshal(new File(url.getFile()));
-        shardingRule = new ShardingRule(yamlShardingConfig.getShardingRule().getShardingRuleConfiguration(), yamlShardingConfig.getDataSources().keySet());
+        YamlRootShardingConfiguration yamlShardingConfig = YamlEngine.unmarshal(new File(url.getFile()), YamlRootShardingConfiguration.class);
+        shardingRule = new ShardingRule(new ShardingRuleConfigurationYamlSwapper().swap(yamlShardingConfig.getShardingRule()), yamlShardingConfig.getDataSources().keySet());
         initializeWithValuesWithPlaceHolder();
         initializeInsertWithValuesWithoutPlaceHolder();
         initializeInsertWithoutValuesWithoutPlaceHolder();

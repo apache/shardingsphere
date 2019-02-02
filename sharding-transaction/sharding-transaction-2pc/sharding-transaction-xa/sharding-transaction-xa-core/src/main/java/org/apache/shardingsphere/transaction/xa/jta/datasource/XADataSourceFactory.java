@@ -18,6 +18,8 @@
 package org.apache.shardingsphere.transaction.xa.jta.datasource;
 
 import com.atomikos.beans.PropertyUtils;
+import com.google.common.collect.LinkedHashMultimap;
+import com.google.common.collect.Multimap;
 import lombok.AccessLevel;
 import lombok.NoArgsConstructor;
 import lombok.SneakyThrows;
@@ -28,8 +30,8 @@ import org.apache.shardingsphere.transaction.xa.jta.datasource.swapper.DataSourc
 
 import javax.sql.DataSource;
 import javax.sql.XADataSource;
-import java.util.HashMap;
-import java.util.Map;
+import java.util.LinkedList;
+import java.util.List;
 import java.util.Properties;
 
 /**
@@ -40,13 +42,14 @@ import java.util.Properties;
 @NoArgsConstructor(access = AccessLevel.PRIVATE)
 public final class XADataSourceFactory {
     
-    private static final Map<DatabaseType, String> XA_DRIVER_CLASS_NAMES = new HashMap<>(DatabaseType.values().length, 1);
+    private static final Multimap<DatabaseType, String> XA_DRIVER_CLASS_NAMES = LinkedHashMultimap.create();
     
     private static final DataSourceSwapper SWAPPER = new DataSourceSwapper();
     
     static {
         XA_DRIVER_CLASS_NAMES.put(DatabaseType.H2, "org.h2.jdbcx.JdbcDataSource");
         XA_DRIVER_CLASS_NAMES.put(DatabaseType.MySQL, "com.mysql.jdbc.jdbc2.optional.MysqlXADataSource");
+        XA_DRIVER_CLASS_NAMES.put(DatabaseType.MySQL, "com.mysql.cj.jdbc.MysqlXADataSource");
         XA_DRIVER_CLASS_NAMES.put(DatabaseType.PostgreSQL, "org.postgresql.xa.PGXADataSource");
         XA_DRIVER_CLASS_NAMES.put(DatabaseType.Oracle, "oracle.jdbc.xa.client.OracleXADataSource");
         XA_DRIVER_CLASS_NAMES.put(DatabaseType.SQLServer, "com.microsoft.sqlserver.jdbc.SQLServerXADataSource");
@@ -78,7 +81,26 @@ public final class XADataSourceFactory {
     }
     
     private static XADataSource createXADataSource(final DatabaseType databaseType) {
-        String xaDataSourceClassName = XA_DRIVER_CLASS_NAMES.get(databaseType);
+        XADataSource result = null;
+        List<ShardingException> exceptions = new LinkedList<>();
+        for (String each : XA_DRIVER_CLASS_NAMES.get(databaseType)) {
+            try {
+                result = loadXADataSource(each);
+            } catch (final ShardingException ex) {
+                exceptions.add(ex);
+            }
+        }
+        if (null == result && !exceptions.isEmpty()) {
+            if (exceptions.size() > 1) {
+                throw new ShardingException("Failed to create [%s] XA DataSource", databaseType);
+            } else {
+                throw exceptions.iterator().next();
+            }
+        }
+        return result;
+    }
+    
+    private static XADataSource loadXADataSource(final String xaDataSourceClassName) {
         Class xaDataSourceClass;
         try {
             xaDataSourceClass = Thread.currentThread().getContextClassLoader().loadClass(xaDataSourceClassName);

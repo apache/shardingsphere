@@ -17,16 +17,16 @@
 
 package org.apache.shardingsphere.orchestration.yaml;
 
+import org.apache.shardingsphere.orchestration.yaml.swapper.DataSourceConfigurationYamlSwapperTest;
+import org.apache.shardingsphere.orchestration.yaml.swapper.OrchestrationConfigurationYamlSwapperTest;
 import org.junit.runner.RunWith;
 import org.junit.runners.Suite;
 import org.junit.runners.Suite.SuiteClasses;
 
 @RunWith(Suite.class)
 @SuiteClasses({
-        ConfigurationYamlConverterTest.class,
-        DefaultYamlRepresenterTest.class, 
-        YamlOrchestrationConfigurationTest.class,
-        YamlDataSourceConfigurationTest.class
+        DataSourceConfigurationYamlSwapperTest.class, 
+        OrchestrationConfigurationYamlSwapperTest.class
 })
 public final class AllYamlTests {
 }

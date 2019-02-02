@@ -22,7 +22,7 @@ import com.google.common.base.Splitter;
 import lombok.Getter;
 import org.apache.shardingsphere.api.algorithm.sharding.ShardingValue;
 import org.apache.shardingsphere.api.algorithm.sharding.complex.ComplexKeysShardingAlgorithm;
-import org.apache.shardingsphere.api.config.strategy.ComplexShardingStrategyConfiguration;
+import org.apache.shardingsphere.api.config.sharding.strategy.ComplexShardingStrategyConfiguration;
 import org.apache.shardingsphere.core.routing.strategy.ShardingStrategy;
 
 import java.util.Collection;

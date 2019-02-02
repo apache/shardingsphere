@@ -17,8 +17,8 @@
 
 package org.apache.shardingsphere.core.rule;
 
-import org.apache.shardingsphere.api.config.rule.ShardingRuleConfiguration;
-import org.apache.shardingsphere.api.config.rule.TableRuleConfiguration;
+import org.apache.shardingsphere.api.config.sharding.ShardingRuleConfiguration;
+import org.apache.shardingsphere.api.config.sharding.TableRuleConfiguration;
 import org.apache.shardingsphere.core.exception.ShardingConfigurationException;
 import org.junit.Test;
 
@@ -76,17 +76,11 @@ public final class BindingTableRuleTest {
     }
     
     private TableRule createTableRule() {
-        TableRuleConfiguration tableRuleConfig = new TableRuleConfiguration();
-        tableRuleConfig.setLogicTable("LOGIC_TABLE");
-        tableRuleConfig.setActualDataNodes("ds${0..1}.table_${0..1}");
-        return new TableRule(tableRuleConfig, createShardingDataSourceNames(), null);
+        return new TableRule(new TableRuleConfiguration("LOGIC_TABLE", "ds${0..1}.table_${0..1}"), createShardingDataSourceNames(), null);
     }
     
     private TableRule createSubTableRule() {
-        TableRuleConfiguration tableRuleConfig = new TableRuleConfiguration();
-        tableRuleConfig.setLogicTable("SUB_LOGIC_TABLE");
-        tableRuleConfig.setActualDataNodes("ds${0..1}.sub_table_${0..1}");
-        return new TableRule(tableRuleConfig, createShardingDataSourceNames(), null);
+        return new TableRule(new TableRuleConfiguration("SUB_LOGIC_TABLE", "ds${0..1}.sub_table_${0..1}"), createShardingDataSourceNames(), null);
     }
     
     private ShardingDataSourceNames createShardingDataSourceNames() {

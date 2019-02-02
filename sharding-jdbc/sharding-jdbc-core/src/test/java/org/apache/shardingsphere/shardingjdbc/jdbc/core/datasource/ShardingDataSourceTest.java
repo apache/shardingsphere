@@ -19,9 +19,9 @@ package org.apache.shardingsphere.shardingjdbc.jdbc.core.datasource;
 
 import com.google.common.base.Joiner;
 import org.apache.shardingsphere.api.algorithm.masterslave.MasterSlaveLoadBalanceAlgorithmType;
-import org.apache.shardingsphere.api.config.rule.MasterSlaveRuleConfiguration;
-import org.apache.shardingsphere.api.config.rule.ShardingRuleConfiguration;
-import org.apache.shardingsphere.api.config.rule.TableRuleConfiguration;
+import org.apache.shardingsphere.api.config.masterslave.MasterSlaveRuleConfiguration;
+import org.apache.shardingsphere.api.config.sharding.ShardingRuleConfiguration;
+import org.apache.shardingsphere.api.config.sharding.TableRuleConfiguration;
 import org.apache.shardingsphere.core.constant.DatabaseType;
 import org.apache.shardingsphere.core.rule.ShardingRule;
 import org.apache.shardingsphere.shardingjdbc.api.MasterSlaveDataSourceFactory;
@@ -192,14 +192,12 @@ public final class ShardingDataSourceTest {
     }
     
     private ShardingRuleConfiguration createShardingRuleConfig(final Map<String, DataSource> dataSourceMap) {
-        final ShardingRuleConfiguration result = new ShardingRuleConfiguration();
-        TableRuleConfiguration tableRuleConfig = new TableRuleConfiguration();
-        tableRuleConfig.setLogicTable("logicTable");
+        ShardingRuleConfiguration result = new ShardingRuleConfiguration();
         List<String> orderActualDataNodes = new LinkedList<>();
         for (String each : dataSourceMap.keySet()) {
             orderActualDataNodes.add(each + ".table_${0..2}");
         }
-        tableRuleConfig.setActualDataNodes(Joiner.on(",").join(orderActualDataNodes));
+        TableRuleConfiguration tableRuleConfig = new TableRuleConfiguration("logicTable", Joiner.on(",").join(orderActualDataNodes));
         result.getTableRuleConfigs().add(tableRuleConfig);
         return result;
     }
