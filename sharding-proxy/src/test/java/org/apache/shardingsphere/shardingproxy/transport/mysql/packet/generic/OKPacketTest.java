@@ -27,7 +27,6 @@ import org.mockito.junit.MockitoJUnitRunner;
 import static org.hamcrest.CoreMatchers.is;
 import static org.junit.Assert.assertThat;
 import static org.mockito.Mockito.verify;
-import static org.mockito.Mockito.when;
 
 @RunWith(MockitoJUnitRunner.class)
 public final class OKPacketTest {
@@ -47,26 +46,12 @@ public final class OKPacketTest {
     
     @Test
     public void assertNewOKPacketWithAffectedRowsAndLastInsertId() {
-        OKPacket actual = new OKPacket(1, 100, 9999L);
+        OKPacket actual = new OKPacket(1, 100L, 9999L);
         assertThat(actual.getSequenceId(), is(1));
         assertThat(actual.getAffectedRows(), is(100L));
         assertThat(actual.getLastInsertId(), is(9999L));
         assertThat(actual.getWarnings(), is(0));
         assertThat(actual.getInfo(), is(""));
-    }
-    
-    @Test
-    public void assertNewOKPacketWithMySQLPacketPayload() {
-        when(packetPayload.readInt1()).thenReturn(1, OKPacket.HEADER);
-        when(packetPayload.readIntLenenc()).thenReturn(100L, 9999L);
-        when(packetPayload.readInt2()).thenReturn(0, 1);
-        when(packetPayload.readStringEOF()).thenReturn("no info");
-        OKPacket actual = new OKPacket(packetPayload);
-        assertThat(actual.getSequenceId(), is(1));
-        assertThat(actual.getAffectedRows(), is(100L));
-        assertThat(actual.getLastInsertId(), is(9999L));
-        assertThat(actual.getWarnings(), is(1));
-        assertThat(actual.getInfo(), is("no info"));
     }
     
     @Test

@@ -19,10 +19,10 @@ package org.apache.shardingsphere.shardingproxy.backend.sctl;
 
 import org.apache.shardingsphere.shardingproxy.backend.ResultPacket;
 import org.apache.shardingsphere.shardingproxy.backend.communication.jdbc.connection.BackendConnection;
-import org.apache.shardingsphere.shardingproxy.transport.mysql.packet.command.CommandResponsePackets;
-import org.apache.shardingsphere.shardingproxy.transport.mysql.packet.command.query.FieldCountPacket;
-import org.apache.shardingsphere.shardingproxy.transport.mysql.packet.command.query.QueryResponsePackets;
-import org.apache.shardingsphere.shardingproxy.transport.mysql.packet.generic.ErrPacket;
+import org.apache.shardingsphere.shardingproxy.transport.common.packet.command.CommandResponsePackets;
+import org.apache.shardingsphere.shardingproxy.transport.common.packet.command.query.DataHeaderPacket;
+import org.apache.shardingsphere.shardingproxy.transport.common.packet.command.query.QueryResponsePackets;
+import org.apache.shardingsphere.shardingproxy.transport.common.packet.generic.DatabaseFailurePacket;
 import org.apache.shardingsphere.transaction.core.TransactionType;
 import org.hamcrest.CoreMatchers;
 import org.junit.Test;
@@ -44,8 +44,8 @@ public final class ShardingCTLShowBackendHandlerTest {
         ShardingCTLShowBackendHandler backendHandler = new ShardingCTLShowBackendHandler("sctl:show transaction_type", backendConnection);
         CommandResponsePackets actual = backendHandler.execute();
         assertThat(actual, instanceOf(QueryResponsePackets.class));
-        assertThat(actual.getHeadPacket(), instanceOf(FieldCountPacket.class));
-        assertThat(actual.getPackets().size(), is(3));
+        assertThat(actual.getHeadPacket(), instanceOf(DataHeaderPacket.class));
+        assertThat(actual.getPackets().size(), is(1));
         backendHandler.next();
         ResultPacket resultPacket = backendHandler.getResultValue();
         assertThat(resultPacket.getData().iterator().next(), CoreMatchers.<Object>is("LOCAL"));
@@ -57,8 +57,8 @@ public final class ShardingCTLShowBackendHandlerTest {
         ShardingCTLShowBackendHandler backendHandler = new ShardingCTLShowBackendHandler("sctl:show cached_connections", backendConnection);
         CommandResponsePackets actual = backendHandler.execute();
         assertThat(actual, instanceOf(QueryResponsePackets.class));
-        assertThat(actual.getHeadPacket(), instanceOf(FieldCountPacket.class));
-        assertThat(actual.getPackets().size(), is(3));
+        assertThat(actual.getHeadPacket(), instanceOf(DataHeaderPacket.class));
+        assertThat(actual.getPackets().size(), is(1));
         backendHandler.next();
         ResultPacket resultPacket = backendHandler.getResultValue();
         assertThat(resultPacket.getData().iterator().next(), CoreMatchers.<Object>is(0));
@@ -69,9 +69,9 @@ public final class ShardingCTLShowBackendHandlerTest {
         backendConnection.setCurrentSchema("schema");
         ShardingCTLShowBackendHandler backendHandler = new ShardingCTLShowBackendHandler("sctl:show cached_connectionss", backendConnection);
         CommandResponsePackets actual = backendHandler.execute();
-        assertThat(actual.getHeadPacket(), instanceOf(ErrPacket.class));
-        ErrPacket errPacket = (ErrPacket) actual.getHeadPacket();
-        assertThat(errPacket.getErrorMessage(), containsString(" could not support this sctl grammar "));
+        assertThat(actual.getHeadPacket(), instanceOf(DatabaseFailurePacket.class));
+        DatabaseFailurePacket databaseFailurePacket = (DatabaseFailurePacket) actual.getHeadPacket();
+        assertThat(databaseFailurePacket.getErrorMessage(), containsString(" could not support this sctl grammar "));
     }
     
     @Test
@@ -79,8 +79,8 @@ public final class ShardingCTLShowBackendHandlerTest {
         backendConnection.setCurrentSchema("schema");
         ShardingCTLShowBackendHandler backendHandler = new ShardingCTLShowBackendHandler("sctl:show=xx", backendConnection);
         CommandResponsePackets actual = backendHandler.execute();
-        assertThat(actual.getHeadPacket(), instanceOf(ErrPacket.class));
-        ErrPacket errPacket = (ErrPacket) actual.getHeadPacket();
-        assertThat(errPacket.getErrorMessage(), containsString(" please review your sctl format"));
+        assertThat(actual.getHeadPacket(), instanceOf(DatabaseFailurePacket.class));
+        DatabaseFailurePacket databaseFailurePacket = (DatabaseFailurePacket) actual.getHeadPacket();
+        assertThat(databaseFailurePacket.getErrorMessage(), containsString(" please review your sctl format"));
     }
 }

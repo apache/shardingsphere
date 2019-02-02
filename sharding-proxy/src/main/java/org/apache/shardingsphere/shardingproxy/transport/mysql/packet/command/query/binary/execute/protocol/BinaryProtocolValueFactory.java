@@ -20,7 +20,7 @@ package org.apache.shardingsphere.shardingproxy.transport.mysql.packet.command.q
 import com.google.common.base.Preconditions;
 import lombok.AccessLevel;
 import lombok.NoArgsConstructor;
-import org.apache.shardingsphere.shardingproxy.transport.mysql.constant.ColumnType;
+import org.apache.shardingsphere.shardingproxy.transport.mysql.constant.MySQLColumnType;
 
 import java.util.HashMap;
 import java.util.Map;
@@ -33,7 +33,7 @@ import java.util.Map;
 @NoArgsConstructor(access = AccessLevel.PRIVATE)
 public final class BinaryProtocolValueFactory {
     
-    private static final Map<ColumnType, BinaryProtocolValue> BINARY_PROTOCOL_VALUES = new HashMap<>();
+    private static final Map<MySQLColumnType, BinaryProtocolValue> BINARY_PROTOCOL_VALUES = new HashMap<>();
     
     static {
         setStringLenencBinaryProtocolValue();
@@ -49,73 +49,73 @@ public final class BinaryProtocolValueFactory {
     
     private static void setStringLenencBinaryProtocolValue() {
         StringLenencBinaryProtocolValue binaryProtocolValue = new StringLenencBinaryProtocolValue();
-        BINARY_PROTOCOL_VALUES.put(ColumnType.MYSQL_TYPE_STRING, binaryProtocolValue);
-        BINARY_PROTOCOL_VALUES.put(ColumnType.MYSQL_TYPE_VARCHAR, binaryProtocolValue);
-        BINARY_PROTOCOL_VALUES.put(ColumnType.MYSQL_TYPE_VAR_STRING, binaryProtocolValue);
-        BINARY_PROTOCOL_VALUES.put(ColumnType.MYSQL_TYPE_ENUM, binaryProtocolValue);
-        BINARY_PROTOCOL_VALUES.put(ColumnType.MYSQL_TYPE_SET, binaryProtocolValue);
-        BINARY_PROTOCOL_VALUES.put(ColumnType.MYSQL_TYPE_LONG_BLOB, binaryProtocolValue);
-        BINARY_PROTOCOL_VALUES.put(ColumnType.MYSQL_TYPE_MEDIUM_BLOB, binaryProtocolValue);
-        BINARY_PROTOCOL_VALUES.put(ColumnType.MYSQL_TYPE_BLOB, binaryProtocolValue);
-        BINARY_PROTOCOL_VALUES.put(ColumnType.MYSQL_TYPE_TINY_BLOB, binaryProtocolValue);
-        BINARY_PROTOCOL_VALUES.put(ColumnType.MYSQL_TYPE_GEOMETRY, binaryProtocolValue);
-        BINARY_PROTOCOL_VALUES.put(ColumnType.MYSQL_TYPE_BIT, binaryProtocolValue);
-        BINARY_PROTOCOL_VALUES.put(ColumnType.MYSQL_TYPE_DECIMAL, binaryProtocolValue);
-        BINARY_PROTOCOL_VALUES.put(ColumnType.MYSQL_TYPE_NEWDECIMAL, binaryProtocolValue);
+        BINARY_PROTOCOL_VALUES.put(MySQLColumnType.MYSQL_TYPE_STRING, binaryProtocolValue);
+        BINARY_PROTOCOL_VALUES.put(MySQLColumnType.MYSQL_TYPE_VARCHAR, binaryProtocolValue);
+        BINARY_PROTOCOL_VALUES.put(MySQLColumnType.MYSQL_TYPE_VAR_STRING, binaryProtocolValue);
+        BINARY_PROTOCOL_VALUES.put(MySQLColumnType.MYSQL_TYPE_ENUM, binaryProtocolValue);
+        BINARY_PROTOCOL_VALUES.put(MySQLColumnType.MYSQL_TYPE_SET, binaryProtocolValue);
+        BINARY_PROTOCOL_VALUES.put(MySQLColumnType.MYSQL_TYPE_LONG_BLOB, binaryProtocolValue);
+        BINARY_PROTOCOL_VALUES.put(MySQLColumnType.MYSQL_TYPE_MEDIUM_BLOB, binaryProtocolValue);
+        BINARY_PROTOCOL_VALUES.put(MySQLColumnType.MYSQL_TYPE_BLOB, binaryProtocolValue);
+        BINARY_PROTOCOL_VALUES.put(MySQLColumnType.MYSQL_TYPE_TINY_BLOB, binaryProtocolValue);
+        BINARY_PROTOCOL_VALUES.put(MySQLColumnType.MYSQL_TYPE_GEOMETRY, binaryProtocolValue);
+        BINARY_PROTOCOL_VALUES.put(MySQLColumnType.MYSQL_TYPE_BIT, binaryProtocolValue);
+        BINARY_PROTOCOL_VALUES.put(MySQLColumnType.MYSQL_TYPE_DECIMAL, binaryProtocolValue);
+        BINARY_PROTOCOL_VALUES.put(MySQLColumnType.MYSQL_TYPE_NEWDECIMAL, binaryProtocolValue);
     }
     
     private static void setInt8BinaryProtocolValue() {
         Int8BinaryProtocolValue binaryProtocolValue = new Int8BinaryProtocolValue();
-        BINARY_PROTOCOL_VALUES.put(ColumnType.MYSQL_TYPE_LONGLONG, binaryProtocolValue);
+        BINARY_PROTOCOL_VALUES.put(MySQLColumnType.MYSQL_TYPE_LONGLONG, binaryProtocolValue);
     }
     
     private static void setInt4BinaryProtocolValue() {
         Int4BinaryProtocolValue binaryProtocolValue = new Int4BinaryProtocolValue();
-        BINARY_PROTOCOL_VALUES.put(ColumnType.MYSQL_TYPE_LONG, binaryProtocolValue);
-        BINARY_PROTOCOL_VALUES.put(ColumnType.MYSQL_TYPE_INT24, binaryProtocolValue);
+        BINARY_PROTOCOL_VALUES.put(MySQLColumnType.MYSQL_TYPE_LONG, binaryProtocolValue);
+        BINARY_PROTOCOL_VALUES.put(MySQLColumnType.MYSQL_TYPE_INT24, binaryProtocolValue);
     }
     
     private static void setInt2BinaryProtocolValue() {
         Int2BinaryProtocolValue binaryProtocolValue = new Int2BinaryProtocolValue();
-        BINARY_PROTOCOL_VALUES.put(ColumnType.MYSQL_TYPE_SHORT, binaryProtocolValue);
-        BINARY_PROTOCOL_VALUES.put(ColumnType.MYSQL_TYPE_YEAR, binaryProtocolValue);
+        BINARY_PROTOCOL_VALUES.put(MySQLColumnType.MYSQL_TYPE_SHORT, binaryProtocolValue);
+        BINARY_PROTOCOL_VALUES.put(MySQLColumnType.MYSQL_TYPE_YEAR, binaryProtocolValue);
     }
     
     private static void setInt1BinaryProtocolValue() {
         Int1BinaryProtocolValue binaryProtocolValue = new Int1BinaryProtocolValue();
-        BINARY_PROTOCOL_VALUES.put(ColumnType.MYSQL_TYPE_TINY, binaryProtocolValue);
+        BINARY_PROTOCOL_VALUES.put(MySQLColumnType.MYSQL_TYPE_TINY, binaryProtocolValue);
     }
     
     private static void setDoubleBinaryProtocolValue() {
         DoubleBinaryProtocolValue binaryProtocolValue = new DoubleBinaryProtocolValue();
-        BINARY_PROTOCOL_VALUES.put(ColumnType.MYSQL_TYPE_DOUBLE, binaryProtocolValue);
+        BINARY_PROTOCOL_VALUES.put(MySQLColumnType.MYSQL_TYPE_DOUBLE, binaryProtocolValue);
     }
     
     private static void setFloatBinaryProtocolValue() {
         FloatBinaryProtocolValue binaryProtocolValue = new FloatBinaryProtocolValue();
-        BINARY_PROTOCOL_VALUES.put(ColumnType.MYSQL_TYPE_FLOAT, binaryProtocolValue);
+        BINARY_PROTOCOL_VALUES.put(MySQLColumnType.MYSQL_TYPE_FLOAT, binaryProtocolValue);
     }
     
     private static void setDateBinaryProtocolValue() {
         DateBinaryProtocolValue binaryProtocolValue = new DateBinaryProtocolValue();
-        BINARY_PROTOCOL_VALUES.put(ColumnType.MYSQL_TYPE_DATE, binaryProtocolValue);
-        BINARY_PROTOCOL_VALUES.put(ColumnType.MYSQL_TYPE_DATETIME, binaryProtocolValue);
-        BINARY_PROTOCOL_VALUES.put(ColumnType.MYSQL_TYPE_TIMESTAMP, binaryProtocolValue);
+        BINARY_PROTOCOL_VALUES.put(MySQLColumnType.MYSQL_TYPE_DATE, binaryProtocolValue);
+        BINARY_PROTOCOL_VALUES.put(MySQLColumnType.MYSQL_TYPE_DATETIME, binaryProtocolValue);
+        BINARY_PROTOCOL_VALUES.put(MySQLColumnType.MYSQL_TYPE_TIMESTAMP, binaryProtocolValue);
     }
     
     private static void setTimeBinaryProtocolValue() {
         TimeBinaryProtocolValue binaryProtocolValue = new TimeBinaryProtocolValue();
-        BINARY_PROTOCOL_VALUES.put(ColumnType.MYSQL_TYPE_TIME, binaryProtocolValue);
+        BINARY_PROTOCOL_VALUES.put(MySQLColumnType.MYSQL_TYPE_TIME, binaryProtocolValue);
     }
     
     /**
      * Get binary protocol value.
      * 
-     * @param columnType column type
+     * @param mySQLColumnType column type
      * @return binary protocol value
      */
-    public static BinaryProtocolValue getBinaryProtocolValue(final ColumnType columnType) {
-        Preconditions.checkArgument(BINARY_PROTOCOL_VALUES.containsKey(columnType), "Cannot find MySQL type '%s' in column type when process binary protocol value", columnType);
-        return BINARY_PROTOCOL_VALUES.get(columnType);
+    public static BinaryProtocolValue getBinaryProtocolValue(final MySQLColumnType mySQLColumnType) {
+        Preconditions.checkArgument(BINARY_PROTOCOL_VALUES.containsKey(mySQLColumnType), "Cannot find MySQL type '%s' in column type when process binary protocol value", mySQLColumnType);
+        return BINARY_PROTOCOL_VALUES.get(mySQLColumnType);
     }
 }

@@ -22,7 +22,7 @@ import lombok.Getter;
 import lombok.extern.slf4j.Slf4j;
 import org.apache.shardingsphere.shardingproxy.transport.mysql.packet.MySQLPacketPayload;
 import org.apache.shardingsphere.shardingproxy.transport.mysql.packet.command.CommandPacket;
-import org.apache.shardingsphere.shardingproxy.transport.mysql.packet.command.CommandResponsePackets;
+import org.apache.shardingsphere.shardingproxy.transport.common.packet.command.CommandResponsePackets;
 
 /**
  * COM_STMT_CLOSE command packet.

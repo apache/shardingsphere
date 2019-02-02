@@ -22,16 +22,15 @@ import org.apache.shardingsphere.core.merger.dal.show.ShowDatabasesMergedResult;
 import org.apache.shardingsphere.shardingproxy.backend.ResultPacket;
 import org.apache.shardingsphere.shardingproxy.backend.text.TextProtocolBackendHandler;
 import org.apache.shardingsphere.shardingproxy.runtime.GlobalRegistry;
-import org.apache.shardingsphere.shardingproxy.transport.mysql.constant.ColumnType;
-import org.apache.shardingsphere.shardingproxy.transport.mysql.packet.command.CommandResponsePackets;
-import org.apache.shardingsphere.shardingproxy.transport.mysql.packet.command.query.ColumnDefinition41Packet;
-import org.apache.shardingsphere.shardingproxy.transport.mysql.packet.command.query.FieldCountPacket;
-import org.apache.shardingsphere.shardingproxy.transport.mysql.packet.command.query.QueryResponsePackets;
-import org.apache.shardingsphere.shardingproxy.transport.mysql.packet.generic.EofPacket;
+import org.apache.shardingsphere.shardingproxy.transport.common.packet.command.query.DataHeaderPacket;
+import org.apache.shardingsphere.shardingproxy.transport.common.packet.command.CommandResponsePackets;
+import org.apache.shardingsphere.shardingproxy.transport.common.packet.command.query.QueryResponsePackets;
 
 import java.sql.SQLException;
+import java.sql.Types;
 import java.util.ArrayList;
 import java.util.Collection;
+import java.util.Collections;
 import java.util.LinkedList;
 import java.util.List;
 
@@ -49,18 +48,17 @@ public final class ShowDatabasesBackendHandler implements TextProtocolBackendHan
     
     private int columnCount;
     
-    private final List<ColumnType> columnTypes = new LinkedList<>();
+    private final List<Integer> columnTypes = new LinkedList<>();
     
     @Override
     public CommandResponsePackets execute() {
         mergedResult = new ShowDatabasesMergedResult(GlobalRegistry.getInstance().getSchemaNames());
-        int sequenceId = 0;
-        FieldCountPacket fieldCountPacket = new FieldCountPacket(++sequenceId, 1);
-        Collection<ColumnDefinition41Packet> columnDefinition41Packets = new ArrayList<>(1);
-        columnDefinition41Packets.add(new ColumnDefinition41Packet(++sequenceId, "", "", "", "Database", "", 100, ColumnType.MYSQL_TYPE_VARCHAR, 0));
-        QueryResponsePackets result = new QueryResponsePackets(fieldCountPacket, columnDefinition41Packets, new EofPacket(++sequenceId));
+        int sequenceId = 1;
+        Collection<DataHeaderPacket> dataHeaderPackets = new ArrayList<>(1);
+        dataHeaderPackets.add(new DataHeaderPacket(++sequenceId, "", "", "", "Database", "", 100, Types.VARCHAR, 0));
+        QueryResponsePackets result = new QueryResponsePackets(Collections.singletonList(Types.VARCHAR), 1, dataHeaderPackets, ++sequenceId);
         currentSequenceId = result.getPackets().size();
-        columnCount = result.getColumnCount();
+        columnCount = result.getFieldCount();
         columnTypes.addAll(result.getColumnTypes());
         return result;
     }

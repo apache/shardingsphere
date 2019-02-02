@@ -25,7 +25,7 @@ import java.util.HashMap;
 import java.util.Map;
 
 /**
- * Column types.
+ * MySQL column types.
  * 
  * @see <a href="https://dev.mysql.com/doc/internals/en/com-query-response.html#column-type">Column Type</a>
  *
@@ -33,7 +33,7 @@ import java.util.Map;
  */
 @RequiredArgsConstructor
 @Getter
-public enum ColumnType {
+public enum MySQLColumnType {
     
     MYSQL_TYPE_DECIMAL(0x00), 
     
@@ -95,7 +95,7 @@ public enum ColumnType {
     
     MYSQL_TYPE_GEOMETRY(0xff);
     
-    private static final Map<Integer, ColumnType> JDBC_TYPE_AND_COLUMN_TYPE_MAP = new HashMap<>(ColumnType.values().length, 1);
+    private static final Map<Integer, MySQLColumnType> JDBC_TYPE_AND_COLUMN_TYPE_MAP = new HashMap<>(MySQLColumnType.values().length, 1);
     
     private final int value;
     
@@ -129,7 +129,7 @@ public enum ColumnType {
      * @param jdbcType JDBC type
      * @return column type enum
      */
-    public static ColumnType valueOfJDBCType(final int jdbcType) {
+    public static MySQLColumnType valueOfJDBCType(final int jdbcType) {
         if (JDBC_TYPE_AND_COLUMN_TYPE_MAP.containsKey(jdbcType)) {
             return JDBC_TYPE_AND_COLUMN_TYPE_MAP.get(jdbcType);
         }
@@ -142,8 +142,8 @@ public enum ColumnType {
      * @param value value
      * @return column type
      */
-    public static ColumnType valueOf(final int value) {
-        for (ColumnType each : ColumnType.values()) {
+    public static MySQLColumnType valueOf(final int value) {
+        for (MySQLColumnType each : MySQLColumnType.values()) {
             if (value == each.value) {
                 return each;
             }

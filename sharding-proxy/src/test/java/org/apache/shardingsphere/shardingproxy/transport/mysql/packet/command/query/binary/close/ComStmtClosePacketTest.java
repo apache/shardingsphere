@@ -19,7 +19,7 @@ package org.apache.shardingsphere.shardingproxy.transport.mysql.packet.command.q
 
 import com.google.common.base.Optional;
 import org.apache.shardingsphere.shardingproxy.transport.mysql.packet.MySQLPacketPayload;
-import org.apache.shardingsphere.shardingproxy.transport.mysql.packet.command.CommandResponsePackets;
+import org.apache.shardingsphere.shardingproxy.transport.common.packet.command.CommandResponsePackets;
 import org.junit.Test;
 import org.junit.runner.RunWith;
 import org.mockito.Mock;

@@ -45,8 +45,7 @@ import org.apache.shardingsphere.shardingproxy.runtime.schema.LogicSchema;
 import org.apache.shardingsphere.shardingproxy.runtime.schema.MasterSlaveSchema;
 import org.apache.shardingsphere.shardingproxy.runtime.schema.ShardingSchema;
 import org.apache.shardingsphere.shardingproxy.transport.common.packet.DatabasePacket;
-import org.apache.shardingsphere.shardingproxy.transport.mysql.constant.ColumnType;
-import org.apache.shardingsphere.shardingproxy.transport.mysql.packet.command.CommandResponsePackets;
+import org.apache.shardingsphere.shardingproxy.transport.common.packet.command.CommandResponsePackets;
 import org.apache.shardingsphere.shardingproxy.transport.mysql.packet.command.query.text.query.ComQueryPacket;
 import org.apache.shardingsphere.shardingproxy.transport.mysql.packet.generic.ErrPacket;
 import org.apache.shardingsphere.shardingproxy.transport.mysql.packet.generic.OKPacket;
@@ -206,9 +205,9 @@ public final class NettyDatabaseCommunicationEngine implements DatabaseCommunica
     private CommandResponsePackets mergeDQLorDAL(final SQLStatement sqlStatement, final List<CommandResponsePackets> packets, final List<QueryResult> queryResults) {
         try {
             mergedResult = MergeEngineFactory.newInstance(
-                    DatabaseType.MySQL, ((ShardingSchema) logicSchema).getShardingRule(), sqlStatement, logicSchema.getMetaData().getTable(), queryResults).merge();
+                GlobalRegistry.getInstance().getDatabaseType(), ((ShardingSchema) logicSchema).getShardingRule(), sqlStatement, logicSchema.getMetaData().getTable(), queryResults).merge();
         } catch (final SQLException ex) {
-            return new CommandResponsePackets(new ErrPacket(1, ex));
+            return new CommandResponsePackets(new ErrPacket(1, ex.getErrorCode(), ex.getSQLState(), ex.getMessage()));
         }
         return packets.get(0);
     }
@@ -228,7 +227,7 @@ public final class NettyDatabaseCommunicationEngine implements DatabaseCommunica
         for (int columnIndex = 1; columnIndex <= columnCount; columnIndex++) {
             data.add(mergedResult.getValue(columnIndex, Object.class));
         }
-        return new ResultPacket(++currentSequenceId, data, columnCount, Collections.<ColumnType>emptyList());
+        return new ResultPacket(++currentSequenceId, data, columnCount, Collections.<Integer>emptyList());
     }
     
     private void channelRelease() {

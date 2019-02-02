@@ -21,6 +21,7 @@ import lombok.AccessLevel;
 import lombok.NoArgsConstructor;
 import org.apache.shardingsphere.core.constant.DatabaseType;
 import org.apache.shardingsphere.shardingproxy.transport.mysql.codec.MySQLPacketCodec;
+import org.apache.shardingsphere.shardingproxy.transport.postgresql.codec.PostgreSQLPacketCodec;
 
 /**
  * Database packet codec factory.
@@ -40,6 +41,8 @@ public final class PacketCodecFactory {
         switch (databaseType) {
             case MySQL:
                 return new MySQLPacketCodec();
+            case PostgreSQL:
+                return new PostgreSQLPacketCodec();
             default:
                 throw new UnsupportedOperationException(String.format("Cannot support database type '%s'", databaseType));
         }

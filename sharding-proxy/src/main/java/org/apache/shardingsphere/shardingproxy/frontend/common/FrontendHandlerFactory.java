@@ -21,6 +21,7 @@ import lombok.AccessLevel;
 import lombok.NoArgsConstructor;
 import org.apache.shardingsphere.core.constant.DatabaseType;
 import org.apache.shardingsphere.shardingproxy.frontend.mysql.MySQLFrontendHandler;
+import org.apache.shardingsphere.shardingproxy.frontend.postgresql.PostgreSQLFrontendHandler;
 
 /**
  * Frontend handler factory.
@@ -41,6 +42,8 @@ public final class FrontendHandlerFactory {
         switch (databaseType) {
             case MySQL:
                 return new MySQLFrontendHandler();
+            case PostgreSQL:
+                return new PostgreSQLFrontendHandler();
             default:
                 throw new UnsupportedOperationException(String.format("Cannot support database type '%s'", databaseType));
         }

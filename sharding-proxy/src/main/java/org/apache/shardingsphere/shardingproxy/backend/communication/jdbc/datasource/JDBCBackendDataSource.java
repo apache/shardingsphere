@@ -20,7 +20,6 @@ package org.apache.shardingsphere.shardingproxy.backend.communication.jdbc.datas
 import lombok.NoArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.apache.shardingsphere.core.constant.ConnectionMode;
-import org.apache.shardingsphere.core.constant.DatabaseType;
 import org.apache.shardingsphere.core.exception.ShardingException;
 import org.apache.shardingsphere.shardingproxy.backend.BackendDataSource;
 import org.apache.shardingsphere.shardingproxy.config.yaml.YamlDataSourceParameter;
@@ -28,7 +27,6 @@ import org.apache.shardingsphere.shardingproxy.runtime.GlobalRegistry;
 import org.apache.shardingsphere.transaction.ShardingTransactionManagerEngine;
 import org.apache.shardingsphere.transaction.core.TransactionType;
 import org.apache.shardingsphere.transaction.spi.ShardingTransactionManager;
-
 import javax.sql.DataSource;
 import java.lang.reflect.Method;
 import java.sql.Connection;
@@ -74,7 +72,7 @@ public final class JDBCBackendDataSource implements BackendDataSource, AutoClose
             }
         }
         this.dataSources = dataSourceMap;
-        shardingTransactionManagerEngine.init(DatabaseType.MySQL, dataSourceMap);
+        shardingTransactionManagerEngine.init(GlobalRegistry.getInstance().getDatabaseType(), dataSourceMap);
     }
     
     /**

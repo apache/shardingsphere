@@ -18,10 +18,11 @@
 package org.apache.shardingsphere.shardingproxy.transport.mysql.packet.command.query;
 
 import org.apache.shardingsphere.core.constant.ShardingConstant;
-import org.apache.shardingsphere.shardingproxy.transport.mysql.constant.ColumnType;
-import org.apache.shardingsphere.shardingproxy.transport.mysql.packet.generic.EofPacket;
+import org.apache.shardingsphere.shardingproxy.transport.common.packet.command.query.DataHeaderPacket;
+import org.apache.shardingsphere.shardingproxy.transport.common.packet.command.query.QueryResponsePackets;
 import org.junit.Test;
 
+import java.sql.Types;
 import java.util.Arrays;
 import java.util.Iterator;
 
@@ -33,27 +34,25 @@ public final class QueryResponsePacketsTest {
     @Test
     public void assertGetColumnDefinition41Packets() {
         QueryResponsePackets actual = createQueryResponsePackets();
-        assertThat(actual.getColumnDefinition41Packets().size(), is(2));
-        Iterator<ColumnDefinition41Packet> actualColumnDefinition41Packets = actual.getColumnDefinition41Packets().iterator();
-        assertThat(actualColumnDefinition41Packets.next().getSequenceId(), is(2));
-        assertThat(actualColumnDefinition41Packets.next().getSequenceId(), is(3));
+        assertThat(actual.getDataHeaderPackets().size(), is(2));
+        Iterator<DataHeaderPacket> actualDataHeaderPackets = actual.getDataHeaderPackets().iterator();
+        assertThat(actualDataHeaderPackets.next().getSequenceId(), is(2));
+        assertThat(actualDataHeaderPackets.next().getSequenceId(), is(3));
     }
     
     @Test
     public void assertGetColumnCount() {
-        assertThat(createQueryResponsePackets().getColumnCount(), is(2));
+        assertThat(createQueryResponsePackets().getFieldCount(), is(2));
     }
     
     @Test
     public void assertGetColumnTypes() {
-        assertThat(createQueryResponsePackets().getColumnTypes(), is(Arrays.asList(ColumnType.MYSQL_TYPE_LONG, ColumnType.MYSQL_TYPE_VARCHAR)));
+        assertThat(createQueryResponsePackets().getColumnTypes(), is(Arrays.asList(Types.BIGINT, Types.VARCHAR)));
     }
     
     private QueryResponsePackets createQueryResponsePackets() {
-        FieldCountPacket fieldCountPacket = new FieldCountPacket(1, 2);
-        ColumnDefinition41Packet columnDefinition41Packet1 = new ColumnDefinition41Packet(2, ShardingConstant.LOGIC_SCHEMA_NAME, "tbl", "tbl", "id", "id", 10, ColumnType.MYSQL_TYPE_LONG, 0);
-        ColumnDefinition41Packet columnDefinition41Packet2 = new ColumnDefinition41Packet(3, ShardingConstant.LOGIC_SCHEMA_NAME, "tbl", "tbl", "value", "value", 20, ColumnType.MYSQL_TYPE_VARCHAR, 0);
-        EofPacket eofPacket = new EofPacket(4);
-        return new QueryResponsePackets(fieldCountPacket, Arrays.asList(columnDefinition41Packet1, columnDefinition41Packet2), eofPacket);
+        DataHeaderPacket dataHeaderPacket1 = new DataHeaderPacket(2, ShardingConstant.LOGIC_SCHEMA_NAME, "tbl", "tbl", "id", "id", 10, Types.BIGINT, 0);
+        DataHeaderPacket dataHeaderPacket2 = new DataHeaderPacket(3, ShardingConstant.LOGIC_SCHEMA_NAME, "tbl", "tbl", "value", "value", 20, Types.VARCHAR, 0);
+        return new QueryResponsePackets(Arrays.asList(Types.BIGINT, Types.VARCHAR), 2, Arrays.asList(dataHeaderPacket1, dataHeaderPacket2), 4);
     }
 }

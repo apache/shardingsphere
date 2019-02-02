@@ -18,6 +18,7 @@
 package org.apache.shardingsphere.shardingproxy.transport.mysql.packet.command;
 
 import com.google.common.base.Optional;
+import org.apache.shardingsphere.shardingproxy.transport.common.packet.command.CommandResponsePackets;
 import org.apache.shardingsphere.shardingproxy.transport.mysql.packet.MySQLPacket;
 
 import java.sql.SQLException;

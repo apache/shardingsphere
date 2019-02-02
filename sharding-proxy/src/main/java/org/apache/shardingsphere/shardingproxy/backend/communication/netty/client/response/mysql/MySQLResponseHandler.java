@@ -127,7 +127,8 @@ public final class MySQLResponseHandler extends ResponseHandler {
         int connectionId = ChannelRegistry.getInstance().getConnectionId(context.channel().id().asShortText());
         try (MySQLPacketPayload payload = new MySQLPacketPayload(byteBuf)) {
             MySQLQueryResult mysqlQueryResult = new MySQLQueryResult();
-            mysqlQueryResult.setGenericResponse(new OKPacket(payload));
+            // TODO remove netty backend
+//            mysqlQueryResult.setGenericResponse(new OKPacket(payload));
             resultMap.put(connectionId, mysqlQueryResult);
             setResponse(context);
         } finally {
@@ -139,7 +140,8 @@ public final class MySQLResponseHandler extends ResponseHandler {
         int connectionId = ChannelRegistry.getInstance().getConnectionId(context.channel().id().asShortText());
         try (MySQLPacketPayload payload = new MySQLPacketPayload(byteBuf)) {
             MySQLQueryResult mysqlQueryResult = new MySQLQueryResult();
-            mysqlQueryResult.setGenericResponse(new ErrPacket(payload));
+            // TODO remove netty backend
+//            mysqlQueryResult.setGenericResponse(new ErrPacket(payload));
             resultMap.put(connectionId, mysqlQueryResult);
             setResponse(context);
         } finally {
@@ -152,11 +154,13 @@ public final class MySQLResponseHandler extends ResponseHandler {
         MySQLQueryResult mysqlQueryResult = resultMap.get(connectionId);
         MySQLPacketPayload payload = new MySQLPacketPayload(byteBuf);
         if (mysqlQueryResult.isColumnFinished()) {
-            mysqlQueryResult.setRowFinished(new EofPacket(payload));
+            // TODO remove netty backend
+//            mysqlQueryResult.setRowFinished(new EofPacket(payload));
             resultMap.remove(connectionId);
             payload.close();
         } else {
-            mysqlQueryResult.setColumnFinished(new EofPacket(payload));
+            // TODO remove netty backend
+//            mysqlQueryResult.setColumnFinished(new EofPacket(payload));
             setResponse(context);
         }
     }

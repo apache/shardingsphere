@@ -27,7 +27,6 @@ import org.mockito.junit.MockitoJUnitRunner;
 import static org.hamcrest.CoreMatchers.is;
 import static org.junit.Assert.assertThat;
 import static org.mockito.Mockito.verify;
-import static org.mockito.Mockito.when;
 
 @RunWith(MockitoJUnitRunner.class)
 public final class EofPacketTest {
@@ -38,16 +37,6 @@ public final class EofPacketTest {
     @Test
     public void assertNewEofPacketWithSequenceId() {
         EofPacket actual = new EofPacket(1);
-        assertThat(actual.getSequenceId(), is(1));
-        assertThat(actual.getWarnings(), is(0));
-        assertThat(actual.getStatusFlags(), is(StatusFlag.SERVER_STATUS_AUTOCOMMIT.getValue()));
-    }
-    
-    @Test
-    public void assertNewEofPacketWithMySQLPacketPayload() {
-        when(payload.readInt1()).thenReturn(1, EofPacket.HEADER);
-        when(payload.readInt2()).thenReturn(0, StatusFlag.SERVER_STATUS_AUTOCOMMIT.getValue());
-        EofPacket actual = new EofPacket(payload);
         assertThat(actual.getSequenceId(), is(1));
         assertThat(actual.getWarnings(), is(0));
         assertThat(actual.getStatusFlags(), is(StatusFlag.SERVER_STATUS_AUTOCOMMIT.getValue()));

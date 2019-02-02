@@ -24,9 +24,9 @@ import org.apache.shardingsphere.shardingproxy.backend.communication.DatabaseCom
 import org.apache.shardingsphere.shardingproxy.backend.communication.DatabaseCommunicationEngineFactory;
 import org.apache.shardingsphere.shardingproxy.backend.communication.jdbc.connection.BackendConnection;
 import org.apache.shardingsphere.shardingproxy.backend.text.TextProtocolBackendHandler;
+import org.apache.shardingsphere.shardingproxy.transport.common.packet.generic.DatabaseFailurePacket;
 import org.apache.shardingsphere.shardingproxy.transport.mysql.constant.ServerErrorCode;
-import org.apache.shardingsphere.shardingproxy.transport.mysql.packet.command.CommandResponsePackets;
-import org.apache.shardingsphere.shardingproxy.transport.mysql.packet.generic.ErrPacket;
+import org.apache.shardingsphere.shardingproxy.transport.common.packet.command.CommandResponsePackets;
 
 import java.sql.SQLException;
 
@@ -53,7 +53,8 @@ public final class QueryBackendHandler implements TextProtocolBackendHandler {
     @Override
     public CommandResponsePackets execute() {
         if (null == backendConnection.getLogicSchema()) {
-            return new CommandResponsePackets(new ErrPacket(1, ServerErrorCode.ER_NO_DB_ERROR));
+            ServerErrorCode serverErrorCode = ServerErrorCode.ER_NO_DB_ERROR;
+            return new CommandResponsePackets(new DatabaseFailurePacket(1, serverErrorCode.getErrorCode(), serverErrorCode.getSqlState(), String.format(serverErrorCode.getErrorMessage(), "")));
         }
         databaseCommunicationEngine = databaseCommunicationEngineFactory.newTextProtocolInstance(backendConnection.getLogicSchema(), sequenceId, sql, backendConnection, databaseType);
         return databaseCommunicationEngine.execute();

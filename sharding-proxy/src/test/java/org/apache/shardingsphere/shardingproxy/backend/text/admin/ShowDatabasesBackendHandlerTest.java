@@ -19,15 +19,15 @@ package org.apache.shardingsphere.shardingproxy.backend.text.admin;
 
 import org.apache.shardingsphere.shardingproxy.backend.MockGlobalRegistryUtil;
 import org.apache.shardingsphere.shardingproxy.backend.ResultPacket;
-import org.apache.shardingsphere.shardingproxy.transport.mysql.constant.ColumnType;
-import org.apache.shardingsphere.shardingproxy.transport.mysql.packet.command.CommandResponsePackets;
-import org.apache.shardingsphere.shardingproxy.transport.mysql.packet.command.query.QueryResponsePackets;
+import org.apache.shardingsphere.shardingproxy.transport.common.packet.command.CommandResponsePackets;
+import org.apache.shardingsphere.shardingproxy.transport.common.packet.command.query.QueryResponsePackets;
 import org.junit.Before;
 import org.junit.Test;
 import org.junit.runner.RunWith;
 import org.mockito.junit.MockitoJUnitRunner;
 
 import java.sql.SQLException;
+import java.sql.Types;
 
 import static org.hamcrest.CoreMatchers.instanceOf;
 import static org.hamcrest.CoreMatchers.is;
@@ -48,22 +48,22 @@ public final class ShowDatabasesBackendHandlerTest {
         CommandResponsePackets actual = showDatabasesBackendHandler.execute();
         assertThat(actual, instanceOf(QueryResponsePackets.class));
         QueryResponsePackets responsePackets = (QueryResponsePackets) actual;
-        assertThat(responsePackets.getColumnCount(), is(1));
-        assertThat(responsePackets.getColumnDefinition41Packets().size(), is(1));
+        assertThat(responsePackets.getFieldCount(), is(1));
+        assertThat(responsePackets.getDataHeaderPackets().size(), is(1));
         assertThat(responsePackets.getColumnTypes().size(), is(1));
-        assertThat(responsePackets.getColumnTypes().iterator().next(), is(ColumnType.MYSQL_TYPE_VARCHAR));
-        assertThat(responsePackets.getColumnTypes().iterator().next(), is(ColumnType.MYSQL_TYPE_VARCHAR));
+        assertThat(responsePackets.getColumnTypes().iterator().next(), is(Types.VARCHAR));
+        assertThat(responsePackets.getColumnTypes().iterator().next(), is(Types.VARCHAR));
     }
     
     @Test
     public void assertShowDatabaseUsingStream() throws SQLException {
         showDatabasesBackendHandler.execute();
-        int sequenceId = 4;
+        int sequenceId = 2;
         while (showDatabasesBackendHandler.next()) {
             ResultPacket resultPacket = showDatabasesBackendHandler.getResultValue();
             assertThat(resultPacket.getColumnCount(), is(1));
             assertThat(resultPacket.getColumnTypes().size(), is(1));
-            assertThat(resultPacket.getColumnTypes().iterator().next(), is(ColumnType.MYSQL_TYPE_VARCHAR));
+            assertThat(resultPacket.getColumnTypes().iterator().next(), is(Types.VARCHAR));
             assertThat(resultPacket.getSequenceId(), is(sequenceId));
             assertThat(resultPacket.getData().size(), is(1));
             ++sequenceId;

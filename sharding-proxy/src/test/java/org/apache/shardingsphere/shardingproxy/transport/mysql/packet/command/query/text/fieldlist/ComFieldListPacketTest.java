@@ -26,11 +26,11 @@ import org.apache.shardingsphere.shardingproxy.backend.communication.DatabaseCom
 import org.apache.shardingsphere.shardingproxy.backend.communication.jdbc.connection.BackendConnection;
 import org.apache.shardingsphere.shardingproxy.runtime.GlobalRegistry;
 import org.apache.shardingsphere.shardingproxy.transport.common.packet.DatabasePacket;
-import org.apache.shardingsphere.shardingproxy.transport.mysql.constant.ColumnType;
+import org.apache.shardingsphere.shardingproxy.transport.mysql.constant.MySQLColumnType;
 import org.apache.shardingsphere.shardingproxy.transport.mysql.constant.ServerErrorCode;
 import org.apache.shardingsphere.shardingproxy.transport.mysql.packet.MySQLPacketPayload;
 import org.apache.shardingsphere.shardingproxy.transport.mysql.packet.command.CommandPacketType;
-import org.apache.shardingsphere.shardingproxy.transport.mysql.packet.command.CommandResponsePackets;
+import org.apache.shardingsphere.shardingproxy.transport.common.packet.command.CommandResponsePackets;
 import org.apache.shardingsphere.shardingproxy.transport.mysql.packet.command.query.ColumnDefinition41Packet;
 import org.apache.shardingsphere.shardingproxy.transport.mysql.packet.command.query.FieldCountPacket;
 import org.apache.shardingsphere.shardingproxy.transport.mysql.packet.generic.EofPacket;
@@ -43,6 +43,7 @@ import org.mockito.junit.MockitoJUnitRunner;
 
 import java.lang.reflect.Field;
 import java.sql.SQLException;
+import java.sql.Types;
 import java.util.Collections;
 import java.util.Iterator;
 import java.util.Properties;
@@ -95,7 +96,7 @@ public final class ComFieldListPacketTest {
         when(payload.readStringNul()).thenReturn("tbl");
         when(payload.readStringEOF()).thenReturn("-");
         when(databaseCommunicationEngine.next()).thenReturn(true, false);
-        when(databaseCommunicationEngine.getResultValue()).thenReturn(new ResultPacket(1, Collections.<Object>singletonList("id"), 1, Collections.singletonList(ColumnType.MYSQL_TYPE_VARCHAR)));
+        when(databaseCommunicationEngine.getResultValue()).thenReturn(new ResultPacket(1, Collections.<Object>singletonList("id"), 1, Collections.singletonList(Types.VARCHAR)));
         when(databaseCommunicationEngine.execute()).thenReturn(new CommandResponsePackets(new FieldCountPacket(1, 1)));
         ComFieldListPacket packet = new ComFieldListPacket(1, payload, backendConnection);
         setBackendHandler(packet);
@@ -110,7 +111,7 @@ public final class ComFieldListPacketTest {
     private void assertColumnDefinition41Packet(final ColumnDefinition41Packet actual) {
         assertThat(actual.getSequenceId(), is(1));
         assertThat(actual.getName(), is("id"));
-        assertThat(actual.getColumnType(), is(ColumnType.MYSQL_TYPE_VARCHAR));
+        assertThat(actual.getMySQLColumnType(), is(MySQLColumnType.MYSQL_TYPE_VARCHAR));
     }
     
     private void assertEofPacket(final EofPacket actual) {

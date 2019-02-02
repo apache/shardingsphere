@@ -26,7 +26,7 @@ import org.apache.shardingsphere.shardingproxy.runtime.schema.LogicSchema;
 import org.apache.shardingsphere.shardingproxy.transport.mysql.constant.ServerErrorCode;
 import org.apache.shardingsphere.shardingproxy.transport.mysql.packet.MySQLPacketPayload;
 import org.apache.shardingsphere.shardingproxy.transport.mysql.packet.command.CommandPacketType;
-import org.apache.shardingsphere.shardingproxy.transport.mysql.packet.command.CommandResponsePackets;
+import org.apache.shardingsphere.shardingproxy.transport.common.packet.command.CommandResponsePackets;
 import org.apache.shardingsphere.shardingproxy.transport.mysql.packet.generic.ErrPacket;
 import org.apache.shardingsphere.shardingproxy.transport.mysql.packet.generic.OKPacket;
 import org.apache.shardingsphere.transaction.core.TransactionType;
