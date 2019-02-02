@@ -83,7 +83,7 @@ public final class ShardingCTLShowBackendHandler implements TextProtocolBackendH
         Collection<DataHeaderPacket> dataHeaderPackets = new ArrayList<>(1);
         dataHeaderPackets.add(new DataHeaderPacket(++sequenceId, "", "", "", columnName, "", 100, Types.VARCHAR, 0));
         QueryResponsePackets queryResponsePackets = new QueryResponsePackets(Collections.singletonList(Types.VARCHAR), 1, dataHeaderPackets, ++sequenceId);
-        currentSequenceId = queryResponsePackets.getPackets().size();
+        currentSequenceId = queryResponsePackets.getPackets().size() + 2;
         columnCount = queryResponsePackets.getFieldCount();
         columnTypes.addAll(queryResponsePackets.getColumnTypes());
         return queryResponsePackets;

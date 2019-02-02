@@ -58,7 +58,7 @@ public final class ShowDatabasesBackendHandlerTest {
     @Test
     public void assertShowDatabaseUsingStream() throws SQLException {
         showDatabasesBackendHandler.execute();
-        int sequenceId = 4;
+        int sequenceId = 2;
         while (showDatabasesBackendHandler.next()) {
             ResultPacket resultPacket = showDatabasesBackendHandler.getResultValue();
             assertThat(resultPacket.getColumnCount(), is(1));

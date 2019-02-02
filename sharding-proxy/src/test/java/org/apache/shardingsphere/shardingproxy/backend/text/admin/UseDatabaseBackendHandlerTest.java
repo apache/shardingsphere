@@ -21,8 +21,8 @@ import org.apache.shardingsphere.core.parsing.parser.dialect.mysql.statement.Use
 import org.apache.shardingsphere.shardingproxy.backend.MockGlobalRegistryUtil;
 import org.apache.shardingsphere.shardingproxy.backend.communication.jdbc.connection.BackendConnection;
 import org.apache.shardingsphere.shardingproxy.transport.common.packet.command.CommandResponsePackets;
-import org.apache.shardingsphere.shardingproxy.transport.mysql.packet.generic.ErrPacket;
-import org.apache.shardingsphere.shardingproxy.transport.mysql.packet.generic.OKPacket;
+import org.apache.shardingsphere.shardingproxy.transport.common.packet.generic.DatabaseFailurePacket;
+import org.apache.shardingsphere.shardingproxy.transport.common.packet.generic.DatabaseSuccessPacket;
 import org.junit.Before;
 import org.junit.Test;
 import org.junit.runner.RunWith;
@@ -55,7 +55,7 @@ public final class UseDatabaseBackendHandlerTest {
         UseDatabaseBackendHandler useSchemaBackendHandler = new UseDatabaseBackendHandler(useStatement, backendConnection);
         CommandResponsePackets actual = useSchemaBackendHandler.execute();
         verify(backendConnection).setCurrentSchema(anyString());
-        assertThat(actual.getHeadPacket(), instanceOf(OKPacket.class));
+        assertThat(actual.getHeadPacket(), instanceOf(DatabaseSuccessPacket.class));
     }
     
     @Test
@@ -64,7 +64,7 @@ public final class UseDatabaseBackendHandlerTest {
         when(useStatement.getSchema()).thenReturn("not_exist");
         UseDatabaseBackendHandler useSchemaBackendHandler = new UseDatabaseBackendHandler(useStatement, backendConnection);
         CommandResponsePackets actual = useSchemaBackendHandler.execute();
-        assertThat(actual.getHeadPacket(), instanceOf(ErrPacket.class));
+        assertThat(actual.getHeadPacket(), instanceOf(DatabaseFailurePacket.class));
         verify(backendConnection, times(0)).setCurrentSchema(anyString());
     }
 }
