@@ -19,6 +19,7 @@ package org.apache.shardingsphere.shardingproxy.transport.mysql.packet.command.q
 
 import org.apache.shardingsphere.core.constant.ShardingConstant;
 import org.apache.shardingsphere.shardingproxy.transport.common.packet.command.query.DataHeaderPacket;
+import org.apache.shardingsphere.shardingproxy.transport.common.packet.command.query.QueryResponsePackets;
 import org.junit.Test;
 
 import java.sql.Types;
