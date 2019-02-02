@@ -19,7 +19,7 @@ package org.apache.shardingsphere.shardingproxy.transport.mysql.packet.command.q
 
 import lombok.Getter;
 import lombok.RequiredArgsConstructor;
-import org.apache.shardingsphere.shardingproxy.transport.mysql.constant.ColumnType;
+import org.apache.shardingsphere.shardingproxy.transport.mysql.constant.MySQLColumnType;
 
 /**
  * Binary prepared statement parameter type.
@@ -30,7 +30,7 @@ import org.apache.shardingsphere.shardingproxy.transport.mysql.constant.ColumnTy
 @Getter
 public final class BinaryStatementParameterType {
     
-    private final ColumnType columnType;
+    private final MySQLColumnType mySQLColumnType;
     
     private final int unsignedFlag;
 }

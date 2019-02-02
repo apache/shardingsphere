@@ -26,7 +26,7 @@ import org.apache.shardingsphere.shardingproxy.backend.communication.DatabaseCom
 import org.apache.shardingsphere.shardingproxy.backend.communication.jdbc.connection.BackendConnection;
 import org.apache.shardingsphere.shardingproxy.runtime.GlobalRegistry;
 import org.apache.shardingsphere.shardingproxy.transport.common.packet.DatabasePacket;
-import org.apache.shardingsphere.shardingproxy.transport.mysql.constant.ColumnType;
+import org.apache.shardingsphere.shardingproxy.transport.mysql.constant.MySQLColumnType;
 import org.apache.shardingsphere.shardingproxy.transport.mysql.constant.ServerErrorCode;
 import org.apache.shardingsphere.shardingproxy.transport.mysql.packet.MySQLPacketPayload;
 import org.apache.shardingsphere.shardingproxy.transport.mysql.packet.command.CommandPacketType;
@@ -111,7 +111,7 @@ public final class ComFieldListPacketTest {
     private void assertColumnDefinition41Packet(final ColumnDefinition41Packet actual) {
         assertThat(actual.getSequenceId(), is(1));
         assertThat(actual.getName(), is("id"));
-        assertThat(actual.getColumnType(), is(ColumnType.MYSQL_TYPE_VARCHAR));
+        assertThat(actual.getMySQLColumnType(), is(MySQLColumnType.MYSQL_TYPE_VARCHAR));
     }
     
     private void assertEofPacket(final EofPacket actual) {

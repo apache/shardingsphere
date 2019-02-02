@@ -27,7 +27,7 @@ import org.apache.shardingsphere.shardingproxy.backend.communication.DatabaseCom
 import org.apache.shardingsphere.shardingproxy.backend.communication.jdbc.connection.BackendConnection;
 import org.apache.shardingsphere.shardingproxy.runtime.GlobalRegistry;
 import org.apache.shardingsphere.shardingproxy.transport.common.packet.DatabasePacket;
-import org.apache.shardingsphere.shardingproxy.transport.mysql.constant.ColumnType;
+import org.apache.shardingsphere.shardingproxy.transport.mysql.constant.MySQLColumnType;
 import org.apache.shardingsphere.shardingproxy.transport.mysql.constant.NewParametersBoundFlag;
 import org.apache.shardingsphere.shardingproxy.transport.mysql.constant.ServerErrorCode;
 import org.apache.shardingsphere.shardingproxy.transport.mysql.packet.MySQLPacketPayload;
@@ -97,9 +97,9 @@ public final class ComStmtExecutePacket implements QueryCommandPacket {
     private List<BinaryStatementParameterType> getParameterTypes(final MySQLPacketPayload payload, final int parametersCount) {
         List<BinaryStatementParameterType> result = new ArrayList<>(parametersCount);
         for (int parameterIndex = 0; parameterIndex < parametersCount; parameterIndex++) {
-            ColumnType columnType = ColumnType.valueOf(payload.readInt1());
+            MySQLColumnType mySQLColumnType = MySQLColumnType.valueOf(payload.readInt1());
             int unsignedFlag = payload.readInt1();
-            result.add(new BinaryStatementParameterType(columnType, unsignedFlag));
+            result.add(new BinaryStatementParameterType(mySQLColumnType, unsignedFlag));
         }
         return result;
     }
@@ -107,7 +107,7 @@ public final class ComStmtExecutePacket implements QueryCommandPacket {
     private List<Object> getParameters(final MySQLPacketPayload payload, final int parametersCount) throws SQLException {
         List<Object> result = new ArrayList<>(parametersCount);
         for (int parameterIndex = 0; parameterIndex < parametersCount; parameterIndex++) {
-            BinaryProtocolValue binaryProtocolValue = BinaryProtocolValueFactory.getBinaryProtocolValue(binaryStatement.getParameterTypes().get(parameterIndex).getColumnType());
+            BinaryProtocolValue binaryProtocolValue = BinaryProtocolValueFactory.getBinaryProtocolValue(binaryStatement.getParameterTypes().get(parameterIndex).getMySQLColumnType());
             result.add(nullBitmap.isNullParameter(parameterIndex) ? null : binaryProtocolValue.read(payload));
         }
         return result;
@@ -125,7 +125,7 @@ public final class ComStmtExecutePacket implements QueryCommandPacket {
         int count = 0;
         for (Object each : parameters) {
             BinaryStatementParameterType parameterType = binaryStatement.getParameterTypes().get(count);
-            payload.writeInt1(parameterType.getColumnType().getValue());
+            payload.writeInt1(parameterType.getMySQLColumnType().getValue());
             payload.writeInt1(parameterType.getUnsignedFlag());
             payload.writeStringLenenc(null == each ? "" : each.toString());
             count++;
@@ -151,10 +151,10 @@ public final class ComStmtExecutePacket implements QueryCommandPacket {
         ResultPacket resultPacket = databaseCommunicationEngine.getResultValue();
         int columnCount = resultPacket.getColumnCount();
         List<Integer> jdbcColumnTypes = resultPacket.getColumnTypes();
-        List<ColumnType> columnTypes = new ArrayList<>(128);
+        List<MySQLColumnType> mySQLColumnTypes = new ArrayList<>(128);
         for (int i = 0; i < columnCount; i++) {
-            columnTypes.add(ColumnType.valueOfJDBCType(jdbcColumnTypes.get(i)));
+            mySQLColumnTypes.add(MySQLColumnType.valueOfJDBCType(jdbcColumnTypes.get(i)));
         }
-        return new BinaryResultSetRowPacket(resultPacket.getSequenceId(), columnCount, resultPacket.getData(), columnTypes);
+        return new BinaryResultSetRowPacket(resultPacket.getSequenceId(), columnCount, resultPacket.getData(), mySQLColumnTypes);
     }
 }

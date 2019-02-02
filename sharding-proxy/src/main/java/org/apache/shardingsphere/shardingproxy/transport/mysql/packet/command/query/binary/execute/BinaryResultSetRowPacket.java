@@ -19,7 +19,7 @@ package org.apache.shardingsphere.shardingproxy.transport.mysql.packet.command.q
 
 import lombok.Getter;
 import lombok.RequiredArgsConstructor;
-import org.apache.shardingsphere.shardingproxy.transport.mysql.constant.ColumnType;
+import org.apache.shardingsphere.shardingproxy.transport.mysql.constant.MySQLColumnType;
 import org.apache.shardingsphere.shardingproxy.transport.mysql.packet.MySQLPacket;
 import org.apache.shardingsphere.shardingproxy.transport.mysql.packet.MySQLPacketPayload;
 import org.apache.shardingsphere.shardingproxy.transport.mysql.packet.command.query.binary.execute.protocol.BinaryProtocolValueFactory;
@@ -48,7 +48,7 @@ public final class BinaryResultSetRowPacket implements MySQLPacket {
     @Getter
     private final List<Object> data;
     
-    private final List<ColumnType> columnTypes;
+    private final List<MySQLColumnType> mySQLColumnTypes;
     
     @Override
     public void write(final MySQLPacketPayload payload) {
@@ -77,7 +77,7 @@ public final class BinaryResultSetRowPacket implements MySQLPacket {
         for (int i = 0; i < columnsCount; i++) {
             Object value = data.get(i);
             if (null != value) {
-                BinaryProtocolValueFactory.getBinaryProtocolValue(columnTypes.get(i)).write(payload, value);
+                BinaryProtocolValueFactory.getBinaryProtocolValue(mySQLColumnTypes.get(i)).write(payload, value);
             }
         }
     }

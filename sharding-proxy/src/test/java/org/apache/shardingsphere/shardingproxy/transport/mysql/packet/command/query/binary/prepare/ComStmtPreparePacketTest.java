@@ -32,7 +32,7 @@ import org.apache.shardingsphere.shardingproxy.backend.communication.jdbc.connec
 import org.apache.shardingsphere.shardingproxy.runtime.GlobalRegistry;
 import org.apache.shardingsphere.shardingproxy.runtime.schema.ShardingSchema;
 import org.apache.shardingsphere.shardingproxy.transport.common.packet.DatabasePacket;
-import org.apache.shardingsphere.shardingproxy.transport.mysql.constant.ColumnType;
+import org.apache.shardingsphere.shardingproxy.transport.mysql.constant.MySQLColumnType;
 import org.apache.shardingsphere.shardingproxy.transport.mysql.packet.MySQLPacketPayload;
 import org.apache.shardingsphere.shardingproxy.transport.common.packet.command.CommandResponsePackets;
 import org.apache.shardingsphere.shardingproxy.transport.mysql.packet.command.query.ColumnDefinition41Packet;
@@ -117,7 +117,7 @@ public final class ComStmtPreparePacketTest {
         ColumnDefinition41Packet columnDefinition41Packet = (ColumnDefinition41Packet) packets.next();
         assertThat(columnDefinition41Packet.getSequenceId(), is(2));
         assertThat(columnDefinition41Packet.getName(), is(""));
-        assertThat(columnDefinition41Packet.getColumnType(), is(ColumnType.MYSQL_TYPE_VARCHAR));
+        assertThat(columnDefinition41Packet.getMySQLColumnType(), is(MySQLColumnType.MYSQL_TYPE_VARCHAR));
         EofPacket eofPacket = (EofPacket) packets.next();
         assertThat(eofPacket.getSequenceId(), is(3));
     }

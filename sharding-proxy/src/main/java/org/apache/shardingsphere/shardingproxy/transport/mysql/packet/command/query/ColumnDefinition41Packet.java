@@ -21,7 +21,7 @@ import com.google.common.base.Preconditions;
 import lombok.Getter;
 import lombok.Setter;
 import org.apache.shardingsphere.shardingproxy.transport.common.packet.command.query.DataHeaderPacket;
-import org.apache.shardingsphere.shardingproxy.transport.mysql.constant.ColumnType;
+import org.apache.shardingsphere.shardingproxy.transport.mysql.constant.MySQLColumnType;
 import org.apache.shardingsphere.shardingproxy.transport.mysql.constant.ServerInfo;
 import org.apache.shardingsphere.shardingproxy.transport.mysql.packet.MySQLPacket;
 import org.apache.shardingsphere.shardingproxy.transport.mysql.packet.MySQLPacketPayload;
@@ -65,18 +65,18 @@ public final class ColumnDefinition41Packet implements MySQLPacket {
     private final int columnLength;
     
     @Getter
-    private final ColumnType columnType;
+    private final MySQLColumnType mySQLColumnType;
     
     private final int decimals;
     
     public ColumnDefinition41Packet(final int sequenceId, final ResultSetMetaData resultSetMetaData, final int columnIndex) throws SQLException {
         this(sequenceId, resultSetMetaData.getSchemaName(columnIndex), resultSetMetaData.getTableName(columnIndex), resultSetMetaData.getTableName(columnIndex), 
                 resultSetMetaData.getColumnLabel(columnIndex), resultSetMetaData.getColumnName(columnIndex), resultSetMetaData.getColumnDisplaySize(columnIndex), 
-                ColumnType.valueOfJDBCType(resultSetMetaData.getColumnType(columnIndex)), resultSetMetaData.getScale(columnIndex));
+                MySQLColumnType.valueOfJDBCType(resultSetMetaData.getColumnType(columnIndex)), resultSetMetaData.getScale(columnIndex));
     }
     
-    public ColumnDefinition41Packet(final int sequenceId, final String schema, final String table, final String orgTable, 
-                                    final String name, final String orgName, final int columnLength, final ColumnType columnType, final int decimals) {
+    public ColumnDefinition41Packet(final int sequenceId, final String schema, final String table, final String orgTable,
+                                    final String name, final String orgName, final int columnLength, final MySQLColumnType mySQLColumnType, final int decimals) {
         this.sequenceId = sequenceId;
         this.characterSet = ServerInfo.CHARSET;
         this.flags = 0;
@@ -86,7 +86,7 @@ public final class ColumnDefinition41Packet implements MySQLPacket {
         this.name = name;
         this.orgName = orgName;
         this.columnLength = columnLength;
-        this.columnType = columnType;
+        this.mySQLColumnType = mySQLColumnType;
         this.decimals = decimals;
     }
     
@@ -100,7 +100,7 @@ public final class ColumnDefinition41Packet implements MySQLPacket {
         this.name = dataHeaderPacket.getName();
         this.orgName = dataHeaderPacket.getOrgName();
         this.columnLength = dataHeaderPacket.getColumnLength();
-        this.columnType = ColumnType.valueOfJDBCType(dataHeaderPacket.getColumnType());
+        this.mySQLColumnType = MySQLColumnType.valueOfJDBCType(dataHeaderPacket.getColumnType());
         this.decimals = dataHeaderPacket.getDecimals();
     }
     
@@ -115,7 +115,7 @@ public final class ColumnDefinition41Packet implements MySQLPacket {
         Preconditions.checkArgument(NEXT_LENGTH == payload.readIntLenenc());
         characterSet = payload.readInt2();
         columnLength = payload.readInt4();
-        columnType = ColumnType.valueOf(payload.readInt1());
+        mySQLColumnType = MySQLColumnType.valueOf(payload.readInt1());
         flags = payload.readInt2();
         decimals = payload.readInt1();
         payload.skipReserved(2);
@@ -132,7 +132,7 @@ public final class ColumnDefinition41Packet implements MySQLPacket {
         payload.writeIntLenenc(NEXT_LENGTH);
         payload.writeInt2(characterSet);
         payload.writeInt4(columnLength);
-        payload.writeInt1(columnType.getValue());
+        payload.writeInt1(mySQLColumnType.getValue());
         payload.writeInt2(flags);
         payload.writeInt1(decimals);
         payload.writeReserved(2);
