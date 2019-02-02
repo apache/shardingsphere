@@ -18,12 +18,14 @@
 package org.apache.shardingsphere.api.config;
 
 import org.apache.shardingsphere.api.config.encryptor.EncryptorConfigurationTest;
+import org.apache.shardingsphere.api.config.masterslave.MasterSlaveRuleConfigurationTest;
 import org.junit.runner.RunWith;
 import org.junit.runners.Suite;
 import org.junit.runners.Suite.SuiteClasses;
 
 @RunWith(Suite.class)
 @SuiteClasses({
+        MasterSlaveRuleConfigurationTest.class, 
         EncryptorConfigurationTest.class
     })
 public final class AllConfigTests {
