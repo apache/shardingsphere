@@ -31,14 +31,14 @@ public final class KeyGeneratorConfigurationYamlSwapper implements YamlSwapper<Y
     @Override
     public YamlKeyGeneratorConfiguration swap(final KeyGeneratorConfiguration data) {
         YamlKeyGeneratorConfiguration result = new YamlKeyGeneratorConfiguration();
-        result.setColumn(data.getColumn());
         result.setType(data.getType());
+        result.setColumn(data.getColumn());
         result.setProps(data.getProps());
         return result;
     }
     
     @Override
     public KeyGeneratorConfiguration swap(final YamlKeyGeneratorConfiguration yamlConfiguration) {
-        return new KeyGeneratorConfiguration(yamlConfiguration.getColumn(), yamlConfiguration.getType(), yamlConfiguration.getProps());
+        return new KeyGeneratorConfiguration(yamlConfiguration.getType(), yamlConfiguration.getColumn(), yamlConfiguration.getProps());
     }
 }

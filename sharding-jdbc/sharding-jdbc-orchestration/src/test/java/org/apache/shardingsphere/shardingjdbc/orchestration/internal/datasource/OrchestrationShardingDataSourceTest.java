@@ -40,6 +40,8 @@ import org.junit.BeforeClass;
 import org.junit.Test;
 
 import java.io.File;
+import java.io.IOException;
+import java.net.URISyntaxException;
 import java.sql.Connection;
 import java.sql.SQLException;
 import java.util.Collections;
@@ -56,12 +58,11 @@ public final class OrchestrationShardingDataSourceTest {
     private static OrchestrationShardingDataSource shardingDataSource;
     
     @BeforeClass
-    public static void setUp() throws SQLException {
+    public static void setUp() throws SQLException, IOException, URISyntaxException {
         shardingDataSource = new OrchestrationShardingDataSource(getShardingDataSource(), getOrchestrationConfiguration());
     }
     
-    @SneakyThrows
-    private static ShardingDataSource getShardingDataSource() {
+    private static ShardingDataSource getShardingDataSource() throws IOException, SQLException, URISyntaxException {
         File yamlFile = new File(OrchestrationShardingDataSourceTest.class.getResource("/yaml/unit/sharding.yaml").toURI());
         return (ShardingDataSource) YamlShardingDataSourceFactory.createDataSource(yamlFile);
     }

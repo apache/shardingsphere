@@ -22,6 +22,7 @@ import org.apache.shardingsphere.api.algorithm.sharding.standard.RangeShardingAl
 import org.junit.Test;
 
 import static org.hamcrest.CoreMatchers.is;
+import static org.junit.Assert.assertNull;
 import static org.junit.Assert.assertThat;
 import static org.mockito.Mockito.mock;
 
@@ -38,7 +39,16 @@ public final class StandardShardingStrategyConfigurationTest {
     }
     
     @Test
-    public void assertConstructorWithFullArguments() {
+    public void assertConstructorWithMinArguments() {
+        PreciseShardingAlgorithm preciseShardingAlgorithm = mock(PreciseShardingAlgorithm.class);
+        StandardShardingStrategyConfiguration actual = new StandardShardingStrategyConfiguration("id", preciseShardingAlgorithm);
+        assertThat(actual.getShardingColumn(), is("id"));
+        assertThat(actual.getPreciseShardingAlgorithm(), is(preciseShardingAlgorithm));
+        assertNull(actual.getRangeShardingAlgorithm());
+    }
+    
+    @Test
+    public void assertConstructorWithMaxArguments() {
         PreciseShardingAlgorithm preciseShardingAlgorithm = mock(PreciseShardingAlgorithm.class);
         RangeShardingAlgorithm rangeShardingAlgorithm = mock(RangeShardingAlgorithm.class);
         StandardShardingStrategyConfiguration actual = new StandardShardingStrategyConfiguration("id", preciseShardingAlgorithm, rangeShardingAlgorithm);

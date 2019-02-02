@@ -62,8 +62,8 @@ shardingRule:
           shardingColumn: order_id
           algorithmExpression: t_order_${order_id % 2}
       keyGenerator:
-        column: order_id
         type: SNOWFLAKE
+        column: order_id
       logicIndex: order_index
     t_order_item:
       actualDataNodes: ds_${0..1}.t_order_item_${0..1}
@@ -83,9 +83,6 @@ shardingRule:
       algorithmExpression: ds_${order_id % 2}
   defaultTableStrategy: 
     none:
-  defaultKeyGenerator:
-    type: SNOWFLAKE
-  
   masterSlaveRules:
     ds_0:
       masterDataSourceName: master_ds_0

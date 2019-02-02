@@ -15,7 +15,7 @@
  * limitations under the License.
  */
 
-package org.apache.shardingsphere.api.config.encryptor;
+package org.apache.shardingsphere.api.config.sharding;
 
 import org.junit.Test;
 
@@ -24,46 +24,33 @@ import java.util.Properties;
 import static org.hamcrest.CoreMatchers.is;
 import static org.junit.Assert.assertThat;
 
-public final class EncryptorConfigurationTest {
+public final class KeyGeneratorConfigurationTest {
     
     @Test(expected = IllegalArgumentException.class)
     public void assertConstructorWithoutType() {
-        new EncryptorConfiguration(null, "pwd", new Properties());
+        new KeyGeneratorConfiguration("", "id", new Properties());
     }
     
     @Test(expected = IllegalArgumentException.class)
-    public void assertConstructorWithoutColumns() {
-        new EncryptorConfiguration("TEST", "", new Properties());
+    public void assertConstructorWithoutColumn() {
+        new KeyGeneratorConfiguration("TEST", "", new Properties());
     }
     
     @Test
-    public void assertConstructorWithoutAssistedQueryColumnsAndProperties() {
-        EncryptorConfiguration actual = new EncryptorConfiguration("TEST", "pwd", null, null);
+    public void assertConstructorWithoutProperties() {
+        KeyGeneratorConfiguration actual = new KeyGeneratorConfiguration("TEST", "id", null);
         assertThat(actual.getType(), is("TEST"));
-        assertThat(actual.getColumns(), is("pwd"));
-        assertThat(actual.getAssistedQueryColumns(), is(""));
+        assertThat(actual.getColumn(), is("id"));
         assertThat(actual.getProps(), is(new Properties()));
     }
     
     @Test
-    public void assertConstructorWithMinArguments() {
+    public void assertConstructorWithFullArguments() {
         Properties props = new Properties();
         props.setProperty("key", "value");
-        EncryptorConfiguration actual = new EncryptorConfiguration("TEST", "pwd", props);
+        KeyGeneratorConfiguration actual = new KeyGeneratorConfiguration("TEST", "id", props);
         assertThat(actual.getType(), is("TEST"));
-        assertThat(actual.getColumns(), is("pwd"));
-        assertThat(actual.getAssistedQueryColumns(), is(""));
-        assertThat(actual.getProps(), is(props));
-    }
-    
-    @Test
-    public void assertConstructorWithMaxArguments() {
-        Properties props = new Properties();
-        props.setProperty("key", "value");
-        EncryptorConfiguration actual = new EncryptorConfiguration("TEST", "pwd", "pwd_query", props);
-        assertThat(actual.getType(), is("TEST"));
-        assertThat(actual.getColumns(), is("pwd"));
-        assertThat(actual.getAssistedQueryColumns(), is("pwd_query"));
+        assertThat(actual.getColumn(), is("id"));
         assertThat(actual.getProps(), is(props));
     }
 }

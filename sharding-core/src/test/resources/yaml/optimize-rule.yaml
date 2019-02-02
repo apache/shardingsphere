@@ -23,6 +23,6 @@ shardingRule:
           shardingColumn: order_id
           algorithmExpression: t_order_${order_id % 2}
       keyGenerator:
-        column: order_id
         type: SNOWFLAKE
+        column: order_id
       logicIndex: order_index

@@ -30,20 +30,20 @@ public final class KeyGeneratorConfigurationYamlSwapperTest {
     
     @Test
     public void assertSwapToYaml() {
-        YamlKeyGeneratorConfiguration actual = new KeyGeneratorConfigurationYamlSwapper().swap(new KeyGeneratorConfiguration("id", "UUID", new Properties()));
-        assertThat(actual.getColumn(), is("id"));
+        YamlKeyGeneratorConfiguration actual = new KeyGeneratorConfigurationYamlSwapper().swap(new KeyGeneratorConfiguration("UUID", "id", new Properties()));
         assertThat(actual.getType(), is("UUID"));
+        assertThat(actual.getColumn(), is("id"));
         assertThat(actual.getProps(), is(new Properties()));
     }
     
     @Test
     public void assertSwapToObject() {
         YamlKeyGeneratorConfiguration yamlConfiguration = new YamlKeyGeneratorConfiguration();
-        yamlConfiguration.setColumn("id");
         yamlConfiguration.setType("UUID");
+        yamlConfiguration.setColumn("id");
         KeyGeneratorConfiguration actual = new KeyGeneratorConfigurationYamlSwapper().swap(yamlConfiguration);
-        assertThat(actual.getColumn(), is("id"));
         assertThat(actual.getType(), is("UUID"));
+        assertThat(actual.getColumn(), is("id"));
         assertThat(actual.getProps(), is(new Properties()));
     }
 }

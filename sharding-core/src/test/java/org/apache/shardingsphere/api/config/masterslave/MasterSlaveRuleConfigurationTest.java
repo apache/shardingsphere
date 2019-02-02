@@ -25,6 +25,7 @@ import java.util.Collection;
 import java.util.Collections;
 
 import static org.hamcrest.CoreMatchers.is;
+import static org.junit.Assert.assertNull;
 import static org.junit.Assert.assertThat;
 
 public final class MasterSlaveRuleConfigurationTest {
@@ -50,7 +51,16 @@ public final class MasterSlaveRuleConfigurationTest {
     }
     
     @Test
-    public void assertConstructorWithFullArguments() {
+    public void assertConstructorWithMinArguments() {
+        MasterSlaveRuleConfiguration actual = new MasterSlaveRuleConfiguration("ds", "master_ds", Collections.singletonList("slave_ds"));
+        assertThat(actual.getName(), is("ds"));
+        assertThat(actual.getMasterDataSourceName(), is("master_ds"));
+        assertThat(actual.getSlaveDataSourceNames(), CoreMatchers.<Collection<String>>is(Collections.singletonList("slave_ds")));
+        assertNull(actual.getLoadBalanceAlgorithm());
+    }
+    
+    @Test
+    public void assertConstructorWithMaxArguments() {
         MasterSlaveRuleConfiguration actual = new MasterSlaveRuleConfiguration(
                 "ds", "master_ds", Collections.singletonList("slave_ds"), MasterSlaveLoadBalanceAlgorithmType.getDefaultAlgorithmType().getAlgorithm());
         assertThat(actual.getName(), is("ds"));
