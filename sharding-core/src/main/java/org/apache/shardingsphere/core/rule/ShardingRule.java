@@ -29,6 +29,7 @@ import org.apache.shardingsphere.api.config.sharding.TableRuleConfiguration;
 import org.apache.shardingsphere.api.config.sharding.strategy.ShardingStrategyConfiguration;
 import org.apache.shardingsphere.core.exception.ShardingConfigurationException;
 import org.apache.shardingsphere.core.exception.ShardingException;
+import org.apache.shardingsphere.core.keygen.ShardingKeyGeneratorFactory;
 import org.apache.shardingsphere.core.keygen.generator.ShardingKeyGenerator;
 import org.apache.shardingsphere.core.keygen.generator.impl.SnowflakeShardingKeyGenerator;
 import org.apache.shardingsphere.core.parsing.parser.context.condition.Column;
@@ -118,11 +119,12 @@ public class ShardingRule {
     }
     
     private ShardingKeyGenerator createDefaultKeyGenerator(final KeyGeneratorConfiguration keyGeneratorConfiguration) {
-        if (null == keyGeneratorConfiguration) {
-            return new SnowflakeShardingKeyGenerator();
-        }
-        Optional<ShardingKeyGenerator> result = keyGeneratorConfiguration.getKeyGenerator();
-        return result.isPresent() ? result.get() : new SnowflakeShardingKeyGenerator();
+        return containsKeyGeneratorConfiguration(keyGeneratorConfiguration) 
+                ? ShardingKeyGeneratorFactory.newInstance(keyGeneratorConfiguration.getType(), keyGeneratorConfiguration.getProps()) : new SnowflakeShardingKeyGenerator();
+    }
+    
+    private boolean containsKeyGeneratorConfiguration(final KeyGeneratorConfiguration keyGeneratorConfiguration) {
+        return null != keyGeneratorConfiguration && !Strings.isNullOrEmpty(keyGeneratorConfiguration.getType());
     }
     
     private Collection<MasterSlaveRule> createMasterSlaveRules(final Collection<MasterSlaveRuleConfiguration> masterSlaveRuleConfigurations) {

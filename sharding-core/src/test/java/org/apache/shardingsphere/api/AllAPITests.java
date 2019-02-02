@@ -24,7 +24,6 @@ import org.apache.shardingsphere.api.algorithm.masterslave.RoundRobinMasterSlave
 import org.apache.shardingsphere.api.algorithm.sharding.DatabaseShardingStrategyTest;
 import org.apache.shardingsphere.api.algorithm.table.TableShardingStrategyTest;
 import org.apache.shardingsphere.api.config.EncryptorConfigurationTest;
-import org.apache.shardingsphere.api.config.KeyGeneratorConfigurationTest;
 import org.junit.runner.RunWith;
 import org.junit.runners.Suite;
 import org.junit.runners.Suite.SuiteClasses;
@@ -39,8 +38,7 @@ import org.junit.runners.Suite.SuiteClasses;
         RandomMasterSlaveLoadBalanceAlgorithmTest.class,
         ConfigMapContextTest.class, 
         HintManagerTest.class,
-        EncryptorConfigurationTest.class,
-        KeyGeneratorConfigurationTest.class
+        EncryptorConfigurationTest.class
     })
 public final class AllAPITests {
 }

@@ -17,12 +17,8 @@
 
 package org.apache.shardingsphere.api.config.sharding;
 
-import com.google.common.base.Optional;
-import com.google.common.base.Strings;
 import lombok.Getter;
 import lombok.RequiredArgsConstructor;
-import org.apache.shardingsphere.core.keygen.ShardingKeyGeneratorFactory;
-import org.apache.shardingsphere.core.keygen.generator.ShardingKeyGenerator;
 
 import java.util.Properties;
 
@@ -40,18 +36,4 @@ public final class KeyGeneratorConfiguration {
     private final String type;
     
     private final Properties props;
-    
-    /**
-     * Build key generator configuration.
-     *
-     * @return table rule configuration
-     */
-    public Optional<ShardingKeyGenerator> getKeyGenerator() {
-        if (Strings.isNullOrEmpty(type)) {
-            return Optional.absent();
-        }
-        ShardingKeyGenerator result = ShardingKeyGeneratorFactory.newInstance(type);
-        result.setProperties(props);
-        return Optional.of(result);
-    }
 }
