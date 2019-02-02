@@ -10,13 +10,27 @@ export const constantRouterMap = [
   },
   {
     path: '/config-regist',
-    component: () => import('@/views/index/index'), hidden: true },
-  { path: '/login',
-    component: () => import('@/views/login/index'), hidden: true },
-  { path: '/config-manage',
-    component: () => import('@/views/config-manage/index'), hidden: true },
-  { path: '/orchestration',
-    component: () => import('@/views/orchestration/index'), hidden: true }
+    component: () => import('@/views/index/index'),
+    hidden: true,
+    name: 'Config regist'
+  },
+  {
+    path: '/login',
+    component: () => import('@/views/login/index'),
+    hidden: true
+  },
+  {
+    path: '/config-manage',
+    component: () => import('@/views/config-manage/index'),
+    hidden: true,
+    name: 'Config manage'
+  },
+  {
+    path: '/orchestration',
+    component: () => import('@/views/orchestration/index'),
+    hidden: true,
+    name: 'Orchestration'
+  }
 ]
 
 export default new Router({

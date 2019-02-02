@@ -1,28 +1,23 @@
 <template>
-  <div class="props">
+  <el-card class="box-card props">
     <el-row :gutter="20">
       <el-col :span="12">
-        <span style="font-size: 18px; font-weight: bold;">Edit source here:</span>
-        <el-input
-          :rows="20"
-          v-model="textarea"
-          type="textarea"
-          class="edit-text"/>
+        <span
+          style="font-size: 14px; color: #4a4a4a; margin-bottom: 10px;display: inline-block;"
+        >Edit source here:</span>
+        <el-input :rows="20" v-model="textarea" type="textarea" class="edit-text"/>
       </el-col>
       <el-col :span="12">
-        <span style="font-size: 18px; font-weight: bold;">Result (JS object dump):</span>
-        <el-input
-          :rows="20"
-          v-model="textarea2"
-          type="textarea"
-          readonly
-          class="show-text"/>
+        <span
+          style="font-size: 14px; color: #4a4a4a; margin-bottom: 10px;display: inline-block;"
+        >Result (JS object dump):</span>
+        <el-input :rows="20" v-model="textarea2" type="textarea" readonly class="show-text"/>
       </el-col>
     </el-row>
     <el-row>
       <el-button class="props-btn" type="primary" @click="onConfirm">{{ $t('btn.submit') }}</el-button>
     </el-row>
-  </div>
+  </el-card>
 </template>
 <script>
 import yaml from 'js-yaml'
@@ -45,7 +40,7 @@ export default {
   },
   methods: {
     getProps() {
-      API.getProps().then((res) => {
+      API.getProps().then(res => {
         if (!res.success) return
         const model = res.model
         if (Object.prototype.toString.call(model) === '[object String]') {
@@ -56,7 +51,7 @@ export default {
       })
     },
     onConfirm() {
-      API.putProps({ props: this.textarea }).then((res) => {
+      API.putProps({ props: this.textarea }).then(res => {
         if (res.success) {
           this.$notify({
             title: this.$t('common').notify.title,
@@ -77,24 +72,24 @@ export default {
 }
 </script>
 <style lang="scss">
-  .props {
-    margin-top: 20px;
-    .edit-text {
-      margin-top: 5px;
-      textarea {
-        background: #fffffb;
-      }
-    }
-    .show-text {
-      margin-top: 5px;
-      textarea {
-        background: rgb(246, 246, 246);
-      }
-    }
-    .props-btn {
-      margin-top: 10px;
-      float: right;
+.props {
+  margin-top: 20px;
+  .edit-text {
+    margin-top: 5px;
+    textarea {
+      background: #fffffb;
     }
   }
+  .show-text {
+    margin-top: 5px;
+    textarea {
+      background: rgb(246, 246, 246);
+    }
+  }
+  .props-btn {
+    margin-top: 10px;
+    float: right;
+  }
+}
 </style>
 

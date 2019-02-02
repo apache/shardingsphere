@@ -5,24 +5,27 @@
       <div class="s-pro-components-header-right">
         <div class="avatar">
           <el-dropdown @command="handlerClick">
-            <span class="el-dropdown-link">{{ username || '未登陆' }}</span>
+            <el-tag type="success">
+              <span class="el-dropdown-link">
+                {{ username || '未登陆' }}
+                <i class="el-icon-arrow-down el-icon--right"/>
+              </span>
+            </el-tag>
             <el-dropdown-menu slot="dropdown">
               <el-dropdown-item>{{ $t("common.loginOut") }}</el-dropdown-item>
             </el-dropdown-menu>
           </el-dropdown>
         </div>
         <div class="lang-more">
-          <el-dropdown>
-            <i class="icon-duoyuyan iconfont"/>
-            <el-dropdown-menu slot="dropdown">
-              <el-dropdown-item>English</el-dropdown-item>
-              <el-dropdown-item disabled>Chinese</el-dropdown-item>
-            </el-dropdown-menu>
-          </el-dropdown>
+          <el-tag>English</el-tag>
         </div>
       </div>
       <el-breadcrumb separator="/" class="bread-nav">
-        <el-breadcrumb-item><a style="font-weight: bold;">{{ $store.state.global.regCenterActivated || '' }}</a></el-breadcrumb-item>
+        <el-breadcrumb-item>
+          <a
+            style="font-weight: bold; color: #E17425;"
+          >{{ $store.state.global.regCenterActivated || '' }}</a>
+        </el-breadcrumb-item>
       </el-breadcrumb>
     </div>
   </div>
@@ -40,10 +43,10 @@ export default {
   computed: {
     classes() {
       return [
-        `s-pro-components-header-trigger`,
+        `icon-item`,
         {
-          [`el-icon-d-arrow-left`]: !this.isCollapse,
-          [`el-icon-d-arrow-right`]: this.isCollapse
+          [`icon-shrink`]: !this.isCollapse,
+          [`icon-expand`]: this.isCollapse
         }
       ]
     }
@@ -96,15 +99,20 @@ export default {
     height: 64px;
     padding: 0;
     background: #fff;
-    box-shadow: 0 1px 4px rgba(0,21,41,.08);
+    box-shadow: 0 1px 4px rgba(0, 21, 41, 0.08);
     position: relative;
-    i.s-pro-components-header-trigger {
-      font-size: 20px;
-      height: 64px;
-      cursor: pointer;
-      transition: all .3s,padding 0s;
-      padding: 22px 24px;
+    i.icon-item {
+      width: 16px;
+      height: 16px;
       float: left;
+      cursor: pointer;
+      margin: 24px;
+    }
+    i.icon-shrink {
+      background: url("../../assets/img/shrink.png") no-repeat left center;
+    }
+    .icon-expand {
+      background: url("../../assets/img/expand.png") no-repeat left center;
     }
     .s-pro-components-header-right {
       float: right;
@@ -116,15 +124,14 @@ export default {
     cursor: pointer;
     padding: 0 12px;
     display: inline-block;
-    transition: all .3s;
+    transition: all 0.3s;
     height: 100%;
-    float: left;
   }
   .lang-more {
     cursor: pointer;
     padding: 0 20px;
     display: inline-block;
-    transition: all .3s;
+    transition: all 0.3s;
     height: 100%;
     // .lang-icon {
     //   background: url('../../assets/img/lang.png') no-repeat center center;

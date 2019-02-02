@@ -3,22 +3,22 @@
     <el-menu
       :collapse="isCollapse"
       :default-active="defActive"
-      background-color="#001529"
+      background-color="#090a01"
       text-color="#fff"
       active-text-color="#fff"
-      class="el-menu-vertical-demo"
+      class="el-menu-vertical-menu"
       @open="handleOpen"
-      @close="handleClose">
+      @close="handleClose"
+    >
       <s-logo/>
       <el-submenu v-for="(item, index) in menuData" :key="String(index)" :index="String(index)">
         <template slot="title">
-          <i class="el-icon-tickets"/>
+          <i class="icon-sidebar"/>
           <span slot="title">{{ item.title }}</span>
         </template>
         <el-menu-item-group>
           <a v-for="(itm, idx) in item.child" :href="'#' + itm.href" :key="idx">
-            <el-menu-item
-              :index="itm.href">{{ itm.title }}</el-menu-item>
+            <el-menu-item :index="itm.href">{{ itm.title }}</el-menu-item>
           </a>
         </el-menu-item-group>
       </el-submenu>
@@ -68,7 +68,6 @@ export default {
     }
   }
 }
-
 </script>
 <style lang="scss">
 .s-menu {
@@ -76,24 +75,47 @@ export default {
   .el-menu--collapse {
     height: 100%;
     width: 80px;
+    .s-pro-components-sider-menu-index-logo {
+      padding-left: 22px;
+    }
   }
-  .el-menu-vertical-demo:not(.el-menu--collapse) {
+  .el-menu-vertical-menu:not(.el-menu--collapse) {
     width: 256px;
     height: 100%;
   }
   .el-menu-item {
-    background: #001529;
+    background: #090a01;
   }
   .el-menu {
     border-right: none;
   }
   .el-submenu {
     .el-menu {
-      background: #000c17;
+      background: #090a01;
     }
   }
   .is-active {
-    background-color: #1890ff !important;
+    background-color: #e17425 !important;
+  }
+  .icon-sidebar {
+    background: url("../../assets/img/sidebar-icon.png") no-repeat left center;
+    display: inline-block;
+    width: 16px;
+    height: 16px;
+  }
+  .el-menu--collapse {
+    img {
+      display: none;
+    }
+    .collapse-logo {
+      display: block;
+      margin-top: 13px;
+    }
+  }
+}
+.el-menu--vertical {
+  .is-active {
+    background-color: #e17425 !important;
   }
 }
 </style>
