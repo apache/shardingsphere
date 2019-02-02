@@ -62,7 +62,7 @@ public final class PostgreSQLComQueryPacket implements PostgreSQLQueryCommandPac
     
     @Override
     public Optional<CommandResponsePackets> execute() {
-        log.debug("ComQueryPacket received for Sharding-Proxy: {}", sql);
+        log.debug("PostgreSQLComQueryPacket received for Sharding-Proxy: {}", sql);
         return GlobalRegistry.getInstance().isCircuitBreak()
                 ? Optional.of(new CommandResponsePackets(new PostgreSQLErrorResponsePacket())) : Optional.of(textProtocolBackendHandler.execute());
     }

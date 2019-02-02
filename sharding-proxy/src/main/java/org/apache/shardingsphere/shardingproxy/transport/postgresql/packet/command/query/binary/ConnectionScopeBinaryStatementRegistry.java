@@ -22,7 +22,7 @@ import java.util.concurrent.ConcurrentHashMap;
 import java.util.concurrent.ConcurrentMap;
 
 /**
- * PostgreSQL binary prepared statement registry.
+ * Connection scope binary statement registry.
  *
  * @author zhangyonglun
  */
