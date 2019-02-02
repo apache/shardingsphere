@@ -19,8 +19,8 @@ package org.apache.shardingsphere.shardingjdbc.api;
 
 import lombok.SneakyThrows;
 import org.apache.shardingsphere.api.ConfigMapContext;
-import org.apache.shardingsphere.api.config.rule.ShardingRuleConfiguration;
-import org.apache.shardingsphere.api.config.rule.TableRuleConfiguration;
+import org.apache.shardingsphere.api.config.sharding.ShardingRuleConfiguration;
+import org.apache.shardingsphere.api.config.sharding.TableRuleConfiguration;
 import org.apache.shardingsphere.core.rule.ShardingRule;
 import org.apache.shardingsphere.shardingjdbc.jdbc.core.ShardingContext;
 import org.junit.Before;

@@ -17,8 +17,8 @@
 
 package org.apache.shardingsphere.core.routing.type.broadcast;
 
-import org.apache.shardingsphere.api.config.rule.ShardingRuleConfiguration;
-import org.apache.shardingsphere.api.config.rule.TableRuleConfiguration;
+import org.apache.shardingsphere.api.config.sharding.ShardingRuleConfiguration;
+import org.apache.shardingsphere.api.config.sharding.TableRuleConfiguration;
 import org.apache.shardingsphere.core.routing.type.RoutingResult;
 import org.apache.shardingsphere.core.routing.type.TableUnit;
 import org.apache.shardingsphere.core.rule.ShardingRule;

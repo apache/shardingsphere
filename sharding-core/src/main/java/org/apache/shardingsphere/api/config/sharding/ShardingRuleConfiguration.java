@@ -15,12 +15,13 @@
  * limitations under the License.
  */
 
-package org.apache.shardingsphere.api.config.rule;
+package org.apache.shardingsphere.api.config.sharding;
 
 import lombok.Getter;
 import lombok.Setter;
-import org.apache.shardingsphere.api.config.KeyGeneratorConfiguration;
-import org.apache.shardingsphere.api.config.strategy.ShardingStrategyConfiguration;
+import org.apache.shardingsphere.api.config.RuleConfiguration;
+import org.apache.shardingsphere.api.config.masterslave.MasterSlaveRuleConfiguration;
+import org.apache.shardingsphere.api.config.sharding.strategy.ShardingStrategyConfiguration;
 
 import java.util.Collection;
 import java.util.LinkedList;

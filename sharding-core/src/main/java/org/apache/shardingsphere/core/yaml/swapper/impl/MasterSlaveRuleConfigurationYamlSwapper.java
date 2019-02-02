@@ -19,7 +19,7 @@ package org.apache.shardingsphere.core.yaml.swapper.impl;
 
 import com.google.common.base.Strings;
 import org.apache.shardingsphere.api.algorithm.masterslave.MasterSlaveLoadBalanceAlgorithm;
-import org.apache.shardingsphere.api.config.rule.MasterSlaveRuleConfiguration;
+import org.apache.shardingsphere.api.config.masterslave.MasterSlaveRuleConfiguration;
 import org.apache.shardingsphere.core.exception.ShardingConfigurationException;
 import org.apache.shardingsphere.core.yaml.config.masterslave.YamlMasterSlaveRuleConfiguration;
 import org.apache.shardingsphere.core.yaml.swapper.YamlSwapper;

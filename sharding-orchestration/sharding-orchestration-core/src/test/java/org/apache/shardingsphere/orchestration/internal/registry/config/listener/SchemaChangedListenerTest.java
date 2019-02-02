@@ -17,8 +17,8 @@
 
 package org.apache.shardingsphere.orchestration.internal.registry.config.listener;
 
-import org.apache.shardingsphere.api.config.rule.MasterSlaveRuleConfiguration;
-import org.apache.shardingsphere.api.config.rule.ShardingRuleConfiguration;
+import org.apache.shardingsphere.api.config.masterslave.MasterSlaveRuleConfiguration;
+import org.apache.shardingsphere.api.config.sharding.ShardingRuleConfiguration;
 import org.apache.shardingsphere.orchestration.internal.registry.config.event.DataSourceChangedEvent;
 import org.apache.shardingsphere.orchestration.internal.registry.config.event.IgnoredShardingOrchestrationEvent;
 import org.apache.shardingsphere.orchestration.internal.registry.config.event.MasterSlaveRuleChangedEvent;

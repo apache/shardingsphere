@@ -19,7 +19,7 @@ package org.apache.shardingsphere.orchestration.internal.rule;
 
 import com.google.common.collect.Sets;
 import org.apache.shardingsphere.api.algorithm.masterslave.RandomMasterSlaveLoadBalanceAlgorithm;
-import org.apache.shardingsphere.api.config.rule.MasterSlaveRuleConfiguration;
+import org.apache.shardingsphere.api.config.masterslave.MasterSlaveRuleConfiguration;
 import org.apache.shardingsphere.orchestration.util.FieldUtil;
 import org.hamcrest.CoreMatchers;
 import org.junit.Test;

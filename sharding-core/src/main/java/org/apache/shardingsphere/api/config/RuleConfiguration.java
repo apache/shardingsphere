@@ -15,22 +15,12 @@
  * limitations under the License.
  */
 
-package org.apache.shardingsphere.api.config.strategy;
-
-import lombok.Getter;
-import lombok.RequiredArgsConstructor;
-import org.apache.shardingsphere.api.algorithm.sharding.complex.ComplexKeysShardingAlgorithm;
+package org.apache.shardingsphere.api.config;
 
 /**
- * Complex sharding strategy configuration.
+ * Rule configuration.
  * 
- * @author zhangliang
+ * @author panjuan
  */
-@RequiredArgsConstructor
-@Getter
-public final class ComplexShardingStrategyConfiguration implements ShardingStrategyConfiguration {
-    
-    private final String shardingColumns;
-    
-    private final ComplexKeysShardingAlgorithm shardingAlgorithm;
+public interface RuleConfiguration {
 }

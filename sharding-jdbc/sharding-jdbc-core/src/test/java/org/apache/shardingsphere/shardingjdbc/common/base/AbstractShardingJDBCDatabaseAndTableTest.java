@@ -18,10 +18,10 @@
 package org.apache.shardingsphere.shardingjdbc.common.base;
 
 import com.google.common.base.Joiner;
-import org.apache.shardingsphere.api.config.KeyGeneratorConfiguration;
-import org.apache.shardingsphere.api.config.rule.ShardingRuleConfiguration;
-import org.apache.shardingsphere.api.config.rule.TableRuleConfiguration;
-import org.apache.shardingsphere.api.config.strategy.StandardShardingStrategyConfiguration;
+import org.apache.shardingsphere.api.config.sharding.KeyGeneratorConfiguration;
+import org.apache.shardingsphere.api.config.sharding.ShardingRuleConfiguration;
+import org.apache.shardingsphere.api.config.sharding.TableRuleConfiguration;
+import org.apache.shardingsphere.api.config.sharding.strategy.StandardShardingStrategyConfiguration;
 import org.apache.shardingsphere.core.constant.DatabaseType;
 import org.apache.shardingsphere.core.rule.ShardingRule;
 import org.apache.shardingsphere.shardingjdbc.fixture.PreciseOrderShardingAlgorithm;

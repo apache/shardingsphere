@@ -19,9 +19,9 @@ package org.apache.shardingsphere.core.merger.dal.show;
 
 import com.google.common.collect.Lists;
 import org.apache.shardingsphere.api.algorithm.fixture.TestComplexKeysShardingAlgorithm;
-import org.apache.shardingsphere.api.config.rule.ShardingRuleConfiguration;
-import org.apache.shardingsphere.api.config.rule.TableRuleConfiguration;
-import org.apache.shardingsphere.api.config.strategy.ComplexShardingStrategyConfiguration;
+import org.apache.shardingsphere.api.config.sharding.ShardingRuleConfiguration;
+import org.apache.shardingsphere.api.config.sharding.TableRuleConfiguration;
+import org.apache.shardingsphere.api.config.sharding.strategy.ComplexShardingStrategyConfiguration;
 import org.apache.shardingsphere.core.merger.QueryResult;
 import org.apache.shardingsphere.core.merger.fixture.TestQueryResult;
 import org.apache.shardingsphere.core.metadata.table.ColumnMetaData;

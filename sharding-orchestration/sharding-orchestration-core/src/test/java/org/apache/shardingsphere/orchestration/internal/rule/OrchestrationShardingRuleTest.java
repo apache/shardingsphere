@@ -18,11 +18,11 @@
 package org.apache.shardingsphere.orchestration.internal.rule;
 
 import org.apache.shardingsphere.api.algorithm.masterslave.RandomMasterSlaveLoadBalanceAlgorithm;
-import org.apache.shardingsphere.api.config.rule.MasterSlaveRuleConfiguration;
-import org.apache.shardingsphere.api.config.rule.ShardingRuleConfiguration;
-import org.apache.shardingsphere.api.config.rule.TableRuleConfiguration;
-import org.apache.shardingsphere.api.config.strategy.InlineShardingStrategyConfiguration;
-import org.apache.shardingsphere.api.config.strategy.NoneShardingStrategyConfiguration;
+import org.apache.shardingsphere.api.config.masterslave.MasterSlaveRuleConfiguration;
+import org.apache.shardingsphere.api.config.sharding.ShardingRuleConfiguration;
+import org.apache.shardingsphere.api.config.sharding.TableRuleConfiguration;
+import org.apache.shardingsphere.api.config.sharding.strategy.InlineShardingStrategyConfiguration;
+import org.apache.shardingsphere.api.config.sharding.strategy.NoneShardingStrategyConfiguration;
 import org.junit.Before;
 import org.junit.Test;
 

@@ -15,12 +15,27 @@
  * limitations under the License.
  */
 
-package org.apache.shardingsphere.api.config.strategy;
+package org.apache.shardingsphere.api.config.sharding.strategy;
+
+import lombok.AllArgsConstructor;
+import lombok.Getter;
+import lombok.RequiredArgsConstructor;
+import org.apache.shardingsphere.api.algorithm.sharding.standard.PreciseShardingAlgorithm;
+import org.apache.shardingsphere.api.algorithm.sharding.standard.RangeShardingAlgorithm;
 
 /**
- * Sharding strategy configuration.
+ * Standard strategy configuration.
  * 
  * @author zhangliang
  */
-public interface ShardingStrategyConfiguration {
+@AllArgsConstructor
+@RequiredArgsConstructor
+@Getter
+public final class StandardShardingStrategyConfiguration implements ShardingStrategyConfiguration {
+    
+    private final String shardingColumn;
+    
+    private final PreciseShardingAlgorithm preciseShardingAlgorithm;
+    
+    private RangeShardingAlgorithm rangeShardingAlgorithm;
 }

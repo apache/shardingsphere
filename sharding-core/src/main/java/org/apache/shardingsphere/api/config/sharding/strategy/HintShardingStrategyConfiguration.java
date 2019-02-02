@@ -15,21 +15,20 @@
  * limitations under the License.
  */
 
-package org.apache.shardingsphere.api.config.strategy;
+package org.apache.shardingsphere.api.config.sharding.strategy;
 
 import lombok.Getter;
 import lombok.RequiredArgsConstructor;
+import org.apache.shardingsphere.api.algorithm.sharding.hint.HintShardingAlgorithm;
 
 /**
- * Inline sharding strategy configuration.
+ * Hint sharding strategy configuration.
  * 
  * @author zhangliang
  */
 @RequiredArgsConstructor
 @Getter
-public final class InlineShardingStrategyConfiguration implements ShardingStrategyConfiguration {
+public final class HintShardingStrategyConfiguration implements ShardingStrategyConfiguration {
     
-    private final String shardingColumn;
-    
-    private final String algorithmExpression;
+    private final HintShardingAlgorithm shardingAlgorithm;
 }

@@ -17,11 +17,11 @@
 
 package org.apache.shardingsphere.core.yaml.swapper.impl;
 
-import org.apache.shardingsphere.api.config.KeyGeneratorConfiguration;
-import org.apache.shardingsphere.api.config.rule.MasterSlaveRuleConfiguration;
-import org.apache.shardingsphere.api.config.rule.ShardingRuleConfiguration;
-import org.apache.shardingsphere.api.config.rule.TableRuleConfiguration;
-import org.apache.shardingsphere.api.config.strategy.ShardingStrategyConfiguration;
+import org.apache.shardingsphere.api.config.masterslave.MasterSlaveRuleConfiguration;
+import org.apache.shardingsphere.api.config.sharding.KeyGeneratorConfiguration;
+import org.apache.shardingsphere.api.config.sharding.ShardingRuleConfiguration;
+import org.apache.shardingsphere.api.config.sharding.TableRuleConfiguration;
+import org.apache.shardingsphere.api.config.sharding.strategy.ShardingStrategyConfiguration;
 import org.apache.shardingsphere.core.yaml.config.masterslave.YamlMasterSlaveRuleConfiguration;
 import org.apache.shardingsphere.core.yaml.config.sharding.YamlKeyGeneratorConfiguration;
 import org.apache.shardingsphere.core.yaml.config.sharding.YamlShardingRuleConfiguration;

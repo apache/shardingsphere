@@ -17,8 +17,8 @@
 
 package org.apache.shardingsphere.core.routing.type.broadcast;
 
-import org.apache.shardingsphere.api.config.rule.ShardingRuleConfiguration;
-import org.apache.shardingsphere.api.config.rule.TableRuleConfiguration;
+import org.apache.shardingsphere.api.config.sharding.ShardingRuleConfiguration;
+import org.apache.shardingsphere.api.config.sharding.TableRuleConfiguration;
 import org.apache.shardingsphere.core.parsing.antlr.sql.statement.ddl.DDLStatement;
 import org.apache.shardingsphere.core.parsing.parser.sql.dql.DQLStatement;
 import org.apache.shardingsphere.core.parsing.parser.token.IndexToken;

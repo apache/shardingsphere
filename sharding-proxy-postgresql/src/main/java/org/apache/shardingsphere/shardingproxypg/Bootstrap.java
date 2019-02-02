@@ -19,7 +19,7 @@ package org.apache.shardingsphere.shardingproxypg;
 
 import lombok.AccessLevel;
 import lombok.NoArgsConstructor;
-import org.apache.shardingsphere.api.config.rule.RuleConfiguration;
+import org.apache.shardingsphere.api.config.RuleConfiguration;
 import org.apache.shardingsphere.core.config.DataSourceConfiguration;
 import org.apache.shardingsphere.core.constant.properties.ShardingPropertiesConstant;
 import org.apache.shardingsphere.core.rule.Authentication;

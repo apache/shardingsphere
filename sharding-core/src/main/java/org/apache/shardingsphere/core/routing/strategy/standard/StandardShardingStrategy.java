@@ -24,7 +24,7 @@ import org.apache.shardingsphere.api.algorithm.sharding.RangeShardingValue;
 import org.apache.shardingsphere.api.algorithm.sharding.ShardingValue;
 import org.apache.shardingsphere.api.algorithm.sharding.standard.PreciseShardingAlgorithm;
 import org.apache.shardingsphere.api.algorithm.sharding.standard.RangeShardingAlgorithm;
-import org.apache.shardingsphere.api.config.strategy.StandardShardingStrategyConfiguration;
+import org.apache.shardingsphere.api.config.sharding.strategy.StandardShardingStrategyConfiguration;
 import org.apache.shardingsphere.core.routing.strategy.ShardingStrategy;
 
 import java.util.ArrayList;

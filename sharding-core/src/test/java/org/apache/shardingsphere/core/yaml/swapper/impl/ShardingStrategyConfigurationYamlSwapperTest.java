@@ -21,11 +21,11 @@ import org.apache.shardingsphere.api.algorithm.sharding.complex.ComplexKeysShard
 import org.apache.shardingsphere.api.algorithm.sharding.hint.HintShardingAlgorithm;
 import org.apache.shardingsphere.api.algorithm.sharding.standard.PreciseShardingAlgorithm;
 import org.apache.shardingsphere.api.algorithm.sharding.standard.RangeShardingAlgorithm;
-import org.apache.shardingsphere.api.config.strategy.ComplexShardingStrategyConfiguration;
-import org.apache.shardingsphere.api.config.strategy.HintShardingStrategyConfiguration;
-import org.apache.shardingsphere.api.config.strategy.InlineShardingStrategyConfiguration;
-import org.apache.shardingsphere.api.config.strategy.NoneShardingStrategyConfiguration;
-import org.apache.shardingsphere.api.config.strategy.StandardShardingStrategyConfiguration;
+import org.apache.shardingsphere.api.config.sharding.strategy.ComplexShardingStrategyConfiguration;
+import org.apache.shardingsphere.api.config.sharding.strategy.HintShardingStrategyConfiguration;
+import org.apache.shardingsphere.api.config.sharding.strategy.InlineShardingStrategyConfiguration;
+import org.apache.shardingsphere.api.config.sharding.strategy.NoneShardingStrategyConfiguration;
+import org.apache.shardingsphere.api.config.sharding.strategy.StandardShardingStrategyConfiguration;
 import org.apache.shardingsphere.core.fixture.ComplexOrderShardingAlgorithm;
 import org.apache.shardingsphere.core.fixture.OrderDatabaseHintShardingAlgorithm;
 import org.apache.shardingsphere.core.fixture.PreciseOrderShardingAlgorithm;

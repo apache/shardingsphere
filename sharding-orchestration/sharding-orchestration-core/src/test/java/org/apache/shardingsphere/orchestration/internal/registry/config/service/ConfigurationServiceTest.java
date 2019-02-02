@@ -20,8 +20,8 @@ package org.apache.shardingsphere.orchestration.internal.registry.config.service
 import com.google.common.base.Function;
 import com.google.common.collect.Maps;
 import org.apache.commons.dbcp2.BasicDataSource;
-import org.apache.shardingsphere.api.config.rule.MasterSlaveRuleConfiguration;
-import org.apache.shardingsphere.api.config.rule.ShardingRuleConfiguration;
+import org.apache.shardingsphere.api.config.masterslave.MasterSlaveRuleConfiguration;
+import org.apache.shardingsphere.api.config.sharding.ShardingRuleConfiguration;
 import org.apache.shardingsphere.core.config.DataSourceConfiguration;
 import org.apache.shardingsphere.core.constant.properties.ShardingPropertiesConstant;
 import org.apache.shardingsphere.core.rule.Authentication;

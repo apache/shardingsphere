@@ -17,6 +17,7 @@
 
 package org.apache.shardingsphere.api.config;
 
+import org.apache.shardingsphere.api.config.encryptor.EncryptorConfiguration;
 import org.junit.Before;
 import org.junit.Test;
 

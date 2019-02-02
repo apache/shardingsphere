@@ -15,43 +15,32 @@
  * limitations under the License.
  */
 
-package org.apache.shardingsphere.api.config;
+package org.apache.shardingsphere.api.config.masterslave;
 
-import com.google.common.base.Optional;
-import com.google.common.base.Strings;
+import lombok.AllArgsConstructor;
 import lombok.Getter;
 import lombok.RequiredArgsConstructor;
-import org.apache.shardingsphere.core.keygen.ShardingKeyGeneratorFactory;
-import org.apache.shardingsphere.core.keygen.generator.ShardingKeyGenerator;
+import org.apache.shardingsphere.api.algorithm.masterslave.MasterSlaveLoadBalanceAlgorithm;
+import org.apache.shardingsphere.api.config.RuleConfiguration;
 
-import java.util.Properties;
+import java.util.Collection;
 
 /**
- * Key generator configuration.
- *
+ * Master-slave rule configuration.
+ * 
+ * @author zhangliang
  * @author panjuan
  */
+@AllArgsConstructor
 @RequiredArgsConstructor
 @Getter
-public final class KeyGeneratorConfiguration {
+public final class MasterSlaveRuleConfiguration implements RuleConfiguration {
     
-    private final String column;
+    private final String name;
     
-    private final String type;
+    private final String masterDataSourceName;
     
-    private final Properties props;
+    private final Collection<String> slaveDataSourceNames;
     
-    /**
-     * Build key generator configuration.
-     *
-     * @return table rule configuration
-     */
-    public Optional<ShardingKeyGenerator> getKeyGenerator() {
-        if (Strings.isNullOrEmpty(type)) {
-            return Optional.absent();
-        }
-        ShardingKeyGenerator result = ShardingKeyGeneratorFactory.newInstance(type);
-        result.setProperties(props);
-        return Optional.of(result);
-    }
+    private MasterSlaveLoadBalanceAlgorithm loadBalanceAlgorithm;
 }

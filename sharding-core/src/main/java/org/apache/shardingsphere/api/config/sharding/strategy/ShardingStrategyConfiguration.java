@@ -15,12 +15,12 @@
  * limitations under the License.
  */
 
-package org.apache.shardingsphere.api.config.strategy;
+package org.apache.shardingsphere.api.config.sharding.strategy;
 
 /**
- * None sharding strategy configuration.
+ * Sharding strategy configuration.
  * 
  * @author zhangliang
  */
-public final class NoneShardingStrategyConfiguration implements ShardingStrategyConfiguration {
+public interface ShardingStrategyConfiguration {
 }

@@ -15,7 +15,7 @@
  * limitations under the License.
  */
 
-package org.apache.shardingsphere.api.config;
+package org.apache.shardingsphere.api.config.encryptor;
 
 import com.google.common.base.Optional;
 import com.google.common.base.Splitter;

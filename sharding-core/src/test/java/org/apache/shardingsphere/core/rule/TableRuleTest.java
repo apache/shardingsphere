@@ -18,10 +18,10 @@
 package org.apache.shardingsphere.core.rule;
 
 import com.google.common.collect.Sets;
-import org.apache.shardingsphere.api.config.KeyGeneratorConfiguration;
-import org.apache.shardingsphere.api.config.rule.ShardingRuleConfiguration;
-import org.apache.shardingsphere.api.config.rule.TableRuleConfiguration;
-import org.apache.shardingsphere.api.config.strategy.NoneShardingStrategyConfiguration;
+import org.apache.shardingsphere.api.config.sharding.KeyGeneratorConfiguration;
+import org.apache.shardingsphere.api.config.sharding.ShardingRuleConfiguration;
+import org.apache.shardingsphere.api.config.sharding.TableRuleConfiguration;
+import org.apache.shardingsphere.api.config.sharding.strategy.NoneShardingStrategyConfiguration;
 import org.apache.shardingsphere.core.keygen.fixture.IncrementShardingKeyGenerator;
 import org.junit.Test;
 

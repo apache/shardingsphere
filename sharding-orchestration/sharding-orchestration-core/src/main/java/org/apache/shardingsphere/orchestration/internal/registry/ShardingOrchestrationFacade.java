@@ -19,7 +19,7 @@ package org.apache.shardingsphere.orchestration.internal.registry;
 
 import lombok.Getter;
 import lombok.extern.slf4j.Slf4j;
-import org.apache.shardingsphere.api.config.rule.RuleConfiguration;
+import org.apache.shardingsphere.api.config.RuleConfiguration;
 import org.apache.shardingsphere.core.config.DataSourceConfiguration;
 import org.apache.shardingsphere.core.rule.Authentication;
 import org.apache.shardingsphere.orchestration.config.OrchestrationConfiguration;

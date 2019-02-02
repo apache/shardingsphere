@@ -17,10 +17,10 @@
 
 package org.apache.shardingsphere.core.routing.type.standard;
 
-import org.apache.shardingsphere.api.config.rule.ShardingRuleConfiguration;
-import org.apache.shardingsphere.api.config.rule.TableRuleConfiguration;
-import org.apache.shardingsphere.api.config.strategy.HintShardingStrategyConfiguration;
-import org.apache.shardingsphere.api.config.strategy.InlineShardingStrategyConfiguration;
+import org.apache.shardingsphere.api.config.sharding.ShardingRuleConfiguration;
+import org.apache.shardingsphere.api.config.sharding.TableRuleConfiguration;
+import org.apache.shardingsphere.api.config.sharding.strategy.HintShardingStrategyConfiguration;
+import org.apache.shardingsphere.api.config.sharding.strategy.InlineShardingStrategyConfiguration;
 import org.apache.shardingsphere.core.constant.DatabaseType;
 import org.apache.shardingsphere.core.fixture.OrderDatabaseHintShardingAlgorithm;
 import org.apache.shardingsphere.core.metadata.ShardingMetaData;

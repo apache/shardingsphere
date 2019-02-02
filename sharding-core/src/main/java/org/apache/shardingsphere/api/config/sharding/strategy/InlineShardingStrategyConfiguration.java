@@ -15,31 +15,21 @@
  * limitations under the License.
  */
 
-package org.apache.shardingsphere.api.config.rule;
+package org.apache.shardingsphere.api.config.sharding.strategy;
 
-import lombok.AllArgsConstructor;
 import lombok.Getter;
 import lombok.RequiredArgsConstructor;
-import org.apache.shardingsphere.api.algorithm.masterslave.MasterSlaveLoadBalanceAlgorithm;
-
-import java.util.Collection;
 
 /**
- * Master-slave rule configuration.
+ * Inline sharding strategy configuration.
  * 
  * @author zhangliang
- * @author panjuan
  */
-@AllArgsConstructor
 @RequiredArgsConstructor
 @Getter
-public final class MasterSlaveRuleConfiguration implements RuleConfiguration {
+public final class InlineShardingStrategyConfiguration implements ShardingStrategyConfiguration {
     
-    private final String name;
+    private final String shardingColumn;
     
-    private final String masterDataSourceName;
-    
-    private final Collection<String> slaveDataSourceNames;
-    
-    private MasterSlaveLoadBalanceAlgorithm loadBalanceAlgorithm;
+    private final String algorithmExpression;
 }

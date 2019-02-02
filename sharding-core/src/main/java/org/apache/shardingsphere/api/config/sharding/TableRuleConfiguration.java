@@ -15,27 +15,40 @@
  * limitations under the License.
  */
 
-package org.apache.shardingsphere.api.config.strategy;
+package org.apache.shardingsphere.api.config.sharding;
 
-import lombok.AllArgsConstructor;
 import lombok.Getter;
 import lombok.RequiredArgsConstructor;
-import org.apache.shardingsphere.api.algorithm.sharding.standard.PreciseShardingAlgorithm;
-import org.apache.shardingsphere.api.algorithm.sharding.standard.RangeShardingAlgorithm;
+import lombok.Setter;
+import org.apache.shardingsphere.api.config.encryptor.EncryptorConfiguration;
+import org.apache.shardingsphere.api.config.sharding.strategy.ShardingStrategyConfiguration;
 
 /**
- * Standard strategy configuration.
+ * Table rule configuration.
  * 
  * @author zhangliang
+ * @author panjuan
  */
-@AllArgsConstructor
 @RequiredArgsConstructor
 @Getter
-public final class StandardShardingStrategyConfiguration implements ShardingStrategyConfiguration {
+@Setter
+public final class TableRuleConfiguration {
     
-    private final String shardingColumn;
+    private final String logicTable;
     
-    private final PreciseShardingAlgorithm preciseShardingAlgorithm;
+    private final String actualDataNodes;
     
-    private RangeShardingAlgorithm rangeShardingAlgorithm;
+    private ShardingStrategyConfiguration databaseShardingStrategyConfig;
+    
+    private ShardingStrategyConfiguration tableShardingStrategyConfig;
+    
+    private KeyGeneratorConfiguration keyGeneratorConfig;
+    
+    private EncryptorConfiguration encryptorConfig;
+    
+    private String logicIndex;
+    
+    public TableRuleConfiguration(final String logicTable) {
+        this(logicTable, null);
+    }
 }

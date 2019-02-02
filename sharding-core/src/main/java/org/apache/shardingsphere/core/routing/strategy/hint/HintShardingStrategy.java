@@ -21,7 +21,7 @@ import com.google.common.base.Preconditions;
 import lombok.Getter;
 import org.apache.shardingsphere.api.algorithm.sharding.ShardingValue;
 import org.apache.shardingsphere.api.algorithm.sharding.hint.HintShardingAlgorithm;
-import org.apache.shardingsphere.api.config.strategy.HintShardingStrategyConfiguration;
+import org.apache.shardingsphere.api.config.sharding.strategy.HintShardingStrategyConfiguration;
 import org.apache.shardingsphere.core.routing.strategy.ShardingStrategy;
 
 import java.util.Collection;

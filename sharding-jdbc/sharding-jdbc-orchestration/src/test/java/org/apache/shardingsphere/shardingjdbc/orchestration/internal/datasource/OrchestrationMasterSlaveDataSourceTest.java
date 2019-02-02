@@ -20,7 +20,7 @@ package org.apache.shardingsphere.shardingjdbc.orchestration.internal.datasource
 import org.apache.commons.dbcp2.BasicDataSource;
 import org.apache.shardingsphere.api.ConfigMapContext;
 import org.apache.shardingsphere.api.algorithm.masterslave.MasterSlaveLoadBalanceAlgorithmType;
-import org.apache.shardingsphere.api.config.rule.MasterSlaveRuleConfiguration;
+import org.apache.shardingsphere.api.config.masterslave.MasterSlaveRuleConfiguration;
 import org.apache.shardingsphere.core.config.DataSourceConfiguration;
 import org.apache.shardingsphere.core.constant.ShardingConstant;
 import org.apache.shardingsphere.core.exception.ShardingException;

@@ -19,9 +19,9 @@ package org.apache.shardingsphere.core.routing.type.standard;
 
 import org.apache.shardingsphere.api.algorithm.sharding.ListShardingValue;
 import org.apache.shardingsphere.api.algorithm.sharding.ShardingValue;
-import org.apache.shardingsphere.api.config.rule.ShardingRuleConfiguration;
-import org.apache.shardingsphere.api.config.rule.TableRuleConfiguration;
-import org.apache.shardingsphere.api.config.strategy.InlineShardingStrategyConfiguration;
+import org.apache.shardingsphere.api.config.sharding.ShardingRuleConfiguration;
+import org.apache.shardingsphere.api.config.sharding.TableRuleConfiguration;
+import org.apache.shardingsphere.api.config.sharding.strategy.InlineShardingStrategyConfiguration;
 import org.apache.shardingsphere.core.optimizer.condition.ShardingCondition;
 import org.apache.shardingsphere.core.optimizer.condition.ShardingConditions;
 import org.apache.shardingsphere.core.routing.type.RoutingResult;

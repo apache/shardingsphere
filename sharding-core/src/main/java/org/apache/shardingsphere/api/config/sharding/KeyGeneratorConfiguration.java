@@ -15,41 +15,43 @@
  * limitations under the License.
  */
 
-package org.apache.shardingsphere.api.config.rule;
+package org.apache.shardingsphere.api.config.sharding;
 
+import com.google.common.base.Optional;
+import com.google.common.base.Strings;
 import lombok.Getter;
 import lombok.RequiredArgsConstructor;
-import lombok.Setter;
-import org.apache.shardingsphere.api.config.EncryptorConfiguration;
-import org.apache.shardingsphere.api.config.KeyGeneratorConfiguration;
-import org.apache.shardingsphere.api.config.strategy.ShardingStrategyConfiguration;
+import org.apache.shardingsphere.core.keygen.ShardingKeyGeneratorFactory;
+import org.apache.shardingsphere.core.keygen.generator.ShardingKeyGenerator;
+
+import java.util.Properties;
 
 /**
- * Table rule configuration.
- * 
- * @author zhangliang
+ * Key generator configuration.
+ *
  * @author panjuan
  */
 @RequiredArgsConstructor
 @Getter
-@Setter
-public final class TableRuleConfiguration implements RuleConfiguration {
+public final class KeyGeneratorConfiguration {
     
-    private final String logicTable;
+    private final String column;
     
-    private final String actualDataNodes;
+    private final String type;
     
-    private ShardingStrategyConfiguration databaseShardingStrategyConfig;
+    private final Properties props;
     
-    private ShardingStrategyConfiguration tableShardingStrategyConfig;
-    
-    private KeyGeneratorConfiguration keyGeneratorConfig;
-    
-    private EncryptorConfiguration encryptorConfig;
-    
-    private String logicIndex;
-    
-    public TableRuleConfiguration(final String logicTable) {
-        this(logicTable, null);
+    /**
+     * Build key generator configuration.
+     *
+     * @return table rule configuration
+     */
+    public Optional<ShardingKeyGenerator> getKeyGenerator() {
+        if (Strings.isNullOrEmpty(type)) {
+            return Optional.absent();
+        }
+        ShardingKeyGenerator result = ShardingKeyGeneratorFactory.newInstance(type);
+        result.setProperties(props);
+        return Optional.of(result);
     }
 }
