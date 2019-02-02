@@ -17,8 +17,9 @@
 
 package org.apache.shardingsphere.api.config.sharding;
 
+import com.google.common.base.Preconditions;
+import com.google.common.base.Strings;
 import lombok.Getter;
-import lombok.RequiredArgsConstructor;
 
 import java.util.Properties;
 
@@ -27,13 +28,20 @@ import java.util.Properties;
  *
  * @author panjuan
  */
-@RequiredArgsConstructor
 @Getter
 public final class KeyGeneratorConfiguration {
     
-    private final String column;
-    
     private final String type;
     
+    private final String column;
+    
     private final Properties props;
+    
+    public KeyGeneratorConfiguration(final String type, final String column, final Properties props) {
+        Preconditions.checkArgument(!Strings.isNullOrEmpty(type), "Type is required.");
+        Preconditions.checkArgument(!Strings.isNullOrEmpty(column), "Column is required.");
+        this.type = type;
+        this.column = column;
+        this.props = null == props ? new Properties() : props;
+    }
 }

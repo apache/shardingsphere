@@ -19,7 +19,12 @@ package org.apache.shardingsphere.api.config;
 
 import org.apache.shardingsphere.api.config.encryptor.EncryptorConfigurationTest;
 import org.apache.shardingsphere.api.config.masterslave.MasterSlaveRuleConfigurationTest;
+import org.apache.shardingsphere.api.config.sharding.KeyGeneratorConfigurationTest;
 import org.apache.shardingsphere.api.config.sharding.TableRuleConfigurationTest;
+import org.apache.shardingsphere.api.config.sharding.strategy.ComplexShardingStrategyConfigurationTest;
+import org.apache.shardingsphere.api.config.sharding.strategy.HintShardingStrategyConfigurationTest;
+import org.apache.shardingsphere.api.config.sharding.strategy.InlineShardingStrategyConfigurationTest;
+import org.apache.shardingsphere.api.config.sharding.strategy.StandardShardingStrategyConfigurationTest;
 import org.junit.runner.RunWith;
 import org.junit.runners.Suite;
 import org.junit.runners.Suite.SuiteClasses;
@@ -27,7 +32,12 @@ import org.junit.runners.Suite.SuiteClasses;
 @RunWith(Suite.class)
 @SuiteClasses({
         TableRuleConfigurationTest.class, 
-        MasterSlaveRuleConfigurationTest.class, 
+        StandardShardingStrategyConfigurationTest.class, 
+        InlineShardingStrategyConfigurationTest.class, 
+        ComplexShardingStrategyConfigurationTest.class, 
+        HintShardingStrategyConfigurationTest.class, 
+        MasterSlaveRuleConfigurationTest.class,
+        KeyGeneratorConfigurationTest.class, 
         EncryptorConfigurationTest.class
     })
 public final class AllConfigTests {

@@ -17,22 +17,24 @@
 
 package org.apache.shardingsphere.api.config.sharding.strategy;
 
-import com.google.common.base.Preconditions;
-import lombok.Getter;
 import org.apache.shardingsphere.api.algorithm.sharding.hint.HintShardingAlgorithm;
+import org.junit.Test;
 
-/**
- * Hint sharding strategy configuration.
- * 
- * @author zhangliang
- */
-@Getter
-public final class HintShardingStrategyConfiguration implements ShardingStrategyConfiguration {
+import static org.hamcrest.CoreMatchers.is;
+import static org.junit.Assert.assertThat;
+import static org.mockito.Mockito.mock;
+
+public final class HintShardingStrategyConfigurationTest {
     
-    private final HintShardingAlgorithm shardingAlgorithm;
+    @Test(expected = NullPointerException.class)
+    public void assertConstructorWithoutShardingAlgorithm() {
+        new HintShardingStrategyConfiguration(null);
+    }
     
-    public HintShardingStrategyConfiguration(final HintShardingAlgorithm shardingAlgorithm) {
-        Preconditions.checkNotNull(shardingAlgorithm, "ShardingAlgorithm is required.");
-        this.shardingAlgorithm = shardingAlgorithm;
+    @Test
+    public void assertConstructorWithFullArguments() {
+        HintShardingAlgorithm shardingAlgorithm = mock(HintShardingAlgorithm.class);
+        HintShardingStrategyConfiguration actual = new HintShardingStrategyConfiguration(shardingAlgorithm);
+        assertThat(actual.getShardingAlgorithm(), is(shardingAlgorithm));
     }
 }

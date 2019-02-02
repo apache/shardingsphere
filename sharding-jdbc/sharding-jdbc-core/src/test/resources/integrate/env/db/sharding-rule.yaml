@@ -16,8 +16,8 @@ shardingRule:
           preciseAlgorithmClassName: org.apache.shardingsphere.dbtest.fixture.PreciseModuloAlgorithm
           rangeAlgorithmClassName: org.apache.shardingsphere.dbtest.fixture.RangeModuloAlgorithm
       keyGenerator:
-        column: item_id
         type: CONSTANT
+        column: item_id
   bindingTables:
     - t_order,t_order_item
   defaultDataSourceName: db_0

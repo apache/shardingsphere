@@ -32,9 +32,9 @@ import java.util.Properties;
 @Setter
 public final class YamlKeyGeneratorConfiguration implements YamlConfiguration {
     
-    private String column;
-    
     private String type;
+    
+    private String column;
     
     private Properties props = new Properties();
 }

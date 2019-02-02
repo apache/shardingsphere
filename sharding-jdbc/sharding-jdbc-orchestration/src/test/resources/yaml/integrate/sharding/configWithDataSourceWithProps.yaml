@@ -28,9 +28,8 @@ shardingRule:
           shardingColumn: order_id
           algorithmExpression: t_order_${order_id % 2}
       keyGenerator:
-        column: order_id
         type: INCREMENT
-    
+        column: order_id
     t_order_item:
       actualDataNodes: db${0..1}.t_order_item_${0..1}
       databaseStrategy: 
