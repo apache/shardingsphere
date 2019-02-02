@@ -47,7 +47,7 @@ import org.apache.shardingsphere.spi.root.SPIRootInvokeHook;
 import java.sql.SQLException;
 
 /**
- * Command executor.
+ * MySQL command executor.
  *
  * @author zhangyonglun
  * @author zhaojun

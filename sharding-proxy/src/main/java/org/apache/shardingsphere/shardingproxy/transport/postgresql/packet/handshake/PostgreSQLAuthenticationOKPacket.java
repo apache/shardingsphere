@@ -23,7 +23,7 @@ import org.apache.shardingsphere.shardingproxy.transport.postgresql.packet.Postg
 import org.apache.shardingsphere.shardingproxy.transport.postgresql.packet.command.PostgreSQLCommandPacketType;
 
 /**
- * Authentication OK message.
+ * PostgreSQL authentication OK packet.
  *
  * @author zhangyonglun
  */

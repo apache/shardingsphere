@@ -25,7 +25,7 @@ import java.util.HashMap;
 import java.util.Map;
 
 /**
- * Startup message.
+ * PostgreSQL startup packet.
  *
  * @author zhangyonglun
  */

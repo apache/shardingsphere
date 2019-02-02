@@ -26,7 +26,7 @@ import org.apache.shardingsphere.shardingproxy.transport.postgresql.packet.comma
 import java.util.List;
 
 /**
- * Row description message.
+ * PostgreSQL row description packet.
  *
  * @author zhangyonglun
  */

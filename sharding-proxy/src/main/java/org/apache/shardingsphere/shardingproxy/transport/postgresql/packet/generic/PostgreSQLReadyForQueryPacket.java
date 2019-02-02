@@ -23,7 +23,7 @@ import org.apache.shardingsphere.shardingproxy.transport.postgresql.packet.Postg
 import org.apache.shardingsphere.shardingproxy.transport.postgresql.packet.command.PostgreSQLCommandPacketType;
 
 /**
- * Ready for query message.
+ * PostgreSQL ready for query packet.
  *
  * @author zhangyonglun
  */

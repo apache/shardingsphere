@@ -21,7 +21,7 @@ import lombok.AccessLevel;
 import lombok.NoArgsConstructor;
 
 /**
- * Connection id generator.
+ * PostgreSQL connection id generator.
  *
  * @author zhangliang
  */

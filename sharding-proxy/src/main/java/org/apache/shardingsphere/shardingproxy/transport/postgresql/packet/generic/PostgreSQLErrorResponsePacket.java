@@ -23,7 +23,7 @@ import org.apache.shardingsphere.shardingproxy.transport.postgresql.packet.Postg
 import org.apache.shardingsphere.shardingproxy.transport.postgresql.packet.command.PostgreSQLCommandPacketType;
 
 /**
- * Error response message.
+ * PostgreSQL error response packet.
  *
  * @author zhangyonglun
  */
