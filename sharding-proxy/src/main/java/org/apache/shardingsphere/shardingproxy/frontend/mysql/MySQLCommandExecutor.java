@@ -53,7 +53,7 @@ import java.sql.SQLException;
  * @author zhaojun
  */
 @RequiredArgsConstructor
-public final class CommandExecutor implements Runnable {
+public final class MySQLCommandExecutor implements Runnable {
     
     private final ChannelHandlerContext context;
     
