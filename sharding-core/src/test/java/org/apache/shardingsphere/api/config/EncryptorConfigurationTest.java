@@ -17,16 +17,18 @@
 
 package org.apache.shardingsphere.api.config;
 
+import org.apache.shardingsphere.api.config.encryptor.EncryptorConfiguration;
 import org.junit.Before;
 import org.junit.Test;
 
 import java.util.Properties;
 
 import static org.hamcrest.CoreMatchers.is;
-import static org.junit.Assert.assertNull;
+import static org.junit.Assert.assertFalse;
 import static org.junit.Assert.assertThat;
+import static org.junit.Assert.assertTrue;
 
-public class EncryptorConfigurationTest {
+public final class EncryptorConfigurationTest {
     
     private EncryptorConfiguration encryptorConfiguration;
     
@@ -39,13 +41,14 @@ public class EncryptorConfigurationTest {
     
     @Test
     public void assertGetShardingEncryptorStrategy() {
-        assertThat(encryptorConfiguration.getShardingEncryptorStrategy().getColumns().get(0), is("pwd1"));
+        assertTrue(encryptorConfiguration.getShardingEncryptorStrategy().isPresent());
+        assertThat(encryptorConfiguration.getShardingEncryptorStrategy().get().getColumns().get(0), is("pwd1"));
     }
     
     @Test
     public void assertGetShardingEncryptorStrategyWithNull() {
         encryptorConfiguration = new EncryptorConfiguration("", "pwd1", "pwd1_index", new Properties());
-        assertNull(encryptorConfiguration.getShardingEncryptorStrategy());
+        assertFalse(encryptorConfiguration.getShardingEncryptorStrategy().isPresent());
     }
     
     @Test

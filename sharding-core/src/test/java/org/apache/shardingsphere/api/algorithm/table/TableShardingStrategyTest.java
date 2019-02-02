@@ -18,7 +18,7 @@
 package org.apache.shardingsphere.api.algorithm.table;
 
 import com.google.common.collect.Sets;
-import org.apache.shardingsphere.api.config.strategy.StandardShardingStrategyConfiguration;
+import org.apache.shardingsphere.api.config.sharding.strategy.StandardShardingStrategyConfiguration;
 import org.apache.shardingsphere.core.fixture.PreciseOrderShardingAlgorithm;
 import org.apache.shardingsphere.core.routing.strategy.standard.StandardShardingStrategy;
 import org.junit.Test;

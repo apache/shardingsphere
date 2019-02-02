@@ -19,9 +19,9 @@ package org.apache.shardingsphere.core.metadata.datasource;
 
 import com.google.common.collect.Lists;
 import org.apache.shardingsphere.api.algorithm.masterslave.MasterSlaveLoadBalanceAlgorithmType;
-import org.apache.shardingsphere.api.config.rule.MasterSlaveRuleConfiguration;
-import org.apache.shardingsphere.api.config.rule.ShardingRuleConfiguration;
-import org.apache.shardingsphere.api.config.rule.TableRuleConfiguration;
+import org.apache.shardingsphere.api.config.masterslave.MasterSlaveRuleConfiguration;
+import org.apache.shardingsphere.api.config.sharding.ShardingRuleConfiguration;
+import org.apache.shardingsphere.api.config.sharding.TableRuleConfiguration;
 import org.apache.shardingsphere.core.constant.DatabaseType;
 import org.apache.shardingsphere.core.rule.ShardingRule;
 import org.junit.Before;
@@ -57,12 +57,6 @@ public class ShardingDataSourceMetaDataTest {
     }
     
     private ShardingRule getMasterSlaveShardingRule() {
-        TableRuleConfiguration tableRuleConfig0 = new TableRuleConfiguration();
-        tableRuleConfig0.setLogicTable("t_order");
-        tableRuleConfig0.setActualDataNodes("ms_${0..2}.t_order_${0..1}");
-        TableRuleConfiguration tableRuleConfig1 = new TableRuleConfiguration();
-        tableRuleConfig1.setLogicTable("t_order_item");
-        tableRuleConfig1.setActualDataNodes("single.t_order_item");
         ShardingRuleConfiguration shardingRuleConfig = new ShardingRuleConfiguration();
         MasterSlaveRuleConfiguration masterSlaveConfig0 = new MasterSlaveRuleConfiguration(
                 "ms_0", "master_0", Collections.singleton("slave_0"), MasterSlaveLoadBalanceAlgorithmType.ROUND_ROBIN.getAlgorithm());
@@ -70,18 +64,15 @@ public class ShardingDataSourceMetaDataTest {
                 "ms_1", "master_1", Collections.singleton("slave_1"), MasterSlaveLoadBalanceAlgorithmType.ROUND_ROBIN.getAlgorithm());
         MasterSlaveRuleConfiguration masterSlaveConfig2 = new MasterSlaveRuleConfiguration(
                 "ms_2", "master_2", Collections.singleton("slave_2"), MasterSlaveLoadBalanceAlgorithmType.ROUND_ROBIN.getAlgorithm());
-        shardingRuleConfig.getTableRuleConfigs().add(tableRuleConfig0);
-        shardingRuleConfig.getTableRuleConfigs().add(tableRuleConfig1);
+        shardingRuleConfig.getTableRuleConfigs().add(new TableRuleConfiguration("t_order", "ms_${0..2}.t_order_${0..1}"));
+        shardingRuleConfig.getTableRuleConfigs().add(new TableRuleConfiguration("t_order_item", "single.t_order_item"));
         shardingRuleConfig.getMasterSlaveRuleConfigs().addAll(Lists.newArrayList(masterSlaveConfig0, masterSlaveConfig1, masterSlaveConfig2));
         return new ShardingRule(shardingRuleConfig, Lists.newArrayList("single", "master_0", "master_1", "master_2", "slave_0", "slave_1", "slave_2"));
     }
     
     private ShardingRule getShardingRule() {
-        TableRuleConfiguration tableRuleConfig = new TableRuleConfiguration();
-        tableRuleConfig.setLogicTable("t_order");
-        tableRuleConfig.setActualDataNodes("ds_${0..1}.t_order_${0..1}");
         ShardingRuleConfiguration shardingRuleConfig = new ShardingRuleConfiguration();
-        shardingRuleConfig.getTableRuleConfigs().add(tableRuleConfig);
+        shardingRuleConfig.getTableRuleConfigs().add(new TableRuleConfiguration("t_order", "ds_${0..1}.t_order_${0..1}"));
         return new ShardingRule(shardingRuleConfig, Lists.newArrayList("ds_0", "ds_1"));
     }
     

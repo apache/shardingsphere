@@ -46,7 +46,9 @@ import org.apache.shardingsphere.core.routing.type.RoutingTable;
 import org.apache.shardingsphere.core.routing.type.TableUnit;
 import org.apache.shardingsphere.core.rule.DataNode;
 import org.apache.shardingsphere.core.rule.ShardingRule;
-import org.apache.shardingsphere.core.yaml.sharding.YamlShardingConfiguration;
+import org.apache.shardingsphere.core.yaml.config.sharding.YamlRootShardingConfiguration;
+import org.apache.shardingsphere.core.yaml.engine.YamlEngine;
+import org.apache.shardingsphere.core.yaml.swapper.impl.ShardingRuleConfigurationYamlSwapper;
 import org.junit.Before;
 import org.junit.Test;
 
@@ -88,8 +90,8 @@ public final class SQLRewriteEngineTest {
     public void setUp() throws IOException, SQLException {
         URL url = SQLRewriteEngineTest.class.getClassLoader().getResource("yaml/rewrite-rule.yaml");
         Preconditions.checkNotNull(url, "Cannot found rewrite rule yaml configuration.");
-        YamlShardingConfiguration yamlShardingConfig = YamlShardingConfiguration.unmarshal(new File(url.getFile()));
-        shardingRule = new ShardingRule(yamlShardingConfig.getShardingRule().getShardingRuleConfiguration(), yamlShardingConfig.getDataSources().keySet());
+        YamlRootShardingConfiguration yamlShardingConfig = YamlEngine.unmarshal(new File(url.getFile()), YamlRootShardingConfiguration.class);
+        shardingRule = new ShardingRule(new ShardingRuleConfigurationYamlSwapper().swap(yamlShardingConfig.getShardingRule()), yamlShardingConfig.getDataSources().keySet());
         selectStatement = new SelectStatement();
         insertStatement = new InsertStatement();
         showTablesStatement = new DALStatement();
@@ -99,7 +101,7 @@ public final class SQLRewriteEngineTest {
         shardingDataSourceMetaData = new ShardingDataSourceMetaData(getDataSourceURLs(yamlShardingConfig), shardingRule, DatabaseType.H2);
     }
     
-    private Map<String, String> getDataSourceURLs(final YamlShardingConfiguration yamlShardingConfig) throws SQLException {
+    private Map<String, String> getDataSourceURLs(final YamlRootShardingConfiguration yamlShardingConfig) throws SQLException {
         Map<String, DataSource> dataSources = yamlShardingConfig.getDataSources();
         Map<String, String> result = new LinkedHashMap<>();
         for (Entry<String, DataSource> entry : dataSources.entrySet()) {

@@ -17,12 +17,12 @@
 
 package org.apache.shardingsphere.orchestration.internal.registry.config.listener;
 
+import org.apache.shardingsphere.core.yaml.engine.YamlEngine;
 import org.apache.shardingsphere.orchestration.internal.registry.config.event.PropertiesChangedEvent;
 import org.apache.shardingsphere.orchestration.internal.registry.config.node.ConfigurationNode;
 import org.apache.shardingsphere.orchestration.internal.registry.listener.PostShardingOrchestrationEventListener;
 import org.apache.shardingsphere.orchestration.reg.api.RegistryCenter;
 import org.apache.shardingsphere.orchestration.reg.listener.DataChangedEvent;
-import org.apache.shardingsphere.orchestration.yaml.YamlLoader;
 
 /**
  * Properties changed listener.
@@ -37,6 +37,6 @@ public final class PropertiesChangedListener extends PostShardingOrchestrationEv
     
     @Override
     protected PropertiesChangedEvent createShardingOrchestrationEvent(final DataChangedEvent event) {
-        return new PropertiesChangedEvent(YamlLoader.loadProperties(event.getValue()));
+        return new PropertiesChangedEvent(YamlEngine.unmarshalProperties(event.getValue()));
     }
 }

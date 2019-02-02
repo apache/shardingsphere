@@ -75,7 +75,7 @@ public final class ShardingExecuteEngine implements AutoCloseable {
      * @throws SQLException throw if execute failure
      */
     public <I, O> List<O> groupExecute(
-            final Collection<ShardingExecuteGroup<I>> inputGroups, final ShardingGroupExecuteCallback<I, O> firstCallback, final ShardingGroupExecuteCallback<I, O> callback, final boolean serial)
+        final Collection<ShardingExecuteGroup<I>> inputGroups, final ShardingGroupExecuteCallback<I, O> firstCallback, final ShardingGroupExecuteCallback<I, O> callback, final boolean serial)
         throws SQLException {
         if (inputGroups.isEmpty()) {
             return Collections.emptyList();
@@ -96,7 +96,7 @@ public final class ShardingExecuteEngine implements AutoCloseable {
     }
     
     private <I, O> List<O> parallelExecute(final Collection<ShardingExecuteGroup<I>> inputGroups, final ShardingGroupExecuteCallback<I, O> firstCallback,
-            final ShardingGroupExecuteCallback<I, O> callback) throws SQLException {
+                                           final ShardingGroupExecuteCallback<I, O> callback) throws SQLException {
         Iterator<ShardingExecuteGroup<I>> inputGroupsIterator = inputGroups.iterator();
         ShardingExecuteGroup<I> firstInputs = inputGroupsIterator.next();
         Collection<ListenableFuture<Collection<O>>> restResultFutures = asyncGroupExecute(Lists.newArrayList(inputGroupsIterator), callback);

@@ -19,13 +19,13 @@ package org.apache.shardingsphere.core.rule;
 
 import org.apache.shardingsphere.api.algorithm.fixture.TestPreciseShardingAlgorithm;
 import org.apache.shardingsphere.api.algorithm.masterslave.MasterSlaveLoadBalanceAlgorithmType;
-import org.apache.shardingsphere.api.config.KeyGeneratorConfiguration;
-import org.apache.shardingsphere.api.config.rule.MasterSlaveRuleConfiguration;
-import org.apache.shardingsphere.api.config.rule.ShardingRuleConfiguration;
-import org.apache.shardingsphere.api.config.rule.TableRuleConfiguration;
-import org.apache.shardingsphere.api.config.strategy.InlineShardingStrategyConfiguration;
-import org.apache.shardingsphere.api.config.strategy.NoneShardingStrategyConfiguration;
-import org.apache.shardingsphere.api.config.strategy.StandardShardingStrategyConfiguration;
+import org.apache.shardingsphere.api.config.masterslave.MasterSlaveRuleConfiguration;
+import org.apache.shardingsphere.api.config.sharding.KeyGeneratorConfiguration;
+import org.apache.shardingsphere.api.config.sharding.ShardingRuleConfiguration;
+import org.apache.shardingsphere.api.config.sharding.TableRuleConfiguration;
+import org.apache.shardingsphere.api.config.sharding.strategy.InlineShardingStrategyConfiguration;
+import org.apache.shardingsphere.api.config.sharding.strategy.NoneShardingStrategyConfiguration;
+import org.apache.shardingsphere.api.config.sharding.strategy.StandardShardingStrategyConfiguration;
 import org.apache.shardingsphere.core.exception.ShardingConfigurationException;
 import org.apache.shardingsphere.core.keygen.fixture.IncrementShardingKeyGenerator;
 import org.apache.shardingsphere.core.keygen.generator.impl.SnowflakeShardingKeyGenerator;
@@ -391,9 +391,7 @@ public final class ShardingRuleTest {
     }
     
     private TableRuleConfiguration createTableRuleConfiguration(final String logicTableName, final String actualDataNodes, final String keyGeneratorColumnName) {
-        TableRuleConfiguration result = new TableRuleConfiguration();
-        result.setLogicTable(logicTableName);
-        result.setActualDataNodes(actualDataNodes);
+        TableRuleConfiguration result = new TableRuleConfiguration(logicTableName, actualDataNodes);
         result.setKeyGeneratorConfig(new KeyGeneratorConfiguration(keyGeneratorColumnName, null, new Properties()));
         return result;
     }
@@ -420,26 +418,20 @@ public final class ShardingRuleTest {
     }
     
     private TableRuleConfiguration createTableRuleConfigWithLogicIndex() {
-        TableRuleConfiguration result = new TableRuleConfiguration();
-        result.setLogicTable("LOGIC_TABLE");
+        TableRuleConfiguration result = new TableRuleConfiguration("LOGIC_TABLE", "ds_${0..1}.table_${0..2}");
         result.setLogicIndex("INDEX_TABLE");
-        result.setActualDataNodes("ds_${0..1}.table_${0..2}");
         return result;
     }
     
     private TableRuleConfiguration createTableRuleConfigWithAllStrategies() {
-        TableRuleConfiguration result = new TableRuleConfiguration();
-        result.setLogicTable("LOGIC_TABLE");
-        result.setActualDataNodes("ds_${0..1}.table_${0..2}");
+        TableRuleConfiguration result = new TableRuleConfiguration("LOGIC_TABLE", "ds_${0..1}.table_${0..2}");
         result.setDatabaseShardingStrategyConfig(new StandardShardingStrategyConfiguration("column", new TestPreciseShardingAlgorithm()));
         result.setTableShardingStrategyConfig(new NoneShardingStrategyConfiguration());
         return result;
     }
     
     private TableRuleConfiguration createTableRuleConfigWithTableStrategies() {
-        TableRuleConfiguration result = new TableRuleConfiguration();
-        result.setLogicTable("LOGIC_TABLE");
-        result.setActualDataNodes("ds_${0..1}.table_${0..2}");
+        TableRuleConfiguration result = new TableRuleConfiguration("LOGIC_TABLE", "ds_${0..1}.table_${0..2}");
         result.setTableShardingStrategyConfig(new StandardShardingStrategyConfiguration("column", new TestPreciseShardingAlgorithm()));
         return result;
     }

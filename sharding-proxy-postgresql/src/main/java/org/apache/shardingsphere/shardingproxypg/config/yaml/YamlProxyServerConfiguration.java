@@ -19,22 +19,23 @@ package org.apache.shardingsphere.shardingproxypg.config.yaml;
 
 import lombok.Getter;
 import lombok.Setter;
-import org.apache.shardingsphere.core.yaml.YamlAuthentication;
-import org.apache.shardingsphere.orchestration.yaml.YamlOrchestrationConfiguration;
+import org.apache.shardingsphere.core.yaml.config.YamlConfiguration;
+import org.apache.shardingsphere.core.yaml.config.common.YamlAuthentication;
+import org.apache.shardingsphere.orchestration.yaml.config.YamlOrchestrationConfiguration;
 
 import java.util.LinkedHashMap;
 import java.util.Map;
 import java.util.Properties;
 
 /**
- * Server configuration for yaml.
+ * Server configuration for YAML.
  * 
  * @author chenqingyang
  * @author panjuan
  */
 @Getter
 @Setter
-public final class YamlProxyServerConfiguration {
+public final class YamlProxyServerConfiguration implements YamlConfiguration {
     
     private YamlAuthentication authentication = new YamlAuthentication();
     
