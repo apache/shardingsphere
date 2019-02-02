@@ -18,7 +18,7 @@
 package org.apache.shardingsphere.core.keygen;
 
 import org.apache.shardingsphere.core.exception.ShardingConfigurationException;
-import org.apache.shardingsphere.core.keygen.generator.impl.SnowflakeShardingKeyGenerator;
+import org.apache.shardingsphere.core.keygen.impl.SnowflakeShardingKeyGenerator;
 import org.junit.Test;
 
 import java.util.Properties;

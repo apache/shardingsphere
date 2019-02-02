@@ -22,7 +22,6 @@ import com.google.common.collect.Collections2;
 import lombok.AccessLevel;
 import lombok.NoArgsConstructor;
 import org.apache.shardingsphere.core.exception.ShardingConfigurationException;
-import org.apache.shardingsphere.core.keygen.generator.ShardingKeyGenerator;
 import org.apache.shardingsphere.spi.NewInstanceServiceLoader;
 
 import java.util.Collection;

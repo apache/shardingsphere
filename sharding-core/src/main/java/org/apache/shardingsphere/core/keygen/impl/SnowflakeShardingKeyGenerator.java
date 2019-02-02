@@ -15,14 +15,14 @@
  * limitations under the License.
  */
 
-package org.apache.shardingsphere.core.keygen.generator.impl;
+package org.apache.shardingsphere.core.keygen.impl;
 
 import com.google.common.base.Preconditions;
 import lombok.Getter;
 import lombok.Setter;
 import lombok.SneakyThrows;
+import org.apache.shardingsphere.core.keygen.ShardingKeyGenerator;
 import org.apache.shardingsphere.core.keygen.TimeService;
-import org.apache.shardingsphere.core.keygen.generator.ShardingKeyGenerator;
 
 import java.util.Calendar;
 import java.util.Properties;
