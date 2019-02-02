@@ -48,7 +48,6 @@ import org.apache.shardingsphere.shardingproxy.backend.communication.jdbc.wrappe
 import org.apache.shardingsphere.shardingproxy.runtime.GlobalRegistry;
 import org.apache.shardingsphere.shardingproxy.transport.common.packet.command.query.DataHeaderPacket;
 import org.apache.shardingsphere.shardingproxy.transport.common.packet.generic.DatabaseSuccessPacket;
-import org.apache.shardingsphere.shardingproxy.transport.mysql.constant.ColumnType;
 import org.apache.shardingsphere.shardingproxy.transport.common.packet.command.query.QueryResponsePackets;
 
 import java.sql.Connection;
@@ -82,8 +81,6 @@ public final class JDBCExecuteEngine implements SQLExecuteEngine {
     private final JDBCExecutorWrapper jdbcExecutorWrapper;
     
     private int columnCount;
-    
-    private List<ColumnType> columnTypes;
     
     private final SQLExecutePrepareTemplate sqlExecutePrepareTemplate;
     
