@@ -21,7 +21,6 @@ import lombok.Getter;
 import org.apache.shardingsphere.core.encrypt.encryptor.ShardingEncryptor;
 import org.apache.shardingsphere.core.exception.ShardingConfigurationException;
 
-import java.util.LinkedList;
 import java.util.List;
 
 /**
@@ -40,14 +39,10 @@ public final class ShardingEncryptorStrategy {
     
     public ShardingEncryptorStrategy(final List<String> columns, final List<String> assistedQueryColumns, final ShardingEncryptor shardingEncryptor) {
         if (!assistedQueryColumns.isEmpty() && assistedQueryColumns.size() != columns.size()) {
-            throw new ShardingConfigurationException("The size of columns and assistedQueryColumns is not same.");
+            throw new ShardingConfigurationException("The size of `columns` and `assistedQueryColumns` is not same.");
         }
         this.columns = columns;
         this.assistedQueryColumns = assistedQueryColumns;
         this.shardingEncryptor = shardingEncryptor;
-    }
-    
-    public ShardingEncryptorStrategy(final List<String> columns, final ShardingEncryptor shardingEncryptor) {
-        this(columns, new LinkedList<String>(), shardingEncryptor);
     }
 }
