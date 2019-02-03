@@ -43,7 +43,7 @@ public final class LocalMasterSlaveConfiguration implements ExampleConfiguration
     public DataSource getDataSource() throws SQLException {
         MasterSlaveRuleConfiguration masterSlaveRuleConfig = new MasterSlaveRuleConfiguration("demo_ds_master_slave", "demo_ds_master", Arrays.asList("demo_ds_slave_0", "demo_ds_slave_1"));
         OrchestrationConfiguration orchestrationConfig = new OrchestrationConfiguration("orchestration-master-slave-data-source", registryCenterConfig, true);
-        return OrchestrationMasterSlaveDataSourceFactory.createDataSource(createDataSourceMap(), masterSlaveRuleConfig, new HashMap<String, Object>(), new Properties(), orchestrationConfig);
+        return OrchestrationMasterSlaveDataSourceFactory.createDataSource(createDataSourceMap(), masterSlaveRuleConfig, new Properties(), orchestrationConfig);
     }
     
     private Map<String, DataSource> createDataSourceMap() {
