@@ -29,7 +29,7 @@ import org.apache.shardingsphere.shardingproxy.transport.common.packet.DatabaseP
 import org.apache.shardingsphere.shardingproxy.transport.common.packet.command.query.DataHeaderPacket;
 import org.apache.shardingsphere.shardingproxy.transport.common.packet.generic.DatabaseFailurePacket;
 import org.apache.shardingsphere.shardingproxy.transport.common.packet.generic.DatabaseSuccessPacket;
-import org.apache.shardingsphere.shardingproxy.transport.mysql.constant.ServerErrorCode;
+import org.apache.shardingsphere.shardingproxy.transport.mysql.constant.MySQLServerErrorCode;
 import org.apache.shardingsphere.shardingproxy.transport.mysql.packet.MySQLPacketPayload;
 import org.apache.shardingsphere.shardingproxy.transport.mysql.packet.command.CommandPacket;
 import org.apache.shardingsphere.shardingproxy.transport.mysql.packet.command.CommandPacketFactory;
@@ -104,7 +104,7 @@ public final class MySQLCommandExecutor implements Runnable {
             // CHECKSTYLE:OFF
         } catch (final Exception ex) {
             // CHECKSTYLE:ON
-            context.write(new ErrPacket(1, ServerErrorCode.ER_STD_UNKNOWN_EXCEPTION, ex.getMessage()));
+            context.write(new ErrPacket(1, MySQLServerErrorCode.ER_STD_UNKNOWN_EXCEPTION, ex.getMessage()));
         } finally {
             context.flush();
             rootInvokeHook.finish(connectionSize);

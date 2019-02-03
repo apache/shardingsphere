@@ -20,7 +20,7 @@ package org.apache.shardingsphere.shardingproxy.transport.common.packet.generic;
 import lombok.Getter;
 import lombok.RequiredArgsConstructor;
 import org.apache.shardingsphere.shardingproxy.transport.common.packet.DatabasePacket;
-import org.apache.shardingsphere.shardingproxy.transport.mysql.constant.ServerErrorCode;
+import org.apache.shardingsphere.shardingproxy.transport.mysql.constant.MySQLServerErrorCode;
 
 import java.sql.SQLException;
 
@@ -41,8 +41,8 @@ public final class DatabaseFailurePacket implements DatabasePacket {
     
     private final String errorMessage;
     
-    public DatabaseFailurePacket(final int sequenceId, final ServerErrorCode serverErrorCode, final Object... errorMessageArguments) {
-        this(sequenceId, serverErrorCode.getErrorCode(), serverErrorCode.getSqlState(), String.format(serverErrorCode.getErrorMessage(), errorMessageArguments));
+    public DatabaseFailurePacket(final int sequenceId, final MySQLServerErrorCode mySQLServerErrorCode, final Object... errorMessageArguments) {
+        this(sequenceId, mySQLServerErrorCode.getErrorCode(), mySQLServerErrorCode.getSqlState(), String.format(mySQLServerErrorCode.getErrorMessage(), errorMessageArguments));
     }
     
     public DatabaseFailurePacket(final int sequenceId, final SQLException cause) {

@@ -17,7 +17,7 @@
 
 package org.apache.shardingsphere.shardingproxy.transport.mysql.packet.generic;
 
-import org.apache.shardingsphere.shardingproxy.transport.mysql.constant.ServerErrorCode;
+import org.apache.shardingsphere.shardingproxy.transport.mysql.constant.MySQLServerErrorCode;
 import org.apache.shardingsphere.shardingproxy.transport.mysql.packet.MySQLPacketPayload;
 import org.junit.Test;
 import org.junit.runner.RunWith;
@@ -38,11 +38,11 @@ public final class ErrPacketTest {
     
     @Test
     public void assertNewErrPacketWithServerErrorCode() {
-        ErrPacket actual = new ErrPacket(1, ServerErrorCode.ER_ACCESS_DENIED_ERROR, "root", "localhost", "root");
+        ErrPacket actual = new ErrPacket(1, MySQLServerErrorCode.ER_ACCESS_DENIED_ERROR, "root", "localhost", "root");
         assertThat(actual.getSequenceId(), is(1));
-        assertThat(actual.getErrorCode(), is(ServerErrorCode.ER_ACCESS_DENIED_ERROR.getErrorCode()));
-        assertThat(actual.getSqlState(), is(ServerErrorCode.ER_ACCESS_DENIED_ERROR.getSqlState()));
-        assertThat(actual.getErrorMessage(), is(String.format(ServerErrorCode.ER_ACCESS_DENIED_ERROR.getErrorMessage(), "root", "localhost", "root")));
+        assertThat(actual.getErrorCode(), is(MySQLServerErrorCode.ER_ACCESS_DENIED_ERROR.getErrorCode()));
+        assertThat(actual.getSqlState(), is(MySQLServerErrorCode.ER_ACCESS_DENIED_ERROR.getSqlState()));
+        assertThat(actual.getErrorMessage(), is(String.format(MySQLServerErrorCode.ER_ACCESS_DENIED_ERROR.getErrorMessage(), "root", "localhost", "root")));
     }
     
     @Test

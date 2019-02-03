@@ -22,7 +22,7 @@ import lombok.Getter;
 import lombok.NoArgsConstructor;
 import org.apache.shardingsphere.shardingproxy.transport.common.packet.DatabasePacket;
 import org.apache.shardingsphere.shardingproxy.transport.common.packet.generic.DatabaseFailurePacket;
-import org.apache.shardingsphere.shardingproxy.transport.mysql.constant.ServerErrorCode;
+import org.apache.shardingsphere.shardingproxy.transport.mysql.constant.MySQLServerErrorCode;
 
 import java.sql.SQLException;
 import java.util.Collection;
@@ -46,7 +46,7 @@ public class CommandResponsePackets {
     public CommandResponsePackets(final Exception exception) {
         Optional<SQLException> sqlException = findSQLException(exception);
         packets.add(sqlException.isPresent() ? new DatabaseFailurePacket(1, sqlException.get().getErrorCode(), sqlException.get().getSQLState(), sqlException.get().getMessage())
-            : new DatabaseFailurePacket(1, ServerErrorCode.ER_STD_UNKNOWN_EXCEPTION, exception.getMessage()));
+            : new DatabaseFailurePacket(1, MySQLServerErrorCode.ER_STD_UNKNOWN_EXCEPTION, exception.getMessage()));
     }
     
     private Optional<SQLException> findSQLException(final Exception exception) {

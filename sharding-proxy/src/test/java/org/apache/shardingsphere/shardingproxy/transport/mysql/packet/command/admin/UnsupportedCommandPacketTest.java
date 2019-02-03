@@ -18,7 +18,7 @@
 package org.apache.shardingsphere.shardingproxy.transport.mysql.packet.command.admin;
 
 import com.google.common.base.Optional;
-import org.apache.shardingsphere.shardingproxy.transport.mysql.constant.ServerErrorCode;
+import org.apache.shardingsphere.shardingproxy.transport.mysql.constant.MySQLServerErrorCode;
 import org.apache.shardingsphere.shardingproxy.transport.mysql.packet.MySQLPacketPayload;
 import org.apache.shardingsphere.shardingproxy.transport.mysql.packet.command.CommandPacketType;
 import org.apache.shardingsphere.shardingproxy.transport.common.packet.command.CommandResponsePackets;
@@ -44,9 +44,9 @@ public final class UnsupportedCommandPacketTest {
         assertTrue(actual.isPresent());
         assertThat(actual.get().getPackets().size(), is(1));
         assertThat(actual.get().getHeadPacket().getSequenceId(), is(2));
-        assertThat(((ErrPacket) actual.get().getHeadPacket()).getErrorCode(), is(ServerErrorCode.ER_UNSUPPORTED_COMMAND.getErrorCode()));
-        assertThat(((ErrPacket) actual.get().getHeadPacket()).getSqlState(), is(ServerErrorCode.ER_UNSUPPORTED_COMMAND.getSqlState()));
-        assertThat(((ErrPacket) actual.get().getHeadPacket()).getErrorMessage(), is(String.format(ServerErrorCode.ER_UNSUPPORTED_COMMAND.getErrorMessage(), CommandPacketType.COM_SLEEP.name())));
+        assertThat(((ErrPacket) actual.get().getHeadPacket()).getErrorCode(), is(MySQLServerErrorCode.ER_UNSUPPORTED_COMMAND.getErrorCode()));
+        assertThat(((ErrPacket) actual.get().getHeadPacket()).getSqlState(), is(MySQLServerErrorCode.ER_UNSUPPORTED_COMMAND.getSqlState()));
+        assertThat(((ErrPacket) actual.get().getHeadPacket()).getErrorMessage(), is(String.format(MySQLServerErrorCode.ER_UNSUPPORTED_COMMAND.getErrorMessage(), CommandPacketType.COM_SLEEP.name())));
     }
     
     @Test

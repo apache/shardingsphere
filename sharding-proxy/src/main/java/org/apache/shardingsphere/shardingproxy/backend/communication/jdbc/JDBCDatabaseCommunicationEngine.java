@@ -41,7 +41,7 @@ import org.apache.shardingsphere.shardingproxy.runtime.schema.ShardingSchema;
 import org.apache.shardingsphere.shardingproxy.transport.common.packet.command.query.DataHeaderPacket;
 import org.apache.shardingsphere.shardingproxy.transport.common.packet.generic.DatabaseFailurePacket;
 import org.apache.shardingsphere.shardingproxy.transport.common.packet.generic.DatabaseSuccessPacket;
-import org.apache.shardingsphere.shardingproxy.transport.mysql.constant.ServerErrorCode;
+import org.apache.shardingsphere.shardingproxy.transport.mysql.constant.MySQLServerErrorCode;
 import org.apache.shardingsphere.shardingproxy.transport.common.packet.command.CommandResponsePackets;
 import org.apache.shardingsphere.shardingproxy.transport.common.packet.command.query.QueryResponsePackets;
 import org.apache.shardingsphere.transaction.core.TransactionType;
@@ -91,9 +91,9 @@ public final class JDBCDatabaseCommunicationEngine implements DatabaseCommunicat
         }
         SQLStatement sqlStatement = routeResult.getSqlStatement();
         if (isUnsupportedXA(sqlStatement.getType())) {
-            ServerErrorCode serverErrorCode = ServerErrorCode.ER_ERROR_ON_MODIFYING_GTID_EXECUTED_TABLE;
-            return new CommandResponsePackets(new DatabaseFailurePacket(1, serverErrorCode.getErrorCode(), serverErrorCode.getSqlState(), sqlStatement.getTables().isSingleTable()
-                ? String.format(serverErrorCode.getErrorMessage(), sqlStatement.getTables().getSingleTableName()) : String.format(serverErrorCode.getErrorMessage(), "unknown_table")));
+            MySQLServerErrorCode mySQLServerErrorCode = MySQLServerErrorCode.ER_ERROR_ON_MODIFYING_GTID_EXECUTED_TABLE;
+            return new CommandResponsePackets(new DatabaseFailurePacket(1, mySQLServerErrorCode.getErrorCode(), mySQLServerErrorCode.getSqlState(), sqlStatement.getTables().isSingleTable()
+                ? String.format(mySQLServerErrorCode.getErrorMessage(), sqlStatement.getTables().getSingleTableName()) : String.format(mySQLServerErrorCode.getErrorMessage(), "unknown_table")));
         }
         executeResponse = executeEngine.execute(routeResult);
         if (logicSchema instanceof ShardingSchema) {

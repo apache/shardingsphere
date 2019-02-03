@@ -22,7 +22,7 @@ import lombok.Getter;
 import lombok.extern.slf4j.Slf4j;
 import org.apache.shardingsphere.shardingproxy.backend.communication.jdbc.connection.BackendConnection;
 import org.apache.shardingsphere.shardingproxy.runtime.GlobalRegistry;
-import org.apache.shardingsphere.shardingproxy.transport.mysql.constant.ServerErrorCode;
+import org.apache.shardingsphere.shardingproxy.transport.mysql.constant.MySQLServerErrorCode;
 import org.apache.shardingsphere.shardingproxy.transport.mysql.packet.MySQLPacketPayload;
 import org.apache.shardingsphere.shardingproxy.transport.mysql.packet.command.CommandPacket;
 import org.apache.shardingsphere.shardingproxy.transport.mysql.packet.command.CommandPacketType;
@@ -65,6 +65,6 @@ public final class ComInitDbPacket implements CommandPacket {
             backendConnection.setCurrentSchema(schema);
             return Optional.of(new CommandResponsePackets(new OKPacket(getSequenceId() + 1)));
         }
-        return Optional.of(new CommandResponsePackets(new ErrPacket(getSequenceId() + 1, ServerErrorCode.ER_BAD_DB_ERROR, schema)));
+        return Optional.of(new CommandResponsePackets(new ErrPacket(getSequenceId() + 1, MySQLServerErrorCode.ER_BAD_DB_ERROR, schema)));
     }
 }

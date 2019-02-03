@@ -20,7 +20,7 @@ package org.apache.shardingsphere.shardingproxy.transport.mysql.packet.command.a
 import com.google.common.base.Optional;
 import lombok.Getter;
 import lombok.RequiredArgsConstructor;
-import org.apache.shardingsphere.shardingproxy.transport.mysql.constant.ServerErrorCode;
+import org.apache.shardingsphere.shardingproxy.transport.mysql.constant.MySQLServerErrorCode;
 import org.apache.shardingsphere.shardingproxy.transport.mysql.packet.MySQLPacketPayload;
 import org.apache.shardingsphere.shardingproxy.transport.mysql.packet.command.CommandPacket;
 import org.apache.shardingsphere.shardingproxy.transport.mysql.packet.command.CommandPacketType;
@@ -42,7 +42,7 @@ public final class UnsupportedCommandPacket implements CommandPacket {
     
     @Override
     public Optional<CommandResponsePackets> execute() {
-        return Optional.of(new CommandResponsePackets(new ErrPacket(getSequenceId() + 1, ServerErrorCode.ER_UNSUPPORTED_COMMAND, type)));
+        return Optional.of(new CommandResponsePackets(new ErrPacket(getSequenceId() + 1, MySQLServerErrorCode.ER_UNSUPPORTED_COMMAND, type)));
     }
     
     @Override

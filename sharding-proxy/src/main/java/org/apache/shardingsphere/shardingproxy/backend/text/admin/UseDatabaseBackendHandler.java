@@ -26,7 +26,7 @@ import org.apache.shardingsphere.shardingproxy.backend.text.TextProtocolBackendH
 import org.apache.shardingsphere.shardingproxy.runtime.GlobalRegistry;
 import org.apache.shardingsphere.shardingproxy.transport.common.packet.generic.DatabaseFailurePacket;
 import org.apache.shardingsphere.shardingproxy.transport.common.packet.generic.DatabaseSuccessPacket;
-import org.apache.shardingsphere.shardingproxy.transport.mysql.constant.ServerErrorCode;
+import org.apache.shardingsphere.shardingproxy.transport.mysql.constant.MySQLServerErrorCode;
 import org.apache.shardingsphere.shardingproxy.transport.common.packet.command.CommandResponsePackets;
 
 /**
@@ -46,8 +46,8 @@ public final class UseDatabaseBackendHandler implements TextProtocolBackendHandl
     public CommandResponsePackets execute() {
         String schema = SQLUtil.getExactlyValue(useStatement.getSchema());
         if (!GlobalRegistry.getInstance().schemaExists(schema)) {
-            ServerErrorCode serverErrorCode = ServerErrorCode.ER_BAD_DB_ERROR;
-            return new CommandResponsePackets(new DatabaseFailurePacket(1, serverErrorCode.getErrorCode(), serverErrorCode.getSqlState(), String.format(serverErrorCode.getErrorMessage(), schema)));
+            MySQLServerErrorCode mySQLServerErrorCode = MySQLServerErrorCode.ER_BAD_DB_ERROR;
+            return new CommandResponsePackets(new DatabaseFailurePacket(1, mySQLServerErrorCode.getErrorCode(), mySQLServerErrorCode.getSqlState(), String.format(mySQLServerErrorCode.getErrorMessage(), schema)));
         }
         backendConnection.setCurrentSchema(schema);
         return new CommandResponsePackets(new DatabaseSuccessPacket(1, 0L, 0L));

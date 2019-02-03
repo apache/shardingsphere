@@ -23,7 +23,7 @@ import org.apache.shardingsphere.core.constant.ShardingConstant;
 import org.apache.shardingsphere.shardingproxy.backend.communication.jdbc.connection.BackendConnection;
 import org.apache.shardingsphere.shardingproxy.runtime.GlobalRegistry;
 import org.apache.shardingsphere.shardingproxy.runtime.schema.LogicSchema;
-import org.apache.shardingsphere.shardingproxy.transport.mysql.constant.ServerErrorCode;
+import org.apache.shardingsphere.shardingproxy.transport.mysql.constant.MySQLServerErrorCode;
 import org.apache.shardingsphere.shardingproxy.transport.mysql.packet.MySQLPacketPayload;
 import org.apache.shardingsphere.shardingproxy.transport.mysql.packet.command.CommandPacketType;
 import org.apache.shardingsphere.shardingproxy.transport.common.packet.command.CommandResponsePackets;
@@ -85,9 +85,9 @@ public final class ComInitDbPacketTest {
         assertTrue(actual.isPresent());
         assertThat(actual.get().getPackets().size(), is(1));
         assertThat(actual.get().getHeadPacket().getSequenceId(), is(2));
-        assertThat(((ErrPacket) actual.get().getHeadPacket()).getErrorCode(), is(ServerErrorCode.ER_BAD_DB_ERROR.getErrorCode()));
-        assertThat(((ErrPacket) actual.get().getHeadPacket()).getSqlState(), is(ServerErrorCode.ER_BAD_DB_ERROR.getSqlState()));
-        assertThat(((ErrPacket) actual.get().getHeadPacket()).getErrorMessage(), is(String.format(ServerErrorCode.ER_BAD_DB_ERROR.getErrorMessage(), invalidSchema)));
+        assertThat(((ErrPacket) actual.get().getHeadPacket()).getErrorCode(), is(MySQLServerErrorCode.ER_BAD_DB_ERROR.getErrorCode()));
+        assertThat(((ErrPacket) actual.get().getHeadPacket()).getSqlState(), is(MySQLServerErrorCode.ER_BAD_DB_ERROR.getSqlState()));
+        assertThat(((ErrPacket) actual.get().getHeadPacket()).getErrorMessage(), is(String.format(MySQLServerErrorCode.ER_BAD_DB_ERROR.getErrorMessage(), invalidSchema)));
     }
     
     @Test

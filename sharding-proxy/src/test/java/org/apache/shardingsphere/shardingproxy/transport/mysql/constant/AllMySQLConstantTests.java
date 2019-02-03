@@ -26,7 +26,7 @@ import org.junit.runners.Suite.SuiteClasses;
         MySQLCapabilityFlagTest.class,
         MySQLColumnTypeTest.class,
         MySQLNewParametersBoundFlagTest.class,
-        ServerErrorCodeTest.class
+        MySQLServerErrorCodeTest.class
 })
 public final class AllMySQLConstantTests {
 }
