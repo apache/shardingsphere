@@ -22,6 +22,7 @@ import io.netty.buffer.ByteBuf;
 import io.netty.channel.ChannelHandlerContext;
 import lombok.RequiredArgsConstructor;
 import org.apache.shardingsphere.core.constant.properties.ShardingPropertiesConstant;
+import org.apache.shardingsphere.core.spi.hook.SPIRootInvokeHook;
 import org.apache.shardingsphere.shardingproxy.backend.communication.jdbc.connection.BackendConnection;
 import org.apache.shardingsphere.shardingproxy.frontend.common.FrontendHandler;
 import org.apache.shardingsphere.shardingproxy.runtime.GlobalRegistry;
@@ -39,8 +40,7 @@ import org.apache.shardingsphere.shardingproxy.transport.postgresql.packet.comma
 import org.apache.shardingsphere.shardingproxy.transport.postgresql.packet.generic.PostgreSQLCommandCompletePacket;
 import org.apache.shardingsphere.shardingproxy.transport.postgresql.packet.generic.PostgreSQLErrorResponsePacket;
 import org.apache.shardingsphere.shardingproxy.transport.postgresql.packet.generic.PostgreSQLReadyForQueryPacket;
-import org.apache.shardingsphere.spi.hook.root.RootInvokeHook;
-import org.apache.shardingsphere.spi.hook.root.SPIRootInvokeHook;
+import org.apache.shardingsphere.spi.hook.RootInvokeHook;
 
 import java.sql.SQLException;
 import java.util.ArrayList;

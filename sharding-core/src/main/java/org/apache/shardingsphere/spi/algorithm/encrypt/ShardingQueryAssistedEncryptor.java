@@ -15,26 +15,20 @@
  * limitations under the License.
  */
 
-package org.apache.shardingsphere.api.algorithm.masterslave;
-
-import org.apache.shardingsphere.spi.algorithm.BaseAlgorithm;
-
-import java.util.List;
+package org.apache.shardingsphere.spi.algorithm.encrypt;
 
 /**
- * Master-slave database load-balance algorithm.
+ * Sharding query assisted encryptor.
  *
- * @author zhangliang
+ * @author panjuan
  */
-public interface MasterSlaveLoadBalanceAlgorithm extends BaseAlgorithm {
+public interface ShardingQueryAssistedEncryptor extends ShardingEncryptor {
     
     /**
-     * Get data source.
+     * Query assisted encode.
      * 
-     * @param name master-slave logic data source name
-     * @param masterDataSourceName name of master data sources
-     * @param slaveDataSourceNames names of slave data sources
-     * @return name of selected data source
+     * @param plaintext plaintext
+     * @return ciphertext
      */
-    String getDataSource(String name, String masterDataSourceName, List<String> slaveDataSourceNames);
+    String queryAssistedEncode(String plaintext);
 }

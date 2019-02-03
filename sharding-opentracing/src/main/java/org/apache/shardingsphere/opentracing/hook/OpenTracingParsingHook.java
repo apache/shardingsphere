@@ -23,7 +23,7 @@ import org.apache.shardingsphere.core.metadata.table.ShardingTableMetaData;
 import org.apache.shardingsphere.core.parsing.parser.sql.SQLStatement;
 import org.apache.shardingsphere.opentracing.ShardingTracer;
 import org.apache.shardingsphere.opentracing.constant.ShardingTags;
-import org.apache.shardingsphere.spi.hook.parsing.ParsingHook;
+import org.apache.shardingsphere.spi.hook.ParsingHook;
 
 /**
  * Open tracing parsing hook.

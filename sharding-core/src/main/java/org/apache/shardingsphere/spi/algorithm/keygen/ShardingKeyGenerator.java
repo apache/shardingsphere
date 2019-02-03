@@ -15,7 +15,7 @@
  * limitations under the License.
  */
 
-package org.apache.shardingsphere.core.keygen;
+package org.apache.shardingsphere.spi.algorithm.keygen;
 
 import org.apache.shardingsphere.spi.algorithm.BaseAlgorithm;
 

@@ -25,7 +25,7 @@ import org.apache.shardingsphere.core.metadata.datasource.DataSourceMetaData;
 import org.apache.shardingsphere.core.routing.RouteUnit;
 import org.apache.shardingsphere.opentracing.ShardingTracer;
 import org.apache.shardingsphere.opentracing.constant.ShardingTags;
-import org.apache.shardingsphere.spi.hook.executor.SQLExecutionHook;
+import org.apache.shardingsphere.spi.hook.SQLExecutionHook;
 
 import java.util.LinkedList;
 import java.util.List;

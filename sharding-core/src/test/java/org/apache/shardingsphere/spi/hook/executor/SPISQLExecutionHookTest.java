@@ -17,6 +17,7 @@
 
 package org.apache.shardingsphere.spi.hook.executor;
 
+import org.apache.shardingsphere.core.spi.hook.SPISQLExecutionHook;
 import org.apache.shardingsphere.spi.fixture.SQLExecutionHookFixture;
 import org.junit.Before;
 import org.junit.Test;

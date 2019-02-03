@@ -15,11 +15,12 @@
  * limitations under the License.
  */
 
-package org.apache.shardingsphere.spi.hook.executor;
+package org.apache.shardingsphere.core.spi.hook;
 
 import org.apache.shardingsphere.core.metadata.datasource.DataSourceMetaData;
 import org.apache.shardingsphere.core.routing.RouteUnit;
-import org.apache.shardingsphere.spi.NewInstanceServiceLoader;
+import org.apache.shardingsphere.core.spi.NewInstanceServiceLoader;
+import org.apache.shardingsphere.spi.hook.SQLExecutionHook;
 
 import java.util.Collection;
 import java.util.Map;

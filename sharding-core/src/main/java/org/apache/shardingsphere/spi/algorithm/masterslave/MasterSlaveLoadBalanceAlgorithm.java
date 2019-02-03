@@ -15,24 +15,26 @@
  * limitations under the License.
  */
 
-package org.apache.shardingsphere.spi.hook.root;
+package org.apache.shardingsphere.spi.algorithm.masterslave;
+
+import org.apache.shardingsphere.spi.algorithm.BaseAlgorithm;
+
+import java.util.List;
 
 /**
- * Root invoke hook.
+ * Master-slave database load-balance algorithm.
  *
  * @author zhangliang
  */
-public interface RootInvokeHook {
+public interface MasterSlaveLoadBalanceAlgorithm extends BaseAlgorithm {
     
     /**
-     * Handle when root invoke started.
-     */
-    void start();
-    
-    /**
-     * Handle when root invoke finished.
+     * Get data source.
      * 
-     * @param connectionCount connection count
+     * @param name master-slave logic data source name
+     * @param masterDataSourceName name of master data sources
+     * @param slaveDataSourceNames names of slave data sources
+     * @return name of selected data source
      */
-    void finish(int connectionCount);
+    String getDataSource(String name, String masterDataSourceName, List<String> slaveDataSourceNames);
 }

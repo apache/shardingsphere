@@ -22,6 +22,7 @@ import io.netty.buffer.ByteBuf;
 import io.netty.channel.ChannelHandlerContext;
 import lombok.RequiredArgsConstructor;
 import org.apache.shardingsphere.core.constant.properties.ShardingPropertiesConstant;
+import org.apache.shardingsphere.core.spi.hook.SPIRootInvokeHook;
 import org.apache.shardingsphere.shardingproxy.backend.communication.jdbc.connection.BackendConnection;
 import org.apache.shardingsphere.shardingproxy.frontend.common.FrontendHandler;
 import org.apache.shardingsphere.shardingproxy.runtime.GlobalRegistry;
@@ -41,8 +42,7 @@ import org.apache.shardingsphere.shardingproxy.transport.mysql.packet.command.qu
 import org.apache.shardingsphere.shardingproxy.transport.mysql.packet.generic.MySQLEofPacket;
 import org.apache.shardingsphere.shardingproxy.transport.mysql.packet.generic.MySQLErrPacket;
 import org.apache.shardingsphere.shardingproxy.transport.mysql.packet.generic.MySQLOKPacket;
-import org.apache.shardingsphere.spi.hook.root.RootInvokeHook;
-import org.apache.shardingsphere.spi.hook.root.SPIRootInvokeHook;
+import org.apache.shardingsphere.spi.hook.RootInvokeHook;
 
 import java.sql.SQLException;
 

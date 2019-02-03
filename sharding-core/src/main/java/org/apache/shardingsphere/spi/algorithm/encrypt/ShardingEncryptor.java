@@ -15,37 +15,30 @@
  * limitations under the License.
  */
 
-package org.apache.shardingsphere.spi.hook.parsing;
+package org.apache.shardingsphere.spi.algorithm.encrypt;
 
-import org.apache.shardingsphere.core.metadata.table.ShardingTableMetaData;
-import org.apache.shardingsphere.core.parsing.parser.sql.SQLStatement;
+import org.apache.shardingsphere.spi.algorithm.BaseAlgorithm;
 
 /**
- * Parsing hook.
+ * Sharding encryptor.
  *
- * @author zhangliang
+ * @author panjuan
  */
-public interface ParsingHook {
+public interface ShardingEncryptor extends BaseAlgorithm {
     
     /**
-     * Handle when parse started.
-     *
-     * @param sql SQL to be parsed
-     */
-    void start(String sql);
-    
-    /**
-     * Handle when parse finished success.
-     *
-     * @param sqlStatement sql statement
-     * @param shardingTableMetaData sharding table meta data
-     */
-    void finishSuccess(SQLStatement sqlStatement, ShardingTableMetaData shardingTableMetaData);
-    
-    /**
-     * Handle when parse finished failure.
+     * Encode.
      * 
-     * @param cause failure cause
+     * @param plaintext plaintext
+     * @return ciphertext
      */
-    void finishFailure(Exception cause);
+    String encode(String plaintext);
+    
+    /**
+     * Decode.
+     * 
+     * @param ciphertext ciphertext
+     * @return plaintext
+     */
+    String decode(String ciphertext);
 }

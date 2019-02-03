@@ -17,6 +17,7 @@
 
 package org.apache.shardingsphere.spi.hook.parsing;
 
+import org.apache.shardingsphere.core.spi.hook.SPIParsingHook;
 import org.apache.shardingsphere.spi.fixture.ParsingHookFixture;
 import org.junit.Before;
 import org.junit.Test;

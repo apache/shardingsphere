@@ -15,7 +15,7 @@
  * limitations under the License.
  */
 
-package org.apache.shardingsphere.spi;
+package org.apache.shardingsphere.core.spi;
 
 import lombok.AccessLevel;
 import lombok.NoArgsConstructor;

@@ -21,8 +21,8 @@ import com.google.common.base.Preconditions;
 import lombok.Getter;
 import lombok.Setter;
 import lombok.SneakyThrows;
-import org.apache.shardingsphere.core.keygen.ShardingKeyGenerator;
 import org.apache.shardingsphere.core.keygen.TimeService;
+import org.apache.shardingsphere.spi.algorithm.keygen.ShardingKeyGenerator;
 
 import java.util.Calendar;
 import java.util.Properties;

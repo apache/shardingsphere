@@ -17,6 +17,7 @@
 
 package org.apache.shardingsphere.spi.hook.root;
 
+import org.apache.shardingsphere.core.spi.hook.SPIRootInvokeHook;
 import org.apache.shardingsphere.spi.fixture.RootInvokeHookFixture;
 import org.junit.Before;
 import org.junit.Test;

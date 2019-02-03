@@ -15,36 +15,24 @@
  * limitations under the License.
  */
 
-package org.apache.shardingsphere.spi.hook.rewrite;
-
-import org.apache.shardingsphere.core.routing.SQLUnit;
-import org.apache.shardingsphere.core.routing.type.TableUnit;
+package org.apache.shardingsphere.spi.hook;
 
 /**
- * Rewrite Hook.
+ * Root invoke hook.
  *
- * @author yangyi
+ * @author zhangliang
  */
-public interface RewriteHook {
+public interface RootInvokeHook {
     
     /**
-     * Handle when rewrite started.
-     *
-     * @param tableUnit table unit
+     * Handle when root invoke started.
      */
-    void start(TableUnit tableUnit);
+    void start();
     
     /**
-     * Handle when rewrite finished success.
-     *
-     * @param sqlUnit sql unit
+     * Handle when root invoke finished.
+     * 
+     * @param connectionCount connection count
      */
-    void finishSuccess(SQLUnit sqlUnit);
-    
-    /**
-     * Handle when rewrite finished failure.
-     *
-     * @param cause failure cause
-     */
-    void finishFailure(Exception cause);
+    void finish(int connectionCount);
 }

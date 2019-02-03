@@ -26,15 +26,15 @@ import lombok.ToString;
 import org.apache.shardingsphere.api.config.encryptor.EncryptorConfiguration;
 import org.apache.shardingsphere.api.config.sharding.KeyGeneratorConfiguration;
 import org.apache.shardingsphere.api.config.sharding.TableRuleConfiguration;
-import org.apache.shardingsphere.core.encrypt.ShardingEncryptor;
 import org.apache.shardingsphere.core.encrypt.ShardingEncryptorFactory;
 import org.apache.shardingsphere.core.exception.ShardingException;
-import org.apache.shardingsphere.core.keygen.ShardingKeyGenerator;
 import org.apache.shardingsphere.core.keygen.ShardingKeyGeneratorFactory;
 import org.apache.shardingsphere.core.routing.strategy.ShardingEncryptorStrategy;
 import org.apache.shardingsphere.core.routing.strategy.ShardingStrategy;
 import org.apache.shardingsphere.core.routing.strategy.ShardingStrategyFactory;
 import org.apache.shardingsphere.core.util.InlineExpressionParser;
+import org.apache.shardingsphere.spi.algorithm.encrypt.ShardingEncryptor;
+import org.apache.shardingsphere.spi.algorithm.keygen.ShardingKeyGenerator;
 
 import java.util.Collection;
 import java.util.Collections;

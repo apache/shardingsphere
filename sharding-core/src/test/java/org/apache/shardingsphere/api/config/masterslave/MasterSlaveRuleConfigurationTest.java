@@ -17,8 +17,8 @@
 
 package org.apache.shardingsphere.api.config.masterslave;
 
-import org.apache.shardingsphere.api.algorithm.masterslave.MasterSlaveLoadBalanceAlgorithm;
 import org.apache.shardingsphere.api.algorithm.masterslave.MasterSlaveLoadBalanceAlgorithmFactory;
+import org.apache.shardingsphere.spi.algorithm.masterslave.MasterSlaveLoadBalanceAlgorithm;
 import org.hamcrest.CoreMatchers;
 import org.junit.Test;
 

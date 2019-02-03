@@ -29,13 +29,13 @@ import org.apache.shardingsphere.api.config.sharding.TableRuleConfiguration;
 import org.apache.shardingsphere.api.config.sharding.strategy.ShardingStrategyConfiguration;
 import org.apache.shardingsphere.core.exception.ShardingConfigurationException;
 import org.apache.shardingsphere.core.exception.ShardingException;
-import org.apache.shardingsphere.core.keygen.ShardingKeyGenerator;
 import org.apache.shardingsphere.core.keygen.ShardingKeyGeneratorFactory;
 import org.apache.shardingsphere.core.parsing.parser.context.condition.Column;
 import org.apache.shardingsphere.core.routing.strategy.ShardingStrategy;
 import org.apache.shardingsphere.core.routing.strategy.ShardingStrategyFactory;
 import org.apache.shardingsphere.core.routing.strategy.hint.HintShardingStrategy;
 import org.apache.shardingsphere.core.routing.strategy.none.NoneShardingStrategy;
+import org.apache.shardingsphere.spi.algorithm.keygen.ShardingKeyGenerator;
 
 import java.util.ArrayList;
 import java.util.Collection;

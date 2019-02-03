@@ -15,30 +15,36 @@
  * limitations under the License.
  */
 
-package org.apache.shardingsphere.core.encrypt;
+package org.apache.shardingsphere.spi.hook;
 
-import org.apache.shardingsphere.spi.algorithm.BaseAlgorithm;
+import org.apache.shardingsphere.core.routing.SQLUnit;
+import org.apache.shardingsphere.core.routing.type.TableUnit;
 
 /**
- * Sharding encryptor.
+ * Rewrite Hook.
  *
- * @author panjuan
+ * @author yangyi
  */
-public interface ShardingEncryptor extends BaseAlgorithm {
+public interface RewriteHook {
     
     /**
-     * Encode.
-     * 
-     * @param plaintext plaintext
-     * @return ciphertext
+     * Handle when rewrite started.
+     *
+     * @param tableUnit table unit
      */
-    String encode(String plaintext);
+    void start(TableUnit tableUnit);
     
     /**
-     * Decode.
-     * 
-     * @param ciphertext ciphertext
-     * @return plaintext
+     * Handle when rewrite finished success.
+     *
+     * @param sqlUnit sql unit
      */
-    String decode(String ciphertext);
+    void finishSuccess(SQLUnit sqlUnit);
+    
+    /**
+     * Handle when rewrite finished failure.
+     *
+     * @param cause failure cause
+     */
+    void finishFailure(Exception cause);
 }

@@ -15,9 +15,10 @@
  * limitations under the License.
  */
 
-package org.apache.shardingsphere.spi.hook.root;
+package org.apache.shardingsphere.core.spi.hook;
 
-import org.apache.shardingsphere.spi.NewInstanceServiceLoader;
+import org.apache.shardingsphere.core.spi.NewInstanceServiceLoader;
+import org.apache.shardingsphere.spi.hook.RootInvokeHook;
 
 import java.util.Collection;
 

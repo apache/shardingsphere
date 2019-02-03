@@ -15,11 +15,12 @@
  * limitations under the License.
  */
 
-package org.apache.shardingsphere.spi.hook.rewrite;
+package org.apache.shardingsphere.core.spi.hook;
 
 import org.apache.shardingsphere.core.routing.SQLUnit;
 import org.apache.shardingsphere.core.routing.type.TableUnit;
-import org.apache.shardingsphere.spi.NewInstanceServiceLoader;
+import org.apache.shardingsphere.core.spi.NewInstanceServiceLoader;
+import org.apache.shardingsphere.spi.hook.RewriteHook;
 
 import java.util.Collection;
 

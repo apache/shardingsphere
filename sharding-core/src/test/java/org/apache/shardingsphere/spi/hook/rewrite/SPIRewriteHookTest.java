@@ -17,6 +17,7 @@
 
 package org.apache.shardingsphere.spi.hook.rewrite;
 
+import org.apache.shardingsphere.core.spi.hook.SPIRewriteHook;
 import org.apache.shardingsphere.spi.fixture.RewriteHookFixture;
 import org.junit.Before;
 import org.junit.Test;
