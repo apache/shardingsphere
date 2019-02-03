@@ -17,10 +17,10 @@
 
 package org.apache.shardingsphere.shardingjdbc.jdbc.core.datasource;
 
-import org.apache.shardingsphere.api.algorithm.masterslave.MasterSlaveLoadBalanceAlgorithmFactory;
 import org.apache.shardingsphere.api.config.masterslave.MasterSlaveRuleConfiguration;
 import org.apache.shardingsphere.core.constant.DatabaseType;
 import org.apache.shardingsphere.core.hint.HintManagerHolder;
+import org.apache.shardingsphere.core.masterslave.MasterSlaveLoadBalanceAlgorithmFactory;
 import org.apache.shardingsphere.core.routing.router.masterslave.MasterVisitedManager;
 import org.apache.shardingsphere.shardingjdbc.api.MasterSlaveDataSourceFactory;
 import org.apache.shardingsphere.shardingjdbc.fixture.TestDataSource;

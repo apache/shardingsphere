@@ -17,7 +17,7 @@
 
 package org.apache.shardingsphere.api.algorithm.masterslave;
 
-import org.apache.shardingsphere.api.algorithm.masterslave.impl.RandomMasterSlaveLoadBalanceAlgorithm;
+import org.apache.shardingsphere.core.masterslave.impl.RandomMasterSlaveLoadBalanceAlgorithm;
 import org.junit.Test;
 
 import java.util.Arrays;

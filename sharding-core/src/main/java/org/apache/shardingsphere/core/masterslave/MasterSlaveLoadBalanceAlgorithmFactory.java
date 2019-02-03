@@ -15,7 +15,7 @@
  * limitations under the License.
  */
 
-package org.apache.shardingsphere.api.algorithm.masterslave;
+package org.apache.shardingsphere.core.masterslave;
 
 import org.apache.shardingsphere.core.spi.NewInstanceServiceLoader;
 import org.apache.shardingsphere.core.spi.algorithm.BaseAlgorithmFactory;

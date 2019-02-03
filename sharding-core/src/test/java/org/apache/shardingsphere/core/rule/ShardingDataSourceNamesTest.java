@@ -18,9 +18,9 @@
 package org.apache.shardingsphere.core.rule;
 
 import com.google.common.collect.Sets;
-import org.apache.shardingsphere.api.algorithm.masterslave.MasterSlaveLoadBalanceAlgorithmFactory;
 import org.apache.shardingsphere.api.config.masterslave.MasterSlaveRuleConfiguration;
 import org.apache.shardingsphere.api.config.sharding.ShardingRuleConfiguration;
+import org.apache.shardingsphere.core.masterslave.MasterSlaveLoadBalanceAlgorithmFactory;
 import org.hamcrest.CoreMatchers;
 import org.junit.Test;
 
