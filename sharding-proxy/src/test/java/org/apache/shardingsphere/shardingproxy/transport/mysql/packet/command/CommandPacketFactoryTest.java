@@ -25,7 +25,7 @@ import org.apache.shardingsphere.core.metadata.ShardingMetaData;
 import org.apache.shardingsphere.shardingproxy.backend.communication.jdbc.connection.BackendConnection;
 import org.apache.shardingsphere.shardingproxy.runtime.GlobalRegistry;
 import org.apache.shardingsphere.shardingproxy.runtime.schema.ShardingSchema;
-import org.apache.shardingsphere.shardingproxy.transport.mysql.constant.NewParametersBoundFlag;
+import org.apache.shardingsphere.shardingproxy.transport.mysql.constant.MySQLNewParametersBoundFlag;
 import org.apache.shardingsphere.shardingproxy.transport.mysql.packet.MySQLPacketPayload;
 import org.apache.shardingsphere.shardingproxy.transport.mysql.packet.command.admin.UnsupportedCommandPacket;
 import org.apache.shardingsphere.shardingproxy.transport.mysql.packet.command.admin.initdb.ComInitDbPacket;
@@ -123,7 +123,7 @@ public final class CommandPacketFactoryTest {
     
     @Test
     public void assertNewInstanceWithComStmtExecutePacket() throws SQLException {
-        when(payload.readInt1()).thenReturn(CommandPacketType.COM_STMT_EXECUTE.getValue(), NewParametersBoundFlag.PARAMETER_TYPE_EXIST.getValue());
+        when(payload.readInt1()).thenReturn(CommandPacketType.COM_STMT_EXECUTE.getValue(), MySQLNewParametersBoundFlag.PARAMETER_TYPE_EXIST.getValue());
         when(payload.readInt4()).thenReturn(1);
         BinaryStatementRegistry.getInstance().register("SELECT * FROM t_order", 1);
         assertThat(CommandPacketFactory.newInstance(1, payload, backendConnection), instanceOf(ComStmtExecutePacket.class));

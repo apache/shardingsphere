@@ -28,7 +28,7 @@ import org.apache.shardingsphere.shardingproxy.backend.communication.jdbc.connec
 import org.apache.shardingsphere.shardingproxy.runtime.GlobalRegistry;
 import org.apache.shardingsphere.shardingproxy.transport.common.packet.DatabasePacket;
 import org.apache.shardingsphere.shardingproxy.transport.mysql.constant.MySQLColumnType;
-import org.apache.shardingsphere.shardingproxy.transport.mysql.constant.NewParametersBoundFlag;
+import org.apache.shardingsphere.shardingproxy.transport.mysql.constant.MySQLNewParametersBoundFlag;
 import org.apache.shardingsphere.shardingproxy.transport.mysql.constant.ServerErrorCode;
 import org.apache.shardingsphere.shardingproxy.transport.mysql.packet.MySQLPacketPayload;
 import org.apache.shardingsphere.shardingproxy.transport.common.packet.command.CommandResponsePackets;
@@ -68,7 +68,7 @@ public final class ComStmtExecutePacket implements QueryCommandPacket {
     
     private final NullBitmap nullBitmap;
     
-    private final NewParametersBoundFlag newParametersBoundFlag;
+    private final MySQLNewParametersBoundFlag mySQLNewParametersBoundFlag;
     
     private final List<Object> parameters;
     
@@ -85,8 +85,8 @@ public final class ComStmtExecutePacket implements QueryCommandPacket {
         for (int i = 0; i < nullBitmap.getNullBitmap().length; i++) {
             nullBitmap.getNullBitmap()[i] = payload.readInt1();
         }
-        newParametersBoundFlag = NewParametersBoundFlag.valueOf(payload.readInt1());
-        if (NewParametersBoundFlag.PARAMETER_TYPE_EXIST == newParametersBoundFlag) {
+        mySQLNewParametersBoundFlag = MySQLNewParametersBoundFlag.valueOf(payload.readInt1());
+        if (MySQLNewParametersBoundFlag.PARAMETER_TYPE_EXIST == mySQLNewParametersBoundFlag) {
             binaryStatement.setParameterTypes(getParameterTypes(payload, parametersCount));
         }
         parameters = getParameters(payload, parametersCount);
@@ -121,7 +121,7 @@ public final class ComStmtExecutePacket implements QueryCommandPacket {
         for (int each : nullBitmap.getNullBitmap()) {
             payload.writeInt1(each);
         }
-        payload.writeInt1(newParametersBoundFlag.getValue());
+        payload.writeInt1(mySQLNewParametersBoundFlag.getValue());
         int count = 0;
         for (Object each : parameters) {
             BinaryStatementParameterType parameterType = binaryStatement.getParameterTypes().get(count);

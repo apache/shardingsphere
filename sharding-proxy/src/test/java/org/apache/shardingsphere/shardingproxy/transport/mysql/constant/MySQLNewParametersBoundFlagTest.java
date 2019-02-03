@@ -22,15 +22,15 @@ import org.junit.Test;
 import static org.hamcrest.CoreMatchers.is;
 import static org.junit.Assert.assertThat;
 
-public final class NewParametersBoundFlagTest {
+public final class MySQLNewParametersBoundFlagTest {
     
     @Test
     public void assertValueOf() {
-        assertThat(NewParametersBoundFlag.valueOf(NewParametersBoundFlag.PARAMETER_TYPE_EXIST.getValue()), is(NewParametersBoundFlag.PARAMETER_TYPE_EXIST));
+        assertThat(MySQLNewParametersBoundFlag.valueOf(MySQLNewParametersBoundFlag.PARAMETER_TYPE_EXIST.getValue()), is(MySQLNewParametersBoundFlag.PARAMETER_TYPE_EXIST));
     }
     
     @Test(expected = IllegalArgumentException.class)
     public void assertValueOfWithIllegalArgument() {
-        NewParametersBoundFlag.valueOf(-1);
+        MySQLNewParametersBoundFlag.valueOf(-1);
     }
 }

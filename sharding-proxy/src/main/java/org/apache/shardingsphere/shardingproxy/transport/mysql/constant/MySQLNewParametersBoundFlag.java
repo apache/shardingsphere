@@ -29,7 +29,7 @@ import lombok.RequiredArgsConstructor;
  */
 @RequiredArgsConstructor
 @Getter
-public enum NewParametersBoundFlag {
+public enum MySQLNewParametersBoundFlag {
     
     PARAMETER_TYPE_EXIST(1),
     
@@ -43,8 +43,8 @@ public enum NewParametersBoundFlag {
      * @param value value
      * @return new parameters bound flag
      */
-    public static NewParametersBoundFlag valueOf(final int value) {
-        for (NewParametersBoundFlag each : NewParametersBoundFlag.values()) {
+    public static MySQLNewParametersBoundFlag valueOf(final int value) {
+        for (MySQLNewParametersBoundFlag each : MySQLNewParametersBoundFlag.values()) {
             if (value == each.value) {
                 return each;
             }
