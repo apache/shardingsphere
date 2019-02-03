@@ -35,7 +35,7 @@ import org.apache.shardingsphere.shardingproxy.transport.mysql.packet.generic.My
 import java.sql.SQLException;
 
 /**
- * COM_FIELD_LIST command packet.
+ * MySQL COM_FIELD_LIST command packet.
  *
  * @author zhangliang
  * @author wangkai

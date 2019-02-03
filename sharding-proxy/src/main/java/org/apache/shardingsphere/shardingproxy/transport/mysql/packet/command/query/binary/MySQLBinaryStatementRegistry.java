@@ -25,7 +25,7 @@ import java.util.concurrent.ConcurrentMap;
 import java.util.concurrent.atomic.AtomicInteger;
 
 /**
- * Binary prepared statement registry.
+ * MySQL binary prepared statement registry.
  *
  * @author zhangliang
  * @author zhangyonglun

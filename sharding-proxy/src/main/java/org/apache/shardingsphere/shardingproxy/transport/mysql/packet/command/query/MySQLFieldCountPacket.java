@@ -23,7 +23,7 @@ import org.apache.shardingsphere.shardingproxy.transport.mysql.packet.MySQLPacke
 import org.apache.shardingsphere.shardingproxy.transport.mysql.packet.MySQLPacketPayload;
 
 /**
- * COM_QUERY response field count packet.
+ * MySQL COM_QUERY response field count packet.
  * 
  * @see <a href="https://dev.mysql.com/doc/internals/en/com-query-response.html">COM_QUERY field count</a>
  *

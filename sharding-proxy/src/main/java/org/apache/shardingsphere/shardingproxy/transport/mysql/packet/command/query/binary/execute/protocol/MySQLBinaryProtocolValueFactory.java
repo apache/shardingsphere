@@ -26,7 +26,7 @@ import java.util.HashMap;
 import java.util.Map;
 
 /**
- * Binary protocol value factory.
+ * MySQL binary protocol value factory.
  *
  * @author zhangliang
  */

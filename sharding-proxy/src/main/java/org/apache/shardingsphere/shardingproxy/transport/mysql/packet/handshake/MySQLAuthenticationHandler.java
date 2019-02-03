@@ -26,7 +26,7 @@ import org.apache.shardingsphere.shardingproxy.runtime.GlobalRegistry;
 import java.util.Arrays;
 
 /**
- * Authentication handler.
+ * MySQL authentication handler.
  *
  * @author panjuan
  */

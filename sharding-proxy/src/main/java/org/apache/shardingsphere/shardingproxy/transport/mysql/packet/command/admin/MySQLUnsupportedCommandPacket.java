@@ -28,7 +28,7 @@ import org.apache.shardingsphere.shardingproxy.transport.common.packet.command.C
 import org.apache.shardingsphere.shardingproxy.transport.mysql.packet.generic.MySQLErrPacket;
 
 /**
- * Unsupported command packet.
+ * MySQL unsupported command packet.
  *
  * @author zhangliang
  */

@@ -31,7 +31,7 @@ import org.apache.shardingsphere.shardingproxy.transport.mysql.packet.generic.My
 import org.apache.shardingsphere.shardingproxy.transport.mysql.packet.generic.MySQLOKPacket;
 
 /**
- * COM_INIT_DB command packet.
+ * MySQL COM_INIT_DB command packet.
  *
  * @author zhangliang
  * @see <a href="https://dev.mysql.com/doc/internals/en/com-init-db.html#packet-COM_INIT_DB">COM_INIT_DB</a>

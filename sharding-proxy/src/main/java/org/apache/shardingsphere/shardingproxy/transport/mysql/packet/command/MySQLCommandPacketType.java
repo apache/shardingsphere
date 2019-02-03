@@ -21,7 +21,7 @@ import lombok.Getter;
 import lombok.RequiredArgsConstructor;
 
 /**
- * Command packet type.
+ * MySQL command packet type.
  *
  * @author zhangliang
  */

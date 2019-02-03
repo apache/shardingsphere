@@ -22,7 +22,7 @@ import lombok.RequiredArgsConstructor;
 import org.apache.shardingsphere.shardingproxy.transport.mysql.constant.MySQLColumnType;
 
 /**
- * Binary prepared statement parameter type.
+ * MySQL binary prepared statement parameter type.
  *
  * @author zhangyonglun
  */

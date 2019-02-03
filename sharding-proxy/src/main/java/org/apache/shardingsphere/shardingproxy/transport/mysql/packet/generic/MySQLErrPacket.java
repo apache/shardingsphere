@@ -27,7 +27,7 @@ import org.apache.shardingsphere.shardingproxy.transport.mysql.packet.MySQLPacke
 import java.sql.SQLException;
 
 /**
- * ERR packet protocol.
+ * MySQL ERR packet protocol.
  * 
  * @see <a href="https://dev.mysql.com/doc/internals/en/packet-ERR_Packet.html">ERR Packet</a>
  * 

@@ -21,7 +21,7 @@ import com.google.common.primitives.Bytes;
 import lombok.Getter;
 
 /**
- * Auth plugin data.
+ * MySQL auth plugin data.
  * 
  * <p>
  *     The auth-plugin-data is the concatenation of strings auth-plugin-data-part-1 and auth-plugin-data-part-2.

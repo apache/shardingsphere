@@ -24,7 +24,7 @@ import org.apache.shardingsphere.shardingproxy.transport.mysql.packet.MySQLPacke
 import java.sql.SQLException;
 
 /**
- * Command packet.
+ * MySQL command packet.
  *
  * @author zhangliang
  * @author wangkai

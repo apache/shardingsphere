@@ -39,7 +39,7 @@ import org.apache.shardingsphere.shardingproxy.transport.mysql.packet.command.qu
 import org.apache.shardingsphere.shardingproxy.transport.mysql.packet.generic.MySQLEofPacket;
 
 /**
- * COM_STMT_PREPARE command packet.
+ * MySQL COM_STMT_PREPARE command packet.
  * 
  * @see <a href="https://dev.mysql.com/doc/internals/en/com-stmt-prepare.html">COM_STMT_PREPARE</a>
  *

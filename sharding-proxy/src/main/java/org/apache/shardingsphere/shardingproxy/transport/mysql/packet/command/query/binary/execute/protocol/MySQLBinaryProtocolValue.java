@@ -22,7 +22,7 @@ import org.apache.shardingsphere.shardingproxy.transport.mysql.packet.MySQLPacke
 import java.sql.SQLException;
 
 /**
- * Binary protocol value.
+ * MySQL binary protocol value.
  *
  * @see <a href="https://dev.mysql.com/doc/internals/en/binary-protocol-value.html">Binary Protocol Value</a>
  *

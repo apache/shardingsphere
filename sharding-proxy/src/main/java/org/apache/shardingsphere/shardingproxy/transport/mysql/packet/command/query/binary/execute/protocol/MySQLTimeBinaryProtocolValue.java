@@ -24,7 +24,7 @@ import java.sql.Timestamp;
 import java.util.Calendar;
 
 /**
- * Binary protocol value for time.
+ * MySQL binary protocol value for time.
  * 
  * @author zhangyonglun
  * @author zhangliang

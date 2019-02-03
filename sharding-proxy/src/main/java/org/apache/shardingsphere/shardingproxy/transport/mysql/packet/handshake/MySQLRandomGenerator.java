@@ -24,7 +24,7 @@ import lombok.NoArgsConstructor;
 import java.util.Random;
 
 /**
- * Random generator.
+ * MySQL random generator.
  *
  * @author zhangliang
  */

@@ -21,7 +21,7 @@ import lombok.AccessLevel;
 import lombok.NoArgsConstructor;
 
 /**
- * Sharding-Proxy's information.
+ * MySQL Sharding-Proxy's information.
  * 
  * @author zhangliang 
  */

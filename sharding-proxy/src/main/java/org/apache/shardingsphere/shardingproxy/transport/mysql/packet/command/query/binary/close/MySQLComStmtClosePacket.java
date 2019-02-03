@@ -25,7 +25,7 @@ import org.apache.shardingsphere.shardingproxy.transport.mysql.packet.command.My
 import org.apache.shardingsphere.shardingproxy.transport.common.packet.command.CommandResponsePackets;
 
 /**
- * COM_STMT_CLOSE command packet.
+ * MySQL COM_STMT_CLOSE command packet.
  * 
  * @see <a href="https://dev.mysql.com/doc/internals/en/com-stmt-close.html">COM_QUERY</a>
  *

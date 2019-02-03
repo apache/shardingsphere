@@ -22,7 +22,7 @@ import org.apache.shardingsphere.shardingproxy.transport.mysql.packet.MySQLPacke
 import java.math.BigDecimal;
 
 /**
- * Binary protocol value for int8.
+ * MySQL binary protocol value for int8.
  * 
  * @author zhangyonglun
  * @author zhangliang
