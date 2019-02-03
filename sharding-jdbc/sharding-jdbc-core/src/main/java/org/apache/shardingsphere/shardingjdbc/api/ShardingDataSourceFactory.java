@@ -41,13 +41,12 @@ public final class ShardingDataSourceFactory {
      *
      * @param dataSourceMap data source map
      * @param shardingRuleConfig rule configuration for databases and tables sharding
-     * @param configMap config map
      * @param props properties for data source
      * @return sharding data source
      * @throws SQLException SQL exception
      */
     public static DataSource createDataSource(
-            final Map<String, DataSource> dataSourceMap, final ShardingRuleConfiguration shardingRuleConfig, final Map<String, Object> configMap, final Properties props) throws SQLException {
-        return new ShardingDataSource(dataSourceMap, new ShardingRule(shardingRuleConfig, dataSourceMap.keySet()), configMap, props);
+            final Map<String, DataSource> dataSourceMap, final ShardingRuleConfiguration shardingRuleConfig, final Properties props) throws SQLException {
+        return new ShardingDataSource(dataSourceMap, new ShardingRule(shardingRuleConfig, dataSourceMap.keySet()), props);
     }
 }

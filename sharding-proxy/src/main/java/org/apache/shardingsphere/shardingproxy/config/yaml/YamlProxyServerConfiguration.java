@@ -23,8 +23,6 @@ import org.apache.shardingsphere.core.yaml.config.YamlConfiguration;
 import org.apache.shardingsphere.core.yaml.config.common.YamlAuthentication;
 import org.apache.shardingsphere.orchestration.yaml.config.YamlOrchestrationConfiguration;
 
-import java.util.LinkedHashMap;
-import java.util.Map;
 import java.util.Properties;
 
 /**
@@ -42,6 +40,4 @@ public final class YamlProxyServerConfiguration implements YamlConfiguration {
     private YamlOrchestrationConfiguration orchestration;
     
     private Properties props = new Properties();
-    
-    private Map<String, Object> configMap = new LinkedHashMap<>();
 }

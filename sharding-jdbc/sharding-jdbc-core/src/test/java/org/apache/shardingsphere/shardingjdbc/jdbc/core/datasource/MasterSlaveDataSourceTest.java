@@ -64,7 +64,7 @@ public final class MasterSlaveDataSourceTest {
         dataSourceMap.put("test_ds_master", masterDataSource);
         dataSourceMap.put("test_ds_slave", slaveDataSource);
         masterSlaveDataSource = new MasterSlaveDataSource(dataSourceMap, new MasterSlaveRuleConfiguration("test_ds", "test_ds_master", Collections.singletonList("test_ds_slave"), 
-                MasterSlaveLoadBalanceAlgorithmFactory.getInstance().newAlgorithm("ROUND_ROBIN", new Properties())), Collections.<String, Object>emptyMap(), new Properties());
+                MasterSlaveLoadBalanceAlgorithmFactory.getInstance().newAlgorithm("ROUND_ROBIN", new Properties())), new Properties());
     }
     
     @Before
@@ -89,7 +89,7 @@ public final class MasterSlaveDataSourceTest {
         MasterSlaveRuleConfiguration masterSlaveRuleConfig = new MasterSlaveRuleConfiguration(
                 "ds", "masterDataSource", Collections.singletonList("slaveDataSource"), MasterSlaveLoadBalanceAlgorithmFactory.getInstance().newAlgorithm("ROUND_ROBIN", new Properties()));
         try {
-            ((MasterSlaveDataSource) MasterSlaveDataSourceFactory.createDataSource(dataSourceMap, masterSlaveRuleConfig, Collections.<String, Object>emptyMap(), new Properties())).getDatabaseType();
+            ((MasterSlaveDataSource) MasterSlaveDataSourceFactory.createDataSource(dataSourceMap, masterSlaveRuleConfig, new Properties())).getDatabaseType();
         } finally {
             verify(masterConnection).close();
             verify(slaveConnection).close();
@@ -113,7 +113,7 @@ public final class MasterSlaveDataSourceTest {
         dataSourceMap.put("slaveDataSource2", slaveDataSource2);
         assertThat(((MasterSlaveDataSource) MasterSlaveDataSourceFactory.createDataSource(dataSourceMap, new MasterSlaveRuleConfiguration(
                 "ds", "masterDataSource", Arrays.asList("slaveDataSource1", "slaveDataSource2"), MasterSlaveLoadBalanceAlgorithmFactory.getInstance().newAlgorithm("ROUND_ROBIN", new Properties())),
-                Collections.<String, Object>emptyMap(), new Properties())).getDatabaseType(), is(DatabaseType.H2));
+                new Properties())).getDatabaseType(), is(DatabaseType.H2));
         verify(slaveConnection1).close();
         verify(slaveConnection2).close();
     }

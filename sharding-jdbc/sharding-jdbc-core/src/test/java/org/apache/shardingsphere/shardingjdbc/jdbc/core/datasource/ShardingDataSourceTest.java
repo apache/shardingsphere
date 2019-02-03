@@ -79,9 +79,9 @@ public final class ShardingDataSourceTest {
         Map<String, DataSource> masterSlaveDataSourceMap = new HashMap<>(2, 1);
         masterSlaveDataSourceMap.put("masterDataSource", masterDataSource);
         masterSlaveDataSourceMap.put("slaveDataSource", slaveDataSource);
-        MasterSlaveDataSource dataSource2 = (MasterSlaveDataSource) MasterSlaveDataSourceFactory.createDataSource(masterSlaveDataSourceMap, new MasterSlaveRuleConfiguration(
-                "ds", "masterDataSource", Collections.singletonList("slaveDataSource"), MasterSlaveLoadBalanceAlgorithmFactory.getInstance().newAlgorithm("ROUND_ROBIN", new Properties())), 
-                Collections.<String, Object>emptyMap(), new Properties());
+        MasterSlaveDataSource dataSource2 = (MasterSlaveDataSource) MasterSlaveDataSourceFactory.createDataSource(masterSlaveDataSourceMap, 
+                new MasterSlaveRuleConfiguration("ds", "masterDataSource", Collections.singletonList("slaveDataSource"), 
+                        MasterSlaveLoadBalanceAlgorithmFactory.getInstance().newAlgorithm("ROUND_ROBIN", new Properties())), new Properties());
         Map<String, DataSource> dataSourceMap = new HashMap<>(2, 1);
         dataSourceMap.put("ds1", dataSource1);
         dataSourceMap.put("ds2", dataSource2);

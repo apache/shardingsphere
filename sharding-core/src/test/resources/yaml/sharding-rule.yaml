@@ -97,11 +97,5 @@ shardingRule:
         - master_ds_1_slave_1
       loadBalanceAlgorithmType: RANDOM
 
-configMap:
-  sharding-key1: sharding-value1
-  sharding-key2: sharding-value2
-  master-slave-key0: master-slave-value0
-  master-slave-key1: master-slave-value1
-
 props:
   sql.show: true

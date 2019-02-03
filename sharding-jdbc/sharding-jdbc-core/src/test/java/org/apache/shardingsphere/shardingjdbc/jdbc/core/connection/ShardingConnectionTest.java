@@ -71,7 +71,7 @@ public final class ShardingConnectionTest {
         dataSourceMap.put("test_ds_master", masterDataSource);
         dataSourceMap.put("test_ds_slave", slaveDataSource);
         masterSlaveDataSource = new MasterSlaveDataSource(dataSourceMap, new MasterSlaveRuleConfiguration("test_ds", "test_ds_master", Collections.singletonList("test_ds_slave"), 
-                MasterSlaveLoadBalanceAlgorithmFactory.getInstance().newAlgorithm("ROUND_ROBIN", new Properties())), Collections.<String, Object>emptyMap(), new Properties());
+                MasterSlaveLoadBalanceAlgorithmFactory.getInstance().newAlgorithm("ROUND_ROBIN", new Properties())), new Properties());
         ((TestDataSource) slaveDataSource).setThrowExceptionWhenClosing(true);
     }
     

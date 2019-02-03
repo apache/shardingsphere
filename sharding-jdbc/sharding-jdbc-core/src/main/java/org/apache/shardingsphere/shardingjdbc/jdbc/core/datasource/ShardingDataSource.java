@@ -20,7 +20,6 @@ package org.apache.shardingsphere.shardingjdbc.jdbc.core.datasource;
 import com.google.common.base.Preconditions;
 import lombok.Getter;
 import lombok.extern.slf4j.Slf4j;
-import org.apache.shardingsphere.api.ConfigMapContext;
 import org.apache.shardingsphere.core.rule.ShardingRule;
 import org.apache.shardingsphere.shardingjdbc.jdbc.adapter.AbstractDataSourceAdapter;
 import org.apache.shardingsphere.shardingjdbc.jdbc.core.ShardingContext;
@@ -31,7 +30,6 @@ import javax.sql.DataSource;
 import java.sql.SQLException;
 import java.util.Map;
 import java.util.Properties;
-import java.util.concurrent.ConcurrentHashMap;
 
 /**
  * Sharding data source.
@@ -47,15 +45,12 @@ public class ShardingDataSource extends AbstractDataSourceAdapter {
     private final ShardingContext shardingContext;
     
     public ShardingDataSource(final Map<String, DataSource> dataSourceMap, final ShardingRule shardingRule) throws SQLException {
-        this(dataSourceMap, shardingRule, new ConcurrentHashMap<String, Object>(), new Properties());
+        this(dataSourceMap, shardingRule, new Properties());
     }
     
-    public ShardingDataSource(final Map<String, DataSource> dataSourceMap, final ShardingRule shardingRule, final Map<String, Object> configMap, final Properties props) throws SQLException {
+    public ShardingDataSource(final Map<String, DataSource> dataSourceMap, final ShardingRule shardingRule, final Properties props) throws SQLException {
         super(dataSourceMap);
         checkDataSourceType(dataSourceMap);
-        if (!configMap.isEmpty()) {
-            ConfigMapContext.getInstance().getConfigMap().putAll(configMap);
-        }
         shardingContext = new ShardingContext(getDataSourceMap(), shardingRule, getDatabaseType(), props);
     }
     

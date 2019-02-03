@@ -35,8 +35,7 @@ import org.junit.runners.Suite.SuiteClasses;
         TableShardingStrategyTest.class,
         RoundRobinMasterSlaveLoadBalanceAlgorithmTest.class, 
         RandomMasterSlaveLoadBalanceAlgorithmTest.class,
-        ConfigMapContextTest.class, 
         HintManagerTest.class
-    })
+})
 public final class AllAPITests {
 }

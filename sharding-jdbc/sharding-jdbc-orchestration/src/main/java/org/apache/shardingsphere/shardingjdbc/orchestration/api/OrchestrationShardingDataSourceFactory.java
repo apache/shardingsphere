@@ -44,17 +44,16 @@ public final class OrchestrationShardingDataSourceFactory {
      * @param dataSourceMap data source map
      * @param shardingRuleConfig sharding rule configuration
      * @param orchestrationConfig orchestration configuration
-     * @param configMap config map
      * @param props properties for data source
      * @return sharding data source
      * @throws SQLException SQL exception
      */
     public static DataSource createDataSource(final Map<String, DataSource> dataSourceMap, final ShardingRuleConfiguration shardingRuleConfig,
-                                              final Map<String, Object> configMap, final Properties props, final OrchestrationConfiguration orchestrationConfig) throws SQLException {
+                                              final Properties props, final OrchestrationConfiguration orchestrationConfig) throws SQLException {
         if (null == shardingRuleConfig || shardingRuleConfig.getTableRuleConfigs().isEmpty()) {
             return createDataSource(orchestrationConfig);
         }
-        ShardingDataSource shardingDataSource = new ShardingDataSource(dataSourceMap, new ShardingRule(shardingRuleConfig, dataSourceMap.keySet()), configMap, props);
+        ShardingDataSource shardingDataSource = new ShardingDataSource(dataSourceMap, new ShardingRule(shardingRuleConfig, dataSourceMap.keySet()), props);
         return new OrchestrationShardingDataSource(shardingDataSource, orchestrationConfig);
     }
     

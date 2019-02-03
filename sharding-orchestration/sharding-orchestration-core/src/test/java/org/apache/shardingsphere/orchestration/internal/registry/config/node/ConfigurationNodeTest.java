@@ -48,11 +48,6 @@ public final class ConfigurationNodeTest {
     }
     
     @Test
-    public void assertGetConfigMapPath() {
-        assertThat(configurationNode.getConfigMapPath(), is("/test/config/configmap"));
-    }
-    
-    @Test
     public void assertGetPropsPath() {
         assertThat(configurationNode.getPropsPath(), is("/test/config/props"));
     }

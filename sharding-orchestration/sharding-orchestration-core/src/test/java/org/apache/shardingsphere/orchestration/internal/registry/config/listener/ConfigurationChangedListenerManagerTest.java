@@ -44,19 +44,14 @@ public final class ConfigurationChangedListenerManagerTest {
     @Mock
     private AuthenticationChangedListener authenticationChangedListener;
     
-    @Mock
-    private ConfigMapChangedListener configMapChangedListener;
-    
     @Test
     public void assertInitListeners() {
         ConfigurationChangedListenerManager actual = new ConfigurationChangedListenerManager("test", regCenter, Arrays.asList("sharding_db", "masterslave_db"));
         FieldUtil.setField(actual, "schemaChangedListener", schemaChangedListener);
         FieldUtil.setField(actual, "propertiesChangedListener", propertiesChangedListener);
         FieldUtil.setField(actual, "authenticationChangedListener", authenticationChangedListener);
-        FieldUtil.setField(actual, "configMapChangedListener", configMapChangedListener);
         actual.initListeners();
         verify(propertiesChangedListener).watch(ChangedType.UPDATED);
         verify(authenticationChangedListener).watch(ChangedType.UPDATED);
-        verify(configMapChangedListener).watch(ChangedType.UPDATED);
     }
 }
