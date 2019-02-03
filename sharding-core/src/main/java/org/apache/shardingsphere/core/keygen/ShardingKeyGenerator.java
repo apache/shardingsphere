@@ -15,33 +15,43 @@
  * limitations under the License.
  */
 
-package org.apache.shardingsphere.core.keygen.generator.impl;
-
-import lombok.Getter;
-import lombok.Setter;
-import org.apache.shardingsphere.core.keygen.generator.ShardingKeyGenerator;
+package org.apache.shardingsphere.core.keygen;
 
 import java.util.Properties;
-import java.util.UUID;
 
 /**
- * UUID key generator.
+ * Key generator interface.
  *
+ * @author zhangliang
  * @author panjuan
  */
-@Getter
-@Setter
-public final class UUIDShardingKeyGenerator implements ShardingKeyGenerator {
+public interface ShardingKeyGenerator {
     
-    private Properties properties = new Properties();
+    /**
+     * Get type of key generator.
+     * 
+     * @return type
+     */
+    String getType();
     
-    @Override
-    public String getType() {
-        return "UUID";
-    }
+    /**
+     * Generate key.
+     * 
+     * @return generated key
+     */
+    Comparable<?> generateKey();
     
-    @Override
-    public synchronized Comparable<?> generateKey() {
-        return UUID.randomUUID().toString().replaceAll("-", "");
-    }
+    /**
+     * Get properties.
+     * 
+     * @return The properties of key generator
+     */
+    Properties getProperties();
+    
+    /**
+     * Set Properties.
+     * 
+     * @param properties properties
+     */
+    void setProperties(Properties properties);
 }
