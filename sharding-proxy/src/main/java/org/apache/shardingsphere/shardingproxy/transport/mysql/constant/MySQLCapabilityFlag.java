@@ -29,7 +29,7 @@ import lombok.RequiredArgsConstructor;
  */
 @RequiredArgsConstructor
 @Getter
-public enum CapabilityFlag {
+public enum MySQLCapabilityFlag {
     
     CLIENT_LONG_PASSWORD(0x00000001),
     
@@ -103,9 +103,9 @@ public enum CapabilityFlag {
     }
     
     // TODO use xor to calculate lower and upper
-    private static int calculateCapabilityFlags(final CapabilityFlag... capabilities) {
+    private static int calculateCapabilityFlags(final MySQLCapabilityFlag... capabilities) {
         int result = 0;
-        for (CapabilityFlag each : capabilities) {
+        for (MySQLCapabilityFlag each : capabilities) {
             result |= each.value;
         }
         return result;

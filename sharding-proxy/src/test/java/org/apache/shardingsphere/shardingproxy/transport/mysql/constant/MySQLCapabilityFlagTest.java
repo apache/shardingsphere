@@ -22,15 +22,15 @@ import org.junit.Test;
 import static org.hamcrest.CoreMatchers.is;
 import static org.junit.Assert.assertThat;
 
-public final class CapabilityFlagTest {
+public final class MySQLCapabilityFlagTest {
     
     @Test
     public void assertCalculateHandshakeCapabilityFlagsLower() {
-        assertThat(CapabilityFlag.calculateHandshakeCapabilityFlagsLower(), is(46927));
+        assertThat(MySQLCapabilityFlag.calculateHandshakeCapabilityFlagsLower(), is(46927));
     }
     
     @Test
     public void assertCalculateHandshakeCapabilityFlagsUpper() {
-        assertThat(CapabilityFlag.calculateHandshakeCapabilityFlagsUpper(), is(0));
+        assertThat(MySQLCapabilityFlag.calculateHandshakeCapabilityFlagsUpper(), is(0));
     }
 }

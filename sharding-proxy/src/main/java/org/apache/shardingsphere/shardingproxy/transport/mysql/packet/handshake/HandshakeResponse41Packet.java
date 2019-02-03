@@ -19,7 +19,7 @@ package org.apache.shardingsphere.shardingproxy.transport.mysql.packet.handshake
 
 import lombok.Getter;
 import lombok.RequiredArgsConstructor;
-import org.apache.shardingsphere.shardingproxy.transport.mysql.constant.CapabilityFlag;
+import org.apache.shardingsphere.shardingproxy.transport.mysql.constant.MySQLCapabilityFlag;
 import org.apache.shardingsphere.shardingproxy.transport.mysql.packet.MySQLPacket;
 import org.apache.shardingsphere.shardingproxy.transport.mysql.packet.MySQLPacketPayload;
 
@@ -64,10 +64,10 @@ public final class HandshakeResponse41Packet implements MySQLPacket {
     }
     
     private byte[] readAuthResponse(final MySQLPacketPayload payload) {
-        if (0 != (capabilityFlags & CapabilityFlag.CLIENT_PLUGIN_AUTH_LENENC_CLIENT_DATA.getValue())) {
+        if (0 != (capabilityFlags & MySQLCapabilityFlag.CLIENT_PLUGIN_AUTH_LENENC_CLIENT_DATA.getValue())) {
             return payload.readStringLenencByBytes();
         }
-        if (0 != (capabilityFlags & CapabilityFlag.CLIENT_SECURE_CONNECTION.getValue())) {
+        if (0 != (capabilityFlags & MySQLCapabilityFlag.CLIENT_SECURE_CONNECTION.getValue())) {
             int length = payload.readInt1();
             return payload.readStringFixByBytes(length);
         }
@@ -75,7 +75,7 @@ public final class HandshakeResponse41Packet implements MySQLPacket {
     }
     
     private String readDatabase(final MySQLPacketPayload payload) {
-        return 0 != (capabilityFlags & CapabilityFlag.CLIENT_CONNECT_WITH_DB.getValue()) ? payload.readStringNul() : null;
+        return 0 != (capabilityFlags & MySQLCapabilityFlag.CLIENT_CONNECT_WITH_DB.getValue()) ? payload.readStringNul() : null;
     }
     
     @Override
@@ -90,9 +90,9 @@ public final class HandshakeResponse41Packet implements MySQLPacket {
     }
     
     private void writeAuthResponse(final MySQLPacketPayload payload) {
-        if (0 != (capabilityFlags & CapabilityFlag.CLIENT_PLUGIN_AUTH_LENENC_CLIENT_DATA.getValue())) {
+        if (0 != (capabilityFlags & MySQLCapabilityFlag.CLIENT_PLUGIN_AUTH_LENENC_CLIENT_DATA.getValue())) {
             payload.writeStringLenenc(new String(authResponse));
-        } else if (0 != (capabilityFlags & CapabilityFlag.CLIENT_SECURE_CONNECTION.getValue())) {
+        } else if (0 != (capabilityFlags & MySQLCapabilityFlag.CLIENT_SECURE_CONNECTION.getValue())) {
             payload.writeInt1(authResponse.length);
             payload.writeBytes(authResponse);
         } else {
@@ -101,7 +101,7 @@ public final class HandshakeResponse41Packet implements MySQLPacket {
     }
     
     private void writeDatabase(final MySQLPacketPayload payload) {
-        if (0 != (capabilityFlags & CapabilityFlag.CLIENT_CONNECT_WITH_DB.getValue())) {
+        if (0 != (capabilityFlags & MySQLCapabilityFlag.CLIENT_CONNECT_WITH_DB.getValue())) {
             payload.writeStringNul(database);
         }
     }

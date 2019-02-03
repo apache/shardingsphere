@@ -17,7 +17,7 @@
 
 package org.apache.shardingsphere.shardingproxy.transport.mysql.packet.handshake;
 
-import org.apache.shardingsphere.shardingproxy.transport.mysql.constant.CapabilityFlag;
+import org.apache.shardingsphere.shardingproxy.transport.mysql.constant.MySQLCapabilityFlag;
 import org.apache.shardingsphere.shardingproxy.transport.mysql.constant.ServerInfo;
 import org.apache.shardingsphere.shardingproxy.transport.mysql.constant.StatusFlag;
 import org.apache.shardingsphere.shardingproxy.transport.mysql.packet.MySQLPacketPayload;
@@ -48,7 +48,7 @@ public final class HandshakePacketTest {
         when(payload.readStringNulByBytes()).thenReturn(part1, part2);
         when(payload.readInt4()).thenReturn(1000);
         when(payload.readInt2()).thenReturn(
-                CapabilityFlag.calculateHandshakeCapabilityFlagsLower(), StatusFlag.SERVER_STATUS_AUTOCOMMIT.getValue(), CapabilityFlag.calculateHandshakeCapabilityFlagsUpper());
+                MySQLCapabilityFlag.calculateHandshakeCapabilityFlagsLower(), StatusFlag.SERVER_STATUS_AUTOCOMMIT.getValue(), MySQLCapabilityFlag.calculateHandshakeCapabilityFlagsUpper());
         HandshakePacket actual = new HandshakePacket(payload);
         assertThat(actual.getSequenceId(), is(1));
         assertThat(actual.getConnectionId(), is(1000));
@@ -65,10 +65,10 @@ public final class HandshakePacketTest {
         verify(payload).writeStringNul(ServerInfo.SERVER_VERSION);
         verify(payload).writeInt4(1000);
         verify(payload).writeStringNul(new String(authPluginData.getAuthPluginDataPart1()));
-        verify(payload).writeInt2(CapabilityFlag.calculateHandshakeCapabilityFlagsLower());
+        verify(payload).writeInt2(MySQLCapabilityFlag.calculateHandshakeCapabilityFlagsLower());
         verify(payload).writeInt1(ServerInfo.CHARSET);
         verify(payload).writeInt2(StatusFlag.SERVER_STATUS_AUTOCOMMIT.getValue());
-        verify(payload).writeInt2(CapabilityFlag.calculateHandshakeCapabilityFlagsUpper());
+        verify(payload).writeInt2(MySQLCapabilityFlag.calculateHandshakeCapabilityFlagsUpper());
         verify(payload).writeInt1(0);
         verify(payload).writeReserved(10);
         verify(payload).writeStringNul(new String(authPluginData.getAuthPluginDataPart2()));

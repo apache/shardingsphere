@@ -23,7 +23,7 @@ import org.junit.runners.Suite.SuiteClasses;
 
 @RunWith(Suite.class)
 @SuiteClasses({
-        CapabilityFlagTest.class,
+        MySQLCapabilityFlagTest.class,
         MySQLColumnTypeTest.class,
         NewParametersBoundFlagTest.class,
         ServerErrorCodeTest.class

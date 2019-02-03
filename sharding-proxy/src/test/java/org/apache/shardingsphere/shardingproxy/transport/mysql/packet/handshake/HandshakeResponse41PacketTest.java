@@ -17,7 +17,7 @@
 
 package org.apache.shardingsphere.shardingproxy.transport.mysql.packet.handshake;
 
-import org.apache.shardingsphere.shardingproxy.transport.mysql.constant.CapabilityFlag;
+import org.apache.shardingsphere.shardingproxy.transport.mysql.constant.MySQLCapabilityFlag;
 import org.apache.shardingsphere.shardingproxy.transport.mysql.constant.ServerInfo;
 import org.apache.shardingsphere.shardingproxy.transport.mysql.packet.MySQLPacketPayload;
 import org.junit.Test;
@@ -39,7 +39,7 @@ public final class HandshakeResponse41PacketTest {
     @Test
     public void assertNewWithPayloadWithDatabase() {
         when(payload.readInt1()).thenReturn(1, ServerInfo.CHARSET);
-        when(payload.readInt4()).thenReturn(CapabilityFlag.CLIENT_CONNECT_WITH_DB.getValue(), 1000);
+        when(payload.readInt4()).thenReturn(MySQLCapabilityFlag.CLIENT_CONNECT_WITH_DB.getValue(), 1000);
         when(payload.readStringNul()).thenReturn("root", "sharding_db");
         when(payload.readStringNulByBytes()).thenReturn(new byte[] {1});
         HandshakeResponse41Packet actual = new HandshakeResponse41Packet(payload);
@@ -52,7 +52,7 @@ public final class HandshakeResponse41PacketTest {
     @Test
     public void assertNewWithPayloadWithClientPluginAuthLenencClientData() {
         when(payload.readInt1()).thenReturn(1, ServerInfo.CHARSET);
-        when(payload.readInt4()).thenReturn(CapabilityFlag.CLIENT_PLUGIN_AUTH_LENENC_CLIENT_DATA.getValue(), 1000);
+        when(payload.readInt4()).thenReturn(MySQLCapabilityFlag.CLIENT_PLUGIN_AUTH_LENENC_CLIENT_DATA.getValue(), 1000);
         when(payload.readStringNul()).thenReturn("root");
         when(payload.readStringLenencByBytes()).thenReturn(new byte[] {1});
         HandshakeResponse41Packet actual = new HandshakeResponse41Packet(payload);
@@ -65,7 +65,7 @@ public final class HandshakeResponse41PacketTest {
     @Test
     public void assertNewWithPayloadWithClientSecureConnection() {
         when(payload.readInt1()).thenReturn(1, ServerInfo.CHARSET, 1);
-        when(payload.readInt4()).thenReturn(CapabilityFlag.CLIENT_SECURE_CONNECTION.getValue(), 1000);
+        when(payload.readInt4()).thenReturn(MySQLCapabilityFlag.CLIENT_SECURE_CONNECTION.getValue(), 1000);
         when(payload.readStringNul()).thenReturn("root");
         when(payload.readStringFixByBytes(1)).thenReturn(new byte[] {1});
         HandshakeResponse41Packet actual = new HandshakeResponse41Packet(payload);
@@ -77,8 +77,8 @@ public final class HandshakeResponse41PacketTest {
     
     @Test
     public void assertWriteWithDatabase() {
-        new HandshakeResponse41Packet(1, CapabilityFlag.CLIENT_CONNECT_WITH_DB.getValue(), 100, ServerInfo.CHARSET, "root", new byte[] {1}, "sharding_db").write(payload);
-        verify(payload).writeInt4(CapabilityFlag.CLIENT_CONNECT_WITH_DB.getValue());
+        new HandshakeResponse41Packet(1, MySQLCapabilityFlag.CLIENT_CONNECT_WITH_DB.getValue(), 100, ServerInfo.CHARSET, "root", new byte[] {1}, "sharding_db").write(payload);
+        verify(payload).writeInt4(MySQLCapabilityFlag.CLIENT_CONNECT_WITH_DB.getValue());
         verify(payload).writeInt4(100);
         verify(payload).writeInt1(ServerInfo.CHARSET);
         verify(payload).writeReserved(23);
@@ -89,8 +89,8 @@ public final class HandshakeResponse41PacketTest {
     
     @Test
     public void assertWriteWithClientPluginAuthLenencClientData() {
-        new HandshakeResponse41Packet(1, CapabilityFlag.CLIENT_PLUGIN_AUTH_LENENC_CLIENT_DATA.getValue(), 100, ServerInfo.CHARSET, "root", new byte[] {1}, null).write(payload);
-        verify(payload).writeInt4(CapabilityFlag.CLIENT_PLUGIN_AUTH_LENENC_CLIENT_DATA.getValue());
+        new HandshakeResponse41Packet(1, MySQLCapabilityFlag.CLIENT_PLUGIN_AUTH_LENENC_CLIENT_DATA.getValue(), 100, ServerInfo.CHARSET, "root", new byte[] {1}, null).write(payload);
+        verify(payload).writeInt4(MySQLCapabilityFlag.CLIENT_PLUGIN_AUTH_LENENC_CLIENT_DATA.getValue());
         verify(payload).writeInt4(100);
         verify(payload).writeInt1(ServerInfo.CHARSET);
         verify(payload).writeReserved(23);
@@ -100,8 +100,8 @@ public final class HandshakeResponse41PacketTest {
     
     @Test
     public void assertWriteWithClientSecureConnection() {
-        new HandshakeResponse41Packet(1, CapabilityFlag.CLIENT_SECURE_CONNECTION.getValue(), 100, ServerInfo.CHARSET, "root", new byte[] {1}, null).write(payload);
-        verify(payload).writeInt4(CapabilityFlag.CLIENT_SECURE_CONNECTION.getValue());
+        new HandshakeResponse41Packet(1, MySQLCapabilityFlag.CLIENT_SECURE_CONNECTION.getValue(), 100, ServerInfo.CHARSET, "root", new byte[] {1}, null).write(payload);
+        verify(payload).writeInt4(MySQLCapabilityFlag.CLIENT_SECURE_CONNECTION.getValue());
         verify(payload).writeInt4(100);
         verify(payload).writeInt1(ServerInfo.CHARSET);
         verify(payload).writeReserved(23);

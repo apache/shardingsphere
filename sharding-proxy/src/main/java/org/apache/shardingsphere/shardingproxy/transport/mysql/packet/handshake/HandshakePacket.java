@@ -19,7 +19,7 @@ package org.apache.shardingsphere.shardingproxy.transport.mysql.packet.handshake
 
 import com.google.common.base.Preconditions;
 import lombok.Getter;
-import org.apache.shardingsphere.shardingproxy.transport.mysql.constant.CapabilityFlag;
+import org.apache.shardingsphere.shardingproxy.transport.mysql.constant.MySQLCapabilityFlag;
 import org.apache.shardingsphere.shardingproxy.transport.mysql.constant.ServerInfo;
 import org.apache.shardingsphere.shardingproxy.transport.mysql.constant.StatusFlag;
 import org.apache.shardingsphere.shardingproxy.transport.mysql.packet.MySQLPacket;
@@ -39,11 +39,11 @@ public final class HandshakePacket implements MySQLPacket {
     
     private final String serverVersion = ServerInfo.SERVER_VERSION;
     
-    private final int capabilityFlagsLower = CapabilityFlag.calculateHandshakeCapabilityFlagsLower();
+    private final int capabilityFlagsLower = MySQLCapabilityFlag.calculateHandshakeCapabilityFlagsLower();
     
     private final StatusFlag statusFlag = StatusFlag.SERVER_STATUS_AUTOCOMMIT;
     
-    private final int capabilityFlagsUpper = CapabilityFlag.calculateHandshakeCapabilityFlagsUpper();
+    private final int capabilityFlagsUpper = MySQLCapabilityFlag.calculateHandshakeCapabilityFlagsUpper();
     
     @Getter
     private final int sequenceId;
