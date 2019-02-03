@@ -15,37 +15,36 @@
  * limitations under the License.
  */
 
-package org.apache.shardingsphere.core.encrypt.fixture;
+package org.apache.shardingsphere.spi.hook.rewrite;
 
-import lombok.Getter;
-import lombok.Setter;
-import org.apache.shardingsphere.core.encrypt.ShardingEncryptor;
-
-import java.util.Properties;
+import org.apache.shardingsphere.core.routing.SQLUnit;
+import org.apache.shardingsphere.core.routing.type.TableUnit;
 
 /**
- * Test sharding encryptor.
+ * Rewrite Hook.
  *
- * @author panjuan
+ * @author yangyi
  */
-@Getter
-@Setter
-public final class TestShardingEncryptor implements ShardingEncryptor {
+public interface RewriteHook {
     
-    private Properties properties = new Properties();
+    /**
+     * Handle when rewrite started.
+     *
+     * @param tableUnit table unit
+     */
+    void start(TableUnit tableUnit);
     
-    @Override
-    public String getType() {
-        return "test";
-    }
+    /**
+     * Handle when rewrite finished success.
+     *
+     * @param sqlUnit sql unit
+     */
+    void finishSuccess(SQLUnit sqlUnit);
     
-    @Override
-    public String encode(final String plaintext) {
-        return "";
-    }
-    
-    @Override
-    public String decode(final String ciphertext) {
-        return "";
-    }
+    /**
+     * Handle when rewrite finished failure.
+     *
+     * @param cause failure cause
+     */
+    void finishFailure(Exception cause);
 }

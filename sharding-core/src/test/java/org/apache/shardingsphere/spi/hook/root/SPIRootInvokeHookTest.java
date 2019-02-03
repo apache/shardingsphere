@@ -15,37 +15,33 @@
  * limitations under the License.
  */
 
-package org.apache.shardingsphere.core.encrypt.fixture;
+package org.apache.shardingsphere.spi.hook.root;
 
-import lombok.Getter;
-import lombok.Setter;
-import org.apache.shardingsphere.core.encrypt.ShardingEncryptor;
+import org.apache.shardingsphere.spi.fixture.RootInvokeHookFixture;
+import org.junit.Before;
+import org.junit.Test;
 
-import java.util.Properties;
+import static org.junit.Assert.assertTrue;
 
-/**
- * Test sharding encryptor.
- *
- * @author panjuan
- */
-@Getter
-@Setter
-public final class TestShardingEncryptor implements ShardingEncryptor {
+public final class SPIRootInvokeHookTest {
     
-    private Properties properties = new Properties();
+    private SPIRootInvokeHook spiRootInvokeHook;
     
-    @Override
-    public String getType() {
-        return "test";
+    @Before
+    public void setUp() {
+        RootInvokeHookFixture.clearActions();
+        spiRootInvokeHook = new SPIRootInvokeHook();
     }
     
-    @Override
-    public String encode(final String plaintext) {
-        return "";
+    @Test
+    public void assertStart() {
+        spiRootInvokeHook.start();
+        assertTrue(RootInvokeHookFixture.containsAction("start"));
     }
     
-    @Override
-    public String decode(final String ciphertext) {
-        return "";
+    @Test
+    public void assertFinishSuccess() {
+        spiRootInvokeHook.finish(0);
+        assertTrue(RootInvokeHookFixture.containsAction("finish"));
     }
 }

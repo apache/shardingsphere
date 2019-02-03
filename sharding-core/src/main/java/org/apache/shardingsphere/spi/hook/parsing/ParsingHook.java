@@ -15,37 +15,37 @@
  * limitations under the License.
  */
 
-package org.apache.shardingsphere.core.encrypt.fixture;
+package org.apache.shardingsphere.spi.hook.parsing;
 
-import lombok.Getter;
-import lombok.Setter;
-import org.apache.shardingsphere.core.encrypt.ShardingEncryptor;
-
-import java.util.Properties;
+import org.apache.shardingsphere.core.metadata.table.ShardingTableMetaData;
+import org.apache.shardingsphere.core.parsing.parser.sql.SQLStatement;
 
 /**
- * Test sharding encryptor.
+ * Parsing hook.
  *
- * @author panjuan
+ * @author zhangliang
  */
-@Getter
-@Setter
-public final class TestShardingEncryptor implements ShardingEncryptor {
+public interface ParsingHook {
     
-    private Properties properties = new Properties();
+    /**
+     * Handle when parse started.
+     *
+     * @param sql SQL to be parsed
+     */
+    void start(String sql);
     
-    @Override
-    public String getType() {
-        return "test";
-    }
+    /**
+     * Handle when parse finished success.
+     *
+     * @param sqlStatement sql statement
+     * @param shardingTableMetaData sharding table meta data
+     */
+    void finishSuccess(SQLStatement sqlStatement, ShardingTableMetaData shardingTableMetaData);
     
-    @Override
-    public String encode(final String plaintext) {
-        return "";
-    }
-    
-    @Override
-    public String decode(final String ciphertext) {
-        return "";
-    }
+    /**
+     * Handle when parse finished failure.
+     * 
+     * @param cause failure cause
+     */
+    void finishFailure(Exception cause);
 }

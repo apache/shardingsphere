@@ -17,7 +17,7 @@
 
 package org.apache.shardingsphere.spi.fixture;
 
-import org.apache.shardingsphere.spi.root.RootInvokeHook;
+import org.apache.shardingsphere.spi.hook.root.RootInvokeHook;
 
 import java.util.Collection;
 import java.util.LinkedList;

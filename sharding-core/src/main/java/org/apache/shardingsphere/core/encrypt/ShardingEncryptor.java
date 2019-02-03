@@ -15,37 +15,51 @@
  * limitations under the License.
  */
 
-package org.apache.shardingsphere.core.encrypt.fixture;
-
-import lombok.Getter;
-import lombok.Setter;
-import org.apache.shardingsphere.core.encrypt.ShardingEncryptor;
+package org.apache.shardingsphere.core.encrypt;
 
 import java.util.Properties;
 
 /**
- * Test sharding encryptor.
+ * Sharding encryptor.
  *
  * @author panjuan
  */
-@Getter
-@Setter
-public final class TestShardingEncryptor implements ShardingEncryptor {
+public interface ShardingEncryptor {
     
-    private Properties properties = new Properties();
+    /**
+     * Get sharding encryptor type.
+     * 
+     * @return sharding encryptor type
+     */
+    String getType();
     
-    @Override
-    public String getType() {
-        return "test";
-    }
+    /**
+     * Get properties.
+     * 
+     * @return properties
+     */
+    Properties getProperties();
     
-    @Override
-    public String encode(final String plaintext) {
-        return "";
-    }
+    /**
+     * Set properties.
+     * 
+     * @param properties properties
+     */
+    void setProperties(Properties properties);
     
-    @Override
-    public String decode(final String ciphertext) {
-        return "";
-    }
+    /**
+     * Encode.
+     * 
+     * @param plaintext plaintext
+     * @return ciphertext
+     */
+    String encode(String plaintext);
+    
+    /**
+     * Decode.
+     * 
+     * @param ciphertext ciphertext
+     * @return plaintext
+     */
+    String decode(String ciphertext);
 }

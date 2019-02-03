@@ -21,7 +21,6 @@ import com.google.common.base.Predicate;
 import com.google.common.collect.Collections2;
 import lombok.AccessLevel;
 import lombok.NoArgsConstructor;
-import org.apache.shardingsphere.core.encrypt.encryptor.ShardingEncryptor;
 import org.apache.shardingsphere.core.exception.ShardingConfigurationException;
 import org.apache.shardingsphere.spi.NewInstanceServiceLoader;
 

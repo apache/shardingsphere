@@ -15,48 +15,45 @@
  * limitations under the License.
  */
 
-package org.apache.shardingsphere.spi.fixture;
+package org.apache.shardingsphere.spi.hook.parsing;
 
 import org.apache.shardingsphere.core.metadata.table.ShardingTableMetaData;
 import org.apache.shardingsphere.core.parsing.parser.sql.SQLStatement;
-import org.apache.shardingsphere.spi.hook.parsing.ParsingHook;
+import org.apache.shardingsphere.spi.NewInstanceServiceLoader;
 
 import java.util.Collection;
-import java.util.LinkedList;
 
-public final class ParsingHookFixture implements ParsingHook {
+/**
+ * Parsing hook for SPI.
+ *
+ * @author zhangliang
+ */
+public final class SPIParsingHook implements ParsingHook {
     
-    private static final Collection<String> ACTIONS = new LinkedList<>();
+    private final Collection<ParsingHook> parsingHooks = NewInstanceServiceLoader.newServiceInstances(ParsingHook.class);
+    
+    static {
+        NewInstanceServiceLoader.register(ParsingHook.class);
+    }
     
     @Override
     public void start(final String sql) {
-        ACTIONS.add("start");
+        for (ParsingHook each : parsingHooks) {
+            each.start(sql);
+        }
     }
     
     @Override
     public void finishSuccess(final SQLStatement sqlStatement, final ShardingTableMetaData shardingTableMetaData) {
-        ACTIONS.add("finishSuccess");
+        for (ParsingHook each : parsingHooks) {
+            each.finishSuccess(sqlStatement, shardingTableMetaData);
+        }
     }
     
     @Override
     public void finishFailure(final Exception cause) {
-        ACTIONS.add("finishFailure");
-    }
-    
-    /**
-     * Contains action or not.
-     * 
-     * @param action action
-     * @return contains action or not
-     */
-    public static boolean containsAction(final String action) {
-        return ACTIONS.contains(action);
-    }
-    
-    /**
-     * Clear actions.
-     */
-    public static void clearActions() {
-        ACTIONS.clear();
+        for (ParsingHook each : parsingHooks) {
+            each.finishFailure(cause);
+        }
     }
 }

@@ -15,30 +15,39 @@
  * limitations under the License.
  */
 
-package org.apache.shardingsphere.spi;
+package org.apache.shardingsphere.spi.hook.executor;
 
-import org.apache.shardingsphere.spi.hook.parsing.ParsingHook;
+import org.apache.shardingsphere.spi.fixture.SQLExecutionHookFixture;
+import org.junit.Before;
 import org.junit.Test;
 
-import java.util.Collection;
-
-import static org.hamcrest.CoreMatchers.is;
-import static org.junit.Assert.assertThat;
 import static org.junit.Assert.assertTrue;
 
-public final class NewInstanceServiceLoaderTest {
+public final class SPISQLExecutionHookTest {
     
-    @Test
-    public void assertNewServiceInstanceWhenIsNotExist() {
-        NewInstanceServiceLoader.register(Collection.class);
-        Collection collection = NewInstanceServiceLoader.newServiceInstances(Collection.class);
-        assertTrue(collection.isEmpty());
+    private SPISQLExecutionHook spiSQLExecutionHook;
+    
+    @Before
+    public void setUp() {
+        SQLExecutionHookFixture.clearActions();
+        spiSQLExecutionHook = new SPISQLExecutionHook();
     }
     
     @Test
-    public void assertNewServiceInstanceWhenIsExist() {
-        NewInstanceServiceLoader.register(ParsingHook.class);
-        Collection collection = NewInstanceServiceLoader.newServiceInstances(ParsingHook.class);
-        assertThat(collection.size(), is(1));
+    public void assertStart() {
+        spiSQLExecutionHook.start(null, null, true, null);
+        assertTrue(SQLExecutionHookFixture.containsAction("start"));
+    }
+    
+    @Test
+    public void assertFinishSuccess() {
+        spiSQLExecutionHook.finishSuccess();
+        assertTrue(SQLExecutionHookFixture.containsAction("finishSuccess"));
+    }
+    
+    @Test
+    public void assertFinishFailure() {
+        spiSQLExecutionHook.finishFailure(null);
+        assertTrue(SQLExecutionHookFixture.containsAction("finishFailure"));
     }
 }

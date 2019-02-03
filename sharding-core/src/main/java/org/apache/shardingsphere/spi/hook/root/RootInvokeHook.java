@@ -15,37 +15,24 @@
  * limitations under the License.
  */
 
-package org.apache.shardingsphere.core.encrypt.fixture;
-
-import lombok.Getter;
-import lombok.Setter;
-import org.apache.shardingsphere.core.encrypt.ShardingEncryptor;
-
-import java.util.Properties;
+package org.apache.shardingsphere.spi.hook.root;
 
 /**
- * Test sharding encryptor.
+ * Root invoke hook.
  *
- * @author panjuan
+ * @author zhangliang
  */
-@Getter
-@Setter
-public final class TestShardingEncryptor implements ShardingEncryptor {
+public interface RootInvokeHook {
     
-    private Properties properties = new Properties();
+    /**
+     * Handle when root invoke started.
+     */
+    void start();
     
-    @Override
-    public String getType() {
-        return "test";
-    }
-    
-    @Override
-    public String encode(final String plaintext) {
-        return "";
-    }
-    
-    @Override
-    public String decode(final String ciphertext) {
-        return "";
-    }
+    /**
+     * Handle when root invoke finished.
+     * 
+     * @param connectionCount connection count
+     */
+    void finish(int connectionCount);
 }
