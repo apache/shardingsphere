@@ -20,7 +20,7 @@ package org.apache.shardingsphere.shardingproxy.transport.mysql.packet.command.q
 import lombok.AccessLevel;
 import lombok.NoArgsConstructor;
 import lombok.SneakyThrows;
-import org.apache.shardingsphere.shardingproxy.transport.mysql.packet.command.query.binary.BinaryStatementRegistry;
+import org.apache.shardingsphere.shardingproxy.transport.mysql.packet.command.query.binary.MySQLBinaryStatementRegistry;
 
 import java.lang.reflect.Field;
 import java.util.Map;
@@ -30,18 +30,18 @@ import java.util.concurrent.atomic.AtomicInteger;
 public final class BinaryStatementRegistryUtil {
     
     /**
-     * Reset {@code BinaryStatementRegistry}.
+     * Reset {@code MySQLBinaryStatementRegistry}.
      */
     @SneakyThrows
     public static void reset() {
-        Field statementIdAssignerField = BinaryStatementRegistry.class.getDeclaredField("statementIdAssigner");
+        Field statementIdAssignerField = MySQLBinaryStatementRegistry.class.getDeclaredField("statementIdAssigner");
         statementIdAssignerField.setAccessible(true);
-        ((Map) statementIdAssignerField.get(BinaryStatementRegistry.getInstance())).clear();
-        Field binaryStatementsField = BinaryStatementRegistry.class.getDeclaredField("binaryStatements");
+        ((Map) statementIdAssignerField.get(MySQLBinaryStatementRegistry.getInstance())).clear();
+        Field binaryStatementsField = MySQLBinaryStatementRegistry.class.getDeclaredField("binaryStatements");
         binaryStatementsField.setAccessible(true);
-        ((Map) binaryStatementsField.get(BinaryStatementRegistry.getInstance())).clear();
-        Field sequenceField = BinaryStatementRegistry.class.getDeclaredField("sequence");
+        ((Map) binaryStatementsField.get(MySQLBinaryStatementRegistry.getInstance())).clear();
+        Field sequenceField = MySQLBinaryStatementRegistry.class.getDeclaredField("sequence");
         sequenceField.setAccessible(true);
-        ((AtomicInteger) sequenceField.get(BinaryStatementRegistry.getInstance())).set(0);
+        ((AtomicInteger) sequenceField.get(MySQLBinaryStatementRegistry.getInstance())).set(0);
     }
 }

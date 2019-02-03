@@ -28,16 +28,16 @@ import org.apache.shardingsphere.shardingproxy.backend.communication.netty.futur
 import org.apache.shardingsphere.shardingproxy.config.yaml.YamlDataSourceParameter;
 import org.apache.shardingsphere.shardingproxy.runtime.ChannelRegistry;
 import org.apache.shardingsphere.shardingproxy.runtime.GlobalRegistry;
-import org.apache.shardingsphere.shardingproxy.transport.mysql.constant.CapabilityFlag;
-import org.apache.shardingsphere.shardingproxy.transport.mysql.constant.ServerInfo;
+import org.apache.shardingsphere.shardingproxy.transport.mysql.constant.MySQLCapabilityFlag;
+import org.apache.shardingsphere.shardingproxy.transport.mysql.constant.MySQLServerInfo;
 import org.apache.shardingsphere.shardingproxy.transport.mysql.packet.MySQLPacketPayload;
-import org.apache.shardingsphere.shardingproxy.transport.mysql.packet.command.query.ColumnDefinition41Packet;
-import org.apache.shardingsphere.shardingproxy.transport.mysql.packet.command.query.text.TextResultSetRowPacket;
-import org.apache.shardingsphere.shardingproxy.transport.mysql.packet.generic.EofPacket;
-import org.apache.shardingsphere.shardingproxy.transport.mysql.packet.generic.ErrPacket;
-import org.apache.shardingsphere.shardingproxy.transport.mysql.packet.generic.OKPacket;
-import org.apache.shardingsphere.shardingproxy.transport.mysql.packet.handshake.HandshakePacket;
-import org.apache.shardingsphere.shardingproxy.transport.mysql.packet.handshake.HandshakeResponse41Packet;
+import org.apache.shardingsphere.shardingproxy.transport.mysql.packet.command.query.MySQLColumnDefinition41Packet;
+import org.apache.shardingsphere.shardingproxy.transport.mysql.packet.command.query.text.MySQLTextResultSetRowPacket;
+import org.apache.shardingsphere.shardingproxy.transport.mysql.packet.generic.MySQLEofPacket;
+import org.apache.shardingsphere.shardingproxy.transport.mysql.packet.generic.MySQLErrPacket;
+import org.apache.shardingsphere.shardingproxy.transport.mysql.packet.generic.MySQLOKPacket;
+import org.apache.shardingsphere.shardingproxy.transport.mysql.packet.handshake.MySQLHandshakePacket;
+import org.apache.shardingsphere.shardingproxy.transport.mysql.packet.handshake.MySQLHandshakeResponse41Packet;
 
 import java.security.MessageDigest;
 import java.util.HashMap;
@@ -80,14 +80,14 @@ public final class MySQLResponseHandler extends ResponseHandler {
     @Override
     protected void auth(final ChannelHandlerContext context, final ByteBuf byteBuf) {
         try (MySQLPacketPayload payload = new MySQLPacketPayload(byteBuf)) {
-            HandshakePacket handshakePacket = new HandshakePacket(payload);
+            MySQLHandshakePacket mySQLHandshakePacket = new MySQLHandshakePacket(payload);
             byte[] authResponse = securePasswordAuthentication(
-                    (null == dataSourceParameter.getPassword() ? "" : dataSourceParameter.getPassword()).getBytes(), handshakePacket.getAuthPluginData().getAuthPluginData());
-            HandshakeResponse41Packet handshakeResponse41Packet = new HandshakeResponse41Packet(
-                    handshakePacket.getSequenceId() + 1, CapabilityFlag.calculateHandshakeCapabilityFlagsLower(), 16777215, ServerInfo.CHARSET,
+                    (null == dataSourceParameter.getPassword() ? "" : dataSourceParameter.getPassword()).getBytes(), mySQLHandshakePacket.getMySQLAuthPluginData().getAuthPluginData());
+            MySQLHandshakeResponse41Packet mySQLHandshakeResponse41Packet = new MySQLHandshakeResponse41Packet(
+                    mySQLHandshakePacket.getSequenceId() + 1, MySQLCapabilityFlag.calculateHandshakeCapabilityFlagsLower(), 16777215, MySQLServerInfo.CHARSET,
                     dataSourceParameter.getUsername(), authResponse, dataSourceMetaData.getSchemaName());
-            ChannelRegistry.getInstance().putConnectionId(context.channel().id().asShortText(), handshakePacket.getConnectionId());
-            context.writeAndFlush(handshakeResponse41Packet);
+            ChannelRegistry.getInstance().putConnectionId(context.channel().id().asShortText(), mySQLHandshakePacket.getConnectionId());
+            context.writeAndFlush(mySQLHandshakeResponse41Packet);
         }
     }
     
@@ -109,13 +109,13 @@ public final class MySQLResponseHandler extends ResponseHandler {
     @Override
     protected void executeCommand(final ChannelHandlerContext context, final ByteBuf byteBuf, final int header) {
         switch (header) {
-            case EofPacket.HEADER:
+            case MySQLEofPacket.HEADER:
                 eofPacket(context, byteBuf);
                 break;
-            case OKPacket.HEADER:
+            case MySQLOKPacket.HEADER:
                 okPacket(context, byteBuf);
                 break;
-            case ErrPacket.HEADER:
+            case MySQLErrPacket.HEADER:
                 errPacket(context, byteBuf);
                 break;
             default:
@@ -128,7 +128,7 @@ public final class MySQLResponseHandler extends ResponseHandler {
         try (MySQLPacketPayload payload = new MySQLPacketPayload(byteBuf)) {
             MySQLQueryResult mysqlQueryResult = new MySQLQueryResult();
             // TODO remove netty backend
-//            mysqlQueryResult.setGenericResponse(new OKPacket(payload));
+//            mysqlQueryResult.setGenericResponse(new MySQLOKPacket(payload));
             resultMap.put(connectionId, mysqlQueryResult);
             setResponse(context);
         } finally {
@@ -141,7 +141,7 @@ public final class MySQLResponseHandler extends ResponseHandler {
         try (MySQLPacketPayload payload = new MySQLPacketPayload(byteBuf)) {
             MySQLQueryResult mysqlQueryResult = new MySQLQueryResult();
             // TODO remove netty backend
-//            mysqlQueryResult.setGenericResponse(new ErrPacket(payload));
+//            mysqlQueryResult.setGenericResponse(new MySQLErrPacket(payload));
             resultMap.put(connectionId, mysqlQueryResult);
             setResponse(context);
         } finally {
@@ -155,12 +155,12 @@ public final class MySQLResponseHandler extends ResponseHandler {
         MySQLPacketPayload payload = new MySQLPacketPayload(byteBuf);
         if (mysqlQueryResult.isColumnFinished()) {
             // TODO remove netty backend
-//            mysqlQueryResult.setRowFinished(new EofPacket(payload));
+//            mysqlQueryResult.setRowFinished(new MySQLEofPacket(payload));
             resultMap.remove(connectionId);
             payload.close();
         } else {
             // TODO remove netty backend
-//            mysqlQueryResult.setColumnFinished(new EofPacket(payload));
+//            mysqlQueryResult.setColumnFinished(new MySQLEofPacket(payload));
             setResponse(context);
         }
     }
@@ -180,9 +180,9 @@ public final class MySQLResponseHandler extends ResponseHandler {
             mysqlQueryResult = new MySQLQueryResult(payload);
             resultMap.put(connectionId, mysqlQueryResult);
         } else if (mysqlQueryResult.needColumnDefinition()) {
-            mysqlQueryResult.addColumnDefinition(new ColumnDefinition41Packet(payload));
+            mysqlQueryResult.addColumnDefinition(new MySQLColumnDefinition41Packet(payload));
         } else {
-            mysqlQueryResult.addTextResultSetRow(new TextResultSetRowPacket(payload, mysqlQueryResult.getColumnCount()));
+            mysqlQueryResult.addTextResultSetRow(new MySQLTextResultSetRowPacket(payload, mysqlQueryResult.getColumnCount()));
         }
     }
 }

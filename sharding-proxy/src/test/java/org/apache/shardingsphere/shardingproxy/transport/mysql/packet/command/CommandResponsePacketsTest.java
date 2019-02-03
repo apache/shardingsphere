@@ -19,7 +19,7 @@ package org.apache.shardingsphere.shardingproxy.transport.mysql.packet.command;
 
 import org.apache.shardingsphere.shardingproxy.transport.common.packet.DatabasePacket;
 import org.apache.shardingsphere.shardingproxy.transport.common.packet.command.CommandResponsePackets;
-import org.apache.shardingsphere.shardingproxy.transport.mysql.packet.generic.OKPacket;
+import org.apache.shardingsphere.shardingproxy.transport.mysql.packet.generic.MySQLOKPacket;
 import org.junit.Test;
 
 import static org.hamcrest.CoreMatchers.is;
@@ -29,8 +29,8 @@ public final class CommandResponsePacketsTest {
     
     @Test
     public void assertGetHeadPacket() {
-        DatabasePacket packet1 = new OKPacket(1);
-        DatabasePacket packet2 = new OKPacket(2);
+        DatabasePacket packet1 = new MySQLOKPacket(1);
+        DatabasePacket packet2 = new MySQLOKPacket(2);
         CommandResponsePackets actual = new CommandResponsePackets(packet1);
         actual.getPackets().add(packet2);
         assertThat(actual.getHeadPacket(), is(packet1));

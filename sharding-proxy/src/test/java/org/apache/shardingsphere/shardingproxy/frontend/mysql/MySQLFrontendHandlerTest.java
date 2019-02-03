@@ -25,10 +25,10 @@ import lombok.SneakyThrows;
 import org.apache.shardingsphere.core.constant.properties.ShardingProperties;
 import org.apache.shardingsphere.core.rule.Authentication;
 import org.apache.shardingsphere.shardingproxy.runtime.GlobalRegistry;
-import org.apache.shardingsphere.shardingproxy.transport.mysql.packet.generic.ErrPacket;
-import org.apache.shardingsphere.shardingproxy.transport.mysql.packet.generic.OKPacket;
-import org.apache.shardingsphere.shardingproxy.transport.mysql.packet.handshake.ConnectionIdGenerator;
-import org.apache.shardingsphere.shardingproxy.transport.mysql.packet.handshake.HandshakePacket;
+import org.apache.shardingsphere.shardingproxy.transport.mysql.packet.generic.MySQLErrPacket;
+import org.apache.shardingsphere.shardingproxy.transport.mysql.packet.generic.MySQLOKPacket;
+import org.apache.shardingsphere.shardingproxy.transport.mysql.packet.handshake.MySQLConnectionIdGenerator;
+import org.apache.shardingsphere.shardingproxy.transport.mysql.packet.handshake.MySQLHandshakePacket;
 import org.junit.Before;
 import org.junit.Test;
 import org.junit.runner.RunWith;
@@ -54,9 +54,9 @@ public final class MySQLFrontendHandlerTest {
     @Before
     @SneakyThrows
     public void resetConnectionIdGenerator() {
-        Field field = ConnectionIdGenerator.class.getDeclaredField("currentId");
+        Field field = MySQLConnectionIdGenerator.class.getDeclaredField("currentId");
         field.setAccessible(true);
-        field.set(ConnectionIdGenerator.getInstance(), 0);
+        field.set(MySQLConnectionIdGenerator.getInstance(), 0);
         mysqlFrontendHandler = new MySQLFrontendHandler();
     }
     
@@ -68,7 +68,7 @@ public final class MySQLFrontendHandlerTest {
         when(channel.id()).thenReturn(channelId);
         when(context.channel()).thenReturn(channel);
         mysqlFrontendHandler.handshake(context);
-        verify(context).writeAndFlush(isA(HandshakePacket.class));
+        verify(context).writeAndFlush(isA(MySQLHandshakePacket.class));
     }
     
     @Test
@@ -76,7 +76,7 @@ public final class MySQLFrontendHandlerTest {
         Authentication authentication = new Authentication("", "");
         setAuthentication(authentication);
         mysqlFrontendHandler.auth(context, mock(ByteBuf.class));
-        verify(context).writeAndFlush(isA(OKPacket.class));
+        verify(context).writeAndFlush(isA(MySQLOKPacket.class));
     }
     
     @Test
@@ -84,7 +84,7 @@ public final class MySQLFrontendHandlerTest {
         Authentication authentication = new Authentication("root", "root");
         setAuthentication(authentication);
         mysqlFrontendHandler.auth(context, mock(ByteBuf.class));
-        verify(context).writeAndFlush(isA(ErrPacket.class));
+        verify(context).writeAndFlush(isA(MySQLErrPacket.class));
     }
     
     @Test

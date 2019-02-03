@@ -23,16 +23,16 @@ import org.junit.runners.Suite.SuiteClasses;
 
 @RunWith(Suite.class)
 @SuiteClasses({
-        BinaryProtocolValueFactoryTest.class, 
-        StringLenencBinaryProtocolValueTest.class, 
-        Int8BinaryProtocolValueTest.class, 
-        Int4BinaryProtocolValueTest.class, 
-        Int2BinaryProtocolValueTest.class, 
-        Int1BinaryProtocolValueTest.class, 
-        DoubleBinaryProtocolValueTest.class, 
-        FloatBinaryProtocolValueTest.class, 
-        DateBinaryProtocolValueTest.class, 
-        TimeBinaryProtocolValueTest.class
+        MySQLMySQLBinaryProtocolValueFactoryTest.class,
+        MySQLStringLenencBinaryProtocolValueTest.class,
+        MySQLInt8BinaryProtocolValueTest.class,
+        MySQLInt4BinaryProtocolValueTest.class,
+        MySQLInt2BinaryProtocolValueTest.class,
+        MySQLInt1BinaryProtocolValueTest.class,
+        MySQLDoubleBinaryProtocolValueTest.class,
+        MySQLFloatBinaryProtocolValueTest.class,
+        MySQLDateBinaryProtocolValueTest.class,
+        MySQLTimeBinaryProtocolValueTest.class
 })
 public final class AllMySQLBinaryProtocolTests {
 }

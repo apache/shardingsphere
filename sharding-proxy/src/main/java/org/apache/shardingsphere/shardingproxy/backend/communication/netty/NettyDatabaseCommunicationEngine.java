@@ -46,9 +46,9 @@ import org.apache.shardingsphere.shardingproxy.runtime.schema.MasterSlaveSchema;
 import org.apache.shardingsphere.shardingproxy.runtime.schema.ShardingSchema;
 import org.apache.shardingsphere.shardingproxy.transport.common.packet.DatabasePacket;
 import org.apache.shardingsphere.shardingproxy.transport.common.packet.command.CommandResponsePackets;
-import org.apache.shardingsphere.shardingproxy.transport.mysql.packet.command.query.text.query.ComQueryPacket;
-import org.apache.shardingsphere.shardingproxy.transport.mysql.packet.generic.ErrPacket;
-import org.apache.shardingsphere.shardingproxy.transport.mysql.packet.generic.OKPacket;
+import org.apache.shardingsphere.shardingproxy.transport.mysql.packet.command.query.text.query.MySQLComPacketQuery;
+import org.apache.shardingsphere.shardingproxy.transport.mysql.packet.generic.MySQLErrPacket;
+import org.apache.shardingsphere.shardingproxy.transport.mysql.packet.generic.MySQLOKPacket;
 
 import java.sql.SQLException;
 import java.util.ArrayList;
@@ -129,7 +129,7 @@ public final class NettyDatabaseCommunicationEngine implements DatabaseCommunica
                 logicSchema.getMetaData(), databaseType, GLOBAL_REGISTRY.getShardingProperties().<Boolean>getValue(ShardingPropertiesConstant.SQL_SHOW));
         SQLRouteResult routeResult = routingEngine.route(sql);
         if (routeResult.getRouteUnits().isEmpty()) {
-            return new CommandResponsePackets(new OKPacket(1));
+            return new CommandResponsePackets(new MySQLOKPacket(1));
         }
         synchronizedFuture = new SynchronizedFuture(routeResult.getRouteUnits().size());
         FutureRegistry.getInstance().put(connectionId, synchronizedFuture);
@@ -164,7 +164,7 @@ public final class NettyDatabaseCommunicationEngine implements DatabaseCommunica
         Channel channel = pool.acquire().get(GLOBAL_REGISTRY.getShardingProperties().<Long>getValue(ShardingPropertiesConstant.PROXY_BACKEND_CONNECTION_TIMEOUT_SECONDS), TimeUnit.SECONDS);
         channelMap.get(dataSourceName).add(channel);
         ChannelRegistry.getInstance().putConnectionId(channel.id().asShortText(), connectionId);
-        channel.writeAndFlush(new ComQueryPacket(sequenceId, sql));
+        channel.writeAndFlush(new MySQLComPacketQuery(sequenceId, sql));
     }
     
     private CommandResponsePackets merge(final SQLStatement sqlStatement, final List<CommandResponsePackets> packets, final List<QueryResult> queryResults) {
@@ -173,7 +173,7 @@ public final class NettyDatabaseCommunicationEngine implements DatabaseCommunica
             headPackets.getPackets().add(each.getHeadPacket());
         }
         for (DatabasePacket each : headPackets.getPackets()) {
-            if (each instanceof ErrPacket) {
+            if (each instanceof MySQLErrPacket) {
                 return new CommandResponsePackets(each);
             }
         }
@@ -193,13 +193,13 @@ public final class NettyDatabaseCommunicationEngine implements DatabaseCommunica
         int affectedRows = 0;
         long lastInsertId = 0;
         for (DatabasePacket each : firstPackets.getPackets()) {
-            if (each instanceof OKPacket) {
-                OKPacket okPacket = (OKPacket) each;
-                affectedRows += okPacket.getAffectedRows();
-                lastInsertId = okPacket.getLastInsertId();
+            if (each instanceof MySQLOKPacket) {
+                MySQLOKPacket mySQLOKPacket = (MySQLOKPacket) each;
+                affectedRows += mySQLOKPacket.getAffectedRows();
+                lastInsertId = mySQLOKPacket.getLastInsertId();
             }
         }
-        return new CommandResponsePackets(new OKPacket(1, affectedRows, lastInsertId));
+        return new CommandResponsePackets(new MySQLOKPacket(1, affectedRows, lastInsertId));
     }
     
     private CommandResponsePackets mergeDQLorDAL(final SQLStatement sqlStatement, final List<CommandResponsePackets> packets, final List<QueryResult> queryResults) {
@@ -207,7 +207,7 @@ public final class NettyDatabaseCommunicationEngine implements DatabaseCommunica
             mergedResult = MergeEngineFactory.newInstance(
                 GlobalRegistry.getInstance().getDatabaseType(), ((ShardingSchema) logicSchema).getShardingRule(), sqlStatement, logicSchema.getMetaData().getTable(), queryResults).merge();
         } catch (final SQLException ex) {
-            return new CommandResponsePackets(new ErrPacket(1, ex.getErrorCode(), ex.getSQLState(), ex.getMessage()));
+            return new CommandResponsePackets(new MySQLErrPacket(1, ex.getErrorCode(), ex.getSQLState(), ex.getMessage()));
         }
         return packets.get(0);
     }

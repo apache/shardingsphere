@@ -23,7 +23,7 @@ import lombok.Getter;
 import lombok.RequiredArgsConstructor;
 
 /**
- * Payload operation for MySQL packet data types.
+ * MySQL payload operation for MySQL packet data types.
  *
  * @see <a href="https://dev.mysql.com/doc/internals/en/describing-packets.html">describing packets</a>
  * 

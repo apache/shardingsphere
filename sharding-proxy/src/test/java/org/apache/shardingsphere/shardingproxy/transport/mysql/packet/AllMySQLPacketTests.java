@@ -17,7 +17,7 @@
 
 package org.apache.shardingsphere.shardingproxy.transport.mysql.packet;
 
-import org.apache.shardingsphere.shardingproxy.transport.mysql.packet.command.AllMySQLCommandPacketTests;
+import org.apache.shardingsphere.shardingproxy.transport.mysql.packet.command.AllMySQLMySQLCommandPacketTests;
 import org.apache.shardingsphere.shardingproxy.transport.mysql.packet.generic.AllMySQLGenericPacketTests;
 import org.apache.shardingsphere.shardingproxy.transport.mysql.packet.handshake.AllMySQLHandshakeTests;
 import org.junit.runner.RunWith;
@@ -29,7 +29,7 @@ import org.junit.runners.Suite.SuiteClasses;
         MySQLPacketPayloadTest.class, 
         AllMySQLGenericPacketTests.class, 
         AllMySQLHandshakeTests.class, 
-        AllMySQLCommandPacketTests.class
+        AllMySQLMySQLCommandPacketTests.class
 })
 public final class AllMySQLPacketTests {
 }
