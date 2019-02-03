@@ -120,7 +120,7 @@ public class ShardingRule {
     
     private ShardingKeyGenerator createDefaultKeyGenerator(final KeyGeneratorConfiguration keyGeneratorConfiguration) {
         return containsKeyGeneratorConfiguration(keyGeneratorConfiguration) 
-                ? ShardingKeyGeneratorFactory.newInstance(keyGeneratorConfiguration.getType(), keyGeneratorConfiguration.getProps()) : new SnowflakeShardingKeyGenerator();
+                ? ShardingKeyGeneratorFactory.getInstance().newAlgorithm(keyGeneratorConfiguration.getType(), keyGeneratorConfiguration.getProps()) : new SnowflakeShardingKeyGenerator();
     }
     
     private boolean containsKeyGeneratorConfiguration(final KeyGeneratorConfiguration keyGeneratorConfiguration) {

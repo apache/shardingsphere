@@ -15,34 +15,35 @@
  * limitations under the License.
  */
 
-package org.apache.shardingsphere.core.encrypt;
+package org.apache.shardingsphere.spi.algorithm;
 
-import org.apache.shardingsphere.spi.NewInstanceServiceLoader;
-import org.apache.shardingsphere.spi.algorithm.BaseAlgorithmFactory;
+import java.util.Properties;
 
 /**
- * Sharding encryptor factory.
- * 
- * @author panjuan
+ * Base algorithm SPI.
+ *
+ * @author zhangliang
  */
-public final class ShardingEncryptorFactory extends BaseAlgorithmFactory<ShardingEncryptor> {
-    
-    private static final ShardingEncryptorFactory INSTANCE = new ShardingEncryptorFactory();
-    
-    static {
-        NewInstanceServiceLoader.register(ShardingEncryptor.class);
-    }
-    
-    private ShardingEncryptorFactory() {
-        super(ShardingEncryptor.class);
-    }
+public interface BaseAlgorithm {
     
     /**
-     * Get instance of encryptor factory.
-     *
-     * @return instance of encryptor factory
+     * Get algorithm type.
+     * 
+     * @return type
      */
-    public static ShardingEncryptorFactory getInstance() {
-        return INSTANCE;
-    }
+    String getType();
+    
+    /**
+     * Get properties.
+     * 
+     * @return properties of algorithm
+     */
+    Properties getProperties();
+    
+    /**
+     * Set properties.
+     * 
+     * @param properties properties of algorithm
+     */
+    void setProperties(Properties properties);
 }

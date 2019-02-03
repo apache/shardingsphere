@@ -17,22 +17,15 @@
 
 package org.apache.shardingsphere.core.keygen;
 
-import java.util.Properties;
+import org.apache.shardingsphere.spi.algorithm.BaseAlgorithm;
 
 /**
- * Key generator interface.
+ * Key generator.
  *
  * @author zhangliang
  * @author panjuan
  */
-public interface ShardingKeyGenerator {
-    
-    /**
-     * Get type of key generator.
-     * 
-     * @return type
-     */
-    String getType();
+public interface ShardingKeyGenerator extends BaseAlgorithm {
     
     /**
      * Generate key.
@@ -40,18 +33,4 @@ public interface ShardingKeyGenerator {
      * @return generated key
      */
     Comparable<?> generateKey();
-    
-    /**
-     * Get properties.
-     * 
-     * @return The properties of key generator
-     */
-    Properties getProperties();
-    
-    /**
-     * Set Properties.
-     * 
-     * @param properties properties
-     */
-    void setProperties(Properties properties);
 }

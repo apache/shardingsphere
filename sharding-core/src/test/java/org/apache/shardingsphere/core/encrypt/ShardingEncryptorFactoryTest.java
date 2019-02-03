@@ -31,11 +31,11 @@ public final class ShardingEncryptorFactoryTest {
     public void assertNewInstance() {
         Properties props = new Properties();
         props.setProperty("key", "value");
-        assertThat(ShardingEncryptorFactory.newInstance("test", props).getProperties().getProperty("key"), is("value"));
+        assertThat(ShardingEncryptorFactory.getInstance().newAlgorithm("test", props).getProperties().getProperty("key"), is("value"));
     }
     
     @Test(expected = ShardingConfigurationException.class)
     public void assertNewInstanceWithException() {
-        ShardingEncryptorFactory.newInstance("test1", new Properties());
+        ShardingEncryptorFactory.getInstance().newAlgorithm("test1", new Properties());
     }
 }

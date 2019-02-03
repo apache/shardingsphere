@@ -26,15 +26,15 @@ import java.util.Properties;
 import static org.hamcrest.CoreMatchers.instanceOf;
 import static org.junit.Assert.assertThat;
 
-public final class ShardingShardingKeyGeneratorFactoryTest {
+public final class ShardingKeyGeneratorFactoryTest {
     
     @Test
     public void assertCreateKeyGeneratorSuccess() {
-        assertThat(ShardingKeyGeneratorFactory.newInstance("SNOWFLAKE", new Properties()), instanceOf(SnowflakeShardingKeyGenerator.class));
+        assertThat(ShardingKeyGeneratorFactory.getInstance().newAlgorithm("SNOWFLAKE", new Properties()), instanceOf(SnowflakeShardingKeyGenerator.class));
     }
     
     @Test(expected = ShardingConfigurationException.class)
     public void assertCreateKeyGeneratorFailureWithInstantiationError() {
-        ShardingKeyGeneratorFactory.newInstance("instantiation", new Properties());
+        ShardingKeyGeneratorFactory.getInstance().newAlgorithm("instantiation", new Properties());
     }
 }

@@ -108,7 +108,7 @@ public final class TableRule {
         tableShardingStrategy = null == tableRuleConfig.getTableShardingStrategyConfig() ? null : ShardingStrategyFactory.newInstance(tableRuleConfig.getTableShardingStrategyConfig());
         generateKeyColumn = getGenerateKeyColumn(tableRuleConfig.getKeyGeneratorConfig(), defaultGenerateKeyColumn);
         shardingKeyGenerator = containsKeyGeneratorConfiguration(tableRuleConfig)
-                ? ShardingKeyGeneratorFactory.newInstance(tableRuleConfig.getKeyGeneratorConfig().getType(), tableRuleConfig.getKeyGeneratorConfig().getProps()) : null;
+                ? ShardingKeyGeneratorFactory.getInstance().newAlgorithm(tableRuleConfig.getKeyGeneratorConfig().getType(), tableRuleConfig.getKeyGeneratorConfig().getProps()) : null;
         shardingEncryptorStrategy = null == tableRuleConfig.getEncryptorConfig() ? null : getShardingEncryptorStrategy(tableRuleConfig.getEncryptorConfig());
         logicIndex = null == tableRuleConfig.getLogicIndex() ? null : tableRuleConfig.getLogicIndex().toLowerCase();
     }
@@ -118,7 +118,7 @@ public final class TableRule {
     }
     
     private ShardingEncryptorStrategy getShardingEncryptorStrategy(final EncryptorConfiguration encryptorConfiguration) {
-        ShardingEncryptor shardingEncryptor = ShardingEncryptorFactory.newInstance(encryptorConfiguration.getType(), encryptorConfiguration.getProps());
+        ShardingEncryptor shardingEncryptor = ShardingEncryptorFactory.getInstance().newAlgorithm(encryptorConfiguration.getType(), encryptorConfiguration.getProps());
         List<String> columns = Splitter.on(",").trimResults().splitToList(encryptorConfiguration.getColumns());
         List<String> assistedQueryColumns = Strings.isNullOrEmpty(encryptorConfiguration.getAssistedQueryColumns())
                 ? Collections.<String>emptyList() : Splitter.on(",").trimResults().splitToList(encryptorConfiguration.getAssistedQueryColumns());

@@ -17,35 +17,14 @@
 
 package org.apache.shardingsphere.core.encrypt;
 
-import java.util.Properties;
+import org.apache.shardingsphere.spi.algorithm.BaseAlgorithm;
 
 /**
  * Sharding encryptor.
  *
  * @author panjuan
  */
-public interface ShardingEncryptor {
-    
-    /**
-     * Get sharding encryptor type.
-     * 
-     * @return sharding encryptor type
-     */
-    String getType();
-    
-    /**
-     * Get properties.
-     * 
-     * @return properties
-     */
-    Properties getProperties();
-    
-    /**
-     * Set properties.
-     * 
-     * @param properties properties
-     */
-    void setProperties(Properties properties);
+public interface ShardingEncryptor extends BaseAlgorithm {
     
     /**
      * Encode.

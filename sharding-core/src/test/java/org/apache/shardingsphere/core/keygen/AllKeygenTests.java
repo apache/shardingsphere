@@ -25,7 +25,7 @@ import org.junit.runners.Suite.SuiteClasses;
 @RunWith(Suite.class)
 @SuiteClasses({
         SnowflakeShardingKeyGeneratorTest.class, 
-        ShardingShardingKeyGeneratorFactoryTest.class
+        ShardingKeyGeneratorFactoryTest.class
     })
 public final class AllKeygenTests {
 }

@@ -17,15 +17,8 @@
 
 package org.apache.shardingsphere.core.keygen;
 
-import com.google.common.base.Predicate;
-import com.google.common.collect.Collections2;
-import lombok.AccessLevel;
-import lombok.NoArgsConstructor;
-import org.apache.shardingsphere.core.exception.ShardingConfigurationException;
 import org.apache.shardingsphere.spi.NewInstanceServiceLoader;
-
-import java.util.Collection;
-import java.util.Properties;
+import org.apache.shardingsphere.spi.algorithm.BaseAlgorithmFactory;
 
 /**
  * Key generator factory.
@@ -33,37 +26,24 @@ import java.util.Properties;
  * @author zhangliang
  * @author panjuan
  */
-@NoArgsConstructor(access = AccessLevel.PRIVATE)
-public final class ShardingKeyGeneratorFactory {
+public final class ShardingKeyGeneratorFactory extends BaseAlgorithmFactory<ShardingKeyGenerator> {
+    
+    private static final ShardingKeyGeneratorFactory INSTANCE = new ShardingKeyGeneratorFactory();
     
     static {
         NewInstanceServiceLoader.register(ShardingKeyGenerator.class);
     }
     
-    /**
-     * Create key generator.
-     * 
-     * @param type key generator type
-     * @param props key generator properties
-     * @return key generator instance
-     */
-    public static ShardingKeyGenerator newInstance(final String type, final Properties props) {
-        Collection<ShardingKeyGenerator> shardingKeyGenerators = loadKeyGenerators(type);
-        if (shardingKeyGenerators.isEmpty()) {
-            throw new ShardingConfigurationException("Invalid key generator type.");
-        }
-        ShardingKeyGenerator result = shardingKeyGenerators.iterator().next();
-        result.setProperties(props);
-        return result;
+    private ShardingKeyGeneratorFactory() {
+        super(ShardingKeyGenerator.class);
     }
     
-    private static Collection<ShardingKeyGenerator> loadKeyGenerators(final String keyGeneratorType) {
-        return Collections2.filter(NewInstanceServiceLoader.newServiceInstances(ShardingKeyGenerator.class), new Predicate<ShardingKeyGenerator>() {
-            
-            @Override
-            public boolean apply(final ShardingKeyGenerator input) {
-                return keyGeneratorType.equalsIgnoreCase(input.getType());
-            }
-        });
+    /**
+     * Get instance of key generator factory.
+     * 
+     * @return instance of key generator factory
+     */
+    public static ShardingKeyGeneratorFactory getInstance() {
+        return INSTANCE;
     }
 }
