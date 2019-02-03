@@ -108,7 +108,8 @@ public final class MySQLQueryComStmtExecutePacket implements MySQLQueryCommandPa
     private List<Object> getParameters(final MySQLPacketPayload payload, final int parametersCount) throws SQLException {
         List<Object> result = new ArrayList<>(parametersCount);
         for (int parameterIndex = 0; parameterIndex < parametersCount; parameterIndex++) {
-            MySQLBinaryProtocolValue mySQLBinaryProtocolValue = MySQLBinaryProtocolValueFactory.getBinaryProtocolValue(mySQLBinaryStatement.getParameterTypes().get(parameterIndex).getMySQLColumnType());
+            MySQLBinaryProtocolValue mySQLBinaryProtocolValue = MySQLBinaryProtocolValueFactory.getBinaryProtocolValue(
+                mySQLBinaryStatement.getParameterTypes().get(parameterIndex).getMySQLColumnType());
             result.add(mySQLNullBitmap.isNullParameter(parameterIndex) ? null : mySQLBinaryProtocolValue.read(payload));
         }
         return result;

@@ -47,7 +47,8 @@ public final class UseDatabaseBackendHandler implements TextProtocolBackendHandl
         String schema = SQLUtil.getExactlyValue(useStatement.getSchema());
         if (!GlobalRegistry.getInstance().schemaExists(schema)) {
             MySQLServerErrorCode mySQLServerErrorCode = MySQLServerErrorCode.ER_BAD_DB_ERROR;
-            return new CommandResponsePackets(new DatabaseFailurePacket(1, mySQLServerErrorCode.getErrorCode(), mySQLServerErrorCode.getSqlState(), String.format(mySQLServerErrorCode.getErrorMessage(), schema)));
+            return new CommandResponsePackets(new DatabaseFailurePacket(1, mySQLServerErrorCode.getErrorCode(),
+                mySQLServerErrorCode.getSqlState(), String.format(mySQLServerErrorCode.getErrorMessage(), schema)));
         }
         backendConnection.setCurrentSchema(schema);
         return new CommandResponsePackets(new DatabaseSuccessPacket(1, 0L, 0L));

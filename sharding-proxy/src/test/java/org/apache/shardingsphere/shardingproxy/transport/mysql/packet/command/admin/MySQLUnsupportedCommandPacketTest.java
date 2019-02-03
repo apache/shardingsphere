@@ -46,7 +46,8 @@ public final class MySQLUnsupportedCommandPacketTest {
         assertThat(actual.get().getHeadPacket().getSequenceId(), is(2));
         assertThat(((MySQLErrPacket) actual.get().getHeadPacket()).getErrorCode(), is(MySQLServerErrorCode.ER_UNSUPPORTED_COMMAND.getErrorCode()));
         assertThat(((MySQLErrPacket) actual.get().getHeadPacket()).getSqlState(), is(MySQLServerErrorCode.ER_UNSUPPORTED_COMMAND.getSqlState()));
-        assertThat(((MySQLErrPacket) actual.get().getHeadPacket()).getErrorMessage(), is(String.format(MySQLServerErrorCode.ER_UNSUPPORTED_COMMAND.getErrorMessage(), MySQLCommandPacketType.COM_SLEEP.name())));
+        assertThat(((MySQLErrPacket) actual.get().getHeadPacket()).getErrorMessage(), is(String.format(
+            MySQLServerErrorCode.ER_UNSUPPORTED_COMMAND.getErrorMessage(), MySQLCommandPacketType.COM_SLEEP.name())));
     }
     
     @Test
