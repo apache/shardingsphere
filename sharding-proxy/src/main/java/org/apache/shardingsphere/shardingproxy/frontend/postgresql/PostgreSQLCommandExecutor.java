@@ -39,8 +39,8 @@ import org.apache.shardingsphere.shardingproxy.transport.postgresql.packet.comma
 import org.apache.shardingsphere.shardingproxy.transport.postgresql.packet.generic.PostgreSQLCommandCompletePacket;
 import org.apache.shardingsphere.shardingproxy.transport.postgresql.packet.generic.PostgreSQLErrorResponsePacket;
 import org.apache.shardingsphere.shardingproxy.transport.postgresql.packet.generic.PostgreSQLReadyForQueryPacket;
-import org.apache.shardingsphere.spi.root.RootInvokeHook;
-import org.apache.shardingsphere.spi.root.SPIRootInvokeHook;
+import org.apache.shardingsphere.spi.hook.root.RootInvokeHook;
+import org.apache.shardingsphere.spi.hook.root.SPIRootInvokeHook;
 
 import java.sql.SQLException;
 import java.util.ArrayList;

@@ -15,41 +15,24 @@
  * limitations under the License.
  */
 
-package org.apache.shardingsphere.spi.fixture;
+package org.apache.shardingsphere.spi.hook.root;
 
-import org.apache.shardingsphere.spi.hook.root.RootInvokeHook;
-
-import java.util.Collection;
-import java.util.LinkedList;
-
-public final class RootInvokeHookFixture implements RootInvokeHook {
-    
-    private static final Collection<String> ACTIONS = new LinkedList<>();
-    
-    @Override
-    public void start() {
-        ACTIONS.add("start");
-    }
-    
-    @Override
-    public void finish(final int connectionCount) {
-        ACTIONS.add("finish");
-    }
+/**
+ * Root invoke hook.
+ *
+ * @author zhangliang
+ */
+public interface RootInvokeHook {
     
     /**
-     * Contains action or not.
+     * Handle when root invoke started.
+     */
+    void start();
+    
+    /**
+     * Handle when root invoke finished.
      * 
-     * @param action action
-     * @return contains action or not
+     * @param connectionCount connection count
      */
-    public static boolean containsAction(final String action) {
-        return ACTIONS.contains(action);
-    }
-    
-    /**
-     * Clear actions.
-     */
-    public static void clearActions() {
-        ACTIONS.clear();
-    }
+    void finish(int connectionCount);
 }

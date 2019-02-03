@@ -27,8 +27,8 @@ import org.apache.shardingsphere.core.routing.router.masterslave.MasterVisitedMa
 import org.apache.shardingsphere.shardingjdbc.jdbc.adapter.executor.ForceExecuteCallback;
 import org.apache.shardingsphere.shardingjdbc.jdbc.adapter.executor.ForceExecuteTemplate;
 import org.apache.shardingsphere.shardingjdbc.jdbc.unsupported.AbstractUnsupportedOperationConnection;
-import org.apache.shardingsphere.spi.root.RootInvokeHook;
-import org.apache.shardingsphere.spi.root.SPIRootInvokeHook;
+import org.apache.shardingsphere.spi.hook.root.RootInvokeHook;
+import org.apache.shardingsphere.spi.hook.root.SPIRootInvokeHook;
 import org.apache.shardingsphere.transaction.ShardingTransactionManagerEngine;
 import org.apache.shardingsphere.transaction.core.TransactionType;
 import org.apache.shardingsphere.transaction.core.TransactionTypeHolder;

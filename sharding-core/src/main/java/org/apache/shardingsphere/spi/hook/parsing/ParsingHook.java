@@ -15,41 +15,37 @@
  * limitations under the License.
  */
 
-package org.apache.shardingsphere.spi.fixture;
+package org.apache.shardingsphere.spi.hook.parsing;
 
-import org.apache.shardingsphere.spi.hook.root.RootInvokeHook;
+import org.apache.shardingsphere.core.metadata.table.ShardingTableMetaData;
+import org.apache.shardingsphere.core.parsing.parser.sql.SQLStatement;
 
-import java.util.Collection;
-import java.util.LinkedList;
-
-public final class RootInvokeHookFixture implements RootInvokeHook {
-    
-    private static final Collection<String> ACTIONS = new LinkedList<>();
-    
-    @Override
-    public void start() {
-        ACTIONS.add("start");
-    }
-    
-    @Override
-    public void finish(final int connectionCount) {
-        ACTIONS.add("finish");
-    }
+/**
+ * Parsing hook.
+ *
+ * @author zhangliang
+ */
+public interface ParsingHook {
     
     /**
-     * Contains action or not.
+     * Handle when parse started.
+     *
+     * @param sql SQL to be parsed
+     */
+    void start(String sql);
+    
+    /**
+     * Handle when parse finished success.
+     *
+     * @param sqlStatement sql statement
+     * @param shardingTableMetaData sharding table meta data
+     */
+    void finishSuccess(SQLStatement sqlStatement, ShardingTableMetaData shardingTableMetaData);
+    
+    /**
+     * Handle when parse finished failure.
      * 
-     * @param action action
-     * @return contains action or not
+     * @param cause failure cause
      */
-    public static boolean containsAction(final String action) {
-        return ACTIONS.contains(action);
-    }
-    
-    /**
-     * Clear actions.
-     */
-    public static void clearActions() {
-        ACTIONS.clear();
-    }
+    void finishFailure(Exception cause);
 }

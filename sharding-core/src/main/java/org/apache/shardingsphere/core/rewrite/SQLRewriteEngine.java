@@ -53,8 +53,8 @@ import org.apache.shardingsphere.core.routing.type.TableUnit;
 import org.apache.shardingsphere.core.rule.BindingTableRule;
 import org.apache.shardingsphere.core.rule.ShardingRule;
 import org.apache.shardingsphere.core.util.SQLUtil;
-import org.apache.shardingsphere.spi.rewrite.RewriteHook;
-import org.apache.shardingsphere.spi.rewrite.SPIRewriteHook;
+import org.apache.shardingsphere.spi.hook.rewrite.RewriteHook;
+import org.apache.shardingsphere.spi.hook.rewrite.SPIRewriteHook;
 
 import java.util.HashMap;
 import java.util.List;

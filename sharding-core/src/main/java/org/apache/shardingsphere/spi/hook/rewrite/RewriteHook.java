@@ -15,41 +15,36 @@
  * limitations under the License.
  */
 
-package org.apache.shardingsphere.spi.fixture;
+package org.apache.shardingsphere.spi.hook.rewrite;
 
-import org.apache.shardingsphere.spi.hook.root.RootInvokeHook;
+import org.apache.shardingsphere.core.routing.SQLUnit;
+import org.apache.shardingsphere.core.routing.type.TableUnit;
 
-import java.util.Collection;
-import java.util.LinkedList;
-
-public final class RootInvokeHookFixture implements RootInvokeHook {
-    
-    private static final Collection<String> ACTIONS = new LinkedList<>();
-    
-    @Override
-    public void start() {
-        ACTIONS.add("start");
-    }
-    
-    @Override
-    public void finish(final int connectionCount) {
-        ACTIONS.add("finish");
-    }
+/**
+ * Rewrite Hook.
+ *
+ * @author yangyi
+ */
+public interface RewriteHook {
     
     /**
-     * Contains action or not.
-     * 
-     * @param action action
-     * @return contains action or not
+     * Handle when rewrite started.
+     *
+     * @param tableUnit table unit
      */
-    public static boolean containsAction(final String action) {
-        return ACTIONS.contains(action);
-    }
+    void start(TableUnit tableUnit);
     
     /**
-     * Clear actions.
+     * Handle when rewrite finished success.
+     *
+     * @param sqlUnit sql unit
      */
-    public static void clearActions() {
-        ACTIONS.clear();
-    }
+    void finishSuccess(SQLUnit sqlUnit);
+    
+    /**
+     * Handle when rewrite finished failure.
+     *
+     * @param cause failure cause
+     */
+    void finishFailure(Exception cause);
 }

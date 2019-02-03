@@ -15,30 +15,36 @@
  * limitations under the License.
  */
 
-package org.apache.shardingsphere.spi;
+package org.apache.shardingsphere.spi.hook.root;
 
-import org.apache.shardingsphere.spi.hook.parsing.ParsingHook;
-import org.junit.Test;
+import org.apache.shardingsphere.spi.NewInstanceServiceLoader;
 
 import java.util.Collection;
 
-import static org.hamcrest.CoreMatchers.is;
-import static org.junit.Assert.assertThat;
-import static org.junit.Assert.assertTrue;
-
-public final class NewInstanceServiceLoaderTest {
+/**
+ * Root invoke hook for SPI.
+ *
+ * @author zhangliang
+ */
+public final class SPIRootInvokeHook implements RootInvokeHook {
     
-    @Test
-    public void assertNewServiceInstanceWhenIsNotExist() {
-        NewInstanceServiceLoader.register(Collection.class);
-        Collection collection = NewInstanceServiceLoader.newServiceInstances(Collection.class);
-        assertTrue(collection.isEmpty());
+    private final Collection<RootInvokeHook> rootInvokeHooks = NewInstanceServiceLoader.newServiceInstances(RootInvokeHook.class);
+    
+    static {
+        NewInstanceServiceLoader.register(RootInvokeHook.class);
     }
     
-    @Test
-    public void assertNewServiceInstanceWhenIsExist() {
-        NewInstanceServiceLoader.register(ParsingHook.class);
-        Collection collection = NewInstanceServiceLoader.newServiceInstances(ParsingHook.class);
-        assertThat(collection.size(), is(1));
+    @Override
+    public void start() {
+        for (RootInvokeHook each : rootInvokeHooks) {
+            each.start();
+        }
+    }
+    
+    @Override
+    public void finish(final int connectionCount) {
+        for (RootInvokeHook each : rootInvokeHooks) {
+            each.finish(connectionCount);
+        }
     }
 }

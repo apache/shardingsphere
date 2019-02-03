@@ -48,8 +48,8 @@ import org.apache.shardingsphere.core.rule.BindingTableRule;
 import org.apache.shardingsphere.core.rule.ShardingRule;
 import org.apache.shardingsphere.core.rule.TableRule;
 import org.apache.shardingsphere.core.util.SQLLogger;
-import org.apache.shardingsphere.spi.parsing.ParsingHook;
-import org.apache.shardingsphere.spi.parsing.SPIParsingHook;
+import org.apache.shardingsphere.spi.hook.parsing.ParsingHook;
+import org.apache.shardingsphere.spi.hook.parsing.SPIParsingHook;
 
 import java.util.LinkedList;
 import java.util.List;
