@@ -18,7 +18,7 @@
 package org.apache.shardingsphere.shardingjdbc.api;
 
 import org.apache.shardingsphere.api.ConfigMapContext;
-import org.apache.shardingsphere.api.algorithm.masterslave.MasterSlaveLoadBalanceAlgorithmType;
+import org.apache.shardingsphere.api.algorithm.masterslave.MasterSlaveLoadBalanceAlgorithmFactory;
 import org.apache.shardingsphere.api.config.masterslave.MasterSlaveRuleConfiguration;
 import org.apache.shardingsphere.shardingjdbc.fixture.TestDataSource;
 import org.apache.shardingsphere.shardingjdbc.jdbc.core.datasource.MasterSlaveDataSource;
@@ -55,8 +55,8 @@ public final class MasterSlaveDataSourceFactoryTest {
         Properties properties = new Properties();
         properties.setProperty("sql.show", "true");
         configMap.put("key1", "value1");
-        assertThat(MasterSlaveDataSourceFactory.createDataSource(dataSourceMap, 
-                new MasterSlaveRuleConfiguration("logic_ds", "master_ds", Collections.singletonList("slave_ds"), MasterSlaveLoadBalanceAlgorithmType.ROUND_ROBIN.getAlgorithm()), 
+        assertThat(MasterSlaveDataSourceFactory.createDataSource(dataSourceMap, new MasterSlaveRuleConfiguration(
+                "logic_ds", "master_ds", Collections.singletonList("slave_ds"), MasterSlaveLoadBalanceAlgorithmFactory.getInstance().newAlgorithm("ROUND_ROBIN", new Properties())), 
                 configMap, properties), instanceOf(MasterSlaveDataSource.class));
         MatcherAssert.assertThat(ConfigMapContext.getInstance().getConfigMap(), is(configMap));
     }
@@ -71,8 +71,8 @@ public final class MasterSlaveDataSourceFactoryTest {
         properties.setProperty("sql.show", "true");
         Map<String, Object> configMap = new ConcurrentHashMap<>();
         configMap.put("key1", "value1");
-        assertThat(MasterSlaveDataSourceFactory.createDataSource(
-                dataSourceMap, new MasterSlaveRuleConfiguration("logic_ds", "master_ds", Arrays.asList("slave_ds_0", "slave_ds_1"), MasterSlaveLoadBalanceAlgorithmType.ROUND_ROBIN.getAlgorithm()),
+        assertThat(MasterSlaveDataSourceFactory.createDataSource(dataSourceMap, new MasterSlaveRuleConfiguration(
+                "logic_ds", "master_ds", Arrays.asList("slave_ds_0", "slave_ds_1"), MasterSlaveLoadBalanceAlgorithmFactory.getInstance().newAlgorithm("ROUND_ROBIN", new Properties())),
                 configMap, properties), instanceOf(MasterSlaveDataSource.class));
         MatcherAssert.assertThat(ConfigMapContext.getInstance().getConfigMap(), is(configMap));
     }

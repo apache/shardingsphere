@@ -18,7 +18,6 @@
 package org.apache.shardingsphere.core.rule;
 
 import org.apache.shardingsphere.api.algorithm.fixture.TestPreciseShardingAlgorithm;
-import org.apache.shardingsphere.api.algorithm.masterslave.MasterSlaveLoadBalanceAlgorithmType;
 import org.apache.shardingsphere.api.config.masterslave.MasterSlaveRuleConfiguration;
 import org.apache.shardingsphere.api.config.sharding.KeyGeneratorConfiguration;
 import org.apache.shardingsphere.api.config.sharding.ShardingRuleConfiguration;
@@ -408,7 +407,7 @@ public final class ShardingRuleTest {
     }
     
     private MasterSlaveRuleConfiguration createMasterSlaveRuleConfiguration(final String name, final String masterDataSourceName, final String slaveDataSourceName) {
-        return new MasterSlaveRuleConfiguration(name, masterDataSourceName, Collections.singletonList(slaveDataSourceName), MasterSlaveLoadBalanceAlgorithmType.ROUND_ROBIN.getAlgorithm());
+        return new MasterSlaveRuleConfiguration(name, masterDataSourceName, Collections.singletonList(slaveDataSourceName));
     }
     
     private Collection<String> createMasterSlaveDataSourceNames() {

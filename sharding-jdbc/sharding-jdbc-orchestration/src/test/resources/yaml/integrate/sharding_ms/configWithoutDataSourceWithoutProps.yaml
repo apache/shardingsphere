@@ -41,7 +41,7 @@ shardingRule:
       masterDataSourceName: db0_master
       slaveDataSourceNames:
         - db0_slave
-      loadBalanceAlgorithmClassName: org.apache.shardingsphere.api.algorithm.masterslave.RoundRobinMasterSlaveLoadBalanceAlgorithm
+      loadBalanceAlgorithmType: ROUND_ROBIN
     db_ms_1:
       masterDataSourceName: db1_master
       slaveDataSourceNames:

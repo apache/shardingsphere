@@ -17,9 +17,7 @@
 
 package org.apache.shardingsphere.core.yaml.swapper.impl;
 
-import org.apache.shardingsphere.api.algorithm.masterslave.MasterSlaveLoadBalanceAlgorithm;
-import org.apache.shardingsphere.api.algorithm.masterslave.MasterSlaveLoadBalanceAlgorithmType;
-import org.apache.shardingsphere.api.algorithm.masterslave.RoundRobinMasterSlaveLoadBalanceAlgorithm;
+import org.apache.shardingsphere.api.algorithm.masterslave.MasterSlaveLoadBalanceAlgorithmFactory;
 import org.apache.shardingsphere.api.config.masterslave.MasterSlaveRuleConfiguration;
 import org.apache.shardingsphere.core.exception.ShardingConfigurationException;
 import org.apache.shardingsphere.core.yaml.config.masterslave.YamlMasterSlaveRuleConfiguration;
@@ -29,8 +27,8 @@ import org.junit.Test;
 import java.util.Arrays;
 import java.util.Collection;
 import java.util.Collections;
+import java.util.Properties;
 
-import static org.hamcrest.CoreMatchers.instanceOf;
 import static org.hamcrest.CoreMatchers.is;
 import static org.junit.Assert.assertNull;
 import static org.junit.Assert.assertThat;
@@ -39,12 +37,12 @@ public final class MasterSlaveRuleConfigurationYamlSwapperTest {
     
     @Test
     public void assertSwapToYamlWithLoadBalanceAlgorithm() {
-        YamlMasterSlaveRuleConfiguration actual = new MasterSlaveRuleConfigurationYamlSwapper().swap(
-                new MasterSlaveRuleConfiguration("ds", "master", Collections.singletonList("slave"), MasterSlaveLoadBalanceAlgorithmType.getDefaultAlgorithmType().getAlgorithm()));
+        YamlMasterSlaveRuleConfiguration actual = new MasterSlaveRuleConfigurationYamlSwapper().swap(new MasterSlaveRuleConfiguration("ds", "master", Collections.singletonList("slave"),
+                MasterSlaveLoadBalanceAlgorithmFactory.getInstance().newAlgorithm("ROUND_ROBIN", new Properties())));
         assertThat(actual.getName(), is("ds"));
         assertThat(actual.getMasterDataSourceName(), is("master"));
         assertThat(actual.getSlaveDataSourceNames(), CoreMatchers.<Collection<String>>is(Collections.singletonList("slave")));
-        assertThat(actual.getLoadBalanceAlgorithmClassName(), is(MasterSlaveLoadBalanceAlgorithmType.getDefaultAlgorithmType().getAlgorithm().getClass().getName()));
+        assertThat(actual.getLoadBalanceAlgorithmType(), is("ROUND_ROBIN"));
     }
     
     @Test
@@ -53,25 +51,16 @@ public final class MasterSlaveRuleConfigurationYamlSwapperTest {
         assertThat(actual.getName(), is("ds"));
         assertThat(actual.getMasterDataSourceName(), is("master"));
         assertThat(actual.getSlaveDataSourceNames(), CoreMatchers.<Collection<String>>is(Collections.singletonList("slave")));
-        assertNull(actual.getLoadBalanceAlgorithmClassName());
-    }
-    
-    @Test
-    public void assertSwapToObjectWithLoadBalanceAlgorithmClassName() {
-        YamlMasterSlaveRuleConfiguration yamlConfiguration = createYamlMasterSlaveRuleConfiguration();
-        yamlConfiguration.setLoadBalanceAlgorithmClassName(RoundRobinMasterSlaveLoadBalanceAlgorithm.class.getName());
-        MasterSlaveRuleConfiguration actual = new MasterSlaveRuleConfigurationYamlSwapper().swap(yamlConfiguration);
-        assertMasterSlaveRuleConfiguration(actual);
-        assertThat(actual.getLoadBalanceAlgorithm(), instanceOf(RoundRobinMasterSlaveLoadBalanceAlgorithm.class));
+        assertNull(actual.getLoadBalanceAlgorithmType());
     }
     
     @Test
     public void assertSwapToObjectWithLoadBalanceAlgorithmType() {
         YamlMasterSlaveRuleConfiguration yamlConfiguration = createYamlMasterSlaveRuleConfiguration();
-        yamlConfiguration.setLoadBalanceAlgorithmType(MasterSlaveLoadBalanceAlgorithmType.RANDOM);
+        yamlConfiguration.setLoadBalanceAlgorithmType("RANDOM");
         MasterSlaveRuleConfiguration actual = new MasterSlaveRuleConfigurationYamlSwapper().swap(yamlConfiguration);
         assertMasterSlaveRuleConfiguration(actual);
-        assertThat(actual.getLoadBalanceAlgorithm(), is(MasterSlaveLoadBalanceAlgorithmType.RANDOM.getAlgorithm()));
+        assertThat(actual.getLoadBalanceAlgorithm().getType(), is("RANDOM"));
     }
     
     @Test
@@ -83,16 +72,9 @@ public final class MasterSlaveRuleConfigurationYamlSwapperTest {
     }
     
     @Test(expected = ShardingConfigurationException.class)
-    public void assertSwapToObjectWithInvalidLoadBalanceAlgorithmClass() {
+    public void assertSwapToObjectWithInvalidLoadBalanceAlgorithmType() {
         YamlMasterSlaveRuleConfiguration yamlConfiguration = createYamlMasterSlaveRuleConfiguration();
-        yamlConfiguration.setLoadBalanceAlgorithmClassName(Object.class.getName());
-        new MasterSlaveRuleConfigurationYamlSwapper().swap(yamlConfiguration);
-    }
-    
-    @Test(expected = ShardingConfigurationException.class)
-    public void assertSwapToObjectWithLoadBalanceAlgorithmClassCannotInitialized() {
-        YamlMasterSlaveRuleConfiguration yamlConfiguration = createYamlMasterSlaveRuleConfiguration();
-        yamlConfiguration.setLoadBalanceAlgorithmClassName(MasterSlaveLoadBalanceAlgorithm.class.getName());
+        yamlConfiguration.setLoadBalanceAlgorithmType("TEST");
         new MasterSlaveRuleConfigurationYamlSwapper().swap(yamlConfiguration);
     }
     

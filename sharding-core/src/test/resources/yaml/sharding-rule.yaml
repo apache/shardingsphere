@@ -95,7 +95,7 @@ shardingRule:
       slaveDataSourceNames: 
         - master_ds_1_slave_0
         - master_ds_1_slave_1
-      loadBalanceAlgorithmClassName: TestAlgorithmClass
+      loadBalanceAlgorithmType: RANDOM
 
 configMap:
   sharding-key1: sharding-value1

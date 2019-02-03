@@ -19,7 +19,6 @@ package org.apache.shardingsphere.core.yaml.config.masterslave;
 
 import lombok.Getter;
 import lombok.Setter;
-import org.apache.shardingsphere.api.algorithm.masterslave.MasterSlaveLoadBalanceAlgorithmType;
 import org.apache.shardingsphere.core.yaml.config.YamlConfiguration;
 
 import java.util.ArrayList;
@@ -41,7 +40,5 @@ public class YamlMasterSlaveRuleConfiguration implements YamlConfiguration {
     
     private Collection<String> slaveDataSourceNames = new ArrayList<>();
     
-    private MasterSlaveLoadBalanceAlgorithmType loadBalanceAlgorithmType;
-    
-    private String loadBalanceAlgorithmClassName;
+    private String loadBalanceAlgorithmType;
 }

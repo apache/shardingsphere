@@ -31,7 +31,6 @@ import org.apache.shardingsphere.core.exception.ShardingConfigurationException;
 import org.apache.shardingsphere.core.exception.ShardingException;
 import org.apache.shardingsphere.core.keygen.ShardingKeyGenerator;
 import org.apache.shardingsphere.core.keygen.ShardingKeyGeneratorFactory;
-import org.apache.shardingsphere.core.keygen.impl.SnowflakeShardingKeyGenerator;
 import org.apache.shardingsphere.core.parsing.parser.context.condition.Column;
 import org.apache.shardingsphere.core.routing.strategy.ShardingStrategy;
 import org.apache.shardingsphere.core.routing.strategy.ShardingStrategyFactory;
@@ -119,8 +118,8 @@ public class ShardingRule {
     }
     
     private ShardingKeyGenerator createDefaultKeyGenerator(final KeyGeneratorConfiguration keyGeneratorConfiguration) {
-        return containsKeyGeneratorConfiguration(keyGeneratorConfiguration) 
-                ? ShardingKeyGeneratorFactory.getInstance().newAlgorithm(keyGeneratorConfiguration.getType(), keyGeneratorConfiguration.getProps()) : new SnowflakeShardingKeyGenerator();
+        ShardingKeyGeneratorFactory factory = ShardingKeyGeneratorFactory.getInstance();
+        return containsKeyGeneratorConfiguration(keyGeneratorConfiguration) ? factory.newAlgorithm(keyGeneratorConfiguration.getType(), keyGeneratorConfiguration.getProps()) : factory.newAlgorithm();
     }
     
     private boolean containsKeyGeneratorConfiguration(final KeyGeneratorConfiguration keyGeneratorConfiguration) {

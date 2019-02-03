@@ -18,7 +18,6 @@
 package org.apache.shardingsphere.api;
 
 import org.apache.shardingsphere.api.algorithm.common.ShardingStrategyTest;
-import org.apache.shardingsphere.api.algorithm.masterslave.MasterSlaveLoadBalanceAlgorithmTypeTest;
 import org.apache.shardingsphere.api.algorithm.masterslave.RandomMasterSlaveLoadBalanceAlgorithmTest;
 import org.apache.shardingsphere.api.algorithm.masterslave.RoundRobinMasterSlaveLoadBalanceAlgorithmTest;
 import org.apache.shardingsphere.api.algorithm.sharding.DatabaseShardingStrategyTest;
@@ -34,7 +33,6 @@ import org.junit.runners.Suite.SuiteClasses;
         ShardingStrategyTest.class, 
         DatabaseShardingStrategyTest.class, 
         TableShardingStrategyTest.class,
-        MasterSlaveLoadBalanceAlgorithmTypeTest.class, 
         RoundRobinMasterSlaveLoadBalanceAlgorithmTest.class, 
         RandomMasterSlaveLoadBalanceAlgorithmTest.class,
         ConfigMapContextTest.class, 

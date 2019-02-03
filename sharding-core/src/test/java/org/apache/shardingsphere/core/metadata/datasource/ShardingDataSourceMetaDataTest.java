@@ -18,7 +18,6 @@
 package org.apache.shardingsphere.core.metadata.datasource;
 
 import com.google.common.collect.Lists;
-import org.apache.shardingsphere.api.algorithm.masterslave.MasterSlaveLoadBalanceAlgorithmType;
 import org.apache.shardingsphere.api.config.masterslave.MasterSlaveRuleConfiguration;
 import org.apache.shardingsphere.api.config.sharding.ShardingRuleConfiguration;
 import org.apache.shardingsphere.api.config.sharding.TableRuleConfiguration;
@@ -58,12 +57,9 @@ public class ShardingDataSourceMetaDataTest {
     
     private ShardingRule getMasterSlaveShardingRule() {
         ShardingRuleConfiguration shardingRuleConfig = new ShardingRuleConfiguration();
-        MasterSlaveRuleConfiguration masterSlaveConfig0 = new MasterSlaveRuleConfiguration(
-                "ms_0", "master_0", Collections.singleton("slave_0"), MasterSlaveLoadBalanceAlgorithmType.ROUND_ROBIN.getAlgorithm());
-        MasterSlaveRuleConfiguration masterSlaveConfig1 = new MasterSlaveRuleConfiguration(
-                "ms_1", "master_1", Collections.singleton("slave_1"), MasterSlaveLoadBalanceAlgorithmType.ROUND_ROBIN.getAlgorithm());
-        MasterSlaveRuleConfiguration masterSlaveConfig2 = new MasterSlaveRuleConfiguration(
-                "ms_2", "master_2", Collections.singleton("slave_2"), MasterSlaveLoadBalanceAlgorithmType.ROUND_ROBIN.getAlgorithm());
+        MasterSlaveRuleConfiguration masterSlaveConfig0 = new MasterSlaveRuleConfiguration("ms_0", "master_0", Collections.singleton("slave_0"));
+        MasterSlaveRuleConfiguration masterSlaveConfig1 = new MasterSlaveRuleConfiguration("ms_1", "master_1", Collections.singleton("slave_1"));
+        MasterSlaveRuleConfiguration masterSlaveConfig2 = new MasterSlaveRuleConfiguration("ms_2", "master_2", Collections.singleton("slave_2"));
         shardingRuleConfig.getTableRuleConfigs().add(new TableRuleConfiguration("t_order", "ms_${0..2}.t_order_${0..1}"));
         shardingRuleConfig.getTableRuleConfigs().add(new TableRuleConfiguration("t_order_item", "single.t_order_item"));
         shardingRuleConfig.getMasterSlaveRuleConfigs().addAll(Lists.newArrayList(masterSlaveConfig0, masterSlaveConfig1, masterSlaveConfig2));

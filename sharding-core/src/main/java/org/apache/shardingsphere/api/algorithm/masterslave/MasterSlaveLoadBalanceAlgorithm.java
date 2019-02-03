@@ -17,6 +17,8 @@
 
 package org.apache.shardingsphere.api.algorithm.masterslave;
 
+import org.apache.shardingsphere.spi.algorithm.BaseAlgorithm;
+
 import java.util.List;
 
 /**
@@ -24,7 +26,7 @@ import java.util.List;
  *
  * @author zhangliang
  */
-public interface MasterSlaveLoadBalanceAlgorithm {
+public interface MasterSlaveLoadBalanceAlgorithm extends BaseAlgorithm {
     
     /**
      * Get data source.

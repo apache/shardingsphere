@@ -56,6 +56,17 @@ public abstract class BaseAlgorithmFactory<T extends BaseAlgorithm> {
         return result;
     }
     
+    /**
+     * Create algorithm instance by default algorithm type.
+     *
+     * @return algorithm instance
+     */
+    public final T newAlgorithm() {
+        T result = loadFirstAlgorithm();
+        result.setProperties(new Properties());
+        return result;
+    }
+    
     private Collection<T> loadAlgorithms(final String type) {
         return Collections2.filter(NewInstanceServiceLoader.newServiceInstances(classType), new Predicate<T>() {
             
@@ -64,5 +75,13 @@ public abstract class BaseAlgorithmFactory<T extends BaseAlgorithm> {
                 return type.equalsIgnoreCase(input.getType());
             }
         });
+    }
+    
+    private T loadFirstAlgorithm() {
+        Collection<T> algorithms = NewInstanceServiceLoader.newServiceInstances(classType);
+        if (algorithms.isEmpty()) {
+            throw new ShardingConfigurationException("Invalid `%s` algorithm, no implementation class load from SPI.", classType.getName());
+        }
+        return algorithms.iterator().next();
     }
 }

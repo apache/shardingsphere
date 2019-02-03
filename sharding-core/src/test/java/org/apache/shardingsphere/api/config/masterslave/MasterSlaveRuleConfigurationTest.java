@@ -17,7 +17,8 @@
 
 package org.apache.shardingsphere.api.config.masterslave;
 
-import org.apache.shardingsphere.api.algorithm.masterslave.MasterSlaveLoadBalanceAlgorithmType;
+import org.apache.shardingsphere.api.algorithm.masterslave.MasterSlaveLoadBalanceAlgorithm;
+import org.apache.shardingsphere.api.algorithm.masterslave.MasterSlaveLoadBalanceAlgorithmFactory;
 import org.hamcrest.CoreMatchers;
 import org.junit.Test;
 
@@ -61,11 +62,11 @@ public final class MasterSlaveRuleConfigurationTest {
     
     @Test
     public void assertConstructorWithMaxArguments() {
-        MasterSlaveRuleConfiguration actual = new MasterSlaveRuleConfiguration(
-                "ds", "master_ds", Collections.singletonList("slave_ds"), MasterSlaveLoadBalanceAlgorithmType.getDefaultAlgorithmType().getAlgorithm());
+        MasterSlaveLoadBalanceAlgorithm algorithm = MasterSlaveLoadBalanceAlgorithmFactory.getInstance().newAlgorithm();
+        MasterSlaveRuleConfiguration actual = new MasterSlaveRuleConfiguration("ds", "master_ds", Collections.singletonList("slave_ds"), algorithm);
         assertThat(actual.getName(), is("ds"));
         assertThat(actual.getMasterDataSourceName(), is("master_ds"));
         assertThat(actual.getSlaveDataSourceNames(), CoreMatchers.<Collection<String>>is(Collections.singletonList("slave_ds")));
-        assertThat(actual.getLoadBalanceAlgorithm(), is(MasterSlaveLoadBalanceAlgorithmType.getDefaultAlgorithmType().getAlgorithm()));
+        assertThat(actual.getLoadBalanceAlgorithm(), is(algorithm));
     }
 }

@@ -15,9 +15,14 @@
  * limitations under the License.
  */
 
-package org.apache.shardingsphere.api.algorithm.masterslave;
+package org.apache.shardingsphere.api.algorithm.masterslave.impl;
+
+import lombok.Getter;
+import lombok.Setter;
+import org.apache.shardingsphere.api.algorithm.masterslave.MasterSlaveLoadBalanceAlgorithm;
 
 import java.util.List;
+import java.util.Properties;
 import java.util.Random;
 
 /**
@@ -25,7 +30,16 @@ import java.util.Random;
  *
  * @author zhangliang
  */
+@Getter
+@Setter
 public final class RandomMasterSlaveLoadBalanceAlgorithm implements MasterSlaveLoadBalanceAlgorithm {
+    
+    private Properties properties = new Properties();
+    
+    @Override
+    public String getType() {
+        return "RANDOM";
+    }
     
     @Override
     public String getDataSource(final String name, final String masterDataSourceName, final List<String> slaveDataSourceNames) {

@@ -17,29 +17,32 @@
 
 package org.apache.shardingsphere.api.algorithm.masterslave;
 
-import lombok.Getter;
-import lombok.RequiredArgsConstructor;
+import org.apache.shardingsphere.spi.NewInstanceServiceLoader;
+import org.apache.shardingsphere.spi.algorithm.BaseAlgorithmFactory;
 
 /**
- * Master-slave database load-balance algorithm type.
- *
+ * Master-slave database load-balance algorithm factory.
+ * 
  * @author zhangliang
  */
-@RequiredArgsConstructor
-@Getter
-public enum MasterSlaveLoadBalanceAlgorithmType {
+public final class MasterSlaveLoadBalanceAlgorithmFactory extends BaseAlgorithmFactory<MasterSlaveLoadBalanceAlgorithm> {
     
-    ROUND_ROBIN(new RoundRobinMasterSlaveLoadBalanceAlgorithm()),
-    RANDOM(new RandomMasterSlaveLoadBalanceAlgorithm());
+    private static final MasterSlaveLoadBalanceAlgorithmFactory INSTANCE = new MasterSlaveLoadBalanceAlgorithmFactory();
     
-    private final MasterSlaveLoadBalanceAlgorithm algorithm;
+    static {
+        NewInstanceServiceLoader.register(MasterSlaveLoadBalanceAlgorithm.class);
+    }
+    
+    private MasterSlaveLoadBalanceAlgorithmFactory() {
+        super(MasterSlaveLoadBalanceAlgorithm.class);
+    }
     
     /**
-     * Get default master-slave database load-balance algorithm type.
-     * 
-     * @return default master-slave database load-balance algorithm type
+     * Get instance of master-slave database load-balance algorithm factory.
+     *
+     * @return instance of master-slave database load-balance algorithm factory
      */
-    public static MasterSlaveLoadBalanceAlgorithmType getDefaultAlgorithmType() {
-        return ROUND_ROBIN;
+    public static MasterSlaveLoadBalanceAlgorithmFactory getInstance() {
+        return INSTANCE;
     }
 }

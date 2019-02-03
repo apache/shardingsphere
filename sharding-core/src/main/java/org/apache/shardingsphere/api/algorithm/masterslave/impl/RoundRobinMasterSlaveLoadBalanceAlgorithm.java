@@ -15,9 +15,14 @@
  * limitations under the License.
  */
 
-package org.apache.shardingsphere.api.algorithm.masterslave;
+package org.apache.shardingsphere.api.algorithm.masterslave.impl;
+
+import lombok.Getter;
+import lombok.Setter;
+import org.apache.shardingsphere.api.algorithm.masterslave.MasterSlaveLoadBalanceAlgorithm;
 
 import java.util.List;
+import java.util.Properties;
 import java.util.concurrent.ConcurrentHashMap;
 import java.util.concurrent.atomic.AtomicInteger;
 
@@ -26,14 +31,23 @@ import java.util.concurrent.atomic.AtomicInteger;
  *
  * @author zhangliang
  */
+@Getter
+@Setter
 public final class RoundRobinMasterSlaveLoadBalanceAlgorithm implements MasterSlaveLoadBalanceAlgorithm {
     
-    private static final ConcurrentHashMap<String, AtomicInteger> COUNT_MAP = new ConcurrentHashMap<>();
+    private static final ConcurrentHashMap<String, AtomicInteger> COUNTS = new ConcurrentHashMap<>();
+    
+    private Properties properties = new Properties();
+    
+    @Override
+    public String getType() {
+        return "ROUND_ROBIN";
+    }
     
     @Override
     public String getDataSource(final String name, final String masterDataSourceName, final List<String> slaveDataSourceNames) {
-        AtomicInteger count = COUNT_MAP.containsKey(name) ? COUNT_MAP.get(name) : new AtomicInteger(0);
-        COUNT_MAP.putIfAbsent(name, count);
+        AtomicInteger count = COUNTS.containsKey(name) ? COUNTS.get(name) : new AtomicInteger(0);
+        COUNTS.putIfAbsent(name, count);
         count.compareAndSet(slaveDataSourceNames.size(), 0);
         return slaveDataSourceNames.get(Math.abs(count.getAndIncrement()) % slaveDataSourceNames.size());
     }
