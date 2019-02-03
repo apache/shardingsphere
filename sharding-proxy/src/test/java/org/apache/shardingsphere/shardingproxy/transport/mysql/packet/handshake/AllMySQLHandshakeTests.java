@@ -23,12 +23,12 @@ import org.junit.runners.Suite.SuiteClasses;
 
 @RunWith(Suite.class)
 @SuiteClasses({
-        RandomGeneratorTest.class, 
-        AuthenticationHandlerTest.class,
-        AuthPluginDataTest.class, 
-        ConnectionIdGeneratorTest.class, 
-        HandshakePacketTest.class, 
-        HandshakeResponse41PacketTest.class
+        MySQLRandomGeneratorTest.class,
+        MySQLAuthenticationHandlerTest.class,
+        MySQLAuthPluginDataTest.class,
+        MySQLConnectionIdGeneratorTest.class,
+        MySQLHandshakePacketTest.class,
+        MySQLHandshakeResponse41PacketTest.class
 })
 public final class AllMySQLHandshakeTests {
 }

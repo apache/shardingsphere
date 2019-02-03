@@ -27,12 +27,12 @@ import org.apache.shardingsphere.shardingproxy.runtime.ChannelRegistry;
 import org.apache.shardingsphere.shardingproxy.runtime.GlobalRegistry;
 import org.apache.shardingsphere.shardingproxy.transport.mysql.constant.MySQLServerErrorCode;
 import org.apache.shardingsphere.shardingproxy.transport.mysql.packet.MySQLPacketPayload;
-import org.apache.shardingsphere.shardingproxy.transport.mysql.packet.generic.ErrPacket;
-import org.apache.shardingsphere.shardingproxy.transport.mysql.packet.generic.OKPacket;
-import org.apache.shardingsphere.shardingproxy.transport.mysql.packet.handshake.AuthenticationHandler;
-import org.apache.shardingsphere.shardingproxy.transport.mysql.packet.handshake.ConnectionIdGenerator;
-import org.apache.shardingsphere.shardingproxy.transport.mysql.packet.handshake.HandshakePacket;
-import org.apache.shardingsphere.shardingproxy.transport.mysql.packet.handshake.HandshakeResponse41Packet;
+import org.apache.shardingsphere.shardingproxy.transport.mysql.packet.generic.MySQLErrPacket;
+import org.apache.shardingsphere.shardingproxy.transport.mysql.packet.generic.MySQLOKPacket;
+import org.apache.shardingsphere.shardingproxy.transport.mysql.packet.handshake.MySQLAuthenticationHandler;
+import org.apache.shardingsphere.shardingproxy.transport.mysql.packet.handshake.MySQLConnectionIdGenerator;
+import org.apache.shardingsphere.shardingproxy.transport.mysql.packet.handshake.MySQLHandshakePacket;
+import org.apache.shardingsphere.shardingproxy.transport.mysql.packet.handshake.MySQLHandshakeResponse41Packet;
 
 /**
  * MySQL frontend handler.
@@ -45,30 +45,30 @@ import org.apache.shardingsphere.shardingproxy.transport.mysql.packet.handshake.
 @RequiredArgsConstructor
 public final class MySQLFrontendHandler extends FrontendHandler {
     
-    private final AuthenticationHandler authenticationHandler = new AuthenticationHandler();
+    private final MySQLAuthenticationHandler mySQLAuthenticationHandler = new MySQLAuthenticationHandler();
     
     @Override
     protected void handshake(final ChannelHandlerContext context) {
-        int connectionId = ConnectionIdGenerator.getInstance().nextId();
+        int connectionId = MySQLConnectionIdGenerator.getInstance().nextId();
         ChannelRegistry.getInstance().putConnectionId(context.channel().id().asShortText(), connectionId);
         getBackendConnection().setConnectionId(connectionId);
-        context.writeAndFlush(new HandshakePacket(connectionId, authenticationHandler.getAuthPluginData()));
+        context.writeAndFlush(new MySQLHandshakePacket(connectionId, mySQLAuthenticationHandler.getMySQLAuthPluginData()));
     }
     
     @Override
     protected void auth(final ChannelHandlerContext context, final ByteBuf message) {
         try (MySQLPacketPayload payload = new MySQLPacketPayload(message)) {
-            HandshakeResponse41Packet response41 = new HandshakeResponse41Packet(payload);
-            if (authenticationHandler.login(response41.getUsername(), response41.getAuthResponse())) {
+            MySQLHandshakeResponse41Packet response41 = new MySQLHandshakeResponse41Packet(payload);
+            if (mySQLAuthenticationHandler.login(response41.getUsername(), response41.getAuthResponse())) {
                 if (!Strings.isNullOrEmpty(response41.getDatabase()) && !GlobalRegistry.getInstance().schemaExists(response41.getDatabase())) {
-                    context.writeAndFlush(new ErrPacket(response41.getSequenceId() + 1, MySQLServerErrorCode.ER_BAD_DB_ERROR, response41.getDatabase()));
+                    context.writeAndFlush(new MySQLErrPacket(response41.getSequenceId() + 1, MySQLServerErrorCode.ER_BAD_DB_ERROR, response41.getDatabase()));
                     return;
                 }
                 getBackendConnection().setCurrentSchema(response41.getDatabase());
-                context.writeAndFlush(new OKPacket(response41.getSequenceId() + 1));
+                context.writeAndFlush(new MySQLOKPacket(response41.getSequenceId() + 1));
             } else {
                 // TODO localhost should replace to real ip address
-                context.writeAndFlush(new ErrPacket(response41.getSequenceId() + 1,
+                context.writeAndFlush(new MySQLErrPacket(response41.getSequenceId() + 1,
                     MySQLServerErrorCode.ER_ACCESS_DENIED_ERROR, response41.getUsername(), "localhost", 0 == response41.getAuthResponse().length ? "NO" : "YES"));
             }
         }
