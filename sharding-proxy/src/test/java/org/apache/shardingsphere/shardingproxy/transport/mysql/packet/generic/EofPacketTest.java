@@ -17,7 +17,7 @@
 
 package org.apache.shardingsphere.shardingproxy.transport.mysql.packet.generic;
 
-import org.apache.shardingsphere.shardingproxy.transport.mysql.constant.StatusFlag;
+import org.apache.shardingsphere.shardingproxy.transport.mysql.constant.MySQLStatusFlag;
 import org.apache.shardingsphere.shardingproxy.transport.mysql.packet.MySQLPacketPayload;
 import org.junit.Test;
 import org.junit.runner.RunWith;
@@ -39,7 +39,7 @@ public final class EofPacketTest {
         EofPacket actual = new EofPacket(1);
         assertThat(actual.getSequenceId(), is(1));
         assertThat(actual.getWarnings(), is(0));
-        assertThat(actual.getStatusFlags(), is(StatusFlag.SERVER_STATUS_AUTOCOMMIT.getValue()));
+        assertThat(actual.getStatusFlags(), is(MySQLStatusFlag.SERVER_STATUS_AUTOCOMMIT.getValue()));
     }
     
     @Test
@@ -47,6 +47,6 @@ public final class EofPacketTest {
         new EofPacket(1).write(payload);
         verify(payload).writeInt1(EofPacket.HEADER);
         verify(payload).writeInt2(0);
-        verify(payload).writeInt2(StatusFlag.SERVER_STATUS_AUTOCOMMIT.getValue());
+        verify(payload).writeInt2(MySQLStatusFlag.SERVER_STATUS_AUTOCOMMIT.getValue());
     }
 }

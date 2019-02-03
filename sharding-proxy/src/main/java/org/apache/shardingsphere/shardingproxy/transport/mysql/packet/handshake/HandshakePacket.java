@@ -21,7 +21,7 @@ import com.google.common.base.Preconditions;
 import lombok.Getter;
 import org.apache.shardingsphere.shardingproxy.transport.mysql.constant.MySQLCapabilityFlag;
 import org.apache.shardingsphere.shardingproxy.transport.mysql.constant.MySQLServerInfo;
-import org.apache.shardingsphere.shardingproxy.transport.mysql.constant.StatusFlag;
+import org.apache.shardingsphere.shardingproxy.transport.mysql.constant.MySQLStatusFlag;
 import org.apache.shardingsphere.shardingproxy.transport.mysql.packet.MySQLPacket;
 import org.apache.shardingsphere.shardingproxy.transport.mysql.packet.MySQLPacketPayload;
 
@@ -41,7 +41,7 @@ public final class HandshakePacket implements MySQLPacket {
     
     private final int capabilityFlagsLower = MySQLCapabilityFlag.calculateHandshakeCapabilityFlagsLower();
     
-    private final StatusFlag statusFlag = StatusFlag.SERVER_STATUS_AUTOCOMMIT;
+    private final MySQLStatusFlag mySQLStatusFlag = MySQLStatusFlag.SERVER_STATUS_AUTOCOMMIT;
     
     private final int capabilityFlagsUpper = MySQLCapabilityFlag.calculateHandshakeCapabilityFlagsUpper();
     
@@ -68,7 +68,7 @@ public final class HandshakePacket implements MySQLPacket {
         final byte[] authPluginDataPart1 = payload.readStringNulByBytes();
         payload.readInt2();
         payload.readInt1();
-        Preconditions.checkArgument(statusFlag.getValue() == payload.readInt2());
+        Preconditions.checkArgument(mySQLStatusFlag.getValue() == payload.readInt2());
         payload.readInt2();
         payload.readInt1();
         payload.skipReserved(10);
@@ -84,7 +84,7 @@ public final class HandshakePacket implements MySQLPacket {
         payload.writeStringNul(new String(authPluginData.getAuthPluginDataPart1()));
         payload.writeInt2(capabilityFlagsLower);
         payload.writeInt1(MySQLServerInfo.CHARSET);
-        payload.writeInt2(statusFlag.getValue());
+        payload.writeInt2(mySQLStatusFlag.getValue());
         payload.writeInt2(capabilityFlagsUpper);
         payload.writeInt1(0);
         payload.writeReserved(10);

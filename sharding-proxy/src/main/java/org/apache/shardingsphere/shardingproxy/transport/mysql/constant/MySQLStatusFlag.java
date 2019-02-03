@@ -29,7 +29,7 @@ import lombok.RequiredArgsConstructor;
  */
 @RequiredArgsConstructor
 @Getter
-public enum StatusFlag {
+public enum MySQLStatusFlag {
     
     SERVER_STATUS_IN_TRANS(0x0001),
     
