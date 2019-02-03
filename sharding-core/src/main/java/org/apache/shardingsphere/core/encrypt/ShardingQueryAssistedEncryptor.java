@@ -15,51 +15,20 @@
  * limitations under the License.
  */
 
-package org.apache.shardingsphere.core.encrypt.encryptor;
-
-import java.util.Properties;
+package org.apache.shardingsphere.core.encrypt;
 
 /**
- * Sharding encryptor.
+ * Sharding query assisted encryptor.
  *
  * @author panjuan
  */
-public interface ShardingEncryptor {
+public interface ShardingQueryAssistedEncryptor extends ShardingEncryptor {
     
     /**
-     * Get sharding encryptor type.
-     * 
-     * @return sharding encryptor type
-     */
-    String getType();
-    
-    /**
-     * Get properties.
-     * 
-     * @return properties
-     */
-    Properties getProperties();
-    
-    /**
-     * Set properties.
-     * 
-     * @param properties properties
-     */
-    void setProperties(Properties properties);
-    
-    /**
-     * Encode.
+     * Query assisted encode.
      * 
      * @param plaintext plaintext
      * @return ciphertext
      */
-    String encode(String plaintext);
-    
-    /**
-     * Decode.
-     * 
-     * @param ciphertext ciphertext
-     * @return plaintext
-     */
-    String decode(String ciphertext);
+    String queryAssistedEncode(String plaintext);
 }

@@ -18,7 +18,7 @@
 package org.apache.shardingsphere.core.routing.strategy;
 
 import lombok.Getter;
-import org.apache.shardingsphere.core.encrypt.encryptor.ShardingEncryptor;
+import org.apache.shardingsphere.core.encrypt.ShardingEncryptor;
 import org.apache.shardingsphere.core.exception.ShardingConfigurationException;
 
 import java.util.List;
