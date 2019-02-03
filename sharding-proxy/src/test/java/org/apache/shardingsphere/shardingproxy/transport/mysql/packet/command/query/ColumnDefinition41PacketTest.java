@@ -19,7 +19,7 @@ package org.apache.shardingsphere.shardingproxy.transport.mysql.packet.command.q
 
 import org.apache.shardingsphere.core.constant.ShardingConstant;
 import org.apache.shardingsphere.shardingproxy.transport.mysql.constant.MySQLColumnType;
-import org.apache.shardingsphere.shardingproxy.transport.mysql.constant.ServerInfo;
+import org.apache.shardingsphere.shardingproxy.transport.mysql.constant.MySQLServerInfo;
 import org.apache.shardingsphere.shardingproxy.transport.mysql.packet.MySQLPacketPayload;
 import org.junit.Test;
 import org.junit.runner.RunWith;
@@ -62,7 +62,7 @@ public final class ColumnDefinition41PacketTest {
     @Test
     public void assertWriteWithPayload() {
         when(payload.readInt1()).thenReturn(1, MySQLColumnType.MYSQL_TYPE_LONG.getValue(), 0);
-        when(payload.readInt2()).thenReturn(ServerInfo.CHARSET, 0);
+        when(payload.readInt2()).thenReturn(MySQLServerInfo.CHARSET, 0);
         when(payload.readInt4()).thenReturn(10);
         when(payload.readIntLenenc()).thenReturn((long) 0x0c);
         when(payload.readStringLenenc()).thenReturn("def", ShardingConstant.LOGIC_SCHEMA_NAME, "tbl", "tbl", "id", "id");
@@ -78,7 +78,7 @@ public final class ColumnDefinition41PacketTest {
         verify(payload, times(2)).writeStringLenenc("tbl");
         verify(payload, times(2)).writeStringLenenc("id");
         verify(payload).writeIntLenenc(0x0c);
-        verify(payload).writeInt2(ServerInfo.CHARSET);
+        verify(payload).writeInt2(MySQLServerInfo.CHARSET);
         verify(payload).writeInt4(10);
         verify(payload).writeInt1(MySQLColumnType.MYSQL_TYPE_LONG.getValue());
         verify(payload).writeInt2(0);

@@ -22,7 +22,7 @@ import lombok.Getter;
 import lombok.Setter;
 import org.apache.shardingsphere.shardingproxy.transport.common.packet.command.query.DataHeaderPacket;
 import org.apache.shardingsphere.shardingproxy.transport.mysql.constant.MySQLColumnType;
-import org.apache.shardingsphere.shardingproxy.transport.mysql.constant.ServerInfo;
+import org.apache.shardingsphere.shardingproxy.transport.mysql.constant.MySQLServerInfo;
 import org.apache.shardingsphere.shardingproxy.transport.mysql.packet.MySQLPacket;
 import org.apache.shardingsphere.shardingproxy.transport.mysql.packet.MySQLPacketPayload;
 
@@ -78,7 +78,7 @@ public final class ColumnDefinition41Packet implements MySQLPacket {
     public ColumnDefinition41Packet(final int sequenceId, final String schema, final String table, final String orgTable,
                                     final String name, final String orgName, final int columnLength, final MySQLColumnType mySQLColumnType, final int decimals) {
         this.sequenceId = sequenceId;
-        this.characterSet = ServerInfo.CHARSET;
+        this.characterSet = MySQLServerInfo.CHARSET;
         this.flags = 0;
         this.schema = schema;
         this.table = table;
@@ -92,7 +92,7 @@ public final class ColumnDefinition41Packet implements MySQLPacket {
     
     public ColumnDefinition41Packet(final DataHeaderPacket dataHeaderPacket) {
         this.sequenceId = dataHeaderPacket.getSequenceId();
-        this.characterSet = ServerInfo.CHARSET;
+        this.characterSet = MySQLServerInfo.CHARSET;
         this.flags = 0;
         this.schema = dataHeaderPacket.getSchema();
         this.table = dataHeaderPacket.getTable();

@@ -20,7 +20,7 @@ package org.apache.shardingsphere.shardingproxy.transport.mysql.packet.handshake
 import com.google.common.base.Preconditions;
 import lombok.Getter;
 import org.apache.shardingsphere.shardingproxy.transport.mysql.constant.MySQLCapabilityFlag;
-import org.apache.shardingsphere.shardingproxy.transport.mysql.constant.ServerInfo;
+import org.apache.shardingsphere.shardingproxy.transport.mysql.constant.MySQLServerInfo;
 import org.apache.shardingsphere.shardingproxy.transport.mysql.constant.StatusFlag;
 import org.apache.shardingsphere.shardingproxy.transport.mysql.packet.MySQLPacket;
 import org.apache.shardingsphere.shardingproxy.transport.mysql.packet.MySQLPacketPayload;
@@ -35,9 +35,9 @@ import org.apache.shardingsphere.shardingproxy.transport.mysql.packet.MySQLPacke
  */
 public final class HandshakePacket implements MySQLPacket {
     
-    private final int protocolVersion = ServerInfo.PROTOCOL_VERSION;
+    private final int protocolVersion = MySQLServerInfo.PROTOCOL_VERSION;
     
-    private final String serverVersion = ServerInfo.SERVER_VERSION;
+    private final String serverVersion = MySQLServerInfo.SERVER_VERSION;
     
     private final int capabilityFlagsLower = MySQLCapabilityFlag.calculateHandshakeCapabilityFlagsLower();
     
@@ -83,7 +83,7 @@ public final class HandshakePacket implements MySQLPacket {
         payload.writeInt4(connectionId);
         payload.writeStringNul(new String(authPluginData.getAuthPluginDataPart1()));
         payload.writeInt2(capabilityFlagsLower);
-        payload.writeInt1(ServerInfo.CHARSET);
+        payload.writeInt1(MySQLServerInfo.CHARSET);
         payload.writeInt2(statusFlag.getValue());
         payload.writeInt2(capabilityFlagsUpper);
         payload.writeInt1(0);

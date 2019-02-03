@@ -18,7 +18,7 @@
 package org.apache.shardingsphere.shardingproxy.transport.mysql.packet.handshake;
 
 import org.apache.shardingsphere.shardingproxy.transport.mysql.constant.MySQLCapabilityFlag;
-import org.apache.shardingsphere.shardingproxy.transport.mysql.constant.ServerInfo;
+import org.apache.shardingsphere.shardingproxy.transport.mysql.constant.MySQLServerInfo;
 import org.apache.shardingsphere.shardingproxy.transport.mysql.constant.StatusFlag;
 import org.apache.shardingsphere.shardingproxy.transport.mysql.packet.MySQLPacketPayload;
 import org.junit.Test;
@@ -43,8 +43,8 @@ public final class HandshakePacketTest {
     
     @Test
     public void assertNewWithPayload() {
-        when(payload.readInt1()).thenReturn(1, ServerInfo.PROTOCOL_VERSION, ServerInfo.CHARSET, 0);
-        when(payload.readStringNul()).thenReturn(ServerInfo.SERVER_VERSION);
+        when(payload.readInt1()).thenReturn(1, MySQLServerInfo.PROTOCOL_VERSION, MySQLServerInfo.CHARSET, 0);
+        when(payload.readStringNul()).thenReturn(MySQLServerInfo.SERVER_VERSION);
         when(payload.readStringNulByBytes()).thenReturn(part1, part2);
         when(payload.readInt4()).thenReturn(1000);
         when(payload.readInt2()).thenReturn(
@@ -61,12 +61,12 @@ public final class HandshakePacketTest {
     public void assertWrite() {
         AuthPluginData authPluginData = new AuthPluginData(part1, part2);
         new HandshakePacket(1000, authPluginData).write(payload);
-        verify(payload).writeInt1(ServerInfo.PROTOCOL_VERSION);
-        verify(payload).writeStringNul(ServerInfo.SERVER_VERSION);
+        verify(payload).writeInt1(MySQLServerInfo.PROTOCOL_VERSION);
+        verify(payload).writeStringNul(MySQLServerInfo.SERVER_VERSION);
         verify(payload).writeInt4(1000);
         verify(payload).writeStringNul(new String(authPluginData.getAuthPluginDataPart1()));
         verify(payload).writeInt2(MySQLCapabilityFlag.calculateHandshakeCapabilityFlagsLower());
-        verify(payload).writeInt1(ServerInfo.CHARSET);
+        verify(payload).writeInt1(MySQLServerInfo.CHARSET);
         verify(payload).writeInt2(StatusFlag.SERVER_STATUS_AUTOCOMMIT.getValue());
         verify(payload).writeInt2(MySQLCapabilityFlag.calculateHandshakeCapabilityFlagsUpper());
         verify(payload).writeInt1(0);

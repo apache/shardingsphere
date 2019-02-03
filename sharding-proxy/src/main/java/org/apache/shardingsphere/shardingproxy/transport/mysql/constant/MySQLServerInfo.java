@@ -26,7 +26,7 @@ import lombok.NoArgsConstructor;
  * @author zhangliang 
  */
 @NoArgsConstructor(access = AccessLevel.PRIVATE)
-public final class ServerInfo {
+public final class MySQLServerInfo {
     
     /**
      * Protocol version is always 0x0A.

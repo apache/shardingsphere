@@ -29,7 +29,7 @@ import org.apache.shardingsphere.shardingproxy.config.yaml.YamlDataSourceParamet
 import org.apache.shardingsphere.shardingproxy.runtime.ChannelRegistry;
 import org.apache.shardingsphere.shardingproxy.runtime.GlobalRegistry;
 import org.apache.shardingsphere.shardingproxy.transport.mysql.constant.MySQLCapabilityFlag;
-import org.apache.shardingsphere.shardingproxy.transport.mysql.constant.ServerInfo;
+import org.apache.shardingsphere.shardingproxy.transport.mysql.constant.MySQLServerInfo;
 import org.apache.shardingsphere.shardingproxy.transport.mysql.packet.MySQLPacketPayload;
 import org.apache.shardingsphere.shardingproxy.transport.mysql.packet.command.query.ColumnDefinition41Packet;
 import org.apache.shardingsphere.shardingproxy.transport.mysql.packet.command.query.text.TextResultSetRowPacket;
@@ -84,7 +84,7 @@ public final class MySQLResponseHandler extends ResponseHandler {
             byte[] authResponse = securePasswordAuthentication(
                     (null == dataSourceParameter.getPassword() ? "" : dataSourceParameter.getPassword()).getBytes(), handshakePacket.getAuthPluginData().getAuthPluginData());
             HandshakeResponse41Packet handshakeResponse41Packet = new HandshakeResponse41Packet(
-                    handshakePacket.getSequenceId() + 1, MySQLCapabilityFlag.calculateHandshakeCapabilityFlagsLower(), 16777215, ServerInfo.CHARSET,
+                    handshakePacket.getSequenceId() + 1, MySQLCapabilityFlag.calculateHandshakeCapabilityFlagsLower(), 16777215, MySQLServerInfo.CHARSET,
                     dataSourceParameter.getUsername(), authResponse, dataSourceMetaData.getSchemaName());
             ChannelRegistry.getInstance().putConnectionId(context.channel().id().asShortText(), handshakePacket.getConnectionId());
             context.writeAndFlush(handshakeResponse41Packet);
