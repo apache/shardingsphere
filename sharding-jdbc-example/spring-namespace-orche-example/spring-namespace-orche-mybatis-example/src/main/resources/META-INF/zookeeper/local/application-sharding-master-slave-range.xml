@@ -60,7 +60,7 @@
         <property name="password" value=""/>
     </bean>
 
-    <bean id="randomStrategy" class="io.shardingsphere.api.algorithm.masterslave.RandomMasterSlaveLoadBalanceAlgorithm" />
+    <bean id="randomStrategy" class="org.apache.shardingsphere.api.algorithm.masterslave.impl.RandomMasterSlaveLoadBalanceAlgorithm" />
     
     <bean id="preciseModuloDatabaseShardingAlgorithm" class="io.shardingsphere.example.algorithm.PreciseModuloShardingDatabaseAlgorithm" />
     <bean id="rangeModuloDatabaseShardingAlgorithm" class="io.shardingsphere.example.algorithm.RangeModuloShardingDatabaseAlgorithm" />
