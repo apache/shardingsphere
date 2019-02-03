@@ -46,7 +46,7 @@ public final class MySQLAuthenticationHandlerTest {
     @SneakyThrows
     private void initAuthPluginDataForAuthenticationHandler() {
         MySQLAuthPluginData mySQLAuthPluginData = new MySQLAuthPluginData(part1, part2);
-        Field field = MySQLAuthenticationHandler.class.getDeclaredField("authPluginData");
+        Field field = MySQLAuthenticationHandler.class.getDeclaredField("mySQLAuthPluginData");
         field.setAccessible(true);
         field.set(mySQLAuthenticationHandler, mySQLAuthPluginData);
     }
