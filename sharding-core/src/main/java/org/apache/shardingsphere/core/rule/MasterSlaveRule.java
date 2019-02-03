@@ -25,7 +25,7 @@ import org.apache.shardingsphere.api.config.masterslave.MasterSlaveRuleConfigura
 import java.util.Collection;
 
 /**
- * Databases and tables master-slave rule configuration.
+ * Databases and tables master-slave rule.
  * 
  * @author zhangliang
  * @author panjuan

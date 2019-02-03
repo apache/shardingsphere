@@ -46,7 +46,7 @@ import java.util.List;
 import java.util.Map;
 
 /**
- * Table rule configuration.
+ * Table rule.
  *
  * @author zhangliang
  */

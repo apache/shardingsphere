@@ -45,7 +45,7 @@ import java.util.List;
 import java.util.TreeSet;
 
 /**
- * Databases and tables sharding rule configuration.
+ * Databases and tables sharding rule.
  *
  * @author zhangliang
  * @author maxiaoguang

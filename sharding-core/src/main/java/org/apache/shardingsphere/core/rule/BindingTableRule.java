@@ -27,7 +27,7 @@ import java.util.Collection;
 import java.util.List;
 
 /**
- * Binding table rule configuration.
+ * Binding table rule.
  * 
  * <p>Binding table is same sharding rule with different tables, use one of them can deduce other name of actual tables and data sources.</p>
  * 
