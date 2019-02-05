@@ -340,7 +340,14 @@ public final class ShardingResultSet extends AbstractResultSetAdapter {
     
     @SneakyThrows
     private Object decode(final Object value, final String columnLabel) {
-        Optional<ShardingEncryptor> shardingEncryptor = ShardingEncryptorEngine.getShardingEncryptor(getMetaData().getTableName(columnLabelIndexMap.get(columnLabel)), columnLabel);
+        Optional<ShardingEncryptor> shardingEncryptor = ShardingEncryptorEngine.getShardingEncryptor(getMetaData().getTableName(columnLabelIndexMap.get(columnLabel)), getMetaData().getColumnName(columnLabelIndexMap.get(columnLabel)));
+        return shardingEncryptor.isPresent() ? shardingEncryptor.get().decode(value) : value;
+        
+    }
+    
+    @SneakyThrows
+    private Object decode(final Object value, final int columnIndex) {
+        Optional<ShardingEncryptor> shardingEncryptor = ShardingEncryptorEngine.getShardingEncryptor(getMetaData().getTableName(columnIndex), getMetaData().getColumnName(columnIndex));
         return shardingEncryptor.isPresent() ? shardingEncryptor.get().decode(value) : value;
         
     }
