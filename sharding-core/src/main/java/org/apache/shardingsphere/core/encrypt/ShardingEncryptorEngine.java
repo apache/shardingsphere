@@ -17,10 +17,12 @@
 
 package org.apache.shardingsphere.core.encrypt;
 
+import com.google.common.base.Optional;
 import lombok.AccessLevel;
 import lombok.NoArgsConstructor;
 import org.apache.shardingsphere.core.routing.strategy.ShardingEncryptorStrategy;
 import org.apache.shardingsphere.core.rule.TableRule;
+import org.apache.shardingsphere.spi.algorithm.encrypt.ShardingEncryptor;
 
 import java.util.Collection;
 import java.util.LinkedHashMap;
@@ -47,5 +49,12 @@ public final class ShardingEncryptorEngine {
                 SHARDING_ENCRYPTOR_STRATEGIES.put(each.getLogicTable(), each.getShardingEncryptorStrategy());
             }
         }
+    }
+    
+    public static Optional<ShardingEncryptor> getShardingEncryptor(final String logicTableName, final String columnName) {
+        if (SHARDING_ENCRYPTOR_STRATEGIES.keySet().contains(logicTableName) && SHARDING_ENCRYPTOR_STRATEGIES.get(logicTableName).getColumns().contains(columnName)) {
+            return Optional.of(SHARDING_ENCRYPTOR_STRATEGIES.get(logicTableName).getShardingEncryptor());
+        }
+        return Optional.absent();
     }
 }
