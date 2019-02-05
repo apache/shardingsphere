@@ -18,8 +18,9 @@
 package org.apache.shardingsphere.shardingjdbc.jdbc.core.resultset;
 
 import lombok.RequiredArgsConstructor;
-import org.apache.shardingsphere.core.metadata.ShardingMetaData;
+import org.apache.shardingsphere.core.constant.ShardingConstant;
 import org.apache.shardingsphere.core.parsing.parser.constant.DerivedColumn;
+import org.apache.shardingsphere.core.rule.ShardingRule;
 import org.apache.shardingsphere.shardingjdbc.jdbc.adapter.WrapperAdapter;
 
 import java.sql.ResultSetMetaData;
@@ -35,7 +36,7 @@ public final class ShardingResultSetMetaData extends WrapperAdapter implements R
     
     private final ResultSetMetaData resultSetMetaData;
     
-    private final ShardingMetaData shardingMetaData;
+    private final ShardingRule shardingRule;
     
     @Override
     public int getColumnCount() throws SQLException {
@@ -95,7 +96,7 @@ public final class ShardingResultSetMetaData extends WrapperAdapter implements R
     
     @Override
     public String getSchemaName(final int column) throws SQLException {
-        return resultSetMetaData.getSchemaName(column);
+        return ShardingConstant.LOGIC_SCHEMA_NAME;
     }
     
     @Override
@@ -110,12 +111,14 @@ public final class ShardingResultSetMetaData extends WrapperAdapter implements R
     
     @Override
     public String getTableName(final int column) throws SQLException {
+        String actualTableName = resultSetMetaData.getTableName(column);
+        
         return resultSetMetaData.getTableName(column);
     }
     
     @Override
     public String getCatalogName(final int column) throws SQLException {
-        return resultSetMetaData.getCatalogName(column);
+        return ShardingConstant.LOGIC_SCHEMA_NAME;
     }
     
     @Override
