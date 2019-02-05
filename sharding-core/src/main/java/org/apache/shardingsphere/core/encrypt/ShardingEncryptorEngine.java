@@ -17,10 +17,27 @@
 
 package org.apache.shardingsphere.core.encrypt;
 
+import org.apache.shardingsphere.core.routing.strategy.ShardingEncryptorStrategy;
+import org.apache.shardingsphere.core.rule.TableRule;
+
+import java.util.LinkedHashMap;
+import java.util.List;
+import java.util.Map;
+
 /**
  * Sharding encryptor engine.
  *
  * @author panjuan
  */
 public final class ShardingEncryptorEngine {
+    
+    private final Map<String, ShardingEncryptorStrategy> shardingEncryptorStrategies = new LinkedHashMap<>();
+    
+    public ShardingEncryptorEngine(final List<TableRule> tableRules) {
+        for (TableRule each : tableRules) {
+            if (null != each.getShardingEncryptorStrategy()) {
+                shardingEncryptorStrategies.put(each.getLogicTable(), each.getShardingEncryptorStrategy());
+            }
+        }
+    }
 }
