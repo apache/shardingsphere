@@ -310,12 +310,12 @@ public final class ShardingResultSet extends AbstractResultSetAdapter {
     
     @Override
     public URL getURL(final int columnIndex) throws SQLException {
-        return (URL) mergeResultSet.getValue(columnIndex, URL.class);
+        return (URL) decode(mergeResultSet.getValue(columnIndex, URL.class), columnIndex);
     }
     
     @Override
     public URL getURL(final String columnLabel) throws SQLException {
-        return (URL) mergeResultSet.getValue(columnLabel, URL.class);
+        return (URL) decode(mergeResultSet.getValue(columnLabel, URL.class), columnLabel);
     }
     
     @Override
