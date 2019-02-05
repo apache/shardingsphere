@@ -77,12 +77,12 @@ public final class ShardingResultSet extends AbstractResultSetAdapter {
     
     @Override
     public boolean getBoolean(final int columnIndex) throws SQLException {
-        return (boolean) ResultSetUtil.convertValue(mergeResultSet.getValue(columnIndex, boolean.class), boolean.class);
+        return (boolean) ResultSetUtil.convertValue(decode(mergeResultSet.getValue(columnIndex, boolean.class), columnIndex), boolean.class);
     }
     
     @Override
     public boolean getBoolean(final String columnLabel) throws SQLException {
-        return (boolean) ResultSetUtil.convertValue(mergeResultSet.getValue(columnLabel, boolean.class), boolean.class);
+        return (boolean) ResultSetUtil.convertValue(decode(mergeResultSet.getValue(columnLabel, boolean.class), columnLabel), boolean.class);
     }
     
     @Override
