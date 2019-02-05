@@ -127,32 +127,32 @@ public final class ShardingResultSet extends AbstractResultSetAdapter {
     
     @Override
     public float getFloat(final int columnIndex) throws SQLException {
-        return (float) ResultSetUtil.convertValue(mergeResultSet.getValue(columnIndex, float.class), float.class);
+        return (float) ResultSetUtil.convertValue(decode(mergeResultSet.getValue(columnIndex, float.class), columnIndex), float.class);
     }
     
     @Override
     public float getFloat(final String columnLabel) throws SQLException {
-        return (float) ResultSetUtil.convertValue(mergeResultSet.getValue(columnLabel, float.class), float.class);
+        return (float) ResultSetUtil.convertValue(decode(mergeResultSet.getValue(columnLabel, float.class), columnLabel), float.class);
     }
     
     @Override
     public double getDouble(final int columnIndex) throws SQLException {
-        return (double) ResultSetUtil.convertValue(mergeResultSet.getValue(columnIndex, double.class), double.class);
+        return (double) ResultSetUtil.convertValue(decode(mergeResultSet.getValue(columnIndex, double.class), columnIndex), double.class);
     }
     
     @Override
     public double getDouble(final String columnLabel) throws SQLException {
-        return (double) ResultSetUtil.convertValue(mergeResultSet.getValue(columnLabel, double.class), double.class);
+        return (double) ResultSetUtil.convertValue(decode(mergeResultSet.getValue(columnLabel, double.class), columnLabel), double.class);
     }
     
     @Override
     public String getString(final int columnIndex) throws SQLException {
-        return (String) ResultSetUtil.convertValue(mergeResultSet.getValue(columnIndex, String.class), String.class);
+        return (String) ResultSetUtil.convertValue(decode(mergeResultSet.getValue(columnIndex, String.class), columnIndex), String.class);
     }
     
     @Override
     public String getString(final String columnLabel) throws SQLException {
-        return (String) ResultSetUtil.convertValue(mergeResultSet.getValue(columnLabel, String.class), String.class);
+        return (String) ResultSetUtil.convertValue(decode(mergeResultSet.getValue(columnLabel, String.class), columnLabel), String.class);
     }
     
     @Override
