@@ -260,13 +260,15 @@ public final class ShardingResultSet extends AbstractResultSetAdapter {
     @SuppressWarnings("deprecation")
     @Override
     public InputStream getUnicodeStream(final int columnIndex) throws SQLException {
-        return mergeResultSet.getInputStream(columnIndex, "Unicode");
+        Object result = decode(convert(mergeResultSet.getInputStream(columnIndex, "Unicode")), columnIndex);
+        return convert(String.valueOf(result));
     }
     
     @SuppressWarnings("deprecation")
     @Override
     public InputStream getUnicodeStream(final String columnLabel) throws SQLException {
-        return mergeResultSet.getInputStream(columnLabel, "Unicode");
+        Object result = decode(convert(mergeResultSet.getInputStream(columnLabel, "Unicode")), columnLabel);
+        return convert(String.valueOf(result));
     }
     
     @Override
