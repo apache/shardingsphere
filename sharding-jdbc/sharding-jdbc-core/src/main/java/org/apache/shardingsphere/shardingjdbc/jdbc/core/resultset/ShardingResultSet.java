@@ -87,22 +87,22 @@ public final class ShardingResultSet extends AbstractResultSetAdapter {
     
     @Override
     public byte getByte(final int columnIndex) throws SQLException {
-        return (byte) ResultSetUtil.convertValue(mergeResultSet.getValue(columnIndex, byte.class), byte.class);
+        return (byte) ResultSetUtil.convertValue(decode(mergeResultSet.getValue(columnIndex, byte.class), columnIndex), byte.class);
     }
     
     @Override
     public byte getByte(final String columnLabel) throws SQLException {
-        return (byte) ResultSetUtil.convertValue(mergeResultSet.getValue(columnLabel, byte.class), byte.class);
+        return (byte) ResultSetUtil.convertValue(decode(mergeResultSet.getValue(columnLabel, byte.class), columnLabel), byte.class);
     }
     
     @Override
     public short getShort(final int columnIndex) throws SQLException {
-        return (short) ResultSetUtil.convertValue(mergeResultSet.getValue(columnIndex, short.class), short.class);
+        return (short) ResultSetUtil.convertValue(decode(mergeResultSet.getValue(columnIndex, short.class), columnIndex), short.class);
     }
     
     @Override
     public short getShort(final String columnLabel) throws SQLException {
-        return (short) ResultSetUtil.convertValue(mergeResultSet.getValue(columnLabel, short.class), short.class);
+        return (short) ResultSetUtil.convertValue(decode(mergeResultSet.getValue(columnLabel, short.class), columnLabel), short.class);
     }
     
     @Override
