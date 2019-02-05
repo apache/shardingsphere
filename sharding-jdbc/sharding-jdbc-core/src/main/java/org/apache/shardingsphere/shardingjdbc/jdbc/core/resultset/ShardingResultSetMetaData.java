@@ -18,6 +18,7 @@
 package org.apache.shardingsphere.shardingjdbc.jdbc.core.resultset;
 
 import lombok.RequiredArgsConstructor;
+import org.apache.shardingsphere.core.metadata.ShardingMetaData;
 import org.apache.shardingsphere.core.parsing.parser.constant.DerivedColumn;
 import org.apache.shardingsphere.shardingjdbc.jdbc.adapter.WrapperAdapter;
 
@@ -33,6 +34,8 @@ import java.sql.SQLException;
 public final class ShardingResultSetMetaData extends WrapperAdapter implements ResultSetMetaData {
     
     private final ResultSetMetaData resultSetMetaData;
+    
+    private final ShardingMetaData shardingMetaData;
     
     @Override
     public int getColumnCount() throws SQLException {
