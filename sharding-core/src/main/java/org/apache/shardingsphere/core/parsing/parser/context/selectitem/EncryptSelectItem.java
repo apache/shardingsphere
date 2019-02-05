@@ -17,10 +17,33 @@
 
 package org.apache.shardingsphere.core.parsing.parser.context.selectitem;
 
+import com.google.common.base.Optional;
+import com.google.common.base.Strings;
+import lombok.RequiredArgsConstructor;
+
 /**
  * Encrypt select item.
  *
  * @author panjuan
  */
-public final class EncryptSelectItem {
+@RequiredArgsConstructor
+public final class EncryptSelectItem implements SelectItem {
+
+    private final String owner;
+
+    private final String name;
+
+    private int index = -1;
+    
+    private final String alias;
+    
+    @Override
+    public String getExpression() { 
+        return name;
+    }
+    
+    @Override
+    public Optional<String> getAlias() {
+        return Strings.isNullOrEmpty(alias) ? Optional.<String>absent() : Optional.of(alias);
+    }
 }
