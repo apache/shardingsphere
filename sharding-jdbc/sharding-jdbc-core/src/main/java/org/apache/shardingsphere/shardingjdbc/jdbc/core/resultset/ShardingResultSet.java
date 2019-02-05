@@ -189,17 +189,17 @@ public final class ShardingResultSet extends AbstractResultSetAdapter {
     
     @Override
     public Date getDate(final int columnIndex) throws SQLException {
-        return (Date) ResultSetUtil.convertValue(mergeResultSet.getValue(columnIndex, Date.class), Date.class);
+        return (Date) ResultSetUtil.convertValue(decode(mergeResultSet.getValue(columnIndex, Date.class), columnIndex), Date.class);
     }
     
     @Override
     public Date getDate(final String columnLabel) throws SQLException {
-        return (Date) ResultSetUtil.convertValue(mergeResultSet.getValue(columnLabel, Date.class), Date.class);
+        return (Date) ResultSetUtil.convertValue(decode(mergeResultSet.getValue(columnLabel, Date.class), columnLabel), Date.class);
     }
     
     @Override
     public Date getDate(final int columnIndex, final Calendar cal) throws SQLException {
-        return (Date) ResultSetUtil.convertValue(mergeResultSet.getCalendarValue(columnIndex, Date.class, cal), Date.class);
+        return (Date) ResultSetUtil.convertValue(decode(mergeResultSet.getCalendarValue(columnIndex, Date.class, cal), columnIndex), Date.class);
     }
     
     @Override
