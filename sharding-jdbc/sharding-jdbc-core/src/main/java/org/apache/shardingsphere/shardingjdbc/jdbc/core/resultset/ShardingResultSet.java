@@ -157,24 +157,24 @@ public final class ShardingResultSet extends AbstractResultSetAdapter {
     
     @Override
     public BigDecimal getBigDecimal(final int columnIndex) throws SQLException {
-        return (BigDecimal) ResultSetUtil.convertValue(mergeResultSet.getValue(columnIndex, BigDecimal.class), BigDecimal.class);
+        return (BigDecimal) ResultSetUtil.convertValue(decode(mergeResultSet.getValue(columnIndex, BigDecimal.class), columnIndex), BigDecimal.class);
     }
     
     @Override
     public BigDecimal getBigDecimal(final String columnLabel) throws SQLException {
-        return (BigDecimal) ResultSetUtil.convertValue(mergeResultSet.getValue(columnLabel, BigDecimal.class), BigDecimal.class);
+        return (BigDecimal) ResultSetUtil.convertValue(decode(mergeResultSet.getValue(columnLabel, BigDecimal.class), columnLabel), BigDecimal.class);
     }
     
     @SuppressWarnings("deprecation")
     @Override
     public BigDecimal getBigDecimal(final int columnIndex, final int scale) throws SQLException {
-        return (BigDecimal) ResultSetUtil.convertValue(mergeResultSet.getValue(columnIndex, BigDecimal.class), BigDecimal.class);
+        return (BigDecimal) ResultSetUtil.convertValue(decode(mergeResultSet.getValue(columnIndex, BigDecimal.class), columnIndex), BigDecimal.class);
     }
     
     @SuppressWarnings("deprecation")
     @Override
     public BigDecimal getBigDecimal(final String columnLabel, final int scale) throws SQLException {
-        return (BigDecimal) ResultSetUtil.convertValue(mergeResultSet.getValue(columnLabel, BigDecimal.class), BigDecimal.class);
+        return (BigDecimal) ResultSetUtil.convertValue(decode(mergeResultSet.getValue(columnLabel, BigDecimal.class), columnLabel), BigDecimal.class);
     }
     
     @Override
