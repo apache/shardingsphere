@@ -249,12 +249,14 @@ public final class ShardingResultSet extends AbstractResultSetAdapter {
     
     @Override
     public InputStream getAsciiStream(final int columnIndex) throws SQLException {
-        return mergeResultSet.getInputStream(columnIndex, "Ascii");
+        Object result = decode(convert(mergeResultSet.getInputStream(columnIndex, "Ascii")), columnIndex);
+        return convert(String.valueOf(result));
     }
     
     @Override
     public InputStream getAsciiStream(final String columnLabel) throws SQLException {
-        return mergeResultSet.getInputStream(columnLabel, "Ascii");
+        Object result = decode(convert(mergeResultSet.getInputStream(columnLabel, "Ascii")), columnLabel);
+        return convert(String.valueOf(result));
     }
     
     @SuppressWarnings("deprecation")
