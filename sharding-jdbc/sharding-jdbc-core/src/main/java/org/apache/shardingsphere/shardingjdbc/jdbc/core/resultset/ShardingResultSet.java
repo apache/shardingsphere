@@ -17,8 +17,12 @@
 
 package org.apache.shardingsphere.shardingjdbc.jdbc.core.resultset;
 
+import com.google.common.base.Optional;
+import lombok.SneakyThrows;
+import org.apache.shardingsphere.core.encrypt.ShardingEncryptorEngine;
 import org.apache.shardingsphere.core.merger.MergedResult;
 import org.apache.shardingsphere.shardingjdbc.jdbc.adapter.AbstractResultSetAdapter;
+import org.apache.shardingsphere.spi.algorithm.encrypt.ShardingEncryptor;
 
 import java.io.InputStream;
 import java.io.Reader;
@@ -334,7 +338,10 @@ public final class ShardingResultSet extends AbstractResultSetAdapter {
         return mergeResultSet.getValue(columnLabel, Object.class);
     }
     
+    @SneakyThrows
     private Object decode(final Object value, final String columnLabel) {
-        String logicTableName = getMetaData().
+        Optional<ShardingEncryptor> shardingEncryptor = ShardingEncryptorEngine.getShardingEncryptor(getMetaData().getTableName(columnLabelIndexMap.get(columnLabel)), columnLabel);
+        return shardingEncryptor.isPresent() ? shardingEncryptor.get().decode(value) : value;
+        
     }
 }
