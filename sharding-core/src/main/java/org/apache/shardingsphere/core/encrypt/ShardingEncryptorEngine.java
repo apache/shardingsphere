@@ -51,6 +51,13 @@ public final class ShardingEncryptorEngine {
         }
     }
     
+    /**
+     * Get sharding encryptor.
+     * 
+     * @param logicTableName logic table name
+     * @param columnName column name
+     * @return optional of sharding encryptor
+     */
     public static Optional<ShardingEncryptor> getShardingEncryptor(final String logicTableName, final String columnName) {
         if (SHARDING_ENCRYPTOR_STRATEGIES.keySet().contains(logicTableName) && SHARDING_ENCRYPTOR_STRATEGIES.get(logicTableName).getColumns().contains(columnName)) {
             return Optional.of(SHARDING_ENCRYPTOR_STRATEGIES.get(logicTableName).getShardingEncryptor());
