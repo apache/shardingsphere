@@ -179,12 +179,12 @@ public final class ShardingResultSet extends AbstractResultSetAdapter {
     
     @Override
     public byte[] getBytes(final int columnIndex) throws SQLException {
-        return (byte[]) ResultSetUtil.convertValue(mergeResultSet.getValue(columnIndex, byte[].class), byte[].class);
+        return (byte[]) ResultSetUtil.convertValue(decode(mergeResultSet.getValue(columnIndex, byte[].class), columnIndex), byte[].class);
     }
     
     @Override
     public byte[] getBytes(final String columnLabel) throws SQLException {
-        return (byte[]) ResultSetUtil.convertValue(mergeResultSet.getValue(columnLabel, byte[].class), byte[].class);
+        return (byte[]) ResultSetUtil.convertValue(decode(mergeResultSet.getValue(columnLabel, byte[].class), columnLabel), byte[].class);
     }
     
     @Override
