@@ -229,22 +229,22 @@ public final class ShardingResultSet extends AbstractResultSetAdapter {
             
     @Override
     public Timestamp getTimestamp(final int columnIndex) throws SQLException {
-        return (Timestamp) ResultSetUtil.convertValue(mergeResultSet.getValue(columnIndex, Timestamp.class), Timestamp.class);
+        return (Timestamp) ResultSetUtil.convertValue(decode(mergeResultSet.getValue(columnIndex, Timestamp.class), columnIndex), Timestamp.class);
     }
     
     @Override
     public Timestamp getTimestamp(final String columnLabel) throws SQLException {
-        return (Timestamp) ResultSetUtil.convertValue(mergeResultSet.getValue(columnLabel, Timestamp.class), Timestamp.class);
+        return (Timestamp) ResultSetUtil.convertValue(decode(mergeResultSet.getValue(columnLabel, Timestamp.class), columnLabel), Timestamp.class);
     }
     
     @Override
     public Timestamp getTimestamp(final int columnIndex, final Calendar cal) throws SQLException {
-        return (Timestamp) ResultSetUtil.convertValue(mergeResultSet.getCalendarValue(columnIndex, Timestamp.class, cal), Timestamp.class);
+        return (Timestamp) ResultSetUtil.convertValue(decode(mergeResultSet.getCalendarValue(columnIndex, Timestamp.class, cal), columnIndex), Timestamp.class);
     }
     
     @Override
     public Timestamp getTimestamp(final String columnLabel, final Calendar cal) throws SQLException {
-        return (Timestamp) ResultSetUtil.convertValue(mergeResultSet.getCalendarValue(columnLabel, Timestamp.class, cal), Timestamp.class);
+        return (Timestamp) ResultSetUtil.convertValue(decode(mergeResultSet.getCalendarValue(columnLabel, Timestamp.class, cal), columnLabel), Timestamp.class);
     }
     
     @Override
