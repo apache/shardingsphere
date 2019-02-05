@@ -204,27 +204,27 @@ public final class ShardingResultSet extends AbstractResultSetAdapter {
     
     @Override
     public Date getDate(final String columnLabel, final Calendar cal) throws SQLException {
-        return (Date) ResultSetUtil.convertValue(mergeResultSet.getCalendarValue(columnLabel, Date.class, cal), Date.class);
+        return (Date) ResultSetUtil.convertValue(decode(mergeResultSet.getCalendarValue(columnLabel, Date.class, cal), columnLabel), Date.class);
     }
     
     @Override
     public Time getTime(final int columnIndex) throws SQLException {
-        return (Time) ResultSetUtil.convertValue(mergeResultSet.getValue(columnIndex, Time.class), Time.class);
+        return (Time) ResultSetUtil.convertValue(decode(mergeResultSet.getValue(columnIndex, Time.class), columnIndex), Time.class);
     }
     
     @Override
     public Time getTime(final String columnLabel) throws SQLException {
-        return (Time) ResultSetUtil.convertValue(mergeResultSet.getValue(columnLabel, Time.class), Time.class);
+        return (Time) ResultSetUtil.convertValue(decode(mergeResultSet.getValue(columnLabel, Time.class), columnLabel), Time.class);
     }
     
     @Override
     public Time getTime(final int columnIndex, final Calendar cal) throws SQLException {
-        return (Time) ResultSetUtil.convertValue(mergeResultSet.getCalendarValue(columnIndex, Time.class, cal), Time.class);
+        return (Time) ResultSetUtil.convertValue(decode(mergeResultSet.getCalendarValue(columnIndex, Time.class, cal), columnIndex), Time.class);
     }
     
     @Override
     public Time getTime(final String columnLabel, final Calendar cal) throws SQLException {
-        return (Time) ResultSetUtil.convertValue(mergeResultSet.getCalendarValue(columnLabel, Time.class, cal), Time.class);
+        return (Time) ResultSetUtil.convertValue(decode(mergeResultSet.getCalendarValue(columnLabel, Time.class, cal), columnLabel), Time.class);
     }
             
     @Override
