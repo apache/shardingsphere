@@ -41,7 +41,7 @@ public final class KeyGeneratorConfigurationTest {
         KeyGeneratorConfiguration actual = new KeyGeneratorConfiguration("TEST", "id", null);
         assertThat(actual.getType(), is("TEST"));
         assertThat(actual.getColumn(), is("id"));
-        assertThat(actual.getProps(), is(new Properties()));
+        assertThat(actual.getProperties(), is(new Properties()));
     }
     
     @Test
@@ -51,6 +51,6 @@ public final class KeyGeneratorConfigurationTest {
         KeyGeneratorConfiguration actual = new KeyGeneratorConfiguration("TEST", "id", props);
         assertThat(actual.getType(), is("TEST"));
         assertThat(actual.getColumn(), is("id"));
-        assertThat(actual.getProps(), is(props));
+        assertThat(actual.getProperties(), is(props));
     }
 }

@@ -20,6 +20,7 @@ package org.apache.shardingsphere.api.config.encryptor;
 import com.google.common.base.Preconditions;
 import com.google.common.base.Strings;
 import lombok.Getter;
+import org.apache.shardingsphere.api.config.StrategyConfiguration;
 
 import java.util.Properties;
 
@@ -29,26 +30,20 @@ import java.util.Properties;
  * @author panjuan
  */
 @Getter
-public final class EncryptorConfiguration {
-    
-    private final String type;
+public final class EncryptorConfiguration extends StrategyConfiguration {
     
     private final String columns;
     
     private String assistedQueryColumns;
     
-    private final Properties props;
-    
-    public EncryptorConfiguration(final String type, final String columns, final Properties props) {
-        this(type, columns, "", props);
+    public EncryptorConfiguration(final String type, final String columns, final Properties properties) {
+        this(type, columns, "", properties);
     }
     
-    public EncryptorConfiguration(final String type, final String columns, final String assistedQueryColumns, final Properties props) {
-        Preconditions.checkArgument(!Strings.isNullOrEmpty(type), "Type is required.");
+    public EncryptorConfiguration(final String type, final String columns, final String assistedQueryColumns, final Properties properties) {
+        super(type, properties);
         Preconditions.checkArgument(!Strings.isNullOrEmpty(columns), "Columns is required.");
-        this.type = type;
         this.columns = columns;
         this.assistedQueryColumns = null == assistedQueryColumns ? "" : assistedQueryColumns;
-        this.props = null == props ? new Properties() : props;
     }
 }

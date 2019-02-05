@@ -119,7 +119,8 @@ public class ShardingRule {
     
     private ShardingKeyGenerator createDefaultKeyGenerator(final KeyGeneratorConfiguration keyGeneratorConfiguration) {
         ShardingKeyGeneratorFactory factory = ShardingKeyGeneratorFactory.getInstance();
-        return containsKeyGeneratorConfiguration(keyGeneratorConfiguration) ? factory.newAlgorithm(keyGeneratorConfiguration.getType(), keyGeneratorConfiguration.getProps()) : factory.newAlgorithm();
+        return containsKeyGeneratorConfiguration(keyGeneratorConfiguration)
+                ? factory.newAlgorithm(keyGeneratorConfiguration.getType(), keyGeneratorConfiguration.getProperties()) : factory.newAlgorithm();
     }
     
     private boolean containsKeyGeneratorConfiguration(final KeyGeneratorConfiguration keyGeneratorConfiguration) {

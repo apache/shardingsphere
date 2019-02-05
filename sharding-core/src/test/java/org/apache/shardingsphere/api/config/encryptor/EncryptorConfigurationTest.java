@@ -42,7 +42,7 @@ public final class EncryptorConfigurationTest {
         assertThat(actual.getType(), is("TEST"));
         assertThat(actual.getColumns(), is("pwd"));
         assertThat(actual.getAssistedQueryColumns(), is(""));
-        assertThat(actual.getProps(), is(new Properties()));
+        assertThat(actual.getProperties(), is(new Properties()));
     }
     
     @Test
@@ -53,7 +53,7 @@ public final class EncryptorConfigurationTest {
         assertThat(actual.getType(), is("TEST"));
         assertThat(actual.getColumns(), is("pwd"));
         assertThat(actual.getAssistedQueryColumns(), is(""));
-        assertThat(actual.getProps(), is(props));
+        assertThat(actual.getProperties(), is(props));
     }
     
     @Test
@@ -64,6 +64,6 @@ public final class EncryptorConfigurationTest {
         assertThat(actual.getType(), is("TEST"));
         assertThat(actual.getColumns(), is("pwd"));
         assertThat(actual.getAssistedQueryColumns(), is("pwd_query"));
-        assertThat(actual.getProps(), is(props));
+        assertThat(actual.getProperties(), is(props));
     }
 }

@@ -15,34 +15,33 @@
  * limitations under the License.
  */
 
-package org.apache.shardingsphere.api.config.sharding;
+package org.apache.shardingsphere.api.config;
 
 import com.google.common.base.Preconditions;
 import com.google.common.base.Strings;
 import lombok.Getter;
-import org.apache.shardingsphere.api.config.StrategyConfiguration;
 
 import java.util.Properties;
 
 /**
- * Key generator configuration.
- *
- * @author panjuan
+ * Strategy configuration.
+ * 
+ * @author zhangliang
  */
 @Getter
-public final class KeyGeneratorConfiguration extends StrategyConfiguration {
+public abstract class StrategyConfiguration {
     
-    private final String column;
+    private final String type;
     
-    public KeyGeneratorConfiguration(final String type, final String column) {
-        super(type);
-        Preconditions.checkArgument(!Strings.isNullOrEmpty(column), "Column is required.");
-        this.column = column;
+    private final Properties properties;
+    
+    public StrategyConfiguration(final String type) {
+        this(type, null);
     }
     
-    public KeyGeneratorConfiguration(final String type, final String column, final Properties properties) {
-        super(type, properties);
-        Preconditions.checkArgument(!Strings.isNullOrEmpty(column), "Column is required.");
-        this.column = column;
+    public StrategyConfiguration(final String type, final Properties properties) {
+        Preconditions.checkArgument(!Strings.isNullOrEmpty(type), "Type is required.");
+        this.type = type;
+        this.properties = null == properties ? new Properties() : properties;
     }
 }
