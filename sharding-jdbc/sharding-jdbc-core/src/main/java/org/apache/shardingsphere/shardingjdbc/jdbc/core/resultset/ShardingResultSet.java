@@ -24,6 +24,7 @@ import org.apache.shardingsphere.core.merger.MergedResult;
 import org.apache.shardingsphere.shardingjdbc.jdbc.adapter.AbstractResultSetAdapter;
 import org.apache.shardingsphere.spi.algorithm.encrypt.ShardingEncryptor;
 
+import java.io.ByteArrayInputStream;
 import java.io.InputStream;
 import java.io.Reader;
 import java.math.BigDecimal;
@@ -275,7 +276,19 @@ public final class ShardingResultSet extends AbstractResultSetAdapter {
     
     @Override
     public InputStream getBinaryStream(final String columnLabel) throws SQLException {
-        return mergeResultSet.getInputStream(columnLabel, "Binary");
+        Object result = decode(getString(mergeResultSet.getInputStream(columnLabel, "Binary")), columnLabel);
+        return getInputStream(String.valueOf(result));
+    }
+    
+    @SneakyThrows
+    private String getString(final InputStream value) {
+        byte[] bytes = new byte[value.available()];
+        value.read(bytes);
+        return new String(bytes);
+    }
+    
+    private InputStream getInputStream(final String value) {
+        return new ByteArrayInputStream(value.getBytes());
     }
     
     @Override
