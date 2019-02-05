@@ -280,12 +280,12 @@ public final class ShardingResultSet extends AbstractResultSetAdapter {
     
     @Override
     public Reader getCharacterStream(final int columnIndex) throws SQLException {
-        return (Reader) mergeResultSet.getValue(columnIndex, Reader.class);
+        return (Reader) decode(mergeResultSet.getValue(columnIndex, Reader.class), columnIndex);
     }
     
     @Override
     public Reader getCharacterStream(final String columnLabel) throws SQLException {
-        return (Reader) mergeResultSet.getValue(columnLabel, Reader.class);
+        return (Reader) decode(mergeResultSet.getValue(columnLabel, Reader.class), columnLabel);
     }
     
     @Override
