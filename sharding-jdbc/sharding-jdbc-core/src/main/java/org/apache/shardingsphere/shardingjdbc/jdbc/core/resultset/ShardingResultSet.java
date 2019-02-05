@@ -320,12 +320,12 @@ public final class ShardingResultSet extends AbstractResultSetAdapter {
     
     @Override
     public SQLXML getSQLXML(final int columnIndex) throws SQLException {
-        return (SQLXML) mergeResultSet.getValue(columnIndex, SQLXML.class);
+        return (SQLXML) decode(mergeResultSet.getValue(columnIndex, SQLXML.class), columnIndex);
     }
     
     @Override
     public SQLXML getSQLXML(final String columnLabel) throws SQLException {
-        return (SQLXML) mergeResultSet.getValue(columnLabel, SQLXML.class);
+        return (SQLXML) decode(mergeResultSet.getValue(columnLabel, SQLXML.class), columnLabel);
     }
     
     @Override
