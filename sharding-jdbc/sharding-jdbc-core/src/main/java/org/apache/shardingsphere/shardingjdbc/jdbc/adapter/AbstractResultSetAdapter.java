@@ -20,9 +20,12 @@ package org.apache.shardingsphere.shardingjdbc.jdbc.adapter;
 import com.google.common.base.Preconditions;
 import lombok.Getter;
 import lombok.extern.slf4j.Slf4j;
+import org.apache.shardingsphere.core.metadata.ShardingMetaData;
 import org.apache.shardingsphere.shardingjdbc.jdbc.adapter.executor.ForceExecuteCallback;
 import org.apache.shardingsphere.shardingjdbc.jdbc.adapter.executor.ForceExecuteTemplate;
 import org.apache.shardingsphere.shardingjdbc.jdbc.core.resultset.ShardingResultSetMetaData;
+import org.apache.shardingsphere.shardingjdbc.jdbc.core.statement.ShardingPreparedStatement;
+import org.apache.shardingsphere.shardingjdbc.jdbc.core.statement.ShardingStatement;
 import org.apache.shardingsphere.shardingjdbc.jdbc.unsupported.AbstractUnsupportedOperationResultSet;
 
 import java.sql.ResultSet;
@@ -58,7 +61,13 @@ public abstract class AbstractResultSetAdapter extends AbstractUnsupportedOperat
     
     @Override
     public final ResultSetMetaData getMetaData() throws SQLException {
-        return new ShardingResultSetMetaData(resultSets.get(0).getMetaData());
+        
+        return new ShardingResultSetMetaData(resultSets.get(0).getMetaData(), getShardingMetaData());
+    }
+    
+    private ShardingMetaData getShardingMetaData() {
+        return statement instanceof ShardingPreparedStatement 
+                ? ((ShardingPreparedStatement) statement).getConnection().getShardingContext().getMetaData() : ((ShardingStatement) statement).getConnection().getShardingContext().getMetaData();
     }
     
     @Override
