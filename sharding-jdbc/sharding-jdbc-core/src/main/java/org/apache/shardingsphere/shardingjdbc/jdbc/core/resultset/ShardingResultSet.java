@@ -34,7 +34,9 @@ import java.sql.Statement;
 import java.sql.Time;
 import java.sql.Timestamp;
 import java.util.Calendar;
+import java.util.LinkedHashMap;
 import java.util.List;
+import java.util.Map;
 
 /**
  * Result that support sharding.
@@ -45,9 +47,17 @@ public final class ShardingResultSet extends AbstractResultSetAdapter {
     
     private final MergedResult mergeResultSet;
     
+    private final Map<String, Integer> columnLabelIndexMap = new LinkedHashMap<>();
+    
     public ShardingResultSet(final List<ResultSet> resultSets, final MergedResult mergeResultSet, final Statement statement) {
         super(resultSets, statement);
         this.mergeResultSet = mergeResultSet;
+    }
+    
+    public ShardingResultSet(final List<ResultSet> resultSets, final MergedResult mergeResultSet, final Map<String, Integer> columnLabelIndexMap, final Statement statement) {
+        super(resultSets, statement);
+        this.mergeResultSet = mergeResultSet;
+        this.columnLabelIndexMap.putAll(columnLabelIndexMap);
     }
     
     @Override
@@ -322,5 +332,9 @@ public final class ShardingResultSet extends AbstractResultSetAdapter {
     @Override
     public Object getObject(final String columnLabel) throws SQLException {
         return mergeResultSet.getValue(columnLabel, Object.class);
+    }
+    
+    private Object decode(final Object value, final String columnLabel) {
+        String logicTableName = getMetaData().
     }
 }
