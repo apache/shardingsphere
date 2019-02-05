@@ -300,12 +300,12 @@ public final class ShardingResultSet extends AbstractResultSetAdapter {
     
     @Override
     public Clob getClob(final int columnIndex) throws SQLException {
-        return (Clob) mergeResultSet.getValue(columnIndex, Clob.class);
+        return (Clob) decode(mergeResultSet.getValue(columnIndex, Clob.class), columnIndex);
     }
         
     @Override
     public Clob getClob(final String columnLabel) throws SQLException {
-        return (Clob) mergeResultSet.getValue(columnLabel, Clob.class);
+        return (Clob) decode(mergeResultSet.getValue(columnLabel, Clob.class), columnLabel);
     }
     
     @Override
