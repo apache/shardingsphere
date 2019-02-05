@@ -17,11 +17,13 @@
 
 package org.apache.shardingsphere.core.encrypt;
 
+import lombok.AccessLevel;
+import lombok.NoArgsConstructor;
 import org.apache.shardingsphere.core.routing.strategy.ShardingEncryptorStrategy;
 import org.apache.shardingsphere.core.rule.TableRule;
 
+import java.util.Collection;
 import java.util.LinkedHashMap;
-import java.util.List;
 import java.util.Map;
 
 /**
@@ -29,14 +31,20 @@ import java.util.Map;
  *
  * @author panjuan
  */
+@NoArgsConstructor(access = AccessLevel.PRIVATE)
 public final class ShardingEncryptorEngine {
     
-    private final Map<String, ShardingEncryptorStrategy> shardingEncryptorStrategies = new LinkedHashMap<>();
+    private static final Map<String, ShardingEncryptorStrategy> SHARDING_ENCRYPTOR_STRATEGIES = new LinkedHashMap<>();
     
-    public ShardingEncryptorEngine(final List<TableRule> tableRules) {
+    /**
+     * Init shardinng encryptor engine.
+     * 
+     * @param tableRules table rules
+     */
+    public static void init(final Collection<TableRule> tableRules) {
         for (TableRule each : tableRules) {
             if (null != each.getShardingEncryptorStrategy()) {
-                shardingEncryptorStrategies.put(each.getLogicTable(), each.getShardingEncryptorStrategy());
+                SHARDING_ENCRYPTOR_STRATEGIES.put(each.getLogicTable(), each.getShardingEncryptorStrategy());
             }
         }
     }
