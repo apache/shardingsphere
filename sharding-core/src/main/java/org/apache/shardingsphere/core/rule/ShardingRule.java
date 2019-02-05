@@ -369,6 +369,22 @@ public class ShardingRule {
     }
     
     /**
+     * Get logic table names base on actual table name.
+     *
+     * @param actualTableName actual table name
+     * @return logic table name
+     */
+    public Collection<String> getLogicTableNames(final String actualTableName) {
+        Collection<String> result = new LinkedList<>();
+        for (TableRule each : tableRules) {
+            if (each.isExisted(actualTableName)) {
+                result.add(each.getLogicTable());
+            }
+        }
+        return result;
+    }
+    
+    /**
      * Find data node by logic table name.
      *
      * @param logicTableName logic table name
