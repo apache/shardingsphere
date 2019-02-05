@@ -95,7 +95,7 @@ public final class ShardingResultSetMetaData extends WrapperAdapter implements R
     }
     
     @Override
-    public String getSchemaName(final int column) throws SQLException {
+    public String getSchemaName(final int column) {
         return ShardingConstant.LOGIC_SCHEMA_NAME;
     }
     
@@ -117,7 +117,7 @@ public final class ShardingResultSetMetaData extends WrapperAdapter implements R
     }
     
     @Override
-    public String getCatalogName(final int column) throws SQLException {
+    public String getCatalogName(final int column) {
         return ShardingConstant.LOGIC_SCHEMA_NAME;
     }
     
