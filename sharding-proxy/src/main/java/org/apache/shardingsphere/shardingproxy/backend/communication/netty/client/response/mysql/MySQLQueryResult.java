@@ -23,11 +23,11 @@ import lombok.extern.slf4j.Slf4j;
 import org.apache.shardingsphere.core.merger.QueryResult;
 import org.apache.shardingsphere.shardingproxy.transport.mysql.packet.MySQLPacket;
 import org.apache.shardingsphere.shardingproxy.transport.mysql.packet.MySQLPacketPayload;
-import org.apache.shardingsphere.shardingproxy.transport.mysql.packet.command.CommandResponsePackets;
-import org.apache.shardingsphere.shardingproxy.transport.mysql.packet.command.query.ColumnDefinition41Packet;
-import org.apache.shardingsphere.shardingproxy.transport.mysql.packet.command.query.FieldCountPacket;
-import org.apache.shardingsphere.shardingproxy.transport.mysql.packet.command.query.text.TextResultSetRowPacket;
-import org.apache.shardingsphere.shardingproxy.transport.mysql.packet.generic.EofPacket;
+import org.apache.shardingsphere.shardingproxy.transport.common.packet.command.CommandResponsePackets;
+import org.apache.shardingsphere.shardingproxy.transport.mysql.packet.command.query.MySQLColumnDefinition41Packet;
+import org.apache.shardingsphere.shardingproxy.transport.mysql.packet.command.query.MySQLFieldCountPacket;
+import org.apache.shardingsphere.shardingproxy.transport.mysql.packet.command.query.text.MySQLTextResultSetRowPacket;
+import org.apache.shardingsphere.shardingproxy.transport.mysql.packet.generic.MySQLEofPacket;
 
 import java.io.InputStream;
 import java.util.Calendar;
@@ -55,14 +55,14 @@ public final class MySQLQueryResult implements QueryResult {
     
     private final Map<String, Integer> columnLabelAndIndexMap;
     
-    private final List<ColumnDefinition41Packet> columnDefinitions;
+    private final List<MySQLColumnDefinition41Packet> columnDefinitions;
     
     private final BlockingQueue<MySQLPacket> resultSet;
     
     @Getter
     private int currentSequenceId;
     
-    private TextResultSetRowPacket currentRow;
+    private MySQLTextResultSetRowPacket currentRow;
     
     @Getter
     private boolean columnFinished;
@@ -77,13 +77,13 @@ public final class MySQLQueryResult implements QueryResult {
     }
     
     public MySQLQueryResult(final MySQLPacketPayload payload) {
-        FieldCountPacket fieldCountPacket = new FieldCountPacket(payload);
-        commandResponsePackets = new CommandResponsePackets(fieldCountPacket);
-        columnCount = fieldCountPacket.getColumnCount();
-        columnIndexAndLabelMap = new HashMap<>(fieldCountPacket.getColumnCount(), 1);
-        columnLabelAndIndexMap = new HashMap<>(fieldCountPacket.getColumnCount(), 1);
-        columnDefinitions = Lists.newArrayListWithCapacity(fieldCountPacket.getColumnCount());
-        currentSequenceId = fieldCountPacket.getSequenceId();
+        MySQLFieldCountPacket mySQLFieldCountPacket = new MySQLFieldCountPacket(payload);
+        commandResponsePackets = new CommandResponsePackets(mySQLFieldCountPacket);
+        columnCount = mySQLFieldCountPacket.getColumnCount();
+        columnIndexAndLabelMap = new HashMap<>(mySQLFieldCountPacket.getColumnCount(), 1);
+        columnLabelAndIndexMap = new HashMap<>(mySQLFieldCountPacket.getColumnCount(), 1);
+        columnDefinitions = Lists.newArrayListWithCapacity(mySQLFieldCountPacket.getColumnCount());
+        currentSequenceId = mySQLFieldCountPacket.getSequenceId();
         resultSet = new LinkedBlockingQueue<>();
     }
     
@@ -110,7 +110,7 @@ public final class MySQLQueryResult implements QueryResult {
      * 
      * @param columnDefinition column definition
      */
-    public void addColumnDefinition(final ColumnDefinition41Packet columnDefinition) {
+    public void addColumnDefinition(final MySQLColumnDefinition41Packet columnDefinition) {
         commandResponsePackets.getPackets().add(columnDefinition);
         columnDefinitions.add(columnDefinition);
         columnIndexAndLabelMap.put(columnDefinitions.indexOf(columnDefinition) + 1, columnDefinition.getName());
@@ -123,26 +123,26 @@ public final class MySQLQueryResult implements QueryResult {
      * 
      * @param textResultSetRow text result set row
      */
-    public void addTextResultSetRow(final TextResultSetRowPacket textResultSetRow) {
+    public void addTextResultSetRow(final MySQLTextResultSetRowPacket textResultSetRow) {
         put(textResultSetRow);
     }
     
     /**
      * Set column finished.
-     * @param eofPacket eof packet
+     * @param mySQLEofPacket eof packet
      */
-    public void setColumnFinished(final EofPacket eofPacket) {
-        commandResponsePackets.getPackets().add(eofPacket);
+    public void setColumnFinished(final MySQLEofPacket mySQLEofPacket) {
+        commandResponsePackets.getPackets().add(mySQLEofPacket);
         currentSequenceId++;
         columnFinished = true;
     }
     
     /**
      * Set row finished.
-     * @param eofPacket eof packet
+     * @param mySQLEofPacket eof packet
      */
-    public void setRowFinished(final EofPacket eofPacket) {
-        put(eofPacket);
+    public void setRowFinished(final MySQLEofPacket mySQLEofPacket) {
+        put(mySQLEofPacket);
     }
     
     private void put(final MySQLPacket mysqlPacket) {
@@ -157,7 +157,7 @@ public final class MySQLQueryResult implements QueryResult {
     public boolean next() {
         try {
             MySQLPacket mysqlPacket = resultSet.take();
-            currentRow = (mysqlPacket instanceof TextResultSetRowPacket) ? (TextResultSetRowPacket) mysqlPacket : null;
+            currentRow = (mysqlPacket instanceof MySQLTextResultSetRowPacket) ? (MySQLTextResultSetRowPacket) mysqlPacket : null;
             return null != currentRow;
         } catch (final InterruptedException ex) {
             log.error(ex.getMessage(), ex);

@@ -25,7 +25,6 @@ import javax.sql.DataSource;
 import java.util.HashMap;
 import java.util.Map;
 import java.util.Properties;
-import java.util.concurrent.ConcurrentHashMap;
 
 /**
  * Root rule configuration for YAML.
@@ -37,8 +36,6 @@ import java.util.concurrent.ConcurrentHashMap;
 public abstract class YamlRootRuleConfiguration implements YamlConfiguration {
     
     private Map<String, DataSource> dataSources = new HashMap<>();
-    
-    private Map<String, Object> configMap = new ConcurrentHashMap<>();
     
     private Properties props = new Properties();
 }

@@ -67,16 +67,14 @@ public final class ConfigurationService {
      * @param dataSourceConfigs data source configuration map
      * @param ruleConfig rule configuration
      * @param authentication authentication
-     * @param configMap config map
      * @param props sharding properties
      * @param isOverwrite is overwrite registry center's configuration
      */
     public void persistConfiguration(final String shardingSchemaName, final Map<String, DataSourceConfiguration> dataSourceConfigs, final RuleConfiguration ruleConfig,
-                                     final Authentication authentication, final Map<String, Object> configMap, final Properties props, final boolean isOverwrite) {
+                                     final Authentication authentication, final Properties props, final boolean isOverwrite) {
         persistDataSourceConfiguration(shardingSchemaName, dataSourceConfigs, isOverwrite);
         persistRuleConfiguration(shardingSchemaName, ruleConfig, isOverwrite);
         persistAuthentication(authentication, isOverwrite);
-        persistConfigMap(configMap, isOverwrite);
         persistProperties(props, isOverwrite);
     }
     
@@ -148,16 +146,6 @@ public final class ConfigurationService {
         return !Strings.isNullOrEmpty(regCenter.get(configNode.getAuthenticationPath()));
     }
     
-    private void persistConfigMap(final Map<String, Object> configMap, final boolean isOverwrite) {
-        if (isOverwrite || !hasConfigMap()) {
-            regCenter.persist(configNode.getConfigMapPath(), YamlEngine.marshal(configMap));
-        }
-    }
-    
-    private boolean hasConfigMap() {
-        return !Strings.isNullOrEmpty(regCenter.get(configNode.getConfigMapPath()));
-    }
-    
     private void persistProperties(final Properties props, final boolean isOverwrite) {
         if (isOverwrite || !hasProperties()) {
             regCenter.persist(configNode.getPropsPath(), YamlEngine.marshal(props));
@@ -224,16 +212,6 @@ public final class ConfigurationService {
      */
     public Authentication loadAuthentication() {
         return new AuthenticationYamlSwapper().swap(YamlEngine.unmarshal(regCenter.getDirectly(configNode.getAuthenticationPath()), YamlAuthentication.class));
-    }
-    
-    /**
-     * Load config map.
-     *
-     * @return config map
-     */
-    @SuppressWarnings("unchecked")
-    public Map<String, Object> loadConfigMap() {
-        return (Map<String, Object>) YamlEngine.unmarshal(regCenter.getDirectly(configNode.getConfigMapPath()));
     }
     
     /**

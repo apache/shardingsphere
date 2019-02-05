@@ -23,20 +23,20 @@ import com.google.common.eventbus.Subscribe;
 import lombok.AccessLevel;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
-import org.apache.shardingsphere.api.ConfigMapContext;
 import org.apache.shardingsphere.api.config.RuleConfiguration;
 import org.apache.shardingsphere.api.config.masterslave.MasterSlaveRuleConfiguration;
 import org.apache.shardingsphere.api.config.sharding.ShardingRuleConfiguration;
+import org.apache.shardingsphere.core.constant.DatabaseType;
 import org.apache.shardingsphere.core.constant.properties.ShardingProperties;
 import org.apache.shardingsphere.core.constant.properties.ShardingPropertiesConstant;
 import org.apache.shardingsphere.core.rule.Authentication;
 import org.apache.shardingsphere.orchestration.internal.eventbus.ShardingOrchestrationEventBus;
 import org.apache.shardingsphere.orchestration.internal.registry.config.event.AuthenticationChangedEvent;
-import org.apache.shardingsphere.orchestration.internal.registry.config.event.ConfigMapChangedEvent;
 import org.apache.shardingsphere.orchestration.internal.registry.config.event.PropertiesChangedEvent;
 import org.apache.shardingsphere.orchestration.internal.registry.config.event.SchemaAddedEvent;
 import org.apache.shardingsphere.orchestration.internal.registry.config.event.SchemaDeletedEvent;
 import org.apache.shardingsphere.orchestration.internal.registry.state.event.CircuitStateChangedEvent;
+import org.apache.shardingsphere.shardingproxy.backend.communication.jdbc.recognizer.JDBCURLRecognizerEngine;
 import org.apache.shardingsphere.shardingproxy.config.yaml.YamlDataSourceParameter;
 import org.apache.shardingsphere.shardingproxy.runtime.schema.LogicSchema;
 import org.apache.shardingsphere.shardingproxy.runtime.schema.MasterSlaveSchema;
@@ -69,6 +69,8 @@ public final class GlobalRegistry {
     
     private final Map<String, LogicSchema> logicSchemas = new ConcurrentHashMap<>();
     
+    private DatabaseType databaseType;
+    
     private ShardingProperties shardingProperties = new ShardingProperties(new Properties());
     
     private ShardingTransactionManagerEngine shardingTransactionManagerEngine = new ShardingTransactionManagerEngine();
@@ -99,12 +101,11 @@ public final class GlobalRegistry {
      * @param schemaDataSources data source map
      * @param schemaRules schema rule map
      * @param authentication authentication
-     * @param configMap config map
      * @param props properties
      */
     public void init(final Map<String, Map<String, YamlDataSourceParameter>> schemaDataSources,
-                     final Map<String, RuleConfiguration> schemaRules, final Authentication authentication, final Map<String, Object> configMap, final Properties props) {
-        init(schemaDataSources, schemaRules, authentication, configMap, props, false);
+                     final Map<String, RuleConfiguration> schemaRules, final Authentication authentication, final Properties props) {
+        init(schemaDataSources, schemaRules, authentication, props, false);
     }
     
     /**
@@ -113,18 +114,15 @@ public final class GlobalRegistry {
      * @param schemaDataSources data source map
      * @param schemaRules schema rule map
      * @param authentication authentication
-     * @param configMap config map
      * @param props properties
      * @param isUsingRegistry is using registry or not
      */
-    public void init(final Map<String, Map<String, YamlDataSourceParameter>> schemaDataSources, final Map<String, RuleConfiguration> schemaRules,
-                     final Authentication authentication, final Map<String, Object> configMap, final Properties props, final boolean isUsingRegistry) {
-        if (!configMap.isEmpty()) {
-            ConfigMapContext.getInstance().getConfigMap().putAll(configMap);
-        }
+    public void init(final Map<String, Map<String, YamlDataSourceParameter>> schemaDataSources, 
+                     final Map<String, RuleConfiguration> schemaRules, final Authentication authentication, final Properties props, final boolean isUsingRegistry) {
         if (null != props) {
             shardingProperties = new ShardingProperties(props);
         }
+        databaseType = JDBCURLRecognizerEngine.getDatabaseType(schemaDataSources.values().iterator().next().values().iterator().next().getUrl());
         this.authentication = authentication;
         initSchema(schemaDataSources, schemaRules, isUsingRegistry);
     }
@@ -200,17 +198,6 @@ public final class GlobalRegistry {
     @Subscribe
     public synchronized void renew(final AuthenticationChangedEvent authenticationChangedEvent) {
         authentication = authenticationChangedEvent.getAuthentication();
-    }
-    
-    /**
-     * Renew config map.
-     *
-     * @param configMapChangedEvent config map changed event
-     */
-    @Subscribe
-    public synchronized void renew(final ConfigMapChangedEvent configMapChangedEvent) {
-        ConfigMapContext.getInstance().getConfigMap().clear();
-        ConfigMapContext.getInstance().getConfigMap().putAll(configMapChangedEvent.getConfigMap());
     }
     
     /**

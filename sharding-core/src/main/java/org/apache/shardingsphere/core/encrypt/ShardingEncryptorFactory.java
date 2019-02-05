@@ -17,49 +17,33 @@
 
 package org.apache.shardingsphere.core.encrypt;
 
-import com.google.common.base.Predicate;
-import com.google.common.collect.Collections2;
-import lombok.AccessLevel;
-import lombok.NoArgsConstructor;
-import org.apache.shardingsphere.core.encrypt.encryptor.ShardingEncryptor;
-import org.apache.shardingsphere.core.exception.ShardingConfigurationException;
-import org.apache.shardingsphere.spi.NewInstanceServiceLoader;
-
-import java.util.Collection;
+import org.apache.shardingsphere.core.spi.NewInstanceServiceLoader;
+import org.apache.shardingsphere.core.spi.algorithm.BaseAlgorithmFactory;
+import org.apache.shardingsphere.spi.algorithm.encrypt.ShardingEncryptor;
 
 /**
  * Sharding encryptor factory.
  * 
  * @author panjuan
  */
-@NoArgsConstructor(access = AccessLevel.PRIVATE)
-public final class ShardingEncryptorFactory {
+public final class ShardingEncryptorFactory extends BaseAlgorithmFactory<ShardingEncryptor> {
+    
+    private static final ShardingEncryptorFactory INSTANCE = new ShardingEncryptorFactory();
     
     static {
         NewInstanceServiceLoader.register(ShardingEncryptor.class);
     }
     
-    /**
-     * Create sharding encryptor.
-     * 
-     * @param encryptorType encryptor type
-     * @return encryptor instance
-     */
-    public static ShardingEncryptor newInstance(final String encryptorType) {
-        Collection<ShardingEncryptor> shardingEncryptors = loadEncryptors(encryptorType);
-        if (shardingEncryptors.isEmpty()) {
-            throw new ShardingConfigurationException("Invalid encryptor type.");
-        }
-        return shardingEncryptors.iterator().next();
+    private ShardingEncryptorFactory() {
+        super(ShardingEncryptor.class);
     }
     
-    private static Collection<ShardingEncryptor> loadEncryptors(final String encryptorType) {
-        return Collections2.filter(NewInstanceServiceLoader.newServiceInstances(ShardingEncryptor.class), new Predicate<ShardingEncryptor>() {
-            
-            @Override
-            public boolean apply(final ShardingEncryptor input) {
-                return encryptorType.equalsIgnoreCase(input.getType());
-            }
-        });
+    /**
+     * Get instance of encryptor factory.
+     *
+     * @return instance of encryptor factory
+     */
+    public static ShardingEncryptorFactory getInstance() {
+        return INSTANCE;
     }
 }

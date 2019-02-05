@@ -30,13 +30,12 @@ import org.apache.shardingsphere.api.config.sharding.strategy.ShardingStrategyCo
 import org.apache.shardingsphere.core.exception.ShardingConfigurationException;
 import org.apache.shardingsphere.core.exception.ShardingException;
 import org.apache.shardingsphere.core.keygen.ShardingKeyGeneratorFactory;
-import org.apache.shardingsphere.core.keygen.generator.ShardingKeyGenerator;
-import org.apache.shardingsphere.core.keygen.generator.impl.SnowflakeShardingKeyGenerator;
 import org.apache.shardingsphere.core.parsing.parser.context.condition.Column;
 import org.apache.shardingsphere.core.routing.strategy.ShardingStrategy;
 import org.apache.shardingsphere.core.routing.strategy.ShardingStrategyFactory;
 import org.apache.shardingsphere.core.routing.strategy.hint.HintShardingStrategy;
 import org.apache.shardingsphere.core.routing.strategy.none.NoneShardingStrategy;
+import org.apache.shardingsphere.spi.algorithm.keygen.ShardingKeyGenerator;
 
 import java.util.ArrayList;
 import java.util.Collection;
@@ -45,7 +44,7 @@ import java.util.List;
 import java.util.TreeSet;
 
 /**
- * Databases and tables sharding rule configuration.
+ * Databases and tables sharding rule.
  *
  * @author zhangliang
  * @author maxiaoguang
@@ -119,8 +118,8 @@ public class ShardingRule {
     }
     
     private ShardingKeyGenerator createDefaultKeyGenerator(final KeyGeneratorConfiguration keyGeneratorConfiguration) {
-        return containsKeyGeneratorConfiguration(keyGeneratorConfiguration) 
-                ? ShardingKeyGeneratorFactory.newInstance(keyGeneratorConfiguration.getType(), keyGeneratorConfiguration.getProps()) : new SnowflakeShardingKeyGenerator();
+        ShardingKeyGeneratorFactory factory = ShardingKeyGeneratorFactory.getInstance();
+        return containsKeyGeneratorConfiguration(keyGeneratorConfiguration) ? factory.newAlgorithm(keyGeneratorConfiguration.getType(), keyGeneratorConfiguration.getProps()) : factory.newAlgorithm();
     }
     
     private boolean containsKeyGeneratorConfiguration(final KeyGeneratorConfiguration keyGeneratorConfiguration) {

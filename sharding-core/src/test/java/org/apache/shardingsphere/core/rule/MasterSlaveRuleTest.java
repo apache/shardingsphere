@@ -22,23 +22,26 @@ import org.junit.Test;
 
 import java.util.Collections;
 
+import static org.junit.Assert.assertFalse;
+import static org.junit.Assert.assertTrue;
+
 public final class MasterSlaveRuleTest {
     
-    @Test(expected = NullPointerException.class)
-    public void assertNewMasterSlaveRuleFailure() {
-        MasterSlaveRuleConfiguration masterSlaveRuleConfig = new MasterSlaveRuleConfiguration("", "", null);
-        new MasterSlaveRule(masterSlaveRuleConfig);
-    }
-    
-    @Test(expected = IllegalStateException.class)
-    public void assertNewMasterSlaveRuleWithEmptySlaveDataSourceNames() {
-        MasterSlaveRuleConfiguration masterSlaveRuleConfig = new MasterSlaveRuleConfiguration("", "", Collections.<String>emptyList());
-        new MasterSlaveRule(masterSlaveRuleConfig);
+    @Test
+    public void assertContainDataSourceNameWithMasterDataSourceName() {
+        MasterSlaveRule actual = new MasterSlaveRule(new MasterSlaveRuleConfiguration("master_slave", "master_ds", Collections.singletonList("slave_ds")));
+        assertTrue(actual.containDataSourceName("master_ds"));
     }
     
     @Test
-    public void assertNewMasterSlaveRuleSuccess() {
-        MasterSlaveRuleConfiguration masterSlaveRuleConfig = new MasterSlaveRuleConfiguration("master_slave", "master0", Collections.singletonList("slave0"));
-        new MasterSlaveRule(masterSlaveRuleConfig);
+    public void assertContainDataSourceNameWithSlaveDataSourceName() {
+        MasterSlaveRule actual = new MasterSlaveRule(new MasterSlaveRuleConfiguration("master_slave", "master_ds", Collections.singletonList("slave_ds")));
+        assertTrue(actual.containDataSourceName("slave_ds"));
+    }
+    
+    @Test
+    public void assertNotContainDataSourceName() {
+        MasterSlaveRule actual = new MasterSlaveRule(new MasterSlaveRuleConfiguration("master_slave", "master_ds", Collections.singletonList("slave_ds")));
+        assertFalse(actual.containDataSourceName("master_slave"));
     }
 }

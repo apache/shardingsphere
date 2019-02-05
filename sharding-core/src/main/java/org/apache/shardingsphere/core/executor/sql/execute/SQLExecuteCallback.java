@@ -24,8 +24,8 @@ import org.apache.shardingsphere.core.executor.StatementExecuteUnit;
 import org.apache.shardingsphere.core.executor.sql.execute.threadlocal.ExecutorExceptionHandler;
 import org.apache.shardingsphere.core.metadata.datasource.DataSourceMetaData;
 import org.apache.shardingsphere.core.metadata.datasource.DataSourceMetaDataFactory;
-import org.apache.shardingsphere.spi.executor.SPISQLExecutionHook;
-import org.apache.shardingsphere.spi.executor.SQLExecutionHook;
+import org.apache.shardingsphere.core.spi.hook.SPISQLExecutionHook;
+import org.apache.shardingsphere.spi.hook.SQLExecutionHook;
 
 import java.sql.SQLException;
 import java.util.Collection;

@@ -17,7 +17,8 @@
 
 package org.apache.shardingsphere.spi;
 
-import org.apache.shardingsphere.spi.parsing.ParsingHook;
+import org.apache.shardingsphere.core.spi.NewInstanceServiceLoader;
+import org.apache.shardingsphere.spi.hook.ParsingHook;
 import org.junit.Test;
 
 import java.util.Collection;

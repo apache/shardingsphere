@@ -20,8 +20,8 @@ package org.apache.shardingsphere.shardingproxy.backend.communication.jdbc.execu
 import lombok.Getter;
 import org.apache.shardingsphere.shardingproxy.backend.communication.jdbc.execute.response.unit.ExecuteResponseUnit;
 import org.apache.shardingsphere.shardingproxy.backend.communication.jdbc.execute.response.unit.ExecuteUpdateResponseUnit;
-import org.apache.shardingsphere.shardingproxy.transport.mysql.packet.command.CommandResponsePackets;
-import org.apache.shardingsphere.shardingproxy.transport.mysql.packet.generic.OKPacket;
+import org.apache.shardingsphere.shardingproxy.transport.common.packet.generic.DatabaseSuccessPacket;
+import org.apache.shardingsphere.shardingproxy.transport.common.packet.command.CommandResponsePackets;
 
 import java.util.Collection;
 import java.util.LinkedList;
@@ -35,11 +35,11 @@ import java.util.List;
 public final class ExecuteUpdateResponse implements ExecuteResponse {
     
     @Getter
-    private final List<OKPacket> packets = new LinkedList<>();
+    private final List<DatabaseSuccessPacket> packets = new LinkedList<>();
     
     public ExecuteUpdateResponse(final Collection<ExecuteResponseUnit> responseUnits) {
         for (ExecuteResponseUnit each : responseUnits) {
-            packets.add(((ExecuteUpdateResponseUnit) each).getOkPacket());
+            packets.add(((ExecuteUpdateResponseUnit) each).getDatabaseSuccessPacket());
         }
     }
     
@@ -51,12 +51,12 @@ public final class ExecuteUpdateResponse implements ExecuteResponse {
     public CommandResponsePackets merge() {
         int affectedRows = 0;
         long lastInsertId = 0;
-        for (OKPacket each : packets) {
+        for (DatabaseSuccessPacket each : packets) {
             affectedRows += each.getAffectedRows();
             if (each.getLastInsertId() > lastInsertId) {
                 lastInsertId = each.getLastInsertId();
             }
         }
-        return new CommandResponsePackets(new OKPacket(1, affectedRows, lastInsertId));
+        return new CommandResponsePackets(new DatabaseSuccessPacket(1, affectedRows, lastInsertId));
     }
 }

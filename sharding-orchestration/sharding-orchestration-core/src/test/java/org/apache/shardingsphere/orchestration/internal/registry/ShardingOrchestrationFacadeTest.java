@@ -74,10 +74,8 @@ public final class ShardingOrchestrationFacadeTest {
         Map<String, RuleConfiguration> ruleConfigurationMap = Collections.singletonMap("sharding_db", mock(RuleConfiguration.class));
         Authentication authentication = new Authentication("root", "root");
         Properties props = new Properties();
-        shardingOrchestrationFacade.init(
-                Collections.singletonMap("sharding_db", dataSourceConfigurationMap), ruleConfigurationMap, authentication, Collections.<String, Object>emptyMap(), props);
-        verify(configService).persistConfiguration(
-                "sharding_db", dataSourceConfigurationMap, ruleConfigurationMap.get("sharding_db"), authentication, Collections.<String, Object>emptyMap(), props, true);
+        shardingOrchestrationFacade.init(Collections.singletonMap("sharding_db", dataSourceConfigurationMap), ruleConfigurationMap, authentication, props);
+        verify(configService).persistConfiguration("sharding_db", dataSourceConfigurationMap, ruleConfigurationMap.get("sharding_db"), authentication, props, true);
         verify(stateService).persistInstanceOnline();
         verify(stateService).persistDataSourcesNode();
         verify(listenerManager).initListeners();

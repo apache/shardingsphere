@@ -17,13 +17,10 @@
 
 package org.apache.shardingsphere.shardingjdbc.api;
 
-import org.apache.shardingsphere.api.ConfigMapContext;
-import org.apache.shardingsphere.api.algorithm.masterslave.MasterSlaveLoadBalanceAlgorithmType;
 import org.apache.shardingsphere.api.config.masterslave.MasterSlaveRuleConfiguration;
+import org.apache.shardingsphere.core.masterslave.MasterSlaveLoadBalanceAlgorithmFactory;
 import org.apache.shardingsphere.shardingjdbc.fixture.TestDataSource;
 import org.apache.shardingsphere.shardingjdbc.jdbc.core.datasource.MasterSlaveDataSource;
-import org.hamcrest.MatcherAssert;
-import org.junit.Before;
 import org.junit.Test;
 
 import javax.sql.DataSource;
@@ -33,32 +30,21 @@ import java.util.Collections;
 import java.util.HashMap;
 import java.util.Map;
 import java.util.Properties;
-import java.util.concurrent.ConcurrentHashMap;
 
 import static org.hamcrest.CoreMatchers.instanceOf;
-import static org.hamcrest.CoreMatchers.is;
 import static org.junit.Assert.assertThat;
 
 public final class MasterSlaveDataSourceFactoryTest {
-    
-    @Before
-    public void setUp() {
-        ConfigMapContext.getInstance().getConfigMap().clear();
-    }
     
     @Test
     public void assertCreateDataSourceForSingleSlave() throws SQLException {
         Map<String, DataSource> dataSourceMap = new HashMap<>(2, 1);
         dataSourceMap.put("master_ds", new TestDataSource("master_ds"));
         dataSourceMap.put("slave_ds", new TestDataSource("slave_ds"));
-        Map<String, Object> configMap = new ConcurrentHashMap<>();
         Properties properties = new Properties();
         properties.setProperty("sql.show", "true");
-        configMap.put("key1", "value1");
-        assertThat(MasterSlaveDataSourceFactory.createDataSource(dataSourceMap, 
-                new MasterSlaveRuleConfiguration("logic_ds", "master_ds", Collections.singletonList("slave_ds"), MasterSlaveLoadBalanceAlgorithmType.ROUND_ROBIN.getAlgorithm()), 
-                configMap, properties), instanceOf(MasterSlaveDataSource.class));
-        MatcherAssert.assertThat(ConfigMapContext.getInstance().getConfigMap(), is(configMap));
+        assertThat(MasterSlaveDataSourceFactory.createDataSource(dataSourceMap, new MasterSlaveRuleConfiguration("logic_ds", "master_ds", Collections.singletonList("slave_ds"), 
+                MasterSlaveLoadBalanceAlgorithmFactory.getInstance().newAlgorithm("ROUND_ROBIN", new Properties())), properties), instanceOf(MasterSlaveDataSource.class));
     }
     
     @Test
@@ -69,11 +55,7 @@ public final class MasterSlaveDataSourceFactoryTest {
         dataSourceMap.put("slave_ds_1", new TestDataSource("slave_ds_1"));
         Properties properties = new Properties();
         properties.setProperty("sql.show", "true");
-        Map<String, Object> configMap = new ConcurrentHashMap<>();
-        configMap.put("key1", "value1");
-        assertThat(MasterSlaveDataSourceFactory.createDataSource(
-                dataSourceMap, new MasterSlaveRuleConfiguration("logic_ds", "master_ds", Arrays.asList("slave_ds_0", "slave_ds_1"), MasterSlaveLoadBalanceAlgorithmType.ROUND_ROBIN.getAlgorithm()),
-                configMap, properties), instanceOf(MasterSlaveDataSource.class));
-        MatcherAssert.assertThat(ConfigMapContext.getInstance().getConfigMap(), is(configMap));
+        assertThat(MasterSlaveDataSourceFactory.createDataSource(dataSourceMap, new MasterSlaveRuleConfiguration("logic_ds", "master_ds", Arrays.asList("slave_ds_0", "slave_ds_1"), 
+                MasterSlaveLoadBalanceAlgorithmFactory.getInstance().newAlgorithm("ROUND_ROBIN", new Properties())), properties), instanceOf(MasterSlaveDataSource.class));
     }
 }

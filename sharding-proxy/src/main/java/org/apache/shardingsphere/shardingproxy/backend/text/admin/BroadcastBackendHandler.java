@@ -25,9 +25,9 @@ import org.apache.shardingsphere.shardingproxy.backend.communication.jdbc.connec
 import org.apache.shardingsphere.shardingproxy.backend.text.TextProtocolBackendHandler;
 import org.apache.shardingsphere.shardingproxy.runtime.GlobalRegistry;
 import org.apache.shardingsphere.shardingproxy.transport.common.packet.DatabasePacket;
-import org.apache.shardingsphere.shardingproxy.transport.mysql.packet.command.CommandResponsePackets;
-import org.apache.shardingsphere.shardingproxy.transport.mysql.packet.generic.ErrPacket;
-import org.apache.shardingsphere.shardingproxy.transport.mysql.packet.generic.OKPacket;
+import org.apache.shardingsphere.shardingproxy.transport.common.packet.generic.DatabaseFailurePacket;
+import org.apache.shardingsphere.shardingproxy.transport.common.packet.generic.DatabaseSuccessPacket;
+import org.apache.shardingsphere.shardingproxy.transport.common.packet.command.CommandResponsePackets;
 
 import java.util.LinkedList;
 import java.util.List;
@@ -59,11 +59,11 @@ public final class BroadcastBackendHandler implements TextProtocolBackendHandler
                     GlobalRegistry.getInstance().getLogicSchema(each), sequenceId, sql, backendConnection, databaseType).execute().getPackets());
         }
         for (DatabasePacket each : packets) {
-            if (each instanceof ErrPacket) {
+            if (each instanceof DatabaseFailurePacket) {
                 return new CommandResponsePackets(each);
             }
         }
-        return new CommandResponsePackets(new OKPacket(1, 0, 0));
+        return new CommandResponsePackets(new DatabaseSuccessPacket(1, 0L, 0L));
     }
     
     @Override

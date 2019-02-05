@@ -19,16 +19,33 @@ package org.apache.shardingsphere.shardingproxy.backend.communication.jdbc.datas
 
 import com.atomikos.jdbc.AtomikosDataSourceBean;
 import com.mysql.jdbc.jdbc2.optional.MysqlXADataSource;
+import lombok.SneakyThrows;
+import org.apache.shardingsphere.core.constant.DatabaseType;
 import org.apache.shardingsphere.shardingproxy.config.yaml.YamlDataSourceParameter;
+import org.apache.shardingsphere.shardingproxy.runtime.GlobalRegistry;
 import org.hamcrest.Matchers;
 import org.hamcrest.core.Is;
+import org.junit.Before;
 import org.junit.Test;
+import java.lang.reflect.Field;
 
 import static org.hamcrest.CoreMatchers.instanceOf;
 import static org.hamcrest.CoreMatchers.is;
 import static org.junit.Assert.assertThat;
 
 public final class JDBCXABackendDataSourceFactoryTest {
+    
+    @Before
+    public void setUp() {
+        setDatabaseType();
+    }
+    
+    @SneakyThrows
+    private void setDatabaseType() {
+        Field field = GlobalRegistry.getInstance().getClass().getDeclaredField("databaseType");
+        field.setAccessible(true);
+        field.set(GlobalRegistry.getInstance(), DatabaseType.MySQL);
+    }
     
     @Test
     public void assertBuild() throws Exception {

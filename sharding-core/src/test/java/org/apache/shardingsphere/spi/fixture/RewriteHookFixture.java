@@ -19,7 +19,7 @@ package org.apache.shardingsphere.spi.fixture;
 
 import org.apache.shardingsphere.core.routing.SQLUnit;
 import org.apache.shardingsphere.core.routing.type.TableUnit;
-import org.apache.shardingsphere.spi.rewrite.RewriteHook;
+import org.apache.shardingsphere.spi.hook.RewriteHook;
 
 import java.util.Collection;
 import java.util.LinkedList;

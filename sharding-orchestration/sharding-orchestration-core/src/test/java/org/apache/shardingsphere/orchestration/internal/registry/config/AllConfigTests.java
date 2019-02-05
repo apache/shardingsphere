@@ -18,7 +18,6 @@
 package org.apache.shardingsphere.orchestration.internal.registry.config;
 
 import org.apache.shardingsphere.orchestration.internal.registry.config.listener.AuthenticationChangedListenerTest;
-import org.apache.shardingsphere.orchestration.internal.registry.config.listener.ConfigMapChangedListenerTest;
 import org.apache.shardingsphere.orchestration.internal.registry.config.listener.ConfigurationChangedListenerManagerTest;
 import org.apache.shardingsphere.orchestration.internal.registry.config.listener.PropertiesChangedListenerTest;
 import org.apache.shardingsphere.orchestration.internal.registry.config.listener.SchemaChangedListenerTest;
@@ -35,7 +34,6 @@ import org.junit.runners.Suite.SuiteClasses;
         ConfigurationChangedListenerManagerTest.class,
         PropertiesChangedListenerTest.class,
         AuthenticationChangedListenerTest.class,
-        ConfigMapChangedListenerTest.class,
         SchemaChangedListenerTest.class
 })
 public final class AllConfigTests {

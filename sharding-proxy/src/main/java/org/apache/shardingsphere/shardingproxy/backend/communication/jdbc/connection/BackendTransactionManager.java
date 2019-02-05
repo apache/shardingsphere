@@ -24,7 +24,7 @@ import org.apache.shardingsphere.transaction.spi.ShardingTransactionManager;
 import java.sql.SQLException;
 
 /**
- * Proxy transaction manager.
+ * Backend transaction manager.
  *
  * @author zhaojun
  */

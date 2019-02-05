@@ -18,11 +18,13 @@
 package org.apache.shardingsphere.core.yaml.swapper.impl;
 
 import com.google.common.base.Strings;
-import org.apache.shardingsphere.api.algorithm.masterslave.MasterSlaveLoadBalanceAlgorithm;
 import org.apache.shardingsphere.api.config.masterslave.MasterSlaveRuleConfiguration;
-import org.apache.shardingsphere.core.exception.ShardingConfigurationException;
+import org.apache.shardingsphere.core.masterslave.MasterSlaveLoadBalanceAlgorithmFactory;
 import org.apache.shardingsphere.core.yaml.config.masterslave.YamlMasterSlaveRuleConfiguration;
 import org.apache.shardingsphere.core.yaml.swapper.YamlSwapper;
+import org.apache.shardingsphere.spi.algorithm.masterslave.MasterSlaveLoadBalanceAlgorithm;
+
+import java.util.Properties;
 
 /**
  * Master-slave rule configuration YAML swapper.
@@ -38,7 +40,7 @@ public final class MasterSlaveRuleConfigurationYamlSwapper implements YamlSwappe
         result.setMasterDataSourceName(data.getMasterDataSourceName());
         result.setSlaveDataSourceNames(data.getSlaveDataSourceNames());
         if (null != data.getLoadBalanceAlgorithm()) {
-            result.setLoadBalanceAlgorithmClassName(data.getLoadBalanceAlgorithm().getClass().getName());
+            result.setLoadBalanceAlgorithmType(data.getLoadBalanceAlgorithm().getType());
         }
         return result;
     }
@@ -50,24 +52,7 @@ public final class MasterSlaveRuleConfigurationYamlSwapper implements YamlSwappe
     }
     
     private MasterSlaveLoadBalanceAlgorithm getMasterSlaveLoadBalanceAlgorithm(final YamlMasterSlaveRuleConfiguration yamlConfiguration) {
-        if (!Strings.isNullOrEmpty(yamlConfiguration.getLoadBalanceAlgorithmClassName())) {
-            return newInstance(yamlConfiguration.getLoadBalanceAlgorithmClassName());
-        }
-        if (null != yamlConfiguration.getLoadBalanceAlgorithmType()) {
-            return yamlConfiguration.getLoadBalanceAlgorithmType().getAlgorithm();
-        }
-        return null;
-    }
-    
-    private MasterSlaveLoadBalanceAlgorithm newInstance(final String masterSlaveLoadBalanceAlgorithmClassName) {
-        try {
-            Class<?> result = Class.forName(masterSlaveLoadBalanceAlgorithmClassName);
-            if (!MasterSlaveLoadBalanceAlgorithm.class.isAssignableFrom(result)) {
-                throw new ShardingConfigurationException("Class %s should be implement %s", masterSlaveLoadBalanceAlgorithmClassName, MasterSlaveLoadBalanceAlgorithm.class.getName());
-            }
-            return (MasterSlaveLoadBalanceAlgorithm) result.newInstance();
-        } catch (final ReflectiveOperationException ex) {
-            throw new ShardingConfigurationException("Class %s should have public privilege and no argument constructor", masterSlaveLoadBalanceAlgorithmClassName);
-        }
+        return Strings.isNullOrEmpty(yamlConfiguration.getLoadBalanceAlgorithmType())
+                ? null : MasterSlaveLoadBalanceAlgorithmFactory.getInstance().newAlgorithm(yamlConfiguration.getLoadBalanceAlgorithmType(), new Properties());
     }
 }

@@ -19,7 +19,6 @@ package org.apache.shardingsphere.shardingproxy.backend;
 
 import lombok.Getter;
 import lombok.RequiredArgsConstructor;
-import org.apache.shardingsphere.shardingproxy.transport.mysql.constant.ColumnType;
 
 import java.util.List;
 
@@ -38,5 +37,5 @@ public final class ResultPacket {
     
     private final int columnCount;
     
-    private final List<ColumnType> columnTypes;
+    private final List<Integer> columnTypes;
 }

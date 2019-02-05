@@ -24,8 +24,8 @@ import org.apache.shardingsphere.shardingproxy.backend.communication.DatabaseCom
 import org.apache.shardingsphere.shardingproxy.backend.communication.DatabaseCommunicationEngineFactory;
 import org.apache.shardingsphere.shardingproxy.backend.communication.jdbc.connection.BackendConnection;
 import org.apache.shardingsphere.shardingproxy.runtime.schema.LogicSchema;
-import org.apache.shardingsphere.shardingproxy.transport.mysql.packet.command.CommandResponsePackets;
-import org.apache.shardingsphere.shardingproxy.transport.mysql.packet.generic.OKPacket;
+import org.apache.shardingsphere.shardingproxy.transport.common.packet.command.CommandResponsePackets;
+import org.apache.shardingsphere.shardingproxy.transport.mysql.packet.generic.MySQLOKPacket;
 import org.apache.shardingsphere.transaction.core.TransactionType;
 import org.junit.Before;
 import org.junit.Test;
@@ -54,7 +54,7 @@ public final class UnicastBackendHandlerTest {
     @Before
     public void setUp() {
         MockGlobalRegistryUtil.setLogicSchemas("schema", 10);
-        setUnderlyingHandler(new CommandResponsePackets(new OKPacket(1)));
+        setUnderlyingHandler(new CommandResponsePackets(new MySQLOKPacket(1)));
     }
     
     @Test
@@ -62,7 +62,7 @@ public final class UnicastBackendHandlerTest {
         UnicastBackendHandler backendHandler = new UnicastBackendHandler(1, "show variable like %s", backendConnection, DatabaseType.MySQL);
         setDatabaseCommunicationEngine(backendHandler);
         CommandResponsePackets actual = backendHandler.execute();
-        assertThat(actual.getHeadPacket(), instanceOf(OKPacket.class));
+        assertThat(actual.getHeadPacket(), instanceOf(MySQLOKPacket.class));
         backendHandler.execute();
     }
     
@@ -72,7 +72,7 @@ public final class UnicastBackendHandlerTest {
         UnicastBackendHandler backendHandler = new UnicastBackendHandler(1, "show variable like %s", backendConnection, DatabaseType.MySQL);
         setDatabaseCommunicationEngine(backendHandler);
         CommandResponsePackets actual = backendHandler.execute();
-        assertThat(actual.getHeadPacket(), instanceOf(OKPacket.class));
+        assertThat(actual.getHeadPacket(), instanceOf(MySQLOKPacket.class));
         backendHandler.execute();
     }
     

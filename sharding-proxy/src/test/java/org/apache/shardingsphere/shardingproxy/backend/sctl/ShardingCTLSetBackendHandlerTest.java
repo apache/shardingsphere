@@ -18,9 +18,9 @@
 package org.apache.shardingsphere.shardingproxy.backend.sctl;
 
 import org.apache.shardingsphere.shardingproxy.backend.communication.jdbc.connection.BackendConnection;
-import org.apache.shardingsphere.shardingproxy.transport.mysql.packet.command.CommandResponsePackets;
-import org.apache.shardingsphere.shardingproxy.transport.mysql.packet.generic.ErrPacket;
-import org.apache.shardingsphere.shardingproxy.transport.mysql.packet.generic.OKPacket;
+import org.apache.shardingsphere.shardingproxy.transport.common.packet.command.CommandResponsePackets;
+import org.apache.shardingsphere.shardingproxy.transport.common.packet.generic.DatabaseFailurePacket;
+import org.apache.shardingsphere.shardingproxy.transport.common.packet.generic.DatabaseSuccessPacket;
 import org.apache.shardingsphere.transaction.core.TransactionType;
 import org.junit.Test;
 
@@ -37,7 +37,7 @@ public final class ShardingCTLSetBackendHandlerTest {
         backendConnection.setCurrentSchema("schema");
         ShardingCTLSetBackendHandler shardingCTLBackendHandler = new ShardingCTLSetBackendHandler("sctl:set transaction_type=XA", backendConnection);
         CommandResponsePackets actual = shardingCTLBackendHandler.execute();
-        assertThat(actual.getHeadPacket(), instanceOf(OKPacket.class));
+        assertThat(actual.getHeadPacket(), instanceOf(DatabaseSuccessPacket.class));
         assertThat(backendConnection.getTransactionType(), is(TransactionType.XA));
     }
     
@@ -46,7 +46,7 @@ public final class ShardingCTLSetBackendHandlerTest {
         backendConnection.setCurrentSchema("schema");
         ShardingCTLSetBackendHandler shardingCTLBackendHandler = new ShardingCTLSetBackendHandler("sctl:set  transaction_type=BASE", backendConnection);
         CommandResponsePackets actual = shardingCTLBackendHandler.execute();
-        assertThat(actual.getHeadPacket(), instanceOf(OKPacket.class));
+        assertThat(actual.getHeadPacket(), instanceOf(DatabaseSuccessPacket.class));
         assertThat(backendConnection.getTransactionType(), is(TransactionType.BASE));
     }
     
@@ -55,7 +55,7 @@ public final class ShardingCTLSetBackendHandlerTest {
         backendConnection.setCurrentSchema("schema");
         ShardingCTLSetBackendHandler shardingCTLBackendHandler = new ShardingCTLSetBackendHandler("sctl:set transaction_type=LOCAL", backendConnection);
         CommandResponsePackets actual = shardingCTLBackendHandler.execute();
-        assertThat(actual.getHeadPacket(), instanceOf(OKPacket.class));
+        assertThat(actual.getHeadPacket(), instanceOf(DatabaseSuccessPacket.class));
         assertThat(backendConnection.getTransactionType(), is(TransactionType.LOCAL));
     }
     
@@ -64,7 +64,7 @@ public final class ShardingCTLSetBackendHandlerTest {
         backendConnection.setCurrentSchema("schema");
         ShardingCTLSetBackendHandler shardingCTLBackendHandler = new ShardingCTLSetBackendHandler("sctl:set transaction_type=XXX", backendConnection);
         CommandResponsePackets actual = shardingCTLBackendHandler.execute();
-        assertThat(actual.getHeadPacket(), instanceOf(ErrPacket.class));
+        assertThat(actual.getHeadPacket(), instanceOf(DatabaseFailurePacket.class));
         assertThat(backendConnection.getTransactionType(), is(TransactionType.LOCAL));
     }
     
@@ -72,13 +72,13 @@ public final class ShardingCTLSetBackendHandlerTest {
     public void assertNotSupportedSCTL() {
         ShardingCTLSetBackendHandler shardingCTLBackendHandler = new ShardingCTLSetBackendHandler("sctl:set @@session=XXX", backendConnection);
         CommandResponsePackets actual = shardingCTLBackendHandler.execute();
-        assertThat(actual.getHeadPacket(), instanceOf(ErrPacket.class));
+        assertThat(actual.getHeadPacket(), instanceOf(DatabaseFailurePacket.class));
     }
     
     @Test
     public void assertFormatErrorSCTL() {
         ShardingCTLSetBackendHandler shardingCTLBackendHandler = new ShardingCTLSetBackendHandler("sctl:set yyyyy", backendConnection);
         CommandResponsePackets actual = shardingCTLBackendHandler.execute();
-        assertThat(actual.getHeadPacket(), instanceOf(ErrPacket.class));
+        assertThat(actual.getHeadPacket(), instanceOf(DatabaseFailurePacket.class));
     }
 }

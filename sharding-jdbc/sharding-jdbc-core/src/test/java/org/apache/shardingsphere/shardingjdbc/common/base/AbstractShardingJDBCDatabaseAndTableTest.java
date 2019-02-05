@@ -65,7 +65,7 @@ public abstract class AbstractShardingJDBCDatabaseAndTableTest extends AbstractS
                 orderItemActualDataNodes.add(dataSourceName + ".t_order_item_${0..1}");
             }
             TableRuleConfiguration orderItemTableRuleConfig = new TableRuleConfiguration("t_order_item", Joiner.on(",").join(orderItemActualDataNodes));
-            orderItemTableRuleConfig.setKeyGeneratorConfig(new KeyGeneratorConfiguration("item_id", "INCREMENT", new Properties()));
+            orderItemTableRuleConfig.setKeyGeneratorConfig(new KeyGeneratorConfiguration("INCREMENT", "item_id", new Properties()));
             shardingRuleConfig.getTableRuleConfigs().add(orderItemTableRuleConfig);
             TableRuleConfiguration configTableRuleConfig = new TableRuleConfiguration("t_config");
             shardingRuleConfig.getTableRuleConfigs().add(configTableRuleConfig);

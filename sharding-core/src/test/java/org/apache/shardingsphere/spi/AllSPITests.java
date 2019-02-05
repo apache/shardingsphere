@@ -17,10 +17,10 @@
 
 package org.apache.shardingsphere.spi;
 
-import org.apache.shardingsphere.spi.executor.SPIParsingHookTest;
-import org.apache.shardingsphere.spi.executor.SPIRewriteHookTest;
-import org.apache.shardingsphere.spi.executor.SPIRootInvokeHookTest;
-import org.apache.shardingsphere.spi.executor.SPISQLExecutionHookTest;
+import org.apache.shardingsphere.spi.hook.executor.SPISQLExecutionHookTest;
+import org.apache.shardingsphere.spi.hook.parsing.SPIParsingHookTest;
+import org.apache.shardingsphere.spi.hook.rewrite.SPIRewriteHookTest;
+import org.apache.shardingsphere.spi.hook.root.SPIRootInvokeHookTest;
 import org.junit.runner.RunWith;
 import org.junit.runners.Suite;
 import org.junit.runners.Suite.SuiteClasses;

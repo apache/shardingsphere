@@ -19,7 +19,7 @@ package org.apache.shardingsphere.core.keygen.fixture;
 
 import lombok.RequiredArgsConstructor;
 import org.apache.shardingsphere.core.keygen.TimeService;
-import org.apache.shardingsphere.core.keygen.generator.impl.SnowflakeShardingKeyGenerator;
+import org.apache.shardingsphere.core.keygen.impl.SnowflakeShardingKeyGenerator;
 
 import java.util.concurrent.atomic.AtomicInteger;
 

@@ -36,13 +36,10 @@ public final class ConfigurationChangedListenerManager {
     
     private final AuthenticationChangedListener authenticationChangedListener;
     
-    private final ConfigMapChangedListener configMapChangedListener;
-    
     public ConfigurationChangedListenerManager(final String name, final RegistryCenter regCenter, final Collection<String> shardingSchemaNames) {
         schemaChangedListener = new SchemaChangedListener(name, regCenter, shardingSchemaNames);
         propertiesChangedListener = new PropertiesChangedListener(name, regCenter);
         authenticationChangedListener = new AuthenticationChangedListener(name, regCenter);
-        configMapChangedListener = new ConfigMapChangedListener(name, regCenter);
     }
     
     /**
@@ -52,6 +49,5 @@ public final class ConfigurationChangedListenerManager {
         schemaChangedListener.watch(ChangedType.UPDATED, ChangedType.DELETED);
         propertiesChangedListener.watch(ChangedType.UPDATED);
         authenticationChangedListener.watch(ChangedType.UPDATED);
-        configMapChangedListener.watch(ChangedType.UPDATED);
     }
 }

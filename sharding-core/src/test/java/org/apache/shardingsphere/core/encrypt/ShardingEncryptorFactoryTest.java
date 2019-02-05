@@ -20,18 +20,22 @@ package org.apache.shardingsphere.core.encrypt;
 import org.apache.shardingsphere.core.exception.ShardingConfigurationException;
 import org.junit.Test;
 
+import java.util.Properties;
+
 import static org.hamcrest.CoreMatchers.is;
 import static org.junit.Assert.assertThat;
 
-public class ShardingEncryptorFactoryTest {
+public final class ShardingEncryptorFactoryTest {
     
     @Test
     public void assertNewInstance() {
-        assertThat(ShardingEncryptorFactory.newInstance("test").getProperties().getProperty("key1"), is("value1"));
+        Properties props = new Properties();
+        props.setProperty("key", "value");
+        assertThat(ShardingEncryptorFactory.getInstance().newAlgorithm("test", props).getProperties().getProperty("key"), is("value"));
     }
     
     @Test(expected = ShardingConfigurationException.class)
     public void assertNewInstanceWithException() {
-        assertThat(ShardingEncryptorFactory.newInstance("test1").getProperties().getProperty("key1"), is("value1"));
+        ShardingEncryptorFactory.getInstance().newAlgorithm("test1", new Properties());
     }
 }

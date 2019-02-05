@@ -17,7 +17,6 @@
 
 package org.apache.shardingsphere.core.yaml.engine;
 
-import org.apache.shardingsphere.api.algorithm.masterslave.MasterSlaveLoadBalanceAlgorithmType;
 import org.apache.shardingsphere.core.yaml.config.sharding.YamlRootShardingConfiguration;
 import org.hamcrest.CoreMatchers;
 import org.junit.Test;
@@ -71,7 +70,6 @@ public final class YamlEngineShardingConfigurationTest {
         assertBroadcastTable(actual);
         assertShardingRuleDefault(actual);
         assertMasterSlaveRules(actual);
-        assertConfigMap(actual);
         assertProps(actual);
     }
     
@@ -142,24 +140,14 @@ public final class YamlEngineShardingConfigurationTest {
         assertThat(actual.getShardingRule().getMasterSlaveRules().get("ds_0").getMasterDataSourceName(), is("master_ds_0"));
         assertThat(actual.getShardingRule().getMasterSlaveRules().get("ds_0").getSlaveDataSourceNames(),
                 CoreMatchers.<Collection<String>>is(Arrays.asList("master_ds_0_slave_0", "master_ds_0_slave_1")));
-        assertThat(actual.getShardingRule().getMasterSlaveRules().get("ds_0").getLoadBalanceAlgorithmType(), is(MasterSlaveLoadBalanceAlgorithmType.ROUND_ROBIN));
-        assertConfigMap(actual);
+        assertThat(actual.getShardingRule().getMasterSlaveRules().get("ds_0").getLoadBalanceAlgorithmType(), is("ROUND_ROBIN"));
     }
     
     private void assertMasterSlaveRuleForDs1(final YamlRootShardingConfiguration actual) {
         assertThat(actual.getShardingRule().getMasterSlaveRules().get("ds_1").getMasterDataSourceName(), is("master_ds_1"));
         assertThat(actual.getShardingRule().getMasterSlaveRules().get("ds_1").getSlaveDataSourceNames(),
                 CoreMatchers.<Collection<String>>is(Arrays.asList("master_ds_1_slave_0", "master_ds_1_slave_1")));
-        assertThat(actual.getShardingRule().getMasterSlaveRules().get("ds_1").getLoadBalanceAlgorithmClassName(), is("TestAlgorithmClass"));
-        assertConfigMap(actual);
-    }
-    
-    private void assertConfigMap(final YamlRootShardingConfiguration actual) {
-        assertThat(actual.getConfigMap().size(), is(4));
-        assertThat(actual.getConfigMap().get("master-slave-key0"), is((Object) "master-slave-value0"));
-        assertThat(actual.getConfigMap().get("master-slave-key1"), is((Object) "master-slave-value1"));
-        assertThat(actual.getConfigMap().get("sharding-key1"), is((Object) "sharding-value1"));
-        assertThat(actual.getConfigMap().get("sharding-key2"), is((Object) "sharding-value2"));
+        assertThat(actual.getShardingRule().getMasterSlaveRules().get("ds_1").getLoadBalanceAlgorithmType(), is("RANDOM"));
     }
     
     private void assertProps(final YamlRootShardingConfiguration actual) {

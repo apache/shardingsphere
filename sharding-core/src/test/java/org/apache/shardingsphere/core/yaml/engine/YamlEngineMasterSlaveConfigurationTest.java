@@ -17,7 +17,6 @@
 
 package org.apache.shardingsphere.core.yaml.engine;
 
-import org.apache.shardingsphere.api.algorithm.masterslave.MasterSlaveLoadBalanceAlgorithmType;
 import org.apache.shardingsphere.core.yaml.config.masterslave.YamlRootMasterSlaveConfiguration;
 import org.hamcrest.CoreMatchers;
 import org.junit.Test;
@@ -63,7 +62,6 @@ public final class YamlEngineMasterSlaveConfigurationTest {
     private void assertYamlMasterSlaveConfig(final YamlRootMasterSlaveConfiguration actual) {
         assertDataSourceMap(actual);
         assertMasterSlaveRule(actual);
-        assertConfigMap(actual);
     }
     
     private void assertDataSourceMap(final YamlRootMasterSlaveConfiguration actual) {
@@ -77,13 +75,6 @@ public final class YamlEngineMasterSlaveConfigurationTest {
         assertThat(actual.getMasterSlaveRule().getName(), is("master-slave-ds"));
         assertThat(actual.getMasterSlaveRule().getMasterDataSourceName(), is("master_ds"));
         assertThat(actual.getMasterSlaveRule().getSlaveDataSourceNames(), CoreMatchers.<Collection<String>>is(Arrays.asList("slave_ds_0", "slave_ds_1")));
-        assertThat(actual.getMasterSlaveRule().getLoadBalanceAlgorithmType(), is(MasterSlaveLoadBalanceAlgorithmType.ROUND_ROBIN));
-        assertThat(actual.getMasterSlaveRule().getLoadBalanceAlgorithmClassName(), is("TestAlgorithmClass"));
-    }
-    
-    private void assertConfigMap(final YamlRootMasterSlaveConfiguration actual) {
-        assertThat(actual.getConfigMap().size(), is(2));
-        assertThat(actual.getConfigMap().get("key1"), is((Object) "value1"));
-        assertThat(actual.getConfigMap().get("key2"), is((Object) "value2"));
+        assertThat(actual.getMasterSlaveRule().getLoadBalanceAlgorithmType(), is("ROUND_ROBIN"));
     }
 }

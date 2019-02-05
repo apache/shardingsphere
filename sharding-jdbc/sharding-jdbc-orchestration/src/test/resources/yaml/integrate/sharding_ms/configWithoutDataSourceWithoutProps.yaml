@@ -14,9 +14,8 @@ shardingRule:
           shardingColumn: order_id
           algorithmExpression: t_order_${order_id % 2}
       keyGenerator:    
-        column: order_id
         type: INCREMENT
-
+        column: order_id
     t_order_item:
       actualDataNodes: db_ms_${0..1}.t_order_item_${0..1}
       databaseStrategy:
@@ -42,7 +41,7 @@ shardingRule:
       masterDataSourceName: db0_master
       slaveDataSourceNames:
         - db0_slave
-      loadBalanceAlgorithmClassName: org.apache.shardingsphere.api.algorithm.masterslave.RoundRobinMasterSlaveLoadBalanceAlgorithm
+      loadBalanceAlgorithmType: ROUND_ROBIN
     db_ms_1:
       masterDataSourceName: db1_master
       slaveDataSourceNames:

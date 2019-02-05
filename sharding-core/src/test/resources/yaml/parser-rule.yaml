@@ -26,8 +26,8 @@ shardingRule:
           shardingColumns: user_id, order_id, item_id
           algorithmClassName: org.apache.shardingsphere.api.algorithm.fixture.TestComplexKeysShardingAlgorithm 
       keyGenerator:
-        column: item_id
         type: SNOWFLAKE
+        column: item_id
     t_place:
       actualDataNodes: db${0..1}.t_place
       tableStrategy: 
@@ -36,5 +36,3 @@ shardingRule:
           algorithmClassName: org.apache.shardingsphere.api.algorithm.fixture.TestComplexKeysShardingAlgorithm
   bindingTables:
     - t_order, t_order_item
-  defaultKeyGenerator:
-    type: SNOWFLAKE

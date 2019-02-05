@@ -19,7 +19,7 @@ package org.apache.shardingsphere.shardingproxy.backend.communication.jdbc.execu
 
 import lombok.Getter;
 import lombok.RequiredArgsConstructor;
-import org.apache.shardingsphere.shardingproxy.transport.mysql.packet.generic.OKPacket;
+import org.apache.shardingsphere.shardingproxy.transport.common.packet.generic.DatabaseSuccessPacket;
 
 /**
  * Execute update response unit.
@@ -30,5 +30,5 @@ import org.apache.shardingsphere.shardingproxy.transport.mysql.packet.generic.OK
 @Getter
 public final class ExecuteUpdateResponseUnit implements ExecuteResponseUnit {
     
-    private final OKPacket okPacket;
+    private final DatabaseSuccessPacket databaseSuccessPacket;
 }

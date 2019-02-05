@@ -59,7 +59,7 @@ public final class YamlOrchestrationMasterSlaveDataSourceFactory {
      */
     public static DataSource createDataSource(final File yamlFile) throws SQLException, IOException {
         YamlOrchestrationMasterSlaveRuleConfiguration config = unmarshal(yamlFile);
-        return createDataSource(config.getDataSources(), config.getMasterSlaveRule(), config.getConfigMap(), config.getProps(), config.getOrchestration());
+        return createDataSource(config.getDataSources(), config.getMasterSlaveRule(), config.getProps(), config.getOrchestration());
     }
     
     /**
@@ -73,7 +73,7 @@ public final class YamlOrchestrationMasterSlaveDataSourceFactory {
      */
     public static DataSource createDataSource(final Map<String, DataSource> dataSourceMap, final File yamlFile) throws SQLException, IOException {
         YamlOrchestrationMasterSlaveRuleConfiguration config = unmarshal(yamlFile);
-        return createDataSource(dataSourceMap, config.getMasterSlaveRule(), config.getConfigMap(), config.getProps(), config.getOrchestration());
+        return createDataSource(dataSourceMap, config.getMasterSlaveRule(), config.getProps(), config.getOrchestration());
     }
     
     /**
@@ -86,7 +86,7 @@ public final class YamlOrchestrationMasterSlaveDataSourceFactory {
      */
     public static DataSource createDataSource(final byte[] yamlBytes) throws SQLException, IOException {
         YamlOrchestrationMasterSlaveRuleConfiguration config = unmarshal(yamlBytes);
-        return createDataSource(config.getDataSources(), config.getMasterSlaveRule(), config.getConfigMap(), config.getProps(), config.getOrchestration());
+        return createDataSource(config.getDataSources(), config.getMasterSlaveRule(), config.getProps(), config.getOrchestration());
     }
     
     /**
@@ -100,15 +100,15 @@ public final class YamlOrchestrationMasterSlaveDataSourceFactory {
      */
     public static DataSource createDataSource(final Map<String, DataSource> dataSourceMap, final byte[] yamlBytes) throws SQLException, IOException {
         YamlOrchestrationMasterSlaveRuleConfiguration config = unmarshal(yamlBytes);
-        return createDataSource(dataSourceMap, config.getMasterSlaveRule(), config.getConfigMap(), config.getProps(), config.getOrchestration());
+        return createDataSource(dataSourceMap, config.getMasterSlaveRule(), config.getProps(), config.getOrchestration());
     }
     
     private static DataSource createDataSource(final Map<String, DataSource> dataSourceMap, final YamlMasterSlaveRuleConfiguration yamlMasterSlaveRuleConfiguration, 
-                                               final Map<String, Object> configMap, final Properties props, final YamlOrchestrationConfiguration yamlOrchestrationConfiguration) throws SQLException {
+                                               final Properties props, final YamlOrchestrationConfiguration yamlOrchestrationConfiguration) throws SQLException {
         if (null == yamlMasterSlaveRuleConfiguration) {
             return new OrchestrationMasterSlaveDataSource(ORCHESTRATION_SWAPPER.swap(yamlOrchestrationConfiguration));
         } else {
-            MasterSlaveDataSource masterSlaveDataSource = new MasterSlaveDataSource(dataSourceMap, MASTER_SLAVE_RULE_SWAPPER.swap(yamlMasterSlaveRuleConfiguration), configMap, props);
+            MasterSlaveDataSource masterSlaveDataSource = new MasterSlaveDataSource(dataSourceMap, MASTER_SLAVE_RULE_SWAPPER.swap(yamlMasterSlaveRuleConfiguration), props);
             return new OrchestrationMasterSlaveDataSource(masterSlaveDataSource, ORCHESTRATION_SWAPPER.swap(yamlOrchestrationConfiguration));
         }
     }

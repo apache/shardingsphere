@@ -19,7 +19,7 @@ package org.apache.shardingsphere.dbtest.fixture;
 
 import lombok.Getter;
 import lombok.Setter;
-import org.apache.shardingsphere.core.keygen.generator.ShardingKeyGenerator;
+import org.apache.shardingsphere.spi.algorithm.keygen.ShardingKeyGenerator;
 
 import java.util.Properties;
 

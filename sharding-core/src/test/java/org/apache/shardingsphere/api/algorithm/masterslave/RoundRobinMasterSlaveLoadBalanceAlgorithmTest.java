@@ -17,6 +17,7 @@
 
 package org.apache.shardingsphere.api.algorithm.masterslave;
 
+import org.apache.shardingsphere.core.masterslave.impl.RoundRobinMasterSlaveLoadBalanceAlgorithm;
 import org.junit.Test;
 
 import java.util.Arrays;
