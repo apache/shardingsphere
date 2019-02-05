@@ -74,8 +74,6 @@ public final class JDBCExecuteEngine implements SQLExecuteEngine {
     
     private static final Integer MEMORY_FETCH_ONE_ROW_A_TIME = Integer.MIN_VALUE;
     
-    private final List<QueryResult> queryResults = new LinkedList<>();
-    
     private final BackendConnection backendConnection;
     
     private final JDBCExecutorWrapper jdbcExecutorWrapper;
