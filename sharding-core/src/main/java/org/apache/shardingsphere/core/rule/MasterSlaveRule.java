@@ -18,6 +18,7 @@
 package org.apache.shardingsphere.core.rule;
 
 import lombok.Getter;
+import org.apache.shardingsphere.api.config.masterslave.LoadBalanceStrategyConfiguration;
 import org.apache.shardingsphere.api.config.masterslave.MasterSlaveRuleConfiguration;
 import org.apache.shardingsphere.core.masterslave.MasterSlaveLoadBalanceAlgorithmFactory;
 import org.apache.shardingsphere.spi.algorithm.masterslave.MasterSlaveLoadBalanceAlgorithm;
@@ -47,8 +48,13 @@ public class MasterSlaveRule {
         name = config.getName();
         masterDataSourceName = config.getMasterDataSourceName();
         slaveDataSourceNames = config.getSlaveDataSourceNames();
-        loadBalanceAlgorithm = null == config.getLoadBalanceAlgorithm() ? MasterSlaveLoadBalanceAlgorithmFactory.getInstance().newAlgorithm() : config.getLoadBalanceAlgorithm();
+        loadBalanceAlgorithm = createMasterSlaveLoadBalanceAlgorithm(config.getLoadBalanceStrategyConfiguration());
         masterSlaveRuleConfiguration = config;
+    }
+    
+    private MasterSlaveLoadBalanceAlgorithm createMasterSlaveLoadBalanceAlgorithm(final LoadBalanceStrategyConfiguration loadBalanceStrategyConfiguration) {
+        MasterSlaveLoadBalanceAlgorithmFactory factory = MasterSlaveLoadBalanceAlgorithmFactory.getInstance();
+        return null == loadBalanceStrategyConfiguration ? factory.newAlgorithm() : factory.newAlgorithm(loadBalanceStrategyConfiguration.getType(), loadBalanceStrategyConfiguration.getProperties());
     }
     
     /**

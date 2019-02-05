@@ -18,8 +18,8 @@
 package org.apache.shardingsphere.orchestration.internal.rule;
 
 import com.google.common.collect.Sets;
+import org.apache.shardingsphere.api.config.masterslave.LoadBalanceStrategyConfiguration;
 import org.apache.shardingsphere.api.config.masterslave.MasterSlaveRuleConfiguration;
-import org.apache.shardingsphere.core.masterslave.impl.RandomMasterSlaveLoadBalanceAlgorithm;
 import org.apache.shardingsphere.orchestration.util.FieldUtil;
 import org.hamcrest.CoreMatchers;
 import org.junit.Test;
@@ -33,7 +33,7 @@ import static org.junit.Assert.assertThat;
 public final class OrchestrationMasterSlaveRuleTest {
     
     private final OrchestrationMasterSlaveRule orchestrationMasterSlaveRule = new OrchestrationMasterSlaveRule(
-            new MasterSlaveRuleConfiguration("test_ms", "master_db", Arrays.asList("slave_db_0", "slave_db_1"), new RandomMasterSlaveLoadBalanceAlgorithm()));
+            new MasterSlaveRuleConfiguration("test_ms", "master_db", Arrays.asList("slave_db_0", "slave_db_1"), new LoadBalanceStrategyConfiguration("RANDOM")));
     
     @Test
     public void assertGetSlaveDataSourceNamesWithoutDisabledDataSourceNames() {
