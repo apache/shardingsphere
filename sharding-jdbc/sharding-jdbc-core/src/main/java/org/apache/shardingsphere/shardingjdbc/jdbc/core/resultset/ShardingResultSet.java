@@ -276,18 +276,19 @@ public final class ShardingResultSet extends AbstractResultSetAdapter {
     
     @Override
     public InputStream getBinaryStream(final String columnLabel) throws SQLException {
-        Object result = decode(getString(mergeResultSet.getInputStream(columnLabel, "Binary")), columnLabel);
-        return getInputStream(String.valueOf(result));
+        Object result = decode(convert(mergeResultSet.getInputStream(columnLabel, "Binary")), columnLabel);
+        return convert(String.valueOf(result));
     }
     
     @SneakyThrows
-    private String getString(final InputStream value) {
+    @SuppressWarnings("all")
+    private String convert(final InputStream value) {
         byte[] bytes = new byte[value.available()];
         value.read(bytes);
         return new String(bytes);
     }
     
-    private InputStream getInputStream(final String value) {
+    private InputStream convert(final String value) {
         return new ByteArrayInputStream(value.getBytes());
     }
     
