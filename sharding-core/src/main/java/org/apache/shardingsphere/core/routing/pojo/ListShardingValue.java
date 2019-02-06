@@ -15,26 +15,27 @@
  * limitations under the License.
  */
 
-package org.apache.shardingsphere.api.algorithm.sharding;
+package org.apache.shardingsphere.core.routing.pojo;
 
-import com.google.common.collect.Range;
 import lombok.Getter;
 import lombok.RequiredArgsConstructor;
 import lombok.ToString;
 
+import java.util.Collection;
+
 /**
- * Sharding value for range values.
+ * Sharding value for list values.
  * 
  * @author zhangliang
  */
 @RequiredArgsConstructor
 @Getter
 @ToString
-public final class RangeShardingValue<T extends Comparable<?>> implements ShardingValue {
+public final class ListShardingValue<T extends Comparable<?>> implements ShardingValue {
     
     private final String logicTableName;
     
     private final String columnName;
     
-    private final Range<T> valueRange;
+    private final Collection<T> values;
 }

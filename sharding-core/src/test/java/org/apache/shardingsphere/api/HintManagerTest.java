@@ -17,8 +17,8 @@
 
 package org.apache.shardingsphere.api;
 
-import org.apache.shardingsphere.api.algorithm.sharding.ListShardingValue;
 import org.apache.shardingsphere.core.hint.HintManagerHolder;
+import org.apache.shardingsphere.core.routing.pojo.ListShardingValue;
 import org.junit.Test;
 
 import static org.hamcrest.CoreMatchers.is;

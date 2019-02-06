@@ -18,7 +18,7 @@
 package org.apache.shardingsphere.core.routing.strategy.none;
 
 import lombok.Getter;
-import org.apache.shardingsphere.api.algorithm.sharding.ShardingValue;
+import org.apache.shardingsphere.core.routing.pojo.ShardingValue;
 import org.apache.shardingsphere.core.routing.strategy.ShardingStrategy;
 
 import java.util.Collection;

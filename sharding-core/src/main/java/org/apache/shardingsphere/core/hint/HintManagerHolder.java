@@ -22,8 +22,8 @@ import com.google.common.base.Preconditions;
 import lombok.AccessLevel;
 import lombok.NoArgsConstructor;
 import org.apache.shardingsphere.api.HintManager;
-import org.apache.shardingsphere.api.algorithm.sharding.ListShardingValue;
-import org.apache.shardingsphere.api.algorithm.sharding.ShardingValue;
+import org.apache.shardingsphere.core.routing.pojo.ListShardingValue;
+import org.apache.shardingsphere.core.routing.pojo.ShardingValue;
 
 import java.util.Collection;
 

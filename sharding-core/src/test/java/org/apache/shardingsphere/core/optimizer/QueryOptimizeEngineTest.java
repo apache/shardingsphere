@@ -18,9 +18,6 @@
 package org.apache.shardingsphere.core.optimizer;
 
 import com.google.common.collect.Range;
-import org.apache.shardingsphere.api.algorithm.sharding.ListShardingValue;
-import org.apache.shardingsphere.api.algorithm.sharding.RangeShardingValue;
-import org.apache.shardingsphere.api.algorithm.sharding.ShardingValue;
 import org.apache.shardingsphere.core.optimizer.condition.ShardingCondition;
 import org.apache.shardingsphere.core.optimizer.condition.ShardingConditions;
 import org.apache.shardingsphere.core.optimizer.query.QueryOptimizeEngine;
@@ -30,6 +27,9 @@ import org.apache.shardingsphere.core.parsing.parser.context.condition.Condition
 import org.apache.shardingsphere.core.parsing.parser.context.condition.OrCondition;
 import org.apache.shardingsphere.core.parsing.parser.expression.SQLExpression;
 import org.apache.shardingsphere.core.parsing.parser.expression.SQLNumberExpression;
+import org.apache.shardingsphere.core.routing.pojo.ListShardingValue;
+import org.apache.shardingsphere.core.routing.pojo.RangeShardingValue;
+import org.apache.shardingsphere.core.routing.pojo.ShardingValue;
 import org.hamcrest.CoreMatchers;
 import org.junit.Test;
 
