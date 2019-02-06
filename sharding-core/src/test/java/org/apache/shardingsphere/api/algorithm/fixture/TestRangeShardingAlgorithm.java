@@ -17,7 +17,7 @@
 
 package org.apache.shardingsphere.api.algorithm.fixture;
 
-import org.apache.shardingsphere.api.algorithm.sharding.RangeShardingValue;
+import com.google.common.collect.Range;
 import org.apache.shardingsphere.api.algorithm.sharding.standard.RangeShardingAlgorithm;
 
 import java.util.ArrayList;
@@ -26,9 +26,9 @@ import java.util.Collection;
 public final class TestRangeShardingAlgorithm implements RangeShardingAlgorithm<String> {
     
     @Override
-    public Collection<String> doSharding(final Collection<String> availableTargetNames, final RangeShardingValue<String> shardingValue) {
+    public Collection<String> doSharding(final Collection<String> availableTargetNames, final String logicTableName, final String columnName, final Range<String> shardingValueRange) {
         Collection<String> result = new ArrayList<>();
-        for (Integer i = Integer.parseInt(shardingValue.getValueRange().lowerEndpoint()); i <= Integer.parseInt(shardingValue.getValueRange().upperEndpoint()); i++) {
+        for (Integer i = Integer.parseInt(shardingValueRange.lowerEndpoint()); i <= Integer.parseInt(shardingValueRange.upperEndpoint()); i++) {
             result.add(i.toString());
         }
         return result;

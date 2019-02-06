@@ -17,19 +17,17 @@
 
 package org.apache.shardingsphere.core.fixture;
 
-import org.apache.shardingsphere.api.algorithm.sharding.ListShardingValue;
-import org.apache.shardingsphere.api.algorithm.sharding.ShardingValue;
 import org.apache.shardingsphere.api.algorithm.sharding.hint.HintShardingAlgorithm;
 
 import java.util.Collection;
 import java.util.Collections;
 
-public final class OrderDatabaseHintShardingAlgorithm implements HintShardingAlgorithm {
+public final class OrderDatabaseHintShardingAlgorithm implements HintShardingAlgorithm<Integer> {
     
     @Override
-    public Collection<String> doSharding(final Collection<String> availableTargetNames, final ShardingValue shardingValue) {
+    public Collection<String> doSharding(final Collection<String> availableTargetNames, final String logicTableName, final String columnName, final Collection<Integer> shardingValues) {
         for (String each : availableTargetNames) {
-            if (each.endsWith(String.valueOf((int) ((ListShardingValue) shardingValue).getValues().iterator().next() % 2))) {
+            if (each.endsWith(String.valueOf(shardingValues.iterator().next() % 2))) {
                 return Collections.singletonList(each);
             }
         }
