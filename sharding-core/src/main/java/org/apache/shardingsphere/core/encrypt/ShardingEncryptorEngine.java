@@ -18,8 +18,6 @@
 package org.apache.shardingsphere.core.encrypt;
 
 import com.google.common.base.Optional;
-import lombok.AccessLevel;
-import lombok.NoArgsConstructor;
 import org.apache.shardingsphere.core.routing.strategy.ShardingEncryptorStrategy;
 import org.apache.shardingsphere.core.rule.TableRule;
 import org.apache.shardingsphere.spi.algorithm.encrypt.ShardingEncryptor;
@@ -33,20 +31,14 @@ import java.util.Map;
  *
  * @author panjuan
  */
-@NoArgsConstructor(access = AccessLevel.PRIVATE)
 public final class ShardingEncryptorEngine {
     
-    private static final Map<String, ShardingEncryptorStrategy> SHARDING_ENCRYPTOR_STRATEGIES = new LinkedHashMap<>();
+    private final Map<String, ShardingEncryptorStrategy> shardingEncryptorStrategies = new LinkedHashMap<>();
     
-    /**
-     * Init shardinng encryptor engine.
-     * 
-     * @param tableRules table rules
-     */
-    public static void init(final Collection<TableRule> tableRules) {
+    public ShardingEncryptorEngine(final Collection<TableRule> tableRules) {
         for (TableRule each : tableRules) {
             if (null != each.getShardingEncryptorStrategy()) {
-                SHARDING_ENCRYPTOR_STRATEGIES.put(each.getLogicTable(), each.getShardingEncryptorStrategy());
+                shardingEncryptorStrategies.put(each.getLogicTable(), each.getShardingEncryptorStrategy());
             }
         }
     }
@@ -58,9 +50,9 @@ public final class ShardingEncryptorEngine {
      * @param columnName column name
      * @return optional of sharding encryptor
      */
-    public static Optional<ShardingEncryptor> getShardingEncryptor(final String logicTableName, final String columnName) {
-        if (SHARDING_ENCRYPTOR_STRATEGIES.keySet().contains(logicTableName) && SHARDING_ENCRYPTOR_STRATEGIES.get(logicTableName).getColumns().contains(columnName)) {
-            return Optional.of(SHARDING_ENCRYPTOR_STRATEGIES.get(logicTableName).getShardingEncryptor());
+    public Optional<ShardingEncryptor> getShardingEncryptor(final String logicTableName, final String columnName) {
+        if (shardingEncryptorStrategies.keySet().contains(logicTableName) && shardingEncryptorStrategies.get(logicTableName).getColumns().contains(columnName)) {
+            return Optional.of(shardingEncryptorStrategies.get(logicTableName).getShardingEncryptor());
         }
         return Optional.absent();
     }
