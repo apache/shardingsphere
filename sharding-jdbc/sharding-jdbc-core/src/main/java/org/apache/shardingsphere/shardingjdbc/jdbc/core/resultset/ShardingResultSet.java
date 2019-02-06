@@ -19,7 +19,6 @@ package org.apache.shardingsphere.shardingjdbc.jdbc.core.resultset;
 
 import com.google.common.base.Optional;
 import lombok.SneakyThrows;
-import org.apache.shardingsphere.core.encrypt.ShardingEncryptorEngine;
 import org.apache.shardingsphere.core.merger.MergedResult;
 import org.apache.shardingsphere.shardingjdbc.jdbc.adapter.AbstractResultSetAdapter;
 import org.apache.shardingsphere.spi.algorithm.encrypt.ShardingEncryptor;
@@ -364,13 +363,13 @@ public final class ShardingResultSet extends AbstractResultSetAdapter {
         if (null == index) {
             return value;
         }
-        Optional<ShardingEncryptor> shardingEncryptor = ShardingEncryptorEngine.getShardingEncryptor(getMetaData().getTableName(index), getMetaData().getColumnName(index));
+        Optional<ShardingEncryptor> shardingEncryptor = getShardingEncryptorEngine().getShardingEncryptor(getMetaData().getTableName(index), getMetaData().getColumnName(index));
         return shardingEncryptor.isPresent() ? shardingEncryptor.get().decode(value) : value;
     }
     
     @SneakyThrows
     private Object decode(final Object value, final int columnIndex) {
-        Optional<ShardingEncryptor> shardingEncryptor = ShardingEncryptorEngine.getShardingEncryptor(getMetaData().getTableName(columnIndex), getMetaData().getColumnName(columnIndex));
+        Optional<ShardingEncryptor> shardingEncryptor = getShardingEncryptorEngine().getShardingEncryptor(getMetaData().getTableName(columnIndex), getMetaData().getColumnName(columnIndex));
         return shardingEncryptor.isPresent() ? shardingEncryptor.get().decode(value) : value;
     }
 }
