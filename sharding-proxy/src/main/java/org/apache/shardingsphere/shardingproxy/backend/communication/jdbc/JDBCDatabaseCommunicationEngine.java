@@ -17,9 +17,12 @@
 
 package org.apache.shardingsphere.shardingproxy.backend.communication.jdbc;
 
+import com.google.common.base.Optional;
 import lombok.RequiredArgsConstructor;
+import lombok.SneakyThrows;
 import org.apache.shardingsphere.api.config.sharding.ShardingRuleConfiguration;
 import org.apache.shardingsphere.core.constant.SQLType;
+import org.apache.shardingsphere.core.encrypt.ShardingEncryptorEngine;
 import org.apache.shardingsphere.core.merger.MergeEngineFactory;
 import org.apache.shardingsphere.core.merger.MergedResult;
 import org.apache.shardingsphere.core.merger.dal.show.ShowTablesMergedResult;
@@ -38,12 +41,13 @@ import org.apache.shardingsphere.shardingproxy.backend.communication.jdbc.execut
 import org.apache.shardingsphere.shardingproxy.runtime.GlobalRegistry;
 import org.apache.shardingsphere.shardingproxy.runtime.schema.LogicSchema;
 import org.apache.shardingsphere.shardingproxy.runtime.schema.ShardingSchema;
+import org.apache.shardingsphere.shardingproxy.transport.common.packet.command.CommandResponsePackets;
 import org.apache.shardingsphere.shardingproxy.transport.common.packet.command.query.DataHeaderPacket;
+import org.apache.shardingsphere.shardingproxy.transport.common.packet.command.query.QueryResponsePackets;
 import org.apache.shardingsphere.shardingproxy.transport.common.packet.generic.DatabaseFailurePacket;
 import org.apache.shardingsphere.shardingproxy.transport.common.packet.generic.DatabaseSuccessPacket;
 import org.apache.shardingsphere.shardingproxy.transport.mysql.constant.MySQLServerErrorCode;
-import org.apache.shardingsphere.shardingproxy.transport.common.packet.command.CommandResponsePackets;
-import org.apache.shardingsphere.shardingproxy.transport.common.packet.command.query.QueryResponsePackets;
+import org.apache.shardingsphere.spi.algorithm.encrypt.ShardingEncryptor;
 import org.apache.shardingsphere.transaction.core.TransactionType;
 
 import java.sql.SQLException;
@@ -141,6 +145,12 @@ public final class JDBCDatabaseCommunicationEngine implements DatabaseCommunicat
         return new QueryResponsePackets(queryResponsePackets.getColumnTypes(), columnCount, dataHeaderPackets, columnCount + 2);
     }
     
+    private void setLogicTableNameForQueryResponsePackets(final QueryResponsePackets queryResponsePackets) {
+        for (DataHeaderPacket each : queryResponsePackets.getDataHeaderPackets()) {
+            String logicTableName = GlobalRegistry.getInstance().
+        }
+    }
+    
     private void setResponseColumnLabelForShowTablesMergedResult(final QueryResponsePackets queryResponsePackets) {
         for (DataHeaderPacket each : queryResponsePackets.getDataHeaderPackets()) {
             if (each.getName().startsWith("Tables_in_")) {
@@ -164,5 +174,11 @@ public final class JDBCDatabaseCommunicationEngine implements DatabaseCommunicat
             data.add(mergedResult.getValue(columnIndex, Object.class));
         }
         return new ResultPacket(++currentSequenceId, data, columnCount, queryResponsePackets.getColumnTypes());
+    }
+    
+    @SneakyThrows
+    private Object decode(final Object value, final int columnIndex) {
+        Optional<ShardingEncryptor> shardingEncryptor = ShardingEncryptorEngine.getShardingEncryptor(getMetaData().getTableName(columnIndex), getMetaData().getColumnName(columnIndex));
+        return shardingEncryptor.isPresent() ? shardingEncryptor.get().decode(value) : value;
     }
 }
