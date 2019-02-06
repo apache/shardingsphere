@@ -46,6 +46,7 @@ import java.sql.Timestamp;
 import java.util.Calendar;
 import java.util.Collections;
 
+import static org.hamcrest.CoreMatchers.instanceOf;
 import static org.hamcrest.CoreMatchers.is;
 import static org.junit.Assert.assertFalse;
 import static org.junit.Assert.assertThat;
@@ -322,14 +323,14 @@ public final class ShardingResultSetTest {
     public void assertGetUnicodeStreamWithColumnIndex() throws SQLException {
         InputStream inputStream = mock(InputStream.class);
         when(mergeResultSet.getInputStream(1, "Unicode")).thenReturn(inputStream);
-        assertThat(shardingResultSet.getUnicodeStream(1), is(inputStream));
+        assertThat(shardingResultSet.getUnicodeStream(1), instanceOf(InputStream.class));
     }
     
     @Test
     public void assertGetUnicodeStreamWithColumnLabel() throws SQLException {
         InputStream inputStream = mock(InputStream.class);
         when(mergeResultSet.getInputStream("label", "Unicode")).thenReturn(inputStream);
-        assertThat(shardingResultSet.getUnicodeStream("label"), is(inputStream));
+        assertThat(shardingResultSet.getUnicodeStream("label"), instanceOf(InputStream.class));
     }
     
     @Test
