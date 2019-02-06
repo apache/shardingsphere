@@ -100,7 +100,7 @@ public final class ShardingStatement extends AbstractStatementAdapter {
     }
     
     private ShardingResultSet getResultSet(final MergeEngine mergeEngine) throws SQLException {
-        return mergeEngine instanceof DQLMergeEngine ? new ShardingResultSet(statementExecutor.getResultSets(), mergeEngine.merge(), ((DQLMergeEngine) mergeEngine).getColumnLabelIndexMap(), this) : new ShardingResultSet(statementExecutor.getResultSets(), mergeEngine.merge(), this);
+        return getCurrentResultSet(statementExecutor.getResultSets(), mergeEngine);
     }
     
     @Override
@@ -230,9 +230,13 @@ public final class ShardingStatement extends AbstractStatementAdapter {
         if (routeResult.getSqlStatement() instanceof SelectStatement || routeResult.getSqlStatement() instanceof DALStatement) {
             MergeEngine mergeEngine = MergeEngineFactory.newInstance(connection.getShardingContext().getDatabaseType(), 
                     connection.getShardingContext().getShardingRule(), routeResult.getSqlStatement(), connection.getShardingContext().getMetaData().getTable(), queryResults);
-            currentResultSet = new ShardingResultSet(resultSets, mergeEngine.merge(), this);
+            currentResultSet = getCurrentResultSet(resultSets, mergeEngine);
         }
         return currentResultSet;
+    }
+    
+    private ShardingResultSet getCurrentResultSet(final List<ResultSet> resultSets, final MergeEngine mergeEngine) throws SQLException {
+        return mergeEngine instanceof DQLMergeEngine ? new ShardingResultSet(resultSets, mergeEngine.merge(), ((DQLMergeEngine) mergeEngine).getColumnLabelIndexMap(), this) : new ShardingResultSet(resultSets, mergeEngine.merge(), this);
     }
     
     private void initStatementExecutor() throws SQLException {
