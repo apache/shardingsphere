@@ -19,7 +19,7 @@ package org.apache.shardingsphere.core.optimizer.condition;
 
 import lombok.Getter;
 import lombok.ToString;
-import org.apache.shardingsphere.api.algorithm.sharding.ShardingValue;
+import org.apache.shardingsphere.core.routing.pojo.ShardingValue;
 
 import java.util.LinkedList;
 import java.util.List;

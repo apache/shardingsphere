@@ -15,17 +15,26 @@
  * limitations under the License.
  */
 
-package org.apache.shardingsphere.core.fixture;
+package org.apache.shardingsphere.api.config.masterslave;
 
-import org.apache.shardingsphere.api.algorithm.sharding.complex.ComplexKeysShardingAlgorithm;
+import lombok.Getter;
+import org.apache.shardingsphere.api.config.StrategyConfiguration;
 
-import java.util.Collection;
-import java.util.Map;
+import java.util.Properties;
 
-public final class ComplexOrderShardingAlgorithm implements ComplexKeysShardingAlgorithm<Integer> {
+/**
+ * Master-slave load balance strategy configuration.
+ *
+ * @author zhangliang
+ */
+@Getter
+public final class LoadBalanceStrategyConfiguration extends StrategyConfiguration {
     
-    @Override
-    public Collection<String> doSharding(final Collection<String> availableTargetNames, final String logicTableName, final Map<String, Collection<Integer>> columnShardingValues) {
-        return availableTargetNames;
+    public LoadBalanceStrategyConfiguration(final String type) {
+        super(type);
+    }
+    
+    public LoadBalanceStrategyConfiguration(final String type, final Properties properties) {
+        super(type, properties);
     }
 }

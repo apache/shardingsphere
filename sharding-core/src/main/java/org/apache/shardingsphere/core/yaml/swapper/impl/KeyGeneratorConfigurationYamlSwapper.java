@@ -33,7 +33,7 @@ public final class KeyGeneratorConfigurationYamlSwapper implements YamlSwapper<Y
         YamlKeyGeneratorConfiguration result = new YamlKeyGeneratorConfiguration();
         result.setType(data.getType());
         result.setColumn(data.getColumn());
-        result.setProps(data.getProps());
+        result.setProps(data.getProperties());
         return result;
     }
     

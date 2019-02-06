@@ -15,25 +15,33 @@
  * limitations under the License.
  */
 
-package org.apache.shardingsphere.api.algorithm.sharding;
+package org.apache.shardingsphere.api.config;
 
+import com.google.common.base.Preconditions;
+import com.google.common.base.Strings;
 import lombok.Getter;
-import lombok.RequiredArgsConstructor;
-import lombok.ToString;
+
+import java.util.Properties;
 
 /**
- * Sharding value for precise value.
+ * Strategy configuration.
  * 
  * @author zhangliang
  */
-@RequiredArgsConstructor
 @Getter
-@ToString
-public final class PreciseShardingValue<T extends Comparable<?>> implements ShardingValue {
+public abstract class StrategyConfiguration {
     
-    private final String logicTableName;
+    private final String type;
     
-    private final String columnName;
+    private final Properties properties;
     
-    private final T value;
+    public StrategyConfiguration(final String type) {
+        this(type, null);
+    }
+    
+    public StrategyConfiguration(final String type, final Properties properties) {
+        Preconditions.checkArgument(!Strings.isNullOrEmpty(type), "Type is required.");
+        this.type = type;
+        this.properties = null == properties ? new Properties() : properties;
+    }
 }

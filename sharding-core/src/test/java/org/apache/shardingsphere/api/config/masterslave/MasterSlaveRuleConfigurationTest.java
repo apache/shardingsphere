@@ -17,8 +17,6 @@
 
 package org.apache.shardingsphere.api.config.masterslave;
 
-import org.apache.shardingsphere.core.masterslave.MasterSlaveLoadBalanceAlgorithmFactory;
-import org.apache.shardingsphere.spi.algorithm.masterslave.MasterSlaveLoadBalanceAlgorithm;
 import org.hamcrest.CoreMatchers;
 import org.junit.Test;
 
@@ -57,16 +55,15 @@ public final class MasterSlaveRuleConfigurationTest {
         assertThat(actual.getName(), is("ds"));
         assertThat(actual.getMasterDataSourceName(), is("master_ds"));
         assertThat(actual.getSlaveDataSourceNames(), CoreMatchers.<Collection<String>>is(Collections.singletonList("slave_ds")));
-        assertNull(actual.getLoadBalanceAlgorithm());
+        assertNull(actual.getLoadBalanceStrategyConfiguration());
     }
     
     @Test
     public void assertConstructorWithMaxArguments() {
-        MasterSlaveLoadBalanceAlgorithm algorithm = MasterSlaveLoadBalanceAlgorithmFactory.getInstance().newAlgorithm();
-        MasterSlaveRuleConfiguration actual = new MasterSlaveRuleConfiguration("ds", "master_ds", Collections.singletonList("slave_ds"), algorithm);
+        MasterSlaveRuleConfiguration actual = new MasterSlaveRuleConfiguration("ds", "master_ds", Collections.singletonList("slave_ds"), new LoadBalanceStrategyConfiguration("ROUND_ROBIN"));
         assertThat(actual.getName(), is("ds"));
         assertThat(actual.getMasterDataSourceName(), is("master_ds"));
         assertThat(actual.getSlaveDataSourceNames(), CoreMatchers.<Collection<String>>is(Collections.singletonList("slave_ds")));
-        assertThat(actual.getLoadBalanceAlgorithm(), is(algorithm));
+        assertThat(actual.getLoadBalanceStrategyConfiguration().getType(), is("ROUND_ROBIN"));
     }
 }

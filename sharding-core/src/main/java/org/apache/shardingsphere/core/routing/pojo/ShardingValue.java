@@ -15,27 +15,26 @@
  * limitations under the License.
  */
 
-package org.apache.shardingsphere.api.algorithm.sharding;
-
-import lombok.Getter;
-import lombok.RequiredArgsConstructor;
-import lombok.ToString;
-
-import java.util.Collection;
+package org.apache.shardingsphere.core.routing.pojo;
 
 /**
- * Sharding value for list values.
+ * Sharding value.
  * 
  * @author zhangliang
  */
-@RequiredArgsConstructor
-@Getter
-@ToString
-public final class ListShardingValue<T extends Comparable<?>> implements ShardingValue {
+public interface ShardingValue {
     
-    private final String logicTableName;
+    /**
+     * Get logic table name.
+     *
+     * @return logic table name
+     */
+    String getLogicTableName();
     
-    private final String columnName;
-    
-    private final Collection<T> values;
+    /**
+     * Get column name.
+     *
+     * @return column name
+     */
+    String getColumnName();
 }

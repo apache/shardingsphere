@@ -20,12 +20,15 @@ package org.apache.shardingsphere.core.routing.strategy.complex;
 import com.google.common.base.Preconditions;
 import com.google.common.base.Splitter;
 import lombok.Getter;
-import org.apache.shardingsphere.api.algorithm.sharding.ShardingValue;
 import org.apache.shardingsphere.api.algorithm.sharding.complex.ComplexKeysShardingAlgorithm;
 import org.apache.shardingsphere.api.config.sharding.strategy.ComplexShardingStrategyConfiguration;
+import org.apache.shardingsphere.core.routing.pojo.ListShardingValue;
+import org.apache.shardingsphere.core.routing.pojo.ShardingValue;
 import org.apache.shardingsphere.core.routing.strategy.ShardingStrategy;
 
 import java.util.Collection;
+import java.util.HashMap;
+import java.util.Map;
 import java.util.TreeSet;
 
 /**
@@ -48,9 +51,16 @@ public final class ComplexShardingStrategy implements ShardingStrategy {
         shardingAlgorithm = complexShardingStrategyConfig.getShardingAlgorithm();
     }
     
+    @SuppressWarnings("unchecked")
     @Override
     public Collection<String> doSharding(final Collection<String> availableTargetNames, final Collection<ShardingValue> shardingValues) {
-        Collection<String> shardingResult = shardingAlgorithm.doSharding(availableTargetNames, shardingValues);
+        Map<String, Collection<Comparable<?>>> columnShardingValues = new HashMap<>(shardingValues.size(), 1);
+        String logicTableName = "";
+        for (ShardingValue each : shardingValues) {
+            columnShardingValues.put(each.getColumnName(), ((ListShardingValue) each).getValues());
+            logicTableName = each.getLogicTableName();
+        }
+        Collection<String> shardingResult = shardingAlgorithm.doSharding(availableTargetNames, logicTableName, columnShardingValues);
         Collection<String> result = new TreeSet<>(String.CASE_INSENSITIVE_ORDER);
         result.addAll(shardingResult);
         return result;

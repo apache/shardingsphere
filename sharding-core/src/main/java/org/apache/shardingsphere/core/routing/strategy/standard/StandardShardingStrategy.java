@@ -18,19 +18,16 @@
 package org.apache.shardingsphere.core.routing.strategy.standard;
 
 import com.google.common.base.Preconditions;
-import org.apache.shardingsphere.api.algorithm.sharding.ListShardingValue;
-import org.apache.shardingsphere.api.algorithm.sharding.PreciseShardingValue;
-import org.apache.shardingsphere.api.algorithm.sharding.RangeShardingValue;
-import org.apache.shardingsphere.api.algorithm.sharding.ShardingValue;
 import org.apache.shardingsphere.api.algorithm.sharding.standard.PreciseShardingAlgorithm;
 import org.apache.shardingsphere.api.algorithm.sharding.standard.RangeShardingAlgorithm;
 import org.apache.shardingsphere.api.config.sharding.strategy.StandardShardingStrategyConfiguration;
+import org.apache.shardingsphere.core.routing.pojo.ListShardingValue;
+import org.apache.shardingsphere.core.routing.pojo.RangeShardingValue;
+import org.apache.shardingsphere.core.routing.pojo.ShardingValue;
 import org.apache.shardingsphere.core.routing.strategy.ShardingStrategy;
 
-import java.util.ArrayList;
 import java.util.Collection;
 import java.util.LinkedList;
-import java.util.List;
 import java.util.TreeSet;
 
 /**
@@ -69,26 +66,17 @@ public final class StandardShardingStrategy implements ShardingStrategy {
         if (null == rangeShardingAlgorithm) {
             throw new UnsupportedOperationException("Cannot find range sharding strategy in sharding rule.");
         }
-        return rangeShardingAlgorithm.doSharding(availableTargetNames, shardingValue);
+        return rangeShardingAlgorithm.doSharding(availableTargetNames, shardingValue.getLogicTableName(), shardingValue.getColumnName(), shardingValue.getValueRange());
     }
     
     @SuppressWarnings("unchecked")
     private Collection<String> doSharding(final Collection<String> availableTargetNames, final ListShardingValue<?> shardingValue) {
         Collection<String> result = new LinkedList<>();
-        for (PreciseShardingValue<?> each : transferToPreciseShardingValues(shardingValue)) {
-            String target = preciseShardingAlgorithm.doSharding(availableTargetNames, each);
+        for (Comparable<?> each : shardingValue.getValues()) {
+            String target = preciseShardingAlgorithm.doSharding(availableTargetNames, shardingValue.getLogicTableName(), shardingValue.getColumnName(), each);
             if (null != target) {
                 result.add(target);
             }
-        }
-        return result;
-    }
-    
-    @SuppressWarnings("unchecked")
-    private List<PreciseShardingValue> transferToPreciseShardingValues(final ListShardingValue<?> shardingValue) {
-        List<PreciseShardingValue> result = new ArrayList<>(shardingValue.getValues().size());
-        for (Comparable<?> each : shardingValue.getValues()) {
-            result.add(new PreciseShardingValue(shardingValue.getLogicTableName(), shardingValue.getColumnName(), each));
         }
         return result;
     }

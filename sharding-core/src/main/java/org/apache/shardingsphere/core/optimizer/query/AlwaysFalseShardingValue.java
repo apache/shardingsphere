@@ -17,7 +17,7 @@
 
 package org.apache.shardingsphere.core.optimizer.query;
 
-import org.apache.shardingsphere.api.algorithm.sharding.ShardingValue;
+import org.apache.shardingsphere.core.routing.pojo.ShardingValue;
 
 /**
  * Always false sharding value.

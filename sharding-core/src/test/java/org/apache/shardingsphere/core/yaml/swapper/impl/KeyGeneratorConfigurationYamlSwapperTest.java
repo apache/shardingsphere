@@ -44,6 +44,6 @@ public final class KeyGeneratorConfigurationYamlSwapperTest {
         KeyGeneratorConfiguration actual = new KeyGeneratorConfigurationYamlSwapper().swap(yamlConfiguration);
         assertThat(actual.getType(), is("UUID"));
         assertThat(actual.getColumn(), is("id"));
-        assertThat(actual.getProps(), is(new Properties()));
+        assertThat(actual.getProperties(), is(new Properties()));
     }
 }

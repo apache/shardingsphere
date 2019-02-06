@@ -47,6 +47,6 @@ public final class EncryptorConfigurationYamlSwapperTest {
         assertThat(actual.getType(), is("MD5"));
         assertThat(actual.getColumns(), is("pwd"));
         assertThat(actual.getAssistedQueryColumns(), is("pwd_query"));
-        assertThat(actual.getProps(), is(new Properties()));
+        assertThat(actual.getProperties(), is(new Properties()));
     }
 }

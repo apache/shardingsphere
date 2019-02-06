@@ -20,9 +20,6 @@ package org.apache.shardingsphere.core.optimizer.query;
 import com.google.common.collect.BoundType;
 import com.google.common.collect.Range;
 import lombok.RequiredArgsConstructor;
-import org.apache.shardingsphere.api.algorithm.sharding.ListShardingValue;
-import org.apache.shardingsphere.api.algorithm.sharding.RangeShardingValue;
-import org.apache.shardingsphere.api.algorithm.sharding.ShardingValue;
 import org.apache.shardingsphere.core.constant.ShardingOperator;
 import org.apache.shardingsphere.core.exception.ShardingException;
 import org.apache.shardingsphere.core.optimizer.OptimizeEngine;
@@ -32,6 +29,9 @@ import org.apache.shardingsphere.core.parsing.parser.context.condition.AndCondit
 import org.apache.shardingsphere.core.parsing.parser.context.condition.Column;
 import org.apache.shardingsphere.core.parsing.parser.context.condition.Condition;
 import org.apache.shardingsphere.core.parsing.parser.context.condition.OrCondition;
+import org.apache.shardingsphere.core.routing.pojo.ListShardingValue;
+import org.apache.shardingsphere.core.routing.pojo.RangeShardingValue;
+import org.apache.shardingsphere.core.routing.pojo.ShardingValue;
 
 import java.util.ArrayList;
 import java.util.LinkedList;

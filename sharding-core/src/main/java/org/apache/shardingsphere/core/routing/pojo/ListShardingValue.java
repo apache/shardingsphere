@@ -15,17 +15,27 @@
  * limitations under the License.
  */
 
-package org.apache.shardingsphere.core.fixture;
+package org.apache.shardingsphere.core.routing.pojo;
 
-import org.apache.shardingsphere.api.algorithm.sharding.complex.ComplexKeysShardingAlgorithm;
+import lombok.Getter;
+import lombok.RequiredArgsConstructor;
+import lombok.ToString;
 
 import java.util.Collection;
-import java.util.Map;
 
-public final class ComplexOrderShardingAlgorithm implements ComplexKeysShardingAlgorithm<Integer> {
+/**
+ * Sharding value for list values.
+ * 
+ * @author zhangliang
+ */
+@RequiredArgsConstructor
+@Getter
+@ToString
+public final class ListShardingValue<T extends Comparable<?>> implements ShardingValue {
     
-    @Override
-    public Collection<String> doSharding(final Collection<String> availableTargetNames, final String logicTableName, final Map<String, Collection<Integer>> columnShardingValues) {
-        return availableTargetNames;
-    }
+    private final String logicTableName;
+    
+    private final String columnName;
+    
+    private final Collection<T> values;
 }

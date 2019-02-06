@@ -34,7 +34,7 @@ public final class EncryptorConfigurationYamlSwapper implements YamlSwapper<Yaml
         result.setType(data.getType());
         result.setColumns(data.getColumns());
         result.setAssistedQueryColumns(data.getAssistedQueryColumns());
-        result.setProps(data.getProps());
+        result.setProps(data.getProperties());
         return result;
     }
     

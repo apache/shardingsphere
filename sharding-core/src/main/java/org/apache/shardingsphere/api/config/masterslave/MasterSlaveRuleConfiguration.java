@@ -21,7 +21,6 @@ import com.google.common.base.Preconditions;
 import com.google.common.base.Strings;
 import lombok.Getter;
 import org.apache.shardingsphere.api.config.RuleConfiguration;
-import org.apache.shardingsphere.spi.algorithm.masterslave.MasterSlaveLoadBalanceAlgorithm;
 
 import java.util.Collection;
 
@@ -32,7 +31,7 @@ import java.util.Collection;
  * @author panjuan
  */
 @Getter
-public final class MasterSlaveRuleConfiguration implements RuleConfiguration {
+public class MasterSlaveRuleConfiguration implements RuleConfiguration {
     
     private final String name;
     
@@ -40,20 +39,20 @@ public final class MasterSlaveRuleConfiguration implements RuleConfiguration {
     
     private final Collection<String> slaveDataSourceNames;
     
-    private final MasterSlaveLoadBalanceAlgorithm loadBalanceAlgorithm;
+    private final LoadBalanceStrategyConfiguration loadBalanceStrategyConfiguration;
     
     public MasterSlaveRuleConfiguration(final String name, final String masterDataSourceName, final Collection<String> slaveDataSourceNames) {
         this(name, masterDataSourceName, slaveDataSourceNames, null);
     }
     
     public MasterSlaveRuleConfiguration(final String name, 
-                                        final String masterDataSourceName, final Collection<String> slaveDataSourceNames, final MasterSlaveLoadBalanceAlgorithm loadBalanceAlgorithm) {
+                                        final String masterDataSourceName, final Collection<String> slaveDataSourceNames, final LoadBalanceStrategyConfiguration loadBalanceStrategyConfiguration) {
         Preconditions.checkArgument(!Strings.isNullOrEmpty(name), "Name is required.");
         Preconditions.checkArgument(!Strings.isNullOrEmpty(masterDataSourceName), "MasterDataSourceName is required.");
         Preconditions.checkArgument(null != slaveDataSourceNames && !slaveDataSourceNames.isEmpty(), "SlaveDataSourceNames is required.");
         this.name = name;
         this.masterDataSourceName = masterDataSourceName;
         this.slaveDataSourceNames = slaveDataSourceNames;
-        this.loadBalanceAlgorithm = loadBalanceAlgorithm;
+        this.loadBalanceStrategyConfiguration = loadBalanceStrategyConfiguration;
     }
 }

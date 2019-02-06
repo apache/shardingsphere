@@ -24,6 +24,7 @@ import lombok.AccessLevel;
 import lombok.Getter;
 import lombok.SneakyThrows;
 import org.apache.shardingsphere.api.config.RuleConfiguration;
+import org.apache.shardingsphere.api.config.masterslave.LoadBalanceStrategyConfiguration;
 import org.apache.shardingsphere.api.config.masterslave.MasterSlaveRuleConfiguration;
 import org.apache.shardingsphere.core.constant.ShardingConstant;
 import org.apache.shardingsphere.core.rule.MasterSlaveRule;
@@ -76,7 +77,8 @@ public class OrchestrationMasterSlaveDataSource extends AbstractOrchestrationDat
         MasterSlaveRule masterSlaveRule = dataSource.getMasterSlaveRule();
         Map<String, RuleConfiguration> result = new HashMap<>();
         result.put(ShardingConstant.LOGIC_SCHEMA_NAME, new MasterSlaveRuleConfiguration(
-                masterSlaveRule.getName(), masterSlaveRule.getMasterDataSourceName(), masterSlaveRule.getSlaveDataSourceNames(), masterSlaveRule.getLoadBalanceAlgorithm()));
+                masterSlaveRule.getName(), masterSlaveRule.getMasterDataSourceName(), masterSlaveRule.getSlaveDataSourceNames(), 
+                new LoadBalanceStrategyConfiguration(masterSlaveRule.getLoadBalanceAlgorithm().getType(), masterSlaveRule.getLoadBalanceAlgorithm().getProperties())));
         return result;
     }
     

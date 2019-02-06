@@ -20,6 +20,7 @@ package org.apache.shardingsphere.api.config.sharding;
 import com.google.common.base.Preconditions;
 import com.google.common.base.Strings;
 import lombok.Getter;
+import org.apache.shardingsphere.api.config.StrategyConfiguration;
 
 import java.util.Properties;
 
@@ -29,19 +30,19 @@ import java.util.Properties;
  * @author panjuan
  */
 @Getter
-public final class KeyGeneratorConfiguration {
-    
-    private final String type;
+public final class KeyGeneratorConfiguration extends StrategyConfiguration {
     
     private final String column;
     
-    private final Properties props;
-    
-    public KeyGeneratorConfiguration(final String type, final String column, final Properties props) {
-        Preconditions.checkArgument(!Strings.isNullOrEmpty(type), "Type is required.");
+    public KeyGeneratorConfiguration(final String type, final String column) {
+        super(type);
         Preconditions.checkArgument(!Strings.isNullOrEmpty(column), "Column is required.");
-        this.type = type;
         this.column = column;
-        this.props = null == props ? new Properties() : props;
+    }
+    
+    public KeyGeneratorConfiguration(final String type, final String column, final Properties properties) {
+        super(type, properties);
+        Preconditions.checkArgument(!Strings.isNullOrEmpty(column), "Column is required.");
+        this.column = column;
     }
 }

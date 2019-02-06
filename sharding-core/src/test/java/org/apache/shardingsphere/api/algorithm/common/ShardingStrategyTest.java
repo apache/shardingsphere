@@ -22,11 +22,11 @@ import com.google.common.collect.Sets;
 import org.apache.shardingsphere.api.algorithm.fixture.TestComplexKeysShardingAlgorithm;
 import org.apache.shardingsphere.api.algorithm.fixture.TestPreciseShardingAlgorithm;
 import org.apache.shardingsphere.api.algorithm.fixture.TestRangeShardingAlgorithm;
-import org.apache.shardingsphere.api.algorithm.sharding.PreciseShardingValue;
-import org.apache.shardingsphere.api.algorithm.sharding.RangeShardingValue;
-import org.apache.shardingsphere.api.algorithm.sharding.ShardingValue;
 import org.apache.shardingsphere.api.config.sharding.strategy.ComplexShardingStrategyConfiguration;
 import org.apache.shardingsphere.api.config.sharding.strategy.StandardShardingStrategyConfiguration;
+import org.apache.shardingsphere.core.routing.pojo.ListShardingValue;
+import org.apache.shardingsphere.core.routing.pojo.RangeShardingValue;
+import org.apache.shardingsphere.core.routing.pojo.ShardingValue;
 import org.apache.shardingsphere.core.routing.strategy.complex.ComplexShardingStrategy;
 import org.apache.shardingsphere.core.routing.strategy.none.NoneShardingStrategy;
 import org.apache.shardingsphere.core.routing.strategy.standard.StandardShardingStrategy;
@@ -58,7 +58,7 @@ public final class ShardingStrategyTest {
     @Test
     public void assertDoShardingForMultipleKeys() {
         ComplexShardingStrategy strategy = new ComplexShardingStrategy(new ComplexShardingStrategyConfiguration("column", new TestComplexKeysShardingAlgorithm()));
-        assertThat(strategy.doSharding(targets, Collections.<ShardingValue>singletonList(new PreciseShardingValue<>("logicTable", "column", "1"))), 
+        assertThat(strategy.doSharding(targets, Collections.<ShardingValue>singletonList(new ListShardingValue<>("logicTable", "column", Collections.singletonList("1")))), 
                 is((Collection<String>) Sets.newHashSet("1", "2", "3")));
     }
 }

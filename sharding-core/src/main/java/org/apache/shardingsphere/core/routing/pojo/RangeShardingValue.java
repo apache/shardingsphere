@@ -15,7 +15,7 @@
  * limitations under the License.
  */
 
-package org.apache.shardingsphere.api.algorithm.sharding;
+package org.apache.shardingsphere.core.routing.pojo;
 
 import com.google.common.collect.Range;
 import lombok.Getter;

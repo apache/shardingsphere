@@ -17,15 +17,15 @@
 
 package org.apache.shardingsphere.api.algorithm.fixture;
 
-import org.apache.shardingsphere.api.algorithm.sharding.ShardingValue;
 import org.apache.shardingsphere.api.algorithm.sharding.complex.ComplexKeysShardingAlgorithm;
 
 import java.util.Collection;
+import java.util.Map;
 
-public final class TestComplexKeysShardingAlgorithm implements ComplexKeysShardingAlgorithm {
+public final class TestComplexKeysShardingAlgorithm implements ComplexKeysShardingAlgorithm<String> {
 
     @Override
-    public Collection<String> doSharding(final Collection<String> availableTargetNames, final Collection<ShardingValue> shardingValues) {
+    public Collection<String> doSharding(final Collection<String> availableTargetNames, final String logicTableName, final Map<String, Collection<String>> columnShardingValues) {
         return availableTargetNames;
     }
 }

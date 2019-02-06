@@ -17,7 +17,6 @@
 
 package org.apache.shardingsphere.core.fixture;
 
-import org.apache.shardingsphere.api.algorithm.sharding.PreciseShardingValue;
 import org.apache.shardingsphere.api.algorithm.sharding.standard.PreciseShardingAlgorithm;
 
 import java.util.Collection;
@@ -25,9 +24,9 @@ import java.util.Collection;
 public final class PreciseOrderShardingAlgorithm implements PreciseShardingAlgorithm<Integer> {
     
     @Override
-    public String doSharding(final Collection<String> availableTargetNames, final PreciseShardingValue<Integer> shardingValue) {
+    public String doSharding(final Collection<String> availableTargetNames, final String logicTableName, final String columnName, final Integer shardingValue) {
         for (String each : availableTargetNames) {
-            if (each.endsWith(String.valueOf(shardingValue.getValue() % 2))) {
+            if (each.endsWith(String.valueOf(shardingValue % 2))) {
                 return each;
             }
         }

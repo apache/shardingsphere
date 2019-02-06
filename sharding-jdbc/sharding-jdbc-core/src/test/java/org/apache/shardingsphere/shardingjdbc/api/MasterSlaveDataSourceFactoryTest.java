@@ -17,8 +17,8 @@
 
 package org.apache.shardingsphere.shardingjdbc.api;
 
+import org.apache.shardingsphere.api.config.masterslave.LoadBalanceStrategyConfiguration;
 import org.apache.shardingsphere.api.config.masterslave.MasterSlaveRuleConfiguration;
-import org.apache.shardingsphere.core.masterslave.MasterSlaveLoadBalanceAlgorithmFactory;
 import org.apache.shardingsphere.shardingjdbc.fixture.TestDataSource;
 import org.apache.shardingsphere.shardingjdbc.jdbc.core.datasource.MasterSlaveDataSource;
 import org.junit.Test;
@@ -43,8 +43,8 @@ public final class MasterSlaveDataSourceFactoryTest {
         dataSourceMap.put("slave_ds", new TestDataSource("slave_ds"));
         Properties properties = new Properties();
         properties.setProperty("sql.show", "true");
-        assertThat(MasterSlaveDataSourceFactory.createDataSource(dataSourceMap, new MasterSlaveRuleConfiguration("logic_ds", "master_ds", Collections.singletonList("slave_ds"), 
-                MasterSlaveLoadBalanceAlgorithmFactory.getInstance().newAlgorithm("ROUND_ROBIN", new Properties())), properties), instanceOf(MasterSlaveDataSource.class));
+        assertThat(MasterSlaveDataSourceFactory.createDataSource(dataSourceMap, new MasterSlaveRuleConfiguration("logic_ds", "master_ds", Collections.singletonList("slave_ds"),
+                new LoadBalanceStrategyConfiguration("ROUND_ROBIN")), properties), instanceOf(MasterSlaveDataSource.class));
     }
     
     @Test
@@ -55,7 +55,7 @@ public final class MasterSlaveDataSourceFactoryTest {
         dataSourceMap.put("slave_ds_1", new TestDataSource("slave_ds_1"));
         Properties properties = new Properties();
         properties.setProperty("sql.show", "true");
-        assertThat(MasterSlaveDataSourceFactory.createDataSource(dataSourceMap, new MasterSlaveRuleConfiguration("logic_ds", "master_ds", Arrays.asList("slave_ds_0", "slave_ds_1"), 
-                MasterSlaveLoadBalanceAlgorithmFactory.getInstance().newAlgorithm("ROUND_ROBIN", new Properties())), properties), instanceOf(MasterSlaveDataSource.class));
+        assertThat(MasterSlaveDataSourceFactory.createDataSource(dataSourceMap, new MasterSlaveRuleConfiguration("logic_ds", "master_ds", Arrays.asList("slave_ds_0", "slave_ds_1"),
+                new LoadBalanceStrategyConfiguration("ROUND_ROBIN")), properties), instanceOf(MasterSlaveDataSource.class));
     }
 }
