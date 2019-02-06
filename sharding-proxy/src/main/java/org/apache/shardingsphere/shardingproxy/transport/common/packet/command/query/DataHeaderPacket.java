@@ -37,10 +37,8 @@ public final class DataHeaderPacket implements DatabasePacket {
     
     private final String schema;
     
-    @Setter
     private String table;
     
-    @Setter
     private String orgTable;
     
     @Setter
