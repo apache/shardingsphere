@@ -20,6 +20,7 @@ package org.apache.shardingsphere.shardingjdbc.jdbc.adapter;
 import com.google.common.base.Preconditions;
 import lombok.Getter;
 import lombok.extern.slf4j.Slf4j;
+import org.apache.shardingsphere.core.encrypt.ShardingEncryptorEngine;
 import org.apache.shardingsphere.core.rule.ShardingRule;
 import org.apache.shardingsphere.shardingjdbc.jdbc.adapter.executor.ForceExecuteCallback;
 import org.apache.shardingsphere.shardingjdbc.jdbc.adapter.executor.ForceExecuteTemplate;
@@ -68,6 +69,10 @@ public abstract class AbstractResultSetAdapter extends AbstractUnsupportedOperat
         return statement instanceof ShardingPreparedStatement 
                 ? ((ShardingPreparedStatement) statement).getConnection().getShardingContext().getShardingRule() 
                 : ((ShardingStatement) statement).getConnection().getShardingContext().getShardingRule();
+    }
+    
+    protected final ShardingEncryptorEngine getShardingEncryptorEngine() {
+        return getShardingRule().getShardingEncryptorEngine();
     }
     
     @Override
