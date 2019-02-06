@@ -18,6 +18,10 @@
 package org.apache.shardingsphere.shardingjdbc.jdbc.core.resultset;
 
 import org.apache.shardingsphere.core.merger.MergedResult;
+import org.apache.shardingsphere.core.rule.ShardingRule;
+import org.apache.shardingsphere.shardingjdbc.jdbc.core.ShardingContext;
+import org.apache.shardingsphere.shardingjdbc.jdbc.core.connection.ShardingConnection;
+import org.apache.shardingsphere.shardingjdbc.jdbc.core.statement.ShardingStatement;
 import org.junit.Before;
 import org.junit.Test;
 import org.junit.runner.RunWith;
@@ -35,7 +39,6 @@ import java.sql.Date;
 import java.sql.ResultSet;
 import java.sql.SQLException;
 import java.sql.SQLXML;
-import java.sql.Statement;
 import java.sql.Time;
 import java.sql.Timestamp;
 import java.util.Calendar;
@@ -45,6 +48,7 @@ import static org.hamcrest.CoreMatchers.is;
 import static org.junit.Assert.assertFalse;
 import static org.junit.Assert.assertThat;
 import static org.junit.Assert.assertTrue;
+import static org.mockito.ArgumentMatchers.anyString;
 import static org.mockito.Mockito.mock;
 import static org.mockito.Mockito.when;
 
@@ -54,13 +58,20 @@ public final class ShardingResultSetTest {
     @Mock
     private MergedResult mergeResultSet;
     
-    @Mock
-    private Statement statement;
+    private ShardingStatement statement;
     
     private ShardingResultSet shardingResultSet;
     
     @Before
     public void setUp() {
+        ShardingConnection shardingConnection = mock(ShardingConnection.class);
+        ShardingContext shardingContext = mock(ShardingContext.class);
+        ShardingRule shardingRule = mock(ShardingRule.class);
+        when(shardingRule.getLogicTableNames(anyString())).thenReturn(Collections.singletonList("test"));
+        when(shardingContext.getShardingRule()).thenReturn(shardingRule);
+        when(shardingConnection.getShardingContext()).thenReturn(shardingContext);
+        statement = mock(ShardingStatement.class);
+        when(statement.getConnection()).thenReturn(shardingConnection);
         shardingResultSet = new ShardingResultSet(Collections.singletonList(mock(ResultSet.class)), mergeResultSet, statement);
     }
     
