@@ -52,6 +52,8 @@ public final class DataHeaderPacket implements DatabasePacket {
     
     private final int decimals;
     
+    private final int columnIndex;
+    
     public DataHeaderPacket(final int sequenceId, final ResultSetMetaData resultSetMetaData, final LogicSchema logicSchema, final int columnIndex) throws SQLException {
         this.sequenceId = sequenceId;
         this.schema = logicSchema.getName();
@@ -63,6 +65,7 @@ public final class DataHeaderPacket implements DatabasePacket {
         this.columnLength = resultSetMetaData.getColumnDisplaySize(columnIndex);
         this.columnType = resultSetMetaData.getColumnType(columnIndex);
         this.decimals = resultSetMetaData.getScale(columnIndex);
+        this.columnIndex = columnIndex;
     }
     
     public DataHeaderPacket(final int sequenceId, final String schema, final String table, final String orgTable,
@@ -76,5 +79,6 @@ public final class DataHeaderPacket implements DatabasePacket {
         this.columnLength = columnLength;
         this.columnType = columnType;
         this.decimals = decimals;
+        this.columnIndex = 1;
     }
 }
