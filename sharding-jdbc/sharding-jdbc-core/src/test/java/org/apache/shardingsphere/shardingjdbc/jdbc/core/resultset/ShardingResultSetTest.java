@@ -17,12 +17,15 @@
 
 package org.apache.shardingsphere.shardingjdbc.jdbc.core.resultset;
 
+import com.google.common.base.Optional;
 import lombok.SneakyThrows;
+import org.apache.shardingsphere.core.encrypt.ShardingEncryptorEngine;
 import org.apache.shardingsphere.core.merger.MergedResult;
 import org.apache.shardingsphere.core.rule.ShardingRule;
 import org.apache.shardingsphere.shardingjdbc.jdbc.core.ShardingContext;
 import org.apache.shardingsphere.shardingjdbc.jdbc.core.connection.ShardingConnection;
 import org.apache.shardingsphere.shardingjdbc.jdbc.core.statement.ShardingStatement;
+import org.apache.shardingsphere.spi.algorithm.encrypt.ShardingEncryptor;
 import org.junit.Before;
 import org.junit.Test;
 
@@ -74,6 +77,7 @@ public final class ShardingResultSetTest {
         ResultSet resultSet = mock(ResultSet.class);
         ResultSetMetaData resultSetMetaData = mock(ResultSetMetaData.class);
         when(resultSetMetaData.getTableName(anyInt())).thenReturn("test");
+        when(resultSetMetaData.getColumnName(anyInt())).thenReturn("test");
         when(resultSet.getMetaData()).thenReturn(resultSetMetaData);
         return Collections.singletonList(resultSet);
     }
@@ -83,6 +87,9 @@ public final class ShardingResultSetTest {
         ShardingContext shardingContext = mock(ShardingContext.class);
         ShardingRule shardingRule = mock(ShardingRule.class);
         when(shardingRule.getLogicTableNames(anyString())).thenReturn(Collections.singletonList("test"));
+        ShardingEncryptorEngine shardingEncryptorEngine = mock(ShardingEncryptorEngine.class);
+        when(shardingEncryptorEngine.getShardingEncryptor(anyString(), anyString())).thenReturn(Optional.<ShardingEncryptor>absent());
+        when(shardingRule.getShardingEncryptorEngine()).thenReturn(shardingEncryptorEngine);
         when(shardingContext.getShardingRule()).thenReturn(shardingRule);
         when(shardingConnection.getShardingContext()).thenReturn(shardingContext);
         ShardingStatement statement = mock(ShardingStatement.class);
