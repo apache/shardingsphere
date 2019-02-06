@@ -28,6 +28,7 @@ import java.sql.SQLException;
  * Data header packet.
  *
  * @author zhangyonglun
+ * @author panjuan
  */
 @Getter
 public final class DataHeaderPacket implements DatabasePacket {
@@ -36,9 +37,11 @@ public final class DataHeaderPacket implements DatabasePacket {
     
     private final String schema;
     
-    private final String table;
+    @Setter
+    private String table;
     
-    private final String orgTable;
+    @Setter
+    private String orgTable;
     
     @Setter
     private String name;
