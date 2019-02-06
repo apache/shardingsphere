@@ -24,9 +24,6 @@ import org.apache.shardingsphere.shardingjdbc.jdbc.core.connection.ShardingConne
 import org.apache.shardingsphere.shardingjdbc.jdbc.core.statement.ShardingStatement;
 import org.junit.Before;
 import org.junit.Test;
-import org.junit.runner.RunWith;
-import org.mockito.Mock;
-import org.mockito.junit.MockitoJUnitRunner;
 
 import java.io.InputStream;
 import java.io.Reader;
@@ -52,10 +49,8 @@ import static org.mockito.ArgumentMatchers.anyString;
 import static org.mockito.Mockito.mock;
 import static org.mockito.Mockito.when;
 
-@RunWith(MockitoJUnitRunner.class)
 public final class ShardingResultSetTest {
     
-    @Mock
     private MergedResult mergeResultSet;
     
     private ShardingStatement statement;
