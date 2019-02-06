@@ -55,7 +55,8 @@ public final class DataHeaderPacket implements DatabasePacket {
     public DataHeaderPacket(final int sequenceId, final ResultSetMetaData resultSetMetaData, final LogicSchema logicSchema, final int columnIndex) throws SQLException {
         this.sequenceId = sequenceId;
         this.schema = logicSchema.getName();
-        this.table = logicSchema instanceof ShardingSchema ? ((ShardingSchema) logicSchema).getShardingRule().getLogicTableNames(resultSetMetaData.getTableName(columnIndex)).iterator().next() : resultSetMetaData.getTableName(columnIndex);
+        this.table = logicSchema instanceof ShardingSchema 
+                ? ((ShardingSchema) logicSchema).getShardingRule().getLogicTableNames(resultSetMetaData.getTableName(columnIndex)).iterator().next() : resultSetMetaData.getTableName(columnIndex);
         this.orgTable = table;
         this.name = resultSetMetaData.getColumnLabel(columnIndex);
         this.orgName = resultSetMetaData.getColumnName(columnIndex);
