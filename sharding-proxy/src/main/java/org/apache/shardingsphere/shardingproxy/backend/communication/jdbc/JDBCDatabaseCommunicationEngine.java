@@ -122,7 +122,6 @@ public final class JDBCDatabaseCommunicationEngine implements DatabaseCommunicat
             GlobalRegistry.getInstance().getDatabaseType(), getShardingRule(), sqlStatement, logicSchema.getMetaData().getTable(), ((ExecuteQueryResponse) executeResponse).getQueryResults()).merge();
         if (mergedResult instanceof ShowTablesMergedResult) {
             ((ShowTablesMergedResult) mergedResult).resetColumnLabel(logicSchema.getName());
-            setResponseColumnLabelForShowTablesMergedResult(((ExecuteQueryResponse) executeResponse).getQueryResponsePackets());
         }
         QueryResponsePackets result = getQueryResponsePacketsWithoutDerivedColumns(((ExecuteQueryResponse) executeResponse).getQueryResponsePackets());
         currentSequenceId = result.getSequenceId();
@@ -143,21 +142,6 @@ public final class JDBCDatabaseCommunicationEngine implements DatabaseCommunicat
             }
         }
         return new QueryResponsePackets(queryResponsePackets.getColumnTypes(), columnCount, dataHeaderPackets, columnCount + 2);
-    }
-    
-    private void setLogicTableNameForQueryResponsePackets(final QueryResponsePackets queryResponsePackets) {
-        for (DataHeaderPacket each : queryResponsePackets.getDataHeaderPackets()) {
-            String logicTableName = GlobalRegistry.getInstance().
-        }
-    }
-    
-    private void setResponseColumnLabelForShowTablesMergedResult(final QueryResponsePackets queryResponsePackets) {
-        for (DataHeaderPacket each : queryResponsePackets.getDataHeaderPackets()) {
-            if (each.getName().startsWith("Tables_in_")) {
-                each.setName("Tables_in_" + logicSchema.getName());
-                break;
-            }
-        }
     }
     
     @Override
