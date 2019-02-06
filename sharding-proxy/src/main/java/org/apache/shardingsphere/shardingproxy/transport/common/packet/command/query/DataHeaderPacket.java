@@ -18,6 +18,8 @@
 package org.apache.shardingsphere.shardingproxy.transport.common.packet.command.query;
 
 import lombok.Getter;
+import org.apache.shardingsphere.shardingproxy.runtime.schema.LogicSchema;
+import org.apache.shardingsphere.shardingproxy.runtime.schema.ShardingSchema;
 import org.apache.shardingsphere.shardingproxy.transport.common.packet.DatabasePacket;
 
 import java.sql.ResultSetMetaData;
@@ -36,11 +38,11 @@ public final class DataHeaderPacket implements DatabasePacket {
     
     private final String schema;
     
-    private String table;
+    private final String table;
     
-    private String orgTable;
+    private final String orgTable;
     
-    private String name;
+    private final String name;
     
     private final String orgName;
     
@@ -50,8 +52,10 @@ public final class DataHeaderPacket implements DatabasePacket {
     
     private final int decimals;
     
-    public DataHeaderPacket(final int sequenceId, final ResultSetMetaData resultSetMetaData, final int columnIndex) throws SQLException {
-        this(sequenceId, resultSetMetaData.getSchemaName(columnIndex), resultSetMetaData.getTableName(columnIndex), resultSetMetaData.getTableName(columnIndex),
+    public DataHeaderPacket(final int sequenceId, final ResultSetMetaData resultSetMetaData, final LogicSchema logicSchema, final int columnIndex) throws SQLException {
+        this.sequenceId = sequenceId;
+        String logicTableName = logicSchema instanceof ShardingSchema ? ((ShardingSchema) logicSchema).getShardingRule().getLogicTableNames(resultSetMetaData.getTableName(columnIndex)).iterator().next() : resultSetMetaData.getTableName(columnIndex);
+        this(sequenceId, logicSchema.getName(), resultSetMetaData.getTableName(columnIndex), logicTableName,
             resultSetMetaData.getColumnLabel(columnIndex), resultSetMetaData.getColumnName(columnIndex), resultSetMetaData.getColumnDisplaySize(columnIndex),
             resultSetMetaData.getColumnType(columnIndex), resultSetMetaData.getScale(columnIndex));
     }
