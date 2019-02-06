@@ -57,16 +57,15 @@ import static org.mockito.ArgumentMatchers.anyString;
 import static org.mockito.Mockito.mock;
 import static org.mockito.Mockito.when;
 
-@RunWith(MockitoJUnitRunner.class)
 public final class ShardingResultSetTest {
     
-    @Mock
     private MergedResult mergeResultSet;
     
     private ShardingResultSet shardingResultSet;
     
     @Before
     public void setUp() {
+        mergeResultSet = mock(MergedResult.class);
         shardingResultSet = new ShardingResultSet(getResultSets(), mergeResultSet, getShardingStatement());
     }
     
