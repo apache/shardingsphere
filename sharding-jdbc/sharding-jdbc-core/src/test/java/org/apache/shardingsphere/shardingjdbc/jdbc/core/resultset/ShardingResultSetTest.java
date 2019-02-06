@@ -309,14 +309,14 @@ public final class ShardingResultSetTest {
     public void assertGetAsciiStreamWithColumnIndex() throws SQLException {
         InputStream inputStream = mock(InputStream.class);
         when(mergeResultSet.getInputStream(1, "Ascii")).thenReturn(inputStream);
-        assertThat(shardingResultSet.getAsciiStream(1), is(inputStream));
+        assertThat(shardingResultSet.getAsciiStream(1), instanceOf(InputStream.class));
     }
     
     @Test
     public void assertGetAsciiStreamWithColumnLabel() throws SQLException {
         InputStream inputStream = mock(InputStream.class);
         when(mergeResultSet.getInputStream("label", "Ascii")).thenReturn(inputStream);
-        assertThat(shardingResultSet.getAsciiStream("label"), is(inputStream));
+        assertThat(shardingResultSet.getAsciiStream("label"), instanceOf(InputStream.class));
     }
     
     @Test
@@ -337,14 +337,14 @@ public final class ShardingResultSetTest {
     public void assertGetBinaryStreamWithColumnIndex() throws SQLException {
         InputStream inputStream = mock(InputStream.class);
         when(mergeResultSet.getInputStream(1, "Binary")).thenReturn(inputStream);
-        assertThat(shardingResultSet.getBinaryStream(1), is(inputStream));
+        assertThat(shardingResultSet.getBinaryStream(1), instanceOf(InputStream.class));
     }
     
     @Test
     public void assertGetBinaryStreamWithColumnLabel() throws SQLException {
         InputStream inputStream = mock(InputStream.class);
         when(mergeResultSet.getInputStream("label", "Binary")).thenReturn(inputStream);
-        assertThat(shardingResultSet.getBinaryStream("label"), is(inputStream));
+        assertThat(shardingResultSet.getBinaryStream("label"), instanceOf(InputStream.class));
     }
     
     @Test
