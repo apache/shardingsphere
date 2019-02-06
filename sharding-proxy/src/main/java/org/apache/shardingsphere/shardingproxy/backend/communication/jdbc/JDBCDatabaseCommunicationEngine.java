@@ -161,6 +161,7 @@ public final class JDBCDatabaseCommunicationEngine implements DatabaseCommunicat
         }
         return new ResultPacket(++currentSequenceId, row, columnCount, queryResponsePackets.getColumnTypes());
     }
+    
     @SneakyThrows
     private Object decode(final int columnIndex, final String tableName, final String columnName) {
         Object value = mergedResult.getValue(columnIndex, Object.class);
