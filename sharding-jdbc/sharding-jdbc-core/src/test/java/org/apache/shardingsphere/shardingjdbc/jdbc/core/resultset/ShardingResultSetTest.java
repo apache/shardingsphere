@@ -67,12 +67,11 @@ public final class ShardingResultSetTest {
     
     @Before
     public void setUp() {
-        
-        shardingResultSet = new ShardingResultSet(getResultSet(), mergeResultSet, getShardingStatement());
+        shardingResultSet = new ShardingResultSet(getResultSets(), mergeResultSet, getShardingStatement());
     }
     
     @SneakyThrows
-    private List<ResultSet> getResultSet() {
+    private List<ResultSet> getResultSets() {
         ResultSet resultSet = mock(ResultSet.class);
         ResultSetMetaData resultSetMetaData = mock(ResultSetMetaData.class);
         when(resultSetMetaData.getTableName(anyInt())).thenReturn("test");
