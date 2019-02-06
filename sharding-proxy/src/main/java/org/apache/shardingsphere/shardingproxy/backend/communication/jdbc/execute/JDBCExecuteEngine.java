@@ -74,8 +74,6 @@ public final class JDBCExecuteEngine implements SQLExecuteEngine {
     
     private static final Integer MEMORY_FETCH_ONE_ROW_A_TIME = Integer.MIN_VALUE;
     
-    private final List<QueryResult> queryResults = new LinkedList<>();
-    
     private final BackendConnection backendConnection;
     
     private final JDBCExecutorWrapper jdbcExecutorWrapper;
@@ -154,7 +152,7 @@ public final class JDBCExecuteEngine implements SQLExecuteEngine {
         Collection<DataHeaderPacket> dataHeaderPackets = new LinkedList<>();
         List<Integer> columnTypes = new ArrayList<>(128);
         for (int columnIndex = 1; columnIndex <= columnCount; columnIndex++) {
-            dataHeaderPackets.add(new DataHeaderPacket(++currentSequenceId, resultSetMetaData, columnIndex));
+            dataHeaderPackets.add(new DataHeaderPacket(++currentSequenceId, resultSetMetaData, backendConnection.getLogicSchema(), columnIndex));
             columnTypes.add(resultSetMetaData.getColumnType(columnIndex));
         }
         return new QueryResponsePackets(columnTypes, columnCount, dataHeaderPackets, ++currentSequenceId);

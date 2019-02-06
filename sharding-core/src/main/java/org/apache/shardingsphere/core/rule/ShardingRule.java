@@ -27,6 +27,7 @@ import org.apache.shardingsphere.api.config.sharding.KeyGeneratorConfiguration;
 import org.apache.shardingsphere.api.config.sharding.ShardingRuleConfiguration;
 import org.apache.shardingsphere.api.config.sharding.TableRuleConfiguration;
 import org.apache.shardingsphere.api.config.sharding.strategy.ShardingStrategyConfiguration;
+import org.apache.shardingsphere.core.encrypt.ShardingEncryptorEngine;
 import org.apache.shardingsphere.core.exception.ShardingConfigurationException;
 import org.apache.shardingsphere.core.exception.ShardingException;
 import org.apache.shardingsphere.core.keygen.ShardingKeyGeneratorFactory;
@@ -71,6 +72,8 @@ public class ShardingRule {
     
     private final Collection<MasterSlaveRule> masterSlaveRules;
     
+    private final ShardingEncryptorEngine shardingEncryptorEngine;
+    
     public ShardingRule(final ShardingRuleConfiguration shardingRuleConfig, final Collection<String> dataSourceNames) {
         Preconditions.checkArgument(!dataSourceNames.isEmpty(), "Data sources cannot be empty.");
         this.shardingRuleConfig = shardingRuleConfig;
@@ -82,6 +85,7 @@ public class ShardingRule {
         defaultTableShardingStrategy = createDefaultShardingStrategy(shardingRuleConfig.getDefaultTableShardingStrategyConfig());
         defaultShardingKeyGenerator = createDefaultKeyGenerator(shardingRuleConfig.getDefaultKeyGeneratorConfig());
         masterSlaveRules = createMasterSlaveRules(shardingRuleConfig.getMasterSlaveRuleConfigs());
+        shardingEncryptorEngine = new ShardingEncryptorEngine(tableRules);
     }
     
     private Collection<TableRule> createTableRules(final ShardingRuleConfiguration shardingRuleConfig) {
@@ -367,6 +371,22 @@ public class ShardingRule {
             }
         }
         throw new ShardingConfigurationException("Cannot find logic table name with logic index name: '%s'", logicIndexName);
+    }
+    
+    /**
+     * Get logic table names base on actual table name.
+     *
+     * @param actualTableName actual table name
+     * @return logic table name
+     */
+    public Collection<String> getLogicTableNames(final String actualTableName) {
+        Collection<String> result = new LinkedList<>();
+        for (TableRule each : tableRules) {
+            if (each.isExisted(actualTableName)) {
+                result.add(each.getLogicTable());
+            }
+        }
+        return result;
     }
     
     /**

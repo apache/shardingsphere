@@ -18,7 +18,8 @@
 package org.apache.shardingsphere.shardingproxy.transport.common.packet.command.query;
 
 import lombok.Getter;
-import lombok.Setter;
+import org.apache.shardingsphere.shardingproxy.runtime.schema.LogicSchema;
+import org.apache.shardingsphere.shardingproxy.runtime.schema.ShardingSchema;
 import org.apache.shardingsphere.shardingproxy.transport.common.packet.DatabasePacket;
 
 import java.sql.ResultSetMetaData;
@@ -28,6 +29,7 @@ import java.sql.SQLException;
  * Data header packet.
  *
  * @author zhangyonglun
+ * @author panjuan
  */
 @Getter
 public final class DataHeaderPacket implements DatabasePacket {
@@ -40,8 +42,7 @@ public final class DataHeaderPacket implements DatabasePacket {
     
     private final String orgTable;
     
-    @Setter
-    private String name;
+    private final String name;
     
     private final String orgName;
     
@@ -51,10 +52,17 @@ public final class DataHeaderPacket implements DatabasePacket {
     
     private final int decimals;
     
-    public DataHeaderPacket(final int sequenceId, final ResultSetMetaData resultSetMetaData, final int columnIndex) throws SQLException {
-        this(sequenceId, resultSetMetaData.getSchemaName(columnIndex), resultSetMetaData.getTableName(columnIndex), resultSetMetaData.getTableName(columnIndex),
-            resultSetMetaData.getColumnLabel(columnIndex), resultSetMetaData.getColumnName(columnIndex), resultSetMetaData.getColumnDisplaySize(columnIndex),
-            resultSetMetaData.getColumnType(columnIndex), resultSetMetaData.getScale(columnIndex));
+    public DataHeaderPacket(final int sequenceId, final ResultSetMetaData resultSetMetaData, final LogicSchema logicSchema, final int columnIndex) throws SQLException {
+        this.sequenceId = sequenceId;
+        this.schema = logicSchema.getName();
+        this.table = logicSchema instanceof ShardingSchema 
+                ? ((ShardingSchema) logicSchema).getShardingRule().getLogicTableNames(resultSetMetaData.getTableName(columnIndex)).iterator().next() : resultSetMetaData.getTableName(columnIndex);
+        this.orgTable = table;
+        this.name = resultSetMetaData.getColumnLabel(columnIndex);
+        this.orgName = resultSetMetaData.getColumnName(columnIndex);
+        this.columnLength = resultSetMetaData.getColumnDisplaySize(columnIndex);
+        this.columnType = resultSetMetaData.getColumnType(columnIndex);
+        this.decimals = resultSetMetaData.getScale(columnIndex);
     }
     
     public DataHeaderPacket(final int sequenceId, final String schema, final String table, final String orgTable,

@@ -24,6 +24,7 @@ import org.apache.shardingsphere.core.executor.sql.execute.result.StreamQueryRes
 import org.apache.shardingsphere.core.merger.MergeEngine;
 import org.apache.shardingsphere.core.merger.MergeEngineFactory;
 import org.apache.shardingsphere.core.merger.QueryResult;
+import org.apache.shardingsphere.core.merger.dql.DQLMergeEngine;
 import org.apache.shardingsphere.core.parsing.parser.sql.dal.DALStatement;
 import org.apache.shardingsphere.core.parsing.parser.sql.dml.insert.InsertStatement;
 import org.apache.shardingsphere.core.parsing.parser.sql.dql.DQLStatement;
@@ -90,12 +91,45 @@ public final class ShardingStatement extends AbstractStatementAdapter {
             initStatementExecutor();
             MergeEngine mergeEngine = MergeEngineFactory.newInstance(connection.getShardingContext().getDatabaseType(), connection.getShardingContext().getShardingRule(), 
                     routeResult.getSqlStatement(), connection.getShardingContext().getMetaData().getTable(), statementExecutor.executeQuery());
-            result = new ShardingResultSet(statementExecutor.getResultSets(), mergeEngine.merge(), this);
+            result = getResultSet(mergeEngine);
         } finally {
             currentResultSet = null;
         }
         currentResultSet = result;
         return result;
+    }
+    
+    @Override
+    public ResultSet getResultSet() throws SQLException {
+        if (null != currentResultSet) {
+            return currentResultSet;
+        }
+        if (1 == statementExecutor.getStatements().size() && routeResult.getSqlStatement() instanceof DQLStatement) {
+            currentResultSet = statementExecutor.getStatements().iterator().next().getResultSet();
+            return currentResultSet;
+        }
+        List<ResultSet> resultSets = new ArrayList<>(statementExecutor.getStatements().size());
+        List<QueryResult> queryResults = new ArrayList<>(statementExecutor.getStatements().size());
+        for (Statement each : statementExecutor.getStatements()) {
+            ResultSet resultSet = each.getResultSet();
+            resultSets.add(resultSet);
+            queryResults.add(new StreamQueryResult(resultSet));
+        }
+        if (routeResult.getSqlStatement() instanceof SelectStatement || routeResult.getSqlStatement() instanceof DALStatement) {
+            MergeEngine mergeEngine = MergeEngineFactory.newInstance(connection.getShardingContext().getDatabaseType(),
+                    connection.getShardingContext().getShardingRule(), routeResult.getSqlStatement(), connection.getShardingContext().getMetaData().getTable(), queryResults);
+            currentResultSet = getCurrentResultSet(resultSets, mergeEngine);
+        }
+        return currentResultSet;
+    }
+    
+    private ShardingResultSet getResultSet(final MergeEngine mergeEngine) throws SQLException {
+        return getCurrentResultSet(statementExecutor.getResultSets(), mergeEngine);
+    }
+    
+    private ShardingResultSet getCurrentResultSet(final List<ResultSet> resultSets, final MergeEngine mergeEngine) throws SQLException {
+        return mergeEngine instanceof DQLMergeEngine 
+                ? new ShardingResultSet(resultSets, mergeEngine.merge(), ((DQLMergeEngine) mergeEngine).getColumnLabelIndexMap(), this) : new ShardingResultSet(resultSets, mergeEngine.merge(), this);
     }
     
     @Override
@@ -204,30 +238,6 @@ public final class ShardingStatement extends AbstractStatementAdapter {
         } finally {
             currentResultSet = null;
         }
-    }
-    
-    @Override
-    public ResultSet getResultSet() throws SQLException {
-        if (null != currentResultSet) {
-            return currentResultSet;
-        }
-        if (1 == statementExecutor.getStatements().size() && routeResult.getSqlStatement() instanceof DQLStatement) {
-            currentResultSet = statementExecutor.getStatements().iterator().next().getResultSet();
-            return currentResultSet;
-        }
-        List<ResultSet> resultSets = new ArrayList<>(statementExecutor.getStatements().size());
-        List<QueryResult> queryResults = new ArrayList<>(statementExecutor.getStatements().size());
-        for (Statement each : statementExecutor.getStatements()) {
-            ResultSet resultSet = each.getResultSet();
-            resultSets.add(resultSet);
-            queryResults.add(new StreamQueryResult(resultSet));
-        }
-        if (routeResult.getSqlStatement() instanceof SelectStatement || routeResult.getSqlStatement() instanceof DALStatement) {
-            MergeEngine mergeEngine = MergeEngineFactory.newInstance(connection.getShardingContext().getDatabaseType(), 
-                    connection.getShardingContext().getShardingRule(), routeResult.getSqlStatement(), connection.getShardingContext().getMetaData().getTable(), queryResults);
-            currentResultSet = new ShardingResultSet(resultSets, mergeEngine.merge(), this);
-        }
-        return currentResultSet;
     }
     
     private void initStatementExecutor() throws SQLException {

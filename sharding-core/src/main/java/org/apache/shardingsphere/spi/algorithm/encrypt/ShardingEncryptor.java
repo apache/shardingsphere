@@ -32,7 +32,7 @@ public interface ShardingEncryptor extends BaseAlgorithm {
      * @param plaintext plaintext
      * @return ciphertext
      */
-    String encode(String plaintext);
+    Object encode(Object plaintext);
     
     /**
      * Decode.
@@ -40,5 +40,5 @@ public interface ShardingEncryptor extends BaseAlgorithm {
      * @param ciphertext ciphertext
      * @return plaintext
      */
-    String decode(String ciphertext);
+    Object decode(Object ciphertext);
 }
