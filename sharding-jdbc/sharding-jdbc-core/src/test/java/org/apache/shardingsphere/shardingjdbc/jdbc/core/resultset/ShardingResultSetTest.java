@@ -17,6 +17,7 @@
 
 package org.apache.shardingsphere.shardingjdbc.jdbc.core.resultset;
 
+import lombok.SneakyThrows;
 import org.apache.shardingsphere.core.merger.MergedResult;
 import org.apache.shardingsphere.core.rule.ShardingRule;
 import org.apache.shardingsphere.shardingjdbc.jdbc.core.ShardingContext;
@@ -37,6 +38,7 @@ import java.sql.Blob;
 import java.sql.Clob;
 import java.sql.Date;
 import java.sql.ResultSet;
+import java.sql.ResultSetMetaData;
 import java.sql.SQLException;
 import java.sql.SQLXML;
 import java.sql.Time;
@@ -48,6 +50,7 @@ import static org.hamcrest.CoreMatchers.is;
 import static org.junit.Assert.assertFalse;
 import static org.junit.Assert.assertThat;
 import static org.junit.Assert.assertTrue;
+import static org.mockito.ArgumentMatchers.anyInt;
 import static org.mockito.ArgumentMatchers.anyString;
 import static org.mockito.Mockito.mock;
 import static org.mockito.Mockito.when;
@@ -63,6 +66,7 @@ public final class ShardingResultSetTest {
     private ShardingResultSet shardingResultSet;
     
     @Before
+    @SneakyThrows
     public void setUp() {
         ShardingConnection shardingConnection = mock(ShardingConnection.class);
         ShardingContext shardingContext = mock(ShardingContext.class);
@@ -72,7 +76,11 @@ public final class ShardingResultSetTest {
         when(shardingConnection.getShardingContext()).thenReturn(shardingContext);
         statement = mock(ShardingStatement.class);
         when(statement.getConnection()).thenReturn(shardingConnection);
-        shardingResultSet = new ShardingResultSet(Collections.singletonList(mock(ResultSet.class)), mergeResultSet, statement);
+        ResultSet resultSet = mock(ResultSet.class);
+        ResultSetMetaData resultSetMetaData = mock(ResultSetMetaData.class);
+        when(resultSetMetaData.getTableName(anyInt())).thenReturn("test");
+        when(resultSet.getMetaData()).thenReturn(resultSetMetaData);
+        shardingResultSet = new ShardingResultSet(Collections.singletonList(resultSet), mergeResultSet, statement);
     }
     
     @Test
