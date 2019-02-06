@@ -19,6 +19,7 @@ package org.apache.shardingsphere.core.merger.dql;
 
 import com.google.common.base.Function;
 import com.google.common.collect.Lists;
+import lombok.Getter;
 import org.apache.shardingsphere.core.constant.DatabaseType;
 import org.apache.shardingsphere.core.executor.sql.execute.result.AggregationDistinctQueryResult;
 import org.apache.shardingsphere.core.executor.sql.execute.result.DistinctQueryResult;
@@ -56,6 +57,7 @@ public final class DQLMergeEngine implements MergeEngine {
     
     private final List<QueryResult> queryResults;
     
+    @Getter
     private final Map<String, Integer> columnLabelIndexMap;
     
     public DQLMergeEngine(final DatabaseType databaseType, final SelectStatement selectStatement, final List<QueryResult> queryResults) throws SQLException {
