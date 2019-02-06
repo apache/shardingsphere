@@ -18,7 +18,6 @@
 package org.apache.shardingsphere.shardingproxy.transport.common.packet.command.query;
 
 import lombok.Getter;
-import lombok.Setter;
 import org.apache.shardingsphere.shardingproxy.transport.common.packet.DatabasePacket;
 
 import java.sql.ResultSetMetaData;
@@ -41,7 +40,6 @@ public final class DataHeaderPacket implements DatabasePacket {
     
     private String orgTable;
     
-    @Setter
     private String name;
     
     private final String orgName;
