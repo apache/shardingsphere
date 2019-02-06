@@ -54,10 +54,14 @@ public final class DataHeaderPacket implements DatabasePacket {
     
     public DataHeaderPacket(final int sequenceId, final ResultSetMetaData resultSetMetaData, final LogicSchema logicSchema, final int columnIndex) throws SQLException {
         this.sequenceId = sequenceId;
-        String logicTableName = logicSchema instanceof ShardingSchema ? ((ShardingSchema) logicSchema).getShardingRule().getLogicTableNames(resultSetMetaData.getTableName(columnIndex)).iterator().next() : resultSetMetaData.getTableName(columnIndex);
-        this(sequenceId, logicSchema.getName(), resultSetMetaData.getTableName(columnIndex), logicTableName,
-            resultSetMetaData.getColumnLabel(columnIndex), resultSetMetaData.getColumnName(columnIndex), resultSetMetaData.getColumnDisplaySize(columnIndex),
-            resultSetMetaData.getColumnType(columnIndex), resultSetMetaData.getScale(columnIndex));
+        this.schema = logicSchema.getName();
+        this.table = logicSchema instanceof ShardingSchema ? ((ShardingSchema) logicSchema).getShardingRule().getLogicTableNames(resultSetMetaData.getTableName(columnIndex)).iterator().next() : resultSetMetaData.getTableName(columnIndex);
+        this.orgTable = table;
+        this.name = resultSetMetaData.getColumnLabel(columnIndex);
+        this.orgName = resultSetMetaData.getColumnName(columnIndex);
+        this.columnLength = resultSetMetaData.getColumnDisplaySize(columnIndex);
+        this.columnType = resultSetMetaData.getColumnType(columnIndex);
+        this.decimals = resultSetMetaData.getScale(columnIndex);
     }
     
     public DataHeaderPacket(final int sequenceId, final String schema, final String table, final String orgTable,
