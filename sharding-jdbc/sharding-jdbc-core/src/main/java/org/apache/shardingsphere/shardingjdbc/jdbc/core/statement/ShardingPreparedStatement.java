@@ -120,7 +120,9 @@ public final class ShardingPreparedStatement extends AbstractShardingPreparedSta
         return getCurrentResultSet(preparedStatementExecutor.getResultSets(), mergeEngine);
     }
     
-    
+    private ShardingResultSet getCurrentResultSet(final List<ResultSet> resultSets, final MergeEngine mergeEngine) throws SQLException {
+        return mergeEngine instanceof DQLMergeEngine ? new ShardingResultSet(resultSets, mergeEngine.merge(), ((DQLMergeEngine) mergeEngine).getColumnLabelIndexMap(), this) : new ShardingResultSet(resultSets, mergeEngine.merge(), this);
+    }
     
     @Override
     public int executeUpdate() throws SQLException {
