@@ -62,26 +62,28 @@ public final class ShardingResultSetTest {
     @Mock
     private MergedResult mergeResultSet;
     
-    private ShardingStatement statement;
-    
     private ShardingResultSet shardingResultSet;
     
     @Before
     @SneakyThrows
     public void setUp() {
+        ResultSet resultSet = mock(ResultSet.class);
+        ResultSetMetaData resultSetMetaData = mock(ResultSetMetaData.class);
+        when(resultSetMetaData.getTableName(anyInt())).thenReturn("test");
+        when(resultSet.getMetaData()).thenReturn(resultSetMetaData);
+        shardingResultSet = new ShardingResultSet(Collections.singletonList(resultSet), mergeResultSet, getShardingStatement());
+    }
+    
+    private ShardingStatement getShardingStatement() {
         ShardingConnection shardingConnection = mock(ShardingConnection.class);
         ShardingContext shardingContext = mock(ShardingContext.class);
         ShardingRule shardingRule = mock(ShardingRule.class);
         when(shardingRule.getLogicTableNames(anyString())).thenReturn(Collections.singletonList("test"));
         when(shardingContext.getShardingRule()).thenReturn(shardingRule);
         when(shardingConnection.getShardingContext()).thenReturn(shardingContext);
-        statement = mock(ShardingStatement.class);
+        ShardingStatement statement = mock(ShardingStatement.class);
         when(statement.getConnection()).thenReturn(shardingConnection);
-        ResultSet resultSet = mock(ResultSet.class);
-        ResultSetMetaData resultSetMetaData = mock(ResultSetMetaData.class);
-        when(resultSetMetaData.getTableName(anyInt())).thenReturn("test");
-        when(resultSet.getMetaData()).thenReturn(resultSetMetaData);
-        shardingResultSet = new ShardingResultSet(Collections.singletonList(resultSet), mergeResultSet, statement);
+        return statement;
     }
     
     @Test
