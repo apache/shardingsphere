@@ -45,6 +45,7 @@ import java.sql.Time;
 import java.sql.Timestamp;
 import java.util.Calendar;
 import java.util.Collections;
+import java.util.List;
 
 import static org.hamcrest.CoreMatchers.instanceOf;
 import static org.hamcrest.CoreMatchers.is;
@@ -65,13 +66,18 @@ public final class ShardingResultSetTest {
     private ShardingResultSet shardingResultSet;
     
     @Before
-    @SneakyThrows
     public void setUp() {
+        
+        shardingResultSet = new ShardingResultSet(getResultSet(), mergeResultSet, getShardingStatement());
+    }
+    
+    @SneakyThrows
+    private List<ResultSet> getResultSet() {
         ResultSet resultSet = mock(ResultSet.class);
         ResultSetMetaData resultSetMetaData = mock(ResultSetMetaData.class);
         when(resultSetMetaData.getTableName(anyInt())).thenReturn("test");
         when(resultSet.getMetaData()).thenReturn(resultSetMetaData);
-        shardingResultSet = new ShardingResultSet(Collections.singletonList(resultSet), mergeResultSet, getShardingStatement());
+        return Collections.singletonList(resultSet);
     }
     
     private ShardingStatement getShardingStatement() {
