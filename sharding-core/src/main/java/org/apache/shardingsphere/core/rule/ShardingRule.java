@@ -72,6 +72,8 @@ public class ShardingRule {
     
     private final Collection<MasterSlaveRule> masterSlaveRules;
     
+    private final ShardingEncryptorEngine shardingEncryptorEngine;
+    
     public ShardingRule(final ShardingRuleConfiguration shardingRuleConfig, final Collection<String> dataSourceNames) {
         Preconditions.checkArgument(!dataSourceNames.isEmpty(), "Data sources cannot be empty.");
         this.shardingRuleConfig = shardingRuleConfig;
@@ -83,7 +85,7 @@ public class ShardingRule {
         defaultTableShardingStrategy = createDefaultShardingStrategy(shardingRuleConfig.getDefaultTableShardingStrategyConfig());
         defaultShardingKeyGenerator = createDefaultKeyGenerator(shardingRuleConfig.getDefaultKeyGeneratorConfig());
         masterSlaveRules = createMasterSlaveRules(shardingRuleConfig.getMasterSlaveRuleConfigs());
-        ShardingEncryptorEngine.init(tableRules);
+        shardingEncryptorEngine = new ShardingEncryptorEngine(tableRules);
     }
     
     private Collection<TableRule> createTableRules(final ShardingRuleConfiguration shardingRuleConfig) {
