@@ -44,6 +44,15 @@ public class MasterSlaveRule {
     
     private final MasterSlaveRuleConfiguration masterSlaveRuleConfiguration;
     
+    public MasterSlaveRule(final String name, final String masterDataSourceName, final Collection<String> slaveDataSourceNames, final MasterSlaveLoadBalanceAlgorithm loadBalanceAlgorithm) {
+        this.name = name;
+        this.masterDataSourceName = masterDataSourceName;
+        this.slaveDataSourceNames = slaveDataSourceNames;
+        this.loadBalanceAlgorithm = null == loadBalanceAlgorithm ? MasterSlaveLoadBalanceAlgorithmFactory.getInstance().newAlgorithm() : loadBalanceAlgorithm;
+        masterSlaveRuleConfiguration = new MasterSlaveRuleConfiguration(name, masterDataSourceName, slaveDataSourceNames, 
+                new LoadBalanceStrategyConfiguration(this.loadBalanceAlgorithm.getType(), this.loadBalanceAlgorithm.getProperties()));
+    }
+    
     public MasterSlaveRule(final MasterSlaveRuleConfiguration config) {
         name = config.getName();
         masterDataSourceName = config.getMasterDataSourceName();

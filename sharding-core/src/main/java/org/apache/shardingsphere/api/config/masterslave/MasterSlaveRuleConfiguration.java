@@ -31,7 +31,7 @@ import java.util.Collection;
  * @author panjuan
  */
 @Getter
-public final class MasterSlaveRuleConfiguration implements RuleConfiguration {
+public class MasterSlaveRuleConfiguration implements RuleConfiguration {
     
     private final String name;
     
