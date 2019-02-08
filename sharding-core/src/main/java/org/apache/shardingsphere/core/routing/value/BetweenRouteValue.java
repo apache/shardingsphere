@@ -15,27 +15,23 @@
  * limitations under the License.
  */
 
-package org.apache.shardingsphere.core.routing.pojo;
+package org.apache.shardingsphere.core.routing.value;
 
+import com.google.common.collect.Range;
 import lombok.Getter;
 import lombok.RequiredArgsConstructor;
-import lombok.ToString;
-
-import java.util.Collection;
+import org.apache.shardingsphere.core.parsing.parser.context.condition.Column;
 
 /**
- * Sharding value for list values.
+ * Route value for between.
  * 
  * @author zhangliang
  */
 @RequiredArgsConstructor
 @Getter
-@ToString
-public final class ListShardingValue<T extends Comparable<?>> implements ShardingValue {
+public final class BetweenRouteValue<T extends Comparable<?>> implements RouteValue {
     
-    private final String logicTableName;
+    private final Column column;
     
-    private final String columnName;
-    
-    private final Collection<T> values;
+    private final Range<T> valueRange;
 }

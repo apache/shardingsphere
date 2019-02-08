@@ -40,10 +40,10 @@ import org.apache.shardingsphere.core.rewrite.SQLBuilder;
 import org.apache.shardingsphere.core.rewrite.SQLRewriteEngine;
 import org.apache.shardingsphere.core.routing.RouteUnit;
 import org.apache.shardingsphere.core.routing.SQLRouteResult;
-import org.apache.shardingsphere.core.routing.pojo.ListShardingValue;
-import org.apache.shardingsphere.core.routing.pojo.ShardingValue;
 import org.apache.shardingsphere.core.routing.type.RoutingResult;
 import org.apache.shardingsphere.core.routing.type.TableUnit;
+import org.apache.shardingsphere.core.routing.value.ListRouteValue;
+import org.apache.shardingsphere.core.routing.value.RouteValue;
 import org.apache.shardingsphere.core.rule.BindingTableRule;
 import org.apache.shardingsphere.core.rule.ShardingRule;
 import org.apache.shardingsphere.core.rule.TableRule;
@@ -206,8 +206,8 @@ public final class ParsingSQLRouter implements ShardingRouter {
     }
     
     private boolean isListShardingValue(final ShardingCondition shardingCondition) {
-        for (ShardingValue each : shardingCondition.getShardingValues()) {
-            if (!(each instanceof ListShardingValue)) {
+        for (RouteValue each : shardingCondition.getShardingValues()) {
+            if (!(each instanceof ListRouteValue)) {
                 return false;
             }
         }
@@ -229,27 +229,27 @@ public final class ParsingSQLRouter implements ShardingRouter {
             return false;
         }
         for (int i = 0; i < shardingCondition1.getShardingValues().size(); i++) {
-            ShardingValue shardingValue1 = shardingCondition1.getShardingValues().get(i);
-            ShardingValue shardingValue2 = shardingCondition2.getShardingValues().get(i);
-            if (!isSameShardingValue((ListShardingValue) shardingValue1, (ListShardingValue) shardingValue2)) {
+            RouteValue shardingValue1 = shardingCondition1.getShardingValues().get(i);
+            RouteValue shardingValue2 = shardingCondition2.getShardingValues().get(i);
+            if (!isSameShardingValue((ListRouteValue) shardingValue1, (ListRouteValue) shardingValue2)) {
                 return false;
             }
         }
         return true;
     }
     
-    private boolean isSameShardingValue(final ListShardingValue shardingValue1, final ListShardingValue shardingValue2) {
+    private boolean isSameShardingValue(final ListRouteValue shardingValue1, final ListRouteValue shardingValue2) {
         return isSameLogicTable(shardingValue1, shardingValue2)
-                && shardingValue1.getColumnName().equals(shardingValue2.getColumnName()) && shardingValue1.getValues().equals(shardingValue2.getValues());
+                && shardingValue1.getColumn().getName().equals(shardingValue2.getColumn().getName()) && shardingValue1.getValues().equals(shardingValue2.getValues());
     }
     
-    private boolean isSameLogicTable(final ListShardingValue shardingValue1, final ListShardingValue shardingValue2) {
-        return shardingValue1.getLogicTableName().equals(shardingValue2.getLogicTableName()) || isBindingTable(shardingValue1, shardingValue2);
+    private boolean isSameLogicTable(final ListRouteValue shardingValue1, final ListRouteValue shardingValue2) {
+        return shardingValue1.getColumn().getTableName().equals(shardingValue2.getColumn().getTableName()) || isBindingTable(shardingValue1, shardingValue2);
     }
     
-    private boolean isBindingTable(final ListShardingValue shardingValue1, final ListShardingValue shardingValue2) {
-        Optional<BindingTableRule> bindingRule = shardingRule.findBindingTableRule(shardingValue1.getLogicTableName());
-        return bindingRule.isPresent() && bindingRule.get().hasLogicTable(shardingValue2.getLogicTableName());
+    private boolean isBindingTable(final ListRouteValue shardingValue1, final ListRouteValue shardingValue2) {
+        Optional<BindingTableRule> bindingRule = shardingRule.findBindingTableRule(shardingValue1.getColumn().getTableName());
+        return bindingRule.isPresent() && bindingRule.get().hasLogicTable(shardingValue2.getColumn().getTableName());
     }
     
     private void mergeShardingValues(final ShardingConditions shardingConditions) {

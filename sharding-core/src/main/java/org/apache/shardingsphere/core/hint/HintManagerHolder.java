@@ -22,8 +22,9 @@ import com.google.common.base.Preconditions;
 import lombok.AccessLevel;
 import lombok.NoArgsConstructor;
 import org.apache.shardingsphere.api.HintManager;
-import org.apache.shardingsphere.core.routing.pojo.ListShardingValue;
-import org.apache.shardingsphere.core.routing.pojo.ShardingValue;
+import org.apache.shardingsphere.core.parsing.parser.context.condition.Column;
+import org.apache.shardingsphere.core.routing.value.ListRouteValue;
+import org.apache.shardingsphere.core.routing.value.RouteValue;
 
 import java.util.Collection;
 
@@ -78,7 +79,7 @@ public final class HintManagerHolder {
      * @param logicTable logic table
      * @return database sharding value
      */
-    public static Optional<ShardingValue> getDatabaseShardingValue(final String logicTable) {
+    public static Optional<RouteValue> getDatabaseShardingValue(final String logicTable) {
         if (null == HINT_MANAGER_HOLDER.get() || !HINT_MANAGER_HOLDER.get().getDatabaseShardingValues().containsKey(logicTable)) {
             return Optional.absent();
         }
@@ -91,17 +92,16 @@ public final class HintManagerHolder {
      * @param logicTable logic table name
      * @return table sharding value
      */
-    public static Optional<ShardingValue> getTableShardingValue(final String logicTable) {
+    public static Optional<RouteValue> getTableShardingValue(final String logicTable) {
         if (null == HINT_MANAGER_HOLDER.get() || !HINT_MANAGER_HOLDER.get().getTableShardingValues().containsKey(logicTable)) {
             return Optional.absent();
         }
         return Optional.of(getShardingValue(logicTable, HINT_MANAGER_HOLDER.get().getTableShardingValues().get(logicTable)));
     }
     
-    @SuppressWarnings("unchecked")
-    private static ShardingValue getShardingValue(final String logicTable, final Collection<Comparable<?>> values) {
+    private static RouteValue getShardingValue(final String logicTable, final Collection<Comparable<?>> values) {
         Preconditions.checkArgument(null != values && !values.isEmpty());
-        return new ListShardingValue(logicTable, DB_COLUMN_NAME, values);
+        return new ListRouteValue<>(new Column(DB_COLUMN_NAME, logicTable), values);
     }
     
     /**

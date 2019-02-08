@@ -22,9 +22,9 @@ import groovy.lang.Closure;
 import groovy.util.Expando;
 import org.apache.shardingsphere.api.algorithm.sharding.standard.PreciseShardingValue;
 import org.apache.shardingsphere.api.config.sharding.strategy.InlineShardingStrategyConfiguration;
-import org.apache.shardingsphere.core.routing.pojo.ListShardingValue;
-import org.apache.shardingsphere.core.routing.pojo.ShardingValue;
 import org.apache.shardingsphere.core.routing.strategy.ShardingStrategy;
+import org.apache.shardingsphere.core.routing.value.ListRouteValue;
+import org.apache.shardingsphere.core.routing.value.RouteValue;
 import org.apache.shardingsphere.core.util.InlineExpressionParser;
 
 import java.util.ArrayList;
@@ -53,16 +53,16 @@ public final class InlineShardingStrategy implements ShardingStrategy {
     }
     
     @Override
-    public Collection<String> doSharding(final Collection<String> availableTargetNames, final Collection<ShardingValue> shardingValues) {
-        ShardingValue shardingValue = shardingValues.iterator().next();
-        Preconditions.checkState(shardingValue instanceof ListShardingValue, "Inline strategy cannot support range sharding.");
-        Collection<String> shardingResult = doSharding((ListShardingValue) shardingValue);
+    public Collection<String> doSharding(final Collection<String> availableTargetNames, final Collection<RouteValue> shardingValues) {
+        RouteValue shardingValue = shardingValues.iterator().next();
+        Preconditions.checkState(shardingValue instanceof ListRouteValue, "Inline strategy cannot support range sharding.");
+        Collection<String> shardingResult = doSharding((ListRouteValue) shardingValue);
         Collection<String> result = new TreeSet<>(String.CASE_INSENSITIVE_ORDER);
         result.addAll(shardingResult);
         return result;
     }
     
-    private Collection<String> doSharding(final ListShardingValue shardingValue) {
+    private Collection<String> doSharding(final ListRouteValue shardingValue) {
         Collection<String> result = new LinkedList<>();
         for (PreciseShardingValue<?> each : transferToPreciseShardingValues(shardingValue)) {
             result.add(execute(each));
@@ -71,10 +71,10 @@ public final class InlineShardingStrategy implements ShardingStrategy {
     }
     
     @SuppressWarnings("unchecked")
-    private List<PreciseShardingValue> transferToPreciseShardingValues(final ListShardingValue<?> shardingValue) {
+    private List<PreciseShardingValue> transferToPreciseShardingValues(final ListRouteValue<?> shardingValue) {
         List<PreciseShardingValue> result = new ArrayList<>(shardingValue.getValues().size());
         for (Comparable<?> each : shardingValue.getValues()) {
-            result.add(new PreciseShardingValue(shardingValue.getLogicTableName(), shardingValue.getColumnName(), each));
+            result.add(new PreciseShardingValue(shardingValue.getColumn().getTableName(), shardingValue.getColumn().getName(), each));
         }
         return result;
     }

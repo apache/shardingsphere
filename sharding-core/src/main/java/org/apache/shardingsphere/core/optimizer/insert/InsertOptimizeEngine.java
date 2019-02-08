@@ -28,8 +28,8 @@ import org.apache.shardingsphere.core.parsing.parser.context.condition.Condition
 import org.apache.shardingsphere.core.parsing.parser.context.condition.GeneratedKeyCondition;
 import org.apache.shardingsphere.core.parsing.parser.context.insertvalue.InsertValue;
 import org.apache.shardingsphere.core.parsing.parser.sql.dml.insert.InsertStatement;
-import org.apache.shardingsphere.core.routing.pojo.ListShardingValue;
 import org.apache.shardingsphere.core.routing.router.sharding.GeneratedKey;
+import org.apache.shardingsphere.core.routing.value.ListRouteValue;
 import org.apache.shardingsphere.core.rule.ShardingRule;
 
 import java.util.ArrayList;
@@ -137,14 +137,14 @@ public final class InsertOptimizeEngine implements OptimizeEngine {
         return insertValue.getExpression().substring(0, insertValue.getExpression().lastIndexOf(")")) + ", ?)";
     }
     
-    private ListShardingValue getShardingValue(final Column column, final Comparable<?> value) {
-        return new ListShardingValue<>(column.getTableName(), column.getName(), new GeneratedKeyCondition(column, -1, value).getConditionValues(parameters));
+    private ListRouteValue getShardingValue(final Column column, final Comparable<?> value) {
+        return new ListRouteValue<>(column, new GeneratedKeyCondition(column, -1, value).getConditionValues(parameters));
     }
     
-    private Collection<ListShardingValue> getShardingValues(final AndCondition andCondition) {
-        Collection<ListShardingValue> result = new LinkedList<>();
+    private Collection<ListRouteValue> getShardingValues(final AndCondition andCondition) {
+        Collection<ListRouteValue> result = new LinkedList<>();
         for (Condition each : andCondition.getConditions()) {
-            result.add(new ListShardingValue<>(each.getColumn().getTableName(), each.getColumn().getName(), each.getConditionValues(parameters)));
+            result.add(new ListRouteValue<>(each.getColumn(), each.getConditionValues(parameters)));
         }
         return result;
     }

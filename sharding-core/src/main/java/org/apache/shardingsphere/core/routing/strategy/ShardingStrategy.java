@@ -17,7 +17,7 @@
 
 package org.apache.shardingsphere.core.routing.strategy;
 
-import org.apache.shardingsphere.core.routing.pojo.ShardingValue;
+import org.apache.shardingsphere.core.routing.value.RouteValue;
 
 import java.util.Collection;
 
@@ -42,5 +42,5 @@ public interface ShardingStrategy {
      * @param shardingValues sharding values
      * @return sharding results for data sources or tables's names
      */
-    Collection<String> doSharding(Collection<String> availableTargetNames, Collection<ShardingValue> shardingValues);
+    Collection<String> doSharding(Collection<String> availableTargetNames, Collection<RouteValue> shardingValues);
 }

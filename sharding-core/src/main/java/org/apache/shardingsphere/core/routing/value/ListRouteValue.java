@@ -15,20 +15,24 @@
  * limitations under the License.
  */
 
-package org.apache.shardingsphere.core.optimizer.query;
+package org.apache.shardingsphere.core.routing.value;
 
+import lombok.Getter;
+import lombok.RequiredArgsConstructor;
 import org.apache.shardingsphere.core.parsing.parser.context.condition.Column;
-import org.apache.shardingsphere.core.routing.value.RouteValue;
+
+import java.util.Collection;
 
 /**
- * Always false sharding value.
- *
+ * Route value for list values.
+ * 
  * @author zhangliang
  */
-public final class AlwaysFalseShardingValue implements RouteValue {
+@RequiredArgsConstructor
+@Getter
+public final class ListRouteValue<T extends Comparable<?>> implements RouteValue {
     
-    @Override
-    public Column getColumn() {
-        return new Column("", "");
-    }
+    private final Column column;
+    
+    private final Collection<T> values;
 }

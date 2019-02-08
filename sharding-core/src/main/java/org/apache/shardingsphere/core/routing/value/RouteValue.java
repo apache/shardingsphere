@@ -15,26 +15,21 @@
  * limitations under the License.
  */
 
-package org.apache.shardingsphere.core.routing.pojo;
+package org.apache.shardingsphere.core.routing.value;
+
+import org.apache.shardingsphere.core.parsing.parser.context.condition.Column;
 
 /**
- * Sharding value.
+ * Route value.
  * 
  * @author zhangliang
  */
-public interface ShardingValue {
+public interface RouteValue {
     
     /**
-     * Get logic table name.
-     *
-     * @return logic table name
+     * Get column.
+     * 
+     * @return column
      */
-    String getLogicTableName();
-    
-    /**
-     * Get column name.
-     *
-     * @return column name
-     */
-    String getColumnName();
+    Column getColumn();
 }
