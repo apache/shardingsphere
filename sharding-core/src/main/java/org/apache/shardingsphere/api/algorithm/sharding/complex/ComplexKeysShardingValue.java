@@ -26,14 +26,14 @@ import java.util.Collection;
 import java.util.Map;
 
 /**
- * Sharding value for complex.
+ * Sharding value for complex keys.
  * 
  * @author zhangliang
  */
 @RequiredArgsConstructor
 @Getter
 @ToString
-public final class ComplexShardingValue<T extends Comparable<?>> implements ShardingValue {
+public final class ComplexKeysShardingValue<T extends Comparable<?>> implements ShardingValue {
     
     private final String logicTableName;
     

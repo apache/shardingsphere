@@ -21,7 +21,7 @@ import com.google.common.base.Preconditions;
 import com.google.common.base.Splitter;
 import lombok.Getter;
 import org.apache.shardingsphere.api.algorithm.sharding.complex.ComplexKeysShardingAlgorithm;
-import org.apache.shardingsphere.api.algorithm.sharding.complex.ComplexShardingValue;
+import org.apache.shardingsphere.api.algorithm.sharding.complex.ComplexKeysShardingValue;
 import org.apache.shardingsphere.api.config.sharding.strategy.ComplexShardingStrategyConfiguration;
 import org.apache.shardingsphere.core.routing.strategy.ShardingStrategy;
 import org.apache.shardingsphere.core.routing.value.ListRouteValue;
@@ -61,7 +61,7 @@ public final class ComplexShardingStrategy implements ShardingStrategy {
             columnShardingValues.put(each.getColumn().getName(), ((ListRouteValue) each).getValues());
             logicTableName = each.getColumn().getTableName();
         }
-        Collection<String> shardingResult = shardingAlgorithm.doSharding(availableTargetNames, new ComplexShardingValue(logicTableName, columnShardingValues));
+        Collection<String> shardingResult = shardingAlgorithm.doSharding(availableTargetNames, new ComplexKeysShardingValue(logicTableName, columnShardingValues));
         Collection<String> result = new TreeSet<>(String.CASE_INSENSITIVE_ORDER);
         result.addAll(shardingResult);
         return result;

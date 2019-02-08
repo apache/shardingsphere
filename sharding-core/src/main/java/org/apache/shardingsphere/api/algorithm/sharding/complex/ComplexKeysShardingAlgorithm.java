@@ -37,5 +37,5 @@ public interface ComplexKeysShardingAlgorithm<T extends Comparable<?>> extends S
      * @param shardingValue sharding value
      * @return sharding results for data sources or tables's names
      */
-    Collection<String> doSharding(Collection<String> availableTargetNames, ComplexShardingValue<T> shardingValue);
+    Collection<String> doSharding(Collection<String> availableTargetNames, ComplexKeysShardingValue<T> shardingValue);
 }
