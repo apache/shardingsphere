@@ -21,6 +21,7 @@ import com.google.common.collect.Range;
 import lombok.Getter;
 import lombok.RequiredArgsConstructor;
 import lombok.ToString;
+import org.apache.shardingsphere.core.routing.strategy.ShardingValue;
 
 /**
  * Sharding value for range.
@@ -30,7 +31,7 @@ import lombok.ToString;
 @RequiredArgsConstructor
 @Getter
 @ToString
-public final class RangeShardingValue<T extends Comparable<?>> {
+public final class RangeShardingValue<T extends Comparable<?>> implements ShardingValue {
     
     private final String logicTableName;
     

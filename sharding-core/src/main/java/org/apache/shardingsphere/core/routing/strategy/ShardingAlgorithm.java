@@ -18,7 +18,7 @@
 package org.apache.shardingsphere.core.routing.strategy;
 
 /**
- * Sharding algorithm interface.
+ * Sharding algorithm.
  * 
  * @author zhangliang
  */

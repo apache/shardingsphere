@@ -20,6 +20,7 @@ package org.apache.shardingsphere.api.algorithm.sharding.hint;
 import lombok.Getter;
 import lombok.RequiredArgsConstructor;
 import lombok.ToString;
+import org.apache.shardingsphere.core.routing.strategy.ShardingValue;
 
 import java.util.Collection;
 
@@ -31,7 +32,7 @@ import java.util.Collection;
 @RequiredArgsConstructor
 @Getter
 @ToString
-public final class HintShardingValue<T extends Comparable<?>> {
+public final class HintShardingValue<T extends Comparable<?>> implements ShardingValue {
     
     private final String logicTableName;
     
