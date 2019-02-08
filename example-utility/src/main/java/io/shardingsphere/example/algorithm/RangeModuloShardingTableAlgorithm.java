@@ -19,17 +19,18 @@ package io.shardingsphere.example.algorithm;
 
 import com.google.common.collect.Range;
 import org.apache.shardingsphere.api.algorithm.sharding.standard.RangeShardingAlgorithm;
+import org.apache.shardingsphere.api.algorithm.sharding.standard.RangeShardingValue;
 
 import java.util.Collection;
 import java.util.LinkedHashSet;
 import java.util.Set;
 
-public class RangeModuloShardingTableAlgorithm implements RangeShardingAlgorithm<Long> {
+public final class RangeModuloShardingTableAlgorithm implements RangeShardingAlgorithm<Long> {
     
     @Override
-    public Collection<String> doSharding(final Collection<String> tableNames, final String logicTableName, final String columnName, final Range<Long> shardingValueRange) {
+    public Collection<String> doSharding(final Collection<String> tableNames, final RangeShardingValue<Long> shardingValue) {
         Set<String> result = new LinkedHashSet<>();
-        if (Range.closed(200000000000000000L, 400000000000000000L).encloses(shardingValueRange)) {
+        if (Range.closed(200000000000000000L, 400000000000000000L).encloses(shardingValue.getValueRange())) {
             for (String each : tableNames) {
                 if (each.endsWith("0")) {
                     result.add(each);

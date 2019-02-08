@@ -18,15 +18,16 @@
 package io.shardingsphere.example.algorithm;
 
 import org.apache.shardingsphere.api.algorithm.sharding.standard.PreciseShardingAlgorithm;
+import org.apache.shardingsphere.api.algorithm.sharding.standard.PreciseShardingValue;
 
 import java.util.Collection;
 
-public class PreciseModuloShardingTableAlgorithm implements PreciseShardingAlgorithm<Long> {
+public final class PreciseModuloShardingTableAlgorithm implements PreciseShardingAlgorithm<Long> {
     
     @Override
-    public String doSharding(final Collection<String> tableNames, final String logicTableName, final String columnName, final Long shardingValue) {
+    public String doSharding(final Collection<String> tableNames, final PreciseShardingValue<Long> shardingValue) {
         for (String each : tableNames) {
-            if (each.endsWith(shardingValue % 2 + "")) {
+            if (each.endsWith(shardingValue.getValue() % 2 + "")) {
                 return each;
             }
         }
