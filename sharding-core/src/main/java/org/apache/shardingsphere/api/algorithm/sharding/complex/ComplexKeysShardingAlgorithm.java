@@ -20,7 +20,6 @@ package org.apache.shardingsphere.api.algorithm.sharding.complex;
 import org.apache.shardingsphere.core.routing.strategy.ShardingAlgorithm;
 
 import java.util.Collection;
-import java.util.Map;
 
 /**
  * Complex keys sharding algorithm.
@@ -35,9 +34,8 @@ public interface ComplexKeysShardingAlgorithm<T extends Comparable<?>> extends S
      * Sharding.
      * 
      * @param availableTargetNames available data sources or tables's names
-     * @param logicTableName logic table name
-     * @param columnShardingValues map of column name and sharding values
+     * @param shardingValue sharding value
      * @return sharding results for data sources or tables's names
      */
-    Collection<String> doSharding(Collection<String> availableTargetNames, String logicTableName, Map<String, Collection<T>> columnShardingValues);
+    Collection<String> doSharding(Collection<String> availableTargetNames, ComplexShardingValue<T> shardingValue);
 }

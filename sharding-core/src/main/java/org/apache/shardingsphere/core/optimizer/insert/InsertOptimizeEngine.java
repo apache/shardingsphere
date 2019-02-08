@@ -138,8 +138,7 @@ public final class InsertOptimizeEngine implements OptimizeEngine {
     }
     
     private ListShardingValue getShardingValue(final Column column, final Comparable<?> value) {
-        return new ListShardingValue<>(column.getTableName(), column.getName(),
-                new GeneratedKeyCondition(column, -1, value).getConditionValues(parameters));
+        return new ListShardingValue<>(column.getTableName(), column.getName(), new GeneratedKeyCondition(column, -1, value).getConditionValues(parameters));
     }
     
     private Collection<ListShardingValue> getShardingValues(final AndCondition andCondition) {

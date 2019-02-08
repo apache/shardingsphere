@@ -34,10 +34,8 @@ public interface PreciseShardingAlgorithm<T extends Comparable<?>> extends Shard
      * Sharding.
      * 
      * @param availableTargetNames available data sources or tables's names
-     * @param logicTableName logic table name
-     * @param columnName column name
      * @param shardingValue sharding value
      * @return sharding result for data source or table's name
      */
-    String doSharding(Collection<String> availableTargetNames, String logicTableName, String columnName, T shardingValue);
+    String doSharding(Collection<String> availableTargetNames, PreciseShardingValue<T> shardingValue);
 }

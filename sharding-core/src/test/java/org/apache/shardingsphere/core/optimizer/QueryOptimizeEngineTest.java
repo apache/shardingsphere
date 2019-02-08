@@ -27,8 +27,8 @@ import org.apache.shardingsphere.core.parsing.parser.context.condition.Condition
 import org.apache.shardingsphere.core.parsing.parser.context.condition.OrCondition;
 import org.apache.shardingsphere.core.parsing.parser.expression.SQLExpression;
 import org.apache.shardingsphere.core.parsing.parser.expression.SQLNumberExpression;
+import org.apache.shardingsphere.core.routing.pojo.BetweenShardingValue;
 import org.apache.shardingsphere.core.routing.pojo.ListShardingValue;
-import org.apache.shardingsphere.core.routing.pojo.RangeShardingValue;
 import org.apache.shardingsphere.core.routing.pojo.ShardingValue;
 import org.hamcrest.CoreMatchers;
 import org.junit.Test;
@@ -116,7 +116,7 @@ public final class QueryOptimizeEngineTest {
         assertFalse(shardingConditions.isAlwaysFalse());
         ShardingCondition shardingCondition = shardingConditions.getShardingConditions().get(0);
         ShardingValue shardingValue = shardingCondition.getShardingValues().get(0);
-        Range<Comparable<?>> values = ((RangeShardingValue<Comparable<?>>) shardingValue).getValueRange();
+        Range<Comparable<?>> values = ((BetweenShardingValue<Comparable<?>>) shardingValue).getValueRange();
         assertThat(values.lowerEndpoint(), CoreMatchers.<Comparable>is(1));
         assertThat(values.upperEndpoint(), CoreMatchers.<Comparable>is(2));
     }

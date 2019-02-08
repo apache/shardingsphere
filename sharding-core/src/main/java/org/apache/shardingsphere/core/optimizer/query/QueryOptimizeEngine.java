@@ -29,8 +29,8 @@ import org.apache.shardingsphere.core.parsing.parser.context.condition.AndCondit
 import org.apache.shardingsphere.core.parsing.parser.context.condition.Column;
 import org.apache.shardingsphere.core.parsing.parser.context.condition.Condition;
 import org.apache.shardingsphere.core.parsing.parser.context.condition.OrCondition;
+import org.apache.shardingsphere.core.routing.pojo.BetweenShardingValue;
 import org.apache.shardingsphere.core.routing.pojo.ListShardingValue;
-import org.apache.shardingsphere.core.routing.pojo.RangeShardingValue;
 import org.apache.shardingsphere.core.routing.pojo.ShardingValue;
 
 import java.util.ArrayList;
@@ -96,7 +96,7 @@ public final class QueryOptimizeEngine implements OptimizeEngine {
             }
         }
         if (null == listValue) {
-            return new RangeShardingValue<>(column.getTableName(), column.getName(), rangeValue);
+            return new BetweenShardingValue<>(column.getTableName(), column.getName(), rangeValue);
         }
         if (null == rangeValue) {
             return new ListShardingValue<>(column.getTableName(), column.getName(), listValue);

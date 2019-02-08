@@ -15,17 +15,27 @@
  * limitations under the License.
  */
 
-package org.apache.shardingsphere.api.algorithm.fixture;
+package org.apache.shardingsphere.api.algorithm.sharding.hint;
 
-import org.apache.shardingsphere.api.algorithm.sharding.standard.PreciseShardingAlgorithm;
-import org.apache.shardingsphere.api.algorithm.sharding.standard.PreciseShardingValue;
+import lombok.Getter;
+import lombok.RequiredArgsConstructor;
+import lombok.ToString;
 
 import java.util.Collection;
 
-public final class TestPreciseShardingAlgorithm implements PreciseShardingAlgorithm<String> {
+/**
+ * Sharding value for hint.
+ * 
+ * @author zhangliang
+ */
+@RequiredArgsConstructor
+@Getter
+@ToString
+public final class HintShardingValue<T extends Comparable<?>> {
     
-    @Override
-    public String doSharding(final Collection<String> availableTargetNames, final PreciseShardingValue<String> shardingValue) {
-        return shardingValue.getValue();
-    }
+    private final String logicTableName;
+    
+    private final String columnName;
+    
+    private final Collection<T> values;
 }

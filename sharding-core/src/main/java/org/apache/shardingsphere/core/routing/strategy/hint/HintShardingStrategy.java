@@ -20,6 +20,7 @@ package org.apache.shardingsphere.core.routing.strategy.hint;
 import com.google.common.base.Preconditions;
 import lombok.Getter;
 import org.apache.shardingsphere.api.algorithm.sharding.hint.HintShardingAlgorithm;
+import org.apache.shardingsphere.api.algorithm.sharding.hint.HintShardingValue;
 import org.apache.shardingsphere.api.config.sharding.strategy.HintShardingStrategyConfiguration;
 import org.apache.shardingsphere.core.routing.pojo.ListShardingValue;
 import org.apache.shardingsphere.core.routing.pojo.ShardingValue;
@@ -50,7 +51,8 @@ public final class HintShardingStrategy implements ShardingStrategy {
     @Override
     public Collection<String> doSharding(final Collection<String> availableTargetNames, final Collection<ShardingValue> shardingValues) {
         ListShardingValue shardingValue = (ListShardingValue) shardingValues.iterator().next();
-        Collection<String> shardingResult = shardingAlgorithm.doSharding(availableTargetNames, shardingValue.getLogicTableName(), shardingValue.getColumnName(), shardingValue.getValues());
+        Collection<String> shardingResult = shardingAlgorithm.doSharding(availableTargetNames, 
+                new HintShardingValue(shardingValue.getLogicTableName(), shardingValue.getColumnName(), shardingValue.getValues()));
         Collection<String> result = new TreeSet<>(String.CASE_INSENSITIVE_ORDER);
         result.addAll(shardingResult);
         return result;

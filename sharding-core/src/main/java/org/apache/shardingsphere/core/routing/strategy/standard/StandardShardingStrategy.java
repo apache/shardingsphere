@@ -19,10 +19,12 @@ package org.apache.shardingsphere.core.routing.strategy.standard;
 
 import com.google.common.base.Preconditions;
 import org.apache.shardingsphere.api.algorithm.sharding.standard.PreciseShardingAlgorithm;
+import org.apache.shardingsphere.api.algorithm.sharding.standard.PreciseShardingValue;
 import org.apache.shardingsphere.api.algorithm.sharding.standard.RangeShardingAlgorithm;
+import org.apache.shardingsphere.api.algorithm.sharding.standard.RangeShardingValue;
 import org.apache.shardingsphere.api.config.sharding.strategy.StandardShardingStrategyConfiguration;
+import org.apache.shardingsphere.core.routing.pojo.BetweenShardingValue;
 import org.apache.shardingsphere.core.routing.pojo.ListShardingValue;
-import org.apache.shardingsphere.core.routing.pojo.RangeShardingValue;
 import org.apache.shardingsphere.core.routing.pojo.ShardingValue;
 import org.apache.shardingsphere.core.routing.strategy.ShardingStrategy;
 
@@ -55,25 +57,25 @@ public final class StandardShardingStrategy implements ShardingStrategy {
     public Collection<String> doSharding(final Collection<String> availableTargetNames, final Collection<ShardingValue> shardingValues) {
         ShardingValue shardingValue = shardingValues.iterator().next();
         Collection<String> shardingResult = shardingValue instanceof ListShardingValue
-                ? doSharding(availableTargetNames, (ListShardingValue) shardingValue) : doSharding(availableTargetNames, (RangeShardingValue) shardingValue);
+                ? doSharding(availableTargetNames, (ListShardingValue) shardingValue) : doSharding(availableTargetNames, (BetweenShardingValue) shardingValue);
         Collection<String> result = new TreeSet<>(String.CASE_INSENSITIVE_ORDER);
         result.addAll(shardingResult);
         return result;
     }
     
     @SuppressWarnings("unchecked")
-    private Collection<String> doSharding(final Collection<String> availableTargetNames, final RangeShardingValue<?> shardingValue) {
+    private Collection<String> doSharding(final Collection<String> availableTargetNames, final BetweenShardingValue<?> shardingValue) {
         if (null == rangeShardingAlgorithm) {
             throw new UnsupportedOperationException("Cannot find range sharding strategy in sharding rule.");
         }
-        return rangeShardingAlgorithm.doSharding(availableTargetNames, shardingValue.getLogicTableName(), shardingValue.getColumnName(), shardingValue.getValueRange());
+        return rangeShardingAlgorithm.doSharding(availableTargetNames, new RangeShardingValue(shardingValue.getLogicTableName(), shardingValue.getColumnName(), shardingValue.getValueRange()));
     }
     
     @SuppressWarnings("unchecked")
     private Collection<String> doSharding(final Collection<String> availableTargetNames, final ListShardingValue<?> shardingValue) {
         Collection<String> result = new LinkedList<>();
         for (Comparable<?> each : shardingValue.getValues()) {
-            String target = preciseShardingAlgorithm.doSharding(availableTargetNames, shardingValue.getLogicTableName(), shardingValue.getColumnName(), each);
+            String target = preciseShardingAlgorithm.doSharding(availableTargetNames, new PreciseShardingValue(shardingValue.getLogicTableName(), shardingValue.getColumnName(), each));
             if (null != target) {
                 result.add(target);
             }

@@ -15,21 +15,21 @@
  * limitations under the License.
  */
 
-package org.apache.shardingsphere.core.routing.pojo;
+package org.apache.shardingsphere.api.algorithm.sharding.standard;
 
 import lombok.Getter;
 import lombok.RequiredArgsConstructor;
 import lombok.ToString;
 
 /**
- * Sharding value for precise value.
+ * Sharding value for precise.
  * 
  * @author zhangliang
  */
 @RequiredArgsConstructor
 @Getter
 @ToString
-public final class PreciseShardingValue<T extends Comparable<?>> implements ShardingValue {
+public final class PreciseShardingValue<T extends Comparable<?>> {
     
     private final String logicTableName;
     

@@ -17,7 +17,6 @@
 
 package org.apache.shardingsphere.api.algorithm.sharding.standard;
 
-import com.google.common.collect.Range;
 import org.apache.shardingsphere.core.routing.strategy.ShardingAlgorithm;
 
 import java.util.Collection;
@@ -35,10 +34,8 @@ public interface RangeShardingAlgorithm<T extends Comparable<?>> extends Shardin
      * Sharding.
      * 
      * @param availableTargetNames available data sources or tables's names
-     * @param logicTableName logic table name
-     * @param columnName column name
-     * @param shardingValueRange sharding value range
+     * @param shardingValue sharding value
      * @return sharding results for data sources or tables's names
      */
-    Collection<String> doSharding(Collection<String> availableTargetNames, String logicTableName, String columnName, Range<T> shardingValueRange);
+    Collection<String> doSharding(Collection<String> availableTargetNames, RangeShardingValue<T> shardingValue);
 }
