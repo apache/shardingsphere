@@ -50,18 +50,27 @@ public final class AESShardingEncryptor implements ShardingEncryptor {
         if (!hasDesKey()) {
             throw new ShardingConfigurationException("No available secret key for AESShardingEncryptor.");
         }
-        Cipher cipher = Cipher.getInstance(getType().toUpperCase());
-        cipher.init(Cipher.ENCRYPT_MODE, generateKey());
-        return new String(cipher.doFinal(String.valueOf(plaintext).getBytes()));
+        getCipher().init(Cipher.ENCRYPT_MODE, generateKey());
+        return new String(getCipher().doFinal(String.valueOf(plaintext).getBytes()));
     }
     
     @Override
+    @SneakyThrows
     public Object decode(final Object ciphertext) {
-        return ciphertext;
+        if (!hasDesKey()) {
+            throw new ShardingConfigurationException("No available secret key for AESShardingEncryptor.");
+        }
+        getCipher().init(Cipher.DECRYPT_MODE, generateKey());
+        return new String(getCipher().doFinal(String.valueOf(ciphertext).getBytes()));
     }
     
     private boolean hasDesKey() {
         return null != properties.get("aes.key.value");
+    }
+    
+    @SneakyThrows
+    private Cipher getCipher() {
+        return Cipher.getInstance(getType().toUpperCase());
     }
     
     private Key generateKey() {
