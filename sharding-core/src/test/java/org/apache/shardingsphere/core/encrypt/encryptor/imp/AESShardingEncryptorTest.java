@@ -52,6 +52,7 @@ public class AESShardingEncryptorTest {
     }
     
     @Test
-    public void testGetProperties() {
+    public void assertGetProperties() {
+        assertThat(encryptor.getProperties().get("aes.key.value").toString(), is("test"));
     }
 }
