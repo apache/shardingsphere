@@ -74,6 +74,6 @@ public final class AESShardingEncryptor implements ShardingEncryptor {
     }
     
     private Key generateKey() {
-        return new SecretKeySpec(properties.getProperty("des.key.value").getBytes(), getType());
+        return new SecretKeySpec(properties.getProperty("aes.key.value").getBytes(), getType());
     }
 }
