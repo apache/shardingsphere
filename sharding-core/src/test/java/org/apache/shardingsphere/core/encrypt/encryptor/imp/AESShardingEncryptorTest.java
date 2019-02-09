@@ -17,17 +17,18 @@
 
 package org.apache.shardingsphere.core.encrypt.encryptor.imp;
 
-import org.junit.Before;
 import org.junit.Test;
+
+import static org.hamcrest.CoreMatchers.is;
+import static org.junit.Assert.assertThat;
 
 public class AESShardingEncryptorTest {
     
-    @Before
-    public void setUp() {
-    }
+    private final AESShardingEncryptor encryptor = new AESShardingEncryptor();
     
     @Test
-    public void testGetType() {
+    public void assertGetType() {
+        assertThat(encryptor.getType(), is("AES"));
     }
     
     @Test
