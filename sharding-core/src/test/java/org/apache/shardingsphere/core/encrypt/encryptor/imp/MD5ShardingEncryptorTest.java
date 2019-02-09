@@ -19,17 +19,21 @@ package org.apache.shardingsphere.core.encrypt.encryptor.imp;
 
 import org.junit.Test;
 
+import static org.hamcrest.CoreMatchers.is;
+import static org.junit.Assert.assertThat;
+
 public class MD5ShardingEncryptorTest {
     
     private final MD5ShardingEncryptor encryptor = new MD5ShardingEncryptor();
     
     @Test
     public void assertGetType() {
-        assertThat()
+        assertThat(encryptor.getType(), is("MD5"));
     }
     
     @Test
     public void assertEncode() {
+        assertThat(encryptor.encode("test").toString(), is("098f6bcd4621d373cade4e832627b4f6"));
     }
     
     @Test
