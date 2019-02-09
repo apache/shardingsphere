@@ -35,12 +35,12 @@ public class MD5ShardingEncryptorTest {
     
     @Test
     public void assertEncode() {
-        assertThat(encryptor.encode("test").toString(), is("098f6bcd4621d373cade4e832627b4f6"));
+        assertThat(encryptor.encrypt("test").toString(), is("098f6bcd4621d373cade4e832627b4f6"));
     }
     
     @Test
     public void assertDecode() {
-        assertThat(encryptor.decode("test").toString(), is("test"));
+        assertThat(encryptor.decrypt("test").toString(), is("test"));
     }
     
     @Test
