@@ -19,6 +19,7 @@ package org.apache.shardingsphere.core.encrypt.encryptor.imp;
 
 import lombok.Getter;
 import lombok.Setter;
+import lombok.SneakyThrows;
 import org.apache.shardingsphere.core.exception.ShardingConfigurationException;
 import org.apache.shardingsphere.spi.algorithm.encrypt.ShardingEncryptor;
 
@@ -44,13 +45,14 @@ public final class AESShardingEncryptor implements ShardingEncryptor {
     }
     
     @Override
+    @SneakyThrows
     public Object encode(final Object plaintext) {
         if (!hasDesKey()) {
             throw new ShardingConfigurationException("No available secret key for AESShardingEncryptor.");
         }
-        Key key = generateKey(properties.getProperty("des.key.value"));
-        Cipher c = Cipher.getInstance(getType().toUpperCase());
-        c.init(Cipher.ENCRYPT_MODE, key);
+        Cipher cipher = Cipher.getInstance(getType().toUpperCase());
+        cipher.init(Cipher.ENCRYPT_MODE, generateKey());
+        return new String(cipher.doFinal(String.valueOf(plaintext).getBytes()));
     }
     
     @Override
@@ -62,7 +64,7 @@ public final class AESShardingEncryptor implements ShardingEncryptor {
         return null != properties.get("aes.key.value");
     }
     
-    private Key generateKey(final String keyValue) {
-        return new SecretKeySpec(keyValue.getBytes(), getType());
+    private Key generateKey() {
+        return new SecretKeySpec(properties.getProperty("des.key.value").getBytes(), getType());
     }
 }
