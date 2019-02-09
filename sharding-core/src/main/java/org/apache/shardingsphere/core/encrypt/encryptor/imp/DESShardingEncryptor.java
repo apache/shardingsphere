@@ -19,9 +19,11 @@ package org.apache.shardingsphere.core.encrypt.encryptor.imp;
 
 import lombok.Getter;
 import lombok.Setter;
-import org.apache.commons.codec.digest.DigestUtils;
+import org.apache.shardingsphere.core.exception.ShardingConfigurationException;
 import org.apache.shardingsphere.spi.algorithm.encrypt.ShardingEncryptor;
 
+import javax.crypto.spec.SecretKeySpec;
+import java.security.Key;
 import java.util.Properties;
 
 /**
@@ -42,7 +44,10 @@ public final class DESShardingEncryptor implements ShardingEncryptor {
     
     @Override
     public Object encode(final Object plaintext) {
-        return new String(DigestUtils.md5(String.valueOf(plaintext)));
+        if (!hasDesKey()) {
+            throw new ShardingConfigurationException("No available secret key for DESShardingEncryptor.");
+        }
+        
     }
     
     @Override
@@ -51,6 +56,10 @@ public final class DESShardingEncryptor implements ShardingEncryptor {
     }
     
     private boolean hasDesKey() {
-        return null != properties.get("des.key");
+        return null != properties.get("des.key.value");
+    }
+    
+    private Key getKey(final String keyValue) {
+        return new SecretKeySpec(keyValue.getBytes(), getType());
     }
 }
