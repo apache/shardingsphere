@@ -19,6 +19,8 @@ package org.apache.shardingsphere.core.encrypt.encryptor.imp;
 
 import org.junit.Test;
 
+import java.util.Properties;
+
 import static org.hamcrest.CoreMatchers.is;
 import static org.junit.Assert.assertThat;
 
@@ -38,6 +40,14 @@ public class MD5ShardingEncryptorTest {
     
     @Test
     public void assertDecode() {
-        assertThat(encryptor.decode("test").toString(), is("098f6bcd4621d373cade4e832627b4f6"));
+        assertThat(encryptor.decode("test").toString(), is("test"));
+    }
+    
+    @Test
+    public void assertProperties() {
+        Properties properties = new Properties();
+        properties.setProperty("key1", "value1");
+        encryptor.setProperties(properties);
+        assertThat(encryptor.getProperties().get("key1").toString(), is("value1"));
     }
 }
