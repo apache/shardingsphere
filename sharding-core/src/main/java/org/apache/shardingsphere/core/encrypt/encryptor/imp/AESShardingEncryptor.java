@@ -22,6 +22,7 @@ import lombok.Setter;
 import org.apache.shardingsphere.core.exception.ShardingConfigurationException;
 import org.apache.shardingsphere.spi.algorithm.encrypt.ShardingEncryptor;
 
+import javax.crypto.Cipher;
 import javax.crypto.spec.SecretKeySpec;
 import java.security.Key;
 import java.util.Properties;
@@ -33,21 +34,23 @@ import java.util.Properties;
  */
 @Getter
 @Setter
-public final class DESShardingEncryptor implements ShardingEncryptor {
+public final class AESShardingEncryptor implements ShardingEncryptor {
     
     private Properties properties = new Properties();
     
     @Override
     public String getType() {
-        return "DES";
+        return "AES";
     }
     
     @Override
     public Object encode(final Object plaintext) {
         if (!hasDesKey()) {
-            throw new ShardingConfigurationException("No available secret key for DESShardingEncryptor.");
+            throw new ShardingConfigurationException("No available secret key for AESShardingEncryptor.");
         }
-        
+        Key key = generateKey(properties.getProperty("des.key.value"));
+        Cipher c = Cipher.getInstance(getType().toUpperCase());
+        c.init(Cipher.ENCRYPT_MODE, key);
     }
     
     @Override
@@ -56,10 +59,10 @@ public final class DESShardingEncryptor implements ShardingEncryptor {
     }
     
     private boolean hasDesKey() {
-        return null != properties.get("des.key.value");
+        return null != properties.get("aes.key.value");
     }
     
-    private Key getKey(final String keyValue) {
+    private Key generateKey(final String keyValue) {
         return new SecretKeySpec(keyValue.getBytes(), getType());
     }
 }
