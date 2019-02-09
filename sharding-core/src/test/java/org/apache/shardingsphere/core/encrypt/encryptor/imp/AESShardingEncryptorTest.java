@@ -19,6 +19,8 @@ package org.apache.shardingsphere.core.encrypt.encryptor.imp;
 
 import org.junit.Test;
 
+import java.util.Properties;
+
 import static org.hamcrest.CoreMatchers.is;
 import static org.junit.Assert.assertThat;
 
@@ -32,7 +34,11 @@ public class AESShardingEncryptorTest {
     }
     
     @Test
-    public void testEncode() {
+    public void assertEncode() {
+        Properties properties = new Properties();
+        properties.setProperty("aes.key.value", "test");
+        encryptor.setProperties(properties);
+        assertThat(encryptor.encode("test").toString(), is("dSpPiyENQGDUXMKFMJPGWA=="));
     }
     
     @Test
