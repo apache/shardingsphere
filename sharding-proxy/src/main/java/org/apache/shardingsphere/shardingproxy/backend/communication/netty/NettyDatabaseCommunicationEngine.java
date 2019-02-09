@@ -231,11 +231,11 @@ public final class NettyDatabaseCommunicationEngine implements DatabaseCommunica
     
     @Override
     public ResultPacket getResultValue() throws SQLException {
-        List<Object> data = new ArrayList<>(columnCount);
+        List<Object> row = new ArrayList<>(columnCount);
         for (int columnIndex = 1; columnIndex <= columnCount; columnIndex++) {
-            data.add(mergedResult.getValue(columnIndex, Object.class));
+            row.add(mergedResult.getValue(columnIndex, Object.class));
         }
-        return new ResultPacket(++currentSequenceId, data, columnCount, Collections.<Integer>emptyList());
+        return new ResultPacket(++currentSequenceId, row, columnCount, Collections.<Integer>emptyList());
     }
     
     private void channelRelease() {
