@@ -43,12 +43,12 @@ public class AESShardingEncryptorTest {
     
     @Test
     public void assertEncode() {
-        assertThat(encryptor.encode("test").toString(), is("dSpPiyENQGDUXMKFMJPGWA=="));
+        assertThat(encryptor.encrypt("test").toString(), is("dSpPiyENQGDUXMKFMJPGWA=="));
     }
     
     @Test
     public void assertDecode() {
-        assertThat(encryptor.decode("dSpPiyENQGDUXMKFMJPGWA==").toString(), is("test"));
+        assertThat(encryptor.decrypt("dSpPiyENQGDUXMKFMJPGWA==").toString(), is("test"));
     }
     
     @Test

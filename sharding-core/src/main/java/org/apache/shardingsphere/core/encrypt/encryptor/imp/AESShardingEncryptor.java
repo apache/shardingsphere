@@ -49,7 +49,7 @@ public final class AESShardingEncryptor implements ShardingEncryptor {
     
     @Override
     @SneakyThrows
-    public Object encode(final Object plaintext) {
+    public Object encrypt(final Object plaintext) {
         if (!hasDesKey()) {
             throw new ShardingConfigurationException("No available secret key for AESShardingEncryptor.");
         }
@@ -61,7 +61,7 @@ public final class AESShardingEncryptor implements ShardingEncryptor {
     
     @Override
     @SneakyThrows
-    public Object decode(final Object ciphertext) {
+    public Object decrypt(final Object ciphertext) {
         if (!hasDesKey()) {
             throw new ShardingConfigurationException("No available secret key for AESShardingEncryptor.");
         }
