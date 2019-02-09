@@ -77,12 +77,8 @@ public final class AESShardingEncryptor implements ShardingEncryptor {
     
     @SneakyThrows
     private Key generateKey() {
-        MessageDigest sha = null;
-        System.out.println(String.valueOf(properties.get("aes.key.value")));
-        byte[] key = String.valueOf(properties.get("aes.key.value")).getBytes("UTF-8");
-        key = Arrays.copyOf(DigestUtils.sha1(key), 16);
-        System.out.println(key);
-        return new SecretKeySpec(key, getType());
+        byte[] keyValue = String.valueOf(properties.get("aes.key.value")).getBytes("UTF8");
+        return new SecretKeySpec(Arrays.copyOf(DigestUtils.sha1(keyValue), 16), getType());
     }
     
     public static void main(String[] args) throws Exception {
