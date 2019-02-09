@@ -19,7 +19,7 @@ package org.apache.shardingsphere.core;
 
 import org.apache.shardingsphere.core.config.AllConfigTests;
 import org.apache.shardingsphere.core.constant.AllConstantsTests;
-import org.apache.shardingsphere.core.encrypt.ShardingEncryptorFactoryTest;
+import org.apache.shardingsphere.core.encrypt.AllEncryptorTests;
 import org.apache.shardingsphere.core.executor.AllExecutorTests;
 import org.apache.shardingsphere.core.hint.AllHintTests;
 import org.apache.shardingsphere.core.keygen.AllKeygenTests;
@@ -50,7 +50,7 @@ import org.junit.runners.Suite.SuiteClasses;
         AllHintTests.class, 
         AllYamlTests.class,
         AllKeygenTests.class,
-        ShardingEncryptorFactoryTest.class
+        AllEncryptorTests.class
     })
 public final class AllCoreTests {
 }
