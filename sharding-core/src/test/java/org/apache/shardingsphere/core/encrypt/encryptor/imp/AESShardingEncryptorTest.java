@@ -17,6 +17,7 @@
 
 package org.apache.shardingsphere.core.encrypt.encryptor.imp;
 
+import org.junit.Before;
 import org.junit.Test;
 
 import java.util.Properties;
@@ -28,6 +29,13 @@ public class AESShardingEncryptorTest {
     
     private final AESShardingEncryptor encryptor = new AESShardingEncryptor();
     
+    @Before
+    public void setUp() {
+        Properties properties = new Properties();
+        properties.setProperty("aes.key.value", "test");
+        encryptor.setProperties(properties);
+    }
+    
     @Test
     public void assertGetType() {
         assertThat(encryptor.getType(), is("AES"));
@@ -35,14 +43,12 @@ public class AESShardingEncryptorTest {
     
     @Test
     public void assertEncode() {
-        Properties properties = new Properties();
-        properties.setProperty("aes.key.value", "test");
-        encryptor.setProperties(properties);
         assertThat(encryptor.encode("test").toString(), is("dSpPiyENQGDUXMKFMJPGWA=="));
     }
     
     @Test
-    public void testDecode() {
+    public void assertDecode() {
+        assertThat(encryptor.decode("dSpPiyENQGDUXMKFMJPGWA==").toString(), is("test"));
     }
     
     @Test
