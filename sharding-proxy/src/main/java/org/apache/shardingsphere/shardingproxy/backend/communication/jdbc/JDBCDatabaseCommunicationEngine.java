@@ -166,6 +166,6 @@ public final class JDBCDatabaseCommunicationEngine implements DatabaseCommunicat
     private Object decode(final int columnIndex, final String tableName, final String columnName) {
         Object value = mergedResult.getValue(columnIndex, Object.class);
         Optional<ShardingEncryptor> shardingEncryptor = ((ShardingSchema) logicSchema).getShardingRule().getShardingEncryptorEngine().getShardingEncryptor(tableName, columnName);
-        return shardingEncryptor.isPresent() ? shardingEncryptor.get().decode(value) : value;
+        return shardingEncryptor.isPresent() ? shardingEncryptor.get().decrypt(value) : value;
     }
 }
