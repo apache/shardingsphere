@@ -20,6 +20,7 @@ package org.apache.shardingsphere.core.encrypt.encryptor.imp;
 import lombok.Getter;
 import lombok.Setter;
 import lombok.SneakyThrows;
+import org.apache.commons.codec.binary.Base64;
 import org.apache.commons.codec.digest.DigestUtils;
 import org.apache.shardingsphere.core.exception.ShardingConfigurationException;
 import org.apache.shardingsphere.spi.algorithm.encrypt.ShardingEncryptor;
@@ -27,7 +28,6 @@ import org.apache.shardingsphere.spi.algorithm.encrypt.ShardingEncryptor;
 import javax.crypto.Cipher;
 import javax.crypto.spec.SecretKeySpec;
 import java.security.Key;
-import java.security.MessageDigest;
 import java.util.Arrays;
 import java.util.Properties;
 
@@ -55,8 +55,8 @@ public final class AESShardingEncryptor implements ShardingEncryptor {
         }
         Cipher cipher = Cipher.getInstance(getType().toUpperCase());
         cipher.init(Cipher.ENCRYPT_MODE, generateKey());
-        byte [] result = cipher.doFinal(String.valueOf(plaintext).getBytes("UTF8"));
-        return org.apache.commons.codec.binary.Base64.encodeBase64String(result);
+        byte[] result = cipher.doFinal(String.valueOf(plaintext).getBytes("UTF8"));
+        return Base64.encodeBase64String(result);
     }
     
     @Override
@@ -67,7 +67,7 @@ public final class AESShardingEncryptor implements ShardingEncryptor {
         }
         Cipher cipher = Cipher.getInstance(getType().toUpperCase());
         cipher.init(Cipher.DECRYPT_MODE, generateKey());
-        byte [] result = org.apache.commons.codec.binary.Base64.decodeBase64(String.valueOf(ciphertext));
+        byte[] result = Base64.decodeBase64(String.valueOf(ciphertext));
         return new String(cipher.doFinal(result));
     }
     
