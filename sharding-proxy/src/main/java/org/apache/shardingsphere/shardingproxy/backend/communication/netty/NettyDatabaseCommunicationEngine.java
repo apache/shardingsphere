@@ -102,7 +102,7 @@ public final class NettyDatabaseCommunicationEngine implements DatabaseCommunica
     
     private MergedResult mergedResult;
     
-    private DataHeaderPacket headerPacket;
+    private DataHeaderPacket dataHeaderPacket;
     
     @Override
     public CommandResponsePackets execute() {
@@ -213,7 +213,7 @@ public final class NettyDatabaseCommunicationEngine implements DatabaseCommunica
         try {
             mergedResult = MergeEngineFactory.newInstance(
                 GlobalRegistry.getInstance().getDatabaseType(), ((ShardingSchema) logicSchema).getShardingRule(), sqlStatement, logicSchema.getMetaData().getTable(), queryResults).merge();
-            headerPacket = ((QueryResponsePackets) packets.get(0)).getDataHeaderPackets().iterator().next();
+            dataHeaderPacket = ((QueryResponsePackets) packets.get(0)).getDataHeaderPackets().iterator().next();
         } catch (final SQLException ex) {
             return new CommandResponsePackets(new MySQLErrPacket(1, ex.getErrorCode(), ex.getSQLState(), ex.getMessage()));
         }
@@ -233,7 +233,8 @@ public final class NettyDatabaseCommunicationEngine implements DatabaseCommunica
     public ResultPacket getResultValue() throws SQLException {
         List<Object> row = new ArrayList<>(columnCount);
         for (int columnIndex = 1; columnIndex <= columnCount; columnIndex++) {
-            row.add(mergedResult.getValue(columnIndex, Object.class));
+            Object data = logicSchema instanceof MasterSlaveSchema ? mergedResult.getValue(columnIndex, Object.class) : decode(columnIndex, dataHeaderPacket.getTable(), dataHeaderPacket.getOrgName());
+            row.add(data);
         }
         return new ResultPacket(++currentSequenceId, row, columnCount, Collections.<Integer>emptyList());
     }
