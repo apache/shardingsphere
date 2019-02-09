@@ -80,21 +80,4 @@ public final class AESShardingEncryptor implements ShardingEncryptor {
         byte[] keyValue = String.valueOf(properties.get("aes.key.value")).getBytes("UTF8");
         return new SecretKeySpec(Arrays.copyOf(DigestUtils.sha1(keyValue), 16), getType());
     }
-    
-    public static void main(String[] args) throws Exception {
-        String before = "aaaaa";
-        AESShardingEncryptor aesShardingEncryptor = new AESShardingEncryptor();
-        Properties properties = new Properties();
-        properties.setProperty("aes.key.value", "123456");
-        aesShardingEncryptor.setProperties(properties);
-        Object after = aesShardingEncryptor.encode(before);
-        System.out.println("-----");
-        System.out.println(after);
-        System.out.println(aesShardingEncryptor.decode(after));
-//        byte[] encryptedByteValue = Base64.encodeBase64("aa".getBytes());
-//        String encryptedValue = String.valueOf(encryptedByteValue);
-//        System.out.println(Base64.decodeBase64(encryptedByteValue).toString());
-//        System.out.println("----");
-     
-    }
 }
