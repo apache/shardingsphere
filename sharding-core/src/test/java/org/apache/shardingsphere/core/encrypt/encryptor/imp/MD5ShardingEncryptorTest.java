@@ -21,15 +21,18 @@ import org.junit.Test;
 
 public class MD5ShardingEncryptorTest {
     
+    private final MD5ShardingEncryptor encryptor = new MD5ShardingEncryptor();
+    
     @Test
-    public void testGetType() {
+    public void assertGetType() {
+        assertThat()
     }
     
     @Test
-    public void testEncode() {
+    public void assertEncode() {
     }
     
     @Test
-    public void testDecode() {
+    public void assertDecode() {
     }
 }
