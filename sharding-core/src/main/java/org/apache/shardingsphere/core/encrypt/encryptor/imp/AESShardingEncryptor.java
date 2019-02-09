@@ -29,7 +29,7 @@ import java.security.Key;
 import java.util.Properties;
 
 /**
- * DES sharding encryptor.
+ * AES sharding encryptor.
  *
  * @author panjuan
  */
