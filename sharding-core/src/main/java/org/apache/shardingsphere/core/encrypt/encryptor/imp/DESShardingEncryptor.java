@@ -49,4 +49,8 @@ public final class DESShardingEncryptor implements ShardingEncryptor {
     public Object decode(final Object ciphertext) {
         return ciphertext;
     }
+    
+    private boolean hasDesKey() {
+        return null != properties.get("des.key");
+    }
 }
