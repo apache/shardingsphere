@@ -20,12 +20,15 @@ package org.apache.shardingsphere.core.encrypt.encryptor.imp;
 import lombok.Getter;
 import lombok.Setter;
 import lombok.SneakyThrows;
+import org.apache.commons.codec.digest.DigestUtils;
 import org.apache.shardingsphere.core.exception.ShardingConfigurationException;
 import org.apache.shardingsphere.spi.algorithm.encrypt.ShardingEncryptor;
 
 import javax.crypto.Cipher;
 import javax.crypto.spec.SecretKeySpec;
 import java.security.Key;
+import java.security.MessageDigest;
+import java.util.Arrays;
 import java.util.Properties;
 
 /**
@@ -50,8 +53,10 @@ public final class AESShardingEncryptor implements ShardingEncryptor {
         if (!hasDesKey()) {
             throw new ShardingConfigurationException("No available secret key for AESShardingEncryptor.");
         }
-        getCipher().init(Cipher.ENCRYPT_MODE, generateKey());
-        return new String(getCipher().doFinal(String.valueOf(plaintext).getBytes()));
+        Cipher cipher = Cipher.getInstance(getType().toUpperCase());
+        cipher.init(Cipher.ENCRYPT_MODE, generateKey());
+        byte [] result = cipher.doFinal(String.valueOf(plaintext).getBytes("UTF8"));
+        return org.apache.commons.codec.binary.Base64.encodeBase64String(result);
     }
     
     @Override
@@ -60,8 +65,10 @@ public final class AESShardingEncryptor implements ShardingEncryptor {
         if (!hasDesKey()) {
             throw new ShardingConfigurationException("No available secret key for AESShardingEncryptor.");
         }
-        getCipher().init(Cipher.DECRYPT_MODE, generateKey());
-        return new String(getCipher().doFinal(String.valueOf(ciphertext).getBytes()));
+        Cipher cipher = Cipher.getInstance(getType().toUpperCase());
+        cipher.init(Cipher.DECRYPT_MODE, generateKey());
+        byte [] result = org.apache.commons.codec.binary.Base64.decodeBase64(String.valueOf(ciphertext));
+        return new String(cipher.doFinal(result));
     }
     
     private boolean hasDesKey() {
@@ -69,11 +76,29 @@ public final class AESShardingEncryptor implements ShardingEncryptor {
     }
     
     @SneakyThrows
-    private Cipher getCipher() {
-        return Cipher.getInstance(getType().toUpperCase());
+    private Key generateKey() {
+        MessageDigest sha = null;
+        System.out.println(String.valueOf(properties.get("aes.key.value")));
+        byte[] key = String.valueOf(properties.get("aes.key.value")).getBytes("UTF-8");
+        key = Arrays.copyOf(DigestUtils.sha1(key), 16);
+        System.out.println(key);
+        return new SecretKeySpec(key, getType());
     }
     
-    private Key generateKey() {
-        return new SecretKeySpec(properties.getProperty("aes.key.value").getBytes(), getType());
+    public static void main(String[] args) throws Exception {
+        String before = "aaaaa";
+        AESShardingEncryptor aesShardingEncryptor = new AESShardingEncryptor();
+        Properties properties = new Properties();
+        properties.setProperty("aes.key.value", "123456");
+        aesShardingEncryptor.setProperties(properties);
+        Object after = aesShardingEncryptor.encode(before);
+        System.out.println("-----");
+        System.out.println(after);
+        System.out.println(aesShardingEncryptor.decode(after));
+//        byte[] encryptedByteValue = Base64.encodeBase64("aa".getBytes());
+//        String encryptedValue = String.valueOf(encryptedByteValue);
+//        System.out.println(Base64.decodeBase64(encryptedByteValue).toString());
+//        System.out.println("----");
+     
     }
 }
