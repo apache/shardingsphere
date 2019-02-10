@@ -66,6 +66,8 @@ public class AESShardingEncryptorTest {
     
     @Test
     public void assertDecodeWithoutKey() {
+        Properties properties = new Properties();
+        encryptor.setProperties(properties);
         assertThat(encryptor.decrypt("dSpPiyENQGDUXMKFMJPGWA==").toString(), is("test"));
     }
     
