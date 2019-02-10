@@ -64,11 +64,10 @@ public class AESShardingEncryptorTest {
         assertThat(encryptor.encrypt("test").toString(), is("dSpPiyENQGDUXMKFMJPGWA=="));
     }
     
-    @Test
+    @Test(expected = ShardingConfigurationException.class)
     public void assertDecodeWithoutKey() {
         Properties properties = new Properties();
         encryptor.setProperties(properties);
         assertThat(encryptor.decrypt("dSpPiyENQGDUXMKFMJPGWA==").toString(), is("test"));
     }
-    
 }
