@@ -364,12 +364,12 @@ public final class ShardingResultSet extends AbstractResultSetAdapter {
             return value;
         }
         Optional<ShardingEncryptor> shardingEncryptor = getShardingEncryptorEngine().getShardingEncryptor(getMetaData().getTableName(index), getMetaData().getColumnName(index));
-        return shardingEncryptor.isPresent() ? shardingEncryptor.get().decode(value) : value;
+        return shardingEncryptor.isPresent() ? shardingEncryptor.get().decrypt(value) : value;
     }
     
     @SneakyThrows
     private Object decode(final Object value, final int columnIndex) {
         Optional<ShardingEncryptor> shardingEncryptor = getShardingEncryptorEngine().getShardingEncryptor(getMetaData().getTableName(columnIndex), getMetaData().getColumnName(columnIndex));
-        return shardingEncryptor.isPresent() ? shardingEncryptor.get().decode(value) : value;
+        return shardingEncryptor.isPresent() ? shardingEncryptor.get().decrypt(value) : value;
     }
 }

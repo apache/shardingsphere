@@ -15,37 +15,19 @@
  * limitations under the License.
  */
 
-package org.apache.shardingsphere.core.encrypt.fixture;
+package org.apache.shardingsphere.core.encrypt;
 
-import lombok.Getter;
-import lombok.Setter;
-import org.apache.shardingsphere.spi.algorithm.encrypt.ShardingEncryptor;
+import org.apache.shardingsphere.core.encrypt.encryptor.imp.AESShardingEncryptorTest;
+import org.apache.shardingsphere.core.encrypt.encryptor.imp.MD5ShardingEncryptorTest;
+import org.junit.runner.RunWith;
+import org.junit.runners.Suite;
+import org.junit.runners.Suite.SuiteClasses;
 
-import java.util.Properties;
-
-/**
- * Test sharding encryptor.
- *
- * @author panjuan
- */
-@Getter
-@Setter
-public final class TestShardingEncryptor implements ShardingEncryptor {
-    
-    private Properties properties = new Properties();
-    
-    @Override
-    public String getType() {
-        return "test";
-    }
-    
-    @Override
-    public Object encrypt(final Object plaintext) {
-        return "";
-    }
-    
-    @Override
-    public Object decrypt(final Object ciphertext) {
-        return "";
-    }
+@RunWith(Suite.class)
+@SuiteClasses({
+        ShardingEncryptorFactoryTest.class,
+        AESShardingEncryptorTest.class,
+        MD5ShardingEncryptorTest.class
+})
+public final class AllEncryptorTests {
 }

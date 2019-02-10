@@ -25,10 +25,10 @@ package org.apache.shardingsphere.spi.algorithm.encrypt;
 public interface ShardingQueryAssistedEncryptor extends ShardingEncryptor {
     
     /**
-     * Query assisted encode.
+     * Query assisted encrypt.
      * 
      * @param plaintext plaintext
      * @return ciphertext
      */
-    String queryAssistedEncode(String plaintext);
+    String queryAssistedEncrypt(String plaintext);
 }

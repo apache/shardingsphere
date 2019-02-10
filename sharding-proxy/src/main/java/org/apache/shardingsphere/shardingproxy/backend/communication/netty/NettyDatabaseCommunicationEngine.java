@@ -17,10 +17,12 @@
 
 package org.apache.shardingsphere.shardingproxy.backend.communication.netty;
 
+import com.google.common.base.Optional;
 import io.netty.channel.Channel;
 import io.netty.channel.pool.SimpleChannelPool;
 import lombok.Getter;
 import lombok.RequiredArgsConstructor;
+import lombok.SneakyThrows;
 import org.apache.shardingsphere.core.constant.DatabaseType;
 import org.apache.shardingsphere.core.constant.SQLType;
 import org.apache.shardingsphere.core.constant.properties.ShardingPropertiesConstant;
@@ -46,9 +48,12 @@ import org.apache.shardingsphere.shardingproxy.runtime.schema.MasterSlaveSchema;
 import org.apache.shardingsphere.shardingproxy.runtime.schema.ShardingSchema;
 import org.apache.shardingsphere.shardingproxy.transport.common.packet.DatabasePacket;
 import org.apache.shardingsphere.shardingproxy.transport.common.packet.command.CommandResponsePackets;
+import org.apache.shardingsphere.shardingproxy.transport.common.packet.command.query.DataHeaderPacket;
+import org.apache.shardingsphere.shardingproxy.transport.common.packet.command.query.QueryResponsePackets;
 import org.apache.shardingsphere.shardingproxy.transport.mysql.packet.command.query.text.query.MySQLComPacketQuery;
 import org.apache.shardingsphere.shardingproxy.transport.mysql.packet.generic.MySQLErrPacket;
 import org.apache.shardingsphere.shardingproxy.transport.mysql.packet.generic.MySQLOKPacket;
+import org.apache.shardingsphere.spi.algorithm.encrypt.ShardingEncryptor;
 
 import java.sql.SQLException;
 import java.util.ArrayList;
@@ -96,6 +101,8 @@ public final class NettyDatabaseCommunicationEngine implements DatabaseCommunica
     private int columnCount;
     
     private MergedResult mergedResult;
+    
+    private DataHeaderPacket dataHeaderPacket;
     
     @Override
     public CommandResponsePackets execute() {
@@ -206,6 +213,7 @@ public final class NettyDatabaseCommunicationEngine implements DatabaseCommunica
         try {
             mergedResult = MergeEngineFactory.newInstance(
                 GlobalRegistry.getInstance().getDatabaseType(), ((ShardingSchema) logicSchema).getShardingRule(), sqlStatement, logicSchema.getMetaData().getTable(), queryResults).merge();
+            dataHeaderPacket = ((QueryResponsePackets) packets.get(0)).getDataHeaderPackets().iterator().next();
         } catch (final SQLException ex) {
             return new CommandResponsePackets(new MySQLErrPacket(1, ex.getErrorCode(), ex.getSQLState(), ex.getMessage()));
         }
@@ -223,11 +231,12 @@ public final class NettyDatabaseCommunicationEngine implements DatabaseCommunica
     
     @Override
     public ResultPacket getResultValue() throws SQLException {
-        List<Object> data = new ArrayList<>(columnCount);
+        List<Object> row = new ArrayList<>(columnCount);
         for (int columnIndex = 1; columnIndex <= columnCount; columnIndex++) {
-            data.add(mergedResult.getValue(columnIndex, Object.class));
+            Object data = logicSchema instanceof MasterSlaveSchema ? mergedResult.getValue(columnIndex, Object.class) : decode(columnIndex, dataHeaderPacket.getTable(), dataHeaderPacket.getOrgName());
+            row.add(data);
         }
-        return new ResultPacket(++currentSequenceId, data, columnCount, Collections.<Integer>emptyList());
+        return new ResultPacket(++currentSequenceId, row, columnCount, Collections.<Integer>emptyList());
     }
     
     private void channelRelease() {
@@ -236,5 +245,12 @@ public final class NettyDatabaseCommunicationEngine implements DatabaseCommunica
                 CLIENT_MANAGER.getBackendNettyClient(logicSchema.getName()).getPoolMap().get(entry.getKey()).release(each);
             }
         }
+    }
+    
+    @SneakyThrows
+    private Object decode(final int columnIndex, final String tableName, final String columnName) {
+        Object value = mergedResult.getValue(columnIndex, Object.class);
+        Optional<ShardingEncryptor> shardingEncryptor = ((ShardingSchema) logicSchema).getShardingRule().getShardingEncryptorEngine().getShardingEncryptor(tableName, columnName);
+        return shardingEncryptor.isPresent() ? shardingEncryptor.get().decrypt(value) : value;
     }
 }
