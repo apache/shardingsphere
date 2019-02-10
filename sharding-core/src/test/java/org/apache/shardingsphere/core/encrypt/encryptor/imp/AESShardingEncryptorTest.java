@@ -47,16 +47,6 @@ public class AESShardingEncryptorTest {
         assertThat(encryptor.encrypt("test").toString(), is("dSpPiyENQGDUXMKFMJPGWA=="));
     }
     
-    @Test
-    public void assertDecode() {
-        assertThat(encryptor.decrypt("dSpPiyENQGDUXMKFMJPGWA==").toString(), is("test"));
-    }
-    
-    @Test
-    public void assertGetProperties() {
-        assertThat(encryptor.getProperties().get("aes.key.value").toString(), is("test"));
-    }
-    
     @Test(expected = ShardingConfigurationException.class)
     public void assertEncodeWithoutKey() {
         Properties properties = new Properties();
@@ -64,10 +54,20 @@ public class AESShardingEncryptorTest {
         assertThat(encryptor.encrypt("test").toString(), is("dSpPiyENQGDUXMKFMJPGWA=="));
     }
     
+    @Test
+    public void assertDecode() {
+        assertThat(encryptor.decrypt("dSpPiyENQGDUXMKFMJPGWA==").toString(), is("test"));
+    }
+    
     @Test(expected = ShardingConfigurationException.class)
     public void assertDecodeWithoutKey() {
         Properties properties = new Properties();
         encryptor.setProperties(properties);
         assertThat(encryptor.decrypt("dSpPiyENQGDUXMKFMJPGWA==").toString(), is("test"));
+    }
+    
+    @Test
+    public void assertGetProperties() {
+        assertThat(encryptor.getProperties().get("aes.key.value").toString(), is("test"));
     }
 }
