@@ -21,9 +21,9 @@ import com.google.common.collect.Range;
 import com.google.common.collect.Sets;
 import org.apache.shardingsphere.api.config.sharding.strategy.ComplexShardingStrategyConfiguration;
 import org.apache.shardingsphere.api.config.sharding.strategy.StandardShardingStrategyConfiguration;
-import org.apache.shardingsphere.core.fixture.TestComplexKeysShardingAlgorithm;
-import org.apache.shardingsphere.core.fixture.TestPreciseShardingAlgorithm;
-import org.apache.shardingsphere.core.fixture.TestRangeShardingAlgorithm;
+import org.apache.shardingsphere.core.fixture.ComplexOrderShardingAlgorithm;
+import org.apache.shardingsphere.core.fixture.PreciseOrderShardingAlgorithm;
+import org.apache.shardingsphere.core.fixture.RangeOrderShardingAlgorithm;
 import org.apache.shardingsphere.core.parsing.parser.context.condition.Column;
 import org.apache.shardingsphere.core.routing.strategy.complex.ComplexShardingStrategy;
 import org.apache.shardingsphere.core.routing.strategy.none.NoneShardingStrategy;
@@ -51,15 +51,15 @@ public final class ShardingStrategyTest {
     
     @Test
     public void assertDoShardingForBetweenSingleKey() {
-        StandardShardingStrategy strategy = new StandardShardingStrategy(new StandardShardingStrategyConfiguration("column", new TestPreciseShardingAlgorithm(), new TestRangeShardingAlgorithm()));
-        assertThat(strategy.doSharding(targets, Collections.<RouteValue>singletonList(new BetweenRouteValue<>(new Column("column", "logicTable"), Range.open("1", "3")))), 
-                is((Collection<String>) Sets.newHashSet("1", "2", "3")));
+        StandardShardingStrategy strategy = new StandardShardingStrategy(new StandardShardingStrategyConfiguration("column", new PreciseOrderShardingAlgorithm(), new RangeOrderShardingAlgorithm()));
+        assertThat(strategy.doSharding(targets, Collections.<RouteValue>singletonList(new BetweenRouteValue<>(new Column("column", "logicTable"), Range.open(1, 3)))), 
+                is((Collection<String>) Sets.newHashSet("1")));
     }
     
     @Test
     public void assertDoShardingForMultipleKeys() {
-        ComplexShardingStrategy strategy = new ComplexShardingStrategy(new ComplexShardingStrategyConfiguration("column", new TestComplexKeysShardingAlgorithm()));
-        assertThat(strategy.doSharding(targets, Collections.<RouteValue>singletonList(new ListRouteValue<>(new Column("column", "logicTable"), Collections.singletonList("1")))), 
+        ComplexShardingStrategy strategy = new ComplexShardingStrategy(new ComplexShardingStrategyConfiguration("column", new ComplexOrderShardingAlgorithm()));
+        assertThat(strategy.doSharding(targets, Collections.<RouteValue>singletonList(new ListRouteValue<>(new Column("column", "logicTable"), Collections.singletonList(1)))), 
                 is((Collection<String>) Sets.newHashSet("1", "2", "3")));
     }
 }
