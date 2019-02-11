@@ -17,20 +17,24 @@
 
 package org.apache.shardingsphere.core.fixture;
 
-import org.apache.shardingsphere.api.algorithm.sharding.standard.PreciseShardingAlgorithm;
-import org.apache.shardingsphere.api.algorithm.sharding.standard.PreciseShardingValue;
+import org.apache.shardingsphere.api.algorithm.sharding.standard.RangeShardingAlgorithm;
+import org.apache.shardingsphere.api.algorithm.sharding.standard.RangeShardingValue;
 
 import java.util.Collection;
+import java.util.HashSet;
 
-public final class PreciseOrderShardingAlgorithm implements PreciseShardingAlgorithm<Integer> {
+public final class RangeShardingAlgorithmFixture implements RangeShardingAlgorithm<Integer> {
     
     @Override
-    public String doSharding(final Collection<String> availableTargetNames, final PreciseShardingValue<Integer> shardingValue) {
-        for (String each : availableTargetNames) {
-            if (each.endsWith(String.valueOf(shardingValue.getValue() % 2))) {
-                return each;
+    public Collection<String> doSharding(final Collection<String> availableTargetNames, final RangeShardingValue<Integer> shardingValue) {
+        Collection<String> result = new HashSet<>(2);
+        for (int i = shardingValue.getValueRange().lowerEndpoint(); i <= shardingValue.getValueRange().upperEndpoint(); i++) {
+            for (String each : availableTargetNames) {
+                if (each.endsWith(String.valueOf(i % 2))) {
+                    result.add(each);
+                }
             }
         }
-        return null;
+        return result;
     }
 }

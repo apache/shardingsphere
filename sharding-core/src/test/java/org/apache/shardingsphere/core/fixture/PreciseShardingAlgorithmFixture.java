@@ -17,19 +17,18 @@
 
 package org.apache.shardingsphere.core.fixture;
 
-import org.apache.shardingsphere.api.algorithm.sharding.hint.HintShardingAlgorithm;
-import org.apache.shardingsphere.api.algorithm.sharding.hint.HintShardingValue;
+import org.apache.shardingsphere.api.algorithm.sharding.standard.PreciseShardingAlgorithm;
+import org.apache.shardingsphere.api.algorithm.sharding.standard.PreciseShardingValue;
 
 import java.util.Collection;
-import java.util.Collections;
 
-public final class OrderDatabaseHintShardingAlgorithm implements HintShardingAlgorithm<Integer> {
+public final class PreciseShardingAlgorithmFixture implements PreciseShardingAlgorithm<Integer> {
     
     @Override
-    public Collection<String> doSharding(final Collection<String> availableTargetNames, final HintShardingValue<Integer> shardingValue) {
+    public String doSharding(final Collection<String> availableTargetNames, final PreciseShardingValue<Integer> shardingValue) {
         for (String each : availableTargetNames) {
-            if (each.endsWith(String.valueOf(shardingValue.getValues().iterator().next() % 2))) {
-                return Collections.singletonList(each);
+            if (each.endsWith(String.valueOf(shardingValue.getValue() % 2))) {
+                return each;
             }
         }
         return null;

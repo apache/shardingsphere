@@ -22,7 +22,7 @@ import org.apache.shardingsphere.api.algorithm.sharding.complex.ComplexKeysShard
 
 import java.util.Collection;
 
-public final class ComplexOrderShardingAlgorithm implements ComplexKeysShardingAlgorithm<Integer> {
+public final class ComplexKeysShardingAlgorithmFixture implements ComplexKeysShardingAlgorithm<Integer> {
     
     @Override
     public Collection<String> doSharding(final Collection<String> availableTargetNames, final ComplexKeysShardingValue<Integer> shardingValue) {

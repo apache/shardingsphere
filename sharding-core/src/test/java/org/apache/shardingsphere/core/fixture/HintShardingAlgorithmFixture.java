@@ -17,24 +17,21 @@
 
 package org.apache.shardingsphere.core.fixture;
 
-import org.apache.shardingsphere.api.algorithm.sharding.standard.RangeShardingAlgorithm;
-import org.apache.shardingsphere.api.algorithm.sharding.standard.RangeShardingValue;
+import org.apache.shardingsphere.api.algorithm.sharding.hint.HintShardingAlgorithm;
+import org.apache.shardingsphere.api.algorithm.sharding.hint.HintShardingValue;
 
 import java.util.Collection;
-import java.util.HashSet;
+import java.util.Collections;
 
-public final class RangeOrderShardingAlgorithm implements RangeShardingAlgorithm<Integer> {
+public final class HintShardingAlgorithmFixture implements HintShardingAlgorithm<Integer> {
     
     @Override
-    public Collection<String> doSharding(final Collection<String> availableTargetNames, final RangeShardingValue<Integer> shardingValue) {
-        Collection<String> result = new HashSet<>(2);
-        for (int i = shardingValue.getValueRange().lowerEndpoint(); i <= shardingValue.getValueRange().upperEndpoint(); i++) {
-            for (String each : availableTargetNames) {
-                if (each.endsWith(String.valueOf(i % 2))) {
-                    result.add(each);
-                }
+    public Collection<String> doSharding(final Collection<String> availableTargetNames, final HintShardingValue<Integer> shardingValue) {
+        for (String each : availableTargetNames) {
+            if (each.endsWith(String.valueOf(shardingValue.getValues().iterator().next() % 2))) {
+                return Collections.singletonList(each);
             }
         }
-        return result;
+        return null;
     }
 }
