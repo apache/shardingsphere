@@ -15,9 +15,8 @@
  * limitations under the License.
  */
 
-package org.apache.shardingsphere.api.algorithm.masterslave;
+package org.apache.shardingsphere.core.masterslave.impl;
 
-import org.apache.shardingsphere.core.masterslave.impl.RandomMasterSlaveLoadBalanceAlgorithm;
 import org.junit.Test;
 
 import java.util.Arrays;
