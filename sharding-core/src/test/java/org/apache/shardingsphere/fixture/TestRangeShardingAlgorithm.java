@@ -15,7 +15,7 @@
  * limitations under the License.
  */
 
-package org.apache.shardingsphere.api.algorithm.fixture;
+package org.apache.shardingsphere.fixture;
 
 import org.apache.shardingsphere.api.algorithm.sharding.standard.RangeShardingAlgorithm;
 import org.apache.shardingsphere.api.algorithm.sharding.standard.RangeShardingValue;

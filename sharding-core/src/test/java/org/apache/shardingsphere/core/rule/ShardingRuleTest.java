@@ -17,7 +17,6 @@
 
 package org.apache.shardingsphere.core.rule;
 
-import org.apache.shardingsphere.api.algorithm.fixture.TestPreciseShardingAlgorithm;
 import org.apache.shardingsphere.api.config.masterslave.MasterSlaveRuleConfiguration;
 import org.apache.shardingsphere.api.config.sharding.KeyGeneratorConfiguration;
 import org.apache.shardingsphere.api.config.sharding.ShardingRuleConfiguration;
@@ -31,6 +30,7 @@ import org.apache.shardingsphere.core.keygen.impl.SnowflakeShardingKeyGenerator;
 import org.apache.shardingsphere.core.parsing.parser.context.condition.Column;
 import org.apache.shardingsphere.core.routing.strategy.inline.InlineShardingStrategy;
 import org.apache.shardingsphere.core.routing.strategy.none.NoneShardingStrategy;
+import org.apache.shardingsphere.fixture.TestPreciseShardingAlgorithm;
 import org.hamcrest.CoreMatchers;
 import org.junit.Test;
 

@@ -15,13 +15,10 @@
  * limitations under the License.
  */
 
-package org.apache.shardingsphere.api.algorithm.common;
+package org.apache.shardingsphere.core.routing.strategy;
 
 import com.google.common.collect.Range;
 import com.google.common.collect.Sets;
-import org.apache.shardingsphere.api.algorithm.fixture.TestComplexKeysShardingAlgorithm;
-import org.apache.shardingsphere.api.algorithm.fixture.TestPreciseShardingAlgorithm;
-import org.apache.shardingsphere.api.algorithm.fixture.TestRangeShardingAlgorithm;
 import org.apache.shardingsphere.api.config.sharding.strategy.ComplexShardingStrategyConfiguration;
 import org.apache.shardingsphere.api.config.sharding.strategy.StandardShardingStrategyConfiguration;
 import org.apache.shardingsphere.core.parsing.parser.context.condition.Column;
@@ -31,6 +28,9 @@ import org.apache.shardingsphere.core.routing.strategy.standard.StandardSharding
 import org.apache.shardingsphere.core.routing.value.BetweenRouteValue;
 import org.apache.shardingsphere.core.routing.value.ListRouteValue;
 import org.apache.shardingsphere.core.routing.value.RouteValue;
+import org.apache.shardingsphere.fixture.TestComplexKeysShardingAlgorithm;
+import org.apache.shardingsphere.fixture.TestPreciseShardingAlgorithm;
+import org.apache.shardingsphere.fixture.TestRangeShardingAlgorithm;
 import org.junit.Test;
 
 import java.util.Collection;
