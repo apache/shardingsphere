@@ -15,17 +15,22 @@
  * limitations under the License.
  */
 
-package org.apache.shardingsphere.fixture;
+package org.apache.shardingsphere.core.fixture;
 
-import org.apache.shardingsphere.api.algorithm.sharding.complex.ComplexKeysShardingAlgorithm;
-import org.apache.shardingsphere.api.algorithm.sharding.complex.ComplexKeysShardingValue;
+import org.apache.shardingsphere.api.algorithm.sharding.standard.RangeShardingAlgorithm;
+import org.apache.shardingsphere.api.algorithm.sharding.standard.RangeShardingValue;
 
+import java.util.ArrayList;
 import java.util.Collection;
 
-public final class TestComplexKeysShardingAlgorithm implements ComplexKeysShardingAlgorithm<String> {
-
+public final class TestRangeShardingAlgorithm implements RangeShardingAlgorithm<String> {
+    
     @Override
-    public Collection<String> doSharding(final Collection<String> availableTargetNames, final ComplexKeysShardingValue<String> shardingValue) {
-        return availableTargetNames;
+    public Collection<String> doSharding(final Collection<String> availableTargetNames, final RangeShardingValue<String> shardingValue) {
+        Collection<String> result = new ArrayList<>();
+        for (Integer i = Integer.parseInt(shardingValue.getValueRange().lowerEndpoint()); i <= Integer.parseInt(shardingValue.getValueRange().upperEndpoint()); i++) {
+            result.add(i.toString());
+        }
+        return result;
     }
 }

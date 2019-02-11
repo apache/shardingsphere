@@ -15,7 +15,7 @@
  * limitations under the License.
  */
 
-package org.apache.shardingsphere.core.routing.strategy;
+package org.apache.shardingsphere.core.encrypt;
 
 import org.apache.shardingsphere.core.exception.ShardingConfigurationException;
 import org.apache.shardingsphere.spi.algorithm.encrypt.ShardingEncryptor;

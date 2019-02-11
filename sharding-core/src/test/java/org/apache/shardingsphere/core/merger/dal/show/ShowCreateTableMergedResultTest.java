@@ -21,13 +21,13 @@ import com.google.common.collect.Lists;
 import org.apache.shardingsphere.api.config.sharding.ShardingRuleConfiguration;
 import org.apache.shardingsphere.api.config.sharding.TableRuleConfiguration;
 import org.apache.shardingsphere.api.config.sharding.strategy.ComplexShardingStrategyConfiguration;
+import org.apache.shardingsphere.core.fixture.TestComplexKeysShardingAlgorithm;
 import org.apache.shardingsphere.core.merger.QueryResult;
 import org.apache.shardingsphere.core.merger.fixture.TestQueryResult;
 import org.apache.shardingsphere.core.metadata.table.ColumnMetaData;
 import org.apache.shardingsphere.core.metadata.table.ShardingTableMetaData;
 import org.apache.shardingsphere.core.metadata.table.TableMetaData;
 import org.apache.shardingsphere.core.rule.ShardingRule;
-import org.apache.shardingsphere.fixture.TestComplexKeysShardingAlgorithm;
 import org.junit.Before;
 import org.junit.Test;
 

@@ -21,6 +21,9 @@ import com.google.common.collect.Range;
 import com.google.common.collect.Sets;
 import org.apache.shardingsphere.api.config.sharding.strategy.ComplexShardingStrategyConfiguration;
 import org.apache.shardingsphere.api.config.sharding.strategy.StandardShardingStrategyConfiguration;
+import org.apache.shardingsphere.core.fixture.TestComplexKeysShardingAlgorithm;
+import org.apache.shardingsphere.core.fixture.TestPreciseShardingAlgorithm;
+import org.apache.shardingsphere.core.fixture.TestRangeShardingAlgorithm;
 import org.apache.shardingsphere.core.parsing.parser.context.condition.Column;
 import org.apache.shardingsphere.core.routing.strategy.complex.ComplexShardingStrategy;
 import org.apache.shardingsphere.core.routing.strategy.none.NoneShardingStrategy;
@@ -28,9 +31,6 @@ import org.apache.shardingsphere.core.routing.strategy.standard.StandardSharding
 import org.apache.shardingsphere.core.routing.value.BetweenRouteValue;
 import org.apache.shardingsphere.core.routing.value.ListRouteValue;
 import org.apache.shardingsphere.core.routing.value.RouteValue;
-import org.apache.shardingsphere.fixture.TestComplexKeysShardingAlgorithm;
-import org.apache.shardingsphere.fixture.TestPreciseShardingAlgorithm;
-import org.apache.shardingsphere.fixture.TestRangeShardingAlgorithm;
 import org.junit.Test;
 
 import java.util.Collection;

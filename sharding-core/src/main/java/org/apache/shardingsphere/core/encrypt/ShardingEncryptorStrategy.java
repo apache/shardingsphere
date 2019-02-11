@@ -15,7 +15,7 @@
  * limitations under the License.
  */
 
-package org.apache.shardingsphere.core.routing.strategy;
+package org.apache.shardingsphere.core.encrypt;
 
 import lombok.Getter;
 import org.apache.shardingsphere.core.exception.ShardingConfigurationException;

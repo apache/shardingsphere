@@ -15,7 +15,7 @@
  * limitations under the License.
  */
 
-package org.apache.shardingsphere.fixture;
+package org.apache.shardingsphere.core.fixture;
 
 import org.apache.shardingsphere.api.algorithm.sharding.standard.PreciseShardingAlgorithm;
 import org.apache.shardingsphere.api.algorithm.sharding.standard.PreciseShardingValue;

@@ -25,9 +25,10 @@ import org.junit.runners.Suite.SuiteClasses;
 
 @RunWith(Suite.class)
 @SuiteClasses({
+        ShardingEncryptorStrategyTest.class, 
         ShardingEncryptorFactoryTest.class, 
         AESShardingEncryptorTest.class, 
         MD5ShardingEncryptorTest.class
-    })
+})
 public final class AllEncryptorTests {
 }

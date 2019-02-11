@@ -25,12 +25,12 @@ import org.apache.shardingsphere.api.config.sharding.strategy.InlineShardingStra
 import org.apache.shardingsphere.api.config.sharding.strategy.NoneShardingStrategyConfiguration;
 import org.apache.shardingsphere.api.config.sharding.strategy.StandardShardingStrategyConfiguration;
 import org.apache.shardingsphere.core.exception.ShardingConfigurationException;
+import org.apache.shardingsphere.core.fixture.TestPreciseShardingAlgorithm;
 import org.apache.shardingsphere.core.keygen.fixture.IncrementShardingKeyGenerator;
 import org.apache.shardingsphere.core.keygen.impl.SnowflakeShardingKeyGenerator;
 import org.apache.shardingsphere.core.parsing.parser.context.condition.Column;
 import org.apache.shardingsphere.core.routing.strategy.inline.InlineShardingStrategy;
 import org.apache.shardingsphere.core.routing.strategy.none.NoneShardingStrategy;
-import org.apache.shardingsphere.fixture.TestPreciseShardingAlgorithm;
 import org.hamcrest.CoreMatchers;
 import org.junit.Test;
 
