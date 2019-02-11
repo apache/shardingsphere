@@ -15,23 +15,9 @@
  * limitations under the License.
  */
 
-package org.apache.shardingsphere.api;
+package org.apache.shardingsphere.core.spi.algorithm.fixture;
 
-import org.apache.shardingsphere.api.algorithm.common.ShardingStrategyTest;
-import org.apache.shardingsphere.api.algorithm.sharding.DatabaseShardingStrategyTest;
-import org.apache.shardingsphere.api.algorithm.table.TableShardingStrategyTest;
-import org.apache.shardingsphere.api.config.AllConfigTests;
-import org.junit.runner.RunWith;
-import org.junit.runners.Suite;
-import org.junit.runners.Suite.SuiteClasses;
+import org.apache.shardingsphere.spi.algorithm.BaseAlgorithm;
 
-@RunWith(Suite.class)
-@SuiteClasses({
-        AllConfigTests.class, 
-        ShardingStrategyTest.class, 
-        DatabaseShardingStrategyTest.class, 
-        TableShardingStrategyTest.class,
-        HintManagerTest.class
-})
-public final class AllAPITests {
+public interface BaseAlgorithmFixture extends BaseAlgorithm {
 }

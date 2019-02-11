@@ -15,7 +15,7 @@
  * limitations under the License.
  */
 
-package org.apache.shardingsphere.core.encrypt.encryptor.imp;
+package org.apache.shardingsphere.core.encrypt.encryptor.impl;
 
 import org.apache.shardingsphere.core.exception.ShardingConfigurationException;
 import org.junit.Before;
@@ -26,7 +26,7 @@ import java.util.Properties;
 import static org.hamcrest.CoreMatchers.is;
 import static org.junit.Assert.assertThat;
 
-public class AESShardingEncryptorTest {
+public final class AESShardingEncryptorTest {
     
     private final AESShardingEncryptor encryptor = new AESShardingEncryptor();
     

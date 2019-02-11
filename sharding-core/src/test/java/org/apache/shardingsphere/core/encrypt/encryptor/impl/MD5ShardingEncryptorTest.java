@@ -15,7 +15,7 @@
  * limitations under the License.
  */
 
-package org.apache.shardingsphere.core.encrypt.encryptor.imp;
+package org.apache.shardingsphere.core.encrypt.encryptor.impl;
 
 import org.junit.Test;
 
@@ -24,7 +24,7 @@ import java.util.Properties;
 import static org.hamcrest.CoreMatchers.is;
 import static org.junit.Assert.assertThat;
 
-public class MD5ShardingEncryptorTest {
+public final class MD5ShardingEncryptorTest {
     
     private final MD5ShardingEncryptor encryptor = new MD5ShardingEncryptor();
     
