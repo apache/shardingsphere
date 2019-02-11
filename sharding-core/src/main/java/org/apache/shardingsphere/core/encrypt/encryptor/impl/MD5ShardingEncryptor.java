@@ -15,7 +15,7 @@
  * limitations under the License.
  */
 
-package org.apache.shardingsphere.core.encrypt.encryptor.imp;
+package org.apache.shardingsphere.core.encrypt.encryptor.impl;
 
 import lombok.Getter;
 import lombok.Setter;

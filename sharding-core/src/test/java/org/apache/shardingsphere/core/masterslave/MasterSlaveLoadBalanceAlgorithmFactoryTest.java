@@ -29,17 +29,17 @@ import static org.junit.Assert.assertThat;
 public final class MasterSlaveLoadBalanceAlgorithmFactoryTest {
     
     @Test
-    public void assertGetRoundRobinMasterSlaveLoadBalanceAlgorithm() {
+    public void assertNewRoundRobinMasterSlaveLoadBalanceAlgorithm() {
         assertThat(MasterSlaveLoadBalanceAlgorithmFactory.getInstance().newAlgorithm("ROUND_ROBIN", new Properties()), instanceOf(RoundRobinMasterSlaveLoadBalanceAlgorithm.class));
     }
     
     @Test
-    public void assertGetRandomMasterSlaveLoadBalanceAlgorithm() {
+    public void assertNewRandomMasterSlaveLoadBalanceAlgorithm() {
         assertThat(MasterSlaveLoadBalanceAlgorithmFactory.getInstance().newAlgorithm("RANDOM", new Properties()), instanceOf(RandomMasterSlaveLoadBalanceAlgorithm.class));
     }
     
     @Test
-    public void assertGetDefaultMasterSlaveLoadBalanceAlgorithm() {
+    public void assertNewDefaultMasterSlaveLoadBalanceAlgorithm() {
         assertThat(MasterSlaveLoadBalanceAlgorithmFactory.getInstance().newAlgorithm(), instanceOf(RoundRobinMasterSlaveLoadBalanceAlgorithm.class));
     }
 }

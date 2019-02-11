@@ -17,8 +17,8 @@
 
 package org.apache.shardingsphere.core.keygen;
 
-import org.apache.shardingsphere.core.exception.ShardingConfigurationException;
 import org.apache.shardingsphere.core.keygen.impl.SnowflakeShardingKeyGenerator;
+import org.apache.shardingsphere.core.keygen.impl.UUIDShardingKeyGenerator;
 import org.junit.Test;
 
 import java.util.Properties;
@@ -29,12 +29,17 @@ import static org.junit.Assert.assertThat;
 public final class ShardingKeyGeneratorFactoryTest {
     
     @Test
-    public void assertCreateKeyGeneratorSuccess() {
+    public void assertNewSnowflakeKeyGenerator() {
         assertThat(ShardingKeyGeneratorFactory.getInstance().newAlgorithm("SNOWFLAKE", new Properties()), instanceOf(SnowflakeShardingKeyGenerator.class));
     }
     
-    @Test(expected = ShardingConfigurationException.class)
-    public void assertCreateKeyGeneratorFailureWithInstantiationError() {
-        ShardingKeyGeneratorFactory.getInstance().newAlgorithm("instantiation", new Properties());
+    @Test
+    public void assertNewUUIDKeyGenerator() {
+        assertThat(ShardingKeyGeneratorFactory.getInstance().newAlgorithm("UUID", new Properties()), instanceOf(UUIDShardingKeyGenerator.class));
+    }
+    
+    @Test
+    public void assertNewDefaultKeyGenerator() {
+        assertThat(ShardingKeyGeneratorFactory.getInstance().newAlgorithm(), instanceOf(SnowflakeShardingKeyGenerator.class));
     }
 }

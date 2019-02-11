@@ -15,19 +15,14 @@
  * limitations under the License.
  */
 
-package org.apache.shardingsphere.core.encrypt;
+package org.apache.shardingsphere.core.spi;
 
-import org.apache.shardingsphere.core.encrypt.encryptor.impl.AESShardingEncryptorTest;
-import org.apache.shardingsphere.core.encrypt.encryptor.impl.MD5ShardingEncryptorTest;
+import org.apache.shardingsphere.core.spi.algorithm.BaseAlgorithmFactoryTest;
 import org.junit.runner.RunWith;
 import org.junit.runners.Suite;
 import org.junit.runners.Suite.SuiteClasses;
 
 @RunWith(Suite.class)
-@SuiteClasses({
-        ShardingEncryptorFactoryTest.class, 
-        AESShardingEncryptorTest.class, 
-        MD5ShardingEncryptorTest.class
-    })
-public final class AllEncryptorTests {
+@SuiteClasses(BaseAlgorithmFactoryTest.class)
+public final class AllSPITests {
 }

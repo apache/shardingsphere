@@ -15,37 +15,29 @@
  * limitations under the License.
  */
 
-package org.apache.shardingsphere.core.encrypt.fixture;
+package org.apache.shardingsphere.core.spi.algorithm.fixture;
 
-import lombok.Getter;
-import lombok.Setter;
-import org.apache.shardingsphere.spi.algorithm.encrypt.ShardingEncryptor;
+import org.apache.shardingsphere.core.spi.NewInstanceServiceLoader;
+import org.apache.shardingsphere.core.spi.algorithm.BaseAlgorithmFactory;
 
-import java.util.Properties;
-
-/**
- * Test sharding encryptor.
- *
- * @author panjuan
- */
-@Getter
-@Setter
-public final class TestShardingEncryptor implements ShardingEncryptor {
+public final class BaseAlgorithmFactoryFixture extends BaseAlgorithmFactory<BaseAlgorithmFixture> {
     
-    private Properties properties = new Properties();
+    private static final BaseAlgorithmFactoryFixture INSTANCE = new BaseAlgorithmFactoryFixture();
     
-    @Override
-    public String getType() {
-        return "test";
+    static {
+        NewInstanceServiceLoader.register(BaseAlgorithmFixture.class);
     }
     
-    @Override
-    public Object encrypt(final Object plaintext) {
-        return "";
+    public BaseAlgorithmFactoryFixture() {
+        super(BaseAlgorithmFixture.class);
     }
     
-    @Override
-    public Object decrypt(final Object ciphertext) {
-        return "";
+    /**
+     * Get instance of factory fixture.
+     *
+     * @return instance of factory fixture
+     */
+    public static BaseAlgorithmFactoryFixture getInstance() {
+        return INSTANCE;
     }
 }

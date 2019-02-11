@@ -15,9 +15,8 @@
  * limitations under the License.
  */
 
-package org.apache.shardingsphere.core.encrypt.encryptor.imp;
+package org.apache.shardingsphere.core.encrypt.encryptor.impl;
 
-import org.junit.Before;
 import org.junit.Test;
 
 import java.util.Properties;
@@ -25,34 +24,30 @@ import java.util.Properties;
 import static org.hamcrest.CoreMatchers.is;
 import static org.junit.Assert.assertThat;
 
-public class AESShardingEncryptorTest {
+public final class MD5ShardingEncryptorTest {
     
-    private final AESShardingEncryptor encryptor = new AESShardingEncryptor();
-    
-    @Before
-    public void setUp() {
-        Properties properties = new Properties();
-        properties.setProperty("aes.key.value", "test");
-        encryptor.setProperties(properties);
-    }
+    private final MD5ShardingEncryptor encryptor = new MD5ShardingEncryptor();
     
     @Test
     public void assertGetType() {
-        assertThat(encryptor.getType(), is("AES"));
+        assertThat(encryptor.getType(), is("MD5"));
     }
     
     @Test
     public void assertEncode() {
-        assertThat(encryptor.encrypt("test").toString(), is("dSpPiyENQGDUXMKFMJPGWA=="));
+        assertThat(encryptor.encrypt("test").toString(), is("098f6bcd4621d373cade4e832627b4f6"));
     }
     
     @Test
     public void assertDecode() {
-        assertThat(encryptor.decrypt("dSpPiyENQGDUXMKFMJPGWA==").toString(), is("test"));
+        assertThat(encryptor.decrypt("test").toString(), is("test"));
     }
     
     @Test
-    public void assertGetProperties() {
-        assertThat(encryptor.getProperties().get("aes.key.value").toString(), is("test"));
+    public void assertProperties() {
+        Properties properties = new Properties();
+        properties.setProperty("key1", "value1");
+        encryptor.setProperties(properties);
+        assertThat(encryptor.getProperties().get("key1").toString(), is("value1"));
     }
 }

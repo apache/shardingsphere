@@ -15,19 +15,21 @@
  * limitations under the License.
  */
 
-package org.apache.shardingsphere.core.encrypt;
+package org.apache.shardingsphere.core.spi.algorithm.fixture;
 
-import org.apache.shardingsphere.core.encrypt.encryptor.impl.AESShardingEncryptorTest;
-import org.apache.shardingsphere.core.encrypt.encryptor.impl.MD5ShardingEncryptorTest;
-import org.junit.runner.RunWith;
-import org.junit.runners.Suite;
-import org.junit.runners.Suite.SuiteClasses;
+import lombok.Getter;
+import lombok.Setter;
 
-@RunWith(Suite.class)
-@SuiteClasses({
-        ShardingEncryptorFactoryTest.class, 
-        AESShardingEncryptorTest.class, 
-        MD5ShardingEncryptorTest.class
-    })
-public final class AllEncryptorTests {
+import java.util.Properties;
+
+@Getter
+@Setter
+public final class BaseAlgorithmFixtureImpl implements BaseAlgorithmFixture {
+    
+    private Properties properties;
+    
+    @Override
+    public String getType() {
+        return "FIXTURE";
+    }
 }

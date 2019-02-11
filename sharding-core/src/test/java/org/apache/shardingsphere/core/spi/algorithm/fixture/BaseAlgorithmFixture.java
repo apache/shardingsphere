@@ -15,19 +15,9 @@
  * limitations under the License.
  */
 
-package org.apache.shardingsphere.core.encrypt;
+package org.apache.shardingsphere.core.spi.algorithm.fixture;
 
-import org.apache.shardingsphere.core.encrypt.encryptor.impl.AESShardingEncryptorTest;
-import org.apache.shardingsphere.core.encrypt.encryptor.impl.MD5ShardingEncryptorTest;
-import org.junit.runner.RunWith;
-import org.junit.runners.Suite;
-import org.junit.runners.Suite.SuiteClasses;
+import org.apache.shardingsphere.spi.algorithm.BaseAlgorithm;
 
-@RunWith(Suite.class)
-@SuiteClasses({
-        ShardingEncryptorFactoryTest.class, 
-        AESShardingEncryptorTest.class, 
-        MD5ShardingEncryptorTest.class
-    })
-public final class AllEncryptorTests {
+public interface BaseAlgorithmFixture extends BaseAlgorithm {
 }
