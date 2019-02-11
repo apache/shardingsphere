@@ -56,3 +56,17 @@ chapter = true
  - For accurate asserts, try not to use `not`, `containsString` to make assertions.
  - Actual values of test cases should be named `actualXXX`, expected values `expectedXXX`.
  - Class for test case and `@Test` annotation do not need javadoc.
+
+## G4 code of Conduct
+
+ - No space before rule name definition. One space between `colon` and rule, `semicolon` should take a new line and keep indents (including blank lines) consistent with the previous one.
+ - After every rule finish, blank line should keep indents (including blank lines) consistent with the previous one.
+ - If a rule's branch is over than 5, every branch take a new line.
+ - Every line cannot over `200` chars, guarantee every line have complete semantics.
+ - If rule name is conflicted with ANTLR's keyword, should take an `underline` behind rule name.
+ - Rule of lexer name should capitalization. If name composite with more than one word, use `underline` to separate.
+ - Lexer is consisted of 3 files: `Keyword`, `DataType` and `Symbol`, lexer need include space skip and comments definition. Rule name of `DataType` and `Symbol` should end with `underline`.
+ - For private rule in lexer should use `fragment`, rule with `fragment` should define behind of public rule which they served.
+ - Common rule of lexer should put in file `Keyword.g4`, every database may has customized rule file by themselves. For example: `MySQLKeyword.g4`.
+ - Rule name of parser should same with java variable's camel case.
+ - Define separate files for every SQL type, file name should consist of `database` + `SQL type` + `Statement`. For example: `MySQLDQLStatement.g4`.
