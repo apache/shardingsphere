@@ -1,8 +1,6 @@
 grammar SQLServerStatement;
 
-import SQLServerKeyword, Keyword, SQLServerBase, Symbol, SQLServerCreateIndex, SQLServerAlterIndex
-       , SQLServerDropIndex, SQLServerCreateTable, SQLServerAlterTable, SQLServerDropTable, SQLServerTruncateTable
-       , SQLServerTCLStatement, SQLServerDCLStatement
+import SQLServerKeyword, Keyword, SQLServerBase, Symbol, SQLServerDDLStatement, SQLServerTCLStatement, SQLServerDCLStatement
        ;
 
 execute
