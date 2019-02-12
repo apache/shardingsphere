@@ -17,14 +17,15 @@
 
 package org.apache.shardingsphere.core.routing.type.hint;
 
-import com.google.common.base.Optional;
 import com.google.common.base.Preconditions;
 import lombok.RequiredArgsConstructor;
 import org.apache.shardingsphere.core.hint.HintManagerHolder;
+import org.apache.shardingsphere.core.parsing.parser.context.condition.Column;
 import org.apache.shardingsphere.core.routing.strategy.hint.HintShardingStrategy;
 import org.apache.shardingsphere.core.routing.type.RoutingEngine;
 import org.apache.shardingsphere.core.routing.type.RoutingResult;
 import org.apache.shardingsphere.core.routing.type.TableUnit;
+import org.apache.shardingsphere.core.routing.value.ListRouteValue;
 import org.apache.shardingsphere.core.routing.value.RouteValue;
 
 import java.util.Collection;
@@ -46,10 +47,10 @@ public final class DatabaseHintRoutingEngine implements RoutingEngine {
     
     @Override
     public RoutingResult route() {
-        Optional<RouteValue> shardingValue = HintManagerHolder.getDatabaseShardingValue();
-        Preconditions.checkState(shardingValue.isPresent());
+        Collection<Comparable<?>> shardingValues = HintManagerHolder.getDatabaseShardingValues();
+        Preconditions.checkState(!shardingValues.isEmpty());
         Collection<String> routingDataSources;
-        routingDataSources = databaseShardingStrategy.doSharding(dataSourceNames, Collections.singletonList(shardingValue.get()));
+        routingDataSources = databaseShardingStrategy.doSharding(dataSourceNames, Collections.<RouteValue>singletonList(new ListRouteValue<>(new Column("", ""), shardingValues)));
         Preconditions.checkState(!routingDataSources.isEmpty(), "no database route info");
         RoutingResult result = new RoutingResult();
         for (String each : routingDataSources) {
