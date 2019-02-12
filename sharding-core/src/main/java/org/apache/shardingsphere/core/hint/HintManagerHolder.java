@@ -39,10 +39,6 @@ import java.util.Collection;
 @NoArgsConstructor(access = AccessLevel.PRIVATE)
 public final class HintManagerHolder {
     
-    public static final String DB_TABLE_NAME = "DB_TABLE_NAME";
-    
-    public static final String DB_COLUMN_NAME = "DB_COLUMN_NAME";
-    
     private static final ThreadLocal<HintManager> HINT_MANAGER_HOLDER = new ThreadLocal<>();
     
     /**
@@ -75,6 +71,15 @@ public final class HintManagerHolder {
     
     /**
      * Get database sharding value.
+     *
+     * @return database sharding value
+     */
+    public static Optional<RouteValue> getDatabaseShardingValue() {
+        return getDatabaseShardingValue("");
+    }
+    
+    /**
+     * Get database sharding value.
      * 
      * @param logicTable logic table
      * @return database sharding value
@@ -101,7 +106,7 @@ public final class HintManagerHolder {
     
     private static RouteValue getShardingValue(final String logicTable, final Collection<Comparable<?>> values) {
         Preconditions.checkArgument(null != values && !values.isEmpty());
-        return new ListRouteValue<>(new Column(DB_COLUMN_NAME, logicTable), values);
+        return new ListRouteValue<>(new Column("", logicTable), values);
     }
     
     /**

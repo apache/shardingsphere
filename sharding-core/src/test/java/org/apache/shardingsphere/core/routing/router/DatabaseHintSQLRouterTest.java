@@ -22,7 +22,6 @@ import org.apache.shardingsphere.api.config.sharding.TableRuleConfiguration;
 import org.apache.shardingsphere.api.config.sharding.strategy.HintShardingStrategyConfiguration;
 import org.apache.shardingsphere.api.hint.HintManager;
 import org.apache.shardingsphere.core.fixture.HintShardingAlgorithmFixture;
-import org.apache.shardingsphere.core.hint.HintManagerHolder;
 import org.apache.shardingsphere.core.parsing.parser.sql.dql.DQLStatement;
 import org.apache.shardingsphere.core.parsing.parser.sql.dql.select.SelectStatement;
 import org.apache.shardingsphere.core.routing.router.sharding.DatabaseHintSQLRouter;
@@ -39,16 +38,16 @@ import static org.junit.Assert.assertNotNull;
 import static org.junit.Assert.assertThat;
 
 public final class DatabaseHintSQLRouterTest {
-
+    
     private final HintManager hintManager = HintManager.getInstance();
-
+    
     private DatabaseHintSQLRouter databaseHintSQLRouter;
-
+    
     @After
     public void tearDown() {
         hintManager.close();
     }
-
+    
     @Before
     public void setRouterContext() {
         ShardingRuleConfiguration shardingRuleConfig = new ShardingRuleConfiguration();
@@ -57,16 +56,15 @@ public final class DatabaseHintSQLRouterTest {
         ShardingRule shardingRule = new ShardingRule(shardingRuleConfig, Arrays.asList("ds0", "ds1"));
         databaseHintSQLRouter = new DatabaseHintSQLRouter(shardingRule, true);
     }
-
+    
     @Test
     public void assertParse() {
         assertThat(databaseHintSQLRouter.parse("select t from table t", false), instanceOf(SelectStatement.class));
     }
-
+    
     @Test
     public void assertRoute() {
-        hintManager.addDatabaseShardingValue(HintManagerHolder.DB_TABLE_NAME, 1);
+        hintManager.addDatabaseShardingValue("", 1);
         assertNotNull(databaseHintSQLRouter.route("select t from table t", Collections.emptyList(), new DQLStatement()));
     }
 }
-

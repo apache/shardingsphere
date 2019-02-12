@@ -46,7 +46,7 @@ public final class DatabaseHintRoutingEngine implements RoutingEngine {
     
     @Override
     public RoutingResult route() {
-        Optional<RouteValue> shardingValue = HintManagerHolder.getDatabaseShardingValue(HintManagerHolder.DB_TABLE_NAME);
+        Optional<RouteValue> shardingValue = HintManagerHolder.getDatabaseShardingValue();
         Preconditions.checkState(shardingValue.isPresent());
         Collection<String> routingDataSources;
         routingDataSources = databaseShardingStrategy.doSharding(dataSourceNames, Collections.singletonList(shardingValue.get()));
