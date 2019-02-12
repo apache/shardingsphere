@@ -36,8 +36,8 @@ public interface HintShardingAlgorithm<T extends Comparable<?>> extends Sharding
      * <p>sharding value injected by hint, not in SQL.</p>
      *
      * @param availableTargetNames available data sources or tables's names
-     * @param shardingValues sharding value
+     * @param shardingValue sharding value
      * @return sharding result for data sources or tables's names
      */
-    Collection<String> doSharding(Collection<String> availableTargetNames, HintShardingValue<T> shardingValues);
+    Collection<String> doSharding(Collection<String> availableTargetNames, HintShardingValue<T> shardingValue);
 }
