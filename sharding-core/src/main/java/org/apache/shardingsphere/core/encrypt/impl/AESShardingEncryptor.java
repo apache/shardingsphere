@@ -15,7 +15,7 @@
  * limitations under the License.
  */
 
-package org.apache.shardingsphere.core.encrypt.encryptor.impl;
+package org.apache.shardingsphere.core.encrypt.impl;
 
 import lombok.Getter;
 import lombok.Setter;
@@ -40,6 +40,8 @@ import java.util.Properties;
 @Setter
 public final class AESShardingEncryptor implements ShardingEncryptor {
     
+    private static final String AES_KEY = "aes.key.value";
+    
     private Properties properties = new Properties();
     
     @Override
@@ -50,11 +52,11 @@ public final class AESShardingEncryptor implements ShardingEncryptor {
     @Override
     @SneakyThrows
     public Object encrypt(final Object plaintext) {
-        if (!hasDesKey()) {
-            throw new ShardingConfigurationException("No available secret key for AESShardingEncryptor.");
+        if (!hasSecretKey()) {
+            throw new ShardingConfigurationException("No available secret key for `%s`.", AESShardingEncryptor.class.getName());
         }
         Cipher cipher = Cipher.getInstance(getType().toUpperCase());
-        cipher.init(Cipher.ENCRYPT_MODE, generateKey());
+        cipher.init(Cipher.ENCRYPT_MODE, generateSecretKey());
         byte[] result = cipher.doFinal(String.valueOf(plaintext).getBytes("UTF8"));
         return Base64.encodeBase64String(result);
     }
@@ -62,22 +64,22 @@ public final class AESShardingEncryptor implements ShardingEncryptor {
     @Override
     @SneakyThrows
     public Object decrypt(final Object ciphertext) {
-        if (!hasDesKey()) {
-            throw new ShardingConfigurationException("No available secret key for AESShardingEncryptor.");
+        if (!hasSecretKey()) {
+            throw new ShardingConfigurationException("No available secret key for `%s`.", AESShardingEncryptor.class.getName());
         }
         Cipher cipher = Cipher.getInstance(getType().toUpperCase());
-        cipher.init(Cipher.DECRYPT_MODE, generateKey());
+        cipher.init(Cipher.DECRYPT_MODE, generateSecretKey());
         byte[] result = Base64.decodeBase64(String.valueOf(ciphertext));
         return new String(cipher.doFinal(result));
     }
     
-    private boolean hasDesKey() {
-        return null != properties.get("aes.key.value");
+    private boolean hasSecretKey() {
+        return null != properties.get(AES_KEY);
     }
     
     @SneakyThrows
-    private Key generateKey() {
-        byte[] keyValue = String.valueOf(properties.get("aes.key.value")).getBytes("UTF8");
+    private Key generateSecretKey() {
+        byte[] keyValue = String.valueOf(properties.get(AES_KEY)).getBytes("UTF8");
         return new SecretKeySpec(Arrays.copyOf(DigestUtils.sha1(keyValue), 16), getType());
     }
 }
