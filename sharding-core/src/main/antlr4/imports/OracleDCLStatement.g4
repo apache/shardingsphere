@@ -15,7 +15,7 @@ grantSystemPrivileges
     ;
     
 systemObjects
-    : systemObject(COMMA systemObject)*
+    : systemObject(COMMA_ systemObject)*
     ;
     
 systemObject
@@ -23,7 +23,7 @@ systemObject
     ;
     
 grantees
-    : grantee (COMMA grantee)*
+    : grantee (COMMA_ grantee)*
     ;
     
 grantee
@@ -31,11 +31,11 @@ grantee
     ;
     
 granteeIdentifiedBy
-    : userNames IDENTIFIED BY STRING_ (COMMA STRING_)*
+    : userNames IDENTIFIED BY STRING_ (COMMA_ STRING_)*
     ;
     
 grantObjectPrivilegeClause
-    : grantObjectPrivilege (COMMA grantObjectPrivilege)* onObjectClause
+    : grantObjectPrivilege (COMMA_ grantObjectPrivilege)* onObjectClause
     TO grantees (WITH HIERARCHY OPTION)?(WITH GRANT OPTION)?
     ;
     
@@ -51,7 +51,7 @@ onObjectClause
     : ON 
     (
        tableName 
-       | USER userName ( COMMA userName)*
+       | USER userName ( COMMA_ userName)*
        | (DIRECTORY | EDITION | MINING MODEL | JAVA (SOURCE | RESOURCE) | SQL TRANSLATION PROFILE) tableName 
     )
     ;
@@ -61,7 +61,7 @@ grantRolesToPrograms
     ;
     
 programUnits
-    : programUnit (COMMA programUnit)*
+    : programUnit (COMMA_ programUnit)*
     ;
     
 programUnit
@@ -81,7 +81,7 @@ revokeSystemPrivileges
     ;
     
 revokeObjectPrivileges
-    : objectPrivilege (COMMA objectPrivilege)* onObjectClause FROM grantees (CASCADE CONSTRAINTS | FORCE)?
+    : objectPrivilege (COMMA_ objectPrivilege)* onObjectClause FROM grantees (CASCADE CONSTRAINTS | FORCE)?
     ;
     
 revokeRolesFromPrograms

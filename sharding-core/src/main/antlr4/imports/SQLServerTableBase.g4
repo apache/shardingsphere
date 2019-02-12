@@ -3,7 +3,7 @@ grammar SQLServerTableBase;
 import SQLServerKeyword, Keyword, Symbol, SQLServerBase, BaseRule, DataType;
 
 columnDefinition
-    : columnName dataType columnDefinitionOption* (columnConstraint(COMMA columnConstraint)*)? columnIndex?
+    : columnName dataType columnDefinitionOption* (columnConstraint(COMMA_ columnConstraint)*)? columnIndex?
     ;
     
 columnDefinitionOption
@@ -12,15 +12,15 @@ columnDefinitionOption
     | SPARSE
     | MASKED WITH LP_ FUNCTION EQ_ STRING_ RP_
     | (CONSTRAINT constraintName)? DEFAULT expr
-    | IDENTITY (LP_ NUMBER_ COMMA NUMBER_ RP_ )?
+    | IDENTITY (LP_ NUMBER_ COMMA_ NUMBER_ RP_ )?
     | NOT FOR REPLICATION
     | GENERATED ALWAYS AS ROW (START | END) HIDDEN_?
     | NOT? NULL
     | ROWGUIDCOL 
     | ENCRYPTED WITH 
-      LP_ COLUMN_ENCRYPTION_KEY EQ_ keyName COMMA ENCRYPTION_TYPE EQ_ ( DETERMINISTIC | RANDOMIZED )
-      COMMA ALGORITHM EQ_ STRING_ RP_ 
-    | columnConstraint (COMMA columnConstraint)*
+      LP_ COLUMN_ENCRYPTION_KEY EQ_ keyName COMMA_ ENCRYPTION_TYPE EQ_ ( DETERMINISTIC | RANDOMIZED )
+      COMMA_ ALGORITHM EQ_ STRING_ RP_
+    | columnConstraint (COMMA_ columnConstraint)*
     | columnIndex
     ;
     
@@ -61,7 +61,7 @@ withBucket
     ;
     
 primaryKeyWithClause
-    : WITH (FILLFACTOR EQ_ NUMBER_ | LP_ indexOption (COMMA indexOption)* RP_)
+    : WITH (FILLFACTOR EQ_ NUMBER_ | LP_ indexOption (COMMA_ indexOption)* RP_)
     ;
     
 primaryKeyOnClause
@@ -86,7 +86,7 @@ checkConstraint:
     
 columnIndex
     : INDEX indexName ( CLUSTERED | NONCLUSTERED )?
-    (WITH LP_ indexOption (COMMA indexOption)* RP_)?
+    (WITH LP_ indexOption (COMMA_ indexOption)* RP_)?
     indexOnClause?
     (FILESTREAM_ON (fileGroup | schemaName | STRING_))?
     ;

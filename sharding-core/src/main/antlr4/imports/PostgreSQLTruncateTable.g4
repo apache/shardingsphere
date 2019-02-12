@@ -7,9 +7,9 @@ truncateTable
     ;
     
 tableNameParts
-    : tableNamePart (COMMA tableNamePart)*
+    : tableNamePart (COMMA_ tableNamePart)*
     ;
     
 tableNamePart
-    : tableName ASTERISK?
+    : tableName ASTERISK_?
     ;

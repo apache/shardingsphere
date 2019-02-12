@@ -26,7 +26,7 @@ BINARY
     : B I N A R Y
     ;
     
-BIT_INCLUSIVE_OR
+VERTICAL_BAR_
     : B I T UL_ I N C L U S I V E UL_ O R
     ;
     

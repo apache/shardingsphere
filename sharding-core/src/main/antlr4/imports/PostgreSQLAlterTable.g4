@@ -8,7 +8,7 @@ alterTable
     ;
     
 alterTableNameWithAsterisk
-    : ALTER TABLE (IF EXISTS)? ONLY? tableName ASTERISK?
+    : ALTER TABLE (IF EXISTS)? ONLY? tableName ASTERISK_?
     ;
     
 alterTableOp
@@ -16,7 +16,7 @@ alterTableOp
     ;
     
 alterTableActions
-    : alterTableAction (COMMA alterTableAction)*
+    : alterTableAction (COMMA_ alterTableAction)*
     ;
     
 alterTableAction
@@ -37,8 +37,8 @@ alterTableAction
     | SET (WITH | WITHOUT) OIDS
     | SET TABLESPACE tablespaceName
     | SET (LOGGED | UNLOGGED)
-    | SET LP_ storageParameterWithValue (COMMA storageParameterWithValue)* RP_
-    | RESET LP_ storageParameter (COMMA storageParameter)* RP_
+    | SET LP_ storageParameterWithValue (COMMA_ storageParameterWithValue)* RP_
+    | RESET LP_ storageParameter (COMMA_ storageParameter)* RP_
     | INHERIT tableName
     | NO INHERIT tableName
     | OF typeName
@@ -88,7 +88,7 @@ alterColumnSetOption
     ;
     
 attributeOptions
-    : attributeOption (COMMA attributeOption)*
+    : attributeOption (COMMA_ attributeOption)*
     ;
     
 attributeOption

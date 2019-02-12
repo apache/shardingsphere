@@ -8,7 +8,7 @@ columnDefinition
     
 dataType
     : typeName dataTypeLength? characterSet? collateClause? UNSIGNED? ZEROFILL?
-    | typeName (LP_ STRING_ (COMMA STRING_)* RP_ characterSet? collateClause?)
+    | typeName (LP_ STRING_ (COMMA_ STRING_)* RP_ characterSet? collateClause?)
     ;
     
 typeName
@@ -77,7 +77,7 @@ indexDefinition
     ;
     
 tableOptions
-    : tableOption (COMMA? tableOption)*
+    : tableOption (COMMA_? tableOption)*
     ;
     
 tableOption
@@ -128,14 +128,14 @@ rangeOrListPartition
     ;
     
 partitionDefinitions
-    : partitionDefinition (COMMA partitionDefinition)*
+    : partitionDefinition (COMMA_ partitionDefinition)*
     ;
     
 partitionDefinition
     : PARTITION partitionName
     (VALUES (lessThanPartition | IN assignmentValueList))?
     partitionDefinitionOption*
-    (LP_ subpartitionDefinition (COMMA subpartitionDefinition)* RP_)?
+    (LP_ subpartitionDefinition (COMMA_ subpartitionDefinition)* RP_)?
     ;
     
 partitionDefinitionOption

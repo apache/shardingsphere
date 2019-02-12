@@ -3,7 +3,7 @@ grammar MySQLDCLStatement;
 import MySQLKeyword, Keyword, MySQLBase, BaseRule, DataType, Symbol;
 
 grant
-    : GRANT privType columnList? (COMMA privType columnList?)*
+    : GRANT privType columnList? (COMMA_ privType columnList?)*
     ON objectType? privLevel
     TO userOrRoles
     (WITH GRANT OPTION)?
@@ -60,9 +60,9 @@ objectType
     ;
     
 privLevel
-    : ASTERISK DOT_ASTERISK
+    : ASTERISK_ DOT_ASTERISK_
     | tableName
-    | schemaName DOT routineName
+    | schemaName DOT_ routineName
     ;
     
 host
@@ -74,7 +74,7 @@ user
     ;
     
 users
-    : user (COMMA user)*
+    : user (COMMA_ user)*
     ;
     
 role
@@ -82,7 +82,7 @@ role
     ;
     
 roles
-    : role (COMMA role)*
+    : role (COMMA_ role)*
     ;
     
 userOrRole
@@ -90,7 +90,7 @@ userOrRole
     ;
     
 userOrRoles
-    : userOrRole (COMMA userOrRole)*
+    : userOrRole (COMMA_ userOrRole)*
     ;
     
 grantProxy
@@ -102,13 +102,13 @@ grantRole
     ;
     
 revoke
-    : REVOKE privType columnList? (COMMA privType columnList?)*
+    : REVOKE privType columnList? (COMMA_ privType columnList?)*
     ON objectType? privLevel
     FROM userOrRoles
     ;
     
 revokeAll
-    : REVOKE ALL PRIVILEGES? COMMA GRANT OPTION
+    : REVOKE ALL PRIVILEGES? COMMA_ GRANT OPTION
     FROM userOrRoles
     ;
     
@@ -126,8 +126,8 @@ createUser
     : CREATE USER (IF NOT EXISTS)?
     userAuthOptions
     (DEFAULT ROLE roles)?
-    (REQUIRE (NONE | tlsOption (COMMA AND? tlsOption)*))?
-    (WITH resourceOption (COMMA resourceOption)*)?
+    (REQUIRE (NONE | tlsOption (COMMA_ AND? tlsOption)*))?
+    (WITH resourceOption (COMMA_ resourceOption)*)?
     (passwordOption | lockOption)*
     ;
     
@@ -144,7 +144,7 @@ userAuthOption
     ;
     
 userAuthOptions
-    : userAuthOption (COMMA userAuthOption)*
+    : userAuthOption (COMMA_ userAuthOption)*
     ;
     
 authPlugin
@@ -175,8 +175,8 @@ lockOption
     
 alterUser
     : ALTER USER (IF EXISTS)? userAuthOptions
-    (REQUIRE (NONE | tlsOption (COMMA AND? tlsOption)*))?
-    (WITH resourceOption (COMMA resourceOption)*)?
+    (REQUIRE (NONE | tlsOption (COMMA_ AND? tlsOption)*))?
+    (WITH resourceOption (COMMA_ resourceOption)*)?
     (passwordOption | lockOption)*
     ;
     

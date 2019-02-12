@@ -3,15 +3,15 @@ grammar BaseRule;
 import DataType, Keyword, Symbol;
 
 ID: 
-    (BQ_?[a-zA-Z_$][a-zA-Z0-9_$]* BQ_? DOT)? (BQ_?[a-zA-Z_$][a-zA-Z0-9_$]* BQ_?)
+    (BQ_?[a-zA-Z_$][a-zA-Z0-9_$]* BQ_? DOT_)? (BQ_?[a-zA-Z_$][a-zA-Z0-9_$]* BQ_?)
     ;
     
 BLOCK_COMMENT
-    : SLASH ASTERISK .*? ASTERISK SLASH -> channel(HIDDEN)
+    : SLASH_ ASTERISK_ .*? ASTERISK_ SLASH_ -> channel(HIDDEN)
     ;
     
 SL_COMMENT
-    : MINUS MINUS ~[\r\n]* -> channel(HIDDEN)
+    : MINUS_ MINUS_ ~[\r\n]* -> channel(HIDDEN)
     ;
     
 schemaName
@@ -140,7 +140,7 @@ serverName
     ;
     
 dataTypeLength
-    : LP_ (NUMBER_ (COMMA NUMBER_)?)? RP_
+    : LP_ (NUMBER_ (COMMA_ NUMBER_)?)? RP_
     ;
 
 primaryKey
@@ -152,7 +152,7 @@ matchNone
     ;
     
 ids
-    : ID (COMMA ID)*
+    : ID (COMMA_ ID)*
     ;
     
 idList
@@ -160,7 +160,7 @@ idList
     ;
     
 rangeClause
-    : rangeItem (COMMA rangeItem)* | rangeItem OFFSET rangeItem
+    : rangeItem (COMMA_ rangeItem)* | rangeItem OFFSET rangeItem
     ;
     
 rangeItem
@@ -168,15 +168,15 @@ rangeItem
     ;
     
 schemaNames
-    : schemaName (COMMA schemaName)*
+    : schemaName (COMMA_ schemaName)*
     ;
     
 databaseNames
-    : databaseName (COMMA databaseName)*
+    : databaseName (COMMA_ databaseName)*
     ;
     
 domainNames
-    : domainName (COMMA domainName)*
+    : domainName (COMMA_ domainName)*
     ;
     
 tableList
@@ -184,7 +184,7 @@ tableList
     ;
     
 tableNames
-    : tableName (COMMA tableName)*
+    : tableName (COMMA_ tableName)*
     ;
     
 columnNamesWithParen
@@ -192,7 +192,7 @@ columnNamesWithParen
     ;
     
 columnNames
-    : columnName (COMMA columnName)*
+    : columnName (COMMA_ columnName)*
     ;
     
 columnList
@@ -200,15 +200,15 @@ columnList
     ;
     
 sequenceNames
-    : sequenceName (COMMA sequenceName)*
+    : sequenceName (COMMA_ sequenceName)*
     ;
     
 tablespaceNames
-    : tablespaceName (COMMA tablespaceName)*
+    : tablespaceName (COMMA_ tablespaceName)*
     ;
     
 indexNames
-    : indexName (COMMA indexName)*
+    : indexName (COMMA_ indexName)*
     ;
     
 indexList
@@ -216,31 +216,31 @@ indexList
     ;
     
 typeNames
-    : typeName (COMMA typeName)*
+    : typeName (COMMA_ typeName)*
     ;
     
 rowNames
-    : rowName (COMMA rowName)*
+    : rowName (COMMA_ rowName)*
     ;
     
 roleNames
-    : roleName (COMMA roleName)*
+    : roleName (COMMA_ roleName)*
     ;
     
 userNames
-    : userName (COMMA userName)*
+    : userName (COMMA_ userName)*
     ;
     
 serverNames
-    : serverName (COMMA serverName)*
+    : serverName (COMMA_ serverName)*
     ;
     
 bitExprs:
-    bitExpr (COMMA bitExpr)*
+    bitExpr (COMMA_ bitExpr)*
     ;
     
 exprs
-    : expr (COMMA expr)*
+    : expr (COMMA_ expr)*
     ;
     
 exprsWithParen
@@ -266,7 +266,7 @@ exprRecursive
     
 booleanPrimary
     : booleanPrimary IS NOT? (TRUE | FALSE | UNKNOWN |NULL)
-    | booleanPrimary SAFE_EQ predicate
+    | booleanPrimary SAFE_EQ_ predicate
     | booleanPrimary comparisonOperator predicate
     | booleanPrimary comparisonOperator (ALL | ANY) subquery
     | predicate
@@ -274,17 +274,16 @@ booleanPrimary
     
 comparisonOperator
     : EQ_
-    | GTE
-    | GT
-    | LTE
-    | LT
+    | GTE_
+    | GT_
+    | LTE_
+    | LT_
     | NEQ_
-    | NEQ
     ;
     
 predicate
     : bitExpr NOT? IN subquery
-    | bitExpr NOT? IN LP_ simpleExpr (COMMA simpleExpr)* RP_
+    | bitExpr NOT? IN LP_ simpleExpr (COMMA_ simpleExpr)* RP_
     | bitExpr NOT? BETWEEN simpleExpr AND predicate
     | bitExpr SOUNDS LIKE simpleExpr
     | bitExpr NOT? LIKE simpleExpr (ESCAPE simpleExpr)*
@@ -293,19 +292,19 @@ predicate
     ;
     
 bitExpr
-    : bitExpr BIT_INCLUSIVE_OR bitExpr
-    | bitExpr BIT_AND bitExpr
-    | bitExpr SIGNED_LEFT_SHIFT bitExpr
-    | bitExpr SIGNED_RIGHT_SHIFT bitExpr
-    | bitExpr PLUS bitExpr
-    | bitExpr MINUS bitExpr
-    | bitExpr ASTERISK bitExpr
-    | bitExpr SLASH bitExpr
+    : bitExpr VERTICAL_BAR_ bitExpr
+    | bitExpr AMPERSAND_ bitExpr
+    | bitExpr SIGNED_LEFT_SHIFT_ bitExpr
+    | bitExpr SIGNED_RIGHT_SHIFT_ bitExpr
+    | bitExpr PLUS_ bitExpr
+    | bitExpr MINUS_ bitExpr
+    | bitExpr ASTERISK_ bitExpr
+    | bitExpr SLASH_ bitExpr
     | bitExpr MOD bitExpr
     | bitExpr MOD_ bitExpr
-    | bitExpr BIT_EXCLUSIVE_OR bitExpr
-    | bitExpr PLUS intervalExpr
-    | bitExpr MINUS intervalExpr
+    | bitExpr BIT_EXCLUSIVE_OR_ bitExpr
+    | bitExpr PLUS_ intervalExpr
+    | bitExpr MINUS_ intervalExpr
     | simpleExpr
     ;
     
@@ -317,9 +316,9 @@ simpleExpr
     //| param_marker
     | variable
     | simpleExpr AND_ simpleExpr
-    | PLUS simpleExpr
-    | MINUS simpleExpr
-    | UNARY_BIT_COMPLEMENT simpleExpr
+    | PLUS_ simpleExpr
+    | MINUS_ simpleExpr
+    | TILDE_ simpleExpr
     | NOT_ simpleExpr
     | BINARY simpleExpr
     | exprsWithParen
@@ -334,7 +333,7 @@ simpleExpr
     ;
     
 functionCall
-    : ID LP_ distinct? (exprs | ASTERISK)? RP_
+    : ID LP_ distinct? (exprs | ASTERISK_)? RP_
     ;
     
 distinct
@@ -372,7 +371,7 @@ liter
     ;
     
 question
-    : QUESTION
+    : QUESTION_
     ;
     
 number
@@ -392,7 +391,7 @@ collateClause
     ;
     
 orderByClause
-    : ORDER BY orderByItem (COMMA orderByItem)*
+    : ORDER BY orderByItem (COMMA_ orderByItem)*
     ;
     
 orderByItem

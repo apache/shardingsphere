@@ -11,7 +11,7 @@ relationalTable
     ;
     
 relationalProperties
-    : relationalProperty (COMMA relationalProperty)*
+    : relationalProperty (COMMA_ relationalProperty)*
     ;
     
 relationalProperty

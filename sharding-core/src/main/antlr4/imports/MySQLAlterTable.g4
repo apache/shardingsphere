@@ -7,7 +7,7 @@ alterTable
     ;
     
 alterSpecifications
-    : alterSpecification (COMMA alterSpecification)*
+    : alterSpecification (COMMA_ alterSpecification)*
     ;
     
 alterSpecification
@@ -29,7 +29,7 @@ alterSpecification
     | FORCE
     | LOCK EQ_? (DEFAULT | NONE | SHARED | EXCLUSIVE)
     | modifyColumn
-    | ORDER BY columnName (COMMA columnName)*
+    | ORDER BY columnName (COMMA_ columnName)*
     | renameIndex
     | renameTable
     | (WITHOUT | WITH) VALIDATION
@@ -59,7 +59,7 @@ firstOrAfterColumn
     ;
     
 multiColumn
-    : LP_ columnDefinition (COMMA columnDefinition)* RP_
+    : LP_ columnDefinition (COMMA_ columnDefinition)* RP_
     ;
     
 addConstraint
@@ -111,5 +111,5 @@ renameTable
     ;
     
 partitionNames
-    : partitionName (COMMA partitionName)*
+    : partitionName (COMMA_ partitionName)*
     ;

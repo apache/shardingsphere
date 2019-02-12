@@ -16,7 +16,7 @@ typeName
     ;
     
 typeNames
-    : typeName (COMMA typeName)*
+    : typeName (COMMA_ typeName)*
     ;
     
 intervalFields
@@ -140,7 +140,7 @@ filterClause
     ;
     
 asteriskWithParen
-    : LP_ ASTERISK RP_
+    : LP_ ASTERISK_ RP_
     ;
     
 windowFunction
@@ -154,7 +154,7 @@ windowFunctionWithClause
     
 windowDefinition
     : ID? (PARTITION BY exprs)?
-    (orderByExpr (COMMA orderByExpr)*)?
+    (orderByExpr (COMMA_ orderByExpr)*)?
     frameClause?
     ;
     
@@ -163,14 +163,14 @@ orderByExpr
     ;
     
 operator
-    : SAFE_EQ
+    : SAFE_EQ_
     | EQ_
     | NEQ
     | NEQ_
-    | GT
-    | GTE
-    | LT
-    | LTE
+    | GT_
+    | GTE_
+    | LT_
+    | LTE_
     | AND_
     | OR_
     | NOT_
@@ -195,24 +195,24 @@ frameEnd
     
 castExpr
     : CAST LP_ expr AS dataType RP_
-    | expr COLON COLON dataType
+    | expr COLON_ COLON_ dataType
     ;
     
-castExprWithColon
-    : COLON COLON dataType(LBT_ RBT_)*
+castExprWithCOLON_
+    : COLON_ COLON_ dataType(LBT_ RBT_)*
     ;
     
 collateExpr
     : expr COLLATE expr
     ;
 arrayConstructorWithCast
-    : arrayConstructor castExprWithColon?
-    | ARRAY LBT_ RBT_ castExprWithColon
+    : arrayConstructor castExprWithCOLON_?
+    | ARRAY LBT_ RBT_ castExprWithCOLON_
     ;
     
 arrayConstructor
     : ARRAY LBT_ exprs RBT_
-    | ARRAY LBT_ arrayConstructor (COMMA arrayConstructor)* RBT_
+    | ARRAY LBT_ arrayConstructor (COMMA_ arrayConstructor)* RBT_
     ;
     
 extractFromFunction

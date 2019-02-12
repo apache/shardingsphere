@@ -3,7 +3,7 @@ grammar MySQLTCLStatement;
 import MySQLKeyword, Keyword, BaseRule, DataType, Symbol;
 
 setTransaction
-    : SET (GLOBAL | SESSION)? TRANSACTION setTransactionCharacteristic (COMMA setTransactionCharacteristic)*
+    : SET (GLOBAL | SESSION)? TRANSACTION setTransactionCharacteristic (COMMA_ setTransactionCharacteristic)*
     ;
     
 setTransactionCharacteristic
@@ -27,7 +27,7 @@ beginTransaction
     ;
     
 startTransaction
-    : START TRANSACTION (startTransactionCharacteristic (COMMA startTransactionCharacteristic)*)?
+    : START TRANSACTION (startTransactionCharacteristic (COMMA_ startTransactionCharacteristic)*)?
     ;
     
 startTransactionCharacteristic

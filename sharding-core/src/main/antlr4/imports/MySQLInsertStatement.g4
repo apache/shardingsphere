@@ -11,7 +11,7 @@ columnClause
     ;
     
 valueClause
-    : (VALUES | VALUE) assignmentValueList (COMMA assignmentValueList)*
+    : (VALUES | VALUE) assignmentValueList (COMMA_ assignmentValueList)*
     ;
     
 setClause

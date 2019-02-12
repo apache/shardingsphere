@@ -32,7 +32,7 @@ beginTransaction
     ;
     
 setAutoCommit
-    : (IF AT_ AT_ TRANCOUNT GT NUMBER_ COMMIT TRAN)? SET IMPLICIT_TRANSACTIONS autoCommitValue
+    : (IF AT_ AT_ TRANCOUNT GT_ NUMBER_ COMMIT TRAN)? SET IMPLICIT_TRANSACTIONS autoCommitValue
     ;
     
 autoCommitValue

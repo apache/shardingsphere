@@ -3,12 +3,12 @@ grammar OracleBase;
 import OracleKeyword, Keyword, Symbol, BaseRule, DataType;
 
 ID
-    : (BQ_?[a-zA-Z_$][a-zA-Z0-9_$#]* BQ_? DOT)? (BQ_?[a-zA-Z_$][a-zA-Z0-9_$#]* BQ_?)
-    | [a-zA-Z_$#0-9]+ DOT_ASTERISK
+    : (BQ_?[a-zA-Z_$][a-zA-Z0-9_$#]* BQ_? DOT_)? (BQ_?[a-zA-Z_$][a-zA-Z0-9_$#]* BQ_?)
+    | [a-zA-Z_$#0-9]+ DOT_ASTERISK_
     ;
     
 oracleId
-    : ID | (STRING_ DOT)* STRING_
+    : ID | (STRING_ DOT_)* STRING_
     ;
     
 tableName
@@ -36,7 +36,7 @@ simpleExprsWithParen
     ;
     
 simpleExprs
-    : simpleExpr ( COMMA simpleExpr)* 
+    : simpleExpr ( COMMA_ simpleExpr)*
     ;
     
 lobItem
@@ -44,7 +44,7 @@ lobItem
     ;
     
 lobItems
-    : lobItem (COMMA lobItem)*
+    : lobItem (COMMA_ lobItem)*
     ;
     
 lobItemList
@@ -108,7 +108,7 @@ exprRecursive
     ;
     
 intervalExpression
-    : LP_ expr MINUS expr RP_ 
+    : LP_ expr MINUS_ expr RP_
     (
      DAY (LP_ NUMBER_ RP_)? TO SECOND (LP_ NUMBER_ RP_)?
      | YEAR (LP_ NUMBER_ RP_)? TO MONTH
@@ -117,9 +117,9 @@ intervalExpression
     
 objectAccessExpression
     : (LP_ simpleExpr RP_ | treatFunction)
-    DOT
+    DOT_
     (
-    attributeName (DOT attributeName )* (DOT functionCall)? | functionCall
+    attributeName (DOT_ attributeName )* (DOT_ functionCall)? | functionCall
     )
     ;
     

@@ -7,7 +7,7 @@ STRING_
     ;
     
 NUMBER_
-    : MINUS? INT_? DOT? INT_ EXP?
+    : MINUS_? INT_? DOT_? INT_ EXP?
     ;
     
 HEX__DIGIT_

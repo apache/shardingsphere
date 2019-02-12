@@ -17,7 +17,7 @@ commit
     ( 
         (COMMENT STRING_)?
         | (WRITE (WAIT | NOWAIT)? (IMMEDIATE | BATCH)?)?
-        | FORCE STRING_ (COMMA NUMBER_)?
+        | FORCE STRING_ (COMMA_ NUMBER_)?
     )
     ;
     

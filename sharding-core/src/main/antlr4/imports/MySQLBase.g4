@@ -7,7 +7,7 @@ alias
     ;
     
 tableName
-    : ID | ID DOT_ASTERISK | ASTERISK
+    : ID | ID DOT_ASTERISK_ | ASTERISK_
     ;
 
 columnName
@@ -31,7 +31,7 @@ keyPartsWithParen
     ;
     
 keyParts
-    : keyPart (COMMA keyPart)*
+    : keyPart (COMMA_ keyPart)*
     ;
     
 keyPart
@@ -59,7 +59,7 @@ assignmentValueList
     ;
     
 assignmentValues
-    : assignmentValue (COMMA assignmentValue)*
+    : assignmentValue (COMMA_ assignmentValue)*
     ;
     
 assignmentValue
@@ -67,13 +67,13 @@ assignmentValue
     ;
     
 functionCall
-    : (ID | DATE) LP_ distinct? (exprs | ASTERISK)? RP_
+    : (ID | DATE) LP_ distinct? (exprs | ASTERISK_)? RP_
     | groupConcat
     | windowFunction
     ;
     
 groupConcat
-    : GROUP_CONCAT LP_ distinct? (exprs | ASTERISK)? (orderByClause (SEPARATOR expr)?)? RP_
+    : GROUP_CONCAT LP_ distinct? (exprs | ASTERISK_)? (orderByClause (SEPARATOR expr)?)? RP_
     ;
     
 windowFunction
@@ -121,11 +121,11 @@ frameEnd
     ;
     
 variable
-    : (AT_ AT_)? (GLOBAL | PERSIST | PERSIST_ONLY | SESSION)? DOT? ID
+    : (AT_ AT_)? (GLOBAL | PERSIST | PERSIST_ONLY | SESSION)? DOT_? ID
     ;
 
 assignmentList
-    : assignment (COMMA assignment)*
+    : assignment (COMMA_ assignment)*
     ;
 
 assignment
@@ -145,7 +145,7 @@ whereClause
     ;
     
 groupByClause 
-    : GROUP BY orderByItem (COMMA orderByItem)* (WITH ROLLUP)?
+    : GROUP BY orderByItem (COMMA_ orderByItem)* (WITH ROLLUP)?
     ;
     
 havingClause
@@ -162,5 +162,5 @@ partitionClause
     
     
 asterisk
-    : ASTERISK
+    : ASTERISK_
     ;

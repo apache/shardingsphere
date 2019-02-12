@@ -20,11 +20,11 @@ fromMulti
     ;
     
 fromMultiTables
-    : fromMultiTable (COMMA fromMultiTable)*
+    : fromMultiTable (COMMA_ fromMultiTable)*
     ;
     
 fromMultiTable
-    : tableName DOT_ASTERISK?
+    : tableName DOT_ASTERISK_?
     ;
     
 deleteSpec

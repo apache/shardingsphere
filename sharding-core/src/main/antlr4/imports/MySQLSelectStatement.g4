@@ -7,7 +7,7 @@ select
     ;
     
 withClause
-    : WITH RECURSIVE? cteClause (COMMA cteClause)* unionSelect
+    : WITH RECURSIVE? cteClause (COMMA_ cteClause)* unionSelect
     ;
     
 unionSelect
@@ -32,7 +32,7 @@ selectSpec
     ;
     
 windowClause
-    : WINDOW windowItem (COMMA windowItem)* 
+    : WINDOW windowItem (COMMA_ windowItem)*
     ;
     
 windowItem
@@ -76,7 +76,7 @@ idListWithEmpty
     ;
     
 tableReferences
-    : tableReference(COMMA tableReference)*
+    : tableReference(COMMA_ tableReference)*
     ;
     
 tableReference
@@ -100,7 +100,7 @@ joinCondition
     ;
     
 indexHintList
-    : indexHint(COMMA indexHint)*
+    : indexHint(COMMA_ indexHint)*
     ;
     
 indexHint
@@ -108,11 +108,11 @@ indexHint
     ;
     
 selectExprs
-    : (asterisk | selectExpr) (COMMA selectExpr)*
+    : (asterisk | selectExpr) (COMMA_ selectExpr)*
     ; 
     
 selectExpr
-    : (columnName | expr) AS? alias? | columnName DOT_ASTERISK
+    : (columnName | expr) AS? alias? | columnName DOT_ASTERISK_
     ;
     
 intervalExpr

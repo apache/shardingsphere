@@ -108,7 +108,7 @@ encryptionSpec
     ;
     
 objectProperties
-    : objectProperty (COMMA objectProperty)*
+    : objectProperty (COMMA_ objectProperty)*
     ;
     
 objectProperty

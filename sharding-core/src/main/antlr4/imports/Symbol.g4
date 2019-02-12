@@ -1,47 +1,165 @@
 lexer grammar Symbol;
 
-AND_: '&&';
-OR_: '||';
-NOT_: '!';
-UNARY_BIT_COMPLEMENT: '~';
-BIT_INCLUSIVE_OR: '|';
-BIT_AND: '&';
-SIGNED_LEFT_SHIFT: '<<';
-SIGNED_RIGHT_SHIFT: '>>';
-BIT_EXCLUSIVE_OR: '^';
-MOD_: '%';
-COLON:':';
-PLUS: '+' ;
-MINUS: '-' ;
-ASTERISK: '*' ;
-SLASH: '/' ;
-BACKSLASH: '\\' ;
-DOT: '.';
-DOT_ASTERISK: '.*';
-SAFE_EQ: '<=>';
-EQ: '==';
-EQ_: '=';
-NEQ: '!=';
-NEQ_: '<>';
-GT: '>';
-GTE: '>=';
-LT: '<' ;
-LTE: '<=' ;
-POUND_: '#';
-LP_: '(';
-RP_: ')';
-LBE_: '{';
-RBE_: '}';
-LBT_:'[';
-RBT_:']';
-COMMA: ',';
-DQ_: '"';
-SQ_: '\'';
-BQ_: '`';
-UL_: '_';
-QUESTION: '?' ;
-AT_: '@';
-SEMI_:';';
+AND_
+    : '&&'
+    ;
+    
+OR_
+    : '||'
+    ;
+    
+NOT_
+    : '!'
+    ;
+
+TILDE_
+    : '~'
+    ;
+
+VERTICAL_BAR_
+    : '|'
+    ;
+
+AMPERSAND_
+    : '&'
+    ;
+
+SIGNED_LEFT_SHIFT_
+    : '<<'
+    ;
+
+SIGNED_RIGHT_SHIFT_
+    : '>>'
+    ;
+
+BIT_EXCLUSIVE_OR_
+    : '^'
+    ;
+
+MOD_
+    : '%'
+    ;
+
+COLON_
+    :':'
+    ;
+
+PLUS_
+    : '+'
+    ;
+
+MINUS_
+    : '-'
+    ;
+
+ASTERISK_
+    : '*'
+    ;
+
+SLASH_
+    : '/'
+    ;
+
+BACKSLASH_
+    : '\\'
+    ;
+
+DOT_
+    : '.'
+    ;
+
+DOT_ASTERISK_
+    : '.*'
+    ;
+
+SAFE_EQ_
+    : '<=>'
+    ;
+
+DEQ_
+    : '=='
+    ;
+
+EQ_
+    : '='
+    ;
+
+NEQ_
+    : '<>' | '!='
+    ;
+
+GT_
+    : '>'
+    ;
+
+GTE_
+    : '>='
+    ;
+
+LT_
+    : '<'
+    ;
+
+LTE_
+    : '<='
+    ;
+
+POUND_
+    : '#'
+    ;
+
+LP_
+    : '('
+    ;
+
+RP_
+    : ')'
+    ;
+
+LBE_
+    : '{'
+    ;
+
+RBE_
+    : '}'
+    ;
+
+LBT_
+    :'['
+    ;
+RBT_
+    :']'
+    ;
+COMMA_
+    : ','
+    ;
+DQ_
+    : '"'
+    ;
+
+SQ_ : '\''
+    ;
+
+BQ_
+    : '`'
+    ;
+
+UL_
+    : '_'
+    ;
+
+QUESTION_
+    : '?'
+    ;
+
+AT_
+    : '@'
+    ;
+
+SEMI_
+    :';'
+    ;
+
 fragment A: [Aa];
 fragment B: [Bb];
 fragment C: [Cc];

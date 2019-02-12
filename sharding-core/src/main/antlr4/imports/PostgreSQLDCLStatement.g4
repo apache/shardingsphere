@@ -3,7 +3,7 @@ grammar PostgreSQLDCLStatement;
 import PostgreSQLKeyword, Keyword, PostgreSQLBase, BaseRule, DataType, Symbol;
 
 grant
-    : GRANT privType columnList? (COMMA privType columnList?)*
+    : GRANT privType columnList? (COMMA_ privType columnList?)*
     privOnClause
     TO roleSpecifications
     (WITH GRANT OPTION)?
@@ -36,8 +36,8 @@ privOnClause
         | DOMAIN domainNames
         | FOREIGN DATA WRAPPER fdwNames
         | FOREIGN SERVER serverNames
-        | (FUNCTION | PROCEDURE | ROUTINE) routineName (LP_ (argMode? argName? dataType (COMMA argMode? argName? dataType)*)? RP_)?
-          (COMMA routineName (LP_ (argMode? argName? dataType (COMMA argMode? argName? dataType)*)? RP_)?)*
+        | (FUNCTION | PROCEDURE | ROUTINE) routineName (LP_ (argMode? argName? dataType (COMMA_ argMode? argName? dataType)*)? RP_)?
+          (COMMA_ routineName (LP_ (argMode? argName? dataType (COMMA_ argMode? argName? dataType)*)? RP_)?)*
         | ALL (FUNCTIONS | PROCEDURES | ROUTINES) IN SCHEMA schemaNames
         | LANGUAGE langNames
         | LARGE OBJECT loids
@@ -52,7 +52,7 @@ fdwName
     ;
     
 fdwNames
-    : fdwName (COMMA fdwName)*
+    : fdwName (COMMA_ fdwName)*
     ;
     
 argMode
@@ -68,7 +68,7 @@ langName
     ;
     
 langNames
-    : langName (COMMA langName)*
+    : langName (COMMA_ langName)*
     ;
     
 loid
@@ -76,7 +76,7 @@ loid
     ;
     
 loids
-    : loid (COMMA loid)*
+    : loid (COMMA_ loid)*
     ;
     
 roleSpecification
@@ -84,7 +84,7 @@ roleSpecification
     ;
     
 roleSpecifications
-    : roleSpecification (COMMA roleSpecification)*
+    : roleSpecification (COMMA_ roleSpecification)*
     ;
     
 grantRole
@@ -93,7 +93,7 @@ grantRole
     
 revoke
     : REVOKE (GRANT OPTION FOR)?
-    privType columnList? (COMMA privType columnList?)*
+    privType columnList? (COMMA_ privType columnList?)*
     privOnClause
     FROM roleSpecifications
     (CASCADE | RESTRICT)?
@@ -136,7 +136,7 @@ roleOption
     ;
     
 roleOptions
-    : roleOption (COMMA roleOption)*
+    : roleOption (COMMA_ roleOption)*
     ;
     
 alterUser

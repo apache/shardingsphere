@@ -3,8 +3,8 @@ grammar SQLServerBase;
 import SQLServerKeyword, Keyword, Symbol, BaseRule, DataType;
 
 ID
-    : (LBT_? DQ_? [a-zA-Z_$#][a-zA-Z0-9_$#]* DQ_? RBT_? DOT)* DOT* (LBT_? DQ_? [a-zA-Z_$#][a-zA-Z0-9_$#]* DQ_? RBT_?)
-    | [a-zA-Z0-9_$]+ DOT_ASTERISK
+    : (LBT_? DQ_? [a-zA-Z_$#][a-zA-Z0-9_$#]* DQ_? RBT_? DOT_)* DOT_* (LBT_? DQ_? [a-zA-Z_$#][a-zA-Z0-9_$#]* DQ_? RBT_?)
+    | [a-zA-Z0-9_$]+ DOT_ASTERISK_
     ;
     
 dataType
@@ -24,7 +24,7 @@ castExpr
     ;
     
 convertExpr
-    : CONVERT ( dataType (LP_ NUMBER_ RP_)? COMMA expr (COMMA NUMBER_)?)
+    : CONVERT ( dataType (LP_ NUMBER_ RP_)? COMMA_ expr (COMMA_ NUMBER_)?)
     ;
     
 windowedFunction
@@ -36,11 +36,11 @@ overClause
     ;
     
 partitionByClause
-    : PARTITION BY expr (COMMA expr)*
+    : PARTITION BY expr (COMMA_ expr)*
     ;
     
 orderByClause
-    : ORDER BY orderByExpr (COMMA orderByExpr)*
+    : ORDER BY orderByExpr (COMMA_ orderByExpr)*
     ;
     
 orderByExpr
@@ -72,7 +72,7 @@ windowFrameFollowing
     ;
     
 columnList
-    : LP_ columnNameWithSort (COMMA columnNameWithSort)* RP_ 
+    : LP_ columnNameWithSort (COMMA_ columnNameWithSort)* RP_
     ;
     
 columnNameWithSort
@@ -123,7 +123,7 @@ onPartitionClause
     ;
     
 partitionExpressions
-    : partitionExpression (COMMA partitionExpression)*
+    : partitionExpression (COMMA_ partitionExpression)*
     ;
     
 partitionExpression
@@ -135,7 +135,7 @@ numberRange
     ;
     
 lowPriorityLockWait
-    : WAIT_AT_LOW_PRIORITY LP_ MAX_DURATION EQ_ NUMBER_ ( MINUTES )? COMMA
+    : WAIT_AT_LOW_PRIORITY LP_ MAX_DURATION EQ_ NUMBER_ ( MINUTES )? COMMA_
     ABORT_AFTER_WAIT EQ_ ( NONE | SELF | BLOCKERS ) RP_
     ;
     

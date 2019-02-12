@@ -19,7 +19,7 @@ createDefinitionsWithParen
     ;
     
 createDefinitions
-    : createDefinition (COMMA createDefinition)*
+    : createDefinition (COMMA_ createDefinition)*
     ;
     
 createDefinition

@@ -11,7 +11,7 @@ grantGeneral
     ;
     
 generalPrisOn
-    : (ALL PRIVILEGES? | permissionOnColumns (COMMA permissionOnColumns)*) (ON (ID COLON COLON)? tableName)?
+    : (ALL PRIVILEGES? | permissionOnColumns (COMMA_ permissionOnColumns)*) (ON (ID COLON_ COLON_)? tableName)?
     ;
     
 permissionOnColumns
@@ -23,7 +23,7 @@ permission
     ;
     
 grantDW
-    : GRANT permission (COMMA permission)* (ON (classType COLON COLON)? ID)?
+    : GRANT permission (COMMA_ permission)* (ON (classType COLON_ COLON_)? ID)?
     TO ids (WITH GRANT OPTION)?
     ;
     
@@ -37,7 +37,7 @@ revoke
     
 revokeGeneral
     : REVOKE (GRANT OPTION FOR)? ((ALL PRIVILEGES?)? | permissionOnColumns)
-    (ON (ID COLON COLON)? ID)? (TO | FROM) ids (CASCADE)? (AS ID)?
+    (ON (ID COLON_ COLON_)? ID)? (TO | FROM) ids (CASCADE)? (AS ID)?
     ;
     
 revokeDW
@@ -45,7 +45,7 @@ revokeDW
     ;
     
 permissionWithClass
-    : permission (COMMA permission)* (ON (classType COLON COLON)? tableName)?
+    : permission (COMMA_ permission)* (ON (classType COLON_ COLON_)? tableName)?
     ;
     
 deny
@@ -67,12 +67,12 @@ createUserBody1
     
 createUserBody2
     : windowsPrincipal (WITH optionsLists)?
-    | userName WITH PASSWORD EQ_ STRING_ (COMMA optionsList)*
+    | userName WITH PASSWORD EQ_ STRING_ (COMMA_ optionsList)*
     | ID FROM EXTERNAL PROVIDER
     ;
     
 windowsPrincipal
-    : ID BACKSLASH ID
+    : ID BACKSLASH_ ID
     ;
      
 createUserBody3
@@ -86,7 +86,7 @@ createUserBody4
     ;
     
 optionsLists
-    : optionsList (COMMA optionsList)*
+    : optionsList (COMMA_ optionsList)*
     ;
     
 optionsList
@@ -106,7 +106,7 @@ createLogin
     ;
     
 loginOptionList
-    : PASSWORD EQ_ (STRING_ | ID HASHED) MUST_CHANGE? (COMMA optionsList)*
+    : PASSWORD EQ_ (STRING_ | ID HASHED) MUST_CHANGE? (COMMA_ optionsList)*
     ;
     
 sources
@@ -114,7 +114,7 @@ sources
     ;
     
 alterLogin
-    : ALTER LOGIN ID (ENABLE | DISABLE | WITH loginOption (COMMA loginOption)* | credentialOption)
+    : ALTER LOGIN ID (ENABLE | DISABLE | WITH loginOption (COMMA_ loginOption)* | credentialOption)
     ;
     
 loginOption

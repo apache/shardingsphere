@@ -37,13 +37,13 @@ addColumn
     : (WITH (CHECK | NOCHECK))?
     ADD
     (
-        alterColumnAddOption (COMMA alterColumnAddOption)*
-        | (columnNameGeneratedClause COMMA periodClause| periodClause COMMA columnNameGeneratedClause)
+        alterColumnAddOption (COMMA_ alterColumnAddOption)*
+        | (columnNameGeneratedClause COMMA_ periodClause| periodClause COMMA_ columnNameGeneratedClause)
     )
     ;
     
 periodClause
-    : PERIOD FOR SYSTEM_TIME LP_ columnName COMMA columnName RP_
+    : PERIOD FOR SYSTEM_TIME LP_ columnName COMMA_ columnName RP_
     ;
     
 alterColumnAddOption
@@ -60,7 +60,7 @@ constraintForColumn
     ;
     
 columnNameWithSortsWithParen
-    : LP_ columnNameWithSort (COMMA columnNameWithSort)* RP_ 
+    : LP_ columnNameWithSort (COMMA_ columnNameWithSort)* RP_
     ;
     
 columnNameWithSort
@@ -72,7 +72,7 @@ columnIndex
     ;
     
 columnNameGeneratedClause:
-    columnNameGenerated DEFAULT simpleExpr (WITH VALUES)? COMMA columnNameGenerated
+    columnNameGenerated DEFAULT simpleExpr (WITH VALUES)? COMMA_ columnNameGenerated
     ;
     
 columnNameGenerated
@@ -91,7 +91,7 @@ alterDrop
     ;
     
 alterTableDropConstraint
-    : CONSTRAINT? (IF EXISTS)? dropConstraintName (COMMA dropConstraintName)*
+    : CONSTRAINT? (IF EXISTS)? dropConstraintName (COMMA_ dropConstraintName)*
     ;
     
 dropConstraintName
@@ -99,7 +99,7 @@ dropConstraintName
     ;
     
 dropConstraintWithClause
-    : WITH LP_ dropConstraintOption (COMMA dropConstraintOption)* RP_
+    : WITH LP_ dropConstraintOption (COMMA_ dropConstraintOption)* RP_
     ;
     
 dropConstraintOption
@@ -115,15 +115,15 @@ dropColumn
     ;
     
 dropIndexDef
-    : INDEX (IF EXISTS)? indexName (COMMA indexName)*
+    : INDEX (IF EXISTS)? indexName (COMMA_ indexName)*
     ;
     
 alterCheckConstraint 
-    : WITH? (CHECK | NOCHECK) CONSTRAINT (ALL | (constraintName (COMMA constraintName)*))
+    : WITH? (CHECK | NOCHECK) CONSTRAINT (ALL | (constraintName (COMMA_ constraintName)*))
     ;
     
 alterTrigger 
-    : (ENABLE| DISABLE) TRIGGER (ALL | (triggerName ( COMMA triggerName)*))
+    : (ENABLE| DISABLE) TRIGGER (ALL | (triggerName ( COMMA_ triggerName)*))
     ;
     
 alterSwitch
@@ -146,8 +146,8 @@ alterSetOnClause
     : ON
     (
         LP_ (HISTORY_TABLE EQ_ tableName)?
-        (COMMA? DATA_CONSISTENCY_CHECK EQ_ ( ON | OFF ))? 
-        (COMMA? HISTORY_RETENTION_PERIOD EQ_ (INFINITE | (NUMBER_ (DAY | DAYS | WEEK | WEEKS | MONTH | MONTHS | YEAR | YEARS ))))?
+        (COMMA_? DATA_CONSISTENCY_CHECK EQ_ ( ON | OFF ))?
+        (COMMA_? HISTORY_RETENTION_PERIOD EQ_ (INFINITE | (NUMBER_ (DAY | DAYS | WEEK | WEEKS | MONTH | MONTHS | YEAR | YEARS ))))?
         RP_
     )?
     ;
@@ -178,5 +178,5 @@ tableOption
     | MEMORY_OPTIMIZED EQ_ ON
     | DURABILITY EQ_ (SCHEMA_ONLY | SCHEMA_AND_DATA) 
     | SYSTEM_VERSIONING EQ_ ON (LP_ HISTORY_TABLE EQ_ tableName
-        (COMMA DATA_CONSISTENCY_CHECK EQ_ (ON | OFF))? RP_ )?
+        (COMMA_ DATA_CONSISTENCY_CHECK EQ_ (ON | OFF))? RP_ )?
     ;
