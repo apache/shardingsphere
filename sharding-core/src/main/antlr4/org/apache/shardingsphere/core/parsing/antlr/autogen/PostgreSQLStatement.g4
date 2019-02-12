@@ -1,8 +1,6 @@
 grammar PostgreSQLStatement;
 
-import PostgreSQLKeyword, Keyword, PostgreSQLBase, Symbol, PostgreSQLCreateIndex, PostgreSQLAlterIndex
-       , PostgreSQLDropIndex, PostgreSQLCreateTable, PostgreSQLAlterTable, PostgreSQLDropTable, PostgreSQLTruncateTable
-       , PostgreSQLTCLStatement, PostgreSQLDCLStatement, PostgreSQLDALStatement
+import PostgreSQLKeyword, Keyword, PostgreSQLBase, Symbol, PostgreSQLDDLStatement, PostgreSQLTCLStatement, PostgreSQLDCLStatement, PostgreSQLDALStatement
        ;
 
 execute

@@ -1,18 +1,83 @@
-grammar PostgreSQLAlterTable;
+grammar PostgreSQLDDLStatement;
 
-import PostgreSQLKeyword, DataType, Keyword, PostgreSQLBase, BaseRule, Symbol;
+import PostgreSQLKeyword, Keyword, DataType, PostgreSQLBase, BaseRule, Symbol;
 
+createIndex
+    : CREATE UNIQUE? INDEX CONCURRENTLY? ((IF NOT EXISTS)? indexName)? ON tableName 
+    ;
+    
+dropIndex
+    : DROP INDEX (CONCURRENTLY)? (IF EXISTS)? indexNames
+    ;
+    
+alterIndex
+    : alterIndexName renameIndex | alterIndexDependsOnExtension | alterIndexSetTableSpace
+    ;
+    
+createTable
+    : createTableHeader createDefinitions inheritClause?
+    ;
+    
 alterTable
     : alterTableNameWithAsterisk (alterTableActions | renameColumn | renameConstraint)
     | alterTableNameExists renameTable
     ;
     
-alterTableNameWithAsterisk
-    : ALTER TABLE (IF EXISTS)? ONLY? tableName ASTERISK_?
+truncateTable
+    : TRUNCATE TABLE? ONLY? tableNameParts
     ;
     
-alterTableOp
-    : ALTER TABLE
+dropTable
+    : DROP TABLE (IF EXISTS)? tableNames
+    ;
+    
+    
+alterIndexName
+    : ALTER INDEX (IF EXISTS)? indexName
+    ;
+    
+renameIndex
+    : RENAME TO indexName
+    ;
+    
+alterIndexDependsOnExtension
+    : ALTER INDEX indexName DEPENDS ON EXTENSION extensionName
+    ;
+    
+alterIndexSetTableSpace
+    : ALTER INDEX ALL IN TABLESPACE indexName (OWNED BY rowNames)?
+    ;
+    
+tableNameParts
+    : tableNamePart (COMMA_ tableNamePart)*
+    ;
+    
+tableNamePart
+    : tableName ASTERISK_?
+    ;
+    
+createTableHeader
+    : CREATE ((GLOBAL | LOCAL)? (TEMPORARY | TEMP) | UNLOGGED)? TABLE (IF NOT EXISTS)? tableName
+    ;
+    
+createDefinitions
+    : LP_ (createDefinition (COMMA_ createDefinition)*)? RP_
+    ;
+    
+createDefinition
+    : columnDefinition | tableConstraint | LIKE tableName likeOption*
+    ;
+    
+likeOption
+    : (INCLUDING | EXCLUDING) (COMMENTS | CONSTRAINTS | DEFAULTS | IDENTITY | INDEXES | STATISTICS | STORAGE | ALL)
+    ;
+    
+inheritClause
+    : INHERITS LP_ tableName (COMMA_ tableName)* RP_
+    ;
+    
+alterTableNameWithAsterisk
+    : ALTER TABLE (IF EXISTS)? ONLY? tableName ASTERISK_?
     ;
     
 alterTableActions
@@ -116,9 +181,10 @@ storageParameter
     ;
     
 alterTableNameExists
-    : alterTableOp (IF EXISTS)? tableName
+    : ALTER TABLE (IF EXISTS)? tableName
     ;
     
 renameTable
     : RENAME TO tableName
     ;
+    
