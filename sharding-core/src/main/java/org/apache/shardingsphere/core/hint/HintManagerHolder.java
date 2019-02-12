@@ -51,12 +51,12 @@ public final class HintManagerHolder {
      * @param hintManager hint manager instance
      */
     public static void setHintManager(final HintManager hintManager) {
-        Preconditions.checkState(null == HINT_MANAGER_HOLDER.get(), "HintManagerHolder has previous value, please clear first.");
+        Preconditions.checkState(null == HINT_MANAGER_HOLDER.get(), "Hint has previous value, please clear first.");
         HINT_MANAGER_HOLDER.set(hintManager);
     }
     
     /**
-     * Judge whether only database is sharding.
+     * Judge whether database sharding only.
      *
      * @return database sharding or not
      */
@@ -65,9 +65,9 @@ public final class HintManagerHolder {
     }
     
     /**
-     * Judge whether it is routed to master database or not.
+     * Judge whether route to master database only or not.
      *
-     * @return is force route to master database only or not
+     * @return route to master database only or not
      */
     public static boolean isMasterRouteOnly() {
         return null != HINT_MANAGER_HOLDER.get() && HINT_MANAGER_HOLDER.get().isMasterRouteOnly();
@@ -105,16 +105,7 @@ public final class HintManagerHolder {
     }
     
     /**
-     * Get hint manager in current thread.
-     *
-     * @return hint manager in current thread
-     */
-    public static HintManager get() {
-        return HINT_MANAGER_HOLDER.get();
-    }
-    
-    /**
-     * Clear hint manager for current thread-local.
+     * Clear hint manager for current thread.
      */
     public static void clear() {
         HINT_MANAGER_HOLDER.remove();

@@ -55,10 +55,9 @@ public final class HintManager implements AutoCloseable {
     }
     
     /**
-     * Add sharding value for database sharding only.
+     * Set sharding value for database sharding only.
      *
      * <p>The sharding operator is {@code =}</p>
-     * When you only need to sharding database, use this method to add database sharding value.
      *
      * @param value sharding value
      */
@@ -66,13 +65,6 @@ public final class HintManager implements AutoCloseable {
         databaseShardingValues.clear();
         addDatabaseShardingValue(HintManagerHolder.DB_TABLE_NAME, value);
         databaseShardingOnly = true;
-    }
-    
-    /**
-     * Set CRUD operation force route to master database only.
-     */
-    public void setMasterRouteOnly() {
-        masterRouteOnly = true;
     }
     
     /**
@@ -99,6 +91,13 @@ public final class HintManager implements AutoCloseable {
     public void addTableShardingValue(final String logicTable, final Comparable<?> value) {
         tableShardingValues.put(logicTable, value);
         databaseShardingOnly = false;
+    }
+    
+    /**
+     * Set database operation force route to master database only.
+     */
+    public void setMasterRouteOnly() {
+        masterRouteOnly = true;
     }
     
     @Override
