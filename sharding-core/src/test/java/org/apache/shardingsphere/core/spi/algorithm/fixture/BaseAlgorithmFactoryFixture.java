@@ -15,18 +15,29 @@
  * limitations under the License.
  */
 
-package org.apache.shardingsphere.api;
+package org.apache.shardingsphere.core.spi.algorithm.fixture;
 
-import org.apache.shardingsphere.api.config.AllConfigTests;
-import org.apache.shardingsphere.api.hint.AllHintTests;
-import org.junit.runner.RunWith;
-import org.junit.runners.Suite;
-import org.junit.runners.Suite.SuiteClasses;
+import org.apache.shardingsphere.core.spi.NewInstanceServiceLoader;
+import org.apache.shardingsphere.core.spi.algorithm.BaseAlgorithmFactory;
 
-@RunWith(Suite.class)
-@SuiteClasses({
-        AllConfigTests.class,
-        AllHintTests.class
-})
-public final class AllAPITests {
+public final class BaseAlgorithmFactoryFixture extends BaseAlgorithmFactory<BaseAlgorithmFixture> {
+    
+    private static final BaseAlgorithmFactoryFixture INSTANCE = new BaseAlgorithmFactoryFixture();
+    
+    static {
+        NewInstanceServiceLoader.register(BaseAlgorithmFixture.class);
+    }
+    
+    public BaseAlgorithmFactoryFixture() {
+        super(BaseAlgorithmFixture.class);
+    }
+    
+    /**
+     * Get instance of factory fixture.
+     *
+     * @return instance of factory fixture
+     */
+    public static BaseAlgorithmFactoryFixture getInstance() {
+        return INSTANCE;
+    }
 }

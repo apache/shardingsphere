@@ -15,18 +15,38 @@
  * limitations under the License.
  */
 
-package org.apache.shardingsphere.api;
+package org.apache.shardingsphere.core.encrypt.impl;
 
-import org.apache.shardingsphere.api.config.AllConfigTests;
-import org.apache.shardingsphere.api.hint.AllHintTests;
-import org.junit.runner.RunWith;
-import org.junit.runners.Suite;
-import org.junit.runners.Suite.SuiteClasses;
+import lombok.Getter;
+import lombok.Setter;
+import org.apache.commons.codec.digest.DigestUtils;
+import org.apache.shardingsphere.spi.algorithm.encrypt.ShardingEncryptor;
 
-@RunWith(Suite.class)
-@SuiteClasses({
-        AllConfigTests.class,
-        AllHintTests.class
-})
-public final class AllAPITests {
+import java.util.Properties;
+
+/**
+ * MD5 sharding encryptor.
+ *
+ * @author panjuan
+ */
+@Getter
+@Setter
+public final class MD5ShardingEncryptor implements ShardingEncryptor {
+    
+    private Properties properties = new Properties();
+    
+    @Override
+    public String getType() {
+        return "MD5";
+    }
+    
+    @Override
+    public Object encrypt(final Object plaintext) {
+        return DigestUtils.md5Hex(String.valueOf(plaintext));
+    }
+    
+    @Override
+    public Object decrypt(final Object ciphertext) {
+        return ciphertext;
+    }
 }

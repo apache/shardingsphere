@@ -15,18 +15,19 @@
  * limitations under the License.
  */
 
-package org.apache.shardingsphere.api;
+package org.apache.shardingsphere.core.masterslave;
 
-import org.apache.shardingsphere.api.config.AllConfigTests;
-import org.apache.shardingsphere.api.hint.AllHintTests;
+import org.apache.shardingsphere.core.masterslave.impl.RandomMasterSlaveLoadBalanceAlgorithmTest;
+import org.apache.shardingsphere.core.masterslave.impl.RoundRobinMasterSlaveLoadBalanceAlgorithmTest;
 import org.junit.runner.RunWith;
 import org.junit.runners.Suite;
 import org.junit.runners.Suite.SuiteClasses;
 
 @RunWith(Suite.class)
 @SuiteClasses({
-        AllConfigTests.class,
-        AllHintTests.class
-})
-public final class AllAPITests {
+        MasterSlaveLoadBalanceAlgorithmFactoryTest.class,
+        RoundRobinMasterSlaveLoadBalanceAlgorithmTest.class,
+        RandomMasterSlaveLoadBalanceAlgorithmTest.class
+    })
+public final class AllMasterSlaveTests {
 }

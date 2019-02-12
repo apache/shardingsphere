@@ -15,31 +15,44 @@
  * limitations under the License.
  */
 
-package org.apache.shardingsphere.core.keygen;
+package org.apache.shardingsphere.core.encrypt.impl;
 
-import org.apache.shardingsphere.core.keygen.impl.SnowflakeShardingKeyGenerator;
-import org.apache.shardingsphere.core.keygen.impl.UUIDShardingKeyGenerator;
+import org.junit.Before;
 import org.junit.Test;
 
 import java.util.Properties;
 
-import static org.hamcrest.CoreMatchers.instanceOf;
+import static org.hamcrest.CoreMatchers.is;
 import static org.junit.Assert.assertThat;
 
-public final class ShardingKeyGeneratorFactoryTest {
+public final class AESShardingEncryptorTest {
     
-    @Test
-    public void assertNewSnowflakeKeyGenerator() {
-        assertThat(ShardingKeyGeneratorFactory.getInstance().newAlgorithm("SNOWFLAKE", new Properties()), instanceOf(SnowflakeShardingKeyGenerator.class));
+    private final AESShardingEncryptor encryptor = new AESShardingEncryptor();
+    
+    @Before
+    public void setUp() {
+        Properties properties = new Properties();
+        properties.setProperty("aes.key.value", "test");
+        encryptor.setProperties(properties);
     }
     
     @Test
-    public void assertNewUUIDKeyGenerator() {
-        assertThat(ShardingKeyGeneratorFactory.getInstance().newAlgorithm("UUID", new Properties()), instanceOf(UUIDShardingKeyGenerator.class));
+    public void assertGetType() {
+        assertThat(encryptor.getType(), is("AES"));
     }
     
     @Test
-    public void assertNewDefaultKeyGenerator() {
-        assertThat(ShardingKeyGeneratorFactory.getInstance().newAlgorithm(), instanceOf(SnowflakeShardingKeyGenerator.class));
+    public void assertEncode() {
+        assertThat(encryptor.encrypt("test").toString(), is("dSpPiyENQGDUXMKFMJPGWA=="));
+    }
+    
+    @Test
+    public void assertDecode() {
+        assertThat(encryptor.decrypt("dSpPiyENQGDUXMKFMJPGWA==").toString(), is("test"));
+    }
+    
+    @Test
+    public void assertGetProperties() {
+        assertThat(encryptor.getProperties().get("aes.key.value").toString(), is("test"));
     }
 }

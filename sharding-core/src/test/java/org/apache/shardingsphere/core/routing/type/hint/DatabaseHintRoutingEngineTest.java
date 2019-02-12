@@ -17,11 +17,11 @@
 
 package org.apache.shardingsphere.core.routing.type.hint;
 
-import org.apache.shardingsphere.api.HintManager;
 import org.apache.shardingsphere.api.config.sharding.ShardingRuleConfiguration;
 import org.apache.shardingsphere.api.config.sharding.TableRuleConfiguration;
 import org.apache.shardingsphere.api.config.sharding.strategy.HintShardingStrategyConfiguration;
-import org.apache.shardingsphere.core.fixture.OrderDatabaseHintShardingAlgorithm;
+import org.apache.shardingsphere.api.hint.HintManager;
+import org.apache.shardingsphere.core.fixture.HintShardingAlgorithmFixture;
 import org.apache.shardingsphere.core.routing.strategy.hint.HintShardingStrategy;
 import org.apache.shardingsphere.core.routing.type.RoutingResult;
 import org.apache.shardingsphere.core.routing.type.TableUnit;
@@ -48,7 +48,7 @@ public final class DatabaseHintRoutingEngineTest {
     public void setEngineContext() {
         ShardingRuleConfiguration shardingRuleConfig = new ShardingRuleConfiguration();
         shardingRuleConfig.getTableRuleConfigs().add(new TableRuleConfiguration("t_order", "ds_${0..1}.t_order"));
-        shardingRuleConfig.setDefaultDatabaseShardingStrategyConfig(new HintShardingStrategyConfiguration(new OrderDatabaseHintShardingAlgorithm()));
+        shardingRuleConfig.setDefaultDatabaseShardingStrategyConfig(new HintShardingStrategyConfiguration(new HintShardingAlgorithmFixture()));
         ShardingRule shardingRule = new ShardingRule(shardingRuleConfig, Arrays.asList("ds_0", "ds_1"));
         databaseHintRoutingEngine = new DatabaseHintRoutingEngine(
                 shardingRule.getShardingDataSourceNames().getDataSourceNames(), (HintShardingStrategy) shardingRule.getDefaultDatabaseShardingStrategy());

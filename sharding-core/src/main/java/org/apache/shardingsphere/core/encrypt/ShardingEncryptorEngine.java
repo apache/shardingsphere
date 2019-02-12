@@ -18,7 +18,6 @@
 package org.apache.shardingsphere.core.encrypt;
 
 import com.google.common.base.Optional;
-import org.apache.shardingsphere.core.routing.strategy.ShardingEncryptorStrategy;
 import org.apache.shardingsphere.core.rule.TableRule;
 import org.apache.shardingsphere.spi.algorithm.encrypt.ShardingEncryptor;
 

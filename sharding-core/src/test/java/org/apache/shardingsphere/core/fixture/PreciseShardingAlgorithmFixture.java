@@ -15,18 +15,22 @@
  * limitations under the License.
  */
 
-package org.apache.shardingsphere.api;
+package org.apache.shardingsphere.core.fixture;
 
-import org.apache.shardingsphere.api.config.AllConfigTests;
-import org.apache.shardingsphere.api.hint.AllHintTests;
-import org.junit.runner.RunWith;
-import org.junit.runners.Suite;
-import org.junit.runners.Suite.SuiteClasses;
+import org.apache.shardingsphere.api.algorithm.sharding.standard.PreciseShardingAlgorithm;
+import org.apache.shardingsphere.api.algorithm.sharding.standard.PreciseShardingValue;
 
-@RunWith(Suite.class)
-@SuiteClasses({
-        AllConfigTests.class,
-        AllHintTests.class
-})
-public final class AllAPITests {
+import java.util.Collection;
+
+public final class PreciseShardingAlgorithmFixture implements PreciseShardingAlgorithm<Integer> {
+    
+    @Override
+    public String doSharding(final Collection<String> availableTargetNames, final PreciseShardingValue<Integer> shardingValue) {
+        for (String each : availableTargetNames) {
+            if (each.endsWith(String.valueOf(shardingValue.getValue() % 2))) {
+                return each;
+            }
+        }
+        return null;
+    }
 }

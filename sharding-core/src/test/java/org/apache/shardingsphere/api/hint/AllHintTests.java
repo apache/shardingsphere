@@ -15,18 +15,13 @@
  * limitations under the License.
  */
 
-package org.apache.shardingsphere.api;
+package org.apache.shardingsphere.api.hint;
 
-import org.apache.shardingsphere.api.config.AllConfigTests;
-import org.apache.shardingsphere.api.hint.AllHintTests;
 import org.junit.runner.RunWith;
 import org.junit.runners.Suite;
 import org.junit.runners.Suite.SuiteClasses;
 
 @RunWith(Suite.class)
-@SuiteClasses({
-        AllConfigTests.class,
-        AllHintTests.class
-})
-public final class AllAPITests {
+@SuiteClasses(HintManagerTest.class)
+public final class AllHintTests {
 }

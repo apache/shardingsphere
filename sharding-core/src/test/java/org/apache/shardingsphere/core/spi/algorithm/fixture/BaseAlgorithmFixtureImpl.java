@@ -15,18 +15,21 @@
  * limitations under the License.
  */
 
-package org.apache.shardingsphere.api;
+package org.apache.shardingsphere.core.spi.algorithm.fixture;
 
-import org.apache.shardingsphere.api.config.AllConfigTests;
-import org.apache.shardingsphere.api.hint.AllHintTests;
-import org.junit.runner.RunWith;
-import org.junit.runners.Suite;
-import org.junit.runners.Suite.SuiteClasses;
+import lombok.Getter;
+import lombok.Setter;
 
-@RunWith(Suite.class)
-@SuiteClasses({
-        AllConfigTests.class,
-        AllHintTests.class
-})
-public final class AllAPITests {
+import java.util.Properties;
+
+@Getter
+@Setter
+public final class BaseAlgorithmFixtureImpl implements BaseAlgorithmFixture {
+    
+    private Properties properties;
+    
+    @Override
+    public String getType() {
+        return "FIXTURE";
+    }
 }

@@ -24,12 +24,14 @@ import org.apache.shardingsphere.core.hint.HintManagerHolder;
 import org.apache.shardingsphere.core.optimizer.condition.ShardingCondition;
 import org.apache.shardingsphere.core.optimizer.condition.ShardingConditions;
 import org.apache.shardingsphere.core.optimizer.insert.InsertShardingCondition;
+import org.apache.shardingsphere.core.parsing.parser.context.condition.Column;
 import org.apache.shardingsphere.core.routing.strategy.ShardingStrategy;
 import org.apache.shardingsphere.core.routing.strategy.hint.HintShardingStrategy;
 import org.apache.shardingsphere.core.routing.type.RoutingEngine;
 import org.apache.shardingsphere.core.routing.type.RoutingResult;
 import org.apache.shardingsphere.core.routing.type.RoutingTable;
 import org.apache.shardingsphere.core.routing.type.TableUnit;
+import org.apache.shardingsphere.core.routing.value.ListRouteValue;
 import org.apache.shardingsphere.core.routing.value.RouteValue;
 import org.apache.shardingsphere.core.rule.BindingTableRule;
 import org.apache.shardingsphere.core.rule.DataNode;
@@ -146,13 +148,15 @@ public final class StandardRoutingEngine implements RoutingEngine {
     }
     
     private List<RouteValue> getDatabaseShardingValuesFromHint() {
-        Optional<RouteValue> shardingValueOptional = HintManagerHolder.getDatabaseShardingValue(logicTableName);
-        return shardingValueOptional.isPresent() ? Collections.singletonList(shardingValueOptional.get()) : Collections.<RouteValue>emptyList();
+        return getRouteValues(HintManagerHolder.getDatabaseShardingValues(logicTableName));
     }
     
     private List<RouteValue> getTableShardingValuesFromHint() {
-        Optional<RouteValue> shardingValueOptional = HintManagerHolder.getTableShardingValue(logicTableName);
-        return shardingValueOptional.isPresent() ? Collections.singletonList(shardingValueOptional.get()) : Collections.<RouteValue>emptyList();
+        return getRouteValues(HintManagerHolder.getTableShardingValues(logicTableName));
+    }
+    
+    private List<RouteValue> getRouteValues(final Collection<Comparable<?>> shardingValue) {
+        return shardingValue.isEmpty() ? Collections.<RouteValue>emptyList() : Collections.<RouteValue>singletonList(new ListRouteValue<>(new Column("", logicTableName), shardingValue));
     }
     
     private List<RouteValue> getShardingValuesFromShardingConditions(final Collection<String> shardingColumns, final ShardingCondition shardingCondition) {

@@ -15,10 +15,10 @@
  * limitations under the License.
  */
 
-package org.apache.shardingsphere.core.keygen;
+package org.apache.shardingsphere.core.masterslave;
 
-import org.apache.shardingsphere.core.keygen.impl.SnowflakeShardingKeyGenerator;
-import org.apache.shardingsphere.core.keygen.impl.UUIDShardingKeyGenerator;
+import org.apache.shardingsphere.core.masterslave.impl.RandomMasterSlaveLoadBalanceAlgorithm;
+import org.apache.shardingsphere.core.masterslave.impl.RoundRobinMasterSlaveLoadBalanceAlgorithm;
 import org.junit.Test;
 
 import java.util.Properties;
@@ -26,20 +26,20 @@ import java.util.Properties;
 import static org.hamcrest.CoreMatchers.instanceOf;
 import static org.junit.Assert.assertThat;
 
-public final class ShardingKeyGeneratorFactoryTest {
+public final class MasterSlaveLoadBalanceAlgorithmFactoryTest {
     
     @Test
-    public void assertNewSnowflakeKeyGenerator() {
-        assertThat(ShardingKeyGeneratorFactory.getInstance().newAlgorithm("SNOWFLAKE", new Properties()), instanceOf(SnowflakeShardingKeyGenerator.class));
+    public void assertNewRoundRobinMasterSlaveLoadBalanceAlgorithm() {
+        assertThat(MasterSlaveLoadBalanceAlgorithmFactory.getInstance().newAlgorithm("ROUND_ROBIN", new Properties()), instanceOf(RoundRobinMasterSlaveLoadBalanceAlgorithm.class));
     }
     
     @Test
-    public void assertNewUUIDKeyGenerator() {
-        assertThat(ShardingKeyGeneratorFactory.getInstance().newAlgorithm("UUID", new Properties()), instanceOf(UUIDShardingKeyGenerator.class));
+    public void assertNewRandomMasterSlaveLoadBalanceAlgorithm() {
+        assertThat(MasterSlaveLoadBalanceAlgorithmFactory.getInstance().newAlgorithm("RANDOM", new Properties()), instanceOf(RandomMasterSlaveLoadBalanceAlgorithm.class));
     }
     
     @Test
-    public void assertNewDefaultKeyGenerator() {
-        assertThat(ShardingKeyGeneratorFactory.getInstance().newAlgorithm(), instanceOf(SnowflakeShardingKeyGenerator.class));
+    public void assertNewDefaultMasterSlaveLoadBalanceAlgorithm() {
+        assertThat(MasterSlaveLoadBalanceAlgorithmFactory.getInstance().newAlgorithm(), instanceOf(RoundRobinMasterSlaveLoadBalanceAlgorithm.class));
     }
 }

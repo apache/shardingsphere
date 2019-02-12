@@ -17,25 +17,29 @@
 
 package org.apache.shardingsphere.core.encrypt;
 
-import org.apache.shardingsphere.core.exception.ShardingConfigurationException;
+import org.apache.shardingsphere.core.encrypt.impl.AESShardingEncryptor;
+import org.apache.shardingsphere.core.encrypt.impl.MD5ShardingEncryptor;
 import org.junit.Test;
 
 import java.util.Properties;
 
-import static org.hamcrest.CoreMatchers.is;
+import static org.hamcrest.CoreMatchers.instanceOf;
 import static org.junit.Assert.assertThat;
 
 public final class ShardingEncryptorFactoryTest {
     
     @Test
-    public void assertNewInstance() {
-        Properties props = new Properties();
-        props.setProperty("key", "value");
-        assertThat(ShardingEncryptorFactory.getInstance().newAlgorithm("test", props).getProperties().getProperty("key"), is("value"));
+    public void assertNewMD5Encryptor() {
+        assertThat(ShardingEncryptorFactory.getInstance().newAlgorithm("MD5", new Properties()), instanceOf(MD5ShardingEncryptor.class));
     }
     
-    @Test(expected = ShardingConfigurationException.class)
-    public void assertNewInstanceWithException() {
-        ShardingEncryptorFactory.getInstance().newAlgorithm("test1", new Properties());
+    @Test
+    public void assertNewAESEncryptor() {
+        assertThat(ShardingEncryptorFactory.getInstance().newAlgorithm("AES", new Properties()), instanceOf(AESShardingEncryptor.class));
+    }
+    
+    @Test
+    public void assertNewDefaultEncryptor() {
+        assertThat(ShardingEncryptorFactory.getInstance().newAlgorithm(), instanceOf(MD5ShardingEncryptor.class));
     }
 }

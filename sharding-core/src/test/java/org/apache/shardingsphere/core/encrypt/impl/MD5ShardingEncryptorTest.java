@@ -15,31 +15,39 @@
  * limitations under the License.
  */
 
-package org.apache.shardingsphere.core.keygen;
+package org.apache.shardingsphere.core.encrypt.impl;
 
-import org.apache.shardingsphere.core.keygen.impl.SnowflakeShardingKeyGenerator;
-import org.apache.shardingsphere.core.keygen.impl.UUIDShardingKeyGenerator;
 import org.junit.Test;
 
 import java.util.Properties;
 
-import static org.hamcrest.CoreMatchers.instanceOf;
+import static org.hamcrest.CoreMatchers.is;
 import static org.junit.Assert.assertThat;
 
-public final class ShardingKeyGeneratorFactoryTest {
+public final class MD5ShardingEncryptorTest {
+    
+    private final MD5ShardingEncryptor encryptor = new MD5ShardingEncryptor();
     
     @Test
-    public void assertNewSnowflakeKeyGenerator() {
-        assertThat(ShardingKeyGeneratorFactory.getInstance().newAlgorithm("SNOWFLAKE", new Properties()), instanceOf(SnowflakeShardingKeyGenerator.class));
+    public void assertGetType() {
+        assertThat(encryptor.getType(), is("MD5"));
     }
     
     @Test
-    public void assertNewUUIDKeyGenerator() {
-        assertThat(ShardingKeyGeneratorFactory.getInstance().newAlgorithm("UUID", new Properties()), instanceOf(UUIDShardingKeyGenerator.class));
+    public void assertEncode() {
+        assertThat(encryptor.encrypt("test").toString(), is("098f6bcd4621d373cade4e832627b4f6"));
     }
     
     @Test
-    public void assertNewDefaultKeyGenerator() {
-        assertThat(ShardingKeyGeneratorFactory.getInstance().newAlgorithm(), instanceOf(SnowflakeShardingKeyGenerator.class));
+    public void assertDecode() {
+        assertThat(encryptor.decrypt("test").toString(), is("test"));
+    }
+    
+    @Test
+    public void assertProperties() {
+        Properties properties = new Properties();
+        properties.setProperty("key1", "value1");
+        encryptor.setProperties(properties);
+        assertThat(encryptor.getProperties().get("key1").toString(), is("value1"));
     }
 }

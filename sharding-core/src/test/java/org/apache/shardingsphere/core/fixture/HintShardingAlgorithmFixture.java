@@ -15,18 +15,23 @@
  * limitations under the License.
  */
 
-package org.apache.shardingsphere.api;
+package org.apache.shardingsphere.core.fixture;
 
-import org.apache.shardingsphere.api.config.AllConfigTests;
-import org.apache.shardingsphere.api.hint.AllHintTests;
-import org.junit.runner.RunWith;
-import org.junit.runners.Suite;
-import org.junit.runners.Suite.SuiteClasses;
+import org.apache.shardingsphere.api.algorithm.sharding.hint.HintShardingAlgorithm;
+import org.apache.shardingsphere.api.algorithm.sharding.hint.HintShardingValue;
 
-@RunWith(Suite.class)
-@SuiteClasses({
-        AllConfigTests.class,
-        AllHintTests.class
-})
-public final class AllAPITests {
+import java.util.Collection;
+import java.util.Collections;
+
+public final class HintShardingAlgorithmFixture implements HintShardingAlgorithm<Integer> {
+    
+    @Override
+    public Collection<String> doSharding(final Collection<String> availableTargetNames, final HintShardingValue<Integer> shardingValue) {
+        for (String each : availableTargetNames) {
+            if (each.endsWith(String.valueOf(shardingValue.getValues().iterator().next() % 2))) {
+                return Collections.singletonList(each);
+            }
+        }
+        return null;
+    }
 }
