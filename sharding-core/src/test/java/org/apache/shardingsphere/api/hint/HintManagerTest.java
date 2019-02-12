@@ -29,45 +29,33 @@ public final class HintManagerTest {
     @Test
     public void assertSetDatabaseShardingValue() {
         try (HintManager hintManager = HintManager.getInstance()) {
-            hintManager.setDatabaseShardingValue("1");
+            hintManager.setDatabaseShardingValue(1);
+            hintManager.setDatabaseShardingValue(3);
             assertTrue(HintManagerHolder.isDatabaseShardingOnly());
-            assertThat(HintManagerHolder.getDatabaseShardingValues("").iterator().next().toString(), is("1"));
+            assertThat(HintManagerHolder.getDatabaseShardingValues("").size(), is(1));
+            assertTrue(HintManagerHolder.getDatabaseShardingValues("").contains(3));
         }
     }
     
     @Test
-    public void assertAddDatabaseShardingValueForEquals() {
-        try (HintManager hintManager = HintManager.getInstance()) {
-            hintManager.addDatabaseShardingValue("logicTable", 1);
-            assertThat(HintManagerHolder.getDatabaseShardingValues("logicTable").iterator().next(), is((Comparable) 1));
-        }
-    }
-    
-    @Test
-    public void assertAddDatabaseShardingValueForIn() {
+    public void assertAddDatabaseShardingValue() {
         try (HintManager hintManager = HintManager.getInstance()) {
             hintManager.addDatabaseShardingValue("logicTable", 1);
             hintManager.addDatabaseShardingValue("logicTable", 3);
-            hintManager.addDatabaseShardingValue("logicTable", 5);
-            assertThat(HintManagerHolder.getDatabaseShardingValues("logicTable").size(), is(3));
+            assertThat(HintManagerHolder.getDatabaseShardingValues("logicTable").size(), is(2));
+            assertTrue(HintManagerHolder.getDatabaseShardingValues("logicTable").contains(1));
+            assertTrue(HintManagerHolder.getDatabaseShardingValues("logicTable").contains(3));
         }
     }
     
     @Test
-    public void assertAddTableShardingValueForEquals() {
-        try (HintManager hintManager = HintManager.getInstance()) {
-            hintManager.addTableShardingValue("logicTable", 1);
-            assertThat(HintManagerHolder.getTableShardingValues("logicTable").iterator().next(), is((Comparable) 1));
-        }
-    }
-    
-    @Test
-    public void assertAddTableShardingValueForIn() {
+    public void assertAddTableShardingValue() {
         try (HintManager hintManager = HintManager.getInstance()) {
             hintManager.addTableShardingValue("logicTable", 1);
             hintManager.addTableShardingValue("logicTable", 3);
-            hintManager.addTableShardingValue("logicTable", 5);
-            assertThat(HintManagerHolder.getTableShardingValues("logicTable").size(), is(3));
+            assertThat(HintManagerHolder.getTableShardingValues("logicTable").size(), is(2));
+            assertTrue(HintManagerHolder.getTableShardingValues("logicTable").contains(1));
+            assertTrue(HintManagerHolder.getTableShardingValues("logicTable").contains(3));
         }
     }
     
