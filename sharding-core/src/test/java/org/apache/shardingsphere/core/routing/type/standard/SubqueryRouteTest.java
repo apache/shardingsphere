@@ -17,11 +17,11 @@
 
 package org.apache.shardingsphere.core.routing.type.standard;
 
+import org.apache.shardingsphere.api.hint.HintManager;
+import org.junit.Test;
+
 import java.util.LinkedList;
 import java.util.List;
-
-import org.apache.shardingsphere.api.HintManager;
-import org.junit.Test;
 
 public final class SubqueryRouteTest extends AbstractSQLRouteTest {
     

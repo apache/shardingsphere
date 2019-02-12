@@ -15,7 +15,7 @@
  * limitations under the License.
  */
 
-package org.apache.shardingsphere.api;
+package org.apache.shardingsphere.api.hint;
 
 import com.google.common.collect.HashMultimap;
 import com.google.common.collect.Multimap;

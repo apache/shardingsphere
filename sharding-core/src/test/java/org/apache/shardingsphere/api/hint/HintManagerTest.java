@@ -15,7 +15,7 @@
  * limitations under the License.
  */
 
-package org.apache.shardingsphere.api;
+package org.apache.shardingsphere.api.hint;
 
 import org.apache.shardingsphere.core.hint.HintManagerHolder;
 import org.apache.shardingsphere.core.routing.value.ListRouteValue;
@@ -85,8 +85,8 @@ public final class HintManagerTest {
         try (HintManager hintManager = HintManager.getInstance()) {
             hintManager.setDatabaseShardingValue("1");
             assertTrue(HintManagerHolder.isDatabaseShardingOnly());
-            assertThat((String) ((ListRouteValue)
-                    HintManagerHolder.getDatabaseShardingValue(HintManagerHolder.DB_TABLE_NAME).get()).getValues().iterator().next(), is("1"));
+            assertTrue(HintManagerHolder.getDatabaseShardingValue(HintManagerHolder.DB_TABLE_NAME).isPresent());
+            assertThat((String) ((ListRouteValue) HintManagerHolder.getDatabaseShardingValue(HintManagerHolder.DB_TABLE_NAME).get()).getValues().iterator().next(), is("1"));
         }
     }
 }

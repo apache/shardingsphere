@@ -17,10 +17,10 @@
 
 package org.apache.shardingsphere.core.routing.router;
 
-import org.apache.shardingsphere.api.HintManager;
 import org.apache.shardingsphere.api.config.sharding.ShardingRuleConfiguration;
 import org.apache.shardingsphere.api.config.sharding.TableRuleConfiguration;
 import org.apache.shardingsphere.api.config.sharding.strategy.HintShardingStrategyConfiguration;
+import org.apache.shardingsphere.api.hint.HintManager;
 import org.apache.shardingsphere.core.fixture.HintShardingAlgorithmFixture;
 import org.apache.shardingsphere.core.hint.HintManagerHolder;
 import org.apache.shardingsphere.core.parsing.parser.sql.dql.DQLStatement;
