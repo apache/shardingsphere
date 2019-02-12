@@ -66,7 +66,7 @@ cascadeOrInvalidate
     ;
     
 checkpointNumber
-    : CHECKPOINT NUMBER
+    : CHECKPOINT NUMBER_
     ;
     
 renameColumn

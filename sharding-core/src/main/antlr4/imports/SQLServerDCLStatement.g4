@@ -67,7 +67,7 @@ createUserBody1
     
 createUserBody2
     : windowsPrincipal (WITH optionsLists)?
-    | userName WITH PASSWORD EQ_ STRING (COMMA optionsList)*
+    | userName WITH PASSWORD EQ_ STRING_ (COMMA optionsList)*
     | ID FROM EXTERNAL PROVIDER
     ;
     
@@ -106,7 +106,7 @@ createLogin
     ;
     
 loginOptionList
-    : PASSWORD EQ_ (STRING | ID HASHED) MUST_CHANGE? (COMMA optionsList)*
+    : PASSWORD EQ_ (STRING_ | ID HASHED) MUST_CHANGE? (COMMA optionsList)*
     ;
     
 sources
@@ -118,7 +118,7 @@ alterLogin
     ;
     
 loginOption
-    : PASSWORD EQ_ (STRING | ID HASHED) (OLD_PASSWORD EQ_ STRING | passwordOption (passwordOption )?)?
+    : PASSWORD EQ_ (STRING_ | ID HASHED) (OLD_PASSWORD EQ_ STRING_ | passwordOption (passwordOption )?)?
     | DEFAULT_DATABASE EQ_ databaseName
     | optionsList
     | NO CREDENTIAL

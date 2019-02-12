@@ -73,7 +73,7 @@ modifyColumn
     | alterColumn ADD GENERATED (ALWAYS | (BY DEFAULT)) AS IDENTITY (LP_ sequenceOptions RP_)?
     | alterColumn alterColumnSetOption alterColumnSetOption*
     | alterColumn DROP IDENTITY (IF EXISTS)?
-    | alterColumn SET STATISTICS NUMBER
+    | alterColumn SET STATISTICS NUMBER_
     | alterColumn SET LP_ attributeOptions RP_
     | alterColumn RESET LP_ attributeOptions RP_
     | alterColumn SET STORAGE (PLAIN | EXTERNAL | EXTENDED | MAIN)
@@ -84,7 +84,7 @@ alterColumn
     ;
     
 alterColumnSetOption
-    : SET (GENERATED (ALWAYS | BY DEFAULT) | sequenceOption) | RESTART (WITH? NUMBER)?
+    : SET (GENERATED (ALWAYS | BY DEFAULT) | sequenceOption) | RESTART (WITH? NUMBER_)?
     ;
     
 attributeOptions

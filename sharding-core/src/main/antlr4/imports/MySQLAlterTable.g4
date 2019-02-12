@@ -38,7 +38,7 @@ alterSpecification
     | DISCARD PARTITION (partitionNames | ALL) TABLESPACE
     | IMPORT_ PARTITION (partitionNames | ALL) TABLESPACE
     | TRUNCATE PARTITION (partitionNames | ALL)
-    | COALESCE PARTITION NUMBER
+    | COALESCE PARTITION NUMBER_
     | REORGANIZE PARTITION partitionNames INTO partitionDefinitions
     | EXCHANGE PARTITION partitionName WITH TABLE tableName ((WITH | WITHOUT) VALIDATION)?
     | ANALYZE PARTITION (partitionNames | ALL)

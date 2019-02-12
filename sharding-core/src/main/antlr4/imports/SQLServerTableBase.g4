@@ -10,16 +10,16 @@ columnDefinitionOption
     : FILESTREAM
     | COLLATE collationName
     | SPARSE
-    | MASKED WITH LP_ FUNCTION EQ_ STRING RP_
+    | MASKED WITH LP_ FUNCTION EQ_ STRING_ RP_
     | (CONSTRAINT constraintName)? DEFAULT expr
-    | IDENTITY (LP_ NUMBER COMMA NUMBER RP_ )?
+    | IDENTITY (LP_ NUMBER_ COMMA NUMBER_ RP_ )?
     | NOT FOR REPLICATION
     | GENERATED ALWAYS AS ROW (START | END) HIDDEN_?
     | NOT? NULL
     | ROWGUIDCOL 
     | ENCRYPTED WITH 
       LP_ COLUMN_ENCRYPTION_KEY EQ_ keyName COMMA ENCRYPTION_TYPE EQ_ ( DETERMINISTIC | RANDOMIZED )
-      COMMA ALGORITHM EQ_ STRING RP_ 
+      COMMA ALGORITHM EQ_ STRING_ RP_ 
     | columnConstraint (COMMA columnConstraint)*
     | columnIndex
     ;
@@ -57,11 +57,11 @@ hashWithBucket
     ;
     
 withBucket
-    : WITH LP_ BUCKET_COUNT EQ_ NUMBER RP_
+    : WITH LP_ BUCKET_COUNT EQ_ NUMBER_ RP_
     ;
     
 primaryKeyWithClause
-    : WITH (FILLFACTOR EQ_ NUMBER | LP_ indexOption (COMMA indexOption)* RP_)
+    : WITH (FILLFACTOR EQ_ NUMBER_ | LP_ indexOption (COMMA indexOption)* RP_)
     ;
     
 primaryKeyOnClause
@@ -77,7 +77,7 @@ onFileGroup
     ;
     
 onString
-    : ON STRING
+    : ON STRING_
     ;
     
 checkConstraint:
@@ -88,7 +88,7 @@ columnIndex
     : INDEX indexName ( CLUSTERED | NONCLUSTERED )?
     (WITH LP_ indexOption (COMMA indexOption)* RP_)?
     indexOnClause?
-    (FILESTREAM_ON (fileGroup | schemaName | STRING))?
+    (FILESTREAM_ON (fileGroup | schemaName | STRING_))?
     ;
     
 indexOnClause

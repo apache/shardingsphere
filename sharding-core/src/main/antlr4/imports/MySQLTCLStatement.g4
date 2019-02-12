@@ -50,5 +50,5 @@ setAutoCommit
     ;
 
 autoCommitValue
-    : NUMBER
+    : NUMBER_
     ;

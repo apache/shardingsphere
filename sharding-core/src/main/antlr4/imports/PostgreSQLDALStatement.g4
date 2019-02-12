@@ -16,11 +16,11 @@ scope
     
 setClause
     : TIME ZONE timeZoneType
-    | ID (TO | EQ_) (STRING | DEFAULT)
+    | ID (TO | EQ_) (STRING_ | DEFAULT)
     ;
     
 timeZoneType
-    : NUMBER | LOCAL | DEFAULT
+    : NUMBER_ | LOCAL | DEFAULT
     ;
     
 resetParam

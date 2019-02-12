@@ -8,7 +8,7 @@ ID
     ;
     
 oracleId
-    : ID | (STRING DOT)* STRING
+    : ID | (STRING_ DOT)* STRING_
     ;
     
 tableName
@@ -60,11 +60,11 @@ typeName
     ;
     
 specialDatatype
-    : typeName (LP_ NUMBER ID RP_) | NATIONAL typeName VARYING? LP_ NUMBER RP_ | typeName LP_? columnName RP_?
+    : typeName (LP_ NUMBER_ ID RP_) | NATIONAL typeName VARYING? LP_ NUMBER_ RP_ | typeName LP_? columnName RP_?
     ;
     
 datetimeTypeSuffix
-    : (WITH LOCAL? TIME ZONE)? | TO MONTH | TO SECOND (LP_ NUMBER RP_)?
+    : (WITH LOCAL? TIME ZONE)? | TO MONTH | TO SECOND (LP_ NUMBER_ RP_)?
     ;
     
 columnSortClause
@@ -100,7 +100,7 @@ elseClause
     ;
     
 dateTimeExpr
-    : expr AT (LOCAL | TIME ZONE (STRING | DBTIMEZONE | expr))
+    : expr AT (LOCAL | TIME ZONE (STRING_ | DBTIMEZONE | expr))
     ;
     
 exprRecursive
@@ -110,8 +110,8 @@ exprRecursive
 intervalExpression
     : LP_ expr MINUS expr RP_ 
     (
-     DAY (LP_ NUMBER RP_)? TO SECOND (LP_ NUMBER RP_)?
-     | YEAR (LP_ NUMBER RP_)? TO MONTH
+     DAY (LP_ NUMBER_ RP_)? TO SECOND (LP_ NUMBER_ RP_)?
+     | YEAR (LP_ NUMBER_ RP_)? TO MONTH
     )
     ;
     

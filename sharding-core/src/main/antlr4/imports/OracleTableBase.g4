@@ -14,15 +14,15 @@ identityClause
     ;
     
 identityOptions
-    : START WITH (NUMBER | LIMIT VALUE)
-    | INCREMENT BY NUMBER
-    | MAXVALUE NUMBER
+    : START WITH (NUMBER_ | LIMIT VALUE)
+    | INCREMENT BY NUMBER_
+    | MAXVALUE NUMBER_
     | NOMAXVALUE
-    | MINVALUE NUMBER
+    | MINVALUE NUMBER_
     | NOMINVALUE
     | CYCLE
     | NOCYCLE
-    | CACHE NUMBER
+    | CACHE NUMBER_
     | NOCACHE
     | ORDER
     | NOORDER
@@ -102,9 +102,9 @@ outOfLineRefConstraint
     ;
     
 encryptionSpec
-    : (USING STRING)?
-    (IDENTIFIED BY STRING)?
-    STRING? (NO? SALT)?
+    : (USING STRING_)?
+    (IDENTIFIED BY STRING_)?
+    STRING_? (NO? SALT)?
     ;
     
 objectProperties

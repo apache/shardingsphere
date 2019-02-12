@@ -104,9 +104,9 @@ dropConstraintWithClause
     
 dropConstraintOption
     : (
-          MAXDOP EQ_ NUMBER
+          MAXDOP EQ_ NUMBER_
           | ONLINE EQ_ ( ON | OFF )
-          | MOVE TO (schemaName LP_ columnName RP_ | fileGroup | STRING)
+          | MOVE TO (schemaName LP_ columnName RP_ | fileGroup | STRING_)
     )
     ;
     
@@ -135,7 +135,7 @@ alterSet
     ;
     
 setFileStreamClause
-    : FILESTREAM_ON EQ_ ( schemaName | fileGroup | STRING )
+    : FILESTREAM_ON EQ_ ( schemaName | fileGroup | STRING_ )
     ;
     
 setSystemVersionClause
@@ -147,7 +147,7 @@ alterSetOnClause
     (
         LP_ (HISTORY_TABLE EQ_ tableName)?
         (COMMA? DATA_CONSISTENCY_CHECK EQ_ ( ON | OFF ))? 
-        (COMMA? HISTORY_RETENTION_PERIOD EQ_ (INFINITE | (NUMBER (DAY | DAYS | WEEK | WEEKS | MONTH | MONTHS | YEAR | YEARS ))))?
+        (COMMA? HISTORY_RETENTION_PERIOD EQ_ (INFINITE | (NUMBER_ (DAY | DAYS | WEEK | WEEKS | MONTH | MONTHS | YEAR | YEARS ))))?
         RP_
     )?
     ;
@@ -170,7 +170,7 @@ indexOnClause
     ;
     
 indexClusterClause
-    : CLUSTERED COLUMNSTORE (WITH COMPRESSION_DELAY EQ_ NUMBER MINUTES?)? indexOnClause?
+    : CLUSTERED COLUMNSTORE (WITH COMPRESSION_DELAY EQ_ NUMBER_ MINUTES?)? indexOnClause?
     ;
     
 tableOption

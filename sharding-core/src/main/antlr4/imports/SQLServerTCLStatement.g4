@@ -28,11 +28,11 @@ savepoint
     ;
     
 beginTransaction
-    : BEGIN (TRAN | TRANSACTION) (ID (WITH MARK STRING)?)?
+    : BEGIN (TRAN | TRANSACTION) (ID (WITH MARK STRING_)?)?
     ;
     
 setAutoCommit
-    : (IF AT_ AT_ TRANCOUNT GT NUMBER COMMIT TRAN)? SET IMPLICIT_TRANSACTIONS autoCommitValue
+    : (IF AT_ AT_ TRANCOUNT GT NUMBER_ COMMIT TRAN)? SET IMPLICIT_TRANSACTIONS autoCommitValue
     ;
     
 autoCommitValue

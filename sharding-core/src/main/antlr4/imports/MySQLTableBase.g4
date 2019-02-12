@@ -8,7 +8,7 @@ columnDefinition
     
 dataType
     : typeName dataTypeLength? characterSet? collateClause? UNSIGNED? ZEROFILL?
-    | typeName (LP_ STRING (COMMA STRING)* RP_ characterSet? collateClause?)
+    | typeName (LP_ STRING_ (COMMA STRING_)* RP_ characterSet? collateClause?)
     ;
     
 typeName
@@ -25,19 +25,19 @@ dataTypeOption
     ;
     
 dataTypeGeneratedOption
-    : NULL | NOT NULL | UNIQUE KEY? | primaryKey | COMMENT STRING
+    : NULL | NOT NULL | UNIQUE KEY? | primaryKey | COMMENT STRING_
     ;
     
 defaultValue
     : NULL
-    | NUMBER
-    | STRING
+    | NUMBER_
+    | STRING_
     | currentTimestampType (ON UPDATE currentTimestampType)?
     | ON UPDATE currentTimestampType
     ;
     
 currentTimestampType
-    : (CURRENT_TIMESTAMP | LOCALTIME | LOCALTIMESTAMP | NOW | NUMBER) dataTypeLength?
+    : (CURRENT_TIMESTAMP | LOCALTIME | LOCALTIMESTAMP | NOW | NUMBER_) dataTypeLength?
     ;
     
 referenceDefinition
@@ -81,27 +81,27 @@ tableOptions
     ;
     
 tableOption
-    : AUTO_INCREMENT EQ_? NUMBER
-    | AVG_ROW_LENGTH EQ_? NUMBER
+    : AUTO_INCREMENT EQ_? NUMBER_
+    | AVG_ROW_LENGTH EQ_? NUMBER_
     | DEFAULT? (characterSet | collateClause)
-    | CHECKSUM EQ_? NUMBER
-    | COMMENT EQ_? STRING
-    | COMPRESSION EQ_? STRING
-    | CONNECTION EQ_? STRING
-    | (DATA | INDEX) DIRECTORY EQ_? STRING
-    | DELAY_KEY_WRITE EQ_? NUMBER
-    | ENCRYPTION EQ_? STRING
+    | CHECKSUM EQ_? NUMBER_
+    | COMMENT EQ_? STRING_
+    | COMPRESSION EQ_? STRING_
+    | CONNECTION EQ_? STRING_
+    | (DATA | INDEX) DIRECTORY EQ_? STRING_
+    | DELAY_KEY_WRITE EQ_? NUMBER_
+    | ENCRYPTION EQ_? STRING_
     | ENGINE EQ_? engineName
     | INSERT_METHOD EQ_? (NO | FIRST | LAST)
-    | KEY_BLOCK_SIZE EQ_? NUMBER
-    | MAX_ROWS EQ_? NUMBER
-    | MIN_ROWS EQ_? NUMBER
-    | PACK_KEYS EQ_? (NUMBER | DEFAULT)
-    | PASSWORD EQ_? STRING
+    | KEY_BLOCK_SIZE EQ_? NUMBER_
+    | MAX_ROWS EQ_? NUMBER_
+    | MIN_ROWS EQ_? NUMBER_
+    | PACK_KEYS EQ_? (NUMBER_ | DEFAULT)
+    | PASSWORD EQ_? STRING_
     | ROW_FORMAT EQ_? (DEFAULT | DYNAMIC | FIXED | COMPRESSED | REDUNDANT | COMPACT)
-    | STATS_AUTO_RECALC EQ_? (DEFAULT | NUMBER)
-    | STATS_PERSISTENT EQ_? (DEFAULT | NUMBER)
-    | STATS_SAMPLE_PAGES EQ_? NUMBER
+    | STATS_AUTO_RECALC EQ_? (DEFAULT | NUMBER_)
+    | STATS_PERSISTENT EQ_? (DEFAULT | NUMBER_)
+    | STATS_SAMPLE_PAGES EQ_? NUMBER_
     | TABLESPACE tablespaceName (STORAGE (DISK | MEMORY | DEFAULT))?
     | UNION EQ_? tableList
     ;
@@ -111,12 +111,12 @@ engineName
     ;
     
 partitionOptions
-    : PARTITION BY (linearPartition | rangeOrListPartition) (PARTITIONS NUMBER)?
-    (SUBPARTITION BY linearPartition (SUBPARTITIONS NUMBER)? )? (LP_ partitionDefinitions RP_)?
+    : PARTITION BY (linearPartition | rangeOrListPartition) (PARTITIONS NUMBER_)?
+    (SUBPARTITION BY linearPartition (SUBPARTITIONS NUMBER_)? )? (LP_ partitionDefinitions RP_)?
     ;
     
 linearPartition
-    : LINEAR? (HASH (yearFunctionExpr | expr) | KEY (ALGORITHM EQ_ NUMBER)? columnNamesWithParen)
+    : LINEAR? (HASH (yearFunctionExpr | expr) | KEY (ALGORITHM EQ_ NUMBER_)? columnNamesWithParen)
     ;
     
 yearFunctionExpr
@@ -140,11 +140,11 @@ partitionDefinition
     
 partitionDefinitionOption
     : STORAGE? ENGINE EQ_? engineName
-    | COMMENT EQ_? STRING
-    | DATA DIRECTORY EQ_? STRING
-    | INDEX DIRECTORY EQ_? STRING
-    | MAX_ROWS EQ_? NUMBER
-    | MIN_ROWS EQ_? NUMBER
+    | COMMENT EQ_? STRING_
+    | DATA DIRECTORY EQ_? STRING_
+    | INDEX DIRECTORY EQ_? STRING_
+    | MAX_ROWS EQ_? NUMBER_
+    | MIN_ROWS EQ_? NUMBER_
     | TABLESPACE EQ_? tablespaceName
     ;
     

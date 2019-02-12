@@ -43,7 +43,7 @@ tablespaceName
     ;
     
 collationName
-    : STRING
+    : STRING_
     | ID
     ;
     
@@ -116,7 +116,7 @@ routineName
     ;
     
 roleName
-    : STRING | ID
+    : STRING_ | ID
     ;
     
 partitionName
@@ -132,7 +132,7 @@ ownerName
     ;
     
 userName
-    : STRING | ID
+    : STRING_ | ID
     ;
     
 serverName
@@ -140,7 +140,7 @@ serverName
     ;
     
 dataTypeLength
-    : LP_ (NUMBER (COMMA NUMBER)?)? RP_
+    : LP_ (NUMBER_ (COMMA NUMBER_)?)? RP_
     ;
 
 primaryKey
@@ -363,12 +363,12 @@ liter
     | TRUE
     | FALSE
     | NULL
-    | LBE_ ID STRING RBE_
-    | HEX_DIGIT
+    | LBE_ ID STRING_ RBE_
+    | HEX_DIGIT_
     | string
-    | ID STRING collateClause?
-    | (DATE | TIME | TIMESTAMP) STRING
-    | ID? BIT_NUM collateClause?
+    | ID STRING_ collateClause?
+    | (DATE | TIME | TIMESTAMP) STRING_
+    | ID? BIT_NUM_ collateClause?
     ;
     
 question
@@ -376,11 +376,11 @@ question
     ;
     
 number
-   : NUMBER
+   : NUMBER_
    ;
    
 string
-    : STRING
+    : STRING_
     ;
     
 subquery

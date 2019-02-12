@@ -72,15 +72,15 @@ sequenceOptions
     ;
     
 sequenceOption
-    : START WITH? NUMBER
-    | INCREMENT BY? NUMBER
-    | MAXVALUE NUMBER
+    : START WITH? NUMBER_
+    | INCREMENT BY? NUMBER_
+    | MAXVALUE NUMBER_
     | NO MAXVALUE
-    | MINVALUE NUMBER
+    | MINVALUE NUMBER_
     | NO MINVALUE
     | CYCLE
     | NO CYCLE
-    | CACHE NUMBER
+    | CACHE NUMBER_
     ;
     
 indexParameters
@@ -122,7 +122,7 @@ privateExprOfDb
     : aggregateExpression
     | windowFunction
     | arrayConstructorWithCast
-    | (TIMESTAMP (WITH TIME ZONE)? STRING)
+    | (TIMESTAMP (WITH TIME ZONE)? STRING_)
     | extractFromFunction
     ;
     
@@ -183,9 +183,9 @@ frameClause
     
 frameStart
     : UNBOUNDED PRECEDING
-    | NUMBER PRECEDING
+    | NUMBER_ PRECEDING
     | CURRENT ROW
-    | NUMBER FOLLOWING
+    | NUMBER_ FOLLOWING
     | UNBOUNDED FOLLOWING
     ;
     

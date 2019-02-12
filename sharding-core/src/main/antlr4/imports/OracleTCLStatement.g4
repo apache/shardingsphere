@@ -9,15 +9,15 @@ setTransaction
         | ISOLATION LEVEL (SERIALIZABLE | READ COMMITTED)
         | USE ROLLBACK SEGMENT ID
     )?
-    | NAME STRING
+    | NAME STRING_
     ;
     
 commit
     : COMMIT WORK?
     ( 
-        (COMMENT STRING)?
+        (COMMENT STRING_)?
         | (WRITE (WAIT | NOWAIT)? (IMMEDIATE | BATCH)?)?
-        | FORCE STRING (COMMA NUMBER)?
+        | FORCE STRING_ (COMMA NUMBER_)?
     )
     ;
     
@@ -25,7 +25,7 @@ rollback
     : ROLLBACK WORK?
     ( 
         TO SAVEPOINT? ID
-        | FORCE STRING
+        | FORCE STRING_
     )? 
     ;
     

@@ -124,15 +124,15 @@ roleOption
     | NOREPLICATION
     | BYPASSRLS
     | NOBYPASSRLS
-    | CONNECTION LIMIT NUMBER
-    | ENCRYPTED? PASSWORD STRING
-    | VALID UNTIL STRING
+    | CONNECTION LIMIT NUMBER_
+    | ENCRYPTED? PASSWORD STRING_
+    | VALID UNTIL STRING_
     | IN ROLE roleNames
     | IN GROUP roleNames
     | ROLE roleNames
     | ADMIN roleNames
     | USER roleNames
-    | SYSID STRING
+    | SYSID STRING_
     ;
     
 roleOptions
@@ -148,7 +148,7 @@ renameUser
     ;
     
 alterUserSetConfig
-    : alterUserConfigOp SET configName ((TO | EQ_) (STRING | ID | NUMBER | DEFAULT) | FROM CURRENT)
+    : alterUserConfigOp SET configName ((TO | EQ_) (STRING_ | ID | NUMBER_ | DEFAULT) | FROM CURRENT)
     ;
     
 configName
@@ -180,7 +180,7 @@ renameRole
     ;
     
 alterRoleSetConfig
-    : alterRoleConfigOp SET configName ((TO | EQ_) (STRING | ID | NUMBER | DEFAULT) | FROM CURRENT)
+    : alterRoleConfigOp SET configName ((TO | EQ_) (STRING_ | ID | NUMBER_ | DEFAULT) | FROM CURRENT)
     ;
     
 alterRoleConfigOp

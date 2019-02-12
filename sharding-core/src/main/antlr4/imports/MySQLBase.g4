@@ -3,7 +3,7 @@ grammar MySQLBase;
 import MySQLKeyword, Keyword, BaseRule, DataType, Symbol;
 
 alias
-    : ID | PASSWORD | STRING
+    : ID | PASSWORD | STRING_
     ;
     
 tableName
@@ -35,7 +35,7 @@ keyParts
     ;
     
 keyPart
-    : columnName (LP_ NUMBER RP_)? (ASC | DESC)?
+    : columnName (LP_ NUMBER_ RP_)? (ASC | DESC)?
     ;
     
 symbol
@@ -51,7 +51,7 @@ indexAndKey
     ;
     
 indexOption
-    : KEY_BLOCK_SIZE EQ_? assignmentValue | indexType | WITH PARSER parserName | COMMENT STRING
+    : KEY_BLOCK_SIZE EQ_? assignmentValue | indexType | WITH PARSER parserName | COMMENT STRING_
     ;
     
 assignmentValueList

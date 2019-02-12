@@ -31,7 +31,7 @@ grantee
     ;
     
 granteeIdentifiedBy
-    : userNames IDENTIFIED BY STRING (COMMA STRING)*
+    : userNames IDENTIFIED BY STRING_ (COMMA STRING_)*
     ;
     
 grantObjectPrivilegeClause
@@ -90,7 +90,7 @@ revokeRolesFromPrograms
     
 createUser
     : CREATE USER userName IDENTIFIED 
-    (BY ID | (EXTERNALLY | GLOBALLY) ( AS STRING)?)
+    (BY ID | (EXTERNALLY | GLOBALLY) ( AS STRING_)?)
     ( 
         DEFAULT TABLESPACE ID
         | TEMPORARY TABLESPACE ID
@@ -104,7 +104,7 @@ createUser
     ;
     
 sizeClause
-    : NUMBER ID?
+    : NUMBER_ ID?
     ;
     
 alterUser
@@ -112,7 +112,7 @@ alterUser
     ( 
         userName
         ( 
-            IDENTIFIED (BY ID (REPLACE STRING)? | (EXTERNALLY | GLOBALLY) ( AS STRING)?)
+            IDENTIFIED (BY ID (REPLACE STRING_)? | (EXTERNALLY | GLOBALLY) ( AS STRING_)?)
             | DEFAULT TABLESPACE ID
             | TEMPORARY TABLESPACE ID
             | QUOTA (sizeClause | UNLIMITED) ON ID

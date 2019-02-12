@@ -13,9 +13,9 @@ createTableHeader
 createTableBody
     : (AS FILETABLE)?
     LP_ createTableDefinition (COMMA createTableDefinition)* (COMMA periodClause)? RP_
-    (ON (schemaName LP_ columnName RP_ | fileGroup | STRING))?
-    (TEXTIMAGE_ON (fileGroup | STRING))?
-    ((FILESTREAM_ON (schemaName) | fileGroup STRING))?
+    (ON (schemaName LP_ columnName RP_ | fileGroup | STRING_))?
+    (TEXTIMAGE_ON (fileGroup | STRING_))?
+    ((FILESTREAM_ON (schemaName) | fileGroup STRING_))?
     (WITH LP_ tableOption (COMMA tableOption)* RP_)?
     ;
     
@@ -33,11 +33,11 @@ tableIndex
         (CLUSTERED | NONCLUSTERED )? columnList
         | CLUSTERED COLUMNSTORE
         | NONCLUSTERED? (COLUMNSTORE columnList | hashWithBucket) 
-        | CLUSTERED COLUMNSTORE (WITH LP_ COMPRESSION_DELAY EQ_ (NUMBER MINUTES?) RP_)?
+        | CLUSTERED COLUMNSTORE (WITH LP_ COMPRESSION_DELAY EQ_ (NUMBER_ MINUTES?) RP_)?
     )
     (WHERE expr)?
     (WITH LP_ indexOption ( COMMA indexOption)* RP_)? indexOnClause?
-    (FILESTREAM_ON (groupName | schemaName | STRING))?
+    (FILESTREAM_ON (groupName | schemaName | STRING_))?
     ;
     
 tableOption
