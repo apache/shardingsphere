@@ -1,6 +1,6 @@
 lexer grammar DataType;
 
-import Symbol;
+import Symbol, Alphabet;
 
 STRING_
     : DQ_ ('\\"' | .)*? DQ_ | SQ_ (SQ_ | .)*? SQ_
@@ -10,7 +10,7 @@ NUMBER_
     : MINUS_? INT_? DOT_? INT_ EXP?
     ;
     
-HEX__DIGIT_
+HEX_DIGIT_
     : '0x' HEX_+ | 'X' SQ_ HEX_+ SQ_
     ;
     
@@ -28,8 +28,4 @@ fragment EXP
     
 fragment HEX_
     : [0-9a-fA-F] 
-    ;
-    
-WS
-    : [ \t\r\n] + ->skip
     ;

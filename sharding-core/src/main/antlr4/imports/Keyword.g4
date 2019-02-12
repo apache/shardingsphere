@@ -1,7 +1,11 @@
 lexer grammar Keyword;
 
-import Symbol;
+import Alphabet;
 
+WS
+    : [ \t\r\n] + ->skip
+    ;
+    
 ALL
     : A L L
     ;
@@ -26,7 +30,7 @@ BINARY
     : B I N A R Y
     ;
     
-VERTICAL_BAR_
+BIT_INCLUSIVE_OR
     : B I T UL_ I N C L U S I V E UL_ O R
     ;
     

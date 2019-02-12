@@ -1,6 +1,6 @@
 lexer grammar SQLServerKeyword;
 
-import Symbol;
+import Alphabet;
 
 ABORT_AFTER_WAIT
     : A B O R T UL_ A F T E R UL_ W A I T

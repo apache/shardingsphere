@@ -6,14 +6,6 @@ ID:
     (BQ_?[a-zA-Z_$][a-zA-Z0-9_$]* BQ_? DOT_)? (BQ_?[a-zA-Z_$][a-zA-Z0-9_$]* BQ_?)
     ;
     
-BLOCK_COMMENT
-    : SLASH_ ASTERISK_ .*? ASTERISK_ SLASH_ -> channel(HIDDEN)
-    ;
-    
-SL_COMMENT
-    : MINUS_ MINUS_ ~[\r\n]* -> channel(HIDDEN)
-    ;
-    
 schemaName
     : ID
     ;
@@ -302,7 +294,7 @@ bitExpr
     | bitExpr SLASH_ bitExpr
     | bitExpr MOD bitExpr
     | bitExpr MOD_ bitExpr
-    | bitExpr BIT_EXCLUSIVE_OR_ bitExpr
+    | bitExpr CARET_ bitExpr
     | bitExpr PLUS_ intervalExpr
     | bitExpr MINUS_ intervalExpr
     | simpleExpr

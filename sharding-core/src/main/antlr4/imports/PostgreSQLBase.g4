@@ -165,7 +165,6 @@ orderByExpr
 operator
     : SAFE_EQ_
     | EQ_
-    | NEQ
     | NEQ_
     | GT_
     | GTE_
