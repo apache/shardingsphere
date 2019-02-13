@@ -46,7 +46,7 @@ public abstract class AbstractSQLStatement implements SQLStatement {
     
     private final Tables tables = new Tables();
     
-    private final Conditions conditions = new Conditions();
+    private final Conditions routeConditions = new Conditions();
     
     @Getter(AccessLevel.NONE)
     private final List<SQLToken> sqlTokens = new LinkedList<>();
