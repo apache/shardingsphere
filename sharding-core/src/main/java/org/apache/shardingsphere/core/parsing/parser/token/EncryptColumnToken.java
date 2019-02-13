@@ -19,33 +19,26 @@ package org.apache.shardingsphere.core.parsing.parser.token;
 
 import lombok.Getter;
 import lombok.ToString;
-import org.apache.shardingsphere.core.util.SQLUtil;
+import org.apache.shardingsphere.core.parsing.parser.context.condition.Column;
 
 /**
  * Encrypt column token.
  *
  * @author panjuan
  */
-@ToString
 public final class EncryptColumnToken extends SQLToken {
     
     @Getter
     private final int stopIndex;
     
-    private final String tableName;
+    private final Column column;
     
-    public EncryptColumnToken(final int startIndex, final int stopIndex, final String tableName) {
+    private final boolean isInWhere;
+    
+    public EncryptColumnToken(final int startIndex, final int stopIndex, final Column column, final boolean isInWhere) {
         super(startIndex);
         this.stopIndex = stopIndex;
-        this.tableName = tableName;
-    }
-    
-    /**
-     * Get table name.
-     *
-     * @return table name
-     */
-    public String getTableName() {
-        return SQLUtil.getExactlyValue(tableName);
+        this.column = column;
+        this.isInWhere = isInWhere;
     }
 }
