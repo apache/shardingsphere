@@ -31,6 +31,7 @@ import org.apache.shardingsphere.core.parsing.parser.sql.SQLStatement;
 import org.apache.shardingsphere.core.parsing.parser.sql.dml.insert.InsertStatement;
 import org.apache.shardingsphere.core.parsing.parser.sql.dql.select.SelectStatement;
 import org.apache.shardingsphere.core.parsing.parser.token.AggregationDistinctToken;
+import org.apache.shardingsphere.core.parsing.parser.token.EncryptColumnToken;
 import org.apache.shardingsphere.core.parsing.parser.token.IndexToken;
 import org.apache.shardingsphere.core.parsing.parser.token.InsertColumnToken;
 import org.apache.shardingsphere.core.parsing.parser.token.InsertValuesToken;
@@ -177,6 +178,8 @@ public final class SQLRewriteEngine {
                 appendSymbolToken(sqlBuilder, (InsertColumnToken) each, count);
             } else if (each instanceof AggregationDistinctToken) {
                 appendAggregationDistinctPlaceholder(sqlBuilder, (AggregationDistinctToken) each, count, isRewrite);
+            } else if (each instanceof EncryptColumnToken) {
+                appendEncryptColumnPlaceholder(sqlBuilder, (EncryptColumnToken) each, count);
             } else if (each instanceof RemoveToken) {
                 appendRest(sqlBuilder, count, ((RemoveToken) each).getStopIndex());
             }
@@ -279,6 +282,10 @@ public final class SQLRewriteEngine {
             sqlBuilder.appendPlaceholder(new AggregationDistinctPlaceholder(distinctToken.getColumnName().toLowerCase(), null, distinctToken.getAlias()));
         }
         appendRest(sqlBuilder, count, distinctToken.getStopIndex() + 1);
+    }
+    
+    private void appendEncryptColumnPlaceholder(final SQLBuilder sqlBuilder, final EncryptColumnToken encryptColumnToken, final int count) {
+        
     }
     
     private void appendRest(final SQLBuilder sqlBuilder, final int count, final int beginPosition) {
