@@ -93,7 +93,7 @@ public abstract class WhereClauseParser implements SQLClauseParser {
     private void parseWhere(final ShardingRule shardingRule, final SQLStatement sqlStatement, final List<SelectItem> items) {
         OrCondition orCondition = parseOr(shardingRule, sqlStatement, items).optimize();
         if (1 != orCondition.getAndConditions().size() || !(orCondition.getAndConditions().get(0).getConditions().get(0) instanceof NullCondition)) {
-            sqlStatement.getConditions().getOrCondition().getAndConditions().addAll(orCondition.getAndConditions());
+            sqlStatement.getRouteConditions().getOrCondition().getAndConditions().addAll(orCondition.getAndConditions());
         }
     }
     

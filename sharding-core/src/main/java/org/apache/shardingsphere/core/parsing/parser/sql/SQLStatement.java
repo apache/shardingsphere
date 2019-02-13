@@ -50,7 +50,7 @@ public interface SQLStatement {
      *
      * @return conditions
      */
-    Conditions getConditions();
+    Conditions getRouteConditions();
     
     /**
      * Add SQL token.

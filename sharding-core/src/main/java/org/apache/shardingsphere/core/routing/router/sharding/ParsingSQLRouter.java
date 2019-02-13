@@ -101,7 +101,7 @@ public final class ParsingSQLRouter implements ShardingRouter {
             setGeneratedKeys(result, generatedKey.get());
         }
         if (sqlStatement instanceof SelectStatement && isNeedMergeShardingValues((SelectStatement) sqlStatement)) {
-            checkSubqueryShardingValues(sqlStatement, sqlStatement.getConditions(), shardingConditions);
+            checkSubqueryShardingValues(sqlStatement, sqlStatement.getRouteConditions(), shardingConditions);
             mergeShardingValues(shardingConditions);
         }
         RoutingResult routingResult = RoutingEngineFactory.newInstance(shardingRule, shardingMetaData.getDataSource(), sqlStatement, shardingConditions).route();
