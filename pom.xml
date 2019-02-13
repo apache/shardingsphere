@@ -21,7 +21,7 @@
         <lombok.version>1.16.4</lombok.version>
         <snakeyaml.version>1.16</snakeyaml.version>
         <commons-codec.version>1.11</commons-codec.version>
-        <sharding-sphere.version>3.1.0.M1</sharding-sphere.version>
+        <sharding-sphere.version>3.1.0</sharding-sphere.version>
         <frontend-maven-plugin.version>1.6</frontend-maven-plugin.version>
         <maven-compiler-plugin.version>3.3</maven-compiler-plugin.version>
         <maven-resources-plugin.version>2.7</maven-resources-plugin.version>

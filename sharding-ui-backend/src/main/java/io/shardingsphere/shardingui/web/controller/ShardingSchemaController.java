@@ -17,6 +17,7 @@
 
 package io.shardingsphere.shardingui.web.controller;
 
+import io.shardingsphere.shardingui.common.dto.ShardingSchemaDTO;
 import io.shardingsphere.shardingui.servcie.ShardingSchemaService;
 import io.shardingsphere.shardingui.web.response.ResponseResult;
 import io.shardingsphere.shardingui.web.response.ResponseResultUtil;
@@ -50,6 +51,18 @@ public final class ShardingSchemaController {
     @RequestMapping(value = "", method = RequestMethod.GET)
     public ResponseResult<Collection<String>> loadAllSchemaNames() {
         return ResponseResultUtil.build(shardingSchemaService.getAllSchemaNames());
+    }
+    
+    /**
+     * Add schema configuration.
+     *
+     * @param shardingSchema sharding schema DTO.
+     * @return response result
+     */
+    @RequestMapping(value = "", method = RequestMethod.POST)
+    public ResponseResult addSchema(final @RequestBody ShardingSchemaDTO shardingSchema) {
+        shardingSchemaService.addSchemaConfiguration(shardingSchema.getName(), shardingSchema.getRuleConfiguration(), shardingSchema.getDataSourceConfiguration());
+        return ResponseResultUtil.success();
     }
     
     /**

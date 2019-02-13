@@ -67,6 +67,15 @@ public final class ShardingSchemaServiceImpl implements ShardingSchemaService {
         registryCenterService.getActivatedRegistryCenter().persist(registryCenterService.getActivateConfigurationNode().getDataSourcePath(schemaName), configData);
     }
     
+    @Override
+    public void addSchemaConfiguration(final String schemaName, final String ruleConfiguration, final String dataSourceConfiguration) {
+        checkSchemaName(schemaName, getAllSchemaNames());
+        checkRuleConfiguration(ruleConfiguration);
+        checkDataSourceConfiguration(dataSourceConfiguration);
+        registryCenterService.getActivatedRegistryCenter().persist(registryCenterService.getActivateConfigurationNode().getRulePath(schemaName), ruleConfiguration);
+        registryCenterService.getActivatedRegistryCenter().persist(registryCenterService.getActivateConfigurationNode().getDataSourcePath(schemaName), dataSourceConfiguration);
+    }
+    
     private void checkRuleConfiguration(final String configData) {
         try {
             RuleConfiguration ruleConfig = configData.contains("tables:\n")
@@ -89,4 +98,9 @@ public final class ShardingSchemaServiceImpl implements ShardingSchemaService {
             throw new IllegalArgumentException("data source configuration is invalid.");
         }
     }
+    
+    private void checkSchemaName(final String schemaName, final Collection<String> existedSchemaNames) {
+        Preconditions.checkState(!existedSchemaNames.contains(schemaName), "schema name already exists.");
+    }
+    
 }
