@@ -73,6 +73,12 @@ public final class OrCondition {
         return this;
     }
     
+    /**
+     * Find conditions by column.
+     * 
+     * @param column column
+     * @return conditions
+     */
     public Collection<Condition> findConditions(final Column column) {
         Collection<Condition> result = new LinkedList<>();
         for (AndCondition each : andConditions) {
