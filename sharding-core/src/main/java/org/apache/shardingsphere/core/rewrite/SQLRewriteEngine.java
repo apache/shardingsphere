@@ -20,11 +20,15 @@ package org.apache.shardingsphere.core.rewrite;
 import com.google.common.base.Optional;
 import com.google.common.base.Predicate;
 import com.google.common.base.Strings;
+import com.google.common.collect.Collections2;
 import com.google.common.collect.Iterators;
+import com.google.common.collect.Lists;
 import org.apache.shardingsphere.core.constant.DatabaseType;
+import org.apache.shardingsphere.core.exception.ShardingException;
 import org.apache.shardingsphere.core.metadata.datasource.ShardingDataSourceMetaData;
 import org.apache.shardingsphere.core.optimizer.condition.ShardingConditions;
 import org.apache.shardingsphere.core.parsing.lexer.token.DefaultKeyword;
+import org.apache.shardingsphere.core.parsing.parser.context.condition.Condition;
 import org.apache.shardingsphere.core.parsing.parser.context.limit.Limit;
 import org.apache.shardingsphere.core.parsing.parser.context.orderby.OrderItem;
 import org.apache.shardingsphere.core.parsing.parser.sql.SQLStatement;
@@ -57,6 +61,8 @@ import org.apache.shardingsphere.core.spi.hook.SPIRewriteHook;
 import org.apache.shardingsphere.core.util.SQLUtil;
 import org.apache.shardingsphere.spi.hook.RewriteHook;
 
+import java.util.ArrayList;
+import java.util.Collection;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
@@ -285,6 +291,28 @@ public final class SQLRewriteEngine {
     }
     
     private void appendEncryptColumnPlaceholder(final SQLBuilder sqlBuilder, final EncryptColumnToken encryptColumnToken, final int count) {
+        if (encryptColumnToken.isInWhere()) {
+            Condition encryptCondition;
+            
+        }
+        
+    }
+    
+    private Condition getEncryptCondition(final EncryptColumnToken encryptColumnToken) {
+        Collection<Condition> conditions = sqlStatement.getEncryptConditions().getOrCondition().findConditions(encryptColumnToken.getColumn());
+        if (0 == conditions.size()) {
+            throw new ShardingException("Can not find encrypt condition");
+        }
+        if (1 == conditions.size()) {
+            return conditions.iterator().next();
+        }
+        List<SQLToken> encryptColumnTokens = new ArrayList<>(Collections2.filter(sqlTokens, new Predicate<SQLToken>() {
+            @Override
+            public boolean apply(final SQLToken input) {
+                return input instanceof EncryptColumnToken && ((EncryptColumnToken) input).getColumn().equals( encryptColumnToken.getColumn());
+            }
+        }));
+        encryptColumnTokens.indexOf(encryptColumnToken);
         
     }
     
