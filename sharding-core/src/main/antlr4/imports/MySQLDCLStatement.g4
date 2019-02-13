@@ -60,9 +60,7 @@ objectType
     ;
     
 privLevel
-    : ASTERISK_ DOT_ASTERISK_
-    | tableName
-    | schemaName DOT_ routineName
+    : ASTERISK_ DOT_ASTERISK_ | tableName | schemaName DOT_ routineName
     ;
     
 host
@@ -102,33 +100,24 @@ grantRole
     ;
     
 revoke
-    : REVOKE privType columnList? (COMMA_ privType columnList?)*
-    ON objectType? privLevel
-    FROM userOrRoles
+    : REVOKE privType columnList? (COMMA_ privType columnList?)* ON objectType? privLevel FROM userOrRoles
     ;
     
 revokeAll
-    : REVOKE ALL PRIVILEGES? COMMA_ GRANT OPTION
-    FROM userOrRoles
+    : REVOKE ALL PRIVILEGES? COMMA_ GRANT OPTION FROM userOrRoles
     ;
     
 revokeProxy
-    : REVOKE PROXY ON userOrRole
-    FROM userOrRoles
+    : REVOKE PROXY ON userOrRole FROM userOrRoles
     ;
     
 revokeRole
-    : REVOKE roleNames
-    FROM userOrRoles
+    : REVOKE roleNames FROM userOrRoles
     ;
     
 createUser
-    : CREATE USER (IF NOT EXISTS)?
-    userAuthOptions
-    (DEFAULT ROLE roles)?
-    (REQUIRE (NONE | tlsOption (COMMA_ AND? tlsOption)*))?
-    (WITH resourceOption (COMMA_ resourceOption)*)?
-    (passwordOption | lockOption)*
+    : CREATE USER (IF NOT EXISTS)? userAuthOptions (DEFAULT ROLE roles)? (REQUIRE (NONE | tlsOption (COMMA_ AND? tlsOption)*))?
+    (WITH resourceOption (COMMA_ resourceOption)*)? (passwordOption | lockOption)*
     ;
     
 authOption
@@ -156,10 +145,7 @@ tlsOption
     ;
     
 resourceOption
-    : MAX_QUERIES_PER_HOUR NUMBER_
-    | MAX_UPDATES_PER_HOUR NUMBER_
-    | MAX_CONNECTIONS_PER_HOUR NUMBER_
-    | MAX_USER_CONNECTIONS NUMBER_
+    : MAX_QUERIES_PER_HOUR NUMBER_ | MAX_UPDATES_PER_HOUR NUMBER_ | MAX_CONNECTIONS_PER_HOUR NUMBER_ | MAX_USER_CONNECTIONS NUMBER_
     ;
     
 passwordOption
@@ -174,10 +160,7 @@ lockOption
     ;
     
 alterUser
-    : ALTER USER (IF EXISTS)? userAuthOptions
-    (REQUIRE (NONE | tlsOption (COMMA_ AND? tlsOption)*))?
-    (WITH resourceOption (COMMA_ resourceOption)*)?
-    (passwordOption | lockOption)*
+    : ALTER USER (IF EXISTS)? userAuthOptions (REQUIRE (NONE | tlsOption (COMMA_ AND? tlsOption)*))? (WITH resourceOption (COMMA_ resourceOption)*)? (passwordOption | lockOption)*
     ;
     
 alterCurrentUser
@@ -185,14 +168,11 @@ alterCurrentUser
     ;
     
 userFuncAuthOption
-    : IDENTIFIED BY STRING_ (REPLACE STRING_)? (RETAIN CURRENT PASSWORD)?
-    | DISCARD OLD PASSWORD
+    : IDENTIFIED BY STRING_ (REPLACE STRING_)? (RETAIN CURRENT PASSWORD)? | DISCARD OLD PASSWORD
     ;
     
 alterUserRole
-    : ALTER USER (IF EXISTS)?
-    user DEFAULT ROLE
-    (NONE | ALL | roles)
+    : ALTER USER (IF EXISTS)? user DEFAULT ROLE (NONE | ALL | roles)
     ;
     
 dropUser

@@ -2,8 +2,8 @@ grammar MySQLDDLStatement;
 
 import MySQLKeyword, Keyword, DataType, MySQLBase, BaseRule, Symbol, MySQLSelectStatement;
 
-createIndex:
-    CREATE (UNIQUE | FULLTEXT | SPATIAL)? INDEX indexName indexType? ON tableName
+createIndex
+    : CREATE (UNIQUE | FULLTEXT | SPATIAL)? INDEX indexName indexType? ON tableName
     ;
     
 dropIndex
@@ -67,8 +67,7 @@ columnDefinition
     ;
     
 dataType
-    : typeName dataTypeLength? characterSet? collateClause? UNSIGNED? ZEROFILL?
-    | typeName (LP_ STRING_ (COMMA_ STRING_)* RP_ characterSet? collateClause?)
+    : typeName dataTypeLength? characterSet? collateClause? UNSIGNED? ZEROFILL? | typeName (LP_ STRING_ (COMMA_ STRING_)* RP_ characterSet? collateClause?)
     ;
     
 typeName
@@ -89,11 +88,7 @@ dataTypeGeneratedOption
     ;
     
 defaultValue
-    : NULL
-    | NUMBER_
-    | STRING_
-    | currentTimestampType (ON UPDATE currentTimestampType)?
-    | ON UPDATE currentTimestampType
+    : NULL | NUMBER_ | STRING_ | currentTimestampType (ON UPDATE currentTimestampType)? | ON UPDATE currentTimestampType
     ;
     
 currentTimestampType
@@ -171,8 +166,7 @@ engineName
     ;
     
 partitionOptions
-    : PARTITION BY (linearPartition | rangeOrListPartition) (PARTITIONS NUMBER_)?
-    (SUBPARTITION BY linearPartition (SUBPARTITIONS NUMBER_)? )? (LP_ partitionDefinitions RP_)?
+    : PARTITION BY (linearPartition | rangeOrListPartition) (PARTITIONS NUMBER_)? (SUBPARTITION BY linearPartition (SUBPARTITIONS NUMBER_)? )? (LP_ partitionDefinitions RP_)?
     ;
     
 linearPartition
@@ -192,10 +186,7 @@ partitionDefinitions
     ;
     
 partitionDefinition
-    : PARTITION partitionName
-    (VALUES (lessThanPartition | IN assignmentValueList))?
-    partitionDefinitionOption*
-    (LP_ subpartitionDefinition (COMMA_ subpartitionDefinition)* RP_)?
+    : PARTITION partitionName (VALUES (lessThanPartition | IN assignmentValueList))? partitionDefinitionOption* (LP_ subpartitionDefinition (COMMA_ subpartitionDefinition)* RP_)?
     ;
     
 partitionDefinitionOption
@@ -292,8 +283,8 @@ changeColumnOp
     : CHANGE COLUMN?
     ;
     
-dropColumn:
-    DROP COLUMN? columnName
+dropColumn
+    : DROP COLUMN? columnName
     ;
 
 dropIndexDef

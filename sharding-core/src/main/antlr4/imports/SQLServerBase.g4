@@ -3,8 +3,7 @@ grammar SQLServerBase;
 import SQLServerKeyword, Keyword, Symbol, BaseRule, DataType;
 
 ID
-    : (LBT_? DQ_? [a-zA-Z_$#][a-zA-Z0-9_$#]* DQ_? RBT_? DOT_)* DOT_* (LBT_? DQ_? [a-zA-Z_$#][a-zA-Z0-9_$#]* DQ_? RBT_?)
-    | [a-zA-Z0-9_$]+ DOT_ASTERISK_
+    : (LBT_? DQ_? [a-zA-Z_$#][a-zA-Z0-9_$#]* DQ_? RBT_? DOT_)* DOT_* (LBT_? DQ_? [a-zA-Z_$#][a-zA-Z0-9_$#]* DQ_? RBT_?) | [a-zA-Z0-9_$]+ DOT_ASTERISK_
     ;
     
 dataType
@@ -135,8 +134,7 @@ numberRange
     ;
     
 lowPriorityLockWait
-    : WAIT_AT_LOW_PRIORITY LP_ MAX_DURATION EQ_ NUMBER_ ( MINUTES )? COMMA_
-    ABORT_AFTER_WAIT EQ_ ( NONE | SELF | BLOCKERS ) RP_
+    : WAIT_AT_LOW_PRIORITY LP_ MAX_DURATION EQ_ NUMBER_ ( MINUTES )? COMMA_ ABORT_AFTER_WAIT EQ_ ( NONE | SELF | BLOCKERS ) RP_
     ;
     
 onLowPriorLockWait

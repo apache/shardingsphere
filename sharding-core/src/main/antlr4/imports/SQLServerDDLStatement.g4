@@ -126,9 +126,7 @@ columnDefinitionOption
     | GENERATED ALWAYS AS ROW (START | END) HIDDEN_?
     | NOT? NULL
     | ROWGUIDCOL 
-    | ENCRYPTED WITH 
-      LP_ COLUMN_ENCRYPTION_KEY EQ_ keyName COMMA_ ENCRYPTION_TYPE EQ_ ( DETERMINISTIC | RANDOMIZED )
-      COMMA_ ALGORITHM EQ_ STRING_ RP_
+    | ENCRYPTED WITH LP_ COLUMN_ENCRYPTION_KEY EQ_ keyName COMMA_ ENCRYPTION_TYPE EQ_ (DETERMINISTIC | RANDOMIZED) COMMA_ ALGORITHM EQ_ STRING_ RP_
     | columnConstraint (COMMA_ columnConstraint)*
     | columnIndex
     ;
@@ -194,10 +192,7 @@ checkConstraint:
     ;
     
 columnIndex
-    : INDEX indexName ( CLUSTERED | NONCLUSTERED )?
-    (WITH LP_ indexOption (COMMA_ indexOption)* RP_)?
-    indexOnClause?
-    (FILESTREAM_ON (fileGroup | schemaName | STRING_))?
+    : INDEX indexName ( CLUSTERED | NONCLUSTERED )? (WITH LP_ indexOption (COMMA_ indexOption)* RP_)? indexOnClause? (FILESTREAM_ON (fileGroup | schemaName | STRING_))?
     ;
     
 indexOnClause
@@ -286,13 +281,12 @@ columnNameWithSort
     : columnName (ASC | DESC)?
     ;
     
-columnNameGeneratedClause:
-    columnNameGenerated DEFAULT simpleExpr (WITH VALUES)? COMMA_ columnNameGenerated
+columnNameGeneratedClause
+    : columnNameGenerated DEFAULT simpleExpr (WITH VALUES)? COMMA_ columnNameGenerated
     ;
     
 columnNameGenerated
-    : columnName typeName GENERATED ALWAYS AS ROW (START | END)?
-    HIDDEN_? (NOT NULL)? (CONSTRAINT constraintName)?
+    : columnName typeName GENERATED ALWAYS AS ROW (START | END)? HIDDEN_? (NOT NULL)? (CONSTRAINT constraintName)?
     ;
     
 alterDrop
@@ -376,8 +370,7 @@ indexWithName
     ;
     
 indexNonClusterClause
-    : NONCLUSTERED
-    (hashWithBucket | (columnNameWithSortsWithParen alterTableIndexOnClause?)) 
+    : NONCLUSTERED (hashWithBucket | (columnNameWithSortsWithParen alterTableIndexOnClause?)) 
     ;
     
 alterTableIndexOnClause
@@ -392,6 +385,5 @@ alterTableTableOption
     : SET LP_ LOCK_ESCALATION EQ_ (AUTO | TABLE | DISABLE) RP_
     | MEMORY_OPTIMIZED EQ_ ON
     | DURABILITY EQ_ (SCHEMA_ONLY | SCHEMA_AND_DATA) 
-    | SYSTEM_VERSIONING EQ_ ON (LP_ HISTORY_TABLE EQ_ tableName
-        (COMMA_ DATA_CONSISTENCY_CHECK EQ_ (ON | OFF))? RP_ )?
+    | SYSTEM_VERSIONING EQ_ ON (LP_ HISTORY_TABLE EQ_ tableName (COMMA_ DATA_CONSISTENCY_CHECK EQ_ (ON | OFF))? RP_ )?
     ;

@@ -3,8 +3,7 @@ grammar OracleDDLStatement;
 import OracleKeyword, Keyword, DataType, OracleBase, BaseRule, Symbol;
 
 createIndex
-    : CREATE ( UNIQUE | BITMAP)? INDEX indexName
-    ON (tableIndexClause | bitmapJoinIndexClause)
+    : CREATE ( UNIQUE | BITMAP)? INDEX indexName ON (tableIndexClause | bitmapJoinIndexClause)
     ;
     
 alterIndex
@@ -32,9 +31,7 @@ truncateTable
     ;
     
 tableIndexClause
-    : tableName alias?
-    LP_ indexExprSort
-    (COMMA_ indexExprSort)* RP_
+    : tableName alias? LP_ indexExprSort (COMMA_ indexExprSort)* RP_
     ;
     
 indexExprSort
@@ -58,9 +55,7 @@ domainIndexClause
     ;
     
 bitmapJoinIndexClause
-    : tableName LP_ columnSortClause( COMMA_ columnSortClause)* RP_
-    FROM tableAndAlias (COMMA_ tableAndAlias)*
-    WHERE expr
+    : tableName LP_ columnSortClause( COMMA_ columnSortClause)* RP_ FROM tableAndAlias (COMMA_ tableAndAlias)* WHERE expr
     ;
     
 relationalTable
@@ -104,8 +99,7 @@ addColumn
     ;
     
 columnOrVirtualDefinitions
-    : LP_ columnOrVirtualDefinition (COMMA_ columnOrVirtualDefinition)* RP_
-    | columnOrVirtualDefinition
+    : LP_ columnOrVirtualDefinition (COMMA_ columnOrVirtualDefinition)* RP_ | columnOrVirtualDefinition
     ;
     
 columnOrVirtualDefinition
@@ -113,13 +107,11 @@ columnOrVirtualDefinition
     ;
     
 modifyColumn
-    : MODIFY 
-    (LP_? modifyColProperties (COMMA_ modifyColProperties)* RP_? | modifyColSubstitutable)
+    : MODIFY (LP_? modifyColProperties (COMMA_ modifyColProperties)* RP_? | modifyColSubstitutable)
     ;
     
 modifyColProperties
-    : columnName dataType? (DEFAULT expr)?
-    (ENCRYPT encryptionSpec | DECRYPT)? inlineConstraint* 
+    : columnName dataType? (DEFAULT expr)? (ENCRYPT encryptionSpec | DECRYPT)? inlineConstraint* 
     ;
     
 modifyColSubstitutable
@@ -190,10 +182,7 @@ alterExternalTable
     ;
     
 columnDefinition
-    : columnName dataType SORT?
-    (DEFAULT (ON NULL)? expr | identityClause)?
-    (ENCRYPT encryptionSpec)?
-    (inlineConstraint+ | inlineRefConstraint)?
+    : columnName dataType SORT? (DEFAULT (ON NULL)? expr | identityClause)? (ENCRYPT encryptionSpec)? (inlineConstraint+ | inlineRefConstraint)?
     ;
     
 identityClause
@@ -220,9 +209,7 @@ virtualColumnDefinition
     ;
     
 inlineConstraint
-    : (CONSTRAINT constraintName)?
-    (NOT? NULL | UNIQUE | primaryKey | referencesClause | CHECK LP_ expr RP_)
-    constraintState*
+    : (CONSTRAINT constraintName)? (NOT? NULL | UNIQUE | primaryKey | referencesClause | CHECK LP_ expr RP_) constraintState*
     ;
     
 referencesClause
@@ -255,16 +242,11 @@ exceptionsClause
     ;
     
 usingIndexClause
-    : USING INDEX
-    (indexName
-    | (LP_ createIndex RP_) 
-    )?
+    : USING INDEX (indexName | LP_ createIndex RP_ )?
     ;
     
 inlineRefConstraint
-    : SCOPE IS tableName
-    | WITH ROWID
-    | (CONSTRAINT constraintName)? referencesClause constraintState*
+    : SCOPE IS tableName | WITH ROWID | (CONSTRAINT constraintName)? referencesClause constraintState*
     ;
     
 outOfLineConstraint
@@ -285,9 +267,7 @@ outOfLineRefConstraint
     ;
     
 encryptionSpec
-    : (USING STRING_)?
-    (IDENTIFIED BY STRING_)?
-    STRING_? (NO? SALT)?
+    : (USING STRING_)? (IDENTIFIED BY STRING_)? STRING_? (NO? SALT)?
     ;
     
 objectProperties
@@ -295,9 +275,7 @@ objectProperties
     ;
     
 objectProperty
-    : (columnName | attributeName ) (DEFAULT expr)? (inlineConstraint* | inlineRefConstraint?)
-    | outOfLineConstraint 
-    | outOfLineRefConstraint
+    : (columnName | attributeName ) (DEFAULT expr)? (inlineConstraint* | inlineRefConstraint?) | outOfLineConstraint | outOfLineRefConstraint
     ;
     
 columnProperties

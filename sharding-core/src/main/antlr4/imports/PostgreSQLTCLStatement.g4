@@ -3,19 +3,15 @@ grammar PostgreSQLTCLStatement;
 import PostgreSQLKeyword, Keyword, BaseRule, DataType, Symbol;
 
 setTransaction
-    : SET TRANSACTION (transactionMode (COMMA_ transactionMode)* | SNAPSHOT ID)
-    | SET SESSION CHARACTERISTICS AS TRANSACTION transactionMode (COMMA_ transactionMode)*
+    : SET TRANSACTION (transactionMode (COMMA_ transactionMode)* | SNAPSHOT ID) | SET SESSION CHARACTERISTICS AS TRANSACTION transactionMode (COMMA_ transactionMode)*
     ;
     
 transactionMode
-    : ISOLATION LEVEL (SERIALIZABLE | REPEATABLE READ | READ COMMITTED | READ UNCOMMITTED)
-    | READ (WRITE | ONLY)
-    | NOT? DEFERRABLE
+    : ISOLATION LEVEL (SERIALIZABLE | REPEATABLE READ | READ COMMITTED | READ UNCOMMITTED) | READ (WRITE | ONLY) | NOT? DEFERRABLE
     ;
     
 commit
-    : COMMIT workOrTransaction?
-    | COMMIT PREPARED ID
+    : COMMIT workOrTransaction? | COMMIT PREPARED ID
     ;
     
 rollback

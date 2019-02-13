@@ -35,10 +35,7 @@ startTransactionCharacteristic
     ;
     
 rollback
-    : ROLLBACK WORK? 
-    (
-     (AND NO? CHAIN)? (NO? RELEASE)? | TO SAVEPOINT? ID
-    )
+    : ROLLBACK WORK? ((AND NO? CHAIN)? (NO? RELEASE)? | TO SAVEPOINT? ID)
     ;
     
 savepoint

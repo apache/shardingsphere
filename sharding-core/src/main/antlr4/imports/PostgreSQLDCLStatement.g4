@@ -1,12 +1,9 @@
 grammar PostgreSQLDCLStatement;
 
-import PostgreSQLKeyword, Keyword, BaseRule, DataType, Symbol;
+import PostgreSQLKeyword, Keyword, PostgreSQLBase, BaseRule, DataType, Symbol;
 
 grant
-    : GRANT privType columnList? (COMMA_ privType columnList?)*
-    privOnClause
-    TO roleSpecifications
-    (WITH GRANT OPTION)?
+    : GRANT privType columnList? (COMMA_ privType columnList?)* privOnClause TO roleSpecifications (WITH GRANT OPTION)?
     ;
     
 privType
@@ -92,17 +89,11 @@ grantRole
     ;
     
 revoke
-    : REVOKE (GRANT OPTION FOR)?
-    privType columnList? (COMMA_ privType columnList?)*
-    privOnClause
-    FROM roleSpecifications
-    (CASCADE | RESTRICT)?
+    : REVOKE (GRANT OPTION FOR)? privType columnList? (COMMA_ privType columnList?)* privOnClause FROM roleSpecifications (CASCADE | RESTRICT)?
     ;
     
 revokeRole
-    : REVOKE (ADMIN OPTION FOR)?
-    roleNames FROM roleNames
-    (CASCADE | RESTRICT)?
+    : REVOKE (ADMIN OPTION FOR)? roleNames FROM roleNames (CASCADE | RESTRICT)?
     ;
     
 createUser

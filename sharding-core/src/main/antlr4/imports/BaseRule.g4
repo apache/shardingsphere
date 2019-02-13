@@ -2,8 +2,8 @@ grammar BaseRule;
 
 import DataType, Keyword, Symbol;
 
-ID: 
-    (BQ_?[a-zA-Z_$][a-zA-Z0-9_$]* BQ_? DOT_)? (BQ_?[a-zA-Z_$][a-zA-Z0-9_$]* BQ_?)
+ID 
+    : (BQ_?[a-zA-Z_$][a-zA-Z0-9_$]* BQ_? DOT_)? (BQ_?[a-zA-Z_$][a-zA-Z0-9_$]* BQ_?)
     ;
     
 schemaName
@@ -35,8 +35,7 @@ tablespaceName
     ;
     
 collationName
-    : STRING_
-    | ID
+    : STRING_ | ID
     ;
     
 indexName

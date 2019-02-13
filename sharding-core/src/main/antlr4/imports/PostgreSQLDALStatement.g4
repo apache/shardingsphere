@@ -15,8 +15,7 @@ scope
     ;
     
 setClause
-    : TIME ZONE timeZoneType
-    | ID (TO | EQ_) (STRING_ | DEFAULT)
+    : TIME ZONE timeZoneType | ID (TO | EQ_) (STRING_ | DEFAULT)
     ;
     
 timeZoneType

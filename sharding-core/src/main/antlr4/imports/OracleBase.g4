@@ -108,19 +108,11 @@ exprRecursive
     ;
     
 intervalExpression
-    : LP_ expr MINUS_ expr RP_
-    (
-     DAY (LP_ NUMBER_ RP_)? TO SECOND (LP_ NUMBER_ RP_)?
-     | YEAR (LP_ NUMBER_ RP_)? TO MONTH
-    )
+    : LP_ expr MINUS_ expr RP_ (DAY (LP_ NUMBER_ RP_)? TO SECOND (LP_ NUMBER_ RP_)? | YEAR (LP_ NUMBER_ RP_)? TO MONTH)
     ;
     
 objectAccessExpression
-    : (LP_ simpleExpr RP_ | treatFunction)
-    DOT_
-    (
-    attributeName (DOT_ attributeName )* (DOT_ functionCall)? | functionCall
-    )
+    : (LP_ simpleExpr RP_ | treatFunction) DOT_ (attributeName (DOT_ attributeName )* (DOT_ functionCall)? | functionCall)
     ;
     
 constructorExpr

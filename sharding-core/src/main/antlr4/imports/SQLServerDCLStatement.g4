@@ -23,8 +23,7 @@ permission
     ;
     
 grantDW
-    : GRANT permission (COMMA_ permission)* (ON (classType COLON_ COLON_)? ID)?
-    TO ids (WITH GRANT OPTION)?
+    : GRANT permission (COMMA_ permission)* (ON (classType COLON_ COLON_)? ID)? TO ids (WITH GRANT OPTION)?
     ;
     
 classType
@@ -36,8 +35,7 @@ revoke
     ;
     
 revokeGeneral
-    : REVOKE (GRANT OPTION FOR)? ((ALL PRIVILEGES?)? | permissionOnColumns)
-    (ON (ID COLON_ COLON_)? ID)? (TO | FROM) ids (CASCADE)? (AS ID)?
+    : REVOKE (GRANT OPTION FOR)? ((ALL PRIVILEGES?)? | permissionOnColumns) (ON (ID COLON_ COLON_)? ID)? (TO | FROM) ids (CASCADE)? (AS ID)?
     ;
     
 revokeDW
@@ -66,9 +64,7 @@ createUserBody1
     ;
     
 createUserBody2
-    : windowsPrincipal (WITH optionsLists)?
-    | userName WITH PASSWORD EQ_ STRING_ (COMMA_ optionsList)*
-    | ID FROM EXTERNAL PROVIDER
+    : windowsPrincipal (WITH optionsLists)? | userName WITH PASSWORD EQ_ STRING_ (COMMA_ optionsList)* | ID FROM EXTERNAL PROVIDER
     ;
     
 windowsPrincipal
@@ -76,13 +72,11 @@ windowsPrincipal
     ;
      
 createUserBody3
-    : windowsPrincipal ((FOR | FROM) LOGIN ID)?
-    | userName (FOR | FROM) LOGIN ID
+    : windowsPrincipal ((FOR | FROM) LOGIN ID)? | userName (FOR | FROM) LOGIN ID
     ;
     
 createUserBody4
-    : WITHOUT LOGIN (WITH optionsLists)?
-    | (FOR | FROM) (CERTIFICATE ID | ASYMMETRIC KEY ID)
+    : WITHOUT LOGIN (WITH optionsLists)? | (FOR | FROM) (CERTIFICATE ID | ASYMMETRIC KEY ID)
     ;
     
 optionsLists
@@ -129,8 +123,7 @@ passwordOption
     ;
     
 credentialOption
-    : ADD CREDENTIAL ID
-    | DROP CREDENTIAL
+    : ADD CREDENTIAL ID | DROP CREDENTIAL
     ;
     
 dropLogin

@@ -160,7 +160,6 @@ partitionClause
     : PARTITION columnList
     ;
     
-    
 asterisk
     : ASTERISK_
     ;

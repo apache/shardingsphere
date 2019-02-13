@@ -3,11 +3,7 @@ grammar OracleDCLStatement;
 import OracleKeyword, Keyword, OracleBase, BaseRule, DataType, Symbol;
 
 grant
-    : GRANT
-    (
-        (grantSystemPrivileges | grantObjectPrivilegeClause) (CONTAINER EQ_ (CURRENT | ALL))?
-        | grantRolesToPrograms
-    )
+    : GRANT ((grantSystemPrivileges | grantObjectPrivilegeClause) (CONTAINER EQ_ (CURRENT | ALL))? | grantRolesToPrograms)
     ;
     
 grantSystemPrivileges
@@ -35,8 +31,7 @@ granteeIdentifiedBy
     ;
     
 grantObjectPrivilegeClause
-    : grantObjectPrivilege (COMMA_ grantObjectPrivilege)* onObjectClause
-    TO grantees (WITH HIERARCHY OPTION)?(WITH GRANT OPTION)?
+    : grantObjectPrivilege (COMMA_ grantObjectPrivilege)* onObjectClause TO grantees (WITH HIERARCHY OPTION)?(WITH GRANT OPTION)?
     ;
     
 grantObjectPrivilege
@@ -48,12 +43,7 @@ objectPrivilege
     ;
     
 onObjectClause
-    : ON 
-    (
-       tableName 
-       | USER userName ( COMMA_ userName)*
-       | (DIRECTORY | EDITION | MINING MODEL | JAVA (SOURCE | RESOURCE) | SQL TRANSLATION PROFILE) tableName 
-    )
+    : ON (tableName | USER userName (COMMA_ userName)* | (DIRECTORY | EDITION | MINING MODEL | JAVA (SOURCE | RESOURCE) | SQL TRANSLATION PROFILE) tableName )
     ;
     
 grantRolesToPrograms
@@ -69,11 +59,7 @@ programUnit
     ;
     
 revoke
-    : REVOKE
-     (
-         (revokeSystemPrivileges | revokeObjectPrivileges) (CONTAINER EQ_ (CURRENT | ALL))?
-         | revokeRolesFromPrograms 
-     )
+    : REVOKE ((revokeSystemPrivileges | revokeObjectPrivileges) (CONTAINER EQ_ (CURRENT | ALL))? | revokeRolesFromPrograms)
     ;
     
 revokeSystemPrivileges
@@ -89,8 +75,7 @@ revokeRolesFromPrograms
     ;
     
 createUser
-    : CREATE USER userName IDENTIFIED 
-    (BY ID | (EXTERNALLY | GLOBALLY) ( AS STRING_)?)
+    : CREATE USER userName IDENTIFIED (BY ID | (EXTERNALLY | GLOBALLY) ( AS STRING_)?)
     ( 
         DEFAULT TABLESPACE ID
         | TEMPORARY TABLESPACE ID
@@ -129,11 +114,7 @@ alterUser
     ;
     
 containerDataClause
-    : (
-          SET CONTAINER_DATA EQ_ ( ALL | DEFAULT | idList )
-          | (ADD |REMOVE) CONTAINER_DATA EQ_ idList
-    )
-    (FOR tableName)?
+    : (SET CONTAINER_DATA EQ_ ( ALL | DEFAULT | idList ) | (ADD |REMOVE) CONTAINER_DATA EQ_ idList) (FOR tableName)?
     ;
     
 proxyClause
@@ -158,9 +139,7 @@ createRole
     ;
     
 alterRole
-    : ALTER ROLE roleName
-    (NOT IDENTIFIED | IDENTIFIED (BY ID | USING tableName | EXTERNALLY | GLOBALLY))
-    (CONTAINER EQ_ (CURRENT | ALL))? 
+    : ALTER ROLE roleName (NOT IDENTIFIED | IDENTIFIED (BY ID | USING tableName | EXTERNALLY | GLOBALLY)) (CONTAINER EQ_ (CURRENT | ALL))? 
     ;
     
 dropRole
