@@ -15,17 +15,13 @@
  * limitations under the License.
  */
 
-package org.apache.shardingsphere.api.algorithm.fixture;
+package org.apache.shardingsphere.api.hint;
 
-import org.apache.shardingsphere.api.algorithm.sharding.complex.ComplexKeysShardingAlgorithm;
-import org.apache.shardingsphere.api.algorithm.sharding.complex.ComplexKeysShardingValue;
+import org.junit.runner.RunWith;
+import org.junit.runners.Suite;
+import org.junit.runners.Suite.SuiteClasses;
 
-import java.util.Collection;
-
-public final class TestComplexKeysShardingAlgorithm implements ComplexKeysShardingAlgorithm<String> {
-
-    @Override
-    public Collection<String> doSharding(final Collection<String> availableTargetNames, final ComplexKeysShardingValue<String> shardingValue) {
-        return availableTargetNames;
-    }
+@RunWith(Suite.class)
+@SuiteClasses(HintManagerTest.class)
+public final class AllHintTests {
 }

@@ -17,8 +17,8 @@
 
 package org.apache.shardingsphere.core.encrypt;
 
-import org.apache.shardingsphere.core.encrypt.encryptor.impl.AESShardingEncryptor;
-import org.apache.shardingsphere.core.encrypt.encryptor.impl.MD5ShardingEncryptor;
+import org.apache.shardingsphere.core.encrypt.impl.AESShardingEncryptor;
+import org.apache.shardingsphere.core.encrypt.impl.MD5ShardingEncryptor;
 import org.junit.Test;
 
 import java.util.Properties;

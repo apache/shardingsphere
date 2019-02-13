@@ -17,16 +17,13 @@
 
 package org.apache.shardingsphere.core.hint;
 
-import com.google.common.base.Optional;
 import com.google.common.base.Preconditions;
 import lombok.AccessLevel;
 import lombok.NoArgsConstructor;
-import org.apache.shardingsphere.api.HintManager;
-import org.apache.shardingsphere.core.parsing.parser.context.condition.Column;
-import org.apache.shardingsphere.core.routing.value.ListRouteValue;
-import org.apache.shardingsphere.core.routing.value.RouteValue;
+import org.apache.shardingsphere.api.hint.HintManager;
 
 import java.util.Collection;
+import java.util.Collections;
 
 /**
  * Hint manager holder.
@@ -39,10 +36,6 @@ import java.util.Collection;
 @NoArgsConstructor(access = AccessLevel.PRIVATE)
 public final class HintManagerHolder {
     
-    public static final String DB_TABLE_NAME = "DB_TABLE_NAME";
-    
-    public static final String DB_COLUMN_NAME = "DB_COLUMN_NAME";
-    
     private static final ThreadLocal<HintManager> HINT_MANAGER_HOLDER = new ThreadLocal<>();
     
     /**
@@ -51,12 +44,41 @@ public final class HintManagerHolder {
      * @param hintManager hint manager instance
      */
     public static void setHintManager(final HintManager hintManager) {
-        Preconditions.checkState(null == HINT_MANAGER_HOLDER.get(), "HintManagerHolder has previous value, please clear first.");
+        Preconditions.checkState(null == HINT_MANAGER_HOLDER.get(), "Hint has previous value, please clear first.");
         HINT_MANAGER_HOLDER.set(hintManager);
     }
     
     /**
-     * Judge whether only database is sharding.
+     * Get database sharding values.
+     *
+     * @return database sharding values
+     */
+    public static Collection<Comparable<?>> getDatabaseShardingValues() {
+        return getDatabaseShardingValues("");
+    }
+    
+    /**
+     * Get database sharding values.
+     * 
+     * @param logicTable logic table
+     * @return database sharding values
+     */
+    public static Collection<Comparable<?>> getDatabaseShardingValues(final String logicTable) {
+        return null == HINT_MANAGER_HOLDER.get() ? Collections.<Comparable<?>>emptyList() : HINT_MANAGER_HOLDER.get().getDatabaseShardingValues().get(logicTable);
+    }
+    
+    /**
+     * Get table sharding values.
+     *
+     * @param logicTable logic table name
+     * @return table sharding values
+     */
+    public static Collection<Comparable<?>> getTableShardingValues(final String logicTable) {
+        return null == HINT_MANAGER_HOLDER.get() ? Collections.<Comparable<?>>emptyList() : HINT_MANAGER_HOLDER.get().getTableShardingValues().get(logicTable);
+    }
+    
+    /**
+     * Judge whether database sharding only.
      *
      * @return database sharding or not
      */
@@ -65,56 +87,16 @@ public final class HintManagerHolder {
     }
     
     /**
-     * Judge whether it is routed to master database or not.
+     * Judge whether route to master database only or not.
      *
-     * @return is force route to master database only or not
+     * @return route to master database only or not
      */
     public static boolean isMasterRouteOnly() {
         return null != HINT_MANAGER_HOLDER.get() && HINT_MANAGER_HOLDER.get().isMasterRouteOnly();
     }
     
     /**
-     * Get database sharding value.
-     * 
-     * @param logicTable logic table
-     * @return database sharding value
-     */
-    public static Optional<RouteValue> getDatabaseShardingValue(final String logicTable) {
-        if (null == HINT_MANAGER_HOLDER.get() || !HINT_MANAGER_HOLDER.get().getDatabaseShardingValues().containsKey(logicTable)) {
-            return Optional.absent();
-        }
-        return Optional.of(getShardingValue(logicTable, HINT_MANAGER_HOLDER.get().getDatabaseShardingValues().get(logicTable)));
-    }
-    
-    /**
-     * Get table sharding value.
-     *
-     * @param logicTable logic table name
-     * @return table sharding value
-     */
-    public static Optional<RouteValue> getTableShardingValue(final String logicTable) {
-        if (null == HINT_MANAGER_HOLDER.get() || !HINT_MANAGER_HOLDER.get().getTableShardingValues().containsKey(logicTable)) {
-            return Optional.absent();
-        }
-        return Optional.of(getShardingValue(logicTable, HINT_MANAGER_HOLDER.get().getTableShardingValues().get(logicTable)));
-    }
-    
-    private static RouteValue getShardingValue(final String logicTable, final Collection<Comparable<?>> values) {
-        Preconditions.checkArgument(null != values && !values.isEmpty());
-        return new ListRouteValue<>(new Column(DB_COLUMN_NAME, logicTable), values);
-    }
-    
-    /**
-     * Get hint manager in current thread.
-     *
-     * @return hint manager in current thread
-     */
-    public static HintManager get() {
-        return HINT_MANAGER_HOLDER.get();
-    }
-    
-    /**
-     * Clear hint manager for current thread-local.
+     * Clear hint manager for current thread.
      */
     public static void clear() {
         HINT_MANAGER_HOLDER.remove();

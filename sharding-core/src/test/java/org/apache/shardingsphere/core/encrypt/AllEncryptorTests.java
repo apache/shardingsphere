@@ -17,17 +17,18 @@
 
 package org.apache.shardingsphere.core.encrypt;
 
-import org.apache.shardingsphere.core.encrypt.encryptor.impl.AESShardingEncryptorTest;
-import org.apache.shardingsphere.core.encrypt.encryptor.impl.MD5ShardingEncryptorTest;
+import org.apache.shardingsphere.core.encrypt.impl.AESShardingEncryptorTest;
+import org.apache.shardingsphere.core.encrypt.impl.MD5ShardingEncryptorTest;
 import org.junit.runner.RunWith;
 import org.junit.runners.Suite;
 import org.junit.runners.Suite.SuiteClasses;
 
 @RunWith(Suite.class)
 @SuiteClasses({
+        ShardingEncryptorStrategyTest.class, 
         ShardingEncryptorFactoryTest.class, 
         AESShardingEncryptorTest.class, 
         MD5ShardingEncryptorTest.class
-    })
+})
 public final class AllEncryptorTests {
 }

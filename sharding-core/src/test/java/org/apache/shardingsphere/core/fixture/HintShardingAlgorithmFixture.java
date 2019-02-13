@@ -15,25 +15,23 @@
  * limitations under the License.
  */
 
-package org.apache.shardingsphere.api.algorithm.table;
+package org.apache.shardingsphere.core.fixture;
 
-import com.google.common.collect.Sets;
-import org.apache.shardingsphere.api.config.sharding.strategy.StandardShardingStrategyConfiguration;
-import org.apache.shardingsphere.core.fixture.PreciseOrderShardingAlgorithm;
-import org.apache.shardingsphere.core.routing.strategy.standard.StandardShardingStrategy;
-import org.junit.Test;
+import org.apache.shardingsphere.api.algorithm.sharding.hint.HintShardingAlgorithm;
+import org.apache.shardingsphere.api.algorithm.sharding.hint.HintShardingValue;
 
 import java.util.Collection;
 import java.util.Collections;
 
-import static org.hamcrest.CoreMatchers.is;
-import static org.junit.Assert.assertThat;
-
-public final class TableShardingStrategyTest {
+public final class HintShardingAlgorithmFixture implements HintShardingAlgorithm<Integer> {
     
-    @Test
-    public void assertTableShardingStrategyWithSingleShardingColumn() {
-        assertThat(new StandardShardingStrategy(new StandardShardingStrategyConfiguration("shardingColumn", new PreciseOrderShardingAlgorithm(), null)).getShardingColumns(), 
-                is((Collection<String>) Sets.newTreeSet(Collections.singleton("shardingColumn"))));
+    @Override
+    public Collection<String> doSharding(final Collection<String> availableTargetNames, final HintShardingValue<Integer> shardingValue) {
+        for (String each : availableTargetNames) {
+            if (each.endsWith(String.valueOf(shardingValue.getValues().iterator().next() % 2))) {
+                return Collections.singletonList(each);
+            }
+        }
+        return null;
     }
 }

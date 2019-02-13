@@ -15,7 +15,7 @@
  * limitations under the License.
  */
 
-package org.apache.shardingsphere.api;
+package org.apache.shardingsphere.api.hint;
 
 import com.google.common.collect.HashMultimap;
 import com.google.common.collect.Multimap;
@@ -55,24 +55,16 @@ public final class HintManager implements AutoCloseable {
     }
     
     /**
-     * Add sharding value for database sharding only.
+     * Set sharding value for database sharding only.
      *
      * <p>The sharding operator is {@code =}</p>
-     * When you only need to sharding database, use this method to add database sharding value.
      *
      * @param value sharding value
      */
     public void setDatabaseShardingValue(final Comparable<?> value) {
         databaseShardingValues.clear();
-        addDatabaseShardingValue(HintManagerHolder.DB_TABLE_NAME, value);
+        databaseShardingValues.put("", value);
         databaseShardingOnly = true;
-    }
-    
-    /**
-     * Set CRUD operation force route to master database only.
-     */
-    public void setMasterRouteOnly() {
-        masterRouteOnly = true;
     }
     
     /**
@@ -99,6 +91,13 @@ public final class HintManager implements AutoCloseable {
     public void addTableShardingValue(final String logicTable, final Comparable<?> value) {
         tableShardingValues.put(logicTable, value);
         databaseShardingOnly = false;
+    }
+    
+    /**
+     * Set database operation force route to master database only.
+     */
+    public void setMasterRouteOnly() {
+        masterRouteOnly = true;
     }
     
     @Override

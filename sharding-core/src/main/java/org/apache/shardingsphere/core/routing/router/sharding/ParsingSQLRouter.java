@@ -165,8 +165,8 @@ public final class ParsingSQLRouter implements ShardingRouter {
     private void checkSubqueryShardingValues(final SQLStatement sqlStatement, final Conditions conditions, final ShardingConditions shardingConditions) {
         for (String each : sqlStatement.getTables().getTableNames()) {
             Optional<TableRule> tableRule = shardingRule.findTableRule(each);
-            if (tableRule.isPresent() && shardingRule.isRoutingByHint(tableRule.get()) && HintManagerHolder.getDatabaseShardingValue(each).isPresent()
-                    && HintManagerHolder.getTableShardingValue(each).isPresent()) {
+            if (tableRule.isPresent() && shardingRule.isRoutingByHint(tableRule.get()) && !HintManagerHolder.getDatabaseShardingValues(each).isEmpty()
+                    && !HintManagerHolder.getTableShardingValues(each).isEmpty()) {
                 return;
             }
         }

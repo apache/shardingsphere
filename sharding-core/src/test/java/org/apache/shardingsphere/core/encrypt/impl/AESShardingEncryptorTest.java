@@ -15,7 +15,7 @@
  * limitations under the License.
  */
 
-package org.apache.shardingsphere.core.encrypt.encryptor.impl;
+package org.apache.shardingsphere.core.encrypt.impl;
 
 import org.apache.shardingsphere.core.exception.ShardingConfigurationException;
 import org.junit.Before;
