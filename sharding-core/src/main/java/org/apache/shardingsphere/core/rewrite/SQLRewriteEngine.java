@@ -306,14 +306,18 @@ public final class SQLRewriteEngine {
         if (1 == conditions.size()) {
             return conditions.iterator().next();
         }
+        getEncryptColumnTokenIndex(encryptColumnToken);
+        
+    }
+    
+    private int getEncryptColumnTokenIndex(final EncryptColumnToken encryptColumnToken) {
         List<SQLToken> encryptColumnTokens = new ArrayList<>(Collections2.filter(sqlTokens, new Predicate<SQLToken>() {
             @Override
             public boolean apply(final SQLToken input) {
                 return input instanceof EncryptColumnToken && ((EncryptColumnToken) input).getColumn().equals( encryptColumnToken.getColumn());
             }
         }));
-        encryptColumnTokens.indexOf(encryptColumnToken);
-        
+       return encryptColumnTokens.indexOf(encryptColumnToken);
     }
     
     private void appendRest(final SQLBuilder sqlBuilder, final int count, final int beginPosition) {
