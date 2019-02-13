@@ -68,8 +68,7 @@ chapter = true
  - 如果一个规则的分支超过5个，则每个分支一行。
  - 每行长度不超过`200`个字符，保证每一行语义完整以便于理解。
  - 与ANTLR内置变量或关键字重名的规则在结尾加`下划线`以示区分。
- - Lexer规则名称使用大写字母。如果名称由多个单词组成，用`下划线`间隔。
- - Lexer由`Keyword`、`DataType`和`Symbol`三个独立文件组成，Lexer中包含空格跳过和注释定义。`DataType`和`Symbol`的规则命名以`下划线`结尾。
+ - Lexer规则名称使用大写字母。如果名称由多个单词组成，用`下划线`间隔。`DataType`和`Symbol`的规则命名以`下划线`结尾。
  - Lexer中不对外暴露的规则使用`fragment`，`fragment`定义的规则需在其服务的规则之后声明。
  - 公用Lexer规则定义放在`Keyword.g4`，每个数据库有自己特有的规则定义。例如：`MySQLKeyword.g4`。
  - Parser的规则命名采用java变量的驼峰形式。

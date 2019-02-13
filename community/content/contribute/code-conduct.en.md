@@ -64,8 +64,7 @@ chapter = true
  - If a rule's branch is over than 5, every branch take a new line.
  - Every line cannot over `200` chars, guarantee every line have complete semantics.
  - If rule name is conflicted with ANTLR's keyword, should take an `underline` behind rule name.
- - Rule of lexer name should capitalization. If name composite with more than one word, use `underline` to separate.
- - Lexer is consisted of 3 files: `Keyword`, `DataType` and `Symbol`, lexer need include space skip and comments definition. Rule name of `DataType` and `Symbol` should end with `underline`.
+ - Rule of lexer name should capitalization. If name composite with more than one word, use `underline` to separate. Rule name of `DataType` and `Symbol` should end with `underline`.
  - For private rule in lexer should use `fragment`, rule with `fragment` should define behind of public rule which they served.
  - Common rule of lexer should put in file `Keyword.g4`, every database may has customized rule file by themselves. For example: `MySQLKeyword.g4`.
  - Rule name of parser should same with java variable's camel case.
