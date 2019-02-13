@@ -150,7 +150,7 @@ public final class InsertFiller implements SQLStatementFiller<InsertSegment> {
                 index++;
             }
             insertStatement.setParametersIndex(parameterIndex);
-            insertStatement.getConditions().getOrCondition().getAndConditions().add(andCondition);
+            insertStatement.getRouteConditions().getOrCondition().getAndConditions().add(andCondition);
         }
     }
     

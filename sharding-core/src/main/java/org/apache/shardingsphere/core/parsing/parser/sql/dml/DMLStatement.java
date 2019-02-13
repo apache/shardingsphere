@@ -17,12 +17,9 @@
 
 package org.apache.shardingsphere.core.parsing.parser.sql.dml;
 
-import java.util.Arrays;
-import java.util.Collection;
-import java.util.HashMap;
-import java.util.LinkedHashMap;
-import java.util.Map;
-
+import lombok.Getter;
+import lombok.Setter;
+import lombok.ToString;
 import org.apache.shardingsphere.core.constant.SQLType;
 import org.apache.shardingsphere.core.parsing.lexer.token.DefaultKeyword;
 import org.apache.shardingsphere.core.parsing.lexer.token.Keyword;
@@ -30,9 +27,11 @@ import org.apache.shardingsphere.core.parsing.lexer.token.TokenType;
 import org.apache.shardingsphere.core.parsing.parser.expression.SQLExpression;
 import org.apache.shardingsphere.core.parsing.parser.sql.AbstractSQLStatement;
 
-import lombok.Getter;
-import lombok.Setter;
-import lombok.ToString;
+import java.util.Arrays;
+import java.util.Collection;
+import java.util.HashMap;
+import java.util.LinkedHashMap;
+import java.util.Map;
 
 /**
  * DML statement.

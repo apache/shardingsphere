@@ -100,7 +100,7 @@ public abstract class InsertSetClauseParser implements SQLClauseParser {
             lexerEngine.accept(Symbol.EQ);
             SQLExpression right = basicExpressionParser.parse(insertStatement);
             if (shardingRule.isShardingColumn(column) && (right instanceof SQLNumberExpression || right instanceof SQLTextExpression || right instanceof SQLPlaceholderExpression)) {
-                insertStatement.getConditions().add(new Condition(column, right), shardingRule);
+                insertStatement.getRouteConditions().add(new Condition(column, right));
             }
             count++;
         } while (lexerEngine.skipIfEqual(Symbol.COMMA));
