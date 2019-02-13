@@ -18,7 +18,6 @@
 package org.apache.shardingsphere.core.parsing.parser.token;
 
 import lombok.Getter;
-import lombok.ToString;
 import org.apache.shardingsphere.core.parsing.parser.context.condition.Column;
 
 /**
@@ -26,9 +25,9 @@ import org.apache.shardingsphere.core.parsing.parser.context.condition.Column;
  *
  * @author panjuan
  */
+@Getter
 public final class EncryptColumnToken extends SQLToken {
     
-    @Getter
     private final int stopIndex;
     
     private final Column column;
