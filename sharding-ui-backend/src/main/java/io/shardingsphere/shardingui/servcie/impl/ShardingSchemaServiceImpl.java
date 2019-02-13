@@ -58,13 +58,13 @@ public final class ShardingSchemaServiceImpl implements ShardingSchemaService {
     @Override
     public void updateRuleConfiguration(final String schemaName, final String configData) {
         checkRuleConfiguration(configData);
-        registryCenterService.getActivatedRegistryCenter().persist(registryCenterService.getActivateConfigurationNode().getRulePath(schemaName), configData);
+        persistRuleConfiguration(schemaName, configData);
     }
     
     @Override
     public void updateDataSourceConfiguration(final String schemaName, final String configData) {
         checkDataSourceConfiguration(configData);
-        registryCenterService.getActivatedRegistryCenter().persist(registryCenterService.getActivateConfigurationNode().getDataSourcePath(schemaName), configData);
+        persistDataSourceConfiguration(schemaName, configData);
     }
     
     @Override
@@ -72,8 +72,8 @@ public final class ShardingSchemaServiceImpl implements ShardingSchemaService {
         checkSchemaName(schemaName, getAllSchemaNames());
         checkRuleConfiguration(ruleConfiguration);
         checkDataSourceConfiguration(dataSourceConfiguration);
-        registryCenterService.getActivatedRegistryCenter().persist(registryCenterService.getActivateConfigurationNode().getRulePath(schemaName), ruleConfiguration);
-        registryCenterService.getActivatedRegistryCenter().persist(registryCenterService.getActivateConfigurationNode().getDataSourcePath(schemaName), dataSourceConfiguration);
+        persistRuleConfiguration(schemaName, ruleConfiguration);
+        persistDataSourceConfiguration(schemaName, dataSourceConfiguration);
     }
     
     private void checkRuleConfiguration(final String configData) {
@@ -88,6 +88,10 @@ public final class ShardingSchemaServiceImpl implements ShardingSchemaService {
         }
     }
     
+    private void persistRuleConfiguration(final String schemaName, final String ruleConfiguration) {
+        registryCenterService.getActivatedRegistryCenter().persist(registryCenterService.getActivateConfigurationNode().getRulePath(schemaName), ruleConfiguration);
+    }
+    
     private void checkDataSourceConfiguration(final String configData) {
         try {
             Map<String, DataSourceConfiguration> dataSourceConfigs = ConfigurationYamlConverter.loadDataSourceConfigurations(configData);
@@ -99,8 +103,12 @@ public final class ShardingSchemaServiceImpl implements ShardingSchemaService {
         }
     }
     
+    private void persistDataSourceConfiguration(final String schemaName, final String dataSourceConfiguration) {
+        registryCenterService.getActivatedRegistryCenter().persist(registryCenterService.getActivateConfigurationNode().getDataSourcePath(schemaName), dataSourceConfiguration);
+    }
+    
     private void checkSchemaName(final String schemaName, final Collection<String> existedSchemaNames) {
-        Preconditions.checkState(!existedSchemaNames.contains(schemaName), "schema name already exists.");
+        Preconditions.checkArgument(!existedSchemaNames.contains(schemaName), "schema name already exists.");
     }
     
 }
