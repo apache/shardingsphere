@@ -83,6 +83,6 @@ public final class ShardingMasterSlaveConfigurationRange implements ExampleConfi
     }
     
     private static KeyGeneratorConfiguration getKeyGeneratorConfiguration() {
-        return new KeyGeneratorConfiguration("order_id", null, new Properties());
+        return new KeyGeneratorConfiguration("SNOWFLAKE", "order_id", new Properties());
     }
 }
