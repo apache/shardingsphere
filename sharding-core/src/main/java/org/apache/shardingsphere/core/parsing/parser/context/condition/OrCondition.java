@@ -17,12 +17,16 @@
 
 package org.apache.shardingsphere.core.parsing.parser.context.condition;
 
+import com.google.common.base.Predicate;
+import com.google.common.collect.Collections2;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
 import lombok.ToString;
 import org.apache.shardingsphere.core.parsing.parser.clause.condition.NullCondition;
 
 import java.util.ArrayList;
+import java.util.Collection;
+import java.util.LinkedList;
 import java.util.List;
 
 /**
@@ -67,5 +71,19 @@ public final class OrCondition {
             }
         }
         return this;
+    }
+    
+    public Collection<Condition> findConditions(final Column column) {
+        Collection<Condition> result = new LinkedList<>();
+        for (AndCondition each : andConditions) {
+            result.addAll(Collections2.filter(each.getConditions(), new Predicate<Condition>() {
+                
+                @Override
+                public boolean apply(final Condition input) {
+                    return input.getColumn().equals(column);
+                }
+            }));
+        }
+        return result;
     }
 }
