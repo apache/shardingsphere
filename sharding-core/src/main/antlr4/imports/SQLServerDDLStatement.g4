@@ -46,12 +46,8 @@ createTableHeader
     ;
     
 createTableBody
-    : (AS FILETABLE)?
-    LP_ createTableDefinition (COMMA_ createTableDefinition)* (COMMA_ periodClause)? RP_
-    (ON (schemaName LP_ columnName RP_ | fileGroup | STRING_))?
-    (TEXTIMAGE_ON (fileGroup | STRING_))?
-    ((FILESTREAM_ON (schemaName) | fileGroup STRING_))?
-    (WITH LP_ tableOption (COMMA_ tableOption)* RP_)?
+    : (AS FILETABLE)? LP_ createTableDefinition (COMMA_ createTableDefinition)* (COMMA_ periodClause)? RP_(ON (schemaName LP_ columnName RP_ | fileGroup | STRING_))?
+    (TEXTIMAGE_ON (fileGroup | STRING_))? ((FILESTREAM_ON (schemaName) | fileGroup STRING_))? (WITH LP_ tableOption (COMMA_ tableOption)* RP_)?
     ;
     
 createTableDefinition
@@ -65,13 +61,13 @@ periodClause
 tableIndex
     : INDEX indexName
     (
-        (CLUSTERED | NONCLUSTERED )? columnList
+        (CLUSTERED | NONCLUSTERED)? columnList
         | CLUSTERED COLUMNSTORE
         | NONCLUSTERED? (COLUMNSTORE columnList | hashWithBucket) 
         | CLUSTERED COLUMNSTORE (WITH LP_ COMPRESSION_DELAY EQ_ (NUMBER_ MINUTES?) RP_)?
     )
     (WHERE expr)?
-    (WITH LP_ indexOption ( COMMA_ indexOption)* RP_)? indexOnClause?
+    (WITH LP_ indexOption (COMMA_ indexOption)* RP_)? indexOnClause?
     (FILESTREAM_ON (groupName | schemaName | STRING_))?
     ;
     
@@ -90,9 +86,7 @@ tableOption
     ;
     
 tableOptOption
-    : (MEMORY_OPTIMIZED EQ_ ON)
-    | (DURABILITY EQ_ (SCHEMA_ONLY | SCHEMA_AND_DATA)) 
-    | (SYSTEM_VERSIONING EQ_ ON ( LP_ HISTORY_TABLE EQ_ tableName (COMMA_ DATA_CONSISTENCY_CHECK EQ_ ( ON | OFF ) )? RP_ )?)
+    : (MEMORY_OPTIMIZED EQ_ ON) | (DURABILITY EQ_ (SCHEMA_ONLY | SCHEMA_AND_DATA)) | (SYSTEM_VERSIONING EQ_ ON (LP_ HISTORY_TABLE EQ_ tableName (COMMA_ DATA_CONSISTENCY_CHECK EQ_ (ON | OFF))? RP_)?)
     ;
     
 distributionOption
@@ -121,7 +115,7 @@ columnDefinitionOption
     | SPARSE
     | MASKED WITH LP_ FUNCTION EQ_ STRING_ RP_
     | (CONSTRAINT constraintName)? DEFAULT expr
-    | IDENTITY (LP_ NUMBER_ COMMA_ NUMBER_ RP_ )?
+    | IDENTITY (LP_ NUMBER_ COMMA_ NUMBER_ RP_)?
     | NOT FOR REPLICATION
     | GENERATED ALWAYS AS ROW (START | END) HIDDEN_?
     | NOT? NULL
@@ -187,12 +181,12 @@ onString
     : ON STRING_
     ;
     
-checkConstraint:
-    CHECK(NOT FOR REPLICATION)? LP_ expr RP_
+checkConstraint
+    : CHECK(NOT FOR REPLICATION)? LP_ expr RP_
     ;
     
 columnIndex
-    : INDEX indexName ( CLUSTERED | NONCLUSTERED )? (WITH LP_ indexOption (COMMA_ indexOption)* RP_)? indexOnClause? (FILESTREAM_ON (fileGroup | schemaName | STRING_))?
+    : INDEX indexName (CLUSTERED | NONCLUSTERED)? (WITH LP_ indexOption (COMMA_ indexOption)* RP_)? indexOnClause? (FILESTREAM_ON (fileGroup | schemaName | STRING_))?
     ;
     
 indexOnClause
@@ -228,7 +222,7 @@ tableForeignKeyConstraint
     ;
     
 computedColumnDefinition
-    : columnName AS expr (PERSISTED( NOT NULL)?)? columnConstraint?
+    : columnName AS expr (PERSISTED(NOT NULL)?)? columnConstraint?
     ;
     
 columnSetDefinition 
@@ -252,12 +246,7 @@ alterColumnOp
     ;
     
 addColumn
-    : (WITH (CHECK | NOCHECK))?
-    ADD
-    (
-        alterColumnAddOption (COMMA_ alterColumnAddOption)*
-        | (columnNameGeneratedClause COMMA_ periodClause| periodClause COMMA_ columnNameGeneratedClause)
-    )
+    : (WITH (CHECK | NOCHECK))? ADD (alterColumnAddOption (COMMA_ alterColumnAddOption)* | (columnNameGeneratedClause COMMA_ periodClause| periodClause COMMA_ columnNameGeneratedClause))
     ;
     
 alterColumnAddOption
@@ -312,11 +301,7 @@ dropConstraintWithClause
     ;
     
 dropConstraintOption
-    : (
-          MAXDOP EQ_ NUMBER_
-          | ONLINE EQ_ ( ON | OFF )
-          | MOVE TO (schemaName LP_ columnName RP_ | fileGroup | STRING_)
-    )
+    : (MAXDOP EQ_ NUMBER_ | ONLINE EQ_ (ON | OFF) | MOVE TO (schemaName LP_ columnName RP_ | fileGroup | STRING_))
     ;
     
 dropColumn
@@ -332,11 +317,11 @@ alterCheckConstraint
     ;
     
 alterTrigger 
-    : (ENABLE| DISABLE) TRIGGER (ALL | (triggerName ( COMMA_ triggerName)*))
+    : (ENABLE| DISABLE) TRIGGER (ALL | (triggerName (COMMA_ triggerName)*))
     ;
     
 alterSwitch
-    : SWITCH ( PARTITION expr )? TO tableName (PARTITION expr)? (WITH LP_ lowPriorityLockWait RP_ )?
+    : SWITCH (PARTITION expr)? TO tableName (PARTITION expr)? (WITH LP_ lowPriorityLockWait RP_)?
     ;
     
 alterSet
@@ -344,7 +329,7 @@ alterSet
     ;
     
 setFileStreamClause
-    : FILESTREAM_ON EQ_ ( schemaName | fileGroup | STRING_ )
+    : FILESTREAM_ON EQ_ (schemaName | fileGroup | STRING_)
     ;
     
 setSystemVersionClause
@@ -355,8 +340,8 @@ alterSetOnClause
     : ON
     (
         LP_ (HISTORY_TABLE EQ_ tableName)?
-        (COMMA_? DATA_CONSISTENCY_CHECK EQ_ ( ON | OFF ))?
-        (COMMA_? HISTORY_RETENTION_PERIOD EQ_ (INFINITE | (NUMBER_ (DAY | DAYS | WEEK | WEEKS | MONTH | MONTHS | YEAR | YEARS ))))?
+        (COMMA_? DATA_CONSISTENCY_CHECK EQ_ (ON | OFF))?
+        (COMMA_? HISTORY_RETENTION_PERIOD EQ_ (INFINITE | (NUMBER_ (DAY | DAYS | WEEK | WEEKS | MONTH | MONTHS | YEAR | YEARS))))?
         RP_
     )?
     ;
@@ -385,5 +370,5 @@ alterTableTableOption
     : SET LP_ LOCK_ESCALATION EQ_ (AUTO | TABLE | DISABLE) RP_
     | MEMORY_OPTIMIZED EQ_ ON
     | DURABILITY EQ_ (SCHEMA_ONLY | SCHEMA_AND_DATA) 
-    | SYSTEM_VERSIONING EQ_ ON (LP_ HISTORY_TABLE EQ_ tableName (COMMA_ DATA_CONSISTENCY_CHECK EQ_ (ON | OFF))? RP_ )?
+    | SYSTEM_VERSIONING EQ_ ON (LP_ HISTORY_TABLE EQ_ tableName (COMMA_ DATA_CONSISTENCY_CHECK EQ_ (ON | OFF))? RP_)?
     ;

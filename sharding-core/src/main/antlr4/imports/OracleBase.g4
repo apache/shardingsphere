@@ -3,8 +3,7 @@ grammar OracleBase;
 import OracleKeyword, Keyword, Symbol, BaseRule, DataType;
 
 ID
-    : (BQ_?[a-zA-Z_$][a-zA-Z0-9_$#]* BQ_? DOT_)? (BQ_?[a-zA-Z_$][a-zA-Z0-9_$#]* BQ_?)
-    | [a-zA-Z_$#0-9]+ DOT_ASTERISK_
+    : (BQ_?[a-zA-Z_$][a-zA-Z0-9_$#]* BQ_? DOT_)? (BQ_?[a-zA-Z_$][a-zA-Z0-9_$#]* BQ_?) | [a-zA-Z_$#0-9]+ DOT_ASTERISK_
     ;
     
 oracleId
@@ -36,7 +35,7 @@ simpleExprsWithParen
     ;
     
 simpleExprs
-    : simpleExpr ( COMMA_ simpleExpr)*
+    : simpleExpr (COMMA_ simpleExpr)*
     ;
     
 lobItem
@@ -112,7 +111,7 @@ intervalExpression
     ;
     
 objectAccessExpression
-    : (LP_ simpleExpr RP_ | treatFunction) DOT_ (attributeName (DOT_ attributeName )* (DOT_ functionCall)? | functionCall)
+    : (LP_ simpleExpr RP_ | treatFunction) DOT_ (attributeName (DOT_ attributeName)* (DOT_ functionCall)? | functionCall)
     ;
     
 constructorExpr

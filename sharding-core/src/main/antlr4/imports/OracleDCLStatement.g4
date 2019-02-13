@@ -31,7 +31,7 @@ granteeIdentifiedBy
     ;
     
 grantObjectPrivilegeClause
-    : grantObjectPrivilege (COMMA_ grantObjectPrivilege)* onObjectClause TO grantees (WITH HIERARCHY OPTION)?(WITH GRANT OPTION)?
+    : grantObjectPrivilege (COMMA_ grantObjectPrivilege)* onObjectClause TO grantees (WITH HIERARCHY OPTION)? (WITH GRANT OPTION)?
     ;
     
 grantObjectPrivilege
@@ -43,7 +43,7 @@ objectPrivilege
     ;
     
 onObjectClause
-    : ON (tableName | USER userName (COMMA_ userName)* | (DIRECTORY | EDITION | MINING MODEL | JAVA (SOURCE | RESOURCE) | SQL TRANSLATION PROFILE) tableName )
+    : ON (tableName | USER userName (COMMA_ userName)* | (DIRECTORY | EDITION | MINING MODEL | JAVA (SOURCE | RESOURCE) | SQL TRANSLATION PROFILE) tableName)
     ;
     
 grantRolesToPrograms
@@ -75,8 +75,8 @@ revokeRolesFromPrograms
     ;
     
 createUser
-    : CREATE USER userName IDENTIFIED (BY ID | (EXTERNALLY | GLOBALLY) ( AS STRING_)?)
-    ( 
+    : CREATE USER userName IDENTIFIED (BY ID | (EXTERNALLY | GLOBALLY) (AS STRING_)?)
+    (
         DEFAULT TABLESPACE ID
         | TEMPORARY TABLESPACE ID
         | (QUOTA (sizeClause | UNLIMITED) ON ID)
@@ -94,10 +94,10 @@ sizeClause
     
 alterUser
     : ALTER USER
-    ( 
+    (
         userName
-        ( 
-            IDENTIFIED (BY ID (REPLACE STRING_)? | (EXTERNALLY | GLOBALLY) ( AS STRING_)?)
+        (
+            IDENTIFIED (BY ID (REPLACE STRING_)? | (EXTERNALLY | GLOBALLY) (AS STRING_)?)
             | DEFAULT TABLESPACE ID
             | TEMPORARY TABLESPACE ID
             | QUOTA (sizeClause | UNLIMITED) ON ID
@@ -114,15 +114,15 @@ alterUser
     ;
     
 containerDataClause
-    : (SET CONTAINER_DATA EQ_ ( ALL | DEFAULT | idList ) | (ADD |REMOVE) CONTAINER_DATA EQ_ idList) (FOR tableName)?
+    : (SET CONTAINER_DATA EQ_ (ALL | DEFAULT | idList) | (ADD |REMOVE) CONTAINER_DATA EQ_ idList) (FOR tableName)?
     ;
     
 proxyClause
-    : (GRANT | REVOKE) CONNECT THROUGH ( ENTERPRISE USERS | userName dbUserProxyClauses)
+    : (GRANT | REVOKE) CONNECT THROUGH (ENTERPRISE USERS | userName dbUserProxyClauses)
     ;
     
 dbUserProxyClauses
-    : (WITH (ROLE (ALL EXCEPT)? roleNames | NO ROLES))? (AUTHENTICATION REQUIRED )?
+    : (WITH (ROLE (ALL EXCEPT)? roleNames | NO ROLES))? (AUTHENTICATION REQUIRED)?
     ;
     
 dropUser
@@ -131,7 +131,7 @@ dropUser
     
 createRole
     : CREATE ROLE roleName
-    ( 
+    (
         NOT IDENTIFIED
         | IDENTIFIED (BY ID | USING tableName | EXTERNALLY | GLOBALLY)
     )? 

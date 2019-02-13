@@ -91,7 +91,7 @@ alterTableAction
     | ALTER CONSTRAINT constraintName constraintOptionalParam
     | VALIDATE CONSTRAINT constraintName
     | DROP CONSTRAINT (IF EXISTS)? constraintName (RESTRICT | CASCADE)?
-    | (DISABLE | ENABLE) TRIGGER (triggerName | ALL | USER )?
+    | (DISABLE | ENABLE) TRIGGER (triggerName | ALL | USER)?
     | ENABLE (REPLICA | ALWAYS) TRIGGER triggerName
     | (DISABLE | ENABLE) RULE rewriteRuleName
     | ENABLE (REPLICA | ALWAYS) RULE rewriteRuleName
@@ -120,7 +120,7 @@ constraintOptionalParam
     ;
     
 addColumn
-    : ADD COLUMN? (IF NOT EXISTS )? columnDefinition
+    : ADD COLUMN? (IF NOT EXISTS)? columnDefinition
     ;
     
 dropColumn

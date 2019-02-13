@@ -4,7 +4,7 @@ import OracleKeyword, Keyword, OracleBase, DataType, Symbol;
 
 setTransaction
     : SET TRANSACTION
-    ( 
+    (
         READ (ONLY | WRITE)
         | ISOLATION LEVEL (SERIALIZABLE | READ COMMITTED)
         | USE ROLLBACK SEGMENT ID
@@ -14,7 +14,7 @@ setTransaction
     
 commit
     : COMMIT WORK?
-    ( 
+    (
         (COMMENT STRING_)?
         | (WRITE (WAIT | NOWAIT)? (IMMEDIATE | BATCH)?)?
         | FORCE STRING_ (COMMA_ NUMBER_)?
@@ -23,7 +23,7 @@ commit
     
 rollback
     : ROLLBACK WORK?
-    ( 
+    (
         TO SAVEPOINT? ID
         | FORCE STRING_
     )? 

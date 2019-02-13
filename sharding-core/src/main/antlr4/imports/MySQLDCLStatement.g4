@@ -3,10 +3,7 @@ grammar MySQLDCLStatement;
 import MySQLKeyword, Keyword, MySQLBase, BaseRule, DataType, Symbol;
 
 grant
-    : GRANT privType columnList? (COMMA_ privType columnList?)*
-    ON objectType? privLevel
-    TO userOrRoles
-    (WITH GRANT OPTION)?
+    : GRANT privType columnList? (COMMA_ privType columnList?)* ON objectType? privLevel TO userOrRoles (WITH GRANT OPTION)?
     ;
     
 privType

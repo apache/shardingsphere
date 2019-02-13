@@ -1,6 +1,6 @@
 grammar MySQLDMLStatement;
 
-import MySQLKeyword, Keyword, BaseRule, MySQLSelectStatement, MySQLBase, DataType, Symbol;
+import MySQLKeyword, Keyword, BaseRule, MySQLDQLStatement, MySQLBase, DataType, Symbol;
 
 insert
     : INSERT (LOW_PRIORITY | DELAYED | HIGH_PRIORITY IGNORE)? INTO? tableName partitionClause? (setClause | columnClause) onDuplicateClause?
@@ -43,8 +43,7 @@ fromSingle
     ;
     
 fromMulti
-    : fromMultiTables FROM tableReferences
-    | FROM fromMultiTables USING tableReferences
+    : fromMultiTables FROM tableReferences | FROM fromMultiTables USING tableReferences
     ;
     
 fromMultiTables
@@ -58,5 +57,3 @@ fromMultiTable
 deleteSpec
     : LOW_PRIORITY? | QUICK? | IGNORE?
     ;
-
-

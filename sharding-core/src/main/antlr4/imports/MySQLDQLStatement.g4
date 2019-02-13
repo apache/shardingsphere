@@ -1,4 +1,4 @@
-grammar MySQLSelectStatement;
+grammar MySQLDQLStatement;
 
 import MySQLBase, MySQLKeyword, Keyword, Symbol, DataType, BaseRule;
 

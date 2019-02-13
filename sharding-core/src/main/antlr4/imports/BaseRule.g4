@@ -226,8 +226,8 @@ serverNames
     : serverName (COMMA_ serverName)*
     ;
     
-bitExprs:
-    bitExpr (COMMA_ bitExpr)*
+bitExprs
+    : bitExpr (COMMA_ bitExpr)*
     ;
     
 exprs

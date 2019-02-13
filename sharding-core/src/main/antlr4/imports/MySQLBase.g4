@@ -67,9 +67,7 @@ assignmentValue
     ;
     
 functionCall
-    : (ID | DATE) LP_ distinct? (exprs | ASTERISK_)? RP_
-    | groupConcat
-    | windowFunction
+    : (ID | DATE) LP_ distinct? (exprs | ASTERISK_)? RP_ | groupConcat | windowFunction
     ;
     
 groupConcat

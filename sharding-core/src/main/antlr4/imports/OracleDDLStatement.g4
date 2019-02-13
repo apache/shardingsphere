@@ -3,7 +3,7 @@ grammar OracleDDLStatement;
 import OracleKeyword, Keyword, DataType, OracleBase, BaseRule, Symbol;
 
 createIndex
-    : CREATE ( UNIQUE | BITMAP)? INDEX indexName ON (tableIndexClause | bitmapJoinIndexClause)
+    : CREATE (UNIQUE | BITMAP)? INDEX indexName ON (tableIndexClause | bitmapJoinIndexClause)
     ;
     
 alterIndex
@@ -55,7 +55,7 @@ domainIndexClause
     ;
     
 bitmapJoinIndexClause
-    : tableName LP_ columnSortClause( COMMA_ columnSortClause)* RP_ FROM tableAndAlias (COMMA_ tableAndAlias)* WHERE expr
+    : tableName LP_ columnSortClause(COMMA_ columnSortClause)* RP_ FROM tableAndAlias (COMMA_ tableAndAlias)* WHERE expr
     ;
     
 relationalTable
@@ -82,8 +82,8 @@ alterTableProperties
     : renameTable | REKEY encryptionSpec
     ;
     
-renameTable:
-    RENAME TO tableName
+renameTable
+    : RENAME TO tableName
     ;
     
 columnClauses
@@ -127,7 +127,7 @@ dropColumn
     ;
     
 columnOrColumnList
-    : COLUMN columnName | LP_ columnName ( COMMA_ columnName )* RP_
+    : COLUMN columnName | LP_ columnName (COMMA_ columnName)* RP_
     ;
     
 cascadeOrInvalidate
@@ -233,8 +233,8 @@ notDeferrable
     : NOT? DEFERRABLE
     ;
     
-initiallyClause:
-    INITIALLY ( IMMEDIATE | DEFERRED )
+initiallyClause
+    : INITIALLY (IMMEDIATE | DEFERRED)
     ;
     
 exceptionsClause
@@ -242,7 +242,7 @@ exceptionsClause
     ;
     
 usingIndexClause
-    : USING INDEX (indexName | LP_ createIndex RP_ )?
+    : USING INDEX (indexName | LP_ createIndex RP_)?
     ;
     
 inlineRefConstraint
@@ -275,7 +275,7 @@ objectProperties
     ;
     
 objectProperty
-    : (columnName | attributeName ) (DEFAULT expr)? (inlineConstraint* | inlineRefConstraint?) | outOfLineConstraint | outOfLineRefConstraint
+    : (columnName | attributeName) (DEFAULT expr)? (inlineConstraint* | inlineRefConstraint?) | outOfLineConstraint | outOfLineRefConstraint
     ;
     
 columnProperties

@@ -23,7 +23,7 @@ castExpr
     ;
     
 convertExpr
-    : CONVERT ( dataType (LP_ NUMBER_ RP_)? COMMA_ expr (COMMA_ NUMBER_)?)
+    : CONVERT (dataType (LP_ NUMBER_ RP_)? COMMA_ expr (COMMA_ NUMBER_)?)
     ;
     
 windowedFunction
@@ -87,7 +87,7 @@ indexOption
     ;
     
 compressionOption
-    : DATA_COMPRESSION EQ_ ( NONE | ROW | PAGE | COLUMNSTORE | COLUMNSTORE_ARCHIVE)
+    : DATA_COMPRESSION EQ_ (NONE | ROW | PAGE | COLUMNSTORE | COLUMNSTORE_ARCHIVE)
     ;
     
 eqTime
@@ -134,7 +134,7 @@ numberRange
     ;
     
 lowPriorityLockWait
-    : WAIT_AT_LOW_PRIORITY LP_ MAX_DURATION EQ_ NUMBER_ ( MINUTES )? COMMA_ ABORT_AFTER_WAIT EQ_ ( NONE | SELF | BLOCKERS ) RP_
+    : WAIT_AT_LOW_PRIORITY LP_ MAX_DURATION EQ_ NUMBER_ (MINUTES)? COMMA_ ABORT_AFTER_WAIT EQ_ (NONE | SELF | BLOCKERS) RP_
     ;
     
 onLowPriorLockWait

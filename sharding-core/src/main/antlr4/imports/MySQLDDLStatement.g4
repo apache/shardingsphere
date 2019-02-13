@@ -1,6 +1,6 @@
 grammar MySQLDDLStatement;
 
-import MySQLKeyword, Keyword, DataType, MySQLBase, BaseRule, Symbol, MySQLSelectStatement;
+import MySQLKeyword, Keyword, MySQLDQLStatement, DataType, MySQLBase, BaseRule, Symbol;
 
 createIndex
     : CREATE (UNIQUE | FULLTEXT | SPATIAL)? INDEX indexName indexType? ON tableName
@@ -166,7 +166,7 @@ engineName
     ;
     
 partitionOptions
-    : PARTITION BY (linearPartition | rangeOrListPartition) (PARTITIONS NUMBER_)? (SUBPARTITION BY linearPartition (SUBPARTITIONS NUMBER_)? )? (LP_ partitionDefinitions RP_)?
+    : PARTITION BY (linearPartition | rangeOrListPartition) (PARTITIONS NUMBER_)? (SUBPARTITION BY linearPartition (SUBPARTITIONS NUMBER_)?)? (LP_ partitionDefinitions RP_)?
     ;
     
 linearPartition

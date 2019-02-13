@@ -112,7 +112,7 @@ alterLogin
     ;
     
 loginOption
-    : PASSWORD EQ_ (STRING_ | ID HASHED) (OLD_PASSWORD EQ_ STRING_ | passwordOption (passwordOption )?)?
+    : PASSWORD EQ_ (STRING_ | ID HASHED) (OLD_PASSWORD EQ_ STRING_ | passwordOption (passwordOption)?)?
     | DEFAULT_DATABASE EQ_ databaseName
     | optionsList
     | NO CREDENTIAL
