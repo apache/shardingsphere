@@ -75,11 +75,10 @@ import java.util.Collection;
 import java.util.Collections;
 import java.util.HashMap;
 import java.util.LinkedHashMap;
+import java.util.LinkedList;
 import java.util.List;
 import java.util.Map;
 import java.util.Map.Entry;
-
-import static java.util.Collections.singletonList;
 
 /**
  * SQL rewrite engine.
@@ -326,14 +325,16 @@ public final class SQLRewriteEngine {
         if (encryptColumnToken.isInWhere()) {
             return encryptCondition.getConditionValues(parameters);
         }
+        List<Comparable<?>> result = new LinkedList<>();
         SQLExpression sqlExpression = ((DMLStatement) sqlStatement).getUpdateColumnValues().get(encryptColumnToken.getColumn());
         if (sqlExpression instanceof SQLPlaceholderExpression) {
-            return Collections.<Comparable<?>>singletonList(parameters.get(((SQLPlaceholderExpression) sqlExpression).getIndex()).toString());
+            result.add(parameters.get(((SQLPlaceholderExpression) sqlExpression).getIndex()).toString());
         } else if (sqlExpression instanceof SQLTextExpression) {
-            return Collections.<Comparable<?>>singletonList(((SQLTextExpression) sqlExpression).getText());
+            result.add(((SQLTextExpression) sqlExpression).getText());
         } else if (sqlExpression instanceof SQLNumberExpression) {
-            return Collections.<Comparable<?>>singletonList((Comparable)((SQLNumberExpression) sqlExpression).getNumber());
+            result.add((Comparable)((SQLNumberExpression) sqlExpression).getNumber());
         }
+        return result;
     }
     
     
