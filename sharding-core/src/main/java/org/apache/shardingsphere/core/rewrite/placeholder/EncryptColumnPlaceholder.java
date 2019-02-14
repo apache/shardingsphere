@@ -37,7 +37,7 @@ public final class EncryptColumnPlaceholder implements ShardingPlaceholder {
     
     private final String columnName;
     
-    private final Map<Integer, Comparable<?>> indexValueMap;
+    private final Map<Integer, Comparable<?>> indexValues;
     
     private final Set<Integer> placeholderIndex;
     
