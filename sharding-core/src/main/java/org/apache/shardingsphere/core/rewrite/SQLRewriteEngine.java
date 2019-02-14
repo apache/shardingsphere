@@ -17,6 +17,7 @@
 
 package org.apache.shardingsphere.core.rewrite;
 
+import com.google.common.base.Function;
 import com.google.common.base.Optional;
 import com.google.common.base.Predicate;
 import com.google.common.base.Strings;
@@ -59,6 +60,8 @@ import org.apache.shardingsphere.core.rule.BindingTableRule;
 import org.apache.shardingsphere.core.rule.ShardingRule;
 import org.apache.shardingsphere.core.spi.hook.SPIRewriteHook;
 import org.apache.shardingsphere.core.util.SQLUtil;
+import org.apache.shardingsphere.spi.algorithm.encrypt.ShardingEncryptor;
+import org.apache.shardingsphere.spi.algorithm.encrypt.ShardingQueryAssistedEncryptor;
 import org.apache.shardingsphere.spi.hook.RewriteHook;
 
 import java.util.ArrayList;
@@ -292,8 +295,20 @@ public final class SQLRewriteEngine {
     
     private void appendEncryptColumnPlaceholder(final SQLBuilder sqlBuilder, final EncryptColumnToken encryptColumnToken, final int count) {
         if (encryptColumnToken.isInWhere()) {
-            Condition encryptCondition;
-            
+            Condition encryptCondition = getEncryptCondition(encryptColumnToken);
+            final ShardingEncryptor shardingEncryptor = shardingRule.getShardingEncryptorEngine().getShardingEncryptor(encryptColumnToken.getColumn().getTableName(), encryptColumnToken.getColumn().getName()).get();
+            if (shardingEncryptor instanceof ShardingQueryAssistedEncryptor) {
+                Optional<String> assistedColumnNameOptional = shardingRule.getTableRule(encryptColumnToken.getColumn().getTableName()).getShardingEncryptorStrategy().getAssistedQueryColumn(encryptColumnToken.getColumn().getName());
+                if (!assistedColumnNameOptional.isPresent()) {
+                    throw new ShardingException("Can not find the assistedColumn of %s", encryptColumnToken.getColumn().getName());
+                }
+                List<Comparable<?>> assistedColumnValues = Lists.transform(encryptCondition.getConditionValues(parameters), new Function<Comparable<?>, Comparable<?>>() {
+                    @Override
+                    public Comparable<?> apply(final Comparable<?> input) {
+                        return ((ShardingQueryAssistedEncryptor) shardingEncryptor).queryAssistedEncrypt(input.toString());
+                    }
+                });
+            }
         }
         
     }
@@ -306,8 +321,7 @@ public final class SQLRewriteEngine {
         if (1 == conditions.size()) {
             return conditions.iterator().next();
         }
-        getEncryptColumnTokenIndex(encryptColumnToken);
-        
+        return Lists.newArrayList(conditions.iterator()).get(getEncryptColumnTokenIndex(encryptColumnToken));
     }
     
     private int getEncryptColumnTokenIndex(final EncryptColumnToken encryptColumnToken) {
