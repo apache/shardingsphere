@@ -37,6 +37,12 @@
             <artifactId>sharding-opentracing</artifactId>
             <version>${project.version}</version>
         </dependency>
+    
+        <dependency>
+            <groupId>io.shardingsphere</groupId>
+            <artifactId>sharding-transaction-base-saga</artifactId>
+            <version>${project.version}</version>
+        </dependency>
         
         <dependency>
             <groupId>io.netty</groupId>
