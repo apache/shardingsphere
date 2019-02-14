@@ -49,6 +49,7 @@ import org.apache.shardingsphere.core.parsing.parser.token.SQLToken;
 import org.apache.shardingsphere.core.parsing.parser.token.SchemaToken;
 import org.apache.shardingsphere.core.parsing.parser.token.TableToken;
 import org.apache.shardingsphere.core.rewrite.placeholder.AggregationDistinctPlaceholder;
+import org.apache.shardingsphere.core.rewrite.placeholder.EncryptColumnPlaceholder;
 import org.apache.shardingsphere.core.rewrite.placeholder.IndexPlaceholder;
 import org.apache.shardingsphere.core.rewrite.placeholder.InsertValuesPlaceholder;
 import org.apache.shardingsphere.core.rewrite.placeholder.SchemaPlaceholder;
@@ -67,8 +68,10 @@ import org.apache.shardingsphere.spi.hook.RewriteHook;
 import java.util.ArrayList;
 import java.util.Collection;
 import java.util.HashMap;
+import java.util.LinkedHashMap;
 import java.util.List;
 import java.util.Map;
+import java.util.Map.Entry;
 
 /**
  * SQL rewrite engine.
@@ -308,6 +311,19 @@ public final class SQLRewriteEngine {
                         return ((ShardingQueryAssistedEncryptor) shardingEncryptor).queryAssistedEncrypt(input.toString());
                     }
                 });
+                
+                if (!encryptCondition.getPositionIndexMap().isEmpty()) {
+                    for (Entry<Integer, Integer> entry : encryptCondition.getPositionIndexMap().entrySet()) {
+                        parameters.set(entry.getValue(), assistedColumnValues.get(entry.getKey()));
+                    }
+                }
+    
+                Map<Integer, Comparable<?>> indexValueMap = new LinkedHashMap<>();
+                for (int each : encryptCondition.getPositionValueMap().keySet()) {
+                    indexValueMap.put(each, assistedColumnValues.get(each));
+                }
+                sqlBuilder.appendPlaceholder(new EncryptColumnPlaceholder(encryptColumnToken.getColumn(), indexValueMap, encryptCondition.getPositionIndexMap().keySet(), encryptCondition.getOperator()));
+                
             }
         }
         
