@@ -24,6 +24,7 @@ import org.apache.shardingsphere.core.constant.SQLType;
 import org.apache.shardingsphere.core.parsing.lexer.token.DefaultKeyword;
 import org.apache.shardingsphere.core.parsing.lexer.token.Keyword;
 import org.apache.shardingsphere.core.parsing.lexer.token.TokenType;
+import org.apache.shardingsphere.core.parsing.parser.context.condition.Column;
 import org.apache.shardingsphere.core.parsing.parser.expression.SQLExpression;
 import org.apache.shardingsphere.core.parsing.parser.sql.AbstractSQLStatement;
 
@@ -49,7 +50,7 @@ public class DMLStatement extends AbstractSQLStatement {
     
     private final Map<String, String> updateTables = new HashMap<>();
     
-    private final Map<String, SQLExpression> updateColumns = new LinkedHashMap<>();
+    private final Map<Column, SQLExpression> updateColumns = new LinkedHashMap<>();
     
     private int whereStartIndex;
     
