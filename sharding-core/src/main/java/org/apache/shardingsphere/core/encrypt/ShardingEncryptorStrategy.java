@@ -45,4 +45,13 @@ public final class ShardingEncryptorStrategy {
         this.assistedQueryColumns = assistedQueryColumns;
         this.shardingEncryptor = shardingEncryptor;
     }
+    
+    /**
+     * Get assisted query column.
+     * @param column column
+     * @return assisted query column
+     */
+    public String getAssistedQueryColumn(final String column) {
+        return assistedQueryColumns.get(columns.indexOf(column));
+    }
 }
