@@ -20,6 +20,7 @@ package io.shardingsphere.example.repository.api.trace;
 import io.shardingsphere.example.repository.api.entity.Order;
 import io.shardingsphere.example.repository.api.entity.OrderItem;
 
+import java.util.Collections;
 import java.util.HashMap;
 import java.util.LinkedList;
 import java.util.List;
@@ -44,7 +45,7 @@ public class MemoryLogService {
     }
     
     public List<Order> getOrderData(final DatabaseAccess operation) {
-        return orderMap.get(operation);
+        return orderMap.containsKey(operation) ? orderMap.get(operation) : Collections.<Order>emptyList();
     }
     
     public void putItemData(final DatabaseAccess operation, final OrderItem orderItem) {
@@ -55,6 +56,6 @@ public class MemoryLogService {
     }
     
     public List<OrderItem> getOrderItemData(final DatabaseAccess operation) {
-        return orderItemMap.get(operation);
+        return orderItemMap.containsKey(operation) ? orderItemMap.get(operation) : Collections.<OrderItem>emptyList();
     }
 }
