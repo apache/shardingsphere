@@ -102,9 +102,10 @@ public class OrchestrationMasterSlaveDataSource extends AbstractOrchestrationDat
     @Subscribe
     @SneakyThrows
     public final synchronized void renew(final DataSourceChangedEvent dataSourceChangedEvent) {
-        dataSource.close();
+        MasterSlaveDataSource dataSourceOld = dataSource;
         dataSource = new MasterSlaveDataSource(
                 DataSourceConverter.getDataSourceMap(dataSourceChangedEvent.getDataSourceConfigurations()), dataSource.getMasterSlaveRule(), dataSource.getShardingProperties().getProps());
+        dataSourceOld.close();
     }
     
     /**
