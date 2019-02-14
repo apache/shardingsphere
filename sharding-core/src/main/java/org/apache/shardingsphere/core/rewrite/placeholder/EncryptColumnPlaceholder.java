@@ -22,8 +22,8 @@ import lombok.RequiredArgsConstructor;
 import org.apache.shardingsphere.core.constant.ShardingOperator;
 import org.apache.shardingsphere.core.parsing.parser.context.condition.Column;
 
-import java.util.List;
 import java.util.Map;
+import java.util.Set;
 
 /**
  * Encrypt Column placeholder for rewrite.
@@ -38,7 +38,7 @@ public final class EncryptColumnPlaceholder implements ShardingPlaceholder {
     
     private final Map<Integer, Comparable<?>> indexValueMap;
     
-    private final List<Integer> placeholderIndex;
+    private final Set<Integer> placeholderIndex;
     
     private final ShardingOperator operator;
     
