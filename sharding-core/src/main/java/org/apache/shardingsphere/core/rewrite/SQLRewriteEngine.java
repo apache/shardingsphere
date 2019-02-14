@@ -306,27 +306,57 @@ public final class SQLRewriteEngine {
                     throw new ShardingException("Can not find the assistedColumn of %s", encryptColumnToken.getColumn().getName());
                 }
                 List<Comparable<?>> assistedColumnValues = Lists.transform(encryptCondition.getConditionValues(parameters), new Function<Comparable<?>, Comparable<?>>() {
+                    
                     @Override
                     public Comparable<?> apply(final Comparable<?> input) {
                         return ((ShardingQueryAssistedEncryptor) shardingEncryptor).queryAssistedEncrypt(input.toString());
                     }
                 });
-                
                 if (!encryptCondition.getPositionIndexMap().isEmpty()) {
                     for (Entry<Integer, Integer> entry : encryptCondition.getPositionIndexMap().entrySet()) {
                         parameters.set(entry.getValue(), assistedColumnValues.get(entry.getKey()));
                     }
                 }
-    
                 Map<Integer, Comparable<?>> indexValueMap = new LinkedHashMap<>();
                 for (int each : encryptCondition.getPositionValueMap().keySet()) {
                     indexValueMap.put(each, assistedColumnValues.get(each));
                 }
-                sqlBuilder.appendPlaceholder(new EncryptColumnPlaceholder(encryptColumnToken.getColumn(), indexValueMap, encryptCondition.getPositionIndexMap().keySet(), encryptCondition.getOperator()));
-                
+                sqlBuilder.appendPlaceholder(new EncryptColumnPlaceholder(encryptColumnToken.getColumn().getTableName(), assistedColumnNameOptional.get(), indexValueMap, encryptCondition.getPositionIndexMap().keySet(), encryptCondition.getOperator()));
+            } else {
+                List<Comparable<?>> encryptColumnValues = Lists.transform(encryptCondition.getConditionValues(parameters), new Function<Comparable<?>, Comparable<?>>() {
+                    @Override
+                    public Comparable<?> apply(final Comparable<?> input) {
+                        return String.valueOf(shardingEncryptor.encrypt(input.toString()));
+                    }
+                });
+                if (!encryptCondition.getPositionIndexMap().isEmpty()) {
+                    for (Entry<Integer, Integer> entry : encryptCondition.getPositionIndexMap().entrySet()) {
+                        parameters.set(entry.getValue(), encryptColumnValues.get(entry.getKey()));
+                    }
+                }
+                Map<Integer, Comparable<?>> indexValueMap = new LinkedHashMap<>();
+                for (int each : encryptCondition.getPositionValueMap().keySet()) {
+                    indexValueMap.put(each, encryptColumnValues.get(each));
+                }
+                sqlBuilder.appendPlaceholder(new EncryptColumnPlaceholder(encryptColumnToken.getColumn().getTableName(), encryptColumnToken.getColumn().getName(), indexValueMap, encryptCondition.getPositionIndexMap().keySet(), encryptCondition.getOperator()));
             }
+        } else {
+            
+            
         }
         
+    }
+    
+    private String getEncryptedColumnName(final EncryptColumnToken encryptColumnToken) {
+        ShardingEncryptor shardingEncryptor = shardingRule.getShardingEncryptorEngine().getShardingEncryptor(encryptColumnToken.getColumn().getTableName(), encryptColumnToken.getColumn().getName()).get();
+        if (shardingEncryptor instanceof ShardingQueryAssistedEncryptor) {
+            Optional<String> assistedColumnName = shardingRule.getTableRule(encryptColumnToken.getColumn().getTableName()).getShardingEncryptorStrategy().getAssistedQueryColumn(encryptColumnToken.getColumn().getName());
+            if (!assistedColumnName.isPresent()) {
+                throw new ShardingException("Can not find the assistedColumn of %s", encryptColumnToken.getColumn().getName());
+            }
+            return assistedColumnName.get();
+        }
+        return encryptColumnToken.getColumn().getName();
     }
     
     private Condition getEncryptCondition(final EncryptColumnToken encryptColumnToken) {
