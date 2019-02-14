@@ -302,18 +302,8 @@ public final class SQLRewriteEngine {
         if (encryptColumnToken.isInWhere()) {
             encryptParameters(encryptCondition, encryptColumnValues);
             sqlBuilder.appendPlaceholder(new EncryptColumnPlaceholder(encryptColumnToken.getColumn().getTableName(), getEncryptColumnName(encryptColumnToken), getIndexValues(encryptCondition, encryptColumnValues), encryptCondition.getPositionIndexMap().keySet(), encryptCondition.getOperator()));
-            } else {
-                List<Comparable<?>> encryptColumnValues = Lists.transform(encryptCondition.getConditionValues(parameters), new Function<Comparable<?>, Comparable<?>>() {
-                    @Override
-                    public Comparable<?> apply(final Comparable<?> input) {
-                        return String.valueOf(shardingEncryptor.encrypt(input.toString()));
-                    }
-                });
-            encryptParameters(encryptCondition, encryptColumnValues);
-            Map<Integer, Comparable<?>> indexValueMap = getIndexValues(encryptCondition, encryptColumnValues);
-                sqlBuilder.appendPlaceholder(new EncryptColumnPlaceholder(encryptColumnToken.getColumn().getTableName(), encryptColumnToken.getColumn().getName(), indexValueMap, encryptCondition.getPositionIndexMap().keySet(), encryptCondition.getOperator()));
-            }
         }
+    }
     
     private Map<Integer, Comparable<?>> getIndexValues(final Condition encryptCondition, final List<Comparable<?>> encryptColumnValues) {
         Map<Integer, Comparable<?>> indexValueMap = new LinkedHashMap<>();
@@ -323,10 +313,10 @@ public final class SQLRewriteEngine {
         return indexValueMap;
     }
     
-    private void encryptParameters(final Condition encryptCondition, final List<Comparable<?>> encrptColumnValues) {
+    private void encryptParameters(final Condition encryptCondition, final List<Comparable<?>> encryptColumnValues) {
         if (!encryptCondition.getPositionIndexMap().isEmpty()) {
             for (Entry<Integer, Integer> entry : encryptCondition.getPositionIndexMap().entrySet()) {
-                parameters.set(entry.getValue(), encrptColumnValues.get(entry.getKey()));
+                parameters.set(entry.getValue(), encryptColumnValues.get(entry.getKey()));
             }
         }
     } else {
