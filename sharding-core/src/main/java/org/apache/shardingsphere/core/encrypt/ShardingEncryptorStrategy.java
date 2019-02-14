@@ -17,6 +17,7 @@
 
 package org.apache.shardingsphere.core.encrypt;
 
+import com.google.common.base.Optional;
 import lombok.Getter;
 import org.apache.shardingsphere.core.exception.ShardingConfigurationException;
 import org.apache.shardingsphere.spi.algorithm.encrypt.ShardingEncryptor;
@@ -51,7 +52,7 @@ public final class ShardingEncryptorStrategy {
      * @param column column
      * @return assisted query column
      */
-    public String getAssistedQueryColumn(final String column) {
-        return assistedQueryColumns.get(columns.indexOf(column));
+    public Optional<String> getAssistedQueryColumn(final String column) {
+        return assistedQueryColumns.size() - 1 >= columns.indexOf(column) ? Optional.of(assistedQueryColumns.get(columns.indexOf(column))) : Optional.<String>absent();
     }
 }
