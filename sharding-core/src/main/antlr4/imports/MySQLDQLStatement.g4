@@ -1,6 +1,6 @@
 grammar MySQLDQLStatement;
 
-import MySQLBase, MySQLKeyword, Keyword, Symbol, DataType, BaseRule;
+import MySQLBase, MySQLKeyword, Keyword, BaseRule, DataType, Symbol;
 
 select 
     : withClause | unionSelect
@@ -104,14 +104,6 @@ indexHintList
     
 indexHint
     : (USE | IGNORE | FORCE) (INDEX | KEY) (FOR (JOIN | ORDER BY | GROUP BY))* indexList
-    ;
-    
-selectExprs
-    : (asterisk | selectExpr) (COMMA_ selectExpr)*
-    ; 
-    
-selectExpr
-    : (columnName | expr) AS? alias? | columnName DOT_ASTERISK_
     ;
     
 intervalExpr

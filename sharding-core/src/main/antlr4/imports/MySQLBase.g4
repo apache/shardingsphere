@@ -75,7 +75,7 @@ groupConcat
     ;
     
 windowFunction
-    : ID exprsWithParen overClause
+    : ID exprList overClause
     ;
     
 overClause
@@ -156,8 +156,4 @@ limitClause
     
 partitionClause 
     : PARTITION columnList
-    ;
-    
-asterisk
-    : ASTERISK_
     ;

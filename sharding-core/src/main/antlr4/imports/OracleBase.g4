@@ -1,6 +1,6 @@
 grammar OracleBase;
 
-import OracleKeyword, Keyword, Symbol, BaseRule, DataType;
+import OracleKeyword, Keyword, BaseRule, DataType, Symbol;
 
 ID
     : (BQ_?[a-zA-Z_$][a-zA-Z0-9_$#]* BQ_? DOT_)? (BQ_?[a-zA-Z_$][a-zA-Z0-9_$#]* BQ_?) | [a-zA-Z_$#0-9]+ DOT_ASTERISK_
@@ -115,5 +115,5 @@ objectAccessExpression
     ;
     
 constructorExpr
-    : NEW typeName exprsWithParen
+    : NEW typeName exprList
     ;

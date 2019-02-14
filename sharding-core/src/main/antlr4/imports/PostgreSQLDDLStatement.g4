@@ -1,6 +1,6 @@
 grammar PostgreSQLDDLStatement;
 
-import PostgreSQLKeyword, Keyword, DataType, PostgreSQLBase, BaseRule, Symbol;
+import PostgreSQLKeyword, Keyword, PostgreSQLBase, DataType, BaseRule, Symbol;
 
 createIndex
     : CREATE UNIQUE? INDEX CONCURRENTLY? ((IF NOT EXISTS)? indexName)? ON tableName 
@@ -115,10 +115,6 @@ tableConstraintUsingIndex
     : (CONSTRAINT constraintName)? (UNIQUE | primaryKey) USING INDEX indexName constraintOptionalParam
     ;
     
-constraintOptionalParam
-    : (NOT? DEFERRABLE)? (INITIALLY (DEFERRED | IMMEDIATE))?
-    ;
-    
 addColumn
     : ADD COLUMN? (IF NOT EXISTS)? columnDefinition
     ;
@@ -185,67 +181,8 @@ renameTable
     : RENAME TO tableName
     ;
     
-columnDefinition
-    : columnName dataType collateClause? columnConstraint*
-    ;
-    
-collateClause
-    : COLLATE collationName
-    ;
-    
 usingIndexType
     : USING (BTREE | HASH | GIST | SPGIST | GIN | BRIN)
-    ;
-    
-columnConstraint
-    : constraintClause? columnConstraintOption constraintOptionalParam
-    ;
-    
-constraintClause
-    : CONSTRAINT constraintName
-    ;
-    
-columnConstraintOption
-    : NOT? NULL
-    | checkOption
-    | DEFAULT defaultExpr
-    | GENERATED (ALWAYS | BY DEFAULT) AS IDENTITY (LP_ sequenceOptions RP_)?
-    | UNIQUE indexParameters
-    | primaryKey indexParameters
-    | REFERENCES tableName (LP_ columnName RP_)?
-     (MATCH FULL | MATCH PARTIAL | MATCH SIMPLE)?(ON DELETE action)? foreignKeyOnAction*
-    ;
-    
-checkOption
-    : CHECK expr (NO INHERIT)?
-    ;
-    
-defaultExpr
-    : CURRENT_TIMESTAMP | expr
-    ;
-    
-sequenceOptions
-    : sequenceOption+
-    ;
-    
-sequenceOption
-    : START WITH? NUMBER_
-    | INCREMENT BY? NUMBER_
-    | MAXVALUE NUMBER_
-    | NO MAXVALUE
-    | MINVALUE NUMBER_
-    | NO MINVALUE
-    | CYCLE
-    | NO CYCLE
-    | CACHE NUMBER_
-    ;
-    
-indexParameters
-    : (USING INDEX TABLESPACE tablespaceName)?
-    ;
-    
-action
-    : NO ACTION | RESTRICT | CASCADE | SET (NULL | DEFAULT)
     ;
     
 tableConstraint
@@ -257,14 +194,6 @@ tableConstraintOption
     | UNIQUE columnList indexParameters
     | primaryKey columnList indexParameters
     | FOREIGN KEY columnList REFERENCES tableName columnList (MATCH FULL | MATCH PARTIAL | MATCH SIMPLE)? foreignKeyOnAction*
-    ;
-    
-foreignKeyOnAction
-    : ON (UPDATE foreignKeyOn | DELETE foreignKeyOn)
-    ;
-    
-foreignKeyOn
-    : RESTRICT | CASCADE | SET NULL | NO ACTION | SET DEFAULT
     ;
     
 excludeElement

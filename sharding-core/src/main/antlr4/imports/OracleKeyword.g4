@@ -1,6 +1,6 @@
 lexer grammar OracleKeyword;
 
-import Symbol;
+import Alphabet;
 
 ACCOUNT
     : A C C O U N T

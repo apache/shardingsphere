@@ -234,8 +234,20 @@ exprs
     : expr (COMMA_ expr)*
     ;
     
-exprsWithParen
+exprList
     : LP_ exprs RP_
+    ;
+    
+exprOrExprListsList
+    : LP_ exprOrExprLists RP_
+    ;
+    
+exprOrExprLists
+    : exprOrExprList (COMMA_ exprOrExprList)*
+    ;
+    
+exprOrExprList
+    : expr | exprList
     ;
     
 expr
@@ -312,8 +324,8 @@ simpleExpr
     | TILDE_ simpleExpr
     | NOT_ simpleExpr
     | BINARY simpleExpr
-    | exprsWithParen
-    | ROW exprsWithParen
+    | exprList
+    | ROW exprList
     | subquery
     | EXISTS subquery
     // | (identifier expr)
@@ -388,3 +400,16 @@ orderByClause
 orderByItem
     : (columnName | number | expr) (ASC | DESC)?
     ;
+    
+asterisk
+    : ASTERISK_
+    ;
+    
+selectExprs
+    : (asterisk | selectExpr) (COMMA_ selectExpr)*
+    ; 
+    
+selectExpr
+    : (columnName | expr) AS? alias? | columnName DOT_ASTERISK_
+    ;
+

@@ -1,7 +1,80 @@
 grammar PostgreSQLBase;
 
-import PostgreSQLKeyword, DataType, Keyword, Symbol, BaseRule;
+import PostgreSQLKeyword, DataType, Keyword, BaseRule, Symbol;
 
+
+columnDefinition
+    : columnName dataType collateClause? columnConstraint*
+    ;
+    
+collateClause
+    : COLLATE collationName
+    ;
+    
+columnConstraint
+    : constraintClause? columnConstraintOption constraintOptionalParam
+    ;
+    
+constraintClause
+    : CONSTRAINT constraintName
+    ;
+    
+columnConstraintOption
+    : NOT? NULL
+    | checkOption
+    | DEFAULT defaultExpr
+    | GENERATED (ALWAYS | BY DEFAULT) AS IDENTITY (LP_ sequenceOptions RP_)?
+    | UNIQUE indexParameters
+    | primaryKey indexParameters
+    | REFERENCES tableName (LP_ columnName RP_)?
+     (MATCH FULL | MATCH PARTIAL | MATCH SIMPLE)?(ON DELETE action)? foreignKeyOnAction*
+    ;
+    
+checkOption
+    : CHECK expr (NO INHERIT)?
+    ;
+    
+defaultExpr
+    : CURRENT_TIMESTAMP | expr
+    ;
+    
+sequenceOptions
+    : sequenceOption+
+    ;
+    
+sequenceOption
+    : START WITH? NUMBER_
+    | INCREMENT BY? NUMBER_
+    | MAXVALUE NUMBER_
+    | NO MAXVALUE
+    | MINVALUE NUMBER_
+    | NO MINVALUE
+    | CYCLE
+    | NO CYCLE
+    | CACHE NUMBER_
+    ;
+    
+indexParameters
+    : (USING INDEX TABLESPACE tablespaceName)?
+    ;
+    
+action
+    : NO ACTION | RESTRICT | CASCADE | SET (NULL | DEFAULT)
+    ;
+    
+foreignKeyOnAction
+    : ON (UPDATE foreignKeyOn | DELETE foreignKeyOn)
+    ;
+    
+foreignKeyOn
+    : RESTRICT | CASCADE | SET NULL | NO ACTION | SET DEFAULT
+    ;
+    
+constraintOptionalParam
+    : (NOT? DEFERRABLE)? (INITIALLY (DEFERRED | IMMEDIATE))?
+    ;
+    
+    
 dataType
     : typeName intervalFields? dataTypeLength? (WITHOUT TIME ZONE | WITH TIME ZONE)? (LBT_ RBT_)* | ID
     ;
@@ -52,7 +125,7 @@ asteriskWithParen
     ;
     
 windowFunction
-    : ID (exprsWithParen | asteriskWithParen) filterClause? windowFunctionWithClause
+    : ID (exprList | asteriskWithParen) filterClause? windowFunctionWithClause
     ;
     
 windowFunctionWithClause
@@ -60,10 +133,10 @@ windowFunctionWithClause
     ;
     
 windowDefinition
-    : ID? (PARTITION BY exprs)? (orderByExpr (COMMA_ orderByExpr)*)? frameClause?
+    : ID? (PARTITION BY exprs)? (orderByClause (COMMA_ orderByClause)*)? frameClause?
     ;
     
-orderByExpr
+orderByClause
     : ORDER BY expr (ASC | DESC | USING operator)? (NULLS (FIRST | LAST))?
     ;
     
