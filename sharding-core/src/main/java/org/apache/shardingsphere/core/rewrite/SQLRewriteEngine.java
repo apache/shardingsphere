@@ -308,6 +308,7 @@ public final class SQLRewriteEngine {
         List<Comparable<?>> encryptColumnValues = getEncryptColumnValues(encryptColumnToken, getColumnValues(encryptColumnToken, encryptCondition));
         encryptParameters(getPositionIndexes(encryptColumnToken), encryptColumnValues);
         sqlBuilder.appendPlaceholder(new EncryptColumnPlaceholder(encryptColumnToken.getColumn().getTableName(), getEncryptColumnName(encryptColumnToken), getIndexValues(encryptCondition, encryptColumnValues), encryptCondition.getPositionIndexMap().keySet(), encryptCondition.getOperator()));
+        appendRest(sqlBuilder, count, encryptColumnToken.getStopIndex() + 1);
     }
     
     private Map<Integer, Integer> getPositionIndexes(final EncryptColumnToken encryptColumnToken) {
@@ -336,7 +337,6 @@ public final class SQLRewriteEngine {
         }
         return result;
     }
-    
     
     private Map<Integer, Comparable<?>> getIndexValues(final Condition encryptCondition, final List<Comparable<?>> encryptColumnValues) {
         Map<Integer, Comparable<?>> indexValueMap = new LinkedHashMap<>();
