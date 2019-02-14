@@ -19,8 +19,8 @@ package org.apache.shardingsphere.core.routing;
 
 import lombok.Getter;
 import lombok.RequiredArgsConstructor;
+import org.apache.shardingsphere.core.keygen.GeneratedKey;
 import org.apache.shardingsphere.core.parsing.parser.sql.SQLStatement;
-import org.apache.shardingsphere.core.routing.router.sharding.GeneratedKey;
 
 import java.util.Collection;
 import java.util.LinkedHashSet;
