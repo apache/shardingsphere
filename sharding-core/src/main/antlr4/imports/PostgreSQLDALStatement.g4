@@ -1,6 +1,6 @@
 grammar PostgreSQLDALStatement;
 
-import PostgreSQLKeyword, Keyword, BaseRule, DataType, Symbol;
+import PostgreSQLKeyword, Keyword, Symbol, BaseRule, DataType;
 
 show
     : SHOW (ALL | ID | TRANSACTION ISOLATION LEVEL)

@@ -1,6 +1,6 @@
 grammar OracleTCLStatement;
 
-import OracleKeyword, Keyword, OracleBase, DataType, Symbol;
+import OracleKeyword, Keyword, Symbol, OracleBase, DataType;
 
 setTransaction
     : SET TRANSACTION

@@ -1,6 +1,6 @@
 grammar SQLServerTCLStatement;
 
-import SQLServerKeyword, Keyword, SQLServerBase, DataType, Symbol;
+import SQLServerKeyword, Keyword, Symbol, SQLServerBase, DataType;
 
 setTransaction
     : SET TRANSACTION ISOLATION LEVEL

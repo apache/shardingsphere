@@ -1,6 +1,6 @@
 grammar PostgreSQLStatement;
 
-import PostgreSQLKeyword, Keyword, PostgreSQLBase, Symbol, PostgreSQLDDLStatement, PostgreSQLTCLStatement, PostgreSQLDCLStatement, PostgreSQLDALStatement
+import PostgreSQLKeyword, Keyword, Symbol, PostgreSQLBase, PostgreSQLDDLStatement, PostgreSQLTCLStatement, PostgreSQLDCLStatement, PostgreSQLDALStatement
        ;
 
 execute

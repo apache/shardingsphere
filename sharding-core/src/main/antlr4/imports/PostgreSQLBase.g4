@@ -1,6 +1,6 @@
 grammar PostgreSQLBase;
 
-import PostgreSQLKeyword, DataType, Keyword, BaseRule, Symbol;
+import PostgreSQLKeyword, Symbol, DataType, Keyword, BaseRule, Symbol;
 
 
 columnDefinition

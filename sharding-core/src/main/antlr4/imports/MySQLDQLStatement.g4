@@ -1,6 +1,6 @@
 grammar MySQLDQLStatement;
 
-import MySQLBase, MySQLKeyword, Keyword, BaseRule, DataType, Symbol;
+import MySQLBase, MySQLKeyword, Keyword, Symbol, BaseRule, DataType;
 
 select 
     : withClause | unionSelect

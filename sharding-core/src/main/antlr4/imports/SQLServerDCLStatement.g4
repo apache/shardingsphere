@@ -1,6 +1,6 @@
 grammar SQLServerDCLStatement;
 
-import SQLServerKeyword, Keyword, SQLServerBase, BaseRule, DataType, Symbol;
+import SQLServerKeyword, Keyword, Symbol, SQLServerBase, BaseRule, DataType;
 
 grant
     : grantGeneral | grantDW

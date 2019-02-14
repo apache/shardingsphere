@@ -1,6 +1,6 @@
 grammar OracleDDLStatement;
 
-import OracleKeyword, Keyword, OracleBase, BaseRule, DataType, Symbol;
+import OracleKeyword, Keyword, Symbol, OracleBase, BaseRule, DataType;
 
 createIndex
     : CREATE (UNIQUE | BITMAP)? INDEX indexName ON (tableIndexClause | bitmapJoinIndexClause)

@@ -1,6 +1,6 @@
 grammar MySQLDDLStatement;
 
-import MySQLKeyword, Keyword, MySQLDQLStatement, DataType, MySQLBase, BaseRule, Symbol;
+import MySQLKeyword, Keyword, Symbol, MySQLDQLStatement, DataType, MySQLBase, BaseRule;
 
 createIndex
     : CREATE (UNIQUE | FULLTEXT | SPATIAL)? INDEX indexName indexType? ON tableName

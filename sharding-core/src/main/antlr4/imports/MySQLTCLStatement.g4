@@ -1,6 +1,6 @@
 grammar MySQLTCLStatement;
 
-import MySQLKeyword, Keyword, BaseRule, DataType, Symbol;
+import MySQLKeyword, Keyword, Symbol, BaseRule, DataType;
 
 setTransaction
     : SET (GLOBAL | SESSION)? TRANSACTION setTransactionCharacteristic (COMMA_ setTransactionCharacteristic)*

@@ -1,6 +1,6 @@
 grammar OracleStatement;
 
-import OracleKeyword, Keyword, OracleBase, Symbol, OracleDDLStatement, OracleTCLStatement, OracleDCLStatement
+import OracleKeyword, Keyword, Symbol, OracleBase, OracleDDLStatement, OracleTCLStatement, OracleDCLStatement
        ;
 
 execute

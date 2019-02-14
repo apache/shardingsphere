@@ -1,6 +1,6 @@
 grammar MySQLBase;
 
-import MySQLKeyword, Keyword, BaseRule, DataType, Symbol;
+import MySQLKeyword, Keyword, Symbol, BaseRule, DataType;
 
 alias
     : ID | PASSWORD | STRING_

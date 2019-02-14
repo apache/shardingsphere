@@ -1,6 +1,6 @@
 grammar SQLServerStatement;
 
-import SQLServerKeyword, Keyword, SQLServerBase, Symbol, SQLServerDDLStatement, SQLServerTCLStatement, SQLServerDCLStatement
+import SQLServerKeyword, Keyword, Symbol, SQLServerBase, SQLServerDDLStatement, SQLServerTCLStatement, SQLServerDCLStatement
        ;
 
 execute

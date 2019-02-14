@@ -1,6 +1,6 @@
 grammar PostgreSQLDCLStatement;
 
-import PostgreSQLKeyword, Keyword, PostgreSQLBase, BaseRule, DataType, Symbol;
+import PostgreSQLKeyword, Keyword, Symbol, PostgreSQLBase, BaseRule, DataType;
 
 grant
     : GRANT privType columnList? (COMMA_ privType columnList?)* privOnClause TO roleSpecifications (WITH GRANT OPTION)?

@@ -1,6 +1,6 @@
 grammar OracleDCLStatement;
 
-import OracleKeyword, Keyword, OracleBase, BaseRule, DataType, Symbol;
+import OracleKeyword, Keyword, Symbol, OracleBase, BaseRule, DataType;
 
 grant
     : GRANT ((grantSystemPrivileges | grantObjectPrivilegeClause) (CONTAINER EQ_ (CURRENT | ALL))? | grantRolesToPrograms)
