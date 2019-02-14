@@ -26,8 +26,7 @@ columnConstraintOption
     | GENERATED (ALWAYS | BY DEFAULT) AS IDENTITY (LP_ sequenceOptions RP_)?
     | UNIQUE indexParameters
     | primaryKey indexParameters
-    | REFERENCES tableName (LP_ columnName RP_)?
-     (MATCH FULL | MATCH PARTIAL | MATCH SIMPLE)?(ON DELETE action)? foreignKeyOnAction*
+    | REFERENCES tableName (LP_ columnName RP_)? (MATCH FULL | MATCH PARTIAL | MATCH SIMPLE)?(ON DELETE action)? foreignKeyOnAction*
     ;
     
 checkOption

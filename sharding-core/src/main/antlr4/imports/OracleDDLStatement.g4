@@ -291,6 +291,5 @@ objectTypeColProperties
     ;
     
 substitutableColumnClause
-    : ELEMENT? IS OF TYPE? LP_ ONLY? typeName RP_
-    | NOT? SUBSTITUTABLE AT ALL LEVELS
+    : ELEMENT? IS OF TYPE? LP_ ONLY? typeName RP_ | NOT? SUBSTITUTABLE AT ALL LEVELS
     ;
