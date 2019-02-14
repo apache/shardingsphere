@@ -20,7 +20,6 @@ package org.apache.shardingsphere.core.rewrite.placeholder;
 import lombok.Getter;
 import lombok.RequiredArgsConstructor;
 import org.apache.shardingsphere.core.constant.ShardingOperator;
-import org.apache.shardingsphere.core.parsing.parser.context.condition.Column;
 
 import java.util.Map;
 import java.util.Set;
@@ -34,7 +33,9 @@ import java.util.Set;
 @Getter
 public final class EncryptColumnPlaceholder implements ShardingPlaceholder {
     
-    private final Column column;
+    private final String logicTableName;
+    
+    private final String columnName;
     
     private final Map<Integer, Comparable<?>> indexValueMap;
     
@@ -45,10 +46,5 @@ public final class EncryptColumnPlaceholder implements ShardingPlaceholder {
     @Override
     public String toString() {
         return "";
-    }
-    
-    @Override
-    public String getLogicTableName() {
-        return column.getTableName();
     }
 }
