@@ -32,7 +32,12 @@ import org.apache.shardingsphere.core.parsing.lexer.token.DefaultKeyword;
 import org.apache.shardingsphere.core.parsing.parser.context.condition.Condition;
 import org.apache.shardingsphere.core.parsing.parser.context.limit.Limit;
 import org.apache.shardingsphere.core.parsing.parser.context.orderby.OrderItem;
+import org.apache.shardingsphere.core.parsing.parser.expression.SQLExpression;
+import org.apache.shardingsphere.core.parsing.parser.expression.SQLNumberExpression;
+import org.apache.shardingsphere.core.parsing.parser.expression.SQLPlaceholderExpression;
+import org.apache.shardingsphere.core.parsing.parser.expression.SQLTextExpression;
 import org.apache.shardingsphere.core.parsing.parser.sql.SQLStatement;
+import org.apache.shardingsphere.core.parsing.parser.sql.dml.DMLStatement;
 import org.apache.shardingsphere.core.parsing.parser.sql.dml.insert.InsertStatement;
 import org.apache.shardingsphere.core.parsing.parser.sql.dql.select.SelectStatement;
 import org.apache.shardingsphere.core.parsing.parser.token.AggregationDistinctToken;
@@ -67,11 +72,14 @@ import org.apache.shardingsphere.spi.hook.RewriteHook;
 
 import java.util.ArrayList;
 import java.util.Collection;
+import java.util.Collections;
 import java.util.HashMap;
 import java.util.LinkedHashMap;
 import java.util.List;
 import java.util.Map;
 import java.util.Map.Entry;
+
+import static java.util.Collections.singletonList;
 
 /**
  * SQL rewrite engine.
@@ -298,12 +306,36 @@ public final class SQLRewriteEngine {
     
     private void appendEncryptColumnPlaceholder(final SQLBuilder sqlBuilder, final EncryptColumnToken encryptColumnToken, final int count) {
         Condition encryptCondition = getEncryptCondition(encryptColumnToken);
-        List<Comparable<?>> encryptColumnValues = getEncryptColumnValues(encryptColumnToken, encryptCondition);
+        List<Comparable<?>> encryptColumnValues = getEncryptColumnValues(encryptColumnToken, getColumnValues(encryptColumnToken, encryptCondition));
+        encryptParameters(getPositionIndexes(encryptColumnToken), encryptColumnValues);
+        sqlBuilder.appendPlaceholder(new EncryptColumnPlaceholder(encryptColumnToken.getColumn().getTableName(), getEncryptColumnName(encryptColumnToken), getIndexValues(encryptCondition, encryptColumnValues), encryptCondition.getPositionIndexMap().keySet(), encryptCondition.getOperator()));
+    }
+    
+    private Map<Integer, Integer> getPositionIndexes(final EncryptColumnToken encryptColumnToken) {
         if (encryptColumnToken.isInWhere()) {
-            encryptParameters(encryptCondition, encryptColumnValues);
-            sqlBuilder.appendPlaceholder(new EncryptColumnPlaceholder(encryptColumnToken.getColumn().getTableName(), getEncryptColumnName(encryptColumnToken), getIndexValues(encryptCondition, encryptColumnValues), encryptCondition.getPositionIndexMap().keySet(), encryptCondition.getOperator()));
+            return getEncryptCondition(encryptColumnToken).getPositionIndexMap();
+        }
+        SQLExpression sqlExpression = ((DMLStatement) sqlStatement).getUpdateColumnValues().get(encryptColumnToken.getColumn());
+        if (sqlExpression instanceof SQLPlaceholderExpression) {
+            return Collections.singletonMap(0, ((SQLPlaceholderExpression) sqlExpression).getIndex());
+        }
+        return new LinkedHashMap<>();
+    }
+    
+    private List<Comparable<?>> getColumnValues(final EncryptColumnToken encryptColumnToken, final Condition encryptCondition) {
+        if (encryptColumnToken.isInWhere()) {
+            return encryptCondition.getConditionValues(parameters);
+        }
+        SQLExpression sqlExpression = ((DMLStatement) sqlStatement).getUpdateColumnValues().get(encryptColumnToken.getColumn());
+        if (sqlExpression instanceof SQLPlaceholderExpression) {
+            return Collections.<Comparable<?>>singletonList(parameters.get(((SQLPlaceholderExpression) sqlExpression).getIndex()).toString());
+        } else if (sqlExpression instanceof SQLTextExpression) {
+            return Collections.<Comparable<?>>singletonList(((SQLTextExpression) sqlExpression).getText());
+        } else if (sqlExpression instanceof SQLNumberExpression) {
+            return Collections.<Comparable<?>>singletonList((Comparable)((SQLNumberExpression) sqlExpression).getNumber());
         }
     }
+    
     
     private Map<Integer, Comparable<?>> getIndexValues(final Condition encryptCondition, final List<Comparable<?>> encryptColumnValues) {
         Map<Integer, Comparable<?>> indexValueMap = new LinkedHashMap<>();
@@ -313,9 +345,9 @@ public final class SQLRewriteEngine {
         return indexValueMap;
     }
     
-    private void encryptParameters(final Condition encryptCondition, final List<Comparable<?>> encryptColumnValues) {
-        if (!encryptCondition.getPositionIndexMap().isEmpty()) {
-            for (Entry<Integer, Integer> entry : encryptCondition.getPositionIndexMap().entrySet()) {
+    private void encryptParameters(final Map<Integer, Integer> positionIndexMap, final List<Comparable<?>> encryptColumnValues) {
+        if (!positionIndexMap.isEmpty()) {
+            for (Entry<Integer, Integer> entry : positionIndexMap.entrySet()) {
                 parameters.set(entry.getValue(), encryptColumnValues.get(entry.getKey()));
             }
         }
@@ -333,18 +365,18 @@ public final class SQLRewriteEngine {
         return encryptColumnToken.getColumn().getName();
     }
     
-    private List<Comparable<?>> getEncryptColumnValues(final EncryptColumnToken encryptColumnToken, final Condition encryptCondition) {
+    private List<Comparable<?>> getEncryptColumnValues(final EncryptColumnToken encryptColumnToken, final List<Comparable<?>> columnValues) {
         final ShardingEncryptor shardingEncryptor = shardingRule.getShardingEncryptorEngine().getShardingEncryptor(encryptColumnToken.getColumn().getTableName(), encryptColumnToken.getColumn().getName()).get();
         if (shardingEncryptor instanceof ShardingQueryAssistedEncryptor) {
-            return Lists.transform(encryptCondition.getConditionValues(parameters), new Function<Comparable<?>, Comparable<?>>() {
-    
+            return Lists.transform(columnValues, new Function<Comparable<?>, Comparable<?>>() {
+                
                 @Override
                 public Comparable<?> apply(final Comparable<?> input) {
                     return ((ShardingQueryAssistedEncryptor) shardingEncryptor).queryAssistedEncrypt(input.toString());
                 }
             });
         }
-        return Lists.transform(encryptCondition.getConditionValues(parameters), new Function<Comparable<?>, Comparable<?>>() {
+        return Lists.transform(columnValues, new Function<Comparable<?>, Comparable<?>>() {
             
             @Override
             public Comparable<?> apply(final Comparable<?> input) {
