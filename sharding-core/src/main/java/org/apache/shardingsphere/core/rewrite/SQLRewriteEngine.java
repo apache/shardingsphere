@@ -319,11 +319,6 @@ public final class SQLRewriteEngine {
                 parameters.set(entry.getValue(), encryptColumnValues.get(entry.getKey()));
             }
         }
-    } else {
-            
-            
-        }
-        
     }
     
     private String getEncryptColumnName(final EncryptColumnToken encryptColumnToken) {
