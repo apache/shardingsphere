@@ -347,7 +347,7 @@ public final class SQLRewriteEngine {
         
     }
     
-    private String getEncryptedColumnName(final EncryptColumnToken encryptColumnToken) {
+    private String getEncryptColumnName(final EncryptColumnToken encryptColumnToken) {
         ShardingEncryptor shardingEncryptor = shardingRule.getShardingEncryptorEngine().getShardingEncryptor(encryptColumnToken.getColumn().getTableName(), encryptColumnToken.getColumn().getName()).get();
         if (shardingEncryptor instanceof ShardingQueryAssistedEncryptor) {
             Optional<String> assistedColumnName = shardingRule.getTableRule(encryptColumnToken.getColumn().getTableName()).getShardingEncryptorStrategy().getAssistedQueryColumn(encryptColumnToken.getColumn().getName());
@@ -359,7 +359,28 @@ public final class SQLRewriteEngine {
         return encryptColumnToken.getColumn().getName();
     }
     
-    private Condition getEncryptCondition(final EncryptColumnToken encryptColumnToken) {
+    private List<Comparable<?>> getEncrptColumnValues(final EncryptColumnToken encryptColumnToken) {
+        final ShardingEncryptor shardingEncryptor = shardingRule.getShardingEncryptorEngine().getShardingEncryptor(encryptColumnToken.getColumn().getTableName(), encryptColumnToken.getColumn().getName()).get();
+        if (shardingEncryptor instanceof ShardingQueryAssistedEncryptor) {
+            return Lists.transform(getEncryptCondition(encryptColumnToken).getConditionValues(parameters), new Function<Comparable<?>, Comparable<?>>() {
+    
+                @Override
+                public Comparable<?> apply(final Comparable<?> input) {
+                    return ((ShardingQueryAssistedEncryptor) shardingEncryptor).queryAssistedEncrypt(input.toString());
+                }
+            });
+        }
+        return Lists.transform(getEncryptCondition().getConditionValues(parameters), new Function<Comparable<?>, Comparable<?>>() {
+            
+            @Override
+            public Comparable<?> apply(final Comparable<?> input) {
+                return String.valueOf(shardingEncryptor.encrypt(input.toString()));
+            }
+        });
+    }
+    
+    
+        private Condition getEncryptCondition(final EncryptColumnToken encryptColumnToken) {
         Collection<Condition> conditions = sqlStatement.getEncryptConditions().getOrCondition().findConditions(encryptColumnToken.getColumn());
         if (0 == conditions.size()) {
             throw new ShardingException("Can not find encrypt condition");
