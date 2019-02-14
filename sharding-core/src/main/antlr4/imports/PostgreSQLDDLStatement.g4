@@ -5,84 +5,83 @@ import PostgreSQLKeyword, Keyword, Symbol, PostgreSQLBase, DataType, BaseRule;
 createIndex
     : CREATE UNIQUE? INDEX CONCURRENTLY? ((IF NOT EXISTS)? indexName)? ON tableName 
     ;
-    
+
 dropIndex
     : DROP INDEX (CONCURRENTLY)? (IF EXISTS)? indexNames
     ;
-    
+
 alterIndex
     : alterIndexName renameIndex | alterIndexDependsOnExtension | alterIndexSetTableSpace
     ;
-    
+
 createTable
     : createTableHeader createDefinitions inheritClause?
     ;
-    
+
 alterTable
     : alterTableNameWithAsterisk (alterTableActions | renameColumn | renameConstraint) | alterTableNameExists renameTable
     ;
-    
+
 truncateTable
     : TRUNCATE TABLE? ONLY? tableNameParts
     ;
-    
+
 dropTable
     : DROP TABLE (IF EXISTS)? tableNames
     ;
-    
-    
+
 alterIndexName
     : ALTER INDEX (IF EXISTS)? indexName
     ;
-    
+
 renameIndex
     : RENAME TO indexName
     ;
-    
+
 alterIndexDependsOnExtension
     : ALTER INDEX indexName DEPENDS ON EXTENSION extensionName
     ;
-    
+
 alterIndexSetTableSpace
     : ALTER INDEX ALL IN TABLESPACE indexName (OWNED BY rowNames)?
     ;
-    
+
 tableNameParts
     : tableNamePart (COMMA_ tableNamePart)*
     ;
-    
+
 tableNamePart
     : tableName ASTERISK_?
     ;
-    
+
 createTableHeader
     : CREATE ((GLOBAL | LOCAL)? (TEMPORARY | TEMP) | UNLOGGED)? TABLE (IF NOT EXISTS)? tableName
     ;
-    
+
 createDefinitions
     : LP_ (createDefinition (COMMA_ createDefinition)*)? RP_
     ;
-    
+
 createDefinition
     : columnDefinition | tableConstraint | LIKE tableName likeOption*
     ;
-    
+
 likeOption
     : (INCLUDING | EXCLUDING) (COMMENTS | CONSTRAINTS | DEFAULTS | IDENTITY | INDEXES | STATISTICS | STORAGE | ALL)
     ;
-    
+
 inheritClause
     : INHERITS LP_ tableName (COMMA_ tableName)* RP_
     ;
-    
+
 alterTableNameWithAsterisk
     : ALTER TABLE (IF EXISTS)? ONLY? tableName ASTERISK_?
     ;
-    
+
 alterTableActions
     : alterTableAction (COMMA_ alterTableAction)*
     ;
-    
+
 alterTableAction
     : addColumn
     | dropColumn
@@ -110,19 +109,19 @@ alterTableAction
     | OWNER TO (ownerName | CURRENT_USER | SESSION_USER)
     | REPLICA IDENTITY (DEFAULT | (USING INDEX indexName) | FULL | NOTHING)
     ;
-    
+
 tableConstraintUsingIndex
     : (CONSTRAINT constraintName)? (UNIQUE | primaryKey) USING INDEX indexName constraintOptionalParam
     ;
-    
+
 addColumn
     : ADD COLUMN? (IF NOT EXISTS)? columnDefinition
     ;
-    
+
 dropColumn
     : DROP COLUMN? (IF EXISTS)? columnName (RESTRICT | CASCADE)?
     ;
-    
+
 modifyColumn
     : alterColumn (SET DATA)? TYPE dataType collateClause? (USING simpleExpr)?
     | alterColumn SET DEFAULT expr
@@ -136,66 +135,66 @@ modifyColumn
     | alterColumn RESET LP_ attributeOptions RP_
     | alterColumn SET STORAGE (PLAIN | EXTERNAL | EXTENDED | MAIN)
     ;
-    
+
 alterColumn
     : ALTER COLUMN? columnName
     ;
-    
+
 alterColumnSetOption
     : SET (GENERATED (ALWAYS | BY DEFAULT) | sequenceOption) | RESTART (WITH? NUMBER_)?
     ;
-    
+
 attributeOptions
     : attributeOption (COMMA_ attributeOption)*
     ;
-    
+
 attributeOption
     : ID EQ_ simpleExpr
     ;
-    
+
 addConstraint
     : ADD (tableConstraint (NOT VALID)? | tableConstraintUsingIndex)
     ;
-    
+
 renameColumn
     : RENAME COLUMN? columnName TO columnName
     ;
-    
+
 renameConstraint
     : RENAME CONSTRAINT constraintName TO constraintName
     ;
-    
+
 storageParameterWithValue
     : storageParameter EQ_ simpleExpr
     ;
-    
+
 storageParameter
     : ID
     ;
-    
+
 alterTableNameExists
     : ALTER TABLE (IF EXISTS)? tableName
     ;
-    
+
 renameTable
     : RENAME TO tableName
     ;
-    
+
 usingIndexType
     : USING (BTREE | HASH | GIST | SPGIST | GIN | BRIN)
     ;
-    
+
 tableConstraint
     : constraintClause? tableConstraintOption constraintOptionalParam
     ;
-    
+
 tableConstraintOption
     : checkOption
     | UNIQUE columnList indexParameters
     | primaryKey columnList indexParameters
     | FOREIGN KEY columnList REFERENCES tableName columnList (MATCH FULL | MATCH PARTIAL | MATCH SIMPLE)? foreignKeyOnAction*
     ;
-    
+
 excludeElement
     : (columnName | expr) opclass? (ASC | DESC)? (NULLS (FIRST | LAST))?
     ;

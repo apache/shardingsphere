@@ -11,7 +11,7 @@ setTransaction
     )?
     | NAME STRING_
     ;
-    
+
 commit
     : COMMIT WORK?
     (
@@ -20,7 +20,7 @@ commit
         | FORCE STRING_ (COMMA_ NUMBER_)?
     )
     ;
-    
+
 rollback
     : ROLLBACK WORK?
     (
@@ -28,7 +28,7 @@ rollback
         | FORCE STRING_
     )? 
     ;
-    
+
 savepoint
     : SAVEPOINT ID 
     ;
