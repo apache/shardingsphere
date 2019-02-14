@@ -1,9 +1,9 @@
 grammar MySQLTCLStatement;
 
-import MySQLKeyword, Keyword, BaseRule, DataType, Symbol;
+import MySQLKeyword, Keyword, Symbol, BaseRule, DataType;
 
 setTransaction
-    : SET (GLOBAL | SESSION)? TRANSACTION setTransactionCharacteristic (COMMA setTransactionCharacteristic)*
+    : SET (GLOBAL | SESSION)? TRANSACTION setTransactionCharacteristic (COMMA_ setTransactionCharacteristic)*
     ;
     
 setTransactionCharacteristic
@@ -27,7 +27,7 @@ beginTransaction
     ;
     
 startTransaction
-    : START TRANSACTION (startTransactionCharacteristic (COMMA startTransactionCharacteristic)*)?
+    : START TRANSACTION (startTransactionCharacteristic (COMMA_ startTransactionCharacteristic)*)?
     ;
     
 startTransactionCharacteristic
@@ -35,10 +35,7 @@ startTransactionCharacteristic
     ;
     
 rollback
-    : ROLLBACK WORK? 
-    (
-     (AND NO? CHAIN)? (NO? RELEASE)? | TO SAVEPOINT? ID
-    )
+    : ROLLBACK WORK? ((AND NO? CHAIN)? (NO? RELEASE)? | TO SAVEPOINT? ID)
     ;
     
 savepoint
@@ -50,5 +47,5 @@ setAutoCommit
     ;
 
 autoCommitValue
-    : NUMBER
+    : NUMBER_
     ;

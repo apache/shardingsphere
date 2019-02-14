@@ -1,6 +1,6 @@
 lexer grammar PostgreSQLKeyword;
 
-import Symbol;
+import Alphabet;
 
 ACTION
     : A C T I O N

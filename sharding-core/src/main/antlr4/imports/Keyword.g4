@@ -1,7 +1,11 @@
 lexer grammar Keyword;
 
-import Symbol;
+import Alphabet;
 
+WS
+    : [ \t\r\n] + ->skip
+    ;
+    
 ALL
     : A L L
     ;

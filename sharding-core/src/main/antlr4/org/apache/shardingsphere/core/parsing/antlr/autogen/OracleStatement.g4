@@ -1,8 +1,6 @@
 grammar OracleStatement;
 
-import OracleKeyword, Keyword, OracleBase, Symbol, OracleCreateIndex, OracleAlterIndex
-       , OracleDropIndex, OracleCreateTable, OracleAlterTable, OracleDropTable, OracleTruncateTable
-       , OracleTCLStatement, OracleDCLStatement
+import OracleKeyword, Keyword, Symbol, OracleBase, OracleDDLStatement, OracleTCLStatement, OracleDCLStatement
        ;
 
 execute

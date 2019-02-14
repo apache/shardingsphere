@@ -1,12 +1,9 @@
 grammar PostgreSQLDCLStatement;
 
-import PostgreSQLKeyword, Keyword, PostgreSQLBase, BaseRule, DataType, Symbol;
+import PostgreSQLKeyword, Keyword, Symbol, PostgreSQLBase, BaseRule, DataType;
 
 grant
-    : GRANT privType columnList? (COMMA privType columnList?)*
-    privOnClause
-    TO roleSpecifications
-    (WITH GRANT OPTION)?
+    : GRANT privType columnList? (COMMA_ privType columnList?)* privOnClause TO roleSpecifications (WITH GRANT OPTION)?
     ;
     
 privType
@@ -36,8 +33,8 @@ privOnClause
         | DOMAIN domainNames
         | FOREIGN DATA WRAPPER fdwNames
         | FOREIGN SERVER serverNames
-        | (FUNCTION | PROCEDURE | ROUTINE) routineName (LP_ (argMode? argName? dataType (COMMA argMode? argName? dataType)*)? RP_)?
-          (COMMA routineName (LP_ (argMode? argName? dataType (COMMA argMode? argName? dataType)*)? RP_)?)*
+        | (FUNCTION | PROCEDURE | ROUTINE) routineName (LP_ (argMode? argName? dataType (COMMA_ argMode? argName? dataType)*)? RP_)?
+          (COMMA_ routineName (LP_ (argMode? argName? dataType (COMMA_ argMode? argName? dataType)*)? RP_)?)*
         | ALL (FUNCTIONS | PROCEDURES | ROUTINES) IN SCHEMA schemaNames
         | LANGUAGE langNames
         | LARGE OBJECT loids
@@ -52,7 +49,7 @@ fdwName
     ;
     
 fdwNames
-    : fdwName (COMMA fdwName)*
+    : fdwName (COMMA_ fdwName)*
     ;
     
 argMode
@@ -68,7 +65,7 @@ langName
     ;
     
 langNames
-    : langName (COMMA langName)*
+    : langName (COMMA_ langName)*
     ;
     
 loid
@@ -76,7 +73,7 @@ loid
     ;
     
 loids
-    : loid (COMMA loid)*
+    : loid (COMMA_ loid)*
     ;
     
 roleSpecification
@@ -84,7 +81,7 @@ roleSpecification
     ;
     
 roleSpecifications
-    : roleSpecification (COMMA roleSpecification)*
+    : roleSpecification (COMMA_ roleSpecification)*
     ;
     
 grantRole
@@ -92,17 +89,11 @@ grantRole
     ;
     
 revoke
-    : REVOKE (GRANT OPTION FOR)?
-    privType columnList? (COMMA privType columnList?)*
-    privOnClause
-    FROM roleSpecifications
-    (CASCADE | RESTRICT)?
+    : REVOKE (GRANT OPTION FOR)? privType columnList? (COMMA_ privType columnList?)* privOnClause FROM roleSpecifications (CASCADE | RESTRICT)?
     ;
     
 revokeRole
-    : REVOKE (ADMIN OPTION FOR)?
-    roleNames FROM roleNames
-    (CASCADE | RESTRICT)?
+    : REVOKE (ADMIN OPTION FOR)? roleNames FROM roleNames (CASCADE | RESTRICT)?
     ;
     
 createUser
@@ -124,19 +115,19 @@ roleOption
     | NOREPLICATION
     | BYPASSRLS
     | NOBYPASSRLS
-    | CONNECTION LIMIT NUMBER
-    | ENCRYPTED? PASSWORD STRING
-    | VALID UNTIL STRING
+    | CONNECTION LIMIT NUMBER_
+    | ENCRYPTED? PASSWORD STRING_
+    | VALID UNTIL STRING_
     | IN ROLE roleNames
     | IN GROUP roleNames
     | ROLE roleNames
     | ADMIN roleNames
     | USER roleNames
-    | SYSID STRING
+    | SYSID STRING_
     ;
     
 roleOptions
-    : roleOption (COMMA roleOption)*
+    : roleOption (COMMA_ roleOption)*
     ;
     
 alterUser
@@ -148,7 +139,7 @@ renameUser
     ;
     
 alterUserSetConfig
-    : alterUserConfigOp SET configName ((TO | EQ_) (STRING | ID | NUMBER | DEFAULT) | FROM CURRENT)
+    : alterUserConfigOp SET configName ((TO | EQ_) (STRING_ | ID | NUMBER_ | DEFAULT) | FROM CURRENT)
     ;
     
 configName
@@ -180,7 +171,7 @@ renameRole
     ;
     
 alterRoleSetConfig
-    : alterRoleConfigOp SET configName ((TO | EQ_) (STRING | ID | NUMBER | DEFAULT) | FROM CURRENT)
+    : alterRoleConfigOp SET configName ((TO | EQ_) (STRING_ | ID | NUMBER_ | DEFAULT) | FROM CURRENT)
     ;
     
 alterRoleConfigOp

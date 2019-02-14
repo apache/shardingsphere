@@ -1,12 +1,9 @@
 grammar MySQLDCLStatement;
 
-import MySQLKeyword, Keyword, MySQLBase, BaseRule, DataType, Symbol;
+import MySQLKeyword, Keyword, Symbol, MySQLBase, BaseRule, DataType;
 
 grant
-    : GRANT privType columnList? (COMMA privType columnList?)*
-    ON objectType? privLevel
-    TO userOrRoles
-    (WITH GRANT OPTION)?
+    : GRANT privType columnList? (COMMA_ privType columnList?)* ON objectType? privLevel TO userOrRoles (WITH GRANT OPTION)?
     ;
     
 privType
@@ -60,13 +57,11 @@ objectType
     ;
     
 privLevel
-    : ASTERISK DOT_ASTERISK
-    | tableName
-    | schemaName DOT routineName
+    : ASTERISK_ DOT_ASTERISK_ | tableName | schemaName DOT_ routineName
     ;
     
 host
-    : STRING | ID | MOD_
+    : STRING_ | ID | MOD_
     ;
     
 user
@@ -74,7 +69,7 @@ user
     ;
     
 users
-    : user (COMMA user)*
+    : user (COMMA_ user)*
     ;
     
 role
@@ -82,7 +77,7 @@ role
     ;
     
 roles
-    : role (COMMA role)*
+    : role (COMMA_ role)*
     ;
     
 userOrRole
@@ -90,7 +85,7 @@ userOrRole
     ;
     
 userOrRoles
-    : userOrRole (COMMA userOrRole)*
+    : userOrRole (COMMA_ userOrRole)*
     ;
     
 grantProxy
@@ -102,40 +97,31 @@ grantRole
     ;
     
 revoke
-    : REVOKE privType columnList? (COMMA privType columnList?)*
-    ON objectType? privLevel
-    FROM userOrRoles
+    : REVOKE privType columnList? (COMMA_ privType columnList?)* ON objectType? privLevel FROM userOrRoles
     ;
     
 revokeAll
-    : REVOKE ALL PRIVILEGES? COMMA GRANT OPTION
-    FROM userOrRoles
+    : REVOKE ALL PRIVILEGES? COMMA_ GRANT OPTION FROM userOrRoles
     ;
     
 revokeProxy
-    : REVOKE PROXY ON userOrRole
-    FROM userOrRoles
+    : REVOKE PROXY ON userOrRole FROM userOrRoles
     ;
     
 revokeRole
-    : REVOKE roleNames
-    FROM userOrRoles
+    : REVOKE roleNames FROM userOrRoles
     ;
     
 createUser
-    : CREATE USER (IF NOT EXISTS)?
-    userAuthOptions
-    (DEFAULT ROLE roles)?
-    (REQUIRE (NONE | tlsOption (COMMA AND? tlsOption)*))?
-    (WITH resourceOption (COMMA resourceOption)*)?
-    (passwordOption | lockOption)*
+    : CREATE USER (IF NOT EXISTS)? userAuthOptions (DEFAULT ROLE roles)? (REQUIRE (NONE | tlsOption (COMMA_ AND? tlsOption)*))?
+    (WITH resourceOption (COMMA_ resourceOption)*)? (passwordOption | lockOption)*
     ;
     
 authOption
-    : IDENTIFIED BY STRING (REPLACE STRING)? (RETAIN CURRENT PASSWORD)?
+    : IDENTIFIED BY STRING_ (REPLACE STRING_)? (RETAIN CURRENT PASSWORD)?
     | IDENTIFIED WITH authPlugin
-    | IDENTIFIED WITH authPlugin BY STRING (REPLACE STRING)? (RETAIN CURRENT PASSWORD)?
-    | IDENTIFIED WITH authPlugin AS STRING
+    | IDENTIFIED WITH authPlugin BY STRING_ (REPLACE STRING_)? (RETAIN CURRENT PASSWORD)?
+    | IDENTIFIED WITH authPlugin AS STRING_
     | DISCARD OLD PASSWORD
     ;
     
@@ -144,7 +130,7 @@ userAuthOption
     ;
     
 userAuthOptions
-    : userAuthOption (COMMA userAuthOption)*
+    : userAuthOption (COMMA_ userAuthOption)*
     ;
     
 authPlugin
@@ -152,20 +138,17 @@ authPlugin
     ;
     
 tlsOption
-    : SSL | CIPHER STRING | ISSUER STRING | SUBJECT STRING | ID
+    : SSL | CIPHER STRING_ | ISSUER STRING_ | SUBJECT STRING_ | ID
     ;
     
 resourceOption
-    : MAX_QUERIES_PER_HOUR NUMBER
-    | MAX_UPDATES_PER_HOUR NUMBER
-    | MAX_CONNECTIONS_PER_HOUR NUMBER
-    | MAX_USER_CONNECTIONS NUMBER
+    : MAX_QUERIES_PER_HOUR NUMBER_ | MAX_UPDATES_PER_HOUR NUMBER_ | MAX_CONNECTIONS_PER_HOUR NUMBER_ | MAX_USER_CONNECTIONS NUMBER_
     ;
     
 passwordOption
-    : PASSWORD EXPIRE (DEFAULT | NEVER | INTERVAL NUMBER DAY)?
-    | PASSWORD HISTORY (DEFAULT | NUMBER)
-    | PASSWORD REUSE INTERVAL (DEFAULT | NUMBER DAY)
+    : PASSWORD EXPIRE (DEFAULT | NEVER | INTERVAL NUMBER_ DAY)?
+    | PASSWORD HISTORY (DEFAULT | NUMBER_)
+    | PASSWORD REUSE INTERVAL (DEFAULT | NUMBER_ DAY)
     | PASSWORD REQUIRE CURRENT (DEFAULT | OPTIONAL)?
     ;
     
@@ -174,10 +157,7 @@ lockOption
     ;
     
 alterUser
-    : ALTER USER (IF EXISTS)? userAuthOptions
-    (REQUIRE (NONE | tlsOption (COMMA AND? tlsOption)*))?
-    (WITH resourceOption (COMMA resourceOption)*)?
-    (passwordOption | lockOption)*
+    : ALTER USER (IF EXISTS)? userAuthOptions (REQUIRE (NONE | tlsOption (COMMA_ AND? tlsOption)*))? (WITH resourceOption (COMMA_ resourceOption)*)? (passwordOption | lockOption)*
     ;
     
 alterCurrentUser
@@ -185,14 +165,11 @@ alterCurrentUser
     ;
     
 userFuncAuthOption
-    : IDENTIFIED BY STRING (REPLACE STRING)? (RETAIN CURRENT PASSWORD)?
-    | DISCARD OLD PASSWORD
+    : IDENTIFIED BY STRING_ (REPLACE STRING_)? (RETAIN CURRENT PASSWORD)? | DISCARD OLD PASSWORD
     ;
     
 alterUserRole
-    : ALTER USER (IF EXISTS)?
-    user DEFAULT ROLE
-    (NONE | ALL | roles)
+    : ALTER USER (IF EXISTS)? user DEFAULT ROLE (NONE | ALL | roles)
     ;
     
 dropUser
@@ -212,7 +189,7 @@ dropRole
     ;
     
 setPassword
-    : SET PASSWORD (FOR user)? EQ_ STRING (REPLACE STRING)? (RETAIN CURRENT PASSWORD)?
+    : SET PASSWORD (FOR user)? EQ_ STRING_ (REPLACE STRING_)? (RETAIN CURRENT PASSWORD)?
     ;
     
 setDefaultRole

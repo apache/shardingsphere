@@ -1,6 +1,6 @@
 grammar PostgreSQLDALStatement;
 
-import PostgreSQLKeyword, Keyword, BaseRule, DataType, Symbol;
+import PostgreSQLKeyword, Keyword, Symbol, BaseRule, DataType;
 
 show
     : SHOW (ALL | ID | TRANSACTION ISOLATION LEVEL)
@@ -15,12 +15,11 @@ scope
     ;
     
 setClause
-    : TIME ZONE timeZoneType
-    | ID (TO | EQ_) (STRING | DEFAULT)
+    : TIME ZONE timeZoneType | ID (TO | EQ_) (STRING_ | DEFAULT)
     ;
     
 timeZoneType
-    : NUMBER | LOCAL | DEFAULT
+    : NUMBER_ | LOCAL | DEFAULT
     ;
     
 resetParam

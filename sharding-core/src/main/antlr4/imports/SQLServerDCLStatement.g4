@@ -1,6 +1,6 @@
 grammar SQLServerDCLStatement;
 
-import SQLServerKeyword, DataType, Keyword, SQLServerBase, BaseRule, Symbol;
+import SQLServerKeyword, Keyword, Symbol, SQLServerBase, BaseRule, DataType;
 
 grant
     : grantGeneral | grantDW
@@ -11,7 +11,7 @@ grantGeneral
     ;
     
 generalPrisOn
-    : (ALL PRIVILEGES? | permissionOnColumns (COMMA permissionOnColumns)*) (ON (ID COLON COLON)? tableName)?
+    : (ALL PRIVILEGES? | permissionOnColumns (COMMA_ permissionOnColumns)*) (ON (ID COLON_ COLON_)? tableName)?
     ;
     
 permissionOnColumns
@@ -23,8 +23,7 @@ permission
     ;
     
 grantDW
-    : GRANT permission (COMMA permission)* (ON (classType COLON COLON)? ID)?
-    TO ids (WITH GRANT OPTION)?
+    : GRANT permission (COMMA_ permission)* (ON (classType COLON_ COLON_)? ID)? TO ids (WITH GRANT OPTION)?
     ;
     
 classType
@@ -36,8 +35,7 @@ revoke
     ;
     
 revokeGeneral
-    : REVOKE (GRANT OPTION FOR)? ((ALL PRIVILEGES?)? | permissionOnColumns)
-    (ON (ID COLON COLON)? ID)? (TO | FROM) ids (CASCADE)? (AS ID)?
+    : REVOKE (GRANT OPTION FOR)? ((ALL PRIVILEGES?)? | permissionOnColumns) (ON (ID COLON_ COLON_)? ID)? (TO | FROM) ids (CASCADE)? (AS ID)?
     ;
     
 revokeDW
@@ -45,7 +43,7 @@ revokeDW
     ;
     
 permissionWithClass
-    : permission (COMMA permission)* (ON (classType COLON COLON)? tableName)?
+    : permission (COMMA_ permission)* (ON (classType COLON_ COLON_)? tableName)?
     ;
     
 deny
@@ -66,27 +64,23 @@ createUserBody1
     ;
     
 createUserBody2
-    : windowsPrincipal (WITH optionsLists)?
-    | userName WITH PASSWORD EQ_ STRING (COMMA optionsList)*
-    | ID FROM EXTERNAL PROVIDER
+    : windowsPrincipal (WITH optionsLists)? | userName WITH PASSWORD EQ_ STRING_ (COMMA_ optionsList)* | ID FROM EXTERNAL PROVIDER
     ;
     
 windowsPrincipal
-    : ID BACKSLASH ID
+    : ID BACKSLASH_ ID
     ;
      
 createUserBody3
-    : windowsPrincipal ((FOR | FROM) LOGIN ID)?
-    | userName (FOR | FROM) LOGIN ID
+    : windowsPrincipal ((FOR | FROM) LOGIN ID)? | userName (FOR | FROM) LOGIN ID
     ;
     
 createUserBody4
-    : WITHOUT LOGIN (WITH optionsLists)?
-    | (FOR | FROM) (CERTIFICATE ID | ASYMMETRIC KEY ID)
+    : WITHOUT LOGIN (WITH optionsLists)? | (FOR | FROM) (CERTIFICATE ID | ASYMMETRIC KEY ID)
     ;
     
 optionsLists
-    : optionsList (COMMA optionsList)*
+    : optionsList (COMMA_ optionsList)*
     ;
     
 optionsList
@@ -106,7 +100,7 @@ createLogin
     ;
     
 loginOptionList
-    : PASSWORD EQ_ (STRING | ID HASHED) MUST_CHANGE? (COMMA optionsList)*
+    : PASSWORD EQ_ (STRING_ | ID HASHED) MUST_CHANGE? (COMMA_ optionsList)*
     ;
     
 sources
@@ -114,11 +108,11 @@ sources
     ;
     
 alterLogin
-    : ALTER LOGIN ID (ENABLE | DISABLE | WITH loginOption (COMMA loginOption)* | credentialOption)
+    : ALTER LOGIN ID (ENABLE | DISABLE | WITH loginOption (COMMA_ loginOption)* | credentialOption)
     ;
     
 loginOption
-    : PASSWORD EQ_ (STRING | ID HASHED) (OLD_PASSWORD EQ_ STRING | passwordOption (passwordOption )?)?
+    : PASSWORD EQ_ (STRING_ | ID HASHED) (OLD_PASSWORD EQ_ STRING_ | passwordOption (passwordOption)?)?
     | DEFAULT_DATABASE EQ_ databaseName
     | optionsList
     | NO CREDENTIAL
@@ -129,8 +123,7 @@ passwordOption
     ;
     
 credentialOption
-    : ADD CREDENTIAL ID
-    | DROP CREDENTIAL
+    : ADD CREDENTIAL ID | DROP CREDENTIAL
     ;
     
 dropLogin

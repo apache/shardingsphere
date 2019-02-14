@@ -1,43 +1,14 @@
 grammar PostgreSQLBase;
 
-import PostgreSQLKeyword, DataType, Keyword, Symbol, BaseRule;
+import PostgreSQLKeyword, Symbol, DataType, Keyword, BaseRule, Symbol;
+
 
 columnDefinition
     : columnName dataType collateClause? columnConstraint*
     ;
     
-dataType
-    : typeName intervalFields? dataTypeLength? (WITHOUT TIME ZONE | WITH TIME ZONE)? (LBT_ RBT_)*
-    | ID
-    ;
-    
-typeName
-    : DOUBLE PRECISION | CHARACTER VARYING? | BIT VARYING? | ID
-    ;
-    
-typeNames
-    : typeName (COMMA typeName)*
-    ;
-    
-intervalFields
-    : intervalField (TO intervalField)?
-    ;
-    
-intervalField
-    : YEAR
-    | MONTH
-    | DAY
-    | HOUR
-    | MINUTE
-    | SECOND
-    ;
-    
 collateClause
     : COLLATE collationName
-    ;
-    
-usingIndexType:
-    USING (BTREE | HASH | GIST | SPGIST | GIN | BRIN)
     ;
     
 columnConstraint
@@ -55,8 +26,7 @@ columnConstraintOption
     | GENERATED (ALWAYS | BY DEFAULT) AS IDENTITY (LP_ sequenceOptions RP_)?
     | UNIQUE indexParameters
     | primaryKey indexParameters
-    | REFERENCES tableName (LP_ columnName RP_)?
-     (MATCH FULL | MATCH PARTIAL | MATCH SIMPLE)?(ON DELETE action)? foreignKeyOnAction*
+    | REFERENCES tableName (LP_ columnName RP_)? (MATCH FULL | MATCH PARTIAL | MATCH SIMPLE)?(ON DELETE action)? foreignKeyOnAction*
     ;
     
 checkOption
@@ -72,15 +42,15 @@ sequenceOptions
     ;
     
 sequenceOption
-    : START WITH? NUMBER
-    | INCREMENT BY? NUMBER
-    | MAXVALUE NUMBER
+    : START WITH? NUMBER_
+    | INCREMENT BY? NUMBER_
+    | MAXVALUE NUMBER_
     | NO MAXVALUE
-    | MINVALUE NUMBER
+    | MINVALUE NUMBER_
     | NO MINVALUE
     | CYCLE
     | NO CYCLE
-    | CACHE NUMBER
+    | CACHE NUMBER_
     ;
     
 indexParameters
@@ -89,21 +59,6 @@ indexParameters
     
 action
     : NO ACTION | RESTRICT | CASCADE | SET (NULL | DEFAULT)
-    ;
-
-constraintOptionalParam
-    : (NOT? DEFERRABLE)? (INITIALLY (DEFERRED | IMMEDIATE))?
-    ;
-    
-tableConstraint
-    : constraintClause? tableConstraintOption constraintOptionalParam
-    ;
-    
-tableConstraintOption
-    : checkOption
-    | UNIQUE columnList indexParameters
-    | primaryKey columnList indexParameters
-    | FOREIGN KEY columnList REFERENCES tableName columnList (MATCH FULL | MATCH PARTIAL | MATCH SIMPLE)? foreignKeyOnAction*
     ;
     
 foreignKeyOnAction
@@ -114,15 +69,41 @@ foreignKeyOn
     : RESTRICT | CASCADE | SET NULL | NO ACTION | SET DEFAULT
     ;
     
-excludeElement
-    : (columnName | expr) opclass? (ASC | DESC)? (NULLS (FIRST | LAST))?
+constraintOptionalParam
+    : (NOT? DEFERRABLE)? (INITIALLY (DEFERRED | IMMEDIATE))?
+    ;
+    
+    
+dataType
+    : typeName intervalFields? dataTypeLength? (WITHOUT TIME ZONE | WITH TIME ZONE)? (LBT_ RBT_)* | ID
+    ;
+    
+typeName
+    : DOUBLE PRECISION | CHARACTER VARYING? | BIT VARYING? | ID
+    ;
+    
+typeNames
+    : typeName (COMMA_ typeName)*
+    ;
+    
+intervalFields
+    : intervalField (TO intervalField)?
+    ;
+    
+intervalField
+    : YEAR
+    | MONTH
+    | DAY
+    | HOUR
+    | MINUTE
+    | SECOND
     ;
     
 privateExprOfDb
     : aggregateExpression
     | windowFunction
     | arrayConstructorWithCast
-    | (TIMESTAMP (WITH TIME ZONE)? STRING)
+    | (TIMESTAMP (WITH TIME ZONE)? STRING_)
     | extractFromFunction
     ;
     
@@ -131,8 +112,7 @@ pgExpr
     ;
     
 aggregateExpression
-    : ID (LP_ (ALL | DISTINCT)? exprs orderByClause? RP_) asteriskWithParen
-    (LP_ exprs RP_ WITHIN GROUP LP_ orderByClause RP_) filterClause?
+    : ID (LP_ (ALL | DISTINCT)? exprs orderByClause? RP_) asteriskWithParen (LP_ exprs RP_ WITHIN GROUP LP_ orderByClause RP_) filterClause?
     ;
     
 filterClause
@@ -140,52 +120,47 @@ filterClause
     ;
     
 asteriskWithParen
-    : LP_ ASTERISK RP_
+    : LP_ ASTERISK_ RP_
     ;
     
 windowFunction
-    : ID (exprsWithParen | asteriskWithParen) 
-    filterClause? windowFunctionWithClause
+    : ID (exprList | asteriskWithParen) filterClause? windowFunctionWithClause
     ;
     
 windowFunctionWithClause
-    : OVER (ID | LP_ windowDefinition RP_ )
+    : OVER (ID | LP_ windowDefinition RP_)
     ;
     
 windowDefinition
-    : ID? (PARTITION BY exprs)?
-    (orderByExpr (COMMA orderByExpr)*)?
-    frameClause?
+    : ID? (PARTITION BY exprs)? (orderByClause (COMMA_ orderByClause)*)? frameClause?
     ;
     
-orderByExpr
-    : ORDER BY expr (ASC | DESC | USING operator)? (NULLS (FIRST | LAST ))?
+orderByClause
+    : ORDER BY expr (ASC | DESC | USING operator)? (NULLS (FIRST | LAST))?
     ;
     
 operator
-    : SAFE_EQ
+    : SAFE_EQ_
     | EQ_
-    | NEQ
     | NEQ_
-    | GT
-    | GTE
-    | LT
-    | LTE
+    | GT_
+    | GTE_
+    | LT_
+    | LTE_
     | AND_
     | OR_
     | NOT_
     ;
     
 frameClause
-    : (RANGE | ROWS) frameStart
-    | (RANGE | ROWS ) BETWEEN frameStart AND frameEnd
+    : (RANGE | ROWS) frameStart | (RANGE | ROWS) BETWEEN frameStart AND frameEnd
     ;
     
 frameStart
     : UNBOUNDED PRECEDING
-    | NUMBER PRECEDING
+    | NUMBER_ PRECEDING
     | CURRENT ROW
-    | NUMBER FOLLOWING
+    | NUMBER_ FOLLOWING
     | UNBOUNDED FOLLOWING
     ;
     
@@ -194,25 +169,22 @@ frameEnd
     ;
     
 castExpr
-    : CAST LP_ expr AS dataType RP_
-    | expr COLON COLON dataType
+    : CAST LP_ expr AS dataType RP_ | expr COLON_ COLON_ dataType
     ;
     
-castExprWithColon
-    : COLON COLON dataType(LBT_ RBT_)*
+castExprWithCOLON_
+    : COLON_ COLON_ dataType(LBT_ RBT_)*
     ;
     
 collateExpr
     : expr COLLATE expr
     ;
 arrayConstructorWithCast
-    : arrayConstructor castExprWithColon?
-    | ARRAY LBT_ RBT_ castExprWithColon
+    : arrayConstructor castExprWithCOLON_? | ARRAY LBT_ RBT_ castExprWithCOLON_
     ;
     
 arrayConstructor
-    : ARRAY LBT_ exprs RBT_
-    | ARRAY LBT_ arrayConstructor (COMMA arrayConstructor)* RBT_
+    : ARRAY LBT_ exprs RBT_ | ARRAY LBT_ arrayConstructor (COMMA_ arrayConstructor)* RBT_
     ;
     
 extractFromFunction

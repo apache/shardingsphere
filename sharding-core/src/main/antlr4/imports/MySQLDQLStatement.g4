@@ -1,13 +1,13 @@
-grammar MySQLSelectStatement;
+grammar MySQLDQLStatement;
 
-import MySQLBase, MySQLKeyword, Keyword, Symbol, DataType, BaseRule;
+import MySQLBase, MySQLKeyword, Keyword, Symbol, BaseRule, DataType;
 
 select 
     : withClause | unionSelect
     ;
     
 withClause
-    : WITH RECURSIVE? cteClause (COMMA cteClause)* unionSelect
+    : WITH RECURSIVE? cteClause (COMMA_ cteClause)* unionSelect
     ;
     
 unionSelect
@@ -27,12 +27,11 @@ selectClause
     ;
     
 selectSpec
-    : (ALL | distinct | DISTINCTROW)? HIGH_PRIORITY? STRAIGHT_JOIN? SQL_SMALL_RESULT?
-    SQL_BIG_RESULT? SQL_BUFFER_RESULT? (SQL_CACHE | SQL_NO_CACHE)? SQL_CALC_FOUND_ROWS?
+    : (ALL | distinct | DISTINCTROW)? HIGH_PRIORITY? STRAIGHT_JOIN? SQL_SMALL_RESULT? SQL_BIG_RESULT? SQL_BUFFER_RESULT? (SQL_CACHE | SQL_NO_CACHE)? SQL_CALC_FOUND_ROWS?
     ;
     
 windowClause
-    : WINDOW windowItem (COMMA windowItem)* 
+    : WINDOW windowItem (COMMA_ windowItem)*
     ;
     
 windowItem
@@ -76,7 +75,7 @@ idListWithEmpty
     ;
     
 tableReferences
-    : tableReference(COMMA tableReference)*
+    : tableReference(COMMA_ tableReference)*
     ;
     
 tableReference
@@ -100,19 +99,11 @@ joinCondition
     ;
     
 indexHintList
-    : indexHint(COMMA indexHint)*
+    : indexHint(COMMA_ indexHint)*
     ;
     
 indexHint
     : (USE | IGNORE | FORCE) (INDEX | KEY) (FOR (JOIN | ORDER BY | GROUP BY))* indexList
-    ;
-    
-selectExprs
-    : (asterisk | selectExpr) (COMMA selectExpr)*
-    ; 
-    
-selectExpr
-    : (columnName | expr) AS? alias? | columnName DOT_ASTERISK
     ;
     
 intervalExpr

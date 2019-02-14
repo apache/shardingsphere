@@ -1,35 +1,31 @@
 lexer grammar DataType;
 
-import Keyword, Symbol;
+import Symbol, Alphabet;
 
-STRING
+STRING_
     : DQ_ ('\\"' | .)*? DQ_ | SQ_ (SQ_ | .)*? SQ_
     ;
     
-NUMBER
-    : MINUS? INT_? DOT? INT_ EXP?
+NUMBER_
+    : MINUS_? INT_? DOT_? INT_ EXP?
     ;
     
-INT_ 
-    : [0-9]+
+HEX_DIGIT_
+    : '0x' HEX_+ | 'X' SQ_ HEX_+ SQ_
     ;
     
-EXP 
-    : E [+\-]? INT_
-    ;
-    
-fragment HEX
-    : [0-9a-fA-F] 
-    ;
-    
-HEX_DIGIT
-    : '0x' HEX+ | 'X' SQ_ HEX+ SQ_
-    ;
-    
-BIT_NUM
+BIT_NUM_
     : '0b' ('0' | '1')+ | B SQ_ ('0' | '1')+ SQ_
     ;
     
-WS
-    : [ \t\r\n] + ->skip
+fragment INT_ 
+    : [0-9]+
+    ;
+    
+fragment EXP 
+    : E [+\-]? INT_
+    ;
+    
+fragment HEX_
+    : [0-9a-fA-F] 
     ;

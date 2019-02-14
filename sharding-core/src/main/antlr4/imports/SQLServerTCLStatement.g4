@@ -1,6 +1,6 @@
 grammar SQLServerTCLStatement;
 
-import SQLServerKeyword, Keyword, SQLServerBase, DataType, Symbol;
+import SQLServerKeyword, Keyword, Symbol, SQLServerBase, DataType;
 
 setTransaction
     : SET TRANSACTION ISOLATION LEVEL
@@ -28,11 +28,11 @@ savepoint
     ;
     
 beginTransaction
-    : BEGIN (TRAN | TRANSACTION) (ID (WITH MARK STRING)?)?
+    : BEGIN (TRAN | TRANSACTION) (ID (WITH MARK STRING_)?)?
     ;
     
 setAutoCommit
-    : (IF AT_ AT_ TRANCOUNT GT NUMBER COMMIT TRAN)? SET IMPLICIT_TRANSACTIONS autoCommitValue
+    : (IF AT_ AT_ TRANCOUNT GT_ NUMBER_ COMMIT TRAN)? SET IMPLICIT_TRANSACTIONS autoCommitValue
     ;
     
 autoCommitValue

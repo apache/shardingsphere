@@ -1,13 +1,13 @@
 grammar MySQLBase;
 
-import MySQLKeyword, Keyword, BaseRule, DataType, Symbol;
+import MySQLKeyword, Keyword, Symbol, BaseRule, DataType;
 
 alias
-    : ID | PASSWORD | STRING
+    : ID | PASSWORD | STRING_
     ;
     
 tableName
-    : ID | ID DOT_ASTERISK | ASTERISK
+    : ID | ID DOT_ASTERISK_ | ASTERISK_
     ;
 
 columnName
@@ -31,11 +31,11 @@ keyPartsWithParen
     ;
     
 keyParts
-    : keyPart (COMMA keyPart)*
+    : keyPart (COMMA_ keyPart)*
     ;
     
 keyPart
-    : columnName (LP_ NUMBER RP_)? (ASC | DESC)?
+    : columnName (LP_ NUMBER_ RP_)? (ASC | DESC)?
     ;
     
 symbol
@@ -51,7 +51,7 @@ indexAndKey
     ;
     
 indexOption
-    : KEY_BLOCK_SIZE EQ_? assignmentValue | indexType | WITH PARSER parserName | COMMENT STRING
+    : KEY_BLOCK_SIZE EQ_? assignmentValue | indexType | WITH PARSER parserName | COMMENT STRING_
     ;
     
 assignmentValueList
@@ -59,7 +59,7 @@ assignmentValueList
     ;
     
 assignmentValues
-    : assignmentValue (COMMA assignmentValue)*
+    : assignmentValue (COMMA_ assignmentValue)*
     ;
     
 assignmentValue
@@ -67,17 +67,15 @@ assignmentValue
     ;
     
 functionCall
-    : (ID | DATE) LP_ distinct? (exprs | ASTERISK)? RP_
-    | groupConcat
-    | windowFunction
+    : (ID | DATE) LP_ distinct? (exprs | ASTERISK_)? RP_ | groupConcat | windowFunction
     ;
     
 groupConcat
-    : GROUP_CONCAT LP_ distinct? (exprs | ASTERISK)? (orderByClause (SEPARATOR expr)?)? RP_
+    : GROUP_CONCAT LP_ distinct? (exprs | ASTERISK_)? (orderByClause (SEPARATOR expr)?)? RP_
     ;
     
 windowFunction
-    : ID exprsWithParen overClause
+    : ID exprList overClause
     ;
     
 overClause
@@ -121,11 +119,11 @@ frameEnd
     ;
     
 variable
-    : (AT_ AT_)? (GLOBAL | PERSIST | PERSIST_ONLY | SESSION)? DOT? ID
+    : (AT_ AT_)? (GLOBAL | PERSIST | PERSIST_ONLY | SESSION)? DOT_? ID
     ;
 
 assignmentList
-    : assignment (COMMA assignment)*
+    : assignment (COMMA_ assignment)*
     ;
 
 assignment
@@ -145,7 +143,7 @@ whereClause
     ;
     
 groupByClause 
-    : GROUP BY orderByItem (COMMA orderByItem)* (WITH ROLLUP)?
+    : GROUP BY orderByItem (COMMA_ orderByItem)* (WITH ROLLUP)?
     ;
     
 havingClause
@@ -158,9 +156,4 @@ limitClause
     
 partitionClause 
     : PARTITION columnList
-    ;
-    
-    
-asterisk
-    : ASTERISK
     ;
