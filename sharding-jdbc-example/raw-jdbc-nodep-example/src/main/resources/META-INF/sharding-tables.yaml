@@ -14,6 +14,7 @@ shardingRule:
           shardingColumn: order_id
           algorithmExpression: t_order_${order_id % 2}
       keyGenerator:
+        type: SNOWFLAKE
         Column: order_id
     t_order_item:
       actualDataNodes: ds.t_order_item_${0..1}
@@ -23,8 +24,6 @@ shardingRule:
           algorithmExpression: t_order_item_${order_id % 2}
   bindingTables:
     - t_order,t_order_item
-  defaultKeyGenerator:
-    type: SNOWFLAKE
-  
+
 props:
   sql.show: true

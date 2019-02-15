@@ -17,17 +17,13 @@
 
 package io.shardingsphere.example.jdbc.nodep;
 
+import io.shardingsphere.example.jdbc.nodep.factory.CommonServiceFactory;
 import io.shardingsphere.example.repository.api.service.TransactionService;
-import io.shardingsphere.example.repository.jdbc.repository.JDBCOrderItemTransactionRepositotyImpl;
-import io.shardingsphere.example.repository.jdbc.repository.JDBCOrderTransactionRepositoryImpl;
-import io.shardingsphere.example.repository.jdbc.service.RawPojoTransactionService;
+import io.shardingsphere.example.type.ConfigurationType;
+import io.shardingsphere.example.type.ServiceType;
 import io.shardingsphere.example.type.ShardingType;
-import org.apache.shardingsphere.shardingjdbc.api.yaml.YamlMasterSlaveDataSourceFactory;
-import org.apache.shardingsphere.shardingjdbc.api.yaml.YamlShardingDataSourceFactory;
 import org.apache.shardingsphere.transaction.core.TransactionType;
 
-import javax.sql.DataSource;
-import java.io.File;
 import java.io.IOException;
 import java.sql.SQLException;
 
@@ -43,39 +39,10 @@ public class YamlConfigurationTransactionExample {
 //    private static ShardingType type = ShardingType.SHARDING_MASTER_SLAVE;
     
     public static void main(final String[] args) throws SQLException, IOException {
-        process(getDataSource());
+        process((TransactionService) CommonServiceFactory.newInstance(ConfigurationType.YAML, ServiceType.TRANSACTION, type));
     }
     
-    private static DataSource getDataSource() throws IOException, SQLException {
-        return ShardingType.MASTER_SLAVE == type ? YamlMasterSlaveDataSourceFactory.createDataSource(getYamlFile()) : YamlShardingDataSourceFactory.createDataSource(getYamlFile());
-    }
-    
-    private static File getYamlFile() {
-        String result;
-        switch (type) {
-            case SHARDING_DATABASES:
-                result = "/META-INF/sharding-databases.yaml";
-                break;
-            case SHARDING_TABLES:
-                result = "/META-INF/sharding-tables.yaml";
-                break;
-            case SHARDING_DATABASES_AND_TABLES:
-                result = "/META-INF/sharding-databases-tables.yaml";
-                break;
-            case MASTER_SLAVE:
-                result = "/META-INF/master-slave.yaml";
-                break;
-            case SHARDING_MASTER_SLAVE:
-                result = "/META-INF/sharding-master-slave.yaml";
-                break;
-            default:
-                throw new UnsupportedOperationException(type.name());
-        }
-        return new File(YamlConfigurationTransactionExample.class.getResource(result).getFile());
-    }
-    
-    private static void process(final DataSource dataSource) throws SQLException {
-        TransactionService transactionService = getTransactionService(dataSource);
+    private static void process(final TransactionService transactionService) {
         transactionService.initEnvironment();
         transactionService.processSuccess();
         processFailureSingleTransaction(transactionService, TransactionType.LOCAL);
@@ -103,9 +70,5 @@ public class YamlConfigurationTransactionExample {
             System.out.println(ex.getMessage());
             transactionService.printData();
         }
-    }
-    
-    private static TransactionService getTransactionService(final DataSource dataSource) throws SQLException {
-        return new RawPojoTransactionService(new JDBCOrderTransactionRepositoryImpl(dataSource), new JDBCOrderItemTransactionRepositotyImpl(dataSource), dataSource);
     }
 }
