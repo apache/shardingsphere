@@ -616,4 +616,27 @@ public final class SQLRewriteEngineTest {
                 "SELECT id FROM table_z WHERE id in (3,5)", DatabaseType.MySQL, selectStatement, null, new LinkedList<>());
         assertThat(rewriteEngine.rewrite(false).toSQL(null, tableTokens, shardingRule, shardingDataSourceMetaData).getSql(), is("SELECT id FROM table_z WHERE id IN (\"encryptValue\", \"encryptValue\")"));
     }
+    
+    @Test
+    public void assertSelectInWithShardingEncryptorWithParameter() {
+        List<Object> parameters = new ArrayList<>(2);
+        parameters.add(1);
+        parameters.add(2);
+        Column column = new Column("id", "table_z");
+        selectStatement.addSQLToken(new TableToken(15, 0, "table_z", "", ""));
+        selectStatement.addSQLToken(new EncryptColumnToken(29, 40, column, true));
+        selectStatement.addSQLToken(new EncryptColumnToken(45, 50, column, true));
+        selectStatement.getEncryptConditions().getOrCondition().getAndConditions().add(new AndCondition());
+        selectStatement.getEncryptConditions().getOrCondition().getAndConditions().add(new AndCondition());
+        List<SQLExpression> sqlExpressions = new LinkedList<>();
+        sqlExpressions.add(new SQLPlaceholderExpression(0));
+        sqlExpressions.add(new SQLPlaceholderExpression(1));
+        selectStatement.getEncryptConditions().getOrCondition().getAndConditions().get(0).getConditions().add(new Condition(column, sqlExpressions));
+        selectStatement.getEncryptConditions().getOrCondition().getAndConditions().get(1).getConditions().add(new Condition(column, new SQLNumberExpression(3)));
+        SQLRewriteEngine rewriteEngine = new SQLRewriteEngine(shardingRule,
+                "SELECT id FROM table_z WHERE id in (?, ?) or id = 3", DatabaseType.MySQL, selectStatement, null, parameters);
+        assertThat(rewriteEngine.rewrite(false).toSQL(null, tableTokens, shardingRule, shardingDataSourceMetaData).getSql(), is("SELECT id FROM table_z WHERE id IN (?, ?) or id = \"encryptValue\""));
+        assertThat(parameters.get(0), is((Object) "encryptValue"));
+        assertThat(parameters.get(1), is((Object) "encryptValue"));
+    }
 }
