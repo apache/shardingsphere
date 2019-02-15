@@ -21,6 +21,8 @@ import io.shardingsphere.example.repository.api.entity.Order;
 import io.shardingsphere.example.repository.api.entity.OrderItem;
 import io.shardingsphere.example.repository.api.repository.OrderItemRepository;
 import io.shardingsphere.example.repository.api.repository.OrderRepository;
+import io.shardingsphere.example.repository.api.trace.DatabaseAccess;
+import io.shardingsphere.example.repository.api.trace.MemoryLogService;
 import org.springframework.transaction.annotation.Transactional;
 
 import java.util.ArrayList;
@@ -28,8 +30,14 @@ import java.util.List;
 
 public abstract class CommonServiceImpl implements CommonService {
     
+    private MemoryLogService memoryLogService = new MemoryLogService();
+    
+    public MemoryLogService getMemoryLogService() {
+        return memoryLogService;
+    }
+    
     @Override
-    public void initEnvironment() {
+    public final void initEnvironment() {
         getOrderRepository().createTableIfNotExists();
         getOrderItemRepository().createTableIfNotExists();
         getOrderRepository().truncateTable();
@@ -37,22 +45,28 @@ public abstract class CommonServiceImpl implements CommonService {
     }
     
     @Override
-    public void cleanEnvironment() {
+    public final void cleanEnvironment() {
         getOrderRepository().dropTable();
         getOrderItemRepository().dropTable();
     }
     
+    /**
+     * process success.
+     */
     @Transactional
     @Override
-    public void processSuccess(final boolean isRangeSharding) {
+    public void processSuccess() {
         System.out.println("-------------- Process Success Begin ---------------");
         List<Long> orderIds = insertData();
-        printData(isRangeSharding);
+        printData();
         deleteData(orderIds);
-        printData(isRangeSharding);
+        printData();
         System.out.println("-------------- Process Success Finish --------------");
     }
     
+    /**
+     * process failure.
+     */
     @Transactional
     @Override
     public void processFailure() {
@@ -70,11 +84,13 @@ public abstract class CommonServiceImpl implements CommonService {
             order.setUserId(i);
             order.setStatus("INSERT_TEST");
             getOrderRepository().insert(order);
+            memoryLogService.putOrderData(DatabaseAccess.INSERT, order);
             OrderItem item = newOrderItem();
             item.setOrderId(order.getOrderId());
             item.setUserId(i);
             item.setStatus("INSERT_TEST");
             getOrderItemRepository().insert(item);
+            memoryLogService.putItemData(DatabaseAccess.INSERT, item);
             result.add(order.getOrderId());
         }
         return result;
@@ -89,32 +105,28 @@ public abstract class CommonServiceImpl implements CommonService {
     }
     
     @Override
-    public void printData(final boolean isRangeSharding) {
-        if (isRangeSharding) {
-            printDataRange();
-        } else {
-            printDataAll();
-        }
-    }
-    
-    private void printDataRange() {
+    public void printData() {
         System.out.println("---------------------------- Print Order Data -----------------------");
-        for (Object each : getOrderRepository().selectRange()) {
+        for (Order each : getOrderRepository().selectAll()) {
+            memoryLogService.putOrderData(DatabaseAccess.SELECT, each);
             System.out.println(each);
         }
         System.out.println("---------------------------- Print OrderItem Data -------------------");
-        for (Object each : getOrderItemRepository().selectRange()) {
+        for (OrderItem each : getOrderItemRepository().selectAll()) {
+            memoryLogService.putItemData(DatabaseAccess.SELECT, each);
             System.out.println(each);
         }
     }
     
-    private void printDataAll() {
+    protected void doPrintRangeData() {
         System.out.println("---------------------------- Print Order Data -----------------------");
-        for (Object each : getOrderRepository().selectAll()) {
+        for (Order each : getOrderRepository().selectRange()) {
+            getMemoryLogService().putOrderData(DatabaseAccess.SELECT, each);
             System.out.println(each);
         }
         System.out.println("---------------------------- Print OrderItem Data -------------------");
-        for (Object each : getOrderItemRepository().selectAll()) {
+        for (OrderItem each : getOrderItemRepository().selectRange()) {
+            getMemoryLogService().putItemData(DatabaseAccess.SELECT, each);
             System.out.println(each);
         }
     }

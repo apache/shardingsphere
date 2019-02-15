@@ -44,12 +44,12 @@ public class SpringBootStarterExample {
     
     private static void process(final ConfigurableApplicationContext applicationContext) {
         CommonService commonService = getCommonService(applicationContext);
-        commonService.processSuccess(false);
+        commonService.processSuccess();
         try {
             commonService.processFailure();
         } catch (final Exception ex) {
             System.out.println(ex.getMessage());
-            commonService.printData(false);
+            commonService.printData();
         }
     }
     

@@ -17,24 +17,11 @@
 
 package io.shardingsphere.example.jdbc.nodep;
 
-import io.shardingsphere.example.config.ExampleConfiguration;
-import io.shardingsphere.example.jdbc.nodep.config.MasterSlaveConfiguration;
-import io.shardingsphere.example.jdbc.nodep.config.ShardingDatabasesAndTablesConfigurationPrecise;
-import io.shardingsphere.example.jdbc.nodep.config.ShardingDatabasesAndTablesConfigurationRange;
-import io.shardingsphere.example.jdbc.nodep.config.ShardingDatabasesConfigurationPrecise;
-import io.shardingsphere.example.jdbc.nodep.config.ShardingDatabasesConfigurationRange;
-import io.shardingsphere.example.jdbc.nodep.config.ShardingMasterSlaveConfigurationPrecise;
-import io.shardingsphere.example.jdbc.nodep.config.ShardingMasterSlaveConfigurationRange;
-import io.shardingsphere.example.jdbc.nodep.config.ShardingTablesConfigurationPrecise;
-import io.shardingsphere.example.jdbc.nodep.config.ShardingTablesConfigurationRange;
-import io.shardingsphere.example.repository.api.service.TransactionService;
-import io.shardingsphere.example.repository.jdbc.repository.JDBCOrderItemTransactionRepositotyImpl;
-import io.shardingsphere.example.repository.jdbc.repository.JDBCOrderTransactionRepositoryImpl;
-import io.shardingsphere.example.repository.jdbc.service.RawPojoTransactionService;
+import io.shardingsphere.example.jdbc.nodep.factory.CommonTransactionServiceFactory;
+import io.shardingsphere.example.repository.api.senario.Scenario;
+import io.shardingsphere.example.repository.api.senario.TransactionServiceScenario;
 import io.shardingsphere.example.type.ShardingType;
-import org.apache.shardingsphere.transaction.core.TransactionType;
 
-import javax.sql.DataSource;
 import java.sql.SQLException;
 
 /*
@@ -49,92 +36,10 @@ public class JavaConfigurationTransactionExample {
 //    private static ShardingType type = ShardingType.SHARDING_MASTER_SLAVE;
     
 //    private static boolean isRangeSharding = true;
-    private static boolean isRangeSharding = false;
     
     public static void main(final String[] args) throws SQLException {
-        process(isRangeSharding ? getDataSourceRange() : getDataSourcePrecise());
-    }
-    
-    private static DataSource getDataSourcePrecise() throws SQLException {
-        ExampleConfiguration exampleConfig;
-        switch (type) {
-            case SHARDING_DATABASES:
-                exampleConfig = new ShardingDatabasesConfigurationPrecise();
-                break;
-            case SHARDING_TABLES:
-                exampleConfig = new ShardingTablesConfigurationPrecise();
-                break;
-            case SHARDING_DATABASES_AND_TABLES:
-                exampleConfig = new ShardingDatabasesAndTablesConfigurationPrecise();
-                break;
-            case MASTER_SLAVE:
-                exampleConfig = new MasterSlaveConfiguration();
-                break;
-            case SHARDING_MASTER_SLAVE:
-                exampleConfig = new ShardingMasterSlaveConfigurationPrecise();
-                break;
-            default:
-                throw new UnsupportedOperationException(type.name());
-        }
-        return exampleConfig.getDataSource();
-    }
-    
-    private static DataSource getDataSourceRange() throws SQLException {
-        ExampleConfiguration exampleConfig;
-        switch (type) {
-            case SHARDING_DATABASES:
-                exampleConfig = new ShardingDatabasesConfigurationRange();
-                break;
-            case SHARDING_TABLES:
-                exampleConfig = new ShardingTablesConfigurationRange();
-                break;
-            case SHARDING_DATABASES_AND_TABLES:
-                exampleConfig = new ShardingDatabasesAndTablesConfigurationRange();
-                break;
-            case MASTER_SLAVE:
-                exampleConfig = new MasterSlaveConfiguration();
-                break;
-            case SHARDING_MASTER_SLAVE:
-                exampleConfig = new ShardingMasterSlaveConfigurationRange();
-                break;
-            default:
-                throw new UnsupportedOperationException(type.name());
-        }
-        return exampleConfig.getDataSource();
-    }
-    
-    private static void process(final DataSource dataSource) throws SQLException {
-        TransactionService transactionService = getTransactionService(dataSource);
-        transactionService.initEnvironment();
-        transactionService.processSuccess(isRangeSharding);
-        processFailureSingleTransaction(transactionService, TransactionType.LOCAL);
-        processFailureSingleTransaction(transactionService, TransactionType.XA);
-        processFailureSingleTransaction(transactionService, TransactionType.BASE);
-        processFailureSingleTransaction(transactionService, TransactionType.LOCAL);
-        transactionService.cleanEnvironment();
-    }
-    
-    private static void processFailureSingleTransaction(final TransactionService transactionService, final TransactionType type) {
-        try {
-            switch (type) {
-                case LOCAL:
-                    transactionService.processFailureWithLocal();
-                    break;
-                case XA:
-                    transactionService.processFailureWithXa();
-                    break;
-                case BASE:
-                    transactionService.processFailureWithBase();
-                    break;
-                default:
-            }
-        } catch (Exception ex) {
-            System.out.println(ex.getMessage());
-            transactionService.printData(false);
-        }
-    }
-    
-    private static TransactionService getTransactionService(final DataSource dataSource) throws SQLException {
-        return new RawPojoTransactionService(new JDBCOrderTransactionRepositoryImpl(dataSource), new JDBCOrderItemTransactionRepositotyImpl(dataSource), dataSource);
+        Scenario scenario = new TransactionServiceScenario(CommonTransactionServiceFactory.newInstance(type));
+        scenario.executeShardingCRUDSuccess();
+        scenario.executeShardingCRUDFailure();
     }
 }
