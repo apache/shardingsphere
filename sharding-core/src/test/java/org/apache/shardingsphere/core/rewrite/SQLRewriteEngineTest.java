@@ -32,6 +32,7 @@ import org.apache.shardingsphere.core.parsing.parser.context.limit.Limit;
 import org.apache.shardingsphere.core.parsing.parser.context.limit.LimitValue;
 import org.apache.shardingsphere.core.parsing.parser.context.orderby.OrderItem;
 import org.apache.shardingsphere.core.parsing.parser.context.table.Table;
+import org.apache.shardingsphere.core.parsing.parser.expression.SQLExpression;
 import org.apache.shardingsphere.core.parsing.parser.expression.SQLNumberExpression;
 import org.apache.shardingsphere.core.parsing.parser.expression.SQLPlaceholderExpression;
 import org.apache.shardingsphere.core.parsing.parser.sql.dal.DALStatement;
@@ -599,5 +600,20 @@ public final class SQLRewriteEngineTest {
         SQLRewriteEngine rewriteEngine = new SQLRewriteEngine(shardingRule,
                 "SELECT id FROM table_z WHERE id between 3 and 5", DatabaseType.MySQL, selectStatement, null, new LinkedList<>());
         assertThat(rewriteEngine.rewrite(false).toSQL(null, tableTokens, shardingRule, shardingDataSourceMetaData).getSql(), is("SELECT id FROM table_z WHERE id BETWEEN \"encryptValue\" AND \"encryptValue\""));
+    }
+    
+    @Test
+    public void assertSelectInWithShardingEncryptor() {
+        Column column = new Column("id", "table_z");
+        selectStatement.addSQLToken(new TableToken(15, 0, "table_z", "", ""));
+        selectStatement.addSQLToken(new EncryptColumnToken(29, 39, column, true));
+        selectStatement.getEncryptConditions().getOrCondition().getAndConditions().add(new AndCondition());
+        List<SQLExpression> sqlExpressions = new LinkedList<>();
+        sqlExpressions.add(new SQLNumberExpression(3));
+        sqlExpressions.add(new SQLNumberExpression(5));
+        selectStatement.getEncryptConditions().getOrCondition().getAndConditions().get(0).getConditions().add(new Condition(column, sqlExpressions));
+        SQLRewriteEngine rewriteEngine = new SQLRewriteEngine(shardingRule,
+                "SELECT id FROM table_z WHERE id in (3,5)", DatabaseType.MySQL, selectStatement, null, new LinkedList<>());
+        assertThat(rewriteEngine.rewrite(false).toSQL(null, tableTokens, shardingRule, shardingDataSourceMetaData).getSql(), is("SELECT id FROM table_z WHERE id IN (\"encryptValue\", \"encryptValue\")"));
     }
 }
