@@ -17,8 +17,8 @@
 
 package org.apache.shardingsphere.core.parsing;
 
+import com.google.common.base.Joiner;
 import com.google.common.base.Optional;
-import lombok.RequiredArgsConstructor;
 import org.apache.shardingsphere.core.constant.DatabaseType;
 import org.apache.shardingsphere.core.metadata.table.ShardingTableMetaData;
 import org.apache.shardingsphere.core.parsing.cache.ParsingResultCache;
@@ -34,7 +34,6 @@ import org.apache.shardingsphere.core.rule.ShardingRule;
  *
  * @author zhangliang
  */
-@RequiredArgsConstructor
 public final class SQLParsingEngine {
     
     private final DatabaseType dbType;
@@ -44,6 +43,16 @@ public final class SQLParsingEngine {
     private final ShardingRule shardingRule;
     
     private final ShardingTableMetaData shardingTableMetaData;
+    
+    private final String statementCacheKey;
+    
+    public SQLParsingEngine(final DatabaseType dbType, final String sql, final ShardingRule shardingRule, final ShardingTableMetaData shardingTableMetaData) {
+        this.dbType = dbType;
+        this.sql = sql;
+        this.shardingRule = shardingRule;
+        this.shardingTableMetaData = shardingTableMetaData;
+        this.statementCacheKey = Joiner.on("-").join(shardingRule.getUniqueId(), sql);
+    }
     
     /**
      * Parse SQL.
@@ -62,12 +71,12 @@ public final class SQLParsingEngine {
             ((AbstractSQLStatement) result).setLogicSQL(sql);
         }
         if (useCache) {
-            ParsingResultCache.getInstance().put(sql, result);
+            ParsingResultCache.getInstance().put(statementCacheKey, result);
         }
         return result;
     }
     
     private Optional<SQLStatement> getSQLStatementFromCache(final boolean useCache) {
-        return useCache ? Optional.fromNullable(ParsingResultCache.getInstance().getSQLStatement(sql)) : Optional.<SQLStatement>absent();
+        return useCache ? Optional.fromNullable(ParsingResultCache.getInstance().getSQLStatement(statementCacheKey)) : Optional.<SQLStatement>absent();
     }
 }

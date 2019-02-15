@@ -43,6 +43,7 @@ import java.util.Collection;
 import java.util.LinkedList;
 import java.util.List;
 import java.util.TreeSet;
+import java.util.UUID;
 
 /**
  * Databases and tables sharding rule.
@@ -53,6 +54,8 @@ import java.util.TreeSet;
  */
 @Getter
 public class ShardingRule {
+    
+    private final String uniqueId = UUID.randomUUID().toString();
     
     private final ShardingRuleConfiguration shardingRuleConfig;
     
