@@ -17,23 +17,16 @@
 
 package io.shardingsphere.example.jdbc.nodep;
 
-import io.shardingsphere.example.jdbc.nodep.config.MasterSlaveConfiguration;
-import io.shardingsphere.example.jdbc.nodep.config.ShardingDatabasesAndTablesConfigurationRange;
-import io.shardingsphere.example.jdbc.nodep.config.ShardingDatabasesConfigurationPrecise;
-import io.shardingsphere.example.jdbc.nodep.config.ShardingDatabasesConfigurationRange;
-import io.shardingsphere.example.jdbc.nodep.config.ShardingMasterSlaveConfigurationPrecise;
-import io.shardingsphere.example.jdbc.nodep.config.ShardingMasterSlaveConfigurationRange;
-import io.shardingsphere.example.jdbc.nodep.config.ShardingTablesConfigurationPrecise;
-import io.shardingsphere.example.jdbc.nodep.config.ShardingTablesConfigurationRange;
+import io.shardingsphere.example.jdbc.nodep.factory.CommonServiceFactory;
 import io.shardingsphere.example.repository.api.service.CommonService;
 import io.shardingsphere.example.repository.api.trace.DatabaseAccess;
 import io.shardingsphere.example.repository.api.trace.MemoryLogService;
-import io.shardingsphere.example.repository.jdbc.repository.JDBCOrderItemRepositoryImpl;
-import io.shardingsphere.example.repository.jdbc.repository.JDBCOrderRepositoryImpl;
 import io.shardingsphere.example.repository.jdbc.service.RawPojoService;
+import io.shardingsphere.example.type.ConfigurationType;
+import io.shardingsphere.example.type.ShardingType;
 import org.junit.Test;
 
-import javax.sql.DataSource;
+import java.io.IOException;
 import java.sql.SQLException;
 
 import static org.hamcrest.CoreMatchers.is;
@@ -42,65 +35,72 @@ import static org.junit.Assert.assertThat;
 public class JavaConfigurationExampleTest {
 
     @Test
-    public void assertShardingDatabasePrecise() throws SQLException {
-        CommonService commonService = process(new ShardingDatabasesConfigurationPrecise().getDataSource(), false);
+    public void assertShardingDatabasePrecise() throws SQLException, IOException {
+        CommonService commonService = CommonServiceFactory.newInstance(ConfigurationType.RAW, ShardingType.SHARDING_DATABASES);
+        process(commonService);
         assertShardingDatabaseResult(commonService, false);
     }
 
     @Test
-    public void assertShardingDatabaseRange() throws SQLException {
-        CommonService commonService = process(new ShardingDatabasesConfigurationRange().getDataSource(), true);
+    public void assertShardingDatabaseRange() throws SQLException, IOException {
+        CommonService commonService = CommonServiceFactory.newInstance(ConfigurationType.RAW, ShardingType.SHARDING_DATABASES_RANGE);
+        process(commonService);
         assertShardingDatabaseResult(commonService, true);
     }
     
     @Test
-    public void assertShardingTablesRange() throws SQLException {
-        CommonService commonService = process(new ShardingTablesConfigurationRange().getDataSource(), true);
+    public void assertShardingTablesRange() throws SQLException, IOException {
+        CommonService commonService = CommonServiceFactory.newInstance(ConfigurationType.RAW, ShardingType.SHARDING_TABLES_RANGE);
+        process(commonService);
         assertShardingTableResult(commonService, true);
     }
 
     @Test
-    public void assertShardingTablesPrecise() throws SQLException {
-        CommonService commonService = process(new ShardingTablesConfigurationPrecise().getDataSource(), false);
+    public void assertShardingTablesPrecise() throws SQLException, IOException {
+        CommonService commonService = CommonServiceFactory.newInstance(ConfigurationType.RAW, ShardingType.SHARDING_TABLES);
+        process(commonService);
         assertShardingTableResult(commonService, false);
     }
 
     @Test
-    public void assertShardingDatabaseAndTablesPrecise() throws SQLException {
-        CommonService commonService = process(new ShardingDatabasesAndTablesConfigurationRange().getDataSource(), false);
+    public void assertShardingDatabaseAndTablesPrecise() throws SQLException, IOException {
+        CommonService commonService = CommonServiceFactory.newInstance(ConfigurationType.RAW, ShardingType.SHARDING_DATABASES_AND_TABLES);
+        process(commonService);
         assertShardingDatabaseAndTableResult(commonService, false);
     }
 
     @Test
-    public void assertShardingDatabaseAndTablesRange() throws SQLException {
-        CommonService commonService = process(new ShardingDatabasesAndTablesConfigurationRange().getDataSource(), true);
+    public void assertShardingDatabaseAndTablesRange() throws SQLException, IOException {
+        CommonService commonService = CommonServiceFactory.newInstance(ConfigurationType.RAW, ShardingType.SHARDING_DATABASES_AND_TABLES_RANGE);
+        process(commonService);
         assertShardingDatabaseAndTableResult(commonService, true);
     }
 
     @Test
-    public void assertMasterSlave() throws SQLException {
-        CommonService commonService = process(new MasterSlaveConfiguration().getDataSource(), false);
+    public void assertMasterSlave() throws SQLException, IOException {
+        CommonService commonService = CommonServiceFactory.newInstance(ConfigurationType.RAW, ShardingType.MASTER_SLAVE);
+        process(commonService);
         assertMasterSlaveResult(commonService);
     }
 
     @Test
-    public void assertShardingMasterSlavePrecise() throws SQLException {
-        CommonService commonService = process(new ShardingMasterSlaveConfigurationPrecise().getDataSource(), false);
+    public void assertShardingMasterSlavePrecise() throws SQLException, IOException {
+        CommonService commonService = CommonServiceFactory.newInstance(ConfigurationType.RAW, ShardingType.SHARDING_MASTER_SLAVE);
+        process(commonService);
         assertMasterSlaveResult(commonService);
     }
 
     @Test
-    public void assertShardingMasterSlaveRange() throws SQLException {
-        CommonService commonService = process(new ShardingMasterSlaveConfigurationRange().getDataSource(), true);
+    public void assertShardingMasterSlaveRange() throws SQLException, IOException {
+        CommonService commonService = CommonServiceFactory.newInstance(ConfigurationType.RAW, ShardingType.SHARDING_MASTER_SLAVE_RANGE);
+        process(commonService);
         assertMasterSlaveResult(commonService);
     }
     
-    private CommonService process(final DataSource dataSource, final boolean isRangeSharding) {
-        CommonService result = new RawPojoService(new JDBCOrderRepositoryImpl(dataSource), new JDBCOrderItemRepositoryImpl(dataSource));
-        result.initEnvironment();
-        result.processSuccess();
-        result.cleanEnvironment();
-        return result;
+    private void process(final CommonService commonService) {
+        commonService.initEnvironment();
+        commonService.processSuccess();
+        commonService.cleanEnvironment();
     }
     
     private void assertShardingDatabaseResult(final CommonService commonService, final boolean isRangeSharding) {
