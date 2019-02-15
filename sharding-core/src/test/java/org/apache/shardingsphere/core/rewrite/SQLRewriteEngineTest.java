@@ -677,7 +677,7 @@ public final class SQLRewriteEngineTest {
     @Test
     public void assertUpdateWithShardingEncryptor() {
         Column column = new Column("id", "table_z");
-        dmlStatement.addSQLToken(new TableToken(7, 0,"table_z", "", ""));
+        dmlStatement.addSQLToken(new TableToken(7, 0, "table_z", "", ""));
         dmlStatement.addSQLToken(new EncryptColumnToken(19, 24, column, false));
         dmlStatement.getUpdateColumnValues().put(column, new SQLNumberExpression(1));
         dmlStatement.addSQLToken(new EncryptColumnToken(32, 37, column, true));
@@ -685,7 +685,8 @@ public final class SQLRewriteEngineTest {
         dmlStatement.getEncryptConditions().getOrCondition().getAndConditions().get(0).getConditions().add(new Condition(column, new SQLNumberExpression(2)));
         SQLRewriteEngine rewriteEngine = new SQLRewriteEngine(shardingRule,
                 "UPDATE table_z SET id = 1 WHERE id = 2", DatabaseType.MySQL, dmlStatement, null, Collections.emptyList());
-        assertThat(rewriteEngine.rewrite(false).toSQL(null, tableTokens, shardingRule, shardingDataSourceMetaData).getSql(), is("UPDATE table_z SET id = \"encryptValue\" WHERE id = \"encryptValue\""));
+        assertThat(rewriteEngine.rewrite(false).toSQL(null, tableTokens, shardingRule, shardingDataSourceMetaData).getSql(), 
+                is("UPDATE table_z SET id = \"encryptValue\" WHERE id = \"encryptValue\""));
     }
     
     @Test
@@ -694,7 +695,7 @@ public final class SQLRewriteEngineTest {
         parameters.add(1);
         parameters.add(5);
         Column column = new Column("id", "table_k");
-        dmlStatement.addSQLToken(new TableToken(7, 0,"table_k", "", ""));
+        dmlStatement.addSQLToken(new TableToken(7, 0, "table_k", "", ""));
         dmlStatement.addSQLToken(new EncryptColumnToken(19, 24, column, false));
         dmlStatement.getUpdateColumnValues().put(column, new SQLPlaceholderExpression(0));
         dmlStatement.addSQLToken(new EncryptColumnToken(32, 49, column, true));
@@ -702,7 +703,8 @@ public final class SQLRewriteEngineTest {
         dmlStatement.getEncryptConditions().getOrCondition().getAndConditions().get(0).getConditions().add(new Condition(column, new SQLNumberExpression(3), new SQLPlaceholderExpression(1)));
         SQLRewriteEngine rewriteEngine = new SQLRewriteEngine(shardingRule,
                 "UPDATE table_k SET id = ? WHERE id between 3 and ?", DatabaseType.MySQL, dmlStatement, null, parameters);
-        assertThat(rewriteEngine.rewrite(false).toSQL(null, tableTokens, shardingRule, shardingDataSourceMetaData).getSql(), is("UPDATE table_k SET query_id = ? WHERE query_id BETWEEN \"assistedEncryptValue\" AND ?"));
+        assertThat(rewriteEngine.rewrite(false).toSQL(null, tableTokens, shardingRule, shardingDataSourceMetaData).getSql(), 
+                is("UPDATE table_k SET query_id = ? WHERE query_id BETWEEN \"assistedEncryptValue\" AND ?"));
         assertThat(parameters.get(0), is((Object) "assistedEncryptValue"));
         assertThat(parameters.get(1), is((Object) "assistedEncryptValue"));
     }
