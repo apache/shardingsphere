@@ -30,6 +30,7 @@ shardingRule:
       actualDataNodes: db${0..1}.table_k
       encryptor:
         type: ASSISTEDTEST
-        columns: id
+        columns: id, id1
+        assistedQueryColumns: query_id, query_id1
   bindingTables:
     - table_x, table_y
