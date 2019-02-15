@@ -641,6 +641,22 @@ public final class SQLRewriteEngineTest {
     }
     
     @Test
+    public void assertSelectEqualWithQueryAssistedShardingEncryptor() {
+        List<Object> parameters = new ArrayList<>(2);
+        parameters.add(1);
+        parameters.add("k");
+        Column column = new Column("id", "table_k");
+        selectStatement.addSQLToken(new TableToken(15, 0, "table_k", "", ""));
+        selectStatement.addSQLToken(new EncryptColumnToken(29, 32, column, true));
+        selectStatement.getEncryptConditions().getOrCondition().getAndConditions().add(new AndCondition());
+        selectStatement.getEncryptConditions().getOrCondition().getAndConditions().get(0).getConditions().add(new Condition(column, new SQLPlaceholderExpression(0)));
+        SQLRewriteEngine rewriteEngine = new SQLRewriteEngine(shardingRule,
+                "SELECT id FROM table_k WHERE id=? AND name=?", DatabaseType.MySQL, selectStatement, null, parameters);
+        assertThat(rewriteEngine.rewrite(false).toSQL(null, tableTokens, shardingRule, shardingDataSourceMetaData).getSql(), is("SELECT id FROM table_k WHERE query_id = ? AND name=?"));
+        assertThat(parameters.get(0), is((Object) "assistedEncryptValue"));
+    }
+    
+    @Test
     public void assertSelectInWithQueryAssistedShardingEncryptor() {
         Column column = new Column("id", "table_k");
         selectStatement.addSQLToken(new TableToken(15, 0, "table_k", "", ""));
@@ -652,6 +668,6 @@ public final class SQLRewriteEngineTest {
         selectStatement.getEncryptConditions().getOrCondition().getAndConditions().get(0).getConditions().add(new Condition(column, sqlExpressions));
         SQLRewriteEngine rewriteEngine = new SQLRewriteEngine(shardingRule,
                 "SELECT id FROM table_k WHERE id in (3,5)", DatabaseType.MySQL, selectStatement, null, new LinkedList<>());
-        assertThat(rewriteEngine.rewrite(false).toSQL(null, tableTokens, shardingRule, shardingDataSourceMetaData).getSql(), is("SELECT id FROM table_z WHERE id IN (\"encryptValue\", \"encryptValue\")"));
+        assertThat(rewriteEngine.rewrite(false).toSQL(null, tableTokens, shardingRule, shardingDataSourceMetaData).getSql(), is("SELECT id FROM table_k WHERE query_id IN (\"assistedEncryptValue\", \"assistedEncryptValue\")"));
     }
 }
