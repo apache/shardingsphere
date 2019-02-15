@@ -72,7 +72,7 @@ public final class EncryptColumnPlaceholder implements ShardingPlaceholder {
     
     private String toStringFromIn() {
         StringBuilder stringBuilder = new StringBuilder();
-        stringBuilder.append(columnName).append(" ").append(operator.name()).append("（");
+        stringBuilder.append(columnName).append(" ").append(operator.name()).append(" (");
         for (int i = 0; i < indexValues.size() + placeholderIndex.size(); i++) {
             if (placeholderIndex.contains(i)) {
                 stringBuilder.append("?");
@@ -81,7 +81,7 @@ public final class EncryptColumnPlaceholder implements ShardingPlaceholder {
             }
             stringBuilder.append(", ");
         }
-        stringBuilder.deleteCharAt(stringBuilder.length() - 1).append(")");
+        stringBuilder.delete(stringBuilder.length() - 2, stringBuilder.length()).append(")");
         return stringBuilder.toString();
     }
 }
