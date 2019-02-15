@@ -79,7 +79,7 @@ public final class OrConditionFiller implements SQLStatementFiller<OrConditionSe
         Map<String, String> columnNameToTable = new HashMap<>();
         Map<String, Integer> columnNameCount = new HashMap<>();
         fillColumnTableMap(sqlStatement, shardingTableMetaData, columnNameToTable, columnNameCount);
-        return filterShardingCondition(sqlStatement, sqlSegment, sql, shardingRule, columnNameToTable, columnNameCount);
+        return filterShardingCondition(shardingTableMetaData, sqlStatement, sqlSegment, sql, shardingRule, columnNameToTable, columnNameCount);
     }
     
     private void fillColumnTableMap(final SQLStatement sqlStatement, final ShardingTableMetaData shardingTableMetaData,
@@ -102,7 +102,7 @@ public final class OrConditionFiller implements SQLStatementFiller<OrConditionSe
         }
     }
     
-    private OrCondition filterShardingCondition(final SQLStatement sqlStatement, final OrConditionSegment orCondition, final String sql, final ShardingRule shardingRule,
+    private OrCondition filterShardingCondition(final ShardingTableMetaData shardingTableMetaData, final SQLStatement sqlStatement, final OrConditionSegment orCondition, final String sql, final ShardingRule shardingRule,
                                                 final Map<String, String> columnNameToTable, final Map<String, Integer> columnNameCount) {
         OrCondition result = new OrCondition();
         for (AndConditionSegment each : orCondition.getAndConditions()) {
@@ -112,9 +112,9 @@ public final class OrConditionFiller implements SQLStatementFiller<OrConditionSe
                 if (null == condition.getColumn()) {
                     continue;
                 }
-                addTableTokenForColumn(sqlStatement, condition.getColumn());
+                addTableTokenForColumn(shardingTableMetaData, sqlStatement, condition.getColumn());
                 if (condition.getExpression() instanceof ColumnSegment) {
-                    addTableTokenForColumn(sqlStatement, (ColumnSegment) condition.getExpression());
+                    addTableTokenForColumn(shardingTableMetaData, sqlStatement, (ColumnSegment) condition.getExpression());
                     needSharding = true;
                     continue;
                 }
@@ -133,11 +133,11 @@ public final class OrConditionFiller implements SQLStatementFiller<OrConditionSe
         return result;
     }
     
-    private void addTableTokenForColumn(final SQLStatement sqlStatement, final ColumnSegment column) {
+    private void addTableTokenForColumn(final ShardingTableMetaData shardingTableMetaData, final SQLStatement sqlStatement, final ColumnSegment column) {
         if (column.getOwner().isPresent()) {
             String owner = column.getOwner().get();
             Optional<Table> logicTable = sqlStatement.getTables().find(owner);
-            if (logicTable.isPresent() && !logicTable.get().getAlias().isPresent()) {
+            if (logicTable.isPresent() && !logicTable.get().getAlias().isPresent() && shardingTableMetaData.containsTable(logicTable.get().getName())) {
                 sqlStatement.addSQLToken(new TableToken(column.getStartIndex(), 0, SQLUtil.getExactlyValue(owner), SQLUtil.getLeftDelimiter(owner), SQLUtil.getRightDelimiter(owner)));
             }
         }
