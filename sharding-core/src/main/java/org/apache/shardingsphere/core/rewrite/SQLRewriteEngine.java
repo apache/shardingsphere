@@ -330,7 +330,7 @@ public final class SQLRewriteEngine {
             
             @Override
             public boolean apply(final SQLToken input) {
-                return input instanceof EncryptColumnToken && ((EncryptColumnToken) input).getColumn().equals( encryptColumnToken.getColumn());
+                return input instanceof EncryptColumnToken && ((EncryptColumnToken) input).getColumn().equals(encryptColumnToken.getColumn());
             }
         }));
         return result.indexOf(encryptColumnToken);
@@ -347,13 +347,14 @@ public final class SQLRewriteEngine {
         } else if (sqlExpression instanceof SQLTextExpression) {
             result.add(((SQLTextExpression) sqlExpression).getText());
         } else if (sqlExpression instanceof SQLNumberExpression) {
-            result.add((Comparable)((SQLNumberExpression) sqlExpression).getNumber());
+            result.add((Comparable) ((SQLNumberExpression) sqlExpression).getNumber());
         }
         return result;
     }
     
     private List<Comparable<?>> getEncryptColumnValues(final EncryptColumnToken encryptColumnToken, final List<Comparable<?>> originalColumnValues) {
-        final ShardingEncryptor shardingEncryptor = shardingRule.getShardingEncryptorEngine().getShardingEncryptor(encryptColumnToken.getColumn().getTableName(), encryptColumnToken.getColumn().getName()).get();
+        final ShardingEncryptor shardingEncryptor = shardingRule.getShardingEncryptorEngine().getShardingEncryptor(encryptColumnToken.getColumn().getTableName(), 
+                encryptColumnToken.getColumn().getName()).get();
         if (shardingEncryptor instanceof ShardingQueryAssistedEncryptor) {
             return Lists.transform(originalColumnValues, new Function<Comparable<?>, Comparable<?>>() {
                 
@@ -392,7 +393,8 @@ public final class SQLRewriteEngine {
     }
     
     private String getEncryptColumnName(final EncryptColumnToken encryptColumnToken) {
-        ShardingEncryptor shardingEncryptor = shardingRule.getShardingEncryptorEngine().getShardingEncryptor(encryptColumnToken.getColumn().getTableName(), encryptColumnToken.getColumn().getName()).get();
+        ShardingEncryptor shardingEncryptor = shardingRule.getShardingEncryptorEngine().getShardingEncryptor(encryptColumnToken.getColumn().getTableName(), 
+                encryptColumnToken.getColumn().getName()).get();
         if (shardingEncryptor instanceof ShardingQueryAssistedEncryptor) {
             Optional<String> result = shardingRule.getTableRule(encryptColumnToken.getColumn().getTableName()).getShardingEncryptorStrategy().getAssistedQueryColumn(encryptColumnToken.getColumn().getName());
             if (!result.isPresent()) {
