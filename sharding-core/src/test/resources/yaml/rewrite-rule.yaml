@@ -26,5 +26,10 @@ shardingRule:
       encryptor:
         type: TEST
         columns: id
+    table_k:
+      actualDataNodes: db${0..1}.table_k
+      encryptor:
+        type: ASSISTEDTEST
+        columns: id
   bindingTables:
     - table_x, table_y
