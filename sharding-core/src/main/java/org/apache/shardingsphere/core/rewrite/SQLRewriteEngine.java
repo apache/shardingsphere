@@ -307,7 +307,7 @@ public final class SQLRewriteEngine {
         Condition encryptCondition = getEncryptCondition(encryptColumnToken);
         List<Comparable<?>> encryptColumnValues = getEncryptColumnValues(encryptColumnToken, getColumnValues(encryptColumnToken, encryptCondition));
         encryptParameters(getPositionIndexes(encryptColumnToken), encryptColumnValues);
-        sqlBuilder.appendPlaceholder(new EncryptColumnPlaceholder(encryptColumnToken.getColumn().getTableName(), getEncryptColumnName(encryptColumnToken), getIndexValues(encryptCondition, encryptColumnValues), encryptCondition.getPositionIndexMap().keySet(), encryptCondition.getOperator()));
+        sqlBuilder.appendPlaceholder(new EncryptColumnPlaceholder(encryptColumnToken.getColumn().getTableName(), getEncryptColumnName(encryptColumnToken), getPositionValues(getValuePositions(encryptColumnToken, encryptCondition), encryptColumnValues), getPlaceholderPositions(encryptColumnToken, encryptCondition), encryptCondition.getOperator()));
         appendRest(sqlBuilder, count, encryptColumnToken.getStopIndex() + 1);
     }
     
@@ -338,13 +338,34 @@ public final class SQLRewriteEngine {
         return result;
     }
     
-    private Map<Integer, Comparable<?>> getIndexValues(final Condition encryptCondition, final List<Comparable<?>> encryptColumnValues) {
+    private Map<Integer, Comparable<?>> getPositionValues(final Collection<Integer> positions, final List<Comparable<?>> encryptColumnValues) {
         Map<Integer, Comparable<?>> indexValueMap = new LinkedHashMap<>();
-        for (int each : encryptCondition.getPositionValueMap().keySet()) {
+        for (int each : positions) {
             indexValueMap.put(each, encryptColumnValues.get(each));
         }
         return indexValueMap;
     }
+    
+    private Collection<Integer> getValuePositions(final EncryptColumnToken encryptColumnToken, final Condition encryptCondition) {
+        if (encryptColumnToken.isInWhere()) {
+            return encryptCondition.getPositionValueMap().keySet();
+        }
+        return Collections.singletonList(0);
+    }
+    
+    private Collection<Integer> getPlaceholderPositions(final EncryptColumnToken encryptColumnToken, final Condition encryptCondition) {
+        if (encryptColumnToken.isInWhere()) {
+            return encryptCondition.getPositionIndexMap().keySet();
+        }
+        Collection<Integer> result = new LinkedList<>();
+        SQLExpression sqlExpression = ((DMLStatement) sqlStatement).getUpdateColumnValues().get(encryptColumnToken.getColumn());
+        if (sqlExpression instanceof SQLPlaceholderExpression) {
+            result.add(((SQLPlaceholderExpression) sqlExpression).getIndex());
+        }
+        return result;
+    }
+    
+    
     
     private void encryptParameters(final Map<Integer, Integer> positionIndexMap, final List<Comparable<?>> encryptColumnValues) {
         if (!positionIndexMap.isEmpty()) {
