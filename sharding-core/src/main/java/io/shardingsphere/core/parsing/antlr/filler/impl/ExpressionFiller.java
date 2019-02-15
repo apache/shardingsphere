@@ -18,6 +18,7 @@
 package io.shardingsphere.core.parsing.antlr.filler.impl;
 
 import com.google.common.base.Optional;
+
 import io.shardingsphere.core.constant.AggregationType;
 import io.shardingsphere.core.metadata.table.ShardingTableMetaData;
 import io.shardingsphere.core.parsing.antlr.filler.SQLStatementFiller;
@@ -54,7 +55,7 @@ public final class ExpressionFiller implements SQLStatementFiller {
         }
         SelectStatement selectStatement = (SelectStatement) sqlStatement;
         if (sqlSegment instanceof PropertyExpressionSegment) {
-            fillPropertyExpression((PropertyExpressionSegment) sqlSegment, selectStatement, sql);
+            fillPropertyExpression(shardingTableMetaData, (PropertyExpressionSegment) sqlSegment, selectStatement, sql);
             return;
         }
         if (sqlSegment instanceof CommonExpressionSegment) {
@@ -64,7 +65,7 @@ public final class ExpressionFiller implements SQLStatementFiller {
             return;
         }
         if (sqlSegment instanceof StarExpressionSegment) {
-            fillStarExpression((StarExpressionSegment) sqlSegment, selectStatement);
+            fillStarExpression(shardingTableMetaData, (StarExpressionSegment) sqlSegment, selectStatement);
             return;
         }
         if (sqlSegment instanceof FunctionExpressionSegment) {
@@ -77,23 +78,25 @@ public final class ExpressionFiller implements SQLStatementFiller {
         }
     }
     
-    private void fillStarExpression(final StarExpressionSegment starSegment, final SelectStatement selectStatement) {
+    private void fillStarExpression(final ShardingTableMetaData shardingTableMetaData, final StarExpressionSegment starSegment, final SelectStatement selectStatement) {
         selectStatement.setContainStar(true);
         Optional<String> owner = starSegment.getOwner();
         selectStatement.getItems().add(new StarSelectItem(owner.orNull()));
-        if (!owner.isPresent()) {
-            return;
-        }
-        Optional<Table> table = selectStatement.getTables().find(owner.get());
-        if (table.isPresent() && !table.get().getAlias().isPresent()) {
-            selectStatement.addSQLToken(new TableToken(starSegment.getStartPosition(), 0, owner.get()));
+        if (owner.isPresent()) {
+            Optional<Table> table = selectStatement.getTables().find(owner.get());
+            if (table.isPresent() && !table.get().getAlias().isPresent() && shardingTableMetaData.containsTable(table.get().getName())) {
+                selectStatement.addSQLToken(new TableToken(starSegment.getStartPosition(), 0, owner.get()));
+            }
         }
     }
     
-    private void fillPropertyExpression(final PropertyExpressionSegment propertySegment, final SelectStatement selectStatement, final String sql) {
+    private void fillPropertyExpression(final ShardingTableMetaData shardingTableMetaData, final PropertyExpressionSegment propertySegment, final SelectStatement selectStatement, final String sql) {
         Optional<String> owner = propertySegment.getOwner();
-        if (owner.isPresent() && selectStatement.getTables().getTableNames().contains(owner.get())) {
-            selectStatement.addSQLToken(new TableToken(propertySegment.getStartPosition(), 0, owner.get()));
+        if (owner.isPresent()) {
+            Optional<Table> table = selectStatement.getTables().find(owner.get());
+            if (table.isPresent() && !table.get().getAlias().isPresent() && shardingTableMetaData.containsTable(table.get().getName())) {
+                selectStatement.addSQLToken(new TableToken(propertySegment.getStartPosition(), 0, owner.get()));
+            }
         }
         String expression = sql.substring(propertySegment.getStartPosition(), propertySegment.getEndPosition() + 1);
         selectStatement.getItems().add(new CommonSelectItem(expression, propertySegment.getAlias()));

@@ -41,6 +41,7 @@ import io.shardingsphere.core.parsing.parser.context.condition.AndCondition;
 import io.shardingsphere.core.parsing.parser.context.condition.Column;
 import io.shardingsphere.core.parsing.parser.context.condition.Condition;
 import io.shardingsphere.core.parsing.parser.context.condition.OrCondition;
+import io.shardingsphere.core.parsing.parser.context.table.Table;
 import io.shardingsphere.core.parsing.parser.expression.SQLExpression;
 import io.shardingsphere.core.parsing.parser.expression.SQLNumberExpression;
 import io.shardingsphere.core.parsing.parser.expression.SQLPlaceholderExpression;
@@ -110,14 +111,9 @@ public final class OrConditionFiller implements SQLStatementFiller<OrConditionSe
                 if (null == condition.getColumn()) {
                     continue;
                 }
-                if (condition.getColumn().getOwner().isPresent() && sqlStatement.getTables().getTableNames().contains(condition.getColumn().getOwner().get())) {
-                    sqlStatement.addSQLToken(new TableToken(condition.getColumn().getStartPosition(), 0, condition.getColumn().getOwner().get()));
-                }
+                addTableTokenForColumn(sqlStatement, condition.getColumn(), shardingTableMetaData);
                 if (condition.getExpression() instanceof ColumnSegment) {
-                    ColumnSegment rightColumn = (ColumnSegment) condition.getExpression();
-                    if (rightColumn.getOwner().isPresent() && sqlStatement.getTables().getTableNames().contains(rightColumn.getOwner().get())) {
-                        sqlStatement.addSQLToken(new TableToken(rightColumn.getStartPosition(), 0, rightColumn.getOwner().get()));
-                    }
+                    addTableTokenForColumn(sqlStatement, (ColumnSegment) condition.getExpression(), shardingTableMetaData);
                     needSharding = true;
                     continue;
                 }
@@ -145,6 +141,16 @@ public final class OrConditionFiller implements SQLStatementFiller<OrConditionSe
             }
         }
         return result;
+    }
+    
+    private void addTableTokenForColumn(final SQLStatement sqlStatement, final ColumnSegment column, final ShardingTableMetaData shardingTableMetaData) {
+        Optional<String> owner = column.getOwner();
+        if (owner.isPresent()) {
+            Optional<Table> table = sqlStatement.getTables().find(owner.get());
+            if (table.isPresent() && !table.get().getAlias().isPresent() && shardingTableMetaData.containsTable(table.get().getName())) {
+                sqlStatement.addSQLToken(new TableToken(column.getStartPosition(), 0, owner.get()));
+            }
+        }
     }
     
     private void fillResult(final OrCondition result, final SQLStatement sqlStatement, final List<ConditionSegment> shardingCondition, final String sql, final ShardingRule shardingRule,
