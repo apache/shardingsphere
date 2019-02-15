@@ -32,6 +32,7 @@ import org.apache.shardingsphere.core.parsing.parser.context.limit.Limit;
 import org.apache.shardingsphere.core.parsing.parser.context.limit.LimitValue;
 import org.apache.shardingsphere.core.parsing.parser.context.orderby.OrderItem;
 import org.apache.shardingsphere.core.parsing.parser.context.table.Table;
+import org.apache.shardingsphere.core.parsing.parser.expression.SQLNumberExpression;
 import org.apache.shardingsphere.core.parsing.parser.expression.SQLPlaceholderExpression;
 import org.apache.shardingsphere.core.parsing.parser.sql.dal.DALStatement;
 import org.apache.shardingsphere.core.parsing.parser.sql.dml.DMLStatement;
@@ -68,6 +69,7 @@ import java.util.Arrays;
 import java.util.Collections;
 import java.util.HashMap;
 import java.util.LinkedHashMap;
+import java.util.LinkedList;
 import java.util.List;
 import java.util.Map;
 import java.util.Map.Entry;
@@ -585,5 +587,17 @@ public final class SQLRewriteEngineTest {
                 "SELECT id FROM table_z WHERE id=? AND name=?", DatabaseType.MySQL, selectStatement, null, parameters);
         assertThat(rewriteEngine.rewrite(false).toSQL(null, tableTokens, shardingRule, shardingDataSourceMetaData).getSql(), is("SELECT id FROM table_z WHERE id = ? AND name=?"));
         assertThat(parameters.get(0), is((Object) "encryptValue"));
+    }
+    
+    @Test
+    public void assertSelectBetweenWithShardingEncryptor() {
+        Column column = new Column("id", "table_z");
+        selectStatement.addSQLToken(new TableToken(15, 0, "table_z", "", ""));
+        selectStatement.addSQLToken(new EncryptColumnToken(29, 46, column, true));
+        selectStatement.getEncryptConditions().getOrCondition().getAndConditions().add(new AndCondition());
+        selectStatement.getEncryptConditions().getOrCondition().getAndConditions().get(0).getConditions().add(new Condition(column, new SQLNumberExpression(3), new SQLNumberExpression(5)));
+        SQLRewriteEngine rewriteEngine = new SQLRewriteEngine(shardingRule,
+                "SELECT id FROM table_z WHERE id between 3 and 5", DatabaseType.MySQL, selectStatement, null, new LinkedList<>());
+        assertThat(rewriteEngine.rewrite(false).toSQL(null, tableTokens, shardingRule, shardingDataSourceMetaData).getSql(), is("SELECT id FROM table_z WHERE id BETWEEN \"encryptValue\" AND \"encryptValue\""));
     }
 }
