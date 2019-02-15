@@ -308,7 +308,9 @@ public final class SQLRewriteEngine {
         Condition encryptCondition = getEncryptCondition(encryptColumnToken);
         List<Comparable<?>> encryptColumnValues = getEncryptColumnValues(encryptColumnToken, getOriginalColumnValues(encryptColumnToken, encryptCondition));
         encryptParameters(getPositionIndexes(encryptColumnToken, encryptCondition), encryptColumnValues);
-        sqlBuilder.appendPlaceholder(new EncryptColumnPlaceholder(encryptColumnToken.getColumn().getTableName(), getEncryptColumnName(encryptColumnToken), getPositionValues(getValuePositions(encryptColumnToken, encryptCondition), encryptColumnValues), getPlaceholderPositions(encryptColumnToken, encryptCondition), getShardingOperator(encryptColumnToken, encryptCondition)));
+        sqlBuilder.appendPlaceholder(new EncryptColumnPlaceholder(encryptColumnToken.getColumn().getTableName(), 
+                getEncryptColumnName(encryptColumnToken), getPositionValues(getValuePositions(encryptColumnToken, encryptCondition), encryptColumnValues), 
+                getPlaceholderPositions(encryptColumnToken, encryptCondition), getShardingOperator(encryptColumnToken, encryptCondition)));
         appendRest(sqlBuilder, count, encryptColumnToken.getStopIndex() + 1);
     }
     
@@ -389,12 +391,16 @@ public final class SQLRewriteEngine {
         }
     }
     
-    private Map<Integer, Comparable<?>> getPositionValues(final Collection<Integer> positions, final List<Comparable<?>> encryptColumnValues) {
-        Map<Integer, Comparable<?>> indexValueMap = new LinkedHashMap<>();
-        for (int each : positions) {
-            indexValueMap.put(each, encryptColumnValues.get(each));
+    private String getEncryptColumnName(final EncryptColumnToken encryptColumnToken) {
+        ShardingEncryptor shardingEncryptor = shardingRule.getShardingEncryptorEngine().getShardingEncryptor(encryptColumnToken.getColumn().getTableName(), encryptColumnToken.getColumn().getName()).get();
+        if (shardingEncryptor instanceof ShardingQueryAssistedEncryptor) {
+            Optional<String> result = shardingRule.getTableRule(encryptColumnToken.getColumn().getTableName()).getShardingEncryptorStrategy().getAssistedQueryColumn(encryptColumnToken.getColumn().getName());
+            if (!result.isPresent()) {
+                throw new ShardingException("Can not find the assistedColumn of %s", encryptColumnToken.getColumn().getName());
+            }
+            return result.get();
         }
-        return indexValueMap;
+        return encryptColumnToken.getColumn().getName();
     }
     
     private Collection<Integer> getValuePositions(final EncryptColumnToken encryptColumnToken, final Condition encryptCondition) {
@@ -402,6 +408,14 @@ public final class SQLRewriteEngine {
             return encryptCondition.getPositionValueMap().keySet();
         }
         return Collections.singletonList(0);
+    }
+    
+    private Map<Integer, Comparable<?>> getPositionValues(final Collection<Integer> valuePositions, final List<Comparable<?>> encryptColumnValues) {
+        Map<Integer, Comparable<?>> result = new LinkedHashMap<>();
+        for (int each : valuePositions) {
+            result.put(each, encryptColumnValues.get(each));
+        }
+        return result;
     }
     
     private Collection<Integer> getPlaceholderPositions(final EncryptColumnToken encryptColumnToken, final Condition encryptCondition) {
@@ -421,18 +435,6 @@ public final class SQLRewriteEngine {
             return encryptCondition.getOperator();
         }
         return ShardingOperator.EQUAL;
-    }
-    
-    private String getEncryptColumnName(final EncryptColumnToken encryptColumnToken) {
-        ShardingEncryptor shardingEncryptor = shardingRule.getShardingEncryptorEngine().getShardingEncryptor(encryptColumnToken.getColumn().getTableName(), encryptColumnToken.getColumn().getName()).get();
-        if (shardingEncryptor instanceof ShardingQueryAssistedEncryptor) {
-            Optional<String> result = shardingRule.getTableRule(encryptColumnToken.getColumn().getTableName()).getShardingEncryptorStrategy().getAssistedQueryColumn(encryptColumnToken.getColumn().getName());
-            if (!result.isPresent()) {
-                throw new ShardingException("Can not find the assistedColumn of %s", encryptColumnToken.getColumn().getName());
-            }
-            return result.get();
-        }
-        return encryptColumnToken.getColumn().getName();
     }
     
     private void appendRest(final SQLBuilder sqlBuilder, final int count, final int beginPosition) {
