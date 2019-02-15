@@ -45,6 +45,28 @@ public final class EncryptColumnPlaceholder implements ShardingPlaceholder {
     
     @Override
     public String toString() {
-        return "";
+        switch (operator) {
+            case EQUAL:
+                return placeholderIndex.isEmpty() ? String.format("%s %s %s", columnName, operator.name(), indexValues.get(0)) : String.format("%s = ?", columnName);
+            case BETWEEN:
+                return toStringFromBetween();
+            case IN:
+                
+    
+        }
+       
+    }
+    
+    private String toStringFromBetween() {
+        if (placeholderIndex.isEmpty()) {
+            return String.format("%s %s %s", indexValues.get(0), operator.name(), indexValues.get(1));
+        }
+        if (2 == placeholderIndex.size()) {
+            return String.format("? %s ?", operator.name());
+        }
+        if (0 == placeholderIndex.iterator().next()) {
+            return String.format("? %s %s", operator.name(), indexValues.get(0));
+        }
+        return String.format("%s %s ?", indexValues.get(0), operator.name());
     }
 }
