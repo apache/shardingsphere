@@ -370,14 +370,6 @@ public final class SQLRewriteEngine {
         });
     }
     
-    private void encryptParameters(final Map<Integer, Integer> positionIndexes, final List<Comparable<?>> encryptColumnValues) {
-        if (!positionIndexes.isEmpty()) {
-            for (Entry<Integer, Integer> entry : positionIndexes.entrySet()) {
-                parameters.set(entry.getValue(), encryptColumnValues.get(entry.getKey()));
-            }
-        }
-    }
-    
     private Map<Integer, Integer> getPositionIndexes(final EncryptColumnToken encryptColumnToken, final Condition encryptCondition) {
         if (encryptColumnToken.isInWhere()) {
             return encryptCondition.getPositionIndexMap();
@@ -387,6 +379,14 @@ public final class SQLRewriteEngine {
             return Collections.singletonMap(0, ((SQLPlaceholderExpression) sqlExpression).getIndex());
         }
         return new LinkedHashMap<>();
+    }
+    
+    private void encryptParameters(final Map<Integer, Integer> positionIndexes, final List<Comparable<?>> encryptColumnValues) {
+        if (!positionIndexes.isEmpty()) {
+            for (Entry<Integer, Integer> entry : positionIndexes.entrySet()) {
+                parameters.set(entry.getValue(), encryptColumnValues.get(entry.getKey()));
+            }
+        }
     }
     
     private Map<Integer, Comparable<?>> getPositionValues(final Collection<Integer> positions, final List<Comparable<?>> encryptColumnValues) {
@@ -426,11 +426,11 @@ public final class SQLRewriteEngine {
     private String getEncryptColumnName(final EncryptColumnToken encryptColumnToken) {
         ShardingEncryptor shardingEncryptor = shardingRule.getShardingEncryptorEngine().getShardingEncryptor(encryptColumnToken.getColumn().getTableName(), encryptColumnToken.getColumn().getName()).get();
         if (shardingEncryptor instanceof ShardingQueryAssistedEncryptor) {
-            Optional<String> assistedColumnName = shardingRule.getTableRule(encryptColumnToken.getColumn().getTableName()).getShardingEncryptorStrategy().getAssistedQueryColumn(encryptColumnToken.getColumn().getName());
-            if (!assistedColumnName.isPresent()) {
+            Optional<String> result = shardingRule.getTableRule(encryptColumnToken.getColumn().getTableName()).getShardingEncryptorStrategy().getAssistedQueryColumn(encryptColumnToken.getColumn().getName());
+            if (!result.isPresent()) {
                 throw new ShardingException("Can not find the assistedColumn of %s", encryptColumnToken.getColumn().getName());
             }
-            return assistedColumnName.get();
+            return result.get();
         }
         return encryptColumnToken.getColumn().getName();
     }
