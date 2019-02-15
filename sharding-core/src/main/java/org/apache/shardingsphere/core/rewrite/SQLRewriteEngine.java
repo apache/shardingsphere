@@ -350,10 +350,10 @@ public final class SQLRewriteEngine {
         return result;
     }
     
-    private List<Comparable<?>> getEncryptColumnValues(final EncryptColumnToken encryptColumnToken, final List<Comparable<?>> columnValues) {
+    private List<Comparable<?>> getEncryptColumnValues(final EncryptColumnToken encryptColumnToken, final List<Comparable<?>> originalColumnValues) {
         final ShardingEncryptor shardingEncryptor = shardingRule.getShardingEncryptorEngine().getShardingEncryptor(encryptColumnToken.getColumn().getTableName(), encryptColumnToken.getColumn().getName()).get();
         if (shardingEncryptor instanceof ShardingQueryAssistedEncryptor) {
-            return Lists.transform(columnValues, new Function<Comparable<?>, Comparable<?>>() {
+            return Lists.transform(originalColumnValues, new Function<Comparable<?>, Comparable<?>>() {
                 
                 @Override
                 public Comparable<?> apply(final Comparable<?> input) {
@@ -361,13 +361,21 @@ public final class SQLRewriteEngine {
                 }
             });
         }
-        return Lists.transform(columnValues, new Function<Comparable<?>, Comparable<?>>() {
+        return Lists.transform(originalColumnValues, new Function<Comparable<?>, Comparable<?>>() {
             
             @Override
             public Comparable<?> apply(final Comparable<?> input) {
                 return String.valueOf(shardingEncryptor.encrypt(input.toString()));
             }
         });
+    }
+    
+    private void encryptParameters(final Map<Integer, Integer> positionIndexes, final List<Comparable<?>> encryptColumnValues) {
+        if (!positionIndexes.isEmpty()) {
+            for (Entry<Integer, Integer> entry : positionIndexes.entrySet()) {
+                parameters.set(entry.getValue(), encryptColumnValues.get(entry.getKey()));
+            }
+        }
     }
     
     private Map<Integer, Integer> getPositionIndexes(final EncryptColumnToken encryptColumnToken, final Condition encryptCondition) {
@@ -413,14 +421,6 @@ public final class SQLRewriteEngine {
             return encryptCondition.getOperator();
         }
         return ShardingOperator.EQUAL;
-    }
-    
-    private void encryptParameters(final Map<Integer, Integer> positionIndexMap, final List<Comparable<?>> encryptColumnValues) {
-        if (!positionIndexMap.isEmpty()) {
-            for (Entry<Integer, Integer> entry : positionIndexMap.entrySet()) {
-                parameters.set(entry.getValue(), encryptColumnValues.get(entry.getKey()));
-            }
-        }
     }
     
     private String getEncryptColumnName(final EncryptColumnToken encryptColumnToken) {
