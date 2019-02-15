@@ -25,14 +25,19 @@ import org.apache.shardingsphere.core.metadata.datasource.ShardingDataSourceMeta
 import org.apache.shardingsphere.core.optimizer.condition.ShardingCondition;
 import org.apache.shardingsphere.core.optimizer.condition.ShardingConditions;
 import org.apache.shardingsphere.core.optimizer.insert.InsertShardingCondition;
+import org.apache.shardingsphere.core.parsing.parser.context.condition.AndCondition;
+import org.apache.shardingsphere.core.parsing.parser.context.condition.Column;
+import org.apache.shardingsphere.core.parsing.parser.context.condition.Condition;
 import org.apache.shardingsphere.core.parsing.parser.context.limit.Limit;
 import org.apache.shardingsphere.core.parsing.parser.context.limit.LimitValue;
 import org.apache.shardingsphere.core.parsing.parser.context.orderby.OrderItem;
 import org.apache.shardingsphere.core.parsing.parser.context.table.Table;
+import org.apache.shardingsphere.core.parsing.parser.expression.SQLPlaceholderExpression;
 import org.apache.shardingsphere.core.parsing.parser.sql.dal.DALStatement;
 import org.apache.shardingsphere.core.parsing.parser.sql.dml.DMLStatement;
 import org.apache.shardingsphere.core.parsing.parser.sql.dml.insert.InsertStatement;
 import org.apache.shardingsphere.core.parsing.parser.sql.dql.select.SelectStatement;
+import org.apache.shardingsphere.core.parsing.parser.token.EncryptColumnToken;
 import org.apache.shardingsphere.core.parsing.parser.token.IndexToken;
 import org.apache.shardingsphere.core.parsing.parser.token.InsertColumnToken;
 import org.apache.shardingsphere.core.parsing.parser.token.InsertValuesToken;
@@ -564,5 +569,21 @@ public final class SQLRewriteEngineTest {
         dmlStatement.addSQLToken(new TableToken(12, "`sharding_db`".length() + 1, "table_x", "`", "`"));
         SQLRewriteEngine rewriteEngine = new SQLRewriteEngine(shardingRule, "DELETE FROM `sharding_db`.`table_x` WHERE user_id=1", DatabaseType.MySQL, dmlStatement, null, Collections.emptyList());
         assertThat(rewriteEngine.rewrite(true).toSQL(null, tableTokens, shardingRule, shardingDataSourceMetaData).getSql(), is("DELETE FROM `table_1` WHERE user_id=1"));
+    }
+    
+    @Test
+    public void assertSelectEqualWithShardingEncryptor() {
+        List<Object> parameters = new ArrayList<>(2);
+        parameters.add(1);
+        parameters.add("x");
+        Column column = new Column("id", "table_z");
+        selectStatement.addSQLToken(new TableToken(15, 0, "table_z", "", ""));
+        selectStatement.addSQLToken(new EncryptColumnToken(29, 32, column, true));
+        selectStatement.getEncryptConditions().getOrCondition().getAndConditions().add(new AndCondition());
+        selectStatement.getEncryptConditions().getOrCondition().getAndConditions().get(0).getConditions().add(new Condition(column, new SQLPlaceholderExpression(0)));
+        SQLRewriteEngine rewriteEngine = new SQLRewriteEngine(shardingRule,
+                "SELECT id FROM table_z WHERE id=? AND name=?", DatabaseType.MySQL, selectStatement, null, parameters);
+        assertThat(rewriteEngine.rewrite(false).toSQL(null, tableTokens, shardingRule, shardingDataSourceMetaData).getSql(), is("SELECT id FROM table_z WHERE id = ? AND name=?"));
+        assertThat(parameters.get(0), is((Object) "encryptValue"));
     }
 }
