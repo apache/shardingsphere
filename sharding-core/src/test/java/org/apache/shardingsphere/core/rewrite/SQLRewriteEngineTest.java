@@ -699,7 +699,7 @@ public final class SQLRewriteEngineTest {
         dmlStatement.getEncryptConditions().getOrCondition().getAndConditions().get(0).getConditions().add(new Condition(column, new SQLNumberExpression(3), new SQLPlaceholderExpression(1)));
         SQLRewriteEngine rewriteEngine = new SQLRewriteEngine(shardingRule,
                 "UPDATE table_k SET id = ? WHERE id between 3 and ?", DatabaseType.MySQL, dmlStatement, null, parameters);
-        assertThat(rewriteEngine.rewrite(false).toSQL(null, tableTokens, shardingRule, shardingDataSourceMetaData).getSql(), is("UPDATE table_k SET query_id = ? WHERE query_id between \"assistedEncryptValue\" and ?"));
+        assertThat(rewriteEngine.rewrite(false).toSQL(null, tableTokens, shardingRule, shardingDataSourceMetaData).getSql(), is("UPDATE table_k SET query_id = ? WHERE query_id BETWEEN \"assistedEncryptValue\" AND ?"));
         assertThat(parameters.get(0), is((Object) "assistedEncryptValue"));
         assertThat(parameters.get(1), is((Object) "assistedEncryptValue"));
     }
