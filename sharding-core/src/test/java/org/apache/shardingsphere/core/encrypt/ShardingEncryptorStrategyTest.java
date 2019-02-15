@@ -17,6 +17,7 @@
 
 package org.apache.shardingsphere.core.encrypt;
 
+import com.google.common.base.Optional;
 import org.apache.shardingsphere.core.exception.ShardingConfigurationException;
 import org.apache.shardingsphere.spi.algorithm.encrypt.ShardingEncryptor;
 import org.junit.Test;
@@ -43,5 +44,11 @@ public final class ShardingEncryptorStrategyTest {
     @Test(expected = ShardingConfigurationException.class)
     public void assertInvalidConstructor() {
         new ShardingEncryptorStrategy(Arrays.asList("pwd1", "pwd2"), Collections.singletonList("pwd1_index"), mock(ShardingEncryptor.class));
+    }
+    
+    @Test
+    public void assertGetAssistedQueryColumn() {
+        ShardingEncryptorStrategy actual = new ShardingEncryptorStrategy(Arrays.asList("pwd1", "pwd2"), Arrays.asList("pwd1_index", "pwd2_index"), mock(ShardingEncryptor.class));
+        assertThat(actual.getAssistedQueryColumn("pwd1"), is(Optional.of("pwd1_index")));
     }
 }
