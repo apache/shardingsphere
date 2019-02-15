@@ -18,6 +18,8 @@
 package io.shardingsphere.example.jdbc.nodep;
 
 import io.shardingsphere.example.repository.api.service.CommonService;
+import io.shardingsphere.example.repository.api.service.CommonServiceImpl;
+import io.shardingsphere.example.repository.api.service.TransactionService;
 import io.shardingsphere.example.repository.api.trace.DatabaseAccess;
 import io.shardingsphere.example.repository.api.trace.MemoryLogService;
 import io.shardingsphere.example.repository.jdbc.service.RawPojoService;
@@ -76,6 +78,14 @@ public class BaseConfigurationExample {
         assertThat(memoryLogService.getOrderData(DatabaseAccess.INSERT).size(), is(10));
         assertThat(memoryLogService.getOrderData(DatabaseAccess.SELECT).size(), is(0));
         assertThat(memoryLogService.getOrderItemData(DatabaseAccess.INSERT).size(), is(10));
+        assertThat(memoryLogService.getOrderItemData(DatabaseAccess.SELECT).size(), is(0));
+    }
+    
+    public void assertTransactionServiceResult(final TransactionService transactionService) {
+        MemoryLogService memoryLogService = ((CommonServiceImpl) transactionService).getMemoryLogService();
+        assertThat(memoryLogService.getOrderData(DatabaseAccess.INSERT).size(), is(30));
+        assertThat(memoryLogService.getOrderData(DatabaseAccess.SELECT).size(), is(0));
+        assertThat(memoryLogService.getOrderItemData(DatabaseAccess.INSERT).size(), is(30));
         assertThat(memoryLogService.getOrderItemData(DatabaseAccess.SELECT).size(), is(0));
     }
 }
