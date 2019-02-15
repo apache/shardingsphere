@@ -51,6 +51,6 @@ public final class TestQueryAssistedShardingEncryptor implements ShardingQueryAs
     
     @Override
     public String queryAssistedEncrypt(String plaintext) {
-        return "assistedDecryptValue";
+        return "assistedEncryptValue";
     }
 }
