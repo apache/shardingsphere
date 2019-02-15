@@ -20,13 +20,13 @@ execute
     | revoke
     | deny
     | createUser
-    | alterUser
     | dropUser
-    | createLogin
-    | alterLogin
-    | dropLogin
+    | alterUser
     | createRole
-    | alterRole
     | dropRole
+    | alterRole
+    | createLogin
+    | dropLogin
+    | alterLogin
     ) SEMI_?
     ;
