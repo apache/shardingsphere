@@ -44,7 +44,7 @@ public class TransactionServiceScenario implements Scenario {
         transactionService.initEnvironment();
         processFailure(transactionService, TransactionType.LOCAL);
         processFailure(transactionService, TransactionType.XA);
-        processFailure(transactionService, TransactionType.BASE);
+//        processFailure(transactionService, TransactionType.BASE);
         processFailure(transactionService, TransactionType.LOCAL);
         transactionService.cleanEnvironment();
     }
