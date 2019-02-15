@@ -9,7 +9,6 @@
     <parser-result sql-case-id="alter_user_name_rename" />
     <parser-result sql-case-id="alter_user_passwd_with_equality" />
     <parser-result sql-case-id="alter_user_passwd_without_equality" />
-    <parser-result sql-case-id="alter_user_passwd_set" />
     <parser-result sql-case-id="alter_role_add_member" />
     <parser-result sql-case-id="alter_role_drop_member" />
 </parser-result-sets>

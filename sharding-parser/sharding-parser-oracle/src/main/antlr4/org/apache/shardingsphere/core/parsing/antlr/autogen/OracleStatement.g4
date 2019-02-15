@@ -1,7 +1,6 @@
 grammar OracleStatement;
 
-import OracleKeyword, Keyword, Symbol, OracleBase, OracleDDLStatement, OracleTCLStatement, OracleDCLStatement
-       ;
+import OracleKeyword, Keyword, Symbol, OracleBase, OracleDDLStatement, OracleTCLStatement, OracleDCLStatement;
 
 execute
     : (createIndex
