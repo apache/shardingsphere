@@ -47,7 +47,7 @@ public final class EncryptColumnPlaceholder implements ShardingPlaceholder {
     public String toString() {
         switch (operator) {
             case EQUAL:
-                return placeholderIndex.isEmpty() ? String.format("%s %s \"%s\"", columnName, operator.name(), indexValues.get(0)) : String.format("%s = ?", columnName);
+                return placeholderIndex.isEmpty() ? String.format("%s = \"%s\"", columnName, indexValues.get(0)) : String.format("%s = ?", columnName);
             case BETWEEN:
                 return toStringFromBetween();
             case IN:
