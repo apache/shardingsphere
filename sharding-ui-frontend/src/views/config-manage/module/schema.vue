@@ -13,20 +13,15 @@
           <div v-for="(itm, idex) in item.children" :key="idex" class="coll-item">
             <div :class="'itm icon-' + idex"/>
             <div class="txt">{{ itm }}</div>
-            <!-- <el-button
-              type="primary"
-              icon="el-icon-edit"
-              size="mini"
-              circle
-              class="edit-btn"
-              @click="handlerClick(item.title, itm)"
-            />-->
             <i class="icon-edit" @click="handlerClick(item.title, itm)"/>
           </div>
         </el-card>
       </el-col>
     </el-row>
-    <el-dialog :visible.sync="centerDialogVisible" :title="type" width="80%">
+    <el-row>
+      <el-button type="primary" icon="el-icon-plus" @click="add" />
+    </el-row>
+    <el-dialog :visible.sync="centerDialogVisible" :title="type" width="80%" top="3vh">
       <el-row :gutter="20">
         <el-col :span="12">
           <span style="font-size: 18px; font-weight: bold;">Edit source here:</span>
@@ -55,6 +50,40 @@
         <el-button type="primary" @click="onConfirm">{{ $t('btn.submit') }}</el-button>
       </span>
     </el-dialog>
+    <el-dialog :visible.sync="addSchemaDialog" title="Add Schema" width="80%" top="3vh">
+      <el-row>
+        <el-col>
+          <span style="font-size: 14px; color: #4a4a4a; font-weight: bold;">schema name:</span>
+          <el-input class="width: 30%"/>
+        </el-col>
+      </el-row>
+      <el-row :gutter="20">
+        <el-col :span="12">
+          <span style="font-size: 14px; color: #4a4a4a; font-weight: bold;">ruleConfig:</span>
+          <el-input
+            :rows="18"
+            v-model="rueleConfigTextArea"
+            type="textarea"
+            placeholder="请输入内容"
+            class="edit-text"
+          />
+        </el-col>
+        <el-col :span="12">
+          <span style="font-size: 14px; color: #4a4a4a; font-weight: bold;">dataSourceConfig:</span>
+          <el-input
+            :rows="18"
+            v-model="dataSourceConfigTextArea"
+            type="textarea"
+            placeholder="请输入内容"
+            class="edit-text"
+          />
+        </el-col>
+      </el-row>
+      <span slot="footer" class="dialog-footer">
+        <el-button @click="addSchemaDialog = false">{{ $t('btn.cancel') }}</el-button>
+        <el-button type="primary" @click="addSchema">{{ $t('btn.submit') }}</el-button>
+      </span>
+    </el-dialog>
   </div>
 </template>
 <script>
@@ -67,8 +96,11 @@ export default {
     return {
       treeData: [],
       textarea: ``,
+      rueleConfigTextArea: ``,
+      dataSourceConfigTextArea: ``,
       schemaData: [],
       centerDialogVisible: false,
+      addSchemaDialog: false,
       type: null,
       sname: '',
       scname: ''
@@ -97,6 +129,9 @@ export default {
     this.getSchema()
   },
   methods: {
+    add() {
+      this.addSchemaDialog = true
+    },
     handlerClick(parent, child) {
       if (child === 'rule') {
         API.getSchemaRule(parent).then(res => {
@@ -165,6 +200,9 @@ export default {
           type: 'error'
         })
       }
+    },
+    addSchema() {
+      console.log('add schema')
     }
   }
 }
@@ -201,6 +239,9 @@ export default {
       float: right;
     }
   }
+  .el-row {
+    margin-bottom: 20px;
+  }
   .el-collapse-item__header {
     font-size: 16px;
   }
@@ -223,6 +264,16 @@ export default {
     display: inline-block;
     float: right;
     cursor: pointer;
+  }
+  .el-dialog__body {
+    padding: 10px 20px
+  }
+  .el-input {
+    width: 30%;
+  }
+  .el-input__inner {
+    height: 35px;
+    line-height: 35px;
   }
 }
 </style>
