@@ -18,6 +18,7 @@
 package io.shardingsphere.shardingui.servcie.impl;
 
 import com.google.common.base.Preconditions;
+import com.google.common.base.Strings;
 import io.shardingsphere.api.config.rule.RuleConfiguration;
 import io.shardingsphere.core.config.DataSourceConfiguration;
 import io.shardingsphere.orchestration.yaml.ConfigurationYamlConverter;
@@ -108,6 +109,7 @@ public final class ShardingSchemaServiceImpl implements ShardingSchemaService {
     }
     
     private void checkSchemaName(final String schemaName, final Collection<String> existedSchemaNames) {
+        Preconditions.checkArgument(!Strings.isNullOrEmpty(schemaName), "schema name is invalid.");
         Preconditions.checkArgument(!existedSchemaNames.contains(schemaName), "schema name already exists.");
     }
     

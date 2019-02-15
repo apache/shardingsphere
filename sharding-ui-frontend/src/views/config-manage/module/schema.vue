@@ -50,11 +50,40 @@
         <el-button type="primary" @click="onConfirm">{{ $t('btn.submit') }}</el-button>
       </span>
     </el-dialog>
-    <el-dialog :visible.sync="addSchemaDialog" title="Add Schema" width="80%" top="3vh">
-      <el-row>
+    <el-dialog :visible.sync="addSchemaDialogVisible" title="Add Schema" width="80%" top="3vh">
+      <el-form ref="form" :model="form" :rules="rules" label-width="150px">
+        <el-form-item label="name" prop="name">
+          <el-input v-model="form.name" autocomplete="off"/>
+        </el-form-item>
+        <el-form-item label="ruleConfig" prop="ruleConfig">
+          <el-input
+            :rows="8"
+            v-model="form.ruleConfig"
+            autocomplete="off"
+            type="textarea"
+            class="edit-text"
+          />
+        </el-form-item>
+        <el-form-item label="dataSourceConfig" prop="dataSourceConfig">
+          <el-input
+            :rows="8"
+            v-model="form.dataSourceConfig"
+            autocomplete="off"
+            type="textarea"
+            class="edit-text"
+          />
+        </el-form-item>
+      </el-form>
+      <div slot="footer" class="dialog-footer">
+        <el-button @click="addSchemaDialogVisible = false">{{ $t('btn.cancel') }}</el-button>
+        <el-button type="primary" @click="addSchema('form')">{{ $t('btn.submit') }}</el-button>
+      </div>
+      <!-- <el-row>
         <el-col>
           <span style="font-size: 14px; color: #4a4a4a; font-weight: bold;">schema name:</span>
-          <el-input class="width: 30%"/>
+          <el-input
+            v-model="schemaName"
+            class="width: 30%"/>
         </el-col>
       </el-row>
       <el-row :gutter="20">
@@ -80,9 +109,9 @@
         </el-col>
       </el-row>
       <span slot="footer" class="dialog-footer">
-        <el-button @click="addSchemaDialog = false">{{ $t('btn.cancel') }}</el-button>
+        <el-button @click="addSchemaDialogVisible = false">{{ $t('btn.cancel') }}</el-button>
         <el-button type="primary" @click="addSchema">{{ $t('btn.submit') }}</el-button>
-      </span>
+      </span> -->
     </el-dialog>
   </div>
 </template>
@@ -96,14 +125,43 @@ export default {
     return {
       treeData: [],
       textarea: ``,
-      rueleConfigTextArea: ``,
-      dataSourceConfigTextArea: ``,
       schemaData: [],
       centerDialogVisible: false,
-      addSchemaDialog: false,
       type: null,
       sname: '',
-      scname: ''
+      scname: '',
+      addSchemaDialogVisible: false,
+      schemaName: ``,
+      rueleConfigTextArea: ``,
+      dataSourceConfigTextArea: ``,
+      form: {
+        name: '',
+        ruleConfig: '',
+        dataSourceConfig: ''
+      },
+      rules: {
+        name: [
+          {
+            required: true,
+            message: this.$t('configManage').schemaRules.name,
+            trigger: 'change'
+          }
+        ],
+        ruleConfig: [
+          {
+            required: true,
+            message: this.$t('configManage').schemaRules.ruleConfig,
+            trigger: 'change'
+          }
+        ],
+        dataSourceConfig: [
+          {
+            required: true,
+            message: this.$t('configManage').schemaRules.dataSourceConfig,
+            trigger: 'change'
+          }
+        ]
+      }
     }
   },
   computed: {
@@ -130,7 +188,7 @@ export default {
   },
   methods: {
     add() {
-      this.addSchemaDialog = true
+      this.addSchemaDialogVisible = true
     },
     handlerClick(parent, child) {
       if (child === 'rule') {
@@ -185,7 +243,7 @@ export default {
         })
       }
     },
-    _onConfirm(res) {
+    _onConfirm(res, type) {
       if (res.success) {
         this.$notify({
           title: this.$t('common').notify.title,
@@ -193,6 +251,10 @@ export default {
           type: 'success'
         })
         this.centerDialogVisible = false
+        if (type === 'ADD_SCHEMA') {
+          this.addSchemaDialogVisible = false
+          this.getSchema()
+        }
       } else {
         this.$notify({
           title: this.$t('common').notify.title,
@@ -201,8 +263,21 @@ export default {
         })
       }
     },
-    addSchema() {
-      console.log('add schema')
+    addSchema(form) {
+      this.$refs[form].validate(valid => {
+        if (valid) {
+          API.addSchema({
+            name: this.form.name,
+            ruleConfiguration: this.form.ruleConfig,
+            dataSourceConfiguration: this.form.dataSourceConfig
+          }).then(res => {
+            this._onConfirm(res, 'ADD_SCHEMA')
+          })
+        } else {
+          console.log('error submit!!')
+          return false
+        }
+      })
     }
   }
 }
