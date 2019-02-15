@@ -323,6 +323,17 @@ public final class SQLRewriteEngine {
         return result.get(getEncryptColumnTokenIndex(encryptColumnToken));
     }
     
+    private int getEncryptColumnTokenIndex(final EncryptColumnToken encryptColumnToken) {
+        List<SQLToken> result = new ArrayList<>(Collections2.filter(sqlTokens, new Predicate<SQLToken>() {
+            
+            @Override
+            public boolean apply(final SQLToken input) {
+                return input instanceof EncryptColumnToken && ((EncryptColumnToken) input).getColumn().equals( encryptColumnToken.getColumn());
+            }
+        }));
+        return result.indexOf(encryptColumnToken);
+    }
+    
     private List<Comparable<?>> getEncryptColumnValues(final EncryptColumnToken encryptColumnToken, final List<Comparable<?>> columnValues) {
         final ShardingEncryptor shardingEncryptor = shardingRule.getShardingEncryptorEngine().getShardingEncryptor(encryptColumnToken.getColumn().getTableName(), encryptColumnToken.getColumn().getName()).get();
         if (shardingEncryptor instanceof ShardingQueryAssistedEncryptor) {
@@ -422,16 +433,6 @@ public final class SQLRewriteEngine {
             return assistedColumnName.get();
         }
         return encryptColumnToken.getColumn().getName();
-    }
-    
-    private int getEncryptColumnTokenIndex(final EncryptColumnToken encryptColumnToken) {
-        List<SQLToken> encryptColumnTokens = new ArrayList<>(Collections2.filter(sqlTokens, new Predicate<SQLToken>() {
-            @Override
-            public boolean apply(final SQLToken input) {
-                return input instanceof EncryptColumnToken && ((EncryptColumnToken) input).getColumn().equals( encryptColumnToken.getColumn());
-            }
-        }));
-       return encryptColumnTokens.indexOf(encryptColumnToken);
     }
     
     private void appendRest(final SQLBuilder sqlBuilder, final int count, final int beginPosition) {
