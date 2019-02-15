@@ -17,7 +17,6 @@
 
 package org.apache.shardingsphere.core.encrypt.impl;
 
-import org.apache.shardingsphere.core.exception.ShardingConfigurationException;
 import org.junit.Before;
 import org.junit.Test;
 
@@ -47,7 +46,7 @@ public final class AESShardingEncryptorTest {
         assertThat(encryptor.encrypt("test").toString(), is("dSpPiyENQGDUXMKFMJPGWA=="));
     }
     
-    @Test(expected = ShardingConfigurationException.class)
+    @Test(expected = IllegalArgumentException.class)
     public void assertEncodeWithoutKey() {
         Properties properties = new Properties();
         encryptor.setProperties(properties);
@@ -59,7 +58,7 @@ public final class AESShardingEncryptorTest {
         assertThat(encryptor.decrypt("dSpPiyENQGDUXMKFMJPGWA==").toString(), is("test"));
     }
     
-    @Test(expected = ShardingConfigurationException.class)
+    @Test(expected = IllegalArgumentException.class)
     public void assertDecodeWithoutKey() {
         Properties properties = new Properties();
         encryptor.setProperties(properties);
