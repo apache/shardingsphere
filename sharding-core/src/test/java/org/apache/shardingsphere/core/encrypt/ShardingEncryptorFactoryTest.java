@@ -19,6 +19,7 @@ package org.apache.shardingsphere.core.encrypt;
 
 import org.apache.shardingsphere.core.encrypt.impl.AESShardingEncryptor;
 import org.apache.shardingsphere.core.encrypt.impl.MD5ShardingEncryptor;
+import org.apache.shardingsphere.core.fixture.TestShardingEncryptor;
 import org.junit.Test;
 
 import java.util.Properties;
@@ -40,6 +41,6 @@ public final class ShardingEncryptorFactoryTest {
     
     @Test
     public void assertNewDefaultEncryptor() {
-        assertThat(ShardingEncryptorFactory.getInstance().newAlgorithm(), instanceOf(MD5ShardingEncryptor.class));
+        assertThat(ShardingEncryptorFactory.getInstance().newAlgorithm(), instanceOf(TestShardingEncryptor.class));
     }
 }

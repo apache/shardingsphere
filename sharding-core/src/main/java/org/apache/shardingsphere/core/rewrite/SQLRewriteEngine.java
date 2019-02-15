@@ -17,20 +17,32 @@
 
 package org.apache.shardingsphere.core.rewrite;
 
+import com.google.common.base.Function;
 import com.google.common.base.Optional;
 import com.google.common.base.Predicate;
 import com.google.common.base.Strings;
+import com.google.common.collect.Collections2;
 import com.google.common.collect.Iterators;
+import com.google.common.collect.Lists;
 import org.apache.shardingsphere.core.constant.DatabaseType;
+import org.apache.shardingsphere.core.constant.ShardingOperator;
+import org.apache.shardingsphere.core.exception.ShardingException;
 import org.apache.shardingsphere.core.metadata.datasource.ShardingDataSourceMetaData;
 import org.apache.shardingsphere.core.optimizer.condition.ShardingConditions;
 import org.apache.shardingsphere.core.parsing.lexer.token.DefaultKeyword;
+import org.apache.shardingsphere.core.parsing.parser.context.condition.Condition;
 import org.apache.shardingsphere.core.parsing.parser.context.limit.Limit;
 import org.apache.shardingsphere.core.parsing.parser.context.orderby.OrderItem;
+import org.apache.shardingsphere.core.parsing.parser.expression.SQLExpression;
+import org.apache.shardingsphere.core.parsing.parser.expression.SQLNumberExpression;
+import org.apache.shardingsphere.core.parsing.parser.expression.SQLPlaceholderExpression;
+import org.apache.shardingsphere.core.parsing.parser.expression.SQLTextExpression;
 import org.apache.shardingsphere.core.parsing.parser.sql.SQLStatement;
+import org.apache.shardingsphere.core.parsing.parser.sql.dml.DMLStatement;
 import org.apache.shardingsphere.core.parsing.parser.sql.dml.insert.InsertStatement;
 import org.apache.shardingsphere.core.parsing.parser.sql.dql.select.SelectStatement;
 import org.apache.shardingsphere.core.parsing.parser.token.AggregationDistinctToken;
+import org.apache.shardingsphere.core.parsing.parser.token.EncryptColumnToken;
 import org.apache.shardingsphere.core.parsing.parser.token.IndexToken;
 import org.apache.shardingsphere.core.parsing.parser.token.InsertColumnToken;
 import org.apache.shardingsphere.core.parsing.parser.token.InsertValuesToken;
@@ -43,6 +55,7 @@ import org.apache.shardingsphere.core.parsing.parser.token.SQLToken;
 import org.apache.shardingsphere.core.parsing.parser.token.SchemaToken;
 import org.apache.shardingsphere.core.parsing.parser.token.TableToken;
 import org.apache.shardingsphere.core.rewrite.placeholder.AggregationDistinctPlaceholder;
+import org.apache.shardingsphere.core.rewrite.placeholder.EncryptColumnPlaceholder;
 import org.apache.shardingsphere.core.rewrite.placeholder.IndexPlaceholder;
 import org.apache.shardingsphere.core.rewrite.placeholder.InsertValuesPlaceholder;
 import org.apache.shardingsphere.core.rewrite.placeholder.SchemaPlaceholder;
@@ -54,11 +67,19 @@ import org.apache.shardingsphere.core.rule.BindingTableRule;
 import org.apache.shardingsphere.core.rule.ShardingRule;
 import org.apache.shardingsphere.core.spi.hook.SPIRewriteHook;
 import org.apache.shardingsphere.core.util.SQLUtil;
+import org.apache.shardingsphere.spi.algorithm.encrypt.ShardingEncryptor;
+import org.apache.shardingsphere.spi.algorithm.encrypt.ShardingQueryAssistedEncryptor;
 import org.apache.shardingsphere.spi.hook.RewriteHook;
 
+import java.util.ArrayList;
+import java.util.Collection;
+import java.util.Collections;
 import java.util.HashMap;
+import java.util.LinkedHashMap;
+import java.util.LinkedList;
 import java.util.List;
 import java.util.Map;
+import java.util.Map.Entry;
 
 /**
  * SQL rewrite engine.
@@ -177,6 +198,8 @@ public final class SQLRewriteEngine {
                 appendSymbolToken(sqlBuilder, (InsertColumnToken) each, count);
             } else if (each instanceof AggregationDistinctToken) {
                 appendAggregationDistinctPlaceholder(sqlBuilder, (AggregationDistinctToken) each, count, isRewrite);
+            } else if (each instanceof EncryptColumnToken) {
+                appendEncryptColumnPlaceholder(sqlBuilder, (EncryptColumnToken) each, count);
             } else if (each instanceof RemoveToken) {
                 appendRest(sqlBuilder, count, ((RemoveToken) each).getStopIndex());
             }
@@ -279,6 +302,141 @@ public final class SQLRewriteEngine {
             sqlBuilder.appendPlaceholder(new AggregationDistinctPlaceholder(distinctToken.getColumnName().toLowerCase(), null, distinctToken.getAlias()));
         }
         appendRest(sqlBuilder, count, distinctToken.getStopIndex() + 1);
+    }
+    
+    private void appendEncryptColumnPlaceholder(final SQLBuilder sqlBuilder, final EncryptColumnToken encryptColumnToken, final int count) {
+        Condition encryptCondition = getEncryptCondition(encryptColumnToken);
+        List<Comparable<?>> encryptColumnValues = getEncryptColumnValues(encryptColumnToken, getOriginalColumnValues(encryptColumnToken, encryptCondition));
+        encryptParameters(getPositionIndexes(encryptColumnToken, encryptCondition), encryptColumnValues);
+        sqlBuilder.appendPlaceholder(new EncryptColumnPlaceholder(encryptColumnToken.getColumn().getTableName(), 
+                getEncryptColumnName(encryptColumnToken), getPositionValues(getValuePositions(encryptColumnToken, encryptCondition), encryptColumnValues), 
+                getPlaceholderPositions(encryptColumnToken, encryptCondition), getShardingOperator(encryptColumnToken, encryptCondition)));
+        appendRest(sqlBuilder, count, encryptColumnToken.getStopIndex() + 1);
+    }
+    
+    private Condition getEncryptCondition(final EncryptColumnToken encryptColumnToken) {
+        List<Condition> result = sqlStatement.getEncryptConditions().getOrCondition().findConditions(encryptColumnToken.getColumn());
+        if (0 == result.size()) {
+            throw new ShardingException("Can not find encrypt condition");
+        }
+        if (1 == result.size()) {
+            return result.iterator().next();
+        }
+        return result.get(getEncryptColumnTokenIndex(encryptColumnToken));
+    }
+    
+    private int getEncryptColumnTokenIndex(final EncryptColumnToken encryptColumnToken) {
+        List<SQLToken> result = new ArrayList<>(Collections2.filter(sqlTokens, new Predicate<SQLToken>() {
+            
+            @Override
+            public boolean apply(final SQLToken input) {
+                return input instanceof EncryptColumnToken && ((EncryptColumnToken) input).getColumn().equals(encryptColumnToken.getColumn());
+            }
+        }));
+        return result.indexOf(encryptColumnToken);
+    }
+    
+    private List<Comparable<?>> getOriginalColumnValues(final EncryptColumnToken encryptColumnToken, final Condition encryptCondition) {
+        if (encryptColumnToken.isInWhere()) {
+            return encryptCondition.getConditionValues(parameters);
+        }
+        List<Comparable<?>> result = new LinkedList<>();
+        SQLExpression sqlExpression = ((DMLStatement) sqlStatement).getUpdateColumnValues().get(encryptColumnToken.getColumn());
+        if (sqlExpression instanceof SQLPlaceholderExpression) {
+            result.add(parameters.get(((SQLPlaceholderExpression) sqlExpression).getIndex()).toString());
+        } else if (sqlExpression instanceof SQLTextExpression) {
+            result.add(((SQLTextExpression) sqlExpression).getText());
+        } else if (sqlExpression instanceof SQLNumberExpression) {
+            result.add((Comparable) ((SQLNumberExpression) sqlExpression).getNumber());
+        }
+        return result;
+    }
+    
+    private List<Comparable<?>> getEncryptColumnValues(final EncryptColumnToken encryptColumnToken, final List<Comparable<?>> originalColumnValues) {
+        final ShardingEncryptor shardingEncryptor = shardingRule.getShardingEncryptorEngine().getShardingEncryptor(encryptColumnToken.getColumn().getTableName(), 
+                encryptColumnToken.getColumn().getName()).get();
+        if (shardingEncryptor instanceof ShardingQueryAssistedEncryptor) {
+            return Lists.transform(originalColumnValues, new Function<Comparable<?>, Comparable<?>>() {
+                
+                @Override
+                public Comparable<?> apply(final Comparable<?> input) {
+                    return ((ShardingQueryAssistedEncryptor) shardingEncryptor).queryAssistedEncrypt(input.toString());
+                }
+            });
+        }
+        return Lists.transform(originalColumnValues, new Function<Comparable<?>, Comparable<?>>() {
+            
+            @Override
+            public Comparable<?> apply(final Comparable<?> input) {
+                return String.valueOf(shardingEncryptor.encrypt(input.toString()));
+            }
+        });
+    }
+    
+    private Map<Integer, Integer> getPositionIndexes(final EncryptColumnToken encryptColumnToken, final Condition encryptCondition) {
+        if (encryptColumnToken.isInWhere()) {
+            return encryptCondition.getPositionIndexMap();
+        }
+        SQLExpression sqlExpression = ((DMLStatement) sqlStatement).getUpdateColumnValues().get(encryptColumnToken.getColumn());
+        if (sqlExpression instanceof SQLPlaceholderExpression) {
+            return Collections.singletonMap(0, ((SQLPlaceholderExpression) sqlExpression).getIndex());
+        }
+        return new LinkedHashMap<>();
+    }
+    
+    private void encryptParameters(final Map<Integer, Integer> positionIndexes, final List<Comparable<?>> encryptColumnValues) {
+        if (!positionIndexes.isEmpty()) {
+            for (Entry<Integer, Integer> entry : positionIndexes.entrySet()) {
+                parameters.set(entry.getValue(), encryptColumnValues.get(entry.getKey()));
+            }
+        }
+    }
+    
+    private String getEncryptColumnName(final EncryptColumnToken encryptColumnToken) {
+        ShardingEncryptor shardingEncryptor = shardingRule.getShardingEncryptorEngine().getShardingEncryptor(encryptColumnToken.getColumn().getTableName(), 
+                encryptColumnToken.getColumn().getName()).get();
+        if (shardingEncryptor instanceof ShardingQueryAssistedEncryptor) {
+            Optional<String> result = shardingRule.getTableRule(encryptColumnToken.getColumn().getTableName()).getShardingEncryptorStrategy().getAssistedQueryColumn(encryptColumnToken.getColumn().getName());
+            if (!result.isPresent()) {
+                throw new ShardingException("Can not find the assistedColumn of %s", encryptColumnToken.getColumn().getName());
+            }
+            return result.get();
+        }
+        return encryptColumnToken.getColumn().getName();
+    }
+    
+    private Collection<Integer> getValuePositions(final EncryptColumnToken encryptColumnToken, final Condition encryptCondition) {
+        if (encryptColumnToken.isInWhere()) {
+            return encryptCondition.getPositionValueMap().keySet();
+        }
+        return Collections.singletonList(0);
+    }
+    
+    private Map<Integer, Comparable<?>> getPositionValues(final Collection<Integer> valuePositions, final List<Comparable<?>> encryptColumnValues) {
+        Map<Integer, Comparable<?>> result = new LinkedHashMap<>();
+        for (int each : valuePositions) {
+            result.put(each, encryptColumnValues.get(each));
+        }
+        return result;
+    }
+    
+    private Collection<Integer> getPlaceholderPositions(final EncryptColumnToken encryptColumnToken, final Condition encryptCondition) {
+        if (encryptColumnToken.isInWhere()) {
+            return encryptCondition.getPositionIndexMap().keySet();
+        }
+        Collection<Integer> result = new LinkedList<>();
+        SQLExpression sqlExpression = ((DMLStatement) sqlStatement).getUpdateColumnValues().get(encryptColumnToken.getColumn());
+        if (sqlExpression instanceof SQLPlaceholderExpression) {
+            result.add(((SQLPlaceholderExpression) sqlExpression).getIndex());
+        }
+        return result;
+    }
+    
+    private ShardingOperator getShardingOperator(final EncryptColumnToken encryptColumnToken, final Condition encryptCondition) {
+        if (encryptColumnToken.isInWhere()) {
+            return encryptCondition.getOperator();
+        }
+        return ShardingOperator.EQUAL;
     }
     
     private void appendRest(final SQLBuilder sqlBuilder, final int count, final int beginPosition) {

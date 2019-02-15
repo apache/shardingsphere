@@ -15,30 +15,37 @@
  * limitations under the License.
  */
 
-package org.apache.shardingsphere.core.parsing.parser.context.condition;
+package org.apache.shardingsphere.core.fixture;
 
 import lombok.Getter;
-import lombok.ToString;
+import lombok.Setter;
+import org.apache.shardingsphere.spi.algorithm.encrypt.ShardingEncryptor;
+
+import java.util.Properties;
 
 /**
- * Conditions collection.
+ * Test sharding encryptor.
  *
- * @author zhangliang
- * @author maxiaoguang
+ * @author panjuan
  */
 @Getter
-@ToString
-public final class Conditions {
+@Setter
+public final class TestShardingEncryptor implements ShardingEncryptor {
     
-    private final OrCondition orCondition = new OrCondition();
+    private Properties properties = new Properties();
     
-    /**
-     * Add condition.
-     *
-     * @param condition condition
-     */
-    public void add(final Condition condition) {
-        // TODO self-join has problem, table name maybe use alias
-        orCondition.add(condition);
+    @Override
+    public String getType() {
+        return "test";
+    }
+    
+    @Override
+    public Object encrypt(final Object plaintext) {
+        return "encryptValue";
+    }
+    
+    @Override
+    public Object decrypt(final Object ciphertext) {
+        return "decryptValue";
     }
 }

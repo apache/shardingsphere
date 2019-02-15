@@ -25,14 +25,21 @@ import org.apache.shardingsphere.core.metadata.datasource.ShardingDataSourceMeta
 import org.apache.shardingsphere.core.optimizer.condition.ShardingCondition;
 import org.apache.shardingsphere.core.optimizer.condition.ShardingConditions;
 import org.apache.shardingsphere.core.optimizer.insert.InsertShardingCondition;
+import org.apache.shardingsphere.core.parsing.parser.context.condition.AndCondition;
+import org.apache.shardingsphere.core.parsing.parser.context.condition.Column;
+import org.apache.shardingsphere.core.parsing.parser.context.condition.Condition;
 import org.apache.shardingsphere.core.parsing.parser.context.limit.Limit;
 import org.apache.shardingsphere.core.parsing.parser.context.limit.LimitValue;
 import org.apache.shardingsphere.core.parsing.parser.context.orderby.OrderItem;
 import org.apache.shardingsphere.core.parsing.parser.context.table.Table;
+import org.apache.shardingsphere.core.parsing.parser.expression.SQLExpression;
+import org.apache.shardingsphere.core.parsing.parser.expression.SQLNumberExpression;
+import org.apache.shardingsphere.core.parsing.parser.expression.SQLPlaceholderExpression;
 import org.apache.shardingsphere.core.parsing.parser.sql.dal.DALStatement;
 import org.apache.shardingsphere.core.parsing.parser.sql.dml.DMLStatement;
 import org.apache.shardingsphere.core.parsing.parser.sql.dml.insert.InsertStatement;
 import org.apache.shardingsphere.core.parsing.parser.sql.dql.select.SelectStatement;
+import org.apache.shardingsphere.core.parsing.parser.token.EncryptColumnToken;
 import org.apache.shardingsphere.core.parsing.parser.token.IndexToken;
 import org.apache.shardingsphere.core.parsing.parser.token.InsertColumnToken;
 import org.apache.shardingsphere.core.parsing.parser.token.InsertValuesToken;
@@ -63,6 +70,7 @@ import java.util.Arrays;
 import java.util.Collections;
 import java.util.HashMap;
 import java.util.LinkedHashMap;
+import java.util.LinkedList;
 import java.util.List;
 import java.util.Map;
 import java.util.Map.Entry;
@@ -564,5 +572,140 @@ public final class SQLRewriteEngineTest {
         dmlStatement.addSQLToken(new TableToken(12, "`sharding_db`".length() + 1, "table_x", "`", "`"));
         SQLRewriteEngine rewriteEngine = new SQLRewriteEngine(shardingRule, "DELETE FROM `sharding_db`.`table_x` WHERE user_id=1", DatabaseType.MySQL, dmlStatement, null, Collections.emptyList());
         assertThat(rewriteEngine.rewrite(true).toSQL(null, tableTokens, shardingRule, shardingDataSourceMetaData).getSql(), is("DELETE FROM `table_1` WHERE user_id=1"));
+    }
+    
+    @Test
+    public void assertSelectEqualWithShardingEncryptor() {
+        List<Object> parameters = new ArrayList<>(2);
+        parameters.add(1);
+        parameters.add("x");
+        Column column = new Column("id", "table_z");
+        selectStatement.addSQLToken(new TableToken(15, 0, "table_z", "", ""));
+        selectStatement.addSQLToken(new EncryptColumnToken(29, 32, column, true));
+        selectStatement.getEncryptConditions().getOrCondition().getAndConditions().add(new AndCondition());
+        selectStatement.getEncryptConditions().getOrCondition().getAndConditions().get(0).getConditions().add(new Condition(column, new SQLPlaceholderExpression(0)));
+        SQLRewriteEngine rewriteEngine = new SQLRewriteEngine(shardingRule,
+                "SELECT id FROM table_z WHERE id=? AND name=?", DatabaseType.MySQL, selectStatement, null, parameters);
+        assertThat(rewriteEngine.rewrite(false).toSQL(null, tableTokens, shardingRule, shardingDataSourceMetaData).getSql(), is("SELECT id FROM table_z WHERE id = ? AND name=?"));
+        assertThat(parameters.get(0), is((Object) "encryptValue"));
+    }
+    
+    @Test
+    public void assertSelectBetweenWithShardingEncryptor() {
+        Column column = new Column("id", "table_z");
+        selectStatement.addSQLToken(new TableToken(15, 0, "table_z", "", ""));
+        selectStatement.addSQLToken(new EncryptColumnToken(29, 46, column, true));
+        selectStatement.getEncryptConditions().getOrCondition().getAndConditions().add(new AndCondition());
+        selectStatement.getEncryptConditions().getOrCondition().getAndConditions().get(0).getConditions().add(new Condition(column, new SQLNumberExpression(3), new SQLNumberExpression(5)));
+        SQLRewriteEngine rewriteEngine = new SQLRewriteEngine(shardingRule,
+                "SELECT id FROM table_z WHERE id between 3 and 5", DatabaseType.MySQL, selectStatement, null, new LinkedList<>());
+        assertThat(rewriteEngine.rewrite(false).toSQL(null, tableTokens, shardingRule, shardingDataSourceMetaData).getSql(), 
+                is("SELECT id FROM table_z WHERE id BETWEEN \"encryptValue\" AND \"encryptValue\""));
+    }
+    
+    @Test
+    public void assertSelectInWithShardingEncryptor() {
+        Column column = new Column("id", "table_z");
+        selectStatement.addSQLToken(new TableToken(15, 0, "table_z", "", ""));
+        selectStatement.addSQLToken(new EncryptColumnToken(29, 39, column, true));
+        selectStatement.getEncryptConditions().getOrCondition().getAndConditions().add(new AndCondition());
+        List<SQLExpression> sqlExpressions = new LinkedList<>();
+        sqlExpressions.add(new SQLNumberExpression(3));
+        sqlExpressions.add(new SQLNumberExpression(5));
+        selectStatement.getEncryptConditions().getOrCondition().getAndConditions().get(0).getConditions().add(new Condition(column, sqlExpressions));
+        SQLRewriteEngine rewriteEngine = new SQLRewriteEngine(shardingRule,
+                "SELECT id FROM table_z WHERE id in (3,5)", DatabaseType.MySQL, selectStatement, null, new LinkedList<>());
+        assertThat(rewriteEngine.rewrite(false).toSQL(null, tableTokens, shardingRule, shardingDataSourceMetaData).getSql(), 
+                is("SELECT id FROM table_z WHERE id IN (\"encryptValue\", \"encryptValue\")"));
+    }
+    
+    @Test
+    public void assertSelectInWithShardingEncryptorWithParameter() {
+        List<Object> parameters = new ArrayList<>(2);
+        parameters.add(1);
+        parameters.add(2);
+        Column column = new Column("id", "table_z");
+        selectStatement.addSQLToken(new TableToken(15, 0, "table_z", "", ""));
+        selectStatement.addSQLToken(new EncryptColumnToken(29, 40, column, true));
+        selectStatement.addSQLToken(new EncryptColumnToken(45, 50, column, true));
+        selectStatement.getEncryptConditions().getOrCondition().getAndConditions().add(new AndCondition());
+        selectStatement.getEncryptConditions().getOrCondition().getAndConditions().add(new AndCondition());
+        List<SQLExpression> sqlExpressions = new LinkedList<>();
+        sqlExpressions.add(new SQLPlaceholderExpression(0));
+        sqlExpressions.add(new SQLPlaceholderExpression(1));
+        selectStatement.getEncryptConditions().getOrCondition().getAndConditions().get(0).getConditions().add(new Condition(column, sqlExpressions));
+        selectStatement.getEncryptConditions().getOrCondition().getAndConditions().get(1).getConditions().add(new Condition(column, new SQLNumberExpression(3)));
+        SQLRewriteEngine rewriteEngine = new SQLRewriteEngine(shardingRule,
+                "SELECT id FROM table_z WHERE id in (?, ?) or id = 3", DatabaseType.MySQL, selectStatement, null, parameters);
+        assertThat(rewriteEngine.rewrite(false).toSQL(null, tableTokens, shardingRule, shardingDataSourceMetaData).getSql(), is("SELECT id FROM table_z WHERE id IN (?, ?) or id = \"encryptValue\""));
+        assertThat(parameters.get(0), is((Object) "encryptValue"));
+        assertThat(parameters.get(1), is((Object) "encryptValue"));
+    }
+    
+    @Test
+    public void assertSelectEqualWithQueryAssistedShardingEncryptor() {
+        List<Object> parameters = new ArrayList<>(2);
+        parameters.add(1);
+        parameters.add("k");
+        Column column = new Column("id", "table_k");
+        selectStatement.addSQLToken(new TableToken(15, 0, "table_k", "", ""));
+        selectStatement.addSQLToken(new EncryptColumnToken(29, 32, column, true));
+        selectStatement.getEncryptConditions().getOrCondition().getAndConditions().add(new AndCondition());
+        selectStatement.getEncryptConditions().getOrCondition().getAndConditions().get(0).getConditions().add(new Condition(column, new SQLPlaceholderExpression(0)));
+        SQLRewriteEngine rewriteEngine = new SQLRewriteEngine(shardingRule,
+                "SELECT id FROM table_k WHERE id=? AND name=?", DatabaseType.MySQL, selectStatement, null, parameters);
+        assertThat(rewriteEngine.rewrite(false).toSQL(null, tableTokens, shardingRule, shardingDataSourceMetaData).getSql(), is("SELECT id FROM table_k WHERE query_id = ? AND name=?"));
+        assertThat(parameters.get(0), is((Object) "assistedEncryptValue"));
+    }
+    
+    @Test
+    public void assertSelectInWithQueryAssistedShardingEncryptor() {
+        Column column = new Column("id", "table_k");
+        selectStatement.addSQLToken(new TableToken(15, 0, "table_k", "", ""));
+        selectStatement.addSQLToken(new EncryptColumnToken(29, 39, column, true));
+        selectStatement.getEncryptConditions().getOrCondition().getAndConditions().add(new AndCondition());
+        List<SQLExpression> sqlExpressions = new LinkedList<>();
+        sqlExpressions.add(new SQLNumberExpression(3));
+        sqlExpressions.add(new SQLNumberExpression(5));
+        selectStatement.getEncryptConditions().getOrCondition().getAndConditions().get(0).getConditions().add(new Condition(column, sqlExpressions));
+        SQLRewriteEngine rewriteEngine = new SQLRewriteEngine(shardingRule,
+                "SELECT id FROM table_k WHERE id in (3,5)", DatabaseType.MySQL, selectStatement, null, new LinkedList<>());
+        assertThat(rewriteEngine.rewrite(false).toSQL(null, tableTokens, shardingRule, shardingDataSourceMetaData).getSql(), 
+                is("SELECT id FROM table_k WHERE query_id IN (\"assistedEncryptValue\", \"assistedEncryptValue\")"));
+    }
+    
+    @Test
+    public void assertUpdateWithShardingEncryptor() {
+        Column column = new Column("id", "table_z");
+        dmlStatement.addSQLToken(new TableToken(7, 0, "table_z", "", ""));
+        dmlStatement.addSQLToken(new EncryptColumnToken(19, 24, column, false));
+        dmlStatement.getUpdateColumnValues().put(column, new SQLNumberExpression(1));
+        dmlStatement.addSQLToken(new EncryptColumnToken(32, 37, column, true));
+        dmlStatement.getEncryptConditions().getOrCondition().getAndConditions().add(new AndCondition());
+        dmlStatement.getEncryptConditions().getOrCondition().getAndConditions().get(0).getConditions().add(new Condition(column, new SQLNumberExpression(2)));
+        SQLRewriteEngine rewriteEngine = new SQLRewriteEngine(shardingRule,
+                "UPDATE table_z SET id = 1 WHERE id = 2", DatabaseType.MySQL, dmlStatement, null, Collections.emptyList());
+        assertThat(rewriteEngine.rewrite(false).toSQL(null, tableTokens, shardingRule, shardingDataSourceMetaData).getSql(), 
+                is("UPDATE table_z SET id = \"encryptValue\" WHERE id = \"encryptValue\""));
+    }
+    
+    @Test
+    public void assertUpdateWithQueryAssistedShardingEncryptor() {
+        List<Object> parameters = new ArrayList<>(2);
+        parameters.add(1);
+        parameters.add(5);
+        Column column = new Column("id", "table_k");
+        dmlStatement.addSQLToken(new TableToken(7, 0, "table_k", "", ""));
+        dmlStatement.addSQLToken(new EncryptColumnToken(19, 24, column, false));
+        dmlStatement.getUpdateColumnValues().put(column, new SQLPlaceholderExpression(0));
+        dmlStatement.addSQLToken(new EncryptColumnToken(32, 49, column, true));
+        dmlStatement.getEncryptConditions().getOrCondition().getAndConditions().add(new AndCondition());
+        dmlStatement.getEncryptConditions().getOrCondition().getAndConditions().get(0).getConditions().add(new Condition(column, new SQLNumberExpression(3), new SQLPlaceholderExpression(1)));
+        SQLRewriteEngine rewriteEngine = new SQLRewriteEngine(shardingRule,
+                "UPDATE table_k SET id = ? WHERE id between 3 and ?", DatabaseType.MySQL, dmlStatement, null, parameters);
+        assertThat(rewriteEngine.rewrite(false).toSQL(null, tableTokens, shardingRule, shardingDataSourceMetaData).getSql(), 
+                is("UPDATE table_k SET query_id = ? WHERE query_id BETWEEN \"assistedEncryptValue\" AND ?"));
+        assertThat(parameters.get(0), is((Object) "assistedEncryptValue"));
+        assertThat(parameters.get(1), is((Object) "assistedEncryptValue"));
     }
 }

@@ -15,30 +15,42 @@
  * limitations under the License.
  */
 
-package org.apache.shardingsphere.core.parsing.parser.context.condition;
+package org.apache.shardingsphere.core.fixture;
 
 import lombok.Getter;
-import lombok.ToString;
+import lombok.Setter;
+import org.apache.shardingsphere.spi.algorithm.encrypt.ShardingQueryAssistedEncryptor;
+
+import java.util.Properties;
 
 /**
- * Conditions collection.
+ * Test query assisted sharding encryptor.
  *
- * @author zhangliang
- * @author maxiaoguang
+ * @author panjuan
  */
 @Getter
-@ToString
-public final class Conditions {
+@Setter
+public final class TestQueryAssistedShardingEncryptor implements ShardingQueryAssistedEncryptor {
     
-    private final OrCondition orCondition = new OrCondition();
+    private Properties properties = new Properties();
     
-    /**
-     * Add condition.
-     *
-     * @param condition condition
-     */
-    public void add(final Condition condition) {
-        // TODO self-join has problem, table name maybe use alias
-        orCondition.add(condition);
+    @Override
+    public String getType() {
+        return "assistedTest";
+    }
+    
+    @Override
+    public Object encrypt(final Object plaintext) {
+        return "encryptValue";
+    }
+    
+    @Override
+    public Object decrypt(final Object ciphertext) {
+        return "decryptValue";
+    }
+    
+    @Override
+    public String queryAssistedEncrypt(String plaintext) {
+        return "assistedEncryptValue";
     }
 }

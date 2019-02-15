@@ -109,10 +109,10 @@ public final class InsertOptimizeEngineTest {
         insertStatementWithValuesWithPlaceHolder.addSQLToken(new InsertValuesToken(39, "t_order"));
         AndCondition andCondition1 = new AndCondition();
         andCondition1.getConditions().add(new Condition(new Column("user_id", "t_order"), new SQLPlaceholderExpression(0)));
-        insertStatementWithValuesWithPlaceHolder.getConditions().getOrCondition().getAndConditions().add(andCondition1);
+        insertStatementWithValuesWithPlaceHolder.getRouteConditions().getOrCondition().getAndConditions().add(andCondition1);
         AndCondition andCondition2 = new AndCondition();
         andCondition2.getConditions().add(new Condition(new Column("user_id", "t_order"), new SQLPlaceholderExpression(2)));
-        insertStatementWithValuesWithPlaceHolder.getConditions().getOrCondition().getAndConditions().add(andCondition2);
+        insertStatementWithValuesWithPlaceHolder.getRouteConditions().getOrCondition().getAndConditions().add(andCondition2);
         insertStatementWithValuesWithPlaceHolder.getInsertValues().getInsertValues().add(new InsertValue(DefaultKeyword.VALUES, "(?, ?)", 2));
         insertStatementWithValuesWithPlaceHolder.getInsertValues().getInsertValues().add(new InsertValue(DefaultKeyword.VALUES, "(?, ?)", 2));
     }
@@ -129,7 +129,7 @@ public final class InsertOptimizeEngineTest {
         insertStatementWithValuesWithoutPlaceHolder.addSQLToken(itemsToken);
         AndCondition andCondition = new AndCondition();
         andCondition.getConditions().add(new Condition(new Column("user_id", "t_order"), new SQLNumberExpression(12)));
-        insertStatementWithValuesWithoutPlaceHolder.getConditions().getOrCondition().getAndConditions().add(andCondition);
+        insertStatementWithValuesWithoutPlaceHolder.getRouteConditions().getOrCondition().getAndConditions().add(andCondition);
         insertStatementWithValuesWithoutPlaceHolder.getInsertValues().getInsertValues().add(new InsertValue(DefaultKeyword.VALUES, "(12,'a')", 0));
     }
     
@@ -147,7 +147,7 @@ public final class InsertOptimizeEngineTest {
         insertStatementWithoutValuesWithPlaceHolder.getColumns().add(new Column("user_id", "t_order"));
         AndCondition andCondition = new AndCondition();
         andCondition.getConditions().add(new Condition(new Column("user_id", "t_order"), new SQLNumberExpression(12)));
-        insertStatementWithoutValuesWithPlaceHolder.getConditions().getOrCondition().getAndConditions().add(andCondition);
+        insertStatementWithoutValuesWithPlaceHolder.getRouteConditions().getOrCondition().getAndConditions().add(andCondition);
         insertStatementWithoutValuesWithPlaceHolder.getInsertValues().getInsertValues().add(new InsertValue(DefaultKeyword.SET, "user_id = ?, status = ?", 2));
     }
     
@@ -165,7 +165,7 @@ public final class InsertOptimizeEngineTest {
         insertStatementWithoutValuesWithoutPlaceHolder.getColumns().add(new Column("user_id", "t_order"));
         AndCondition andCondition = new AndCondition();
         andCondition.getConditions().add(new Condition(new Column("user_id", "t_order"), new SQLNumberExpression(12)));
-        insertStatementWithoutValuesWithoutPlaceHolder.getConditions().getOrCondition().getAndConditions().add(andCondition);
+        insertStatementWithoutValuesWithoutPlaceHolder.getRouteConditions().getOrCondition().getAndConditions().add(andCondition);
         insertStatementWithoutValuesWithoutPlaceHolder.getInsertValues().getInsertValues().add(new InsertValue(DefaultKeyword.SET, "user_id = 12, status = 'a'", 0));
     }
     

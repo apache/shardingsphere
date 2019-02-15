@@ -58,7 +58,7 @@ public final class InsertOptimizeEngine implements OptimizeEngine {
     
     @Override
     public ShardingConditions optimize() {
-        List<AndCondition> andConditions = insertStatement.getConditions().getOrCondition().getAndConditions();
+        List<AndCondition> andConditions = insertStatement.getRouteConditions().getOrCondition().getAndConditions();
         List<InsertValue> insertValues = insertStatement.getInsertValues().getInsertValues();
         List<ShardingCondition> result = new ArrayList<>(andConditions.size());
         Iterator<Comparable<?>> generatedKeys = createGeneratedKeys();

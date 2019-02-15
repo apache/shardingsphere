@@ -46,8 +46,22 @@ public final class AESShardingEncryptorTest {
         assertThat(encryptor.encrypt("test").toString(), is("dSpPiyENQGDUXMKFMJPGWA=="));
     }
     
+    @Test(expected = IllegalArgumentException.class)
+    public void assertEncodeWithoutKey() {
+        Properties properties = new Properties();
+        encryptor.setProperties(properties);
+        assertThat(encryptor.encrypt("test").toString(), is("dSpPiyENQGDUXMKFMJPGWA=="));
+    }
+    
     @Test
     public void assertDecode() {
+        assertThat(encryptor.decrypt("dSpPiyENQGDUXMKFMJPGWA==").toString(), is("test"));
+    }
+    
+    @Test(expected = IllegalArgumentException.class)
+    public void assertDecodeWithoutKey() {
+        Properties properties = new Properties();
+        encryptor.setProperties(properties);
         assertThat(encryptor.decrypt("dSpPiyENQGDUXMKFMJPGWA==").toString(), is("test"));
     }
     

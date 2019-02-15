@@ -15,30 +15,29 @@
  * limitations under the License.
  */
 
-package org.apache.shardingsphere.core.parsing.parser.context.condition;
+package org.apache.shardingsphere.core.parsing.parser.token;
 
 import lombok.Getter;
-import lombok.ToString;
+import org.apache.shardingsphere.core.parsing.parser.context.condition.Column;
 
 /**
- * Conditions collection.
+ * Encrypt column token.
  *
- * @author zhangliang
- * @author maxiaoguang
+ * @author panjuan
  */
 @Getter
-@ToString
-public final class Conditions {
+public final class EncryptColumnToken extends SQLToken {
     
-    private final OrCondition orCondition = new OrCondition();
+    private final int stopIndex;
     
-    /**
-     * Add condition.
-     *
-     * @param condition condition
-     */
-    public void add(final Condition condition) {
-        // TODO self-join has problem, table name maybe use alias
-        orCondition.add(condition);
+    private final Column column;
+    
+    private final boolean isInWhere;
+    
+    public EncryptColumnToken(final int startIndex, final int stopIndex, final Column column, final boolean isInWhere) {
+        super(startIndex);
+        this.stopIndex = stopIndex;
+        this.column = column;
+        this.isInWhere = isInWhere;
     }
 }

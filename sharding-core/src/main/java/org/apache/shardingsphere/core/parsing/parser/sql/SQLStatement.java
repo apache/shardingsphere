@@ -46,11 +46,18 @@ public interface SQLStatement {
     Tables getTables();
     
     /**
-     * Get conditions.
+     * Get route conditions.
      *
      * @return conditions
      */
-    Conditions getConditions();
+    Conditions getRouteConditions();
+    
+    /**
+     * Get encrypt conditions.
+     *
+     * @return conditions
+     */
+    Conditions getEncryptConditions();
     
     /**
      * Add SQL token.
