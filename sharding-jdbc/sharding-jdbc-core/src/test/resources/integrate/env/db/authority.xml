@@ -1,5 +1,5 @@
 <authority>
-    <sqlset db-types="Oracle,H2,SQLServer,PostgreSQL">
+    <sqlset db-types="Oracle,SQLServer,PostgreSQL">
         <user-create>
             <sql>CREATE ROLE role_dev</sql>
         </user-create>
@@ -45,7 +45,7 @@
             <sql>CREATE USER user_dev identified by passwd_dev</sql>
         </user-create>
     </sqlset>
-    <sqlset db-types="H2,PostgreSQL">
+    <sqlset db-types="PostgreSQL">
         <user-create>
             <sql>CREATE USER user_dev PASSWORD 'passwd_dev'</sql>
         </user-create>

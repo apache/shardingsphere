@@ -10,13 +10,25 @@
     </parser-result>
     <parser-result sql-case-id="revoke_role" />
     <parser-result sql-case-id="revoke_user_from" />
-    <parser-result sql-case-id="revoke_user_with_hostname_on_db">
+    <parser-result sql-case-id="revoke_user_with_hostname" />
+    <parser-result sql-case-id="revoke_user_with_hostname_on_db" />
+    <parser-result sql-case-id="revoke_user_with_hostname_on_table">
         <tables>
-            <table name="*" />
+            <table name="t_order" />
         </tables>
         <tokens>
-            <table-token start-index="25" table-name="*" />
+            <table-token start-index="25" table-name="t_order" />
         </tokens>
     </parser-result>
-    <parser-result sql-case-id="revoke_user_with_hostname" />
+    <parser-result sql-case-id="revoke_user_with_hostname_on_db_and_table">
+        <tables>
+            <table name="t_order" />
+        </tables>
+        <tokens>
+            <!--  TODO should be 37, because table name should start from real table name, not start from schema name. Need change ID definition of g4
+            <table-token start-index="37" table-name="t_order" />
+            -->
+            <table-token start-index="25" table-name="t_order" />
+        </tokens>
+    </parser-result>
 </parser-result-sets>

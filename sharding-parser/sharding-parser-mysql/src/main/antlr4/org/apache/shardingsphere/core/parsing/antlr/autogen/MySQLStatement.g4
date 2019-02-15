@@ -1,7 +1,6 @@
 grammar MySQLStatement;
 
-import MySQLKeyword, Keyword, MySQLComments, Symbol, MySQLDQLStatement, MySQLBase, MySQLDMLStatement, MySQLDDLStatement, MySQLTCLStatement, MySQLDCLStatement
-    ;
+import MySQLKeyword, Keyword, MySQLComments, Symbol, MySQLDQLStatement, MySQLBase, MySQLDMLStatement, MySQLDDLStatement, MySQLTCLStatement, MySQLDCLStatement;
 
 execute
     : (select
@@ -28,15 +27,12 @@ execute
     | revokeProxy
     | revokeRole
     | createUser
-    | alterUser
-    | alterCurrentUser
-    | alterUserRole
     | dropUser
+    | alterUser
     | renameUser
     | createRole
     | dropRole
-    | setPassword
-    | setDefaultRole
     | setRole
+    | setPassword
     )SEMI_? 
     ;
