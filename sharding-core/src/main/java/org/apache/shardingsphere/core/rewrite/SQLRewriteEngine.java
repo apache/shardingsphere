@@ -307,9 +307,20 @@ public final class SQLRewriteEngine {
     private void appendEncryptColumnPlaceholder(final SQLBuilder sqlBuilder, final EncryptColumnToken encryptColumnToken, final int count) {
         Condition encryptCondition = getEncryptCondition(encryptColumnToken);
         List<Comparable<?>> encryptColumnValues = getEncryptColumnValues(encryptColumnToken, getColumnValues(encryptColumnToken, encryptCondition));
-        encryptParameters(getPositionIndexes(encryptColumnToken), encryptColumnValues);
+        encryptParameters(getPositionIndexes(encryptColumnToken, encryptCondition), encryptColumnValues);
         sqlBuilder.appendPlaceholder(new EncryptColumnPlaceholder(encryptColumnToken.getColumn().getTableName(), getEncryptColumnName(encryptColumnToken), getPositionValues(getValuePositions(encryptColumnToken, encryptCondition), encryptColumnValues), getPlaceholderPositions(encryptColumnToken, encryptCondition), getShardingOperator(encryptColumnToken, encryptCondition)));
         appendRest(sqlBuilder, count, encryptColumnToken.getStopIndex() + 1);
+    }
+    
+    private Condition getEncryptCondition(final EncryptColumnToken encryptColumnToken) {
+        List<Condition> result = sqlStatement.getEncryptConditions().getOrCondition().findConditions(encryptColumnToken.getColumn());
+        if (0 == result.size()) {
+            throw new ShardingException("Can not find encrypt condition");
+        }
+        if (1 == result.size()) {
+            return result.iterator().next();
+        }
+        return result.get(getEncryptColumnTokenIndex(encryptColumnToken));
     }
     
     private List<Comparable<?>> getEncryptColumnValues(final EncryptColumnToken encryptColumnToken, final List<Comparable<?>> columnValues) {
@@ -332,9 +343,9 @@ public final class SQLRewriteEngine {
         });
     }
     
-    private Map<Integer, Integer> getPositionIndexes(final EncryptColumnToken encryptColumnToken) {
+    private Map<Integer, Integer> getPositionIndexes(final EncryptColumnToken encryptColumnToken, final Condition encryptCondition) {
         if (encryptColumnToken.isInWhere()) {
-            return getEncryptCondition(encryptColumnToken).getPositionIndexMap();
+            return encryptCondition.getPositionIndexMap();
         }
         SQLExpression sqlExpression = ((DMLStatement) sqlStatement).getUpdateColumnValues().get(encryptColumnToken.getColumn());
         if (sqlExpression instanceof SQLPlaceholderExpression) {
@@ -411,17 +422,6 @@ public final class SQLRewriteEngine {
             return assistedColumnName.get();
         }
         return encryptColumnToken.getColumn().getName();
-    }
-    
-    private Condition getEncryptCondition(final EncryptColumnToken encryptColumnToken) { 
-        Collection<Condition> conditions = sqlStatement.getEncryptConditions().getOrCondition().findConditions(encryptColumnToken.getColumn());
-        if (0 == conditions.size()) {
-            throw new ShardingException("Can not find encrypt condition");
-        }
-        if (1 == conditions.size()) {
-            return conditions.iterator().next();
-        }
-        return Lists.newArrayList(conditions.iterator()).get(getEncryptColumnTokenIndex(encryptColumnToken));
     }
     
     private int getEncryptColumnTokenIndex(final EncryptColumnToken encryptColumnToken) {
