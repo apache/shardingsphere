@@ -639,4 +639,19 @@ public final class SQLRewriteEngineTest {
         assertThat(parameters.get(0), is((Object) "encryptValue"));
         assertThat(parameters.get(1), is((Object) "encryptValue"));
     }
+    
+    @Test
+    public void assertSelectInWithQueryAssistedShardingEncryptor() {
+        Column column = new Column("id", "table_k");
+        selectStatement.addSQLToken(new TableToken(15, 0, "table_k", "", ""));
+        selectStatement.addSQLToken(new EncryptColumnToken(29, 39, column, true));
+        selectStatement.getEncryptConditions().getOrCondition().getAndConditions().add(new AndCondition());
+        List<SQLExpression> sqlExpressions = new LinkedList<>();
+        sqlExpressions.add(new SQLNumberExpression(3));
+        sqlExpressions.add(new SQLNumberExpression(5));
+        selectStatement.getEncryptConditions().getOrCondition().getAndConditions().get(0).getConditions().add(new Condition(column, sqlExpressions));
+        SQLRewriteEngine rewriteEngine = new SQLRewriteEngine(shardingRule,
+                "SELECT id FROM table_k WHERE id in (3,5)", DatabaseType.MySQL, selectStatement, null, new LinkedList<>());
+        assertThat(rewriteEngine.rewrite(false).toSQL(null, tableTokens, shardingRule, shardingDataSourceMetaData).getSql(), is("SELECT id FROM table_z WHERE id IN (\"encryptValue\", \"encryptValue\")"));
+    }
 }
