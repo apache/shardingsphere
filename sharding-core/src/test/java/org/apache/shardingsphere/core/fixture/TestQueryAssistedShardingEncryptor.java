@@ -19,18 +19,18 @@ package org.apache.shardingsphere.core.fixture;
 
 import lombok.Getter;
 import lombok.Setter;
-import org.apache.shardingsphere.spi.algorithm.encrypt.ShardingEncryptor;
+import org.apache.shardingsphere.spi.algorithm.encrypt.ShardingQueryAssistedEncryptor;
 
 import java.util.Properties;
 
 /**
- * Test sharding encryptor.
+ * Test query assisted sharding encryptor.
  *
  * @author panjuan
  */
 @Getter
 @Setter
-public final class TestQueryAssistedShardingEncryptor implements ShardingEncryptor {
+public final class TestQueryAssistedShardingEncryptor implements ShardingQueryAssistedEncryptor {
     
     private Properties properties = new Properties();
     
@@ -47,5 +47,10 @@ public final class TestQueryAssistedShardingEncryptor implements ShardingEncrypt
     @Override
     public Object decrypt(final Object ciphertext) {
         return "decryptValue";
+    }
+    
+    @Override
+    public String queryAssistedEncrypt(String plaintext) {
+        return "assistedDecryptValue";
     }
 }
