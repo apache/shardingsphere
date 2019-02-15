@@ -21,17 +21,11 @@ execute
     | revoke
     | revokeRole
     | createUser
-    | alterUser
-    | renameUser
-    | alterUserSetConfig
-    | alterUserResetConfig
     | dropUser
+    | alterUser
     | createRole
-    | alterRole
-    | renameRole
-    | alterRoleSetConfig
-    | alterRoleResetConfig
     | dropRole
+    | alterRole
     | show
     | setParam
     | resetParam
