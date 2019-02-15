@@ -25,6 +25,7 @@ import com.google.common.collect.Collections2;
 import com.google.common.collect.Iterators;
 import com.google.common.collect.Lists;
 import org.apache.shardingsphere.core.constant.DatabaseType;
+import org.apache.shardingsphere.core.constant.ShardingOperator;
 import org.apache.shardingsphere.core.exception.ShardingException;
 import org.apache.shardingsphere.core.metadata.datasource.ShardingDataSourceMetaData;
 import org.apache.shardingsphere.core.optimizer.condition.ShardingConditions;
@@ -307,7 +308,7 @@ public final class SQLRewriteEngine {
         Condition encryptCondition = getEncryptCondition(encryptColumnToken);
         List<Comparable<?>> encryptColumnValues = getEncryptColumnValues(encryptColumnToken, getColumnValues(encryptColumnToken, encryptCondition));
         encryptParameters(getPositionIndexes(encryptColumnToken), encryptColumnValues);
-        sqlBuilder.appendPlaceholder(new EncryptColumnPlaceholder(encryptColumnToken.getColumn().getTableName(), getEncryptColumnName(encryptColumnToken), getPositionValues(getValuePositions(encryptColumnToken, encryptCondition), encryptColumnValues), getPlaceholderPositions(encryptColumnToken, encryptCondition), encryptCondition.getOperator()));
+        sqlBuilder.appendPlaceholder(new EncryptColumnPlaceholder(encryptColumnToken.getColumn().getTableName(), getEncryptColumnName(encryptColumnToken), getPositionValues(getValuePositions(encryptColumnToken, encryptCondition), encryptColumnValues), getPlaceholderPositions(encryptColumnToken, encryptCondition), getShardingOperator(encryptColumnToken, encryptCondition)));
         appendRest(sqlBuilder, count, encryptColumnToken.getStopIndex() + 1);
     }
     
@@ -365,7 +366,12 @@ public final class SQLRewriteEngine {
         return result;
     }
     
-    
+    private ShardingOperator getShardingOperator(final EncryptColumnToken encryptColumnToken, final Condition encryptCondition) {
+        if (encryptColumnToken.isInWhere()) {
+            return encryptCondition.getOperator();
+        }
+        return ShardingOperator.EQUAL;
+    }
     
     private void encryptParameters(final Map<Integer, Integer> positionIndexMap, final List<Comparable<?>> encryptColumnValues) {
         if (!positionIndexMap.isEmpty()) {
