@@ -17,7 +17,6 @@
 
 package org.apache.shardingsphere.core.parsing.antlr.filler.impl.dql;
 
-import com.google.common.base.Optional;
 import org.apache.shardingsphere.core.metadata.table.ShardingTableMetaData;
 import org.apache.shardingsphere.core.parsing.antlr.filler.SQLStatementFiller;
 import org.apache.shardingsphere.core.parsing.antlr.sql.segment.SQLSegment;
@@ -32,13 +31,14 @@ import org.apache.shardingsphere.core.parsing.parser.context.selectitem.Aggregat
 import org.apache.shardingsphere.core.parsing.parser.context.selectitem.AggregationSelectItem;
 import org.apache.shardingsphere.core.parsing.parser.context.selectitem.CommonSelectItem;
 import org.apache.shardingsphere.core.parsing.parser.context.selectitem.StarSelectItem;
-import org.apache.shardingsphere.core.parsing.parser.context.table.Table;
 import org.apache.shardingsphere.core.parsing.parser.sql.SQLStatement;
 import org.apache.shardingsphere.core.parsing.parser.sql.dql.select.SelectStatement;
 import org.apache.shardingsphere.core.parsing.parser.token.AggregationDistinctToken;
 import org.apache.shardingsphere.core.parsing.parser.token.TableToken;
 import org.apache.shardingsphere.core.rule.ShardingRule;
 import org.apache.shardingsphere.core.util.SQLUtil;
+
+import com.google.common.base.Optional;
 
 /**
  * Select item filler.
@@ -79,11 +79,7 @@ public final class SelectItemFiller implements SQLStatementFiller {
         selectStatement.setContainStar(true);
         Optional<String> owner = selectItemSegment.getOwner();
         selectStatement.getItems().add(new StarSelectItem(owner.orNull()));
-        if (!owner.isPresent()) {
-            return;
-        }
-        Optional<Table> table = selectStatement.getTables().find(owner.get());
-        if (table.isPresent() && !table.get().getAlias().isPresent()) {
+        if (owner.isPresent() && !selectStatement.getTables().isTableAlias(owner.get())) {
             selectStatement.addSQLToken(new TableToken(selectItemSegment.getStartIndex(), 
                     0, SQLUtil.getExactlyValue(owner.get()), SQLUtil.getLeftDelimiter(owner.get()), SQLUtil.getRightDelimiter(owner.get())));
         }
@@ -91,7 +87,7 @@ public final class SelectItemFiller implements SQLStatementFiller {
     
     private void fillColumnSelectItemSegment(final ColumnSelectItemSegment selectItemSegment, final SelectStatement selectStatement) {
         Optional<String> owner = selectItemSegment.getOwner();
-        if (owner.isPresent() && selectStatement.getTables().getTableNames().contains(owner.get())) {
+        if (owner.isPresent() && !selectStatement.getTables().isTableAlias(owner.get())) {
             selectStatement.addSQLToken(new TableToken(selectItemSegment.getStartIndex(), 
                     0, SQLUtil.getExactlyValue(owner.get()), SQLUtil.getLeftDelimiter(owner.get()), SQLUtil.getRightDelimiter(owner.get())));
         }

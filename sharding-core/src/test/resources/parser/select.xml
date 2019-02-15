@@ -21,6 +21,25 @@
         </or-condition>
     </parser-result>
     
+    <parser-result sql-case-id="select_with_same_table_name_and_alias_column_with_owner" parameters="1, 1">
+        <tables>
+            <table name="t_order" alias="t_order" />
+        </tables>
+        <tokens>
+            <table-token start-index="52" table-name="t_order" />
+        </tokens>
+        <or-condition>
+            <and-condition>
+                <condition column-name="user_id" table-name="t_order" operator="EQUAL">
+                    <value index="0" literal="1" type="int" />
+                </condition>
+                <condition column-name="order_id" table-name="t_order" operator="EQUAL">
+                    <value index="1" literal="1" type="int" />
+                </condition>
+            </and-condition>
+        </or-condition>
+    </parser-result>
+    
     <parser-result sql-case-id="select_not_equal_with_single_table" parameters="1">
         <tables>
             <table name="t_order_item" />

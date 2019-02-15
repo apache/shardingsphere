@@ -112,17 +112,9 @@ public final class OrConditionFiller implements SQLStatementFiller<OrConditionSe
                 if (null == condition.getColumn()) {
                     continue;
                 }
-                if (condition.getColumn().getOwner().isPresent() && sqlStatement.getTables().getTableNames().contains(condition.getColumn().getOwner().get())) {
-                    String owner = condition.getColumn().getOwner().get();
-                    sqlStatement.addSQLToken(new TableToken(condition.getColumn().getStartIndex(), 
-                            0, SQLUtil.getExactlyValue(owner), SQLUtil.getLeftDelimiter(owner), SQLUtil.getRightDelimiter(owner)));
-                }
+                addTableTokenForColumn(sqlStatement, condition.getColumn());
                 if (condition.getExpression() instanceof ColumnSegment) {
-                    ColumnSegment rightColumn = (ColumnSegment) condition.getExpression();
-                    if (rightColumn.getOwner().isPresent() && sqlStatement.getTables().getTableNames().contains(rightColumn.getOwner().get())) {
-                        String owner = rightColumn.getOwner().get();
-                        sqlStatement.addSQLToken(new TableToken(rightColumn.getStartIndex(), 0, SQLUtil.getExactlyValue(owner), SQLUtil.getLeftDelimiter(owner), SQLUtil.getRightDelimiter(owner)));
-                    }
+                    addTableTokenForColumn(sqlStatement, (ColumnSegment) condition.getExpression());
                     needSharding = true;
                     continue;
                 }
@@ -139,6 +131,16 @@ public final class OrConditionFiller implements SQLStatementFiller<OrConditionSe
             }
         }
         return result;
+    }
+    
+    private void addTableTokenForColumn(final SQLStatement sqlStatement, final ColumnSegment column) {
+        if (column.getOwner().isPresent()) {
+            String owner = column.getOwner().get();
+            Optional<Table> logicTable = sqlStatement.getTables().find(owner);
+            if (logicTable.isPresent() && !logicTable.get().getAlias().isPresent()) {
+                sqlStatement.addSQLToken(new TableToken(column.getStartIndex(), 0, SQLUtil.getExactlyValue(owner), SQLUtil.getLeftDelimiter(owner), SQLUtil.getRightDelimiter(owner)));
+            }
+        }
     }
     
     private void fillResult(final SQLStatement sqlStatement, final ShardingRule shardingRule, final OrCondition orCondition, final List<ConditionSegment> shardingCondition, final String sql) {
