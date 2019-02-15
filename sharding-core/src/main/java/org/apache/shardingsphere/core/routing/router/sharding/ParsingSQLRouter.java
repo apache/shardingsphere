@@ -23,16 +23,15 @@ import lombok.RequiredArgsConstructor;
 import org.apache.shardingsphere.core.constant.DatabaseType;
 import org.apache.shardingsphere.core.constant.ShardingOperator;
 import org.apache.shardingsphere.core.hint.HintManagerHolder;
+import org.apache.shardingsphere.core.keygen.GeneratedKey;
 import org.apache.shardingsphere.core.metadata.ShardingMetaData;
 import org.apache.shardingsphere.core.optimizer.OptimizeEngineFactory;
 import org.apache.shardingsphere.core.optimizer.condition.ShardingCondition;
 import org.apache.shardingsphere.core.optimizer.condition.ShardingConditions;
 import org.apache.shardingsphere.core.parsing.SQLParsingEngine;
 import org.apache.shardingsphere.core.parsing.parser.context.condition.AndCondition;
-import org.apache.shardingsphere.core.parsing.parser.context.condition.Column;
 import org.apache.shardingsphere.core.parsing.parser.context.condition.Condition;
 import org.apache.shardingsphere.core.parsing.parser.context.condition.Conditions;
-import org.apache.shardingsphere.core.parsing.parser.context.condition.GeneratedKeyCondition;
 import org.apache.shardingsphere.core.parsing.parser.sql.SQLStatement;
 import org.apache.shardingsphere.core.parsing.parser.sql.dml.insert.InsertStatement;
 import org.apache.shardingsphere.core.parsing.parser.sql.dql.select.SelectStatement;
@@ -51,6 +50,8 @@ import org.apache.shardingsphere.core.spi.hook.SPIParsingHook;
 import org.apache.shardingsphere.core.util.SQLLogger;
 import org.apache.shardingsphere.spi.hook.ParsingHook;
 
+import java.util.Collection;
+import java.util.LinkedHashSet;
 import java.util.LinkedList;
 import java.util.List;
 
@@ -94,7 +95,8 @@ public final class ParsingSQLRouter implements ShardingRouter {
     
     @Override
     public SQLRouteResult route(final String logicSQL, final List<Object> parameters, final SQLStatement sqlStatement) {
-        Optional<GeneratedKey> generatedKey = sqlStatement instanceof InsertStatement ? getGenerateKey(parameters, (InsertStatement) sqlStatement) : Optional.<GeneratedKey>absent();
+        Optional<GeneratedKey> generatedKey = sqlStatement instanceof InsertStatement
+                ? GeneratedKey.getGenerateKey(shardingRule, parameters, (InsertStatement) sqlStatement) : Optional.<GeneratedKey>absent();
         SQLRouteResult result = new SQLRouteResult(sqlStatement, generatedKey.orNull());
         ShardingConditions shardingConditions = OptimizeEngineFactory.newInstance(shardingRule, sqlStatement, parameters, generatedKey.orNull()).optimize();
         if (generatedKey.isPresent()) {
@@ -105,51 +107,11 @@ public final class ParsingSQLRouter implements ShardingRouter {
             mergeShardingValues(shardingConditions);
         }
         RoutingResult routingResult = RoutingEngineFactory.newInstance(shardingRule, shardingMetaData.getDataSource(), sqlStatement, shardingConditions).route();
-        boolean isSingleRouting = routingResult.isSingleRouting();
-        SQLRewriteEngine rewriteEngine = new SQLRewriteEngine(shardingRule, logicSQL, databaseType, sqlStatement, shardingConditions, parameters);
-        if (sqlStatement instanceof SelectStatement && null != ((SelectStatement) sqlStatement).getLimit()) {
-            processLimit(parameters, (SelectStatement) sqlStatement, isSingleRouting);
-        }
-        SQLBuilder sqlBuilder = rewriteEngine.rewrite(isSingleRouting);
-        for (TableUnit each : routingResult.getTableUnits().getTableUnits()) {
-            result.getRouteUnits().add(new RouteUnit(each.getDataSourceName(), rewriteEngine.generateSQL(each, sqlBuilder, shardingMetaData.getDataSource())));
-        }
+        result.getRouteUnits().addAll(rewrite(logicSQL, parameters, sqlStatement, shardingConditions, routingResult));
         if (showSQL) {
             SQLLogger.logSQL(logicSQL, sqlStatement, result.getRouteUnits());
         }
         return result;
-    }
-    
-    private Optional<GeneratedKey> getGenerateKey(final List<Object> parameters, final InsertStatement insertStatement) {
-        return -1 == insertStatement.getGenerateKeyColumnIndex() ? createGeneratedKey(insertStatement) : findGeneratedKey(parameters, insertStatement);
-    }
-    
-    private Optional<GeneratedKey> createGeneratedKey(final InsertStatement insertStatement) {
-        String logicTableName = insertStatement.getTables().getSingleTableName();
-        Optional<TableRule> tableRule = shardingRule.findTableRule(logicTableName);
-        if (!tableRule.isPresent()) {
-            return Optional.absent();
-        }
-        Optional<Column> generateKeyColumn = shardingRule.findGenerateKeyColumn(logicTableName);
-        if (!generateKeyColumn.isPresent()) {
-            return Optional.absent();
-        }
-        GeneratedKey result = new GeneratedKey(generateKeyColumn.get());
-        for (int i = 0; i < insertStatement.getInsertValues().getInsertValues().size(); i++) {
-            result.getGeneratedKeys().add(shardingRule.generateKey(logicTableName));
-        }
-        return Optional.of(result);
-    }
-    
-    private Optional<GeneratedKey> findGeneratedKey(final List<Object> parameters, final InsertStatement insertStatement) {
-        GeneratedKey result = null;
-        for (GeneratedKeyCondition each : insertStatement.getGeneratedKeyConditions()) {
-            if (null == result) {
-                result = new GeneratedKey(each.getColumn());
-            }
-            result.getGeneratedKeys().add(-1 == each.getIndex() ? each.getValue() : (Comparable<?>) parameters.get(each.getIndex()));
-        }
-        return Optional.fromNullable(result);
     }
     
     private void setGeneratedKeys(final SQLRouteResult sqlRouteResult, final GeneratedKey generatedKey) {
@@ -258,6 +220,21 @@ public final class ParsingSQLRouter implements ShardingRouter {
             shardingConditions.getShardingConditions().clear();
             shardingConditions.getShardingConditions().add(shardingCondition);
         }
+    }
+    
+    private Collection<RouteUnit> rewrite(final String logicSQL, final List<Object> parameters, 
+                                          final SQLStatement sqlStatement, final ShardingConditions shardingConditions, final RoutingResult routingResult) {
+        Collection<RouteUnit> result = new LinkedHashSet<>();
+        boolean isSingleRouting = routingResult.isSingleRouting();
+        SQLRewriteEngine rewriteEngine = new SQLRewriteEngine(shardingRule, logicSQL, databaseType, sqlStatement, shardingConditions, parameters);
+        if (sqlStatement instanceof SelectStatement && null != ((SelectStatement) sqlStatement).getLimit()) {
+            processLimit(parameters, (SelectStatement) sqlStatement, isSingleRouting);
+        }
+        SQLBuilder sqlBuilder = rewriteEngine.rewrite(isSingleRouting);
+        for (TableUnit each : routingResult.getTableUnits().getTableUnits()) {
+            result.add(new RouteUnit(each.getDataSourceName(), rewriteEngine.generateSQL(each, sqlBuilder, shardingMetaData.getDataSource())));
+        }
+        return result;
     }
     
     private void processLimit(final List<Object> parameters, final SelectStatement selectStatement, final boolean isSingleRouting) {

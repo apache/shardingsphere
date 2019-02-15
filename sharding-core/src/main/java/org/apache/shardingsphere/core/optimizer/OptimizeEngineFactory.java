@@ -19,13 +19,13 @@ package org.apache.shardingsphere.core.optimizer;
 
 import lombok.AccessLevel;
 import lombok.NoArgsConstructor;
+import org.apache.shardingsphere.core.keygen.GeneratedKey;
 import org.apache.shardingsphere.core.optimizer.insert.InsertOptimizeEngine;
 import org.apache.shardingsphere.core.optimizer.query.QueryOptimizeEngine;
 import org.apache.shardingsphere.core.parsing.parser.sql.SQLStatement;
 import org.apache.shardingsphere.core.parsing.parser.sql.dml.DMLStatement;
 import org.apache.shardingsphere.core.parsing.parser.sql.dml.insert.InsertStatement;
 import org.apache.shardingsphere.core.parsing.parser.sql.dql.select.SelectStatement;
-import org.apache.shardingsphere.core.routing.router.sharding.GeneratedKey;
 import org.apache.shardingsphere.core.rule.ShardingRule;
 
 import java.util.List;

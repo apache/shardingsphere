@@ -13,6 +13,27 @@
     
     <dependencies>
         <dependency>
+            <groupId>org.apache.shardingsphere</groupId>
+            <artifactId>sharding-parser-mysql</artifactId>
+            <version>${project.version}</version>
+        </dependency>
+        <dependency>
+            <groupId>org.apache.shardingsphere</groupId>
+            <artifactId>sharding-parser-postgresql</artifactId>
+            <version>${project.version}</version>
+        </dependency>
+        <dependency>
+            <groupId>org.apache.shardingsphere</groupId>
+            <artifactId>sharding-parser-oracle</artifactId>
+            <version>${project.version}</version>
+        </dependency>
+        <dependency>
+            <groupId>org.apache.shardingsphere</groupId>
+            <artifactId>sharding-parser-sqlserver</artifactId>
+            <version>${project.version}</version>
+        </dependency>
+        
+        <dependency>
             <groupId>org.codehaus.groovy</groupId>
             <artifactId>groovy</artifactId>
             <classifier>indy</classifier>
@@ -47,26 +68,4 @@
             <artifactId>commons-codec</artifactId>
         </dependency>
     </dependencies>
-    <build>
-        <plugins>
-            <plugin>
-                <groupId>org.antlr</groupId>
-                <artifactId>antlr4-maven-plugin</artifactId>
-                <version>4.7.1</version>
-                <executions>
-                    <execution>
-                        <id>antlr</id>
-                        <configuration>
-                            <libDirectory>src/main/antlr4/imports/</libDirectory>
-                            <listener>false</listener>
-                            <visitor>false</visitor>
-                        </configuration>
-                        <goals>
-                            <goal>antlr4</goal>
-                        </goals>
-                     </execution>
-                </executions>
-             </plugin>
-        </plugins>
-    </build>
 </project>

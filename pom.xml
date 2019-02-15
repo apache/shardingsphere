@@ -10,6 +10,7 @@
     <name>${project.artifactId}</name>
     
     <modules>
+        <module>sharding-parser</module>
         <module>sharding-core</module>
         
         <module>sharding-jdbc</module>
@@ -487,6 +488,11 @@
                     <groupId>org.apache.maven.plugins</groupId>
                     <artifactId>maven-source-plugin</artifactId>
                     <version>${maven-source-plugin.version}</version>
+                </plugin>
+                <plugin>
+                    <groupId>org.antlr</groupId>
+                    <artifactId>antlr4-maven-plugin</artifactId>
+                    <version>${antlr4.version}</version>
                 </plugin>
             </plugins>
         </pluginManagement>
