@@ -4,7 +4,11 @@
       <el-col
         v-for="(item, index) in schemaData"
         :key="index"
-        :span="Math.ceil(24 / schemaData.length)"
+        :xs="24"
+        :sm="12"
+        :md="6"
+        :lg="4"
+        :xl="3"
       >
         <el-card class="box-card">
           <div slot="header" class="clearfix">
@@ -78,40 +82,6 @@
         <el-button @click="addSchemaDialogVisible = false">{{ $t('btn.cancel') }}</el-button>
         <el-button type="primary" @click="addSchema('form')">{{ $t('btn.submit') }}</el-button>
       </div>
-      <!-- <el-row>
-        <el-col>
-          <span style="font-size: 14px; color: #4a4a4a; font-weight: bold;">schema name:</span>
-          <el-input
-            v-model="schemaName"
-            class="width: 30%"/>
-        </el-col>
-      </el-row>
-      <el-row :gutter="20">
-        <el-col :span="12">
-          <span style="font-size: 14px; color: #4a4a4a; font-weight: bold;">ruleConfig:</span>
-          <el-input
-            :rows="18"
-            v-model="rueleConfigTextArea"
-            type="textarea"
-            placeholder="请输入内容"
-            class="edit-text"
-          />
-        </el-col>
-        <el-col :span="12">
-          <span style="font-size: 14px; color: #4a4a4a; font-weight: bold;">dataSourceConfig:</span>
-          <el-input
-            :rows="18"
-            v-model="dataSourceConfigTextArea"
-            type="textarea"
-            placeholder="请输入内容"
-            class="edit-text"
-          />
-        </el-col>
-      </el-row>
-      <span slot="footer" class="dialog-footer">
-        <el-button @click="addSchemaDialogVisible = false">{{ $t('btn.cancel') }}</el-button>
-        <el-button type="primary" @click="addSchema">{{ $t('btn.submit') }}</el-button>
-      </span> -->
     </el-dialog>
   </div>
 </template>
