@@ -599,7 +599,8 @@ public final class SQLRewriteEngineTest {
         selectStatement.getEncryptConditions().getOrCondition().getAndConditions().get(0).getConditions().add(new Condition(column, new SQLNumberExpression(3), new SQLNumberExpression(5)));
         SQLRewriteEngine rewriteEngine = new SQLRewriteEngine(shardingRule,
                 "SELECT id FROM table_z WHERE id between 3 and 5", DatabaseType.MySQL, selectStatement, null, new LinkedList<>());
-        assertThat(rewriteEngine.rewrite(false).toSQL(null, tableTokens, shardingRule, shardingDataSourceMetaData).getSql(), is("SELECT id FROM table_z WHERE id BETWEEN \"encryptValue\" AND \"encryptValue\""));
+        assertThat(rewriteEngine.rewrite(false).toSQL(null, tableTokens, shardingRule, shardingDataSourceMetaData).getSql(), 
+                is("SELECT id FROM table_z WHERE id BETWEEN \"encryptValue\" AND \"encryptValue\""));
     }
     
     @Test
@@ -614,7 +615,8 @@ public final class SQLRewriteEngineTest {
         selectStatement.getEncryptConditions().getOrCondition().getAndConditions().get(0).getConditions().add(new Condition(column, sqlExpressions));
         SQLRewriteEngine rewriteEngine = new SQLRewriteEngine(shardingRule,
                 "SELECT id FROM table_z WHERE id in (3,5)", DatabaseType.MySQL, selectStatement, null, new LinkedList<>());
-        assertThat(rewriteEngine.rewrite(false).toSQL(null, tableTokens, shardingRule, shardingDataSourceMetaData).getSql(), is("SELECT id FROM table_z WHERE id IN (\"encryptValue\", \"encryptValue\")"));
+        assertThat(rewriteEngine.rewrite(false).toSQL(null, tableTokens, shardingRule, shardingDataSourceMetaData).getSql(), 
+                is("SELECT id FROM table_z WHERE id IN (\"encryptValue\", \"encryptValue\")"));
     }
     
     @Test
@@ -668,7 +670,8 @@ public final class SQLRewriteEngineTest {
         selectStatement.getEncryptConditions().getOrCondition().getAndConditions().get(0).getConditions().add(new Condition(column, sqlExpressions));
         SQLRewriteEngine rewriteEngine = new SQLRewriteEngine(shardingRule,
                 "SELECT id FROM table_k WHERE id in (3,5)", DatabaseType.MySQL, selectStatement, null, new LinkedList<>());
-        assertThat(rewriteEngine.rewrite(false).toSQL(null, tableTokens, shardingRule, shardingDataSourceMetaData).getSql(), is("SELECT id FROM table_k WHERE query_id IN (\"assistedEncryptValue\", \"assistedEncryptValue\")"));
+        assertThat(rewriteEngine.rewrite(false).toSQL(null, tableTokens, shardingRule, shardingDataSourceMetaData).getSql(), 
+                is("SELECT id FROM table_k WHERE query_id IN (\"assistedEncryptValue\", \"assistedEncryptValue\")"));
     }
     
     @Test
