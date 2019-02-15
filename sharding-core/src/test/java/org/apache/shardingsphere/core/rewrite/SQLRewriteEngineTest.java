@@ -670,4 +670,18 @@ public final class SQLRewriteEngineTest {
                 "SELECT id FROM table_k WHERE id in (3,5)", DatabaseType.MySQL, selectStatement, null, new LinkedList<>());
         assertThat(rewriteEngine.rewrite(false).toSQL(null, tableTokens, shardingRule, shardingDataSourceMetaData).getSql(), is("SELECT id FROM table_k WHERE query_id IN (\"assistedEncryptValue\", \"assistedEncryptValue\")"));
     }
+    
+    @Test
+    public void assertUpdateWithShardingEncryptor() {
+        Column column = new Column("id", "table_z");
+        dmlStatement.addSQLToken(new TableToken(7, 0,"table_z", "", ""));
+        dmlStatement.addSQLToken(new EncryptColumnToken(19, 24, column, false));
+        dmlStatement.getUpdateColumnValues().put(column, new SQLNumberExpression(1));
+        dmlStatement.addSQLToken(new EncryptColumnToken(32, 37, column, true));
+        dmlStatement.getEncryptConditions().getOrCondition().getAndConditions().add(new AndCondition());
+        dmlStatement.getEncryptConditions().getOrCondition().getAndConditions().get(0).getConditions().add(new Condition(column, new SQLNumberExpression(2)));
+        SQLRewriteEngine rewriteEngine = new SQLRewriteEngine(shardingRule,
+                "UPDATE table_z SET id = 1 WHERE id = 2", DatabaseType.MySQL, dmlStatement, null, Collections.emptyList());
+        assertThat(rewriteEngine.rewrite(false).toSQL(null, tableTokens, shardingRule, shardingDataSourceMetaData).getSql(), is("UPDATE table_z SET id = \"encryptValue\" WHERE id = \"encryptValue\""));
+    }
 }
