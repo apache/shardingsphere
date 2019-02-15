@@ -137,7 +137,6 @@ public final class Tables {
      * @return boolean
      */
     public boolean isTableAlias(final String alias) {
-        Optional<Table> tableFromName = findTableFromAlias(alias);
-        return tableFromName.isPresent();
+        return findTableFromAlias(alias).isPresent();
     }
 }
