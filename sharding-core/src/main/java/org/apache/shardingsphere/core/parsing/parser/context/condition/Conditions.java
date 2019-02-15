@@ -19,7 +19,6 @@ package org.apache.shardingsphere.core.parsing.parser.context.condition;
 
 import lombok.Getter;
 import lombok.ToString;
-import org.apache.shardingsphere.core.rule.ShardingRule;
 
 /**
  * Conditions collection.
@@ -37,12 +36,9 @@ public final class Conditions {
      * Add condition.
      *
      * @param condition condition
-     * @param shardingRule databases and tables sharding rule
      */
-    public void add(final Condition condition, final ShardingRule shardingRule) {
+    public void add(final Condition condition) {
         // TODO self-join has problem, table name maybe use alias
-        if (shardingRule.isShardingColumn(condition.getColumn())) {
-            orCondition.add(condition);
-        }
+        orCondition.add(condition);
     }
 }

@@ -94,7 +94,7 @@ public final class JDBCDatabaseCommunicationEngine implements DatabaseCommunicat
             return new CommandResponsePackets(new DatabaseSuccessPacket(1, 0L, 0L));
         }
         SQLStatement sqlStatement = routeResult.getSqlStatement();
-        if (isUnsupportedXA(sqlStatement.getType())) {
+        if (isUnsupportedXA(sqlStatement.getType()) || isUnsupportedBASE(sqlStatement.getType())) {
             MySQLServerErrorCode mySQLServerErrorCode = MySQLServerErrorCode.ER_ERROR_ON_MODIFYING_GTID_EXECUTED_TABLE;
             return new CommandResponsePackets(new DatabaseFailurePacket(1, mySQLServerErrorCode.getErrorCode(), mySQLServerErrorCode.getSqlState(), sqlStatement.getTables().isSingleTable()
                 ? String.format(mySQLServerErrorCode.getErrorMessage(), sqlStatement.getTables().getSingleTableName()) : String.format(mySQLServerErrorCode.getErrorMessage(), "unknown_table")));
@@ -109,6 +109,11 @@ public final class JDBCDatabaseCommunicationEngine implements DatabaseCommunicat
     private boolean isUnsupportedXA(final SQLType sqlType) {
         BackendConnection connection = executeEngine.getBackendConnection();
         return TransactionType.XA == connection.getTransactionType() && SQLType.DDL == sqlType && ConnectionStatus.TRANSACTION == connection.getStateHandler().getStatus();
+    }
+    
+    private boolean isUnsupportedBASE(final SQLType sqlType) {
+        BackendConnection connection = executeEngine.getBackendConnection();
+        return TransactionType.BASE == connection.getTransactionType() && SQLType.DML != sqlType && ConnectionStatus.TRANSACTION == connection.getStateHandler().getStatus();
     }
     
     private CommandResponsePackets merge(final SQLStatement sqlStatement) throws SQLException {

@@ -35,6 +35,7 @@ import java.util.List;
  * SQL statement abstract class.
  *
  * @author zhangliang
+ * @author panjuan
  */
 @RequiredArgsConstructor
 @Getter
@@ -46,7 +47,9 @@ public abstract class AbstractSQLStatement implements SQLStatement {
     
     private final Tables tables = new Tables();
     
-    private final Conditions conditions = new Conditions();
+    private final Conditions routeConditions = new Conditions();
+    
+    private final Conditions encryptConditions = new Conditions();
     
     @Getter(AccessLevel.NONE)
     private final List<SQLToken> sqlTokens = new LinkedList<>();
