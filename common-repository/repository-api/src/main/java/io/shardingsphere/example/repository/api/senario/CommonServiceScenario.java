@@ -27,6 +27,10 @@ public final class CommonServiceScenario implements Scenario {
         this.commonService = commonService;
     }
     
+    public CommonService getCommonService() {
+        return commonService;
+    }
+    
     @Override
     public void executeShardingCRUDSuccess() {
         commonService.initEnvironment();

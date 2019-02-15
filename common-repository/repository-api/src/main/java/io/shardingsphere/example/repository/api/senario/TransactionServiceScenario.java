@@ -28,6 +28,10 @@ public class TransactionServiceScenario implements Scenario {
         this.transactionService = transactionService;
     }
     
+    public TransactionService getTransactionService() {
+        return transactionService;
+    }
+    
     @Override
     public void executeShardingCRUDSuccess() {
         transactionService.initEnvironment();
