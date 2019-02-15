@@ -12,19 +12,19 @@
     <title>Code of Conduct :: ShardingSphere</title>
     
     
-    <link href="https://shardingsphere.apache.org/community/css/nucleus.css?1548917465" rel="stylesheet">
-    <link href="https://shardingsphere.apache.org/community/css/font-awesome.min.css?1548917465" rel="stylesheet">
-    <link href="https://shardingsphere.apache.org/community/css/hybrid.css?1548917465" rel="stylesheet">
-    <link href="https://shardingsphere.apache.org/community/css/featherlight.min.css?1548917465" rel="stylesheet">
-    <link href="https://shardingsphere.apache.org/community/css/perfect-scrollbar.min.css?1548917465" rel="stylesheet">
-    <link href="https://shardingsphere.apache.org/community/css/auto-complete.css?1548917465" rel="stylesheet">
-    <link href="https://shardingsphere.apache.org/community/css/theme.css?1548917465" rel="stylesheet">
-    <link href="https://shardingsphere.apache.org/community/css/hugo-theme.css?1548917465" rel="stylesheet">
+    <link href="https://shardingsphere.apache.org/community/css/nucleus.css?1550226746" rel="stylesheet">
+    <link href="https://shardingsphere.apache.org/community/css/font-awesome.min.css?1550226746" rel="stylesheet">
+    <link href="https://shardingsphere.apache.org/community/css/hybrid.css?1550226746" rel="stylesheet">
+    <link href="https://shardingsphere.apache.org/community/css/featherlight.min.css?1550226746" rel="stylesheet">
+    <link href="https://shardingsphere.apache.org/community/css/perfect-scrollbar.min.css?1550226746" rel="stylesheet">
+    <link href="https://shardingsphere.apache.org/community/css/auto-complete.css?1550226746" rel="stylesheet">
+    <link href="https://shardingsphere.apache.org/community/css/theme.css?1550226746" rel="stylesheet">
+    <link href="https://shardingsphere.apache.org/community/css/hugo-theme.css?1550226746" rel="stylesheet">
     
-      <link href="https://shardingsphere.apache.org/community/css/theme-black.css?1548917465" rel="stylesheet">
+      <link href="https://shardingsphere.apache.org/community/css/theme-black.css?1550226746" rel="stylesheet">
     
 
-    <script src="https://shardingsphere.apache.org/community/js/jquery-2.x.min.js?1548917465"></script>
+    <script src="https://shardingsphere.apache.org/community/js/jquery-2.x.min.js?1550226746"></script>
     
     <style type="text/css">
       :root #header + #content > #left > #rlblock_left{ 
@@ -425,6 +425,33 @@
 <li>Class for test case and <code>@Test</code> annotation do not need javadoc.</li>
 </ul>
 
+<h2 id="g4-code-of-conduct">G4 code of Conduct</h2>
+
+<ul>
+<li>Common Conduct
+
+<ul>
+<li>Every line cannot over <code>200</code> chars, guarantee every line have complete semantics.</li>
+</ul></li>
+<li>Lexer Conduct
+
+<ul>
+<li>Every rule should be in single line, no empty line between rules.</li>
+<li>Rule of lexer name should capitalization. If name composite with more than one word, use <code>underline</code> to separate. Rule name of <code>DataType</code> and <code>Symbol</code> should end with <code>underline</code>. If rule name is conflicted with ANTLR&rsquo;s keyword, should take an <code>underline</code> behind rule name.</li>
+<li>For private rule in lexer should use <code>fragment</code>, rule with <code>fragment</code> should define behind of public rule which they served.</li>
+<li>Common rule of lexer should put in file <code>Keyword.g4</code>, every database may has customized rule file by themselves. For example: <code>MySQLKeyword.g4</code>.</li>
+</ul></li>
+<li>Parser Conduct
+
+<ul>
+<li>After every rule finish, blank line should no indents.</li>
+<li>No space before rule name definition. One space between <code>colon</code> and rule, <code>semicolon</code> should take a new line and keep indents (including blank lines) consistent with the previous one.</li>
+<li>If a rule&rsquo;s branch is over than <code>5</code>, every branch take a new line.</li>
+<li>Rule name of parser should same with java variable&rsquo;s camel case.</li>
+<li>Define separate files for every SQL type, file name should consist of <code>database</code> + <code>SQL type</code> + <code>Statement</code>. For example: <code>MySQLDQLStatement.g4</code>.</li>
+</ul></li>
+</ul>
+
 
 <footer class=" footline" >
 	
@@ -630,20 +657,20 @@
     <div style="left: -1000px; overflow: scroll; position: absolute; top: -1000px; border: none; box-sizing: content-box; height: 200px; margin: 0px; padding: 0px; width: 200px;">
       <div style="border: none; box-sizing: content-box; height: 200px; margin: 0px; padding: 0px; width: 200px;"></div>
     </div>
-    <script src="https://shardingsphere.apache.org/community/js/clipboard.min.js?1548917465"></script>
-    <script src="https://shardingsphere.apache.org/community/js/perfect-scrollbar.min.js?1548917465"></script>
-    <script src="https://shardingsphere.apache.org/community/js/perfect-scrollbar.jquery.min.js?1548917465"></script>
-    <script src="https://shardingsphere.apache.org/community/js/jquery.sticky.js?1548917465"></script>
-    <script src="https://shardingsphere.apache.org/community/js/featherlight.min.js?1548917465"></script>
-    <script src="https://shardingsphere.apache.org/community/js/html5shiv-printshiv.min.js?1548917465"></script>
-    <script src="https://shardingsphere.apache.org/community/js/highlight.pack.js?1548917465"></script>
+    <script src="https://shardingsphere.apache.org/community/js/clipboard.min.js?1550226746"></script>
+    <script src="https://shardingsphere.apache.org/community/js/perfect-scrollbar.min.js?1550226746"></script>
+    <script src="https://shardingsphere.apache.org/community/js/perfect-scrollbar.jquery.min.js?1550226746"></script>
+    <script src="https://shardingsphere.apache.org/community/js/jquery.sticky.js?1550226746"></script>
+    <script src="https://shardingsphere.apache.org/community/js/featherlight.min.js?1550226746"></script>
+    <script src="https://shardingsphere.apache.org/community/js/html5shiv-printshiv.min.js?1550226746"></script>
+    <script src="https://shardingsphere.apache.org/community/js/highlight.pack.js?1550226746"></script>
     <script>hljs.initHighlightingOnLoad();</script>
-    <script src="https://shardingsphere.apache.org/community/js/modernizr.custom.71422.js?1548917465"></script>
-    <script src="https://shardingsphere.apache.org/community/js/learn.js?1548917465"></script>
-    <script src="https://shardingsphere.apache.org/community/js/hugo-learn.js?1548917465"></script>
+    <script src="https://shardingsphere.apache.org/community/js/modernizr.custom.71422.js?1550226746"></script>
+    <script src="https://shardingsphere.apache.org/community/js/learn.js?1550226746"></script>
+    <script src="https://shardingsphere.apache.org/community/js/hugo-learn.js?1550226746"></script>
 
-    <link href="https://shardingsphere.apache.org/community/mermaid/mermaid.css?1548917465" type="text/css" rel="stylesheet" />
-    <script src="https://shardingsphere.apache.org/community/mermaid/mermaid.js?1548917465"></script>
+    <link href="https://shardingsphere.apache.org/community/mermaid/mermaid.css?1550226746" type="text/css" rel="stylesheet" />
+    <script src="https://shardingsphere.apache.org/community/mermaid/mermaid.js?1550226746"></script>
     <script>
         mermaid.initialize({ startOnLoad: true });
     </script>

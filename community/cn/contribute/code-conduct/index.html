@@ -12,19 +12,19 @@
     <title>开发规范 :: ShardingSphere</title>
     
     
-    <link href="https://shardingsphere.apache.org/community/css/nucleus.css?1548917465" rel="stylesheet">
-    <link href="https://shardingsphere.apache.org/community/css/font-awesome.min.css?1548917465" rel="stylesheet">
-    <link href="https://shardingsphere.apache.org/community/css/hybrid.css?1548917465" rel="stylesheet">
-    <link href="https://shardingsphere.apache.org/community/css/featherlight.min.css?1548917465" rel="stylesheet">
-    <link href="https://shardingsphere.apache.org/community/css/perfect-scrollbar.min.css?1548917465" rel="stylesheet">
-    <link href="https://shardingsphere.apache.org/community/css/auto-complete.css?1548917465" rel="stylesheet">
-    <link href="https://shardingsphere.apache.org/community/css/theme.css?1548917465" rel="stylesheet">
-    <link href="https://shardingsphere.apache.org/community/css/hugo-theme.css?1548917465" rel="stylesheet">
+    <link href="https://shardingsphere.apache.org/community/css/nucleus.css?1550226746" rel="stylesheet">
+    <link href="https://shardingsphere.apache.org/community/css/font-awesome.min.css?1550226746" rel="stylesheet">
+    <link href="https://shardingsphere.apache.org/community/css/hybrid.css?1550226746" rel="stylesheet">
+    <link href="https://shardingsphere.apache.org/community/css/featherlight.min.css?1550226746" rel="stylesheet">
+    <link href="https://shardingsphere.apache.org/community/css/perfect-scrollbar.min.css?1550226746" rel="stylesheet">
+    <link href="https://shardingsphere.apache.org/community/css/auto-complete.css?1550226746" rel="stylesheet">
+    <link href="https://shardingsphere.apache.org/community/css/theme.css?1550226746" rel="stylesheet">
+    <link href="https://shardingsphere.apache.org/community/css/hugo-theme.css?1550226746" rel="stylesheet">
     
-      <link href="https://shardingsphere.apache.org/community/css/theme-black.css?1548917465" rel="stylesheet">
+      <link href="https://shardingsphere.apache.org/community/css/theme-black.css?1550226746" rel="stylesheet">
     
 
-    <script src="https://shardingsphere.apache.org/community/js/jquery-2.x.min.js?1548917465"></script>
+    <script src="https://shardingsphere.apache.org/community/js/jquery-2.x.min.js?1550226746"></script>
     
     <style type="text/css">
       :root #header + #content > #left > #rlblock_left{ 
@@ -429,6 +429,33 @@
 <li>测试类和<code>@Test</code>标注的方法无需javadoc。</li>
 </ul>
 
+<h2 id="g4规范">G4规范</h2>
+
+<ul>
+<li>公共规范
+
+<ul>
+<li>每行长度不超过<code>200</code>个字符，保证每一行语义完整以便于理解。</li>
+</ul></li>
+<li>词法解析规范
+
+<ul>
+<li>每个规则一行，规则间无需空行。</li>
+<li>规则名称使用大写字母。如果名称由多个单词组成，用<code>下划线</code>间隔。<code>DataType</code>和<code>Symbol</code>的规则命名以<code>下划线</code>结尾。与ANTLR内置变量或关键字重名的规则在结尾加<code>下划线</code>以示区分。</li>
+<li>不对外暴露的规则使用<code>fragment</code>，<code>fragment</code>定义的规则需在其服务的规则之后声明。</li>
+<li>公用规则定义放在<code>Keyword.g4</code>，每个数据库可以有自己特有的规则定义。例如：<code>MySQLKeyword.g4</code>。</li>
+</ul></li>
+<li>语法解析规范
+
+<ul>
+<li>每个规则结束后空一行，空行无需缩进。</li>
+<li>规则名称前面不空格，<code>冒号</code>后空一格再开始写规则，<code>分号</code>在单独一行并保持和上一行相同缩进。</li>
+<li>如果一个规则的分支超过<code>5</code>个，则每个分支一行。</li>
+<li>规则命名采用java变量的驼峰形式。</li>
+<li>为每种SQL语句类型定义一个独立的语法文件，文件名称由<code>数据库名称</code> + <code>语句类型名称</code> + <code>Statement</code>。例如：<code>MySQLDQLStatement.g4</code>。</li>
+</ul></li>
+</ul>
+
 
 <footer class=" footline" >
 	
@@ -634,20 +661,20 @@
     <div style="left: -1000px; overflow: scroll; position: absolute; top: -1000px; border: none; box-sizing: content-box; height: 200px; margin: 0px; padding: 0px; width: 200px;">
       <div style="border: none; box-sizing: content-box; height: 200px; margin: 0px; padding: 0px; width: 200px;"></div>
     </div>
-    <script src="https://shardingsphere.apache.org/community/js/clipboard.min.js?1548917465"></script>
-    <script src="https://shardingsphere.apache.org/community/js/perfect-scrollbar.min.js?1548917465"></script>
-    <script src="https://shardingsphere.apache.org/community/js/perfect-scrollbar.jquery.min.js?1548917465"></script>
-    <script src="https://shardingsphere.apache.org/community/js/jquery.sticky.js?1548917465"></script>
-    <script src="https://shardingsphere.apache.org/community/js/featherlight.min.js?1548917465"></script>
-    <script src="https://shardingsphere.apache.org/community/js/html5shiv-printshiv.min.js?1548917465"></script>
-    <script src="https://shardingsphere.apache.org/community/js/highlight.pack.js?1548917465"></script>
+    <script src="https://shardingsphere.apache.org/community/js/clipboard.min.js?1550226746"></script>
+    <script src="https://shardingsphere.apache.org/community/js/perfect-scrollbar.min.js?1550226746"></script>
+    <script src="https://shardingsphere.apache.org/community/js/perfect-scrollbar.jquery.min.js?1550226746"></script>
+    <script src="https://shardingsphere.apache.org/community/js/jquery.sticky.js?1550226746"></script>
+    <script src="https://shardingsphere.apache.org/community/js/featherlight.min.js?1550226746"></script>
+    <script src="https://shardingsphere.apache.org/community/js/html5shiv-printshiv.min.js?1550226746"></script>
+    <script src="https://shardingsphere.apache.org/community/js/highlight.pack.js?1550226746"></script>
     <script>hljs.initHighlightingOnLoad();</script>
-    <script src="https://shardingsphere.apache.org/community/js/modernizr.custom.71422.js?1548917465"></script>
-    <script src="https://shardingsphere.apache.org/community/js/learn.js?1548917465"></script>
-    <script src="https://shardingsphere.apache.org/community/js/hugo-learn.js?1548917465"></script>
+    <script src="https://shardingsphere.apache.org/community/js/modernizr.custom.71422.js?1550226746"></script>
+    <script src="https://shardingsphere.apache.org/community/js/learn.js?1550226746"></script>
+    <script src="https://shardingsphere.apache.org/community/js/hugo-learn.js?1550226746"></script>
 
-    <link href="https://shardingsphere.apache.org/community/mermaid/mermaid.css?1548917465" type="text/css" rel="stylesheet" />
-    <script src="https://shardingsphere.apache.org/community/mermaid/mermaid.js?1548917465"></script>
+    <link href="https://shardingsphere.apache.org/community/mermaid/mermaid.css?1550226746" type="text/css" rel="stylesheet" />
+    <script src="https://shardingsphere.apache.org/community/mermaid/mermaid.js?1550226746"></script>
     <script>
         mermaid.initialize({ startOnLoad: true });
     </script>
