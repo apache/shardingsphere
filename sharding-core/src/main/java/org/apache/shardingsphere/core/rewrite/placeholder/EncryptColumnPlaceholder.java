@@ -47,26 +47,41 @@ public final class EncryptColumnPlaceholder implements ShardingPlaceholder {
     public String toString() {
         switch (operator) {
             case EQUAL:
-                return placeholderIndex.isEmpty() ? String.format("%s %s %s", columnName, operator.name(), indexValues.get(0)) : String.format("%s = ?", columnName);
+                return placeholderIndex.isEmpty() ? String.format("%s %s \"%s\"", columnName, operator.name(), indexValues.get(0)) : String.format("%s = ?", columnName);
             case BETWEEN:
                 return toStringFromBetween();
             case IN:
-                
-    
+                return toStringFromIn();
+            default:
+                return "";
         }
-       
     }
     
     private String toStringFromBetween() {
         if (placeholderIndex.isEmpty()) {
-            return String.format("%s %s %s", indexValues.get(0), operator.name(), indexValues.get(1));
+            return String.format("%s %s \"%s\" AND \"%s\"", columnName, operator.name(), indexValues.get(0), indexValues.get(1));
         }
         if (2 == placeholderIndex.size()) {
-            return String.format("? %s ?", operator.name());
+            return String.format("%s %s ? AND ?", columnName, operator.name());
         }
         if (0 == placeholderIndex.iterator().next()) {
-            return String.format("? %s %s", operator.name(), indexValues.get(0));
+            return String.format("%s %s ? AND \"%s\"", columnName, operator.name(), indexValues.get(0));
         }
-        return String.format("%s %s ?", indexValues.get(0), operator.name());
+        return String.format("%s %s \"%s\" AND ?", columnName, operator.name(), indexValues.get(0));
+    }
+    
+    private String toStringFromIn() {
+        StringBuilder stringBuilder = new StringBuilder();
+        stringBuilder.append(columnName).append(" ").append(operator.name()).append("（");
+        for (int i = 0; i < indexValues.size() + placeholderIndex.size(); i++) {
+            if (placeholderIndex.contains(i)) {
+                stringBuilder.append("?");
+            } else {
+                stringBuilder.append('"').append(indexValues.get(i)).append('"');
+            }
+            stringBuilder.append(", ");
+        }
+        stringBuilder.deleteCharAt(stringBuilder.length() - 1).append(")");
+        return stringBuilder.toString();
     }
 }
