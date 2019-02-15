@@ -55,12 +55,12 @@ public abstract class CommonServiceImpl implements CommonService {
      */
     @Transactional
     @Override
-    public void processSuccess(final boolean isRangeSharding) {
+    public void processSuccess() {
         System.out.println("-------------- Process Success Begin ---------------");
         List<Long> orderIds = insertData();
-        printData(isRangeSharding);
+        printData();
         deleteData(orderIds);
-        printData(isRangeSharding);
+        printData();
         System.out.println("-------------- Process Success Finish --------------");
     }
     
@@ -105,28 +105,7 @@ public abstract class CommonServiceImpl implements CommonService {
     }
     
     @Override
-    public final void printData(final boolean isRangeSharding) {
-        if (isRangeSharding) {
-            printDataRange();
-        } else {
-            printDataAll();
-        }
-    }
-    
-    private void printDataRange() {
-        System.out.println("---------------------------- Print Order Data -----------------------");
-        for (Order each : getOrderRepository().selectRange()) {
-            memoryLogService.putOrderData(DatabaseAccess.SELECT, each);
-            System.out.println(each);
-        }
-        System.out.println("---------------------------- Print OrderItem Data -------------------");
-        for (OrderItem each : getOrderItemRepository().selectRange()) {
-            memoryLogService.putItemData(DatabaseAccess.SELECT, each);
-            System.out.println(each);
-        }
-    }
-    
-    private void printDataAll() {
+    public void printData() {
         System.out.println("---------------------------- Print Order Data -----------------------");
         for (Order each : getOrderRepository().selectAll()) {
             memoryLogService.putOrderData(DatabaseAccess.SELECT, each);
@@ -135,6 +114,19 @@ public abstract class CommonServiceImpl implements CommonService {
         System.out.println("---------------------------- Print OrderItem Data -------------------");
         for (OrderItem each : getOrderItemRepository().selectAll()) {
             memoryLogService.putItemData(DatabaseAccess.SELECT, each);
+            System.out.println(each);
+        }
+    }
+    
+    protected void doPrintRangeData() {
+        System.out.println("---------------------------- Print Order Data -----------------------");
+        for (Order each : getOrderRepository().selectRange()) {
+            getMemoryLogService().putOrderData(DatabaseAccess.SELECT, each);
+            System.out.println(each);
+        }
+        System.out.println("---------------------------- Print OrderItem Data -------------------");
+        for (OrderItem each : getOrderItemRepository().selectRange()) {
+            getMemoryLogService().putItemData(DatabaseAccess.SELECT, each);
             System.out.println(each);
         }
     }

@@ -104,7 +104,7 @@ public final class RawPojoTransactionService extends CommonServiceImpl implement
         } catch (RuntimeException ex) {
             System.out.println(ex.getMessage());
             rollbackTransaction();
-            super.printData(false);
+            super.printData();
         }
     }
     

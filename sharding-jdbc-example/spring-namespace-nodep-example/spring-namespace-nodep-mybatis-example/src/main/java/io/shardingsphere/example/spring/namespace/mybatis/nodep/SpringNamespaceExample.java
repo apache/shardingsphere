@@ -77,12 +77,12 @@ public class SpringNamespaceExample {
     private static void process(final ConfigurableApplicationContext applicationContext) {
         CommonService commonService = getCommonService(applicationContext);
         commonService.initEnvironment();
-        commonService.processSuccess(isRangeSharding);
+        commonService.processSuccess();
         try {
             commonService.processFailure();
         } catch (final Exception ex) {
             System.out.println(ex.getMessage());
-            commonService.printData(isRangeSharding);
+            commonService.printData();
         } finally {
             commonService.cleanEnvironment();
         }

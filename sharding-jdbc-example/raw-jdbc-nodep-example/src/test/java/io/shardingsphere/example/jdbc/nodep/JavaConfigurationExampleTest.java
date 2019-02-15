@@ -98,7 +98,7 @@ public class JavaConfigurationExampleTest {
     private CommonService process(final DataSource dataSource, final boolean isRangeSharding) {
         CommonService result = new RawPojoService(new JDBCOrderRepositoryImpl(dataSource), new JDBCOrderItemRepositoryImpl(dataSource));
         result.initEnvironment();
-        result.processSuccess(isRangeSharding);
+        result.processSuccess();
         result.cleanEnvironment();
         return result;
     }

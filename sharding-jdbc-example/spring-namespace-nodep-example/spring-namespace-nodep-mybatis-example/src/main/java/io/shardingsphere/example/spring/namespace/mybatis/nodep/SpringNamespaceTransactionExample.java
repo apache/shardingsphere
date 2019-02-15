@@ -78,7 +78,7 @@ public class SpringNamespaceTransactionExample {
     private static void process(final ConfigurableApplicationContext applicationContext) {
         TransactionService transactionService = getTransactionService(applicationContext);
         transactionService.initEnvironment();
-        transactionService.processSuccess(false);
+        transactionService.processSuccess();
         processFailureSingleTransaction(transactionService, TransactionType.LOCAL);
         processFailureSingleTransaction(transactionService, TransactionType.XA);
         processFailureSingleTransaction(transactionService, TransactionType.BASE);
@@ -102,7 +102,7 @@ public class SpringNamespaceTransactionExample {
             }
         } catch (Exception ex) {
             System.out.println(ex.getMessage());
-            transactionService.printData(false);
+            transactionService.printData();
         }
     }
     
