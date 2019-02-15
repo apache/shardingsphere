@@ -22,11 +22,9 @@ import io.shardingsphere.example.repository.api.service.CommonService;
 import io.shardingsphere.example.repository.api.trace.DatabaseAccess;
 import io.shardingsphere.example.repository.api.trace.MemoryLogService;
 import io.shardingsphere.example.repository.jdbc.service.RawPojoService;
-import io.shardingsphere.example.type.ConfigurationType;
 import io.shardingsphere.example.type.ShardingType;
 import org.junit.Test;
 
-import java.io.IOException;
 import java.sql.SQLException;
 
 import static org.hamcrest.CoreMatchers.is;
@@ -35,64 +33,64 @@ import static org.junit.Assert.assertThat;
 public class JavaConfigurationExampleTest {
 
     @Test
-    public void assertShardingDatabasePrecise() throws SQLException, IOException {
-        CommonService commonService = CommonServiceFactory.newInstance(ConfigurationType.RAW, ShardingType.SHARDING_DATABASES);
+    public void assertShardingDatabasePrecise() throws SQLException {
+        CommonService commonService = CommonServiceFactory.newInstance(ShardingType.SHARDING_DATABASES);
         process(commonService);
         assertShardingDatabaseResult(commonService, false);
     }
 
     @Test
-    public void assertShardingDatabaseRange() throws SQLException, IOException {
-        CommonService commonService = CommonServiceFactory.newInstance(ConfigurationType.RAW, ShardingType.SHARDING_DATABASES_RANGE);
+    public void assertShardingDatabaseRange() throws SQLException {
+        CommonService commonService = CommonServiceFactory.newInstance(ShardingType.SHARDING_DATABASES_RANGE);
         process(commonService);
         assertShardingDatabaseResult(commonService, true);
     }
     
     @Test
-    public void assertShardingTablesRange() throws SQLException, IOException {
-        CommonService commonService = CommonServiceFactory.newInstance(ConfigurationType.RAW, ShardingType.SHARDING_TABLES_RANGE);
+    public void assertShardingTablesRange() throws SQLException {
+        CommonService commonService = CommonServiceFactory.newInstance(ShardingType.SHARDING_TABLES_RANGE);
         process(commonService);
         assertShardingTableResult(commonService, true);
     }
 
     @Test
-    public void assertShardingTablesPrecise() throws SQLException, IOException {
-        CommonService commonService = CommonServiceFactory.newInstance(ConfigurationType.RAW, ShardingType.SHARDING_TABLES);
+    public void assertShardingTablesPrecise() throws SQLException {
+        CommonService commonService = CommonServiceFactory.newInstance(ShardingType.SHARDING_TABLES);
         process(commonService);
         assertShardingTableResult(commonService, false);
     }
 
     @Test
-    public void assertShardingDatabaseAndTablesPrecise() throws SQLException, IOException {
-        CommonService commonService = CommonServiceFactory.newInstance(ConfigurationType.RAW, ShardingType.SHARDING_DATABASES_AND_TABLES);
+    public void assertShardingDatabaseAndTablesPrecise() throws SQLException {
+        CommonService commonService = CommonServiceFactory.newInstance(ShardingType.SHARDING_DATABASES_AND_TABLES);
         process(commonService);
         assertShardingDatabaseAndTableResult(commonService, false);
     }
 
     @Test
-    public void assertShardingDatabaseAndTablesRange() throws SQLException, IOException {
-        CommonService commonService = CommonServiceFactory.newInstance(ConfigurationType.RAW, ShardingType.SHARDING_DATABASES_AND_TABLES_RANGE);
+    public void assertShardingDatabaseAndTablesRange() throws SQLException {
+        CommonService commonService = CommonServiceFactory.newInstance(ShardingType.SHARDING_DATABASES_AND_TABLES_RANGE);
         process(commonService);
         assertShardingDatabaseAndTableResult(commonService, true);
     }
 
     @Test
-    public void assertMasterSlave() throws SQLException, IOException {
-        CommonService commonService = CommonServiceFactory.newInstance(ConfigurationType.RAW, ShardingType.MASTER_SLAVE);
+    public void assertMasterSlave() throws SQLException {
+        CommonService commonService = CommonServiceFactory.newInstance(ShardingType.MASTER_SLAVE);
         process(commonService);
         assertMasterSlaveResult(commonService);
     }
 
     @Test
-    public void assertShardingMasterSlavePrecise() throws SQLException, IOException {
-        CommonService commonService = CommonServiceFactory.newInstance(ConfigurationType.RAW, ShardingType.SHARDING_MASTER_SLAVE);
+    public void assertShardingMasterSlavePrecise() throws SQLException {
+        CommonService commonService = CommonServiceFactory.newInstance(ShardingType.SHARDING_MASTER_SLAVE);
         process(commonService);
         assertMasterSlaveResult(commonService);
     }
 
     @Test
-    public void assertShardingMasterSlaveRange() throws SQLException, IOException {
-        CommonService commonService = CommonServiceFactory.newInstance(ConfigurationType.RAW, ShardingType.SHARDING_MASTER_SLAVE_RANGE);
+    public void assertShardingMasterSlaveRange() throws SQLException {
+        CommonService commonService = CommonServiceFactory.newInstance(ShardingType.SHARDING_MASTER_SLAVE_RANGE);
         process(commonService);
         assertMasterSlaveResult(commonService);
     }

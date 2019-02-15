@@ -17,9 +17,9 @@
 
 package io.shardingsphere.example.jdbc.nodep;
 
-import io.shardingsphere.example.jdbc.nodep.factory.CommonServiceFactory;
-import io.shardingsphere.example.repository.api.service.CommonService;
-import io.shardingsphere.example.type.ConfigurationType;
+import io.shardingsphere.example.jdbc.nodep.factory.YamlCommonServiceFactory;
+import io.shardingsphere.example.repository.api.senario.CommonServiceScenario;
+import io.shardingsphere.example.repository.api.senario.Scenario;
 import io.shardingsphere.example.type.ShardingType;
 
 import java.io.IOException;
@@ -37,12 +37,7 @@ public class YamlConfigurationExample {
 //    private static ShardingType type = ShardingType.SHARDING_MASTER_SLAVE;
     
     public static void main(final String[] args) throws SQLException, IOException {
-        process(CommonServiceFactory.newInstance(ConfigurationType.YAML, type));
-    }
-    
-    private static void process(final CommonService commonService) {
-        commonService.initEnvironment();
-        commonService.processSuccess();
-        commonService.cleanEnvironment();
+        Scenario scenario = new CommonServiceScenario(YamlCommonServiceFactory.newInstance(type));
+        scenario.executeShardingCRUDSuccess();
     }
 }

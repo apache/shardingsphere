@@ -15,9 +15,11 @@
  * limitations under the License.
  */
 
-package io.shardingsphere.example.type;
+package io.shardingsphere.example.repository.api.senario;
 
-public enum ConfigurationType {
+public interface Scenario {
     
-    RAW, YAML
+    void executeShardingCRUDSuccess();
+    
+    void executeShardingCRUDFailure();
 }

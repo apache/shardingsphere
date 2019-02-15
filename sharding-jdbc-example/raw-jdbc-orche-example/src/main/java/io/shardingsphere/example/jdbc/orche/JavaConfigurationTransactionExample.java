@@ -132,7 +132,7 @@ public class JavaConfigurationTransactionExample {
     private static void process(final DataSource dataSource) throws Exception {
         TransactionService transactionService = getTransactionService(dataSource);
         transactionService.initEnvironment();
-        transactionService.processSuccess(isRangeSharding);
+        transactionService.processSuccess();
         processFailureSingleTransaction(transactionService, TransactionType.LOCAL);
         processFailureSingleTransaction(transactionService, TransactionType.XA);
         processFailureSingleTransaction(transactionService, TransactionType.BASE);
@@ -157,7 +157,7 @@ public class JavaConfigurationTransactionExample {
             }
         } catch (Exception ex) {
             System.out.println(ex.getMessage());
-            transactionService.printData(false);
+            transactionService.printData();
         }
     }
     

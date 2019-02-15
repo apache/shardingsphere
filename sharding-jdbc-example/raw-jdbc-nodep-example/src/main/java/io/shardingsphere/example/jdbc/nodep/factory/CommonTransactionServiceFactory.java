@@ -21,53 +21,43 @@ import io.shardingsphere.example.jdbc.nodep.config.MasterSlaveConfiguration;
 import io.shardingsphere.example.jdbc.nodep.config.ShardingDatabasesAndTablesConfigurationPrecise;
 import io.shardingsphere.example.jdbc.nodep.config.ShardingDatabasesAndTablesConfigurationRange;
 import io.shardingsphere.example.jdbc.nodep.config.ShardingDatabasesConfigurationPrecise;
-import io.shardingsphere.example.jdbc.nodep.config.ShardingDatabasesConfigurationRange;
 import io.shardingsphere.example.jdbc.nodep.config.ShardingMasterSlaveConfigurationPrecise;
-import io.shardingsphere.example.jdbc.nodep.config.ShardingMasterSlaveConfigurationRange;
 import io.shardingsphere.example.jdbc.nodep.config.ShardingTablesConfigurationPrecise;
 import io.shardingsphere.example.jdbc.nodep.config.ShardingTablesConfigurationRange;
 import io.shardingsphere.example.repository.api.service.CommonService;
-import io.shardingsphere.example.repository.jdbc.repository.JDBCOrderItemRepositoryImpl;
-import io.shardingsphere.example.repository.jdbc.repository.JDBCOrderRepositoryImpl;
-import io.shardingsphere.example.repository.jdbc.service.RangeRawPojoService;
-import io.shardingsphere.example.repository.jdbc.service.RawPojoService;
+import io.shardingsphere.example.repository.api.service.TransactionService;
+import io.shardingsphere.example.repository.jdbc.repository.JDBCOrderItemTransactionRepositotyImpl;
+import io.shardingsphere.example.repository.jdbc.repository.JDBCOrderTransactionRepositoryImpl;
+import io.shardingsphere.example.repository.jdbc.service.RawPojoTransactionService;
 import io.shardingsphere.example.type.ShardingType;
 
 import javax.sql.DataSource;
 import java.sql.SQLException;
 
-public class CommonServiceFactory {
+public class CommonTransactionServiceFactory {
     
-    public static CommonService newInstance(final ShardingType shardingType) throws SQLException {
+    public static TransactionService newInstance(final ShardingType shardingType) throws SQLException {
         switch (shardingType) {
             case SHARDING_DATABASES:
-                return createCommonService(new ShardingDatabasesConfigurationPrecise().getDataSource());
-            case SHARDING_DATABASES_RANGE:
-                return CreateRangeCommonService(new ShardingDatabasesConfigurationRange().getDataSource());
+                return createTransactionService(new ShardingDatabasesConfigurationPrecise().getDataSource());
             case SHARDING_TABLES:
-                return createCommonService(new ShardingTablesConfigurationPrecise().getDataSource());
+                return createTransactionService(new ShardingTablesConfigurationPrecise().getDataSource());
             case SHARDING_TABLES_RANGE:
-                return CreateRangeCommonService(new ShardingTablesConfigurationRange().getDataSource());
+                return createTransactionService(new ShardingTablesConfigurationRange().getDataSource());
             case SHARDING_DATABASES_AND_TABLES:
-                return createCommonService(new ShardingDatabasesAndTablesConfigurationPrecise().getDataSource());
+                return createTransactionService(new ShardingDatabasesAndTablesConfigurationPrecise().getDataSource());
             case SHARDING_DATABASES_AND_TABLES_RANGE:
-                return CreateRangeCommonService(new ShardingDatabasesAndTablesConfigurationRange().getDataSource());
+                return createTransactionService(new ShardingDatabasesAndTablesConfigurationRange().getDataSource());
             case MASTER_SLAVE:
-                return createCommonService(new MasterSlaveConfiguration().getDataSource());
+                return createTransactionService(new MasterSlaveConfiguration().getDataSource());
             case SHARDING_MASTER_SLAVE:
-                return createCommonService(new ShardingMasterSlaveConfigurationPrecise().getDataSource());
-            case SHARDING_MASTER_SLAVE_RANGE:
-                return CreateRangeCommonService(new ShardingMasterSlaveConfigurationRange().getDataSource());
+                return createTransactionService(new ShardingMasterSlaveConfigurationPrecise().getDataSource());
             default:
                 throw new UnsupportedOperationException(shardingType.name());
         }
     }
     
-    private static CommonService createCommonService(final DataSource dataSource) {
-        return new RawPojoService(new JDBCOrderRepositoryImpl(dataSource), new JDBCOrderItemRepositoryImpl(dataSource));
-    }
-    
-    private static CommonService CreateRangeCommonService(final DataSource dataSource) {
-        return new RangeRawPojoService(new JDBCOrderRepositoryImpl(dataSource), new JDBCOrderItemRepositoryImpl(dataSource));
+    private static TransactionService createTransactionService(final DataSource dataSource) throws SQLException {
+        return new RawPojoTransactionService(new JDBCOrderTransactionRepositoryImpl(dataSource), new JDBCOrderItemTransactionRepositotyImpl(dataSource), dataSource);
     }
 }

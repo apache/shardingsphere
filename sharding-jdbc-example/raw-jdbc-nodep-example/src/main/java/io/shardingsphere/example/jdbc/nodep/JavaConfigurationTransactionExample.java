@@ -17,14 +17,11 @@
 
 package io.shardingsphere.example.jdbc.nodep;
 
-import io.shardingsphere.example.jdbc.nodep.factory.CommonServiceFactory;
-import io.shardingsphere.example.repository.api.service.TransactionService;
-import io.shardingsphere.example.type.ConfigurationType;
-import io.shardingsphere.example.type.ServiceType;
+import io.shardingsphere.example.jdbc.nodep.factory.CommonTransactionServiceFactory;
+import io.shardingsphere.example.repository.api.senario.Scenario;
+import io.shardingsphere.example.repository.api.senario.TransactionServiceScenario;
 import io.shardingsphere.example.type.ShardingType;
-import org.apache.shardingsphere.transaction.core.TransactionType;
 
-import java.io.IOException;
 import java.sql.SQLException;
 
 /*
@@ -40,37 +37,9 @@ public class JavaConfigurationTransactionExample {
     
 //    private static boolean isRangeSharding = true;
     
-    public static void main(final String[] args) throws SQLException, IOException {
-        process((TransactionService) CommonServiceFactory.newInstance(ConfigurationType.RAW, ServiceType.TRANSACTION, type));
-    }
-    
-    private static void process(final TransactionService transactionService) {
-        transactionService.initEnvironment();
-        transactionService.processSuccess();
-        processFailureSingleTransaction(transactionService, TransactionType.LOCAL);
-        processFailureSingleTransaction(transactionService, TransactionType.XA);
-        processFailureSingleTransaction(transactionService, TransactionType.BASE);
-        processFailureSingleTransaction(transactionService, TransactionType.LOCAL);
-        transactionService.cleanEnvironment();
-    }
-    
-    private static void processFailureSingleTransaction(final TransactionService transactionService, final TransactionType type) {
-        try {
-            switch (type) {
-                case LOCAL:
-                    transactionService.processFailureWithLocal();
-                    break;
-                case XA:
-                    transactionService.processFailureWithXa();
-                    break;
-                case BASE:
-                    transactionService.processFailureWithBase();
-                    break;
-                default:
-            }
-        } catch (Exception ex) {
-            System.out.println(ex.getMessage());
-            transactionService.printData();
-        }
+    public static void main(final String[] args) throws SQLException {
+        Scenario scenario = new TransactionServiceScenario(CommonTransactionServiceFactory.newInstance(type));
+        scenario.executeShardingCRUDSuccess();
+        scenario.executeShardingCRUDFailure();
     }
 }

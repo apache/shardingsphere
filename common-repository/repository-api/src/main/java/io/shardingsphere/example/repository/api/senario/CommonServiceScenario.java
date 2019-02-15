@@ -15,9 +15,27 @@
  * limitations under the License.
  */
 
-package io.shardingsphere.example.type;
+package io.shardingsphere.example.repository.api.senario;
 
-public enum ServiceType {
+import io.shardingsphere.example.repository.api.service.CommonService;
+
+public final class CommonServiceScenario implements Scenario {
     
-    RAW, TRANSACTION
+    private final CommonService commonService;
+    
+    public CommonServiceScenario(final CommonService commonService) {
+        this.commonService = commonService;
+    }
+    
+    @Override
+    public void executeShardingCRUDSuccess() {
+        commonService.initEnvironment();
+        commonService.processSuccess();
+        commonService.cleanEnvironment();
+    }
+    
+    @Override
+    public void executeShardingCRUDFailure() {
+    
+    }
 }
