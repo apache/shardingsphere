@@ -11,14 +11,14 @@ revoke
     ;
 
 systemPrivileges_
-    : privilege_ (COMMA_ privilege_)*
+    : privilegeType_ (COMMA_ privilegeType_)*
     ;
 
 objectPrivileges_
-    : privilege_ columnList? (COMMA_ privilege_ columnList?)*
+    : privilegeType_ columnList? (COMMA_ privilegeType_ columnList?)*
     ;
 
-privilege_
+privilegeType_
     : ALL PRIVILEGES? | ID*?
     ;
 

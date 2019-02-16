@@ -11,10 +11,10 @@ revoke
     ;
 
 privileges_
-    : privilege_ columnList? (COMMA_ privilege_ columnList?)*
+    : privilegeType_ columnList? (COMMA_ privilegeType_ columnList?)*
     ;
 
-privilege_
+privilegeType_
     : ALL PRIVILEGES?
     | SELECT
     | INSERT
