@@ -10,11 +10,11 @@ execute
     | alterTable
     | dropTable
     | truncateTable
+    | setTransaction
     | beginTransaction
     | setAutoCommit
     | commit
     | rollback
-    | setTransaction
     | savepoint
     | grant
     | revoke

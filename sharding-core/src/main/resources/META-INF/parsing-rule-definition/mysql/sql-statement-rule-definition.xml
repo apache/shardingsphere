@@ -13,16 +13,17 @@
                         extractor-rule-refs="tableNames, indexNames, selectClause, fromWhere, groupBy, orderBy, limit, subqueryCondition"
                         optimizer-class="org.apache.shardingsphere.core.parsing.antlr.optimizer.impl.dql.dialect.mysql.MySQLSelectOptimizer" />
     
+    <sql-statement-rule context="Delete" sql-statement-class="org.apache.shardingsphere.core.parsing.parser.sql.dml.DMLStatement" extractor-rule-refs="tableNames,deleteFromWhere"/>
+    <sql-statement-rule context="Update" sql-statement-class="org.apache.shardingsphere.core.parsing.parser.sql.dml.DMLStatement" extractor-rule-refs="tableNames,updateWhere"/>
+    <sql-statement-rule context="Insert" sql-statement-class="org.apache.shardingsphere.core.parsing.parser.sql.dml.insert.InsertStatement" extractor-rule-refs="tableNames,insert"/>
+    
+    <sql-statement-rule context="setTransaction" sql-statement-class="org.apache.shardingsphere.core.parsing.antlr.sql.statement.tcl.SetTransactionStatement" />
+    <sql-statement-rule context="setAutoCommit" sql-statement-class="org.apache.shardingsphere.core.parsing.antlr.sql.statement.tcl.SetAutoCommitStatement" extractor-rule-refs="setAutoCommit" />
     <sql-statement-rule context="beginTransaction" sql-statement-class="org.apache.shardingsphere.core.parsing.antlr.sql.statement.tcl.BeginTransactionStatement" />
     <sql-statement-rule context="commit" sql-statement-class="org.apache.shardingsphere.core.parsing.antlr.sql.statement.tcl.CommitStatement" />
     <sql-statement-rule context="rollback" sql-statement-class="org.apache.shardingsphere.core.parsing.antlr.sql.statement.tcl.RollbackStatement" />
     <sql-statement-rule context="savepoint" sql-statement-class="org.apache.shardingsphere.core.parsing.antlr.sql.statement.tcl.SavepointStatement" />
-    <sql-statement-rule context="setAutoCommit" sql-statement-class="org.apache.shardingsphere.core.parsing.antlr.sql.statement.tcl.SetAutoCommitStatement" extractor-rule-refs="setAutoCommit" />
-    <sql-statement-rule context="setTransaction" sql-statement-class="org.apache.shardingsphere.core.parsing.antlr.sql.statement.tcl.SetTransactionStatement" />
-    <sql-statement-rule context="Delete" sql-statement-class="org.apache.shardingsphere.core.parsing.parser.sql.dml.DMLStatement" extractor-rule-refs="tableNames,deleteFromWhere"/>
-    <sql-statement-rule context="Update" sql-statement-class="org.apache.shardingsphere.core.parsing.parser.sql.dml.DMLStatement" extractor-rule-refs="tableNames,updateWhere"/>
-    <sql-statement-rule context="Insert" sql-statement-class="org.apache.shardingsphere.core.parsing.parser.sql.dml.insert.InsertStatement" extractor-rule-refs="tableNames,insert"/>
-
+    
     <sql-statement-rule context="grant" sql-statement-class="org.apache.shardingsphere.core.parsing.antlr.sql.statement.dcl.DCLStatement" extractor-rule-refs="tableNames" />
     <sql-statement-rule context="revoke" sql-statement-class="org.apache.shardingsphere.core.parsing.antlr.sql.statement.dcl.DCLStatement" extractor-rule-refs="tableNames" />
     <sql-statement-rule context="createUser" sql-statement-class="org.apache.shardingsphere.core.parsing.antlr.sql.statement.dcl.DCLStatement" />
