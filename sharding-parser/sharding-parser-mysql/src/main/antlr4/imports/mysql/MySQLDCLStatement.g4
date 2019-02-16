@@ -15,32 +15,32 @@ privileges_
     ;
 
 privilegeType_
-    : ALL PRIVILEGES?
-    | ALTER ROUTINE?
+    : (ALL PRIVILEGES?)
+    | (ALTER ROUTINE?)
     | CREATE
-    | CREATE ROUTINE
-    | CREATE TABLESPACE
-    | CREATE TEMPORARY TABLES
-    | CREATE USER
-    | CREATE VIEW
+    | (CREATE ROUTINE)
+    | (CREATE TABLESPACE)
+    | (CREATE TEMPORARY TABLES)
+    | (CREATE USER)
+    | (CREATE VIEW)
     | DELETE
     | DROP
     | EVENT
     | EXECUTE
     | FILE
-    | GRANT OPTION
+    | (GRANT OPTION)
     | INDEX
     | INSERT
-    | LOCK TABLES
+    | (LOCK TABLES)
     | PROCESS
     | PROXY
     | REFERENCES
     | RELOAD
-    | REPLICATION CLIENT
-    | REPLICATION SLAVE
+    | (REPLICATION CLIENT)
+    | (REPLICATION SLAVE)
     | SELECT
-    | SHOW DATABASES
-    | SHOW VIEW
+    | (SHOW DATABASES)
+    | (SHOW VIEW)
     | SHUTDOWN
     | SUPER
     | TRIGGER
@@ -69,7 +69,7 @@ objectType_
     ;
 
 privilegeLevel_
-    : ASTERISK_ | ASTERISK_ DOT_ASTERISK_ | ID DOT_ASTERISK_ | tableName
+    : ASTERISK_ | (ASTERISK_ DOT_ASTERISK_) | (ID DOT_ASTERISK_) | tableName
     ;
 
 createUser
