@@ -17,10 +17,10 @@ execute
     | grant
     | revoke
     | createUser
-    | alterUser
     | dropUser
+    | alterUser
     | createRole
-    | alterRole
     | dropRole
+    | alterRole
     ) SEMI_?
     ;

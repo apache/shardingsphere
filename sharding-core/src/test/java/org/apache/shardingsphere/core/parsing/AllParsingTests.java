@@ -34,6 +34,6 @@ import org.junit.runners.Suite.SuiteClasses;
         AllContextTests.class,
         AllConstantTests.class, 
         AllParsingIntegrateTests.class
-    })
+})
 public final class AllParsingTests {
 }
