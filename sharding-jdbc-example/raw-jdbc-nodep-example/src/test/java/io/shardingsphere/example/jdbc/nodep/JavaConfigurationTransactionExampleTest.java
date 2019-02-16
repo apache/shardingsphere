@@ -19,45 +19,46 @@ package io.shardingsphere.example.jdbc.nodep;
 
 import io.shardingsphere.example.jdbc.nodep.factory.CommonTransactionServiceFactory;
 import io.shardingsphere.example.repository.api.senario.TransactionServiceScenario;
+import io.shardingsphere.example.repository.api.trace.ResultAssertUtils;
 import io.shardingsphere.example.type.ShardingType;
 import org.junit.Test;
 
 import java.sql.SQLException;
 
-public class JavaConfigurationTransactionExampleTest extends BaseConfigurationExample {
+public class JavaConfigurationTransactionExampleTest {
     
     @Test
     public void assertShardingDatabasePrecise() throws SQLException {
         TransactionServiceScenario scenario = new TransactionServiceScenario(CommonTransactionServiceFactory.newInstance(ShardingType.SHARDING_DATABASES));
         scenario.executeShardingCRUDFailure();
-        assertTransactionServiceResult(scenario.getTransactionService());
+        ResultAssertUtils.assertTransactionServiceResult(scenario.getTransactionService());
     }
     
     @Test
     public void assertShardingTablesPrecise() throws SQLException {
         TransactionServiceScenario scenario = new TransactionServiceScenario(CommonTransactionServiceFactory.newInstance(ShardingType.SHARDING_TABLES));
         scenario.executeShardingCRUDFailure();
-        assertTransactionServiceResult(scenario.getTransactionService());
+        ResultAssertUtils.assertTransactionServiceResult(scenario.getTransactionService());
     }
     
     @Test
     public void assertShardingDatabaseAndTablesPrecise() throws SQLException {
         TransactionServiceScenario scenario = new TransactionServiceScenario(CommonTransactionServiceFactory.newInstance(ShardingType.SHARDING_DATABASES_AND_TABLES));
         scenario.executeShardingCRUDFailure();
-        assertTransactionServiceResult(scenario.getTransactionService());
+        ResultAssertUtils.assertTransactionServiceResult(scenario.getTransactionService());
     }
     
     @Test
     public void assertMasterSlave() throws SQLException {
         TransactionServiceScenario scenario = new TransactionServiceScenario(CommonTransactionServiceFactory.newInstance(ShardingType.MASTER_SLAVE));
         scenario.executeShardingCRUDFailure();
-        assertTransactionServiceResult(scenario.getTransactionService());
+        ResultAssertUtils.assertTransactionServiceResult(scenario.getTransactionService());
     }
     
     @Test
     public void assertShardingMasterSlavePrecise() throws SQLException {
         TransactionServiceScenario scenario = new TransactionServiceScenario(CommonTransactionServiceFactory.newInstance(ShardingType.SHARDING_MASTER_SLAVE));
         scenario.executeShardingCRUDFailure();
-        assertTransactionServiceResult(scenario.getTransactionService());
+        ResultAssertUtils.assertTransactionServiceResult(scenario.getTransactionService());
     }
 }
