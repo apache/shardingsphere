@@ -22,10 +22,13 @@ import io.shardingsphere.example.repository.api.senario.CommonServiceScenario;
 import io.shardingsphere.example.repository.api.trace.ResultAssertUtils;
 import io.shardingsphere.example.type.RegistryCenterType;
 import io.shardingsphere.example.type.ShardingType;
+import org.junit.FixMethodOrder;
 import org.junit.Test;
+import org.junit.runners.MethodSorters;
 
 import java.sql.SQLException;
 
+@FixMethodOrder(MethodSorters.JVM)
 public class JavaConfigurationExampleTest {
 
     @Test
