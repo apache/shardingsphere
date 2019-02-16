@@ -3,34 +3,18 @@ grammar MySQLDCLStatement;
 import MySQLKeyword, Keyword, Symbol, MySQLBase, BaseRule, DataType;
 
 grant
-    : GRANT privType_ columnList? (COMMA_ privType_ columnList?)* ON objectType_? privLevel
-    ;
-
-grantProxy
-    : GRANT PROXY ON
-    ;
-
-grantRole
-    : GRANT roleNames
+    : GRANT ((PROXY ON) | (privileges_ ON onObjectClause_) | roleNames)
     ;
 
 revoke
-    : REVOKE privType_ columnList? (COMMA_ privType_ columnList?)* ON objectType_? privLevel
+    : REVOKE ((ALL PRIVILEGES? COMMA_ GRANT OPTION) | (PROXY ON) | (privileges_ ON onObjectClause_) | roleNames)
     ;
 
-revokeAll
-    : REVOKE ALL PRIVILEGES? COMMA_ GRANT OPTION
+privileges_
+    : privilegeType_ columnList? (COMMA_ privilegeType_ columnList?)*
     ;
 
-revokeProxy
-    : REVOKE PROXY ON
-    ;
-
-revokeRole
-    : REVOKE roleNames
-    ;
-
-privType_
+privilegeType_
     : ALL PRIVILEGES?
     | ALTER ROUTINE?
     | CREATE
@@ -76,12 +60,16 @@ privType_
     | VERSION_TOKEN_ADMIN
     ;
 
+onObjectClause_
+    : objectType_? privilegeLevel_
+    ;
+
 objectType_
     : TABLE | FUNCTION | PROCEDURE
     ;
 
-privLevel
-    : ASTERISK_ | ASTERISK_ DOT_ASTERISK_ | ID DOT_ASTERISK_ | ID DOT_ tableName | tableName
+privilegeLevel_
+    : ASTERISK_ | ASTERISK_ DOT_ASTERISK_ | ID DOT_ASTERISK_ | tableName
     ;
 
 createUser

@@ -20,12 +20,7 @@ execute
     | setTransaction
     | savepoint
     | grant
-    | grantProxy
-    | grantRole
     | revoke
-    | revokeAll
-    | revokeProxy
-    | revokeRole
     | createUser
     | dropUser
     | alterUser
