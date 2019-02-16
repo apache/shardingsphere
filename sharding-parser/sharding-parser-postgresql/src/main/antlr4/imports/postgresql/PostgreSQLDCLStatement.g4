@@ -15,7 +15,7 @@ privileges_
     ;
 
 privilegeType_
-    : ALL PRIVILEGES?
+    : (ALL PRIVILEGES?)
     | SELECT
     | INSERT
     | UPDATE
@@ -41,7 +41,7 @@ onObjectClause_
     | ROUTINE
     | ALL
     | LANGUAGE
-    | LARGE OBJECT
+    | (LARGE OBJECT)
     | SCHEMA
     | TABLESPACE
     | TYPE
