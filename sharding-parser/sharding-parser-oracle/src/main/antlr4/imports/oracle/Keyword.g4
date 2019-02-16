@@ -373,3 +373,83 @@ WORK
 YEAR
     : Y E A R
     ;
+
+SELECT
+    : S E L E C T
+    ;
+
+INSERT
+    : I N S E R T
+    ;
+
+UPDATE
+    : U P D A T E
+    ;
+
+WRITE
+    : W R I T E
+    ;
+    
+EXECUTE
+    : E X E C U T E
+    ;
+    
+USE
+    : U S E
+    ;
+
+DEBUG
+    : D E B U G
+    ;
+
+UNDER
+    : U N D E R
+    ;
+
+FLASHBACK
+    : F L A S H B A C K
+    ;
+
+ARCHIVE
+    : A R C H I V E
+    ;
+
+REFRESH
+    : R E F R E S H
+    ;
+
+QUERY
+    : Q U E R Y
+    ;
+
+REWRITE
+    : R E W R I T E
+    ;
+
+KEEP
+    : K E E P
+    ;
+    
+SEQUENCE
+    : S E Q U E N C E
+    ;
+
+INHERIT
+    : I N H E R I T
+    ;
+
+TRANSLATE
+    : T R A N S L A T E
+    ;
+
+SQL
+    : S Q L
+    ;
+
+MERGE
+    : M E R G E
+    ;
+
+VIEW
+    : V I E W
+    ;

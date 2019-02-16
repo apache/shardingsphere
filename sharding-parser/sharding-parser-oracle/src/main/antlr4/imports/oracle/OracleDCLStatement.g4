@@ -3,33 +3,49 @@ grammar OracleDCLStatement;
 import OracleKeyword, Keyword, Symbol, OracleBase, BaseRule, DataType;
 
 grant
-    : GRANT (systemPrivileges_ | (objectPrivileges_ ON onObjectClause_) | rolesToPrograms_) TO
+    : GRANT (objectPrivileges_ (ON onObjectClause_)? | otherPrivileges_)
     ;
 
 revoke
-    : REVOKE (systemPrivileges_ | (objectPrivileges_ ON onObjectClause_) | rolesToPrograms_) FROM
-    ;
-
-systemPrivileges_
-    : privilegeType_ (COMMA_ privilegeType_)*
+    : REVOKE (objectPrivileges_ (ON onObjectClause_)? | otherPrivileges_)
     ;
 
 objectPrivileges_
-    : privilegeType_ columnList? (COMMA_ privilegeType_ columnList?)*
+    : objectPrivilegeType_ columnList? (COMMA_ objectPrivilegeType_ columnList?)*
     ;
 
-privilegeType_
-    : ALL PRIVILEGES? | ID*?
+objectPrivilegeType_
+    : (ALL PRIVILEGES?)
+    | SELECT
+    | INSERT
+    | DELETE
+    | UPDATE
+    | ALTER
+    | READ
+    | WRITE
+    | EXECUTE
+    | USE
+    | INDEX
+    | REFERENCES
+    | DEBUG
+    | UNDER
+    | (FLASHBACK ARCHIVE)
+    | (ON COMMIT REFRESH)
+    | (QUERY REWRITE)
+    | (KEEP SEQUENCE)
+    | (INHERIT PRIVILEGES)
+    | (TRANSLATE SQL)
+    | (MERGE VIEW)
     ;
 
 onObjectClause_
-    : USER | DIRECTORY | EDITION | MINING MODEL | SQL TRANSLATION PROFILE
+    : USER | DIRECTORY | EDITION | (MINING MODEL) | (SQL TRANSLATION PROFILE)
     | JAVA (SOURCE | RESOURCE) tableName
     | tableName
     ;
 
-rolesToPrograms_
-    : ALL | ID*?
+otherPrivileges_
+    : STRING_+ | ID+
     ;
 
 createUser
