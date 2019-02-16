@@ -17,35 +17,11 @@
 
 package io.shardingsphere.example.jdbc.orche;
 
-import io.shardingsphere.example.config.ExampleConfiguration;
-import io.shardingsphere.example.jdbc.orche.config.RegistryCenterConfigurationUtil;
-import io.shardingsphere.example.jdbc.orche.config.cloud.CloudMasterSlaveConfiguration;
-import io.shardingsphere.example.jdbc.orche.config.cloud.CloudShardingDatabasesAndTablesConfiguration;
-import io.shardingsphere.example.jdbc.orche.config.cloud.CloudShardingDatabasesConfiguration;
-import io.shardingsphere.example.jdbc.orche.config.cloud.CloudShardingMasterSlaveConfiguration;
-import io.shardingsphere.example.jdbc.orche.config.cloud.CloudShardingTablesConfiguration;
-import io.shardingsphere.example.jdbc.orche.config.local.LocalMasterSlaveConfiguration;
-import io.shardingsphere.example.jdbc.orche.config.local.LocalShardingDatabasesAndTablesConfigurationPrecise;
-import io.shardingsphere.example.jdbc.orche.config.local.LocalShardingDatabasesAndTablesConfigurationRange;
-import io.shardingsphere.example.jdbc.orche.config.local.LocalShardingDatabasesConfigurationPrecise;
-import io.shardingsphere.example.jdbc.orche.config.local.LocalShardingDatabasesConfigurationRange;
-import io.shardingsphere.example.jdbc.orche.config.local.LocalShardingMasterSlaveConfigurationPrecise;
-import io.shardingsphere.example.jdbc.orche.config.local.LocalShardingMasterSlaveConfigurationRange;
-import io.shardingsphere.example.jdbc.orche.config.local.LocalShardingTablesConfigurationPrecise;
-import io.shardingsphere.example.jdbc.orche.config.local.LocalShardingTablesConfigurationRange;
-import io.shardingsphere.example.repository.api.service.TransactionService;
-import io.shardingsphere.example.repository.jdbc.repository.JDBCOrderItemTransactionRepositotyImpl;
-import io.shardingsphere.example.repository.jdbc.repository.JDBCOrderTransactionRepositoryImpl;
-import io.shardingsphere.example.repository.jdbc.service.RawPojoTransactionService;
+import io.shardingsphere.example.jdbc.orche.factory.CommonTransactionServiceFactory;
+import io.shardingsphere.example.repository.api.senario.Scenario;
+import io.shardingsphere.example.repository.api.senario.TransactionServiceScenario;
 import io.shardingsphere.example.type.RegistryCenterType;
 import io.shardingsphere.example.type.ShardingType;
-import org.apache.shardingsphere.orchestration.reg.api.RegistryCenterConfiguration;
-import org.apache.shardingsphere.shardingjdbc.orchestration.internal.datasource.OrchestrationMasterSlaveDataSource;
-import org.apache.shardingsphere.shardingjdbc.orchestration.internal.datasource.OrchestrationShardingDataSource;
-import org.apache.shardingsphere.transaction.core.TransactionType;
-
-import javax.sql.DataSource;
-import java.sql.SQLException;
 
 /*
  * 1. Please make sure master-slave data sync on MySQL is running correctly. Otherwise this example will query empty data from slave.
@@ -60,9 +36,6 @@ public class JavaConfigurationTransactionExample {
 //    private static ShardingType shardingType = ShardingType.MASTER_SLAVE;
 //    private static ShardingType shardingType = ShardingType.SHARDING_MASTER_SLAVE;
     
-//    private static boolean isRangeSharding = true;
-    private static boolean isRangeSharding = false;
-    
     private static RegistryCenterType registryCenterType = RegistryCenterType.ZOOKEEPER;
 //    private static RegistryCenterType registryCenterType = RegistryCenterType.ETCD;
     
@@ -70,106 +43,8 @@ public class JavaConfigurationTransactionExample {
 //    private static boolean loadConfigFromRegCenter = true;
     
     public static void main(final String[] args) throws Exception {
-        process(isRangeSharding ? getDataSourceRange() : getDataSourcePrecise());
-    }
-    
-    private static DataSource getDataSourcePrecise() throws SQLException {
-        ExampleConfiguration exampleConfig;
-        RegistryCenterConfiguration registryCenterConfig = getRegistryCenterConfiguration();
-        switch (shardingType) {
-            case SHARDING_DATABASES:
-                exampleConfig = loadConfigFromRegCenter ? new CloudShardingDatabasesConfiguration(registryCenterConfig) : new LocalShardingDatabasesConfigurationPrecise(registryCenterConfig);
-                break;
-            case SHARDING_TABLES:
-                exampleConfig = loadConfigFromRegCenter ? new CloudShardingTablesConfiguration(registryCenterConfig) : new LocalShardingTablesConfigurationPrecise(registryCenterConfig);
-                break;
-            case SHARDING_DATABASES_AND_TABLES:
-                exampleConfig = loadConfigFromRegCenter
-                        ? new CloudShardingDatabasesAndTablesConfiguration(registryCenterConfig) : new LocalShardingDatabasesAndTablesConfigurationPrecise(registryCenterConfig);
-                break;
-            case MASTER_SLAVE:
-                exampleConfig = loadConfigFromRegCenter ? new CloudMasterSlaveConfiguration(registryCenterConfig) : new LocalMasterSlaveConfiguration(registryCenterConfig);
-                break;
-            case SHARDING_MASTER_SLAVE:
-                exampleConfig = loadConfigFromRegCenter ? new CloudShardingMasterSlaveConfiguration(registryCenterConfig) : new LocalShardingMasterSlaveConfigurationPrecise(registryCenterConfig);
-                break;
-            default:
-                throw new UnsupportedOperationException(shardingType.name());
-        }
-        return exampleConfig.getDataSource();
-    }
-    
-    private static DataSource getDataSourceRange() throws Exception {
-        ExampleConfiguration exampleConfig;
-        RegistryCenterConfiguration registryCenterConfig = getRegistryCenterConfiguration();
-        switch (shardingType) {
-            case SHARDING_DATABASES:
-                exampleConfig = loadConfigFromRegCenter ? new CloudShardingDatabasesConfiguration(registryCenterConfig) : new LocalShardingDatabasesConfigurationRange(registryCenterConfig);
-                break;
-            case SHARDING_TABLES:
-                exampleConfig = loadConfigFromRegCenter ? new CloudShardingTablesConfiguration(registryCenterConfig) : new LocalShardingTablesConfigurationRange(registryCenterConfig);
-                break;
-            case SHARDING_DATABASES_AND_TABLES:
-                exampleConfig = loadConfigFromRegCenter
-                    ? new CloudShardingDatabasesAndTablesConfiguration(registryCenterConfig) : new LocalShardingDatabasesAndTablesConfigurationRange(registryCenterConfig);
-                break;
-            case MASTER_SLAVE:
-                exampleConfig = loadConfigFromRegCenter ? new CloudMasterSlaveConfiguration(registryCenterConfig) : new LocalMasterSlaveConfiguration(registryCenterConfig);
-                break;
-            case SHARDING_MASTER_SLAVE:
-                exampleConfig = loadConfigFromRegCenter ? new CloudShardingMasterSlaveConfiguration(registryCenterConfig) : new LocalShardingMasterSlaveConfigurationRange(registryCenterConfig);
-                break;
-            default:
-                throw new UnsupportedOperationException(shardingType.name());
-        }
-        return exampleConfig.getDataSource();
-    }
-    
-    private static RegistryCenterConfiguration getRegistryCenterConfiguration() {
-        return RegistryCenterType.ZOOKEEPER == registryCenterType ? RegistryCenterConfigurationUtil.getZooKeeperConfiguration() : RegistryCenterConfigurationUtil.getEtcdConfiguration();
-    }
-    
-    private static void process(final DataSource dataSource) throws Exception {
-        TransactionService transactionService = getTransactionService(dataSource);
-        transactionService.initEnvironment();
-        transactionService.processSuccess();
-        processFailureSingleTransaction(transactionService, TransactionType.LOCAL);
-        processFailureSingleTransaction(transactionService, TransactionType.XA);
-        processFailureSingleTransaction(transactionService, TransactionType.BASE);
-        processFailureSingleTransaction(transactionService, TransactionType.LOCAL);
-        transactionService.cleanEnvironment();
-        closeDataSource(dataSource);
-    }
-    
-    private static void processFailureSingleTransaction(final TransactionService transactionService, final TransactionType type) {
-        try {
-            switch (type) {
-                case LOCAL:
-                    transactionService.processFailureWithLocal();
-                    break;
-                case XA:
-                    transactionService.processFailureWithXa();
-                    break;
-                case BASE:
-                    transactionService.processFailureWithBase();
-                    break;
-                default:
-            }
-        } catch (Exception ex) {
-            System.out.println(ex.getMessage());
-            transactionService.printData();
-        }
-    }
-    
-    private static TransactionService getTransactionService(final DataSource dataSource) throws SQLException {
-        return new RawPojoTransactionService(new JDBCOrderTransactionRepositoryImpl(dataSource), new JDBCOrderItemTransactionRepositotyImpl(dataSource), dataSource);
-    }
-    
-    private static void closeDataSource(final DataSource dataSource) throws Exception {
-        if (dataSource instanceof OrchestrationMasterSlaveDataSource) {
-            ((OrchestrationMasterSlaveDataSource) dataSource).close();
-        } else {
-            ((OrchestrationShardingDataSource) dataSource).close();
-        }
+        Scenario scenario = new TransactionServiceScenario(CommonTransactionServiceFactory.newInstance(shardingType, registryCenterType, loadConfigFromRegCenter));
+        scenario.executeShardingCRUDSuccess();
+        scenario.executeShardingCRUDFailure();
     }
 }

@@ -41,5 +41,4 @@ public class YamlConfigurationTransactionExample {
         scenario.executeShardingCRUDSuccess();
         scenario.executeShardingCRUDFailure();
     }
-    
 }
