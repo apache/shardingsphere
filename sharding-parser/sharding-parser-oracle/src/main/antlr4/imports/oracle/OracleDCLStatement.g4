@@ -3,11 +3,11 @@ grammar OracleDCLStatement;
 import OracleKeyword, Keyword, Symbol, OracleBase, BaseRule, DataType;
 
 grant
-    : GRANT (systemPrivileges_ | objectPrivileges_ ON onObjectClause_ | rolesToPrograms_) TO
+    : GRANT (systemPrivileges_ | (objectPrivileges_ ON onObjectClause_) | rolesToPrograms_) TO
     ;
 
 revoke
-    : REVOKE (systemPrivileges_ | objectPrivileges_ ON onObjectClause_ | rolesToPrograms_) FROM
+    : REVOKE (systemPrivileges_ | (objectPrivileges_ ON onObjectClause_) | rolesToPrograms_) FROM
     ;
 
 systemPrivileges_

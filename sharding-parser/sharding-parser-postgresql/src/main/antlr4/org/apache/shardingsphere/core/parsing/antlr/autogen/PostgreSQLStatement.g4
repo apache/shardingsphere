@@ -17,9 +17,7 @@ execute
     | setTransaction
     | savepoint
     | grant
-    | grantRole
     | revoke
-    | revokeRole
     | createUser
     | dropUser
     | alterUser

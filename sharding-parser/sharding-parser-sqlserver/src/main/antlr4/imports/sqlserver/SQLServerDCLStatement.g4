@@ -15,11 +15,11 @@ deny
     ;
 
 byClass_
-    : (ALL PRIVILEGES? | permission_ columnList? (COMMA_ permission_ columnList?)*) (ON class_? tableName)?
+    : ((ALL PRIVILEGES?) | (permission_ columnList? (COMMA_ permission_ columnList?)*)) (ON class_? tableName)?
     ;
 
 byClassType_
-    : permission_ (COMMA_ permission_)* (ON (classType_)? tableName)?
+    : permission_ (COMMA_ permission_)* (ON classType_? tableName)?
     ;
 
 permission_
