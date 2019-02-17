@@ -23,7 +23,6 @@ import lombok.ToString;
 import org.apache.shardingsphere.core.parsing.lexer.token.DefaultKeyword;
 import org.apache.shardingsphere.core.parsing.parser.token.InsertValuesToken.InsertColumnValue;
 
-import java.util.LinkedList;
 import java.util.List;
 
 /**
@@ -41,7 +40,7 @@ public final class InsertValuesPlaceholder implements ShardingPlaceholder {
     
     private final DefaultKeyword type;
     
-    private final List<String> columnNames = new LinkedList<>();
+    private final List<String> columnNames;
     
-    private final List<InsertColumnValue> columnValues = new LinkedList<>();
+    private final List<InsertColumnValue> columnValues;
 }
