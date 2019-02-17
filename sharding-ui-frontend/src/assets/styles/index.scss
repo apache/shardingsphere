@@ -1,4 +1,5 @@
 @import '../font/iconfont.css';
+
 body {
   height: 100%;
   -moz-osx-font-smoothing: grayscale;
@@ -16,7 +17,7 @@ html {
   box-sizing: border-box;
 }
 
-#app{
+#app {
   height: 100%;
 }
 
@@ -35,9 +36,9 @@ a:hover {
   text-decoration: none;
 }
 
-div:focus{
+div:focus {
   outline: none;
- }
+}
 
 a:focus,
 a:active {
@@ -64,10 +65,26 @@ a:hover {
 }
 
 //main-container全局样式
-.app-main{
+.app-main {
   min-height: 100%
 }
 
 .app-container {
   padding: 20px;
+}
+
+.el-table th>.cell {
+  color: #4a4a4a;
+}
+
+.el-table .cell {
+  color: #4a4a4a;
+}
+
+.el-form-item__label {
+  color: #4a4a4a;
+}
+
+.el-radio__label {
+  color: #4a4a4a;
 }
