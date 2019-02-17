@@ -79,7 +79,7 @@ public final class InsertValuesToken extends SQLToken {
          * @param columnValueIndex column value index
          * @param columnValue column value
          */
-        public void updateColumnValue(final int columnValueIndex, final String columnValue) {
+        public void setColumnValue(final int columnValueIndex, final String columnValue) {
             SQLExpression sqlExpression = values.get(columnValueIndex);
             if (sqlExpression instanceof SQLPlaceholderExpression) {
                 parameters.set(getParameterIndex(sqlExpression), columnValue);
