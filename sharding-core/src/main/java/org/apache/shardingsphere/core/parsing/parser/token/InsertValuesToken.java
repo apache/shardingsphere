@@ -38,17 +38,15 @@ public final class InsertValuesToken extends SQLToken {
     
     private final List<String> insertColumnNames = new LinkedList<>();
     
+    private final List<InsertColumnValue> columnValues = new LinkedList<>();
     
     
-    
-    
-    
-    public InsertValuesToken(final int startIndex, final String tableName) {
+    public InsertValuesToken(final int startIndex, final DefaultKeyword type) {
         super(startIndex);
-        this.tableName = tableName;
+        this.type = type;
     }
     
-    public final class InsertColumnValue {
+    private final class InsertColumnValue {
     
         private final List<SQLExpression> values = new LinkedList<>();
         
