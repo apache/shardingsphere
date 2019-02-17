@@ -130,18 +130,21 @@ public final class InsertOptimizeEngine implements OptimizeEngine {
     }
     
     private void encryptColumnValues(final InsertValuesToken insertValuesToken, final int currentIndex) {
-        String logicTableName = insertStatement.getTables().getSingleTableName();
+//        String logicTableName = insertStatement.getTables().getSingleTableName()
         for (int i = 0; i < insertValuesToken.getColumnNames().size(); i++) {
-            String columnName = insertValuesToken.getColumnNames().get(i);
-            Optional<ShardingEncryptor> shardingEncryptor = shardingRule.getShardingEncryptorEngine().getShardingEncryptor(logicTableName, columnName);
+            Optional<ShardingEncryptor> shardingEncryptor = shardingRule.getShardingEncryptorEngine().getShardingEncryptor(insertStatement.getTables().getSingleTableName(), insertValuesToken.getColumnNames().get(i));
             if (shardingEncryptor.isPresent()) {
-                InsertColumnValue insertColumnValue = insertValuesToken.getColumnValues().get(currentIndex);
-                insertColumnValue.setColumnValue(i, shardingEncryptor.get().encrypt(insertColumnValue.getColumnValue(i)).toString());
-                if (shardingEncryptor instanceof ShardingQueryAssistedEncryptor) {
-                    insertValuesToken.getColumnNames().add(shardingRule.getTableRule(logicTableName).getShardingEncryptorStrategy().getAssistedQueryColumn(columnName).get());
-                    fillInsertValuesTokenWithColumnValue(insertColumnValue, insertColumnValue.getColumnValue(i));
-                }
+                reviseInsertValuesToken(insertValuesToken, currentIndex, i, shardingEncryptor.get());
             }
+        }
+    }
+    
+    private void reviseInsertValuesToken(final InsertValuesToken insertValuesToken, final int insertColumnValueIndex, final int columnIndex, final ShardingEncryptor shardingEncryptor) {
+        InsertColumnValue insertColumnValue = insertValuesToken.getColumnValues().get(insertColumnValueIndex);
+        insertColumnValue.setColumnValue(columnIndex, shardingEncryptor.encrypt(insertColumnValue.getColumnValue(columnIndex)).toString());
+        if (shardingEncryptor instanceof ShardingQueryAssistedEncryptor) {
+            insertValuesToken.getColumnNames().add(shardingRule.getTableRule(insertStatement.getTables().getSingleTableName()).getShardingEncryptorStrategy().getAssistedQueryColumn(insertValuesToken.getColumnNames().get(columnIndex)).get());
+            fillInsertValuesTokenWithColumnValue(insertColumnValue, insertColumnValue.getColumnValue(columnIndex));
         }
     }
     
