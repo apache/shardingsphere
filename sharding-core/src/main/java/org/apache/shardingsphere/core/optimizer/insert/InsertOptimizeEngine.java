@@ -28,7 +28,6 @@ import org.apache.shardingsphere.core.parsing.parser.context.condition.Column;
 import org.apache.shardingsphere.core.parsing.parser.context.condition.Condition;
 import org.apache.shardingsphere.core.parsing.parser.context.condition.GeneratedKeyCondition;
 import org.apache.shardingsphere.core.parsing.parser.context.insertvalue.InsertValue;
-import org.apache.shardingsphere.core.parsing.parser.expression.SQLExpression;
 import org.apache.shardingsphere.core.parsing.parser.expression.SQLNumberExpression;
 import org.apache.shardingsphere.core.parsing.parser.expression.SQLPlaceholderExpression;
 import org.apache.shardingsphere.core.parsing.parser.expression.SQLTextExpression;
@@ -80,8 +79,13 @@ public final class InsertOptimizeEngine implements OptimizeEngine {
             insertValuesToken.addInsertColumnValue(insertValue.getColumnValues(), currentParameters);
             if (isNeededToAppendGeneratedKey()) {
                 insertValuesToken.getColumnNames().add(shardingRule.findGenerateKeyColumn(insertStatement.getTables().getSingleTableName()).get().getName());
+                fillInsertValuesTokenWithGeneratedKey(insertValuesToken, i, generatedKeys.next());
             }
-            insertValuesToken.getColumnValues().get(i).getValues().add()
+            if (isNeededToEncrypt()) {
+                
+            }
+            
+            
             
             
             
@@ -97,6 +101,10 @@ public final class InsertOptimizeEngine implements OptimizeEngine {
         return -1 == insertStatement.getGenerateKeyColumnIndex() && shardingRule.findGenerateKeyColumn(insertStatement.getTables().getSingleTableName()).isPresent();
     }
     
+    private boolean isNeededToEncrypt() {
+        return shardingRule.getShardingEncryptorEngine().isHasShardingEncryptorStrategy(insertStatement.getTables().getSingleTableName());
+    }
+    
     private Iterator<Comparable<?>> createGeneratedKeys() {
         return isNeededToAppendGeneratedKey() ? generatedKey.getGeneratedKeys().iterator() : null;
     }
@@ -107,7 +115,7 @@ public final class InsertOptimizeEngine implements OptimizeEngine {
         return result;
     }
     
-    private void fillInsertValuesTokenWithColumnValue(final InsertValuesToken insertValuesToken, final int currentIndex, final Comparable<?> currentGeneratedKey) {
+    private void fillInsertValuesTokenWithGeneratedKey(final InsertValuesToken insertValuesToken, final int currentIndex, final Comparable<?> currentGeneratedKey) {
         if (!parameters.isEmpty()) {
             insertValuesToken.getColumnValues().get(currentIndex).getValues().add(new SQLPlaceholderExpression(parameters.size() - 1));
             insertValuesToken.getColumnValues().get(currentIndex).getParameters().add(currentGeneratedKey);
