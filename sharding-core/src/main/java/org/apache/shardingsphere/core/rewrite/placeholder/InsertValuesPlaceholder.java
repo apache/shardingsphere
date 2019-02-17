@@ -43,6 +43,11 @@ public final class InsertValuesPlaceholder implements ShardingPlaceholder {
     
     private final List<InsertColumnValue> columnValues;
     
+    /**
+     * Get parameter sets.
+     * 
+     * @return parameter sets
+     */
     public List<List<Object>> getParameterSets() {
         List<List<Object>> result = new LinkedList<>();
         for (InsertColumnValue each : columnValues) {
