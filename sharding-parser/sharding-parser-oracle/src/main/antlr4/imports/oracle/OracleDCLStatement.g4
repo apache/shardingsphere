@@ -15,7 +15,7 @@ objectPrivileges_
     ;
 
 objectPrivilegeType_
-    : (ALL PRIVILEGES?)
+    : ALL PRIVILEGES?
     | SELECT
     | INSERT
     | DELETE
@@ -29,17 +29,17 @@ objectPrivilegeType_
     | REFERENCES
     | DEBUG
     | UNDER
-    | (FLASHBACK ARCHIVE)
-    | (ON COMMIT REFRESH)
-    | (QUERY REWRITE)
-    | (KEEP SEQUENCE)
-    | (INHERIT PRIVILEGES)
-    | (TRANSLATE SQL)
-    | (MERGE VIEW)
+    | FLASHBACK ARCHIVE
+    | ON COMMIT REFRESH
+    | QUERY REWRITE
+    | KEEP SEQUENCE
+    | INHERIT PRIVILEGES
+    | TRANSLATE SQL
+    | MERGE VIEW
     ;
 
 onObjectClause_
-    : USER | DIRECTORY | EDITION | (MINING MODEL) | (SQL TRANSLATION PROFILE)
+    : USER | DIRECTORY | EDITION | MINING MODEL | SQL TRANSLATION PROFILE
     | JAVA (SOURCE | RESOURCE) tableName
     | tableName
     ;

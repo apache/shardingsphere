@@ -15,7 +15,7 @@ autoCommitValue
     ;
 
 beginTransaction
-    : BEGIN | (START TRANSACTION)
+    : BEGIN | START TRANSACTION
     ;
 
 commit
