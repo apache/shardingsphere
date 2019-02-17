@@ -98,7 +98,13 @@ public final class InsertValuesToken extends SQLToken {
             }));
             return sqlPlaceholderExpressions.indexOf(sqlExpression);
         }
-        
+    
+        /**
+         * Get column value.
+         * 
+         * @param columnValueIndex column value index
+         * @return column value
+         */
         public String getColumnValue(final int columnValueIndex) {
             SQLExpression sqlExpression = values.get(columnValueIndex);
             if (sqlExpression instanceof SQLPlaceholderExpression) {
