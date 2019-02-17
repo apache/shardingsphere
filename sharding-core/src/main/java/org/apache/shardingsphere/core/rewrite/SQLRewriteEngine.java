@@ -29,6 +29,7 @@ import org.apache.shardingsphere.core.constant.ShardingOperator;
 import org.apache.shardingsphere.core.exception.ShardingException;
 import org.apache.shardingsphere.core.metadata.datasource.ShardingDataSourceMetaData;
 import org.apache.shardingsphere.core.parsing.lexer.token.DefaultKeyword;
+import org.apache.shardingsphere.core.parsing.parser.context.condition.Column;
 import org.apache.shardingsphere.core.parsing.parser.context.condition.Condition;
 import org.apache.shardingsphere.core.parsing.parser.context.limit.Limit;
 import org.apache.shardingsphere.core.parsing.parser.context.orderby.OrderItem;
@@ -237,7 +238,8 @@ public final class SQLRewriteEngine {
     }
     
     private void appendInsertValuesToken(final SQLBuilder sqlBuilder, final InsertValuesToken insertValuesToken, final int count) {
-        sqlBuilder.appendPlaceholder(new InsertValuesPlaceholder(sqlStatement.getTables().getSingleTableName(), insertValuesToken.getType(), insertValuesToken.getColumnNames(), insertValuesToken.getColumnValues()));
+        sqlBuilder.appendPlaceholder(new InsertValuesPlaceholder(sqlStatement.getTables().getSingleTableName(), 
+                insertValuesToken.getType(), insertValuesToken.getColumnNames(), insertValuesToken.getColumnValues()));
         appendRest(sqlBuilder, count, ((InsertStatement) sqlStatement).getInsertValuesListLastIndex() + 1);
     }
     
@@ -390,7 +392,8 @@ public final class SQLRewriteEngine {
         ShardingEncryptor shardingEncryptor = shardingRule.getShardingEncryptorEngine().getShardingEncryptor(encryptColumnToken.getColumn().getTableName(), 
                 encryptColumnToken.getColumn().getName()).get();
         if (shardingEncryptor instanceof ShardingQueryAssistedEncryptor) {
-            Optional<String> result = shardingRule.getTableRule(encryptColumnToken.getColumn().getTableName()).getShardingEncryptorStrategy().getAssistedQueryColumn(encryptColumnToken.getColumn().getName());
+            Column column = encryptColumnToken.getColumn();
+            Optional<String> result = shardingRule.getTableRule(column.getTableName()).getShardingEncryptorStrategy().getAssistedQueryColumn(column.getName());
             if (!result.isPresent()) {
                 throw new ShardingException("Can not find the assistedColumn of %s", encryptColumnToken.getColumn().getName());
             }
