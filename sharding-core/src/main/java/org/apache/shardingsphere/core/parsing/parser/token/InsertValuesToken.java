@@ -59,7 +59,7 @@ public final class InsertValuesToken extends SQLToken {
     }
     
     @Getter
-    private final class InsertColumnValue {
+    public final class InsertColumnValue {
     
         private final List<SQLExpression> values = new LinkedList<>();
         
