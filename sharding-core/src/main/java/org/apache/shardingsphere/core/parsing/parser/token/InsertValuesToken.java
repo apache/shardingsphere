@@ -17,11 +17,16 @@
 
 package org.apache.shardingsphere.core.parsing.parser.token;
 
+import com.google.common.base.Predicate;
+import com.google.common.collect.Collections2;
 import lombok.Getter;
 import org.apache.shardingsphere.core.parsing.lexer.token.DefaultKeyword;
 import org.apache.shardingsphere.core.parsing.parser.expression.SQLExpression;
+import org.apache.shardingsphere.core.parsing.parser.expression.SQLPlaceholderExpression;
+import org.apache.shardingsphere.core.parsing.parser.expression.SQLTextExpression;
 import org.apache.shardingsphere.core.rule.DataNode;
 
+import java.util.ArrayList;
 import java.util.LinkedList;
 import java.util.List;
 
@@ -66,5 +71,25 @@ public final class InsertValuesToken extends SQLToken {
         private final List<Object> parameters = new LinkedList<>();
     
         private final List<DataNode> dataNodes = new LinkedList<>();
+        
+        public void updateColumnValue(final int valueIndex, final String columnValue) {
+            SQLExpression sqlExpression = values.get(valueIndex);
+            if (sqlExpression instanceof SQLPlaceholderExpression) {
+                parameters.set(getParameterIndex(sqlExpression), columnValue);
+            } else {
+                values.set(valueIndex, new SQLTextExpression(columnValue));
+            }
+        }
+    
+        private int getParameterIndex(final SQLExpression sqlExpression) {
+            List<SQLExpression> sqlPlaceholderExpressions = new ArrayList<>(Collections2.filter(values, new Predicate<SQLExpression>() {
+
+                @Override
+                public boolean apply(final SQLExpression input) {
+                    return input instanceof SQLPlaceholderExpression;
+                }
+            }));
+            return sqlPlaceholderExpressions.indexOf(sqlExpression);
+        }
     }
 }
