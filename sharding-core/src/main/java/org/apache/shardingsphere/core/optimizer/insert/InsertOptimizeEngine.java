@@ -129,12 +129,11 @@ public final class InsertOptimizeEngine implements OptimizeEngine {
         return shardingRule.getShardingEncryptorEngine().isHasShardingEncryptorStrategy(insertStatement.getTables().getSingleTableName());
     }
     
-    private void encryptColumnValues(final InsertValuesToken insertValuesToken, final int currentIndex) {
-//        String logicTableName = insertStatement.getTables().getSingleTableName()
+    private void encryptColumnValues(final InsertValuesToken insertValuesToken, final int insertColumnValueIndex) {
         for (int i = 0; i < insertValuesToken.getColumnNames().size(); i++) {
             Optional<ShardingEncryptor> shardingEncryptor = shardingRule.getShardingEncryptorEngine().getShardingEncryptor(insertStatement.getTables().getSingleTableName(), insertValuesToken.getColumnNames().get(i));
             if (shardingEncryptor.isPresent()) {
-                reviseInsertValuesToken(insertValuesToken, currentIndex, i, shardingEncryptor.get());
+                reviseInsertValuesToken(insertValuesToken, insertColumnValueIndex, i, shardingEncryptor.get());
             }
         }
     }
