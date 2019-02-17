@@ -86,7 +86,7 @@ public final class RoutingEngineFactory {
         }
         Collection<String> shardingTableNames = shardingRule.getShardingLogicTableNames(tableNames);
         if (1 == shardingTableNames.size() || shardingRule.isAllBindingTables(shardingTableNames)) {
-            return new StandardRoutingEngine(shardingRule, shardingTableNames.iterator().next(), shardingConditions);
+            return new StandardRoutingEngine(sqlStatement, shardingRule, shardingTableNames.iterator().next(), shardingConditions);
         }
         // TODO config for cartesian set
         return new ComplexRoutingEngine(shardingRule, tableNames, shardingConditions);
