@@ -55,4 +55,8 @@ public final class ShardingEncryptorEngine {
         }
         return Optional.absent();
     }
+    
+    public boolean isHasShardingEncryptorStrategy(final String logicTableName) {
+        return shardingEncryptorStrategies.keySet().contains(logicTableName);
+    }
 }
