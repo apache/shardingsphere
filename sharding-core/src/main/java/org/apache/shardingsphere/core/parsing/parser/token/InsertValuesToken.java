@@ -121,8 +121,15 @@ public final class InsertValuesToken extends SQLToken {
             StringBuilder result = new StringBuilder();
             if (DefaultKeyword.SET == type) {
                 for (int i = 0; i < columnNames.size(); i++) {
-                    result.append(String.format("%s = %s", columnNames.get(i), ))
+                    result.append(String.format("%s = %s", columnNames.get(i), getColumnSQLExpressionValue(i))).append(", ");
                 }
+                result.delete(result.length() - 2, result.length());
+            } else {
+                result.append("(");
+                for (int i = 0; i < columnNames.size(); i++) {
+                    result.append(getColumnSQLExpressionValue(i)).append(", ");
+                }
+                result.delete(result.length() - 2, result.length()).append(")");
             }
         }
         
