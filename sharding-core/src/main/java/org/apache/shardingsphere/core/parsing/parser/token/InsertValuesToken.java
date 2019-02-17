@@ -120,19 +120,28 @@ public final class InsertValuesToken extends SQLToken {
         public String toString() {
             StringBuilder result = new StringBuilder();
             if (DefaultKeyword.SET == type) {
-                for (int i = 0; i < columnNames.size(); i++) {
-                    result.append(String.format("%s = %s", columnNames.get(i), getColumnSQLExpressionValue(i))).append(", ");
-                }
-                result.delete(result.length() - 2, result.length());
+                fillResultBySet(result);
             } else {
-                result.append("(");
-                for (int i = 0; i < columnNames.size(); i++) {
-                    result.append(getColumnSQLExpressionValue(i)).append(", ");
-                }
-                result.delete(result.length() - 2, result.length()).append(")");
+                fillResultByValues(result);
             }
+            return result.toString();
         }
-        
+    
+        private void fillResultByValues(final StringBuilder result) {
+            result.append("(");
+            for (int i = 0; i < columnNames.size(); i++) {
+                result.append(getColumnSQLExpressionValue(i)).append(", ");
+            }
+            result.delete(result.length() - 2, result.length()).append(")");
+        }
+    
+        private void fillResultBySet(final StringBuilder result) {
+            for (int i = 0; i < columnNames.size(); i++) {
+                result.append(String.format("%s = %s", columnNames.get(i), getColumnSQLExpressionValue(i))).append(", ");
+            }
+            result.delete(result.length() - 2, result.length());
+        }
+    
         private String getColumnSQLExpressionValue(final int columnValueIndex) {
             SQLExpression sqlExpression = values.get(columnValueIndex);
             if (sqlExpression instanceof SQLPlaceholderExpression) {
