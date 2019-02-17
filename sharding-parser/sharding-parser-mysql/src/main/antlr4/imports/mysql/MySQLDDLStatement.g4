@@ -2,225 +2,141 @@ grammar MySQLDDLStatement;
 
 import MySQLKeyword, Keyword, Symbol, MySQLDQLStatement, DataType, MySQLBase, BaseRule;
 
-createIndex
-    : CREATE (UNIQUE | FULLTEXT | SPATIAL)? INDEX indexName indexType? ON tableName
-    ;
-
-dropIndex
-    : DROP INDEX (ONLINE | OFFLINE)? indexName ON tableName
-    ;
-
-truncateTable
-    : TRUNCATE TABLE? tableName
-    ;
-
 createTable
-    : CREATE TEMPORARY? TABLE (IF NOT EXISTS)? tableName createTableOptions
+    : CREATE TEMPORARY? TABLE (IF NOT EXISTS)? tableName (LP_ createDefinitions_ RP_ | createLike_)
     ;
 
-dropTable
-    : DROP TEMPORARY? TABLE (IF EXISTS)? tableNames
+createDefinitions_
+    : createDefinition_ (COMMA_ createDefinition_)*
     ;
 
-alterTable
-    : ALTER TABLE tableName alterSpecifications?
+createDefinition_
+    : columnDefinition | constraintDefinition | indexDefinition | checkExpr_
     ;
 
-createTableOptions
-    : createTableBasic | createTableSelect | createTableLike
-    ;
-
-createTableBasic
-    : createDefinitionsWithParen tableOptions? partitionOptions?
-    ;
-
-createDefinitionsWithParen
-    : LP_ createDefinitions RP_
-    ;
-
-createDefinitions
-    : createDefinition (COMMA_ createDefinition)*
-    ;
-
-createDefinition
-    : columnDefinition | constraintDefinition | indexDefinition | checkExpr
-    ;
-
-checkExpr
+checkExpr_
     : CHECK expr
     ;
 
-createTableSelect
-    : createDefinitionsWithParen? tableOptions? partitionOptions? (IGNORE | REPLACE)? AS? unionSelect
-    ;
-
-createTableLike
-    : likeTable | LP_ likeTable RP_
-    ;
-
-likeTable
-    : LIKE tableName
+createLike_
+    : LIKE tableName | LP_ LIKE tableName RP_
     ;
 
 columnDefinition
-    : columnName dataType (dataTypeOption* | dataTypeGenerated?)
+    : columnName dataType (dataTypeOption_* | dataTypeGenerated_?)
     ;
 
 dataType
-    : typeName dataTypeLength? characterSet? collateClause? UNSIGNED? ZEROFILL? | typeName (LP_ STRING_ (COMMA_ STRING_)* RP_ characterSet? collateClause?)
+    : typeName_ dataTypeLength_? characterSet_? collateClause_? UNSIGNED? ZEROFILL? | typeName_ LP_ STRING_ (COMMA_ STRING_)* RP_ characterSet_? collateClause_?
     ;
 
-typeName
+typeName_
     : DOUBLE PRECISION | ID
     ;
 
-dataTypeOption
-    : dataTypeGeneratedOption
-    | DEFAULT? defaultValue
+dataTypeLength_
+    : LP_ NUMBER_ (COMMA_ NUMBER_)? RP_
+    ;
+
+characterSet_
+    : (CHARACTER | CHAR) SET EQ_? charsetName_ | CHARSET EQ_? charsetName_
+    ;
+
+charsetName_
+    : ID | BINARY
+    ;
+
+collateClause_
+    : COLLATE EQ_? collationName_
+    ;
+
+collationName_
+    : STRING_ | ID
+    ;
+
+dataTypeOption_
+    : dataTypeGeneratedOption_
+    | DEFAULT? defaultValue_
     | AUTO_INCREMENT
     | COLUMN_FORMAT (FIXED | DYNAMIC | DEFAULT)
     | STORAGE (DISK | MEMORY | DEFAULT)
-    | referenceDefinition
+    | referenceDefinition_
     ;
 
-dataTypeGeneratedOption
+dataTypeGeneratedOption_
     : NULL | NOT NULL | UNIQUE KEY? | primaryKey | COMMENT STRING_
     ;
 
-defaultValue
-    : NULL | NUMBER_ | STRING_ | currentTimestampType (ON UPDATE currentTimestampType)? | ON UPDATE currentTimestampType
+defaultValue_
+    : NULL | NUMBER_ | STRING_ | currentTimestampType_ (ON UPDATE currentTimestampType_)? | ON UPDATE currentTimestampType_
     ;
 
-currentTimestampType
-    : (CURRENT_TIMESTAMP | LOCALTIME | LOCALTIMESTAMP | NOW | NUMBER_) dataTypeLength?
+currentTimestampType_
+    : (CURRENT_TIMESTAMP | LOCALTIME | LOCALTIMESTAMP | NOW | NUMBER_) dataTypeLength_?
     ;
 
-referenceDefinition
-    : REFERENCES tableName keyPartsWithParen (MATCH FULL | MATCH PARTIAL | MATCH SIMPLE)? referenceType*
+referenceDefinition_
+    : REFERENCES tableName LP_ keyParts_ RP_ (MATCH FULL | MATCH PARTIAL | MATCH SIMPLE)? referenceType_*
     ;
 
-referenceType
-    : ON (UPDATE | DELETE) referenceOption
+referenceType_
+    : ON (UPDATE | DELETE) referenceOption_
     ;
 
-referenceOption
+referenceOption_
     : RESTRICT | CASCADE | SET NULL | NO ACTION | SET DEFAULT
     ;
 
-dataTypeGenerated
-    : (GENERATED ALWAYS)? AS expr (VIRTUAL | STORED)? dataTypeGeneratedOption*
+dataTypeGenerated_
+    : (GENERATED ALWAYS)? AS expr (VIRTUAL | STORED)? dataTypeGeneratedOption_*
     ;
 
 constraintDefinition
-    : (CONSTRAINT symbol?)? (primaryKeyOption | uniqueOption | foreignKeyOption)
+    : (CONSTRAINT symbol?)? (primaryKeyOption_ | uniqueOption_ | foreignKeyOption_)
     ;
 
-primaryKeyOption
+primaryKeyOption_
     : primaryKey indexType? columnList indexOption*
     ;
 
-uniqueOption
-    : UNIQUE indexAndKey? indexName? indexType? keyPartsWithParen indexOption*
+uniqueOption_
+    : UNIQUE indexAndKey? indexName? indexType? LP_ keyParts_ RP_ indexOption*
     ;
 
-foreignKeyOption
-    : FOREIGN KEY indexName? columnNamesWithParen referenceDefinition
+foreignKeyOption_
+    : FOREIGN KEY indexName? columnNamesWithParen referenceDefinition_
     ;
 
 indexDefinition
-    : (FULLTEXT | SPATIAL)? indexAndKey? indexName? indexType? keyPartsWithParen indexOption*
+    : (FULLTEXT | SPATIAL)? indexAndKey? indexName? indexType? LP_ keyParts_ RP_ indexOption*
     ;
 
-tableOptions
-    : tableOption (COMMA_? tableOption)*
+keyParts_
+    : keyPart_ (COMMA_ keyPart_)*
     ;
 
-tableOption
-    : AUTO_INCREMENT EQ_? NUMBER_
-    | AVG_ROW_LENGTH EQ_? NUMBER_
-    | DEFAULT? (characterSet | collateClause)
-    | CHECKSUM EQ_? NUMBER_
-    | COMMENT EQ_? STRING_
-    | COMPRESSION EQ_? STRING_
-    | CONNECTION EQ_? STRING_
-    | (DATA | INDEX) DIRECTORY EQ_? STRING_
-    | DELAY_KEY_WRITE EQ_? NUMBER_
-    | ENCRYPTION EQ_? STRING_
-    | ENGINE EQ_? engineName
-    | INSERT_METHOD EQ_? (NO | FIRST | LAST)
-    | KEY_BLOCK_SIZE EQ_? NUMBER_
-    | MAX_ROWS EQ_? NUMBER_
-    | MIN_ROWS EQ_? NUMBER_
-    | PACK_KEYS EQ_? (NUMBER_ | DEFAULT)
-    | PASSWORD EQ_? STRING_
-    | ROW_FORMAT EQ_? (DEFAULT | DYNAMIC | FIXED | COMPRESSED | REDUNDANT | COMPACT)
-    | STATS_AUTO_RECALC EQ_? (DEFAULT | NUMBER_)
-    | STATS_PERSISTENT EQ_? (DEFAULT | NUMBER_)
-    | STATS_SAMPLE_PAGES EQ_? NUMBER_
-    | TABLESPACE tablespaceName (STORAGE (DISK | MEMORY | DEFAULT))?
-    | UNION EQ_? tableList
+keyPart_
+    : columnName (LP_ NUMBER_ RP_)? (ASC | DESC)?
     ;
 
-engineName
-    : ID | MEMORY
+alterTable
+    : ALTER TABLE tableName alterSpecifications_?
     ;
 
-partitionOptions
-    : PARTITION BY (linearPartition | rangeOrListPartition) (PARTITIONS NUMBER_)? (SUBPARTITION BY linearPartition (SUBPARTITIONS NUMBER_)?)? (LP_ partitionDefinitions RP_)?
+alterSpecifications_
+    : alterSpecification_ (COMMA_ alterSpecification_)*
     ;
 
-linearPartition
-    : LINEAR? (HASH (yearFunctionExpr | expr) | KEY (ALGORITHM EQ_ NUMBER_)? columnNamesWithParen)
-    ;
-
-yearFunctionExpr
-    : LP_ YEAR expr RP_
-    ;
-
-rangeOrListPartition
-    : (RANGE | LIST) (expr | COLUMNS columnNamesWithParen)
-    ;
-
-partitionDefinitions
-    : partitionDefinition (COMMA_ partitionDefinition)*
-    ;
-
-partitionDefinition
-    : PARTITION partitionName (VALUES (lessThanPartition | IN assignmentValueList))? partitionDefinitionOption* (LP_ subpartitionDefinition (COMMA_ subpartitionDefinition)* RP_)?
-    ;
-
-partitionDefinitionOption
-    : STORAGE? ENGINE EQ_? engineName
-    | COMMENT EQ_? STRING_
-    | DATA DIRECTORY EQ_? STRING_
-    | INDEX DIRECTORY EQ_? STRING_
-    | MAX_ROWS EQ_? NUMBER_
-    | MIN_ROWS EQ_? NUMBER_
-    | TABLESPACE EQ_? tablespaceName
-    ;
-
-lessThanPartition
-    : LESS THAN (LP_ (expr | assignmentValues) RP_ | MAXVALUE)
-    ;
-
-subpartitionDefinition
-    : SUBPARTITION partitionName partitionDefinitionOption*
-    ;
-
-alterSpecifications
-    : alterSpecification (COMMA_ alterSpecification)*
-    ;
-
-alterSpecification
-    : tableOptions
+alterSpecification_
+    : tableOptions_
     | addColumn
     | addIndex
     | addConstraint
     | ALGORITHM EQ_? (DEFAULT | INPLACE | COPY)
     | ALTER COLUMN? columnName (SET DEFAULT | DROP DEFAULT)
     | changeColumn
-    | DEFAULT? characterSet collateClause?
-    | CONVERT TO characterSet collateClause?
+    | DEFAULT? characterSet_ collateClause_?
+    | CONVERT TO characterSet_ collateClause_?
     | (DISABLE | ENABLE) KEYS
     | (DISCARD | IMPORT_) TABLESPACE
     | dropColumn
@@ -234,13 +150,13 @@ alterSpecification
     | renameIndex
     | renameTable
     | (WITHOUT | WITH) VALIDATION
-    | ADD PARTITION partitionDefinitions
+    | ADD PARTITION partitionDefinitions_
     | DROP PARTITION partitionNames
     | DISCARD PARTITION (partitionNames | ALL) TABLESPACE
     | IMPORT_ PARTITION (partitionNames | ALL) TABLESPACE
     | TRUNCATE PARTITION (partitionNames | ALL)
     | COALESCE PARTITION NUMBER_
-    | REORGANIZE PARTITION partitionNames INTO partitionDefinitions
+    | REORGANIZE PARTITION partitionNames INTO partitionDefinitions_
     | EXCHANGE PARTITION partitionName WITH TABLE tableName ((WITH | WITHOUT) VALIDATION)?
     | ANALYZE PARTITION (partitionNames | ALL)
     | CHECK PARTITION (partitionNames | ALL)
@@ -311,6 +227,98 @@ renameTable
     : RENAME (TO | AS)? tableName
     ;
 
+tableOptions_
+    : tableOption_ (COMMA_? tableOption_)*
+    ;
+
+tableOption_
+    : AUTO_INCREMENT EQ_? NUMBER_
+    | AVG_ROW_LENGTH EQ_? NUMBER_
+    | DEFAULT? (characterSet_ | collateClause_)
+    | CHECKSUM EQ_? NUMBER_
+    | COMMENT EQ_? STRING_
+    | COMPRESSION EQ_? STRING_
+    | CONNECTION EQ_? STRING_
+    | (DATA | INDEX) DIRECTORY EQ_? STRING_
+    | DELAY_KEY_WRITE EQ_? NUMBER_
+    | ENCRYPTION EQ_? STRING_
+    | ENGINE EQ_? engineName_
+    | INSERT_METHOD EQ_? (NO | FIRST | LAST)
+    | KEY_BLOCK_SIZE EQ_? NUMBER_
+    | MAX_ROWS EQ_? NUMBER_
+    | MIN_ROWS EQ_? NUMBER_
+    | PACK_KEYS EQ_? (NUMBER_ | DEFAULT)
+    | PASSWORD EQ_? STRING_
+    | ROW_FORMAT EQ_? (DEFAULT | DYNAMIC | FIXED | COMPRESSED | REDUNDANT | COMPACT)
+    | STATS_AUTO_RECALC EQ_? (DEFAULT | NUMBER_)
+    | STATS_PERSISTENT EQ_? (DEFAULT | NUMBER_)
+    | STATS_SAMPLE_PAGES EQ_? NUMBER_
+    | TABLESPACE tablespaceName (STORAGE (DISK | MEMORY | DEFAULT))?
+    | UNION EQ_? tableList
+    ;
+
+engineName_
+    : ID | MEMORY
+    ;
+
+partitionOptions_
+    : PARTITION BY (linearPartition_ | rangeOrListPartition_) (PARTITIONS NUMBER_)? (SUBPARTITION BY linearPartition_ (SUBPARTITIONS NUMBER_)?)? (LP_ partitionDefinitions_ RP_)?
+    ;
+
+linearPartition_
+    : LINEAR? (HASH (yearFunctionExpr_ | expr) | KEY (ALGORITHM EQ_ NUMBER_)? columnNamesWithParen)
+    ;
+
+yearFunctionExpr_
+    : LP_ YEAR expr RP_
+    ;
+
+rangeOrListPartition_
+    : (RANGE | LIST) (expr | COLUMNS columnNamesWithParen)
+    ;
+
+partitionDefinitions_
+    : partitionDefinition_ (COMMA_ partitionDefinition_)*
+    ;
+
+partitionDefinition_
+    : PARTITION partitionName (VALUES (lessThanPartition_ | IN assignmentValueList))? partitionDefinitionOption_* (LP_ subpartitionDefinition_ (COMMA_ subpartitionDefinition_)* RP_)?
+    ;
+
+partitionDefinitionOption_
+    : STORAGE? ENGINE EQ_? engineName_
+    | COMMENT EQ_? STRING_
+    | DATA DIRECTORY EQ_? STRING_
+    | INDEX DIRECTORY EQ_? STRING_
+    | MAX_ROWS EQ_? NUMBER_
+    | MIN_ROWS EQ_? NUMBER_
+    | TABLESPACE EQ_? tablespaceName
+    ;
+
+lessThanPartition_
+    : LESS THAN (LP_ (expr | assignmentValues) RP_ | MAXVALUE)
+    ;
+
+subpartitionDefinition_
+    : SUBPARTITION partitionName partitionDefinitionOption_*
+    ;
+
 partitionNames
     : partitionName (COMMA_ partitionName)*
+    ;
+
+dropTable
+    : DROP TEMPORARY? TABLE (IF EXISTS)? tableNames
+    ;
+
+truncateTable
+    : TRUNCATE TABLE? tableName
+    ;
+
+createIndex
+    : CREATE (UNIQUE | FULLTEXT | SPATIAL)? INDEX indexName indexType? ON tableName
+    ;
+
+dropIndex
+    : DROP INDEX (ONLINE | OFFLINE)? indexName ON tableName
     ;

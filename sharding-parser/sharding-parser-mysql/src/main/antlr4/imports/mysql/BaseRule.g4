@@ -34,10 +34,6 @@ tablespaceName
     : ID
     ;
 
-collationName
-    : STRING_ | ID
-    ;
-
 indexName
     : ID
     ;
@@ -128,10 +124,6 @@ userName
 
 serverName
     : ID
-    ;
-
-dataTypeLength
-    : LP_ (NUMBER_ (COMMA_ NUMBER_)?)? RP_
     ;
 
 primaryKey

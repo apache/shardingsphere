@@ -7,12 +7,12 @@ execute
     | insert
     | update
     | delete
-    | createIndex
-    | dropIndex
     | createTable
     | alterTable
     | dropTable
     | truncateTable
+    | createIndex
+    | dropIndex
     | setTransaction
     | beginTransaction
     | setAutoCommit
