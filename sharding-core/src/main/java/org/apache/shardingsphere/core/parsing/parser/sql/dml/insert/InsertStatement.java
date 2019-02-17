@@ -75,6 +75,11 @@ public final class InsertStatement extends DMLStatement {
         return result;
     }
     
+    /**
+     * Get insert values token.
+     * 
+     * @return insert values token
+     */
     public InsertValuesToken getInsertValuesToken() {
         return (InsertValuesToken) Collections2.filter(getSQLTokens(), new Predicate<SQLToken>() {
             
