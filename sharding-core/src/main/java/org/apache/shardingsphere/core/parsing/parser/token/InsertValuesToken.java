@@ -18,19 +18,42 @@
 package org.apache.shardingsphere.core.parsing.parser.token;
 
 import lombok.Getter;
+import org.apache.shardingsphere.core.parsing.lexer.token.DefaultKeyword;
+import org.apache.shardingsphere.core.parsing.parser.expression.SQLExpression;
+import org.apache.shardingsphere.core.rule.DataNode;
+
+import java.util.LinkedList;
+import java.util.List;
 
 /**
  * Insert values token.
  *
  * @author maxiaoguang
+ * @author panjuan
  */
 @Getter
 public final class InsertValuesToken extends SQLToken {
     
-    private final String tableName;
+    private final DefaultKeyword type;
+    
+    private final List<String> insertColumnNames = new LinkedList<>();
+    
+    
+    
+    
+    
     
     public InsertValuesToken(final int startIndex, final String tableName) {
         super(startIndex);
         this.tableName = tableName;
+    }
+    
+    public final class InsertColumnValue {
+    
+        private final List<SQLExpression> values = new LinkedList<>();
+        
+        private final List<Object> parameters = new LinkedList<>();
+    
+        private final List<DataNode> dataNodes = new LinkedList<>();
     }
 }
