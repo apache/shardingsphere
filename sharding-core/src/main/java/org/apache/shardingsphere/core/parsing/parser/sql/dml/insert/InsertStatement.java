@@ -92,6 +92,11 @@ public final class InsertStatement extends DMLStatement {
         }).iterator().next();
     }
     
+    /**
+     * Get insert column names.
+     * 
+     * @return insert column names
+     */
     public List<String> getInsertColumnNames() {
         return Lists.transform(columns, new Function<Column, String>() {
             @Override
