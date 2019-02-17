@@ -17,6 +17,7 @@
 
 package org.apache.shardingsphere.core.optimizer.insert;
 
+import com.google.common.base.Optional;
 import lombok.RequiredArgsConstructor;
 import org.apache.shardingsphere.core.keygen.GeneratedKey;
 import org.apache.shardingsphere.core.optimizer.OptimizeEngine;
@@ -33,8 +34,11 @@ import org.apache.shardingsphere.core.parsing.parser.expression.SQLPlaceholderEx
 import org.apache.shardingsphere.core.parsing.parser.expression.SQLTextExpression;
 import org.apache.shardingsphere.core.parsing.parser.sql.dml.insert.InsertStatement;
 import org.apache.shardingsphere.core.parsing.parser.token.InsertValuesToken;
+import org.apache.shardingsphere.core.parsing.parser.token.InsertValuesToken.InsertColumnValue;
 import org.apache.shardingsphere.core.routing.value.ListRouteValue;
 import org.apache.shardingsphere.core.rule.ShardingRule;
+import org.apache.shardingsphere.spi.algorithm.encrypt.ShardingEncryptor;
+import org.apache.shardingsphere.spi.algorithm.encrypt.ShardingQueryAssistedEncryptor;
 
 import java.util.ArrayList;
 import java.util.Collection;
@@ -79,10 +83,9 @@ public final class InsertOptimizeEngine implements OptimizeEngine {
             insertValuesToken.addInsertColumnValue(insertValue.getColumnValues(), currentParameters);
             if (isNeededToAppendGeneratedKey()) {
                 insertValuesToken.getColumnNames().add(shardingRule.findGenerateKeyColumn(insertStatement.getTables().getSingleTableName()).get().getName());
-                fillInsertValuesTokenWithGeneratedKey(insertValuesToken, i, generatedKeys.next());
+                fillInsertValuesTokenWithGeneratedKey(insertValuesToken.getColumnValues().get(i), generatedKeys.next());
             }
             if (isNeededToEncrypt()) {
-                
             }
             
             
@@ -101,10 +104,6 @@ public final class InsertOptimizeEngine implements OptimizeEngine {
         return -1 == insertStatement.getGenerateKeyColumnIndex() && shardingRule.findGenerateKeyColumn(insertStatement.getTables().getSingleTableName()).isPresent();
     }
     
-    private boolean isNeededToEncrypt() {
-        return shardingRule.getShardingEncryptorEngine().isHasShardingEncryptorStrategy(insertStatement.getTables().getSingleTableName());
-    }
-    
     private Iterator<Comparable<?>> createGeneratedKeys() {
         return isNeededToAppendGeneratedKey() ? generatedKey.getGeneratedKeys().iterator() : null;
     }
@@ -115,14 +114,34 @@ public final class InsertOptimizeEngine implements OptimizeEngine {
         return result;
     }
     
-    private void fillInsertValuesTokenWithGeneratedKey(final InsertValuesToken insertValuesToken, final int currentIndex, final Comparable<?> currentGeneratedKey) {
+    private void fillInsertValuesTokenWithGeneratedKey(final InsertColumnValue insertColumnValue, final Comparable<?> currentGeneratedKey) {
         if (!parameters.isEmpty()) {
-            insertValuesToken.getColumnValues().get(currentIndex).getValues().add(new SQLPlaceholderExpression(parameters.size() - 1));
-            insertValuesToken.getColumnValues().get(currentIndex).getParameters().add(currentGeneratedKey);
+            insertColumnValue.getValues().add(new SQLPlaceholderExpression(parameters.size() - 1));
+            insertColumnValue.getParameters().add(currentGeneratedKey);
         } else if (currentGeneratedKey.getClass() == String.class) {
-            insertValuesToken.getColumnValues().get(currentIndex).getValues().add(new SQLTextExpression(currentGeneratedKey.toString()));
+            insertColumnValue.getValues().add(new SQLTextExpression(currentGeneratedKey.toString()));
         } else {
-            insertValuesToken.getColumnValues().get(currentIndex).getValues().add(new SQLNumberExpression((Number) currentGeneratedKey));
+            insertColumnValue.getValues().add(new SQLNumberExpression((Number) currentGeneratedKey));
+        }
+    }
+    
+    private boolean isNeededToEncrypt() {
+        return shardingRule.getShardingEncryptorEngine().isHasShardingEncryptorStrategy(insertStatement.getTables().getSingleTableName());
+    }
+    
+    private void encryptColumnValues(final InsertValuesToken insertValuesToken, final int currentIndex) {
+        String logicTableName = insertStatement.getTables().getSingleTableName();
+        for (int i = 0; i < insertValuesToken.getColumnNames().size(); i++) {
+            String columnName = insertValuesToken.getColumnNames().get(i);
+            Optional<ShardingEncryptor> shardingEncryptor = shardingRule.getShardingEncryptorEngine().getShardingEncryptor(logicTableName, columnName);
+            if (shardingEncryptor.isPresent()) {
+                InsertColumnValue insertColumnValue = insertValuesToken.getColumnValues().get(currentIndex);
+                insertColumnValue.setColumnValue(i, shardingEncryptor.get().encrypt(insertColumnValue.getColumnValue(i)).toString());
+                if (shardingEncryptor instanceof ShardingQueryAssistedEncryptor) {
+                    insertValuesToken.getColumnNames().add(shardingRule.getTableRule(logicTableName).getShardingEncryptorStrategy().getAssistedQueryColumn(columnName).get());
+                    fillInsertValuesTokenWithGeneratedKey(insertColumnValue, insertColumnValue.getColumnValue(i));
+                }
+            }
         }
     }
     
