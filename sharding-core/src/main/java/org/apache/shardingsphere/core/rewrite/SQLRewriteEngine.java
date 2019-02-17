@@ -28,7 +28,6 @@ import org.apache.shardingsphere.core.constant.DatabaseType;
 import org.apache.shardingsphere.core.constant.ShardingOperator;
 import org.apache.shardingsphere.core.exception.ShardingException;
 import org.apache.shardingsphere.core.metadata.datasource.ShardingDataSourceMetaData;
-import org.apache.shardingsphere.core.optimizer.condition.ShardingConditions;
 import org.apache.shardingsphere.core.parsing.lexer.token.DefaultKeyword;
 import org.apache.shardingsphere.core.parsing.parser.context.condition.Condition;
 import org.apache.shardingsphere.core.parsing.parser.context.limit.Limit;
@@ -102,8 +101,6 @@ public final class SQLRewriteEngine {
     
     private final List<SQLToken> sqlTokens;
     
-    private final ShardingConditions shardingConditions;
-    
     private final List<Object> parameters;
     
     private final RewriteHook rewriteHook = new SPIRewriteHook();
@@ -115,17 +112,14 @@ public final class SQLRewriteEngine {
      * @param originalSQL original SQL
      * @param databaseType database type
      * @param sqlStatement SQL statement
-     * @param shardingConditions sharding conditions
      * @param parameters parameters
      */
-    public SQLRewriteEngine(final ShardingRule shardingRule, final String originalSQL, final DatabaseType databaseType,
-                            final SQLStatement sqlStatement, final ShardingConditions shardingConditions, final List<Object> parameters) {
+    public SQLRewriteEngine(final ShardingRule shardingRule, final String originalSQL, final DatabaseType databaseType, final SQLStatement sqlStatement, final List<Object> parameters) {
         this.shardingRule = shardingRule;
         this.originalSQL = originalSQL;
         this.databaseType = databaseType;
         this.sqlStatement = sqlStatement;
         sqlTokens = sqlStatement.getSQLTokens();
-        this.shardingConditions = shardingConditions;
         this.parameters = parameters;
     }
     
