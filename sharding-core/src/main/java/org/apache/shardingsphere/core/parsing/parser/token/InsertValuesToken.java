@@ -115,5 +115,26 @@ public final class InsertValuesToken extends SQLToken {
                 return String.valueOf(((SQLNumberExpression) sqlExpression).getNumber());
             }
         }
+    
+        @Override
+        public String toString() {
+            StringBuilder result = new StringBuilder();
+            if (DefaultKeyword.SET == type) {
+                for (int i = 0; i < columnNames.size(); i++) {
+                    result.append(String.format("%s = %s", columnNames.get(i), ))
+                }
+            }
+        }
+        
+        private String getColumnSQLExpressionValue(final int columnValueIndex) {
+            SQLExpression sqlExpression = values.get(columnValueIndex);
+            if (sqlExpression instanceof SQLPlaceholderExpression) {
+                return "?";
+            } else if (sqlExpression instanceof SQLTextExpression) {
+                return ((SQLTextExpression) sqlExpression).getText();
+            } else {
+                return String.valueOf(((SQLNumberExpression) sqlExpression).getNumber());
+            }
+        }
     }
 }
