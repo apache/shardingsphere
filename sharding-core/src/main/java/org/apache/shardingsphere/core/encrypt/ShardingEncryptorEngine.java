@@ -56,6 +56,12 @@ public final class ShardingEncryptorEngine {
         return Optional.absent();
     }
     
+    /**
+     * Is has sharding encryptor strategy or not.
+     * 
+     * @param logicTableName logic table name
+     * @return sharding encryptor strategy or not
+     */
     public boolean isHasShardingEncryptorStrategy(final String logicTableName) {
         return shardingEncryptorStrategies.keySet().contains(logicTableName);
     }
