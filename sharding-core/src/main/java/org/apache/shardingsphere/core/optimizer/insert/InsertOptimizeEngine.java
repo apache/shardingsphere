@@ -74,7 +74,6 @@ public final class InsertOptimizeEngine implements OptimizeEngine {
         int parametersCount = 0;
         for (int i = 0; i < andConditions.size(); i++) {
             InsertValue insertValue = insertValues.get(i);
-            Comparable<?> currentGeneratedKey = generatedKeys.next();
             List<Object> currentParameters = new ArrayList<>(insertValue.getParametersCount() + 1);
             if (0 != insertValue.getParametersCount()) {
                 currentParameters = getCurrentParameters(parametersCount, insertValue.getParametersCount());
@@ -84,6 +83,7 @@ public final class InsertOptimizeEngine implements OptimizeEngine {
             shardingCondition.getShardingValues().addAll(getShardingValues(andConditions.get(i)));
             insertValuesToken.addInsertColumnValue(insertValue.getColumnValues(), currentParameters);
             if (isNeededToAppendGeneratedKey()) {
+                Comparable<?> currentGeneratedKey = generatedKeys.next();
                 insertValuesToken.getColumnNames().add(shardingRule.findGenerateKeyColumn(insertStatement.getTables().getSingleTableName()).get().getName());
                 fillInsertValuesTokenWithColumnValue(insertValuesToken.getColumnValues().get(i), currentGeneratedKey);
                 fillShardingValue(shardingCondition, currentGeneratedKey);
@@ -124,7 +124,8 @@ public final class InsertOptimizeEngine implements OptimizeEngine {
     
     private void encryptInsertColumnValues(final InsertValuesToken insertValuesToken, final int insertColumnValueIndex) {
         for (int i = 0; i < insertValuesToken.getColumnNames().size(); i++) {
-            Optional<ShardingEncryptor> shardingEncryptor = shardingRule.getShardingEncryptorEngine().getShardingEncryptor(insertStatement.getTables().getSingleTableName(), insertValuesToken.getColumnNames().get(i));
+            Optional<ShardingEncryptor> shardingEncryptor = shardingRule.getShardingEncryptorEngine().getShardingEncryptor(insertStatement.getTables().getSingleTableName(), 
+                    insertValuesToken.getColumnNames().get(i));
             if (shardingEncryptor.isPresent()) {
                 reviseInsertValuesToken(insertValuesToken, insertColumnValueIndex, i, shardingEncryptor.get());
             }
@@ -135,7 +136,9 @@ public final class InsertOptimizeEngine implements OptimizeEngine {
         InsertColumnValue insertColumnValue = insertValuesToken.getColumnValues().get(insertColumnValueIndex);
         insertColumnValue.setColumnValue(columnIndex, shardingEncryptor.encrypt(insertColumnValue.getColumnValue(columnIndex)).toString());
         if (shardingEncryptor instanceof ShardingQueryAssistedEncryptor) {
-            insertValuesToken.getColumnNames().add(shardingRule.getTableRule(insertStatement.getTables().getSingleTableName()).getShardingEncryptorStrategy().getAssistedQueryColumn(insertValuesToken.getColumnNames().get(columnIndex)).get());
+            String columnName = insertValuesToken.getColumnNames().get(columnIndex);
+            String assistedColumnName = shardingRule.getTableRule(insertStatement.getTables().getSingleTableName()).getShardingEncryptorStrategy().getAssistedQueryColumn(columnName).get();
+            insertValuesToken.getColumnNames().add(assistedColumnName);
             fillInsertValuesTokenWithColumnValue(insertColumnValue, insertColumnValue.getColumnValue(columnIndex));
         }
     }
