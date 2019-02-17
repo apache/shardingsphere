@@ -10,23 +10,11 @@ schemaName
     : ID
     ;
 
-databaseName
-    : ID
-    ;
-
-domainName
-    : ID
-    ;
-
 tableName
     : ID
     ;
 
 columnName
-    : ID
-    ;
-
-sequenceName
     : ID
     ;
 
@@ -98,10 +86,6 @@ triggerName
     : ID
     ;
 
-routineName
-    : ID
-    ;
-
 roleName
     : STRING_ | ID
     ;
@@ -115,14 +99,6 @@ rewriteRuleName
     ;
 
 ownerName
-    : ID
-    ;
-
-userName
-    : STRING_ | ID
-    ;
-
-serverName
     : ID
     ;
 
@@ -150,18 +126,6 @@ rangeItem
     : number | question
     ;
 
-schemaNames
-    : schemaName (COMMA_ schemaName)*
-    ;
-
-databaseNames
-    : databaseName (COMMA_ databaseName)*
-    ;
-
-domainNames
-    : domainName (COMMA_ domainName)*
-    ;
-
 tableList
     : LP_ tableNames RP_
     ;
@@ -182,24 +146,12 @@ columnList
     : LP_ columnNames RP_
     ;
 
-sequenceNames
-    : sequenceName (COMMA_ sequenceName)*
-    ;
-
-tablespaceNames
-    : tablespaceName (COMMA_ tablespaceName)*
-    ;
-
 indexNames
     : indexName (COMMA_ indexName)*
     ;
 
 indexList
     : LP_ indexNames RP_
-    ;
-
-typeNames
-    : typeName (COMMA_ typeName)*
     ;
 
 rowNames
@@ -210,36 +162,12 @@ roleNames
     : roleName (COMMA_ roleName)*
     ;
 
-userNames
-    : userName (COMMA_ userName)*
-    ;
-
-serverNames
-    : serverName (COMMA_ serverName)*
-    ;
-
-bitExprs
-    : bitExpr (COMMA_ bitExpr)*
-    ;
-
 exprs
     : expr (COMMA_ expr)*
     ;
 
 exprList
     : LP_ exprs RP_
-    ;
-
-exprOrExprListsList
-    : LP_ exprOrExprLists RP_
-    ;
-
-exprOrExprLists
-    : exprOrExprList (COMMA_ exprOrExprList)*
-    ;
-
-exprOrExprList
-    : expr | exprList
     ;
 
 expr

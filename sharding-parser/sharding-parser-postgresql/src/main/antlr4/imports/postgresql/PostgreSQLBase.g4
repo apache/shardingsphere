@@ -80,10 +80,6 @@ typeName
     : DOUBLE PRECISION | CHARACTER VARYING? | BIT VARYING? | ID
     ;
 
-typeNames
-    : typeName (COMMA_ typeName)*
-    ;
-
 intervalFields
     : intervalField (TO intervalField)?
     ;
