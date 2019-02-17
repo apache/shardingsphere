@@ -17,8 +17,10 @@
 
 package org.apache.shardingsphere.core.parsing.parser.sql.dml.insert;
 
+import com.google.common.base.Function;
 import com.google.common.base.Predicate;
 import com.google.common.collect.Collections2;
+import com.google.common.collect.Lists;
 import lombok.Getter;
 import lombok.Setter;
 import lombok.ToString;
@@ -88,5 +90,14 @@ public final class InsertStatement extends DMLStatement {
                 return input instanceof InsertValuesToken;
             }
         }).iterator().next();
+    }
+    
+    public List<String> getInsertColumnNames() {
+        return Lists.transform(columns, new Function<Column, String>() {
+            @Override
+            public String apply(final Column input) {
+                return input.getName();
+            }
+        });
     }
 }
