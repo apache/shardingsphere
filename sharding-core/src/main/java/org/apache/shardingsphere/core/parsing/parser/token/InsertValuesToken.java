@@ -45,6 +45,19 @@ public final class InsertValuesToken extends SQLToken {
         this.type = type;
     }
     
+    /**
+     * Add insert column value.
+     *
+     * @param columnValues column values
+     * @param columnParameters  column parameters
+     */
+    public void addInsertColumnValue(final List<SQLExpression> columnValues, final List<Object> columnParameters) {
+        InsertColumnValue result = new InsertColumnValue();
+        result.values.addAll(columnValues);
+        result.parameters.addAll(columnParameters);
+        this.columnValues.add(result);
+    }
+    
     private final class InsertColumnValue {
     
         private final List<SQLExpression> values = new LinkedList<>();
@@ -52,12 +65,5 @@ public final class InsertValuesToken extends SQLToken {
         private final List<Object> parameters = new LinkedList<>();
     
         private final List<DataNode> dataNodes = new LinkedList<>();
-    }
-    
-    public void addInsertColumnValue(final List<SQLExpression> columnValues, final List<Object> columnParameters) {
-        InsertColumnValue result = new InsertColumnValue();
-        result.values.addAll(columnValues);
-        result.parameters.addAll(columnParameters);
-        this.columnValues.add(result);
     }
 }
