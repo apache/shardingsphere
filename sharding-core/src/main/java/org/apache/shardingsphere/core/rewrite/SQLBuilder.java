@@ -20,7 +20,9 @@ package org.apache.shardingsphere.core.rewrite;
 import com.google.common.base.Strings;
 import org.apache.shardingsphere.core.metadata.datasource.ShardingDataSourceMetaData;
 import org.apache.shardingsphere.core.optimizer.condition.ShardingCondition;
+import org.apache.shardingsphere.core.optimizer.condition.ShardingConditions;
 import org.apache.shardingsphere.core.optimizer.insert.InsertShardingCondition;
+import org.apache.shardingsphere.core.parsing.parser.token.InsertValuesToken.InsertColumnValue;
 import org.apache.shardingsphere.core.rewrite.placeholder.IndexPlaceholder;
 import org.apache.shardingsphere.core.rewrite.placeholder.InsertValuesPlaceholder;
 import org.apache.shardingsphere.core.rewrite.placeholder.SchemaPlaceholder;
@@ -93,7 +95,7 @@ public final class SQLBuilder {
      * @param shardingDataSourceMetaData sharding data source meta data
      * @return SQL unit
      */
-    public SQLUnit toSQL(final TableUnit tableUnit, final Map<String, String> logicAndActualTableMap, final ShardingRule shardingRule, final ShardingDataSourceMetaData shardingDataSourceMetaData) {
+    public SQLUnit toSQL(final TableUnit tableUnit, final Map<String, String> logicAndActualTableMap, final ShardingRule shardingRule, final ShardingConditions shardingConditions, final ShardingDataSourceMetaData shardingDataSourceMetaData) {
         StringBuilder result = new StringBuilder();
         List<Object> insertParameters = new LinkedList<>();
         for (Object each : segments) {
@@ -110,7 +112,7 @@ public final class SQLBuilder {
             } else if (each instanceof IndexPlaceholder) {
                 appendIndexPlaceholder((IndexPlaceholder) each, actualTableName, result);
             } else if (each instanceof InsertValuesPlaceholder) {
-                appendInsertValuesPlaceholder(tableUnit, insertParameters, (InsertValuesPlaceholder) each, result);
+                appendInsertValuesPlaceholder(tableUnit, shardingConditions, (InsertValuesPlaceholder) each, result);
             } else {
                 result.append(each);
             }
@@ -161,26 +163,20 @@ public final class SQLBuilder {
         }
     }
     
-    private void appendInsertValuesPlaceholder(final TableUnit tableUnit, final List<Object> parameters, final InsertValuesPlaceholder insertValuesPlaceholder, final StringBuilder stringBuilder) {
-        List<String> expressions = new LinkedList<>();
-        for (ShardingCondition each : insertValuesPlaceholder.getShardingConditions().getShardingConditions()) {
-            processInsertShardingCondition(tableUnit, (InsertShardingCondition) each, expressions, parameters);
+    private void appendInsertValuesPlaceholder(final TableUnit tableUnit, final ShardingConditions shardingConditions, final InsertValuesPlaceholder insertValuesPlaceholder, final StringBuilder stringBuilder) {
+        for (ShardingCondition each : shardingConditions.getShardingConditions()) {
+            appendInsertValue(tableUnit, insertValuesPlaceholder, (InsertShardingCondition) each);
         }
-        int count = 0;
-        for (String each : expressions) {
-            if (0 != count) {
-                stringBuilder.append(", ");
-            }
-            stringBuilder.append(each);
-            count++;
+    
+        for (int i = 0; i < shardingConditions.getShardingConditions().size(); i++) {
+            appendInsertValue(tableUnit, insertValuesPlaceholder.getColumnValues().get(i), (InsertShardingCondition) shardingConditions.getShardingConditions().get(i));
         }
     }
     
-    private void processInsertShardingCondition(final TableUnit tableUnit, final InsertShardingCondition shardingCondition, final List<String> expressions, final List<Object> parameters) {
+    private void appendInsertValue(final TableUnit tableUnit, final InsertColumnValue insertColumnValue, final InsertShardingCondition shardingCondition) {
         for (DataNode each : shardingCondition.getDataNodes()) {
             if (each.getDataSourceName().equals(tableUnit.getDataSourceName()) && each.getTableName().equals(tableUnit.getRoutingTables().iterator().next().getActualTableName())) {
-                expressions.add(shardingCondition.getInsertValueExpression());
-                parameters.addAll(shardingCondition.getParameters());
+                
                 return;
             }
         }
