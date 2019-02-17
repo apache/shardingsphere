@@ -36,7 +36,7 @@ public final class InsertValuesToken extends SQLToken {
     
     private final DefaultKeyword type;
     
-    private final List<String> insertColumnNames = new LinkedList<>();
+    private final List<String> columnNames = new LinkedList<>();
     
     private final List<InsertColumnValue> columnValues = new LinkedList<>();
     
