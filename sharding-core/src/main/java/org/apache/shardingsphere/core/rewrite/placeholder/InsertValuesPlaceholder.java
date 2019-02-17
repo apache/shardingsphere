@@ -19,10 +19,10 @@ package org.apache.shardingsphere.core.rewrite.placeholder;
 
 import lombok.Getter;
 import lombok.RequiredArgsConstructor;
-import lombok.ToString;
 import org.apache.shardingsphere.core.parsing.lexer.token.DefaultKeyword;
 import org.apache.shardingsphere.core.parsing.parser.token.InsertValuesToken.InsertColumnValue;
 
+import java.util.LinkedList;
 import java.util.List;
 
 /**
@@ -33,7 +33,6 @@ import java.util.List;
  */
 @RequiredArgsConstructor
 @Getter
-@ToString
 public final class InsertValuesPlaceholder implements ShardingPlaceholder {
     
     private final String logicTableName;
@@ -43,4 +42,12 @@ public final class InsertValuesPlaceholder implements ShardingPlaceholder {
     private final List<String> columnNames;
     
     private final List<InsertColumnValue> columnValues;
+    
+    public List<List<Object>> getParameterSets() {
+        List<List<Object>> result = new LinkedList<>();
+        for (InsertColumnValue each : columnValues) {
+            result.add(each.getParameters());
+        }
+        return result;
+    }
 }
