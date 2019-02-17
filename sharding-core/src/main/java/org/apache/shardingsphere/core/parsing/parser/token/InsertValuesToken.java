@@ -71,13 +71,19 @@ public final class InsertValuesToken extends SQLToken {
         private final List<Object> parameters = new LinkedList<>();
     
         private final List<DataNode> dataNodes = new LinkedList<>();
-        
-        public void updateColumnValue(final int valueIndex, final String columnValue) {
-            SQLExpression sqlExpression = values.get(valueIndex);
+    
+        /**
+         * Update column value.
+         * 
+         * @param columnValueIndex column value index
+         * @param columnValue column value
+         */
+        public void updateColumnValue(final int columnValueIndex, final String columnValue) {
+            SQLExpression sqlExpression = values.get(columnValueIndex);
             if (sqlExpression instanceof SQLPlaceholderExpression) {
                 parameters.set(getParameterIndex(sqlExpression), columnValue);
             } else {
-                values.set(valueIndex, new SQLTextExpression(columnValue));
+                values.set(columnValueIndex, new SQLTextExpression(columnValue));
             }
         }
     
