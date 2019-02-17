@@ -29,6 +29,7 @@ import org.apache.shardingsphere.core.parsing.parser.context.condition.Condition
 import org.apache.shardingsphere.core.parsing.parser.context.condition.GeneratedKeyCondition;
 import org.apache.shardingsphere.core.parsing.parser.context.insertvalue.InsertValue;
 import org.apache.shardingsphere.core.parsing.parser.sql.dml.insert.InsertStatement;
+import org.apache.shardingsphere.core.parsing.parser.token.InsertValuesToken;
 import org.apache.shardingsphere.core.routing.value.ListRouteValue;
 import org.apache.shardingsphere.core.rule.ShardingRule;
 
@@ -70,6 +71,13 @@ public final class InsertOptimizeEngine implements OptimizeEngine {
                 currentParameters = getCurrentParameters(parametersCount, insertValue.getParametersCount());
                 parametersCount = parametersCount + insertValue.getParametersCount();
             }
+            InsertValuesToken insertValuesToken = insertStatement.getInsertValuesToken();
+            insertValuesToken.getColumnNames().addAll(insertStatement.getInsertColumnNames());
+            insertValuesToken.addInsertColumnValue(insertValue.getColumnValues(), currentParameters);
+            
+            
+            
+            
             InsertShardingCondition insertShardingCondition = isNeededToAppendGeneratedKey() ? getInsertShardingCondition(generatedKeys.next(), insertValue, currentParameters) 
                     : new InsertShardingCondition(insertValue.getExpression(), currentParameters);
             insertShardingCondition.getShardingValues().addAll(getShardingValues(andConditions.get(i)));
