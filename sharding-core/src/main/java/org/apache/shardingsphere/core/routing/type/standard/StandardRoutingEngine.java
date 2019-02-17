@@ -210,8 +210,7 @@ public final class StandardRoutingEngine implements RoutingEngine {
         if (sqlStatement instanceof InsertStatement) {
             List<InsertColumnValue> insertColumnValues = ((InsertStatement) sqlStatement).getInsertValuesToken().getColumnValues();
             InsertColumnValue insertColumnValue = insertColumnValues.get(shardingConditions.getShardingConditions().indexOf(shardingCondition));
-            
+            insertColumnValue.getDataNodes().addAll(dataNodes);
         }
-        
     }
 }
