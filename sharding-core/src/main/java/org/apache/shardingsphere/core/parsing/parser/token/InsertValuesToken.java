@@ -58,6 +58,7 @@ public final class InsertValuesToken extends SQLToken {
         this.columnValues.add(result);
     }
     
+    @Getter
     private final class InsertColumnValue {
     
         private final List<SQLExpression> values = new LinkedList<>();
